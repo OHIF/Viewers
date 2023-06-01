@@ -1,7 +1,21 @@
 import validate from 'validate.js';
 
-// The equals function is used to validate if a given value is equal to another value or an array of values.
-
+/**
+ * check if the value is strictly equal to options
+ *
+ * @example
+ * value = ['abc', 'def', 'GHI']
+ * testValue = 'abc' (Fail)
+ *           = ['abc'] (Fail)
+ *           = ['abc', 'def', 'GHI'] (Valid)
+ *           = ['abc', 'GHI', 'def'] (Fail)
+ *           = ['abc', 'def'] (Fail)
+ *
+ * value = 'Attenuation Corrected'
+ * testValue = 'Attenuation Corrected' (Valid)
+ *           = 'Attenuation' (Fail)
+ *
+ * */
 validate.validators.equals = function(value, options, key) {
   const testValue = getTestValue(options);
 
@@ -17,8 +31,10 @@ validate.validators.equals = function(value, options, key) {
     }
     // We need to compare each element in the array
     else {
-      if (JSON.stringify(testValue) !== JSON.stringify(value)) {
-        return `${key} must strictly equal ${testValue}`;
+      for (let i = 0; i < testValue.length; i++) {
+        if (testValue[i] !== value[i]) {
+          return `${key} ${testValue[i]} must equal ${value[i]}`;
+        }
       }
     }
   }
@@ -28,7 +44,22 @@ validate.validators.equals = function(value, options, key) {
     return `${key} must equal ${testValue}`;
   }
 };
-// The doesNotEqual function is used to validate if a given value is not equal to another value or an array of values.
+/**
+ * check if the value is not equal to options
+ *
+ * @example
+ * value = ['abc', 'def', 'GHI']
+ * testValue = 'abc' (Valid)
+ *           = ['abc'] (Valid)
+ *           = ['abc', 'def', 'GHI'] (Fail)
+ *           = ['abc', 'GHI', 'def'] (Valid)
+ *           = ['abc', 'def'] (Valid)
+ *
+ * value = 'Attenuation Corrected'
+ * testValue = 'Attenuation Corrected' (Fail)Valid
+ *           = 'Attenuation' (Valid)
+ *
+ * */
 validate.validators.doesNotEqual = function(value, options, key) {
   const testValue = getTestValue(options);
 
@@ -37,28 +68,72 @@ validate.validators.doesNotEqual = function(value, options, key) {
       if (testValue[0] === value) {
         return `${key} must not be ${testValue}`;
       }
-    } else if (JSON.stringify(testValue) === JSON.stringify(value)) {
-      return `${key} must not be equal to ${testValue}`;
+    } else {
+      if (testValue.length === value.length) {
+        let score = 0;
+        testValue.forEach((x, i) => {
+          if (x === value[i]) {
+            score++;
+          }
+        });
+        if (score === testValue.length) {
+          return `${key} must not equal to ${testValue}`;
+        }
+      }
     }
   } else if (value === testValue) {
-    return `${key} must not be ${testValue}`;
+    return `${key} must not equal to ${testValue}`;
   }
 };
 
+/**
+ * Check if a value includes one or more specified options.
+ *
+ * @example
+ * value = ['abc', 'def', 'GHI']
+ * testValue = ‘abc’ (Valid)
+ *           = ‘dog’ (Fail)
+ *           = [‘att’, ‘abc’] (Valid)
+ *           = ['abc', 'def', 'dog'] (Valid)
+ *           = ['cat', 'dog'] (Fail)
+ *
+ * value = 'Attenuation Corrected' (Fail)
+ *
+ * */
 validate.validators.includes = function(value, options, key) {
   const testValue = getTestValue(options);
+
+  if (!Array.isArray(value)) {
+    return `${key} is not allowed as a single value`;
+  }
   if (Array.isArray(testValue)) {
-    const includedValues = testValue.filter(val => value.includes(val));
+    const includedValues = value.filter(val => testValue.includes(val));
     if (includedValues.length === 0) {
-      return `${key} must include at least one of the following values: ${value.join(
+      return `${key} must include at least one of the following values: ${testValue.join(
           ', '
       )}`;
     }
   } else if (!value.includes(testValue)) {
-    return `${key} must include ${testValue}`;
+    return `${key} ${value} must include ${testValue}`;
   }
 };
+/**
+ * Check if a value does not include one or more specified options.
+ *
+ * @example
+ * value = ['abc', 'def', 'GHI']
+ * testValue = ‘Corr’ (Valid)
+ *           = ‘abc’ (Fail)
+ *           = [‘att’, ‘cor’] (Valid)
+ *           = ['abc', 'def', 'dog'] (Fail)
+ *
+ * value = 'Attenuation Corrected' (Fail)
+ *
+ * */
 validate.validators.doesNotInclude = function(value, options, key) {
+  if (!Array.isArray(value)) {
+    return `${key} is not allowed as a single value`;
+  }
   const testValue = getTestValue(options);
   if (Array.isArray(testValue)) {
     const includedValues = testValue.filter(val => value.includes(val));
@@ -71,6 +146,22 @@ validate.validators.doesNotInclude = function(value, options, key) {
 };
 // Ignore case contains.
 // options testValue MUST be in lower case already, otherwise it won't match
+/**
+ * @example
+ * value = 'Attenuation Corrected'
+ * testValue = ‘Corr’ (Valid)
+ *           = ‘corr’ (Valid)
+ *           = [‘att’, ‘cor’] (Valid)
+ *           = [‘Att’, ‘Wall’] (Valid)
+ *           = [‘cat’, ‘dog’] (Fail)
+ *
+ * value = ['abc', 'def', 'GHI']
+ * testValue = 'def' (Valid)
+ *           = 'dog' (Fail)
+ *           = ['gh', 'de'] (Valid)
+ *           = ['cat', 'dog'] (Fail)
+ *
+ * */
 validate.validators.containsI = function(value, options, key) {
   const testValue = getTestValue(options);
   if (Array.isArray(value)) {
@@ -104,7 +195,22 @@ validate.validators.containsI = function(value, options, key) {
     return key + 'must contain any case of' + testValue;
   }
 };
-
+/**
+ * @example
+ * value = 'Attenuation Corrected'
+ * testValue = ‘Corr’ (Valid)
+ *           = ‘corr’ (Fail)
+ *           = [‘att’, ‘cor’] (Fail)
+ *           = [‘Att’, ‘Wall’] (Valid)
+ *           = [‘cat’, ‘dog’] (Fail)
+ *
+ * value = ['abc', 'def', 'GHI']
+ * testValue = 'def' (Valid)
+ *           = 'dog' (Fail)
+ *           = ['cat', 'de'] (Valid)
+ *           = ['cat', 'dog'] (Fail)
+ *
+ * */
 validate.validators.contains = function(value, options, key) {
   const testValue = getTestValue(options);
   if (Array.isArray(value)) {
@@ -129,19 +235,66 @@ validate.validators.contains = function(value, options, key) {
     return key + 'must contain ' + testValue;
   }
 };
+/**
+ * @example
+ * value = 'Attenuation Corrected'
+ * testValue = ‘Corr’ (Fail)
+ *           = ‘corr’ (Valid)
+ *           = [‘att’, ‘cor’] (Valid)
+ *           = [‘Att’, ‘Wall’] (Fail)
+ *           = [‘cat’, ‘dog’] (Valid)
+ *
+ * value = ['abc', 'def', 'GHI']
+ * testValue = 'def' (Fail)
+ *           = 'dog' (Valid)
+ *           = ['cat', 'de'] (Fail)
+ *           = ['cat', 'dog'] (Valid)
+ *
+ * */
 validate.validators.doesNotContain = function(value, options, key) {
   const containsResult = validate.validators.contains(value, options, key);
   if (!containsResult) {
     return `No item of ${value} should contain ${getTestValue(options)}`;
   }
 };
+
+/**
+ * @example
+ * value = 'Attenuation Corrected'
+ * testValue = ‘Corr’ (Fail)
+ *           = ‘corr’ (Fail)
+ *           = [‘att’, ‘cor’] (Fail)
+ *           = [‘Att’, ‘Wall’] (Fail)
+ *           = [‘cat’, ‘dog’] (Valid)
+ *
+ * value = ['abc', 'def', 'GHI']
+ * testValue = 'DEF' (Fail)
+ *           = 'dog' (Valid)
+ *           = ['cat', 'gh'] (Fail)
+ *           = ['cat', 'dog'] (Valid)
+ *
+ * */
 validate.validators.doesNotContainI = function(value, options, key) {
   const containsResult = validate.validators.containsI(value, options, key);
   if (!containsResult) {
     return `No item of ${value} should not contain ${getTestValue(options)}`;
   }
 };
-
+/**
+ * @example
+ * value = 'Attenuation Corrected'
+ * testValue = ‘Corr’ (Fail)
+ *           = ‘Att’ (Fail)
+ *           = ['cat', 'dog', 'Att'] (Valid)
+ *           = [‘cat’, ‘dog’] (Fail)
+ *
+ * value = ['abc', 'def', 'GHI']
+ * testValue = 'deg' (Valid)
+ *           = ['cat', 'GH']  (Valid)
+ *           = ['cat', 'gh'] (Fail)
+ *           = ['cat', 'dog'] (Fail)
+ *
+ * */
 validate.validators.startsWith = function(value, options, key) {
   let testValues = getTestValue(options);
 
@@ -174,6 +327,22 @@ validate.validators.startsWith = function(value, options, key) {
     return 'Value must be a string or an array';
   }
 };
+
+/**
+ * @example
+ * value = 'Attenuation Corrected'
+ * testValue = ‘TED’ (Fail)
+ *           = ‘ted’ (Valid)
+ *           = ['cat', 'dog', 'ted'] (Valid)
+ *           = [‘cat’, ‘dog’] (Fail)
+ *
+ * value = ['abc', 'def', 'GHI']
+ * testValue = 'deg' (Valid)
+ *           = ['cat', 'HI']  (Valid)
+ *           = ['cat', 'hi'] (Fail)
+ *           = ['cat', 'dog'] (Fail)
+ *
+ * */
 validate.validators.endsWith = function(value, options, key) {
   let testValues = getTestValue(options);
 
@@ -206,9 +375,18 @@ validate.validators.endsWith = function(value, options, key) {
     return key + ' must be a string or an array';
   }
 };
-
+/**
+ * @example
+ * value = 30
+ * testValue = 20 (Valid)
+ *           = 40 (Fail)
+ *
+ * */
 validate.validators.greaterThan = function(value, options, key) {
   const testValue = getTestValue(options);
+  if (Array.isArray(value) || typeof value === 'string') {
+    return `${key} is not allowed as an array or string`;
+  }
   if (Array.isArray(testValue)) {
     if (testValue.length === 1) {
       if (!(value >= testValue[0])) {
@@ -223,6 +401,13 @@ validate.validators.greaterThan = function(value, options, key) {
     }
   }
 };
+/**
+ * @example
+ * value = 30
+ * testValue = 40 (Valid)
+ *           = 20 (Fail)
+ *
+ * */
 validate.validators.lessThan = function(value, options, key) {
   const testValue = getTestValue(options);
   if (Array.isArray(testValue)) {
@@ -239,7 +424,19 @@ validate.validators.lessThan = function(value, options, key) {
     }
   }
 };
+/**
+ * @example
 
+ *
+ * value = 50
+ * testValue = [10,60] (Valid)
+ *           = [60, 10] (Valid)
+ *           = [0, 10] (Fail)
+ *           = [70, 80] (Fail)
+ *           = 45  (Fail)
+ *           = [45] (Fail)
+ *
+ * */
 validate.validators.range = function(value, options, key) {
   const testValue = getTestValue(options);
   if (Array.isArray(testValue) && testValue.length === 2) {

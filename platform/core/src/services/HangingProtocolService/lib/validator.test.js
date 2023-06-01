@@ -97,6 +97,9 @@ describe('validator', () => {
     describe('includes', () => {
         it('returns match any list includes', () => {
             expect(
+                validate(attributeMap, { str: { includes: 'Att' } }, [options])
+            ).not.toBeUndefined();
+            expect(
                 validate(attributeMap, { list: { includes: 'abc' } }, [options])
             ).toBeUndefined();
             expect(
@@ -113,10 +116,18 @@ describe('validator', () => {
             expect(
                 validate(attributeMap, { list: { includes: ['HI', 'bye'] } }, [options])
             ).not.toBeUndefined();
+            expect(
+                validate(attributeMap, { str: { includes: ['df', 'abc'] } }, [options])
+            ).not.toBeUndefined();
         });
     });
     describe('doesNotInclude', () => {
         it('returns undefined if list does not includes', () => {
+            expect(
+                validate(attributeMap, { str: { doesNotInclude: ['df', 'abc'] } }, [
+                    options,
+                ])
+            ).not.toBeUndefined();
             expect(
                 validate(attributeMap, { list: { doesNotInclude: ['hi', 'bye'] } }, [
                     options,
