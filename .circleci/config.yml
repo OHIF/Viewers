@@ -161,16 +161,16 @@ jobs:
           name: 'Build the OHIF Viewer'
           command: yarn run build
           no_output_timeout: 45m
-      # - run:
-      #     name: 'Upload SourceMaps, Send Deploy Notification'
-      #     command: |
-      #       # export FILE_1=$(find ./build/static/js -type f -name "2.*.js" -exec basename {} \;)
-      #       # export FILE_MAIN=$(find ./build/static/js -type f -name "main.*.js" -exec basename {} \;)
-      #       # export FILE_RUNTIME_MAIN=$(find ./build/static/js -type f -name "runtime~main.*.js" -exec basename {} \;)
-      #       # curl https://api.rollbar.com/api/1/sourcemap -F source_map=@build/static/js/$FILE_1.map -F access_token=$ROLLBAR_TOKEN -F version=$CIRCLE_SHA1 -F minified_url=https://$GOOGLE_STORAGE_BUCKET/static/js/$FILE_1
-      #       # curl https://api.rollbar.com/api/1/sourcemap -F source_map=@build/static/js/$FILE_MAIN.map -F access_token=$ROLLBAR_TOKEN -F version=$CIRCLE_SHA1 -F minified_url=https://$GOOGLE_STORAGE_BUCKET/static/js/$FILE_MAIN
-      #       # curl https://api.rollbar.com/api/1/sourcemap -F source_map=@build/static/js/$FILE_RUNTIME_MAIN.map -F access_token=$ROLLBAR_TOKEN -F version=$CIRCLE_SHA1 -F minified_url=https://$GOOGLE_STORAGE_BUCKET/static/js/$FILE_RUNTIME_MAIN
-      #       curl --request POST https://api.rollbar.com/api/1/deploy/ -F access_token=$ROLLBAR_TOKEN -F environment=$GOOGLE_STORAGE_BUCKET -F revision=$CIRCLE_SHA1 -F local_username=CircleCI
+      - run:
+          name: 'Upload SourceMaps, Send Deploy Notification'
+          command: |
+            # export FILE_1=$(find ./build/static/js -type f -name "2.*.js" -exec basename {} \;)
+            # export FILE_MAIN=$(find ./build/static/js -type f -name "main.*.js" -exec basename {} \;)
+            # export FILE_RUNTIME_MAIN=$(find ./build/static/js -type f -name "runtime~main.*.js" -exec basename {} \;)
+            # curl https://api.rollbar.com/api/1/sourcemap -F source_map=@build/static/js/$FILE_1.map -F access_token=$ROLLBAR_TOKEN -F version=$CIRCLE_SHA1 -F minified_url=https://$GOOGLE_STORAGE_BUCKET/static/js/$FILE_1
+            # curl https://api.rollbar.com/api/1/sourcemap -F source_map=@build/static/js/$FILE_MAIN.map -F access_token=$ROLLBAR_TOKEN -F version=$CIRCLE_SHA1 -F minified_url=https://$GOOGLE_STORAGE_BUCKET/static/js/$FILE_MAIN
+            # curl https://api.rollbar.com/api/1/sourcemap -F source_map=@build/static/js/$FILE_RUNTIME_MAIN.map -F access_token=$ROLLBAR_TOKEN -F version=$CIRCLE_SHA1 -F minified_url=https://$GOOGLE_STORAGE_BUCKET/static/js/$FILE_RUNTIME_MAIN
+            curl --request POST https://api.rollbar.com/api/1/deploy/ -F access_token=$ROLLBAR_TOKEN -F environment=$GOOGLE_STORAGE_BUCKET -F revision=$CIRCLE_SHA1 -F local_username=CircleCI
       # Persist :+1:
       - persist_to_workspace:
           root: ~/repo
@@ -224,6 +224,22 @@ jobs:
           cp .netlify/deploy-workflow/_redirects platform/viewer/dist/_redirects
       - run: cd .netlify && npm run deploy
 
+    DEPLOY_TO_RELEASE_DEV:
+      docker:
+        - image: circleci/node:16.14.0
+          environment:
+            TERM: xterm
+            NETLIFY_SITE_ID: 3270878-22
+      working_directory: ~/repo
+      steps:
+        - attach_workspace:
+            at: ~/repo
+        - run: cd .netlify && npm install
+        - run:
+            cp .netlify/deploy-workflow/_redirects
+            platform/viewer/dist/_redirects
+        - run: cd .netlify && npm run deploy
+
   ###
   # Workflow: RELEASE
   ###
@@ -269,22 +285,6 @@ jobs:
           root: ~/repo
           paths: .
 
-  DOCS_PUBLISH:
-    <<: *defaults
-    steps:
-      - checkout
-      - run:
-          name: Avoid hosts unknown for github
-          command: |
-            rm -rf ~/.ssh
-            mkdir ~/.ssh/
-            echo -e "Host github.com\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
-            git config --global user.email "danny.ri.brown+ohif-bot@gmail.com"
-            git config --global user.name "ohif-bot"
-      - run: yarn global add gitbook-cli gh-pages
-      - run: chmod +x ~/repo/.circleci/build-and-publish-docs.sh
-      - run: ~/repo/.circleci/build-and-publish-docs.sh
-
   DOCKER_MASTER_PUBLISH:
     <<: *defaults
     steps:
@@ -320,13 +320,8 @@ workflows:
 
   PR_CHECKS:
     jobs:
-      - UNIT_TESTS:
-          filters:
-            branches:
-              ignore:
-                - master
-                - feature/*
-                - hotfix/*
+      - UNIT_TESTS
+
       # E2E: PWA
       - cypress/run:
           name: 'E2E: PWA'
@@ -386,13 +381,27 @@ workflows:
           requires:
             - AWAIT_APPROVAL
 
-  DEPLOY:
+  # Our master branch deploys to viewer-dev.ohif.org, the viewer.ohif.org is
+  # deployed from the release branch which is more stable and less frequently updated.
+  DEPLOY_MASTER:
     jobs:
       - BUILD:
           filters:
             branches:
               only: master
       - DEPLOY_TO_DEV:
+          requires:
+            - BUILD
+
+  # Our release branch deploys to viewer.ohif.org and is more stable and less
+  # frequently updated after being tested in the staging environment.
+  DEPLOY_RELEASE:
+    jobs:
+      - BUILD:
+          filters:
+            branches:
+              only: release
+      - DEPLOY_TO_RELEASE_DEV:
           requires:
             - BUILD
       - PROMOTE_TO_STAGING:
@@ -402,13 +411,13 @@ workflows:
       - DEPLOY_TO_STAGING:
           requires:
             - PROMOTE_TO_STAGING
-      # - PROMOTE_TO_PRODUCTION:
-      #     type: approval
-      #     requires:
-      #       - DEPLOY_TO_STAGING
-      # - DEPLOY_TO_PRODUCTION:
-      #     requires:
-      #       - PROMOTE_TO_PRODUCTION
+      - PROMOTE_TO_PRODUCTION:
+          type: approval
+          requires:
+            - DEPLOY_TO_STAGING
+      - DEPLOY_TO_PRODUCTION:
+          requires:
+            - PROMOTE_TO_PRODUCTION
   ###
   # Unit and E2E tests have already run for PR_CHECKS
   # Re-running should not gain us any confidence here
