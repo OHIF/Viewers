@@ -1,5 +1,5 @@
 {
-  "version": "independent",
+  "version": "3.4",
   "packages": ["extensions/*", "platform/*", "modes/*"],
   "npmClient": "yarn",
   "useWorkspaces": true,
@@ -13,7 +13,8 @@
       "conventionalCommits": true,
       "createRelease": "github",
       "yes": true,
-      "message": "chore(release): publish [skip ci]"
+      "message": "chore(release): publish [skip ci]",
+      "forcePublish": true
     }
   }
 }
