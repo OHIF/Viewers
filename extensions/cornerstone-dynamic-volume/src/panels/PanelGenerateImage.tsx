@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import PropTypes from 'prop-types';
-import { Button, Input, Select, InputDoubleRange, Label } from '@ohif/ui';
+import PropTypes, { array } from 'prop-types';
+import { Button, Input, Select, InputDoubleRange, Label, Icon } from '@ohif/ui';
 // import { useViewportSettings } from '@ohif/ui';
 // import { useViewer } from '@ohif/ui';
 // import cornerstone from 'cornerstone-core';
@@ -117,6 +117,9 @@ export default function PanelGenerateImage({
         cornerstoneViewportService.subscribe(evt, evtdetails => {
           console.log('EVTDETAILS');
           console.log(evtdetails.viewportData.data);
+          if (!Array.isArray(evtdetails.viewportData.data)) {
+            return;
+          }
           evtdetails.viewportData.data.forEach(volumeData => {
             if (volumeData.volumeId.split(':')[0] === volumeLoaderScheme) {
               if (testDynamicVolume === undefined) {
@@ -179,12 +182,13 @@ export default function PanelGenerateImage({
           SeriesInstanceUID: 'test',
           StudyInstanceUID: 'test',
           SeriesNumber: 0,
-          FrameRate: 0,
+          FrameRate: undefined,
           SeriesDescription: '',
           Modality: myDynamicVolume.metadata.Modality,
           isMultiFrame: false,
           countIcon: undefined,
           numImageFrames: 1,
+          uid: uuidComputedVolume,
           averageSpacingBetweenFrames: null,
         },
       };
@@ -288,13 +292,35 @@ export default function PanelGenerateImage({
         <Button color="primary" onClick={onGenerateImage}>
           Generate Image
         </Button>
-        <Button color="primary" onClick={callRender}>
+        {/* <Button color="primary" onClick={callRender}>
           Render Generated Image
-        </Button>
+        </Button> */}
         <Button color="primary" onClick={returnTo4D}>
           Return To 4D
         </Button>
-        <Select
+        <div className="flex space-between">
+          <Button
+            onClick={() => {}}
+            variant="contained"
+            color="primary"
+            border="primary"
+            startIcon={<Icon name="icon-play" />}
+            fullWidth={true}
+          >
+            Play
+          </Button>
+          <Button
+            onClick={() => {}}
+            variant="contained"
+            color="primary"
+            border="primary"
+            startIcon={<Icon name="icon-pause" />}
+            fullWidth={true}
+          >
+            Pause
+          </Button>
+        </div>
+        {/* <Select
           label={t('TimeFrameOptions')}
           closeMenuOnSelect={false}
           className="mr-2 bg-black border-primary-main text-white "
@@ -307,7 +333,7 @@ export default function PanelGenerateImage({
               TimeFrames: e.target.value,
             });
           }}
-        />
+        /> */}
       </div>
     </div>
   );
