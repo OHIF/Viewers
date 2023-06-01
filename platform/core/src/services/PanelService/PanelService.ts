@@ -99,6 +99,14 @@ export default class PanelService extends PubSubService {
     panelsIds.forEach(panelId => this.addPanel(position, panelId));
   }
 
+  public setPanels(panels: { [key in PanelPosition]: string[] }): void {
+    this.reset();
+
+    Object.keys(panels).forEach((position: PanelPosition) => {
+      this.addPanels(position, panels[position]);
+    });
+  }
+
   public getPanels(position: PanelPosition): PanelData[] {
     const panels = this._panelsGroups.get(position) ?? [];
 

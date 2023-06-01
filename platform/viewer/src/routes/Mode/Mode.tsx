@@ -94,8 +94,8 @@ function initWorkflowStages({ mode, servicesManager }) {
 
   const initialStageId = workflow.initialStageId ?? workflow.stages[0].id;
 
-  workflowStagesService.addStages(workflow.stages);
-  workflowStagesService.setActiveStage(initialStageId);
+  workflowStagesService.addWorkflowStages(workflow.stages);
+  workflowStagesService.setActiveWorkflowStage(initialStageId);
 }
 
 export default function ModeRoute({

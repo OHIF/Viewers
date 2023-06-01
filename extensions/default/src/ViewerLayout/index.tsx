@@ -6,6 +6,7 @@ import { useLocation } from 'react-router';
 
 import {
   SidePanel,
+  SidePanelWithService,
   ErrorBoundary,
   UserPreferences,
   AboutModal,
@@ -232,7 +233,7 @@ function ViewerLayout({
           {/* LEFT SIDEPANELS */}
           {hasLeftPanels ? (
             <ErrorBoundary context="Left Panel">
-              <SidePanel
+              <SidePanelWithService
                 side="left"
                 activeTabIndex={leftPanelDefaultClosed ? null : 0}
                 servicesManager={servicesManager}
@@ -253,7 +254,7 @@ function ViewerLayout({
           </div>
           {hasRightPanels ? (
             <ErrorBoundary context="Right Panel">
-              <SidePanel
+              <SidePanelWithService
                 side="right"
                 activeTabIndex={rightPanelDefaultClosed ? null : 0}
                 servicesManager={servicesManager}

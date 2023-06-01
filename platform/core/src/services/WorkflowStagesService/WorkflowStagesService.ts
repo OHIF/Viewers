@@ -8,6 +8,53 @@ export const EVENTS = {
   STAGES_CHANGED: 'event::workflowStagesService:stagesChanged',
 };
 
+/*
+  A mode may define a workflow and each workflow may have one or more stages.
+  Each stage may define a different set of tools, hanging protocol and panels
+  layout that will be applied to the viewer once it gets activated making the
+  viewer work in a more dynamic way.
+
+  Example:
+    All keys inside brackets are optionals.
+
+    workflow: {
+      [initialStageId]: 'stage1',
+      stages: [
+        {
+          id: 'firstStage',
+          name: 'First Stage',
+          [toolbar]: {
+            buttons: firstStageToolbarButtons,
+            sections: [
+              {
+                key: 'primary',
+                buttons: [ 'MeasurementTools', 'Zoom', ... ],
+              },
+            ],
+          },
+          [layout]: {
+            [panels]: {
+              left: ['firstLeftPanelId', 'secondLeftPanelId'],
+              right: ['firstRightPanelId'],
+            },
+          },
+          [hangingProtocol]: {
+            protocolId: 'default',
+            [stageId]: 'firstStage',
+          },
+        },
+        {
+          id: 'secondStage',
+          name: 'Second Stage',
+          ...
+        },
+      ]
+    }
+
+  If workflow stages are defined but `initialStageId` is not set then the first
+  stage is set as active during mode initialization.
+*/
+
 export type WorkflowStage = {
   id: string;
   name: string;
@@ -24,9 +71,8 @@ export type WorkflowStage = {
   };
   layout?: {
     panels: {
-      leftPanels?: unknown[];
-      rightPanels?: unknown[];
-      rightPanelDefaultClosed?: boolean;
+      left?: string[];
+      right?: string[];
     };
   };
 };
@@ -34,50 +80,54 @@ export type WorkflowStage = {
 class WorkflowStagesService extends PubSubService {
   private _servicesManager: ServicesManager;
   private _commandsManager: CommandsManager;
-  private _stages: WorkflowStage[];
-  private _activeStage: WorkflowStage;
+  private _workflowStages: WorkflowStage[];
+  private _activeWorkflowStage: WorkflowStage;
 
   constructor(
     commandsManager: CommandsManager,
     servicesManager: ServicesManager
   ) {
     super(EVENTS);
-    this._stages = [];
-    this._activeStage = null;
+    this._workflowStages = [];
+    this._activeWorkflowStage = null;
     this._commandsManager = commandsManager;
     this._servicesManager = servicesManager;
   }
 
-  public get stages(): WorkflowStage[] {
-    return this._stages;
+  public get workflowStages(): WorkflowStage[] {
+    return [...this._workflowStages];
   }
 
-  public get activeStage(): WorkflowStage {
-    return this._activeStage;
+  public get activeWorkflowStage(): WorkflowStage {
+    return this._activeWorkflowStage;
   }
 
-  public addStages(stages: WorkflowStage[]): void {
-    let stageAdded = false;
+  public addWorkflowStages(workflowStages: WorkflowStage[]): void {
+    let workflowStageAdded = false;
 
-    stages.forEach(newStage => {
-      const stageExists = this._stages.some(stage => stage.id === newStage.id);
+    workflowStages.forEach(newWorkflowStage => {
+      const workflowStageExists = this._workflowStages.some(
+        workflowStage => workflowStage.id === newWorkflowStage.id
+      );
 
-      if (stageExists) {
-        throw new Error(`Duplicated stage id (${newStage.id})`);
+      if (workflowStageExists) {
+        throw new Error(
+          `Duplicated workflow stage id (${newWorkflowStage.id})`
+        );
       }
 
-      this._stages.push(newStage);
-      stageAdded = true;
+      this._workflowStages.push(newWorkflowStage);
+      workflowStageAdded = true;
     });
 
-    if (stageAdded) {
+    if (workflowStageAdded) {
       this._broadcastEvent(EVENTS.STAGES_CHANGED, {});
     }
   }
 
-  private _updateToolBar(stage: WorkflowStage) {
+  private _updateToolBar(workflowStage: WorkflowStage) {
     const { toolbarService } = this._servicesManager.services;
-    const { toolbar } = stage;
+    const { toolbar } = workflowStage;
     const shouldUpdate = !!toolbar?.buttons && !!toolbar?.sections;
 
     if (!shouldUpdate) {
@@ -92,23 +142,19 @@ class WorkflowStagesService extends PubSubService {
     });
   }
 
-  private _updatePanels(stage: WorkflowStage) {
+  private _updatePanels(workflowStage: WorkflowStage) {
     const { panelService } = this._servicesManager.services;
-    const panels = stage?.layout?.panels;
+    const panels = workflowStage?.layout?.panels;
 
     if (!panels) {
       return;
     }
 
-    panelService.reset();
-
-    Object.keys(panels).forEach(position => {
-      panelService.addPanels(position, panels[position]);
-    });
+    panelService.setPanels(panels);
   }
 
-  private _updateHangingProtocol(stage: WorkflowStage) {
-    const { hangingProtocol } = stage;
+  private _updateHangingProtocol(workflowStage: WorkflowStage) {
+    const { hangingProtocol } = workflowStage;
 
     if (!hangingProtocol) {
       return;
@@ -121,27 +167,29 @@ class WorkflowStagesService extends PubSubService {
     });
   }
 
-  private _activateStage(stage: WorkflowStage): void {
-    this._updateToolBar(stage);
-    this._updatePanels(stage);
-    this._updateHangingProtocol(stage);
+  private _activateWorkflowStage(activeWorkflowStage: WorkflowStage): void {
+    this._activeWorkflowStage = activeWorkflowStage;
+    this._updateToolBar(activeWorkflowStage);
+    this._updatePanels(activeWorkflowStage);
+    this._updateHangingProtocol(activeWorkflowStage);
+    this._broadcastEvent(EVENTS.ACTIVE_STAGE_CHANGED, { activeWorkflowStage });
   }
 
-  public setActiveStage(stageId: string): void {
-    const activeStage = this._stages.find(stage => stage.id === stageId);
+  public setActiveWorkflowStage(workflowStageId: string): void {
+    const activeWorkflowStage = this._workflowStages.find(
+      stage => stage.id === workflowStageId
+    );
 
-    if (!activeStage) {
-      throw new Error(`Invalid stageId (${stageId})`);
+    if (!activeWorkflowStage) {
+      throw new Error(`Invalid workflowStageId (${workflowStageId})`);
     }
 
-    this._activeStage = activeStage;
-    this._activateStage(activeStage);
-    this._broadcastEvent(EVENTS.ACTIVE_STAGE_CHANGED, { activeStage });
+    this._activateWorkflowStage(activeWorkflowStage);
   }
 
   public reset(): void {
-    this._activeStage = null;
-    this._stages = [];
+    this._activeWorkflowStage = null;
+    this._workflowStages = [];
   }
 
   public onModeEnter(): void {
@@ -150,11 +198,7 @@ class WorkflowStagesService extends PubSubService {
 
   public static REGISTRATION = {
     name: 'workflowStagesService',
-    create: ({
-      // configuration = {},
-      commandsManager,
-      servicesManager,
-    }): WorkflowStagesService => {
+    create: ({ commandsManager, servicesManager }): WorkflowStagesService => {
       return new WorkflowStagesService(commandsManager, servicesManager);
     },
   };

@@ -48,6 +48,7 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
     appConfig,
   });
 
+  // extensionManager cannot be passed in the ServicesManager constructor due to a cyclical dependency
   servicesManager.init({ extensionManager });
 
   servicesManager.registerServices([
