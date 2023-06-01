@@ -92,27 +92,14 @@ function modeFactory({ modeConfiguration }) {
         modalities_list.includes(modality)
       );
     },
+
+    // You can find more infomation about how to define a workflow and its
+    // stages in WorkflowStageService
     workflow: {
-      // initialStageId: 'registration',
       stages: [
         {
           id: 'dataPreparation',
           name: 'Data Preparation',
-          // toolbar: {
-          //   buttons: dataPreparationToolbarButtons,
-          //   sections: [
-          //     {
-          //       key: 'primary',
-          //       buttons: [ 'MeasurementTools', 'Zoom', ... ],
-          //     },
-          //   ],
-          // },
-          // layout: {
-          //   panels: {
-          //     left: [dynamicVolume.leftPanel],
-          //     right: [ohif.rightPanel],
-          //   },
-          // },
           hangingProtocol: {
             protocolId: 'default4D',
             stageId: 'dataPreparation',

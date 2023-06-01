@@ -21,17 +21,17 @@ const styles = {
 
 function WorkflowPanel({ servicesManager }) {
   const { workflowStagesService } = servicesManager.services;
-  const [stages, setStages] = useState(workflowStagesService.stages);
-  const [activeStage, setActiveStage] = useState(workflowStagesService.activeStage);
+  const [workflowStages, setWorkflowStages] = useState(workflowStagesService.workflowStages);
+  const [activeWorkflowStage, setActiveWorkflowStage] = useState(workflowStagesService.activeWorkflowStage);
 
-  const handleClick = useCallback((stage) => {
-    workflowStagesService.setActiveStage(stage.id);
+  const handleClick = useCallback((workflowStage) => {
+    workflowStagesService.setActiveWorkflowStage(workflowStage.id);
   }, [workflowStagesService]);
 
   useEffect(() => {
     const { unsubscribe } = workflowStagesService.subscribe(
       workflowStagesService.EVENTS.STAGES_CHANGED,
-      () => setStages(workflowStagesService.stages)
+      () => setWorkflowStages(workflowStagesService.workflowStages)
     );
 
     return () => {
@@ -42,7 +42,7 @@ function WorkflowPanel({ servicesManager }) {
   useEffect(() => {
     const { unsubscribe } = workflowStagesService.subscribe(
       workflowStagesService.EVENTS.ACTIVE_STAGE_CHANGED,
-      () => setActiveStage(workflowStagesService.activeStage)
+      () => setActiveWorkflowStage(workflowStagesService.activeWorkflowStage)
     );
 
     return () => {
@@ -50,14 +50,14 @@ function WorkflowPanel({ servicesManager }) {
     }
   }, [servicesManager]);
 
-  const stagesContent = stages.map(stage => {
+  const workflowStagesContent = workflowStages.map(workflowStage => {
     return (
       <div
-        key={stage.id}
-        onClick={() => handleClick(stage)}
-        style={ stage.id === activeStage?.id ? styles.listItemSelected : styles.listItem }
+        key={workflowStage.id}
+        onClick={() => handleClick(workflowStage)}
+        style={ workflowStage.id === activeWorkflowStage?.id ? styles.listItemSelected : styles.listItem }
       >
-        { stage.id === activeStage?.id && '[' } { stage.name } { stage.id === activeStage?.id && ']' }
+        { workflowStage.id === activeWorkflowStage?.id && '[' } { workflowStage.name } { workflowStage.id === activeWorkflowStage?.id && ']' }
       </div>
     );
   })
@@ -66,7 +66,7 @@ function WorkflowPanel({ servicesManager }) {
     <div data-cy={'workflow-panel'} style={styles.panel}>
       <div style={styles.title}>Workflow</div>
       <div style={styles.container}>
-        { stagesContent }
+        { workflowStagesContent }
       </div>
     </div>
   );
