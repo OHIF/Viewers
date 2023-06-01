@@ -57,7 +57,7 @@ module.exports = {
   projectName: 'OHIF',
   baseUrl,
   baseUrlIssueBanner: true,
-  url: 'https://v3-docs.ohif.org',
+  url: 'https://docs.ohif.org',
   i18n: {
     defaultLocale: 'en',
     locales: isDeployPreview
@@ -233,7 +233,7 @@ module.exports = {
           //     : undefined,
           versions: {
             current: {
-              label: 'Version 3.4 - Stable',
+              label: 'Latest',
             },
             '2.0': {
               label: 'Version 2.0 - Master branch',
@@ -429,7 +429,7 @@ module.exports = {
         logo: {
           alt: 'OHIF ',
           src: 'img/netlify-color-accent.svg',
-          href: 'https://v3-demo.ohif.org/',
+          href: 'https://viewer.ohif.org/',
         },
         copyright: `OHIF is open source software released under the MIT license.`,
       },

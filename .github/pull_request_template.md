@@ -1,6 +1,6 @@
 <!-- Do Not Delete This! pr_template -->
 <!-- Please read our Rules of Conduct: https://github.com/OHIF/Viewers/blob/master/CODE_OF_CONDUCT.md -->
-<!-- 🕮 Read our guide about our Contributing Guide here https://v3-docs.ohif.org/development/contributing -->
+<!-- 🕮 Read our guide about our Contributing Guide here https://docs.ohif.org/development/contributing -->
 <!-- :hand: Thank you for starting this amazing contribution! -->
 
 <!--
@@ -75,7 +75,7 @@ after the commits are squashed.
 
 #### Public Documentation Updates
 
-<!-- https://v3-docs.ohif.org/ -->
+<!-- https://docs.ohif.org/ -->
 
 - [] The documentation page has been updated as necessary for any public API
   additions or removals.
