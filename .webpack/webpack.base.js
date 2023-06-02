@@ -11,7 +11,7 @@ const TerserJSPlugin = require('terser-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 
 // ~~ PackageJSON
-const PACKAGE = require('../platform/viewer/package.json');
+const PACKAGE = require('../platform/app/package.json');
 // const vtkRules = require('vtk.js/Utilities/config/dependency.js').webpack.core
 //   .rules;
 // ~~ RULES
@@ -103,14 +103,14 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
       mainFields: ['module', 'browser', 'main'],
       alias: {
         // Viewer project
-        '@': path.resolve(__dirname, '../platform/viewer/src'),
+        '@': path.resolve(__dirname, '../platform/app/src'),
         '@components': path.resolve(
           __dirname,
-          '../platform/viewer/src/components'
+          '../platform/app/src/components'
         ),
-        '@hooks': path.resolve(__dirname, '../platform/viewer/src/hooks'),
-        '@routes': path.resolve(__dirname, '../platform/viewer/src/routes'),
-        '@state': path.resolve(__dirname, '../platform/viewer/src/state'),
+        '@hooks': path.resolve(__dirname, '../platform/app/src/hooks'),
+        '@routes': path.resolve(__dirname, '../platform/app/src/routes'),
+        '@state': path.resolve(__dirname, '../platform/app/src/state'),
         'dicom-microscopy-viewer':
           'dicom-microscopy-viewer/dist/dynamic-import/dicomMicroscopyViewer.min.js',
         '@cornerstonejs/dicom-image-loader':
@@ -122,7 +122,7 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
         path.resolve(__dirname, '../node_modules'),
         // Hoisted Yarn Workspace Modules
         path.resolve(__dirname, '../../../node_modules'),
-        path.resolve(__dirname, '../platform/viewer/node_modules'),
+        path.resolve(__dirname, '../platform/app/node_modules'),
         path.resolve(__dirname, '../platform/ui/node_modules'),
         SRC_DIR,
       ],

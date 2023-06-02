@@ -368,7 +368,7 @@ Similar to extension registration, `viewer` will look inside the `pluginConfig.j
 find the `modes` to register.
 
 
-```js title=platform/viewer/pluginConfig.json
+```js title=platform/app/pluginConfig.json
 // Simplified version of the `pluginConfig.json` file
 {
   "extensions": [

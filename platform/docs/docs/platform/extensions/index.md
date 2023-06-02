@@ -152,7 +152,7 @@ the top level [`extensions/`][ext-source] directory.
 `pluginConfig.json`, by default we register all extensions in the repo.
 
 
-```js title=platform/viewer/pluginConfig.json
+```js title=platform/app/pluginConfig.json
 // Simplified version of the `pluginConfig.json` file
 {
   "extensions": [
@@ -319,7 +319,7 @@ documentation page.</span>
 
 ### Contexts
 
-The `@ohif/viewer` tracks "active contexts" that extensions can use to scope
+The `@ohif/app` tracks "active contexts" that extensions can use to scope
 their functionality. Some example contexts being:
 
 - Route: `ROUTE:VIEWER`, `ROUTE:STUDY_LIST`

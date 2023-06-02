@@ -257,9 +257,9 @@ MIT © [OHIF](https://github.com/OHIF)
 [semantic-image]: https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg
 [semantic-url]: https://github.com/semantic-release/semantic-release
 <!-- ROW -->
-[npm-url]: https://npmjs.org/package/@ohif/viewer
-[npm-downloads-image]: https://img.shields.io/npm/dm/@ohif/viewer.svg?style=flat-square
-[npm-version-image]: https://img.shields.io/npm/v/@ohif/viewer.svg?style=flat-square
+[npm-url]: https://npmjs.org/package/@ohif/app
+[npm-downloads-image]: https://img.shields.io/npm/dm/@ohif/app.svg?style=flat-square
+[npm-version-image]: https://img.shields.io/npm/v/@ohif/app.svg?style=flat-square
 [docker-pulls-img]: https://img.shields.io/docker/pulls/ohif/viewer.svg?style=flat-square
 [docker-image-url]: https://hub.docker.com/r/ohif/viewer
 [license-image]: https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square
@@ -275,7 +275,7 @@ MIT © [OHIF](https://github.com/OHIF)
 [deployment-docs]: https://docs.ohif.org/deployment/
 [react-url]: https://reactjs.org/
 [pwa-url]: https://developers.google.com/web/progressive-web-apps/
-[ohif-viewer-url]: https://www.npmjs.com/package/@ohif/viewer
+[ohif-viewer-url]: https://www.npmjs.com/package/@ohif/app
 [configuration-url]: https://docs.ohif.org/configuring/
 [extensions-url]: https://docs.ohif.org/extensions/
 <!-- Platform -->
@@ -285,8 +285,8 @@ MIT © [OHIF](https://github.com/OHIF)
 [i18n-npm]: https://www.npmjs.com/package/@ohif/i18n
 [platform-ui]: platform/ui/README.md
 [ui-npm]: https://www.npmjs.com/package/@ohif/ui
-[platform-viewer]: platform/viewer/README.md
-[viewer-npm]: https://www.npmjs.com/package/@ohif/viewer
+[platform-viewer]: platform/app/README.md
+[viewer-npm]: https://www.npmjs.com/package/@ohif/app
 <!-- Extensions -->
 [extension-cornerstone]: extensions/cornerstone/README.md
 [cornerstone-npm]: https://www.npmjs.com/package/@ohif/extension-cornerstone

@@ -51,7 +51,7 @@
       "dependsOn": ["^test:e2e:serve"]
     },
     "build": {
-      "outputs": ["{projectRoot}/platform/viewer/dist"]
+      "outputs": ["{projectRoot}/platform/app/dist"]
     }
   }
 }

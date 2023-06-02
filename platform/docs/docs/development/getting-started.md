@@ -63,10 +63,10 @@ yarn run dev
 You should see the following output:
 
 ```bash
-@ohif/viewer: i ｢wds｣: Project is running at http://localhost:3000/
-@ohif/viewer: i ｢wds｣: webpack output is served from /
-@ohif/viewer: i ｢wds｣: Content not from webpack is served from D:\code\ohif\Viewers\platform\viewer
-@ohif/viewer: i ｢wds｣: 404s will fallback to /index.html
+@ohif/app: i ｢wds｣: Project is running at http://localhost:3000/
+@ohif/app: i ｢wds｣: webpack output is served from /
+@ohif/app: i ｢wds｣: Content not from webpack is served from D:\code\ohif\Viewers\platform\viewer
+@ohif/app: i ｢wds｣: 404s will fallback to /index.html
 
 # And a list of all generated files
 ```

@@ -43,9 +43,9 @@ yarn run build
 ```
 
 If everything worked as expected, you should have a new `dist/` directory in the
-`platform/viewer/dist` folder. It should roughly resemble the following:
+`platform/app/dist` folder. It should roughly resemble the following:
 
-```bash title="<root>platform/viewer/dist/"
+```bash title="<root>platform/app/dist/"
 ├── app-config.js
 ├── app.bundle.js
 ├── app.css
@@ -62,7 +62,7 @@ how to configure the project for your own imaging archive below.
 
 ### Configuration
 
-The configuration for our viewer is in the `<root>platform/viewer/public/config`
+The configuration for our viewer is in the `<root>platform/app/public/config`
 directory. Our build process knows which configuration file to use based on the
 `APP_CONFIG` environment variable. By default, its value is
 [`config/default.js`][default-config]. The majority of the viewer's features,
@@ -101,7 +101,7 @@ directory:
 # Install http-server as a globally available package
 yarn global add http-server
 
-# Change the directory to the platform/viewer
+# Change the directory to the platform/app
 
 # Serve the files in our current directory
 # Accessible at: `http://localhost:8080`

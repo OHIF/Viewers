@@ -65,18 +65,18 @@ jobs:
       - run:
           name: 'JavaScript Test Suite'
           command: yarn run test:unit:ci
-      # PLATFORM/VIEWER
+      # platform/app
       - run:
           name: 'VIEWER: Combine report output'
           command: |
-            viewerCov="/home/circleci/repo/platform/viewer/coverage"
+            viewerCov="/home/circleci/repo/platform/app/coverage"
             touch "${viewerCov}/reports"
             cat "${viewerCov}/clover.xml" >> "${viewerCov}/reports"
             echo "\<<\<<\<< EOF" >> "${viewerCov}/reports"
             cat "${viewerCov}/lcov.info" >>"${viewerCov}/reports"
             echo "\<<\<<\<< EOF" >> "${viewerCov}/reports"
       - codecov/upload:
-          file: '/home/circleci/repo/platform/viewer/coverage/reports'
+          file: '/home/circleci/repo/platform/app/coverage/reports'
           flags: 'viewer'
       # PLATFORM/CORE
       - run:
@@ -128,9 +128,9 @@ jobs:
             # Set our version number using vars
             echo $CIRCLE_BUILD_NUM
             # Build our image, auth, and push
-            docker build --tag ohif/viewer:PR_BUILD-$CIRCLE_BUILD_NUM .
+            docker build --tag ohif/app:PR_BUILD-$CIRCLE_BUILD_NUM .
             echo $DOCKER_PWD | docker login -u $DOCKER_LOGIN --password-stdin
-            docker push ohif/viewer:PR_BUILD-$CIRCLE_BUILD_NUM
+            docker push ohif/app:PR_BUILD-$CIRCLE_BUILD_NUM
 
   ###
   # Workflow: DEPLOY
@@ -175,7 +175,7 @@ jobs:
       - persist_to_workspace:
           root: ~/repo
           paths:
-            - platform/viewer/dist
+            - platform/app/dist
             - netlify.toml
             - .netlify
 
@@ -190,8 +190,7 @@ jobs:
       - attach_workspace:
           at: ~/repo
       - run: cd .netlify && npm install
-      - run:
-          cp .netlify/deploy-workflow/_redirects platform/viewer/dist/_redirects
+      - run: cp .netlify/deploy-workflow/_redirects platform/app/dist/_redirects
       - run: cd .netlify && npm run deploy
 
   DEPLOY_TO_STAGING:
@@ -205,8 +204,7 @@ jobs:
       - attach_workspace:
           at: ~/repo
       - run: cd .netlify && npm install
-      - run:
-          cp .netlify/deploy-workflow/_redirects platform/viewer/dist/_redirects
+      - run: cp .netlify/deploy-workflow/_redirects platform/app/dist/_redirects
       - run: cd .netlify && npm run deploy
 
   DEPLOY_TO_PRODUCTION:
@@ -220,8 +218,7 @@ jobs:
       - attach_workspace:
           at: ~/repo
       - run: cd .netlify && npm install
-      - run:
-          cp .netlify/deploy-workflow/_redirects platform/viewer/dist/_redirects
+      - run: cp .netlify/deploy-workflow/_redirects platform/app/dist/_redirects
       - run: cd .netlify && npm run deploy
 
     DEPLOY_TO_RELEASE_DEV:
@@ -236,8 +233,7 @@ jobs:
             at: ~/repo
         - run: cd .netlify && npm install
         - run:
-            cp .netlify/deploy-workflow/_redirects
-            platform/viewer/dist/_redirects
+            cp .netlify/deploy-workflow/_redirects platform/app/dist/_redirects
         - run: cd .netlify && npm run deploy
 
   ###
@@ -297,14 +293,14 @@ jobs:
           command: |
             # This file will exist if a new version was published by
             # our command in the previous job. Created in npm ci:generateSuccessVersion script
-            # in the `platform/viewer` project.
-            if [[ ! -e platform/viewer/success_version.txt ]]; then
+            # in the `platform/app` project.
+            if [[ ! -e platform/app/success_version.txt ]]; then
               exit 0
             else
               # Remove npm config
               rm -f ./.npmrc
               # Set our version number using vars
-              export IMAGE_VERSION=$(cat platform/viewer/success_version.txt)
+              export IMAGE_VERSION=$(cat platform/app/success_version.txt)
               export IMAGE_VERSION_FULL=v$IMAGE_VERSION.${CIRCLE_BUILD_NUM}
               echo $IMAGE_VERSION
               echo $IMAGE_VERSION_FULL
@@ -335,7 +331,7 @@ workflows:
           yarn: true
           record: true
           store_artifacts: true
-          working_directory: platform/viewer
+          working_directory: platform/app
           build: yarn test:data
           start: yarn run test:e2e:serve
           spec: 'cypress/integration/**/*'
@@ -344,11 +340,11 @@ workflows:
           no-workspace: true # Don't persist workspace
           post-steps:
             - store_artifacts:
-                path: platform/viewer/cypress/screenshots
+                path: platform/app/cypress/screenshots
             - store_artifacts:
-                path: platform/viewer/cypress/videos
+                path: platform/app/cypress/videos
             - store_test_results:
-                path: platform/viewer/cypress/results
+                path: platform/app/cypress/results
           requires:
             - UNIT_TESTS
 
@@ -365,7 +361,7 @@ workflows:
             - run: 'rm -rf ~/.yarn && yarn -v && yarn global add wait-on'
           yarn: true
           store_artifacts: false
-          working_directory: platform/viewer
+          working_directory: platform/app
           build:
             yarn test:data && npx cross-env QUICK_BUILD=true
             APP_CONFIG=config/dicomweb-server.js yarn run build
@@ -375,9 +371,9 @@ workflows:
           no-workspace: true # Don't persist workspace
           post-steps:
             - store_artifacts:
-                path: platform/viewer/cypress/screenshots
+                path: platform/app/cypress/screenshots
             - store_artifacts:
-                path: platform/viewer/cypress/videos
+                path: platform/app/cypress/videos
           requires:
             - AWAIT_APPROVAL
 
@@ -443,7 +439,7 @@ workflows:
   #               add wait-on' # Use yarn latest
   #         yarn: true
   #         store_artifacts: false
-  #         working_directory: platform/viewer
+  #         working_directory: platform/app
   #         build:
   #           npx cross-env QUICK_BUILD=true APP_CONFIG=config/e2e.js yarn run
   #           build
@@ -453,11 +449,11 @@ workflows:
   #         no-workspace: true # Don't persist workspace
   #         post-steps:
   #           - store_artifacts:
-  #               path: platform/viewer/cypress/screenshots
+  #               path: platform/app/cypress/screenshots
   #           - store_artifacts:
-  #               path: platform/viewer/cypress/videos
+  #               path: platform/app/cypress/videos
   #           - store_test_results:
-  #               path: platform/viewer/cypress/results
+  #               path: platform/app/cypress/results
   #         filters:
   #           branches:
   #             only: master
