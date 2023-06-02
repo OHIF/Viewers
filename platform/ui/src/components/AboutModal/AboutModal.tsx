@@ -80,13 +80,13 @@ const AboutModal = ({ buildNumber, versionNumber }) => {
       <div className="flex flex-col">
         <Row
           title="Repository URL"
-          value="https://github.com/OHIF/Viewers/tree/v3-stable"
-          link="https://github.com/OHIF/Viewers/tree/v3-stable"
+          value="https://github.com/OHIF/Viewers/"
+          link="https://github.com/OHIF/Viewers/"
         />
         {/* <Row
           title="Last Master Commits"
-          value="https://github.com/OHIF/Viewers/tree/v3-stable"
-          link="https://github.com/OHIF/Viewers/tree/v3-stable"
+          value="https://github.com/OHIF/Viewers/"
+          link="https://github.com/OHIF/Viewers/"
         /> */}
         <Row title="Version number" value={versionNumber} />
         <Row title="Build number" value={buildNumber} />
