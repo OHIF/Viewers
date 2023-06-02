@@ -50,8 +50,6 @@
     "lerna:clean": "lerna clean",
     "lerna:cache": "./netlify-lerna-cache.sh",
     "lerna:restore": "./netlify-lerna-restore.sh",
-    "lerna:version": "npx lerna version prerelease --force-publish",
-    "lerna:publish": "lerna publish from-package --dist-tag next",
     "link-list": "npm ls --depth=0 --link=true"
   },
   "dependencies": {

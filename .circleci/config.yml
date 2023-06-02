@@ -277,13 +277,13 @@ jobs:
           name: Authenticate with NPM registry
           command:
             echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/repo/.npmrc
-      - run: npx lerna version
-      - run: yarn run build:package-all
-      - run: yarn run lerna:publish
-      - run: npx lerna run ci:generateSuccessVersion --stream
-      - persist_to_workspace:
-          root: ~/repo
-          paths: .
+      # - run: npx lerna version
+      # - run: yarn run build:package-all
+      # - run: yarn run lerna:publish
+      # - run: npx lerna run ci:generateSuccessVersion --stream
+      # - persist_to_workspace:
+      #     root: ~/repo
+      #     paths: .
 
   DOCKER_MASTER_PUBLISH:
     <<: *defaults
