@@ -1399,8 +1399,8 @@ export default class HangingProtocolService extends PubSubService {
           studyMatchingRules,
           {
             studies: this.studies,
-            displaySets: this.displaySets,
-            studyDisplaySets: studyDisplaySets,
+            displaySets: studyDisplaySets,
+            allDisplaySets: this.displaySets,
             displaySetMatchDetails: this.displaySetMatchDetails,
           }
       );
