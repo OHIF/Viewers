@@ -12,7 +12,7 @@ import { Input, Dialog } from '@ohif/ui';
  */
 export default function callInputDialog({
   uiDialogService,
-  title = 'Enter your annotation',
+  title = 'Annotation',
   defaultValue = '',
   callback = (value: string, action: string) => {}
 }) {
@@ -49,24 +49,23 @@ export default function callInputDialog({
         onSubmit: onSubmitHandler,
         body: ({ value, setValue }) => {
           return (
-            <div className="p-4 bg-primary-dark">
-              <Input
-                autoFocus
-                className="mt-2 bg-black border-primary-main"
-                type="text"
-                containerClassName="mr-2"
-                value={value.defaultValue}
-                onChange={event => {
-                  event.persist();
-                  setValue(value => ({ ...value, value: event.target.value }));
-                }}
-                onKeyPress={event => {
-                  if (event.key === 'Enter') {
-                    onSubmitHandler({ value, action: { id: 'save' } });
-                  }
-                }}
-              />
-            </div>
+            <Input
+              label="Enter your annotation"
+              labelClassName="text-white text-[14px] leading-[1.2]"
+              autoFocus
+              className="bg-black border-primary-main"
+              type="text"
+              value={value.defaultValue}
+              onChange={event => {
+                event.persist();
+                setValue(value => ({ ...value, value: event.target.value }));
+              }}
+              onKeyPress={event => {
+                if (event.key === 'Enter') {
+                  onSubmitHandler({ value, action: { id: 'save' } });
+                }
+              }}
+            />
           );
         },
       },

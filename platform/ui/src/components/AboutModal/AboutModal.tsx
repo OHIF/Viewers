@@ -49,7 +49,11 @@ const AboutModal = ({ buildNumber, versionNumber }) => {
 
   const renderRowTitle = title => (
     <div className="pb-3 mb-3 border-b-2 border-black">
-      <Typography variant="h6" className="text-primary-light">
+      <Typography
+        variant="inherit"
+        color="primaryLight"
+        className="text-[16px] font-semibold !leading-[1.2]"
+      >
         {title}
       </Typography>
     </div>
