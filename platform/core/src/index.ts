@@ -1,6 +1,7 @@
 import { ExtensionManager, MODULE_TYPES } from './extensions';
 import { ServicesManager } from './services';
 import classes, { CommandsManager, HotkeysManager } from './classes';
+import { ValidationManager } from './validations';
 
 import DICOMWeb from './DICOMWeb';
 import errorHandler from './errorHandler.js';
@@ -47,6 +48,7 @@ const OHIF = {
   ExtensionManager,
   HotkeysManager,
   ServicesManager,
+  ValidationManager,
   //
   defaults,
   utils,
@@ -87,6 +89,7 @@ export {
   ExtensionManager,
   HotkeysManager,
   ServicesManager,
+  ValidationManager,
   //
   defaults,
   utils,

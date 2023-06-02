@@ -11,4 +11,5 @@ export default {
   LAYOUT_TEMPLATE: 'layoutTemplateModule',
   HANGING_PROTOCOL: 'hangingProtocolModule',
   UTILITY: 'utilityModule',
+  VALIDATION: 'validationModule',
 };

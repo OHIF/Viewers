@@ -61,11 +61,13 @@ export default class ExtensionManager {
   private _commandsManager: CommandsManager;
   private _servicesManager: ServicesManager;
   private _hotkeysManager: HotkeysManager;
+  private _validationManager: any;
 
   constructor({
     commandsManager,
     servicesManager,
     hotkeysManager,
+    validationManager,
     appConfig = {},
   }: ExtensionConstructor) {
     this.modules = {};
@@ -75,6 +77,7 @@ export default class ExtensionManager {
     this._commandsManager = commandsManager;
     this._servicesManager = servicesManager;
     this._hotkeysManager = hotkeysManager;
+    this._validationManager = validationManager;
     this._appConfig = appConfig;
 
     this.modulesMap = {};
@@ -297,6 +300,9 @@ export default class ExtensionManager {
               this.modulesMap[id] = element;
             });
             break;
+          case MODULE_TYPES.VALIDATION:
+            this._validationManager.registerValidationModule(extensionModule);
+              break;
           default:
             throw new Error(`Module type invalid: ${moduleType}`);
         }
