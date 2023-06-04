@@ -402,56 +402,56 @@ workflows:
       - DEPLOY_TO_STAGING:
           requires:
             - PROMOTE_TO_STAGING
-      - PROMOTE_TO_PRODUCTION:
-          type: approval
-          requires:
-            - DEPLOY_TO_STAGING
-      - DEPLOY_TO_PRODUCTION:
-          requires:
-            - PROMOTE_TO_PRODUCTION
+      # - PROMOTE_TO_PRODUCTION:
+      #     type: approval
+      #     requires:
+      #       - DEPLOY_TO_STAGING
+      # - DEPLOY_TO_PRODUCTION:
+      #     requires:
+      #       - PROMOTE_TO_PRODUCTION
   ###
   # Unit and E2E tests have already run for PR_CHECKS
   # Re-running should not gain us any confidence here
   ###
-  RELEASE:
-    jobs:
-      - NPM_PUBLISH:
-          filters:
-            branches:
-              only: master
-      - DOCS_PUBLISH:
-          filters:
-            branches:
-              only: master
-      # Update base branch snapshots
-      # and record a Cypress dashboard test run
-      - cypress/run:
-          name: 'Generate Percy Snapshots'
-          executor: cypress/browsers-chrome76
-          browser: chrome
-          pre-steps:
-            - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v && yarn global
-                add wait-on' # Use yarn latest
-          yarn: true
-          store_artifacts: false
-          working_directory: platform/viewer
-          build:
-            npx cross-env QUICK_BUILD=true APP_CONFIG=config/e2e.js yarn run
-            build
-          # start server --> verify running --> percy + chrome + cypress
-          command: yarn run test:e2e:dist
-          cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
-          no-workspace: true # Don't persist workspace
-          post-steps:
-            - store_artifacts:
-                path: platform/viewer/cypress/screenshots
-            - store_artifacts:
-                path: platform/viewer/cypress/videos
-            - store_test_results:
-                path: platform/viewer/cypress/results
-          filters:
-            branches:
-              only: master
-      - DOCKER_MASTER_PUBLISH:
-          requires:
-            - NPM_PUBLISH
+  # RELEASE:
+  #   jobs:
+  #     - NPM_PUBLISH:
+  #         filters:
+  #           branches:
+  #             only: master
+  #     - DOCS_PUBLISH:
+  #         filters:
+  #           branches:
+  #             only: master
+  #     # Update base branch snapshots
+  #     # and record a Cypress dashboard test run
+  #     - cypress/run:
+  #         name: 'Generate Percy Snapshots'
+  #         executor: cypress/browsers-chrome76
+  #         browser: chrome
+  #         pre-steps:
+  #           - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v && yarn global
+  #               add wait-on' # Use yarn latest
+  #         yarn: true
+  #         store_artifacts: false
+  #         working_directory: platform/viewer
+  #         build:
+  #           npx cross-env QUICK_BUILD=true APP_CONFIG=config/e2e.js yarn run
+  #           build
+  #         # start server --> verify running --> percy + chrome + cypress
+  #         command: yarn run test:e2e:dist
+  #         cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
+  #         no-workspace: true # Don't persist workspace
+  #         post-steps:
+  #           - store_artifacts:
+  #               path: platform/viewer/cypress/screenshots
+  #           - store_artifacts:
+  #               path: platform/viewer/cypress/videos
+  #           - store_test_results:
+  #               path: platform/viewer/cypress/results
+  #         filters:
+  #           branches:
+  #             only: master
+  #     - DOCKER_MASTER_PUBLISH:
+  #         requires:
+  #           - NPM_PUBLISH
