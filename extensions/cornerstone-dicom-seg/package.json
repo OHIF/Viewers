@@ -4,7 +4,7 @@
   "description": "DICOM SEG read workflow",
   "author": "OHIF",
   "license": "MIT",
-  "main": "dist/umd/@ohif/dicom-seg/index.umd.js",
+  "main": "dist/ohif-extension-cornerstone-dicom-seg.umd.js",
   "module": "src/index.tsx",
   "files": [
     "dist/**",

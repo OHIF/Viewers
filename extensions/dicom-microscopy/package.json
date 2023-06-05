@@ -4,7 +4,7 @@
   "description": "OHIF extension for DICOM microscopy",
   "author": "Bill Wallace, md-prog",
   "license": "MIT",
-  "main": "dist/umd/@ohif/extension-dicom-microscopy/index.umd.js",
+  "main": "dist/ohif-extension-dicom-microscopy.umd.js",
   "files": [
     "dist/**",
     "public/**",

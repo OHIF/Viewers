@@ -5,9 +5,15 @@ const webpackCommon = require('./../../../.webpack/webpack.base.js');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const pkg = require('./../package.json');
-const ROOT_DIR = path.join(__dirname, './../');
+
+const ROOT_DIR = path.join(__dirname, '../');
 const SRC_DIR = path.join(__dirname, '../src');
 const DIST_DIR = path.join(__dirname, '../dist');
+const ENTRY = {
+  app: `${SRC_DIR}/index.ts`,
+};
+
+const outputName = `ohif-${pkg.name.split('/').pop()}`;
 
 module.exports = (env, argv) => {
   const commonConfig = webpackCommon(env, argv, { SRC_DIR, DIST_DIR, ENTRY });
@@ -26,22 +32,28 @@ module.exports = (env, argv) => {
     },
     optimization: {
       minimize: true,
-      sideEffects: false,
+      sideEffects: true,
     },
     output: {
       path: ROOT_DIR,
-      library: 'OHIFExtCornerstone',
+      library: 'ohif-extension-default',
       libraryTarget: 'umd',
-      libraryExport: 'default',
       filename: pkg.main,
     },
+    externals: [
+      /\b(vtk.js)/,
+      /\b(dcmjs)/,
+      /\b(gl-matrix)/,
+      /^@ohif/,
+      /^@cornerstonejs/,
+    ],
     plugins: [
       new webpack.optimize.LimitChunkCountPlugin({
         maxChunks: 1,
       }),
       new MiniCssExtractPlugin({
-        filename: './dist/[name].css',
-        chunkFilename: './dist/[id].css',
+        filename: `./dist/${outputName}.css`,
+        chunkFilename: `./dist/${outputName}.css`,
       }),
     ],
   });

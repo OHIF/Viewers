@@ -49,7 +49,7 @@ module.exports = (env, argv) => {
       new webpack.optimize.LimitChunkCountPlugin({
         maxChunks: 1,
       }),
-      new BundleAnalyzerPlugin(),
+      // new BundleAnalyzerPlugin(),
     ],
   });
 };
