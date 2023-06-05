@@ -36,7 +36,7 @@ module.exports = (env, argv) => {
       path: ROOT_DIR,
       library: 'ohif-extension-dicom-video',
       libraryTarget: 'umd',
-      filename: `${pkg.main}`,
+      filename: pkg.main,
     },
     externals: [
       /\b(vtk.js)/,
