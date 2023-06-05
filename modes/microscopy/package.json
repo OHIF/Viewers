@@ -4,7 +4,7 @@
   "description": "OHIF mode for DICOM microscopy",
   "author": "Bill Wallace, md-prog",
   "license": "MIT",
-  "main": "dist/umd/@ohif/mode-microscopy/index.umd.js",
+  "main": "dist/ohif-mode-microscopy.umd.js",
   "files": [
     "dist/**",
     "public/**",
