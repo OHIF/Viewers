@@ -15,6 +15,7 @@ const ENTRY = {
   app: `${SRC_DIR}/index.js`,
 };
 
+const outputName = `ohif-${pkg.name.split('/').pop()}`;
 
 module.exports = (env, argv) => {
   const commonConfig = webpackCommon(env, argv, { SRC_DIR, DIST_DIR, ENTRY });
@@ -51,8 +52,8 @@ module.exports = (env, argv) => {
     ],
     plugins: [
       new MiniCssExtractPlugin({
-        filename: `./dist/[name].css`,
-        chunkFilename: `./dist/[id].css`,
+        filename: `./dist/${outputName}.css`,
+        chunkFilename: `./dist/${outputName}.css`,
       }),
       // new BundleAnalyzerPlugin({}),
     ],

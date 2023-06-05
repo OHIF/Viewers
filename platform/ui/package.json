@@ -4,7 +4,7 @@
   "description": "A set of React components for Medical Imaging Viewers",
   "author": "OHIF Contributors",
   "license": "MIT",
-  "main": "dist/index.umd.js",
+  "main": "dist/ohif-ui.umd.js",
   "module": "src/index.js",
   "publishConfig": {
     "access": "public"
