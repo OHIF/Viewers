@@ -34,7 +34,7 @@ module.exports = (env, argv) => {
     },
     output: {
       path: ROOT_DIR,
-      library: 'ohif-extension-dicom-video',
+      library: 'ohif-extension-dicom-pdf',
       libraryTarget: 'umd',
       filename: `${pkg.main}`,
     },
@@ -49,7 +49,7 @@ module.exports = (env, argv) => {
       new webpack.optimize.LimitChunkCountPlugin({
         maxChunks: 1,
       }),
-      // new BundleAnalyzerPlugin(),
+      new BundleAnalyzerPlugin(),
     ],
   });
 };
