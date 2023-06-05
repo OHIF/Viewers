@@ -8,8 +8,12 @@ const ROOT_DIR = path.join(__dirname, './..');
 const SRC_DIR = path.join(__dirname, '../src');
 const DIST_DIR = path.join(__dirname, '../dist');
 
+const ENTRY = {
+  app: `${SRC_DIR}/index.tsx`,
+};
+
 module.exports = (env, argv) => {
-  const commonConfig = webpackCommon(env, argv, { SRC_DIR, DIST_DIR });
+  const commonConfig = webpackCommon(env, argv, { SRC_DIR, DIST_DIR, ENTRY });
 
   return merge(commonConfig, {
     stats: {
@@ -29,7 +33,7 @@ module.exports = (env, argv) => {
     },
     output: {
       path: ROOT_DIR,
-      library: 'OHIFExtDICOMSR',
+      library: 'ohif-extension-test',
       libraryTarget: 'umd',
       libraryExport: 'default',
       filename: pkg.main,
