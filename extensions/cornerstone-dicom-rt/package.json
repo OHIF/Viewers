@@ -4,7 +4,7 @@
   "description": "DICOM RT read workflow",
   "author": "OHIF",
   "license": "MIT",
-  "main": "dist/umd/@ohif/dicom-rt/index.umd.js",
+  "main": "dist/ohif-extension-cornerstone-dicom-rt.umd.js",
   "module": "src/index.tsx",
   "files": [
     "dist/**",

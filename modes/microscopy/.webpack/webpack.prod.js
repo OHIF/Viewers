@@ -20,26 +20,11 @@ const config = {
     globalObject: "typeof self !== 'undefined' ? self : this",
   },
   externals: [
-    {
-      react: {
-        root: 'React',
-        commonjs2: 'react',
-        commonjs: 'react',
-        amd: 'react',
-      },
-      '@ohif/core': {
-        commonjs2: '@ohif/core',
-        commonjs: '@ohif/core',
-        amd: '@ohif/core',
-        root: '@ohif/core',
-      },
-      '@ohif/ui': {
-        commonjs2: '@ohif/ui',
-        commonjs: '@ohif/ui',
-        amd: '@ohif/ui',
-        root: '@ohif/ui',
-      },
-    },
+    /\b(vtk.js)/,
+    /\b(dcmjs)/,
+    /\b(gl-matrix)/,
+    /^@ohif/,
+    /^@cornerstonejs/,
   ],
   module: {
     rules: [

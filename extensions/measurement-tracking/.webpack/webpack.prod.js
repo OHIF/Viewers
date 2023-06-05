@@ -32,7 +32,7 @@ module.exports = (env, argv) => {
       warnings: true,
     },
     optimization: {
-      minimize: false,
+      minimize: true,
       sideEffects: false,
     },
     output: {

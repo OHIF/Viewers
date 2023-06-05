@@ -10,7 +10,7 @@ const SRC_DIR = path.join(__dirname, '../src');
 const DIST_DIR = path.join(__dirname, '../dist');
 
 module.exports = (env, argv) => {
-  const commonConfig = webpackCommon(env, argv, { SRC_DIR, DIST_DIR });
+  const commonConfig = webpackCommon(env, argv, { SRC_DIR, DIST_DIR, ENTRY });
 
   return merge(commonConfig, {
     stats: {
