@@ -328,7 +328,7 @@ To use these included custom attributes, the extension will need to be enabled u
     ...
     {
       "packageName": "@ohif/extension-test",
-      "version": "0.0.1"
+      "version": "3.4.0"
     },
     ...
   ]

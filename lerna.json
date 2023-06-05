@@ -1,12 +1,6 @@
 {
-  "version": "3.4",
+  "version": "3.4.0",
   "packages": ["extensions/*", "platform/*", "modes/*"],
   "npmClient": "yarn",
-  "useWorkspaces": true,
-  "command": {
-    "publish": {
-      "ignoreChanges": ["*.md", "*.yml", "*.spec.js", "*.test.js"],
-      "message": "chore(release): publish"
-    }
-  }
+  "useWorkspaces": true
 }

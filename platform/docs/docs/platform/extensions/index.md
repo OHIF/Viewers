@@ -158,18 +158,18 @@ the top level [`extensions/`][ext-source] directory.
   "extensions": [
     {
       "packageName": "@ohif/extension-cornerstone",
-      "version": "3.0.0"
+      "version": "3.4.0"
     },
     {
       "packageName": "@ohif/extension-measurement-tracking",
-      "version": "3.0.0"
+      "version": "3.4.0"
     },
     // ...
   ],
   "modes": [
     {
       "packageName": "@ohif/mode-longitudinal",
-      "version": "0.0.1"
+      "version": "3.4.0"
     }
   ]
 }

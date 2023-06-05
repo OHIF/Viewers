@@ -374,14 +374,14 @@ find the `modes` to register.
   "extensions": [
     {
       "packageName": "@ohif/extension-cornerstone",
-      "version": "3.0.0"
+      "version": "3.4.0"
     },
     // ...
   ],
   "modes": [
     {
       "packageName": "@ohif/mode-longitudinal",
-      "version": "0.0.1"
+      "version": "3.4.0"
     }
   ]
 }

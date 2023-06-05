@@ -3313,6 +3313,143 @@
   dependencies:
     "@octokit/openapi-types" "^17.1.0"
 
+"@ohif/core@file:platform/core":
+  version "3.4.0"
+  dependencies:
+    "@babel/runtime" "^7.20.13"
+    dcmjs "^0.29.5"
+    dicomweb-client "^0.10.2"
+    gl-matrix "^3.4.3"
+    isomorphic-base64 "^1.0.2"
+    lodash.clonedeep "^4.5.0"
+    lodash.merge "^4.6.1"
+    moment "^2.24.0"
+    object-hash "2.1.1"
+    query-string "^6.14.0"
+    validate.js "^0.12.0"
+
+"@ohif/extension-cornerstone-dicom-rt@file:extensions/cornerstone-dicom-rt":
+  version "3.4.0"
+  dependencies:
+    "@babel/runtime" "^7.20.13"
+    react-color "^2.19.3"
+
+"@ohif/extension-cornerstone-dicom-seg@file:extensions/cornerstone-dicom-seg":
+  version "3.4.0"
+  dependencies:
+    "@babel/runtime" "^7.20.13"
+    react-color "^2.19.3"
+
+"@ohif/extension-cornerstone-dicom-sr@file:extensions/cornerstone-dicom-sr":
+  version "3.4.0"
+  dependencies:
+    "@babel/runtime" "^7.20.13"
+    "@cornerstonejs/adapters" "^1.1.0"
+    "@cornerstonejs/core" "^1.1.0"
+    "@cornerstonejs/tools" "^1.1.0"
+    classnames "^2.3.2"
+
+"@ohif/extension-cornerstone@file:extensions/cornerstone":
+  version "3.4.0"
+  dependencies:
+    "@babel/runtime" "^7.20.13"
+    "@cornerstonejs/adapters" "^1.1.0"
+    "@cornerstonejs/core" "^1.1.0"
+    "@cornerstonejs/streaming-image-volume-loader" "^1.1.0"
+    "@cornerstonejs/tools" "^1.1.0"
+    "@kitware/vtk.js" "27.3.1"
+    html2canvas "^1.4.1"
+    lodash.debounce "4.0.8"
+    lodash.merge "^4.6.2"
+    shader-loader "^1.3.1"
+    worker-loader "^3.0.8"
+
+"@ohif/extension-default@file:extensions/default":
+  version "3.4.0"
+  dependencies:
+    "@babel/runtime" "^7.20.13"
+    "@cornerstonejs/calculate-suv" "^1.0.3"
+
+"@ohif/extension-dicom-microscopy@file:extensions/dicom-microscopy":
+  version "3.4.0"
+  dependencies:
+    "@babel/runtime" "^7.20.13"
+    "@cornerstonejs/codec-charls" "^1.2.3"
+    "@cornerstonejs/codec-libjpeg-turbo-8bit" "^1.2.2"
+    "@cornerstonejs/codec-openjpeg" "^1.2.2"
+    colormap "^2.3"
+    dicom-microscopy-viewer "^0.44.0"
+    dicomicc "^0.1"
+
+"@ohif/extension-dicom-pdf@file:extensions/dicom-pdf":
+  version "3.4.0"
+  dependencies:
+    "@babel/runtime" "^7.20.13"
+    classnames "^2.3.2"
+
+"@ohif/extension-dicom-video@file:extensions/dicom-video":
+  version "3.4.0"
+  dependencies:
+    "@babel/runtime" "^7.20.13"
+    classnames "^2.3.2"
+
+"@ohif/extension-test@file:extensions/test-extension":
+  version "3.4.0"
+  dependencies:
+    "@babel/runtime" "^7.20.13"
+    classnames "^2.3.2"
+
+"@ohif/i18n@file:platform/i18n":
+  version "3.4.0"
+  dependencies:
+    "@babel/runtime" "^7.20.13"
+    i18next-locize-backend "^2.0.0"
+    locize-editor "^2.0.0"
+    locize-lastused "^1.1.0"
+
+"@ohif/mode-basic-dev-mode@file:modes/basic-dev-mode":
+  version "3.4.0"
+  dependencies:
+    "@babel/runtime" "^7.20.13"
+
+"@ohif/mode-longitudinal@file:modes/longitudinal":
+  version "3.4.0"
+  dependencies:
+    "@babel/runtime" "^7.20.13"
+
+"@ohif/mode-microscopy@file:modes/microscopy":
+  version "3.4.0"
+  dependencies:
+    "@babel/runtime" "^7.20.13"
+
+"@ohif/mode-test@file:modes/basic-test-mode":
+  version "3.4.0"
+  dependencies:
+    "@babel/runtime" "^7.20.13"
+
+"@ohif/ui@file:platform/ui":
+  version "3.4.0"
+  dependencies:
+    browser-detect "^0.2.28"
+    classnames "^2.3.2"
+    lodash.debounce "4.0.8"
+    moment "2.29.4"
+    mousetrap "^1.6.5"
+    react "^17.0.2"
+    react-dates "^21.8.0"
+    react-dnd "14.0.2"
+    react-dnd-html5-backend "14.0.0"
+    react-dom "^17.0.2"
+    react-draggable "4.4.3"
+    react-error-boundary "^3.1.3"
+    react-modal "3.11.2"
+    react-outside-click-handler "^1.3.0"
+    react-select "3.0.8"
+    react-window "^1.8.9"
+    react-with-direction "^1.3.1"
+    swiper "^8.4.2"
+    webpack "^5.81.0"
+
 "@oozcitak/dom@1.15.10":
   version "1.15.10"
   resolved "https://registry.npmjs.org/@oozcitak/dom/-/dom-1.15.10.tgz#dca7289f2b292cff2a901ea4fbbcc0a1ab0b05c2"
@@ -9794,6 +9931,21 @@ execa@^6.0.0:
     signal-exit "^3.0.7"
     strip-final-newline "^3.0.0"
 
+execa@^7.1.1:
+  version "7.1.1"
+  resolved "https://registry.npmjs.org/execa/-/execa-7.1.1.tgz#3eb3c83d239488e7b409d48e8813b76bb55c9c43"
+  integrity sha512-wH0eMf/UXckdUYnO21+HDztteVv05rq2GXksxT4fCGeHkBhw1DROXh40wcjMcRqDOWE7iPJ4n3M7e2+YFP+76Q==
+  dependencies:
+    cross-spawn "^7.0.3"
+    get-stream "^6.0.1"
+    human-signals "^4.3.0"
+    is-stream "^3.0.0"
+    merge-stream "^2.0.0"
+    npm-run-path "^5.1.0"
+    onetime "^6.0.0"
+    signal-exit "^3.0.7"
+    strip-final-newline "^3.0.0"
+
 executable@^4.1.1:
   version "4.1.1"
   resolved "https://registry.npmjs.org/executable/-/executable-4.1.1.tgz#41532bff361d3e57af4d763b70582db18f5d133c"
@@ -11437,6 +11589,11 @@ human-signals@^3.0.1:
   version "3.0.1"
   resolved "https://registry.npmjs.org/human-signals/-/human-signals-3.0.1.tgz#c740920859dafa50e5a3222da9d3bf4bb0e5eef5"
   integrity sha512-rQLskxnM/5OCldHo+wNXbpVgDn5A17CUoKX+7Sokwaknlq7CdSnphy0W39GU8dw59XiCXmFXDg4fRuckQRKewQ==
+
+human-signals@^4.3.0:
+  version "4.3.1"
+  resolved "https://registry.npmjs.org/human-signals/-/human-signals-4.3.1.tgz#ab7f811e851fca97ffbd2c1fe9a958964de321b2"
+  integrity sha512-nZXjEF2nbo7lIw3mgYjItAfgQXog3OjJogSbKa2CQIIvSGWcKgeJnQlNXip6NglNzYH45nSRiEVimMvYL8DDqQ==
 
 humanize-ms@^1.2.1:
   version "1.2.1"
@@ -18431,6 +18588,13 @@ semver@^7.0.0, semver@^7.1.1, semver@^7.2.1, semver@^7.3.2, semver@^7.3.4, semve
   version "7.5.0"
   resolved "https://registry.npmjs.org/semver/-/semver-7.5.0.tgz#ed8c5dc8efb6c629c88b23d41dc9bf40c1d96cd0"
   integrity sha512-+XC0AD/R7Q2mPSRuy2Id0+CGTZ98+8f+KvwirxOKIEyid+XSx6HbC63p+O4IndTHuX5Z+JxQ0TghCkO5Cg/2HA==
+  dependencies:
+    lru-cache "^6.0.0"
+
+semver@^7.5.1:
+  version "7.5.1"
+  resolved "https://registry.npmjs.org/semver/-/semver-7.5.1.tgz#c90c4d631cf74720e46b21c1d37ea07edfab91ec"
+  integrity sha512-Wvss5ivl8TMRZXXESstBA4uR5iXgEN/VC5/sOcuXdVLzcdkz4HWetIoRfG5gb5X+ij/G9rw9YoGn3QoQ8OCSpw==
   dependencies:
     lru-cache "^6.0.0"
 
