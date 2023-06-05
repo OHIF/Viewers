@@ -5,7 +5,7 @@ import dicomImageLoader, {
   webWorkerManager,
 } from '@cornerstonejs/dicom-image-loader';
 import dicomParser from 'dicom-parser';
-import { errorHandler } from '@ohif/core';
+import { errorHandler, utils } from '@ohif/core';
 
 const { registerVolumeLoader } = volumeLoader;
 
@@ -55,14 +55,19 @@ export default function initWADOImageLoader(
       // we should set this flag to false.
       convertFloatPixelDataToInt: false,
     },
-    beforeSend: function (xhr) {
+    beforeSend: function(xhr) {
       //TODO should be removed in the future and request emitted by DicomWebDataSource
-      const sourceConfig = extensionManager.getActiveDataSource()?.[0].getConfig() ?? {}
+      const sourceConfig =
+        extensionManager.getActiveDataSource()?.[0].getConfig() ?? {};
       const headers = userAuthenticationService.getAuthorizationHeader();
-      const acceptHeader = generateAcceptHeader(sourceConfig.acceptHeader, sourceConfig.omitQuotationForMultipartRequest)
+      const acceptHeader = utils.generateAcceptHeader(
+        sourceConfig.acceptHeader,
+        sourceConfig.requestTransferSyntaxUID,
+        sourceConfig.omitQuotationForMultipartRequest
+      );
 
       const xhrRequestHeaders = {
-        Accept: acceptHeader
+        Accept: acceptHeader,
       };
 
       if (headers) {
@@ -77,34 +82,6 @@ export default function initWADOImageLoader(
   });
 
   initWebWorkers(appConfig);
-}
-
-const generateAcceptHeader = (configAcceptHeader = [], omitQuotationForMultipartRequest = false) => {
-  let acceptHeader = []
-  if (configAcceptHeader.length === 0) {
-    acceptHeader.push('multipart/related; type=application/octet-stream')
-  } else {
-    acceptHeader = configAcceptHeader
-  }
-
-  if (!omitQuotationForMultipartRequest) {
-    //need to add quotation for each mime type of each accept entry
-    acceptHeader = acceptHeader.map(accept => {
-      let mimes = accept.split("; ")
-      let newMimes = mimes.map(mime => {
-        if (mime.startsWith('type=')) {
-          const quotedParam = 'type=' + '"' + mime.substring(5, mime.length) + '"'
-          return quotedParam
-        } else {
-          return mime
-        }
-      })
-      return newMimes.join(';')
-    })
-  }
-
-  return acceptHeader
-
 }
 
 export function destroy() {

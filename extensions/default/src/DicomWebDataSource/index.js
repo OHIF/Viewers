@@ -61,17 +61,22 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
     staticWado,
     singlepart,
     omitQuotationForMultipartRequest,
-    acceptHeader
+    acceptHeader,
+    requestTransferSyntaxUID,
   } = dicomWebConfig;
 
   const dicomWebConfigCopy = JSON.parse(JSON.stringify(dicomWebConfig));
 
   //Generate accept header depending on config params
-  let formattedAcceptHeader = generateAcceptHeader(acceptHeader, omitQuotationForMultipartRequest)
+  let formattedAcceptHeader = utils.generateAcceptHeader(
+    acceptHeader,
+    requestTransferSyntaxUID,
+    omitQuotationForMultipartRequest
+  );
 
-  const authHeaders = userAuthenticationService.getAuthorizationHeader()
+  const authHeaders = userAuthenticationService.getAuthorizationHeader();
 
-  const xhrRequestHeaders = {}
+  const xhrRequestHeaders = {};
 
   if (authHeaders && authHeaders.Authorization) {
     xhrRequestHeaders.Authorization = authHeaders.Authorization;
@@ -91,7 +96,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
     singlepart,
     headers: {
       ...xhrRequestHeaders,
-      Accept: formattedAcceptHeader
+      Accept: formattedAcceptHeader,
     },
     errorInterceptor: errorHandler.getHTTPErrorHandler(),
   };
@@ -125,8 +130,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
     query: {
       studies: {
         mapParams: mapParams.bind(),
-        search: async function (origParams) {
-
+        search: async function(origParams) {
           const { studyInstanceUid, seriesInstanceUid, ...mappedParams } =
             mapParams(origParams, {
               supportsFuzzyMatching,
@@ -146,7 +150,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
       },
       series: {
         // mapParams: mapParams.bind(),
-        search: async function (studyInstanceUid) {
+        search: async function(studyInstanceUid) {
           const results = await seriesInStudy(
             qidoDicomWebClient,
             studyInstanceUid
@@ -202,7 +206,6 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
           sortFunction,
           madeInClient = false,
         } = {}) => {
-
           if (!StudyInstanceUID) {
             throw new Error(
               'Unable to query for SeriesMetadata without StudyInstanceUID'
@@ -232,7 +235,6 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
 
     store: {
       dicom: async (dataset, request) => {
-
         if (dataset instanceof ArrayBuffer) {
           const options = {
             datasets: [dataset],
@@ -516,34 +518,6 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
   }
 
   return IWebApiDataSource.create(implementation);
-}
-
-const generateAcceptHeader = (configAcceptHeader = [], omitQuotationForMultipartRequest = false) => {
-  let acceptHeader = []
-  if (configAcceptHeader.length === 0) {
-    acceptHeader.push('multipart/related; type=application/octet-stream')
-  } else {
-    acceptHeader = configAcceptHeader
-  }
-
-  if (!omitQuotationForMultipartRequest) {
-    //need to add quotation for each mime type of each accept entry
-    acceptHeader = acceptHeader.map(accept => {
-      let mimes = accept.split("; ")
-      let newMimes = mimes.map(mime => {
-        if (mime.startsWith('type=')) {
-          const quotedParam = 'type=' + '"' + mime.substring(5, mime.length) + '"'
-          return quotedParam
-        } else {
-          return mime
-        }
-      })
-      return newMimes.join(';')
-    })
-  }
-
-  return acceptHeader
-
 }
 
 export { createDicomWebApi };
