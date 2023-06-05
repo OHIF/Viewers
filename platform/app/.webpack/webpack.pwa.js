@@ -42,7 +42,7 @@ const setHeaders = (res, path) => {
 };
 
 module.exports = (env, argv) => {
-  const baseConfig = webpackBase(env, argv, { SRC_DIR, DIST_DIR, ENTRY });
+  const baseConfig = webpackBase(env, argv, { SRC_DIR, DIST_DIR });
   const isProdBuild = process.env.NODE_ENV === 'production';
   const hasProxy = PROXY_TARGET && PROXY_DOMAIN;
 

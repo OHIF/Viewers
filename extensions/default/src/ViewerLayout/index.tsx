@@ -80,7 +80,7 @@ function ViewerLayout({
   const { hangingProtocolService } = servicesManager.services;
 
   const { hotkeyDefinitions, hotkeyDefaults } = hotkeysManager;
-  const versionNumber = process.env.VERSION_NUMBER;
+  const versionNumber = '3.4'; // Todo: fix this
   const buildNumber = process.env.BUILD_NUM;
 
   const menuOptions = [

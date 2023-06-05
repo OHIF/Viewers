@@ -23,6 +23,10 @@ const NODE_ENV = process.env.NODE_ENV;
 const QUICK_BUILD = process.env.QUICK_BUILD;
 const BUILD_NUM = process.env.CIRCLE_BUILD_NUM || '0';
 
+// read from ../version.txt
+const VERSION_NUMBER = require('../version.txt') || '';
+const HASH_NUMBER = require('../commit.txt') || '';
+
 //
 dotenv.config();
 
@@ -136,6 +140,8 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
         'process.env.APP_CONFIG': JSON.stringify(process.env.APP_CONFIG || ''),
         'process.env.PUBLIC_URL': JSON.stringify(process.env.PUBLIC_URL || '/'),
         'process.env.BUILD_NUM': JSON.stringify(BUILD_NUM),
+        'process.env.VERSION_NUMBER': JSON.stringify(VERSION_NUMBER),
+        'process.env.HASH_NUMBER': JSON.stringify(HASH_NUMBER),
         /* i18n */
         'process.env.USE_LOCIZE': JSON.stringify(process.env.USE_LOCIZE || ''),
         'process.env.LOCIZE_PROJECTID': JSON.stringify(
