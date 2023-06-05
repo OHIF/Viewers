@@ -7,6 +7,7 @@ describe('validator', () => {
         num: 3,
         nullValue: null,
         list: ['abc', 'def', 'GHI'],
+        listStr: ['Attenuation Corrected'],
     };
 
     const options = {
@@ -16,10 +17,35 @@ describe('validator', () => {
     describe('equals', () => {
         it('returned undefined on strictly equals', () => {
             expect(
+                validate(attributeMap, { listStr: { equals: ['Attenuation'] } }, [
+                    options,
+                ])
+            ).not.toBeUndefined();
+            expect(
+                validate(attributeMap, { listStr: { equals: 'Attenuation' } }, [
+                    options,
+                ])
+            ).not.toBeUndefined();
+            expect(
+                validate(
+                    attributeMap,
+                    { listStr: { equals: 'Attenuation Corrected' } },
+                    [options]
+                )
+            ).toBeUndefined();
+            expect(
+                validate(
+                    attributeMap,
+                    { listStr: { equals: ['Attenuation Corrected'] } },
+                    [options]
+                )
+            ).toBeUndefined();
+            expect(
                 validate(attributeMap, { str: { equals: 'Attenuation Corrected' } }, [
                     options,
                 ])
             ).toBeUndefined();
+
             expect(
                 validate(
                     attributeMap,
@@ -56,6 +82,26 @@ describe('validator', () => {
     });
     describe('doesNotEqual', () => {
         it('returns undefined if value does not equal ', () => {
+            expect(
+                validate(
+                    attributeMap,
+                    { listStr: { doesNotEqual: 'Attenuation Corrected' } },
+                    [options]
+                )
+            ).not.toBeUndefined();
+            expect(
+                validate(
+                    attributeMap,
+                    { listStr: { doesNotEqual: ['Attenuation Corrected'] } },
+                    [options]
+                )
+            ).not.toBeUndefined();
+            expect(
+                validate(attributeMap, { listStr: { doesNotEqual: 'Attenuation' } }, [
+                    options,
+                ])
+            ).toBeUndefined();
+
             expect(
                 validate(attributeMap, { str: { doesNotEqual: 'Attenuation' } }, [
                     options,
@@ -97,13 +143,47 @@ describe('validator', () => {
     describe('includes', () => {
         it('returns match any list includes', () => {
             expect(
-                validate(attributeMap, { list: { includes: 'abc' } }, [options])
+                validate(
+                    attributeMap,
+                    { listStr: { includes: 'Attenuation Corrected' } },
+                    [options]
+                )
+            ).not.toBeUndefined();
+            expect(
+                validate(
+                    attributeMap,
+                    { listStr: { includes: ['Attenuation Corrected'] } },
+                    [options]
+                )
             ).toBeUndefined();
             expect(
-                validate(attributeMap, { list: { includes: { value: 'abc' } } }, [
-                    options,
-                ])
+                validate(
+                    attributeMap,
+                    { listStr: { includes: ['Attenuation Corrected', 'Corrected'] } },
+                    [options]
+                )
             ).toBeUndefined();
+            expect(
+                validate(
+                    attributeMap,
+                    { listStr: { includes: ['Attenuation', 'Corrected'] } },
+                    [options]
+                )
+            ).not.toBeUndefined();
+            expect(
+                validate(
+                    attributeMap,
+                    { str: { includes: ['Attenuation Corrected', 'Corrected'] } },
+                    [options]
+                )
+            ).toBeUndefined();
+            expect(
+                validate(
+                    attributeMap,
+                    { str: { includes: ['Attenuation', 'Corrected'] } },
+                    [options]
+                )
+            ).not.toBeUndefined();
             expect(
                 validate(attributeMap, { list: { includes: ['abc'] } }, [options])
             ).toBeUndefined();
@@ -118,29 +198,68 @@ describe('validator', () => {
     describe('doesNotInclude', () => {
         it('returns undefined if list does not includes', () => {
             expect(
-                validate(attributeMap, { list: { doesNotInclude: ['hi', 'bye'] } }, [
-                    options,
-                ])
-            ).toBeUndefined();
-            expect(
-                validate(attributeMap, { list: { doesNotInclude: 'hi' } }, [options])
-            ).toBeUndefined();
-            expect(
-                validate(attributeMap, { list: { doesNotInclude: { value: 'hi' } } }, [
-                    options,
-                ])
-            ).toBeUndefined();
-            expect(
                 validate(
                     attributeMap,
-                    { list: { doesNotInclude: { value: ['abc', 'GHI'] } } },
+                    { listStr: { doesNotInclude: 'Attenuation Corrected' } },
                     [options]
                 )
             ).not.toBeUndefined();
             expect(
                 validate(
                     attributeMap,
-                    { list: { doesNotInclude: { value: ['abc', 'def', 'GHI'] } } },
+                    {
+                        listStr: { doesNotInclude: ['Attenuation Corrected', 'Corrected'] },
+                    },
+                    [options]
+                )
+            ).not.toBeUndefined();
+            expect(
+                validate(
+                    attributeMap,
+                    { listStr: { doesNotInclude: ['Attenuation', 'Corrected'] } },
+                    [options]
+                )
+            ).toBeUndefined();
+            expect(
+                validate(
+                    attributeMap,
+                    { str: { doesNotInclude: ['Attenuation Corrected', 'Corrected'] } },
+                    [options]
+                )
+            ).not.toBeUndefined();
+            expect(
+                validate(
+                    attributeMap,
+                    { str: { doesNotInclude: ['Attenuation', 'Corrected'] } },
+                    [options]
+                )
+            ).toBeUndefined();
+            expect(
+                validate(attributeMap, { list: { doesNotInclude: ['Corr'] } }, [
+                    options,
+                ])
+            ).toBeUndefined();
+            expect(
+                validate(attributeMap, { list: { doesNotInclude: 'abc' } }, [options])
+            ).not.toBeUndefined();
+            expect(
+                validate(
+                    attributeMap,
+                    { list: { doesNotInclude: { value: ['abc'] } } },
+                    [options]
+                )
+            ).not.toBeUndefined();
+            expect(
+                validate(
+                    attributeMap,
+                    { list: { doesNotInclude: { value: ['att', 'cor'] } } },
+                    [options]
+                )
+            ).toBeUndefined();
+            expect(
+                validate(
+                    attributeMap,
+                    { list: { doesNotInclude: { value: ['abc', 'def', 'dog'] } } },
                     [options]
                 )
             ).not.toBeUndefined();
