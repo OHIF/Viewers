@@ -8,10 +8,8 @@ const webpack = require('webpack');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
   .BundleAnalyzerPlugin;
 const TerserJSPlugin = require('terser-webpack-plugin');
-const CopyPlugin = require('copy-webpack-plugin');
 
 // ~~ PackageJSON
-const PACKAGE = require('../platform/app/package.json');
 // const vtkRules = require('vtk.js/Utilities/config/dependency.js').webpack.core
 //   .rules;
 // ~~ RULES
@@ -28,7 +26,7 @@ const BUILD_NUM = process.env.CIRCLE_BUILD_NUM || '0';
 //
 dotenv.config();
 
-module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
+module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
   if (!process.env.NODE_ENV) {
     throw new Error('process.env.NODE_ENV not set');
   }
@@ -40,9 +38,7 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
   const config = {
     mode: isProdBuild ? 'production' : 'development',
     devtool: isProdBuild ? 'source-map' : 'cheap-module-source-map',
-    entry: {
-      app: `${SRC_DIR}/index.js`,
-    },
+    entry: ENTRY,
     optimization: {
       // splitChunks: {
       //   // include all types of chunks
@@ -50,7 +46,7 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
       // },
       //runtimeChunk: 'single',
       minimize: isProdBuild,
-      sideEffects: true,
+      sideEffects: false,
     },
     output: {
       // clean: true,
@@ -139,9 +135,6 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
         'process.env.DEBUG': JSON.stringify(process.env.DEBUG),
         'process.env.APP_CONFIG': JSON.stringify(process.env.APP_CONFIG || ''),
         'process.env.PUBLIC_URL': JSON.stringify(process.env.PUBLIC_URL || '/'),
-        'process.env.VERSION_NUMBER': JSON.stringify(
-          process.env.VERSION_NUMBER || PACKAGE.productVersion || ''
-        ),
         'process.env.BUILD_NUM': JSON.stringify(BUILD_NUM),
         /* i18n */
         'process.env.USE_LOCIZE': JSON.stringify(process.env.USE_LOCIZE || ''),

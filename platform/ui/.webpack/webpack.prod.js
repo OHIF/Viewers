@@ -26,7 +26,7 @@ module.exports = (env, argv) => {
     },
     optimization: {
       minimize: true,
-      sideEffects: true,
+      sideEffects: false,
     },
     output: {
       path: ROOT_DIR,
