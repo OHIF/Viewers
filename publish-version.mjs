@@ -68,10 +68,16 @@ async function run() {
     }
   }
 
+  // remove the .npmrc to not accidentally publish to npm
+  await fs.unlink('.npmrc');
+
+  // rm -f ./.npmrc again
+  await execa('rm', ['-f', '.npmrc']);
+
   // Todo: Do we really need to run the build command here?
   // Maybe we need to hook the netlify deploy preview
   // await execa('yarn', ['run', 'build']);
-  // console.log('Build command completed');
+
   console.log('Committing and pushing changes...');
   await execa('git', ['add', '-A']);
   await execa('git', [
@@ -94,31 +100,8 @@ async function run() {
     '--message',
     'chore(version): Update package versions [skip ci]',
   ]);
+
   console.log('Version set using lerna');
-
-  // Publishing each package, if on master/main branch publish beta versions
-  // otherwise publish latest
-  if (branchName === 'release') {
-    await execa('npx', [
-      'lerna',
-      'publish',
-      'from-package',
-      '--no-verify-access',
-      '--yes',
-    ]);
-  } else {
-    await execa('npx', [
-      'lerna',
-      'publish',
-      'from-package',
-      '--no-verify-access',
-      '--yes',
-      '--dist-tag',
-      'beta',
-    ]);
-  }
-
-  console.log('Finished');
 }
 
 run().catch(err => {
