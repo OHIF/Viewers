@@ -426,7 +426,7 @@ workflows:
       - NPM_PUBLISH:
           requires:
             - BUILD
-      - DOCKER_PUBLISH:
+      - DOCKER_RELEASE_PUBLISH:
           requires:
             - BUILD
   ###
