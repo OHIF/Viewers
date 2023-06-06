@@ -1,6 +1,7 @@
 import { CustomizationService } from '@ohif/core';
 import React from 'react';
 import DataSourceSelector from './Panels/DataSourceSelector';
+import StepProgressDropdownWithService from './components/StepProgressDropdownWithService';
 
 /**
  *
@@ -83,7 +84,7 @@ export default function getCustomizationModule() {
          */
         {
           id: 'ohif.overlayItem',
-          content: function (props) {
+          content: function(props) {
             if (this.condition && !this.condition(props)) return null;
 
             const { instance } = props;
@@ -91,8 +92,8 @@ export default function getCustomizationModule() {
               instance && this.attribute
                 ? instance[this.attribute]
                 : this.contentF && typeof this.contentF === 'function'
-                  ? this.contentF(props)
-                  : null;
+                ? this.contentF(props)
+                : null;
             if (!value) return null;
 
             return (
@@ -117,7 +118,7 @@ export default function getCustomizationModule() {
            * This function clones the object and child objects to prevent
            * changes to the original customization object.
            */
-          transform: function (customizationService: CustomizationService) {
+          transform: function(customizationService: CustomizationService) {
             // Don't modify the children, as those are copied by reference
             const clonedObject = { ...this };
             clonedObject.menus = this.menus.map(menu => ({ ...menu }));
@@ -131,6 +132,11 @@ export default function getCustomizationModule() {
             }
             return clonedObject;
           },
+        },
+
+        {
+          id: 'stepProgressDropdownWithServiceComponent',
+          component: StepProgressDropdownWithService,
         },
       ],
     },

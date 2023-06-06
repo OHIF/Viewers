@@ -76,6 +76,7 @@ export {
   SegmentationGroupTable,
   SidePanel,
   SplitButton,
+  StepProgressDropdown,
   StudyBrowser,
   StudyItem,
   StudyListExpandedRow,

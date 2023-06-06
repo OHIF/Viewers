@@ -3,6 +3,7 @@ import React from 'react';
 
 import arrowDown from './../../assets/icons/arrow-down.svg';
 import arrowLeft from './../../assets/icons/arrow-left.svg';
+import arrowRight from './../../assets/icons/arrow-right.svg';
 import arrowLeftSmall from './../../assets/icons/arrow-left-small.svg';
 import arrowRightSmall from './../../assets/icons/arrow-right-small.svg';
 import calendar from './../../assets/icons/calendar.svg';
@@ -130,6 +131,7 @@ import oldStop from './../../assets/icons/old-stop.svg';
 const ICONS = {
   'arrow-down': arrowDown,
   'arrow-left': arrowLeft,
+  'arrow-right': arrowRight,
   'arrow-left-small': arrowLeftSmall,
   'arrow-right-small': arrowRightSmall,
   calendar: calendar,
