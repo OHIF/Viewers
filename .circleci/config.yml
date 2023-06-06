@@ -179,11 +179,10 @@ jobs:
           root: ~/repo
           paths:
             - platform/app/dist
+            - Dockerfile
             - version.txt
             - commit.txt
             - version.json
-            - netlify.toml
-            - .netlify
 
   # DEPLOY_TO_DEV:
   #   docker:
@@ -248,6 +247,8 @@ jobs:
   NPM_PUBLISH:
     <<: *defaults
     steps:
+      - attach_workspace:
+          at: ~/repo
       - run: yarn -v
       # Checkout code and ALL Git Tags
       - checkout:
