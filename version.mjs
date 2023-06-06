@@ -12,10 +12,10 @@ async function run() {
   ]);
   console.log('Current branch:', branchName);
 
-  const packageJsonPath = 'platform/app/package.json';
-  const packageJson = JSON.parse(await fs.readFile(packageJsonPath, 'utf-8'));
+  // read the current version from lerna.json
+  const lernaJson = JSON.parse(await fs.readFile('lerna.json', 'utf-8'));
+  const currentVersion = lernaJson.version;
 
-  const currentVersion = packageJson.version;
   console.log('Current version:', currentVersion);
 
   const { stdout: currentCommitHash } = await execa('git', [
@@ -76,7 +76,6 @@ async function run() {
   console.log('Version info saved to version.json');
 
   // Read the packages from the lerna.json file
-  const lernaJson = JSON.parse(await fs.readFile('lerna.json', 'utf-8'));
   const packages = lernaJson.packages;
 
   if (!packages) {
@@ -109,7 +108,7 @@ async function run() {
           packageJson.peerDependencies
         )) {
           if (peerDependency.startsWith('@ohif/')) {
-            packageJson.peerDependencies[peerDependency] = '1.1.2';
+            packageJson.peerDependencies[peerDependency] = nextVersion;
 
             console.log(
               'updating peerdependency to ',
@@ -162,25 +161,25 @@ async function run() {
 
   // Publishing each package, if on master/main branch publish beta versions
   // otherwise publish latest
-  // if (branchName === 'release') {
-  //   await execa('npx', [
-  //     'lerna',
-  //     'publish',
-  //     'from-package',
-  //     '--no-verify-access',
-  //     '--yes',
-  //   ]);
-  // } else {
-  //   await execa('npx', [
-  //     'lerna',
-  //     'publish',
-  //     'from-package',
-  //     '--no-verify-access',
-  //     '--yes',
-  //     '--dist-tag',
-  //     'beta',
-  //   ]);
-  // }
+  if (branchName === 'release') {
+    await execa('npx', [
+      'lerna',
+      'publish',
+      'from-package',
+      '--no-verify-access',
+      '--yes',
+    ]);
+  } else {
+    await execa('npx', [
+      'lerna',
+      'publish',
+      'from-package',
+      '--no-verify-access',
+      '--yes',
+      '--dist-tag',
+      'beta',
+    ]);
+  }
 
   console.log('Finished');
 }

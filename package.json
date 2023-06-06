@@ -50,6 +50,7 @@
     "lerna:clean": "lerna clean",
     "lerna:cache": "./netlify-lerna-cache.sh",
     "lerna:restore": "./netlify-lerna-restore.sh",
+    "lerna:customVersion": "node version.mjsx",
     "link-list": "npm ls --depth=0 --link=true"
   },
   "dependencies": {
