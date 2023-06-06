@@ -44,9 +44,7 @@ jobs:
       # Update yarn
       - run: yarn -v
       # Checkout code and ALL Git Tags
-      - checkout:
-          post:
-            - git fetch --all
+      - checkout
       - restore_cache:
           name: Restore Yarn and Cypress Package Cache
           keys:
@@ -102,10 +100,7 @@ jobs:
       - run: yarn config set workspaces-experimental true
 
       # Checkout code and ALL Git Tags
-      - checkout:
-          post:
-            - git fetch --all
-
+      - checkout
       - restore_cache:
           name: Restore Yarn and Cypress Package Cache
           keys:
@@ -139,9 +134,7 @@ jobs:
     <<: *defaults
     steps:
       # Checkout code and ALL Git Tags
-      - checkout:
-          post:
-            - git fetch --all
+      - checkout
       - restore_cache:
           name: Restore Yarn and Cypress Package Cache
           keys:
@@ -247,13 +240,11 @@ jobs:
   NPM_PUBLISH:
     <<: *defaults
     steps:
-      - attach_workspace:
-          at: ~/repo
       - run: yarn -v
       # Checkout code and ALL Git Tags
-      - checkout:
-          post:
-            - git fetch --all
+      - checkout
+      - attach_workspace:
+          at: ~/repo
       # Use increasingly general patterns to restore cache
       - restore_cache:
           name: Restore Yarn and Cypress Package Cache
@@ -304,6 +295,10 @@ jobs:
           name: publish package dist
           command: |
             node ./publish-package.mjs
+      - persist_to_workspace:
+          root: ~/repo
+          paths:
+            - .
 
   DOCKER_RELEASE_PUBLISH:
     <<: *defaults
@@ -449,7 +444,7 @@ workflows:
             - BUILD
       - DOCKER_BETA_PUBLISH:
           requires:
-            - BUILD
+            - NPM_PUBLISH
 
   # Our release branch deploys to viewer.ohif.org and is more stable and less
   # frequently updated after being tested in the staging environment.
@@ -464,7 +459,7 @@ workflows:
             - BUILD
       - DOCKER_RELEASE_PUBLISH:
           requires:
-            - BUILD
+            - NPM_PUBLISH
   ###
   # Unit and E2E tests have already run for PR_CHECKS
   # Re-running should not gain us any confidence here
