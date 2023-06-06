@@ -18,18 +18,17 @@ executors:
   # Custom executor to override Cypress config
   deploy-to-prod-executor:
     docker:
-      - image: cimg/node:18.16.0
+      - image: cimg/node:16.14
         environment:
           CYPRESS_BASE_URL: https://ohif-staging.netlify.com/
   chrome-and-pacs:
     docker:
       # Primary container image where all steps run.
-      - image: 'cypress/browsers:node18.12.0-chrome103-ff107'
-      # - image: 'cypress/browsers:node16.14.2-slim-chrome103-ff102'
+      - image: 'cypress/browsers:node16.14.2-slim-chrome103-ff102'
 
 defaults: &defaults
   docker:
-    - image: cimg/node:18.16.0-browsers
+    - image: cimg/node:16.14-browsers
       environment:
         TERM: xterm # Enable colors in term
         QUICK_BUILD: true
@@ -303,7 +302,6 @@ jobs:
             # This file will exist if a new version was published by
             # our command in the previous job.
             if [[ ! -e ../version.txt ]]; then
-              echo "No new version published. Skipping Docker build."
               exit 0
             else
               # Remove npm config
@@ -331,25 +329,29 @@ jobs:
           name:
             Build and push Docker image from the master branch (beta releases)
           command: |
+            echo $(ls -l)
+
             # This file will exist if a new version was published by
             # our command in the previous job.
             if [[ ! -e ../version.txt ]]; then
-              echo "No new version published. Skipping Docker build."
-              # list the directory contents
-              ls -l
+              echo "don't have version txt"
               exit 0
             else
-              # Remove npm config
-              # rm -f ./.npmrc
-              # # Set our version number using vars
-              # export IMAGE_VERSION=$(cat ../version.txt)
-              # export IMAGE_VERSION_FULL=v$IMAGE_VERSION
-              # echo $IMAGE_VERSION
-              # echo $IMAGE_VERSION_FULL
-              # # Build our image, auth, and push
-              # docker build --tag ohif/app:$IMAGE_VERSION_FULL .
-              # echo $DOCKER_PWD | docker login -u $DOCKER_LOGIN --password-stdin
-              # docker push ohif/app:$IMAGE_VERSION_FULL
+              echo "Building and pushing Docker image from the master branch (beta releases)"
+              rm -f ./.npmrc
+              # Set our version number using vars
+              export IMAGE_VERSION=$(cat ../version.txt)
+              export IMAGE_VERSION_FULL=v$IMAGE_VERSION
+              echo $IMAGE_VERSION
+              echo $IMAGE_VERSION_FULL
+              # Build our image, auth, and push
+
+              echo "starting docker build"
+              docker build --tag ohif/app:$IMAGE_VERSION_FULL .
+              echo $DOCKER_PWD | docker login -u $DOCKER_LOGIN --password-stdin
+
+              echo "starting docker push"
+              docker push ohif/app:$IMAGE_VERSION_FULL
             fi
 
 workflows:
