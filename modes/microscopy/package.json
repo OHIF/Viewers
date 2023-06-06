@@ -14,7 +14,7 @@
   "keywords": [
     "ohif-mode"
   ],
-   "publishConfig": {
+  "publishConfig": {
     "access": "public"
   },
   "module": "src/index.tsx",

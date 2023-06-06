@@ -179,6 +179,9 @@ jobs:
           root: ~/repo
           paths:
             - platform/app/dist
+            - version.txt
+            - commit.txt
+            - version.json
             - netlify.toml
             - .netlify
 
@@ -281,9 +284,13 @@ jobs:
           command: |
             node ./increaseEventEmitterLimit.mjs
       - run:
-          name: build all packages
+          name: build half of the packages
           command: |
             yarn run build:package-all
+      - run:
+          name: build the other half of the packages
+          command: |
+            yarn run build:package-all-1
       - run:
           name: version and publish all packages
           command: |
@@ -301,13 +308,13 @@ jobs:
           command: |
             # This file will exist if a new version was published by
             # our command in the previous job.
-            if [[ ! -e ../version.txt ]]; then
+            if [[ ! -e version.txt ]]; then
               exit 0
             else
               # Remove npm config
               rm -f ./.npmrc
               # Set our version number using vars
-              export IMAGE_VERSION=$(cat ../version.txt)
+              export IMAGE_VERSION=$(cat version.txt)
               export IMAGE_VERSION_FULL=v$IMAGE_VERSION
               echo $IMAGE_VERSION
               echo $IMAGE_VERSION_FULL
@@ -333,14 +340,14 @@ jobs:
 
             # This file will exist if a new version was published by
             # our command in the previous job.
-            if [[ ! -e ../version.txt ]]; then
+            if [[ ! -e version.txt ]]; then
               echo "don't have version txt"
               exit 0
             else
               echo "Building and pushing Docker image from the master branch (beta releases)"
               rm -f ./.npmrc
               # Set our version number using vars
-              export IMAGE_VERSION=$(cat ../version.txt)
+              export IMAGE_VERSION=$(cat version.txt)
               export IMAGE_VERSION_FULL=v$IMAGE_VERSION
               echo $IMAGE_VERSION
               echo $IMAGE_VERSION_FULL
