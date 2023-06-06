@@ -33,7 +33,7 @@ window.config = {
         supportsWildcard: true,
         dicomUploadEnabled: true,
         bulkDataURI: {
-          enabled: false,
+          enabled: true,
         },
       },
     },
