@@ -4,13 +4,16 @@
   "description": "DICOM RT read workflow",
   "author": "OHIF",
   "license": "MIT",
-  "main": "dist/umd/@ohif/dicom-rt/index.umd.js",
+  "main": "dist/ohif-extension-cornerstone-dicom-rt.umd.js",
   "module": "src/index.tsx",
   "files": [
     "dist/**",
     "public/**",
     "README.md"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "repository": "OHIF/Viewers",
   "keywords": [
     "ohif-extension"
@@ -21,7 +24,7 @@
     "yarn": ">=1.18.0"
   },
   "scripts": {
-    "dev": "cross-env NODE_ENV=development webpack --config .webpack/webpack.dev.js --watch --debug --output-pathinfo",
+    "dev": "cross-env NODE_ENV=development webpack --config .webpack/webpack.dev.js --watch --output-pathinfo",
     "dev:dicom-seg": "yarn run dev",
     "build": "cross-env NODE_ENV=production webpack --config .webpack/webpack.prod.js",
     "build:package": "yarn run build",
@@ -31,7 +34,7 @@
     "@ohif/core": "^3.0.0",
     "@ohif/extension-default": "^3.0.0",
     "@ohif/extension-cornerstone": "^3.0.0",
-    "@ohif/i18n": "^1.0.0",
+    "@ohif/i18n": "^3.0.0",
     "prop-types": "^15.6.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",

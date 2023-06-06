@@ -2,9 +2,9 @@
   "name": "@ohif/mode-microscopy",
   "version": "3.0.0",
   "description": "OHIF mode for DICOM microscopy",
-  "author": "Bill Wallace, md-prog",
+  "author": "OHIF",
   "license": "MIT",
-  "main": "dist/umd/@ohif/mode-microscopy/index.umd.js",
+  "main": "dist/ohif-mode-microscopy.umd.js",
   "files": [
     "dist/**",
     "public/**",
@@ -14,6 +14,9 @@
   "keywords": [
     "ohif-mode"
   ],
+   "publishConfig": {
+    "access": "public"
+  },
   "module": "src/index.tsx",
   "engines": {
     "node": ">=14",
@@ -21,7 +24,7 @@
     "yarn": ">=1.16.0"
   },
   "scripts": {
-    "dev": "cross-env NODE_ENV=development webpack --config .webpack/webpack.dev.js --watch --debug --output-pathinfo",
+    "dev": "cross-env NODE_ENV=development webpack --config .webpack/webpack.dev.js --watch --output-pathinfo",
     "dev:cornerstone": "yarn run dev",
     "build": "cross-env NODE_ENV=production webpack --config .webpack/webpack.prod.js",
     "build:package": "yarn run build",

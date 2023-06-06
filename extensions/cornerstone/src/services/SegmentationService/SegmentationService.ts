@@ -107,7 +107,7 @@ class SegmentationService extends PubSubService {
 
   /**
    * It adds a segment to a segmentation, basically just setting the properties for
-   * the segment
+   * the segment.
    * @param segmentationId - The ID of the segmentation you want to add a
    * segment to.
    * @param segmentIndex - The index of the segment to add.
