@@ -130,6 +130,7 @@ function modeFactory() {
         'MPR',
         'Crosshairs',
         'MoreTools',
+        'fusionPTColormap',
       ]);
 
       // // ActivatePanel event trigger for when a segmentation or measurement is added.

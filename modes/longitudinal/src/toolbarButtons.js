@@ -54,7 +54,33 @@ function _createWwwcPreset(preset, title, subtitle) {
     ],
   };
 }
-
+function _createColormap(label, colormap) {
+  return {
+    id: label.toString(),
+    title: label,
+    subtitle: label,
+    type: 'action',
+    commands: [
+      {
+        commandName: 'setViewportColormap',
+        commandOptions: {
+          toolGroupId: toolGroupIds['default'],
+          colormap,
+        },
+        context: 'CORNERSTONE',
+      },
+      {
+        commandName: 'setViewportColormap',
+        commandOptions: {
+          toolGroupId: toolGroupIds['default'],
+          colormap,
+          context: 'CORNERSTONE',
+        },
+      },
+    ],
+    context: 'CORNERSTONE',
+  };
+}
 const toolGroupIds = ['default', 'mpr', 'SRToolGroup'];
 
 /**
@@ -76,6 +102,41 @@ function _createSetToolActiveCommands(toolName) {
 }
 
 const toolbarButtons = [
+  {
+    id: 'fusionPTColormap',
+    type: 'ohif.splitButton',
+    props: {
+      groupId: 'fusionPTColormap',
+      primary: _createToolButton(
+        'fusionPTColormap',
+        'tool-fusion-color',
+        'Fusion PT Colormap',
+        [],
+        'Fusion PT Colormap'
+      ),
+      secondary: {
+        icon: 'chevron-down',
+        label: 'PT Colormap',
+        isActive: true,
+        tooltip: 'PET Image Colormap',
+      },
+      isAction: true, // ?
+      renderer: WindowLevelMenuItem,
+      items: [
+        _createColormap('HSV', 'hsv'),
+        _createColormap('Hot Iron', 'hot_iron'),
+        _createColormap('S PET', 's_pet'),
+        _createColormap('Red Hot', 'red_hot'),
+        _createColormap('Perfusion', 'perfusion'),
+        _createColormap('Rainbow', 'rainbow_2'),
+        _createColormap('SUV', 'suv'),
+        _createColormap('GE 256', 'ge_256'),
+        _createColormap('GE', 'ge'),
+        _createColormap('Siemens', 'siemens'),
+        _createColormap('Test', 'test'),
+      ],
+    },
+  },
   // Measurement
   {
     id: 'MeasurementTools',
