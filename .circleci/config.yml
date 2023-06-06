@@ -158,6 +158,9 @@ jobs:
           key: yarn-packages-{{ checksum "yarn.lock" }}
       # Build & Test
       - run:
+          name: 'Perform the versioning before build'
+          command: node ../version.mjs
+      - run:
           name: 'Build the OHIF Viewer'
           command: yarn run build
           no_output_timeout: 45m
@@ -273,8 +276,18 @@ jobs:
           name: Authenticate with NPM registry
           command:
             echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/repo/.npmrc
-      - run: yarn run build:package-all
-      - run: yarn run lerna:customVersion
+      - run:
+          name: Increase the event emitter limit
+          command: |
+            node ../increaseEventEmitterLimit.mjs
+      - run:
+          name: build all packages
+          command: |
+            yarn run build:package-all
+      - run:
+          name: version and publish all packages
+          command: |
+            node ../publish.mjs
 
   DOCKER_RELEASE_PUBLISH:
     <<: *defaults
