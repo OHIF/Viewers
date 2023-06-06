@@ -49,7 +49,7 @@ docker run -d -e PORT=8080 -p 3000:8080/tcp --name ohif-viewer-container ohif-vi
 
 ### Configuring the OHIF config file
 
-The OHIF [config file](../configuration/configurationFiles.md) to use can be specified by mounting it as a volume for the Docker container using the `-v` flag. If the OHIF config file is on the local file system then it can be specified as such:
+The OHIF [config file](../configuration/configurationFiles.md) to use can be specified by mounting it as a volume for the Docker container using the `-v` flag. If the OHIF config file is on the local file system then it can be specified as below. Note that depending on the version of Docker, an absolute path to the config file might be required.
 
 ```sh
 docker run -d -p 3000:80/tcp -v /path/to/config/file.js:/usr/share/nginx/html/app-config.js --name ohif-viewer-container ohif-viewer-image
