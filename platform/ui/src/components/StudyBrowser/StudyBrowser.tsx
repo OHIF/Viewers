@@ -2,7 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 
-import { ButtonGroup, Button, StudyItem, ThumbnailList } from '../';
+import StudyItem from '../StudyItem';
+import ButtonGroup from '../ButtonGroup';
+import Button from '../Button';
+import ThumbnailList from '../ThumbnailList';
 import { StringNumber } from '../../types';
 
 const getTrackedSeries = displaySets => {
@@ -171,7 +174,7 @@ StudyBrowser.propTypes = {
   ),
 };
 
-const noop = () => { };
+const noop = () => {};
 
 StudyBrowser.defaultProps = {
   onClickTab: noop,

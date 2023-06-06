@@ -1,11 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import ReactModal from 'react-modal';
+import { useModal } from '../../contextProviders';
+
+import Icon from '../Icon';
+import Typography from '../Typography';
 
 import './Modal.css';
-
-import { Typography, Icon } from '../';
-import { useModal } from '../../contextProviders';
 
 if (typeof document !== 'undefined') {
   ReactModal.setAppElement(document.getElementById('root'));

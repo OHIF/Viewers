@@ -1,6 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
-import { Icon } from '@ohif/ui';
+
+import Icon from '../Icon';
 import ProgressLoadingBar from '../ProgressLoadingBar';
 
 /**

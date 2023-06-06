@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Button, ButtonGroup, Typography, Select } from '../';
 import { useTranslation } from 'react-i18next';
+
+import Button from '../Button';
+import ButtonGroup from '../ButtonGroup';
+import Typography from '../Typography';
+import Select from '../Select';
 
 const StudyListPagination = ({
   onChangePage,

@@ -1,7 +1,9 @@
 import React, { useEffect, useRef } from 'react';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
-import { Button, Icon } from '../';
+
+import Button from '../Button';
+import Icon from '../Icon';
 
 const Notification = ({
   id,

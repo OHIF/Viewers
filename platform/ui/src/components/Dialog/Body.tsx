@@ -2,7 +2,7 @@ import React from 'react';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 
-import { Typography } from '..';
+import Typography from '../Typography';
 
 const Body = ({ text, className }) => {
   const theme = 'bg-primary-dark';
