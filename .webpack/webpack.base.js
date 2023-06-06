@@ -2,6 +2,8 @@
 const dotenv = require('dotenv');
 //
 const path = require('path');
+const fs = require('fs');
+
 const webpack = require('webpack');
 
 // ~~ PLUGINS
@@ -24,8 +26,11 @@ const QUICK_BUILD = process.env.QUICK_BUILD;
 const BUILD_NUM = process.env.CIRCLE_BUILD_NUM || '0';
 
 // read from ../version.txt
-const VERSION_NUMBER = require('../version.txt') || '';
-const HASH_NUMBER = require('../commit.txt') || '';
+const VERSION_NUMBER =
+  fs.readFileSync(path.join(__dirname, '../version.txt'), 'utf8') || '';
+
+const COMMIT_HASH =
+  fs.readFileSync(path.join(__dirname, '../commit.txt'), 'utf8') || '';
 
 //
 dotenv.config();
@@ -141,7 +146,7 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
         'process.env.PUBLIC_URL': JSON.stringify(process.env.PUBLIC_URL || '/'),
         'process.env.BUILD_NUM': JSON.stringify(BUILD_NUM),
         'process.env.VERSION_NUMBER': JSON.stringify(VERSION_NUMBER),
-        'process.env.HASH_NUMBER': JSON.stringify(HASH_NUMBER),
+        'process.env.COMMIT_HASH': JSON.stringify(COMMIT_HASH),
         /* i18n */
         'process.env.USE_LOCIZE': JSON.stringify(process.env.USE_LOCIZE || ''),
         'process.env.LOCIZE_PROJECTID': JSON.stringify(

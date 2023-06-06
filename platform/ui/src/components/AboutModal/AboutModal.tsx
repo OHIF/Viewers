@@ -43,7 +43,7 @@ const Row = ({ title, value, link }) => {
   );
 };
 
-const AboutModal = ({ buildNumber, versionNumber }) => {
+const AboutModal = ({ buildNumber, versionNumber, commitHash }) => {
   const { os, version, name } = detect();
   const browser = `${name[0].toUpperCase()}${name.substr(1)} ${version}`;
 
@@ -89,7 +89,8 @@ const AboutModal = ({ buildNumber, versionNumber }) => {
           link="https://github.com/OHIF/Viewers/"
         /> */}
         <Row title="Version number" value={versionNumber} />
-        <Row title="Build number" value={buildNumber} />
+        {buildNumber && <Row title="Build number" value={buildNumber} />}
+        {commitHash && <Row title="Commit Hash" value={commitHash} />}
         <Row title="Browser" value={browser} />
         <Row title="OS" value={os} />
       </div>

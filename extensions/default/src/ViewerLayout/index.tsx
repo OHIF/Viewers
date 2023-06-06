@@ -80,8 +80,8 @@ function ViewerLayout({
   const { hangingProtocolService } = servicesManager.services;
 
   const { hotkeyDefinitions, hotkeyDefaults } = hotkeysManager;
-  const versionNumber = '3.4'; // Todo: fix this
-  const buildNumber = process.env.BUILD_NUM;
+  const versionNumber = process.env.VERSION_NUMBER;
+  const commitHash = process.env.COMMIT_HASH;
 
   const menuOptions = [
     {
@@ -91,7 +91,7 @@ function ViewerLayout({
         show({
           content: AboutModal,
           title: 'About OHIF Viewer',
-          contentProps: { versionNumber, buildNumber },
+          contentProps: { versionNumber, commitHash },
         }),
     },
     {
