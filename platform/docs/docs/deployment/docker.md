@@ -46,3 +46,11 @@ The Dockerfile and entry point use the `${PORT}` environment variable as the por
 ```sh
 docker run -d -e PORT=8080 -p 3000:8080/tcp --name ohif-viewer-container ohif-viewer-image
 ```
+
+### Configuring the OHIF config file
+
+The OHIF [config file](../configuration/configurationFiles.md) to use can be specified by mounting it as a volume for the Docker container using the `-v` flag. If the OHIF config file is on the local file system then it can be specified as such:
+
+```sh
+docker run -d -p 3000:80/tcp -v /path/to/config/file.js:/usr/share/nginx/html/app-config.js --name ohif-viewer-container ohif-viewer-image
+```
