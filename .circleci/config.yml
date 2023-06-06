@@ -284,7 +284,7 @@ jobs:
           command: |
             node ./increaseEventEmitterLimit.mjs
       - run:
-          name: build half of the packages
+          name: build half of the packages (to avoid out of memory in circleci)
           command: |
             yarn run build:package-all
       - run:
@@ -292,9 +292,17 @@ jobs:
           command: |
             yarn run build:package-all-1
       - run:
-          name: version and publish all packages
+          name: publish package versions
           command: |
-            node ./publish.mjs
+            node ./publish-version.mjs
+      - run:
+          name: Again set the NPM registry (was deleted in the version script)
+          command:
+            echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/repo/.npmrc
+      - run:
+          name: publish package dist
+          command: |
+            node ./publish-package.mjs
 
   DOCKER_RELEASE_PUBLISH:
     <<: *defaults

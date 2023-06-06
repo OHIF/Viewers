@@ -65,6 +65,7 @@ async function run() {
   }
 
   console.log('Next version:', nextVersion);
+  console.log('Current commit hash:', currentCommitHash);
 
   const versionInfo = { version: nextVersion, commit: currentCommitHash };
   await fs.writeFile('./version.json', JSON.stringify(versionInfo, null, 2));
@@ -75,6 +76,6 @@ async function run() {
 }
 
 run().catch(err => {
-  console.error('Error encountered during version bump:', err);
+  console.error('Error encountered during new version & commit write:', err);
   process.exit(1);
 });
