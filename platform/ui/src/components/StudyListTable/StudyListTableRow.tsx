@@ -1,8 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import { Icon } from '../';
 import getGridWidthClass from '../../utils/getGridWidthClass';
+
+import Icon from '../Icon';
 
 const StudyListTableRow = props => {
   const { tableData } = props;
