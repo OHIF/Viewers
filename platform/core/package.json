@@ -38,7 +38,7 @@
     "@cornerstonejs/codec-openjpeg": "^1.2.2",
     "@cornerstonejs/codec-openjph": "^2.4.2",
     "dicom-parser": "^1.8.21",
-    "@ohif/ui": "^2.0.0"
+    "@ohif/ui": "^3.0.0"
   },
   "dependencies": {
     "@babel/runtime": "^7.20.13",
