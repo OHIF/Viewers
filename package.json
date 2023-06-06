@@ -26,6 +26,7 @@
     "build:ui:deploy-preview": "lerna run build:ui:deploy-preview --stream",
     "build:demo": "lerna run build:viewer:demo --stream",
     "build:package-all": "lerna run build:package --parallel --stream",
+    "build:package-all-1": "lerna run build:package-1 --parallel --stream",
     "dev": "lerna run dev:viewer --stream",
     "dev:project": ".scripts/dev.sh",
     "dev:orthanc": "lerna run dev:orthanc --stream",
