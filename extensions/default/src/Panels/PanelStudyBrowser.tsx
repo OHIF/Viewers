@@ -11,6 +11,7 @@ const { sortStudyInstances, formatDate } = utils;
  */
 function PanelStudyBrowser({
   servicesManager,
+  validationManager,
   getImageSrc,
   getStudiesForPatientByMRN,
   requestDisplaySetCreationForStudy,
@@ -162,7 +163,10 @@ function PanelStudyBrowser({
       displaySetService.EVENTS.DISPLAY_SETS_ADDED,
       data => {
         const { displaySetsAdded } = data;
+
         displaySetsAdded.forEach(async dSet => {
+          validationManager.validateDisplaySet(dSet);
+
           const newImageSrcEntry = {};
           const displaySet = displaySetService.getDisplaySetByUID(
             dSet.displaySetInstanceUID
