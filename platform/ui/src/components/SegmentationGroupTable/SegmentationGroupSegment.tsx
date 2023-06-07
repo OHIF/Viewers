@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import { Icon } from '@ohif/ui';
+
+import Icon from '../Icon';
 
 const SegmentItem = ({
   segmentIndex,
@@ -66,7 +67,7 @@ const SegmentItem = ({
         {isSegmentIndexHovering && showSegmentDelete ? (
           <Icon
             name="close"
-            className={classnames('w-5 h-5 pr-2')}
+            className={classnames('pr-0.5')}
             onClick={e => {
               e.stopPropagation();
               onDelete(segmentationId, segmentIndex);

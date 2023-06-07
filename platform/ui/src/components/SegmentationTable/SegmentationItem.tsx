@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import { Icon } from '../';
+
+import Icon from '../Icon';
 
 const SegmentationItem = ({
   id,
@@ -55,7 +56,7 @@ const SegmentationItem = ({
           <Icon
             name="close"
             className={classnames(
-              'w-5 transition duration-500 text-center hover:opacity-80',
+              'w-[10px] transition duration-500 text-center hover:opacity-80',
               {
                 'bg-primary-light text-black': isActive,
                 'bg-primary-dark text-primary-light group-hover:bg-secondary-main': !isActive,

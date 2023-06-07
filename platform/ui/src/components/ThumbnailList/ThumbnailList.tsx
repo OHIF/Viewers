@@ -1,7 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { Thumbnail, ThumbnailNoImage, ThumbnailTracked } from '../';
+import Thumbnail from '../Thumbnail';
+import ThumbnailNoImage from '../ThumbnailNoImage';
+import ThumbnailTracked from '../ThumbnailTracked';
 import * as Types from '../../types';
 
 const ThumbnailList = ({

@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import debounce from 'lodash.debounce';
-import { IconButton, Icon } from '../';
+
+import IconButton from '../IconButton';
+import Icon from '../Icon';
 
 import './LegacyCinePlayerCustomInputRange.css';
 
@@ -62,7 +64,7 @@ const LegacyCinePlayer = ({
         className="mr-3 border rounded-full text-primary-active border-primary-active"
         onClick={onClose}
       >
-        <Icon name="close" width="15px" height="15px" />
+        <Icon name="close" />
       </IconButton>
     </div>
   );

@@ -2,7 +2,12 @@ import React, { ReactNode } from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import classNames from 'classnames';
-import { NavBar, Svg, Icon, IconButton, Dropdown } from '../';
+
+import NavBar from '../NavBar';
+import Svg from '../Svg';
+import Icon from '../Icon';
+import IconButton from '../IconButton';
+import Dropdown from '../Dropdown';
 
 function Header({
   children,

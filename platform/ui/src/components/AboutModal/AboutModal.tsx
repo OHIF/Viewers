@@ -1,7 +1,9 @@
 import React from 'react';
-import { Typography, Icon } from '../';
 import PropTypes from 'prop-types';
 import detect from 'browser-detect';
+
+import Typography from '../Typography';
+import Icon from '../Icon';
 
 const Link = ({ href, children, showIcon = false }) => {
   return (
@@ -49,7 +51,11 @@ const AboutModal = ({ buildNumber, versionNumber, commitHash }) => {
 
   const renderRowTitle = title => (
     <div className="pb-3 mb-3 border-b-2 border-black">
-      <Typography variant="h6" className="text-primary-light">
+      <Typography
+        variant="inherit"
+        color="primaryLight"
+        className="text-[16px] font-semibold !leading-[1.2]"
+      >
         {title}
       </Typography>
     </div>

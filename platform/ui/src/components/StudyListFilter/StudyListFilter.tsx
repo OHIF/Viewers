@@ -2,7 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 
-import { Button, Icon, Typography, InputGroup } from '../';
+import Button from '../Button';
+import Icon from '../Icon';
+import Typography from '../Typography';
+import InputGroup from '../InputGroup';
 
 const StudyListFilter = ({
   filtersMeta,
