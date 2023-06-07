@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-cornerstone-dicom-seg",
-  "version": "3.5.0",
+  "version": "3.6.0-beta.3",
   "description": "DICOM SEG read workflow",
   "author": "OHIF",
   "license": "MIT",
@@ -31,44 +31,19 @@
     "start": "yarn run dev"
   },
   "peerDependencies": {
-    "@ohif/core": "3.5.0",
-    "@ohif/extension-cornerstone": "3.5.0",
-    "@ohif/extension-default": "3.5.0",
-    "@ohif/i18n": "3.5.0",
+    "@ohif/core": "3.6.0-beta.3",
+    "@ohif/extension-cornerstone": "3.6.0-beta.3",
+    "@ohif/extension-default": "3.6.0-beta.3",
+    "@ohif/i18n": "3.6.0-beta.3",
     "prop-types": "^15.6.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-i18next": "^12.2.2",
     "react-router": "^6.8.1",
-    "react-router-dom": "^6.8.1",
-    "webpack": "^5.50.0",
-    "webpack-merge": "^5.7.3"
+    "react-router-dom": "^6.8.1"
   },
   "dependencies": {
     "@babel/runtime": "^7.20.13",
     "react-color": "^2.19.3"
-  },
-  "devDependencies": {
-    "@babel/core": "^7.21.4",
-    "@babel/plugin-proposal-class-properties": "^7.5.0",
-    "@babel/plugin-proposal-object-rest-spread": "^7.5.5",
-    "@babel/plugin-syntax-dynamic-import": "^7.2.0",
-    "@babel/plugin-transform-arrow-functions": "^7.2.0",
-    "@babel/plugin-transform-regenerator": "^7.16.7",
-    "@babel/plugin-transform-runtime": "^7.17.0",
-    "@babel/preset-env": "^7.5.0",
-    "@babel/preset-react": "^7.16.7",
-    "babel-eslint": "^8.0.3",
-    "babel-loader": "^8.0.0-beta.4",
-    "babel-plugin-inline-react-svg": "^2.0.1",
-    "clean-webpack-plugin": "^4.0.0",
-    "copy-webpack-plugin": "^11.0.0",
-    "cross-env": "^7.0.3",
-    "dotenv": "^14.1.0",
-    "eslint": "^5.0.1",
-    "eslint-loader": "^2.0.0",
-    "webpack": "^5.50.0",
-    "webpack-cli": "^4.7.2",
-    "webpack-merge": "^5.7.3"
   }
 }

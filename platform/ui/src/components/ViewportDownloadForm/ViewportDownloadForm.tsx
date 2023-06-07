@@ -7,16 +7,14 @@ import React, {
 } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import {
-  Typography,
-  Input,
-  Tooltip,
-  IconButton,
-  Icon,
-  Select,
-  InputLabelWrapper,
-  Button,
-} from '../';
+import Typography from '../Typography';
+import Input from '../Input';
+import Tooltip from '../Tooltip';
+import IconButton from '../IconButton';
+import Icon from '../Icon';
+import Select from '../Select';
+import InputLabelWrapper from '../InputLabelWrapper';
+import Button from '../Button';
 
 const FILE_TYPE_OPTIONS = [
   {
