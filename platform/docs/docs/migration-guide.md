@@ -55,6 +55,7 @@ Certain scenarios can make the migration process more complex and potentially in
 OHIF v3 is a major re-architecture of the OHIF v2 to make it more modular and
 easier to maintain. The main differences are:
 
+- platform/viewer (@ohif/viewer) has been renamed to platform/app (@ohif/app) (explanation below)
 - Extensions are available to be used by modes on request, but are still injected as module components.
 - To use the modules provided by the extensions, you need to write a [Mode](./platform/modes/index.md). Modes
 are configuration objects that will be used by the viewer to load the modules. This lets users to be able to use common extensions with different configurations, and enhances the customizability of the viewer.
@@ -77,6 +78,13 @@ New significant additions that might be useful for you that weren't available in
 - [Data Sources](./platform/extensions/modules/data-source.md)
 - [Hanging Protocols](./platform/services/data/HangingProtocolService.md)
 - [URL Params](./configuration/url.md)
+
+## Platform/viewer (@ohif/viewer) -> platform/app (@ohif/app)
+
+
+To ensure proper versioning of OHIF v3, we have made a decision to rename the platform/viewer to platform/app. Previously, the platform/viewer package followed software engineering versioning (currently at v4.12.51). However, going forward, we aim to align the versioning of platform/app with the product version (e.g., v3.4.0, v3.5.0, etc.).
+
+Since the platform/viewer (@ohif/viewer) is already at v4.12.51, we opted to rename it as platform/app to enable versioning in accordance with the product versioning approach. If you were utilizing any exports from @ohif/viewer, please update them to use @ohif/app instead.
 
 
 ## Configuration

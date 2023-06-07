@@ -6,9 +6,6 @@ sidebar_position: 4
 
 The OHIF source code provides a Dockerfile to create and run a Docker image that containerizes an [nginx](https://www.nginx.com/) web server serving the OHIF Viewer.
 
-:::info Good to Know
-The OHIF Viewer Docker image for the `v3-stable` branch is not yet published. The available image in [Docker Hub](https://hub.docker.com/r/ohif/viewer) is based on the `master` branch.
-:::
 
 ## Prequisites
 The machine on which to build and run the Docker container must have:

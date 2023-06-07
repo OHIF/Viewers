@@ -4,7 +4,7 @@ sidebar_position: 2
 # Browser Support
 
 The browsers that we support are specified in the `.browserlistrc` file located
-in the `platform/viewer` project. While we leverage the latest language features
+in the `platform/app` project. While we leverage the latest language features
 when writing code, we rely on `babel` to _transpile_ our code so that it can run
 in the browsers that we support.
 

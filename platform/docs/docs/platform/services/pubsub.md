@@ -77,7 +77,7 @@ observer.
 Below, we can see `simplified` `Mode.jsx` and the corresponding `useEffect`
 where the unsubscription functions are executed upon destruction.
 
-```js title="platform/viewer/src/routes/Mode/Mode.jsx"
+```js title="platform/app/src/routes/Mode/Mode.jsx"
 export default function ModeRoute(/**..**/) {
   /**...**/
   useEffect(() => {

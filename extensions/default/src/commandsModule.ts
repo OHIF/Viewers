@@ -12,7 +12,7 @@ import findViewportsByPosition, {
 
 import { ContextMenuProps } from './CustomizableContextMenu/types';
 import { NavigateHistory } from './types/commandModuleTypes';
-import { history } from '@ohif/viewer';
+import { history } from '@ohif/app';
 
 const { subscribeToNextViewportGridChange } = utils;
 

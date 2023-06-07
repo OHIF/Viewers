@@ -1,3 +1,9 @@
+navigator.serviceWorker.getRegistrations().then(function(registrations) {
+  for (let registration of registrations) {
+    registration.unregister();
+  }
+});
+
 // https://developers.google.com/web/tools/workbox/modules/workbox-window
 // All major browsers that support service worker also support native JavaScript
 // modules, so it's perfectly fine to serve this code to any browsers
@@ -5,7 +11,7 @@
 //
 //import { Workbox } from './workbox-window.prod.mjs';
 // proper initialization
-if( 'function' === typeof importScripts) {
+if ('function' === typeof importScripts) {
   importScripts(
     'https://storage.googleapis.com/workbox-cdn/releases/6.5.4/workbox-window.prod.mjs'
   );
@@ -55,5 +61,4 @@ if( 'function' === typeof importScripts) {
 
     wb.register();
   }
-
 }

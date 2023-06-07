@@ -1,10 +1,10 @@
 {
   "name": "@ohif/mode-microscopy",
-  "version": "3.0.0",
+  "version": "3.6.0-beta.0",
   "description": "OHIF mode for DICOM microscopy",
-  "author": "Bill Wallace, md-prog",
+  "author": "OHIF",
   "license": "MIT",
-  "main": "dist/umd/@ohif/mode-microscopy/index.umd.js",
+  "main": "dist/ohif-mode-microscopy.umd.js",
   "files": [
     "dist/**",
     "public/**",
@@ -14,6 +14,9 @@
   "keywords": [
     "ohif-mode"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "module": "src/index.tsx",
   "engines": {
     "node": ">=14",
@@ -21,7 +24,7 @@
     "yarn": ">=1.16.0"
   },
   "scripts": {
-    "dev": "cross-env NODE_ENV=development webpack --config .webpack/webpack.dev.js --watch --debug --output-pathinfo",
+    "dev": "cross-env NODE_ENV=development webpack --config .webpack/webpack.dev.js --watch --output-pathinfo",
     "dev:cornerstone": "yarn run dev",
     "build": "cross-env NODE_ENV=production webpack --config .webpack/webpack.prod.js",
     "build:package": "yarn run build",
@@ -30,8 +33,8 @@
     "test:unit:ci": "jest --ci --runInBand --collectCoverage --passWithNoTests"
   },
   "peerDependencies": {
-    "@ohif/core": "^3.0.0",
-    "@ohif/extension-dicom-microscopy": "^3.0.0"
+    "@ohif/core": "3.6.0-beta.0",
+    "@ohif/extension-dicom-microscopy": "3.6.0-beta.0"
   },
   "dependencies": {
     "@babel/runtime": "^7.20.13"
@@ -59,7 +62,7 @@
     "eslint": "^5.0.1",
     "eslint-loader": "^2.0.0",
     "webpack": "^5.50.0",
-    "webpack-merge": "^5.7.3",
-    "webpack-cli": "^4.7.2"
+    "webpack-cli": "^4.7.2",
+    "webpack-merge": "^5.7.3"
   }
 }

@@ -8,7 +8,7 @@ sidebar_label: Segmentation Service
 ## Overview
 
 Using Segmentation Service you can create, edit and delete segmentation data, and
-change appearance of the segmentation including color, opacity, and visibility.
+change appearance of the segmentation including color, opacity and visibility.
 
 Segmentations in OHIF are based on the Segmentations in Cornerstone3D. You can
 read more about it in the [Cornerstone Segmentation](https://www.cornerstonejs.org/docs/concepts/cornerstone-tools/segmentation/). OHIF currently only supports
