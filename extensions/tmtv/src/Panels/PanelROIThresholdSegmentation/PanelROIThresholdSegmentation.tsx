@@ -269,7 +269,7 @@ export default function PanelRoiThresholdSegmentation({
         onClick={() => {
           // navigate to a url in a new tab
           window.open(
-            'https://github.com/OHIF/Viewers/blob/v3-stable/modes/tmtv/README.md',
+            'https://github.com/OHIF/Viewers/blob/master/modes/tmtv/README.md',
             '_blank'
           );
         }}

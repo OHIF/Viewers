@@ -49,7 +49,7 @@ export default class ServicesManager {
 
 By default, `OHIF-v3` registers the following services in the `appInit`.
 
-```js title="platform/viewer/src/appInit.js"
+```js title="platform/app/src/appInit.js"
 servicesManager.registerServices([
   CustomizationService,
   UINotificationService,

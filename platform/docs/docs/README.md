@@ -23,14 +23,17 @@ Key features:
   components available in a reusable component library built with React.js and
   Tailwind CSS
 
-![OHIF Viewer Screenshot](./assets/img/OHIF-Viewer.png)
+![OHIF Viewer Screenshot](./assets/img/OHIF-Viewer.jpg)
 
 <div className="text--center">
     <div className="button-group">
-        <a className='button button--primary' href="https://v3-demo.ohif.org/">Try the demo</a>
+        <a className='button button--primary' href="https://ohif.org/news/">Subscribe to our newsletter</a>
         <a className='button button--primary' href="./release-notes">Release Notes</a>
     </div>
 </div>
+
+
+
 
 ## Where to next?
 
@@ -91,7 +94,7 @@ MIT © [OHIF](https://github.com/OHIF)
 
 <!-- prettier-ignore-start -->
 [ohif-org]: https://www.ohif.org
-[ohif-demo]: http://v3-demo.ohif.org/
+[ohif-demo]: http://viewer.ohif.org/
 [dicom-web]: https://en.wikipedia.org/wiki/DICOMweb
 [gh-issues]: https://github.com/OHIF/Viewers/issues
 <!-- prettier-ignore-end -->

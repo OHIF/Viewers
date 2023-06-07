@@ -1,10 +1,10 @@
 {
   "name": "@ohif/extension-cornerstone-dicom-seg",
-  "version": "3.0.0",
+  "version": "3.5.0-beta.1",
   "description": "DICOM SEG read workflow",
   "author": "OHIF",
   "license": "MIT",
-  "main": "dist/umd/@ohif/dicom-seg/index.umd.js",
+  "main": "dist/ohif-extension-cornerstone-dicom-seg.umd.js",
   "module": "src/index.tsx",
   "files": [
     "dist/**",
@@ -15,23 +15,26 @@
   "keywords": [
     "ohif-extension"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "engines": {
     "node": ">=14",
     "npm": ">=6",
     "yarn": ">=1.18.0"
   },
   "scripts": {
-    "dev": "cross-env NODE_ENV=development webpack --config .webpack/webpack.dev.js --watch --debug --output-pathinfo",
+    "dev": "cross-env NODE_ENV=development webpack --config .webpack/webpack.dev.js --watch --output-pathinfo",
     "dev:dicom-seg": "yarn run dev",
     "build": "cross-env NODE_ENV=production webpack --config .webpack/webpack.prod.js",
-    "build:package": "yarn run build",
+    "build:package-1": "yarn run build",
     "start": "yarn run dev"
   },
   "peerDependencies": {
-    "@ohif/core": "^3.0.0",
-    "@ohif/extension-default": "^3.0.0",
-    "@ohif/extension-cornerstone": "^3.0.0",
-    "@ohif/i18n": "^1.0.0",
+    "@ohif/core": "3.5.0-beta.1",
+    "@ohif/extension-cornerstone": "3.5.0-beta.1",
+    "@ohif/extension-default": "3.5.0-beta.1",
+    "@ohif/i18n": "3.5.0-beta.1",
     "prop-types": "^15.6.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
@@ -53,11 +56,11 @@
     "@babel/plugin-transform-arrow-functions": "^7.2.0",
     "@babel/plugin-transform-regenerator": "^7.16.7",
     "@babel/plugin-transform-runtime": "^7.17.0",
-    "babel-plugin-inline-react-svg": "^2.0.1",
     "@babel/preset-env": "^7.5.0",
     "@babel/preset-react": "^7.16.7",
     "babel-eslint": "^8.0.3",
     "babel-loader": "^8.0.0-beta.4",
+    "babel-plugin-inline-react-svg": "^2.0.1",
     "clean-webpack-plugin": "^4.0.0",
     "copy-webpack-plugin": "^11.0.0",
     "cross-env": "^7.0.3",
@@ -65,7 +68,7 @@
     "eslint": "^5.0.1",
     "eslint-loader": "^2.0.0",
     "webpack": "^5.50.0",
-    "webpack-merge": "^5.7.3",
-    "webpack-cli": "^4.7.2"
+    "webpack-cli": "^4.7.2",
+    "webpack-merge": "^5.7.3"
   }
 }

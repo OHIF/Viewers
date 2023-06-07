@@ -2,7 +2,7 @@ const autoprefixer = require('autoprefixer');
 const path = require('path');
 const tailwindcss = require('tailwindcss');
 const tailwindConfigPath = path.resolve(
-  '../../platform/viewer/tailwind.config.js'
+  '../../platform/app/tailwind.config.js'
 );
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const devMode = process.env.NODE_ENV !== 'production';

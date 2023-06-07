@@ -105,7 +105,7 @@ of the instances to the display set.
 You can find another example for this mapping between raw metadata and displaySet for
 `DICOM-SR` extension.
 
-## `@ohif/viewer` usage
+## `@ohif/app` usage
 
 We use the `sopClassHandlerModule`s in `DisplaySetService` where we
 transform instances from the raw metadata format to a OHIF displaySet format.
