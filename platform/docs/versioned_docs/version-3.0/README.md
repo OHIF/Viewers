@@ -27,7 +27,7 @@ Key features:
 
 <div className="text--center">
     <div className="button-group">
-        <a className='button button--primary' href="https://v3-demo.ohif.org/">Try the demo</a>
+        <a className='button button--primary' href="https://viewer.ohif.org/">Try the demo</a>
         <a className='button button--primary' href="./release-notes">Release Notes</a>
     </div>
 </div>
@@ -91,7 +91,7 @@ MIT © [OHIF](https://github.com/OHIF)
 
 <!-- prettier-ignore-start -->
 [ohif-org]: https://www.ohif.org
-[ohif-demo]: http://v3-demo.ohif.org/
+[ohif-demo]: http://viewer.ohif.org/
 [dicom-web]: https://en.wikipedia.org/wiki/DICOMweb
 [gh-issues]: https://github.com/OHIF/Viewers/issues
 <!-- prettier-ignore-end -->

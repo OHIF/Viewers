@@ -320,7 +320,7 @@ A few custom attributes are included under @ohif/extension-test, these are namel
 *maxNumImageFrames
 *numberOfDisplaySets
 
-To use these included custom attributes, the extension will need to be enabled under platform/viewer/pluginConfig.json:
+To use these included custom attributes, the extension will need to be enabled under platform/app/pluginConfig.json:
 
 ```javascript
 {
@@ -328,7 +328,7 @@ To use these included custom attributes, the extension will need to be enabled u
     ...
     {
       "packageName": "@ohif/extension-test",
-      "version": "0.0.1"
+      "version": "3.4.0"
     },
     ...
   ]

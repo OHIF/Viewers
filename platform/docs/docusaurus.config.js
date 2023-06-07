@@ -57,7 +57,7 @@ module.exports = {
   projectName: 'OHIF',
   baseUrl,
   baseUrlIssueBanner: true,
-  url: 'https://v3-docs.ohif.org',
+  url: 'https://docs.ohif.org',
   i18n: {
     defaultLocale: 'en',
     locales: isDeployPreview
@@ -218,7 +218,7 @@ module.exports = {
 
             // We want users to submit doc updates to the upstream/next version!
             // Otherwise we risk losing the update on the next release.
-            return `https://github.com/OHIF/Viewers/edit/v3-stable/platform/docs/docs/${docPath}`;
+            return `https://github.com/OHIF/Viewers/edit/master/platform/docs/docs/${docPath}`;
           },
           showLastUpdateAuthor: true,
           showLastUpdateTime: true,
@@ -233,10 +233,7 @@ module.exports = {
           //     : undefined,
           versions: {
             current: {
-              label: 'Version 3.3 - Segmentation Support 🚧',
-            },
-            '2.0': {
-              label: 'Version 2.0 - Master branch',
+              label: 'Latest',
             },
           },
         },
@@ -290,13 +287,13 @@ module.exports = {
           {
             to: 'https://ohif.org/get-started',
             label: 'Get Started',
-            target: '_self',
+            target: '_blank',
             position: 'left',
           },
           {
             to: 'https://ohif.org/examples',
             label: 'Examples',
-            target: '_self',
+            target: '_blank',
             position: 'left',
           },
           {
@@ -309,7 +306,7 @@ module.exports = {
           {
             to: 'https://ohif.org/community',
             label: 'Community',
-            target: '_self',
+            target: '_blank',
             position: 'left',
           },
           {
@@ -429,7 +426,7 @@ module.exports = {
         logo: {
           alt: 'OHIF ',
           src: 'img/netlify-color-accent.svg',
-          href: 'https://v3-demo.ohif.org/',
+          href: 'https://viewer.ohif.org/',
         },
         copyright: `OHIF is open source software released under the MIT license.`,
       },

@@ -12,7 +12,7 @@ services:
       # Project root
       context: ./../../../../
       # Relative to context
-      dockerfile: ./platform/viewer/.recipes/OpenResty-Orthanc/dockerfile
+      dockerfile: ./platform/app/.recipes/OpenResty-Orthanc/dockerfile
     image: webapp:latest
     container_name: webapp
     volumes:

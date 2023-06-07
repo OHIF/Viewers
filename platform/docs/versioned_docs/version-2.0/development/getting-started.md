@@ -88,9 +88,6 @@ You should see the following output:
 ```bash
 # Build static assets to host a PWA
 yarn run build
-
-# Build packaged output (script-tag use)
-yarn run build:package
 ```
 
 ## Troubleshooting

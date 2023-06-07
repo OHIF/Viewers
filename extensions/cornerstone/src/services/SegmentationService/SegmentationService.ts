@@ -107,7 +107,7 @@ class SegmentationService extends PubSubService {
 
   /**
    * It adds a segment to a segmentation, basically just setting the properties for
-   * the segment
+   * the segment.
    * @param segmentationId - The ID of the segmentation you want to add a
    * segment to.
    * @param segmentIndex - The index of the segment to add.
@@ -117,7 +117,7 @@ class SegmentationService extends PubSubService {
    * -- opacity: the opacity of the segment
    * -- visibility: the visibility of the segment (boolean)
    * -- isLocked: whether the segment is locked for editing
-   * -- active: whether the segment is currently the active segment to be edited
+   * -- active: whether the segment is currently the active segment to be edited or not
    */
   public addSegment(
     segmentationId: string,
