@@ -235,9 +235,6 @@ module.exports = {
             current: {
               label: 'Latest',
             },
-            '2.0': {
-              label: 'Version 2.0 - Master branch',
-            },
           },
         },
         theme: {
