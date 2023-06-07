@@ -8,7 +8,7 @@ import arrowRightSmall from './../../assets/icons/arrow-right-small.svg';
 import calendar from './../../assets/icons/calendar.svg';
 import cancel from './../../assets/icons/cancel.svg';
 import clipboard from './../../assets/icons/clipboard.svg';
-import close from './../../assets/icons/close.svg';
+import close from './../../assets/icons/closeIcon.svg';
 import dottedCircle from './../../assets/icons/dotted-circle.svg';
 import circledCheckmark from './../../assets/icons/circled-checkmark.svg';
 import chevronDown from './../../assets/icons/chevron-down.svg';
