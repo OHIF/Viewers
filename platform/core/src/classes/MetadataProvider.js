@@ -199,8 +199,10 @@ class MetadataProvider {
           sliceThickness: toNumber(instance.SliceThickness),
           sliceLocation: toNumber(instance.SliceLocation),
           pixelSpacing: toNumber(PixelSpacing || 1),
-          rowPixelSpacing: toNumber(rowPixelSpacing || 1),
-          columnPixelSpacing: toNumber(columnPixelSpacing || 1),
+            rowPixelSpacing: rowPixelSpacing ? toNumber(rowPixelSpacing) : null,
+            columnPixelSpacing: columnPixelSpacing
+              ? toNumber(columnPixelSpacing)
+              : null,
         };
         break;
       case WADO_IMAGE_LOADER_TAGS.IMAGE_PIXEL_MODULE:
