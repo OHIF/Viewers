@@ -17,6 +17,10 @@ provided by the <a href="https://ohif.org/">Open Health Imaging Foundation (OHIF
 <div align="center">
   📰 <a href="https://ohif.org/news/"><strong>Join OHIF Newsletter</strong></a> 📰
 </div>
+<div align="center">
+  📰 <a href="https://ohif.org/news/"><strong>Join OHIF Newsletter</strong></a> 📰
+</div>
+
 
 
 <hr />
