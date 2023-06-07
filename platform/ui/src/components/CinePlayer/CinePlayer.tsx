@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import debounce from 'lodash.debounce';
-import { Icon, Tooltip, InputRange } from '../';
+
+import Icon from '../Icon';
+import Tooltip from '../Tooltip';
+import InputRange from '../InputRange';
 
 import './CinePlayer.css';
 import classNames from 'classnames';

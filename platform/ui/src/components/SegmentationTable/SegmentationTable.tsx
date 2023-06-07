@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Icon } from '../';
 import SegmentationItem from './SegmentationItem';
+
+import Icon from '../Icon';
 
 const SegmentationTable = ({
   title,

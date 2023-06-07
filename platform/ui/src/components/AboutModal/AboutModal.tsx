@@ -1,7 +1,9 @@
 import React from 'react';
-import { Typography, Icon } from '../';
 import PropTypes from 'prop-types';
 import detect from 'browser-detect';
+
+import Typography from '../Typography';
+import Icon from '../Icon';
 
 const Link = ({ href, children, showIcon = false }) => {
   return (

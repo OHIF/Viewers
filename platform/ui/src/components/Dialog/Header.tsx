@@ -2,7 +2,8 @@ import React from 'react';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 
-import { Typography, Icon } from '..';
+import Typography from '../Typography';
+import Icon from '../Icon';
 
 const CloseButton = ({ onClick }) => {
   return (

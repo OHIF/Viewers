@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Select, Typography, Button, HotkeysPreferences } from '../';
 import { useTranslation } from 'react-i18next';
+
+import Select from '../Select';
+import Typography from '../Typography';
+import Button from '../Button';
+import HotkeysPreferences from '../HotkeysPreferences';
 
 const UserPreferences = ({
   availableLanguages,

@@ -2,7 +2,7 @@ import React from 'react';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 
-import { Button } from '..';
+import Button from '../Button';
 
 const Footer = ({ actions, className, onSubmit, value }) => {
   const flex = 'flex items-center justify-end';
