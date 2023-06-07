@@ -42,7 +42,7 @@ const Modal = ({
             <Icon
               onClick={onClose}
               name="close"
-              className="cursor-pointer text-primary-active"
+              className="cursor-pointer text-primary-active w-6 h-6"
             />
           )}
         </header>
