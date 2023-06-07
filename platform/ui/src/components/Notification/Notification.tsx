@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
-import Button from '../Button';
+import Button, { ButtonType } from '../Button';
 import Icon from '../Icon';
 
 const Notification = ({
@@ -75,14 +75,13 @@ const Notification = ({
       <div className="flex justify-end mt-2">
         {actions.map((action, index) => {
           const isFirst = index === 0;
-          const isPrimary = action.type === 'primary';
 
           return (
             <Button
-              data-cy={action.id}
+              name={action.id}
               key={index}
+              type={action.type}
               className={classnames({ 'ml-2': !isFirst })}
-              color={isPrimary ? 'primary' : undefined}
               onClick={() => {
                 onSubmit(action.value);
               }}
@@ -108,7 +107,8 @@ Notification.propTypes = {
     PropTypes.shape({
       text: PropTypes.string.isRequired,
       value: PropTypes.any.isRequired,
-      type: PropTypes.oneOf(['primary', 'secondary', 'cancel']).isRequired,
+      type: PropTypes.oneOf([ButtonType.primary, ButtonType.secondary])
+        .isRequired,
     })
   ).isRequired,
   onSubmit: PropTypes.func.isRequired,

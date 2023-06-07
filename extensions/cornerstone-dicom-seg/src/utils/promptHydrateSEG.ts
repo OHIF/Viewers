@@ -1,3 +1,4 @@
+import { ButtonType } from '@ohif/ui';
 import hydrateSEGDisplaySet from './_hydrateSEG';
 
 const RESPONSE = {
@@ -6,11 +7,7 @@ const RESPONSE = {
   HYDRATE_SEG: 5,
 };
 
-function promptHydrateSEG({
-  servicesManager,
-  segDisplaySet,
-  viewportIndex,
-}) {
+function promptHydrateSEG({ servicesManager, segDisplaySet, viewportIndex }) {
   const { uiViewportDialogService } = servicesManager.services;
 
   return new Promise(async function(resolve, reject) {
@@ -36,12 +33,12 @@ function _askHydrate(uiViewportDialogService, viewportIndex) {
     const message = 'Do you want to open this Segmentation?';
     const actions = [
       {
-        type: 'secondary',
+        type: ButtonType.secondary,
         text: 'No',
         value: RESPONSE.CANCEL,
       },
       {
-        type: 'primary',
+        type: ButtonType.primary,
         text: 'Yes',
         value: RESPONSE.HYDRATE_SEG,
       },

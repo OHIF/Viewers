@@ -1,6 +1,6 @@
 /* eslint-disable react/display-name */
 import React from 'react';
-import { Dialog, Input, Select } from '@ohif/ui';
+import { ButtonType, Dialog, Input, Select } from '@ohif/ui';
 
 export const CREATE_REPORT_DIALOG_RESPONSE = {
   CANCEL: 0,
@@ -81,8 +81,8 @@ export default function createReportDialogPrompt(
         noCloseButton: true,
         onClose: _handleClose,
         actions: [
-          { id: 'cancel', text: 'Cancel', type: 'primary' },
-          { id: 'save', text: 'Save', type: 'secondary' },
+          { id: 'cancel', text: 'Cancel', type: ButtonType.secondary },
+          { id: 'save', text: 'Save', type: ButtonType.primary },
         ],
         // TODO: Should be on button press...
         onSubmit: _handleFormSubmit,

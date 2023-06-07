@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 
-import Button from '../Button';
+import LegacyButton from '../LegacyButton';
 import Icon from '../Icon';
 import Typography from '../Typography';
 import InputGroup from '../InputGroup';
@@ -49,7 +49,7 @@ const StudyListFilter = ({
               </div>
               <div className="flex flex-row">
                 {isFiltering && (
-                  <Button
+                  <LegacyButton
                     rounded="full"
                     variant="outlined"
                     color="primaryActive"
@@ -59,7 +59,7 @@ const StudyListFilter = ({
                     onClick={clearFilters}
                   >
                     {t('ClearFilters')}
-                  </Button>
+                  </LegacyButton>
                 )}
                 <Typography
                   variant="h4"

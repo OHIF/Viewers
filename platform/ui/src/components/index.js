@@ -1,6 +1,7 @@
 import AboutModal from './AboutModal';
 import Button from './Button';
 import ButtonGroup from './ButtonGroup';
+import { ButtonType, ButtonSize } from './Button';
 import ContextMenu from './ContextMenu';
 import CinePlayer from './CinePlayer';
 import DateRange from './DateRange';
@@ -81,6 +82,8 @@ export {
   HotkeysPreferences,
   Button,
   ButtonGroup,
+  ButtonSize,
+  ButtonType,
   CheckBox,
   CinePlayer,
   ContextMenu,

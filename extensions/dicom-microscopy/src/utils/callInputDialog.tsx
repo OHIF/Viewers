@@ -1,5 +1,5 @@
 import React from 'react';
-import { Input, Dialog } from '@ohif/ui';
+import { Input, Dialog, ButtonType } from '@ohif/ui';
 
 /**
  *
@@ -14,7 +14,7 @@ export default function callInputDialog({
   uiDialogService,
   title = 'Annotation',
   defaultValue = '',
-  callback = (value: string, action: string) => {}
+  callback = (value: string, action: string) => {},
 }) {
   const dialogId = 'microscopy-input-dialog';
 
@@ -43,8 +43,8 @@ export default function callInputDialog({
         noCloseButton: true,
         onClose: () => uiDialogService.dismiss({ id: dialogId }),
         actions: [
-          { id: 'cancel', text: 'Cancel', type: 'primary' },
-          { id: 'save', text: 'Save', type: 'secondary' },
+          { id: 'cancel', text: 'Cancel', type: ButtonType.secondary },
+          { id: 'save', text: 'Save', type: ButtonType.primary },
         ],
         onSubmit: onSubmitHandler,
         body: ({ value, setValue }) => {

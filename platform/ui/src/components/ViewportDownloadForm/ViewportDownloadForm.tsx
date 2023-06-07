@@ -14,7 +14,7 @@ import IconButton from '../IconButton';
 import Icon from '../Icon';
 import Select from '../Select';
 import InputLabelWrapper from '../InputLabelWrapper';
-import Button from '../Button';
+import Button, { ButtonType } from '../Button';
 
 const FILE_TYPE_OPTIONS = [
   {
@@ -400,23 +400,15 @@ const ViewportDownloadForm = ({
       </div>
 
       <div className="flex justify-end mt-4">
-        <Button
-          data-cy="cancel-btn"
-          variant="outlined"
-          size="initial"
-          color="black"
-          border="secondary"
-          onClick={onClose}
-          className="p-2"
-        >
+        <Button name="cancel" type={ButtonType.secondary} onClick={onClose}>
           {t('Cancel')}
         </Button>
         <Button
           className="ml-2"
           disabled={hasError}
           onClick={downloadImage}
-          color="primary"
-          data-cy="download-btn"
+          type={ButtonType.primary}
+          name={'download'}
         >
           {t('Download')}
         </Button>

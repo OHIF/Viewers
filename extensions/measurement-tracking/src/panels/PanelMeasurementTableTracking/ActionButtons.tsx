@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 
-import { Button, ButtonGroup } from '@ohif/ui';
+import { Button, ButtonSize, ButtonType } from '@ohif/ui';
 
 function ActionButtons({ onExportClick, onCreateReportClick, disabled }) {
   const { t } = useTranslation('MeasurementTable');
@@ -10,23 +10,18 @@ function ActionButtons({ onExportClick, onCreateReportClick, disabled }) {
   return (
     <React.Fragment>
       <Button
-        className="text-base px-2 py-2"
-        size="initial"
-        variant={disabled ? 'disabled' : 'outlined'}
-        color="black"
-        border="primaryActive"
         onClick={onExportClick}
         disabled={disabled}
+        type={ButtonType.secondary}
+        size={ButtonSize.small}
       >
         {t('Export')}
       </Button>
       <Button
-        className="ml-2 px-2 text-base"
-        variant={disabled ? 'disabled' : 'outlined'}
-        size="initial"
-        color="black"
-        border="primaryActive"
+        className="ml-2"
         onClick={onCreateReportClick}
+        type={ButtonType.secondary}
+        size={ButtonSize.small}
         disabled={disabled}
       >
         {t('Create Report')}

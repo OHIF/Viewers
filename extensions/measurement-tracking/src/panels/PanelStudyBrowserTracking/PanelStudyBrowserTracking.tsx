@@ -6,6 +6,7 @@ import {
   useImageViewer,
   useViewportGrid,
   Dialog,
+  ButtonType,
 } from '@ohif/ui';
 import { useTrackedMeasurements } from '../../getContextModule';
 
@@ -507,11 +508,11 @@ function _mapDisplaySets(
                   </div>
                 ),
                 actions: [
-                  { id: 'cancel', text: 'Cancel', type: 'secondary' },
+                  { id: 'cancel', text: 'Cancel', type: ButtonType.secondary },
                   {
                     id: 'yes',
                     text: 'Yes',
-                    type: 'primary',
+                    type: ButtonType.primary,
                     classes: ['reject-yes-button'],
                   },
                 ],

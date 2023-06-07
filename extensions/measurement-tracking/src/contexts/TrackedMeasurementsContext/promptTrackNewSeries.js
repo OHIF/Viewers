@@ -1,3 +1,5 @@
+import { ButtonType } from '@ohif/ui';
+
 const RESPONSE = {
   NO_NEVER: -1,
   CANCEL: 0,
@@ -38,14 +40,14 @@ function _askShouldAddMeasurements(uiViewportDialogService, viewportIndex) {
     const message =
       'Do you want to add this measurement to the existing report?';
     const actions = [
-      { type: 'cancel', text: 'Cancel', value: RESPONSE.CANCEL },
+      { type: ButtonType.secondary, text: 'Cancel', value: RESPONSE.CANCEL },
       {
-        type: 'secondary',
+        type: ButtonType.primary,
         text: 'Create new report',
         value: RESPONSE.CREATE_REPORT,
       },
       {
-        type: 'primary',
+        type: ButtonType.primary,
         text: 'Add to existing report',
         value: RESPONSE.ADD_SERIES,
       },

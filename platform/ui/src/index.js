@@ -42,6 +42,8 @@ export {
   HotkeysPreferences,
   Button,
   ButtonGroup,
+  ButtonSize,
+  ButtonType,
   ContextMenu,
   CinePlayer,
   DateRange,

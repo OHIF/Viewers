@@ -1,3 +1,4 @@
+import { ButtonType } from '@ohif/ui';
 import hydrateRTDisplaySet from './_hydrateRT';
 
 const RESPONSE = {
@@ -38,12 +39,12 @@ function _askHydrate(uiViewportDialogService, viewportIndex) {
     const message = 'Do you want to open this Segmentation?';
     const actions = [
       {
-        type: 'secondary',
+        type: ButtonType.secondary,
         text: 'No',
         value: RESPONSE.CANCEL,
       },
       {
-        type: 'primary',
+        type: ButtonType.primary,
         text: 'Yes',
         value: RESPONSE.HYDRATE_SEG,
       },
