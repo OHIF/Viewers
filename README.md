@@ -19,14 +19,13 @@ provided by the <a href="https://ohif.org/">Open Health Imaging Foundation (OHIF
 </div>
 
 
-
 <hr />
 
 [![NPM version][npm-version-image]][npm-url]
-[![NPM downloads][npm-downloads-image]][npm-url]
-[![Pulls][docker-pulls-img]][docker-image-url]
 [![MIT License][license-image]][license-url]
 [![This project is using Percy.io for visual regression testing.][percy-image]](percy-url)
+<!-- [![NPM downloads][npm-downloads-image]][npm-url] -->
+<!-- [![Pulls][docker-pulls-img]][docker-image-url] -->
 <!-- [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FOHIF%2FViewers.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2FOHIF%2FViewers?ref=badge_shield) -->
 
 <!-- [![Netlify Status][netlify-image]][netlify-url] -->
@@ -34,6 +33,8 @@ provided by the <a href="https://ohif.org/">Open Health Imaging Foundation (OHIF
 <!-- [![codecov][codecov-image]][codecov-url] -->
 <!-- [![All Contributors](https://img.shields.io/badge/all_contributors-10-orange.svg?style=flat-square)](#contributors) -->
 <!-- prettier-ignore-end -->
+
+![Alt text](platform/docs/docs/assets/img/OHIF-Viewer.jpg)
 
 ## About
 
@@ -94,6 +95,37 @@ questions; please read our
 
 
 ## Developing
+
+### Branches
+
+#### `master` branch - The latest dev (beta) release
+
+- `master` - The latest dev release
+
+This is typically where the latest development happens. Code that is in the master branch has passed code reviews and automated tests, but it may not be deemed ready for production. This branch usually contains the most recent changes and features being worked on by the development team. It's often the starting point for creating feature branches (where new features are developed) and hotfix branches (for urgent fixes).
+
+Each package is tagged with beta version numbers, and published to npm such as `@ohif/ui@3.6.0-beta.1`
+
+### `release` branch - The latest stable release
+
+This branch represents the latest stable version of the project that is considered ready for production. The code in this branch should be fully tested and vetted for release. Once the code in the master branch reaches a state where it's stable and ready to be released to users,
+we do a comprehensive code review and QA testing. Once the code is approved,
+we merge it into the release branch and tag a new release.
+
+Each package is tagged with version numbers, and published to npm such as `@ohif/ui@3.5.0`
+
+Note: `master` is always ahead of `release` branch. We publish both docker builds for beta and stable releases.
+
+Here is a schematic representation of our development workflow:
+
+![Alt text](platform/docs/docs/assets/img/github-readme-branches.png)
+
+
+
+
+
+
+
 
 ### Requirements
 
@@ -261,7 +293,7 @@ MIT © [OHIF](https://github.com/OHIF)
 [npm-downloads-image]: https://img.shields.io/npm/dm/@ohif/app.svg?style=flat-square
 [npm-version-image]: https://img.shields.io/npm/v/@ohif/app.svg?style=flat-square
 [docker-pulls-img]: https://img.shields.io/docker/pulls/ohif/viewer.svg?style=flat-square
-[docker-image-url]: https://hub.docker.com/r/ohif/viewer
+[docker-image-url]: https://hub.docker.com/r/ohif/app
 [license-image]: https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square
 [license-url]: LICENSE
 [percy-image]: https://percy.io/static/images/percy-badge.svg

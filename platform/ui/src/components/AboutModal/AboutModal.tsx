@@ -83,6 +83,11 @@ const AboutModal = ({ buildNumber, versionNumber, commitHash }) => {
           value="https://github.com/OHIF/Viewers/"
           link="https://github.com/OHIF/Viewers/"
         />
+        <Row
+          title="Data Citation"
+          value="https://github.com/OHIF/Viewers/blob/master/DATACITATION.md"
+          link="https://github.com/OHIF/Viewers/blob/master/DATACITATION.md"
+        />
         {/* <Row
           title="Last Master Commits"
           value="https://github.com/OHIF/Viewers/"
