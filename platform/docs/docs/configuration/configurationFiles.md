@@ -17,7 +17,7 @@ remotely.
 
 ## Configuration Files
 
-The configuration for our viewer is in the `<root>platform/viewer/public/config`
+The configuration for our viewer is in the `<root>platform/app/public/config`
 directory. Our build process knows which configuration file to use based on the
 `APP_CONFIG` environment variable. By default, its value is
 [`config/default.js`][default-config]. The majority of the viewer's features,
@@ -25,7 +25,7 @@ and registered extension's features, are configured using this file.
 
 The simplest way is to update the existing default config:
 
-```js title="platform/viewer/public/config/default.js"
+```js title="platform/app/public/config/default.js"
 window.config = {
   routerBasename: '/',
   extensions: [],
@@ -194,7 +194,7 @@ output.
 [dicomcloud-install]: https://github.com/DICOMcloud/DICOMcloud#running-the-code
 [osirix]: https://www.osirix-viewer.com/
 [horos]: https://www.horosproject.org/
-[default-config]: https://github.com/OHIF/Viewers/blob/master/platform/viewer/public/config/default.js
-[html-templates]: https://github.com/OHIF/Viewers/tree/master/platform/viewer/public/html-templates
-[config-files]: https://github.com/OHIF/Viewers/tree/master/platform/viewer/public/config
+[default-config]: https://github.com/OHIF/Viewers/blob/master/platform/app/public/config/default.js
+[html-templates]: https://github.com/OHIF/Viewers/tree/master/platform/app/public/html-templates
+[config-files]: https://github.com/OHIF/Viewers/tree/master/platform/app/public/config
 <!-- prettier-ignore-end -->

@@ -44,9 +44,7 @@ jobs:
       # Update yarn
       - run: yarn -v
       # Checkout code and ALL Git Tags
-      - checkout:
-          post:
-            - git fetch --all
+      - checkout
       - restore_cache:
           name: Restore Yarn and Cypress Package Cache
           keys:
@@ -65,18 +63,18 @@ jobs:
       - run:
           name: 'JavaScript Test Suite'
           command: yarn run test:unit:ci
-      # PLATFORM/VIEWER
+      # platform/app
       - run:
           name: 'VIEWER: Combine report output'
           command: |
-            viewerCov="/home/circleci/repo/platform/viewer/coverage"
+            viewerCov="/home/circleci/repo/platform/app/coverage"
             touch "${viewerCov}/reports"
             cat "${viewerCov}/clover.xml" >> "${viewerCov}/reports"
             echo "\<<\<<\<< EOF" >> "${viewerCov}/reports"
             cat "${viewerCov}/lcov.info" >>"${viewerCov}/reports"
             echo "\<<\<<\<< EOF" >> "${viewerCov}/reports"
       - codecov/upload:
-          file: '/home/circleci/repo/platform/viewer/coverage/reports'
+          file: '/home/circleci/repo/platform/app/coverage/reports'
           flags: 'viewer'
       # PLATFORM/CORE
       - run:
@@ -102,10 +100,7 @@ jobs:
       - run: yarn config set workspaces-experimental true
 
       # Checkout code and ALL Git Tags
-      - checkout:
-          post:
-            - git fetch --all
-
+      - checkout
       - restore_cache:
           name: Restore Yarn and Cypress Package Cache
           keys:
@@ -128,9 +123,9 @@ jobs:
             # Set our version number using vars
             echo $CIRCLE_BUILD_NUM
             # Build our image, auth, and push
-            docker build --tag ohif/viewer:PR_BUILD-$CIRCLE_BUILD_NUM .
+            docker build --tag ohif/app:PR_BUILD-$CIRCLE_BUILD_NUM .
             echo $DOCKER_PWD | docker login -u $DOCKER_LOGIN --password-stdin
-            docker push ohif/viewer:PR_BUILD-$CIRCLE_BUILD_NUM
+            docker push ohif/app:PR_BUILD-$CIRCLE_BUILD_NUM
 
   ###
   # Workflow: DEPLOY
@@ -139,9 +134,7 @@ jobs:
     <<: *defaults
     steps:
       # Checkout code and ALL Git Tags
-      - checkout:
-          post:
-            - git fetch --all
+      - checkout
       - restore_cache:
           name: Restore Yarn and Cypress Package Cache
           keys:
@@ -158,71 +151,88 @@ jobs:
           key: yarn-packages-{{ checksum "yarn.lock" }}
       # Build & Test
       - run:
+          name: 'Perform the versioning before build'
+          command: node ./version.mjs
+      - run:
           name: 'Build the OHIF Viewer'
           command: yarn run build
           no_output_timeout: 45m
-      # - run:
-      #     name: 'Upload SourceMaps, Send Deploy Notification'
-      #     command: |
-      #       # export FILE_1=$(find ./build/static/js -type f -name "2.*.js" -exec basename {} \;)
-      #       # export FILE_MAIN=$(find ./build/static/js -type f -name "main.*.js" -exec basename {} \;)
-      #       # export FILE_RUNTIME_MAIN=$(find ./build/static/js -type f -name "runtime~main.*.js" -exec basename {} \;)
-      #       # curl https://api.rollbar.com/api/1/sourcemap -F source_map=@build/static/js/$FILE_1.map -F access_token=$ROLLBAR_TOKEN -F version=$CIRCLE_SHA1 -F minified_url=https://$GOOGLE_STORAGE_BUCKET/static/js/$FILE_1
-      #       # curl https://api.rollbar.com/api/1/sourcemap -F source_map=@build/static/js/$FILE_MAIN.map -F access_token=$ROLLBAR_TOKEN -F version=$CIRCLE_SHA1 -F minified_url=https://$GOOGLE_STORAGE_BUCKET/static/js/$FILE_MAIN
-      #       # curl https://api.rollbar.com/api/1/sourcemap -F source_map=@build/static/js/$FILE_RUNTIME_MAIN.map -F access_token=$ROLLBAR_TOKEN -F version=$CIRCLE_SHA1 -F minified_url=https://$GOOGLE_STORAGE_BUCKET/static/js/$FILE_RUNTIME_MAIN
-      #       curl --request POST https://api.rollbar.com/api/1/deploy/ -F access_token=$ROLLBAR_TOKEN -F environment=$GOOGLE_STORAGE_BUCKET -F revision=$CIRCLE_SHA1 -F local_username=CircleCI
+      - run:
+          name: 'Upload SourceMaps, Send Deploy Notification'
+          command: |
+            # export FILE_1=$(find ./build/static/js -type f -name "2.*.js" -exec basename {} \;)
+            # export FILE_MAIN=$(find ./build/static/js -type f -name "main.*.js" -exec basename {} \;)
+            # export FILE_RUNTIME_MAIN=$(find ./build/static/js -type f -name "runtime~main.*.js" -exec basename {} \;)
+            # curl https://api.rollbar.com/api/1/sourcemap -F source_map=@build/static/js/$FILE_1.map -F access_token=$ROLLBAR_TOKEN -F version=$CIRCLE_SHA1 -F minified_url=https://$GOOGLE_STORAGE_BUCKET/static/js/$FILE_1
+            # curl https://api.rollbar.com/api/1/sourcemap -F source_map=@build/static/js/$FILE_MAIN.map -F access_token=$ROLLBAR_TOKEN -F version=$CIRCLE_SHA1 -F minified_url=https://$GOOGLE_STORAGE_BUCKET/static/js/$FILE_MAIN
+            # curl https://api.rollbar.com/api/1/sourcemap -F source_map=@build/static/js/$FILE_RUNTIME_MAIN.map -F access_token=$ROLLBAR_TOKEN -F version=$CIRCLE_SHA1 -F minified_url=https://$GOOGLE_STORAGE_BUCKET/static/js/$FILE_RUNTIME_MAIN
+            curl --request POST https://api.rollbar.com/api/1/deploy/ -F access_token=$ROLLBAR_TOKEN -F environment=$GOOGLE_STORAGE_BUCKET -F revision=$CIRCLE_SHA1 -F local_username=CircleCI
       # Persist :+1:
       - persist_to_workspace:
           root: ~/repo
           paths:
-            - platform/viewer/dist
-            - netlify.toml
-            - .netlify
+            - platform/app/dist
+            - Dockerfile
+            - version.txt
+            - commit.txt
+            - version.json
 
-  DEPLOY_TO_DEV:
-    docker:
-      - image: circleci/node:16.14.0
-        environment:
-          TERM: xterm
-          NETLIFY_SITE_ID: 32708787-c9b0-4634-b50f-7ca41952da77
-    working_directory: ~/repo
-    steps:
-      - attach_workspace:
-          at: ~/repo
-      - run: cd .netlify && npm install
-      - run:
-          cp .netlify/deploy-workflow/_redirects platform/viewer/dist/_redirects
-      - run: cd .netlify && npm run deploy
+  # DEPLOY_TO_DEV:
+  #   docker:
+  #     - image: circleci/node:16.14.0
+  #       environment:
+  #         TERM: xterm
+  #         NETLIFY_SITE_ID: 32708787-c9b0-4634-b50f-7ca41952da77
+  #   working_directory: ~/repo
+  #   steps:
+  #     - attach_workspace:
+  #         at: ~/repo
+  #     - run: cd .netlify && npm install
+  #     - run: cp .netlify/deploy-workflow/_redirects platform/app/dist/_redirects
+  #     - run: cd .netlify && npm run deploy
 
-  DEPLOY_TO_STAGING:
-    docker:
-      - image: circleci/node:16.14.0
-        environment:
-          TERM: xterm
-          NETLIFY_SITE_ID: c7502ae3-b150-493c-8422-05701e44a969
-    working_directory: ~/repo
-    steps:
-      - attach_workspace:
-          at: ~/repo
-      - run: cd .netlify && npm install
-      - run:
-          cp .netlify/deploy-workflow/_redirects platform/viewer/dist/_redirects
-      - run: cd .netlify && npm run deploy
+  # DEPLOY_TO_STAGING:
+  #   docker:
+  #     - image: circleci/node:16.14.0
+  #       environment:
+  #         TERM: xterm
+  #         NETLIFY_SITE_ID: c7502ae3-b150-493c-8422-05701e44a969
+  #   working_directory: ~/repo
+  #   steps:
+  #     - attach_workspace:
+  #         at: ~/repo
+  #     - run: cd .netlify && npm install
+  #     - run: cp .netlify/deploy-workflow/_redirects platform/app/dist/_redirects
+  #     - run: cd .netlify && npm run deploy
 
-  DEPLOY_TO_PRODUCTION:
-    docker:
-      - image: circleci/node:16.14.0
-        environment:
-          TERM: xterm
-          NETLIFY_SITE_ID: 79c4a5da-5c95-4dc9-84f7-45fd9dfe21b0
-    working_directory: ~/repo
-    steps:
-      - attach_workspace:
-          at: ~/repo
-      - run: cd .netlify && npm install
-      - run:
-          cp .netlify/deploy-workflow/_redirects platform/viewer/dist/_redirects
-      - run: cd .netlify && npm run deploy
+  # DEPLOY_TO_PRODUCTION:
+  #   docker:
+  #     - image: circleci/node:16.14.0
+  #       environment:
+  #         TERM: xterm
+  #         NETLIFY_SITE_ID: 79c4a5da-5c95-4dc9-84f7-45fd9dfe21b0
+  #   working_directory: ~/repo
+  #   steps:
+  #     - attach_workspace:
+  #         at: ~/repo
+  #     - run: cd .netlify && npm install
+  #     - run: cp .netlify/deploy-workflow/_redirects platform/app/dist/_redirects
+  #     - run: cd .netlify && npm run deploy
+
+  #   DEPLOY_TO_RELEASE_DEV:
+  #     docker:
+  #       - image: circleci/node:16.14.0
+  #         environment:
+  #           TERM: xterm
+  #           NETLIFY_SITE_ID: 3270878-22
+  #     working_directory: ~/repo
+  #     steps:
+  #       - attach_workspace:
+  #           at: ~/repo
+  #       - run: cd .netlify && npm install
+  #       - run:
+  #           cp .netlify/deploy-workflow/_redirects platform/app/dist/_redirects
+  #       - run: cd .netlify && npm run deploy
 
   ###
   # Workflow: RELEASE
@@ -232,9 +242,9 @@ jobs:
     steps:
       - run: yarn -v
       # Checkout code and ALL Git Tags
-      - checkout:
-          post:
-            - git fetch --all
+      - checkout
+      - attach_workspace:
+          at: ~/repo
       # Use increasingly general patterns to restore cache
       - restore_cache:
           name: Restore Yarn and Cypress Package Cache
@@ -261,31 +271,36 @@ jobs:
           name: Authenticate with NPM registry
           command:
             echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/repo/.npmrc
-      - run: npx lerna version
-      - run: yarn run build:package-all
-      - run: yarn run lerna:publish
-      - run: npx lerna run ci:generateSuccessVersion --stream
+      - run:
+          name: Increase the event emitter limit
+          command: |
+            node ./increaseEventEmitterLimit.mjs
+      - run:
+          name: build half of the packages (to avoid out of memory in circleci)
+          command: |
+            yarn run build:package-all
+      - run:
+          name: build the other half of the packages
+          command: |
+            yarn run build:package-all-1
+      - run:
+          name: publish package versions
+          command: |
+            node ./publish-version.mjs
+      - run:
+          name: Again set the NPM registry (was deleted in the version script)
+          command:
+            echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/repo/.npmrc
+      - run:
+          name: publish package dist
+          command: |
+            node ./publish-package.mjs
       - persist_to_workspace:
           root: ~/repo
-          paths: .
+          paths:
+            - .
 
-  DOCS_PUBLISH:
-    <<: *defaults
-    steps:
-      - checkout
-      - run:
-          name: Avoid hosts unknown for github
-          command: |
-            rm -rf ~/.ssh
-            mkdir ~/.ssh/
-            echo -e "Host github.com\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
-            git config --global user.email "danny.ri.brown+ohif-bot@gmail.com"
-            git config --global user.name "ohif-bot"
-      - run: yarn global add gitbook-cli gh-pages
-      - run: chmod +x ~/repo/.circleci/build-and-publish-docs.sh
-      - run: ~/repo/.circleci/build-and-publish-docs.sh
-
-  DOCKER_MASTER_PUBLISH:
+  DOCKER_RELEASE_PUBLISH:
     <<: *defaults
     steps:
       - attach_workspace:
@@ -293,26 +308,61 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: false
       - run:
-          name: Build and push Docker image
+          name: Build and push Docker image from the release branch
           command: |
             # This file will exist if a new version was published by
-            # our command in the previous job. Created in npm ci:generateSuccessVersion script
-            # in the `platform/viewer` project.
-            if [[ ! -e platform/viewer/success_version.txt ]]; then
+            # our command in the previous job.
+            if [[ ! -e version.txt ]]; then
               exit 0
             else
               # Remove npm config
               rm -f ./.npmrc
               # Set our version number using vars
-              export IMAGE_VERSION=$(cat platform/viewer/success_version.txt)
-              export IMAGE_VERSION_FULL=v$IMAGE_VERSION.${CIRCLE_BUILD_NUM}
+              export IMAGE_VERSION=$(cat version.txt)
+              export IMAGE_VERSION_FULL=v$IMAGE_VERSION
               echo $IMAGE_VERSION
               echo $IMAGE_VERSION_FULL
               # Build our image, auth, and push
-              docker build --tag ohif/$IMAGE_NAME:$IMAGE_VERSION_FULL --tag ohif/$IMAGE_NAME:latest .
+              docker build --tag ohif/app:$IMAGE_VERSION_FULL --tag ohif/app:latest .
               echo $DOCKER_PWD | docker login -u $DOCKER_LOGIN --password-stdin
-              docker push ohif/$IMAGE_NAME:$IMAGE_VERSION_FULL
-              docker push ohif/$IMAGE_NAME:latest
+              docker push ohif/app:$IMAGE_VERSION_FULL
+              docker push ohif/app:latest
+            fi
+
+  DOCKER_BETA_PUBLISH:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/repo
+      - setup_remote_docker:
+          docker_layer_caching: false
+      - run:
+          name:
+            Build and push Docker image from the master branch (beta releases)
+          command: |
+            echo $(ls -l)
+
+            # This file will exist if a new version was published by
+            # our command in the previous job.
+            if [[ ! -e version.txt ]]; then
+              echo "don't have version txt"
+              exit 0
+            else
+              echo "Building and pushing Docker image from the master branch (beta releases)"
+              rm -f ./.npmrc
+              # Set our version number using vars
+              export IMAGE_VERSION=$(cat version.txt)
+              export IMAGE_VERSION_FULL=v$IMAGE_VERSION
+              echo $IMAGE_VERSION
+              echo $IMAGE_VERSION_FULL
+              # Build our image, auth, and push
+
+              echo "starting docker build"
+              docker build --tag ohif/app:$IMAGE_VERSION_FULL .
+              echo $DOCKER_PWD | docker login -u $DOCKER_LOGIN --password-stdin
+
+              echo "starting docker push"
+              docker push ohif/app:$IMAGE_VERSION_FULL
             fi
 
 workflows:
@@ -320,13 +370,8 @@ workflows:
 
   PR_CHECKS:
     jobs:
-      - UNIT_TESTS:
-          filters:
-            branches:
-              ignore:
-                - master
-                - feature/*
-                - hotfix/*
+      - UNIT_TESTS
+
       # E2E: PWA
       - cypress/run:
           name: 'E2E: PWA'
@@ -340,7 +385,7 @@ workflows:
           yarn: true
           record: true
           store_artifacts: true
-          working_directory: platform/viewer
+          working_directory: platform/app
           build: yarn test:data
           start: yarn run test:e2e:serve
           spec: 'cypress/integration/**/*'
@@ -349,11 +394,11 @@ workflows:
           no-workspace: true # Don't persist workspace
           post-steps:
             - store_artifacts:
-                path: platform/viewer/cypress/screenshots
+                path: platform/app/cypress/screenshots
             - store_artifacts:
-                path: platform/viewer/cypress/videos
+                path: platform/app/cypress/videos
             - store_test_results:
-                path: platform/viewer/cypress/results
+                path: platform/app/cypress/results
           requires:
             - UNIT_TESTS
 
@@ -370,7 +415,7 @@ workflows:
             - run: 'rm -rf ~/.yarn && yarn -v && yarn global add wait-on'
           yarn: true
           store_artifacts: false
-          working_directory: platform/viewer
+          working_directory: platform/app
           build:
             yarn test:data && npx cross-env QUICK_BUILD=true
             APP_CONFIG=config/dicomweb-server.js yarn run build
@@ -380,78 +425,84 @@ workflows:
           no-workspace: true # Don't persist workspace
           post-steps:
             - store_artifacts:
-                path: platform/viewer/cypress/screenshots
+                path: platform/app/cypress/screenshots
             - store_artifacts:
-                path: platform/viewer/cypress/videos
+                path: platform/app/cypress/videos
           requires:
             - AWAIT_APPROVAL
 
-  DEPLOY:
+  # Our master branch deploys to viewer-dev.ohif.org, the viewer.ohif.org is
+  # deployed from the release branch which is more stable and less frequently updated.
+  DEPLOY_MASTER:
     jobs:
       - BUILD:
           filters:
             branches:
               only: master
-      - DEPLOY_TO_DEV:
+      - NPM_PUBLISH:
           requires:
             - BUILD
-      - PROMOTE_TO_STAGING:
-          type: approval
+      - DOCKER_BETA_PUBLISH:
           requires:
-            - DEPLOY_TO_DEV
-      - DEPLOY_TO_STAGING:
+            - NPM_PUBLISH
+
+  # Our release branch deploys to viewer.ohif.org and is more stable and less
+  # frequently updated after being tested in the staging environment.
+  DEPLOY_RELEASE:
+    jobs:
+      - BUILD:
+          filters:
+            branches:
+              only: release
+      - NPM_PUBLISH:
           requires:
-            - PROMOTE_TO_STAGING
-      - PROMOTE_TO_PRODUCTION:
-          type: approval
+            - BUILD
+      - DOCKER_RELEASE_PUBLISH:
           requires:
-            - DEPLOY_TO_STAGING
-      - DEPLOY_TO_PRODUCTION:
-          requires:
-            - PROMOTE_TO_PRODUCTION
+            - NPM_PUBLISH
   ###
   # Unit and E2E tests have already run for PR_CHECKS
   # Re-running should not gain us any confidence here
   ###
-  RELEASE:
-    jobs:
-      - NPM_PUBLISH:
-          filters:
-            branches:
-              only: master
-      - DOCS_PUBLISH:
-          filters:
-            branches:
-              only: master
-      # Update base branch snapshots
-      # and record a Cypress dashboard test run
-      - cypress/run:
-          name: 'Generate Percy Snapshots'
-          executor: cypress/browsers-chrome76
-          browser: chrome
-          pre-steps:
-            - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v && yarn global
-                add wait-on' # Use yarn latest
-          yarn: true
-          store_artifacts: false
-          working_directory: platform/viewer
-          build:
-            npx cross-env QUICK_BUILD=true APP_CONFIG=config/e2e.js yarn run
-            build
-          # start server --> verify running --> percy + chrome + cypress
-          command: yarn run test:e2e:dist
-          cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
-          no-workspace: true # Don't persist workspace
-          post-steps:
-            - store_artifacts:
-                path: platform/viewer/cypress/screenshots
-            - store_artifacts:
-                path: platform/viewer/cypress/videos
-            - store_test_results:
-                path: platform/viewer/cypress/results
-          filters:
-            branches:
-              only: master
-      - DOCKER_MASTER_PUBLISH:
-          requires:
-            - NPM_PUBLISH
+  # RELEASE:
+  #   jobs:
+  #     - NPM_PUBLISH:
+  #         filters:
+  #           branches:
+  #             only: master
+  #     - DOCS_PUBLISH:
+  #         filters:
+  #           branches:
+  #             only: master
+  #     # Update base branch snapshots
+  #     # and record a Cypress dashboard test run
+  #     - cypress/run:
+  #         name: 'Generate Percy Snapshots'
+  #         executor: cypress/browsers-chrome76
+  #         browser: chrome
+  #         pre-steps:
+  #           - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v && yarn global
+  #               add wait-on' # Use yarn latest
+  #         yarn: true
+  #         store_artifacts: false
+  #         working_directory: platform/app
+  #         build:
+  #           npx cross-env QUICK_BUILD=true APP_CONFIG=config/e2e.js yarn run
+  #           build
+  #         # start server --> verify running --> percy + chrome + cypress
+  #         command: yarn run test:e2e:dist
+  #         cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
+  #         no-workspace: true # Don't persist workspace
+  #         post-steps:
+  #           - store_artifacts:
+  #               path: platform/app/cypress/screenshots
+  #           - store_artifacts:
+  #               path: platform/app/cypress/videos
+  #           - store_test_results:
+  #               path: platform/app/cypress/results
+  #         filters:
+  #           branches:
+  #             only: master
+  #     - DOCKER_MASTER_PUBLISH:
+  #         requires:
+  #           - NPM_PUBLISH

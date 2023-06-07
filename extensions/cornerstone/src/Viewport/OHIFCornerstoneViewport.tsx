@@ -335,13 +335,13 @@ const OHIFCornerstoneViewport = React.memo(props => {
 
       cleanUpServices();
 
+      const viewportInfo = cornerstoneViewportService.getViewportInfoByIndex(
+        viewportIndex
+      );
+
       cornerstoneViewportService.disableElement(viewportIndex);
 
       if (onElementDisabled) {
-        const viewportInfo = cornerstoneViewportService.getViewportInfoByIndex(
-          viewportIndex
-        );
-
         onElementDisabled(viewportInfo);
       }
 
