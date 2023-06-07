@@ -165,7 +165,8 @@ function PanelStudyBrowser({
         const { displaySetsAdded } = data;
 
         displaySetsAdded.forEach(async dSet => {
-          validationManager.validateDisplaySet(dSet);
+          const validationResults = validationManager.validateDisplaySet(dSet);
+          setValidationResults(validationResults);
 
           const newImageSrcEntry = {};
           const displaySet = displaySetService.getDisplaySetByUID(
