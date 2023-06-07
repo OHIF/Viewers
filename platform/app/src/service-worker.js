@@ -1,3 +1,9 @@
+navigator.serviceWorker.getRegistrations().then(function(registrations) {
+  for (let registration of registrations) {
+    registration.unregister();
+  }
+});
+
 // https://developers.google.com/web/tools/workbox/guides/troubleshoot-and-debug
 importScripts(
   'https://storage.googleapis.com/workbox-cdn/releases/5.0.0-beta.1/workbox-sw.js'
