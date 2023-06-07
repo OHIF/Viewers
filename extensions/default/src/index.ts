@@ -9,6 +9,7 @@ import getCommandsModule from './commandsModule';
 import getHangingProtocolModule from './getHangingProtocolModule';
 import getStudiesForPatientByMRN from './Panels/getStudiesForPatientByMRN';
 import getCustomizationModule from './getCustomizationModule';
+import getValidationModule from './getValidationModule';
 import { id } from './id.js';
 import preRegistration from './init';
 import {
@@ -40,7 +41,7 @@ const defaultExtension: Types.Extensions.Extension = {
       },
     ];
   },
-
+  getValidationModule,
   getCustomizationModule,
 };
 
