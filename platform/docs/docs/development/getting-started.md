@@ -40,6 +40,31 @@ aren't as concerned with syncing updates, then follow these steps:
 
 ## Developing
 
+### Branches
+
+#### `master` branch - The latest dev (beta) release
+
+- `master` - The latest dev release
+
+This is typically where the latest development happens. Code that is in the master branch has passed code reviews and automated tests, but it may not be deemed ready for production. This branch usually contains the most recent changes and features being worked on by the development team. It's often the starting point for creating feature branches (where new features are developed) and hotfix branches (for urgent fixes).
+
+Each package is tagged with beta version numbers, and published to npm such as `@ohif/ui@3.6.0-beta.1`
+
+### `release` branch - The latest stable release
+
+This branch represents the latest stable version of the project that is considered ready for production. The code in this branch should be fully tested and vetted for release. Once the code in the master branch reaches a state where it's stable and ready to be released to users,
+we do a comprehensive code review and QA testing. Once the code is approved,
+we merge it into the release branch and tag a new release.
+
+Each package is tagged with version numbers, and published to npm such as `@ohif/ui@3.5.0`
+
+Note: `master` is always ahead of `release` branch. We publish both docker builds for beta and stable releases.
+
+Here is a schematic representation of our development workflow:
+
+![Alt text](../../docs/assets/img/github-readme-branches.png)
+
+
 ### Requirements
 
 - [Node.js & NPM](https://nodejs.org/en/)
