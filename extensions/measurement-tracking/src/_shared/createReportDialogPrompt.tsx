@@ -38,7 +38,7 @@ export default function createReportDialogPrompt(uiDialogService) {
       useLastPosition: false,
       showOverlay: true,
       contentProps: {
-        title: 'Provide a name for your report',
+        title: 'Create Report',
         value: { label: '' },
         noCloseButton: true,
         onClose: _handleClose,
@@ -60,12 +60,13 @@ export default function createReportDialogPrompt(uiDialogService) {
             }
           };
           return (
-            <div className="p-4 bg-primary-dark">
+            <div className="">
               <Input
+                label="Enter the report name"
+                labelClassName="text-white grow leading-[1.2] text-[14px]"
                 autoFocus
-                className="mt-2 bg-black border-primary-main"
+                className="bg-black border-primary-main grow"
                 type="text"
-                containerClassName="mr-2"
                 value={value.label}
                 onChange={onChangeHandler}
                 onKeyPress={onKeyPressHandler}

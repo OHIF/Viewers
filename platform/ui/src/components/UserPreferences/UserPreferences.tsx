@@ -63,8 +63,9 @@ const UserPreferences = ({
     <>
       <div className="border-b-2 border-black mb-2">
         <Typography
-          variant="h5"
-          className="flex grow text-primary-light font-light pb-2"
+          variant="inherit"
+          color="primaryLight"
+          className="flex text-[16px] font-semibold pb-2 !leading-[1.2]"
         >
           {title}
         </Typography>
@@ -74,7 +75,7 @@ const UserPreferences = ({
   );
 
   return (
-    <div className="p-2">
+    <>
       <Section title={t('General')}>
         <div className="flex flex-row justify-center items-center w-72">
           <Typography variant="subtitle" className="mr-5 text-right h-full">
@@ -122,7 +123,7 @@ const UserPreferences = ({
           </Button>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

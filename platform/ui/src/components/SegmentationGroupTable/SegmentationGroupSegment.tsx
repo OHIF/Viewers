@@ -66,7 +66,7 @@ const SegmentItem = ({
         {isSegmentIndexHovering && showSegmentDelete ? (
           <Icon
             name="close"
-            className={classnames('w-5 h-5 pr-2')}
+            className={classnames('pr-0.5')}
             onClick={e => {
               e.stopPropagation();
               onDelete(segmentationId, segmentIndex);

@@ -6,12 +6,10 @@ import { Button } from '..';
 
 const Footer = ({ actions, className, onSubmit, value }) => {
   const flex = 'flex items-center justify-end';
-  const border = 'border-t-2 border-solid border-black rounded-b';
-  const spacing = 'p-6';
-  const theme = 'bg-primary-dark';
+  const padding = 'pt-[20px]';
 
   return (
-    <div className={classNames(flex, border, spacing, theme, className)}>
+    <div className={classNames(flex, padding, className)}>
       {actions.map((action, index) => {
         const isFirst = index === 0;
         const isPrimary = action.type === 'primary';
