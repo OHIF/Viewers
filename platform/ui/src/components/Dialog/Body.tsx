@@ -8,11 +8,13 @@ const Body = ({ text, className }) => {
   const theme = 'bg-primary-dark';
   return (
     <div className={classNames('relative flex-auto', theme, className)}>
-      <div className="p-6">
-        <Typography variant="body" className="my-4 leading-relaxed">
-          {text}
-        </Typography>
-      </div>
+      <Typography
+        variant="inherit"
+        color="initial"
+        className="text-[14px] !leading-[1.2]"
+      >
+        {text}
+      </Typography>
     </div>
   );
 };

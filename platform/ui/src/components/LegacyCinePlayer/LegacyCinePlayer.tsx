@@ -62,7 +62,7 @@ const LegacyCinePlayer = ({
         className="mr-3 border rounded-full text-primary-active border-primary-active"
         onClick={onClose}
       >
-        <Icon name="close" width="15px" height="15px" />
+        <Icon name="close" />
       </IconButton>
     </div>
   );
