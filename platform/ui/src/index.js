@@ -62,6 +62,7 @@ export {
   InputText,
   Label,
   LayoutSelector,
+  LegacyButton,
   LegacyCinePlayer,
   LegacyViewportActionBar,
   LoadingIndicatorProgress,

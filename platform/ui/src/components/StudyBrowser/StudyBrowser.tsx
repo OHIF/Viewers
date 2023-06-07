@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import StudyItem from '../StudyItem';
 import ButtonGroup from '../ButtonGroup';
-import Button from '../Button';
+import LegacyButton from '../LegacyButton';
 import ThumbnailList from '../ThumbnailList';
 import { StringNumber } from '../../types';
 
@@ -95,7 +95,7 @@ const StudyBrowser = ({
             };
             const color = classStudyBrowser[`${isActive}`];
             return (
-              <Button
+              <LegacyButton
                 key={name}
                 className={'text-white text-base p-2 min-w-18'}
                 size="initial"
@@ -107,7 +107,7 @@ const StudyBrowser = ({
                 disabled={isDisabled}
               >
                 {t(label)}
-              </Button>
+              </LegacyButton>
             );
           })}
         </ButtonGroup>

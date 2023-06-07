@@ -18,6 +18,7 @@ import InputMultiSelect from './InputMultiSelect';
 import InputText from './InputText';
 import Label from './Label';
 import LayoutSelector from './LayoutSelector';
+import LegacyButton from './LegacyButton';
 import LegacyCinePlayer from './LegacyCinePlayer';
 import LegacyViewportActionBar from './LegacyViewportActionBar';
 import MeasurementTable from './MeasurementTable';
@@ -103,6 +104,7 @@ export {
   ImageScrollbar,
   Label,
   LayoutSelector,
+  LegacyButton,
   LegacyCinePlayer,
   LegacyViewportActionBar,
   LoadingIndicatorProgress,

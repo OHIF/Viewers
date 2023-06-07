@@ -6,7 +6,7 @@ import { StringNumber } from '../../types';
 import LegacyPatientInfo from '../LegacyPatientInfo';
 import Icon from '../Icon';
 import ButtonGroup from '../ButtonGroup';
-import Button from '../Button';
+import LegacyButton from '../LegacyButton';
 import LegacyCinePlayer from '../LegacyCinePlayer';
 
 const LegacyViewportActionBar = ({
@@ -105,22 +105,22 @@ const LegacyViewportActionBar = ({
       {showNavArrows && !showCine && (
         <div className="mt-2" style={{ pointerEvents: 'all' }}>
           <ButtonGroup>
-            <Button
+            <LegacyButton
               size="initial"
               className="px-2 py-1 bg-black"
               border="light"
               onClick={() => onArrowsClick('left')}
             >
               <Icon name="chevron-left" className="w-4 text-white" />
-            </Button>
-            <Button
+            </LegacyButton>
+            <LegacyButton
               size="initial"
               border="light"
               className="px-2 py-1 bg-black"
               onClick={() => onArrowsClick('right')}
             >
               <Icon name="chevron-right" className="w-4 text-white" />
-            </Button>
+            </LegacyButton>
           </ButtonGroup>
         </div>
       )}
