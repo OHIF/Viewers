@@ -117,7 +117,7 @@ class SegmentationService extends PubSubService {
    * -- opacity: the opacity of the segment
    * -- visibility: the visibility of the segment (boolean)
    * -- isLocked: whether the segment is locked for editing
-   * -- active: whether the segment is currently the active segment to be edited or not
+   * -- active: whether the segment is currently the active segment to be edited
    */
   public addSegment(
     segmentationId: string,
