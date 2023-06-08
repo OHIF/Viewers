@@ -348,6 +348,7 @@ const toolbarButtons = [
       isAction: true, // ?
       renderer: WindowLevelMenuItem,
       items: [
+        _createColormap('Default', 'default'),
         _createColormap('HSV', 'hsv'),
         _createColormap('Hot Iron', 'hot_iron'),
         _createColormap('S PET', 's_pet'),

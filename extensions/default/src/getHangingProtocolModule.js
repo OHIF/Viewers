@@ -22,7 +22,7 @@ const defaultProtocol = {
   // additional viewports are added using the layout tool
   defaultViewport: {
     viewportOptions: {
-      viewportType: 'stack',
+      viewportType: 'orthographic',
       toolGroupId: 'default',
       allowUnmatchedView: true,
     },
@@ -30,7 +30,6 @@ const defaultProtocol = {
       {
         id: 'defaultDisplaySetId',
         matchedDisplaySetsIndex: -1,
-        options: { colormap: 'test' },
       },
     ],
   },
@@ -73,7 +72,7 @@ const defaultProtocol = {
       viewports: [
         {
           viewportOptions: {
-            viewportType: 'stack',
+            viewportType: 'orthographic',
             toolGroupId: 'default',
             // This will specify the initial image options index if it matches in the URL
             // and will otherwise not specify anything.
@@ -89,7 +88,6 @@ const defaultProtocol = {
           displaySets: [
             {
               id: 'defaultDisplaySetId',
-              options: { colormap: 'test' },
             },
           ],
         },

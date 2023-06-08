@@ -320,7 +320,22 @@ const commandsModule = ({
         });
       }
     },
+    setColorMap: ({ colormap }) => {
+      const { activeViewportIndex, viewports } = viewportGridService.getState();
+      const activeViewportSpecificData = viewports[activeViewportIndex];
+      const { displaySetInstanceUIDs } = activeViewportSpecificData;
 
+      const displaySets = displaySetService.activeDisplaySets;
+
+      const displaySetInstanceUID = displaySetInstanceUIDs[0];
+      console.log(displaySetInstanceUID);
+      console.log(colormap);
+      commandsManager.runCommand('setViewportColormap', {
+        viewportIndex: activeViewportIndex,
+        displaySetInstanceUID,
+        colormap,
+      });
+    },
     deltaStage: ({ direction }) => {
       const {
         protocolId,
@@ -673,6 +688,9 @@ const commandsModule = ({
   };
 
   const definitions = {
+    setColormap: {
+      commandFn: actions.setColorMap,
+    },
     showContextMenu: {
       commandFn: actions.showContextMenu,
     },

@@ -62,23 +62,20 @@ function _createColormap(label, colormap) {
     type: 'action',
     commands: [
       {
-        commandName: 'setViewportColormap',
+        commandName: 'setColormap',
         commandOptions: {
-          toolGroupId: toolGroupIds['default'],
           colormap,
         },
-        context: 'CORNERSTONE',
+        context: 'DEFAULT',
       },
       {
-        commandName: 'setViewportColormap',
+        commandName: 'setColormap',
         commandOptions: {
-          toolGroupId: toolGroupIds['default'],
           colormap,
-          context: 'CORNERSTONE',
         },
+        context: 'DEFAULT',
       },
     ],
-    context: 'CORNERSTONE',
   };
 }
 const toolGroupIds = ['default', 'mpr', 'SRToolGroup'];
@@ -123,6 +120,7 @@ const toolbarButtons = [
       isAction: true, // ?
       renderer: WindowLevelMenuItem,
       items: [
+        _createColormap('DEFAULT', 'default'),
         _createColormap('HSV', 'hsv'),
         _createColormap('Hot Iron', 'hot_iron'),
         _createColormap('S PET', 's_pet'),

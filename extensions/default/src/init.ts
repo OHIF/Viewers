@@ -1,8 +1,11 @@
 import { DicomMetadataStore, classes } from '@ohif/core';
 import { calculateSUVScalingFactors } from '@cornerstonejs/calculate-suv';
+import { utilities } from '@cornerstonejs/core';
 
 import getPTImageIdInstanceMetadata from './getPTImageIdInstanceMetadata';
+import colormaps from './utils/colormaps';
 
+const { registerColormap } = utilities.colormap;
 const metadataProvider = classes.MetadataProvider;
 
 /**
@@ -52,6 +55,7 @@ export default function init({ servicesManager, configuration = {} }): void {
   // changes numRows and numCols, the viewports can be remembers and then replaced
   // afterwards.
   stateSyncService.register('viewportsByPosition', { clearOnModeExit: true });
+  colormaps.forEach(registerColormap);
 }
 
 const handlePETImageMetadata = ({ SeriesInstanceUID, StudyInstanceUID }) => {

@@ -558,28 +558,26 @@ function commandsModule({
       viewportIndex,
       displaySetInstanceUID,
       colormap,
-      immediate = false,
+      immediate = true,
     }) => {
-      const { viewportId } = _getActiveViewportEnabledElement();
-      const renderingEngine = cornerstoneViewportService.getRenderingEngine();
-
-      const viewport = renderingEngine.getViewport(viewportId);
-
       // const viewport = cornerstoneViewportService.getCornerstoneViewportByIndex(
       //   viewportIndex
       // );
-      console.log(viewport);
-      const actorEntries = viewport.getActors();
-      console.log(actorEntries);
-      console.log(displaySetInstanceUID);
-      console.log(colormap);
-      const actorEntry = actorEntries.find(actorEntry => {
-        return actorEntry.uid.includes(displaySetInstanceUID);
-      });
+      const { viewportId } = _getActiveViewportEnabledElement();
+      console.log(viewportId);
+      // get actor from the viewport
+      const renderingEngine = cornerstoneViewportService.getRenderingEngine();
+      const viewport = renderingEngine.getViewport(viewportId);
+      // const actorEntries = viewport.getActors();
+
+      // const actorEntry = actorEntries.find(actorEntry => {
+      //   return actorEntry.uid.includes(displaySetInstanceUID);
+      // });
 
       // const { actor: volumeActor, uid: volumeId } = actorEntry;
-
+      console.log(colormap);
       viewport.setProperties({ colormap: colormap });
+      console.log(viewport);
 
       if (immediate) {
         viewport.render();
