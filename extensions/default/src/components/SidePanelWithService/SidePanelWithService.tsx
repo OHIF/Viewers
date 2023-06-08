@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import SidePanel from '../SidePanel';
+import { SidePanel } from '@ohif/ui';
 import { PanelService, ServicesManager, Types } from '@ohif/core';
 
 const SidePanelWithService = ({
@@ -17,8 +17,7 @@ const SidePanelWithService = ({
   );
 
   const panelService: PanelService = servicesManager.services.panelService;
-  const initialTabsState = tabsProp ?? panelService.getPanels(side);
-  const [tabs, setTabs] = useState(initialTabsState);
+  const [tabs, setTabs] = useState(tabsProp ?? panelService.getPanels(side));
   const [activeTabIndex, setActiveTabIndex] = useState(activeTabIndexProp);
 
   const handleSidePanelOpen = useCallback(() => {

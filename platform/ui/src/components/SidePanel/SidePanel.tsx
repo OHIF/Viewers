@@ -103,22 +103,27 @@ const SidePanel = ({
     }
   }, [swiper]);
 
-  useEffect(() => {
-    if (panelOpen && onSidePanelOpen) {
-      onSidePanelOpen();
-    }
-  }, [panelOpen, onSidePanelOpen]);
+  const updatePanelOpen = useCallback(
+    (panelOpen: boolean) => {
+      setPanelOpen(panelOpen);
+
+      if (panelOpen && onSidePanelOpen) {
+        onSidePanelOpen();
+      }
+    },
+    [onSidePanelOpen]
+  );
 
   const updateActiveTabIndex = useCallback(
     (activeTabIndexParam: number) => {
       setActiveTabIndex(activeTabIndexParam);
-      setPanelOpen(true);
+      updatePanelOpen(true);
 
       if (onActiveTabIndexChange) {
         onActiveTabIndexChange({ activeTabIndex: activeTabIndexParam });
       }
     },
-    [onActiveTabIndexChange, setPanelOpen]
+    [onActiveTabIndexChange, updatePanelOpen]
   );
 
   useEffect(() => {
@@ -137,7 +142,7 @@ const SidePanel = ({
             side === 'left' ? 'pr-2 justify-end' : 'pl-2 justify-start'
           )}
           onClick={() => {
-            setPanelOpen(prev => !prev);
+            updatePanelOpen(!panelOpen);
           }}
           data-cy={`side-panel-header-${side}`}
         >
@@ -204,7 +209,7 @@ const SidePanel = ({
               tabs.length === 1 && 'mb-1'
             )}
             onClick={() => {
-              setPanelOpen(prev => !prev);
+              updatePanelOpen(!panelOpen);
               // slideToActivePanel();
             }}
             data-cy={`side-panel-header-${side}`}

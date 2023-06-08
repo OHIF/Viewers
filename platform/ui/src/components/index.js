@@ -28,7 +28,6 @@ import Select from './Select';
 import SegmentationTable from './SegmentationTable';
 import SegmentationGroupTable from './SegmentationGroupTable';
 import SidePanel from './SidePanel';
-import SidePanelWithService from './SidePanelWithService';
 import SplitButton from './SplitButton';
 import StudyBrowser from './StudyBrowser';
 import StudyItem from './StudyItem';
@@ -117,7 +116,6 @@ export {
   SegmentationTable,
   SegmentationGroupTable,
   SidePanel,
-  SidePanelWithService,
   SplitButton,
   StudyBrowser,
   StudyItem,

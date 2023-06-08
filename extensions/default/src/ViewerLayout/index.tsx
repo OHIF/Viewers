@@ -5,8 +5,6 @@ import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router';
 
 import {
-  SidePanel,
-  SidePanelWithService,
   ErrorBoundary,
   UserPreferences,
   AboutModal,
@@ -23,6 +21,7 @@ import {
 } from '@ohif/core';
 import { useAppConfig } from '@state';
 import Toolbar from '../Toolbar/Toolbar';
+import SidePanelWithService from '../components/SidePanelWithService';
 
 const { availableLanguages, defaultLanguage, currentLanguage } = i18n;
 
