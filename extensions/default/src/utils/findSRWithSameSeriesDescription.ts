@@ -46,7 +46,7 @@ export default function findSRWithSameSeriesDescription(
       SeriesTime,
       SeriesNumber,
       Modality,
-      InstanceNumber: maxInstance + 1,
+      InstanceNumber: sameSeries.instances.length + 1,
     };
   }
 

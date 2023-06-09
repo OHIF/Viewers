@@ -423,7 +423,8 @@ As you can see in the hanging protocol we defined three viewports (but only show
    - `options` (optional): options for the display set
         - voi: windowing options for the display set (optional: windowWidth, windowCenter)
         - voiInverted: whether the VOI is inverted or not (optional)
-        - colormap: colormap for the display set (optional: 'hsv' etc.)
+        - colormap: colormap for the display set (optional, it is an object with `{ name }` and optional extra `opacityMapping` property)
+        - displayPreset: display preset for the display set (optional, used for 3D volume rendering. e.g., 'CT-Bone')
 
 
 ### Custom attribute

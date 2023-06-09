@@ -1,4 +1,4 @@
-import { ServicesManager } from '@ohif/core';
+import { ServicesManager, Types } from '@ohif/core';
 import {
   cache as cs3DCache,
   Enums,
@@ -15,20 +15,21 @@ import {
 const VOLUME_LOADER_SCHEME = 'cornerstoneStreamingImageVolume';
 
 class CornerstoneCacheService {
-  static REGISTRATION = (serviceManager: ServicesManager) => {
-    return {
+  static REGISTRATION = {
       name: 'cornerstoneCacheService',
       altName: 'CornerstoneCacheService',
-      create: ({ configuration = {} }) => {
-        return new CornerstoneCacheService(serviceManager);
+    create: ({
+      servicesManager,
+    }: Types.Extensions.ExtensionParams): CornerstoneCacheService => {
+      return new CornerstoneCacheService(servicesManager);
       },
     };
-  };
 
   stackImageIds: Map<string, string[]> = new Map();
   volumeImageIds: Map<string, string[]> = new Map();
+  readonly servicesManager: ServicesManager;
 
-  constructor(servicesManager) {
+  constructor(servicesManager: ServicesManager) {
     this.servicesManager = servicesManager;
   }
 
@@ -104,13 +105,8 @@ class CornerstoneCacheService {
   ) {
     if (viewportData.viewportType === Enums.ViewportType.STACK) {
       return this._getCornerstoneStackImageIds(
-        dataSource,
-        [
-          displaySetService.getDisplaySetByUID(
-            invalidatedDisplaySetInstanceUID
-          ),
-        ],
-        0
+        displaySetService.getDisplaySetByUID(invalidatedDisplaySetInstanceUID),
+        dataSource
       );
     }
 
@@ -121,6 +117,7 @@ class CornerstoneCacheService {
 
     if (volume) {
       cs3DCache.removeVolumeLoadObject(volumeId);
+      this.volumeImageIds.delete(volumeId);
     }
 
     const displaySets = viewportData.data.map(({ displaySetInstanceUID }) =>
@@ -154,13 +151,18 @@ class CornerstoneCacheService {
       this.stackImageIds.set(displaySet.displaySetInstanceUID, stackImageIds);
     }
 
-    const { displaySetInstanceUID, StudyInstanceUID } = displaySet;
+    const {
+      displaySetInstanceUID,
+      StudyInstanceUID,
+      isCompositeStack,
+    } = displaySet;
 
     const StackViewportData: StackViewportData = {
       viewportType,
       data: {
         StudyInstanceUID,
         displaySetInstanceUID,
+        isCompositeStack,
         imageIds: stackImageIds,
       },
     };

@@ -25,7 +25,7 @@ const sopClassUids = [
 const CORNERSTONE_3D_TOOLS_SOURCE_NAME = 'Cornerstone3DTools';
 const CORNERSTONE_3D_TOOLS_SOURCE_VERSION = '0.1';
 
-const checkStudyUID = (uid: string, instances): void => {
+const validateSameStudyUID = (uid: string, instances): void => {
   instances.forEach(it => {
     if (it.StudyInstanceUID !== uid) {
       console.warn('Not all instances have the same UID', uid, it);
@@ -77,15 +77,11 @@ function addInstances(
 ) {
   this.instances.push(...instances);
   utils.sortStudyInstances(this.instances);
+  // The last instance is the newest one, so is the one most interesting.
+  // Eventually, the SR viewer should have the ability to choose which SR
+  // gets loaded, and to navigate among them.
   this.instance = this.instances[this.instances.length - 1];
   this.isLoaded = false;
-  if (this.keyImageDisplaySet) {
-    this.load();
-    this.keyImageDisplaySet.updateInstances();
-    displaySetService.setDisplaySetMetadataInvalidated(
-      this.keyImageDisplaySet.displaySetInstanceUID
-    );
-  }
   return this;
 }
 
@@ -108,6 +104,9 @@ function _getDisplaySetsFromSeries(
   }
 
   utils.sortStudyInstances(instances);
+  // The last instance is the newest one, so is the one most interesting.
+  // Eventually, the SR viewer should have the ability to choose which SR
+  // gets loaded, and to navigate among them.
   const instance = instances[instances.length - 1];
 
   const {
@@ -120,16 +119,20 @@ function _getDisplaySetsFromSeries(
     ConceptNameCodeSequence,
     SOPClassUID,
   } = instance;
-  checkStudyUID(instance.StudyInstanceUID, instances);
+  validateSameStudyUID(instance.StudyInstanceUID, instances);
 
   if (
     !ConceptNameCodeSequence ||
     ConceptNameCodeSequence.CodeValue !==
     CodeNameCodeSequenceValues.ImagingMeasurementReport
   ) {
-    console.log(
-      'Only support Imaging Measurement Report SRs (TID1500) for this renderer.'
-    );
+    servicesManager.services.uiNotificationService.show({
+      title: 'DICOM SR',
+      message:
+        'OHIF only supports TID1500 Imaging Measurement Report Structured Reports. The SR you’re trying to view is not supported.',
+      type: 'warning',
+      duration: 6000,
+    });
     return [];
   }
 
@@ -146,8 +149,6 @@ function _getDisplaySetsFromSeries(
     SOPClassHandlerId,
     SOPClassUID,
     instances,
-    // Others is a historical value used for instances which is deprecated and will be removed
-    others: instances,
     referencedImages: null,
     measurements: null,
     isDerivedDisplaySet: true,

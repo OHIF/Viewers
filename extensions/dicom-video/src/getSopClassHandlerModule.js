@@ -12,6 +12,10 @@ const SOP_CLASS_UIDS = {
 };
 
 const sopClassUids = Object.values(SOP_CLASS_UIDS);
+const secondaryCaptureSopClassUids = [
+  SOP_CLASS_UIDS.SECONDARY_CAPTURE_IMAGE_STORAGE,
+  SOP_CLASS_UIDS.MULTIFRAME_TRUE_COLOR_SECONDARY_CAPTURE_IMAGE_STORAGE,
+];
 
 const SupportedTransferSyntaxes = {
   MPEG4_AVC_264_HIGH_PROFILE: '1.2.840.10008.1.2.4.102',
@@ -37,7 +41,23 @@ const _getDisplaySetsFromSeries = (
         metadata.AvailableTransferSyntaxUID ||
         metadata.TransferSyntaxUID ||
         metadata['00083002'];
-      return supportedTransferSyntaxUIDs.includes(tsuid);
+
+      if (supportedTransferSyntaxUIDs.includes(tsuid)) {
+        return true;
+      }
+
+      if (
+        metadata.SOPClassUID === SOP_CLASS_UIDS.VIDEO_PHOTOGRAPHIC_IMAGE_STORAGE
+      ) {
+        return true;
+      }
+
+      // Assume that an instance with one of the secondary capture SOPClassUIDs and
+      // with at least 90 frames (i.e. typically 3 seconds of video) is indeed a video.
+      return (
+        secondaryCaptureSopClassUids.includes(metadata.SOPClassUID) &&
+        metadata.NumberOfFrames >= 90
+      );
     })
     .map(instance => {
       const {
@@ -70,7 +90,7 @@ const _getDisplaySetsFromSeries = (
           singlepart: 'video',
           tag: 'PixelData',
         }),
-        others: [instance],
+        instances: [instance],
         thumbnailSrc: dataSource.retrieve.directURL({
           instance,
           defaultPath: '/thumbnail',

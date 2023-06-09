@@ -63,7 +63,7 @@ export default class CustomizationService extends PubSubService {
 
   modeCustomizations: Record<string, Customization> = {};
   globalCustomizations: Record<string, Customization> = {};
-  configuration: CustomizationConfiguration;
+  configuration: any;
 
   constructor({ configuration, commandsManager }) {
     super(EVENTS);

@@ -7,16 +7,14 @@ import React, {
 } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import {
-  Typography,
-  Input,
-  Tooltip,
-  IconButton,
-  Icon,
-  Select,
-  InputLabelWrapper,
-  Button,
-} from '../';
+import Typography from '../Typography';
+import Input from '../Input';
+import Tooltip from '../Tooltip';
+import IconButton from '../IconButton';
+import Icon from '../Icon';
+import Select from '../Select';
+import InputLabelWrapper from '../InputLabelWrapper';
+import Button from '../Button';
 
 const FILE_TYPE_OPTIONS = [
   {
@@ -95,11 +93,11 @@ const ViewportDownloadForm = ({
 
   const onKeepAspectToggle = () => {
     const { width, height } = dimensions;
-    const aspectMultiplier = { ...aspectMultiplier };
     if (!keepAspect) {
-      const base = Math.min(width, height);
-      aspectMultiplier.width = width / base;
-      aspectMultiplier.height = height / base;
+      const aspectMultiplier = {
+        width: width / height,
+        height: height / width,
+      };
       setAspectMultiplier(aspectMultiplier);
     }
 
@@ -379,7 +377,7 @@ const ViewportDownloadForm = ({
 
       <div className="mt-8">
         <div
-          className="p-4 rounded bg-secondary-dark border-secondary-primary"
+          className="p-4 rounded bg-secondary-dark border-secondary-primary w-max-content min-w-full"
           data-cy="image-preview"
         >
           <Typography variant="h5">{t('Image preview')}</Typography>

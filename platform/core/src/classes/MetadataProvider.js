@@ -116,14 +116,14 @@ class MetadataProvider {
       return instance[naturalizedTagOrWADOImageLoaderTag];
     }
 
-    // Maybe its a legacy CornerstoneWADOImageLoader tag then:
-    return this._getCornerstoneWADOImageLoaderTag(
+    // Maybe its a legacy dicomImageLoader tag then:
+    return this._getCornerstoneDICOMImageLoaderTag(
       naturalizedTagOrWADOImageLoaderTag,
       instance
     );
   }
 
-  _getCornerstoneWADOImageLoaderTag(wadoImageLoaderTag, instance) {
+  _getCornerstoneDICOMImageLoaderTag(wadoImageLoaderTag, instance) {
     let metadata;
 
     switch (wadoImageLoaderTag) {
@@ -441,7 +441,7 @@ class MetadataProvider {
   }
 
   getUIDsFromImageID(imageId) {
-    if (!imageId) throw new Error('Empty imageId');
+    if (!imageId) throw new Error('MetadataProvider::Empty imageId');
     // TODO: adding csiv here is not really correct. Probably need to use
     // metadataProvider.addImageIdToUIDs(imageId, {
     //   StudyInstanceUID,
@@ -481,6 +481,9 @@ class MetadataProvider {
       imageURI = imageIdToURI(imageId);
     }
 
+    // remove &frame=number from imageId
+    imageURI = imageURI.split('&frame=')[0];
+
     const uids = this.imageURIToUIDs.get(imageURI);
     let frameNumber = this.getFrameInformationFromURL(imageId) || '1';
 
@@ -496,7 +499,7 @@ const metadataProvider = new MetadataProvider();
 export default metadataProvider;
 
 const WADO_IMAGE_LOADER_TAGS = {
-  // CornerstoneWADOImageLoader specific
+  // dicomImageLoader specific
   GENERAL_SERIES_MODULE: 'generalSeriesModule',
   PATIENT_STUDY_MODULE: 'patientStudyModule',
   IMAGE_PLANE_MODULE: 'imagePlaneModule',
