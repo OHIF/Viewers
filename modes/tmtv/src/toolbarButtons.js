@@ -24,9 +24,8 @@ function _createButton(type, id, icon, label, commands, tooltip) {
 
 function _createColormap(label, colormap) {
   return {
-    id: label.toString(),
-    title: label,
-    subtitle: label,
+    id: label,
+    label,
     type: 'action',
     commands: [
       {
@@ -306,7 +305,8 @@ const toolbarButtons = [
           commandName: 'displayNotification',
           commandOptions: {
             title: 'RectangleROI Threshold Tip',
-            text: 'RectangleROI Threshold tool should be used on PT Axial Viewport',
+            text:
+              'RectangleROI Threshold tool should be used on PT Axial Viewport',
             type: 'info',
           },
         },
@@ -338,7 +338,6 @@ const toolbarButtons = [
         tooltip: 'PET Image Colormap',
       },
       isAction: true, // ?
-      renderer: WindowLevelMenuItem,
       items: [
         _createColormap('HSV', 'hsv'),
         _createColormap('Hot Iron', 'hot_iron'),
