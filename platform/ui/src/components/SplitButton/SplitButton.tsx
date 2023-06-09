@@ -4,7 +4,10 @@ import classNames from 'classnames';
 import OutsideClickHandler from 'react-outside-click-handler';
 import { useTranslation } from 'react-i18next';
 
-import { Icon, Tooltip, ListMenu, ToolbarButton } from '../';
+import Icon from '../Icon';
+import Tooltip from '../Tooltip';
+import ListMenu from '../ListMenu';
+import ToolbarButton from '../ToolbarButton';
 
 const baseClasses = {
   Button:
@@ -92,7 +95,7 @@ const SplitButton = ({
 }) => {
   const { t } = useTranslation('Buttons');
 
-  const { toolbarService } = servicesManager.services;
+  const { toolbarService } = servicesManager?.services || {};
 
   const { primaryToolId, toggles } = bState;
   /* Bubbles up individual item clicks */
@@ -146,7 +149,7 @@ const SplitButton = ({
     (isPrimaryToggle && toggles[state.primary.id] === true);
 
   const PrimaryButtonComponent =
-    toolbarService.getButtonComponentForUIType(state.primary.uiType) ??
+    toolbarService?.getButtonComponentForUIType(state.primary.uiType) ??
     ToolbarButton;
 
   const primaryButtonClassName = classes.Primary({

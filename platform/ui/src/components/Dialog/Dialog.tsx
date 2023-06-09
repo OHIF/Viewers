@@ -22,12 +22,13 @@ const Dialog = ({
 }) => {
   const [value, setValue] = useState(defaultValue);
 
-  const theme = 'bg-secondary-light';
+  const theme = 'bg-primary-dark';
   const flex = 'flex flex-col';
-  const border = 'border-0 rounded-lg drop-shadow-lg';
+  const border = 'border-0 rounded';
   const outline = 'outline-none focus:outline-none';
   const position = 'relative';
   const width = 'w-full';
+  const padding = 'px-[20px] pb-[20px] pt-[13px]';
 
   useEffect(() => {
     if (onShow) {
@@ -36,7 +37,17 @@ const Dialog = ({
   }, [onShow]);
 
   return (
-    <div className={classNames(theme, flex, border, outline, position, width)}>
+    <div
+      className={classNames(
+        theme,
+        flex,
+        border,
+        outline,
+        position,
+        width,
+        padding
+      )}
+    >
       <HeaderComponent
         title={title}
         noCloseButton={noCloseButton}
