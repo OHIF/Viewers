@@ -553,7 +553,10 @@ const commandsModule = ({
         commandsManager.runCommand('setViewportColormap', {
           viewportIndex,
           displaySetInstanceUID: ptDisplaySet.displaySetInstanceUID,
-          colormap,
+          colormap: {
+            name: colormap,
+            opacityMapping: [{ value: 0.1, opacity: 0.9 }],
+          },
         });
 
         viewports.push(

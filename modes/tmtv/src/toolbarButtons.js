@@ -36,13 +36,6 @@ function _createColormap(label, colormap) {
           colormap,
         },
       },
-      {
-        commandName: 'setFusionPTColormap',
-        commandOptions: {
-          toolGroupId: toolGroupIds.Fusion,
-          colormap,
-        },
-      },
     ],
   };
 }
