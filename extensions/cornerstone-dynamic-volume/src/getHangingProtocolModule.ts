@@ -20,10 +20,10 @@ function getPTOptions({
 
 
 function getPTViewports() {
-const ptOptionsParams = {
-  /* colormap: DEFAULT_COLORMAP, */
-  voiInverted: true,
-};
+  const ptOptionsParams = {
+    /* colormap: DEFAULT_COLORMAP, */
+    voiInverted: true,
+  };
 
   return [
     {
@@ -66,7 +66,8 @@ const ptOptionsParams = {
         background: [1, 1, 1],
         toolGroupId: 'dynamic4D-default',
         initialImageOptions: {
-          preset: 'middle', // 'first', 'last', 'middle'
+          // preset: 'middle', // 'first', 'last', 'middle'
+          index: 140,
         },
         syncGroups: [
           {
@@ -98,7 +99,8 @@ const ptOptionsParams = {
         background: [1, 1, 1],
         toolGroupId: 'dynamic4D-default',
         initialImageOptions: {
-          preset: 'middle', // 'first', 'last', 'middle'
+          // preset: 'middle', // 'first', 'last', 'middle'
+          index: 160,
         },
         syncGroups: [
           {
@@ -176,7 +178,8 @@ function getFusionViewports() {
         orientation: 'sagittal',
         toolGroupId: 'dynamic4D-fusion',
         initialImageOptions: {
-          preset: 'middle', // 'first', 'last', 'middle'
+          // preset: 'middle', // 'first', 'last', 'middle'
+          index: 600,
         },
         syncGroups: [
           {
@@ -216,7 +219,8 @@ function getFusionViewports() {
         orientation: 'coronal',
         toolGroupId: 'dynamic4D-fusion',
         initialImageOptions: {
-          preset: 'middle', // 'first', 'last', 'middle'
+          // preset: 'middle', // 'first', 'last', 'middle'
+          index: 600,
         },
         syncGroups: [
           {
