@@ -81,12 +81,6 @@ module.exports = {
     path.resolve(__dirname, './pluginOHIFWebpackConfig.js'),
     'plugin-image-zoom', // 3rd party plugin for image click to pop
     [
-      '@docusaurus/plugin-google-gtag',
-      {
-        trackingID: 'UA-110573590-2',
-      },
-    ],
-    [
       '@docusaurus/plugin-client-redirects',
       {
         fromExtensions: ['html'],
@@ -239,6 +233,10 @@ module.exports = {
         },
         theme: {
           customCss: [require.resolve('./src/css/custom.css')],
+        },
+        gtag: {
+          trackingID: 'G-DDBJFE34EG',
+          anonymizeIP: true,
         },
       }),
     ],
