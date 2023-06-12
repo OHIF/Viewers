@@ -112,7 +112,7 @@ function getMappedAnnotations(annotation, DisplaySetService) {
     );
 
     const { SeriesNumber } = displaySet;
-    const { mean, stdDev, max, area, Modality } = targetStats;
+    const { mean, stdDev, max, area, Modality, areaUnit } = targetStats;
     const unit = getModalityUnit(Modality);
 
     annotations.push({
@@ -126,6 +126,7 @@ function getMappedAnnotations(annotation, DisplaySetService) {
       stdDev,
       max,
       area,
+      areaUnit,
     });
   });
 
@@ -146,7 +147,7 @@ function _getReport(mappedAnnotations, points, FrameOfReferenceUID) {
   values.push('Cornerstone:CircleROI');
 
   mappedAnnotations.forEach(annotation => {
-    const { mean, stdDev, max, area, unit } = annotation;
+    const { mean, stdDev, max, area, unit, areaUnit } = annotation;
 
     if (!mean || !unit || !max || !area) {
       return;
@@ -156,9 +157,10 @@ function _getReport(mappedAnnotations, points, FrameOfReferenceUID) {
       `max (${unit})`,
       `mean (${unit})`,
       `std (${unit})`,
-      `area (mm2)`
+      'Area',
+      'Unit'
     );
-    values.push(max, mean, stdDev, area);
+    values.push(max, mean, stdDev, area, areaUnit);
   });
 
   if (FrameOfReferenceUID) {
@@ -188,7 +190,7 @@ function getDisplayText(mappedAnnotations, displaySet) {
   const displayText = [];
 
   // Area is the same for all series
-  const { area, SOPInstanceUID, frameNumber } = mappedAnnotations[0];
+  const { area, SOPInstanceUID, frameNumber, areaUnit } = mappedAnnotations[0];
 
   const instance = displaySet.images.find(
     image => image.SOPInstanceUID === SOPInstanceUID
@@ -204,7 +206,7 @@ function getDisplayText(mappedAnnotations, displaySet) {
 
   // Area sometimes becomes undefined if `preventHandleOutsideImage` is off.
   const roundedArea = utils.roundNumber(area || 0, 2);
-  displayText.push(`${roundedArea} mm<sup>2</sup>`);
+  displayText.push(`${roundedArea} ${areaUnit}`);
 
   // Todo: we need a better UI for displaying all these information
   mappedAnnotations.forEach(mappedAnnotation => {

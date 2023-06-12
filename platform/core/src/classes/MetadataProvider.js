@@ -165,20 +165,17 @@ class MetadataProvider {
       case WADO_IMAGE_LOADER_TAGS.IMAGE_PLANE_MODULE:
         const { ImageOrientationPatient } = instance;
 
-        // Fallback for DX images.
-        // TODO: We should use the rest of the results of this function
-        // to update the UI somehow
-        const { PixelSpacing } = getPixelSpacingInformation(instance);
-
+        const calibration = getPixelSpacingInformation(instance);
+        const { pixelSpacing } = calibration;
         let rowPixelSpacing;
         let columnPixelSpacing;
 
         let rowCosines;
         let columnCosines;
 
-        if (PixelSpacing) {
-          rowPixelSpacing = PixelSpacing[0];
-          columnPixelSpacing = PixelSpacing[1];
+        if (pixelSpacing) {
+          rowPixelSpacing = pixelSpacing[0];
+          columnPixelSpacing = pixelSpacing[1];
         }
 
         if (ImageOrientationPatient) {
@@ -188,6 +185,7 @@ class MetadataProvider {
 
         metadata = {
           frameOfReferenceUID: instance.FrameOfReferenceUID,
+          calibration,
           rows: toNumber(instance.Rows),
           columns: toNumber(instance.Columns),
           imageOrientationPatient: toNumber(ImageOrientationPatient),
@@ -198,9 +196,11 @@ class MetadataProvider {
           ),
           sliceThickness: toNumber(instance.SliceThickness),
           sliceLocation: toNumber(instance.SliceLocation),
-          pixelSpacing: toNumber(PixelSpacing || 1),
-          rowPixelSpacing: toNumber(rowPixelSpacing || 1),
-          columnPixelSpacing: toNumber(columnPixelSpacing || 1),
+          pixelSpacing: pixelSpacing && toNumber(pixelSpacing),
+          rowPixelSpacing: rowPixelSpacing ? toNumber(rowPixelSpacing) : null,
+          columnPixelSpacing: columnPixelSpacing
+            ? toNumber(columnPixelSpacing)
+            : null,
         };
         break;
       case WADO_IMAGE_LOADER_TAGS.IMAGE_PIXEL_MODULE:
