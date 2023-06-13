@@ -1,11 +1,11 @@
 {
   "name": "@ohif/extension-measurement-tracking",
-  "version": "3.0.0",
+  "version": "3.7.0-beta.4",
   "description": "Tracking features and functionality for basic image viewing",
   "author": "OHIF Core Team",
   "license": "MIT",
   "repository": "OHIF/Viewers",
-  "main": "dist/index.umd.js",
+  "main": "dist/ohif-extension-measurement-tracking.umd.js",
   "module": "src/index.tsx",
   "publishConfig": {
     "access": "public"
@@ -23,30 +23,30 @@
     "ohif-extension"
   ],
   "scripts": {
-    "dev": "cross-env NODE_ENV=development webpack --config .webpack/webpack.dev.js --watch --debug --output-pathinfo",
+    "dev": "cross-env NODE_ENV=development webpack --config .webpack/webpack.dev.js --watch --output-pathinfo",
     "dev:dicom-pdf": "yarn run dev",
     "build": "cross-env NODE_ENV=production webpack --config .webpack/webpack.prod.js",
-    "build:package": "yarn run build",
+    "build:package-1": "yarn run build",
     "start": "yarn run dev"
   },
   "peerDependencies": {
-    "@ohif/core": "^3.0.0",
+    "@cornerstonejs/core": "^1.1.8",
+    "@cornerstonejs/tools": "^1.1.8",
+    "@ohif/core": "3.7.0-beta.4",
+    "@ohif/extension-cornerstone-dicom-sr": "3.7.0-beta.4",
+    "@ohif/ui": "3.7.0-beta.4",
     "classnames": "^2.3.2",
-    "@cornerstonejs/core": "^1.1.0",
-    "@cornerstonejs/tools": "^1.1.0",
-    "@ohif/extension-cornerstone-dicom-sr": "^3.0.0",
     "dcmjs": "^0.29.5",
     "lodash.debounce": "^4.17.21",
     "prop-types": "^15.6.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "webpack": "^5.50.0",
-    "webpack-merge": "^5.7.3",
-    "@ohif/ui": "^2.0.0"
+    "webpack-merge": "^5.7.3"
   },
   "dependencies": {
     "@babel/runtime": "^7.20.13",
-    "@ohif/ui": "^2.0.0",
+    "@ohif/ui": "3.7.0-beta.4",
     "@xstate/react": "^0.8.1",
     "xstate": "^4.10.0"
   }

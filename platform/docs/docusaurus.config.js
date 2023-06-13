@@ -57,7 +57,7 @@ module.exports = {
   projectName: 'OHIF',
   baseUrl,
   baseUrlIssueBanner: true,
-  url: 'https://v3-docs.ohif.org',
+  url: 'https://docs.ohif.org',
   i18n: {
     defaultLocale: 'en',
     locales: isDeployPreview
@@ -80,12 +80,6 @@ module.exports = {
   plugins: [
     path.resolve(__dirname, './pluginOHIFWebpackConfig.js'),
     'plugin-image-zoom', // 3rd party plugin for image click to pop
-    [
-      '@docusaurus/plugin-google-gtag',
-      {
-        trackingID: 'UA-110573590-2',
-      },
-    ],
     [
       '@docusaurus/plugin-client-redirects',
       {
@@ -218,7 +212,7 @@ module.exports = {
 
             // We want users to submit doc updates to the upstream/next version!
             // Otherwise we risk losing the update on the next release.
-            return `https://github.com/OHIF/Viewers/edit/v3-stable/platform/docs/docs/${docPath}`;
+            return `https://github.com/OHIF/Viewers/edit/master/platform/docs/docs/${docPath}`;
           },
           showLastUpdateAuthor: true,
           showLastUpdateTime: true,
@@ -233,15 +227,16 @@ module.exports = {
           //     : undefined,
           versions: {
             current: {
-              label: 'Version 3.3 - Segmentation Support 🚧',
-            },
-            '2.0': {
-              label: 'Version 2.0 - Master branch',
+              label: 'Latest',
             },
           },
         },
         theme: {
           customCss: [require.resolve('./src/css/custom.css')],
+        },
+        gtag: {
+          trackingID: 'G-DDBJFE34EG',
+          anonymizeIP: true,
         },
       }),
     ],
@@ -288,15 +283,9 @@ module.exports = {
         },
         items: [
           {
-            to: 'https://ohif.org/get-started',
-            label: 'Get Started',
-            target: '_self',
-            position: 'left',
-          },
-          {
-            to: 'https://ohif.org/examples',
-            label: 'Examples',
-            target: '_self',
+            to: 'https://ohif.org/showcase',
+            label: 'Showcase',
+            target: '_blank',
             position: 'left',
           },
           {
@@ -307,9 +296,9 @@ module.exports = {
             label: 'Docs',
           },
           {
-            to: 'https://ohif.org/community',
-            label: 'Community',
-            target: '_self',
+            to: 'https://ohif.org/collaborate',
+            label: 'Collaborate',
+            target: '_blank',
             position: 'left',
           },
           {
@@ -429,7 +418,7 @@ module.exports = {
         logo: {
           alt: 'OHIF ',
           src: 'img/netlify-color-accent.svg',
-          href: 'https://v3-demo.ohif.org/',
+          href: 'https://viewer.ohif.org/',
         },
         copyright: `OHIF is open source software released under the MIT license.`,
       },

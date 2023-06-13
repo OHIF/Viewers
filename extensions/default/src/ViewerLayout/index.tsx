@@ -82,7 +82,7 @@ function ViewerLayout({
 
   const { hotkeyDefinitions, hotkeyDefaults } = hotkeysManager;
   const versionNumber = process.env.VERSION_NUMBER;
-  const buildNumber = process.env.BUILD_NUM;
+  const commitHash = process.env.COMMIT_HASH;
 
   const menuOptions = [
     {
@@ -92,7 +92,7 @@ function ViewerLayout({
         show({
           content: AboutModal,
           title: 'About OHIF Viewer',
-          contentProps: { versionNumber, buildNumber },
+          contentProps: { versionNumber, commitHash },
         }),
     },
     {

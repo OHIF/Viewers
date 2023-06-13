@@ -32,6 +32,16 @@ SidePanel is a component that renders the SidePanels.
     args={{
       side: 'left',
       defaultComponentOpen: 'Example',
+      tabs: [
+        {
+          id: 'tab1',
+          name: 'tab1',
+          label: 'Tab 1',
+          iconName: 'group-layers',
+          iconLabel: 'group-layers',
+          content: () => <div class="text-primary-light p-3">Hello</div>,
+        }
+      ],
       childComponents: [
         {
           iconName: 'home',

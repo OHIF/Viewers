@@ -1,11 +1,11 @@
 {
   "name": "@ohif/mode-basic-dev-mode",
-  "version": "3.0.0",
+  "version": "3.7.0-beta.4",
   "description": "Basic OHIF Viewer Using Cornerstone",
   "author": "OHIF",
   "license": "MIT",
   "repository": "OHIF/Viewers",
-  "main": "dist/index.umd.js",
+  "main": "dist/ohif-mode-basic-dev-mode.umd.js",
   "module": "src/index.js",
   "engines": {
     "node": ">=10",
@@ -20,7 +20,7 @@
     "access": "public"
   },
   "scripts": {
-    "dev": "cross-env NODE_ENV=development webpack --config .webpack/webpack.dev.js --watch --debug --output-pathinfo",
+    "dev": "cross-env NODE_ENV=development webpack --config .webpack/webpack.dev.js --watch --output-pathinfo",
     "dev:cornerstone": "yarn run dev",
     "build": "cross-env NODE_ENV=production webpack --config .webpack/webpack.prod.js",
     "build:package": "yarn run build",
@@ -29,12 +29,12 @@
     "test:unit:ci": "jest --ci --runInBand --collectCoverage --passWithNoTests"
   },
   "peerDependencies": {
-    "@ohif/core": "^3.0.0",
-    "@ohif/extension-default": "^3.0.0",
-    "@ohif/extension-cornerstone": "^3.0.0",
-    "@ohif/extension-cornerstone-dicom-sr": "^3.0.0",
-    "@ohif/extension-dicom-pdf": "^3.0.1",
-    "@ohif/extension-dicom-video": "^3.0.1"
+    "@ohif/core": "3.7.0-beta.4",
+    "@ohif/extension-cornerstone": "3.7.0-beta.4",
+    "@ohif/extension-cornerstone-dicom-sr": "3.7.0-beta.4",
+    "@ohif/extension-default": "3.7.0-beta.4",
+    "@ohif/extension-dicom-pdf": "3.7.0-beta.4",
+    "@ohif/extension-dicom-video": "3.7.0-beta.4"
   },
   "dependencies": {
     "@babel/runtime": "^7.20.13"

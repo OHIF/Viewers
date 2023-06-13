@@ -1,19 +1,6 @@
 {
-  "version": "independent",
+  "version": "3.7.0-beta.4",
   "packages": ["extensions/*", "platform/*", "modes/*"],
   "npmClient": "yarn",
-  "useWorkspaces": true,
-  "command": {
-    "publish": {
-      "ignoreChanges": ["*.md", "*.yml", "*.spec.js", "*.test.js"],
-      "message": "chore(release): publish"
-    },
-    "version": {
-      "allowBranch": "master",
-      "conventionalCommits": true,
-      "createRelease": "github",
-      "yes": true,
-      "message": "chore(release): publish [skip ci]"
-    }
-  }
+  "useWorkspaces": true
 }

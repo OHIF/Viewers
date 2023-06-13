@@ -1,11 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import ReactModal from 'react-modal';
+import { useModal } from '../../contextProviders';
+
+import Icon from '../Icon';
+import Typography from '../Typography';
 
 import './Modal.css';
-
-import { Typography, Icon } from '../';
-import { useModal } from '../../contextProviders';
 
 if (typeof document !== 'undefined') {
   ReactModal.setAppElement(document.getElementById('root'));
@@ -29,10 +30,11 @@ const Modal = ({
   const renderHeader = () => {
     return (
       title && (
-        <header className="flex items-center p-4 border-b-2 border-black bg-secondary-dark rounded-tl rounded-tr">
+        <header className="flex items-center px-[20px] py-[13px] bg-primary-dark rounded-tl rounded-tr">
           <Typography
-            variant="h4"
-            className="flex grow text-primary-light font-light"
+            variant="h6"
+            color="primaryLight"
+            className="flex grow !leading-[1.2]"
             data-cy="modal-header"
           >
             {title}
@@ -41,7 +43,7 @@ const Modal = ({
             <Icon
               onClick={onClose}
               name="close"
-              className="cursor-pointer text-primary-active w-6 h-6"
+              className="cursor-pointer text-primary-active"
             />
           )}
         </header>
@@ -60,7 +62,7 @@ const Modal = ({
       shouldCloseOnOverlayClick={shouldCloseOnOverlayClick}
     >
       {renderHeader()}
-      <section className="ohif-scrollbar modal-content overflow-y-auto px-4 py-6 rounded-bl rounded-br bg-primary-dark">
+      <section className="ohif-scrollbar modal-content overflow-y-auto px-[20px] pt-2 pb-[20px] rounded-bl rounded-br bg-primary-dark">
         {children}
       </section>
     </ReactModal>

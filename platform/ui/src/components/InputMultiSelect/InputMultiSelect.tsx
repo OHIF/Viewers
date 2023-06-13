@@ -1,7 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { Select, InputLabelWrapper } from '../';
+import Select from '../Select';
+import InputLabelWrapper from '../InputLabelWrapper';
 
 const InputMultiSelect = ({
   id,

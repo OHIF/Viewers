@@ -1,11 +1,11 @@
 {
   "name": "@ohif/extension-default",
-  "version": "3.0.0",
+  "version": "3.7.0-beta.4",
   "description": "Common/default features and functionality for basic image viewing",
   "author": "OHIF Core Team",
   "license": "MIT",
   "repository": "OHIF/Viewers",
-  "main": "dist/index.umd.js",
+  "main": "dist/ohif-extension-default.umd.js",
   "module": "src/index.ts",
   "publishConfig": {
     "access": "public"
@@ -23,15 +23,15 @@
     "ohif-extension"
   ],
   "scripts": {
-    "dev": "cross-env NODE_ENV=development webpack --config .webpack/webpack.dev.js --watch --debug --output-pathinfo",
+    "dev": "cross-env NODE_ENV=development webpack --config .webpack/webpack.dev.js --watch --output-pathinfo",
     "dev:dicom-pdf": "yarn run dev",
     "build": "cross-env NODE_ENV=production webpack --config .webpack/webpack.prod.js",
-    "build:package": "yarn run build",
+    "build:package-1": "yarn run build",
     "start": "yarn run dev"
   },
   "peerDependencies": {
-    "@ohif/core": "^3.0.0",
-    "@ohif/i18n": "^1.0.0",
+    "@ohif/core": "3.7.0-beta.4",
+    "@ohif/i18n": "3.7.0-beta.4",
     "dcmjs": "^0.29.5",
     "dicomweb-client": "^0.10.2",
     "prop-types": "^15.6.2",

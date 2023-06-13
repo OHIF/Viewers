@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { ErrorBoundary as ReactErrorBoundary } from 'react-error-boundary';
-import { Icon, IconButton } from '@ohif/ui';
 import PropTypes from 'prop-types';
+
 import Modal from '../Modal';
+import Icon from '../Icon';
+import IconButton from '../IconButton';
 
 const isProduction = process.env.NODE_ENV === 'production';
 

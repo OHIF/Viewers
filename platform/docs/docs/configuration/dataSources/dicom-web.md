@@ -32,7 +32,7 @@ _Not sure if you have `docker` installed already? Try running `docker --version`
 in command prompt or terminal_
 
 > If you are using `Docker Toolbox` you need to change the _PROXY_DOMAIN_
-> parameter in _platform/viewer/package.json_ to http://192.168.99.100:8042 or
+> parameter in _platform/app/package.json_ to http://192.168.99.100:8042 or
 > the ip docker-machine ip throws. This is the value [`WebPack`][webpack-proxy]
 > uses to proxy requests
 
@@ -101,7 +101,7 @@ yarn run dev:orthanc
 
 Let's take a look at what's going on under the hood here. `yarn run dev:orthanc`
 is running the `dev:orthanc` script in our project's `package.json` (inside
-`platform/viewer`). That script is:
+`platform/app`). That script is:
 
 ```js
 cross-env NODE_ENV=development PROXY_TARGET=/dicom-web PROXY_DOMAIN=http://localhost:8042 APP_CONFIG=config/docker_nginx-orthanc.js webpack-dev-server --config .webpack/webpack.pwa.js -w
@@ -120,7 +120,7 @@ requesting resources that live at a different domain.
 
 The `APP_CONFIG` value tells our app which file to load on to `window.config`.
 By default, our app uses the file at
-`<project-root>/platform/viewer/public/config/default.js`. Here is what that
+`<project-root>/platform/app/public/config/default.js`. Here is what that
 configuration looks like:
 
 ```js
@@ -225,8 +225,8 @@ below:
 [osirix]: http://www.osirix-viewer.com/
 [horos]: https://www.horosproject.org/
 [default-config]:
-  https://github.com/OHIF/Viewers/blob/master/platform/viewer/public/config/default.js
+  https://github.com/OHIF/Viewers/blob/master/platform/app/public/config/default.js
 [html-templates]:
-  https://github.com/OHIF/Viewers/tree/master/platform/viewer/public/html-templates
+  https://github.com/OHIF/Viewers/tree/master/platform/app/public/html-templates
 [config-files]:
-  https://github.com/OHIF/Viewers/tree/master/platform/viewer/public/config
+  https://github.com/OHIF/Viewers/tree/master/platform/app/public/config
