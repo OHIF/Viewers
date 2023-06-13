@@ -36,11 +36,11 @@ Key features:
 
 |     |  |
 | :-: | :---  |
-| <img src="./assets/img/demo-measurements.jpg" alt="Measurement tracking" width="350"> | Measurement Tracking |
-| <img src="./assets/img/demo-segmentation.png" alt="Segmentations" width="350"> | Labelmap Segmentations  |
-| <img src="./assets/img/demo-ptct.png" alt="Hanging Protocols" width="350"> | Fusion and Custom Hanging protocols  |
-| <img src="./assets/img/demo-microscopy.png" alt="Microscopy" width="350"> | Slide Microscopy  |
-| <img src="./assets/img/demo-volumeRendering.png" alt="Volume Rendering" width="350"> | Volume Rendering  |
+| <img src="./assets/img/demo-measurements.jpg" alt="Measurement tracking" width="350"/> | Measurement Tracking |
+| <img src="./assets/img/demo-segmentation.png" alt="Segmentations" width="350"/> | Labelmap Segmentations  |
+| <img src="./assets/img/demo-ptct.png" alt="Hanging Protocols" width="350"/> | Fusion and Custom Hanging protocols  |
+| <img src="./assets/img/demo-microscopy.png" alt="Microscopy" width="350"/> | Slide Microscopy  |
+| <img src="./assets/img/demo-volumeRendering.png" alt="Volume Rendering" width="350"/> | Volume Rendering  |
 
 
 
