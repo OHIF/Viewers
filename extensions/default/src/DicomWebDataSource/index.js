@@ -55,10 +55,16 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
     qidoConfig,
     wadoConfig,
     qidoDicomWebClient,
-    wadoDicomWebClient;
+    wadoDicomWebClient,
+    isInitialized = false;
 
   const implementation = {
     initialize: ({ params, query }) => {
+      if (isInitialized === true) {
+        return;
+      }
+      isInitialized = true;
+
       if (
         dicomWebConfig.onConfiguration &&
         typeof dicomWebConfig.onConfiguration === 'function'
