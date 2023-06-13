@@ -23,7 +23,6 @@ Key features:
   components available in a reusable component library built with React.js and
   Tailwind CSS
 
-![OHIF Viewer Screenshot](./assets/img/OHIF-Viewer.jpg)
 
 <div className="text--center">
     <div className="button-group">
@@ -32,6 +31,16 @@ Key features:
     </div>
 </div>
 
+
+
+
+|     |  |
+| :-: | :---  |
+| <img src="./assets/img/demo-measurements.jpg" alt="Measurement tracking" width="350"> | Measurement Tracking |
+| <img src="./assets/img/demo-segmentation.png" alt="Segmentations" width="350"> | Labelmap Segmentations  |
+| <img src="./assets/img/demo-ptct.png" alt="Hanging Protocols" width="350"> | Fusion and Custom Hanging protocols  |
+| <img src="./assets/img/demo-microscopy.png" alt="Microscopy" width="350"> | Slide Microscopy  |
+| <img src="./assets/img/demo-volumeRendering.png" alt="Volume Rendering" width="350"> | Volume Rendering  |
 
 
 

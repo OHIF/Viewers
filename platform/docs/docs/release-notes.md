@@ -5,9 +5,11 @@ sidebar_label: Release Notes
 
 # Release Notes
 
-> New `OHIF-v3` architecture has made OHIF a general purpose extensible medical
-> imaging **platform**, as opposed to a configurable viewer.
+## Current Release (master branch)
 
+
+
+## Previous V3 Releases (on v3-stable branch)
 ## What's new in `OHIF-v3`
 
 `OHIF-v3` is our second try for a React-based viewer, and is the third version

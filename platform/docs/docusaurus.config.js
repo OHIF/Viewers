@@ -283,14 +283,8 @@ module.exports = {
         },
         items: [
           {
-            to: 'https://ohif.org/get-started',
-            label: 'Get Started',
-            target: '_blank',
-            position: 'left',
-          },
-          {
-            to: 'https://ohif.org/examples',
-            label: 'Examples',
+            to: 'https://ohif.org/showcase',
+            label: 'Showcase',
             target: '_blank',
             position: 'left',
           },
@@ -302,8 +296,8 @@ module.exports = {
             label: 'Docs',
           },
           {
-            to: 'https://ohif.org/community',
-            label: 'Community',
+            to: 'https://ohif.org/collaborate',
+            label: 'Collaborate',
             target: '_blank',
             position: 'left',
           },
