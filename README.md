@@ -36,11 +36,11 @@ provided by the <a href="https://ohif.org/">Open Health Imaging Foundation (OHIF
 
 |     |  |
 | :-: | :---  |
-| <img src="platform/docs/docs/assets/img/demo-measurements.jpg" alt="Measurement tracking" width="350"> | Measurement Tracking |
-| <img src="platform/docs/docs/assets/img/demo-segmentation.png" alt="Segmentations" width="350"> | Labelmap Segmentations  |
-| <img src="platform/docs/docs/assets/img/demo-ptct.png" alt="Hanging Protocols" width="350"> | Fusion and Custom Hanging protocols  |
-| <img src="platform/docs/docs/assets/img/demo-microscopy.png" alt="Microscopy" width="350"> | Slide Microscopy  |
-| <img src="platform/docs/docs/assets/img/demo-volumeRendering.png" alt="Volume Rendering" width="350"> | Volume Rendering  |
+| <img src="platform/docs/docs/assets/img/demo-measurements.jpg" alt="Measurement tracking" width="350"/> | Measurement Tracking |
+| <img src="platform/docs/docs/assets/img/demo-segmentation.png" alt="Segmentations" width="350"/> | Labelmap Segmentations  |
+| <img src="platform/docs/docs/assets/img/demo-ptct.png" alt="Hanging Protocols" width="350"/> | Fusion and Custom Hanging protocols  |
+| <img src="platform/docs/docs/assets/img/demo-microscopy.png" alt="Microscopy" width="350"/> | Slide Microscopy  |
+| <img src="platform/docs/docs/assets/img/demo-volumeRendering.png" alt="Volume Rendering" width="350"/> | Volume Rendering  |
 
 
 ## About
