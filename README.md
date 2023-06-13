@@ -34,7 +34,14 @@ provided by the <a href="https://ohif.org/">Open Health Imaging Foundation (OHIF
 <!-- [![All Contributors](https://img.shields.io/badge/all_contributors-10-orange.svg?style=flat-square)](#contributors) -->
 <!-- prettier-ignore-end -->
 
-![Alt text](platform/docs/docs/assets/img/OHIF-Viewer.jpg)
+|     |  |
+| :-: | :---  |
+| <img src="platform/docs/docs/assets/img/demo-measurements.jpg" alt="Measurement tracking" width="350"/> | Measurement Tracking |
+| <img src="platform/docs/docs/assets/img/demo-segmentation.png" alt="Segmentations" width="350"/> | Labelmap Segmentations  |
+| <img src="platform/docs/docs/assets/img/demo-ptct.png" alt="Hanging Protocols" width="350"/> | Fusion and Custom Hanging protocols  |
+| <img src="platform/docs/docs/assets/img/demo-microscopy.png" alt="Microscopy" width="350"/> | Slide Microscopy  |
+| <img src="platform/docs/docs/assets/img/demo-volumeRendering.png" alt="Volume Rendering" width="350"/> | Volume Rendering  |
+
 
 ## About
 
@@ -81,17 +88,14 @@ forking).
 
 ### Support
 
-We offer support through
-[GitHub Issues](https://github.com/OHIF/Viewers/issues/new/choose). You can:
-
 - [Report a Bug 🐛](https://github.com/OHIF/Viewers/issues/new?assignees=&labels=Community%3A+Report+%3Abug%3A%2CAwaiting+Reproduction&projects=&template=bug-report.yml&title=%5BBug%5D+)
 - [Request a Feature 🚀](https://github.com/OHIF/Viewers/issues/new?assignees=&labels=Community%3A+Request+%3Ahand%3A&projects=&template=feature-request.yml&title=%5BFeature+Request%5D+)
 - [Ask a Question 🤗](community.ohif.org)
 - [Slack Channel](https://join.slack.com/t/cornerstonejs/shared_invite/zt-1r8xb2zau-dOxlD6jit3TN0Uwf928w9Q)
 
 For commercial support, academic collaborations, and answers to common
-questions; please read our
-[documented FAQ](https://docs.ohif.org/faq/index.html#does-ohif-offer-commercial-support).
+questions; please use [Get Support](https://ohif.org/get-support/) to contact
+us.
 
 
 ## Developing
@@ -119,9 +123,6 @@ Note: `master` is always ahead of `release` branch. We publish both docker build
 Here is a schematic representation of our development workflow:
 
 ![Alt text](platform/docs/docs/assets/img/github-readme-branches.png)
-
-
-
 
 
 
@@ -217,15 +218,6 @@ you'll see the following:
 ├── package.json             # Shared devDependencies and commands
 └── README.md                # This file
 ```
-
-Want to better understand why and how we've structured this repository? Read
-more about it in our [Architecture Documentation][ohif-architecture].
-
-
-
-| Name                                                 | Description                                           | Links                  |
-| ---------------------------------------------------- | ----------------------------------------------------- | ---------------------- |
-| [@ohif/extension-cornerstone][extension-cornerstone] | 2D image viewing, annotation, and segementation tools | [NPM][cornerstone-npm] |
 
 ## Acknowledgments
 
