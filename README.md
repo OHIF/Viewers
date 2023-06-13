@@ -34,13 +34,15 @@ provided by the <a href="https://ohif.org/">Open Health Imaging Foundation (OHIF
 <!-- [![All Contributors](https://img.shields.io/badge/all_contributors-10-orange.svg?style=flat-square)](#contributors) -->
 <!-- prettier-ignore-end -->
 
-|     |  |
-| :-: | :---  |
-| <img src="platform/docs/docs/assets/img/demo-measurements.jpg" alt="Measurement tracking" width="350"/> | Measurement Tracking |
-| <img src="platform/docs/docs/assets/img/demo-segmentation.png" alt="Segmentations" width="350"/> | Labelmap Segmentations  |
-| <img src="platform/docs/docs/assets/img/demo-ptct.png" alt="Hanging Protocols" width="350"/> | Fusion and Custom Hanging protocols  |
-| <img src="platform/docs/docs/assets/img/demo-microscopy.png" alt="Microscopy" width="350"/> | Slide Microscopy  |
-| <img src="platform/docs/docs/assets/img/demo-volumeRendering.png" alt="Volume Rendering" width="350"/> | Volume Rendering  |
+
+|     |  | |
+| :-: | :---  | :--- |
+| <img src="platform/docs/docs/assets/img/demo-measurements.jpg" alt="Measurement tracking" width="350"/> | Measurement Tracking | [Demo](https://viewer.ohif.org/viewer?StudyInstanceUIDs=1.3.6.1.4.1.25403.345050719074.3824.20170125095438.5) |
+| <img src="platform/docs/docs/assets/img/demo-segmentation.png" alt="Segmentations" width="350"/> | Labelmap Segmentations  | [Demo](https://viewer.ohif.org/viewer?StudyInstanceUIDs=1.3.12.2.1107.5.2.32.35162.30000015050317233592200000046) |
+| <img src="platform/docs/docs/assets/img/demo-ptct.png" alt="Hanging Protocols" width="350"/> | Fusion and Custom Hanging protocols  | [Demo](https://viewer.ohif.org/tmtv?StudyInstanceUIDs=1.3.6.1.4.1.14519.5.2.1.7009.2403.334240657131972136850343327463) |
+| <img src="platform/docs/docs/assets/img/demo-microscopy.png" alt="Microscopy" width="350"/> | Slide Microscopy  | [Demo](https://viewer.ohif.org/microscopy?StudyInstanceUIDs=2.25.275741864483510678566144889372061815320) |
+| <img src="platform/docs/docs/assets/img/demo-volumeRendering.png" alt="Volume Rendering" width="350"/> | Volume Rendering  | [Demo](https://viewer.ohif.org/viewer?StudyInstanceUIDs=1.3.6.1.4.1.25403.345050719074.3824.20170125095438.5&hangingprotocolId=mprAnd3DVolumeViewport) |
+
 
 
 ## About
