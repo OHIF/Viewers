@@ -13,7 +13,10 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 
 import { PanelService, ServicesManager, Types } from '@ohif/core';
 
-import { Button, Icon, IconButton, Tooltip } from '../';
+import Button from '../Button';
+import Icon from '../Icon';
+import IconButton from '../IconButton';
+import Tooltip from '../Tooltip';
 
 import 'swiper/css';
 import 'swiper/css/navigation';
@@ -75,7 +78,7 @@ const SidePanel = ({
   activeTabIndex: activeTabIndexProp,
   tabs,
 }) => {
-  const panelService: PanelService = servicesManager.services.panelService;
+  const panelService: PanelService = servicesManager?.services?.panelService;
 
   const { t } = useTranslation('SidePanel');
 
@@ -128,23 +131,25 @@ const SidePanel = ({
   );
 
   useEffect(() => {
-    const activatePanelSubscription = panelService.subscribe(
-      panelService.EVENTS.ACTIVATE_PANEL,
-      (activatePanelEvent: Types.ActivatePanelEvent) => {
-        if (!hasBeenOpened || activatePanelEvent.forceActive) {
-          const tabIndex = tabs.findIndex(
-            tab => tab.id === activatePanelEvent.panelId
-          );
-          if (tabIndex !== -1) {
-            updateActiveTabIndex(tabIndex);
+    if (panelService) {
+      const activatePanelSubscription = panelService.subscribe(
+        panelService.EVENTS.ACTIVATE_PANEL,
+        (activatePanelEvent: Types.ActivatePanelEvent) => {
+          if (!hasBeenOpened || activatePanelEvent.forceActive) {
+            const tabIndex = tabs.findIndex(
+              tab => tab.id === activatePanelEvent.panelId
+            );
+            if (tabIndex !== -1) {
+              updateActiveTabIndex(tabIndex);
+            }
           }
         }
-      }
-    );
+      );
 
-    return () => {
-      activatePanelSubscription.unsubscribe();
-    };
+      return () => {
+        activatePanelSubscription.unsubscribe();
+      };
+    }
   }, [tabs, hasBeenOpened, panelService, updateActiveTabIndex]);
 
   const getCloseStateComponent = () => {

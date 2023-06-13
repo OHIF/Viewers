@@ -2,7 +2,8 @@ import React from 'react';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 
-import { Typography, Icon } from '..';
+import Typography from '../Typography';
+import Icon from '../Icon';
 
 const CloseButton = ({ onClick }) => {
   return (
@@ -10,7 +11,7 @@ const CloseButton = ({ onClick }) => {
       data-cy="close-button"
       onClick={onClick}
       name="close"
-      className="cursor-pointer text-primary-active w-6 h-6"
+      className="cursor-pointer text-primary-active"
     />
   );
 };
@@ -20,14 +21,13 @@ CloseButton.propTypes = {
 };
 
 const Header = ({ title, noCloseButton, onClose }) => {
-  const theme = 'bg-secondary-main';
+  const theme = 'bg-primary-dark';
   const flex = 'flex items-center justify-between';
-  const border = 'border-b-2 border-solid border-black rounded-t';
-  const spacing = 'p-4';
+  const padding = 'pb-[20px]';
 
   return (
-    <div className={classNames(theme, flex, border, spacing)}>
-      <Typography variant="h6" color="primaryActive">
+    <div className={classNames(theme, flex, padding)}>
+      <Typography variant="h6" color="primaryLight" className="!leading-[1.2]">
         {title}
       </Typography>
       {!noCloseButton && <CloseButton onClick={onClose} />}

@@ -1,6 +1,12 @@
 import { api } from 'dicomweb-client';
 import { errorHandler, DicomMetadataStore } from '@ohif/core';
 
+const { DICOMwebClient } = api;
+
+DICOMwebClient._buildMultipartAcceptHeaderFieldValue = () => {
+  return '*/*';
+};
+
 /**
  * create a DICOMwebClient object to be used by Dicom Microscopy Viewer
  *

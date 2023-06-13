@@ -22,4 +22,4 @@ flags:
       - platform/core
   viewer:
     paths:
-      - platform/viewer
+      - platform/app

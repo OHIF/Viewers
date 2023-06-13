@@ -24,10 +24,6 @@ up-to-date with the upstream (original) repository. This is called a "Triangular
 Workflow" and is common for Open Source projects. The GitHub blog has a [good
 graphic that illustrates this setup][triangular-workflow].
 
-### `v3-stable` branch
-Currently the stable branch for OHIF-v3 is `v3-stable`. Once the v3-stable branch has
-feature parity with the master branch, `v3-stable` will be pushed to the master branch.
-You can read more about the roadmap timeline [here](https://ohif.org/roadmap).
 
 ### Private
 
@@ -44,6 +40,31 @@ aren't as concerned with syncing updates, then follow these steps:
 
 ## Developing
 
+### Branches
+
+#### `master` branch - The latest dev (beta) release
+
+- `master` - The latest dev release
+
+This is typically where the latest development happens. Code that is in the master branch has passed code reviews and automated tests, but it may not be deemed ready for production. This branch usually contains the most recent changes and features being worked on by the development team. It's often the starting point for creating feature branches (where new features are developed) and hotfix branches (for urgent fixes).
+
+Each package is tagged with beta version numbers, and published to npm such as `@ohif/ui@3.6.0-beta.1`
+
+### `release` branch - The latest stable release
+
+This branch represents the latest stable version of the project that is considered ready for production. The code in this branch should be fully tested and vetted for release. Once the code in the master branch reaches a state where it's stable and ready to be released to users,
+we do a comprehensive code review and QA testing. Once the code is approved,
+we merge it into the release branch and tag a new release.
+
+Each package is tagged with version numbers, and published to npm such as `@ohif/ui@3.5.0`
+
+Note: `master` is always ahead of `release` branch. We publish both docker builds for beta and stable releases.
+
+Here is a schematic representation of our development workflow:
+
+![Alt text](../../docs/assets/img/github-readme-branches.png)
+
+
 ### Requirements
 
 - [Node.js & NPM](https://nodejs.org/en/)
@@ -57,9 +78,6 @@ Navigate to the root of the project's directory in your terminal and run the
 following commands:
 
 ```bash
-# Switch to the v3 branch
-git switch v3-stable
-
 # Restore dependencies
 yarn install
 
@@ -70,10 +88,10 @@ yarn run dev
 You should see the following output:
 
 ```bash
-@ohif/viewer: i ｢wds｣: Project is running at http://localhost:3000/
-@ohif/viewer: i ｢wds｣: webpack output is served from /
-@ohif/viewer: i ｢wds｣: Content not from webpack is served from D:\code\ohif\Viewers\platform\viewer
-@ohif/viewer: i ｢wds｣: 404s will fallback to /index.html
+@ohif/app: i ｢wds｣: Project is running at http://localhost:3000/
+@ohif/app: i ｢wds｣: webpack output is served from /
+@ohif/app: i ｢wds｣: Content not from webpack is served from D:\code\ohif\Viewers\platform\viewer
+@ohif/app: i ｢wds｣: 404s will fallback to /index.html
 
 # And a list of all generated files
 ```
@@ -111,6 +129,6 @@ yarn run build
 [add-remote-repo]: https://help.github.com/en/articles/fork-a-repo#step-3-configure-git-to-sync-your-fork-with-the-original-spoon-knife-repository
 [sync-changes]: https://help.github.com/en/articles/syncing-a-fork
 [triangular-workflow]: https://github.blog/2015-07-29-git-2-5-including-multiple-worktrees-and-triangular-workflows/#improved-support-for-triangular-workflows
-[ohif-viewers-repo]: https://github.com/OHIF/Viewers/tree/v3-stable
+[ohif-viewers-repo]: https://github.com/OHIF/Viewers/
 [ohif-viewers]: https://github.com/OHIF/Viewers
 <!-- prettier-ignore-end -->

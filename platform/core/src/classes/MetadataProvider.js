@@ -481,6 +481,9 @@ class MetadataProvider {
       imageURI = imageIdToURI(imageId);
     }
 
+    // remove &frame=number from imageId
+    imageURI = imageURI.split('&frame=')[0];
+
     const uids = this.imageURIToUIDs.get(imageURI);
     let frameNumber = this.getFrameInformationFromURL(imageId) || '1';
 

@@ -267,7 +267,7 @@ members put together:
 [orthanc-docs]: http://book.orthanc-server.com/users/configuration.html#configuration
 [lua-resty-openidc-docs]: https://github.com/zmartzone/lua-resty-openidc
 <!-- SRC -->
-[dockerfile]: https://github.com/OHIF/Viewers/blob/master/platform/viewer/.recipes/OpenResty-Orthanc/dockerfile
-[config-nginx]: https://github.com/OHIF/Viewers/blob/master/platform/viewer/.recipes/OpenResty-Orthanc/config/nginx.conf
-[config-orthanc]: https://github.com/OHIF/Viewers/blob/master/platform/viewer/.recipes/OpenResty-Orthanc/config/orthanc.json
+[dockerfile]: https://github.com/OHIF/Viewers/blob/master/platform/app/.recipes/OpenResty-Orthanc/dockerfile
+[config-nginx]: https://github.com/OHIF/Viewers/blob/master/platform/app/.recipes/OpenResty-Orthanc/config/nginx.conf
+[config-orthanc]: https://github.com/OHIF/Viewers/blob/master/platform/app/.recipes/OpenResty-Orthanc/config/orthanc.json
 <!-- prettier-ignore-end -->

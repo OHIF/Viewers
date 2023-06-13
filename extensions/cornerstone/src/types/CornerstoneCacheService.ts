@@ -1,12 +1,12 @@
-import {
-  Enums,
-  Types,
-} from '@cornerstonejs/core';
-
+import { Enums, Types } from '@cornerstonejs/core';
 
 type StackData = {
   StudyInstanceUID: string;
   displaySetInstanceUID: string;
+  // A composite stack is one created from other display sets - kind of like
+  // madeInClient, but specific to indicating that the imageIds can come from
+  // different series or even studies.
+  isCompositeStack?: boolean;
   imageIds: string[];
   frameRate?: number;
   isClip?: boolean;
@@ -20,19 +20,14 @@ type VolumeData = {
   imageIds?: string[];
 };
 
- type StackViewportData = {
+type StackViewportData = {
   viewportType: Enums.ViewportType;
   data: StackData;
 };
 
- type VolumeViewportData = {
+type VolumeViewportData = {
   viewportType: Enums.ViewportType;
   data: VolumeData[];
 };
 
-export type {
-  StackViewportData,
-  VolumeViewportData,
-  StackData,
-  VolumeData,
-};
+export type { StackViewportData, VolumeViewportData, StackData, VolumeData };

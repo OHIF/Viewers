@@ -1,5 +1,6 @@
 import { Enums } from '@cornerstonejs/tools';
 import { toolNames } from './initCornerstoneTools';
+import DicomUpload from './components/DicomUpload/DicomUpload';
 
 const tools = {
   active: [
@@ -22,6 +23,13 @@ const tools = {
 
 function getCustomizationModule() {
   return [
+    {
+      name: 'cornerstoneDicomUploadComponent',
+      value: {
+        id: 'dicomUploadComponent',
+        component: DicomUpload,
+      },
+    },
     {
       name: 'default',
       value: [

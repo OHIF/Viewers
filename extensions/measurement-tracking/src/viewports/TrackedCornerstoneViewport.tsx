@@ -1,31 +1,24 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import OHIF, { utils } from '@ohif/core';
 
-import {
-  Notification,
-  ViewportActionBar,
-  useViewportDialog,
-  Tooltip,
-  Icon,
-} from '@ohif/ui';
+import { ViewportActionBar, Tooltip, Icon } from '@ohif/ui';
 
 import { useTranslation } from 'react-i18next';
 
 import { annotation } from '@cornerstonejs/tools';
 import { useTrackedMeasurements } from './../getContextModule';
+import { BaseVolumeViewport, Enums } from '@cornerstonejs/core';
 
 const { formatDate } = utils;
 
 function TrackedCornerstoneViewport(props) {
   const {
-    children,
     displaySets,
     viewportIndex,
     viewportLabel,
     servicesManager,
     extensionManager,
-    commandsManager,
     viewportOptions,
   } = props;
 
@@ -40,15 +33,14 @@ function TrackedCornerstoneViewport(props) {
   const displaySet = displaySets[0];
 
   const [trackedMeasurements] = useTrackedMeasurements();
-  const [viewportDialogState] = useViewportDialog();
   const [isTracked, setIsTracked] = useState(false);
   const [trackedMeasurementUID, setTrackedMeasurementUID] = useState(null);
+  const [viewportElem, setViewportElem] = useState(null);
 
   const { trackedSeries } = trackedMeasurements.context;
   const viewportId = viewportOptions.viewportId;
 
   const {
-    Modality,
     SeriesDate,
     SeriesDescription,
     SeriesInstanceUID,
@@ -64,6 +56,69 @@ function TrackedCornerstoneViewport(props) {
     SpacingBetweenSlices,
     ManufacturerModelName,
   } = displaySet.images[0];
+
+  const updateIsTracked = useCallback(() => {
+    const viewport = cornerstoneViewportService.getCornerstoneViewportByIndex(
+      viewportIndex
+    );
+
+    if (viewport instanceof BaseVolumeViewport) {
+      // A current image id will only exist for volume viewports that can have measurements tracked.
+      // Typically these are those volume viewports for the series of acquisition.
+      const currentImageId = viewport?.getCurrentImageId();
+
+      if (!currentImageId) {
+        if (isTracked) {
+          setIsTracked(false);
+        }
+        return;
+      }
+    }
+
+    if (trackedSeries.includes(SeriesInstanceUID) !== isTracked) {
+      setIsTracked(!isTracked);
+    }
+  }, [isTracked, trackedMeasurements, viewportIndex, SeriesInstanceUID]);
+
+  const onElementEnabled = useCallback(
+    evt => {
+      if (evt.detail.element !== viewportElem) {
+        // The VOLUME_VIEWPORT_NEW_VOLUME event allows updateIsTracked to reliably fetch the image id for a volume viewport.
+        evt.detail.element?.addEventListener(
+          Enums.Events.VOLUME_VIEWPORT_NEW_VOLUME,
+          updateIsTracked
+        );
+        setViewportElem(evt.detail.element);
+      }
+    },
+    [updateIsTracked, viewportElem]
+  );
+
+  const onElementDisabled = useCallback(() => {
+    viewportElem?.removeEventListener(
+      Enums.Events.VOLUME_VIEWPORT_NEW_VOLUME,
+      updateIsTracked
+    );
+  }, [updateIsTracked, viewportElem]);
+
+  useEffect(updateIsTracked, [updateIsTracked]);
+
+  useEffect(() => {
+    const { unsubscribe } = cornerstoneViewportService.subscribe(
+      cornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED,
+      props => {
+        if (props.viewportIndex !== viewportIndex) {
+          return;
+        }
+
+        updateIsTracked();
+      }
+    );
+
+    return () => {
+      unsubscribe();
+    };
+  }, [updateIsTracked, viewportIndex]);
 
   useEffect(() => {
     if (isTracked) {
@@ -93,10 +148,6 @@ function TrackedCornerstoneViewport(props) {
     };
   }, [isTracked]);
 
-  if (trackedSeries.includes(SeriesInstanceUID) !== isTracked) {
-    setIsTracked(!isTracked);
-  }
-
   function switchMeasurement(direction) {
     const newTrackedMeasurementUID = _getNextMeasurementUID(
       direction,
@@ -122,7 +173,13 @@ function TrackedCornerstoneViewport(props) {
       '@ohif/extension-cornerstone.viewportModule.cornerstone'
     );
 
-    return <Component {...props} />;
+    return (
+      <Component
+        {...props}
+        onElementEnabled={onElementEnabled}
+        onElementDisabled={onElementDisabled}
+      />
+    );
   };
 
   return (
