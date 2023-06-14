@@ -124,10 +124,11 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
         path.resolve(__dirname, '../../../node_modules'),
         path.resolve(__dirname, '../platform/viewer/node_modules'),
         path.resolve(__dirname, '../platform/ui/node_modules'),
+        path.resolve(__dirname, '../../Viewers'),
         SRC_DIR,
       ],
       // Attempt to resolve these extensions in order.
-      extensions: ['.js', '.jsx', '.json', '.ts', '.tsx', '*'],
+      extensions: ['.js', '.jsx', '.json', '.ts', '.tsx', '.*'],
       // symlinked resources are resolved to their real path, not their symlinked location
       symlinks: true,
       fallback: { fs: false, path: false, zlib: false },

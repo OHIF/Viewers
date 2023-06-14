@@ -1,20 +1,30 @@
 import { DicomMetadataStore, classes } from '@ohif/core';
 import { calculateSUVScalingFactors } from '@cornerstonejs/calculate-suv';
 import { utilities } from '@cornerstonejs/core';
-
+import {
+  addTool,
+  RectangleROIStartEndThresholdTool,
+} from '@cornerstonejs/tools';
 import getPTImageIdInstanceMetadata from './getPTImageIdInstanceMetadata';
 import colormaps from './utils/colormaps';
+import measurementServiceMappingsFactory from './utils/measurementServiceMappings/measurementServiceMappingsFactory';
 
 const { registerColormap } = utilities.colormap;
 const metadataProvider = classes.MetadataProvider;
-
+const CORNERSTONE_3D_TOOLS_SOURCE_NAME = 'Cornerstone3DTools';
+const CORNERSTONE_3D_TOOLS_SOURCE_VERSION = '0.1';
 /**
  *
  * @param {Object} servicesManager
  * @param {Object} configuration
  */
 export default function init({ servicesManager, configuration = {} }): void {
-  const { stateSyncService } = servicesManager.services;
+  const {
+    stateSyncService,
+    measurementService,
+    displaySetService,
+    cornerstoneViewportService,
+  } = servicesManager.services;
   // Add
   DicomMetadataStore.subscribe(
     DicomMetadataStore.EVENTS.INSTANCES_ADDED,
@@ -55,6 +65,28 @@ export default function init({ servicesManager, configuration = {} }): void {
   // changes numRows and numCols, the viewports can be remembers and then replaced
   // afterwards.
   stateSyncService.register('viewportsByPosition', { clearOnModeExit: true });
+
+  addTool(RectangleROIStartEndThresholdTool);
+
+  // const { RectangleROIStartEndThreshold } = measurementServiceMappingsFactory(
+  //   measurementService,
+  //   displaySetService,
+  //   cornerstoneViewportService
+  // );
+
+  // const csTools3DVer1MeasurementSource = measurementService.getSource(
+  //   CORNERSTONE_3D_TOOLS_SOURCE_NAME,
+  //   CORNERSTONE_3D_TOOLS_SOURCE_VERSION
+  // );
+  // console.log(csTools3DVer1MeasurementSource);
+  // measurementService.addMapping(
+  //   csTools3DVer1MeasurementSource,
+  //   'RectangleROIStartEndThreshold',
+  //   RectangleROIStartEndThreshold.matchingCriteria,
+  //   RectangleROIStartEndThreshold.toAnnotation,
+  //   RectangleROIStartEndThreshold.toMeasurement
+  // );
+
   colormaps.forEach(registerColormap);
 }
 

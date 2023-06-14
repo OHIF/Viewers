@@ -19,6 +19,8 @@ import CustomizationService from './CustomizationService';
 import Services from '../types/Services';
 import StateSyncService from './StateSyncService';
 import PanelService from './PanelService';
+import SegmentationService from './SegmentationService';
+import ToolGroupService from './ToolGroupService';
 
 export {
   Services,
@@ -40,4 +42,6 @@ export {
   PubSubService,
   UserAuthenticationService,
   PanelService,
+  SegmentationService,
+  ToolGroupService,
 };

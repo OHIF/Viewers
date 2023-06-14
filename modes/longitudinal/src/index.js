@@ -131,6 +131,7 @@ function modeFactory() {
         'Crosshairs',
         'MoreTools',
         'fusionPTColormap',
+        'RectangleROIStartEndThreshold',
       ]);
 
       // // ActivatePanel event trigger for when a segmentation or measurement is added.

@@ -30,7 +30,17 @@ function _createButton(type, id, icon, label, commands, tooltip, uiType) {
 const _createActionButton = _createButton.bind(null, 'action');
 const _createToggleButton = _createButton.bind(null, 'toggle');
 const _createToolButton = _createButton.bind(null, 'tool');
-
+function _createCommands(commandName, toolName, toolGroupIds) {
+  return toolGroupIds.map(toolGroupId => ({
+    /* It's a command that is being run when the button is clicked. */
+    commandName,
+    commandOptions: {
+      toolName,
+      toolGroupId,
+    },
+    context: 'DEFAULT',
+  }));
+}
 /**
  *
  * @param {*} preset - preset number (from above import)
@@ -132,6 +142,30 @@ const toolbarButtons = [
         _createColormap('GE', 'ge'),
         _createColormap('Siemens', 'siemens'),
         _createColormap('Test', 'test'),
+      ],
+    },
+  },
+  {
+    id: 'RectangleROIStartEndThreshold',
+    type: 'ohif.radioGroup',
+    props: {
+      type: 'tool',
+      icon: 'tool-create-threshold',
+      label: 'Rectangle ROI Threshold',
+      commands: [
+        ..._createCommands('setToolActive', 'RectangleROIStartEndThreshold', [
+          'default',
+        ]),
+        // {
+        //   commandName: 'displayNotification',
+        //   commandOptions: {
+        //     title: 'RectangleROI Threshold Tip',
+        //     text:
+        //       'RectangleROI Threshold tool should be used on PT Axial Viewport',
+        //     type: 'info',
+        //     context: 'default',
+        //   },
+        // },
       ],
     },
   },

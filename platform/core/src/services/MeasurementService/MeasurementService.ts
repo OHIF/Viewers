@@ -260,7 +260,7 @@ class MeasurementService extends PubSubService {
   getSource(name, version) {
     const { sources } = this;
     const uid = this._getSourceUID(name, version);
-
+    console.log(sources[uid]);
     return sources[uid];
   }
 
@@ -676,7 +676,7 @@ class MeasurementService extends PubSubService {
 
       return source.name === name && source.version === version;
     });
-
+    console.log(sourceUID);
     return sourceUID;
   }
 
