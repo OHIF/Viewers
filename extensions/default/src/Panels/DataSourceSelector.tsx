@@ -3,7 +3,7 @@ import classnames from 'classnames';
 import { useNavigate } from 'react-router-dom';
 import { useAppConfig } from '@state';
 
-import { Button, ButtonType } from '@ohif/ui';
+import { Button, ButtonEnums } from '@ohif/ui';
 
 function DataSourceSelector() {
   const [appConfig] = useAppConfig();
@@ -33,7 +33,7 @@ function DataSourceSelector() {
                 <div key={ds.sourceName}>
                   <h1 className="text-white">{ds.friendlyName}</h1>
                   <Button
-                    type={ButtonType.primary}
+                    type={ButtonEnums.type.primary}
                     className={classnames('ml-2')}
                     onClick={() => {
                       navigate({

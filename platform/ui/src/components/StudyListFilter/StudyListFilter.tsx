@@ -48,6 +48,7 @@ const StudyListFilter = ({
                 )}
               </div>
               <div className="flex flex-row">
+                {/* TODO revisit the completely rounded style of button used for clearing the study list filter - for now use LegacyButton*/}
                 {isFiltering && (
                   <LegacyButton
                     rounded="full"

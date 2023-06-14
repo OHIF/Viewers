@@ -6,7 +6,7 @@ import {
   Dialog,
   Input,
   useViewportGrid,
-  ButtonType,
+  ButtonEnums,
 } from '@ohif/ui';
 import { DicomMetadataStore, utils } from '@ohif/core';
 import { useDebounce } from '@hooks';
@@ -218,8 +218,8 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
           );
         },
         actions: [
-          { id: 'cancel', text: 'Cancel', type: ButtonType.secondary },
-          { id: 'save', text: 'Save', type: ButtonType.primary },
+          { id: 'cancel', text: 'Cancel', type: ButtonEnums.type.secondary },
+          { id: 'save', text: 'Save', type: ButtonEnums.type.primary },
         ],
         onSubmit: onSubmitHandler,
       },

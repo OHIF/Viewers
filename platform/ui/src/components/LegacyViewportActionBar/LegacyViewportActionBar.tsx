@@ -104,6 +104,7 @@ const LegacyViewportActionBar = ({
       </div>
       {showNavArrows && !showCine && (
         <div className="mt-2" style={{ pointerEvents: 'all' }}>
+          {/* TODO Revisit design of ButtonGroup later - for now use LegacyButton for its children.*/}
           <ButtonGroup>
             <LegacyButton
               size="initial"

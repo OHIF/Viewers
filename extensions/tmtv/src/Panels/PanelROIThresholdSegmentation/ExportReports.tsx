@@ -9,6 +9,7 @@ function ExportReports({ segmentations, tmtvValue, config, commandsManager }) {
     <>
       {segmentations?.length ? (
         <div className="flex justify-center mt-4 space-x-2">
+          {/* TODO Revisit design of ButtonGroup later - for now use LegacyButton for its children.*/}
           <ButtonGroup color="black" size="inherit">
             <LegacyButton
               className="px-2 py-2 text-base"

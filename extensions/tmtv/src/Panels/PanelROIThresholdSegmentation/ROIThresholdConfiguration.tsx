@@ -38,6 +38,7 @@ function ROIThresholdConfiguration({ config, dispatch, runCommand }) {
           />
         </div>
         <div className="w-1/2">
+          {/* TODO Revisit design of ButtonGroup later - for now use LegacyButton for its children.*/}
           <ButtonGroup>
             <LegacyButton
               size="initial"

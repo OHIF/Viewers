@@ -1,5 +1,5 @@
 import Button from './Button';
-import { ButtonSize, ButtonType } from './Button';
+import * as ButtonEnums from './ButtonEnums';
 
-export { ButtonSize, ButtonType };
+export { ButtonEnums };
 export default Button;

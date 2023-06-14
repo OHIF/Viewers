@@ -363,6 +363,7 @@ function WorkList({
                   ''}?${query.toString()}`}
                 // to={`${mode.routeName}/dicomweb?StudyInstanceUIDs=${studyInstanceUid}`}
               >
+                {/* TODO revisit the completely rounded style of buttons used for launching a mode from the worklist later - for now use LegacyButton*/}
                 <LegacyButton
                   rounded="full"
                   variant={isValidMode ? 'contained' : 'disabled'}

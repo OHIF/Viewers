@@ -74,6 +74,7 @@ module.exports = {
       },
 
       customblue: {
+        10: '#0A163F',
         20: '#0B1F54',
         30: '#09286e',
         40: '#0E307F',

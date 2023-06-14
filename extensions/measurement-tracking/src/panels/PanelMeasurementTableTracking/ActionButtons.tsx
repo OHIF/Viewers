@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 
-import { Button, ButtonSize, ButtonType } from '@ohif/ui';
+import { Button, ButtonEnums } from '@ohif/ui';
 
 function ActionButtons({ onExportClick, onCreateReportClick, disabled }) {
   const { t } = useTranslation('MeasurementTable');
@@ -12,16 +12,16 @@ function ActionButtons({ onExportClick, onCreateReportClick, disabled }) {
       <Button
         onClick={onExportClick}
         disabled={disabled}
-        type={ButtonType.secondary}
-        size={ButtonSize.small}
+        type={ButtonEnums.type.secondary}
+        size={ButtonEnums.size.small}
       >
         {t('Export')}
       </Button>
       <Button
         className="ml-2"
         onClick={onCreateReportClick}
-        type={ButtonType.secondary}
-        size={ButtonSize.small}
+        type={ButtonEnums.type.secondary}
+        size={ButtonEnums.size.small}
         disabled={disabled}
       >
         {t('Create Report')}

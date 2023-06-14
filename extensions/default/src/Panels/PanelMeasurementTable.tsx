@@ -6,7 +6,7 @@ import {
   Dialog,
   Input,
   useViewportGrid,
-  ButtonType,
+  ButtonEnums,
 } from '@ohif/ui';
 import ActionButtons from './ActionButtons';
 import debounce from 'lodash.debounce';
@@ -195,8 +195,8 @@ export default function PanelMeasurementTable({
           );
         },
         actions: [
-          { id: 'cancel', text: 'Cancel', type: ButtonType.secondary },
-          { id: 'save', text: 'Save', type: ButtonType.primary },
+          { id: 'cancel', text: 'Cancel', type: ButtonEnums.type.secondary },
+          { id: 'save', text: 'Save', type: ButtonEnums.type.primary },
         ],
         onSubmit: onSubmitHandler,
       },

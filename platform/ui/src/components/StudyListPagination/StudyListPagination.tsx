@@ -59,6 +59,7 @@ const StudyListPagination = ({
               <Typography className="opacity-60 mr-4 text-base">
                 {t('Page')} {currentPage}
               </Typography>
+              {/* TODO Revisit design of ButtonGroup later - for now use LegacyButton for its children.*/}
               <ButtonGroup>
                 <LegacyButton
                   size="initial"

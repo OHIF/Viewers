@@ -2,7 +2,7 @@ import React from 'react';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 
-import Button, { ButtonType } from '../Button';
+import Button, { ButtonEnums } from '../Button';
 
 const Footer = ({ actions, className, onSubmit, value }) => {
   const flex = 'flex items-center justify-end';
@@ -40,8 +40,10 @@ Footer.propTypes = {
       id: PropTypes.string.isRequired,
       text: PropTypes.string.isRequired,
       value: PropTypes.any,
-      type: PropTypes.oneOf([ButtonType.primary, ButtonType.secondary])
-        .isRequired,
+      type: PropTypes.oneOf([
+        ButtonEnums.type.primary,
+        ButtonEnums.type.secondary,
+      ]).isRequired,
       classes: PropTypes.arrayOf(PropTypes.string),
     })
   ).isRequired,

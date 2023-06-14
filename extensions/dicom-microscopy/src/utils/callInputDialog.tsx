@@ -1,5 +1,5 @@
 import React from 'react';
-import { Input, Dialog, ButtonType } from '@ohif/ui';
+import { Input, Dialog, ButtonEnums } from '@ohif/ui';
 
 /**
  *
@@ -43,8 +43,8 @@ export default function callInputDialog({
         noCloseButton: true,
         onClose: () => uiDialogService.dismiss({ id: dialogId }),
         actions: [
-          { id: 'cancel', text: 'Cancel', type: ButtonType.secondary },
-          { id: 'save', text: 'Save', type: ButtonType.primary },
+          { id: 'cancel', text: 'Cancel', type: ButtonEnums.type.secondary },
+          { id: 'save', text: 'Save', type: ButtonEnums.type.primary },
         ],
         onSubmit: onSubmitHandler,
         body: ({ value, setValue }) => {

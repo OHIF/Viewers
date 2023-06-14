@@ -234,6 +234,7 @@ const SidePanel = ({
             }}
             data-cy={`side-panel-header-${side}`}
           >
+            {/* TODO This should be redesigned to not be a button. */}
             <LegacyButton
               variant="text"
               color="inherit"

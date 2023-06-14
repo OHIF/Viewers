@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import DicomFileUploader from '../../utils/DicomFileUploader';
 import DicomUploadProgress from './DicomUploadProgress';
-import { Button, ButtonType } from '@ohif/ui';
+import { Button, ButtonEnums } from '@ohif/ui';
 import './DicomUpload.css';
 
 type DicomUploadProps = {
@@ -57,7 +57,7 @@ function DicomUpload({
                 {({ getRootProps, getInputProps }) => (
                   <div {...getRootProps()}>
                     <Button
-                      type={ButtonType.secondary}
+                      type={ButtonEnums.type.secondary}
                       disabled={false}
                       onClick={() => {}}
                     >

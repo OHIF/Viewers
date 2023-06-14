@@ -1,5 +1,5 @@
 import React from 'react';
-import { Input, Dialog, ButtonType } from '@ohif/ui';
+import { Input, Dialog, ButtonEnums } from '@ohif/ui';
 
 function segmentationItemEditHandler({ id, servicesManager }) {
   const { segmentationService, uiDialogService } = servicesManager.services;
@@ -56,8 +56,8 @@ function segmentationItemEditHandler({ id, servicesManager }) {
         );
       },
       actions: [
-        { id: 'cancel', text: 'Cancel', type: ButtonType.secondary },
-        { id: 'save', text: 'Save', type: ButtonType.primary },
+        { id: 'cancel', text: 'Cancel', type: ButtonEnums.type.secondary },
+        { id: 'save', text: 'Save', type: ButtonEnums.type.primary },
       ],
       onSubmit: onSubmitHandler,
     },

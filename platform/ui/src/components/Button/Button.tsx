@@ -1,40 +1,33 @@
 import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-
-export enum ButtonType {
-  primary = 'primary',
-  secondary = 'secondary',
-}
-export enum ButtonSize {
-  medium = 'medium',
-  small = 'small',
-}
+import * as ButtonEnums from './ButtonEnums';
 
 const sizeClasses = {
-  [ButtonSize.small]: 'h-[26px] text-[13px]',
-  [ButtonSize.medium]: 'h-[32px] text-[14px]',
+  [ButtonEnums.size.small]: 'h-[26px] text-[13px]',
+  [ButtonEnums.size.medium]: 'h-[32px] text-[14px]',
 };
 
 const layoutClasses =
-  'inline-flex flex-row items-center gap-[5px] justify center px-[10px] outline-none rounded';
+  'box-content inline-flex flex-row items-center justify-center gap-[5px] justify center px-[10px] outline-none rounded';
 
-const baseFontTextClasses = 'leading-[1.2] font-sans text-center';
+const baseFontTextClasses =
+  'leading-[1.2] font-sans text-center whitespace-nowrap';
 
 const fontTextClasses = {
-  [ButtonType.primary]: classnames(baseFontTextClasses, 'font-semibold'),
-  [ButtonType.secondary]: classnames(baseFontTextClasses, 'font-400'),
+  [ButtonEnums.type.primary]: classnames(baseFontTextClasses, 'font-semibold'),
+  [ButtonEnums.type.secondary]: classnames(baseFontTextClasses, 'font-400'),
 };
 
 const baseEnabledEffectClasses =
   'transition duration-300 ease-in-out focus:outline-none';
 
 const enabledEffectClasses = {
-  [ButtonType.primary]: classnames(
+  [ButtonEnums.type.primary]: classnames(
     baseEnabledEffectClasses,
     'hover:bg-customblue-80 active:bg-customblue-40'
   ),
-  [ButtonType.secondary]: classnames(
+  [ButtonEnums.type.secondary]: classnames(
     baseEnabledEffectClasses,
     'hover:bg-customblue-50 active:bg-customblue-20'
   ),
@@ -43,15 +36,15 @@ const enabledEffectClasses = {
 const baseEnabledClasses = 'text-white';
 
 const enabledClasses = {
-  [ButtonType.primary]: classnames(
+  [ButtonEnums.type.primary]: classnames(
     'bg-primary-main',
     baseEnabledClasses,
-    enabledEffectClasses[ButtonType.primary]
+    enabledEffectClasses[ButtonEnums.type.primary]
   ),
-  [ButtonType.secondary]: classnames(
+  [ButtonEnums.type.secondary]: classnames(
     'bg-customblue-30',
     baseEnabledClasses,
-    enabledEffectClasses[ButtonType.secondary]
+    enabledEffectClasses[ButtonEnums.type.secondary]
   ),
 };
 
@@ -62,8 +55,8 @@ const defaults = {
   color: 'default',
   disabled: false,
   rounded: 'small',
-  size: ButtonSize.medium,
-  type: ButtonType.primary,
+  size: ButtonEnums.size.medium,
+  type: ButtonEnums.type.primary,
 };
 
 const Button = ({
@@ -106,6 +99,7 @@ const Button = ({
     fontTextClasses[type],
     disabled ? disabledClasses : enabledClasses[type],
     sizeClasses[size],
+    children ? 'min-w-[32px]' : '', // minimum width for buttons with text; icon only button does NOT get a minimum width
     className
   );
 
@@ -138,11 +132,11 @@ Button.propTypes = {
   /** Callback to be called when the button is clicked  */
   onClick: PropTypes.func.isRequired,
   /** Button size  */
-  size: PropTypes.oneOf([ButtonSize.medium, ButtonSize.small]),
+  size: PropTypes.oneOf([ButtonEnums.size.medium, ButtonEnums.size.small]),
   /** Whether the button should be disabled  */
   disabled: PropTypes.bool,
   /** Button type  */
-  type: PropTypes.oneOf([ButtonType.primary, ButtonType.secondary]),
+  type: PropTypes.oneOf([ButtonEnums.type.primary, ButtonEnums.type.secondary]),
   name: PropTypes.string,
   /** Button start icon name - if any icon is specified  */
   startIcon: PropTypes.node,
