@@ -73,15 +73,6 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
       children: false,
       warnings: true,
     },
-    devServer: {
-      open: true,
-      port: 3000,
-      historyApiFallback: true,
-      headers: {
-        'Cross-Origin-Embedder-Policy': 'require-corp',
-        'Cross-Origin-Opener-Policy': 'same-origin',
-      },
-    },
     cache: {
       type: 'filesystem',
     },
