@@ -6,13 +6,10 @@
  */
 
 const path = require('path');
-const versions = require('./versions.json');
-const VersionsArchived = require('./versionsArchived.json');
 
-const ArchivedVersionsDropdownItems = Object.entries(VersionsArchived).splice(
-  0,
-  5
-);
+// read this text file
+const fs = require('fs');
+const versions = fs.readFileSync('../../version.txt', 'utf8').split('\n');
 
 // This probably only makes sense for the beta phase, temporary
 // function getNextBetaVersionName() {
@@ -227,7 +224,7 @@ module.exports = {
           //     : undefined,
           versions: {
             current: {
-              label: 'Latest',
+              label: `${versions} (Latest)`,
             },
           },
         },
@@ -283,7 +280,7 @@ module.exports = {
         },
         items: [
           {
-            to: 'https://ohif.org/showcase',
+            href: 'https://ohif.org/showcase',
             label: 'Showcase',
             target: '_blank',
             position: 'left',
@@ -296,10 +293,16 @@ module.exports = {
             label: 'Docs',
           },
           {
-            to: 'https://ohif.org/collaborate',
+            href: 'https://ohif.org/collaborate',
             label: 'Collaborate',
             target: '_blank',
             position: 'left',
+          },
+          {
+            to: '/migration-guide',
+            label: 'Migration Guides',
+            position: 'left',
+            className: 'new-badge',
           },
           {
             to: '/help',
@@ -312,21 +315,6 @@ module.exports = {
             position: 'right',
             dropdownActiveClassDisabled: true,
             dropdownItemsAfter: [
-              {
-                type: 'html',
-                value: '<hr class="dropdown-separator">',
-              },
-              {
-                type: 'html',
-                className: 'dropdown-archived-versions',
-                value: '<b>Archived versions</b>',
-              },
-              ...ArchivedVersionsDropdownItems.map(
-                ([versionName, versionUrl]) => ({
-                  label: versionName,
-                  href: versionUrl,
-                })
-              ),
               {
                 type: 'html',
                 value: '<hr class="dropdown-separator">',
