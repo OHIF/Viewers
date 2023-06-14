@@ -149,7 +149,7 @@
     ]
   },
   "resolutions": {
-    "@cornerstonejs/core": "^1.1.8",
+    "@cornerstonejs/core": "^1.2.4",
     "**/@babel/runtime": "^7.20.13",
     "commander": "8.3.0",
     "nth-check": "^2.1.1",
