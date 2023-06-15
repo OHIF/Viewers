@@ -70,7 +70,9 @@ const Notification = ({
     >
       <div className="flex items-center grow">
         <Icon name={icon} className={classnames('w-6 h-6', color)} />
-        <span className="ml-2 text-[13px] text-white">{message}</span>
+        <span className="ml-2 text-[13px] text-black font-[500]">
+          {message}
+        </span>
       </div>
       <div className="flex flex-wrap gap-2 justify-end mt-2">
         {actions.map((action, index) => {
