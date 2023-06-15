@@ -65,7 +65,7 @@ const Notification = ({
   return (
     <div
       ref={notificationRef}
-      className="flex flex-col p-2 mx-2 mt-2 border-2 rounded-md border-customblue-10 bg-primary-dark"
+      className="flex flex-col p-2 mx-2 mt-2 border-2 rounded-md border-customblue-10 bg-customblue-400"
       data-cy={id}
     >
       <div className="flex items-center grow">

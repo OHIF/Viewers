@@ -72,6 +72,7 @@ module.exports = {
         100: '#c4fdff',
         200: '#38daff',
         300: '#1D204D',
+        400: '#90A0C1',
       },
 
       customgray: {
