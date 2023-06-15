@@ -19,6 +19,7 @@ const tracked = {
   thumbnailList: '@ohif/extension-measurement-tracking.panelModule.seriesList',
   viewport:
     '@ohif/extension-measurement-tracking.viewportModule.cornerstone-tracked',
+  ROIThresholdPanel: '@ohif/extension-default.panelModule.ROIThresholdSeg',
 };
 
 const dicomsr = {
@@ -197,7 +198,11 @@ function modeFactory() {
             id: ohif.layout,
             props: {
               leftPanels: [tracked.thumbnailList],
-              rightPanels: [dicomSeg.panel, tracked.measurements],
+              rightPanels: [
+                dicomSeg.panel,
+                tracked.measurements,
+                tracked.ROIThresholdPanel,
+              ],
               rightPanelDefaultClosed: true,
               viewports: [
                 {

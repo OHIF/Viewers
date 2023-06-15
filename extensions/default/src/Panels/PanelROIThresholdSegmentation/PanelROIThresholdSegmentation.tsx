@@ -89,10 +89,10 @@ export default function PanelRoiThresholdSegmentation({
       segmentationId: selectedSegmentationId,
       config,
     });
-
-    const lesionStats = runCommand('getLesionStats', { labelmap });
-    const suvPeak = runCommand('calculateSuvPeak', { labelmap });
-    const lesionGlyoclysisStats = lesionStats.volume * lesionStats.meanValue;
+    console.log(labelmap);
+    // const lesionStats = runCommand('getLesionStats', { labelmap });
+    // const suvPeak = runCommand('calculateSuvPeak', { labelmap });
+    // const lesionGlyoclysisStats = lesionStats.volume * lesionStats.meanValue;
 
     // update segDetails with the suv peak for the active segmentation
     const segmentation = segmentationService.getSegmentation(
@@ -100,9 +100,9 @@ export default function PanelRoiThresholdSegmentation({
     );
 
     const cachedStats = {
-      lesionStats,
-      suvPeak,
-      lesionGlyoclysisStats,
+      // lesionStats,
+      // suvPeak,
+      // lesionGlyoclysisStats,
     };
 
     const notYetUpdatedAtSource = true;
@@ -110,7 +110,7 @@ export default function PanelRoiThresholdSegmentation({
       {
         ...segmentation,
         ...Object.assign(segmentation.cachedStats, cachedStats),
-        displayText: [`SUV Peak: ${suvPeak.suvPeak.toFixed(2)}`],
+        // displayText: [`SUV Peak: ${suvPeak.suvPeak.toFixed(2)}`],
       },
       notYetUpdatedAtSource
     );

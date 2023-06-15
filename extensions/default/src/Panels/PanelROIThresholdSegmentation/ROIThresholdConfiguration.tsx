@@ -42,7 +42,7 @@ function ROIThresholdConfiguration({ config, dispatch, runCommand }) {
             <Button
               size="initial"
               className="px-2 py-2 text-base text-white"
-              color="primaryLight"
+              color="primary"
               variant="outlined"
               onClick={() => runCommand('setStartSliceForROIThresholdTool')}
             >
@@ -50,7 +50,7 @@ function ROIThresholdConfiguration({ config, dispatch, runCommand }) {
             </Button>
             <Button
               size="initial"
-              color="primaryLight"
+              color="primary"
               variant="outlined"
               className="px-2 py-2 text-base text-white"
               onClick={() => runCommand('setEndSliceForROIThresholdTool')}

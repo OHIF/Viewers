@@ -1,5 +1,12 @@
 import PanelStudyBrowser from './PanelStudyBrowser';
 import WrappedPanelStudyBrowser from './WrappedPanelStudyBrowser';
 import PanelMeasurementTable from './PanelMeasurementTable';
-
-export { PanelStudyBrowser, WrappedPanelStudyBrowser, PanelMeasurementTable };
+import PanelROIThresholdSegmentation from './PanelROIThresholdSegmentation';
+import PanelPetSUV from './PanelPetSUV';
+export {
+  PanelStudyBrowser,
+  WrappedPanelStudyBrowser,
+  PanelMeasurementTable,
+  PanelROIThresholdSegmentation,
+  PanelPetSUV,
+};

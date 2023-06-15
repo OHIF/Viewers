@@ -1,5 +1,10 @@
 import React from 'react';
-import { WrappedPanelStudyBrowser, PanelMeasurementTable } from './Panels';
+import {
+  WrappedPanelStudyBrowser,
+  PanelMeasurementTable,
+  PanelPetSUV,
+  PanelROIThresholdSegmentation,
+} from './Panels';
 
 // TODO:
 // - No loading UI exists yet
@@ -20,7 +25,25 @@ function getPanelModule({
       />
     );
   };
+  const wrappedPanelPetSuv = () => {
+    return (
+      <PanelPetSUV
+        commandsManager={commandsManager}
+        servicesManager={servicesManager}
+        extensionManager={extensionManager}
+      />
+    );
+  };
 
+  const wrappedROIThresholdSeg = () => {
+    return (
+      <PanelROIThresholdSegmentation
+        commandsManager={commandsManager}
+        servicesManager={servicesManager}
+        extensionManager={extensionManager}
+      />
+    );
+  };
   return [
     {
       name: 'seriesList',
@@ -40,6 +63,22 @@ function getPanelModule({
       label: 'Measurements',
       secondaryLabel: 'Measurements',
       component: wrappedMeasurementPanel,
+    },
+    {
+      name: 'petSUV',
+      iconName: 'tab-patient-info',
+      iconLabel: 'PET SUV',
+      label: 'PET SUV',
+      component: wrappedPanelPetSuv,
+      context: 'default',
+    },
+    {
+      name: 'ROIThresholdSeg',
+      iconName: 'tab-roi-threshold',
+      iconLabel: 'ROI Threshold',
+      label: 'ROI Threshold',
+      component: wrappedROIThresholdSeg,
+      context: 'default',
     },
   ];
 }
