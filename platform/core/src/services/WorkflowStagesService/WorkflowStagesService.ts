@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
 import { CommandsManager } from '../../classes';
-import { ServicesManager, ToolbarService } from '../../services';
+import { ServicesManager } from '../../services';
 import { PubSubService } from '../_shared/pubSubServiceInterface';
 
 export const EVENTS = {
@@ -167,15 +166,11 @@ class WorkflowStagesService extends PubSubService {
     });
   }
 
-  private _activateWorkflowStage(activeWorkflowStage: WorkflowStage): void {
-    this._activeWorkflowStage = activeWorkflowStage;
-    this._updateToolBar(activeWorkflowStage);
-    this._updatePanels(activeWorkflowStage);
-    this._updateHangingProtocol(activeWorkflowStage);
-    this._broadcastEvent(EVENTS.ACTIVE_STAGE_CHANGED, { activeWorkflowStage });
-  }
-
   public setActiveWorkflowStage(workflowStageId: string): void {
+    if (workflowStageId === this._activeWorkflowStage?.id) {
+      return;
+    }
+
     const activeWorkflowStage = this._workflowStages.find(
       stage => stage.id === workflowStageId
     );
@@ -184,7 +179,11 @@ class WorkflowStagesService extends PubSubService {
       throw new Error(`Invalid workflowStageId (${workflowStageId})`);
     }
 
-    this._activateWorkflowStage(activeWorkflowStage);
+    this._activeWorkflowStage = activeWorkflowStage;
+    this._updateToolBar(activeWorkflowStage);
+    this._updatePanels(activeWorkflowStage);
+    this._updateHangingProtocol(activeWorkflowStage);
+    this._broadcastEvent(EVENTS.ACTIVE_STAGE_CHANGED, { activeWorkflowStage });
   }
 
   public reset(): void {
