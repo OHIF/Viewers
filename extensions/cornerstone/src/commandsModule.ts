@@ -560,6 +560,31 @@ function commandsModule({
       colormap,
       immediate = true,
     }) => {
+      const viewport = cornerstoneViewportService.getCornerstoneViewportByIndex(
+        viewportIndex
+      );
+      //get actor from the viewport
+      const actorEntries = viewport.getActors();
+
+      const actorEntry = actorEntries.find(actorEntry => {
+        return actorEntry.uid.includes(displaySetInstanceUID);
+      });
+
+      const { actor: volumeActor, uid: volumeId } = actorEntry;
+      console.log(colormap);
+      viewport.setProperties({ colormap: colormap });
+      console.log(viewport);
+
+      if (immediate) {
+        viewport.render();
+      }
+    },
+    setSingleViewportColormap: ({
+      viewportIndex,
+      displaySetInstanceUID,
+      colormap,
+      immediate = true,
+    }) => {
       // const viewport = cornerstoneViewportService.getCornerstoneViewportByIndex(
       //   viewportIndex
       // );
@@ -746,6 +771,9 @@ function commandsModule({
     },
     toggleReferenceLines: {
       commandFn: actions.toggleReferenceLines,
+    },
+    setSingleViewportColormap: {
+      commandFn: actions.setSingleViewportColormap,
     },
   };
 

@@ -1,7 +1,7 @@
 import { ToolGroupManager, Enums, Types } from '@cornerstonejs/tools';
 
 import { Types as OhifTypes, pubSubServiceInterface } from '@ohif/core';
-import getActiveViewportEnabledElement from 'extensions/cornerstone/src/utils/getActiveViewportEnabledElement';
+import getActiveViewportEnabledElement from '../../utils/getActiveViewportEnabledElement';
 const EVENTS = {
   VIEWPORT_ADDED: 'event::cornerstone::toolgroupservice:viewportadded',
   TOOLGROUP_CREATED: 'event::cornerstone::toolgroupservice:toolgroupcreated',

@@ -352,7 +352,8 @@ class MeasurementService extends PubSubService {
       measurement,
       annotationType
     );
-
+    console.log(measurement);
+    console.log(mapping);
     if (mapping) {
       return mapping.toAnnotationSchema(measurement, annotationType);
     }
@@ -416,7 +417,6 @@ class MeasurementService extends PubSubService {
       log.warn('Invalid source. Exiting early.');
       return;
     }
-
     const sourceInfo = this._getSourceToString(source);
 
     if (!annotationType) {
@@ -528,7 +528,7 @@ class MeasurementService extends PubSubService {
         return;
       }
       const { toMeasurementSchema } = sourceMapping;
-
+      console.log(sourceAnnotationDetail);
       /* Convert measurement */
       measurement = toMeasurementSchema(sourceAnnotationDetail);
       measurement.source = source;
