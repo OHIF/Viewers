@@ -1,17 +1,17 @@
-import StepProgressDropdown from '../StepProgressDropdown';
+import ProgressDropdown from '../ProgressDropdown';
 import { ArgsTable, Story, Canvas, Meta } from '@storybook/addon-docs';
 import { createComponentTemplate } from '../../../storybook/functions/create-component-story';
 
 export const argTypes = {
-  component: StepProgressDropdown,
-  title: 'Components/StepProgressDropdown',
+  component: ProgressDropdown,
+  title: 'Components/ProgressDropdown',
 };
 
-<Meta title="Components/StepProgressDropdown" component={StepProgressDropdown} />
+<Meta title="Components/ProgressDropdown" component={ProgressDropdown} />
 
-export const StepProgressDropdownTemplate = args => (
+export const ProgressDropdownTemplate = args => (
   <div className="flex h-60 mb-2.5 max-w-xs">
-    <StepProgressDropdown {...args} />
+    <ProgressDropdown {...args} />
   </div>
 );
 
@@ -20,7 +20,7 @@ export const loremIpsumText = new Array(7)
   .substring(1);
 
 
-<Heading title="StepProgressDropdown" componentRelativePath="StepProgressDropdown/StepProgressDropdown.tsx" />
+<Heading title="ProgressDropdown" componentRelativePath="ProgressDropdown/ProgressDropdown.tsx" />
 
 - [Overview](#overview)
 - [Props](#props)
@@ -32,17 +32,17 @@ export const loremIpsumText = new Array(7)
 Dropdown is a modal Dropdown component which enabled to show a modal Dropdown.
 
 <Canvas>
-  <Story name="StepProgressDropdownOverview" args={{
+  <Story name="ProgressDropdownOverview" args={{
     options: [],
     children: '[empty dropdown]'
   }}>
-    {StepProgressDropdownTemplate.bind({})}
+    {ProgressDropdownTemplate.bind({})}
   </Story>
 </Canvas>
 
 ## Props
 
-<ArgsTable of={StepProgressDropdown} />
+<ArgsTable of={ProgressDropdown} />
 
 ## Usage
 
@@ -51,7 +51,7 @@ black to dark blue in the status bar beneath the dropdown when the item is selec
 
 <Canvas>
   <Story
-    name="StepProgressDropdownList"
+    name="ProgressDropdownList"
     onChange={ selectedItem => selectedItem.completed = true }
     args={{
       options: [
@@ -89,10 +89,10 @@ black to dark blue in the status bar beneath the dropdown when the item is selec
       ],
     }}
   >
-    {StepProgressDropdownTemplate.bind({})}
+    {ProgressDropdownTemplate.bind({})}
   </Story>
 </Canvas>
 
 ## Contribute
 
-<Footer componentRelativePath="StepProgressDropdown/__stories__/progressDropdown.stories.mdx" />
+<Footer componentRelativePath="ProgressDropdown/__stories__/progressDropdown.stories.mdx" />

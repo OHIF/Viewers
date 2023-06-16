@@ -1,7 +1,7 @@
 import { CustomizationService } from '@ohif/core';
 import React from 'react';
 import DataSourceSelector from './Panels/DataSourceSelector';
-import StepProgressDropdownWithService from './components/StepProgressDropdownWithService';
+import ProgressDropdownWithService from './components/ProgressDropdownWithService';
 
 /**
  *
@@ -135,8 +135,8 @@ export default function getCustomizationModule() {
         },
 
         {
-          id: 'stepProgressDropdownWithServiceComponent',
-          component: StepProgressDropdownWithService,
+          id: 'progressDropdownWithServiceComponent',
+          component: ProgressDropdownWithService,
         },
       ],
     },

@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback, ReactElement } from 'react';
 import { ServicesManager } from '@ohif/core';
-import { StepProgressDropdown } from '@ohif/ui';
+import { ProgressDropdown } from '@ohif/ui';
 
 const stagesToDropdownOptions = (stages = []) =>
   stages.map(stage => ({
@@ -10,7 +10,7 @@ const stagesToDropdownOptions = (stages = []) =>
     completed: false,
   }));
 
-function StepProgressDropdownWithService({
+function ProgressDropdownWithService({
   servicesManager,
 }: {
   servicesManager: ServicesManager;
@@ -106,7 +106,7 @@ function StepProgressDropdownWithService({
   }, [servicesManager, workflowStagesService]);
 
   return (
-    <StepProgressDropdown
+    <ProgressDropdown
       options={dropdownOptions}
       value={activeStageId}
       onChange={handleDropdownChange}
@@ -114,4 +114,4 @@ function StepProgressDropdownWithService({
   );
 }
 
-export default StepProgressDropdownWithService;
+export default ProgressDropdownWithService;

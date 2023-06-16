@@ -23,11 +23,11 @@ const styles = {
 }
 
 function WorkflowPanel({ servicesManager, extensionManager }) {
-  const StepProgressDropdownWithService = useMemo(() => {
+  const ProgressDropdownWithService = useMemo(() => {
     const defaultComponents = extensionManager.getModuleEntry('@ohif/extension-default.customizationModule.default').value;
 
     return defaultComponents.find(
-      component => component.id === 'stepProgressDropdownWithServiceComponent'
+      component => component.id === 'progressDropdownWithServiceComponent'
     ).component;
   }, []);
 
@@ -35,7 +35,7 @@ function WorkflowPanel({ servicesManager, extensionManager }) {
     <div data-cy={'workflow-panel'} style={styles.panel} >
       <div style={styles.title}>Workflow</div>
       <div style={{ padding: '0 5px 10px' }}>
-        <StepProgressDropdownWithService servicesManager={servicesManager} />
+        <ProgressDropdownWithService servicesManager={servicesManager} />
       </div>
     </div>
   );

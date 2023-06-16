@@ -24,7 +24,7 @@ import MeasurementTable from './MeasurementTable';
 import Modal from './Modal';
 import NavBar from './NavBar';
 import Notification from './Notification';
-import StepProgressDropdown from './StepProgressDropdown';
+import ProgressDropdown from './ProgressDropdown';
 import Select from './Select';
 import SegmentationTable from './SegmentationTable';
 import SegmentationGroupTable from './SegmentationGroupTable';
@@ -112,7 +112,7 @@ export {
   Modal,
   NavBar,
   Notification,
-  StepProgressDropdown,
+  ProgressDropdown,
   ProgressLoadingBar,
   Select,
   SegmentationTable,
