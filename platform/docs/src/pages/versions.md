@@ -16,5 +16,5 @@ Currently we have three product versions:
 - Version 3.x (release branch): Released version of the OHIF platform which is more stable and tested
 
 
-You can read more about the differences between the versions in the [development section](../../development/getting-started#branches) of the documentation
+You can read more about the differences between the versions in the [development section](../../docs/development/getting-started#branches) of the documentation
 to understand which version is more suitable for your use case.

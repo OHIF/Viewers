@@ -5,7 +5,7 @@ sidebar_label: Overview
 
 # Deployment
 
-The OHIF Viewer can served up as a stand-alone PWA ([progressive web
+The OHIF Viewer can be served as a stand-alone PWA ([progressive web
 application][pwa-url]) by building and hosting a collection of static assets or be embedded in other web applications via an iframe if needed. In
 either case, you will need to configure your instance of the Viewer so that it
 can connect to your data source (the database or PACS that provides the data
@@ -15,7 +15,7 @@ your Viewer will display).
 Our goal is to make deployment as simple and painless as possible; however,
 there is an inherent amount of complexity in configuring and deploying web
 applications. If you find yourself a little lost, please don't hesitate to
-[reach out for help](/help)
+reach out to for help.
 :::
 
 ## Deployment Scenarios

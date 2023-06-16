@@ -109,7 +109,7 @@ npx http-server ./dist
 ```
 
 :::caution
-In the video below you see there is `platform/viewer` which has been renamed to `platform/app` in the latest version
+In the video below notice that there is `platform/viewer` which has been renamed to `platform/app` in the latest version
 :::
 
 <div style={{padding:"56.25% 0 0 0", position:"relative"}}>
