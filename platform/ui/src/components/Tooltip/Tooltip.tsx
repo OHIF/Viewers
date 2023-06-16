@@ -40,6 +40,7 @@ const Tooltip = ({
   tight,
   children,
   isDisabled,
+  // time to show/hide the tooltip on mouse over and  mouse out events (default: 300ms)
   showHideDelay,
   onHide,
 }) => {

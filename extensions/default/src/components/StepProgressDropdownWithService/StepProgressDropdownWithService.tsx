@@ -2,16 +2,10 @@ import React, { useEffect, useState, useCallback, ReactElement } from 'react';
 import { ServicesManager } from '@ohif/core';
 import { StepProgressDropdown } from '@ohif/ui';
 
-// Long text to test tooptip size limit
-const loremIpsum = new Array(7)
-  .join(` Lorem ipsum, dolor sit amet consectetur adipisicing elit`)
-  .substring(1);
-
 const stagesToDropdownOptions = (stages = []) =>
   stages.map(stage => ({
     label: stage.name,
     value: stage.id,
-    info: `${stage.name.toUpperCase()} information text. ${loremIpsum}`,
     activated: false,
     completed: false,
   }));
