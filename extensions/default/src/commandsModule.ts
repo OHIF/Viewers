@@ -23,8 +23,7 @@ import calculateTMTV from './utils/calculateTMTV';
 import createAndDownloadTMTVReport from './utils/createAndDownloadTMTVReport';
 
 import dicomRTAnnotationExport from './utils/dicomRTAnnotationExport/RTStructureSet';
-import { getEnabledElement } from 'extensions/cornerstone/src/state';
-
+import { getEnabledElement } from './state';
 const { subscribeToNextViewportGridChange } = utils;
 
 export type HangingProtocolParams = {
@@ -367,7 +366,7 @@ const commandsModule = ({
       const displaySetInstanceUID = displaySetInstanceUIDs[0];
       console.log(displaySetInstanceUID);
       console.log(colormap);
-      commandsManager.runCommand('setViewportColormap', {
+      commandsManager.runCommand('setSingleViewportColormap', {
         viewportIndex: activeViewportIndex,
         displaySetInstanceUID,
         colormap,
@@ -969,13 +968,23 @@ const commandsModule = ({
         });
         return;
       }
-
+      console.log(annotationUIDs);
       const { ptLower, ptUpper, ctLower, ctUpper } = getThresholdValues(
         annotationUIDs,
         [referencedVolume, ctReferencedVolume],
         config
       );
-
+      console.log(
+        csTools.utilities.segmentation.rectangleROIThresholdVolumeByRange(
+          annotationUIDs,
+          labelmapVolume,
+          [
+            { volume: referencedVolume, lower: ptLower, upper: ptUpper },
+            { volume: ctReferencedVolume, lower: ctLower, upper: ctUpper },
+          ],
+          { overwrite: true }
+        )
+      );
       return csTools.utilities.segmentation.rectangleROIThresholdVolumeByRange(
         annotationUIDs,
         labelmapVolume,
