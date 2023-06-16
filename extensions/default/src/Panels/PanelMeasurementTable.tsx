@@ -1,7 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { utils, ServicesManager } from '@ohif/core';
-import { MeasurementTable, Dialog, Input, useViewportGrid } from '@ohif/ui';
+import {
+  MeasurementTable,
+  Dialog,
+  Input,
+  useViewportGrid,
+  ButtonEnums,
+} from '@ohif/ui';
 import ActionButtons from './ActionButtons';
 import debounce from 'lodash.debounce';
 
@@ -189,9 +195,8 @@ export default function PanelMeasurementTable({
           );
         },
         actions: [
-          // temp: swap button types until colors are updated
-          { id: 'cancel', text: 'Cancel', type: 'primary' },
-          { id: 'save', text: 'Save', type: 'secondary' },
+          { id: 'cancel', text: 'Cancel', type: ButtonEnums.type.secondary },
+          { id: 'save', text: 'Save', type: ButtonEnums.type.primary },
         ],
         onSubmit: onSubmitHandler,
       },
