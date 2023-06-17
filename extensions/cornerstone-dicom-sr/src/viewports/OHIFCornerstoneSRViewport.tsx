@@ -22,8 +22,8 @@ function OHIFCornerstoneSRViewport(props) {
     dataSource,
     displaySets,
     viewportIndex,
-    viewportOptions,
     viewportLabel,
+    viewportOptions,
     servicesManager,
     extensionManager,
   } = props;
@@ -210,9 +210,19 @@ function OHIFCornerstoneSRViewport(props) {
         // should be passed second since we don't want SR displaySet to
         // override the activeImageDisplaySetData
         displaySets={[activeImageDisplaySetData]}
+        // It is possible that there is a hanging protocol applying viewportOptions
+        // for the SR, so inherit the viewport options
+        // TODO: Ensure the viewport options are set correctly with respect to
+        // stack etc, in the incoming viewport options.
         viewportOptions={{
           ...viewportOptions,
           toolGroupId: `${SR_TOOLGROUP_BASE_NAME}`,
+          // viewportType should not be required, as the stack type should be
+          // required already in order to view SR, but sometimes segmentation
+          // views set the viewport type without fixing the allowed display
+          viewportType: 'stack',
+          // The positionIds for the viewport aren't meaningful for the child display sets
+          positionIds: null,
         }}
         onElementEnabled={onElementEnabled}
         initialImageIndex={initialImageIndex}

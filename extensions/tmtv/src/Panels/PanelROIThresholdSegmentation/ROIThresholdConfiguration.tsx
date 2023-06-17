@@ -1,5 +1,5 @@
 import React from 'react';
-import { Input, Label, Select, Button, ButtonGroup } from '@ohif/ui';
+import { Input, Label, Select, LegacyButton, ButtonGroup } from '@ohif/ui';
 import { useTranslation } from 'react-i18next';
 
 export const ROI_STAT = 'roi_stat';
@@ -38,8 +38,9 @@ function ROIThresholdConfiguration({ config, dispatch, runCommand }) {
           />
         </div>
         <div className="w-1/2">
+          {/* TODO Revisit design of ButtonGroup later - for now use LegacyButton for its children.*/}
           <ButtonGroup>
-            <Button
+            <LegacyButton
               size="initial"
               className="px-2 py-2 text-base text-white"
               color="primaryLight"
@@ -47,8 +48,8 @@ function ROIThresholdConfiguration({ config, dispatch, runCommand }) {
               onClick={() => runCommand('setStartSliceForROIThresholdTool')}
             >
               {t('Start')}
-            </Button>
-            <Button
+            </LegacyButton>
+            <LegacyButton
               size="initial"
               color="primaryLight"
               variant="outlined"
@@ -56,7 +57,7 @@ function ROIThresholdConfiguration({ config, dispatch, runCommand }) {
               onClick={() => runCommand('setEndSliceForROIThresholdTool')}
             >
               {t('End')}
-            </Button>
+            </LegacyButton>
           </ButtonGroup>
         </div>
       </div>

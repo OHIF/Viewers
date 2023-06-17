@@ -2,7 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
-import { IconButton, Icon, Tooltip } from '../';
+import IconButton from '../IconButton';
+import Icon from '../Icon';
+import Tooltip from '../Tooltip';
 
 const ToolbarButton = ({
   type = 'tool',

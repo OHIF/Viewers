@@ -10,7 +10,11 @@ import SwiperCore, {
   Scrollbar,
 } from 'swiper';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Button, Icon, IconButton, Tooltip } from '../';
+
+import LegacyButton from '../LegacyButton';
+import Icon from '../Icon';
+import IconButton from '../IconButton';
+import Tooltip from '../Tooltip';
 
 import 'swiper/css';
 import 'swiper/css/navigation';
@@ -214,7 +218,8 @@ const SidePanel = ({
             }}
             data-cy={`side-panel-header-${side}`}
           >
-            <Button
+            {/* TODO This should be redesigned to not be a button. */}
+            <LegacyButton
               variant="text"
               color="inherit"
               border="none"
@@ -234,7 +239,7 @@ const SidePanel = ({
               <span className="text-primary-active">
                 {tabs.length === 1 && (t(tabs[activeTabIndex].label) as string)}
               </span>
-            </Button>
+            </LegacyButton>
           </div>
           {tabs.length > 1 &&
             _getMoreThanOneTabLayout(

@@ -91,7 +91,3 @@ const extension = {
 };
 
 export default extension;
-
-// Export the protocols separately to allow for extending it at compile time
-// in other modules
-export { protocols };

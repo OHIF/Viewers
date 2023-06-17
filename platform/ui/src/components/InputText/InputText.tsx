@@ -1,7 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { Input, InputLabelWrapper } from '../';
+import Input from '../Input';
+import InputLabelWrapper from '../InputLabelWrapper';
 
 const InputText = ({
   id,
