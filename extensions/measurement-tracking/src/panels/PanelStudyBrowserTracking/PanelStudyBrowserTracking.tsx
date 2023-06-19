@@ -6,6 +6,7 @@ import {
   useImageViewer,
   useViewportGrid,
   Dialog,
+  ButtonEnums,
 } from '@ohif/ui';
 import { useTrackedMeasurements } from '../../getContextModule';
 
@@ -507,11 +508,15 @@ function _mapDisplaySets(
                   </div>
                 ),
                 actions: [
-                  { id: 'cancel', text: 'Cancel', type: 'secondary' },
+                  {
+                    id: 'cancel',
+                    text: 'Cancel',
+                    type: ButtonEnums.type.secondary,
+                  },
                   {
                     id: 'yes',
                     text: 'Yes',
-                    type: 'primary',
+                    type: ButtonEnums.type.primary,
                     classes: ['reject-yes-button'],
                   },
                 ],

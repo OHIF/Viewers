@@ -27,7 +27,7 @@ describe('OHIF Measurement Panel', function() {
     cy.addLengthMeasurement();
     cy.get('[data-cy="viewport-notification"]').should('exist');
     cy.get('[data-cy="viewport-notification"]').should('be.visible');
-    cy.get('[data-cy="prompt-begin-tracking-yes"]').click();
+    cy.get('[data-cy="prompt-begin-tracking-yes-btn"]').click();
     cy.get('[data-cy="measurement-item"]').click();
 
     cy.get('[data-cy="measurement-item"]')
@@ -46,7 +46,7 @@ describe('OHIF Measurement Panel', function() {
   it('checks if image would jump when clicked on a measurement item', function() {
     // Add length measurement
     cy.addLengthMeasurement();
-    cy.get('[data-cy="prompt-begin-tracking-yes"]').click();
+    cy.get('[data-cy="prompt-begin-tracking-yes-btn"]').click();
 
     cy.scrollToIndex(13);
 

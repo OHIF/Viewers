@@ -1,5 +1,5 @@
 import React from 'react';
-import { Input, Dialog } from '@ohif/ui';
+import { Input, Dialog, ButtonEnums } from '@ohif/ui';
 
 function callInputDialog(uiDialogService, label, callback) {
   const dialogId = 'enter-segment-label';
@@ -29,8 +29,8 @@ function callInputDialog(uiDialogService, label, callback) {
         noCloseButton: true,
         onClose: () => uiDialogService.dismiss({ id: dialogId }),
         actions: [
-          { id: 'cancel', text: 'Cancel', type: 'primary' },
-          { id: 'save', text: 'Confirm', type: 'secondary' },
+          { id: 'cancel', text: 'Cancel', type: ButtonEnums.type.secondary },
+          { id: 'save', text: 'Confirm', type: ButtonEnums.type.primary },
         ],
         onSubmit: onSubmitHandler,
         body: ({ value, setValue }) => {
