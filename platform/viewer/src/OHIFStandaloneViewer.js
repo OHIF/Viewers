@@ -150,7 +150,10 @@ class OHIFStandaloneViewer extends Component {
             component={() => {
               userManager.getUser().then(user => {
                 if (user) {
-                  userManager.signinSilent();
+                  userManager.signinSilent().catch(error => {
+                    'Silent login failed', error;
+                    userManager.signinRedirect();
+                  });
                 } else {
                   userManager.signinRedirect();
                 }

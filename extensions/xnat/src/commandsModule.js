@@ -155,16 +155,16 @@ const definitions = {
     storeContexts: [],
     options: { evt: null },
   },
-  undo: {
-    commandFn: actions.brushUndoRedo,
-    storeContexts: ['viewports'],
-    options: { operation: 'undo' },
-  },
-  redo: {
-    commandFn: actions.brushUndoRedo,
-    storeContexts: ['viewports'],
-    options: { operation: 'redo' },
-  },
+  // undo: {
+  //   commandFn: actions.brushUndoRedo,
+  //   storeContexts: ['viewports'],
+  //   options: { operation: 'undo' },
+  // },
+  // redo: {
+  //   commandFn: actions.brushUndoRedo,
+  //   storeContexts: ['viewports'],
+  //   options: { operation: 'redo' },
+  // },
 };
 
 export default {
