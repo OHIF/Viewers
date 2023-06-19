@@ -171,4 +171,4 @@ export default {
   actions,
   definitions,
   defaultContext: 'ACTIVE_VIEWPORT::CORNERSTONE::XNAT',
-};
+};s
