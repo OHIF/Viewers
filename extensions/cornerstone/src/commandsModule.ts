@@ -623,21 +623,19 @@ function commandsModule({
       );
       toolGroup.setToolEnabled(ReferenceLinesTool.toolName);
     },
-    setVolumeToViewport: ({ displaySet }) => {
-      console.log('setVolumeToViewport has run');
+    setDisplaySetToViewport: ({ displaySet }) => {
+      const cachedDisplaySetKeys = [
+        ...displaySetService.getDisplaySetCache().keys(),
+      ];
       const displaySetKey = Object.keys(displaySet)[0];
-      displaySetService._addDisplaySetsToCache([displaySet[displaySetKey]]);
-      const testttt = displaySetService.getDisplaySetCache();
-      console.log(`Test:`);
-      console.log(testttt);
-      // const makeTest = displaySetService.addDisplaySets();
 
-      // console.log(makeTest);
+      // Check to see if computed display set is already in cache
+      if (!cachedDisplaySetKeys.includes(displaySetKey)) {
+        displaySetService._addDisplaySetsToCache([displaySet[displaySetKey]]);
+      }
 
-      // const displayUID = volumeId.split(':')[1];
       // Get all viewports and their corresponding indexs
       const { viewports } = viewportGridService.getState();
-      const viewportIndex = Object.keys(viewports)[0];
       const viewportsToUpdate = [];
 
       viewports.forEach((viewport, index) => {
@@ -648,41 +646,14 @@ function commandsModule({
             initialImageOptions: {
               preset: 'middle',
             },
+            viewportType: 'volume',
+            orientation: viewport.viewportOptions.orientation,
+            background: viewport.viewportOptions.background,
           },
         });
       });
 
-      console.log(viewportsToUpdate);
-
       viewportGridService.setDisplaySetsForViewports(viewportsToUpdate);
-
-      // For each viewport index, get the cornerstone viewport and set the
-      // computed volume
-      // viewportIndex.forEach(viewportNum => {
-      //   const viewport = cornerstoneViewportService.getCornerstoneViewport(
-      //     viewports[viewportNum].viewportId
-      //   );
-
-      //   console.log(viewport.getActors());
-
-      //   viewport.setVolumes([
-      //     {
-      //       volumeId,
-      //     },
-      //   ]);
-      //   const viewportInfo = cornerstoneViewportService.getViewportInfo(
-      //     viewports[viewportNum].viewportId
-      //   );
-
-      //   const viewportInd = viewportInfo.getViewportIndex();
-      //   console.log(viewportInd);
-
-      //   // commandsManager.runCommand('setViewportColormap', {
-      //   //   viewportIndex: viewportInd,
-      //   //   displaySetInstanceUID: displayUID,
-      //   //   colormap,
-      //   // });
-      // });
     },
   };
 
@@ -808,8 +779,8 @@ function commandsModule({
     toggleReferenceLines: {
       commandFn: actions.toggleReferenceLines,
     },
-    setVolumeToViewport: {
-      commandFn: actions.setVolumeToViewport,
+    setDisplaySetToViewport: {
+      commandFn: actions.setDisplaySetToViewport,
       storeContexts: [],
       options: {},
     },
