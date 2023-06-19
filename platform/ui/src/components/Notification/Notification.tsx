@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
-import Button from '../Button';
+import Button, { ButtonEnums } from '../Button';
 import Icon from '../Icon';
 
 const Notification = ({
@@ -42,7 +42,7 @@ const Notification = ({
       color: 'text-yellow-500',
     },
     info: {
-      icon: 'info',
+      icon: 'notifications-info',
       color: 'text-primary-main',
     },
     success: {
@@ -65,24 +65,23 @@ const Notification = ({
   return (
     <div
       ref={notificationRef}
-      className="flex flex-col p-2 mx-2 mt-2 rounded bg-common-bright"
+      className="flex flex-col p-2 mx-2 mt-2 border-2 rounded-md border-customblue-10 bg-customblue-400"
       data-cy={id}
     >
-      <div className="flex grow">
-        <Icon name={icon} className={classnames('w-5', color)} />
-        <span className="ml-2 text-base text-black">{message}</span>
+      <div className="flex items-center grow">
+        <Icon name={icon} className={classnames('w-6 h-6', color)} />
+        <span className="ml-2 text-[13px] text-black">{message}</span>
       </div>
-      <div className="flex justify-end mt-2">
+      <div className="flex flex-wrap gap-2 justify-end mt-2">
         {actions.map((action, index) => {
           const isFirst = index === 0;
-          const isPrimary = action.type === 'primary';
 
           return (
             <Button
-              data-cy={action.id}
+              name={action.id}
               key={index}
-              className={classnames({ 'ml-2': !isFirst })}
-              color={isPrimary ? 'primary' : undefined}
+              type={action.type}
+              size={action.size || ButtonEnums.size.small}
               onClick={() => {
                 onSubmit(action.value);
               }}
@@ -108,7 +107,11 @@ Notification.propTypes = {
     PropTypes.shape({
       text: PropTypes.string.isRequired,
       value: PropTypes.any.isRequired,
-      type: PropTypes.oneOf(['primary', 'secondary', 'cancel']).isRequired,
+      type: PropTypes.oneOf([
+        ButtonEnums.type.primary,
+        ButtonEnums.type.secondary,
+      ]).isRequired,
+      size: PropTypes.oneOf([ButtonEnums.size.small, ButtonEnums.size.medium]),
     })
   ).isRequired,
   onSubmit: PropTypes.func.isRequired,

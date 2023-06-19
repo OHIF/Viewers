@@ -37,11 +37,10 @@ collaborators. We are always happy to hear about new groups interested in using
 the OHIF framework, and may be able to provide development support if the
 proposed collaboration has an impact on cancer research.
 
-### Does OHIF offer commercial support?
+### Does OHIF offer support?
 
-The Open Health Imaging Foundation does not offer commercial support, however,
-some community members do offer consulting services. You can search our
-[Community Forum](https://community.ohif.org/) for more information.
+yes, you can contact us for more information [here](https://ohif.org/get-support)
+
 
 ### Does The OHIF Viewer have [510(k) Clearance][501k-clearance] from the U.S. F.D.A or [CE Marking][ce-marking] from the European Commission?
 

@@ -14,7 +14,7 @@ import IconButton from '../IconButton';
 import Icon from '../Icon';
 import Select from '../Select';
 import InputLabelWrapper from '../InputLabelWrapper';
-import Button from '../Button';
+import Button, { ButtonEnums } from '../Button';
 
 const FILE_TYPE_OPTIONS = [
   {
@@ -401,13 +401,9 @@ const ViewportDownloadForm = ({
 
       <div className="flex justify-end mt-4">
         <Button
-          data-cy="cancel-btn"
-          variant="outlined"
-          size="initial"
-          color="black"
-          border="secondary"
+          name="cancel"
+          type={ButtonEnums.type.secondary}
           onClick={onClose}
-          className="p-2"
         >
           {t('Cancel')}
         </Button>
@@ -415,8 +411,8 @@ const ViewportDownloadForm = ({
           className="ml-2"
           disabled={hasError}
           onClick={downloadImage}
-          color="primary"
-          data-cy="download-btn"
+          type={ButtonEnums.type.primary}
+          name={'download'}
         >
           {t('Download')}
         </Button>

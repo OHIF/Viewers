@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import StudyItem from '../StudyItem';
 import ButtonGroup from '../ButtonGroup';
-import Button from '../Button';
+import LegacyButton from '../LegacyButton';
 import ThumbnailList from '../ThumbnailList';
 import { StringNumber } from '../../types';
 
@@ -81,6 +81,7 @@ const StudyBrowser = ({
         className="flex flex-row items-center justify-center h-16 p-4 border-b w-100 border-secondary-light bg-primary-dark"
         data-cy={'studyBrowser-panel'}
       >
+        {/* TODO Revisit design of ButtonGroup later - for now use LegacyButton for its children.*/}
         <ButtonGroup variant="outlined" color="secondary" splitBorder={false}>
           {tabs.map(tab => {
             const { name, label, studies } = tab;
@@ -95,7 +96,7 @@ const StudyBrowser = ({
             };
             const color = classStudyBrowser[`${isActive}`];
             return (
-              <Button
+              <LegacyButton
                 key={name}
                 className={'text-white text-base p-2 min-w-18'}
                 size="initial"
@@ -107,7 +108,7 @@ const StudyBrowser = ({
                 disabled={isDisabled}
               >
                 {t(label)}
-              </Button>
+              </LegacyButton>
             );
           })}
         </ButtonGroup>
