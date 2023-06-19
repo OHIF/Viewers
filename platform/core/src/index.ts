@@ -29,6 +29,8 @@ import {
   PubSubService,
   UserAuthenticationService,
   CustomizationService,
+  StateSyncService,
+  PanelService,
 } from './services';
 
 import IWebApiDataSource from './DataSources/IWebApiDataSource';
@@ -60,6 +62,7 @@ const OHIF = {
   //
   CineService,
   CustomizationService,
+  StateSyncService,
   UIDialogService,
   UIModalService,
   UINotificationService,
@@ -74,6 +77,7 @@ const OHIF = {
   DicomMetadataStore,
   pubSubServiceInterface,
   PubSubService,
+  PanelService,
 };
 
 export {
@@ -97,6 +101,7 @@ export {
   //
   CineService,
   CustomizationService,
+  StateSyncService,
   UIDialogService,
   UIModalService,
   UINotificationService,
@@ -112,6 +117,7 @@ export {
   pubSubServiceInterface,
   PubSubService,
   Types,
+  PanelService,
 };
 
 export { OHIF };

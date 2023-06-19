@@ -81,6 +81,16 @@ export default class ProtocolEngine {
     });
   }
 
+  /**
+   * finds the match results against the given display set or
+   * study instance by testing the given rules against this, and using
+   * the provided options for testing.
+   *
+   * @param {*} metaData to match against as primary value
+   * @param {*} rules to apply
+   * @param {*} options are additional values that can be used for matching
+   * @returns
+   */
   findMatch(metaData, rules, options) {
     return HPMatcher.match(
       metaData,
@@ -109,7 +119,7 @@ export default class ProtocolEngine {
       let rules = protocol.protocolMatchingRules.slice();
       if (!rules || !rules.length) {
         console.warn(
-          'ProtocolEngine::findMatchByStudy no matching rules - specify protocolMatchingRules',
+          'ProtocolEngine::findMatchByStudy no matching rules - specify protocolMatchingRules for',
           protocol.id
         );
         return;

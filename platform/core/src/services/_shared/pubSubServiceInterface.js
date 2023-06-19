@@ -103,4 +103,20 @@ export class PubSubService {
     this.unsubscriptions.forEach(unsub => unsub());
     this.unsubscriptions = [];
   }
+
+  /**
+   * Creates an event that records whether or not someone
+   * has consumed it.  Call eventData.consume() to consume the event.
+   * Check eventData.isConsumed to see if it is consumed or not.
+   * @param props - to include in the event
+   */
+  protected createConsumableEvent(props) {
+    return {
+      ...props,
+      isConsumed: false,
+      consume: function Consume() {
+        this.isConsumed = true;
+      },
+    }
+  }
 }

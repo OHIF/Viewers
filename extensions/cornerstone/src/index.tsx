@@ -7,25 +7,29 @@ import {
   imageRetrievalPoolManager,
 } from '@cornerstonejs/core';
 import { Enums as cs3DToolsEnums } from '@cornerstonejs/tools';
-import { Types } from '@ohif/core';
+import { ServicesManager, Types } from '@ohif/core';
 
 import init from './init';
-import commandsModule from './commandsModule';
+import getCustomizationModule from './getCustomizationModule';
+import getCommandsModule from './commandsModule';
 import getHangingProtocolModule from './getHangingProtocolModule';
 import ToolGroupService from './services/ToolGroupService';
 import SyncGroupService from './services/SyncGroupService';
 import SegmentationService from './services/SegmentationService';
 import CornerstoneCacheService from './services/CornerstoneCacheService';
+import CornerstoneViewportService from './services/ViewportService/CornerstoneViewportService';
+import * as CornerstoneExtensionTypes from './types';
 
 import { toolNames } from './initCornerstoneTools';
 import { getEnabledElement, reset as enabledElementReset } from './state';
-import CornerstoneViewportService from './services/ViewportService/CornerstoneViewportService';
 import dicomLoaderService from './utils/dicomLoaderService';
+import getActiveViewportEnabledElement from './utils/getActiveViewportEnabledElement';
 import { registerColormap } from './utils/colormap/transferFunctionHelpers';
 
 import { id } from './id';
 import * as csWADOImageLoader from './initWADOImageLoader.js';
 import { measurementMappingUtils } from './utils/measurementServiceMappings';
+import type { PublicViewportOptions } from './services/ViewportService/Viewport';
 
 const Component = React.lazy(() => {
   return import(
@@ -50,7 +54,7 @@ const cornerstoneExtension: Types.Extensions.Extension = {
    */
   id,
 
-  onModeExit: () => {
+  onModeExit: (): void => {
     // Empty out the image load and retrieval pools to prevent memory leaks
     // on the mode exits
     Object.values(cs3DEnums.RequestType).forEach(type => {
@@ -67,39 +71,31 @@ const cornerstoneExtension: Types.Extensions.Extension = {
    *
    * @param configuration.csToolsConfig - Passed directly to `initCornerstoneTools`
    */
-  async preRegistration({
-    servicesManager,
-    commandsManager,
-    configuration = {},
-    appConfig,
-  }) {
-    // Todo: we should be consistent with how services get registered. Use REGISTRATION static method for all
-    servicesManager.registerService(
-      CornerstoneViewportService(servicesManager)
-    );
-    servicesManager.registerService(
-      ToolGroupService.REGISTRATION(servicesManager)
-    );
-    servicesManager.registerService(SyncGroupService(servicesManager));
-    servicesManager.registerService(SegmentationService(servicesManager));
-    servicesManager.registerService(
-      CornerstoneCacheService.REGISTRATION(servicesManager)
-    );
+  preRegistration: function (
+    props: Types.Extensions.ExtensionParams
+  ): Promise<void> {
+    const { servicesManager } = props;
+    servicesManager.registerService(CornerstoneViewportService.REGISTRATION);
+    servicesManager.registerService(ToolGroupService.REGISTRATION);
+    servicesManager.registerService(SyncGroupService.REGISTRATION);
+    servicesManager.registerService(SegmentationService.REGISTRATION);
+    servicesManager.registerService(CornerstoneCacheService.REGISTRATION);
 
-    await init({ servicesManager, commandsManager, configuration, appConfig });
+    return init.call(this, props);
   },
+
   getHangingProtocolModule,
   getViewportModule({ servicesManager, commandsManager }) {
     const ExtendedOHIFCornerstoneViewport = props => {
       // const onNewImageHandler = jumpData => {
       //   commandsManager.runCommand('jumpToImage', jumpData);
       // };
-      const { ToolbarService } = servicesManager.services;
+      const { toolbarService } = (servicesManager as ServicesManager).services;
 
       return (
         <OHIFCornerstoneViewport
           {...props}
-          ToolbarService={ToolbarService}
+          toolbarService={toolbarService}
           servicesManager={servicesManager}
           commandsManager={commandsManager}
         />
@@ -113,13 +109,8 @@ const cornerstoneExtension: Types.Extensions.Extension = {
       },
     ];
   },
-  getCommandsModule({ servicesManager, commandsManager, extensionManager }) {
-    return commandsModule({
-      servicesManager,
-      commandsManager,
-      extensionManager,
-    });
-  },
+  getCommandsModule,
+  getCustomizationModule,
   getUtilityModule({ servicesManager }) {
     return [
       {
@@ -130,7 +121,6 @@ const cornerstoneExtension: Types.Extensions.Extension = {
           },
           getEnabledElement,
           dicomLoaderService,
-          registerColormap,
         },
       },
       {
@@ -150,5 +140,6 @@ const cornerstoneExtension: Types.Extensions.Extension = {
   },
 };
 
+export type { PublicViewportOptions };
+export { measurementMappingUtils, CornerstoneExtensionTypes, toolNames , getActiveViewportEnabledElement};
 export default cornerstoneExtension;
-export { measurementMappingUtils };

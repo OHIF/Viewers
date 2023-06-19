@@ -1,10 +1,11 @@
 import log from './../log.js';
 import Services from '../types/Services';
+import CommandsManager from '../classes/CommandsManager';
 
 export default class ServicesManager {
   public services: Services = {};
 
-  constructor(commandsManager) {
+  constructor(commandsManager: CommandsManager) {
     this._commandsManager = commandsManager;
     this.services = {};
     this.registeredServiceNames = [];

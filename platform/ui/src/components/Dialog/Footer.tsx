@@ -2,19 +2,16 @@ import React from 'react';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 
-import { Button } from '..';
+import Button, { ButtonEnums } from '../Button';
 
 const Footer = ({ actions, className, onSubmit, value }) => {
   const flex = 'flex items-center justify-end';
-  const border = 'border-t-2 border-solid border-black rounded-b';
-  const spacing = 'p-6';
-  const theme = 'bg-primary-dark';
+  const padding = 'pt-[20px]';
 
   return (
-    <div className={classNames(flex, border, spacing, theme, className)}>
+    <div className={classNames(flex, padding, className)}>
       {actions.map((action, index) => {
         const isFirst = index === 0;
-        const isPrimary = action.type === 'primary';
 
         const onClickHandler = event => onSubmit({ action, value, event });
 
@@ -22,9 +19,8 @@ const Footer = ({ actions, className, onSubmit, value }) => {
           <Button
             key={index}
             className={classNames({ 'ml-2': !isFirst }, action.classes)}
-            color={isPrimary ? 'primary' : undefined}
+            type={action.type}
             onClick={onClickHandler}
-            style={{ transition: 'all .15s ease', height: 34 }}
           >
             {action.text}
           </Button>
@@ -44,7 +40,10 @@ Footer.propTypes = {
       id: PropTypes.string.isRequired,
       text: PropTypes.string.isRequired,
       value: PropTypes.any,
-      type: PropTypes.oneOf(['primary', 'secondary', 'cancel']).isRequired,
+      type: PropTypes.oneOf([
+        ButtonEnums.type.primary,
+        ButtonEnums.type.secondary,
+      ]).isRequired,
       classes: PropTypes.arrayOf(PropTypes.string),
     })
   ).isRequired,

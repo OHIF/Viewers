@@ -1,6 +1,6 @@
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import SwiperCore, {
   A11y,
@@ -11,7 +11,12 @@ import SwiperCore, {
 } from 'swiper';
 import { Swiper, SwiperSlide } from 'swiper/react';
 
-import { Button, Icon, IconButton, Tooltip } from '../';
+import { PanelService, ServicesManager, Types } from '@ohif/core';
+
+import LegacyButton from '../LegacyButton';
+import Icon from '../Icon';
+import IconButton from '../IconButton';
+import Tooltip from '../Tooltip';
 
 import 'swiper/css';
 import 'swiper/css/navigation';
@@ -67,15 +72,23 @@ const position = {
 };
 
 const SidePanel = ({
+  servicesManager,
   side,
   className,
   activeTabIndex: activeTabIndexProp,
   tabs,
 }) => {
+  const panelService: PanelService = servicesManager?.services?.panelService;
+
   const { t } = useTranslation('SidePanel');
 
+  // Tracks whether this SidePanel has been opened at least once since this SidePanel was inserted into the DOM.
+  // Thus going to the Study List page and back to the viewer resets this flag for a SidePanel.
+  const [hasBeenOpened, setHasBeenOpened] = useState(
+    activeTabIndexProp !== null
+  );
   const [panelOpen, setPanelOpen] = useState(activeTabIndexProp !== null);
-  const [activeTabIndex, setActiveTabIndex] = useState(activeTabIndexProp || 0);
+  const [activeTabIndex, setActiveTabIndex] = useState(activeTabIndexProp ?? 0);
   const swiperRef = useRef() as any;
   const [swiper, setSwiper] = useState<any>();
 
@@ -102,6 +115,43 @@ const SidePanel = ({
     }
   }, [swiper]);
 
+  const updatePanelOpen = useCallback((panelOpen: boolean) => {
+    setPanelOpen(panelOpen);
+    if (panelOpen) {
+      setHasBeenOpened(true);
+    }
+  }, []);
+
+  const updateActiveTabIndex = useCallback(
+    (activeTabIndex: number) => {
+      setActiveTabIndex(activeTabIndex);
+      updatePanelOpen(true);
+    },
+    [updatePanelOpen]
+  );
+
+  useEffect(() => {
+    if (panelService) {
+      const activatePanelSubscription = panelService.subscribe(
+        panelService.EVENTS.ACTIVATE_PANEL,
+        (activatePanelEvent: Types.ActivatePanelEvent) => {
+          if (!hasBeenOpened || activatePanelEvent.forceActive) {
+            const tabIndex = tabs.findIndex(
+              tab => tab.id === activatePanelEvent.panelId
+            );
+            if (tabIndex !== -1) {
+              updateActiveTabIndex(tabIndex);
+            }
+          }
+        }
+      );
+
+      return () => {
+        activatePanelSubscription.unsubscribe();
+      };
+    }
+  }, [tabs, hasBeenOpened, panelService, updateActiveTabIndex]);
+
   const getCloseStateComponent = () => {
     const _childComponents = Array.isArray(tabs) ? tabs : [tabs];
     return (
@@ -112,7 +162,7 @@ const SidePanel = ({
             side === 'left' ? 'pr-2 justify-end' : 'pl-2 justify-start'
           )}
           onClick={() => {
-            setPanelOpen(prev => !prev);
+            updatePanelOpen(prev => !prev);
           }}
           data-cy={`side-panel-header-${side}`}
         >
@@ -142,8 +192,7 @@ const SidePanel = ({
                 size="initial"
                 className="text-primary-active"
                 onClick={() => {
-                  setActiveTabIndex(index);
-                  setPanelOpen(true);
+                  updateActiveTabIndex(index);
                 }}
               >
                 <Icon
@@ -180,12 +229,13 @@ const SidePanel = ({
               tabs.length === 1 && 'mb-1'
             )}
             onClick={() => {
-              setPanelOpen(prev => !prev);
+              updatePanelOpen(prev => !prev);
               // slideToActivePanel();
             }}
             data-cy={`side-panel-header-${side}`}
           >
-            <Button
+            {/* TODO This should be redesigned to not be a button. */}
+            <LegacyButton
               variant="text"
               color="inherit"
               border="none"
@@ -205,7 +255,7 @@ const SidePanel = ({
               <span className="text-primary-active">
                 {tabs.length === 1 && (t(tabs[activeTabIndex].label) as string)}
               </span>
-            </Button>
+            </LegacyButton>
           </div>
           {tabs.length > 1 &&
             _getMoreThanOneTabLayout(
@@ -215,8 +265,7 @@ const SidePanel = ({
               nextRef,
               tabs,
               activeTabIndex,
-              setActiveTabIndex,
-              setPanelOpen
+              updateActiveTabIndex
             )}
           {/** carousel navigation with the arrows */}
           {/** only show carousel nav if tabs are more than 3 tabs */}
@@ -250,6 +299,7 @@ SidePanel.defaultProps = {
 };
 
 SidePanel.propTypes = {
+  servicesManager: PropTypes.instanceOf(ServicesManager),
   side: PropTypes.oneOf(['left', 'right']).isRequired,
   className: PropTypes.string,
   activeTabIndex: PropTypes.number,
@@ -273,8 +323,7 @@ function _getMoreThanOneTabLayout(
   nextRef: React.MutableRefObject<undefined>,
   tabs: any,
   activeTabIndex: any,
-  setActiveTabIndex: React.Dispatch<any>,
-  setPanelOpen: React.Dispatch<React.SetStateAction<boolean>>
+  updateActiveTabIndex
 ) {
   return (
     <div
@@ -309,8 +358,7 @@ function _getMoreThanOneTabLayout(
                 )}
                 key={index}
                 onClick={() => {
-                  setActiveTabIndex(index);
-                  setPanelOpen(true);
+                  updateActiveTabIndex(index);
                 }}
                 data-cy={`${obj.name}-btn`}
               >

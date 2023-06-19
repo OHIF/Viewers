@@ -48,8 +48,8 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
     const { element } = viewport;
 
     let annotations = annotation.state.getAnnotations(
-      element,
-      this.getToolName()
+      this.getToolName(),
+      element
     );
 
     // Todo: We don't need this anymore, filtering happens in triggerAnnotationRender
@@ -307,13 +307,26 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
 
       const ellipsePointsWorld = data;
 
+      const rotation = viewport.getRotation();
+
       canvasCoordinates = ellipsePointsWorld.map(p =>
         viewport.worldToCanvas(p)
       );
-
-      const canvasCorners = <Array<Types.Point2>>(
-        utilities.math.ellipse.getCanvasEllipseCorners(canvasCoordinates)
-      );
+      let canvasCorners;
+      if (rotation == 90 || rotation == 270) {
+        canvasCorners = <Array<Types.Point2>>(
+          utilities.math.ellipse.getCanvasEllipseCorners([
+            canvasCoordinates[2],
+            canvasCoordinates[3],
+            canvasCoordinates[0],
+            canvasCoordinates[1],
+          ])
+        );
+      } else {
+        canvasCorners = <Array<Types.Point2>>(
+          utilities.math.ellipse.getCanvasEllipseCorners(canvasCoordinates)
+        );
+      }
 
       const lineUID = `${index}`;
       drawing.drawEllipse(

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import {
   StudySummary,
@@ -6,11 +6,13 @@ import {
   Dialog,
   Input,
   useViewportGrid,
+  ButtonEnums,
 } from '@ohif/ui';
 import { DicomMetadataStore, utils } from '@ohif/core';
 import { useDebounce } from '@hooks';
 import ActionButtons from './ActionButtons';
 import { useTrackedMeasurements } from '../../getContextModule';
+import debounce from 'lodash.debounce';
 
 const { downloadCSVReport } = utils;
 const { formatDate } = utils;
@@ -45,6 +47,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     DISPLAY_STUDY_SUMMARY_INITIAL_VALUE
   );
   const [displayMeasurements, setDisplayMeasurements] = useState([]);
+  const measurementsPanelRef = useRef(null);
 
   useEffect(() => {
     const measurements = measurementService.getMeasurements();
@@ -125,6 +128,12 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
       subscriptions.push(
         measurementService.subscribe(evt, () => {
           setMeasurementsUpdated(Date.now().toString());
+          if (evt === added) {
+            debounce(() => {
+              measurementsPanelRef.current.scrollTop =
+                measurementsPanelRef.current.scrollHeight;
+            }, 300)();
+          }
         }).unsubscribe
       );
     });
@@ -180,7 +189,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
       showOverlay: true,
       content: Dialog,
       contentProps: {
-        title: 'Enter your annotation',
+        title: 'Annotation',
         noCloseButton: true,
         value: { label: measurement.label || '' },
         body: ({ value, setValue }) => {
@@ -195,24 +204,22 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
             }
           };
           return (
-            <div className="p-4 bg-primary-dark">
-              <Input
-                autoFocus
-                id="annotation"
-                className="mt-2 bg-black border-primary-main"
-                type="text"
-                containerClassName="mr-2"
-                value={value.label}
-                onChange={onChangeHandler}
-                onKeyPress={onKeyPressHandler}
-              />
-            </div>
+            <Input
+              label="Enter your annotation"
+              labelClassName="text-white grow text-[14px] leading-[1.2]"
+              autoFocus
+              id="annotation"
+              className="bg-black border-primary-main"
+              type="text"
+              value={value.label}
+              onChange={onChangeHandler}
+              onKeyPress={onKeyPressHandler}
+            />
           );
         },
         actions: [
-          // temp: swap button types until colors are updated
-          { id: 'cancel', text: 'Cancel', type: 'primary' },
-          { id: 'save', text: 'Save', type: 'secondary' },
+          { id: 'cancel', text: 'Cancel', type: ButtonEnums.type.secondary },
+          { id: 'save', text: 'Save', type: ButtonEnums.type.primary },
         ],
         onSubmit: onSubmitHandler,
       },
@@ -241,6 +248,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     <>
       <div
         className="overflow-x-hidden overflow-y-auto invisible-scrollbar"
+        ref={measurementsPanelRef}
         data-cy={'trackedMeasurements-panel'}
       >
         {displayStudySummary.key && (
@@ -253,6 +261,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
         <MeasurementTable
           title="Measurements"
           data={displayMeasurementsWithoutFindings}
+          servicesManager={servicesManager}
           onClick={jumpToImage}
           onEdit={onMeasurementItemEditHandler}
         />
@@ -260,6 +269,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
           <MeasurementTable
             title="Additional Findings"
             data={additionalFindings}
+            servicesManager={servicesManager}
             onClick={jumpToImage}
             onEdit={onMeasurementItemEditHandler}
           />
@@ -318,13 +328,40 @@ function _mapMeasurementToDisplay(measurement, types, displaySetService) {
     );
   }
 
-  const { displayText } = measurement;
+  const {
+    displayText: baseDisplayText,
+    uid,
+    label: baseLabel,
+    type,
+    selected,
+    findingSites,
+    finding,
+  } = measurement;
+
+  const firstSite = findingSites?.[0];
+  const label = baseLabel || finding?.text || firstSite?.text || '(empty)';
+  let displayText = baseDisplayText || [];
+  if (findingSites) {
+    const siteText = [];
+    findingSites.forEach(site => {
+      if (site?.text !== label) siteText.push(site.text);
+    });
+    displayText = [...siteText, ...displayText];
+  }
+  if (finding && finding?.text !== label) {
+    displayText = [finding.text, ...displayText];
+  }
+
   return {
-    uid: measurement.uid,
-    label: measurement.label || '(empty)',
-    measurementType: measurement.type,
-    displayText: displayText || [],
-    isActive: measurement.selected,
+    uid,
+    label,
+    baseLabel,
+    measurementType: type,
+    displayText,
+    baseDisplayText,
+    isActive: selected,
+    finding,
+    findingSites,
   };
 }
 

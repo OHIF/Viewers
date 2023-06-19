@@ -1,6 +1,6 @@
 /* eslint-disable react/display-name */
 import React from 'react';
-import { Dialog, Input } from '@ohif/ui';
+import { ButtonEnums, Dialog, Input } from '@ohif/ui';
 import RESPONSE from './PROMPT_RESPONSES';
 
 export default function createReportDialogPrompt(uiDialogService) {
@@ -45,13 +45,13 @@ export default function createReportDialogPrompt(uiDialogService) {
       useLastPosition: false,
       showOverlay: true,
       contentProps: {
-        title: 'Provide a name for your report',
+        title: 'Create Report',
         value: { label: '' },
         noCloseButton: true,
         onClose: _handleClose,
         actions: [
-          { id: 'cancel', text: 'Cancel', type: 'primary' },
-          { id: 'save', text: 'Save', type: 'secondary' },
+          { id: 'cancel', text: 'Cancel', type: ButtonEnums.type.secondary },
+          { id: 'save', text: 'Save', type: ButtonEnums.type.primary },
         ],
         // TODO: Should be on button press...
         onSubmit: _handleFormSubmit,
@@ -67,12 +67,13 @@ export default function createReportDialogPrompt(uiDialogService) {
             }
           };
           return (
-            <div className="p-4 bg-primary-dark">
+            <div className="">
               <Input
+                label="Enter the report name"
+                labelClassName="text-white grow leading-[1.2] text-[14px]"
                 autoFocus
-                className="mt-2 bg-black border-primary-main"
+                className="bg-black border-primary-main grow"
                 type="text"
-                containerClassName="mr-2"
                 value={value.label}
                 onChange={onChangeHandler}
                 onKeyPress={onKeyPressHandler}

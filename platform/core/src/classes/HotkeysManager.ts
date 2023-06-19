@@ -64,19 +64,17 @@ export class HotkeysManager {
    *
    * @param {HotkeyDefinition[] | Object} [hotkeyDefinitions=[]] Contains hotkeys definitions
    */
-  setHotkeys(hotkeyDefinitions = [], key = 'hotkey-definitions') {
+  setHotkeys(hotkeyDefinitions = [], name = 'hotkey-definitions') {
     try {
       const definitions = this.getValidDefinitions(hotkeyDefinitions);
       if (isequal(definitions, this.hotkeyDefaults)) {
-        console.log('hotkeys REMOVING unused definition', key);
-        localStorage.removeItem(key);
+        localStorage.removeItem(name);
       } else {
-        console.log('hotkeys setting local storage', key);
-        localStorage.setItem(key, JSON.stringify(definitions));
+        localStorage.setItem(name, JSON.stringify(definitions));
       }
       definitions.forEach(definition => this.registerHotkeys(definition));
     } catch (error) {
-      const { uiNotificationService, } = this._servicesManager.services;
+      const { uiNotificationService } = this._servicesManager.services;
       uiNotificationService.show({
         title: 'Hotkeys Manager',
         message: 'Error while setting hotkeys',

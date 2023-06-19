@@ -1,3 +1,5 @@
+import { ButtonEnums } from '@ohif/ui';
+
 const RESPONSE = {
   NO_NEVER: -1,
   CANCEL: 0,
@@ -33,36 +35,40 @@ function promptTrackNewSeries({ servicesManager, extensionManager }, ctx, evt) {
   });
 }
 
-function _askShouldAddMeasurements(UIViewportDialogService, viewportIndex) {
+function _askShouldAddMeasurements(uiViewportDialogService, viewportIndex) {
   return new Promise(function(resolve, reject) {
     const message =
       'Do you want to add this measurement to the existing report?';
     const actions = [
-      { type: 'cancel', text: 'Cancel', value: RESPONSE.CANCEL },
       {
-        type: 'secondary',
+        type: ButtonEnums.type.secondary,
+        text: 'Cancel',
+        value: RESPONSE.CANCEL,
+      },
+      {
+        type: ButtonEnums.type.primary,
         text: 'Create new report',
         value: RESPONSE.CREATE_REPORT,
       },
       {
-        type: 'primary',
+        type: ButtonEnums.type.primary,
         text: 'Add to existing report',
         value: RESPONSE.ADD_SERIES,
       },
     ];
     const onSubmit = result => {
-      UIViewportDialogService.hide();
+      uiViewportDialogService.hide();
       resolve(result);
     };
 
-    UIViewportDialogService.show({
+    uiViewportDialogService.show({
       viewportIndex,
       type: 'info',
       message,
       actions,
       onSubmit,
       onOutsideClick: () => {
-        UIViewportDialogService.hide();
+        uiViewportDialogService.hide();
         resolve(RESPONSE.CANCEL);
       },
     });

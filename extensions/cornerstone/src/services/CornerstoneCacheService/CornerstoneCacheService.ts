@@ -1,5 +1,10 @@
-import { ServicesManager } from '@ohif/core';
-import { cache as cs3DCache, Enums, volumeLoader } from '@cornerstonejs/core';
+import { ServicesManager, Types } from '@ohif/core';
+import {
+  cache as cs3DCache,
+  Enums,
+  volumeLoader,
+  utilities as utils,
+} from '@cornerstonejs/core';
 
 import getCornerstoneViewportType from '../../utils/getCornerstoneViewportType';
 import {
@@ -10,20 +15,21 @@ import {
 const VOLUME_LOADER_SCHEME = 'cornerstoneStreamingImageVolume';
 
 class CornerstoneCacheService {
-  static REGISTRATION = (serviceManager: ServicesManager) => {
-    return {
-      name: 'cornerstoneCacheService',
-      altName: 'CornerstoneCacheService',
-      create: ({ configuration = {} }) => {
-        return new CornerstoneCacheService(serviceManager);
-      },
-    };
+  static REGISTRATION = {
+    name: 'cornerstoneCacheService',
+    altName: 'CornerstoneCacheService',
+    create: ({
+      servicesManager,
+    }: Types.Extensions.ExtensionParams): CornerstoneCacheService => {
+      return new CornerstoneCacheService(servicesManager);
+    },
   };
 
   stackImageIds: Map<string, string[]> = new Map();
   volumeImageIds: Map<string, string[]> = new Map();
+  readonly servicesManager: ServicesManager;
 
-  constructor(servicesManager) {
+  constructor(servicesManager: ServicesManager) {
     this.servicesManager = servicesManager;
   }
 
@@ -62,12 +68,20 @@ class CornerstoneCacheService {
       viewportData = await this._getStackViewportData(
         dataSource,
         displaySets,
-        initialImageIndex
+        initialImageIndex,
+        cs3DViewportType
       );
     }
 
-    if (cs3DViewportType === Enums.ViewportType.ORTHOGRAPHIC) {
-      viewportData = await this._getVolumeViewportData(dataSource, displaySets);
+    if (
+      cs3DViewportType === Enums.ViewportType.ORTHOGRAPHIC ||
+      cs3DViewportType === Enums.ViewportType.VOLUME_3D
+    ) {
+      viewportData = await this._getVolumeViewportData(
+        dataSource,
+        displaySets,
+        cs3DViewportType
+      );
     }
 
     viewportData.viewportType = cs3DViewportType;
@@ -82,7 +96,10 @@ class CornerstoneCacheService {
     displaySetService
   ) {
     if (viewportData.viewportType === Enums.ViewportType.STACK) {
-      throw new Error('Invalidation of StackViewport is not supported yet');
+      return this._getCornerstoneStackImageIds(
+        displaySetService.getDisplaySetByUID(invalidatedDisplaySetInstanceUID),
+        dataSource
+      );
     }
 
     // Todo: grab the volume and get the id from the viewport itself
@@ -92,6 +109,7 @@ class CornerstoneCacheService {
 
     if (volume) {
       cs3DCache.removeVolumeLoadObject(volumeId);
+      this.volumeImageIds.delete(volumeId);
     }
 
     const displaySets = viewportData.data.map(({ displaySetInstanceUID }) =>
@@ -100,7 +118,8 @@ class CornerstoneCacheService {
 
     const newViewportData = await this._getVolumeViewportData(
       dataSource,
-      displaySets
+      displaySets,
+      viewportData.viewportType
     );
 
     return newViewportData;
@@ -109,7 +128,8 @@ class CornerstoneCacheService {
   private _getStackViewportData(
     dataSource,
     displaySets,
-    initialImageIndex
+    initialImageIndex,
+    viewportType: Enums.ViewportType
   ): StackViewportData {
     // For Stack Viewport we don't have fusion currently
     const displaySet = displaySets[0];
@@ -123,13 +143,18 @@ class CornerstoneCacheService {
       this.stackImageIds.set(displaySet.displaySetInstanceUID, stackImageIds);
     }
 
-    const { displaySetInstanceUID, StudyInstanceUID } = displaySet;
+    const {
+      displaySetInstanceUID,
+      StudyInstanceUID,
+      isCompositeStack,
+    } = displaySet;
 
     const StackViewportData: StackViewportData = {
-      viewportType: Enums.ViewportType.STACK,
+      viewportType,
       data: {
         StudyInstanceUID,
         displaySetInstanceUID,
+        isCompositeStack,
         imageIds: stackImageIds,
       },
     };
@@ -143,7 +168,8 @@ class CornerstoneCacheService {
 
   private async _getVolumeViewportData(
     dataSource,
-    displaySets
+    displaySets,
+    viewportType: Enums.ViewportType
   ): Promise<VolumeViewportData> {
     // Todo: Check the cache for multiple scenarios to see if we need to
     // decache the volume data from other viewports or not
@@ -207,7 +233,7 @@ class CornerstoneCacheService {
     }
 
     return {
-      viewportType: Enums.ViewportType.ORTHOGRAPHIC,
+      viewportType,
       data: volumeData,
     };
   }

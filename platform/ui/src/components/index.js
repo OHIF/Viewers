@@ -1,6 +1,7 @@
 import AboutModal from './AboutModal';
 import Button from './Button';
 import ButtonGroup from './ButtonGroup';
+import { ButtonEnums } from './Button';
 import ContextMenu from './ContextMenu';
 import CinePlayer from './CinePlayer';
 import DateRange from './DateRange';
@@ -18,6 +19,7 @@ import InputMultiSelect from './InputMultiSelect';
 import InputText from './InputText';
 import Label from './Label';
 import LayoutSelector from './LayoutSelector';
+import LegacyButton from './LegacyButton';
 import LegacyCinePlayer from './LegacyCinePlayer';
 import LegacyViewportActionBar from './LegacyViewportActionBar';
 import MeasurementTable from './MeasurementTable';
@@ -48,7 +50,6 @@ import ThumbnailNoImage from './ThumbnailNoImage';
 import ThumbnailTracked from './ThumbnailTracked';
 import ThumbnailList from './ThumbnailList';
 import ToolbarButton from './ToolbarButton';
-import ContextMenuMeasurements from './ContextMenuMeasurements';
 import ExpandableToolbarButton from './ExpandableToolbarButton';
 import ListMenu from './ListMenu';
 import Tooltip from './Tooltip';
@@ -69,7 +70,9 @@ import InputRange from './InputRange';
 import InputNumber from './InputNumber';
 import CheckBox from './CheckBox';
 import LoadingIndicatorProgress from './LoadingIndicatorProgress';
+import LoadingIndicatorTotalPercent from './LoadingIndicatorTotalPercent';
 import ViewportActionBar from './ViewportActionBar';
+import ProgressLoadingBar from './ProgressLoadingBar';
 
 export {
   AboutModal,
@@ -79,6 +82,7 @@ export {
   HotkeysPreferences,
   Button,
   ButtonGroup,
+  ButtonEnums,
   CheckBox,
   CinePlayer,
   ContextMenu,
@@ -102,13 +106,16 @@ export {
   ImageScrollbar,
   Label,
   LayoutSelector,
+  LegacyButton,
   LegacyCinePlayer,
   LegacyViewportActionBar,
   LoadingIndicatorProgress,
+  LoadingIndicatorTotalPercent,
   MeasurementTable,
   Modal,
   NavBar,
   Notification,
+  ProgressLoadingBar,
   Select,
   SegmentationTable,
   SegmentationGroupTable,
@@ -134,7 +141,6 @@ export {
   ThumbnailTracked,
   ThumbnailList,
   ToolbarButton,
-  ContextMenuMeasurements,
   Tooltip,
   TooltipClipboard,
   Typography,

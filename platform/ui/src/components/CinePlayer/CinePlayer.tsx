@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import debounce from 'lodash.debounce';
-import { Icon, Tooltip, InputRange } from '../';
+
+import Icon from '../Icon';
+import Tooltip from '../Tooltip';
+import InputRange from '../InputRange';
 
 import './CinePlayer.css';
 import classNames from 'classnames';
@@ -9,10 +12,10 @@ import classNames from 'classnames';
 export type CinePlayerProps = {
   className: string;
   isPlaying: boolean;
-  minFrameRate: number;
-  maxFrameRate: number;
-  stepFrameRate: number;
-  frameRate: number;
+  minFrameRate?: number;
+  maxFrameRate?: number;
+  stepFrameRate?: number;
+  frameRate?: number;
   onFrameRateChange: (value: number) => void;
   onPlayPauseChange: (value: boolean) => void;
   onClose: () => void;
@@ -116,12 +119,12 @@ CinePlayer.defaultProps = {
 
 CinePlayer.propTypes = {
   /** Minimum value for range slider */
-  minFrameRate: PropTypes.number.isRequired,
+  minFrameRate: PropTypes.number,
   /** Maximum value for range slider */
-  maxFrameRate: PropTypes.number.isRequired,
+  maxFrameRate: PropTypes.number,
   /** Increment range slider can "step" in either direction */
-  stepFrameRate: PropTypes.number.isRequired,
-  frameRate: PropTypes.number.isRequired,
+  stepFrameRate: PropTypes.number,
+  frameRate: PropTypes.number,
   /** 'true' if playing, 'false' if paused */
   isPlaying: PropTypes.bool.isRequired,
   onPlayPauseChange: PropTypes.func,

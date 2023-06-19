@@ -84,9 +84,9 @@ function _getInstance(StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID) {
 }
 
 function _getInstanceByImageId(imageId) {
-  for (let study of _model.studies) {
-    for (let series of study.series) {
-      for (let instance of series.instances) {
+  for (const study of _model.studies) {
+    for (const series of study.series) {
+      for (const instance of series.instances) {
         if (instance.imageId === imageId) {
           return instance;
         }
@@ -236,7 +236,7 @@ const BaseImplementation = {
   addStudy(study) {
     const { StudyInstanceUID } = study;
 
-    let existingStudy = _model.studies.find(
+    const existingStudy = _model.studies.find(
       study => study.StudyInstanceUID === StudyInstanceUID
     );
 

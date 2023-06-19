@@ -9,6 +9,7 @@ import {
   LengthTool,
   RectangleROITool,
   EllipticalROITool,
+  CircleROITool,
   BidirectionalTool,
   ArrowAnnotateTool,
   DragProbeTool,
@@ -23,11 +24,15 @@ import {
   addTool,
   annotation,
   ReferenceLinesTool,
+  TrackballRotateTool,
 } from '@cornerstonejs/tools';
 
 import CalibrationLineTool from './tools/CalibrationLineTool';
 
 export default function initCornerstoneTools(configuration = {}) {
+  CrosshairsTool.isAnnotation = false;
+  ReferenceLinesTool.isAnnotation = false;
+
   init(configuration);
   addTool(PanTool);
   addTool(WindowLevelTool);
@@ -40,6 +45,7 @@ export default function initCornerstoneTools(configuration = {}) {
   addTool(LengthTool);
   addTool(RectangleROITool);
   addTool(EllipticalROITool);
+  addTool(CircleROITool);
   addTool(BidirectionalTool);
   addTool(ArrowAnnotateTool);
   addTool(DragProbeTool);
@@ -51,6 +57,7 @@ export default function initCornerstoneTools(configuration = {}) {
   addTool(SegmentationDisplayTool);
   addTool(ReferenceLinesTool);
   addTool(CalibrationLineTool);
+  addTool(TrackballRotateTool);
 
   // Modify annotation tools to use dashed lines on SR
   const annotationStyle = {
@@ -81,6 +88,7 @@ const toolNames = {
   Probe: ProbeTool.toolName,
   RectangleROI: RectangleROITool.toolName,
   EllipticalROI: EllipticalROITool.toolName,
+  CircleROI: CircleROITool.toolName,
   Bidirectional: BidirectionalTool.toolName,
   Angle: AngleTool.toolName,
   CobbAngle: CobbAngleTool.toolName,
@@ -90,6 +98,7 @@ const toolNames = {
   SegmentationDisplay: SegmentationDisplayTool.toolName,
   ReferenceLines: ReferenceLinesTool.toolName,
   CalibrationLine: CalibrationLineTool.toolName,
+  TrackballRotateTool: TrackballRotateTool.toolName,
 };
 
 export { toolNames };

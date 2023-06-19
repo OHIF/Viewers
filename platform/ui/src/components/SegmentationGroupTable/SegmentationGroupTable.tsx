@@ -4,30 +4,6 @@ import Icon from '../Icon';
 import SegmentationGroup from './SegmentationGroup';
 import SegmentationConfig from './SegmentationConfig';
 
-const GetSegmentationConfig = ({
-  setFillAlpha,
-  setFillAlphaInactive,
-  setOutlineWidthActive,
-  setRenderFill,
-  setRenderInactiveSegmentations,
-  setRenderOutline,
-  setOutlineOpacityActive,
-  segmentationConfig,
-}) => {
-  return (
-    <SegmentationConfig
-      setFillAlpha={setFillAlpha}
-      setFillAlphaInactive={setFillAlphaInactive}
-      setOutlineWidthActive={setOutlineWidthActive}
-      setOutlineOpacityActive={setOutlineOpacityActive}
-      setRenderFill={setRenderFill}
-      setRenderInactiveSegmentations={setRenderInactiveSegmentations}
-      setRenderOutline={setRenderOutline}
-      segmentationConfig={segmentationConfig}
-    />
-  );
-};
-
 const SegmentationGroupTable = ({
   segmentations,
   onSegmentationAdd,
@@ -56,10 +32,7 @@ const SegmentationGroupTable = ({
 }) => {
   return (
     <div className="flex flex-col min-h-0 font-inter font-[300]">
-      <GetSegmentationConfig
-        // showAddSegmentation={showAddSegmentation}
-        // onSegmentationAdd={onSegmentationAdd}
-        segmentationConfig={segmentationConfig}
+      <SegmentationConfig
         setFillAlpha={setFillAlpha}
         setFillAlphaInactive={setFillAlphaInactive}
         setOutlineWidthActive={setOutlineWidthActive}
@@ -67,6 +40,7 @@ const SegmentationGroupTable = ({
         setRenderFill={setRenderFill}
         setRenderInactiveSegmentations={setRenderInactiveSegmentations}
         setRenderOutline={setRenderOutline}
+        segmentationConfig={segmentationConfig}
       />
       <div className="flex flex-col min-h-0 pr-[1px] mt-1">
         {!!segmentations.length &&
@@ -82,30 +56,29 @@ const SegmentationGroupTable = ({
               activeSegmentIndex,
             } = segmentation;
             return (
-                <SegmentationGroup
-                  id={id}
-                  label={label}
-                  isMinimized={isMinimized[id]}
-                  segments={segments}
-                  showAddSegment={showAddSegment}
-                  segmentCount={segmentCount}
-                  isActive={isActive}
-                  isVisible={isVisible}
-                  onSegmentColorClick={onSegmentColorClick}
-                  onSegmentationClick={() => onSegmentationClick(id)}
-                  activeSegmentIndex={activeSegmentIndex}
-                  onToggleMinimizeSegmentation={onToggleMinimizeSegmentation}
-                  onSegmentationEdit={onSegmentationEdit}
-                  onSegmentationDelete={onSegmentationDelete}
-                  onSegmentClick={onSegmentClick}
-                  onSegmentEdit={onSegmentEdit}
-                  onToggleSegmentVisibility={onToggleSegmentVisibility}
-                  onToggleSegmentationVisibility={
-                    onToggleSegmentationVisibility
-                  }
-                  onSegmentAdd={onSegmentAdd}
-                  showSegmentDelete={false}
-                />
+              <SegmentationGroup
+                id={id}
+                key={id}
+                label={label}
+                isMinimized={isMinimized[id]}
+                segments={segments}
+                showAddSegment={showAddSegment}
+                segmentCount={segmentCount}
+                isActive={isActive}
+                isVisible={isVisible}
+                onSegmentColorClick={onSegmentColorClick}
+                onSegmentationClick={() => onSegmentationClick(id)}
+                activeSegmentIndex={activeSegmentIndex}
+                onToggleMinimizeSegmentation={onToggleMinimizeSegmentation}
+                onSegmentationEdit={onSegmentationEdit}
+                onSegmentationDelete={onSegmentationDelete}
+                onSegmentClick={onSegmentClick}
+                onSegmentEdit={onSegmentEdit}
+                onToggleSegmentVisibility={onToggleSegmentVisibility}
+                onToggleSegmentationVisibility={onToggleSegmentationVisibility}
+                onSegmentAdd={onSegmentAdd}
+                showSegmentDelete={false}
+              />
             );
           })}
       </div>
@@ -156,7 +129,6 @@ SegmentationGroupTable.defaultProps = {
       renderInactiveSegmentations: true,
       renderOutline: true,
     },
-    usePercentage: true,
   },
   setFillAlpha: () => {},
   setFillAlphaInactive: () => {},

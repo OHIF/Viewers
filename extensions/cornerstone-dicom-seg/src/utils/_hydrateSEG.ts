@@ -1,7 +1,6 @@
 async function _hydrateSEGDisplaySet({
   segDisplaySet,
   viewportIndex,
-  toolGroupId,
   servicesManager,
 }) {
   const {
@@ -32,8 +31,6 @@ async function _hydrateSEGDisplaySet({
     displaySetInstanceUID
   );
 
-  viewportGridService.setDisplaySetsForViewports(updatedViewports);
-
   // Todo: fix this after we have a better way for stack viewport segmentations
 
   // check every viewport in the viewports to see if the displaySetInstanceUID
@@ -51,12 +48,10 @@ async function _hydrateSEGDisplaySet({
     );
 
     if (shouldDisplaySeg) {
-      viewportGridService.setDisplaySetsForViewport({
+      updatedViewports.push({
         viewportIndex: index,
         displaySetInstanceUIDs: viewport.displaySetInstanceUIDs,
         viewportOptions: {
-          viewportType: 'volume',
-          toolGroupId,
           initialImageOptions: {
             preset: 'middle',
           },
@@ -64,6 +59,9 @@ async function _hydrateSEGDisplaySet({
       });
     }
   });
+
+  // Do the entire update at once
+  viewportGridService.setDisplaySetsForViewports(updatedViewports);
 
   return true;
 }

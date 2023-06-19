@@ -2,7 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
-import { Icon, Thumbnail, Tooltip } from '../';
+import Icon from '../Icon';
+import Thumbnail from '../Thumbnail';
+import Tooltip from '../Tooltip';
 import { StringNumber } from '../../types';
 
 const ThumbnailTracked = ({
@@ -13,6 +15,7 @@ const ThumbnailTracked = ({
   description,
   seriesNumber,
   numInstances,
+  countIcon,
   dragData,
   onClick,
   onDoubleClick,
@@ -117,6 +120,7 @@ const ThumbnailTracked = ({
         description={description}
         seriesNumber={seriesNumber}
         numInstances={numInstances}
+        countIcon={countIcon}
         isActive={isActive}
         onClick={onClick}
         onDoubleClick={onDoubleClick}

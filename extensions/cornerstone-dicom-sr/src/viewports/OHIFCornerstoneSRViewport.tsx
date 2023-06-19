@@ -1,17 +1,11 @@
 import PropTypes from 'prop-types';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import OHIF, { utils } from '@ohif/core';
+import OHIF, { utils, ServicesManager, ExtensionManager } from '@ohif/core';
+
 import { setTrackingUniqueIdentifiersForElement } from '../tools/modules/dicomSRModule';
 
-import {
-  Icon,
-  Notification,
-  Tooltip,
-  useViewportDialog,
-  useViewportGrid,
-  ViewportActionBar,
-} from '@ohif/ui';
+import { Icon, Tooltip, useViewportGrid, ViewportActionBar } from '@ohif/ui';
 import hydrateStructuredReport from '../utils/hydrateStructuredReport';
 
 const { formatDate } = utils;
@@ -28,6 +22,7 @@ function OHIFCornerstoneSRViewport(props) {
     displaySets,
     viewportIndex,
     viewportLabel,
+    viewportOptions,
     servicesManager,
     extensionManager,
   } = props;
@@ -46,7 +41,6 @@ function OHIFCornerstoneSRViewport(props) {
   const srDisplaySet = displaySets[0];
 
   const [viewportGrid, viewportGridService] = useViewportGrid();
-  const [viewportDialogState, viewportDialogApi] = useViewportDialog();
   const [measurementSelected, setMeasurementSelected] = useState(0);
   const [measurementCount, setMeasurementCount] = useState(1);
   const [activeImageDisplaySetData, setActiveImageDisplaySetData] = useState(
@@ -56,7 +50,6 @@ function OHIFCornerstoneSRViewport(props) {
     referencedDisplaySetMetadata,
     setReferencedDisplaySetMetadata,
   ] = useState(null);
-  const [isHydrated, setIsHydrated] = useState(srDisplaySet.isHydrated);
   const [element, setElement] = useState(null);
   const { viewports, activeViewportIndex } = viewportGrid;
 
@@ -90,10 +83,12 @@ function OHIFCornerstoneSRViewport(props) {
         SeriesInstanceUIDs[0]
       );
       if (displaySets.length) {
-        viewportGridService.setDisplaySetsForViewport({
-          viewportIndex: activeViewportIndex,
-          displaySetInstanceUIDs: [displaySets[0].displaySetInstanceUID],
-        });
+        viewportGridService.setDisplaySetsForViewports([
+          {
+            viewportIndex: activeViewportIndex,
+            displaySetInstanceUIDs: [displaySets[0].displaySetInstanceUID],
+          },
+        ]);
       }
     };
   }
@@ -214,8 +209,19 @@ function OHIFCornerstoneSRViewport(props) {
         // should be passed second since we don't want SR displaySet to
         // override the activeImageDisplaySetData
         displaySets={[activeImageDisplaySetData]}
+        // It is possible that there is a hanging protocol applying viewportOptions
+        // for the SR, so inherit the viewport options
+        // TODO: Ensure the viewport options are set correctly with respect to
+        // stack etc, in the incoming viewport options.
         viewportOptions={{
+          ...viewportOptions,
           toolGroupId: `${SR_TOOLGROUP_BASE_NAME}`,
+          // viewportType should not be required, as the stack type should be
+          // required already in order to view SR, but sometimes segmentation
+          // views set the viewport type without fixing the allowed display
+          viewportType: 'stack',
+          // The positionIds for the viewport aren't meaningful for the child display sets
+          positionIds: null,
         }}
         onElementEnabled={onElementEnabled}
         initialImageIndex={initialImageIndex}
@@ -287,8 +293,6 @@ function OHIFCornerstoneSRViewport(props) {
     if (!srDisplaySet.isLoaded) {
       srDisplaySet.load();
     }
-    setIsHydrated(srDisplaySet.isHydrated);
-
     const numMeasurements = srDisplaySet.measurements.length;
     setMeasurementCount(numMeasurements);
   }, [srDisplaySet]);
@@ -376,6 +380,7 @@ function OHIFCornerstoneSRViewport(props) {
           label: viewportLabel,
           useAltStyling: true,
           studyDate: formatDate(StudyDate),
+          currentSeries: SeriesNumber,
           seriesDescription: SeriesDescription || '',
           patientInformation: {
             patientName: PatientName
@@ -396,17 +401,6 @@ function OHIFCornerstoneSRViewport(props) {
 
       <div className="relative flex flex-row w-full h-full overflow-hidden">
         {getCornerstoneViewport()}
-        <div className="absolute w-full">
-          {viewportDialogState.viewportIndex === viewportIndex && (
-            <Notification
-              message={viewportDialogState.message}
-              type={viewportDialogState.type}
-              actions={viewportDialogState.actions}
-              onSubmit={viewportDialogState.onSubmit}
-              onOutsideClick={viewportDialogState.onOutsideClick}
-            />
-          )}
-        </div>
         {childrenWithProps}
       </div>
     </>
@@ -418,7 +412,12 @@ OHIFCornerstoneSRViewport.propTypes = {
   viewportIndex: PropTypes.number.isRequired,
   dataSource: PropTypes.object,
   children: PropTypes.node,
+  viewportLabel: PropTypes.string,
   customProps: PropTypes.object,
+  viewportOptions: PropTypes.object,
+  viewportLabel: PropTypes.string,
+  servicesManager: PropTypes.instanceOf(ServicesManager).isRequired,
+  extensionManager: PropTypes.instanceOf(ExtensionManager).isRequired,
 };
 
 OHIFCornerstoneSRViewport.defaultProps = {

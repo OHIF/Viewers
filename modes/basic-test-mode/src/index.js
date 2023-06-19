@@ -72,12 +72,18 @@ function modeFactory() {
         measurementService,
         toolbarService,
         toolGroupService,
+        customizationService,
       } = servicesManager.services;
 
       measurementService.clearMeasurements();
 
       // Init Default and SR ToolGroups
       initToolGroups(extensionManager, toolGroupService, commandsManager);
+
+      // init customizations
+      customizationService.addModeCustomizations([
+        '@ohif/extension-test.customizationModule.custom-context-menu',
+      ]);
 
       let unsubscribe;
 
@@ -127,12 +133,10 @@ function modeFactory() {
       const {
         toolGroupService,
         syncGroupService,
-        toolbarService,
         segmentationService,
         cornerstoneViewportService,
       } = servicesManager.services;
 
-      toolbarService.reset();
       toolGroupService.destroy();
       syncGroupService.destroy();
       segmentationService.destroy();
@@ -205,7 +209,12 @@ function modeFactory() {
       dicompdf.sopClassHandler,
       dicomsr.sopClassHandler,
     ],
-    hotkeys: [...hotkeys.defaults.hotkeyBindings],
+    hotkeys: {
+      // Don't store the hotkeys for basic-test-mode under the same key
+      // because they get customized by tests
+      name: 'basic-test-hotkeys',
+      hotkeys: [...hotkeys.defaults.hotkeyBindings],
+    },
   };
 }
 

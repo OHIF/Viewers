@@ -1,4 +1,4 @@
-import { DicomMetadataStore, IWebApiDataSource } from '@ohif/core';
+import { DicomMetadataStore, IWebApiDataSource, utils } from '@ohif/core';
 import OHIF from '@ohif/core';
 import dcmjs from 'dcmjs';
 
@@ -75,7 +75,7 @@ function createDicomLocalApi(dicomLocalConfig) {
             const study = DicomMetadataStore.getStudy(StudyInstanceUID);
             study.series.forEach(aSeries => {
               numInstances += aSeries.instances.length;
-              modalities.add(aSeries.Modality);
+              modalities.add(aSeries.instances[0].Modality);
             });
 
             // first instance in the first series
@@ -87,7 +87,7 @@ function createDicomLocalApi(dicomLocalConfig) {
                 date: firstInstance.StudyDate,
                 description: firstInstance.StudyDescription,
                 mrn: firstInstance.PatientID,
-                patientName: { Alphabetic: firstInstance.PatientName },
+                patientName: utils.formatPN(firstInstance.PatientName),
                 studyInstanceUid: firstInstance.StudyInstanceUID,
                 time: firstInstance.StudyTime,
                 //
@@ -103,9 +103,20 @@ function createDicomLocalApi(dicomLocalConfig) {
         },
       },
       series: {
-        // mapParams: mapParams.bind(),
-        search: () => {
-          console.debug(' DICOMLocal QUERY SERIES SEARCH');
+        search: studyInstanceUID => {
+          const study = DicomMetadataStore.getStudy(studyInstanceUID);
+          return study.series.map(aSeries => {
+            const firstInstance = aSeries?.instances[0];
+            return {
+              studyInstanceUid: studyInstanceUID,
+              seriesInstanceUid: firstInstance.SeriesInstanceUID,
+              modality: firstInstance.Modality,
+              seriesNumber: firstInstance.SeriesNumber,
+              seriesDate: firstInstance.SeriesDate,
+              numSeriesInstances: aSeries.instances.length,
+              description: firstInstance.SeriesDescription,
+            };
+          });
         },
       },
       instances: {
@@ -115,6 +126,18 @@ function createDicomLocalApi(dicomLocalConfig) {
       },
     },
     retrieve: {
+      directURL: params => {
+        const { instance, tag, defaultType } = params;
+
+        const value = instance[tag];
+        if (value instanceof Array && value[0] instanceof ArrayBuffer) {
+          return URL.createObjectURL(
+            new Blob([value[0]], {
+              type: defaultType,
+            })
+          );
+        }
+      },
       series: {
         metadata: async ({ StudyInstanceUID, madeInClient = false } = {}) => {
           if (!StudyInstanceUID) {
@@ -138,7 +161,9 @@ function createDicomLocalApi(dicomLocalConfig) {
           study.series.forEach(aSeries => {
             const { SeriesInstanceUID } = aSeries;
 
-            aSeries.instances.forEach(instance => {
+            const isMultiframe = aSeries.instances[0].NumberOfFrames > 1;
+
+            aSeries.instances.forEach((instance, index) => {
               const {
                 url: imageId,
                 StudyInstanceUID,
@@ -153,6 +178,7 @@ function createDicomLocalApi(dicomLocalConfig) {
                 StudyInstanceUID,
                 SeriesInstanceUID,
                 SOPInstanceUID,
+                frameIndex: isMultiframe ? index : 1,
               });
             });
 
@@ -185,7 +211,8 @@ function createDicomLocalApi(dicomLocalConfig) {
       displaySet.images.forEach(instance => {
         const NumberOfFrames = instance.NumberOfFrames;
         if (NumberOfFrames > 1) {
-          for (let i = 0; i < NumberOfFrames; i++) {
+          // in multiframe we start at frame 1
+          for (let i = 1; i <= NumberOfFrames; i++) {
             const imageId = this.getImageIdsForInstance({
               instance,
               frame: i,

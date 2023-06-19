@@ -200,6 +200,29 @@ const toolbarButtons = [
           ],
           'Ellipse Tool'
         ),
+        _createToolButton(
+          'CircleROI',
+          'tool-circle',
+          'Circle',
+          [
+            {
+              commandName: 'setToolActive',
+              commandOptions: {
+                toolName: 'CircleROI',
+              },
+              context: 'CORNERSTONE',
+            },
+            {
+              commandName: 'setToolActive',
+              commandOptions: {
+                toolName: 'SRCircleROI',
+                toolGroupId: 'SRToolGroup',
+              },
+              context: 'CORNERSTONE',
+            },
+          ],
+          'Circle Tool'
+        ),
       ],
     },
   },
@@ -297,10 +320,96 @@ const toolbarButtons = [
   },
   {
     id: 'Layout',
-    type: 'ohif.layoutSelector',
+    type: 'ohif.splitButton',
     props: {
-      rows: 3,
-      columns: 3,
+      groupId: 'LayoutTools',
+      isRadio: false,
+      primary: {
+        id: 'Layout',
+        type: 'action',
+        uiType: 'ohif.layoutSelector',
+        icon: 'tool-layout',
+        label: 'Grid Layout',
+        props: {
+          rows: 4,
+          columns: 4,
+          commands: [
+            {
+              commandName: 'setLayout',
+              commandOptions: {},
+              context: 'CORNERSTONE',
+            },
+          ],
+        },
+      },
+      secondary: {
+        icon: 'chevron-down',
+        label: '',
+        isActive: true,
+        tooltip: 'Hanging Protocols',
+      },
+      items: [
+        {
+          id: '2x2',
+          type: 'action',
+          label: '2x2',
+          commands: [
+            {
+              commandName: 'setHangingProtocol',
+              commandOptions: {
+                protocolId: '@ohif/mnGrid',
+                stageId: '2x2',
+              },
+              context: 'DEFAULT',
+            },
+          ],
+        },
+        {
+          id: '3x1',
+          type: 'action',
+          label: '3x1',
+          commands: [
+            {
+              commandName: 'setHangingProtocol',
+              commandOptions: {
+                protocolId: '@ohif/mnGrid',
+                stageId: '3x1',
+              },
+              context: 'DEFAULT',
+            },
+          ],
+        },
+        {
+          id: '2x1',
+          type: 'action',
+          label: '2x1',
+          commands: [
+            {
+              commandName: 'setHangingProtocol',
+              commandOptions: {
+                protocolId: '@ohif/mnGrid',
+                stageId: '2x1',
+              },
+              context: 'DEFAULT',
+            },
+          ],
+        },
+        {
+          id: '1x1',
+          type: 'action',
+          label: '1x1',
+          commands: [
+            {
+              commandName: 'setHangingProtocol',
+              commandOptions: {
+                protocolId: '@ohif/mnGrid',
+                stageId: '1x1',
+              },
+              context: 'DEFAULT',
+            },
+          ],
+        },
+      ],
     },
   },
   {
@@ -312,9 +421,11 @@ const toolbarButtons = [
       label: 'MPR',
       commands: [
         {
-          commandName: 'toggleMPR',
-          commandOptions: {},
-          context: 'CORNERSTONE',
+          commandName: 'toggleHangingProtocol',
+          commandOptions: {
+            protocolId: 'mpr',
+          },
+          context: 'DEFAULT',
         },
       ],
     },

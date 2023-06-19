@@ -43,7 +43,7 @@ export default function addMeasurement(
   // Use the metadata provider to grab its imagePlaneModule metadata
   const imagePlaneModule = metaData.get('imagePlaneModule', imageId);
 
-  const annotationManager = annotation.state.getDefaultAnnotationManager();
+  const annotationManager = annotation.state.getAnnotationManager();
 
   // Create Cornerstone3D Annotation from measurement
   const frameNumber =

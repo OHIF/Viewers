@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 //
 import PanelStudyBrowser from './PanelStudyBrowser';
 import getImageSrcFromImageId from './getImageSrcFromImageId';
-import getStudiesForPatientByStudyInstanceUID from './getStudiesForPatientByStudyInstanceUID';
+import getStudiesForPatientByMRN from './getStudiesForPatientByMRN';
 import requestDisplaySetCreationForStudy from './requestDisplaySetCreationForStudy';
 
 /**
@@ -21,7 +21,7 @@ function WrappedPanelStudyBrowser({
   // TODO: This should be made available a different way; route should have
   // already determined our datasource
   const dataSource = extensionManager.getDataSources()[0];
-  const _getStudiesForPatientByStudyInstanceUID = getStudiesForPatientByStudyInstanceUID.bind(
+  const _getStudiesForPatientByMRN = getStudiesForPatientByMRN.bind(
     null,
     dataSource
   );
@@ -38,9 +38,7 @@ function WrappedPanelStudyBrowser({
       servicesManager={servicesManager}
       dataSource={dataSource}
       getImageSrc={_getImageSrcFromImageId}
-      getStudiesForPatientByStudyInstanceUID={
-        _getStudiesForPatientByStudyInstanceUID
-      }
+      getStudiesForPatientByMRN={_getStudiesForPatientByMRN}
       requestDisplaySetCreationForStudy={_requestDisplaySetCreationForStudy}
     />
   );

@@ -4,26 +4,18 @@ import { SegmentationGroupTable } from '@ohif/ui';
 import callInputDialog from './callInputDialog';
 
 import { useTranslation } from 'react-i18next';
-import callColorPickerDialog from './callColorPickerDialog';
 
 export default function PanelSegmentation({
   servicesManager,
   commandsManager,
 }) {
-  const {
-    segmentationService,
-    uiDialogService,
-    viewportGridService,
-    toolGroupService,
-    cornerstoneViewportService,
-  } = servicesManager.services;
+  const { segmentationService, uiDialogService } = servicesManager.services;
 
   const { t } = useTranslation('PanelSegmentation');
   const [selectedSegmentationId, setSelectedSegmentationId] = useState(null);
-  const [
-    initialSegmentationConfigurations,
-    setInitialSegmentationConfigurations,
-  ] = useState(segmentationService.getConfiguration());
+  const [segmentationConfiguration, setSegmentationConfiguration] = useState(
+    segmentationService.getConfiguration()
+  );
 
   const [segmentations, setSegmentations] = useState(() =>
     segmentationService.getSegmentations()
@@ -63,6 +55,7 @@ export default function PanelSegmentation({
       const { unsubscribe } = segmentationService.subscribe(evt, () => {
         const segmentations = segmentationService.getSegmentations();
         setSegmentations(segmentations);
+        setSegmentationConfiguration(segmentationService.getConfiguration());
       });
       subscriptions.push(unsubscribe);
     });
@@ -185,7 +178,7 @@ export default function PanelSegmentation({
     segmentationService.toggleSegmentationVisibility(segmentationId);
   };
 
-  const setSegmentationConfiguration = useCallback(
+  const _setSegmentationConfiguration = useCallback(
     (segmentationId, key, value) => {
       segmentationService.setConfiguration({
         segmentationId,
@@ -204,7 +197,7 @@ export default function PanelSegmentation({
           showAddSegmentation={false}
           segmentations={segmentations}
           isMinimized={isMinimized}
-          activeSegmentationId={selectedSegmentationId}
+          activeSegmentationId={selectedSegmentationId || ''}
           onSegmentationClick={onSegmentationClick}
           onSegmentationDelete={onSegmentationDelete}
           onSegmentationEdit={onSegmentationEdit}
@@ -215,54 +208,51 @@ export default function PanelSegmentation({
           onToggleSegmentVisibility={onToggleSegmentVisibility}
           onToggleSegmentationVisibility={onToggleSegmentationVisibility}
           onToggleMinimizeSegmentation={onToggleMinimizeSegmentation}
-          segmentationConfig={{
-            initialConfig: initialSegmentationConfigurations,
-            usePercentage: true,
-          }}
+          segmentationConfig={{ initialConfig: segmentationConfiguration }}
           setRenderOutline={value =>
-            setSegmentationConfiguration(
+            _setSegmentationConfiguration(
               selectedSegmentationId,
               'renderOutline',
               value
             )
           }
           setOutlineOpacityActive={value =>
-            setSegmentationConfiguration(
+            _setSegmentationConfiguration(
               selectedSegmentationId,
               'outlineOpacity',
               value
             )
           }
           setRenderFill={value =>
-            setSegmentationConfiguration(
+            _setSegmentationConfiguration(
               selectedSegmentationId,
               'renderFill',
               value
             )
           }
           setRenderInactiveSegmentations={value =>
-            setSegmentationConfiguration(
+            _setSegmentationConfiguration(
               selectedSegmentationId,
               'renderInactiveSegmentations',
               value
             )
           }
           setOutlineWidthActive={value =>
-            setSegmentationConfiguration(
+            _setSegmentationConfiguration(
               selectedSegmentationId,
               'outlineWidthActive',
               value
             )
           }
           setFillAlpha={value =>
-            setSegmentationConfiguration(
+            _setSegmentationConfiguration(
               selectedSegmentationId,
               'fillAlpha',
               value
             )
           }
           setFillAlphaInactive={value =>
-            setSegmentationConfiguration(
+            _setSegmentationConfiguration(
               selectedSegmentationId,
               'fillAlphaInactive',
               value

@@ -1,8 +1,18 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { LegacyViewportActionBar, Notification } from '../';
+import LegacyViewportActionBar from '../LegacyViewportActionBar';
+import Notification from '../Notification';
 
-const Viewport = ({ viewportIndex, onArrowsClick, studyData, children }) => {
+const Viewport = ({
+  viewportId,
+  viewportIndex,
+  onArrowsClick,
+  studyData,
+  children,
+}) => {
+  if (!viewportId) {
+    viewportId = `viewport-${viewportIndex}`;
+  }
   return (
     <div className="relative flex flex-col h-full">
       <div className="absolute top-0 left-0 w-full">
@@ -39,7 +49,7 @@ const Viewport = ({ viewportIndex, onArrowsClick, studyData, children }) => {
       </div>
 
       {/* STUDY IMAGE */}
-      <div className="w-full h-full" id={`viewport-${viewportIndex}`}>
+      <div className="w-full h-full" id={viewportId}>
         {children}
       </div>
     </div>

@@ -8,6 +8,6 @@ module.exports = {
   // rootDir: "../.."
   // testMatch: [
   //   //`<rootDir>/platform/${pack.name}/**/*.spec.js`
-  //   "<rootDir>/platform/viewer/**/*.test.js"
+  //   "<rootDir>/platform/app/**/*.test.js"
   // ]
 };

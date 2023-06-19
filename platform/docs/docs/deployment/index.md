@@ -322,7 +322,7 @@ Please feel free to suggest or contribute your own recipes.
   -->
 
 <!-- prettier-ignore-start -->
-[viewer-npm]: https://www.npmjs.com/package/@ohif/viewer
+[viewer-npm]: https://www.npmjs.com/package/@ohif/app
 [pwa-url]: https://developers.google.com/web/progressive-web-apps/
 [static-assets-url]: https://www.maxcdn.com/one/visual-glossary/static-content/
 [app-store]: https://medium.freecodecamp.org/i-built-a-pwa-and-published-it-in-3-app-stores-heres-what-i-learned-7cb3f56daf9b

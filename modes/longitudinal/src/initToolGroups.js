@@ -32,6 +32,7 @@ function initDefaultToolGroup(
       { toolName: toolNames.Bidirectional },
       { toolName: toolNames.DragProbe },
       { toolName: toolNames.EllipticalROI },
+      { toolName: toolNames.CircleROI },
       { toolName: toolNames.RectangleROI },
       { toolName: toolNames.StackScroll },
       { toolName: toolNames.Angle },
@@ -113,6 +114,7 @@ function initSRToolGroup(extensionManager, toolGroupService, commandsManager) {
       { toolName: SRToolNames.SRArrowAnnotate },
       { toolName: SRToolNames.SRBidirectional },
       { toolName: SRToolNames.SREllipticalROI },
+      { toolName: SRToolNames.SRCircleROI },
     ],
     enabled: [
       {
@@ -173,6 +175,7 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
       { toolName: toolNames.Bidirectional },
       { toolName: toolNames.DragProbe },
       { toolName: toolNames.EllipticalROI },
+      { toolName: toolNames.CircleROI },
       { toolName: toolNames.RectangleROI },
       { toolName: toolNames.StackScroll },
       { toolName: toolNames.Angle },
@@ -215,6 +218,32 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
 
   toolGroupService.createToolGroupAndAddTools('mpr', tools, toolsConfig);
 }
+function initVolume3DToolGroup(extensionManager, toolGroupService) {
+  const utilityModule = extensionManager.getModuleEntry(
+    '@ohif/extension-cornerstone.utilityModule.tools'
+  );
+
+  const { toolNames, Enums } = utilityModule.exports;
+
+  const tools = {
+    active: [
+      {
+        toolName: toolNames.TrackballRotateTool,
+        bindings: [{ mouseButton: Enums.MouseBindings.Primary }],
+      },
+      {
+        toolName: toolNames.Zoom,
+        bindings: [{ mouseButton: Enums.MouseBindings.Secondary }],
+      },
+      {
+        toolName: toolNames.Pan,
+        bindings: [{ mouseButton: Enums.MouseBindings.Auxiliary }],
+      },
+    ],
+  };
+
+  toolGroupService.createToolGroupAndAddTools('volume3d', tools);
+}
 
 function initToolGroups(extensionManager, toolGroupService, commandsManager) {
   initDefaultToolGroup(
@@ -225,6 +254,7 @@ function initToolGroups(extensionManager, toolGroupService, commandsManager) {
   );
   initSRToolGroup(extensionManager, toolGroupService, commandsManager);
   initMPRToolGroup(extensionManager, toolGroupService, commandsManager);
+  initVolume3DToolGroup(extensionManager, toolGroupService);
 }
 
 export default initToolGroups;

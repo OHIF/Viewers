@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
-import { Icon } from '../';
+import Icon from '../Icon';
 
 const baseClasses =
   'first:border-0 border-t border-secondary-light cursor-pointer select-none outline-none';

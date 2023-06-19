@@ -5,6 +5,7 @@ const toolNames = {
   SRLength: 'SRLength',
   SRBidirectional: 'SRBidirectional',
   SREllipticalROI: 'SREllipticalROI',
+  SRCircleROI: 'SRCircleROI',
   SRArrowAnnotate: 'SRArrowAnnotate',
   SRAngle: 'SRAngle',
   SRCobbAngle: 'SRCobbAngle',

@@ -315,7 +315,9 @@ handles creation of the displaySets.
 ### Hotkeys
 
 `hotkeys` is another property in the configuration of a mode that can be defined
-to add the specific hotkeys to the viewer at all routes.
+to add the specific hotkeys to the viewer on the mode route.  Additionally, the
+name under which the hotkeys are stored can be configured as `hotkeyName`.
+This allows user customization of the mode specific hotkeys.
 
 ```js
 // default hotkeys
@@ -347,7 +349,13 @@ function modeFactory() {
     /*
     ...
     */
-    hotkeys: [..hotkeys.defaults.hotkeyBindings, ...myHotkeys],
+    hotkeys: {
+      // The name in preferences to use for this set of hotkeys
+      // Allows defining different sets for different modes
+      name: 'custom-hotkey-name',
+      // And the actual custom values here.
+      hotkeys:[..hotkeys.defaults.hotkeyBindings, ...myHotkeys]
+    },
   }
 }
 
@@ -360,20 +368,20 @@ Similar to extension registration, `viewer` will look inside the `pluginConfig.j
 find the `modes` to register.
 
 
-```js title=platform/viewer/pluginConfig.json
+```js title=platform/app/pluginConfig.json
 // Simplified version of the `pluginConfig.json` file
 {
   "extensions": [
     {
       "packageName": "@ohif/extension-cornerstone",
-      "version": "3.0.0"
+      "version": "3.4.0"
     },
     // ...
   ],
   "modes": [
     {
       "packageName": "@ohif/mode-longitudinal",
-      "version": "0.0.1"
+      "version": "3.4.0"
     }
   ]
 }
