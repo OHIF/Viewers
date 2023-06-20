@@ -61,7 +61,7 @@ https://web.dev/coop-coep/ or follow the steps below to enable it.
 ### Fixing the Cross Origin Isolation Warning to enable volume rendering
 
 For that we need a more sophisticated setup, since we need to add the Cross Origin Embedder Policy and Cross Origin Opener Policy headers
-to make the parent app cross origin isolated. For that we can use a express server. (Note: you can use any other method
+to make the parent app cross origin isolated. For that we can use an express server. (Note: you can use any other method
 to add the headers, this is just one of the methods)
 
 Download files from [here](https://ohif-assets.s3.us-east-2.amazonaws.com/iframe-express/Archive.zip)
@@ -130,9 +130,11 @@ If you are not using the static build, you can use the iframe to load the viewer
 <iframe src="http://localhost:3000" style="width: 100%; height: 500px; border: none"/>
 ```
 
-You need to notice that not including the static build removes the need for
-the PUBLIC_URL and the routerBasename. However, you need to take care of the Cross Origin Resource Policy (CORP)
-headers since the viewer will be loaded from a different port. You can read more about CORP [here](https://developer.mozilla.org/en-US/docs/Web/HTTP/Cross-Origin_Resource_Policy), but basically in the development server that is serving the viewer, you need to add the following headers:
+Notice that not including the static build removes the need for
+the PUBLIC_URL and the routerBasename. However, the Cross Origin Resource Policy (CORP)
+headers must be set because the viewer will be loaded from a different port. You can read
+more about CORP [here](https://developer.mozilla.org/en-US/docs/Web/HTTP/Cross-Origin_Resource_Policy).
+Basically in the development server that is serving the viewer, add the following headers:
 
 ```js
 // use this if the embedding app is running on the same site as OHIF
