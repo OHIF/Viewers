@@ -77,7 +77,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
   };
 
   const generateWadoHeader = () => {
-    let baseHeader = getAuthrorizationHeader();
+    let authorizationHeader = getAuthrorizationHeader();
     //Generate accept header depending on config params
     let formattedAcceptHeader = utils.generateAcceptHeader(
       acceptHeader,
@@ -86,7 +86,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
     );
 
     return {
-      ...baseHeader,
+      ...authorizationHeader,
       Accept: formattedAcceptHeader,
     };
   };
