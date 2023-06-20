@@ -61,7 +61,7 @@ https://web.dev/coop-coep/ or follow the steps below to enable it.
 ### Fixing the Cross Origin Isolation Warning to enable volume rendering
 
 For that we need a more sophisticated setup, since we need to add the Cross Origin Embedder Policy and Cross Origin Opener Policy headers
-to make the parent app cross origin isolated. For that we can use an express server. (Note: you can use any other method
+to make the parent app cross origin isolated. For that we can use an Express server. (Note: you can use any other method
 to add the headers, this is just one of the methods)
 
 Download files from [here](https://ohif-assets.s3.us-east-2.amazonaws.com/iframe-express/Archive.zip)
