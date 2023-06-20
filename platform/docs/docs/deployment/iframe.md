@@ -27,7 +27,7 @@ contains the `index.html` file (See [build for production](./build-for-productio
 It is also required that the PUBLIC_URL environment variable is set to the same path. For example, if the iframe is
 `<iframe src="./ohif" />` (which means there is a `ohif` folder containing the build in your main app), then you need to:
 
-1. use a config file that is using the `routerBasename` of `/ohif` (note the one / - it is not /ohif/).
+1. use a config (e.g. config/myConfig.js) file that is using the `routerBasename` of `/ohif` (note the one / - it is not /ohif/).
 2. build the viewer with `PUBLIC_URL=./ohif/ APP_CONFIG=config/myConfig.js yarn build` (note the one / - it is not /ohif/).
 
 :::tip
