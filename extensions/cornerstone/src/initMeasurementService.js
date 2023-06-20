@@ -360,7 +360,7 @@ const connectMeasurementServiceToTools = (
       const instance = DicomMetadataStore.getInstance(
         referenceStudyUID,
         referenceSeriesUID,
-        SOPInstanceUID
+        SOPInstanceUID || measurement.metadata.SOPInstanceUID
       );
 
       let imageId;
@@ -372,10 +372,12 @@ const connectMeasurementServiceToTools = (
           measurement.metadata.referencedImageId
         ).frameNumber;
       } else {
-        imageId = dataSource.getImageIdsForInstance({ instance });
+        console.log({ dataSource });
+        imageId = dataSource?.getImageIdsForInstance?.({ instance });
       }
 
       const annotationManager = annotation.state.getAnnotationManager();
+      console.log('VU1:', measurement.metadata.viewUp);
       annotationManager.addAnnotation({
         annotationUID: measurement.uid,
         highlighted: false,
@@ -385,6 +387,8 @@ const connectMeasurementServiceToTools = (
           toolName: measurement.toolName,
           FrameOfReferenceUID: measurement.FrameOfReferenceUID,
           referencedImageId: imageId,
+          viewPlaneNormal: measurement.metadata.viewPlaneNormal,
+          viewUp: measurement.metadata.viewUp,
         },
         data: {
           text: data.annotation.data.text,
