@@ -367,8 +367,16 @@ module.exports = {
                 to: '/',
               },
               {
-                label: 'Installation',
+                label: 'Getting Started',
                 to: 'development/getting-started',
+              },
+              {
+                label: 'FAQ',
+                to: '/faq',
+              },
+              {
+                label: 'Resources',
+                to: '/resources',
               },
             ],
           },
@@ -377,7 +385,7 @@ module.exports = {
             items: [
               {
                 label: 'Discussion board',
-                to: 'https://community.ohif.org/',
+                href: 'https://community.ohif.org/',
               },
               {
                 label: 'Help',
@@ -390,15 +398,15 @@ module.exports = {
             items: [
               {
                 label: 'Donate',
-                to: 'https://giving.massgeneral.org/ohif',
+                href: 'https://giving.massgeneral.org/ohif',
               },
               {
                 label: 'GitHub',
-                to: 'https://github.com/OHIF/Viewers',
+                href: 'https://github.com/OHIF/Viewers',
               },
               {
                 label: 'Twitter',
-                to: 'https://twitter.com/OHIFviewer',
+                href: 'https://twitter.com/OHIFviewer',
               },
             ],
           },
