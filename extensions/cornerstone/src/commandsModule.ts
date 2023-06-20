@@ -643,9 +643,7 @@ function commandsModule({
           viewportIndex: index,
           displaySetInstanceUIDs: [displaySetKey],
           viewportOptions: {
-            initialImageOptions: {
-              preset: 'middle',
-            },
+            initialImageOptions: viewport.viewportOptions.initialImageOptions,
             viewportType: 'volume',
             orientation: viewport.viewportOptions.orientation,
             background: viewport.viewportOptions.background,

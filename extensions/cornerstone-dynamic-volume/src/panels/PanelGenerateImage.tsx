@@ -280,6 +280,7 @@ export default function PanelGenerateImage({
   return (
     <div className="flex flex-col">
       <div className="flex flex-col p-4 space-y-4 bg-primary-dark">
+        <div className="marginBottom-10px">Frame Panel</div>
         <div className="w-3">
           <InputDoubleRange
             labelClassName="text-black"

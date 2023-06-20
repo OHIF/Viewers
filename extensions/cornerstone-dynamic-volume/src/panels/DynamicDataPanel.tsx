@@ -18,7 +18,7 @@ function DynamicDataPanel({
         servicesManager={servicesManager}
         extensionManager={extensionManager}
       />
-      <ToolsPanel></ToolsPanel>
+      {/* <ToolsPanel></ToolsPanel>
       <WindowLevelPanel></WindowLevelPanel> */}
       <PanelGenerateImage
         commandsManager={commandsManager}
