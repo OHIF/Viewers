@@ -103,6 +103,7 @@ const commandsModule = ({}) => {
           additionalFindingTypes,
           options
         );
+        console.log('*** Report:', JSON.stringify(naturalizedReport, null, 2));
 
         const { StudyInstanceUID, ContentSequence } = naturalizedReport;
         // The content sequence has 5 or more elements, of which
