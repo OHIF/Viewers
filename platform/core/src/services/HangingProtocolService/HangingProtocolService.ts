@@ -767,39 +767,6 @@ export default class HangingProtocolService extends PubSubService {
   }
 
   /**
-   *  Gets a computed options value, or a copy of the options
-   * This allows computing values such as the initial image index to use
-   * based on custom attribute functions, the same as the validators.
-   * Computing individual values is something that can be declared statically
-   * as long as the named functions are provided ahead of time, which is much
-   * simpler than recomputing the entire protocol.
-   */
-  public getComputedOptions(
-    options: Record<string, unknown>,
-    displaySetUIDs: string[]
-  ) {
-    const computed = { ...options };
-    let displaySets;
-    for (const key in computed) {
-      const value = computed[key];
-      if (!value) continue;
-      if (value.custom) {
-        if (!displaySets) {
-          displaySets = this.displaySets.filter(
-            displaySet =>
-              displaySetUIDs.indexOf(displaySet.displaySetInstanceUID) !== -1
-          );
-        }
-        computed[key] = this.customAttributeRetrievalCallbacks[
-          value.custom
-        ].callback.call(computed, displaySets);
-        if (computed[key] === undefined) computed[key] = computed.defaultValue;
-      }
-    }
-    return computed;
-  }
-
-  /**
    * It applied the protocol to the current studies and display sets based on the
    * protocolId that is provided.
    * @param protocolId - name of the registered protocol to be set

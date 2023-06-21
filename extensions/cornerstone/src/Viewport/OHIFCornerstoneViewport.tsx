@@ -145,8 +145,6 @@ const OHIFCornerstoneViewport = React.memo(props => {
 
   const [viewportDialogState] = useViewportDialog();
 
-  const [viewportDialogState] = useViewportDialog();
-
   const cineHandler = useCallback(() => {
     if (!cines || !cines[viewportIndex] || !enabledVPElement) {
       return;
