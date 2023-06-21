@@ -69,6 +69,14 @@ module.exports = (env, argv) => {
         // Hoisted Yarn Workspace Modules
         path.resolve(__dirname, '../../../node_modules'),
         SRC_DIR,
+        path.resolve(
+          __dirname,
+          '../../../../ohif-3-extensions/@better-medicine/extension-tuh-clinical-study/node_modules'
+        ),
+        path.resolve(
+          __dirname,
+          '../../../../ohif-3-modes/@better-medicine/test-phase/node_modules'
+        ),
       ],
     },
     plugins: [
