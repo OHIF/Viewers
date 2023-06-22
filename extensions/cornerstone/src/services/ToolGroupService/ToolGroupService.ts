@@ -51,6 +51,10 @@ export default class ToolGroupService {
     Object.assign(this, pubSubServiceInterface);
   }
 
+  onModeExit() {
+    this.destroy();
+  }
+
   /**
    * Retrieves a tool group from the ToolGroupManager by tool group ID.
    * If no tool group ID is provided, it retrieves the tool group of the active viewport.

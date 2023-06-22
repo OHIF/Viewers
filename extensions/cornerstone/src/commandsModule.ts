@@ -14,7 +14,6 @@ import { Types as OhifTypes } from '@ohif/core';
 
 import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownloadForm';
 import callInputDialog from './utils/callInputDialog';
-import { setColormap } from './utils/colormap/transferFunctionHelpers';
 import toggleStackImageSync from './utils/stackSync/toggleStackImageSync';
 import { getFirstAnnotationSelected } from './utils/measurementServiceMappings/utils/selection';
 import getActiveViewportEnabledElement from './utils/getActiveViewportEnabledElement';
@@ -369,6 +368,21 @@ function commandsModule({
     },
     showDownloadViewportModal: () => {
       const { activeViewportIndex } = viewportGridService.getState();
+
+      if (
+        !cornerstoneViewportService.getCornerstoneViewportByIndex(
+          activeViewportIndex
+        )
+      ) {
+        // Cannot download a non-cornerstone viewport (image).
+        uiNotificationService.show({
+          title: 'Download Image',
+          message: 'Image cannot be downloaded',
+          type: 'error',
+        });
+        return;
+      }
+
       const { uiModalService } = servicesManager.services;
 
       if (uiModalService) {
@@ -556,9 +570,9 @@ function commandsModule({
         return actorEntry.uid.includes(displaySetInstanceUID);
       });
 
-      const { actor: volumeActor } = actorEntry;
+      const { actor: volumeActor, uid: volumeId } = actorEntry;
 
-      setColormap(volumeActor, colormap);
+      viewport.setProperties({ colormap, volumeActor }, volumeId);
 
       if (immediate) {
         viewport.render();

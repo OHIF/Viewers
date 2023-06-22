@@ -335,13 +335,13 @@ const OHIFCornerstoneViewport = React.memo(props => {
 
       cleanUpServices();
 
+      const viewportInfo = cornerstoneViewportService.getViewportInfoByIndex(
+        viewportIndex
+      );
+
       cornerstoneViewportService.disableElement(viewportIndex);
 
       if (onElementDisabled) {
-        const viewportInfo = cornerstoneViewportService.getViewportInfoByIndex(
-          viewportIndex
-        );
-
         onElementDisabled(viewportInfo);
       }
 
@@ -567,8 +567,9 @@ function _subscribeToJumpToMeasurementEvents(
           { referencedImageId: measurement.referencedImageId }
         );
       }
-      if (cacheJumpToMeasurementEvent.cornerstoneViewport !== viewportIndex)
+      if (cacheJumpToMeasurementEvent.cornerstoneViewport !== viewportIndex) {
         return;
+      }
       _jumpToMeasurement(
         measurement,
         elementRef,

@@ -23,7 +23,9 @@ const InputRange: React.FC<{
   inputClassName?: string;
   labelClassName?: string;
   labelVariant?: string;
-  showLabel: boolean;
+  showLabel?: boolean;
+  labelPosition?: string;
+  trackColor?: string;
 }> = ({
   value,
   onChange,
@@ -36,6 +38,8 @@ const InputRange: React.FC<{
   labelClassName,
   labelVariant,
   showLabel = true,
+  labelPosition = '',
+  trackColor,
 }) => {
   const [rangeValue, setRangeValue] = useState(value);
 
@@ -63,6 +67,16 @@ const InputRange: React.FC<{
         containerClassName ? containerClassName : ''
       }`}
     >
+      {showLabel && labelPosition === 'left' && (
+        <Typography
+          variant={labelVariant ?? 'subtitle'}
+          component="p"
+          className={classNames('w-8', labelClassName ?? 'text-white')}
+        >
+          {rangeValueForStr}
+          {unit}
+        </Typography>
+      )}
       <input
         type="range"
         min={minValue}
@@ -72,14 +86,16 @@ const InputRange: React.FC<{
           inputClassName ? inputClassName : ''
         }`}
         style={{
-          background: `linear-gradient(to right, #5acce6 0%, #5acce6 ${rangeValuePercentage -
-            10}%, #3a3f99 ${rangeValuePercentage + 10}%, #3a3f99 100%)`,
+          background:
+            trackColor ||
+            `linear-gradient(to right, #5acce6 0%, #5acce6 ${rangeValuePercentage -
+              10}%, #3a3f99 ${rangeValuePercentage + 10}%, #3a3f99 100%)`,
         }}
         onChange={handleChange}
         id="myRange"
         step={step}
       />
-      {showLabel && (
+      {showLabel && (!labelPosition || labelPosition === 'right') && (
         <Typography
           variant={labelVariant ?? 'subtitle'}
           component="p"

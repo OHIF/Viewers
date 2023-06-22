@@ -1,5 +1,10 @@
 import { ServicesManager, Types } from '@ohif/core';
-import { cache as cs3DCache, Enums, volumeLoader } from '@cornerstonejs/core';
+import {
+  cache as cs3DCache,
+  Enums,
+  volumeLoader,
+  utilities as utils,
+} from '@cornerstonejs/core';
 
 import getCornerstoneViewportType from '../../utils/getCornerstoneViewportType';
 import {

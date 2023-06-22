@@ -1,28 +1,41 @@
-const DEFAULT_COLORMAP = 'hsv';
+// 2hot, Black-Body Radiation, Black, Orange and White,
+// erdc_red2yellow_BW, RED_TEMPERATURE
+const DEFAULT_COLORMAP = '2hot';
 
 function getPTOptions({
   colormap,
-  voiInverted
+  opacityMapping,
+  voiInverted,
 }: {
   colormap?: string;
+  opacityMapping?: {
+    value: number;
+    opacity: number;
+  }[];
   voiInverted?: boolean;
-} = { }
-) {
+} = {}) {
+  const colormapData = colormap
+    ? {
+        name: colormap,
+        opacityMapping,
+      }
+    : undefined;
+
   return {
-    colormap,
+    colormap: colormapData,
     voi: {
       windowWidth: 5,
       windowCenter: 2.5,
     },
     voiInverted,
-  }
+  };
 }
-
 
 function getPTViewports() {
   const ptOptionsParams = {
-    /* colormap: DEFAULT_COLORMAP, */
-    voiInverted: true,
+    colormap: DEFAULT_COLORMAP,
+    opacityMapping: [{ value: 0, opacity: 1 }],
+    voiInverted: false,
   };
 
   return [
@@ -31,7 +44,6 @@ function getPTViewports() {
         viewportId: 'ptAxial',
         viewportType: 'volume',
         orientation: 'axial',
-        background: [1, 1, 1],
         toolGroupId: 'dynamic4D-default',
         initialImageOptions: {
           preset: 'middle', // 'first', 'last', 'middle'
@@ -63,7 +75,6 @@ function getPTViewports() {
         viewportId: 'ptSagittal',
         viewportType: 'volume',
         orientation: 'sagittal',
-        background: [1, 1, 1],
         toolGroupId: 'dynamic4D-default',
         initialImageOptions: {
           // preset: 'middle', // 'first', 'last', 'middle'
@@ -96,7 +107,6 @@ function getPTViewports() {
         viewportId: 'ptCoronal',
         viewportType: 'volume',
         orientation: 'coronal',
-        background: [1, 1, 1],
         toolGroupId: 'dynamic4D-default',
         initialImageOptions: {
           // preset: 'middle', // 'first', 'last', 'middle'
@@ -123,12 +133,15 @@ function getPTViewports() {
           options: { ...getPTOptions(ptOptionsParams) },
         },
       ],
-    }
-  ]
+    },
+  ];
 }
 
 function getFusionViewports() {
-  const ptOptionsParams = { colormap: DEFAULT_COLORMAP };
+  const ptOptionsParams = {
+    colormap: 'hsv',
+    opacityMapping: [{ value: 0.1, opacity: 0.9 }],
+  };
 
   return [
     {
@@ -400,9 +413,7 @@ const defaultProtocol = {
           columns: 3,
         },
       },
-      viewports: [
-        ...getPTViewports(),
-      ],
+      viewports: [...getPTViewports()],
       createdDate: '2023-01-01T00:00:00.000Z',
     },
 
@@ -416,10 +427,7 @@ const defaultProtocol = {
           columns: 3,
         },
       },
-      viewports: [
-        ...getFusionViewports(),
-        ...getPTViewports(),
-      ],
+      viewports: [...getFusionViewports(), ...getPTViewports()],
       createdDate: '2023-01-01T00:00:00.000Z',
     },
 
@@ -433,9 +441,7 @@ const defaultProtocol = {
           columns: 3,
         },
       },
-      viewports: [
-        ...getFusionViewports(),
-      ],
+      viewports: [...getFusionViewports()],
       createdDate: '2023-01-01T00:00:00.000Z',
     },
 
@@ -449,9 +455,7 @@ const defaultProtocol = {
           columns: 3,
         },
       },
-      viewports: [
-        ...getFusionViewports(),
-      ],
+      viewports: [...getFusionViewports()],
       createdDate: '2023-01-01T00:00:00.000Z',
     },
 
@@ -465,21 +469,19 @@ const defaultProtocol = {
           columns: 3,
         },
       },
-      viewports: [
-        ...getPTViewports()
-      ],
+      viewports: [...getPTViewports()],
       createdDate: '2023-01-01T00:00:00.000Z',
     },
   ],
 };
 
 /**
-   * HangingProtocolModule should provide a list of hanging protocols that will be
-   * available in OHIF for Modes to use to decide on the structure of the viewports
-   * and also the series that hung in the viewports. Each hanging protocol is defined by
-   * { name, protocols}. Examples include the default hanging protocol provided by
-   * the default extension that shows 2x2 viewports.
-   */
+ * HangingProtocolModule should provide a list of hanging protocols that will be
+ * available in OHIF for Modes to use to decide on the structure of the viewports
+ * and also the series that hung in the viewports. Each hanging protocol is defined by
+ * { name, protocols}. Examples include the default hanging protocol provided by
+ * the default extension that shows 2x2 viewports.
+ */
 
 function getHangingProtocolModule() {
   return [

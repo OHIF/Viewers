@@ -78,7 +78,7 @@ export default class DisplaySetService extends PubSubService {
       if (!activeDisplaySetsMap.has(displaySet.displaySetInstanceUID)) {
         this.activeDisplaySetsChanged = true;
         activeDisplaySets.push(displaySet);
-        activeDisplaySetsMap.set(displaySet.displayInstanceUID, displaySet);
+        activeDisplaySetsMap.set(displaySet.displaySetInstanceUID, displaySet);
       }
     });
   }
