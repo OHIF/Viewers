@@ -10075,4 +10075,9 @@ export default [
       0.3,
     ],
   },
+  {
+    ColorSpace: 'RGB',
+    Name: 'default',
+    RGBPoints: [0, 0, 0, 0, 0.5, 0.5, 0.5, 0.5, 1, 1, 1, 1],
+  },
 ];
