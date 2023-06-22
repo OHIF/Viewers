@@ -70,7 +70,7 @@ and registered extension's features, are configured using this file.
 
 The easiest way to apply your own configuration is to modify the `default.js`
 file. For more advanced configuration options, check out our
-[configuration essentials guide](../configuration/index.md).
+[configuration essentials guide](../configuration/configurationFiles.md).
 
 ## Next Steps
 
@@ -108,6 +108,10 @@ yarn global add http-server
 npx http-server ./dist
 ```
 
+:::caution
+In the video below notice that there is `platform/viewer` which has been renamed to `platform/app` in the latest version
+:::
+
 <div style={{padding:"56.25% 0 0 0", position:"relative"}}>
     <iframe src="https://player.vimeo.com/video/551957266?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479"  frameBorder="0" allow="autoplay; fullscreen; picture-in-picture" allowFullScreen style= {{ position:"absolute",top:0,left:0,width:"100%",height:"100%"}} title="measurement-report"></iframe>
 </div>
@@ -127,6 +131,6 @@ web application. For a starting point, check out this repository's own use of:
 [circleci]: https://circleci.com/gh/OHIF/Viewers
 [circleci-config]: https://github.com/OHIF/Viewers/blob/master/.circleci/config.yml
 [netlify]: https://app.netlify.com/sites/ohif/deploys
-[netlify.toml]: https://github.com/OHIF/Viewers/blob/master/netlify.toml
+[netlify.toml]: https://github.com/OHIF/Viewers/blob/master/platform/app/netlify.toml
 [build-deploy-preview.sh]: https://github.com/OHIF/Viewers/blob/master/.netlify/build-deploy-preview.sh
 <!-- prettier-ignore-end -->
