@@ -30,6 +30,7 @@ const initMeasurementService = (
     CobbAngle,
     RectangleROI,
     PlanarFreehandROI,
+    CalibrationLine,
   } = measurementServiceMappingsFactory(
     measurementService,
     displaySetService,
@@ -118,9 +119,9 @@ const initMeasurementService = (
   measurementService.addMapping(
     csTools3DVer1MeasurementSource,
     'CalibrationLine',
-    Length.matchingCriteria,
-    Length.toAnnotation,
-    Length.toMeasurement
+    CalibrationLine.matchingCriteria,
+    CalibrationLine.toAnnotation,
+    CalibrationLine.toMeasurement
   );
 
   return csTools3DVer1MeasurementSource;
@@ -166,10 +167,10 @@ const connectToolsToMeasurementService = servicesManager => {
             () => true
           )
           .finally(() => {
-            // we don't need the calibration line lingering around, remove the
-            // annotation from the display
-            removeAnnotation(annotationUID);
-            removeMeasurement(csToolsEvent);
+            // TODO: Remove any existing calibrations on the same image
+            annotationAddedEventDetail.uid = annotationUID;
+            annotationToMeasurement(toolName, annotationAddedEventDetail);
+            // Hide the annotation
             // this will ensure redrawing of annotations
             cornerstoneViewportService.resize();
           });
