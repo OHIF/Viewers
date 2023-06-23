@@ -24,6 +24,7 @@ describe('Top level exports', () => {
       'b64toBlob',
       'formatDate',
       'formatPN',
+      'generateAcceptHeader',
       'isEqualWithin',
       //'loadAndCacheDerivedDisplaySets',
       'isDisplaySetReconstructable',

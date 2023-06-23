@@ -1,6 +1,6 @@
 /* eslint-disable react/display-name */
 import React from 'react';
-import { Dialog, Input } from '@ohif/ui';
+import { ButtonEnums, Dialog, Input } from '@ohif/ui';
 import RESPONSE from './PROMPT_RESPONSES';
 
 export default function createReportDialogPrompt(uiDialogService) {
@@ -20,12 +20,19 @@ export default function createReportDialogPrompt(uiDialogService) {
      * @param {string} param0.value - value from input field
      */
     const _handleFormSubmit = ({ action, value }) => {
-      uiDialogService.dismiss({ id: dialogId });
       switch (action.id) {
         case 'save':
-          resolve({ action: RESPONSE.CREATE_REPORT, value: value.label });
+          // Only save if description is not blank otherwise ignore
+          if (value.label && value.label.trim() !== '') {
+            resolve({
+              action: RESPONSE.CREATE_REPORT,
+              value: value.label.trim(),
+            });
+            uiDialogService.dismiss({ id: dialogId });
+          }
           break;
         case 'cancel':
+          uiDialogService.dismiss({ id: dialogId });
           resolve({ action: RESPONSE.CANCEL, value: undefined });
           break;
       }
@@ -43,8 +50,8 @@ export default function createReportDialogPrompt(uiDialogService) {
         noCloseButton: true,
         onClose: _handleClose,
         actions: [
-          { id: 'cancel', text: 'Cancel', type: 'primary' },
-          { id: 'save', text: 'Save', type: 'secondary' },
+          { id: 'cancel', text: 'Cancel', type: ButtonEnums.type.secondary },
+          { id: 'save', text: 'Save', type: ButtonEnums.type.primary },
         ],
         // TODO: Should be on button press...
         onSubmit: _handleFormSubmit,
@@ -55,8 +62,8 @@ export default function createReportDialogPrompt(uiDialogService) {
           };
           const onKeyPressHandler = event => {
             if (event.key === 'Enter') {
-              uiDialogService.dismiss({ id: dialogId });
-              resolve({ action: RESPONSE.CREATE_REPORT, value: value.label });
+              // Trigger form submit
+              _handleFormSubmit({ action: { id: 'save' }, value });
             }
           };
           return (

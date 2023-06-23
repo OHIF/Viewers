@@ -1,5 +1,5 @@
-describe('OHIF Context Menu', function () {
-  beforeEach(function () {
+describe('OHIF Context Menu', function() {
+  beforeEach(function() {
     cy.checkStudyRouteInViewer(
       '1.2.840.113619.2.5.1762583153.215519.978957063.78'
     );
@@ -10,10 +10,10 @@ describe('OHIF Context Menu', function () {
     cy.resetViewport().wait(50);
   });
 
-  it('checks context menu customization', function () {
+  it('checks context menu customization', function() {
     // Add length measurement
     cy.addLengthMeasurement();
-    cy.get('[data-cy="prompt-begin-tracking-yes"]').click();
+    cy.get('[data-cy="prompt-begin-tracking-yes-btn"]').click();
     cy.get('[data-cy="measurement-item"]').click();
 
     const [x1, y1] = [150, 100];
