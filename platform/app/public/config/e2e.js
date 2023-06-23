@@ -4,7 +4,6 @@ window.config = {
   modes: ['@ohif/mode-test'],
   showStudyList: true,
   // below flag is for performance reasons, but it might not work for all servers
-  omitQuotationForMultipartRequest: true,
   maxNumberOfWebWorkers: 3,
   showWarningMessageForCrossOrigin: false,
   showCPUFallbackMessage: false,
@@ -31,6 +30,7 @@ window.config = {
         supportsFuzzyMatching: false,
         supportsWildcard: true,
         singlepart: 'video,thumbnail,pdf',
+        omitQuotationForMultipartRequest: true,
       },
     },
     {
