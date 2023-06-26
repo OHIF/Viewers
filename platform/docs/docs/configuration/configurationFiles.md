@@ -138,7 +138,7 @@ Example 2, to restricts to either hosptial.com or othersite.com.<br/>
 `regex: /(https:\/\/hospital.com(\/[0-9A-Za-z.]+)*)|(https:\/\/othersite.com(\/[0-9A-Za-z.]+)*)/` <br/>
 Example usage:<br/>
 `http://localhost:3000/?configUrl=http://localhost:3000/config/example.json`<br/>
-- `onConfiguration`: Currently only available for DicomWebDataSource. This option allows interception of the data source configuration for dynamic values or configuration options that are dependent of url params or query params. Example:
+- `onConfiguration`: Currently only available for DicomWebDataSource, this option allows the interception of the data source configuration for dynamic values e.g. values coming from url params or query params. Here is an example of building the dicomweb datasource configuration object with values that are based on the route url params:
 ```
   {
     friendlyName: 'GCP DICOMWeb Server',
@@ -169,6 +169,7 @@ Example usage:<br/>
     },
   },
 ```
+This configuration would allow the user to build a dicomweb configuration from a GCP healthcare api path e.g. http://localhost:3000/projects/your-gcp-project/locations/us-central1/datasets/your-dataset/dicomStores/your-dicom-store/study/1.3.6.1.4.1.1234.5.2.1.1234.1234.123123123123123123123123123123
 
 <!-- **Embedded Use Note:**
 
