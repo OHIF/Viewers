@@ -65,6 +65,7 @@ function modeFactory() {
     id: '',
     version: '',
     displayName: '',
+    noWorklistButton: false,
     onModeEnter: () => {},
     onModeExit: () => {},
     validationTags: {},
@@ -111,6 +112,12 @@ export default mode;
           displayName
       </td>
       <td align="left">actual name of the mode being displayed for each study in the study summary panel</td>
+    </tr>
+    <tr>
+      <td align="left">
+          noWorklistButton
+      </td>
+      <td align="left">wether or not to display the mode button in the expanded worklist item</td>
     </tr>
     <tr>
       <td align="left">

@@ -34,7 +34,7 @@ function ViewerLayout({
   // From Modes
   viewports,
   ViewportGridComp,
-  isReturnEnabled = true,
+  showStudyList = true,
   leftPanels = [],
   rightPanels = [],
   leftPanelDefaultClosed = false,
@@ -221,7 +221,7 @@ function ViewerLayout({
     <div>
       <Header
         menuOptions={menuOptions}
-        isReturnEnabled={isReturnEnabled && !!appConfig.showStudyList}
+        isReturnEnabled={showStudyList && !!appConfig.showStudyList}
         onClickReturnButton={onClickReturnButton}
         WhiteLabeling={appConfig.whiteLabeling}
       >

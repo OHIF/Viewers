@@ -38,7 +38,7 @@ A simplified code for `Default extension`'s layout template is:
 
 ```jsx title="extensions/default/src/ViewerLayout/index.jsx"
 import React from 'react';
-import { SidePanel } from '@ohif/ui';
+import { SidePanel, Header } from '@ohif/ui';
 
 function Toolbar({ servicesManager }) {
   const { ToolBarService } = servicesManager.services;
@@ -70,6 +70,7 @@ function ViewerLayout({
   hotkeysManager,
   commandsManager,
   // From Modes
+  showStudyList,
   leftPanels,
   rightPanels,
   viewports,
@@ -103,7 +104,9 @@ function ViewerLayout({
 
   return (
     <div>
-      <Toolbar servicesManager={servicesManager} />
+      <Header isReturnEnabled={showStudyList}>
+        <Toolbar servicesManager={servicesManager} />
+      </Header>
 
       <div>
         {/* LEFT SIDEPANELS */}
