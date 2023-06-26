@@ -166,7 +166,7 @@ export default async function init({
     prefetch: appConfig?.maxNumRequests?.prefetch || 10,
   };
 
-  initWADOImageLoader(userAuthenticationService, appConfig);
+  initWADOImageLoader(userAuthenticationService, appConfig, extensionManager);
 
   /* Measurement Service */
   this.measurementServiceSource = connectToolsToMeasurementService(

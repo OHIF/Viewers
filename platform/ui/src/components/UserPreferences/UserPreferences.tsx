@@ -6,6 +6,7 @@ import Select from '../Select';
 import Typography from '../Typography';
 import Button from '../Button';
 import HotkeysPreferences from '../HotkeysPreferences';
+import { ButtonEnums } from '../Button';
 
 const UserPreferences = ({
   availableLanguages,
@@ -104,22 +105,18 @@ const UserPreferences = ({
       </Section>
       <div className="flex flex-row justify-between">
         <Button
-          variant="outlined"
-          border="light"
+          type={ButtonEnums.type.secondary}
           onClick={onResetHandler}
           disabled={disabled}
         >
           {t('Reset to Defaults')}
         </Button>
         <div className="flex flex-row">
-          <Button variant="outlined" border="light" onClick={onCancelHandler}>
+          <Button type={ButtonEnums.type.secondary} onClick={onCancelHandler}>
             {t('Cancel')}
           </Button>
           <Button
-            variant="contained"
             disabled={state.isDisabled}
-            color="light"
-            border="light"
             className="ml-2"
             onClick={onSubmitHandler}
           >

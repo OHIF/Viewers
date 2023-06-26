@@ -113,7 +113,7 @@ describe('OHIF Cornerstone Toolbar', () => {
     cy.addLengthMeasurement();
     cy.get('[data-cy="viewport-notification"]').should('exist');
     cy.get('[data-cy="viewport-notification"]').should('be.visible');
-    cy.get('[data-cy="prompt-begin-tracking-yes"]').click();
+    cy.get('[data-cy="prompt-begin-tracking-yes-btn"]').click();
 
     //Verify the measurement exists in the table
     cy.get('@measurementsPanel').should('be.visible');

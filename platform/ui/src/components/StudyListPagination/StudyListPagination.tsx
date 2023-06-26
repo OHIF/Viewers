@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 
-import Button from '../Button';
+import LegacyButton from '../LegacyButton';
 import ButtonGroup from '../ButtonGroup';
 import Typography from '../Typography';
 import Select from '../Select';
@@ -59,8 +59,9 @@ const StudyListPagination = ({
               <Typography className="opacity-60 mr-4 text-base">
                 {t('Page')} {currentPage}
               </Typography>
+              {/* TODO Revisit design of ButtonGroup later - for now use LegacyButton for its children.*/}
               <ButtonGroup>
-                <Button
+                <LegacyButton
                   size="initial"
                   className="px-4 py-2 text-base"
                   color="translucent"
@@ -69,8 +70,8 @@ const StudyListPagination = ({
                   onClick={() => navigateToPage(1)}
                 >
                   {`<<`}
-                </Button>
-                <Button
+                </LegacyButton>
+                <LegacyButton
                   size="initial"
                   className="py-2 px-2 text-base"
                   color="translucent"
@@ -79,8 +80,8 @@ const StudyListPagination = ({
                   onClick={() => navigateToPage(currentPage - 1)}
                 >
                   {t('Previous')}
-                </Button>
-                <Button
+                </LegacyButton>
+                <LegacyButton
                   size="initial"
                   className="py-2 px-4 text-base"
                   color="translucent"
@@ -89,7 +90,7 @@ const StudyListPagination = ({
                   onClick={() => navigateToPage(currentPage + 1)}
                 >
                   {t('Next')}
-                </Button>
+                </LegacyButton>
               </ButtonGroup>
             </div>
           </div>

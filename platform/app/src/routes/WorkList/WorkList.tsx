@@ -16,7 +16,7 @@ import { useParams } from 'react-router';
 import {
   Icon,
   StudyListExpandedRow,
-  Button,
+  LegacyButton,
   EmptyStudies,
   StudyListTable,
   StudyListPagination,
@@ -371,16 +371,17 @@ function WorkList({
                   ''}?${query.toString()}`}
                 // to={`${mode.routeName}/dicomweb?StudyInstanceUIDs=${studyInstanceUid}`}
               >
-                <Button
+                {/* TODO revisit the completely rounded style of buttons used for launching a mode from the worklist later - for now use LegacyButton*/}
+                <LegacyButton
                   rounded="full"
                   variant={isValidMode ? 'contained' : 'disabled'}
                   disabled={!isValidMode}
                   endIcon={<Icon name="launch-arrow" />} // launch-arrow | launch-info
-                  className={classnames('font-medium	', { 'ml-2': !isFirst })}
+                  className={classnames({ 'ml-2': !isFirst })}
                   onClick={() => {}}
                 >
                   {t(`Modes:${mode.displayName}`)}
-                </Button>
+                </LegacyButton>
               </Link>
             );
           })}
