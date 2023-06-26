@@ -289,8 +289,10 @@ class SelectMask extends Component {
       const seriesUid = strippedImageId.split('/')[2]; // get series UID instead of SOP instance UID
       handleScrolltoIndex(enabledElement, seriesUid);
       handleRestoreToolState(cornerstone, enabledElement, instance_uid);
+      eventBus.dispatch('completeLoadingState', {});
     } catch (error) {
       console.log(error);
+      eventBus.dispatch('completeLoadingState', {});
     }
   };
 

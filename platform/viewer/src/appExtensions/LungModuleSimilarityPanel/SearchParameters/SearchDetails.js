@@ -108,9 +108,10 @@ export const RenderLoadingModal = () => {
         // left: 0,
         // width: '100vw',
         // height: '100vh',
+        position: 'absolute',
         width: '100%',
         height: '100%',
-        background: 'rgba(0,0,0,0.3)',
+        background: 'rgba(0,0,0,0.5)',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
@@ -585,17 +586,28 @@ const SearchDetails = props => {
                     });
                   }}
                 >
-                  <img
-                    crossOrigin="anonymous"
-                    src={res.region_thumbnail_url}
+                  <div
                     style={{
                       width: '90%',
-                      height: '90%',
-                      marginBottom: 20,
-                      border: '2.55px solid blue',
-                      borderColor: res.malignant ? 'red' : 'blue',
+                      paddingBottom: '90%', // This maintains the 1:1 aspect ratio
+                      position: 'relative', // Enables positioning of child elements
                     }}
-                  />
+                  >
+                    <img
+                      crossOrigin="anonymous"
+                      src={res.region_thumbnail_url}
+                      style={{
+                        position: 'absolute', // Positions the image within the div
+                        top: 0,
+                        left: 0,
+                        width: '100%', // Sets image width to full size of parent div
+                        height: '100%', // Sets image height to full size of parent div
+                        border: '2.55px solid blue',
+                        borderColor: res.malignant ? 'red' : 'blue',
+                      }}
+                    />
+                  </div>
+
                   <RenderSimilarityResultText
                     content={`Similarity: ${res.similarity_score}`}
                     res={res}

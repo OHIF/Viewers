@@ -28,7 +28,6 @@ import crypto from 'crypto-js';
 import { generateSegmentationMetadata } from '../../../../../extensions/xnat/src/peppermint-tools';
 import refreshViewports from '../../../../../extensions/dicom-segmentation/src/utils/refreshViewports';
 import { triggerEvent } from 'cornerstone-core';
-import { RenderLoadingModal } from '../../appExtensions/LungModuleSimilarityPanel/SearchParameters/SearchDetails';
 import { useLocation } from 'react-router';
 import { BrainMode, radcadapi } from '../../utils/constants';
 import { JobsContext } from '../../context/JobsContext';
@@ -37,6 +36,35 @@ import eventBus from '../../lib/eventBus';
 const { UINotificationService } = servicesManager.services;
 
 const { loadAndCacheDerivedDisplaySets, studyMetadataManager } = utils;
+
+export const RenderLoadingModal = () => {
+  return (
+    <div
+      style={{
+        position: 'absolute',
+        width: '100%',
+        height: '100%',
+        background: 'rgba(0,0,0,0.5)',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 1000,
+      }}
+    >
+      {/* <RenderLoadingIcon size={70} /> */}
+      <div
+        style={{
+          color: 'white',
+          fontWeight: 'bold',
+          fontSize: 26,
+        }}
+      >
+        Loading...
+      </div>
+    </div>
+  );
+};
 
 const ViewportGrid = function(props) {
   const {
@@ -79,10 +107,7 @@ const ViewportGrid = function(props) {
   const [isSegmentsLoadedSuccessfully, setSegmentloadingState] = useState(
     false
   );
-  const [loadingState, setLoadingState] = useState(
-    location.pathname.includes('/edit') ||
-      location.pathname.includes('/radionics')
-  );
+  const [loadingState, setLoadingState] = useState(true);
 
   const [fetchedSegmentations, setFetchedSegmentations] = useState('idle');
 
@@ -148,8 +173,13 @@ const ViewportGrid = function(props) {
 
   useEffect(() => {
     localStorage.setItem('fetchsegments', JSON.stringify(0));
+    eventBus.on('completeLoadingState', data => {
+      setLoadingState(false);
+    });
+
     return () => {
       removeSegments();
+      eventBus.remove('completeLoadingState');
     };
   }, []);
 
@@ -761,7 +791,7 @@ const ViewportGrid = function(props) {
       });
       // const appContext = this.context;
       editedSegmentationRef.current = hashBucket;
-      setLoadingState(false);
+      // setLoadingState(false);
       setFetchedSegmentations('complete');
       refreshViewports();
       triggerEvent(element, 'peppermintautosegmentgenerationevent', {});
@@ -948,10 +978,11 @@ const ViewportGrid = function(props) {
         gridTemplateRows: `repeat(${numRows}, ${rowSize}%)`,
         gridTemplateColumns: `repeat(${numColumns}, ${colSize}%)`,
         height: '100%',
+        position: 'relative',
         width: '100%',
       }}
     >
-      {/* {loadingState && <RenderLoadingModal />} */}
+      {loadingState && <RenderLoadingModal />}
       {ViewportPanes}
     </div>
   );

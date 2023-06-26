@@ -299,8 +299,10 @@ class Viewer extends Component {
       handleScrolltoIndex(enabledElement, seriesUid);
       handleRestoreToolState(cornerstone, enabledElement, instance_uid);
       let viewport = cornerstone.getViewport(enabledElement);
+      eventBus.dispatch('completeLoadingState', {});
     } catch (error) {
       console.log(error);
+      eventBus.dispatch('completeLoadingState', {});
     }
   };
 

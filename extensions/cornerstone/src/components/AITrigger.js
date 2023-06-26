@@ -78,13 +78,13 @@ const TriggerAlgorithm = ({ viewports, servicesManager }) => {
       if (count === 1) {
         return;
       } else {
-        UINotificationService.show({
-          title: 'Overwrite Alert',
-          message:
-            'Taking new dimensions would remove previously selected ones',
-          type: 'warning',
-          duration: 7000,
-        });
+        // UINotificationService.show({
+        //   title: 'Overwrite Alert',
+        //   message:
+        //     'Taking new dimensions would remove previously selected ones',
+        //   type: 'warning',
+        //   duration: 7000,
+        // });
         count++;
       }
     }

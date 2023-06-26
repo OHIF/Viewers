@@ -15,7 +15,7 @@ const refreshCornerstoneViewports = () => {
   });
 };
 
-const getEnabledElement = (activeIndex) => {
+const getEnabledElement = activeIndex => {
   const enabledElements = cornerstone.getEnabledElements();
   return enabledElements[activeIndex].element;
 };
@@ -39,7 +39,9 @@ const actions = {
     }
 
     let imageIdIndices = [];
-    const { undo, redo, labelmaps2D } = segmentationModule.getters.labelmap3D(enabledElement);
+    const { undo, redo, labelmaps2D } = segmentationModule.getters.labelmap3D(
+      enabledElement
+    );
     if (operation === 'undo' && undo.length) {
       undo[undo.length - 1].forEach(item =>
         imageIdIndices.push(item.imageIdIndex)
@@ -171,4 +173,4 @@ export default {
   actions,
   definitions,
   defaultContext: 'ACTIVE_VIEWPORT::CORNERSTONE::XNAT',
-};s
+};
