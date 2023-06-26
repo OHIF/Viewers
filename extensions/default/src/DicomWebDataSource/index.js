@@ -56,17 +56,11 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
     wadoConfig,
     qidoDicomWebClient,
     wadoDicomWebClient,
-    isInitialized = false,
-    getAuthrorizationHeader = () => {},
-    generateWadoHeader = () => {};
+    getAuthrorizationHeader,
+    generateWadoHeader;
 
   const implementation = {
     initialize: ({ params, query }) => {
-      if (isInitialized === true) {
-        return;
-      }
-      isInitialized = true;
-
       if (
         dicomWebConfig.onConfiguration &&
         typeof dicomWebConfig.onConfiguration === 'function'
@@ -128,20 +122,6 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
       wadoDicomWebClient = dicomWebConfig.staticWado
         ? new StaticWadoClient(wadoConfig)
         : new api.DICOMwebClient(wadoConfig);
-
-      const { StudyInstanceUIDs: paramsStudyInstanceUIDs } = params;
-      const queryStudyInstanceUIDs = utils.splitComma(
-        query.getAll('StudyInstanceUIDs')
-      );
-
-      const StudyInstanceUIDs =
-        (queryStudyInstanceUIDs.length && queryStudyInstanceUIDs) ||
-        paramsStudyInstanceUIDs;
-      const StudyInstanceUIDsAsArray =
-        StudyInstanceUIDs && Array.isArray(StudyInstanceUIDs)
-          ? StudyInstanceUIDs
-          : [StudyInstanceUIDs];
-      return StudyInstanceUIDsAsArray;
     },
     query: {
       studies: {
@@ -537,6 +517,21 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
     },
     getConfig() {
       return dicomWebConfigCopy;
+    },
+    getStudyInstanceUIDs({ params, query }) {
+      const { StudyInstanceUIDs: paramsStudyInstanceUIDs } = params;
+      const queryStudyInstanceUIDs = utils.splitComma(
+        query.getAll('StudyInstanceUIDs')
+      );
+
+      const StudyInstanceUIDs =
+        (queryStudyInstanceUIDs.length && queryStudyInstanceUIDs) ||
+        paramsStudyInstanceUIDs;
+      const StudyInstanceUIDsAsArray =
+        StudyInstanceUIDs && Array.isArray(StudyInstanceUIDs)
+          ? StudyInstanceUIDs
+          : [StudyInstanceUIDs];
+      return StudyInstanceUIDsAsArray;
     },
   };
 

@@ -67,6 +67,15 @@ function DataSourceWrapper(props) {
   };
   const [data, setData] = useState(DEFAULT_DATA);
   const [isLoading, setIsLoading] = useState(false);
+  const [isDataSourceInitialized, setIsDataSourceInitialized] = useState(false);
+
+  useEffect(() => {
+    const initDataSource = async () => {
+      await dataSource.initialize({ params, query });
+      setIsDataSourceInitialized(true);
+    };
+    initDataSource();
+  }, []);
 
   useEffect(() => {
     const queryFilterValues = _getQueryFilterValues(
@@ -76,8 +85,11 @@ function DataSourceWrapper(props) {
 
     // 204: no content
     async function getData() {
+      if (!isDataSourceInitialized) {
+        return;
+      }
+
       setIsLoading(true);
-      await dataSource.initialize({ params, query });
       const studies = await dataSource.query.studies.search(queryFilterValues);
 
       setData({
@@ -117,7 +129,14 @@ function DataSourceWrapper(props) {
       console.warn(ex);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data, location, params, isLoading, setIsLoading]);
+  }, [
+    data,
+    location,
+    params,
+    isLoading,
+    setIsLoading,
+    isDataSourceInitialized,
+  ]);
   // queryFilterValues
 
   // TODO: Better way to pass DataSource?

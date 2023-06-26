@@ -1,5 +1,6 @@
 import React from 'react';
 import ModeRoute from '@routes/Mode';
+import DataSourceWrapper from './DataSourceWrapper';
 
 /*
   Routes uniquely define an entry point to:
@@ -45,7 +46,7 @@ export default function buildModeRoutes({
       const path = `/${mode.routeName}/${dataSourceName}`;
 
       // TODO move up.
-      const children = () => (
+      const children = (...props) => (
         <ModeRoute
           mode={mode}
           dataSourceName={dataSourceName}
@@ -53,13 +54,15 @@ export default function buildModeRoutes({
           servicesManager={servicesManager}
           commandsManager={commandsManager}
           hotkeysManager={hotkeysManager}
+          {...props}
         />
       );
 
       routes.push({
         path,
-        children,
+        children: DataSourceWrapper,
         private: true,
+        props: { children },
       });
     });
 
@@ -69,7 +72,7 @@ export default function buildModeRoutes({
     const path = `/${mode.routeName}`;
 
     // TODO move up.
-    const children = () => (
+    const children = (...props) => (
       <ModeRoute
         mode={mode}
         dataSourceName={defaultDataSourceName}
@@ -77,13 +80,15 @@ export default function buildModeRoutes({
         servicesManager={servicesManager}
         commandsManager={commandsManager}
         hotkeysManager={hotkeysManager}
+        {...props}
       />
     );
 
     routes.push({
       path,
-      children,
+      children: DataSourceWrapper,
       private: true, // todo: all mode routes are private for now
+      props: { children },
     });
   });
 

@@ -230,16 +230,14 @@ export default function ModeRoute({
       return;
     }
 
-    // Todo: this should not be here, data source should not care about params
-    const initializeDataSource = async (params, query) => {
-      const studyInstanceUIDs = await dataSource.initialize({
-        params,
-        query,
-      });
+    const studyInstanceUIDs = dataSource.getStudyInstanceUIDs({
+      params,
+      query,
+    });
+    if (studyInstanceUIDs) {
       setStudyInstanceUIDs(studyInstanceUIDs);
-    };
+    }
 
-    initializeDataSource(params, query);
     return () => {
       layoutTemplateData.current = null;
     };
