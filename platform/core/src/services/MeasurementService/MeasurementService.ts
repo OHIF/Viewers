@@ -380,6 +380,7 @@ class MeasurementService extends PubSubService {
       modifiedTimestamp: Math.floor(Date.now() / 1000),
     };
 
+    console.log('*** Updating measurement', measurement);
     log.info(
       `Updating internal measurement representation...`,
       updatedMeasurement
@@ -469,12 +470,22 @@ class MeasurementService extends PubSubService {
 
     if (this.measurements.get(internalUID)) {
       this.measurements.set(internalUID, newMeasurement);
+      console.log(
+        '* Updating measurement',
+        newMeasurement.metadata.toolName,
+        newMeasurement
+      );
       this._broadcastEvent(this.EVENTS.MEASUREMENT_UPDATED, {
         source,
         measurement: newMeasurement,
       });
     } else {
-      log.info('Measurement added', newMeasurement);
+      console.log(
+        '* Add new raw measurement',
+        newMeasurement.metadata.toolName,
+        newMeasurement
+      );
+      log.info('Measurement added', newMeasurement, data);
       this.measurements.set(internalUID, newMeasurement);
       this._broadcastEvent(this.EVENTS.RAW_MEASUREMENT_ADDED, {
         source,

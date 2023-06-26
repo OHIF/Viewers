@@ -1,4 +1,5 @@
-import { metaData } from '@cornerstonejs/core';
+import { Types } from '@ohif/core';
+import { metaData, Types as csTypes } from '@cornerstonejs/core';
 import { LengthTool, utilities } from '@cornerstonejs/tools';
 import callInputDialog from '../utils/callInputDialog';
 import getActiveViewportEnabledElement from '../utils/getActiveViewportEnabledElement';
@@ -8,7 +9,7 @@ const { calibrateImageSpacing } = utilities;
 /**
  * Calibration Line tool works almost the same as the
  */
-class CalibrationLineTool extends LengthTool {
+export class CalibrationLineTool extends LengthTool {
   static toolName = 'CalibrationLine';
 
   _renderingViewport: any;
@@ -20,7 +21,7 @@ class CalibrationLineTool extends LengthTool {
     return this._lengthToolRenderAnnotation(enabledElement, svgDrawingHelper);
   };
 
-  _getTextLines(data, targetId) {
+  _getTextLines(data, targetId: string): string[] {
     const [canvasPoint1, canvasPoint2] = data.handles.points.map(p =>
       this._renderingViewport.worldToCanvas(p)
     );
@@ -50,18 +51,7 @@ function calculateLength3(pos1, pos2) {
 
 export default CalibrationLineTool;
 
-export function onCompletedCalibrationLine(servicesManager, csToolsEvent) {
-  const { uiDialogService, viewportGridService } = servicesManager.services;
-
-  // calculate length (mm) with the current Pixel Spacing
-  const annotationAddedEventDetail = csToolsEvent.detail;
-  const {
-    annotation: { metadata, data: annotationData },
-  } = annotationAddedEventDetail;
-  const { referencedImageId: imageId } = metadata;
-  const enabledElement = getActiveViewportEnabledElement(viewportGridService);
-  const { viewport } = enabledElement;
-
+export function getCalibrationLength(annotationData): number {
   const length =
     Math.round(
       calculateLength3(
@@ -69,7 +59,9 @@ export function onCompletedCalibrationLine(servicesManager, csToolsEvent) {
         annotationData.handles.points[1]
       ) * 100
     ) / 100;
-
+  return length;
+}
+export function setCalibration(imageId, renderingEngine, length, newLength) {
   // calculate the currently applied pixel spacing on the viewport
   const calibratedPixelSpacing = metaData.get(
     'calibratedPixelSpacing',
@@ -80,20 +72,44 @@ export function onCompletedCalibrationLine(servicesManager, csToolsEvent) {
     calibratedPixelSpacing?.[0] || imagePlaneModule?.rowPixelSpacing || 1;
   const currentColumnPixelSpacing =
     calibratedPixelSpacing?.[1] || imagePlaneModule?.columnPixelSpacing || 1;
+  const spacingScale = newLength / length;
+  const rowSpacing = spacingScale * currentRowPixelSpacing;
+  const colSpacing = spacingScale * currentColumnPixelSpacing;
 
-  const adjustCalibration = newLength => {
-    const spacingScale = newLength / length;
-    const rowSpacing = spacingScale * currentRowPixelSpacing;
-    const colSpacing = spacingScale * currentColumnPixelSpacing;
+  // trigger resize of the viewport to adjust the world/pixel mapping
+  console.log(
+    '* setCalibration',
+    imageId,
+    length,
+    newLength,
+    rowSpacing,
+    colSpacing
+  );
+  calibrateImageSpacing(imageId, renderingEngine, rowSpacing, colSpacing);
+}
 
-    // trigger resize of the viewport to adjust the world/pixel mapping
-    calibrateImageSpacing(
-      imageId,
-      viewport.getRenderingEngine(),
-      rowSpacing,
-      colSpacing
-    );
-  };
+export function onCompletedCalibrationLine(
+  servicesManager: Types.ServicesManager,
+  csToolsEvent
+): void {
+  const { uiDialogService, viewportGridService } = servicesManager.services;
+
+  // calculate length (mm) with the current Pixel Spacing
+  const annotationAddedEventDetail = csToolsEvent.detail;
+  const {
+    annotation: { metadata, data: annotationData },
+  } = annotationAddedEventDetail;
+  const { referencedImageId: imageId } = metadata;
+  const enabledElement = getActiveViewportEnabledElement(viewportGridService);
+  const { viewport } = enabledElement;
+  const length = getCalibrationLength(annotationData);
+
+  const adjustCalibration = setCalibration.bind(
+    null,
+    imageId,
+    viewport.getRenderingEngine(),
+    length
+  );
 
   return new Promise((resolve, reject) => {
     if (!uiDialogService) {

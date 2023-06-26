@@ -376,6 +376,11 @@ const connectMeasurementServiceToTools = (
         imageId = dataSource.getImageIdsForInstance({ instance });
       }
 
+      console.log(
+        '* Measurement Service - Adding annotation listener',
+        measurement.toolName,
+        JSON.stringify(data.annotation)
+      );
       const annotationManager = annotation.state.getAnnotationManager();
       annotationManager.addAnnotation({
         annotationUID: measurement.uid,

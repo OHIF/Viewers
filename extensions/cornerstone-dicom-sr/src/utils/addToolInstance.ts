@@ -7,6 +7,7 @@ export default function addToolInstance(
 ): void {
   class InstanceClass extends toolClass {
     static toolName = name;
+    static baseToolName = toolClass.toolName;
   }
   addTool(InstanceClass);
 }

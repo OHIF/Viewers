@@ -55,7 +55,7 @@ export default function addMeasurement(
     annotationUID: measurement.TrackingUniqueIdentifier,
     metadata: {
       FrameOfReferenceUID: imagePlaneModule.frameOfReferenceUID,
-      toolName: toolName,
+      toolName,
       referencedImageId: imageId,
     },
     data: {
@@ -71,6 +71,11 @@ export default function addMeasurement(
     },
   };
 
+  console.log(
+    '* Adding DICOM SR addAnnotation',
+    SRAnnotation.metadata.toolName,
+    JSON.stringify(SRAnnotation)
+  );
   annotationManager.addAnnotation(SRAnnotation);
 
   measurement.loaded = true;

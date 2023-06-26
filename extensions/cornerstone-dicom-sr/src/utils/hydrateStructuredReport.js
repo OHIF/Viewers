@@ -2,6 +2,7 @@ import { utilities, metaData } from '@cornerstonejs/core';
 import OHIF, { DicomMetadataStore } from '@ohif/core';
 import getLabelFromDCMJSImportedToolData from './getLabelFromDCMJSImportedToolData';
 import { adaptersSR } from '@cornerstonejs/adapters';
+import { calibrationUtilities } from '@ohif/extension-cornerstone';
 
 const { guid } = OHIF.utils;
 const { MeasurementReport, CORNERSTONE_3D_TAG } = adaptersSR.Cornerstone3D;
@@ -30,6 +31,25 @@ const convertSites = (codingValues, sites) => {
   return (ret.length && ret) || undefined;
 };
 
+const setCalibrations = (renderingEngine, calibrations) => {
+  if (!calibrations) return;
+  console.log('* calibrations=', calibrations);
+  for (const calibration of calibrations) {
+    const { annotation } = calibration;
+    const { referencedImageId } = annotation.metadata;
+    const key = `imageId:${referencedImageId}`;
+    const newLength = annotation.data.cachedStats[key].length;
+    const length = calibrationUtilities.getCalibrationLength(annotation.data);
+    console.log('calibration', length, newLength, annotation);
+    calibrationUtilities.setCalibration(
+      referencedImageId,
+      renderingEngine,
+      length,
+      newLength
+    );
+  }
+};
+
 /**
  * Hydrates a structured report, for default viewports.
  *
@@ -43,6 +63,7 @@ export default function hydrateStructuredReport(
     measurementService,
     displaySetService,
     customizationService,
+    cornerstoneViewportService,
   } = servicesManager.services;
 
   const codingValues = customizationService.getCustomization(
@@ -158,7 +179,9 @@ export default function hydrateStructuredReport(
     }
   }
 
+  const calibrations = hydratableMeasurementsInSR.CalibrationLine;
   Object.keys(hydratableMeasurementsInSR).forEach(annotationType => {
+    console.log('Annotation type', annotationType);
     const toolDataForAnnotationType =
       hydratableMeasurementsInSR[annotationType];
 
@@ -227,10 +250,15 @@ export default function hydrateStructuredReport(
   });
 
   displaySet.isHydrated = true;
+  setCalibrations(
+    cornerstoneViewportService.getRenderingEngine(),
+    calibrations
+  );
 
   return {
     StudyInstanceUID: targetStudyInstanceUID,
     SeriesInstanceUIDs,
+    calibrations,
   };
 }
 
@@ -287,7 +315,7 @@ function _mapLegacyDataSet(dataset) {
   return dataset;
 }
 
-const toArray = function (x) {
+const toArray = function(x) {
   return Array.isArray(x) ? x : [x];
 };
 

@@ -123,6 +123,7 @@ function initSRToolGroup(extensionManager, toolGroupService, commandsManager) {
       },
     ],
     // disabled
+    disabled: [{ toolName: 'Length' }],
   };
 
   const toolsConfig = {
