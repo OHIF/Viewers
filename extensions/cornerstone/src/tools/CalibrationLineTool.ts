@@ -72,9 +72,7 @@ export function setCalibration(imageId, renderingEngine, length, newLength) {
     calibratedPixelSpacing?.[0] || imagePlaneModule?.rowPixelSpacing || 1;
   const currentColumnPixelSpacing =
     calibratedPixelSpacing?.[1] || imagePlaneModule?.columnPixelSpacing || 1;
-  const spacingScale = newLength / length;
-  const rowSpacing = spacingScale * currentRowPixelSpacing;
-  const colSpacing = spacingScale * currentColumnPixelSpacing;
+  const scale = length / newLength;
 
   // trigger resize of the viewport to adjust the world/pixel mapping
   console.log(
@@ -82,10 +80,9 @@ export function setCalibration(imageId, renderingEngine, length, newLength) {
     imageId,
     length,
     newLength,
-    rowSpacing,
-    colSpacing
+    scale,
   );
-  calibrateImageSpacing(imageId, renderingEngine, rowSpacing, colSpacing);
+  calibrateImageSpacing(imageId, renderingEngine, scale);
 }
 
 export function onCompletedCalibrationLine(
