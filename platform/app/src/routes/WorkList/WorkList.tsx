@@ -450,7 +450,7 @@ function WorkList({
   const { component: dicomUploadComponent } =
     customizationService.get('dicomUploadComponent') ?? {};
   const uploadProps =
-    dicomUploadComponent && dataSource.getConfig().dicomUploadEnabled
+    dicomUploadComponent && dataSource.getConfig()?.dicomUploadEnabled
       ? {
           title: 'Upload files',
           closeButton: true,

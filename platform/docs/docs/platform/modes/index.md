@@ -117,7 +117,7 @@ export default mode;
       <td align="left">
           noWorklistButton
       </td>
-      <td align="left">wether or not to display the mode button in the expanded worklist item</td>
+      <td align="left">whether or not to display the mode button in the expanded worklist item</td>
     </tr>
     <tr>
       <td align="left">

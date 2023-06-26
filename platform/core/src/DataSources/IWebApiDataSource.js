@@ -74,7 +74,7 @@ function create({
     getImageIdsForDisplaySet,
     getImageIdsForInstance,
     getConfig: getConfig || defaultGetConfig,
-    getStudyInstanceUIDs,
+    getStudyInstanceUIDs: getStudyInstanceUIDs || (({ params, query }) => []),
   };
 }
 

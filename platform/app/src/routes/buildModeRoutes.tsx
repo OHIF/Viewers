@@ -40,29 +40,26 @@ export default function buildModeRoutes({
     }
   });
 
+  const getDataSourceModeRoute = (mode, dataSourceName) => () => (
+    <ModeRoute
+      mode={mode}
+      dataSourceName={dataSourceName}
+      extensionManager={extensionManager}
+      servicesManager={servicesManager}
+      commandsManager={commandsManager}
+      hotkeysManager={hotkeysManager}
+    />
+  );
+
   modes.forEach(mode => {
     // todo: for each route. add route to path.
     dataSourceNames.forEach(dataSourceName => {
       const path = `/${mode.routeName}/${dataSourceName}`;
-
-      // TODO move up.
-      const children = (...props) => (
-        <ModeRoute
-          mode={mode}
-          dataSourceName={dataSourceName}
-          extensionManager={extensionManager}
-          servicesManager={servicesManager}
-          commandsManager={commandsManager}
-          hotkeysManager={hotkeysManager}
-          {...props}
-        />
-      );
-
       routes.push({
         path,
         children: DataSourceWrapper,
         private: true,
-        props: { children },
+        props: { children: getDataSourceModeRoute(mode, dataSourceName) },
       });
     });
 
@@ -70,25 +67,11 @@ export default function buildModeRoutes({
 
     // Add default DataSource route.
     const path = `/${mode.routeName}`;
-
-    // TODO move up.
-    const children = (...props) => (
-      <ModeRoute
-        mode={mode}
-        dataSourceName={defaultDataSourceName}
-        extensionManager={extensionManager}
-        servicesManager={servicesManager}
-        commandsManager={commandsManager}
-        hotkeysManager={hotkeysManager}
-        {...props}
-      />
-    );
-
     routes.push({
       path,
       children: DataSourceWrapper,
       private: true, // todo: all mode routes are private for now
-      props: { children },
+      props: { children: getDataSourceModeRoute(mode, defaultDataSourceName) },
     });
   });
 

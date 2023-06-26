@@ -234,7 +234,7 @@ export default function ModeRoute({
       params,
       query,
     });
-    if (studyInstanceUIDs) {
+    if (studyInstanceUIDs.length) {
       setStudyInstanceUIDs(studyInstanceUIDs);
     }
 

@@ -60,7 +60,11 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
     generateWadoHeader;
 
   const implementation = {
-    initialize: ({ params, query }) => {
+    initialize: ({ config, params, query }) => {
+      if (config) {
+        dicomWebConfig = Object.assign({}, dicomWebConfig, config);
+      }
+
       if (
         dicomWebConfig.onConfiguration &&
         typeof dicomWebConfig.onConfiguration === 'function'
