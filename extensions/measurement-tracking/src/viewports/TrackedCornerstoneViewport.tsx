@@ -22,7 +22,7 @@ function TrackedCornerstoneViewport(props) {
     viewportOptions,
   } = props;
 
-  const { t } = useTranslation('TrackedViewport');
+  const { t } = useTranslation('Common');
 
   const {
     measurementService,
@@ -196,7 +196,7 @@ function TrackedCornerstoneViewport(props) {
         studyData={{
           label: viewportLabel,
           studyDate:
-            formatDate(SeriesDate) || formatDate(StudyDate) || 'No Study Date',
+            formatDate(SeriesDate) || formatDate(StudyDate) || t('NoStudyDate'),
           currentSeries: SeriesNumber, // TODO - switch entire currentSeries to be UID based or actual position based
           seriesDescription: SeriesDescription,
           patientInformation: {
