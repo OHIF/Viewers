@@ -6,7 +6,6 @@ function getPanelModule({
   extensionManager,
   servicesManager,
 }) {
-  console.warn('>>>>> getPanelModule');
   const wrappedDynamicDataPanel = () => {
     return (
       <DynamicDataPanel

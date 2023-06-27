@@ -18,9 +18,6 @@ import toggleStackImageSync from './utils/stackSync/toggleStackImageSync';
 import { getFirstAnnotationSelected } from './utils/measurementServiceMappings/utils/selection';
 import getActiveViewportEnabledElement from './utils/getActiveViewportEnabledElement';
 import { CornerstoneServices } from './types';
-import { split } from 'lodash';
-import getSopClassHandlerModule from 'extensions/default/src/getSopClassHandlerModule';
-import { HangingProtocol } from 'platform/core/src/types';
 
 function commandsModule({
   servicesManager,
@@ -623,7 +620,7 @@ function commandsModule({
       );
       toolGroup.setToolEnabled(ReferenceLinesTool.toolName);
     },
-    setDisplaySetToViewport: ({ displaySet }) => {
+    setDisplaySetToGridViewports: ({ displaySet }) => {
       const cachedDisplaySetKeys = [
         ...displaySetService.getDisplaySetCache().keys(),
       ];
@@ -636,22 +633,29 @@ function commandsModule({
 
       // Get all viewports and their corresponding indexs
       const { viewports } = viewportGridService.getState();
-      const viewportsToUpdate = [];
 
-      viewports.forEach((viewport, index) => {
-        viewportsToUpdate.push({
-          viewportIndex: index,
-          displaySetInstanceUIDs: [displaySetKey],
-          viewportOptions: {
-            initialImageOptions: viewport.viewportOptions.initialImageOptions,
-            viewportType: 'volume',
-            orientation: viewport.viewportOptions.orientation,
-            background: viewport.viewportOptions.background,
-          },
-        });
-      });
+      const viewportsToUpdate = viewports.map((viewport, index) => ({
+        viewportIndex: index,
+        displaySetInstanceUIDs: [displaySetKey],
+        viewportOptions: {
+          initialImageOptions: viewport.viewportOptions.initialImageOptions,
+          viewportType: 'volume',
+          orientation: viewport.viewportOptions.orientation,
+          background: viewport.viewportOptions.background,
+        },
+      }));
 
       viewportGridService.setDisplaySetsForViewports(viewportsToUpdate);
+    },
+    updateVolumeTextureAndImageData: ({ volume }) => {
+      // update vtkOpenGLTexture and imageData of computed volume
+      const { imageData, vtkOpenGLTexture } = volume;
+      const numSlices = imageData.getDimensions()[2];
+      const slicesToUpdate = [...Array(numSlices).keys()];
+      slicesToUpdate.forEach(i => {
+        vtkOpenGLTexture.setUpdatedFrame(i);
+      });
+      imageData.modified();
     },
   };
 
@@ -777,10 +781,13 @@ function commandsModule({
     toggleReferenceLines: {
       commandFn: actions.toggleReferenceLines,
     },
-    setDisplaySetToViewport: {
-      commandFn: actions.setDisplaySetToViewport,
+    setDisplaySetToGridViewports: {
+      commandFn: actions.setDisplaySetToGridViewports,
       storeContexts: [],
       options: {},
+    },
+    updateVolumeTextureAndImageData: {
+      commandFn: actions.updateVolumeTextureAndImageData,
     },
   };
 

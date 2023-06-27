@@ -15,7 +15,6 @@ import './InputDoubleRange.css';
 const InputDoubleRange: React.FC<{
   valueLeft: number;
   valueRight: number;
-  onChange: (leftVal: number, rightVal: number) => void;
   onSliderChange;
   minValue: number;
   maxValue: number;
@@ -29,7 +28,6 @@ const InputDoubleRange: React.FC<{
 }> = ({
   valueLeft,
   valueRight,
-  onChange,
   onSliderChange,
   minValue,
   maxValue,
@@ -43,10 +41,7 @@ const InputDoubleRange: React.FC<{
 }) => {
   const [leftVal, setLeftVal] = useState(valueLeft);
   const [rightVal, setRightVal] = useState(valueRight);
-
-  const leftValRef = useRef(valueLeft);
-  const rightValRef = useRef(valueRight);
-  const range = useRef(null);
+  const rangeRef = useRef(null);
 
   // Convert to percentage
   const getPercent = useCallback(
@@ -55,35 +50,25 @@ const InputDoubleRange: React.FC<{
   );
 
   function handleSliderChange(newValues) {
-    // console.log(newValues);
+    console.log(newValues);
     onSliderChange(newValues);
   }
 
-  // Set width of the range to decrease from the left side
-  useEffect(() => {
-    const minPercent = getPercent(leftVal);
-    const maxPercent = getPercent(rightVal);
-
-    if (range.current) {
-      range.current.style.left = `${minPercent}%`;
-      range.current.style.width = `${maxPercent - minPercent}%`;
-    }
-  }, [leftVal, getPercent]);
-
-  // Set width of the range to decrease from the right side
-  useEffect(() => {
-    const minPercent = getPercent(leftVal);
-    const maxPercent = getPercent(rightVal);
-
-    if (range.current) {
-      range.current.style.width = `${maxPercent - minPercent}%`;
-    }
-  }, [rightVal, getPercent]);
-
   // Get min and max values when their state changes
   useEffect(() => {
-    handleSliderChange([leftValRef, rightValRef]);
+    handleSliderChange([leftVal, rightVal]);
   }, []);
+
+  // Set width of the range
+  useEffect(() => {
+    const minPercent = getPercent(leftVal);
+    const maxPercent = getPercent(rightVal);
+
+    if (rangeRef.current) {
+      rangeRef.current.style.left = `${minPercent}%`;
+      rangeRef.current.style.width = `${maxPercent - minPercent}%`;
+    }
+  }, [leftVal, rightVal, getPercent]);
 
   const rangeValueLeftPercentage =
     ((leftVal - minValue) / (maxValue - minValue)) * 100;
@@ -104,8 +89,8 @@ const InputDoubleRange: React.FC<{
         onChange={event => {
           const value = Math.min(Number(event.target.value), rightVal);
           setLeftVal(value);
-          leftValRef.current = value;
-          handleSliderChange([leftValRef.current, rightValRef.current]);
+          // leftValRef.current = value;
+          handleSliderChange([value, rightVal]);
         }}
         className="appearance-none h-[3px] rounded-lg thumb thumb--left"
         style={{
@@ -121,8 +106,8 @@ const InputDoubleRange: React.FC<{
         onChange={event => {
           const value = Math.max(Number(event.target.value), leftVal);
           setRightVal(value);
-          rightValRef.current = value;
-          handleSliderChange([leftValRef.current, rightValRef.current]);
+          // rightValRef.current = value;
+          handleSliderChange([leftVal, value]);
         }}
         className="appearance-none h-[3px] rounded-lg thumb thumb--right"
         style={{
@@ -131,7 +116,7 @@ const InputDoubleRange: React.FC<{
       />
       <div className="slider">
         <div className="slider__track" />
-        <div ref={range} className="slider__range" />
+        <div ref={rangeRef} className="slider__range" />
         <div
           className={classNames(
             labelClassName ?? 'text-white',

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import PropTypes, { array } from 'prop-types';
 import { Button, Select, InputDoubleRange, Label, Icon } from '@ohif/ui';
@@ -17,15 +17,20 @@ const DEFAULT_OPTIONS = {
   Operation: 'SUM',
 };
 
-const SUM = 'SUM';
-const AVG = 'AVERAGE';
-const SUB = 'SUBTRACT';
+const OPERATION = {
+  SUM: 'SUM',
+  AVG: 'AVERAGE',
+  SUB: 'SUBTRACT',
+};
 
-const operations = [
-  { value: SUM, label: 'SUM', placeHolder: 'SUM' },
-  { value: AVG, label: 'AVERAGE', placeHolder: 'AVERAGE' },
-  { value: SUB, label: 'SUBTRACT', placeHolder: 'SUBTRACT' },
+const operationsUI = [
+  { value: OPERATION.SUM, label: 'SUM', placeHolder: 'SUM' },
+  { value: OPERATION.AVG, label: 'AVERAGE', placeHolder: 'AVERAGE' },
+  { value: OPERATION.SUB, label: 'SUBTRACT', placeHolder: 'SUBTRACT' },
 ];
+
+const volumeLoaderScheme = 'cornerstoneStreamingDynamicImageVolume'; // Loader id which defines which volume loader to use
+const SOPClassHandlerId = '@ohif/extension-default.sopClassHandlerModule.stack';
 
 export default function PanelGenerateImage({
   servicesManager,
@@ -34,22 +39,18 @@ export default function PanelGenerateImage({
   const {
     viewportGridService,
     cornerstoneViewportService,
-    displaySetService,
+    // displaySetService,
     hangingProtocolService,
   } = servicesManager.services;
   const { t } = useTranslation('PanelGenerateImage');
-  const [generateOptions, setGenerateOptions] = useState(DEFAULT_OPTIONS);
-  const [timeOptions, setTimeOptions] = useState([]);
+  const [options, setOptions] = useState(DEFAULT_OPTIONS);
   const [rangeValues, setRangeValues] = useState([]);
-  const [sliderValues, setSliderValues] = useState([]);
   const [timeFramesToUse, setTimeFramesToUse] = useState([]);
   const [computedDisplaySet, setComputedDisplaySet] = useState(null);
-  const [myDynamicVolume, setMyDynamicVolume] = useState(null);
-  const [myComputedVolume, setMyComputedVolume] = useState(null);
+  const [dynamicVolume, setDynamicVolume] = useState(null);
   const [frameRate, setFrameRate] = useState(20);
-  const [uuidComputedVolume, setUuidComputedVolume] = useState(
-    csUtils.uuidv4()
-  );
+  const uuidComputedVolume = useRef(csUtils.uuidv4());
+  const uuidDynamicVolume = useRef(null);
 
   // Cine states
   // cineState is passed from the reducer in cine provider, cineService is the
@@ -57,17 +58,17 @@ export default function PanelGenerateImage({
   const [cineState, cineService] = useCine();
   const { inCineEnabled, cines } = cineState;
 
-  const handleGenerateOptionsChange = generateOptions => {
-    setGenerateOptions(prevState => {
+  const handleGenerateOptionsChange = options => {
+    setOptions(prevState => {
       const newState = { ...prevState };
-      Object.keys(generateOptions).forEach(key => {
-        if (typeof generateOptions[key] === 'object') {
+      Object.keys(options).forEach(key => {
+        if (typeof options[key] === 'object') {
           newState[key] = {
             ...prevState[key],
-            ...generateOptions[key],
+            ...options[key],
           };
         } else {
-          newState[key] = generateOptions[key];
+          newState[key] = options[key];
         }
       });
       return newState;
@@ -77,45 +78,27 @@ export default function PanelGenerateImage({
   // Establish a reference to the viewer API context
   const { activeViewportIndex, viewports } = viewportGridService.getState();
   const displaySetInstanceUID = viewports[0].displaySetInstanceUIDs[0];
-  const volumeLoaderScheme = 'cornerstoneStreamingDynamicImageVolume'; // Loader id which defines which volume loader to use
-  const computedVolumeId = `cornerstoneStreamingImageVolume:${uuidComputedVolume}`;
+  const computedVolumeId = `cornerstoneStreamingImageVolume:${uuidComputedVolume.current}`;
   const dynamicVolumeId = `${volumeLoaderScheme}:${displaySetInstanceUID}`;
 
   useEffect(() => {
     // ~~ Subscription
-    const added = cornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED;
+    const evt = cornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED;
     const subscriptions = [];
 
-    // Used to make sure initialization of computed volume only runs once
-    let initStatus = false;
-
-    [added].forEach(evt => {
-      subscriptions.push(
-        cornerstoneViewportService.subscribe(evt, evtdetails => {
-          evtdetails.viewportData.data.forEach(volumeData => {
-            if (volumeData.volumeId.split(':')[0] === volumeLoaderScheme) {
-              if (!initStatus) {
-                initStatus = true;
-                setMyDynamicVolume(volumeData.volume);
-                const options = numTimePointsToOptions(
-                  volumeData.volume._numTimePoints
-                );
-                const range = [1, volumeData.volume._numTimePoints];
-                setTimeOptions(prevArray => [...prevArray, ...options]);
-                setRangeValues(prevArray => [...prevArray, ...range]);
-                setSliderValues(range);
-                setTimeFramesToUse([0, 1]);
-                const computedVolumeInit = createComputedVolume(
-                  volumeData.volume.volumeId,
-                  computedVolumeId
-                );
-                setMyComputedVolume(computedVolumeInit);
-              }
-            }
-          });
-        }).unsubscribe
-      );
-    });
+    subscriptions.push(
+      cornerstoneViewportService.subscribe(evt, evtdetails => {
+        evtdetails.viewportData.data.forEach(volumeData => {
+          if (volumeData.volumeId.split(':')[0] === volumeLoaderScheme) {
+            setDynamicVolume(volumeData.volume);
+            uuidDynamicVolume.current = volumeData.displaySetInstanceUID;
+            const range = [1, volumeData.volume._numTimePoints];
+            setRangeValues(prevArray => [...prevArray, ...range]);
+            setTimeFramesToUse([0, 1]);
+          }
+        });
+      }).unsubscribe
+    );
 
     return () => {
       subscriptions.forEach(unsub => {
@@ -124,13 +107,24 @@ export default function PanelGenerateImage({
     };
   }, []);
 
+  function renderGeneratedImage(displaySet) {
+    commandsManager.runCommand('setDisplaySetToGridViewports', {
+      displaySet,
+    });
+  }
+
   // Get computed volume from cache, calculate the data across the time frames,
   // set the scalar data to the computedVolume, and create displaySet
-  function onGenerateImage() {
+  async function onGenerateImage() {
+    const computedVolumeInit = await createComputedVolume(
+      dynamicVolume.volumeId,
+      computedVolumeId
+    );
+
     const computedVolume = cache.getVolume(computedVolumeId);
     const dataInTime = cstUtils.dynamicVolume.generateImageFromTimeData(
-      myDynamicVolume,
-      generateOptions.Operation,
+      dynamicVolume,
+      options.Operation,
       timeFramesToUse
     );
 
@@ -148,43 +142,28 @@ export default function PanelGenerateImage({
     // the displaySet. If it does exist, update the image data and vtkTexture
     if (!computedDisplaySet) {
       const obj = {
-        [uuidComputedVolume]: {
+        [uuidComputedVolume.current]: {
           volumeLoaderSchema: computedVolume.volumeId.split(':')[0],
-          displaySetInstanceUID: uuidComputedVolume,
-          SOPClassHandlerId:
-            '@ohif/extension-default.sopClassHandlerModule.stack',
-          SOPClassUID: '1.2.840.10008.5.1.4.1.1.128',
-          SeriesInstanceUID: 'test',
-          StudyInstanceUID: 'test',
-          SeriesNumber: 0,
-          FrameRate: undefined,
-          SeriesDescription: '',
-          Modality: myDynamicVolume.metadata.Modality,
+          displaySetInstanceUID: uuidComputedVolume.current,
+          SOPClassHandlerId: SOPClassHandlerId,
+          Modality: dynamicVolume.metadata.Modality,
           isMultiFrame: false,
-          countIcon: undefined,
           numImageFrames: 1,
-          uid: uuidComputedVolume,
-          averageSpacingBetweenFrames: null,
+          uid: uuidComputedVolume.current,
         },
       };
       setComputedDisplaySet(obj);
     } else {
-      // update vtkOpenGLTexture and imageData of computed volume
-      const { imageData, vtkOpenGLTexture } = computedVolume;
-      const numSlices = imageData.getDimensions()[2];
-      const slicesToUpdate = [...Array(numSlices).keys()];
-      slicesToUpdate.forEach(i => {
-        vtkOpenGLTexture.setUpdatedFrame(i);
+      commandsManager.runCommand('updateVolumeTextureAndImageData', {
+        volume: computedVolume,
       });
-      imageData.modified();
 
       // Check if viewport is currently displaying the computed volume, if so,
       // call render on the viewports to update the image, if not, call
       // renderGeneratedImage
       if (!cache.getVolume(dynamicVolumeId)) {
         for (const viewport of viewports) {
-          const renderingEngine = cornerstoneViewportService.getRenderingEngine();
-          const viewportForRendering = renderingEngine.getViewport(
+          const viewportForRendering = cornerstoneViewportService.getCornerstoneViewport(
             viewport.viewportId
           );
           viewportForRendering.render();
@@ -202,27 +181,16 @@ export default function PanelGenerateImage({
     }
   }, [computedDisplaySet]);
 
-  function renderGeneratedImage(displaySet) {
-    commandsManager.runCommand('setDisplaySetToViewport', {
-      displaySet,
-    });
-  }
-
   function returnTo4D() {
-    const displaySets = displaySetService.getDisplaySetCache();
-    for (const [key, value] of displaySets) {
-      if (value.volumeLoaderSchema === volumeLoaderScheme) {
-        const updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
-          0,
-          key
-        );
-        viewportGridService.setDisplaySetsForViewports(updatedViewports);
-      }
-    }
+    const updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
+      0,
+      uuidDynamicVolume.current
+    );
+    viewportGridService.setDisplaySetsForViewports(updatedViewports);
   }
 
   const handlePlay = () => {
-    const viewportInfo = cornerstoneViewportService.viewportsById.get(
+    const viewportInfo = cornerstoneViewportService.getViewportInfo(
       viewports[activeViewportIndex].viewportId
     );
     const { element } = viewportInfo;
@@ -234,7 +202,7 @@ export default function PanelGenerateImage({
   };
 
   const handleStop = () => {
-    const viewportInfo = cornerstoneViewportService.viewportsById.get(
+    const viewportInfo = cornerstoneViewportService.getViewportInfo(
       viewports[activeViewportIndex].viewportId
     );
     const { element } = viewportInfo;
@@ -256,20 +224,8 @@ export default function PanelGenerateImage({
     }
   };
 
-  useEffect(() => {
-    handlePlay;
-  }, [frameRate]);
-
-  const handleLast = () => {
-    myDynamicVolume.timePointIndex = rangeValues[1] - 1;
-  };
-
-  const handleFirst = () => {
-    myDynamicVolume.timePointIndex = rangeValues[0] - 1;
-  };
-
   function handleSliderChange(newValues) {
-    setSliderValues(newValues);
+    // setSliderValues(newValues);
     const timeFrameValuesArray = Array.from(
       { length: newValues[1] - newValues[0] + 1 },
       (_, i) => i + newValues[0] - 1
@@ -297,13 +253,12 @@ export default function PanelGenerateImage({
           label={t('Strategy')}
           closeMenuOnSelect={true}
           className="mr-2 bg-black border-primary-main text-white "
-          options={operations}
+          options={operationsUI}
           placeholder={
-            operations.find(
-              option => option.value === generateOptions.Operation
-            ).placeHolder
+            operationsUI.find(option => option.value === options.Operation)
+              .placeHolder
           }
-          value={generateOptions.Operation}
+          value={options.Operation}
           onChange={({ value }) => {
             handleGenerateOptionsChange({
               Operation: value,
@@ -318,7 +273,9 @@ export default function PanelGenerateImage({
         </Button>
         <div className="flex space-between">
           <Button
-            onClick={handleFirst}
+            onClick={() => {
+              dynamicVolume.timePointIndex = rangeValues[0] - 1;
+            }}
             variant="contained"
             color="primary"
             border="primary"
@@ -327,7 +284,9 @@ export default function PanelGenerateImage({
             {'First Frame'}
           </Button>
           <Button
-            onClick={handleLast}
+            onClick={() => {
+              dynamicVolume.timePointIndex = rangeValues[1] - 1;
+            }}
             variant="contained"
             color="primary"
             border="primary"
@@ -390,14 +349,6 @@ async function createComputedVolume(dynamicVolumeId, computedVolumeId) {
     );
     return computedVolume;
   }
-}
-
-function numTimePointsToOptions(numTimePoints) {
-  const options = [];
-  for (let i = 0; i < numTimePoints; i++) {
-    options.push({ value: `${i}`, label: `${i}`, placeHolder: `${i}` });
-  }
-  return options;
 }
 
 PanelGenerateImage.propTypes = {

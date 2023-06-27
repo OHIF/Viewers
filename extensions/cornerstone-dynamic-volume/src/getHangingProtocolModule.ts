@@ -14,6 +14,13 @@ function getPTOptions({
   }[];
   voiInverted?: boolean;
 } = {}) {
+  const colormapData = colormap
+    ? {
+        name: colormap,
+        opacityMapping,
+      }
+    : undefined;
+
   return {
     colormap: colormapData,
     voi: {
