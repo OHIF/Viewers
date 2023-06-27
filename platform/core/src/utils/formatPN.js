@@ -6,7 +6,13 @@ export default function formatPN(name) {
     return;
   }
 
-  const nameToUse = name.Alphabetic ?? name;
+  let nameToUse;
+  const _nameToUse = name.Alphabetic ?? name;
+  if (_nameToUse instanceof String) {
+    nameToUse = _nameToUse;
+  } else {
+    nameToUse = '';
+  }
 
   // Convert the first ^ to a ', '. String.replace() only affects
   // the first appearance of the character.

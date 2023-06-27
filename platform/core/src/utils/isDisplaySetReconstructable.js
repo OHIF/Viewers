@@ -54,8 +54,8 @@ function hasPixelMeasurements(multiFrameInstance) {
     Boolean(sharedSequence?.PixelMeasuresSequence) ||
     Boolean(
       multiFrameInstance.PixelSpacing &&
-        (multiFrameInstance.SliceThickness ||
-          multiFrameInstance.SpacingBetweenFrames)
+      (multiFrameInstance.SliceThickness ||
+        multiFrameInstance.SpacingBetweenFrames)
     )
   );
 }
@@ -70,8 +70,8 @@ function hasOrientation(multiFrameInstance) {
     Boolean(perFrameSequence?.PlaneOrientationSequence) ||
     Boolean(
       multiFrameInstance.ImageOrientationPatient ||
-        multiFrameInstance.DetectorInformationSequence?.[0]
-          ?.ImageOrientationPatient
+      multiFrameInstance.DetectorInformationSequence?.[0]
+        ?.ImageOrientationPatient
     )
   );
 }
@@ -85,8 +85,8 @@ function hasPosition(multiFrameInstance) {
     Boolean(perFrameSequence?.CTPositionSequence) ||
     Boolean(
       multiFrameInstance.ImagePositionPatient ||
-        multiFrameInstance.DetectorInformationSequence?.[0]
-          ?.ImagePositionPatient
+      multiFrameInstance.DetectorInformationSequence?.[0]
+        ?.ImagePositionPatient
     )
   );
 }
@@ -161,6 +161,7 @@ function processSingleframe(instances) {
   }
 
   let missingFrames = 0;
+  let averageSpacingBetweenFrames;
 
   // Check if frame spacing is approximately equal within a spacingTolerance.
   // If spacing is on a uniform grid but we are missing frames,
@@ -175,7 +176,7 @@ function processSingleframe(instances) {
       return { value: false };
     }
 
-    const averageSpacingBetweenFrames =
+    averageSpacingBetweenFrames =
       _getPerpendicularDistance(firstImagePositionPatient, lastIpp) /
       (instances.length - 1);
 
@@ -209,7 +210,7 @@ function processSingleframe(instances) {
     }
   }
 
-  return { value: true, missingFrames };
+  return { value: true, averageSpacingBetweenFrames };
 }
 
 function _isSameOrientation(iop1, iop2) {
@@ -260,8 +261,8 @@ function _getSpacingIssue(spacing, averageSpacing) {
 function _getPerpendicularDistance(a, b) {
   return Math.sqrt(
     Math.pow(a[0] - b[0], 2) +
-      Math.pow(a[1] - b[1], 2) +
-      Math.pow(a[2] - b[2], 2)
+    Math.pow(a[1] - b[1], 2) +
+    Math.pow(a[2] - b[2], 2)
   );
 }
 
@@ -269,4 +270,16 @@ const constructableModalities = ['MR', 'CT', 'PT', 'NM'];
 const reconstructionIssues = {
   MISSING_FRAMES: 'missingframes',
   IRREGULAR_SPACING: 'irregularspacing',
+};
+
+export {
+  hasPixelMeasurements,
+  hasOrientation,
+  hasPosition,
+  isNMReconstructable,
+  _isSameOrientation,
+  _getSpacingIssue,
+  _getPerpendicularDistance,
+  reconstructionIssues,
+  constructableModalities,
 };
