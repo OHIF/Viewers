@@ -27,7 +27,6 @@ const DicomUploadProgressItem = memo(
     const [failedReason, setFailedReason] = useState('');
     const [status, setStatus] = useState(dicomFileUploader.getStatus());
 
-    console.info(`${dicomFileUploader.getFileId()}`);
     const isComplete = useCallback(() => {
       return (
         status === UploadStatus.Failed ||
