@@ -2,9 +2,12 @@ import {
   addTool,
   RectangleROIStartEndThresholdTool,
 } from '@cornerstonejs/tools';
+import { utilities } from '@cornerstonejs/core';
 
 import measurementServiceMappingsFactory from './utils/measurementServiceMappings/measurementServiceMappingsFactory';
 import colormaps from './utils/colormaps';
+
+const { registerColormap } = utilities.colormap;
 
 const CORNERSTONE_3D_TOOLS_SOURCE_NAME = 'Cornerstone3DTools';
 const CORNERSTONE_3D_TOOLS_SOURCE_VERSION = '0.1';
@@ -41,16 +44,6 @@ export default function init({ servicesManager, extensionManager }) {
     RectangleROIStartEndThreshold.toAnnotation,
     RectangleROIStartEndThreshold.toMeasurement
   );
-
-  initColormaps(extensionManager);
-}
-
-function initColormaps(extensionManager) {
-  const utilityModule = extensionManager.getModuleEntry(
-    '@ohif/extension-cornerstone.utilityModule.common'
-  );
-
-  const { registerColormap } = utilityModule.exports;
 
   colormaps.forEach(registerColormap);
 }

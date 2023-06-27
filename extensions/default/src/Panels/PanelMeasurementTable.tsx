@@ -1,7 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { utils, ServicesManager } from '@ohif/core';
-import { MeasurementTable, Dialog, Input, useViewportGrid } from '@ohif/ui';
+import {
+  MeasurementTable,
+  Dialog,
+  Input,
+  useViewportGrid,
+  ButtonEnums,
+} from '@ohif/ui';
 import ActionButtons from './ActionButtons';
 import debounce from 'lodash.debounce';
 
@@ -160,7 +166,7 @@ export default function PanelMeasurementTable({
       showOverlay: true,
       content: Dialog,
       contentProps: {
-        title: 'Enter your annotation',
+        title: 'Annotation',
         noCloseButton: true,
         value: { label: measurement.label || '' },
         body: ({ value, setValue }) => {
@@ -175,24 +181,22 @@ export default function PanelMeasurementTable({
             }
           };
           return (
-            <div className="p-4 bg-primary-dark">
-              <Input
-                autoFocus
-                id="annotation"
-                className="mt-2 bg-black border-primary-main"
-                type="text"
-                containerClassName="mr-2"
-                value={value.label}
-                onChange={onChangeHandler}
-                onKeyPress={onKeyPressHandler}
-              />
-            </div>
+            <Input
+              label="Enter your annotation"
+              labelClassName="text-white text-[14px] leading-[1.2]"
+              autoFocus
+              id="annotation"
+              className="bg-black border-primary-main"
+              type="text"
+              value={value.label}
+              onChange={onChangeHandler}
+              onKeyPress={onKeyPressHandler}
+            />
           );
         },
         actions: [
-          // temp: swap button types until colors are updated
-          { id: 'cancel', text: 'Cancel', type: 'primary' },
-          { id: 'save', text: 'Save', type: 'secondary' },
+          { id: 'cancel', text: 'Cancel', type: ButtonEnums.type.secondary },
+          { id: 'save', text: 'Save', type: ButtonEnums.type.primary },
         ],
         onSubmit: onSubmitHandler,
       },

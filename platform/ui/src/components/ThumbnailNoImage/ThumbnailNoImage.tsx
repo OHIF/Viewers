@@ -2,7 +2,9 @@ import React from 'react';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import { useDrag } from 'react-dnd';
-import { Icon, Tooltip, Typography } from '../';
+import Icon from '../Icon';
+import Tooltip from '../Tooltip';
+import Typography from '../Typography';
 
 const ThumbnailNoImage = ({
   displaySetInstanceUID,
@@ -18,7 +20,7 @@ const ThumbnailNoImage = ({
   isActive,
 }) => {
   const [collectedProps, drag, dragPreview] = useDrag({
-    type: "displayset",
+    type: 'displayset',
     item: { ...dragData },
     canDrag: function(monitor) {
       return Object.keys(dragData).length !== 0;
@@ -39,6 +41,7 @@ const ThumbnailNoImage = ({
       onDoubleClick={onDoubleClick}
       role="button"
       tabIndex="0"
+      data-cy={`study-browser-thumbnail-no-image`}
     >
       <div ref={drag}>
         <div className="flex flex-col flex-1">

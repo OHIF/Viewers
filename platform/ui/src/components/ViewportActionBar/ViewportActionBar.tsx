@@ -7,10 +7,11 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Icon } from '..';
 import { useResizeObserver } from '../../hooks';
 import useOnClickOutside from '../../utils/useOnClickOutside';
+
 import PatientInfo from '../PatientInfo';
+import Icon from '../Icon';
 
 export type ViewportActionBarProps = {
   studyData: any;

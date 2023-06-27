@@ -13,6 +13,7 @@ import Queue from './Queue';
 import isDicomUid from './isDicomUid';
 import formatDate from './formatDate';
 import formatPN from './formatPN';
+import generateAcceptHeader from './generateAcceptHeader';
 import resolveObjectPath from './resolveObjectPath';
 import hierarchicalListUtils from './hierarchicalListUtils';
 import progressTrackingUtils from './progressTrackingUtils';
@@ -74,6 +75,7 @@ const utils = {
   subscribeToNextViewportGridChange,
   splitComma,
   getSplitParam,
+  generateAcceptHeader,
 };
 
 export {
@@ -105,6 +107,7 @@ export {
   downloadCSVReport,
   splitComma,
   getSplitParam,
+  generateAcceptHeader,
 };
 
 export default utils;

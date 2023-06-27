@@ -188,6 +188,7 @@ function getDisplayText(mappedAnnotations, displaySet) {
   const instanceText = InstanceNumber ? ` I: ${InstanceNumber}` : '';
   const frameText = displaySet.isMultiFrame ? ` F: ${frameNumber}` : '';
 
+  if (length === null || length === undefined) return displayText;
   const roundedLength = utils.roundNumber(length, 2);
   displayText.push(
     `${roundedLength} mm (S: ${SeriesNumber}${instanceText}${frameText})`

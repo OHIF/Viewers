@@ -2,7 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import ReactSelect, { components } from 'react-select';
-import { Icon } from '@ohif/ui';
+
+import Icon from '../Icon';
 
 import './Select.css';
 
@@ -77,7 +78,7 @@ const Select = ({
       inputId={`input-${id}`}
       className={classnames(
         className,
-        'flex flex-col flex-1 customSelect__wrapper'
+        'ohif-select flex flex-col flex-1 customSelect__wrapper'
       )}
       data-cy={`input-${id}`}
       classNamePrefix="customSelect"

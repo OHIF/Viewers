@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import DicomFileUploader from '../../utils/DicomFileUploader';
 import DicomUploadProgress from './DicomUploadProgress';
-import { Button } from '@ohif/ui';
+import { Button, ButtonEnums } from '@ohif/ui';
 import './DicomUpload.css';
 
 type DicomUploadProps = {
@@ -19,7 +19,7 @@ function DicomUpload({
   onComplete,
   onStarted,
 }: DicomUploadProps): ReactElement {
-  const baseClassNames = 'min-h-[520px] flex flex-col bg-black select-none';
+  const baseClassNames = 'min-h-[480px] flex flex-col bg-black select-none';
   const [dicomFileUploaderArr, setDicomFileUploaderArr] = useState([]);
 
   const onDrop = useCallback(async acceptedFiles => {
@@ -46,12 +46,7 @@ function DicomUpload({
               <Dropzone onDrop={onDrop} noDrag>
                 {({ getRootProps, getInputProps }) => (
                   <div {...getRootProps()}>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      disabled={false}
-                      onClick={() => {}}
-                    >
+                    <Button disabled={false} onClick={() => {}}>
                       {'Add files'}
                       <input {...getInputProps()} />
                     </Button>
@@ -62,9 +57,7 @@ function DicomUpload({
                 {({ getRootProps, getInputProps }) => (
                   <div {...getRootProps()}>
                     <Button
-                      variant="contained"
-                      color="primaryDark"
-                      border="primaryActive"
+                      type={ButtonEnums.type.secondary}
                       disabled={false}
                       onClick={() => {}}
                     >
@@ -99,7 +92,7 @@ function DicomUpload({
           />
         </div>
       ) : (
-        <div className={classNames('h-[520px]', baseClassNames)}>
+        <div className={classNames('h-[480px]', baseClassNames)}>
           {getDropZoneComponent()}
         </div>
       )}

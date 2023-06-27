@@ -7,8 +7,12 @@ const ROOT_DIR = path.join(__dirname, './../');
 const SRC_DIR = path.join(__dirname, '../src');
 const DIST_DIR = path.join(__dirname, '../dist');
 
+const ENTRY = {
+  app: `${SRC_DIR}/index.ts`,
+};
+
 module.exports = (env, argv) => {
-  const commonConfig = webpackCommon(env, argv, { SRC_DIR, DIST_DIR });
+  const commonConfig = webpackCommon(env, argv, { SRC_DIR, DIST_DIR, ENTRY });
 
   return merge(commonConfig, {
     stats: {
@@ -24,23 +28,19 @@ module.exports = (env, argv) => {
     },
     optimization: {
       minimize: true,
-      sideEffects: true,
+      sideEffects: false,
     },
     output: {
       path: ROOT_DIR,
-      library: 'ohifCore',
+      library: 'ohif-core',
       libraryTarget: 'umd',
       filename: pkg.main,
     },
-    externals: [
-      {
-        'cornerstone-math': {
-          commonjs: 'cornerstone-math',
-          commonjs2: 'cornerstone-math',
-          amd: 'cornerstone-math',
-          root: 'cornerstoneMath',
-        },
-      },
+     externals: [
+      /\b(vtk.js)/,
+      /\b(dcmjs)/,
+      /\b(gl-matrix)/,
+      /^@cornerstonejs/,
     ],
   });
 };

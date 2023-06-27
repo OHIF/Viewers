@@ -273,3 +273,16 @@ html[data-theme='dark'] .docusaurus-highlight-code-line {
   padding: 0 var(--ifm-pre-padding);
   border-left: 3px solid #ff000080;
 }
+
+.new-badge::after,
+.deprecated-badge::after {
+  font-size: 11px;
+  @apply inline-flex items-center justify-center rounded-sm;
+  @apply ml-1.5 px-1 py-0;
+}
+
+.new-badge::after {
+  content: ' (NEW)';
+  @apply bg-red-300 text-red-500;
+  @apply dark:bg-blue-900 dark:text-blue-100;
+}

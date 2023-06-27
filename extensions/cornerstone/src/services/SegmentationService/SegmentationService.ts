@@ -107,7 +107,7 @@ class SegmentationService extends PubSubService {
 
   /**
    * It adds a segment to a segmentation, basically just setting the properties for
-   * the segment
+   * the segment.
    * @param segmentationId - The ID of the segmentation you want to add a
    * segment to.
    * @param segmentIndex - The index of the segment to add.
@@ -816,45 +816,54 @@ class SegmentationService extends PubSubService {
     const segmentsCachedStats = {};
     const initializeContour = async rtStructData => {
       const { data, id, color, segmentIndex, geometryId } = rtStructData;
-      const geometry = await geometryLoader.createAndCacheGeometry(geometryId, {
-        geometryData: {
-          data,
-          id,
-          color,
-          frameOfReferenceUID: structureSet.frameOfReferenceUID,
+
+      // catch error instead of failing to allow loading to continue
+      try {
+        const geometry = await geometryLoader.createAndCacheGeometry(
+          geometryId,
+          {
+            geometryData: {
+              data,
+              id,
+              color,
+              frameOfReferenceUID: structureSet.frameOfReferenceUID,
+              segmentIndex,
+            },
+            type: csEnums.GeometryType.CONTOUR,
+          }
+        );
+
+        const contourSet = geometry.data;
+        const centroid = contourSet.getCentroid();
+
+        segmentsCachedStats[segmentIndex] = {
+          center: { world: centroid },
+          modifiedTime: rtDisplaySet.SeriesDate, // we use the SeriesDate as the modifiedTime since this is the first time we are creating the segmentation
+        };
+
+        segmentation.segments[segmentIndex] = {
+          label: id,
           segmentIndex,
-        },
-        type: csEnums.GeometryType.CONTOUR,
-      });
+          color,
+          ...SEGMENT_CONSTANT,
+        };
 
-      const contourSet = geometry.data;
-      const centroid = contourSet.getCentroid();
+        const numInitialized = Object.keys(segmentsCachedStats).length;
 
-      segmentsCachedStats[segmentIndex] = {
-        center: { world: centroid },
-        modifiedTime: rtDisplaySet.SeriesDate, // we use the SeriesDate as the modifiedTime since this is the first time we are creating the segmentation
-      };
+        // Calculate percentage completed
+        const percentComplete = Math.round(
+          (numInitialized / allRTStructData.length) * 100
+        );
 
-      segmentation.segments[segmentIndex] = {
-        label: id,
-        segmentIndex,
-        color,
-        ...SEGMENT_CONSTANT,
-      };
-
-      const numInitialized = Object.keys(segmentsCachedStats).length;
-
-      // Calculate percentage completed
-      const percentComplete = Math.round(
-        (numInitialized / allRTStructData.length) * 100
-      );
-
-      this._broadcastEvent(EVENTS.SEGMENT_LOADING_COMPLETE, {
-        percentComplete,
-        // Note: this is not the geometryIds length since there might be
-        // some missing ROINumbers
-        numSegments: allRTStructData.length,
-      });
+        this._broadcastEvent(EVENTS.SEGMENT_LOADING_COMPLETE, {
+          percentComplete,
+          // Note: this is not the geometryIds length since there might be
+          // some missing ROINumbers
+          numSegments: allRTStructData.length,
+        });
+      } catch (e) {
+        console.warn(e);
+      }
     };
 
     const promiseArray = [];
@@ -996,10 +1005,16 @@ class SegmentationService extends PubSubService {
       label: string;
     }
   ): Promise<string> => {
+    const { displaySetService } = this.servicesManager.services;
+
+    const displaySet = displaySetService.getDisplaySetByUID(
+      displaySetInstanceUID
+    );
+
     // Todo: we currently only support labelmap for segmentation for a displaySet
     const representationType = LABELMAP;
 
-    const volumeId = this._getVolumeIdForDisplaySet(displaySetInstanceUID);
+    const volumeId = this._getVolumeIdForDisplaySet(displaySet);
 
     const segmentationId = options?.segmentationId ?? `${csUtils.uuidv4()}`;
 
@@ -1241,37 +1256,39 @@ class SegmentationService extends PubSubService {
 
     const { fillAlpha } = this.getConfiguration(toolGroupId);
 
-    let count = 0;
-    const intervalTime = 16;
-    const numberOfFrames = Math.ceil(animationLength / intervalTime);
+    let startTime: number = null;
+    const animation = (timestamp: number) => {
+      if (startTime === null) {
+        startTime = timestamp;
+      }
 
-    this.highlightIntervalId = setInterval(() => {
-      const x = (count * intervalTime) / animationLength;
+      const elapsed = timestamp - startTime;
+      const progress = Math.min(elapsed / animationLength, 1);
+
       cstSegmentation.config.setSegmentSpecificConfig(
         toolGroupId,
         segmentationRepresentation.segmentationRepresentationUID,
         {
           [segmentIndex]: {
             LABELMAP: {
-              fillAlpha: easeInOutBell(x, fillAlpha),
+              fillAlpha: easeInOutBell(progress, fillAlpha),
             },
           },
         }
       );
 
-      count++;
-
-      if (count === numberOfFrames) {
-        clearInterval(this.highlightIntervalId);
+      if (progress < 1) {
+        requestAnimationFrame(animation);
+      } else {
         cstSegmentation.config.setSegmentSpecificConfig(
           toolGroupId,
           segmentationRepresentation.segmentationRepresentationUID,
           {}
         );
-
-        this.highlightIntervalId = null;
       }
-    }, intervalTime);
+    };
+
+    requestAnimationFrame(animation);
   }
 
   private _highlightContour(

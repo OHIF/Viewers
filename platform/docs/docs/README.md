@@ -23,14 +23,28 @@ Key features:
   components available in a reusable component library built with React.js and
   Tailwind CSS
 
-![OHIF Viewer Screenshot](./assets/img/OHIF-Viewer.png)
 
 <div className="text--center">
     <div className="button-group">
-        <a className='button button--primary' href="https://v3-demo.ohif.org/">Try the demo</a>
+        <a className='button button--primary' href="https://ohif.org/news/">Subscribe to our newsletter</a>
         <a className='button button--primary' href="./release-notes">Release Notes</a>
     </div>
 </div>
+
+<br/>
+<br/>
+
+
+
+|     |  | |
+| :-: | :---  | :--- |
+| <img src="https://github.com/OHIF/Viewers/blob/master/platform/docs/docs/assets/img/demo-measurements.jpg?raw=true" alt="Measurement tracking" width="350"/> | Measurement Tracking | [Demo](https://viewer.ohif.org/viewer?StudyInstanceUIDs=1.3.6.1.4.1.25403.345050719074.3824.20170125095438.5) |
+| <img src="https://github.com/OHIF/Viewers/blob/master/platform/docs/docs/assets/img/demo-segmentation.png?raw=true" alt="Segmentations" width="350"/> | Labelmap Segmentations  | [Demo](https://viewer.ohif.org/viewer?StudyInstanceUIDs=1.3.12.2.1107.5.2.32.35162.30000015050317233592200000046) |
+| <img src="https://github.com/OHIF/Viewers/blob/master/platform/docs/docs/assets/img/demo-ptct.png?raw=true" alt="Hanging Protocols" width="350"/> | Fusion and Custom Hanging protocols  | [Demo](https://viewer.ohif.org/tmtv?StudyInstanceUIDs=1.3.6.1.4.1.14519.5.2.1.7009.2403.334240657131972136850343327463) |
+| <img src="https://github.com/OHIF/Viewers/blob/master/platform/docs/docs/assets/img/demo-microscopy.png?raw=true" alt="Microscopy" width="350"/> | Slide Microscopy  | [Demo](https://viewer.ohif.org/microscopy?StudyInstanceUIDs=2.25.275741864483510678566144889372061815320) |
+| <img src="https://github.com/OHIF/Viewers/blob/master/platform/docs/docs/assets/img/demo-volumeRendering.png?raw=true" alt="Volume Rendering" width="350"/> | Volume Rendering  | [Demo](https://viewer.ohif.org/viewer?StudyInstanceUIDs=1.3.6.1.4.1.25403.345050719074.3824.20170125095438.5&hangingprotocolId=mprAnd3DVolumeViewport) |
+
+
 
 ## Where to next?
 
@@ -91,7 +105,7 @@ MIT © [OHIF](https://github.com/OHIF)
 
 <!-- prettier-ignore-start -->
 [ohif-org]: https://www.ohif.org
-[ohif-demo]: http://v3-demo.ohif.org/
+[ohif-demo]: http://viewer.ohif.org/
 [dicom-web]: https://en.wikipedia.org/wiki/DICOMweb
 [gh-issues]: https://github.com/OHIF/Viewers/issues
 <!-- prettier-ignore-end -->

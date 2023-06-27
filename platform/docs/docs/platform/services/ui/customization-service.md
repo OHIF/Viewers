@@ -332,7 +332,7 @@ customizationService: [
 Below is the full example configuration of the customizable viewport overlay and the screenshot of the result overlay.
 
 ```javascript
-// this is one of the configuration files in `platform/viewer/public/config/*.js`
+// this is one of the configuration files in `platform/app/public/config/*.js`
 window.config = {
   // ...
 
@@ -490,7 +490,7 @@ are specific to the context used for where the menu is displayed.
 The default cornerstone context menu can be customized by setting the
 `cornerstoneContextMenu`.  For a full example, see `findingsContextMenu`.
 
-## Customizeable Cornerstone Viewport Click Behaviour
+## Customizable Cornerstone Viewport Click Behaviour
 
 The behaviour on clicking on the cornerstone viewport can be customized
 by setting the `cornerstoneViewportClickCommands`.  This is intended to

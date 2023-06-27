@@ -121,8 +121,7 @@ const ptAXIAL = {
     {
       options: {
         voi: {
-          windowWidth: 5,
-          windowCenter: 2.5,
+          custom: 'getPTVOIRange',
         },
         voiInverted: true,
       },
@@ -163,8 +162,7 @@ const ptSAGITTAL = {
     {
       options: {
         voi: {
-          windowWidth: 5,
-          windowCenter: 2.5,
+          custom: 'getPTVOIRange',
         },
         voiInverted: true,
       },
@@ -205,8 +203,7 @@ const ptCORONAL = {
     {
       options: {
         voi: {
-          windowWidth: 5,
-          windowCenter: 2.5,
+          custom: 'getPTVOIRange',
         },
         voiInverted: true,
       },
@@ -258,10 +255,12 @@ const fusionAXIAL = {
     },
     {
       options: {
-        colormap: 'hsv',
+        colormap: {
+          name: 'hsv',
+          opacityMapping: [{ value: 0.1, opacity: 0.9 }],
+        },
         voi: {
-          windowWidth: 5,
-          windowCenter: 2.5,
+          custom: 'getPTVOIRange',
         },
       },
       id: 'ptDisplaySet',
@@ -312,10 +311,12 @@ const fusionSAGITTAL = {
     },
     {
       options: {
-        colormap: 'hsv',
+        colormap: {
+          name: 'hsv',
+          opacityMapping: [{ value: 0.1, opacity: 0.9 }],
+        },
         voi: {
-          windowWidth: 5,
-          windowCenter: 2.5,
+          custom: 'getPTVOIRange',
         },
       },
       id: 'ptDisplaySet',
@@ -366,10 +367,12 @@ const fusionCORONAL = {
     },
     {
       options: {
-        colormap: 'hsv',
+        colormap: {
+          name: 'hsv',
+          opacityMapping: [{ value: 0.1, opacity: 0.9 }],
+        },
         voi: {
-          windowWidth: 5,
-          windowCenter: 2.5,
+          custom: 'getPTVOIRange',
         },
       },
       id: 'ptDisplaySet',
@@ -414,8 +417,7 @@ const mipSAGITTAL = {
         blendMode: 'MIP',
         slabThickness: 'fullVolume',
         voi: {
-          windowWidth: 5,
-          windowCenter: 2.5,
+          custom: 'getPTVOIRange',
         },
         voiInverted: true,
       },

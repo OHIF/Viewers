@@ -6,6 +6,7 @@ import {
   Dialog,
   Input,
   useViewportGrid,
+  ButtonEnums,
 } from '@ohif/ui';
 import { DicomMetadataStore, utils } from '@ohif/core';
 import { useDebounce } from '@hooks';
@@ -188,7 +189,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
       showOverlay: true,
       content: Dialog,
       contentProps: {
-        title: 'Enter your annotation',
+        title: 'Annotation',
         noCloseButton: true,
         value: { label: measurement.label || '' },
         body: ({ value, setValue }) => {
@@ -203,24 +204,22 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
             }
           };
           return (
-            <div className="p-4 bg-primary-dark">
-              <Input
-                autoFocus
-                id="annotation"
-                className="mt-2 bg-black border-primary-main"
-                type="text"
-                containerClassName="mr-2"
-                value={value.label}
-                onChange={onChangeHandler}
-                onKeyPress={onKeyPressHandler}
-              />
-            </div>
+            <Input
+              label="Enter your annotation"
+              labelClassName="text-white grow text-[14px] leading-[1.2]"
+              autoFocus
+              id="annotation"
+              className="bg-black border-primary-main"
+              type="text"
+              value={value.label}
+              onChange={onChangeHandler}
+              onKeyPress={onKeyPressHandler}
+            />
           );
         },
         actions: [
-          // temp: swap button types until colors are updated
-          { id: 'cancel', text: 'Cancel', type: 'primary' },
-          { id: 'save', text: 'Save', type: 'secondary' },
+          { id: 'cancel', text: 'Cancel', type: ButtonEnums.type.secondary },
+          { id: 'save', text: 'Save', type: ButtonEnums.type.primary },
         ],
         onSubmit: onSubmitHandler,
       },
