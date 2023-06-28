@@ -43,6 +43,11 @@ export enum CalibrationTypes {
    */
   REGION = 'Region',
   /**
+   * Unknown is used when there is pixel spacing but not enough information to
+   * determine if it is ERMF calibrated or not, or what type it is.
+   */
+  UNKNOWN = 'Unknown',
+  /**
    * Error is used to define mismatches between various units, such as when
    * there are two different ERMF values specified.  This is an indication to
    * NOT trust the measurement values but to manually calibrate.

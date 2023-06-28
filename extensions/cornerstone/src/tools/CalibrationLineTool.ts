@@ -75,14 +75,11 @@ export function setCalibration(imageId, renderingEngine, length, newLength) {
   const scale = length / newLength;
 
   // trigger resize of the viewport to adjust the world/pixel mapping
-  console.log(
-    '* setCalibration',
-    imageId,
-    length,
-    newLength,
+  console.log('* setCalibration', imageId, length, newLength, scale);
+  calibrateImageSpacing(imageId, renderingEngine, {
+    type: CalibrationTypes.USER,
     scale,
-  );
-  calibrateImageSpacing(imageId, renderingEngine, scale);
+  });
 }
 
 export function onCompletedCalibrationLine(
