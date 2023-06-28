@@ -3,7 +3,7 @@ import sopClassDictionary from '@ohif/core/src/utils/sopClassDictionary';
 import ImageSet from '@ohif/core/src/classes/ImageSet';
 import isDisplaySetReconstructable from '@ohif/core/src/utils/isDisplaySetReconstructable';
 import { id } from './id';
-import validateInstances from './validateInstances.js';
+import validateInstances from './validateInstances';
 
 const sopClassHandlerName = 'stack';
 
