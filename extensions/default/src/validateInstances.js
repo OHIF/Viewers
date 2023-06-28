@@ -15,14 +15,16 @@ import {
 function addWarning(warnings, warning) {
   if (!warnings.includes(warning)) {
     warnings.push(warning);
+    return true;
   }
+  return false;
 }
 /**
  * Checks if a series is reconstructable to a 3D volume.
  *
  * @param {Object[]} instances An array of `OHIFInstanceMetadata` objects.
  */
-export default function validateInstances(instances) {
+export default function validateInstances(instances, isReconstructable) {
   const warnings = [];
   if (!instances.length) {
     addWarning(warnings, 'No valid instances found in series.');
@@ -44,7 +46,7 @@ export default function validateInstances(instances) {
     !isMultiframe &&
     !instances.every(instance => instance.ImagePositionPatient)
   ) {
-    addWarning(warnings, 'Missing position information in some frames.');
+    addWarning(warnings, 'Series has missing position information.');
   }
 
   const sortedInstances = sortInstancesByPosition(instances);
@@ -53,6 +55,10 @@ export default function validateInstances(instances) {
     checkMultiFrame(sortedInstances[0], warnings);
   } else {
     checkSingleFrame(sortedInstances, warnings);
+  }
+
+  if (!isReconstructable) {
+    warnings.push('Series is not a reconstructable 3D volume.');
   }
   return warnings;
 }
@@ -64,19 +70,19 @@ function checkMultiFrame(multiFrameInstance, warnings) {
   if (!hasPixelMeasurements(multiFrameInstance)) {
     addWarning(
       warnings,
-      "Multiframe series don't have pixel measurement information"
+      "Multiframe series don't have pixel measurement information."
     );
   }
 
   if (!hasOrientation(multiFrameInstance)) {
     addWarning(
       warnings,
-      "Multiframe series don't have orientation information"
+      "Multiframe series don't have orientation information."
     );
   }
 
   if (!hasPosition(multiFrameInstance)) {
-    addWarning(warnings, "Multiframe series don't have position information");
+    addWarning(warnings, "Multiframe series don't have position information.");
   }
 }
 
@@ -133,11 +139,14 @@ function checkSingleFrame(instances, warnings) {
       );
 
       if (Rows !== firstImageRows || Columns !== firstImageColumns) {
-        addWarning(warnings, 'Series has different dimensions between frames');
+        addWarning(warnings, 'Series has different dimensions between frames.');
       }
 
       if (SamplesPerPixel !== firstImageSamplesPerPixel) {
-        addWarning(warnings, 'Frames have different number of components');
+        addWarning(
+          warnings,
+          'Series has frames with different number of components.'
+        );
       }
 
       if (
@@ -146,7 +155,7 @@ function checkSingleFrame(instances, warnings) {
           firstImageOrientationPatient
         )
       ) {
-        addWarning(warnings, 'Frames have different orientation information');
+        addWarning(warnings, 'Series has frames with different orientations.');
       }
     }
   }
@@ -161,7 +170,7 @@ function checkSingleFrame(instances, warnings) {
 
     // We can't reconstruct if we are missing ImagePositionPatient values
     if (!firstImagePositionPatient || !lastIpp) {
-      addWarning(warnings, 'Missing position information in some frames.');
+      addWarning(warnings, 'Series has missing position information.');
     }
 
     const averageSpacingBetweenFrames =
@@ -189,7 +198,7 @@ function checkSingleFrame(instances, warnings) {
           averageSpacingBetweenFrames
         )
       ) {
-        addWarning(warnings, 'Unexpected movement detected in series.');
+        addWarning(warnings, 'Series has inconsistent position information.');
       }
       const spacingIssue = _getSpacingIssue(
         spacingBetweenFrames,

@@ -221,7 +221,10 @@ function _isSameOrientation(iop1, iop2) {
   return (
     Math.abs(iop1[0] - iop2[0]) < iopTolerance &&
     Math.abs(iop1[1] - iop2[1]) < iopTolerance &&
-    Math.abs(iop1[2] - iop2[2]) < iopTolerance
+    Math.abs(iop1[2] - iop2[2]) < iopTolerance &&
+    Math.abs(iop1[3] - iop2[3]) < iopTolerance &&
+    Math.abs(iop1[4] - iop2[4]) < iopTolerance &&
+    Math.abs(iop1[5] - iop2[5]) < iopTolerance
   );
 }
 

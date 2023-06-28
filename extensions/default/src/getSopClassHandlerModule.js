@@ -19,7 +19,7 @@ const makeDisplaySet = instances => {
     value: isReconstructable,
     averageSpacingBetweenFrames,
   } = isDisplaySetReconstructable(instances);
-  const warnings = validateInstances(instances);
+  const warnings = validateInstances(instances, isReconstructable);
   // set appropriate attributes to image set...
   imageSet.setAttributes({
     displaySetInstanceUID: imageSet.uid, // create a local alias for the imageSet UID
