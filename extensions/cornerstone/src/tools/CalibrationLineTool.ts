@@ -70,29 +70,14 @@ export function onCompletedCalibrationLine(servicesManager, csToolsEvent) {
       ) * 100
     ) / 100;
 
-  // calculate the currently applied pixel spacing on the viewport
-  const calibratedPixelSpacing = metaData.get(
-    'calibratedPixelSpacing',
-    imageId
-  );
-  const imagePlaneModule = metaData.get('imagePlaneModule', imageId);
-  const currentRowPixelSpacing =
-    calibratedPixelSpacing?.[0] || imagePlaneModule?.rowPixelSpacing || 1;
-  const currentColumnPixelSpacing =
-    calibratedPixelSpacing?.[1] || imagePlaneModule?.columnPixelSpacing || 1;
-
   const adjustCalibration = newLength => {
     const spacingScale = newLength / length;
-    const rowSpacing = spacingScale * currentRowPixelSpacing;
-    const colSpacing = spacingScale * currentColumnPixelSpacing;
 
     // trigger resize of the viewport to adjust the world/pixel mapping
-    calibrateImageSpacing(
-      imageId,
-      viewport.getRenderingEngine(),
-      rowSpacing,
-      colSpacing
-    );
+    calibrateImageSpacing(imageId, viewport.getRenderingEngine(), {
+      type: 'User',
+      scale: 1 / spacingScale,
+    });
   };
 
   return new Promise((resolve, reject) => {
