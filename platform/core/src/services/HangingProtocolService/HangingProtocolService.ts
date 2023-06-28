@@ -695,15 +695,18 @@ export default class HangingProtocolService extends PubSubService {
   ) {
     viewport.displaySets.forEach(displaySet => {
       const { id } = displaySet;
-      const {
-        displaySetInstanceUID: oldDisplaySetInstanceUID,
-      } = displaySetMatchDetails.get(id);
+      const displaySetMatchDetail = displaySetMatchDetails.get(id);
 
-      displaySetInstanceUIDs.push(
+      const { displaySetInstanceUID: oldDisplaySetInstanceUID } = displaySetMatchDetail;
+
+      const displaySetInstanceUID =
         displaySet.id === displaySetSelectorId
           ? newDisplaySetInstanceUID
-          : oldDisplaySetInstanceUID
-      );
+          : oldDisplaySetInstanceUID;
+
+      displaySetMatchDetail.displaySetInstanceUID = displaySetInstanceUID;
+
+      displaySetInstanceUIDs.push(displaySetInstanceUID);
       displaySetOptions.push(displaySet);
     });
   }
