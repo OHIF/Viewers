@@ -225,9 +225,7 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
               value={metadata.SeriesTime || ''}
               onChange={() => {}}
             />
-            <Button color="primary" onClick={updateMetadata}>
-              Reload Data
-            </Button>
+            <Button onClick={updateMetadata}>Reload Data</Button>
           </div>
         </div>
       }

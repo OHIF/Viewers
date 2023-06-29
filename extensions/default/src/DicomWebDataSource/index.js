@@ -60,15 +60,42 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
     supportsReject,
     staticWado,
     singlepart,
+    omitQuotationForMultipartRequest,
+    acceptHeader,
+    requestTransferSyntaxUID,
   } = dicomWebConfig;
 
   const dicomWebConfigCopy = JSON.parse(JSON.stringify(dicomWebConfig));
+
+  const getAuthrorizationHeader = () => {
+    const xhrRequestHeaders = {};
+    const authHeaders = userAuthenticationService.getAuthorizationHeader();
+    if (authHeaders && authHeaders.Authorization) {
+      xhrRequestHeaders.Authorization = authHeaders.Authorization;
+    }
+    return xhrRequestHeaders;
+  };
+
+  const generateWadoHeader = () => {
+    let authorizationHeader = getAuthrorizationHeader();
+    //Generate accept header depending on config params
+    let formattedAcceptHeader = utils.generateAcceptHeader(
+      acceptHeader,
+      requestTransferSyntaxUID,
+      omitQuotationForMultipartRequest
+    );
+
+    return {
+      ...authorizationHeader,
+      Accept: formattedAcceptHeader,
+    };
+  };
 
   const qidoConfig = {
     url: qidoRoot,
     staticWado,
     singlepart,
-    headers: userAuthenticationService.getAuthorizationHeader(),
+    headers: getAuthrorizationHeader(),
     errorInterceptor: errorHandler.getHTTPErrorHandler(),
   };
 
@@ -76,7 +103,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
     url: wadoRoot,
     staticWado,
     singlepart,
-    headers: userAuthenticationService.getAuthorizationHeader(),
+    headers: generateWadoHeader(),
     errorInterceptor: errorHandler.getHTTPErrorHandler(),
   };
 
@@ -110,11 +137,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
       studies: {
         mapParams: mapParams.bind(),
         search: async function(origParams) {
-          const headers = userAuthenticationService.getAuthorizationHeader();
-          if (headers) {
-            qidoDicomWebClient.headers = headers;
-          }
-
+          qidoDicomWebClient.headers = getAuthrorizationHeader();
           const { studyInstanceUid, seriesInstanceUid, ...mappedParams } =
             mapParams(origParams, {
               supportsFuzzyMatching,
@@ -135,11 +158,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
       series: {
         // mapParams: mapParams.bind(),
         search: async function(studyInstanceUid) {
-          const headers = userAuthenticationService.getAuthorizationHeader();
-          if (headers) {
-            qidoDicomWebClient.headers = headers;
-          }
-
+          qidoDicomWebClient.headers = getAuthrorizationHeader();
           const results = await seriesInStudy(
             qidoDicomWebClient,
             studyInstanceUid
@@ -151,11 +170,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
       },
       instances: {
         search: (studyInstanceUid, queryParameters) => {
-          const headers = userAuthenticationService.getAuthorizationHeader();
-          if (headers) {
-            qidoDicomWebClient.headers = headers;
-          }
-
+          qidoDicomWebClient.headers = getAuthrorizationHeader();
           qidoSearch.call(
             undefined,
             qidoDicomWebClient,
@@ -182,6 +197,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
         return getDirectURL({ wadoRoot, singlepart }, params);
       },
       bulkDataURI: async ({ StudyInstanceUID, BulkDataURI }) => {
+        qidoDicomWebClient.headers = getAuthrorizationHeader();
         const options = {
           multipart: false,
           BulkDataURI,
@@ -200,11 +216,6 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
           sortFunction,
           madeInClient = false,
         } = {}) => {
-          const headers = userAuthenticationService.getAuthorizationHeader();
-          if (headers) {
-            wadoDicomWebClient.headers = headers;
-          }
-
           if (!StudyInstanceUID) {
             throw new Error(
               'Unable to query for SeriesMetadata without StudyInstanceUID'
@@ -234,17 +245,12 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
 
     store: {
       dicom: async (dataset, request) => {
-        const headers = userAuthenticationService.getAuthorizationHeader();
-        if (headers) {
-          wadoDicomWebClient.headers = headers;
-        }
-
+        wadoDicomWebClient.headers = getAuthrorizationHeader();
         if (dataset instanceof ArrayBuffer) {
           const options = {
             datasets: [dataset],
             request,
           };
-
           await wadoDicomWebClient.storeInstances(options);
         } else {
           const meta = {
@@ -282,7 +288,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
       madeInClient
     ) => {
       const enableStudyLazyLoad = false;
-
+      wadoDicomWebClient.headers = generateWadoHeader();
       // data is all SOPInstanceUIDs
       const data = await retrieveStudyMetadata(
         wadoDicomWebClient,
@@ -353,6 +359,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
       madeInClient = false
     ) => {
       const enableStudyLazyLoad = true;
+      wadoDicomWebClient.headers = generateWadoHeader();
       // Get Series
       const {
         preLoadData: seriesSummaryMetadata,

@@ -745,7 +745,7 @@ class CornerstoneViewportService extends PubSubService
     const viewport = this.getCornerstoneViewport(viewportId);
     const viewportCamera = viewport.getCamera();
 
-    if (viewport instanceof VolumeViewport) {
+    if (viewport instanceof VolumeViewport || viewport instanceof VolumeViewport3D) {
       this._setVolumeViewport(viewport, viewportData, viewportInfo).then(() => {
         if (keepCamera) {
           viewport.setCamera(viewportCamera);

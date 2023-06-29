@@ -181,7 +181,6 @@ export default function PanelRoiThresholdSegmentation({
         <div className="overflow-x-hidden overflow-y-auto invisible-scrollbar">
           <div className="flex mx-4 my-4 mb-4 space-x-4">
             <Button
-              color="primary"
               onClick={() => {
                 setLabelmapLoading(true);
                 setTimeout(() => {
@@ -194,9 +193,7 @@ export default function PanelRoiThresholdSegmentation({
             >
               {labelmapLoading ? 'loading ...' : 'New Label'}
             </Button>
-            <Button color="primary" onClick={handleROIThresholding}>
-              Run
-            </Button>
+            <Button onClick={handleROIThresholding}>Run</Button>
           </div>
           <div
             className="flex items-center justify-around h-8 mb-2 border-t outline-none cursor-pointer select-none bg-secondary-dark first:border-0 border-secondary-light"

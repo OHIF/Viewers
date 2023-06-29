@@ -308,13 +308,7 @@ function DicomUploadProgress({
             } ${
               dicomFileUploaderArr.length > 1 ? 'files' : 'file'
             } completed.`}</span>
-            <Button
-              variant="contained"
-              color="primary"
-              disabled={false}
-              className="ml-auto"
-              onClick={onComplete}
-            >
+            <Button disabled={false} className="ml-auto" onClick={onComplete}>
               {'Close'}
             </Button>
           </>
