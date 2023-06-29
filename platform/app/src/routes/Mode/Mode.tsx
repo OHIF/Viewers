@@ -329,6 +329,12 @@ export default function ModeRoute({
         commandsManager,
       });
 
+      const disableEditing = extensionManager._appConfig?.disableEditing;
+      if (disableEditing) {
+        const { toolbarService } = servicesManager.services;
+        toolbarService.disableButtonInSection('primary', 'MeasurementTools');
+      }
+
       /**
        * The next line should get all the query parameters provided by the URL
        * - except the StudyInstanceUIDs - and create an object called filters

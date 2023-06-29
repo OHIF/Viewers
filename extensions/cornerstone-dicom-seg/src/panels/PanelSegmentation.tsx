@@ -8,8 +8,14 @@ import { useTranslation } from 'react-i18next';
 export default function PanelSegmentation({
   servicesManager,
   commandsManager,
+  extensionManager,
 }) {
-  const { segmentationService, uiDialogService } = servicesManager.services;
+  const {
+    segmentationService,
+    uiDialogService,
+    uiNotificationService,
+  } = servicesManager.services;
+  const disableEditing = extensionManager._appConfig?.disableEditing;
 
   const { t } = useTranslation('PanelSegmentation');
   const [selectedSegmentationId, setSelectedSegmentationId] = useState(null);
@@ -67,6 +73,13 @@ export default function PanelSegmentation({
     };
   }, []);
 
+  const disableEditingNotification = () => {
+    uiNotificationService.show({
+      title: 'Segmentation Edit',
+      message: 'Segmentation editing is disabled in this viewer.',
+      type: 'error',
+    });
+  };
   const onSegmentationClick = (segmentationId: string) => {
     segmentationService.setActiveSegmentationForToolGroup(segmentationId);
   };
@@ -111,37 +124,49 @@ export default function PanelSegmentation({
     const segment = segmentation.segments[segmentIndex];
     const { label } = segment;
 
-    callInputDialog(uiDialogService, label, (label, actionId) => {
-      if (label === '') {
-        return;
-      }
+    callInputDialog(
+      uiDialogService,
+      'Segment',
+      'Enter the segment label',
+      label,
+      (label, actionId) => {
+        if (label === '') {
+          return;
+        }
 
-      segmentationService.setSegmentLabelForSegmentation(
-        segmentationId,
-        segmentIndex,
-        label
-      );
-    });
+        segmentationService.setSegmentLabelForSegmentation(
+          segmentationId,
+          segmentIndex,
+          label
+        );
+      }
+    );
   };
 
   const onSegmentationEdit = segmentationId => {
     const segmentation = segmentationService.getSegmentation(segmentationId);
     const { label } = segmentation;
 
-    callInputDialog(uiDialogService, label, (label, actionId) => {
-      if (label === '') {
-        return;
-      }
+    callInputDialog(
+      uiDialogService,
+      'Segmentation',
+      'Enter the segmentation label',
+      label,
+      (label, actionId) => {
+        if (label === '') {
+          return;
+        }
 
-      segmentationService.addOrUpdateSegmentation(
-        {
-          id: segmentationId,
-          label,
-        },
-        false, // suppress event
-        true // notYetUpdatedAtSource
-      );
-    });
+        segmentationService.addOrUpdateSegmentation(
+          {
+            id: segmentationId,
+            label,
+          },
+          false, // suppress event
+          true // notYetUpdatedAtSource
+        );
+      }
+    );
   };
 
   const onSegmentColorClick = (segmentationId, segmentIndex) => {
@@ -200,9 +225,13 @@ export default function PanelSegmentation({
           activeSegmentationId={selectedSegmentationId || ''}
           onSegmentationClick={onSegmentationClick}
           onSegmentationDelete={onSegmentationDelete}
-          onSegmentationEdit={onSegmentationEdit}
+          onSegmentationEdit={
+            disableEditing ? disableEditingNotification : onSegmentationEdit
+          }
           onSegmentClick={onSegmentClick}
-          onSegmentEdit={onSegmentEdit}
+          onSegmentEdit={
+            disableEditing ? disableEditingNotification : onSegmentEdit
+          }
           onSegmentColorClick={onSegmentColorClick}
           onSegmentDelete={onSegmentDelete}
           onToggleSegmentVisibility={onToggleSegmentVisibility}

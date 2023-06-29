@@ -1,7 +1,13 @@
 import React from 'react';
 import { Input, Dialog, ButtonEnums } from '@ohif/ui';
 
-function callInputDialog(uiDialogService, label, callback) {
+function callInputDialog(
+  uiDialogService,
+  dialogTitle,
+  dialogLabel,
+  inputLabel,
+  callback
+) {
   const dialogId = 'enter-segment-label';
 
   const onSubmitHandler = ({ action, value }) => {
@@ -24,8 +30,8 @@ function callInputDialog(uiDialogService, label, callback) {
       showOverlay: true,
       content: Dialog,
       contentProps: {
-        title: 'Segment',
-        value: { label },
+        title: dialogTitle,
+        value: { inputLabel },
         noCloseButton: true,
         onClose: () => uiDialogService.dismiss({ id: dialogId }),
         actions: [
@@ -36,7 +42,7 @@ function callInputDialog(uiDialogService, label, callback) {
         body: ({ value, setValue }) => {
           return (
             <Input
-              label="Enter the segment label"
+              label={dialogLabel}
               labelClassName="text-white text-[14px] leading-[1.2]"
               autoFocus
               className="bg-black border-primary-main"

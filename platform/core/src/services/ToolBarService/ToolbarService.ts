@@ -299,6 +299,14 @@ export default class ToolbarService extends PubSubService {
     };
   }
 
+  disableButtonInSection(section, buttonId) {
+    if (this.buttonSections[section]) {
+      const buttonIndex = this.buttonSections[section].indexOf(buttonId);
+      delete this.buttonSections[section][buttonIndex];
+      this._broadcastEvent(this.EVENTS.TOOL_BAR_MODIFIED, {});
+    }
+  }
+
   getButtonComponentForUIType(uiType: string) {
     return uiType
       ? this._buttonTypes()[uiType]?.defaultComponent ?? null
