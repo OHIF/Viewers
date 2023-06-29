@@ -53,6 +53,34 @@ pdfmake.vfs = pdfFonts.pdfMake.vfs;
 
 let hasRestoredState = false;
 
+export const RenderLoadingModal = () => {
+  return (
+    <div
+      style={{
+        position: 'absolute',
+        width: '100%',
+        height: '100%',
+        background: 'rgba(0,0,0,0.9)',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 8,
+      }}
+    >
+      <div
+        style={{
+          color: 'white',
+          fontWeight: 'bold',
+          fontSize: 26,
+        }}
+      >
+        Loading...
+      </div>
+    </div>
+  );
+};
+
 class Radiomics extends Component {
   static propTypes = {
     studies: PropTypes.arrayOf(
@@ -314,8 +342,10 @@ class Radiomics extends Component {
       handleScrolltoIndex(enabledElement, seriesUid);
       // handleRestoreToolState(cornerstone, enabledElement, instance_uid);
       eventBus.dispatch('completeLoadingState', {});
+      eventBus.dispatch('completeLoadingState', {});
     } catch (error) {
       console.log(error);
+      eventBus.dispatch('completeLoadingState', {});
       eventBus.dispatch('completeLoadingState', {});
     }
   };
@@ -640,7 +670,11 @@ class Radiomics extends Component {
     const text = '';
 
     return (
-      <div style={{}}>
+      <div
+        style={{
+          position: 'relative',
+        }}
+      >
         <JobsContextUtil
           series={
             this.props.studies && this.props.studies.length > 0
@@ -652,10 +686,19 @@ class Radiomics extends Component {
         />
         <div
           style={{
-            width: '100vw',
-            height: '100vh',
-            display: 'none',
-            display: this.state.isComplete ? 'none' : 'block',
+            // width: '100vw',
+            // height: '100vh',
+            position: 'absolute',
+            width: '100%',
+            height: '100%',
+            background: 'rgba(23,28,33,0.99)',
+            // display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 8,
+            // display: 'none',
+            display: this.state.isComplete ? 'none' : 'flex',
           }}
         >
           {this.state.job && this.state.job.data ? (
@@ -734,7 +777,7 @@ class Radiomics extends Component {
           className="printView"
           style={{
             paddingBottom: 140,
-            display: this.state.isComplete ? 'block' : 'none',
+            // display: this.state.isComplete ? 'block' : 'none',
           }}
         >
           <div className="container">
@@ -831,9 +874,12 @@ class Radiomics extends Component {
                     </div>
                   </div>
 
-                  <div className=" remove-padding" style={{
-                    width: '300px',
-                  }}>
+                  <div
+                    className=" remove-padding"
+                    style={{
+                      width: '300px',
+                    }}
+                  >
                     <ErrorBoundaryDialog context="RightSidePanel">
                       <div>
                         {CollageView && (

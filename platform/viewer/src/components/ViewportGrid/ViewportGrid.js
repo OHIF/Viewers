@@ -44,17 +44,17 @@ export const RenderLoadingModal = () => {
         position: 'absolute',
         width: '100%',
         height: '100%',
-        background: 'rgba(0,0,0,0.6)',
+        background: 'rgba(0,0,0,0.5)',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        zIndex: 8,
+        zIndex: 7,
       }}
     >
       <div
         style={{
-          color: 'yellow',
+          color: 'white',
           fontWeight: 'bold',
           fontSize: 26,
         }}

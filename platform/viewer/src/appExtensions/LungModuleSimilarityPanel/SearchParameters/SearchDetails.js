@@ -104,13 +104,13 @@ export const RenderLoadingModal = () => {
     <div
       style={{
         width: '100%',
-        height: '300px',
+        height: '100%',
         background: 'rgba(0,0,0,0.3)',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        zIndex: 1000,
+        zIndex:7,
       }}
     >
       <RenderLoadingIcon size={70} />

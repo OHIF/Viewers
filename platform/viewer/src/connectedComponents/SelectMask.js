@@ -290,8 +290,10 @@ class SelectMask extends Component {
       handleScrolltoIndex(enabledElement, seriesUid);
       handleRestoreToolState(cornerstone, enabledElement, instance_uid);
       eventBus.dispatch('completeLoadingState', {});
+      eventBus.dispatch('completeLoadingState', {});
     } catch (error) {
       console.log(error);
+      eventBus.dispatch('completeLoadingState', {});
       eventBus.dispatch('completeLoadingState', {});
     }
   };

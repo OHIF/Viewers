@@ -300,8 +300,10 @@ class Viewer extends Component {
       handleRestoreToolState(cornerstone, enabledElement, instance_uid);
       let viewport = cornerstone.getViewport(enabledElement);
       eventBus.dispatch('completeLoadingState', {});
+      eventBus.dispatch('completeLoadingState', {});
     } catch (error) {
       console.log(error);
+      eventBus.dispatch('completeLoadingState', {});
       eventBus.dispatch('completeLoadingState', {});
     }
   };

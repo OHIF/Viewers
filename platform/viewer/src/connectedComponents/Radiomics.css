@@ -27,10 +27,10 @@
   /* background-color: black; */
 }
 
-.container-item-extra .main-content {
+/* .container-item-extra .main-content { */
   /* Insert your styles here */
-  height: 60vh !important;
-}
+  /* height: 60vh !important; */
+/* } */
 
 .remove-padding {
   padding-bottom: 0 !important;
