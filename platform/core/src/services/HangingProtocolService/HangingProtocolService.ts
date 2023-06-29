@@ -1389,17 +1389,20 @@ export default class HangingProtocolService extends PubSubService {
     this.studies.forEach(study => {
       // Skip non-active if active only
       if (matchActiveOnly && this.activeStudy !== study) return;
+
       const studyDisplaySets = this.displaySets.filter(
-        it => it.StudyInstanceUID === study.StudyInstanceUID
+          it => it.StudyInstanceUID === study.StudyInstanceUID
       );
+
       const studyMatchDetails = this.protocolEngine.findMatch(
-        study,
-        studyMatchingRules,
-        {
-          studies: this.studies,
-          displaySets: studyDisplaySets,
-          displaySetMatchDetails: this.displaySetMatchDetails,
-        }
+          study,
+          studyMatchingRules,
+          {
+            studies: this.studies,
+            displaySets: studyDisplaySets,
+            allDisplaySets: this.displaySets,
+            displaySetMatchDetails: this.displaySetMatchDetails,
+          }
       );
 
       // Prevent bestMatch from being updated if the matchDetails' required attribute check has failed
@@ -1408,10 +1411,10 @@ export default class HangingProtocolService extends PubSubService {
       }
 
       this.debug(
-        'study',
-        study.StudyInstanceUID,
-        'display sets #',
-        studyDisplaySets.length
+          'study',
+          study.StudyInstanceUID,
+          'display sets #',
+          studyDisplaySets.length
       );
       studyDisplaySets.forEach(displaySet => {
         const {
@@ -1420,15 +1423,15 @@ export default class HangingProtocolService extends PubSubService {
           displaySetInstanceUID,
         } = displaySet;
         const seriesMatchDetails = this.protocolEngine.findMatch(
-          displaySet,
-          seriesMatchingRules,
-          // Todo: why we have images here since the matching type does not have it
-          {
-            studies: this.studies,
-            instance: displaySet.images?.[0],
-            displaySetMatchDetails: this.displaySetMatchDetails,
-            displaySets: studyDisplaySets,
-          }
+            displaySet,
+            seriesMatchingRules,
+            // Todo: why we have images here since the matching type does not have it
+            {
+              studies: this.studies,
+              instance: displaySet.images?.[0],
+              displaySetMatchDetails: this.displaySetMatchDetails,
+              displaySets: studyDisplaySets,
+            }
         );
 
         // Prevent bestMatch from being updated if the matchDetails' required attribute check has failed
