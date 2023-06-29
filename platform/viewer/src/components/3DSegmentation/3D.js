@@ -5,6 +5,7 @@ import Plot from 'react-plotly.js';
 import * as Plotly from 'plotly.js';
 import debounce from 'lodash.debounce';
 import './3d.css';
+import { RenderLoadingIcon } from '../../appExtensions/LungModuleSimilarityPanel/SearchParameters/SearchDetails';
 
 const Morphology3DComponent = React.forwardRef((props, ref) => {
   const [currentImage, setCurrentImage] = useState('');
@@ -133,6 +134,32 @@ const Morphology3DComponent = React.forwardRef((props, ref) => {
     debouncedGetImage();
   };
 
+  const RenderLoadingModal = () => {
+    return (
+      <div
+        style={{
+          width: '100%',
+          height: '600px',
+          background: 'rgba(0,0,0,0.3)',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          // zIndex: 1000,
+        }}
+      >
+        <RenderLoadingIcon size={70} />
+        <p
+          style={{
+            color: 'white',
+          }}
+        >
+          Please Wait..
+        </p>
+      </div>
+    );
+  };
+
   return (
     <section
       style={{
@@ -144,7 +171,7 @@ const Morphology3DComponent = React.forwardRef((props, ref) => {
       }}
     >
       {loadingApp ? (
-        <p>Loading 3D Morphology...</p>
+        <RenderLoadingModal />
       ) : (
         <>
           <h1
@@ -181,7 +208,8 @@ const Morphology3DComponent = React.forwardRef((props, ref) => {
           {segmentationError ? (
             <p>Error: {segmentationError}</p>
           ) : loadingGraph ? (
-            <p>Loading segmentation data...</p>
+            // <p>Loading segmentation data...</p>
+            <RenderLoadingModal />
           ) : (
             <>
               <div>

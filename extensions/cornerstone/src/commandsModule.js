@@ -30,6 +30,56 @@ const refreshCornerstoneViewports = () => {
 
 const commandsModule = ({ servicesManager }) => {
   const actions = {
+    brushUndoRedo: ({ viewports, operation }) => {
+      const enabledElement = getEnabledElement(viewports.activeViewportIndex);
+      if (!enabledElement) {
+        return;
+      }
+
+      const segmentationModule = cornerstoneTools.getModule('segmentation');
+
+      const activeLabelmapIndex = segmentationModule.getters.activeLabelmapIndex(
+        enabledElement
+      );
+      if (activeLabelmapIndex === undefined) {
+        return;
+      }
+
+      let imageIdIndices = [];
+      const { undo, redo, labelmaps2D } = segmentationModule.getters.labelmap3D(
+        enabledElement
+      );
+
+      let undoLengthBefore = undo.length;
+      let redoLengthBefore = redo.length;
+
+      if (operation === 'undo' && undo.length) {
+        undo[undo.length - 1].forEach(item =>
+          imageIdIndices.push(item.imageIdIndex)
+        );
+        segmentationModule.setters.undo(enabledElement);
+      } else if (operation === 'redo' && redo.length) {
+        redo[redo.length - 1].forEach(item =>
+          imageIdIndices.push(item.imageIdIndex)
+        );
+        segmentationModule.setters.redo(enabledElement);
+      }
+
+      // Update segments on Labelmap2D
+      imageIdIndices.forEach(imageIndex => {
+        segmentationModule.setters.updateSegmentsOnLabelmap2D(
+          labelmaps2D[imageIndex]
+        );
+      });
+
+      refreshCornerstoneViewports();
+
+      if (
+        (operation === 'undo' && undoLengthBefore > undo.length) ||
+        (operation === 'redo' && redoLengthBefore > redo.length)
+      )
+        eventBus.dispatch('brushUndoRedo', {});
+    },
     rotateViewport: ({ viewports, rotation }) => {
       const enabledElement = getEnabledElement(viewports.activeViewportIndex);
 
@@ -456,6 +506,16 @@ const commandsModule = ({ servicesManager }) => {
       commandFn: actions.triggerAlgorithm,
       storeContexts: ['viewports'],
       options: {},
+    },
+    undo: {
+      commandFn: actions.brushUndoRedo,
+      storeContexts: ['viewports'],
+      options: { operation: 'undo' },
+    },
+    redo: {
+      commandFn: actions.brushUndoRedo,
+      storeContexts: ['viewports'],
+      options: { operation: 'redo' },
     },
   };
 

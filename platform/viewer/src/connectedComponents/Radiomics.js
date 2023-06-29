@@ -655,7 +655,7 @@ class Radiomics extends Component {
             width: '100vw',
             height: '100vh',
             display: 'none',
-            // display: this.state.isComplete ? 'none' : 'block',
+            display: this.state.isComplete ? 'none' : 'block',
           }}
         >
           {this.state.job && this.state.job.data ? (
@@ -734,7 +734,7 @@ class Radiomics extends Component {
           className="printView"
           style={{
             paddingBottom: 140,
-            // display: this.state.isComplete ? 'block' : 'none',
+            display: this.state.isComplete ? 'block' : 'none',
           }}
         >
           <div className="container">
@@ -831,7 +831,9 @@ class Radiomics extends Component {
                     </div>
                   </div>
 
-                  <div className="container-item">
+                  <div className=" remove-padding" style={{
+                    width: '300px',
+                  }}>
                     <ErrorBoundaryDialog context="RightSidePanel">
                       <div>
                         {CollageView && (

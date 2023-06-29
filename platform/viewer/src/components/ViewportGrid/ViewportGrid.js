@@ -44,18 +44,17 @@ export const RenderLoadingModal = () => {
         position: 'absolute',
         width: '100%',
         height: '100%',
-        background: 'rgba(0,0,0,0.5)',
+        background: 'rgba(0,0,0,0.6)',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        zIndex: 1000,
+        zIndex: 8,
       }}
     >
-      {/* <RenderLoadingIcon size={70} /> */}
       <div
         style={{
-          color: 'white',
+          color: 'yellow',
           fontWeight: 'bold',
           fontSize: 26,
         }}
@@ -244,19 +243,19 @@ const ViewportGrid = function(props) {
       rows,
       columns,
     };
-    if (
-      location.pathname.includes('/edit')
-      // location.pathname.includes('/radionics')
-    )
-      targeDiv.addEventListener('mouseup', handleDragEnd);
+    // if (
+    //   location.pathname.includes('/edit')
+    //   // location.pathname.includes('/radionics')
+    // )
+    //   targeDiv.addEventListener('mouseup', handleDragEnd);
 
     return () => {
-      if (
-        location.pathname.includes('/edit')
-        // location.pathname.includes('/selectmask')
-        // ||location.pathname.includes('/radionics')
-      )
-        targeDiv.removeEventListener('mouseup', handleDragEnd);
+      // if (
+      //   location.pathname.includes('/edit')
+      //   // location.pathname.includes('/selectmask')
+      //   // ||location.pathname.includes('/radionics')
+      // )
+      //   targeDiv.removeEventListener('mouseup', handleDragEnd);
     };
   }, [activeViewportIndex]);
 
@@ -374,7 +373,7 @@ const ViewportGrid = function(props) {
 
   useEffect(() => {
     eventBus.on('brushUndoRedo', data => {
-      handleDragEnd({});
+      // handleDragEnd({});
     });
     // clean up eventbus
     return () => {
@@ -464,10 +463,11 @@ const ViewportGrid = function(props) {
             body: JSON.stringify(body),
           };
 
-          let response = await fetch(
-            `${radcadapi}/segmentations`,
-            requestOptions
-          );
+          // let response = await fetch(
+          //   `${radcadapi}/segmentations`,
+          //   requestOptions
+          // );
+          let response = {};
 
           UINotificationService.show({
             title: 'Segment saved successfully',
@@ -475,7 +475,7 @@ const ViewportGrid = function(props) {
             autoClose: true,
           });
           setLoading(true);
-          response = await response.json();
+          // response = await response.json();
           setLoading(false);
           console.log({ saveddata: response });
           // updateAndSaveLocalSegmentations(body);

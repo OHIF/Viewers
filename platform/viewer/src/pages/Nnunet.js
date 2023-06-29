@@ -48,7 +48,7 @@ export const getExistingSegmentations = async (series_uid, userEmail) => {
     return data;
   } catch (error) {
     console.error('Error getting existing segmentations: ', error);
-    return null;
+    return [];
   }
 };
 

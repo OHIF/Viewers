@@ -26,3 +26,14 @@
   padding: 1rem;
   /* background-color: black; */
 }
+
+.container-item-extra .main-content {
+  /* Insert your styles here */
+  height: 60vh !important;
+}
+
+.remove-padding {
+  padding-bottom: 0 !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}

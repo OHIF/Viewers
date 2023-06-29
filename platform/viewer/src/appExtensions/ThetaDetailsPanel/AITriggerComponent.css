@@ -50,8 +50,8 @@ h1 {
 }
 
 .accordion {
-  max-width: 90%;
-  margin: 2rem auto;
+  max-width: 100%;
+  /* margin: 2rem auto; */
 }
 
 .accordion-item {

@@ -246,7 +246,7 @@ function NnunetPage({ studyInstanceUIDs, seriesInstanceUIDs }) {
           if (
             data['nnUNet-3d-fullres-lung-endpoint'] === 'RUNNING' &&
             data['nnUNet-4D-Brain-lite-3modality-endpoint'] === 'RUNNING' &&
-            data['cbir-encoder'] === 'RUNNING'
+            data['cbir-siames-backbone'] === 'RUNNING'
           ) {
             setLoading(false);
             clearInterval(interval);
