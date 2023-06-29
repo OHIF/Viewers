@@ -2,7 +2,8 @@ import React, { useEffect, useCallback, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
-import { Icon, Typography } from '../';
+import Icon from '../Icon';
+import Typography from '../Typography';
 
 const Dropdown = ({ id, children, showDropdownIcon, list, titleClassName }) => {
   const [open, setOpen] = useState(false);

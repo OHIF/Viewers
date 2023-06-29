@@ -1,7 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { Thumbnail, ThumbnailNoImage, ThumbnailTracked } from '../';
+import Thumbnail from '../Thumbnail';
+import ThumbnailNoImage from '../ThumbnailNoImage';
+import ThumbnailTracked from '../ThumbnailTracked';
 import * as Types from '../../types';
 
 const ThumbnailList = ({
@@ -12,7 +14,10 @@ const ThumbnailList = ({
   activeDisplaySetInstanceUIDs = [],
 }) => {
   return (
-    <div className="py-3 bg-black overflow-y-hidden ohif-scrollbar study-min-height">
+    <div
+      id="ohif-thumbnail-list"
+      className="py-3 bg-black overflow-y-hidden ohif-scrollbar study-min-height"
+    >
       {thumbnails.map(
         ({
           displaySetInstanceUID,

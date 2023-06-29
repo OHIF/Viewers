@@ -1,4 +1,4 @@
-# This dockerfile is used to publish the `ohif/viewer` image on dockerhub.
+# This dockerfile is used to publish the `ohif/app` image on dockerhub.
 #
 # It's a good example of how to build our static application and package it
 # with a web server capable of hosting it as static content.
@@ -68,6 +68,6 @@ RUN rm /etc/nginx/conf.d/default.conf
 USER nginx
 COPY --chown=nginx:nginx .docker/Viewer-v3.x /usr/src
 RUN chmod 777 /usr/src/entrypoint.sh
-COPY --from=builder /usr/src/app/platform/viewer/dist /usr/share/nginx/html
+COPY --from=builder /usr/src/app/platform/app/dist /usr/share/nginx/html
 ENTRYPOINT ["/usr/src/entrypoint.sh"]
 CMD ["nginx", "-g", "daemon off;"]

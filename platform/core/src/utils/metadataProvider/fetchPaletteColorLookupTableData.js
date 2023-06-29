@@ -40,7 +40,7 @@ function _getPaletteColor(paletteColorLookupTableData, lutDescriptor) {
       }
     } else {
       for (let i = 0; i < numLutEntries; i++) {
-        lut[i] = byteArray[i];
+        lut[i] = arraybuffer[i];
       }
     }
     return lut;

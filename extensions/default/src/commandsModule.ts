@@ -1,16 +1,18 @@
-import { ServicesManager, utils } from '@ohif/core';
+import { ServicesManager, utils, Types } from '@ohif/core';
 
 import {
   ContextMenuController,
   defaultContextMenu,
-} from './CustomizeableContextMenu';
+} from './CustomizableContextMenu';
 import DicomTagBrowser from './DicomTagBrowser/DicomTagBrowser';
 import reuseCachedLayouts from './utils/reuseCachedLayouts';
 import findViewportsByPosition, {
   findOrCreateViewport as layoutFindOrCreate,
 } from './findViewportsByPosition';
 
-import { ContextMenuProps } from './CustomizeableContextMenu/types';
+import { ContextMenuProps } from './CustomizableContextMenu/types';
+import { NavigateHistory } from './types/commandModuleTypes';
+import { history } from '@ohif/app';
 
 const { subscribeToNextViewportGridChange } = utils;
 
@@ -19,6 +21,11 @@ export type HangingProtocolParams = {
   stageIndex?: number;
   activeStudyUID?: string;
   stageId?: string;
+};
+
+export type UpdateViewportDisplaySetParams = {
+  direction: number;
+  excludeNonImageModalities?: boolean;
 };
 
 /**
@@ -171,7 +178,7 @@ const commandsModule = ({
       reset = false,
     }: HangingProtocolParams): boolean => {
       try {
-        // Stores in the state the reuseID to displaySetUID mapping
+        // Stores in the state the display set selector id to displaySetUID mapping
         // Pass in viewportId for the active viewport.  This item will get set as
         // the activeViewportId
         const state = viewportGridService.getState();
@@ -242,6 +249,12 @@ const commandsModule = ({
           }
         }
         // Do this after successfully applying the update
+        // Note, don't store the active display set - it is only needed while
+        // changing display sets.  This causes jump to measurement to fail on
+        // multi-study display.
+        delete displaySetSelectorMap[
+          `${activeStudyUID || hpInfo.activeStudyUID}:activeDisplaySet:0`
+        ];
         stateSyncService.store(stateSyncReduce);
         // This is a default action applied
         actions.toggleHpTools(hangingProtocolService.getActiveProtocol());
@@ -480,6 +493,28 @@ const commandsModule = ({
       }
     },
 
+    /**
+     * Exposes the browser history navigation used by OHIF. This command can be used to either replace or
+     * push a new entry into the browser history. For example, the following will replace the current
+     * browser history entry with the specified relative URL which changes the study displayed to the
+     * study with study instance UID 1.2.3. Note that as a result of using `options.replace = true`, the
+     * page prior to invoking this command cannot be returned to via the browser back button.
+     *
+     * navigateHistory({
+     *   to: 'viewer?StudyInstanceUIDs=1.2.3',
+     *   options: { replace: true },
+     * });
+     *
+     * @param historyArgs - arguments for the history function;
+     *                      the `to` property is the URL;
+     *                      the `options.replace` is a boolean indicating if the current browser history entry
+     *                      should be replaced or a new entry pushed onto the history (stack); the default value
+     *                      for `replace` is false
+     */
+    navigateHistory(historyArgs: NavigateHistory) {
+      history.navigate(historyArgs.to, historyArgs.options);
+    },
+
     openDICOMTagViewer() {
       const { activeViewportIndex, viewports } = viewportGridService.getState();
       const activeViewportSpecificData = viewports[activeViewportIndex];
@@ -511,6 +546,130 @@ const commandsModule = ({
         overlays.item(i).classList.toggle('hidden');
       }
     },
+
+    scrollActiveThumbnailIntoView: () => {
+      const { activeViewportIndex, viewports } = viewportGridService.getState();
+
+      if (
+        !viewports ||
+        activeViewportIndex < 0 ||
+        activeViewportIndex > viewports.length - 1
+      ) {
+        return;
+      }
+
+      const activeViewport = viewports[activeViewportIndex];
+      const activeDisplaySetInstanceUID =
+        activeViewport.displaySetInstanceUIDs[0];
+
+      const thumbnailList = document.querySelector('#ohif-thumbnail-list');
+
+      if (!thumbnailList) {
+        return;
+      }
+
+      const thumbnailListBounds = thumbnailList.getBoundingClientRect();
+
+      const thumbnail = document.querySelector(
+        `#thumbnail-${activeDisplaySetInstanceUID}`
+      );
+
+      if (!thumbnail) {
+        return;
+      }
+
+      const thumbnailBounds = thumbnail.getBoundingClientRect();
+
+      // This only handles a vertical thumbnail list.
+      if (
+        thumbnailBounds.top >= thumbnailListBounds.top &&
+        thumbnailBounds.top <= thumbnailListBounds.bottom
+      ) {
+        return;
+      }
+
+      thumbnail.scrollIntoView({ behavior: 'smooth' });
+    },
+
+    updateViewportDisplaySet: ({
+      direction,
+      excludeNonImageModalities,
+    }: UpdateViewportDisplaySetParams) => {
+      const nonImageModalities = [
+        'SR',
+        'SEG',
+        'SM',
+        'RTSTRUCT',
+        'RTPLAN',
+        'RTDOSE',
+      ];
+
+      // Sort the display sets as per the hanging protocol service viewport/display set scoring system.
+      // The thumbnail list uses the same sorting.
+      const dsSortFn = hangingProtocolService.getDisplaySetSortFunction();
+      const currentDisplaySets = [...displaySetService.activeDisplaySets];
+
+      currentDisplaySets.sort(dsSortFn);
+
+      const { activeViewportIndex, viewports } = viewportGridService.getState();
+
+      const { displaySetInstanceUIDs } = viewports[activeViewportIndex];
+
+      const activeDisplaySetIndex = currentDisplaySets.findIndex(displaySet =>
+        displaySetInstanceUIDs.includes(displaySet.displaySetInstanceUID)
+      );
+
+      let displaySetIndexToShow: number;
+
+      for (
+        displaySetIndexToShow = activeDisplaySetIndex + direction;
+        displaySetIndexToShow > -1 &&
+        displaySetIndexToShow < currentDisplaySets.length;
+        displaySetIndexToShow += direction
+      ) {
+        if (
+          !excludeNonImageModalities ||
+          !nonImageModalities.includes(
+            currentDisplaySets[displaySetIndexToShow].Modality
+          )
+        ) {
+          break;
+        }
+      }
+
+      if (
+        displaySetIndexToShow < 0 ||
+        displaySetIndexToShow >= currentDisplaySets.length
+      ) {
+        return;
+      }
+
+      const { displaySetInstanceUID } = currentDisplaySets[
+        displaySetIndexToShow
+      ];
+
+      let updatedViewports = [];
+
+      try {
+        updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
+          activeViewportIndex,
+          displaySetInstanceUID
+        );
+      } catch (error) {
+        console.warn(error);
+        uiNotificationService.show({
+          title: 'Navigate Viewport Display Set',
+          message:
+            'The requested display sets could not be added to the viewport due to a mismatch in the Hanging Protocol rules.',
+          type: 'info',
+          duration: 3000,
+        });
+      }
+
+      viewportGridService.setDisplaySetsForViewports(updatedViewports);
+
+      setTimeout(() => actions.scrollActiveThumbnailIntoView(), 0);
+    },
   };
 
   const definitions = {
@@ -540,6 +699,11 @@ const commandsModule = ({
       storeContexts: [],
       options: {},
     },
+    navigateHistory: {
+      commandFn: actions.navigateHistory,
+      storeContexts: [],
+      options: {},
+    },
     nextStage: {
       commandFn: actions.deltaStage,
       storeContexts: [],
@@ -562,6 +726,11 @@ const commandsModule = ({
     },
     openDICOMTagViewer: {
       commandFn: actions.openDICOMTagViewer,
+    },
+    updateViewportDisplaySet: {
+      commandFn: actions.updateViewportDisplaySet,
+      storeContexts: [],
+      options: {},
     },
   };
 

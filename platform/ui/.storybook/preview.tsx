@@ -1,5 +1,4 @@
 import React from 'react';
-import { addParameters } from '@storybook/react';
 import { DocsPage, DocsContainer } from '@storybook/addon-docs';
 import {
   Heading,
@@ -13,7 +12,8 @@ import '../src/tailwind.css';
 import './custom.css';
 
 // https://github.com/mondaycom/monday-ui-react-core/tree/master/.storybook
-addParameters({
+
+export const parameters = {
   docs: {
     inlineStories: true,
     container: ({ children, context }) => (
@@ -78,6 +78,6 @@ addParameters({
       order: ['Welcome', 'Contribute', 'Foundations', 'Modals', '*'],
     },
   },
-});
+};
 
 export const decorators = [];

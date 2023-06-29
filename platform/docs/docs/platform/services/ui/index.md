@@ -58,7 +58,7 @@ The `ServicesManager` is:
 makes the context values exposed in the app, and service's `setImplementation`
 can get run to override the implementation of the service.**
 
-```js title="platform/viewer/src/App.jsx"
+```js title="platform/app/src/App.jsx"
 function App({ config, defaultExtensions }) {
   /**...**/
   /**...**/
@@ -189,7 +189,7 @@ clicking on the gear button on the right side of the header.
 
 A `simplified` code for our worklist is:
 
-```js title="platform/viewer/src/routes/WorkList/WorkList.jsx"
+```js title="platform/app/src/routes/WorkList/WorkList.jsx"
 import { useModal, Header } from '@ohif/ui';
 
 function WorkList({

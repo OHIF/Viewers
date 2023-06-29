@@ -50,7 +50,7 @@ you'll see the following:
 OHIF v3 is composed of the following components, described in detail in further
 sections:
 
-- `@ohif/viewer`: The core framework that controls extension registration, mode
+- `@ohif/app`: The core framework that controls extension registration, mode
   composition and routing.
 - `@ohif/core`: A library of useful and reusable medical imaging functionality
   for the web.
@@ -58,7 +58,7 @@ sections:
   with.
 - `Extensions`: A set of building blocks for building applications. The OHIF org
   maintains a few core libraries.
-- `Modes`: Configuration objects that tell @ohif/viewer how to compose
+- `Modes`: Configuration objects that tell @ohif/app how to compose
   extensions to build applications on different routes of the platform.
 
 ## Extensions
@@ -110,7 +110,7 @@ certain workflows.
 To summarize the difference between extensions and modes in `OHIF-v3` and
 extensions in `OHIF-v2`
 
-> - `Modes` are configuration objects that tell _@ohif/viewer_ how to compose
+> - `Modes` are configuration objects that tell _@ohif/app_ how to compose
 >   extensions to build applications on different routes of the platform.
 > - In v2 extensions are “plugins” that add functionality to a core viewer.
 > - In v3 extensions are building blocks that a mode uses to build an entire
@@ -120,7 +120,7 @@ extensions in `OHIF-v2`
 
 ## Platform
 
-### `@ohif/viewer`
+### `@ohif/app`
 
 This library is the core library which consumes modes and extensions and builds
 an application. Extensions can be passed in as app configuration and will be
@@ -195,7 +195,7 @@ new mode as well.
 <!-- prettier-ignore-start -->
 [monorepo]: https://github.com/OHIF/Viewers/issues/768
 [viewers-project]: https://github.com/OHIF/Viewers
-[viewer-npm]: https://www.npmjs.com/package/@ohif/viewer
+[viewer-npm]: https://www.npmjs.com/package/@ohif/app
 [pwa]: https://developers.google.com/web/progressive-web-apps/
 [configuration]: ../configuration/index.md
 [extensions]: ../platform/extensions/index.md

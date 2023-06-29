@@ -13,6 +13,7 @@ import Queue from './Queue';
 import isDicomUid from './isDicomUid';
 import formatDate from './formatDate';
 import formatPN from './formatPN';
+import generateAcceptHeader from './generateAcceptHeader';
 import resolveObjectPath from './resolveObjectPath';
 import hierarchicalListUtils from './hierarchicalListUtils';
 import progressTrackingUtils from './progressTrackingUtils';
@@ -33,6 +34,7 @@ import {
   seriesSortCriteria,
 } from './sortStudy';
 import { subscribeToNextViewportGridChange } from './subscribeToNextViewportGridChange';
+import { splitComma, getSplitParam } from './splitComma';
 
 // Commented out unused functionality.
 // Need to implement new mechanism for derived displaySets using the displaySetManager.
@@ -71,6 +73,9 @@ const utils = {
   roundNumber,
   downloadCSVReport,
   subscribeToNextViewportGridChange,
+  splitComma,
+  getSplitParam,
+  generateAcceptHeader,
 };
 
 export {
@@ -100,6 +105,9 @@ export {
   debounce,
   roundNumber,
   downloadCSVReport,
+  splitComma,
+  getSplitParam,
+  generateAcceptHeader,
 };
 
 export default utils;

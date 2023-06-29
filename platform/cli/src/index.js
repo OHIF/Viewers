@@ -23,7 +23,7 @@ import {
 import chalk from 'chalk';
 
 const runningDirectory = process.cwd();
-const viewerDirectory = path.resolve(runningDirectory, 'platform/viewer');
+const viewerDirectory = path.resolve(runningDirectory, 'platform/app');
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const packageJsonPath = path.join(runningDirectory, 'package.json');

@@ -67,7 +67,10 @@ const EVENTS = {
   RAW_MEASUREMENT_ADDED: 'event::raw_measurement_added',
   MEASUREMENT_REMOVED: 'event::measurement_removed',
   MEASUREMENTS_CLEARED: 'event::measurements_cleared',
-  JUMP_TO_MEASUREMENT: 'event:jump_to_measurement',
+  // Give the viewport a chance to jump to the measurement
+  JUMP_TO_MEASUREMENT_VIEWPORT: 'event:jump_to_measurement_viewport',
+  // Give the layout a chance to jump to the measurement
+  JUMP_TO_MEASUREMENT_LAYOUT: 'event:jump_to_measurement_layout',
 };
 
 const VALUE_TYPES = {
@@ -104,15 +107,17 @@ class MeasurementService extends PubSubService {
     },
   };
 
+  public static readonly EVENTS = EVENTS;
   public static VALUE_TYPES = VALUE_TYPES;
   public readonly VALUE_TYPES = VALUE_TYPES;
+
+  private measurements = new Map();
+  private unmappedMeasurements = new Set();
 
   constructor() {
     super(EVENTS);
     this.sources = {};
     this.mappings = {};
-    this.measurements = {};
-    this._jumpToMeasurementCache = {};
   }
 
   /**
@@ -120,7 +125,7 @@ class MeasurementService extends PubSubService {
    * This method should be used to add custom tool schema to the measurement service.
    * @param {Array} schema schema for validation
    */
-  addMeasurementSchemaKeys(schema) {
+  public addMeasurementSchemaKeys(schema): void {
     if (!Array.isArray(schema)) {
       schema = [schema];
     }
@@ -160,11 +165,7 @@ class MeasurementService extends PubSubService {
    * @return {Measurement[]} Array of measurements
    */
   getMeasurements() {
-    const measurements = this._arrayOfObjects(this.measurements);
-    return (
-      measurements &&
-      measurements.map(m => this.measurements[Object.keys(m)[0]])
-    );
+    return [...this.measurements.values()];
   }
 
   /**
@@ -173,18 +174,14 @@ class MeasurementService extends PubSubService {
    * @param {string} uid measurement uid
    * @return {Measurement} Measurement instance
    */
-  getMeasurement(measurementUID) {
-    let measurement = null;
-    const measurements = this.measurements[measurementUID];
-
-    if (measurements && Object.keys(measurements).length > 0) {
-      measurement = this.measurements[measurementUID];
-    }
-
-    return measurement;
+  public getMeasurement(measurementUID: string) {
+    return this.measurements.get(measurementUID);
   }
 
-  setMeasurementSelected(measurementUID, selected) {
+  public setMeasurementSelected(
+    measurementUID: string,
+    selected: boolean
+  ): void {
     const measurement = this.getMeasurement(measurementUID);
     if (!measurement) {
       return;
@@ -373,8 +370,8 @@ class MeasurementService extends PubSubService {
     }
   }
 
-  update(measurementUID, measurement, notYetUpdatedAtSource = false) {
-    if (!this.measurements[measurementUID]) {
+  update(measurementUID: string, measurement, notYetUpdatedAtSource = false) {
+    if (!this.measurements.has(measurementUID)) {
       return;
     }
 
@@ -388,7 +385,7 @@ class MeasurementService extends PubSubService {
       updatedMeasurement
     );
 
-    this.measurements[measurementUID] = updatedMeasurement;
+    this.measurements.set(measurementUID, updatedMeasurement);
 
     this._broadcastEvent(this.EVENTS.MEASUREMENT_UPDATED, {
       source: measurement.source,
@@ -470,15 +467,15 @@ class MeasurementService extends PubSubService {
       uid: internalUID,
     };
 
-    if (this.measurements[internalUID]) {
-      this.measurements[internalUID] = newMeasurement;
+    if (this.measurements.get(internalUID)) {
+      this.measurements.set(internalUID, newMeasurement);
       this._broadcastEvent(this.EVENTS.MEASUREMENT_UPDATED, {
         source,
         measurement: newMeasurement,
       });
     } else {
       log.info('Measurement added', newMeasurement);
-      this.measurements[internalUID] = newMeasurement;
+      this.measurements.set(internalUID, newMeasurement);
       this._broadcastEvent(this.EVENTS.RAW_MEASUREMENT_ADDED, {
         source,
         measurement: newMeasurement,
@@ -508,7 +505,6 @@ class MeasurementService extends PubSubService {
     if (!this._isValidSource(source)) {
       throw new Error('Invalid source.');
     }
-
     if (!annotationType) {
       throw new Error('No source annotationType provided.');
     }
@@ -537,6 +533,8 @@ class MeasurementService extends PubSubService {
       measurement = toMeasurementSchema(sourceAnnotationDetail);
       measurement.source = source;
     } catch (error) {
+      this.unmappedMeasurements.add(sourceAnnotationDetail.uid);
+
       console.log('Failed to map', error);
       throw new Error(
         `Failed to map '${sourceInfo}' measurement for annotationType ${annotationType}: ${error.message}`
@@ -558,7 +556,7 @@ class MeasurementService extends PubSubService {
       );
     }
 
-    const oldMeasurement = this.measurements[internalUID];
+    const oldMeasurement = this.measurements.get(internalUID);
 
     const newMeasurement = {
       ...oldMeasurement,
@@ -570,9 +568,9 @@ class MeasurementService extends PubSubService {
     if (oldMeasurement) {
       // TODO: Ultimately, each annotation should have a selected flag right from the soure.
       // For now, it is just added in OHIF here and in setMeasurementSelected.
-      this.measurements[internalUID] = newMeasurement;
+      this.measurements.set(internalUID, newMeasurement);
       if (isUpdate) {
-       this._broadcastEvent(this.EVENTS.MEASUREMENT_UPDATED, {
+        this._broadcastEvent(this.EVENTS.MEASUREMENT_UPDATED, {
           source,
           measurement: newMeasurement,
           notYetUpdatedAtSource: false,
@@ -586,7 +584,7 @@ class MeasurementService extends PubSubService {
       }
     } else {
       log.info('Measurement started.', newMeasurement);
-      this.measurements[internalUID] = newMeasurement;
+      this.measurements.set(internalUID, newMeasurement);
     }
 
     return newMeasurement.uid;
@@ -599,12 +597,17 @@ class MeasurementService extends PubSubService {
    * @param {MeasurementSource} source The measurement source instance
    */
   remove(measurementUID, source, eventDetails) {
-    if (!measurementUID || !this.measurements[measurementUID]) {
+    if (
+      !measurementUID ||
+      (!this.measurements.has(measurementUID) &&
+        !this.unmappedMeasurements.has(measurementUID))
+    ) {
       log.warn(`No uid provided, or unable to find measurement by uid.`);
       return;
     }
 
-    delete this.measurements[measurementUID];
+    this.unmappedMeasurements.delete(measurementUID);
+    this.measurements.delete(measurementUID);
     this._broadcastEvent(this.EVENTS.MEASUREMENT_REMOVED, {
       source,
       measurement: measurementUID,
@@ -613,10 +616,11 @@ class MeasurementService extends PubSubService {
   }
 
   clearMeasurements() {
+    this.unmappedMeasurements.clear();
+
     // Make a copy of the measurements
-    const measurements = { ...this.measurements };
-    this.measurements = {};
-    this._jumpToMeasurementCache = {};
+    const measurements = [...this.measurements.values()];
+    this.measurements.clear();
     this._broadcastEvent(this.EVENTS.MEASUREMENTS_CLEARED, { measurements });
   }
 
@@ -629,27 +633,39 @@ class MeasurementService extends PubSubService {
     this.clearMeasurements();
   }
 
-  jumpToMeasurement(viewportIndex, measurementUID) {
-    const measurement = this.measurements[measurementUID];
+  /**
+   * This method calls the subscriptions for JUMP_TO_MEASUREMENT_VIEWPORT
+   * and JUMP_TO_MEASUREMENT_LAYOUT.  There are two events which are
+   * fired because there are two different items which might want to handle
+   * the event.  First, there might already be a viewport which can handle
+   * the event.  If so, then the layout doesn't need to necessarily change.
+   * This is communicated by the isConsumed value on the event itself.
+   * Otherwise, the layout itself may need to be navigated to in order
+   * to provide a viewport which can show the given measurement.
+   *
+   * When a viewport decides to apply the event, it should call the consume()
+   * method on the event, so that other listeners know they do not need to
+   * navigate.  This does NOT affect whether the layout event is fired, and
+   * merely causes it to fire the event with the isConsumed set to true.
+   */
+
+  public jumpToMeasurement(
+    viewportIndex: number,
+    measurementUID: string
+  ): void {
+    const measurement = this.measurements.get(measurementUID);
 
     if (!measurement) {
       log.warn(`No measurement uid, or unable to find by uid.`);
       return;
     }
-    this._addJumpToMeasurement(viewportIndex, measurementUID);
-
-    this._broadcastEvent(this.EVENTS.JUMP_TO_MEASUREMENT, {
+    const consumableEvent = this.createConsumableEvent({
       viewportIndex,
       measurement,
     });
-  }
 
-  getJumpToMeasurement(viewportIndex) {
-    return this._jumpToMeasurementCache[viewportIndex];
-  }
-
-  removeJumpToMeasurement(viewportIndex) {
-    delete this._jumpToMeasurementCache[viewportIndex];
+    this._broadcastEvent(EVENTS.JUMP_TO_MEASUREMENT_VIEWPORT, consumableEvent);
+    this._broadcastEvent(EVENTS.JUMP_TO_MEASUREMENT_LAYOUT, consumableEvent);
   }
 
   _getSourceUID(name, version) {
@@ -662,10 +678,6 @@ class MeasurementService extends PubSubService {
     });
 
     return sourceUID;
-  }
-
-  _addJumpToMeasurement(viewportIndex, measurementUID) {
-    this._jumpToMeasurementCache[viewportIndex] = measurementUID;
   }
 
   _getMappingByMeasurementSource(measurement, annotationType) {
