@@ -109,10 +109,10 @@ If both the [volume mounting method](#volume-mounting) and the [environment vari
 
 ### Embedding in an iframe
 
-If the OHIF instance served by the Docker image is to be embedded in an `iframe`, and if  [cross-origin isolation]{} is required, then the [Cross Origin Resource Policy header value (CORP)](https://github.com/OHIF/Viewers/blob/8a8ae237d26faf123abeb073cbf0cd426c3e9ef2/.docker/Viewer-v3.x/default.conf.template#L9) that OHIF is served with will have to be updated accordingly. More information on CORP and `iframe`s can be found [here]().
+If the OHIF instance served by the Docker image is to be embedded in an `iframe`, and if  [cross-origin isolation](./cors.md#cross-origin-isolation) is required, then the [Cross Origin Resource Policy header value (CORP)](https://github.com/OHIF/Viewers/blob/8a8ae237d26faf123abeb073cbf0cd426c3e9ef2/.docker/Viewer-v3.x/default.conf.template#L10) that OHIF is served with will have to be updated accordingly. More information on CORP and `iframe`s can be found [here](./cors.md#ohif-as-a-cross-origin-resource-in-an-iframe).
 
 :::tip
-For SSL Docker deployments, the CORP header value is set [here]().
+For SSL Docker deployments, the CORP header value is set [here](https://github.com/OHIF/Viewers/blob/8a8ae237d26faf123abeb073cbf0cd426c3e9ef2/.docker/Viewer-v3.x/default.ssl.conf.template#L12).
 :::
 
 ## SSL
@@ -122,7 +122,7 @@ We make no claims or guarantees regarding this section concerning security. If i
 :::
 
 ### Why SSL?
-As described [here](), OHIF must be used in a [secure context]() in order to fully leverage all of OHIF's capabilities. Whenever OHIF is not running in a secure context and is navigated to using OHIF's server IP address (e.g. `http://192.168.1.162:3000`) or domain name (e.g. `http://my.ohif.server`) then the following popup message will be displayed in OHIF
+As described [here](./cors.md#cross-origin-information-for-ohif), OHIF must be used in a [secure context](./cors.md#secure-context) in order to fully leverage all of OHIF's capabilities. Whenever OHIF is not running in a secure context and is navigated to using OHIF's server IP address (e.g. `http://192.168.1.162:3000`) or domain name (e.g. `http://my.ohif.server`) then the following popup message will be displayed in OHIF
 
 ![OHIF in non-secure context](../assets/img/ohif-non-secure-context.png)
 
@@ -156,7 +156,7 @@ docker run -d -e SSL_PORT=443 -p 3003:443/tcp -v /path/to/certificate:/etc/ssl/c
 ```
 
 :::caution
-The above deploys OHIF over SSL using `nginx`'s default SSL configuration. For further OHIF server hardening and security configuration, consider enlisting an expert and then editing OHIF's `nginx` [SSL template configuration file]() with further [security settings](https://nginx.org/en/docs/http/ngx_http_ssl_module.html) and [tweaks](http://nginx.org/en/docs/http/configuring_https_servers.html) and then [build a new Docker image](#building-the-docker-image) from there.
+The above deploys OHIF over SSL using `nginx`'s default SSL configuration. For further OHIF server hardening and security configuration, consider enlisting an expert and then editing OHIF's `nginx` [SSL template configuration file](https://github.com/OHIF/Viewers/blob/8a8ae237d26faf123abeb073cbf0cd426c3e9ef2/.docker/Viewer-v3.x/default.ssl.conf.template) with further [security settings](https://nginx.org/en/docs/http/ngx_http_ssl_module.html) and [tweaks](http://nginx.org/en/docs/http/configuring_https_servers.html) and then [build a new Docker image](#building-the-docker-image) from there.
 :::
 
 :::caution
