@@ -112,8 +112,7 @@ function getMappedAnnotations(annotation, displaySetService) {
     );
 
     const { SeriesNumber } = displaySet;
-    const { length, width } = targetStats;
-    const unit = 'mm';
+    const { length, width, unit } = targetStats;
 
     annotations.push({
       SeriesInstanceUID,
@@ -143,9 +142,9 @@ function _getReport(mappedAnnotations, points, FrameOfReferenceUID) {
   values.push('Cornerstone:Bidirectional');
 
   mappedAnnotations.forEach(annotation => {
-    const { length, width } = annotation;
-    columns.push(`Length (mm)`, `Width (mm)`);
-    values.push(length, width);
+    const { length, width, unit } = annotation;
+    columns.push(`Length`, `Width`, 'Unit');
+    values.push(length, width, unit);
   });
 
   if (FrameOfReferenceUID) {
@@ -178,6 +177,7 @@ function getDisplayText(mappedAnnotations, displaySet) {
   const {
     length,
     width,
+    unit,
     SeriesNumber,
     SOPInstanceUID,
     frameNumber,
@@ -198,9 +198,9 @@ function getDisplayText(mappedAnnotations, displaySet) {
   const frameText = displaySet.isMultiFrame ? ` F: ${frameNumber}` : '';
 
   displayText.push(
-    `L: ${roundedLength} mm (S: ${SeriesNumber}${instanceText}${frameText})`
+    `L: ${roundedLength} ${unit} (S: ${SeriesNumber}${instanceText}${frameText})`
   );
-  displayText.push(`W: ${roundedWidth} mm`);
+  displayText.push(`W: ${roundedWidth} ${unit}`);
 
   return displayText;
 }
