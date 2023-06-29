@@ -19,9 +19,11 @@ import { Command, Commands } from '../types/Command';
  * to extend this class, please check it's source before adding new methods.
  */
 export class CommandsManager {
-  constructor({} = {}) {
-    this.contexts = {};
-  }
+  private contexts: Record<string, unknown> = {};
+  /** Defines the context names to use, in priority order, first is first searched */
+  private contextNames: string[];
+
+  constructor() { }
 
   /**
    * Allows us to create commands "per context". An example would be the "Cornerstone"
@@ -98,43 +100,49 @@ export class CommandsManager {
     context[commandName] = definition;
   }
 
+  /** Gets the context names, in the order of first being the first one to search for */
+  getContextNames(): string[] {
+    return this.contextNames || Object.keys(this.contexts);
+  }
+
+  /** Sets the context names */
+  public setContextNames(contextNames: string[]): void {
+    this.contextNames = contextNames;
+  }
+
+  public onModeEnter(): void {
+    this.setContextNames(null);
+  }
+
   /**
    * Finds a command with the provided name if it exists in the specified context,
-   * or a currently active context.
+   * or the first version found in the context order.
    *
    * @method
    * @param {String} commandName - Command to find
    * @param {String} [contextName] - Specific command to look in. Defaults to current activeContexts
    */
   getCommand = (commandName: string, contextName?: string) => {
-    const contexts = [];
+    let contexts = [];
 
     if (contextName) {
       const context = this.getContext(contextName);
-      if (context) {
-        contexts.push(context);
-      }
+      if (context) contexts.push(context);
     } else {
-      Object.keys(this.contexts).forEach(contextName => {
-        contexts.push(this.getContext(contextName));
-      });
+      contexts = this.getContextNames();
     }
 
     if (contexts.length === 0) {
       return;
     }
 
-    let foundCommand;
-    contexts.forEach(context => {
-      if (context[commandName]) {
-        foundCommand = context[commandName];
-      }
-    });
-
-    return foundCommand;
+    return contexts.map(it => this.contexts[it]).find(it => it[commandName]);
   };
 
   /**
+   * Runs the command named 'commandName'
+   * If the contextName is provided, it will look only in that given context,
+   * otherwise it looks in the contextNames in order.
    *
    * @method
    * @param {String} commandName
