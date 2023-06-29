@@ -1640,10 +1640,10 @@
   resolved "https://registry.yarnpkg.com/@cornerstonejs/codec-openjph/-/codec-openjph-2.4.2.tgz#e96721d56f6ec96f7f95c16321d88cc8467d8d81"
   integrity sha512-lgdvBvvNezleY+4pIe2ceUsJzlZe/0PipdeubQ3vZZOz3xxtHHMR1XFCl4fgd8gosR8COHuD7h6q+MwgrwBsng==
 
-"@cornerstonejs/core@^1.2.4":
-  version "1.2.4"
-  resolved "https://registry.npmjs.org/@cornerstonejs/core/-/core-1.2.4.tgz#98c480f0db3cc98477f1160b47e8c686357e794b"
-  integrity sha512-CRrpn744m8e6damEdJaE6spF1C7/qS/h2OZiaHQnobDkJHdnSU8JHcPeP4NuMI0eRjk8NL/nGadVF4YXDOSppg==
+"@cornerstonejs/core@^1.2.4", "@cornerstonejs/core@^1.2.8":
+  version "1.2.8"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/core/-/core-1.2.8.tgz#e84ecf74cba66085f342a03965f3d73111bb4948"
+  integrity sha512-7RPIxXiMt9Ud5PWZ3+fVYJRhCzObbb4emaQvQ3dPo30xLyU7EcNDEyLjIezJfJHAMOHKQo9SnsoUQz+8YmdXSQ==
   dependencies:
     "@kitware/vtk.js" "27.3.1"
     detect-gpu "^5.0.22"
@@ -1671,12 +1671,12 @@
   dependencies:
     "@cornerstonejs/core" "^1.2.4"
 
-"@cornerstonejs/tools@^1.2.4":
-  version "1.2.4"
-  resolved "https://registry.npmjs.org/@cornerstonejs/tools/-/tools-1.2.4.tgz#292cc0782158811ab623ee96fb2ba9d7e2fd22e6"
-  integrity sha512-EM2wf1unzMZ5RPj5hCZP5SDarOO8P1uK9ORZ3aEKL0q+d0xdirKTzazp38cC+Deavda460Q9KmaHCPTtSHfE1g==
+"@cornerstonejs/tools@^1.2.8":
+  version "1.2.8"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/tools/-/tools-1.2.8.tgz#8979a40cf53a4a2a648ef8c0fc24ef15603a0f9a"
+  integrity sha512-E3+UOgl/DRNvvxTJziMoEa6uudKSGr/JFL5k9HvjU2HtGm4kdpYNo9lGnsTqeuUZ2xrPnUZFLYHVwF1WVegoEw==
   dependencies:
-    "@cornerstonejs/core" "^1.2.4"
+    "@cornerstonejs/core" "^1.2.8"
     lodash.clonedeep "4.5.0"
     lodash.get "^4.4.2"
 
