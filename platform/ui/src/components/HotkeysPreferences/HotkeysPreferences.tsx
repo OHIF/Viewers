@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import { HotkeyField, Typography } from '../';
 import { useTranslation } from 'react-i18next';
+
+import HotkeyField from '../HotkeyField';
+import Typography from '../Typography';
 
 /* TODO: Move these configs and utils to core? */
 import { MODIFIER_KEYS } from './hotkeysConfig';

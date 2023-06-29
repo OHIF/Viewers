@@ -2,7 +2,9 @@ import React from 'react';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import { useDrag } from 'react-dnd';
-import { Icon, Tooltip, Typography } from '../';
+import Icon from '../Icon';
+import Tooltip from '../Tooltip';
+import Typography from '../Typography';
 
 const ThumbnailNoImage = ({
   displaySetInstanceUID,

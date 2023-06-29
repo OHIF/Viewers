@@ -2,7 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 
-import { Button, Icon, Typography, InputGroup } from '../';
+import LegacyButton from '../LegacyButton';
+import Icon from '../Icon';
+import Typography from '../Typography';
+import InputGroup from '../InputGroup';
 
 const StudyListFilter = ({
   filtersMeta,
@@ -45,8 +48,9 @@ const StudyListFilter = ({
                 )}
               </div>
               <div className="flex flex-row">
+                {/* TODO revisit the completely rounded style of button used for clearing the study list filter - for now use LegacyButton*/}
                 {isFiltering && (
-                  <Button
+                  <LegacyButton
                     rounded="full"
                     variant="outlined"
                     color="primaryActive"
@@ -56,7 +60,7 @@ const StudyListFilter = ({
                     onClick={clearFilters}
                   >
                     {t('ClearFilters')}
-                  </Button>
+                  </LegacyButton>
                 )}
                 <Typography
                   variant="h4"

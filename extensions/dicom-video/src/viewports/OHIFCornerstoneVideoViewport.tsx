@@ -29,6 +29,7 @@ function OHIFCornerstoneVideoViewport({ displaySets }) {
         controlsList="nodownload"
         preload="auto"
         className="w-full h-full"
+        crossOrigin="anonymous"
       >
         <source src={url} type={mimeType} />
         <source src={url} type={mimeType} />

@@ -13,8 +13,9 @@ import { id } from './id.js';
 import preRegistration from './init';
 import {
   ContextMenuController,
-  CustomizeableContextMenuTypes,
-} from './CustomizeableContextMenu';
+  CustomizableContextMenuTypes,
+} from './CustomizableContextMenu';
+import * as dicomWebUtils from './DicomWebDataSource/utils';
 
 const defaultExtension: Types.Extensions.Extension = {
   /**
@@ -47,6 +48,7 @@ export default defaultExtension;
 
 export {
   ContextMenuController,
-  CustomizeableContextMenuTypes,
+  CustomizableContextMenuTypes,
   getStudiesForPatientByMRN,
+  dicomWebUtils,
 };

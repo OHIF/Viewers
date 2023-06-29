@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
-import { Icon, InputRange, CheckBox, InputNumber } from '../';
 import classNames from 'classnames';
+
+import Icon from '../Icon';
+import InputRange from '../InputRange';
+import CheckBox from '../CheckBox';
+import InputNumber from '../InputNumber';
 
 const ActiveSegmentationConfig = ({
   config,

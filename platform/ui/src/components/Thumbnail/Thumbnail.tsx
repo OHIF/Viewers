@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { useDrag } from 'react-dnd';
-import { Icon } from '../';
+import Icon from '../Icon';
 import { StringNumber } from '../../types';
 
 /**
@@ -63,6 +63,7 @@ const Thumbnail = ({
               src={imageSrc}
               alt={imageAltText}
               className="object-none min-h-32"
+              crossOrigin="anonymous"
             />
           ) : (
             <div>{imageAltText}</div>

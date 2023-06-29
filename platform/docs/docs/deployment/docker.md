@@ -6,9 +6,6 @@ sidebar_position: 4
 
 The OHIF source code provides a Dockerfile to create and run a Docker image that containerizes an [nginx](https://www.nginx.com/) web server serving the OHIF Viewer.
 
-:::info Good to Know
-The OHIF Viewer Docker image for the `v3-stable` branch is not yet published. The available image in [Docker Hub](https://hub.docker.com/r/ohif/viewer) is based on the `master` branch.
-:::
 
 ## Prequisites
 The machine on which to build and run the Docker container must have:
@@ -45,4 +42,12 @@ The Dockerfile and entry point use the `${PORT}` environment variable as the por
 
 ```sh
 docker run -d -e PORT=8080 -p 3000:8080/tcp --name ohif-viewer-container ohif-viewer-image
+```
+
+### Configuring the OHIF config file
+
+The OHIF [config file](../configuration/configurationFiles.md) to use can be specified by mounting it as a volume for the Docker container using the `-v` flag. If the OHIF config file is on the local file system then it can be specified as below. Note that depending on the version of Docker, an absolute path to the config file might be required.
+
+```sh
+docker run -d -p 3000:80/tcp -v /path/to/config/file.js:/usr/share/nginx/html/app-config.js --name ohif-viewer-container ohif-viewer-image
 ```

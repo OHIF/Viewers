@@ -1,14 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import getGridWidthClass from '../../utils/getGridWidthClass'
+import getGridWidthClass from '../../utils/getGridWidthClass';
 
-import {
-  InputText,
-  InputDateRange,
-  InputMultiSelect,
-  InputLabelWrapper,
-} from '../';
+import InputText from '../InputText';
+import InputDateRange from '../InputDateRange';
+import InputMultiSelect from '../InputMultiSelect';
+import InputLabelWrapper from '../InputLabelWrapper';
 
 const InputGroup = ({
   inputMeta,

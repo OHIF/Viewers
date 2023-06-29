@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
-import { HangingProtocolService, utils } from '@ohif/core';
+import { utils } from '@ohif/core';
 import {
   StudyBrowser,
   useImageViewer,
   useViewportGrid,
   Dialog,
+  ButtonEnums,
 } from '@ohif/ui';
 import { useTrackedMeasurements } from '../../getContextModule';
 
@@ -29,6 +31,8 @@ function PanelStudyBrowserTracking({
     hangingProtocolService,
     uiNotificationService,
   } = servicesManager.services;
+
+  const { t } = useTranslation('Common');
 
   // Normally you nest the components so the tree isn't so deep, and the data
   // doesn't have to have such an intense shape. This works well enough for now.
@@ -133,7 +137,7 @@ function PanelStudyBrowserTracking({
       const actuallyMappedStudies = mappedStudies.map(qidoStudy => {
         return {
           studyInstanceUid: qidoStudy.StudyInstanceUID,
-          date: formatDate(qidoStudy.StudyDate),
+          date: formatDate(qidoStudy.StudyDate) || t('NoStudyDate'),
           description: qidoStudy.StudyDescription,
           modalities: qidoStudy.ModalitiesInStudy,
           numInstances: qidoStudy.NumInstances,
@@ -507,11 +511,15 @@ function _mapDisplaySets(
                   </div>
                 ),
                 actions: [
-                  { id: 'cancel', text: 'Cancel', type: 'secondary' },
+                  {
+                    id: 'cancel',
+                    text: 'Cancel',
+                    type: ButtonEnums.type.secondary,
+                  },
                   {
                     id: 'yes',
                     text: 'Yes',
-                    type: 'primary',
+                    type: ButtonEnums.type.primary,
                     classes: ['reject-yes-button'],
                   },
                 ],

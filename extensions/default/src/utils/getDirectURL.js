@@ -1,10 +1,4 @@
-import {
-  DicomMetadataStore,
-  IWebApiDataSource,
-  utils,
-  errorHandler,
-  classes,
-} from '@ohif/core';
+import { utils } from '@ohif/core';
 
 /**
  * Generates a URL that can be used for direct retrieve of the bulkdata
@@ -57,31 +51,19 @@ const getDirectURL = (config, params) => {
   const BulkDataURI =
     (value && value.BulkDataURI) ||
     `series/${SeriesInstanceUID}/instances/${SOPInstanceUID}${defaultPath}`;
-  const hasQuery = BulkDataURI.indexOf('?') != -1;
-  const hasAccept = BulkDataURI.indexOf('accept=') != -1;
+  const hasQuery = BulkDataURI.indexOf('?') !== -1;
+  const hasAccept = BulkDataURI.indexOf('accept=') !== -1;
   const acceptUri =
     BulkDataURI +
     (hasAccept ? '' : (hasQuery ? '&' : '?') + `accept=${defaultType}`);
-  if (BulkDataURI.indexOf('http') === 0) {
-    if (tag === 'PixelData' || tag === 'EncapsulatedDocument') {
-      return `${wadoRoot}/studies/${StudyInstanceUID}/series/${SeriesInstanceUID}/instances/${SOPInstanceUID}/rendered`;
-    } else {
-      return acceptUri;
-    }
+
+  if (tag === 'PixelData' || tag === 'EncapsulatedDocument') {
+    return `${wadoRoot}/studies/${StudyInstanceUID}/series/${SeriesInstanceUID}/instances/${SOPInstanceUID}/rendered`;
   }
-  if (BulkDataURI.indexOf('/') === 0) {
-    return wadoRoot + acceptUri;
-  }
-  if (BulkDataURI.indexOf('series/') == 0) {
-    return `${wadoRoot}/studies/${StudyInstanceUID}/${acceptUri}`;
-  }
-  if (BulkDataURI.indexOf('instances/') === 0) {
-    return `${wadoRoot}/studies/${StudyInstanceUID}/series/${SeriesInstanceUID}/${acceptUri}`;
-  }
-  if (BulkDataURI.indexOf('bulkdata/') === 0) {
-    return `${wadoRoot}/studies/${StudyInstanceUID}/${acceptUri}`;
-  }
-  throw new Error('BulkDataURI in unknown format:' + BulkDataURI);
+
+  // The DICOMweb standard states that the default is multipart related, and then
+  // separately states that the accept parameter is the URL parameter equivalent of the accept header.
+  return acceptUri;
 };
 
 export default getDirectURL;

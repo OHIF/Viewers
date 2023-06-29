@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { LegacyViewportActionBar, Notification } from '../';
+import LegacyViewportActionBar from '../LegacyViewportActionBar';
+import Notification from '../Notification';
 
 const Viewport = ({
   viewportId,

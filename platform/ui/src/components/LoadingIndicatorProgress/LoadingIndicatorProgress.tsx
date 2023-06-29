@@ -1,6 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
-import { Icon } from '@ohif/ui';
+
+import Icon from '../Icon';
 import ProgressLoadingBar from '../ProgressLoadingBar';
 
 /**
@@ -19,7 +20,7 @@ function LoadingIndicatorProgress({ className, textBlock, progress }) {
     >
       <Icon name="loading-ohif-mark" className="text-white w-12 h-12" />
       <div className="w-48">
-        <ProgressLoadingBar></ProgressLoadingBar>
+        <ProgressLoadingBar progress={progress} />
       </div>
       {textBlock}
     </div>
