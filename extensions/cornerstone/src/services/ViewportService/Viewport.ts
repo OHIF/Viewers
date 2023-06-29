@@ -198,7 +198,9 @@ class ViewportInfo {
     // via cornerstoneViewportService
     let viewportData = this.getViewportData();
 
-    if (viewportData.viewportType === Enums.ViewportType.ORTHOGRAPHIC) {
+    if (viewportData.viewportType === Enums.ViewportType.ORTHOGRAPHIC ||
+        viewportData.viewportType === Enums.ViewportType.VOLUME_3D
+    ) {
       viewportData = viewportData as VolumeViewportData;
       return viewportData.data.some(
         ({ displaySetInstanceUID: dsUID }) => dsUID === displaySetInstanceUID
