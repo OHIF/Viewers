@@ -220,7 +220,7 @@ function modeFactory({ modeConfiguration }) {
           return {
             id: ohif.layout,
             props: {
-              // leftPanels: [ohif.thumbnailList],
+              leftPanels: [ohif.thumbnailList],
               rightPanels: [tmtv.ROIThresholdPanel, tmtv.petSUV],
               viewports: [
                 {
