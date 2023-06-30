@@ -57,22 +57,22 @@ const ThumbnailNoImage = ({
               </div>
             </Tooltip>
             <span className="ml-4 text-base text-blue-300">{seriesDate}</span>
-            {messages.size() && (
+            {messages?.size() ? (
               <div>
                 <Tooltip
-                  position="bottom"
+                  position="left"
+                  tight={true}
                   content={
                     <div className="text-left max-w-40">
                       {messages.thumbnailContents()}
                     </div>
                   }
                 >
-                  <Icon
-                    name="notifications-warning"
-                    className="text-white py-2"
-                  />
+                  <Icon name="notifications-warning" className="w-3 h-3" />
                 </Tooltip>
               </div>
+            ) : (
+              <></>
             )}
           </div>
           <div className="flex flex-row">

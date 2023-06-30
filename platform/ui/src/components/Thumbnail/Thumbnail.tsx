@@ -80,7 +80,7 @@ const Thumbnail = ({
             <Icon name={countIcon || 'group-layers'} className="w-3 mr-2" />
             {` ${numInstances}`}
           </div>
-          {messages.size() ? (
+          {messages?.size() ? (
             <div>
               <Tooltip
                 position="left"
