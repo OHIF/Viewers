@@ -95,13 +95,13 @@ See the [MDN CORS article](https://developer.mozilla.org/en-US/docs/Web/HTTP/COR
 The header that mostly concerns OHIF is listed below and should be configured accordingly on the DICOMweb server or any data source that OHIF would make XMLHttpRequests to for its data.
 
 ```http
-Access-Control-Allow-Origin: <origin> | *
+Access-Control-Allow-Origin: `<origin>` | *
 ```
 
 :::tip
 The `Access-Control-Allow-Origin` header specifies which origins can access the served resource embedded in the response.
 
-Either a single, specific origin (i.e. <origin>) can be specified or ALL origins (i.e. *)
+Either a single, specific origin (i.e. `<origin>`) can be specified or ALL origins (i.e. *)
 
 See [MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS#access-control-allow-origin) for more information.
 :::
