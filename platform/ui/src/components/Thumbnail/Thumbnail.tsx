@@ -5,7 +5,6 @@ import { useDrag } from 'react-dnd';
 import Icon from '../Icon';
 import Tooltip from '../Tooltip';
 import { StringNumber } from '../../types';
-import getWarningsContent from '../../utils/getWarningsContent';
 
 /**
  * Display a thumbnail for a display set.
@@ -19,7 +18,7 @@ const Thumbnail = ({
   seriesNumber,
   numInstances,
   countIcon,
-  warnings,
+  messages,
   dragData,
   isActive,
   onClick,
@@ -81,14 +80,14 @@ const Thumbnail = ({
             <Icon name={countIcon || 'group-layers'} className="w-3 mr-2" />
             {` ${numInstances}`}
           </div>
-          {warnings?.length ? (
+          {messages.size() ? (
             <div>
               <Tooltip
                 position="left"
                 tight={true}
                 content={
                   <div className="text-left max-w-40">
-                    {getWarningsContent(warnings)}
+                    {messages.thumbnailContents()}
                   </div>
                 }
               >
@@ -124,7 +123,7 @@ Thumbnail.propTypes = {
   description: PropTypes.string.isRequired,
   seriesNumber: StringNumber.isRequired,
   numInstances: PropTypes.number.isRequired,
-  warnings: PropTypes.array,
+  messages: PropTypes.object,
   isActive: PropTypes.bool.isRequired,
   onClick: PropTypes.func.isRequired,
   onDoubleClick: PropTypes.func.isRequired,

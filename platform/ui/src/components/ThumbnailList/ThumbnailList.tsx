@@ -34,7 +34,7 @@ const ThumbnailList = ({
           canReject,
           onReject,
           imageSrc,
-          warnings,
+          messages,
           imageAltText,
         }) => {
           const isActive = activeDisplaySetInstanceUIDs.includes(
@@ -53,7 +53,7 @@ const ThumbnailList = ({
                   countIcon={countIcon}
                   imageSrc={imageSrc}
                   imageAltText={imageAltText}
-                  warnings={warnings}
+                  messages={messages}
                   viewportIdentificator={viewportIdentificator}
                   isActive={isActive}
                   onClick={() => onThumbnailClick(displaySetInstanceUID)}
@@ -74,7 +74,7 @@ const ThumbnailList = ({
                   countIcon={countIcon}
                   imageSrc={imageSrc}
                   imageAltText={imageAltText}
-                  warnings={warnings}
+                  messages={messages}
                   viewportIdentificator={viewportIdentificator}
                   isTracked={isTracked}
                   isActive={isActive}
@@ -94,7 +94,7 @@ const ThumbnailList = ({
                   dragData={dragData}
                   modality={modality}
                   modalityTooltip={_getModalityTooltip(modality)}
-                  warnings={warnings}
+                  messages={messages}
                   seriesDate={seriesDate}
                   description={description}
                   canReject={canReject}

@@ -16,7 +16,7 @@ const ThumbnailTracked = ({
   seriesNumber,
   numInstances,
   countIcon,
-  warnings,
+  messages,
   dragData,
   onClick,
   onDoubleClick,
@@ -120,7 +120,7 @@ const ThumbnailTracked = ({
         dragData={dragData}
         description={description}
         seriesNumber={seriesNumber}
-        warnings={warnings}
+        messages={messages}
         numInstances={numInstances}
         countIcon={countIcon}
         isActive={isActive}
@@ -155,7 +155,7 @@ ThumbnailTracked.propTypes = {
   onClickUntrack: PropTypes.func.isRequired,
   viewportIdentificator: PropTypes.array,
   isTracked: PropTypes.bool,
-  warnings: PropTypes.array,
+  messages: PropTypes.object,
   isActive: PropTypes.bool.isRequired,
 };
 

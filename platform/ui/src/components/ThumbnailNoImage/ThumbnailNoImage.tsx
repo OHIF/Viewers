@@ -5,7 +5,6 @@ import { useDrag } from 'react-dnd';
 import Icon from '../Icon';
 import Tooltip from '../Tooltip';
 import Typography from '../Typography';
-import getWarningsContent from '../../utils/getWarningsContent';
 
 const ThumbnailNoImage = ({
   displaySetInstanceUID,
@@ -17,7 +16,7 @@ const ThumbnailNoImage = ({
   onDoubleClick,
   canReject,
   onReject,
-  warnings,
+  messages,
   dragData,
   isActive,
 }) => {
@@ -58,13 +57,13 @@ const ThumbnailNoImage = ({
               </div>
             </Tooltip>
             <span className="ml-4 text-base text-blue-300">{seriesDate}</span>
-            {warnings?.length && (
+            {messages.size() && (
               <div>
                 <Tooltip
                   position="bottom"
                   content={
                     <div className="text-left max-w-40">
-                      {getWarningsContent(warnings)}
+                      {messages.thumbnailContents()}
                     </div>
                   }
                 >
@@ -115,7 +114,7 @@ ThumbnailNoImage.propTypes = {
   seriesDate: PropTypes.string.isRequired,
   onClick: PropTypes.func.isRequired,
   onDoubleClick: PropTypes.func.isRequired,
-  warnings: PropTypes.array,
+  messages: PropTypes.object,
   isActive: PropTypes.bool.isRequired,
 };
 
