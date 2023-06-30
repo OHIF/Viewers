@@ -1,7 +1,14 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import PropTypes, { array } from 'prop-types';
-import { Button, Select, InputDoubleRange, Label, Icon } from '@ohif/ui';
+import {
+  Button,
+  Select,
+  InputDoubleRange,
+  Label,
+  Icon,
+  FramePanel,
+} from '@ohif/ui';
 import { useCine, useViewportGrid } from '@ohif/ui';
 import { cache, utilities as csUtils, volumeLoader } from '@cornerstonejs/core';
 import {
@@ -271,7 +278,7 @@ export default function PanelGenerateImage({
         <Button color="primary" onClick={returnTo4D}>
           Return To 4D
         </Button>
-        <div className="flex space-between">
+        <div className="flex justify-between">
           <Button
             onClick={() => {
               dynamicVolume.timePointIndex = rangeValues[0] - 1;
@@ -280,6 +287,7 @@ export default function PanelGenerateImage({
             color="primary"
             border="primary"
             fullWidth={true}
+            className="flex-grow"
           >
             {'First Frame'}
           </Button>
@@ -291,11 +299,12 @@ export default function PanelGenerateImage({
             color="primary"
             border="primary"
             fullWidth={true}
+            className="flex-grow"
           >
             {'Last Frame'}
           </Button>
         </div>
-        <div className="flex space-between">
+        <div className="flex justify-between">
           <Button
             onClick={handlePlay}
             variant="contained"
@@ -303,6 +312,7 @@ export default function PanelGenerateImage({
             border="primary"
             startIcon={<Icon name="icon-play" />}
             fullWidth={true}
+            className="flex-grow"
           >
             Play
           </Button>
@@ -313,6 +323,7 @@ export default function PanelGenerateImage({
             border="primary"
             startIcon={<Icon name="icon-pause" />}
             fullWidth={true}
+            className="flex-grow"
           >
             Pause
           </Button>

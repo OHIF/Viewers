@@ -50,7 +50,6 @@ const InputDoubleRange: React.FC<{
   );
 
   function handleSliderChange(newValues) {
-    console.log(newValues);
     onSliderChange(newValues);
   }
 
