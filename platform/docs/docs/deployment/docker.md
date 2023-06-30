@@ -209,9 +209,10 @@ To create a self-signed certificate:
     ```
 
     The chart below describes each of the items in the command.
+
     |Command Item|Description|
-    |----|-----------|
-    |sudo|temporarily grant access as the root/super user to run the `openssl` command |
+    |------------|-----------|
+    |sudo|temporarily grant access as the root/super user to run the `openssl` command|
     |openssl|the command line tool for creating and managing certificates and keys|
     |req|this together with the subsequent `-x509` indicates to request to generate a self-signed certificate|
     |-x509|this together with the `req` indicates to request to generate a self-signed certificate|
