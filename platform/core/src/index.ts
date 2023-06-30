@@ -33,6 +33,14 @@ import {
   PanelService,
 } from './services';
 
+import {
+  displayServiceMessage,
+  displayServiceMessageList,
+  displaySetMessageCodes,
+  displaySetMessageStrings,
+  displayLocationCodes,
+} from './services/DisplaySetService';
+
 import IWebApiDataSource from './DataSources/IWebApiDataSource';
 
 const hotkeys = {
@@ -107,6 +115,11 @@ export {
   UINotificationService,
   UIViewportDialogService,
   DisplaySetService,
+  displayServiceMessage,
+  displayServiceMessageList,
+  displaySetMessageCodes,
+  displaySetMessageStrings,
+  displayLocationCodes,
   MeasurementService,
   ToolbarService,
   ViewportGridService,
