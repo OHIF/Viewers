@@ -8,7 +8,7 @@ export default function formatPN(name) {
 
   let nameToUse;
   const _nameToUse = name.Alphabetic ?? name;
-  if (_nameToUse instanceof String) {
+  if (typeof _nameToUse === 'string' || _nameToUse instanceof String) {
     nameToUse = _nameToUse;
   } else {
     nameToUse = '';
