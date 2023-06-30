@@ -4,6 +4,7 @@ import ImageSet from '@ohif/core/src/classes/ImageSet';
 import isDisplaySetReconstructable from '@ohif/core/src/utils/isDisplaySetReconstructable';
 import { id } from './id';
 import validateInstances from './validateInstances';
+import { displayServiceMessageList } from '@ohif/core';
 
 const sopClassHandlerName = 'stack';
 
@@ -19,8 +20,9 @@ const makeDisplaySet = instances => {
     value: isReconstructable,
     averageSpacingBetweenFrames,
   } = isDisplaySetReconstructable(instances);
-  const warnings = validateInstances(instances, isReconstructable);
   // set appropriate attributes to image set...
+  const messages = validateInstances(instances, isReconstructable);
+
   imageSet.setAttributes({
     displaySetInstanceUID: imageSet.uid, // create a local alias for the imageSet UID
     SeriesDate: instance.SeriesDate,
@@ -37,7 +39,7 @@ const makeDisplaySet = instances => {
     numImageFrames: instances.length,
     SOPClassHandlerId: `${id}.sopClassHandlerModule.${sopClassHandlerName}`,
     isReconstructable,
-    warnings,
+    messages,
     averageSpacingBetweenFrames: averageSpacingBetweenFrames || null,
   });
 
@@ -94,7 +96,7 @@ function getSopClassUids(instances) {
  * @param {SeriesMetadata} series The series metadata object from which the display sets will be created
  * @returns {Array} The list of display sets created for the given series object
  */
-function getDisplaySetsFromSeries(instances) {
+function _getDisplaySetsFromSeries(instances, servicesManager) {
   // If the series has no instances, stop here
   if (!instances || !instances.length) {
     throw new Error('No instances were provided');
@@ -205,12 +207,14 @@ const sopClassUids = [
   sopClassDictionary.EnhancedUSVolumeStorage,
 ];
 
-function getSopClassHandlerModule() {
+function getSopClassHandlerModule({ servicesManager }) {
   return [
     {
       name: sopClassHandlerName,
       sopClassUids,
-      getDisplaySetsFromSeries,
+      getDisplaySetsFromSeries: instances => {
+        return _getDisplaySetsFromSeries(instances, servicesManager);
+      },
     },
   ];
 }

@@ -11,20 +11,8 @@ import {
   _isSameOrientation,
   constructableModalities,
 } from '@ohif/core/src/utils/isDisplaySetReconstructable';
+import { displaySetMessageCodes, displayServiceMessageList } from '@ohif/core';
 
-/**
- * Add a warning to a list of warnings
- * @param {*} warnings List of warnings
- * @param {*} warning warning to be added
- * @returns
- */
-function addWarning(warnings, warning) {
-  if (!warnings.includes(warning)) {
-    warnings.push(warning);
-    return true;
-  }
-  return false;
-}
 /**
  * Calculates the scanAxisNormal based on a image orientation vector extract from a frame
  * @param {*} imageOrientation
@@ -49,21 +37,24 @@ function calculateScanAxisNormal(imageOrientation) {
  *
  * @param {Object[]} instances An array of `OHIFInstanceMetadata` objects.
  */
-export default function validateInstances(instances, isReconstructable) {
-  const warnings = [];
+export default function validateInstances(
+  instances: Array<any>,
+  isReconstructable: boolean
+): displayServiceMessageList {
+  const messages = new displayServiceMessageList();
   if (!instances.length) {
-    addWarning(warnings, 'No valid instances found in series.');
+    messages.addMessage(displaySetMessageCodes.NO_VALID_INSTANCES);
   }
 
   const firstInstance = instances[0];
   if (firstInstance.ImageType.includes('LOCALIZER')) {
-    return warnings;
+    return messages;
   }
 
   const isMultiframe = firstInstance.NumberOfFrames > 1;
   const Modality = firstInstance.Modality;
   if (!constructableModalities.includes(Modality)) {
-    return warnings;
+    return messages;
   }
 
   // Can't reconstruct if all instances don't have the ImagePositionPatient.
@@ -71,21 +62,21 @@ export default function validateInstances(instances, isReconstructable) {
     !isMultiframe &&
     !instances.every(instance => instance.ImagePositionPatient)
   ) {
-    addWarning(warnings, 'Series has missing position information.');
+    messages.addMessage(displaySetMessageCodes.NO_POSITION_INFORMATION);
   }
 
   const sortedInstances = sortInstancesByPosition(instances);
 
   if (isMultiframe) {
-    checkMultiFrame(sortedInstances[0], warnings);
+    checkMultiFrame(sortedInstances[0], messages);
   } else {
-    checkSingleFrames(sortedInstances, warnings);
+    checkSingleFrames(sortedInstances, messages);
   }
 
   if (!isReconstructable) {
-    warnings.push('Series is not a reconstructable 3D volume.');
+    messages.addMessage(displaySetMessageCodes.NOT_RECONSTRUCTABLE);
   }
-  return warnings;
+  return messages;
 }
 
 /**
@@ -93,23 +84,24 @@ export default function validateInstances(instances, isReconstructable) {
  * @param {*} multiFrameInstance
  * @param {*} warnings
  */
-function checkMultiFrame(multiFrameInstance, warnings) {
+function checkMultiFrame(
+  multiFrameInstance,
+  messages: displayServiceMessageList
+): void {
   if (!hasPixelMeasurements(multiFrameInstance)) {
-    addWarning(
-      warnings,
-      "Multiframe series don't have pixel measurement information."
+    messages.addMessage(
+      displaySetMessageCodes.MULTIFRAME_NO_PIXEL_MEASUREMENTS
     );
   }
 
   if (!hasOrientation(multiFrameInstance)) {
-    addWarning(
-      warnings,
-      "Multiframe series don't have orientation information."
-    );
+    messages.addMessage(displaySetMessageCodes.MULTIFRAME_NO_ORIENTATION);
   }
 
   if (!hasPosition(multiFrameInstance)) {
-    addWarning(warnings, "Multiframe series don't have position information.");
+    messages.addMessage(
+      displaySetMessageCodes.MULTIFRAME_NO_POSITION_INFORMATION
+    );
   }
 }
 
@@ -249,7 +241,7 @@ function checkPositionShift(instances) {
  * @param {*} instances
  * @param {*} warnings
  */
-function checkSeriesSpacing(instances, warnings) {
+function checkSeriesSpacing(instances, messages) {
   const firstImagePositionPatient = toNumber(instances[0].ImagePositionPatient);
   const lastIpp = toNumber(
     instances[instances.length - 1].ImagePositionPatient
@@ -283,9 +275,9 @@ function checkSeriesSpacing(instances, warnings) {
       if (!issuesFound.includes(issue)) {
         issuesFound.push(issue);
         if (issue === reconstructionIssues.MISSING_FRAMES) {
-          addWarning(warnings, 'Series has missing frames.');
+          messages.addMessage(displaySetMessageCodes.MISSING_FRAMES);
         } else if (issue === reconstructionIssues.IRREGULAR_SPACING) {
-          addWarning(warnings, 'Series has irregular spacing.');
+          messages.addMessage(displaySetMessageCodes.IRREGULAR_SPACING);
         }
       }
       // we just want to find issues not how many
@@ -302,27 +294,26 @@ function checkSeriesSpacing(instances, warnings) {
  * @param {*} instances
  * @param {*} warnings
  */
-function checkSingleFrames(instances, warnings) {
+function checkSingleFrames(instances, messages) {
   if (instances.length > 2) {
     if (!checkSeriesDimensions(instances)) {
-      addWarning(warnings, 'Series has different dimensions between frames.');
+      messages.addMessage(displaySetMessageCodes.INCONSISTENT_DIMENSIONS);
     }
 
     if (!checkSeriesComponents(instances)) {
-      addWarning(
-        warnings,
-        'Series has frames with different number of components.'
-      );
+      messages.addMessage(displaySetMessageCodes.INCONSISTENT_COMPONENTS);
     }
 
     if (!checkSeriesOrientation(instances)) {
-      addWarning(warnings, 'Series has frames with different orientations.');
+      messages.addMessage(displaySetMessageCodes.INCONSISTENT_ORIENTATIONS);
     }
 
     if (!checkPositionShift(instances)) {
-      addWarning(warnings, 'Series has inconsistent position information.');
+      messages.addMessage(
+        displaySetMessageCodes.INCONSISTENT_POSITION_INFORMATION
+      );
     }
 
-    checkSeriesSpacing(instances, warnings);
+    checkSeriesSpacing(instances, messages);
   }
 }
