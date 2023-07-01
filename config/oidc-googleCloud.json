@@ -10,14 +10,16 @@
       "dicomWeb": []
     },
     "custom": {
-      "oidc": [{
-        "authServerUrl": "https://accounts.google.com",
-        "authRedirectUri": "/_oauth/google",
-        "postLogoutRedirectUri": "/",
-        "clientId": "YOURCLIENTID.apps.googleusercontent.com",
-        "scope": "email profile openid  https://www.googleapis.com/auth/cloud-platform.read-only https://www.googleapis.com/auth/cloud-healthcare",
-        "revokeUrl": "https://accounts.google.com/o/oauth2/revoke?token="
-      }]
+      "oidc": [
+        {
+          "authServerUrl": "https://accounts.google.com",
+          "authRedirectUri": "/callback",
+          "postLogoutRedirectUri": "/",
+          "clientId": "723928408739-k9k9r3i44j32rhu69vlnibipmmk9i57p.apps.googleusercontent.com",
+          "scope": "email profile openid https://www.googleapis.com/auth/cloudplatformprojects.readonly https://www.googleapis.com/auth/cloud-healthcare",
+          "revokeUrl": "https://accounts.google.com/o/oauth2/revoke?token="
+        }
+      ]
     },
     "userAuthenticationRoutesEnabled": false,
     "demoMode": false

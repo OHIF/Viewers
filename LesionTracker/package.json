@@ -10,7 +10,7 @@
   "description": "",
   "dependencies": {
     "@babel/runtime": "7.0.0-beta.51",
-    "bcrypt": "^3.0.1",
+    "bcrypt": "^3.0.4-napi",
     "loglevel": "^1.6.1",
     "url": "^0.11.0"
   },

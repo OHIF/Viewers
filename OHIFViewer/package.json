@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
-    "@babel/runtime": "7.0.0-beta.51",
+    "@babel/runtime": "^7.0.0-beta.51",
     "loglevel": "^1.6.1"
   },
   "devDependencies": {
