@@ -211,8 +211,9 @@ const JobParameters = props => {
   const sendParams = data => {
     const series_uid = data.SeriesInstanceUID;
     const study_uid = data.StudyInstanceUID;
-    const email = user.profile.email;
+    // const email = user.profile.email;
     // const email = 'nick.fragakis@thetatech.ai';
+    const email = 'razakwasiu@gmail.com';
 
     const body = {
       study_uid: study_uid,

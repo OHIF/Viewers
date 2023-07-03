@@ -170,8 +170,8 @@ const JobParameters = props => {
     const series_uid =
       data.SeriesInstanceUID || JSON.parse(localStorage.getItem('series_uid'));
     const study_uid = data.StudyInstanceUID || JSON.parse(localStorage.getItem('studyInstanceUID'));
-    const email = user.profile.email;
-    // const email = 'nick.fragakis@thetatech.ai';
+    // const email = user.profile.email;
+    const email = 'nick.fragakis@thetatech.ai';
 
     const body = {
       study_uid: study_uid,

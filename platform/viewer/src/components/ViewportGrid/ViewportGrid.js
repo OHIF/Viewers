@@ -243,19 +243,12 @@ const ViewportGrid = function(props) {
       rows,
       columns,
     };
-    // if (
-    //   location.pathname.includes('/edit')
-    //   // location.pathname.includes('/radionics')
-    // )
-    //   targeDiv.addEventListener('mouseup', handleDragEnd);
+    if (location.pathname.includes('/edit'))
+      targeDiv.addEventListener('mouseup', handleDragEnd);
 
     return () => {
-      // if (
-      //   location.pathname.includes('/edit')
-      //   // location.pathname.includes('/selectmask')
-      //   // ||location.pathname.includes('/radionics')
-      // )
-      //   targeDiv.removeEventListener('mouseup', handleDragEnd);
+      if (location.pathname.includes('/edit'))
+        targeDiv.removeEventListener('mouseup', handleDragEnd);
     };
   }, [activeViewportIndex]);
 
@@ -346,8 +339,8 @@ const ViewportGrid = function(props) {
   };
 
   useEffect(() => {
-    // if (isStudyLoaded) {
-    if (studies.length > 0) {
+    if (isStudyLoaded) {
+      // if (studies.length > 0) {
       viewportData.forEach(displaySet => {
         loadAndCacheDerivedDisplaySets(displaySet, studies, logger, snackbar);
       });
@@ -373,7 +366,7 @@ const ViewportGrid = function(props) {
 
   useEffect(() => {
     eventBus.on('brushUndoRedo', data => {
-      // handleDragEnd({});
+      handleDragEnd({});
     });
     // clean up eventbus
     return () => {
@@ -463,11 +456,11 @@ const ViewportGrid = function(props) {
             body: JSON.stringify(body),
           };
 
-          // let response = await fetch(
-          //   `${radcadapi}/segmentations`,
-          //   requestOptions
-          // );
-          let response = {};
+          let response = await fetch(
+            `${radcadapi}/segmentations`,
+            requestOptions
+          );
+          // let response = {};
 
           UINotificationService.show({
             title: 'Segment saved successfully',
@@ -857,16 +850,6 @@ const ViewportGrid = function(props) {
           .catch(error => {
             console.log(error);
           });
-
-        // await client
-        //   .get(`/segmentations?series=${series_uid}&email=${email}`, body)
-        //   .then(async response => {
-        //     console.log({ response });
-        //     res(response.data);
-        //   })
-        //   .catch(error => {
-        //     console.log(error);
-        //   });
       } catch (error) {
         console.log({ error });
         rej(error);
