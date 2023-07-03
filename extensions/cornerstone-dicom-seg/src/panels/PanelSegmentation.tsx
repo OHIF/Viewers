@@ -2,20 +2,16 @@ import React, { useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { SegmentationGroupTable } from '@ohif/ui';
 import callInputDialog from './callInputDialog';
-
 import { useTranslation } from 'react-i18next';
 
 export default function PanelSegmentation({
   servicesManager,
   commandsManager,
   extensionManager,
+  appConfig,
 }) {
-  const {
-    segmentationService,
-    uiDialogService,
-    uiNotificationService,
-  } = servicesManager.services;
-  const disableEditing = extensionManager._appConfig?.disableEditing;
+  const { segmentationService, uiDialogService } = servicesManager.services;
+  const disableEditing = appConfig?.disableEditing;
 
   const { t } = useTranslation('PanelSegmentation');
   const [selectedSegmentationId, setSelectedSegmentationId] = useState(null);
@@ -73,13 +69,6 @@ export default function PanelSegmentation({
     };
   }, []);
 
-  const disableEditingNotification = () => {
-    uiNotificationService.show({
-      title: 'Segmentation Edit',
-      message: 'Segmentation editing is disabled in this viewer.',
-      type: 'error',
-    });
-  };
   const onSegmentationClick = (segmentationId: string) => {
     segmentationService.setActiveSegmentationForToolGroup(segmentationId);
   };
@@ -225,13 +214,10 @@ export default function PanelSegmentation({
           activeSegmentationId={selectedSegmentationId || ''}
           onSegmentationClick={onSegmentationClick}
           onSegmentationDelete={onSegmentationDelete}
-          onSegmentationEdit={
-            disableEditing ? disableEditingNotification : onSegmentationEdit
-          }
+          onSegmentationEdit={onSegmentationEdit}
           onSegmentClick={onSegmentClick}
-          onSegmentEdit={
-            disableEditing ? disableEditingNotification : onSegmentEdit
-          }
+          onSegmentEdit={onSegmentEdit}
+          disableEditing={disableEditing}
           onSegmentColorClick={onSegmentColorClick}
           onSegmentDelete={onSegmentDelete}
           onToggleSegmentVisibility={onToggleSegmentVisibility}
@@ -297,6 +283,8 @@ PanelSegmentation.propTypes = {
   commandsManager: PropTypes.shape({
     runCommand: PropTypes.func.isRequired,
   }),
+  appConfig: PropTypes.object.isRequired,
+  extensionManager: PropTypes.object,
   servicesManager: PropTypes.shape({
     services: PropTypes.shape({
       segmentationService: PropTypes.shape({

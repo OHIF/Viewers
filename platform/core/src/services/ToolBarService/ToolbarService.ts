@@ -299,7 +299,12 @@ export default class ToolbarService extends PubSubService {
     };
   }
 
-  disableButtonInSection(section, buttonId) {
+  /**
+   * Removes a button section
+   * @param section
+   * @param buttonId
+   */
+  removeButtonSection(section, buttonId) {
     if (this.buttonSections[section]) {
       const buttonIndex = this.buttonSections[section].indexOf(buttonId);
       delete this.buttonSections[section][buttonIndex];

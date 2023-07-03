@@ -25,6 +25,7 @@ function OHIFCornerstoneSRViewport(props) {
     viewportOptions,
     servicesManager,
     extensionManager,
+    appConfig,
   } = props;
 
   const {
@@ -76,7 +77,7 @@ function OHIFCornerstoneSRViewport(props) {
     sendTrackedMeasurementsEvent = (eventName, { displaySetInstanceUID }) => {
       measurementService.clearMeasurements();
       const { SeriesInstanceUIDs } = hydrateStructuredReport(
-        { servicesManager, extensionManager },
+        { servicesManager, extensionManager, appConfig },
         displaySetInstanceUID
       );
       const displaySets = displaySetService.getDisplaySetsForSeries(
@@ -417,6 +418,7 @@ OHIFCornerstoneSRViewport.propTypes = {
   customProps: PropTypes.object,
   viewportOptions: PropTypes.object,
   viewportLabel: PropTypes.string,
+  appConfig: PropTypes.object,
   servicesManager: PropTypes.instanceOf(ServicesManager).isRequired,
   extensionManager: PropTypes.instanceOf(ExtensionManager).isRequired,
 };

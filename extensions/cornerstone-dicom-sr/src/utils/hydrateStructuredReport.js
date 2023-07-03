@@ -2,6 +2,8 @@ import { utilities, metaData } from '@cornerstonejs/core';
 import OHIF, { DicomMetadataStore } from '@ohif/core';
 import getLabelFromDCMJSImportedToolData from './getLabelFromDCMJSImportedToolData';
 import { adaptersSR } from '@cornerstonejs/adapters';
+import { annotation as CsAnnotation } from '@cornerstonejs/tools';
+const { locking } = CsAnnotation;
 
 const { guid } = OHIF.utils;
 const { MeasurementReport, CORNERSTONE_3D_TAG } = adaptersSR.Cornerstone3D;
@@ -35,9 +37,10 @@ const convertSites = (codingValues, sites) => {
  *
  */
 export default function hydrateStructuredReport(
-  { servicesManager, extensionManager },
+  { servicesManager, extensionManager, appConfig },
   displaySetInstanceUID
 ) {
+  const annotationManager = CsAnnotation.state.getAnnotationManager();
   const dataSource = extensionManager.getActiveDataSource()[0];
   const {
     measurementService,
@@ -45,6 +48,7 @@ export default function hydrateStructuredReport(
     customizationService,
   } = servicesManager.services;
 
+  const disableEditing = appConfig?.disableEditing;
   const codingValues = customizationService.getCustomization(
     'codingValues',
     {}
@@ -212,13 +216,20 @@ export default function hydrateStructuredReport(
         m => m.annotationType === annotationType
       );
 
-      measurementService.addRawMeasurement(
+      const newAnnotationUID = measurementService.addRawMeasurement(
         source,
         annotationType,
         { annotation },
         matchingMapping.toMeasurementSchema,
         dataSource
       );
+
+      if (disableEditing) {
+        const addedAnnotation = annotationManager.getAnnotation(
+          newAnnotationUID
+        );
+        locking.setAnnotationLocked(addedAnnotation, true);
+      }
 
       if (!imageIds.includes(imageId)) {
         imageIds.push(imageId);
