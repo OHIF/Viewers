@@ -322,7 +322,8 @@ const SearchDetails = props => {
     // const series_uid = data.SeriesInstanceUID;
     // const study_uid = data.StudyInstanceUID;
     setLoadingState('list');
-    const email = user.profile.email;
+    const email = 'nick.fragakis@thetatech.ai';
+    // const email = user.profile.email;
 
     // get current image
     const image = cornerstone.getImage(el);

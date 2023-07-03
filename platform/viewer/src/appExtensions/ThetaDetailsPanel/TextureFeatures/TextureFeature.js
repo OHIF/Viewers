@@ -14,8 +14,8 @@ const TextureFeature = props => {
   const [isActive, setIsActive] = useState(false);
   const [showMore, setShowMore] = useState(true);
   const access_token = user.access_token;
-  const email = user.profile.email;
-  // const email = 'nick.fragakis@thetatech.ai';
+  // const email = user.profile.email;
+  const email = 'nick.fragakis@thetatech.ai';
 
   const series = viewport.viewportSpecificData[0].SeriesInstanceUID;
   const { overlayStatus, setOverlayStatus } = useContext(JobsContext);
