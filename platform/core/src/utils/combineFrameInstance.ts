@@ -21,6 +21,7 @@ const combineFrameInstance = (frame, instance) => {
       ? Object.values(SharedFunctionalGroupsSequence[0])
       : []
     )
+      .filter(it => !!it)
       .map(it => it[0])
       .filter(it => it !== undefined && typeof it === 'object');
     const perFrame = (PerFrameFunctionalGroupsSequence
