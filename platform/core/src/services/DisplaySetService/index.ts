@@ -1,19 +1,5 @@
 import DisplaySetService from './DisplaySetService';
-import displaySetMessageContent from './displaySetMessageContent';
-import {
-  displayServiceMessageList,
-  displayServiceMessage,
-  displaySetMessageCodes,
-  displaySetMessageStrings,
-  displayLocationCodes,
-} from './displayServiceMessage';
+import { DisplaySetMessage, DisplaySetMessageList } from './DisplaySetMessage';
 
 export default DisplaySetService;
-export {
-  displaySetMessageContent,
-  displayServiceMessageList,
-  displayServiceMessage,
-  displaySetMessageCodes,
-  displaySetMessageStrings,
-  displayLocationCodes,
-};
+export { DisplaySetMessage, DisplaySetMessageList };

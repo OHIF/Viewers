@@ -34,11 +34,8 @@ import {
 } from './services';
 
 import {
-  displayServiceMessage,
-  displayServiceMessageList,
-  displaySetMessageCodes,
-  displaySetMessageStrings,
-  displayLocationCodes,
+  DisplaySetMessage,
+  DisplaySetMessageList,
 } from './services/DisplaySetService';
 
 import IWebApiDataSource from './DataSources/IWebApiDataSource';
@@ -115,11 +112,8 @@ export {
   UINotificationService,
   UIViewportDialogService,
   DisplaySetService,
-  displayServiceMessage,
-  displayServiceMessageList,
-  displaySetMessageCodes,
-  displaySetMessageStrings,
-  displayLocationCodes,
+  DisplaySetMessage,
+  DisplaySetMessageList,
   MeasurementService,
   ToolbarService,
   ViewportGridService,

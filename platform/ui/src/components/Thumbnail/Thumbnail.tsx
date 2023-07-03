@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { useDrag } from 'react-dnd';
 import Icon from '../Icon';
-import Tooltip from '../Tooltip';
 import { StringNumber } from '../../types';
+import DisplaySetMessageListTooltip from '../DisplaySetMessageListTooltip';
 
 /**
  * Display a thumbnail for a display set.
@@ -80,23 +80,7 @@ const Thumbnail = ({
             <Icon name={countIcon || 'group-layers'} className="w-3 mr-2" />
             {` ${numInstances}`}
           </div>
-          {messages?.size() ? (
-            <div>
-              <Tooltip
-                position="left"
-                tight={true}
-                content={
-                  <div className="text-left max-w-40">
-                    {messages.thumbnailContents()}
-                  </div>
-                }
-              >
-                <Icon name="notifications-warning" className="w-3 h-3" />
-              </Tooltip>
-            </div>
-          ) : (
-            <></>
-          )}
+          <DisplaySetMessageListTooltip messages={messages} />
         </div>
         <div className="text-base text-white break-all">{description}</div>
       </div>

@@ -11,7 +11,7 @@ import {
   _isSameOrientation,
   constructableModalities,
 } from '@ohif/core/src/utils/isDisplaySetReconstructable';
-import { displaySetMessageCodes, displayServiceMessageList } from '@ohif/core';
+import { DisplaySetMessage, DisplaySetMessageList } from '@ohif/core';
 
 /**
  * Calculates the scanAxisNormal based on a image orientation vector extract from a frame
@@ -40,10 +40,10 @@ function calculateScanAxisNormal(imageOrientation) {
 export default function validateInstances(
   instances: Array<any>,
   isReconstructable: boolean
-): displayServiceMessageList {
-  const messages = new displayServiceMessageList();
+): DisplaySetMessageList {
+  const messages = new DisplaySetMessageList();
   if (!instances.length) {
-    messages.addMessage(displaySetMessageCodes.NO_VALID_INSTANCES);
+    messages.addMessage(DisplaySetMessage.CODES.NO_VALID_INSTANCES);
   }
 
   const firstInstance = instances[0];
@@ -62,7 +62,7 @@ export default function validateInstances(
     !isMultiframe &&
     !instances.every(instance => instance.ImagePositionPatient)
   ) {
-    messages.addMessage(displaySetMessageCodes.NO_POSITION_INFORMATION);
+    messages.addMessage(DisplaySetMessage.CODES.NO_POSITION_INFORMATION);
   }
 
   const sortedInstances = sortInstancesByPosition(instances);
@@ -74,7 +74,7 @@ export default function validateInstances(
   }
 
   if (!isReconstructable) {
-    messages.addMessage(displaySetMessageCodes.NOT_RECONSTRUCTABLE);
+    messages.addMessage(DisplaySetMessage.CODES.NOT_RECONSTRUCTABLE);
   }
   return messages;
 }
@@ -86,21 +86,21 @@ export default function validateInstances(
  */
 function checkMultiFrame(
   multiFrameInstance,
-  messages: displayServiceMessageList
+  messages: DisplaySetMessageList
 ): void {
   if (!hasPixelMeasurements(multiFrameInstance)) {
     messages.addMessage(
-      displaySetMessageCodes.MULTIFRAME_NO_PIXEL_MEASUREMENTS
+      DisplaySetMessage.CODES.MULTIFRAME_NO_PIXEL_MEASUREMENTS
     );
   }
 
   if (!hasOrientation(multiFrameInstance)) {
-    messages.addMessage(displaySetMessageCodes.MULTIFRAME_NO_ORIENTATION);
+    messages.addMessage(DisplaySetMessage.CODES.MULTIFRAME_NO_ORIENTATION);
   }
 
   if (!hasPosition(multiFrameInstance)) {
     messages.addMessage(
-      displaySetMessageCodes.MULTIFRAME_NO_POSITION_INFORMATION
+      DisplaySetMessage.CODES.MULTIFRAME_NO_POSITION_INFORMATION
     );
   }
 }
@@ -275,9 +275,9 @@ function checkSeriesSpacing(instances, messages) {
       if (!issuesFound.includes(issue)) {
         issuesFound.push(issue);
         if (issue === reconstructionIssues.MISSING_FRAMES) {
-          messages.addMessage(displaySetMessageCodes.MISSING_FRAMES);
+          messages.addMessage(DisplaySetMessage.CODES.MISSING_FRAMES);
         } else if (issue === reconstructionIssues.IRREGULAR_SPACING) {
-          messages.addMessage(displaySetMessageCodes.IRREGULAR_SPACING);
+          messages.addMessage(DisplaySetMessage.CODES.IRREGULAR_SPACING);
         }
       }
       // we just want to find issues not how many
@@ -297,20 +297,20 @@ function checkSeriesSpacing(instances, messages) {
 function checkSingleFrames(instances, messages) {
   if (instances.length > 2) {
     if (!checkSeriesDimensions(instances)) {
-      messages.addMessage(displaySetMessageCodes.INCONSISTENT_DIMENSIONS);
+      messages.addMessage(DisplaySetMessage.CODES.INCONSISTENT_DIMENSIONS);
     }
 
     if (!checkSeriesComponents(instances)) {
-      messages.addMessage(displaySetMessageCodes.INCONSISTENT_COMPONENTS);
+      messages.addMessage(DisplaySetMessage.CODES.INCONSISTENT_COMPONENTS);
     }
 
     if (!checkSeriesOrientation(instances)) {
-      messages.addMessage(displaySetMessageCodes.INCONSISTENT_ORIENTATIONS);
+      messages.addMessage(DisplaySetMessage.CODES.INCONSISTENT_ORIENTATIONS);
     }
 
     if (!checkPositionShift(instances)) {
       messages.addMessage(
-        displaySetMessageCodes.INCONSISTENT_POSITION_INFORMATION
+        DisplaySetMessage.CODES.INCONSISTENT_POSITION_INFORMATION
       );
     }
 
