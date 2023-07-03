@@ -22,7 +22,7 @@ function TrackedCornerstoneViewport(props) {
     viewportOptions,
   } = props;
 
-  const { t } = useTranslation('TrackedViewport');
+  const { t } = useTranslation('Common');
 
   const {
     measurementService,
@@ -54,6 +54,7 @@ function TrackedCornerstoneViewport(props) {
     PatientAge,
     SliceThickness,
     SpacingBetweenSlices,
+    StudyDate,
     ManufacturerModelName,
   } = displaySet.images[0];
 
@@ -194,7 +195,8 @@ function TrackedCornerstoneViewport(props) {
         getStatusComponent={() => _getStatusComponent(isTracked)}
         studyData={{
           label: viewportLabel,
-          studyDate: formatDate(SeriesDate), // TODO: This is series date. Is that ok?
+          studyDate:
+            formatDate(SeriesDate) || formatDate(StudyDate) || t('NoStudyDate'),
           currentSeries: SeriesNumber, // TODO - switch entire currentSeries to be UID based or actual position based
           seriesDescription: SeriesDescription,
           patientInformation: {
