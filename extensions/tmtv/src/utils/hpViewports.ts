@@ -254,16 +254,20 @@ const fusionAXIAL = {
       id: 'ctDisplaySet',
     },
     {
+      id: 'ptDisplaySet',
       options: {
         colormap: {
           name: 'hsv',
-          opacityMapping: [{ value: 0.1, opacity: 0.9 }],
+          opacity: [
+            { value: 0, opacity: 0 },
+            { value: 0.1, opacity: 0.9 },
+            { value: 1, opacity: 0.95 },
+          ],
         },
         voi: {
           custom: 'getPTVOIRange',
         },
       },
-      id: 'ptDisplaySet',
     },
   ],
 };
@@ -310,16 +314,20 @@ const fusionSAGITTAL = {
       id: 'ctDisplaySet',
     },
     {
+      id: 'ptDisplaySet',
       options: {
         colormap: {
           name: 'hsv',
-          opacityMapping: [{ value: 0.1, opacity: 0.9 }],
+          opacity: [
+            { value: 0, opacity: 0 },
+            { value: 0.1, opacity: 0.9 },
+            { value: 1, opacity: 0.95 },
+          ],
         },
         voi: {
           custom: 'getPTVOIRange',
         },
       },
-      id: 'ptDisplaySet',
     },
   ],
 };
@@ -366,16 +374,20 @@ const fusionCORONAL = {
       id: 'ctDisplaySet',
     },
     {
+      id: 'ptDisplaySet',
       options: {
         colormap: {
           name: 'hsv',
-          opacityMapping: [{ value: 0.1, opacity: 0.9 }],
+          opacity: [
+            { value: 0, opacity: 0 },
+            { value: 0.1, opacity: 0.9 },
+            { value: 1, opacity: 0.95 },
+          ],
         },
         voi: {
           custom: 'getPTVOIRange',
         },
       },
-      id: 'ptDisplaySet',
     },
   ],
 };
