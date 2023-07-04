@@ -234,9 +234,7 @@ export default function ModeRoute({
       params,
       query,
     });
-    if (studyInstanceUIDs.length) {
-      setStudyInstanceUIDs(studyInstanceUIDs);
-    }
+    setStudyInstanceUIDs(studyInstanceUIDs);
 
     return () => {
       layoutTemplateData.current = null;

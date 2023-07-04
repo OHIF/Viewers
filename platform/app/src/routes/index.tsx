@@ -15,15 +15,24 @@ import PrivateRoute from './PrivateRoute';
 const bakedInRoutes = [
   {
     path: '/debug',
-    children: Debug,
+    children: DataSourceWrapper,
+    props: {
+      children: Debug,
+    },
   },
   {
     path: '/local',
-    children: Local.bind(null, { modePath: '' }), // navigate to the worklist
+    children: DataSourceWrapper,
+    props: {
+      children: Local.bind(null, { modePath: '' }), // navigate to the worklist
+    },
   },
   {
     path: '/localbasic',
-    children: Local.bind(null, { modePath: 'viewer/dicomlocal' }),
+    children: DataSourceWrapper,
+    props: {
+      children: Local.bind(null, { modePath: 'viewer/dicomlocal' }),
+    },
   },
 ];
 

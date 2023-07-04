@@ -72,6 +72,14 @@ function DataSourceWrapper(props) {
   useEffect(() => {
     const initDataSource = async () => {
       await dataSource.initialize({ params, query });
+      if (extensionManager.activeDataSource !== dataSourceName) {
+        const activeDataSource = extensionManager.getDataSources(
+          extensionManager.activeDataSource
+        )?.[0];
+        if (activeDataSource) {
+          await activeDataSource.initialize({ params, query });
+        }
+      }
       setIsDataSourceInitialized(true);
     };
     initDataSource();

@@ -158,7 +158,7 @@ TooltipClipboard.defaultProps = {
 
 TooltipClipboard.propTypes = {
   text: PropTypes.string,
-  children: PropTypes.node.isRequired,
+  children: PropTypes.node,
 };
 
 export default TooltipClipboard;

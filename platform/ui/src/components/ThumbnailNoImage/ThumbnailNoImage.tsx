@@ -66,9 +66,11 @@ const ThumbnailNoImage = ({
                 onClick={onReject}
               />
             )}
-            <div className="ml-4 text-base text-white break-all">
-              {description}
-            </div>
+            {description && (
+              <div className="ml-4 text-base text-white break-all">
+                {description}
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -89,7 +91,7 @@ ThumbnailNoImage.propTypes = {
     /** Must match the "type" a dropTarget expects */
     type: PropTypes.string.isRequired,
   }),
-  description: PropTypes.string.isRequired,
+  description: PropTypes.string,
   modality: PropTypes.string.isRequired,
   /* Tooltip message to display when modality text is hovered */
   modalityTooltip: PropTypes.string.isRequired,

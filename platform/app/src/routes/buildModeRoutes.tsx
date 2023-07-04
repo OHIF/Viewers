@@ -59,7 +59,9 @@ export default function buildModeRoutes({
         path,
         children: DataSourceWrapper,
         private: true,
-        props: { children: getDataSourceModeRoute(mode, dataSourceName) },
+        props: {
+          children: getDataSourceModeRoute(mode, dataSourceName),
+        },
       });
     });
 
@@ -71,7 +73,9 @@ export default function buildModeRoutes({
       path,
       children: DataSourceWrapper,
       private: true, // todo: all mode routes are private for now
-      props: { children: getDataSourceModeRoute(mode, defaultDataSourceName) },
+      props: {
+        children: getDataSourceModeRoute(mode, defaultDataSourceName),
+      },
     });
   });
 

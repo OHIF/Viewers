@@ -535,6 +535,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
         StudyInstanceUIDs && Array.isArray(StudyInstanceUIDs)
           ? StudyInstanceUIDs
           : [StudyInstanceUIDs];
+
       return StudyInstanceUIDsAsArray;
     },
   };
