@@ -246,7 +246,7 @@ A list of criteria for the protocol along with the provided points for ranking.
 
   - `constraint`: the constraint that needs to be satisfied for the attribute. It accepts a `validator` which can be
     [`equals`, `doesNotEqual`, `contains`, `doesNotContain`, `startsWith`, `endsWidth`]
-   
+
   - | Rule 	| Single Value 	| Array Value 	| Example 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
     |---	|---	|---	|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
     | equals 	| === 	| All members are === in same order 	| value = ['abc', 'def', 'GHI']<br/>testValue = 'abc' (Fail)<br/><br/>          = ['abc'] (Fail)<br/><br/>          = ['abc', 'def', 'GHI'] (Valid)<br/><br/>          = ['abc', 'GHI', 'def'] (Fail)<br/><br/>          = ['abc', 'def'] (Fail)<br/><br/>value = 'Attenuation Corrected'<br/>testValue = 'Attenuation Corrected' (Valid)<br/>          = 'Attenuation' (Fail)<br/><br/> 	       value = ['Attenuation Corrected'] <br/>     testValue = ['Attenuation Corrected'] (Valid)<br/> = 'Attenuation Corrected' (Valid) <br/>  = 'Attenuation' (Fail) <br/>                                                            |
@@ -439,7 +439,7 @@ As you can see in the hanging protocol we defined three viewports (but only show
    - `options` (optional): options for the display set
         - voi: windowing options for the display set (optional: windowWidth, windowCenter)
         - voiInverted: whether the VOI is inverted or not (optional)
-        - colormap: colormap for the display set (optional, it is an object with `{ name }` and optional extra `opacityMapping` property)
+        - colormap: colormap for the display set (optional, it is an object with `{ name }` and optional extra `opacity` property)
         - displayPreset: display preset for the display set (optional, used for 3D volume rendering. e.g., 'CT-Bone')
 
 
