@@ -28,6 +28,7 @@ const combineFrameInstance = (frame, instance) => {
       ? Object.values(PerFrameFunctionalGroupsSequence[frameNumber - 1])
       : []
     )
+      .filter(it => !!it)
       .map(it => it[0])
       .filter(it => it !== undefined && typeof it === 'object');
 
