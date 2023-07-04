@@ -226,7 +226,7 @@ The CORP HTTP response header indicates which origins can read and use a resourc
 
 ### Header Values (see [MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/Cross-Origin_Resource_Policy#usage) for more information)
 
-|<div style="width:12ch">Value</div>|Description|
+|Value|Description|
 |-----|-----------|
 |same-site|Only requests from the same site can read the resource.|
 |same-origin|Only requests from the same origin can read the resource.|
