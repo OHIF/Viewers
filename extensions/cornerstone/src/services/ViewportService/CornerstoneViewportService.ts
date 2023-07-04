@@ -291,6 +291,18 @@ class CornerstoneViewportService extends PubSubService
     // ENABLED_ELEMENT again and again, which will run onEnableElement callbacks
     renderingEngine.enableElement(viewportInput);
 
+    const renderingEngineViewports = renderingEngine.getViewports();
+
+    // Compare the number of viewports
+    if (this.getViewportIds().length !== renderingEngineViewports.length) {
+      for (const viewport of renderingEngineViewports) {
+        if (!this.getViewportIds().includes(viewport.id)) {
+          // delete the unwanted viewport
+          renderingEngine.disableElement(viewport.id);
+        }
+      }
+    }
+
     const viewport = renderingEngine.getViewport(viewportId);
     this._setDisplaySets(viewport, viewportData, viewportInfo, presentations);
 
