@@ -40,7 +40,7 @@ Absence of the above error in the console together with the presence of the Cros
 
 ## Embedding OHIF in an iframe
 
-As described [here](./iframe.md#iframe), there are cases where OHIF will be embedded in an iframe. The following links provide more information for setting up and configuring OHIF to work in an iframe:
+As described [here](./iframe.md), there are cases where OHIF will be embedded in an iframe. The following links provide more information for setting up and configuring OHIF to work in an iframe:
 
 - [OHIF iframe documentation](./iframe.md#static-build)
 - [OHIF as a Cross-origin Resource in an iframe](#ohif-as-a-cross-origin-resource-in-an-iframe)
@@ -65,7 +65,7 @@ Beyond all of the inherent benefits of a secure connection, OHIF requires a secu
 
 ### Configuring/setting up a secure context
 
-Local URLs are [considered secure](https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts#when_is_a_context_considered_secure), and as such whenever OHIF is accessed via a local URL (e.g. http://localhost:3000) it is running in a secure context. For example, in a development environment using the default webpack setup, OHIF can be deployed and accessed in a secure context at http://localhost:3000.
+[Local URLs are considered secure](https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts#when_is_a_context_considered_secure), and as such whenever OHIF is accessed via a local URL (e.g. http://localhost:3000) it is running in a secure context. For example, in a development environment using the default webpack setup, OHIF can be deployed and accessed in a secure context at http://localhost:3000.
 
 The best alternative is to host OHIF over HTTPS.
 
@@ -120,7 +120,7 @@ And the following is what is in the accompanying network tab.
 
 ![CORS browser network panel errors](../assets/img/cors-network-panel-errors.png)
 
-:::note
+:::info
 Setting the appropriate CORS header varies per server or service that is hosting the data source. What follows below is just one example to remedy the problem.
 :::
 
@@ -203,8 +203,8 @@ If deploying OHIF using Netlify, the Netlify configuration [file](https://docs.n
   for = "/*"
 
   [headers.values]
-    Cross-Origin-Embedder-Policy = "require-corp"
     Cross-Origin-Opener-Policy =  "same-origin"
+    Cross-Origin-Embedder-Policy = "require-corp"
 ```
 :::
 
@@ -226,7 +226,7 @@ The CORP HTTP response header indicates which origins can read and use a resourc
 
 ### Header Values (see [MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/Cross-Origin_Resource_Policy#usage) for more information)
 
-|Value|Description|
+|<div style="width:12ch">Value</div>|Description|
 |-----|-----------|
 |same-site|Only requests from the same site can read the resource.|
 |same-origin|Only requests from the same origin can read the resource.|
@@ -264,7 +264,7 @@ add_header 'Cross-Origin-Resource-Policy' 'same-site' always;
 
 #### OHIF as a Cross-origin Resource in an iframe
 
-There are cases where [OHIF is embedded in an iframe](./iframe.md#iframe) and the embedding page is from a different origin. Again due to the [security requirements for SharedArrayBuffer](#security-requirements), [both OHIF and the embedding page](#iframe) must have the appropriate COEP header. In this scenario, OHIF is the cross-origin resource and since the `<iframe>` tag does not support the `crossorigin` attribute, OHIF must be served with the appropriate CORP header.
+There are cases where [OHIF is embedded in an iframe](./iframe.md) and the embedding page is from a different origin. Again due to the [security requirements for SharedArrayBuffer](#security-requirements), [both OHIF and the embedding page](#iframe) must have the appropriate COEP header. In this scenario, OHIF is the cross-origin resource and since the `<iframe>` tag does not support the `crossorigin` attribute, OHIF must be served with the appropriate CORP header.
 
 :::info
 Setting the CORP header such that OHIF can be embedded in an iframe varies per server or service hosting OHIF. What follows are just a few examples. Note that whenever the embedding page is hosted on the same site as OHIF, consider using the `same-site` value instead of `cross-origin`.

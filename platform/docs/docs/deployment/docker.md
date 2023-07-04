@@ -20,7 +20,7 @@ The machine on which to build and run the Docker container must have:
 ## Building the Docker Image
 The docker image can be built from a terminal window as such:
 1. Switch to the OHIF Viewer code root directory.
-2. Issue the following docker command. Note that what follows `-t` flag is the `{name}:{tag}` for the Docker image and is arbitrary when creating a local Docker image.
+2. Issue the following Docker command. Note that what follows `-t` flag is the `{name}:{tag}` for the Docker image and is arbitrary when creating a local Docker image.
 
     ```sh
     docker build . -t ohif-viewer-image
@@ -64,7 +64,7 @@ The Dockerfile and entry point use the `${PORT}` environment variable as the por
 docker run -d -e PORT=8080 -p 3000:8080/tcp --name ohif-viewer-container ohif-viewer-image
 ```
 
-### Configuring the OHIF config file
+### Specifying the OHIF config File
 
 There are two approaches for specifying the OHIF configuration file for a Docker container:
 
@@ -79,11 +79,11 @@ The OHIF [config file](../configuration/configurationFiles.md) can be specified 
 docker run -d -p 3000:80/tcp -v /path/to/config/file.js:/usr/share/nginx/html/app-config.js --name ohif-viewer-container ohif-viewer-image
 ```
 :::tip
- Depending on the version of Docker, an absolute path to the local source file might be required.
+ Depending on the version of Docker, an absolute path to the local source config file might be required.
 :::
 #### Environment Variable
 
-In certain environments, such as deploying the Docker container to Google Cloud, it might be convenient to specify the configuration file (contents) as an environment variable. That environment variable is `${APP_CONFIG}` and it can be set in the `docker run` command using the `-e` switch.
+In certain scenarios, such as deploying the Docker container to Google Cloud, it might be convenient to specify the configuration file (contents) as an environment variable. That environment variable is `${APP_CONFIG}` and it can be set in the `docker run` command using the `-e` switch.
 
 :::tip
 It is important to stress here that the environment variable is the contents of the configuration file and NOT the path to the config file as is [typically specified](https://docs.ohif.org/configuration/configurationFiles#configuration-files) for development and build environments or for the [volume mounting method](#volume-mounting).
@@ -109,7 +109,7 @@ If both the [volume mounting method](#volume-mounting) and the [environment vari
 
 ### Embedding in an iframe
 
-If the OHIF instance served by the Docker image is to be embedded in an `iframe`, and if  [cross-origin isolation](./cors.md#cross-origin-isolation) is required, then the [Cross Origin Resource Policy header value (CORP)](https://github.com/OHIF/Viewers/blob/8a8ae237d26faf123abeb073cbf0cd426c3e9ef2/.docker/Viewer-v3.x/default.conf.template#L10) that OHIF is served with will have to be updated accordingly. More information on CORP and `iframe`s can be found [here](./cors.md#ohif-as-a-cross-origin-resource-in-an-iframe).
+If the OHIF instance served by the Docker image is to be embedded in an `iframe`, and if  [cross-origin isolation](./cors.md#cross-origin-isolation) is required, then the [Cross Origin Resource Policy (CORP) header value](https://github.com/OHIF/Viewers/blob/8a8ae237d26faf123abeb073cbf0cd426c3e9ef2/.docker/Viewer-v3.x/default.conf.template#L10) that OHIF is served with will have to be updated accordingly. More information on CORP and `iframe`s can be found [here](./cors.md#ohif-as-a-cross-origin-resource-in-an-iframe).
 
 :::tip
 For SSL Docker deployments, the CORP header value is set [here](https://github.com/OHIF/Viewers/blob/8a8ae237d26faf123abeb073cbf0cd426c3e9ef2/.docker/Viewer-v3.x/default.ssl.conf.template#L12).
@@ -122,7 +122,7 @@ We make no claims or guarantees regarding this section concerning security. If i
 :::
 
 ### Why SSL?
-As described [here](./cors.md#cross-origin-information-for-ohif), OHIF must be used in a [secure context](./cors.md#secure-context) in order to fully leverage all of OHIF's capabilities. Whenever OHIF is not running in a secure context and is navigated to using OHIF's server IP address (e.g. `http://192.168.1.162:3000`) or domain name (e.g. `http://my.ohif.server`) then the following popup message will be displayed in OHIF
+As described [here](./cors.md), OHIF must be used in a [secure context](./cors.md#secure-context) in order to fully leverage all of OHIF's capabilities. Whenever OHIF is not running in a secure context and is navigated to using the OHIF's server IP address (e.g. `http://192.168.1.162:3000`) or domain name (e.g. `http://my.ohif.server`) then the following popup message will be displayed in OHIF
 
 ![OHIF in non-secure context](../assets/img/ohif-non-secure-context.png)
 
