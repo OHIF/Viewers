@@ -2,9 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Tooltip from '../Tooltip';
 import Icon from '../Icon';
-import { DisplaySetMessage } from '@ohif/core';
+import { useTranslation } from 'react-i18next';
 
 const DisplaySetMessageListTooltip = ({ messages }): React.ReactNode => {
+  const { t } = useTranslation('Messages');
   if (messages.size()) {
     return (
       <div>
@@ -19,21 +20,14 @@ const DisplaySetMessageListTooltip = ({ messages }): React.ReactNode => {
               <ol>
                 {messages.messages.map((message, index) => (
                   <li key={index}>
-                    {index + 1}. {message.toString()}
+                    {index + 1}. {t(message.id)}
                   </li>
                 ))}
               </ol>
             </div>
           }
         >
-          <Icon
-            name={
-              messages.includes([DisplaySetMessage.CODES.NOT_RECONSTRUCTABLE])
-                ? 'notifications-error'
-                : 'notifications-warning'
-            }
-            className="w-3 h-3"
-          />
+          <Icon name="notifications-warning" className="w-3 h-3" />
         </Tooltip>
       </div>
     );

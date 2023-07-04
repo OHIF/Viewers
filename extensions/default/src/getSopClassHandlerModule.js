@@ -4,7 +4,6 @@ import ImageSet from '@ohif/core/src/classes/ImageSet';
 import isDisplaySetReconstructable from '@ohif/core/src/utils/isDisplaySetReconstructable';
 import { id } from './id';
 import validateInstances from './validateInstances';
-import { displayServiceMessageList } from '@ohif/core';
 
 const sopClassHandlerName = 'stack';
 
@@ -96,7 +95,7 @@ function getSopClassUids(instances) {
  * @param {SeriesMetadata} series The series metadata object from which the display sets will be created
  * @returns {Array} The list of display sets created for the given series object
  */
-function _getDisplaySetsFromSeries(instances, servicesManager) {
+function _getDisplaySetsFromSeries(instances) {
   // If the series has no instances, stop here
   if (!instances || !instances.length) {
     throw new Error('No instances were provided');
@@ -207,13 +206,13 @@ const sopClassUids = [
   sopClassDictionary.EnhancedUSVolumeStorage,
 ];
 
-function getSopClassHandlerModule({ servicesManager }) {
+function getSopClassHandlerModule() {
   return [
     {
       name: sopClassHandlerName,
       sopClassUids,
       getDisplaySetsFromSeries: instances => {
-        return _getDisplaySetsFromSeries(instances, servicesManager);
+        return _getDisplaySetsFromSeries(instances);
       },
     },
   ];

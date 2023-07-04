@@ -13,28 +13,6 @@ const CODES = {
   INCONSISTENT_POSITION_INFORMATION: 12,
 };
 
-const STRINGS = {
-  [CODES.NO_VALID_INSTANCES]: 'No valid instances found in series.',
-  [CODES.NO_POSITION_INFORMATION]: 'Series has missing position information.',
-  [CODES.NOT_RECONSTRUCTABLE]: 'Series is not a reconstructable 3D volume.',
-  [CODES.MULTIFRAME_NO_PIXEL_MEASUREMENTS]:
-    "Multi frame series don't have pixel measurement information.",
-  [CODES.MULTIFRAME_NO_ORIENTATION]:
-    "Multi frame series don't have orientation information.",
-  [CODES.MULTIFRAME_NO_POSITION_INFORMATION]:
-    "Multi frame series don't have position information.",
-  [CODES.MISSING_FRAMES]: 'Series has missing frames.',
-  [CODES.IRREGULAR_SPACING]: 'Series has irregular spacing.',
-  [CODES.INCONSISTENT_DIMENSIONS]:
-    'Series has inconsistent dimensions between frames.',
-  [CODES.INCONSISTENT_COMPONENTS]:
-    'Series has frames with inconsistent number of components.',
-  [CODES.INCONSISTENT_ORIENTATIONS]:
-    'Series has frames with inconsistent orientations.',
-  [CODES.INCONSISTENT_POSITION_INFORMATION]:
-    'Series has inconsistent position information.',
-};
-
 class DisplaySetMessage {
   id: number;
 
@@ -42,12 +20,6 @@ class DisplaySetMessage {
     this.id = id;
   }
 
-  public toString(): string {
-    return STRINGS[this.id];
-  }
-  public static get STRINGS() {
-    return STRINGS;
-  }
   public static get CODES() {
     return CODES;
   }

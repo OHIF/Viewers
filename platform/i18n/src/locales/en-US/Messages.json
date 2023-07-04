@@ -1,0 +1,14 @@
+{
+  "1": "No valid instances found in series.",
+  "2": "Series has missing position information.",
+  "3": "Series is not a reconstructable 3D volume.",
+  "4": "Multi frame series don't have pixel measurement information.",
+  "5": "Multi frame series don't have orientation information.",
+  "6": "Multi frame series don't have position information.",
+  "7": "Series has missing frames.",
+  "8": "Series has irregular spacing.",
+  "9": "Series has inconsistent dimensions between frames.",
+  "10": "Series has frames with inconsistent number of components.",
+  "11": "Series has frames with inconsistent orientations.",
+  "12": "Series has inconsistent position information."
+}
