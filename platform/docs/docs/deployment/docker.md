@@ -168,6 +168,16 @@ The presence of the `${SSL_PORT}` environment variable is used to trigger to dep
 :::
 
 :::tip
+The read and write permissions of the source, mounted volumes are preserved in the Docker container. The volume mounted certificate and private key require read permission.
+
+One way to ensure both are readable is to issue the following on the host system terminal prior to running the Docker container and mounting the certificate and private key volumes.
+
+```sh
+sudo chmod 644 /path/to/certificate /path/to/private/key
+```
+:::
+
+:::tip
 The SSL certificate and private key can be either [CA issued](#ca-signed-certificates) or [self-signed](#self-signed-certificates).
 :::
 

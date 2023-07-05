@@ -72,7 +72,7 @@ COPY --from=builder /usr/src/app/platform/app/dist /usr/share/nginx/html
 # In entrypoint.sh, app-config.js might be overwritten, so chmod it to be writeable.
 # The nginx user cannot chmod it, so change to root.
 USER root
-run chmod 666 /usr/share/nginx/html/app-config.js
+RUN chmod 666 /usr/share/nginx/html/app-config.js
 USER nginx
 ENTRYPOINT ["/usr/src/entrypoint.sh"]
 CMD ["nginx", "-g", "daemon off;"]
