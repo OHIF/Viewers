@@ -7,7 +7,7 @@ import {
   InputDoubleRange,
   Label,
   Icon,
-  FramePanel,
+  GenerateVolume,
 } from '@ohif/ui';
 import { useCine, useViewportGrid } from '@ohif/ui';
 import { cache, utilities as csUtils, volumeLoader } from '@cornerstonejs/core';
@@ -96,11 +96,11 @@ export default function PanelGenerateImage({
     subscriptions.push(
       cornerstoneViewportService.subscribe(evt, evtdetails => {
         evtdetails.viewportData.data.forEach(volumeData => {
-          if (volumeData.volumeId.split(':')[0] === volumeLoaderScheme) {
+          if (volumeData.volume.isDynamicVolume()) {
             setDynamicVolume(volumeData.volume);
             uuidDynamicVolume.current = volumeData.displaySetInstanceUID;
-            const range = [1, volumeData.volume._numTimePoints];
-            setRangeValues(prevArray => [...prevArray, ...range]);
+            const range = [1, volumeData.volume.numTimePoints];
+            setRangeValues(range);
             setTimeFramesToUse([0, 1]);
           }
         });
@@ -141,9 +141,7 @@ export default function PanelGenerateImage({
 
     // Set computed scalar data to volume
     const scalarData = computedVolume.getScalarData();
-    for (let i = 0; i < dataInTime.length; i++) {
-      scalarData[i] = dataInTime[i];
-    }
+    scalarData.set(dataInTime);
 
     // If computed display set does not exist, create an object to be used as
     // the displaySet. If it does exist, update the image data and vtkTexture
@@ -160,6 +158,7 @@ export default function PanelGenerateImage({
         },
       };
       setComputedDisplaySet(obj);
+      renderGeneratedImage(obj);
     } else {
       commandsManager.runCommand('updateVolumeTextureAndImageData', {
         volume: computedVolume,
@@ -180,13 +179,6 @@ export default function PanelGenerateImage({
       }
     }
   }
-
-  // if computedDisplaySet is defined, render when the data changes
-  useEffect(() => {
-    if (computedDisplaySet) {
-      renderGeneratedImage(computedDisplaySet);
-    }
-  }, [computedDisplaySet]);
 
   function returnTo4D() {
     const updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
@@ -232,7 +224,6 @@ export default function PanelGenerateImage({
   };
 
   function handleSliderChange(newValues) {
-    // setSliderValues(newValues);
     const timeFrameValuesArray = Array.from(
       { length: newValues[1] - newValues[0] + 1 },
       (_, i) => i + newValues[0] - 1
@@ -243,41 +234,15 @@ export default function PanelGenerateImage({
   return (
     <div className="flex flex-col">
       <div className="flex flex-col p-4 space-y-4 bg-primary-dark">
-        <div className="marginBottom-10px">Frame Panel</div>
-        <div className="w-3">
-          <InputDoubleRange
-            labelClassName="text-black"
-            maxValue={rangeValues[1] || 2}
-            minValue={rangeValues[0] || 1}
-            onSliderChange={handleSliderChange}
-            step={10}
-            unit="%"
-            valueLeft={rangeValues[0] || 1}
-            valueRight={rangeValues[1] || 2}
-          />
-        </div>
-        <Select
-          label={t('Strategy')}
-          closeMenuOnSelect={true}
-          className="mr-2 bg-black border-primary-main text-white "
-          options={operationsUI}
-          placeholder={
-            operationsUI.find(option => option.value === options.Operation)
-              .placeHolder
-          }
-          value={options.Operation}
-          onChange={({ value }) => {
-            handleGenerateOptionsChange({
-              Operation: value,
-            });
-          }}
+        <GenerateVolume
+          rangeValues={rangeValues}
+          handleSliderChange={handleSliderChange}
+          operationsUI={operationsUI}
+          options={options}
+          handleGenerateOptionsChange={handleGenerateOptionsChange}
+          onGenerateImage={onGenerateImage}
+          returnTo4D={returnTo4D}
         />
-        <Button color="primary" onClick={onGenerateImage}>
-          Generate Image
-        </Button>
-        <Button color="primary" onClick={returnTo4D}>
-          Return To 4D
-        </Button>
         <div className="flex justify-between">
           <Button
             onClick={() => {

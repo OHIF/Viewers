@@ -9,6 +9,7 @@ import Dialog from './Dialog';
 import Dropdown from './Dropdown';
 import EmptyStudies from './EmptyStudies';
 import ErrorBoundary from './ErrorBoundary';
+import GenerateVolume from './GenerateVolume/GenerateVolume';
 import Icon from './Icon';
 import IconButton from './IconButton';
 import Input from './Input';
@@ -94,6 +95,7 @@ export {
   EmptyStudies,
   ErrorBoundary,
   ExpandableToolbarButton,
+  GenerateVolume,
   ListMenu,
   Icon,
   IconButton,

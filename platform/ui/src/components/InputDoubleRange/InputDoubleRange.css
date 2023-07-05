@@ -15,7 +15,6 @@ input[type='range'] {
 .slider__track,
 .slider__range {
   border-radius: 3px;
-  height: 3px;
 }
 .slider__track {
   background-color: #3a3f99;

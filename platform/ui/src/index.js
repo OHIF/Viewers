@@ -51,6 +51,7 @@ export {
   EmptyStudies,
   ErrorBoundary,
   ExpandableToolbarButton,
+  GenerateVolume,
   ListMenu,
   Icon,
   IconButton,

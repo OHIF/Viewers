@@ -21,7 +21,6 @@ const InputDoubleRange: React.FC<{
   step: number;
   unit?: string;
   containerClassName?: string;
-  inputClassName?: string;
   labelClassName?: string;
   labelVariant?: string;
   showLabel: boolean;
@@ -34,7 +33,6 @@ const InputDoubleRange: React.FC<{
   step = 1,
   unit = '',
   containerClassName,
-  inputClassName,
   labelClassName,
   labelVariant,
   showLabel = true,
@@ -88,13 +86,11 @@ const InputDoubleRange: React.FC<{
         onChange={event => {
           const value = Math.min(Number(event.target.value), rightVal);
           setLeftVal(value);
-          // leftValRef.current = value;
           handleSliderChange([value, rightVal]);
         }}
         className="appearance-none h-[3px] rounded-lg thumb thumb--left"
         style={{
-          zIndex: leftVal > valueRight - 100 && '5',
-          background: `linear-gradient(to right, #5acce6 0%, #5acce6 ${rangeValueLeftPercentage}%, #3a3f99 ${rangeValueLeftPercentage}%, #3a3f99 ${rangeValueLeftPercentage}%, #5acce6 ${rangeValueLeftPercentage}%, #5acce6 100%)`,
+          background: `linear-gradient(to right, #3a3f99 0%, #3a3f99 ${rangeValueLeftPercentage}%, #5acce6 ${rangeValueLeftPercentage}%, #5acce6 ${rangeValueRightPercentage}%, #3a3f99 ${rangeValueRightPercentage}%, #3a3f99 100%)`,
         }}
       />
       <input
@@ -105,12 +101,11 @@ const InputDoubleRange: React.FC<{
         onChange={event => {
           const value = Math.max(Number(event.target.value), leftVal);
           setRightVal(value);
-          // rightValRef.current = value;
           handleSliderChange([leftVal, value]);
         }}
         className="appearance-none h-[3px] rounded-lg thumb thumb--right"
         style={{
-          background: `linear-gradient(to right, #5acce6 0%, #5acce6 ${rangeValueRightPercentage}%, #3a3f99 ${rangeValueRightPercentage}%, #3a3f99 ${rangeValueRightPercentage}%, #5acce6 ${rangeValueRightPercentage}%, #5acce6 100%)`,
+          background: `linear-gradient(to right, transparent 0%, transparent ${rangeValueLeftPercentage}%, #5acce6 ${rangeValueLeftPercentage}%, #5acce6 ${rangeValueRightPercentage}%, transparent ${rangeValueRightPercentage}%, #3a3f99 100%)`,
         }}
       />
       <div className="slider">

@@ -621,14 +621,13 @@ function commandsModule({
       toolGroup.setToolEnabled(ReferenceLinesTool.toolName);
     },
     setDisplaySetToGridViewports: ({ displaySet }) => {
-      const cachedDisplaySetKeys = [
-        ...displaySetService.getDisplaySetCache().keys(),
-      ];
+      const displaySetCache = displaySetService.getDisplaySetCache();
+      const cachedDisplaySetKeys = [displaySetCache.keys()];
       const displaySetKey = Object.keys(displaySet)[0];
 
       // Check to see if computed display set is already in cache
       if (!cachedDisplaySetKeys.includes(displaySetKey)) {
-        displaySetService._addDisplaySetsToCache([displaySet[displaySetKey]]);
+        displaySetCache.set(displaySetKey, displaySet[displaySetKey]);
       }
 
       // Get all viewports and their corresponding indexs
