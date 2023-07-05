@@ -1,8 +1,8 @@
 import React from 'react';
-import Typography from '../Typography';
-import InputDoubleRange from '../InputDoubleRange';
-import Select from '../Select';
-import Button from '../Button';
+import Typography from '@ohif/ui';
+import { InputDoubleRange } from '@ohif/ui';
+import { Select } from '@ohif/ui';
+import { Button } from '@ohif/ui';
 import PropTypes from 'prop-types';
 
 const GenerateVolume = ({

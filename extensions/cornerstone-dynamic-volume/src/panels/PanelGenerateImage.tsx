@@ -1,14 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import PropTypes, { array } from 'prop-types';
-import {
-  Button,
-  Select,
-  InputDoubleRange,
-  Label,
-  Icon,
-  GenerateVolume,
-} from '@ohif/ui';
+import { Button, Select, InputDoubleRange, Label, Icon } from '@ohif/ui';
 import { useCine, useViewportGrid } from '@ohif/ui';
 import { cache, utilities as csUtils, volumeLoader } from '@cornerstonejs/core';
 import {
@@ -18,6 +11,7 @@ import {
   Types as cstTypes,
   utilities as cstUtils,
 } from '@cornerstonejs/tools';
+import GenerateVolume from './GenerateVolume';
 
 const DEFAULT_OPTIONS = {
   TimeFrames: null,
@@ -91,31 +85,27 @@ export default function PanelGenerateImage({
   useEffect(() => {
     // ~~ Subscription
     const evt = cornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED;
-    const subscriptions = [];
+    let unsubscribe;
 
-    subscriptions.push(
-      cornerstoneViewportService.subscribe(evt, evtdetails => {
-        evtdetails.viewportData.data.forEach(volumeData => {
-          if (volumeData.volume.isDynamicVolume()) {
-            setDynamicVolume(volumeData.volume);
-            uuidDynamicVolume.current = volumeData.displaySetInstanceUID;
-            const range = [1, volumeData.volume.numTimePoints];
-            setRangeValues(range);
-            setTimeFramesToUse([0, 1]);
-          }
-        });
-      }).unsubscribe
-    );
+    unsubscribe = cornerstoneViewportService.subscribe(evt, evtdetails => {
+      evtdetails.viewportData.data.forEach(volumeData => {
+        if (volumeData.volume.isDynamicVolume()) {
+          setDynamicVolume(volumeData.volume);
+          uuidDynamicVolume.current = volumeData.displaySetInstanceUID;
+          const range = [1, volumeData.volume.numTimePoints];
+          setRangeValues(range);
+          setTimeFramesToUse([0, 1]);
+        }
+      });
+    }).unsubscribe;
 
     return () => {
-      subscriptions.forEach(unsub => {
-        unsub();
-      });
+      unsubscribe();
     };
   }, []);
 
   function renderGeneratedImage(displaySet) {
-    commandsManager.runCommand('setDisplaySetToGridViewports', {
+    commandsManager.runCommand('setViewportGridDisplaySets', {
       displaySet,
     });
   }
@@ -160,7 +150,7 @@ export default function PanelGenerateImage({
       setComputedDisplaySet(obj);
       renderGeneratedImage(obj);
     } else {
-      commandsManager.runCommand('updateVolumeTextureAndImageData', {
+      commandsManager.runCommand('updateVolumeData', {
         volume: computedVolume,
       });
 
@@ -295,7 +285,9 @@ export default function PanelGenerateImage({
         </div>
         <div className="flex justify-center items-center space-between">
           <div
-            className={`'cursor-pointer text-primary-active active:text-primary-light hover:bg-customblue-300  flex items-center justify-center rounded-l`}
+            className={
+              'cursor-pointer text-primary-active active:text-primary-light hover:bg-customblue-300  flex items-center justify-center rounded-l'
+            }
             onClick={() => handleSetFrameRate(frameRate - 1)}
           >
             <Icon name="icon-prev" />

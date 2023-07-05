@@ -620,7 +620,7 @@ function commandsModule({
       );
       toolGroup.setToolEnabled(ReferenceLinesTool.toolName);
     },
-    setDisplaySetToGridViewports: ({ displaySet }) => {
+    setViewportGridDisplaySets: ({ displaySet }) => {
       const displaySetCache = displaySetService.getDisplaySetCache();
       const cachedDisplaySetKeys = [displaySetCache.keys()];
       const displaySetKey = Object.keys(displaySet)[0];
@@ -646,7 +646,7 @@ function commandsModule({
 
       viewportGridService.setDisplaySetsForViewports(viewportsToUpdate);
     },
-    updateVolumeTextureAndImageData: ({ volume }) => {
+    updateVolumeData: ({ volume }) => {
       // update vtkOpenGLTexture and imageData of computed volume
       const { imageData, vtkOpenGLTexture } = volume;
       const numSlices = imageData.getDimensions()[2];
@@ -780,13 +780,13 @@ function commandsModule({
     toggleReferenceLines: {
       commandFn: actions.toggleReferenceLines,
     },
-    setDisplaySetToGridViewports: {
-      commandFn: actions.setDisplaySetToGridViewports,
+    setViewportGridDisplaySets: {
+      commandFn: actions.setViewportGridDisplaySets,
       storeContexts: [],
       options: {},
     },
-    updateVolumeTextureAndImageData: {
-      commandFn: actions.updateVolumeTextureAndImageData,
+    updateVolumeData: {
+      commandFn: actions.updateVolumeData,
     },
   };
 
