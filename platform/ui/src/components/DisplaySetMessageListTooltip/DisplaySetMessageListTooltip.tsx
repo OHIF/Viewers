@@ -4,6 +4,11 @@ import Tooltip from '../Tooltip';
 import Icon from '../Icon';
 import { useTranslation } from 'react-i18next';
 
+/**
+ * Displays a tooltip with a list of messages of a displaySet
+ * @param param0
+ * @returns
+ */
 const DisplaySetMessageListTooltip = ({ messages }): React.ReactNode => {
   const { t } = useTranslation('Messages');
   if (messages.size()) {

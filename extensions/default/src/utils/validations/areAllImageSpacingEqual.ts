@@ -11,7 +11,7 @@ import toNumber from '@ohif/core/src/utils/toNumber';
  * @param {*} instances
  * @param {*} warnings
  */
-export default function checkSeriesSpacing(instances, messages) {
+export default function areAllImageSpacingEqual(instances, messages) {
   const firstImagePositionPatient = toNumber(instances[0].ImagePositionPatient);
   const lastIpp = toNumber(
     instances[instances.length - 1].ImagePositionPatient

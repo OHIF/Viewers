@@ -8,7 +8,7 @@ import checkSingleFrames from './utils/validations/checkSingleFrames';
  *
  * @param {Object[]} instances An array of `OHIFInstanceMetadata` objects.
  */
-export default function validateInstances(
+export default function getDisplaySetMessages(
   instances: Array<any>,
   isReconstructable: boolean
 ): DisplaySetMessageList {
@@ -18,16 +18,17 @@ export default function validateInstances(
   }
 
   const firstInstance = instances[0];
+  // Due to current requirements, LOCALIZER series doesn't have any messages
   if (firstInstance.ImageType.includes('LOCALIZER')) {
     return messages;
   }
 
-  const isMultiframe = firstInstance.NumberOfFrames > 1;
   const Modality = firstInstance.Modality;
   if (!constructableModalities.includes(Modality)) {
     return messages;
   }
 
+  const isMultiframe = firstInstance.NumberOfFrames > 1;
   // Can't reconstruct if all instances don't have the ImagePositionPatient.
   if (
     !isMultiframe &&
@@ -38,11 +39,9 @@ export default function validateInstances(
 
   const sortedInstances = sortInstancesByPosition(instances);
 
-  if (isMultiframe) {
-    checkMultiFrame(sortedInstances[0], messages);
-  } else {
-    checkSingleFrames(sortedInstances, messages);
-  }
+  isMultiframe
+    ? checkMultiFrame(sortedInstances[0], messages)
+    : checkSingleFrames(sortedInstances, messages);
 
   if (!isReconstructable) {
     messages.addMessage(DisplaySetMessage.CODES.NOT_RECONSTRUCTABLE);

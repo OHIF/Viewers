@@ -1,30 +1,30 @@
-const CODES = {
-  NO_VALID_INSTANCES: 1,
-  NO_POSITION_INFORMATION: 2,
-  NOT_RECONSTRUCTABLE: 3,
-  MULTIFRAME_NO_PIXEL_MEASUREMENTS: 4,
-  MULTIFRAME_NO_ORIENTATION: 5,
-  MULTIFRAME_NO_POSITION_INFORMATION: 6,
-  MISSING_FRAMES: 7,
-  IRREGULAR_SPACING: 8,
-  INCONSISTENT_DIMENSIONS: 9,
-  INCONSISTENT_COMPONENTS: 10,
-  INCONSISTENT_ORIENTATIONS: 11,
-  INCONSISTENT_POSITION_INFORMATION: 12,
-};
-
+/**
+ * Defines a displaySet message, that could be any pf the potential problems of a displaySet
+ */
 class DisplaySetMessage {
   id: number;
+  static CODES = {
+    NO_VALID_INSTANCES: 1,
+    NO_POSITION_INFORMATION: 2,
+    NOT_RECONSTRUCTABLE: 3,
+    MULTIFRAME_NO_PIXEL_MEASUREMENTS: 4,
+    MULTIFRAME_NO_ORIENTATION: 5,
+    MULTIFRAME_NO_POSITION_INFORMATION: 6,
+    MISSING_FRAMES: 7,
+    IRREGULAR_SPACING: 8,
+    INCONSISTENT_DIMENSIONS: 9,
+    INCONSISTENT_COMPONENTS: 10,
+    INCONSISTENT_ORIENTATIONS: 11,
+    INCONSISTENT_POSITION_INFORMATION: 12,
+  };
 
   constructor(id: number) {
     this.id = id;
   }
-
-  public static get CODES() {
-    return CODES;
-  }
 }
-
+/**
+ * Defines a list of displaySet messages
+ */
 class DisplaySetMessageList {
   messages = [];
 
@@ -38,21 +38,11 @@ class DisplaySetMessageList {
   }
 
   public include(messageId: number): boolean {
-    for (let i = 0; i < this.messages.length; i++) {
-      if (this.messages[i].id === messageId) {
-        return true;
-      }
-    }
-    return false;
+    return this.messages.some(message => message.id === messageId);
   }
 
   public includes(messageIdList: number[]): boolean {
-    for (let i = 0; i < messageIdList.length; i++) {
-      if (!this.include(messageIdList[i])) {
-        return false;
-      }
-    }
-    return true;
+    return messageIdList.every(messageId => this.include(messageId));
   }
 }
 

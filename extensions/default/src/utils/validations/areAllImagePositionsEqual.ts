@@ -36,7 +36,7 @@ function _checkSeriesPositionShift(
  * @param {*} instances
  * @returns
  */
-export default function checkSeriesPositionShift(instances) {
+export default function areAllImagePositionsEqual(instances) {
   const firstImageOrientationPatient = toNumber(
     instances[0].ImageOrientationPatient
   );

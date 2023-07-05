@@ -1,8 +1,8 @@
-import checkSeriesDimensions from './checkSeriesDimensions';
-import checkSeriesComponents from './checkSeriesComponents';
-import checkSeriesOrientation from './checkSeriesOrientation';
-import checkSeriesPositionShift from './checkSeriesPositionShit';
-import checkSeriesSpacing from './checkSeriesSpacing';
+import areAllImageDimensionsEqual from './areAllImageDimensionsEqual';
+import areAllImageComponentsEqual from './areAllImageComponentsEqual';
+import areAllImageOrientationsEqual from './areAllImageOrientationsEqual';
+import areAllImagePositionsEqual from './areAllImagePositionsEqual';
+import areAllImageSpacingEqual from './areAllImageSpacingEqual';
 import { DisplaySetMessage, DisplaySetMessageList } from '@ohif/core';
 
 /**
@@ -15,23 +15,23 @@ export default function checkSingleFrames(
   messages: DisplaySetMessageList
 ): void {
   if (instances.length > 2) {
-    if (!checkSeriesDimensions(instances)) {
+    if (!areAllImageDimensionsEqual(instances)) {
       messages.addMessage(DisplaySetMessage.CODES.INCONSISTENT_DIMENSIONS);
     }
 
-    if (!checkSeriesComponents(instances)) {
+    if (!areAllImageComponentsEqual(instances)) {
       messages.addMessage(DisplaySetMessage.CODES.INCONSISTENT_COMPONENTS);
     }
 
-    if (!checkSeriesOrientation(instances)) {
+    if (!areAllImageOrientationsEqual(instances)) {
       messages.addMessage(DisplaySetMessage.CODES.INCONSISTENT_ORIENTATIONS);
     }
 
-    if (!checkSeriesPositionShift(instances)) {
+    if (!areAllImagePositionsEqual(instances)) {
       messages.addMessage(
         DisplaySetMessage.CODES.INCONSISTENT_POSITION_INFORMATION
       );
     }
-    checkSeriesSpacing(instances, messages);
+    areAllImageSpacingEqual(instances, messages);
   }
 }

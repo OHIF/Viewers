@@ -3,7 +3,7 @@ import sopClassDictionary from '@ohif/core/src/utils/sopClassDictionary';
 import ImageSet from '@ohif/core/src/classes/ImageSet';
 import isDisplaySetReconstructable from '@ohif/core/src/utils/isDisplaySetReconstructable';
 import { id } from './id';
-import validateInstances from './validateInstances';
+import getDisplaySetMessages from './getDisplaySetMessages';
 
 const sopClassHandlerName = 'stack';
 
@@ -20,7 +20,7 @@ const makeDisplaySet = instances => {
     averageSpacingBetweenFrames,
   } = isDisplaySetReconstructable(instances);
   // set appropriate attributes to image set...
-  const messages = validateInstances(instances, isReconstructable);
+  const messages = getDisplaySetMessages(instances, isReconstructable);
 
   imageSet.setAttributes({
     displaySetInstanceUID: imageSet.uid, // create a local alias for the imageSet UID
@@ -95,7 +95,7 @@ function getSopClassUids(instances) {
  * @param {SeriesMetadata} series The series metadata object from which the display sets will be created
  * @returns {Array} The list of display sets created for the given series object
  */
-function _getDisplaySetsFromSeries(instances) {
+function getDisplaySetsFromSeries(instances) {
   // If the series has no instances, stop here
   if (!instances || !instances.length) {
     throw new Error('No instances were provided');
@@ -211,9 +211,7 @@ function getSopClassHandlerModule() {
     {
       name: sopClassHandlerName,
       sopClassUids,
-      getDisplaySetsFromSeries: instances => {
-        return _getDisplaySetsFromSeries(instances);
-      },
+      getDisplaySetsFromSeries,
     },
   ];
 }

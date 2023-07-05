@@ -1,11 +1,11 @@
 import toNumber from '@ohif/core/src/utils/toNumber';
 
 /**
- * Check if the series has frames with different samplesPerPixel
+ * Check if all voxels in series images has same number of components (samplesPerPixel)
  * @param {*} instances
  * @returns
  */
-export default function checkSeriesComponents(instances) {
+export default function areAllImageComponentsEqual(instances) {
   const firstImage = instances[0];
   const firstImageSamplesPerPixel = toNumber(firstImage.SamplesPerPixel);
 
