@@ -20,7 +20,7 @@ const DisplaySetMessageListTooltip = ({ messages }): React.ReactNode => {
           content={
             <div className="text-left max-w-40">
               <div className="break-normal text-base text-blue-300 font-bold">
-                Series Messages
+                DisplaySet Messages
               </div>
               <ol>
                 {messages.messages.map((message, index) => (
