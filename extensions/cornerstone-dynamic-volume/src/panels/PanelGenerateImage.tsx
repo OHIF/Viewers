@@ -105,7 +105,7 @@ export default function PanelGenerateImage({
   }, []);
 
   function renderGeneratedImage(displaySet) {
-    commandsManager.runCommand('setViewportGridDisplaySets', {
+    commandsManager.runCommand('setDerviedDisplaySetsInGridViewports', {
       displaySet,
     });
   }

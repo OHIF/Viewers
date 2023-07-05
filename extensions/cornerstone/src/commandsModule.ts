@@ -620,7 +620,7 @@ function commandsModule({
       );
       toolGroup.setToolEnabled(ReferenceLinesTool.toolName);
     },
-    setViewportGridDisplaySets: ({ displaySet }) => {
+    setDerviedDisplaySetsInGridViewports: ({ displaySet }) => {
       const displaySetCache = displaySetService.getDisplaySetCache();
       const cachedDisplaySetKeys = [displaySetCache.keys()];
       const displaySetKey = Object.keys(displaySet)[0];
@@ -780,8 +780,8 @@ function commandsModule({
     toggleReferenceLines: {
       commandFn: actions.toggleReferenceLines,
     },
-    setViewportGridDisplaySets: {
-      commandFn: actions.setViewportGridDisplaySets,
+    setDerviedDisplaySetsInGridViewports: {
+      commandFn: actions.setDerviedDisplaySetsInGridViewports,
       storeContexts: [],
       options: {},
     },
