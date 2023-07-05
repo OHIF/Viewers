@@ -10,7 +10,7 @@ import {
   utilities as cstUtils,
   ReferenceLinesTool,
 } from '@cornerstonejs/tools';
-import { Types as OhifTypes } from '@ohif/core';
+import { HangingProtocolService, Types as OhifTypes } from '@ohif/core';
 
 import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownloadForm';
 import callInputDialog from './utils/callInputDialog';
@@ -32,6 +32,8 @@ function commandsModule({
     cornerstoneViewportService,
     uiNotificationService,
     measurementService,
+    displaySetService,
+    hangingProtocolService,
   } = servicesManager.services as CornerstoneServices;
 
   const { measurementServiceSource } = this;
@@ -618,6 +620,42 @@ function commandsModule({
       );
       toolGroup.setToolEnabled(ReferenceLinesTool.toolName);
     },
+    setDerviedDisplaySetsInGridViewports: ({ displaySet }) => {
+      const displaySetCache = displaySetService.getDisplaySetCache();
+      const cachedDisplaySetKeys = [displaySetCache.keys()];
+      const displaySetKey = Object.keys(displaySet)[0];
+
+      // Check to see if computed display set is already in cache
+      if (!cachedDisplaySetKeys.includes(displaySetKey)) {
+        displaySetCache.set(displaySetKey, displaySet[displaySetKey]);
+      }
+
+      // Get all viewports and their corresponding indexs
+      const { viewports } = viewportGridService.getState();
+
+      const viewportsToUpdate = viewports.map((viewport, index) => ({
+        viewportIndex: index,
+        displaySetInstanceUIDs: [displaySetKey],
+        viewportOptions: {
+          initialImageOptions: viewport.viewportOptions.initialImageOptions,
+          viewportType: 'volume',
+          orientation: viewport.viewportOptions.orientation,
+          background: viewport.viewportOptions.background,
+        },
+      }));
+
+      viewportGridService.setDisplaySetsForViewports(viewportsToUpdate);
+    },
+    updateVolumeData: ({ volume }) => {
+      // update vtkOpenGLTexture and imageData of computed volume
+      const { imageData, vtkOpenGLTexture } = volume;
+      const numSlices = imageData.getDimensions()[2];
+      const slicesToUpdate = [...Array(numSlices).keys()];
+      slicesToUpdate.forEach(i => {
+        vtkOpenGLTexture.setUpdatedFrame(i);
+      });
+      imageData.modified();
+    },
   };
 
   const definitions = {
@@ -741,6 +779,14 @@ function commandsModule({
     },
     toggleReferenceLines: {
       commandFn: actions.toggleReferenceLines,
+    },
+    setDerviedDisplaySetsInGridViewports: {
+      commandFn: actions.setDerviedDisplaySetsInGridViewports,
+      storeContexts: [],
+      options: {},
+    },
+    updateVolumeData: {
+      commandFn: actions.updateVolumeData,
     },
   };
 

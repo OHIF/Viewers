@@ -126,7 +126,8 @@ const OHIFCornerstoneViewport = React.memo(props => {
   } = props;
 
   const [scrollbarHeight, setScrollbarHeight] = useState('100px');
-  const [{ isCineEnabled, cines }, cineService] = useCine();
+  const [cineState, cineService] = useCine();
+  const { isCineEnabled, cines } = cineState;
   const [{ activeViewportIndex }] = useViewportGrid();
   const [enabledVPElement, setEnabledVPElement] = useState(null);
   const elementRef = useRef();
