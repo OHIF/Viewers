@@ -11,6 +11,8 @@ const ohif = {
   layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
   sopClassHandler: '@ohif/extension-default.sopClassHandlerModule.stack',
   thumbnailList: '@ohif/extension-default.panelModule.seriesList',
+  HounsfieldUnitPanel:
+    'extension-lytic-lesion.panelModule.HounsfieldRangeSelector',
 };
 
 const tracked = {
@@ -198,7 +200,7 @@ function modeFactory() {
           return {
             id: ohif.layout,
             props: {
-              leftPanels: [tracked.thumbnailList],
+              leftPanels: [tracked.thumbnailList, ohif.HounsfieldUnitPanel],
               rightPanels: [
                 dicomSeg.panel,
                 tracked.measurements,

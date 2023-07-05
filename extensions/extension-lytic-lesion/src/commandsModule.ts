@@ -1,7 +1,8 @@
 import { ServicesManager, utils, Types } from '@ohif/core';
 
-import { Enums, utilities as cstUtils } from '@cornerstonejs/tools';
+import { Enums, utilities as csUtils } from '@cornerstonejs/tools';
 import { Types as OhifTypes } from '@ohif/core';
+
 import {
   ContextMenuController,
   defaultContextMenu,
@@ -21,10 +22,12 @@ import getThresholdValues from './utils/getThresholdValue';
 import calculateSuvPeak from './utils/calculateSUVPeak';
 import calculateTMTV from './utils/calculateTMTV';
 import createAndDownloadTMTVReport from './utils/createAndDownloadTMTVReport';
-
+import { utilities } from '@cornerstonejs/core';
+import customColormap from './utils/colormaps/customColormap';
 import dicomRTAnnotationExport from './utils/dicomRTAnnotationExport/RTStructureSet';
 import { getEnabledElement } from './state';
 const { subscribeToNextViewportGridChange } = utils;
+const { registerColormap, getColormapNames } = utilities.colormap;
 
 export type HangingProtocolParams = {
   protocolId?: string;
@@ -356,56 +359,57 @@ const commandsModule = ({
         });
       }
     },
-    setColorMap: ({ toolGroupId, colormap }) => {
-      //   const { activeViewportIndex, viewports } = viewportGridService.getState();
-      //   const activeViewportSpecificData = viewports[activeViewportIndex];
-      //   const { displaySetInstanceUIDs } = activeViewportSpecificData;
+    setHounsfieldRange: ({minHU, maxHU, targetNumber}) =>{
+      const { activeViewportIndex, viewports } = viewportGridService.getState();
+      const activeViewportSpecificData = viewports[activeViewportIndex];
+      const { displaySetInstanceUIDs } = activeViewportSpecificData;
+      const displaySets = displaySetService.activeDisplaySets;
+      const viewport = cornerstoneViewportService.getCornerstoneViewportByIndex(
+        activeViewportIndex
+      );
 
-      //   const displaySets = displaySetService.activeDisplaySets;
-
-      //   const displaySetInstanceUID = displaySetInstanceUIDs[0];
-      //   console.log(displaySetInstanceUID);
-      //   console.log(colormap);
-      //   commandsManager.runCommand('setSingleViewportColormap', {
-      //     viewportIndex: activeViewportIndex,
-      //     displaySetInstanceUID,
-      //     colormap,
-      //   });
-      console.log(toolGroupId);
-      const toolGroup = toolGroupService.getToolGroup(toolGroupId);
-      const { viewportMatchDetails } = hangingProtocolService.getMatchDetails();
-
-      const ptDisplaySet = actions.getMatchingPTDisplaySet({
-        viewportMatchDetails,
-      });
-
-      if (!ptDisplaySet) {
-        return;
+      let props = viewport.getProperties();
+      let windowLow = props.voiRange.lower;
+      let windowHigh = props.voiRange.upper;
+      let newColormap = customColormap(minHU, maxHU, targetNumber, windowLow, windowHigh);
+      let colormap ={
+        ColorSpace: 'RGB',
+        Name: 'HUColormap',
+        RGBPoints: newColormap,
       }
 
-      const fusionViewportIds = toolGroup.getViewportIds();
-
-      const viewports = [];
-      fusionViewportIds.forEach(viewportId => {
-        const viewportInfo = cornerstoneViewportService.getViewportInfo(
-          viewportId
-        );
-
-        const viewportIndex = viewportInfo.getViewportIndex();
+      registerColormap(colormap);
+    },
+    setColorMap: ({ colormap }) => {
+      const { activeViewportIndex, viewports } = viewportGridService.getState();
+      const activeViewportSpecificData = viewports[activeViewportIndex];
+      const { displaySetInstanceUIDs } = activeViewportSpecificData;
+      const displaySets = displaySetService.activeDisplaySets;
+      let views = []
+      console.log(colormap);
+      viewports.forEach(viewport =>{
+        console.log(viewport);
+        let displaySetInstanceUID = viewport.displaySetInstanceUIDs[0];
         commandsManager.runCommand('setViewportColormap', {
-          viewportIndex,
-          displaySetInstanceUID: ptDisplaySet.displaySetInstanceUID,
-          colormap,
+          viewportIndex: viewport.viewportIndex,
+          displaySetInstanceUID,
+          colormap: {
+            name: colormap,
+            // TODO: This opacity mapping matches that in hpViewports, but
+            // ideally making this editable in a side panel would be useful
+            opacityMapping: [{ value: 0.1, opacity: 0.9 }],
+          },
         });
-
-        viewports.push(
-          cornerstoneViewportService.getCornerstoneViewport(viewportId)
+        views.push(
+          cornerstoneViewportService.getCornerstoneViewport(viewport.viewportId)
         );
-      });
+      })
 
-      viewports.forEach(viewport => {
-        viewport.render();
-      });
+
+    views.forEach(viewport => {
+      viewport.render();
+    });
+
     },
     deltaStage: ({ direction }) => {
       const {
@@ -1335,6 +1339,9 @@ const commandsModule = ({
     },
     thresholdSegmentationByRectangleROITool: {
       commandFn: actions.thresholdSegmentationByRectangleROITool,
+    },
+    setHounsfieldRange:{
+      commandFn: actions.setHounsfieldRange,
     },
   };
 

@@ -4,6 +4,7 @@ import {
   PanelMeasurementTable,
   PanelPetSUV,
   PanelROIThresholdSegmentation,
+  HounsfieldRangeSelector
 } from './Panels';
 
 // TODO:
@@ -44,6 +45,15 @@ function getPanelModule({
       />
     );
   };
+  const wrappedHounsfieldUnitRange = () => {
+    return (
+      <HounsfieldRangeSelector
+        commandsManager={commandsManager}
+        servicesManager={servicesManager}
+        extensionManager={extensionManager}
+      />
+    );
+  };
   return [
     {
       name: 'seriesList',
@@ -70,7 +80,7 @@ function getPanelModule({
       iconLabel: 'PET SUV',
       label: 'PET SUV',
       component: wrappedPanelPetSuv,
-      context: 'default',
+      context: 'LYTIC',
     },
     {
       name: 'ROIThresholdSeg',
@@ -78,7 +88,15 @@ function getPanelModule({
       iconLabel: 'ROI Threshold',
       label: 'ROI Threshold',
       component: wrappedROIThresholdSeg,
-      context: 'default',
+      context: 'LYTIC',
+    },
+    {
+      name: 'HounsfieldRangeSelector',
+      iconName: 'tab-roi-threshold',
+      iconLabel: 'Hounsfield Range',
+      label: 'Hounsfield Range',
+      component: wrappedHounsfieldUnitRange,
+      context: 'LYTIC',
     },
   ];
 }

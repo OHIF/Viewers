@@ -347,14 +347,11 @@ const toolbarButtons = [
         'Window Level',
         [
           {
-            commandName: 'displayNotification',
+            commandName: 'setToolActive',
             commandOptions: {
-              title: 'Window Level Tip',
-              text:
-                'Manual Windowing should not be used in Lytic Lesion Mode, please use preset Window Levels.',
-              type: 'info',
-              context: 'LYTIC',
+              toolName: 'WindowLevel',
             },
+            context: 'CORNERSTONE',
           },
         ],
         'Window Level'
@@ -373,8 +370,8 @@ const toolbarButtons = [
         _createWwwcPreset(3, 'Liver', '150 / 90'),
         _createWwwcPreset(4, 'Bone', '2500 / 480'),
         _createWwwcPreset(5, 'Brain', '80 / 40'),
-        _createWwwcPreset(7, 'Test', '1000 / 233'),
-        _createWwwcPreset(8, 'newTest', '590 / 233'),
+        _createWwwcPreset(7, 'Wide Lesion', '1180 / 233'),
+        _createWwwcPreset(8, 'Narrow Lesion', '590 / 233'),
       ],
     },
   },

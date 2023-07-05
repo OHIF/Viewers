@@ -558,7 +558,7 @@ function commandsModule({
       viewportIndex,
       displaySetInstanceUID,
       colormap,
-      immediate = true,
+      immediate = false,
     }) => {
       const viewport = cornerstoneViewportService.getCornerstoneViewportByIndex(
         viewportIndex
@@ -571,10 +571,7 @@ function commandsModule({
       });
 
       const { actor: volumeActor, uid: volumeId } = actorEntry;
-      console.log(colormap);
-      viewport.setProperties({ colormap: colormap });
-      console.log(viewport);
-
+      viewport.setProperties({ colormap });
       if (immediate) {
         viewport.render();
       }
@@ -583,7 +580,7 @@ function commandsModule({
       viewportIndex,
       displaySetInstanceUID,
       colormap,
-      immediate = true,
+      immediate = false,
     }) => {
       const { viewportId, viewport } = _getActiveViewportEnabledElement();
       const renderingEngine = cornerstoneViewportService.getRenderingEngine();
