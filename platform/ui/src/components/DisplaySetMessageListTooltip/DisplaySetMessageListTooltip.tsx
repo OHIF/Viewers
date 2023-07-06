@@ -19,12 +19,28 @@ const DisplaySetMessageListTooltip = ({ messages }): React.ReactNode => {
           tight={true}
           content={
             <div className="text-left max-w-40">
-              <div className="break-normal text-base text-blue-300 font-bold">
+              <div
+                className="break-normal text-base text-blue-300 font-bold"
+                style={{
+                  marginLeft: '12px',
+                  marginTop: '12px',
+                }}
+              >
                 DisplaySet Messages
               </div>
-              <ol>
+              <ol
+                style={{
+                  marginLeft: '12px',
+                }}
+              >
                 {messages.messages.map((message, index) => (
-                  <li key={index}>
+                  <li
+                    style={{
+                      marginTop: '6px',
+                      marginBottom: '6px',
+                    }}
+                    key={index}
+                  >
                     {index + 1}. {t(message.id)}
                   </li>
                 ))}
@@ -32,7 +48,7 @@ const DisplaySetMessageListTooltip = ({ messages }): React.ReactNode => {
             </div>
           }
         >
-          <Icon name="notifications-warning" className="w-3 h-3" />
+          <Icon name="status-alert-warning" />
         </Tooltip>
       </div>
     );
