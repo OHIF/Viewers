@@ -8,7 +8,20 @@ import { hotkeysValidators } from './hotkeysValidators';
  */
 const splitHotkeyDefinitionsAndCreateTuples = hotkeyDefinitions => {
   const splitedHotkeys = [];
-  const arrayHotkeys = Object.entries(hotkeyDefinitions);
+  const arrayHotkeys = Object.entries(hotkeyDefinitions).sort((x, y) => {
+    const labelX = x[1].label.toUpperCase(); // ignore upper and lowercase
+    const labelY = y[1].label.toUpperCase(); // ignore upper and lowercase
+    if (labelX < labelY) {
+      return -1;
+    }
+    if (labelX > labelY) {
+      return 1;
+    }
+
+    // names must be equal
+    return 0;
+  });
+
 
   if (arrayHotkeys.length) {
     const halfwayThrough = Math.ceil(arrayHotkeys.length / 2);

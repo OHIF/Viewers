@@ -8,10 +8,6 @@
   "main": "dist/ohif-extension-cornerstone.umd.js",
   "module": "src/index.tsx",
   "types": "src/types/index.ts",
-  "exports": {
-    ".": "./src/index.tsx",
-    "./types": "./src/types/index.ts"
-  },
   "engines": {
     "node": ">=10",
     "npm": ">=6",
