@@ -1,5 +1,3 @@
-// 2hot, Black-Body Radiation, Black, Orange and White,
-// erdc_red2yellow_BW, RED_TEMPERATURE
 const DEFAULT_COLORMAP = '2hot';
 
 function getPTOptions({
@@ -139,7 +137,7 @@ function getPTViewports() {
 
 function getFusionViewports() {
   const ptOptionsParams = {
-    colormap: 'hsv',
+    colormap: DEFAULT_COLORMAP,
     opacityMapping: [{ value: 0.1, opacity: 0.9 }],
   };
 

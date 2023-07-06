@@ -24,3 +24,11 @@ input[type='range']::-moz-range-thumb {
   box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.521);
   border: 1.5px solid #090c29;
 }
+
+input[type='range']::-webkit-slider-thumb {
+  pointer-events: all;
+}
+
+input[type='range']::-moz-range-thumb {
+  pointer-events: all;
+}

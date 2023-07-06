@@ -108,6 +108,7 @@ export {
   ViewportDownloadForm,
   ViewportGrid,
   ViewportPane,
+  WindowLevel,
   WindowLevelMenuItem,
   ImageScrollbar,
   ViewportOverlay,

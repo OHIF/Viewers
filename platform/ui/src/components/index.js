@@ -60,6 +60,7 @@ import Viewport from './Viewport';
 import ViewportDownloadForm from './ViewportDownloadForm';
 import ViewportGrid from './ViewportGrid';
 import ViewportPane from './ViewportPane';
+import WindowLevel from './WindowLevel';
 import WindowLevelMenuItem from './WindowLevelMenuItem';
 import UserPreferences from './UserPreferences';
 import HotkeysPreferences from './HotkeysPreferences';
@@ -153,6 +154,7 @@ export {
   ViewportGrid,
   ViewportPane,
   ViewportOverlay,
+  WindowLevel,
   WindowLevelMenuItem,
   InputDoubleRange,
 };

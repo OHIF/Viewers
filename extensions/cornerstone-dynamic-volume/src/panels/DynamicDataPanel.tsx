@@ -1,6 +1,5 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React from 'react';
 import WorkflowPanel from './WorkflowPanel';
-import ToolsPanel from './ToolsPanel';
 import WindowLevelPanel from './WindowLevelPanel';
 import PanelGenerateImage from './PanelGenerateImage';
 
@@ -18,12 +17,14 @@ function DynamicDataPanel({
         servicesManager={servicesManager}
         extensionManager={extensionManager}
       />
-      {/* <ToolsPanel></ToolsPanel>
-      <WindowLevelPanel></WindowLevelPanel> */}
       <PanelGenerateImage
         commandsManager={commandsManager}
         servicesManager={servicesManager}
       ></PanelGenerateImage>
+      <WindowLevelPanel
+        extensionManager={extensionManager}
+        servicesManager={servicesManager}
+      ></WindowLevelPanel>
     </div>
   );
 }

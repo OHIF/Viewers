@@ -301,6 +301,7 @@ class CornerstoneViewportService extends PubSubService
       viewportData,
       viewportIndex,
       viewportId,
+      viewportInfo,
     });
   }
 

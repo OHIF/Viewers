@@ -1,9 +1,17 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useMemo } from 'react';
 
-function WindowLevelPanel() {
+function WindowLevelPanel({ extensionManager, servicesManager }): ReactElement {
+  const ActiveViewportWindowLevel = useMemo(
+    () =>
+      extensionManager.getModuleEntry(
+        '@ohif/extension-cornerstone.customizationModule.cornerstoneActiveViewportWindowLevelComponent'
+      ).value.component,
+    [extensionManager]
+  );
+
   return (
     <div data-cy={'windowLevel-panel'}>
-      Window Level Panel
+      <ActiveViewportWindowLevel servicesManager={servicesManager} />
     </div>
   );
 }
