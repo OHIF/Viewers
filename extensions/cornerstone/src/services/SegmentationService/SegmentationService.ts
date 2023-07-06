@@ -542,6 +542,7 @@ class SegmentationService extends PubSubService {
       id: segmentationId,
       displaySetInstanceUID: segDisplaySet.displaySetInstanceUID,
       type: representationType,
+      label: segDisplaySet.SeriesDescription,
       representationData: {
         [LABELMAP]: {
           volumeId: segmentationId,
@@ -789,6 +790,7 @@ class SegmentationService extends PubSubService {
       id: segmentationId,
       displaySetInstanceUID: rtDisplaySetUID,
       type: representationType,
+      label: rtDisplaySet.SeriesDescription,
       representationData: {
         [CONTOUR]: {
           geometryIds,
