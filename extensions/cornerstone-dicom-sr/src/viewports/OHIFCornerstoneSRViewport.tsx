@@ -226,6 +226,7 @@ function OHIFCornerstoneSRViewport(props) {
         }}
         onElementEnabled={onElementEnabled}
         initialImageIndex={initialImageIndex}
+        isJumpToMeasurementDisabled={true}
       ></Component>
     );
   }, [activeImageDisplaySetData, viewportIndex, measurementSelected]);

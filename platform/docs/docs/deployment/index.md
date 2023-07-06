@@ -5,28 +5,20 @@ sidebar_label: Overview
 
 # Deployment
 
-The OHIF Viewer can be embedded in other web applications via it's [packaged
-script source][viewer-npm], or served up as a stand-alone PWA ([progressive web
-application][pwa-url]) by building and hosting a collection of static assets. In
+The OHIF Viewer can be served as a stand-alone PWA ([progressive web
+application][pwa-url]) by building and hosting a collection of static assets or be embedded in other web applications via an iframe if needed. In
 either case, you will need to configure your instance of the Viewer so that it
 can connect to your data source (the database or PACS that provides the data
 your Viewer will display).
 
-## Overview
-
+:::tip
 Our goal is to make deployment as simple and painless as possible; however,
 there is an inherent amount of complexity in configuring and deploying web
 applications. If you find yourself a little lost, please don't hesitate to
-[reach out for help](/help)
+reach out to for help.
+:::
 
 ## Deployment Scenarios
-
-### Embedded Viewer (deprecated)
-
-`OHIF-v3` has deprecated deploying the viewer as an embedded viewer the number
-of underlying libraries that run web workers are increasing for OHIF. An example
-of these libraries is OHIF's 3D rendering functionality that is provided by
-`vtk-js`.
 
 ### Stand-alone Viewer
 
@@ -43,7 +35,6 @@ _Today:_
 _In the future:_
 
 - The ability to package the viewer for [App Store distribution][app-store]
-- Leverage `service-workers` for offline support and speed benefits from caching
 
 #### Hosted Static Assets
 
@@ -51,10 +42,6 @@ At the end of the day, a production OHIF Viewer instance is a collection of
 HTML, CSS, JS, Font Files, and Images. We "build" those files from our
 `source code` with configuration specific to our project. We then make those
 files publicly accessible by hosting them on a Web Server.
-
-If you have not deployed a web application before, this may be a good time to
-[reach out for help](/help), as these steps assume prior web development and
-deployment experience.
 
 ##### Part 1 - Build Production Assets
 
@@ -83,6 +70,16 @@ _Advanced_
 - [AWS S3 + Cloudfront](./static-assets.md#aws-s3--cloudfront)
 - [GCP + Cloudflare](./static-assets.md#gcp--cloudflare)
 - [Azure](./static-assets.md#azure)
+
+### Embedded Viewer (iframe)
+
+`OHIF-v3` has deprecated deploying the viewer as an embedded viewer via a script
+tag as the number of underlying libraries that run web workers are increasing for OHIF. An example of these libraries is OHIF's 3D rendering functionality that is provided by
+`vtk-js`.
+
+However, you can still embed the viewer using an iframe. You can utilize the iframe element to load the OHIF viewer and establish communication with it using the postMessage API if needed.
+Read more about how to use the iframe [here](./iframe.md).
+
 
 ## Data
 

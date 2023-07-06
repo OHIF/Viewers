@@ -31,7 +31,7 @@ export default function Toolbar({ servicesManager }) {
 
   return (
     <>
-      {toolbarButtons.map((toolDef, index) => {
+      {toolbarButtons.map(toolDef => {
         const { id, Component, componentProps } = toolDef;
         // TODO: ...
 

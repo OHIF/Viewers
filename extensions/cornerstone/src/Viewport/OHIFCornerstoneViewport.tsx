@@ -119,6 +119,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
     servicesManager,
     onElementEnabled,
     onElementDisabled,
+    isJumpToMeasurementDisabled,
     // Note: you SHOULD NOT use the initialImageIdOrIndex for manipulation
     // of the imageData in the OHIFCornerstoneViewport. This prop is used
     // to set the initial state of the viewport's first image to render
@@ -455,6 +456,10 @@ const OHIFCornerstoneViewport = React.memo(props => {
    * the cache for jumping to see if there is any jump queued, then we jump to the correct slice.
    */
   useEffect(() => {
+    if (isJumpToMeasurementDisabled) {
+      return;
+    }
+
     const unsubscribeFromJumpToMeasurementEvents = _subscribeToJumpToMeasurementEvents(
       measurementService,
       displaySetService,
@@ -717,6 +722,10 @@ function _jumpToMeasurement(
 // Component displayName
 OHIFCornerstoneViewport.displayName = 'OHIFCornerstoneViewport';
 
+OHIFCornerstoneViewport.defaultProps = {
+  isJumpToMeasurementDisabled: false,
+};
+
 OHIFCornerstoneViewport.propTypes = {
   viewportIndex: PropTypes.number.isRequired,
   displaySets: PropTypes.array.isRequired,
@@ -725,6 +734,7 @@ OHIFCornerstoneViewport.propTypes = {
   displaySetOptions: PropTypes.arrayOf(PropTypes.any),
   servicesManager: PropTypes.object.isRequired,
   onElementEnabled: PropTypes.func,
+  isJumpToMeasurementDisabled: PropTypes.bool,
   // Note: you SHOULD NOT use the initialImageIdOrIndex for manipulation
   // of the imageData in the OHIFCornerstoneViewport. This prop is used
   // to set the initial state of the viewport's first image to render

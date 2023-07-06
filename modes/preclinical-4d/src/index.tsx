@@ -6,9 +6,9 @@ import toolbarButtons from './toolbarButtons';
 const REQUIRED_MODALITIES = ['PT', 'CT'];
 
 const extensionDependencies = {
-  '@ohif/extension-default': '3.7.0-beta.5',
-  '@ohif/extension-cornerstone': '3.7.0-beta.5',
-  '@ohif/extension-cornerstone-dynamic-volume': '3.7.0-beta.5',
+  '@ohif/extension-default': '3.7.0-beta.27',
+  '@ohif/extension-cornerstone': '3.7.0-beta.27',
+  '@ohif/extension-cornerstone-dynamic-volume': '3.7.0-beta.27',
 };
 
 const ohif = {

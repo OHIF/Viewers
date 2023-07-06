@@ -20,12 +20,19 @@ export default function createReportDialogPrompt(uiDialogService) {
      * @param {string} param0.value - value from input field
      */
     const _handleFormSubmit = ({ action, value }) => {
-      uiDialogService.dismiss({ id: dialogId });
       switch (action.id) {
         case 'save':
-          resolve({ action: RESPONSE.CREATE_REPORT, value: value.label });
+          // Only save if description is not blank otherwise ignore
+          if (value.label && value.label.trim() !== '') {
+            resolve({
+              action: RESPONSE.CREATE_REPORT,
+              value: value.label.trim(),
+            });
+            uiDialogService.dismiss({ id: dialogId });
+          }
           break;
         case 'cancel':
+          uiDialogService.dismiss({ id: dialogId });
           resolve({ action: RESPONSE.CANCEL, value: undefined });
           break;
       }
@@ -55,8 +62,8 @@ export default function createReportDialogPrompt(uiDialogService) {
           };
           const onKeyPressHandler = event => {
             if (event.key === 'Enter') {
-              uiDialogService.dismiss({ id: dialogId });
-              resolve({ action: RESPONSE.CREATE_REPORT, value: value.label });
+              // Trigger form submit
+              _handleFormSubmit({ action: { id: 'save' }, value });
             }
           };
           return (

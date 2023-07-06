@@ -113,7 +113,7 @@ files:
 
 ### create-extension
 
-Similar to the `create-extension` command, you can use the `create-extension`
+Similar to the `create-mode` command, you can use the `create-extension`
 command to create a new extension template. This command will create a new
 extension template in the directory that you specify the path.
 

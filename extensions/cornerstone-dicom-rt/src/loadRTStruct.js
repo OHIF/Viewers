@@ -181,12 +181,6 @@ export default async function loadRTStruct(
         ContourGeometricType,
       } = ContourSequenceArray[c];
 
-      const sopInstanceUID = ContourImageSequence.ReferencedSOPInstanceUID;
-      const imageId = _getImageId(imageIdSopInstanceUidPairs, sopInstanceUID);
-
-      if (!imageId) {
-        continue;
-      }
       let isSupported = false;
 
       const points = [];
