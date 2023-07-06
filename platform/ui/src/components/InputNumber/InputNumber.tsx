@@ -15,7 +15,7 @@ import Label from '../Label';
 
 const sizesClasses = {
   sm: 'w-[45px] h-[28px]',
-  bg: 'w-[206px] h-[35px]',
+  lg: 'w-[206px] h-[35px]',
 };
 
 const InputNumber: React.FC<{
