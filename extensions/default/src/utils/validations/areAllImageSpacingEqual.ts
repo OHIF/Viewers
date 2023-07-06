@@ -5,13 +5,17 @@ import {
 } from '@ohif/core/src/utils/isDisplaySetReconstructable';
 import { DisplaySetMessage } from '@ohif/core';
 import toNumber from '@ohif/core/src/utils/toNumber';
+import { DisplaySetMessageList } from '@ohif/core';
 
 /**
  * Checks if series has spacing issues
  * @param {*} instances
  * @param {*} warnings
  */
-export default function areAllImageSpacingEqual(instances, messages) {
+export default function areAllImageSpacingEqual(
+  instances: Array<any>,
+  messages: DisplaySetMessageList
+): void {
   const firstImagePositionPatient = toNumber(instances[0].ImagePositionPatient);
   const lastIpp = toNumber(
     instances[instances.length - 1].ImagePositionPatient

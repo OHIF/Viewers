@@ -5,7 +5,9 @@ import toNumber from '@ohif/core/src/utils/toNumber';
  * @param {*} instances
  * @returns
  */
-export default function areAllImageComponentsEqual(instances) {
+export default function areAllImageComponentsEqual(
+  instances: Array<any>
+): boolean {
   const firstImage = instances[0];
   const firstImageSamplesPerPixel = toNumber(firstImage.SamplesPerPixel);
 

@@ -6,7 +6,9 @@ import { _isSameOrientation } from '@ohif/core/src/utils/isDisplaySetReconstruct
  * @param {*} instances
  * @returns
  */
-export default function areAllImageOrientationsEqual(instances) {
+export default function areAllImageOrientationsEqual(
+  instances: Array<any>
+): boolean {
   const firstImage = instances[0];
   const firstImageOrientationPatient = toNumber(
     firstImage.ImageOrientationPatient

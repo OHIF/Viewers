@@ -5,7 +5,9 @@ import toNumber from '@ohif/core/src/utils/toNumber';
  * @param {*} instances
  * @returns
  */
-export default function areAllImageDimensionsEqual(instances) {
+export default function areAllImageDimensionsEqual(
+  instances: Array<any>
+): boolean {
   const firstImage = instances[0];
   const firstImageRows = toNumber(firstImage.Rows);
   const firstImageColumns = toNumber(firstImage.Columns);

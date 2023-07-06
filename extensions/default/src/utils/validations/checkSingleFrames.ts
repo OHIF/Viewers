@@ -11,7 +11,7 @@ import { DisplaySetMessage, DisplaySetMessageList } from '@ohif/core';
  * @param {*} warnings
  */
 export default function checkSingleFrames(
-  instances,
+  instances: Array<any>,
   messages: DisplaySetMessageList
 ): void {
   if (instances.length > 2) {
