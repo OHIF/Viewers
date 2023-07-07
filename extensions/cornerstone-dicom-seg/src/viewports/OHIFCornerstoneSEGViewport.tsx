@@ -71,7 +71,8 @@ function OHIFCornerstoneSEGViewport(props) {
 
   const referencedDisplaySet = segDisplaySet.getReferenceDisplaySet();
   const referencedDisplaySetMetadata = _getReferencedDisplaySetMetadata(
-    referencedDisplaySet
+    referencedDisplaySet,
+    segDisplaySet
   );
 
   referencedDisplaySetRef.current = {
@@ -343,10 +344,10 @@ function OHIFCornerstoneSEGViewport(props) {
             patientSex: PatientSex || '',
             patientAge: PatientAge || '',
             MRN: PatientID || '',
-            thickness: SliceThickness ? `${SliceThickness.toFixed(2)}mm` : '',
+            thickness: SliceThickness ? `${parseFloat(SliceThickness).toFixed(2)}mm` : '',
             spacing:
               SpacingBetweenSlices !== undefined
-                ? `${SpacingBetweenSlices.toFixed(2)}mm`
+                ? `${parseFloat(SpacingBetweenSlices).toFixed(2)}mm`
                 : '',
             scanner: ManufacturerModelName || '',
           },
@@ -381,20 +382,28 @@ OHIFCornerstoneSEGViewport.defaultProps = {
   customProps: {},
 };
 
-function _getReferencedDisplaySetMetadata(referencedDisplaySet) {
+function _getReferencedDisplaySetMetadata(referencedDisplaySet, segDisplaySet) {
+  const {
+    SharedFunctionalGroupsSequence: [SharedFunctionalGroup],
+  } = segDisplaySet.instance;
+  const {
+    PixelMeasuresSequence: [PixelMeasures],
+  } = SharedFunctionalGroup;
+  const { SpacingBetweenSlices, SliceThickness } = PixelMeasures;
+
   const image0 = referencedDisplaySet.images[0];
   const referencedDisplaySetMetadata = {
     PatientID: image0.PatientID,
     PatientName: image0.PatientName,
     PatientSex: image0.PatientSex,
     PatientAge: image0.PatientAge,
-    SliceThickness: image0.SliceThickness,
+    SliceThickness: image0.SliceThickness || SliceThickness,
     StudyDate: image0.StudyDate,
     SeriesDescription: image0.SeriesDescription,
     SeriesInstanceUID: image0.SeriesInstanceUID,
     SeriesNumber: image0.SeriesNumber,
     ManufacturerModelName: image0.ManufacturerModelName,
-    SpacingBetweenSlices: image0.SpacingBetweenSlices,
+    SpacingBetweenSlices: image0.SpacingBetweenSlices || SpacingBetweenSlices,
   };
 
   return referencedDisplaySetMetadata;

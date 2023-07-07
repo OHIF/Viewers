@@ -25,7 +25,6 @@ import { toolNames } from './initCornerstoneTools';
 import { getEnabledElement, reset as enabledElementReset } from './state';
 import dicomLoaderService from './utils/dicomLoaderService';
 import getActiveViewportEnabledElement from './utils/getActiveViewportEnabledElement';
-import { registerColormap } from './utils/colormap/transferFunctionHelpers';
 
 import { id } from './id';
 import * as csWADOImageLoader from './initWADOImageLoader.js';

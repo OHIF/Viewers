@@ -4,7 +4,6 @@ window.config = {
   extensions: [],
   modes: [],
   // below flag is for performance reasons, but it might not work for all servers
-  omitQuotationForMultipartRequest: true,
   showWarningMessageForCrossOrigin: true,
   showCPUFallbackMessage: true,
   showLoadingIndicator: true,
@@ -23,6 +22,7 @@ window.config = {
         qidoSupportsIncludeField: false,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
+        omitQuotationForMultipartRequest: true,
       },
     },
     {
