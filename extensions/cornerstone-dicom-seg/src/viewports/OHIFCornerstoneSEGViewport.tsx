@@ -24,8 +24,19 @@ function OHIFCornerstoneSEGViewport(props) {
     viewportLabel,
     servicesManager,
     extensionManager,
+    appConfig,
   } = props;
 
+  const isSegmentationReady = () => {
+    return (
+      segmentationService.getLabelmapVolume(
+        segDisplaySet.displaySetInstanceUID
+      ) &&
+      segmentationService.getSegmentation(segDisplaySet.displaySetInstanceUID)
+    );
+  };
+
+  const disableHydration = appConfig?.disableHydration;
   const { t } = useTranslation('SEGViewport');
 
   const {
@@ -155,15 +166,17 @@ function OHIFCornerstoneSEGViewport(props) {
       return;
     }
 
-    promptHydrateSEG({
-      servicesManager,
-      viewportIndex,
-      segDisplaySet,
-    }).then(isHydrated => {
-      if (isHydrated) {
-        setIsHydrated(true);
-      }
-    });
+    if (!disableHydration) {
+      promptHydrateSEG({
+        servicesManager,
+        viewportIndex,
+        segDisplaySet,
+      }).then(isHydrated => {
+        if (isHydrated) {
+          setIsHydrated(true);
+        }
+      });
+    }
   }, [servicesManager, viewportIndex, segDisplaySet, segIsLoading]);
 
   useEffect(() => {
@@ -318,6 +331,10 @@ function OHIFCornerstoneSEGViewport(props) {
     setIsHydrated(isHydrated);
   };
 
+  if (isSegmentationReady() && !isHydrated && disableHydration) {
+    onStatusClick();
+  }
+
   return (
     <>
       <ViewportActionBar
@@ -344,7 +361,9 @@ function OHIFCornerstoneSEGViewport(props) {
             patientSex: PatientSex || '',
             patientAge: PatientAge || '',
             MRN: PatientID || '',
-            thickness: SliceThickness ? `${parseFloat(SliceThickness).toFixed(2)}mm` : '',
+            thickness: SliceThickness
+              ? `${parseFloat(SliceThickness).toFixed(2)}mm`
+              : '',
             spacing:
               SpacingBetweenSlices !== undefined
                 ? `${parseFloat(SpacingBetweenSlices).toFixed(2)}mm`
