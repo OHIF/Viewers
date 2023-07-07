@@ -33,6 +33,7 @@ function OHIFCornerstoneSRViewport(props) {
     cornerstoneViewportService,
     measurementService,
   } = servicesManager.services;
+  const disableHydration = appConfig?.disableHydration;
 
   // SR viewport will always have a single display set
   if (displaySets.length > 1) {
@@ -376,6 +377,7 @@ function OHIFCornerstoneSRViewport(props) {
             isRehydratable: srDisplaySet.isRehydratable,
             isLocked,
             sendTrackedMeasurementsEvent,
+            disableHydration,
           })
         }
         studyData={{
@@ -465,6 +467,7 @@ function _getStatusComponent({
   isRehydratable,
   isLocked,
   sendTrackedMeasurementsEvent,
+  disableHydration,
 }) {
   const handleMouseUp = () => {
     sendTrackedMeasurementsEvent('HYDRATE_SR', {
@@ -535,6 +538,9 @@ function _getStatusComponent({
     </div>
   );
 
+  if (disableHydration) {
+    handleMouseUp();
+  }
   return (
     <>
       {ToolTipMessage && (

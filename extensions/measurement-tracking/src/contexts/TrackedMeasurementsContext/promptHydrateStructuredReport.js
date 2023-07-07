@@ -26,10 +26,15 @@ function promptHydrateStructuredReport(
   );
 
   return new Promise(async function (resolve, reject) {
-    const promptResult = await _askTrackMeasurements(
-      uiViewportDialogService,
-      viewportIndex
-    );
+    let promptResult;
+    if (appConfig?.disableHydration) {
+      promptResult = RESPONSE.HYDRATE_REPORT;
+    } else {
+      promptResult = await _askTrackMeasurements(
+        uiViewportDialogService,
+        viewportIndex
+      );
+    }
 
     // Need to do action here... So we can set state...
     let StudyInstanceUID, SeriesInstanceUIDs;
