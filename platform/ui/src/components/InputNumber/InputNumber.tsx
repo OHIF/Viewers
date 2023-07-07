@@ -5,7 +5,7 @@ import './InputNumber.css';
 import Label from '../Label';
 
 /**
- * React Number Input component'
+ *  React Number Input component'
  * it has two props, value and onChange
  * value is a number value
  * onChange is a function that will be called when the number input is changed
