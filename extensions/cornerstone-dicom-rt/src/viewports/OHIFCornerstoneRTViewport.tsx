@@ -25,6 +25,7 @@ function OHIFCornerstoneRTViewport(props) {
     viewportLabel,
     servicesManager,
     extensionManager,
+    appConfig,
   } = props;
 
   const {
@@ -42,6 +43,7 @@ function OHIFCornerstoneRTViewport(props) {
     throw new Error('RT viewport should only have a single display set');
   }
 
+  const disableHydration = appConfig?.disableHydration;
   const rtDisplaySet = displaySets[0];
 
   const [viewportGrid, viewportGridService] = useViewportGrid();
@@ -151,15 +153,17 @@ function OHIFCornerstoneRTViewport(props) {
       return;
     }
 
-    promptHydrateRT({
-      servicesManager,
-      viewportIndex,
-      rtDisplaySet,
-    }).then(isHydrated => {
-      if (isHydrated) {
-        setIsHydrated(true);
-      }
-    });
+    if (!disableHydration) {
+      promptHydrateRT({
+        servicesManager,
+        viewportIndex,
+        rtDisplaySet,
+      }).then(isHydrated => {
+        if (isHydrated) {
+          setIsHydrated(true);
+        }
+      });
+    }
   }, [servicesManager, viewportIndex, rtDisplaySet, rtIsLoading]);
 
   useEffect(() => {
@@ -266,6 +270,12 @@ function OHIFCornerstoneRTViewport(props) {
     };
   }, [rtDisplaySet]);
 
+  const isSegmentationReady = () => {
+    return segmentationService.getSegmentation(
+      rtDisplaySet.displaySetInstanceUID
+    );
+  };
+
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   let childrenWithProps = null;
 
@@ -312,6 +322,9 @@ function OHIFCornerstoneRTViewport(props) {
     setIsHydrated(isHydrated);
   };
 
+  if (isSegmentationReady() && disableHydration) {
+    onStatusClick();
+  }
   return (
     <>
       <ViewportActionBar
