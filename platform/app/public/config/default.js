@@ -1,4 +1,5 @@
 window.config = {
+  disableHydration: true,
   disableEditing: true,
   routerBasename: '/',
   // whiteLabeling: {},
