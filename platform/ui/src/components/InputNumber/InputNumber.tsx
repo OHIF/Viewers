@@ -2,9 +2,10 @@ import React, { useState, useCallback } from 'react';
 import IconButton from '../IconButton';
 import Icon from '../Icon';
 import './InputNumber.css';
+import Label from '../Label';
 
 /**
- * React Number Input component'
+ *  React Number Input component'
  * it has two props, value and onChange
  * value is a number value
  * onChange is a function that will be called when the number input is changed
@@ -14,6 +15,7 @@ import './InputNumber.css';
 
 const sizesClasses = {
   sm: 'w-[45px] h-[28px]',
+  lg: 'w-[206px] h-[35px]',
 };
 
 const InputNumber: React.FC<{
@@ -24,6 +26,8 @@ const InputNumber: React.FC<{
   step: number;
   size?: string;
   className?: string;
+  labelClassName?: string;
+  label?: string;
 }> = ({
   value,
   onChange,
@@ -32,6 +36,8 @@ const InputNumber: React.FC<{
   size = 'sm',
   minValue = 0,
   maxValue = 100,
+  labelClassName,
+  label,
 }) => {
   const [numberValue, setNumberValue] = useState(value);
 
@@ -76,6 +82,8 @@ const InputNumber: React.FC<{
   );
 
   return (
+  <div className={'flex flex-col flex-1'}>
+      {label && <Label className={labelClassName} text={label}></Label>}
     <div
       className={`flex items-center bg-black border-2 px-1 overflow-hidden justify-center border-secondary-light rounded-md ${sizesClasses[size]
         } ${className ? className : ''}`}
@@ -112,6 +120,7 @@ const InputNumber: React.FC<{
         </div>
       </div>
     </div>
+  </div>
   );
 };
 
