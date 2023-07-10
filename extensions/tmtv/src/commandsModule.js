@@ -69,7 +69,7 @@ const commandsModule = ({
         const displaySets = displaySetsInfo.map(({ displaySetInstanceUID }) =>
           displaySetService.getDisplaySetByUID(displaySetInstanceUID)
         );
-
+        console.log(displaySets);
         if (!displaySets || displaySets.length === 0) {
           continue;
         }

@@ -53,6 +53,9 @@ const hpMN: Types.HangingProtocol.Protocol = {
       {
         id: 'defaultDisplaySetId',
         matchedDisplaySetsIndex: -1,
+        options:{
+          opacityMapping: [{ value: 0.1, opacity: 0.9 }],
+        },
       },
     ],
   },
@@ -80,6 +83,9 @@ const hpMN: Types.HangingProtocol.Protocol = {
           displaySets: [
             {
               id: 'defaultDisplaySetId',
+              options:{
+                opacityMapping: [{ value: 0.1, opacity: 0.9 }],
+              },
             },
           ],
         },
@@ -92,6 +98,9 @@ const hpMN: Types.HangingProtocol.Protocol = {
             {
               matchedDisplaySetsIndex: 1,
               id: 'defaultDisplaySetId',
+              options:{
+                opacityMapping: [{ value: 0.1, opacity: 0.9 }],
+              },
             },
           ],
         },
@@ -104,6 +113,9 @@ const hpMN: Types.HangingProtocol.Protocol = {
             {
               matchedDisplaySetsIndex: 2,
               id: 'defaultDisplaySetId',
+              options:{
+                opacityMapping: [{ value: 0.1, opacity: 0.9 }],
+              },
             },
           ],
         },
@@ -116,6 +128,9 @@ const hpMN: Types.HangingProtocol.Protocol = {
             {
               matchedDisplaySetsIndex: 3,
               id: 'defaultDisplaySetId',
+              options:{
+                opacityMapping: [{ value: 0.1, opacity: 0.9 }],
+              },
             },
           ],
         },
@@ -150,6 +165,9 @@ const hpMN: Types.HangingProtocol.Protocol = {
           displaySets: [
             {
               id: 'defaultDisplaySetId',
+              options:{
+                opacityMapping: [{ value: 0.1, opacity: 0.9 }],
+              },
             },
           ],
         },
@@ -162,6 +180,9 @@ const hpMN: Types.HangingProtocol.Protocol = {
             {
               id: 'defaultDisplaySetId',
               matchedDisplaySetsIndex: 1,
+              options:{
+                opacityMapping: [{ value: 0.1, opacity: 0.9 }],
+              },
             },
           ],
         },
@@ -174,6 +195,9 @@ const hpMN: Types.HangingProtocol.Protocol = {
             {
               id: 'defaultDisplaySetId',
               matchedDisplaySetsIndex: 2,
+              options:{
+                opacityMapping: [{ value: 0.1, opacity: 0.9 }],
+              },
             },
           ],
         },
@@ -206,6 +230,9 @@ const hpMN: Types.HangingProtocol.Protocol = {
           displaySets: [
             {
               id: 'defaultDisplaySetId',
+              options:{
+                opacityMapping: [{ value: 0.1, opacity: 0.9 }],
+              },
             },
           ],
         },
@@ -218,6 +245,9 @@ const hpMN: Types.HangingProtocol.Protocol = {
             {
               matchedDisplaySetsIndex: 1,
               id: 'defaultDisplaySetId',
+              options:{
+                opacityMapping: [{ value: 0.1, opacity: 0.9 }],
+              },
             },
           ],
         },
@@ -250,6 +280,9 @@ const hpMN: Types.HangingProtocol.Protocol = {
           displaySets: [
             {
               id: 'defaultDisplaySetId',
+              options:{
+                opacityMapping: [{ value: 0.1, opacity: 0.9 }],
+              },
             },
           ],
         },

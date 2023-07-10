@@ -27,13 +27,6 @@ function customColormap(huLow, huHigh, huMid, windowLow, windowHigh) {
   // Define the HU range and breakpoints
   const huG = (huCenter + huMin) / 2;
   const huB = (huCenter + huMax) / 2;
-  console.log(windowLow);
-  console.log(huMin);
-  console.log(huG);
-  console.log(huCenter);
-  console.log(huB);
-  console.log(huMax);
-  console.log(windowHigh);
   // Define the color transitions
   let breakpoints;
   if (windowHigh - windowLow > huHigh - huLow) {
@@ -46,7 +39,6 @@ function customColormap(huLow, huHigh, huMid, windowLow, windowHigh) {
       [huMax / windowHigh, [128, 128, 128]], // gray
       [1, [255, 255, 255]], // white
     ];
-    console.log(breakpoints);
   } else {
     breakpoints = [
       [0, [0, 0, 0]], // black

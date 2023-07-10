@@ -13,6 +13,8 @@ const defaultProtocol = {
   availableTo: {},
   editableBy: {},
   protocolMatchingRules: [],
+  imageLoadStrategy: 'nth',
+
   toolGroupIds: ['default'],
   // -1 would be used to indicate active only, whereas other values are
   // the number of required priors referenced - so 0 means active with
@@ -20,79 +22,159 @@ const defaultProtocol = {
   numberOfPriorsReferenced: 0,
   // Default viewport is used to define the viewport when
   // additional viewports are added using the layout tool
-  defaultViewport: {
-    viewportOptions: {
-      viewportType: 'orthographic',
-      toolGroupId: 'default',
-      allowUnmatchedView: true,
-    },
-    displaySets: [
-      {
-        id: 'defaultDisplaySetId',
-        matchedDisplaySetsIndex: -1,
-      },
-    ],
-  },
   displaySetSelectors: {
-    defaultDisplaySetId: {
-      // Matches displaysets, NOT series
+    backgroundDisplaySet: {
       seriesMatchingRules: [
-        // Try to match series with images by default, to prevent weird display
-        // on SEG/SR containing studies
         {
-          attribute: 'numImageFrames',
+          weight: 1,
+          attribute: 'isReconstructable',
           constraint: {
-            greaterThan: { value: 0 },
+            equals: {
+              value: true,
+            },
           },
-        },
-        // This display set will select the specified items by preference
-        // It has no affect if nothing is specified in the URL.
-        {
-          attribute: 'isDisplaySetFromUrl',
-          weight: 10,
-          constraint: {
-            equals: true,
-          },
+          required: true,
         },
       ],
-      // Can be used to select matching studies
-      // studyMatchingRules: [],
+    },
+    activeDisplaySet: {
+      seriesMatchingRules: [
+        {
+          weight: 1,
+          attribute: 'isReconstructable',
+          constraint: {
+            equals: {
+              value: true,
+            },
+          },
+          required: true,
+        },
+      ],
     },
   },
   stages: [
     {
-      name: 'default',
+      name: 'MPR 1x3',
       viewportStructure: {
         layoutType: 'grid',
         properties: {
           rows: 1,
-          columns: 1,
+          columns: 3,
+          layoutOptions: [
+            {
+              x: 0,
+              y: 0,
+              width: 1 / 3,
+              height: 1,
+            },
+            {
+              x: 1 / 3,
+              y: 0,
+              width: 1 / 3,
+              height: 1,
+            },
+            {
+              x: 2 / 3,
+              y: 0,
+              width: 1 / 3,
+              height: 1,
+            },
+          ],
         },
       },
       viewports: [
         {
           viewportOptions: {
-            viewportType: 'orthographic',
-            toolGroupId: 'default',
-            // This will specify the initial image options index if it matches in the URL
-            // and will otherwise not specify anything.
+            toolGroupId: 'mpr',
+            viewportType: 'volume',
+            orientation: 'axial',
             initialImageOptions: {
-              custom: 'sopInstanceLocation',
+              preset: 'middle',
             },
-            // Other options for initialImageOptions, which can be included in the default
-            // custom attribute, or can be provided directly.
-            //   index: 180,
-            //   preset: 'middle', // 'first', 'last', 'middle'
-            // },
+            syncGroups: [
+              {
+                type: 'voi',
+                id: 'mpr',
+                source: true,
+                target: true,
+              },
+            ],
           },
           displaySets: [
             {
-              id: 'defaultDisplaySetId',
+              id: 'activeDisplaySet',
+              colormap: 'test',
+            },
+            {
+              id: 'backgroundDisplaySet',
+            },
+          ],
+        },
+        {
+          viewportOptions: {
+            toolGroupId: 'mpr',
+            viewportType: 'volume',
+            orientation: 'sagittal',
+            initialImageOptions: {
+              preset: 'middle',
+            },
+            syncGroups: [
+              {
+                type: 'voi',
+                id: 'mpr',
+                source: true,
+                target: true,
+              },
+            ],
+          },
+          displaySets: [
+            {
+              id: 'activeDisplaySet',
+              options: {
+                colormap: {
+                  name: 'hsv',
+                  opacityMapping: [{ value: 0.1, opacity: 0.9 }],
+                },
+              },
+            },
+            {
+              id: 'backgroundDisplaySet',
+            },
+          ],
+        },
+        {
+          viewportOptions: {
+            toolGroupId: 'mpr',
+            viewportType: 'volume',
+            orientation: 'coronal',
+            initialImageOptions: {
+              preset: 'middle',
+            },
+            syncGroups: [
+              {
+                type: 'voi',
+                id: 'mpr',
+                source: true,
+                target: true,
+              },
+            ],
+          },
+          displaySets: [
+            {
+              id: 'activeDisplaySet',
+              options: {
+                colormap: {
+                  name: 'hsv',
+                  opacityMapping: [{ value: 0.1, opacity: 0.9 }],
+                },
+              },
+            },
+            {
+              id: 'backgroundDisplaySet',
             },
           ],
         },
       ],
-      createdDate: '2021-02-23T18:32:42.850Z',
     },
   ],
 };

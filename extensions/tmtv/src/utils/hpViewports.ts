@@ -262,7 +262,7 @@ const fusionAXIAL = {
       options: {
         colormap: {
           name: 'hsv',
-          opacityMapping: [{ value: 0.1, opacity: 0.9 }],
+          opacityMapping: [{ value: 0.1, opacity: 0.2 }],
         },
         voi: {
           custom: 'getPTVOIRange',
@@ -316,10 +316,7 @@ const fusionSAGITTAL = {
     },
     {
       options: {
-        colormap: {
-          name: 'hsv',
-          opacityMapping: [{ value: 0.1, opacity: 0.9 }],
-        },
+        colormap: 'test',
         voi: {
           custom: 'getPTVOIRange',
         },
@@ -372,10 +369,7 @@ const fusionCORONAL = {
     },
     {
       options: {
-        colormap: {
-          name: 'hsv',
-          opacityMapping: [{ value: 0.1, opacity: 0.9 }],
-        },
+        colormap: 'hot_iron',
         voi: {
           custom: 'getPTVOIRange',
         },

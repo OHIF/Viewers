@@ -571,7 +571,7 @@ function commandsModule({
       });
 
       const { actor: volumeActor, uid: volumeId } = actorEntry;
-      viewport.setProperties({ colormap });
+      viewport.setProperties({ colormap, volumeActor }, volumeId);
       if (immediate) {
         viewport.render();
       }

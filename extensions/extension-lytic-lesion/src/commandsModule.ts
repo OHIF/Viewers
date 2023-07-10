@@ -385,20 +385,15 @@ const commandsModule = ({
       const activeViewportSpecificData = viewports[activeViewportIndex];
       const { displaySetInstanceUIDs } = activeViewportSpecificData;
       const displaySets = displaySetService.activeDisplaySets;
+      console.log(displaySets);
       let views = []
-      console.log(colormap);
       viewports.forEach(viewport =>{
         console.log(viewport);
         let displaySetInstanceUID = viewport.displaySetInstanceUIDs[0];
         commandsManager.runCommand('setViewportColormap', {
           viewportIndex: viewport.viewportIndex,
           displaySetInstanceUID,
-          colormap: {
-            name: colormap,
-            // TODO: This opacity mapping matches that in hpViewports, but
-            // ideally making this editable in a side panel would be useful
-            opacityMapping: [{ value: 0.1, opacity: 0.9 }],
-          },
+          colormap,
         });
         views.push(
           cornerstoneViewportService.getCornerstoneViewport(viewport.viewportId)
