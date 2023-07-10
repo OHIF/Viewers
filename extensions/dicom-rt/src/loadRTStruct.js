@@ -75,7 +75,7 @@ export default async function loadRTStruct(
       continue;
     }
 
-    const isSupported = false;
+    let isSupported = false;
 
     const ContourSequenceArray = _toArray(ContourSequence);
 
