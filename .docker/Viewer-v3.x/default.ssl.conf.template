@@ -1,6 +1,8 @@
 server {
-  listen ${PORT} default_server;
-  listen [::]:${PORT} default_server;
+  listen ${SSL_PORT} ssl http2 default_server;
+  listen [::]:${SSL_PORT} ssl http2 default_server;
+  ssl_certificate /etc/ssl/certs/ssl-certificate.crt;
+  ssl_certificate_key /etc/ssl/private/ssl-private-key.key;
   location / {
     root   /usr/share/nginx/html;
     index  index.html index.htm;
