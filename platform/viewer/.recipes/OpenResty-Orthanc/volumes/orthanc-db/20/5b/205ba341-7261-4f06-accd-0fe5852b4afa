@@ -1,0 +1,1022 @@
+{
+   "0008,0005" : {
+      "Name" : "SpecificCharacterSet",
+      "Type" : "String",
+      "Value" : "ISO_IR 100"
+   },
+   "0008,0012" : {
+      "Name" : "InstanceCreationDate",
+      "Type" : "String",
+      "Value" : "20140807"
+   },
+   "0008,0013" : {
+      "Name" : "InstanceCreationTime",
+      "Type" : "String",
+      "Value" : "114512.177000"
+   },
+   "0008,0016" : {
+      "Name" : "SOPClassUID",
+      "Type" : "String",
+      "Value" : "1.2.840.10008.5.1.4.1.1.481.5"
+   },
+   "0008,0018" : {
+      "Name" : "SOPInstanceUID",
+      "Type" : "String",
+      "Value" : "1.2.246.352.71.5.876365306.1104.20140807113751"
+   },
+   "0008,0020" : {
+      "Name" : "StudyDate",
+      "Type" : "String",
+      "Value" : "20140304"
+   },
+   "0008,0030" : {
+      "Name" : "StudyTime",
+      "Type" : "String",
+      "Value" : "092015.875000"
+   },
+   "0008,0050" : {
+      "Name" : "AccessionNumber",
+      "Type" : "String",
+      "Value" : ""
+   },
+   "0008,0060" : {
+      "Name" : "Modality",
+      "Type" : "String",
+      "Value" : "RTPLAN"
+   },
+   "0008,0070" : {
+      "Name" : "Manufacturer",
+      "Type" : "String",
+      "Value" : "Varian Medical Systems"
+   },
+   "0008,0090" : {
+      "Name" : "ReferringPhysicianName",
+      "Type" : "String",
+      "Value" : ""
+   },
+   "0008,1010" : {
+      "Name" : "StationName",
+      "Type" : "String",
+      "Value" : "DKVARTTV2"
+   },
+   "0008,1030" : {
+      "Name" : "StudyDescription",
+      "Type" : "String",
+      "Value" : "ARIA RadOnc Study"
+   },
+   "0008,103e" : {
+      "Name" : "SeriesDescription",
+      "Type" : "String",
+      "Value" : "ARIA RadOnc Plans"
+   },
+   "0008,1070" : {
+      "Name" : "OperatorsName",
+      "Type" : "String",
+      "Value" : "alexandk"
+   },
+   "0008,1090" : {
+      "Name" : "ManufacturerModelName",
+      "Type" : "String",
+      "Value" : "ARIA RadOnc"
+   },
+   "0010,0010" : {
+      "Name" : "PatientName",
+      "Type" : "String",
+      "Value" : "TIM0005^TIM0005"
+   },
+   "0010,0020" : {
+      "Name" : "PatientID",
+      "Type" : "String",
+      "Value" : "PYTIM05"
+   },
+   "0010,0030" : {
+      "Name" : "PatientBirthDate",
+      "Type" : "String",
+      "Value" : ""
+   },
+   "0010,0040" : {
+      "Name" : "PatientSex",
+      "Type" : "String",
+      "Value" : ""
+   },
+   "0018,1000" : {
+      "Name" : "DeviceSerialNumber",
+      "Type" : "String",
+      "Value" : "876365306"
+   },
+   "0018,1020" : {
+      "Name" : "SoftwareVersions",
+      "Type" : "String",
+      "Value" : "10.0.42"
+   },
+   "0020,000d" : {
+      "Name" : "StudyInstanceUID",
+      "Type" : "String",
+      "Value" : "1.2.246.352.71.1.1706542068.246170.20140304092110"
+   },
+   "0020,000e" : {
+      "Name" : "SeriesInstanceUID",
+      "Type" : "String",
+      "Value" : "1.2.246.352.71.2.876365306.15125.20140807113605"
+   },
+   "0020,0010" : {
+      "Name" : "StudyID",
+      "Type" : "String",
+      "Value" : "Tricky contours"
+   },
+   "0020,0011" : {
+      "Name" : "SeriesNumber",
+      "Type" : "String",
+      "Value" : "16"
+   },
+   "0020,0052" : {
+      "Name" : "FrameOfReferenceUID",
+      "Type" : "String",
+      "Value" : "1.2.840.113619.2.55.3.671756986.842.1389963354.112.10735.1"
+   },
+   "0020,1040" : {
+      "Name" : "PositionReferenceIndicator",
+      "Type" : "String",
+      "Value" : "BB"
+   },
+   "300a,0002" : {
+      "Name" : "RTPlanLabel",
+      "Type" : "String",
+      "Value" : "PS3"
+   },
+   "300a,0006" : {
+      "Name" : "RTPlanDate",
+      "Type" : "String",
+      "Value" : "20140807"
+   },
+   "300a,0007" : {
+      "Name" : "RTPlanTime",
+      "Type" : "String",
+      "Value" : "114109.320000"
+   },
+   "300a,000a" : {
+      "Name" : "PlanIntent",
+      "Type" : "String",
+      "Value" : "CURATIVE"
+   },
+   "300a,000c" : {
+      "Name" : "RTPlanGeometry",
+      "Type" : "String",
+      "Value" : "PATIENT"
+   },
+   "300a,0010" : {
+      "Name" : "DoseReferenceSequence",
+      "Type" : "Sequence",
+      "Value" : [
+         {
+            "300a,0012" : {
+               "Name" : "DoseReferenceNumber",
+               "Type" : "String",
+               "Value" : "1"
+            },
+            "300a,0013" : {
+               "Name" : "DoseReferenceUID",
+               "Type" : "String",
+               "Value" : "1.2.246.352.71.10.876365306.453.20140807114108"
+            },
+            "300a,0014" : {
+               "Name" : "DoseReferenceStructureType",
+               "Type" : "String",
+               "Value" : "SITE"
+            },
+            "300a,0016" : {
+               "Name" : "DoseReferenceDescription",
+               "Type" : "String",
+               "Value" : "optPTV70_P"
+            },
+            "300a,0020" : {
+               "Name" : "DoseReferenceType",
+               "Type" : "String",
+               "Value" : "TARGET"
+            },
+            "300a,0026" : {
+               "Name" : "TargetPrescriptionDose",
+               "Type" : "String",
+               "Value" : "5"
+            },
+            "3267,0010" : {
+               "Name" : "PrivateCreator",
+               "Type" : "String",
+               "Value" : "Varian Medical Systems VISION 3267"
+            },
+            "3267,1000" : {
+               "Name" : "Unknown Tag & Data",
+               "PrivateCreator" : "Varian Medical Systems VISION 3267",
+               "Type" : "Null",
+               "Value" : null
+            }
+         }
+      ]
+   },
+   "300a,0070" : {
+      "Name" : "FractionGroupSequence",
+      "Type" : "Sequence",
+      "Value" : [
+         {
+            "300a,0071" : {
+               "Name" : "FractionGroupNumber",
+               "Type" : "String",
+               "Value" : "1"
+            },
+            "300a,0078" : {
+               "Name" : "NumberOfFractionsPlanned",
+               "Type" : "String",
+               "Value" : "1"
+            },
+            "300a,0080" : {
+               "Name" : "NumberOfBeams",
+               "Type" : "String",
+               "Value" : "2"
+            },
+            "300a,00a0" : {
+               "Name" : "NumberOfBrachyApplicationSetups",
+               "Type" : "String",
+               "Value" : "0"
+            },
+            "300c,0004" : {
+               "Name" : "ReferencedBeamSequence",
+               "Type" : "Sequence",
+               "Value" : [
+                  {
+                     "300a,0084" : {
+                        "Name" : "BeamDose",
+                        "Type" : "String",
+                        "Value" : "2.5"
+                     },
+                     "300a,0086" : {
+                        "Name" : "BeamMeterset",
+                        "Type" : "String",
+                        "Value" : "239.152886315387"
+                     },
+                     "300c,0006" : {
+                        "Name" : "ReferencedBeamNumber",
+                        "Type" : "String",
+                        "Value" : "1"
+                     },
+                     "3249,0010" : {
+                        "Name" : "PrivateCreator",
+                        "Type" : "String",
+                        "Value" : "Varian Medical Systems VISION 3249"
+                     },
+                     "3249,1010" : {
+                        "Name" : "Unknown Tag & Data",
+                        "PrivateCreator" : "Varian Medical Systems VISION 3249",
+                        "Type" : "Null",
+                        "Value" : null
+                     }
+                  },
+                  {
+                     "300a,0084" : {
+                        "Name" : "BeamDose",
+                        "Type" : "String",
+                        "Value" : "2.5"
+                     },
+                     "300a,0086" : {
+                        "Name" : "BeamMeterset",
+                        "Type" : "String",
+                        "Value" : "204.05965880016"
+                     },
+                     "300c,0006" : {
+                        "Name" : "ReferencedBeamNumber",
+                        "Type" : "String",
+                        "Value" : "2"
+                     },
+                     "3249,0010" : {
+                        "Name" : "PrivateCreator",
+                        "Type" : "String",
+                        "Value" : "Varian Medical Systems VISION 3249"
+                     },
+                     "3249,1010" : {
+                        "Name" : "Unknown Tag & Data",
+                        "PrivateCreator" : "Varian Medical Systems VISION 3249",
+                        "Type" : "Null",
+                        "Value" : null
+                     }
+                  }
+               ]
+            }
+         }
+      ]
+   },
+   "300a,00b0" : {
+      "Name" : "BeamSequence",
+      "Type" : "Sequence",
+      "Value" : [
+         {
+            "0008,0070" : {
+               "Name" : "Manufacturer",
+               "Type" : "String",
+               "Value" : "Varian Medical Systems"
+            },
+            "0008,1090" : {
+               "Name" : "ManufacturerModelName",
+               "Type" : "String",
+               "Value" : "2300IX"
+            },
+            "0018,1000" : {
+               "Name" : "DeviceSerialNumber",
+               "Type" : "String",
+               "Value" : "5099"
+            },
+            "3002,0050" : {
+               "Name" : "PrimaryFluenceModeSequence",
+               "Type" : "Sequence",
+               "Value" : [
+                  {
+                     "3002,0051" : {
+                        "Name" : "FluenceMode",
+                        "Type" : "String",
+                        "Value" : "STANDARD"
+                     }
+                  }
+               ]
+            },
+            "300a,00b2" : {
+               "Name" : "TreatmentMachineName",
+               "Type" : "String",
+               "Value" : "CL21D"
+            },
+            "300a,00b3" : {
+               "Name" : "PrimaryDosimeterUnit",
+               "Type" : "String",
+               "Value" : "MU"
+            },
+            "300a,00b4" : {
+               "Name" : "SourceAxisDistance",
+               "Type" : "String",
+               "Value" : "1000"
+            },
+            "300a,00b6" : {
+               "Name" : "BeamLimitingDeviceSequence",
+               "Type" : "Sequence",
+               "Value" : [
+                  {
+                     "300a,00b8" : {
+                        "Name" : "RTBeamLimitingDeviceType",
+                        "Type" : "String",
+                        "Value" : "X"
+                     },
+                     "300a,00bc" : {
+                        "Name" : "NumberOfLeafJawPairs",
+                        "Type" : "String",
+                        "Value" : "1"
+                     }
+                  },
+                  {
+                     "300a,00b8" : {
+                        "Name" : "RTBeamLimitingDeviceType",
+                        "Type" : "String",
+                        "Value" : "Y"
+                     },
+                     "300a,00bc" : {
+                        "Name" : "NumberOfLeafJawPairs",
+                        "Type" : "String",
+                        "Value" : "1"
+                     }
+                  }
+               ]
+            },
+            "300a,00c0" : {
+               "Name" : "BeamNumber",
+               "Type" : "String",
+               "Value" : "1"
+            },
+            "300a,00c2" : {
+               "Name" : "BeamName",
+               "Type" : "String",
+               "Value" : "G0"
+            },
+            "300a,00c4" : {
+               "Name" : "BeamType",
+               "Type" : "String",
+               "Value" : "STATIC"
+            },
+            "300a,00c6" : {
+               "Name" : "RadiationType",
+               "Type" : "String",
+               "Value" : "PHOTON"
+            },
+            "300a,00ce" : {
+               "Name" : "TreatmentDeliveryType",
+               "Type" : "String",
+               "Value" : "TREATMENT"
+            },
+            "300a,00d0" : {
+               "Name" : "NumberOfWedges",
+               "Type" : "String",
+               "Value" : "0"
+            },
+            "300a,00e0" : {
+               "Name" : "NumberOfCompensators",
+               "Type" : "String",
+               "Value" : "0"
+            },
+            "300a,00ed" : {
+               "Name" : "NumberOfBoli",
+               "Type" : "String",
+               "Value" : "0"
+            },
+            "300a,00f0" : {
+               "Name" : "NumberOfBlocks",
+               "Type" : "String",
+               "Value" : "0"
+            },
+            "300a,010e" : {
+               "Name" : "FinalCumulativeMetersetWeight",
+               "Type" : "String",
+               "Value" : "1"
+            },
+            "300a,0110" : {
+               "Name" : "NumberOfControlPoints",
+               "Type" : "String",
+               "Value" : "2"
+            },
+            "300a,0111" : {
+               "Name" : "ControlPointSequence",
+               "Type" : "Sequence",
+               "Value" : [
+                  {
+                     "300a,0112" : {
+                        "Name" : "ControlPointIndex",
+                        "Type" : "String",
+                        "Value" : "0"
+                     },
+                     "300a,0114" : {
+                        "Name" : "NominalBeamEnergy",
+                        "Type" : "String",
+                        "Value" : "6"
+                     },
+                     "300a,0115" : {
+                        "Name" : "DoseRateSet",
+                        "Type" : "String",
+                        "Value" : "400"
+                     },
+                     "300a,011a" : {
+                        "Name" : "BeamLimitingDevicePositionSequence",
+                        "Type" : "Sequence",
+                        "Value" : [
+                           {
+                              "300a,00b8" : {
+                                 "Name" : "RTBeamLimitingDeviceType",
+                                 "Type" : "String",
+                                 "Value" : "X"
+                              },
+                              "300a,011c" : {
+                                 "Name" : "LeafJawPositions",
+                                 "Type" : "String",
+                                 "Value" : "-100\\100"
+                              }
+                           },
+                           {
+                              "300a,00b8" : {
+                                 "Name" : "RTBeamLimitingDeviceType",
+                                 "Type" : "String",
+                                 "Value" : "Y"
+                              },
+                              "300a,011c" : {
+                                 "Name" : "LeafJawPositions",
+                                 "Type" : "String",
+                                 "Value" : "-100\\100"
+                              }
+                           }
+                        ]
+                     },
+                     "300a,011e" : {
+                        "Name" : "GantryAngle",
+                        "Type" : "String",
+                        "Value" : "0.0"
+                     },
+                     "300a,011f" : {
+                        "Name" : "GantryRotationDirection",
+                        "Type" : "String",
+                        "Value" : "NONE"
+                     },
+                     "300a,0120" : {
+                        "Name" : "BeamLimitingDeviceAngle",
+                        "Type" : "String",
+                        "Value" : "0.0"
+                     },
+                     "300a,0121" : {
+                        "Name" : "BeamLimitingDeviceRotationDirection",
+                        "Type" : "String",
+                        "Value" : "NONE"
+                     },
+                     "300a,0122" : {
+                        "Name" : "PatientSupportAngle",
+                        "Type" : "String",
+                        "Value" : "0.0"
+                     },
+                     "300a,0123" : {
+                        "Name" : "PatientSupportRotationDirection",
+                        "Type" : "String",
+                        "Value" : "NONE"
+                     },
+                     "300a,0125" : {
+                        "Name" : "TableTopEccentricAngle",
+                        "Type" : "String",
+                        "Value" : "0.0"
+                     },
+                     "300a,0126" : {
+                        "Name" : "TableTopEccentricRotationDirection",
+                        "Type" : "String",
+                        "Value" : "NONE"
+                     },
+                     "300a,0128" : {
+                        "Name" : "TableTopVerticalPosition",
+                        "Type" : "String",
+                        "Value" : ""
+                     },
+                     "300a,0129" : {
+                        "Name" : "TableTopLongitudinalPosition",
+                        "Type" : "String",
+                        "Value" : ""
+                     },
+                     "300a,012a" : {
+                        "Name" : "TableTopLateralPosition",
+                        "Type" : "String",
+                        "Value" : ""
+                     },
+                     "300a,012c" : {
+                        "Name" : "IsocenterPosition",
+                        "Type" : "String",
+                        "Value" : "-5.370455e-1\\-5.370455e-1\\41.25"
+                     },
+                     "300a,0134" : {
+                        "Name" : "CumulativeMetersetWeight",
+                        "Type" : "String",
+                        "Value" : "0.0"
+                     },
+                     "300c,0050" : {
+                        "Name" : "ReferencedDoseReferenceSequence",
+                        "Type" : "Sequence",
+                        "Value" : [
+                           {
+                              "300a,010c" : {
+                                 "Name" : "CumulativeDoseReferenceCoefficient",
+                                 "Type" : "String",
+                                 "Value" : "0.0"
+                              },
+                              "300c,0051" : {
+                                 "Name" : "ReferencedDoseReferenceNumber",
+                                 "Type" : "String",
+                                 "Value" : "1"
+                              }
+                           }
+                        ]
+                     }
+                  },
+                  {
+                     "300a,0112" : {
+                        "Name" : "ControlPointIndex",
+                        "Type" : "String",
+                        "Value" : "1"
+                     },
+                     "300a,0134" : {
+                        "Name" : "CumulativeMetersetWeight",
+                        "Type" : "String",
+                        "Value" : "1"
+                     },
+                     "300c,0050" : {
+                        "Name" : "ReferencedDoseReferenceSequence",
+                        "Type" : "Sequence",
+                        "Value" : [
+                           {
+                              "300a,010c" : {
+                                 "Name" : "CumulativeDoseReferenceCoefficient",
+                                 "Type" : "String",
+                                 "Value" : "1"
+                              },
+                              "300c,0051" : {
+                                 "Name" : "ReferencedDoseReferenceNumber",
+                                 "Type" : "String",
+                                 "Value" : "1"
+                              }
+                           }
+                        ]
+                     }
+                  }
+               ]
+            },
+            "300c,006a" : {
+               "Name" : "ReferencedPatientSetupNumber",
+               "Type" : "String",
+               "Value" : "1"
+            },
+            "3285,0010" : {
+               "Name" : "PrivateCreator",
+               "Type" : "String",
+               "Value" : "Varian Medical Systems VISION 3285"
+            },
+            "3285,1000" : {
+               "Name" : "Unknown Tag & Data",
+               "PrivateCreator" : "Varian Medical Systems VISION 3285",
+               "Type" : "Null",
+               "Value" : null
+            }
+         },
+         {
+            "0008,0070" : {
+               "Name" : "Manufacturer",
+               "Type" : "String",
+               "Value" : "Varian Medical Systems"
+            },
+            "0008,1090" : {
+               "Name" : "ManufacturerModelName",
+               "Type" : "String",
+               "Value" : "2300IX"
+            },
+            "0018,1000" : {
+               "Name" : "DeviceSerialNumber",
+               "Type" : "String",
+               "Value" : "5099"
+            },
+            "3002,0050" : {
+               "Name" : "PrimaryFluenceModeSequence",
+               "Type" : "Sequence",
+               "Value" : [
+                  {
+                     "3002,0051" : {
+                        "Name" : "FluenceMode",
+                        "Type" : "String",
+                        "Value" : "STANDARD"
+                     }
+                  }
+               ]
+            },
+            "300a,00b2" : {
+               "Name" : "TreatmentMachineName",
+               "Type" : "String",
+               "Value" : "CL21D"
+            },
+            "300a,00b3" : {
+               "Name" : "PrimaryDosimeterUnit",
+               "Type" : "String",
+               "Value" : "MU"
+            },
+            "300a,00b4" : {
+               "Name" : "SourceAxisDistance",
+               "Type" : "String",
+               "Value" : "1000"
+            },
+            "300a,00b6" : {
+               "Name" : "BeamLimitingDeviceSequence",
+               "Type" : "Sequence",
+               "Value" : [
+                  {
+                     "300a,00b8" : {
+                        "Name" : "RTBeamLimitingDeviceType",
+                        "Type" : "String",
+                        "Value" : "X"
+                     },
+                     "300a,00bc" : {
+                        "Name" : "NumberOfLeafJawPairs",
+                        "Type" : "String",
+                        "Value" : "1"
+                     }
+                  },
+                  {
+                     "300a,00b8" : {
+                        "Name" : "RTBeamLimitingDeviceType",
+                        "Type" : "String",
+                        "Value" : "Y"
+                     },
+                     "300a,00bc" : {
+                        "Name" : "NumberOfLeafJawPairs",
+                        "Type" : "String",
+                        "Value" : "1"
+                     }
+                  }
+               ]
+            },
+            "300a,00c0" : {
+               "Name" : "BeamNumber",
+               "Type" : "String",
+               "Value" : "2"
+            },
+            "300a,00c2" : {
+               "Name" : "BeamName",
+               "Type" : "String",
+               "Value" : "G90"
+            },
+            "300a,00c4" : {
+               "Name" : "BeamType",
+               "Type" : "String",
+               "Value" : "STATIC"
+            },
+            "300a,00c6" : {
+               "Name" : "RadiationType",
+               "Type" : "String",
+               "Value" : "PHOTON"
+            },
+            "300a,00ce" : {
+               "Name" : "TreatmentDeliveryType",
+               "Type" : "String",
+               "Value" : "TREATMENT"
+            },
+            "300a,00d0" : {
+               "Name" : "NumberOfWedges",
+               "Type" : "String",
+               "Value" : "0"
+            },
+            "300a,00e0" : {
+               "Name" : "NumberOfCompensators",
+               "Type" : "String",
+               "Value" : "0"
+            },
+            "300a,00ed" : {
+               "Name" : "NumberOfBoli",
+               "Type" : "String",
+               "Value" : "0"
+            },
+            "300a,00f0" : {
+               "Name" : "NumberOfBlocks",
+               "Type" : "String",
+               "Value" : "0"
+            },
+            "300a,010e" : {
+               "Name" : "FinalCumulativeMetersetWeight",
+               "Type" : "String",
+               "Value" : "1"
+            },
+            "300a,0110" : {
+               "Name" : "NumberOfControlPoints",
+               "Type" : "String",
+               "Value" : "2"
+            },
+            "300a,0111" : {
+               "Name" : "ControlPointSequence",
+               "Type" : "Sequence",
+               "Value" : [
+                  {
+                     "300a,0112" : {
+                        "Name" : "ControlPointIndex",
+                        "Type" : "String",
+                        "Value" : "0"
+                     },
+                     "300a,0114" : {
+                        "Name" : "NominalBeamEnergy",
+                        "Type" : "String",
+                        "Value" : "6"
+                     },
+                     "300a,0115" : {
+                        "Name" : "DoseRateSet",
+                        "Type" : "String",
+                        "Value" : "400"
+                     },
+                     "300a,011a" : {
+                        "Name" : "BeamLimitingDevicePositionSequence",
+                        "Type" : "Sequence",
+                        "Value" : [
+                           {
+                              "300a,00b8" : {
+                                 "Name" : "RTBeamLimitingDeviceType",
+                                 "Type" : "String",
+                                 "Value" : "X"
+                              },
+                              "300a,011c" : {
+                                 "Name" : "LeafJawPositions",
+                                 "Type" : "String",
+                                 "Value" : "-75\\75"
+                              }
+                           },
+                           {
+                              "300a,00b8" : {
+                                 "Name" : "RTBeamLimitingDeviceType",
+                                 "Type" : "String",
+                                 "Value" : "Y"
+                              },
+                              "300a,011c" : {
+                                 "Name" : "LeafJawPositions",
+                                 "Type" : "String",
+                                 "Value" : "-75\\75"
+                              }
+                           }
+                        ]
+                     },
+                     "300a,011e" : {
+                        "Name" : "GantryAngle",
+                        "Type" : "String",
+                        "Value" : "90"
+                     },
+                     "300a,011f" : {
+                        "Name" : "GantryRotationDirection",
+                        "Type" : "String",
+                        "Value" : "NONE"
+                     },
+                     "300a,0120" : {
+                        "Name" : "BeamLimitingDeviceAngle",
+                        "Type" : "String",
+                        "Value" : "0.0"
+                     },
+                     "300a,0121" : {
+                        "Name" : "BeamLimitingDeviceRotationDirection",
+                        "Type" : "String",
+                        "Value" : "NONE"
+                     },
+                     "300a,0122" : {
+                        "Name" : "PatientSupportAngle",
+                        "Type" : "String",
+                        "Value" : "0.0"
+                     },
+                     "300a,0123" : {
+                        "Name" : "PatientSupportRotationDirection",
+                        "Type" : "String",
+                        "Value" : "NONE"
+                     },
+                     "300a,0125" : {
+                        "Name" : "TableTopEccentricAngle",
+                        "Type" : "String",
+                        "Value" : "0.0"
+                     },
+                     "300a,0126" : {
+                        "Name" : "TableTopEccentricRotationDirection",
+                        "Type" : "String",
+                        "Value" : "NONE"
+                     },
+                     "300a,0128" : {
+                        "Name" : "TableTopVerticalPosition",
+                        "Type" : "String",
+                        "Value" : ""
+                     },
+                     "300a,0129" : {
+                        "Name" : "TableTopLongitudinalPosition",
+                        "Type" : "String",
+                        "Value" : ""
+                     },
+                     "300a,012a" : {
+                        "Name" : "TableTopLateralPosition",
+                        "Type" : "String",
+                        "Value" : ""
+                     },
+                     "300a,012c" : {
+                        "Name" : "IsocenterPosition",
+                        "Type" : "String",
+                        "Value" : "-5.370455e-1\\-5.370455e-1\\41.25"
+                     },
+                     "300a,0134" : {
+                        "Name" : "CumulativeMetersetWeight",
+                        "Type" : "String",
+                        "Value" : "0.0"
+                     },
+                     "300c,0050" : {
+                        "Name" : "ReferencedDoseReferenceSequence",
+                        "Type" : "Sequence",
+                        "Value" : [
+                           {
+                              "300a,010c" : {
+                                 "Name" : "CumulativeDoseReferenceCoefficient",
+                                 "Type" : "String",
+                                 "Value" : "0.0"
+                              },
+                              "300c,0051" : {
+                                 "Name" : "ReferencedDoseReferenceNumber",
+                                 "Type" : "String",
+                                 "Value" : "1"
+                              }
+                           }
+                        ]
+                     }
+                  },
+                  {
+                     "300a,0112" : {
+                        "Name" : "ControlPointIndex",
+                        "Type" : "String",
+                        "Value" : "1"
+                     },
+                     "300a,0134" : {
+                        "Name" : "CumulativeMetersetWeight",
+                        "Type" : "String",
+                        "Value" : "1"
+                     },
+                     "300c,0050" : {
+                        "Name" : "ReferencedDoseReferenceSequence",
+                        "Type" : "Sequence",
+                        "Value" : [
+                           {
+                              "300a,010c" : {
+                                 "Name" : "CumulativeDoseReferenceCoefficient",
+                                 "Type" : "String",
+                                 "Value" : "1"
+                              },
+                              "300c,0051" : {
+                                 "Name" : "ReferencedDoseReferenceNumber",
+                                 "Type" : "String",
+                                 "Value" : "1"
+                              }
+                           }
+                        ]
+                     }
+                  }
+               ]
+            },
+            "300c,006a" : {
+               "Name" : "ReferencedPatientSetupNumber",
+               "Type" : "String",
+               "Value" : "2"
+            },
+            "3285,0010" : {
+               "Name" : "PrivateCreator",
+               "Type" : "String",
+               "Value" : "Varian Medical Systems VISION 3285"
+            },
+            "3285,1000" : {
+               "Name" : "Unknown Tag & Data",
+               "PrivateCreator" : "Varian Medical Systems VISION 3285",
+               "Type" : "Null",
+               "Value" : null
+            }
+         }
+      ]
+   },
+   "300a,0180" : {
+      "Name" : "PatientSetupSequence",
+      "Type" : "Sequence",
+      "Value" : [
+         {
+            "0018,5100" : {
+               "Name" : "PatientPosition",
+               "Type" : "String",
+               "Value" : "HFS"
+            },
+            "300a,0182" : {
+               "Name" : "PatientSetupNumber",
+               "Type" : "String",
+               "Value" : "1"
+            },
+            "300a,01b0" : {
+               "Name" : "SetupTechnique",
+               "Type" : "String",
+               "Value" : "ISOCENTRIC"
+            }
+         },
+         {
+            "0018,5100" : {
+               "Name" : "PatientPosition",
+               "Type" : "String",
+               "Value" : "HFS"
+            },
+            "300a,0182" : {
+               "Name" : "PatientSetupNumber",
+               "Type" : "String",
+               "Value" : "2"
+            },
+            "300a,01b0" : {
+               "Name" : "SetupTechnique",
+               "Type" : "String",
+               "Value" : "ISOCENTRIC"
+            }
+         }
+      ]
+   },
+   "300c,0060" : {
+      "Name" : "ReferencedStructureSetSequence",
+      "Type" : "Sequence",
+      "Value" : [
+         {
+            "0008,1150" : {
+               "Name" : "ReferencedSOPClassUID",
+               "Type" : "String",
+               "Value" : "1.2.840.10008.5.1.4.1.1.481.3"
+            },
+            "0008,1155" : {
+               "Name" : "ReferencedSOPInstanceUID",
+               "Type" : "String",
+               "Value" : "1.2.246.352.71.4.1706542068.117469.20140304092519"
+            }
+         }
+      ]
+   },
+   "300e,0002" : {
+      "Name" : "ApprovalStatus",
+      "Type" : "String",
+      "Value" : "UNAPPROVED"
+   },
+   "3253,0010" : {
+      "Name" : "PrivateCreator",
+      "Type" : "String",
+      "Value" : "Varian Medical Systems VISION 3253"
+   },
+   "3253,1000" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Varian Medical Systems VISION 3253",
+      "Type" : "Null",
+      "Value" : null
+   },
+   "3253,1001" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Varian Medical Systems VISION 3253",
+      "Type" : "Null",
+      "Value" : null
+   },
+   "3253,1002" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Varian Medical Systems VISION 3253",
+      "Type" : "Null",
+      "Value" : null
+   }
+}

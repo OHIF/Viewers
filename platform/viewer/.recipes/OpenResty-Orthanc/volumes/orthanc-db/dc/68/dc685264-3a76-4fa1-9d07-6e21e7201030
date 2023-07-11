@@ -1,0 +1,2346 @@
+{
+   "0008,0005" : {
+      "Name" : "SpecificCharacterSet",
+      "Type" : "String",
+      "Value" : "ISO_IR 100"
+   },
+   "0008,0008" : {
+      "Name" : "ImageType",
+      "Type" : "String",
+      "Value" : "ORIGINAL\\PRIMARY\\M_FFE\\M\\FFE"
+   },
+   "0008,0012" : {
+      "Name" : "InstanceCreationDate",
+      "Type" : "String",
+      "Value" : "20060323"
+   },
+   "0008,0013" : {
+      "Name" : "InstanceCreationTime",
+      "Type" : "String",
+      "Value" : "172132"
+   },
+   "0008,0014" : {
+      "Name" : "InstanceCreatorUID",
+      "Type" : "String",
+      "Value" : "1.3.46.670589.11.5706.5"
+   },
+   "0008,0016" : {
+      "Name" : "SOPClassUID",
+      "Type" : "String",
+      "Value" : "1.2.840.10008.5.1.4.1.1.4"
+   },
+   "0008,0018" : {
+      "Name" : "SOPInstanceUID",
+      "Type" : "String",
+      "Value" : "1.3.46.670589.11.0.0.11.4.2.0.5706.5.4544.2006032316170175609"
+   },
+   "0008,0020" : {
+      "Name" : "StudyDate",
+      "Type" : "String",
+      "Value" : "20060323"
+   },
+   "0008,0021" : {
+      "Name" : "SeriesDate",
+      "Type" : "String",
+      "Value" : "20060323"
+   },
+   "0008,0022" : {
+      "Name" : "AcquisitionDate",
+      "Type" : "String",
+      "Value" : "20060323"
+   },
+   "0008,0023" : {
+      "Name" : "ContentDate",
+      "Type" : "String",
+      "Value" : "20060323"
+   },
+   "0008,0030" : {
+      "Name" : "StudyTime",
+      "Type" : "String",
+      "Value" : "154809"
+   },
+   "0008,0031" : {
+      "Name" : "SeriesTime",
+      "Type" : "String",
+      "Value" : "161555.89000"
+   },
+   "0008,0032" : {
+      "Name" : "AcquisitionTime",
+      "Type" : "String",
+      "Value" : "161555.89"
+   },
+   "0008,0033" : {
+      "Name" : "ContentTime",
+      "Type" : "String",
+      "Value" : "161555.89"
+   },
+   "0008,0050" : {
+      "Name" : "AccessionNumber",
+      "Type" : "String",
+      "Value" : ""
+   },
+   "0008,0060" : {
+      "Name" : "Modality",
+      "Type" : "String",
+      "Value" : "MR"
+   },
+   "0008,0070" : {
+      "Name" : "Manufacturer",
+      "Type" : "String",
+      "Value" : "Philips Medical Systems"
+   },
+   "0008,0080" : {
+      "Name" : "InstitutionName",
+      "Type" : "String",
+      "Value" : "MUSC 3T"
+   },
+   "0008,0081" : {
+      "Name" : "InstitutionAddress",
+      "Type" : "String",
+      "Value" : ""
+   },
+   "0008,0090" : {
+      "Name" : "ReferringPhysicianName",
+      "Type" : "String",
+      "Value" : ""
+   },
+   "0008,1010" : {
+      "Name" : "StationName",
+      "Type" : "String",
+      "Value" : "MRTHREET"
+   },
+   "0008,1030" : {
+      "Name" : "StudyDescription",
+      "Type" : "String",
+      "Value" : "USC msMRI Rorden"
+   },
+   "0008,103e" : {
+      "Name" : "SeriesDescription",
+      "Type" : "String",
+      "Value" : "fMRI_SENCom2_fMRI"
+   },
+   "0008,1040" : {
+      "Name" : "InstitutionalDepartmentName",
+      "Type" : "String",
+      "Value" : ""
+   },
+   "0008,1048" : {
+      "Name" : "PhysiciansOfRecord",
+      "Type" : "String",
+      "Value" : ""
+   },
+   "0008,1050" : {
+      "Name" : "PerformingPhysicianName",
+      "Type" : "String",
+      "Value" : ""
+   },
+   "0008,1060" : {
+      "Name" : "NameOfPhysiciansReadingStudy",
+      "Type" : "String",
+      "Value" : ""
+   },
+   "0008,1070" : {
+      "Name" : "OperatorsName",
+      "Type" : "String",
+      "Value" : ""
+   },
+   "0008,1080" : {
+      "Name" : "AdmittingDiagnosesDescription",
+      "Type" : "String",
+      "Value" : ""
+   },
+   "0008,1090" : {
+      "Name" : "ManufacturerModelName",
+      "Type" : "String",
+      "Value" : "Intera"
+   },
+   "0008,1111" : {
+      "Name" : "ReferencedPerformedProcedureStepSequence",
+      "Type" : "Sequence",
+      "Value" : [
+         {
+            "0008,0005" : {
+               "Name" : "SpecificCharacterSet",
+               "Type" : "String",
+               "Value" : "ISO_IR 100"
+            },
+            "0008,0012" : {
+               "Name" : "InstanceCreationDate",
+               "Type" : "String",
+               "Value" : "20060323"
+            },
+            "0008,0013" : {
+               "Name" : "InstanceCreationTime",
+               "Type" : "String",
+               "Value" : "172158"
+            },
+            "0008,0014" : {
+               "Name" : "InstanceCreatorUID",
+               "Type" : "String",
+               "Value" : "1.3.46.670589.11.5706.5"
+            },
+            "0008,1150" : {
+               "Name" : "ReferencedSOPClassUID",
+               "Type" : "String",
+               "Value" : "1.2.840.10008.3.1.2.3.3"
+            },
+            "0008,1155" : {
+               "Name" : "ReferencedSOPInstanceUID",
+               "Type" : "String",
+               "Value" : "1.3.46.670589.11.0.0.11.4.2.0.5706.5.5576.2006032315480760001"
+            },
+            "0020,0013" : {
+               "Name" : "InstanceNumber",
+               "Type" : "String",
+               "Value" : "0"
+            }
+         }
+      ]
+   },
+   "0008,1140" : {
+      "Name" : "ReferencedImageSequence",
+      "Type" : "Sequence",
+      "Value" : [
+         {
+            "0008,1150" : {
+               "Name" : "ReferencedSOPClassUID",
+               "Type" : "String",
+               "Value" : "1.2.840.10008.5.1.4.1.1.4"
+            },
+            "0008,1155" : {
+               "Name" : "ReferencedSOPInstanceUID",
+               "Type" : "String",
+               "Value" : "1.3.46.670589.11.0.0.11.4.2.0.5706.5.4544.2006032315560607745"
+            }
+         },
+         {
+            "0008,1150" : {
+               "Name" : "ReferencedSOPClassUID",
+               "Type" : "String",
+               "Value" : "1.2.840.10008.5.1.4.1.1.4"
+            },
+            "0008,1155" : {
+               "Name" : "ReferencedSOPInstanceUID",
+               "Type" : "String",
+               "Value" : "1.3.46.670589.11.0.0.11.4.2.0.5706.5.4544.2006032315561657748"
+            }
+         },
+         {
+            "0008,1150" : {
+               "Name" : "ReferencedSOPClassUID",
+               "Type" : "String",
+               "Value" : "1.2.840.10008.5.1.4.1.1.4"
+            },
+            "0008,1155" : {
+               "Name" : "ReferencedSOPInstanceUID",
+               "Type" : "String",
+               "Value" : "1.3.46.670589.11.0.0.11.4.2.0.5706.5.4544.2006032315562357750"
+            }
+         }
+      ]
+   },
+   "0010,0010" : {
+      "Name" : "PatientName",
+      "Type" : "String",
+      "Value" : "BONILHA, Leo"
+   },
+   "0010,0020" : {
+      "Name" : "PatientID",
+      "Type" : "String",
+      "Value" : "USC msMRI Rorden"
+   },
+   "0010,0030" : {
+      "Name" : "PatientBirthDate",
+      "Type" : "String",
+      "Value" : "19701111"
+   },
+   "0010,0040" : {
+      "Name" : "PatientSex",
+      "Type" : "String",
+      "Value" : "M"
+   },
+   "0010,1030" : {
+      "Name" : "PatientWeight",
+      "Type" : "String",
+      "Value" : "88.0"
+   },
+   "0010,2000" : {
+      "Name" : "MedicalAlerts",
+      "Type" : "String",
+      "Value" : ""
+   },
+   "0010,2110" : {
+      "Name" : "Allergies",
+      "Type" : "String",
+      "Value" : ""
+   },
+   "0010,2160" : {
+      "Name" : "EthnicGroup",
+      "Type" : "String",
+      "Value" : ""
+   },
+   "0010,2180" : {
+      "Name" : "Occupation",
+      "Type" : "String",
+      "Value" : ""
+   },
+   "0010,21b0" : {
+      "Name" : "AdditionalPatientHistory",
+      "Type" : "String",
+      "Value" : ""
+   },
+   "0010,21c0" : {
+      "Name" : "PregnancyStatus",
+      "Type" : "String",
+      "Value" : "4"
+   },
+   "0010,4000" : {
+      "Name" : "PatientComments",
+      "Type" : "String",
+      "Value" : ""
+   },
+   "0018,0020" : {
+      "Name" : "ScanningSequence",
+      "Type" : "String",
+      "Value" : "GR"
+   },
+   "0018,0021" : {
+      "Name" : "SequenceVariant",
+      "Type" : "String",
+      "Value" : "SK"
+   },
+   "0018,0022" : {
+      "Name" : "ScanOptions",
+      "Type" : "String",
+      "Value" : "FS"
+   },
+   "0018,0023" : {
+      "Name" : "MRAcquisitionType",
+      "Type" : "String",
+      "Value" : ""
+   },
+   "0018,0024" : {
+      "Name" : "SequenceName",
+      "Type" : "String",
+      "Value" : ""
+   },
+   "0018,0050" : {
+      "Name" : "SliceThickness",
+      "Type" : "String",
+      "Value" : "3.0"
+   },
+   "0018,0080" : {
+      "Name" : "RepetitionTime",
+      "Type" : "String",
+      "Value" : "1808.83081054687"
+   },
+   "0018,0081" : {
+      "Name" : "EchoTime",
+      "Type" : "String",
+      "Value" : "30.0002994537353"
+   },
+   "0018,0082" : {
+      "Name" : "InversionTime",
+      "Type" : "String",
+      "Value" : "0.0"
+   },
+   "0018,0083" : {
+      "Name" : "NumberOfAverages",
+      "Type" : "String",
+      "Value" : "1.0"
+   },
+   "0018,0084" : {
+      "Name" : "ImagingFrequency",
+      "Type" : "String",
+      "Value" : "127.784438999999"
+   },
+   "0018,0085" : {
+      "Name" : "ImagedNucleus",
+      "Type" : "String",
+      "Value" : "1H"
+   },
+   "0018,0086" : {
+      "Name" : "EchoNumbers",
+      "Type" : "String",
+      "Value" : "1"
+   },
+   "0018,0087" : {
+      "Name" : "MagneticFieldStrength",
+      "Type" : "String",
+      "Value" : "3.0"
+   },
+   "0018,0088" : {
+      "Name" : "SpacingBetweenSlices",
+      "Type" : "String",
+      "Value" : "3.0"
+   },
+   "0018,0089" : {
+      "Name" : "NumberOfPhaseEncodingSteps",
+      "Type" : "String",
+      "Value" : "64"
+   },
+   "0018,0091" : {
+      "Name" : "EchoTrainLength",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "0018,0093" : {
+      "Name" : "PercentSampling",
+      "Type" : "String",
+      "Value" : "100.0"
+   },
+   "0018,0094" : {
+      "Name" : "PercentPhaseFieldOfView",
+      "Type" : "String",
+      "Value" : "100.0"
+   },
+   "0018,1000" : {
+      "Name" : "DeviceSerialNumber",
+      "Type" : "String",
+      "Value" : "05706"
+   },
+   "0018,1020" : {
+      "Name" : "SoftwareVersions",
+      "Type" : "String",
+      "Value" : "NT 10.4.1\\PIIM V2.1.4.1 MIMIT MCS"
+   },
+   "0018,1030" : {
+      "Name" : "ProtocolName",
+      "Type" : "String",
+      "Value" : "2_fMRI       SENSE"
+   },
+   "0018,1081" : {
+      "Name" : "LowRRValue",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "0018,1082" : {
+      "Name" : "HighRRValue",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "0018,1083" : {
+      "Name" : "IntervalsAcquired",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "0018,1084" : {
+      "Name" : "IntervalsRejected",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "0018,1088" : {
+      "Name" : "HeartRate",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "0018,1100" : {
+      "Name" : "ReconstructionDiameter",
+      "Type" : "String",
+      "Value" : "208.0"
+   },
+   "0018,1250" : {
+      "Name" : "ReceiveCoilName",
+      "Type" : "String",
+      "Value" : "SENSE-head"
+   },
+   "0018,1251" : {
+      "Name" : "TransmitCoilName",
+      "Type" : "String",
+      "Value" : "B"
+   },
+   "0018,1310" : {
+      "Name" : "AcquisitionMatrix",
+      "Type" : "String",
+      "Value" : "64\\0\\0\\64"
+   },
+   "0018,1312" : {
+      "Name" : "InPlanePhaseEncodingDirection",
+      "Type" : "String",
+      "Value" : "COL"
+   },
+   "0018,1314" : {
+      "Name" : "FlipAngle",
+      "Type" : "String",
+      "Value" : "90.0"
+   },
+   "0018,5100" : {
+      "Name" : "PatientPosition",
+      "Type" : "String",
+      "Value" : "HFS"
+   },
+   "0020,000d" : {
+      "Name" : "StudyInstanceUID",
+      "Type" : "String",
+      "Value" : "1.3.46.670589.11.0.0.11.4.2.0.5706.5.5576.2006032315480760000"
+   },
+   "0020,000e" : {
+      "Name" : "SeriesInstanceUID",
+      "Type" : "String",
+      "Value" : "1.3.46.670589.11.0.0.11.4.2.0.5706.5.3464.2006032316155589053"
+   },
+   "0020,0010" : {
+      "Name" : "StudyID",
+      "Type" : "String",
+      "Value" : "196357687"
+   },
+   "0020,0011" : {
+      "Name" : "SeriesNumber",
+      "Type" : "String",
+      "Value" : "601"
+   },
+   "0020,0012" : {
+      "Name" : "AcquisitionNumber",
+      "Type" : "String",
+      "Value" : "6"
+   },
+   "0020,0013" : {
+      "Name" : "InstanceNumber",
+      "Type" : "String",
+      "Value" : "21"
+   },
+   "0020,0032" : {
+      "Name" : "ImagePositionPatient",
+      "Type" : "String",
+      "Value" : "-106.60549887126\\-102.37646202715\\-32.217633269635"
+   },
+   "0020,0037" : {
+      "Name" : "ImageOrientationPatient",
+      "Type" : "String",
+      "Value" : "0.99536771512525\\-1.216534485E-10\\0.09614110300138\\0.00665142737805\\0.99760391560746\\-0.0688635322829"
+   },
+   "0020,0052" : {
+      "Name" : "FrameOfReferenceUID",
+      "Type" : "String",
+      "Value" : "1.3.46.670589.11.0.0.11.4.2.0.5706.5.3464.2006032315553698000"
+   },
+   "0020,0060" : {
+      "Name" : "Laterality",
+      "Type" : "String",
+      "Value" : ""
+   },
+   "0020,0100" : {
+      "Name" : "TemporalPositionIdentifier",
+      "Type" : "String",
+      "Value" : "1"
+   },
+   "0020,0105" : {
+      "Name" : "NumberOfTemporalPositions",
+      "Type" : "String",
+      "Value" : "2"
+   },
+   "0020,1040" : {
+      "Name" : "PositionReferenceIndicator",
+      "Type" : "String",
+      "Value" : ""
+   },
+   "0020,1041" : {
+      "Name" : "SliceLocation",
+      "Type" : "String",
+      "Value" : "30.000002111705"
+   },
+   "0020,4000" : {
+      "Name" : "ImageComments",
+      "Type" : "String",
+      "Value" : ""
+   },
+   "0028,0002" : {
+      "Name" : "SamplesPerPixel",
+      "Type" : "String",
+      "Value" : "1"
+   },
+   "0028,0004" : {
+      "Name" : "PhotometricInterpretation",
+      "Type" : "String",
+      "Value" : "MONOCHROME2"
+   },
+   "0028,0010" : {
+      "Name" : "Rows",
+      "Type" : "String",
+      "Value" : "64"
+   },
+   "0028,0011" : {
+      "Name" : "Columns",
+      "Type" : "String",
+      "Value" : "64"
+   },
+   "0028,0030" : {
+      "Name" : "PixelSpacing",
+      "Type" : "String",
+      "Value" : "3.25\\3.25"
+   },
+   "0028,0034" : {
+      "Name" : "PixelAspectRatio",
+      "Type" : "String",
+      "Value" : "1\\1"
+   },
+   "0028,0100" : {
+      "Name" : "BitsAllocated",
+      "Type" : "String",
+      "Value" : "16"
+   },
+   "0028,0101" : {
+      "Name" : "BitsStored",
+      "Type" : "String",
+      "Value" : "12"
+   },
+   "0028,0102" : {
+      "Name" : "HighBit",
+      "Type" : "String",
+      "Value" : "11"
+   },
+   "0028,0103" : {
+      "Name" : "PixelRepresentation",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "0028,1050" : {
+      "Name" : "WindowCenter",
+      "Type" : "String",
+      "Value" : "1119.0"
+   },
+   "0028,1051" : {
+      "Name" : "WindowWidth",
+      "Type" : "String",
+      "Value" : "2238.0"
+   },
+   "0028,1052" : {
+      "Name" : "RescaleIntercept",
+      "Type" : "String",
+      "Value" : "0.0"
+   },
+   "0028,1053" : {
+      "Name" : "RescaleSlope",
+      "Type" : "String",
+      "Value" : "2.03003663003663"
+   },
+   "0028,1054" : {
+      "Name" : "RescaleType",
+      "Type" : "String",
+      "Value" : "normalized"
+   },
+   "0028,2110" : {
+      "Name" : "LossyImageCompression",
+      "Type" : "String",
+      "Value" : "00"
+   },
+   "0032,1032" : {
+      "Name" : "RequestingPhysician",
+      "Type" : "String",
+      "Value" : ""
+   },
+   "0032,1033" : {
+      "Name" : "RequestingService",
+      "Type" : "String",
+      "Value" : ""
+   },
+   "0032,1060" : {
+      "Name" : "RequestedProcedureDescription",
+      "Type" : "String",
+      "Value" : ""
+   },
+   "0032,1070" : {
+      "Name" : "RequestedContrastAgent",
+      "Type" : "String",
+      "Value" : ""
+   },
+   "0032,4000" : {
+      "Name" : "RETIRED_StudyComments",
+      "Type" : "String",
+      "Value" : ""
+   },
+   "0038,0050" : {
+      "Name" : "SpecialNeeds",
+      "Type" : "String",
+      "Value" : ""
+   },
+   "0038,0500" : {
+      "Name" : "PatientState",
+      "Type" : "String",
+      "Value" : ""
+   },
+   "0040,0241" : {
+      "Name" : "PerformedStationAETitle",
+      "Type" : "String",
+      "Value" : "MRHI_STORE_EXP"
+   },
+   "0040,0242" : {
+      "Name" : "PerformedStationName",
+      "Type" : "String",
+      "Value" : ""
+   },
+   "0040,0243" : {
+      "Name" : "PerformedLocation",
+      "Type" : "String",
+      "Value" : ""
+   },
+   "0040,0244" : {
+      "Name" : "PerformedProcedureStepStartDate",
+      "Type" : "String",
+      "Value" : "20060323"
+   },
+   "0040,0245" : {
+      "Name" : "PerformedProcedureStepStartTime",
+      "Type" : "String",
+      "Value" : "154809"
+   },
+   "0040,0250" : {
+      "Name" : "PerformedProcedureStepEndDate",
+      "Type" : "String",
+      "Value" : "20060323"
+   },
+   "0040,0251" : {
+      "Name" : "PerformedProcedureStepEndTime",
+      "Type" : "String",
+      "Value" : "154809"
+   },
+   "0040,0252" : {
+      "Name" : "PerformedProcedureStepStatus",
+      "Type" : "String",
+      "Value" : ""
+   },
+   "0040,0253" : {
+      "Name" : "PerformedProcedureStepID",
+      "Type" : "String",
+      "Value" : "196357687"
+   },
+   "0040,0254" : {
+      "Name" : "PerformedProcedureStepDescription",
+      "Type" : "String",
+      "Value" : "USC msMRI Rorden"
+   },
+   "0040,0255" : {
+      "Name" : "PerformedProcedureTypeDescription",
+      "Type" : "String",
+      "Value" : ""
+   },
+   "0040,0275" : {
+      "Name" : "RequestAttributesSequence",
+      "Type" : "Sequence",
+      "Value" : []
+   },
+   "0040,0280" : {
+      "Name" : "CommentsOnThePerformedProcedureStep",
+      "Type" : "String",
+      "Value" : ""
+   },
+   "0040,0321" : {
+      "Name" : "FilmConsumptionSequence",
+      "Type" : "Sequence",
+      "Value" : []
+   },
+   "0040,1001" : {
+      "Name" : "RequestedProcedureID",
+      "Type" : "String",
+      "Value" : ""
+   },
+   "0040,1002" : {
+      "Name" : "ReasonForTheRequestedProcedure",
+      "Type" : "String",
+      "Value" : ""
+   },
+   "0040,1003" : {
+      "Name" : "RequestedProcedurePriority",
+      "Type" : "String",
+      "Value" : ""
+   },
+   "0040,1004" : {
+      "Name" : "PatientTransportArrangements",
+      "Type" : "String",
+      "Value" : ""
+   },
+   "0040,1005" : {
+      "Name" : "RequestedProcedureLocation",
+      "Type" : "String",
+      "Value" : ""
+   },
+   "0040,1010" : {
+      "Name" : "NamesOfIntendedRecipientsOfResults",
+      "Type" : "String",
+      "Value" : ""
+   },
+   "0040,1400" : {
+      "Name" : "RequestedProcedureComments",
+      "Type" : "String",
+      "Value" : ""
+   },
+   "0040,2001" : {
+      "Name" : "RETIRED_ReasonForTheImagingServiceRequest",
+      "Type" : "String",
+      "Value" : ""
+   },
+   "0040,2004" : {
+      "Name" : "IssueDateOfImagingServiceRequest",
+      "Type" : "String",
+      "Value" : ""
+   },
+   "0040,2005" : {
+      "Name" : "IssueTimeOfImagingServiceRequest",
+      "Type" : "String",
+      "Value" : ""
+   },
+   "0040,2006" : {
+      "Name" : "RETIRED_PlacerOrderNumberImagingServiceRequestRetired",
+      "Type" : "String",
+      "Value" : ""
+   },
+   "0040,2007" : {
+      "Name" : "RETIRED_FillerOrderNumberImagingServiceRequestRetired",
+      "Type" : "String",
+      "Value" : ""
+   },
+   "0040,2008" : {
+      "Name" : "OrderEnteredBy",
+      "Type" : "String",
+      "Value" : ""
+   },
+   "0040,2009" : {
+      "Name" : "OrderEntererLocation",
+      "Type" : "String",
+      "Value" : ""
+   },
+   "0040,2010" : {
+      "Name" : "OrderCallbackPhoneNumber",
+      "Type" : "String",
+      "Value" : ""
+   },
+   "0040,2400" : {
+      "Name" : "ImagingServiceRequestComments",
+      "Type" : "String",
+      "Value" : ""
+   },
+   "2001,0010" : {
+      "Name" : "PrivateCreator",
+      "Type" : "String",
+      "Value" : "Philips Imaging DD 001"
+   },
+   "2001,1001" : {
+      "Name" : "ChemicalShift",
+      "PrivateCreator" : "Philips Imaging DD 001",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "2001,1002" : {
+      "Name" : "ChemicalShiftNumberMR",
+      "PrivateCreator" : "Philips Imaging DD 001",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "2001,1003" : {
+      "Name" : "DiffusionBFactor",
+      "PrivateCreator" : "Philips Imaging DD 001",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "2001,1004" : {
+      "Name" : "DiffusionDirection",
+      "PrivateCreator" : "Philips Imaging DD 001",
+      "Type" : "String",
+      "Value" : ""
+   },
+   "2001,1006" : {
+      "Name" : "ImageEnhanced",
+      "PrivateCreator" : "Philips Imaging DD 001",
+      "Type" : "String",
+      "Value" : "N"
+   },
+   "2001,1007" : {
+      "Name" : "ImageTypeEDES",
+      "PrivateCreator" : "Philips Imaging DD 001",
+      "Type" : "String",
+      "Value" : "U"
+   },
+   "2001,1008" : {
+      "Name" : "PhaseNumber",
+      "PrivateCreator" : "Philips Imaging DD 001",
+      "Type" : "String",
+      "Value" : "1"
+   },
+   "2001,1009" : {
+      "Name" : "ImagePrepulseDelay",
+      "PrivateCreator" : "Philips Imaging DD 001",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "2001,100a" : {
+      "Name" : "SliceNumberMR",
+      "PrivateCreator" : "Philips Imaging DD 001",
+      "Type" : "String",
+      "Value" : "11"
+   },
+   "2001,100b" : {
+      "Name" : "SliceOrientation",
+      "PrivateCreator" : "Philips Imaging DD 001",
+      "Type" : "String",
+      "Value" : "TRANSVERSAL"
+   },
+   "2001,100c" : {
+      "Name" : "ArrhythmiaRejection",
+      "PrivateCreator" : "Philips Imaging DD 001",
+      "Type" : "String",
+      "Value" : "N"
+   },
+   "2001,100e" : {
+      "Name" : "CardiacCycled",
+      "PrivateCreator" : "Philips Imaging DD 001",
+      "Type" : "String",
+      "Value" : "N"
+   },
+   "2001,100f" : {
+      "Name" : "CardiacGateWidth",
+      "PrivateCreator" : "Philips Imaging DD 001",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "2001,1010" : {
+      "Name" : "CardiacSync",
+      "PrivateCreator" : "Philips Imaging DD 001",
+      "Type" : "String",
+      "Value" : "NO"
+   },
+   "2001,1011" : {
+      "Name" : "DiffusionEchoTime",
+      "PrivateCreator" : "Philips Imaging DD 001",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "2001,1012" : {
+      "Name" : "DynamicSeries",
+      "PrivateCreator" : "Philips Imaging DD 001",
+      "Type" : "String",
+      "Value" : "Y"
+   },
+   "2001,1013" : {
+      "Name" : "EPIFactor",
+      "PrivateCreator" : "Philips Imaging DD 001",
+      "Type" : "String",
+      "Value" : "31"
+   },
+   "2001,1014" : {
+      "Name" : "NumberOfEchoes",
+      "PrivateCreator" : "Philips Imaging DD 001",
+      "Type" : "String",
+      "Value" : "1"
+   },
+   "2001,1015" : {
+      "Name" : "NumberOfLocations",
+      "PrivateCreator" : "Philips Imaging DD 001",
+      "Type" : "String",
+      "Value" : "1"
+   },
+   "2001,1016" : {
+      "Name" : "NumberOfPCDirections",
+      "PrivateCreator" : "Philips Imaging DD 001",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "2001,1017" : {
+      "Name" : "NumberOfPhasesMR",
+      "PrivateCreator" : "Philips Imaging DD 001",
+      "Type" : "String",
+      "Value" : "1"
+   },
+   "2001,1018" : {
+      "Name" : "NumberOfSlicesMR",
+      "PrivateCreator" : "Philips Imaging DD 001",
+      "Type" : "String",
+      "Value" : "36"
+   },
+   "2001,1019" : {
+      "Name" : "PartialMatrixScanned",
+      "PrivateCreator" : "Philips Imaging DD 001",
+      "Type" : "String",
+      "Value" : "N"
+   },
+   "2001,101a" : {
+      "Name" : "PCVelocity",
+      "PrivateCreator" : "Philips Imaging DD 001",
+      "Type" : "String",
+      "Value" : "0\\0\\0"
+   },
+   "2001,101b" : {
+      "Name" : "PrepulseDelay",
+      "PrivateCreator" : "Philips Imaging DD 001",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "2001,101c" : {
+      "Name" : "PrepulseType",
+      "PrivateCreator" : "Philips Imaging DD 001",
+      "Type" : "String",
+      "Value" : "NO"
+   },
+   "2001,101d" : {
+      "Name" : "ReconstructionNumberMR",
+      "PrivateCreator" : "Philips Imaging DD 001",
+      "Type" : "String",
+      "Value" : "1"
+   },
+   "2001,101e" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips Imaging DD 001",
+      "Type" : "String",
+      "Value" : ""
+   },
+   "2001,101f" : {
+      "Name" : "RespirationSync",
+      "PrivateCreator" : "Philips Imaging DD 001",
+      "Type" : "String",
+      "Value" : "NO"
+   },
+   "2001,1020" : {
+      "Name" : "ScanningTechnique",
+      "PrivateCreator" : "Philips Imaging DD 001",
+      "Type" : "String",
+      "Value" : "FEEPI"
+   },
+   "2001,1021" : {
+      "Name" : "SPIR",
+      "PrivateCreator" : "Philips Imaging DD 001",
+      "Type" : "String",
+      "Value" : "Y"
+   },
+   "2001,1022" : {
+      "Name" : "WaterFatShift",
+      "PrivateCreator" : "Philips Imaging DD 001",
+      "Type" : "String",
+      "Value" : "8.47801685"
+   },
+   "2001,1023" : {
+      "Name" : "FlipAnglePhilips",
+      "PrivateCreator" : "Philips Imaging DD 001",
+      "Type" : "String",
+      "Value" : "90.0"
+   },
+   "2001,1024" : {
+      "Name" : "SeriesIsInteractive",
+      "PrivateCreator" : "Philips Imaging DD 001",
+      "Type" : "String",
+      "Value" : "N"
+   },
+   "2001,1025" : {
+      "Name" : "EchoTimeDisplayMR",
+      "PrivateCreator" : "Philips Imaging DD 001",
+      "Type" : "String",
+      "Value" : "30"
+   },
+   "2001,1052" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips Imaging DD 001",
+      "Type" : "String",
+      "Value" : ""
+   },
+   "2001,105f" : {
+      "Name" : "StackSequence",
+      "Type" : "Sequence",
+      "Value" : [
+         {
+            "2001,0010" : {
+               "Name" : "PrivateCreator",
+               "Type" : "String",
+               "Value" : "Philips Imaging DD 001"
+            },
+            "2001,102d" : {
+               "Name" : "StackNumberOfSlices",
+               "PrivateCreator" : "Philips Imaging DD 001",
+               "Type" : "String",
+               "Value" : "36"
+            },
+            "2001,1032" : {
+               "Name" : "StackRadialAngle",
+               "PrivateCreator" : "Philips Imaging DD 001",
+               "Type" : "String",
+               "Value" : "0"
+            },
+            "2001,1033" : {
+               "Name" : "StackRadialAxis",
+               "PrivateCreator" : "Philips Imaging DD 001",
+               "Type" : "String",
+               "Value" : "AP"
+            },
+            "2001,1035" : {
+               "Name" : "StackSliceNumber",
+               "PrivateCreator" : "Philips Imaging DD 001",
+               "Type" : "String",
+               "Value" : "1"
+            },
+            "2001,1036" : {
+               "Name" : "StackType",
+               "PrivateCreator" : "Philips Imaging DD 001",
+               "Type" : "String",
+               "Value" : "PARALLEL"
+            },
+            "2005,0010" : {
+               "Name" : "PrivateCreator",
+               "Type" : "String",
+               "Value" : "Philips MR Imaging DD 001"
+            },
+            "2005,1071" : {
+               "Name" : "Unknown Tag & Data",
+               "PrivateCreator" : "Philips MR Imaging DD 001",
+               "Type" : "String",
+               "Value" : "-5.50374079"
+            },
+            "2005,1072" : {
+               "Name" : "Unknown Tag & Data",
+               "PrivateCreator" : "Philips MR Imaging DD 001",
+               "Type" : "String",
+               "Value" : "-0.382866591"
+            },
+            "2005,1073" : {
+               "Name" : "Unknown Tag & Data",
+               "PrivateCreator" : "Philips MR Imaging DD 001",
+               "Type" : "String",
+               "Value" : "-3.98552394"
+            },
+            "2005,1074" : {
+               "Name" : "Unknown Tag & Data",
+               "PrivateCreator" : "Philips MR Imaging DD 001",
+               "Type" : "String",
+               "Value" : "208"
+            },
+            "2005,1075" : {
+               "Name" : "Unknown Tag & Data",
+               "PrivateCreator" : "Philips MR Imaging DD 001",
+               "Type" : "String",
+               "Value" : "108"
+            },
+            "2005,1076" : {
+               "Name" : "Unknown Tag & Data",
+               "PrivateCreator" : "Philips MR Imaging DD 001",
+               "Type" : "String",
+               "Value" : "208"
+            },
+            "2005,1078" : {
+               "Name" : "Unknown Tag & Data",
+               "PrivateCreator" : "Philips MR Imaging DD 001",
+               "Type" : "String",
+               "Value" : "2.93098545"
+            },
+            "2005,1079" : {
+               "Name" : "Unknown Tag & Data",
+               "PrivateCreator" : "Philips MR Imaging DD 001",
+               "Type" : "String",
+               "Value" : "-7.03865528"
+            },
+            "2005,107a" : {
+               "Name" : "Unknown Tag & Data",
+               "PrivateCreator" : "Philips MR Imaging DD 001",
+               "Type" : "String",
+               "Value" : "-4.5534997"
+            },
+            "2005,107b" : {
+               "Name" : "Unknown Tag & Data",
+               "PrivateCreator" : "Philips MR Imaging DD 001",
+               "Type" : "String",
+               "Value" : "AP"
+            },
+            "2005,107e" : {
+               "Name" : "Unknown Tag & Data",
+               "PrivateCreator" : "Philips MR Imaging DD 001",
+               "Type" : "String",
+               "Value" : "3"
+            },
+            "2005,1081" : {
+               "Name" : "Unknown Tag & Data",
+               "PrivateCreator" : "Philips MR Imaging DD 001",
+               "Type" : "String",
+               "Value" : "FH"
+            },
+            "2005,10a3" : {
+               "Name" : "Unknown Tag & Data",
+               "PrivateCreator" : "Philips MR Imaging DD 001",
+               "Type" : "String",
+               "Value" : "38"
+            },
+            "2005,10a4" : {
+               "Name" : "Unknown Tag & Data",
+               "PrivateCreator" : "Philips MR Imaging DD 001",
+               "Type" : "String",
+               "Value" : "0"
+            },
+            "2005,10a5" : {
+               "Name" : "Unknown Tag & Data",
+               "PrivateCreator" : "Philips MR Imaging DD 001",
+               "Type" : "String",
+               "Value" : "0"
+            },
+            "2005,10a6" : {
+               "Name" : "Unknown Tag & Data",
+               "PrivateCreator" : "Philips MR Imaging DD 001",
+               "Type" : "String",
+               "Value" : "123456"
+            },
+            "2005,10a7" : {
+               "Name" : "Unknown Tag & Data",
+               "PrivateCreator" : "Philips MR Imaging DD 001",
+               "Type" : "String",
+               "Value" : "DEFAULT"
+            }
+         }
+      ]
+   },
+   "2001,1060" : {
+      "Name" : "NumberOfStacks",
+      "PrivateCreator" : "Philips Imaging DD 001",
+      "Type" : "String",
+      "Value" : "1"
+   },
+   "2001,1061" : {
+      "Name" : "SeriesTransmitted",
+      "PrivateCreator" : "Philips Imaging DD 001",
+      "Type" : "String",
+      "Value" : "N"
+   },
+   "2001,1062" : {
+      "Name" : "SeriesCommitted",
+      "PrivateCreator" : "Philips Imaging DD 001",
+      "Type" : "String",
+      "Value" : "N"
+   },
+   "2001,1063" : {
+      "Name" : "ExaminationSource",
+      "PrivateCreator" : "Philips Imaging DD 001",
+      "Type" : "String",
+      "Value" : "ELSEWHERE"
+   },
+   "2001,106e" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips Imaging DD 001",
+      "Type" : "String",
+      "Value" : "MRSERIES"
+   },
+   "2001,107b" : {
+      "Name" : "AcquisitionNumber",
+      "PrivateCreator" : "Philips Imaging DD 001",
+      "Type" : "String",
+      "Value" : "6"
+   },
+   "2001,1081" : {
+      "Name" : "NumberOfDynamicScans",
+      "PrivateCreator" : "Philips Imaging DD 001",
+      "Type" : "String",
+      "Value" : "2"
+   },
+   "2001,1082" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips Imaging DD 001",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "2001,1083" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips Imaging DD 001",
+      "Type" : "String",
+      "Value" : "127.784438999999"
+   },
+   "2001,1084" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips Imaging DD 001",
+      "Type" : "String",
+      "Value" : "0.0"
+   },
+   "2001,1085" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips Imaging DD 001",
+      "Type" : "String",
+      "Value" : "0.0"
+   },
+   "2001,1086" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips Imaging DD 001",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "2001,1087" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips Imaging DD 001",
+      "Type" : "String",
+      "Value" : "1H"
+   },
+   "2001,1088" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips Imaging DD 001",
+      "Type" : "String",
+      "Value" : "1.0"
+   },
+   "2001,1089" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips Imaging DD 001",
+      "Type" : "String",
+      "Value" : "0.0"
+   },
+   "2001,108a" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips Imaging DD 001",
+      "Type" : "String",
+      "Value" : "0.0"
+   },
+   "2001,108b" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips Imaging DD 001",
+      "Type" : "String",
+      "Value" : "B"
+   },
+   "2005,0010" : {
+      "Name" : "PrivateCreator",
+      "Type" : "String",
+      "Value" : "Philips MR Imaging DD 001"
+   },
+   "2005,0011" : {
+      "Name" : "PrivateCreator",
+      "Type" : "String",
+      "Value" : "Philips MR Imaging DD 002"
+   },
+   "2005,0012" : {
+      "Name" : "PrivateCreator",
+      "Type" : "String",
+      "Value" : "Philips MR Imaging DD 003"
+   },
+   "2005,0013" : {
+      "Name" : "PrivateCreator",
+      "Type" : "String",
+      "Value" : "Philips MR Imaging DD 004"
+   },
+   "2005,1000" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 001",
+      "Type" : "String",
+      "Value" : "-5.50374079"
+   },
+   "2005,1001" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 001",
+      "Type" : "String",
+      "Value" : "-0.382866591"
+   },
+   "2005,1002" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 001",
+      "Type" : "String",
+      "Value" : "-3.98552394"
+   },
+   "2005,1004" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 001",
+      "Type" : "String",
+      "Value" : "NONE"
+   },
+   "2005,1008" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 001",
+      "Type" : "String",
+      "Value" : "1.37434518"
+   },
+   "2005,1009" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 001",
+      "Type" : "String",
+      "Value" : "-29.3807659"
+   },
+   "2005,100a" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 001",
+      "Type" : "String",
+      "Value" : "-2.39550805"
+   },
+   "2005,100b" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 001",
+      "Type" : "String",
+      "Value" : "3714012.25"
+   },
+   "2005,100c" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 001",
+      "Type" : "String",
+      "Value" : "260.033875"
+   },
+   "2005,100d" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 001",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "2005,100e" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 001",
+      "Type" : "String",
+      "Value" : "0.000315632875"
+   },
+   "2005,1011" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 001",
+      "Type" : "String",
+      "Value" : "M"
+   },
+   "2005,1012" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 001",
+      "Type" : "String",
+      "Value" : "N"
+   },
+   "2005,1013" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 001",
+      "Type" : "String",
+      "Value" : "NO"
+   },
+   "2005,1014" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 001",
+      "Type" : "String",
+      "Value" : "N"
+   },
+   "2005,1015" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 001",
+      "Type" : "String",
+      "Value" : "Y"
+   },
+   "2005,1016" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 001",
+      "Type" : "String",
+      "Value" : "N"
+   },
+   "2005,1017" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 001",
+      "Type" : "String",
+      "Value" : "N"
+   },
+   "2005,1018" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 001",
+      "Type" : "String",
+      "Value" : ""
+   },
+   "2005,1019" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 001",
+      "Type" : "String",
+      "Value" : "N"
+   },
+   "2005,101a" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 001",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "2005,101b" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 001",
+      "Type" : "String",
+      "Value" : "N"
+   },
+   "2005,101c" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 001",
+      "Type" : "String",
+      "Value" : "N"
+   },
+   "2005,101d" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 001",
+      "Type" : "String",
+      "Value" : "64"
+   },
+   "2005,101e" : {
+      "Name" : "MIPProtocol",
+      "PrivateCreator" : "Philips MR Imaging DD 001",
+      "Type" : "String",
+      "Value" : "compose"
+   },
+   "2005,101f" : {
+      "Name" : "MPRProtocol",
+      "PrivateCreator" : "Philips MR Imaging DD 001",
+      "Type" : "String",
+      "Value" : "compose"
+   },
+   "2005,1020" : {
+      "Name" : "NumberOfChemicalShifts",
+      "PrivateCreator" : "Philips MR Imaging DD 001",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "2005,1021" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 001",
+      "Type" : "String",
+      "Value" : "1"
+   },
+   "2005,1022" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 001",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "2005,1023" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 001",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "2005,1025" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 001",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "2005,1026" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 001",
+      "Type" : "String",
+      "Value" : "N"
+   },
+   "2005,1027" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 001",
+      "Type" : "String",
+      "Value" : "MINIMUM"
+   },
+   "2005,1028" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 001",
+      "Type" : "String",
+      "Value" : "N"
+   },
+   "2005,1029" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 001",
+      "Type" : "String",
+      "Value" : "N"
+   },
+   "2005,102a" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 001",
+      "Type" : "String",
+      "Value" : "202924546"
+   },
+   "2005,102b" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 001",
+      "Type" : "String",
+      "Value" : "100"
+   },
+   "2005,102c" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 001",
+      "Type" : "String",
+      "Value" : "N"
+   },
+   "2005,102d" : {
+      "Name" : "NumberOfStackSlices",
+      "PrivateCreator" : "Philips MR Imaging DD 001",
+      "Type" : "String",
+      "Value" : "3"
+   },
+   "2005,102e" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 001",
+      "Type" : "String",
+      "Value" : "N"
+   },
+   "2005,102f" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 001",
+      "Type" : "String",
+      "Value" : "N"
+   },
+   "2005,1030" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 001",
+      "Type" : "String",
+      "Value" : "1808.83081"
+   },
+   "2005,1031" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 001",
+      "Type" : "String",
+      "Value" : "N"
+   },
+   "2005,1032" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 001",
+      "Type" : "String",
+      "Value" : ""
+   },
+   "2005,1033" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 001",
+      "Type" : "String",
+      "Value" : "9.07299995"
+   },
+   "2005,1034" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 001",
+      "Type" : "String",
+      "Value" : "Y"
+   },
+   "2005,1035" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 001",
+      "Type" : "String",
+      "Value" : "PIXEL"
+   },
+   "2005,1036" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 001",
+      "Type" : "String",
+      "Value" : "N"
+   },
+   "2005,1037" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 001",
+      "Type" : "String",
+      "Value" : "N"
+   },
+   "2005,1038" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 001",
+      "Type" : "String",
+      "Value" : "N"
+   },
+   "2005,1039" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 001",
+      "Type" : "String",
+      "Value" : "N"
+   },
+   "2005,103a" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 001",
+      "Type" : "String",
+      "Value" : "fMRI_SENComp"
+   },
+   "2005,103b" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 001",
+      "Type" : "String",
+      "Value" : "N"
+   },
+   "2005,103c" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 001",
+      "Type" : "String",
+      "Value" : "N"
+   },
+   "2005,103d" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 001",
+      "Type" : "String",
+      "Value" : "102"
+   },
+   "2005,103e" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 001",
+      "Type" : "String",
+      "Value" : "0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0"
+   },
+   "2005,105f" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 001",
+      "Type" : "String",
+      "Value" : "UNKNOWN"
+   },
+   "2005,1060" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 001",
+      "Type" : "String",
+      "Value" : "-1"
+   },
+   "2005,1061" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 001",
+      "Type" : "String",
+      "Value" : "NO"
+   },
+   "2005,1063" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 001",
+      "Type" : "String",
+      "Value" : "1"
+   },
+   "2005,106e" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 001",
+      "Type" : "String",
+      "Value" : "FFE"
+   },
+   "2005,106f" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 001",
+      "Type" : "String",
+      "Value" : "MS"
+   },
+   "2005,1070" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 001",
+      "Type" : "String",
+      "Value" : ""
+   },
+   "2005,1080" : {
+      "Name" : "Unknown Tag & Data",
+      "Type" : "Sequence",
+      "Value" : [
+         {
+            "0008,1150" : {
+               "Name" : "ReferencedSOPClassUID",
+               "Type" : "String",
+               "Value" : "1.2.840.10008.5.1.4.1.1.4"
+            },
+            "0008,1155" : {
+               "Name" : "ReferencedSOPInstanceUID",
+               "Type" : "String",
+               "Value" : "1.3.46.670589.11.0.0.11.4.2.0.5706.5.4544.2006032315560607745"
+            },
+            "2005,0010" : {
+               "Name" : "PrivateCreator",
+               "Type" : "String",
+               "Value" : "Philips MR Imaging DD 001"
+            },
+            "2005,103f" : {
+               "Name" : "Unknown Tag & Data",
+               "PrivateCreator" : "Philips MR Imaging DD 001",
+               "Type" : "String",
+               "Value" : "1"
+            },
+            "2005,1040" : {
+               "Name" : "Unknown Tag & Data",
+               "PrivateCreator" : "Philips MR Imaging DD 001",
+               "Type" : "String",
+               "Value" : "0"
+            },
+            "2005,1041" : {
+               "Name" : "Unknown Tag & Data",
+               "PrivateCreator" : "Philips MR Imaging DD 001",
+               "Type" : "String",
+               "Value" : "1"
+            },
+            "2005,1042" : {
+               "Name" : "Unknown Tag & Data",
+               "PrivateCreator" : "Philips MR Imaging DD 001",
+               "Type" : "String",
+               "Value" : "1"
+            },
+            "2005,1043" : {
+               "Name" : "Unknown Tag & Data",
+               "PrivateCreator" : "Philips MR Imaging DD 001",
+               "Type" : "String",
+               "Value" : "M"
+            },
+            "2005,1044" : {
+               "Name" : "Unknown Tag & Data",
+               "PrivateCreator" : "Philips MR Imaging DD 001",
+               "Type" : "String",
+               "Value" : "1"
+            },
+            "2005,1045" : {
+               "Name" : "Unknown Tag & Data",
+               "PrivateCreator" : "Philips MR Imaging DD 001",
+               "Type" : "String",
+               "Value" : "1"
+            },
+            "2005,1046" : {
+               "Name" : "Unknown Tag & Data",
+               "PrivateCreator" : "Philips MR Imaging DD 001",
+               "Type" : "String",
+               "Value" : "FFE"
+            },
+            "2005,1047" : {
+               "Name" : "Unknown Tag & Data",
+               "PrivateCreator" : "Philips MR Imaging DD 001",
+               "Type" : "String",
+               "Value" : "2"
+            }
+         },
+         {
+            "0008,1150" : {
+               "Name" : "ReferencedSOPClassUID",
+               "Type" : "String",
+               "Value" : "1.2.840.10008.5.1.4.1.1.4"
+            },
+            "0008,1155" : {
+               "Name" : "ReferencedSOPInstanceUID",
+               "Type" : "String",
+               "Value" : "1.3.46.670589.11.0.0.11.4.2.0.5706.5.4544.2006032315561657748"
+            },
+            "2005,0010" : {
+               "Name" : "PrivateCreator",
+               "Type" : "String",
+               "Value" : "Philips MR Imaging DD 001"
+            },
+            "2005,103f" : {
+               "Name" : "Unknown Tag & Data",
+               "PrivateCreator" : "Philips MR Imaging DD 001",
+               "Type" : "String",
+               "Value" : "1"
+            },
+            "2005,1040" : {
+               "Name" : "Unknown Tag & Data",
+               "PrivateCreator" : "Philips MR Imaging DD 001",
+               "Type" : "String",
+               "Value" : "0"
+            },
+            "2005,1041" : {
+               "Name" : "Unknown Tag & Data",
+               "PrivateCreator" : "Philips MR Imaging DD 001",
+               "Type" : "String",
+               "Value" : "1"
+            },
+            "2005,1042" : {
+               "Name" : "Unknown Tag & Data",
+               "PrivateCreator" : "Philips MR Imaging DD 001",
+               "Type" : "String",
+               "Value" : "1"
+            },
+            "2005,1043" : {
+               "Name" : "Unknown Tag & Data",
+               "PrivateCreator" : "Philips MR Imaging DD 001",
+               "Type" : "String",
+               "Value" : "M"
+            },
+            "2005,1044" : {
+               "Name" : "Unknown Tag & Data",
+               "PrivateCreator" : "Philips MR Imaging DD 001",
+               "Type" : "String",
+               "Value" : "1"
+            },
+            "2005,1045" : {
+               "Name" : "Unknown Tag & Data",
+               "PrivateCreator" : "Philips MR Imaging DD 001",
+               "Type" : "String",
+               "Value" : "1"
+            },
+            "2005,1046" : {
+               "Name" : "Unknown Tag & Data",
+               "PrivateCreator" : "Philips MR Imaging DD 001",
+               "Type" : "String",
+               "Value" : "FFE"
+            },
+            "2005,1047" : {
+               "Name" : "Unknown Tag & Data",
+               "PrivateCreator" : "Philips MR Imaging DD 001",
+               "Type" : "String",
+               "Value" : "5"
+            }
+         },
+         {
+            "0008,1150" : {
+               "Name" : "ReferencedSOPClassUID",
+               "Type" : "String",
+               "Value" : "1.2.840.10008.5.1.4.1.1.4"
+            },
+            "0008,1155" : {
+               "Name" : "ReferencedSOPInstanceUID",
+               "Type" : "String",
+               "Value" : "1.3.46.670589.11.0.0.11.4.2.0.5706.5.4544.2006032315562357750"
+            },
+            "2005,0010" : {
+               "Name" : "PrivateCreator",
+               "Type" : "String",
+               "Value" : "Philips MR Imaging DD 001"
+            },
+            "2005,103f" : {
+               "Name" : "Unknown Tag & Data",
+               "PrivateCreator" : "Philips MR Imaging DD 001",
+               "Type" : "String",
+               "Value" : "1"
+            },
+            "2005,1040" : {
+               "Name" : "Unknown Tag & Data",
+               "PrivateCreator" : "Philips MR Imaging DD 001",
+               "Type" : "String",
+               "Value" : "0"
+            },
+            "2005,1041" : {
+               "Name" : "Unknown Tag & Data",
+               "PrivateCreator" : "Philips MR Imaging DD 001",
+               "Type" : "String",
+               "Value" : "1"
+            },
+            "2005,1042" : {
+               "Name" : "Unknown Tag & Data",
+               "PrivateCreator" : "Philips MR Imaging DD 001",
+               "Type" : "String",
+               "Value" : "1"
+            },
+            "2005,1043" : {
+               "Name" : "Unknown Tag & Data",
+               "PrivateCreator" : "Philips MR Imaging DD 001",
+               "Type" : "String",
+               "Value" : "M"
+            },
+            "2005,1044" : {
+               "Name" : "Unknown Tag & Data",
+               "PrivateCreator" : "Philips MR Imaging DD 001",
+               "Type" : "String",
+               "Value" : "1"
+            },
+            "2005,1045" : {
+               "Name" : "Unknown Tag & Data",
+               "PrivateCreator" : "Philips MR Imaging DD 001",
+               "Type" : "String",
+               "Value" : "1"
+            },
+            "2005,1046" : {
+               "Name" : "Unknown Tag & Data",
+               "PrivateCreator" : "Philips MR Imaging DD 001",
+               "Type" : "String",
+               "Value" : "FFE"
+            },
+            "2005,1047" : {
+               "Name" : "Unknown Tag & Data",
+               "PrivateCreator" : "Philips MR Imaging DD 001",
+               "Type" : "String",
+               "Value" : "7"
+            }
+         }
+      ]
+   },
+   "2005,1083" : {
+      "Name" : "Unknown",
+      "Type" : "Sequence",
+      "Value" : []
+   },
+   "2005,1084" : {
+      "Name" : "Unknown Tag & Data",
+      "Type" : "Sequence",
+      "Value" : []
+   },
+   "2005,1085" : {
+      "Name" : "Unknown Tag & Data",
+      "Type" : "Sequence",
+      "Value" : []
+   },
+   "2005,1086" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 001",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "2005,109e" : {
+      "Name" : "Unknown Tag & Data",
+      "Type" : "Sequence",
+      "Value" : []
+   },
+   "2005,109f" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 001",
+      "Type" : "String",
+      "Value" : ""
+   },
+   "2005,10a0" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 001",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "2005,10a1" : {
+      "Name" : "SyncraScanType",
+      "PrivateCreator" : "Philips MR Imaging DD 001",
+      "Type" : "String",
+      "Value" : "SENSE"
+   },
+   "2005,10a2" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 001",
+      "Type" : "String",
+      "Value" : "N"
+   },
+   "2005,10a8" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 001",
+      "Type" : "String",
+      "Value" : "0.0"
+   },
+   "2005,10a9" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 001",
+      "Type" : "String",
+      "Value" : "NA"
+   },
+   "2005,10b0" : {
+      "Name" : "DiffusionDirectionRL",
+      "PrivateCreator" : "Philips MR Imaging DD 001",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "2005,10b1" : {
+      "Name" : "DiffusionDirectionAP",
+      "PrivateCreator" : "Philips MR Imaging DD 001",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "2005,10b2" : {
+      "Name" : "DiffusionDirectionFH",
+      "PrivateCreator" : "Philips MR Imaging DD 001",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "2005,10c0" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 001",
+      "Type" : "String",
+      "Value" : "GR"
+   },
+   "2005,1134" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 002",
+      "Type" : "String",
+      "Value" : ""
+   },
+   "2005,1199" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 002",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "2005,1200" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 003",
+      "Type" : "String",
+      "Value" : "1"
+   },
+   "2005,1201" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 003",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "2005,1243" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 003",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "2005,1244" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 003",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "2005,1245" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 003",
+      "Type" : "String",
+      "Value" : "1"
+   },
+   "2005,1246" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 003",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "2005,1247" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 003",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "2005,1248" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 003",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "2005,1249" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 003",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "2005,1250" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 003",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "2005,1251" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 003",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "2005,1252" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 003",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "2005,1253" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 003",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "2005,1254" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 003",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "2005,1255" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 003",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "2005,1325" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 004",
+      "Type" : "String",
+      "Value" : "N"
+   },
+   "2005,1326" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 004",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "2005,1327" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 004",
+      "Type" : "String",
+      "Value" : "REAL"
+   },
+   "2005,1328" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 004",
+      "Type" : "String",
+      "Value" : "ORIGINAL"
+   },
+   "2005,1329" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 004",
+      "Type" : "String",
+      "Value" : "50"
+   },
+   "2005,1330" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 004",
+      "Type" : "String",
+      "Value" : "PLUS_A_PLUS_B\\PLUS_A_PLUS_B\\PLUS_A_PLUS_B\\PLUS_A_PLUS_B"
+   },
+   "2005,1331" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 004",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "2005,1333" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 004",
+      "Type" : "String",
+      "Value" : "0\\0\\0"
+   },
+   "2005,1334" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 004",
+      "Type" : "String",
+      "Value" : "UNKNOWN"
+   },
+   "2005,1335" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 004",
+      "Type" : "String",
+      "Value" : "UNKNOWN"
+   },
+   "2005,1336" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 004",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "2005,1337" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 004",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "2005,1338" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 004",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "2005,1339" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 004",
+      "Type" : "String",
+      "Value" : "0\\0"
+   },
+   "2005,1340" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 004",
+      "Type" : "String",
+      "Value" : "PRE_FT"
+   },
+   "2005,1341" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 004",
+      "Type" : "String",
+      "Value" : "UNKNOWN"
+   },
+   "2005,1342" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 004",
+      "Type" : "String",
+      "Value" : "FID"
+   },
+   "2005,1343" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 004",
+      "Type" : "String",
+      "Value" : "Y"
+   },
+   "2005,1344" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 004",
+      "Type" : "String",
+      "Value" : "0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0"
+   },
+   "2005,1345" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 004",
+      "Type" : "String",
+      "Value" : "NO"
+   },
+   "2005,1346" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 004",
+      "Type" : "String",
+      "Value" : "HERTZ"
+   },
+   "2005,1347" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 004",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "2005,1348" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 004",
+      "Type" : "String",
+      "Value" : "OFF"
+   },
+   "2005,1349" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 004",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "2005,1350" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 004",
+      "Type" : "String",
+      "Value" : "0\\0"
+   },
+   "2005,1351" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 004",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "2005,1352" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 004",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "2005,1353" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 004",
+      "Type" : "String",
+      "Value" : "\\\\\\\\\\\\\\\\\\\\\\\\\\"
+   },
+   "2005,1354" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 004",
+      "Type" : "String",
+      "Value" : ""
+   },
+   "2005,1355" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 004",
+      "Type" : "String",
+      "Value" : "0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0"
+   },
+   "2005,1356" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 004",
+      "Type" : "String",
+      "Value" : "NO"
+   },
+   "2005,1357" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 004",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "2005,1358" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 004",
+      "Type" : "String",
+      "Value" : ""
+   },
+   "2005,1359" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 004",
+      "Type" : "String",
+      "Value" : "1"
+   },
+   "2005,1360" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 004",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "2005,1361" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 004",
+      "Type" : "String",
+      "Value" : "0\\0"
+   },
+   "2005,1362" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 004",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "2005,1363" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 004",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "2005,1364" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 004",
+      "Type" : "String",
+      "Value" : "NO"
+   },
+   "2005,1370" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 004",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "2005,1371" : {
+      "Name" : "Unknown Tag & Data",
+      "Type" : "Sequence",
+      "Value" : []
+   },
+   "2005,1381" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "Philips MR Imaging DD 004",
+      "Type" : "String",
+      "Value" : "3"
+   },
+   "7fe0,0010" : {
+      "Name" : "PixelData",
+      "Type" : "Null",
+      "Value" : null
+   }
+}

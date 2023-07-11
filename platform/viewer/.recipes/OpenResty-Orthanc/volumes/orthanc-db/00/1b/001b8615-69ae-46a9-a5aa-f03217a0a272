@@ -1,0 +1,1957 @@
+{
+   "0008,0005" : {
+      "Name" : "SpecificCharacterSet",
+      "Type" : "String",
+      "Value" : "ISO_IR 100"
+   },
+   "0008,0008" : {
+      "Name" : "ImageType",
+      "Type" : "String",
+      "Value" : "ORIGINAL\\PRIMARY\\EPI\\NONE"
+   },
+   "0008,0016" : {
+      "Name" : "SOPClassUID",
+      "Type" : "String",
+      "Value" : "1.2.840.10008.5.1.4.1.1.4"
+   },
+   "0008,0018" : {
+      "Name" : "SOPInstanceUID",
+      "Type" : "String",
+      "Value" : "1.2.840.113619.2.440.14196467.865358.19309.1568310548.852"
+   },
+   "0008,0020" : {
+      "Name" : "StudyDate",
+      "Type" : "String",
+      "Value" : "20190920"
+   },
+   "0008,0021" : {
+      "Name" : "SeriesDate",
+      "Type" : "String",
+      "Value" : "20190920"
+   },
+   "0008,0022" : {
+      "Name" : "AcquisitionDate",
+      "Type" : "String",
+      "Value" : "20190920"
+   },
+   "0008,0023" : {
+      "Name" : "ContentDate",
+      "Type" : "String",
+      "Value" : "20190920"
+   },
+   "0008,0030" : {
+      "Name" : "StudyTime",
+      "Type" : "String",
+      "Value" : "122643"
+   },
+   "0008,0031" : {
+      "Name" : "SeriesTime",
+      "Type" : "String",
+      "Value" : "122832"
+   },
+   "0008,0032" : {
+      "Name" : "AcquisitionTime",
+      "Type" : "String",
+      "Value" : "122832"
+   },
+   "0008,0033" : {
+      "Name" : "ContentTime",
+      "Type" : "String",
+      "Value" : "122832"
+   },
+   "0008,0050" : {
+      "Name" : "AccessionNumber",
+      "Type" : "String",
+      "Value" : ""
+   },
+   "0008,0060" : {
+      "Name" : "Modality",
+      "Type" : "String",
+      "Value" : "MR"
+   },
+   "0008,0070" : {
+      "Name" : "Manufacturer",
+      "Type" : "String",
+      "Value" : "GE MEDICAL SYSTEMS"
+   },
+   "0008,0080" : {
+      "Name" : "InstitutionName",
+      "Type" : "String",
+      "Value" : "MCW Premier"
+   },
+   "0008,0090" : {
+      "Name" : "ReferringPhysicianName",
+      "Type" : "String",
+      "Value" : ""
+   },
+   "0008,1010" : {
+      "Name" : "StationName",
+      "Type" : "String",
+      "Value" : "MCWPREM"
+   },
+   "0008,1030" : {
+      "Name" : "StudyDescription",
+      "Type" : "String",
+      "Value" : "PremierQA"
+   },
+   "0008,103e" : {
+      "Name" : "SeriesDescription",
+      "Type" : "String",
+      "Value" : "FATES_EPI_RUN"
+   },
+   "0008,1070" : {
+      "Name" : "OperatorsName",
+      "Type" : "String",
+      "Value" : "8"
+   },
+   "0008,1090" : {
+      "Name" : "ManufacturerModelName",
+      "Type" : "String",
+      "Value" : "SIGNA Premier"
+   },
+   "0008,1111" : {
+      "Name" : "ReferencedPerformedProcedureStepSequence",
+      "Type" : "Sequence",
+      "Value" : [
+         {
+            "0008,1150" : {
+               "Name" : "ReferencedSOPClassUID",
+               "Type" : "String",
+               "Value" : "1.2.840.10008.3.1.2.3.3"
+            },
+            "0008,1155" : {
+               "Name" : "ReferencedSOPInstanceUID",
+               "Type" : "String",
+               "Value" : "1.2.840.113619.6.440.328506079601469594463086314056442069487"
+            }
+         }
+      ]
+   },
+   "0008,2218" : {
+      "Name" : "AnatomicRegionSequence",
+      "Type" : "Sequence",
+      "Value" : [
+         {
+            "0008,0100" : {
+               "Name" : "CodeValue",
+               "Type" : "String",
+               "Value" : "T-A0100"
+            },
+            "0008,0102" : {
+               "Name" : "CodingSchemeDesignator",
+               "Type" : "String",
+               "Value" : "SRT"
+            },
+            "0008,0104" : {
+               "Name" : "CodeMeaning",
+               "Type" : "String",
+               "Value" : "Brain"
+            }
+         }
+      ]
+   },
+   "0009,0010" : {
+      "Name" : "PrivateCreator",
+      "Type" : "String",
+      "Value" : "GEMS_IDEN_01"
+   },
+   "0009,1002" : {
+      "Name" : "SuiteId",
+      "PrivateCreator" : "GEMS_IDEN_01",
+      "Type" : "String",
+      "Value" : "GOC"
+   },
+   "0009,1004" : {
+      "Name" : "ProductId",
+      "PrivateCreator" : "GEMS_IDEN_01",
+      "Type" : "String",
+      "Value" : "SIGNA"
+   },
+   "0009,1027" : {
+      "Name" : "ImageActualDate",
+      "PrivateCreator" : "GEMS_IDEN_01",
+      "Type" : "String",
+      "Value" : "1568982512"
+   },
+   "0009,1030" : {
+      "Name" : "ServiceId",
+      "PrivateCreator" : "GEMS_IDEN_01",
+      "Type" : "String",
+      "Value" : "GOC"
+   },
+   "0009,1031" : {
+      "Name" : "MobileLocationNumber",
+      "PrivateCreator" : "GEMS_IDEN_01",
+      "Type" : "String",
+      "Value" : "9999"
+   },
+   "0009,10e3" : {
+      "Name" : "EquipmentUID",
+      "PrivateCreator" : "GEMS_IDEN_01",
+      "Type" : "String",
+      "Value" : "1.2.840.113619.1.440.5.14196467.865358"
+   },
+   "0009,10e9" : {
+      "Name" : "ActualSeriesDataTimeStamp",
+      "PrivateCreator" : "GEMS_IDEN_01",
+      "Type" : "String",
+      "Value" : "1568982512"
+   },
+   "0010,0010" : {
+      "Name" : "PatientName",
+      "Type" : "String",
+      "Value" : "PremierQA_Premier_LNova"
+   },
+   "0010,0020" : {
+      "Name" : "PatientID",
+      "Type" : "String",
+      "Value" : "Premier_LNova_092019"
+   },
+   "0010,0030" : {
+      "Name" : "PatientBirthDate",
+      "Type" : "String",
+      "Value" : ""
+   },
+   "0010,0040" : {
+      "Name" : "PatientSex",
+      "Type" : "String",
+      "Value" : ""
+   },
+   "0010,1010" : {
+      "Name" : "PatientAge",
+      "Type" : "String",
+      "Value" : "000Y"
+   },
+   "0010,1030" : {
+      "Name" : "PatientWeight",
+      "Type" : "String",
+      "Value" : "50.35"
+   },
+   "0010,21b0" : {
+      "Name" : "AdditionalPatientHistory",
+      "Type" : "String",
+      "Value" : ""
+   },
+   "0012,0064" : {
+      "Name" : "DeidentificationMethodCodeSequence",
+      "Type" : "Sequence",
+      "Value" : [
+         {
+            "0008,0100" : {
+               "Name" : "CodeValue",
+               "Type" : "String",
+               "Value" : "1"
+            },
+            "0008,0102" : {
+               "Name" : "CodingSchemeDesignator",
+               "Type" : "String",
+               "Value" : "XNAT"
+            },
+            "0008,0103" : {
+               "Name" : "CodingSchemeVersion",
+               "Type" : "String",
+               "Value" : "0.1"
+            },
+            "0008,0104" : {
+               "Name" : "CodeMeaning",
+               "Type" : "String",
+               "Value" : "XNAT Edit Script"
+            }
+         },
+         {
+            "0008,0100" : {
+               "Name" : "CodeValue",
+               "Type" : "String",
+               "Value" : "3"
+            },
+            "0008,0102" : {
+               "Name" : "CodingSchemeDesignator",
+               "Type" : "String",
+               "Value" : "XNAT"
+            },
+            "0008,0103" : {
+               "Name" : "CodingSchemeVersion",
+               "Type" : "String",
+               "Value" : "1.0"
+            },
+            "0008,0104" : {
+               "Name" : "CodeMeaning",
+               "Type" : "String",
+               "Value" : "XNAT DicomEdit 6 Script"
+            }
+         }
+      ]
+   },
+   "0018,0015" : {
+      "Name" : "BodyPartExamined",
+      "Type" : "String",
+      "Value" : "BRAIN"
+   },
+   "0018,0020" : {
+      "Name" : "ScanningSequence",
+      "Type" : "String",
+      "Value" : "EP\\GR"
+   },
+   "0018,0021" : {
+      "Name" : "SequenceVariant",
+      "Type" : "String",
+      "Value" : "SS"
+   },
+   "0018,0022" : {
+      "Name" : "ScanOptions",
+      "Type" : "String",
+      "Value" : "SAT_GEMS\\EPI_GEMS\\FS"
+   },
+   "0018,0023" : {
+      "Name" : "MRAcquisitionType",
+      "Type" : "String",
+      "Value" : "2D"
+   },
+   "0018,0025" : {
+      "Name" : "AngioFlag",
+      "Type" : "String",
+      "Value" : "N"
+   },
+   "0018,0050" : {
+      "Name" : "SliceThickness",
+      "Type" : "String",
+      "Value" : "4"
+   },
+   "0018,0080" : {
+      "Name" : "RepetitionTime",
+      "Type" : "String",
+      "Value" : "2000"
+   },
+   "0018,0081" : {
+      "Name" : "EchoTime",
+      "Type" : "String",
+      "Value" : "30"
+   },
+   "0018,0083" : {
+      "Name" : "NumberOfAverages",
+      "Type" : "String",
+      "Value" : "1"
+   },
+   "0018,0084" : {
+      "Name" : "ImagingFrequency",
+      "Type" : "String",
+      "Value" : "127.772717"
+   },
+   "0018,0085" : {
+      "Name" : "ImagedNucleus",
+      "Type" : "String",
+      "Value" : "1H"
+   },
+   "0018,0086" : {
+      "Name" : "EchoNumbers",
+      "Type" : "String",
+      "Value" : "1"
+   },
+   "0018,0087" : {
+      "Name" : "MagneticFieldStrength",
+      "Type" : "String",
+      "Value" : "3"
+   },
+   "0018,0088" : {
+      "Name" : "SpacingBetweenSlices",
+      "Type" : "String",
+      "Value" : "5"
+   },
+   "0018,0091" : {
+      "Name" : "EchoTrainLength",
+      "Type" : "String",
+      "Value" : "1"
+   },
+   "0018,0093" : {
+      "Name" : "PercentSampling",
+      "Type" : "String",
+      "Value" : "100"
+   },
+   "0018,0094" : {
+      "Name" : "PercentPhaseFieldOfView",
+      "Type" : "String",
+      "Value" : "100"
+   },
+   "0018,0095" : {
+      "Name" : "PixelBandwidth",
+      "Type" : "String",
+      "Value" : "7812.5"
+   },
+   "0018,1000" : {
+      "Name" : "DeviceSerialNumber",
+      "Type" : "String",
+      "Value" : "00000000FLORIO1X"
+   },
+   "0018,1020" : {
+      "Name" : "SoftwareVersions",
+      "Type" : "String",
+      "Value" : "27\\LX\\MR Software release:RX27.0_R03_1850.a"
+   },
+   "0018,1030" : {
+      "Name" : "ProtocolName",
+      "Type" : "String",
+      "Value" : "QA MR Premier_Nova32"
+   },
+   "0018,1080" : {
+      "Name" : "BeatRejectionFlag",
+      "Type" : "String",
+      "Value" : "Y"
+   },
+   "0018,1088" : {
+      "Name" : "HeartRate",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "0018,1090" : {
+      "Name" : "CardiacNumberOfImages",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "0018,1094" : {
+      "Name" : "TriggerWindow",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "0018,1100" : {
+      "Name" : "ReconstructionDiameter",
+      "Type" : "String",
+      "Value" : "220"
+   },
+   "0018,1250" : {
+      "Name" : "ReceiveCoilName",
+      "Type" : "String",
+      "Value" : "RM:32NovaHead2"
+   },
+   "0018,1310" : {
+      "Name" : "AcquisitionMatrix",
+      "Type" : "String",
+      "Value" : "64\\0\\0\\64"
+   },
+   "0018,1312" : {
+      "Name" : "InPlanePhaseEncodingDirection",
+      "Type" : "String",
+      "Value" : "COL"
+   },
+   "0018,1314" : {
+      "Name" : "FlipAngle",
+      "Type" : "String",
+      "Value" : "90"
+   },
+   "0018,1315" : {
+      "Name" : "VariableFlipAngleFlag",
+      "Type" : "String",
+      "Value" : "N"
+   },
+   "0018,1316" : {
+      "Name" : "SAR",
+      "Type" : "String",
+      "Value" : "0.060791"
+   },
+   "0018,5100" : {
+      "Name" : "PatientPosition",
+      "Type" : "String",
+      "Value" : "HFS"
+   },
+   "0019,0010" : {
+      "Name" : "PrivateCreator",
+      "Type" : "String",
+      "Value" : "GEMS_ACQU_01"
+   },
+   "0019,100f" : {
+      "Name" : "HorizontalFrameOfReference",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "407.500000"
+   },
+   "0019,1011" : {
+      "Name" : "SeriesContrast",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "0019,1012" : {
+      "Name" : "LastPseq",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "4"
+   },
+   "0019,1017" : {
+      "Name" : "SeriesPlane",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "2"
+   },
+   "0019,1018" : {
+      "Name" : "FirstScanRAS",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "I"
+   },
+   "0019,1019" : {
+      "Name" : "FirstScanLocation",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "-73.9"
+   },
+   "0019,101a" : {
+      "Name" : "LastScanRAS",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "S"
+   },
+   "0019,101b" : {
+      "Name" : "LastScanLocation",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "56.1"
+   },
+   "0019,101e" : {
+      "Name" : "DisplayFieldOfView",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "220.000000"
+   },
+   "0019,105a" : {
+      "Name" : "AcquisitionDuration",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "400000192"
+   },
+   "0019,107d" : {
+      "Name" : "SecondEcho",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "0019,107e" : {
+      "Name" : "NumberOfEchos",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "1"
+   },
+   "0019,107f" : {
+      "Name" : "TableDelta",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "0.000000"
+   },
+   "0019,1081" : {
+      "Name" : "Contiguous",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "1"
+   },
+   "0019,1084" : {
+      "Name" : "PeakSAR",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "0.654267"
+   },
+   "0019,1087" : {
+      "Name" : "CardiacRepetitionTime",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "0.000000"
+   },
+   "0019,1088" : {
+      "Name" : "ImagesPerCardiacCycle",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "0019,108a" : {
+      "Name" : "ActualReceiveGainAnalog",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "9"
+   },
+   "0019,108b" : {
+      "Name" : "ActualReceiveGainDigital",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "13"
+   },
+   "0019,108d" : {
+      "Name" : "DelayAfterTrigger",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "0019,108f" : {
+      "Name" : "SwapPhaseFrequency",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "1"
+   },
+   "0019,1090" : {
+      "Name" : "PauseInterval",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "0019,1091" : {
+      "Name" : "PulseTime",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "0.000000"
+   },
+   "0019,1092" : {
+      "Name" : "SliceOffsetOnFrequencyAxis",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "0019,1093" : {
+      "Name" : "CenterFrequency",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "1277727170"
+   },
+   "0019,1094" : {
+      "Name" : "TransmitGain",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "101"
+   },
+   "0019,1095" : {
+      "Name" : "AnalogReceiverGain",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "9"
+   },
+   "0019,1096" : {
+      "Name" : "DigitalReceiverGain",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "13"
+   },
+   "0019,1097" : {
+      "Name" : "BitmapDefiningCVs",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "17"
+   },
+   "0019,109b" : {
+      "Name" : "PulseSequenceMode",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "1"
+   },
+   "0019,109c" : {
+      "Name" : "PulseSequenceName",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "epiRT"
+   },
+   "0019,109d" : {
+      "Name" : "PulseSequenceDate",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "20181211053346"
+   },
+   "0019,109e" : {
+      "Name" : "InternalPulseSequenceName",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "EPI"
+   },
+   "0019,109f" : {
+      "Name" : "TransmittingCoil",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "3"
+   },
+   "0019,10a0" : {
+      "Name" : "SurfaceCoilType",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "0019,10a1" : {
+      "Name" : "ExtremityCoilFlag",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "0019,10a2" : {
+      "Name" : "RawDataRunNumber",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "38418"
+   },
+   "0019,10a3" : {
+      "Name" : "CalibratedFieldStrength",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "0019,10a4" : {
+      "Name" : "SATFatWaterBone",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "1"
+   },
+   "0019,10a7" : {
+      "Name" : "UserData",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "1.000000"
+   },
+   "0019,10a8" : {
+      "Name" : "UserData",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "0.000000"
+   },
+   "0019,10a9" : {
+      "Name" : "UserData",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "0.000000"
+   },
+   "0019,10aa" : {
+      "Name" : "UserData",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "0.000000"
+   },
+   "0019,10ab" : {
+      "Name" : "UserData",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "0.000000"
+   },
+   "0019,10ac" : {
+      "Name" : "UserData",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "0.000000"
+   },
+   "0019,10ad" : {
+      "Name" : "UserData",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "0.000000"
+   },
+   "0019,10ae" : {
+      "Name" : "UserData",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "0.000000"
+   },
+   "0019,10af" : {
+      "Name" : "UserData",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "0.000000"
+   },
+   "0019,10b0" : {
+      "Name" : "UserData",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "0.000000"
+   },
+   "0019,10b1" : {
+      "Name" : "UserData",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "0.000000"
+   },
+   "0019,10b2" : {
+      "Name" : "UserData",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "0.000000"
+   },
+   "0019,10b3" : {
+      "Name" : "UserData",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "0.000000"
+   },
+   "0019,10b4" : {
+      "Name" : "UserData",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "0.000000"
+   },
+   "0019,10b5" : {
+      "Name" : "UserData",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "0.000000"
+   },
+   "0019,10b6" : {
+      "Name" : "UserData",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "0.000000"
+   },
+   "0019,10b7" : {
+      "Name" : "UserData",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "0.000000"
+   },
+   "0019,10b8" : {
+      "Name" : "UserData",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "0.000000"
+   },
+   "0019,10b9" : {
+      "Name" : "UserData",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "0.000000"
+   },
+   "0019,10ba" : {
+      "Name" : "UserData",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "0.000000"
+   },
+   "0019,10bb" : {
+      "Name" : "UserData",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "0.000000"
+   },
+   "0019,10bc" : {
+      "Name" : "UserData",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "0.000000"
+   },
+   "0019,10bd" : {
+      "Name" : "UserData",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "0.000000"
+   },
+   "0019,10be" : {
+      "Name" : "ProjectionAngle",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "0.000000"
+   },
+   "0019,10c0" : {
+      "Name" : "SaturationPlanes",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "0019,10c2" : {
+      "Name" : "SATLocationR",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "9990"
+   },
+   "0019,10c3" : {
+      "Name" : "SATLocationL",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "9990"
+   },
+   "0019,10c4" : {
+      "Name" : "SATLocationA",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "9990"
+   },
+   "0019,10c5" : {
+      "Name" : "SATLocationP",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "9990"
+   },
+   "0019,10c6" : {
+      "Name" : "SATLocationH",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "9990"
+   },
+   "0019,10c7" : {
+      "Name" : "SATLocationF",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "9990"
+   },
+   "0019,10c8" : {
+      "Name" : "SATThicknessRL",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "0019,10c9" : {
+      "Name" : "SATThicknessAP",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "0019,10ca" : {
+      "Name" : "SATThicknessHF",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "0019,10cb" : {
+      "Name" : "PrescribedFlowAxis",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "0019,10cc" : {
+      "Name" : "VelocityEncoding",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "0019,10cd" : {
+      "Name" : "ThicknessDisclaimer",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "0019,10ce" : {
+      "Name" : "PrescanType",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "2"
+   },
+   "0019,10cf" : {
+      "Name" : "PrescanStatus",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "0019,10d2" : {
+      "Name" : "ProjectionAlgorithm",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "0019,10d3" : {
+      "Name" : "ProjectionAlgorithm",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : ""
+   },
+   "0019,10d5" : {
+      "Name" : "FractionalEcho",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "2"
+   },
+   "0019,10d7" : {
+      "Name" : "CardiacPhases",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "0019,10d8" : {
+      "Name" : "VariableEchoFlag",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "0019,10d9" : {
+      "Name" : "ConcatenatedSAT",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "0.000000"
+   },
+   "0019,10df" : {
+      "Name" : "UserData",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "0.000000"
+   },
+   "0019,10e0" : {
+      "Name" : "UserData",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "0.000000"
+   },
+   "0019,10e2" : {
+      "Name" : "VelocityEncodeScale",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "0.000000"
+   },
+   "0019,10f2" : {
+      "Name" : "FastPhases",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "200"
+   },
+   "0019,10f9" : {
+      "Name" : "TransmitGain",
+      "PrivateCreator" : "GEMS_ACQU_01",
+      "Type" : "String",
+      "Value" : "101"
+   },
+   "0020,000d" : {
+      "Name" : "StudyInstanceUID",
+      "Type" : "String",
+      "Value" : "1.2.840.113619.6.440.85296922507692578691574739282047950533"
+   },
+   "0020,000e" : {
+      "Name" : "SeriesInstanceUID",
+      "Type" : "String",
+      "Value" : "1.2.840.113619.2.440.14196467.865358.19471.1568310355.748"
+   },
+   "0020,0010" : {
+      "Name" : "StudyID",
+      "Type" : "String",
+      "Value" : "1106"
+   },
+   "0020,0011" : {
+      "Name" : "SeriesNumber",
+      "Type" : "String",
+      "Value" : "2"
+   },
+   "0020,0012" : {
+      "Name" : "AcquisitionNumber",
+      "Type" : "String",
+      "Value" : "1"
+   },
+   "0020,0013" : {
+      "Name" : "InstanceNumber",
+      "Type" : "String",
+      "Value" : "613"
+   },
+   "0020,0032" : {
+      "Name" : "ImagePositionPatient",
+      "Type" : "String",
+      "Value" : "-112.6812515259\\-106.0812530518\\16.1000003815"
+   },
+   "0020,0037" : {
+      "Name" : "ImageOrientationPatient",
+      "Type" : "String",
+      "Value" : "1.0000000000000\\-0.0000000000000\\0.0000000000000\\-0.0000000000000\\1.0000000000000\\0.0000000000000"
+   },
+   "0020,0052" : {
+      "Name" : "FrameOfReferenceUID",
+      "Type" : "String",
+      "Value" : "1.2.840.113619.2.440.14196467.865358.19471.1568310355.742"
+   },
+   "0020,0060" : {
+      "Name" : "Laterality",
+      "Type" : "String",
+      "Value" : ""
+   },
+   "0020,0105" : {
+      "Name" : "NumberOfTemporalPositions",
+      "Type" : "String",
+      "Value" : "200"
+   },
+   "0020,1002" : {
+      "Name" : "ImagesInAcquisition",
+      "Type" : "String",
+      "Value" : "27"
+   },
+   "0020,1040" : {
+      "Name" : "PositionReferenceIndicator",
+      "Type" : "String",
+      "Value" : ""
+   },
+   "0020,1041" : {
+      "Name" : "SliceLocation",
+      "Type" : "String",
+      "Value" : "16.10000038"
+   },
+   "0021,0010" : {
+      "Name" : "PrivateCreator",
+      "Type" : "String",
+      "Value" : "GEMS_RELA_01"
+   },
+   "0021,1035" : {
+      "Name" : "SeriesFromWhichPrescribed",
+      "PrivateCreator" : "GEMS_RELA_01",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "0021,1036" : {
+      "Name" : "ImageFromWhichPrescribed",
+      "PrivateCreator" : "GEMS_RELA_01",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "0021,1037" : {
+      "Name" : "ScreenFormat",
+      "PrivateCreator" : "GEMS_RELA_01",
+      "Type" : "String",
+      "Value" : "16"
+   },
+   "0021,104f" : {
+      "Name" : "LocationsInAcquisition",
+      "PrivateCreator" : "GEMS_RELA_01",
+      "Type" : "String",
+      "Value" : "27"
+   },
+   "0021,1050" : {
+      "Name" : "GraphicallyPrescribed",
+      "PrivateCreator" : "GEMS_RELA_01",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "0021,1051" : {
+      "Name" : "RotationFromSourceXRot",
+      "PrivateCreator" : "GEMS_RELA_01",
+      "Type" : "String",
+      "Value" : "0.000000"
+   },
+   "0021,1052" : {
+      "Name" : "RotationFromSourceYRot",
+      "PrivateCreator" : "GEMS_RELA_01",
+      "Type" : "String",
+      "Value" : "0.000000"
+   },
+   "0021,1053" : {
+      "Name" : "RotationFromSourceZRot",
+      "PrivateCreator" : "GEMS_RELA_01",
+      "Type" : "String",
+      "Value" : "0.000000"
+   },
+   "0021,1056" : {
+      "Name" : "IntegerSlop",
+      "PrivateCreator" : "GEMS_RELA_01",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "0021,1057" : {
+      "Name" : "IntegerSlop",
+      "PrivateCreator" : "GEMS_RELA_01",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "0021,1058" : {
+      "Name" : "IntegerSlop",
+      "PrivateCreator" : "GEMS_RELA_01",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "0021,1059" : {
+      "Name" : "IntegerSlop",
+      "PrivateCreator" : "GEMS_RELA_01",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "0021,105a" : {
+      "Name" : "IntegerSlop",
+      "PrivateCreator" : "GEMS_RELA_01",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "0021,105b" : {
+      "Name" : "FloatSlop",
+      "PrivateCreator" : "GEMS_RELA_01",
+      "Type" : "String",
+      "Value" : "0.000000"
+   },
+   "0021,105c" : {
+      "Name" : "FloatSlop",
+      "PrivateCreator" : "GEMS_RELA_01",
+      "Type" : "String",
+      "Value" : "0.000000"
+   },
+   "0021,105d" : {
+      "Name" : "FloatSlop",
+      "PrivateCreator" : "GEMS_RELA_01",
+      "Type" : "String",
+      "Value" : "0.000000"
+   },
+   "0021,105e" : {
+      "Name" : "FloatSlop",
+      "PrivateCreator" : "GEMS_RELA_01",
+      "Type" : "String",
+      "Value" : "0.000000"
+   },
+   "0021,105f" : {
+      "Name" : "FloatSlop",
+      "PrivateCreator" : "GEMS_RELA_01",
+      "Type" : "String",
+      "Value" : "0.000000"
+   },
+   "0021,1081" : {
+      "Name" : "AutoWindowLevelAlpha",
+      "PrivateCreator" : "GEMS_RELA_01",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "0021,1082" : {
+      "Name" : "AutoWindowLevelBeta",
+      "PrivateCreator" : "GEMS_RELA_01",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "0021,1083" : {
+      "Name" : "AutoWindowLevelWindow",
+      "PrivateCreator" : "GEMS_RELA_01",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "0021,1084" : {
+      "Name" : "AutoWindowLevelLevel",
+      "PrivateCreator" : "GEMS_RELA_01",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "0023,0010" : {
+      "Name" : "PrivateCreator",
+      "Type" : "String",
+      "Value" : "GEMS_STDY_01"
+   },
+   "0023,1070" : {
+      "Name" : "StartTimeSecsInFirstAxial",
+      "PrivateCreator" : "GEMS_STDY_01",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "0023,1074" : {
+      "Name" : "NumberOfUpdatesToHeader",
+      "PrivateCreator" : "GEMS_STDY_01",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "0023,107d" : {
+      "Name" : "IndicatesIfStudyHasCompleteInfo",
+      "PrivateCreator" : "GEMS_STDY_01",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "0023,1080" : {
+      "Name" : "Unknown Tag & Data",
+      "Type" : "Sequence",
+      "Value" : [
+         {
+            "0040,0255" : {
+               "Name" : "PerformedProcedureTypeDescription",
+               "Type" : "String",
+               "Value" : ""
+            }
+         }
+      ]
+   },
+   "0025,0010" : {
+      "Name" : "PrivateCreator",
+      "Type" : "String",
+      "Value" : "GEMS_SERS_01"
+   },
+   "0025,1006" : {
+      "Name" : "LastPulseSequenceUsed",
+      "PrivateCreator" : "GEMS_SERS_01",
+      "Type" : "String",
+      "Value" : "4"
+   },
+   "0025,1007" : {
+      "Name" : "ImagesInSeries",
+      "PrivateCreator" : "GEMS_SERS_01",
+      "Type" : "String",
+      "Value" : "27"
+   },
+   "0025,1010" : {
+      "Name" : "LandmarkCounter",
+      "PrivateCreator" : "GEMS_SERS_01",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "0025,1011" : {
+      "Name" : "NumberOfAcquisitions",
+      "PrivateCreator" : "GEMS_SERS_01",
+      "Type" : "String",
+      "Value" : "1"
+   },
+   "0025,1014" : {
+      "Name" : "IndicatesNumberOfUpdatesToHeader",
+      "PrivateCreator" : "GEMS_SERS_01",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "0025,1017" : {
+      "Name" : "SeriesCompleteFlag",
+      "PrivateCreator" : "GEMS_SERS_01",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "0025,1018" : {
+      "Name" : "NumberOfImagesArchived",
+      "PrivateCreator" : "GEMS_SERS_01",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "0025,1019" : {
+      "Name" : "LastImageNumberUsed",
+      "PrivateCreator" : "GEMS_SERS_01",
+      "Type" : "String",
+      "Value" : "27"
+   },
+   "0025,101a" : {
+      "Name" : "PrimaryReceiverSuiteAndHost",
+      "PrivateCreator" : "GEMS_SERS_01",
+      "Type" : "String",
+      "Value" : "GOCGOC"
+   },
+   "0025,101b" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "GEMS_SERS_01",
+      "Type" : "Null",
+      "Value" : null
+   },
+   "0027,0010" : {
+      "Name" : "PrivateCreator",
+      "Type" : "String",
+      "Value" : "GEMS_IMAG_01"
+   },
+   "0027,1006" : {
+      "Name" : "ImageArchiveFlag",
+      "PrivateCreator" : "GEMS_IMAG_01",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "0027,1010" : {
+      "Name" : "ScoutType",
+      "PrivateCreator" : "GEMS_IMAG_01",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "0027,1030" : {
+      "Name" : "ForeignImageRevision",
+      "PrivateCreator" : "GEMS_IMAG_01",
+      "Type" : "String",
+      "Value" : ""
+   },
+   "0027,1031" : {
+      "Name" : "ImagingMode",
+      "PrivateCreator" : "GEMS_IMAG_01",
+      "Type" : "String",
+      "Value" : "1"
+   },
+   "0027,1032" : {
+      "Name" : "PulseSequence",
+      "PrivateCreator" : "GEMS_IMAG_01",
+      "Type" : "String",
+      "Value" : "4"
+   },
+   "0027,1033" : {
+      "Name" : "ImagingOptions",
+      "PrivateCreator" : "GEMS_IMAG_01",
+      "Type" : "String",
+      "Value" : "1140850720"
+   },
+   "0027,1035" : {
+      "Name" : "PlaneType",
+      "PrivateCreator" : "GEMS_IMAG_01",
+      "Type" : "String",
+      "Value" : "2"
+   },
+   "0027,1040" : {
+      "Name" : "RASLetterOfImageLocation",
+      "PrivateCreator" : "GEMS_IMAG_01",
+      "Type" : "String",
+      "Value" : "S"
+   },
+   "0027,1041" : {
+      "Name" : "ImageLocation",
+      "PrivateCreator" : "GEMS_IMAG_01",
+      "Type" : "String",
+      "Value" : "16.1000004"
+   },
+   "0027,1060" : {
+      "Name" : "ImageDimensionX",
+      "PrivateCreator" : "GEMS_IMAG_01",
+      "Type" : "String",
+      "Value" : "64"
+   },
+   "0027,1061" : {
+      "Name" : "ImageDimensionY",
+      "PrivateCreator" : "GEMS_IMAG_01",
+      "Type" : "String",
+      "Value" : "64"
+   },
+   "0027,1062" : {
+      "Name" : "NumberOfExcitations",
+      "PrivateCreator" : "GEMS_IMAG_01",
+      "Type" : "String",
+      "Value" : "1"
+   },
+   "0028,0002" : {
+      "Name" : "SamplesPerPixel",
+      "Type" : "String",
+      "Value" : "1"
+   },
+   "0028,0004" : {
+      "Name" : "PhotometricInterpretation",
+      "Type" : "String",
+      "Value" : "MONOCHROME2"
+   },
+   "0028,0010" : {
+      "Name" : "Rows",
+      "Type" : "String",
+      "Value" : "64"
+   },
+   "0028,0011" : {
+      "Name" : "Columns",
+      "Type" : "String",
+      "Value" : "64"
+   },
+   "0028,0030" : {
+      "Name" : "PixelSpacing",
+      "Type" : "String",
+      "Value" : "3.4375\\3.4375"
+   },
+   "0028,0100" : {
+      "Name" : "BitsAllocated",
+      "Type" : "String",
+      "Value" : "16"
+   },
+   "0028,0101" : {
+      "Name" : "BitsStored",
+      "Type" : "String",
+      "Value" : "16"
+   },
+   "0028,0102" : {
+      "Name" : "HighBit",
+      "Type" : "String",
+      "Value" : "15"
+   },
+   "0028,0103" : {
+      "Name" : "PixelRepresentation",
+      "Type" : "String",
+      "Value" : "1"
+   },
+   "0028,0106" : {
+      "Name" : "SmallestImagePixelValue",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "0028,0107" : {
+      "Name" : "LargestImagePixelValue",
+      "Type" : "String",
+      "Value" : "5586"
+   },
+   "0028,1050" : {
+      "Name" : "WindowCenter",
+      "Type" : "String",
+      "Value" : "2793"
+   },
+   "0028,1051" : {
+      "Name" : "WindowWidth",
+      "Type" : "String",
+      "Value" : "5586"
+   },
+   "0029,0010" : {
+      "Name" : "PrivateCreator",
+      "Type" : "String",
+      "Value" : "GEMS_IMPS_01"
+   },
+   "0029,1015" : {
+      "Name" : "LowerRangeOfPixels",
+      "PrivateCreator" : "GEMS_IMPS_01",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "0029,1016" : {
+      "Name" : "LowerRangeOfPixels",
+      "PrivateCreator" : "GEMS_IMPS_01",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "0029,1017" : {
+      "Name" : "LowerRangeOfPixels",
+      "PrivateCreator" : "GEMS_IMPS_01",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "0029,1018" : {
+      "Name" : "UpperRangeOfPixels",
+      "PrivateCreator" : "GEMS_IMPS_01",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "0029,1026" : {
+      "Name" : "VersionOfHeaderStructure",
+      "PrivateCreator" : "GEMS_IMPS_01",
+      "Type" : "String",
+      "Value" : "2"
+   },
+   "0029,1034" : {
+      "Name" : "AdvantageCompOverflow",
+      "PrivateCreator" : "GEMS_IMPS_01",
+      "Type" : "String",
+      "Value" : "16384"
+   },
+   "0029,1035" : {
+      "Name" : "AdvantageCompUnderflow",
+      "PrivateCreator" : "GEMS_IMPS_01",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "0040,0242" : {
+      "Name" : "PerformedStationName",
+      "Type" : "String",
+      "Value" : "MCWPREM"
+   },
+   "0040,0243" : {
+      "Name" : "PerformedLocation",
+      "Type" : "String",
+      "Value" : "GOC"
+   },
+   "0040,0244" : {
+      "Name" : "PerformedProcedureStepStartDate",
+      "Type" : "String",
+      "Value" : "20190920"
+   },
+   "0040,0245" : {
+      "Name" : "PerformedProcedureStepStartTime",
+      "Type" : "String",
+      "Value" : "122624"
+   },
+   "0040,0253" : {
+      "Name" : "PerformedProcedureStepID",
+      "Type" : "String",
+      "Value" : "7390.1569000384"
+   },
+   "0040,0254" : {
+      "Name" : "PerformedProcedureStepDescription",
+      "Type" : "String",
+      "Value" : "PremierQA"
+   },
+   "0043,0010" : {
+      "Name" : "PrivateCreator",
+      "Type" : "String",
+      "Value" : "GEMS_PARM_01"
+   },
+   "0043,1001" : {
+      "Name" : "BitmapOfPrescanOptions",
+      "PrivateCreator" : "GEMS_PARM_01",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "0043,1002" : {
+      "Name" : "GradientOffsetInX",
+      "PrivateCreator" : "GEMS_PARM_01",
+      "Type" : "String",
+      "Value" : "2"
+   },
+   "0043,1003" : {
+      "Name" : "GradientOffsetInY",
+      "PrivateCreator" : "GEMS_PARM_01",
+      "Type" : "String",
+      "Value" : "36"
+   },
+   "0043,1004" : {
+      "Name" : "GradientOffsetInZ",
+      "PrivateCreator" : "GEMS_PARM_01",
+      "Type" : "String",
+      "Value" : "-168"
+   },
+   "0043,1006" : {
+      "Name" : "NumberOfEPIShots",
+      "PrivateCreator" : "GEMS_PARM_01",
+      "Type" : "String",
+      "Value" : "1"
+   },
+   "0043,1007" : {
+      "Name" : "ViewsPerSegment",
+      "PrivateCreator" : "GEMS_PARM_01",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "0043,1008" : {
+      "Name" : "RespiratoryRateInBPM",
+      "PrivateCreator" : "GEMS_PARM_01",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "0043,1009" : {
+      "Name" : "RespiratoryTriggerPoint",
+      "PrivateCreator" : "GEMS_PARM_01",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "0043,100a" : {
+      "Name" : "TypeOfReceiverUsed",
+      "PrivateCreator" : "GEMS_PARM_01",
+      "Type" : "String",
+      "Value" : "1"
+   },
+   "0043,100b" : {
+      "Name" : "PeakRateOfChangeOfGradientField",
+      "PrivateCreator" : "GEMS_PARM_01",
+      "Type" : "String",
+      "Value" : "0.000000"
+   },
+   "0043,100c" : {
+      "Name" : "LimitsInUnitsOfPercent",
+      "PrivateCreator" : "GEMS_PARM_01",
+      "Type" : "String",
+      "Value" : "100.000000"
+   },
+   "0043,100d" : {
+      "Name" : "PSDEstimatedLimit",
+      "PrivateCreator" : "GEMS_PARM_01",
+      "Type" : "String",
+      "Value" : "77.629997"
+   },
+   "0043,100e" : {
+      "Name" : "PSDEstimatedLimitInTeslaPerSecond",
+      "PrivateCreator" : "GEMS_PARM_01",
+      "Type" : "String",
+      "Value" : "69.589996"
+   },
+   "0043,1010" : {
+      "Name" : "WindowValue",
+      "PrivateCreator" : "GEMS_PARM_01",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "0043,101c" : {
+      "Name" : "GEImageIntegrity",
+      "PrivateCreator" : "GEMS_PARM_01",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "0043,101d" : {
+      "Name" : "LevelValue",
+      "PrivateCreator" : "GEMS_PARM_01",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "0043,1028" : {
+      "Name" : "UniqueImageIdentifier",
+      "PrivateCreator" : "GEMS_PARM_01",
+      "Type" : "Null",
+      "Value" : null
+   },
+   "0043,1029" : {
+      "Name" : "HistogramTables",
+      "PrivateCreator" : "GEMS_PARM_01",
+      "Type" : "Null",
+      "Value" : null
+   },
+   "0043,102a" : {
+      "Name" : "UserDefinedData",
+      "PrivateCreator" : "GEMS_PARM_01",
+      "Type" : "Null",
+      "Value" : null
+   },
+   "0043,102c" : {
+      "Name" : "EffectiveEchoSpacing",
+      "PrivateCreator" : "GEMS_PARM_01",
+      "Type" : "String",
+      "Value" : "476"
+   },
+   "0043,102e" : {
+      "Name" : "StringSlopField2",
+      "PrivateCreator" : "GEMS_PARM_01",
+      "Type" : "String",
+      "Value" : ""
+   },
+   "0043,102f" : {
+      "Name" : "RawDataType",
+      "PrivateCreator" : "GEMS_PARM_01",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "0043,1030" : {
+      "Name" : "RawDataType",
+      "PrivateCreator" : "GEMS_PARM_01",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "0043,1032" : {
+      "Name" : "RawDataType",
+      "PrivateCreator" : "GEMS_PARM_01",
+      "Type" : "String",
+      "Value" : "2"
+   },
+   "0043,1033" : {
+      "Name" : "NegScanSpacing",
+      "PrivateCreator" : "GEMS_PARM_01",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "0043,1034" : {
+      "Name" : "OffsetFrequency",
+      "PrivateCreator" : "GEMS_PARM_01",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "0043,1035" : {
+      "Name" : "UserUsageTag",
+      "PrivateCreator" : "GEMS_PARM_01",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "0043,1036" : {
+      "Name" : "UserFillMapMSW",
+      "PrivateCreator" : "GEMS_PARM_01",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "0043,1037" : {
+      "Name" : "UserFillMapLSW",
+      "PrivateCreator" : "GEMS_PARM_01",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "0043,1038" : {
+      "Name" : "User25ToUser48",
+      "PrivateCreator" : "GEMS_PARM_01",
+      "Type" : "String",
+      "Value" : "0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0"
+   },
+   "0043,1039" : {
+      "Name" : "SlopInteger6ToSlopInteger9",
+      "PrivateCreator" : "GEMS_PARM_01",
+      "Type" : "String",
+      "Value" : "0\\268435456\\0\\0"
+   },
+   "0043,1060" : {
+      "Name" : "SlopInteger10ToSlopInteger17",
+      "PrivateCreator" : "GEMS_PARM_01",
+      "Type" : "String",
+      "Value" : "0\\0\\0\\0\\0\\0\\0\\0"
+   },
+   "0043,1061" : {
+      "Name" : "ScannerStudyEntityUID",
+      "PrivateCreator" : "GEMS_PARM_01",
+      "Type" : "String",
+      "Value" : "1.2.840.113619.6.440.85296922507692578691574739282047950533"
+   },
+   "0043,1062" : {
+      "Name" : "ScannerStudyID",
+      "PrivateCreator" : "GEMS_PARM_01",
+      "Type" : "String",
+      "Value" : "1106"
+   },
+   "0043,106f" : {
+      "Name" : "ScannerTableEntry",
+      "PrivateCreator" : "GEMS_PARM_01",
+      "Type" : "String",
+      "Value" : "0\\0\\0\\0"
+   },
+   "0043,1073" : {
+      "Name" : "ExperimentType",
+      "PrivateCreator" : "GEMS_PARM_01",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "0043,1074" : {
+      "Name" : "NumberOfRestVolumes",
+      "PrivateCreator" : "GEMS_PARM_01",
+      "Type" : "String",
+      "Value" : "7"
+   },
+   "0043,1075" : {
+      "Name" : "NumberOfActiveVolumes",
+      "PrivateCreator" : "GEMS_PARM_01",
+      "Type" : "String",
+      "Value" : "7"
+   },
+   "0043,1076" : {
+      "Name" : "NumberOfDummyScans",
+      "PrivateCreator" : "GEMS_PARM_01",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "0043,1079" : {
+      "Name" : "SlicesPerVolume",
+      "PrivateCreator" : "GEMS_PARM_01",
+      "Type" : "String",
+      "Value" : "27"
+   },
+   "0043,107a" : {
+      "Name" : "ExpectedTimePoints",
+      "PrivateCreator" : "GEMS_PARM_01",
+      "Type" : "String",
+      "Value" : "200"
+   },
+   "0043,107b" : {
+      "Name" : "RegressorValues",
+      "PrivateCreator" : "GEMS_PARM_01",
+      "Type" : "String",
+      "Value" : "1"
+   },
+   "0043,107c" : {
+      "Name" : "DelayAfterSliceGroup",
+      "PrivateCreator" : "GEMS_PARM_01",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "0043,107d" : {
+      "Name" : "ReconModeFlagWord",
+      "PrivateCreator" : "GEMS_PARM_01",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "0043,1080" : {
+      "Name" : "CoilIDData",
+      "PrivateCreator" : "GEMS_PARM_01",
+      "Type" : "String",
+      "Value" : "P1:\\R0000L8rAguLRvEWnXkDHaJdpcKQApKq\\cc00000011e3620f\\P2:\\R000zQjNQF0RnkyPT1LvCGdMQO7Y5vHw\\ef00000011bfee0f\\P3:0\\P4:0\\E:\\GEHCjuG3mGyo4svtKudXKLG5dpvy##Ky\\a40000039eb28f0b"
+   },
+   "0043,1081" : {
+      "Name" : "GECoilName",
+      "PrivateCreator" : "GEMS_PARM_01",
+      "Type" : "String",
+      "Value" : "CZmMM81z2BsZJEJop8rOz7w"
+   },
+   "0043,1082" : {
+      "Name" : "SystemConfigurationInformation",
+      "PrivateCreator" : "GEMS_PARM_01",
+      "Type" : "String",
+      "Value" : "SRMode=150\\GCoilType=13\\gradientAmp=9000\\lineFreq=60\\RFampType=32\\DerateGrad=Yes"
+   },
+   "0043,1083" : {
+      "Name" : "AssetRFactors",
+      "PrivateCreator" : "GEMS_PARM_01",
+      "Type" : "String",
+      "Value" : "1\\1"
+   },
+   "0043,1084" : {
+      "Name" : "AdditionalAssetData",
+      "PrivateCreator" : "GEMS_PARM_01",
+      "Type" : "String",
+      "Value" : "10000\\0\\0\\0\\\\NO\\"
+   },
+   "0043,1089" : {
+      "Name" : "GoverningBodydBdtAndSARDefinition",
+      "PrivateCreator" : "GEMS_PARM_01",
+      "Type" : "String",
+      "Value" : "IEC\\IEC_FIRST_LEVEL\\IEC_FIRST_LEVEL"
+   },
+   "0043,108a" : {
+      "Name" : "PrivateInPlanePhaseEncodingDirection",
+      "PrivateCreator" : "GEMS_PARM_01",
+      "Type" : "String",
+      "Value" : "COL"
+   },
+   "0043,1090" : {
+      "Name" : "SARDefinition",
+      "PrivateCreator" : "GEMS_PARM_01",
+      "Type" : "String",
+      "Value" : "WHOLE_BODY_6_MIN\\LOCAL_PEAK_6_MIN\\PARTIAL_BODY_6MIN"
+   },
+   "0043,1091" : {
+      "Name" : "SARValue",
+      "PrivateCreator" : "GEMS_PARM_01",
+      "Type" : "String",
+      "Value" : "0.06079\\0.654267\\0.261707"
+   },
+   "0043,1095" : {
+      "Name" : "PrescanReuseString",
+      "PrivateCreator" : "GEMS_PARM_01",
+      "Type" : "String",
+      "Value" : "TG/s1,RN/s1,Coil/s1"
+   },
+   "0043,1096" : {
+      "Name" : "ContentQualification",
+      "PrivateCreator" : "GEMS_PARM_01",
+      "Type" : "String",
+      "Value" : "RESEARCH"
+   },
+   "0043,1097" : {
+      "Name" : "ImageFilteringParameters",
+      "PrivateCreator" : "GEMS_PARM_01",
+      "Type" : "String",
+      "Value" : "\\\\1.30 0.40 0.40 5.50 64.00 0.50 \\1.30 0.40 0.40 5.50 64.00 0.50 \\1.30 0.40 0.40 5.50 64.00 0.50 \\100\\0\\0\\\\1\\0\\"
+   },
+   "0043,109a" : {
+      "Name" : "RxStackIdentification",
+      "PrivateCreator" : "GEMS_PARM_01",
+      "Type" : "String",
+      "Value" : "1"
+   },
+   "0043,10a8" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "GEMS_PARM_01",
+      "Type" : "String",
+      "Value" : "1\\0\\0"
+   },
+   "0043,10aa" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "GEMS_PARM_01",
+      "Type" : "String",
+      "Value" : "rev=2;a=1;b=10.0;c=0.0;d=1.0;e=0.00;f=12.00\\rev=2;g=32.0;h=10.0;i=1.0\\rev=2;j=0;k=0.00\\rev=2;l=10.0;m=0.00;n=1.00;o=0;p=0.0\\rev=2;q=0.00;r=2;s=0.0;t=0;u=0;v=0;w=0;x=0"
+   },
+   "0043,10b2" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "GEMS_PARM_01",
+      "Type" : "String",
+      "Value" : "962.8\\407.5\\8.89996\\0\\83.0386\\91.9386"
+   },
+   "0043,10b3" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "GEMS_PARM_01",
+      "Type" : "String",
+      "Value" : "0\\0\\0\\0\\0"
+   },
+   "0043,10b7" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "GEMS_PARM_01",
+      "Type" : "String",
+      "Value" : "1\\0\\3\\0"
+   },
+   "0043,10b8" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "GEMS_PARM_01",
+      "Type" : "String",
+      "Value" : "1\\1\\1\\0\\0\\-0.0442543"
+   },
+   "0043,10ba" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "GEMS_PARM_01",
+      "Type" : "String",
+      "Value" : "0.5"
+   },
+   "0043,10bb" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "GEMS_PARM_01",
+      "Type" : "String",
+      "Value" : "3.4\\3.4\\"
+   },
+   "0043,10bc" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "GEMS_PARM_01",
+      "Type" : "String",
+      "Value" : "0"
+   },
+   "0043,10c0" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "GEMS_PARM_01",
+      "Type" : "String",
+      "Value" : "2\\-7\\0\\-7\\-97.43"
+   },
+   "0043,10c1" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "GEMS_PARM_01",
+      "Type" : "String",
+      "Value" : "RM:Nova32chHead1\\RM:Nova32chHead1\\P1\\#\\RM:Nova32chHead2\\RM:Nova32chHead2\\P2"
+   },
+   "0043,10c2" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "GEMS_PARM_01",
+      "Type" : "String",
+      "Value" : "RM:Nova32chHead1\\RM:Nova32chHead1\\P1\\#\\RM:Nova32chHead2\\RM:Nova32chHead2\\P2"
+   },
+   "0043,10c3" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "GEMS_PARM_01",
+      "Type" : "String",
+      "Value" : "{\"ver\":1,\"grx\":[{\"plug\":[\"RM:Nova32chHead1;P1\"],\"ras\":[[-82.0312\\,74.2188,1],[-500,500,1],[-71.0983,71.0985,1]],\"flag\":0,\"group\":\\0},{\"plug\":[\"RM:Nova32chHead2;P2\"],\"ras\":[[-82.0312,82.0312,1],[\\-500,500,1],[-78.9982,78.9984,1]],\"flag\":0,\"group\":1}]}"
+   },
+   "0043,10c4" : {
+      "Name" : "Unknown Tag & Data",
+      "PrivateCreator" : "GEMS_PARM_01",
+      "Type" : "String",
+      "Value" : "{\"ver\":1,\"grx\":[{\"plug\":[\"RM:Nova32chHead1;P1\"],\"ras\":[[-82.0312\\,74.2188,1],[-500,500,1],[-71.0983,71.0985,1]],\"flag\":1,\"group\":\\0},{\"plug\":[\"RM:Nova32chHead2;P2\"],\"ras\":[[-82.0312,82.0312,1],[\\-500,500,1],[-78.9982,78.9984,1]],\"flag\":1,\"group\":1}]}"
+   },
+   "7fe0,0010" : {
+      "Name" : "PixelData",
+      "Type" : "Null",
+      "Value" : null
+   }
+}
