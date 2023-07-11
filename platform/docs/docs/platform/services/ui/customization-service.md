@@ -332,7 +332,7 @@ customizationService: [
 Below is the full example configuration of the customizable viewport overlay and the screenshot of the result overlay.
 
 ```javascript
-// this is one of the configuration files in `platform/viewer/public/config/*.js`
+// this is one of the configuration files in `platform/app/public/config/*.js`
 window.config = {
   // ...
 

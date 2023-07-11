@@ -1,4 +1,4 @@
-# This dockerfile is used to publish the `ohif/viewer` image on dockerhub.
+# This dockerfile is used to publish the `ohif/app` image on dockerhub.
 #
 # It's a good example of how to build our static application and package it
 # with a web server capable of hosting it as static content.
@@ -61,13 +61,18 @@ RUN yarn run build
 
 # Stage 3: Bundle the built application into a Docker container
 # which runs Nginx using Alpine Linux
-FROM nginxinc/nginx-unprivileged:1.23.1-alpine as final
+FROM nginxinc/nginx-unprivileged:1.25-alpine as final
 #RUN apk add --no-cache bash
 ENV PORT=80
 RUN rm /etc/nginx/conf.d/default.conf
 USER nginx
 COPY --chown=nginx:nginx .docker/Viewer-v3.x /usr/src
 RUN chmod 777 /usr/src/entrypoint.sh
-COPY --from=builder /usr/src/app/platform/viewer/dist /usr/share/nginx/html
+COPY --from=builder /usr/src/app/platform/app/dist /usr/share/nginx/html
+# In entrypoint.sh, app-config.js might be overwritten, so chmod it to be writeable.
+# The nginx user cannot chmod it, so change to root.
+USER root
+RUN chmod 666 /usr/share/nginx/html/app-config.js
+USER nginx
 ENTRYPOINT ["/usr/src/entrypoint.sh"]
 CMD ["nginx", "-g", "daemon off;"]

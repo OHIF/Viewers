@@ -553,7 +553,16 @@ const commandsModule = ({
         commandsManager.runCommand('setViewportColormap', {
           viewportIndex,
           displaySetInstanceUID: ptDisplaySet.displaySetInstanceUID,
-          colormap,
+          colormap: {
+            name: colormap,
+            // TODO: This opacity mapping matches that in hpViewports, but
+            // ideally making this editable in a side panel would be useful
+            opacity: [
+              { value: 0, opacity: 0 },
+              { value: 0.1, opacity: 0.9 },
+              { value: 1, opacity: 0.95 },
+            ],
+          },
         });
 
         viewports.push(

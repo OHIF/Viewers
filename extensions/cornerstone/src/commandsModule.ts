@@ -457,11 +457,9 @@ function commandsModule({
 
       const { viewport } = enabledElement;
 
-      if (viewport instanceof StackViewport) {
-        const { invert } = viewport.getProperties();
-        viewport.setProperties({ invert: !invert });
-        viewport.render();
-      }
+      const { invert } = viewport.getProperties();
+      viewport.setProperties({ invert: !invert });
+      viewport.render();
     },
     resetViewport: () => {
       const enabledElement = _getActiveViewportEnabledElement();

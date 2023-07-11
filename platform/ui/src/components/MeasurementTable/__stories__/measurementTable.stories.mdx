@@ -34,6 +34,13 @@ MeasurementTable is a component that renders the MeasurementTables.
     name="Overview"
     args={{
       title: 'Measurements',
+      servicesManager: {
+        services: {
+          customizationService: {
+            getCustomization: (title, data) => data.content,
+          }
+        },
+      },
     }}
   >
     {MeasurementTableTemplate.bind({})}
@@ -62,6 +69,13 @@ With data
           isActive: false,
         },
       ],
+      servicesManager: {
+        services: {
+          customizationService: {
+            getCustomization: (title, data) => data,
+          }
+        },
+      },
     }}
   >
     {MeasurementTableTemplate.bind({})}

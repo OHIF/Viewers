@@ -17,7 +17,7 @@ remotely.
 
 ## Configuration Files
 
-The configuration for our viewer is in the `<root>platform/viewer/public/config`
+The configuration for our viewer is in the `<root>platform/app/public/config`
 directory. Our build process knows which configuration file to use based on the
 `APP_CONFIG` environment variable. By default, its value is
 [`config/default.js`][default-config]. The majority of the viewer's features,
@@ -25,7 +25,7 @@ and registered extension's features, are configured using this file.
 
 The simplest way is to update the existing default config:
 
-```js title="platform/viewer/public/config/default.js"
+```js title="platform/app/public/config/default.js"
 window.config = {
   routerBasename: '/',
   extensions: [],
@@ -48,6 +48,7 @@ window.config = {
         enableStudyLazyLoad: true,
         supportsFuzzyMatching: true,
         supportsWildcard: true,
+        omitQuotationForMultipartRequest: true,
       },
     },
   ],
@@ -97,6 +98,7 @@ window.config = ({ servicesManager } = {}) => {
         enableStudyLazyLoad: true,
         supportsFuzzyMatching: true,
         supportsWildcard: true,
+        omitQuotationForMultipartRequest: true,
       },
     },
   ],
@@ -112,6 +114,8 @@ Here are a list of some options available:
 - `maxNumberOfWebWorkers`: The maximum number of web workers to use for
   decoding. Defaults to minimum of `navigator.hardwareConcurrency` and
   what is specified by `maxNumberOfWebWorkers`. Some windows machines require smaller values.
+- `acceptHeader` : accept header to request specific dicom transfer syntax ex : [ 'multipart/related; type=image/jls; q=1', 'multipart/related; type=application/octet-stream; q=0.1' ]
+- `requestTransferSyntaxUID` : Request a specific Tansfer syntax from dicom web server ex: 1.2.840.10008.1.2.4.80  (applyed only if acceptHeader is not set)
 - `omitQuotationForMultipartRequest`: Some servers (e.g., .NET) require the `multipart/related` request to be sent without quotation marks. Defaults to `false`. If your server doesn't require this, then setting this flag to `true` might improve performance (by removing the need for preflight requests). Also note that
 if auth headers are used, a preflight request is required.
 - `maxNumRequests`: The maximum number of requests to allow in parallel. It is an object with keys of `interaction`, `thumbnail`, and `prefetch`. You can specify a specific number for each type.
@@ -194,7 +198,7 @@ output.
 [dicomcloud-install]: https://github.com/DICOMcloud/DICOMcloud#running-the-code
 [osirix]: https://www.osirix-viewer.com/
 [horos]: https://www.horosproject.org/
-[default-config]: https://github.com/OHIF/Viewers/blob/master/platform/viewer/public/config/default.js
-[html-templates]: https://github.com/OHIF/Viewers/tree/master/platform/viewer/public/html-templates
-[config-files]: https://github.com/OHIF/Viewers/tree/master/platform/viewer/public/config
+[default-config]: https://github.com/OHIF/Viewers/blob/master/platform/app/public/config/default.js
+[html-templates]: https://github.com/OHIF/Viewers/tree/master/platform/app/public/html-templates
+[config-files]: https://github.com/OHIF/Viewers/tree/master/platform/app/public/config
 <!-- prettier-ignore-end -->
