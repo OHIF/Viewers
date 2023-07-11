@@ -17,7 +17,7 @@ import * as csTools from '@cornerstonejs/tools';
 import { classes } from '@ohif/core';
 import { ContextMenuProps } from './CustomizableContextMenu/types';
 import { NavigateHistory } from './types/commandModuleTypes';
-import { history } from '@ohif/viewer';
+import { history } from '@ohif/app';
 import getThresholdValues from './utils/getThresholdValue';
 import calculateSuvPeak from './utils/calculateSUVPeak';
 import calculateTMTV from './utils/calculateTMTV';
