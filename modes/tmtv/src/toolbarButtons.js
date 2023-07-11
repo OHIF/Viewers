@@ -339,6 +339,7 @@ const toolbarButtons = [
       },
       isAction: true, // ?
       items: [
+        _createColormap('Default', 'default'),
         _createColormap('HSV', 'hsv'),
         _createColormap('Hot Iron', 'hot_iron'),
         _createColormap('S PET', 's_pet'),
@@ -349,6 +350,7 @@ const toolbarButtons = [
         _createColormap('GE 256', 'ge_256'),
         _createColormap('GE', 'ge'),
         _createColormap('Siemens', 'siemens'),
+        _createColormap('Test', 'test'),
       ],
     },
   },

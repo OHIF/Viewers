@@ -318,7 +318,6 @@ class CornerstoneViewportService extends PubSubService
     }
 
     const viewport = this.renderingEngine.getViewport(viewportId);
-
     return viewport;
   }
 

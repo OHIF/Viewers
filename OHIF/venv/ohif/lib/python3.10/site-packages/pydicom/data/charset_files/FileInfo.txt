@@ -1,0 +1,23 @@
+Filename         Character Sets                           "Patient's Name"
+--------         --------------                           '--------------'
+chrArab.dcm      ISO_IR 127                               '\xe2\xc8\xc7\xe6\xea^\xe4\xe6\xd2\xc7\xd1'
+chrFren.dcm      ISO_IR 100                               'Buc^J\xe9r\xf4me'
+chrFrenMulti.dcm ISO_IR 100                               'Buc^J\xe9r\xf4me'
+chrGerm.dcm      ISO_IR 100                               '\xc4neas^R\xfcdiger'
+chrGreek.dcm     ISO_IR 126                               '\xc4\xe9\xef\xed\xf5\xf3\xe9\xef\xf2'
+chrH31.dcm       ['', 'ISO 2022 IR 87']                   'Yamada^Tarou=\x1b$B;3ED\x1b(B^\x1b$BB@O:\x1b(B=\x1b$B$d$^$@\x1b(B^\x1b$B$?$m$&\x1b(B'
+chrH32.dcm       ['ISO 2022 IR 13', 'ISO 2022 IR 87']     '\xd4\xcf\xc0\xde^\xc0\xdb\xb3=\x1b$B;3ED\x1b(J^\x1b$BB@O:\x1b(J=\x1b$B$d$^$@\x1b(J^\x1b$B$?$m$&\x1b(J'
+chrHbrw.dcm      ISO_IR 138                               '\xf9\xf8\xe5\xef^\xe3\xe1\xe5\xf8\xe4'
+chrI2.dcm        ['', 'ISO 2022 IR 149']                  'Hong^Gildong=\x1b$)C\xfb\xf3^\x1b$)C\xd1\xce\xd4\xd7=\x1b$)C\xc8\xab^\x1b$)C\xb1\xe6\xb5\xbf'
+chrRuss.dcm      ISO_IR 144                               '\xbb\xee\xdace\xdc\xd1yp\xd3'
+chrX1.dcm        ISO_IR 192                               'Wang^XiaoDong=\xe7\x8e\x8b^\xe5\xb0\x8f\xe6\x9d\xb1='
+chrX2.dcm        GB18030                                  'Wang^XiaoDong=\xcd\xf5^\xd0\xa1\xb6\xab='
+
+Other
+=====
+chrFrenMulti.dcm is a modified version of chrFren.dcm with multi-valued PN and LO for testing decoding
+chrSQEncoding.dcm is a minimal constructed dataset with a sequence that has
+    another encoding (['ISO 2022 IR 13', 'ISO 2022 IR 87']) than the dataset (ISO_IR 192)
+chrSQEncoding1.dcm is the same dataset with the encoding ['ISO 2022 IR 13', 'ISO 2022 IR 87']
+    defined in the dataset, but not in the sequence
+

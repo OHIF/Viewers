@@ -260,7 +260,7 @@ class MeasurementService extends PubSubService {
   getSource(name, version) {
     const { sources } = this;
     const uid = this._getSourceUID(name, version);
-
+    console.log(sources[uid]);
     return sources[uid];
   }
 
@@ -352,7 +352,8 @@ class MeasurementService extends PubSubService {
       measurement,
       annotationType
     );
-
+    console.log(measurement);
+    console.log(mapping);
     if (mapping) {
       return mapping.toAnnotationSchema(measurement, annotationType);
     }
@@ -416,7 +417,6 @@ class MeasurementService extends PubSubService {
       log.warn('Invalid source. Exiting early.');
       return;
     }
-
     const sourceInfo = this._getSourceToString(source);
 
     if (!annotationType) {
@@ -528,7 +528,7 @@ class MeasurementService extends PubSubService {
         return;
       }
       const { toMeasurementSchema } = sourceMapping;
-
+      console.log(sourceAnnotationDetail);
       /* Convert measurement */
       measurement = toMeasurementSchema(sourceAnnotationDetail);
       measurement.source = source;
@@ -676,7 +676,7 @@ class MeasurementService extends PubSubService {
 
       return source.name === name && source.version === version;
     });
-
+    console.log(sourceUID);
     return sourceUID;
   }
 

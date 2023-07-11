@@ -41,10 +41,15 @@ function initDefaultToolGroup(
       { toolName: toolNames.Magnify },
       { toolName: toolNames.SegmentationDisplay },
       { toolName: toolNames.CalibrationLine },
+      { toolName: 'RectangleROIStartEndThreshold' },
     ],
     // enabled
     // disabled
-    disabled: [{ toolName: toolNames.ReferenceLines }],
+    enabled: [{ toolName: toolNames.SegmentationDisplay }],
+    disabled: [
+      { toolName: toolNames.ReferenceLines },
+      { toolName: toolNames.Crosshairs },
+    ],
   };
 
   const toolsConfig = {
@@ -115,6 +120,7 @@ function initSRToolGroup(extensionManager, toolGroupService, commandsManager) {
       { toolName: SRToolNames.SRBidirectional },
       { toolName: SRToolNames.SREllipticalROI },
       { toolName: SRToolNames.SRCircleROI },
+      { toolName: 'RectangleROIStartEndThreshold' },
     ],
     enabled: [
       {
@@ -182,6 +188,7 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
       { toolName: toolNames.CobbAngle },
       { toolName: toolNames.PlanarFreehandROI },
       { toolName: toolNames.SegmentationDisplay },
+      { toolName: 'RectangleROIStartEndThreshold' },
     ],
     disabled: [
       { toolName: toolNames.Crosshairs },

@@ -30,7 +30,17 @@ function _createButton(type, id, icon, label, commands, tooltip, uiType) {
 const _createActionButton = _createButton.bind(null, 'action');
 const _createToggleButton = _createButton.bind(null, 'toggle');
 const _createToolButton = _createButton.bind(null, 'tool');
-
+function _createCommands(commandName, toolName, toolGroupIds) {
+  return toolGroupIds.map(toolGroupId => ({
+    /* It's a command that is being run when the button is clicked. */
+    commandName,
+    commandOptions: {
+      toolName,
+      toolGroupId,
+    },
+    context: 'DEFAULT',
+  }));
+}
 /**
  *
  * @param {*} preset - preset number (from above import)
@@ -54,7 +64,30 @@ function _createWwwcPreset(preset, title, subtitle) {
     ],
   };
 }
-
+function _createColormap(label, colormap) {
+  return {
+    id: label.toString(),
+    title: label,
+    subtitle: label,
+    type: 'action',
+    commands: [
+      {
+        commandName: 'setColormap',
+        commandOptions: {
+          colormap,
+        },
+        context: 'DEFAULT',
+      },
+      {
+        commandName: 'setColormap',
+        commandOptions: {
+          colormap,
+        },
+        context: 'DEFAULT',
+      },
+    ],
+  };
+}
 const toolGroupIds = ['default', 'mpr', 'SRToolGroup'];
 
 /**
@@ -76,6 +109,67 @@ function _createSetToolActiveCommands(toolName) {
 }
 
 const toolbarButtons = [
+  {
+    id: 'fusionPTColormap',
+    type: 'ohif.splitButton',
+    props: {
+      groupId: 'fusionPTColormap',
+      primary: _createToolButton(
+        'fusionPTColormap',
+        'tool-fusion-color',
+        'Fusion PT Colormap',
+        [],
+        'Fusion PT Colormap'
+      ),
+      secondary: {
+        icon: 'chevron-down',
+        label: 'PT Colormap',
+        isActive: true,
+        tooltip: 'PET Image Colormap',
+      },
+      isAction: true, // ?
+      renderer: WindowLevelMenuItem,
+      items: [
+        _createColormap('DEFAULT', 'default'),
+        _createColormap('HSV', 'hsv'),
+        _createColormap('Hot Iron', 'hot_iron'),
+        _createColormap('S PET', 's_pet'),
+        _createColormap('Red Hot', 'red_hot'),
+        _createColormap('Perfusion', 'perfusion'),
+        _createColormap('Rainbow', 'rainbow_2'),
+        _createColormap('SUV', 'suv'),
+        _createColormap('GE 256', 'ge_256'),
+        _createColormap('GE', 'ge'),
+        _createColormap('Siemens', 'siemens'),
+        _createColormap('Test', 'test'),
+        _createColormap('newTest', 'newtest'),
+      ],
+    },
+  },
+  {
+    id: 'RectangleROIStartEndThreshold',
+    type: 'ohif.radioGroup',
+    props: {
+      type: 'tool',
+      icon: 'tool-create-threshold',
+      label: 'Rectangle ROI Threshold',
+      commands: [
+        ..._createCommands('setToolActive', 'RectangleROIStartEndThreshold', [
+          'default',
+        ]),
+        // {
+        //   commandName: 'displayNotification',
+        //   commandOptions: {
+        //     title: 'RectangleROI Threshold Tip',
+        //     text:
+        //       'RectangleROI Threshold tool should be used on PT Axial Viewport',
+        //     type: 'info',
+        //     context: 'default',
+        //   },
+        // },
+      ],
+    },
+  },
   // Measurement
   {
     id: 'MeasurementTools',
@@ -280,6 +374,8 @@ const toolbarButtons = [
         _createWwwcPreset(3, 'Liver', '150 / 90'),
         _createWwwcPreset(4, 'Bone', '2500 / 480'),
         _createWwwcPreset(5, 'Brain', '80 / 40'),
+        _createWwwcPreset(7, 'Test', '1500 / 233'),
+        _createWwwcPreset(8, 'newTest', '590 / 233'),
       ],
     },
   },

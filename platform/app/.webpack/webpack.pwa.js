@@ -69,6 +69,18 @@ module.exports = (env, argv) => {
         // Hoisted Yarn Workspace Modules
         path.resolve(__dirname, '../../../node_modules'),
         SRC_DIR,
+        path.resolve(
+          __dirname,
+          '/Users/zpick/Desktop/Viewers/modes/longitudinal/node_modules'
+        ),
+        path.resolve(
+          __dirname,
+          '/Users/zpick/Desktop/Viewers/modes/lytic-lesions/node_modules'
+        ),
+        path.resolve(
+          __dirname,
+          '/Users/zpick/Desktop/Viewers/extensions/extension-lytic-lesion/node_modules'
+        ),
       ],
     },
     plugins: [

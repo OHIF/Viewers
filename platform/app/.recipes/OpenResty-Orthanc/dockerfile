@@ -23,8 +23,8 @@
 
 
 # Stage 1: Build the application
-FROM node:12.22.1-slim as builder
-
+FROM node:20.1.0-slim as builder
+RUN apt-get update && apt-get install -y python3 build-essential
 RUN mkdir /usr/src/app
 WORKDIR /usr/src/app
 
