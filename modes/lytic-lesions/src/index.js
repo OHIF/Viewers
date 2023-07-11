@@ -134,7 +134,7 @@ function modeFactory() {
         'MPR',
         'Crosshairs',
         'MoreTools',
-        'fusionPTColormap',
+        'setColormap',
         'RectangleROIStartEndThreshold',
       ]);
 

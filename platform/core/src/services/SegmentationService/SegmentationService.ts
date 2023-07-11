@@ -1,6 +1,7 @@
 import cloneDeep from 'lodash.clonedeep';
 
-import { Types as OhifTypes, ServicesManager, PubSubService } from '@ohif/core';
+import { Types as OhifTypes, ServicesManager } from '@ohif/core';
+import { PubSubService } from '../_shared/pubSubServiceInterface';
 import {
   cache,
   Enums as csEnums,

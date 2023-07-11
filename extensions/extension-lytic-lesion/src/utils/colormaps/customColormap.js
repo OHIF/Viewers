@@ -57,6 +57,11 @@ function customColormap(huLow, huHigh, huMid, windowLow, windowHigh) {
     numPoints
   );
   console.log(colormap);
+  console.log(huMin);
+  console.log(huG);
+  console.log(huCenter);
+  console.log(huB);
+  console.log(huMax);
   // Initialize the array to store RGBPoints
   const RGBPoints = [];
   // Generate RGBPoints

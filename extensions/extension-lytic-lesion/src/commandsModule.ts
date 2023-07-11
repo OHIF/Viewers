@@ -393,7 +393,14 @@ const commandsModule = ({
         commandsManager.runCommand('setViewportColormap', {
           viewportIndex: viewport.viewportIndex,
           displaySetInstanceUID,
-          colormap,
+          colormap: {
+            name: colormap,
+            opacity: [
+              { value: 0, opacity: 0 },
+              { value: 0.1, opacity: .95 },
+              { value: 1, opacity: 1 },
+            ],
+          },
         });
         views.push(
           cornerstoneViewportService.getCornerstoneViewport(viewport.viewportId)

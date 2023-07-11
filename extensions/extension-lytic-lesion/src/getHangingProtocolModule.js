@@ -103,7 +103,6 @@ const defaultProtocol = {
           displaySets: [
             {
               id: 'activeDisplaySet',
-              colormap: 'test',
             },
             {
               id: 'backgroundDisplaySet',
@@ -130,12 +129,6 @@ const defaultProtocol = {
           displaySets: [
             {
               id: 'activeDisplaySet',
-              options: {
-                colormap: {
-                  name: 'hsv',
-                  opacityMapping: [{ value: 0.1, opacity: 0.9 }],
-                },
-              },
             },
             {
               id: 'backgroundDisplaySet',
@@ -162,12 +155,6 @@ const defaultProtocol = {
           displaySets: [
             {
               id: 'activeDisplaySet',
-              options: {
-                colormap: {
-                  name: 'hsv',
-                  opacityMapping: [{ value: 0.1, opacity: 0.9 }],
-                },
-              },
             },
             {
               id: 'backgroundDisplaySet',
