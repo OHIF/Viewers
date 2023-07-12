@@ -258,6 +258,10 @@ function commandsModule({
       const windowWidthNum = Number(window);
       const windowCenterNum = Number(level);
 
+      if (Number.isNaN(windowCenterNum) || Number.isNaN(windowCenterNum)) {
+        return;
+      }
+
       const { viewportId } = _getActiveViewportEnabledElement();
       const viewportToolGroupId = toolGroupService.getToolGroupForViewport(
         viewportId
