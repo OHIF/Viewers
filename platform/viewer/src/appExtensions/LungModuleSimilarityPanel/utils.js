@@ -20,7 +20,7 @@ const reconstructSegs = ({ arr, rows, cols, slices, isNnunet }) => {
   let reshaped;
   // if (isNnunet) reshaped = reshape(arr, [rows, cols * slices]);
   // else reshaped = reshape(arr, [slices, rows * cols]);
-  reshaped = reshape(arr, [slices, rows * cols]);
+  reshaped = reshape(Array.from(arr), [slices, rows * cols]);
 
   console.log({ reshaped });
   return reshaped;
@@ -33,7 +33,7 @@ export const uncompress = ({ segmentation, shape, isNnunet }) => {
   });
   const binData = new Uint8Array(splitCompressData);
   const data = Pako.inflate(binData);
-  const dataArr = Array.from(data);
+  // Removed conversion to Array
   console.log('starting uncompress');
   console.log({
     isNnunet,
@@ -41,15 +41,15 @@ export const uncompress = ({ segmentation, shape, isNnunet }) => {
   });
   console.log(
     'Has Values Greater Than Zeroes',
-    dataArr.some((val, index, arr) => val > 0)
+    data.some((val, index, arr) => val > 0)
   );
   const reconstructed = reconstructSegs({
-    arr: dataArr,
+    arr: data, // Pass Uint8Array directly
     isNnunet,
     ...shape,
   });
   console.log({
-    dataArr,
+    data,
     reconstructed,
   });
   return reconstructed;

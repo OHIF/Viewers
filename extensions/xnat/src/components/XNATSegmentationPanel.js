@@ -193,7 +193,7 @@ class XNATSegmentationPanel extends React.Component {
 
       const slicexsegments = new Set();
       labelmap3D.labelmaps2D.forEach((labelmap, index) => {
-        console.log('index', index);
+        // console.log('index', index);
         for (let i = 0; i < labelmap.pixelData.length; i++) {
           if (labelmap.pixelData[i] === 1) {
             slicexsegments.add(index);
@@ -832,13 +832,13 @@ class XNATSegmentationPanel extends React.Component {
                 }
               />
             </div>
-            {/* <MenuIOButtons
+            <MenuIOButtons
               // ImportCallbackOrComponent={XNATSegmentationImportMenu}
               ExportCallbackOrComponent={XNATSegmentationExportMenu}
               // onImportButtonClick={() => this.setState({ importing: true })}
               onExportButtonClick={() => this.setState({ exporting: true })}
               exportDisabledMessage={exportDisabledMessage}
-            /> */}
+            />
           </div>
           <div className="roiCollectionBody">
             <div className="workingCollectionHeader">

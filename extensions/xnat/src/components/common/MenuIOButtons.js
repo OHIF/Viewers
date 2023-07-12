@@ -24,11 +24,21 @@ export default class MenuIOButtons extends React.Component {
     }
 
     const exportButton = exportDisabledMessage ? (
-      <button title={exportDisabledMessage} disabled>
-        Export
+      <button
+        style={{ display: 'none' }}
+        title={exportDisabledMessage}
+        disabled
+      >
+        Export2
       </button>
     ) : (
-      <button onClick={onExportButtonClick}>Export</button>
+      <button
+        id="triggerExportSegmentations"
+        style={{ display: 'none' }}
+        onClick={onExportButtonClick}
+      >
+        Export3
+      </button>
     );
 
     return (
@@ -36,9 +46,7 @@ export default class MenuIOButtons extends React.Component {
         {ImportCallbackOrComponent && (
           <button onClick={onImportButtonClick}>Import</button>
         )}
-        {ExportCallbackOrComponent && (
-          exportButton
-        )}
+        {ExportCallbackOrComponent && exportButton}
       </div>
     );
   }

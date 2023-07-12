@@ -11,6 +11,8 @@ import { useSelector } from 'react-redux';
 import { getEnabledElement } from '../../../../../extensions/cornerstone/src/state';
 import { handleSaveToolState } from '../../utils/syncrhonizeToolState';
 import { setItem, getItem } from '../../lib/localStorageUtils';
+import { useSyncedStorageState } from '../../utils/synced_storage';
+import eventBus from '../../lib/eventBus';
 
 const NavigateIcons = () => {
   const { UINotificationService } = servicesManager.services;
@@ -22,12 +24,67 @@ const NavigateIcons = () => {
   const location = useLocation();
   const [activeStep, setActiveStep] = useState(1);
   const [endpointsRunning, setEndpointsRunning] = useState(false);
+  const [setUnsavedChanges] = useSyncedStorageState('hasUnsavedChanges', false);
   const [loading, setLoading] = useState(true);
   const isBrainMode = currentMode == BrainMode;
 
   const selectMaskStep = isBrainMode ? 5 : 3;
 
   const intervalId = setInterval(checkEndpointStatus, 60000);
+
+  const triggerReload = () => {
+    try {
+      document.getElementById('triggerExportSegmentations').click();
+    } catch (error) {}
+  };
+
+  const handleNextWrapper = () => {
+    if (isBrainMode && activeStep === 4) {
+      const unsavedChanges = getItem('hasUnsavedChanges');
+      if (unsavedChanges) {
+        const userConfirmed = window.confirm(
+          'You have unsaved changes. Do you want to save them before leaving?'
+        );
+        if (userConfirmed) {
+          triggerReload();
+          // eventBus.dispatch('saveSegmentationChanges', {});
+        } else {
+          setItem('hasUnsavedChanges', false);
+          handleNext();
+        }
+      } else {
+        setItem('hasUnsavedChanges', false);
+        // setUnsavedChanges(false);
+        handleNext();
+      }
+    } else {
+      handleNext();
+    }
+  };
+
+  const handleBackWrapper = () => {
+    if (isBrainMode && activeStep === 4) {
+      const unsavedChanges = getItem('hasUnsavedChanges');
+
+      if (unsavedChanges) {
+        const userConfirmed = window.confirm(
+          'You have unsaved changes. Do you want to save them before leaving?'
+        );
+        if (userConfirmed) {
+          triggerReload();
+          // eventBus.dispatch('saveSegmentationChanges', {});
+        } else {
+          setItem('hasUnsavedChanges', false);
+          handleBack();
+        }
+      } else {
+        setItem('hasUnsavedChanges', false);
+        handleBack();
+      }
+    } else {
+      handleBack();
+    }
+  };
 
   const handleNext = () => {
     const paths =
@@ -103,6 +160,7 @@ const NavigateIcons = () => {
 
   useEffect(() => {
     setItem('canSave', 0);
+    setItem('hasUnsavedChanges', false);
 
     cornerstone.events.addEventListener(
       cornerstone.EVENTS.ELEMENT_ENABLED,
@@ -229,7 +287,7 @@ const NavigateIcons = () => {
             className="btn"
             style={{ backgroundColor: 'transparent' }}
             disabled={isForNavigationDisabled}
-            onClick={handleBack}
+            onClick={handleBackWrapper}
           >
             <ReactTooltip id={`back`} delayShow={250} border={true}>
               {/* <span>Back</span> */}
@@ -251,7 +309,7 @@ const NavigateIcons = () => {
               backgroundColor: 'transparent',
             }}
             disabled={isBackNavigationDisabled}
-            onClick={handleNext}
+            onClick={handleNextWrapper}
           >
             <ReactTooltip id={`forward`} delayShow={250} border={true}>
               {/* <span>Forward</span> */}

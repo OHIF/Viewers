@@ -33,6 +33,8 @@ import { BrainMode, radcadapi } from '../../utils/constants';
 import { JobsContext } from '../../context/JobsContext';
 import { servicesManager } from '../../App';
 import eventBus from '../../lib/eventBus';
+import { useSyncedStorageState } from '../../utils/synced_storage';
+import { setItem } from '../../lib/localStorageUtils';
 const { UINotificationService } = servicesManager.services;
 
 const { loadAndCacheDerivedDisplaySets, studyMetadataManager } = utils;
@@ -107,6 +109,7 @@ const ViewportGrid = function(props) {
     false
   );
   const [loadingState, setLoadingState] = useState(true);
+  const [setUnsavedChanges] = useSyncedStorageState('hasUnsavedChanges', false);
 
   const [fetchedSegmentations, setFetchedSegmentations] = useState('idle');
 
@@ -258,86 +261,6 @@ const ViewportGrid = function(props) {
     });
   }, [editedSegmentationRef.current]);
 
-  const handleDragEnd = event => {
-    const tool_to_avoid = ['Pan', 'Zoom', 'Reset', 'More', 'Wwwc'];
-    const last_active_tool = localStorage.getItem('setToolActive') || null;
-    if (tool_to_avoid.includes(last_active_tool)) return;
-    console.log('drag ended', {
-      props,
-      el: elementRef.current,
-      cornerstoneTools,
-    });
-
-    //  get ative tool here
-    let element = elementRef.current;
-    console.log({ element });
-
-    if (!element) {
-      const view_ports = cornerstone.getEnabledElements();
-      const viewports = view_ports[0];
-
-      element = getEnabledElement(view_ports.indexOf(viewports));
-      elementRef.current = element;
-    }
-
-    const {
-      labelmap3D,
-      currentImageIdIndex,
-      activeLabelmapIndex,
-      ...labelmap2DRest
-    } = segmentationModule.getters.labelmap2D(element);
-
-    let segmentIndex = labelmap3D.activeSegmentIndex;
-    let metadata = labelmap3D.metadata;
-
-    console.log({
-      changedSegmentsRef: changedSegmentsRef.current,
-      segmentIndex,
-      metadata,
-      tool: cornerstoneTools.getToolState(element),
-    });
-    changedSegmentsRef.current[segmentIndex] = segmentIndex;
-    delayRef.current && clearTimeout(delayRef.current);
-    delayRef.current = setTimeout(
-      () =>
-        handleSaveSegmentations({
-          metadata,
-          labelmap3D,
-        }),
-      2000
-    );
-  };
-
-  const handleSaveSegmentations = ({ metadata, labelmap3D }) => {
-    console.log('saveSegmentations', {
-      metadata,
-      labelmap3D,
-      changedSegmentsRef: changedSegmentsRef.current,
-    });
-
-    const segList = [];
-    changedSegmentsRef.current.forEach(item => {
-      console.log('each changedSegment', { item });
-      if (metadata[item]) {
-        const hasData = labelmap3D.labelmaps2D.some(labelmap2D => {
-          return labelmap2D.segmentsOnLabelmap.includes(item);
-        });
-        if (hasData) {
-          segList.push({
-            index: item,
-            metadata: metadata[item],
-          });
-        }
-      }
-    });
-
-    console.log({
-      segList,
-    });
-
-    handleExportSegmentations(segList);
-  };
-
   useEffect(() => {
     if (isStudyLoaded) {
       // if (studies.length > 0) {
@@ -374,71 +297,163 @@ const ViewportGrid = function(props) {
     };
   }, []);
 
-  const updateAndSaveLocalSegmentations = b => {
-    console.log({ b });
-    const fetchedSegmentationsList = localStorage.getItem('segmentation');
-    console.log({
-      fetchedSegmentationsList,
+  const prepareSegList = (metadata, labelmap3D) => {
+    const segList = [];
+    const t0 = performance.now();
+
+    changedSegmentsRef.current.forEach(item => {
+      if (metadata[item]) {
+        const t0 = performance.now();
+
+        const hasData = labelmap3D.labelmaps2D.some(labelmap2D => {
+          return labelmap2D.segmentsOnLabelmap.includes(item);
+        });
+        if (hasData) {
+          segList.push({
+            index: item,
+            metadata: metadata[item],
+          });
+        }
+        const t1 = performance.now();
+        console.log(
+          `Call to changedSegmentsRef loop took ${t1 - t0} milliseconds.`
+        );
+      }
     });
-    const segmentationsList =
-      fetchedSegmentationsList && fetchedSegmentationsList !== 'undefined'
-        ? JSON.parse(fetchedSegmentationsList)
-        : {};
-
-    segmentationsList[b.label] = {
-      segmentation: b.segmentation,
-      label: b.label,
-      shape: b.shape,
-    };
-    console.log({ segmentationsList });
-
-    localStorage.setItem('segmentation', JSON.stringify(segmentationsList));
+    const t1 = performance.now();
+    console.log(`Call to prepareSegList loop took ${t1 - t0} milliseconds.`);
+    return segList;
   };
 
-  const saveSegmentation = ({ segmentation, shape, label }) => {
+  const getActiveToolData = () => {
+    let element = elementRef.current;
+
+    if (!element) {
+      const view_ports = cornerstone.getEnabledElements();
+      const viewports = view_ports[0];
+
+      element = getEnabledElement(view_ports.indexOf(viewports));
+      elementRef.current = element;
+    }
+    return element;
+  };
+
+  const handleDragEnd = event => {
+    const tool_to_avoid = ['Pan', 'Zoom', 'Reset', 'More', 'Wwwc'];
+    const last_active_tool = localStorage.getItem('setToolActive') || null;
+    if (tool_to_avoid.includes(last_active_tool)) return;
+    setItem('hasUnsavedChanges', true);
+    // let element = getActiveToolData();
+    // console.time('handleDragEnd');
+
+    // const {
+    //   labelmap3D,
+    //   currentImageIdIndex,
+    //   activeLabelmapIndex,
+    //   ...labelmap2DRest
+    // } = segmentationModule.getters.labelmap2D(element);
+
+    // let segmentIndex = labelmap3D.activeSegmentIndex;
+    // let metadata = labelmap3D.metadata;
+
+    // changedSegmentsRef.current[segmentIndex] = segmentIndex;
+
+    // console.timeEnd('handleDragEnd');
+
+    // delayRef.current && clearTimeout(delayRef.current);
+    // delayRef.current = setTimeout(
+    //   () =>
+    //     handleSaveSegmentations({
+    //       metadata,
+    //       labelmap3D,
+    //     }),
+    //   2000
+    // );
+  };
+  const handleDragEndCore = event => {
+    setItem('hasUnsavedChanges', false);
+    const tool_to_avoid = ['Pan', 'Zoom', 'Reset', 'More', 'Wwwc'];
+    const last_active_tool = localStorage.getItem('setToolActive') || null;
+    if (tool_to_avoid.includes(last_active_tool)) return;
+    let element = getActiveToolData();
+    console.time('handleDragEnd');
+
+    const {
+      labelmap3D,
+      currentImageIdIndex,
+      activeLabelmapIndex,
+      ...labelmap2DRest
+    } = segmentationModule.getters.labelmap2D(element);
+
+    let segmentIndex = labelmap3D.activeSegmentIndex;
+    let metadata = labelmap3D.metadata;
+
+    changedSegmentsRef.current[segmentIndex] = segmentIndex;
+
+    console.timeEnd('handleDragEnd');
+
+    delayRef.current && clearTimeout(delayRef.current);
+    delayRef.current = setTimeout(
+      () =>
+        handleSaveSegmentations({
+          metadata,
+          labelmap3D,
+        }),
+      2000
+    );
+  };
+
+  const handleSaveSegmentations = ({ metadata, labelmap3D }) => {
+    console.time('handleSaveSegmentations');
+    const segList = prepareSegList(metadata, labelmap3D);
+    handleExportSegmentations(segList);
+    console.timeEnd('handleSaveSegmentations');
+  };
+
+  const saveSegmentation = body => {
     return new Promise(async (res, rej) => {
       try {
         UINotificationService.show({
           title: 'Saving your last segment',
           type: 'info',
-          autoClose: true,
+          autoClose: false,
         });
 
-        console.log('saving', props);
-        const series_uid = props.viewportData[0].SeriesInstanceUID;
-        console.log({ series_uid });
+        // console.log('saving', props);
+        // const series_uid = props.viewportData[0].SeriesInstanceUID;
+        // console.log({ series_uid });
 
-        const email = props.user.profile.email;
+        // const email = props.user.profile.email;
 
-        console.log({ savingSegmentation: segmentation });
+        // console.log({ savingSegmentation: segmentation });
 
-        const body = {
-          series_uid: series_uid,
-          email,
-          segmentation,
-          shape,
-          label,
-        };
+        // const body = {
+        //   series_uid: series_uid,
+        //   email,
+        //   segmentation,
+        //   shape,
+        //   label,
+        // };
 
-        console.log({
-          payload: body,
-          str: JSON.stringify(body),
-          label,
-          // savedHashes: editedSegmentationRef.current,
-        });
+        // console.log({
+        //   payload: body,
+        //   str: JSON.stringify(body),
+        //   label,
+        //   // savedHashes: editedSegmentationRef.current,
+        // });
 
-        const hashed = crypto.SHA512(segmentation).toString();
-        const recordedHash = Object.keys(editedSegmentationRef.current).length
-          ? editedSegmentationRef.current[label]
-          : false;
+        // const hashed = crypto.SHA512(segmentation).toString();
+        // const recordedHash = Object.keys(editedSegmentationRef.current).length
+        //   ? editedSegmentationRef.current[label]
+        //   : false;
 
-        console.log({
-          hashed,
-          recordedHash,
-          label,
-          editedSegmentationRef: Object.keys(editedSegmentationRef.current)
-            .length,
-        });
+        // console.log({
+        //   hashed,
+        //   recordedHash,
+        //   label,
+        //   editedSegmentationRef: Object.keys(editedSegmentationRef.current)
+        //     .length,
+        // });
 
         if (false) {
           // if (recordedHash && recordedHash === hashed) {
@@ -462,37 +477,31 @@ const ViewportGrid = function(props) {
           );
           // let response = {};
 
-          UINotificationService.show({
-            title: 'Segment saved successfully',
-            type: 'info',
-            autoClose: true,
-          });
           setLoading(true);
-          // response = await response.json();
+          response = await response.json();
           setLoading(false);
           console.log({ saveddata: response });
           // updateAndSaveLocalSegmentations(body);
+
           res({ response });
         }
       } catch (error) {
         setLoading(false);
         console.log({ error });
-        UINotificationService.show({
-          title: 'Error saving Segment',
-          type: 'error',
-          autoClose: true,
-        });
       }
     });
   };
 
-  const saveExportations = async ({ element, segList }) => {
+  const saveExportations = async ({ element, segList, series_uid, email }) => {
     return new Promise(async (res, rej) => {
+      const t0 = performance.now();
+
       console.log({ segList });
+
       // const imagePlaneModule =
       //   cornerstone.metaData.get('imagePlaneModule', props.firstImageId) ||
       //   {};
-      // const { rows, columns } = imagePlaneModule;
+      // const { rows, columns } = imagePlaneModule
       const rows = imageDimensionsRef.current.rows;
       const columns = imageDimensionsRef.current.columns;
       console.log({ rows, columns });
@@ -513,70 +522,47 @@ const ViewportGrid = function(props) {
       });
       console.log({ segArray });
 
-      const segmentations = {};
-
       const asyncSaveSegs = segList.map((item, index) => {
         return () =>
           new Promise(async (resolve, reject) => {
-            console.log('asyncSaveSegs', { item, index });
-
             const splitSegArray = getSplitSegArray({
               flatSegmentationArray: segArray,
-              index: item.index,
-            });
-
-            console.log({
-              item,
               index,
-              splitSegArray,
             });
-
             const compressedSeg = await compressSeg(splitSegArray);
-            console.log({
-              compressedSeg,
-            });
-
-            const response = await saveSegmentation({
+            const body = {
+              series_uid: series_uid,
+              email,
               segmentation: compressedSeg,
               label: item.metadata.SegmentLabel,
               shape,
-            });
-            console.log({
-              response,
-            });
-
+            };
+            const response = await saveSegmentation(body);
             resolve(response);
           });
       });
 
-      console.log({ asyncSaveSegs });
-      console.log({ segmentations });
+      // This is the new line of code:
+      const resList = await Promise.all(asyncSaveSegs.map(fn => fn()));
 
-      const resList = [];
-
-      for (const fn of asyncSaveSegs) {
-        const response = await fn();
-        resList.push(response);
-      }
+      const t1 = performance.now();
+      console.log(`Call to saveExportations took ${t1 - t0} milliseconds.`);
 
       console.log({ resList });
-      res({
-        ['exportation complete']: resList,
-      });
+      res({ ['exportation complete']: resList });
     });
   };
 
   const handleExportSegmentations = async segList => {
     console.log({ segList });
     const { viewportData } = props;
+    const t0 = performance.now();
 
     // this.setState({ exporting: true });
-
     // const seriesInfo = getSeriesInfoForImageId(viewportData);
     const element = getElementForFirstImageId(firstImageIdRef.current);
     // const view_ports = cornerstone.getEnabledElements();
     // const viewports = view_ports[0];
-
     // const element = getEnabledElement(view_ports.indexOf(viewports));
 
     console.log({
@@ -604,19 +590,41 @@ const ViewportGrid = function(props) {
       labelMap3d,
     });
 
-    const response = await saveExportations({
+    const series_uid = props.viewportData[0].SeriesInstanceUID;
+    const email = props.user.profile.email;
+
+    await saveExportations({
       element,
       segList: segList,
+      series_uid,
+      email,
     });
-
-    console.log({ response });
-
-    // this.setState({
-    //   exporting: false,
-    // });
-    // props.onExportCancel();
-
+    const t1 = performance.now();
+    console.log(
+      `Call to handleExportSegmentations took ${t1 - t0} milliseconds.`
+    );
     return;
+  };
+
+  const updateAndSaveLocalSegmentations = b => {
+    console.log({ b });
+    const fetchedSegmentationsList = localStorage.getItem('segmentation');
+    console.log({
+      fetchedSegmentationsList,
+    });
+    const segmentationsList =
+      fetchedSegmentationsList && fetchedSegmentationsList !== 'undefined'
+        ? JSON.parse(fetchedSegmentationsList)
+        : {};
+
+    segmentationsList[b.label] = {
+      segmentation: b.segmentation,
+      label: b.label,
+      shape: b.shape,
+    };
+    console.log({ segmentationsList });
+
+    localStorage.setItem('segmentation', JSON.stringify(segmentationsList));
   };
 
   const addSegmentationToCanvas = ({ segmentation, label, element }) => {
