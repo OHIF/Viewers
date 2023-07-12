@@ -154,6 +154,13 @@ function TrackedCornerstoneViewport(props) {
     };
   }, [isTracked]);
 
+  /**
+   * The effect for listening to measurement service measurement added events
+   * and in turn firing an event to update the measurement tracking state machine.
+   * The TrackedCornerstoneViewport is the best place for this because when
+   * a measurement is added, at least one TrackedCornerstoneViewport will be in
+   * the DOM and thus can react to the events fired.
+   */
   useEffect(() => {
     const added = measurementService.EVENTS.MEASUREMENT_ADDED;
     const addedRaw = measurementService.EVENTS.RAW_MEASUREMENT_ADDED;
