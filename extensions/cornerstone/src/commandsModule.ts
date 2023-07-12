@@ -258,7 +258,7 @@ function commandsModule({
       const windowWidthNum = Number(window);
       const windowCenterNum = Number(level);
 
-      if (Number.isNaN(windowCenterNum) || Number.isNaN(windowCenterNum)) {
+      if (Number.isNaN(windowWidthNum) || Number.isNaN(windowCenterNum)) {
         return;
       }
 
