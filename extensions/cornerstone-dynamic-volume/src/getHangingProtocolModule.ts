@@ -1,26 +1,26 @@
+// import { Enums } from '@cornerstonejs/core';
+
 const DEFAULT_COLORMAP = '2hot';
+// const { BlendModes } = Enums;
 
 function getPTOptions({
   colormap,
-  opacityMapping,
   voiInverted,
 }: {
-  colormap?: string;
-  opacityMapping?: {
-    value: number;
-    opacity: number;
-  }[];
+  colormap?: {
+    name: string;
+    opacity:
+      | number
+      | {
+          value: number;
+          opacity: number;
+        }[];
+  };
   voiInverted?: boolean;
 } = {}) {
-  const colormapData = colormap
-    ? {
-        name: colormap,
-        opacityMapping,
-      }
-    : undefined;
-
   return {
-    colormap: colormapData,
+    blendMode: 'MIP',
+    colormap,
     voi: {
       windowWidth: 5,
       windowCenter: 2.5,
@@ -31,8 +31,14 @@ function getPTOptions({
 
 function getPTViewports() {
   const ptOptionsParams = {
-    colormap: DEFAULT_COLORMAP,
-    opacityMapping: [{ value: 0, opacity: 1 }],
+    colormap: {
+      name: DEFAULT_COLORMAP,
+      opacity: [
+        { value: 0, opacity: 0 },
+        { value: 0.1, opacity: 1 },
+        { value: 1, opacity: 1 },
+      ],
+    },
     voiInverted: false,
   };
 
@@ -137,8 +143,14 @@ function getPTViewports() {
 
 function getFusionViewports() {
   const ptOptionsParams = {
-    colormap: DEFAULT_COLORMAP,
-    opacityMapping: [{ value: 0.1, opacity: 0.9 }],
+    colormap: {
+      name: DEFAULT_COLORMAP,
+      opacity: [
+        { value: 0, opacity: 0 },
+        { value: 0.1, opacity: 0.3 },
+        { value: 1, opacity: 0.3 },
+      ],
+    },
   };
 
   return [

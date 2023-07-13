@@ -81,6 +81,7 @@ const ViewportWindowLevel = ({
 }): ReactElement => {
   const { cornerstoneViewportService } = servicesManager.services;
   const [windowLevels, setWindowLevels] = useState([]);
+  const [cachedHistograms, setCachedHistograms] = useState({});
 
   const getViewportVolumeHistogram = useCallback(
     (viewport, volume, options?) => {
@@ -108,8 +109,122 @@ const ViewportWindowLevel = ({
     []
   );
 
+  /**
+   * Looks for all viewports that has exaclty all volumeIds passed as parameter.
+   */
+  const getViewportsWithVolumeIds = useCallback(
+    (volumeIds: string[]) => {
+      const renderingEngine = cornerstoneViewportService.getRenderingEngine();
+      const viewports = renderingEngine.getVolumeViewports();
+
+      return viewports.filter(vp => {
+        const viewportVolumeIds = vp.getActors().map(actor => actor.uid);
+
+        return (
+          volumeIds.length === viewportVolumeIds.length &&
+          volumeIds.every(volumeId => viewportVolumeIds.includes(volumeId))
+        );
+      });
+    },
+    [cornerstoneViewportService]
+  );
+
+  const getNodeOpacity = (volumeActor, nodeIndex) => {
+    const volumeOpacity = volumeActor.getProperty().getScalarOpacity(0);
+    const nodeValue = [];
+
+    volumeOpacity.getNodeValue(nodeIndex, nodeValue);
+
+    return nodeValue[1];
+  };
+
+  /**
+   * Checks if the opacity applied to the PET volume is something like
+   * [{x: 0, y: 0}, {x: 0.1, y: [C]}, {x: [ANY], y: [C]}] where C is a
+   * constant opacity value for all x's greater than 0.1
+   */
+  const isPetVolumeWithDefaultOpacity = (volumeId, volumeActor) => {
+    const volume = cs3DCache.getVolume(volumeId);
+    const modality = volume.metadata.Modality;
+
+    if (modality !== 'PT') {
+      return false;
+    }
+
+    const volumeOpacity = volumeActor.getProperty().getScalarOpacity(0);
+
+    // It must have at least two points (0 and 0.1)
+    if (volumeOpacity.getSize() < 2) {
+      return false;
+    }
+
+    const node1Value = [];
+    const node2Value = [];
+
+    volumeOpacity.getNodeValue(0, node1Value);
+    volumeOpacity.getNodeValue(1, node2Value);
+
+    // First node must be (x:0, y:0} and the second one {x:0.1, y:any}
+    if (node1Value[0] !== 0 || node1Value[1] !== 0 || node2Value[0] !== 0.1) {
+      return false;
+    }
+
+    const expectedOpacity = node2Value[1];
+    const opacitySize = volumeOpacity.getSize();
+    const currentNodeValue = [];
+
+    // Any point after 0.1 must have the same opacity
+    for (let i = 2; i < opacitySize; i++) {
+      volumeOpacity.getNodeValue(i, currentNodeValue);
+
+      if (currentNodeValue[1] !== expectedOpacity) {
+        return false;
+      }
+    }
+
+    return true;
+  };
+
+  /**
+   * Checks if the opacity function has a constance opacity value for all x's
+   */
+  const isVolumeWithConstantOpacity = volumeActor => {
+    const volumeOpacity = volumeActor.getProperty().getScalarOpacity(0);
+    const opacitySize = volumeOpacity.getSize();
+    const firstNodeValue = [];
+
+    volumeOpacity.getNodeValue(0, firstNodeValue);
+
+    const firstNodeOpacity = firstNodeValue[1];
+
+    for (let i = 0; i < opacitySize; i++) {
+      const currentNodeValue = [];
+
+      volumeOpacity.getNodeValue(0, currentNodeValue);
+
+      if (currentNodeValue[1] !== firstNodeOpacity) {
+        return false;
+      }
+    }
+
+    return true;
+  };
+
+  const getVolumeOpacity = useCallback((viewport, volumeId) => {
+    const volumeActor = viewport.getActor(volumeId).actor;
+
+    if (isPetVolumeWithDefaultOpacity(volumeId, volumeActor)) {
+      // Get the opacity from the second node at 0.1
+      return getNodeOpacity(volumeActor, 1);
+    } else if (isVolumeWithConstantOpacity(volumeActor)) {
+      return getNodeOpacity(volumeActor, 0);
+    }
+
+    return undefined;
+  }, []);
+
   const getWindowLevelsData = useCallback(
-    (viewportIndex, prevWindowLevels = []) => {
+    (viewportIndex: number) => {
       const viewport = cornerstoneViewportService.getCornerstoneViewportByIndex(
         viewportIndex
       );
@@ -135,13 +250,7 @@ const ViewportWindowLevel = ({
 
       const windowLevels = volumeIds
         .map((volumeId, volumeIndex) => {
-          const prevWindowLevel = prevWindowLevels.find(
-            prev => prev.volumeId === volumeId
-          );
-
-          if (prevWindowLevel) {
-            return { ...prevWindowLevel };
-          }
+          const opacity = getVolumeOpacity(viewport, volumeId);
 
           const volume = cs3DCache.getVolume(volumeId);
           const { metadata, scaling } = volume;
@@ -150,14 +259,12 @@ const ViewportWindowLevel = ({
           // TODO: find a proper way to fix the histogram
           const options = {
             min: modality === 'PT' ? 0.1 : -999,
-            max: modality === 'PT' ? 5 : 1000,
+            max: modality === 'PT' ? 5 : 2000,
           };
 
-          const histogram = getViewportVolumeHistogram(
-            viewport,
-            volume,
-            options
-          );
+          const histogram =
+            cachedHistograms[volumeId] ??
+            getViewportVolumeHistogram(viewport, volume, options);
           const {
             voi: displaySetVOI,
             colormap: displaySetColormap,
@@ -175,29 +282,35 @@ const ViewportWindowLevel = ({
             : displaySetVOI;
 
           return {
+            viewportIndex,
             modality,
             volumeId,
             volumeIndex,
             voi,
             histogram,
             colormap,
-            step: scaling?.PET ? 0.05 : 1,
+            step: scaling?.PT ? 0.05 : 1,
+            opacity,
+            showOpacitySlider: volumeIndex === 1 && opacity !== undefined,
           };
         })
         .filter(windowLevel => !!windowLevel.histogram);
 
       return windowLevels;
     },
-    [cornerstoneViewportService, getViewportVolumeHistogram]
+    [
+      cachedHistograms,
+      cornerstoneViewportService,
+      getVolumeOpacity,
+      getViewportVolumeHistogram,
+    ]
   );
 
   const updateViewportHistograms = useCallback(() => {
-    setWindowLevels(prevWindowLevels =>
-      getWindowLevelsData(viewportIndex, prevWindowLevels)
-    );
+    setWindowLevels(() => getWindowLevelsData(viewportIndex));
   }, [viewportIndex, getWindowLevelsData]);
 
-  const handleVOIModified = useCallback(
+  const handleCornerstoneVOIModified = useCallback(
     e => {
       const { detail } = e;
       const { volumeId, range } = detail;
@@ -235,9 +348,9 @@ const ViewportWindowLevel = ({
     [windowLevels]
   );
 
-  const debouncedHandleVOIModified = useCallback(
-    debounce(handleVOIModified, 100),
-    [handleVOIModified]
+  const debouncedHandleCornerstoneVOIModified = useCallback(
+    debounce(handleCornerstoneVOIModified, 100),
+    [handleCornerstoneVOIModified]
   );
 
   const handleVOIChange = useCallback(
@@ -258,22 +371,48 @@ const ViewportWindowLevel = ({
   );
 
   const handleOpacityChange = useCallback(
-    (_volumeIndex, _volumeId, opacity) => {
-      // const viewport = cornerstoneViewportService.getCornerstoneViewportByIndex(
-      //   viewportIndex
-      // );
-      // const properties = viewport.getProperties(volumeId);
+    (viewportIndex, _volumeIndex, volumeId, opacity) => {
+      const viewport = cornerstoneViewportService.getCornerstoneViewportByIndex(
+        viewportIndex
+      );
 
-      console.warn(`TODO: update opacity: ${opacity}`);
+      if (!viewport) {
+        return;
+      }
+
+      const viewportVolumeIds = viewport.getActors().map(actor => actor.uid);
+      const viewports = getViewportsWithVolumeIds(viewportVolumeIds);
+
+      viewports.forEach(vp => {
+        vp.setProperties({ colormap: { opacity } }, volumeId);
+        vp.render();
+      });
     },
-    []
+    [getViewportsWithVolumeIds, cornerstoneViewportService]
   );
 
+  // Listen to windowLevels changes and caches all the new ones
+  useEffect(() => {
+    const newVolumeHistograms = windowLevels
+      .filter(windowLevel => !cachedHistograms[windowLevel.volumeId])
+      .reduce((volumeHistograms, windowLevel) => {
+        volumeHistograms[windowLevel.volumeId] = windowLevel.histogram;
+
+        return volumeHistograms;
+      }, {});
+
+    if (Object.keys(newVolumeHistograms).length) {
+      setCachedHistograms({ ...cachedHistograms, ...newVolumeHistograms });
+    }
+  }, [windowLevels, cachedHistograms]);
+
+  // Updates the histogram when the viewport index prop has changed
   useEffect(() => updateViewportHistograms(), [
     viewportIndex,
     updateViewportHistograms,
   ]);
 
+  // Listen to cornerstone events on "eventTarget" and at the document level
   useEffect(() => {
     eventTarget.addEventListener(
       Events.IMAGE_VOLUME_LOADING_COMPLETED,
@@ -282,7 +421,7 @@ const ViewportWindowLevel = ({
 
     document.addEventListener(
       Events.VOI_MODIFIED,
-      debouncedHandleVOIModified,
+      debouncedHandleCornerstoneVOIModified,
       true
     );
 
@@ -294,11 +433,29 @@ const ViewportWindowLevel = ({
 
       document.removeEventListener(
         Events.VOI_MODIFIED,
-        debouncedHandleVOIModified,
+        debouncedHandleCornerstoneVOIModified,
         true
       );
     };
-  }, [updateViewportHistograms, debouncedHandleVOIModified]);
+  }, [updateViewportHistograms, debouncedHandleCornerstoneVOIModified]);
+
+  // Updates the viewport when the context of the viewport has changed. This is
+  // necessary when moving across different stages because the viewport index
+  // may not change but the volumes loaded on it may change.
+  useEffect(() => {
+    const { unsubscribe } = cornerstoneViewportService.subscribe(
+      cornerstoneViewportService.EVENTS.VIEWPORT_VOLUMES_CHANGED,
+      ({ viewportInfo }) => {
+        if (viewportInfo.viewportIndex === viewportIndex) {
+          updateViewportHistograms();
+        }
+      }
+    );
+
+    return () => {
+      unsubscribe();
+    };
+  }, [viewportIndex, cornerstoneViewportService, updateViewportHistograms]);
 
   return (
     <>
@@ -309,11 +466,17 @@ const ViewportWindowLevel = ({
           histogram={windowLevel.histogram}
           voi={windowLevel.voi}
           step={windowLevel.step}
-          showOpacitySlider={!!i}
+          showOpacitySlider={windowLevel.showOpacitySlider}
           colormap={windowLevel.colormap}
           onVOIChange={voi => handleVOIChange(windowLevel.volumeId, voi)}
+          opacity={windowLevel.opacity}
           onOpacityChange={opacity =>
-            handleOpacityChange(i, windowLevel.volumeId, opacity)
+            handleOpacityChange(
+              windowLevel.viewportIndex,
+              i,
+              windowLevel.volumeId,
+              opacity
+            )
           }
         />
       ))}

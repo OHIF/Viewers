@@ -151,9 +151,9 @@ const WindowLevel = ({
                 <InputRange
                   inputClassName="grow"
                   showLabel={false}
-                  maxValue={100}
+                  maxValue={1}
                   minValue={0}
-                  step={0.25}
+                  step={0.001}
                   value={opacity}
                   onChange={handleOpacityChange}
                 />
@@ -169,7 +169,7 @@ const WindowLevel = ({
 WindowLevel.defaultProps = {
   title: 'Window Level',
   step: 1,
-  opacity: 100,
+  opacity: 1,
   showOpacitySlider: false,
   style: 'polygon',
   fillColor: '#3f3f3f',
