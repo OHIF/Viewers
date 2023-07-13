@@ -110,7 +110,7 @@ export const RenderLoadingModal = () => {
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        zIndex:7,
+        zIndex: 7,
       }}
     >
       <RenderLoadingIcon size={70} />
@@ -381,6 +381,7 @@ const SearchDetails = props => {
         const currJob = response.results.find(result => {
           return result.job_id === jobId;
         });
+        console.log({ currJob });
         console.log({ currJob });
 
         if (currJob && currJob.status === 'DONE') {
