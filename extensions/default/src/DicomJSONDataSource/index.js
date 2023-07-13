@@ -11,6 +11,7 @@ const mappings = {
   patientId: 'PatientID',
 };
 
+let _data;
 let _store = {
   urls: [],
   // {
@@ -41,10 +42,10 @@ const findStudies = (key, value) => {
 };
 
 function createDicomJSONApi(dicomJsonConfig) {
-  const { name, wadoRoot } = dicomJsonConfig;
+  const { wadoRoot } = dicomJsonConfig;
 
   const implementation = {
-    initialize: async ({ params, query, url }) => {
+    initialize: async ({ query, url }) => {
       if (!url) url = query.get('url');
       let metaData = getMetaDataByURL(url);
 
@@ -58,15 +59,11 @@ function createDicomJSONApi(dicomJsonConfig) {
       }
 
       const response = await fetch(url);
-      let data = await response.json();
-
-      const studyInstanceUIDs = data.studies.map(
-        study => study.StudyInstanceUID
-      );
+      _data = await response.json();
 
       let StudyInstanceUID;
       let SeriesInstanceUID;
-      data.studies.forEach(study => {
+      _data.studies.forEach(study => {
         StudyInstanceUID = study.StudyInstanceUID;
 
         study.series.forEach(series => {
@@ -87,14 +84,12 @@ function createDicomJSONApi(dicomJsonConfig) {
 
       _store.urls.push({
         url,
-        studies: [...data.studies],
+        studies: [..._data.studies],
       });
-
-      return studyInstanceUIDs;
     },
     query: {
       studies: {
-        mapParams: () => { },
+        mapParams: () => {},
         search: async param => {
           const [key, value] = Object.entries(param)[0];
           const mappedParam = mappings[key];
@@ -252,11 +247,14 @@ function createDicomJSONApi(dicomJsonConfig) {
       return imageIds;
     },
     getImageIdsForInstance({ instance, frame }) {
-      const imageIds = getImageId({
-        instance,
-        frame,
-      });
+      const imageIds = getImageId({ instance, frame });
       return imageIds;
+    },
+    getStudyInstanceUIDs: ({ params, query }) => {
+      const studyInstanceUIDs = _data.studies.map(
+        study => study.StudyInstanceUID
+      );
+      return studyInstanceUIDs;
     },
   };
   return IWebApiDataSource.create(implementation);

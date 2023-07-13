@@ -1,8 +1,9 @@
 import MODULE_TYPES from './MODULE_TYPES';
 import log from '../log';
 import { AppConfig } from '../types/AppConfig';
-import { ServicesManager } from '../services';
+import { PubSubService, ServicesManager } from '../services';
 import { HotkeysManager, CommandsManager } from '../classes';
+import { DataSourceDefinition } from '../types';
 
 /**
  * This is the arguments given to create the extension.
@@ -57,7 +58,11 @@ export type CommandsModule = {
   defaultContext?: string;
 };
 
-export default class ExtensionManager {
+export default class ExtensionManager extends PubSubService {
+  public static readonly EVENTS = {
+    ACTIVE_DATA_SOURCE_CHANGED: 'event::activedatasourcechanged',
+  };
+
   private _commandsManager: CommandsManager;
   private _servicesManager: ServicesManager;
   private _hotkeysManager: HotkeysManager;
@@ -68,6 +73,7 @@ export default class ExtensionManager {
     hotkeysManager,
     appConfig = {},
   }: ExtensionConstructor) {
+    super(ExtensionManager.EVENTS);
     this.modules = {};
     this.registeredExtensionIds = [];
     this.moduleTypeNames = Object.values(MODULE_TYPES);
@@ -85,11 +91,20 @@ export default class ExtensionManager {
     this.dataSourceMap = {};
     this.dataSourceDefs = {};
     this.defaultDataSourceName = appConfig.defaultDataSourceName;
-    this.activeDataSource = undefined;
+    this.activeDataSource = appConfig.defaultDataSourceName;
   }
 
-  public setActiveDataSource(dataSourceName: string): void {
-    this.activeDataSource = dataSourceName;
+  public setActiveDataSource(dataSource: string): void {
+    if (this.activeDataSource === dataSource) {
+      return;
+    }
+
+    this.activeDataSource = dataSource;
+
+    this._broadcastEvent(
+      ExtensionManager.EVENTS.ACTIVE_DATA_SOURCE_CHANGED,
+      this.activeDataSource
+    );
   }
 
   /**
@@ -330,10 +345,6 @@ export default class ExtensionManager {
     return this.dataSourceMap[this.activeDataSource];
   };
 
-  getDataSource = () => {
-    return this.dataSourceMap[this.activeDataSource];
-  };
-
   /**
    * @private
    * @param {string} moduleType
@@ -383,10 +394,76 @@ export default class ExtensionManager {
     });
   };
 
-  _initDataSourcesModule(extensionModule, extensionId, dataSources = []) {
+  addDataSource(dataSource: DataSourceDefinition, activate = false) {
+    const existingDataSource = this.getDataSources(dataSource.sourceName);
+    if (existingDataSource?.[0]) {
+      return;
+    }
+
+    const module = this.getModuleEntry(dataSource.namespace);
+
+    if (!module) {
+      return;
+    }
+
+    this.dataSourceDefs[dataSource.sourceName] = dataSource;
+
     const { userAuthenticationService } = this._servicesManager.services;
-    dataSources.forEach(dataSource => {
-      this.dataSourceDefs[dataSource.sourceName] = dataSource;
+    const dataSourceInstance = module.createDataSource(
+      dataSource.configuration,
+      userAuthenticationService
+    );
+
+    if (this.dataSourceMap[dataSource.sourceName]) {
+      this.dataSourceMap[dataSource.sourceName].push(dataSourceInstance);
+    } else {
+      this.dataSourceMap[dataSource.sourceName] = [dataSourceInstance];
+    }
+
+    if (activate) {
+      this.setActiveDataSource(dataSource.sourceName);
+    }
+  }
+
+  setDataSource(dataSource: DataSourceDefinition) {
+    const existingDataSource = this.getDataSources(dataSource.sourceName);
+    if (!existingDataSource?.[0]) {
+      return;
+    }
+
+    const module = this.getModuleEntry(dataSource.namespace);
+
+    if (!module) {
+      return;
+    }
+
+    this.dataSourceDefs[dataSource.sourceName] = dataSource;
+
+    const { userAuthenticationService } = this._servicesManager.services;
+    const dataSourceInstance = module.createDataSource(
+      dataSource.configuration,
+      userAuthenticationService
+    );
+
+    this.dataSourceMap[dataSource.sourceName] = [dataSourceInstance];
+
+    if (this.activeDataSource === dataSource.sourceName) {
+      this._broadcastEvent(
+        ExtensionManager.EVENTS.ACTIVE_DATA_SOURCE_CHANGED,
+        this.activeDataSource
+      );
+    }
+  }
+
+  _initDataSourcesModule(
+    extensionModule,
+    extensionId,
+    dataSources: Array<DataSourceDefinition> = []
+  ): void {
+    extensionModule.forEach(element => {
+      this.modulesMap[
+        `${extensionId}.${MODULE_TYPES.DATA_SOURCE}.${element.name}`
+      ] = element;
     });
 
     extensionModule.forEach(element => {
@@ -394,24 +471,9 @@ export default class ExtensionManager {
 
       dataSources.forEach(dataSource => {
         if (dataSource.namespace === namespace) {
-          const dataSourceInstance = element.createDataSource(
-            dataSource.configuration,
-            userAuthenticationService
-          );
-
-          if (this.dataSourceMap[dataSource.sourceName]) {
-            this.dataSourceMap[dataSource.sourceName].push(dataSourceInstance);
-          } else {
-            this.dataSourceMap[dataSource.sourceName] = [dataSourceInstance];
-          }
+          this.addDataSource(dataSource);
         }
       });
-    });
-
-    extensionModule.forEach(element => {
-      this.modulesMap[
-        `${extensionId}.${MODULE_TYPES.DATA_SOURCE}.${element.name}`
-      ] = element;
     });
   }
 
