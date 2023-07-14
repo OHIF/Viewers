@@ -14,12 +14,13 @@ export default class ProtocolEngine {
    * @param props.studies is a list of studies to compare against (for priors evaluation)
    * @param props.activeStudy is the current metadata for the study to display.
    * @param props.displaySets are the list of display sets which can be modified.
+   * @param props.nthBest is the nth best match from the existing options. In case of undefined it consider the first best.
    */
-  run({ studies, displaySets, activeStudy }) {
+  run({ studies, displaySets, activeStudy, nthBest }) {
     this.studies = studies;
     this.study = activeStudy || studies[0];
     this.displaySets = displaySets;
-    return this.getBestProtocolMatch();
+    return this.getBestProtocolMatch(nthBest);
   }
 
   // /**
@@ -33,20 +34,32 @@ export default class ProtocolEngine {
 
   /**
    * Return the best matched Protocol to the current study or set of studies
+   * @param nthBest is the nth best match from the existing options. In case of undefined it consider the first best.
    * @returns {*}
    */
-  getBestProtocolMatch() {
-    // Run the matching to populate matchedProtocols Set and Map
-    this.updateProtocolMatches();
+  getBestProtocolMatch(nthBest) {
+
+    if(!nthBest) {
+      // Run the matching to populate matchedProtocols Set and Map
+      this.updateProtocolMatches();
+    }
 
     // Retrieve the highest scoring Protocol
-    const bestMatch = this._getHighestScoringProtocol();
+    const bestMatch = this._getHighestScoringProtocol(nthBest);
 
     console.log('ProtocolEngine::getBestProtocolMatch bestMatch', bestMatch);
 
     return bestMatch;
   }
 
+  /**
+   * Returns the amount of matched protocols
+   *
+   * @returns number
+   */
+  getMatchedProtocolsSize() {
+    return this.matchedProtocols.size;
+  }
   /**
    * Populates the MatchedProtocols Collection by running the matching procedure
    */
@@ -166,16 +179,25 @@ export default class ProtocolEngine {
     this.matchedProtocolScores = {};
   }
 
-  _largestKeyByValue(obj) {
-    return Object.keys(obj).reduce((a, b) => (obj[a] > obj[b] ? a : b));
+  _largestKeyByValue(obj, nth = 1) {
+    const sortedObj = Object.keys(obj).sort((a, b) => (obj[a] > obj[b]));
+
+    return sortedObj[nth - 1];
   }
 
-  _getHighestScoringProtocol() {
+  /**
+   * Get the protocol with highest score.
+   * If nth is present return the nth best match.
+   * @param nth tells that we need the nth highest scoring protocol. Default if 1 (first).
+   *
+   */
+  _getHighestScoringProtocol(nth) {
     if (!Object.keys(this.matchedProtocolScores).length) {
       return;
     }
     const highestScoringProtocolId = this._largestKeyByValue(
-      this.matchedProtocolScores
+      this.matchedProtocolScores,
+      nth
     );
     return this.matchedProtocols.get(highestScoringProtocolId);
   }

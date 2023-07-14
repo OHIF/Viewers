@@ -382,12 +382,30 @@ export default class HangingProtocolService extends PubSubService {
       return;
     }
 
-    const matchedProtocol = this.protocolEngine.run({
+    let matchedProtocol = this.protocolEngine.run({
       studies: this.studies,
       activeStudy,
       displaySets,
     });
-    this._setProtocol(matchedProtocol);
+    let nthBestMatch = 1;
+    const matchedProtocolSize = this.protocolEngine.getMatchedProtocolsSize();
+    let done = false;
+    while (!done && nthBestMatch <= matchedProtocolSize) {
+      try {
+        this._setProtocol(matchedProtocol);
+        done = true;
+      } catch (e) {
+        // something went wrong while setting current matchedProtocol, so we rollback and
+        // try again with next nth best matched protocol
+        nthBestMatch++;
+        matchedProtocol = this.protocolEngine.run({
+          studies: this.studies,
+          activeStudy,
+          displaySets,
+          nthBest: nthBestMatch
+        });
+      }
+    }
   }
 
   /**
@@ -856,24 +874,37 @@ export default class HangingProtocolService extends PubSubService {
     options = null as HangingProtocol.SetProtocolOptions
   ) {
     const stages = this.protocol.stages;
+    let failureCounter = 0;
     for (let i = 0; i < stages.length; i++) {
-      const stage = stages[i];
+      try {
+        const stage = stages[i];
 
-      const { matchedViewports } = this._matchAllViewports(
-        stage,
-        options,
-        new Map()
-      );
-      const activation = stage.stageActivation || {};
-      if (this.matchActivation(matchedViewports, activation.passive, 0)) {
-        if (this.matchActivation(matchedViewports, activation.enabled, 1)) {
-          stage.status = 'enabled';
+        const { matchedViewports } = this._matchAllViewports(
+          stage,
+          options,
+          new Map()
+        ) || {};
+        const activation = stage.stageActivation || {};
+
+        if (this.matchActivation(matchedViewports, activation.passive, 0)) {
+          if (this.matchActivation(matchedViewports, activation.enabled, 1)) {
+            stage.status = 'enabled';
+          } else {
+            stage.status = 'passive';
+          }
         } else {
-          stage.status = 'passive';
+          stage.status = 'disabled';
         }
-      } else {
-        stage.status = 'disabled';
+      } catch (e) {
+        stages[i].status = 'passive';
+        failureCounter++;
+        console.warn(`The hanging protocol viewport is requesting to display the matching displaysets for ${stages[i]} but something went wrong and it could not be matched.`);
       }
+    }
+
+    // it means there is no valid stage
+    if (failureCounter === stages.length) {
+      throw new Error();
     }
 
     this._broadcastEvent(this.EVENTS.STAGE_ACTIVATION, {
@@ -1284,6 +1315,14 @@ export default class HangingProtocolService extends PubSubService {
         );
       }
     });
+
+    // there is no displayset found for given protocol
+    if (!displaySetsInfo.length) {
+      throw new Error(
+        `Can't find a displaySet match for any viewport`
+      );
+    }
+
     return {
       viewportOptions,
       displaySetsInfo,
