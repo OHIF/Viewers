@@ -18,6 +18,7 @@ const Footer = ({ actions, className, onSubmit, value }) => {
         return (
           <Button
             key={index}
+            name={action.text}
             className={classNames({ 'ml-2': !isFirst }, action.classes)}
             type={action.type}
             onClick={onClickHandler}
