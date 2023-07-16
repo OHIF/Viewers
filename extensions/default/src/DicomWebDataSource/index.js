@@ -67,17 +67,6 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
     requestTransferSyntaxUID,
   } = dicomWebConfig;
 
-<<<<<<< HEAD
-  const dicomWebClientConfig = {
-    url: baseUrl,
-    wadoURLPrefix: wadoURLPrefix,
-    qidoURLPrefix: qidoURLPrefix,
-    stowURLPrefix: stowURLPrefix,
-    headers: userAuthenticationService.getAuthorizationHeader(),
-    errorInterceptor: errorHandler.getHTTPErrorHandler(),
-  };
-
-=======
   const dicomWebConfigCopy = JSON.parse(JSON.stringify(dicomWebConfig));
 
   const getAuthrorizationHeader = () => {
@@ -89,39 +78,34 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
     return xhrRequestHeaders;
   };
 
-  const generateWadoHeader = () => {
-    let authorizationHeader = getAuthrorizationHeader();
-    //Generate accept header depending on config params
-    let formattedAcceptHeader = utils.generateAcceptHeader(
-      acceptHeader,
-      requestTransferSyntaxUID,
-      omitQuotationForMultipartRequest
-    );
+  // TODO: Delete is headers of thedicomweb client are working!
+  // const FwadoR = () => {
+  //   let authorizationHeader = getAuthrorizationHeader();
+  //   //Generate accept header depending on config params
+  //   let formattedAcceptHeader = utils.generateAcceptHeader(
+  //     acceptHeader,
+  //     requestTransferSyntaxUID,
+  //     omitQuotationForMultipartRequest
+  //   );
 
-    return {
-      ...authorizationHeader,
-      Accept: formattedAcceptHeader,
-    };
-  };
+  //   return {
+  //     ...authorizationHeader,
+  //     Accept: formattedAcceptHeader,
+  //   };
+  // };
 
-  const qidoConfig = {
-    url: qidoRoot,
+  const dicomWebClientConfig = {
+    url: baseUrl,
+    qidoURLPrefix: qidoURLPrefix,
+    wadoURLPrefix: wadoURLPrefix,
+    stowURLPrefix: stowURLPrefix,
     staticWado,
     singlepart,
     headers: getAuthrorizationHeader(),
     errorInterceptor: errorHandler.getHTTPErrorHandler(),
   };
 
-  const wadoConfig = {
-    url: wadoRoot,
-    staticWado,
-    singlepart,
-    headers: generateWadoHeader(),
-    errorInterceptor: errorHandler.getHTTPErrorHandler(),
-  };
-
   // TODO -> Two clients sucks, but its better than 1000.
->>>>>>> ohif/master
   // TODO -> We'll need to merge auth later.
   const dicomWebClient = staticWado
     ? new StaticWadoClient(dicomWebClientConfig)
@@ -147,15 +131,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
       studies: {
         mapParams: mapParams.bind(),
         search: async function(origParams) {
-<<<<<<< HEAD
-          const headers = userAuthenticationService.getAuthorizationHeader();
-          if (headers) {
-            dicomWebClient.headers = headers;
-          }
-
-=======
-          qidoDicomWebClient.headers = getAuthrorizationHeader();
->>>>>>> ohif/master
+          dicomWebClient.headers = getAuthrorizationHeader();
           const { studyInstanceUid, seriesInstanceUid, ...mappedParams } =
             mapParams(origParams, {
               supportsFuzzyMatching,
@@ -176,20 +152,11 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
       series: {
         // mapParams: mapParams.bind(),
         search: async function(studyInstanceUid) {
-<<<<<<< HEAD
-          const headers = userAuthenticationService.getAuthorizationHeader();
-          if (headers) {
-            dicomWebClient.headers = headers;
-          }
-
-          const results = await seriesInStudy(dicomWebClient, studyInstanceUid);
-=======
-          qidoDicomWebClient.headers = getAuthrorizationHeader();
+          dicomWebClient.headers = getAuthrorizationHeader();
           const results = await seriesInStudy(
-            qidoDicomWebClient,
+            dicomWebClient,
             studyInstanceUid
           );
->>>>>>> ohif/master
 
           return processSeriesResults(results);
         },
@@ -197,15 +164,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
       },
       instances: {
         search: (studyInstanceUid, queryParameters) => {
-<<<<<<< HEAD
-          const headers = userAuthenticationService.getAuthorizationHeader();
-          if (headers) {
-            dicomWebClient.headers = headers;
-          }
-
-=======
-          qidoDicomWebClient.headers = getAuthrorizationHeader();
->>>>>>> ohif/master
+          dicomWebClient.headers = getAuthrorizationHeader();
           qidoSearch.call(
             undefined,
             dicomWebClient,
@@ -228,11 +187,14 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
        * @returns an absolute URL to the resource, if the absolute URL can be retrieved as singlepart,
        *    or is already retrieved, or a promise to a URL for such use if a BulkDataURI
        */
+
+
       directURL: params => {
+        const wadoRoot = `${baseUrl}/${wadoURLPrefix}`;
         return getDirectURL({ wadoRoot, singlepart }, params);
       },
       bulkDataURI: async ({ StudyInstanceUID, BulkDataURI }) => {
-        qidoDicomWebClient.headers = getAuthrorizationHeader();
+        dicomWebClient.headers = getAuthrorizationHeader();
         const options = {
           multipart: false,
           BulkDataURI,
@@ -251,14 +213,6 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
           sortFunction,
           madeInClient = false,
         } = {}) => {
-<<<<<<< HEAD
-          const headers = userAuthenticationService.getAuthorizationHeader();
-          if (headers) {
-            dicomWebClient.headers = headers;
-          }
-
-=======
->>>>>>> ohif/master
           if (!StudyInstanceUID) {
             throw new Error(
               'Unable to query for SeriesMetadata without StudyInstanceUID'
@@ -288,21 +242,14 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
 
     store: {
       dicom: async (dataset, request) => {
-<<<<<<< HEAD
-        const headers = userAuthenticationService.getAuthorizationHeader();
-        if (headers) {
-          dicomWebClient.headers = headers;
-        }
-
-=======
-        wadoDicomWebClient.headers = generateWadoHeader();
->>>>>>> ohif/master
+        // TODO: Delete is headers of thedicomweb client are working!
+        // wadoDicomWebClient.headers = generateWadoHeader();
         if (dataset instanceof ArrayBuffer) {
           const options = {
             datasets: [dataset],
             request,
           };
-          await wadoDicomWebClient.storeInstances(options);
+          await dicomWebClient.storeInstances(options);
         } else {
           const meta = {
             FileMetaInformationVersion:
@@ -339,7 +286,8 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
       madeInClient
     ) => {
       const enableStudyLazyLoad = false;
-      wadoDicomWebClient.headers = generateWadoHeader();
+      // TODO: Delete is headers of thedicomweb client are working!
+      //wadoDicomWebClient.headers = generateWadoHeader();
       // data is all SOPInstanceUIDs
       const data = await retrieveStudyMetadata(
         dicomWebClient,
@@ -410,7 +358,8 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
       madeInClient = false
     ) => {
       const enableStudyLazyLoad = true;
-      wadoDicomWebClient.headers = generateWadoHeader();
+      // TODO: Delete is headers of thedicomweb client are working!
+      // wadoDicomWebClient.headers = generateWadoHeader();
       // Get Series
       const {
         preLoadData: seriesSummaryMetadata,
@@ -462,11 +411,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
                 StudyInstanceUID: naturalized.StudyInstanceUID,
               };
               // Todo: this needs to be from wado dicom web client
-<<<<<<< HEAD
               return dicomWebClient.retrieveBulkData(options).then(val => {
-                const ret = (val && val[0]) || undefined;
-=======
-              return qidoDicomWebClient.retrieveBulkData(options).then(val => {
                 // There are DICOM PDF cases where the first ArrayBuffer in the array is
                 // the bulk data and DICOM video cases where the second ArrayBuffer is
                 // the bulk data. Here we play it safe and do a find.
@@ -474,7 +419,6 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
                   (val instanceof Array &&
                     val.find(arrayBuffer => arrayBuffer?.byteLength)) ||
                   undefined;
->>>>>>> ohif/master
                 value.Value = ret;
                 return ret;
               });
