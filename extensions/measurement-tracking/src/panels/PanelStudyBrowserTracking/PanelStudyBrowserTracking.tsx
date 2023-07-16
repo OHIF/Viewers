@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 import { utils } from '@ohif/core';
 import {
@@ -24,19 +25,20 @@ function PanelStudyBrowserTracking({
   dataSource,
 }) {
   const {
-    measurementService,
     displaySetService,
     uiDialogService,
     hangingProtocolService,
     uiNotificationService,
   } = servicesManager.services;
 
+  const { t } = useTranslation('Common');
+
   // Normally you nest the components so the tree isn't so deep, and the data
   // doesn't have to have such an intense shape. This works well enough for now.
   // Tabs --> Studies --> DisplaySets --> Thumbnails
   const { StudyInstanceUIDs } = useImageViewer();
   const [
-    { activeViewportIndex, viewports, numCols, numRows },
+    { activeViewportIndex, viewports },
     viewportGridService,
   ] = useViewportGrid();
   const [
@@ -77,36 +79,6 @@ function PanelStudyBrowserTracking({
   const activeViewportDisplaySetInstanceUIDs =
     viewports[activeViewportIndex]?.displaySetInstanceUIDs;
 
-  useEffect(() => {
-    const added = measurementService.EVENTS.MEASUREMENT_ADDED;
-    const addedRaw = measurementService.EVENTS.RAW_MEASUREMENT_ADDED;
-    const subscriptions = [];
-
-    [added, addedRaw].forEach(evt => {
-      subscriptions.push(
-        measurementService.subscribe(evt, ({ source, measurement }) => {
-          const {
-            referenceSeriesUID: SeriesInstanceUID,
-            referenceStudyUID: StudyInstanceUID,
-          } = measurement;
-
-          sendTrackedMeasurementsEvent('SET_DIRTY', { SeriesInstanceUID });
-          sendTrackedMeasurementsEvent('TRACK_SERIES', {
-            viewportIndex: activeViewportIndex,
-            StudyInstanceUID,
-            SeriesInstanceUID,
-          });
-        }).unsubscribe
-      );
-    });
-
-    return () => {
-      subscriptions.forEach(unsub => {
-        unsub();
-      });
-    };
-  }, [measurementService, activeViewportIndex, sendTrackedMeasurementsEvent]);
-
   const { trackedSeries } = trackedMeasurements.context;
 
   // ~~ studyDisplayList
@@ -134,7 +106,7 @@ function PanelStudyBrowserTracking({
       const actuallyMappedStudies = mappedStudies.map(qidoStudy => {
         return {
           studyInstanceUid: qidoStudy.StudyInstanceUID,
-          date: formatDate(qidoStudy.StudyDate),
+          date: formatDate(qidoStudy.StudyDate) || t('NoStudyDate'),
           description: qidoStudy.StudyDescription,
           modalities: qidoStudy.ModalitiesInStudy,
           numInstances: qidoStudy.NumInstances,

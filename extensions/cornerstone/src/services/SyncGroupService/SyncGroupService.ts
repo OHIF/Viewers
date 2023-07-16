@@ -15,7 +15,7 @@ const EVENTS = {
  * sync group declared.
  */
 export type SyncCreator = (
-  type: string,
+  id: string,
   options?: Record<string, unknown>
 ) => Synchronizer;
 
@@ -83,7 +83,7 @@ export default class SyncGroupService {
    * @param type is the type of the synchronizer to create
    * @param creator
    */
-  public setSynchronizer(type: string, creator: SyncCreator): void {
+  public addSynchronizerType(type: string, creator: SyncCreator): void {
     this.synchronizerCreators[type.toLowerCase()] = creator;
   }
 

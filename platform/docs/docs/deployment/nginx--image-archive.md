@@ -1,5 +1,5 @@
 ---
-sidebar_position: 5
+sidebar_position: 8
 ---
 
 # Nginx + Image Archive
@@ -14,9 +14,7 @@ control.
 
 Do not use this recipe to host sensitive medical data on the open web. Depending
 on your company's policies, this may be an appropriate setup on an internal
-network when protected with a server's basic authentication. For a more robust
-setup, check out our [user account control recipe](./user-account-control)
-that builds on the lessons learned here.
+network when protected with a server's basic authentication.
 
 ## Overview
 

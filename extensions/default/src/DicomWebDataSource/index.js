@@ -78,22 +78,6 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
     return xhrRequestHeaders;
   };
 
-  // TODO: Delete is headers of thedicomweb client are working!
-  // const FwadoR = () => {
-  //   let authorizationHeader = getAuthrorizationHeader();
-  //   //Generate accept header depending on config params
-  //   let formattedAcceptHeader = utils.generateAcceptHeader(
-  //     acceptHeader,
-  //     requestTransferSyntaxUID,
-  //     omitQuotationForMultipartRequest
-  //   );
-
-  //   return {
-  //     ...authorizationHeader,
-  //     Accept: formattedAcceptHeader,
-  //   };
-  // };
-
   const dicomWebClientConfig = {
     url: baseUrl,
     qidoURLPrefix: qidoURLPrefix,
@@ -242,8 +226,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
 
     store: {
       dicom: async (dataset, request) => {
-        // TODO: Delete is headers of thedicomweb client are working!
-        // wadoDicomWebClient.headers = generateWadoHeader();
+        dicomWebClient.headers = getAuthrorizationHeader();
         if (dataset instanceof ArrayBuffer) {
           const options = {
             datasets: [dataset],
@@ -286,8 +269,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
       madeInClient
     ) => {
       const enableStudyLazyLoad = false;
-      // TODO: Delete is headers of thedicomweb client are working!
-      //wadoDicomWebClient.headers = generateWadoHeader();
+      dicomWebClient.headers = getAuthrorizationHeader();
       // data is all SOPInstanceUIDs
       const data = await retrieveStudyMetadata(
         dicomWebClient,
@@ -358,8 +340,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
       madeInClient = false
     ) => {
       const enableStudyLazyLoad = true;
-      // TODO: Delete is headers of thedicomweb client are working!
-      // wadoDicomWebClient.headers = generateWadoHeader();
+      dicomWebClient.headers = getAuthrorizationHeader();
       // Get Series
       const {
         preLoadData: seriesSummaryMetadata,
