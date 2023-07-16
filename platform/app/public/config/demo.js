@@ -15,9 +15,10 @@ window.config = {
       sourceName: 'dicomweb',
       configuration: {
         name: 'DCM4CHEE',
-        wadoUriRoot: 'https://d33do7qe4w26qo.cloudfront.net/dicomweb',
-        qidoRoot: 'https://d33do7qe4w26qo.cloudfront.net/dicomweb',
-        wadoRoot: 'https://d33do7qe4w26qo.cloudfront.net/dicomweb',
+        wadoUriRoot: 'https://domvja9iplmyu.cloudfront.net/',
+        qidoUrlPrefix: 'dicomweb',
+        wadoUrlPrefix: 'dicomweb',
+        stowUrlPrefix: 'dicomweb',
         qidoSupportsIncludeField: true,
         imageRendering: 'wadors',
         enableStudyLazyLoad: true,

@@ -31,11 +31,6 @@ COPY extensions /usr/src/app/extensions
 COPY modes /usr/src/app/modes
 COPY platform /usr/src/app/platform
 
-# Find and remove non-package.json files
-#RUN find extensions \! -name "package.json" -mindepth 2 -maxdepth 2 -print | xargs rm -rf
-#RUN find modes \! -name "package.json" -mindepth 2 -maxdepth 2 -print | xargs rm -rf
-#RUN find platform \! -name "package.json" -mindepth 2 -maxdepth 2 -print | xargs rm -rf
-
 # Copy Files
 FROM node:16.15.0-slim as builder
 RUN mkdir /usr/src/app
@@ -56,6 +51,8 @@ ENV PATH /usr/src/app/node_modules/.bin:$PATH
 ENV QUICK_BUILD true
 # ENV GENERATE_SOURCEMAP=false
 # ENV REACT_APP_CONFIG=config/default.js
+
+RUN yarn run build
 
 RUN yarn run build
 

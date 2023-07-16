@@ -1,6 +1,6 @@
 function buildInstanceWadoRsUri(instance, config) {
   const { StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID } = instance;
-  return `${config.wadoRoot}/studies/${StudyInstanceUID}/series/${SeriesInstanceUID}/instances/${SOPInstanceUID}`;
+  return `${config.baseUrl}/${config.wadoURLPrefix}/studies/${StudyInstanceUID}/series/${SeriesInstanceUID}/instances/${SOPInstanceUID}`;
 }
 
 function buildInstanceFrameWadoRsUri(instance, config, frame) {

@@ -39,21 +39,23 @@ const metadataProvider = classes.MetadataProvider;
 
 /**
  *
- * @param {string} name - Data source name
- * @param {string} wadoUriRoot - Legacy? (potentially unused/replaced)
- * @param {string} qidoRoot - Base URL to use for QIDO requests
- * @param {string} wadoRoot - Base URL to use for WADO requests
- * @param {boolean} qidoSupportsIncludeField - Whether QIDO supports the "Include" option to request additional fields in response
- * @param {string} imageRengering - wadors | ? (unsure of where/how this is used)
- * @param {string} thumbnailRendering - wadors | ? (unsure of where/how this is used)
+ * @param {string} baseUrl - The root URL for DICOMWeb calls
+ * @param {string} wadoURLPrefix - The URL prefix for WADO DICOMWeb calls
+ * @param {string} qidoURLPrefix - The URL prefix for QIDO DICOMWeb calls
+ * @param {string} stowURLPrefix - The URL prefix for STOW DICOMWeb calls
+ * @param {bool} qidoSupportsIncludeField - Whether QIDO supports the "Include" option to request additional fields in response
+ * @param {bool} enableStudyLazyLoad - Request series meta async instead of blocking
+ * @param {bool} supportsWildcard - Whether the server supports wildcards calls (i.e. DCM4CHEE)
  * @param {bool} supportsReject - Whether the server supports reject calls (i.e. DCM4CHEE)
- * @param {bool} lazyLoadStudy - "enableStudyLazyLoad"; Request series meta async instead of blocking
+ * @param {bool} staticWado - Wether the DICOMWeb client is a static wado one fot test purposes
  * @param {string|bool} singlepart - indicates of the retrieves can fetch singlepart.  Options are bulkdata, video, image or boolean true
  */
 function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
   const {
-    qidoRoot,
-    wadoRoot,
+    baseUrl,
+    wadoURLPrefix,
+    qidoURLPrefix,
+    stowURLPrefix,
     enableStudyLazyLoad,
     supportsFuzzyMatching,
     supportsWildcard,
@@ -76,46 +78,22 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
     return xhrRequestHeaders;
   };
 
-  const generateWadoHeader = () => {
-    let authorizationHeader = getAuthrorizationHeader();
-    //Generate accept header depending on config params
-    let formattedAcceptHeader = utils.generateAcceptHeader(
-      acceptHeader,
-      requestTransferSyntaxUID,
-      omitQuotationForMultipartRequest
-    );
-
-    return {
-      ...authorizationHeader,
-      Accept: formattedAcceptHeader,
-    };
-  };
-
-  const qidoConfig = {
-    url: qidoRoot,
+  const dicomWebClientConfig = {
+    url: baseUrl,
+    qidoURLPrefix: qidoURLPrefix,
+    wadoURLPrefix: wadoURLPrefix,
+    stowURLPrefix: stowURLPrefix,
     staticWado,
     singlepart,
     headers: getAuthrorizationHeader(),
     errorInterceptor: errorHandler.getHTTPErrorHandler(),
   };
 
-  const wadoConfig = {
-    url: wadoRoot,
-    staticWado,
-    singlepart,
-    headers: generateWadoHeader(),
-    errorInterceptor: errorHandler.getHTTPErrorHandler(),
-  };
-
   // TODO -> Two clients sucks, but its better than 1000.
   // TODO -> We'll need to merge auth later.
-  const qidoDicomWebClient = staticWado
-    ? new StaticWadoClient(qidoConfig)
-    : new api.DICOMwebClient(qidoConfig);
-
-  const wadoDicomWebClient = staticWado
-    ? new StaticWadoClient(wadoConfig)
-    : new api.DICOMwebClient(wadoConfig);
+  const dicomWebClient = staticWado
+    ? new StaticWadoClient(dicomWebClientConfig)
+    : new api.DICOMwebClient(dicomWebClientConfig);
 
   const implementation = {
     initialize: ({ params, query }) => {
@@ -137,7 +115,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
       studies: {
         mapParams: mapParams.bind(),
         search: async function(origParams) {
-          qidoDicomWebClient.headers = getAuthrorizationHeader();
+          dicomWebClient.headers = getAuthrorizationHeader();
           const { studyInstanceUid, seriesInstanceUid, ...mappedParams } =
             mapParams(origParams, {
               supportsFuzzyMatching,
@@ -145,7 +123,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
             }) || {};
 
           const results = await qidoSearch(
-            qidoDicomWebClient,
+            dicomWebClient,
             undefined,
             undefined,
             mappedParams
@@ -158,9 +136,9 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
       series: {
         // mapParams: mapParams.bind(),
         search: async function(studyInstanceUid) {
-          qidoDicomWebClient.headers = getAuthrorizationHeader();
+          dicomWebClient.headers = getAuthrorizationHeader();
           const results = await seriesInStudy(
-            qidoDicomWebClient,
+            dicomWebClient,
             studyInstanceUid
           );
 
@@ -170,10 +148,10 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
       },
       instances: {
         search: (studyInstanceUid, queryParameters) => {
-          qidoDicomWebClient.headers = getAuthrorizationHeader();
+          dicomWebClient.headers = getAuthrorizationHeader();
           qidoSearch.call(
             undefined,
-            qidoDicomWebClient,
+            dicomWebClient,
             studyInstanceUid,
             null,
             queryParameters
@@ -193,17 +171,20 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
        * @returns an absolute URL to the resource, if the absolute URL can be retrieved as singlepart,
        *    or is already retrieved, or a promise to a URL for such use if a BulkDataURI
        */
+
+
       directURL: params => {
+        const wadoRoot = `${baseUrl}/${wadoURLPrefix}`;
         return getDirectURL({ wadoRoot, singlepart }, params);
       },
       bulkDataURI: async ({ StudyInstanceUID, BulkDataURI }) => {
-        qidoDicomWebClient.headers = getAuthrorizationHeader();
+        dicomWebClient.headers = getAuthrorizationHeader();
         const options = {
           multipart: false,
           BulkDataURI,
           StudyInstanceUID,
         };
-        return qidoDicomWebClient.retrieveBulkData(options).then(val => {
+        return dicomWebClient.retrieveBulkData(options).then(val => {
           const ret = (val && val[0]) || undefined;
           return ret;
         });
@@ -245,13 +226,13 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
 
     store: {
       dicom: async (dataset, request) => {
-        wadoDicomWebClient.headers = getAuthrorizationHeader();
+        dicomWebClient.headers = getAuthrorizationHeader();
         if (dataset instanceof ArrayBuffer) {
           const options = {
             datasets: [dataset],
             request,
           };
-          await wadoDicomWebClient.storeInstances(options);
+          await dicomWebClient.storeInstances(options);
         } else {
           const meta = {
             FileMetaInformationVersion:
@@ -275,7 +256,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
             request,
           };
 
-          await wadoDicomWebClient.storeInstances(options);
+          await dicomWebClient.storeInstances(options);
         }
       },
     },
@@ -288,10 +269,10 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
       madeInClient
     ) => {
       const enableStudyLazyLoad = false;
-      wadoDicomWebClient.headers = generateWadoHeader();
+      dicomWebClient.headers = getAuthrorizationHeader();
       // data is all SOPInstanceUIDs
       const data = await retrieveStudyMetadata(
-        wadoDicomWebClient,
+        dicomWebClient,
         StudyInstanceUID,
         enableStudyLazyLoad,
         filters,
@@ -359,13 +340,13 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
       madeInClient = false
     ) => {
       const enableStudyLazyLoad = true;
-      wadoDicomWebClient.headers = generateWadoHeader();
+      dicomWebClient.headers = getAuthrorizationHeader();
       // Get Series
       const {
         preLoadData: seriesSummaryMetadata,
         promises: seriesPromises,
       } = await retrieveStudyMetadata(
-        wadoDicomWebClient,
+        dicomWebClient,
         StudyInstanceUID,
         enableStudyLazyLoad,
         filters,
@@ -411,7 +392,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
                 StudyInstanceUID: naturalized.StudyInstanceUID,
               };
               // Todo: this needs to be from wado dicom web client
-              return qidoDicomWebClient.retrieveBulkData(options).then(val => {
+              return dicomWebClient.retrieveBulkData(options).then(val => {
                 // There are DICOM PDF cases where the first ArrayBuffer in the array is
                 // the bulk data and DICOM video cases where the second ArrayBuffer is
                 // the bulk data. Here we play it safe and do a find.
@@ -525,7 +506,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
   };
 
   if (supportsReject) {
-    implementation.reject = dcm4cheeReject(wadoRoot);
+    implementation.reject = dcm4cheeReject(`${baseUrl}/${wadoURLPrefix}`);
   }
 
   return IWebApiDataSource.create(implementation);

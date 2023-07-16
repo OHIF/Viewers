@@ -20,8 +20,9 @@ window.config = {
         name: 'DCM4CHEE',
         // Something here to check build
         wadoUriRoot: 'https://myserver.com/dicomweb',
-        qidoRoot: 'https://myserver.com/dicomweb',
-        wadoRoot: 'https://myserver.com/dicomweb',
+        qidoUrlPrefix: 'https://myserver.com/dicomweb',
+        wadoUrlPrefix: 'https://myserver.com/dicomweb',
+        stowUrlPrefix: 'https://myserver.com/dicomweb',
         qidoSupportsIncludeField: false,
         supportsReject: false,
         imageRendering: 'wadors',
