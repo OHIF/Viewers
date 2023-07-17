@@ -64,6 +64,7 @@ function WorkList({
     ...defaultFilterValues,
     ...queryFilterValues,
   });
+  const [querying, setQuerying] = useState(true);
 
   const debouncedFilterValues = useDebounce(filterValues, 200);
   const { resultsPerPage, pageNumber, sortBy, sortDirection } = filterValues;
@@ -117,6 +118,7 @@ function WorkList({
     if (filterValues.pageNumber === val.pageNumber) {
       val.pageNumber = 1;
     }
+    setQuerying(true);
     _setFilterValues(val);
     setExpandedRows([]);
   };
@@ -218,6 +220,8 @@ function WorkList({
 
       fetchSeries(studyInstanceUid);
     }
+    setQuerying(false);
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [expandedRows, studies]);
 
@@ -501,6 +505,7 @@ function WorkList({
             <StudyListTable
               tableDataSource={tableDataSource.slice(offset, offsetAndTake)}
               numOfStudies={numOfStudies}
+              querying={querying}
               filtersMeta={filtersMeta}
             />
             <div className="grow">
