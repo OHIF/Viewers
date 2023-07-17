@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import { Link, useNavigate } from 'react-router-dom';
@@ -64,7 +64,6 @@ function WorkList({
     ...defaultFilterValues,
     ...queryFilterValues,
   });
-  const [querying, setQuerying] = useState(true);
 
   const debouncedFilterValues = useDebounce(filterValues, 200);
   const { resultsPerPage, pageNumber, sortBy, sortDirection } = filterValues;
@@ -113,12 +112,14 @@ function WorkList({
   const [expandedRows, setExpandedRows] = useState([]);
   const [studiesWithSeriesData, setStudiesWithSeriesData] = useState([]);
   const numOfStudies = studiesTotal;
+  const querying = useMemo(() => {
+    return isLoadingData || expandedRows.length > 0;
+  }, [isLoadingData, expandedRows]);
 
   const setFilterValues = val => {
     if (filterValues.pageNumber === val.pageNumber) {
       val.pageNumber = 1;
     }
-    setQuerying(true);
     _setFilterValues(val);
     setExpandedRows([]);
   };
@@ -220,7 +221,6 @@ function WorkList({
 
       fetchSeries(studyInstanceUid);
     }
-    setQuerying(false);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [expandedRows, studies]);
