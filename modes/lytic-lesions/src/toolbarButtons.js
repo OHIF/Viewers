@@ -109,24 +109,24 @@ const toolbarButtons = [
     id: 'setColormap',
     type: 'ohif.splitButton',
     props: {
-      groupId: 'setColormap',
+      groupId: 'fusionPTColormap',
       primary: _createToolButton(
         'setColormap',
-        'tool-set-color',
+        'tool-fusion-color',
         'Set Colormap',
         [],
         'Set Colormap'
       ),
       secondary: {
         icon: 'chevron-down',
-        label: 'Set Colormap',
+        label: 'PT Colormap',
         isActive: true,
-        tooltip: 'Set Colormap',
+        tooltip: 'PET Image Colormap',
       },
       isAction: true, // ?
       renderer: WindowLevelMenuItem,
       items: [
-        _createColormap('Default', 'default'),
+        _createColormap('DEFAULT', 'default'),
         _createColormap('HSV', 'hsv'),
         _createColormap('Hot Iron', 'hot_iron'),
         _createColormap('S PET', 's_pet'),
@@ -137,6 +137,8 @@ const toolbarButtons = [
         _createColormap('GE 256', 'ge_256'),
         _createColormap('GE', 'ge'),
         _createColormap('Siemens', 'siemens'),
+        _createColormap('Test', 'test'),
+        _createColormap('newTest', 'newtest'),
       ],
     },
   },
