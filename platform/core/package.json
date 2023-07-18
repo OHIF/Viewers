@@ -33,7 +33,7 @@
   "peerDependencies": {
     "cornerstone-core": "^2.6.1",
     "cornerstone-tools": "^6.0.6",
-    "cornerstone-wado-image-loader": "^4.2.1",
+    "cornerstone-wado-image-loader": "4.13.2",
     "dicom-parser": "^1.8.11"
   },
   "dependencies": {
