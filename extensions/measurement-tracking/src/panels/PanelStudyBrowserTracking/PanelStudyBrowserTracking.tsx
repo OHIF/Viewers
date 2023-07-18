@@ -25,7 +25,6 @@ function PanelStudyBrowserTracking({
   dataSource,
 }) {
   const {
-    measurementService,
     displaySetService,
     uiDialogService,
     hangingProtocolService,
@@ -39,7 +38,7 @@ function PanelStudyBrowserTracking({
   // Tabs --> Studies --> DisplaySets --> Thumbnails
   const { StudyInstanceUIDs } = useImageViewer();
   const [
-    { activeViewportIndex, viewports, numCols, numRows },
+    { activeViewportIndex, viewports },
     viewportGridService,
   ] = useViewportGrid();
   const [
@@ -79,36 +78,6 @@ function PanelStudyBrowserTracking({
 
   const activeViewportDisplaySetInstanceUIDs =
     viewports[activeViewportIndex]?.displaySetInstanceUIDs;
-
-  useEffect(() => {
-    const added = measurementService.EVENTS.MEASUREMENT_ADDED;
-    const addedRaw = measurementService.EVENTS.RAW_MEASUREMENT_ADDED;
-    const subscriptions = [];
-
-    [added, addedRaw].forEach(evt => {
-      subscriptions.push(
-        measurementService.subscribe(evt, ({ source, measurement }) => {
-          const {
-            referenceSeriesUID: SeriesInstanceUID,
-            referenceStudyUID: StudyInstanceUID,
-          } = measurement;
-
-          sendTrackedMeasurementsEvent('SET_DIRTY', { SeriesInstanceUID });
-          sendTrackedMeasurementsEvent('TRACK_SERIES', {
-            viewportIndex: activeViewportIndex,
-            StudyInstanceUID,
-            SeriesInstanceUID,
-          });
-        }).unsubscribe
-      );
-    });
-
-    return () => {
-      subscriptions.forEach(unsub => {
-        unsub();
-      });
-    };
-  }, [measurementService, activeViewportIndex, sendTrackedMeasurementsEvent]);
 
   const { trackedSeries } = trackedMeasurements.context;
 
