@@ -18,14 +18,31 @@ const getImageId = imageObj => {
 
 const findImageIdOnStudies = (studies, displaySetInstanceUID) => {
   const study = studies.find(study => {
-    const displaySet = study.displaySets.some(
+    const foundDisplaySet = study.displaySets.some(
       displaySet => displaySet.displaySetInstanceUID === displaySetInstanceUID
     );
-    return displaySet;
+
+    return foundDisplaySet;
   });
+
+  const displaySet = study.displaySets.find(displaySet => {
+    return displaySet.displaySetInstanceUID === displaySetInstanceUID;
+  });
+
+  const seriesInstanceUid = displaySet.SeriesInstanceUID;
+  const sopInstanceUid = displaySet.SOPInstanceUID;
+
   const { series = [] } = study;
-  const { instances = [] } = series[0] || {};
-  const instance = instances[0];
+
+  const a_series = series.find(a_series => {
+    return a_series.SeriesInstanceUID == seriesInstanceUid;
+  });
+
+  const { instances = [] } = a_series || {};
+
+  const instance = instances.find(instance => {
+    return instance.metadata.SOPInstanceUID == sopInstanceUid;
+  });
 
   return getImageId(instance);
 };
