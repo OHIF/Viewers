@@ -101,7 +101,7 @@ export default function ModeRoute({
   // The URL's query search parameters where the keys casing is maintained
   const query = useSearchParams();
   // The URL's query search parameters where the keys are all lower case.
-  const lowerCaseSearchParams = useSearchParams(true);
+  const lowerCaseSearchParams = useSearchParams({ lowerCaseKeys: true });
 
   const [studyInstanceUIDs, setStudyInstanceUIDs] = useState();
 

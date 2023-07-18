@@ -5,7 +5,18 @@ import { ExtensionManager, MODULE_TYPES } from '@ohif/core';
 //
 import { extensionManager } from '../App.tsx';
 import { useParams, useLocation } from 'react-router';
-import useSearchParams from '../hooks/useSearchParams.js';
+import useSearchParams from '../hooks/useSearchParams.ts';
+
+/**
+ * Determines if two React Router location objects are the same.
+ */
+const areLocationsTheSame = (location0, location1) => {
+  return (
+    location0.pathname === location1.pathname &&
+    location0.search === location1.search &&
+    location0.hash === location1.hash
+  );
+};
 
 /**
  * Uses route properties to determine the data source that should be passed
@@ -19,8 +30,22 @@ function DataSourceWrapper(props) {
   const { children: LayoutTemplate, ...rest } = props;
   const params = useParams();
   const location = useLocation();
-  const lowerCaseSearchParams = useSearchParams(true);
+  const lowerCaseSearchParams = useSearchParams({ lowerCaseKeys: true });
   const query = useSearchParams();
+  // Route props --> studies.mapParams
+  // mapParams --> studies.search
+  // studies.search --> studies.processResults
+  // studies.processResults --> <LayoutTemplate studies={} />
+  // But only for LayoutTemplate type of 'list'?
+  // Or no data fetching here, and just hand down my source
+  const STUDIES_LIMIT = 101;
+  const DEFAULT_DATA = {
+    studies: [],
+    total: 0,
+    resultsPerPage: 25,
+    pageNumber: 1,
+    location: 'Not a valid location, causes first load to occur',
+  };
 
   const getInitialDataSourceName = useCallback(() => {
     // TODO - get the variable from the props all the time...
@@ -53,14 +78,15 @@ function DataSourceWrapper(props) {
     return dataSourceName;
   }, []);
 
-  const getInitialDataPath = useCallback(() => {
+  const [isDataSourceInitialized, setIsDataSourceInitialized] = useState(false);
+
+  // The path to the data source to be used in the URL for a mode (e.g. mode/dataSourcePath?StudyIntanceUIDs=1.2.3)
+  const [dataSourcePath, setDataSourcePath] = useState(() => {
     const dataSourceName = getInitialDataSourceName();
     return dataSourceName ? `/${dataSourceName}` : '';
-  }, [getInitialDataSourceName]);
+  });
 
-  const [dataPath, setDataPath] = useState(getInitialDataPath());
-
-  const getInitialDataSource = useCallback(() => {
+  const [dataSource, setDataSource] = useState(() => {
     const dataSourceName = getInitialDataSourceName();
 
     if (!dataSourceName) {
@@ -73,31 +99,14 @@ function DataSourceWrapper(props) {
     }
 
     return dataSource;
-  }, [getInitialDataSourceName]);
+  });
 
-  const [dataSource, setDataSource] = useState(getInitialDataSource());
-  const [isDataSourceInitialized, setIsDataSourceInitialized] = useState(false);
-
-  // Route props --> studies.mapParams
-  // mapParams --> studies.search
-  // studies.search --> studies.processResults
-  // studies.processResults --> <LayoutTemplate studies={} />
-  // But only for LayoutTemplate type of 'list'?
-  // Or no data fetching here, and just hand down my source
-  const STUDIES_LIMIT = 101;
-  const DEFAULT_DATA = {
-    studies: [],
-    total: 0,
-    resultsPerPage: 25,
-    pageNumber: 1,
-    location: 'Not a valid location, causes first load to occur',
-  };
   const [data, setData] = useState(DEFAULT_DATA);
   const [isLoading, setIsLoading] = useState(false);
 
   /**
    * The effect to initialize the data source whenever it changes. Similar to
-   * whenever a different Mode is entered, the Mode's data source is initiliazed, so
+   * whenever a different Mode is entered, the Mode's data source is initialized, so
    * too this DataSourceWrapper must initialize its data source whenever a different
    * data source is activated. Furthermore, a data source might be initialized
    * several times as it gets activated/deactivated because the location URL
@@ -115,8 +124,9 @@ function DataSourceWrapper(props) {
   useEffect(() => {
     const dataSourceChangedCallback = () => {
       setIsDataSourceInitialized(false);
-      setDataPath('');
+      setDataSourcePath('');
       setDataSource(extensionManager.getActiveDataSource()[0]);
+      // Setting data to DEFAULT_DATA triggers a new query just like it does for the initial load.
       setData(DEFAULT_DATA);
     };
 
@@ -126,14 +136,6 @@ function DataSourceWrapper(props) {
     );
     return () => sub.unsubscribe();
   }, []);
-
-  const areLocationsTheSame = (location0, location1) => {
-    return (
-      location0.pathname === location1.pathname &&
-      location0.search === location1.search &&
-      location0.hash === location1.hash
-    );
-  };
 
   useEffect(() => {
     if (!isDataSourceInitialized) {
@@ -209,7 +211,7 @@ function DataSourceWrapper(props) {
     <LayoutTemplate
       {...rest}
       data={data.studies}
-      dataPath={dataPath}
+      dataPath={dataSourcePath}
       dataTotal={data.total}
       dataSource={dataSource}
       isLoadingData={isLoading}

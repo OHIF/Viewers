@@ -11,9 +11,9 @@ const mappings = {
   patientId: 'PatientID',
 };
 
-let _data;
 let _store = {
   urls: [],
+  studyInstanceUIDMap: new Map(), // map of urls to array of study instance UIDs
   // {
   //   url: url1
   //   studies: [Study1, Study2], // if multiple studies
@@ -59,11 +59,11 @@ function createDicomJSONApi(dicomJsonConfig) {
       }
 
       const response = await fetch(url);
-      _data = await response.json();
+      const data = await response.json();
 
       let StudyInstanceUID;
       let SeriesInstanceUID;
-      _data.studies.forEach(study => {
+      data.studies.forEach(study => {
         StudyInstanceUID = study.StudyInstanceUID;
 
         study.series.forEach(series => {
@@ -84,8 +84,12 @@ function createDicomJSONApi(dicomJsonConfig) {
 
       _store.urls.push({
         url,
-        studies: [..._data.studies],
+        studies: [...data.studies],
       });
+      _store.studyInstanceUIDMap.set(
+        url,
+        data.studies.map(study => study.StudyInstanceUID)
+      );
     },
     query: {
       studies: {
@@ -251,10 +255,8 @@ function createDicomJSONApi(dicomJsonConfig) {
       return imageIds;
     },
     getStudyInstanceUIDs: ({ params, query }) => {
-      const studyInstanceUIDs = _data.studies.map(
-        study => study.StudyInstanceUID
-      );
-      return studyInstanceUIDs;
+      const url = query.get('url');
+      return _store.studyInstanceUIDMap.get(url);
     },
   };
   return IWebApiDataSource.create(implementation);

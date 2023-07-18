@@ -26,7 +26,7 @@ The following events get published by the `ExtensionManager`:
 
 | Event                        | Description                                            |
 | ---------------------------- | ------------------------------------------------------ |
-| ACTIVE_DATA_SOURCE_CHANGED   | Fired when the active data source is changed - either replaced with an entirely different one or the existing one gets its definition changed via `setDataSource`. |
+| ACTIVE_DATA_SOURCE_CHANGED   | Fired when the active data source is changed - either replaced with an entirely different one or the existing active data source gets its definition changed via `updateDataSourceConfiguration`. |
 
 ## API
 The `ExtensionManager` only has the following public API:
@@ -36,8 +36,63 @@ The `ExtensionManager` only has the following public API:
 - `getActiveDataSource` - Returns the currently active data source
 - `getModuleEntry` - Returns the module entry by the give id.
 - `addDataSource` - Dynamically adds a data source and optionally sets it as the active data source
-- `setDataSource` - Sets the data source to have the (new) configuration passed in
+- `updateDataSourceConfiguration` - Updates the configuration of a specified data source (name).
 
+### `addDataSource` Example
+
+The following snippet of code demonstrates how `addDataSource` can be used to add a new DICOMWeb data source for the Google Healthcare Cloud API and set it as the active data source.
+
+```js
+extensionManager.addDataSource({
+  namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
+  sourceName: 'google',
+  configuration: {
+    friendlyName: 'dcmjs DICOMWeb Server',
+    name: 'GCP',
+    wadoUriRoot:
+      'https://healthcare.googleapis.com/v1/projects/ohif-cloud-healthcare/locations/us-east4/datasets/ohif-qa-dataset/dicomStores/ohif-qa-2/dicomWeb',
+    qidoRoot:
+      'https://healthcare.googleapis.com/v1/projects/ohif-cloud-healthcare/locations/us-east4/datasets/ohif-qa-dataset/dicomStores/ohif-qa-2/dicomWeb',
+    wadoRoot:
+      'https://healthcare.googleapis.com/v1/projects/ohif-cloud-healthcare/locations/us-east4/datasets/ohif-qa-dataset/dicomStores/ohif-qa-2/dicomWeb',
+    qidoSupportsIncludeField: true,
+    imageRendering: 'wadors',
+    thumbnailRendering: 'wadors',
+    enableStudyLazyLoad: true,
+    supportsFuzzyMatching: true,
+    supportsWildcard: false,
+    dicomUploadEnabled: true,
+    omitQuotationForMultipartRequest: true,
+  },
+  {activate:true}
+});
+```
+
+### `updateDataSourceConfiguration` Example
+
+The following snippet of code demonstrates how `updateDataSourceConfiguration` can be use to update the configuration of an existing DICOMWeb data source (named `dicomweb`) with the configuration for a Google Healthcare Cloud API data source.
+
+```js
+extensionManager.updateDataSourceConfiguration( "dicomweb",
+  {
+    name: 'GCP',
+    wadoUriRoot:
+      'https://healthcare.googleapis.com/v1/projects/ohif-cloud-healthcare/locations/us-east4/datasets/ohif-qa-dataset/dicomStores/ohif-qa-2/dicomWeb',
+    qidoRoot:
+      'https://healthcare.googleapis.com/v1/projects/ohif-cloud-healthcare/locations/us-east4/datasets/ohif-qa-dataset/dicomStores/ohif-qa-2/dicomWeb',
+    wadoRoot:
+      'https://healthcare.googleapis.com/v1/projects/ohif-cloud-healthcare/locations/us-east4/datasets/ohif-qa-dataset/dicomStores/ohif-qa-2/dicomWeb',
+    qidoSupportsIncludeField: true,
+    imageRendering: 'wadors',
+    thumbnailRendering: 'wadors',
+    enableStudyLazyLoad: true,
+    supportsFuzzyMatching: true,
+    supportsWildcard: false,
+    dicomUploadEnabled: true,
+    omitQuotationForMultipartRequest: true,
+  },
+);
+```
 ## Accessing Modules
 
 We use `getModuleEntry` in our `ViewerLayout` logic to find the panels based on

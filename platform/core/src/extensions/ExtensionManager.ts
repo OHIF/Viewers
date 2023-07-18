@@ -103,7 +103,7 @@ export default class ExtensionManager extends PubSubService {
 
     this._broadcastEvent(
       ExtensionManager.EVENTS.ACTIVE_DATA_SOURCE_CHANGED,
-      this.activeDataSource
+      this.dataSourceDefs[this.activeDataSource]
     );
   }
 
@@ -345,6 +345,15 @@ export default class ExtensionManager extends PubSubService {
     return this.dataSourceMap[this.activeDataSource];
   };
 
+  getDataSourceDef = dataSourceName => {
+    if (dataSourceName === undefined) {
+      // Default to the activeDataSource
+      dataSourceName = this.activeDataSource;
+    }
+
+    return this.dataSourceDefs[dataSourceName];
+  };
+
   /**
    * @private
    * @param {string} moduleType
@@ -394,65 +403,81 @@ export default class ExtensionManager extends PubSubService {
     });
   };
 
-  addDataSource(dataSource: DataSourceDefinition, activate = false) {
-    const existingDataSource = this.getDataSources(dataSource.sourceName);
+  /**
+   * Adds the given data source and optionally sets it as the active data source.
+   * The method does this by first creating the data source.
+   * @param dataSourceDef the data source definition to be added
+   * @param activate flag to indicate if the added data source should be set to the active data source
+   */
+  addDataSource(
+    dataSourceDef: DataSourceDefinition,
+    options = { activate: false }
+  ) {
+    const existingDataSource = this.getDataSources(dataSourceDef.sourceName);
     if (existingDataSource?.[0]) {
+      // The data source already exists and cannot be added.
       return;
     }
 
-    const module = this.getModuleEntry(dataSource.namespace);
+    this._createDataSourceInstance(dataSourceDef);
 
-    if (!module) {
-      return;
-    }
-
-    this.dataSourceDefs[dataSource.sourceName] = dataSource;
-
-    const { userAuthenticationService } = this._servicesManager.services;
-    const dataSourceInstance = module.createDataSource(
-      dataSource.configuration,
-      userAuthenticationService
-    );
-
-    if (this.dataSourceMap[dataSource.sourceName]) {
-      this.dataSourceMap[dataSource.sourceName].push(dataSourceInstance);
-    } else {
-      this.dataSourceMap[dataSource.sourceName] = [dataSourceInstance];
-    }
-
-    if (activate) {
-      this.setActiveDataSource(dataSource.sourceName);
+    if (options.activate) {
+      this.setActiveDataSource(dataSourceDef.sourceName);
     }
   }
 
-  setDataSource(dataSource: DataSourceDefinition) {
-    const existingDataSource = this.getDataSources(dataSource.sourceName);
+  /**
+   * Updates the configuration of the given data source name. It first creates a new data source with
+   * the existing definition and the new configuration passed in.
+   * @param dataSourceName the name of the data source to update
+   * @param dataSourceConfiguration the new configuration to update the data source with
+   */
+  updateDataSourceConfiguration(
+    dataSourceName: string,
+    dataSourceConfiguration: any
+  ) {
+    const existingDataSource = this.getDataSources(dataSourceName);
     if (!existingDataSource?.[0]) {
+      // Cannot update a non existent data source.
       return;
     }
 
-    const module = this.getModuleEntry(dataSource.namespace);
+    const dataSourceDef = this.dataSourceDefs[dataSourceName];
+    // Update the configuration.
+    dataSourceDef.configuration = dataSourceConfiguration;
+    this._createDataSourceInstance(dataSourceDef);
+
+    if (this.activeDataSource === dataSourceName) {
+      // When the active data source is changed/set, fire an event to indicate that its configuration has changed.
+      this._broadcastEvent(
+        ExtensionManager.EVENTS.ACTIVE_DATA_SOURCE_CHANGED,
+        dataSourceDef
+      );
+    }
+  }
+
+  /**
+   * Creates a data source instance from the given definition. The definition is
+   * added to dataSourceDefs and the created instance is added to dataSourceMap.
+   * @param dataSourceDef
+   * @returns
+   */
+  _createDataSourceInstance(dataSourceDef: DataSourceDefinition) {
+    const module = this.getModuleEntry(dataSourceDef.namespace);
 
     if (!module) {
       return;
     }
 
-    this.dataSourceDefs[dataSource.sourceName] = dataSource;
+    this.dataSourceDefs[dataSourceDef.sourceName] = dataSourceDef;
 
     const { userAuthenticationService } = this._servicesManager.services;
     const dataSourceInstance = module.createDataSource(
-      dataSource.configuration,
+      dataSourceDef.configuration,
       userAuthenticationService
     );
 
-    this.dataSourceMap[dataSource.sourceName] = [dataSourceInstance];
-
-    if (this.activeDataSource === dataSource.sourceName) {
-      this._broadcastEvent(
-        ExtensionManager.EVENTS.ACTIVE_DATA_SOURCE_CHANGED,
-        this.activeDataSource
-      );
-    }
+    this.dataSourceMap[dataSourceDef.sourceName] = [dataSourceInstance];
   }
 
   _initDataSourcesModule(

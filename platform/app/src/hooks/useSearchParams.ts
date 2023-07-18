@@ -3,10 +3,11 @@ import { useLocation } from 'react-router';
 /**
  * It returns a URLSearchParams of the query parameters in the URL, where the keys are
  * either lowercase or maintain their case based on the lowerCaseKeys parameter.
- * @param {boolean} lowerCaseKeys true to return lower case keys; false (default) to maintain casing;
+ * @param {lowerCaseKeys:boolean} true to return lower case keys; false (default) to maintain casing;
  * @returns {URLSearchParams}
  */
-export default function useSearchParams(lowerCaseKeys = false) {
+export default function useSearchParams(options = { lowerCaseKeys: false }) {
+  const { lowerCaseKeys } = options;
   const searchParams = new URLSearchParams(useLocation().search);
 
   if (!lowerCaseKeys) {
