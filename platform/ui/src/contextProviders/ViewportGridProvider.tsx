@@ -34,22 +34,9 @@ const DEFAULT_STATE = {
 
 export const ViewportGridContext = createContext(DEFAULT_STATE);
 
-/** A viewport is reuseable if it is the same size as the old
- * one and has the same display sets, in the same position.
- * It SHOULD be possible to re-use them at different positions, but
- * this causes problems with segmentation.
- */
+// A viewport is reuseable if it is in the same position.
 const isReuseableViewport = (oldViewport, newViewport) => {
-  const sameDiplaySets = isEqual(
-    oldViewport.displaySetInstanceUIDs,
-    newViewport.displaySetInstanceUIDs
-  );
-  return (
-    oldViewport.viewportIndex === newViewport.viewportIndex &&
-    sameDiplaySets &&
-    oldViewport.height === newViewport.height &&
-    oldViewport.width === newViewport.width
-  );
+  return oldViewport.viewportIndex === newViewport.viewportIndex;
 };
 
 // Holds a global viewport counter - used to assign new id's to viewports
