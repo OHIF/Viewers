@@ -344,7 +344,9 @@ function OHIFCornerstoneSEGViewport(props) {
             patientSex: PatientSex || '',
             patientAge: PatientAge || '',
             MRN: PatientID || '',
-            thickness: SliceThickness ? `${parseFloat(SliceThickness).toFixed(2)}mm` : '',
+            thickness: SliceThickness
+              ? `${parseFloat(SliceThickness).toFixed(2)}mm`
+              : '',
             spacing:
               SpacingBetweenSlices !== undefined
                 ? `${parseFloat(SpacingBetweenSlices).toFixed(2)}mm`
