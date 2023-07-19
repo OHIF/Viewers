@@ -209,7 +209,10 @@ Cypress.Commands.add('waitDicomImage', () => {
       const enabled = $cornerstone.getEnabledElements();
       if (enabled?.length) {
         enabled.forEach((item, i) => {
-          if (item.viewport.viewportStatus !== 'rendered') {
+          if (
+            item.viewport.viewportStatus !==
+            $cornerstone.Enums.ViewportStatus.RENDERED
+          ) {
             throw new Error(
               `Viewport ${i} in state ${item.viewport.viewportStatus}`
             );
