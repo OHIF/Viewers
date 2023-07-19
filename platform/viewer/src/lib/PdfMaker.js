@@ -726,7 +726,7 @@ const PdfMaker = (SimilarScans, ohif_image, chart, morphologyBase64) => {
       },
       {
         text:
-          'The Nodify XL2 test is a blood-based lung nodule test designed to help identify low to moderate risk patients with an incidental lung nodule that is likely benign. The test integrates two circulating proteins measured by mass spectrometry with clinical risk factors associated with lung cancer into a proprietary algorithm that generates a numerical test result. The Nodify XL2 test is intended for patients at least 40 years of age with an incidental lung nodule between 8 and 30mm and a pre-test risk of malignancy of 50% or less calculated using the solitary pulmonary nodule calculator!. Nodify XL2 was developed and clinically validated in a population with a prevalence of cancer of 16%23. The Nodify XL2 test has not been evaluated outside of this population.',
+          'The report is produced by utilizing ResNet models for the classification of lung nodules, with the primary objective of identifying instances with malignant characteristics. The outcomes delineate scans that bear resemblance, particularly those exhibiting malignant indentations, along with their corresponding prediction numbers and unique identification identifiers for each analogous scan.        ',
         fontSize: 7,
         width: 200,
         margin: [0, 5, 0, 0],
