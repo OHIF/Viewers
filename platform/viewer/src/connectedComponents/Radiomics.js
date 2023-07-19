@@ -137,6 +137,7 @@ class Radiomics extends Component {
       thumbnails: [],
       job: null,
       isComplete: false,
+      isSimilarlookingScans: false,
       similarityResultState: { knn: [] },
       isEditSelection: true,
     };
@@ -318,6 +319,15 @@ class Radiomics extends Component {
       console.log({
         fetchscans: data,
       });
+
+      try {
+        if (similarityResultState.knn.length > 1) {
+          this.setState({
+            isSimilarlookingScans: true,
+          });
+        }
+      } catch (error) {}
+
       this.setState({
         similarityResultState: data,
       });
@@ -698,7 +708,10 @@ class Radiomics extends Component {
             alignItems: 'center',
             zIndex: 8,
             // display: 'none',
-            display: this.state.isComplete ? 'none' : 'flex',
+            display:
+              this.state.isComplete && this.state.isSimilarlookingScans
+                ? 'none'
+                : 'flex',
           }}
         >
           {this.state.job && this.state.job.data ? (
