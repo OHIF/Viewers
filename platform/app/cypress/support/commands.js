@@ -65,6 +65,8 @@ Cypress.Commands.add(
       ) {
         cy.openStudyInViewer(StudyInstanceUID, otherParams);
         cy.waitDicomImage();
+        // Very short wait to ensure pending updates are handled
+        cy.wait(25);
       }
     });
   }
