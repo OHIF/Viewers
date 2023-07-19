@@ -345,6 +345,13 @@ export default class ExtensionManager extends PubSubService {
     return this.dataSourceMap[this.activeDataSource];
   };
 
+  /**
+   * Gets the data source definition for the given data source name.
+   * If no data source name is provided, the active data source definition is
+   * returned.
+   * @param dataSourceName the data source name
+   * @returns the data source definition
+   */
   getDataSourceDef = dataSourceName => {
     if (dataSourceName === undefined) {
       // Default to the activeDataSource
