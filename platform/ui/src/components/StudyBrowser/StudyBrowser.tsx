@@ -113,10 +113,7 @@ const StudyBrowser = ({
           })}
         </ButtonGroup>
       </div>
-      <div
-        className="flex flex-col flex-1 ohif-scrollbar invisible-scrollbar"
-        style={{ overflow: 'visible' }}
-      >
+      <div className="flex flex-col flex-1 overflow-auto ohif-scrollbar invisible-scrollbar">
         {getTabContent()}
       </div>
     </React.Fragment>
