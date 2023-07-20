@@ -15,7 +15,7 @@ const DisplaySetMessageListTooltip = ({ messages }): React.ReactNode => {
     return (
       <div>
         <Tooltip
-          position="left"
+          position="right"
           tight={true}
           content={
             <div className="text-left max-w-40">
