@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import { Link, useNavigate } from 'react-router-dom';
@@ -112,6 +112,9 @@ function WorkList({
   const [expandedRows, setExpandedRows] = useState([]);
   const [studiesWithSeriesData, setStudiesWithSeriesData] = useState([]);
   const numOfStudies = studiesTotal;
+  const querying = useMemo(() => {
+    return isLoadingData || expandedRows.length > 0;
+  }, [isLoadingData, expandedRows]);
 
   const setFilterValues = val => {
     if (filterValues.pageNumber === val.pageNumber) {
@@ -218,6 +221,7 @@ function WorkList({
 
       fetchSeries(studyInstanceUid);
     }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [expandedRows, studies]);
 
@@ -501,6 +505,7 @@ function WorkList({
             <StudyListTable
               tableDataSource={tableDataSource.slice(offset, offsetAndTake)}
               numOfStudies={numOfStudies}
+              querying={querying}
               filtersMeta={filtersMeta}
             />
             <div className="grow">

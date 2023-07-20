@@ -130,7 +130,6 @@ const OHIFCornerstoneViewport = React.memo(props => {
   const [{ isCineEnabled, cines }, cineService] = useCine();
   const [{ activeViewportIndex }] = useViewportGrid();
   const [enabledVPElement, setEnabledVPElement] = useState(null);
-
   const elementRef = useRef();
 
   const {
@@ -435,7 +434,6 @@ const OHIFCornerstoneViewport = React.memo(props => {
         displaySetOptions,
         presentations
       );
-
       if (measurement) {
         cs3DTools.annotation.selection.setAnnotationSelected(measurement.uid);
       }
@@ -488,11 +486,8 @@ const OHIFCornerstoneViewport = React.memo(props => {
     <React.Fragment>
       <div className="viewport-wrapper">
         <ReactResizeDetector
-          handleWidth
-          handleHeight
-          skipOnMount={true} // Todo: make these configurable
-          refreshMode={'debounce'}
-          refreshRate={200} // transition amount in side panel
+          refreshMode="debounce"
+          refreshRate={50} // Wait 50 ms after last move to render
           onResize={onResize}
           targetRef={elementRef.current}
         />
@@ -659,7 +654,6 @@ function _jumpToMeasurement(
   const viewportInfo = cornerstoneViewportService.getViewportInfoByIndex(
     viewportIndex
   );
-
   if (enabledElement) {
     // See how the jumpToSlice() of Cornerstone3D deals with imageIdx param.
     const viewport = enabledElement.viewport as
