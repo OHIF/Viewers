@@ -89,6 +89,29 @@ function _getInstanceByImageId(imageId) {
   }
 }
 
+function _updateInstance(StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID, metadata) {
+  const study = _getStudy(StudyInstanceUID);
+
+  if (!study) {
+    return;
+  }
+
+  const series = study.series.find(
+    aSeries => aSeries.SeriesInstanceUID === SeriesInstanceUID
+  );
+
+  const { instances } = series;
+  // update all instances metadata for this series with the new metadata
+  instances.forEach(instance => {
+    if (instance.SOPInstanceUID === SOPInstanceUID) {
+      Object.keys(metadata).forEach(key => {
+        instance[key] = metadata[key];
+      });
+    }
+  });
+}
+
+
 /**
  * Update the metadata of a specific series
  * @param {*} StudyInstanceUID
@@ -255,6 +278,7 @@ const BaseImplementation = {
   getInstance: _getInstance,
   getInstanceByImageId: _getInstanceByImageId,
   updateMetadataForSeries: _updateMetadataForSeries,
+  updateInstance: _updateInstance,
 };
 const DicomMetadataStore = Object.assign(
   // get study
