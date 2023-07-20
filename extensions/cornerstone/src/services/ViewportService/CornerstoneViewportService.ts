@@ -36,6 +36,8 @@ import JumpPresets from '../../utils/JumpPresets';
 const EVENTS = {
   VIEWPORT_DATA_CHANGED:
     'event::cornerstoneViewportService:viewportDataChanged',
+  VIEWPORT_VOLUMES_CHANGED:
+    'event::cornerstoneViewportService:viewportVolumesChanged',
 };
 
 /**
@@ -301,6 +303,7 @@ class CornerstoneViewportService extends PubSubService
       viewportData,
       viewportIndex,
       viewportId,
+      viewportInfo,
     });
   }
 
@@ -640,6 +643,10 @@ class CornerstoneViewportService extends PubSubService
     }
 
     viewport.render();
+
+    this._broadcastEvent(this.EVENTS.VIEWPORT_VOLUMES_CHANGED, {
+      viewportInfo,
+    });
   }
 
   private _addSegmentationRepresentationToToolGroupIfNecessary(
