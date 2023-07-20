@@ -7,6 +7,10 @@ import fetchPaletteColorLookupTableData from '../utils/metadataProvider/fetchPal
 import toNumber from '../utils/toNumber';
 import combineFrameInstance from '../utils/combineFrameInstance';
 
+import dicomImageLoader from '@cornerstonejs/dicom-image-loader';
+import dcmjs from 'dcmjs';
+
+
 class MetadataProvider {
   constructor() {
     // Define the main "metadataLookup" private property as an immutable property.
@@ -32,6 +36,22 @@ class MetadataProvider {
       writable: false,
       value: new Map(),
     });
+
+    Object.defineProperty(this, 'automaticallyLoadDicomMetadata', {
+      configurable: false,
+      enumerable: false,
+      writable: true,
+      value: false,
+    });
+  }
+
+  setLoadDicomMetadata(option) {
+    if (option === undefined)
+      return
+
+    console.log("mdr" + option)
+
+    this.automaticallyLoadDicomMetadata = option
   }
 
   addImageIdToUIDs(imageId, uids) {
@@ -65,11 +85,12 @@ class MetadataProvider {
       frameNumber,
     } = uids;
 
-    const instance = DicomMetadataStore.getInstance(
+    let instance = DicomMetadataStore.getInstance(
       StudyInstanceUID,
       SeriesInstanceUID,
       SOPInstanceUID
     );
+
     return (
       (frameNumber && combineFrameInstance(frameNumber, instance)) || instance
     );
@@ -125,6 +146,47 @@ class MetadataProvider {
 
   _getCornerstoneDICOMImageLoaderTag(wadoImageLoaderTag, instance) {
     let metadata;
+
+    if (this.automaticallyLoadDicomMetadata && (instance.imageMetadataLoaded === undefined || !instance.imageMetadataLoaded)) {
+
+      const dataSetCacheManager = dicomImageLoader.wadouri.dataSetCacheManager
+      const parsedImageId = dicomImageLoader.wadouri.parseImageId(instance.imageId);
+      let url = parsedImageId.url;
+
+      if (parsedImageId.frame) {
+        url = `${url}&frame=${parsedImageId.frame}`;
+      }
+
+      const rawDataSet = dataSetCacheManager.get(url);
+
+      if (!rawDataSet) {
+        return;
+      }
+
+      const dicomData = dcmjs.data.DicomMessage.readFile(rawDataSet.byteArray.buffer);
+      const dataset = dcmjs.data.DicomMetaDictionary.naturalizeDataset(dicomData.dict);
+
+      instance = {
+        ...instance,
+        ...dataset,
+        imageMetadataLoaded: true
+      }
+
+      const uids = this.getUIDsFromImageID(instance.imageId);
+
+      if (!uids) {
+        return;
+      }
+
+      const {
+        StudyInstanceUID,
+        SeriesInstanceUID,
+        SOPInstanceUID
+      } = uids;
+
+      DicomMetadataStore.updateInstance(StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID, instance)
+    }
+
 
     switch (wadoImageLoaderTag) {
       case WADO_IMAGE_LOADER_TAGS.GENERAL_SERIES_MODULE:
@@ -405,14 +467,6 @@ class MetadataProvider {
         };
 
         break;
-      case WADO_IMAGE_LOADER_TAGS.PER_SERIES_MODULE:
-        metadata = {
-          correctedImage: instance.CorrectedImage,
-          units: instance.Units,
-          decayCorrection: instance.DecayCorrection,
-        };
-        break;
-
       default:
         return;
     }
@@ -516,7 +570,6 @@ const WADO_IMAGE_LOADER_TAGS = {
   MODALITY_LUT_MODULE: 'modalityLutModule',
   SOP_COMMON_MODULE: 'sopCommonModule',
   PET_ISOTOPE_MODULE: 'petIsotopeModule',
-  PER_SERIES_MODULE: 'petSeriesModule',
   OVERLAY_PLANE_MODULE: 'overlayPlaneModule',
   PATIENT_DEMOGRAPHIC_MODULE: 'patientDemographicModule',
 
