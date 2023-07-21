@@ -219,6 +219,9 @@ function createDicomJSONApi(dicomJsonConfig) {
                 imageId: instance.url,
                 ...series,
                 ...study,
+                // We need to force this flag to false in case the client wants to load the metadata from the image
+                // directly with automaticallyLoadDicomMetadata
+                imageMetadataLoaded: false
               };
               delete obj.instances;
               delete obj.series;

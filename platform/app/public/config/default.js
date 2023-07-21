@@ -20,6 +20,7 @@ window.config = {
     prefetch: 25,
   },
   // Allow Metadataprovider to parse dicom images as it retrieves it
+  // Only works with dicom json datasource for now
   automaticallyLoadDicomMetadata: true,
   // filterQueryParam: false,
   defaultDataSourceName: 'dicomweb',

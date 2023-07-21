@@ -151,7 +151,12 @@ class MetadataProvider {
       return metadata;
     }
 
-    if (this.automaticallyLoadDicomMetadata && (instance.imageMetadataLoaded === undefined || !instance.imageMetadataLoaded)) {
+    // NOTE : we only check if the flag is set and set to false to prevent other
+    // non compatible data source to work even if automaticallyLoadDicomMetadata
+    // is set.
+    // To make your data source compatible with this you'll have to explicitly
+    // set the instance.imageMetadataLoaded to false
+    if (this.automaticallyLoadDicomMetadata && (instance.imageMetadataLoaded === false)) {
 
       const dataSetCacheManager = dicomImageLoader.wadouri.dataSetCacheManager
       const parsedImageId = dicomImageLoader.wadouri.parseImageId(instance.imageId);
