@@ -163,7 +163,7 @@ yarn install
 
 These commands are available from the root directory. Each project directory
 also supports a number of commands that can be found in their respective
-`README.md` and `project.json` files.
+`README.md` and `package.json` files.
 
 | Yarn Commands                | Description                                                   |
 | ---------------------------- | ------------------------------------------------------------- |

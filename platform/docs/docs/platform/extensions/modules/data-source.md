@@ -100,3 +100,66 @@ In `OHIF-v3` we have a central location for the metadata of studies, and they ar
 located in `DicomMetadataStore`. Your custom datasource can communicate with
 `DicomMetadataStore` to store, and fetch Study/Series/Instance metadata. We will
 learn more about `DicomMetadataStore` in services.
+
+## Adding a Data Source Outside a Module
+
+A data source can be added outside a module via `ExtensionManager.addDataSource`.
+The following snippet of code demonstrates how `addDataSource` can be used to add
+a new DICOMWeb data source for the Google Cloud Healthcare API and set it as the
+active data source.
+
+```js
+extensionManager.addDataSource({
+  namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
+  sourceName: 'google',
+  configuration: {
+    friendlyName: 'dcmjs DICOMWeb Server',
+    name: 'GCP',
+    wadoUriRoot:
+      'https://healthcare.googleapis.com/v1/projects/ohif-cloud-healthcare/locations/us-east4/datasets/ohif-qa-dataset/dicomStores/ohif-qa-2/dicomWeb',
+    qidoRoot:
+      'https://healthcare.googleapis.com/v1/projects/ohif-cloud-healthcare/locations/us-east4/datasets/ohif-qa-dataset/dicomStores/ohif-qa-2/dicomWeb',
+    wadoRoot:
+      'https://healthcare.googleapis.com/v1/projects/ohif-cloud-healthcare/locations/us-east4/datasets/ohif-qa-dataset/dicomStores/ohif-qa-2/dicomWeb',
+    qidoSupportsIncludeField: true,
+    imageRendering: 'wadors',
+    thumbnailRendering: 'wadors',
+    enableStudyLazyLoad: true,
+    supportsFuzzyMatching: true,
+    supportsWildcard: false,
+    dicomUploadEnabled: true,
+    omitQuotationForMultipartRequest: true,
+  },
+  {activate:true}
+});
+```
+
+## Updating a Data Source's Configuration
+
+An existing data source can have its configuration updated using the
+`ExtensionManager.updateDataSourceConfiguration` method. The following snippet of
+code demonstrates how `updateDataSourceConfiguration` can be use to update the
+configuration of an existing DICOMWeb data source (named `dicomweb`) with the
+configuration for a Google Cloud Healthcare API data source.
+
+```js
+extensionManager.updateDataSourceConfiguration( "dicomweb",
+  {
+    name: 'GCP',
+    wadoUriRoot:
+      'https://healthcare.googleapis.com/v1/projects/ohif-cloud-healthcare/locations/us-east4/datasets/ohif-qa-dataset/dicomStores/ohif-qa-2/dicomWeb',
+    qidoRoot:
+      'https://healthcare.googleapis.com/v1/projects/ohif-cloud-healthcare/locations/us-east4/datasets/ohif-qa-dataset/dicomStores/ohif-qa-2/dicomWeb',
+    wadoRoot:
+      'https://healthcare.googleapis.com/v1/projects/ohif-cloud-healthcare/locations/us-east4/datasets/ohif-qa-dataset/dicomStores/ohif-qa-2/dicomWeb',
+    qidoSupportsIncludeField: true,
+    imageRendering: 'wadors',
+    thumbnailRendering: 'wadors',
+    enableStudyLazyLoad: true,
+    supportsFuzzyMatching: true,
+    supportsWildcard: false,
+    dicomUploadEnabled: true,
+    omitQuotationForMultipartRequest: true,
+  },
+);
+```

@@ -15,10 +15,10 @@ window.config = {
   defaultDataSourceName: 'dicomweb',
   dataSources: [
     {
-      friendlyName: 'DCM4CHEE Server',
       namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
       sourceName: 'dicomweb',
       configuration: {
+        friendlyName: 'DCM4CHEE Server',
         name: 'DCM4CHEE',
         wadoUriRoot: 'http://localhost:8080/dcm4chee-arc/aets/DCM4CHEE/wado',
         qidoRoot: 'http://localhost:8080/dcm4chee-arc/aets/DCM4CHEE/rs',
@@ -42,18 +42,19 @@ window.config = {
       },
     },
     {
-      friendlyName: 'dicom json',
       namespace: '@ohif/extension-default.dataSourcesModule.dicomjson',
       sourceName: 'dicomjson',
       configuration: {
+        friendlyName: 'dicom json',
         name: 'json',
       },
     },
     {
-      friendlyName: 'dicom local',
       namespace: '@ohif/extension-default.dataSourcesModule.dicomlocal',
       sourceName: 'dicomlocal',
-      configuration: {},
+      configuration: {
+        friendlyName: 'dicom local',
+      },
     },
   ],
   studyListFunctionsEnabled: true,
