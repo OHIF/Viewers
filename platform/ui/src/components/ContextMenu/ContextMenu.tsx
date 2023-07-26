@@ -5,7 +5,6 @@ import Icon from '../Icon';
 
 const ContextMenu = ({ items, ...props }) => {
   if (!items) {
-    console.warn('No items for context menu');
     return null;
   }
   return (

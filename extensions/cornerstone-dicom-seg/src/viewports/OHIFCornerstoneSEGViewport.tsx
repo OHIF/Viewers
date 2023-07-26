@@ -24,6 +24,7 @@ function OHIFCornerstoneSEGViewport(props) {
     viewportLabel,
     servicesManager,
     extensionManager,
+    commandsManager,
   } = props;
 
   const { t } = useTranslation('SEGViewport');
@@ -48,7 +49,6 @@ function OHIFCornerstoneSEGViewport(props) {
   const [viewportGrid, viewportGridService] = useViewportGrid();
 
   // States
-  const [isToolGroupCreated, setToolGroupCreated] = useState(false);
   const [selectedSegment, setSelectedSegment] = useState(1);
 
   // Hydration means that the SEG is opened and segments are loaded into the
@@ -92,6 +92,14 @@ function OHIFCornerstoneSEGViewport(props) {
   const onElementDisabled = () => {
     setElement(null);
   };
+
+  const storePresentationState = useCallback(() => {
+    viewportGrid?.viewports.forEach(({ viewportIndex }) => {
+      commandsManager.runCommand('storePresentation', {
+        viewportIndex,
+      });
+    });
+  }, [viewportGrid]);
 
   const getCornerstoneViewport = useCallback(() => {
     const { component: Component } = extensionManager.getModuleEntry(
@@ -160,6 +168,8 @@ function OHIFCornerstoneSEGViewport(props) {
       viewportIndex,
       segDisplaySet,
     }).then(isHydrated => {
+      storePresentationState();
+
       if (isHydrated) {
         setIsHydrated(true);
       }
@@ -248,8 +258,6 @@ function OHIFCornerstoneSEGViewport(props) {
       toolGroupId
     );
 
-    setToolGroupCreated(true);
-
     return () => {
       // remove the segmentation representations if seg displayset changed
       segmentationService.removeSegmentationRepresentationFromToolGroup(
@@ -309,6 +317,7 @@ function OHIFCornerstoneSEGViewport(props) {
   } = referencedDisplaySetRef.current.metadata;
 
   const onStatusClick = async () => {
+    storePresentationState();
     const isHydrated = await hydrateSEGDisplaySet({
       segDisplaySet,
       viewportIndex,
@@ -344,7 +353,9 @@ function OHIFCornerstoneSEGViewport(props) {
             patientSex: PatientSex || '',
             patientAge: PatientAge || '',
             MRN: PatientID || '',
-            thickness: SliceThickness ? `${parseFloat(SliceThickness).toFixed(2)}mm` : '',
+            thickness: SliceThickness
+              ? `${parseFloat(SliceThickness).toFixed(2)}mm`
+              : '',
             spacing:
               SpacingBetweenSlices !== undefined
                 ? `${parseFloat(SpacingBetweenSlices).toFixed(2)}mm`

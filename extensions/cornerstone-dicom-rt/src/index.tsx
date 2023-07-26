@@ -36,12 +36,14 @@ const extension: Types.Extensions.Extension = {
   getViewportModule({
     servicesManager,
     extensionManager,
+    commandsManager,
   }: Types.Extensions.ExtensionParams) {
     const ExtendedOHIFCornerstoneRTViewport = props => {
       return (
         <OHIFCornerstoneRTViewport
           servicesManager={servicesManager}
           extensionManager={extensionManager}
+          commandsManager={commandsManager}
           {...props}
         />
       );

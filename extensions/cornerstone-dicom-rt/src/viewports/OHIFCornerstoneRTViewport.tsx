@@ -25,6 +25,7 @@ function OHIFCornerstoneRTViewport(props) {
     viewportLabel,
     servicesManager,
     extensionManager,
+    commandsManager,
   } = props;
 
   const {
@@ -91,6 +92,14 @@ function OHIFCornerstoneRTViewport(props) {
     setElement(null);
   };
 
+  const storePresentationState = useCallback(() => {
+    viewportGrid?.viewports.forEach(({ viewportIndex }) => {
+      commandsManager.runCommand('storePresentation', {
+        viewportIndex,
+      });
+    });
+  }, [viewportGrid]);
+
   const getCornerstoneViewport = useCallback(() => {
     const { component: Component } = extensionManager.getModuleEntry(
       '@ohif/extension-cornerstone.viewportModule.cornerstone'
@@ -156,6 +165,7 @@ function OHIFCornerstoneRTViewport(props) {
       viewportIndex,
       rtDisplaySet,
     }).then(isHydrated => {
+      storePresentationState();
       if (isHydrated) {
         setIsHydrated(true);
       }
@@ -303,6 +313,7 @@ function OHIFCornerstoneRTViewport(props) {
   } = referencedDisplaySetRef.current.metadata;
 
   const onStatusClick = async () => {
+    storePresentationState();
     const isHydrated = await _hydrateRTDisplaySet({
       rtDisplaySet,
       viewportIndex,
