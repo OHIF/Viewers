@@ -183,83 +183,80 @@ const SplitButton = ({
 
   const listItemRenderer = renderer || DefaultListItemRenderer;
 
-  const getReturn = () => (
-    <div name="SplitButton" className="relative">
-      <div
-        className={classes.Button({
-          ...state,
-          primary: { isActive: isPrimaryActive },
-        })}
-        style={{ height: '40px' }}
-        onMouseEnter={onMouseEnterHandler}
-        onMouseLeave={onMouseLeaveHandler}
-      >
-        <div className={classes.Interface}>
-          <div onClick={outsideClickHandler}>
-            <PrimaryButtonComponent
-              key={state.primary.id}
-              {...state.primary}
-              bState={bState}
-              isActive={isPrimaryActive}
-              onInteraction={args => toolbarService.recordInteraction(args)}
-              servicesManager={servicesManager}
-              // All rounding is taken care of by className
-              rounded="none"
-              className={primaryButtonClassName}
-              data-tool={state.primary.id}
-              data-cy={`${groupId}-split-button-primary`}
-            />
-          </div>
-          <div
-            className={classes.Separator({
-              ...state,
-              primary: { isActive: isPrimaryActive },
-            })}
-          ></div>
-          <div
-            className={classes.Secondary({
-              ...state,
-              primary: { isActive: isPrimaryActive },
-            })}
-            onClick={onSecondaryClickHandler}
-            data-cy={`${groupId}-split-button-secondary`}
-          >
-            <Tooltip
-              isDisabled={state.isExpanded || !secondary.tooltip}
-              content={secondary.tooltip}
-              className="h-full"
-            >
-              <Icon
-                name={secondary.icon}
-                className={classes.SecondaryIcon({
-                  ...state,
-                  primary: { isActive: isPrimaryActive },
-                })}
+  return (
+    <OutsideClickHandler
+      onOutsideClick={outsideClickHandler}
+      disabled={!state.isExpanded}
+    >
+      <div name="SplitButton" className="relative">
+        <div
+          className={classes.Button({
+            ...state,
+            primary: { isActive: isPrimaryActive },
+          })}
+          style={{ height: '40px' }}
+          onMouseEnter={onMouseEnterHandler}
+          onMouseLeave={onMouseLeaveHandler}
+        >
+          <div className={classes.Interface}>
+            <div onClick={outsideClickHandler}>
+              <PrimaryButtonComponent
+                key={state.primary.id}
+                {...state.primary}
+                bState={bState}
+                isActive={isPrimaryActive}
+                onInteraction={args => toolbarService.recordInteraction(args)}
+                servicesManager={servicesManager}
+                // All rounding is taken care of by className
+                rounded="none"
+                className={primaryButtonClassName}
+                data-tool={state.primary.id}
+                data-cy={`${groupId}-split-button-primary`}
               />
-            </Tooltip>
+            </div>
+            <div
+              className={classes.Separator({
+                ...state,
+                primary: { isActive: isPrimaryActive },
+              })}
+            ></div>
+            <div
+              className={classes.Secondary({
+                ...state,
+                primary: { isActive: isPrimaryActive },
+              })}
+              onClick={onSecondaryClickHandler}
+              data-cy={`${groupId}-split-button-secondary`}
+            >
+              <Tooltip
+                isDisabled={state.isExpanded || !secondary.tooltip}
+                content={secondary.tooltip}
+                className="h-full"
+              >
+                <Icon
+                  name={secondary.icon}
+                  className={classes.SecondaryIcon({
+                    ...state,
+                    primary: { isActive: isPrimaryActive },
+                  })}
+                />
+              </Tooltip>
+            </div>
           </div>
         </div>
+        {/* EXPANDED LIST OF OPTIONS */}
+        <div
+          className={classes.Content({ ...state })}
+          data-cy={`${groupId}-list-menu`}
+        >
+          <ListMenu
+            items={state.items}
+            bState={bState}
+            renderer={args => listItemRenderer({ ...args, t })}
+          />
+        </div>
       </div>
-      {/* EXPANDED LIST OF OPTIONS */}
-      <div
-        className={classes.Content({ ...state })}
-        data-cy={`${groupId}-list-menu`}
-      >
-        <ListMenu
-          items={state.items}
-          bState={bState}
-          renderer={args => listItemRenderer({ ...args, t })}
-        />
-      </div>
-    </div>
-  );
-
-  return state.isExpanded ? (
-    <OutsideClickHandler onOutsideClick={outsideClickHandler}>
-      {getReturn()}
     </OutsideClickHandler>
-  ) : (
-    getReturn()
   );
 };
 

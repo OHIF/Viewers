@@ -7,9 +7,12 @@ function WrappedCinePlayer({
   viewportIndex,
   servicesManager,
 }) {
-  const { toolbarService } = servicesManager.services;
+  const { toolbarService, customizationService } = servicesManager.services;
   const [{ isCineEnabled, cines }, cineService] = useCine();
   const [{ activeViewportIndex }] = useViewportGrid();
+
+  const { component: CinePlayerComponent = CinePlayer } =
+    customizationService.get('cinePlayer') ?? {};
 
   const handleCineClose = () => {
     toolbarService.recordInteraction({
@@ -25,6 +28,7 @@ function WrappedCinePlayer({
       ],
     });
   };
+
   const cineHandler = () => {
     if (!cines || !cines[viewportIndex] || !enabledVPElement) {
       return;
@@ -79,7 +83,7 @@ function WrappedCinePlayer({
 
   return (
     isCineEnabled && (
-      <CinePlayer
+      <CinePlayerComponent
         className="absolute left-1/2 -translate-x-1/2 bottom-3"
         isPlaying={isPlaying}
         onClose={handleCineClose}
