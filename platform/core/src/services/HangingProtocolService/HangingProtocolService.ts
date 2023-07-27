@@ -393,7 +393,7 @@ export default class HangingProtocolService extends PubSubService {
   /**
    * Returns true, if the hangingProtocol has a custom loading strategy for the images
    * and its callback has been added to the HangingProtocolService
-   * @returns {boolean} true
+   * @returns A boolean indicating whether a custom image load strategy has been added or not.
    */
   public hasCustomImageLoadStrategy(): boolean {
     return (
@@ -404,8 +404,29 @@ export default class HangingProtocolService extends PubSubService {
     );
   }
 
+  /**
+   * Returns a boolean indicating whether a custom image load has been performed or not.
+   * A custom image load is performed when a custom image load strategy is used to load images.
+   * This method is used internally by the HangingProtocolService to determine whether to perform
+   * a custom image load or not.
+   *
+   * @returns A boolean indicating whether a custom image load has been performed or not.
+   */
   public getCustomImageLoadPerformed(): boolean {
     return this.customImageLoadPerformed;
+  }
+
+  /**
+   * Returns a boolean indicating whether a custom image load should be performed or not.
+   * A custom image load should be performed if a custom image load strategy has been added to the HangingProtocolService
+   * and it has not been performed yet.
+   *
+   * @returns A boolean indicating whether a custom image load should be performed or not.
+   */
+  public getShouldPerformCustomImageLoad(): boolean {
+    return (
+      this.hasCustomImageLoadStrategy() && !this.getCustomImageLoadPerformed()
+    );
   }
 
   /**
@@ -697,7 +718,9 @@ export default class HangingProtocolService extends PubSubService {
       const { id } = displaySet;
       const displaySetMatchDetail = displaySetMatchDetails.get(id);
 
-      const { displaySetInstanceUID: oldDisplaySetInstanceUID } = displaySetMatchDetail;
+      const {
+        displaySetInstanceUID: oldDisplaySetInstanceUID,
+      } = displaySetMatchDetail;
 
       const displaySetInstanceUID =
         displaySet.id === displaySetSelectorId
@@ -1066,7 +1089,7 @@ export default class HangingProtocolService extends PubSubService {
     // matching applied
     this.viewportMatchDetails = new Map();
     this.displaySetMatchDetails = new Map();
-    this.customImageLoadPerformed = false;
+    // this.customImageLoadPerformed = false;
 
     // Retrieve the current stage
     const stageModel = this._getCurrentStageModel();
@@ -1394,18 +1417,18 @@ export default class HangingProtocolService extends PubSubService {
       if (matchActiveOnly && this.activeStudy !== study) return;
 
       const studyDisplaySets = this.displaySets.filter(
-          it => it.StudyInstanceUID === study.StudyInstanceUID
+        it => it.StudyInstanceUID === study.StudyInstanceUID
       );
 
       const studyMatchDetails = this.protocolEngine.findMatch(
-          study,
-          studyMatchingRules,
-          {
-            studies: this.studies,
-            displaySets: studyDisplaySets,
-            allDisplaySets: this.displaySets,
-            displaySetMatchDetails: this.displaySetMatchDetails,
-          }
+        study,
+        studyMatchingRules,
+        {
+          studies: this.studies,
+          displaySets: studyDisplaySets,
+          allDisplaySets: this.displaySets,
+          displaySetMatchDetails: this.displaySetMatchDetails,
+        }
       );
 
       // Prevent bestMatch from being updated if the matchDetails' required attribute check has failed
@@ -1414,10 +1437,10 @@ export default class HangingProtocolService extends PubSubService {
       }
 
       this.debug(
-          'study',
-          study.StudyInstanceUID,
-          'display sets #',
-          studyDisplaySets.length
+        'study',
+        study.StudyInstanceUID,
+        'display sets #',
+        studyDisplaySets.length
       );
       studyDisplaySets.forEach(displaySet => {
         const {
@@ -1426,15 +1449,15 @@ export default class HangingProtocolService extends PubSubService {
           displaySetInstanceUID,
         } = displaySet;
         const seriesMatchDetails = this.protocolEngine.findMatch(
-            displaySet,
-            seriesMatchingRules,
-            // Todo: why we have images here since the matching type does not have it
-            {
-              studies: this.studies,
-              instance: displaySet.images?.[0],
-              displaySetMatchDetails: this.displaySetMatchDetails,
-              displaySets: studyDisplaySets,
-            }
+          displaySet,
+          seriesMatchingRules,
+          // Todo: why we have images here since the matching type does not have it
+          {
+            studies: this.studies,
+            instance: displaySet.images?.[0],
+            displaySetMatchDetails: this.displaySetMatchDetails,
+            displaySets: studyDisplaySets,
+          }
         );
 
         // Prevent bestMatch from being updated if the matchDetails' required attribute check has failed
