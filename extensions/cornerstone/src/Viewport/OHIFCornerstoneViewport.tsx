@@ -407,8 +407,6 @@ const OHIFCornerstoneViewport = React.memo(props => {
     };
   }, [displaySets, elementRef, viewportIndex]);
 
-  console.debug('OHIFCornerstoneViewport rendering');
-
   return (
     <React.Fragment>
       <div className="viewport-wrapper">
