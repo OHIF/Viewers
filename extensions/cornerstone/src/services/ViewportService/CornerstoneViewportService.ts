@@ -171,21 +171,22 @@ class CornerstoneViewportService extends PubSubService
    * created for every new viewport, this will be called whenever the set of
    * viewports is changed, but NOT when the viewport position changes only.
    *
-   * @param viewportIndex
+   * @param viewportId - The viewportId to disable
    */
-  public disableElement(viewportIndex: number): void {
-    const viewportInfo = this.viewportsInfo.get(viewportIndex);
-    if (!viewportInfo) {
-      return;
-    }
+  public disableElement(viewportId: string): void {
+    this.renderingEngine?.disableElement(viewportId);
 
-    const viewportId = viewportInfo.getViewportId();
-
-    this.renderingEngine && this.renderingEngine.disableElement(viewportId);
-
-    this.viewportsInfo.get(viewportIndex).destroy();
-    this.viewportsInfo.delete(viewportIndex);
+    // clean up
     this.viewportsById.delete(viewportId);
+
+    this.viewportsInfo = new Map(
+      // @ts-ignore
+      [...this.viewportsInfo].filter(
+        ([, value]) => value.viewportId !== viewportId
+      )
+    );
+
+    this.viewportsDisplaySets.delete(viewportId);
   }
 
   public setPresentations(viewport, presentations?: Presentations): void {

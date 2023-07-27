@@ -54,9 +54,9 @@ export interface IViewportService {
   /**
    * Disables the viewport inside the renderingEngine, if no viewport is left
    * it destroys the renderingEngine.
-   * @param viewportIndex
+   * @param viewportId
    */
-  disableElement(viewportIndex: number): void;
+  disableElement(viewportId: string): void;
   /**
    * Uses the renderingEngine to enable the element for the given viewport index
    * and sets the displaySet data to the viewport
