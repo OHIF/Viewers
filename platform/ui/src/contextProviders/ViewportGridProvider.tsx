@@ -64,8 +64,7 @@ export function ViewportGridProvider({ children, service }) {
 
           const displaySetOptions = updatedViewport.displaySetOptions || [];
           if (!displaySetOptions.length) {
-            // Copy all the display set options, assuming a full set of displa
-            // set UID's is provided.
+            // Copy all the display set options, assuming a full set of displayset UID's is provided.
             displaySetOptions.push(...previousViewport.displaySetOptions);
             if (!displaySetOptions.length) {
               displaySetOptions.push({});
@@ -79,6 +78,7 @@ export function ViewportGridProvider({ children, service }) {
             displaySetOptions,
             viewportLabel: viewportLabels[viewportIndex],
           };
+
           viewportOptions.presentationIds = ViewportGridService.getPresentationIds(
             newViewport,
             viewports
@@ -87,6 +87,7 @@ export function ViewportGridProvider({ children, service }) {
           if (!newViewport.viewportOptions?.viewportId) {
             newViewport.viewportOptions.viewportId = `viewport-${viewportIndex}`;
           }
+
           newViewport.viewportIndex = previousViewport.viewportIndex;
 
           viewports[viewportIndex] = {
@@ -146,8 +147,8 @@ export function ViewportGridProvider({ children, service }) {
             // Create a new viewport object as it is getting updated here
             // and it is part of the read only state
             viewports.push(viewport);
-            let xPos, yPos, w, h;
 
+            let xPos, yPos, w, h;
             if (layoutOptions && layoutOptions[pos]) {
               ({ x: xPos, y: yPos, width: w, height: h } = layoutOptions[pos]);
             } else {
@@ -157,10 +158,12 @@ export function ViewportGridProvider({ children, service }) {
               yPos = row * h;
             }
 
-            viewport.width = w;
-            viewport.height = h;
-            viewport.x = xPos;
-            viewport.y = yPos;
+            Object.assign(viewport, {
+              width: w,
+              height: h,
+              x: xPos,
+              y: yPos,
+            });
 
             //     if (!viewport.viewportOptions.presentationIds) {
             //     viewport.viewportOptions.presentationIds = ViewportGridService.getPresentationIds(
