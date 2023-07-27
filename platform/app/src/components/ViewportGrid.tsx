@@ -254,10 +254,6 @@ function ViewerViewportGrid(props) {
       const viewportIndex = i;
       const isActive = activeViewportIndex === viewportIndex;
       const paneMetadata = viewports[i] || {};
-      const viewportId = paneMetadata.viewportId || `viewport-${i}`;
-      if (!paneMetadata.viewportId) {
-        paneMetadata.viewportId = viewportId;
-      }
       const {
         displaySetInstanceUIDs,
         viewportOptions,
@@ -307,7 +303,16 @@ function ViewerViewportGrid(props) {
 
       viewportPanes[i] = (
         <ViewportPane
-          key={viewportId}
+          // Note: It is highly important that the key is the viewportId here,
+          // since it is used to determine if the component should be re-rendered
+          // by React, and also in the hanging protocol and stage changes if the
+          // same viewportId is used, React, by default, will only move (not re-render)
+          // those components. For instance, if we have a 2x3 layout, and we move
+          // from 2x3 to 1x1 (second viewport), if the key is the viewportIndex,
+          // React will RE-RENDER the resulting viewport as the key will be different.
+          // however, if the key is the viewportId, React will only move the component
+          // and not re-render it.
+          key={paneMetadata.viewportOptions.viewportId}
           acceptDropsFor="displayset"
           onDrop={onDropHandler.bind(null, viewportIndex)}
           onInteraction={onInteractionHandler}

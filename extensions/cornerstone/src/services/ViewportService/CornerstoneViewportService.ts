@@ -243,20 +243,13 @@ class CornerstoneViewportService extends PubSubService
       throw new Error('Must define viewportId externally');
     }
 
-    const viewportInfo = this.viewportsById.get(viewportId);
+    const viewportInfo = this.viewportsById.get(
+      publicViewportOptions.viewportId
+    );
 
     if (!viewportInfo) {
       throw new Error('Viewport info not defined');
     }
-
-    // If the viewport has moved index, then record the new index
-    if (viewportInfo.viewportIndex !== viewportIndex) {
-      this.viewportsInfo.delete(viewportInfo.viewportIndex);
-      this.viewportsInfo.set(viewportIndex, viewportInfo);
-      viewportInfo.viewportIndex = viewportIndex;
-    }
-
-    viewportInfo.setRenderingEngineId(renderingEngine.id);
 
     const {
       viewportOptions,
@@ -267,9 +260,16 @@ class CornerstoneViewportService extends PubSubService
       viewportInfo
     );
 
+    viewportInfo.setRenderingEngineId(renderingEngine.id);
     viewportInfo.setViewportOptions(viewportOptions);
     viewportInfo.setDisplaySetOptions(displaySetOptions);
     viewportInfo.setViewportData(viewportData);
+    viewportInfo.setViewportId(viewportId);
+    viewportInfo.setViewportIndex(viewportIndex);
+
+    // change the viewportIndex information if needed, disableElement will handle
+    // the rest of the logic
+    this.viewportsInfo.set(viewportIndex, viewportInfo);
 
     const element = viewportInfo.getElement();
     const type = viewportInfo.getViewportType();
@@ -532,10 +532,7 @@ class CornerstoneViewportService extends PubSubService
 
     this.viewportsDisplaySets.set(viewport.id, displaySetInstanceUIDs);
 
-    if (
-      hangingProtocolService.hasCustomImageLoadStrategy() &&
-      !hangingProtocolService.customImageLoadPerformed
-    ) {
+    if (hangingProtocolService.getShouldPerformCustomImageLoad()) {
       // delegate the volume loading to the hanging protocol service if it has a custom image load strategy
       return hangingProtocolService.runImageLoadStrategy({
         viewportId: viewport.id,
@@ -746,7 +743,10 @@ class CornerstoneViewportService extends PubSubService
     const viewport = this.getCornerstoneViewport(viewportId);
     const viewportCamera = viewport.getCamera();
 
-    if (viewport instanceof VolumeViewport || viewport instanceof VolumeViewport3D) {
+    if (
+      viewport instanceof VolumeViewport ||
+      viewport instanceof VolumeViewport3D
+    ) {
       this._setVolumeViewport(viewport, viewportData, viewportInfo).then(() => {
         if (keepCamera) {
           viewport.setCamera(viewportCamera);
