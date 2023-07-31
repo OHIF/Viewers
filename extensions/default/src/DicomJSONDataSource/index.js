@@ -13,6 +13,7 @@ const mappings = {
 
 let _store = {
   urls: [],
+  studyInstanceUIDMap: new Map(), // map of urls to array of study instance UIDs
   // {
   //   url: url1
   //   studies: [Study1, Study2], // if multiple studies
@@ -41,10 +42,10 @@ const findStudies = (key, value) => {
 };
 
 function createDicomJSONApi(dicomJsonConfig) {
-  const { name, wadoRoot } = dicomJsonConfig;
+  const { wadoRoot } = dicomJsonConfig;
 
   const implementation = {
-    initialize: async ({ params, query, url }) => {
+    initialize: async ({ query, url }) => {
       if (!url) url = query.get('url');
       let metaData = getMetaDataByURL(url);
 
@@ -58,11 +59,7 @@ function createDicomJSONApi(dicomJsonConfig) {
       }
 
       const response = await fetch(url);
-      let data = await response.json();
-
-      const studyInstanceUIDs = data.studies.map(
-        study => study.StudyInstanceUID
-      );
+      const data = await response.json();
 
       let StudyInstanceUID;
       let SeriesInstanceUID;
@@ -89,12 +86,14 @@ function createDicomJSONApi(dicomJsonConfig) {
         url,
         studies: [...data.studies],
       });
-
-      return studyInstanceUIDs;
+      _store.studyInstanceUIDMap.set(
+        url,
+        data.studies.map(study => study.StudyInstanceUID)
+      );
     },
     query: {
       studies: {
-        mapParams: () => { },
+        mapParams: () => {},
         search: async param => {
           const [key, value] = Object.entries(param)[0];
           const mappedParam = mappings[key];
@@ -252,11 +251,12 @@ function createDicomJSONApi(dicomJsonConfig) {
       return imageIds;
     },
     getImageIdsForInstance({ instance, frame }) {
-      const imageIds = getImageId({
-        instance,
-        frame,
-      });
+      const imageIds = getImageId({ instance, frame });
       return imageIds;
+    },
+    getStudyInstanceUIDs: ({ params, query }) => {
+      const url = query.get('url');
+      return _store.studyInstanceUIDMap.get(url);
     },
   };
   return IWebApiDataSource.create(implementation);

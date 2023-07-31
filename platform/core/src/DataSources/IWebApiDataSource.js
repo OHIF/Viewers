@@ -22,6 +22,7 @@ function create({
   getImageIdsForDisplaySet,
   getImageIdsForInstance,
   getConfig,
+  getStudyInstanceUIDs,
 }) {
   const defaultQuery = {
     studies: {
@@ -73,6 +74,7 @@ function create({
     getImageIdsForDisplaySet,
     getImageIdsForInstance,
     getConfig: getConfig || defaultGetConfig,
+    getStudyInstanceUIDs: getStudyInstanceUIDs,
   };
 }
 

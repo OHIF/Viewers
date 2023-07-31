@@ -10,13 +10,7 @@ import {
   utilities as csUtils,
 } from '@cornerstonejs/core';
 import { MeasurementService } from '@ohif/core';
-import {
-  CinePlayer,
-  useCine,
-  useViewportGrid,
-  Notification,
-  useViewportDialog,
-} from '@ohif/ui';
+import { Notification, useViewportDialog } from '@ohif/ui';
 import {
   IStackViewport,
   IVolumeViewport,
@@ -28,6 +22,7 @@ import './OHIFCornerstoneViewport.css';
 import CornerstoneOverlays from './Overlays/CornerstoneOverlays';
 import getSOPInstanceAttributes from '../utils/measurementServiceMappings/utils/getSOPInstanceAttributes';
 import CornerstoneServices from '../types/CornerstoneServices';
+import CinePlayer from '../components/CinePlayer';
 
 const STACK = 'stack';
 
@@ -119,6 +114,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
     servicesManager,
     onElementEnabled,
     onElementDisabled,
+    isJumpToMeasurementDisabled,
     // Note: you SHOULD NOT use the initialImageIdOrIndex for manipulation
     // of the imageData in the OHIFCornerstoneViewport. This prop is used
     // to set the initial state of the viewport's first image to render
@@ -126,10 +122,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
   } = props;
 
   const [scrollbarHeight, setScrollbarHeight] = useState('100px');
-  const [{ isCineEnabled, cines }, cineService] = useCine();
-  const [{ activeViewportIndex }] = useViewportGrid();
   const [enabledVPElement, setEnabledVPElement] = useState(null);
-
   const elementRef = useRef();
 
   const {
@@ -145,74 +138,6 @@ const OHIFCornerstoneViewport = React.memo(props => {
   } = servicesManager.services as CornerstoneServices;
 
   const [viewportDialogState] = useViewportDialog();
-
-  const cineHandler = () => {
-    if (!cines || !cines[viewportIndex] || !enabledVPElement) {
-      return;
-    }
-
-    const cine = cines[viewportIndex];
-    const isPlaying = cine.isPlaying || false;
-    const frameRate = cine.frameRate || 24;
-
-    const validFrameRate = Math.max(frameRate, 1);
-
-    if (isPlaying) {
-      cineService.playClip(enabledVPElement, {
-        framesPerSecond: validFrameRate,
-      });
-    } else {
-      cineService.stopClip(enabledVPElement);
-    }
-  };
-
-  useEffect(() => {
-    eventTarget.addEventListener(
-      Enums.Events.STACK_VIEWPORT_NEW_STACK,
-      cineHandler
-    );
-
-    return () => {
-      cineService.setCine({ id: viewportIndex, isPlaying: false });
-      eventTarget.removeEventListener(
-        Enums.Events.STACK_VIEWPORT_NEW_STACK,
-        cineHandler
-      );
-    };
-  }, [enabledVPElement]);
-
-  useEffect(() => {
-    if (!cines || !cines[viewportIndex] || !enabledVPElement) {
-      return;
-    }
-
-    cineHandler();
-
-    return () => {
-      if (enabledVPElement && cines?.[viewportIndex]?.isPlaying) {
-        cineService.stopClip(enabledVPElement);
-      }
-    };
-  }, [cines, viewportIndex, cineService, enabledVPElement, cineHandler]);
-
-  const cine = cines[viewportIndex];
-  const isPlaying = (cine && cine.isPlaying) || false;
-
-  const handleCineClose = () => {
-    toolbarService.recordInteraction({
-      groupId: 'MoreTools',
-      itemId: 'cine',
-      interactionType: 'toggle',
-      commands: [
-        {
-          commandName: 'toggleCine',
-          commandOptions: {},
-          context: 'CORNERSTONE',
-        },
-      ],
-    });
-  };
-
   // useCallback for scroll bar height calculation
   const setImageScrollBarHeight = useCallback(() => {
     const scrollbarHeight = `${elementRef.current.clientHeight - 20}px`;
@@ -434,7 +359,6 @@ const OHIFCornerstoneViewport = React.memo(props => {
         displaySetOptions,
         presentations
       );
-
       if (measurement) {
         cs3DTools.annotation.selection.setAnnotationSelected(measurement.uid);
       }
@@ -454,6 +378,10 @@ const OHIFCornerstoneViewport = React.memo(props => {
    * the cache for jumping to see if there is any jump queued, then we jump to the correct slice.
    */
   useEffect(() => {
+    if (isJumpToMeasurementDisabled) {
+      return;
+    }
+
     const unsubscribeFromJumpToMeasurementEvents = _subscribeToJumpToMeasurementEvents(
       measurementService,
       displaySetService,
@@ -479,15 +407,14 @@ const OHIFCornerstoneViewport = React.memo(props => {
     };
   }, [displaySets, elementRef, viewportIndex]);
 
+  console.debug('OHIFCornerstoneViewport rendering');
+
   return (
     <React.Fragment>
     <div className="viewport-wrapper">
       <ReactResizeDetector
-        handleWidth
-        handleHeight
-        skipOnMount={true} // Todo: make these configurable
-        refreshMode={'debounce'}
-        refreshRate={200} // transition amount in side panel
+          refreshMode="debounce"
+          refreshRate={50} // Wait 50 ms after last move to render
         onResize={onResize}
         targetRef={elementRef.current}
       />
@@ -505,25 +432,11 @@ const OHIFCornerstoneViewport = React.memo(props => {
         scrollbarHeight={scrollbarHeight}
         servicesManager={servicesManager}
       />
-      {isCineEnabled && (
         <CinePlayer
-          className="absolute left-1/2 -translate-x-1/2 bottom-3"
-          isPlaying={isPlaying}
-          onClose={handleCineClose}
-          onPlayPauseChange={isPlaying =>
-            cineService.setCine({
-              id: activeViewportIndex,
-              isPlaying,
-            })
-          }
-          onFrameRateChange={frameRate =>
-            cineService.setCine({
-              id: activeViewportIndex,
-              frameRate,
-            })
-          }
+          enabledVPElement={enabledVPElement}
+          viewportIndex={viewportIndex}
+          servicesManager={servicesManager}
         />
-      )}
     </div>
       <div className="absolute w-full">
         {viewportDialogState.viewportIndex === viewportIndex && (
@@ -654,7 +567,6 @@ function _jumpToMeasurement(
   const viewportInfo = cornerstoneViewportService.getViewportInfoByIndex(
     viewportIndex
   );
-
   if (enabledElement) {
     // See how the jumpToSlice() of Cornerstone3D deals with imageIdx param.
     const viewport = enabledElement.viewport as
@@ -716,6 +628,10 @@ function _jumpToMeasurement(
 // Component displayName
 OHIFCornerstoneViewport.displayName = 'OHIFCornerstoneViewport';
 
+OHIFCornerstoneViewport.defaultProps = {
+  isJumpToMeasurementDisabled: false,
+};
+
 OHIFCornerstoneViewport.propTypes = {
   viewportIndex: PropTypes.number.isRequired,
   displaySets: PropTypes.array.isRequired,
@@ -724,6 +640,7 @@ OHIFCornerstoneViewport.propTypes = {
   displaySetOptions: PropTypes.arrayOf(PropTypes.any),
   servicesManager: PropTypes.object.isRequired,
   onElementEnabled: PropTypes.func,
+  isJumpToMeasurementDisabled: PropTypes.bool,
   // Note: you SHOULD NOT use the initialImageIdOrIndex for manipulation
   // of the imageData in the OHIFCornerstoneViewport. This prop is used
   // to set the initial state of the viewport's first image to render

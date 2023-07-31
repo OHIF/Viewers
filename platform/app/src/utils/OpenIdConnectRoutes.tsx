@@ -111,6 +111,12 @@ function OpenIdConnectRoutes({
   const getAuthorizationHeader = () => {
     const user = userAuthenticationService.getUser();
 
+    // if the user is null return early, next time
+    // we hit this function we will have a user
+    if (!user) {
+      return;
+    }
+
     return {
       Authorization: `Bearer ${user.access_token}`,
     };
