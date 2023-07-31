@@ -12,10 +12,10 @@ window.config = {
   defaultDataSourceName: 'dicomweb',
   dataSources: [
     {
-      friendlyName: 'Orthanc Server',
       namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
       sourceName: 'dicomweb',
       configuration: {
+        friendlyName: 'Orthanc Server',
         name: 'Orthanc',
         wadoUriRoot: 'http://127.0.0.1/pacs/wado',
         qidoRoot: 'http://127.0.0.1/pacs/dicom-web',
@@ -27,18 +27,19 @@ window.config = {
       },
     },
     {
-      friendlyName: 'dicom json',
       namespace: '@ohif/extension-default.dataSourcesModule.dicomjson',
       sourceName: 'dicomjson',
       configuration: {
+        friendlyName: 'dicom json',
         name: 'json',
       },
     },
     {
-      friendlyName: 'dicom local',
       namespace: '@ohif/extension-default.dataSourcesModule.dicomlocal',
       sourceName: 'dicomlocal',
-      configuration: {},
+      configuration: {
+        friendlyName: 'dicom local',
+      },
     },
   ],
 };

@@ -36,10 +36,10 @@ window.config = {
   // },
   dataSources: [
     {
-      friendlyName: 'dcmjs DICOMWeb Server',
       namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
       sourceName: 'dicomweb',
       configuration: {
+        friendlyName: 'dcmjs DICOMWeb Server',
         name: 'aws',
         // old server
         // wadoUriRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/wado',
@@ -70,26 +70,27 @@ window.config = {
       },
     },
     {
-      friendlyName: 'dicomweb delegating proxy',
       namespace: '@ohif/extension-default.dataSourcesModule.dicomwebproxy',
       sourceName: 'dicomwebproxy',
       configuration: {
+        friendlyName: 'dicomweb delegating proxy',
         name: 'dicomwebproxy',
       },
     },
     {
-      friendlyName: 'dicom json',
       namespace: '@ohif/extension-default.dataSourcesModule.dicomjson',
       sourceName: 'dicomjson',
       configuration: {
+        friendlyName: 'dicom json',
         name: 'json',
       },
     },
     {
-      friendlyName: 'dicom local',
       namespace: '@ohif/extension-default.dataSourcesModule.dicomlocal',
       sourceName: 'dicomlocal',
-      configuration: {},
+      configuration: {
+        friendlyName: 'dicom local',
+      },
     },
   ],
   httpErrorHandler: error => {

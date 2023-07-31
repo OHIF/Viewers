@@ -24,10 +24,10 @@ window.config = {
   defaultDataSourceName: 'default',
   dataSources: [
     {
-      friendlyName: 'Static WADO Local Data',
       namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
       sourceName: 'default',
       configuration: {
+        friendlyName: 'Static WADO Local Data',
         name: 'DCM4CHEE',
         qidoRoot: '/dicomweb',
         wadoRoot: '/dicomweb',
@@ -45,10 +45,10 @@ window.config = {
       },
     },
     {
-      friendlyName: 'dcmjs DICOMWeb Server',
       namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
       sourceName: 'ohif',
       configuration: {
+        friendlyName: 'dcmjs DICOMWeb Server',
         name: 'aws',
         // old server
         // wadoUriRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/wado',
@@ -70,10 +70,10 @@ window.config = {
       },
     },
     {
-      friendlyName: 'AWS S3 OHIF',
       namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
       sourceName: 'aws',
       configuration: {
+        friendlyName: 'AWS S3 OHIF',
         name: 'aws',
         qidoRoot: 'https://dd32w2rfebxel.cloudfront.net/dicomweb',
         wadoRoot: 'https://dd32w2rfebxel.cloudfront.net/dicomweb',
@@ -90,10 +90,10 @@ window.config = {
       },
     },
     {
-      friendlyName: 'E2E Test Data',
       namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
       sourceName: 'e2e',
       configuration: {
+        friendlyName: 'E2E Test Data',
         name: 'DCM4CHEE',
         wadoUriRoot: '/viewer-testdata',
         qidoRoot: '/viewer-testdata',
@@ -111,18 +111,19 @@ window.config = {
       },
     },
     {
-      friendlyName: 'dicom json',
       namespace: '@ohif/extension-default.dataSourcesModule.dicomjson',
       sourceName: 'dicomjson',
       configuration: {
+        friendlyName: 'dicom json',
         name: 'json',
       },
     },
     {
-      friendlyName: 'dicom local',
       namespace: '@ohif/extension-default.dataSourcesModule.dicomlocal',
       sourceName: 'dicomlocal',
-      configuration: {},
+      configuration: {
+        friendlyName: 'dicom local',
+      },
     },
   ],
   httpErrorHandler: error => {

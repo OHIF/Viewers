@@ -41,25 +41,7 @@ function createDicomLocalApi(dicomLocalConfig) {
   const { name } = dicomLocalConfig;
 
   const implementation = {
-    initialize: ({ params, query }) => {
-      const { StudyInstanceUIDs: paramsStudyInstanceUIDs } = params;
-      const queryStudyInstanceUIDs = query.getAll('StudyInstanceUIDs');
-
-      const StudyInstanceUIDs =
-        queryStudyInstanceUIDs || paramsStudyInstanceUIDs;
-      const StudyInstanceUIDsAsArray =
-        StudyInstanceUIDs && Array.isArray(StudyInstanceUIDs)
-          ? StudyInstanceUIDs
-          : [StudyInstanceUIDs];
-
-      // Put SRs at the end of series list to make sure images are loaded first
-      StudyInstanceUIDsAsArray.forEach(StudyInstanceUID => {
-        const study = DicomMetadataStore.getStudy(StudyInstanceUID);
-        study.series = study.series.sort(customSort);
-      });
-
-      return StudyInstanceUIDsAsArray;
-    },
+    initialize: ({ params, query }) => {},
     query: {
       studies: {
         mapParams: () => {},
@@ -245,6 +227,29 @@ function createDicomLocalApi(dicomLocalConfig) {
     },
     deleteStudyMetadataPromise() {
       console.log('deleteStudyMetadataPromise not implemented');
+    },
+    getStudyInstanceUIDs: ({ params, query }) => {
+      const { StudyInstanceUIDs: paramsStudyInstanceUIDs } = params;
+      const queryStudyInstanceUIDs = query.getAll('StudyInstanceUIDs');
+
+      const StudyInstanceUIDs =
+        queryStudyInstanceUIDs || paramsStudyInstanceUIDs;
+      const StudyInstanceUIDsAsArray =
+        StudyInstanceUIDs && Array.isArray(StudyInstanceUIDs)
+          ? StudyInstanceUIDs
+          : [StudyInstanceUIDs];
+
+      // Put SRs at the end of series list to make sure images are loaded first
+      let isStudyInCache = false;
+      StudyInstanceUIDsAsArray.forEach(StudyInstanceUID => {
+        const study = DicomMetadataStore.getStudy(StudyInstanceUID);
+        if (study) {
+          study.series = study.series.sort(customSort);
+          isStudyInCache = true;
+        }
+      });
+
+      return isStudyInCache ? StudyInstanceUIDsAsArray : [];
     },
   };
   return IWebApiDataSource.create(implementation);

@@ -33,10 +33,10 @@ window.config = {
   showStudyList: true,
   dataSources: [
     {
-      friendlyName: 'dcmjs DICOMWeb Server',
       namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
       sourceName: 'dicomweb',
       configuration: {
+        friendlyName: 'dcmjs DICOMWeb Server',
         name: 'DCM4CHEE',
         wadoUriRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/wado',
         qidoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
@@ -83,10 +83,10 @@ window.config = ({ servicesManager } = {}) => {
     routerBasename: '/',
     dataSources: [
     {
-      friendlyName: 'dcmjs DICOMWeb Server',
       namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
       sourceName: 'dicomweb',
       configuration: {
+        friendlyName: 'dcmjs DICOMWeb Server',
         name: 'DCM4CHEE',
         wadoUriRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/wado',
         qidoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
@@ -138,7 +138,38 @@ Example 2, to restricts to either hosptial.com or othersite.com.<br/>
 `regex: /(https:\/\/hospital.com(\/[0-9A-Za-z.]+)*)|(https:\/\/othersite.com(\/[0-9A-Za-z.]+)*)/` <br/>
 Example usage:<br/>
 `http://localhost:3000/?configUrl=http://localhost:3000/config/example.json`<br/>
-
+- `onConfiguration`: Currently only available for DicomWebDataSource, this option allows the interception of the data source configuration for dynamic values e.g. values coming from url params or query params. Here is an example of building the dicomweb datasource configuration object with values that are based on the route url params:
+   ```
+   {
+     namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
+     sourceName: 'gcpdicomweb',
+     configuration: {
+       friendlyName: 'GCP DICOMWeb Server',
+       name: 'gcpdicomweb',
+       qidoSupportsIncludeField: false,
+       imageRendering: 'wadors',
+       thumbnailRendering: 'wadors',
+       enableStudyLazyLoad: true,
+       supportsFuzzyMatching: false,
+       supportsWildcard: false,
+       singlepart: 'bulkdata,video,pdf',
+       useBulkDataURI: false,
+       onConfiguration: (dicomWebConfig, options) => {
+         const { params } = options;
+         const { project, location, dataset, dicomStore } = params;
+         const pathUrl = `https://healthcare.googleapis.com/v1/projects/${project}/locations/${location}/datasets/${dataset}/dicomStores/${dicomStore}/dicomWeb`;
+         return {
+           ...dicomWebConfig,
+           wadoRoot: pathUrl,
+           qidoRoot: pathUrl,
+           wadoUri: pathUrl,
+           wadoUriRoot: pathUrl,
+         };
+       },
+     },
+   },
+  ```
+This configuration would allow the user to build a dicomweb configuration from a GCP healthcare api path e.g. http://localhost:3000/projects/your-gcp-project/locations/us-central1/datasets/your-dataset/dicomStores/your-dicom-store/study/1.3.6.1.4.1.1234.5.2.1.1234.1234.123123123123123123123123123123
 
 
 <!-- **Embedded Use Note:**

@@ -27,12 +27,17 @@ function TrackedCornerstoneViewport(props) {
   const {
     measurementService,
     cornerstoneViewportService,
+    viewportGridService,
   } = servicesManager.services;
 
   // Todo: handling more than one displaySet on the same viewport
   const displaySet = displaySets[0];
 
-  const [trackedMeasurements] = useTrackedMeasurements();
+  const [
+    trackedMeasurements,
+    sendTrackedMeasurementsEvent,
+  ] = useTrackedMeasurements();
+
   const [isTracked, setIsTracked] = useState(false);
   const [trackedMeasurementUID, setTrackedMeasurementUID] = useState(null);
   const [viewportElem, setViewportElem] = useState(null);
@@ -148,6 +153,55 @@ function TrackedCornerstoneViewport(props) {
       annotation.config.style.setViewportToolStyles(viewportId, {});
     };
   }, [isTracked]);
+
+  /**
+   * The effect for listening to measurement service measurement added events
+   * and in turn firing an event to update the measurement tracking state machine.
+   * The TrackedCornerstoneViewport is the best place for this because when
+   * a measurement is added, at least one TrackedCornerstoneViewport will be in
+   * the DOM and thus can react to the events fired.
+   */
+  useEffect(() => {
+    const added = measurementService.EVENTS.MEASUREMENT_ADDED;
+    const addedRaw = measurementService.EVENTS.RAW_MEASUREMENT_ADDED;
+    const subscriptions = [];
+
+    [added, addedRaw].forEach(evt => {
+      subscriptions.push(
+        measurementService.subscribe(evt, ({ source, measurement }) => {
+          const { activeViewportIndex } = viewportGridService.getState();
+
+          // Each TrackedCornerstoneViewport receives the MeasurementService's events.
+          // Only send the tracked measurements event for the active viewport to avoid
+          // sending it more than once.
+          if (viewportIndex === activeViewportIndex) {
+            const {
+              referenceStudyUID: StudyInstanceUID,
+              referenceSeriesUID: SeriesInstanceUID,
+            } = measurement;
+
+            sendTrackedMeasurementsEvent('SET_DIRTY', { SeriesInstanceUID });
+            sendTrackedMeasurementsEvent('TRACK_SERIES', {
+              viewportIndex,
+              StudyInstanceUID,
+              SeriesInstanceUID,
+            });
+          }
+        }).unsubscribe
+      );
+    });
+
+    return () => {
+      subscriptions.forEach(unsub => {
+        unsub();
+      });
+    };
+  }, [
+    measurementService,
+    sendTrackedMeasurementsEvent,
+    viewportIndex,
+    viewportGridService,
+  ]);
 
   function switchMeasurement(direction) {
     const newTrackedMeasurementUID = _getNextMeasurementUID(
