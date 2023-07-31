@@ -31,7 +31,6 @@ export default function getCommandsModule({
 
       callInputDialog({
         uiDialogService,
-        title: 'Enter your annotation',
         defaultValue: '',
         callback: (value: string, action: string) => {
           switch (action) {

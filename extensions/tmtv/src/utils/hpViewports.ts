@@ -121,8 +121,7 @@ const ptAXIAL = {
     {
       options: {
         voi: {
-          windowWidth: 5,
-          windowCenter: 2.5,
+          custom: 'getPTVOIRange',
         },
         voiInverted: true,
       },
@@ -163,8 +162,7 @@ const ptSAGITTAL = {
     {
       options: {
         voi: {
-          windowWidth: 5,
-          windowCenter: 2.5,
+          custom: 'getPTVOIRange',
         },
         voiInverted: true,
       },
@@ -205,8 +203,7 @@ const ptCORONAL = {
     {
       options: {
         voi: {
-          windowWidth: 5,
-          windowCenter: 2.5,
+          custom: 'getPTVOIRange',
         },
         voiInverted: true,
       },
@@ -257,14 +254,20 @@ const fusionAXIAL = {
       id: 'ctDisplaySet',
     },
     {
+      id: 'ptDisplaySet',
       options: {
-        colormap: 'hsv',
+        colormap: {
+          name: 'hsv',
+          opacity: [
+            { value: 0, opacity: 0 },
+            { value: 0.1, opacity: 0.9 },
+            { value: 1, opacity: 0.95 },
+          ],
+        },
         voi: {
-          windowWidth: 5,
-          windowCenter: 2.5,
+          custom: 'getPTVOIRange',
         },
       },
-      id: 'ptDisplaySet',
     },
   ],
 };
@@ -311,14 +314,20 @@ const fusionSAGITTAL = {
       id: 'ctDisplaySet',
     },
     {
+      id: 'ptDisplaySet',
       options: {
-        colormap: 'hsv',
+        colormap: {
+          name: 'hsv',
+          opacity: [
+            { value: 0, opacity: 0 },
+            { value: 0.1, opacity: 0.9 },
+            { value: 1, opacity: 0.95 },
+          ],
+        },
         voi: {
-          windowWidth: 5,
-          windowCenter: 2.5,
+          custom: 'getPTVOIRange',
         },
       },
-      id: 'ptDisplaySet',
     },
   ],
 };
@@ -365,14 +374,20 @@ const fusionCORONAL = {
       id: 'ctDisplaySet',
     },
     {
+      id: 'ptDisplaySet',
       options: {
-        colormap: 'hsv',
+        colormap: {
+          name: 'hsv',
+          opacity: [
+            { value: 0, opacity: 0 },
+            { value: 0.1, opacity: 0.9 },
+            { value: 1, opacity: 0.95 },
+          ],
+        },
         voi: {
-          windowWidth: 5,
-          windowCenter: 2.5,
+          custom: 'getPTVOIRange',
         },
       },
-      id: 'ptDisplaySet',
     },
   ],
 };
@@ -414,8 +429,7 @@ const mipSAGITTAL = {
         blendMode: 'MIP',
         slabThickness: 'fullVolume',
         voi: {
-          windowWidth: 5,
-          windowCenter: 2.5,
+          custom: 'getPTVOIRange',
         },
         voiInverted: true,
       },

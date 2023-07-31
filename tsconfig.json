@@ -16,7 +16,7 @@
       "@ohif/core": ["platform/core/src"],
       "@ohif/ui": ["platform/ui/src"],
       "@ohif/i18n": ["platform/i18n/src"],
-      "@ohif/viewer": ["platform/viewer/src"]
+      "@ohif/app": ["platform/app/src"]
     }
   },
   "include": [

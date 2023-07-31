@@ -1,4 +1,6 @@
+import { hotkeys } from '@ohif/core';
 import { id } from './id';
+import { initToolGroups, toolbarButtons } from '@ohif/mode-longitudinal';
 
 const ohif = {
   layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
@@ -38,12 +40,76 @@ function modeFactory({ modeConfiguration }) {
      * Runs when the Mode Route is mounted to the DOM. Usually used to initialize
      * Services and other resources.
      */
-    onModeEnter: ({ servicesManager, extensionManager }) => {},
-    /**
-     * Runs when the Mode Route is unmounted from the DOM. Usually used to clean
-     * up resources and states
-     */
-    onModeExit: () => {},
+    onModeEnter: ({ servicesManager, extensionManager, commandsManager }) => {
+      const {
+        measurementService,
+        toolbarService,
+        toolGroupService,
+      } = servicesManager.services;
+
+      measurementService.clearMeasurements();
+
+      // Init Default and SR ToolGroups
+      initToolGroups(extensionManager, toolGroupService, commandsManager);
+
+      let unsubscribe;
+
+      const activateTool = () => {
+        toolbarService.recordInteraction({
+          groupId: 'WindowLevel',
+          itemId: 'WindowLevel',
+          interactionType: 'tool',
+          commands: [
+            {
+              commandName: 'setToolActive',
+              commandOptions: {
+                toolName: 'WindowLevel',
+              },
+              context: 'CORNERSTONE',
+            },
+          ],
+        });
+
+        // We don't need to reset the active tool whenever a viewport is getting
+        // added to the toolGroup.
+        unsubscribe();
+      };
+
+      // Since we only have one viewport for the basic cs3d mode and it has
+      // only one hanging protocol, we can just use the first viewport
+      ({ unsubscribe } = toolGroupService.subscribe(
+        toolGroupService.EVENTS.VIEWPORT_ADDED,
+        activateTool
+      ));
+
+      toolbarService.init(extensionManager);
+      toolbarService.addButtons(toolbarButtons);
+      toolbarService.createButtonSection('primary', [
+        'MeasurementTools',
+        'Zoom',
+        'WindowLevel',
+        'Pan',
+        'Capture',
+        'Layout',
+        'MPR',
+        'Crosshairs',
+        'MoreTools',
+      ]);
+    },
+    onModeExit: ({ servicesManager }) => {
+      const {
+        toolGroupService,
+        syncGroupService,
+        toolbarService,
+        segmentationService,
+        cornerstoneViewportService,
+      } = servicesManager.services;
+
+      toolGroupService.destroy();
+      syncGroupService.destroy();
+      segmentationService.destroy();
+      cornerstoneViewportService.destroy();
+    },
     /** */
     validationTags: {
       study: [],
@@ -93,7 +159,7 @@ function modeFactory({ modeConfiguration }) {
     /** SopClassHandlers used by the mode */
     sopClassHandlers: [ohif.sopClassHandler],
     /** hotkeys for mode */
-    hotkeys: [''],
+    hotkeys: [...hotkeys.defaults.hotkeyBindings],
   };
 }
 

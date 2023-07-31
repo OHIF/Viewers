@@ -10,9 +10,12 @@ const ROOT_DIR = path.join(__dirname, './../');
 const SRC_DIR = path.join(__dirname, '../src');
 const DIST_DIR = path.join(__dirname, '../dist');
 
-const fileName = 'index.umd.js';
+const ENTRY = {
+  app: `${SRC_DIR}/index.js`,
+};
+
 module.exports = (env, argv) => {
-  const commonConfig = webpackCommon(env, argv, { SRC_DIR, DIST_DIR });
+  const commonConfig = webpackCommon(env, argv, { SRC_DIR, DIST_DIR, ENTRY });
 
   return merge(commonConfig, {
     stats: {
@@ -28,23 +31,30 @@ module.exports = (env, argv) => {
     },
     optimization: {
       minimize: true,
-      sideEffects: true,
+      sideEffects: false,
     },
     output: {
       path: ROOT_DIR,
-      library: 'OHIFExtCornerstone',
+      library: 'ohif-mode-basic-test',
       libraryTarget: 'umd',
       libraryExport: 'default',
       filename: pkg.main,
     },
+    externals: [
+      /\b(vtk.js)/,
+      /\b(dcmjs)/,
+      /\b(gl-matrix)/,
+      /^@ohif/,
+      /^@cornerstonejs/,
+    ],
     plugins: [
       new webpack.optimize.LimitChunkCountPlugin({
         maxChunks: 1,
       }),
-      new MiniCssExtractPlugin({
-        filename: './dist/[name].css',
-        chunkFilename: './dist/[id].css',
-      }),
+      // new MiniCssExtractPlugin({
+      //   filename: './dist/[name].css',
+      //   chunkFilename: './dist/[id].css',
+      // }),
     ],
   });
 };

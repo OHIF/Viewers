@@ -36,7 +36,7 @@ ContextMenu.propTypes = {
       label: PropTypes.string.isRequired,
       action: PropTypes.func.isRequired,
     })
-  ).isRequired,
+  ),
 };
 
 export default ContextMenu;

@@ -8,7 +8,7 @@
 # managed by CircleCI and deployed to our Google Hosting
 #
 
-#[build]
+[build]
   ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF . ../ui/ ../core/ ../i18n/"
 
 # NODE_VERSION in root `.nvmrc` takes priority

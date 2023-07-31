@@ -405,6 +405,14 @@ class MetadataProvider {
         };
 
         break;
+      case WADO_IMAGE_LOADER_TAGS.PER_SERIES_MODULE:
+        metadata = {
+          correctedImage: instance.CorrectedImage,
+          units: instance.Units,
+          decayCorrection: instance.DecayCorrection,
+        };
+        break;
+
       default:
         return;
     }
@@ -481,6 +489,9 @@ class MetadataProvider {
       imageURI = imageIdToURI(imageId);
     }
 
+    // remove &frame=number from imageId
+    imageURI = imageURI.split('&frame=')[0];
+
     const uids = this.imageURIToUIDs.get(imageURI);
     let frameNumber = this.getFrameInformationFromURL(imageId) || '1';
 
@@ -505,6 +516,7 @@ const WADO_IMAGE_LOADER_TAGS = {
   MODALITY_LUT_MODULE: 'modalityLutModule',
   SOP_COMMON_MODULE: 'sopCommonModule',
   PET_ISOTOPE_MODULE: 'petIsotopeModule',
+  PER_SERIES_MODULE: 'petSeriesModule',
   OVERLAY_PLANE_MODULE: 'overlayPlaneModule',
   PATIENT_DEMOGRAPHIC_MODULE: 'patientDemographicModule',
 

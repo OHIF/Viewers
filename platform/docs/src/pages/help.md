@@ -3,7 +3,7 @@
 We all need a little help sometimes. Don't let a few roadblocks stand in the way
 of you building something awesome.
 
-## Community Support
+## Get Support
 
 If you're a developer looking to contribute code, documentation, or discussion;
 we are more than happy to help provide clarification and answer questions via
@@ -21,15 +21,9 @@ resources and must be judicious with how we allocate them. If you find yourself
 in this situation and in need of assistance, it may be in your best interest to
 persue paid support.
 
-## Commercial Support
+If you need additional help, please [reach out to us](https://ohif.org/get-support) to get more information on
+how we can help you.
 
-The Open Health Imaging Foundation does not offer commercial support, however,
-some community members do offer consulting services. You can search our
-[Community Forum](https://community.ohif.org/) for more information.
-
-<!--
-  Links
-  -->
 
 [gh-issues]: https://github.com/OHIF/Viewers/issues/
 [google-group]: https://groups.google.com/forum/#!forum/cornerstone-platform

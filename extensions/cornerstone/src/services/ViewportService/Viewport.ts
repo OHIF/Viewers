@@ -63,7 +63,7 @@ export type PublicDisplaySetOptions = {
   blendMode?: string;
   slabThickness?: number;
   colormap?: string;
-  presetName?: string;
+  displayPreset?: string;
 };
 
 export type DisplaySetOptions = {
@@ -73,7 +73,7 @@ export type DisplaySetOptions = {
   blendMode?: Enums.BlendModes;
   slabThickness?: number;
   colormap?: string;
-  presetName?: string;
+  displayPreset?: string;
 };
 
 type VOI = {
@@ -126,7 +126,7 @@ class ViewportInfo {
     if (!this.viewportData?.data) return false;
 
     if (this.viewportData.data.length) {
-      return !!this.viewportData.find(data =>
+      return !!this.viewportData.data.find(data =>
         dataContains(data, displaySetUID, imageId)
       );
     }
@@ -198,7 +198,9 @@ class ViewportInfo {
     // via cornerstoneViewportService
     let viewportData = this.getViewportData();
 
-    if (viewportData.viewportType === Enums.ViewportType.ORTHOGRAPHIC) {
+    if (viewportData.viewportType === Enums.ViewportType.ORTHOGRAPHIC ||
+        viewportData.viewportType === Enums.ViewportType.VOLUME_3D
+    ) {
       viewportData = viewportData as VolumeViewportData;
       return viewportData.data.some(
         ({ displaySetInstanceUID: dsUID }) => dsUID === displaySetInstanceUID
@@ -315,7 +317,7 @@ class ViewportInfo {
         colormap: option.colormap,
         slabThickness: option.slabThickness,
         blendMode,
-        presetName: option.presetName,
+        displayPreset: option.displayPreset,
       });
     });
 

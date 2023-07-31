@@ -26,6 +26,7 @@ import nthLoader from './utils/nthLoader';
 import interleaveTopToBottom from './utils/interleaveTopToBottom';
 import initContextMenu from './initContextMenu';
 import initDoubleClick from './initDoubleClick';
+import { CornerstoneServices } from './types';
 
 // TODO: Cypress tests are currently grabbing this from the window?
 window.cornerstone = cornerstone;
@@ -69,10 +70,7 @@ export default async function init({
 
   const {
     userAuthenticationService,
-    measurementService,
     customizationService,
-    displaySetService,
-    uiDialogService,
     uiModalService,
     uiNotificationService,
     cineService,
@@ -81,7 +79,7 @@ export default async function init({
     toolGroupService,
     viewportGridService,
     stateSyncService,
-  } = servicesManager.services;
+  } = servicesManager.services as CornerstoneServices;
 
   window.services = servicesManager.services;
   window.extensionManager = extensionManager;
@@ -166,7 +164,7 @@ export default async function init({
     prefetch: appConfig?.maxNumRequests?.prefetch || 10,
   };
 
-  initWADOImageLoader(userAuthenticationService, appConfig);
+  initWADOImageLoader(userAuthenticationService, appConfig, extensionManager);
 
   /* Measurement Service */
   this.measurementServiceSource = connectToolsToMeasurementService(

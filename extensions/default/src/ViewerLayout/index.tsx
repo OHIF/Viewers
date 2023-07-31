@@ -46,13 +46,27 @@ function ViewerLayout({
   const onClickReturnButton = () => {
     const { pathname } = location;
     const dataSourceIdx = pathname.indexOf('/', 1);
-    const search =
-      dataSourceIdx === -1
-        ? undefined
-        : `datasources=${pathname.substring(dataSourceIdx + 1)}`;
+    // const search =
+    //   dataSourceIdx === -1
+    //     ? undefined
+    //     : `datasources=${pathname.substring(dataSourceIdx + 1)}`;
+
+    // Todo: Handle parameters in a better way.
+    const query = new URLSearchParams(window.location.search);
+    const configUrl = query.get('configUrl');
+
+    const searchQuery = new URLSearchParams();
+    if (dataSourceIdx !== -1) {
+      searchQuery.append('datasources', pathname.substring(dataSourceIdx + 1));
+    }
+
+    if (configUrl) {
+      searchQuery.append('configUrl', configUrl);
+    }
+
     navigate({
       pathname: '/',
-      search,
+      search: decodeURIComponent(searchQuery.toString()),
     });
   };
 
@@ -67,7 +81,7 @@ function ViewerLayout({
 
   const { hotkeyDefinitions, hotkeyDefaults } = hotkeysManager;
   const versionNumber = process.env.VERSION_NUMBER;
-  const buildNumber = process.env.BUILD_NUM;
+  const commitHash = process.env.COMMIT_HASH;
 
   const menuOptions = [
     {
@@ -77,7 +91,7 @@ function ViewerLayout({
         show({
           content: AboutModal,
           title: 'About OHIF Viewer',
-          contentProps: { versionNumber, buildNumber },
+          contentProps: { versionNumber, commitHash },
         }),
     },
     {

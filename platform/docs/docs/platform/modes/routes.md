@@ -13,7 +13,7 @@ important part of the mode configuration.
 
 ## Route
 
-`@ohif/viewer` **compose** extensions to build applications on different routes
+`@ohif/app` **compose** extensions to build applications on different routes
 for the platform.
 
 Below, you can see a simplified version of the `longitudinal` mode and the

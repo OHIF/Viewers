@@ -88,7 +88,7 @@ function TrackedCornerstoneViewport({
 ```
 
 
-### `@ohif/viewer`
+### `@ohif/app`
 
 Viewport components are managed by the `ViewportGrid` Component. Which Viewport
 component is used depends on:

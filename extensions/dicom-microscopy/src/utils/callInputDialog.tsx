@@ -1,5 +1,5 @@
 import React from 'react';
-import { Input, Dialog } from '@ohif/ui';
+import { Input, Dialog, ButtonEnums } from '@ohif/ui';
 
 /**
  *
@@ -12,9 +12,9 @@ import { Input, Dialog } from '@ohif/ui';
  */
 export default function callInputDialog({
   uiDialogService,
-  title = 'Enter your annotation',
+  title = 'Annotation',
   defaultValue = '',
-  callback = (value: string, action: string) => {}
+  callback = (value: string, action: string) => {},
 }) {
   const dialogId = 'microscopy-input-dialog';
 
@@ -43,30 +43,29 @@ export default function callInputDialog({
         noCloseButton: true,
         onClose: () => uiDialogService.dismiss({ id: dialogId }),
         actions: [
-          { id: 'cancel', text: 'Cancel', type: 'primary' },
-          { id: 'save', text: 'Save', type: 'secondary' },
+          { id: 'cancel', text: 'Cancel', type: ButtonEnums.type.secondary },
+          { id: 'save', text: 'Save', type: ButtonEnums.type.primary },
         ],
         onSubmit: onSubmitHandler,
         body: ({ value, setValue }) => {
           return (
-            <div className="p-4 bg-primary-dark">
-              <Input
-                autoFocus
-                className="mt-2 bg-black border-primary-main"
-                type="text"
-                containerClassName="mr-2"
-                value={value.defaultValue}
-                onChange={event => {
-                  event.persist();
-                  setValue(value => ({ ...value, value: event.target.value }));
-                }}
-                onKeyPress={event => {
-                  if (event.key === 'Enter') {
-                    onSubmitHandler({ value, action: { id: 'save' } });
-                  }
-                }}
-              />
-            </div>
+            <Input
+              label="Enter your annotation"
+              labelClassName="text-white text-[14px] leading-[1.2]"
+              autoFocus
+              className="bg-black border-primary-main"
+              type="text"
+              value={value.defaultValue}
+              onChange={event => {
+                event.persist();
+                setValue(value => ({ ...value, value: event.target.value }));
+              }}
+              onKeyPress={event => {
+                if (event.key === 'Enter') {
+                  onSubmitHandler({ value, action: { id: 'save' } });
+                }
+              }}
+            />
           );
         },
       },

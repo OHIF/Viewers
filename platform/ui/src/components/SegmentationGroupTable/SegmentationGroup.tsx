@@ -82,7 +82,9 @@ const SegmentGroupHeader = ({
           }
         )}
       />
-      <span className="text-white ">{label.toUpperCase()}</span>
+      <span className="text-white w-full whitespace-nowrap text-ellipsis overflow-hidden">
+        {label.toUpperCase()}
+      </span>
       <div className="flex-grow" />
       <span className="text-white ">{segmentCount}</span>
       <div

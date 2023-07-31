@@ -245,7 +245,7 @@ const mprAnd3DVolumeViewport = {
             {
               id: 'mprDisplaySet',
               options: {
-                presetName: 'CT-Bone',
+                displayPreset: 'CT-Bone',
               },
             },
           ],

@@ -1,9 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { Icon, ButtonGroup, Button, LegacyCinePlayer } from '../';
 import useOnClickOutside from '../../utils/useOnClickOutside';
-import LegacyPatientInfo from '../LegacyPatientInfo';
 import { StringNumber } from '../../types';
+
+import LegacyPatientInfo from '../LegacyPatientInfo';
+import Icon from '../Icon';
+import ButtonGroup from '../ButtonGroup';
+import LegacyButton from '../LegacyButton';
+import LegacyCinePlayer from '../LegacyCinePlayer';
 
 const LegacyViewportActionBar = ({
   studyData,
@@ -75,7 +79,7 @@ const LegacyViewportActionBar = ({
       <div className="flex flex-1 grow mt-2 min-w-48">
         <div className="flex items-center">
           <span className="mr-2 text-white text-large">{label}</span>
-          {showStatus && getStatusComponent()}
+          {showStatus && getStatusComponent && getStatusComponent()}
         </div>
         <div className="flex flex-col justify-start ml-4">
           <div className="flex">
@@ -100,23 +104,24 @@ const LegacyViewportActionBar = ({
       </div>
       {showNavArrows && !showCine && (
         <div className="mt-2" style={{ pointerEvents: 'all' }}>
+          {/* TODO Revisit design of ButtonGroup later - for now use LegacyButton for its children.*/}
           <ButtonGroup>
-            <Button
+            <LegacyButton
               size="initial"
               className="px-2 py-1 bg-black"
               border="light"
               onClick={() => onArrowsClick('left')}
             >
               <Icon name="chevron-left" className="w-4 text-white" />
-            </Button>
-            <Button
+            </LegacyButton>
+            <LegacyButton
               size="initial"
               border="light"
               className="px-2 py-1 bg-black"
               onClick={() => onArrowsClick('right')}
             >
               <Icon name="chevron-right" className="w-4 text-white" />
-            </Button>
+            </LegacyButton>
           </ButtonGroup>
         </div>
       )}

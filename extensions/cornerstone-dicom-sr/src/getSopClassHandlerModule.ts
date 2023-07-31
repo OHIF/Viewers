@@ -82,13 +82,6 @@ function addInstances(
   // gets loaded, and to navigate among them.
   this.instance = this.instances[this.instances.length - 1];
   this.isLoaded = false;
-  if (this.keyImageDisplaySet) {
-    this.load();
-    this.keyImageDisplaySet.updateInstances();
-    displaySetService.setDisplaySetMetadataInvalidated(
-      this.keyImageDisplaySet.displaySetInstanceUID
-    );
-  }
   return this;
 }
 
@@ -133,9 +126,13 @@ function _getDisplaySetsFromSeries(
     ConceptNameCodeSequence.CodeValue !==
       CodeNameCodeSequenceValues.ImagingMeasurementReport
   ) {
-    console.log(
-      'Only support Imaging Measurement Report SRs (TID1500) for this renderer.'
-    );
+    servicesManager.services.uiNotificationService.show({
+      title: 'DICOM SR',
+      message:
+        'OHIF only supports TID1500 Imaging Measurement Report Structured Reports. The SR you’re trying to view is not supported.',
+      type: 'warning',
+      duration: 6000,
+    });
     return [];
   }
 
