@@ -1,5 +1,19 @@
 import { Types } from '@ohif/core';
 
+const viewportOptions = {
+  viewportType: 'stack',
+  toolGroupId: 'default',
+  allowUnmatchedView: true,
+  syncGroups: [
+    {
+      type: 'stackImage',
+      id: 'stackImage',
+      source: true,
+      target: true,
+    },
+  ],
+};
+
 /**
  * This hanging protocol can be activated on the primary mode by directly
  * referencing it in a URL or by directly including it within a mode, e.g.:
@@ -44,11 +58,7 @@ const hpMN: Types.HangingProtocol.Protocol = {
     },
   },
   defaultViewport: {
-    viewportOptions: {
-      viewportType: 'stack',
-      toolGroupId: 'default',
-      allowUnmatchedView: true,
-    },
+    viewportOptions: { ...viewportOptions },
     displaySets: [
       {
         id: 'defaultDisplaySetId',
@@ -73,10 +83,7 @@ const hpMN: Types.HangingProtocol.Protocol = {
       },
       viewports: [
         {
-          viewportOptions: {
-            toolGroupId: 'default',
-            allowUnmatchedView: true,
-          },
+          viewportOptions: { ...viewportOptions },
           displaySets: [
             {
               id: 'defaultDisplaySetId',
@@ -84,10 +91,7 @@ const hpMN: Types.HangingProtocol.Protocol = {
           ],
         },
         {
-          viewportOptions: {
-            toolGroupId: 'default',
-            allowUnmatchedView: true,
-          },
+          viewportOptions: { ...viewportOptions },
           displaySets: [
             {
               matchedDisplaySetsIndex: 1,
@@ -96,10 +100,7 @@ const hpMN: Types.HangingProtocol.Protocol = {
           ],
         },
         {
-          viewportOptions: {
-            toolGroupId: 'default',
-            allowUnmatchedView: true,
-          },
+          viewportOptions: { ...viewportOptions },
           displaySets: [
             {
               matchedDisplaySetsIndex: 2,
@@ -108,10 +109,7 @@ const hpMN: Types.HangingProtocol.Protocol = {
           ],
         },
         {
-          viewportOptions: {
-            toolGroupId: 'default',
-            allowUnmatchedView: true,
-          },
+          viewportOptions: { ...viewportOptions },
           displaySets: [
             {
               matchedDisplaySetsIndex: 3,
