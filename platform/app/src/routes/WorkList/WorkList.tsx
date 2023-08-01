@@ -12,6 +12,9 @@ import { useAppConfig } from '@state';
 import { useDebounce, useSearchParams } from '@hooks';
 import { utils, hotkeys, ServicesManager } from '@ohif/core';
 
+// New
+import './Worklist.styl';
+
 import {
   Icon,
   StudyListExpandedRow,
@@ -490,7 +493,7 @@ function WorkList({
         isReturnEnabled={false}
         WhiteLabeling={appConfig.whiteLabeling}
       />
-      <div className="overflow-y-auto ohif-scrollbar flex flex-col grow">
+      <div className="custom-monai overflow-y-auto ohif-scrollbar flex flex-col grow">
         <StudyListFilter
           numOfStudies={pageNumber * resultsPerPage > 100 ? 101 : numOfStudies}
           filtersMeta={filtersMeta}

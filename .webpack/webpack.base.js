@@ -19,6 +19,7 @@ const loadShadersRule = require('./rules/loadShaders.js');
 const loadWebWorkersRule = require('./rules/loadWebWorkers.js');
 const transpileJavaScriptRule = require('./rules/transpileJavaScript.js');
 const cssToJavaScript = require('./rules/cssToJavaScript.js');
+const stylusToJavaScript = require('./rules/stylusToJavaScript.js');
 
 // ~~ ENV VARS
 const NODE_ENV = process.env.NODE_ENV;
@@ -94,6 +95,7 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
           },
         },
         cssToJavaScript,
+        stylusToJavaScript,
         {
           test: /\.wasm/,
           type: 'asset/resource',
