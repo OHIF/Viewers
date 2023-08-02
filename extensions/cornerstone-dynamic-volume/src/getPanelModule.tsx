@@ -1,5 +1,6 @@
 import React from 'react';
 import { DynamicDataPanel } from './panels';
+import { ROISegmentationPanel } from './panels';
 
 function getPanelModule({
   commandsManager,
@@ -16,6 +17,15 @@ function getPanelModule({
     );
   };
 
+  const wrappedROISegmentationPanel = () => {
+    return (
+      <ROISegmentationPanel
+        commandsManager={commandsManager}
+        servicesManager={servicesManager}
+      />
+    );
+  };
+
   return [
     {
       name: 'dynamic-volume',
@@ -23,6 +33,13 @@ function getPanelModule({
       iconLabel: '4D Workflow',
       label: '4D Workflow',
       component: wrappedDynamicDataPanel,
+    },
+    {
+      name: 'ROISegmentation',
+      iconName: 'tab-roi-threshold',
+      iconLabel: 'ROI Segmentation',
+      label: 'ROI Segmentation',
+      component: wrappedROISegmentationPanel,
     },
   ];
 }

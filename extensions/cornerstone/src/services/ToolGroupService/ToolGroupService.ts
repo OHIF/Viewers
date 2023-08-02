@@ -259,34 +259,6 @@ export default class ToolGroupService {
     toolInstance.configuration = config;
   }
 
-  private _getToolNames(toolGroupTools: Tools): string[] {
-    const toolNames = [];
-    if (toolGroupTools.active) {
-      toolGroupTools.active.forEach(tool => {
-        toolNames.push(tool.toolName);
-      });
-    }
-    if (toolGroupTools.passive) {
-      toolGroupTools.passive.forEach(tool => {
-        toolNames.push(tool.toolName);
-      });
-    }
-
-    if (toolGroupTools.enabled) {
-      toolGroupTools.enabled.forEach(tool => {
-        toolNames.push(tool.toolName);
-      });
-    }
-
-    if (toolGroupTools.disabled) {
-      toolGroupTools.disabled.forEach(tool => {
-        toolNames.push(tool.toolName);
-      });
-    }
-
-    return toolNames;
-  }
-
   private _setToolsMode(toolGroup, tools) {
     const { active, passive, enabled, disabled } = tools;
 
@@ -316,16 +288,17 @@ export default class ToolGroupService {
   }
 
   private _addTools(toolGroup, tools, configs) {
-    const toolNames = this._getToolNames(tools);
-    toolNames.forEach(toolName => {
-      // Initialize the toolConfig if no configuration is provided
-      const toolConfig = configs[toolName] ?? {};
+    ['active', 'passive', 'enabled', 'disabled'].forEach(toolStateName => {
+      (tools[toolStateName] ?? []).forEach(tool => {
+        const { toolName, parentClassName } = tool;
+        const toolConfig = { ...(configs[toolName] ?? {}) };
 
-      // if (volumeUID) {
-      //   toolConfig.volumeUID = volumeUID;
-      // }
-
-      toolGroup.addTool(toolName, { ...toolConfig });
+        if (parentClassName) {
+          toolGroup.addToolInstance(toolName, parentClassName, toolConfig);
+        } else {
+          toolGroup.addTool(toolName, toolConfig);
+        }
+      });
     });
   }
 }

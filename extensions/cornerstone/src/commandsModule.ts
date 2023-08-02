@@ -25,6 +25,7 @@ function commandsModule({
 }: OhifTypes.Extensions.ExtensionParams): OhifTypes.Extensions.CommandsModule {
   const {
     viewportGridService,
+    toolService,
     toolGroupService,
     cineService,
     toolbarService,
@@ -295,78 +296,7 @@ function commandsModule({
     },
 
     setToolActive: ({ toolName, toolGroupId = null }) => {
-      if (toolName === 'Crosshairs') {
-        const activeViewportToolGroup = toolGroupService.getToolGroup(null);
-
-        if (!activeViewportToolGroup._toolInstances.Crosshairs) {
-          uiNotificationService.show({
-            title: 'Crosshairs',
-            message:
-              'You need to be in a MPR view to use Crosshairs. Click on MPR button in the toolbar to activate it.',
-            type: 'info',
-            duration: 3000,
-          });
-
-          throw new Error('Crosshairs tool is not available in this viewport');
-        }
-      }
-
-      const { viewports } = viewportGridService.getState() || {
-        viewports: [],
-      };
-
-      const toolGroup = toolGroupService.getToolGroup(toolGroupId);
-      const toolGroupViewportIds = toolGroup?.getViewportIds?.();
-
-      // if toolGroup has been destroyed, or its viewports have been removed
-      if (!toolGroupViewportIds || !toolGroupViewportIds.length) {
-        return;
-      }
-
-      const filteredViewports = viewports.filter(viewport => {
-        if (!viewport.viewportOptions) {
-          return false;
-        }
-
-        return toolGroupViewportIds.includes(
-          viewport.viewportOptions.viewportId
-        );
-      });
-
-      if (!filteredViewports.length) {
-        return;
-      }
-
-      if (!toolGroup.getToolInstance(toolName)) {
-        uiNotificationService.show({
-          title: `${toolName} tool`,
-          message: `The ${toolName} tool is not available in this viewport.`,
-          type: 'info',
-          duration: 3000,
-        });
-
-        throw new Error(`ToolGroup ${toolGroup.id} does not have this tool.`);
-      }
-
-      const activeToolName = toolGroup.getActivePrimaryMouseButtonTool();
-
-      if (activeToolName) {
-        // Todo: this is a hack to prevent the crosshairs to stick around
-        // after another tool is selected. We should find a better way to do this
-        if (activeToolName === 'Crosshairs') {
-          toolGroup.setToolDisabled(activeToolName);
-        } else {
-          toolGroup.setToolPassive(activeToolName);
-        }
-      }
-      // Set the new toolName to be active
-      toolGroup.setToolActive(toolName, {
-        bindings: [
-          {
-            mouseButton: Enums.MouseBindings.Primary,
-          },
-        ],
-      });
+      toolService.setPrimaryToolActive(toolName, toolGroupId);
     },
     showDownloadViewportModal: () => {
       const { activeViewportIndex } = viewportGridService.getState();

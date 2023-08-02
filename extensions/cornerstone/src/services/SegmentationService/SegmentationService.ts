@@ -1982,7 +1982,7 @@ class SegmentationService extends PubSubService {
       toolGroupId
     );
 
-    if (segmentationRepresentations.length === 0) {
+    if (!segmentationRepresentations?.length) {
       return;
     }
 

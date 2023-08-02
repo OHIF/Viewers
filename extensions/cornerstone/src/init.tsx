@@ -76,17 +76,12 @@ export default async function init({
     customizationService,
     uiModalService,
     uiNotificationService,
-    cineService,
     cornerstoneViewportService,
     hangingProtocolService,
     toolGroupService,
     viewportGridService,
     stateSyncService,
   } = servicesManager.services as CornerstoneServices;
-
-  window.services = servicesManager.services;
-  window.extensionManager = extensionManager;
-  window.commandsManager = commandsManager;
 
   if (
     appConfig.showWarningMessageForCrossOrigin &&

@@ -145,6 +145,11 @@ const ViewportWindowLevel = ({
    */
   const isPetVolumeWithDefaultOpacity = (volumeId, volumeActor) => {
     const volume = cs3DCache.getVolume(volumeId);
+
+    if (!volume) {
+      return false;
+    }
+
     const modality = volume.metadata.Modality;
 
     if (modality !== 'PT') {
@@ -250,9 +255,13 @@ const ViewportWindowLevel = ({
 
       const windowLevels = volumeIds
         .map((volumeId, volumeIndex) => {
-          const opacity = getVolumeOpacity(viewport, volumeId);
-
           const volume = cs3DCache.getVolume(volumeId);
+
+          if (!volume) {
+            return null;
+          }
+
+          const opacity = getVolumeOpacity(viewport, volumeId);
           const { metadata, scaling } = volume;
           const modality = metadata.Modality;
 
@@ -294,7 +303,7 @@ const ViewportWindowLevel = ({
             showOpacitySlider: volumeIndex === 1 && opacity !== undefined,
           };
         })
-        .filter(windowLevel => !!windowLevel.histogram);
+        .filter(windowLevel => !!windowLevel?.histogram);
 
       return windowLevels;
     },

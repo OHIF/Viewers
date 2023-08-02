@@ -1,6 +1,6 @@
 import { WindowLevelMenuItem } from '@ohif/ui';
 import { defaults } from '@ohif/core';
-import { toolGroupIds as ToolGroupIds } from './initToolGroups';
+import { toolGroupIds as ToolGroupIds, toolGroupIds } from './initToolGroups';
 
 const { windowLevelPresets } = defaults;
 /**
@@ -200,36 +200,127 @@ function _createPanToolButton() {
   };
 }
 
+function _createCircularBrush() {
+  return _createToolButton(
+    'CircularBrush',
+    'notifications-warning',
+    'Circular Brush',
+    [..._createCommands('setToolActive', 'CircularBrush')],
+    'Circular Brush'
+  );
+}
+
+function _createCircularEraser() {
+  return _createToolButton(
+    'CircularEraser',
+    'notifications-warning',
+    'Circular Eraser',
+    [..._createCommands('setToolActive', 'CircularEraser')],
+    'Circular Eraser'
+  );
+}
+
+function _createSphereBrush() {
+  return _createToolButton(
+    'SphereBrush',
+    'notifications-warning',
+    'Sphere Brush',
+    [..._createCommands('setToolActive', 'SphereBrush')],
+    'Sphere Brush'
+  );
+}
+
+function _createSphereEraser() {
+  return _createToolButton(
+    'SphereEraser',
+    'notifications-warning',
+    'Sphere Eraser',
+    [..._createCommands('setToolActive', 'SphereEraser')],
+    'Sphere Eraser'
+  );
+}
+
+function _createThresholdBrush() {
+  return _createToolButton(
+    'ThresholdBrush',
+    'notifications-warning',
+    'Threshold Brush',
+    [..._createCommands('setToolActive', 'ThresholdBrush')],
+    'Threshold Brush'
+  );
+}
+
+function _createRectangleROIStartEndThreshold() {
+  return _createToolButton(
+    'RectangleROIStartEndThreshold',
+    'tool-create-threshold',
+    'Rectangle ROI Threshold (start/end)',
+    [
+      ..._createCommands('setToolActive', 'RectangleROIStartEndThreshold', [
+        toolGroupIds.PT,
+      ]),
+      {
+        commandName: 'displayNotification',
+        commandOptions: {
+          title: 'RectangleROI Threshold Tip',
+          text:
+            'RectangleROI Threshold tool should be used on PT Axial Viewport',
+          type: 'info',
+        },
+      },
+    ],
+    'Rectangle ROI Threshold (start/end)'
+  );
+}
+
 function _createRectangleROIThreshold() {
-  return {
-    id: 'RectangleROIStartEndThreshold',
-    type: 'ohif.radioGroup',
-    props: {
-      type: 'tool',
-      icon: 'tool-create-threshold',
-      label: 'Rectangle ROI Threshold',
-      commands: [
-        ..._createCommands('setToolActive', 'RectangleROIStartEndThreshold', [
-          ToolGroupIds.PT,
-        ]),
-        {
-          commandName: 'displayNotification',
-          commandOptions: {
-            title: 'RectangleROI Threshold Tip',
-            text:
-              'RectangleROI Threshold tool should be used on PT Axial Viewport',
-            type: 'info',
-          },
-        },
-        {
-          commandName: 'setViewportActive',
-          commandOptions: {
-            viewportId: 'ptAXIAL',
-          },
-        },
-      ],
-    },
-  };
+  return _createToolButton(
+    'RectangleROIThreshold',
+    'notifications-warning',
+    'Rectangle ROI Threshold',
+    [..._createCommands('setToolActive', 'RectangleROIThreshold')],
+    'Rectangle ROI Threshold'
+  );
+}
+
+function _createRectangleScissor() {
+  return _createToolButton(
+    'RectangleScissor',
+    'notifications-warning',
+    'Rectangle Scissor',
+    [..._createCommands('setToolActive', 'RectangleScissor')],
+    'Rectangle Scissor'
+  );
+}
+
+function _createCircleScissor() {
+  return _createToolButton(
+    'CircleScissor',
+    'notifications-warning',
+    'Circle Scissor',
+    [..._createCommands('setToolActive', 'CircleScissor')],
+    'Circle Scissor'
+  );
+}
+
+function _createSphereScissor() {
+  return _createToolButton(
+    'SphereScissor',
+    'notifications-warning',
+    'Sphere Scissor',
+    [..._createCommands('setToolActive', 'SphereScissor')],
+    'Sphere Scissor'
+  );
+}
+
+function _createPaintFill() {
+  return _createToolButton(
+    'PaintFill',
+    'notifications-warning',
+    'Paint Fill',
+    [..._createCommands('setToolActive', 'PaintFill')],
+    'Paint Fill'
+  );
 }
 
 function _createFusionPTColormap() {
@@ -562,9 +653,36 @@ const toolbarButtons = [
   _createWindowLevelToolButton(),
   _createCrosshairsToolButton(),
   _createPanToolButton(),
-  _createRectangleROIThreshold(),
   _createFusionPTColormap(),
   _createCineToolbarButton(),
+  {
+    id: 'SegmentationTools',
+    type: 'ohif.splitButton',
+    props: {
+      groupId: 'SegmentationTools',
+      isRadio: true,
+      primary: _createCircularBrush(),
+      secondary: {
+        icon: 'chevron-down',
+        label: '',
+        isActive: true,
+        tooltip: 'More Segmentation Tools',
+      },
+      items: [
+        _createCircularBrush(),
+        _createCircularEraser(),
+        _createSphereBrush(),
+        _createSphereEraser(),
+        _createThresholdBrush(),
+        _createRectangleROIStartEndThreshold(),
+        _createRectangleROIThreshold(),
+        _createRectangleScissor(),
+        _createCircleScissor(),
+        _createSphereScissor(),
+        _createPaintFill(),
+      ],
+    },
+  },
 
   // _createCaptureToolButton(),
   // _createLayoutToolbarButton(),
