@@ -4,11 +4,9 @@ import {
   setAnnotationSelected,
   getFirstAnnotationSelected,
 } from './selection';
-import getModalityUnit from './getModalityUnit';
 import getSOPInstanceAttributes from './getSOPInstanceAttributes';
 
 export {
-  getModalityUnit,
   getHandlesFromPoints,
   getSOPInstanceAttributes,
   isAnnotationSelected,

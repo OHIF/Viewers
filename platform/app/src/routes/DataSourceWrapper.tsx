@@ -1,10 +1,22 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { MODULE_TYPES } from '@ohif/core';
+import { ExtensionManager, MODULE_TYPES } from '@ohif/core';
 //
 import { extensionManager } from '../App.tsx';
 import { useParams, useLocation } from 'react-router';
+import useSearchParams from '../hooks/useSearchParams.ts';
+
+/**
+ * Determines if two React Router location objects are the same.
+ */
+const areLocationsTheSame = (location0, location1) => {
+  return (
+    location0.pathname === location1.pathname &&
+    location0.search === location1.search &&
+    location0.hash === location1.hash
+  );
+};
 
 /**
  * Uses route properties to determine the data source that should be passed
@@ -18,37 +30,8 @@ function DataSourceWrapper(props) {
   const { children: LayoutTemplate, ...rest } = props;
   const params = useParams();
   const location = useLocation();
-
-  // TODO - get the variable from the props all the time...
-  let dataSourceName = new URLSearchParams(location.search).get('datasources');
-  const dataPath = dataSourceName ? `/${dataSourceName}` : '';
-
-  if (!dataSourceName && window.config.defaultDataSourceName) {
-    dataSourceName = window.config.defaultDataSourceName;
-  } else if (!dataSourceName) {
-    // Gets the first defined datasource with the right name
-    // Mostly for historical reasons - new configs should use the defaultDataSourceName
-    const dataSourceModules =
-      extensionManager.modules[MODULE_TYPES.DATA_SOURCE];
-    // TODO: Good usecase for flatmap?
-    const webApiDataSources = dataSourceModules.reduce((acc, curr) => {
-      const mods = [];
-      curr.module.forEach(mod => {
-        if (mod.type === 'webApi') {
-          mods.push(mod);
-        }
-      });
-      return acc.concat(mods);
-    }, []);
-    dataSourceName = webApiDataSources
-      .map(ds => ds.name)
-      .find(it => extensionManager.getDataSources(it)?.[0] !== undefined);
-  }
-  const dataSource = extensionManager.getDataSources(dataSourceName)?.[0];
-  if (!dataSource) {
-    throw new Error(`No data source found for ${dataSourceName}`);
-  }
-
+  const lowerCaseSearchParams = useSearchParams({ lowerCaseKeys: true });
+  const query = useSearchParams();
   // Route props --> studies.mapParams
   // mapParams --> studies.search
   // studies.search --> studies.processResults
@@ -63,10 +46,102 @@ function DataSourceWrapper(props) {
     pageNumber: 1,
     location: 'Not a valid location, causes first load to occur',
   };
+
+  const getInitialDataSourceName = useCallback(() => {
+    // TODO - get the variable from the props all the time...
+    let dataSourceName = lowerCaseSearchParams.get('datasources');
+
+    if (!dataSourceName && window.config.defaultDataSourceName) {
+      return '';
+    }
+
+    if (!dataSourceName) {
+      // Gets the first defined datasource with the right name
+      // Mostly for historical reasons - new configs should use the defaultDataSourceName
+      const dataSourceModules =
+        extensionManager.modules[MODULE_TYPES.DATA_SOURCE];
+      // TODO: Good usecase for flatmap?
+      const webApiDataSources = dataSourceModules.reduce((acc, curr) => {
+        const mods = [];
+        curr.module.forEach(mod => {
+          if (mod.type === 'webApi') {
+            mods.push(mod);
+          }
+        });
+        return acc.concat(mods);
+      }, []);
+      dataSourceName = webApiDataSources
+        .map(ds => ds.name)
+        .find(it => extensionManager.getDataSources(it)?.[0] !== undefined);
+    }
+
+    return dataSourceName;
+  }, []);
+
+  const [isDataSourceInitialized, setIsDataSourceInitialized] = useState(false);
+
+  // The path to the data source to be used in the URL for a mode (e.g. mode/dataSourcePath?StudyIntanceUIDs=1.2.3)
+  const [dataSourcePath, setDataSourcePath] = useState(() => {
+    const dataSourceName = getInitialDataSourceName();
+    return dataSourceName ? `/${dataSourceName}` : '';
+  });
+
+  const [dataSource, setDataSource] = useState(() => {
+    const dataSourceName = getInitialDataSourceName();
+
+    if (!dataSourceName) {
+      return extensionManager.getActiveDataSource()[0];
+    }
+
+    const dataSource = extensionManager.getDataSources(dataSourceName)?.[0];
+    if (!dataSource) {
+      throw new Error(`No data source found for ${dataSourceName}`);
+    }
+
+    return dataSource;
+  });
+
   const [data, setData] = useState(DEFAULT_DATA);
   const [isLoading, setIsLoading] = useState(false);
 
+  /**
+   * The effect to initialize the data source whenever it changes. Similar to
+   * whenever a different Mode is entered, the Mode's data source is initialized, so
+   * too this DataSourceWrapper must initialize its data source whenever a different
+   * data source is activated. Furthermore, a data source might be initialized
+   * several times as it gets activated/deactivated because the location URL
+   * might change and data sources initialize based on the URL.
+   */
   useEffect(() => {
+    const initializeDataSource = async () => {
+      await dataSource.initialize({ params, query });
+      setIsDataSourceInitialized(true);
+    };
+
+    initializeDataSource();
+  }, [dataSource]);
+
+  useEffect(() => {
+    const dataSourceChangedCallback = () => {
+      setIsDataSourceInitialized(false);
+      setDataSourcePath('');
+      setDataSource(extensionManager.getActiveDataSource()[0]);
+      // Setting data to DEFAULT_DATA triggers a new query just like it does for the initial load.
+      setData(DEFAULT_DATA);
+    };
+
+    const sub = extensionManager.subscribe(
+      ExtensionManager.EVENTS.ACTIVE_DATA_SOURCE_CHANGED,
+      dataSourceChangedCallback
+    );
+    return () => sub.unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    if (!isDataSourceInitialized) {
+      return;
+    }
+
     const queryFilterValues = _getQueryFilterValues(
       location.search,
       STUDIES_LIMIT
@@ -75,6 +150,7 @@ function DataSourceWrapper(props) {
     // 204: no content
     async function getData() {
       setIsLoading(true);
+
       const studies = await dataSource.query.studies.search(queryFilterValues);
 
       setData({
@@ -102,7 +178,12 @@ function DataSourceWrapper(props) {
             STUDIES_LIMIT
         ) *
         (STUDIES_LIMIT - 1);
-      const isLocationUpdated = data.location !== location;
+      // Simply checking data.location !== location is not sufficient because even though the location href (i.e. entire URL)
+      // has not changed, the React Router still provides a new location reference and would result in two study queries
+      // on initial load. Alternatively, window.location.href could be used.
+      const isLocationUpdated =
+        typeof data.location === 'string' ||
+        !areLocationsTheSame(data.location, location);
       const isDataInvalid =
         !isSamePage ||
         (!isLoading && (newOffset !== previousOffset || isLocationUpdated));
@@ -114,7 +195,15 @@ function DataSourceWrapper(props) {
       console.warn(ex);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data, location, params, isLoading, setIsLoading]);
+  }, [
+    data,
+    location,
+    params,
+    isLoading,
+    setIsLoading,
+    dataSource,
+    isDataSourceInitialized,
+  ]);
   // queryFilterValues
 
   // TODO: Better way to pass DataSource?
@@ -122,7 +211,7 @@ function DataSourceWrapper(props) {
     <LayoutTemplate
       {...rest}
       data={data.studies}
-      dataPath={dataPath}
+      dataPath={dataSourcePath}
       dataTotal={data.total}
       dataSource={dataSource}
       isLoadingData={isLoading}

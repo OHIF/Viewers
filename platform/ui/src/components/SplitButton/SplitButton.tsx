@@ -184,7 +184,10 @@ const SplitButton = ({
   const listItemRenderer = renderer || DefaultListItemRenderer;
 
   return (
-    <OutsideClickHandler onOutsideClick={outsideClickHandler}>
+    <OutsideClickHandler
+      onOutsideClick={outsideClickHandler}
+      disabled={!state.isExpanded}
+    >
       <div name="SplitButton" className="relative">
         <div
           className={classes.Button({

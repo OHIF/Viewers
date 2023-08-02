@@ -21,13 +21,23 @@ const extensionManager = new ExtensionManager({
   appConfig,
 });
 ```
+## Events
+The following events get published by the `ExtensionManager`:
 
-The `ExtensionManager` only has a few public members:
+| Event                        | Description                                            |
+| ---------------------------- | ------------------------------------------------------ |
+| ACTIVE_DATA_SOURCE_CHANGED   | Fired when the active data source is changed - either replaced with an entirely different one or the existing active data source gets its definition changed via `updateDataSourceConfiguration`. |
+
+## API
+The `ExtensionManager` only has the following public API:
 
 - `setActiveDataSource` - Sets the active data source for the application
 - `getDataSources` - Returns the registered data sources
 - `getActiveDataSource` - Returns the currently active data source
 - `getModuleEntry` - Returns the module entry by the give id.
+- `addDataSource` - Dynamically adds a data source and optionally sets it as the active data source
+- `updateDataSourceConfiguration` - Updates the configuration of a specified data source (name).
+- `getDataSourceDef` - Gets the data source definition for a particular data source name.
 
 ## Accessing Modules
 

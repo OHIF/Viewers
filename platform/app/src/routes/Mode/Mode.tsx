@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 // TODO: DicomMetadataStore should be injected?
 import { DicomMetadataStore, ServicesManager, utils } from '@ohif/core';
 import { DragAndDropProvider, ImageViewerProvider } from '@ohif/ui';
-import { useQuery, useSearchParams } from '@hooks';
+import { useSearchParams } from '@hooks';
 import ViewportGrid from '@components/ViewportGrid';
 import Compose from './Compose';
 import getStudies from './studiesList';
@@ -95,9 +95,13 @@ export default function ModeRoute({
 }) {
   // Parse route params/querystring
   const location = useLocation();
-  const query = useQuery();
+
+  // The react router DOM placeholder map (see https://reactrouter.com/en/main/hooks/use-params).
   const params = useParams();
-  const searchParams = useSearchParams();
+  // The URL's query search parameters where the keys casing is maintained
+  const query = useSearchParams();
+  // The URL's query search parameters where the keys are all lower case.
+  const lowerCaseSearchParams = useSearchParams({ lowerCaseKeys: true });
 
   const [studyInstanceUIDs, setStudyInstanceUIDs] = useState();
 
@@ -132,8 +136,10 @@ export default function ModeRoute({
     hangingProtocol,
   } = mode;
 
-  const runTimeHangingProtocolId = searchParams.get('hangingprotocolid');
-  const token = searchParams.get('token');
+  const runTimeHangingProtocolId = lowerCaseSearchParams.get(
+    'hangingprotocolid'
+  );
+  const token = lowerCaseSearchParams.get('token');
 
   if (token) {
     // if a token is passed in, set the userAuthenticationService to use it
@@ -163,11 +169,10 @@ export default function ModeRoute({
   const hotkeys = Array.isArray(hotkeyObj) ? hotkeyObj : hotkeyObj?.hotkeys;
   const hotkeyName = hotkeyObj?.name || 'hotkey-definitions-v2';
 
-  if (dataSourceName === undefined) {
-    dataSourceName = extensionManager.defaultDataSourceName;
+  // An undefined dataSourceName implies that the active data source that is already set in the ExtensionManager should be used.
+  if (dataSourceName !== undefined) {
+    extensionManager.setActiveDataSource(dataSourceName);
   }
-
-  extensionManager.setActiveDataSource(dataSourceName);
 
   const dataSource = extensionManager.getActiveDataSource()[0];
 
@@ -232,11 +237,11 @@ export default function ModeRoute({
 
     // Todo: this should not be here, data source should not care about params
     const initializeDataSource = async (params, query) => {
-      const studyInstanceUIDs = await dataSource.initialize({
+      await dataSource.initialize({
         params,
         query,
       });
-      setStudyInstanceUIDs(studyInstanceUIDs);
+      setStudyInstanceUIDs(dataSource.getStudyInstanceUIDs({ params, query }));
     };
 
     initializeDataSource(params, query);
