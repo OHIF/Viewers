@@ -14,7 +14,6 @@ import init from './init';
 import getCustomizationModule from './getCustomizationModule';
 import getCommandsModule from './commandsModule';
 import getHangingProtocolModule from './getHangingProtocolModule';
-import ToolService from './services/ToolService';
 import ToolGroupService from './services/ToolGroupService';
 import SyncGroupService from './services/SyncGroupService';
 import SegmentationService from './services/SegmentationService';
@@ -80,7 +79,6 @@ const cornerstoneExtension: Types.Extensions.Extension = {
   ): Promise<void> {
     const { servicesManager } = props;
     servicesManager.registerService(CornerstoneViewportService.REGISTRATION);
-    servicesManager.registerService(ToolService.REGISTRATION);
     servicesManager.registerService(ToolGroupService.REGISTRATION);
     servicesManager.registerService(SyncGroupService.REGISTRATION);
     servicesManager.registerService(SegmentationService.REGISTRATION);

@@ -25,7 +25,6 @@ function commandsModule({
 }: OhifTypes.Extensions.ExtensionParams): OhifTypes.Extensions.CommandsModule {
   const {
     viewportGridService,
-    toolService,
     toolGroupService,
     cineService,
     toolbarService,
@@ -296,7 +295,7 @@ function commandsModule({
     },
 
     setToolActive: ({ toolName, toolGroupId = null }) => {
-      toolService.setPrimaryToolActive(toolName, toolGroupId);
+      toolGroupService.setPrimaryToolActive(toolName, toolGroupId);
     },
     showDownloadViewportModal: () => {
       const { activeViewportIndex } = viewportGridService.getState();

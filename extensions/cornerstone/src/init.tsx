@@ -83,6 +83,10 @@ export default async function init({
     stateSyncService,
   } = servicesManager.services as CornerstoneServices;
 
+  window.services = servicesManager.services;
+  window.extensionManager = extensionManager;
+  window.commandsManager = commandsManager;
+
   if (
     appConfig.showWarningMessageForCrossOrigin &&
     !window.crossOriginIsolated

@@ -7,6 +7,7 @@ import React, {
   ReactElement,
 } from 'react';
 import PropTypes from 'prop-types';
+
 import { CommandsManager, ServicesManager } from '@ohif/core';
 import { SegmentationTable, Button, Icon } from '@ohif/ui';
 // import { utilities as cstUtils } from '@cornerstonejs/tools';
@@ -99,8 +100,10 @@ export default function ROISegmentationPanel({
   servicesManager: ServicesManager;
   commandsManager: CommandsManager;
 }): ReactElement {
-  const { toolService, segmentationService } = servicesManager.services;
-  const [activePrimaryTool, setActivePrimaryTool] = useState('');
+  const { toolGroupService, segmentationService } = servicesManager.services;
+  const [activePrimaryTool, setActivePrimaryTool] = useState(
+    toolGroupService.getActivePrimaryMouseButtonTool()
+  );
   const { t } = useTranslation('PanelSUV');
   const [showConfig, setShowConfig] = useState(false);
   const [labelmapLoading, setLabelmapLoading] = useState(false);
@@ -247,15 +250,18 @@ export default function ROISegmentationPanel({
   }, [segmentations, selectedSegmentationId, handleTMTVCalculation]);
 
   useEffect(() => {
-    const { unsubscribe } = toolService.subscribe(
-      toolService.EVENTS.PRIMARY_TOOL_ACTIVATED,
-      ({ toolName }) => setActivePrimaryTool(toolName)
+    const { unsubscribe } = toolGroupService.subscribe(
+      toolGroupService.EVENTS.PRIMARY_TOOL_ACTIVATED,
+      ({ toolName }) => {
+        console.log('ROISeg :: PRIMARY_TOOL_ACTIVATED');
+        setActivePrimaryTool(toolName);
+      }
     );
 
     return () => {
       unsubscribe();
     };
-  }, [toolService]);
+  }, [toolGroupService]);
 
   return (
     <>
