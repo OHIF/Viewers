@@ -141,7 +141,7 @@ export function ViewportGridProvider({ children, service }) {
 
             // If the viewport doesn't have a viewportId, we create one
             if (!viewport.viewportOptions?.viewportId) {
-              viewport.viewportOptions.viewportId = `viewport-${positionId}`;
+              viewport.viewportOptions.viewportId = `viewport-${pos}`;
             }
 
             // Create a new viewport object as it is getting updated here

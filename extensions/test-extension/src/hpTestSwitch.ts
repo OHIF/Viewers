@@ -55,6 +55,34 @@ const viewport3d = {
   ],
 };
 
+const viewport4e = {
+  viewportOptions: {
+    viewportId: 'viewportE',
+    toolGroupId: 'default',
+    allowUnmatchedView: true,
+  },
+  displaySets: [
+    {
+      matchedDisplaySetsIndex: 4,
+      id: 'defaultDisplaySetId',
+    },
+  ],
+};
+
+const viewport5f = {
+  viewportOptions: {
+    viewportId: 'viewportF',
+    toolGroupId: 'default',
+    allowUnmatchedView: true,
+  },
+  displaySets: [
+    {
+      matchedDisplaySetsIndex: 5,
+      id: 'defaultDisplaySetId',
+    },
+  ],
+};
+
 const viewport3a = {
   viewportOptions: {
     viewportId: 'viewportA',
@@ -115,6 +143,14 @@ const viewportStructure = {
   properties: {
     rows: 2,
     columns: 2,
+  },
+};
+
+const viewportStructure32 = {
+  layoutType: 'grid',
+  properties: {
+    rows: 2,
+    columns: 3,
   },
 };
 
@@ -180,9 +216,18 @@ const hpTestSwitch: Types.HangingProtocol.Protocol = {
       viewports: [viewport0a, viewport1b, viewport2c, viewport3d],
     },
     {
-      name: '2x2 2c3d0a1b',
-      viewportStructure,
-      viewports: [viewport2c, viewport3d, viewport0a, viewport1b],
+      name: '3x2 0a1b4e2c3d5f',
+      viewportStructure: viewportStructure32,
+      // Note the following structure simply preserves the viewportId for
+      // a given screen position
+      viewports: [
+        viewport0a,
+        viewport1b,
+        viewport4e,
+        viewport2c,
+        viewport3d,
+        viewport5f,
+      ],
     },
     {
       name: '2x2 1c0d3a2b',
