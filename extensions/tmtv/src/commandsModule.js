@@ -11,7 +11,6 @@ import createAndDownloadTMTVReport from './utils/createAndDownloadTMTVReport';
 import dicomRTAnnotationExport from './utils/dicomRTAnnotationExport/RTStructureSet';
 
 const metadataProvider = classes.MetadataProvider;
-// const RECTANGLE_ROI_THRESHOLD_MANUAL = 'RectangleROIStartEndThreshold';
 const RECTANGLE_ROI_THRESHOLD_MANUAL_TOOLIDS = [
   'RectangleROIStartEndThreshold',
   'RectangleROIThreshold',

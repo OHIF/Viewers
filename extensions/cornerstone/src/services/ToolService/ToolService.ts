@@ -1,32 +1,7 @@
-// import cloneDeep from 'lodash.clonedeep';
 import { Types as OhifTypes, ServicesManager, PubSubService } from '@ohif/core';
-import {
-  // cache,
-  // Enums as csEnums,
-  // geometryLoader,
-  eventTarget,
-  // getEnabledElementByIds,
-  // metaData,
-  // utilities as csUtils,
-  // volumeLoader,
-} from '@cornerstonejs/core';
-import {
-  // CONSTANTS as cstConstants,
-  Enums as cstEnums,
-  // segmentation as cstSegmentation,
-  // Types as cstTypes,
-  // utilities as cstUtils,
-} from '@cornerstonejs/tools';
+import { eventTarget } from '@cornerstonejs/core';
+import { Enums as cstEnums } from '@cornerstonejs/tools';
 import { CornerstoneServices } from '../../types';
-// import isEqual from 'lodash.isequal';
-// import { Types as ohifTypes } from '@ohif/core';
-// import { easeInOutBell, reverseEaseInOutBell } from '../../utils/transitions';
-// import {
-//   Segment,
-//   Segmentation,
-//   SegmentationConfig,
-// } from './ToolServiceTypes';
-// import { mapROIContoursToRTStructData } from './RTSTRUCT/mapROIContoursToRTStructData';
 
 const EVENTS = {
   TOOL_ACTIVATED: 'event::cornerstone::toolservice:toolActivated',
