@@ -4,7 +4,6 @@
       "runner": "nx/tasks-runners/default",
       "options": {
         "cacheableOperations": [
-          "build:dev",
           "build:viewer",
           "build:orthanc"
         ]

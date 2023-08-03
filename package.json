@@ -19,7 +19,7 @@
   "scripts": {
     "cm": "npx git-cz",
     "build": "lerna run build:viewer --stream",
-    "build:dev": "NX_DAEMON=false && lerna run build:dev --stream",
+    "build:dev": "lerna run build:dev --stream",
     "build:ci": "lerna run build:viewer:ci --stream",
     "build:qa": "lerna run build:viewer:qa --stream",
     "cli": "node ./platform/cli/src/index.js",
