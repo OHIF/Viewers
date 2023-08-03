@@ -1,57 +1,227 @@
 {
   "tasksRunnerOptions": {
     "default": {
-      "runner": "nx/tasks-runners/default",
+      "runner": "nx-cloud",
       "options": {
         "cacheableOperations": [
-          "dev",
-          "build",
-          "test:unit",
-          "test:unit:ci",
-          "test",
-          "test:e2e",
-          "test:e2e:ci",
-          "test:e2e:local",
-          "test:e2e:dist",
-          "test:e2e:serve",
           "build:viewer",
-          "build:dev",
-          "build:aws",
-          "build:viewer:ci",
-          "build:viewer:qa",
-          "build:viewer:demo",
-          "build"
-        ]
+          "build:orthanc"
+        ],
+        "accessToken": "N2E3MGQ5ZjEtN2E3ZC00OWYyLWIzNDMtOGIwNmE0ZDk1N2EwfHJlYWQtd3JpdGU="
       }
     }
   },
   "targetDefaults": {
     "test:unit": {
-      "dependsOn": ["^test:unit"]
+      "dependsOn": [
+        "^test:unit"
+      ]
     },
     "test:unit:ci": {
-      "dependsOn": ["^test:unit:ci"]
+      "dependsOn": [
+        "^test:unit:ci"
+      ]
     },
     "test": {
-      "dependsOn": ["^test"]
+      "dependsOn": [
+        "^test"
+      ]
     },
     "test:e2e": {
-      "dependsOn": ["^test:e2e"]
+      "dependsOn": [
+        "^test:e2e"
+      ]
     },
     "test:e2e:ci": {
-      "dependsOn": ["^test:e2e:ci"]
+      "dependsOn": [
+        "^test:e2e:ci"
+      ]
     },
     "test:e2e:local": {
-      "dependsOn": ["^test:e2e:local"]
+      "dependsOn": [
+        "^test:e2e:local"
+      ]
     },
     "test:e2e:dist": {
-      "dependsOn": ["^test:e2e:dist"]
+      "dependsOn": [
+        "^test:e2e:dist"
+      ]
     },
     "test:e2e:serve": {
-      "dependsOn": ["^test:e2e:serve"]
+      "dependsOn": [
+        "^test:e2e:serve"
+      ]
     },
     "build": {
-      "outputs": ["{projectRoot}/platform/viewer/dist"]
+      "dependsOn": [
+        "^build"
+      ]
+    },
+    "dev": {
+      "dependsOn": [
+        "^dev"
+      ]
+    },
+    "dev:dicom-seg": {
+      "dependsOn": [
+        "^dev:dicom-seg"
+      ]
+    },
+    "build:package": {
+      "dependsOn": [
+        "^build:package"
+      ]
+    },
+    "start": {
+      "dependsOn": [
+        "^start"
+      ]
+    },
+    "dev:cornerstone": {
+      "dependsOn": [
+        "^dev:cornerstone"
+      ]
+    },
+    "dev:dicom-pdf": {
+      "dependsOn": [
+        "^dev:dicom-pdf"
+      ]
+    },
+    "dev:core": {
+      "dependsOn": [
+        "^dev:core"
+      ]
+    },
+    "docusaurus": {
+      "dependsOn": [
+        "^docusaurus"
+      ]
+    },
+    "docs": {
+      "dependsOn": [
+        "^docs"
+      ]
+    },
+    "swizzle": {
+      "dependsOn": [
+        "^swizzle"
+      ]
+    },
+    "deploy": {
+      "dependsOn": [
+        "^deploy"
+      ]
+    },
+    "clear": {
+      "dependsOn": [
+        "^clear"
+      ]
+    },
+    "serve": {
+      "dependsOn": [
+        "^serve"
+      ]
+    },
+    "write-translations": {
+      "dependsOn": [
+        "^write-translations"
+      ]
+    },
+    "write-heading-ids": {
+      "dependsOn": [
+        "^write-heading-ids"
+      ]
+    },
+    "dev:i18n": {
+      "dependsOn": [
+        "^dev:i18n"
+      ]
+    },
+    "pullTranslations": {
+      "dependsOn": [
+        "^pullTranslations"
+      ]
+    },
+    "storybook": {
+      "dependsOn": [
+        "^storybook"
+      ]
+    },
+    "build-storybook": {
+      "dependsOn": [
+        "^build-storybook"
+      ]
+    },
+    "build:viewer": {
+      "dependsOn": [
+        "^build:viewer"
+      ]
+    },
+    "build:dev": {
+      "dependsOn": [
+        "^build:dev"
+      ]
+    },
+    "build:aws": {
+      "dependsOn": [
+        "^build:aws"
+      ]
+    },
+    "build:viewer:ci": {
+      "dependsOn": [
+        "^build:viewer:ci"
+      ]
+    },
+    "build:viewer:qa": {
+      "dependsOn": [
+        "^build:viewer:qa"
+      ]
+    },
+    "build:viewer:demo": {
+      "dependsOn": [
+        "^build:viewer:demo"
+      ]
+    },
+    "dev:orthanc": {
+      "dependsOn": [
+        "^dev:orthanc"
+      ]
+    },
+    "dev:dcm4chee": {
+      "dependsOn": [
+        "^dev:dcm4chee"
+      ]
+    },
+    "dev:static": {
+      "dependsOn": [
+        "^dev:static"
+      ]
+    },
+    "dev:viewer": {
+      "dependsOn": [
+        "^dev:viewer"
+      ]
+    },
+    "preinstall": {
+      "dependsOn": [
+        "^preinstall"
+      ]
+    },
+    "ci:generateSuccessVersion": {
+      "dependsOn": [
+        "^ci:generateSuccessVersion"
+      ]
     }
+  },
+  "$schema": "./node_modules/nx/schemas/nx-schema.json",
+  "namedInputs": {
+    "default": [
+      "{projectRoot}/**/*",
+      "sharedGlobals"
+    ],
+    "sharedGlobals": [],
+    "production": [
+      "default"
+    ]
   }
 }
