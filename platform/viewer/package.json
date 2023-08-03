@@ -8,6 +8,7 @@
   "repository": "OHIF/Viewers",
   "main": "dist/index.umd.js",
   "module": "src/index.js",
+  "homepage": "./",
   "publishConfig": {
     "access": "public"
   },
