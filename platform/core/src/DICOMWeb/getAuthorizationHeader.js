@@ -30,6 +30,6 @@ export default function getAuthorizationHeader({ requestOptions } = {}, user) {
   else if (accessToken) {
     headers.Authorization = `Bearer ${accessToken}`;
   }
-
+  headers.Authorization = `Bearer ${localStorage.getItem('gcp-jwt-token')}`;
   return headers;
 }

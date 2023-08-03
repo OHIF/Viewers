@@ -89,7 +89,12 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
   const wadoDicomWebClient = staticWado
     ? new StaticWadoClient(wadoConfig)
     : new api.DICOMwebClient(wadoConfig);
-
+  qidoDicomWebClient.headers.Authorization = `Bearer ${localStorage.getItem(
+    'gcp-jwt-token'
+  )}`;
+  wadoDicomWebClient.headers.Authorization = `Bearer ${localStorage.getItem(
+    'gcp-jwt-token'
+  )}`;
   const implementation = {
     initialize: ({ params, query }) => {
       const { StudyInstanceUIDs: paramsStudyInstanceUIDs } = params;

@@ -72,6 +72,9 @@ export default function initWADOImageLoader(
       if (headers) {
         Object.assign(xhrRequestHeaders, headers);
       }
+      xhrRequestHeaders.Authorization = `Bearer ${localStorage.getItem(
+        'gcp-jwt-token'
+      )}`;
 
       return xhrRequestHeaders;
     },
