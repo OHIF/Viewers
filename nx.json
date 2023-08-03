@@ -4,6 +4,7 @@
       "runner": "nx-cloud",
       "options": {
         "cacheableOperations": [
+          "build:dev",
           "build:viewer",
           "build:orthanc"
         ],
