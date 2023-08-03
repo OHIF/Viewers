@@ -15,7 +15,7 @@ RUN yarn install --frozen-lockfile --verbose
 
 COPY . .
 
-RUN yarn run build:dev
+RUN yarn run build:viewer
 
 # Stage 2: Bundle the built application into a Docker container
 FROM nginx:stable-alpine
