@@ -159,6 +159,9 @@ export default class HangingProtocolService extends PubSubService {
     this.studies = [];
     this.viewportMatchDetails = new Map();
     this.displaySetMatchDetails = new Map();
+    this.protocol = undefined;
+    this.stageIndex = undefined;
+    this.protocolEngine = undefined;
   }
 
   /** Leave the hanging protocol in the initialized state */
@@ -1389,7 +1392,7 @@ export default class HangingProtocolService extends PubSubService {
       seriesMatchingRules
     );
     const matchActiveOnly = this.protocol.numberOfPriorsReferenced === -1;
-    this.studies.forEach(study => {
+    this.studies.forEach((study, studyInstanceUIDsIndex) => {
       // Skip non-active if active only
       if (matchActiveOnly && this.activeStudy !== study) return;
 
@@ -1405,6 +1408,7 @@ export default class HangingProtocolService extends PubSubService {
             displaySets: studyDisplaySets,
             allDisplaySets: this.displaySets,
             displaySetMatchDetails: this.displaySetMatchDetails,
+          studyInstanceUIDsIndex,
           }
       );
 

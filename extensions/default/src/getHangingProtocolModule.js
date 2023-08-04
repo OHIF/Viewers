@@ -1,4 +1,5 @@
 import hpMNGrid from './hpMNGrid';
+import hpMNCompare from './hpCompare';
 
 const defaultProtocol = {
   id: 'default',
@@ -107,6 +108,11 @@ function getHangingProtocolModule() {
     {
       name: hpMNGrid.id,
       protocol: hpMNGrid,
+    },
+    // Create a MxN comparison hanging protocol available by default
+    {
+      name: hpMNCompare.id,
+      protocol: hpMNCompare,
     },
   ];
 }
