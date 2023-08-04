@@ -112,6 +112,8 @@ SegmentationGroupTable.defaultProps = {
   title: '',
   segmentations: [],
   activeSegmentationId: '',
+  showAddSegmentation: true,
+  showAddSegment: true,
   onClick: () => {},
   onEdit: () => {},
   onDelete: () => {},

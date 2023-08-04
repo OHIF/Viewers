@@ -120,7 +120,7 @@ const SegmentationConfig = ({
   const { initialConfig } = segmentationConfig;
   const [isMinimized, setIsMinimized] = useState(true);
   return (
-    <div className="bg-primary-dark">
+    <div className="bg-primary-dark select-none">
       <div
         className="flex cursor-pointer items-center"
         onClick={evt => {

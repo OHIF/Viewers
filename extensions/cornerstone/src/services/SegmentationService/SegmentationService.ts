@@ -1067,7 +1067,8 @@ class SegmentationService extends PubSubService {
     toolGroupId: string,
     segmentationId: string,
     hydrateSegmentation = false,
-    representationType = csToolsEnums.SegmentationRepresentations.Labelmap
+    representationType = csToolsEnums.SegmentationRepresentations.Labelmap,
+    suppressEvents = false
   ): Promise<void> => {
     const segmentation = this.getSegmentation(segmentationId);
 
@@ -1162,6 +1163,12 @@ class SegmentationService extends PubSubService {
           suppressEvents
         );
       }
+    }
+
+    if (!suppressEvents) {
+      this._broadcastEvent(this.EVENTS.SEGMENTATION_UPDATED, {
+        segmentation,
+      });
     }
   };
 
