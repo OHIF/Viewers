@@ -43,7 +43,7 @@ automatically when the extension or mode is loaded.
 In the `value` of each customizations, you will define customization prototype(s).
 These customization prototype(s) can be considered like "Prototype" in Javascript.
 These can be used to extend the customization definitions from configurations.
-Default cutomizations will be often used to define all the customization prototypes,
+Default customizations will be often used to define all the customization prototypes,
 as they will be loaded automatically along with the defining extension or mode.
 
 
@@ -58,7 +58,6 @@ For example, the `@ohif/extension-default` extension defines,
       value: [
         {
           id: 'ohif.overlayItem',
-          uiType: 'uiType',
           content: function (props) {
             if (this.condition && !this.condition(props)) return null;
 
@@ -92,8 +91,9 @@ For example, the `@ohif/extension-default` extension defines,
   ],
 ```
 
-And this `ohif.overlayItem` object will be used as a prototype to define items
-to be displayed on `CustomizableViewportOverlay`. See the next section.
+And this `ohif.overlayItem` object will be used as a prototype (and template) to define items
+to be displayed on `CustomizableViewportOverlay`. See how we use the `ohif.overlayItem` in
+the example below.
 
 ## Configuring customizations
 
@@ -119,13 +119,16 @@ window.config = {
   customizationService: {
     cornerstoneOverlayTopRight: {
       id: 'cornerstoneOverlayTopRight',
-      customizationType: 'ohif.cornerstoneOverlay',
       items: [
         {
           id: 'PatientNameOverlay',
-          // Note the overlayItem as a parent type - this provides the
-          // rendering functionality to read the attribute and use the label.
+          // Note below that here we are using the customization prototype of
+          // `ohif.overlayItem` which was registered to the customization module in
+          // `ohif/extension-default` extension.
           customizationType: 'ohif.overlayItem',
+          // the following props are passed to the `ohif.overlayItem` prototype
+          // which is used to render the overlay item based on the label, color,
+          // conditions, etc.
           attribute: 'PatientName',
           label: 'PN:',
           title: 'Patient Name',
@@ -157,31 +160,28 @@ The `customizationType` field is simply the id of another customization object.
 ### Mode Customizations
 
 Mode-specific customizations are no different from the global ones,
-except that the mode customizations are cleared before the mode `onModeEnter`
-is called, and they can have new values registered in the `onModeEnter`
+except that the mode customizations are specific to one mode and
+are not globally applied. Mode-specific customizations are also cleared
+before the mode `onModeEnter` is called, and they can have new values registered in the `onModeEnter`
 
-In the mode customization, the overlay is then further customized
-with a bottom-right overlay, which extends the customizationService configuration.
+Following on our example above to customize the overlay, we can now add a mode customization
+with a bottom-right overlay.
 
 ```js
 // Import the type from the extension itself
-import OverlayUICustomization from '@ohif/cornerstone-extension';
-
+import OverlayUICustomization from "@ohif/cornerstone-extension";
 
 // In the mode itself, customizations can be registered:
-onModeEnter() {
-  ...
+onModeEnter: {
   // Note how the object can be strongly typed
-  const bottomRight: OverlayUICustomization =     {
-      id: 'cornerstoneOverlayBottomRight',
-      // Note the type is the previously registered ohif.cornerstoneOverlay
-      customizationType: 'ohif.cornerstoneOverlay',
-      // The cornerstoneOverlay definition requires an items list here.
-      items: [
-        // Custom definitions for hte context menu here.
-      ],
-    };
+  const bottomRight: OverlayUICustomization = {
+    id: "cornerstoneOverlayBottomRight",
+    items: [
+      // Custom definitions for hte context menu here.
+    ],
+  };
   customizationService.addModeCustomizations(bottomRight);
+}
 ```
 
 The mode customizations are retrieved via the `getModeCustomization` function,
@@ -198,9 +198,17 @@ can then be used in a way defined by the extension provided that customization
 point.
 
 ```ts
-   cornerstoneOverlay = uiConfigurationService.getModeCustomization("cornerstoneOverlay", {customizationType: "ohif.cornerstoneOverlay", ...});
-   const { component: overlayComponent, props} = uiConfigurationService.getComponent(cornerstoneOverlay);
-   return (<defaultComponent {...props} overlay={cornerstoneOverlay}....></defaultComponent>);
+const cornerstoneOverlay = customizationService.getModeCustomization(
+  "cornerstoneOverlay",
+  { customizationType: "ohif.cornerstoneOverlay" },
+);
+
+const { component: overlayComponent, props } =
+  customizationService.getComponent(cornerstoneOverlay);
+
+return (
+  <defaultComponent {...props} overlay={cornerstoneOverlay}></defaultComponent>
+);
 ```
 
 This example shows fetching the default component to render this object.  The
@@ -210,8 +218,11 @@ example (this example comes from the context menu customizations as that one
 uses commands lists):
 
 ```ts
-   cornerstoneContextMenu = uiConfigurationService.get("cornerstoneContextMenu", defaultMenu);
-   commandsManager.run(cornerstoneContextMenu, extraProps);
+cornerstoneContextMenu = customizationService.get(
+  "cornerstoneContextMenu",
+  defaultMenu,
+);
+commandsManager.run(cornerstoneContextMenu, extraProps);
 ```
 
 ### Global Customizations
@@ -339,7 +350,6 @@ window.config = {
   customizationService: {
     cornerstoneOverlayTopLeft: {
       id: 'cornerstoneOverlayTopLeft',
-      customizationType: 'ohif.cornerstoneOverlay',
       items: [
         {
           id: 'WindowLevel',
@@ -398,7 +408,6 @@ window.config = {
     },
     cornerstoneOverlayTopRight: {
       id: 'cornerstoneOverlayTopRight',
-      customizationType: 'ohif.cornerstoneOverlay',
 
       items: [
         {
@@ -438,7 +447,6 @@ window.config = {
     },
     cornerstoneOverlayBottomLeft: {
       id: 'cornerstoneOverlayBottomLeft',
-      customizationType: 'ohif.cornerstoneOverlay',
 
       items: [
         {
