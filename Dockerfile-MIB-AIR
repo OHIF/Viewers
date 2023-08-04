@@ -21,6 +21,7 @@ RUN yarn run build:dev
 FROM nginx:stable-alpine
 ENV PORT=80
 WORKDIR /app
+ENV APP_GCP_URL=''
 
 # Remove default nginx website
 RUN rm -rf /usr/share/nginx/html/*
