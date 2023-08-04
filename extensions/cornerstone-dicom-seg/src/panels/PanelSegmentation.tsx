@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import { SegmentationGroupTable } from '@ohif/ui';
+import { SegmentationGroupTable, useViewportGrid } from '@ohif/ui';
 import callInputDialog from './callInputDialog';
 
 import { useTranslation } from 'react-i18next';
@@ -9,7 +9,14 @@ export default function PanelSegmentation({
   servicesManager,
   commandsManager,
 }) {
-  const { segmentationService, uiDialogService } = servicesManager.services;
+  const {
+    segmentationService,
+    uiDialogService,
+    uiNotificationService,
+  } = servicesManager.services;
+  const [viewportGrid, viewportGridService] = useViewportGrid();
+
+  const { layout, activeViewportIndex, viewports } = viewportGrid;
 
   const { t } = useTranslation('PanelSegmentation');
   const [selectedSegmentationId, setSelectedSegmentationId] = useState(null);
@@ -66,6 +73,69 @@ export default function PanelSegmentation({
       });
     };
   }, []);
+
+  const onSegmentationAdd = () => {
+    const activeViewport = viewports[activeViewportIndex];
+
+    if (!activeViewport) {
+      return;
+    }
+
+    const { displaySetInstanceUIDs } = activeViewport;
+
+    // if more than one show notification that this is not supported
+    if (displaySetInstanceUIDs.length > 1) {
+      uiNotificationService.show({
+        title: t('Segmentation'),
+        message: t(
+          'Segmentation is not supported for multiple display sets yet'
+        ),
+        type: 'error',
+      });
+      return;
+    }
+
+    const displaySetInstanceUID = displaySetInstanceUIDs[0];
+
+    // identify if the viewport is a stack viewport then we need to convert
+    // the viewport to a volume viewport first and mount on the same element
+    // otherwise we are good
+
+    const { viewportOptions } = activeViewport;
+
+    if (viewportOptions.viewportType === 'stack') {
+      // Todo: handle finding out other viewports in the grid
+      // that require to change to volume viewport
+
+      // Todo: add current imageIdIndex to the viewportOptions
+      // so that we can restore it after changing to volume viewport
+      viewportGridService.setDisplaySetsForViewports([
+        {
+          viewportIndex: activeViewportIndex,
+          displaySetInstanceUIDs: [displaySetInstanceUID],
+          viewportOptions: {
+            // initialImageOptions: {
+            //   index:
+            // },
+            viewportType: 'volume',
+          },
+        },
+      ]);
+    }
+
+    setTimeout(async () => {
+      const segmentationId = await segmentationService.createSegmentationForDisplaySet(
+        displaySetInstanceUID,
+        { label: 'New Segmentation' }
+      );
+
+      await segmentationService.addSegmentationRepresentationToToolGroup(
+        'default',
+        segmentationId,
+        true // hydrateSegmentation,
+      );
+    }, 1000);
+  };
 
   const onSegmentationClick = (segmentationId: string) => {
     segmentationService.setActiveSegmentationForToolGroup(segmentationId);
@@ -191,75 +261,73 @@ export default function PanelSegmentation({
   return (
     <div className="flex flex-col flex-auto min-h-0 justify-between mt-1">
       {/* show segmentation table */}
-      {segmentations?.length ? (
-        <SegmentationGroupTable
-          title={t('Segmentations')}
-          showAddSegmentation={false}
-          segmentations={segmentations}
-          isMinimized={isMinimized}
-          activeSegmentationId={selectedSegmentationId || ''}
-          onSegmentationClick={onSegmentationClick}
-          onSegmentationDelete={onSegmentationDelete}
-          onSegmentationEdit={onSegmentationEdit}
-          onSegmentClick={onSegmentClick}
-          onSegmentEdit={onSegmentEdit}
-          onSegmentColorClick={onSegmentColorClick}
-          onSegmentDelete={onSegmentDelete}
-          onToggleSegmentVisibility={onToggleSegmentVisibility}
-          onToggleSegmentationVisibility={onToggleSegmentationVisibility}
-          onToggleMinimizeSegmentation={onToggleMinimizeSegmentation}
-          segmentationConfig={{ initialConfig: segmentationConfiguration }}
-          setRenderOutline={value =>
-            _setSegmentationConfiguration(
-              selectedSegmentationId,
-              'renderOutline',
-              value
-            )
-          }
-          setOutlineOpacityActive={value =>
-            _setSegmentationConfiguration(
-              selectedSegmentationId,
-              'outlineOpacity',
-              value
-            )
-          }
-          setRenderFill={value =>
-            _setSegmentationConfiguration(
-              selectedSegmentationId,
-              'renderFill',
-              value
-            )
-          }
-          setRenderInactiveSegmentations={value =>
-            _setSegmentationConfiguration(
-              selectedSegmentationId,
-              'renderInactiveSegmentations',
-              value
-            )
-          }
-          setOutlineWidthActive={value =>
-            _setSegmentationConfiguration(
-              selectedSegmentationId,
-              'outlineWidthActive',
-              value
-            )
-          }
-          setFillAlpha={value =>
-            _setSegmentationConfiguration(
-              selectedSegmentationId,
-              'fillAlpha',
-              value
-            )
-          }
-          setFillAlphaInactive={value =>
-            _setSegmentationConfiguration(
-              selectedSegmentationId,
-              'fillAlphaInactive',
-              value
-            )
-          }
-        />
-      ) : null}
+      <SegmentationGroupTable
+        title={t('Segmentations')}
+        segmentations={segmentations}
+        isMinimized={isMinimized}
+        activeSegmentationId={selectedSegmentationId || ''}
+        onSegmentationAdd={onSegmentationAdd}
+        onSegmentationClick={onSegmentationClick}
+        onSegmentationDelete={onSegmentationDelete}
+        onSegmentationEdit={onSegmentationEdit}
+        onSegmentClick={onSegmentClick}
+        onSegmentEdit={onSegmentEdit}
+        onSegmentColorClick={onSegmentColorClick}
+        onSegmentDelete={onSegmentDelete}
+        onToggleSegmentVisibility={onToggleSegmentVisibility}
+        onToggleSegmentationVisibility={onToggleSegmentationVisibility}
+        onToggleMinimizeSegmentation={onToggleMinimizeSegmentation}
+        segmentationConfig={{ initialConfig: segmentationConfiguration }}
+        setRenderOutline={value =>
+          _setSegmentationConfiguration(
+            selectedSegmentationId,
+            'renderOutline',
+            value
+          )
+        }
+        setOutlineOpacityActive={value =>
+          _setSegmentationConfiguration(
+            selectedSegmentationId,
+            'outlineOpacity',
+            value
+          )
+        }
+        setRenderFill={value =>
+          _setSegmentationConfiguration(
+            selectedSegmentationId,
+            'renderFill',
+            value
+          )
+        }
+        setRenderInactiveSegmentations={value =>
+          _setSegmentationConfiguration(
+            selectedSegmentationId,
+            'renderInactiveSegmentations',
+            value
+          )
+        }
+        setOutlineWidthActive={value =>
+          _setSegmentationConfiguration(
+            selectedSegmentationId,
+            'outlineWidthActive',
+            value
+          )
+        }
+        setFillAlpha={value =>
+          _setSegmentationConfiguration(
+            selectedSegmentationId,
+            'fillAlpha',
+            value
+          )
+        }
+        setFillAlphaInactive={value =>
+          _setSegmentationConfiguration(
+            selectedSegmentationId,
+            'fillAlphaInactive',
+            value
+          )
+        }
+      />
     </div>
   );
 }
