@@ -34,16 +34,28 @@ let commandsManager: CommandsManager,
   servicesManager: ServicesManager,
   hotkeysManager: HotkeysManager;
 
+// Gets the GCP token on app load
+const getGcpToken = async () => {
+  try {
+    const res = await fetch("https://airstudies-dev.ccr.cancer.gov/api/v1/ohif/jwt/build");
+    const token = await res.text();
+    localStorage.setItem("gcp-jwt-token", token);
+  } catch (err) {
+    console.log("Unable to fetch JWT token from backend. Please try again. Error: " + err);
+  }
+};
+
 function App({ config, defaultExtensions, defaultModes }) {
   const [init, setInit] = useState(null);
   useEffect(() => {
-    const run = async () => {
-      appInit(config, defaultExtensions, defaultModes)
-        .then(setInit)
-        .catch(console.error);
-    };
-
-    run();
+    getGcpToken().then(() => {
+      const run = async () => {
+        appInit(config, defaultExtensions, defaultModes)
+          .then(setInit)
+          .catch(console.error);
+      };
+      run();
+    });
   }, []);
 
   if (!init) {

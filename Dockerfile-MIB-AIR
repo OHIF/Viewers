@@ -22,6 +22,7 @@ FROM nginx:stable-alpine
 ENV PORT=80
 WORKDIR /app
 ENV APP_GCP_URL=''
+ENV APP_URL_PREFIX='airstudies-dev'
 
 # Remove default nginx website
 RUN rm -rf /usr/share/nginx/html/*
