@@ -64,6 +64,9 @@
       "packageName": "@ohif/mode-microscopy"
     },
     {
+      "packageName": "@ohif/mode-segmentation"
+    },
+    {
       "packageName": "@ohif/mode-test",
       "default": false,
       "version": "3.0.0"

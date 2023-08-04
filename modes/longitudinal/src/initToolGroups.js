@@ -72,6 +72,10 @@ function initSRToolGroup(extensionManager, toolGroupService, commandsManager) {
     '@ohif/extension-cornerstone-dicom-sr.utilityModule.tools'
   );
 
+  if (!SRUtilityModule) {
+    return;
+  }
+
   const CS3DUtilityModule = extensionManager.getModuleEntry(
     '@ohif/extension-cornerstone.utilityModule.tools'
   );
