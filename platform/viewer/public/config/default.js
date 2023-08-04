@@ -17,20 +17,6 @@ window.config = {
   showStudyList: true,
   // filterQueryParam: false,
   defaultDataSourceName: 'dicomweb',
-  oidc: [
-    {
-      // ~ REQUIRED
-      // Authorization Server URL
-      authority: 'https://auth.ncats.nih.gov/_api/v2/auth/NCI-CCR-TEST',
-      client_id: 'mib-air-ohif-local',
-      redirect_uri: window.location.origin,
-      response_type: 'code',
-      scope: 'openid profile email offline_access',
-      post_logout_redirect_uri: window.location.origin,
-      automaticSilentRenew: true,
-      revokeAccessTokenOnSignout: true,
-    },
-  ],
   dataSources: [
     {
       friendlyName: 'dcmjs DICOMWeb Server',
