@@ -106,42 +106,51 @@ class SegmentationService extends PubSubService {
   };
 
   /**
-   * It adds a segment to a segmentation, basically just setting the properties for
-   * the segment.
-   * @param segmentationId - The ID of the segmentation you want to add a
-   * segment to.
-   * @param segmentIndex - The index of the segment to add.
-   * @param properties - The properties of the segment to add including
-   * -- label: the label of the segment
-   * -- color: the color of the segment
-   * -- opacity: the opacity of the segment
-   * -- visibility: the visibility of the segment (boolean)
-   * -- isLocked: whether the segment is locked for editing
-   * -- active: whether the segment is currently the active segment to be edited
+   * Adds a new segment to the specified segmentation.
+   * @param segmentationId - The ID of the segmentation to add the segment to.
+   * @param config - An object containing the configuration options for the new segment.
+   *   - segmentIndex: (optional) The index of the segment to add. If not provided, the next available index will be used.
+   *   - toolGroupId: (optional) The ID of the tool group to associate the new segment with. If not provided, the first available tool group will be used.
+   *   - properties: (optional) An object containing the properties of the new segment.
+   *     - label: (optional) The label of the new segment. If not provided, a default label will be used.
+   *     - color: (optional) The color of the new segment in RGB format. If not provided, a default color will be used.
+   *     - opacity: (optional) The opacity of the new segment. If not provided, a default opacity will be used.
+   *     - visibility: (optional) Whether the new segment should be visible. If not provided, the segment will be visible by default.
+   *     - isLocked: (optional) Whether the new segment should be locked for editing. If not provided, the segment will not be locked by default.
+   *     - active: (optional) Whether the new segment should be the active segment to be edited. If not provided, the segment will not be active by default.
    */
   public addSegment(
     segmentationId: string,
-    segmentIndex: number,
-    toolGroupId?: string,
-    properties?: {
-      label?: string;
-      color?: ohifTypes.RGB;
-      opacity?: number;
-      visibility?: boolean;
-      isLocked?: boolean;
-      active?: boolean;
-    }
+    config: {
+      segmentIndex?: number;
+      toolGroupId?: string;
+      properties?: {
+        label?: string;
+        color?: ohifTypes.RGB;
+        opacity?: number;
+        visibility?: boolean;
+        isLocked?: boolean;
+        active?: boolean;
+      };
+    } = {}
   ): void {
-    if (segmentIndex === 0) {
+    if (config?.segmentIndex === 0) {
       throw new Error('Segment index 0 is reserved for "no label"');
     }
 
-    toolGroupId = toolGroupId ?? this._getFirstToolGroupId();
+    const toolGroupId = config.toolGroupId ?? this._getFirstToolGroupId();
 
     const {
       segmentationRepresentationUID,
       segmentation,
     } = this._getSegmentationInfo(segmentationId, toolGroupId);
+
+    let segmentIndex = config.segmentIndex;
+    if (!segmentIndex) {
+      // grab the next available segment index
+      segmentIndex =
+        segmentation.segments.length === 0 ? 1 : segmentation.segments.length;
+    }
 
     if (this._getSegmentInfo(segmentation, segmentIndex)) {
       throw new Error(`Segment ${segmentIndex} already exists`);
@@ -154,7 +163,7 @@ class SegmentationService extends PubSubService {
     );
 
     segmentation.segments[segmentIndex] = {
-      label: properties.label,
+      label: config.properties?.label ?? `Segment ${segmentIndex}`,
       segmentIndex: segmentIndex,
       color: [rgbaColor[0], rgbaColor[1], rgbaColor[2]],
       opacity: rgbaColor[3],
@@ -165,14 +174,14 @@ class SegmentationService extends PubSubService {
     segmentation.segmentCount++;
 
     const suppressEvents = true;
-    if (properties !== undefined) {
+    if (config.properties !== undefined) {
       const {
         color: newColor,
         opacity,
         isLocked,
         visibility,
         active,
-      } = properties;
+      } = config.properties;
 
       if (newColor !== undefined) {
         this._setSegmentColor(
@@ -915,6 +924,10 @@ class SegmentationService extends PubSubService {
   ): void {
     const { toolGroupService } = this.servicesManager.services;
     const center = this._getSegmentCenter(segmentationId, segmentIndex);
+
+    if (!center?.world) {
+      return;
+    }
 
     const { world } = center;
 

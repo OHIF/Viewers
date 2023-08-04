@@ -16,7 +16,7 @@ export default function PanelSegmentation({
   } = servicesManager.services;
   const [viewportGrid, viewportGridService] = useViewportGrid();
 
-  const { layout, activeViewportIndex, viewports } = viewportGrid;
+  const { activeViewportIndex, viewports } = viewportGrid;
 
   const { t } = useTranslation('PanelSegmentation');
   const [selectedSegmentationId, setSelectedSegmentationId] = useState(null);
@@ -134,6 +134,13 @@ export default function PanelSegmentation({
         segmentationId,
         true // hydrateSegmentation,
       );
+
+      // Todo: handle other toolgroups than default
+      segmentationService.addSegment(segmentationId, {
+        properties: {
+          label: 'Segment 1',
+        },
+      });
     }, 1000);
   };
 
@@ -151,6 +158,10 @@ export default function PanelSegmentation({
     );
 
     return toolGroupIds;
+  };
+
+  const onSegmentAdd = segmentationId => {
+    segmentationService.addSegment(segmentationId);
   };
 
   const onSegmentClick = (segmentationId, segmentIndex) => {
@@ -259,8 +270,7 @@ export default function PanelSegmentation({
   );
 
   return (
-    <div className="flex flex-col flex-auto min-h-0 justify-between mt-1">
-      {/* show segmentation table */}
+    <div className="flex flex-col flex-auto min-h-0 justify-between mt-1 select-none">
       <SegmentationGroupTable
         title={t('Segmentations')}
         segmentations={segmentations}
@@ -272,6 +282,7 @@ export default function PanelSegmentation({
         onSegmentationEdit={onSegmentationEdit}
         onSegmentClick={onSegmentClick}
         onSegmentEdit={onSegmentEdit}
+        onSegmentAdd={onSegmentAdd}
         onSegmentColorClick={onSegmentColorClick}
         onSegmentDelete={onSegmentDelete}
         onToggleSegmentVisibility={onToggleSegmentVisibility}

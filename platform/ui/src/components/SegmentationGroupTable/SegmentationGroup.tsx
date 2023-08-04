@@ -18,7 +18,7 @@ const AddNewSegmentRow = ({
     <div>
       <div className="flex items-center pl-[29px] bg-black text-primary-active hover:opacity-80 cursor-pointer text-[12px] py-1">
         {showAddSegment && (
-          <div className="flex items-center" onClick={() => onSegmentAdd()}>
+          <div className="flex items-center" onClick={() => onSegmentAdd(id)}>
             <Icon name="row-add" className="w-5 h-5" />
             <div className="">Add Segment</div>
           </div>
