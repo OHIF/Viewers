@@ -1,7 +1,7 @@
 {
   "tasksRunnerOptions": {
     "default": {
-      "runner": "nx/tasks-runners/default",
+      "runner": "nx-cloud",
       "options": {
         "useDaemonProcess": false,
         "cacheableOperations": [
@@ -22,37 +22,56 @@
           "build:viewer:qa",
           "build:viewer:demo",
           "build"
-        ]
+        ],
+        "accessToken": "ZDk5YjE4YWEtNGIxYS00YmU3LWFlYzEtOTVjM2Y3MmMzODU3fHJlYWQtd3JpdGU="
       }
     }
   },
   "targetDefaults": {
     "test:unit": {
-      "dependsOn": ["^test:unit"]
+      "dependsOn": [
+        "^test:unit"
+      ]
     },
     "test:unit:ci": {
-      "dependsOn": ["^test:unit:ci"]
+      "dependsOn": [
+        "^test:unit:ci"
+      ]
     },
     "test": {
-      "dependsOn": ["^test"]
+      "dependsOn": [
+        "^test"
+      ]
     },
     "test:e2e": {
-      "dependsOn": ["^test:e2e"]
+      "dependsOn": [
+        "^test:e2e"
+      ]
     },
     "test:e2e:ci": {
-      "dependsOn": ["^test:e2e:ci"]
+      "dependsOn": [
+        "^test:e2e:ci"
+      ]
     },
     "test:e2e:local": {
-      "dependsOn": ["^test:e2e:local"]
+      "dependsOn": [
+        "^test:e2e:local"
+      ]
     },
     "test:e2e:dist": {
-      "dependsOn": ["^test:e2e:dist"]
+      "dependsOn": [
+        "^test:e2e:dist"
+      ]
     },
     "test:e2e:serve": {
-      "dependsOn": ["^test:e2e:serve"]
+      "dependsOn": [
+        "^test:e2e:serve"
+      ]
     },
     "build": {
-      "outputs": ["{projectRoot}/platform/viewer/dist"]
+      "outputs": [
+        "{projectRoot}/platform/viewer/dist"
+      ]
     }
   }
 }
