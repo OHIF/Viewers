@@ -50,13 +50,16 @@ function ViewerLayout({
     //   dataSourceIdx === -1
     //     ? undefined
     //     : `datasources=${pathname.substring(dataSourceIdx + 1)}`;
-
+    
     // Todo: Handle parameters in a better way.
     const query = new URLSearchParams(window.location.search);
     const configUrl = query.get('configUrl');
 
+    const dataSourceName = pathname.substring(dataSourceIdx + 1);
+    const existingDataSource = extensionManager.getDataSources(dataSourceName);
+
     const searchQuery = new URLSearchParams();
-    if (dataSourceIdx !== -1) {
+    if (dataSourceIdx !== -1 && existingDataSource) {
       searchQuery.append('datasources', pathname.substring(dataSourceIdx + 1));
     }
 
@@ -66,7 +69,7 @@ function ViewerLayout({
 
     navigate({
       pathname: '/',
-      search: decodeURIComponent(searchQuery.toString()),
+      search: decodeURIComponent(searchQuery.toString())
     });
   };
 
