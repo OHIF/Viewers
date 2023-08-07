@@ -83,27 +83,6 @@ export default function buildModeRoutes({
       children,
       private: true, // todo: all mode routes are private for now
     });
-
-    if (mode.exactPaths && mode.exactPaths.length) {
-      mode.exactPaths.forEach(({ path, dataSourceName }) => {
-        const children = () => (
-          <ModeRoute
-            mode={mode}
-            dataSourceName={dataSourceName}
-            extensionManager={extensionManager}
-            servicesManager={servicesManager}
-            commandsManager={commandsManager}
-            hotkeysManager={hotkeysManager}
-          />
-        );
-
-        routes.push({
-          path,
-          children,
-          private: true,
-        });
-      });
-    }
   });
 
   return routes;
