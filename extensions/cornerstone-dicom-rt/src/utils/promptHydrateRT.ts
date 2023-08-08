@@ -23,11 +23,9 @@ function promptHydrateRT({
     );
 
     if (promptResult === RESPONSE.HYDRATE_SEG) {
-      if (preHydrateCallbacks?.length) {
-        preHydrateCallbacks.forEach(callback => {
-          callback();
-        });
-      }
+      preHydrateCallbacks?.forEach(callback => {
+        callback();
+      });
 
       const isHydrated = await hydrateRTDisplaySet({
         rtDisplaySet,
