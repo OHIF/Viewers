@@ -313,6 +313,12 @@ function OHIFCornerstoneRTViewport(props) {
   } = referencedDisplaySetRef.current.metadata;
 
   const onStatusClick = async () => {
+    // Before hydrating a RT and make it added to all viewports in the grid
+    // that share the same frameOfReferenceUID, we need to store the viewport grid
+    // presentation state, so that we can restore it after hydrating the RT. This is
+    // required if the user has changed the viewport (other viewport than RT viewport)
+    // presentation state (w/l and invert) and then opens the RT. If we don't store
+    // the presentation state, the viewport will be reset to the default presentation
     storePresentationState();
     const isHydrated = await _hydrateRTDisplaySet({
       rtDisplaySet,

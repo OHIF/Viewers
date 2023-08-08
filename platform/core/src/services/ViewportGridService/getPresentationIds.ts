@@ -116,7 +116,7 @@ const getPresentationIds = (viewport, viewports): PresentationIds => {
   }
 
   // only add unique index if the viewport is getting inserted and not updated
-  const isUpdatingSameViewport = viewports.find(v => {
+  const isUpdatingSameViewport = viewports.some(v => {
     return (
       v.displaySetInstanceUIDs.toString() ===
         viewport.displaySetInstanceUIDs.toString() &&

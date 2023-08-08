@@ -168,6 +168,12 @@ function OHIFCornerstoneSEGViewport(props) {
       viewportIndex,
       segDisplaySet,
     }).then(isHydrated => {
+      // Before hydrating a SEG and make it added to all viewports in the grid
+      // that share the same frameOfReferenceUID, we need to store the viewport grid
+      // presentation state, so that we can restore it after hydrating the SEG. This is
+      // required if the user has changed the viewport (other viewport than SEG viewport)
+      // presentation state (w/l and invert) and then opens the SEG. If we don't store
+      // the presentation state, the viewport will be reset to the default presentation
       storePresentationState();
 
       if (isHydrated) {
