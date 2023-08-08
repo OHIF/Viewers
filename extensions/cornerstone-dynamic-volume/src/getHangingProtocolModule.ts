@@ -277,8 +277,7 @@ function getFusionViewports() {
 }
 
 const defaultProtocol = {
-  id:
-    '@ohif/extension-cornerstone-dynamic-volume.hangingProtocolModule.default',
+  id: 'default4D',
   locked: true,
   // Don't store this hanging protocol as it applies to the currently active
   // display set by default

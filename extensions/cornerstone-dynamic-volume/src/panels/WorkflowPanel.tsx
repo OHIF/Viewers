@@ -1,40 +1,23 @@
-import React, { useMemo } from 'react';
-
-const styles = {
-  panel: {
-    marginBottom: '10px',
-    backgroundColor: '#041c4a',
-    padding: '10px 0'
-  },
-  title: {
-    marginBottom: '10px',
-  },
-  container: {
-    fontSize: '12px',
-    padding: '10px',
-  },
-  listItem: {
-    cursor: 'pointer',
-  },
-  listItemSelected: {
-    cursor: 'pointer',
-    color: '#0f0',
-  },
-}
+import React, { useEffect, useMemo } from 'react';
 
 function WorkflowPanel({ servicesManager, extensionManager }) {
   const ProgressDropdownWithService = useMemo(() => {
-    const defaultComponents = extensionManager.getModuleEntry('@ohif/extension-default.customizationModule.default').value;
+    const defaultComponents = extensionManager.getModuleEntry(
+      '@ohif/extension-default.customizationModule.default'
+    ).value;
 
     return defaultComponents.find(
       component => component.id === 'progressDropdownWithServiceComponent'
     ).component;
-  }, []);
+  }, [extensionManager]);
 
   return (
-    <div data-cy={'workflow-panel'} style={styles.panel} >
-      <div style={styles.title}>Workflow</div>
-      <div style={{ padding: '0 5px 10px' }}>
+    <div
+      data-cy={'workflow-panel'}
+      className="px-3 py-4 mb-1 bg-secondary-dark"
+    >
+      <div className="mb-1">Workflow</div>
+      <div>
         <ProgressDropdownWithService servicesManager={servicesManager} />
       </div>
     </div>

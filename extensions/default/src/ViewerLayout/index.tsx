@@ -217,7 +217,7 @@ function ViewerLayout({
     return () => {
       unsubscribe();
     };
-  }, [panelService]);
+  }, [panelService, hasPanels]);
 
   const viewportComponents = viewports.map(getViewportComponentData);
 

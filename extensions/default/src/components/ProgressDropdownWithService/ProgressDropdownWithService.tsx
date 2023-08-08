@@ -70,12 +70,13 @@ function ProgressDropdownWithService({
     let timeoutId;
 
     if (activeStageId) {
-      // Give a little bit more time to update the UI since a method from
-      // Texture.js (create3DFilterableFromDataArray) is taking some to update
-      // the UI(eg: 600+ ms after moving from a 1x3 PET to a 2x3 PET/CT layout).
-      timeoutId = setTimeout(() => {
-        workflowStagesService.setActiveWorkflowStage(activeStageId);
-      }, 100);
+      // We've used setTimeout to give it more time to update the UI since
+      // create3DFilterableFromDataArray from Texture.js may take 600+ ms to run
+      // when there is a new series to load in the next step but that resulted
+      // in the followed React error when updating the content from left/right panels
+      // and all component states were being lost:
+      //   Error: Can't perform a React state update on an unmounted component
+      workflowStagesService.setActiveWorkflowStage(activeStageId);
     }
 
     return () => clearTimeout(timeoutId);
@@ -96,6 +97,7 @@ function ProgressDropdownWithService({
       unsubscribe: unsubActiveStageChanged,
     } = workflowStagesService.subscribe(
       workflowStagesService.EVENTS.ACTIVE_STAGE_CHANGED,
+
       () => setActiveStageId(workflowStagesService.activeWorkflowStage.id)
     );
 
