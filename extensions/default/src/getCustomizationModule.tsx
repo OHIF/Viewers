@@ -84,7 +84,9 @@ export default function getCustomizationModule() {
         {
           id: 'ohif.overlayItem',
           content: function(props) {
-            if (this.condition && !this.condition(props)) return null;
+            if (this.condition && !this.condition(props)) {
+              return null;
+            }
 
             const { instance } = props;
             const value =
@@ -93,7 +95,9 @@ export default function getCustomizationModule() {
                 : this.contentF && typeof this.contentF === 'function'
                 ? this.contentF(props)
                 : null;
-            if (!value) return null;
+            if (!value) {
+              return null;
+            }
 
             return (
               <span

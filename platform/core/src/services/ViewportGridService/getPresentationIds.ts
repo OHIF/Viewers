@@ -29,10 +29,16 @@ const addUniqueIndex = (arr, key, viewports) => {
 };
 
 const getLutId = (ds): string => {
-  if (!ds || !ds.options) return DEFAULT;
-  if (ds.options.id) return ds.options.id;
+  if (!ds || !ds.options) {
+    return DEFAULT;
+  }
+  if (ds.options.id) {
+    return ds.options.id;
+  }
   const arr = Object.entries(ds.options).map(([key, val]) => `${key}=${val}`);
-  if (!arr.length) return DEFAULT;
+  if (!arr.length) {
+    return DEFAULT;
+  }
   return arr.join(JOIN_STR);
 };
 
@@ -87,7 +93,9 @@ export type PresentationIds = {
  * @returns PresentationIds
  */
 const getPresentationIds = (viewport, viewports): PresentationIds => {
-  if (!viewport) return;
+  if (!viewport) {
+    return;
+  }
   const {
     viewportOptions,
     displaySetInstanceUIDs,
@@ -102,7 +110,9 @@ const getPresentationIds = (viewport, viewports): PresentationIds => {
   const lutPresentationArr = [lutId];
 
   const positionPresentationArr = [orientation || 'acquisition'];
-  if (id) positionPresentationArr.push(id);
+  if (id) {
+    positionPresentationArr.push(id);
+  }
 
   for (const uid of displaySetInstanceUIDs) {
     positionPresentationArr.push(uid);

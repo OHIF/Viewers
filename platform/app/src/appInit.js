@@ -103,7 +103,9 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
   const modesById = new Set();
   for (let i = 0; i < loadedModes.length; i++) {
     let mode = loadedModes[i];
-    if (!mode) continue;
+    if (!mode) {
+      continue;
+    }
     const { id } = mode;
 
     if (mode.modeFactory) {
@@ -116,10 +118,14 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
       mode = mode.modeFactory({ modeConfiguration });
     }
 
-    if (modesById.has(id)) continue;
+    if (modesById.has(id)) {
+      continue;
+    }
     // Prevent duplication
     modesById.add(id);
-    if (!mode || typeof mode !== 'object') continue;
+    if (!mode || typeof mode !== 'object') {
+      continue;
+    }
     appConfig.loadedModes.push(mode);
   }
   // Hack alert - don't touch the original modes definition,

@@ -124,7 +124,9 @@ export default class MicroscopyService extends PubSubService {
   _onRoiModified(data) {
     const { roiGraphic, managedViewer } = data;
     const roiAnnotation = this.getAnnotation(roiGraphic.uid);
-    if (!roiAnnotation) return;
+    if (!roiAnnotation) {
+      return;
+    }
     roiAnnotation.setRoiGraphic(roiGraphic);
     roiAnnotation.setViewState(managedViewer.getViewState());
   }
@@ -177,7 +179,9 @@ export default class MicroscopyService extends PubSubService {
       selectedAnnotation &&
       selectedAnnotation !== this.getSelectedAnnotation()
     ) {
-      if (this.selectedAnnotation) this.clearSelection();
+      if (this.selectedAnnotation) {
+        this.clearSelection();
+      }
       this.selectedAnnotation = selectedAnnotation;
       this._broadcastEvent(EVENTS.ANNOTATION_SELECTED, selectedAnnotation);
     }
@@ -486,7 +490,9 @@ export default class MicroscopyService extends PubSubService {
    * @param {RoiAnnotation} roiAnnotation The instance to be selected
    */
   selectAnnotation(roiAnnotation) {
-    if (this.selectedAnnotation) this.clearSelection();
+    if (this.selectedAnnotation) {
+      this.clearSelection();
+    }
 
     this.selectedAnnotation = roiAnnotation;
     this._broadcastEvent(EVENTS.ANNOTATION_SELECTED, roiAnnotation);

@@ -41,7 +41,9 @@ class DicomMicroscopyViewport extends Component {
     const { microscopyService } = this.props.servicesManager.services;
     this.microscopyService = microscopyService;
     this.debouncedResize = debounce(() => {
-      if (this.viewer) this.viewer.resize();
+      if (this.viewer) {
+        this.viewer.resize();
+      }
     }, 100);
   }
 

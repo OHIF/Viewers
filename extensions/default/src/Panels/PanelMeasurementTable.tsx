@@ -276,7 +276,9 @@ function _mapMeasurementToDisplay(measurement, index, types) {
   if (findingSites) {
     const siteText = [];
     findingSites.forEach(site => {
-      if (site?.text !== label) siteText.push(site.text);
+      if (site?.text !== label) {
+        siteText.push(site.text);
+      }
     });
     displayText = [...siteText, ...displayText];
   }

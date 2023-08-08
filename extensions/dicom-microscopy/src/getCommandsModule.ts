@@ -22,7 +22,9 @@ export default function getCommandsModule({
     deleteMeasurement: ({ uid }) => {
       if (uid) {
         const roiAnnotation = microscopyService.getAnnotation(uid);
-        if (roiAnnotation) microscopyService.removeAnnotation(roiAnnotation);
+        if (roiAnnotation) {
+          microscopyService.removeAnnotation(roiAnnotation);
+        }
       }
     },
 
@@ -140,7 +142,9 @@ export default function getCommandsModule({
       );
       let onoff = false; // true if this will toggle on
       for (let i = 0; i < overlays.length; i++) {
-        if (i === 0) onoff = overlays.item(0).classList.contains('hidden');
+        if (i === 0) {
+          onoff = overlays.item(0).classList.contains('hidden');
+        }
         overlays.item(i).classList.toggle('hidden');
       }
 

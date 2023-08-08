@@ -12,7 +12,9 @@ const ListMenu = ({ items = [], renderer, onClick }) => {
     const onClickHandler = () => {
       setSelectedIndex(index);
       onClick({ item, selectedIndex: index });
-      if (item.onClick) item.onClick({ ...item, index, isSelected });
+      if (item.onClick) {
+        item.onClick({ ...item, index, isSelected });
+      }
     };
 
     return (

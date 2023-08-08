@@ -10,7 +10,9 @@ const findInstance = (measurement, displaySetService: DisplaySetService) => {
   const referencedDisplaySet = displaySetService.getDisplaySetByUID(
     displaySetInstanceUID
   );
-  if (!referencedDisplaySet.images) return;
+  if (!referencedDisplaySet.images) {
+    return;
+  }
   return referencedDisplaySet.images.find(it => it.SOPInstanceUID === sopUid);
 };
 
@@ -26,8 +28,12 @@ const findReferencedInstances = (
   const instanceById = {};
   for (const measurement of displaySet.measurements) {
     const { imageId } = measurement;
-    if (!imageId) continue;
-    if (instanceById[imageId]) continue;
+    if (!imageId) {
+      continue;
+    }
+    if (instanceById[imageId]) {
+      continue;
+    }
 
     const instance = findInstance(measurement, displaySetService);
     if (!instance) {

@@ -114,7 +114,9 @@ validate.validators.includes = function(value, options, key) {
         ', '
       )}`;
     }
-  } else return `${key} ${testValue} must be an array`;
+  } else {
+    return `${key} ${testValue} must be an array`;
+  }
   // else if (!value.includes(testValue)) {
   //   return `${key} ${value} must include ${testValue}`;
   // }
@@ -151,7 +153,9 @@ validate.validators.doesNotInclude = function(value, options, key) {
     if (includedValues.length > 0) {
       return `${key} must not include the following value: ${includedValues}`;
     }
-  } else return `${key} ${testValue} must be an array`;
+  } else {
+    return `${key} ${testValue} must be an array`;
+  }
 };
 // Ignore case contains.
 // options testValue MUST be in lower case already, otherwise it won't match
@@ -454,7 +458,9 @@ validate.validators.range = function(value, options, key) {
     if (value === undefined || value < min || value > max) {
       return `${key} with value ${value} must be between ${min} and ${max}`;
     }
-  } else return `${key} must be an array of length 2`;
+  } else {
+    return `${key} must be an array of length 2`;
+  }
 };
 
 validate.validators.notNull = value =>
