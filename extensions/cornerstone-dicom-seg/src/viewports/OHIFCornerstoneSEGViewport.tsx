@@ -332,7 +332,6 @@ function OHIFCornerstoneSEGViewport(props) {
 
     setIsHydrated(isHydrated);
   };
-
   return (
     <>
       <ViewportActionBar
@@ -360,11 +359,12 @@ function OHIFCornerstoneSEGViewport(props) {
             patientAge: PatientAge || '',
             MRN: PatientID || '',
             thickness: SliceThickness
-              ? `${parseFloat(SliceThickness).toFixed(2)}mm`
+              ? utils.roundNumber(SliceThickness, 2)
               : '',
+            thicknessUnits: SliceThickness !== undefined ? 'mm' : '',
             spacing:
               SpacingBetweenSlices !== undefined
-                ? `${parseFloat(SpacingBetweenSlices).toFixed(2)}mm`
+                ? utils.roundNumber(SpacingBetweenSlices, 2)
                 : '',
             scanner: ManufacturerModelName || '',
           },

@@ -563,11 +563,11 @@ class SegmentationService extends PubSubService {
       );
     }
 
-    const { segments, referencedVolumeId } = segDisplaySet;
+    const { labelmapBufferArray, referencedVolumeId } = segDisplaySet;
 
-    if (!segments || !referencedVolumeId) {
+    if (!labelmapBufferArray || !referencedVolumeId) {
       throw new Error(
-        'To create the segmentation from SEG displaySet, the displaySet should be loaded first, you can perform segDisplaySet.load() before calling this method.'
+        'No labelmapBufferArray or referencedVolumeId found for the SEG displaySet'
       );
     }
 
@@ -593,88 +593,27 @@ class SegmentationService extends PubSubService {
         },
       }
     );
-    const [rows, columns] = derivedVolume.dimensions;
     const derivedVolumeScalarData = derivedVolume.getScalarData();
 
-    const { imageIds } = referencedVolume;
-    const sopUIDImageIdIndexMap = imageIds.reduce((acc, imageId, index) => {
-      const { sopInstanceUid } = metaData.get('generalImageModule', imageId);
-      acc[sopInstanceUid] = index;
-      return acc;
-    }, {} as { [sopUID: string]: number });
+    const segmentsInfo = segDisplaySet.segMetadata.data;
+    derivedVolumeScalarData.set(new Uint8Array(labelmapBufferArray[0]));
 
-    const numSegments = Object.keys(segments).length;
-    // Note: ideally we could use the TypedArray set method, but since each
-    // slice can have multiple segments, we need to loop over each slice and
-    // set the segment value for each segment.
-    let overlappingSegments = false;
-
-    const _segmentInfoUpdate = (segmentInfo, segmentIndex) => {
-      const { pixelData: segPixelData } = segmentInfo;
-
-      let segmentX = 0;
-      let segmentY = 0;
-      let segmentZ = 0;
-      let count = 0;
-
-      for (const [
-        functionalGroupIndex,
-        functionalGroup,
-      ] of segmentInfo.functionalGroups.entries()) {
-        const {
-          ReferencedSOPInstanceUID,
-        } = functionalGroup.DerivationImageSequence.SourceImageSequence;
-
-        const imageIdIndex = sopUIDImageIdIndexMap[ReferencedSOPInstanceUID];
-
-        if (imageIdIndex === -1) {
-          return;
-        }
-
-        const step = rows * columns;
-
-        // we need a faster way to get the pixel data for the current
-        // functional group, which we use typed array view
-
-        const functionGroupPixelData = new Uint8Array(
-          segPixelData.buffer,
-          functionalGroupIndex * step,
-          step
-        );
-
-        const functionalGroupStartIndex = imageIdIndex * step;
-        const functionalGroupEndIndex = (imageIdIndex + 1) * step;
-
-        // Note: this for loop is not optimized, since DICOM SEG stores
-        // each segment as a separate labelmap so if there is a slice
-        // that has multiple segments, we will have to loop over each
-        // segment and we cannot use the TypedArray set method.
-        for (
-          let i = functionalGroupStartIndex, j = 0;
-          i < functionalGroupEndIndex;
-          i++, j++
-        ) {
-          if (functionGroupPixelData[j] !== 0) {
-            if (derivedVolumeScalarData[i] !== 0) {
-              overlappingSegments = true;
-            }
-
-            derivedVolumeScalarData[i] = segmentIndex;
-
-            // centroid calculations
-            segmentX += i % columns;
-            segmentY += Math.floor(i / columns) % rows;
-            segmentZ += Math.floor(i / (columns * rows));
-            count++;
-          }
-        }
+    segmentation.segments = segmentsInfo.map((segmentInfo, segmentIndex) => {
+      if (segmentIndex === 0) {
+        return;
       }
 
-      // centroid calculations
-      const x = Math.floor(segmentX / count);
-      const y = Math.floor(segmentY / count);
-      const z = Math.floor(segmentZ / count);
+      const {
+        SegmentedPropertyCategoryCodeSequence,
+        SegmentNumber,
+        SegmentLabel,
+        SegmentAlgorithmType,
+        SegmentAlgorithmName,
+        SegmentedPropertyTypeCodeSequence,
+        rgba,
+      } = segmentInfo;
 
+      const { x, y, z } = segDisplaySet.centroids.get(segmentIndex);
       const centerWorld = derivedVolume.imageData.indexToWorld([x, y, z]);
 
       segmentation.cachedStats = {
@@ -691,65 +630,31 @@ class SegmentationService extends PubSubService {
         },
       };
 
-      const numInitialized = Object.keys(segmentation.cachedStats.segmentCenter)
-        .length;
-
-      // Calculate percentage completed
-      const percentComplete = Math.round((numInitialized / numSegments) * 100);
-
-      this._broadcastEvent(EVENTS.SEGMENT_LOADING_COMPLETE, {
-        percentComplete,
-        numSegments: numSegments,
-      });
-    };
-
-    const promiseArray = [];
-
-    for (const segmentIndex in segments) {
-      const segmentInfo = segments[segmentIndex];
-
-      // Important: we need a non-blocking way to update the segmentation
-      // state, otherwise the UI will freeze and the user will not be able
-      // to interact with the app or progress bars will not be updated.
-      const promise = new Promise<void>((resolve, reject) => {
-        setTimeout(() => {
-          _segmentInfoUpdate(segmentInfo, segmentIndex);
-          resolve();
-        }, 0);
-      });
-
-      promiseArray.push(promise);
-    }
-
-    await Promise.all(promiseArray);
-
-    segmentation.segmentCount = Object.keys(segments).length;
-    segmentation.segments = [null]; // segment 0
-
-    Object.keys(segments).forEach(segmentIndex => {
-      const segmentInfo = segments[segmentIndex];
-      const segIndex = Number(segmentIndex);
-
-      segmentation.segments[segIndex] = {
-        label: segmentInfo.label || `Segment ${segIndex}`,
-        segmentIndex: Number(segmentIndex),
-        color: [
-          segmentInfo.color[0],
-          segmentInfo.color[1],
-          segmentInfo.color[2],
-        ],
-        opacity: segmentInfo.color[3],
+      return {
+        label: SegmentLabel || `Segment ${SegmentNumber}`,
+        segmentIndex: Number(SegmentNumber),
+        category: SegmentedPropertyCategoryCodeSequence
+          ? SegmentedPropertyCategoryCodeSequence.CodeMeaning
+          : '',
+        type: SegmentedPropertyTypeCodeSequence
+          ? SegmentedPropertyTypeCodeSequence.CodeMeaning
+          : '',
+        algorithmType: SegmentAlgorithmType,
+        algorithmName: SegmentAlgorithmName,
+        color: rgba,
+        opacity: 255,
         isVisible: true,
         isLocked: false,
       };
     });
+
+    segmentation.segmentCount = segmentsInfo.length - 1;
 
     segDisplaySet.isLoaded = true;
 
     this._broadcastEvent(EVENTS.SEGMENTATION_LOADING_COMPLETE, {
       segmentationId,
       segDisplaySet,
-      overlappingSegments,
     });
 
     return this.addOrUpdateSegmentation(segmentation, suppressEvents);
