@@ -6,6 +6,7 @@ function BrushConfiguration({
   brushThresholdOptions,
   brushThresholdId,
   brushSize,
+  showThresholdSettings,
   onBrushThresholdChange,
   onBrushSizeChange,
 }: {
@@ -16,27 +17,32 @@ function BrushConfiguration({
   };
   brushThresholdId: string;
   brushSize: number;
+  showThresholdSettings: boolean;
   onBrushThresholdChange: (thresholdId: string) => void;
   onBrushSizeChange: (brushSize: number) => void;
 }): ReactElement {
   return (
     <div className="flex flex-col px-4 py-2 space-y-4 bg-primary-dark text-white">
-      <div>Threshold</div>
-      <div className="pb-2">
-        <Select
-          label="Brush Threshold"
-          closeMenuOnSelect={true}
-          className="mr-2 bg-black border-primary-main text-white "
-          options={brushThresholdOptions}
-          placeholder={
-            brushThresholdOptions.find(
-              option => option.value === brushThresholdId
-            ).placeHolder
-          }
-          value={brushThresholdId}
-          onChange={({ value }) => onBrushThresholdChange(value)}
-        />
-      </div>
+      {showThresholdSettings && (
+        <>
+          <div>Threshold</div>
+          <div className="pb-2">
+            <Select
+              label="Brush Threshold"
+              closeMenuOnSelect={true}
+              className="mr-2 bg-black border-primary-main text-white "
+              options={brushThresholdOptions}
+              placeholder={
+                brushThresholdOptions.find(
+                  option => option.value === brushThresholdId
+                ).placeHolder
+              }
+              value={brushThresholdId}
+              onChange={({ value }) => onBrushThresholdChange(value)}
+            />
+          </div>
+        </>
+      )}
       <div>
         <Label className="text-white">Brush Size</Label>
         <InputRange
@@ -54,15 +60,22 @@ function BrushConfiguration({
   );
 }
 
+BrushConfiguration.defaultPprops = {
+  showThresholdSettings: false,
+};
+
 BrushConfiguration.propTypes = {
-  brushThresholdOptions: PropTypes.shape({
-    value: PropTypes.string.isRequired,
-    label: PropTypes.string.isRequired,
-    placeHolder: PropTypes.string.isRequired,
-  }).isRequired,
-  brushThresholdId: PropTypes.string.isRequired,
+  brushThresholdOptions: PropTypes.arrayOf(
+    PropTypes.shape({
+      value: PropTypes.string.isRequired,
+      label: PropTypes.string.isRequired,
+      placeHolder: PropTypes.string.isRequired,
+    })
+  ).isRequired,
+  brushThresholdId: PropTypes.string,
   brushSize: PropTypes.number.isRequired,
-  onBrushThresholdChange: PropTypes.func.isRequired,
+  showThresholdSettings: PropTypes.bool,
+  onBrushThresholdChange: PropTypes.func,
   onBrushSizeChange: PropTypes.func.isRequired,
 };
 

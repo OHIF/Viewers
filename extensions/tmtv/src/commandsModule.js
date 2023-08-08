@@ -131,7 +131,7 @@ const commandsModule = ({
 
       return metadata;
     },
-    createNewLabelmapFromPT: async () => {
+    createNewLabelmapFromPT: async ({ label }) => {
       // Create a segmentation of the same resolution as the source data
       // using volumeLoader.createAndCacheDerivedVolume.
       const { viewportMatchDetails } = hangingProtocolService.getMatchDetails();
@@ -145,7 +145,8 @@ const commandsModule = ({
       }
 
       const segmentationId = await segmentationService.createSegmentationForDisplaySet(
-        ptDisplaySet.displaySetInstanceUID
+        ptDisplaySet.displaySetInstanceUID,
+        { label }
       );
 
       // Add Segmentation to all toolGroupIds in the viewer

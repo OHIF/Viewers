@@ -257,6 +257,7 @@ function _createRectangleROIStartEndThreshold() {
     'Rectangle ROI Threshold (start/end)',
     [
       ..._createCommands('setToolActive', 'RectangleROIStartEndThreshold', [
+        toolGroupIds.Fusion,
         toolGroupIds.PT,
       ]),
       {

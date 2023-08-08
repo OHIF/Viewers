@@ -1,6 +1,7 @@
 import React from 'react';
 import { Input, Label, Select, LegacyButton, ButtonGroup } from '@ohif/ui';
 import { useTranslation } from 'react-i18next';
+import classnames from 'classnames';
 
 export const ROI_STAT = 'roi_stat';
 const RANGE = 'range';
@@ -10,7 +11,8 @@ const options = [
   { value: RANGE, label: 'Range', placeHolder: 'Range' },
 ];
 
-function RectangleROIStartEndThresholdConfiguration({
+function RectangleROIThresholdConfiguration({
+  showStartEndThresholdSettings = false,
   config,
   dispatch,
   runCommand,
@@ -20,7 +22,12 @@ function RectangleROIStartEndThresholdConfiguration({
   return (
     <div className="flex flex-col px-4 space-y-4 bg-primary-dark py-2">
       <div className="flex items-end space-x-2">
-        <div className="flex flex-col w-1/2">
+        <div
+          className={classnames('flex flex-col', {
+            'w-1/2': showStartEndThresholdSettings,
+            'w-full': !showStartEndThresholdSettings,
+          })}
+        >
           <Select
             label={t('Strategy')}
             closeMenuOnSelect={true}
@@ -41,29 +48,31 @@ function RectangleROIStartEndThresholdConfiguration({
             }}
           />
         </div>
-        <div className="w-1/2">
-          {/* TODO Revisit design of ButtonGroup later - for now use LegacyButton for its children.*/}
-          <ButtonGroup>
-            <LegacyButton
-              size="initial"
-              className="px-2 py-2 text-base text-white"
-              color="primaryLight"
-              variant="outlined"
-              onClick={() => runCommand('setStartSliceForROIThresholdTool')}
-            >
-              {t('Start')}
-            </LegacyButton>
-            <LegacyButton
-              size="initial"
-              color="primaryLight"
-              variant="outlined"
-              className="px-2 py-2 text-base text-white"
-              onClick={() => runCommand('setEndSliceForROIThresholdTool')}
-            >
-              {t('End')}
-            </LegacyButton>
-          </ButtonGroup>
-        </div>
+        {showStartEndThresholdSettings && (
+          <div className="w-1/2">
+            {/* TODO Revisit design of ButtonGroup later - for now use LegacyButton for its children.*/}
+            <ButtonGroup>
+              <LegacyButton
+                size="initial"
+                className="px-2 py-2 text-base text-white"
+                color="primaryLight"
+                variant="outlined"
+                onClick={() => runCommand('setStartSliceForROIThresholdTool')}
+              >
+                {t('Start')}
+              </LegacyButton>
+              <LegacyButton
+                size="initial"
+                color="primaryLight"
+                variant="outlined"
+                className="px-2 py-2 text-base text-white"
+                onClick={() => runCommand('setEndSliceForROIThresholdTool')}
+              >
+                {t('End')}
+              </LegacyButton>
+            </ButtonGroup>
+          </div>
+        )}
       </div>
 
       {config.strategy === ROI_STAT && (
@@ -186,4 +195,4 @@ function RectangleROIStartEndThresholdConfiguration({
   );
 }
 
-export default RectangleROIStartEndThresholdConfiguration;
+export default RectangleROIThresholdConfiguration;

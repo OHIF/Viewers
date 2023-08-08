@@ -9,15 +9,14 @@ import React, {
 import PropTypes from 'prop-types';
 
 import { CommandsManager, ServicesManager } from '@ohif/core';
-import { SegmentationTable, Button, Icon } from '@ohif/ui';
-// import { utilities as cstUtils } from '@cornerstonejs/tools';
+import { SegmentationTable, Button } from '@ohif/ui';
 import { useTranslation } from 'react-i18next';
 import BrushConfigurationWithServices from './BrushConfigurationWithServices';
 import segmentationEditHandler from './segmentationEditHandler';
 // import ExportReports from './ExportReports';
-import RectangleROIStartEndThresholdConfiguration, {
+import RectangleROIThresholdConfiguration, {
   ROI_STAT,
-} from './RectangleROIStartEndThresholdConfiguration';
+} from './RectangleROIThresholdConfiguration';
 
 const LOWER_CT_THRESHOLD_DEFAULT = -1024;
 const UPPER_CT_THRESHOLD_DEFAULT = 1024;
@@ -78,12 +77,28 @@ function getToolsConfigInfo({ servicesManager, config, dispatch, runCommand }) {
     },
     ThresholdBrush: {
       title: 'Threshold Brush Configuration',
-      component: wrappedBrushConfigurationWithServices,
+      component: () => (
+        <BrushConfigurationWithServices
+          servicesManager={servicesManager}
+          showThresholdSettings={true}
+        />
+      ),
     },
     RectangleROIStartEndThreshold: {
       title: 'ROI Threshold Configuration',
       component: () => (
-        <RectangleROIStartEndThresholdConfiguration
+        <RectangleROIThresholdConfiguration
+          showStartEndThresholdSettings={true}
+          config={config}
+          dispatch={dispatch}
+          runCommand={runCommand}
+        />
+      ),
+    },
+    RectangleROIThreshold: {
+      title: 'ROI Threshold Configuration',
+      component: () => (
+        <RectangleROIThresholdConfiguration
           config={config}
           dispatch={dispatch}
           runCommand={runCommand}
@@ -107,9 +122,15 @@ export default function ROISegmentationPanel({
   const { t } = useTranslation('PanelSUV');
   const [showConfig, setShowConfig] = useState(false);
   const [labelmapLoading, setLabelmapLoading] = useState(false);
-  const [selectedSegmentationId, setSelectedSegmentationId] = useState(null);
   const [segmentations, setSegmentations] = useState(() =>
     segmentationService.getSegmentations()
+  );
+  const selectedSegmentationId = useMemo(
+    () => segmentations.find(segmentation => segmentation.isActive)?.id,
+    [segmentations]
+  );
+  const [nextSegmentationSequenceId, setNextSegmentationSequenceId] = useState(
+    segmentations.length + 1
   );
   const showThresholdRunButton = [
     'RectangleROIThreshold',
@@ -125,8 +146,6 @@ export default function ROISegmentationPanel({
     weight: WEIGHT_DEFAULT,
   });
 
-  const [tmtvValue, setTmtvValue] = useState(null);
-
   const runCommand = useCallback(
     (commandName, commandOptions = {}) => {
       return commandsManager.runCommand(commandName, commandOptions);
@@ -139,14 +158,6 @@ export default function ROISegmentationPanel({
     [servicesManager, config, runCommand]
   );
   const toolConfigInfo = toolsConfigInfo[activePrimaryTool];
-
-  const handleTMTVCalculation = useCallback(() => {
-    const tmtv = runCommand('calculateTMTV', { segmentations });
-
-    if (tmtv !== undefined) {
-      setTmtvValue(tmtv.toFixed(2));
-    }
-  }, [segmentations, runCommand]);
 
   const handleROIThresholding = useCallback(() => {
     const labelmap = runCommand('thresholdSegmentationByRectangleROITool', {
@@ -182,15 +193,7 @@ export default function ROISegmentationPanel({
       },
       notYetUpdatedAtSource
     );
-
-    handleTMTVCalculation();
-  }, [
-    selectedSegmentationId,
-    config,
-    handleTMTVCalculation,
-    runCommand,
-    segmentationService,
-  ]);
+  }, [selectedSegmentationId, config, runCommand, segmentationService]);
 
   /**
    * Update UI based on segmentation changes (added, removed, updated)
@@ -199,9 +202,10 @@ export default function ROISegmentationPanel({
     // ~~ Subscription
     const added = segmentationService.EVENTS.SEGMENTATION_ADDED;
     const updated = segmentationService.EVENTS.SEGMENTATION_UPDATED;
+    const removed = segmentationService.EVENTS.SEGMENTATION_REMOVED;
     const subscriptions = [];
 
-    [added, updated].forEach(evt => {
+    [added, updated, removed].forEach(evt => {
       const { unsubscribe } = segmentationService.subscribe(evt, () => {
         const segmentations = segmentationService.getSegmentations();
         setSegmentations(segmentations);
@@ -214,46 +218,12 @@ export default function ROISegmentationPanel({
         unsub();
       });
     };
-  }, []);
-
-  useEffect(() => {
-    const { unsubscribe } = segmentationService.subscribe(
-      segmentationService.EVENTS.SEGMENTATION_REMOVED,
-      () => {
-        const segmentations = segmentationService.getSegmentations();
-        setSegmentations(segmentations);
-
-        if (segmentations.length > 0) {
-          setSelectedSegmentationId(segmentations[0].id);
-          handleTMTVCalculation();
-        } else {
-          setSelectedSegmentationId(null);
-          setTmtvValue(null);
-        }
-      }
-    );
-
-    return () => {
-      unsubscribe();
-    };
-  }, [handleTMTVCalculation, segmentationService]);
-
-  /**
-   * Whenever the segmentations change, update the TMTV calculations
-   */
-  useEffect(() => {
-    if (!selectedSegmentationId && segmentations.length > 0) {
-      setSelectedSegmentationId(segmentations[0].id);
-    }
-
-    handleTMTVCalculation();
-  }, [segmentations, selectedSegmentationId, handleTMTVCalculation]);
+  }, [segmentationService]);
 
   useEffect(() => {
     const { unsubscribe } = toolGroupService.subscribe(
       toolGroupService.EVENTS.PRIMARY_TOOL_ACTIVATED,
       ({ toolName }) => {
-        console.log('ROISeg :: PRIMARY_TOOL_ACTIVATED');
         setActivePrimaryTool(toolName);
       }
     );
@@ -272,11 +242,11 @@ export default function ROISegmentationPanel({
               className="grow"
               onClick={() => {
                 setLabelmapLoading(true);
-                setTimeout(() => {
-                  runCommand('createNewLabelmapFromPT').then(segmentationId => {
-                    setLabelmapLoading(false);
-                    setSelectedSegmentationId(segmentationId);
-                  });
+                runCommand('createNewLabelmapFromPT', {
+                  label: `Segmentation ${nextSegmentationSequenceId}`,
+                }).then(() => {
+                  setNextSegmentationSequenceId(prev => prev + 1);
+                  setLabelmapLoading(false);
                 });
               }}
             >
@@ -316,7 +286,6 @@ export default function ROISegmentationPanel({
                   runCommand('setSegmentationActiveForToolGroups', {
                     segmentationId: id,
                   });
-                  setSelectedSegmentationId(id);
                 }}
                 onToggleVisibility={id => {
                   segmentationService.toggleSegmentationVisibility(id);
@@ -326,26 +295,11 @@ export default function ROISegmentationPanel({
                     segmentationService.toggleSegmentationVisibility(id);
                   });
                 }}
-                onDelete={id => {
-                  segmentationService.remove(id);
-                }}
-                onEdit={id => {
-                  segmentationEditHandler({
-                    id,
-                    servicesManager,
-                  });
-                }}
+                onDelete={id => segmentationService.remove(id)}
+                onEdit={id => segmentationEditHandler({ id, servicesManager })}
               />
             ) : null}
           </div>
-          {tmtvValue !== null ? (
-            <div className="flex items-baseline justify-between px-2 py-1 mt-4 bg-secondary-dark">
-              <span className="text-base font-bold tracking-widest text-white uppercase">
-                {'TMTV:'}
-              </span>
-              <div className="text-white">{`${tmtvValue} mL`}</div>
-            </div>
-          ) : null}
           {/* <ExportReports
             segmentations={segmentations}
             tmtvValue={tmtvValue}
@@ -353,24 +307,6 @@ export default function ROISegmentationPanel({
             commandsManager={commandsManager}
           /> */}
         </div>
-      </div>
-      <div
-        className="opacity-50 hover:opacity-80 flex items-center justify-center text-blue-400 mt-auto cursor-pointer mb-4"
-        onClick={() => {
-          // navigate to a url in a new tab
-          window.open(
-            'https://github.com/OHIF/Viewers/blob/master/modes/tmtv/README.md',
-            '_blank'
-          );
-        }}
-      >
-        <Icon
-          width="15px"
-          height="15px"
-          name={'info'}
-          className={'text-primary-active ml-4 mr-3'}
-        />
-        <span>{'User Guide'}</span>
       </div>
     </>
   );

@@ -65,6 +65,7 @@ const getViewportBrushToolSettings = (servicesManager, viewportIndex) => {
 
 function BrushConfigurationWithServices({
   servicesManager,
+  showThresholdSettings = false,
 }: {
   servicesManager: ServicesManager;
 }): ReactElement {
@@ -154,14 +155,20 @@ function BrushConfigurationWithServices({
       brushThresholdOptions={brushThresholdOptions}
       brushThresholdId={selectedBrushThresholdId}
       brushSize={brushSize}
+      showThresholdSettings={showThresholdSettings}
       onBrushThresholdChange={handleBrushThresholdChange}
       onBrushSizeChange={handleBrushSizeChange}
     />
   );
 }
 
+BrushConfigurationWithServices.defaultProps = {
+  showThresholdSettings: false,
+};
+
 BrushConfigurationWithServices.propTypes = {
   servicesManager: PropTypes.instanceOf(ServicesManager),
+  showThresholdSettings: PropTypes.bool.isRequired,
 };
 
 export { BrushConfigurationWithServices as default };

@@ -122,20 +122,24 @@ function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager) {
   toolGroupService.createToolGroupAndAddTools(
     toolGroupIds.PT,
     {
-      active: tools.active,
+      ...tools,
       passive: [
         ...tools.passive,
         { toolName: 'RectangleROIStartEndThreshold' },
       ],
-      enabled: tools.enabled,
-      disabled: tools.disabled,
     },
     toolsConfig
   );
 
   toolGroupService.createToolGroupAndAddTools(
     toolGroupIds.Fusion,
-    tools,
+    {
+      ...tools,
+      passive: [
+        ...tools.passive,
+        { toolName: 'RectangleROIStartEndThreshold' },
+      ],
+    },
     toolsConfig
   );
 
