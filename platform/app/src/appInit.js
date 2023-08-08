@@ -108,12 +108,12 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
 
     if (mode.modeFactory) {
       // If the appConfig contains configuration for this mode, use it.
-      const modeConfig =
-        appConfig.modeConfig && appConfig.modeConfig[i]
-          ? appConfig.modeConfig[id]
+      const modeConfiguration =
+        appConfig.modesConfiguration && appConfig.modesConfiguration[id]
+          ? appConfig.modesConfiguration[id]
           : {};
 
-      mode = mode.modeFactory(modeConfig);
+      mode = mode.modeFactory({ modeConfiguration });
     }
 
     if (modesById.has(id)) continue;
