@@ -123,7 +123,7 @@ if auth headers are used, a preflight request is required.
   - Example config:
   ```js
     modesConfiguration: {
-      ['@ohif/mode-longitudinal']: {
+      '@ohif/mode-longitudinal': {
         displayName: 'Custom Name',
         routeName: 'customRouteName',
           routes: [
