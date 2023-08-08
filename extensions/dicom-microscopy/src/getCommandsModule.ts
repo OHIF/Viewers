@@ -72,7 +72,7 @@ export default function getCommandsModule({
         ].indexOf(toolName) >= 0
       ) {
         // TODO: read from configuration
-        let options = {
+        const options = {
           geometryType: toolName,
           vertexEnabled: true,
           styleOptions: styles.default,

@@ -3,8 +3,10 @@ import { DisplaySetService, classes } from '@ohif/core';
 const ImageSet = classes.ImageSet;
 
 const findInstance = (measurement, displaySetService: DisplaySetService) => {
-  const { displaySetInstanceUID, ReferencedSOPInstanceUID: sopUid } =
-    measurement;
+  const {
+    displaySetInstanceUID,
+    ReferencedSOPInstanceUID: sopUid,
+  } = measurement;
   const referencedDisplaySet = displaySetService.getDisplaySetByUID(
     displaySetInstanceUID
   );

@@ -287,7 +287,7 @@ function _mapLegacyDataSet(dataset) {
   return dataset;
 }
 
-const toArray = function (x) {
+const toArray = function(x) {
   return Array.isArray(x) ? x : [x];
 };
 

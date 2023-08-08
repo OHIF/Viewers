@@ -72,7 +72,9 @@ const disallowedValidator = ({ pressedKeys = [] }) => {
 
   if (hasDisallowedCombinations) {
     return {
-      error: `"${formatPressedKeys(pressedKeys)}" shortcut combination is not allowed`,
+      error: `"${formatPressedKeys(
+        pressedKeys
+      )}" shortcut combination is not allowed`,
     };
   }
 };

@@ -13,8 +13,8 @@ const transparentClasses = {
 
 const smallInputClasses = {
   true: 'input-small',
-  false: ''
-}
+  false: '',
+};
 
 const Input = ({
   id,
