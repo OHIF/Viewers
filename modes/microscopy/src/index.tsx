@@ -36,7 +36,7 @@ const extensionDependencies = {
   '@ohif/extension-dicom-microscopy': '^3.0.0',
 };
 
-function modeFactory() {
+function modeFactory({ modeConfiguration }) {
   return {
     // TODO: We're using this as a route segment
     // We should not be.
@@ -130,6 +130,7 @@ function modeFactory() {
       dicompdf.sopClassHandler,
     ],
     hotkeys: [...hotkeys.defaults.hotkeyBindings],
+    ...modeConfiguration,
   };
 }
 

@@ -119,6 +119,58 @@ Here are a list of some options available:
 - `omitQuotationForMultipartRequest`: Some servers (e.g., .NET) require the `multipart/related` request to be sent without quotation marks. Defaults to `false`. If your server doesn't require this, then setting this flag to `true` might improve performance (by removing the need for preflight requests). Also note that
 if auth headers are used, a preflight request is required.
 - `maxNumRequests`: The maximum number of requests to allow in parallel. It is an object with keys of `interaction`, `thumbnail`, and `prefetch`. You can specify a specific number for each type.
+- `modesConfiguration`: Allows overriding modes configuration.
+  - Example config:
+  ```js
+    modesConfiguration: {
+      '@ohif/mode-longitudinal': {
+        displayName: 'Custom Name',
+        routeName: 'customRouteName',
+          routes: [
+            {
+              path: 'customPath',
+              layoutTemplate: () => {
+                /** Custom Layout */
+                return {
+                  id: ohif.layout,
+                  props: {
+                    leftPanels: [tracked.thumbnailList],
+                    rightPanels: [dicomSeg.panel, tracked.measurements],
+                    rightPanelDefaultClosed: true,
+                    viewports: [
+                      {
+                        namespace: tracked.viewport,
+                        displaySetsToDisplay: [ohif.sopClassHandler],
+                      },
+                    ],
+                  },
+                };
+              },
+            },
+          ],
+      }
+    },
+  ```
+  Note: Although the mode configuration is passed to the mode factory function, it is up to the particular mode itself if its going to use it to allow overwriting its original configuration e.g.
+  ```js
+    function modeFactory({ modeConfiguration }) {
+    return {
+      id,
+      routeName: 'viewer',
+      displayName: 'Basic Viewer',
+      ...
+      onModeEnter: ({ servicesManager, extensionManager, commandsManager }) => {
+        ...
+      },
+      /** 
+       * This mode allows its configuration to be overwritten by 
+       * destructuring the modeConfiguration value from the mode fatory function
+       * at the end of the mode configuration definition. 
+       */
+      ...modeConfiguration,
+    };
+  }
+  ```
 - `showLoadingIndicator`: (default to true), if set to false, the loading indicator will not be shown when navigating between studies.
 - `dangerouslyUseDynamicConfig`: Dynamic config allows user to pass `configUrl` query string. This allows to load config without recompiling application. If the `configUrl` query string is passed, the worklist and modes will load from the referenced json rather than the default .env config. If there is no `configUrl` path provided, the default behaviour is used and there should not be any deviation from current user experience.<br/>
 Points to consider while using `dangerouslyUseDynamicConfig`:<br/>
