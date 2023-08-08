@@ -6,11 +6,8 @@ export default function formatPN(name) {
     return;
   }
 
-  let nameToUse;
-  const _nameToUse = name.Alphabetic ?? name;
-  if (typeof _nameToUse === 'string' || _nameToUse instanceof String) {
-    nameToUse = _nameToUse;
-  } else {
+  let nameToUse = name.Alphabetic ?? name;
+  if (typeof nameToUse === 'object') {
     nameToUse = '';
   }
 
