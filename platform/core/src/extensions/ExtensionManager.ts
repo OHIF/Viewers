@@ -27,6 +27,7 @@ export type ExtensionConfiguration = Record<string, unknown>;
  */
 export interface ExtensionParams extends ExtensionConstructor {
   extensionManager: ExtensionManager;
+  servicesManager: ServicesManager;
   configuration?: ExtensionConfiguration;
 }
 
@@ -43,6 +44,7 @@ export interface Extension {
   getViewportModule?: (p: ExtensionParams) => unknown;
   getUtilityModule?: (p: ExtensionParams) => unknown;
   getCustomizationModule?: (p: ExtensionParams) => unknown;
+  getSopClassHandlerModule?: (p: ExtensionParams) => unknown;
   onModeEnter?: () => void;
   onModeExit?: () => void;
 }

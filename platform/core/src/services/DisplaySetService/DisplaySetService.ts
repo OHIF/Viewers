@@ -1,3 +1,4 @@
+import { ExtensionManager } from '../../extensions';
 import { InstanceMetadata } from '../../types';
 import { PubSubService } from '../_shared/pubSubServiceInterface';
 import EVENTS from './EVENTS';
@@ -47,6 +48,7 @@ export default class DisplaySetService extends PubSubService {
   };
 
   public activeDisplaySets = [];
+  extensionManager: ExtensionManager;
 
   protected activeDisplaySetsMap = new Map<string, DisplaySet>();
 
