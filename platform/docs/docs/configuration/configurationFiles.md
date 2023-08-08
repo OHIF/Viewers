@@ -124,7 +124,30 @@ if auth headers are used, a preflight request is required.
   ```js
     modesConfiguration: {
       ['@ohif/mode-longitudinal']: {
-        displayName: 'New Name'
+        displayName: 'Custom Name',
+        routeName: 'customRouteName',
+          routes: [
+            {
+              path: 'customPath',
+              layoutTemplate: () => {
+                /** Custom Layout */
+                return {
+                  id: ohif.layout,
+                  props: {
+                    leftPanels: [tracked.thumbnailList],
+                    rightPanels: [dicomSeg.panel, tracked.measurements],
+                    rightPanelDefaultClosed: true,
+                    viewports: [
+                      {
+                        namespace: tracked.viewport,
+                        displaySetsToDisplay: [ohif.sopClassHandler],
+                      },
+                    ],
+                  },
+                };
+              },
+            },
+          ],
       }
     },
   ```
