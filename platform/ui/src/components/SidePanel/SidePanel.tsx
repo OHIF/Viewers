@@ -89,9 +89,6 @@ const SidePanel = ({
   const openStatus = panelOpen ? 'open' : 'closed';
   const style = Object.assign({}, styleMap[openStatus][side], baseStyle);
 
-  const ActiveComponent =
-    activeTabIndex < tabs.length ? tabs[activeTabIndex].content : null;
-
   useEffect(() => {
     if (panelOpen && swiper) {
       swiper.slideTo(activeTabIndex, 500);
@@ -269,7 +266,15 @@ const SidePanel = ({
               </button>
             </div>
           )}
-          {ActiveComponent && <ActiveComponent />}
+
+          {tabs.map((tab, tabIndex) => (
+            <div
+              key={tab.id}
+              className={tabIndex === activeTabIndex ? '' : 'hidden'}
+            >
+              <tab.content />
+            </div>
+          ))}
         </React.Fragment>
       ) : (
         <React.Fragment>{getCloseStateComponent()}</React.Fragment>

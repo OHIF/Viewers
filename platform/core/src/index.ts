@@ -31,7 +31,7 @@ import {
   CustomizationService,
   StateSyncService,
   PanelService,
-  WorkflowStagesService,
+  WorkflowStepsService,
 } from './services';
 
 import IWebApiDataSource from './DataSources/IWebApiDataSource';
@@ -79,7 +79,7 @@ const OHIF = {
   pubSubServiceInterface,
   PubSubService,
   PanelService,
-  WorkflowStagesService,
+  WorkflowStepsService,
 };
 
 export {
@@ -120,7 +120,7 @@ export {
   PubSubService,
   Types,
   PanelService,
-  WorkflowStagesService,
+  WorkflowStepsService,
 };
 
 export { OHIF };

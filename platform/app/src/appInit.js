@@ -18,7 +18,7 @@ import {
   errorHandler,
   CustomizationService,
   PanelService,
-  WorkflowStagesService,
+  WorkflowStepsService,
   // utils,
 } from '@ohif/core';
 
@@ -67,7 +67,7 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
     CineService.REGISTRATION,
     UserAuthenticationService.REGISTRATION,
     PanelService.REGISTRATION,
-    WorkflowStagesService.REGISTRATION,
+    WorkflowStepsService.REGISTRATION,
     StateSyncService.REGISTRATION,
   ]);
 

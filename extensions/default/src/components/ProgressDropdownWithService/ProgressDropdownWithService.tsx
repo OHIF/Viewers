@@ -2,10 +2,10 @@ import React, { useEffect, useState, useCallback, ReactElement } from 'react';
 import { ServicesManager } from '@ohif/core';
 import { ProgressDropdown } from '@ohif/ui';
 
-const stagesToDropdownOptions = (stages = []) =>
-  stages.map(stage => ({
-    label: stage.name,
-    value: stage.id,
+const workflowStepsToDropdownOptions = (steps = []) =>
+  steps.map(step => ({
+    label: step.name,
+    value: step.id,
     activated: false,
     completed: false,
   }));
@@ -15,13 +15,13 @@ function ProgressDropdownWithService({
 }: {
   servicesManager: ServicesManager;
 }): ReactElement {
-  const { workflowStagesService } = servicesManager.services;
-  const [activeStageId, setActiveStageId] = useState(
-    workflowStagesService.activeWorkflowStage?.id
+  const { workflowStepsService } = servicesManager.services;
+  const [activeStepId, setActiveStepId] = useState(
+    workflowStepsService.activeWorkflowStep?.id
   );
 
   const [dropdownOptions, setDropdownOptions] = useState(
-    stagesToDropdownOptions(workflowStagesService.workflowStages)
+    workflowStepsToDropdownOptions(workflowStepsService.workflowSteps)
   );
 
   const setCurrentAndPreviousOptionsAsCompleted = useCallback(currentOption => {
@@ -58,10 +58,10 @@ function ProgressDropdownWithService({
         return;
       }
 
-      // TODO: Stages should be marked as completed after user has
+      // TODO: Steps should be marked as completed after user has
       // completed some action when required (not implemented)
       setCurrentAndPreviousOptionsAsCompleted(selectedOption);
-      setActiveStageId(selectedOption.value);
+      setActiveStepId(selectedOption.value);
     },
     [setCurrentAndPreviousOptionsAsCompleted]
   );
@@ -69,46 +69,48 @@ function ProgressDropdownWithService({
   useEffect(() => {
     let timeoutId;
 
-    if (activeStageId) {
-      // Give a little bit more time to update the UI since a method from
-      // Texture.js (create3DFilterableFromDataArray) is taking some to update
-      // the UI(eg: 600+ ms after moving from a 1x3 PET to a 2x3 PET/CT layout).
-      timeoutId = setTimeout(() => {
-        workflowStagesService.setActiveWorkflowStage(activeStageId);
-      }, 100);
+    if (activeStepId) {
+      // We've used setTimeout to give it more time to update the UI since
+      // create3DFilterableFromDataArray from Texture.js may take 600+ ms to run
+      // when there is a new series to load in the next step but that resulted
+      // in the followed React error when updating the content from left/right panels
+      // and all component states were being lost:
+      //   Error: Can't perform a React state update on an unmounted component
+      workflowStepsService.setActiveWorkflowStep(activeStepId);
     }
 
     return () => clearTimeout(timeoutId);
-  }, [activeStageId, workflowStagesService]);
+  }, [activeStepId, workflowStepsService]);
 
   useEffect(() => {
     const {
-      unsubscribe: unsubStagesChanged,
-    } = workflowStagesService.subscribe(
-      workflowStagesService.EVENTS.STAGES_CHANGED,
+      unsubscribe: unsubStepsChanged,
+    } = workflowStepsService.subscribe(
+      workflowStepsService.EVENTS.STEPS_CHANGED,
       () =>
         setDropdownOptions(
-          stagesToDropdownOptions(workflowStagesService.workflowStages)
+          workflowStepsToDropdownOptions(workflowStepsService.workflowSteps)
         )
     );
 
     const {
-      unsubscribe: unsubActiveStageChanged,
-    } = workflowStagesService.subscribe(
-      workflowStagesService.EVENTS.ACTIVE_STAGE_CHANGED,
-      () => setActiveStageId(workflowStagesService.activeWorkflowStage.id)
+      unsubscribe: unsubActiveStepChanged,
+    } = workflowStepsService.subscribe(
+      workflowStepsService.EVENTS.ACTIVE_STEP_CHANGED,
+
+      () => setActiveStepId(workflowStepsService.activeWorkflowStep.id)
     );
 
     return () => {
-      unsubStagesChanged();
-      unsubActiveStageChanged();
+      unsubStepsChanged();
+      unsubActiveStepChanged();
     };
-  }, [servicesManager, workflowStagesService]);
+  }, [servicesManager, workflowStepsService]);
 
   return (
     <ProgressDropdown
       options={dropdownOptions}
-      value={activeStageId}
+      value={activeStepId}
       onChange={handleDropdownChange}
     />
   );

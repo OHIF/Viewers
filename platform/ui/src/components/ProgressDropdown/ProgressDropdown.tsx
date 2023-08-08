@@ -32,15 +32,7 @@ const ProgressDropdown = ({
   const [open, setOpen] = useState(false);
   const toggleOpen = () => setOpen(s => !s);
   const [options, setOptions] = useState(optionsProps);
-
-  const getSelectedOption = useCallback(
-    () => (value ? options.find(option => option.value === value) : undefined),
-    [options, value]
-  );
-
-  const [selectedOption, setSelectedOption] = useState(() =>
-    getSelectedOption()
-  );
+  const [selectedOption, setSelectedOption] = useState(undefined);
 
   const selectedOptionIndex = useMemo(
     () => options.findIndex(option => option.value === selectedOption?.value),
@@ -80,10 +72,7 @@ const ProgressDropdown = ({
   }, [options, selectedOptionIndex, canMoveNext, handleOptionSelected]);
 
   // Update the options in case the options from props has changed
-  useEffect(() => {
-    setOptions(optionsProps);
-    setSelectedOption(getSelectedOption());
-  }, [optionsProps, getSelectedOption]);
+  useEffect(() => setOptions(optionsProps), [optionsProps]);
 
   // Updates the selected item based on the value from props
   useEffect(() => {
@@ -98,6 +87,7 @@ const ProgressDropdown = ({
     handleOptionSelected(newOption);
   }, [value, options, handleOptionSelected]);
 
+  // Listen to any click event outside of the dropdown context to hide the options
   useEffect(() => {
     const handleDocumentClick = e => {
       if (element.current && !element.current.contains(e.target)) {

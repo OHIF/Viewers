@@ -85,20 +85,6 @@ async function defaultRouteInit(
   return unsubscriptions;
 }
 
-function initWorkflowStages({ mode, servicesManager }) {
-  const { workflowStagesService } = servicesManager.services;
-  const { workflow } = mode;
-
-  if (!workflow?.stages) {
-    return;
-  }
-
-  const initialStageId = workflow.initialStageId ?? workflow.stages[0].id;
-
-  workflowStagesService.addWorkflowStages(workflow.stages);
-  workflowStagesService.setActiveWorkflowStage(initialStageId);
-}
-
 export default function ModeRoute({
   mode,
   dataSourceName,
@@ -422,9 +408,13 @@ export default function ModeRoute({
     setupRouteInit().then(unsubs => {
       unsubscriptions = unsubs;
 
-      // This needs to run after hanging protocol matching process because
-      // it may change the protocol/stage based on workflow stage settings
-      initWorkflowStages({ mode, servicesManager });
+      // Some code may need to run after hanging protocol initialization
+      // (eg: workflowStepsService initialization on 4D mode)
+      mode?.onSetupRouteComplete({
+        servicesManager,
+        extensionManager,
+        commandsManager,
+      });
     });
 
     return () => {

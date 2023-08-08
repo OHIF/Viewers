@@ -42,7 +42,7 @@ describe('Top level exports', () => {
       'pubSubServiceInterface',
       'PubSubService',
       'PanelService',
-      'WorkflowStagesService',
+      'WorkflowStepsService',
     ].sort();
 
     const exports = Object.keys(OHIF).sort();

@@ -11,7 +11,10 @@ import createAndDownloadTMTVReport from './utils/createAndDownloadTMTVReport';
 import dicomRTAnnotationExport from './utils/dicomRTAnnotationExport/RTStructureSet';
 
 const metadataProvider = classes.MetadataProvider;
-const RECTANGLE_ROI_THRESHOLD_MANUAL = 'RectangleROIStartEndThreshold';
+const RECTANGLE_ROI_THRESHOLD_MANUAL_TOOLIDS = [
+  'RectangleROIStartEndThreshold',
+  'RectangleROIThreshold',
+];
 const LABELMAP = csTools.Enums.SegmentationRepresentations.Labelmap;
 
 const commandsModule = ({
@@ -54,6 +57,16 @@ const commandsModule = ({
     });
 
     return toolGroupIds;
+  }
+
+  function _getAnnotationsSelectedByToolNames(toolNames) {
+    return toolNames.reduce((allAnnotationUIDs, toolName) => {
+      const annotationUIDs = csTools.annotation.selection.getAnnotationsSelectedByToolName(
+        toolName
+      );
+
+      return allAnnotationUIDs.concat(annotationUIDs);
+    }, []);
   }
 
   const actions = {
@@ -118,7 +131,7 @@ const commandsModule = ({
 
       return metadata;
     },
-    createNewLabelmapFromPT: async () => {
+    createNewLabelmapFromPT: async ({ label }) => {
       // Create a segmentation of the same resolution as the source data
       // using volumeLoader.createAndCacheDerivedVolume.
       const { viewportMatchDetails } = hangingProtocolService.getMatchDetails();
@@ -132,7 +145,8 @@ const commandsModule = ({
       }
 
       const segmentationId = await segmentationService.createSegmentationForDisplaySet(
-        ptDisplaySet.displaySetInstanceUID
+        ptDisplaySet.displaySetInstanceUID,
+        { label }
       );
 
       // Add Segmentation to all toolGroupIds in the viewer
@@ -196,8 +210,8 @@ const commandsModule = ({
         throw new Error('No Reference labelmap found');
       }
 
-      const annotationUIDs = csTools.annotation.selection.getAnnotationsSelectedByToolName(
-        RECTANGLE_ROI_THRESHOLD_MANUAL
+      const annotationUIDs = _getAnnotationsSelectedByToolNames(
+        RECTANGLE_ROI_THRESHOLD_MANUAL_TOOLIDS
       );
 
       if (annotationUIDs.length === 0) {
@@ -230,8 +244,8 @@ const commandsModule = ({
 
       const referencedVolume = cs.cache.getVolume(referencedVolumeId);
 
-      const annotationUIDs = csTools.annotation.selection.getAnnotationsSelectedByToolName(
-        RECTANGLE_ROI_THRESHOLD_MANUAL
+      const annotationUIDs = _getAnnotationsSelectedByToolNames(
+        RECTANGLE_ROI_THRESHOLD_MANUAL_TOOLIDS
       );
 
       const annotations = annotationUIDs.map(annotationUID =>
@@ -379,8 +393,8 @@ const commandsModule = ({
       const { viewport } = _getActiveViewportsEnabledElement();
       const { focalPoint, viewPlaneNormal } = viewport.getCamera();
 
-      const selectedAnnotationUIDs = csTools.annotation.selection.getAnnotationsSelectedByToolName(
-        RECTANGLE_ROI_THRESHOLD_MANUAL
+      const selectedAnnotationUIDs = _getAnnotationsSelectedByToolNames(
+        RECTANGLE_ROI_THRESHOLD_MANUAL_TOOLIDS
       );
 
       const annotationUID = selectedAnnotationUIDs[0];
@@ -417,8 +431,8 @@ const commandsModule = ({
     setEndSliceForROIThresholdTool: () => {
       const { viewport } = _getActiveViewportsEnabledElement();
 
-      const selectedAnnotationUIDs = csTools.annotation.selection.getAnnotationsSelectedByToolName(
-        RECTANGLE_ROI_THRESHOLD_MANUAL
+      const selectedAnnotationUIDs = _getAnnotationsSelectedByToolNames(
+        RECTANGLE_ROI_THRESHOLD_MANUAL_TOOLIDS
       );
 
       const annotationUID = selectedAnnotationUIDs[0];
@@ -443,7 +457,14 @@ const commandsModule = ({
 
       Object.keys(stateManager.annotations).forEach(frameOfReferenceUID => {
         const forAnnotations = stateManager.annotations[frameOfReferenceUID];
-        const ROIAnnotations = forAnnotations[RECTANGLE_ROI_THRESHOLD_MANUAL];
+        const ROIAnnotations = RECTANGLE_ROI_THRESHOLD_MANUAL_TOOLIDS.reduce(
+          (annotations, toolName) => [
+            ...annotations,
+            ...(forAnnotations[toolName] ?? []),
+          ],
+          []
+        );
+
         annotations.push(...ROIAnnotations);
       });
 

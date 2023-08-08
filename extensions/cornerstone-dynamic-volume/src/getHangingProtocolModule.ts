@@ -1,7 +1,4 @@
-// import { Enums } from '@cornerstonejs/core';
-
 const DEFAULT_COLORMAP = '2hot';
-// const { BlendModes } = Enums;
 
 function getPTOptions({
   colormap,
@@ -48,7 +45,7 @@ function getPTViewports() {
         viewportId: 'ptAxial',
         viewportType: 'volume',
         orientation: 'axial',
-        toolGroupId: 'dynamic4D-default',
+        toolGroupId: 'dynamic4D-pt',
         initialImageOptions: {
           preset: 'middle', // 'first', 'last', 'middle'
         },
@@ -79,7 +76,7 @@ function getPTViewports() {
         viewportId: 'ptSagittal',
         viewportType: 'volume',
         orientation: 'sagittal',
-        toolGroupId: 'dynamic4D-default',
+        toolGroupId: 'dynamic4D-pt',
         initialImageOptions: {
           // preset: 'middle', // 'first', 'last', 'middle'
           index: 140,
@@ -111,7 +108,7 @@ function getPTViewports() {
         viewportId: 'ptCoronal',
         viewportType: 'volume',
         orientation: 'coronal',
-        toolGroupId: 'dynamic4D-default',
+        toolGroupId: 'dynamic4D-pt',
         initialImageOptions: {
           // preset: 'middle', // 'first', 'last', 'middle'
           index: 160,
@@ -300,29 +297,10 @@ const defaultProtocol = {
       },
     },
   ],
-  toolGroupIds: ['dynamic4D-default'],
   // -1 would be used to indicate active only, whereas other values are
   // the number of required priors referenced - so 0 means active with
   // 0 or more priors.
-  numberOfPriorsReferenced: 0,
-  // Default viewport is used to define the viewport when
-  // additional viewports are added using the layout tool
-  defaultViewport: {
-    viewportOptions: {
-      viewportType: 'volume',
-      toolGroupId: 'dynamic4D-default',
-      allowUnmatchedView: true,
-      initialImageOptions: {
-        preset: 'middle', // 'first', 'last', 'middle'
-      },
-    },
-    displaySets: [
-      {
-        id: 'defaultDisplaySetId',
-        matchedDisplaySetsIndex: -1,
-      },
-    ],
-  },
+  numberOfPriorsReferenced: -1,
   displaySetSelectors: {
     defaultDisplaySetId: {
       // Unused currently

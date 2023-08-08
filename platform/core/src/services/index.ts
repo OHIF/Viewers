@@ -19,7 +19,7 @@ import CustomizationService from './CustomizationService';
 import Services from '../types/Services';
 import StateSyncService from './StateSyncService';
 import PanelService from './PanelService';
-import WorkflowStagesService from './WorkflowStagesService';
+import WorkflowStepsService from './WorkflowStepsService';
 
 export {
   Services,
@@ -41,5 +41,5 @@ export {
   PubSubService,
   UserAuthenticationService,
   PanelService,
-  WorkflowStagesService,
+  WorkflowStepsService,
 };

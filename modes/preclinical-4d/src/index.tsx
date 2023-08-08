@@ -1,5 +1,6 @@
 import { id } from './id';
 import { hotkeys } from '@ohif/core';
+import initWorkflowSteps from './initWorkflowSteps';
 import initToolGroups from './initToolGroups';
 import toolbarButtons from './toolbarButtons';
 
@@ -9,6 +10,8 @@ const extensionDependencies = {
   '@ohif/extension-default': '3.7.0-beta.27',
   '@ohif/extension-cornerstone': '3.7.0-beta.27',
   '@ohif/extension-cornerstone-dynamic-volume': '3.7.0-beta.27',
+  '@ohif/extension-cornerstone-dicom-seg': '3.7.0-beta.27',
+  '@ohif/extension-tmtv': '3.7.0-beta.27',
 };
 
 const ohif = {
@@ -22,6 +25,8 @@ const ohif = {
 const dynamicVolume = {
   leftPanel:
     '@ohif/extension-cornerstone-dynamic-volume.panelModule.dynamic-volume',
+  rightPanel:
+    '@ohif/extension-cornerstone-dynamic-volume.panelModule.ROISegmentation',
 };
 
 const cornerstone = {
@@ -61,10 +66,15 @@ function modeFactory({ modeConfiguration }) {
         'WindowLevel',
         'Crosshairs',
         'Pan',
-        'RectangleROIStartEndThreshold',
         'fusionPTColormap',
         'Cine',
+        'SegmentationTools',
       ]);
+    },
+    onSetupRouteComplete: ({ servicesManager }) => {
+      // This needs to run after hanging protocol matching process because
+      // it may change the protocol/stage based on workflow stage settings
+      initWorkflowSteps(servicesManager);
     },
     onModeExit: ({ servicesManager }) => {
       const {
@@ -93,52 +103,6 @@ function modeFactory({ modeConfiguration }) {
       );
     },
 
-    // You can find more infomation about how to define a workflow and its
-    // stages in WorkflowStageService
-    workflow: {
-      stages: [
-        {
-          id: 'dataPreparation',
-          name: 'Data Preparation',
-          hangingProtocol: {
-            protocolId: 'default4D',
-            stageId: 'dataPreparation',
-          },
-        },
-        {
-          id: 'registration',
-          name: 'Registration',
-          hangingProtocol: {
-            protocolId: 'default4D',
-            stageId: 'registration',
-          },
-        },
-        {
-          id: 'review',
-          name: 'Review',
-          hangingProtocol: {
-            protocolId: 'default4D',
-            stageId: 'review',
-          },
-        },
-        {
-          id: 'roiQuantification',
-          name: 'ROI Quantification',
-          hangingProtocol: {
-            protocolId: 'default4D',
-            stageId: 'roiQuantification',
-          },
-        },
-        {
-          id: 'kineticAnalysis',
-          name: 'Kinect Analysis',
-          hangingProtocol: {
-            protocolId: 'default4D',
-            stageId: 'kinectAnalysis',
-          },
-        },
-      ],
-    },
     /**
      * Mode Routes are used to define the mode's behavior. A list of Mode Route
      * that includes the mode's path and the layout to be used. The layout will
@@ -159,7 +123,7 @@ function modeFactory({ modeConfiguration }) {
             id: ohif.layout,
             props: {
               leftPanels: [dynamicVolume.leftPanel],
-              rightPanels: [ohif.rightPanel],
+              rightPanels: [],
               rightPanelDefaultClosed: true,
               viewports: [
                 {
@@ -174,7 +138,7 @@ function modeFactory({ modeConfiguration }) {
     ],
     extensions: extensionDependencies,
     // Default protocol gets self-registered by default in the init
-    hangingProtocol: ['default4D'],
+    hangingProtocol: 'default4D',
     // Order is important in sop class handlers when two handlers both use
     // the same sop class under different situations.  In that case, the more
     // general handler needs to come last.  For this case, the dicomvideo must
