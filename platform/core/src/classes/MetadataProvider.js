@@ -70,6 +70,11 @@ class MetadataProvider {
       SeriesInstanceUID,
       SOPInstanceUID
     );
+
+    if (!instance) {
+      return;
+    }
+
     return (
       (frameNumber && combineFrameInstance(frameNumber, instance)) || instance
     );
