@@ -1,6 +1,6 @@
 import { id } from './id';
 import { hotkeys } from '@ohif/core';
-import initWorkflowStages from './initWorkflowStages';
+import initWorkflowSteps from './initWorkflowSteps';
 import initToolGroups from './initToolGroups';
 import toolbarButtons from './toolbarButtons';
 
@@ -74,7 +74,7 @@ function modeFactory({ modeConfiguration }) {
     onSetupRouteComplete: ({ servicesManager }) => {
       // This needs to run after hanging protocol matching process because
       // it may change the protocol/stage based on workflow stage settings
-      initWorkflowStages(servicesManager);
+      initWorkflowSteps(servicesManager);
     },
     onModeExit: ({ servicesManager }) => {
       const {

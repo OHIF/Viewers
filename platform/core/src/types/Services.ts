@@ -8,7 +8,7 @@ import {
   StateSyncService,
   UINotificationService,
   UIModalService,
-  WorkflowStagesService,
+  WorkflowStepsService,
 } from '../services';
 
 /**
@@ -24,7 +24,7 @@ export default interface Services {
   uiModalService?: UIModalService;
   uiNotificationService?: UINotificationService;
   stateSyncService?: StateSyncService;
-  workflowStagesService: WorkflowStagesService;
+  workflowStepsService: WorkflowStepsService;
   cineService?: unknown;
   userAuthenticationService?: unknown;
   cornerstoneViewportService?: unknown;

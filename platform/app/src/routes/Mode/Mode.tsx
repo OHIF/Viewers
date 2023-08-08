@@ -409,7 +409,7 @@ export default function ModeRoute({
       unsubscriptions = unsubs;
 
       // Some code may need to run after hanging protocol initialization
-      // (eg: workflowStagesService initialization on 4D mode)
+      // (eg: workflowStepsService initialization on 4D mode)
       mode?.onSetupRouteComplete({
         servicesManager,
         extensionManager,

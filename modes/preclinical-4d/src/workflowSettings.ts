@@ -13,7 +13,7 @@ const defaultPanels = {
 const defaultLayout = { panels: defaultPanels };
 
 const workflowSettings = {
-  stages: [
+  steps: [
     {
       id: 'dataPreparation',
       name: 'Data Preparation',
