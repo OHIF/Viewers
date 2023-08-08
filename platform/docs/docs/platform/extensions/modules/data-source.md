@@ -61,11 +61,9 @@ You can add your custom datasource by creating the implementation using
 `IWebApiDataSource.create` from `@ohif/core`. This factory function creates a
 new "Web API" data source that fetches data over HTTP.
 
-You need to make sure, you implement the following functions for the data
-source.
-
 ```js title="platform/core/src/DataSources/IWebApiDataSource.js"
 function create({
+  initialize,
   query,
   retrieve,
   store,
@@ -80,7 +78,18 @@ function create({
 ```
 
 You can take a look at `dicomweb` data source implementation to get an idea
-`extensions/default/src/DicomWebDataSource/index.js`
+`extensions/default/src/DicomWebDataSource/index.js` but here here are some
+important api endpoints that you need to implement:
+
+
+- `initialize`: This method is called when the data source is first created in the mode.tsx, it is used to initialize the data source and set the configuration. For instance, `dicomwebDatasource` uses this method to grab the StudyInstanceUID from the URL and set it as the active study, as opposed to `dicomJSONDatasource` which uses url in the browser to fetch the data and store it in a cache
+- `query.studies.search`: This is used in the study panel on the left to fetch the prior studies for the same MRN which is then used to display on the `All` tab. it is also used in the Worklist to show all the studies from the server.
+- `query.series.search`: This is used to fetch the series information for a given study that is expanded in the Worklist.
+- `retrieve.bulkDataURI`: used to render RTSTUCTURESET in the viewport.
+- `retrieve.series.metadata`: It is a crucial end point that is used to fetch series level metadata which for hanging displaySets and displaySet creation.
+- `store.dicom`: If you don't need store functionality, you can skip this method. This is used to store the data in the backend.
+
+
 
 ## Static WADO Client
 

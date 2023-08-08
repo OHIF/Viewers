@@ -79,6 +79,11 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
     module: {
       noParse: [/(codec)/, /(dicomicc)/],
       rules: [
+        {
+          test: /\.js$/,
+          enforce: 'pre',
+          use: 'source-map-loader',
+        },
         transpileJavaScriptRule(mode),
         loadWebWorkersRule,
         // loadShadersRule,
