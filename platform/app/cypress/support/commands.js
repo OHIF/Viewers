@@ -60,7 +60,7 @@ Cypress.Commands.add(
     cy.location('pathname').then($url => {
       cy.log($url);
       if (
-        $url == 'blank' ||
+        $url === 'blank' ||
         !$url.includes(`/basic-test/${StudyInstanceUID}${otherParams}`)
       ) {
         cy.openStudyInViewer(StudyInstanceUID, otherParams);
