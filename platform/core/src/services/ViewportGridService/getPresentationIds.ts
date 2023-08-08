@@ -10,11 +10,11 @@ const DEFAULT = 'default';
 // dragged and dropped the view in twice.  For example, it allows displaying
 // bone, brain and soft tissue views of a single display set, and to still
 // remember the specific changes to each viewport.
-const addUniqueIndex = (arr, key, viewports, isUpdatingViewport) => {
+const addUniqueIndex = (arr, key, viewports, isUpdatingSameViewport) => {
   arr.push(0);
 
   // If we are updating the viewport, we should not increment the index
-  if (isUpdatingViewport) {
+  if (isUpdatingSameViewport) {
     return;
   }
 
@@ -116,7 +116,7 @@ const getPresentationIds = (viewport, viewports): PresentationIds => {
   }
 
   // only add unique index if the viewport is getting inserted and not updated
-  const isUpdatingViewport = viewports.find(v => {
+  const isUpdatingSameViewport = viewports.find(v => {
     return (
       v.displaySetInstanceUIDs.toString() ===
         viewport.displaySetInstanceUIDs.toString() &&
@@ -131,13 +131,13 @@ const getPresentationIds = (viewport, viewports): PresentationIds => {
     positionPresentationArr,
     'positionPresentationId',
     viewports,
-    isUpdatingViewport
+    isUpdatingSameViewport
   );
   addUniqueIndex(
     lutPresentationArr,
     'lutPresentationId',
     viewports,
-    isUpdatingViewport
+    isUpdatingSameViewport
   );
 
   const lutPresentationId = lutPresentationArr.join(JOIN_STR);
