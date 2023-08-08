@@ -164,8 +164,8 @@ function OHIFCornerstoneRTViewport(props) {
       servicesManager,
       viewportIndex,
       rtDisplaySet,
+      preHydrateCallbacks: [storePresentationState],
     }).then(isHydrated => {
-      storePresentationState();
       if (isHydrated) {
         setIsHydrated(true);
       }
