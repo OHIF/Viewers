@@ -8,7 +8,7 @@ import {
 import { adaptersSEG, Enums } from '@cornerstonejs/adapters';
 
 import { SOPClassHandlerId } from './id';
-import dcmjs from 'dcmjs';
+import { dicomlabToRGB } from './utils/dicomlabToRGB';
 
 const sopClassUids = ['1.2.840.10008.5.1.4.1.1.66.4'];
 
@@ -203,12 +203,7 @@ async function _loadSegments({
 
   results.segMetadata.data.forEach((data, i) => {
     if (i > 0) {
-      const { RecommendedDisplayCIELabValue: cielab } = data;
-      const rgba = dcmjs.data.Colors.dicomlab2RGB(cielab).map(x =>
-        Math.round(x * 255)
-      );
-
-      data.rgba = rgba;
+      data.rgba = dicomlabToRGB(data.RecommendedDisplayCIELabValue);
     }
   });
 

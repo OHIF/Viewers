@@ -34,12 +34,8 @@ function LoadingIndicatorTotalPercent({
     ) : !totalNumbers && percentComplete !== null ? (
       <div className="text-white text-sm">Loaded {percentComplete}%</div>
     ) : (
-      <div className="text-white text-sm flex items-baseline space-x-1">
-        <div>Loaded</div>
-        <div>{numTargetsLoadedText}</div>
-        <div>of</div>
-        <div>{totalNumbersText}</div>
-        <div>{targetText}</div>
+      <div className="text-white text-sm">
+        Loaded {numTargetsLoadedText} of {totalNumbersText} {targetText}
       </div>
     );
 
