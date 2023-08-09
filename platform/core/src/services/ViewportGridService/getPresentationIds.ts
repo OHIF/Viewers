@@ -130,7 +130,7 @@ const getPresentationIds = (viewport, viewports): PresentationIds => {
     return (
       v.displaySetInstanceUIDs.toString() ===
         viewport.displaySetInstanceUIDs.toString() &&
-      v.viewportIndex === viewport.viewportIndex
+      v.viewportId === viewport.viewportId
     );
   });
 

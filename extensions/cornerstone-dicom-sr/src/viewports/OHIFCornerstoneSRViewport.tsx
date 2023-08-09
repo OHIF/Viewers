@@ -20,7 +20,6 @@ function OHIFCornerstoneSRViewport(props) {
     children,
     dataSource,
     displaySets,
-    viewportIndex,
     viewportLabel,
     viewportOptions,
     servicesManager,
@@ -32,6 +31,8 @@ function OHIFCornerstoneSRViewport(props) {
     cornerstoneViewportService,
     measurementService,
   } = servicesManager.services;
+
+  const viewportId = viewportOptions.viewportId;
 
   // SR viewport will always have a single display set
   if (displaySets.length > 1) {
@@ -51,7 +52,7 @@ function OHIFCornerstoneSRViewport(props) {
     setReferencedDisplaySetMetadata,
   ] = useState(null);
   const [element, setElement] = useState(null);
-  const { viewports, activeViewportIndex } = viewportGrid;
+  const { viewports, activeViewportId } = viewportGrid;
 
   // Optional hook into tracking extension, if present.
   let trackedMeasurements;
@@ -85,7 +86,7 @@ function OHIFCornerstoneSRViewport(props) {
       if (displaySets.length) {
         viewportGridService.setDisplaySetsForViewports([
           {
-            viewportIndex: activeViewportIndex,
+            viewportId: activeViewportId,
             displaySetInstanceUIDs: [displaySets[0].displaySetInstanceUID],
           },
         ]);
@@ -160,13 +161,11 @@ function OHIFCornerstoneSRViewport(props) {
           // imageIdIndex will handle it by updating the viewport, but if they
           // are the same we just need to use measurementService to jump to the
           // new measurement
-          const viewportInfo = cornerstoneViewportService.getViewportInfoByIndex(
-            viewportIndex
+          const viewportInfo = cornerstoneViewportService.getViewportInfo(
+            viewportId
           );
 
-          const csViewport = cornerstoneViewportService.getCornerstoneViewport(
-            viewportInfo.getViewportId()
-          );
+          const csViewport = cornerstoneViewportService.getCornerstoneViewport();
 
           const imageIds = csViewport.getImageIds();
 
@@ -180,7 +179,7 @@ function OHIFCornerstoneSRViewport(props) {
         }
       });
     },
-    [dataSource, srDisplaySet, activeImageDisplaySetData, viewportIndex]
+    [dataSource, srDisplaySet, activeImageDisplaySetData, viewportId]
   );
 
   const getCornerstoneViewport = useCallback(() => {
@@ -228,7 +227,7 @@ function OHIFCornerstoneSRViewport(props) {
         isJumpToMeasurementDisabled={true}
       ></Component>
     );
-  }, [activeImageDisplaySetData, viewportIndex, measurementSelected]);
+  }, [activeImageDisplaySetData, viewportId, measurementSelected]);
 
   const onMeasurementChange = useCallback(
     direction => {
@@ -266,12 +265,12 @@ function OHIFCornerstoneSRViewport(props) {
     const onDisplaySetsRemovedSubscription = displaySetService.subscribe(
       displaySetService.EVENTS.DISPLAY_SETS_REMOVED,
       ({ displaySetInstanceUIDs }) => {
-        const activeViewport = viewports[activeViewportIndex];
+        const activeViewport = viewports[activeViewportId];
         if (
           displaySetInstanceUIDs.includes(activeViewport.displaySetInstanceUID)
         ) {
           viewportGridService.setDisplaySetsForViewport({
-            viewportIndex: activeViewportIndex,
+            viewportId: activeViewportId,
             displaySetInstanceUIDs: [],
           });
         }
@@ -338,7 +337,7 @@ function OHIFCornerstoneSRViewport(props) {
       return (
         child &&
         React.cloneElement(child, {
-          viewportIndex,
+          viewportId,
           key: index,
         })
       );
@@ -370,7 +369,7 @@ function OHIFCornerstoneSRViewport(props) {
         getStatusComponent={() =>
           _getStatusComponent({
             srDisplaySet,
-            viewportIndex,
+            viewportId,
             isTracked: false,
             isRehydratable: srDisplaySet.isRehydratable,
             isLocked,
@@ -410,7 +409,7 @@ function OHIFCornerstoneSRViewport(props) {
 
 OHIFCornerstoneSRViewport.propTypes = {
   displaySets: PropTypes.arrayOf(PropTypes.object),
-  viewportIndex: PropTypes.number.isRequired,
+  viewportId: PropTypes.number.isRequired,
   dataSource: PropTypes.object,
   children: PropTypes.node,
   viewportLabel: PropTypes.string,
@@ -459,7 +458,7 @@ async function _getViewportReferencedDisplaySetData(
 
 function _getStatusComponent({
   srDisplaySet,
-  viewportIndex,
+  viewportId,
   isRehydratable,
   isLocked,
   sendTrackedMeasurementsEvent,
@@ -467,7 +466,7 @@ function _getStatusComponent({
   const handleMouseUp = () => {
     sendTrackedMeasurementsEvent('HYDRATE_SR', {
       displaySetInstanceUID: srDisplaySet.displaySetInstanceUID,
-      viewportIndex,
+      viewportId,
     });
   };
 

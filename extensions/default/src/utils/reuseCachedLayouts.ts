@@ -19,7 +19,7 @@ const reuseCachedLayout = (
   hangingProtocolService: HangingProtocolService,
   syncService: StateSyncService
 ): ReturnType => {
-  const { activeViewportIndex, viewports, layout } = state;
+  const { activeViewportId, viewports, layout } = state;
   const hpInfo = hangingProtocolService.getState();
   const { protocolId, stageIndex, activeStudyUID } = hpInfo;
   const { protocol } = hangingProtocolService.getActiveProtocol();
@@ -55,7 +55,7 @@ const reuseCachedLayout = (
       if (!displaySetUID) {
         continue;
       }
-      if (idx === activeViewportIndex && i === 0) {
+      if (idx === activeViewportId && i === 0) {
         displaySetSelectorMap[
           `${activeStudyUID}:activeDisplaySet:0`
         ] = displaySetUID;

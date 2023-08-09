@@ -7,7 +7,7 @@ import { StateSyncService, Types } from '@ohif/core';
  * then one can be re-used from the display set if it isn't going to be displayed.
  * @param hangingProtocolService - bound parameter supplied before using this
  * @param viewportsByPosition - bound parameter supplied before using this
- * @param viewportIndex - the index to retrieve
+ * @param viewportId - viewport Id to use for the new viewport
  * @param positionId - the current position on screen to retrieve
  * @param options - the set of options used, so that subsequent calls can
  *                  store state that is reset by the setLayout.
@@ -17,7 +17,7 @@ import { StateSyncService, Types } from '@ohif/core';
 export const findOrCreateViewport = (
   hangingProtocolService,
   viewportsByPosition,
-  viewportIndex: number,
+  viewportId: string,
   positionId: string,
   options: Record<string, unknown>
 ) => {

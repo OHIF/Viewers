@@ -10,7 +10,7 @@ function ViewerViewportGrid(props) {
   const { servicesManager, viewportComponents, dataSource } = props;
   const [viewportGrid, viewportGridService] = useViewportGrid();
 
-  const { layout, activeViewportIndex, viewports } = viewportGrid;
+  const { layout, activeViewportId, viewports } = viewportGrid;
   const { numCols, numRows } = layout;
 
   // TODO -> Need some way of selecting which displaySets hit the viewports.
@@ -51,10 +51,10 @@ function ViewerViewportGrid(props) {
      * specify the viewport match details, which specifies the size and
      * setup of the various viewports.
      */
-    const findOrCreateViewport = viewportIndex => {
-      const details = viewportMatchDetails.get(viewportIndex);
+    const findOrCreateViewport = viewportId => {
+      const details = viewportMatchDetails.get(viewportId);
       if (!details) {
-        console.log('No match details for viewport', viewportIndex);
+        console.log('No match details for viewport', viewportId);
         return;
       }
 
@@ -99,11 +99,11 @@ function ViewerViewportGrid(props) {
   };
 
   const _getUpdatedViewports = useCallback(
-    (viewportIndex, displaySetInstanceUID) => {
+    (viewportId, displaySetInstanceUID) => {
       let updatedViewports = [];
       try {
         updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
-          viewportIndex,
+          viewportId,
           displaySetInstanceUID
         );
       } catch (error) {
@@ -144,7 +144,7 @@ function ViewerViewportGrid(props) {
   useEffect(() => {
     const { unsubscribe } = measurementService.subscribe(
       MeasurementService.EVENTS.JUMP_TO_MEASUREMENT_LAYOUT,
-      ({ viewportIndex, measurement, isConsumed }) => {
+      ({ viewportId, measurement, isConsumed }) => {
         if (isConsumed) {
           return;
         }
@@ -155,7 +155,7 @@ function ViewerViewportGrid(props) {
           measurement;
 
         const updatedViewports = _getUpdatedViewports(
-          viewportIndex,
+          viewportId,
           referencedDisplaySetInstanceUID
         );
         // Arbitrarily assign the viewport to element 0
@@ -197,7 +197,7 @@ function ViewerViewportGrid(props) {
   }, [viewports]);
 
   /**
-  const onDoubleClick = viewportIndex => {
+  const onDoubleClick = viewportId => {
     // TODO -> Disabled for now.
     // onNewImage on a cornerstone viewport is firing setDisplaySetsForViewport.
     // Which it really really shouldn't. We need a larger fix for jump to
@@ -206,7 +206,7 @@ function ViewerViewportGrid(props) {
       viewportGridService.set({
         numCols: cachedLayout.numCols,
         numRows: cachedLayout.numRows,
-        activeViewportIndex: cachedLayout.activeViewportIndex,
+        activeViewportId: cachedLayout.activeViewportId,
         viewports: cachedLayout.viewports,
         cachedLayout: null,
       });
@@ -223,10 +223,10 @@ function ViewerViewportGrid(props) {
     viewportGridService.set({
       numCols: 1,
       numRows: 1,
-      activeViewportIndex: 0,
+      activeViewportId: 0,
       viewports: [
         {
-          displaySetInstanceUID: viewports[viewportIndex].displaySetInstanceUID,
+          displaySetInstanceUID: viewports[viewportId].displaySetInstanceUID,
           imageIndex: undefined,
         },
       ],
@@ -234,15 +234,15 @@ function ViewerViewportGrid(props) {
         numCols,
         numRows,
         viewports: cachedViewports,
-        activeViewportIndex: viewportIndex,
+        activeViewportId: viewportId,
       },
     });
   };
   */
 
-  const onDropHandler = (viewportIndex, { displaySetInstanceUID }) => {
+  const onDropHandler = (viewportId, { displaySetInstanceUID }) => {
     const updatedViewports = _getUpdatedViewports(
-      viewportIndex,
+      viewportId,
       displaySetInstanceUID
     );
     viewportGridService.setDisplaySetsForViewports(updatedViewports);
@@ -253,9 +253,7 @@ function ViewerViewportGrid(props) {
 
     const numViewportPanes = viewportGridService.getNumViewportPanes();
     for (let i = 0; i < numViewportPanes; i++) {
-      const viewportIndex = i;
-      const isActive = activeViewportIndex === viewportIndex;
-      const paneMetadata = viewports[i] || {};
+      const paneMetadata = Array.from(viewports.values())[i] || {};
       const {
         displaySetInstanceUIDs,
         viewportOptions,
@@ -267,9 +265,13 @@ function ViewerViewportGrid(props) {
         viewportLabel,
       } = paneMetadata;
 
+      const viewportId = viewportOptions.viewportId
+      const isActive = activeViewportId === viewportId;
+
+
       const displaySetInstanceUIDsToUse = displaySetInstanceUIDs || [];
 
-      // This is causing the viewport components re-render when the activeViewportIndex changes
+      // This is causing the viewport components re-render when the activeViewportId changes
       const displaySets = displaySetInstanceUIDsToUse.map(
         displaySetInstanceUID => {
           return (
@@ -299,7 +301,7 @@ function ViewerViewportGrid(props) {
           event.stopPropagation();
         }
 
-        viewportGridService.setActiveViewportIndex(viewportIndex);
+        viewportGridService.setActiveViewportId(viewportId);
       };
 
       // TEMP -> Double click disabled for now
@@ -316,9 +318,9 @@ function ViewerViewportGrid(props) {
           // React will RE-RENDER the resulting viewport as the key will be different.
           // however, if the key is the viewportId, React will only move the component
           // and not re-render it.
-          key={paneMetadata.viewportOptions.viewportId}
+          key={viewportId}
           acceptDropsFor="displayset"
-          onDrop={onDropHandler.bind(null, viewportIndex)}
+          onDrop={onDropHandler.bind(null, viewportId)}
           onInteraction={onInteractionHandler}
           customStyle={{
             position: 'absolute',
@@ -337,7 +339,6 @@ function ViewerViewportGrid(props) {
           >
             <ViewportComponent
               displaySets={displaySets}
-              viewportIndex={viewportIndex}
               viewportLabel={viewports.length > 1 ? viewportLabel : ''}
               dataSource={dataSource}
               viewportOptions={viewportOptions}
@@ -350,7 +351,7 @@ function ViewerViewportGrid(props) {
     }
 
     return viewportPanes;
-  }, [viewports, activeViewportIndex, viewportComponents, dataSource]);
+  }, [viewports, activeViewportId, viewportComponents, dataSource]);
 
   /**
    * Loading indicator until numCols and numRows are gotten from the HangingProtocolService

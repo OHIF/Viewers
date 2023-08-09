@@ -106,15 +106,13 @@ const dataContains = (
 
 class ViewportInfo {
   private viewportId = '';
-  private viewportIndex: number;
   private element: HTMLDivElement;
   private viewportOptions: ViewportOptions;
   private displaySetOptions: Array<DisplaySetOptions>;
   private viewportData: StackViewportData | VolumeViewportData;
   private renderingEngineId: string;
 
-  constructor(viewportIndex: number, viewportId: string) {
-    this.viewportIndex = viewportIndex;
+  constructor(viewportId: string) {
     this.viewportId = viewportId;
     this.setPublicViewportOptions({});
     this.setPublicDisplaySetOptions([{}]);
@@ -155,9 +153,6 @@ class ViewportInfo {
   public setViewportId(viewportId: string): void {
     this.viewportId = viewportId;
   }
-  public setViewportIndex(viewportIndex: number): void {
-    this.viewportIndex = viewportIndex;
-  }
 
   public setElement(element: HTMLDivElement): void {
     this.element = element;
@@ -173,9 +168,6 @@ class ViewportInfo {
     return this.viewportData;
   }
 
-  public getViewportIndex(): number {
-    return this.viewportIndex;
-  }
 
   public getElement(): HTMLDivElement {
     return this.element;

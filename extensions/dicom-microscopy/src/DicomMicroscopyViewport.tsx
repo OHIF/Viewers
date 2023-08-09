@@ -49,12 +49,12 @@ class DicomMicroscopyViewport extends Component {
 
   static propTypes = {
     viewportData: PropTypes.object,
-    activeViewportIndex: PropTypes.number,
+    activeViewportId: PropTypes.number,
     setViewportActive: PropTypes.func,
 
     // props from OHIF Viewport Grid
     displaySets: PropTypes.array,
-    viewportIndex: PropTypes.number,
+    viewportId: PropTypes.number,
     viewportLabel: PropTypes.string,
     dataSource: PropTypes.object,
     viewportOptions: PropTypes.object,
@@ -230,7 +230,7 @@ class DicomMicroscopyViewport extends Component {
 
       this.managedViewer = this.microscopyService.addViewer(
         this.viewer,
-        this.props.viewportIndex,
+        this.props.viewportId,
         container,
         StudyInstanceUID,
         SeriesInstanceUID
@@ -259,8 +259,8 @@ class DicomMicroscopyViewport extends Component {
   }
 
   componentDidMount() {
-    const { displaySets, viewportIndex } = this.props;
-    const displaySet = displaySets[viewportIndex];
+    const { displaySets, viewportId } = this.props;
+    const displaySet = displaySets[viewportId];
     this.installOpenLayersRenderer(this.container.current, displaySet).then(
       () => {
         this.setState({ isLoaded: true });
@@ -295,14 +295,10 @@ class DicomMicroscopyViewport extends Component {
   }
 
   setViewportActiveHandler = () => {
-    const {
-      setViewportActive,
-      viewportIndex,
-      activeViewportIndex,
-    } = this.props;
+    const { setViewportActive, viewportId, activeViewportId } = this.props;
 
-    if (viewportIndex !== activeViewportIndex) {
-      setViewportActive(viewportIndex);
+    if (viewportId !== activeViewportId) {
+      setViewportActive(viewportId);
     }
   };
 

@@ -17,7 +17,6 @@ export interface IViewportService {
   viewportGridResizeObserver: unknown;
   viewportsInfo: unknown;
   sceneVolumeInputs: unknown;
-  viewportIndexUIDMap: unknown;
   viewportDivElements: unknown;
   ViewportPropertiesMap: unknown;
   volumeUIDs: unknown;
@@ -28,14 +27,9 @@ export interface IViewportService {
   _broadcastEvent: unknown;
   /**
    * Adds the HTML element to the viewportService
-   * @param {*} viewportIndex
    * @param {*} elementRef
    */
-  enableViewport(
-    viewportIndex: number,
-    viewportOptions: ViewportOptions,
-    elementRef: HTMLDivElement
-  ): void;
+  enableViewport(viewportId: number, elementRef: HTMLDivElement): void;
   /**
    * It retrieves the renderingEngine if it does exist, or creates one otherwise
    * @returns {RenderingEngine} rendering engine
@@ -60,13 +54,11 @@ export interface IViewportService {
   /**
    * Uses the renderingEngine to enable the element for the given viewport index
    * and sets the displaySet data to the viewport
-   * @param {*} viewportIndex
    * @param {*} displaySet
    * @param {*} dataSource
    * @returns
    */
   setViewportData(
-    viewportIndex: number,
     viewportData: StackData | VolumeData,
     publicViewportOptions: PublicViewportOptions,
     publicDisplaySetOptions: DisplaySetOptions[]

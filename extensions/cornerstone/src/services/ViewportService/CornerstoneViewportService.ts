@@ -9,8 +9,6 @@ import {
   VolumeViewport,
   VolumeViewport3D,
   cache,
-  utilities,
-  CONSTANTS,
   Enums as csEnums,
 } from '@cornerstonejs/core';
 
@@ -55,7 +53,6 @@ class CornerstoneViewportService extends PubSubService
   };
 
   renderingEngine: Types.IRenderingEngine | null;
-  viewportsInfo: Map<number, ViewportInfo> = new Map();
   viewportsById: Map<string, ViewportInfo> = new Map();
   viewportGridResizeObserver: ResizeObserver | null;
   viewportsDisplaySets: Map<string, string[]> = new Map();
@@ -75,45 +72,17 @@ class CornerstoneViewportService extends PubSubService
 
   /**
    * Adds the HTML element to the viewportService
-   * @param {*} viewportIndex
+   * @param {*} viewportId
    * @param {*} elementRef
    */
-  public enableViewport(
-    viewportIndex: number,
-    viewportOptions: PublicViewportOptions,
-    elementRef: HTMLDivElement
-  ): void {
-    // Use the provided viewportId
-    // Not providing a viewportId is frowned upon because it does weird things
-    // on moving them around, but it does mostly work.
-    if (!viewportOptions.viewportId) {
-      console.warn('Should provide viewport id externally', viewportOptions);
-      viewportOptions.viewportId =
-        this.getViewportId(viewportIndex) || `viewport-${viewportIndex}`;
-    }
-    const { viewportId } = viewportOptions;
-    const viewportInfo = new ViewportInfo(viewportIndex, viewportId);
-    if (!viewportInfo.viewportId) {
-      throw new Error('Should have viewport ID afterwards');
-    }
-
+  public enableViewport(viewportId: string, elementRef: HTMLDivElement): void {
+    const viewportInfo = new ViewportInfo(viewportId);
     viewportInfo.setElement(elementRef);
-    this.viewportsInfo.set(viewportIndex, viewportInfo);
     this.viewportsById.set(viewportId, viewportInfo);
   }
 
   public getViewportIds(): string[] {
-    const viewportIds = [];
-
-    this.viewportsInfo.forEach(viewportInfo => {
-      viewportIds.push(viewportInfo.getViewportId());
-    });
-
-    return viewportIds;
-  }
-
-  public getViewportId(viewportIndex: number): string {
-    return this.viewportsInfo[viewportIndex]?.viewportId;
+    return Array.from(this.viewportsById.keys());
   }
 
   /**
@@ -178,14 +147,6 @@ class CornerstoneViewportService extends PubSubService
 
     // clean up
     this.viewportsById.delete(viewportId);
-
-    this.viewportsInfo = new Map(
-      // @ts-ignore
-      [...this.viewportsInfo].filter(
-        ([, value]) => value.viewportId !== viewportId
-      )
-    );
-
     this.viewportsDisplaySets.delete(viewportId);
   }
 
@@ -200,14 +161,14 @@ class CornerstoneViewportService extends PubSubService
     }
   }
 
-  public getPresentation(viewportIndex: number): Presentation {
-    const viewportInfo = this.viewportsInfo.get(viewportIndex);
+  public getPresentation(viewportId: string): Presentation {
+    const viewportInfo = this.viewportsById.get(viewportId);
     if (!viewportInfo) {
       return;
     }
     const { viewportType, presentationIds } = viewportInfo.getViewportOptions();
 
-    const csViewport = this.getCornerstoneViewportByIndex(viewportIndex);
+    const csViewport = this.getCornerstoneViewport(viewportId);
     if (!csViewport) {
       return;
     }
@@ -232,24 +193,19 @@ class CornerstoneViewportService extends PubSubService
   /**
    * Uses the renderingEngine to enable the element for the given viewport index
    * and sets the displaySet data to the viewport
-   * @param {*} viewportIndex
+   * @param {*} viewportId
    * @param {*} displaySet
    * @param {*} dataSource
    * @returns
    */
   public setViewportData(
-    viewportIndex: number,
+    viewportId: string,
     viewportData: StackViewportData | VolumeViewportData,
     publicViewportOptions: PublicViewportOptions,
     publicDisplaySetOptions: DisplaySetOptions[],
     presentations?: Presentations
   ): void {
     const renderingEngine = this.getRenderingEngine();
-    const viewportId =
-      publicViewportOptions.viewportId || this.getViewportId(viewportIndex);
-    if (!viewportId) {
-      throw new Error('Must define viewportId externally');
-    }
 
     const viewportInfo = this.viewportsById.get(
       publicViewportOptions.viewportId
@@ -273,11 +229,8 @@ class CornerstoneViewportService extends PubSubService
     viewportInfo.setDisplaySetOptions(displaySetOptions);
     viewportInfo.setViewportData(viewportData);
     viewportInfo.setViewportId(viewportId);
-    viewportInfo.setViewportIndex(viewportIndex);
 
-    // change the viewportIndex information if needed, disableElement will handle
-    // the rest of the logic
-    this.viewportsInfo.set(viewportIndex, viewportInfo);
+    this.viewportsById.set(viewportId, viewportInfo);
 
     const element = viewportInfo.getElement();
     const type = viewportInfo.getViewportType();
@@ -308,7 +261,6 @@ class CornerstoneViewportService extends PubSubService
     // invalid data.
     this._broadcastEvent(this.EVENTS.VIEWPORT_DATA_CHANGED, {
       viewportData,
-      viewportIndex,
       viewportId,
     });
   }
@@ -331,43 +283,8 @@ class CornerstoneViewportService extends PubSubService
     return viewport;
   }
 
-  public getCornerstoneViewportByIndex(
-    viewportIndex: number
-  ): Types.IStackViewport | Types.IVolumeViewport | null {
-    const viewportInfo = this.getViewportInfoByIndex(viewportIndex);
-
-    if (
-      !viewportInfo ||
-      !this.renderingEngine ||
-      this.renderingEngine.hasBeenDestroyed
-    ) {
-      return null;
-    }
-
-    const viewport = this.renderingEngine.getViewport(
-      viewportInfo.getViewportId()
-    );
-
-    return viewport;
-  }
-
-  /**
-   * Returns the viewportIndex for the provided viewportId
-   * @param {string} viewportId - the viewportId
-   * @returns {number} - the viewportIndex
-   */
-  public getViewportInfoByIndex(viewportIndex: number): ViewportInfo {
-    return this.viewportsInfo.get(viewportIndex);
-  }
-
   public getViewportInfo(viewportId: string): ViewportInfo {
-    // @ts-ignore
-    for (const [index, viewport] of this.viewportsInfo.entries()) {
-      if (viewport.getViewportId() === viewportId) {
-        return viewport;
-      }
-    }
-    return null;
+    return this.viewportsById.get(viewportId);
   }
 
   _setStackViewport(
@@ -742,14 +659,8 @@ class CornerstoneViewportService extends PubSubService
 
   // Todo: keepCamera is an interim solution until we have a better solution for
   // keeping the camera position when the viewport data is changed
-  public updateViewport(
-    viewportIndex: number,
-    viewportData,
-    keepCamera = false
-  ) {
-    const viewportInfo = this.getViewportInfoByIndex(viewportIndex);
-
-    const viewportId = viewportInfo.getViewportId();
+  public updateViewport(viewportId: string, viewportData, keepCamera = false) {
+    const viewportInfo = this.getViewportInfo(viewportId);
     const viewport = this.getCornerstoneViewport(viewportId);
     const viewportCamera = viewport.getCamera();
 
@@ -847,13 +758,8 @@ class CornerstoneViewportService extends PubSubService
     viewportOptions: ViewportOptions;
     displaySetOptions: DisplaySetOptions[];
   } {
-    const viewportIndex = viewportInfo.getViewportIndex();
-
     // Creating a temporary viewportInfo to handle defaults
-    const newViewportInfo = new ViewportInfo(
-      viewportIndex,
-      viewportInfo.getViewportId()
-    );
+    const newViewportInfo = new ViewportInfo(viewportInfo.getViewportId());
 
     // To handle setting the default values if missing for the viewportOptions and
     // displaySetOptions
@@ -905,25 +811,25 @@ class CornerstoneViewportService extends PubSubService
    *
    * @param measurement
    *          The measurement that is desired to view.
-   * @param activeViewportIndex - the index that was active at the time the jump
+   * @param activeViewportId - the index that was active at the time the jump
    *          was initiated.
-   * @return the viewportIndex to display the given measurement
+   * @return the viewportId that the measurement should be displayed in.
    */
-  public getViewportIndexToJump(
-    activeViewportIndex: number,
+  public getViewportIdToJump(
+    activeViewportId: number,
     displaySetInstanceUID: string,
     cameraProps: unknown
-  ): number {
-    const viewportInfo = this.viewportsInfo.get(activeViewportIndex);
+  ): string {
+    const viewportInfo = this.getViewportInfo(activeViewportId);
     const { referencedImageId } = cameraProps;
     if (viewportInfo?.contains(displaySetInstanceUID, referencedImageId)) {
-      return activeViewportIndex;
+      return activeViewportId;
     }
 
     return (
       [...this.viewportsById.values()].find(viewportInfo =>
         viewportInfo.contains(displaySetInstanceUID, referencedImageId)
-      )?.viewportIndex ?? -1
+      )?.viewportId ?? -1
     );
   }
 }

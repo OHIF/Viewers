@@ -124,15 +124,15 @@ export default function getCommandsModule({
     },
 
     incrementActiveViewport: () => {
-      const { activeViewportIndex, viewports } = viewportGridService.getState();
-      const nextViewportIndex = (activeViewportIndex + 1) % viewports.length;
-      viewportGridService.setActiveViewportIndex(nextViewportIndex);
+      const { activeViewportId, viewports } = viewportGridService.getState();
+      const nextViewportIndex = (activeViewportId + 1) % viewports.length;
+      viewportGridService.setActiveViewportId(nextViewportIndex);
     },
     decrementActiveViewport: () => {
-      const { activeViewportIndex, viewports } = viewportGridService.getState();
+      const { activeViewportId, viewports } = viewportGridService.getState();
       const nextViewportIndex =
-        (activeViewportIndex - 1 + viewports.length) % viewports.length;
-      viewportGridService.setActiveViewportIndex(nextViewportIndex);
+        (activeViewportId - 1 + viewports.length) % viewports.length;
+      viewportGridService.setActiveViewportId(nextViewportIndex);
     },
 
     toggleOverlays: () => {
@@ -149,8 +149,8 @@ export default function getCommandsModule({
       }
 
       // overview
-      const { activeViewportIndex, viewports } = viewportGridService.getState();
-      microscopyService.toggleOverviewMap(activeViewportIndex);
+      const { activeViewportId, viewports } = viewportGridService.getState();
+      microscopyService.toggleOverviewMap(activeViewportId);
     },
     toggleAnnotations: () => {
       microscopyService.toggleROIsVisibility();

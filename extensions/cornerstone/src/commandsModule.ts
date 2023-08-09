@@ -239,8 +239,7 @@ function commandsModule({
         return;
       }
 
-      const viewportIndex = viewportInfo.getViewportIndex();
-      viewportGridService.setActiveViewportIndex(viewportIndex);
+      viewportGridService.setActiveViewportId(viewportId);
     },
     arrowTextCallback: ({ callback, data }) => {
       callInputDialog(uiDialogService, data, callback);
@@ -368,12 +367,10 @@ function commandsModule({
       });
     },
     showDownloadViewportModal: () => {
-      const { activeViewportIndex } = viewportGridService.getState();
+      const { activeViewportId } = viewportGridService.getState();
 
       if (
-        !cornerstoneViewportService.getCornerstoneViewportByIndex(
-          activeViewportIndex
-        )
+        !cornerstoneViewportService.getCornerstoneViewport(activeViewportId)
       ) {
         // Cannot download a non-cornerstone viewport (image).
         uiNotificationService.show({
@@ -391,7 +388,7 @@ function commandsModule({
           content: CornerstoneViewportDownloadForm,
           title: 'Download High Quality Image',
           contentProps: {
-            activeViewportIndex,
+            activeViewportId,
             onClose: uiModalService.hide,
             cornerstoneViewportService,
           },
@@ -554,13 +551,13 @@ function commandsModule({
       cstUtils.scroll(viewport, options);
     },
     setViewportColormap: ({
-      viewportIndex,
+      viewportId,
       displaySetInstanceUID,
       colormap,
       immediate = false,
     }) => {
-      const viewport = cornerstoneViewportService.getCornerstoneViewportByIndex(
-        viewportIndex
+      const viewport = cornerstoneViewportService.getCornerstoneViewport(
+        viewportId
       );
 
       const actorEntries = viewport.getActors();
@@ -578,15 +575,15 @@ function commandsModule({
       }
     },
     incrementActiveViewport: () => {
-      const { activeViewportIndex, viewports } = viewportGridService.getState();
-      const nextViewportIndex = (activeViewportIndex + 1) % viewports.length;
-      viewportGridService.setActiveViewportIndex(nextViewportIndex);
+      const { activeViewportId, viewports } = viewportGridService.getState();
+      const nextViewportIndex = (activeViewportId + 1) % viewports.length;
+      viewportGridService.setActiveViewportId(nextViewportIndex);
     },
     decrementActiveViewport: () => {
-      const { activeViewportIndex, viewports } = viewportGridService.getState();
+      const { activeViewportId, viewports } = viewportGridService.getState();
       const nextViewportIndex =
-        (activeViewportIndex - 1 + viewports.length) % viewports.length;
-      viewportGridService.setActiveViewportIndex(nextViewportIndex);
+        (activeViewportId - 1 + viewports.length) % viewports.length;
+      viewportGridService.setActiveViewportId(nextViewportIndex);
     },
     toggleStackImageSync: ({ toggledState }) => {
       toggleStackImageSync({
@@ -596,9 +593,9 @@ function commandsModule({
       });
     },
     toggleReferenceLines: ({ toggledState }) => {
-      const { activeViewportIndex } = viewportGridService.getState();
-      const viewportInfo = cornerstoneViewportService.getViewportInfoByIndex(
-        activeViewportIndex
+      const { activeViewportId } = viewportGridService.getState();
+      const viewportInfo = cornerstoneViewportService.getViewportInfo(
+        activeViewportId
       );
 
       const viewportId = viewportInfo.getViewportId();
@@ -617,9 +614,9 @@ function commandsModule({
       );
       toolGroup.setToolEnabled(ReferenceLinesTool.toolName);
     },
-    storePresentation: ({ viewportIndex }) => {
+    storePresentation: ({ viewportId }) => {
       const presentation = cornerstoneViewportService.getPresentation(
-        viewportIndex
+        viewportId
       );
       if (!presentation || !presentation.presentationIds) {
         return;

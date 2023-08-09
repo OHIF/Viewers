@@ -30,7 +30,7 @@ function TrackedMeasurementsContextProvider(
   { children } // Component props
 ) {
   const [viewportGrid, viewportGridService] = useViewportGrid();
-  const { activeViewportIndex, viewports } = viewportGrid;
+  const { activeViewportId, viewports } = viewportGrid;
   const { measurementService, displaySetService } = servicesManager.services;
 
   const machineOptions = Object.assign({}, defaultOptions);
@@ -46,7 +46,7 @@ function TrackedMeasurementsContextProvider(
 
       console.log(
         'jumping to measurement reset viewport',
-        viewportGrid.activeViewportIndex,
+        viewportGrid.activeViewportId,
         trackedMeasurements[0]
       );
 
@@ -81,7 +81,7 @@ function TrackedMeasurementsContextProvider(
       }
 
       viewportGridService.setDisplaySetsForViewport({
-        viewportIndex: viewportGrid.activeViewportIndex,
+        viewportId: viewportGrid.activeViewportId,
         displaySetInstanceUIDs: [referencedDisplaySetUID],
         viewportOptions: {
           initialImageOptions: {
@@ -96,7 +96,7 @@ function TrackedMeasurementsContextProvider(
           evt.data.createdDisplaySetInstanceUIDs[0].displaySetInstanceUID;
 
         viewportGridService.setDisplaySetsForViewport({
-          viewportIndex: evt.data.viewportIndex,
+          viewportId: evt.data.viewportId,
           displaySetInstanceUIDs: [StructuredReportDisplaySetInstanceUID],
         });
       }
@@ -163,16 +163,14 @@ function TrackedMeasurementsContextProvider(
     machineOptions
   );
 
-  const [
-    trackedMeasurements,
-    sendTrackedMeasurementsEvent,
-    trackedMeasurementsService,
-  ] = useMachine(measurementTrackingMachine);
+  const [trackedMeasurements, sendTrackedMeasurementsEvent] = useMachine(
+    measurementTrackingMachine
+  );
 
   // ~~ Listen for changes to ViewportGrid for potential SRs hung in panes when idle
   useEffect(() => {
-    if (viewports.length > 0) {
-      const activeViewport = viewports[activeViewportIndex];
+    if (viewports.size > 0) {
+      const activeViewport = viewports.get(activeViewportId);
 
       if (!activeViewport || !activeViewport?.displaySetInstanceUIDs?.length) {
         return;
@@ -220,12 +218,12 @@ function TrackedMeasurementsContextProvider(
         sendTrackedMeasurementsEvent('PROMPT_HYDRATE_SR', {
           displaySetInstanceUID: displaySet.displaySetInstanceUID,
           SeriesInstanceUID: displaySet.SeriesInstanceUID,
-          viewportIndex: activeViewportIndex,
+          viewportId: activeViewportId,
         });
       }
     }
   }, [
-    activeViewportIndex,
+    activeViewportId,
     sendTrackedMeasurementsEvent,
     servicesManager.services,
     viewports,

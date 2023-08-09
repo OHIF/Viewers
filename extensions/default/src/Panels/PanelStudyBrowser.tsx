@@ -26,7 +26,7 @@ function PanelStudyBrowser({
   // Tabs --> Studies --> DisplaySets --> Thumbnails
   const { StudyInstanceUIDs } = useImageViewer();
   const [
-    { activeViewportIndex, viewports },
+    { activeViewportId, viewports },
     viewportGridService,
   ] = useViewportGrid();
   const [activeTabName, setActiveTabName] = useState('primary');
@@ -40,10 +40,10 @@ function PanelStudyBrowser({
 
   const onDoubleClickThumbnailHandler = displaySetInstanceUID => {
     let updatedViewports = [];
-    const viewportIndex = activeViewportIndex;
+    const viewportId = activeViewportId;
     try {
       updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
-        viewportIndex,
+        viewportId,
         displaySetInstanceUID
       );
     } catch (error) {
@@ -239,8 +239,8 @@ function PanelStudyBrowser({
     }
   }
 
-  const activeDisplaySetInstanceUIDs =
-    viewports[activeViewportIndex]?.displaySetInstanceUIDs;
+  const activeDisplaySetInstanceUIDs = viewports.get(activeViewportId)
+    ?.displaySetInstanceUIDs;
 
   return (
     <StudyBrowser

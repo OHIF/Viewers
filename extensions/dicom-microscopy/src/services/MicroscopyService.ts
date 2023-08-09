@@ -293,7 +293,7 @@ export default class MicroscopyService extends PubSubService {
    * active viewport.
    *
    * @param {Object} viewer Third-party viewer API's object to be managed
-   * @param {Number} viewportIndex The index of the viewport to load the viewer
+   * @param {Number} viewportId The viewport Id where the viewer will be loaded
    * @param {HTMLElement} container The DOM element where it will be renderd
    * @param {String} studyInstanceUID The study UID of the loaded image
    * @param {String} seriesInstanceUID The series UID of the loaded image
@@ -303,14 +303,14 @@ export default class MicroscopyService extends PubSubService {
    */
   addViewer(
     viewer,
-    viewportIndex,
+    viewportId,
     container,
     studyInstanceUID,
     seriesInstanceUID
   ) {
     const managedViewer = new ViewerManager(
       viewer,
-      viewportIndex,
+      viewportId,
       container,
       studyInstanceUID,
       seriesInstanceUID
@@ -325,7 +325,7 @@ export default class MicroscopyService extends PubSubService {
 
     if (this.pendingFocus) {
       this.pendingFocus = false;
-      this.focusAnnotation(this.selectedAnnotation, viewportIndex);
+      this.focusAnnotation(this.selectedAnnotation, viewportId);
     }
 
     return managedViewer;
@@ -502,13 +502,13 @@ export default class MicroscopyService extends PubSubService {
   /**
    * Toggles overview map
    *
-   * @param viewportIndex The active viewport index
+   * @param viewportId The active viewport index
    * @returns {void}
    */
-  toggleOverviewMap(viewportIndex) {
+  toggleOverviewMap(viewportId) {
     const managedViewers = Array.from(this.managedViewers);
     const managedViewer = managedViewers.find(
-      mv => mv.viewportIndex === viewportIndex
+      mv => mv.viewportId === viewportId
     );
     if (managedViewer) {
       managedViewer.toggleOverviewMap();
@@ -550,10 +550,10 @@ export default class MicroscopyService extends PubSubService {
    * the managed viewer instance is created.
    *
    * @param {RoiAnnotation} roiAnnotation RoiAnnotation instance to be focused
-   * @param {Number} viewportIndex Index of the viewport to focus
+   * @param {Number} viewportId Index of the viewport to focus
    */
-  focusAnnotation(roiAnnotation, viewportIndex) {
-    const filter = mv => mv.viewportIndex === viewportIndex;
+  focusAnnotation(roiAnnotation, viewportId) {
+    const filter = mv => mv.viewportId === viewportId;
     const managedViewer = Array.from(this.managedViewers).find(filter);
     if (managedViewer) {
       managedViewer.setViewStateByExtent(roiAnnotation);
