@@ -71,6 +71,7 @@ describe('OHIF Cornerstone Toolbar', () => {
 
   it('checks if Levels tool will change the window width and center of an image', () => {
     //Click on button and verify if icon is active on toolbar
+    cy.waitDicomImage();
     cy.get('@wwwcBtnPrimary')
       .click()
       .then($wwwcBtn => {

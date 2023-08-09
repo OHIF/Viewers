@@ -35,9 +35,15 @@ const DEFAULT_CONTEXT_MENU_CLICKS = {
 function getEventName(evt) {
   const button = evt.detail.event.which;
   const nameArr = [];
-  if (evt.detail.event.altKey) nameArr.push('alt');
-  if (evt.detail.event.ctrlKey) nameArr.push('ctrl');
-  if (evt.detail.event.shiftKey) nameArr.push('shift');
+  if (evt.detail.event.altKey) {
+    nameArr.push('alt');
+  }
+  if (evt.detail.event.ctrlKey) {
+    nameArr.push('ctrl');
+  }
+  if (evt.detail.event.shiftKey) {
+    nameArr.push('shift');
+  }
   nameArr.push('button');
   nameArr.push(button);
   return nameArr.join('');
@@ -73,7 +79,9 @@ function initContextMenu({
   function elementEnabledHandler(evt) {
     const { viewportId, element } = evt.detail;
     const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
-    if (!viewportInfo) return;
+    if (!viewportInfo) {
+      return;
+    }
     const viewportIndex = viewportInfo.getViewportIndex();
     // TODO check update upstream
     setEnabledElement(viewportIndex, element);

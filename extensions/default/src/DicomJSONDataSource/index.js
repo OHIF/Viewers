@@ -46,7 +46,9 @@ function createDicomJSONApi(dicomJsonConfig) {
 
   const implementation = {
     initialize: async ({ query, url }) => {
-      if (!url) url = query.get('url');
+      if (!url) {
+        url = query.get('url');
+      }
       let metaData = getMetaDataByURL(url);
 
       // if we have already cached the data from this specific url
@@ -212,7 +214,9 @@ function createDicomJSONApi(dicomJsonConfig) {
               return obj;
             });
             storeInstances(instances);
-            if (index === numberOfSeries - 1) setSuccessFlag();
+            if (index === numberOfSeries - 1) {
+              setSuccessFlag();
+            }
           });
         },
       },

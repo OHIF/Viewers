@@ -445,7 +445,9 @@ function _subscribeToJumpToMeasurementEvents(
     props => {
       cacheJumpToMeasurementEvent = props;
       const { viewportIndex: jumpIndex, measurement, isConsumed } = props;
-      if (!measurement || isConsumed) return;
+      if (!measurement || isConsumed) {
+        return;
+      }
       if (cacheJumpToMeasurementEvent.cornerstoneViewport === undefined) {
         // Decide on which viewport should handle this
         cacheJumpToMeasurementEvent.cornerstoneViewport = cornerstoneViewportService.getViewportIndexToJump(
@@ -482,7 +484,9 @@ function _checkForCachedJumpToMeasurementEvents(
   viewportGridService,
   cornerstoneViewportService
 ) {
-  if (!cacheJumpToMeasurementEvent) return;
+  if (!cacheJumpToMeasurementEvent) {
+    return;
+  }
   if (cacheJumpToMeasurementEvent.isConsumed) {
     cacheJumpToMeasurementEvent = null;
     return;
@@ -490,7 +494,9 @@ function _checkForCachedJumpToMeasurementEvents(
   const displaysUIDs = displaySets.map(
     displaySet => displaySet.displaySetInstanceUID
   );
-  if (!displaysUIDs?.length) return;
+  if (!displaysUIDs?.length) {
+    return;
+  }
 
   // Jump to measurement if the measurement exists
   const { measurement } = cacheJumpToMeasurementEvent;

@@ -12,8 +12,12 @@ const END_MODALITIES = {
 };
 
 const compareValue = (v1, v2, def = 0) => {
-  if (v1 === v2) return def;
-  if (v1 < v2) return -1;
+  if (v1 === v2) {
+    return def;
+  }
+  if (v1 < v2) {
+    return -1;
+  }
   return 1;
 };
 

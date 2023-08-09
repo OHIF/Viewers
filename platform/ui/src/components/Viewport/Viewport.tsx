@@ -43,7 +43,9 @@ const Viewport = ({
             },
           ]}
           onSubmit={value => {
-            if (typeof window !== 'undefined') window.alert(value);
+            if (typeof window !== 'undefined') {
+              window.alert(value);
+            }
           }}
         />
       </div>
