@@ -364,7 +364,7 @@ function WorkList({
                 query.append('configUrl', filterValues.configUrl);
               }
               query.append('StudyInstanceUIDs', studyInstanceUid);
-              return (
+              return mode.displayName && (
                 <Link
                   className={isValidMode ? '' : 'cursor-not-allowed'}
                   key={i}
