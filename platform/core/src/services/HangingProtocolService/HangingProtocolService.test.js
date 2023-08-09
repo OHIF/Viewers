@@ -134,7 +134,7 @@ function checkHpsBestMatch(hps) {
         displaySetOptions: {
           id: 'displaySetSelector',
           options: {},
-      },
+        },
       },
     ],
   });
@@ -192,6 +192,6 @@ describe('HangingProtocolService', () => {
       it('matches best image match', () => {
         checkHpsBestMatch(hangingProtocolService);
       });
-      });
     });
   });
+});

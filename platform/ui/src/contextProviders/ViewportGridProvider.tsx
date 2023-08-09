@@ -136,7 +136,9 @@ export function ViewportGridProvider({ children, service }) {
               activeViewportIndexToSet = pos;
             }
             const viewport = findOrCreateViewport(pos, positionId, options);
-            if (!viewport) continue;
+            if (!viewport) {
+              continue;
+            }
             viewport.positionId = positionId;
 
             // If the viewport doesn't have a viewportId, we create one

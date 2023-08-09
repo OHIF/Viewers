@@ -60,7 +60,7 @@ Cypress.Commands.add(
     cy.location('pathname').then($url => {
       cy.log($url);
       if (
-        $url == 'blank' ||
+        $url === 'blank' ||
         !$url.includes(`/basic-test/${StudyInstanceUID}${otherParams}`)
       ) {
         cy.openStudyInViewer(StudyInstanceUID, otherParams);
@@ -158,10 +158,10 @@ Cypress.Commands.add('addLine', (viewport, firstClick, secondClick) => {
 
     // TODO: Added a wait which appears necessary in Cornerstone Tools >4?
     cy.wrap($viewport)
-      .click(x1, y1)
+      .click(x1, y1, { force: true })
       .wait(100)
       .trigger('mousemove', { clientX: x2, clientY: y2 })
-      .click(x2, y2)
+      .click(x2, y2, { force: true })
       .wait(100);
   });
 });
