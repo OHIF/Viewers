@@ -43,12 +43,13 @@ const dicomSRExtension = {
    * @param {object} [configuration={}]
    * @param {object|array} [configuration.csToolsConfig] - Passed directly to `initCornerstoneTools`
    */
-  getViewportModule({ servicesManager, extensionManager }) {
+  getViewportModule({ servicesManager, extensionManager, appConfig }) {
     const ExtendedOHIFCornerstoneSRViewport = props => {
       return (
         <OHIFCornerstoneSRViewport
           servicesManager={servicesManager}
           extensionManager={extensionManager}
+          appConfig={appConfig}
           {...props}
         />
       );
