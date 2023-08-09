@@ -95,7 +95,9 @@ const dataContains = (
   displaySetUID: string,
   imageId?: string
 ): boolean => {
-  if (data.displaySetInstanceUID === displaySetUID) return true;
+  if (data.displaySetInstanceUID === displaySetUID) {
+    return true;
+  }
   if (imageId && data.isCompositeStack && data.imageIds) {
     return !!data.imageIds.find(dataId => dataId === imageId);
   }
@@ -123,7 +125,9 @@ class ViewportInfo {
    * OR if it is a composite stack and contains the given imageId
    */
   public contains(displaySetUID: string, imageId: string): boolean {
-    if (!this.viewportData?.data) return false;
+    if (!this.viewportData?.data) {
+      return false;
+    }
 
     if (this.viewportData.data.length) {
       return !!this.viewportData.data.find(data =>

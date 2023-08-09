@@ -12,8 +12,12 @@ const flattenNestedStrings = (
   strs: NestedStrings | string,
   ret?: Record<string, string>
 ): Record<string, string> => {
-  if (!ret) ret = {};
-  if (!strs) return ret;
+  if (!ret) {
+    ret = {};
+  }
+  if (!strs) {
+    return ret;
+  }
   if (Array.isArray(strs)) {
     for (const val of strs) {
       flattenNestedStrings(val, ret);
@@ -81,7 +85,9 @@ export default class CustomizationService extends PubSubService {
     this.extensionManager.registeredExtensionIds.forEach(extensionId => {
       const key = `${extensionId}.customizationModule.default`;
       const defaultCustomizations = this.findExtensionValue(key);
-      if (!defaultCustomizations) return;
+      if (!defaultCustomizations) {
+        return;
+      }
       const { value } = defaultCustomizations;
       this.addReference(value, true);
     });
@@ -172,9 +178,13 @@ export default class CustomizationService extends PubSubService {
    * type into the new type, allowing default behaviour to be configured.
    */
   public transform(customization: Customization): Customization {
-    if (!customization) return customization;
+    if (!customization) {
+      return customization;
+    }
     const { customizationType } = customization;
-    if (!customizationType) return customization;
+    if (!customizationType) {
+      return customization;
+    }
     const parent = this.getCustomization(customizationType);
     const result = parent
       ? Object.assign(Object.create(parent), customization)
@@ -242,7 +252,9 @@ export default class CustomizationService extends PubSubService {
    * or a customization itself.
    */
   addReference(value?: Obj | string, isGlobal = true, id?: string): void {
-    if (!value) return;
+    if (!value) {
+      return;
+    }
     if (typeof value === 'string') {
       const extensionValue = this.findExtensionValue(value);
       // The child of a reference is only a set of references when an array,
@@ -265,7 +277,9 @@ export default class CustomizationService extends PubSubService {
    * or customization.
    */
   addReferences(references?: Obj | Obj[], isGlobal = true): void {
-    if (!references) return;
+    if (!references) {
+      return;
+    }
     if (Array.isArray(references)) {
       references.forEach(item => {
         this.addReference(item, isGlobal);
