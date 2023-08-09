@@ -107,8 +107,12 @@ const itemGenerator = (props: any) => {
   props.formatTime = formatDICOMTime;
   props.formatPN = formatPN;
   props.formatNumberPrecision = formatNumberPrecision;
-  if (condition && !condition(props)) return null;
-  if (!contents && !valueFunc) return null;
+  if (condition && !condition(props)) {
+    return null;
+  }
+  if (!contents && !valueFunc) {
+    return null;
+  }
   const value = valueFunc && valueFunc(props);
   const contentsValue = (contents && contents(props)) || [
     { className: 'mr-1', value: title },

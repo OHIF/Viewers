@@ -129,13 +129,17 @@ const commandsModule = ({
         stage,
       } = hangingProtocolService.getActiveProtocol();
       const enableListener = button => {
-        if (!button.id) return;
+        if (!button.id) {
+          return;
+        }
         const { commands, items } = button.props || button;
         if (items) {
           items.forEach(enableListener);
         }
         const hpCommand = commands?.find?.(isHangingProtocolCommand);
-        if (!hpCommand) return;
+        if (!hpCommand) {
+          return;
+        }
         const { protocolId, stageIndex, stageId } = hpCommand.commandOptions;
         const isActive =
           (!protocolId || protocolId === protocol.id) &&

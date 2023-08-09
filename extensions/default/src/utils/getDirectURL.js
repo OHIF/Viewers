@@ -23,9 +23,13 @@ const getDirectURL = (config, params) => {
     singlepart: fetchPart = 'video',
   } = params;
   const value = instance[tag];
-  if (!value) return undefined;
+  if (!value) {
+    return undefined;
+  }
 
-  if (value.DirectRetrieveURL) return value.DirectRetrieveURL;
+  if (value.DirectRetrieveURL) {
+    return value.DirectRetrieveURL;
+  }
   if (value.InlineBinary) {
     const blob = utils.b64toBlob(value.InlineBinary, defaultType);
     value.DirectRetrieveURL = URL.createObjectURL(blob);
