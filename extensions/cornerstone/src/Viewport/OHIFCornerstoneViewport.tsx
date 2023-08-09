@@ -112,6 +112,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
     viewportOptions,
     displaySetOptions,
     servicesManager,
+    commandsManager,
     onElementEnabled,
     onElementDisabled,
     isJumpToMeasurementDisabled,
@@ -151,35 +152,6 @@ const OHIFCornerstoneViewport = React.memo(props => {
       setImageScrollBarHeight();
     }
   }, [elementRef]);
-
-  const storePresentation = () => {
-    const currentPresentation = cornerstoneViewportService.getPresentation(
-      viewportIndex
-    );
-    if (!currentPresentation || !currentPresentation.presentationIds) {
-      return;
-    }
-    const {
-      lutPresentationStore,
-      positionPresentationStore,
-    } = stateSyncService.getState();
-    const { presentationIds } = currentPresentation;
-    const { lutPresentationId, positionPresentationId } = presentationIds || {};
-    const storeState = {};
-    if (lutPresentationId) {
-      storeState.lutPresentationStore = {
-        ...lutPresentationStore,
-        [lutPresentationId]: currentPresentation,
-      };
-    }
-    if (positionPresentationId) {
-      storeState.positionPresentationStore = {
-        ...positionPresentationStore,
-        [positionPresentationId]: currentPresentation,
-      };
-    }
-    stateSyncService.store(storeState);
-  };
 
   const cleanUpServices = useCallback(() => {
     const viewportInfo = cornerstoneViewportService.getViewportInfoByIndex(
@@ -258,7 +230,9 @@ const OHIFCornerstoneViewport = React.memo(props => {
     setImageScrollBarHeight();
 
     return () => {
-      storePresentation();
+      commandsManager.runCommand('storePresentation', {
+        viewportIndex,
+      });
 
       cleanUpServices();
 
@@ -408,8 +382,6 @@ const OHIFCornerstoneViewport = React.memo(props => {
       unsubscribeFromJumpToMeasurementEvents();
     };
   }, [displaySets, elementRef, viewportIndex]);
-
-  console.debug('OHIFCornerstoneViewport rendering');
 
   return (
     <React.Fragment>
