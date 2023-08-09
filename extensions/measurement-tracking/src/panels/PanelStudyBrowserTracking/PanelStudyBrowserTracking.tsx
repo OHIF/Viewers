@@ -423,9 +423,9 @@ function _mapDisplaySets(
         numPanes === 1
           ? []
           : Array.from(viewports.entries()).reduce(
-              (acc, [viewportIndex, viewportData]) => {
+              (acc, [index, viewportData]) => {
                 if (
-                  viewportIndex < numPanes &&
+                  index < numPanes &&
                   viewportData?.displaySetInstanceUIDs?.includes(
                     ds.displaySetInstanceUID
                   )

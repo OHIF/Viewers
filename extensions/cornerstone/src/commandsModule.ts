@@ -572,17 +572,17 @@ function commandsModule({
         viewport.render();
       }
     },
-    incrementActiveViewport: () => {
+    changeActiveViewport: ({ direction = 1 }) => {
       const { activeViewportId, viewports } = viewportGridService.getState();
-      const nextViewportIndex = (activeViewportId + 1) % viewports.length;
-      viewportGridService.setActiveViewportId(nextViewportIndex);
-    },
-    decrementActiveViewport: () => {
-      const { activeViewportId, viewports } = viewportGridService.getState();
+      const viewportIds = Array.from(viewports.keys());
+      const currentIndex = viewportIds.indexOf(activeViewportId);
       const nextViewportIndex =
-        (activeViewportId - 1 + viewports.length) % viewports.length;
-      viewportGridService.setActiveViewportId(nextViewportIndex);
+        (currentIndex + direction + viewportIds.length) % viewportIds.length;
+      viewportGridService.setActiveViewportId(
+        viewportIds[nextViewportIndex] as string
+      );
     },
+
     toggleStackImageSync: ({ toggledState }) => {
       toggleStackImageSync({
         getEnabledElement,
@@ -696,10 +696,11 @@ function commandsModule({
       options: { rotation: -90 },
     },
     incrementActiveViewport: {
-      commandFn: actions.incrementActiveViewport,
+      commandFn: actions.changeActiveViewport,
     },
     decrementActiveViewport: {
-      commandFn: actions.decrementActiveViewport,
+      commandFn: actions.changeActiveViewport,
+      options: { direction: -1 },
     },
     flipViewportHorizontal: {
       commandFn: actions.flipViewportHorizontal,

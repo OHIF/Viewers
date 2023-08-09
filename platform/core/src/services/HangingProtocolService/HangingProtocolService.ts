@@ -132,7 +132,7 @@ export default class HangingProtocolService extends PubSubService {
   > = new Map();
 
   /**
-   * An array that contains for each viewport (viewportIndex) specified in the
+   * An array that contains for each viewport (viewportId) specified in the
    * hanging protocol, an object of the form
    */
   viewportMatchDetails: Map<
@@ -812,7 +812,7 @@ export default class HangingProtocolService extends PubSubService {
    * @param protocolId - name of the registered protocol to be set
    * @param options - options to be passed to the protocol, this is either an array
    * of the displaySetInstanceUIDs to be set on ALL VIEWPORTS OF THE PROTOCOL or an object
-   * that contains viewportIndex as the key and displaySetInstanceUIDs as the value
+   * that contains viewportId as the key and displaySetInstanceUIDs as the value
    * for each viewport that needs to be set.
    * @param errorCallback - callback to be called if there is an error
    * during the protocol application
