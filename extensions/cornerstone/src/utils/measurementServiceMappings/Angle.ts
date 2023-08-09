@@ -3,7 +3,7 @@ import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
 import { utils } from '@ohif/core';
 
 const Angle = {
-  toAnnotation: measurement => { },
+  toAnnotation: measurement => {},
 
   /**
    * Maps cornerstone annotation event data to measurement service format.
@@ -198,7 +198,9 @@ function getDisplayText(mappedAnnotations, displaySet) {
 
   const instanceText = InstanceNumber ? ` I: ${InstanceNumber}` : '';
   const frameText = displaySet.isMultiFrame ? ` F: ${frameNumber}` : '';
-  if (angle === undefined) return displayText;
+  if (angle === undefined) {
+    return displayText;
+  }
   const roundedAngle = utils.roundNumber(angle, 2);
   displayText.push(
     `${roundedAngle} ${unit} (S: ${SeriesNumber}${instanceText}${frameText})`

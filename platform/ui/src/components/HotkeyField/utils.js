@@ -25,7 +25,4 @@ const getKeys = ({ sequence, modifierKeys }) => {
   return [...modifiers, ...keys];
 };
 
-export {
-  getKeys,
-  formatKeysForInput
-};
+export { getKeys, formatKeysForInput };

@@ -175,7 +175,9 @@ export class CommandsManager {
     toRun: Command | Commands | Command[] | undefined,
     options?: Record<string, unknown>
   ): unknown {
-    if (!toRun) return;
+    if (!toRun) {
+      return;
+    }
     const commands =
       (Array.isArray(toRun) && toRun) ||
       ((toRun as Command).commandName && [toRun]) ||
