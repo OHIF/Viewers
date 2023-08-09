@@ -72,10 +72,6 @@
       "packageName": "@ohif/mode-basic-dev-mode",
       "default": false,
       "version": "3.0.0"
-    },
-    {
-      "packageName": "@ohif/mode-autoload",
-      "version": "3.7.0-beta.43"
     }
   ],
   "public": [
