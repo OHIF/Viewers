@@ -54,7 +54,7 @@ module.exports = (env, argv) => {
       path: DIST_DIR,
       filename: isProdBuild ? '[name].bundle.[chunkhash].js' : '[name].js',
       publicPath: PUBLIC_URL, // Used by HtmlWebPackPlugin for asset prefix
-      devtoolModuleFilenameTemplate: function(info) {
+      devtoolModuleFilenameTemplate: function (info) {
         if (isProdBuild) {
           return `webpack:///${info.resourcePath}`;
         } else {
@@ -69,6 +69,7 @@ module.exports = (env, argv) => {
         // Hoisted Yarn Workspace Modules
         path.resolve(__dirname, '../../../node_modules'),
         SRC_DIR,
+        path.resolve(__dirname, 'modes/autoload/node_modules'),
       ],
     },
     plugins: [
