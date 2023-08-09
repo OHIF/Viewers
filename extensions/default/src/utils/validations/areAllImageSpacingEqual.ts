@@ -16,6 +16,9 @@ export default function areAllImageSpacingEqual(
   instances: Array<any>,
   messages: DisplaySetMessageList
 ): void {
+  if (!instances?.length) {
+    return;
+  }
   const firstImagePositionPatient = toNumber(instances[0].ImagePositionPatient);
   const lastIpp = toNumber(
     instances[instances.length - 1].ImagePositionPatient

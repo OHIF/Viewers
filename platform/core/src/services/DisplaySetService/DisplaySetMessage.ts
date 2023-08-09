@@ -37,11 +37,11 @@ class DisplaySetMessageList {
     return this.messages.length;
   }
 
-  public include(messageId: number): boolean {
+  public includesMessage(messageId: number): boolean {
     return this.messages.some(message => message.id === messageId);
   }
 
-  public includes(messageIdList: number[]): boolean {
+  public includesAllMessages(messageIdList: number[]): boolean {
     return messageIdList.every(messageId => this.include(messageId));
   }
 }

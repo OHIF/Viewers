@@ -8,6 +8,9 @@ import toNumber from '@ohif/core/src/utils/toNumber';
 export default function areAllImageDimensionsEqual(
   instances: Array<any>
 ): boolean {
+  if (!instances?.length) {
+    return false;
+  }
   const firstImage = instances[0];
   const firstImageRows = toNumber(firstImage.Rows);
   const firstImageColumns = toNumber(firstImage.Columns);
