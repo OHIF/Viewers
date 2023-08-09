@@ -576,16 +576,18 @@ export default class HangingProtocolService extends PubSubService {
     };
   }
 
-  getViewportsRequireUpdate(viewportIndex, displaySetInstanceUID) {
+  getViewportsRequireUpdate(viewportId, displaySetInstanceUID) {
     const newDisplaySetInstanceUID = displaySetInstanceUID;
     const protocol = this.protocol;
     const protocolStage = protocol.stages[this.stageIndex];
     const protocolViewports = protocolStage.viewports;
-    const protocolViewport = protocolViewports[viewportIndex];
+    const protocolViewport = protocolViewports.find(
+      pv => pv.viewportOptions.viewportId === viewportId
+    );
 
     const defaultReturn = [
       {
-        viewportIndex,
+        viewportId,
         displaySetInstanceUIDs: [newDisplaySetInstanceUID],
       },
     ];
@@ -655,13 +657,13 @@ export default class HangingProtocolService extends PubSubService {
     }
 
     // if we reach here, it means that the displaySetInstanceUIDs to be dropped
-    // in the viewportIndex are valid, and we can proceed with the update. However
+    // for the desired viewportId are valid, and we can proceed with the update. However
     // we need to check if the displaySets that the viewport were showing
     // was also referenced by other viewports, and if so, we need to update those
     // viewports as well
 
     // check if displaySetSelectors are used by other viewports, and
-    // store the viewportIndex and displaySetInstanceUIDs that need to be updated
+    // store the viewportId and displaySetInstanceUIDs that need to be updated
     const viewportsToUpdate = [];
     protocolViewports.forEach((viewport, index) => {
       const viewportNeedsUpdate = viewport.displaySets.some(
@@ -672,7 +674,7 @@ export default class HangingProtocolService extends PubSubService {
 
       if (viewportNeedsUpdate) {
         // Try to recompute the viewport options based on the current
-        // viewportIndex that needs update but from its old/original un-computed
+        // viewportId that needs update but from its old/original un-computed
         // viewport & displaySet options
         if (originalProtocolStage) {
           const originalViewport = originalProtocolStage.viewports[index];
@@ -703,7 +705,7 @@ export default class HangingProtocolService extends PubSubService {
         );
 
         viewportsToUpdate.push({
-          viewportIndex: index,
+          viewportId: viewport.viewportOptions.viewportId,
           displaySetInstanceUIDs,
           viewportOptions: viewport.viewportOptions,
           displaySetOptions,

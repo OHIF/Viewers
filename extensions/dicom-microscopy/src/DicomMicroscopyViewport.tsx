@@ -49,12 +49,12 @@ class DicomMicroscopyViewport extends Component {
 
   static propTypes = {
     viewportData: PropTypes.object,
-    activeViewportId: PropTypes.number,
+    activeViewportId: PropTypes.string,
     setViewportActive: PropTypes.func,
 
     // props from OHIF Viewport Grid
     displaySets: PropTypes.array,
-    viewportId: PropTypes.number,
+    viewportId: PropTypes.string,
     viewportLabel: PropTypes.string,
     dataSource: PropTypes.object,
     viewportOptions: PropTypes.object,
@@ -259,8 +259,10 @@ class DicomMicroscopyViewport extends Component {
   }
 
   componentDidMount() {
-    const { displaySets, viewportId } = this.props;
-    const displaySet = displaySets[viewportId];
+    const { displaySets, viewportOptions } = this.props;
+    const { viewportId } = viewportOptions;
+    // Todo-rename: this is always getting the 0
+    const displaySet = displaySets[0];
     this.installOpenLayersRenderer(this.container.current, displaySet).then(
       () => {
         this.setState({ isLoaded: true });

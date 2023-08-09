@@ -409,7 +409,7 @@ function OHIFCornerstoneSRViewport(props) {
 
 OHIFCornerstoneSRViewport.propTypes = {
   displaySets: PropTypes.arrayOf(PropTypes.object),
-  viewportId: PropTypes.number.isRequired,
+  viewportId: PropTypes.string.isRequired,
   dataSource: PropTypes.object,
   children: PropTypes.node,
   viewportLabel: PropTypes.string,

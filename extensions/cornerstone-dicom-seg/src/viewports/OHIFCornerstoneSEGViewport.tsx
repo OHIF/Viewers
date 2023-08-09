@@ -388,7 +388,7 @@ function OHIFCornerstoneSEGViewport(props) {
 
 OHIFCornerstoneSEGViewport.propTypes = {
   displaySets: PropTypes.arrayOf(PropTypes.object),
-  viewportId: PropTypes.number.isRequired,
+  viewportId: PropTypes.string.isRequired,
   dataSource: PropTypes.object,
   children: PropTypes.node,
   customProps: PropTypes.object,

@@ -399,7 +399,7 @@ const commandsModule = ({
         displaySetInstanceUIDs,
         displaySetOptions,
         viewportOptions,
-      } = viewports[activeViewportId];
+      } = viewports.get(activeViewportId);
 
       if (layout.numCols === 1 && layout.numRows === 1) {
         // The viewer is in one-up. Check if there is a state to restore/toggle back to.
@@ -439,7 +439,7 @@ const commandsModule = ({
 
           return viewport
             ? { viewportOptions, displaySetOptions, ...viewport }
-            : toggleOneUpViewportGridStore.viewports[viewportId];
+            : toggleOneUpViewportGridStore.viewports.get(viewportId);
         };
 
         const layoutOptions = viewportGridService.getLayoutOptionsFromState(

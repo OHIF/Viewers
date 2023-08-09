@@ -52,7 +52,7 @@ const formatLength = (length, unit) => {
 
 interface IMicroscopyPanelProps extends WithTranslation {
   viewports: PropTypes.array;
-  activeViewportId: PropTypes.number;
+  activeViewportId: PropTypes.string;
 
   //
   onSaveComplete?: PropTypes.func; // callback when successfully saved annotations

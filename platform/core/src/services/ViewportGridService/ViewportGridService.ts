@@ -87,7 +87,7 @@ class ViewportGridService extends PubSubService {
     const viewports = [];
 
     for (const viewport of props) {
-      const updatedViewport = state.viewports.find(vp => vp.viewportId === viewport.viewportId)
+      const updatedViewport = state.viewports.get(viewport.viewportId);
       if (updatedViewport) {
         viewports.push(updatedViewport);
       } else {
@@ -158,8 +158,8 @@ class ViewportGridService extends PubSubService {
     return this.serviceImplementation._getNumViewportPanes();
   }
 
-  public getLayoutOptionsFromState(state) {
-    return state.viewports.map(viewport => {
+  public getLayoutOptionsFromState(state: any): { x: number; y: number; width: number; height: number }[] {
+    return Array.from(state.viewports.entries()).map(([_, viewport]) => {
       return {
         x: viewport.x,
         y: viewport.y,

@@ -76,6 +76,8 @@ export function ViewportGridProvider({ children, service }) {
        */
       case 'SET_DISPLAYSETS_FOR_VIEWPORTS': {
         const { payload } = action;
+        const viewports = new Map(state.viewports);
+
         for (const updatedViewport of payload) {
           // Use the newly provide viewportOptions and display set options
           // when provided, and otherwise fall back to the previous ones.
@@ -83,7 +85,6 @@ export function ViewportGridProvider({ children, service }) {
           const { viewportId, displaySetInstanceUIDs } = updatedViewport;
 
           // create a copy of state.viewports
-          const viewports = new Map(state.viewports);
 
           const previousViewport = viewports.get(viewportId);
           const viewportOptions = {
@@ -114,16 +115,17 @@ export function ViewportGridProvider({ children, service }) {
             viewports
           );
 
-          if (!newViewport.viewportOptions?.viewportId) {
-            // Todo-rename: fix
-            newViewport.viewportOptions.viewportId = `viewport-${1}`;
-            newViewport.viewportId = `viewport-${1}`;
-          }
+          // Todo-rename: we most likely don't need this since we are inhering the viewportIds
+          // if (!newViewport.viewportOptions?.viewportId) {
+          //   // Todo-rename: fix
+          //   newViewport.viewportOptions.viewportId = `viewport-${1}`;
+          //   newViewport.viewportId = `viewport-${1}`;
+          // }
 
-          viewports[viewportId] = {
+          viewports.set(viewportId, {
             ...viewports[viewportId],
             ...newViewport,
-          };
+          });
         }
 
         return { ...state, viewports };

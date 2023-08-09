@@ -285,7 +285,7 @@ function _getInstanceNumberFromVolume(
 CornerstoneViewportOverlay.propTypes = {
   viewportData: PropTypes.object,
   imageIndex: PropTypes.number,
-  viewportId: PropTypes.number,
+  viewportId: PropTypes.string,
   servicesManager: PropTypes.instanceOf(ServicesManager),
 };
 
