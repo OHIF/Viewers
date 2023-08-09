@@ -51,7 +51,8 @@ function ViewerViewportGrid(props) {
      * specify the viewport match details, which specifies the size and
      * setup of the various viewports.
      */
-    const findOrCreateViewport = viewportId => {
+    const findOrCreateViewport = pos => {
+      const viewportId = Array.from(viewportMatchDetails.keys())[pos];
       const details = viewportMatchDetails.get(viewportId);
       if (!details) {
         console.log('No match details for viewport', viewportId);
@@ -303,9 +304,6 @@ function ViewerViewportGrid(props) {
 
         viewportGridService.setActiveViewportId(viewportId);
       };
-
-      // TEMP -> Double click disabled for now
-      // onDoubleClick={() => onDoubleClick(viewportIndex)}
 
       viewportPanes[i] = (
         <ViewportPane

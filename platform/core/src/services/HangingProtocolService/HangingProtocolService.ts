@@ -136,7 +136,7 @@ export default class HangingProtocolService extends PubSubService {
    * hanging protocol, an object of the form
    */
   viewportMatchDetails: Map<
-    number, // viewportIndex
+    string, // viewportId
     HangingProtocol.ViewportMatchDetails
   > = new Map();
 
@@ -182,7 +182,7 @@ export default class HangingProtocolService extends PubSubService {
     stage: HangingProtocol.ProtocolStage;
     stageIndex: number;
     activeStudy?: StudyMetadata;
-    viewportMatchDetails: Map<number, HangingProtocol.ViewportMatchDetails>;
+    viewportMatchDetails: Map<string, HangingProtocol.ViewportMatchDetails>;
     displaySetMatchDetails: Map<string, HangingProtocol.DisplaySetMatchDetails>;
     activeImageLoadStrategyName: string;
   } {
@@ -1159,7 +1159,8 @@ export default class HangingProtocolService extends PubSubService {
     displaySetMatchDetails: Map<string, HangingProtocol.DisplaySetMatchDetails>;
   } {
     let matchedViewports = 0;
-    stageModel.viewports.forEach((viewport, viewportIndex) => {
+    stageModel.viewports.forEach(viewport => {
+      const viewportId = viewport.viewportOptions.viewportId;
       const matchDetails = this._matchViewport(
         viewport,
         options,
@@ -1180,7 +1181,7 @@ export default class HangingProtocolService extends PubSubService {
             displaySetOptions: it,
           }));
         }
-        viewportMatchDetails.set(viewportIndex, matchDetails);
+        viewportMatchDetails.set(viewportId, matchDetails);
       }
     });
     return {

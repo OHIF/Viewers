@@ -309,9 +309,11 @@ function commandsModule({
         }
       }
 
-      const { viewports } = viewportGridService.getState() || {
-        viewports: [],
-      };
+      const { viewports } = viewportGridService.getState();
+
+      if (!viewports.size) {
+        return;
+      }
 
       const toolGroup = toolGroupService.getToolGroup(toolGroupId);
       const toolGroupViewportIds = toolGroup?.getViewportIds?.();
@@ -321,15 +323,11 @@ function commandsModule({
         return;
       }
 
-      const filteredViewports = viewports.filter(viewport => {
-        if (!viewport.viewportOptions) {
-          return false;
+      const filteredViewports = Array.from(viewports.values()).filter(
+        viewport => {
+          return toolGroupViewportIds.includes(viewport.viewportId);
         }
-
-        return toolGroupViewportIds.includes(
-          viewport.viewportOptions.viewportId
-        );
-      });
+      );
 
       if (!filteredViewports.length) {
         return;

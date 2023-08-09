@@ -155,9 +155,12 @@ export function ViewportGridProvider({ children, service }) {
             const pos = col + row * numCols;
             const layoutOption = layoutOptions[pos];
             const positionId = layoutOption?.positionId || `${col}-${row}`;
+
             if (hasOptions && pos >= layoutOptions.length) {
               continue;
             }
+
+            // todo-rename: most likely need to be investigated
             if (
               activeViewportIdToSet == null &&
               state.viewports.get(state.activeViewportId)?.positionId ===
@@ -165,16 +168,21 @@ export function ViewportGridProvider({ children, service }) {
             ) {
               activeViewportIdToSet = pos;
             }
+
             const viewport = findOrCreateViewport(pos, positionId, options);
             if (!viewport) {
               continue;
             }
+
             viewport.positionId = positionId;
 
             // If the viewport doesn't have a viewportId, we create one
             if (!viewport.viewportOptions?.viewportId) {
               viewport.viewportOptions.viewportId = `viewport-${pos}`;
-              viewport.viewportId = `viewport-${pos}`;
+            }
+
+            if (!viewport.viewportId) {
+              viewport.viewportId = viewport.viewportOptions.viewportId;
             }
 
             // Create a new viewport object as it is getting updated here
@@ -207,7 +215,8 @@ export function ViewportGridProvider({ children, service }) {
           }
         }
 
-        activeViewportIdToSet = activeViewportIdToSet ?? 0;
+        // todo-rename: fix this
+        activeViewportIdToSet = activeViewportIdToSet ?? 'default';
 
         const ret = {
           ...state,

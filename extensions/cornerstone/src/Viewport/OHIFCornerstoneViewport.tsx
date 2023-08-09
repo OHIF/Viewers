@@ -153,25 +153,32 @@ const OHIFCornerstoneViewport = React.memo(props => {
     }
   }, [elementRef]);
 
-  const cleanUpServices = useCallback(() => {
-    const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
+  const cleanUpServices = useCallback(
+    viewportId => {
+      const viewportInfo = cornerstoneViewportService.getViewportInfo(
+        viewportId
+      );
 
-    if (!viewportInfo) {
-      return;
-    }
+      if (!viewportInfo) {
+        return;
+      }
 
-    const viewportId = viewportInfo.getViewportId();
-    const renderingEngineId = viewportInfo.getRenderingEngineId();
-    const syncGroups = viewportInfo.getSyncGroups();
+      const renderingEngineId = viewportInfo.getRenderingEngineId();
+      const syncGroups = viewportInfo.getSyncGroups();
 
-    toolGroupService.removeViewportFromToolGroup(viewportId, renderingEngineId);
+      toolGroupService.removeViewportFromToolGroup(
+        viewportId,
+        renderingEngineId
+      );
 
-    syncGroupService.removeViewportFromSyncGroup(
-      viewportId,
-      renderingEngineId,
-      syncGroups
-    );
-  }, [viewportId]);
+      syncGroupService.removeViewportFromSyncGroup(
+        viewportId,
+        renderingEngineId,
+        syncGroups
+      );
+    },
+    [viewportId]
+  );
 
   const elementEnabledHandler = useCallback(
     evt => {
@@ -226,7 +233,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
         viewportId,
       });
 
-      cleanUpServices();
+      cleanUpServices(viewportId);
 
       const viewportInfo = cornerstoneViewportService.getViewportInfo(
         viewportId
@@ -439,7 +446,7 @@ function _subscribeToJumpToMeasurementEvents(
       }
       if (cacheJumpToMeasurementEvent.cornerstoneViewport === undefined) {
         // Decide on which viewport should handle this
-        cacheJumpToMeasurementEvent.cornerstoneViewport = cornerstoneViewportService.getViewportIndexToJump(
+        cacheJumpToMeasurementEvent.cornerstoneViewport = cornerstoneViewportService.getViewportIdToJump(
           jumpId,
           measurement.displaySetInstanceUID,
           { referencedImageId: measurement.referencedImageId }

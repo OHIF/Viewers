@@ -61,7 +61,7 @@ export type SetProtocolOptions = {
 
 export type HangingProtocolMatchDetails = {
   displaySetMatchDetails: Map<string, DisplaySetMatchDetails>;
-  viewportMatchDetails: Map<number, ViewportMatchDetails>;
+  viewportMatchDetails: Map<string, ViewportMatchDetails>;
 };
 
 export type ConstraintValue =
