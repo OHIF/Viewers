@@ -9,7 +9,7 @@ const portalNodes = {};
 /**
  * A portal based tooltip.
  */
-export default class ToolTip extends React.Component {
+export default class PortalTooltip extends React.Component {
   static propTypes = {
     parent: PropTypes.oneOfType([PropTypes.string, PropTypes.object])
       .isRequired,

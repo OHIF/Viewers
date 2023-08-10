@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import Tooltip from '../Tooltip/PortalTooltip';
+import PortalTooltip from '../Tooltip/PortalTooltip';
 import Icon from '../Icon';
 import { useTranslation } from 'react-i18next';
 
@@ -23,7 +23,7 @@ const DisplaySetMessageListTooltip = ({ messages, id }): React.ReactNode => {
           onBlur={() => setIsOpen(false)}
           name="status-alert-warning"
         />
-        <Tooltip
+        <PortalTooltip
           active={isOpen}
           position="right"
           arrow="center"
@@ -57,7 +57,7 @@ const DisplaySetMessageListTooltip = ({ messages, id }): React.ReactNode => {
               ))}
             </ol>
           </div>
-        </Tooltip>
+        </PortalTooltip>
       </>
     );
   }
