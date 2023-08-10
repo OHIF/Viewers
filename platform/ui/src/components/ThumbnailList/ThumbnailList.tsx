@@ -35,6 +35,7 @@ const ThumbnailList = ({
           onReject,
           imageSrc,
           imageAltText,
+          isHydrated,
         }) => {
           const isActive = activeDisplaySetInstanceUIDs.includes(
             displaySetInstanceUID
@@ -100,6 +101,7 @@ const ThumbnailList = ({
                     onThumbnailDoubleClick(displaySetInstanceUID)
                   }
                   viewportIdentificator={viewportIdentificator}
+                  isHydrated={isHydrated}
                 />
               );
             default:
