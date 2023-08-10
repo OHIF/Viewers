@@ -15,35 +15,37 @@ const DefaultFallback = ({
   fallbackRoute,
 }) => {
   const [showDetails, setShowDetails] = useState(false);
-  const title = `Something went wrong${!isProduction && ` in ${context}`}.`;
+  const title = `Something went wrong in ${context}.`;
   const subtitle = `Sorry, something went wrong there. Try again.`;
   return (
     <div className="ErrorFallback bg-primary-dark w-full h-full" role="alert">
       <p className="text-primary-light text-xl">{title}</p>
       <p className="text-primary-light text-base">{subtitle}</p>
-      {!isProduction && (
-        <div className="rounded-md bg-secondary-dark p-5 mt-5 font-mono space-y-2">
-          <p className="text-primary-light">Context: {context}</p>
-          <p className="text-primary-light">Error Message: {error.message}</p>
+      <div className="rounded-md bg-secondary-dark p-5 mt-5 font-mono space-y-2">
+        <p className="text-primary-light">Context: {context}</p>
+        <p className="text-primary-light">Error Message: {error.message}</p>
 
-          <IconButton
-            variant="contained"
-            color="inherit"
-            size="initial"
-            className="text-primary-active"
-            onClick={() => setShowDetails(!showDetails)}
-          >
-            <React.Fragment>
-              <div>{'Stack Trace'}</div>
-              <Icon width="15px" height="15px" name="chevron-down" />
-            </React.Fragment>
-          </IconButton>
+        {!isProduction && (
+          <>
+            <IconButton
+              variant="contained"
+              color="inherit"
+              size="initial"
+              className="text-primary-active"
+              onClick={() => setShowDetails(!showDetails)}
+            >
+              <React.Fragment>
+                <div>{'Stack Trace'}</div>
+                <Icon width="15px" height="15px" name="chevron-down" />
+              </React.Fragment>
+            </IconButton>
 
-          {showDetails && (
-            <p className="px-4 text-primary-light">Stack: {error.stack}</p>
-          )}
-        </div>
-      )}
+            {showDetails && (
+              <p className="px-4 text-primary-light">Stack: {error.stack}</p>
+            )}
+          </>
+        )}
+      </div>
     </div>
   );
 };
