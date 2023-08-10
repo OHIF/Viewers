@@ -235,7 +235,6 @@ const ICONS = {
   'tool-create-threshold': toolCreateThreshold,
   'tool-calibration': toolCalibration,
   'tool-point': toolCircle,
-  'tool-circle': toolCircle,
   'tool-freehand-line': toolFreehand,
   'tool-freehand-polygon': toolFreehandPolygon,
   'tool-polygon': toolPolygon,

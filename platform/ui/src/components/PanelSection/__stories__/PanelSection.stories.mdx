@@ -50,6 +50,9 @@ PanelSection is a component that renders the PanelSections.
     name="Overview"
     args={{
       title: 'left',
+      actionIcons: [
+        {name: 'row-hide', onClick: ()=> alert('row-hide')},
+      ]
     }}
   >
     {PanelSectionTemplate.bind({})}

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Icon } from '@ohif/ui';
 import PropTypes from 'prop-types';
 
-const PanelSection = ({ title, children }) => {
+const PanelSection = ({ title, children, actionIcons = [] }) => {
   const [isChildrenVisible, setChildrenVisible] = useState(true);
 
   const handleHeaderClick = () => {
@@ -16,9 +16,21 @@ const PanelSection = ({ title, children }) => {
         onClick={handleHeaderClick}
       >
         <div className="text-aqua-pale">{title}</div>
-        <Icon
-          name={isChildrenVisible ? 'chevron-down-new' : 'chevron-left-new'}
-        />
+        <div className="flex">
+          {actionIcons.map((icon, index) => (
+            <Icon
+              key={index}
+              name={icon.name}
+              onClick={e => {
+                e.stopPropagation();
+                icon.onClick();
+              }}
+            />
+          ))}
+          <Icon
+            name={isChildrenVisible ? 'chevron-down-new' : 'chevron-left-new'}
+          />
+        </div>
       </div>
       {isChildrenVisible && children}
     </>
