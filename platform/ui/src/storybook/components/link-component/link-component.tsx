@@ -6,7 +6,7 @@ export const LinkComponent = ({
   target: originalTarget,
   rel,
 }) => {
-  const onClick = (event) => {
+  const onClick = event => {
     if (originalTarget) {
       return;
     }

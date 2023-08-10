@@ -1,5 +1,5 @@
 window.config = {
-  disableEditing: false,
+  disableEditing: true,
   routerBasename: '/',
   // whiteLabeling: {},
   extensions: [],

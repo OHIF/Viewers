@@ -117,7 +117,7 @@ function calculateSuvPeak(
   const secondaryCircleWorld = vec3.create();
   const bottomWorld = vec3.create();
   const topWorld = vec3.create();
-  referenceVolumeImageData.indexToWorld(<vec3>maxIJK, secondaryCircleWorld);
+  referenceVolumeImageData.indexToWorld(maxIJK as vec3, secondaryCircleWorld);
   vec3.scaleAndAdd(bottomWorld, secondaryCircleWorld, direction, -diameter / 2);
   vec3.scaleAndAdd(topWorld, secondaryCircleWorld, direction, diameter / 2);
   const suvPeakCirclePoints = [bottomWorld, topWorld] as [

@@ -314,18 +314,16 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
       );
       let canvasCorners;
       if (rotation == 90 || rotation == 270) {
-        canvasCorners = <Array<Types.Point2>>(
-          utilities.math.ellipse.getCanvasEllipseCorners([
-            canvasCoordinates[2],
-            canvasCoordinates[3],
-            canvasCoordinates[0],
-            canvasCoordinates[1],
-          ])
-        );
+        canvasCorners = utilities.math.ellipse.getCanvasEllipseCorners([
+          canvasCoordinates[2],
+          canvasCoordinates[3],
+          canvasCoordinates[0],
+          canvasCoordinates[1],
+        ]) as Array<Types.Point2>;
       } else {
-        canvasCorners = <Array<Types.Point2>>(
-          utilities.math.ellipse.getCanvasEllipseCorners(canvasCoordinates)
-        );
+        canvasCorners = utilities.math.ellipse.getCanvasEllipseCorners(
+          canvasCoordinates
+        ) as Array<Types.Point2>;
       }
 
       const lineUID = `${index}`;

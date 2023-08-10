@@ -12,11 +12,17 @@ const ListMenu = ({ items = [], renderer, onClick }) => {
     const onClickHandler = () => {
       setSelectedIndex(index);
       onClick({ item, selectedIndex: index });
-      if (item.onClick) item.onClick({ ...item, index, isSelected });
+      if (item.onClick) {
+        item.onClick({ ...item, index, isSelected });
+      }
     };
 
     return (
-      <div className={classnames(flex, theme, 'cursor-pointer')} onClick={onClickHandler} data-cy={item.id}>
+      <div
+        className={classnames(flex, theme, 'cursor-pointer')}
+        onClick={onClickHandler}
+        data-cy={item.id}
+      >
         {renderer && renderer({ ...item, index, isSelected })}
       </div>
     );
@@ -38,16 +44,16 @@ const ListMenu = ({ items = [], renderer, onClick }) => {
   );
 };
 
-const noop = () => { };
+const noop = () => {};
 
 ListMenu.propTypes = {
   items: PropTypes.array.isRequired,
   renderer: PropTypes.func.isRequired,
-  onClick: PropTypes.func
+  onClick: PropTypes.func,
 };
 
 ListMenu.defaultProps = {
-  onClick: noop
+  onClick: noop,
 };
 
 export default ListMenu;

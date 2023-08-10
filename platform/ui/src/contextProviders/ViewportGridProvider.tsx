@@ -135,7 +135,9 @@ export function ViewportGridProvider({ children, service }) {
         // Have the initial id set contain all viewports not updated here
         const viewportIdSet = new Set();
         viewports.forEach((viewport, index) => {
-          if (!viewport.viewportId) return;
+          if (!viewport.viewportId) {
+            return;
+          }
           const isUpdated = payload.find(
             newViewport => newViewport.viewportIndex === index
           );
@@ -228,7 +230,9 @@ export function ViewportGridProvider({ children, service }) {
               activeViewportIndexToSet = pos;
             }
             const viewport = findOrCreateViewport(pos, positionId, options);
-            if (!viewport) continue;
+            if (!viewport) {
+              continue;
+            }
             viewport.positionId = positionId;
             // Create a new viewport object as it is getting updated here
             // and it is part of the read only state
