@@ -58,8 +58,8 @@ icons.
           {icons
             .filter(ic => ic !== 'magnifier')
             .map(icon => (
-              <div className="m-4 flex flex-col justify-center items-center">
-                <div class="w-8 h-8">
+              <div className="m-4 flex flex-col justify-center items-center" key={icon}>
+                <div className="w-8 h-8">
                   <Icon name={icon} />
                 </div>
                 <div className="text-gray-600">{icon}</div>

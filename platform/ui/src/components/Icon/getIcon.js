@@ -123,6 +123,8 @@ import iconMPR from './../../assets/icons/icon-mpr-alt.svg';
 import checkboxDefault from './../../assets/icons/checkbox-default.svg';
 import checkboxActive from './../../assets/icons/checkbox-active.svg';
 import referenceLines from './../../assets/icons/reference-lines.svg';
+import chevronDownNew from './../../assets/icons/icon-disclosure-close.svg';
+import chevronLeftNew from './../../assets/icons/icon-disclosure-open.svg';
 
 /** Old OHIF */
 import oldTrash from './../../assets/icons/old-trash.svg';
@@ -255,6 +257,8 @@ const ICONS = {
   'checkbox-default': checkboxDefault,
   'checkbox-active': checkboxActive,
   'tool-referenceLines': referenceLines,
+  'chevron-left-new': chevronLeftNew,
+  'chevron-down-new': chevronDownNew,
 
   /** Old OHIF */
   'old-trash': oldTrash,
