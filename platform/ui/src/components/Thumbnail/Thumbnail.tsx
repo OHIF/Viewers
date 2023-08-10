@@ -80,7 +80,10 @@ const Thumbnail = ({
             <Icon name={countIcon || 'group-layers'} className="w-3 mr-2" />
             {` ${numInstances}`}
           </div>
-          <DisplaySetMessageListTooltip messages={messages} />
+          <DisplaySetMessageListTooltip
+            messages={messages}
+            id={`display-set-tooltip-${seriesNumber}`}
+          />
         </div>
         <div className="text-base text-white break-all">{description}</div>
       </div>
