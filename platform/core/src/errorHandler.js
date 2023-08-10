@@ -1,6 +1,6 @@
 // These should be overridden by the implementation
 const errorHandler = {
-  getHTTPErrorHandler: () => null,
+  getHTTPErrorHandler: () => { },
 };
 
 export default errorHandler;

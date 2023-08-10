@@ -11,6 +11,7 @@ import Compose from './Compose';
 import getStudies from './studiesList';
 import { history } from '../../utils/history';
 import loadModules from '../../pluginImports';
+import Error from '../../components/Error';
 
 const { getSplitParam } = utils;
 
@@ -117,6 +118,12 @@ export default function ModeRoute({
   const layoutTemplateData = useRef(false);
   const locationRef = useRef(null);
   const isMounted = useRef(false);
+
+  // error
+  const [error, setError] = useState(null);
+  if (error) {
+    throw error;
+  }
 
   // Expose the react router dom navigation.
   history.navigate = useNavigate();
@@ -234,27 +241,33 @@ export default function ModeRoute({
   }, []);
 
   useEffect(() => {
-    if (!ExtensionDependenciesLoaded) {
+    if (!ExtensionDependenciesLoaded || error) {
       return;
     }
 
     // Todo: this should not be here, data source should not care about params
     const initializeDataSource = async (params, query) => {
-      await dataSource.initialize({
-        params,
-        query,
-      });
-      setStudyInstanceUIDs(dataSource.getStudyInstanceUIDs({ params, query }));
+      try {
+        await dataSource.initialize({
+          params,
+          query,
+        });
+        setStudyInstanceUIDs(
+          dataSource.getStudyInstanceUIDs({ params, query })
+        );
+      } catch (error) {
+        setError(error);
+      }
     };
 
     initializeDataSource(params, query);
     return () => {
       layoutTemplateData.current = null;
     };
-  }, [location, ExtensionDependenciesLoaded]);
+  }, [location, ExtensionDependenciesLoaded, error]);
 
   useEffect(() => {
-    if (!ExtensionDependenciesLoaded) {
+    if (!ExtensionDependenciesLoaded || error) {
       return;
     }
 
@@ -275,10 +288,10 @@ export default function ModeRoute({
     return () => {
       layoutTemplateData.current = null;
     };
-  }, [studyInstanceUIDs, ExtensionDependenciesLoaded]);
+  }, [studyInstanceUIDs, ExtensionDependenciesLoaded, error]);
 
   useEffect(() => {
-    if (!hotkeys || !ExtensionDependenciesLoaded) {
+    if (!hotkeys || !ExtensionDependenciesLoaded || error) {
       return;
     }
 
@@ -295,10 +308,10 @@ export default function ModeRoute({
     return () => {
       hotkeysManager.destroy();
     };
-  }, [ExtensionDependenciesLoaded]);
+  }, [ExtensionDependenciesLoaded, error]);
 
   useEffect(() => {
-    if (!layoutTemplateData.current || !ExtensionDependenciesLoaded) {
+    if (!layoutTemplateData.current || !ExtensionDependenciesLoaded || error) {
       return;
     }
 
@@ -432,6 +445,7 @@ export default function ModeRoute({
     hotkeysManager,
     studyInstanceUIDs,
     refresh,
+    error,
   ]);
 
   const renderLayoutData = props => {
