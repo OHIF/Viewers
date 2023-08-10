@@ -7,6 +7,7 @@ import { setTrackingUniqueIdentifiersForElement } from '../tools/modules/dicomSR
 
 import { Icon, Tooltip, useViewportGrid, ViewportActionBar } from '@ohif/ui';
 import hydrateStructuredReport from '../utils/hydrateStructuredReport';
+import { useAppConfig } from '@state';
 
 const { formatDate } = utils;
 
@@ -25,8 +26,9 @@ function OHIFCornerstoneSRViewport(props) {
     viewportOptions,
     servicesManager,
     extensionManager,
-    appConfig,
   } = props;
+
+  const [appConfig] = useAppConfig();
 
   const {
     displaySetService,

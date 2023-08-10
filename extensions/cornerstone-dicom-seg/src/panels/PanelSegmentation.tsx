@@ -2,15 +2,15 @@ import React, { useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { SegmentationGroupTable } from '@ohif/ui';
 import callInputDialog from './callInputDialog';
-
+import { useAppConfig } from '@state';
 import { useTranslation } from 'react-i18next';
 
 export default function PanelSegmentation({
   servicesManager,
   commandsManager,
-  appConfig,
 }) {
   const { segmentationService, uiDialogService } = servicesManager.services;
+  const [appConfig] = useAppConfig();
   const disableEditing = appConfig?.disableEditing;
 
   const { t } = useTranslation('PanelSegmentation');

@@ -41,7 +41,6 @@ const extension = {
     servicesManager,
     commandsManager,
     extensionManager,
-    appConfig,
   }): Types.Panel[] => {
     const wrappedPanelSegmentation = () => {
       return (
@@ -49,7 +48,6 @@ const extension = {
           commandsManager={commandsManager}
           servicesManager={servicesManager}
           extensionManager={extensionManager}
-          appConfig={appConfig}
         />
       );
     };

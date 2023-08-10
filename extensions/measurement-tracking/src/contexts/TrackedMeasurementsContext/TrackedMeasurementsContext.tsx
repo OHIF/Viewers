@@ -13,6 +13,7 @@ import promptTrackNewStudy from './promptTrackNewStudy';
 import promptSaveReport from './promptSaveReport';
 import promptHydrateStructuredReport from './promptHydrateStructuredReport';
 import hydrateStructuredReport from './hydrateStructuredReport';
+import { useAppConfig } from '@state';
 
 const TrackedMeasurementsContext = React.createContext();
 TrackedMeasurementsContext.displayName = 'TrackedMeasurementsContext';
@@ -26,9 +27,11 @@ const SR_SOPCLASSHANDLERID =
  * @param {*} param0
  */
 function TrackedMeasurementsContextProvider(
-  { servicesManager, commandsManager, extensionManager, appConfig }, // Bound by consumer
+  { servicesManager, commandsManager, extensionManager }, // Bound by consumer
   { children } // Component props
 ) {
+  const [appConfig] = useAppConfig();
+
   const [viewportGrid, viewportGridService] = useViewportGrid();
   const { activeViewportIndex, viewports } = viewportGrid;
   const { measurementService, displaySetService } = servicesManager.services;
