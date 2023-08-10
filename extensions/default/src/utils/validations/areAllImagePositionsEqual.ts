@@ -39,6 +39,9 @@ function _checkSeriesPositionShift(
 export default function areAllImagePositionsEqual(
   instances: Array<any>
 ): boolean {
+  if (!instances?.length) {
+    return false;
+  }
   const firstImageOrientationPatient = toNumber(
     instances[0].ImageOrientationPatient
   );

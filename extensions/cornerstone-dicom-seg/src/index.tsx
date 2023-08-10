@@ -69,6 +69,7 @@ const extension = {
         <OHIFCornerstoneSEGViewport
           servicesManager={servicesManager}
           extensionManager={extensionManager}
+          commandsManager={commandsManager}
           {...props}
         />
       );
