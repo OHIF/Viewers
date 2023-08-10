@@ -30,9 +30,11 @@ function defaultRouteInit(
   const {
     displaySetService,
     hangingProtocolService,
+    uiNotificationService,
   } = servicesManager.services;
 
   const unsubscriptions = [];
+  const issuedWarningSeries = [];
   const {
     unsubscribe: instanceAddedUnsubscribe,
   } = DicomMetadataStore.subscribe(
@@ -43,6 +45,44 @@ function defaultRouteInit(
         SeriesInstanceUID
       );
 
+      /**
+       * This function is used to check if the filter is used. Its intend is to
+       * warn the user in case of link with a SeriesInstanceUID was called
+       * @param instances
+       * @returns
+       */
+      function isSeriesFilterUsed(instances) {
+        const seriesInstanceUIDs = filters?.seriesInstanceUID;
+        if (seriesInstanceUIDs) {
+          if (instances.length) {
+            const instance = instances[0];
+            if (seriesInstanceUIDs.includes(instance.SeriesInstanceUID)) {
+              return true;
+            } else {
+              return false;
+            }
+          } else {
+            return false; // no images so the filter didn't work
+          }
+        } else {
+          return true; // no filter so its ok
+        }
+      }
+      // checks if the series filter was used, if it exists
+      const seriesInstanceUID = filters?.seriesInstanceUID[0];
+      if (
+        !isSeriesFilterUsed(seriesMetadata.instances) &&
+        !issuedWarningSeries.includes(seriesInstanceUID)
+      ) {
+        // stores the series instance filter so it shows only once the warning
+        issuedWarningSeries.push(seriesInstanceUID);
+        uiNotificationService.show({
+          title: 'Series filter',
+          message: `Series ${seriesInstanceUID} could not be found in the current study`,
+          type: 'error',
+          duration: 7000,
+        });
+      }
       displaySetService.makeDisplaySets(seriesMetadata.instances, madeInClient);
     }
   );
