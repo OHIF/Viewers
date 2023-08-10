@@ -69,16 +69,18 @@ function defaultRouteInit(
         }
       }
       // checks if the series filter was used, if it exists
-      const seriesInstanceUID = filters?.seriesInstanceUID[0];
+      const seriesInstanceUIDs = filters?.seriesInstanceUID;
       if (
+        seriesInstanceUIDs &&
+        seriesInstanceUIDs.length &&
         !isSeriesFilterUsed(seriesMetadata.instances) &&
-        !issuedWarningSeries.includes(seriesInstanceUID)
+        !issuedWarningSeries.includes(seriesInstanceUIDs[0])
       ) {
         // stores the series instance filter so it shows only once the warning
-        issuedWarningSeries.push(seriesInstanceUID);
+        issuedWarningSeries.push(seriesInstanceUIDs[0]);
         uiNotificationService.show({
           title: 'Series filter',
-          message: `Series ${seriesInstanceUID} could not be found in the current study`,
+          message: `Series ${seriesInstanceUIDs[0]} could not be found in the current study`,
           type: 'error',
           duration: 7000,
         });
