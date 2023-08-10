@@ -125,6 +125,7 @@ import checkboxActive from './../../assets/icons/checkbox-active.svg';
 import referenceLines from './../../assets/icons/reference-lines.svg';
 import chevronDownNew from './../../assets/icons/icon-disclosure-close.svg';
 import chevronLeftNew from './../../assets/icons/icon-disclosure-open.svg';
+import settingsBars from './../../assets/icons/icon-display-settings.svg';
 
 /** Old OHIF */
 import oldTrash from './../../assets/icons/old-trash.svg';
@@ -258,6 +259,7 @@ const ICONS = {
   'tool-referenceLines': referenceLines,
   'chevron-left-new': chevronLeftNew,
   'chevron-down-new': chevronDownNew,
+  'settings-bars': settingsBars,
 
   /** Old OHIF */
   'old-trash': oldTrash,

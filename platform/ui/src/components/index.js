@@ -73,6 +73,7 @@ import LoadingIndicatorProgress from './LoadingIndicatorProgress';
 import LoadingIndicatorTotalPercent from './LoadingIndicatorTotalPercent';
 import ViewportActionBar from './ViewportActionBar';
 import ProgressLoadingBar from './ProgressLoadingBar';
+import PanelSection from './PanelSection';
 
 export {
   AboutModal,
@@ -116,6 +117,7 @@ export {
   NavBar,
   Notification,
   ProgressLoadingBar,
+  PanelSection,
   Select,
   SegmentationTable,
   SegmentationGroupTable,

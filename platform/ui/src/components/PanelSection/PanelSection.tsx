@@ -16,13 +16,16 @@ const PanelSection = ({ title, children, actionIcons = [] }) => {
         onClick={handleHeaderClick}
       >
         <div className="text-aqua-pale">{title}</div>
-        <div className="flex">
+        <div className="flex items-center space-x-1">
           {actionIcons.map((icon, index) => (
             <Icon
               key={index}
               name={icon.name}
               onClick={e => {
                 e.stopPropagation();
+                if (!isChildrenVisible) {
+                  setChildrenVisible(true);
+                }
                 icon.onClick();
               }}
             />

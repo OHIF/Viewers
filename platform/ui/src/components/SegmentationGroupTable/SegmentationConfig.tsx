@@ -15,7 +15,7 @@ const ActiveSegmentationConfig = ({
   setFillAlpha,
 }) => {
   return (
-    <div className="flex justify-between text-[12px] pt-[13px] px-2">
+    <div className="flex justify-between text-[12px] pt-[13px] px-3">
       <div className="flex flex-col items-start">
         <div className="text-white mb-[12px]">Active</div>
         <CheckBox
@@ -118,58 +118,35 @@ const SegmentationConfig = ({
   setRenderOutline,
 }) => {
   const { initialConfig } = segmentationConfig;
-  const [isMinimized, setIsMinimized] = useState(true);
   return (
     <div className="bg-primary-dark select-none">
-      <div
-        className="flex cursor-pointer items-center"
-        onClick={evt => {
-          evt.stopPropagation();
-          setIsMinimized(!isMinimized);
-        }}
-      >
-        <Icon
-          name="panel-group-open-close"
-          className={classNames(
-            'w-5 h-5 text-white transition duration-300 cursor-pointer',
-            {
-              'transform rotate-90': !isMinimized,
-            }
-          )}
-        />
-        <span className="text-[#d8d8d8] text-[12px] font-[300]">
-          {'Segmentation Appearance'}
-        </span>
-      </div>
       {/* active segmentation */}
-      {!isMinimized && (
-        <div>
-          <ActiveSegmentationConfig
-            config={initialConfig}
-            setFillAlpha={setFillAlpha}
-            setOutlineWidthActive={setOutlineWidthActive}
-            setOutlineOpacityActive={setOutlineOpacityActive}
-            setRenderFill={setRenderFill}
-            setRenderOutline={setRenderOutline}
-          />
-          {/* A small line  */}
-          <div className="h-[1px] bg-[#212456] mb-[8px] mx-1"></div>
-          {/* inactive segmentation */}
-          <div
-            onClick={() => setIsMinimized(!isMinimized)}
-            className="flex items-center cursor-pointer pl-2 pb-[9px]"
-          >
-            <span className="text-[#d8d8d8] text-[12px] font-[300]">
-              {'Inactive Segmentations'}
-            </span>
-          </div>
-          <InactiveSegmentationConfig
-            config={initialConfig}
-            setRenderInactiveSegmentations={setRenderInactiveSegmentations}
-            setFillAlphaInactive={setFillAlphaInactive}
-          />
+      <div>
+        <ActiveSegmentationConfig
+          config={initialConfig}
+          setFillAlpha={setFillAlpha}
+          setOutlineWidthActive={setOutlineWidthActive}
+          setOutlineOpacityActive={setOutlineOpacityActive}
+          setRenderFill={setRenderFill}
+          setRenderOutline={setRenderOutline}
+        />
+        {/* A small line  */}
+        <div className="h-[1px] bg-[#212456] mb-[8px] mx-1"></div>
+        {/* inactive segmentation */}
+        <div
+          onClick={() => setIsMinimized(!isMinimized)}
+          className="flex items-center cursor-pointer pl-2 pb-[9px]"
+        >
+          <span className="text-[#d8d8d8] text-[12px] font-[300]">
+            {'Inactive Segmentations'}
+          </span>
         </div>
-      )}
+        <InactiveSegmentationConfig
+          config={initialConfig}
+          setRenderInactiveSegmentations={setRenderInactiveSegmentations}
+          setFillAlphaInactive={setFillAlphaInactive}
+        />
+      </div>
       <div className="h-[6px] bg-black "></div>
     </div>
   );

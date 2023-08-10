@@ -1,2 +1,2 @@
-import SidePanel from './SidePanel';
-export default SidePanel;
+import PanelSection from './PanelSection';
+export default PanelSection;
