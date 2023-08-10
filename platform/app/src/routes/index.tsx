@@ -10,9 +10,56 @@ import Debug from './Debug';
 import NotFound from './NotFound';
 import buildModeRoutes from './buildModeRoutes';
 import PrivateRoute from './PrivateRoute';
+import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
+
+const NotFoundServer = ({
+  message = 'Sorry, image server is unreachable.',
+}) => {
+  return (
+    <div className="absolute w-full h-full flex justify-center items-center text-white">
+      <div>
+        <h4>{message}</h4>
+      </div>
+    </div>
+  );
+};
+
+NotFoundServer.propTypes = {
+  message: PropTypes.string,
+};
+
+const NotFoundStudy = ({
+  message = 'Sorry, study not found in image server. Please, return to the ',
+}) => {
+  return (
+    <div className="absolute w-full h-full flex justify-center items-center text-white">
+      <div>
+        <h4>
+          {message}{' '}
+          <Link className="text-primary-light" to={'/'}>
+            Study List
+          </Link>
+        </h4>
+      </div>
+    </div>
+  );
+};
+
+NotFoundStudy.propTypes = {
+  message: PropTypes.string,
+};
 
 // TODO: Include "routes" debug route if dev build
 const bakedInRoutes = [
+  {
+    path: '/notfoundserver',
+    children: NotFoundServer,
+  },
+  {
+    path: '/notfoundstudy',
+    children: NotFoundStudy,
+  },
   {
     path: '/debug',
     children: Debug,
