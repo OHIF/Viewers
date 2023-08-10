@@ -77,6 +77,9 @@ function createDicomJSONApi(dicomJsonConfig) {
       }
 
       const response = await fetch(url);
+      if (!response?.ok) {
+        throw Error(await response.text());
+      }
       const data = await response.json();
 
       let StudyInstanceUID;
@@ -115,7 +118,7 @@ function createDicomJSONApi(dicomJsonConfig) {
     },
     query: {
       studies: {
-        mapParams: () => {},
+        mapParams: () => { },
         search: async param => {
           const [key, value] = Object.entries(param)[0];
           const mappedParam = mappings[key];
