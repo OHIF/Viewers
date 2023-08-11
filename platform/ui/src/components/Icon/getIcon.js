@@ -72,6 +72,8 @@ import tabROIThreshold from './../../assets/icons/tab-roi-threshold.svg';
 import tabSegmentation from './../../assets/icons/tab-segmentation.svg';
 import uiArrowDown from './../../assets/icons/ui-arrow-down.svg';
 import uiArrowUp from './../../assets/icons/ui-arrow-up.svg';
+import uiArrowLeft from './../../assets/icons/ui-arrow-left.svg';
+import uiArrowRight from './../../assets/icons/ui-arrow-right.svg';
 import loadingOHIFMark from './../../assets/icons/loading-ohif-mark.svg';
 import notificationsInfo from './../../assets/icons/notifications-info.svg';
 import notificationsWarning from './../../assets/icons/notifications-warning.svg';
@@ -126,6 +128,9 @@ import referenceLines from './../../assets/icons/reference-lines.svg';
 import chevronDownNew from './../../assets/icons/icon-disclosure-close.svg';
 import chevronLeftNew from './../../assets/icons/icon-disclosure-open.svg';
 import settingsBars from './../../assets/icons/icon-display-settings.svg';
+import iconAdd from './../../assets/icons/icon-add.svg';
+import iconRename from './../../assets/icons/icon-rename.svg';
+import iconDelete from './../../assets/icons/icon-delete.svg';
 
 /** Old OHIF */
 import oldTrash from './../../assets/icons/old-trash.svg';
@@ -254,12 +259,17 @@ const ICONS = {
   'tab-segmentation': tabSegmentation,
   'ui-arrow-down': uiArrowDown,
   'ui-arrow-up': uiArrowUp,
+  'ui-arrow-left': uiArrowLeft,
+  'ui-arrow-right': uiArrowRight,
   'checkbox-default': checkboxDefault,
   'checkbox-active': checkboxActive,
   'tool-referenceLines': referenceLines,
   'chevron-left-new': chevronLeftNew,
   'chevron-down-new': chevronDownNew,
   'settings-bars': settingsBars,
+  'icon-rename': iconRename,
+  'icon-add': iconAdd,
+  'icon-delete': iconDelete,
 
   /** Old OHIF */
   'old-trash': oldTrash,

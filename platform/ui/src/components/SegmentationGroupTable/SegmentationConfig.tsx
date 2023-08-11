@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
-import classNames from 'classnames';
-
 import Icon from '../Icon';
 import InputRange from '../InputRange';
 import CheckBox from '../CheckBox';
 import InputNumber from '../InputNumber';
+import classNames from 'classnames';
 
 const ActiveSegmentationConfig = ({
   config,
@@ -80,11 +79,11 @@ const InactiveSegmentationConfig = ({
   setFillAlphaInactive,
 }) => {
   return (
-    <div className="px-2">
+    <div className="px-3">
       <CheckBox
         label="Display Inactive Segmentations"
         checked={config.renderInactiveSegmentations}
-        labelClassName="text-[12px] pt-1"
+        labelClassName="text-[12px]"
         className="mb-[9px]"
         onChange={setRenderInactiveSegmentations}
       />
@@ -118,9 +117,9 @@ const SegmentationConfig = ({
   setRenderOutline,
 }) => {
   const { initialConfig } = segmentationConfig;
+  const [isMinimized, setIsMinimized] = useState(true);
   return (
     <div className="bg-primary-dark select-none">
-      {/* active segmentation */}
       <div>
         <ActiveSegmentationConfig
           config={initialConfig}
@@ -130,22 +129,31 @@ const SegmentationConfig = ({
           setRenderFill={setRenderFill}
           setRenderOutline={setRenderOutline}
         />
-        {/* A small line  */}
         <div className="h-[1px] bg-[#212456] mb-[8px] mx-1"></div>
-        {/* inactive segmentation */}
         <div
           onClick={() => setIsMinimized(!isMinimized)}
           className="flex items-center cursor-pointer pl-2 pb-[9px]"
         >
+          <Icon
+            name="panel-group-open-close"
+            className={classNames(
+              'w-5 h-5 text-white transition duration-300 cursor-pointer',
+              {
+                'transform rotate-90': !isMinimized,
+              }
+            )}
+          />
           <span className="text-[#d8d8d8] text-[12px] font-[300]">
             {'Inactive Segmentations'}
           </span>
         </div>
-        <InactiveSegmentationConfig
-          config={initialConfig}
-          setRenderInactiveSegmentations={setRenderInactiveSegmentations}
-          setFillAlphaInactive={setFillAlphaInactive}
-        />
+        {!isMinimized && (
+          <InactiveSegmentationConfig
+            config={initialConfig}
+            setRenderInactiveSegmentations={setRenderInactiveSegmentations}
+            setFillAlphaInactive={setFillAlphaInactive}
+          />
+        )}
       </div>
       <div className="h-[6px] bg-black "></div>
     </div>

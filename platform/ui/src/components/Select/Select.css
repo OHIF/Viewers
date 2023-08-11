@@ -1,6 +1,6 @@
 .customSelect__wrapper .customSelect__control {
-  @apply bg-black border-primary-main shadow transition duration-300 border rounded w-full text-sm text-white leading-tight;
-  min-height: 33px;
+  @apply bg-black border-secondary-light shadow transition duration-300 border rounded w-full text-sm text-white leading-tight;
+  min-height: 28px;
 }
 .customSelect__wrapper .customSelect__control:hover {
   @apply border-gray-500;
@@ -13,6 +13,10 @@
 
 .customSelect--is-disabled .customSelect__control--is-disabled {
   @apply pointer-events-none;
+}
+
+.css-1hwfws3 {
+  padding: 0;
 }
 
 .customSelect__wrapper .customSelect__indicator-separator {
@@ -36,7 +40,7 @@
 }
 
 .customSelect__wrapper .customSelect__single-value {
-  @apply text-white;
+  @apply text-aqua-pale pl-1;
 }
 
 .customSelect__wrapper.customSelect--is-disabled {
@@ -54,8 +58,7 @@
 
 .ohif-select .customSelect__menu-list {
   overflow-x: hidden !important;
-  margin-right: 4px;
-  margin-top: 4px;
+  margin: 4px;
   padding-top: 0px !important;
 }
 
@@ -73,7 +76,8 @@
   background-color: #0944b391 !important;
 }
 
-.ohif-select .customSelect__option, .ohif-select .customSelect__option label {
+.ohif-select .customSelect__option,
+.ohif-select .customSelect__option label {
   color: #d6d6d6;
   font-size: 14px;
   display: flex;
@@ -88,4 +92,8 @@
   border: 2px solid #0944b3;
   border-radius: 6px;
   background-color: #151515 !important;
+}
+
+.css-1hwfws3 {
+  all: unset !important;
 }

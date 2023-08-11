@@ -30,9 +30,11 @@ const PanelSection = ({ title, children, actionIcons = [] }) => {
               }}
             />
           ))}
-          <Icon
-            name={isChildrenVisible ? 'chevron-down-new' : 'chevron-left-new'}
-          />
+          <div className="w-[20px] h-[20px] flex items-center justify-center">
+            <Icon
+              name={isChildrenVisible ? 'chevron-down-new' : 'chevron-left-new'}
+            />
+          </div>
         </div>
       </div>
       {isChildrenVisible && children}
