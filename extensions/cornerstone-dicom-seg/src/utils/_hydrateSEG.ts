@@ -24,8 +24,6 @@ async function _hydrateSEGDisplaySet({
 
   segmentationService.hydrateSegmentation(segDisplaySet.displaySetInstanceUID);
 
-  segDisplaySet.isHydrated = true;
-
   const { viewports } = viewportGridService.getState();
 
   const updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
