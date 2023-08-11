@@ -60,7 +60,7 @@ Cypress.Commands.add(
     cy.location('pathname').then($url => {
       cy.log($url);
       if (
-        $url == 'blank' ||
+        $url === 'blank' ||
         !$url.includes(`${mode}/${StudyInstanceUID}${otherParams}`)
       ) {
         cy.openStudyInViewer(StudyInstanceUID, otherParams, mode);
@@ -224,6 +224,8 @@ Cypress.Commands.add(
           throw new Error('No enabled elements');
         }
       });
+    // This shouldn't be necessary, but seems to be.
+    cy.wait(250);
     cy.log('DICOM image loaded');
   }
 );
