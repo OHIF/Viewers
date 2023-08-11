@@ -12,20 +12,26 @@ const CORNERSTONE_3D_TOOLS_SOURCE_VERSION = '0.1';
 const supportedLegacyCornerstoneTags = ['cornerstoneTools@^4.0.0'];
 
 const convertCode = (codingValues, code) => {
-  if (!code || code.CodingSchemeDesignator === 'CORNERSTONEJS') return;
+  if (!code || code.CodingSchemeDesignator === 'CORNERSTONEJS') {
+    return;
+  }
   const ref = `${code.CodingSchemeDesignator}:${code.CodeValue}`;
   const ret = { ...codingValues[ref], ref, ...code, text: code.CodeMeaning };
   return ret;
 };
 
 const convertSites = (codingValues, sites) => {
-  if (!sites || !sites.length) return;
+  if (!sites || !sites.length) {
+    return;
+  }
   const ret = [];
   // Do as a loop to convert away from Proxy instances
   for (let i = 0; i < sites.length; i++) {
     // Deal with irregular conversion from dcmjs
     const site = convertCode(codingValues, sites[i][0] || sites[i]);
-    if (site) ret.push(site);
+    if (site) {
+      ret.push(site);
+    }
   }
   return (ret.length && ret) || undefined;
 };
@@ -287,7 +293,7 @@ function _mapLegacyDataSet(dataset) {
   return dataset;
 }
 
-const toArray = function (x) {
+const toArray = function(x) {
   return Array.isArray(x) ? x : [x];
 };
 

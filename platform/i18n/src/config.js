@@ -4,7 +4,15 @@ const debugMode = !!(
 
 const detectionOptions = {
   // order and from where user language should be detected
-  order: ['querystring', 'cookie', 'localStorage', 'navigator', 'htmlTag', 'path', 'subdomain'],
+  order: [
+    'querystring',
+    'cookie',
+    'localStorage',
+    'navigator',
+    'htmlTag',
+    'path',
+    'subdomain',
+  ],
 
   // keys or params to lookup language from
   lookupQuerystring: 'lng',
@@ -18,7 +26,7 @@ const detectionOptions = {
   excludeCacheFor: ['cimode'], // languages to not persist (cookie, localStorage)
 
   // optional htmlTag with lang attribute, the default is:
-  htmlTag: document.documentElement
+  htmlTag: document.documentElement,
 };
 
 export { debugMode, detectionOptions };

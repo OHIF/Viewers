@@ -6,6 +6,7 @@ import { Types } from '@ohif/core';
 import getSopClassHandlerModule from './getSopClassHandlerModule';
 import PanelSegmentation from './panels/PanelSegmentation';
 import getHangingProtocolModule from './getHangingProtocolModule';
+import hydrateSEGDisplaySet from './utils/_hydrateSEG';
 
 const Component = React.lazy(() => {
   return import(
@@ -69,6 +70,7 @@ const extension = {
         <OHIFCornerstoneSEGViewport
           servicesManager={servicesManager}
           extensionManager={extensionManager}
+          commandsManager={commandsManager}
           {...props}
         />
       );
@@ -89,3 +91,4 @@ const extension = {
 };
 
 export default extension;
+export { hydrateSEGDisplaySet };

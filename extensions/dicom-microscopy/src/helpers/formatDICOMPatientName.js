@@ -5,7 +5,9 @@
  * @returns {string} formatted name
  */
 export default function formatDICOMPatientName(name) {
-  if (typeof name !== 'string') return;
+  if (typeof name !== 'string') {
+    return;
+  }
 
   /**
    * Convert the first ^ to a ', '. String.replace() only affects
