@@ -242,6 +242,7 @@ Cypress.Commands.add('resetViewport', () => {
 Cypress.Commands.add('imageZoomIn', () => {
   cy.initCornerstoneToolsAliases();
   cy.get('@zoomBtn').click();
+  cy.wait(25);
 
   //drags the mouse inside the viewport to be able to interact with series
   cy.get('@viewport')
@@ -253,6 +254,7 @@ Cypress.Commands.add('imageZoomIn', () => {
 Cypress.Commands.add('imageContrast', () => {
   cy.initCornerstoneToolsAliases();
   cy.get('@wwwcBtnPrimary').click();
+  cy.wait(25);
 
   //drags the mouse inside the viewport to be able to interact with series
   cy.get('@viewport')
