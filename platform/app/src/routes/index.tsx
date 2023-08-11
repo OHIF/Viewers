@@ -14,7 +14,7 @@ import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 
 const NotFoundServer = ({
-  message = 'Sorry, image server is unreachable.',
+  message = 'Unable to query for studies at this time. Check your data source configuration or network connection',
 }) => {
   return (
     <div className="absolute w-full h-full flex justify-center items-center text-white">
@@ -29,17 +29,17 @@ NotFoundServer.propTypes = {
   message: PropTypes.string,
 };
 
-const NotFoundStudy = ({
-  message = 'Sorry, study not found in image server. Please, return to the ',
-}) => {
+const NotFoundStudy = () => {
   return (
     <div className="absolute w-full h-full flex justify-center items-center text-white">
       <div>
         <h4>
-          {message}{' '}
+          One or more of the requested studies are not available at this time.
+          Return to the{' '}
           <Link className="text-primary-light" to={'/'}>
-            Study List
-          </Link>
+            study list
+          </Link>{' '}
+          to select a different study to view.
         </h4>
       </div>
     </div>

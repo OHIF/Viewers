@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 import { utils } from '@ohif/core';
@@ -30,6 +31,7 @@ function PanelStudyBrowserTracking({
     hangingProtocolService,
     uiNotificationService,
   } = servicesManager.services;
+  const navigate = useNavigate();
 
   const { t } = useTranslation('Common');
 
@@ -90,8 +92,8 @@ function PanelStudyBrowserTracking({
         studyInstanceUid: StudyInstanceUID,
       });
 
-      if (!qidoForStudyUID.length) {
-        window.open('/notfoundstudy', '_self');
+      if (!qidoForStudyUID?.length) {
+        navigate('/notfoundstudy', '_self');
         throw new Error('Invalid study URL');
       }
 
