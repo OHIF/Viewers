@@ -32,9 +32,25 @@ function commandsModule({
     cornerstoneViewportService,
     uiNotificationService,
     measurementService,
+    hangingProtocolService,
+    segmentationService,
   } = servicesManager.services as CornerstoneServices;
 
   const { measurementServiceSource } = this;
+
+  function _getMatchedViewportsToolGroupIds() {
+    const { viewportMatchDetails } = hangingProtocolService.getMatchDetails();
+    const toolGroupIds = [];
+
+    viewportMatchDetails.forEach((matchDetails, viewportIndex) => {
+      const { toolGroupId } = matchDetails.viewportOptions;
+      if (toolGroupIds.indexOf(toolGroupId) === -1) {
+        toolGroupIds.push(toolGroupId);
+      }
+    });
+
+    return toolGroupIds;
+  }
 
   function _getActiveViewportEnabledElement() {
     return getActiveViewportEnabledElement(viewportGridService);
@@ -616,6 +632,75 @@ function commandsModule({
       );
       toolGroup.setToolEnabled(ReferenceLinesTool.toolName);
     },
+    loadSegmentationsForDisplaySet: async ({
+      displaySetInstanceUID,
+      segmentations,
+      onCompleteCallback,
+    }) => {
+      const toolGroupIds = _getMatchedViewportsToolGroupIds();
+      for (let i = 0; i < segmentations.length; i++) {
+        const segmentation = segmentations[i];
+        const segmentationId = segmentation.id;
+        const label = segmentation.label;
+
+        const segments = segmentation.segments;
+
+        // Remove segments, we shall add them through the API so that all the
+        // appropriate cornerstone logic is applied.
+        delete segmentation.segments;
+
+        await segmentationService.createSegmentationForDisplaySet(
+          displaySetInstanceUID,
+          { segmentationId, label }
+        );
+
+        const labelmapVolume = segmentationService.getLabelmapVolume(
+          segmentationId
+        );
+
+        labelmapVolume.scalarData.set(segmentation.scalarData);
+        segmentationService.addOrUpdateSegmentation(segmentation);
+
+        for (const toolGroupId of toolGroupIds) {
+          await segmentationService.addSegmentationRepresentationToToolGroup(
+            toolGroupId,
+            segmentationId
+          );
+        }
+
+        segments.forEach(segment => {
+          if (segment === null) {
+            return;
+          }
+
+          segmentationService.addSegment(
+            segmentationId,
+            segment.segmentIndex,
+            null, // toolGroupId,
+            {
+              color: segment.color,
+              label: segment.label,
+              opacity: segment.opacity,
+              isLocked: segment.isLocked,
+              visibility: segment.isVisible,
+              active: segmentation.activeSegmentIndex === segment.segmentIndex,
+            }
+          );
+        });
+      }
+
+      const segmentationToSetActive = segmentations.find(
+        segmentation => segmentation.isActive
+      );
+
+      if (segmentationToSetActive !== undefined) {
+        segmentationService.setActiveSegmentationForToolGroup(
+          segmentationToSetActive.id
+        );
+      }
+
+      onCompleteCallback?.();
+    },
   };
 
   const definitions = {
@@ -739,6 +824,11 @@ function commandsModule({
     },
     toggleReferenceLines: {
       commandFn: actions.toggleReferenceLines,
+    },
+    loadSegmentationsForDisplaySet: {
+      commandFn: actions.loadSegmentationsForDisplaySet,
+      storeContexts: [],
+      options: {},
     },
   };
 

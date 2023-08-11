@@ -22,7 +22,7 @@ const defaultProtocol = {
   // additional viewports are added using the layout tool
   defaultViewport: {
     viewportOptions: {
-      viewportType: 'stack',
+      viewportType: 'volume',
       toolGroupId: 'default',
       allowUnmatchedView: true,
     },
@@ -43,6 +43,12 @@ const defaultProtocol = {
           attribute: 'numImageFrames',
           constraint: {
             greaterThan: { value: 0 },
+          },
+        },
+        {
+          attribute: 'Modality',
+          constraint: {
+            equals: 'CT',
           },
         },
         // This display set will select the specified items by preference
@@ -72,7 +78,7 @@ const defaultProtocol = {
       viewports: [
         {
           viewportOptions: {
-            viewportType: 'stack',
+            viewportType: 'volume',
             toolGroupId: 'default',
             // This will specify the initial image options index if it matches in the URL
             // and will otherwise not specify anything.
