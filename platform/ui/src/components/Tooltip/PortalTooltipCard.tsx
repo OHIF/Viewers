@@ -5,7 +5,10 @@ const FG_SIZE = 8;
 const BG_SIZE = 9;
 
 /**
- * Portal tooltip card.
+ * A portal based tooltip card component.
+ *
+ * This component has been repurposed and modified
+ * for OHIF usage: https://github.com/romainberger/react-portal-tooltip
  */
 export default class PortalTooltipCard extends Component {
   static propTypes = {

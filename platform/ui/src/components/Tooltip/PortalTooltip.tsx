@@ -7,7 +7,10 @@ import Card from './PortalTooltipCard';
 const portalNodes = {};
 
 /**
- * A portal based tooltip.
+ * A portal based tooltip component.
+ *
+ * This component has been repurposed and modified
+ * for OHIF usage: https://github.com/romainberger/react-portal-tooltip
  */
 export default class PortalTooltip extends React.Component {
   static propTypes = {
