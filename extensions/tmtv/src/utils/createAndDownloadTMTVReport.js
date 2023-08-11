@@ -1,6 +1,7 @@
 export default function createAndDownloadTMTVReport(
   segReport,
-  additionalReportRows
+  additionalReportRows,
+  options = {}
 ) {
   const firstReport = segReport[Object.keys(segReport)[0]];
   const columns = Object.keys(firstReport);
@@ -45,6 +46,6 @@ export default function createAndDownloadTMTVReport(
 
   const a = document.createElement('a');
   a.href = url;
-  a.download = `${firstReport.PatientID}_tmtv.csv`;
+  a.download = options.filename ?? `${firstReport.PatientID}_tmtv.csv`;
   a.click();
 }

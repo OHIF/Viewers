@@ -262,10 +262,9 @@ const commandsModule = ({
     },
     getLesionStats: ({ labelmap, segmentIndex = 1 }) => {
       const { scalarData, spacing } = labelmap;
-
-      const { scalarData: referencedScalarData } = cs.cache.getVolume(
-        labelmap.referencedVolumeId
-      );
+      const referencedScalarData = cs.cache
+        .getVolume(labelmap.referencedVolumeId)
+        .getScalarData();
 
       let segmentationMax = -Infinity;
       let segmentationMin = Infinity;
@@ -317,19 +316,25 @@ const commandsModule = ({
 
       return calculateTMTV(labelmaps);
     },
-    exportTMTVReportCSV: ({ segmentations, tmtv, config }) => {
+    exportTMTVReportCSV: ({ segmentations, tmtv, config, options }) => {
       const segReport = commandsManager.runCommand('getSegmentationCSVReport', {
         segmentations,
       });
 
       const tlg = actions.getTotalLesionGlycolysis({ segmentations });
       const additionalReportRows = [
-        { key: 'Total Metabolic Tumor Volume', value: { tmtv } },
         { key: 'Total Lesion Glycolysis', value: { tlg: tlg.toFixed(4) } },
         { key: 'Threshold Configuration', value: { ...config } },
       ];
 
-      createAndDownloadTMTVReport(segReport, additionalReportRows);
+      if (tmtv !== undefined) {
+        additionalReportRows.unshift({
+          key: 'Total Metabolic Tumor Volume',
+          value: { tmtv },
+        });
+      }
+
+      createAndDownloadTMTVReport(segReport, additionalReportRows, options);
     },
     getTotalLesionGlycolysis: ({ segmentations }) => {
       const labelmapVolumes = segmentations.map(s =>
@@ -358,9 +363,9 @@ const commandsModule = ({
       }
 
       const ptVolume = cs.cache.getVolume(referencedVolumeId);
-      const mergedLabelData = mergedLabelmap.scalarData;
+      const mergedLabelData = mergedLabelmap.getScalarData();
 
-      if (mergedLabelData.length !== ptVolume.scalarData.length) {
+      if (mergedLabelData.length !== ptVolume.getScalarData().length) {
         console.error(
           'commandsModule::getTotalLesionGlycolysis:Labelmap and ptVolume are not the same size'
         );
@@ -371,7 +376,7 @@ const commandsModule = ({
       for (let i = 0; i < mergedLabelData.length; i++) {
         // if not background
         if (mergedLabelData[i] !== 0) {
-          suv += ptVolume.scalarData[i];
+          suv += ptVolume.getScalarData()[i];
           totalLesionVoxelCount += 1;
         }
       }
@@ -537,7 +542,7 @@ const commandsModule = ({
 
         report[id] = {
           ...segReport,
-          PatientID: instance.PatientID,
+          PatientID: instance.PatientID ?? '000000',
           PatientName: instance.PatientName.Alphabetic,
           StudyInstanceUID: instance.StudyInstanceUID,
           SeriesInstanceUID: instance.SeriesInstanceUID,

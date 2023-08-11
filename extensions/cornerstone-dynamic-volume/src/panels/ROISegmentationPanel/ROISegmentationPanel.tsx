@@ -8,12 +8,12 @@ import React, {
 } from 'react';
 import PropTypes from 'prop-types';
 
+import * as cs from '@cornerstonejs/core';
 import { CommandsManager, ServicesManager } from '@ohif/core';
-import { SegmentationTable, Button } from '@ohif/ui';
+import { SegmentationTable, LegacyButton, Button, ButtonGroup } from '@ohif/ui';
 import { useTranslation } from 'react-i18next';
 import BrushConfigurationWithServices from './BrushConfigurationWithServices';
 import segmentationEditHandler from './segmentationEditHandler';
-// import ExportReports from './ExportReports';
 import RectangleROIThresholdConfiguration, {
   ROI_STAT,
 } from './RectangleROIThresholdConfiguration';
@@ -24,6 +24,12 @@ const LOWER_PT_THRESHOLD_DEFAULT = 2.5;
 const UPPER_PT_THRESHOLD_DEFAULT = 100;
 const WEIGHT_DEFAULT = 0.41; // a default weight for suv max often used in the literature
 const DEFAULT_STRATEGY = ROI_STAT;
+
+const runAsync = fn => {
+  return new Promise(resolve => {
+    setTimeout(() => resolve(fn()), 1);
+  });
+};
 
 function reducer(state, action) {
   const { payload } = action;
@@ -122,6 +128,7 @@ export default function ROISegmentationPanel({
   const { t } = useTranslation('PanelSUV');
   const [showConfig, setShowConfig] = useState(false);
   const [labelmapLoading, setLabelmapLoading] = useState(false);
+  const [processingSegmentation, setProcessingSegmentation] = useState(false);
   const [segmentations, setSegmentations] = useState(() =>
     segmentationService.getSegmentations()
   );
@@ -132,10 +139,6 @@ export default function ROISegmentationPanel({
   const [nextSegmentationSequenceId, setNextSegmentationSequenceId] = useState(
     segmentations.length + 1
   );
-  const showThresholdRunButton = [
-    'RectangleROIThreshold',
-    'RectangleROIStartEndThreshold',
-  ].includes(activePrimaryTool);
 
   const [config, dispatch] = useReducer(reducer, {
     strategy: DEFAULT_STRATEGY,
@@ -159,41 +162,66 @@ export default function ROISegmentationPanel({
   );
   const toolConfigInfo = toolsConfigInfo[activePrimaryTool];
 
-  const handleROIThresholding = useCallback(() => {
-    const labelmap = runCommand('thresholdSegmentationByRectangleROITool', {
-      segmentationId: selectedSegmentationId,
-      config,
-    });
+  const updateSegmentationDetails = useCallback(
+    (segmentationId, labelmap) => {
+      const lesionStats = runCommand('getLesionStats', { labelmap });
+      const suvPeak = runCommand('calculateSuvPeak', { labelmap });
+      const lesionGlyoclysisStats = lesionStats.volume * lesionStats.meanValue;
+
+      // update segDetails with the suv peak for the active segmentation
+      const segmentation = segmentationService.getSegmentation(segmentationId);
+
+      const cachedStats = {
+        lesionStats,
+        suvPeak,
+        lesionGlyoclysisStats,
+      };
+
+      const suppressEvents = false;
+      const notYetUpdatedAtSource = true;
+
+      segmentationService.addOrUpdateSegmentation(
+        {
+          ...segmentation,
+          ...Object.assign(segmentation.cachedStats, cachedStats),
+          displayText: [`SUV Peak: ${suvPeak.suvPeak.toFixed(2)}`],
+        },
+        suppressEvents,
+        notYetUpdatedAtSource
+      );
+    },
+    [runCommand, segmentationService]
+  );
+
+  const handleRunClick = useCallback(() => {
+    // It may currently be RectangleROIThreshold and RectangleROIStartEndThreshold
+    const rectangleROIToolActive = activePrimaryTool
+      .toLowerCase()
+      .startsWith('rectangleroi');
+
+    const labelmap = rectangleROIToolActive
+      ? runCommand('thresholdSegmentationByRectangleROITool', {
+          segmentationId: selectedSegmentationId,
+          config,
+        })
+      : cs.cache.getVolume(selectedSegmentationId);
 
     if (!labelmap) {
       return;
     }
 
-    const lesionStats = runCommand('getLesionStats', { labelmap });
-    const suvPeak = runCommand('calculateSuvPeak', { labelmap });
-    const lesionGlyoclysisStats = lesionStats.volume * lesionStats.meanValue;
-
-    // update segDetails with the suv peak for the active segmentation
-    const segmentation = segmentationService.getSegmentation(
-      selectedSegmentationId
+    // Give react some time to update the UI because it is currently taking
+    // some time to process when there are no Rectangle ROI annotations
+    return runAsync(() =>
+      updateSegmentationDetails(selectedSegmentationId, labelmap)
     );
-
-    const cachedStats = {
-      lesionStats,
-      suvPeak,
-      lesionGlyoclysisStats,
-    };
-
-    const notYetUpdatedAtSource = true;
-    segmentationService.addOrUpdateSegmentation(
-      {
-        ...segmentation,
-        ...Object.assign(segmentation.cachedStats, cachedStats),
-        displayText: [`SUV Peak: ${suvPeak.suvPeak.toFixed(2)}`],
-      },
-      notYetUpdatedAtSource
-    );
-  }, [selectedSegmentationId, config, runCommand, segmentationService]);
+  }, [
+    config,
+    activePrimaryTool,
+    selectedSegmentationId,
+    runCommand,
+    updateSegmentationDetails,
+  ]);
 
   /**
    * Update UI based on segmentation changes (added, removed, updated)
@@ -252,9 +280,16 @@ export default function ROISegmentationPanel({
             >
               {labelmapLoading ? 'loading ...' : 'New Label'}
             </Button>
-            {showThresholdRunButton && (
-              <Button className="grow" onClick={handleROIThresholding}>
-                Run
+            {selectedSegmentationId !== undefined && (
+              <Button
+                className="grow"
+                onClick={async () => {
+                  setProcessingSegmentation(true);
+                  await handleRunClick();
+                  setProcessingSegmentation(false);
+                }}
+              >
+                {processingSegmentation ? 'Running...' : 'Run'}
               </Button>
             )}
           </div>
@@ -300,12 +335,25 @@ export default function ROISegmentationPanel({
               />
             ) : null}
           </div>
-          {/* <ExportReports
-            segmentations={segmentations}
-            tmtvValue={tmtvValue}
-            config={config}
-            commandsManager={commandsManager}
-          /> */}
+          <div className="flex justify-center mt-4 space-x-2">
+            <ButtonGroup color="black" size="inherit">
+              <LegacyButton
+                className="px-2 py-2 text-base"
+                disabled={!segmentations.length}
+                onClick={() => {
+                  commandsManager.runCommand('exportTMTVReportCSV', {
+                    segmentations,
+                    config,
+                    options: {
+                      filename: 'segmentations.csv',
+                    },
+                  });
+                }}
+              >
+                {t('Export CSV')}
+              </LegacyButton>
+            </ButtonGroup>
+          </div>
         </div>
       </div>
     </>

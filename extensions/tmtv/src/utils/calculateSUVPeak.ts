@@ -54,7 +54,7 @@ function calculateSuvPeak(
 
   let boundsIJK;
   // Todo: using the first annotation for now
-  if (annotations && annotations[0].data?.cachedStats) {
+  if (annotations?.length && annotations[0].data?.cachedStats) {
     const { projectionPoints } = annotations[0].data.cachedStats;
     const pointsToUse = [].concat(...projectionPoints); // cannot use flat() because of typescript compiler right now
 
