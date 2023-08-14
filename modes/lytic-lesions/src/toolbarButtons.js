@@ -119,9 +119,9 @@ const toolbarButtons = [
       ),
       secondary: {
         icon: 'chevron-down',
-        label: 'PT Colormap',
+        label: 'Colormap',
         isActive: true,
-        tooltip: 'PET Image Colormap',
+        tooltip: 'Colormap',
       },
       isAction: true, // ?
       renderer: WindowLevelMenuItem,
@@ -137,8 +137,6 @@ const toolbarButtons = [
         _createColormap('GE 256', 'ge_256'),
         _createColormap('GE', 'ge'),
         _createColormap('Siemens', 'siemens'),
-        _createColormap('Test', 'test'),
-        _createColormap('newTest', 'newtest'),
       ],
     },
   },
