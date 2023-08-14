@@ -80,7 +80,7 @@ export default function PanelMeasurementTable({
 
   async function createReport(): Promise<any> {
     // filter measurements that are added to the active study
-    const activeViewport = viewports[activeViewportId];
+    const activeViewport = viewports.get(activeViewportId);
     const measurements = measurementService.getMeasurements();
     const displaySet = displaySetService.getDisplaySetByUID(
       activeViewport.displaySetInstanceUIDs[0]

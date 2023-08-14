@@ -296,7 +296,7 @@ function _getNextMeasurementUID(
   const { activeViewportId, viewports } = viewportGridService.getState();
   const {
     displaySetInstanceUIDs: activeViewportDisplaySetInstanceUIDs,
-  } = viewports[activeViewportId];
+  } = viewports.get(activeViewportId);
 
   const { trackedSeries } = trackedMeasurements.context;
 

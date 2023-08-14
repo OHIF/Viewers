@@ -521,7 +521,7 @@ const commandsModule = ({
 
     openDICOMTagViewer() {
       const { activeViewportId, viewports } = viewportGridService.getState();
-      const activeViewportSpecificData = viewports[activeViewportId];
+      const activeViewportSpecificData = viewports.get(activeViewportId);
       const { displaySetInstanceUIDs } = activeViewportSpecificData;
 
       const displaySets = displaySetService.activeDisplaySets;
@@ -554,15 +554,7 @@ const commandsModule = ({
     scrollActiveThumbnailIntoView: () => {
       const { activeViewportId, viewports } = viewportGridService.getState();
 
-      if (
-        !viewports ||
-        activeViewportId < 0 ||
-        activeViewportId > viewports.size - 1
-      ) {
-        return;
-      }
-
-      const activeViewport = viewports[activeViewportId];
+      const activeViewport = viewports.get(activeViewportId);
       const activeDisplaySetInstanceUID =
         activeViewport.displaySetInstanceUIDs[0];
 
@@ -617,8 +609,8 @@ const commandsModule = ({
 
       const { activeViewportId, viewports } = viewportGridService.getState();
 
-      const { displaySetInstanceUIDs } = viewports[activeViewportId];
-
+      const { displaySetInstanceUIDs } = viewports.get(activeViewportId);
+      debugger;
       const activeDisplaySetIndex = currentDisplaySets.findIndex(displaySet =>
         displaySetInstanceUIDs.includes(displaySet.displaySetInstanceUID)
       );

@@ -6,8 +6,9 @@ import React, {
   useReducer,
 } from 'react';
 import PropTypes from 'prop-types';
-import { ViewportGridService } from '@ohif/core';
+import { ViewportGridService, utils } from '@ohif/core';
 import viewportLabels from '../utils/viewportLabels';
+import uuidv4 from 'platform/core/src/utils/uuidv4';
 
 interface Viewport {
   viewportId: string;
@@ -129,7 +130,7 @@ export function ViewportGridProvider({ children, service }) {
           // }
 
           viewports.set(viewportId, {
-            ...viewports[viewportId],
+            ...viewports.get(viewportId),
             ...newViewport,
           });
         });
@@ -176,7 +177,7 @@ export function ViewportGridProvider({ children, service }) {
             ) {
               activeViewportIdToSet = pos;
             }
-
+            debugger;
             const viewport = findOrCreateViewport(pos, positionId, options);
             if (!viewport) {
               continue;
@@ -186,7 +187,8 @@ export function ViewportGridProvider({ children, service }) {
 
             // If the viewport doesn't have a viewportId, we create one
             if (!viewport.viewportOptions?.viewportId) {
-              viewport.viewportOptions.viewportId = `viewport-${pos}`;
+              const randomUID = utils.uuidv4().substring(0, 8);
+              viewport.viewportOptions.viewportId = `viewport-${randomUID}`;
             }
 
             if (!viewport.viewportId) {

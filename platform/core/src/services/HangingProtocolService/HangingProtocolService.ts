@@ -1162,6 +1162,9 @@ export default class HangingProtocolService extends PubSubService {
   } {
     let matchedViewports = 0;
     stageModel.viewports.forEach(viewport => {
+      // Todo: we should probably assign a random viewportId if not defined
+      // below, but it feels odd since viewportGrid should handle this kind
+      // of thing
       const viewportId = viewport.viewportOptions.viewportId;
       const matchDetails = this._matchViewport(
         viewport,
@@ -1183,6 +1186,7 @@ export default class HangingProtocolService extends PubSubService {
             displaySetOptions: it,
           }));
         }
+        debugger;
         viewportMatchDetails.set(viewportId, matchDetails);
       }
     });

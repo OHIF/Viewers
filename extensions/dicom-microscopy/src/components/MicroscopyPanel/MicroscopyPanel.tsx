@@ -83,6 +83,7 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
   const { uiDialogService, displaySetService } = servicesManager.services;
 
   useEffect(() => {
+    debugger;
     const viewport = props.viewports[props.activeViewportId];
     if (viewport.displaySetInstanceUIDs[0]) {
       const displaySet = displaySetService.getDisplaySetByUID(
