@@ -1,7 +1,4 @@
 window.config = {
-  // This variable disables editing in OHIF, hiding edit buttons in segmentation
-  // panel and locking already stored measurements.
-  //disableEditing: true,
   routerBasename: '/',
   // whiteLabeling: {},
   extensions: [],
