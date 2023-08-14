@@ -42,6 +42,7 @@ import settings from './../../assets/icons/settings.svg';
 import sorting from './../../assets/icons/sorting.svg';
 import sortingActiveDown from './../../assets/icons/sorting-active-down.svg';
 import sortingActiveUp from './../../assets/icons/sorting-active-up.svg';
+import statusAlertWarning from './../../assets/icons/status-alert-warning.svg';
 import statusAlert from './../../assets/icons/status-alert.svg';
 import statusLocked from './../../assets/icons/status-locked.svg';
 import statusTracked from './../../assets/icons/status-tracked.svg';
@@ -181,6 +182,7 @@ const ICONS = {
   'sorting-active-down': sortingActiveDown,
   'sorting-active-up': sortingActiveUp,
   'status-alert': statusAlert,
+  'status-alert-warning': statusAlertWarning,
   'status-locked': statusLocked,
   'status-tracked': statusTracked,
   'status-untracked': statusUntracked,

@@ -317,6 +317,7 @@ function _mapDisplaySets(displaySets, thumbnailImageSrcMap) {
         numInstances: ds.numImageFrames,
         countIcon: ds.countIcon,
         StudyInstanceUID: ds.StudyInstanceUID,
+        messages: ds.messages,
         componentType,
         imageSrc,
         dragData: {
