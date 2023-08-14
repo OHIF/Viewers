@@ -49,8 +49,7 @@ function defaultRouteInit(
       // checks if the series filter was used, if it exists
       const seriesInstanceUIDs = filters?.seriesInstanceUID;
       if (
-        seriesInstanceUIDs &&
-        seriesInstanceUIDs.length &&
+        seriesInstanceUIDs?.length &&
         !isSeriesFilterUsed(seriesMetadata.instances, filters) &&
         !issuedWarningSeries.includes(seriesInstanceUIDs[0])
       ) {
