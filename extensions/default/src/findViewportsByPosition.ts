@@ -21,7 +21,6 @@ export const findOrCreateViewport = (
   positionId: string,
   options: Record<string, unknown>
 ) => {
-  debugger;
   const byPositionViewport = viewportsByPosition?.[positionId];
   if (byPositionViewport) {
     return { ...byPositionViewport };

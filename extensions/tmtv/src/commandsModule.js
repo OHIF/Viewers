@@ -45,8 +45,8 @@ const commandsModule = ({
   function _getMatchedViewportsToolGroupIds() {
     const { viewportMatchDetails } = hangingProtocolService.getMatchDetails();
     const toolGroupIds = [];
-    viewportMatchDetails.forEach((value, key) => {
-      const { viewportOptions } = value;
+    viewportMatchDetails.forEach(viewport => {
+      const { viewportOptions } = viewport;
       const { toolGroupId } = viewportOptions;
       if (toolGroupIds.indexOf(toolGroupId) === -1) {
         toolGroupIds.push(toolGroupId);
@@ -137,7 +137,6 @@ const commandsModule = ({
 
       // Add Segmentation to all toolGroupIds in the viewer
       const toolGroupIds = _getMatchedViewportsToolGroupIds();
-
       const representationType = LABELMAP;
 
       for (const toolGroupId of toolGroupIds) {

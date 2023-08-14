@@ -432,14 +432,14 @@ const commandsModule = ({
         // This findOrCreateViewport returns either one of the updatedViewports
         // returned from the HP service OR if there is not one from the HP service then
         // simply returns what was in the previous state.
-        const findOrCreateViewport = (viewportId: number) => {
+        const findOrCreateViewport = (pos: number) => {
           const viewport = updatedViewports.find(
-            viewport => viewport.viewportId === viewportId
+            viewport => viewport.pos === pos
           );
 
           return viewport
             ? { viewportOptions, displaySetOptions, ...viewport }
-            : toggleOneUpViewportGridStore.viewports.get(viewportId);
+            : Array.from(toggleOneUpViewportGridStore.viewports.values())[pos];
         };
 
         const layoutOptions = viewportGridService.getLayoutOptionsFromState(
