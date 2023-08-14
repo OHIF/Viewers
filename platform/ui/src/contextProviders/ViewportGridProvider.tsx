@@ -8,7 +8,6 @@ import React, {
 import PropTypes from 'prop-types';
 import { ViewportGridService, utils } from '@ohif/core';
 import viewportLabels from '../utils/viewportLabels';
-import uuidv4 from 'platform/core/src/utils/uuidv4';
 
 interface Viewport {
   viewportId: string;
@@ -68,6 +67,57 @@ const getViewportLabel = (viewports, viewportId) => {
   return viewportLabels[viewportIds.indexOf(viewportId)];
 };
 
+const getActiveViewportId = (state: DefaultState, newViewports: Map) => {
+  const { activeViewportId } = state;
+  const currentActiveViewport = state.viewports.get(activeViewportId);
+
+  if (!currentActiveViewport) {
+    return null; // Return an appropriate value if the current active viewport is not found
+  }
+
+  // for the new viewports, we should rank them by the displaySetInstanceUIDs
+  // they are displaying and the orientation then we can find the active viewport
+  const currentActiveDisplaySetInstanceUIDs =
+    currentActiveViewport.displaySetInstanceUIDs;
+
+  // This doesn't take into account where stack viewport is converting to volumeViewport
+  // since in stack viewport we don't have a concept of "orientation" as a string
+  // maybe we should calculate the orientation based on the active imageId
+  // so that we can compare it with the new viewports (which might be volume viewports)
+  // and find the best match
+  const currentOrientation = currentActiveViewport.viewportOptions.orientation;
+
+  const sortedViewports = Array.from(newViewports.values()).sort((a, b) => {
+    // Compare orientations
+    const aOrientationMatch =
+      a.viewportOptions.orientation === currentOrientation;
+    const bOrientationMatch =
+      b.viewportOptions.orientation === currentOrientation;
+    if (aOrientationMatch !== bOrientationMatch) {
+      return bOrientationMatch - aOrientationMatch;
+    }
+
+    // Compare displaySetInstanceUIDs
+    const aMatch = a.displaySetInstanceUIDs.some(uid =>
+      currentActiveDisplaySetInstanceUIDs.includes(uid)
+    );
+    const bMatch = b.displaySetInstanceUIDs.some(uid =>
+      currentActiveDisplaySetInstanceUIDs.includes(uid)
+    );
+    if (aMatch !== bMatch) {
+      return bMatch - aMatch;
+    }
+
+    return 0; // Return 0 if no differences found
+  });
+
+  const newActiveViewport = sortedViewports.find(
+    viewport => viewport.viewportId !== activeViewportId
+  );
+
+  return newActiveViewport ? newActiveViewport.viewportId : null;
+};
+
 export const ViewportGridContext = createContext(DEFAULT_STATE);
 
 export function ViewportGridProvider({ children, service }) {
@@ -121,13 +171,6 @@ export function ViewportGridProvider({ children, service }) {
             newViewport,
             viewports
           );
-
-          // Todo-rename: we most likely don't need this since we are inhering the viewportIds
-          // if (!newViewport.viewportOptions?.viewportId) {
-          //   // Todo-rename: fix
-          //   newViewport.viewportOptions.viewportId = `viewport-${1}`;
-          //   newViewport.viewportId = `viewport-${1}`;
-          // }
 
           viewports.set(viewportId, {
             ...viewports.get(viewportId),
@@ -212,17 +255,19 @@ export function ViewportGridProvider({ children, service }) {
               viewport.viewportId
             );
 
-            //     if (!viewport.viewportOptions.presentationIds) {
-            //     viewport.viewportOptions.presentationIds = ViewportGridService.getPresentationIds(
-            //       viewport,
-            //       viewports
-            //     );
-            //   }
+            if (!viewport.viewportOptions.presentationIds) {
+              viewport.viewportOptions.presentationIds = ViewportGridService.getPresentationIds(
+                viewport,
+                viewports
+              );
+            }
           }
         }
 
-        // todo-rename: fix this
-        activeViewportIdToSet = activeViewportIdToSet ?? 'default';
+        activeViewportIdToSet =
+          activeViewportIdToSet ??
+          getActiveViewportId(state, viewports) ??
+          'default';
 
         const ret = {
           ...state,
