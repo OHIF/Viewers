@@ -83,17 +83,21 @@ export default function getCustomizationModule() {
          */
         {
           id: 'ohif.overlayItem',
-          content: function (props) {
-            if (this.condition && !this.condition(props)) return null;
+          content: function(props) {
+            if (this.condition && !this.condition(props)) {
+              return null;
+            }
 
             const { instance } = props;
             const value =
               instance && this.attribute
                 ? instance[this.attribute]
                 : this.contentF && typeof this.contentF === 'function'
-                  ? this.contentF(props)
-                  : null;
-            if (!value) return null;
+                ? this.contentF(props)
+                : null;
+            if (!value) {
+              return null;
+            }
 
             return (
               <span
@@ -117,7 +121,7 @@ export default function getCustomizationModule() {
            * This function clones the object and child objects to prevent
            * changes to the original customization object.
            */
-          transform: function (customizationService: CustomizationService) {
+          transform: function(customizationService: CustomizationService) {
             // Don't modify the children, as those are copied by reference
             const clonedObject = { ...this };
             clonedObject.menus = this.menus.map(menu => ({ ...menu }));

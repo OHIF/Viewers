@@ -32,7 +32,9 @@ export function createStoryMetaSettings({
     }
   });
 
-  if (component === Avatar) console.log(argTypes);
+  if (component === Avatar) {
+    console.log(argTypes);
+  }
 
   // set icon allowed values inside argsTypes object
   iconPropNamesArray?.forEach(propName => {

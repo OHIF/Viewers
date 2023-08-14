@@ -1,3 +1,4 @@
+import { ExtensionManager } from '../../extensions';
 import { InstanceMetadata } from '../../types';
 import { PubSubService } from '../_shared/pubSubServiceInterface';
 import EVENTS from './EVENTS';
@@ -47,6 +48,7 @@ export default class DisplaySetService extends PubSubService {
   };
 
   public activeDisplaySets = [];
+  extensionManager: ExtensionManager;
 
   protected activeDisplaySetsMap = new Map<string, DisplaySet>();
 
@@ -155,7 +157,9 @@ export default class DisplaySetService extends PubSubService {
   }
 
   public deleteDisplaySet(displaySetInstanceUID) {
-    if (!displaySetInstanceUID) return;
+    if (!displaySetInstanceUID) {
+      return;
+    }
     const { activeDisplaySets, activeDisplaySetsMap } = this;
 
     const activeDisplaySetsIndex = activeDisplaySets.findIndex(
@@ -312,7 +316,9 @@ export default class DisplaySetService extends PubSubService {
             }
             // This means that all instances already existed or got added to
             // existing display sets, and had an invalidated event fired
-            if (!instances.length) return allDisplaySets;
+            if (!instances.length) {
+              return allDisplaySets;
+            }
           }
 
           if (!instances.length) {
@@ -327,7 +333,9 @@ export default class DisplaySetService extends PubSubService {
         // creating additional display sets using the sop class handler
         displaySets = handler.getDisplaySetsFromSeries(instances);
 
-        if (!displaySets || !displaySets.length) continue;
+        if (!displaySets || !displaySets.length) {
+          continue;
+        }
 
         // applying hp-defined viewport settings to the displaysets
         displaySets.forEach(ds => {

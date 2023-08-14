@@ -56,7 +56,7 @@ export default class MicroscopyService extends PubSubService {
   clear() {
     this.managedViewers.forEach(managedViewer => managedViewer.destroy());
     this.managedViewers.clear();
-    for (var key in this.annotations) {
+    for (const key in this.annotations) {
       delete this.annotations[key];
     }
 
@@ -124,7 +124,9 @@ export default class MicroscopyService extends PubSubService {
   _onRoiModified(data) {
     const { roiGraphic, managedViewer } = data;
     const roiAnnotation = this.getAnnotation(roiGraphic.uid);
-    if (!roiAnnotation) return;
+    if (!roiAnnotation) {
+      return;
+    }
     roiAnnotation.setRoiGraphic(roiGraphic);
     roiAnnotation.setViewState(managedViewer.getViewState());
   }
@@ -156,7 +158,10 @@ export default class MicroscopyService extends PubSubService {
   _onRoiUpdated(data) {
     const { roiGraphic, managedViewer } = data;
     this.synchronizeViewers(managedViewer);
-    this._broadcastEvent(EVENTS.ANNOTATION_UPDATED, this.getAnnotation(roiGraphic.uid));
+    this._broadcastEvent(
+      EVENTS.ANNOTATION_UPDATED,
+      this.getAnnotation(roiGraphic.uid)
+    );
   }
 
   /**
@@ -170,8 +175,13 @@ export default class MicroscopyService extends PubSubService {
   _onRoiSelected(data) {
     const { roiGraphic } = data;
     const selectedAnnotation = this.getAnnotation(roiGraphic.uid);
-    if (selectedAnnotation && selectedAnnotation !== this.getSelectedAnnotation()) {
-      if (this.selectedAnnotation) this.clearSelection();
+    if (
+      selectedAnnotation &&
+      selectedAnnotation !== this.getSelectedAnnotation()
+    ) {
+      if (this.selectedAnnotation) {
+        this.clearSelection();
+      }
       this.selectedAnnotation = selectedAnnotation;
       this._broadcastEvent(EVENTS.ANNOTATION_SELECTED, selectedAnnotation);
     }
@@ -183,11 +193,26 @@ export default class MicroscopyService extends PubSubService {
    * @param {ViewerManager} managedViewer The viewer being added
    */
   _addManagedViewerSubscriptions(managedViewer) {
-    managedViewer._roiAddedSubscription = managedViewer.subscribe(ViewerEvents.ADDED, this._onRoiAdded);
-    managedViewer._roiModifiedSubscription = managedViewer.subscribe(ViewerEvents.MODIFIED, this._onRoiModified);
-    managedViewer._roiRemovedSubscription = managedViewer.subscribe(ViewerEvents.REMOVED, this._onRoiRemoved);
-    managedViewer._roiUpdatedSubscription = managedViewer.subscribe(ViewerEvents.UPDATED, this._onRoiUpdated);
-    managedViewer._roiSelectedSubscription = managedViewer.subscribe(ViewerEvents.UPDATED, this._onRoiSelected);
+    managedViewer._roiAddedSubscription = managedViewer.subscribe(
+      ViewerEvents.ADDED,
+      this._onRoiAdded
+    );
+    managedViewer._roiModifiedSubscription = managedViewer.subscribe(
+      ViewerEvents.MODIFIED,
+      this._onRoiModified
+    );
+    managedViewer._roiRemovedSubscription = managedViewer.subscribe(
+      ViewerEvents.REMOVED,
+      this._onRoiRemoved
+    );
+    managedViewer._roiUpdatedSubscription = managedViewer.subscribe(
+      ViewerEvents.UPDATED,
+      this._onRoiUpdated
+    );
+    managedViewer._roiSelectedSubscription = managedViewer.subscribe(
+      ViewerEvents.UPDATED,
+      this._onRoiSelected
+    );
   }
 
   /**
@@ -196,11 +221,16 @@ export default class MicroscopyService extends PubSubService {
    * @param {ViewerManager} managedViewer The viewer being removed
    */
   _removeManagedViewerSubscriptions(managedViewer) {
-    managedViewer._roiAddedSubscription && managedViewer._roiAddedSubscription.unsubscribe();
-    managedViewer._roiModifiedSubscription && managedViewer._roiModifiedSubscription.unsubscribe();
-    managedViewer._roiRemovedSubscription && managedViewer._roiRemovedSubscription.unsubscribe();
-    managedViewer._roiUpdatedSubscription && managedViewer._roiUpdatedSubscription.unsubscribe();
-    managedViewer._roiSelectedSubscription && managedViewer._roiSelectedSubscription.unsubscribe();
+    managedViewer._roiAddedSubscription &&
+      managedViewer._roiAddedSubscription.unsubscribe();
+    managedViewer._roiModifiedSubscription &&
+      managedViewer._roiModifiedSubscription.unsubscribe();
+    managedViewer._roiRemovedSubscription &&
+      managedViewer._roiRemovedSubscription.unsubscribe();
+    managedViewer._roiUpdatedSubscription &&
+      managedViewer._roiUpdatedSubscription.unsubscribe();
+    managedViewer._roiSelectedSubscription &&
+      managedViewer._roiSelectedSubscription.unsubscribe();
 
     managedViewer._roiAddedSubscription = null;
     managedViewer._roiModifiedSubscription = null;
@@ -460,7 +490,9 @@ export default class MicroscopyService extends PubSubService {
    * @param {RoiAnnotation} roiAnnotation The instance to be selected
    */
   selectAnnotation(roiAnnotation) {
-    if (this.selectedAnnotation) this.clearSelection();
+    if (this.selectedAnnotation) {
+      this.clearSelection();
+    }
 
     this.selectedAnnotation = roiAnnotation;
     this._broadcastEvent(EVENTS.ANNOTATION_SELECTED, roiAnnotation);
