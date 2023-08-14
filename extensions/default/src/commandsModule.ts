@@ -557,7 +557,7 @@ const commandsModule = ({
       if (
         !viewports ||
         activeViewportId < 0 ||
-        activeViewportId > viewports.length - 1
+        activeViewportId > viewports.size - 1
       ) {
         return;
       }

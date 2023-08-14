@@ -337,7 +337,7 @@ function ViewerViewportGrid(props) {
           >
             <ViewportComponent
               displaySets={displaySets}
-              viewportLabel={viewports.length > 1 ? viewportLabel : ''}
+              viewportLabel={viewports.size > 1 ? viewportLabel : ''}
               viewportId={viewportId}
               dataSource={dataSource}
               viewportOptions={viewportOptions}

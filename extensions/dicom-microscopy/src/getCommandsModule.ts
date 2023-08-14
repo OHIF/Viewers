@@ -125,13 +125,13 @@ export default function getCommandsModule({
 
     incrementActiveViewport: () => {
       const { activeViewportId, viewports } = viewportGridService.getState();
-      const nextViewportIndex = (activeViewportId + 1) % viewports.length;
+      const nextViewportIndex = (activeViewportId + 1) % viewports.size;
       viewportGridService.setActiveViewportId(nextViewportIndex);
     },
     decrementActiveViewport: () => {
       const { activeViewportId, viewports } = viewportGridService.getState();
       const nextViewportIndex =
-        (activeViewportId - 1 + viewports.length) % viewports.length;
+        (activeViewportId - 1 + viewports.size) % viewports.size;
       viewportGridService.setActiveViewportId(nextViewportIndex);
     },
 

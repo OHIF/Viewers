@@ -19,7 +19,7 @@ const reuseCachedLayout = (
   hangingProtocolService: HangingProtocolService,
   syncService: StateSyncService
 ): ReturnType => {
-  const { activeViewportId, viewports, layout } = state;
+  const { activeViewportId } = state;
   const hpInfo = hangingProtocolService.getState();
   const { protocolId, stageIndex, activeStudyUID } = hpInfo;
   const { protocol } = hangingProtocolService.getActiveProtocol();
@@ -34,7 +34,7 @@ const reuseCachedLayout = (
   const displaySetSelectorMap = { ...syncState.displaySetSelectorMap };
   const { rows, columns } = stage.viewportStructure.properties;
   const custom =
-    stage.viewports.length !== state.viewports.length ||
+    stage.viewports.length !== state.viewports.size ||
     state.layout.numRows !== rows ||
     state.layout.numCols !== columns;
 

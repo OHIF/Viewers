@@ -27,7 +27,6 @@ const ViewportActionBar = ({
   getStatusComponent,
 }: ViewportActionBarProps): JSX.Element => {
   const { label, studyDate, seriesDescription, patientInformation } = studyData;
-
   const {
     patientName,
     patientSex,

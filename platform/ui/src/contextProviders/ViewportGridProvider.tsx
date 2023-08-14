@@ -41,6 +41,9 @@ const DEFAULT_STATE: DefaultState = {
     numCols: 0,
     layoutType: 'grid',
   },
+  // Viewports structure has been changed to Map (previously it was
+  // tied to the viewportIndex which caused multiple issues. Now we have
+  // moved completely to viewportId which is unique for each viewport.
   viewports: new Map(
     Object.entries({
       default: {
@@ -59,12 +62,17 @@ const DEFAULT_STATE: DefaultState = {
   ),
 };
 
+const getViewportLabel = (viewports, viewportId) => {
+  const viewportIds = Array.from(viewports.keys());
+  return viewportLabels[viewportIds.indexOf(viewportId)];
+};
+
 export const ViewportGridContext = createContext(DEFAULT_STATE);
 
 export function ViewportGridProvider({ children, service }) {
   const viewportGridReducer = (state: DefaultState, action) => {
     switch (action.type) {
-      case 'SET_ACTIVE_VIEWPORT_INDEX': {
+      case 'SET_ACTIVE_VIEWPORT_ID': {
         return { ...state, ...{ activeViewportId: action.payload } };
       }
 
@@ -78,15 +86,14 @@ export function ViewportGridProvider({ children, service }) {
         const { payload } = action;
         const viewports = new Map(state.viewports);
 
-        for (const updatedViewport of payload) {
+        payload.forEach(updatedViewport => {
+          const { viewportId, displaySetInstanceUIDs } = updatedViewport;
+
+          const previousViewport = viewports.get(viewportId);
+
           // Use the newly provide viewportOptions and display set options
           // when provided, and otherwise fall back to the previous ones.
           // That allows for easy updates of just the display set.
-          const { viewportId, displaySetInstanceUIDs } = updatedViewport;
-
-          // create a copy of state.viewports
-
-          const previousViewport = viewports.get(viewportId);
           const viewportOptions = {
             ...(updatedViewport.viewportOptions ||
               previousViewport.viewportOptions),
@@ -94,7 +101,7 @@ export function ViewportGridProvider({ children, service }) {
 
           const displaySetOptions = updatedViewport.displaySetOptions || [];
           if (!displaySetOptions.length) {
-            // Copy all the display set options, assuming a full set of displayset UID's is provided.
+            // Copy all the display set options, assuming a full set of displaySet UID's is provided.
             displaySetOptions.push(...previousViewport.displaySetOptions);
             if (!displaySetOptions.length) {
               displaySetOptions.push({});
@@ -106,8 +113,7 @@ export function ViewportGridProvider({ children, service }) {
             displaySetInstanceUIDs,
             viewportOptions,
             displaySetOptions,
-            // Todo-rename: fix label
-            viewportLabel: viewportLabels[0],
+            viewportLabel: getViewportLabel(viewports, viewportId),
           };
 
           viewportOptions.presentationIds = ViewportGridService.getPresentationIds(
@@ -126,7 +132,7 @@ export function ViewportGridProvider({ children, service }) {
             ...viewports[viewportId],
             ...newViewport,
           });
-        }
+        });
 
         return { ...state, viewports };
       }
@@ -208,6 +214,11 @@ export function ViewportGridProvider({ children, service }) {
               y: yPos,
             });
 
+            viewport.viewportLabel = getViewportLabel(
+              viewports,
+              viewport.viewportId
+            );
+
             //     if (!viewport.viewportOptions.presentationIds) {
             //     viewport.viewportOptions.presentationIds = ViewportGridService.getPresentationIds(
             //       viewport,
@@ -259,7 +270,7 @@ export function ViewportGridProvider({ children, service }) {
   }, [viewportGridState]);
 
   const setActiveViewportId = useCallback(
-    index => dispatch({ type: 'SET_ACTIVE_VIEWPORT_INDEX', payload: index }),
+    index => dispatch({ type: 'SET_ACTIVE_VIEWPORT_ID', payload: index }),
     [dispatch]
   );
 

@@ -19,7 +19,6 @@ function TrackedCornerstoneViewport(props) {
     viewportLabel,
     servicesManager,
     extensionManager,
-    viewportOptions,
   } = props;
 
   const { t } = useTranslation('Common');

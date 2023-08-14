@@ -419,23 +419,19 @@ function _mapDisplaySets(
       const imageSrc = thumbnailImageSrcMap[ds.displaySetInstanceUID];
       const componentType = _getComponentType(ds.Modality);
       const numPanes = viewportGridService.getNumViewportPanes();
-      const viewportIdentificator =
-        numPanes === 1
-          ? []
-          : Array.from(viewports.entries()).reduce(
-              (acc, [index, viewportData]) => {
-                if (
-                  index < numPanes &&
-                  viewportData?.displaySetInstanceUIDs?.includes(
-                    ds.displaySetInstanceUID
-                  )
-                ) {
-                  acc.push(viewportData.viewportLabel);
-                }
-                return acc;
-              },
-              []
-            );
+      const viewportIdentificator = [];
+
+      if (numPanes !== 1) {
+        viewports.forEach(viewportData => {
+          if (
+            viewportData?.displaySetInstanceUIDs?.includes(
+              ds.displaySetInstanceUID
+            )
+          ) {
+            viewportIdentificator.push(viewportData.viewportLabel);
+          }
+        });
+      }
 
       const array =
         componentType === 'thumbnailTracked'
