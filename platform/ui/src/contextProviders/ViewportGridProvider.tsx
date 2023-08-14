@@ -169,15 +169,6 @@ export function ViewportGridProvider({ children, service }) {
               continue;
             }
 
-            // todo-rename: most likely need to be investigated
-            if (
-              activeViewportIdToSet == null &&
-              state.viewports.get(state.activeViewportId)?.positionId ===
-                positionId
-            ) {
-              activeViewportIdToSet = pos;
-            }
-            debugger;
             const viewport = findOrCreateViewport(pos, positionId, options);
             if (!viewport) {
               continue;

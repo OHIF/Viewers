@@ -1186,7 +1186,6 @@ export default class HangingProtocolService extends PubSubService {
             displaySetOptions: it,
           }));
         }
-        debugger;
         viewportMatchDetails.set(viewportId, matchDetails);
       }
     });

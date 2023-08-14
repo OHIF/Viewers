@@ -610,7 +610,7 @@ const commandsModule = ({
       const { activeViewportId, viewports } = viewportGridService.getState();
 
       const { displaySetInstanceUIDs } = viewports.get(activeViewportId);
-      debugger;
+
       const activeDisplaySetIndex = currentDisplaySets.findIndex(displaySet =>
         displaySetInstanceUIDs.includes(displaySet.displaySetInstanceUID)
       );
