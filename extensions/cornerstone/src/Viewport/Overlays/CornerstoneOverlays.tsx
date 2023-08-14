@@ -36,8 +36,9 @@ function CornerstoneOverlays(props) {
   }
 
   if (viewportData) {
-    const viewportInfo =
-      cornerstoneViewportService.getViewportInfoByIndex(viewportIndex);
+    const viewportInfo = cornerstoneViewportService.getViewportInfoByIndex(
+      viewportIndex
+    );
 
     if (viewportInfo?.viewportOptions?.customViewportProps?.hideOverlays) {
       return null;

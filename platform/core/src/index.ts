@@ -35,6 +35,11 @@ import {
   SegmentationService,
 } from './services';
 
+import {
+  DisplaySetMessage,
+  DisplaySetMessageList,
+} from './services/DisplaySetService';
+
 import IWebApiDataSource from './DataSources/IWebApiDataSource';
 
 const hotkeys = {
@@ -111,6 +116,8 @@ export {
   UINotificationService,
   UIViewportDialogService,
   DisplaySetService,
+  DisplaySetMessage,
+  DisplaySetMessageList,
   MeasurementService,
   ToolbarService,
   ViewportGridService,

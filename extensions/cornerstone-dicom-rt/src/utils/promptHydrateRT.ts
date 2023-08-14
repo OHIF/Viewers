@@ -12,6 +12,7 @@ function promptHydrateRT({
   rtDisplaySet,
   viewportIndex,
   toolGroupId = 'default',
+  preHydrateCallbacks,
 }) {
   const { uiViewportDialogService } = servicesManager.services;
 
@@ -22,6 +23,10 @@ function promptHydrateRT({
     );
 
     if (promptResult === RESPONSE.HYDRATE_SEG) {
+      preHydrateCallbacks?.forEach(callback => {
+        callback();
+      });
+
       const isHydrated = await hydrateRTDisplaySet({
         rtDisplaySet,
         viewportIndex,

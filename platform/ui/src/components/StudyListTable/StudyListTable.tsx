@@ -3,12 +3,12 @@ import PropTypes from 'prop-types';
 
 import StudyListTableRow from './StudyListTableRow';
 
-const StudyListTable = ({ tableDataSource }) => {
+const StudyListTable = ({ tableDataSource, querying }) => {
   return (
     <div className="bg-black">
       <div className="container m-auto relative">
         <table className="w-full text-white">
-          <tbody data-cy="study-list-results">
+          <tbody data-cy="study-list-results" data-querying={querying}>
             {tableDataSource.map((tableData, i) => {
               return <StudyListTableRow tableData={tableData} key={i} />;
             })}
@@ -24,6 +24,7 @@ StudyListTable.propTypes = {
     PropTypes.shape({
       row: PropTypes.array.isRequired,
       expandedContent: PropTypes.node.isRequired,
+      querying: PropTypes.bool,
       onClickRow: PropTypes.func.isRequired,
       isExpanded: PropTypes.bool.isRequired,
     })

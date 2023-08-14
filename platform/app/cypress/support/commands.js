@@ -46,7 +46,7 @@ Cypress.Commands.add('openStudy', PatientName => {
   cy.openStudyList();
   cy.get('#filter-patientNameOrId').type(PatientName);
   // cy.get('@getStudies').then(() => {
-  cy.wait(1000);
+  cy.waitQueryList();
 
   cy.get('[data-cy="study-list-results"]', { timeout: 5000 })
     .contains(PatientName)
@@ -60,12 +60,13 @@ Cypress.Commands.add(
     cy.location('pathname').then($url => {
       cy.log($url);
       if (
-        $url == 'blank' ||
+        $url === 'blank' ||
         !$url.includes(`/basic-test/${StudyInstanceUID}${otherParams}`)
       ) {
         cy.openStudyInViewer(StudyInstanceUID, otherParams);
         cy.waitDicomImage();
-        cy.wait(2000);
+        // Very short wait to ensure pending updates are handled
+        cy.wait(25);
       }
     });
   }
@@ -78,6 +79,9 @@ Cypress.Commands.add(
   }
 );
 
+Cypress.Commands.add('waitQueryList', () => {
+  cy.get('[data-querying="false"]');
+});
 /**
  * Command to search for a Modality and open the study.
  *
@@ -89,7 +93,7 @@ Cypress.Commands.add('openStudyModality', Modality => {
 
   cy.get('#filter-accessionOrModalityOrDescription')
     .type(Modality)
-    .wait(2000);
+    .waitQueryList();
 
   cy.get('[data-cy="study-list-results"]')
     .contains(Modality)
@@ -113,7 +117,7 @@ Cypress.Commands.add('openStudyList', () => {
   // For some reason cypress 12.x does not like to stub the network request
   // so we just wait herer for 1 second
   // cy.wait('@getStudies');
-  cy.wait(1000);
+  cy.waitQueryList();
 });
 
 Cypress.Commands.add('waitStudyList', () => {
@@ -154,10 +158,10 @@ Cypress.Commands.add('addLine', (viewport, firstClick, secondClick) => {
 
     // TODO: Added a wait which appears necessary in Cornerstone Tools >4?
     cy.wrap($viewport)
-      .click(x1, y1)
+      .click(x1, y1, { force: true })
       .wait(100)
       .trigger('mousemove', { clientX: x2, clientY: y2 })
-      .click(x2, y2)
+      .click(x2, y2, { force: true })
       .wait(100);
   });
 });
@@ -198,54 +202,27 @@ Cypress.Commands.add('expectMinimumThumbnails', (seriesToWait = 1) => {
 });
 
 //Command to wait DICOM image to load into the viewport
-Cypress.Commands.add('waitDicomImage', (timeout = 50000) => {
-  const loaded = cy.isPageLoaded();
-
-  if (loaded) {
-    cy.window()
-      .its('cornerstone')
-      .then({ timeout }, $cornerstone => {
-        return new Cypress.Promise(resolve => {
-          const onEvent = renderedEvt => {
-            const element = renderedEvt.detail.element;
-
-            element.removeEventListener(
-              $cornerstone.Enums.Events.IMAGE_RENDERED,
-              onEvent
-            );
-            $cornerstone.eventTarget.removeEventListener(
-              $cornerstone.Enums.Events.IMAGE_RENDERED,
-              onEvent
-            );
-            resolve();
-          };
-          const onEnabled = enabledEvt => {
-            const element = enabledEvt.detail.element;
-
-            element.addEventListener(
-              $cornerstone.Enums.Events.IMAGE_RENDERED,
-              onEvent
-            );
-
-            $cornerstone.eventTarget.removeEventListener(
-              $cornerstone.Enums.Events.ELEMENT_ENABLED,
-              onEnabled
-            );
-          };
-          const enabledElements = $cornerstone.getEnabledElements();
-          if (enabledElements && enabledElements.length) {
-            // Sometimes the page finishes rendering before this gets run,
-            // if so, just resolve immediately.
-            resolve();
-          } else {
-            $cornerstone.eventTarget.addEventListener(
-              $cornerstone.Enums.Events.ELEMENT_ENABLED,
-              onEnabled
+Cypress.Commands.add('waitDicomImage', () => {
+  cy.window()
+    .its('cornerstone')
+    .should($cornerstone => {
+      const enabled = $cornerstone.getEnabledElements();
+      if (enabled?.length) {
+        enabled.forEach((item, i) => {
+          if (
+            item.viewport.viewportStatus !==
+            $cornerstone.Enums.ViewportStatus.RENDERED
+          ) {
+            throw new Error(
+              `Viewport ${i} in state ${item.viewport.viewportStatus}`
             );
           }
         });
-      });
-  }
+      } else {
+        throw new Error('No enabled elements');
+      }
+    });
+  cy.log('DICOM image loaded');
 });
 
 //Command to reset and clear all the changes made to the viewport
@@ -401,7 +378,8 @@ Cypress.Commands.add('setLayout', (columns = 1, rows = 1) => {
     .eq(columns - 1)
     .click();
 
-  cy.wait(1000);
+  cy.wait(10);
+  cy.waitDicomImage();
 });
 
 function convertCanvas(documentClone) {

@@ -1,6 +1,5 @@
 import SUPPORTED_TOOLS from './constants/supportedTools';
 import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
-import getModalityUnit from './utils/getModalityUnit';
 import { utils } from '@ohif/core';
 
 const RectangleROI = {
@@ -26,12 +25,15 @@ const RectangleROI = {
       throw new Error('Tool not supported');
     }
 
-    const { SOPInstanceUID, SeriesInstanceUID, StudyInstanceUID } =
-      getSOPInstanceAttributes(
-        referencedImageId,
-        CornerstoneViewportService,
-        viewportId
-      );
+    const {
+      SOPInstanceUID,
+      SeriesInstanceUID,
+      StudyInstanceUID,
+    } = getSOPInstanceAttributes(
+      referencedImageId,
+      CornerstoneViewportService,
+      viewportId
+    );
 
     let displaySet;
 
@@ -96,8 +98,11 @@ function getMappedAnnotations(annotation, DisplaySetService) {
       );
     }
 
-    const { SOPInstanceUID, SeriesInstanceUID, frameNumber } =
-      getSOPInstanceAttributes(referencedImageId);
+    const {
+      SOPInstanceUID,
+      SeriesInstanceUID,
+      frameNumber,
+    } = getSOPInstanceAttributes(referencedImageId);
 
     const displaySet = DisplaySetService.getDisplaySetForSOPInstanceUID(
       SOPInstanceUID,
@@ -106,8 +111,7 @@ function getMappedAnnotations(annotation, DisplaySetService) {
     );
 
     const { SeriesNumber } = displaySet;
-    const { mean, stdDev, max, area, Modality } = targetStats;
-    const unit = getModalityUnit(Modality);
+    const { mean, stdDev, max, area, Modality, modalityUnit } = targetStats;
 
     annotations.push({
       SeriesInstanceUID,
@@ -115,7 +119,7 @@ function getMappedAnnotations(annotation, DisplaySetService) {
       SeriesNumber,
       frameNumber,
       Modality,
-      unit,
+      unit: modalityUnit,
       mean,
       stdDev,
       max,

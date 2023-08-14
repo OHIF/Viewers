@@ -10,7 +10,7 @@ import {
   initGit,
 } from './utils/index.js';
 
-const createPackage = async (options) => {
+const createPackage = async options => {
   const { packageType } = options; // extension or mode
 
   if (fs.existsSync(options.targetDir)) {

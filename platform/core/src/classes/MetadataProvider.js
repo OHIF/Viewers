@@ -70,6 +70,11 @@ class MetadataProvider {
       SeriesInstanceUID,
       SOPInstanceUID
     );
+
+    if (!instance) {
+      return;
+    }
+
     return (
       (frameNumber && combineFrameInstance(frameNumber, instance)) || instance
     );
@@ -405,6 +410,14 @@ class MetadataProvider {
         };
 
         break;
+      case WADO_IMAGE_LOADER_TAGS.PER_SERIES_MODULE:
+        metadata = {
+          correctedImage: instance.CorrectedImage,
+          units: instance.Units,
+          decayCorrection: instance.DecayCorrection,
+        };
+        break;
+
       default:
         return;
     }
@@ -441,7 +454,9 @@ class MetadataProvider {
   }
 
   getUIDsFromImageID(imageId) {
-    if (!imageId) throw new Error('MetadataProvider::Empty imageId');
+    if (!imageId) {
+      throw new Error('MetadataProvider::Empty imageId');
+    }
     // TODO: adding csiv here is not really correct. Probably need to use
     // metadataProvider.addImageIdToUIDs(imageId, {
     //   StudyInstanceUID,
@@ -508,6 +523,7 @@ const WADO_IMAGE_LOADER_TAGS = {
   MODALITY_LUT_MODULE: 'modalityLutModule',
   SOP_COMMON_MODULE: 'sopCommonModule',
   PET_ISOTOPE_MODULE: 'petIsotopeModule',
+  PER_SERIES_MODULE: 'petSeriesModule',
   OVERLAY_PLANE_MODULE: 'overlayPlaneModule',
   PATIENT_DEMOGRAPHIC_MODULE: 'patientDemographicModule',
 

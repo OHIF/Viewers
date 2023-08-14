@@ -28,6 +28,7 @@ function commandsModule({
     toolGroupService,
     cineService,
     toolbarService,
+    stateSyncService,
     uiDialogService,
     cornerstoneViewportService,
     uiNotificationService,
@@ -628,6 +629,35 @@ function commandsModule({
       );
       toolGroup.setToolEnabled(ReferenceLinesTool.toolName);
     },
+    storePresentation: ({ viewportIndex }) => {
+      const presentation = cornerstoneViewportService.getPresentation(
+        viewportIndex
+      );
+      if (!presentation || !presentation.presentationIds) {
+        return;
+      }
+      const {
+        lutPresentationStore,
+        positionPresentationStore,
+      } = stateSyncService.getState();
+      const { presentationIds } = presentation;
+      const { lutPresentationId, positionPresentationId } =
+        presentationIds || {};
+      const storeState = {};
+      if (lutPresentationId) {
+        storeState.lutPresentationStore = {
+          ...lutPresentationStore,
+          [lutPresentationId]: presentation,
+        };
+      }
+      if (positionPresentationId) {
+        storeState.positionPresentationStore = {
+          ...positionPresentationStore,
+          [positionPresentationId]: presentation,
+        };
+      }
+      stateSyncService.store(storeState);
+    },
   };
 
   const definitions = {
@@ -754,6 +784,11 @@ function commandsModule({
     },
     setSingleViewportColormap: {
       commandFn: actions.setSingleViewportColormap,
+    },
+    storePresentation: {
+      commandFn: actions.storePresentation,
+      storeContexts: [],
+      options: {},
     },
   };
 
