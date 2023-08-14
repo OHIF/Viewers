@@ -35,8 +35,9 @@ function callInputDialog(
   const onSubmitHandler = ({ action, value }) => {
     switch (action.id) {
       case 'save':
-        if (typeof validateFunc === 'function' && !validateFunc(value.label))
+        if (typeof validateFunc === 'function' && !validateFunc(value.label)) {
           return;
+        }
 
         callback(value.label, action.id);
         break;

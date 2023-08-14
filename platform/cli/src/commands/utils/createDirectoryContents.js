@@ -22,7 +22,9 @@ const createDirectoryContents = (
       const contents = fs.readFileSync(origFilePath, 'utf8');
 
       // Rename
-      if (file === '.npmignore') file = '.gitignore';
+      if (file === '.npmignore') {
+        file = '.gitignore';
+      }
 
       const writePath = `${targetDirPath}/${file}`;
       fs.writeFileSync(writePath, contents, 'utf8');

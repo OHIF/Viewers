@@ -13,7 +13,9 @@ const compareSeriesDateTime = (a, b) => {
 const defaultSeriesSort = (a, b) => {
   const seriesNumberA = a.SeriesNumber ?? a.seriesNumber;
   const seriesNumberB = b.SeriesNumber ?? b.seriesNumber;
-  if (seriesNumberA === seriesNumberB) return compareSeriesDateTime(a, b);
+  if (seriesNumberA === seriesNumberB) {
+    return compareSeriesDateTime(a, b);
+  }
   return seriesNumberA - seriesNumberB;
 };
 
@@ -67,8 +69,11 @@ const sortStudySeries = (
   seriesSortingCriteria = seriesSortCriteria.default,
   sortFunction = null
 ) => {
-  if (typeof sortFunction === 'function') return sortFunction(series);
-  else return series.sort(seriesSortingCriteria);
+  if (typeof sortFunction === 'function') {
+    return sortFunction(series);
+  } else {
+    return series.sort(seriesSortingCriteria);
+  }
 };
 
 /**

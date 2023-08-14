@@ -2,7 +2,7 @@ import SUPPORTED_TOOLS from './constants/supportedTools';
 import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
 
 const PlanarFreehandROI = {
-  toAnnotation: measurement => { },
+  toAnnotation: measurement => {},
 
   /**
    * Maps cornerstone annotation event data to measurement service format.

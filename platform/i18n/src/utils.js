@@ -57,7 +57,7 @@ const languagesMap = {
   'test-LNG': 'Test Language',
 };
 
-const getLanguageLabel = (language) => {
+const getLanguageLabel = language => {
   return languagesMap[language];
 };
 

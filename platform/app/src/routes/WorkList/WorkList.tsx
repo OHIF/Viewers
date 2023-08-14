@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import { Link, useNavigate } from 'react-router-dom';
@@ -112,6 +112,9 @@ function WorkList({
   const [expandedRows, setExpandedRows] = useState([]);
   const [studiesWithSeriesData, setStudiesWithSeriesData] = useState([]);
   const numOfStudies = studiesTotal;
+  const querying = useMemo(() => {
+    return isLoadingData || expandedRows.length > 0;
+  }, [isLoadingData, expandedRows]);
 
   const setFilterValues = val => {
     if (filterValues.pageNumber === val.pageNumber) {
@@ -218,6 +221,7 @@ function WorkList({
 
       fetchSeries(studyInstanceUid);
     }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [expandedRows, studies]);
 
@@ -358,31 +362,34 @@ function WorkList({
               }
               query.append('StudyInstanceUIDs', studyInstanceUid);
               return (
-                <Link
-                  className={isValidMode ? '' : 'cursor-not-allowed'}
-                  key={i}
-                  to={`${dataPath ? '../../' : ''}${mode.routeName}${dataPath ||
-                    ''}?${query.toString()}`}
-                  onClick={event => {
-                    // In case any event bubbles up for an invalid mode, prevent the navigation.
-                    // For example, the event bubbles up when the icon embedded in the disabled button is clicked.
-                    if (!isValidMode) {
-                      event.preventDefault();
-                    }
-                  }}
-                  // to={`${mode.routeName}/dicomweb?StudyInstanceUIDs=${studyInstanceUid}`}
-                >
-                  {/* TODO revisit the completely rounded style of buttons used for launching a mode from the worklist later - for now use LegacyButton*/}
-                  <LegacyButton
-                    rounded="full"
-                    variant={isValidMode ? 'contained' : 'disabled'}
-                    disabled={!isValidMode}
-                    endIcon={<Icon name="launch-arrow" />} // launch-arrow | launch-info
-                    onClick={() => {}}
+                mode.displayName && (
+                  <Link
+                    className={isValidMode ? '' : 'cursor-not-allowed'}
+                    key={i}
+                    to={`${dataPath ? '../../' : ''}${
+                      mode.routeName
+                    }${dataPath || ''}?${query.toString()}`}
+                    onClick={event => {
+                      // In case any event bubbles up for an invalid mode, prevent the navigation.
+                      // For example, the event bubbles up when the icon embedded in the disabled button is clicked.
+                      if (!isValidMode) {
+                        event.preventDefault();
+                      }
+                    }}
+                    // to={`${mode.routeName}/dicomweb?StudyInstanceUIDs=${studyInstanceUid}`}
                   >
-                    {t(`Modes:${mode.displayName}`)}
-                  </LegacyButton>
-                </Link>
+                    {/* TODO revisit the completely rounded style of buttons used for launching a mode from the worklist later - for now use LegacyButton*/}
+                    <LegacyButton
+                      rounded="full"
+                      variant={isValidMode ? 'contained' : 'disabled'}
+                      disabled={!isValidMode}
+                      endIcon={<Icon name="launch-arrow" />} // launch-arrow | launch-info
+                      onClick={() => {}}
+                    >
+                      {t(`Modes:${mode.displayName}`)}
+                    </LegacyButton>
+                  </Link>
+                )
               );
             })}
           </div>
@@ -455,7 +462,7 @@ function WorkList({
   const { component: dicomUploadComponent } =
     customizationService.get('dicomUploadComponent') ?? {};
   const uploadProps =
-    dicomUploadComponent && dataSource.getConfig().dicomUploadEnabled
+    dicomUploadComponent && dataSource.getConfig()?.dicomUploadEnabled
       ? {
           title: 'Upload files',
           closeButton: true,
@@ -501,6 +508,7 @@ function WorkList({
             <StudyListTable
               tableDataSource={tableDataSource.slice(offset, offsetAndTake)}
               numOfStudies={numOfStudies}
+              querying={querying}
               filtersMeta={filtersMeta}
             />
             <div className="grow">

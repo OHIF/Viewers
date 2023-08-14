@@ -83,7 +83,9 @@ export default function constructSR(
     console.debug('[SR] storing evaluations...', evaluations);
     console.debug('[SR] storing presentation state...', presentationState);
 
-    if (presentationState) presentationState.marker = marker;
+    if (presentationState) {
+      presentationState.marker = marker;
+    }
 
     /** Avoid incompatibility with dcmjs */
     measurements = measurements.map((measurement: any) => {

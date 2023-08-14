@@ -31,7 +31,9 @@ function DataSourceSelector() {
               )
               .map(ds => (
                 <div key={ds.sourceName}>
-                  <h1 className="text-white">{ds.friendlyName}</h1>
+                  <h1 className="text-white">
+                    {ds.configuration?.friendlyName || ds.friendlyName}
+                  </h1>
                   <Button
                     type={ButtonEnums.type.primary}
                     className={classnames('ml-2')}

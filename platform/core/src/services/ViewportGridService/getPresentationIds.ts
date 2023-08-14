@@ -10,8 +10,14 @@ const DEFAULT = 'default';
 // dragged and dropped the view in twice.  For example, it allows displaying
 // bone, brain and soft tissue views of a single display set, and to still
 // remember the specific changes to each viewport.
-const addUniqueIndex = (arr, key, viewports) => {
+const addUniqueIndex = (arr, key, viewports, isUpdatingSameViewport) => {
   arr.push(0);
+
+  // If we are updating the viewport, we should not increment the index
+  if (isUpdatingSameViewport) {
+    return;
+  }
+
   // The 128 is just a value that is larger than how many viewports we
   // display at once, used as an upper bound on how many unique presentation
   // ID's might exist for a single display set at once.
@@ -29,10 +35,16 @@ const addUniqueIndex = (arr, key, viewports) => {
 };
 
 const getLutId = (ds): string => {
-  if (!ds || !ds.options) return DEFAULT;
-  if (ds.options.id) return ds.options.id;
+  if (!ds || !ds.options) {
+    return DEFAULT;
+  }
+  if (ds.options.id) {
+    return ds.options.id;
+  }
   const arr = Object.entries(ds.options).map(([key, val]) => `${key}=${val}`);
-  if (!arr.length) return DEFAULT;
+  if (!arr.length) {
+    return DEFAULT;
+  }
   return arr.join(JOIN_STR);
 };
 
@@ -87,7 +99,9 @@ export type PresentationIds = {
  * @returns PresentationIds
  */
 const getPresentationIds = (viewport, viewports): PresentationIds => {
-  if (!viewport) return;
+  if (!viewport) {
+    return;
+  }
   const {
     viewportOptions,
     displaySetInstanceUIDs,
@@ -102,15 +116,39 @@ const getPresentationIds = (viewport, viewports): PresentationIds => {
   const lutPresentationArr = [lutId];
 
   const positionPresentationArr = [orientation || 'acquisition'];
-  if (id) positionPresentationArr.push(id);
+  if (id) {
+    positionPresentationArr.push(id);
+  }
 
   for (const uid of displaySetInstanceUIDs) {
     positionPresentationArr.push(uid);
     lutPresentationArr.push(uid);
   }
 
-  addUniqueIndex(positionPresentationArr, 'positionPresentationId', viewports);
-  addUniqueIndex(lutPresentationArr, 'lutPresentationId', viewports);
+  // only add unique index if the viewport is getting inserted and not updated
+  const isUpdatingSameViewport = viewports.some(v => {
+    return (
+      v.displaySetInstanceUIDs.toString() ===
+        viewport.displaySetInstanceUIDs.toString() &&
+      v.viewportIndex === viewport.viewportIndex
+    );
+  });
+
+  // if it is updating the viewport we should not increment the index since
+  // it might be a layer on the fusion or a SEG layer that is added on
+  // top of the original display set
+  addUniqueIndex(
+    positionPresentationArr,
+    'positionPresentationId',
+    viewports,
+    isUpdatingSameViewport
+  );
+  addUniqueIndex(
+    lutPresentationArr,
+    'lutPresentationId',
+    viewports,
+    isUpdatingSameViewport
+  );
 
   const lutPresentationId = lutPresentationArr.join(JOIN_STR);
   const positionPresentationId = positionPresentationArr.join(JOIN_STR);
