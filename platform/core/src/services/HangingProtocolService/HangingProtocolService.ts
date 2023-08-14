@@ -562,6 +562,13 @@ export default class HangingProtocolService extends PubSubService {
     const protocolViewports = protocolStage.viewports;
     const protocolViewport = protocolViewports[viewportIndex];
 
+    const { displaySetService } = this._servicesManager.services;
+    const displaySet = displaySetService.getDisplaySetByUID(
+      displaySetInstanceUID
+    );
+    if (displaySet && displaySet?.unsupported) {
+      throw new Error('Unsupported displaySet');
+    }
     const defaultReturn = [
       {
         viewportIndex,
@@ -1428,7 +1435,7 @@ export default class HangingProtocolService extends PubSubService {
       }
 
       const studyDisplaySets = this.displaySets.filter(
-        it => it.StudyInstanceUID === study.StudyInstanceUID
+        it => it.StudyInstanceUID === study.StudyInstanceUID && !it?.unsupported
       );
 
       const studyMatchDetails = this.protocolEngine.findMatch(

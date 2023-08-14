@@ -2,6 +2,8 @@ import { ExtensionManager } from '../../extensions';
 import { InstanceMetadata } from '../../types';
 import { PubSubService } from '../_shared/pubSubServiceInterface';
 import EVENTS from './EVENTS';
+import ImageSet from '../../classes/ImageSet';
+import { DisplaySetMessage, DisplaySetMessageList } from './DisplaySetMessage';
 
 export type DisplaySet = {
   displaySetInstanceUID: string;
@@ -9,6 +11,7 @@ export type DisplaySet = {
   StudyInstanceUID: string;
   SeriesInstanceUID?: string;
   numImages?: number;
+  unsupported?: boolean;
 };
 
 const displaySetCache = new Map<string, DisplaySet>();
@@ -272,7 +275,7 @@ export default class DisplaySetService extends PubSubService {
    * @param settings are settings to add
    * @returns Array of the display sets added.
    */
-  public makeDisplaySetForInstances(
+  private _makeDisplaySetForInstances(
     instancesSrc: InstanceMetadata[],
     settings
   ): DisplaySet[] {
@@ -355,6 +358,65 @@ export default class DisplaySetService extends PubSubService {
         allDisplaySets.push(...displaySets);
       }
     }
+    if (allDisplaySets.length === 0) {
+      const imageSet = new ImageSet(instances);
+      const messages = new DisplaySetMessageList();
+      messages.addMessage(DisplaySetMessage.CODES.UNSUPPORTED_DISPLAYSET);
+
+      imageSet.setAttributes({
+        displaySetInstanceUID: imageSet.uid, // create a local alias for the imageSet UID
+        SeriesDate: instance.SeriesDate,
+        SeriesTime: instance.SeriesTime,
+        SeriesInstanceUID: instance.SeriesInstanceUID,
+        StudyInstanceUID: instance.StudyInstanceUID,
+        SeriesNumber: instance.SeriesNumber || 0,
+        FrameRate: instance.FrameTime,
+        SOPClassUID: instance.SOPClassUID,
+        SeriesDescription: instance.SeriesDescription || '',
+        Modality: instance.Modality,
+        numImageFrames: instances.length,
+        unsupported: true,
+        SOPClassHandlerId: 'unsupported',
+        isReconstructable: false,
+        messages,
+      });
+      // applying hp-defined viewport settings to the displaySets
+      Object.keys(settings).forEach(key => {
+        imageSet[key] = settings[key];
+      });
+
+      this._addDisplaySetsToCache([imageSet]);
+      this._addActiveDisplaySets([imageSet]);
+
+      allDisplaySets.push(imageSet);
+    }
+    return allDisplaySets;
+  }
+
+  public makeDisplaySetForInstances(
+    instancesSrc: InstanceMetadata[],
+    settings
+  ): DisplaySet[] {
+    // listing sopClasses of the instances in displaySet
+    const instancesForSetSOPClasses = instancesSrc.reduce(
+      (sopClassList, instance) => {
+        if (!(instance.SOPClassUID in sopClassList)) {
+          sopClassList[instance.SOPClassUID] = [];
+        }
+        sopClassList[instance.SOPClassUID].push(instance);
+        return sopClassList;
+      },
+      {}
+    );
+    const sopClasses = Object.keys(instancesForSetSOPClasses);
+    let allDisplaySets = [];
+    sopClasses.forEach(sopClass => {
+      const displaySets = this._makeDisplaySetForInstances(
+        instancesForSetSOPClasses[sopClass],
+        settings
+      );
+      allDisplaySets = [...allDisplaySets, ...displaySets];
+    });
     return allDisplaySets;
   }
 

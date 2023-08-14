@@ -205,23 +205,24 @@ function PanelStudyBrowserTracking({
           const displaySet = displaySetService.getDisplaySetByUID(
             displaySetInstanceUID
           );
+          if (!displaySet?.unsupported) {
+            if (options.madeInClient) {
+              setJumpToDisplaySet(displaySetInstanceUID);
+            }
 
-          if (options.madeInClient) {
-            setJumpToDisplaySet(displaySetInstanceUID);
-          }
+            const imageIds = dataSource.getImageIdsForDisplaySet(displaySet);
+            const imageId = imageIds[Math.floor(imageIds.length / 2)];
 
-          const imageIds = dataSource.getImageIdsForDisplaySet(displaySet);
-          const imageId = imageIds[Math.floor(imageIds.length / 2)];
-
-          // TODO: Is it okay that imageIds are not returned here for SR displaysets?
-          if (imageId) {
-            // When the image arrives, render it and store the result in the thumbnailImgSrcMap
-            newImageSrcEntry[displaySetInstanceUID] = await getImageSrc(
-              imageId
-            );
-            setThumbnailImageSrcMap(prevState => {
-              return { ...prevState, ...newImageSrcEntry };
-            });
+            // TODO: Is it okay that imageIds are not returned here for SR displaysets?
+            if (imageId) {
+              // When the image arrives, render it and store the result in the thumbnailImgSrcMap
+              newImageSrcEntry[displaySetInstanceUID] = await getImageSrc(
+                imageId
+              );
+              setThumbnailImageSrcMap(prevState => {
+                return { ...prevState, ...newImageSrcEntry };
+              });
+            }
           }
         });
       }
@@ -417,7 +418,7 @@ function _mapDisplaySets(
     .filter(ds => !ds.excludeFromThumbnailBrowser)
     .forEach(ds => {
       const imageSrc = thumbnailImageSrcMap[ds.displaySetInstanceUID];
-      const componentType = _getComponentType(ds.Modality);
+      const componentType = _getComponentType(ds);
       const numPanes = viewportGridService.getNumViewportPanes();
       const viewportIdentificator =
         numPanes === 1
@@ -464,7 +465,7 @@ function _mapDisplaySets(
 
       if (componentType === 'thumbnailNoImage') {
         if (dataSource.reject && dataSource.reject.series) {
-          thumbnailProps.canReject = true;
+          thumbnailProps.canReject = !ds?.unsupported;
           thumbnailProps.onReject = () => {
             uiDialogService.create({
               id: 'ds-reject-sr',
@@ -557,8 +558,8 @@ const thumbnailNoImageModalities = [
   'OT',
 ];
 
-function _getComponentType(Modality) {
-  if (thumbnailNoImageModalities.includes(Modality)) {
+function _getComponentType(ds) {
+  if (thumbnailNoImageModalities.includes(ds.Modality) || ds?.unsupported) {
     return 'thumbnailNoImage';
   }
 
