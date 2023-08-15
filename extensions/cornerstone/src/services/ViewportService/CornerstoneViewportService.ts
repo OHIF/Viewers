@@ -190,18 +190,26 @@ class CornerstoneViewportService extends PubSubService
 
   public setPresentations(viewport, presentations?: Presentations): void {
     const properties = presentations?.lutPresentation?.properties;
-    if (properties) viewport.setProperties(properties);
+    if (properties) {
+      viewport.setProperties(properties);
+    }
     const camera = presentations?.positionPresentation?.camera;
-    if (camera) viewport.setCamera(camera);
+    if (camera) {
+      viewport.setCamera(camera);
+    }
   }
 
   public getPresentation(viewportIndex: number): Presentation {
     const viewportInfo = this.viewportsInfo.get(viewportIndex);
-    if (!viewportInfo) return;
+    if (!viewportInfo) {
+      return;
+    }
     const { viewportType, presentationIds } = viewportInfo.getViewportOptions();
 
     const csViewport = this.getCornerstoneViewportByIndex(viewportIndex);
-    if (!csViewport) return;
+    if (!csViewport) {
+      return;
+    }
 
     const properties = csViewport.getProperties();
     if (properties.isComputedVOI) {
@@ -408,7 +416,9 @@ class CornerstoneViewportService extends PubSubService
     viewport.setStack(imageIds, initialImageIndexToUse).then(() => {
       viewport.setProperties(properties);
       const camera = presentations.positionPresentation?.camera;
-      if (camera) viewport.setCamera(camera);
+      if (camera) {
+        viewport.setCamera(camera);
+      }
     });
   }
 
@@ -745,7 +755,10 @@ class CornerstoneViewportService extends PubSubService
     const viewport = this.getCornerstoneViewport(viewportId);
     const viewportCamera = viewport.getCamera();
 
-    if (viewport instanceof VolumeViewport || viewport instanceof VolumeViewport3D) {
+    if (
+      viewport instanceof VolumeViewport ||
+      viewport instanceof VolumeViewport3D
+    ) {
       this._setVolumeViewport(viewport, viewportData, viewportInfo).then(() => {
         if (keepCamera) {
           viewport.setCamera(viewportCamera);

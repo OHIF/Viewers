@@ -27,7 +27,9 @@ export default function CineProvider({ children, service }) {
         const { id, frameRate, isPlaying = undefined } = action.payload;
         const cines = state.cines;
 
-        if (!cines[id]) cines[id] = { id, ...DEFAULT_CINE };
+        if (!cines[id]) {
+          cines[id] = { id, ...DEFAULT_CINE };
+        }
         cines[id].frameRate = frameRate || cines[id].frameRate;
         cines[id].isPlaying =
           isPlaying !== undefined ? isPlaying : cines[id].isPlaying;

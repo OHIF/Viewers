@@ -77,14 +77,14 @@ function getVersion(json, version) {
   const [majorVersion] = version
     .split('^')[1]
     .split('.')
-    .map((v) => parseInt(v));
+    .map(v => parseInt(v));
 
   // Find the version that matches the major version, but is the latest minor version
   versions
-    .filter((version) => parseInt(version.split('.')[0]) === majorVersion)
+    .filter(version => parseInt(version.split('.')[0]) === majorVersion)
     .sort((a, b) => {
-      const [majorA, minorA, patchA] = a.split('.').map((v) => parseInt(v));
-      const [majorB, minorB, patchB] = b.split('.').map((v) => parseInt(v));
+      const [majorA, minorA, patchA] = a.split('.').map(v => parseInt(v));
+      const [majorB, minorB, patchB] = b.split('.').map(v => parseInt(v));
 
       if (majorA === majorB) {
         if (minorA === minorB) {
@@ -110,13 +110,16 @@ function validate(packageName, version, keyword) {
 
     // Gets the registry of the package. Scoped packages may not be using the global default.
     const registryUrlOfPackage = registryUrl(scope);
-    let options = {}
-    if (process.env.NPM_TOKEN){
+    let options = {};
+    if (process.env.NPM_TOKEN) {
       options['headers'] = {
-        'Authorization': `Bearer ${process.env.NPM_TOKEN}`,
-      }
+        Authorization: `Bearer ${process.env.NPM_TOKEN}`,
+      };
     }
-    const response = await fetch(`${registryUrlOfPackage}${packageName}`, options);
+    const response = await fetch(
+      `${registryUrlOfPackage}${packageName}`,
+      options
+    );
     const json = await response.json();
 
     if (json.error && json.error === NOT_FOUND) {

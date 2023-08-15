@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import { DicomMetadataStore, ServicesManager, utils } from '@ohif/core';
 import { DragAndDropProvider, ImageViewerProvider } from '@ohif/ui';
 import { useSearchParams } from '@hooks';
+import { useAppConfig } from '@state';
 import ViewportGrid from '@components/ViewportGrid';
 import Compose from './Compose';
 import getStudies from './studiesList';
@@ -93,6 +94,8 @@ export default function ModeRoute({
   commandsManager,
   hotkeysManager,
 }) {
+  const [appConfig] = useAppConfig();
+
   // Parse route params/querystring
   const location = useLocation();
 
@@ -313,6 +316,7 @@ export default function ModeRoute({
         servicesManager,
         extensionManager,
         commandsManager,
+        appConfig,
       });
 
       // use the URL hangingProtocolId if it exists, otherwise use the one
@@ -403,6 +407,7 @@ export default function ModeRoute({
         mode?.onModeExit?.({
           servicesManager,
           extensionManager,
+          appConfig,
         });
       } catch (e) {
         console.warn('mode exit failure', e);

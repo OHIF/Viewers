@@ -21,6 +21,10 @@
       "version": "detect"
     }
   },
+  "rules": {
+    // Enforce consistent brace style for all control statements for readability
+    "curly": "error"
+  },
   "globals": {
     "cy": true,
     "before": true,

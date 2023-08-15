@@ -22,7 +22,9 @@ export const findOrCreateViewport = (
   options: Record<string, unknown>
 ) => {
   const byPositionViewport = viewportsByPosition?.[positionId];
-  if (byPositionViewport) return { ...byPositionViewport };
+  if (byPositionViewport) {
+    return { ...byPositionViewport };
+  }
   const { protocolId, stageIndex } = hangingProtocolService.getState();
 
   // Setup the initial in display correctly for initial view/select

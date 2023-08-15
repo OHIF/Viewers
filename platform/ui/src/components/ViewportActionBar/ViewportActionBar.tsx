@@ -34,6 +34,7 @@ const ViewportActionBar = ({
     patientAge,
     MRN,
     thickness,
+    thicknessUnits,
     spacing,
     scanner,
   } = patientInformation;
@@ -173,6 +174,7 @@ const ViewportActionBar = ({
           patientAge={patientAge}
           MRN={MRN}
           thickness={thickness}
+          thicknessUnits={thicknessUnits}
           spacing={spacing}
           scanner={scanner}
         />
@@ -196,6 +198,7 @@ ViewportActionBar.propTypes = {
       patientAge: PropTypes.string.isRequired,
       MRN: PropTypes.string.isRequired,
       thickness: PropTypes.string.isRequired,
+      thicknessUnits: PropTypes.string.isRequired,
       spacing: PropTypes.string.isRequired,
       scanner: PropTypes.string.isRequired,
     }),

@@ -145,7 +145,9 @@ function ViewerViewportGrid(props) {
     const { unsubscribe } = measurementService.subscribe(
       MeasurementService.EVENTS.JUMP_TO_MEASUREMENT_LAYOUT,
       ({ viewportIndex, measurement, isConsumed }) => {
-        if (isConsumed) return;
+        if (isConsumed) {
+          return;
+        }
         // This occurs when no viewport has elected to consume the event
         // so we need to change layouts into a layout which can consume
         // the event.
@@ -292,7 +294,9 @@ function ViewerViewportGrid(props) {
       });
 
       const onInteractionHandler = event => {
-        if (isActive) return;
+        if (isActive) {
+          return;
+        }
 
         if (event) {
           event.preventDefault();

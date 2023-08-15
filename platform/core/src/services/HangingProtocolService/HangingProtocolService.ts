@@ -86,7 +86,9 @@ export default class HangingProtocolService extends PubSubService {
         metadata.ModalitiesInStudy ??
         (metadata.series || []).reduce((prev, curr) => {
           const { Modality } = curr;
-          if (Modality && prev.indexOf(Modality) == -1) prev.push(Modality);
+          if (Modality && prev.indexOf(Modality) == -1) {
+            prev.push(Modality);
+          }
           return prev;
         }, []),
     },
@@ -203,7 +205,9 @@ export default class HangingProtocolService extends PubSubService {
    * protocolId, stageIndex, stageId and activeStudyUID
    */
   public getState(): HangingProtocol.HPInfo {
-    if (!this.protocol) return;
+    if (!this.protocol) {
+      return;
+    }
     return {
       protocolId: this.protocol.id,
       stageIndex: this.stageIndex,
@@ -260,8 +264,12 @@ export default class HangingProtocolService extends PubSubService {
    * @returns protocol - the protocol with the given id
    */
   public getProtocolById(protocolId: string): HangingProtocol.Protocol {
-    if (!protocolId) return;
-    if (protocolId === this.protocol?.id) return this.protocol;
+    if (!protocolId) {
+      return;
+    }
+    if (protocolId === this.protocol?.id) {
+      return this.protocol;
+    }
     const protocol = this.protocols.get(protocolId);
     if (!protocol) {
       throw new Error(`No protocol ${protocolId} found`);
@@ -700,7 +708,9 @@ export default class HangingProtocolService extends PubSubService {
       const { id } = displaySet;
       const displaySetMatchDetail = displaySetMatchDetails.get(id);
 
-      const { displaySetInstanceUID: oldDisplaySetInstanceUID } = displaySetMatchDetail;
+      const {
+        displaySetInstanceUID: oldDisplaySetInstanceUID,
+      } = displaySetMatchDetail;
 
       const displaySetInstanceUID =
         displaySet.id === displaySetSelectorId
@@ -733,8 +743,12 @@ export default class HangingProtocolService extends PubSubService {
       );
     }
 
-    if (options === null) return options;
-    if (typeof options !== 'object') return options;
+    if (options === null) {
+      return options;
+    }
+    if (typeof options !== 'object') {
+      return options;
+    }
 
     // If options is an object with a custom attribute, compute a new options object
     if (options.custom) {
@@ -895,7 +909,9 @@ export default class HangingProtocolService extends PubSubService {
     if (stageId) {
       for (let i = 0; i < stages.length; i++) {
         const stage = stages[i];
-        if (stage.id === stageId && stage.status !== 'disabled') return i;
+        if (stage.id === stageId && stage.status !== 'disabled') {
+          return i;
+      }
       }
       return;
     }
@@ -908,7 +924,9 @@ export default class HangingProtocolService extends PubSubService {
     let firstNotDisabled: number;
 
     for (let i = 0; i < stages.length; i++) {
-      if (stages[i].status === 'enabled') return i;
+      if (stages[i].status === 'enabled') {
+        return i;
+      }
       if (firstNotDisabled === undefined && stages[i].status !== 'disabled') {
         firstNotDisabled = i;
       }
@@ -982,7 +1000,9 @@ export default class HangingProtocolService extends PubSubService {
     if (stageId !== undefined) {
       return protocol.stages.findIndex(it => it.id === stageId);
     }
-    if (stageIndex !== undefined) return stageIndex;
+    if (stageIndex !== undefined) {
+      return stageIndex;
+    }
     return 0;
   }
 
@@ -1033,7 +1053,9 @@ export default class HangingProtocolService extends PubSubService {
     const protocol = this.protocol;
     const stage = protocol.stages[stageIdx];
     const defaultViewport = stage.defaultViewport || protocol.defaultViewport;
-    if (!defaultViewport) return;
+    if (!defaultViewport) {
+      return;
+    }
 
     const useViewport = { ...defaultViewport };
     return this._matchViewport(useViewport, options);
@@ -1155,12 +1177,18 @@ export default class HangingProtocolService extends PubSubService {
     offset: number,
     options: HangingProtocol.SetProtocolOptions = {}
   ): HangingProtocol.DisplaySetMatchDetails {
-    if (!matchDetails) return;
-    if (offset === 0) return matchDetails;
+    if (!matchDetails) {
+      return;
+    }
+    if (offset === 0) {
+      return matchDetails;
+    }
     const { matchingScores = [] } = matchDetails;
     if (offset === -1) {
       const { inDisplay } = options;
-      if (!inDisplay) return matchDetails;
+      if (!inDisplay) {
+        return matchDetails;
+      }
       for (let i = 0; i < matchDetails.matchingScores.length; i++) {
         if (
           inDisplay.indexOf(
@@ -1187,12 +1215,16 @@ export default class HangingProtocolService extends PubSubService {
     id: string,
     displaySetUID: string
   ): void {
-    if (match.displaySetInstanceUID === displaySetUID) return;
+    if (match.displaySetInstanceUID === displaySetUID) {
+      return;
+    }
     if (!match.matchingScores) {
       throw new Error('No matchingScores found in ' + match);
     }
     for (const subMatch of match.matchingScores) {
-      if (subMatch.displaySetInstanceUID === displaySetUID) return;
+      if (subMatch.displaySetInstanceUID === displaySetUID) {
+        return;
+    }
     }
     throw new Error(
       `Reused viewport details ${id} with ds ${displaySetUID} not valid`
@@ -1394,7 +1426,9 @@ export default class HangingProtocolService extends PubSubService {
     const matchActiveOnly = this.protocol.numberOfPriorsReferenced === -1;
     this.studies.forEach((study, studyInstanceUIDsIndex) => {
       // Skip non-active if active only
-      if (matchActiveOnly && this.activeStudy !== study) return;
+      if (matchActiveOnly && this.activeStudy !== study) {
+        return;
+      }
 
       const studyDisplaySets = this.displaySets.filter(
           it => it.StudyInstanceUID === study.StudyInstanceUID
