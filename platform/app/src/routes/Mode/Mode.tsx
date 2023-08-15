@@ -57,7 +57,7 @@ function defaultRouteInit(
         issuedWarningSeries.push(seriesInstanceUIDs[0]);
         uiNotificationService.show({
           title: 'Series filter',
-          message: `Series ${seriesInstanceUIDs[0]} could not be found in the current study`,
+          message: `Each of the series in filter: ${seriesInstanceUIDs} are not part of the current study. The entire study is being displayed`,
           type: 'error',
           duration: 7000,
         });
