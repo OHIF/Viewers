@@ -25,7 +25,7 @@ const addUniqueIndex = (arr, key, viewports, isUpdatingSameViewport) => {
     arr[arr.length - 1] = displayInstance;
     const testId = arr.join(JOIN_STR);
     if (
-      !viewports.find(
+      !Array.from(viewports.values()).find(
         viewport => viewport.viewportOptions?.presentationIds?.[key] === testId
       )
     ) {
