@@ -469,6 +469,7 @@ function _mapDisplaySets(
         seriesDate: formatDate(ds.SeriesDate),
         numInstances: ds.numImageFrames,
         countIcon: ds.countIcon,
+        messages: ds.messages,
         StudyInstanceUID: ds.StudyInstanceUID,
         componentType,
         imageSrc,

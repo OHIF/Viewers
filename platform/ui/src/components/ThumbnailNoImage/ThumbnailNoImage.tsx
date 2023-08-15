@@ -16,6 +16,7 @@ const ThumbnailNoImage = ({
   onDoubleClick,
   canReject,
   onReject,
+  messages,
   dragData,
   isActive,
   isHydrated,
@@ -70,6 +71,23 @@ const ThumbnailNoImage = ({
               </div>
             </Tooltip>
             <span className="ml-4 text-base text-blue-300">{seriesDate}</span>
+            {messages?.size() ? (
+              <div>
+                <Tooltip
+                  position="left"
+                  tight={true}
+                  content={
+                    <div className="text-left max-w-40">
+                      {messages.thumbnailContents()}
+                    </div>
+                  }
+                >
+                  <Icon name="notifications-warning" className="w-3 h-3" />
+                </Tooltip>
+              </div>
+            ) : (
+              <></>
+            )}
           </div>
           <div className="flex flex-row">
             {canReject && (
@@ -110,6 +128,7 @@ ThumbnailNoImage.propTypes = {
   seriesDate: PropTypes.string.isRequired,
   onClick: PropTypes.func.isRequired,
   onDoubleClick: PropTypes.func.isRequired,
+  messages: PropTypes.object,
   isActive: PropTypes.bool.isRequired,
   isHydrated: PropTypes.bool,
 };
