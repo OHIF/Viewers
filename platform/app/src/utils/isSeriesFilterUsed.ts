@@ -6,7 +6,7 @@
  */
 export default function isSeriesFilterUsed(instances, filters) {
   const seriesInstanceUIDs = filters?.seriesInstanceUID;
-  if (seriesInstanceUIDs) {
+  if (!seriesInstanceUIDs) {
     return true;
   }
   if (!instances.length) {
