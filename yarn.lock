@@ -5350,10 +5350,10 @@ cornerstone-tools@^6.0.6:
     "@babel/runtime" "7.1.2"
     cornerstone-math "0.1.9"
 
-cornerstone-wado-image-loader@^4.13.1:
-  version "4.13.1"
-  resolved "https://registry.yarnpkg.com/cornerstone-wado-image-loader/-/cornerstone-wado-image-loader-4.13.1.tgz#99b90e15834b6e1b5f84f0495270400b18b07e8e"
-  integrity sha512-IKAeI2JLG2HFBFF+ANHYyHxOJmjbys+wfX15flC0bz3D9AhDU1HX34qJMRh+HMMZ/Jcqjc4EJJq1ttR0OwMdig==
+cornerstone-wado-image-loader@4.13.2:
+  version "4.13.2"
+  resolved "https://registry.yarnpkg.com/cornerstone-wado-image-loader/-/cornerstone-wado-image-loader-4.13.2.tgz#8810f83e988590e722f002b8003134e90bbcabf7"
+  integrity sha512-NGqH44bY1VMY8OYuVykkLriNtZQrmoZU/S6f/1t1xX3rMc+WUMNN+yi4Nu3jp6nckLdH/bVGiigoJXrp0dTrAg==
   dependencies:
     "@babel/eslint-parser" "^7.19.1"
     "@cornerstonejs/codec-charls" "^1.2.3"
