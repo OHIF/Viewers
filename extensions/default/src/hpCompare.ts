@@ -112,10 +112,11 @@ const priorViewport1 = {
  * It is not included in the viewer mode by default.
  */
 const hpMNCompare: Types.HangingProtocol.Protocol = {
-  hasUpdatedPriorsInformation: false,
   id: '@ohif/hpCompare',
   description: 'Compare two studies in various layouts',
   name: 'Compare Two Studies',
+  hasUpdatedPriorsInformation: true,
+  numberOfPriorsReferenced: 1,
   protocolMatchingRules: [
     {
       id: 'Two Studies',
@@ -188,7 +189,6 @@ const hpMNCompare: Types.HangingProtocol.Protocol = {
       viewports: [currentViewport0, priorViewport0],
     },
   ],
-  numberOfPriorsReferenced: 1,
 };
 
 export default hpMNCompare;
