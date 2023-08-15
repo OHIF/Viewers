@@ -4,6 +4,8 @@ import Icon from '../Icon';
 import SegmentationGroup from './SegmentationGroup';
 import { PanelSection, Select } from '../../components';
 import SegmentationConfig from './SegmentationConfig';
+import SegmentationDropDownRow from './SegmentationDropDownRow';
+import NoSegmentationRow from './NoSegmentationRow';
 
 // {
 //   showAddSegmentation && (
@@ -44,9 +46,10 @@ const SegmentationGroupTable = ({
   setRenderOutline,
 }) => {
   const [isConfigOpen, setIsConfigOpen] = useState(false);
-  const [activeSegmentation, setActiveSegmentation] = useState(
-    segmentations[0]
-  );
+
+  const handleActiveSegmentationChange = segmentation => {
+    onSegmentationClick(segmentation);
+  };
 
   return (
     <div className="flex flex-col min-h-0 font-inter font-[300] text-xs">
@@ -71,42 +74,24 @@ const SegmentationGroupTable = ({
             segmentationConfig={segmentationConfig}
           />
         )}
-        {segmentations?.length === 0 ? (
-          <div className="text-white">{'No Segmentation'}</div>
-        ) : (
-          <div className="bg-black">
-            {/* segmentation row add, hover edit etc */}
-            <div className="flex items-center mt-[8px] space-x-1 group">
-              <div className="w-[28px] h-[28px] flex items-center justify-center hover:bg-primary-dark">
-                <Icon name="icon-add"></Icon>
-              </div>
-              <Select
-                id="segmentation-select"
-                isClearable={false}
-                onChange={value => {
-                  setActiveSegmentation(value);
-                }}
-                options={segmentations.map(s => ({
-                  value: s.id,
-                  label: s.label,
-                }))}
-                value={activeSegmentation}
-                className="text-aqua-pale h-[26px] w-1/2"
-              />
-              <div className="items-center hidden group-hover:flex">
-                <div className="w-[28px] h-[28px] flex items-center justify-center hover:bg-primary-dark">
-                  <Icon name="icon-rename"></Icon>
-                </div>
-                <div className="w-[28px] h-[28px] flex items-center justify-center hover:bg-primary-dark">
-                  <Icon name="icon-delete"></Icon>
-                </div>
-              </div>
+        <div className="bg-black">
+          {segmentations?.length === 0 ? (
+            <div className=" mt-3 select-none">
+              <NoSegmentationRow />
             </div>
-            {/* add segment row  */}
-            <div className="mt-[4px]"></div>
-            {/* active segmentation list */}
-          </div>
-        )}
+          ) : (
+            <div className=" mt-3 select-none">
+              {/* segmentation row add, hover edit etc */}
+              <SegmentationDropDownRow
+                segmentations={segmentations}
+                onActiveSegmentationChange={handleActiveSegmentationChange}
+              />
+              {/* <AddSegmentRow /> */}
+              {/* active segmentation list */}
+            </div>
+          )}
+        </div>
+
         {/* <div className="flex flex-col min-h-0 pr-[1px] mt-1">
           {!!segmentations.length &&
             segmentations.map((segmentation, index) => {
