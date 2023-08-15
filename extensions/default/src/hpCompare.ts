@@ -1,6 +1,6 @@
 import { Types } from '@ohif/core';
 
-const defaultDisplaySetId = {
+const defaultDisplaySetSelector = {
   studyMatchingRules: [
     {
       // The priorInstance is a study counter that indicates what position this study is in
@@ -32,7 +32,7 @@ const defaultDisplaySetId = {
   ],
 };
 
-const priorDisplaySetId = {
+const priorDisplaySetSelector = {
   studyMatchingRules: [
     {
       // The priorInstance is a study counter that indicates what position this study is in
@@ -115,7 +115,6 @@ const hpMNCompare: Types.HangingProtocol.Protocol = {
   id: '@ohif/hpCompare',
   description: 'Compare two studies in various layouts',
   name: 'Compare Two Studies',
-  hasUpdatedPriorsInformation: true,
   numberOfPriorsReferenced: 1,
   protocolMatchingRules: [
     {
@@ -133,8 +132,8 @@ const hpMNCompare: Types.HangingProtocol.Protocol = {
   ],
   toolGroupIds: ['default'],
   displaySetSelectors: {
-    defaultDisplaySetId,
-    priorDisplaySetId,
+    defaultDisplaySetId: defaultDisplaySetSelector,
+    priorDisplaySetId: priorDisplaySetSelector,
   },
   defaultViewport: {
     viewportOptions: {

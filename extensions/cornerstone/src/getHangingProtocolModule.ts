@@ -4,9 +4,8 @@ const mpr: Types.HangingProtocol.Protocol = {
   id: 'mpr',
   name: 'Multi-Planar Reconstruction',
   locked: true,
-  hasUpdatedPriorsInformation: false,
   createdDate: '2021-02-23',
-  modifiedDate: '2023-04-03',
+  modifiedDate: '2023-08-15',
   availableTo: {},
   editableBy: {},
   // Unknown number of priors referenced - so just match any study
@@ -164,7 +163,6 @@ const mpr: Types.HangingProtocol.Protocol = {
 const mprAnd3DVolumeViewport = {
   id: 'mprAnd3DVolumeViewport',
   locked: true,
-  hasUpdatedPriorsInformation: false,
   name: 'mpr',
   createdDate: '2023-03-15T10:29:44.894Z',
   modifiedDate: '2023-03-15T10:29:44.894Z',

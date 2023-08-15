@@ -7,7 +7,6 @@ const defaultProtocol = {
   // Don't store this hanging protocol as it applies to the currently active
   // display set by default
   // cacheId: null,
-  hasUpdatedPriorsInformation: false,
   name: 'Default',
   createdDate: '2021-02-23T19:22:08.894Z',
   modifiedDate: '2023-04-01',
