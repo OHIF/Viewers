@@ -556,12 +556,6 @@ export default class HangingProtocolService extends PubSubService {
   }
 
   getViewportsRequireUpdate(viewportIndex, displaySetInstanceUID) {
-    const newDisplaySetInstanceUID = displaySetInstanceUID;
-    const protocol = this.protocol;
-    const protocolStage = protocol.stages[this.stageIndex];
-    const protocolViewports = protocolStage.viewports;
-    const protocolViewport = protocolViewports[viewportIndex];
-
     const { displaySetService } = this._servicesManager.services;
     const displaySet = displaySetService.getDisplaySetByUID(
       displaySetInstanceUID
@@ -569,6 +563,12 @@ export default class HangingProtocolService extends PubSubService {
     if (displaySet?.unsupported) {
       throw new Error('Unsupported displaySet');
     }
+    const newDisplaySetInstanceUID = displaySetInstanceUID;
+    const protocol = this.protocol;
+    const protocolStage = protocol.stages[this.stageIndex];
+    const protocolViewports = protocolStage.viewports;
+    const protocolViewport = protocolViewports[viewportIndex];
+
     const defaultReturn = [
       {
         viewportIndex,

@@ -49,6 +49,7 @@ export default class DisplaySetService extends PubSubService {
   };
 
   public activeDisplaySets = [];
+  public unsuportedSOPClassHandler;
   extensionManager: ExtensionManager;
 
   protected activeDisplaySetsMap = new Map<string, DisplaySet>();
@@ -59,6 +60,8 @@ export default class DisplaySetService extends PubSubService {
 
   constructor() {
     super(EVENTS);
+    this.unsuportedSOPClassHandler =
+      '@ohif/extension-default.sopClassHandlerModule.not-supported-display-sets-handler';
   }
 
   public init(extensionManager, SOPClassHandlerIds): void {
@@ -84,6 +87,14 @@ export default class DisplaySetService extends PubSubService {
         activeDisplaySetsMap.set(displaySet.displaySetInstanceUID, displaySet);
       }
     });
+  }
+
+  /**
+   * Sets the handler for unsupported sop classes
+   * @param sopClassHandlerUID
+   */
+  public setUnsuportedSOPClassHandler(sopClassHandler) {
+    this.unsuportedSOPClassHandler = sopClassHandler;
   }
 
   /**
@@ -258,6 +269,47 @@ export default class DisplaySetService extends PubSubService {
   }
 
   /**
+   * This function hides the old makeDisplaySetForInstances function to first
+   * separate the instances by sopClassUID so each call have only instances
+   * with the same sopClassUID, to avoid a series composed by different
+   * sopClassUIDs be filtered inside one of the SOPClassHandler functions and
+   * didn't appear in the series list.
+   * @param instancesSrc
+   * @param settings
+   * @returns
+   */
+  public makeDisplaySetForInstances(
+    instancesSrc: InstanceMetadata[],
+    settings
+  ): DisplaySet[] {
+    // creating a sopClassUID list and for each sopClass associate its respective
+    // instance list
+    const instancesForSetSOPClasses = instancesSrc.reduce(
+      (sopClassList, instance) => {
+        if (!(instance.SOPClassUID in sopClassList)) {
+          sopClassList[instance.SOPClassUID] = [];
+        }
+        sopClassList[instance.SOPClassUID].push(instance);
+        return sopClassList;
+      },
+      {}
+    );
+    // for each sopClassUID, call the old makeDisplaySetForInstances with a
+    // instance list composed only by instances with the same sopClassUID and
+    // accumulate the displaySets in the variable allDisplaySets
+    const sopClasses = Object.keys(instancesForSetSOPClasses);
+    let allDisplaySets = [];
+    sopClasses.forEach(sopClass => {
+      const displaySets = this._makeDisplaySetForInstances(
+        instancesForSetSOPClasses[sopClass],
+        settings
+      );
+      allDisplaySets = [...allDisplaySets, ...displaySets];
+    });
+    return allDisplaySets;
+  }
+
+  /**
    * Creates new display sets for the instances contained in instancesSrc
    * according to the sop class handlers registered.
    * This is idempotent in that calling it a second time with the
@@ -359,10 +411,8 @@ export default class DisplaySetService extends PubSubService {
     // applying the default sopClassUID handler
     if (allDisplaySets.length === 0) {
       // applying hp-defined viewport settings to the displaysets
-      const defaultSOPClassHandler =
-        '@ohif/extension-default.sopClassHandlerModule.default';
       const handler = this.extensionManager.getModuleEntry(
-        defaultSOPClassHandler
+        this.unsuportedSOPClassHandler
       );
       const displaySets = handler.getDisplaySetsFromSeries(instances);
       if (displaySets?.length) {
@@ -378,47 +428,6 @@ export default class DisplaySetService extends PubSubService {
         allDisplaySets.push(...displaySets);
       }
     }
-    return allDisplaySets;
-  }
-
-  /**
-   * This function hides the old makeDisplaySetForInstances function to first
-   * separate the instances by sopClassUID so each call have only instances
-   * with the same sopClassUID, to avoid a series composed by different
-   * sopClassUIDs be filtered inside one of the SOPClassHandler functions and
-   * didn't appear in the series list.
-   * @param instancesSrc
-   * @param settings
-   * @returns
-   */
-  public makeDisplaySetForInstances(
-    instancesSrc: InstanceMetadata[],
-    settings
-  ): DisplaySet[] {
-    // creating a sopClassUID list and for each sopClass associate its respective
-    // instance list
-    const instancesForSetSOPClasses = instancesSrc.reduce(
-      (sopClassList, instance) => {
-        if (!(instance.SOPClassUID in sopClassList)) {
-          sopClassList[instance.SOPClassUID] = [];
-        }
-        sopClassList[instance.SOPClassUID].push(instance);
-        return sopClassList;
-      },
-      {}
-    );
-    // for each sopClassUID, call the old makeDisplaySetForInstances with a
-    // instance list composed only by instances with the same sopClassUID and
-    // accumulate the displaySets in the variable allDisplaySets
-    const sopClasses = Object.keys(instancesForSetSOPClasses);
-    let allDisplaySets = [];
-    sopClasses.forEach(sopClass => {
-      const displaySets = this._makeDisplaySetForInstances(
-        instancesForSetSOPClasses[sopClass],
-        settings
-      );
-      allDisplaySets = [...allDisplaySets, ...displaySets];
-    });
     return allDisplaySets;
   }
 

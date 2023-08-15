@@ -149,7 +149,7 @@ function PanelStudyBrowserTracking({
       const imageId = imageIds[Math.floor(imageIds.length / 2)];
 
       // TODO: Is it okay that imageIds are not returned here for SR displaysets?
-      if (imageId) {
+      if (imageId && !displaySet?.unsupported) {
         // When the image arrives, render it and store the result in the thumbnailImgSrcMap
         newImageSrcEntry[dSet.displaySetInstanceUID] = await getImageSrc(
           imageId
