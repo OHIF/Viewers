@@ -1143,7 +1143,7 @@ class SegmentationService extends PubSubService {
     } = this.servicesManager.services;
     const displaySet = displaySetService.getDisplaySetByUID(displaySetUID);
     displaySet.isHydrated = isHydrated;
-    displaySetService.setDisplaySetMetadataInvalidated(displaySetUID);
+    displaySetService.setDisplaySetMetadataInvalidated(displaySetUID, false);
   }
 
   private _highlightLabelmap(

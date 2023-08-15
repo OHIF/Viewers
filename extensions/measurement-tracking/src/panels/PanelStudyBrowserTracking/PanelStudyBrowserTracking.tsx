@@ -479,7 +479,7 @@ function _mapDisplaySets(
           // .. Any other data to pass
         },
         isTracked: trackedSeriesInstanceUIDs.includes(ds.SeriesInstanceUID),
-        isHydrated: ds.isHydrated,
+        isHydratedForDerivedDisplaySet: ds.isHydrated,
         viewportIdentificator,
       };
 

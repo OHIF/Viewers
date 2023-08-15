@@ -19,7 +19,7 @@ const ThumbnailNoImage = ({
   messages,
   dragData,
   isActive,
-  isHydrated,
+  isHydratedForDerivedDisplaySet,
 }) => {
   const [collectedProps, drag, dragPreview] = useDrag({
     type: 'displayset',
@@ -52,7 +52,9 @@ const ThumbnailNoImage = ({
               name="list-bullets"
               className={classnames(
                 'w-12',
-                isHydrated ? 'text-primary-light' : 'text-secondary-light'
+                isHydratedForDerivedDisplaySet
+                  ? 'text-primary-light'
+                  : 'text-secondary-light'
               )}
             />
             <Tooltip
@@ -62,7 +64,7 @@ const ThumbnailNoImage = ({
               <div
                 className={classnames(
                   'px-3 text-lg  rounded-sm',
-                  isHydrated
+                  isHydratedForDerivedDisplaySet
                     ? 'text-black bg-primary-light'
                     : 'text-white bg-primary-main'
                 )}
@@ -130,7 +132,7 @@ ThumbnailNoImage.propTypes = {
   onDoubleClick: PropTypes.func.isRequired,
   messages: PropTypes.object,
   isActive: PropTypes.bool.isRequired,
-  isHydrated: PropTypes.bool,
+  isHydratedForDerivedDisplaySet: PropTypes.bool,
 };
 
 export default ThumbnailNoImage;
