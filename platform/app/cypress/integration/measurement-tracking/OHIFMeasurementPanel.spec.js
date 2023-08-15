@@ -8,6 +8,7 @@ describe('OHIF Measurement Panel', function() {
     cy.initCommonElementsAliases();
     cy.initCornerstoneToolsAliases();
     cy.resetViewport().wait(50);
+    cy.waitDicomImage();
   });
 
   it('checks if Measurements right panel can be hidden/displayed', function() {
