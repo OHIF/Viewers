@@ -37,9 +37,15 @@ let commandsManager: CommandsManager,
 // Gets the GCP token on app load
 const getGcpToken = async () => {
   try {
-    const res = await fetch("https://airstudies-dev.ccr.cancer.gov/api/v1/ohif/jwt/build");
-    const token = await res.text();
-    localStorage.setItem("gcp-jwt-token", token);
+    const name = "gcp-jwt-token=";
+    const cookieArray = document.cookie.split(';');
+
+    for (let i = 0; i < cookieArray.length; i++) {
+      let cookie = cookieArray[i].trim(); // Trim whitespace
+      if (cookie.indexOf(name) === 0) {
+        localStorage.setItem("gcp-jwt-token", cookie.substring(name.length).trim());
+      }
+    }
   } catch (err) {
     console.log("Unable to fetch JWT token from backend. Please try again. Error: " + err);
   }
