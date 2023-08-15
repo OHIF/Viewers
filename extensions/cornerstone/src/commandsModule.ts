@@ -687,6 +687,8 @@ function commandsModule({
             }
           );
         });
+
+        segmentationService.hydrateSegmentation(segmentation.id);
       }
 
       const segmentationToSetActive = segmentations.find(
