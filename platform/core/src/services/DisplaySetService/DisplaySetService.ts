@@ -2,8 +2,6 @@ import { ExtensionManager } from '../../extensions';
 import { InstanceMetadata } from '../../types';
 import { PubSubService } from '../_shared/pubSubServiceInterface';
 import EVENTS from './EVENTS';
-import ImageSet from '../../classes/ImageSet';
-import { DisplaySetMessage, DisplaySetMessageList } from './DisplaySetMessage';
 
 export type DisplaySet = {
   displaySetInstanceUID: string;
@@ -358,46 +356,47 @@ export default class DisplaySetService extends PubSubService {
         allDisplaySets.push(...displaySets);
       }
     }
+    // applying the default sopClassUID handler
     if (allDisplaySets.length === 0) {
-      const imageSet = new ImageSet(instances);
-      const messages = new DisplaySetMessageList();
-      messages.addMessage(DisplaySetMessage.CODES.UNSUPPORTED_DISPLAYSET);
+      // applying hp-defined viewport settings to the displaysets
+      const defaultSOPClassHandler =
+        '@ohif/extension-default.sopClassHandlerModule.default';
+      const handler = this.extensionManager.getModuleEntry(
+        defaultSOPClassHandler
+      );
+      const displaySets = handler.getDisplaySetsFromSeries(instances);
+      if (displaySets?.length) {
+        displaySets.forEach(ds => {
+          Object.keys(settings).forEach(key => {
+            ds[key] = settings[key];
+          });
+        });
 
-      imageSet.setAttributes({
-        displaySetInstanceUID: imageSet.uid, // create a local alias for the imageSet UID
-        SeriesDate: instance.SeriesDate,
-        SeriesTime: instance.SeriesTime,
-        SeriesInstanceUID: instance.SeriesInstanceUID,
-        StudyInstanceUID: instance.StudyInstanceUID,
-        SeriesNumber: instance.SeriesNumber || 0,
-        FrameRate: instance.FrameTime,
-        SOPClassUID: instance.SOPClassUID,
-        SeriesDescription: instance.SeriesDescription || '',
-        Modality: instance.Modality,
-        numImageFrames: instances.length,
-        unsupported: true,
-        SOPClassHandlerId: 'unsupported',
-        isReconstructable: false,
-        messages,
-      });
-      // applying hp-defined viewport settings to the displaySets
-      Object.keys(settings).forEach(key => {
-        imageSet[key] = settings[key];
-      });
+        this._addDisplaySetsToCache(displaySets);
+        this._addActiveDisplaySets(displaySets);
 
-      this._addDisplaySetsToCache([imageSet]);
-      this._addActiveDisplaySets([imageSet]);
-
-      allDisplaySets.push(imageSet);
+        allDisplaySets.push(...displaySets);
+      }
     }
     return allDisplaySets;
   }
 
+  /**
+   * This function hides the old makeDisplaySetForInstances function to first
+   * separate the instances by sopClassUID so each call have only instances
+   * with the same sopClassUID, to avoid a series composed by different
+   * sopClassUIDs be filtered inside one of the SOPClassHandler functions and
+   * didn't appear in the series list.
+   * @param instancesSrc
+   * @param settings
+   * @returns
+   */
   public makeDisplaySetForInstances(
     instancesSrc: InstanceMetadata[],
     settings
   ): DisplaySet[] {
-    // listing sopClasses of the instances in displaySet
+    // creating a sopClassUID list and for each sopClass associate its respective
+    // instance list
     const instancesForSetSOPClasses = instancesSrc.reduce(
       (sopClassList, instance) => {
         if (!(instance.SOPClassUID in sopClassList)) {
@@ -408,6 +407,9 @@ export default class DisplaySetService extends PubSubService {
       },
       {}
     );
+    // for each sopClassUID, call the old makeDisplaySetForInstances with a
+    // instance list composed only by instances with the same sopClassUID and
+    // accumulate the displaySets in the variable allDisplaySets
     const sopClasses = Object.keys(instancesForSetSOPClasses);
     let allDisplaySets = [];
     sopClasses.forEach(sopClass => {

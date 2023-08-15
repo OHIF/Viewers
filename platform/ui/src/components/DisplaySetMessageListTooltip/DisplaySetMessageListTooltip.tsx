@@ -12,7 +12,7 @@ import { useTranslation } from 'react-i18next';
 const DisplaySetMessageListTooltip = ({ messages, id }): React.ReactNode => {
   const { t } = useTranslation('Messages');
   const [isOpen, setIsOpen] = useState(false);
-  if (messages && messages.size()) {
+  if (messages?.size()) {
     return (
       <>
         <Icon
@@ -42,6 +42,7 @@ const DisplaySetMessageListTooltip = ({ messages, id }): React.ReactNode => {
             <ol
               style={{
                 marginLeft: '12px',
+                marginRight: '12px',
               }}
             >
               {messages.messages.map((message, index) => (

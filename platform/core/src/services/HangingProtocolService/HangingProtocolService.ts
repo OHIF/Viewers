@@ -566,7 +566,7 @@ export default class HangingProtocolService extends PubSubService {
     const displaySet = displaySetService.getDisplaySetByUID(
       displaySetInstanceUID
     );
-    if (displaySet && displaySet?.unsupported) {
+    if (displaySet?.unsupported) {
       throw new Error('Unsupported displaySet');
     }
     const defaultReturn = [
