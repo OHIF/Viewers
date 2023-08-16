@@ -198,7 +198,7 @@ ViewportActionBar.propTypes = {
       patientAge: PropTypes.string.isRequired,
       MRN: PropTypes.string.isRequired,
       thickness: PropTypes.string.isRequired,
-      thicknessUnits: PropTypes.string.isRequired,
+      thicknessUnits: PropTypes.string,
       spacing: PropTypes.string.isRequired,
       scanner: PropTypes.string.isRequired,
     }),

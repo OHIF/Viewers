@@ -131,7 +131,7 @@ function PanelStudyBrowser({
       const imageId = imageIds[Math.floor(imageIds.length / 2)];
 
       // TODO: Is it okay that imageIds are not returned here for SR displaySets?
-      if (imageId) {
+      if (imageId && !displaySet?.unsupported) {
         // When the image arrives, render it and store the result in the thumbnailImgSrcMap
         newImageSrcEntry[dSet.displaySetInstanceUID] = await getImageSrc(
           imageId
@@ -175,20 +175,22 @@ function PanelStudyBrowser({
           const displaySet = displaySetService.getDisplaySetByUID(
             dSet.displaySetInstanceUID
           );
-          const imageIds = dataSource.getImageIdsForDisplaySet(displaySet);
-          const imageId = imageIds[Math.floor(imageIds.length / 2)];
+          if (!displaySet?.unsupported) {
+            const imageIds = dataSource.getImageIdsForDisplaySet(displaySet);
+            const imageId = imageIds[Math.floor(imageIds.length / 2)];
 
-          // TODO: Is it okay that imageIds are not returned here for SR displaysets?
-          if (imageId) {
-            // When the image arrives, render it and store the result in the thumbnailImgSrcMap
-            newImageSrcEntry[dSet.displaySetInstanceUID] = await getImageSrc(
-              imageId,
-              dSet.initialViewport
-            );
-            if (isMounted.current) {
-              setThumbnailImageSrcMap(prevState => {
-                return { ...prevState, ...newImageSrcEntry };
-              });
+            // TODO: Is it okay that imageIds are not returned here for SR displaysets?
+            if (imageId) {
+              // When the image arrives, render it and store the result in the thumbnailImgSrcMap
+              newImageSrcEntry[dSet.displaySetInstanceUID] = await getImageSrc(
+                imageId,
+                dSet.initialViewport
+              );
+              if (isMounted.current) {
+                setThumbnailImageSrcMap(prevState => {
+                  return { ...prevState, ...newImageSrcEntry };
+                });
+              }
             }
           }
         });
@@ -308,7 +310,7 @@ function _mapDisplaySets(displaySets, thumbnailImageSrcMap) {
     .filter(ds => !ds.excludeFromThumbnailBrowser)
     .forEach(ds => {
       const imageSrc = thumbnailImageSrcMap[ds.displaySetInstanceUID];
-      const componentType = _getComponentType(ds.Modality);
+      const componentType = _getComponentType(ds);
 
       const array =
         componentType === 'thumbnail'
@@ -348,8 +350,8 @@ const thumbnailNoImageModalities = [
   'RTDOSE',
 ];
 
-function _getComponentType(Modality) {
-  if (thumbnailNoImageModalities.includes(Modality)) {
+function _getComponentType(ds) {
+  if (thumbnailNoImageModalities.includes(ds.Modality) || ds?.unsupported) {
     // TODO probably others.
     return 'thumbnailNoImage';
   }
