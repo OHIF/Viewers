@@ -27,7 +27,9 @@ const SegmentItem = ({
 
   return (
     <div
-      className="flex text-aqua-pale bg-black group/row min-h-[28px]"
+      className={classnames(
+        'flex text-aqua-pale bg-black group/row min-h-[28px]'
+      )}
       onMouseEnter={() => setRowIsHovering(true)}
       onMouseLeave={() => setRowIsHovering(false)}
       onClick={e => {
@@ -38,7 +40,13 @@ const SegmentItem = ({
       data-cy={'segment-item'}
     >
       <div
-        className="grid place-items-center w-[28px] bg-primary-dark group/number"
+        className={classnames(
+          'grid place-items-center w-[28px] bg-primary-dark group/number',
+          {
+            'bg-primary-light text-black border border-primary-light rounded-l-[4px]': isActive,
+            'border border-primary-dark': !isActive,
+          }
+        )}
         onMouseEnter={() => setIsNumberBoxHovering(true)}
         onMouseLeave={() => setIsNumberBoxHovering(false)}
       >
@@ -55,7 +63,12 @@ const SegmentItem = ({
           <div>{segmentIndex}</div>
         )}
       </div>
-      <div className="relative flex w-full">
+      <div
+        className={classnames('relative flex w-full', {
+          'border border-primary-light bg-primary-dark border-l-0 rounded-r-[4px]': isActive,
+          'border border-transparent border-l-0': !isActive,
+        })}
+      >
         <div className="flex flex-grow items-center group-hover/row:bg-primary-dark w-full h-full">
           <div className="pl-3 pr-2.5">
             <div
