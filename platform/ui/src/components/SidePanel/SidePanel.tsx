@@ -22,27 +22,42 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import './style.css';
 
-const borderSize = 4;
-const expandedWidth = 248;
-const collapsedWidth = 25;
-
-const baseStyle = {
-  maxWidth: `${expandedWidth}px`,
-  width: `${expandedWidth}px`,
-};
-
-const collapsedHideWidth = expandedWidth - collapsedWidth - borderSize;
-const styleMap = {
+type StyleMap = {
   open: {
-    left: { marginLeft: '0px' },
-    right: { marginRight: '0px' },
-  },
+    left: { marginLeft: string };
+    right: { marginRight: string };
+  };
   closed: {
-    left: { marginLeft: `-${collapsedHideWidth}px` },
-    right: { marginRight: `-${collapsedHideWidth}px` },
-  },
+    left: { marginLeft: string };
+    right: { marginRight: string };
+  };
 };
+const createStyleMap = (
+    expandedWidth: number,
+    borderSize: number,
+    collapsedWidth: number
+): StyleMap => {
+  const collapsedHideWidth = expandedWidth - collapsedWidth - borderSize;
 
+  const styleMap: StyleMap = {
+    open: {
+      left: { marginLeft: '0px' },
+      right: { marginRight: '0px' },
+    },
+    closed: {
+      left: { marginLeft: `-${collapsedHideWidth}px` },
+      right: { marginRight: `-${collapsedHideWidth}px` },
+    },
+  };
+
+  return styleMap;
+};
+const createBaseStyle = (expandedWidth: number) => {
+  return {
+    maxWidth: `${expandedWidth}px`,
+    width: `${expandedWidth}px`,
+  };
+};
 const baseClasses =
   'transition-all duration-300 ease-in-out h-100 bg-black border-black justify-start box-content flex flex-col';
 
@@ -77,7 +92,14 @@ const SidePanel = ({
   className,
   activeTabIndex: activeTabIndexProp,
   tabs,
+  expandedWidth = 248,
+  borderSize = 4,
+  collapsedWidth = 25,
 }) => {
+
+  const styleMap = createStyleMap(expandedWidth, borderSize, collapsedWidth);
+  const baseStyle = createBaseStyle(expandedWidth);
+
   const panelService: PanelService = servicesManager?.services?.panelService;
 
   const { t } = useTranslation('SidePanel');
@@ -314,6 +336,9 @@ SidePanel.propTypes = {
       })
     ),
   ]),
+  expandedWidth : PropTypes.number,
+  borderSize : PropTypes.number,
+  collapsedWidth : PropTypes.number
 };
 
 function _getMoreThanOneTabLayout(
