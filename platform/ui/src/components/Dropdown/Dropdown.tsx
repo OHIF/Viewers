@@ -5,12 +5,16 @@ import classnames from 'classnames';
 import Icon from '../Icon';
 import Typography from '../Typography';
 
+const borderStyle = 'border-b last:border-b-0 border-secondary-main';
+
 const Dropdown = ({
   id,
   children,
   showDropdownIcon,
   list,
+  itemsClassName,
   titleClassName,
+  showBorders,
   alignment,
   // By default the max characters per line is the longest title
   // if you wish to override this, you can pass in a number
@@ -40,8 +44,9 @@ const Dropdown = ({
       <div
         key={title}
         className={classnames(
-          'flex px-4 py-2 cursor-pointer items-center transition duration-300 hover:bg-secondary-main border-b last:border-b-0 border-secondary-main',
-          titleClassName
+          'flex px-4 py-2 cursor-pointer items-center transition duration-300 hover:bg-secondary-main ',
+          titleClassName,
+          showBorders && borderStyle
         )}
         onClick={() => {
           setOpen(false);
@@ -53,19 +58,19 @@ const Dropdown = ({
         <div
           style={{
             whiteSpace: 'nowrap',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
           }}
         >
           {title.length > maxCharactersPerLine && (
             <div>
               {lines.map((line, index) => (
-                <Typography key={index}>{line}</Typography>
+                <Typography key={index} className={itemsClassName}>
+                  {line}
+                </Typography>
               ))}
             </div>
           )}
           {title.length <= maxCharactersPerLine && (
-            <Typography>{title}</Typography>
+            <Typography className={itemsClassName}>{title}</Typography>
           )}
         </div>
       </div>
@@ -139,6 +144,7 @@ const Dropdown = ({
 Dropdown.defaultProps = {
   showDropdownIcon: true,
   maxTextLength: 10,
+  showBorders: true,
 };
 
 Dropdown.propTypes = {

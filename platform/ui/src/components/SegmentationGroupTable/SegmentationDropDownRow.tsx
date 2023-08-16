@@ -42,6 +42,8 @@ function SegmentationDropDownRow({
             id="segmentation-dropdown"
             showDropdownIcon={false}
             alignment="left"
+            itemsClassName="text-primary-active"
+            showBorders={false}
             list={[
               {
                 title: 'Rename',
@@ -74,6 +76,7 @@ function SegmentationDropDownRow({
         id="segmentation-select"
         isClearable={false}
         onChange={handleChange}
+        isSearchable={false}
         options={segmentations.map(s => ({
           value: s.id,
           label: s.label,

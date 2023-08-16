@@ -76,11 +76,11 @@ const SegmentationGroupTable = ({
         )}
         <div className="bg-black">
           {segmentations?.length === 0 ? (
-            <div className=" mt-3 select-none">
+            <div className=" mt-1 select-none">
               <NoSegmentationRow />
             </div>
           ) : (
-            <div className=" mt-3 select-none">
+            <div className=" mt-1 select-none">
               {/* segmentation row add, hover edit etc */}
               <SegmentationDropDownRow
                 segmentations={segmentations}
