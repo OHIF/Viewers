@@ -3,6 +3,8 @@ import sopClassDictionary from '@ohif/core/src/utils/sopClassDictionary';
 import ImageSet from '@ohif/core/src/classes/ImageSet';
 import isDisplaySetReconstructable from '@ohif/core/src/utils/isDisplaySetReconstructable';
 import { id } from './id';
+import getDisplaySetMessages from './getDisplaySetMessages';
+import getDisplaySetsFromUnsupportedSeries from './getDisplaySetsFromUnsupportedSeries';
 
 const sopClassHandlerName = 'stack';
 
@@ -18,8 +20,9 @@ const makeDisplaySet = instances => {
     value: isReconstructable,
     averageSpacingBetweenFrames,
   } = isDisplaySetReconstructable(instances);
-
   // set appropriate attributes to image set...
+  const messages = getDisplaySetMessages(instances, isReconstructable);
+
   imageSet.setAttributes({
     displaySetInstanceUID: imageSet.uid, // create a local alias for the imageSet UID
     SeriesDate: instance.SeriesDate,
@@ -36,6 +39,7 @@ const makeDisplaySet = instances => {
     numImageFrames: instances.length,
     SOPClassHandlerId: `${id}.sopClassHandlerModule.${sopClassHandlerName}`,
     isReconstructable,
+    messages,
     averageSpacingBetweenFrames: averageSpacingBetweenFrames || null,
   });
 
@@ -209,6 +213,11 @@ function getSopClassHandlerModule() {
       name: sopClassHandlerName,
       sopClassUids,
       getDisplaySetsFromSeries,
+    },
+    {
+      name: 'not-supported-display-sets-handler',
+      sopClassUids: [],
+      getDisplaySetsFromSeries: getDisplaySetsFromUnsupportedSeries,
     },
   ];
 }

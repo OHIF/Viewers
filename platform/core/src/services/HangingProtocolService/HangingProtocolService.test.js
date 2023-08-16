@@ -2,7 +2,6 @@ import HangingProtocolService from './HangingProtocolService';
 
 const testProtocol = {
   id: 'test',
-  hasUpdatedPriorsInformation: false,
   name: 'Default',
   protocolMatchingRules: [
     {
@@ -134,7 +133,7 @@ function checkHpsBestMatch(hps) {
         displaySetOptions: {
           id: 'displaySetSelector',
           options: {},
-      },
+        },
       },
     ],
   });
@@ -192,6 +191,6 @@ describe('HangingProtocolService', () => {
       it('matches best image match', () => {
         checkHpsBestMatch(hangingProtocolService);
       });
-      });
     });
   });
+});

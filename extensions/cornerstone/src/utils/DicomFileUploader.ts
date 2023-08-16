@@ -212,7 +212,9 @@ export default class DicomFileUploader extends PubSubService {
   }
 
   private _checkDicomFile(arrayBuffer: ArrayBuffer) {
-    if (arrayBuffer.length <= 132) return false;
+    if (arrayBuffer.length <= 132) {
+      return false;
+    }
     const arr = new Uint8Array(arrayBuffer.slice(128, 132));
     // bytes from 128 to 132 must be "DICM"
     return Array.from('DICM').every((char, i) => char.charCodeAt(0) === arr[i]);

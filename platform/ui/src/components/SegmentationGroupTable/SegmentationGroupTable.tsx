@@ -20,6 +20,7 @@ const SegmentationGroupTable = ({
   onSegmentClick,
   onSegmentAdd,
   segmentationConfig,
+  disableEditing,
   onSegmentDelete,
   onSegmentEdit,
   onToggleSegmentationVisibility,
@@ -134,6 +135,7 @@ SegmentationGroupTable.propTypes = {
   onToggleVisibility: PropTypes.func.isRequired,
   onToggleVisibilityAll: PropTypes.func.isRequired,
   segmentationConfig: PropTypes.object,
+  disableEditing: PropTypes.bool,
 };
 
 SegmentationGroupTable.defaultProps = {

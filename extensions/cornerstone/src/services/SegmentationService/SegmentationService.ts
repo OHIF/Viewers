@@ -1143,6 +1143,8 @@ class SegmentationService extends PubSubService {
       );
     }
 
+    this._setDisplaySetIsHydrated(segmentationId, true);
+
     segmentation.hydrated = true;
 
     if (!suppressEvents) {
@@ -1151,6 +1153,18 @@ class SegmentationService extends PubSubService {
       });
     }
   };
+
+  private _setDisplaySetIsHydrated(
+    displaySetUID: string,
+    isHydrated: boolean
+  ): void {
+    const {
+      DisplaySetService: displaySetService,
+    } = this.servicesManager.services;
+    const displaySet = displaySetService.getDisplaySetByUID(displaySetUID);
+    displaySet.isHydrated = isHydrated;
+    displaySetService.setDisplaySetMetadataInvalidated(displaySetUID, false);
+  }
 
   private _highlightLabelmap(
     segmentIndex: number,
@@ -1322,6 +1336,8 @@ class SegmentationService extends PubSubService {
         );
       }
     }
+
+    this._setDisplaySetIsHydrated(segmentationId, false);
 
     this._broadcastEvent(this.EVENTS.SEGMENTATION_REMOVED, {
       segmentationId,

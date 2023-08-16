@@ -308,8 +308,9 @@ function _measurementReferencesSOPInstanceUID(
       measurement.coords[0].ReferencedSOPSequence[0]?.ReferencedFrameNumber) ||
     1;
 
-  if (frameNumber && Number(frameNumber) !== Number(ReferencedFrameNumber))
+  if (frameNumber && Number(frameNumber) !== Number(ReferencedFrameNumber)) {
     return false;
+  }
 
   for (let j = 0; j < coords.length; j++) {
     const coord = coords[j];
@@ -670,7 +671,9 @@ function _getReferencedImagesList(ImagingMeasurementReportContentSequence) {
 
   _getSequenceAsArray(ImageLibraryGroup.ContentSequence).forEach(item => {
     const { ReferencedSOPSequence } = item;
-    if (!ReferencedSOPSequence) return;
+    if (!ReferencedSOPSequence) {
+      return;
+    }
     for (const ref of _getSequenceAsArray(ReferencedSOPSequence)) {
       if (ref.ReferencedSOPClassUID) {
         const { ReferencedSOPClassUID, ReferencedSOPInstanceUID } = ref;
@@ -687,7 +690,9 @@ function _getReferencedImagesList(ImagingMeasurementReportContentSequence) {
 }
 
 function _getSequenceAsArray(sequence) {
-  if (!sequence) return [];
+  if (!sequence) {
+    return [];
+  }
   return Array.isArray(sequence) ? sequence : [sequence];
 }
 

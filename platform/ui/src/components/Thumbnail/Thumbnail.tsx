@@ -4,6 +4,7 @@ import classnames from 'classnames';
 import { useDrag } from 'react-dnd';
 import Icon from '../Icon';
 import { StringNumber } from '../../types';
+import DisplaySetMessageListTooltip from '../DisplaySetMessageListTooltip';
 
 /**
  * Display a thumbnail for a display set.
@@ -17,6 +18,7 @@ const Thumbnail = ({
   seriesNumber,
   numInstances,
   countIcon,
+  messages,
   dragData,
   isActive,
   onClick,
@@ -78,6 +80,10 @@ const Thumbnail = ({
             <Icon name={countIcon || 'group-layers'} className="w-3 mr-2" />
             {` ${numInstances}`}
           </div>
+          <DisplaySetMessageListTooltip
+            messages={messages}
+            id={`display-set-tooltip-${displaySetInstanceUID}`}
+          />
         </div>
         <div className="text-base text-white break-all">{description}</div>
       </div>
@@ -104,6 +110,7 @@ Thumbnail.propTypes = {
   description: PropTypes.string.isRequired,
   seriesNumber: StringNumber.isRequired,
   numInstances: PropTypes.number.isRequired,
+  messages: PropTypes.object,
   isActive: PropTypes.bool.isRequired,
   onClick: PropTypes.func.isRequired,
   onDoubleClick: PropTypes.func.isRequired,

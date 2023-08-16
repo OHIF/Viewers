@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { StudyBrowser, useImageViewer, useViewportGrid } from '@ohif/ui';
 import { utils } from '@ohif/core';
+import { useNavigate } from 'react-router-dom';
 
 const { sortStudyInstances, formatDate } = utils;
 
@@ -21,6 +22,8 @@ function PanelStudyBrowser({
     displaySetService,
     uiNotificationService,
   } = servicesManager.services;
+  const navigate = useNavigate();
+
   // Normally you nest the components so the tree isn't so deep, and the data
   // doesn't have to have such an intense shape. This works well enough for now.
   // Tabs --> Studies --> DisplaySets --> Thumbnails
@@ -68,6 +71,11 @@ function PanelStudyBrowser({
       const qidoForStudyUID = await dataSource.query.studies.search({
         studyInstanceUid: StudyInstanceUID,
       });
+
+      if (!qidoForStudyUID?.length) {
+        navigate('/notfoundstudy', '_self');
+        throw new Error('Invalid study URL');
+      }
 
       let qidoStudiesForPatient = qidoForStudyUID;
 
@@ -123,7 +131,7 @@ function PanelStudyBrowser({
       const imageId = imageIds[Math.floor(imageIds.length / 2)];
 
       // TODO: Is it okay that imageIds are not returned here for SR displaySets?
-      if (imageId) {
+      if (imageId && !displaySet?.unsupported) {
         // When the image arrives, render it and store the result in the thumbnailImgSrcMap
         newImageSrcEntry[dSet.displaySetInstanceUID] = await getImageSrc(
           imageId
@@ -167,20 +175,22 @@ function PanelStudyBrowser({
           const displaySet = displaySetService.getDisplaySetByUID(
             dSet.displaySetInstanceUID
           );
-          const imageIds = dataSource.getImageIdsForDisplaySet(displaySet);
-          const imageId = imageIds[Math.floor(imageIds.length / 2)];
+          if (!displaySet?.unsupported) {
+            const imageIds = dataSource.getImageIdsForDisplaySet(displaySet);
+            const imageId = imageIds[Math.floor(imageIds.length / 2)];
 
-          // TODO: Is it okay that imageIds are not returned here for SR displaysets?
-          if (imageId) {
-            // When the image arrives, render it and store the result in the thumbnailImgSrcMap
-            newImageSrcEntry[dSet.displaySetInstanceUID] = await getImageSrc(
-              imageId,
-              dSet.initialViewport
-            );
-            if (isMounted.current) {
-              setThumbnailImageSrcMap(prevState => {
-                return { ...prevState, ...newImageSrcEntry };
-              });
+            // TODO: Is it okay that imageIds are not returned here for SR displaysets?
+            if (imageId) {
+              // When the image arrives, render it and store the result in the thumbnailImgSrcMap
+              newImageSrcEntry[dSet.displaySetInstanceUID] = await getImageSrc(
+                imageId,
+                dSet.initialViewport
+              );
+              if (isMounted.current) {
+                setThumbnailImageSrcMap(prevState => {
+                  return { ...prevState, ...newImageSrcEntry };
+                });
+              }
             }
           }
         });
@@ -200,9 +210,22 @@ function PanelStudyBrowser({
       }
     );
 
+    const SubscriptionDisplaySetMetaDataInvalidated = displaySetService.subscribe(
+      displaySetService.EVENTS.DISPLAY_SET_SERIES_METADATA_INVALIDATED,
+      () => {
+        const mappedDisplaySets = _mapDisplaySets(
+          displaySetService.getActiveDisplaySets(),
+          thumbnailImageSrcMap
+        );
+
+        setDisplaySets(mappedDisplaySets);
+      }
+    );
+
     return () => {
       SubscriptionDisplaySetsAdded.unsubscribe();
       SubscriptionDisplaySetsChanged.unsubscribe();
+      SubscriptionDisplaySetMetaDataInvalidated.unsubscribe();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -300,7 +323,7 @@ function _mapDisplaySets(displaySets, thumbnailImageSrcMap) {
     .filter(ds => !ds.excludeFromThumbnailBrowser)
     .forEach(ds => {
       const imageSrc = thumbnailImageSrcMap[ds.displaySetInstanceUID];
-      const componentType = _getComponentType(ds.Modality);
+      const componentType = _getComponentType(ds);
 
       const array =
         componentType === 'thumbnail'
@@ -317,6 +340,7 @@ function _mapDisplaySets(displaySets, thumbnailImageSrcMap) {
         numInstances: ds.numImageFrames,
         countIcon: ds.countIcon,
         StudyInstanceUID: ds.StudyInstanceUID,
+        messages: ds.messages,
         componentType,
         imageSrc,
         dragData: {
@@ -324,6 +348,7 @@ function _mapDisplaySets(displaySets, thumbnailImageSrcMap) {
           displaySetInstanceUID: ds.displaySetInstanceUID,
           // .. Any other data to pass
         },
+        isHydratedForDerivedDisplaySet: ds.isHydrated,
       });
     });
 
@@ -339,8 +364,8 @@ const thumbnailNoImageModalities = [
   'RTDOSE',
 ];
 
-function _getComponentType(Modality) {
-  if (thumbnailNoImageModalities.includes(Modality)) {
+function _getComponentType(ds) {
+  if (thumbnailNoImageModalities.includes(ds.Modality) || ds?.unsupported) {
     // TODO probably others.
     return 'thumbnailNoImage';
   }

@@ -66,7 +66,9 @@ export default class ToolbarService extends PubSubService {
    *    called with {...commandOptions,...options}
    */
   recordInteraction(interaction, options?: Record<string, unknown>) {
-    if (!interaction) return;
+    if (!interaction) {
+      return;
+    }
     const commandsManager = this._commandsManager;
     const { groupId, itemId, interactionType, commands } = interaction;
 

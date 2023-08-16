@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { SegmentationGroupTable, useViewportGrid } from '@ohif/ui';
 import callInputDialog from './callInputDialog';
-
+import { useAppConfig } from '@state';
 import { useTranslation } from 'react-i18next';
 
 export default function PanelSegmentation({
@@ -14,6 +14,8 @@ export default function PanelSegmentation({
     uiDialogService,
     uiNotificationService,
   } = servicesManager.services;
+  const [appConfig] = useAppConfig();
+  const disableEditing = appConfig?.disableEditing;
   const [viewportGrid, viewportGridService] = useViewportGrid();
 
   const { activeViewportIndex, viewports } = viewportGrid;
@@ -283,6 +285,7 @@ export default function PanelSegmentation({
         onSegmentClick={onSegmentClick}
         onSegmentEdit={onSegmentEdit}
         onSegmentAdd={onSegmentAdd}
+        disableEditing={disableEditing}
         onSegmentColorClick={onSegmentColorClick}
         onSegmentDelete={onSegmentDelete}
         onToggleSegmentVisibility={onToggleSegmentVisibility}
@@ -347,6 +350,7 @@ PanelSegmentation.propTypes = {
   commandsManager: PropTypes.shape({
     runCommand: PropTypes.func.isRequired,
   }),
+  appConfig: PropTypes.object.isRequired,
   servicesManager: PropTypes.shape({
     services: PropTypes.shape({
       segmentationService: PropTypes.shape({

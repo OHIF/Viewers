@@ -34,7 +34,9 @@ const ThumbnailList = ({
           canReject,
           onReject,
           imageSrc,
+          messages,
           imageAltText,
+          isHydratedForDerivedDisplaySet,
         }) => {
           const isActive = activeDisplaySetInstanceUIDs.includes(
             displaySetInstanceUID
@@ -52,6 +54,7 @@ const ThumbnailList = ({
                   countIcon={countIcon}
                   imageSrc={imageSrc}
                   imageAltText={imageAltText}
+                  messages={messages}
                   viewportIdentificator={viewportIdentificator}
                   isActive={isActive}
                   onClick={() => onThumbnailClick(displaySetInstanceUID)}
@@ -72,6 +75,7 @@ const ThumbnailList = ({
                   countIcon={countIcon}
                   imageSrc={imageSrc}
                   imageAltText={imageAltText}
+                  messages={messages}
                   viewportIdentificator={viewportIdentificator}
                   isTracked={isTracked}
                   isActive={isActive}
@@ -91,6 +95,7 @@ const ThumbnailList = ({
                   dragData={dragData}
                   modality={modality}
                   modalityTooltip={_getModalityTooltip(modality)}
+                  messages={messages}
                   seriesDate={seriesDate}
                   description={description}
                   canReject={canReject}
@@ -100,6 +105,9 @@ const ThumbnailList = ({
                     onThumbnailDoubleClick(displaySetInstanceUID)
                   }
                   viewportIdentificator={viewportIdentificator}
+                  isHydratedForDerivedDisplaySet={
+                    isHydratedForDerivedDisplaySet
+                  }
                 />
               );
             default:
@@ -155,7 +163,7 @@ function _getModalityTooltip(modality) {
 const _modalityTooltips = {
   SR: 'Structured Report',
   SEG: 'Segmentation',
-  RT: 'RT Structure Set',
+  RTSTRUCT: 'RT Structure Set',
 };
 
 export default ThumbnailList;

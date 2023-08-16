@@ -23,6 +23,7 @@ import CornerstoneOverlays from './Overlays/CornerstoneOverlays';
 import getSOPInstanceAttributes from '../utils/measurementServiceMappings/utils/getSOPInstanceAttributes';
 import CornerstoneServices from '../types/CornerstoneServices';
 import CinePlayer from '../components/CinePlayer';
+import { Types } from '@ohif/core';
 
 const STACK = 'stack';
 
@@ -264,7 +265,14 @@ const OHIFCornerstoneViewport = React.memo(props => {
   useEffect(() => {
     const { unsubscribe } = displaySetService.subscribe(
       displaySetService.EVENTS.DISPLAY_SET_SERIES_METADATA_INVALIDATED,
-      async invalidatedDisplaySetInstanceUID => {
+      async ({
+        displaySetInstanceUID: invalidatedDisplaySetInstanceUID,
+        invalidateData,
+      }: Types.DisplaySetSeriesMetadataInvalidatedEvent) => {
+        if (!invalidateData) {
+          return;
+        }
+
         const viewportInfo = cornerstoneViewportService.getViewportInfoByIndex(
           viewportIndex
         );
@@ -445,7 +453,9 @@ function _subscribeToJumpToMeasurementEvents(
     props => {
       cacheJumpToMeasurementEvent = props;
       const { viewportIndex: jumpIndex, measurement, isConsumed } = props;
-      if (!measurement || isConsumed) return;
+      if (!measurement || isConsumed) {
+        return;
+      }
       if (cacheJumpToMeasurementEvent.cornerstoneViewport === undefined) {
         // Decide on which viewport should handle this
         cacheJumpToMeasurementEvent.cornerstoneViewport = cornerstoneViewportService.getViewportIndexToJump(
@@ -482,7 +492,9 @@ function _checkForCachedJumpToMeasurementEvents(
   viewportGridService,
   cornerstoneViewportService
 ) {
-  if (!cacheJumpToMeasurementEvent) return;
+  if (!cacheJumpToMeasurementEvent) {
+    return;
+  }
   if (cacheJumpToMeasurementEvent.isConsumed) {
     cacheJumpToMeasurementEvent = null;
     return;
@@ -490,7 +502,9 @@ function _checkForCachedJumpToMeasurementEvents(
   const displaysUIDs = displaySets.map(
     displaySet => displaySet.displaySetInstanceUID
   );
-  if (!displaysUIDs?.length) return;
+  if (!displaysUIDs?.length) {
+    return;
+  }
 
   // Jump to measurement if the measurement exists
   const { measurement } = cacheJumpToMeasurementEvent;

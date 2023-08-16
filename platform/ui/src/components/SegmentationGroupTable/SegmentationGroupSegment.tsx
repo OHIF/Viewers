@@ -177,6 +177,7 @@ SegmentItem.propTypes = {
   segmentIndex: PropTypes.number.isRequired,
   segmentationId: PropTypes.string.isRequired,
   label: PropTypes.string,
+  disableEditing: PropTypes.bool,
   // color as array
   color: PropTypes.array,
   isActive: PropTypes.bool.isRequired,

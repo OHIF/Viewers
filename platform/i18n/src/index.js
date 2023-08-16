@@ -128,7 +128,7 @@ function initI18n(
       });
   }
 
-  return initialized.then(function (t) {
+  return initialized.then(function(t) {
     i18n.T = t;
     customDebug(`T function available.`, 'info');
   });
@@ -140,7 +140,13 @@ i18n.initializing = initI18n();
 i18n.initI18n = initI18n;
 i18n.addLocales = addLocales;
 i18n.availableLanguages = getAvailableLanguagesInfo(locales);
-i18n.defaultLanguage = { label: getLanguageLabel(DEFAULT_LANGUAGE), value: DEFAULT_LANGUAGE };
-i18n.currentLanguage = () => ({ label: getLanguageLabel(i18n.language), value: i18n.language });
+i18n.defaultLanguage = {
+  label: getLanguageLabel(DEFAULT_LANGUAGE),
+  value: DEFAULT_LANGUAGE,
+};
+i18n.currentLanguage = () => ({
+  label: getLanguageLabel(i18n.language),
+  value: i18n.language,
+});
 
 export default i18n;
