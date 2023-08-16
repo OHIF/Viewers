@@ -4,6 +4,7 @@ import ImageSet from '@ohif/core/src/classes/ImageSet';
 import isDisplaySetReconstructable from '@ohif/core/src/utils/isDisplaySetReconstructable';
 import { id } from './id';
 import getDisplaySetMessages from './getDisplaySetMessages';
+import getDisplaySetsFromUnsupportedSeries from './getDisplaySetsFromUnsupportedSeries';
 
 const sopClassHandlerName = 'stack';
 
@@ -212,6 +213,11 @@ function getSopClassHandlerModule() {
       name: sopClassHandlerName,
       sopClassUids,
       getDisplaySetsFromSeries,
+    },
+    {
+      name: 'not-supported-display-sets-handler',
+      sopClassUids: [],
+      getDisplaySetsFromSeries: getDisplaySetsFromUnsupportedSeries,
     },
   ];
 }

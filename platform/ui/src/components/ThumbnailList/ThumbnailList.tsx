@@ -36,6 +36,7 @@ const ThumbnailList = ({
           imageSrc,
           messages,
           imageAltText,
+          isHydratedForDerivedDisplaySet,
         }) => {
           const isActive = activeDisplaySetInstanceUIDs.includes(
             displaySetInstanceUID
@@ -104,6 +105,9 @@ const ThumbnailList = ({
                     onThumbnailDoubleClick(displaySetInstanceUID)
                   }
                   viewportIdentificator={viewportIdentificator}
+                  isHydratedForDerivedDisplaySet={
+                    isHydratedForDerivedDisplaySet
+                  }
                 />
               );
             default:
@@ -159,7 +163,7 @@ function _getModalityTooltip(modality) {
 const _modalityTooltips = {
   SR: 'Structured Report',
   SEG: 'Segmentation',
-  RT: 'RT Structure Set',
+  RTSTRUCT: 'RT Structure Set',
 };
 
 export default ThumbnailList;

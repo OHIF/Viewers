@@ -484,7 +484,7 @@ class MeasurementService extends PubSubService {
       });
     }
 
-    return newMeasurement.id;
+    return newMeasurement.uid;
   }
 
   /**

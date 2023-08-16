@@ -82,7 +82,7 @@ const Thumbnail = ({
           </div>
           <DisplaySetMessageListTooltip
             messages={messages}
-            id={`display-set-tooltip-${seriesNumber}`}
+            id={`display-set-tooltip-${displaySetInstanceUID}`}
           />
         </div>
         <div className="text-base text-white break-all">{description}</div>
