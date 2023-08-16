@@ -38,7 +38,7 @@ const SegmentationGroupTable = ({
 }) => {
   const [isConfigOpen, setIsConfigOpen] = useState(false);
   const [activeSegmentationId, setActiveSegmentationId] = useState(
-    segmentations[0].id
+    segmentations?.[0]?.id
   );
 
   const handleActiveSegmentationChange = segmentation => {

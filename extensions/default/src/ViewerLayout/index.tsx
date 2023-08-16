@@ -50,7 +50,7 @@ function ViewerLayout({
     //   dataSourceIdx === -1
     //     ? undefined
     //     : `datasources=${pathname.substring(dataSourceIdx + 1)}`;
-    
+
     // Todo: Handle parameters in a better way.
     const query = new URLSearchParams(window.location.search);
     const configUrl = query.get('configUrl');
@@ -69,7 +69,7 @@ function ViewerLayout({
 
     navigate({
       pathname: '/',
-      search: decodeURIComponent(searchQuery.toString())
+      search: decodeURIComponent(searchQuery.toString()),
     });
   };
 
@@ -160,7 +160,7 @@ function ViewerLayout({
 
     if (!entry) {
       throw new Error(
-        `${id} is not a valid entry for an extension module, please check your configuration or make sure the extension is registered.`
+        `${id} is not valid for an extension module. Please verify your configuration or ensure that the extension is properly registered. It's also possible that your mode is utilizing a module from an extension that hasn't been included in its dependencies (add the extension to the "extensionDependencies" array in your mode's index.js file)`
       );
     }
 
