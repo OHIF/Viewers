@@ -7,7 +7,12 @@ const RESPONSE = {
   HYDRATE_SEG: 5,
 };
 
-function promptHydrateSEG({ servicesManager, segDisplaySet, viewportIndex }) {
+function promptHydrateSEG({
+  servicesManager,
+  segDisplaySet,
+  viewportIndex,
+  preHydrateCallbacks,
+}) {
   const { uiViewportDialogService } = servicesManager.services;
 
   return new Promise(async function(resolve, reject) {
@@ -17,6 +22,10 @@ function promptHydrateSEG({ servicesManager, segDisplaySet, viewportIndex }) {
     );
 
     if (promptResult === RESPONSE.HYDRATE_SEG) {
+      preHydrateCallbacks?.forEach(callback => {
+        callback();
+      });
+
       const isHydrated = await hydrateSEGDisplaySet({
         segDisplaySet,
         viewportIndex,

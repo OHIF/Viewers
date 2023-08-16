@@ -24,6 +24,7 @@ function OHIFCornerstoneSEGViewport(props) {
     viewportLabel,
     servicesManager,
     extensionManager,
+    commandsManager,
   } = props;
 
   const { t } = useTranslation('SEGViewport');
@@ -48,7 +49,6 @@ function OHIFCornerstoneSEGViewport(props) {
   const [viewportGrid, viewportGridService] = useViewportGrid();
 
   // States
-  const [isToolGroupCreated, setToolGroupCreated] = useState(false);
   const [selectedSegment, setSelectedSegment] = useState(1);
 
   // Hydration means that the SEG is opened and segments are loaded into the
@@ -92,6 +92,14 @@ function OHIFCornerstoneSEGViewport(props) {
   const onElementDisabled = () => {
     setElement(null);
   };
+
+  const storePresentationState = useCallback(() => {
+    viewportGrid?.viewports.forEach(({ viewportIndex }) => {
+      commandsManager.runCommand('storePresentation', {
+        viewportIndex,
+      });
+    });
+  }, [viewportGrid]);
 
   const getCornerstoneViewport = useCallback(() => {
     const { component: Component } = extensionManager.getModuleEntry(
@@ -159,6 +167,7 @@ function OHIFCornerstoneSEGViewport(props) {
       servicesManager,
       viewportIndex,
       segDisplaySet,
+      preHydrateCallbacks: [storePresentationState],
     }).then(isHydrated => {
       if (isHydrated) {
         setIsHydrated(true);
@@ -248,8 +257,6 @@ function OHIFCornerstoneSEGViewport(props) {
       toolGroupId
     );
 
-    setToolGroupCreated(true);
-
     return () => {
       // remove the segmentation representations if seg displayset changed
       segmentationService.removeSegmentationRepresentationFromToolGroup(
@@ -309,6 +316,13 @@ function OHIFCornerstoneSEGViewport(props) {
   } = referencedDisplaySetRef.current.metadata;
 
   const onStatusClick = async () => {
+    // Before hydrating a SEG and make it added to all viewports in the grid
+    // that share the same frameOfReferenceUID, we need to store the viewport grid
+    // presentation state, so that we can restore it after hydrating the SEG. This is
+    // required if the user has changed the viewport (other viewport than SEG viewport)
+    // presentation state (w/l and invert) and then opens the SEG. If we don't store
+    // the presentation state, the viewport will be reset to the default presentation
+    storePresentationState();
     const isHydrated = await hydrateSEGDisplaySet({
       segDisplaySet,
       viewportIndex,
@@ -317,7 +331,6 @@ function OHIFCornerstoneSEGViewport(props) {
 
     setIsHydrated(isHydrated);
   };
-
   return (
     <>
       <ViewportActionBar
@@ -344,10 +357,13 @@ function OHIFCornerstoneSEGViewport(props) {
             patientSex: PatientSex || '',
             patientAge: PatientAge || '',
             MRN: PatientID || '',
-            thickness: SliceThickness ? `${parseFloat(SliceThickness).toFixed(2)}mm` : '',
+            thickness: SliceThickness
+              ? utils.roundNumber(SliceThickness, 2)
+              : '',
+            thicknessUnits: SliceThickness !== undefined ? 'mm' : '',
             spacing:
               SpacingBetweenSlices !== undefined
-                ? `${parseFloat(SpacingBetweenSlices).toFixed(2)}mm`
+                ? utils.roundNumber(SpacingBetweenSlices, 2)
                 : '',
             scanner: ManufacturerModelName || '',
           },

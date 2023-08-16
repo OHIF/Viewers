@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 import { utils } from '@ohif/core';
@@ -30,6 +31,7 @@ function PanelStudyBrowserTracking({
     hangingProtocolService,
     uiNotificationService,
   } = servicesManager.services;
+  const navigate = useNavigate();
 
   const { t } = useTranslation('Common');
 
@@ -89,6 +91,11 @@ function PanelStudyBrowserTracking({
       const qidoForStudyUID = await dataSource.query.studies.search({
         studyInstanceUid: StudyInstanceUID,
       });
+
+      if (!qidoForStudyUID?.length) {
+        navigate('/notfoundstudy', '_self');
+        throw new Error('Invalid study URL');
+      }
 
       let qidoStudiesForPatient = qidoForStudyUID;
 
@@ -449,6 +456,7 @@ function _mapDisplaySets(
         seriesDate: formatDate(ds.SeriesDate),
         numInstances: ds.numImageFrames,
         countIcon: ds.countIcon,
+        messages: ds.messages,
         StudyInstanceUID: ds.StudyInstanceUID,
         componentType,
         imageSrc,

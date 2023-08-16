@@ -21,26 +21,23 @@ function LoadingIndicatorTotalPercent({
   loadingText = 'Loading...',
   targetText = 'segments',
 }: Props): JSX.Element {
-  percentComplete = percentComplete !== null ? percentComplete : null;
-
-  const progress = percentComplete !== null ? percentComplete : null;
+  const progress = percentComplete;
   const totalNumbersText = totalNumbers !== null ? `${totalNumbers}` : '';
   const numTargetsLoadedText =
     percentComplete !== null
       ? Math.floor((percentComplete * totalNumbers) / 100)
       : '';
 
-  const textBlock = !totalNumbers ? (
-    <div className="text-white text-sm">{loadingText}</div>
-  ) : (
-    <div className="text-white text-sm flex items-baseline space-x-1">
-      <div>Loaded</div>
-      <div>{numTargetsLoadedText}</div>
-      <div>of</div>
-      <div>{totalNumbersText}</div>
-      <div>{targetText}</div>
-    </div>
-  );
+  const textBlock =
+    !totalNumbers && percentComplete === null ? (
+      <div className="text-white text-sm">{loadingText}</div>
+    ) : !totalNumbers && percentComplete !== null ? (
+      <div className="text-white text-sm">Loaded {percentComplete}%</div>
+    ) : (
+      <div className="text-white text-sm">
+        Loaded {numTargetsLoadedText} of {totalNumbersText} {targetText}
+      </div>
+    );
 
   return (
     <LoadingIndicatorProgress

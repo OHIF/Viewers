@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { StudyBrowser, useImageViewer, useViewportGrid } from '@ohif/ui';
 import { utils } from '@ohif/core';
+import { useNavigate } from 'react-router-dom';
 
 const { sortStudyInstances, formatDate } = utils;
 
@@ -21,6 +22,8 @@ function PanelStudyBrowser({
     displaySetService,
     uiNotificationService,
   } = servicesManager.services;
+  const navigate = useNavigate();
+
   // Normally you nest the components so the tree isn't so deep, and the data
   // doesn't have to have such an intense shape. This works well enough for now.
   // Tabs --> Studies --> DisplaySets --> Thumbnails
@@ -68,6 +71,11 @@ function PanelStudyBrowser({
       const qidoForStudyUID = await dataSource.query.studies.search({
         studyInstanceUid: StudyInstanceUID,
       });
+
+      if (!qidoForStudyUID?.length) {
+        navigate('/notfoundstudy', '_self');
+        throw new Error('Invalid study URL');
+      }
 
       let qidoStudiesForPatient = qidoForStudyUID;
 
@@ -317,6 +325,7 @@ function _mapDisplaySets(displaySets, thumbnailImageSrcMap) {
         numInstances: ds.numImageFrames,
         countIcon: ds.countIcon,
         StudyInstanceUID: ds.StudyInstanceUID,
+        messages: ds.messages,
         componentType,
         imageSrc,
         dragData: {

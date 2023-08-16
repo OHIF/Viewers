@@ -112,6 +112,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
     viewportOptions,
     displaySetOptions,
     servicesManager,
+    commandsManager,
     onElementEnabled,
     onElementDisabled,
     isJumpToMeasurementDisabled,
@@ -151,33 +152,6 @@ const OHIFCornerstoneViewport = React.memo(props => {
       setImageScrollBarHeight();
     }
   }, [elementRef]);
-
-  const storePresentation = () => {
-    const currentPresentation = cornerstoneViewportService.getPresentation(
-      viewportIndex
-    );
-    if (!currentPresentation || !currentPresentation.presentationIds) return;
-    const {
-      lutPresentationStore,
-      positionPresentationStore,
-    } = stateSyncService.getState();
-    const { presentationIds } = currentPresentation;
-    const { lutPresentationId, positionPresentationId } = presentationIds || {};
-    const storeState = {};
-    if (lutPresentationId) {
-      storeState.lutPresentationStore = {
-        ...lutPresentationStore,
-        [lutPresentationId]: currentPresentation,
-      };
-    }
-    if (positionPresentationId) {
-      storeState.positionPresentationStore = {
-        ...positionPresentationStore,
-        [positionPresentationId]: currentPresentation,
-      };
-    }
-    stateSyncService.store(storeState);
-  };
 
   const cleanUpServices = useCallback(() => {
     const viewportInfo = cornerstoneViewportService.getViewportInfoByIndex(
@@ -256,7 +230,9 @@ const OHIFCornerstoneViewport = React.memo(props => {
     setImageScrollBarHeight();
 
     return () => {
-      storePresentation();
+      commandsManager.runCommand('storePresentation', {
+        viewportIndex,
+      });
 
       cleanUpServices();
 
@@ -407,8 +383,6 @@ const OHIFCornerstoneViewport = React.memo(props => {
     };
   }, [displaySets, elementRef, viewportIndex]);
 
-  console.debug('OHIFCornerstoneViewport rendering');
-
   return (
     <React.Fragment>
       <div className="viewport-wrapper">
@@ -471,7 +445,9 @@ function _subscribeToJumpToMeasurementEvents(
     props => {
       cacheJumpToMeasurementEvent = props;
       const { viewportIndex: jumpIndex, measurement, isConsumed } = props;
-      if (!measurement || isConsumed) return;
+      if (!measurement || isConsumed) {
+        return;
+      }
       if (cacheJumpToMeasurementEvent.cornerstoneViewport === undefined) {
         // Decide on which viewport should handle this
         cacheJumpToMeasurementEvent.cornerstoneViewport = cornerstoneViewportService.getViewportIndexToJump(
@@ -508,7 +484,9 @@ function _checkForCachedJumpToMeasurementEvents(
   viewportGridService,
   cornerstoneViewportService
 ) {
-  if (!cacheJumpToMeasurementEvent) return;
+  if (!cacheJumpToMeasurementEvent) {
+    return;
+  }
   if (cacheJumpToMeasurementEvent.isConsumed) {
     cacheJumpToMeasurementEvent = null;
     return;
@@ -516,7 +494,9 @@ function _checkForCachedJumpToMeasurementEvents(
   const displaysUIDs = displaySets.map(
     displaySet => displaySet.displaySetInstanceUID
   );
-  if (!displaysUIDs?.length) return;
+  if (!displaysUIDs?.length) {
+    return;
+  }
 
   // Jump to measurement if the measurement exists
   const { measurement } = cacheJumpToMeasurementEvent;

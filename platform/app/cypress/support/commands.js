@@ -56,14 +56,14 @@ Cypress.Commands.add('openStudy', PatientName => {
 
 Cypress.Commands.add(
   'checkStudyRouteInViewer',
-  (StudyInstanceUID, otherParams = '') => {
+  (StudyInstanceUID, otherParams = '', mode = '/basic-test') => {
     cy.location('pathname').then($url => {
       cy.log($url);
       if (
-        $url == 'blank' ||
-        !$url.includes(`/basic-test/${StudyInstanceUID}${otherParams}`)
+        $url === 'blank' ||
+        !$url.includes(`${mode}/${StudyInstanceUID}${otherParams}`)
       ) {
-        cy.openStudyInViewer(StudyInstanceUID, otherParams);
+        cy.openStudyInViewer(StudyInstanceUID, otherParams, mode);
         cy.waitDicomImage();
         // Very short wait to ensure pending updates are handled
         cy.wait(25);
@@ -74,8 +74,8 @@ Cypress.Commands.add(
 
 Cypress.Commands.add(
   'openStudyInViewer',
-  (StudyInstanceUID, otherParams = '') => {
-    cy.visit(`/basic-test?StudyInstanceUIDs=${StudyInstanceUID}${otherParams}`);
+  (StudyInstanceUID, otherParams = '', mode = '/basic-test') => {
+    cy.visit(`${mode}?StudyInstanceUIDs=${StudyInstanceUID}${otherParams}`);
   }
 );
 
@@ -156,13 +156,13 @@ Cypress.Commands.add('addLine', (viewport, firstClick, secondClick) => {
     const [x1, y1] = firstClick;
     const [x2, y2] = secondClick;
 
-    // TODO: Added a wait which appears necessary in Cornerstone Tools >4?
+    // The wait is necessary because of double click testing
     cy.wrap($viewport)
       .click(x1, y1)
-      .wait(100)
+      .wait(250)
       .trigger('mousemove', { clientX: x2, clientY: y2 })
       .click(x2, y2)
-      .wait(100);
+      .wait(250);
   });
 });
 
@@ -202,28 +202,33 @@ Cypress.Commands.add('expectMinimumThumbnails', (seriesToWait = 1) => {
 });
 
 //Command to wait DICOM image to load into the viewport
-Cypress.Commands.add('waitDicomImage', () => {
-  cy.window()
-    .its('cornerstone')
-    .should($cornerstone => {
-      const enabled = $cornerstone.getEnabledElements();
-      if (enabled?.length) {
-        enabled.forEach((item, i) => {
-          if (
-            item.viewport.viewportStatus !==
-            $cornerstone.Enums.ViewportStatus.RENDERED
-          ) {
-            throw new Error(
-              `Viewport ${i} in state ${item.viewport.viewportStatus}`
-            );
-          }
-        });
-      } else {
-        throw new Error('No enabled elements');
-      }
-    });
-  cy.log('DICOM image loaded');
-});
+Cypress.Commands.add(
+  'waitDicomImage',
+  (mode = '/basic-test', timeout = 50000) => {
+    cy.window()
+      .its('cornerstone')
+      .should($cornerstone => {
+        const enabled = $cornerstone.getEnabledElements();
+        if (enabled?.length) {
+          enabled.forEach((item, i) => {
+            if (
+              item.viewport.viewportStatus !==
+              $cornerstone.Enums.ViewportStatus.RENDERED
+            ) {
+              throw new Error(
+                `Viewport ${i} in state ${item.viewport.viewportStatus}`
+              );
+            }
+          });
+        } else {
+          throw new Error('No enabled elements');
+        }
+      });
+    // This shouldn't be necessary, but seems to be.
+    cy.wait(250);
+    cy.log('DICOM image loaded');
+  }
+);
 
 //Command to reset and clear all the changes made to the viewport
 Cypress.Commands.add('resetViewport', () => {
@@ -237,6 +242,7 @@ Cypress.Commands.add('resetViewport', () => {
 Cypress.Commands.add('imageZoomIn', () => {
   cy.initCornerstoneToolsAliases();
   cy.get('@zoomBtn').click();
+  cy.wait(25);
 
   //drags the mouse inside the viewport to be able to interact with series
   cy.get('@viewport')
@@ -248,6 +254,7 @@ Cypress.Commands.add('imageZoomIn', () => {
 Cypress.Commands.add('imageContrast', () => {
   cy.initCornerstoneToolsAliases();
   cy.get('@wwwcBtnPrimary').click();
+  cy.wait(25);
 
   //drags the mouse inside the viewport to be able to interact with series
   cy.get('@viewport')
@@ -295,7 +302,9 @@ Cypress.Commands.add(
 Cypress.Commands.add(
   'addAngleMeasurement',
   (initPos = [180, 390], midPos = [300, 410], finalPos = [180, 450]) => {
+    cy.get('[data-cy="MeasurementTools-split-button-secondary"]').click();
     cy.get('[data-cy="Angle"]').click();
+
     cy.addAngle('.viewport-element', initPos, midPos, finalPos);
   }
 );

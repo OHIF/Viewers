@@ -1,6 +1,8 @@
 /** Splits a list of stirngs by commas within the strings */
 const splitComma = (strings: string[]): string[] => {
-  if (!strings) return null;
+  if (!strings) {
+    return null;
+  }
   for (let i = 0; i < strings.length; i++) {
     const comma = strings[i].indexOf(',');
     if (comma !== -1) {
@@ -24,7 +26,9 @@ const getSplitParam = (
   const sourceKey = [...params.keys()].find(
     it => it.toLowerCase() === lowerCaseKey
   );
-  if (!sourceKey) return;
+  if (!sourceKey) {
+    return;
+  }
   return splitComma(params.getAll(sourceKey));
 };
 

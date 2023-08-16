@@ -5,11 +5,13 @@ import PropTypes from 'prop-types';
 import { DicomMetadataStore, ServicesManager, utils } from '@ohif/core';
 import { DragAndDropProvider, ImageViewerProvider } from '@ohif/ui';
 import { useSearchParams } from '@hooks';
+import { useAppConfig } from '@state';
 import ViewportGrid from '@components/ViewportGrid';
 import Compose from './Compose';
 import getStudies from './studiesList';
 import { history } from '../../utils/history';
 import loadModules from '../../pluginImports';
+import isSeriesFilterUsed from '../../utils/isSeriesFilterUsed';
 
 const { getSplitParam } = utils;
 
@@ -29,9 +31,11 @@ function defaultRouteInit(
   const {
     displaySetService,
     hangingProtocolService,
+    uiNotificationService,
   } = servicesManager.services;
 
   const unsubscriptions = [];
+  const issuedWarningSeries = [];
   const {
     unsubscribe: instanceAddedUnsubscribe,
   } = DicomMetadataStore.subscribe(
@@ -42,6 +46,22 @@ function defaultRouteInit(
         SeriesInstanceUID
       );
 
+      // checks if the series filter was used, if it exists
+      const seriesInstanceUIDs = filters?.seriesInstanceUID;
+      if (
+        seriesInstanceUIDs?.length &&
+        !isSeriesFilterUsed(seriesMetadata.instances, filters) &&
+        !issuedWarningSeries.includes(seriesInstanceUIDs[0])
+      ) {
+        // stores the series instance filter so it shows only once the warning
+        issuedWarningSeries.push(seriesInstanceUIDs[0]);
+        uiNotificationService.show({
+          title: 'Series filter',
+          message: `Each of the series in filter: ${seriesInstanceUIDs} are not part of the current study. The entire study is being displayed`,
+          type: 'error',
+          duration: 7000,
+        });
+      }
       displaySetService.makeDisplaySets(seriesMetadata.instances, madeInClient);
     }
   );
@@ -93,6 +113,8 @@ export default function ModeRoute({
   commandsManager,
   hotkeysManager,
 }) {
+  const [appConfig] = useAppConfig();
+
   // Parse route params/querystring
   const location = useLocation();
 
@@ -313,6 +335,7 @@ export default function ModeRoute({
         servicesManager,
         extensionManager,
         commandsManager,
+        appConfig,
       });
 
       // use the URL hangingProtocolId if it exists, otherwise use the one
@@ -403,6 +426,7 @@ export default function ModeRoute({
         mode?.onModeExit?.({
           servicesManager,
           extensionManager,
+          appConfig,
         });
       } catch (e) {
         console.warn('mode exit failure', e);
