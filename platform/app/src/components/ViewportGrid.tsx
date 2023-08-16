@@ -280,6 +280,10 @@ function ViewerViewportGrid(props) {
             displaySetService.getDisplaySetByUID(displaySetInstanceUID) || {}
           );
         }
+      ).filter(
+        (displaySet) => {
+          return !displaySet?.unsupported;
+        }
       );
 
       const ViewportComponent = _getViewportComponent(

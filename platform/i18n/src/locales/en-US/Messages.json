@@ -10,5 +10,6 @@
   "9": "DisplaySet has inconsistent dimensions between frames.",
   "10": "DisplaySet has frames with inconsistent number of components.",
   "11": "DisplaySet has frames with inconsistent orientations.",
-  "12": "DisplaySet has inconsistent position information."
+  "12": "DisplaySet has inconsistent position information.",
+  "13": "Unsupported displaySet."
 }
