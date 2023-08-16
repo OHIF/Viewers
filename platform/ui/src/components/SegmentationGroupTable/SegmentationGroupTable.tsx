@@ -6,18 +6,8 @@ import { PanelSection, Select } from '../../components';
 import SegmentationConfig from './SegmentationConfig';
 import SegmentationDropDownRow from './SegmentationDropDownRow';
 import NoSegmentationRow from './NoSegmentationRow';
-
-// {
-//   showAddSegmentation && (
-//     <div
-//       className="flex items-center cursor-pointer hover:opacity-80 text-primary-active bg-black text-[12px] pl-1 h-[45px]"
-//       onClick={() => onSegmentationAdd()}
-//     >
-//       <Icon name="row-add" className="w-5 h-5" />
-//       <div className="pl-1">Add New Segmentation</div>
-//     </div>
-//   );
-// }
+import AddSegmentRow from './AddSegmentRow';
+import SegmentItem from './SegmentationGroupSegment';
 
 const SegmentationGroupTable = ({
   segmentations,
@@ -44,12 +34,21 @@ const SegmentationGroupTable = ({
   setRenderFill,
   setRenderInactiveSegmentations,
   setRenderOutline,
+  showSegmentDelete,
 }) => {
   const [isConfigOpen, setIsConfigOpen] = useState(false);
+  const [activeSegmentationId, setActiveSegmentationId] = useState(
+    segmentations[0].id
+  );
 
   const handleActiveSegmentationChange = segmentation => {
     onSegmentationClick(segmentation);
+    setActiveSegmentationId(segmentation.id);
   };
+
+  const activeSegmentation = segmentations?.find(
+    segmentation => segmentation.id === activeSegmentationId
+  );
 
   return (
     <div className="flex flex-col min-h-0 font-inter font-[300] text-xs">
@@ -81,59 +80,44 @@ const SegmentationGroupTable = ({
             </div>
           ) : (
             <div className=" mt-1 select-none">
-              {/* segmentation row add, hover edit etc */}
               <SegmentationDropDownRow
                 segmentations={segmentations}
                 onActiveSegmentationChange={handleActiveSegmentationChange}
               />
-              {/* <AddSegmentRow /> */}
-              {/* active segmentation list */}
+              <AddSegmentRow />
             </div>
           )}
         </div>
+        <div className="flex flex-col min-h-0 ohif-scrollbar overflow-y-hidden">
+          {activeSegmentation?.segments?.map(segment => {
+            if (segment === undefined || segment === null) {
+              return null;
+            }
 
-        {/* <div className="flex flex-col min-h-0 pr-[1px] mt-1">
-          {!!segmentations.length &&
-            segmentations.map((segmentation, index) => {
-              const {
-                id,
-                label,
-                displayText = [],
-                segmentCount,
-                segments,
-                isVisible,
-                isActive,
-                activeSegmentIndex,
-              } = segmentation;
-              return (
-                <SegmentationGroup
-                  id={id}
-                  key={id}
+            const { segmentIndex, color, label, isVisible, isLocked } = segment;
+            return (
+              <div className="mb-[1px]" key={segmentIndex}>
+                <SegmentItem
+                  segmentationId={activeSegmentationId}
+                  segmentIndex={segmentIndex}
                   label={label}
-                  isMinimized={isMinimized[id]}
-                  segments={segments}
-                  showAddSegment={showAddSegment}
-                  segmentCount={segmentCount}
-                  isActive={isActive}
-                  isVisible={isVisible}
-                  onSegmentColorClick={onSegmentColorClick}
-                  onSegmentationClick={() => onSegmentationClick(id)}
-                  activeSegmentIndex={activeSegmentIndex}
-                  onToggleMinimizeSegmentation={onToggleMinimizeSegmentation}
-                  onSegmentationEdit={onSegmentationEdit}
-                  onSegmentationDelete={onSegmentationDelete}
-                  onSegmentClick={onSegmentClick}
-                  onSegmentEdit={onSegmentEdit}
-                  onToggleSegmentVisibility={onToggleSegmentVisibility}
-                  onToggleSegmentationVisibility={
-                    onToggleSegmentationVisibility
+                  color={color}
+                  isActive={
+                    activeSegmentation.activeSegmentIndex === segmentIndex
                   }
-                  onSegmentAdd={onSegmentAdd}
-                  showSegmentDelete={false}
+                  isLocked={isLocked}
+                  isVisible={isVisible}
+                  onClick={onSegmentClick}
+                  onEdit={onSegmentEdit}
+                  onDelete={onSegmentDelete}
+                  showSegmentDelete={showSegmentDelete}
+                  onColor={onSegmentColorClick}
+                  onToggleVisibility={onToggleSegmentVisibility}
                 />
-              );
-            })}
-        </div> */}
+              </div>
+            );
+          })}
+        </div>
       </PanelSection>
     </div>
   );

@@ -32,45 +32,43 @@ function SegmentationDropDownRow({
 
   return (
     <div className="flex items-center mt-[8px] space-x-1 group">
-      <div className="">
-        <div
-          onClick={e => {
-            e.stopPropagation();
-          }}
+      <div
+        onClick={e => {
+          e.stopPropagation();
+        }}
+      >
+        <Dropdown
+          id="segmentation-dropdown"
+          showDropdownIcon={false}
+          alignment="left"
+          itemsClassName="text-primary-active"
+          showBorders={false}
+          list={[
+            {
+              title: 'Rename',
+              onClick: () => {
+                onSegmentationEdit(activeSegmentation);
+              },
+            },
+            {
+              title: 'Add New Segmentation',
+              onClick: () => {
+                onSegmentationAdd();
+              },
+            },
+            {
+              title: 'Delete',
+              onClick: () => {
+                onSegmentationDelete(activeSegmentation);
+              },
+            },
+          ]}
         >
-          <Dropdown
-            id="segmentation-dropdown"
-            showDropdownIcon={false}
-            alignment="left"
-            itemsClassName="text-primary-active"
-            showBorders={false}
-            list={[
-              {
-                title: 'Rename',
-                onClick: () => {
-                  onSegmentationEdit(activeSegmentation);
-                },
-              },
-              {
-                title: 'Add New Segmentation',
-                onClick: () => {
-                  onSegmentationAdd();
-                },
-              },
-              {
-                title: 'Delete',
-                onClick: () => {
-                  onSegmentationDelete(activeSegmentation);
-                },
-              },
-            ]}
-          >
-            <Icon
-              name="tool-more-menu"
-              className="w-[28px] h-[28px] grid place-items-center hover:bg-primary-dark cursor-pointer text-primary-active rounded-[4px]"
-            ></Icon>
-          </Dropdown>
-        </div>
+          <Icon
+            name="tool-more-menu"
+            className="w-[28px] h-[28px] grid place-items-center hover:bg-primary-dark cursor-pointer text-primary-active rounded-[4px]"
+          ></Icon>
+        </Dropdown>
       </div>
       <Select
         id="segmentation-select"

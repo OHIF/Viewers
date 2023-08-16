@@ -115,107 +115,69 @@ const SegmentItem = ({
             </div>
           )}
           {isHovering && (
-            <div className={classnames('flex items-center')}>
-              <Icon
-                name="row-edit"
-                className={classnames('w-5 h-5', {
-                  'text-white': isLocked,
-                  'text-primary-light': !isLocked,
-                })}
-                onClick={e => {
-                  e.stopPropagation();
-                  onEdit(segmentationId, segmentIndex);
-                }}
-              />
-              {isVisible ? (
-                <Icon
-                  name="row-hide"
-                  className={classnames('w-5 h-5', {
-                    'text-white': isLocked,
-                    'text-primary-light': !isLocked,
-                  })}
-                  onClick={e => {
-                    e.stopPropagation();
-                    onToggleVisibility(segmentationId, segmentIndex);
-                  }}
-                />
-              ) : (
-                <Icon
-                  name="row-unhide"
-                  className={classnames('w-5 h-5', {
-                    'text-white': isLocked,
-                    'text-primary-light': !isLocked,
-                  })}
-                  onClick={e => {
-                    e.stopPropagation();
-                    onToggleVisibility(segmentationId, segmentIndex);
-                  }}
-                />
-              )}
-            </div>
+            <HoveringIcons
+              onEdit={onEdit}
+              isLocked={isLocked}
+              isVisible={isVisible}
+              onToggleLocked={onToggleLocked}
+              onToggleVisibility={onToggleVisibility}
+              segmentationId={segmentationId}
+              segmentIndex={segmentIndex}
+            />
           )}
         </div>
       </div>
-      {/* <div className="relative flex flex-col w-full border-t border-t-black">
-        <div className="fl`ex items-center mb-1 ml-2">
-          <div className="flex items-center flex-1 text-base text-primary-light">
-            <div
-              className={classnames(
-                'w-3 h-3 mt-1 mr-2 rounded-full cursor-pointer transition duration-300 hover:opacity-80'
-              )}
-              onClick={e => {
-                e.stopPropagation();
-                onColor(segmentationId, segmentIndex);
-              }}
-              style={{ backgroundColor: cssColor }}
-            ></div>
-            {label}
-          </div>
-          <div className="flex items-center w-1/3">
-            <div className="px-1">
-              <Icon
-                className={classnames(
-                  'text-white w-4 cursor-pointer transition duration-300 hover:opacity-80'
-                )}
-                name={isVisible ? 'eye-visible' : 'eye-hidden'}
-                onClick={e => {
-                  // stopPropagation needed to avoid disable the current active item
-                  e.stopPropagation();
-                  onToggleVisibility(segmentationId, segmentIndex);
-                }}
-              />
-            </div>
-            {onToggleLocked !== undefined ? (
-              <div className="px-1">
-                <Icon
-                  className={classnames(
-                    'text-white w-4 cursor-pointer transition duration-300 hover:opacity-80'
-                  )}
-                  name={isLocked ? 'lock' : 'dotted-circle'}
-                  onClick={e => {
-                    // stopPropagation needed to avoid disable the current active item
-                    e.stopPropagation();
-                    onToggleLocked(segmentationId, segmentIndex);
-                  }}
-                />
-              </div>
-            ) : null}
-            <div className="px-1">
-              <Icon
-                className={classnames(
-                  'text-white w-4 cursor-pointer transition duration-300 hover:opacity-80'
-                )}
-                name={'pencil'}
-                onClick={e => {
-                  // stopPropagation needed to avoid disable the current active item
-                  e.stopPropagation();
-                  onEdit(segmentationId, segmentIndex);
-                }}
-              />
-            </div>
-          </div>
-        </div>
-      </div> */}
+    </div>
+  );
+};
+
+const HoveringIcons = ({
+  onEdit,
+  isLocked,
+  isVisible,
+  onToggleLocked,
+  onToggleVisibility,
+  segmentationId,
+  segmentIndex,
+}) => {
+  return (
+    <div className={classnames('flex items-center')}>
+      <Icon
+        name="row-edit"
+        className={classnames('w-5 h-5', {
+          'text-white': isLocked,
+          'text-primary-light': !isLocked,
+        })}
+        onClick={e => {
+          e.stopPropagation();
+          onEdit(segmentationId, segmentIndex);
+        }}
+      />
+      {isVisible ? (
+        <Icon
+          name="row-hide"
+          className={classnames('w-5 h-5', {
+            'text-white': isLocked,
+            'text-primary-light': !isLocked,
+          })}
+          onClick={e => {
+            e.stopPropagation();
+            onToggleVisibility(segmentationId, segmentIndex);
+          }}
+        />
+      ) : (
+        <Icon
+          name="row-unhide"
+          className={classnames('w-5 h-5', {
+            'text-white': isLocked,
+            'text-primary-light': !isLocked,
+          })}
+          onClick={e => {
+            e.stopPropagation();
+            onToggleVisibility(segmentationId, segmentIndex);
+          }}
+        />
+      )}
     </div>
   );
 };
