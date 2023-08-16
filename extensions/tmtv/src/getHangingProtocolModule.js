@@ -217,7 +217,6 @@ const stage4 = {
 const ptCT = {
   id: '@ohif/extension-tmtv.hangingProtocolModule.ptCT',
   locked: true,
-  hasUpdatedPriorsInformation: false,
   name: 'Default',
   createdDate: '2021-02-23T19:22:08.894Z',
   modifiedDate: '2022-10-04T19:22:08.894Z',

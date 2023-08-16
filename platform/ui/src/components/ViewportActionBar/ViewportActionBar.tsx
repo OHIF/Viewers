@@ -133,7 +133,11 @@ const ViewportActionBar = ({
         <span className="ml-1 text-aqua-pale text-large">{label}</span>
       )}
       <div className={separatorClasses}></div>
-      <span ref={studyDateElemRef} className={studyDateClasses()}>
+      <span
+        data-cy="studyDate"
+        ref={studyDateElemRef}
+        className={studyDateClasses()}
+      >
         {studyDate}
       </span>
       {showSeriesDesc && (
