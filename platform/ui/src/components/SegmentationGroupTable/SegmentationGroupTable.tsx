@@ -34,7 +34,7 @@ const SegmentationGroupTable = ({
   setRenderFill,
   setRenderInactiveSegmentations,
   setRenderOutline,
-  showSegmentDelete,
+  showDeleteSegment,
 }) => {
   const [isConfigOpen, setIsConfigOpen] = useState(false);
   const [activeSegmentationId, setActiveSegmentationId] = useState(
@@ -110,7 +110,7 @@ const SegmentationGroupTable = ({
                   onClick={onSegmentClick}
                   onEdit={onSegmentEdit}
                   onDelete={onSegmentDelete}
-                  showSegmentDelete={showSegmentDelete}
+                  showDelete={showDeleteSegment}
                   onColor={onSegmentColorClick}
                   onToggleVisibility={onToggleSegmentVisibility}
                 />

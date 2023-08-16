@@ -144,7 +144,7 @@ const SegmentationGroup = ({
   onToggleSegmentVisibility,
   onToggleSegmentationVisibility,
   onSegmentDelete,
-  showSegmentDelete,
+  showDeleteSegment,
   onToggleMinimizeSegmentation,
   onSegmentationConfigChange,
   onSegmentationDelete,
@@ -200,7 +200,7 @@ const SegmentationGroup = ({
                       onClick={onSegmentClick}
                       onEdit={onSegmentEdit}
                       onDelete={onSegmentDelete}
-                      showSegmentDelete={showSegmentDelete}
+                      showDeleteSegment={showDeleteSegment}
                       onColor={onSegmentColorClick}
                       onToggleVisibility={onToggleSegmentVisibility}
                     />
