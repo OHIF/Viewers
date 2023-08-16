@@ -3,7 +3,9 @@ import React from 'react';
 
 import { Types } from '@ohif/core';
 
-import getSopClassHandlerModule from './getSopClassHandlerModule';
+import getSopClassHandlerModule, {
+  protocols,
+} from './getSopClassHandlerModule';
 import PanelSegmentation from './panels/PanelSegmentation';
 import getHangingProtocolModule from './getHangingProtocolModule';
 import hydrateSEGDisplaySet from './utils/_hydrateSEG';

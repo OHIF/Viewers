@@ -204,6 +204,17 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
           return ret;
         });
       },
+      bulkDataURI: async ({ StudyInstanceUID, BulkDataURI }) => {
+        const options = {
+          multipart: false,
+          BulkDataURI,
+          StudyInstanceUID,
+        };
+        return qidoDicomWebClient.retrieveBulkData(options).then(val => {
+          const ret = (val && val[0]) || undefined;
+          return ret;
+        });
+      },
       series: {
         metadata: async ({
           StudyInstanceUID,

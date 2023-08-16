@@ -8,6 +8,7 @@ import { setTrackingUniqueIdentifiersForElement } from '../tools/modules/dicomSR
 import { Icon, Tooltip, useViewportGrid, ViewportActionBar } from '@ohif/ui';
 import hydrateStructuredReport from '../utils/hydrateStructuredReport';
 import { useAppConfig } from '@state';
+import createReferencedImageDisplaySet from '../utils/createReferencedImageDisplaySet';
 
 const { formatDate } = utils;
 
@@ -34,7 +35,7 @@ function OHIFCornerstoneSRViewport(props) {
     displaySetService,
     cornerstoneViewportService,
     measurementService,
-  } = servicesManager.services;
+  } = servicesManager.services as CornerstoneServices;
 
   // SR viewport will always have a single display set
   if (displaySets.length > 1) {
@@ -82,9 +83,9 @@ function OHIFCornerstoneSRViewport(props) {
         { servicesManager, extensionManager, appConfig },
         displaySetInstanceUID
       );
-      const displaySets = displaySetService.getDisplaySetsForSeries(
-        SeriesInstanceUIDs[0]
-      );
+      const displaySets = srDisplaySet.keyImageDisplaySet
+        ? [srDisplaySet.keyImageDisplaySet]
+        : displaySetService.getDisplaySetsForSeries(SeriesInstanceUIDs[0]);
       if (displaySets.length) {
         viewportGridService.setDisplaySetsForViewports([
           {
@@ -433,14 +434,18 @@ async function _getViewportReferencedDisplaySetData(
   measurementSelected,
   displaySetService
 ) {
-  const { measurements } = displaySet;
-  const measurement = measurements[measurementSelected];
+  if (!displaySet.keyImageDisplaySet) {
+    // Create a new display set, and preserve a reference to it here,
+    // so that it can be re-displayed and shown inside the SR viewport.
+    // This is only for ease of redisplay - the display set is stored in the
+    // usual manner in the display set service.
+    displaySet.keyImageDisplaySet = createReferencedImageDisplaySet(
+      displaySetService,
+      displaySet
+    );
+  }
 
-  const { displaySetInstanceUID } = measurement;
-
-  const referencedDisplaySet = displaySetService.getDisplaySetByUID(
-    displaySetInstanceUID
-  );
+  const referencedDisplaySet = displaySet.keyImageDisplaySet;
 
   const image0 = referencedDisplaySet.images[0];
   const referencedDisplaySetMetadata = {

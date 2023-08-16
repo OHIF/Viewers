@@ -18,6 +18,7 @@ import {
   errorHandler,
   CustomizationService,
   PanelService,
+  WorkflowStepsService,
   // utils,
 } from '@ohif/core';
 
@@ -49,6 +50,9 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
     appConfig,
   });
 
+  // extensionManager cannot be passed in the ServicesManager constructor due to a cyclical dependency
+  servicesManager.init({ extensionManager });
+
   servicesManager.registerServices([
     UINotificationService.REGISTRATION,
     UIModalService.REGISTRATION,
@@ -63,6 +67,7 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
     CineService.REGISTRATION,
     UserAuthenticationService.REGISTRATION,
     PanelService.REGISTRATION,
+    WorkflowStepsService.REGISTRATION,
     StateSyncService.REGISTRATION,
   ]);
 

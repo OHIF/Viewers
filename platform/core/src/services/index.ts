@@ -21,6 +21,7 @@ import StateSyncService from './StateSyncService';
 import PanelService from './PanelService';
 import SegmentationService from './SegmentationService';
 import ToolGroupService from './ToolGroupService';
+import WorkflowStepsService from './WorkflowStepsService';
 
 export {
   Services,
@@ -44,4 +45,5 @@ export {
   PanelService,
   SegmentationService,
   ToolGroupService,
+  WorkflowStepsService,
 };

@@ -124,6 +124,9 @@ const OHIFCornerstoneViewport = React.memo(props => {
   } = props;
 
   const [scrollbarHeight, setScrollbarHeight] = useState('100px');
+  const [cineState, cineService] = useCine();
+  const { isCineEnabled, cines } = cineState;
+  const [{ activeViewportIndex }] = useViewportGrid();
   const [enabledVPElement, setEnabledVPElement] = useState(null);
   const elementRef = useRef();
 
@@ -140,6 +143,75 @@ const OHIFCornerstoneViewport = React.memo(props => {
   } = servicesManager.services as CornerstoneServices;
 
   const [viewportDialogState] = useViewportDialog();
+
+  const cineHandler = useCallback(() => {
+    if (!cines || !cines[viewportIndex] || !enabledVPElement) {
+      return;
+    }
+
+    const cine = cines[viewportIndex];
+    const isPlaying = cine.isPlaying || false;
+    const frameRate = cine.frameRate || 24;
+
+    const validFrameRate = Math.max(frameRate, 1);
+
+    if (isPlaying) {
+      cineService.playClip(enabledVPElement, {
+        framesPerSecond: validFrameRate,
+      });
+    } else {
+      cineService.stopClip(enabledVPElement);
+    }
+  }, [cines, viewportIndex, cineService, enabledVPElement]);
+
+  useEffect(() => {
+    eventTarget.addEventListener(
+      Enums.Events.STACK_VIEWPORT_NEW_STACK,
+      cineHandler
+    );
+
+    return () => {
+      cineService.setCine({ id: viewportIndex, isPlaying: false });
+      eventTarget.removeEventListener(
+        Enums.Events.STACK_VIEWPORT_NEW_STACK,
+        cineHandler
+      );
+    };
+  }, [enabledVPElement]);
+
+  useEffect(() => {
+    if (!cines || !cines[viewportIndex] || !enabledVPElement) {
+      return;
+    }
+
+    cineHandler();
+
+    return () => {
+      if (enabledVPElement && cines?.[viewportIndex]?.isPlaying) {
+        cineService.stopClip(enabledVPElement);
+      }
+    };
+  }, [cines, viewportIndex, cineService, enabledVPElement, cineHandler]);
+
+  const cine = cines[viewportIndex];
+  const isPlaying = cine?.isPlaying ?? false;
+  const frameRate = cine?.frameRate ?? 24;
+
+  const handleCineClose = () => {
+    toolbarService.recordInteraction({
+      groupId: 'MoreTools',
+      itemId: 'cine',
+      interactionType: 'toggle',
+      commands: [
+        {
+          commandName: 'toggleCine',
+          commandOptions: {},
+          context: 'CORNERSTONE',
+        },
+      ],
+    });
+  };
+
   // useCallback for scroll bar height calculation
   const setImageScrollBarHeight = useCallback(() => {
     const scrollbarHeight = `${elementRef.current.clientHeight - 20}px`;

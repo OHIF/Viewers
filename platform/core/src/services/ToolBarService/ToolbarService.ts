@@ -43,18 +43,18 @@ export default class ToolbarService extends PubSubService {
   }
 
   public reset(): void {
-    this.unsubscriptions.forEach(unsub => unsub());
+    // this.unsubscriptions.forEach(unsub => unsub());
     this.state = {
       primaryToolId: 'WindowLevel',
       toggles: {},
       groups: {},
     };
-    this.unsubscriptions = [];
+    // this.unsubscriptions = [];
     this.buttonSections = {};
     this.buttons = {};
   }
 
-  onModeEnter() {
+  onModeEnter(): void {
     this.reset();
   }
 

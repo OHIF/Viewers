@@ -14,7 +14,10 @@ import {
   utilities as csUtilities,
 } from '@cornerstonejs/core';
 import { Enums, utilities, ReferenceLinesTool } from '@cornerstonejs/tools';
-import { cornerstoneStreamingImageVolumeLoader } from '@cornerstonejs/streaming-image-volume-loader';
+import {
+  cornerstoneStreamingImageVolumeLoader,
+  cornerstoneStreamingDynamicImageVolumeLoader,
+} from '@cornerstonejs/streaming-image-volume-loader';
 
 import initWADOImageLoader from './initWADOImageLoader';
 import initCornerstoneTools from './initCornerstoneTools';
@@ -72,7 +75,6 @@ export default async function init({
     customizationService,
     uiModalService,
     uiNotificationService,
-    cineService,
     cornerstoneViewportService,
     hangingProtocolService,
     toolGroupService,
@@ -139,6 +141,11 @@ export default async function init({
     cornerstoneStreamingImageVolumeLoader
   );
 
+  volumeLoader.registerVolumeLoader(
+    'cornerstoneStreamingDynamicImageVolume',
+    cornerstoneStreamingDynamicImageVolumeLoader
+  );
+
   hangingProtocolService.registerImageLoadStrategy(
     'interleaveCenter',
     interleaveCenterLoader
@@ -170,7 +177,7 @@ export default async function init({
     servicesManager
   );
 
-  initCineService(cineService);
+  initCineService(servicesManager);
 
   // When a custom image load is performed, update the relevant viewports
   hangingProtocolService.subscribe(

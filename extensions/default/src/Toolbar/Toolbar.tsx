@@ -14,7 +14,9 @@ export default function Toolbar({ servicesManager }) {
   useEffect(() => {
     const { unsubscribe: unsub1 } = toolbarService.subscribe(
       toolbarService.EVENTS.TOOL_BAR_MODIFIED,
-      () => setToolbarButtons(toolbarService.getButtonSection('primary'))
+      () => {
+        setToolbarButtons(toolbarService.getButtonSection('primary'));
+      }
     );
     const { unsubscribe: unsub2 } = toolbarService.subscribe(
       toolbarService.EVENTS.TOOL_BAR_STATE_MODIFIED,

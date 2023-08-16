@@ -37,7 +37,7 @@ const InputText = ({
 InputText.defaultProps = {
   value: '',
   isSortable: false,
-  onLabelClick: () => {},
+  onLabelClick: () => { },
   sortDirection: 'none',
 };
 

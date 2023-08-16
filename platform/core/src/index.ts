@@ -33,6 +33,7 @@ import {
   PanelService,
   ToolGroupService,
   SegmentationService,
+  WorkflowStepsService,
 } from './services';
 
 import {
@@ -87,6 +88,7 @@ const OHIF = {
   PanelService,
   SegmentationService,
   ToolGroupService,
+  WorkflowStepsService,
 };
 
 export {
@@ -131,6 +133,7 @@ export {
   PanelService,
   SegmentationService,
   ToolGroupService,
+  WorkflowStepsService,
 };
 
 export { OHIF };

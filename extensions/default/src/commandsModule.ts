@@ -222,9 +222,8 @@ const commandsModule = ({
         // the activeViewportId
         const state = viewportGridService.getState();
         const hpInfo = hangingProtocolService.getState();
-        const {
-          protocol: oldProtocol,
-        } = hangingProtocolService.getActiveProtocol();
+        const { protocol: oldProtocol } =
+          hangingProtocolService.getActiveProtocol() ?? {};
         const stateSyncReduce = reuseCachedLayouts(
           state,
           hangingProtocolService,
@@ -302,13 +301,14 @@ const commandsModule = ({
           const { protocol } = hangingProtocolService.getActiveProtocol();
           // The old protocol callbacks are used for turning off things
           // like crosshairs when moving to the new HP
-          commandsManager.run(oldProtocol.callbacks?.onProtocolExit);
+          commandsManager.run(oldProtocol?.callbacks?.onProtocolExit);
           // The new protocol callback is used for things like
           // activating modes etc.
           commandsManager.run(protocol.callbacks?.onProtocolEnter);
         }
         return true;
       } catch (e) {
+        console.error(e);
         actions.toggleHpTools(hangingProtocolService.getActiveProtocol());
         uiNotificationService.show({
           title: 'Apply Hanging Protocol',

@@ -10,7 +10,7 @@ import {
   utilities as cstUtils,
   ReferenceLinesTool,
 } from '@cornerstonejs/tools';
-import { Types as OhifTypes } from '@ohif/core';
+import { HangingProtocolService, Types as OhifTypes } from '@ohif/core';
 
 import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownloadForm';
 import callInputDialog from './utils/callInputDialog';
@@ -33,6 +33,8 @@ function commandsModule({
     cornerstoneViewportService,
     uiNotificationService,
     measurementService,
+    displaySetService,
+    hangingProtocolService,
   } = servicesManager.services as CornerstoneServices;
 
   const { measurementServiceSource } = this;
@@ -294,78 +296,7 @@ function commandsModule({
     },
 
     setToolActive: ({ toolName, toolGroupId = null }) => {
-      if (toolName === 'Crosshairs') {
-        const activeViewportToolGroup = toolGroupService.getToolGroup(null);
-
-        if (!activeViewportToolGroup._toolInstances.Crosshairs) {
-          uiNotificationService.show({
-            title: 'Crosshairs',
-            message:
-              'You need to be in a MPR view to use Crosshairs. Click on MPR button in the toolbar to activate it.',
-            type: 'info',
-            duration: 3000,
-          });
-
-          throw new Error('Crosshairs tool is not available in this viewport');
-        }
-      }
-
-      const { viewports } = viewportGridService.getState() || {
-        viewports: [],
-      };
-
-      const toolGroup = toolGroupService.getToolGroup(toolGroupId);
-      const toolGroupViewportIds = toolGroup?.getViewportIds?.();
-
-      // if toolGroup has been destroyed, or its viewports have been removed
-      if (!toolGroupViewportIds || !toolGroupViewportIds.length) {
-        return;
-      }
-
-      const filteredViewports = viewports.filter(viewport => {
-        if (!viewport.viewportOptions) {
-          return false;
-        }
-
-        return toolGroupViewportIds.includes(
-          viewport.viewportOptions.viewportId
-        );
-      });
-
-      if (!filteredViewports.length) {
-        return;
-      }
-
-      if (!toolGroup.getToolInstance(toolName)) {
-        uiNotificationService.show({
-          title: `${toolName} tool`,
-          message: `The ${toolName} tool is not available in this viewport.`,
-          type: 'info',
-          duration: 3000,
-        });
-
-        throw new Error(`ToolGroup ${toolGroup.id} does not have this tool.`);
-      }
-
-      const activeToolName = toolGroup.getActivePrimaryMouseButtonTool();
-
-      if (activeToolName) {
-        // Todo: this is a hack to prevent the crosshairs to stick around
-        // after another tool is selected. We should find a better way to do this
-        if (activeToolName === 'Crosshairs') {
-          toolGroup.setToolDisabled(activeToolName);
-        } else {
-          toolGroup.setToolPassive(activeToolName);
-        }
-      }
-      // Set the new toolName to be active
-      toolGroup.setToolActive(toolName, {
-        bindings: [
-          {
-            mouseButton: Enums.MouseBindings.Primary,
-          },
-        ],
-      });
+      toolGroupService.setPrimaryToolActive(toolName, toolGroupId);
     },
     showDownloadViewportModal: () => {
       const { activeViewportIndex } = viewportGridService.getState();
@@ -657,6 +588,41 @@ function commandsModule({
         };
       }
       stateSyncService.store(storeState);
+    setDerviedDisplaySetsInGridViewports: ({ displaySet }) => {
+      const displaySetCache = displaySetService.getDisplaySetCache();
+      const cachedDisplaySetKeys = [displaySetCache.keys()];
+      const displaySetKey = Object.keys(displaySet)[0];
+
+      // Check to see if computed display set is already in cache
+      if (!cachedDisplaySetKeys.includes(displaySetKey)) {
+        displaySetCache.set(displaySetKey, displaySet[displaySetKey]);
+      }
+
+      // Get all viewports and their corresponding indexs
+      const { viewports } = viewportGridService.getState();
+
+      const viewportsToUpdate = viewports.map((viewport, index) => ({
+        viewportIndex: index,
+        displaySetInstanceUIDs: [displaySetKey],
+        viewportOptions: {
+          initialImageOptions: viewport.viewportOptions.initialImageOptions,
+          viewportType: 'volume',
+          orientation: viewport.viewportOptions.orientation,
+          background: viewport.viewportOptions.background,
+        },
+      }));
+
+      viewportGridService.setDisplaySetsForViewports(viewportsToUpdate);
+    },
+    updateVolumeData: ({ volume }) => {
+      // update vtkOpenGLTexture and imageData of computed volume
+      const { imageData, vtkOpenGLTexture } = volume;
+      const numSlices = imageData.getDimensions()[2];
+      const slicesToUpdate = [...Array(numSlices).keys()];
+      slicesToUpdate.forEach(i => {
+        vtkOpenGLTexture.setUpdatedFrame(i);
+      });
+      imageData.modified();
     },
   };
 
@@ -789,6 +755,13 @@ function commandsModule({
     },
     setSingleViewportColormap: {
       commandFn: actions.setSingleViewportColormap,
+    setDerviedDisplaySetsInGridViewports: {
+      commandFn: actions.setDerviedDisplaySetsInGridViewports,
+      storeContexts: [],
+      options: {},
+    },
+    updateVolumeData: {
+      commandFn: actions.updateVolumeData,
     },
   };
 
