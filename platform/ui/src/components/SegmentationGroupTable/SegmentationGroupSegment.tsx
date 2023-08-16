@@ -11,7 +11,7 @@ const SegmentItem = ({
   isActive,
   isVisible,
   color,
-  showSegmentDelete,
+  showDelete,
   isLocked = false,
   onClick,
   onEdit,
@@ -20,89 +20,56 @@ const SegmentItem = ({
   onToggleVisibility,
   onToggleLocked,
 }) => {
-  const [isHovering, setIsHovering] = useState(false);
-  const [isSegmentIndexHovering, setIsSegmentIndexHovering] = useState(false);
-
-  const onMouseEnter = () => setIsHovering(true);
-  const onMouseLeave = () => setIsHovering(false);
+  const [isRowHovering, setRowIsHovering] = useState(false);
+  const [isNumberBoxHovering, setIsNumberBoxHovering] = useState(false);
 
   const cssColor = `rgb(${color[0]},${color[1]},${color[2]})`;
 
   return (
     <div
-      className={classnames(
-        'group relative flex cursor-pointer bg-primary-dark transition duration-300 text-[12px] overflow-hidden border',
-        {
-          'border-primary-light rounded-[3px]': isActive,
-        },
-        {
-          'border-transparent': !isActive,
-        }
-      )}
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
+      className="flex text-aqua-pale bg-black group/row min-h-[28px]"
+      onMouseEnter={() => setRowIsHovering(true)}
+      onMouseLeave={() => setRowIsHovering(false)}
       onClick={e => {
         e.stopPropagation();
         onClick(segmentationId, segmentIndex);
       }}
-      role="button"
       tabIndex={0}
       data-cy={'segment-item'}
     >
       <div
-        className={classnames(
-          'w-[27px] flex items-center justify-center border-r border-r-black text-[12px]',
-          {
-            'bg-primary-light text-black border-l border-l-primary-light rounded-l-sm': isActive,
-            'bg-[#1d3c58]  border-l border-l-[#1d3c58] rounded-l-sm':
-              !isActive && isHovering,
-            'bg-primary-dark text-aqua-pale':
-              !isActive && !isHovering && isVisible,
-            'bg-[#140e2e] opacity-60 text-[#537594]': !isActive && !isVisible,
-          }
-        )}
-        onMouseEnter={() => setIsSegmentIndexHovering(true)}
-        onMouseLeave={() => setIsSegmentIndexHovering(false)}
+        className="grid place-items-center w-[28px] bg-primary-dark group/number"
+        onMouseEnter={() => setIsNumberBoxHovering(true)}
+        onMouseLeave={() => setIsNumberBoxHovering(false)}
       >
-        {isSegmentIndexHovering && showSegmentDelete ? (
+        {isNumberBoxHovering && showDelete ? (
           <Icon
             name="close"
-            className={classnames('pr-0.5')}
             onClick={e => {
               e.stopPropagation();
               onDelete(segmentationId, segmentIndex);
             }}
           />
         ) : (
-          <div className={classnames('flex items-center pr-2 ')}>
-            {segmentIndex}
-          </div>
+          <div>{segmentIndex}</div>
         )}
       </div>
-      <div
-        className={classnames(
-          'flex items-center justify-between w-full pl-2 py-1 text-white border-r border-r-black relative ',
-          {
-            'bg-primary-dark text-primary-light': isActive,
-            'bg-primary-dark text-aqua-pale': !isActive && isVisible,
-            'bg-[#140e2e] opacity-60 text-[#3d5871]': !isVisible,
-          }
-        )}
-      >
-        <div className={classnames('flex items-baseline gap-2')}>
-          <div
-            className={classnames('shrink-0 w-[8px] h-[8px] rounded-full')}
-            style={{ backgroundColor: cssColor }}
-            onClick={e => {
-              e.stopPropagation();
-              onColor(segmentationId, segmentIndex);
-            }}
-          />
-          <div className="">{label}</div>
+      <div className="relative flex w-full">
+        <div className="flex flex-grow items-center group-hover/row:bg-primary-dark w-full h-full">
+          <div className="pl-3 pr-2.5">
+            <div
+              className={classnames('grow-0 w-[8px] h-[8px] rounded-full')}
+              style={{ backgroundColor: cssColor }}
+              onClick={e => {
+                e.stopPropagation();
+                onColor(segmentationId, segmentIndex);
+              }}
+            />
+          </div>
+          <div className="flex items-center">{label}</div>
         </div>
-        {/* with faded background */}
-        <div className="absolute right-0 bg-black/15 rounded-lg pr-[7px]">
-          {!isVisible && !isHovering && (
+        <div className="absolute right-0 top-1 bg-black/15 rounded-lg pr-[7px]">
+          {!isVisible && !isRowHovering && (
             <div>
               <Icon
                 name="row-hidden"
@@ -114,7 +81,7 @@ const SegmentItem = ({
               />
             </div>
           )}
-          {isHovering && (
+          {isRowHovering && (
             <HoveringIcons
               onEdit={onEdit}
               isLocked={isLocked}
