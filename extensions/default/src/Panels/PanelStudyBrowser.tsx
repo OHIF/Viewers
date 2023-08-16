@@ -210,9 +210,22 @@ function PanelStudyBrowser({
       }
     );
 
+    const SubscriptionDisplaySetMetaDataInvalidated = displaySetService.subscribe(
+      displaySetService.EVENTS.DISPLAY_SET_SERIES_METADATA_INVALIDATED,
+      () => {
+        const mappedDisplaySets = _mapDisplaySets(
+          displaySetService.getActiveDisplaySets(),
+          thumbnailImageSrcMap
+        );
+
+        setDisplaySets(mappedDisplaySets);
+      }
+    );
+
     return () => {
       SubscriptionDisplaySetsAdded.unsubscribe();
       SubscriptionDisplaySetsChanged.unsubscribe();
+      SubscriptionDisplaySetMetaDataInvalidated.unsubscribe();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -335,6 +348,7 @@ function _mapDisplaySets(displaySets, thumbnailImageSrcMap) {
           displaySetInstanceUID: ds.displaySetInstanceUID,
           // .. Any other data to pass
         },
+        isHydratedForDerivedDisplaySet: ds.isHydrated,
       });
     });
 

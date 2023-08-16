@@ -1,16 +1,7 @@
 import { ExtensionManager } from '../../extensions';
-import { InstanceMetadata } from '../../types';
+import { DisplaySet, InstanceMetadata } from '../../types';
 import { PubSubService } from '../_shared/pubSubServiceInterface';
 import EVENTS from './EVENTS';
-
-export type DisplaySet = {
-  displaySetInstanceUID: string;
-  instances: InstanceMetadata[];
-  StudyInstanceUID: string;
-  SeriesInstanceUID?: string;
-  numImages?: number;
-  unsupported?: boolean;
-};
 
 const displaySetCache = new Map<string, DisplaySet>();
 
@@ -154,7 +145,10 @@ export default class DisplaySetService extends PubSubService {
     return displaySet;
   }
 
-  public setDisplaySetMetadataInvalidated(displaySetInstanceUID: string): void {
+  public setDisplaySetMetadataInvalidated(
+    displaySetInstanceUID: string,
+    invalidateData = true
+  ): void {
     const displaySet = this.getDisplaySetByUID(displaySetInstanceUID);
 
     if (!displaySet) {
@@ -162,10 +156,10 @@ export default class DisplaySetService extends PubSubService {
     }
 
     // broadcast event to update listeners with the new displaySets
-    this._broadcastEvent(
-      EVENTS.DISPLAY_SET_SERIES_METADATA_INVALIDATED,
-      displaySetInstanceUID
-    );
+    this._broadcastEvent(EVENTS.DISPLAY_SET_SERIES_METADATA_INVALIDATED, {
+      displaySetInstanceUID,
+      invalidateData,
+    });
   }
 
   public deleteDisplaySet(displaySetInstanceUID) {

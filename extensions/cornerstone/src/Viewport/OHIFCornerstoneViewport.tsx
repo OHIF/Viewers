@@ -23,6 +23,7 @@ import CornerstoneOverlays from './Overlays/CornerstoneOverlays';
 import getSOPInstanceAttributes from '../utils/measurementServiceMappings/utils/getSOPInstanceAttributes';
 import CornerstoneServices from '../types/CornerstoneServices';
 import CinePlayer from '../components/CinePlayer';
+import { Types } from '@ohif/core';
 
 const STACK = 'stack';
 
@@ -264,7 +265,14 @@ const OHIFCornerstoneViewport = React.memo(props => {
   useEffect(() => {
     const { unsubscribe } = displaySetService.subscribe(
       displaySetService.EVENTS.DISPLAY_SET_SERIES_METADATA_INVALIDATED,
-      async invalidatedDisplaySetInstanceUID => {
+      async ({
+        displaySetInstanceUID: invalidatedDisplaySetInstanceUID,
+        invalidateData,
+      }: Types.DisplaySetSeriesMetadataInvalidatedEvent) => {
+        if (!invalidateData) {
+          return;
+        }
+
         const viewportInfo = cornerstoneViewportService.getViewportInfoByIndex(
           viewportIndex
         );

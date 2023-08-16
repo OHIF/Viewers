@@ -20,6 +20,7 @@ const ThumbnailNoImage = ({
   messages,
   dragData,
   isActive,
+  isHydratedForDerivedDisplaySet,
 }) => {
   const [collectedProps, drag, dragPreview] = useDrag({
     type: 'displayset',
@@ -32,8 +33,8 @@ const ThumbnailNoImage = ({
   return (
     <div
       className={classnames(
-        'flex flex-row flex-1 cursor-pointer outline-none border-transparent hover:border-blue-300 focus:border-blue-300 rounded select-none',
-        isActive ? 'border-2 border-primary-light' : 'border'
+        'flex flex-row flex-1 cursor-pointer outline-none hover:border-blue-300 focus:border-blue-300 rounded select-none',
+        isActive ? 'border-2 border-primary-light' : 'border border-transparent'
       )}
       style={{
         padding: isActive ? '11px' : '12px',
@@ -48,12 +49,27 @@ const ThumbnailNoImage = ({
       <div ref={drag}>
         <div className="flex flex-col flex-1">
           <div className="flex flex-row items-center flex-1 mb-2">
-            <Icon name="list-bullets" className="w-12 text-secondary-light" />
+            <Icon
+              name="list-bullets"
+              className={classnames(
+                'w-12',
+                isHydratedForDerivedDisplaySet
+                  ? 'text-primary-light'
+                  : 'text-secondary-light'
+              )}
+            />
             <Tooltip
               position="bottom"
               content={<Typography>{modalityTooltip}</Typography>}
             >
-              <div className="px-3 text-lg text-white rounded-sm bg-primary-main">
+              <div
+                className={classnames(
+                  'px-3 text-lg  rounded-sm',
+                  isHydratedForDerivedDisplaySet
+                    ? 'text-black bg-primary-light'
+                    : 'text-white bg-primary-main'
+                )}
+              >
                 {modality}
               </div>
             </Tooltip>
@@ -104,6 +120,7 @@ ThumbnailNoImage.propTypes = {
   onDoubleClick: PropTypes.func.isRequired,
   messages: PropTypes.object,
   isActive: PropTypes.bool.isRequired,
+  isHydratedForDerivedDisplaySet: PropTypes.bool,
 };
 
 export default ThumbnailNoImage;

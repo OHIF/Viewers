@@ -256,9 +256,29 @@ function PanelStudyBrowserTracking({
       }
     );
 
+    const SubscriptionDisplaySetMetaDataInvalidated = displaySetService.subscribe(
+      displaySetService.EVENTS.DISPLAY_SET_SERIES_METADATA_INVALIDATED,
+      () => {
+        const mappedDisplaySets = _mapDisplaySets(
+          displaySetService.getActiveDisplaySets(),
+          thumbnailImageSrcMap,
+          trackedSeries,
+          viewports,
+          viewportGridService,
+          dataSource,
+          displaySetService,
+          uiDialogService,
+          uiNotificationService
+        );
+
+        setDisplaySets(mappedDisplaySets);
+      }
+    );
+
     return () => {
       SubscriptionDisplaySetsAdded.unsubscribe();
       SubscriptionDisplaySetsChanged.unsubscribe();
+      SubscriptionDisplaySetMetaDataInvalidated.unsubscribe();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
@@ -467,6 +487,7 @@ function _mapDisplaySets(
           // .. Any other data to pass
         },
         isTracked: trackedSeriesInstanceUIDs.includes(ds.SeriesInstanceUID),
+        isHydratedForDerivedDisplaySet: ds.isHydrated,
         viewportIdentificator,
       };
 
