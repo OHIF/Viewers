@@ -6,6 +6,7 @@ export type DisplaySet = {
   StudyInstanceUID: string;
   SeriesInstanceUID?: string;
   numImages?: number;
+  unsupported?: boolean;
 };
 
 export type DisplaySetSeriesMetadataInvalidatedEvent = {

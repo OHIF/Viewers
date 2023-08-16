@@ -40,6 +40,7 @@ export default class DisplaySetService extends PubSubService {
   };
 
   public activeDisplaySets = [];
+  public unsuportedSOPClassHandler;
   extensionManager: ExtensionManager;
 
   protected activeDisplaySetsMap = new Map<string, DisplaySet>();
@@ -50,6 +51,8 @@ export default class DisplaySetService extends PubSubService {
 
   constructor() {
     super(EVENTS);
+    this.unsuportedSOPClassHandler =
+      '@ohif/extension-default.sopClassHandlerModule.not-supported-display-sets-handler';
   }
 
   public init(extensionManager, SOPClassHandlerIds): void {
@@ -75,6 +78,14 @@ export default class DisplaySetService extends PubSubService {
         activeDisplaySetsMap.set(displaySet.displaySetInstanceUID, displaySet);
       }
     });
+  }
+
+  /**
+   * Sets the handler for unsupported sop classes
+   * @param sopClassHandlerUID
+   */
+  public setUnsuportedSOPClassHandler(sopClassHandler) {
+    this.unsuportedSOPClassHandler = sopClassHandler;
   }
 
   /**
@@ -252,6 +263,47 @@ export default class DisplaySetService extends PubSubService {
   }
 
   /**
+   * This function hides the old makeDisplaySetForInstances function to first
+   * separate the instances by sopClassUID so each call have only instances
+   * with the same sopClassUID, to avoid a series composed by different
+   * sopClassUIDs be filtered inside one of the SOPClassHandler functions and
+   * didn't appear in the series list.
+   * @param instancesSrc
+   * @param settings
+   * @returns
+   */
+  public makeDisplaySetForInstances(
+    instancesSrc: InstanceMetadata[],
+    settings
+  ): DisplaySet[] {
+    // creating a sopClassUID list and for each sopClass associate its respective
+    // instance list
+    const instancesForSetSOPClasses = instancesSrc.reduce(
+      (sopClassList, instance) => {
+        if (!(instance.SOPClassUID in sopClassList)) {
+          sopClassList[instance.SOPClassUID] = [];
+        }
+        sopClassList[instance.SOPClassUID].push(instance);
+        return sopClassList;
+      },
+      {}
+    );
+    // for each sopClassUID, call the old makeDisplaySetForInstances with a
+    // instance list composed only by instances with the same sopClassUID and
+    // accumulate the displaySets in the variable allDisplaySets
+    const sopClasses = Object.keys(instancesForSetSOPClasses);
+    let allDisplaySets = [];
+    sopClasses.forEach(sopClass => {
+      const displaySets = this._makeDisplaySetForInstances(
+        instancesForSetSOPClasses[sopClass],
+        settings
+      );
+      allDisplaySets = [...allDisplaySets, ...displaySets];
+    });
+    return allDisplaySets;
+  }
+
+  /**
    * Creates new display sets for the instances contained in instancesSrc
    * according to the sop class handlers registered.
    * This is idempotent in that calling it a second time with the
@@ -267,7 +319,7 @@ export default class DisplaySetService extends PubSubService {
    * @param settings are settings to add
    * @returns Array of the display sets added.
    */
-  public makeDisplaySetForInstances(
+  private _makeDisplaySetForInstances(
     instancesSrc: InstanceMetadata[],
     settings
   ): DisplaySet[] {
@@ -346,6 +398,26 @@ export default class DisplaySetService extends PubSubService {
         // but there may need to be other instances handled by other handlers,
         // so remove the handled instances
         instances = filterInstances(instances, displaySets);
+
+        allDisplaySets.push(...displaySets);
+      }
+    }
+    // applying the default sopClassUID handler
+    if (allDisplaySets.length === 0) {
+      // applying hp-defined viewport settings to the displaysets
+      const handler = this.extensionManager.getModuleEntry(
+        this.unsuportedSOPClassHandler
+      );
+      const displaySets = handler.getDisplaySetsFromSeries(instances);
+      if (displaySets?.length) {
+        displaySets.forEach(ds => {
+          Object.keys(settings).forEach(key => {
+            ds[key] = settings[key];
+          });
+        });
+
+        this._addDisplaySetsToCache(displaySets);
+        this._addActiveDisplaySets(displaySets);
 
         allDisplaySets.push(...displaySets);
       }

@@ -2,7 +2,6 @@ import HangingProtocolService from './HangingProtocolService';
 
 const testProtocol = {
   id: 'test',
-  hasUpdatedPriorsInformation: false,
   name: 'Default',
   protocolMatchingRules: [
     {
