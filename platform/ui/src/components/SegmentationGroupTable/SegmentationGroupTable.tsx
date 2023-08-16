@@ -15,6 +15,7 @@ const SegmentationGroupTable = ({
   onSegmentClick,
   onSegmentAdd,
   segmentationConfig,
+  disableEditing,
   onSegmentDelete,
   onSegmentEdit,
   onToggleSegmentationVisibility,
@@ -60,6 +61,7 @@ const SegmentationGroupTable = ({
                 id={id}
                 key={id}
                 label={label}
+                disableEditing={disableEditing}
                 isMinimized={isMinimized[id]}
                 segments={segments}
                 showAddSegment={showAddSegment}
@@ -82,7 +84,7 @@ const SegmentationGroupTable = ({
             );
           })}
       </div>
-      {showAddSegmentation && (
+      {showAddSegmentation && !disableEditing && (
         <div
           className="flex items-center cursor-pointer hover:opacity-80 text-primary-active bg-black text-[12px] pl-1 h-[45px]"
           onClick={() => onSegmentationAdd()}
@@ -106,6 +108,7 @@ SegmentationGroupTable.propTypes = {
   onToggleVisibility: PropTypes.func.isRequired,
   onToggleVisibilityAll: PropTypes.func.isRequired,
   segmentationConfig: PropTypes.object,
+  disableEditing: PropTypes.bool,
 };
 
 SegmentationGroupTable.defaultProps = {

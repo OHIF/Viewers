@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { SegmentationGroupTable } from '@ohif/ui';
 import callInputDialog from './callInputDialog';
-
+import { useAppConfig } from '@state';
 import { useTranslation } from 'react-i18next';
 
 export default function PanelSegmentation({
@@ -10,6 +10,8 @@ export default function PanelSegmentation({
   commandsManager,
 }) {
   const { segmentationService, uiDialogService } = servicesManager.services;
+  const [appConfig] = useAppConfig();
+  const disableEditing = appConfig?.disableEditing;
 
   const { t } = useTranslation('PanelSegmentation');
   const [selectedSegmentationId, setSelectedSegmentationId] = useState(null);
@@ -203,6 +205,7 @@ export default function PanelSegmentation({
           onSegmentationEdit={onSegmentationEdit}
           onSegmentClick={onSegmentClick}
           onSegmentEdit={onSegmentEdit}
+          disableEditing={disableEditing}
           onSegmentColorClick={onSegmentColorClick}
           onSegmentDelete={onSegmentDelete}
           onToggleSegmentVisibility={onToggleSegmentVisibility}
@@ -268,6 +271,7 @@ PanelSegmentation.propTypes = {
   commandsManager: PropTypes.shape({
     runCommand: PropTypes.func.isRequired,
   }),
+  appConfig: PropTypes.object.isRequired,
   servicesManager: PropTypes.shape({
     services: PropTypes.shape({
       segmentationService: PropTypes.shape({
