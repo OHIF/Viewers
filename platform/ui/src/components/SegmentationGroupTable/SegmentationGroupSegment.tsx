@@ -12,6 +12,7 @@ const SegmentItem = ({
   isVisible,
   color,
   showDelete,
+  disableEditing,
   isLocked = false,
   onClick,
   onEdit,
@@ -53,8 +54,13 @@ const SegmentItem = ({
         {isNumberBoxHovering && showDelete ? (
           <Icon
             name="close"
-            className="w-[8px] h-[8px] hover:cursor-pointer hover:opacity-60"
+            className={classnames('w-[8px] h-[8px]', {
+              'hover:cursor-pointer hover:opacity-60': !disableEditing,
+            })}
             onClick={e => {
+              if (disableEditing) {
+                return;
+              }
               e.stopPropagation();
               onDelete(segmentationId, segmentIndex);
             }}
@@ -70,13 +76,16 @@ const SegmentItem = ({
         })}
       >
         <div className="flex flex-grow items-center group-hover/row:bg-primary-dark w-full h-full">
-          <div className="pl-3 pr-2.5">
+          <div className="pl-3.5 pr-2.5">
             <div
-              className={classnames(
-                'grow-0 w-[8px] h-[8px] rounded-full hover:opacity-60 hover:cursor-pointer'
-              )}
+              className={classnames('grow-0 w-[8px] h-[8px] rounded-full', {
+                'hover:cursor-pointer hover:opacity-60': !disableEditing,
+              })}
               style={{ backgroundColor: cssColor }}
               onClick={e => {
+                if (disableEditing) {
+                  return;
+                }
                 e.stopPropagation();
                 onColor(segmentationId, segmentIndex);
               }}

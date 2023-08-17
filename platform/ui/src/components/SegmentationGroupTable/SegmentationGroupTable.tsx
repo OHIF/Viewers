@@ -1,16 +1,16 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import Icon from '../Icon';
-import SegmentationGroup from './SegmentationGroup';
 import { PanelSection, Select } from '../../components';
 import SegmentationConfig from './SegmentationConfig';
 import SegmentationDropDownRow from './SegmentationDropDownRow';
 import NoSegmentationRow from './NoSegmentationRow';
 import AddSegmentRow from './AddSegmentRow';
-import SegmentItem from './SegmentationGroupSegment';
+import SegmentationGroupSegment from './SegmentationGroupSegment';
 
 const SegmentationGroupTable = ({
   segmentations,
+  segmentationConfig,
+  disableEditing,
   onSegmentationAdd,
   onSegmentationEdit,
   onSegmentationClick,
@@ -19,15 +19,11 @@ const SegmentationGroupTable = ({
   showAddSegment,
   onSegmentClick,
   onSegmentAdd,
-  segmentationConfig,
-  disableEditing,
   onSegmentDelete,
   onSegmentEdit,
   onToggleSegmentationVisibility,
   onToggleSegmentVisibility,
   onSegmentColorClick,
-  isMinimized,
-  onToggleMinimizeSegmentation,
   setFillAlpha,
   setFillAlphaInactive,
   setOutlineWidthActive,
@@ -38,21 +34,38 @@ const SegmentationGroupTable = ({
   showDeleteSegment,
 }) => {
   const [isConfigOpen, setIsConfigOpen] = useState(false);
-  const [activeSegmentationId, setActiveSegmentationId] = useState(
-    segmentations?.[0]?.id
-  );
+  const [activeSegmentationId, setActiveSegmentationId] = useState(null);
 
-  const handleActiveSegmentationChange = segmentation => {
-    onSegmentationClick(segmentation);
-    setActiveSegmentationId(segmentation.id);
+  const onActiveSegmentationChange = segmentationId => {
+    onSegmentationClick(segmentationId);
+    setActiveSegmentationId(segmentationId);
   };
+
+  useEffect(() => {
+    // find the first active segmentation to set
+    let activeSegmentationIdToSet = segmentations?.find(
+      segmentation => segmentation.isActive
+    )?.id;
+
+    // If there is no active segmentation, set the first one to be active
+    if (!activeSegmentationIdToSet && segmentations?.length > 0) {
+      activeSegmentationIdToSet = segmentations[0].id;
+    }
+
+    // If there is no segmentation, set the active segmentation to null
+    if (segmentations?.length === 0) {
+      activeSegmentationIdToSet = null;
+    }
+
+    setActiveSegmentationId(activeSegmentationIdToSet);
+  }, [segmentations, activeSegmentationId]);
 
   const activeSegmentation = segmentations?.find(
     segmentation => segmentation.id === activeSegmentationId
   );
 
   return (
-    <div className="flex flex-col min-h-0 font-inter font-[300] text-xs">
+    <div className="flex flex-col min-h-0 font-inter font-[300] text-[13px] bg-black">
       <PanelSection
         title="Segmentation"
         actionIcons={[
@@ -77,19 +90,25 @@ const SegmentationGroupTable = ({
         <div className="bg-black">
           {segmentations?.length === 0 ? (
             <div className=" mt-1 select-none">
-              <NoSegmentationRow />
+              {showAddSegmentation && !disableEditing && <NoSegmentationRow />}
             </div>
           ) : (
             <div className=" mt-1 select-none">
               <SegmentationDropDownRow
                 segmentations={segmentations}
-                onActiveSegmentationChange={handleActiveSegmentationChange}
+                disableEditing={disableEditing}
+                activeSegmentation={activeSegmentation}
+                onActiveSegmentationChange={onActiveSegmentationChange}
+                onSegmentationDelete={onSegmentationDelete}
+                onSegmentationEdit={onSegmentationEdit}
+                onSegmentationAdd={onSegmentationAdd}
+                onToggleSegmentationVisibility={onToggleSegmentationVisibility}
               />
-              <AddSegmentRow />
+              {!disableEditing && showAddSegment && <AddSegmentRow />}
             </div>
           )}
         </div>
-        <div className="flex flex-col min-h-0 ohif-scrollbar overflow-y-hidden">
+        <div className="flex flex-col min-h-0 ohif-scrollbar overflow-y-hidden mt-2">
           {activeSegmentation?.segments?.map(segment => {
             if (segment === undefined || segment === null) {
               return null;
@@ -98,7 +117,7 @@ const SegmentationGroupTable = ({
             const { segmentIndex, color, label, isVisible, isLocked } = segment;
             return (
               <div className="mb-[1px]" key={segmentIndex}>
-                <SegmentItem
+                <SegmentationGroupSegment
                   segmentationId={activeSegmentationId}
                   segmentIndex={segmentIndex}
                   label={label}
@@ -106,6 +125,7 @@ const SegmentationGroupTable = ({
                   isActive={
                     activeSegmentation.activeSegmentIndex === segmentIndex
                   }
+                  disableEditing={disableEditing}
                   isLocked={isLocked}
                   isVisible={isVisible}
                   onClick={onSegmentClick}

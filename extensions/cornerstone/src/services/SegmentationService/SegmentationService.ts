@@ -1073,7 +1073,7 @@ class SegmentationService extends PubSubService {
         );
       }
 
-      if (isLocked !== undefined) {
+      if (isLocked) {
         this._setSegmentLocked(
           segmentationId,
           segmentIndex,

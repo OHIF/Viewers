@@ -1,34 +1,29 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Select, Icon, Dropdown } from '../../components';
 import PropTypes from 'prop-types';
 
-interface Segmentation {
-  id: string;
-  label: string;
-}
-
-interface SegmentationDropDownRowProps {
-  segmentations: Segmentation[];
-  onActiveSegmentationChange: (segmentation: Segmentation) => void;
-}
-
 function SegmentationDropDownRow({
   segmentations = [],
+  activeSegmentation,
   onActiveSegmentationChange,
-  isVisible,
+  disableEditing,
+  onToggleSegmentationVisibility,
   onSegmentationEdit,
   onSegmentationDelete,
   onSegmentationAdd,
-}: SegmentationDropDownRowProps) {
-  const [
-    activeSegmentation,
-    setActiveSegmentation,
-  ] = useState<Segmentation | null>(segmentations[0]);
-
-  const handleChange = value => {
-    setActiveSegmentation(value);
-    onActiveSegmentationChange(value); // Notify the parent
+}) {
+  const handleChange = option => {
+    onActiveSegmentationChange(option.value); // Notify the parent
   };
+
+  const selectOptions = segmentations.map(s => ({
+    value: s.id,
+    label: s.label,
+  }));
+
+  if (!activeSegmentation) {
+    return null;
+  }
 
   return (
     <div className="flex items-center mt-[8px] space-x-1 group">
@@ -45,23 +40,27 @@ function SegmentationDropDownRow({
           showBorders={false}
           list={[
             {
-              title: 'Rename',
-              onClick: () => {
-                onSegmentationEdit(activeSegmentation);
-              },
-            },
-            {
-              title: 'Add New Segmentation',
-              onClick: () => {
-                onSegmentationAdd();
-              },
-            },
-            {
               title: 'Delete',
               onClick: () => {
-                onSegmentationDelete(activeSegmentation);
+                onSegmentationDelete(activeSegmentation.id);
               },
             },
+            ...(disableEditing
+              ? []
+              : [
+                  {
+                    title: 'Rename',
+                    onClick: () => {
+                      onSegmentationEdit(activeSegmentation.id);
+                    },
+                  },
+                  {
+                    title: 'Add New Segmentation',
+                    onClick: () => {
+                      onSegmentationAdd();
+                    },
+                  },
+                ]),
           ]}
         >
           <Icon
@@ -70,21 +69,28 @@ function SegmentationDropDownRow({
           ></Icon>
         </Dropdown>
       </div>
-      <Select
-        id="segmentation-select"
-        isClearable={false}
-        onChange={handleChange}
-        isSearchable={false}
-        options={segmentations.map(s => ({
-          value: s.id,
-          label: s.label,
-        }))}
-        value={activeSegmentation}
-        className="text-aqua-pale h-[26px] w-1/2"
-      />
+      {selectOptions?.length && (
+        <Select
+          id="segmentation-select"
+          isClearable={false}
+          onChange={handleChange}
+          components={{
+            DropdownIndicator: () => (
+              <Icon name={'chevron-down-new'} className="mr-2" />
+            ),
+          }}
+          isSearchable={false}
+          options={selectOptions}
+          value={selectOptions?.find(o => o.value === activeSegmentation.id)}
+          className="text-aqua-pale h-[26px] w-1/2 text-[13px]"
+        />
+      )}
       <div className="items-center flex">
-        <div className="w-[28px] h-[28px] rounded-[4px] grid place-items-center  hover:bg-primary-dark cursor-pointer">
-          {isVisible ? (
+        <div
+          className="w-[28px] h-[28px] rounded-[4px] grid place-items-center  hover:bg-primary-dark cursor-pointer"
+          onClick={() => onToggleSegmentationVisibility(activeSegmentation.id)}
+        >
+          {activeSegmentation.isVisible ? (
             <Icon name="row-show-all" />
           ) : (
             <Icon name="row-hide-all" />

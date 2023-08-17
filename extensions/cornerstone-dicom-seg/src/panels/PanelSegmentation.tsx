@@ -2,20 +2,18 @@ import React, { useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { SegmentationGroupTable, useViewportGrid } from '@ohif/ui';
 import callInputDialog from './callInputDialog';
-import { useAppConfig } from '@state';
 import { useTranslation } from 'react-i18next';
 
 export default function PanelSegmentation({
   servicesManager,
-  commandsManager,
+  configuration,
+  extensionManager,
 }) {
   const {
     segmentationService,
     uiDialogService,
     uiNotificationService,
   } = servicesManager.services;
-  const [appConfig] = useAppConfig();
-  const disableEditing = appConfig?.disableEditing;
   const [viewportGrid, viewportGridService] = useViewportGrid();
 
   const { activeViewportIndex, viewports } = viewportGrid;
@@ -29,29 +27,6 @@ export default function PanelSegmentation({
   const [segmentations, setSegmentations] = useState(() =>
     segmentationService.getSegmentations()
   );
-
-  const [isMinimized, setIsMinimized] = useState({});
-
-  const onToggleMinimizeSegmentation = useCallback(
-    id => {
-      setIsMinimized(prevState => ({
-        ...prevState,
-        [id]: !prevState[id],
-      }));
-    },
-    [setIsMinimized]
-  );
-
-  // Only expand the last segmentation added to the list and collapse the rest
-  useEffect(() => {
-    const lastSegmentationId = segmentations[segmentations.length - 1]?.id;
-    if (lastSegmentationId) {
-      setIsMinimized(prevState => ({
-        ...prevState,
-        [lastSegmentationId]: false,
-      }));
-    }
-  }, [segmentations, setIsMinimized]);
 
   useEffect(() => {
     // ~~ Subscription
@@ -276,7 +251,6 @@ export default function PanelSegmentation({
       <SegmentationGroupTable
         title={t('Segmentations')}
         segmentations={segmentations}
-        isMinimized={isMinimized}
         activeSegmentationId={selectedSegmentationId || ''}
         onSegmentationAdd={onSegmentationAdd}
         onSegmentationClick={onSegmentationClick}
@@ -285,12 +259,11 @@ export default function PanelSegmentation({
         onSegmentClick={onSegmentClick}
         onSegmentEdit={onSegmentEdit}
         onSegmentAdd={onSegmentAdd}
-        disableEditing={disableEditing}
+        disableEditing={configuration.disableEditing}
         onSegmentColorClick={onSegmentColorClick}
         onSegmentDelete={onSegmentDelete}
         onToggleSegmentVisibility={onToggleSegmentVisibility}
         onToggleSegmentationVisibility={onToggleSegmentationVisibility}
-        onToggleMinimizeSegmentation={onToggleMinimizeSegmentation}
         segmentationConfig={{ initialConfig: segmentationConfiguration }}
         setRenderOutline={value =>
           _setSegmentationConfiguration(
@@ -350,7 +323,6 @@ PanelSegmentation.propTypes = {
   commandsManager: PropTypes.shape({
     runCommand: PropTypes.func.isRequired,
   }),
-  appConfig: PropTypes.object.isRequired,
   servicesManager: PropTypes.shape({
     services: PropTypes.shape({
       segmentationService: PropTypes.shape({

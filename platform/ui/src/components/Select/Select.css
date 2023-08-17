@@ -41,6 +41,10 @@
 
 .customSelect__wrapper .customSelect__single-value {
   @apply text-aqua-pale pl-1;
+  max-width: calc(100% - 20px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .customSelect__wrapper.customSelect--is-disabled {
