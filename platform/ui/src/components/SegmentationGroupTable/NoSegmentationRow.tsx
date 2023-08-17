@@ -1,10 +1,10 @@
 import React from 'react';
 import Icon from '../Icon';
 
-function NoSegmentationRow() {
+function NoSegmentationRow({ onSegmentationAdd }) {
   return (
-    <div className="group">
-      <div className="text-primary-active flex group-hover:bg-secondary-dark items-center">
+    <div className="group" onClick={onSegmentationAdd}>
+      <div className="text-primary-active flex group-hover:bg-secondary-dark group-hover:cursor-pointer items-center">
         <div className="w-[28px] h-[28px] grid place-items-center">
           <Icon name="icon-add" />
         </div>

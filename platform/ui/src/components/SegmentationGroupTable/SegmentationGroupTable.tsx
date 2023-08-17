@@ -9,14 +9,18 @@ import SegmentationGroupSegment from './SegmentationGroupSegment';
 
 const SegmentationGroupTable = ({
   segmentations,
+  // segmentation initial config
   segmentationConfig,
+  // UI show/hide
   disableEditing,
+  showAddSegmentation,
+  showAddSegment,
+  showDeleteSegment,
+  // segmentation/segment handlers
   onSegmentationAdd,
   onSegmentationEdit,
   onSegmentationClick,
   onSegmentationDelete,
-  showAddSegmentation,
-  showAddSegment,
   onSegmentClick,
   onSegmentAdd,
   onSegmentDelete,
@@ -24,6 +28,7 @@ const SegmentationGroupTable = ({
   onToggleSegmentationVisibility,
   onToggleSegmentVisibility,
   onSegmentColorClick,
+  // segmentation config handlers
   setFillAlpha,
   setFillAlphaInactive,
   setOutlineWidthActive,
@@ -31,7 +36,6 @@ const SegmentationGroupTable = ({
   setRenderFill,
   setRenderInactiveSegmentations,
   setRenderOutline,
-  showDeleteSegment,
 }) => {
   const [isConfigOpen, setIsConfigOpen] = useState(false);
   const [activeSegmentationId, setActiveSegmentationId] = useState(null);
@@ -90,7 +94,9 @@ const SegmentationGroupTable = ({
         <div className="bg-black">
           {segmentations?.length === 0 ? (
             <div className=" mt-1 select-none">
-              {showAddSegmentation && !disableEditing && <NoSegmentationRow />}
+              {showAddSegmentation && !disableEditing && (
+                <NoSegmentationRow onSegmentationAdd={onSegmentationAdd} />
+              )}
             </div>
           ) : (
             <div className=" mt-1 select-none">
@@ -104,7 +110,11 @@ const SegmentationGroupTable = ({
                 onSegmentationAdd={onSegmentationAdd}
                 onToggleSegmentationVisibility={onToggleSegmentationVisibility}
               />
-              {!disableEditing && showAddSegment && <AddSegmentRow />}
+              {!disableEditing && showAddSegment && (
+                <AddSegmentRow
+                  onClick={() => onSegmentAdd(activeSegmentationId)}
+                />
+              )}
             </div>
           )}
         </div>

@@ -1,9 +1,9 @@
 import React from 'react';
 import Icon from '../Icon';
 
-function AddSegmentRow() {
+function AddSegmentRow({ onClick }) {
   return (
-    <div className="flex hover:cursor-pointer">
+    <div className="flex hover:cursor-pointer" onClick={onClick}>
       <div className="w-[28px] h-[28px]"></div>
       <div className="group ml-1 mt-1">
         <div className="text-primary-active flex group-hover:bg-secondary-dark items-center rounded-sm pr-2">

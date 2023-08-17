@@ -173,6 +173,9 @@ class SegmentationService extends PubSubService {
 
     segmentation.segmentCount++;
 
+    // make the newly added segment the active segment
+    this._setActiveSegment(segmentationId, segmentIndex);
+
     const suppressEvents = true;
     if (config.properties !== undefined) {
       const {
