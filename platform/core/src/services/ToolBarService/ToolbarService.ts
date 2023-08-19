@@ -19,11 +19,13 @@ export default class ToolbarService extends PubSubService {
   };
 
   buttons: Record<string, unknown> = {};
+
   state: {
     primaryToolId: string;
     toggles: Record<string, boolean>;
     groups: Record<string, unknown>;
-  } = { primaryToolId: 'WindowLevel', toggles: {}, groups: {} };
+  } = { primaryToolId: '', toggles: {}, groups: {} };
+
   buttonSections: Record<string, unknown> = {
     /**
      * primary: ['Zoom', 'Wwwc'],
@@ -58,6 +60,23 @@ export default class ToolbarService extends PubSubService {
     this.reset();
   }
 
+  getAlternateInteraction(toolName) {
+    const button = this.getButton(toolName);
+    if (!button || !button.props.primary) {
+      return;
+    }
+    const {
+      id: itemId,
+      type: interactionType,
+      commands,
+    } = button.props.primary;
+    return {
+      itemId,
+      interactionType,
+      commands,
+    };
+  }
+
   /**
    *
    * @param {*} interaction - can be undefined to run nothing
@@ -70,31 +89,29 @@ export default class ToolbarService extends PubSubService {
       return;
     }
     const commandsManager = this._commandsManager;
-    const { groupId, itemId, interactionType, commands } = interaction;
+    const {
+      groupId,
+      itemId,
+      interactionType,
+      commands,
+      defaultTool,
+    } = interaction;
 
     switch (interactionType) {
       case 'action': {
-        commands.forEach(({ commandName, commandOptions, context }) => {
-          if (commandName) {
-            commandsManager.runCommand(
-              commandName,
-              {
-                ...commandOptions,
-                ...options,
-              },
-              context
-            );
-          }
-        });
+        commandsManager.run(commands, options);
         break;
       }
       case 'tool': {
         try {
-          commands.forEach(
-            ({ commandName = 'setToolActive', commandOptions, context }) => {
-              commandsManager.runCommand(commandName, commandOptions, context);
-            }
-          );
+          const alternateInteraction =
+            this.state.primaryToolId === itemId &&
+            this.getAlternateInteraction(defaultTool);
+          if (alternateInteraction) {
+            // Allow toggling the mode off
+            return this.recordInteraction(alternateInteraction, options);
+          }
+          commandsManager.run(commands, options);
 
           // only set the primary tool if no error was thrown
           this.state.primaryToolId = itemId;

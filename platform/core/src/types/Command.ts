@@ -8,3 +8,5 @@ export interface Command {
 export interface Commands {
   commands: Command[];
 }
+
+export type SingleOrArrayCommand = Command | Command[];

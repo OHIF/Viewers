@@ -425,7 +425,6 @@ const toolbarButtons = [
           commandOptions: {
             protocolId: 'mpr',
           },
-          context: 'DEFAULT',
         },
       ],
     },
@@ -437,16 +436,14 @@ const toolbarButtons = [
       type: 'tool',
       icon: 'tool-crosshair',
       label: 'Crosshairs',
-      commands: [
-        {
-          commandName: 'setToolActive',
-          commandOptions: {
-            toolGroupId: 'mpr',
-            toolName: 'Crosshairs',
-          },
-          context: 'CORNERSTONE',
+      defaultTool: 'WindowLevel',
+      commands: {
+        commandName: 'setToolActive',
+        commandOptions: {
+          toolGroupId: 'mpr',
+          toolName: 'Crosshairs',
         },
-      ],
+      },
     },
   },
   // More...
@@ -460,13 +457,9 @@ const toolbarButtons = [
         'Reset',
         'tool-reset',
         'Reset View',
-        [
-          {
-            commandName: 'resetViewport',
-            commandOptions: {},
-            context: 'CORNERSTONE',
-          },
-        ],
+        {
+          commandName: 'resetViewport',
+        },
         'Reset'
       ),
       secondary: {
@@ -480,13 +473,9 @@ const toolbarButtons = [
           'Reset',
           'tool-reset',
           'Reset View',
-          [
-            {
-              commandName: 'resetViewport',
-              commandOptions: {},
-              context: 'CORNERSTONE',
-            },
-          ],
+          {
+            commandName: 'resetViewport',
+          },
           'Reset'
         ),
         _createActionButton(

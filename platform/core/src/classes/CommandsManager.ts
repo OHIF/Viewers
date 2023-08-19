@@ -173,7 +173,8 @@ export class CommandsManager {
    */
   public run(
     toRun: Command | Commands | Command[] | undefined,
-    options?: Record<string, unknown>
+    options?: Record<string, unknown>,
+    defaultCommand?: string
   ): unknown {
     if (!toRun) {
       return;
@@ -190,7 +191,7 @@ export class CommandsManager {
 
     let result;
     (commands as Command[]).forEach(
-      ({ commandName, commandOptions, context }) => {
+      ({ commandName = defaultCommand, commandOptions, context }) => {
         if (commandName) {
           result = this.runCommand(
             commandName,
