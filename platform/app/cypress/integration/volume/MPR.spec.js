@@ -95,19 +95,7 @@ describe('OHIF MPR', () => {
   });
 
   it('should correctly render Crosshairs for MPR', () => {
-    cy.wait(250);
-
-    cy.get('[data-cy="Crosshairs"]').click();
-    cy.window()
-      .its('cornerstoneTools')
-      .then(cornerstoneTools => {
-        const state = cornerstoneTools.annotation.state.getAnnotationManager();
-
-        const fORMap = state.annotations;
-        // it should not have crosshairs yet
-        expect(Object.keys(fORMap)).to.have.length(0);
-      });
-
+    cy.get('[data-cy="Crosshairs"]').should('not.exist');
     cy.get(':nth-child(3) > [data-cy="study-browser-thumbnail"]').dblclick();
     cy.get('[data-cy="MPR"]').click();
     cy.get('[data-cy="Crosshairs"]').click();
