@@ -639,6 +639,140 @@ const toolbarButtons = [
       ],
     },
   },
+
+  // More...
+  {
+    id: 'MoreToolsMpr',
+    type: 'ohif.splitButton',
+    props: {
+      isRadio: true, // ?
+      groupId: 'MoreTools',
+      primary: _createActionButton(
+        'Reset',
+        'tool-reset',
+        'Reset View',
+        {
+          commandName: 'resetViewport',
+        },
+        'Reset'
+      ),
+      secondary: {
+        icon: 'chevron-down',
+        label: '',
+        isActive: true,
+        tooltip: 'More Tools',
+      },
+      items: [
+        _createActionButton(
+          'Reset',
+          'tool-reset',
+          'Reset View',
+          {
+            commandName: 'resetViewport',
+          },
+          'Reset'
+        ),
+        _createToolButton(
+          'StackScroll',
+          'tool-stack-scroll',
+          'Stack Scroll',
+          [
+            {
+              commandName: 'setToolActive',
+              commandOptions: {
+                toolName: 'StackScroll',
+              },
+              context: 'CORNERSTONE',
+            },
+          ],
+          'Stack Scroll'
+        ),
+        _createActionButton(
+          'invert',
+          'tool-invert',
+          'Invert',
+          [
+            {
+              commandName: 'invertViewport',
+              commandOptions: {},
+              context: 'CORNERSTONE',
+            },
+          ],
+          'Invert Colors'
+        ),
+        _createToolButton(
+          'Probe',
+          'tool-probe',
+          'Probe',
+          [
+            {
+              commandName: 'setToolActive',
+              commandOptions: {
+                toolName: 'DragProbe',
+              },
+              context: 'CORNERSTONE',
+            },
+          ],
+          'Probe'
+        ),
+        _createToggleButton(
+          'cine',
+          'tool-cine',
+          'Cine',
+          [
+            {
+              commandName: 'toggleCine',
+              context: 'CORNERSTONE',
+            },
+          ],
+          'Cine'
+        ),
+        _createToolButton(
+          'Angle',
+          'tool-angle',
+          'Angle',
+          [
+            {
+              commandName: 'setToolActive',
+              commandOptions: {
+                toolName: 'Angle',
+              },
+              context: 'CORNERSTONE',
+            },
+          ],
+          'Angle'
+        ),
+        _createToolButton(
+          'Rectangle',
+          'tool-rectangle',
+          'Rectangle',
+          [
+            {
+              commandName: 'setToolActive',
+              commandOptions: {
+                toolName: 'RectangleROI',
+              },
+              context: 'CORNERSTONE',
+            },
+          ],
+          'Rectangle'
+        ),
+        _createActionButton(
+          'TagBrowser',
+          'list-bullets',
+          'Dicom Tag Browser',
+          [
+            {
+              commandName: 'openDICOMTagViewer',
+              commandOptions: {},
+              context: 'DEFAULT',
+            },
+          ],
+          'Dicom Tag Browser'
+        ),
+      ],
+    },
+  },
 ];
 
 export default toolbarButtons;

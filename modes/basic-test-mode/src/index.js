@@ -86,22 +86,23 @@ function modeFactory() {
       ]);
 
       let unsubscribe;
+      toolbarService.setDefaultTool({
+        groupId: 'WindowLevel',
+        itemId: 'WindowLevel',
+        interactionType: 'tool',
+        commands: [
+          {
+            commandName: 'setToolActive',
+            commandOptions: {
+              toolName: 'WindowLevel',
+            },
+            context: 'CORNERSTONE',
+          },
+        ],
+      });
 
       const activateTool = () => {
-        toolbarService.recordInteraction({
-          groupId: 'WindowLevel',
-          itemId: 'WindowLevel',
-          interactionType: 'tool',
-          commands: [
-            {
-              commandName: 'setToolActive',
-              commandOptions: {
-                toolName: 'WindowLevel',
-              },
-              context: 'CORNERSTONE',
-            },
-          ],
-        });
+        toolbarService.recordInteraction(toolbarService.getDefaultTool());
 
         // We don't need to reset the active tool whenever a viewport is getting
         // added to the toolGroup.
@@ -125,8 +126,18 @@ function modeFactory() {
         'Capture',
         'Layout',
         'MPR',
-        'Crosshairs',
         'MoreTools',
+      ]);
+      toolbarService.createButtonSection('mpr', [
+        'MeasurementTools',
+        'Zoom',
+        'WindowLevel',
+        'Pan',
+        'Capture',
+        'Layout',
+        'MPR',
+        'Crosshairs',
+        'MoreToolsMpr',
       ]);
     },
     onModeExit: ({ servicesManager }) => {

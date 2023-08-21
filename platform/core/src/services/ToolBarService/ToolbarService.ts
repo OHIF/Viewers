@@ -35,6 +35,8 @@ export default class ToolbarService extends PubSubService {
   _commandsManager: CommandsManager;
   extensionManager: ExtensionManager;
 
+  defaultTool: Record<string, unknown>;
+
   constructor(commandsManager: CommandsManager) {
     super(EVENTS);
     this._commandsManager = commandsManager;
@@ -60,21 +62,12 @@ export default class ToolbarService extends PubSubService {
     this.reset();
   }
 
-  getAlternateInteraction(toolName) {
-    const button = this.getButton(toolName);
-    if (!button || !button.props.primary) {
-      return;
-    }
-    const {
-      id: itemId,
-      type: interactionType,
-      commands,
-    } = button.props.primary;
-    return {
-      itemId,
-      interactionType,
-      commands,
-    };
+  public setDefaultTool(interaction) {
+    this.defaultTool = interaction;
+  }
+
+  public getDefaultTool() {
+    return this.defaultTool;
   }
 
   /**
@@ -89,13 +82,7 @@ export default class ToolbarService extends PubSubService {
       return;
     }
     const commandsManager = this._commandsManager;
-    const {
-      groupId,
-      itemId,
-      interactionType,
-      commands,
-      defaultTool,
-    } = interaction;
+    const { groupId, itemId, interactionType, commands } = interaction;
 
     switch (interactionType) {
       case 'action': {
@@ -106,7 +93,8 @@ export default class ToolbarService extends PubSubService {
         try {
           const alternateInteraction =
             this.state.primaryToolId === itemId &&
-            this.getAlternateInteraction(defaultTool);
+            this.defaultTool?.itemId !== itemId &&
+            this.getDefaultTool();
           if (alternateInteraction) {
             // Allow toggling the mode off
             return this.recordInteraction(alternateInteraction, options);
@@ -261,11 +249,17 @@ export default class ToolbarService extends PubSubService {
    * Finds a button section by it's name, then maps the list of string name
    * identifiers to schema/values that can be used to render the buttons.
    *
-   * @param {string} key
-   * @param {*} props
+   * @param key - the tool group id
+   * @param props - to apply to the secitons
+   * @param defaultKey - what key to return if the given section isn't defined
    */
-  getButtonSection(key, props) {
-    const buttonSectionIds = this.buttonSections[key];
+  getButtonSection(
+    key: string,
+    props?: Record<string, unknown>,
+    defaultKey = 'primary'
+  ) {
+    const buttonSectionIds =
+      this.buttonSections[key] || this.buttonSections[defaultKey];
     const buttonsInSection = [];
 
     if (buttonSectionIds && buttonSectionIds.length !== 0) {

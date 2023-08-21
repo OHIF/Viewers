@@ -471,13 +471,8 @@ function commandsModule({
 
       const { viewport } = enabledElement;
 
-      if (viewport instanceof StackViewport) {
-        viewport.resetProperties();
-        viewport.resetCamera();
-      } else {
-        // Todo: add reset properties for volume viewport
-        viewport.resetCamera();
-      }
+      viewport.resetProperties?.();
+      viewport.resetCamera();
 
       viewport.render();
     },

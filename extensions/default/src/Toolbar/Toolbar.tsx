@@ -1,8 +1,15 @@
 import React, { useEffect, useState } from 'react';
+import { Types } from '@ohif/core';
+import { useViewportGrid } from '@ohif/ui';
 import classnames from 'classnames';
 
-export default function Toolbar({ servicesManager }) {
+export default function Toolbar({
+  servicesManager,
+}: Types.Extensions.ExtensionParams): React.ReactElement {
   const { toolbarService } = servicesManager.services;
+
+  const [viewportGrid, viewportGridService] = useViewportGrid();
+
   const [toolbarButtons, setToolbarButtons] = useState([]);
   const [buttonState, setButtonState] = useState({
     primaryToolId: '',
@@ -12,20 +19,27 @@ export default function Toolbar({ servicesManager }) {
 
   // Could track buttons and state separately...?
   useEffect(() => {
+    const updateToolbar = () => {
+      const toolGroupId = viewportGridService.getActiveViewportOption('toolGroupId', 'default');
+      setToolbarButtons(toolbarService.getButtonSection(toolGroupId));
+    };
+
     const { unsubscribe: unsub1 } = toolbarService.subscribe(
       toolbarService.EVENTS.TOOL_BAR_MODIFIED,
-      () => setToolbarButtons(toolbarService.getButtonSection('primary'))
+      updateToolbar
     );
     const { unsubscribe: unsub2 } = toolbarService.subscribe(
       toolbarService.EVENTS.TOOL_BAR_STATE_MODIFIED,
       () => setButtonState({ ...toolbarService.state })
     );
 
+    updateToolbar();
+
     return () => {
       unsub1();
       unsub2();
     };
-  }, [toolbarService]);
+  }, [toolbarService, viewportGrid]);
 
   return (
     <>
