@@ -111,7 +111,8 @@ window.config = ({ servicesManager } = {}) => {
 ## Configuration Options
 
 Here are a list of some options available:
-
+- `disableEditing`:  If true, it disables editing in OHIF, hiding edit buttons in segmentation
+  panel and locking already stored measurements.
 - `maxNumberOfWebWorkers`: The maximum number of web workers to use for
   decoding. Defaults to minimum of `navigator.hardwareConcurrency` and
   what is specified by `maxNumberOfWebWorkers`. Some windows machines require smaller values.
@@ -163,10 +164,10 @@ if auth headers are used, a preflight request is required.
       onModeEnter: ({ servicesManager, extensionManager, commandsManager }) => {
         ...
       },
-      /** 
-       * This mode allows its configuration to be overwritten by 
+      /**
+       * This mode allows its configuration to be overwritten by
        * destructuring the modeConfiguration value from the mode fatory function
-       * at the end of the mode configuration definition. 
+       * at the end of the mode configuration definition.
        */
       ...modeConfiguration,
     };

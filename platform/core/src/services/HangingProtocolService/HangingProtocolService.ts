@@ -161,6 +161,9 @@ export default class HangingProtocolService extends PubSubService {
     this.studies = [];
     this.viewportMatchDetails = new Map();
     this.displaySetMatchDetails = new Map();
+    this.protocol = undefined;
+    this.stageIndex = undefined;
+    this.protocolEngine = undefined;
   }
 
   /** Leave the hanging protocol in the initialized state */
@@ -556,6 +559,13 @@ export default class HangingProtocolService extends PubSubService {
   }
 
   getViewportsRequireUpdate(viewportIndex, displaySetInstanceUID) {
+    const { displaySetService } = this._servicesManager.services;
+    const displaySet = displaySetService.getDisplaySetByUID(
+      displaySetInstanceUID
+    );
+    if (displaySet?.unsupported) {
+      throw new Error('Unsupported displaySet');
+    }
     const newDisplaySetInstanceUID = displaySetInstanceUID;
     const protocol = this.protocol;
     const protocolStage = protocol.stages[this.stageIndex];
@@ -908,7 +918,7 @@ export default class HangingProtocolService extends PubSubService {
         const stage = stages[i];
         if (stage.id === stageId && stage.status !== 'disabled') {
           return i;
-        }
+      }
       }
       return;
     }
@@ -1221,7 +1231,7 @@ export default class HangingProtocolService extends PubSubService {
     for (const subMatch of match.matchingScores) {
       if (subMatch.displaySetInstanceUID === displaySetUID) {
         return;
-      }
+    }
     }
     throw new Error(
       `Reused viewport details ${id} with ds ${displaySetUID} not valid`
@@ -1421,25 +1431,26 @@ export default class HangingProtocolService extends PubSubService {
       seriesMatchingRules
     );
     const matchActiveOnly = this.protocol.numberOfPriorsReferenced === -1;
-    this.studies.forEach(study => {
+    this.studies.forEach((study, studyInstanceUIDsIndex) => {
       // Skip non-active if active only
       if (matchActiveOnly && this.activeStudy !== study) {
         return;
       }
 
       const studyDisplaySets = this.displaySets.filter(
-        it => it.StudyInstanceUID === study.StudyInstanceUID
+        it => it.StudyInstanceUID === study.StudyInstanceUID && !it?.unsupported
       );
 
       const studyMatchDetails = this.protocolEngine.findMatch(
-        study,
-        studyMatchingRules,
-        {
-          studies: this.studies,
-          displaySets: studyDisplaySets,
-          allDisplaySets: this.displaySets,
-          displaySetMatchDetails: this.displaySetMatchDetails,
-        }
+          study,
+          studyMatchingRules,
+          {
+            studies: this.studies,
+            displaySets: studyDisplaySets,
+            allDisplaySets: this.displaySets,
+            displaySetMatchDetails: this.displaySetMatchDetails,
+          studyInstanceUIDsIndex,
+          }
       );
 
       // Prevent bestMatch from being updated if the matchDetails' required attribute check has failed
@@ -1448,10 +1459,10 @@ export default class HangingProtocolService extends PubSubService {
       }
 
       this.debug(
-        'study',
-        study.StudyInstanceUID,
-        'display sets #',
-        studyDisplaySets.length
+          'study',
+          study.StudyInstanceUID,
+          'display sets #',
+          studyDisplaySets.length
       );
       studyDisplaySets.forEach(displaySet => {
         const {
@@ -1460,15 +1471,15 @@ export default class HangingProtocolService extends PubSubService {
           displaySetInstanceUID,
         } = displaySet;
         const seriesMatchDetails = this.protocolEngine.findMatch(
-          displaySet,
-          seriesMatchingRules,
-          // Todo: why we have images here since the matching type does not have it
-          {
-            studies: this.studies,
-            instance: displaySet.images?.[0],
-            displaySetMatchDetails: this.displaySetMatchDetails,
-            displaySets: studyDisplaySets,
-          }
+            displaySet,
+            seriesMatchingRules,
+            // Todo: why we have images here since the matching type does not have it
+            {
+              studies: this.studies,
+              instance: displaySet.images?.[0],
+              displaySetMatchDetails: this.displaySetMatchDetails,
+              displaySets: studyDisplaySets,
+            }
         );
 
         // Prevent bestMatch from being updated if the matchDetails' required attribute check has failed

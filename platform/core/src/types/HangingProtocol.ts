@@ -270,7 +270,6 @@ export type Protocol = {
   stages: ProtocolStage[];
   // Optional
   locked?: boolean;
-  hasUpdatedPriorsInformation?: boolean;
   name?: string;
   createdDate?: string;
   modifiedDate?: string;
@@ -284,7 +283,9 @@ export type Protocol = {
   /* The number of priors required for this hanging protocol.
    * -1 means that NO priors are referenced, and thus this HP matches
    * only the active study, whereas 0 means that an unknown number of
-   * priors is matched.
+   * priors is matched.  Positive values mean at least that many priors are
+   * required.
+   * Replaces hasUpdatedPriors
    */
   numberOfPriorsReferenced?: number;
   syncDataForViewports?: boolean;

@@ -13,11 +13,12 @@ const AddNewSegmentRow = ({
   onSegmentAdd,
   isVisible,
   showAddSegment,
+  disableEditing,
 }) => {
   return (
     <div>
       <div className="flex items-center pl-[29px] bg-black text-primary-active hover:opacity-80 cursor-pointer text-[12px] py-1">
-        {showAddSegment && (
+        {showAddSegment && !disableEditing && (
           <div className="flex items-center" onClick={() => onSegmentAdd()}>
             <Icon name="row-add" className="w-5 h-5" />
             <div className="">Add Segment</div>
@@ -53,6 +54,7 @@ const SegmentGroupHeader = ({
   isActive,
   segmentCount,
   onSegmentationEdit,
+  disableEditing,
   onSegmentationDelete,
 }) => {
   return (
@@ -92,34 +94,36 @@ const SegmentGroupHeader = ({
           e.stopPropagation();
         }}
       >
-        <Dropdown
-          id="segmentation-dropdown"
-          showDropdownIcon={false}
-          list={[
-            {
-              title: 'Rename',
-              onClick: () => {
-                onSegmentationEdit(id);
+        {!disableEditing && (
+          <Dropdown
+            id="segmentation-dropdown"
+            showDropdownIcon={false}
+            list={[
+              {
+                title: 'Rename',
+                onClick: () => {
+                  onSegmentationEdit(id);
+                },
               },
-            },
-            {
-              title: 'Delete',
-              onClick: () => {
-                onSegmentationDelete(id);
+              {
+                title: 'Delete',
+                onClick: () => {
+                  onSegmentationDelete(id);
+                },
               },
-            },
-          ]}
-        >
-          <IconButton
-            id={''}
-            variant="text"
-            color="inherit"
-            size="initial"
-            className="text-primary-active"
+            ]}
           >
-            <Icon name="panel-group-more" />
-          </IconButton>
-        </Dropdown>
+            <IconButton
+              id={''}
+              variant="text"
+              color="inherit"
+              size="initial"
+              className="text-primary-active"
+            >
+              <Icon name="panel-group-more" />
+            </IconButton>
+          </Dropdown>
+        )}
       </div>
     </div>
   );
@@ -134,6 +138,7 @@ const SegmentationGroup = ({
   onSegmentClick,
   isMinimized,
   onSegmentColorClick,
+  disableEditing,
   showAddSegment,
   segments,
   activeSegmentIndex,
@@ -162,6 +167,7 @@ const SegmentationGroup = ({
         segmentCount={segmentCount}
         onSegmentationEdit={onSegmentationEdit}
         onSegmentationDelete={onSegmentationDelete}
+        disableEditing={disableEditing}
       />
       {!isMinimized && (
         <div className="flex flex-col flex-auto min-h-0">
@@ -171,6 +177,7 @@ const SegmentationGroup = ({
             isVisible={isVisible}
             onToggleSegmentationVisibility={onToggleSegmentationVisibility}
             id={id}
+            disableEditing={disableEditing}
             showAddSegment={showAddSegment}
           />
           <div className="flex flex-col min-h-0 ohif-scrollbar overflow-y-hidden">
@@ -197,6 +204,7 @@ const SegmentationGroup = ({
                       isActive={activeSegmentIndex === segmentIndex}
                       isLocked={isLocked}
                       isVisible={isVisible}
+                      disableEditing={disableEditing}
                       onClick={onSegmentClick}
                       onEdit={onSegmentEdit}
                       onDelete={onSegmentDelete}
@@ -241,6 +249,7 @@ SegmentationGroup.propTypes = {
   onSegmentationConfigChange: PropTypes.func.isRequired,
   onSegmentationDelete: PropTypes.func.isRequired,
   onSegmentEdit: PropTypes.func.isRequired,
+  disableEditing: PropTypes.bool,
 };
 
 SegmentationGroup.defaultProps = {
