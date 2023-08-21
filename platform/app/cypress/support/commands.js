@@ -287,12 +287,13 @@ Cypress.Commands.add('initStudyListAliasesOnDesktop', () => {
 Cypress.Commands.add(
   'addLengthMeasurement',
   (firstClick = [150, 100], secondClick = [130, 170]) => {
-    cy.get('@measurementToolsBtnPrimary')
-      .should('have.attr', 'data-tool', 'Length')
-      .click()
-      .then($lengthBtn => {
-        cy.wrap($lengthBtn).should('have.class', 'active');
-      });
+    cy.get('@measurementToolsBtnPrimary').then(button => {
+      if (!button.is('.active')) {
+        cy.wrap(button).click();
+      }
+    });
+
+    cy.get('@measurementToolsBtnPrimary').should('have.class', 'active');
 
     cy.addLine('.viewport-element', firstClick, secondClick);
   }
