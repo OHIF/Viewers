@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { useTranslation } from 'react-i18next';
@@ -38,24 +38,29 @@ const Tooltip = ({
   tight,
   children,
   isDisabled,
+  delay,
 }) => {
   const [isActive, setIsActive] = useState(false);
   const { t } = useTranslation('Buttons');
 
+  const delayTimeout = useRef(null);
+
   const handleMouseOver = () => {
-    if (!isActive) {
-      setIsActive(true);
+    if (!isActive && !isDisabled) {
+      delayTimeout.current = setTimeout(() => {
+        setIsActive(true);
+      }, delay);
     }
   };
 
   const handleMouseOut = () => {
-    if (isActive) {
-      setIsActive(false);
+    if (delayTimeout.current) {
+      clearTimeout(delayTimeout.current); // Clear the timeout using the ref
     }
+    setIsActive(false);
   };
 
   const isOpen = (isSticky || isActive) && !isDisabled;
-
   return (
     <div
       className={classnames('relative', className)}
@@ -100,12 +105,14 @@ Tooltip.defaultProps = {
   isSticky: false,
   position: 'bottom',
   isDisabled: false,
+  delay: 0,
 };
 
 Tooltip.propTypes = {
   /** prevents tooltip from rendering despite hover/active/sticky */
   isDisabled: PropTypes.bool,
   content: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+  delay: PropTypes.number,
   position: PropTypes.oneOf([
     'bottom',
     'bottom-left',

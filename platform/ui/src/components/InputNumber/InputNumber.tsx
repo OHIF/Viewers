@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import IconButton from '../IconButton';
 import Icon from '../Icon';
 import './InputNumber.css';
@@ -28,6 +28,7 @@ const InputNumber: React.FC<{
   className?: string;
   labelClassName?: string;
   label?: string;
+  showUpAndDownArrows?: boolean;
 }> = ({
   value,
   onChange,
@@ -38,6 +39,7 @@ const InputNumber: React.FC<{
   maxValue = 100,
   labelClassName,
   label,
+  showUpAndDownArrows = true,
 }) => {
   const [numberValue, setNumberValue] = useState(value);
 
@@ -53,6 +55,12 @@ const InputNumber: React.FC<{
     },
     [maxValue, minValue]
   );
+
+  useEffect(() => {
+    if (value !== numberValue) {
+      setNumberValue(value);
+    }
+  }, [value]);
 
   const handleChange = useCallback(
     e => {
@@ -97,28 +105,30 @@ const InputNumber: React.FC<{
             className={`bg-black text-white text-[12px] w-full text-center input-number`}
           />
 
-          <div className="up-arrowsize flex flex-col items-center justify-around">
-            <IconButton
-              id={'down-arrow-icon'}
-              variant="text"
-              color="inherit"
-              size="initial"
-              className="text-[#726f7e] transform rotate-180"
-              onClick={handleIncrement}
-            >
-              <Icon name="ui-arrow-down" />
-            </IconButton>
-            <IconButton
-              id={'down-arrow-icon'}
-              variant="text"
-              color="inherit"
-              size="initial"
-              className="text-[#726f7e]"
-              onClick={handleDecrement}
-            >
-              <Icon name="ui-arrow-down" />
-            </IconButton>
-          </div>
+          {showUpAndDownArrows && (
+            <div className="up-arrowsize flex flex-col items-center justify-around">
+              <IconButton
+                id={'down-arrow-icon'}
+                variant="text"
+                color="inherit"
+                size="initial"
+                className="text-[#726f7e] transform rotate-180"
+                onClick={handleIncrement}
+              >
+                <Icon name="ui-arrow-down" />
+              </IconButton>
+              <IconButton
+                id={'down-arrow-icon'}
+                variant="text"
+                color="inherit"
+                size="initial"
+                className="text-[#726f7e]"
+                onClick={handleDecrement}
+              >
+                <Icon name="ui-arrow-down" />
+              </IconButton>
+            </div>
+          )}
         </div>
       </div>
     </div>

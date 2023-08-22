@@ -58,10 +58,11 @@ customization.
               name: "Mode",
               type: "radio",
               value: "Circle",
-              options: [
+              values: [
                 { value: "Circle", label: "Circle" },
                 { value: "Sphere", label: "Sphere" },
               ],
+              onChange: (value) => console.log("Brush mode changed", value),
             },
           ],
         },
@@ -71,145 +72,6 @@ customization.
           active: true,
           onClick: () => console.log("eraser clicked"),
           options: [
-            {
-              name: "Eraser Size",
-              type: "range",
-              min: 1,
-              max: 10,
-              value: 5,
-              step: 1,
-              onChange: (value) => console.log("eraser size changed", value),
-            },
-            {
-              name: "Mode",
-              type: "radio",
-              value: "Circle",
-              options: [
-                { value: "Circle", label: "Circle" },
-                { value: "Sphere", label: "Sphere" },
-              ],
-            },
-          ],
-        },
-        {
-          name: "Eraser",
-          icon: "icon-tool-eraser",
-          active: true,
-          onClick: () => console.log("eraser clicked"),
-          options: [
-            {
-              name: "Eraser Size",
-              type: "range",
-              min: 1,
-              max: 10,
-              value: 5,
-              step: 1,
-              onChange: (value) => console.log("eraser size changed", value),
-            },
-            {
-              name: "Mode",
-              type: "radio",
-              value: "Circle",
-              options: [
-                { value: "Circle", label: "Circle" },
-                { value: "Sphere", label: "Sphere" },
-              ],
-            },
-          ],
-        },
-        {
-          name: "Eraser",
-          icon: "icon-tool-eraser",
-          active: true,
-          onClick: () => console.log("eraser clicked"),
-          options: [
-            {
-              name: "Eraser Size",
-              type: "range",
-              min: 1,
-              max: 10,
-              value: 5,
-              step: 1,
-              onChange: (value) => console.log("eraser size changed", value),
-            },
-            {
-              name: "Mode",
-              type: "radio",
-              value: "Circle",
-              options: [
-                { value: "Circle", label: "Circle" },
-                { value: "Sphere", label: "Sphere" },
-              ],
-            },
-          ],
-        },
-        {
-          name: "Eraser",
-          icon: "icon-tool-eraser",
-          active: true,
-          onClick: () => console.log("eraser clicked"),
-          options: [
-            {
-              name: "Eraser Size",
-              type: "range",
-              min: 1,
-              max: 10,
-              value: 5,
-              step: 1,
-              onChange: (value) => console.log("eraser size changed", value),
-            },
-            {
-              name: "Mode",
-              type: "radio",
-              value: "Circle",
-              options: [
-                { value: "Circle", label: "Circle" },
-                { value: "Sphere", label: "Sphere" },
-              ],
-            },
-          ],
-        },
-        {
-          name: "Eraser",
-          icon: "icon-tool-eraser",
-          active: true,
-          onClick: () => console.log("eraser clicked"),
-          options: [
-            {
-              name: "Eraser Size",
-              type: "range",
-              min: 1,
-              max: 10,
-              value: 5,
-              step: 1,
-              onChange: (value) => console.log("eraser size changed", value),
-            },
-            {
-              name: "Mode",
-              type: "radio",
-              value: "Circle",
-              options: [
-                { value: "Circle", label: "Circle" },
-                { value: "Sphere", label: "Sphere" },
-              ],
-            },
-          ],
-        },
-        {
-          name: "Eraser",
-          icon: "icon-tool-eraser",
-          active: true,
-          onClick: () => console.log("eraser clicked"),
-          options: [
-            {
-              name: "Eraser Size",
-              type: "range",
-              min: 1,
-              max: 10,
-              value: 5,
-              step: 1,
-              onChange: (value) => console.log("eraser size changed", value),
-            },
             {
               name: "Mode",
               type: "radio",
