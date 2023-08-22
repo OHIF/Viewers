@@ -56,7 +56,7 @@ function TrackedCornerstoneViewport({
   children,
   dataSource,
   displaySets,
-  viewportIndex,
+  viewportId,
   servicesManager,
   extensionManager,
   commandsManager,

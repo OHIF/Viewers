@@ -71,7 +71,7 @@ export default {
           extensionManager={extensionManager}
           commandsManager={commandsManager}
           activeViewportId={activeViewportId}
-          setViewportActive={(viewportId: number) => {
+          setViewportActive={(viewportId: string) => {
             viewportGridService.setActiveViewportId(viewportId);
           }}
           viewportData={viewportOptions}

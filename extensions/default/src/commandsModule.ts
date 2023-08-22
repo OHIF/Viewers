@@ -261,17 +261,17 @@ const commandsModule = ({
         ];
         stateSyncService.store(stateSyncReduce);
         // This is a default action applied
-        actions.toggleHpTools(hangingProtocolService.getActiveProtocol());
+        const { protocol } = hangingProtocolService.getActiveProtocol();
+        actions.toggleHpTools(protocol);
         // Send the notification about updating the state
         if (protocolId !== hpInfo.protocolId) {
-          const { protocol } = hangingProtocolService.getActiveProtocol();
           // The old protocol callbacks are used for turning off things
           // like crosshairs when moving to the new HP
           commandsManager.run(oldProtocol.callbacks?.onProtocolExit);
           // The new protocol callback is used for things like
           // activating modes etc.
-          commandsManager.run(protocol.callbacks?.onProtocolEnter);
         }
+        commandsManager.run(protocol.callbacks?.onProtocolEnter);
         return true;
       } catch (e) {
         actions.toggleHpTools(hangingProtocolService.getActiveProtocol());
@@ -410,7 +410,7 @@ const commandsModule = ({
         }
         // There is a state to toggle back to. The viewport that was
         // originally toggled to one up was the former active viewport.
-        const viewportIdsToUpdate =
+        const viewportIdToUpdate =
           toggleOneUpViewportGridStore.activeViewportId;
 
         // Determine which viewports need to be updated. This is particularly
@@ -423,7 +423,7 @@ const commandsModule = ({
             : displaySetInstanceUIDs
                 .map(displaySetInstanceUID =>
                   hangingProtocolService.getViewportsRequireUpdate(
-                    viewportIdsToUpdate,
+                    viewportIdToUpdate,
                     displaySetInstanceUID
                   )
                 )
@@ -432,14 +432,16 @@ const commandsModule = ({
         // This findOrCreateViewport returns either one of the updatedViewports
         // returned from the HP service OR if there is not one from the HP service then
         // simply returns what was in the previous state.
-        const findOrCreateViewport = (pos: number) => {
+        const findOrCreateViewport = (position: number) => {
           const viewport = updatedViewports.find(
-            viewport => viewport.pos === pos
+            viewport => viewport.pos === position
           );
 
           return viewport
             ? { viewportOptions, displaySetOptions, ...viewport }
-            : Array.from(toggleOneUpViewportGridStore.viewports.values())[pos];
+            : Array.from(toggleOneUpViewportGridStore.viewports.values())[
+                position
+              ];
         };
 
         const layoutOptions = viewportGridService.getLayoutOptionsFromState(
@@ -450,7 +452,7 @@ const commandsModule = ({
         viewportGridService.setLayout({
           numRows: toggleOneUpViewportGridStore.layout.numRows,
           numCols: toggleOneUpViewportGridStore.layout.numCols,
-          activeViewportId: viewportIdsToUpdate,
+          activeViewportId: viewportIdToUpdate,
           layoutOptions,
           findOrCreateViewport,
         });

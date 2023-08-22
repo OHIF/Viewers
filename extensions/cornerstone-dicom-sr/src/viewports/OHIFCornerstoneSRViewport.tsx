@@ -161,11 +161,9 @@ function OHIFCornerstoneSRViewport(props) {
           // imageIdIndex will handle it by updating the viewport, but if they
           // are the same we just need to use measurementService to jump to the
           // new measurement
-          const viewportInfo = cornerstoneViewportService.getViewportInfo(
+          const csViewport = cornerstoneViewportService.getCornerstoneViewport(
             viewportId
           );
-
-          const csViewport = cornerstoneViewportService.getCornerstoneViewport();
 
           const imageIds = csViewport.getImageIds();
 

@@ -286,18 +286,18 @@ export default class MicroscopyService extends PubSubService {
   }
 
   /**
-   * Creates a managed viewer instance for the given thrid-party API's viewer.
+   * Creates a managed viewer instance for the given third-party API's viewer.
    * Restores existing annotations for the given study/series.
    * Adds event subscriptions for the viewer being added.
    * Focuses the selected annotation when the viewer is being loaded into the
    * active viewport.
    *
-   * @param {Object} viewer Third-party viewer API's object to be managed
-   * @param {Number} viewportId The viewport Id where the viewer will be loaded
-   * @param {HTMLElement} container The DOM element where it will be renderd
-   * @param {String} studyInstanceUID The study UID of the loaded image
-   * @param {String} seriesInstanceUID The series UID of the loaded image
-   * @param {Array} displaySets All displaySets related to the same StudyInstanceUID
+   * @param viewer - Third-party viewer API's object to be managed
+   * @param viewportId - The viewport Id where the viewer will be loaded
+   * @param container - The DOM element where it will be rendered
+   * @param studyInstanceUID - The study UID of the loaded image
+   * @param seriesInstanceUID - The series UID of the loaded image
+   * @param displaySets - All displaySets related to the same StudyInstanceUID
    *
    * @returns {ViewerManager} managed viewer
    */

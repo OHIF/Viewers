@@ -29,7 +29,7 @@ export interface IViewportService {
    * Adds the HTML element to the viewportService
    * @param {*} elementRef
    */
-  enableViewport(viewportId: number, elementRef: HTMLDivElement): void;
+  enableViewport(viewportId: string, elementRef: HTMLDivElement): void;
   /**
    * It retrieves the renderingEngine if it does exist, or creates one otherwise
    * @returns {RenderingEngine} rendering engine

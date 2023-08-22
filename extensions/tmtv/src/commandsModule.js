@@ -544,10 +544,6 @@ const commandsModule = ({
 
       let viewports = [];
       fusionViewportIds.forEach(viewportId => {
-        const viewportInfo = cornerstoneViewportService.getViewportInfo(
-          viewportId
-        );
-
         commandsManager.runCommand('setViewportColormap', {
           viewportId,
           displaySetInstanceUID: ptDisplaySet.displaySetInstanceUID,

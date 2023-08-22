@@ -67,7 +67,7 @@ const getViewportLabel = (viewports, viewportId) => {
   return viewportLabels[viewportIds.indexOf(viewportId)];
 };
 
-const getActiveViewportId = (state: DefaultState, newViewports: Map) => {
+const determineActiveViewportId = (state: DefaultState, newViewports: Map) => {
   const { activeViewportId } = state;
   const currentActiveViewport = state.viewports.get(activeViewportId);
 
@@ -225,9 +225,7 @@ export function ViewportGridProvider({ children, service }) {
               viewport.viewportOptions.viewportId = `viewport-${randomUID}`;
             }
 
-            if (!viewport.viewportId) {
-              viewport.viewportId = viewport.viewportOptions.viewportId;
-            }
+            viewport.viewportId = viewport.viewportOptions.viewportId;
 
             // Create a new viewport object as it is getting updated here
             // and it is part of the read only state
@@ -266,7 +264,7 @@ export function ViewportGridProvider({ children, service }) {
 
         activeViewportIdToSet =
           activeViewportIdToSet ??
-          getActiveViewportId(state, viewports) ??
+          determineActiveViewportId(state, viewports) ??
           'default';
 
         const ret = {

@@ -191,12 +191,12 @@ class CornerstoneViewportService extends PubSubService
   }
 
   /**
-   * Uses the renderingEngine to enable the element for the given viewport index
-   * and sets the displaySet data to the viewport
-   * @param {*} viewportId
-   * @param {*} displaySet
-   * @param {*} dataSource
-   * @returns
+   * Sets the viewport data for a viewport.
+   * @param viewportId - The ID of the viewport to set the data for.
+   * @param viewportData - The viewport data to set.
+   * @param publicViewportOptions - The public viewport options.
+   * @param publicDisplaySetOptions - The public display set options.
+   * @param presentations - The presentations to set.
    */
   public setViewportData(
     viewportId: string,
@@ -207,9 +207,7 @@ class CornerstoneViewportService extends PubSubService
   ): void {
     const renderingEngine = this.getRenderingEngine();
 
-    const viewportInfo = this.viewportsById.get(
-      publicViewportOptions.viewportId
-    );
+    const viewportInfo = this.viewportsById.get(viewportId);
 
     if (!viewportInfo) {
       throw new Error('Viewport info not defined');
@@ -816,10 +814,10 @@ class CornerstoneViewportService extends PubSubService
    * @return the viewportId that the measurement should be displayed in.
    */
   public getViewportIdToJump(
-    activeViewportId: number,
+    activeViewportId: string,
     displaySetInstanceUID: string,
     cameraProps: unknown
-  ): string {
+  ): string | null {
     const viewportInfo = this.getViewportInfo(activeViewportId);
     const { referencedImageId } = cameraProps;
     if (viewportInfo?.contains(displaySetInstanceUID, referencedImageId)) {
@@ -829,7 +827,7 @@ class CornerstoneViewportService extends PubSubService
     return (
       [...this.viewportsById.values()].find(viewportInfo =>
         viewportInfo.contains(displaySetInstanceUID, referencedImageId)
-      )?.viewportId ?? -1
+      )?.viewportId ?? null
     );
   }
 }

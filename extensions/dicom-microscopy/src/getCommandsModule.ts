@@ -122,19 +122,6 @@ export default function getCommandsModule({
         ]);
       }
     },
-
-    incrementActiveViewport: () => {
-      const { activeViewportId, viewports } = viewportGridService.getState();
-      const nextViewportIndex = (activeViewportId + 1) % viewports.size;
-      viewportGridService.setActiveViewportId(nextViewportIndex);
-    },
-    decrementActiveViewport: () => {
-      const { activeViewportId, viewports } = viewportGridService.getState();
-      const nextViewportIndex =
-        (activeViewportId - 1 + viewports.size) % viewports.size;
-      viewportGridService.setActiveViewportId(nextViewportIndex);
-    },
-
     toggleOverlays: () => {
       // overlay
       const overlays = document.getElementsByClassName(
@@ -172,14 +159,6 @@ export default function getCommandsModule({
       commandFn: actions.setToolActive,
       storeContexts: [] as any[],
       options: {},
-    },
-    incrementActiveViewport: {
-      commandFn: actions.incrementActiveViewport,
-      storeContexts: [] as any[],
-    },
-    decrementActiveViewport: {
-      commandFn: actions.decrementActiveViewport,
-      storeContexts: [] as any[],
     },
     toggleOverlays: {
       commandFn: actions.toggleOverlays,

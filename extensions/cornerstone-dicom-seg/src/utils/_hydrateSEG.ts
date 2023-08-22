@@ -1,6 +1,6 @@
 async function _hydrateSEGDisplaySet({
   segDisplaySet,
-  viewportId,
+  viewportId: targetViewportId,
   servicesManager,
 }) {
   const {
@@ -27,7 +27,7 @@ async function _hydrateSEGDisplaySet({
   const { viewports } = viewportGridService.getState();
 
   const updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
-    viewportId,
+    targetViewportId,
     displaySetInstanceUID
   );
 
@@ -37,8 +37,8 @@ async function _hydrateSEGDisplaySet({
   // is being displayed, if so we need to update the viewport to use volume viewport
   // (if already is not using it) since Cornerstone3D currently only supports
   // volume viewport for segmentation
-  viewports.forEach((viewport, index) => {
-    if (index === viewportId) {
+  viewports.forEach((viewport, viewportId) => {
+    if (targetViewportId === viewportId) {
       return;
     }
 
@@ -49,7 +49,7 @@ async function _hydrateSEGDisplaySet({
 
     if (shouldDisplaySeg) {
       updatedViewports.push({
-        viewportId: index,
+        viewportId: targetViewportId,
         displaySetInstanceUIDs: viewport.displaySetInstanceUIDs,
         viewportOptions: {
           initialImageOptions: {

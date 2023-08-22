@@ -581,9 +581,6 @@ export default class HangingProtocolService extends PubSubService {
     const protocol = this.protocol;
     const protocolStage = protocol.stages[this.stageIndex];
     const protocolViewports = protocolStage.viewports;
-    const protocolViewport = protocolViewports.find(
-      pv => pv.viewportOptions.viewportId === viewportId
-    );
 
     const defaultReturn = [
       {
@@ -591,6 +588,14 @@ export default class HangingProtocolService extends PubSubService {
         displaySetInstanceUIDs: [newDisplaySetInstanceUID],
       },
     ];
+
+    if (!protocolViewports) {
+      return defaultReturn;
+    }
+
+    const protocolViewport = protocolViewports.find(
+      pv => pv.viewportOptions.viewportId === viewportId
+    );
 
     // if no viewport, then we can assume there is no predefined set of
     // rules that should be applied to this viewport while matching
@@ -1111,7 +1116,6 @@ export default class HangingProtocolService extends PubSubService {
     // matching applied
     this.viewportMatchDetails = new Map();
     this.displaySetMatchDetails = new Map();
-    // this.customImageLoadPerformed = false;
 
     // Retrieve the current stage
     const stageModel = this._getCurrentStageModel();

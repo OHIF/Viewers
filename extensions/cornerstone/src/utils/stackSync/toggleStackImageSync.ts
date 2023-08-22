@@ -2,7 +2,7 @@ import calculateViewportRegistrations from './calculateViewportRegistrations';
 
 // [ {
 //   synchronizerId: string,
-//   viewports: [ { viewportId: number, renderingEngineId: string, index: number } , ...]
+//   viewports: [ { viewportId: string, renderingEngineId: string, index: number } , ...]
 // ]}
 let STACK_IMAGE_SYNC_GROUPS_INFO = [];
 
@@ -41,11 +41,7 @@ export default function toggleStackImageSync({
 
   // filter empty viewports
   const viewportsArray = Array.from(viewports.values())
-    .filter(
-      viewport =>
-        viewport.displaySetInstanceUIDs &&
-        viewport.displaySetInstanceUIDs.length
-    )
+    .filter(viewport => viewport.displaySetInstanceUIDs?.length)
     // filter reconstructable viewports
     .filter(viewport => {
       const { displaySetInstanceUIDs } = viewport;
@@ -55,7 +51,7 @@ export default function toggleStackImageSync({
           displaySetInstanceUID
         );
 
-        if (displaySet && displaySet.isReconstructable) {
+        if (displaySet?.isReconstructable) {
           return true;
         }
 
