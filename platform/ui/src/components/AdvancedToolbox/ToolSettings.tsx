@@ -7,11 +7,8 @@ function ToolSettings({ options }) {
       {options?.map(option => {
         if (option.type === 'range') {
           return (
-            <div
-              className="flex space-x-2 bg-pink-200 items-center"
-              key={option.name}
-            >
-              <div className="text-xs w-1/3 bg-blue-200">{option.name}</div>
+            <div className="flex space-x-2 items-center" key={option.name}>
+              <div className="text-xs w-1/3">{option.name}</div>
               <InputRange
                 minValue={option.min}
                 maxValue={option.max}
@@ -20,7 +17,6 @@ function ToolSettings({ options }) {
                 onChange={e => option.onChange(e)}
                 allowNumberEdit={true}
                 showAdjustmentArrows={false}
-                containerClassName="bg-green-200"
               />
             </div>
           );

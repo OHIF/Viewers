@@ -29,22 +29,6 @@ type InputRangeProps = {
   showAdjustmentArrows?: boolean;
 };
 
-const Label: React.FC<{
-  value: number;
-  unit: string;
-  className?: string;
-  variant?: string;
-}> = ({ value, unit, className, variant }) => (
-  <Typography
-    variant={variant ?? 'subtitle'}
-    component="p"
-    className={classNames('w-8', className ?? 'text-white')}
-  >
-    {value.toFixed(value >= 1 ? 0 : 1)}
-    {unit}
-  </Typography>
-);
-
 const InputRange: React.FC<InputRangeProps> = ({
   value,
   onChange,
@@ -78,13 +62,7 @@ const InputRange: React.FC<InputRangeProps> = ({
   const rangeValuePercentage =
     ((rangeValue - minValue) / (maxValue - minValue)) * 100;
 
-  const inputStyle = {
-    background:
-      trackColor ||
-      `linear-gradient(to right, #5acce6 0%, #5acce6 ${rangeValuePercentage -
-        10}%, #3a3f99 ${rangeValuePercentage + 10}%, #3a3f99 100%)`,
-  };
-
+  console.debug('🚀 ~ labelClassName:', labelClassName);
   const LabelOrEditableNumber = allowNumberEdit ? (
     <InputNumber
       minValue={minValue}
@@ -98,20 +76,19 @@ const InputRange: React.FC<InputRangeProps> = ({
       showAdjustmentArrows={showAdjustmentArrows}
     />
   ) : (
-    <Label
-      value={rangeValue}
-      unit={unit}
-      className={labelClassName}
-      variant={labelVariant}
-    />
+    <span className={classNames(labelClassName ?? 'text-white')}>
+      {value}
+      {unit}
+    </span>
   );
 
   return (
     <div
       className={`flex items-center cursor-pointer ${containerClassName ?? ''}`}
     >
-      <div className="flex items-center w-full">
+      <div className="flex items-center w-full relative">
         {showLabel && labelPosition === 'left' && LabelOrEditableNumber}
+        <div className="range-track"></div>
         <input
           type="range"
           min={minValue}
@@ -119,7 +96,9 @@ const InputRange: React.FC<InputRangeProps> = ({
           value={rangeValue}
           className={`appearance-none h-[3px] rounded-lg input-range-thumb-design ${inputClassName ??
             ''}`}
-          style={inputStyle}
+          style={{
+            background: `linear-gradient(to right, #5acce6 0%, #5acce6 ${rangeValuePercentage}%, #3a3f99 ${rangeValuePercentage}%, #3a3f99 100%)`,
+          }}
           onChange={handleChange}
           id="myRange"
           step={step}
