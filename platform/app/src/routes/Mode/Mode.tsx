@@ -25,7 +25,7 @@ const { getSplitParam } = utils;
  * @returns array of subscriptions to cancel
  */
 function defaultRouteInit(
-  { servicesManager, studyInstanceUIDs, dataSource, filters },
+  { servicesManager, studyInstanceUIDs, dataSource, filters, appConfig },
   hangingProtocolId
 ) {
   const {
@@ -33,6 +33,31 @@ function defaultRouteInit(
     hangingProtocolService,
     uiNotificationService,
   } = servicesManager.services;
+  const minDisplaySetsToRunHP = appConfig?.minDisplaySetsToRunHP;
+
+  function applyHangingProtocol() {
+    if (hangingProtocolService.getActiveProtocol().protocol) {
+      return;
+    }
+    const displaySets = displaySetService.getActiveDisplaySets();
+
+    if (!displaySets || !displaySets.length) {
+      return;
+    }
+
+    // Gets the studies list to use
+    const studies = getStudies(studyInstanceUIDs, displaySets);
+
+    // study being displayed, and is thus the "active" study.
+    const activeStudy = studies[0];
+
+    // run the hanging protocol matching on the displaySets with the predefined
+    // hanging protocol in the mode configuration
+    hangingProtocolService.run(
+      { studies, activeStudy, displaySets },
+      hangingProtocolId
+    );
+  }
 
   const unsubscriptions = [];
   const issuedWarningSeries = [];
@@ -63,6 +88,15 @@ function defaultRouteInit(
         });
       }
       displaySetService.makeDisplaySets(seriesMetadata.instances, madeInClient);
+      if (minDisplaySetsToRunHP) {
+        const displaySets = displaySetService.getActiveDisplaySets();
+        if (
+          displaySets?.length > minDisplaySetsToRunHP &&
+          !hangingProtocolService.getActiveProtocol().protocol
+        ) {
+          applyHangingProtocol();
+        }
+      }
     }
   );
 
@@ -82,24 +116,7 @@ function defaultRouteInit(
   // until we run the hanging protocol matching service.
 
   Promise.allSettled(allRetrieves).then(() => {
-    const displaySets = displaySetService.getActiveDisplaySets();
-
-    if (!displaySets || !displaySets.length) {
-      return;
-    }
-
-    // Gets the studies list to use
-    const studies = getStudies(studyInstanceUIDs, displaySets);
-
-    // study being displayed, and is thus the "active" study.
-    const activeStudy = studies[0];
-
-    // run the hanging protocol matching on the displaySets with the predefined
-    // hanging protocol in the mode configuration
-    hangingProtocolService.run(
-      { studies, activeStudy, displaySets },
-      hangingProtocolId
-    );
+    applyHangingProtocol();
   });
 
   return unsubscriptions;
@@ -408,6 +425,7 @@ export default function ModeRoute({
           studyInstanceUIDs,
           dataSource,
           filters,
+          appConfig,
         },
         hangingProtocolIdToUse
       );

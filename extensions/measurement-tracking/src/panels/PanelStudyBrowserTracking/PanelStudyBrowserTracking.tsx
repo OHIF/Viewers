@@ -148,7 +148,6 @@ function PanelStudyBrowserTracking({
     }
 
     currentDisplaySets.forEach(async dSet => {
-      const newImageSrcEntry = {};
       const displaySet = displaySetService.getDisplaySetByUID(
         dSet.displaySetInstanceUID
       );
@@ -156,13 +155,18 @@ function PanelStudyBrowserTracking({
       const imageId = imageIds[Math.floor(imageIds.length / 2)];
 
       // TODO: Is it okay that imageIds are not returned here for SR displaysets?
-      if (imageId && !displaySet?.unsupported) {
+      if (
+        imageId &&
+        !displaySet?.unsupported &&
+        !(dSet.displaySetInstanceUID in thumbnailImageSrcMap)
+      ) {
         // When the image arrives, render it and store the result in the thumbnailImgSrcMap
-        newImageSrcEntry[dSet.displaySetInstanceUID] = await getImageSrc(
-          imageId
-        );
-        setThumbnailImageSrcMap(prevState => {
-          return { ...prevState, ...newImageSrcEntry };
+        getImageSrc(imageId).then(imgSrc => {
+          const newImageSrcEntry = {};
+          newImageSrcEntry[dSet.displaySetInstanceUID] = imgSrc;
+          setThumbnailImageSrcMap(prevState => {
+            return { ...prevState, ...newImageSrcEntry };
+          });
         });
       }
     });
@@ -208,7 +212,6 @@ function PanelStudyBrowserTracking({
         displaySetsAdded.forEach(async dSet => {
           const displaySetInstanceUID = dSet.displaySetInstanceUID;
 
-          const newImageSrcEntry = {};
           const displaySet = displaySetService.getDisplaySetByUID(
             displaySetInstanceUID
           );
@@ -221,13 +224,14 @@ function PanelStudyBrowserTracking({
             const imageId = imageIds[Math.floor(imageIds.length / 2)];
 
             // TODO: Is it okay that imageIds are not returned here for SR displaysets?
-            if (imageId) {
+            if (imageId && !(displaySetInstanceUID in thumbnailImageSrcMap)) {
               // When the image arrives, render it and store the result in the thumbnailImgSrcMap
-              newImageSrcEntry[displaySetInstanceUID] = await getImageSrc(
-                imageId
-              );
-              setThumbnailImageSrcMap(prevState => {
-                return { ...prevState, ...newImageSrcEntry };
+              getImageSrc(imageId).then(imgSrc => {
+                const newImageSrcEntry = {};
+                newImageSrcEntry[displaySetInstanceUID] = imgSrc;
+                setThumbnailImageSrcMap(prevState => {
+                  return { ...prevState, ...newImageSrcEntry };
+                });
               });
             }
           }
