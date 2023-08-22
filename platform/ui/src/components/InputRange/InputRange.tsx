@@ -26,7 +26,7 @@ type InputRangeProps = {
   labelPosition?: string;
   trackColor?: string;
   allowNumberEdit?: boolean;
-  showNumberEditArrows?: boolean;
+  showAdjustmentArrows?: boolean;
 };
 
 const Label: React.FC<{
@@ -60,7 +60,7 @@ const InputRange: React.FC<InputRangeProps> = ({
   labelPosition = 'right',
   trackColor,
   allowNumberEdit = false,
-  showNumberEditArrows = true,
+  showAdjustmentArrows = true,
 }) => {
   const [rangeValue, setRangeValue] = useState(value);
 
@@ -95,7 +95,7 @@ const InputRange: React.FC<InputRangeProps> = ({
         onChange(val);
       }}
       step={step}
-      showUpAndDownArrows={showNumberEditArrows}
+      showAdjustmentArrows={showAdjustmentArrows}
     />
   ) : (
     <Label
@@ -110,7 +110,7 @@ const InputRange: React.FC<InputRangeProps> = ({
     <div
       className={`flex items-center cursor-pointer ${containerClassName ?? ''}`}
     >
-      <div className="input-range-wrapper flex items-center w-full">
+      <div className="flex items-center w-full">
         {showLabel && labelPosition === 'left' && LabelOrEditableNumber}
         <input
           type="range"

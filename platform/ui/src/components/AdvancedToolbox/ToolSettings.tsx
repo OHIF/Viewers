@@ -19,8 +19,8 @@ function ToolSettings({ options }) {
                 value={option.value}
                 onChange={e => option.onChange(e)}
                 allowNumberEdit={true}
-                showNumberEditArrows={false}
-                containerClassName="w-2/3 bg-green-200"
+                showAdjustmentArrows={false}
+                containerClassName="bg-green-200"
               />
             </div>
           );

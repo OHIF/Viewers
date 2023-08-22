@@ -20,15 +20,15 @@ const sizesClasses = {
 
 const InputNumber: React.FC<{
   value: number;
-  onChange: (value) => void;
+  onChange: (value: number) => void;
   minValue?: number;
   maxValue?: number;
-  step: number;
-  size?: string;
+  step?: number;
+  size?: 'sm' | 'lg';
   className?: string;
   labelClassName?: string;
   label?: string;
-  showUpAndDownArrows?: boolean;
+  showAdjustmentArrows?: boolean;
 }> = ({
   value,
   onChange,
@@ -39,94 +39,60 @@ const InputNumber: React.FC<{
   maxValue = 100,
   labelClassName,
   label,
-  showUpAndDownArrows = true,
+  showAdjustmentArrows = true,
 }) => {
   const [numberValue, setNumberValue] = useState(value);
 
+  const maxDigits = maxValue.toString().length;
+  console.debug('🚀 ~ maxDigits:', maxDigits);
+  const inputWidth = Math.max(maxDigits * 10, showAdjustmentArrows ? 20 : 28);
+  const arrowWidth = showAdjustmentArrows ? 20 : 0; // Estimate the width of arrows
+  const containerWidth = `${inputWidth + arrowWidth}px`; // Sum of input and arrows
+
+  useEffect(() => {
+    setNumberValue(value);
+  }, [value]);
+
   const handleMinMax = useCallback(
-    (value: number) => {
-      if (value > maxValue) {
-        return maxValue;
-      } else if (value < minValue) {
-        return minValue;
-      } else {
-        return value;
-      }
-    },
+    (val: number) => Math.min(Math.max(val, minValue), maxValue),
     [maxValue, minValue]
   );
 
-  useEffect(() => {
-    if (value !== numberValue) {
-      setNumberValue(value);
-    }
-  }, [value]);
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+    updateValue(Number(e.target.value));
 
-  const handleChange = useCallback(
-    e => {
-      const numberValue = handleMinMax(Number(e.target.value));
-      setNumberValue(numberValue);
-      onChange(numberValue);
-    },
-    [onChange, setNumberValue, handleMinMax]
-  );
+  const updateValue = (val: number) => {
+    const newValue = handleMinMax(val);
+    setNumberValue(newValue);
+    onChange(newValue);
+  };
 
-  const handleIncrement = useCallback(
-    e => {
-      const newNum = handleMinMax(Number(numberValue) + step);
-      setNumberValue(newNum);
-      onChange(newNum);
-    },
-    [onChange, setNumberValue, step, numberValue, handleMinMax]
-  );
-
-  const handleDecrement = useCallback(
-    e => {
-      const newNum = handleMinMax(Number(numberValue) - step);
-      setNumberValue(newNum);
-      onChange(newNum);
-    },
-    [onChange, setNumberValue, step, numberValue, handleMinMax]
-  );
+  const increment = () => updateValue(numberValue + step);
+  const decrement = () => updateValue(numberValue - step);
 
   return (
-    <div className={'flex flex-col flex-1'}>
-      {label && <Label className={labelClassName} text={label}></Label>}
+    <div className="flex flex-col flex-1">
+      {label && <Label className={labelClassName} text={label} />}
       <div
         className={`flex items-center bg-black border-2 px-1 overflow-hidden justify-center border-secondary-light rounded-md ${
           sizesClasses[size]
-        } ${className ? className : ''}`}
+        } ${className || ''}`}
+        style={{ width: containerWidth }}
       >
         <div className="flex">
           <input
             type="text"
             value={numberValue}
             onChange={handleChange}
-            className={`bg-black text-white text-[12px] w-full text-center input-number`}
+            className={
+              'bg-black text-white text-[12px] w-full text-center input-number'
+            }
+            style={{ width: inputWidth }}
           />
-
-          {showUpAndDownArrows && (
+          {showAdjustmentArrows && (
             <div className="up-arrowsize flex flex-col items-center justify-around">
-              <IconButton
-                id={'down-arrow-icon'}
-                variant="text"
-                color="inherit"
-                size="initial"
-                className="text-[#726f7e] transform rotate-180"
-                onClick={handleIncrement}
-              >
-                <Icon name="ui-arrow-down" />
-              </IconButton>
-              <IconButton
-                id={'down-arrow-icon'}
-                variant="text"
-                color="inherit"
-                size="initial"
-                className="text-[#726f7e]"
-                onClick={handleDecrement}
-              >
-                <Icon name="ui-arrow-down" />
-              </IconButton>
+              <ArrowButton onClick={increment} rotate />
+              <ArrowButton onClick={decrement} />
             </div>
           )}
         </div>
@@ -134,5 +100,24 @@ const InputNumber: React.FC<{
     </div>
   );
 };
+
+const ArrowButton = ({
+  onClick,
+  rotate = false,
+}: {
+  onClick: () => void;
+  rotate?: boolean;
+}) => (
+  <IconButton
+    id="arrow-icon"
+    variant="text"
+    color="inherit"
+    size="initial"
+    className={`text-[#726f7e] ${rotate ? 'transform rotate-180' : ''}`}
+    onClick={onClick}
+  >
+    <Icon name="ui-arrow-down" />
+  </IconButton>
+);
 
 export default InputNumber;

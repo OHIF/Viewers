@@ -24,14 +24,3 @@ input[type='range']::-moz-range-thumb {
   box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.521);
   border: 1.5px solid #090c29;
 }
-
-.input-range-wrapper {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-}
-
-.input-range-wrapper input[type='range'] {
-  flex-grow: 1;
-  min-width: 0;
-}
