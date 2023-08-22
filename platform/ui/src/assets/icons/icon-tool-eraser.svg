@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24.25px" height="22.418445px" viewBox="0 0 24.25 22.418445" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>icon-tool-eraser</title>
+    <g id="Artboards" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Segmentation---assets" transform="translate(-83.375, -106.3752)">
+            <g id="icon-tool-eraser" transform="translate(83, 105)">
+                <g id="eraser-1" transform="translate(1, 2)" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.25">
+                    <path d="M7,19.1705986 C5.7337971,19.1021794 4.52894862,18.6033051 3.585,17.7565986 L1.414,15.5835986 C0.635868537,14.8011205 0.635868537,13.5370767 1.414,12.7545986 L13.585,0.583598597 C14.3674781,-0.194532866 15.6315219,-0.194532866 16.414,0.583598597 L21.585,5.7545986 C22.3631315,6.53707671 22.3631315,7.80112049 21.585,8.5835986 L12.414,17.7545986 C11.4705925,18.601822 10.2661029,19.1013994 9,19.1705986 L7,19.1705986 Z" id="Path"></path>
+                    <line x1="9" y1="5.1685986" x2="17" y2="13.1685986" id="Path"></line>
+                    <line x1="0" y1="21.1685986" x2="23" y2="21.1685986" id="Path"></line>
+                </g>
+                <rect id="Rectangle" x="0" y="0" width="25" height="25"></rect>
+            </g>
+        </g>
+    </g>
+</svg>

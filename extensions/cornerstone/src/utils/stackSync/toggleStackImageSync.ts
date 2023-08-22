@@ -41,8 +41,7 @@ export default function toggleStackImageSync({
 
   // filter empty viewports
   viewports = viewports.filter(
-    viewport =>
-      viewport.displaySetInstanceUIDs && viewport.displaySetInstanceUIDs.length
+    viewport => viewport.displaySetInstanceUIDs?.length
   );
 
   // filter reconstructable viewports
@@ -54,7 +53,7 @@ export default function toggleStackImageSync({
         displaySetInstanceUID
       );
 
-      if (displaySet && displaySet.isReconstructable) {
+      if (displaySet?.isReconstructable) {
         return true;
       }
 

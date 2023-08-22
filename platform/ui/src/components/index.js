@@ -74,9 +74,11 @@ import LoadingIndicatorTotalPercent from './LoadingIndicatorTotalPercent';
 import ViewportActionBar from './ViewportActionBar';
 import ProgressLoadingBar from './ProgressLoadingBar';
 import PanelSection from './PanelSection';
+import AdvancedToolbox from './AdvancedToolbox';
 
 export {
   AboutModal,
+  AdvancedToolbox,
   HotkeyField,
   Header,
   UserPreferences,

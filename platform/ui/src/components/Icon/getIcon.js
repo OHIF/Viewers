@@ -132,6 +132,11 @@ import settingsBars from './../../assets/icons/icon-display-settings.svg';
 import iconAdd from './../../assets/icons/icon-add.svg';
 import iconRename from './../../assets/icons/icon-rename.svg';
 import iconDelete from './../../assets/icons/icon-delete.svg';
+import iconMoreMenu from './../../assets/icons/icon-more-menu.svg';
+import iconToolBrush from './../../assets/icons/icon-tool-brush.svg';
+import iconToolEraser from './../../assets/icons/icon-tool-eraser.svg';
+import iconToolScissor from './../../assets/icons/icon-tool-scissor.svg';
+import iconToolThreshold from './../../assets/icons/icon-tool-threshold.svg';
 
 /** Old OHIF */
 import oldTrash from './../../assets/icons/old-trash.svg';
@@ -171,7 +176,6 @@ const ICONS = {
   'icon-transferring': iconTransferring,
   'info-action': infoAction,
   'info-link': infoLink,
-  'arrow-left': arrowLeft,
   'launch-arrow': launchArrow,
   'launch-info': launchInfo,
   link: link,
@@ -272,6 +276,11 @@ const ICONS = {
   'icon-rename': iconRename,
   'icon-add': iconAdd,
   'icon-delete': iconDelete,
+  'icon-more-menu': iconMoreMenu,
+  'icon-tool-brush': iconToolBrush,
+  'icon-tool-eraser': iconToolEraser,
+  'icon-tool-scissor': iconToolScissor,
+  'icon-tool-wthreshold': iconToolThreshold,
 
   /** Old OHIF */
   'old-trash': oldTrash,

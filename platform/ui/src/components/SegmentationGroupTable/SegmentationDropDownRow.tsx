@@ -26,7 +26,7 @@ function SegmentationDropDownRow({
   }
 
   return (
-    <div className="flex items-center mt-[8px] space-x-1 group">
+    <div className="flex items-center mt-[8px] space-x-1 group mx-0.5">
       <div
         onClick={e => {
           e.stopPropagation();
@@ -63,10 +63,13 @@ function SegmentationDropDownRow({
                 ]),
           ]}
         >
-          <Icon
-            name="tool-more-menu"
-            className="w-[28px] h-[28px] grid place-items-center hover:bg-primary-dark cursor-pointer text-primary-active rounded-[4px]"
-          ></Icon>
+          {/* <Icon
+            name="icon-more-menu"
+            className="w-[20px] h-[20px] grid place-items-center hover:bg-primary-dark cursor-pointer text-primary-active rounded-[4px] "
+          ></Icon> */}
+          <div className="w-[28px] h-[28px] rounded-[4px] grid place-items-center  hover:bg-primary-dark cursor-pointer">
+            <Icon name="icon-more-menu"></Icon>
+          </div>
         </Dropdown>
       </div>
       {selectOptions?.length && (
