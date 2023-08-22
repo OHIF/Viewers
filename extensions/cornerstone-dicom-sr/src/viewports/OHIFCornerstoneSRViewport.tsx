@@ -7,6 +7,7 @@ import { setTrackingUniqueIdentifiersForElement } from '../tools/modules/dicomSR
 
 import { Icon, Tooltip, useViewportGrid, ViewportActionBar } from '@ohif/ui';
 import hydrateStructuredReport from '../utils/hydrateStructuredReport';
+import { useAppConfig } from '@state';
 
 const { formatDate } = utils;
 
@@ -25,6 +26,8 @@ function OHIFCornerstoneSRViewport(props) {
     servicesManager,
     extensionManager,
   } = props;
+
+  const [appConfig] = useAppConfig();
 
   const {
     displaySetService,
@@ -77,7 +80,7 @@ function OHIFCornerstoneSRViewport(props) {
     sendTrackedMeasurementsEvent = (eventName, { displaySetInstanceUID }) => {
       measurementService.clearMeasurements();
       const { SeriesInstanceUIDs } = hydrateStructuredReport(
-        { servicesManager, extensionManager },
+        { servicesManager, extensionManager, appConfig },
         displaySetInstanceUID
       );
       const displaySets = displaySetService.getDisplaySetsForSeries(

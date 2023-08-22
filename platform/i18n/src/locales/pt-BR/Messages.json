@@ -10,5 +10,6 @@
   "9": "Série possui dimensões inconsistentes entre frames.",
   "10": "Série possui frames com componentes inconsistentes.",
   "11": "Série possui frames com orientações inconsistentes.",
-  "12": "Série possui informação de posição inconsistentes."
+  "12": "Série possui informação de posição inconsistentes.",
+  "13": "Série não suportada."
 }

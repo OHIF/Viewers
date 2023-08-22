@@ -5,6 +5,7 @@ import { ExtensionManager, MODULE_TYPES } from '@ohif/core';
 //
 import { extensionManager } from '../App.tsx';
 import { useParams, useLocation } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import useSearchParams from '../hooks/useSearchParams.ts';
 
 /**
@@ -27,6 +28,7 @@ const areLocationsTheSame = (location0, location1) => {
  * @param {function} props.children - Layout Template React Component
  */
 function DataSourceWrapper(props) {
+  const navigate = useNavigate();
   const { children: LayoutTemplate, ...rest } = props;
   const params = useParams();
   const location = useLocation();
@@ -189,7 +191,7 @@ function DataSourceWrapper(props) {
         (!isLoading && (newOffset !== previousOffset || isLocationUpdated));
 
       if (isDataInvalid) {
-        getData();
+        getData().catch(() => navigate('/notfoundserver', '_self'));
       }
     } catch (ex) {
       console.warn(ex);

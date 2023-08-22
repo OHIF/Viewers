@@ -12,7 +12,7 @@ const RESPONSE = {
 };
 
 function promptHydrateStructuredReport(
-  { servicesManager, extensionManager },
+  { servicesManager, extensionManager, appConfig },
   ctx,
   evt
 ) {
@@ -37,7 +37,7 @@ function promptHydrateStructuredReport(
     if (promptResult === RESPONSE.HYDRATE_REPORT) {
       console.warn('!! HYDRATING STRUCTURED REPORT');
       const hydrationResult = hydrateStructuredReport(
-        { servicesManager, extensionManager },
+        { servicesManager, extensionManager, appConfig },
         displaySetInstanceUID
       );
 
