@@ -35,7 +35,13 @@ function defaultRouteInit(
   } = servicesManager.services;
   const minDisplaySetsToRunHP = appConfig?.minDisplaySetsToRunHP;
 
+  /**
+   * Function to apply the hanging protocol when the minimum number of display sets were
+   * received or all display sets retrieval were completed
+   * @returns
+   */
   function applyHangingProtocol() {
+    // check if a hanging protocol is already applied. If so abort execution
     if (hangingProtocolService.getActiveProtocol().protocol) {
       return;
     }
@@ -88,6 +94,9 @@ function defaultRouteInit(
         });
       }
       displaySetService.makeDisplaySets(seriesMetadata.instances, madeInClient);
+
+      // if minimum number of display sets to run a hanging protocol is defined
+      // check if it was reached to apply a hanging protocol
       if (minDisplaySetsToRunHP) {
         const displaySets = displaySetService.getActiveDisplaySets();
         if (

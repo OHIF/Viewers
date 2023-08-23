@@ -111,8 +111,7 @@ window.config = ({ servicesManager } = {}) => {
 ## Configuration Options
 
 Here are a list of some options available:
-- `minDisplaySetsToRunHP`:  If configured, sets the minimum display sets needed to run the hanging protocol and start display images. Used when OHIF needs to handle studies with several series and it is required that
-the first image should be loaded fast. Change that only if really necessary.
+- `minDisplaySetsToRunHP`:  If configured, sets the minimum display sets needed to run the hanging protocol and start displaying images. Used when OHIF needs to handle studies with several series and it is required that the first image should be loaded faster. Only changed if really necessary.
   panel and locking already stored measurements.
 - `disableEditing`:  If true, it disables editing in OHIF, hiding edit buttons in segmentation
   panel and locking already stored measurements.
