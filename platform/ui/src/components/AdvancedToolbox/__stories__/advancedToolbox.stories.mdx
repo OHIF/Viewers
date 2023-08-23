@@ -69,17 +69,17 @@ customization.
         {
           name: "Eraser",
           icon: "icon-tool-eraser",
-          active: true,
           onClick: () => console.log("eraser clicked"),
           options: [
             {
               name: "Mode",
               type: "radio",
-              value: "Circle",
-              options: [
-                { value: "Circle", label: "Circle" },
-                { value: "Sphere", label: "Sphere" },
+              value: "EraserSphere",
+              values: [
+                { value: "EraserCircle", label: "Circle" },
+                { value: "EraserSphere", label: "Sphere" },
               ],
+              onChange: (value) => console.log("Brush mode changed", value),
             },
           ],
         },
