@@ -60,8 +60,9 @@ export interface BaseDataSourceConfigurationAPI {
   ): Promise<Array<BaseDataSourceConfigurationAPIItem>>;
 
   /**
-   * Gets the list of item names currently configured for the data source associated with
-   * this API instance.
+   * Gets the list of item currently configured for the data source associated with
+   * this API instance. The resultant array must be the same length as the result of
+   * `getItemLabels`.
    */
-  getConfiguredItemsNameList(): Array<string>;
+  getConfiguredItems(): Promise<Array<BaseDataSourceConfigurationAPIItem>>;
 }

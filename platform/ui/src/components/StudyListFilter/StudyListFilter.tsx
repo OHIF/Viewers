@@ -15,7 +15,7 @@ const StudyListFilter = ({
   isFiltering,
   numOfStudies,
   onUploadClick,
-  getConfigureDataSourceComponent,
+  getDataSourceConfigurationComponent,
 }) => {
   const { t } = useTranslation('StudyList');
   const { sortBy, sortDirection } = filterValues;
@@ -38,8 +38,8 @@ const StudyListFilter = ({
                 <Typography variant="h4" className="text-primary-light">
                   {t('StudyList')}
                 </Typography>
-                {getConfigureDataSourceComponent &&
-                  getConfigureDataSourceComponent()}
+                {getDataSourceConfigurationComponent &&
+                  getDataSourceConfigurationComponent()}
                 {onUploadClick && (
                   <div
                     className="flex items-center gap-2 cursor-pointer text-primary-active text-lg self-center font-semibold"
@@ -137,7 +137,7 @@ StudyListFilter.propTypes = {
   clearFilters: PropTypes.func.isRequired,
   isFiltering: PropTypes.bool.isRequired,
   onUploadClick: PropTypes.func,
-  getConfigureDataSourceComponent: PropTypes.func,
+  getDataSourceConfigurationComponent: PropTypes.func,
 };
 
 export default StudyListFilter;

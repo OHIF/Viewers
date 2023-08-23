@@ -505,7 +505,7 @@ function WorkList({
           clearFilters={() => setFilterValues(defaultFilterValues)}
           isFiltering={isFiltering(filterValues, defaultFilterValues)}
           onUploadClick={uploadProps ? () => show(uploadProps) : undefined}
-          getConfigureDataSourceComponent={
+          getDataSourceConfigurationComponent={
             dataSourceConfigurationComponent
               ? () => dataSourceConfigurationComponent()
               : undefined
