@@ -267,8 +267,8 @@ const OHIFCornerstoneViewport = React.memo(props => {
           return;
         }
 
-        const viewportInfo = cornerstoneViewportService.getViewportInfoByIndex(
-          viewportIndex
+        const viewportInfo = cornerstoneViewportService.getViewportInfo(
+          viewportId
         );
 
         if (viewportInfo.hasDisplaySet(invalidatedDisplaySetInstanceUID)) {

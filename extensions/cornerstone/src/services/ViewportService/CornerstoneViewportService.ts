@@ -841,7 +841,7 @@ class CornerstoneViewportService extends PubSubService
     activeViewportId: string,
     displaySetInstanceUID: string,
     cameraProps: unknown
-  ): string | null {
+  ): string {
     const viewportInfo = this.getViewportInfo(activeViewportId);
     const { referencedImageId } = cameraProps;
     if (viewportInfo?.contains(displaySetInstanceUID, referencedImageId)) {

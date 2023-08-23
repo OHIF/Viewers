@@ -612,6 +612,9 @@ function commandsModule({
       );
       toolGroup.setToolEnabled(ReferenceLinesTool.toolName);
     },
+    storePresentation: ({ viewportId }) => {
+      cornerstoneViewportService.storePresentation({ viewportId });
+    },
   };
 
   const definitions = {
@@ -736,6 +739,11 @@ function commandsModule({
     },
     toggleReferenceLines: {
       commandFn: actions.toggleReferenceLines,
+    },
+    storePresentation: {
+      commandFn: actions.storePresentation,
+      storeContexts: [],
+      options: {},
     },
   };
 
