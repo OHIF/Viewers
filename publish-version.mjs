@@ -99,6 +99,9 @@ async function run() {
     '--force-publish',
     '--message',
     'chore(version): Update package versions [skip ci]',
+    '--conventional-commits',
+    '--create-release',
+    'github',
   ]);
 
   console.log('Version set using lerna');
