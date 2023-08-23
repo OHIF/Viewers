@@ -244,6 +244,12 @@ class CornerstoneViewportService extends PubSubService
     // This is the old viewportInfo, which may have old options but we might be
     // using its viewport (same viewportId as the new viewportInfo)
     const viewportInfo = this.viewportsById.get(viewportId);
+
+    // We should store the presentation for the current viewport since we can't only
+    // rely to store it WHEN the viewport is disabled since we might keep around the
+    // same viewport/element and just change the viewportData for it (drag and drop etc.)
+    // the disableElement storePresentation handle would not be called in this case
+    // and we would lose the presentation.
     this.storePresentation({ viewportId: viewportInfo.getViewportId() });
 
     if (!viewportInfo) {

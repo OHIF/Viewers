@@ -612,22 +612,6 @@ function commandsModule({
       );
       toolGroup.setToolEnabled(ReferenceLinesTool.toolName);
     },
-
-    resetCameraLayout: () => {
-      const { viewports } = viewportGridService.getState();
-      viewports.forEach(viewport => {
-        const { viewportId } = viewport;
-        const cornerstoneViewport = cornerstoneViewportService.getCornerstoneViewport(
-          viewportId
-        );
-        if (cornerstoneViewport && !cornerstoneViewport.isDisabled) {
-          const resetPan = false;
-          const resetZoom = true;
-          const resetToCenter = false;
-          cornerstoneViewport.resetCamera(resetPan, resetZoom, resetToCenter);
-        }
-      });
-    },
   };
 
   const definitions = {
@@ -752,11 +736,6 @@ function commandsModule({
     },
     toggleReferenceLines: {
       commandFn: actions.toggleReferenceLines,
-    },
-    resetCameraLayout: {
-      commandFn: actions.resetCameraLayout,
-      storeContexts: [],
-      options: {},
     },
   };
 

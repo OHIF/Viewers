@@ -115,11 +115,11 @@ const determineActiveViewportId = (state: DefaultState, newViewports: Map) => {
     return 0; // Return 0 if no differences found
   });
 
-  const newActiveViewport = sortedViewports.find(
-    viewport => viewport.viewportId !== activeViewportId
-  );
+  if (!sortedViewports?.length) {
+    return null;
+  }
 
-  return newActiveViewport ? newActiveViewport.viewportId : null;
+  return sortedViewports[0].viewportId;
 };
 
 export const ViewportGridContext = createContext(DEFAULT_STATE);
@@ -151,8 +151,8 @@ export function ViewportGridProvider({ children, service }) {
           // That allows for easy updates of just the display set.
           const viewportOptions = merge(
             {},
-            updatedViewport.viewportOptions,
-            previousViewport.viewportOptions
+            updatedViewport?.viewportOptions,
+            previousViewport?.viewportOptions
           );
 
           const displaySetOptions = updatedViewport.displaySetOptions || [];

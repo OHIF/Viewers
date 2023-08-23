@@ -235,6 +235,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
       }
 
       cleanUpServices(viewportInfo);
+      cornerstoneViewportService.storePresentation({ viewportId });
 
       if (onElementDisabled) {
         onElementDisabled(viewportInfo);

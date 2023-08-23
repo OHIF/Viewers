@@ -550,7 +550,7 @@ export default class MicroscopyService extends PubSubService {
    * the managed viewer instance is created.
    *
    * @param {RoiAnnotation} roiAnnotation RoiAnnotation instance to be focused
-   * @param {Number} viewportId Index of the viewport to focus
+   * @param {string} viewportId Index of the viewport to focus
    */
   focusAnnotation(roiAnnotation, viewportId) {
     const filter = mv => mv.viewportId === viewportId;
