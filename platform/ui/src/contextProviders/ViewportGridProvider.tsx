@@ -5,6 +5,8 @@ import React, {
   useEffect,
   useReducer,
 } from 'react';
+import merge from 'lodash.merge';
+
 import PropTypes from 'prop-types';
 import { ViewportGridService, utils } from '@ohif/core';
 import viewportLabels from '../utils/viewportLabels';
@@ -49,7 +51,9 @@ const DEFAULT_STATE: DefaultState = {
       default: {
         viewportId: 'default',
         displaySetInstanceUIDs: [],
-        viewportOptions: {},
+        viewportOptions: {
+          viewportId: 'default',
+        },
         displaySetSelectors: [],
         displaySetOptions: [{}],
         x: 0, // left
@@ -145,10 +149,11 @@ export function ViewportGridProvider({ children, service }) {
           // Use the newly provide viewportOptions and display set options
           // when provided, and otherwise fall back to the previous ones.
           // That allows for easy updates of just the display set.
-          const viewportOptions = {
-            ...(updatedViewport.viewportOptions ||
-              previousViewport.viewportOptions),
-          };
+          const viewportOptions = merge(
+            {},
+            updatedViewport.viewportOptions,
+            previousViewport.viewportOptions
+          );
 
           const displaySetOptions = updatedViewport.displaySetOptions || [];
           if (!displaySetOptions.length) {

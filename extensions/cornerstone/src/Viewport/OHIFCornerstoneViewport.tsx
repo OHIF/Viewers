@@ -63,6 +63,10 @@ function areEqual(prevProps, nextProps) {
     return false;
   }
 
+  if (nextProps.viewportOptions.needsRerendering) {
+    return false;
+  }
+
   const prevDisplaySets = prevProps.displaySets;
   const nextDisplaySets = nextProps.displaySets;
 
@@ -323,6 +327,16 @@ const OHIFCornerstoneViewport = React.memo(props => {
         // Delete the position presentation so that viewport navigates direct
         presentations.positionPresentation = null;
         cacheJumpToMeasurementEvent = null;
+      }
+
+      // Note: This is a hack to get the grid to re-render the OHIFCornerstoneViewport component
+      // Used for segmentation hydration right now, since the logic to decide whether
+      // a viewport needs to render a segmentation lives inside the CornerstoneViewportService
+      // so we need to re-render (force update via change of the needsRerendering) so that React
+      // does the diffing and decides we should render this again (although the id and element has not changed)
+      // so that the CornerstoneViewportService can decide whether to render the segmentation or not. Not that we reached here we can turn it off.
+      if (viewportOptions.needsRerendering) {
+        viewportOptions.needsRerendering = false;
       }
 
       cornerstoneViewportService.setViewportData(
