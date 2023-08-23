@@ -549,19 +549,20 @@ export default class HangingProtocolService extends PubSubService {
           });
         }
       } else {
+        // Clone each viewport to ensure independent objects
+        stage.viewports = stage.viewports.map(viewport => ({
+          ...viewport,
+          viewportOptions: {
+            ...(viewport.viewportOptions || defaultViewportOptions),
+            viewportId: viewport.viewportOptions?.viewportId || uuidv4(),
+          },
+          displaySets: viewport.displaySets || [],
+        }));
+
         stage.viewports.forEach(viewport => {
-          viewport.viewportOptions =
-            viewport.viewportOptions || defaultViewportOptions;
-          if (!viewport.viewportOptions.viewportId) {
-            viewport.viewportOptions.viewportId = uuidv4();
-          }
-          if (!viewport.displaySets) {
-            viewport.displaySets = [];
-          } else {
-            viewport.displaySets.forEach(displaySet => {
-              displaySet.options = displaySet.options || {};
-            });
-          }
+          viewport.displaySets.forEach(displaySet => {
+            displaySet.options = displaySet.options || {};
+          });
         });
       }
     });
