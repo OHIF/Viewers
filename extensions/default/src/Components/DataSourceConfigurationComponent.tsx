@@ -67,22 +67,22 @@ function DataSourceConfigurationComponent({
   }, []);
 
   return configuredItems ? (
-    <div
-      className="flex text-aqua-pale cursor-pointer overflow-hidden items-center"
-      onClick={() =>
-        show({
-          content: DataSourceConfigurationModalComponent,
-          title: t('Configure Data Source'),
-          contentProps: {
-            configurationAPI,
-            configuredItems,
-            onHide: hide,
-          },
-        })
-      }
-    >
-      <Icon name="settings" className="w-3.5 h-3.5"></Icon>
-      <div>&nbsp;</div>
+    <div className="flex text-aqua-pale overflow-hidden items-center">
+      <Icon
+        name="settings"
+        className="cursor-pointer shrink-0 w-3.5 h-3.5 mr-2.5"
+        onClick={() =>
+          show({
+            content: DataSourceConfigurationModalComponent,
+            title: t('Configure Data Source'),
+            contentProps: {
+              configurationAPI,
+              configuredItems,
+              onHide: hide,
+            },
+          })
+        }
+      ></Icon>
       {configuredItems.map((item, itemIndex) => {
         return (
           <div key={itemIndex} className="flex overflow-hidden">
@@ -93,7 +93,7 @@ function DataSourceConfigurationComponent({
               {item.name}
             </div>
             {itemIndex !== configuredItems.length - 1 && (
-              <div>&nbsp;|&nbsp;</div>
+              <div className="px-2.5">|</div>
             )}
           </div>
         );

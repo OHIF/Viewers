@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React, { ReactElement, useCallback, useEffect, useState } from 'react';
+import React, { ReactElement, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@ohif/ui';
 import { Types } from '@ohif/core';
@@ -103,21 +103,23 @@ function DataSourceConfigurationModalComponent({
 
   const getSelectedItemsComponent = (): ReactElement => {
     const getCursorClasses = itemIndex =>
-      itemIndex < selectedItems.length ? 'cursor-pointer' : 'cursor-auto';
+      itemIndex !== itemLabels.length - 1 && itemIndex < selectedItems.length
+        ? 'cursor-pointer'
+        : 'cursor-auto';
 
     const getBackgroundClasses = itemIndex =>
       itemIndex < selectedItems.length
-        ? 'bg-black/[.4] hover:bg-transparent active:bg-secondary-dark'
+        ? classNames(
+            'bg-black/[.4]',
+            itemIndex !== itemLabels.length - 1
+              ? 'hover:bg-transparent active:bg-secondary-dark'
+              : ''
+          )
         : 'bg-transparent';
 
     const getBorderClasses = itemIndex =>
       itemIndex === currentSelectedItemIndex + 1
-        ? classNames(
-            'border-2',
-            'border-solid',
-            'border-primary-light',
-            showFullConfig ? 'active:border-white' : ''
-          )
+        ? classNames('border-2', 'border-solid', 'border-primary-light')
         : itemIndex < selectedItems.length
         ? 'border border-solid border-primary-active hover:border-primary-light active:border-white'
         : 'border border-dashed border-secondary-light';
@@ -141,7 +143,8 @@ function DataSourceConfigurationModalComponent({
                 getTextClasses(itemLabelIndex)
               )}
               onClick={
-                showFullConfig || itemLabelIndex <= currentSelectedItemIndex
+                (showFullConfig && itemLabelIndex < currentSelectedItemIndex) ||
+                itemLabelIndex <= currentSelectedItemIndex
                   ? () => {
                       setShowFullConfig(false);
                       setSelectedItems(theList =>

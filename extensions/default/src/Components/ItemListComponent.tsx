@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React, { ReactElement, useCallback, useEffect, useState } from 'react';
+import React, { ReactElement, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Button,
