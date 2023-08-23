@@ -612,35 +612,7 @@ function commandsModule({
       );
       toolGroup.setToolEnabled(ReferenceLinesTool.toolName);
     },
-    storePresentation: ({ viewportId }) => {
-      const presentation = cornerstoneViewportService.getPresentation(
-        viewportId
-      );
-      if (!presentation || !presentation.presentationIds) {
-        return;
-      }
-      const {
-        lutPresentationStore,
-        positionPresentationStore,
-      } = stateSyncService.getState();
-      const { presentationIds } = presentation;
-      const { lutPresentationId, positionPresentationId } =
-        presentationIds || {};
-      const storeState = {};
-      if (lutPresentationId) {
-        storeState.lutPresentationStore = {
-          ...lutPresentationStore,
-          [lutPresentationId]: presentation,
-        };
-      }
-      if (positionPresentationId) {
-        storeState.positionPresentationStore = {
-          ...positionPresentationStore,
-          [positionPresentationId]: presentation,
-        };
-      }
-      stateSyncService.store(storeState);
-    },
+
     resetCameraLayout: () => {
       const { viewports } = viewportGridService.getState();
       viewports.forEach(viewport => {
@@ -780,11 +752,6 @@ function commandsModule({
     },
     toggleReferenceLines: {
       commandFn: actions.toggleReferenceLines,
-    },
-    storePresentation: {
-      commandFn: actions.storePresentation,
-      storeContexts: [],
-      options: {},
     },
     resetCameraLayout: {
       commandFn: actions.resetCameraLayout,

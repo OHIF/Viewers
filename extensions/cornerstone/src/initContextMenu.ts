@@ -63,7 +63,6 @@ function initContextMenu({
       customizationService.get('cornerstoneViewportClickCommands') ||
       DEFAULT_CONTEXT_MENU_CLICKS;
     const toRun = customizations[name];
-    console.log('initContextMenu::cornerstoneViewportHandleEvent', name, toRun);
     const options = {
       nearbyToolData: findNearbyToolData(commandsManager, evt),
       event: evt,

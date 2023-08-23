@@ -155,15 +155,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
   }, [elementRef]);
 
   const cleanUpServices = useCallback(
-    viewportId => {
-      const viewportInfo = cornerstoneViewportService.getViewportInfo(
-        viewportId
-      );
-
-      if (!viewportInfo) {
-        return;
-      }
-
+    viewportInfo => {
       const renderingEngineId = viewportInfo.getRenderingEngineId();
       const syncGroups = viewportInfo.getSyncGroups();
 
@@ -230,17 +222,15 @@ const OHIFCornerstoneViewport = React.memo(props => {
     setImageScrollBarHeight();
 
     return () => {
-      commandsManager.runCommand('storePresentation', {
-        viewportId,
-      });
-
-      cleanUpServices(viewportId);
-
       const viewportInfo = cornerstoneViewportService.getViewportInfo(
         viewportId
       );
 
-      cornerstoneViewportService.disableElement(viewportId);
+      if (!viewportInfo) {
+        return;
+      }
+
+      cleanUpServices(viewportInfo);
 
       if (onElementDisabled) {
         onElementDisabled(viewportInfo);

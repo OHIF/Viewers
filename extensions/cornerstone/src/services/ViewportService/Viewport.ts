@@ -179,13 +179,15 @@ class ViewportInfo {
 
   public setPublicDisplaySetOptions(
     publicDisplaySetOptions: PublicDisplaySetOptions[] | DisplaySetSelector[]
-  ): void {
+  ): Array<DisplaySetOptions> {
     // map the displaySetOptions and check if they are undefined then set them to default values
     const displaySetOptions = this.mapDisplaySetOptions(
       publicDisplaySetOptions
     );
 
     this.setDisplaySetOptions(displaySetOptions);
+
+    return this.displaySetOptions
   }
 
   public hasDisplaySet(displaySetInstanceUID: string): boolean {
@@ -209,7 +211,7 @@ class ViewportInfo {
 
   public setPublicViewportOptions(
     viewportOptionsEntry: PublicViewportOptions
-  ): void {
+  ): ViewportOptions {
     let viewportType = viewportOptionsEntry.viewportType;
     const {
       toolGroupId = DEFAULT_TOOLGROUP_ID,
@@ -242,6 +244,8 @@ class ViewportInfo {
       toolGroupId,
       presentationIds,
     });
+
+    return this.viewportOptions;
   }
 
   public setViewportOptions(viewportOptions: ViewportOptions): void {

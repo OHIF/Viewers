@@ -14,6 +14,7 @@ import {
 } from './custom-attribute/isDisplaySetFromUrl';
 import numberOfDisplaySetsWithImages from './custom-attribute/numberOfDisplaySetsWithImages';
 import seriesDescriptionsFromDisplaySets from './custom-attribute/seriesDescriptionsFromDisplaySets';
+import uuidv4 from '../../utils/uuidv4';
 
 type Protocol = HangingProtocol.Protocol | HangingProtocol.ProtocolGenerator;
 
@@ -540,7 +541,10 @@ export default class HangingProtocolService extends PubSubService {
 
         for (let i = 0; i < rows * columns; i++) {
           stage.viewports.push({
-            viewportOptions: defaultViewportOptions,
+            viewportOptions: {
+              ...defaultViewportOptions,
+              viewportId: uuidv4(),
+            },
             displaySets: [],
           });
         }
@@ -548,6 +552,9 @@ export default class HangingProtocolService extends PubSubService {
         stage.viewports.forEach(viewport => {
           viewport.viewportOptions =
             viewport.viewportOptions || defaultViewportOptions;
+          if (!viewport.viewportOptions.viewportId) {
+            viewport.viewportOptions.viewportId = uuidv4();
+          }
           if (!viewport.displaySets) {
             viewport.displaySets = [];
           } else {

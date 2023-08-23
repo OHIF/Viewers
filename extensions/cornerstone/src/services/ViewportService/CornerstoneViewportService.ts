@@ -190,6 +190,40 @@ class CornerstoneViewportService extends PubSubService
     };
   }
 
+  public storePresentation({ viewportId }) {
+    const stateSyncService = this.servicesManager.services.stateSyncService;
+    let presentation;
+    try {
+      presentation = this.getPresentation(viewportId);
+    } catch (error) {
+      console.warn(error);
+    }
+
+    if (!presentation || !presentation.presentationIds) {
+      return;
+    }
+    const {
+      lutPresentationStore,
+      positionPresentationStore,
+    } = stateSyncService.getState();
+    const { presentationIds } = presentation;
+    const { lutPresentationId, positionPresentationId } = presentationIds || {};
+    const storeState = {};
+    if (lutPresentationId) {
+      storeState.lutPresentationStore = {
+        ...lutPresentationStore,
+        [lutPresentationId]: presentation,
+      };
+    }
+    if (positionPresentationId) {
+      storeState.positionPresentationStore = {
+        ...positionPresentationStore,
+        [positionPresentationId]: presentation,
+      };
+    }
+    stateSyncService.store(storeState);
+  }
+
   /**
    * Sets the viewport data for a viewport.
    * @param viewportId - The ID of the viewport to set the data for.
@@ -207,28 +241,23 @@ class CornerstoneViewportService extends PubSubService
   ): void {
     const renderingEngine = this.getRenderingEngine();
 
+    // This is the old viewportInfo, which may have old options but we might be
+    // using its viewport (same viewportId as the new viewportInfo)
     const viewportInfo = this.viewportsById.get(viewportId);
+    this.storePresentation({ viewportId: viewportInfo.getViewportId() });
 
     if (!viewportInfo) {
-      throw new Error('Viewport info not defined');
+      throw new Error('element is not enabled for the given viewportId');
     }
 
-    const {
-      viewportOptions,
-      displaySetOptions,
-    } = this._getViewportAndDisplaySetOptions(
-      publicViewportOptions,
-      publicDisplaySetOptions,
-      viewportInfo
+    // override the viewportOptions and displaySetOptions with the public ones
+    // since those are the newly set ones, we set them here so that it handles defaults
+    const displaySetOptions = viewportInfo.setPublicDisplaySetOptions(
+      publicDisplaySetOptions
     );
-
-    viewportInfo.setRenderingEngineId(renderingEngine.id);
-    viewportInfo.setViewportOptions(viewportOptions);
-    viewportInfo.setDisplaySetOptions(displaySetOptions);
-    viewportInfo.setViewportData(viewportData);
-    viewportInfo.setViewportId(viewportId);
-
-    this.viewportsById.set(viewportId, viewportInfo);
+    const viewportOptions = viewportInfo.setPublicViewportOptions(
+      publicViewportOptions
+    );
 
     const element = viewportInfo.getElement();
     const type = viewportInfo.getViewportType();
@@ -245,11 +274,25 @@ class CornerstoneViewportService extends PubSubService
       },
     };
 
+    // Rendering Engine Id set should happen before enabling the element
+    // since there are callbacks that depend on the renderingEngine id
+    // Todo: however, this is a limitation which means that we can't change
+    // the rendering engine id for a given viewport which might be a super edge
+    // case
+    viewportInfo.setRenderingEngineId(renderingEngine.id);
+
     // Todo: this is not optimal at all, we are re-enabling the already enabled
     // element which is not what we want. But enabledElement as part of the
     // renderingEngine is designed to be used like this. This will trigger
     // ENABLED_ELEMENT again and again, which will run onEnableElement callbacks
     renderingEngine.enableElement(viewportInput);
+
+    viewportInfo.setViewportOptions(viewportOptions);
+    viewportInfo.setDisplaySetOptions(displaySetOptions);
+    viewportInfo.setViewportData(viewportData);
+    viewportInfo.setViewportId(viewportId);
+
+    this.viewportsById.set(viewportId, viewportInfo);
 
     const viewport = renderingEngine.getViewport(viewportId);
     this._setDisplaySets(viewport, viewportData, viewportInfo, presentations);
@@ -330,7 +373,7 @@ class CornerstoneViewportService extends PubSubService
     }
 
     viewport.setStack(imageIds, initialImageIndexToUse).then(() => {
-      viewport.setProperties(properties);
+      viewport.setProperties({ ...properties });
       const camera = presentations.positionPresentation?.camera;
       if (camera) {
         viewport.setCamera(camera);
@@ -746,31 +789,6 @@ class CornerstoneViewportService extends PubSubService
 
       return slabThickness;
     }
-  }
-
-  _getViewportAndDisplaySetOptions(
-    publicViewportOptions: PublicViewportOptions,
-    publicDisplaySetOptions: DisplaySetOptions[],
-    viewportInfo: ViewportInfo
-  ): {
-    viewportOptions: ViewportOptions;
-    displaySetOptions: DisplaySetOptions[];
-  } {
-    // Creating a temporary viewportInfo to handle defaults
-    const newViewportInfo = new ViewportInfo(viewportInfo.getViewportId());
-
-    // To handle setting the default values if missing for the viewportOptions and
-    // displaySetOptions
-    newViewportInfo.setPublicViewportOptions(publicViewportOptions);
-    newViewportInfo.setPublicDisplaySetOptions(publicDisplaySetOptions);
-
-    const newViewportOptions = newViewportInfo.getViewportOptions();
-    const newDisplaySetOptions = newViewportInfo.getDisplaySetOptions();
-
-    return {
-      viewportOptions: newViewportOptions,
-      displaySetOptions: newDisplaySetOptions,
-    };
   }
 
   _getFrameOfReferenceUID(displaySetInstanceUID) {
