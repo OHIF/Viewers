@@ -666,29 +666,30 @@ function commandsModule({
             toolGroupId,
             segmentationId
           );
-        }
 
-        segments.forEach(segment => {
-          if (segment === null) {
-            return;
-          }
-
-          segmentationService.addSegment(
-            segmentationId,
-            segment.segmentIndex,
-            null, // toolGroupId,
-            {
-              color: segment.color,
-              label: segment.label,
-              opacity: segment.opacity,
-              isLocked: segment.isLocked,
-              visibility: segment.isVisible,
-              active: segmentation.activeSegmentIndex === segment.segmentIndex,
+          segments.forEach(segment => {
+            if (segment === null) {
+              return;
             }
-          );
-        });
 
-        segmentationService.hydrateSegmentation(segmentation.id);
+            segmentationService.addSegment(
+              segmentationId,
+              segment.segmentIndex,
+              toolGroupId,
+              {
+                color: segment.color,
+                label: segment.label,
+                opacity: segment.opacity,
+                isLocked: segment.isLocked,
+                visibility: segment.isVisible,
+                active:
+                  segmentation.activeSegmentIndex === segment.segmentIndex,
+              }
+            );
+          });
+
+          segmentationService.hydrateSegmentation(segmentation.id);
+        }
       }
 
       const segmentationToSetActive = segmentations.find(
@@ -696,9 +697,12 @@ function commandsModule({
       );
 
       if (segmentationToSetActive !== undefined) {
-        segmentationService.setActiveSegmentationForToolGroup(
-          segmentationToSetActive.id
-        );
+        toolGroupIds.forEach(toolGroupId => {
+          segmentationService.setActiveSegmentationForToolGroup(
+            segmentationToSetActive.id,
+            toolGroupId
+          );
+        });
       }
 
       onCompleteCallback?.();

@@ -204,7 +204,7 @@ class SegmentationService extends PubSubService {
         );
       }
 
-      if (active !== undefined) {
+      if (active === true) {
         this._setActiveSegment(segmentationId, segmentIndex, suppressEvents);
       }
 
@@ -441,6 +441,22 @@ class SegmentationService extends PubSubService {
     );
   }
 
+  public getActiveSegmentation(): Segmentation {
+    const segmentations = this.getSegmentations();
+
+    return segmentations.find(segmentation => segmentation.isActive);
+  }
+
+  public getActiveSegment() {
+    const activeSegmentation = this.getActiveSegmentation();
+    const { activeSegmentIndex, segments } = activeSegmentation;
+
+    if (activeSegmentIndex === null) {
+      return;
+    }
+
+    return segments[activeSegmentIndex];
+  }
   /**
    * Get specific segmentation by its id.
    *
@@ -820,6 +836,10 @@ class SegmentationService extends PubSubService {
   ): void {
     const { toolGroupService } = this.servicesManager.services;
     const center = this._getSegmentCenter(segmentationId, segmentIndex);
+
+    if (!center) {
+      return;
+    }
 
     const { world } = center;
 
@@ -1887,7 +1907,7 @@ class SegmentationService extends PubSubService {
       toolGroupId
     );
 
-    if (segmentationRepresentations.length === 0) {
+    if (segmentationRepresentations?.length === 0) {
       return;
     }
 
