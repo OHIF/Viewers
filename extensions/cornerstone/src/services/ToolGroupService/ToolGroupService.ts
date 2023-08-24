@@ -110,11 +110,7 @@ export default class ToolGroupService {
   }
 
   public getActiveToolForViewport(viewportId: string): string {
-    const toolGroup = ToolGroupManager.getToolGroupForViewport(viewportId);
-    if (!toolGroup) {
-      return null;
-    }
-
+    const toolGroup = this.getToolGroupForViewport(viewportId);
     return toolGroup.getActivePrimaryMouseButtonTool();
   }
 

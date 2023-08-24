@@ -9,9 +9,7 @@ const AdvancedToolbox = ({ title, items, name }) => {
   useEffect(() => {
     // see if any of the items are active from the outside
     const activeItem = items?.find(item => item.active);
-    if (activeItem) {
-      setIsActive(activeItem.name);
-    }
+    setIsActive(activeItem ? activeItem.name : null);
   }, [items]);
 
   return (

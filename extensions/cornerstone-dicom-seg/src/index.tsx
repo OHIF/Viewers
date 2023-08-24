@@ -5,6 +5,7 @@ import getSopClassHandlerModule from './getSopClassHandlerModule';
 import getHangingProtocolModule from './getHangingProtocolModule';
 import getPanelModule from './getPanelModule';
 import hydrateSEGDisplaySet from './utils/_hydrateSEG';
+import preRegistration from './init';
 
 const Component = React.lazy(() => {
   return import(
@@ -29,6 +30,7 @@ const extension = {
    * You ID can be anything you want, but it should be unique.
    */
   id,
+  preRegistration,
 
   /**
    * PanelModule should provide a list of panels that will be available in OHIF

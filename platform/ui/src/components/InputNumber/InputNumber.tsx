@@ -44,7 +44,6 @@ const InputNumber: React.FC<{
   const [numberValue, setNumberValue] = useState(value);
 
   const maxDigits = maxValue.toString().length;
-  console.debug('🚀 ~ maxDigits:', maxDigits);
   const inputWidth = Math.max(maxDigits * 10, showAdjustmentArrows ? 20 : 28);
   const arrowWidth = showAdjustmentArrows ? 20 : 0; // Estimate the width of arrows
   const containerWidth = `${inputWidth + arrowWidth}px`; // Sum of input and arrows

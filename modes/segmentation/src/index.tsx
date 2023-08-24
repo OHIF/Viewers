@@ -1,6 +1,7 @@
 import { hotkeys } from '@ohif/core';
 import { id } from './id';
-import { initToolGroups, toolbarButtons } from '@ohif/mode-longitudinal';
+import { toolbarButtons } from '@ohif/mode-longitudinal';
+import initToolGroups from './initToolGroups';
 
 const ohif = {
   layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
@@ -16,6 +17,8 @@ const cornerstone = {
 
 const segmentation = {
   panel: '@ohif/extension-cornerstone-dicom-seg.panelModule.panelSegmentation',
+  panelTool:
+    '@ohif/extension-cornerstone-dicom-seg.panelModule.panelSegmentationWithTools',
 };
 
 /**
@@ -145,7 +148,7 @@ function modeFactory({ modeConfiguration }) {
             id: ohif.layout,
             props: {
               leftPanels: [ohif.leftPanel],
-              rightPanels: [segmentation.panel],
+              rightPanels: [segmentation.panelTool],
               viewports: [
                 {
                   namespace: cornerstone.viewport,

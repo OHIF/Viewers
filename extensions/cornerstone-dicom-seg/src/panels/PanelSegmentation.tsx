@@ -100,6 +100,7 @@ export default function PanelSegmentation({
       ]);
     }
 
+    // Todo: fix setTimout here
     setTimeout(async () => {
       const segmentationId = await segmentationService.createSegmentationForDisplaySet(
         displaySetInstanceUID,
@@ -107,7 +108,7 @@ export default function PanelSegmentation({
       );
 
       await segmentationService.addSegmentationRepresentationToToolGroup(
-        'default',
+        activeViewport.viewportOptions.toolGroupId,
         segmentationId,
         true // hydrateSegmentation,
       );

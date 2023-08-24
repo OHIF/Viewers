@@ -2,6 +2,7 @@ import React from 'react';
 
 import { useAppConfig } from '@state';
 import PanelSegmentation from './panels/PanelSegmentation';
+import SegmentationToolbox from './panels/SegmentationToolbox';
 
 const getPanelModule = ({
   commandsManager,
@@ -32,6 +33,30 @@ const getPanelModule = ({
     );
   };
 
+  const wrappedPanelSegmentationWithTools = configuration => {
+    const [appConfig] = useAppConfig();
+    return (
+      <>
+        <SegmentationToolbox
+          commandsManager={commandsManager}
+          servicesManager={servicesManager}
+          extensionManager={extensionManager}
+          configuration={{
+            ...configuration,
+          }}
+        />
+        <PanelSegmentation
+          commandsManager={commandsManager}
+          servicesManager={servicesManager}
+          extensionManager={extensionManager}
+          configuration={{
+            ...configuration,
+          }}
+        />
+      </>
+    );
+  };
+
   return [
     {
       name: 'panelSegmentation',
@@ -39,6 +64,13 @@ const getPanelModule = ({
       iconLabel: 'Segmentation',
       label: 'Segmentation',
       component: wrappedPanelSegmentation,
+    },
+    {
+      name: 'panelSegmentationWithTools',
+      iconName: 'tab-segmentation',
+      iconLabel: 'Segmentation',
+      label: 'Segmentation',
+      component: wrappedPanelSegmentationWithTools,
     },
   ];
 };
