@@ -11,7 +11,7 @@ export interface BaseDataSourceConfigurationAPIItem {
 export interface BaseDataSourceConfigurationAPI {
   /**
    * Gets the i18n labels (i.e. the i18n lookup keys) for each of the configurable items
-   * of the cloud server API.
+   * of the data source configuration API.
    * For example, for the Google Cloud Healthcare API, this would be
    * ['Project', 'Location', 'Data set', 'DICOM store'].
    * Besides the configurable item labels themselves, several other string look ups
@@ -29,14 +29,14 @@ export interface BaseDataSourceConfigurationAPI {
    *    - usually accompanied by the error itself
    *    - for example, for Google, `Error fetching Project list` would be 'Error fetching projects'
    * 4. `Search {itemLabel} list`
-   *    - used as the placeholder text for filtering a lit of items
+   *    - used as the placeholder text for filtering a list of items
    *    - for example, for Google, `Search Project list` would be 'Search projects'
    */
   getItemLabels(): Array<string>;
 
   /**
-   * Initializes the cloud server API and returns the top-level sub-items
-   * that can be chosen to begin the process of configuring a data source.
+   * Initializes the data source configuration API and returns the top-level sub-items
+   * that can be chosen to begin the process of configuring the data source.
    * For example, for the Google Cloud Healthcare API, this would perform the initial request
    * to fetch the top level projects for the logged in user account.
    */
@@ -51,8 +51,8 @@ export interface BaseDataSourceConfigurationAPI {
    * For example, for the Google Cloud Healthcare API, this would take the current item
    * (say a data set) and queries and returns its sub-items (i.e. all of the DICOM stores
    * contained in that data set). Furthermore, whenever the item to set is a DICOM store,
-   * the Google Cloud Healthcare API implementation would update the OHIF active data source
-   * to point to that DICOM store.
+   * the Google Cloud Healthcare API implementation would update the OHIF data source
+   * associated with this instance to point to that DICOM store.
    * @param item the item to set as current
    */
   setCurrentItem(
@@ -60,7 +60,7 @@ export interface BaseDataSourceConfigurationAPI {
   ): Promise<Array<BaseDataSourceConfigurationAPIItem>>;
 
   /**
-   * Gets the list of item currently configured for the data source associated with
+   * Gets the list of items currently configured for the data source associated with
    * this API instance. The resultant array must be the same length as the result of
    * `getItemLabels`.
    */
