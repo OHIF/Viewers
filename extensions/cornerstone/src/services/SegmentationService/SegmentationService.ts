@@ -1152,6 +1152,90 @@ class SegmentationService extends PubSubService {
     }
   };
 
+  private calculateCentroids = (
+    segmentationId: string,
+    segmentIndex?: number
+  ): void => {
+    const segmentation = this.getSegmentation(segmentationId);
+
+    // segmentIndices to calculate centroids for
+    const segmentIndices = segmentIndex
+      ? [segmentIndex]
+      : segmentation.segments
+          .filter(segment => segment?.segmentIndex)
+          .map(segment => segment.segmentIndex);
+
+    const volume = this.getLabelmapVolume(segmentationId);
+
+    const { dimensions, imageData } = volume;
+    const scalarData = volume.getScalarData();
+
+    const frameLength = dimensions[0] * dimensions[1];
+    const numFrames = dimensions[2];
+
+    const centroids = new Map();
+
+    // Convert segmentIndices to a Set for faster lookups
+    const segmentIndicesSet = new Set(segmentIndices);
+
+    // Pre-allocate objects for centroids
+    for (const segmentIndex of segmentIndicesSet) {
+      centroids.set(segmentIndex, {
+        x: 0,
+        y: 0,
+        z: 0,
+        count: 0,
+      });
+    }
+
+    const dim0 = dimensions[0];
+    for (let frame = 0; frame < numFrames; frame++) {
+      let voxelIndex = frame * frameLength;
+      for (let p = 0; p < frameLength; p++) {
+        const segmentIndex = scalarData[voxelIndex++];
+
+        if (segmentIndicesSet.has(segmentIndex)) {
+          const centroid = centroids.get(segmentIndex);
+          centroid.x += p % dim0;
+          centroid.y += (p / dim0) | 0; // Equivalent to Math.floor(p / dim0) but faster
+          centroid.z += frame;
+          centroid.count++;
+        }
+      }
+    }
+
+    // Create or ensure segmentCenter object exists
+    if (!segmentation.cachedStats) {
+      segmentation.cachedStats = { segmentCenter: {} };
+    } else if (!segmentation.cachedStats.segmentCenter) {
+      segmentation.cachedStats.segmentCenter = {};
+    }
+
+    // Combine the two loops
+    for (const [segmentIndex, centroid] of centroids) {
+      const count = centroid.count;
+
+      centroid.x /= count;
+      centroid.y /= count;
+      centroid.z /= count;
+
+      centroid.world = imageData.indexToWorld([
+        centroid.x,
+        centroid.y,
+        centroid.z,
+      ]);
+
+      segmentation.cachedStats.segmentCenter[segmentIndex] = {
+        center: {
+          image: [centroid.x, centroid.y, centroid.z],
+          world: centroid.world,
+        },
+      };
+    }
+
+    this.addOrUpdateSegmentation(segmentation, true, true);
+  };
+
   private _highlightLabelmap(
     segmentIndex: number,
     alpha: number,

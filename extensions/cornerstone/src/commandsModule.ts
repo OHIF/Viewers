@@ -636,6 +636,7 @@ function commandsModule({
       displaySetInstanceUID,
       segmentations,
       onCompleteCallback,
+      calculateCentroids = false,
     }) => {
       const toolGroupIds = _getMatchedViewportsToolGroupIds();
       for (let i = 0; i < segmentations.length; i++) {
@@ -706,6 +707,12 @@ function commandsModule({
       }
 
       onCompleteCallback?.();
+
+      if (calculateCentroids) {
+        segmentations.forEach(segmentation => {
+          segmentationService.calculateCentroids(segmentation.id);
+        });
+      }
     },
   };
 
