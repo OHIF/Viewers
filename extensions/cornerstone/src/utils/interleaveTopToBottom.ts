@@ -37,6 +37,25 @@ export default function interleaveTopToBottom({
     }
   }
 
+  const filteredMatchDetails = [];
+  const displaySetsToLoad = new Set();
+
+  Array.from(matchDetails.values()).forEach(curMatchDetails => {
+    const { displaySetsInfo } = curMatchDetails;
+    let numDisplaySetsToLoad = 0;
+
+    displaySetsInfo.forEach(({ displaySetInstanceUID, displaySetOptions }) => {
+      if (!displaySetOptions?.options?.skipLoading) {
+        numDisplaySetsToLoad++;
+        displaySetsToLoad.add(displaySetInstanceUID);
+      }
+    });
+
+    if (numDisplaySetsToLoad) {
+      filteredMatchDetails.push(curMatchDetails);
+    }
+  });
+
   /**
    * The following is checking if all the viewports that were matched in the HP has been
    * successfully created their cornerstone viewport or not. Todo: This can be
@@ -50,16 +69,19 @@ export default function interleaveTopToBottom({
    * listen to it and as the other viewports are created we can set the volumes for them
    * since volumes are already started loading.
    */
-  if (matchDetails.size !== viewportIdVolumeInputArrayMap.size) {
+  if (filteredMatchDetails.length !== viewportIdVolumeInputArrayMap.size) {
     return;
   }
 
   // Check if all the matched volumes are loaded
   for (const [_, details] of displaySetsMatchDetails.entries()) {
-    const { SeriesInstanceUID } = details;
+    const { SeriesInstanceUID, displaySetInstanceUID } = details;
 
     // HangingProtocol has matched, but don't have all the volumes created yet, so return
-    if (!Array.from(volumeIdMapsToLoad.values()).includes(SeriesInstanceUID)) {
+    if (
+      displaySetsToLoad.has(displaySetInstanceUID) &&
+      !Array.from(volumeIdMapsToLoad.values()).includes(SeriesInstanceUID)
+    ) {
       return;
     }
   }

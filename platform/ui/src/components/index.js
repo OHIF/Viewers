@@ -52,6 +52,7 @@ import ThumbnailTracked from './ThumbnailTracked';
 import ThumbnailList from './ThumbnailList';
 import ToolbarButton from './ToolbarButton';
 import ExpandableToolbarButton from './ExpandableToolbarButton';
+import LineChart from './LineChart';
 import ListMenu from './ListMenu';
 import Tooltip from './Tooltip';
 import TooltipClipboard from './TooltipClipboard';
@@ -95,6 +96,7 @@ export {
   EmptyStudies,
   ErrorBoundary,
   ExpandableToolbarButton,
+  LineChart,
   ListMenu,
   Icon,
   IconButton,

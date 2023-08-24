@@ -1,4 +1,6 @@
 const dynamicVolume = {
+  sopClassHandler:
+    '@ohif/extension-cornerstone-dynamic-volume.sopClassHandlerModule.dynamic-volume',
   leftPanel:
     '@ohif/extension-cornerstone-dynamic-volume.panelModule.dynamic-volume',
   rightPanel:
@@ -66,6 +68,13 @@ const workflowSettings = {
       hangingProtocol: {
         protocolId: 'default4D',
         stageId: 'kinectAnalysis',
+      },
+      onBeforeActivate: ({ extensionManager, servicesManager }) => {
+        const sopClassHandler = extensionManager.getModuleEntry(
+          dynamicVolume.sopClassHandler
+        );
+
+        sopClassHandler.updateSegmentationsDisplaySets();
       },
     },
   ],

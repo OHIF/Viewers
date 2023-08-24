@@ -1,4 +1,5 @@
 import { CommandsManager } from '../../classes';
+import { ExtensionManager } from '../../extensions';
 import { ServicesManager } from '../../services';
 import { PubSubService } from '../_shared/pubSubServiceInterface';
 
@@ -77,18 +78,21 @@ export type WorkflowStep = {
 };
 
 class WorkflowStepsService extends PubSubService {
+  private _extensionManager: ExtensionManager;
   private _servicesManager: ServicesManager;
   private _commandsManager: CommandsManager;
   private _workflowSteps: WorkflowStep[];
   private _activeWorkflowStep: WorkflowStep;
 
   constructor(
+    extensionManager: ExtensionManager,
     commandsManager: CommandsManager,
     servicesManager: ServicesManager
   ) {
     super(EVENTS);
     this._workflowSteps = [];
     this._activeWorkflowStep = null;
+    this._extensionManager = extensionManager;
     this._commandsManager = commandsManager;
     this._servicesManager = servicesManager;
   }
@@ -165,23 +169,39 @@ class WorkflowStepsService extends PubSubService {
   }
 
   public setActiveWorkflowStep(workflowStepId: string): void {
-    if (workflowStepId === this._activeWorkflowStep?.id) {
+    const previousWorkflowStep = this._activeWorkflowStep;
+
+    if (workflowStepId === previousWorkflowStep?.id) {
       return;
     }
 
-    const activeWorkflowStep = this._workflowSteps.find(
+    const newWorkflowStep = this._workflowSteps.find(
       step => step.id === workflowStepId
     );
 
-    if (!activeWorkflowStep) {
+    if (!newWorkflowStep) {
       throw new Error(`Invalid workflowStepId (${workflowStepId})`);
     }
 
-    this._activeWorkflowStep = activeWorkflowStep;
-    this._updateToolBar(activeWorkflowStep);
-    this._updatePanels(activeWorkflowStep);
-    this._updateHangingProtocol(activeWorkflowStep);
-    this._broadcastEvent(EVENTS.ACTIVE_STEP_CHANGED, { activeWorkflowStep });
+    const appContext = {
+      extensionManager: this._extensionManager,
+      servicesManager: this._servicesManager,
+      commandsManager: this._commandsManager,
+    };
+
+    previousWorkflowStep?.onBeforeInactivate?.(appContext);
+    newWorkflowStep?.onBeforeActivate?.(appContext);
+
+    this._activeWorkflowStep = newWorkflowStep;
+    this._updateToolBar(newWorkflowStep);
+    this._updatePanels(newWorkflowStep);
+    this._updateHangingProtocol(newWorkflowStep);
+    this._broadcastEvent(EVENTS.ACTIVE_STEP_CHANGED, {
+      activeWorkflowStep: newWorkflowStep,
+    });
+
+    previousWorkflowStep?.onAfterInactivate?.(appContext);
+    newWorkflowStep?.onAfterActivate?.(appContext);
   }
 
   public reset(): void {
@@ -195,8 +215,16 @@ class WorkflowStepsService extends PubSubService {
 
   public static REGISTRATION = {
     name: 'workflowStepsService',
-    create: ({ commandsManager, servicesManager }): WorkflowStepsService => {
-      return new WorkflowStepsService(commandsManager, servicesManager);
+    create: ({
+      extensionManager,
+      commandsManager,
+      servicesManager,
+    }): WorkflowStepsService => {
+      return new WorkflowStepsService(
+        extensionManager,
+        commandsManager,
+        servicesManager
+      );
     },
   };
 }
