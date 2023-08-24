@@ -223,23 +223,6 @@ const ptCT = {
   availableTo: {},
   editableBy: {},
   imageLoadStrategy: 'interleaveTopToBottom', // "default" , "interleaveTopToBottom",  "interleaveCenter"
-
-  callbacks: {
-    // Switches out of MPR mode when the layout change button is used
-    onLayoutChange: [
-      {
-        commandName: 'resetCameraLayout',
-        context: 'DEFAULT',
-      },
-    ],
-    // // Turns off crosshairs when switching out of MPR mode
-    onProtocolEnter: [
-      {
-        commandName: 'resetCameraLayout',
-        context: 'CORNERSTONE',
-      },
-    ],
-  },
   protocolMatchingRules: [
     {
       attribute: 'ModalitiesInStudy',

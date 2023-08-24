@@ -155,6 +155,10 @@ export function ViewportGridProvider({ children, service }) {
             previousViewport?.viewportOptions
           );
 
+          // Prefer the updated viewport type since it may have changed
+          viewportOptions.viewportType = updatedViewport.viewportType;
+          viewportOptions.orientation = updatedViewport.orientation;
+
           const displaySetOptions = updatedViewport.displaySetOptions || [];
           if (!displaySetOptions.length) {
             // Copy all the display set options, assuming a full set of displaySet UID's is provided.
@@ -209,15 +213,20 @@ export function ViewportGridProvider({ children, service }) {
         let activeViewportIdToSet = activeViewportId;
         for (let row = 0; row < numRows; row++) {
           for (let col = 0; col < numCols; col++) {
-            const pos = col + row * numCols;
-            const layoutOption = layoutOptions[pos];
+            const position = col + row * numCols;
+            const layoutOption = layoutOptions[position];
             const positionId = layoutOption?.positionId || `${col}-${row}`;
 
-            if (hasOptions && pos >= layoutOptions.length) {
+            if (hasOptions && position >= layoutOptions.length) {
               continue;
             }
 
-            const viewport = findOrCreateViewport(pos, positionId, options);
+            const viewport = findOrCreateViewport(
+              position,
+              positionId,
+              options
+            );
+
             if (!viewport) {
               continue;
             }
@@ -237,8 +246,10 @@ export function ViewportGridProvider({ children, service }) {
             viewports.set(viewport.viewportId, viewport);
 
             let xPos, yPos, w, h;
-            if (layoutOptions && layoutOptions[pos]) {
-              ({ x: xPos, y: yPos, width: w, height: h } = layoutOptions[pos]);
+            if (layoutOptions && layoutOptions[position]) {
+              ({ x: xPos, y: yPos, width: w, height: h } = layoutOptions[
+                position
+              ]);
             } else {
               w = 1 / numCols;
               h = 1 / numRows;
