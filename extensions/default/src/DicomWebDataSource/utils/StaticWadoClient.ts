@@ -67,11 +67,29 @@ export default class StaticWadoClient extends api.DICOMwebClient {
   }
 
   async searchForSeries(options) {
+    // asking to include Series Date, Series Time, Series Description
+    // and Series Number in the series metadata returned to better sort series
+    // in preLoad function
+    const commaSeparatedFields = [
+      '00080021',
+      '00080031',
+      '0008103E',
+      '00200011',
+    ].join(',');
+
+    const queryParamsMinimun = {
+      includefield: commaSeparatedFields,
+    };
+    const updatedOptions = {
+      ...options,
+      queryParams: queryParamsMinimun,
+    };
+
     if (!this.staticWado) {
-      return super.searchForSeries(options);
+      return super.searchForSeries(updatedOptions);
     }
 
-    const searchResult = await super.searchForSeries(options);
+    const searchResult = await super.searchForSeries(updatedOptions);
     const { queryParams } = options;
     if (!queryParams) {
       return searchResult;

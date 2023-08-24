@@ -74,7 +74,7 @@ export default class RetrieveMetadataLoaderAsync extends RetrieveMetadataLoader 
     return sortStudySeries(
       naturalized,
       sortCriteria ||
-        sortingCriteria.seriesSortCriteria.seriesInfoSortingCriteria,
+      sortingCriteria.seriesSortCriteria.seriesInfoSortingCriteria,
       sortFunction
     );
   }
@@ -91,6 +91,21 @@ export default class RetrieveMetadataLoaderAsync extends RetrieveMetadataLoader 
     );
 
     const promises = [];
+
+    // if a large study, fetch first a small group of series to run hanging protocol
+    if (preLoadData.length > this.thresholdLargeStudy) {
+      const firstGroup = [];
+      while (seriesAsyncLoader.hasNext()) {
+        const promise = seriesAsyncLoader.next();
+        promises.push(promise);
+        firstGroup.push(promise);
+        if (firstGroup.length >= this.firstGroupSize) {
+          break;
+        }
+      }
+      // wait for all promises in the first group to be settled
+      await Promise.allSettled(firstGroup);
+    }
 
     while (seriesAsyncLoader.hasNext()) {
       promises.push(seriesAsyncLoader.next());

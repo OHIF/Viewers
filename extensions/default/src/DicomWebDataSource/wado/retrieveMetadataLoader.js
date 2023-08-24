@@ -12,20 +12,27 @@ export default class RetrieveMetadataLoader {
    * @param {Array} studyInstanceUID Study instance ui to be retrieved
    * @param {Object} [filters] - Object containing filters to be applied on retrieve metadata process
    * @param {string} [filter.seriesInstanceUID] - series instance uid to filter results against
-   * @param {Function} [sortSeries] - Custom sort function for series
+   * @param {Object} [sortCriteria] - Custom sort criteria used for series
+   * @param {Function} [sortFunction] - Custom sort function for series
+   * @param {number} [thresholdLargeStudy] - Threshold used for classify a study as a large studies
+   * @param {number} [firstGroupSize] - In case of a large study, fetch first <firstGroupSize> series to display the first image fast to the user
    */
   constructor(
     client,
     studyInstanceUID,
     filters = {},
-    sortCriteria,
-    sortFunction
+    sortCriteria = undefined,
+    sortFunction = undefined,
+    thresholdLargeStudy = 100,
+    firstGroupSize = 10
   ) {
     this.client = client;
     this.studyInstanceUID = studyInstanceUID;
     this.filters = filters;
     this.sortCriteria = sortCriteria;
     this.sortFunction = sortFunction;
+    this.thresholdLargeStudy = thresholdLargeStudy;
+    this.firstGroupSize = firstGroupSize;
   }
 
   async execLoad() {
@@ -61,8 +68,8 @@ export default class RetrieveMetadataLoader {
   }
 
   // Methods to be overwrite
-  async configLoad() {}
-  async preLoad() {}
-  async load(preLoadData) {}
-  async posLoad(loadData) {}
+  async configLoad() { }
+  async preLoad() { }
+  async load(preLoadData) { }
+  async posLoad(loadData) { }
 }
