@@ -155,10 +155,6 @@ export function ViewportGridProvider({ children, service }) {
             previousViewport?.viewportOptions
           );
 
-          // Prefer the updated viewport type since it may have changed
-          viewportOptions.viewportType = updatedViewport.viewportType;
-          viewportOptions.orientation = updatedViewport.orientation;
-
           const displaySetOptions = updatedViewport.displaySetOptions || [];
           if (!displaySetOptions.length) {
             // Copy all the display set options, assuming a full set of displaySet UID's is provided.

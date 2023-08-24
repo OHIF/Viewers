@@ -24,10 +24,6 @@ function subscribeToNextViewportGridChange(
         viewportGridService.EVENTS.LAYOUT_CHANGED,
         callback
       ),
-      viewportGridService.subscribe(
-        viewportGridService.EVENTS.GRID_STATE_CHANGED,
-        callback
-      ),
     ];
   };
 

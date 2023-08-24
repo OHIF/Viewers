@@ -413,11 +413,7 @@ const commandsModule = ({
         const viewportIdToUpdate =
           toggleOneUpViewportGridStore.activeViewportId;
 
-        // Determine which viewports need to be updated. This is particularly
-        // important when MPR is toggled to one up and a different reconstructable
-        // is swapped in. Note that currently HangingProtocolService.getViewportsRequireUpdate
-        // does not support viewport with multiple display sets.
-        const updatedViewports =
+        const updatedViewportsViaHP =
           displaySetInstanceUIDs.length > 1
             ? []
             : displaySetInstanceUIDs
@@ -433,15 +429,49 @@ const commandsModule = ({
         // returned from the HP service OR if there is not one from the HP service then
         // simply returns what was in the previous state.
         const findOrCreateViewport = (position: number) => {
-          const viewport = updatedViewports.find(
-            viewport => viewport.pos === position
-          );
+          // get the viewportId in the current state (since we are in the one-up layout)
+          const currentOneUpViewport = Array.from(viewports.values())[0];
 
-          return viewport
-            ? { viewportOptions, displaySetOptions, ...viewport }
-            : Array.from(toggleOneUpViewportGridStore.viewports.values())[
-                position
-              ];
+          // we should restore the previous layout but take into the account the fact that
+          // the current one up viewport might have a new displaySet dragged and dropped on it
+          // so we should prioritize the current one in the old grid store layout viewports
+
+          const newViewports = Array.from(
+            toggleOneUpViewportGridStore.viewports.values()
+          ).map(viewport => {
+            if (viewport.viewportId === currentOneUpViewport.viewportId) {
+              return {
+                ...currentOneUpViewport,
+              };
+            }
+
+            return viewport;
+          });
+
+          // However, we also need to take into account that the current one up viewport
+          // might have been part of a bigger hanging protocol layout, so going back
+          // from one up we should apply those viewports as well.
+          return updatedViewportsViaHP.length > 1 &&
+            updatedViewportsViaHP[position]
+            ? {
+                viewportOptions,
+                displaySetOptions,
+                ...updatedViewportsViaHP[position],
+              }
+            : newViewports[position];
+
+          // const viewport = updatedViewports.find(
+          //   viewport => viewport.pos === position
+          // );
+
+          // return viewport
+          //   ? { viewportOptions, displaySetOptions, ...viewport }
+          //   : Array.from(toggleOneUpViewportGridStore.viewports.values())[
+          //       position
+          //     ];
+          return Array.from(toggleOneUpViewportGridStore.viewports.values())[
+            position
+          ];
         };
 
         const layoutOptions = viewportGridService.getLayoutOptionsFromState(
