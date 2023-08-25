@@ -93,13 +93,13 @@ export default class RetrieveMetadataLoaderAsync extends RetrieveMetadataLoader 
     const promises = [];
 
     // if a large study, fetch first a small group of series to run hanging protocol
-    if (preLoadData.length > this.thresholdLargeStudy) {
+    if (preLoadData.length > this.largeStudySeriesCountThreshold) {
       const firstGroup = [];
       while (seriesAsyncLoader.hasNext()) {
         const promise = seriesAsyncLoader.next();
         promises.push(promise);
         firstGroup.push(promise);
-        if (firstGroup.length >= this.firstGroupSize) {
+        if (firstGroup.length >= this.initialSeriesFetchSize) {
           break;
         }
       }

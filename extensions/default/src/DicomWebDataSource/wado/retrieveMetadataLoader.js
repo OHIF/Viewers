@@ -14,8 +14,8 @@ export default class RetrieveMetadataLoader {
    * @param {string} [filter.seriesInstanceUID] - series instance uid to filter results against
    * @param {Object} [sortCriteria] - Custom sort criteria used for series
    * @param {Function} [sortFunction] - Custom sort function for series
-   * @param {number} [thresholdLargeStudy] - Threshold used for classify a study as a large studies
-   * @param {number} [firstGroupSize] - In case of a large study, fetch first <firstGroupSize> series to display the first image fast to the user
+   * @param {number} [largeStudySeriesCountThreshold ] - Threshold used for classify a study as a large studies
+   * @param {number} [initialSeriesFetchSize] - In case of a large study, fetch first <firstGroupSize> series to display the first image fast to the user
    */
   constructor(
     client,
@@ -23,16 +23,16 @@ export default class RetrieveMetadataLoader {
     filters = {},
     sortCriteria = undefined,
     sortFunction = undefined,
-    thresholdLargeStudy = 100,
-    firstGroupSize = 10
+    largeStudySeriesCountThreshold = 100,
+    initialSeriesFetchSize = 10
   ) {
     this.client = client;
     this.studyInstanceUID = studyInstanceUID;
     this.filters = filters;
     this.sortCriteria = sortCriteria;
     this.sortFunction = sortFunction;
-    this.thresholdLargeStudy = thresholdLargeStudy;
-    this.firstGroupSize = firstGroupSize;
+    this.largeStudySeriesCountThreshold = largeStudySeriesCountThreshold;
+    this.initialSeriesFetchSize = initialSeriesFetchSize;
   }
 
   async execLoad() {
