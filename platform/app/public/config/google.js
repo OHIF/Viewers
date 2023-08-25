@@ -55,6 +55,7 @@ window.config = {
         supportsWildcard: false,
         dicomUploadEnabled: true,
         omitQuotationForMultipartRequest: true,
+        configurationAPI: 'ohif.dataSourceConfigurationAPI.google',
       },
     },
     {

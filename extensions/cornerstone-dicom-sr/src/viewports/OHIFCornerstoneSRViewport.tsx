@@ -511,7 +511,9 @@ function _getStatusComponent({
       );
       break;
     case 3:
-      StatusIcon = () => <Icon name="status-untracked" />;
+      StatusIcon = () => (
+        <Icon className="text-aqua-pale" name="status-untracked" />
+      );
 
       ToolTipMessage = () => (
         <div>{`Click ${loadStr} to restore measurements.`}</div>

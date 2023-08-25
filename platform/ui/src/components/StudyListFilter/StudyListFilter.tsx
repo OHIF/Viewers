@@ -15,6 +15,7 @@ const StudyListFilter = ({
   isFiltering,
   numOfStudies,
   onUploadClick,
+  getDataSourceConfigurationComponent,
 }) => {
   const { t } = useTranslation('StudyList');
   const { sortBy, sortDirection } = filterValues;
@@ -30,13 +31,15 @@ const StudyListFilter = ({
   return (
     <React.Fragment>
       <div>
-        <div className="bg-primary-dark">
-          <div className="container relative flex flex-col pt-5 m-auto">
-            <div className="flex flex-row justify-between px-12 mb-5">
-              <div className="flex flex-row">
-                <Typography variant="h4" className="mr-6 text-primary-light">
+        <div className="bg-black">
+          <div className="container relative flex flex-col pt-5 mx-auto">
+            <div className="flex flex-row justify-between mb-5">
+              <div className="flex flex-row items-center gap-6 shrink min-w-[1px]">
+                <Typography variant="h6" className="text-white">
                   {t('StudyList')}
                 </Typography>
+                {getDataSourceConfigurationComponent &&
+                  getDataSourceConfigurationComponent()}
                 {onUploadClick && (
                   <div
                     className="flex items-center gap-2 cursor-pointer text-primary-active text-lg self-center font-semibold"
@@ -63,7 +66,7 @@ const StudyListFilter = ({
                   </LegacyButton>
                 )}
                 <Typography
-                  variant="h4"
+                  variant="h6"
                   className="mr-2"
                   data-cy={'num-studies'}
                 >
@@ -71,7 +74,7 @@ const StudyListFilter = ({
                 </Typography>
                 <Typography
                   variant="h6"
-                  className="self-end pb-1 text-common-light"
+                  className="self-end pb-1 text-primary-light"
                 >
                   {t('Studies')}
                 </Typography>
@@ -80,8 +83,8 @@ const StudyListFilter = ({
           </div>
         </div>
       </div>
-      <div className="sticky z-10 border-b-4 border-black -top-1">
-        <div className="pt-3 pb-3 bg-primary-dark ">
+      <div className="sticky z-10 border-b-4 border-black -top-1 mx-auto">
+        <div className="pt-3 pb-3 bg-primary-dark">
           <InputGroup
             inputMeta={filtersMeta}
             values={filterValues}
@@ -134,6 +137,7 @@ StudyListFilter.propTypes = {
   clearFilters: PropTypes.func.isRequired,
   isFiltering: PropTypes.bool.isRequired,
   onUploadClick: PropTypes.func,
+  getDataSourceConfigurationComponent: PropTypes.func,
 };
 
 export default StudyListFilter;

@@ -18,7 +18,9 @@ export default function _getStatusComponent({ isHydrated, onStatusClick }) {
       );
       break;
     case false:
-      StatusIcon = () => <Icon name="status-untracked" />;
+      StatusIcon = () => (
+        <Icon className="text-aqua-pale" name="status-untracked" />
+      );
 
       ToolTipMessage = () => <div>Click LOAD to load segmentation.</div>;
   }
