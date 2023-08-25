@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-test",
-  "version": "3.7.0-beta.57",
+  "version": "3.7.0-beta.58",
   "description": "OHIF extension used inside e2e testing",
   "author": "OHIF",
   "license": "MIT",
