@@ -691,6 +691,13 @@ function commandsModule({
 
           segmentationService.hydrateSegmentation(segmentation.id);
         }
+
+        if (segmentation.centroidsIJK) {
+          segmentationService.setCentroids(
+            segmentation.id,
+            segmentation.centroidsIJK
+          );
+        }
       }
 
       const segmentationToSetActive = segmentations.find(
