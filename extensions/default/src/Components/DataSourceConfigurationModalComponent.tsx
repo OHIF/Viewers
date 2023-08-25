@@ -90,6 +90,33 @@ function DataSourceConfigurationModalComponent({
     currentSelectedItemIndex,
   ]);
 
+  const getSelectedItemCursorClasses = itemIndex =>
+    itemIndex !== itemLabels.length - 1 && itemIndex < selectedItems.length
+      ? 'cursor-pointer'
+      : 'cursor-auto';
+
+  const getSelectedItemBackgroundClasses = itemIndex =>
+    itemIndex < selectedItems.length
+      ? classNames(
+          'bg-black/[.4]',
+          itemIndex !== itemLabels.length - 1
+            ? 'hover:bg-transparent active:bg-secondary-dark'
+            : ''
+        )
+      : 'bg-transparent';
+
+  const getSelectedItemBorderClasses = itemIndex =>
+    itemIndex === currentSelectedItemIndex + 1
+      ? classNames('border-2', 'border-solid', 'border-primary-light')
+      : itemIndex < selectedItems.length
+      ? 'border border-solid border-primary-active hover:border-primary-light active:border-white'
+      : 'border border-dashed border-secondary-light';
+
+  const getSelectedItemTextClasses = itemIndex =>
+    itemIndex <= selectedItems.length
+      ? 'text-primary-light'
+      : 'text-primary-active';
+
   const getErrorComponent = (): ReactElement => {
     return (
       <div className="flex flex-col gap-4 min-h-[1px] grow">
@@ -102,33 +129,6 @@ function DataSourceConfigurationModalComponent({
   };
 
   const getSelectedItemsComponent = (): ReactElement => {
-    const getCursorClasses = itemIndex =>
-      itemIndex !== itemLabels.length - 1 && itemIndex < selectedItems.length
-        ? 'cursor-pointer'
-        : 'cursor-auto';
-
-    const getBackgroundClasses = itemIndex =>
-      itemIndex < selectedItems.length
-        ? classNames(
-            'bg-black/[.4]',
-            itemIndex !== itemLabels.length - 1
-              ? 'hover:bg-transparent active:bg-secondary-dark'
-              : ''
-          )
-        : 'bg-transparent';
-
-    const getBorderClasses = itemIndex =>
-      itemIndex === currentSelectedItemIndex + 1
-        ? classNames('border-2', 'border-solid', 'border-primary-light')
-        : itemIndex < selectedItems.length
-        ? 'border border-solid border-primary-active hover:border-primary-light active:border-white'
-        : 'border border-dashed border-secondary-light';
-
-    const getTextClasses = itemIndex =>
-      itemIndex <= selectedItems.length
-        ? 'text-primary-light'
-        : 'text-primary-active';
-
     return (
       <div className="flex gap-4">
         {itemLabels.map((itemLabel, itemLabelIndex) => {
@@ -137,10 +137,10 @@ function DataSourceConfigurationModalComponent({
               key={itemLabel}
               className={classNames(
                 'rounded-md p-3.5 flex flex-col gap-1 shrink min-w-[1px] basis-[200px]',
-                getCursorClasses(itemLabelIndex),
-                getBackgroundClasses(itemLabelIndex),
-                getBorderClasses(itemLabelIndex),
-                getTextClasses(itemLabelIndex)
+                getSelectedItemCursorClasses(itemLabelIndex),
+                getSelectedItemBackgroundClasses(itemLabelIndex),
+                getSelectedItemBorderClasses(itemLabelIndex),
+                getSelectedItemTextClasses(itemLabelIndex)
               )}
               onClick={
                 (showFullConfig && itemLabelIndex < currentSelectedItemIndex) ||

@@ -32,25 +32,27 @@ function DataSourceConfigurationComponent({
     const dataSourceChangedCallback = async () => {
       const activeDataSourceDef = extensionManager.getActiveDataSourceDefinition();
 
-      if (activeDataSourceDef.configuration.configurationAPI) {
-        const { factory: configurationAPIFactory } =
-          customizationService.get(
-            activeDataSourceDef.configuration.configurationAPI
-          ) ?? {};
-
-        if (configurationAPIFactory) {
-          const configAPI = configurationAPIFactory(
-            activeDataSourceDef.sourceName
-          );
-          setConfigurationAPI(configAPI);
-
-          configAPI.getConfiguredItems().then(list => {
-            if (shouldUpdate) {
-              setConfiguredItems(list);
-            }
-          });
-        }
+      if (!activeDataSourceDef.configuration.configurationAPI) {
+        return;
       }
+
+      const { factory: configurationAPIFactory } =
+        customizationService.get(
+          activeDataSourceDef.configuration.configurationAPI
+        ) ?? {};
+
+      if (!configurationAPIFactory) {
+        return;
+      }
+
+      const configAPI = configurationAPIFactory(activeDataSourceDef.sourceName);
+      setConfigurationAPI(configAPI);
+
+      configAPI.getConfiguredItems().then(list => {
+        if (shouldUpdate) {
+          setConfiguredItems(list);
+        }
+      });
     };
 
     const sub = extensionManager.subscribe(
