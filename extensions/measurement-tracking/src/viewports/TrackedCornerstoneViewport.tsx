@@ -384,7 +384,7 @@ function _getStatusComponent(isTracked) {
           </div>
         }
       >
-        <Icon name={trackedIcon} className="text-primary-light" />
+        <Icon name={trackedIcon} className="text-aqua-pale" />
       </Tooltip>
     </div>
   );
