@@ -925,6 +925,7 @@ class SegmentationService extends PubSubService {
     displaySetInstanceUID: string,
     options?: {
       segmentationId: string;
+      FrameOfReferenceUID: string;
       label: string;
     }
   ): Promise<string> => {
@@ -961,6 +962,9 @@ class SegmentationService extends PubSubService {
       // We should set it as active by default, as it created for display
       isActive: true,
       type: representationType,
+      FrameOfReferenceUID:
+        options?.FrameOfReferenceUID ||
+        displaySet.instances?.[0]?.FrameOfReferenceUID,
       representationData: {
         LABELMAP: {
           volumeId: segmentationId,

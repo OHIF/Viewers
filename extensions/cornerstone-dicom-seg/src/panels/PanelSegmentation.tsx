@@ -119,7 +119,7 @@ export default function PanelSegmentation({
           label: 'Segment 1',
         },
       });
-    }, 1000);
+    }, 500);
   };
 
   const onSegmentationClick = (segmentationId: string) => {

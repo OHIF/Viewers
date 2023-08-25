@@ -52,6 +52,7 @@ function ToolSettings({ options }) {
                         )}
                         size="inherit"
                         bgColor={isActive ? 'bg-primary-main' : 'bg-black'}
+                        onClick={() => option.onChange(optionValue)}
                       >
                         {label}
                       </LegacyButton>

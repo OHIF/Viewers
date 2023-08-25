@@ -52,8 +52,51 @@ function initDefaultToolGroup(
     ],
     passive: [
       { toolName: toolNames.Length },
-      { toolName: 'Brush' },
-      { toolName: toolNames.ArrowAnnotate },
+      {
+        toolName: 'CircularBrush',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: brushStrategies.CircularBrush,
+        },
+      },
+      {
+        toolName: 'CircularEraser',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: brushStrategies.CircularEraser,
+        },
+      },
+      {
+        toolName: 'SphereEraser',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: brushStrategies.SphereEraser,
+        },
+      },
+      {
+        toolName: 'SphereBrush',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: brushStrategies.SphereBrush,
+        },
+      },
+      {
+        toolName: toolNames.ArrowAnnotate,
+        configuration: {
+          getTextCallback: (callback, eventDetails) =>
+            commandsManager.runCommand('arrowTextCallback', {
+              callback,
+              eventDetails,
+            }),
+
+          changeTextCallback: (data, eventDetails, callback) =>
+            commandsManager.runCommand('arrowTextCallback', {
+              callback,
+              data,
+              eventDetails,
+            }),
+        },
+      },
       { toolName: toolNames.Bidirectional },
       { toolName: toolNames.DragProbe },
       { toolName: toolNames.EllipticalROI },
@@ -72,24 +115,7 @@ function initDefaultToolGroup(
     disabled: [{ toolName: toolNames.ReferenceLines }],
   };
 
-  const toolsConfig = {
-    [toolNames.ArrowAnnotate]: {
-      getTextCallback: (callback, eventDetails) =>
-        commandsManager.runCommand('arrowTextCallback', {
-          callback,
-          eventDetails,
-        }),
-
-      changeTextCallback: (data, eventDetails, callback) =>
-        commandsManager.runCommand('arrowTextCallback', {
-          callback,
-          data,
-          eventDetails,
-        }),
-    },
-  };
-
-  toolGroupService.createToolGroupAndAddTools(toolGroupId, tools, toolsConfig);
+  toolGroupService.createToolGroupAndAddTools(toolGroupId, tools);
 }
 
 function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
@@ -117,8 +143,51 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
     ],
     passive: [
       { toolName: toolNames.Length },
-      { toolName: 'Brush' },
-      { toolName: toolNames.ArrowAnnotate },
+      {
+        toolName: 'CircularBrush',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: brushStrategies.CircularBrush,
+        },
+      },
+      {
+        toolName: 'CircularEraser',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: brushStrategies.CircularEraser,
+        },
+      },
+      {
+        toolName: 'SphereEraser',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: brushStrategies.SphereEraser,
+        },
+      },
+      {
+        toolName: 'SphereBrush',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: brushStrategies.SphereBrush,
+        },
+      },
+      {
+        toolName: toolNames.ArrowAnnotate,
+        configuration: {
+          getTextCallback: (callback, eventDetails) =>
+            commandsManager.runCommand('arrowTextCallback', {
+              callback,
+              eventDetails,
+            }),
+
+          changeTextCallback: (data, eventDetails, callback) =>
+            commandsManager.runCommand('arrowTextCallback', {
+              callback,
+              data,
+              eventDetails,
+            }),
+        },
+      },
       { toolName: toolNames.Bidirectional },
       { toolName: toolNames.DragProbe },
       { toolName: toolNames.EllipticalROI },
@@ -131,7 +200,16 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
       { toolName: toolNames.SegmentationDisplay },
     ],
     disabled: [
-      { toolName: toolNames.Crosshairs },
+      {
+        toolName: toolNames.Crosshairs,
+        configuration: {
+          viewportIndicators: false,
+          autoPan: {
+            enabled: false,
+            panSize: 10,
+          },
+        },
+      },
       { toolName: toolNames.ReferenceLines },
     ],
 
@@ -139,31 +217,7 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
     // disabled
   };
 
-  const toolsConfig = {
-    [toolNames.Crosshairs]: {
-      viewportIndicators: false,
-      autoPan: {
-        enabled: false,
-        panSize: 10,
-      },
-    },
-    [toolNames.ArrowAnnotate]: {
-      getTextCallback: (callback, eventDetails) =>
-        commandsManager.runCommand('arrowTextCallback', {
-          callback,
-          eventDetails,
-        }),
-
-      changeTextCallback: (data, eventDetails, callback) =>
-        commandsManager.runCommand('arrowTextCallback', {
-          callback,
-          data,
-          eventDetails,
-        }),
-    },
-  };
-
-  toolGroupService.createToolGroupAndAddTools('mpr', tools, toolsConfig);
+  toolGroupService.createToolGroupAndAddTools('mpr', tools);
 }
 
 function initToolGroups(extensionManager, toolGroupService, commandsManager) {

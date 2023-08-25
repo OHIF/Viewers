@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { AdvancedToolbox } from '@ohif/ui';
+import { AdvancedToolbox, useViewportGrid } from '@ohif/ui';
 import { utilities } from '@cornerstonejs/tools';
-import type { Types } from '@ohif/extension-cornerstone';
+import { Types } from '@ohif/extension-cornerstone';
 
 const { segmentation: segmentationUtils } = utilities;
 
@@ -10,18 +10,39 @@ function SegmentationToolbox({ servicesManager }) {
     toolbarService,
     segmentationService,
     toolGroupService,
-    viewportGridService
-  } = servicesManager.services as Types.CornerstoneServices
+  } = servicesManager.services as Types.CornerstoneServices;
+
+  const [viewportGrid = {}] = useViewportGrid();
+  const { viewports, activeViewportIndex } = viewportGrid;
+
   const [brushSize, setBrushSize] = useState(null);
-  const [activeTool, setactiveTool] = useState(null);
+  const [activeTool, setActiveTool] = useState(null);
 
   const getActiveViewportToolGroupId = useCallback(() => {
-    const { activeViewportIndex, viewports} = viewportGridService.getState();
     const viewport = viewports[activeViewportIndex];
-    const { toolGroupId } = viewport.viewportOptions
-    return toolGroupId;
-  }, [viewportGridService]);
+    const toolGroup = toolGroupService.getToolGroupForViewport(
+      viewport.viewportId
+    );
+    return toolGroup.id;
+  }, [viewports, activeViewportIndex]);
 
+  const updateActiveTool = useCallback(() => {
+    if (!viewports?.length || activeViewportIndex === undefined) {
+      return;
+    }
+
+    const viewport = viewports[activeViewportIndex];
+
+    if (!viewport.viewportId) {
+      return;
+    }
+
+    const activeTool = toolGroupService.getActiveToolForViewport(
+      viewport.viewportId
+    );
+    console.debug('🚀 ~ activeTool:', activeTool);
+    setActiveTool(activeTool);
+  }, [activeViewportIndex, viewports]);
 
   useEffect(() => {
     const { unsubscribe: unsub1 } = segmentationService.subscribe(
@@ -34,22 +55,25 @@ function SegmentationToolbox({ servicesManager }) {
       }
     );
 
-
-      const { unsubscribe: unsub2 } = toolbarService.subscribe(
-      toolbarService.EVENTS.TOOL_BAR_STATE_MODIFIED, () => {
-        const { activeViewportIndex, viewports} = viewportGridService.getState();
-    const viewport = viewports[activeViewportIndex];
-        const activeTool = toolGroupService.getActiveToolForViewport(viewport.viewportId);
-        setactiveTool(activeTool);
+    const { unsubscribe: unsub2 } = toolbarService.subscribe(
+      toolbarService.EVENTS.TOOL_BAR_STATE_MODIFIED,
+      () => {
+        updateActiveTool();
       }
-    )
+    );
 
     return () => {
       unsub1();
+      unsub2();
     };
-  }, []);
+  }, [activeViewportIndex, viewports]);
 
-  const onSegmentationToolClick = toolName => {
+  useEffect(() => {
+    updateActiveTool();
+  }, [activeViewportIndex, viewports]);
+
+  const setToolActive = toolName => {
+    console.debug('🚀 ~ toolName:', toolName);
     toolbarService.recordInteraction({
       groupId: 'SegmentationTools',
       itemId: 'Brush',
@@ -70,6 +94,7 @@ function SegmentationToolbox({ servicesManager }) {
     toolGroupService.getToolGroupIds()?.forEach(toolGroupId => {
       segmentationUtils.setBrushSizeForToolGroup(toolGroupId, value);
     });
+    setBrushSize(value);
   };
 
   return (
@@ -79,8 +104,9 @@ function SegmentationToolbox({ servicesManager }) {
         {
           name: 'Brush',
           icon: 'icon-tool-brush',
-          active: activeTool === 'Brush',
-          onClick: () => onSegmentationToolClick('Brush'),
+          active:
+            activeTool === 'CircularBrush' || activeTool === 'SphereBrush',
+          onClick: () => setToolActive('CircularBrush'),
           options: [
             {
               name: 'Brush Size',
@@ -94,30 +120,40 @@ function SegmentationToolbox({ servicesManager }) {
             {
               name: 'Mode',
               type: 'radio',
-              value: 'Circle',
+              value: activeTool,
               values: [
-                { value: 'Circle', label: 'Circle' },
-                { value: 'Sphere', label: 'Sphere' },
+                { value: 'CircularBrush', label: 'Circle' },
+                { value: 'SphereBrush', label: 'Sphere' },
               ],
-              onChange: value => console.log('Brush mode changed', value),
+              onChange: value => setToolActive(value),
             },
           ],
         },
         {
           name: 'Eraser',
           icon: 'icon-tool-eraser',
-          active: activeTool === 'Eraser',
-          onClick: () => console.log('eraser clicked'),
+          active:
+            activeTool === 'CircularEraser' || activeTool === 'SphereEraser',
+          onClick: () => setToolActive('CircularEraser'),
           options: [
+            {
+              name: 'Brush Size',
+              type: 'range',
+              min: 15,
+              max: 40,
+              value: brushSize,
+              step: 1,
+              onChange: onBrushSizeChange,
+            },
             {
               name: 'Mode',
               type: 'radio',
-              value: 'EraserSphere',
+              value: activeTool,
               values: [
-                { value: 'EraserCircle', label: 'Circle' },
-                { value: 'EraserSphere', label: 'Sphere' },
+                { value: 'CircularEraser', label: 'Circle' },
+                { value: 'SphereEraser', label: 'Sphere' },
               ],
-              onChange: value => console.log('Brush mode changed', value),
+              onChange: value => setToolActive(value),
             },
           ],
         },
