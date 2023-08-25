@@ -459,19 +459,6 @@ const commandsModule = ({
                 ...updatedViewportsViaHP[position],
               }
             : newViewports[position];
-
-          // const viewport = updatedViewports.find(
-          //   viewport => viewport.pos === position
-          // );
-
-          // return viewport
-          //   ? { viewportOptions, displaySetOptions, ...viewport }
-          //   : Array.from(toggleOneUpViewportGridStore.viewports.values())[
-          //       position
-          //     ];
-          return Array.from(toggleOneUpViewportGridStore.viewports.values())[
-            position
-          ];
         };
 
         const layoutOptions = viewportGridService.getLayoutOptionsFromState(
