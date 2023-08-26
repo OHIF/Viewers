@@ -75,6 +75,7 @@ import ViewportActionBar from './ViewportActionBar';
 import ProgressLoadingBar from './ProgressLoadingBar';
 import PanelSection from './PanelSection';
 import AdvancedToolbox from './AdvancedToolbox';
+import InputDoubleRange from './InputDoubleRange';
 
 export {
   AboutModal,
@@ -102,6 +103,7 @@ export {
   InputDateRange,
   InputGroup,
   InputRange,
+  InputDoubleRange,
   InputNumber,
   InputLabelWrapper,
   InputMultiSelect,

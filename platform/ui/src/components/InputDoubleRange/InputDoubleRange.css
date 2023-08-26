@@ -1,0 +1,7 @@
+input[type='range'] {
+  -webkit-appearance: none;
+}
+
+.input-range-thumb-design[type='range']::-webkit-slider-thumb {
+  border: 2px solid #090c29;
+}
