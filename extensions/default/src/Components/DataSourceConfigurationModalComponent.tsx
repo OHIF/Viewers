@@ -27,13 +27,16 @@ function DataSourceConfigurationModalComponent({
 
   const [selectedItems, setSelectedItems] = useState(configuredItems);
 
-  // Determines whether to show the full configuration for the data source.
-  // This typically occurs when the configuration component is first displayed.
-  const [showFullConfig, setShowFullConfig] = useState(true);
-
   const [errorMessage, setErrorMessage] = useState<string>();
 
   const [itemLabels] = useState(configurationAPI.getItemLabels());
+
+  // Determines whether to show the full/existing configuration for the data source.
+  // If the data source is fully configured, then it is shown, otherwise
+  // configuration starts from scratch.
+  const [showFullConfig, setShowFullConfig] = useState(
+    itemLabels.length === configuredItems.length
+  );
 
   /**
    * The index of the selected item that is considered current and for which

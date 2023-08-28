@@ -148,7 +148,12 @@ class GoogleCloudDataSourceConfigurationAPI
     const urlSplit = url.substring(projectsIndex).split('/');
 
     const configuredItems = [];
-    for (let itemType = 0; itemType < 4; itemType += 1) {
+
+    for (
+      let itemType = 0;
+      itemType < 4 && (itemType + 1) * 2 < urlSplit.length;
+      itemType += 1
+    ) {
       if (itemType === ItemType.projects) {
         const projectId = urlSplit[1];
         const projectUrl = `${initialUrl}/projects/${projectId}`;
