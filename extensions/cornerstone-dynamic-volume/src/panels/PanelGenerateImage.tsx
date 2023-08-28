@@ -242,9 +242,9 @@ export default function PanelGenerateImage({
             color="primary"
             border="primary"
             fullWidth={true}
-            className="flex-grow"
+            className="grow basis-0 mr-1"
           >
-            {'First Frame'}
+            First Frame
           </Button>
           <Button
             onClick={() => {
@@ -254,9 +254,9 @@ export default function PanelGenerateImage({
             color="primary"
             border="primary"
             fullWidth={true}
-            className="flex-grow"
+            className="grow basis-0 ml-1"
           >
-            {'Last Frame'}
+            Last Frame
           </Button>
         </div>
         <div className="flex justify-between">
@@ -267,7 +267,7 @@ export default function PanelGenerateImage({
             border="primary"
             startIcon={<Icon name="icon-play" />}
             fullWidth={true}
-            className="flex-grow"
+            className="grow basis-0 mr-1"
           >
             Play
           </Button>
@@ -278,7 +278,7 @@ export default function PanelGenerateImage({
             border="primary"
             startIcon={<Icon name="icon-pause" />}
             fullWidth={true}
-            className="flex-grow"
+            className="grow basis-0 ml-1"
           >
             Pause
           </Button>
@@ -292,7 +292,7 @@ export default function PanelGenerateImage({
           >
             <Icon name="icon-prev" />
           </div>
-          <div className="border border-secondary-light text-white text-center group-hover/fps:text-primary-light leading-[22px]">
+          <div className="border border-secondary-light text-white text-center group-hover/fps:text-primary-light leading-[22px] px-2 mx-1">
             {`${frameRate} FPS`}
           </div>
           <div
