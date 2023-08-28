@@ -108,6 +108,11 @@ import toolCalibration from './../../assets/icons/tool-calibration.svg';
 import toolFreehand from './../../assets/icons/tool-freehand.svg';
 import toolFreehandPolygon from './../../assets/icons/tool-freehand-polygon.svg';
 import toolPolygon from './../../assets/icons/tool-polygon.svg';
+import toolBrush from './../../assets/icons/tool-brush.svg';
+import toolEraser from './../../assets/icons/tool-eraser.svg';
+import toolScissorRect from './../../assets/icons/tool-scissor-rect.svg';
+import toolScissorCircle from './../../assets/icons/tool-scissor-circle-2.svg';
+import toolPaintFill from './../../assets/icons/tool-paint-fill.svg';
 import editPatient from './../../assets/icons/edit-patient.svg';
 import panelGroupMore from './../../assets/icons/panel-group-more.svg';
 import panelGroupOpenClose from './../../assets/icons/panel-group-open-close.svg';
@@ -218,7 +223,6 @@ const ICONS = {
   'tool-annotate': toolAnnotate,
   'tool-bidirectional': toolBidirectional,
   'tool-elipse': toolElipse,
-  'tool-circle': toolCircle,
   'tool-length': toolLength,
   'tool-stack-scroll': toolStackScroll,
   'tool-magnify': toolMagnify,
@@ -239,6 +243,11 @@ const ICONS = {
   'tool-freehand-line': toolFreehand,
   'tool-freehand-polygon': toolFreehandPolygon,
   'tool-polygon': toolPolygon,
+  'tool-brush': toolBrush,
+  'tool-eraser': toolEraser,
+  'tool-scissor-rect': toolScissorRect,
+  'tool-scissor-circle': toolScissorCircle,
+  'tool-paint-fill': toolPaintFill,
   'edit-patient': editPatient,
   'icon-mpr': iconMPR,
   'icon-next-inactive': iconNextInactive,

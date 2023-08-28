@@ -203,7 +203,7 @@ function _createPanToolButton() {
 function _createCircularBrush() {
   return _createToolButton(
     'CircularBrush',
-    'notifications-warning',
+    'tool-brush',
     'Circular Brush',
     [..._createCommands('setToolActive', 'CircularBrush')],
     'Circular Brush'
@@ -213,7 +213,7 @@ function _createCircularBrush() {
 function _createCircularEraser() {
   return _createToolButton(
     'CircularEraser',
-    'notifications-warning',
+    'tool-eraser',
     'Circular Eraser',
     [..._createCommands('setToolActive', 'CircularEraser')],
     'Circular Eraser'
@@ -287,7 +287,7 @@ function _createRectangleROIThreshold() {
 function _createRectangleScissor() {
   return _createToolButton(
     'RectangleScissor',
-    'notifications-warning',
+    'tool-scissor-rect',
     'Rectangle Scissor',
     [..._createCommands('setToolActive', 'RectangleScissor')],
     'Rectangle Scissor'
@@ -297,7 +297,7 @@ function _createRectangleScissor() {
 function _createCircleScissor() {
   return _createToolButton(
     'CircleScissor',
-    'notifications-warning',
+    'tool-scissor-circle',
     'Circle Scissor',
     [..._createCommands('setToolActive', 'CircleScissor')],
     'Circle Scissor'
@@ -317,7 +317,7 @@ function _createSphereScissor() {
 function _createPaintFill() {
   return _createToolButton(
     'PaintFill',
-    'notifications-warning',
+    'tool-paint-fill',
     'Paint Fill',
     [..._createCommands('setToolActive', 'PaintFill')],
     'Paint Fill'
