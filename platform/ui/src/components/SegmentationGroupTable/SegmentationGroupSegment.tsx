@@ -95,7 +95,12 @@ const SegmentItem = ({
             {label}
           </div>
         </div>
-        <div className="absolute right-0 top-1 bg-black/15 rounded-lg pr-[7px]">
+        <div
+          className={classnames(
+            'absolute right-0 top-0 rounded-lg pr-[8px] pt-[3px] flex flex-row-reverse',
+            {}
+          )}
+        >
           {!isVisible && !isRowHovering && (
             <div>
               <Icon
@@ -106,6 +111,28 @@ const SegmentItem = ({
                   onToggleVisibility(segmentationId, segmentIndex);
                 }}
               />
+            </div>
+          )}
+          {isLocked && !isRowHovering && (
+            <div className="flex">
+              <div>
+                <Icon
+                  name="row-locked"
+                  className={classnames('w-5 h-5')}
+                  onClick={e => {
+                    e.stopPropagation();
+                    onToggleLocked(segmentationId, segmentIndex);
+                  }}
+                />
+              </div>
+              {isVisible && (
+                <div>
+                  <Icon
+                    name="row-hidden"
+                    className={classnames('opacity-0 w-5 h-5')}
+                  />
+                </div>
+              )}
             </div>
           )}
           {isRowHovering && (
@@ -138,24 +165,40 @@ const HoveringIcons = ({
     <div className={classnames('flex items-center')}>
       <Icon
         name="row-edit"
-        className={classnames('w-5 h-5 hover:cursor-pointer hover:opacity-60', {
-          'text-white': isLocked,
-          'text-primary-light': !isLocked,
-        })}
+        className={'w-5 h-5 hover:cursor-pointer hover:opacity-60'}
         onClick={e => {
           e.stopPropagation();
           onEdit(segmentationId, segmentIndex);
         }}
       />
+      {isLocked ? (
+        <Icon
+          name="row-locked"
+          className={classnames(
+            'w-5 h-5 hover:cursor-pointer hover:opacity-60'
+          )}
+          onClick={e => {
+            e.stopPropagation();
+            onToggleLocked(segmentationId, segmentIndex);
+          }}
+        />
+      ) : (
+        <Icon
+          name="row-unlocked"
+          className={classnames(
+            'w-5 h-5 hover:cursor-pointer hover:opacity-60'
+          )}
+          onClick={e => {
+            e.stopPropagation();
+            onToggleLocked(segmentationId, segmentIndex);
+          }}
+        />
+      )}
       {isVisible ? (
         <Icon
           name="row-hide"
           className={classnames(
-            'w-5 h-5 hover:cursor-pointer hover:opacity-60',
-            {
-              'text-white': isLocked,
-              'text-primary-light': !isLocked,
-            }
+            'w-5 h-5 hover:cursor-pointer hover:opacity-60'
           )}
           onClick={e => {
             e.stopPropagation();
@@ -166,11 +209,7 @@ const HoveringIcons = ({
         <Icon
           name="row-unhide"
           className={classnames(
-            'w-5 h-5 hover:cursor-pointer hover:opacity-60',
-            {
-              'text-white': isLocked,
-              'text-primary-light': !isLocked,
-            }
+            'w-5 h-5 hover:cursor-pointer hover:opacity-60'
           )}
           onClick={e => {
             e.stopPropagation();

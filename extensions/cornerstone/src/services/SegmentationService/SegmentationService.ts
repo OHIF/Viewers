@@ -325,7 +325,7 @@ class SegmentationService extends PubSubService {
     );
   }
 
-  public setSegmentLockedForSegmentation(
+  public setSegmentLocked(
     segmentationId: string,
     segmentIndex: number,
     isLocked: boolean
@@ -337,6 +337,17 @@ class SegmentationService extends PubSubService {
       isLocked,
       suppressEvents
     );
+  }
+
+  public toggleSegmentLocked(
+    segmentationId: string,
+    segmentIndex: number
+  ): void {
+    const suppressEvents = false;
+    const segmentation = this.getSegmentation(segmentationId);
+    const segment = this._getSegmentInfo(segmentation, segmentIndex);
+    const isLocked = !segment.isLocked;
+    this._setSegmentLocked(segmentationId, segmentIndex, isLocked);
   }
 
   public setSegmentLabel(
@@ -413,10 +424,7 @@ class SegmentationService extends PubSubService {
     );
   }
 
-  public setActiveSegmentForSegmentation(
-    segmentationId: string,
-    segmentIndex: number
-  ): void {
+  public setActiveSegment(segmentationId: string, segmentIndex: number): void {
     this._setActiveSegment(segmentationId, segmentIndex, false);
   }
 
@@ -1097,7 +1105,7 @@ class SegmentationService extends PubSubService {
     }
   };
 
-  public setSegmentRGBAColorForSegmentation = (
+  public setSegmentRGBAColor = (
     segmentationId: string,
     segmentIndex: number,
     rgbaColor,
@@ -1476,15 +1484,15 @@ class SegmentationService extends PubSubService {
     return cstSegmentation.state.getSegmentationRepresentations(toolGroupId);
   };
 
-  public setSegmentLabelForSegmentation(
+  public setSegmentLabel(
     segmentationId: string,
     segmentIndex: number,
     label: string
   ) {
-    this._setSegmentLabelForSegmentation(segmentationId, segmentIndex, label);
+    this._setSegmentLabel(segmentationId, segmentIndex, label);
   }
 
-  private _setSegmentLabelForSegmentation(
+  private _setSegmentLabel(
     segmentationId: string,
     segmentIndex: number,
     label: string,

@@ -143,10 +143,7 @@ export default function PanelSegmentation({
   };
 
   const onSegmentClick = (segmentationId, segmentIndex) => {
-    segmentationService.setActiveSegmentForSegmentation(
-      segmentationId,
-      segmentIndex
-    );
+    segmentationService.setActiveSegment(segmentationId, segmentIndex);
 
     const toolGroupIds = getToolGroupIds(segmentationId);
 
@@ -175,11 +172,7 @@ export default function PanelSegmentation({
         return;
       }
 
-      segmentationService.setSegmentLabelForSegmentation(
-        segmentationId,
-        segmentIndex,
-        label
-      );
+      segmentationService.setSegmentLabel(segmentationId, segmentIndex, label);
     });
   };
 
@@ -209,11 +202,7 @@ export default function PanelSegmentation({
   };
 
   const onSegmentDelete = (segmentationId, segmentIndex) => {
-    // segmentationService.removeSegmentFromSegmentation(
-    //   segmentationId,
-    //   segmentIndex
-    // );
-    console.warn('not implemented yet');
+    segmentationService.removeSegment(segmentationId, segmentIndex);
   };
 
   const onToggleSegmentVisibility = (segmentationId, segmentIndex) => {
@@ -231,6 +220,10 @@ export default function PanelSegmentation({
         toolGroupId
       );
     });
+  };
+
+  const onToggleSegmentLock = (segmentationId, segmentIndex) => {
+    segmentationService.toggleSegmentLocked(segmentationId, segmentIndex);
   };
 
   const onToggleSegmentationVisibility = segmentationId => {
@@ -264,6 +257,7 @@ export default function PanelSegmentation({
         onSegmentColorClick={onSegmentColorClick}
         onSegmentDelete={onSegmentDelete}
         onToggleSegmentVisibility={onToggleSegmentVisibility}
+        onToggleSegmentLock={onToggleSegmentLock}
         onToggleSegmentationVisibility={onToggleSegmentationVisibility}
         segmentationConfig={{ initialConfig: segmentationConfiguration }}
         setRenderOutline={value =>

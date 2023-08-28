@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { PanelSection, Select } from '../../components';
+import { PanelSection } from '../../components';
 import SegmentationConfig from './SegmentationConfig';
 import SegmentationDropDownRow from './SegmentationDropDownRow';
 import NoSegmentationRow from './NoSegmentationRow';
@@ -21,12 +21,14 @@ const SegmentationGroupTable = ({
   onSegmentationEdit,
   onSegmentationClick,
   onSegmentationDelete,
+  // segment handlers
   onSegmentClick,
   onSegmentAdd,
   onSegmentDelete,
   onSegmentEdit,
   onToggleSegmentationVisibility,
   onToggleSegmentVisibility,
+  onToggleSegmentLock,
   onSegmentColorClick,
   // segmentation config handlers
   setFillAlpha,
@@ -144,6 +146,7 @@ const SegmentationGroupTable = ({
                   showDelete={showDeleteSegment}
                   onColor={onSegmentColorClick}
                   onToggleVisibility={onToggleSegmentVisibility}
+                  onToggleLocked={onToggleSegmentLock}
                 />
               </div>
             );
