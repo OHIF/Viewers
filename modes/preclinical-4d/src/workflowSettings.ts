@@ -1,3 +1,5 @@
+import toolbarButtons from './toolbarButtons';
+
 const dynamicVolume = {
   sopClassHandler:
     '@ohif/extension-cornerstone-dynamic-volume.sopClassHandlerModule.dynamic-volume',
@@ -14,6 +16,31 @@ const defaultPanels = {
 
 const defaultLayout = { panels: defaultPanels };
 
+const defaultToolbar = {
+  buttons: toolbarButtons,
+  sections: [
+    {
+      key: 'primary',
+      buttons: [
+        'MeasurementTools',
+        'Zoom',
+        'WindowLevel',
+        'Crosshairs',
+        'Pan',
+        'fusionPTColormap',
+        'Cine',
+      ],
+    },
+  ],
+};
+
+const roiQuantificationToolbar = JSON.parse(JSON.stringify(defaultToolbar));
+
+// Add segmentation tools to ROI Quantification step
+roiQuantificationToolbar.sections
+  .find(s => s.key === 'primary')
+  .buttons.push('SegmentationTools');
+
 const workflowSettings = {
   steps: [
     {
@@ -24,6 +51,7 @@ const workflowSettings = {
           left: [dynamicVolume.leftPanel],
         },
       },
+      toolbar: defaultToolbar,
       hangingProtocol: {
         protocolId: 'default4D',
         stageId: 'dataPreparation',
@@ -33,6 +61,7 @@ const workflowSettings = {
       id: 'registration',
       name: 'Registration',
       layout: defaultLayout,
+      toolbar: defaultToolbar,
       hangingProtocol: {
         protocolId: 'default4D',
         stageId: 'registration',
@@ -42,6 +71,7 @@ const workflowSettings = {
       id: 'review',
       name: 'Review',
       layout: defaultLayout,
+      toolbar: defaultToolbar,
       hangingProtocol: {
         protocolId: 'default4D',
         stageId: 'review',
@@ -56,6 +86,7 @@ const workflowSettings = {
           right: [dynamicVolume.rightPanel],
         },
       },
+      toolbar: roiQuantificationToolbar,
       hangingProtocol: {
         protocolId: 'default4D',
         stageId: 'roiQuantification',
@@ -65,6 +96,7 @@ const workflowSettings = {
       id: 'kineticAnalysis',
       name: 'Kinect Analysis',
       layout: defaultLayout,
+      toolbar: defaultToolbar,
       hangingProtocol: {
         protocolId: 'default4D',
         stageId: 'kinectAnalysis',

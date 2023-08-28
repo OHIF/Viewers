@@ -63,17 +63,6 @@ function modeFactory({ modeConfiguration }) {
       initToolGroups({ toolNames, Enums, toolGroupService, commandsManager });
 
       toolbarService.init(extensionManager);
-      toolbarService.addButtons(toolbarButtons);
-      toolbarService.createButtonSection('primary', [
-        'MeasurementTools',
-        'Zoom',
-        'WindowLevel',
-        'Crosshairs',
-        'Pan',
-        'fusionPTColormap',
-        'Cine',
-        'SegmentationTools',
-      ]);
     },
     onSetupRouteComplete: ({ servicesManager }) => {
       // This needs to run after hanging protocol matching process because
