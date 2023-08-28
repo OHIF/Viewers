@@ -114,7 +114,7 @@ function _getTimePointsDataByTagName(volume, timePointsTag) {
     return timePoints;
   }, new Set());
 
-  return Array.from(uniqueTimePoints).sort();
+  return Array.from(uniqueTimePoints).sort((a: number, b: number) => a - b);
 }
 
 function _convertTimePointsUnit(timePoints, timePointsUnit) {
