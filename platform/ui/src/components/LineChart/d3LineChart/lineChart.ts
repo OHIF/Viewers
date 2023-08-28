@@ -165,6 +165,11 @@ const addLineChartNode = ({
     maxY = Math.max(maxY, _getMaxValue(currentSeries.points, YAxis.indexRef));
   });
 
+  minX = axis?.x?.range?.min ?? minX;
+  maxX = axis?.x?.range?.max ?? maxX;
+  minY = axis?.y?.range?.min ?? minY;
+  maxY = axis?.y?.range?.max ?? maxY;
+
   const xAxisScale = _createAxisScale(minX, maxX, 0, _width);
   const yAxisScale = _createAxisScale(minY, maxY, _height, 0);
 

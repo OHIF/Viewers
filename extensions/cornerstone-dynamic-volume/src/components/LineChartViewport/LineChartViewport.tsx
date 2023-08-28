@@ -14,6 +14,9 @@ const LineChartViewport = ({ displaySets }) => {
           label: chartAxis.x.label,
           indexRef: 0,
           type: 'x',
+          range: {
+            min: 0,
+          },
         },
         y: {
           label: chartAxis.y.label,
