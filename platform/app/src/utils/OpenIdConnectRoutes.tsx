@@ -122,8 +122,8 @@ function OpenIdConnectRoutes({
     };
   };
 
-  const handleUnauthenticated = () => {
-    userManager.signinRedirect();
+  const handleUnauthenticated = async () => {
+    await userManager.signinRedirect();
 
     // return null because this is used in a react component
     return null;
