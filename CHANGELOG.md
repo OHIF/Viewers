@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.7.0-beta.61](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.60...v3.7.0-beta.61) (2023-08-29)
+
+
+### Bug Fixes
+
+* **OpenIdConnectRoutes:** fix handleUnauthenticated ([#3617](https://github.com/OHIF/Viewers/issues/3617)) ([35fc30c](https://github.com/OHIF/Viewers/commit/35fc30c5359d8199cc38ffa670c08687d2672f11))
+
+
+
+
+
 # [3.7.0-beta.60](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.59...v3.7.0-beta.60) (2023-08-29)
 
 
