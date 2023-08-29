@@ -1,4 +1,8 @@
 const DEFAULT_COLORMAP = '2hot';
+const toolGroupIds = {
+  pt: 'dynamic4D-pt',
+  fusion: 'dynamic4D-fusion',
+};
 
 function getPTOptions({
   colormap,
@@ -45,7 +49,7 @@ function getPTViewports() {
         viewportId: 'ptAxial',
         viewportType: 'volume',
         orientation: 'axial',
-        toolGroupId: 'dynamic4D-pt',
+        toolGroupId: toolGroupIds.pt,
         initialImageOptions: {
           preset: 'middle', // 'first', 'last', 'middle'
         },
@@ -76,7 +80,7 @@ function getPTViewports() {
         viewportId: 'ptSagittal',
         viewportType: 'volume',
         orientation: 'sagittal',
-        toolGroupId: 'dynamic4D-pt',
+        toolGroupId: toolGroupIds.pt,
         initialImageOptions: {
           // preset: 'middle', // 'first', 'last', 'middle'
           index: 140,
@@ -108,7 +112,7 @@ function getPTViewports() {
         viewportId: 'ptCoronal',
         viewportType: 'volume',
         orientation: 'coronal',
-        toolGroupId: 'dynamic4D-pt',
+        toolGroupId: toolGroupIds.pt,
         initialImageOptions: {
           // preset: 'middle', // 'first', 'last', 'middle'
           index: 160,
@@ -156,7 +160,7 @@ function getFusionViewports() {
         viewportId: 'fusionAxial',
         viewportType: 'volume',
         orientation: 'axial',
-        toolGroupId: 'dynamic4D-fusion',
+        toolGroupId: toolGroupIds.fusion,
         initialImageOptions: {
           preset: 'middle', // 'first', 'last', 'middle'
         },
@@ -196,7 +200,7 @@ function getFusionViewports() {
         viewportId: 'fusionSagittal',
         viewportType: 'volume',
         orientation: 'sagittal',
-        toolGroupId: 'dynamic4D-fusion',
+        toolGroupId: toolGroupIds.fusion,
         initialImageOptions: {
           // preset: 'middle', // 'first', 'last', 'middle'
           index: 600,
@@ -237,7 +241,7 @@ function getFusionViewports() {
         viewportId: 'fusionCoronal',
         viewportType: 'volume',
         orientation: 'coronal',
-        toolGroupId: 'dynamic4D-fusion',
+        toolGroupId: toolGroupIds.fusion,
         initialImageOptions: {
           // preset: 'middle', // 'first', 'last', 'middle'
           index: 600,

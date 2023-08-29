@@ -681,7 +681,7 @@ class CornerstoneViewportService extends PubSubService
 
       // otherwise, check if the hydrated segmentations are in the same FOR
       // as the primary displaySet, if so add the representation (since it was not there)
-      const { id: segDisplaySetInstanceUID, type } = segmentation;
+      const { displaySetInstanceUID: segDisplaySetInstanceUID } = segmentation;
       const segFrameOfReferenceUID = this._getFrameOfReferenceUID(
         segDisplaySetInstanceUID
       );
@@ -752,7 +752,10 @@ class CornerstoneViewportService extends PubSubService
     const viewport = this.getCornerstoneViewport(viewportId);
     const viewportCamera = viewport.getCamera();
 
-    if (viewport instanceof VolumeViewport || viewport instanceof VolumeViewport3D) {
+    if (
+      viewport instanceof VolumeViewport ||
+      viewport instanceof VolumeViewport3D
+    ) {
       this._setVolumeViewport(viewport, viewportData, viewportInfo).then(() => {
         if (keepCamera) {
           viewport.setCamera(viewportCamera);
