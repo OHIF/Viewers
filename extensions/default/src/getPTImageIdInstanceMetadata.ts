@@ -19,7 +19,6 @@ export default function getPTImageIdInstanceMetadata(
   if (
     dicomMetaData.SeriesDate === undefined ||
     dicomMetaData.SeriesTime === undefined ||
-    dicomMetaData.PatientWeight === undefined ||
     dicomMetaData.CorrectedImage === undefined ||
     dicomMetaData.Units === undefined ||
     !dicomMetaData.RadiopharmaceuticalInformationSequence ||
@@ -36,6 +35,10 @@ export default function getPTImageIdInstanceMetadata(
         .RadiopharmaceuticalStartTime === undefined)
   ) {
     throw new Error('required metadata are missing');
+  }
+
+  if (dicomMetaData.PatientWeight === undefined) {
+    console.warn('PatientWeight missing from PT instance metadata');
   }
 
   const instanceMetadata: InstanceMetadata = {
