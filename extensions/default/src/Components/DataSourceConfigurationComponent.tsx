@@ -49,7 +49,7 @@ function DataSourceConfigurationComponent({
       setConfigurationAPI(configAPI);
 
       // New configuration API means that the existing configured items must be cleared.
-      setConfiguredItems(undefined);
+      setConfiguredItems(null);
 
       configAPI.getConfiguredItems().then(list => {
         if (shouldUpdate) {

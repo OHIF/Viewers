@@ -32,8 +32,10 @@ function DataSourceConfigurationModalComponent({
   const [itemLabels] = useState(configurationAPI.getItemLabels());
 
   // Determines whether to show the full/existing configuration for the data source.
-  // If the data source is fully configured, then it is shown, otherwise
-  // configuration starts from scratch.
+  // A full or complete configuration is one where the data source (path) has the
+  // maximum/required number of path items. Anything less is considered not complete and
+  // the configuration starts from scratch (i.e. as if no items are configured at all).
+  // TODO: consider configuration starting from a partial (i.e. non-empty) configuration
   const [showFullConfig, setShowFullConfig] = useState(
     itemLabels.length === configuredItems.length
   );
