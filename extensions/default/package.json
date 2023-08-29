@@ -30,8 +30,8 @@
     "start": "yarn run dev"
   },
   "peerDependencies": {
-    "@ohif/core": "3.7.0-beta.58",
-    "@ohif/i18n": "3.7.0-beta.58",
+    "@ohif/core": "3.7.0-beta.59",
+    "@ohif/i18n": "3.7.0-beta.59",
     "dcmjs": "^0.29.5",
     "dicomweb-client": "^0.10.2",
     "prop-types": "^15.6.2",
