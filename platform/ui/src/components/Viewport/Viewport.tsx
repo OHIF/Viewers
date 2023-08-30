@@ -81,3 +81,4 @@ const Viewport: React.FC<ViewportProps> = ({
 };
 
 export default Viewport;
+export type { ViewportProps, StudyData };

@@ -197,7 +197,7 @@ export function ViewportGridProvider({ children, service }) {
 
         // If empty viewportOptions, we use numRow and numCols to calculate number of viewports
         const hasOptions = layoutOptions?.length;
-        const viewports = new Map() as Map<string, Viewport>;
+        const viewports = new Map<string, Viewport>();
 
         // Options is a temporary state store which can be used by the
         // findOrCreate to store state about already found viewports.  Typically,

@@ -51,11 +51,7 @@ export default function toggleStackImageSync({
           displaySetInstanceUID
         );
 
-        if (displaySet?.isReconstructable) {
-          return true;
-        }
-
-        return false;
+        return !!displaySet?.isReconstructable;
       }
     });
 
@@ -68,9 +64,8 @@ export default function toggleStackImageSync({
     }
 
     const { element } = cornerstoneViewportService.getViewportInfo(viewportId);
-    const { viewport: csViewport, renderingEngineId } = getEnabledElement(
-      element
-    );
+    const { viewport: csViewport, renderingEngineId } =
+      getEnabledElement(element);
     const { viewPlaneNormal } = csViewport.getCamera();
 
     // Should we round here? I guess so, but not sure how much precision we need

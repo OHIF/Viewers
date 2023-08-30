@@ -74,6 +74,15 @@ const match = (
       errorMessages = ['Something went wrong during validation.', e];
     }
 
+    // TODO: move to a logger
+    // console.log(
+    //   'Test',
+    //   `${from}.${attribute}`,
+    //   readValues[attribute],
+    //   JSON.stringify(rule.constraint),
+    //   !errorMessages
+    // );
+
     if (!errorMessages) {
       // If no errorMessages were returned, then validation passed.
 
