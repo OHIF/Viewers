@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.7.0-beta.61](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.60...v3.7.0-beta.61) (2023-08-29)
+
+
+### Bug Fixes
+
+* **OpenIdConnectRoutes:** fix handleUnauthenticated ([#3617](https://github.com/OHIF/Viewers/issues/3617)) ([35fc30c](https://github.com/OHIF/Viewers/commit/35fc30c5359d8199cc38ffa670c08687d2672f11))
+
+
+
+
+
+# [3.7.0-beta.60](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.59...v3.7.0-beta.60) (2023-08-29)
+
+
+### Bug Fixes
+
+* **PT Metadata:** Allow for PatientWeight to be missing from the metadata ([#3621](https://github.com/OHIF/Viewers/issues/3621)) ([44f101d](https://github.com/OHIF/Viewers/commit/44f101d3f2b3204b67e31f4e4939062e65a246ee))
+
+
+
+
+
+# [3.7.0-beta.59](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.58...v3.7.0-beta.59) (2023-08-29)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
 # [3.7.0-beta.58](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.57...v3.7.0-beta.58) (2023-08-25)
 
 
