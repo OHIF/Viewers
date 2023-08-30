@@ -21,6 +21,8 @@ const SegmentationGroupTable = ({
   onSegmentationEdit,
   onSegmentationClick,
   onSegmentationDelete,
+  onSegmentationDownload,
+  onSegmentationCreateReport,
   // segment handlers
   onSegmentClick,
   onSegmentAdd,
@@ -109,6 +111,8 @@ const SegmentationGroupTable = ({
                 onActiveSegmentationChange={onActiveSegmentationChange}
                 onSegmentationDelete={onSegmentationDelete}
                 onSegmentationEdit={onSegmentationEdit}
+                onSegmentationDownload={onSegmentationDownload}
+                onSegmentationCreateReport={onSegmentationCreateReport}
                 onSegmentationAdd={onSegmentationAdd}
                 onToggleSegmentationVisibility={onToggleSegmentationVisibility}
               />

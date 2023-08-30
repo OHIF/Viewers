@@ -4,6 +4,7 @@ import React from 'react';
 import getSopClassHandlerModule from './getSopClassHandlerModule';
 import getHangingProtocolModule from './getHangingProtocolModule';
 import getPanelModule from './getPanelModule';
+import getCommandsModule from './commandsModule';
 import hydrateSEGDisplaySet from './utils/_hydrateSEG';
 import preRegistration from './init';
 
@@ -39,6 +40,7 @@ const extension = {
    * is the StudyBrowserPanel that is provided by the default extension in OHIF.
    */
   getPanelModule,
+  getCommandsModule,
 
   getViewportModule({ servicesManager, extensionManager }) {
     const ExtendedOHIFCornerstoneSEGViewport = props => {

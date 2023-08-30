@@ -161,62 +161,26 @@ const HoveringIcons = ({
   segmentationId,
   segmentIndex,
 }) => {
+  const iconClass = 'w-5 h-5 hover:cursor-pointer hover:opacity-60';
+
+  const handleIconClick = (e, action) => {
+    e.stopPropagation();
+    action(segmentationId, segmentIndex);
+  };
+
+  const createIcon = (name, action) => (
+    <Icon
+      name={name}
+      className={iconClass}
+      onClick={e => handleIconClick(e, action)}
+    />
+  );
+
   return (
-    <div className={classnames('flex items-center')}>
-      <Icon
-        name="row-edit"
-        className={'w-5 h-5 hover:cursor-pointer hover:opacity-60'}
-        onClick={e => {
-          e.stopPropagation();
-          onEdit(segmentationId, segmentIndex);
-        }}
-      />
-      {isLocked ? (
-        <Icon
-          name="row-locked"
-          className={classnames(
-            'w-5 h-5 hover:cursor-pointer hover:opacity-60'
-          )}
-          onClick={e => {
-            e.stopPropagation();
-            onToggleLocked(segmentationId, segmentIndex);
-          }}
-        />
-      ) : (
-        <Icon
-          name="row-unlocked"
-          className={classnames(
-            'w-5 h-5 hover:cursor-pointer hover:opacity-60'
-          )}
-          onClick={e => {
-            e.stopPropagation();
-            onToggleLocked(segmentationId, segmentIndex);
-          }}
-        />
-      )}
-      {isVisible ? (
-        <Icon
-          name="row-hide"
-          className={classnames(
-            'w-5 h-5 hover:cursor-pointer hover:opacity-60'
-          )}
-          onClick={e => {
-            e.stopPropagation();
-            onToggleVisibility(segmentationId, segmentIndex);
-          }}
-        />
-      ) : (
-        <Icon
-          name="row-unhide"
-          className={classnames(
-            'w-5 h-5 hover:cursor-pointer hover:opacity-60'
-          )}
-          onClick={e => {
-            e.stopPropagation();
-            onToggleVisibility(segmentationId, segmentIndex);
-          }}
-        />
-      )}
+    <div className="flex items-center">
+      {createIcon('row-edit', onEdit)}
+      {createIcon(isLocked ? 'row-locked' : 'row-unlocked', onToggleLocked)}
+      {createIcon(isVisible ? 'row-hide' : 'row-unhide', onToggleVisibility)}
     </div>
   );
 };

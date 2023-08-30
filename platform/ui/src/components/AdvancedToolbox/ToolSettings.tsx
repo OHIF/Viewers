@@ -13,17 +13,20 @@ function ToolSettings({ options }) {
       {options?.map(option => {
         if (option.type === 'range') {
           return (
-            <div className="flex space-x-2 items-center" key={option.name}>
+            <div className="flex items-center" key={option.name}>
               <div className="text-xs w-1/3 text-[13px]">{option.name}</div>
-              <InputRange
-                minValue={option.min}
-                maxValue={option.max}
-                step={option.step}
-                value={option.value}
-                onChange={e => option.onChange(e)}
-                allowNumberEdit={true}
-                showAdjustmentArrows={false}
-              />
+              <div className="w-2/3">
+                <InputRange
+                  minValue={option.min}
+                  maxValue={option.max}
+                  step={option.step}
+                  value={option.value}
+                  onChange={e => option.onChange(e)}
+                  allowNumberEdit={true}
+                  showAdjustmentArrows={false}
+                  inputClassName="ml-2 w-4/5"
+                />
+              </div>
             </div>
           );
         }

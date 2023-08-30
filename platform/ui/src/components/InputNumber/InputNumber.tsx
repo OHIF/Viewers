@@ -18,6 +18,13 @@ const sizesClasses = {
   lg: 'w-[206px] h-[35px]',
 };
 
+const getMaxDigits = (maxValue: number, step: number) => {
+  const integerDigits = maxValue.toString().length;
+  const decimalDigits =
+    step % 1 === 0 ? 0 : step.toString().split('.')[1].length;
+  return integerDigits + (decimalDigits ? decimalDigits + 1 : 0);
+};
+
 const InputNumber: React.FC<{
   value: number;
   onChange: (value: number) => void;
@@ -43,10 +50,10 @@ const InputNumber: React.FC<{
 }) => {
   const [numberValue, setNumberValue] = useState(value);
 
-  const maxDigits = maxValue.toString().length;
+  const maxDigits = getMaxDigits(maxValue, step);
   const inputWidth = Math.max(maxDigits * 10, showAdjustmentArrows ? 20 : 28);
-  const arrowWidth = showAdjustmentArrows ? 20 : 0; // Estimate the width of arrows
-  const containerWidth = `${inputWidth + arrowWidth}px`; // Sum of input and arrows
+  const arrowWidth = showAdjustmentArrows ? 20 : 0;
+  const containerWidth = `${inputWidth + arrowWidth}px`;
 
   useEffect(() => {
     setNumberValue(value);

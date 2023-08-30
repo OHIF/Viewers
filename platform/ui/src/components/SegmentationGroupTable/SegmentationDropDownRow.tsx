@@ -9,6 +9,8 @@ function SegmentationDropDownRow({
   disableEditing,
   onToggleSegmentationVisibility,
   onSegmentationEdit,
+  onSegmentationDownload,
+  onSegmentationCreateReport,
   onSegmentationDelete,
   onSegmentationAdd,
 }) {
@@ -39,28 +41,48 @@ function SegmentationDropDownRow({
           itemsClassName="text-primary-active"
           showBorders={false}
           list={[
-            {
-              title: 'Delete',
-              onClick: () => {
-                onSegmentationDelete(activeSegmentation.id);
-              },
-            },
-            ...(disableEditing
-              ? []
-              : [
-                  {
-                    title: 'Rename',
-                    onClick: () => {
-                      onSegmentationEdit(activeSegmentation.id);
-                    },
-                  },
+            ...(!disableEditing
+              ? [
                   {
                     title: 'Add New Segmentation',
                     onClick: () => {
                       onSegmentationAdd();
                     },
                   },
-                ]),
+                ]
+              : []),
+            ...(!disableEditing
+              ? [
+                  {
+                    title: 'Rename',
+                    onClick: () => {
+                      onSegmentationEdit(activeSegmentation.id);
+                    },
+                  },
+                ]
+              : []),
+            {
+              title: 'Delete',
+              onClick: () => {
+                onSegmentationDelete(activeSegmentation.id);
+              },
+            },
+            ...(!disableEditing
+              ? [
+                  {
+                    title: 'Create Report',
+                    onClick: () => {
+                      onSegmentationCreateReport(activeSegmentation.id);
+                    },
+                  },
+                  {
+                    title: 'Download',
+                    onClick: () => {
+                      onSegmentationDownload(activeSegmentation.id);
+                    },
+                  },
+                ]
+              : []),
           ]}
         >
           {/* <Icon

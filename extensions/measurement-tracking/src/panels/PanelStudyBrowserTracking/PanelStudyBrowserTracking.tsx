@@ -506,7 +506,7 @@ function _mapDisplaySets(
                 body: () => (
                   <div className="p-4 text-white bg-primary-dark">
                     <p>Are you sure you want to delete this report?</p>
-                    <p>This action cannot be undone.</p>
+                    <p className="mt-2">This action cannot be undone.</p>
                   </div>
                 ),
                 actions: [

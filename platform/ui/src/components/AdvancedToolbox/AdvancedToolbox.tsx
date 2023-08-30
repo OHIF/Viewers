@@ -19,7 +19,7 @@ const AdvancedToolbox = ({ title, items, name }) => {
           {items?.map(item => {
             return (
               <div
-                className=" ml-2 mb-2"
+                className="ml-2 mb-2"
                 key={item.name}
                 onClick={() => {
                   setIsActive(item.name);

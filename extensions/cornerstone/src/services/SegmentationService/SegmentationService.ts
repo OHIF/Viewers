@@ -511,12 +511,14 @@ class SegmentationService extends PubSubService {
       },
     ]);
 
-    // Define a new color LUT and associate it with this segmentation.
-    // Todo: need to be generalized to accept custom color LUTs
-    const newColorLUT = this.generateNewColorLUT();
-    const newColorLUTIndex = this.getNextColorLUTIndex();
-
-    cstSegmentation.config.color.addColorLUT(newColorLUT, newColorLUTIndex);
+    // if first segmentation, we can use the default colorLUT, otherwise
+    // we need to generate a new one and use a new colorLUT
+    const colorLUTIndex = 0;
+    if (Object.keys(this.segmentations).length !== 0) {
+      const newColorLUT = this.generateNewColorLUT();
+      const colorLUTIndex = this.getNextColorLUTIndex();
+      cstSegmentation.config.color.addColorLUT(newColorLUT, colorLUTIndex);
+    }
 
     this.segmentations[segmentationId] = {
       ...segmentation,
@@ -525,8 +527,8 @@ class SegmentationService extends PubSubService {
       activeSegmentIndex: segmentation.activeSegmentIndex ?? null,
       segmentCount: segmentation.segmentCount ?? 0,
       isActive: false,
-      colorLUTIndex: newColorLUTIndex,
       isVisible: true,
+      colorLUTIndex,
     };
 
     cachedSegmentation = this.segmentations[segmentationId];
@@ -827,6 +829,97 @@ class SegmentationService extends PubSubService {
 
     return this.addOrUpdateSegmentation(segmentation, suppressEvents);
   }
+
+  // Todo: this should not run on the main thread
+  public calculateCentroids = (
+    segmentationId: string,
+    segmentIndex?: number
+  ): Map<number, { x: number; y: number; z: number; world: number[] }> => {
+    const segmentation = this.getSegmentation(segmentationId);
+    const volume = this.getLabelmapVolume(segmentationId);
+    const { dimensions, imageData } = volume;
+    const scalarData = volume.getScalarData();
+    const [dimX, dimY, numFrames] = dimensions;
+    const frameLength = dimX * dimY;
+
+    const segmentIndices = segmentIndex
+      ? [segmentIndex]
+      : segmentation.segments
+          .filter(segment => segment?.segmentIndex)
+          .map(segment => segment.segmentIndex);
+
+    const segmentIndicesSet = new Set(segmentIndices);
+
+    const centroids = new Map();
+    for (const index of segmentIndicesSet) {
+      centroids.set(index, { x: 0, y: 0, z: 0, count: 0 });
+    }
+
+    let voxelIndex = 0;
+    for (let frame = 0; frame < numFrames; frame++) {
+      for (let p = 0; p < frameLength; p++) {
+        const segmentIndex = scalarData[voxelIndex++];
+        if (segmentIndicesSet.has(segmentIndex)) {
+          const centroid = centroids.get(segmentIndex);
+          centroid.x += p % dimX;
+          centroid.y += (p / dimX) | 0;
+          centroid.z += frame;
+          centroid.count++;
+        }
+      }
+    }
+
+    const result = new Map();
+    for (const [index, centroid] of centroids) {
+      const count = centroid.count;
+      const normalizedCentroid = {
+        x: centroid.x / count,
+        y: centroid.y / count,
+        z: centroid.z / count,
+      };
+      normalizedCentroid.world = imageData.indexToWorld([
+        normalizedCentroid.x,
+        normalizedCentroid.y,
+        normalizedCentroid.z,
+      ]);
+      result.set(index, normalizedCentroid);
+    }
+
+    this.setCentroids(segmentationId, result);
+    return result;
+  };
+
+  private setCentroids = (
+    segmentationId: string,
+    centroids: Map<number, { image: number[]; world?: number[] }>
+  ): void => {
+    const segmentation = this.getSegmentation(segmentationId);
+    const imageData = this.getLabelmapVolume(segmentationId).imageData; // Assuming this method returns imageData
+
+    if (!segmentation.cachedStats) {
+      segmentation.cachedStats = { segmentCenter: {} };
+    } else if (!segmentation.cachedStats.segmentCenter) {
+      segmentation.cachedStats.segmentCenter = {};
+    }
+
+    for (const [segmentIndex, centroid] of centroids) {
+      let world = centroid.world;
+
+      // If world coordinates are not provided, calculate them
+      if (!world || world.length === 0) {
+        world = imageData.indexToWorld(centroid.image);
+      }
+
+      segmentation.cachedStats.segmentCenter[segmentIndex] = {
+        center: {
+          image: centroid.image,
+          world: world,
+        },
+      };
+    }
+
+    this.addOrUpdateSegmentation(segmentation, true, true);
+  };
 
   public jumpToSegmentCenter(
     segmentationId: string,

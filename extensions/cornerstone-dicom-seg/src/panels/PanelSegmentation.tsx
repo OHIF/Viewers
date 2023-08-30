@@ -1,18 +1,22 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { SegmentationGroupTable, useViewportGrid } from '@ohif/ui';
+import { Enums } from '@cornerstonejs/core';
+
 import callInputDialog from './callInputDialog';
+import callColorPickerDialog from './colorPickerDialog';
 import { useTranslation } from 'react-i18next';
 
 export default function PanelSegmentation({
   servicesManager,
+  commandsManager,
   configuration,
-  extensionManager,
 }) {
   const {
     segmentationService,
     uiDialogService,
     uiNotificationService,
+    cornerstoneViewportService,
   } = servicesManager.services;
   const [viewportGrid, viewportGridService] = useViewportGrid();
 
@@ -51,75 +55,16 @@ export default function PanelSegmentation({
     };
   }, []);
 
-  const onSegmentationAdd = () => {
-    const activeViewport = viewports[activeViewportIndex];
+  const getToolGroupIds = segmentationId => {
+    const toolGroupIds = segmentationService.getToolGroupIdsWithSegmentation(
+      segmentationId
+    );
 
-    if (!activeViewport) {
-      return;
-    }
+    return toolGroupIds;
+  };
 
-    const { displaySetInstanceUIDs } = activeViewport;
-
-    // if more than one show notification that this is not supported
-    if (displaySetInstanceUIDs.length > 1) {
-      uiNotificationService.show({
-        title: t('Segmentation'),
-        message: t(
-          'Segmentation is not supported for multiple display sets yet'
-        ),
-        type: 'error',
-      });
-      return;
-    }
-
-    const displaySetInstanceUID = displaySetInstanceUIDs[0];
-
-    // identify if the viewport is a stack viewport then we need to convert
-    // the viewport to a volume viewport first and mount on the same element
-    // otherwise we are good
-
-    const { viewportOptions } = activeViewport;
-
-    if (viewportOptions.viewportType === 'stack') {
-      // Todo: handle finding out other viewports in the grid
-      // that require to change to volume viewport
-
-      // Todo: add current imageIdIndex to the viewportOptions
-      // so that we can restore it after changing to volume viewport
-      viewportGridService.setDisplaySetsForViewports([
-        {
-          viewportIndex: activeViewportIndex,
-          displaySetInstanceUIDs: [displaySetInstanceUID],
-          viewportOptions: {
-            // initialImageOptions: {
-            //   index:
-            // },
-            viewportType: 'volume',
-          },
-        },
-      ]);
-    }
-
-    // Todo: fix setTimout here
-    setTimeout(async () => {
-      const segmentationId = await segmentationService.createSegmentationForDisplaySet(
-        displaySetInstanceUID,
-        { label: 'New Segmentation' }
-      );
-
-      await segmentationService.addSegmentationRepresentationToToolGroup(
-        activeViewport.viewportOptions.toolGroupId,
-        segmentationId,
-        true // hydrateSegmentation,
-      );
-
-      // Todo: handle other toolgroups than default
-      segmentationService.addSegment(segmentationId, {
-        properties: {
-          label: 'Segment 1',
-        },
-      });
-    }, 500);
+  const onSegmentationAdd = async () => {
+    commandsManager.runCommand('addSegmentationForActiveViewport');
   };
 
   const onSegmentationClick = (segmentationId: string) => {
@@ -128,14 +73,6 @@ export default function PanelSegmentation({
 
   const onSegmentationDelete = (segmentationId: string) => {
     segmentationService.remove(segmentationId);
-  };
-
-  const getToolGroupIds = segmentationId => {
-    const toolGroupIds = segmentationService.getToolGroupIdsWithSegmentation(
-      segmentationId
-    );
-
-    return toolGroupIds;
   };
 
   const onSegmentAdd = segmentationId => {
@@ -197,8 +134,34 @@ export default function PanelSegmentation({
   };
 
   const onSegmentColorClick = (segmentationId, segmentIndex) => {
-    // Todo: Implement color picker later
-    return;
+    const segmentation = segmentationService.getSegmentation(segmentationId);
+
+    const segment = segmentation.segments[segmentIndex];
+    const { color, opacity } = segment;
+
+    const rgbaColor = {
+      r: color[0],
+      g: color[1],
+      b: color[2],
+      a: opacity / 255.0,
+    };
+
+    callColorPickerDialog(
+      uiDialogService,
+      rgbaColor,
+      (newRgbaColor, actionId) => {
+        if (actionId === 'cancel') {
+          return;
+        }
+
+        segmentationService.setSegmentRGBAColor(segmentationId, segmentIndex, [
+          newRgbaColor.r,
+          newRgbaColor.g,
+          newRgbaColor.b,
+          newRgbaColor.a * 255.0,
+        ]);
+      }
+    );
   };
 
   const onSegmentDelete = (segmentationId, segmentIndex) => {
@@ -240,76 +203,93 @@ export default function PanelSegmentation({
     [segmentationService]
   );
 
+  const onSegmentationDownload = segmentationId => {
+    commandsManager.runCommand('downloadSegmentation', {
+      segmentationId,
+    });
+  };
+
+  const onSegmentationCreateReport = segmentationId => {
+    commandsManager.runCommand('createSegmentationReport', {
+      segmentationId,
+    });
+  };
+
   return (
-    <div className="flex flex-col flex-auto min-h-0 justify-between mt-1 select-none">
-      <SegmentationGroupTable
-        title={t('Segmentations')}
-        segmentations={segmentations}
-        activeSegmentationId={selectedSegmentationId || ''}
-        onSegmentationAdd={onSegmentationAdd}
-        onSegmentationClick={onSegmentationClick}
-        onSegmentationDelete={onSegmentationDelete}
-        onSegmentationEdit={onSegmentationEdit}
-        onSegmentClick={onSegmentClick}
-        onSegmentEdit={onSegmentEdit}
-        onSegmentAdd={onSegmentAdd}
-        disableEditing={configuration.disableEditing}
-        onSegmentColorClick={onSegmentColorClick}
-        onSegmentDelete={onSegmentDelete}
-        onToggleSegmentVisibility={onToggleSegmentVisibility}
-        onToggleSegmentLock={onToggleSegmentLock}
-        onToggleSegmentationVisibility={onToggleSegmentationVisibility}
-        segmentationConfig={{ initialConfig: segmentationConfiguration }}
-        setRenderOutline={value =>
-          _setSegmentationConfiguration(
-            selectedSegmentationId,
-            'renderOutline',
-            value
-          )
-        }
-        setOutlineOpacityActive={value =>
-          _setSegmentationConfiguration(
-            selectedSegmentationId,
-            'outlineOpacity',
-            value
-          )
-        }
-        setRenderFill={value =>
-          _setSegmentationConfiguration(
-            selectedSegmentationId,
-            'renderFill',
-            value
-          )
-        }
-        setRenderInactiveSegmentations={value =>
-          _setSegmentationConfiguration(
-            selectedSegmentationId,
-            'renderInactiveSegmentations',
-            value
-          )
-        }
-        setOutlineWidthActive={value =>
-          _setSegmentationConfiguration(
-            selectedSegmentationId,
-            'outlineWidthActive',
-            value
-          )
-        }
-        setFillAlpha={value =>
-          _setSegmentationConfiguration(
-            selectedSegmentationId,
-            'fillAlpha',
-            value
-          )
-        }
-        setFillAlphaInactive={value =>
-          _setSegmentationConfiguration(
-            selectedSegmentationId,
-            'fillAlphaInactive',
-            value
-          )
-        }
-      />
+    <div>
+      <div className="flex flex-col flex-auto min-h-0 justify-between mt-1 select-none">
+        <SegmentationGroupTable
+          title={t('Segmentations')}
+          segmentations={segmentations}
+          disableEditing={configuration.disableEditing}
+          activeSegmentationId={selectedSegmentationId || ''}
+          onSegmentationAdd={onSegmentationAdd}
+          onSegmentationClick={onSegmentationClick}
+          onSegmentationDelete={onSegmentationDelete}
+          onSegmentationDownload={onSegmentationDownload}
+          onSegmentationCreateReport={onSegmentationCreateReport}
+          onSegmentationEdit={onSegmentationEdit}
+          onSegmentClick={onSegmentClick}
+          onSegmentEdit={onSegmentEdit}
+          onSegmentAdd={onSegmentAdd}
+          onSegmentColorClick={onSegmentColorClick}
+          onSegmentDelete={onSegmentDelete}
+          onToggleSegmentVisibility={onToggleSegmentVisibility}
+          onToggleSegmentLock={onToggleSegmentLock}
+          onToggleSegmentationVisibility={onToggleSegmentationVisibility}
+          showDeleteSegment={true}
+          segmentationConfig={{ initialConfig: segmentationConfiguration }}
+          setRenderOutline={value =>
+            _setSegmentationConfiguration(
+              selectedSegmentationId,
+              'renderOutline',
+              value
+            )
+          }
+          setOutlineOpacityActive={value =>
+            _setSegmentationConfiguration(
+              selectedSegmentationId,
+              'outlineOpacity',
+              value
+            )
+          }
+          setRenderFill={value =>
+            _setSegmentationConfiguration(
+              selectedSegmentationId,
+              'renderFill',
+              value
+            )
+          }
+          setRenderInactiveSegmentations={value =>
+            _setSegmentationConfiguration(
+              selectedSegmentationId,
+              'renderInactiveSegmentations',
+              value
+            )
+          }
+          setOutlineWidthActive={value =>
+            _setSegmentationConfiguration(
+              selectedSegmentationId,
+              'outlineWidthActive',
+              value
+            )
+          }
+          setFillAlpha={value =>
+            _setSegmentationConfiguration(
+              selectedSegmentationId,
+              'fillAlpha',
+              value
+            )
+          }
+          setFillAlphaInactive={value =>
+            _setSegmentationConfiguration(
+              selectedSegmentationId,
+              'fillAlphaInactive',
+              value
+            )
+          }
+        />
+      </div>
     </div>
   );
 }

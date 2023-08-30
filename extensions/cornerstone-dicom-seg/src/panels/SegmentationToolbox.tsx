@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { AdvancedToolbox, useViewportGrid } from '@ohif/ui';
-import { utilities } from '@cornerstonejs/tools';
+import { eventTarget } from '@cornerstonejs/core';
+import { utilities, Enums } from '@cornerstonejs/tools';
 import { Types } from '@ohif/extension-cornerstone';
 
 const { segmentation: segmentationUtils } = utilities;
@@ -40,7 +41,6 @@ function SegmentationToolbox({ servicesManager }) {
     const activeTool = toolGroupService.getActiveToolForViewport(
       viewport.viewportId
     );
-    console.debug('🚀 ~ activeTool:', activeTool);
     setActiveTool(activeTool);
   }, [activeViewportIndex, viewports]);
 
@@ -109,12 +109,12 @@ function SegmentationToolbox({ servicesManager }) {
           onClick: () => setToolActive('CircularBrush'),
           options: [
             {
-              name: 'Brush Size',
+              name: 'Radius (mm)',
               type: 'range',
-              min: 15,
-              max: 40,
-              value: brushSize,
-              step: 1,
+              min: 0.01,
+              max: 100,
+              value: brushSize || 15,
+              step: 0.5,
               onChange: onBrushSizeChange,
             },
             {
@@ -137,11 +137,11 @@ function SegmentationToolbox({ servicesManager }) {
           onClick: () => setToolActive('CircularEraser'),
           options: [
             {
-              name: 'Brush Size',
+              name: 'Radius (mm)',
               type: 'range',
               min: 15,
               max: 40,
-              value: brushSize,
+              value: brushSize || 15,
               step: 1,
               onChange: onBrushSizeChange,
             },

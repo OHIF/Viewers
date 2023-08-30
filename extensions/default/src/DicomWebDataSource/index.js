@@ -251,7 +251,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
         } else {
           const meta = {
             FileMetaInformationVersion:
-              dataset._meta.FileMetaInformationVersion.Value,
+              dataset._met?.FileMetaInformationVersion?.Value,
             MediaStorageSOPClassUID: dataset.SOPClassUID,
             MediaStorageSOPInstanceUID: dataset.SOPInstanceUID,
             TransferSyntaxUID: EXPLICIT_VR_LITTLE_ENDIAN,
