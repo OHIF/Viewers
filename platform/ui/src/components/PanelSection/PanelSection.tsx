@@ -12,7 +12,7 @@ const PanelSection = ({ title, children, actionIcons = [] }) => {
   return (
     <>
       <div
-        className="flex justify-between h-7 bg-primary-dark pl-2.5 items-center cursor-pointer select-none text-[13px]"
+        className="flex justify-between h-7 bg-secondary-dark pl-2.5 items-center cursor-pointer select-none text-[13px] rounded-[4px] mt-[2px]"
         onClick={handleHeaderClick}
       >
         <div className="text-aqua-pale">{title}</div>
@@ -37,7 +37,12 @@ const PanelSection = ({ title, children, actionIcons = [] }) => {
           </div>
         </div>
       </div>
-      {isChildrenVisible && children}
+      {isChildrenVisible && (
+        <>
+          <div className="h-[2px] bg-black"></div>
+          <div className="bg-primary-dark rounded-b-[4px]">{children}</div>
+        </>
+      )}
     </>
   );
 };

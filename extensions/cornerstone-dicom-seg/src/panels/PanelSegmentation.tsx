@@ -1,7 +1,7 @@
+import { createReportAsync } from '@ohif/extension-default';
 import React, { useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import { SegmentationGroupTable, useViewportGrid } from '@ohif/ui';
-import { Enums } from '@cornerstonejs/core';
+import { SegmentationGroupTable } from '@ohif/ui';
 
 import callInputDialog from './callInputDialog';
 import callColorPickerDialog from './colorPickerDialog';
@@ -10,19 +10,13 @@ import { useTranslation } from 'react-i18next';
 export default function PanelSegmentation({
   servicesManager,
   commandsManager,
+  extensionManager,
   configuration,
 }) {
-  const {
-    segmentationService,
-    uiDialogService,
-    uiNotificationService,
-    cornerstoneViewportService,
-  } = servicesManager.services;
-  const [viewportGrid, viewportGridService] = useViewportGrid();
-
-  const { activeViewportIndex, viewports } = viewportGrid;
+  const { segmentationService, uiDialogService } = servicesManager.services;
 
   const { t } = useTranslation('PanelSegmentation');
+
   const [selectedSegmentationId, setSelectedSegmentationId] = useState(null);
   const [segmentationConfiguration, setSegmentationConfiguration] = useState(
     segmentationService.getConfiguration()
@@ -209,9 +203,20 @@ export default function PanelSegmentation({
     });
   };
 
-  const onSegmentationCreateReport = segmentationId => {
-    commandsManager.runCommand('createSegmentationReport', {
-      segmentationId,
+  const storeSegmentation = segmentationId => {
+    const datasources = extensionManager.getActiveDataSource();
+
+    const getReport = async () => {
+      return await commandsManager.runCommand('storeSegmentation', {
+        segmentationId,
+        dataSource: datasources[0],
+      });
+    };
+
+    createReportAsync({
+      servicesManager,
+      getReport,
+      reportType: 'Segmentation',
     });
   };
 
@@ -227,7 +232,7 @@ export default function PanelSegmentation({
           onSegmentationClick={onSegmentationClick}
           onSegmentationDelete={onSegmentationDelete}
           onSegmentationDownload={onSegmentationDownload}
-          onSegmentationCreateReport={onSegmentationCreateReport}
+          storeSegmentation={storeSegmentation}
           onSegmentationEdit={onSegmentationEdit}
           onSegmentClick={onSegmentClick}
           onSegmentEdit={onSegmentEdit}

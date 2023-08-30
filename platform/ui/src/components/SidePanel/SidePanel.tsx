@@ -225,8 +225,7 @@ const SidePanel = ({
           {/** Panel Header with Arrow and Close Actions */}
           <div
             className={classnames(
-              'flex flex-static px-[10px] bg-primary-dark h-9 cursor-pointer',
-              tabs.length === 1 && 'mb-1'
+              'flex flex-static px-[10px] bg-primary-dark h-9 cursor-pointer'
             )}
             onClick={() => {
               updatePanelOpen(prev => !prev);

@@ -22,7 +22,7 @@ const SegmentationGroupTable = ({
   onSegmentationClick,
   onSegmentationDelete,
   onSegmentationDownload,
-  onSegmentationCreateReport,
+  storeSegmentation,
   // segment handlers
   onSegmentClick,
   onSegmentAdd,
@@ -73,7 +73,7 @@ const SegmentationGroupTable = ({
   );
 
   return (
-    <div className="flex flex-col min-h-0 font-inter font-[300] text-[13px] bg-black">
+    <div className="flex flex-col min-h-0 font-[300] text-[13px] bg-black">
       <PanelSection
         title="Segmentation"
         actionIcons={[
@@ -95,15 +95,15 @@ const SegmentationGroupTable = ({
             segmentationConfig={segmentationConfig}
           />
         )}
-        <div className="bg-black">
+        <div className="bg-primary-dark">
           {segmentations?.length === 0 ? (
-            <div className=" mt-1 select-none">
+            <div className="select-none rounded-[4px]">
               {showAddSegmentation && !disableEditing && (
                 <NoSegmentationRow onSegmentationAdd={onSegmentationAdd} />
               )}
             </div>
           ) : (
-            <div className=" mt-1 select-none">
+            <div className="mt-1 select-none">
               <SegmentationDropDownRow
                 segmentations={segmentations}
                 disableEditing={disableEditing}
@@ -112,7 +112,7 @@ const SegmentationGroupTable = ({
                 onSegmentationDelete={onSegmentationDelete}
                 onSegmentationEdit={onSegmentationEdit}
                 onSegmentationDownload={onSegmentationDownload}
-                onSegmentationCreateReport={onSegmentationCreateReport}
+                storeSegmentation={storeSegmentation}
                 onSegmentationAdd={onSegmentationAdd}
                 onToggleSegmentationVisibility={onToggleSegmentationVisibility}
               />
@@ -124,7 +124,7 @@ const SegmentationGroupTable = ({
             </div>
           )}
         </div>
-        <div className="flex flex-col min-h-0 ohif-scrollbar overflow-y-hidden mt-2">
+        <div className="flex flex-col min-h-0 ohif-scrollbar overflow-y-hidden mt-1">
           {activeSegmentation?.segments?.map(segment => {
             if (segment === undefined || segment === null) {
               return null;

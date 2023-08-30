@@ -10,7 +10,7 @@ function SegmentationDropDownRow({
   onToggleSegmentationVisibility,
   onSegmentationEdit,
   onSegmentationDownload,
-  onSegmentationCreateReport,
+  storeSegmentation,
   onSegmentationDelete,
   onSegmentationAdd,
 }) {
@@ -28,7 +28,7 @@ function SegmentationDropDownRow({
   }
 
   return (
-    <div className="flex items-center mt-[8px] space-x-1 group mx-0.5">
+    <div className="flex items-center mt-[8px] group mx-0.5">
       <div
         onClick={e => {
           e.stopPropagation();
@@ -72,7 +72,7 @@ function SegmentationDropDownRow({
                   {
                     title: 'Create Report',
                     onClick: () => {
-                      onSegmentationCreateReport(activeSegmentation.id);
+                      storeSegmentation(activeSegmentation.id);
                     },
                   },
                   {
@@ -87,9 +87,9 @@ function SegmentationDropDownRow({
         >
           {/* <Icon
             name="icon-more-menu"
-            className="w-[20px] h-[20px] grid place-items-center hover:bg-primary-dark cursor-pointer text-primary-active rounded-[4px] "
+            className="w-[20px] h-[20px] grid place-items-center hover:bg-secondary-dark cursor-pointer text-primary-active rounded-[4px] "
           ></Icon> */}
-          <div className="w-[28px] h-[28px] rounded-[4px] grid place-items-center  hover:bg-primary-dark cursor-pointer">
+          <div className="w-[28px] h-[28px] rounded-[4px] grid place-items-center  hover:bg-secondary-dark cursor-pointer mx-1">
             <Icon name="icon-more-menu"></Icon>
           </div>
         </Dropdown>
@@ -112,7 +112,7 @@ function SegmentationDropDownRow({
       )}
       <div className="items-center flex">
         <div
-          className="w-[28px] h-[28px] rounded-[4px] grid place-items-center  hover:bg-primary-dark cursor-pointer"
+          className="w-[28px] h-[28px] rounded-[4px] grid place-items-center  hover:bg-secondary-dark cursor-pointer ml-3 mr-1"
           onClick={() => onToggleSegmentationVisibility(activeSegmentation.id)}
         >
           {activeSegmentation.isVisible ? (

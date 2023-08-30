@@ -42,7 +42,7 @@ const SegmentItem = ({
     >
       <div
         className={classnames(
-          'grid place-items-center w-[28px] bg-primary-dark group/number',
+          'grid place-items-center w-[32px] bg-primary-dark group/number',
           {
             'bg-primary-light text-black border border-primary-light rounded-l-[4px]': isActive,
             'border border-primary-dark': !isActive,
@@ -76,7 +76,7 @@ const SegmentItem = ({
         })}
       >
         <div className="flex flex-grow items-center group-hover/row:bg-primary-dark w-full h-full">
-          <div className="pl-3.5 pr-2.5">
+          <div className="pl-2 pr-1.5">
             <div
               className={classnames('grow-0 w-[8px] h-[8px] rounded-full', {
                 'hover:cursor-pointer hover:opacity-60': !disableEditing,
