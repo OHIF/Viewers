@@ -65,6 +65,37 @@ const RELATIONSHIP_TYPE = {
 
 const CORNERSTONE_FREETEXT_CODE_VALUE = 'CORNERSTONEFREETEXT';
 
+/**
+ * Calculates the projection of a world point in an image plane
+ * @param point
+ * @param instance
+ */
+function getPointProjection(point, instance) {
+  const reference = instance.ImagePositionPatient;
+  const imageOrientation = instance.ImageOrientationPatient;
+  const rowCosineVec = vec3.fromValues(
+    imageOrientation[0],
+    imageOrientation[1],
+    imageOrientation[2]
+  );
+  const colCosineVec = vec3.fromValues(
+    imageOrientation[3],
+    imageOrientation[4],
+    imageOrientation[5]
+  );
+  const subtractedPoint = vec3.create();
+  vec3.subtract(subtractedPoint, point, reference);
+  const x = vec3.dot(subtractedPoint, rowCosineVec);
+  const y = vec3.dot(subtractedPoint, colCosineVec);
+  vec3.scale(subtractedPoint, rowCosineVec, x);
+  return vec3.scaleAndAdd(subtractedPoint, subtractedPoint, colCosineVec, y);
+}
+/**
+ * Calculates the minimum distance between a world point and an image plane
+ * @param point
+ * @param instance
+ * @returns
+ */
 function planeDistance(point, instance) {
   const imageOrientation = instance.ImageOrientationPatient;
   const rowCosineVec = vec3.fromValues(
@@ -727,6 +758,10 @@ function _getCoordsFromSCOORDOrSCOORD3D(item, displaySetService) {
           ReferencedSOPClassUID: closestInstanceInfo.instance.SOPClassUID,
           ReferencedSOPInstanceUID: closestInstanceInfo.instance.SOPInstanceUID,
         };
+        // coords.GraphicData = getPointProjection(
+        //   coords.GraphicData,
+        //   closestInstanceInfo.instance
+        // );
       }
     }
   }
