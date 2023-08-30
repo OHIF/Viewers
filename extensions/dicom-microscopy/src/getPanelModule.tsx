@@ -18,15 +18,12 @@ export default function getPanelModule({
   extensionManager: ExtensionManager;
 }) {
   const wrappedMeasurementPanel = () => {
-    const [
-      { activeViewportIndex, viewports },
-      viewportGridService,
-    ] = useViewportGrid();
+    const [{ activeViewportId, viewports }] = useViewportGrid();
 
     return (
       <MicroscopyPanel
         viewports={viewports}
-        activeViewportIndex={activeViewportIndex}
+        activeViewportId={activeViewportId}
         onSaveComplete={() => {}}
         onRejectComplete={() => {}}
         commandsManager={commandsManager}

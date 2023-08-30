@@ -649,10 +649,7 @@ class MeasurementService extends PubSubService {
    * merely causes it to fire the event with the isConsumed set to true.
    */
 
-  public jumpToMeasurement(
-    viewportIndex: number,
-    measurementUID: string
-  ): void {
+  public jumpToMeasurement(viewportId: string, measurementUID: string): void {
     const measurement = this.measurements.get(measurementUID);
 
     if (!measurement) {
@@ -660,7 +657,7 @@ class MeasurementService extends PubSubService {
       return;
     }
     const consumableEvent = this.createConsumableEvent({
-      viewportIndex,
+      viewportId,
       measurement,
     });
 

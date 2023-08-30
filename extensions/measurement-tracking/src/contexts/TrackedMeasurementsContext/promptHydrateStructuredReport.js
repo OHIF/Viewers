@@ -20,15 +20,15 @@ function promptHydrateStructuredReport(
     uiViewportDialogService,
     displaySetService,
   } = servicesManager.services;
-  const { viewportIndex, displaySetInstanceUID } = evt;
+  const { viewportId, displaySetInstanceUID } = evt;
   const srDisplaySet = displaySetService.getDisplaySetByUID(
     displaySetInstanceUID
   );
 
-  return new Promise(async function (resolve, reject) {
+  return new Promise(async function(resolve, reject) {
     const promptResult = await _askTrackMeasurements(
       uiViewportDialogService,
-      viewportIndex
+      viewportId
     );
 
     // Need to do action here... So we can set state...
@@ -49,15 +49,15 @@ function promptHydrateStructuredReport(
       userResponse: promptResult,
       displaySetInstanceUID: evt.displaySetInstanceUID,
       srSeriesInstanceUID: srDisplaySet.SeriesInstanceUID,
-      viewportIndex,
+      viewportId,
       StudyInstanceUID,
       SeriesInstanceUIDs,
     });
   });
 }
 
-function _askTrackMeasurements(uiViewportDialogService, viewportIndex) {
-  return new Promise(function (resolve, reject) {
+function _askTrackMeasurements(uiViewportDialogService, viewportId) {
+  return new Promise(function(resolve, reject) {
     const message =
       'Do you want to continue tracking measurements for this study?';
     const actions = [
@@ -78,7 +78,7 @@ function _askTrackMeasurements(uiViewportDialogService, viewportIndex) {
     };
 
     uiViewportDialogService.show({
-      viewportIndex,
+      viewportId,
       type: 'info',
       message,
       actions,

@@ -1,4 +1,4 @@
-import { StateSyncService, Types } from '@ohif/core';
+import { StateSyncService } from '@ohif/core';
 
 /**
  * This find or create viewport is paired with the reduce results from
@@ -7,7 +7,7 @@ import { StateSyncService, Types } from '@ohif/core';
  * then one can be re-used from the display set if it isn't going to be displayed.
  * @param hangingProtocolService - bound parameter supplied before using this
  * @param viewportsByPosition - bound parameter supplied before using this
- * @param viewportIndex - the index to retrieve
+ * @param position - the position in the grid to retrieve
  * @param positionId - the current position on screen to retrieve
  * @param options - the set of options used, so that subsequent calls can
  *                  store state that is reset by the setLayout.
@@ -17,7 +17,7 @@ import { StateSyncService, Types } from '@ohif/core';
 export const findOrCreateViewport = (
   hangingProtocolService,
   viewportsByPosition,
-  viewportIndex: number,
+  position: number,
   positionId: string,
   options: Record<string, unknown>
 ) => {
@@ -74,24 +74,19 @@ const findViewportsByPosition = (
   const viewportsByPosition = { ...syncState.viewportsByPosition };
   const initialInDisplay = [];
 
-  for (const viewport of viewports) {
+  viewports.forEach(viewport => {
     if (viewport.positionId) {
       const storedViewport = {
         ...viewport,
         viewportOptions: { ...viewport.viewportOptions },
       };
       viewportsByPosition[viewport.positionId] = storedViewport;
-      // The cache doesn't store the viewport options - it is only useful
-      // for remembering the type of viewport and UIDs
-      delete storedViewport.viewportId;
-      delete storedViewport.viewportOptions.viewportId;
     }
-  }
+  });
 
   for (let row = 0; row < numRows; row++) {
     for (let col = 0; col < numCols; col++) {
-      const pos = col + row * numCols;
-      const positionId = viewports?.[pos]?.positionId || `${col}-${row}`;
+      const positionId = `${col}-${row}`;
       const viewport = viewportsByPosition[positionId];
       if (viewport?.displaySetInstanceUIDs) {
         initialInDisplay.push(...viewport.displaySetInstanceUIDs);

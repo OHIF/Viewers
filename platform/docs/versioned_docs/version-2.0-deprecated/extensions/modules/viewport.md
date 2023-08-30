@@ -25,7 +25,7 @@ Each `ViewportComponent` will receive the following props:
 ```html
 <viewportComponent
   viewportData="{viewportData}"
-  viewportIndex="{viewportIndex}"
+  viewportId="{viewportId}"
   children="{[children]}"
 />
 ```
@@ -34,7 +34,7 @@ Each `ViewportComponent` will receive the following props:
 | --------------- | --------------- | --------------------------------- |
 | `children`      | React.element[] |                                   |
 | `viewportData`  | object          | `viewportSpecificData` (probably) |
-| `viewportIndex` | number          |                                   |
+| `viewportId` | string          |                                   |
 
 ### `@ohif/viewer`
 

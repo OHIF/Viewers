@@ -22,7 +22,7 @@ function ViewportOrientationMarkers({
   element,
   viewportData,
   imageSliceData,
-  viewportIndex,
+  viewportId,
   servicesManager,
   orientationMarkers = ['top', 'left'],
 }) {
@@ -114,9 +114,7 @@ function ViewportOrientationMarkers({
       flipHorizontal
     );
 
-    const ohifViewport = cornerstoneViewportService.getViewportInfoByIndex(
-      viewportIndex
-    );
+    const ohifViewport = cornerstoneViewportService.getViewportInfo(viewportId);
 
     if (!ohifViewport) {
       console.log('ViewportOrientationMarkers::No viewport');
