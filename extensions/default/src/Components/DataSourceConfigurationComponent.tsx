@@ -1,4 +1,4 @@
-import React, { ReactElement, useEffect, useState } from 'react';
+import React, { ReactElement, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Icon, useModal } from '@ohif/ui';
 import { ExtensionManager, ServicesManager, Types } from '@ohif/core';
@@ -48,6 +48,9 @@ function DataSourceConfigurationComponent({
       const configAPI = configurationAPIFactory(activeDataSourceDef.sourceName);
       setConfigurationAPI(configAPI);
 
+      // New configuration API means that the existing configured items must be cleared.
+      setConfiguredItems(null);
+
       configAPI.getConfiguredItems().then(list => {
         if (shouldUpdate) {
           setConfiguredItems(list);
@@ -68,22 +71,35 @@ function DataSourceConfigurationComponent({
     };
   }, []);
 
+  const showConfigurationModal = useCallback(() => {
+    show({
+      content: DataSourceConfigurationModalComponent,
+      title: t('Configure Data Source'),
+      contentProps: {
+        configurationAPI,
+        configuredItems,
+        onHide: hide,
+      },
+    });
+  }, [configurationAPI, configuredItems]);
+
+  useEffect(() => {
+    if (!configurationAPI || !configuredItems) {
+      return;
+    }
+
+    if (configuredItems.length !== configurationAPI.getItemLabels().length) {
+      // Not the correct number of configured items, so show the modal to configure the data source.
+      showConfigurationModal();
+    }
+  }, [configurationAPI, configuredItems, showConfigurationModal]);
+
   return configuredItems ? (
     <div className="flex text-aqua-pale overflow-hidden items-center">
       <Icon
         name="settings"
         className="cursor-pointer shrink-0 w-3.5 h-3.5 mr-2.5"
-        onClick={() =>
-          show({
-            content: DataSourceConfigurationModalComponent,
-            title: t('Configure Data Source'),
-            contentProps: {
-              configurationAPI,
-              configuredItems,
-              onHide: hide,
-            },
-          })
-        }
+        onClick={showConfigurationModal}
       ></Icon>
       {configuredItems.map((item, itemIndex) => {
         return (
