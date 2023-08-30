@@ -8,13 +8,16 @@ jest.mock('../../log', () => ({
 }));
 
 describe('MeasurementService.js', () => {
+  const unmappedMeasurementUID = 'unmappedMeasurementUId';
   let measurementService;
   let measurement;
+  let unmappedMeasurement;
   let source;
   let annotationType;
   let matchingCriteria;
   let toSourceSchema;
   let toMeasurement;
+  let toMeasurementThrowsError;
   let annotation;
 
   beforeEach(() => {
@@ -40,6 +43,25 @@ describe('MeasurementService.js', () => {
       ],
       source: source,
     };
+    // A measurement with various metadata missing (e.g. referenced SOPInstanceUID) that
+    // would not typically get mapped my the MeasurementService possibly because it was
+    // made in a non-acquisition plane of a volume.
+    unmappedMeasurement = {
+      uid: unmappedMeasurementUID,
+      SOPInstanceUID: undefined,
+      FrameOfReferenceUID: undefined,
+      referenceSeriesUID: undefined,
+      label: 'Label',
+      description: 'Description',
+      unit: 'mm',
+      area: 123,
+      type: measurementService.VALUE_TYPES.POLYLINE,
+      points: [
+        { x: 1, y: 2 },
+        { x: 1, y: 2 },
+      ],
+      source: source,
+    };
     toSourceSchema = () => annotation;
     toMeasurement = () => {
       if (Object.keys(measurement).includes('invalidProperty')) {
@@ -47,6 +69,9 @@ describe('MeasurementService.js', () => {
       }
 
       return measurement;
+    };
+    toMeasurementThrowsError = () => {
+      throw new Error('Unmapped measurement.');
     };
     matchingCriteria = {
       valueType: measurementService.VALUE_TYPES.POLYLINE,
@@ -428,6 +453,76 @@ describe('MeasurementService.js', () => {
       source.annotationToMeasurement(annotationType, { uid, ...measurement });
 
       expect(updateCallbackWasCalled).toBe(false);
+    });
+
+    it('subscribers do NOT receive add unmapped measurements event', () => {
+      measurementService.addMapping(
+        source,
+        annotationType,
+        matchingCriteria,
+        toSourceSchema,
+        toMeasurementThrowsError
+      );
+
+      const { MEASUREMENT_ADDED } = measurementService.EVENTS;
+      let addCallbackWasCalled = false;
+
+      /* Subscribe to add event */
+      measurementService.subscribe(
+        MEASUREMENT_ADDED,
+        () => (addCallbackWasCalled = true)
+      );
+
+      /* Add new measurement - two calls needed for the start and the other for the completed*/
+      // expect exceptions for unmapped measurements
+      expect(() => {
+        source.annotationToMeasurement(annotationType, unmappedMeasurement);
+      }).toThrow();
+
+      expect(() => {
+        source.annotationToMeasurement(annotationType, {
+          unmappedMeasurementUID,
+          ...unmappedMeasurement,
+        });
+      }).toThrow();
+
+      expect(addCallbackWasCalled).toBe(false);
+    });
+
+    it('subscribers do receive remove unmapped measurements event', () => {
+      measurementService.addMapping(
+        source,
+        annotationType,
+        matchingCriteria,
+        toSourceSchema,
+        toMeasurementThrowsError
+      );
+
+      const { MEASUREMENT_REMOVED } = measurementService.EVENTS;
+      let removeCallbackWasCalled = false;
+
+      /* Subscribe to add event */
+      measurementService.subscribe(
+        MEASUREMENT_REMOVED,
+        () => (removeCallbackWasCalled = true)
+      );
+
+      /* Add new measurement - two calls needed for the start and the other for the completed*/
+      // expect exceptions for unmapped measurements
+      expect(() => {
+        source.annotationToMeasurement(annotationType, unmappedMeasurement);
+      }).toThrow();
+
+      expect(() => {
+        source.annotationToMeasurement(annotationType, {
+          unmappedMeasurementUID,
+          ...unmappedMeasurement,
+        });
+      }).toThrow();
+
+      measurementService.remove(unmappedMeasurementUID);
+
+      expect(removeCallbackWasCalled).toBe(true);
     });
   });
 });

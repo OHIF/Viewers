@@ -1,8 +1,9 @@
 import MODULE_TYPES from './MODULE_TYPES';
 import log from '../log';
 import { AppConfig } from '../types/AppConfig';
-import { ServicesManager } from '../services';
+import { PubSubService, ServicesManager } from '../services';
 import { HotkeysManager, CommandsManager } from '../classes';
+import { DataSourceDefinition } from '../types';
 
 /**
  * This is the arguments given to create the extension.
@@ -26,6 +27,7 @@ export type ExtensionConfiguration = Record<string, unknown>;
  */
 export interface ExtensionParams extends ExtensionConstructor {
   extensionManager: ExtensionManager;
+  servicesManager: ServicesManager;
   configuration?: ExtensionConfiguration;
 }
 
@@ -37,9 +39,14 @@ export interface ExtensionParams extends ExtensionConstructor {
 export interface Extension {
   id: string;
   preRegistration?: (p: ExtensionParams) => Promise<void> | void;
-  onModeExit?: () => void;
   getHangingProtocolModule?: (p: ExtensionParams) => unknown;
   getCommandsModule?: (p: ExtensionParams) => CommandsModule;
+  getViewportModule?: (p: ExtensionParams) => unknown;
+  getUtilityModule?: (p: ExtensionParams) => unknown;
+  getCustomizationModule?: (p: ExtensionParams) => unknown;
+  getSopClassHandlerModule?: (p: ExtensionParams) => unknown;
+  onModeEnter?: () => void;
+  onModeExit?: () => void;
 }
 
 export type ExtensionRegister = {
@@ -53,7 +60,11 @@ export type CommandsModule = {
   defaultContext?: string;
 };
 
-export default class ExtensionManager {
+export default class ExtensionManager extends PubSubService {
+  public static readonly EVENTS = {
+    ACTIVE_DATA_SOURCE_CHANGED: 'event::activedatasourcechanged',
+  };
+
   private _commandsManager: CommandsManager;
   private _servicesManager: ServicesManager;
   private _hotkeysManager: HotkeysManager;
@@ -64,6 +75,7 @@ export default class ExtensionManager {
     hotkeysManager,
     appConfig = {},
   }: ExtensionConstructor) {
+    super(ExtensionManager.EVENTS);
     this.modules = {};
     this.registeredExtensionIds = [];
     this.moduleTypeNames = Object.values(MODULE_TYPES);
@@ -81,11 +93,20 @@ export default class ExtensionManager {
     this.dataSourceMap = {};
     this.dataSourceDefs = {};
     this.defaultDataSourceName = appConfig.defaultDataSourceName;
-    this.activeDataSource = undefined;
+    this.activeDataSource = appConfig.defaultDataSourceName;
   }
 
-  public setActiveDataSource(dataSourceName: string): void {
-    this.activeDataSource = dataSourceName;
+  public setActiveDataSource(dataSource: string): void {
+    if (this.activeDataSource === dataSource) {
+      return;
+    }
+
+    this.activeDataSource = dataSource;
+
+    this._broadcastEvent(
+      ExtensionManager.EVENTS.ACTIVE_DATA_SOURCE_CHANGED,
+      this.dataSourceDefs[this.activeDataSource]
+    );
   }
 
   /**
@@ -326,8 +347,27 @@ export default class ExtensionManager {
     return this.dataSourceMap[this.activeDataSource];
   };
 
-  getDataSource = () => {
-    return this.dataSourceMap[this.activeDataSource];
+  /**
+   * Gets the data source definition for the given data source name.
+   * If no data source name is provided, the active data source definition is
+   * returned.
+   * @param dataSourceName the data source name
+   * @returns the data source definition
+   */
+  getDataSourceDefinition = dataSourceName => {
+    if (dataSourceName === undefined) {
+      // Default to the activeDataSource
+      dataSourceName = this.activeDataSource;
+    }
+
+    return this.dataSourceDefs[dataSourceName];
+  };
+
+  /**
+   * Gets the data source definition for the active data source.
+   */
+  getActiveDataSourceDefinition = () => {
+    return this.getDataSourceDefinition(this.activeDataSource);
   };
 
   /**
@@ -379,10 +419,92 @@ export default class ExtensionManager {
     });
   };
 
-  _initDataSourcesModule(extensionModule, extensionId, dataSources = []) {
+  /**
+   * Adds the given data source and optionally sets it as the active data source.
+   * The method does this by first creating the data source.
+   * @param dataSourceDef the data source definition to be added
+   * @param activate flag to indicate if the added data source should be set to the active data source
+   */
+  addDataSource(
+    dataSourceDef: DataSourceDefinition,
+    options = { activate: false }
+  ) {
+    const existingDataSource = this.getDataSources(dataSourceDef.sourceName);
+    if (existingDataSource?.[0]) {
+      // The data source already exists and cannot be added.
+      return;
+    }
+
+    this._createDataSourceInstance(dataSourceDef);
+
+    if (options.activate) {
+      this.setActiveDataSource(dataSourceDef.sourceName);
+    }
+  }
+
+  /**
+   * Updates the configuration of the given data source name. It first creates a new data source with
+   * the existing definition and the new configuration passed in.
+   * @param dataSourceName the name of the data source to update
+   * @param dataSourceConfiguration the new configuration to update the data source with
+   */
+  updateDataSourceConfiguration(
+    dataSourceName: string,
+    dataSourceConfiguration: any
+  ) {
+    const existingDataSource = this.getDataSources(dataSourceName);
+    if (!existingDataSource?.[0]) {
+      // Cannot update a non existent data source.
+      return;
+    }
+
+    const dataSourceDef = this.dataSourceDefs[dataSourceName];
+    // Update the configuration.
+    dataSourceDef.configuration = dataSourceConfiguration;
+    this._createDataSourceInstance(dataSourceDef);
+
+    if (this.activeDataSource === dataSourceName) {
+      // When the active data source is changed/set, fire an event to indicate that its configuration has changed.
+      this._broadcastEvent(
+        ExtensionManager.EVENTS.ACTIVE_DATA_SOURCE_CHANGED,
+        dataSourceDef
+      );
+    }
+  }
+
+  /**
+   * Creates a data source instance from the given definition. The definition is
+   * added to dataSourceDefs and the created instance is added to dataSourceMap.
+   * @param dataSourceDef
+   * @returns
+   */
+  _createDataSourceInstance(dataSourceDef: DataSourceDefinition) {
+    const module = this.getModuleEntry(dataSourceDef.namespace);
+
+    if (!module) {
+      return;
+    }
+
+    this.dataSourceDefs[dataSourceDef.sourceName] = dataSourceDef;
+
     const { userAuthenticationService } = this._servicesManager.services;
-    dataSources.forEach(dataSource => {
-      this.dataSourceDefs[dataSource.sourceName] = dataSource;
+    const dataSourceInstance = module.createDataSource(
+      dataSourceDef.configuration,
+      userAuthenticationService
+    );
+
+    this.dataSourceMap[dataSourceDef.sourceName] = [dataSourceInstance];
+  }
+
+  _initDataSourcesModule(
+    extensionModule,
+    extensionId,
+    dataSources: Array<DataSourceDefinition> = []
+  ): void {
+    extensionModule.forEach(element => {
+      this.modulesMap[
+        `${extensionId}.${MODULE_TYPES.DATA_SOURCE}.${element.name}`
+      ] = element;
     });
 
     extensionModule.forEach(element => {
@@ -390,24 +512,9 @@ export default class ExtensionManager {
 
       dataSources.forEach(dataSource => {
         if (dataSource.namespace === namespace) {
-          const dataSourceInstance = element.createDataSource(
-            dataSource.configuration,
-            userAuthenticationService
-          );
-
-          if (this.dataSourceMap[dataSource.sourceName]) {
-            this.dataSourceMap[dataSource.sourceName].push(dataSourceInstance);
-          } else {
-            this.dataSourceMap[dataSource.sourceName] = [dataSourceInstance];
-          }
+          this.addDataSource(dataSource);
         }
       });
-    });
-
-    extensionModule.forEach(element => {
-      this.modulesMap[
-        `${extensionId}.${MODULE_TYPES.DATA_SOURCE}.${element.name}`
-      ] = element;
     });
   }
 

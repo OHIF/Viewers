@@ -2,6 +2,8 @@ import { utilities, metaData } from '@cornerstonejs/core';
 import OHIF, { DicomMetadataStore } from '@ohif/core';
 import getLabelFromDCMJSImportedToolData from './getLabelFromDCMJSImportedToolData';
 import { adaptersSR } from '@cornerstonejs/adapters';
+import { annotation as CsAnnotation } from '@cornerstonejs/tools';
+const { locking } = CsAnnotation;
 
 const { guid } = OHIF.utils;
 const { MeasurementReport, CORNERSTONE_3D_TAG } = adaptersSR.Cornerstone3D;
@@ -12,20 +14,26 @@ const CORNERSTONE_3D_TOOLS_SOURCE_VERSION = '0.1';
 const supportedLegacyCornerstoneTags = ['cornerstoneTools@^4.0.0'];
 
 const convertCode = (codingValues, code) => {
-  if (!code || code.CodingSchemeDesignator === 'CORNERSTONEJS') return;
+  if (!code || code.CodingSchemeDesignator === 'CORNERSTONEJS') {
+    return;
+  }
   const ref = `${code.CodingSchemeDesignator}:${code.CodeValue}`;
   const ret = { ...codingValues[ref], ref, ...code, text: code.CodeMeaning };
   return ret;
 };
 
 const convertSites = (codingValues, sites) => {
-  if (!sites || !sites.length) return;
+  if (!sites || !sites.length) {
+    return;
+  }
   const ret = [];
   // Do as a loop to convert away from Proxy instances
   for (let i = 0; i < sites.length; i++) {
     // Deal with irregular conversion from dcmjs
     const site = convertCode(codingValues, sites[i][0] || sites[i]);
-    if (site) ret.push(site);
+    if (site) {
+      ret.push(site);
+    }
   }
   return (ret.length && ret) || undefined;
 };
@@ -35,9 +43,11 @@ const convertSites = (codingValues, sites) => {
  *
  */
 export default function hydrateStructuredReport(
-  { servicesManager, extensionManager },
+  { servicesManager, extensionManager, appConfig },
   displaySetInstanceUID
 ) {
+  const annotationManager = CsAnnotation.state.getAnnotationManager();
+  const disableEditing = appConfig?.disableEditing;
   const dataSource = extensionManager.getActiveDataSource()[0];
   const {
     measurementService,
@@ -212,13 +222,20 @@ export default function hydrateStructuredReport(
         m => m.annotationType === annotationType
       );
 
-      measurementService.addRawMeasurement(
+      const newAnnotationUID = measurementService.addRawMeasurement(
         source,
         annotationType,
         { annotation },
         matchingMapping.toMeasurementSchema,
         dataSource
       );
+
+      if (disableEditing) {
+        const addedAnnotation = annotationManager.getAnnotation(
+          newAnnotationUID
+        );
+        locking.setAnnotationLocked(addedAnnotation, true);
+      }
 
       if (!imageIds.includes(imageId)) {
         imageIds.push(imageId);
@@ -287,7 +304,7 @@ function _mapLegacyDataSet(dataset) {
   return dataset;
 }
 
-const toArray = function (x) {
+const toArray = function(x) {
   return Array.isArray(x) ? x : [x];
 };
 

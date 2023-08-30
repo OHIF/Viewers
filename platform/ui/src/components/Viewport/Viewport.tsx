@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { LegacyViewportActionBar, Notification } from '../';
+import LegacyViewportActionBar from '../LegacyViewportActionBar';
+import Notification from '../Notification';
 
 const Viewport = ({
   viewportId,
@@ -42,7 +43,9 @@ const Viewport = ({
             },
           ]}
           onSubmit={value => {
-            if (typeof window !== 'undefined') window.alert(value);
+            if (typeof window !== 'undefined') {
+              window.alert(value);
+            }
           }}
         />
       </div>

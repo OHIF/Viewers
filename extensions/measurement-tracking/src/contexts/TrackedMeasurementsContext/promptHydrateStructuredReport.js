@@ -1,4 +1,5 @@
 import { hydrateStructuredReport } from '@ohif/extension-cornerstone-dicom-sr';
+import { ButtonEnums } from '@ohif/ui';
 
 const RESPONSE = {
   NO_NEVER: -1,
@@ -11,7 +12,7 @@ const RESPONSE = {
 };
 
 function promptHydrateStructuredReport(
-  { servicesManager, extensionManager },
+  { servicesManager, extensionManager, appConfig },
   ctx,
   evt
 ) {
@@ -24,7 +25,7 @@ function promptHydrateStructuredReport(
     displaySetInstanceUID
   );
 
-  return new Promise(async function(resolve, reject) {
+  return new Promise(async function (resolve, reject) {
     const promptResult = await _askTrackMeasurements(
       uiViewportDialogService,
       viewportIndex
@@ -36,7 +37,7 @@ function promptHydrateStructuredReport(
     if (promptResult === RESPONSE.HYDRATE_REPORT) {
       console.warn('!! HYDRATING STRUCTURED REPORT');
       const hydrationResult = hydrateStructuredReport(
-        { servicesManager, extensionManager },
+        { servicesManager, extensionManager, appConfig },
         displaySetInstanceUID
       );
 
@@ -56,17 +57,17 @@ function promptHydrateStructuredReport(
 }
 
 function _askTrackMeasurements(uiViewportDialogService, viewportIndex) {
-  return new Promise(function(resolve, reject) {
+  return new Promise(function (resolve, reject) {
     const message =
       'Do you want to continue tracking measurements for this study?';
     const actions = [
       {
-        type: 'secondary',
+        type: ButtonEnums.type.secondary,
         text: 'No',
         value: RESPONSE.CANCEL,
       },
       {
-        type: 'primary',
+        type: ButtonEnums.type.primary,
         text: 'Yes',
         value: RESPONSE.HYDRATE_REPORT,
       },

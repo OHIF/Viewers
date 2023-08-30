@@ -1,11 +1,11 @@
 import { Types } from '@ohif/core';
 
 const mpr: Types.HangingProtocol.Protocol = {
+  id: 'mpr',
+  name: 'Multi-Planar Reconstruction',
   locked: true,
-  hasUpdatedPriorsInformation: false,
-  name: 'mpr',
-  createdDate: '2021-02-23T19:22:08.894Z',
-  modifiedDate: '2023-02-17',
+  createdDate: '2021-02-23',
+  modifiedDate: '2023-08-15',
   availableTo: {},
   editableBy: {},
   // Unknown number of priors referenced - so just match any study
@@ -163,7 +163,6 @@ const mpr: Types.HangingProtocol.Protocol = {
 const mprAnd3DVolumeViewport = {
   id: 'mprAnd3DVolumeViewport',
   locked: true,
-  hasUpdatedPriorsInformation: false,
   name: 'mpr',
   createdDate: '2023-03-15T10:29:44.894Z',
   modifiedDate: '2023-03-15T10:29:44.894Z',
@@ -244,7 +243,7 @@ const mprAnd3DVolumeViewport = {
             {
               id: 'mprDisplaySet',
               options: {
-                presetName: 'CT-Bone',
+                displayPreset: 'CT-Bone',
               },
             },
           ],
@@ -303,7 +302,7 @@ const mprAnd3DVolumeViewport = {
 function getHangingProtocolModule() {
   return [
     {
-      name: 'mpr',
+      name: mpr.id,
       protocol: mpr,
     },
     {

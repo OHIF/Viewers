@@ -2,8 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { useDrag } from 'react-dnd';
-import { Icon } from '../';
+import Icon from '../Icon';
 import { StringNumber } from '../../types';
+import DisplaySetMessageListTooltip from '../DisplaySetMessageListTooltip';
 
 /**
  * Display a thumbnail for a display set.
@@ -17,6 +18,7 @@ const Thumbnail = ({
   seriesNumber,
   numInstances,
   countIcon,
+  messages,
   dragData,
   isActive,
   onClick,
@@ -52,7 +54,7 @@ const Thumbnail = ({
             'flex flex-1 items-center justify-center rounded-md bg-black text-base text-white overflow-hidden min-h-32',
             isActive
               ? 'border-2 border-primary-light'
-              : 'border border-secondary-light group-focus:border-blue-300 hover:border-blue-300'
+              : 'border border-secondary-light hover:border-blue-300'
           )}
           style={{
             margin: isActive ? '0' : '1px',
@@ -63,6 +65,7 @@ const Thumbnail = ({
               src={imageSrc}
               alt={imageAltText}
               className="object-none min-h-32"
+              crossOrigin="anonymous"
             />
           ) : (
             <div>{imageAltText}</div>
@@ -77,6 +80,10 @@ const Thumbnail = ({
             <Icon name={countIcon || 'group-layers'} className="w-3 mr-2" />
             {` ${numInstances}`}
           </div>
+          <DisplaySetMessageListTooltip
+            messages={messages}
+            id={`display-set-tooltip-${displaySetInstanceUID}`}
+          />
         </div>
         <div className="text-base text-white break-all">{description}</div>
       </div>
@@ -103,6 +110,7 @@ Thumbnail.propTypes = {
   description: PropTypes.string.isRequired,
   seriesNumber: StringNumber.isRequired,
   numInstances: PropTypes.number.isRequired,
+  messages: PropTypes.object,
   isActive: PropTypes.bool.isRequired,
   onClick: PropTypes.func.isRequired,
   onDoubleClick: PropTypes.func.isRequired,

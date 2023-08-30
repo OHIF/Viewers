@@ -7,10 +7,11 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Icon } from '..';
 import { useResizeObserver } from '../../hooks';
 import useOnClickOutside from '../../utils/useOnClickOutside';
+
 import PatientInfo from '../PatientInfo';
+import Icon from '../Icon';
 
 export type ViewportActionBarProps = {
   studyData: any;
@@ -33,6 +34,7 @@ const ViewportActionBar = ({
     patientAge,
     MRN,
     thickness,
+    thicknessUnits,
     spacing,
     scanner,
   } = patientInformation;
@@ -131,7 +133,11 @@ const ViewportActionBar = ({
         <span className="ml-1 text-aqua-pale text-large">{label}</span>
       )}
       <div className={separatorClasses}></div>
-      <span ref={studyDateElemRef} className={studyDateClasses()}>
+      <span
+        data-cy="studyDate"
+        ref={studyDateElemRef}
+        className={studyDateClasses()}
+      >
         {studyDate}
       </span>
       {showSeriesDesc && (
@@ -168,6 +174,7 @@ const ViewportActionBar = ({
           patientAge={patientAge}
           MRN={MRN}
           thickness={thickness}
+          thicknessUnits={thicknessUnits}
           spacing={spacing}
           scanner={scanner}
         />
@@ -191,6 +198,7 @@ ViewportActionBar.propTypes = {
       patientAge: PropTypes.string.isRequired,
       MRN: PropTypes.string.isRequired,
       thickness: PropTypes.string.isRequired,
+      thicknessUnits: PropTypes.string,
       spacing: PropTypes.string.isRequired,
       scanner: PropTypes.string.isRequired,
     }),

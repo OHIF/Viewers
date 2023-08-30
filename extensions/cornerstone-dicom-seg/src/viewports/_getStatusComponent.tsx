@@ -2,13 +2,12 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Icon, Tooltip } from '@ohif/ui';
 
-
 export default function _getStatusComponent({ isHydrated, onStatusClick }) {
   let ToolTipMessage = null;
   let StatusIcon = null;
 
-  const {t} = useTranslation("Common");
-  const loadStr = t("LOAD");
+  const { t } = useTranslation('Common');
+  const loadStr = t('LOAD');
 
   switch (isHydrated) {
     case true:
@@ -18,8 +17,10 @@ export default function _getStatusComponent({ isHydrated, onStatusClick }) {
         <div>This Segmentation is loaded in the segmentation panel</div>
       );
       break;
-  case false:
-      StatusIcon = () => <Icon name="status-untracked" />;
+    case false:
+      StatusIcon = () => (
+        <Icon className="text-aqua-pale" name="status-untracked" />
+      );
 
       ToolTipMessage = () => <div>Click LOAD to load segmentation.</div>;
   }
@@ -41,7 +42,6 @@ export default function _getStatusComponent({ isHydrated, onStatusClick }) {
       )}
     </div>
   );
-
 
   return (
     <>

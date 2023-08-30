@@ -18,8 +18,9 @@ export default function fetchPaletteColorLookupTableData(
 ) {
   const { PaletteColorLookupTableUID } = item;
   const paletteData = item[tag];
-  if (paletteData === undefined && PaletteColorLookupTableUID === undefined)
+  if (paletteData === undefined && PaletteColorLookupTableUID === undefined) {
     return;
+  }
   // performance optimization - read UID and cache by UID
   return _getPaletteColor(item[tag], item[descriptorTag]);
 }
@@ -28,7 +29,9 @@ function _getPaletteColor(paletteColorLookupTableData, lutDescriptor) {
   const numLutEntries = lutDescriptor[0];
   const bits = lutDescriptor[2];
 
-  if (!paletteColorLookupTableData) return undefined;
+  if (!paletteColorLookupTableData) {
+    return undefined;
+  }
 
   const arrayBufferToPaletteColorLUT = arraybuffer => {
     const lut = [];
@@ -40,7 +43,7 @@ function _getPaletteColor(paletteColorLookupTableData, lutDescriptor) {
       }
     } else {
       for (let i = 0; i < numLutEntries; i++) {
-        lut[i] = byteArray[i];
+        lut[i] = arraybuffer[i];
       }
     }
     return lut;

@@ -13,6 +13,7 @@ import promptTrackNewStudy from './promptTrackNewStudy';
 import promptSaveReport from './promptSaveReport';
 import promptHydrateStructuredReport from './promptHydrateStructuredReport';
 import hydrateStructuredReport from './hydrateStructuredReport';
+import { useAppConfig } from '@state';
 
 const TrackedMeasurementsContext = React.createContext();
 TrackedMeasurementsContext.displayName = 'TrackedMeasurementsContext';
@@ -29,14 +30,15 @@ function TrackedMeasurementsContextProvider(
   { servicesManager, commandsManager, extensionManager }, // Bound by consumer
   { children } // Component props
 ) {
+  const [appConfig] = useAppConfig();
+
   const [viewportGrid, viewportGridService] = useViewportGrid();
   const { activeViewportIndex, viewports } = viewportGrid;
+  const { measurementService, displaySetService } = servicesManager.services;
 
   const machineOptions = Object.assign({}, defaultOptions);
   machineOptions.actions = Object.assign({}, machineOptions.actions, {
     jumpToFirstMeasurementInActiveViewport: (ctx, evt) => {
-      const { measurementService } = servicesManager.services;
-
       const { trackedStudy, trackedSeries } = ctx;
       const measurements = measurementService.getMeasurements();
       const trackedMeasurements = measurements.filter(
@@ -45,12 +47,51 @@ function TrackedMeasurementsContextProvider(
           trackedSeries.includes(m.referenceSeriesUID)
       );
 
-      const uid = trackedMeasurements[0].uid;
-
-      measurementService.jumpToMeasurement(
+      console.log(
+        'jumping to measurement reset viewport',
         viewportGrid.activeViewportIndex,
-        uid
+        trackedMeasurements[0]
       );
+
+      const referencedDisplaySetUID =
+        trackedMeasurements[0].displaySetInstanceUID;
+      const referencedDisplaySet = displaySetService.getDisplaySetByUID(
+        referencedDisplaySetUID
+      );
+
+      const referencedImages = referencedDisplaySet.images;
+      const isVolumeIdReferenced = referencedImages[0].imageId.startsWith(
+        'volumeId'
+      );
+
+      const measurementData = trackedMeasurements[0].data;
+
+      let imageIndex = 0;
+      if (!isVolumeIdReferenced && measurementData) {
+        // if it is imageId referenced find the index of the imageId, we don't have
+        // support for volumeId referenced images yet
+        imageIndex = referencedImages.findIndex(image => {
+          const imageIdToUse = Object.keys(measurementData)[0].substring(8);
+          return image.imageId === imageIdToUse;
+        });
+
+        if (imageIndex === -1) {
+          console.warn(
+            'Could not find image index for tracked measurement, using 0'
+          );
+          imageIndex = 0;
+        }
+      }
+
+      viewportGridService.setDisplaySetsForViewport({
+        viewportIndex: viewportGrid.activeViewportIndex,
+        displaySetInstanceUIDs: [referencedDisplaySetUID],
+        viewportOptions: {
+          initialImageOptions: {
+            index: imageIndex,
+          },
+        },
+      });
     },
     showStructuredReportDisplaySetInActiveViewport: (ctx, evt) => {
       if (evt.data.createdDisplaySetInstanceUIDs.length > 0) {
@@ -64,7 +105,6 @@ function TrackedMeasurementsContextProvider(
       }
     },
     discardPreviouslyTrackedMeasurements: (ctx, evt) => {
-      const { measurementService } = servicesManager.services;
       const measurements = measurementService.getMeasurements();
       const filteredMeasurements = measurements.filter(ms =>
         ctx.prevTrackedSeries.includes(ms.referenceSeriesUID)
@@ -76,7 +116,6 @@ function TrackedMeasurementsContextProvider(
       }
     },
     clearAllMeasurements: (ctx, evt) => {
-      const { measurementService } = servicesManager.services;
       const measurements = measurementService.getMeasurements();
       const measurementIds = measurements.map(fm => fm.uid);
 
@@ -89,27 +128,33 @@ function TrackedMeasurementsContextProvider(
     promptBeginTracking: promptBeginTracking.bind(null, {
       servicesManager,
       extensionManager,
+      appConfig,
     }),
     promptTrackNewSeries: promptTrackNewSeries.bind(null, {
       servicesManager,
       extensionManager,
+      appConfig,
     }),
     promptTrackNewStudy: promptTrackNewStudy.bind(null, {
       servicesManager,
       extensionManager,
+      appConfig,
     }),
     promptSaveReport: promptSaveReport.bind(null, {
       servicesManager,
       commandsManager,
       extensionManager,
+      appConfig,
     }),
     promptHydrateStructuredReport: promptHydrateStructuredReport.bind(null, {
       servicesManager,
       extensionManager,
+      appConfig,
     }),
     hydrateStructuredReport: hydrateStructuredReport.bind(null, {
       servicesManager,
       extensionManager,
+      appConfig,
     }),
   });
 
@@ -148,6 +193,10 @@ function TrackedMeasurementsContextProvider(
       const displaySet = displaySetService.getDisplaySetByUID(
         activeViewport.displaySetInstanceUIDs[0]
       );
+
+      if (!displaySet) {
+        return;
+      }
 
       // If this is an SR produced by our SR SOPClassHandler,
       // and it hasn't been loaded yet, do that now so we
@@ -205,6 +254,7 @@ TrackedMeasurementsContextProvider.propTypes = {
   servicesManager: PropTypes.object.isRequired,
   commandsManager: PropTypes.object.isRequired,
   extensionManager: PropTypes.object.isRequired,
+  appConfig: PropTypes.object,
 };
 
 export {

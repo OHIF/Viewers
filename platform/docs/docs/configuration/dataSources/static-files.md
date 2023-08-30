@@ -1,5 +1,5 @@
 ---
-sidebar_position: 4
+sidebar_position: 5
 sidebar_label: Static Files
 ---
 
@@ -27,11 +27,11 @@ cd /dicomweb
 npx http-server -p 5000 --cors -g
 ```
 
-There is then a dev environment in the platform/viewer directory which can be
+There is then a dev environment in the platform/app directory which can be
 run against those files, like this:
 
 ```
-cd platform/viewer
+cd platform/app
 yarn dev:static
 ```
 

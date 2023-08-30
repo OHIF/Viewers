@@ -1,4 +1,4 @@
-import OHIF from '@ohif/core';
+import OHIF, { Types } from '@ohif/core';
 import React from 'react';
 
 import * as cornerstone from '@cornerstonejs/core';
@@ -26,6 +26,7 @@ import nthLoader from './utils/nthLoader';
 import interleaveTopToBottom from './utils/interleaveTopToBottom';
 import initContextMenu from './initContextMenu';
 import initDoubleClick from './initDoubleClick';
+import { CornerstoneServices } from './types';
 
 // TODO: Cypress tests are currently grabbing this from the window?
 window.cornerstone = cornerstone;
@@ -36,6 +37,7 @@ window.cornerstoneTools = cornerstoneTools;
 export default async function init({
   servicesManager,
   commandsManager,
+  extensionManager,
   configuration,
   appConfig,
 }: Types.Extensions.ExtensionParams): Promise<void> {
@@ -52,12 +54,11 @@ export default async function init({
     },
   });
 
-  // For debugging large datasets
-  const MAX_CACHE_SIZE_1GB = 1073741824;
-  const maxCacheSize = appConfig.maxCacheSize;
-  cornerstone.cache.setMaxCacheSize(
-    maxCacheSize ? maxCacheSize : MAX_CACHE_SIZE_1GB
-  );
+  // For debugging large datasets, otherwise prefer the defaults
+  const { maxCacheSize } = appConfig;
+  if (maxCacheSize) {
+    cornerstone.cache.setMaxCacheSize(maxCacheSize);
+  }
 
   initCornerstoneTools();
 
@@ -68,10 +69,7 @@ export default async function init({
 
   const {
     userAuthenticationService,
-    measurementService,
     customizationService,
-    displaySetService,
-    uiDialogService,
     uiModalService,
     uiNotificationService,
     cineService,
@@ -80,9 +78,11 @@ export default async function init({
     toolGroupService,
     viewportGridService,
     stateSyncService,
-  } = servicesManager.services;
+  } = servicesManager.services as CornerstoneServices;
 
   window.services = servicesManager.services;
+  window.extensionManager = extensionManager;
+  window.commandsManager = commandsManager;
 
   if (
     appConfig.showWarningMessageForCrossOrigin &&
@@ -163,7 +163,7 @@ export default async function init({
     prefetch: appConfig?.maxNumRequests?.prefetch || 10,
   };
 
-  initWADOImageLoader(userAuthenticationService, appConfig);
+  initWADOImageLoader(userAuthenticationService, appConfig, extensionManager);
 
   /* Measurement Service */
   this.measurementServiceSource = connectToolsToMeasurementService(

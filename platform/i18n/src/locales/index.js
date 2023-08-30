@@ -19,5 +19,5 @@ export default {
   ...pt_BR,
   ...vi,
   ...zh,
-  ...test_lng
+  ...test_lng,
 };

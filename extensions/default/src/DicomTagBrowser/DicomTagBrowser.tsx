@@ -1,21 +1,32 @@
 import dcmjs from 'dcmjs';
 import moment from 'moment';
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { classes } from '@ohif/core';
+import { InputRange, Select, Typography, InputFilterText } from '@ohif/ui';
+import debounce from 'lodash.debounce';
+
 import DicomTagTable from './DicomTagTable';
 import './DicomTagBrowser.css';
-import { InputRange, Select, Typography } from '@ohif/ui';
 
 const { ImageSet } = classes;
 const { DicomMetaDictionary } = dcmjs.data;
 const { nameMap } = DicomMetaDictionary;
 
 const DicomTagBrowser = ({ displaySets, displaySetInstanceUID }) => {
+  // The column indices that are to be excluded during a filter of the table.
+  // At present the column indices are:
+  // 0: DICOM tag
+  // 1: VR
+  // 2: Keyword
+  // 3: Value
+  const excludedColumnIndicesForFilter: Set<number> = new Set([1]);
+
   const [
     selectedDisplaySetInstanceUID,
     setSelectedDisplaySetInstanceUID,
   ] = useState(displaySetInstanceUID);
   const [instanceNumber, setInstanceNumber] = useState(1);
+  const [filterValue, setFilterValue] = useState('');
 
   const onSelectChange = value => {
     setSelectedDisplaySetInstanceUID(value.value);
@@ -54,64 +65,108 @@ const DicomTagBrowser = ({ displaySets, displaySetInstanceUID }) => {
     });
   }, [displaySets]);
 
+  const rows = useMemo(() => {
+    let metadata;
+    if (isImageStack) {
+      metadata = activeDisplaySet.images[instanceNumber - 1];
+    } else {
+      metadata = activeDisplaySet.instance || activeDisplaySet;
+    }
+    const tags = getSortedTags(metadata);
+    return getFormattedRowsFromTags(tags, metadata);
+  }, [instanceNumber, selectedDisplaySetInstanceUID]);
+
+  const filteredRows = useMemo(() => {
+    if (!filterValue) {
+      return rows;
+    }
+
+    const filterValueLowerCase = filterValue.toLowerCase();
+    return rows.filter(row => {
+      return row.reduce((keepRow, col, colIndex) => {
+        if (keepRow) {
+          // We are already keeping the row, why do more work so return now.
+          return keepRow;
+        }
+
+        if (excludedColumnIndicesForFilter.has(colIndex)) {
+          return keepRow;
+        }
+
+        return keepRow || col.toLowerCase().includes(filterValueLowerCase);
+      }, false);
+    });
+  }, [rows, filterValue]);
+
+  const debouncedSetFilterValue = useMemo(() => {
+    return debounce(setFilterValue, 200);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      debouncedSetFilterValue?.cancel();
+    };
+  }, []);
+
   return (
     <div className="dicom-tag-browser-content">
-      <div className="flex flex-row items-center mb-2">
-        <Typography variant="subtitle" className="w-1/2 mr-8">
-          Series
-        </Typography>
-        {showInstanceList && (
-          <Typography variant="subtitle" className="w-1/2">
-            Instance Number
+      <div className="flex flex-row mb-6 items-center pl-1">
+        <div className="flex flex-row items-center w-1/2">
+          <Typography variant="subtitle" className="mr-4">
+            Series
           </Typography>
-        )}
-      </div>
-      <div className="flex flex-row items-center mb-6">
-        <div className="w-1/2 mr-8">
-          <Select
-            isClearable={false}
-            onChange={onSelectChange}
-            options={displaySetList}
-            value={displaySetList.find(
-              ds => ds.value === selectedDisplaySetInstanceUID
-            )}
-            className="text-white"
-          />
-        </div>
-        {showInstanceList ? (
-          <div className="w-1/2">
-            <InputRange
-              value={instanceNumber}
-              key={selectedDisplaySetInstanceUID}
-              onChange={value => {
-                setInstanceNumber(parseInt(value));
-              }}
-              minValue={1}
-              maxValue={activeDisplaySet.images.length}
-              step={1}
+          <div className="grow mr-8">
+            <Select
+              id="display-set-selector"
+              isClearable={false}
+              onChange={onSelectChange}
+              options={displaySetList}
+              value={displaySetList.find(
+                ds => ds.value === selectedDisplaySetInstanceUID
+              )}
+              className="text-white"
             />
           </div>
-        ) : null}
+        </div>
+        <div className="flex flex-row items-center w-1/2">
+          {showInstanceList && (
+            <Typography variant="subtitle" className="mr-4">
+              Instance Number
+            </Typography>
+          )}
+          {showInstanceList && (
+            <div className="grow">
+              <InputRange
+                value={instanceNumber}
+                key={selectedDisplaySetInstanceUID}
+                onChange={value => {
+                  setInstanceNumber(parseInt(value));
+                }}
+                minValue={1}
+                maxValue={activeDisplaySet.images.length}
+                step={1}
+                inputClassName="w-full"
+                labelPosition="left"
+                trackColor={'#3a3f99'}
+              />
+            </div>
+          )}
+        </div>
       </div>
-      <DicomTagTable
-        rows={getFormattedRowsFromTags(activeDisplaySet, instanceNumber)}
-      ></DicomTagTable>
+      <div className="w-full h-1 bg-black"></div>
+      <div className="flex flex-row my-3 w-1/2">
+        <InputFilterText
+          className="block w-full mr-8"
+          placeholder="Search metadata..."
+          onDebounceChange={setFilterValue}
+        ></InputFilterText>
+      </div>
+      <DicomTagTable rows={filteredRows} />
     </div>
   );
 };
 
-function getFormattedRowsFromTags(displaySet, instanceNumber) {
-  const isImageStack = _isImageStack(displaySet);
-
-  let metadata;
-
-  if (isImageStack) {
-    metadata = displaySet.images[instanceNumber - 1];
-  } else {
-    metadata = displaySet;
-  }
-
-  const tags = getSortedTags(metadata);
+function getFormattedRowsFromTags(tags, metadata) {
   const rows = [];
 
   tags.forEach(tagInfo => {
@@ -126,7 +181,7 @@ function getFormattedRowsFromTags(displaySet, instanceNumber) {
       const { values } = tagInfo;
 
       values.forEach((item, index) => {
-        const formatedRowsFromTags = getFormattedRowsFromTags(item);
+        const formatedRowsFromTags = getFormattedRowsFromTags(item, metadata);
 
         rows.push([
           `${item[0].tagIndent}(FFFE,E000)`,
@@ -140,34 +195,21 @@ function getFormattedRowsFromTags(displaySet, instanceNumber) {
     } else {
       if (tagInfo.vr === 'xs') {
         try {
-          /*  const dataset = metadataProvider.getStudyDataset(
-              meta.StudyInstanceUID
-            );*/
-          //  console.log(dataset);
-          //  const tag = dcmjs.data.Tag.fromPString(tagInfo.tag).toCleanString();
-          // const originalTagInfo = dataset[tag];
-          //  tagInfo.vr = originalTagInfo.vr;
+          const tag = dcmjs.data.Tag.fromPString(tagInfo.tag).toCleanString();
+          const originalTagInfo = metadata[tag];
+          tagInfo.vr = originalTagInfo.vr;
         } catch (error) {
           console.error(
             `Failed to parse value representation for tag '${tagInfo.keyword}'`
           );
         }
       }
-      if (tagInfo.vr === 'PN') {
-        rows.push([
-          `${tagInfo.tagIndent}${tagInfo.tag}`,
-          tagInfo.vr,
-          tagInfo.keyword,
-          tagInfo.value,
-        ]);
-      } else {
-        rows.push([
-          `${tagInfo.tagIndent}${tagInfo.tag}`,
-          tagInfo.vr,
-          tagInfo.keyword,
-          tagInfo.value,
-        ]);
-      }
+      rows.push([
+        `${tagInfo.tagIndent}${tagInfo.tag}`,
+        tagInfo.vr,
+        tagInfo.keyword,
+        tagInfo.value,
+      ]);
     }
   });
 

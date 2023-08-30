@@ -1,54 +1,51 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import OHIF, { utils } from '@ohif/core';
 
-import {
-  Notification,
-  ViewportActionBar,
-  useViewportDialog,
-  Tooltip,
-  Icon,
-} from '@ohif/ui';
+import { ViewportActionBar, Tooltip, Icon } from '@ohif/ui';
 
 import { useTranslation } from 'react-i18next';
 
 import { annotation } from '@cornerstonejs/tools';
 import { useTrackedMeasurements } from './../getContextModule';
+import { BaseVolumeViewport, Enums } from '@cornerstonejs/core';
 
 const { formatDate } = utils;
 
 function TrackedCornerstoneViewport(props) {
   const {
-    children,
     displaySets,
     viewportIndex,
     viewportLabel,
     servicesManager,
     extensionManager,
-    commandsManager,
     viewportOptions,
   } = props;
 
-  const { t } = useTranslation('TrackedViewport');
+  const { t } = useTranslation('Common');
 
   const {
     measurementService,
     cornerstoneViewportService,
+    viewportGridService,
   } = servicesManager.services;
 
   // Todo: handling more than one displaySet on the same viewport
   const displaySet = displaySets[0];
 
-  const [trackedMeasurements] = useTrackedMeasurements();
-  const [viewportDialogState] = useViewportDialog();
+  const [
+    trackedMeasurements,
+    sendTrackedMeasurementsEvent,
+  ] = useTrackedMeasurements();
+
   const [isTracked, setIsTracked] = useState(false);
   const [trackedMeasurementUID, setTrackedMeasurementUID] = useState(null);
+  const [viewportElem, setViewportElem] = useState(null);
 
   const { trackedSeries } = trackedMeasurements.context;
   const viewportId = viewportOptions.viewportId;
 
   const {
-    Modality,
     SeriesDate,
     SeriesDescription,
     SeriesInstanceUID,
@@ -62,8 +59,72 @@ function TrackedCornerstoneViewport(props) {
     PatientAge,
     SliceThickness,
     SpacingBetweenSlices,
+    StudyDate,
     ManufacturerModelName,
   } = displaySet.images[0];
+
+  const updateIsTracked = useCallback(() => {
+    const viewport = cornerstoneViewportService.getCornerstoneViewportByIndex(
+      viewportIndex
+    );
+
+    if (viewport instanceof BaseVolumeViewport) {
+      // A current image id will only exist for volume viewports that can have measurements tracked.
+      // Typically these are those volume viewports for the series of acquisition.
+      const currentImageId = viewport?.getCurrentImageId();
+
+      if (!currentImageId) {
+        if (isTracked) {
+          setIsTracked(false);
+        }
+        return;
+      }
+    }
+
+    if (trackedSeries.includes(SeriesInstanceUID) !== isTracked) {
+      setIsTracked(!isTracked);
+    }
+  }, [isTracked, trackedMeasurements, viewportIndex, SeriesInstanceUID]);
+
+  const onElementEnabled = useCallback(
+    evt => {
+      if (evt.detail.element !== viewportElem) {
+        // The VOLUME_VIEWPORT_NEW_VOLUME event allows updateIsTracked to reliably fetch the image id for a volume viewport.
+        evt.detail.element?.addEventListener(
+          Enums.Events.VOLUME_VIEWPORT_NEW_VOLUME,
+          updateIsTracked
+        );
+        setViewportElem(evt.detail.element);
+      }
+    },
+    [updateIsTracked, viewportElem]
+  );
+
+  const onElementDisabled = useCallback(() => {
+    viewportElem?.removeEventListener(
+      Enums.Events.VOLUME_VIEWPORT_NEW_VOLUME,
+      updateIsTracked
+    );
+  }, [updateIsTracked, viewportElem]);
+
+  useEffect(updateIsTracked, [updateIsTracked]);
+
+  useEffect(() => {
+    const { unsubscribe } = cornerstoneViewportService.subscribe(
+      cornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED,
+      props => {
+        if (props.viewportIndex !== viewportIndex) {
+          return;
+        }
+
+        updateIsTracked();
+      }
+    );
+
+    return () => {
+      unsubscribe();
+    };
+  }, [updateIsTracked, viewportIndex]);
 
   useEffect(() => {
     if (isTracked) {
@@ -93,9 +154,54 @@ function TrackedCornerstoneViewport(props) {
     };
   }, [isTracked]);
 
-  if (trackedSeries.includes(SeriesInstanceUID) !== isTracked) {
-    setIsTracked(!isTracked);
-  }
+  /**
+   * The effect for listening to measurement service measurement added events
+   * and in turn firing an event to update the measurement tracking state machine.
+   * The TrackedCornerstoneViewport is the best place for this because when
+   * a measurement is added, at least one TrackedCornerstoneViewport will be in
+   * the DOM and thus can react to the events fired.
+   */
+  useEffect(() => {
+    const added = measurementService.EVENTS.MEASUREMENT_ADDED;
+    const addedRaw = measurementService.EVENTS.RAW_MEASUREMENT_ADDED;
+    const subscriptions = [];
+
+    [added, addedRaw].forEach(evt => {
+      subscriptions.push(
+        measurementService.subscribe(evt, ({ source, measurement }) => {
+          const { activeViewportIndex } = viewportGridService.getState();
+
+          // Each TrackedCornerstoneViewport receives the MeasurementService's events.
+          // Only send the tracked measurements event for the active viewport to avoid
+          // sending it more than once.
+          if (viewportIndex === activeViewportIndex) {
+            const {
+              referenceStudyUID: StudyInstanceUID,
+              referenceSeriesUID: SeriesInstanceUID,
+            } = measurement;
+
+            sendTrackedMeasurementsEvent('SET_DIRTY', { SeriesInstanceUID });
+            sendTrackedMeasurementsEvent('TRACK_SERIES', {
+              viewportIndex,
+              StudyInstanceUID,
+              SeriesInstanceUID,
+            });
+          }
+        }).unsubscribe
+      );
+    });
+
+    return () => {
+      subscriptions.forEach(unsub => {
+        unsub();
+      });
+    };
+  }, [
+    measurementService,
+    sendTrackedMeasurementsEvent,
+    viewportIndex,
+    viewportGridService,
+  ]);
 
   function switchMeasurement(direction) {
     const newTrackedMeasurementUID = _getNextMeasurementUID(
@@ -122,7 +228,13 @@ function TrackedCornerstoneViewport(props) {
       '@ohif/extension-cornerstone.viewportModule.cornerstone'
     );
 
-    return <Component {...props} />;
+    return (
+      <Component
+        {...props}
+        onElementEnabled={onElementEnabled}
+        onElementDisabled={onElementDisabled}
+      />
+    );
   };
 
   return (
@@ -137,7 +249,8 @@ function TrackedCornerstoneViewport(props) {
         getStatusComponent={() => _getStatusComponent(isTracked)}
         studyData={{
           label: viewportLabel,
-          studyDate: formatDate(SeriesDate), // TODO: This is series date. Is that ok?
+          studyDate:
+            formatDate(SeriesDate) || formatDate(StudyDate) || t('NoStudyDate'),
           currentSeries: SeriesNumber, // TODO - switch entire currentSeries to be UID based or actual position based
           seriesDescription: SeriesDescription,
           patientInformation: {
@@ -146,8 +259,9 @@ function TrackedCornerstoneViewport(props) {
             patientAge: PatientAge || '',
             MRN: PatientID || '',
             thickness: SliceThickness
-              ? `${parseFloat(SliceThickness).toFixed(2)}mm`
+              ? `${parseFloat(SliceThickness).toFixed(2)}`
               : '',
+            thicknessUnits: 'mm',
             spacing:
               SpacingBetweenSlices !== undefined
                 ? `${parseFloat(SpacingBetweenSlices).toFixed(2)}mm`
@@ -159,18 +273,6 @@ function TrackedCornerstoneViewport(props) {
       {/* TODO: Viewport interface to accept stack or layers of content like this? */}
       <div className="relative flex flex-row w-full h-full overflow-hidden">
         {getCornerstoneViewport()}
-        <div className="absolute w-full">
-          {viewportDialogState.viewportIndex === viewportIndex && (
-            <Notification
-              id={viewportDialogState.id}
-              message={viewportDialogState.message}
-              type={viewportDialogState.type}
-              actions={viewportDialogState.actions}
-              onSubmit={viewportDialogState.onSubmit}
-              onOutsideClick={viewportDialogState.onOutsideClick}
-            />
-          )}
-        </div>
       </div>
     </>
   );
@@ -282,7 +384,7 @@ function _getStatusComponent(isTracked) {
           </div>
         }
       >
-        <Icon name={trackedIcon} className="text-primary-light" />
+        <Icon name={trackedIcon} className="text-aqua-pale" />
       </Tooltip>
     </div>
   );

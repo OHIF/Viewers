@@ -63,7 +63,7 @@ export type PublicDisplaySetOptions = {
   blendMode?: string;
   slabThickness?: number;
   colormap?: string;
-  presetName?: string;
+  displayPreset?: string;
 };
 
 export type DisplaySetOptions = {
@@ -73,7 +73,7 @@ export type DisplaySetOptions = {
   blendMode?: Enums.BlendModes;
   slabThickness?: number;
   colormap?: string;
-  presetName?: string;
+  displayPreset?: string;
 };
 
 type VOI = {
@@ -87,6 +87,22 @@ export type DisplaySet = {
 
 const STACK = 'stack';
 const DEFAULT_TOOLGROUP_ID = 'default';
+
+// Return true if the data contains the given display set UID OR the imageId
+// if it is a composite object.
+const dataContains = (
+  data,
+  displaySetUID: string,
+  imageId?: string
+): boolean => {
+  if (data.displaySetInstanceUID === displaySetUID) {
+    return true;
+  }
+  if (imageId && data.isCompositeStack && data.imageIds) {
+    return !!data.imageIds.find(dataId => dataId === imageId);
+  }
+  return false;
+};
 
 class ViewportInfo {
   private viewportId = '';
@@ -102,6 +118,23 @@ class ViewportInfo {
     this.viewportId = viewportId;
     this.setPublicViewportOptions({});
     this.setPublicDisplaySetOptions([{}]);
+  }
+
+  /**
+   * Return true if the viewport contains the given display set UID,
+   * OR if it is a composite stack and contains the given imageId
+   */
+  public contains(displaySetUID: string, imageId: string): boolean {
+    if (!this.viewportData?.data) {
+      return false;
+    }
+
+    if (this.viewportData.data.length) {
+      return !!this.viewportData.data.find(data =>
+        dataContains(data, displaySetUID, imageId)
+      );
+    }
+    return dataContains(this.viewportData.data, displaySetUID, imageId);
   }
 
   public destroy = (): void => {
@@ -169,7 +202,9 @@ class ViewportInfo {
     // via cornerstoneViewportService
     let viewportData = this.getViewportData();
 
-    if (viewportData.viewportType === Enums.ViewportType.ORTHOGRAPHIC) {
+    if (viewportData.viewportType === Enums.ViewportType.ORTHOGRAPHIC ||
+        viewportData.viewportType === Enums.ViewportType.VOLUME_3D
+    ) {
       viewportData = viewportData as VolumeViewportData;
       return viewportData.data.some(
         ({ displaySetInstanceUID: dsUID }) => dsUID === displaySetInstanceUID
@@ -203,6 +238,10 @@ class ViewportInfo {
       orientation = getCornerstoneOrientation(viewportOptionsEntry.orientation);
     }
 
+    if (!toolGroupId) {
+      toolGroupId = DEFAULT_TOOLGROUP_ID;
+    }
+
     this.setViewportOptions({
       ...viewportOptionsEntry,
       viewportId: this.viewportId,
@@ -228,7 +267,8 @@ class ViewportInfo {
   }
 
   public getSyncGroups(): SyncGroup[] {
-    return this.viewportOptions.syncGroups || [];
+    this.viewportOptions.syncGroups ||= [];
+    return this.viewportOptions.syncGroups;
   }
 
   public getDisplaySetOptions(): Array<DisplaySetOptions> {
@@ -281,7 +321,7 @@ class ViewportInfo {
         colormap: option.colormap,
         slabThickness: option.slabThickness,
         blendMode,
-        presetName: option.presetName,
+        displayPreset: option.displayPreset,
       });
     });
 

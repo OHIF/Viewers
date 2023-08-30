@@ -40,7 +40,7 @@ export default class StateSyncService extends PubSubService {
     this.configuration = configuration || {};
   }
 
-  public init(extensionManager: ExtensionManager): void { }
+  public init(extensionManager: ExtensionManager): void {}
 
   /** Registers a new sync store called `id`.  The state
    * defines how the state is stored, and any default clearing of the

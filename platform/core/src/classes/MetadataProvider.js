@@ -70,6 +70,11 @@ class MetadataProvider {
       SeriesInstanceUID,
       SOPInstanceUID
     );
+
+    if (!instance) {
+      return;
+    }
+
     return (
       (frameNumber && combineFrameInstance(frameNumber, instance)) || instance
     );
@@ -116,14 +121,14 @@ class MetadataProvider {
       return instance[naturalizedTagOrWADOImageLoaderTag];
     }
 
-    // Maybe its a legacy CornerstoneWADOImageLoader tag then:
-    return this._getCornerstoneWADOImageLoaderTag(
+    // Maybe its a legacy dicomImageLoader tag then:
+    return this._getCornerstoneDICOMImageLoaderTag(
       naturalizedTagOrWADOImageLoaderTag,
       instance
     );
   }
 
-  _getCornerstoneWADOImageLoaderTag(wadoImageLoaderTag, instance) {
+  _getCornerstoneDICOMImageLoaderTag(wadoImageLoaderTag, instance) {
     let metadata;
 
     switch (wadoImageLoaderTag) {
@@ -405,6 +410,14 @@ class MetadataProvider {
         };
 
         break;
+      case WADO_IMAGE_LOADER_TAGS.PER_SERIES_MODULE:
+        metadata = {
+          correctedImage: instance.CorrectedImage,
+          units: instance.Units,
+          decayCorrection: instance.DecayCorrection,
+        };
+        break;
+
       default:
         return;
     }
@@ -441,6 +454,9 @@ class MetadataProvider {
   }
 
   getUIDsFromImageID(imageId) {
+    if (!imageId) {
+      throw new Error('MetadataProvider::Empty imageId');
+    }
     // TODO: adding csiv here is not really correct. Probably need to use
     // metadataProvider.addImageIdToUIDs(imageId, {
     //   StudyInstanceUID,
@@ -480,6 +496,9 @@ class MetadataProvider {
       imageURI = imageIdToURI(imageId);
     }
 
+    // remove &frame=number from imageId
+    imageURI = imageURI.split('&frame=')[0];
+
     const uids = this.imageURIToUIDs.get(imageURI);
     let frameNumber = this.getFrameInformationFromURL(imageId) || '1';
 
@@ -495,7 +514,7 @@ const metadataProvider = new MetadataProvider();
 export default metadataProvider;
 
 const WADO_IMAGE_LOADER_TAGS = {
-  // CornerstoneWADOImageLoader specific
+  // dicomImageLoader specific
   GENERAL_SERIES_MODULE: 'generalSeriesModule',
   PATIENT_STUDY_MODULE: 'patientStudyModule',
   IMAGE_PLANE_MODULE: 'imagePlaneModule',
@@ -504,6 +523,7 @@ const WADO_IMAGE_LOADER_TAGS = {
   MODALITY_LUT_MODULE: 'modalityLutModule',
   SOP_COMMON_MODULE: 'sopCommonModule',
   PET_ISOTOPE_MODULE: 'petIsotopeModule',
+  PER_SERIES_MODULE: 'petSeriesModule',
   OVERLAY_PLANE_MODULE: 'overlayPlaneModule',
   PATIENT_DEMOGRAPHIC_MODULE: 'patientDemographicModule',
 

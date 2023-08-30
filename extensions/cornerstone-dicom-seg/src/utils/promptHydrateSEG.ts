@@ -1,3 +1,4 @@
+import { ButtonEnums } from '@ohif/ui';
 import hydrateSEGDisplaySet from './_hydrateSEG';
 
 const RESPONSE = {
@@ -10,6 +11,7 @@ function promptHydrateSEG({
   servicesManager,
   segDisplaySet,
   viewportIndex,
+  preHydrateCallbacks,
 }) {
   const { uiViewportDialogService } = servicesManager.services;
 
@@ -20,6 +22,10 @@ function promptHydrateSEG({
     );
 
     if (promptResult === RESPONSE.HYDRATE_SEG) {
+      preHydrateCallbacks?.forEach(callback => {
+        callback();
+      });
+
       const isHydrated = await hydrateSEGDisplaySet({
         segDisplaySet,
         viewportIndex,
@@ -36,12 +42,12 @@ function _askHydrate(uiViewportDialogService, viewportIndex) {
     const message = 'Do you want to open this Segmentation?';
     const actions = [
       {
-        type: 'secondary',
+        type: ButtonEnums.type.secondary,
         text: 'No',
         value: RESPONSE.CANCEL,
       },
       {
-        type: 'primary',
+        type: ButtonEnums.type.primary,
         text: 'Yes',
         value: RESPONSE.HYDRATE_SEG,
       },

@@ -1,8 +1,10 @@
 import React from 'react';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
-import { Icon, Tooltip } from '../';
 import { useTranslation } from 'react-i18next';
+
+import Icon from '../Icon';
+import Tooltip from '../Tooltip';
 
 const classes = {
   infoHeader: 'text-base text-primary-light',
@@ -17,6 +19,7 @@ function PatientInfo({
   patientAge,
   MRN,
   thickness,
+  thicknessUnits,
   spacing,
   scanner,
   isOpen,
@@ -27,7 +30,6 @@ function PatientInfo({
   while (patientAge.charAt(0) === '0') {
     patientAge = patientAge.substr(1);
   }
-
   return (
     <div ref={showPatientInfoRef}>
       <Tooltip
@@ -88,7 +90,9 @@ function PatientInfo({
                       className={classnames(classes.infoText)}
                       title={thickness}
                     >
-                      {thickness}
+                      {thicknessUnits
+                        ? `${thickness}${thicknessUnits}`
+                        : `${thickness}`}
                     </span>
                   </div>
                   <div className={classnames(classes.row)}>
@@ -134,6 +138,7 @@ PatientInfo.propTypes = {
   patientAge: PropTypes.string,
   MRN: PropTypes.string,
   thickness: PropTypes.string,
+  thicknessUnits: PropTypes.string,
   spacing: PropTypes.string,
   scanner: PropTypes.string,
   isOpen: PropTypes.bool,

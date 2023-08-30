@@ -1,4 +1,6 @@
 // https://babeljs.io/docs/en/options#babelrcroots
+const { extendDefaultPlugins } = require('svgo');
+
 module.exports = {
   babelrcRoots: ['./platform/*', './extensions/*', './modes/*'],
   presets: [
@@ -7,7 +9,23 @@ module.exports = {
     '@babel/preset-typescript',
   ],
   plugins: [
-    'inline-react-svg',
+    [
+      'inline-react-svg',
+      {
+        svgo: {
+          plugins: [
+            {
+              name: 'preset-default',
+              params: {
+                overrides: {
+                  removeViewBox: false,
+                },
+              },
+            },
+          ],
+        },
+      },
+    ],
     ['@babel/plugin-proposal-class-properties', { loose: true }],
     '@babel/plugin-transform-typescript',
     ['@babel/plugin-proposal-private-property-in-object', { loose: true }],

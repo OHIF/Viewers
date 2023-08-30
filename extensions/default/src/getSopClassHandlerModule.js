@@ -3,6 +3,8 @@ import sopClassDictionary from '@ohif/core/src/utils/sopClassDictionary';
 import ImageSet from '@ohif/core/src/classes/ImageSet';
 import isDisplaySetReconstructable from '@ohif/core/src/utils/isDisplaySetReconstructable';
 import { id } from './id';
+import getDisplaySetMessages from './getDisplaySetMessages';
+import getDisplaySetsFromUnsupportedSeries from './getDisplaySetsFromUnsupportedSeries';
 
 const sopClassHandlerName = 'stack';
 
@@ -14,9 +16,13 @@ const makeDisplaySet = instances => {
   const instance = instances[0];
   const imageSet = new ImageSet(instances);
 
-  const displayReconstructableInfo = isDisplaySetReconstructable(instances);
-
+  const {
+    value: isReconstructable,
+    averageSpacingBetweenFrames,
+  } = isDisplaySetReconstructable(instances);
   // set appropriate attributes to image set...
+  const messages = getDisplaySetMessages(instances, isReconstructable);
+
   imageSet.setAttributes({
     displaySetInstanceUID: imageSet.uid, // create a local alias for the imageSet UID
     SeriesDate: instance.SeriesDate,
@@ -29,10 +35,12 @@ const makeDisplaySet = instances => {
     SeriesDescription: instance.SeriesDescription || '',
     Modality: instance.Modality,
     isMultiFrame: isMultiFrame(instance),
-    countIcon: displayReconstructableInfo.value ? 'icon-mpr' : undefined,
+    countIcon: isReconstructable ? 'icon-mpr' : undefined,
     numImageFrames: instances.length,
     SOPClassHandlerId: `${id}.sopClassHandlerModule.${sopClassHandlerName}`,
-    isReconstructable: displayReconstructableInfo.value,
+    isReconstructable,
+    messages,
+    averageSpacingBetweenFrames: averageSpacingBetweenFrames || null,
   });
 
   // Sort the images in this series if needed
@@ -205,6 +213,11 @@ function getSopClassHandlerModule() {
       name: sopClassHandlerName,
       sopClassUids,
       getDisplaySetsFromSeries,
+    },
+    {
+      name: 'not-supported-display-sets-handler',
+      sopClassUids: [],
+      getDisplaySetsFromSeries: getDisplaySetsFromUnsupportedSeries,
     },
   ];
 }

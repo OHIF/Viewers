@@ -11,7 +11,7 @@ const extensionManager = {
   registeredExtensionIds: [],
   moduleEntries: {},
 
-  getModuleEntry: function (id) {
+  getModuleEntry: function(id) {
     return this.moduleEntries[id];
   },
 };
@@ -20,7 +20,7 @@ const commandsManager = {};
 
 const ohifOverlayItem = {
   id: 'ohif.overlayItem',
-  content: function (props) {
+  content: function(props) {
     return {
       label: this.label,
       value: props[this.attribute],

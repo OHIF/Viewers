@@ -47,10 +47,14 @@ const reuseCachedLayout = (
   for (let idx = 0; idx < state.viewports.length; idx++) {
     const viewport = state.viewports[idx];
     const { displaySetOptions, displaySetInstanceUIDs } = viewport;
-    if (!displaySetOptions) continue;
+    if (!displaySetOptions) {
+      continue;
+    }
     for (let i = 0; i < displaySetOptions.length; i++) {
       const displaySetUID = displaySetInstanceUIDs[i];
-      if (!displaySetUID) continue;
+      if (!displaySetUID) {
+        continue;
+      }
       if (idx === activeViewportIndex && i === 0) {
         displaySetSelectorMap[
           `${activeStudyUID}:activeDisplaySet:0`

@@ -24,9 +24,6 @@ module.exports = {
       initial: 'initial',
       inherit: 'inherit',
 
-      indigo: {
-        dark: '#0b1a42',
-      },
       aqua: {
         pale: '#7bb2ce',
       },
@@ -36,6 +33,13 @@ module.exports = {
         main: '#0944b3',
         dark: '#090c29',
         active: '#348cfd',
+      },
+
+      inputfield: {
+        main: '#3a3f99',
+        disabled: '#2b166b',
+        focus: '#5acce6',
+        placeholder: '#39383f',
       },
 
       secondary: {
@@ -59,9 +63,16 @@ module.exports = {
       },
 
       customblue: {
+        10: '#0A163F',
+        20: '#0B1F54',
+        30: '#09286e',
+        40: '#0E307F',
+        50: '#0F3A94',
+        80: '#1454D4',
         100: '#c4fdff',
         200: '#38daff',
         300: '#1D204D',
+        400: '#90A0C1',
       },
 
       customgray: {
@@ -155,6 +166,7 @@ module.exports = {
         700: '#4c51bf',
         800: '#434190',
         900: '#3c366b',
+        dark: '#0b1a42',
       },
       purple: {
         100: '#faf5ff',

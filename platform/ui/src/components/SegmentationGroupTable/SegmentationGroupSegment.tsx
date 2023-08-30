@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import { Icon } from '@ohif/ui';
+
+import Icon from '../Icon';
 
 const SegmentItem = ({
   segmentIndex,
@@ -11,6 +12,7 @@ const SegmentItem = ({
   isVisible,
   color,
   showSegmentDelete,
+  disableEditing,
   isLocked = false,
   onClick,
   onEdit,
@@ -66,7 +68,7 @@ const SegmentItem = ({
         {isSegmentIndexHovering && showSegmentDelete ? (
           <Icon
             name="close"
-            className={classnames('w-5 h-5 pr-2')}
+            className={classnames('pr-0.5')}
             onClick={e => {
               e.stopPropagation();
               onDelete(segmentationId, segmentIndex);
@@ -115,17 +117,19 @@ const SegmentItem = ({
           )}
           {isHovering && (
             <div className={classnames('flex items-center')}>
-              <Icon
-                name="row-edit"
-                className={classnames('w-5 h-5', {
-                  'text-white': isLocked,
-                  'text-primary-light': !isLocked,
-                })}
-                onClick={e => {
-                  e.stopPropagation();
-                  onEdit(segmentationId, segmentIndex);
-                }}
-              />
+              {!disableEditing && (
+                <Icon
+                  name="row-edit"
+                  className={classnames('w-5 h-5', {
+                    'text-white': isLocked,
+                    'text-primary-light': !isLocked,
+                  })}
+                  onClick={e => {
+                    e.stopPropagation();
+                    onEdit(segmentationId, segmentIndex);
+                  }}
+                />
+              )}
               {isVisible ? (
                 <Icon
                   name="row-hide"
@@ -223,6 +227,7 @@ SegmentItem.propTypes = {
   segmentIndex: PropTypes.number.isRequired,
   segmentationId: PropTypes.string.isRequired,
   label: PropTypes.string,
+  disableEditing: PropTypes.bool,
   // color as array
   color: PropTypes.array,
   isActive: PropTypes.bool.isRequired,

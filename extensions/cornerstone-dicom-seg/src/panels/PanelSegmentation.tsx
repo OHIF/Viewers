@@ -2,27 +2,22 @@ import React, { useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { SegmentationGroupTable } from '@ohif/ui';
 import callInputDialog from './callInputDialog';
-
+import { useAppConfig } from '@state';
 import { useTranslation } from 'react-i18next';
 
 export default function PanelSegmentation({
   servicesManager,
   commandsManager,
 }) {
-  const {
-    segmentationService,
-    uiDialogService,
-    viewportGridService,
-    toolGroupService,
-    cornerstoneViewportService,
-  } = servicesManager.services;
+  const { segmentationService, uiDialogService } = servicesManager.services;
+  const [appConfig] = useAppConfig();
+  const disableEditing = appConfig?.disableEditing;
 
   const { t } = useTranslation('PanelSegmentation');
   const [selectedSegmentationId, setSelectedSegmentationId] = useState(null);
-  const [
-    initialSegmentationConfigurations,
-    setInitialSegmentationConfigurations,
-  ] = useState(segmentationService.getConfiguration());
+  const [segmentationConfiguration, setSegmentationConfiguration] = useState(
+    segmentationService.getConfiguration()
+  );
 
   const [segmentations, setSegmentations] = useState(() =>
     segmentationService.getSegmentations()
@@ -62,6 +57,7 @@ export default function PanelSegmentation({
       const { unsubscribe } = segmentationService.subscribe(evt, () => {
         const segmentations = segmentationService.getSegmentations();
         setSegmentations(segmentations);
+        setSegmentationConfiguration(segmentationService.getConfiguration());
       });
       subscriptions.push(unsubscribe);
     });
@@ -184,7 +180,7 @@ export default function PanelSegmentation({
     segmentationService.toggleSegmentationVisibility(segmentationId);
   };
 
-  const setSegmentationConfiguration = useCallback(
+  const _setSegmentationConfiguration = useCallback(
     (segmentationId, key, value) => {
       segmentationService.setConfiguration({
         segmentationId,
@@ -209,59 +205,57 @@ export default function PanelSegmentation({
           onSegmentationEdit={onSegmentationEdit}
           onSegmentClick={onSegmentClick}
           onSegmentEdit={onSegmentEdit}
+          disableEditing={disableEditing}
           onSegmentColorClick={onSegmentColorClick}
           onSegmentDelete={onSegmentDelete}
           onToggleSegmentVisibility={onToggleSegmentVisibility}
           onToggleSegmentationVisibility={onToggleSegmentationVisibility}
           onToggleMinimizeSegmentation={onToggleMinimizeSegmentation}
-          segmentationConfig={{
-            initialConfig: initialSegmentationConfigurations,
-            usePercentage: true,
-          }}
+          segmentationConfig={{ initialConfig: segmentationConfiguration }}
           setRenderOutline={value =>
-            setSegmentationConfiguration(
+            _setSegmentationConfiguration(
               selectedSegmentationId,
               'renderOutline',
               value
             )
           }
           setOutlineOpacityActive={value =>
-            setSegmentationConfiguration(
+            _setSegmentationConfiguration(
               selectedSegmentationId,
               'outlineOpacity',
               value
             )
           }
           setRenderFill={value =>
-            setSegmentationConfiguration(
+            _setSegmentationConfiguration(
               selectedSegmentationId,
               'renderFill',
               value
             )
           }
           setRenderInactiveSegmentations={value =>
-            setSegmentationConfiguration(
+            _setSegmentationConfiguration(
               selectedSegmentationId,
               'renderInactiveSegmentations',
               value
             )
           }
           setOutlineWidthActive={value =>
-            setSegmentationConfiguration(
+            _setSegmentationConfiguration(
               selectedSegmentationId,
               'outlineWidthActive',
               value
             )
           }
           setFillAlpha={value =>
-            setSegmentationConfiguration(
+            _setSegmentationConfiguration(
               selectedSegmentationId,
               'fillAlpha',
               value
             )
           }
           setFillAlphaInactive={value =>
-            setSegmentationConfiguration(
+            _setSegmentationConfiguration(
               selectedSegmentationId,
               'fillAlphaInactive',
               value
@@ -277,6 +271,7 @@ PanelSegmentation.propTypes = {
   commandsManager: PropTypes.shape({
     runCommand: PropTypes.func.isRequired,
   }),
+  appConfig: PropTypes.object.isRequired,
   servicesManager: PropTypes.shape({
     services: PropTypes.shape({
       segmentationService: PropTypes.shape({

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { StudyBrowser, useImageViewer, useViewportGrid } from '@ohif/ui';
 import { utils } from '@ohif/core';
+import { useNavigate } from 'react-router-dom';
 
 const { sortStudyInstances, formatDate } = utils;
 
@@ -12,7 +13,7 @@ const { sortStudyInstances, formatDate } = utils;
 function PanelStudyBrowser({
   servicesManager,
   getImageSrc,
-  getStudiesForPatientByStudyInstanceUID,
+  getStudiesForPatientByMRN,
   requestDisplaySetCreationForStudy,
   dataSource,
 }) {
@@ -21,6 +22,8 @@ function PanelStudyBrowser({
     displaySetService,
     uiNotificationService,
   } = servicesManager.services;
+  const navigate = useNavigate();
+
   // Normally you nest the components so the tree isn't so deep, and the data
   // doesn't have to have such an intense shape. This works well enough for now.
   // Tabs --> Studies --> DisplaySets --> Thumbnails
@@ -64,12 +67,29 @@ function PanelStudyBrowser({
   useEffect(() => {
     // Fetch all studies for the patient in each primary study
     async function fetchStudiesForPatient(StudyInstanceUID) {
-      const qidoStudiesForPatient =
-        (await getStudiesForPatientByStudyInstanceUID(StudyInstanceUID)) || [];
+      // current study qido
+      const qidoForStudyUID = await dataSource.query.studies.search({
+        studyInstanceUid: StudyInstanceUID,
+      });
 
-      // TODO: This should be "naturalized DICOM JSON" studies
+      if (!qidoForStudyUID?.length) {
+        navigate('/notfoundstudy', '_self');
+        throw new Error('Invalid study URL');
+      }
+
+      let qidoStudiesForPatient = qidoForStudyUID;
+
+      // try to fetch the prior studies based on the patientID if the
+      // server can respond.
+      try {
+        qidoStudiesForPatient = await getStudiesForPatientByMRN(
+          qidoForStudyUID
+        );
+      } catch (error) {
+        console.warn(error);
+      }
+
       const mappedStudies = _mapDataSourceStudies(qidoStudiesForPatient);
-
       const actuallyMappedStudies = mappedStudies.map(qidoStudy => {
         return {
           studyInstanceUid: qidoStudy.StudyInstanceUID,
@@ -77,29 +97,27 @@ function PanelStudyBrowser({
           description: qidoStudy.StudyDescription,
           modalities: qidoStudy.ModalitiesInStudy,
           numInstances: qidoStudy.NumInstances,
-          // displaySets: []
         };
       });
-      if (isMounted.current) {
-        setStudyDisplayList(prevArray => {
-          const ret = [...prevArray];
-          for (const study of actuallyMappedStudies) {
-            if (
-              !prevArray.find(
-                it => it.studyInstanceUid === study.studyInstanceUid
-              )
-            ) {
-              ret.push(study);
-            }
+
+      setStudyDisplayList(prevArray => {
+        const ret = [...prevArray];
+        for (const study of actuallyMappedStudies) {
+          if (
+            !prevArray.find(
+              it => it.studyInstanceUid === study.studyInstanceUid
+            )
+          ) {
+            ret.push(study);
           }
-          return ret;
-        });
-      }
+        }
+        return ret;
+      });
     }
 
     StudyInstanceUIDs.forEach(sid => fetchStudiesForPatient(sid));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [StudyInstanceUIDs, getStudiesForPatientByStudyInstanceUID]);
+  }, [StudyInstanceUIDs, getStudiesForPatientByMRN]);
 
   // // ~~ Initial Thumbnails
   useEffect(() => {
@@ -113,7 +131,7 @@ function PanelStudyBrowser({
       const imageId = imageIds[Math.floor(imageIds.length / 2)];
 
       // TODO: Is it okay that imageIds are not returned here for SR displaySets?
-      if (imageId) {
+      if (imageId && !displaySet?.unsupported) {
         // When the image arrives, render it and store the result in the thumbnailImgSrcMap
         newImageSrcEntry[dSet.displaySetInstanceUID] = await getImageSrc(
           imageId
@@ -157,20 +175,22 @@ function PanelStudyBrowser({
           const displaySet = displaySetService.getDisplaySetByUID(
             dSet.displaySetInstanceUID
           );
-          const imageIds = dataSource.getImageIdsForDisplaySet(displaySet);
-          const imageId = imageIds[Math.floor(imageIds.length / 2)];
+          if (!displaySet?.unsupported) {
+            const imageIds = dataSource.getImageIdsForDisplaySet(displaySet);
+            const imageId = imageIds[Math.floor(imageIds.length / 2)];
 
-          // TODO: Is it okay that imageIds are not returned here for SR displaysets?
-          if (imageId) {
-            // When the image arrives, render it and store the result in the thumbnailImgSrcMap
-            newImageSrcEntry[dSet.displaySetInstanceUID] = await getImageSrc(
-              imageId,
-              dSet.initialViewport
-            );
-            if (isMounted.current) {
-              setThumbnailImageSrcMap(prevState => {
-                return { ...prevState, ...newImageSrcEntry };
-              });
+            // TODO: Is it okay that imageIds are not returned here for SR displaysets?
+            if (imageId) {
+              // When the image arrives, render it and store the result in the thumbnailImgSrcMap
+              newImageSrcEntry[dSet.displaySetInstanceUID] = await getImageSrc(
+                imageId,
+                dSet.initialViewport
+              );
+              if (isMounted.current) {
+                setThumbnailImageSrcMap(prevState => {
+                  return { ...prevState, ...newImageSrcEntry };
+                });
+              }
             }
           }
         });
@@ -190,9 +210,22 @@ function PanelStudyBrowser({
       }
     );
 
+    const SubscriptionDisplaySetMetaDataInvalidated = displaySetService.subscribe(
+      displaySetService.EVENTS.DISPLAY_SET_SERIES_METADATA_INVALIDATED,
+      () => {
+        const mappedDisplaySets = _mapDisplaySets(
+          displaySetService.getActiveDisplaySets(),
+          thumbnailImageSrcMap
+        );
+
+        setDisplaySets(mappedDisplaySets);
+      }
+    );
+
     return () => {
       SubscriptionDisplaySetsAdded.unsubscribe();
       SubscriptionDisplaySetsChanged.unsubscribe();
+      SubscriptionDisplaySetMetaDataInvalidated.unsubscribe();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -254,7 +287,7 @@ PanelStudyBrowser.propTypes = {
     getImageIdsForDisplaySet: PropTypes.func.isRequired,
   }).isRequired,
   getImageSrc: PropTypes.func.isRequired,
-  getStudiesForPatientByStudyInstanceUID: PropTypes.func.isRequired,
+  getStudiesForPatientByMRN: PropTypes.func.isRequired,
   requestDisplaySetCreationForStudy: PropTypes.func.isRequired,
 };
 
@@ -286,34 +319,38 @@ function _mapDisplaySets(displaySets, thumbnailImageSrcMap) {
   const thumbnailDisplaySets = [];
   const thumbnailNoImageDisplaySets = [];
 
-  displaySets.forEach(ds => {
-    const imageSrc = thumbnailImageSrcMap[ds.displaySetInstanceUID];
-    const componentType = _getComponentType(ds.Modality);
+  displaySets
+    .filter(ds => !ds.excludeFromThumbnailBrowser)
+    .forEach(ds => {
+      const imageSrc = thumbnailImageSrcMap[ds.displaySetInstanceUID];
+      const componentType = _getComponentType(ds);
 
-    const array =
-      componentType === 'thumbnail'
-        ? thumbnailDisplaySets
-        : thumbnailNoImageDisplaySets;
+      const array =
+        componentType === 'thumbnail'
+          ? thumbnailDisplaySets
+          : thumbnailNoImageDisplaySets;
 
-    array.push({
-      displaySetInstanceUID: ds.displaySetInstanceUID,
-      description: ds.SeriesDescription || '',
-      seriesNumber: ds.SeriesNumber,
-      modality: ds.Modality,
-      seriesDate: ds.SeriesDate,
-      seriesTime: ds.SeriesTime,
-      numInstances: ds.numImageFrames,
-      countIcon: ds.countIcon,
-      StudyInstanceUID: ds.StudyInstanceUID,
-      componentType,
-      imageSrc,
-      dragData: {
-        type: 'displayset',
+      array.push({
         displaySetInstanceUID: ds.displaySetInstanceUID,
-        // .. Any other data to pass
-      },
+        description: ds.SeriesDescription || '',
+        seriesNumber: ds.SeriesNumber,
+        modality: ds.Modality,
+        seriesDate: ds.SeriesDate,
+        seriesTime: ds.SeriesTime,
+        numInstances: ds.numImageFrames,
+        countIcon: ds.countIcon,
+        StudyInstanceUID: ds.StudyInstanceUID,
+        messages: ds.messages,
+        componentType,
+        imageSrc,
+        dragData: {
+          type: 'displayset',
+          displaySetInstanceUID: ds.displaySetInstanceUID,
+          // .. Any other data to pass
+        },
+        isHydratedForDerivedDisplaySet: ds.isHydrated,
+      });
     });
-  });
 
   return [...thumbnailDisplaySets, ...thumbnailNoImageDisplaySets];
 }
@@ -321,13 +358,14 @@ function _mapDisplaySets(displaySets, thumbnailImageSrcMap) {
 const thumbnailNoImageModalities = [
   'SR',
   'SEG',
+  'SM',
   'RTSTRUCT',
   'RTPLAN',
   'RTDOSE',
 ];
 
-function _getComponentType(Modality) {
-  if (thumbnailNoImageModalities.includes(Modality)) {
+function _getComponentType(ds) {
+  if (thumbnailNoImageModalities.includes(ds.Modality) || ds?.unsupported) {
     // TODO probably others.
     return 'thumbnailNoImage';
   }

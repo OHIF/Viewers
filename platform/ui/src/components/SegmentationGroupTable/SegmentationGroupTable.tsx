@@ -4,30 +4,6 @@ import Icon from '../Icon';
 import SegmentationGroup from './SegmentationGroup';
 import SegmentationConfig from './SegmentationConfig';
 
-const GetSegmentationConfig = ({
-  setFillAlpha,
-  setFillAlphaInactive,
-  setOutlineWidthActive,
-  setRenderFill,
-  setRenderInactiveSegmentations,
-  setRenderOutline,
-  setOutlineOpacityActive,
-  segmentationConfig,
-}) => {
-  return (
-    <SegmentationConfig
-      setFillAlpha={setFillAlpha}
-      setFillAlphaInactive={setFillAlphaInactive}
-      setOutlineWidthActive={setOutlineWidthActive}
-      setOutlineOpacityActive={setOutlineOpacityActive}
-      setRenderFill={setRenderFill}
-      setRenderInactiveSegmentations={setRenderInactiveSegmentations}
-      setRenderOutline={setRenderOutline}
-      segmentationConfig={segmentationConfig}
-    />
-  );
-};
-
 const SegmentationGroupTable = ({
   segmentations,
   onSegmentationAdd,
@@ -39,6 +15,7 @@ const SegmentationGroupTable = ({
   onSegmentClick,
   onSegmentAdd,
   segmentationConfig,
+  disableEditing,
   onSegmentDelete,
   onSegmentEdit,
   onToggleSegmentationVisibility,
@@ -56,10 +33,7 @@ const SegmentationGroupTable = ({
 }) => {
   return (
     <div className="flex flex-col min-h-0 font-inter font-[300]">
-      <GetSegmentationConfig
-        // showAddSegmentation={showAddSegmentation}
-        // onSegmentationAdd={onSegmentationAdd}
-        segmentationConfig={segmentationConfig}
+      <SegmentationConfig
         setFillAlpha={setFillAlpha}
         setFillAlphaInactive={setFillAlphaInactive}
         setOutlineWidthActive={setOutlineWidthActive}
@@ -67,6 +41,7 @@ const SegmentationGroupTable = ({
         setRenderFill={setRenderFill}
         setRenderInactiveSegmentations={setRenderInactiveSegmentations}
         setRenderOutline={setRenderOutline}
+        segmentationConfig={segmentationConfig}
       />
       <div className="flex flex-col min-h-0 pr-[1px] mt-1">
         {!!segmentations.length &&
@@ -86,6 +61,7 @@ const SegmentationGroupTable = ({
                 id={id}
                 key={id}
                 label={label}
+                disableEditing={disableEditing}
                 isMinimized={isMinimized[id]}
                 segments={segments}
                 showAddSegment={showAddSegment}
@@ -108,7 +84,7 @@ const SegmentationGroupTable = ({
             );
           })}
       </div>
-      {showAddSegmentation && (
+      {showAddSegmentation && !disableEditing && (
         <div
           className="flex items-center cursor-pointer hover:opacity-80 text-primary-active bg-black text-[12px] pl-1 h-[45px]"
           onClick={() => onSegmentationAdd()}
@@ -132,6 +108,7 @@ SegmentationGroupTable.propTypes = {
   onToggleVisibility: PropTypes.func.isRequired,
   onToggleVisibilityAll: PropTypes.func.isRequired,
   segmentationConfig: PropTypes.object,
+  disableEditing: PropTypes.bool,
 };
 
 SegmentationGroupTable.defaultProps = {
@@ -155,7 +132,6 @@ SegmentationGroupTable.defaultProps = {
       renderInactiveSegmentations: true,
       renderOutline: true,
     },
-    usePercentage: true,
   },
   setFillAlpha: () => {},
   setFillAlphaInactive: () => {},

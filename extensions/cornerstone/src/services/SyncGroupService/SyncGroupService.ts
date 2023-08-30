@@ -4,7 +4,7 @@ import {
   Synchronizer,
 } from '@cornerstonejs/tools';
 
-import { pubSubServiceInterface } from '@ohif/core';
+import { pubSubServiceInterface, Types, ServicesManager } from '@ohif/core';
 
 const EVENTS = {
   TOOL_GROUP_CREATED: 'event::cornerstone::syncgroupservice:toolgroupcreated',
@@ -15,7 +15,7 @@ const EVENTS = {
  * sync group declared.
  */
 export type SyncCreator = (
-  type: string,
+  id: string,
   options?: Record<string, unknown>
 ) => Synchronizer;
 
@@ -37,7 +37,17 @@ const asSyncGroup = (syncGroup: string | SyncGroup): SyncGroup =>
   typeof syncGroup === 'string' ? { type: syncGroup } : syncGroup;
 
 export default class SyncGroupService {
-  serviceManager: any;
+  static REGISTRATION = {
+    name: 'syncGroupService',
+    altName: 'SyncGroupService',
+    create: ({
+      servicesManager,
+    }: Types.Extensions.ExtensionParams): SyncGroupService => {
+      return new SyncGroupService(servicesManager);
+    },
+  };
+
+  servicesManager: ServicesManager;
   listeners: { [key: string]: (...args: any[]) => void } = {};
   EVENTS: { [key: string]: string };
   synchronizerCreators: Record<string, SyncCreator> = {
@@ -47,8 +57,8 @@ export default class SyncGroupService {
     [STACKIMAGE]: synchronizers.createStackImageSynchronizer,
   };
 
-  constructor(serviceManager) {
-    this.serviceManager = serviceManager;
+  constructor(serviceManager: ServicesManager) {
+    this.servicesManager = serviceManager;
     this.listeners = {};
     this.EVENTS = EVENTS;
     //
@@ -73,7 +83,7 @@ export default class SyncGroupService {
    * @param type is the type of the synchronizer to create
    * @param creator
    */
-  public setSynchronizer(type: string, creator: SyncCreator): void {
+  public addSynchronizerType(type: string, creator: SyncCreator): void {
     this.synchronizerCreators[type.toLowerCase()] = creator;
   }
 
