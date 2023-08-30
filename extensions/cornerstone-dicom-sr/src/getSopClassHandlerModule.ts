@@ -3,6 +3,7 @@ import { utils, classes, DisplaySetService, Types } from '@ohif/core';
 import addMeasurement from './utils/addMeasurement';
 import isRehydratable from './utils/isRehydratable';
 import { adaptersSR } from '@cornerstonejs/adapters';
+import { vec3 } from 'gl-matrix';
 
 type InstanceMetadata = Types.InstanceMetadata;
 
@@ -63,6 +64,73 @@ const RELATIONSHIP_TYPE = {
 };
 
 const CORNERSTONE_FREETEXT_CODE_VALUE = 'CORNERSTONEFREETEXT';
+
+function planeDistance(point, instance) {
+  const imageOrientation = instance.ImageOrientationPatient;
+  const rowCosineVec = vec3.fromValues(
+    imageOrientation[0],
+    imageOrientation[1],
+    imageOrientation[2]
+  );
+  const colCosineVec = vec3.fromValues(
+    imageOrientation[3],
+    imageOrientation[4],
+    imageOrientation[5]
+  );
+  const scanAxisNormal = vec3.cross(vec3.create(), rowCosineVec, colCosineVec);
+  vec3.normalize(scanAxisNormal, scanAxisNormal);
+  return Math.abs(vec3.dot(scanAxisNormal, point));
+}
+/**
+ * Gets the closest instance of a displaySet related to a given world point
+ * @param targetPoint            target world point
+ * @param displaySet             displaySet to check
+ * @param closestInstanceInfo    last closest instance
+ * @returns
+ */
+function getClosestInstance(targetPoint, displaySet, closestInstanceInfo) {
+  // todo: this does not assume orientation yet, but that can be added later
+  const displaySetInstanceUID = displaySet.displaySetInstanceUID;
+  const distance = closestInstanceInfo
+    ? planeDistance(targetPoint, closestInstanceInfo.instance)
+    : Infinity;
+  return displaySet.instances.reduce(
+    (closestInstanceInfo, instance) => {
+      const distance = planeDistance(targetPoint, instance);
+
+      if (distance < closestInstanceInfo.distance) {
+        return {
+          distance,
+          instance,
+          displaySetInstanceUID,
+        };
+      }
+      return closestInstanceInfo;
+    },
+    {
+      distance: distance,
+      instance: closestInstanceInfo?.instance,
+      displaySetInstanceUID: closestInstanceInfo?.displaySetInstanceUID,
+    }
+  );
+}
+
+/**
+ * Return the information of the closest instance respective to a target world point
+ * of all displaySets that shares a given FrameOfReferenceUID
+ * @param targetPoint
+ * @param displaySets
+ * @returns
+ */
+function getClosestInstanceInfo(targetPoint, frameOfReferenceUID, displaySets) {
+  return displaySets.reduce((closestInstanceInfo, displaySet) => {
+    if (displaySet.instance.FrameOfReferenceUID === frameOfReferenceUID) {
+      return getClosestInstance(targetPoint, displaySet, closestInstanceInfo);
+    } else {
+      return closestInstanceInfo;
+    }
+  }, undefined);
+}
 
 /**
  * Adds instances to the DICOM SR series, rather than creating a new
@@ -171,7 +239,10 @@ function _load(displaySet, servicesManager, extensionManager) {
   const { ContentSequence } = displaySet.instance;
 
   displaySet.referencedImages = _getReferencedImagesList(ContentSequence);
-  displaySet.measurements = _getMeasurements(ContentSequence);
+  displaySet.measurements = _getMeasurements(
+    ContentSequence,
+    displaySetService
+  );
 
   const mappings = measurementService.getSourceMappings(
     CORNERSTONE_3D_TOOLS_SOURCE_NAME,
@@ -340,7 +411,10 @@ function getSopClassHandlerModule({ servicesManager, extensionManager }) {
   ];
 }
 
-function _getMeasurements(ImagingMeasurementReportContentSequence) {
+function _getMeasurements(
+  ImagingMeasurementReportContentSequence,
+  displaySetService
+) {
   const ImagingMeasurements = ImagingMeasurementReportContentSequence.find(
     item =>
       item.ConceptNameCodeSequence.CodeValue ===
@@ -368,7 +442,10 @@ function _getMeasurements(ImagingMeasurementReportContentSequence) {
           trackingUniqueIdentifier
         ];
 
-      const measurement = _processMeasurement(mergedContentSequence);
+      const measurement = _processMeasurement(
+        mergedContentSequence,
+        displaySetService
+      );
 
       if (measurement) {
         measurements.push(measurement);
@@ -431,25 +508,31 @@ function _getMergedContentSequencesByTrackingUniqueIdentifiers(
   return mergedContentSequencesByTrackingUniqueIdentifiers;
 }
 
-function _processMeasurement(mergedContentSequence) {
+function _processMeasurement(mergedContentSequence, displaySetService) {
   if (
     mergedContentSequence.some(
       group => group.ValueType === 'SCOORD' || group.ValueType === 'SCOORD3D'
     )
   ) {
-    return _processTID1410Measurement(mergedContentSequence);
+    return _processTID1410Measurement(mergedContentSequence, displaySetService);
   }
 
   return _processNonGeometricallyDefinedMeasurement(mergedContentSequence);
 }
 
-function _processTID1410Measurement(mergedContentSequence) {
+function _processTID1410Measurement(mergedContentSequence, displaySetService) {
   // Need to deal with TID 1410 style measurements, which will have a SCOORD or SCOORD3D at the top level,
   // And non-geometric representations where each NUM has "INFERRED FROM" SCOORD/SCOORD3D
 
-  const graphicItem = mergedContentSequence.find(
+  let graphicItem = mergedContentSequence.find(
     group => group.ValueType === 'SCOORD'
   );
+
+  if (!graphicItem) {
+    graphicItem = mergedContentSequence.find(
+      group => group.ValueType === 'SCOORD3D'
+    );
+  }
 
   const UIDREFContentItem = mergedContentSequence.find(
     group => group.ValueType === 'UIDREF'
@@ -475,7 +558,7 @@ function _processTID1410Measurement(mergedContentSequence) {
   const measurement = {
     loaded: false,
     labels: [],
-    coords: [_getCoordsFromSCOORDOrSCOORD3D(graphicItem)],
+    coords: [_getCoordsFromSCOORDOrSCOORD3D(graphicItem, displaySetService)],
     TrackingUniqueIdentifier: UIDREFContentItem.UID,
     TrackingIdentifier: TrackingIdentifierContentItem.TextValue,
   };
@@ -602,7 +685,7 @@ function _processNonGeometricallyDefinedMeasurement(mergedContentSequence) {
   return measurement;
 }
 
-function _getCoordsFromSCOORDOrSCOORD3D(item) {
+function _getCoordsFromSCOORDOrSCOORD3D(item, displaySetService) {
   const { ValueType, RelationshipType, GraphicType, GraphicData } = item;
 
   if (
@@ -626,9 +709,26 @@ function _getCoordsFromSCOORDOrSCOORD3D(item) {
 
     coords.ReferencedSOPSequence = ReferencedSOPSequence;
   } else if (ValueType === 'SCOORD3D') {
-    const { ReferencedFrameOfReferenceSequence } = item.ContentSequence;
+    const ReferencedFrameOfReferenceSequence = item?.ContentSequence
+      ?.ReferencedFrameOfReferenceSequence || {
+      FrameOfReferenceUID: item?.ReferencedFrameOfReferenceUID,
+    };
 
     coords.ReferencedFrameOfReferenceSequence = ReferencedFrameOfReferenceSequence;
+    if (coords.ReferencedFrameOfReferenceSequence) {
+      const displaySets = [...displaySetService.getDisplaySetCache().values()];
+      const closestInstanceInfo = getClosestInstanceInfo(
+        coords.GraphicData,
+        coords.ReferencedFrameOfReferenceSequence.FrameOfReferenceUID,
+        displaySets
+      );
+      if (closestInstanceInfo?.instance) {
+        coords.ReferencedSOPSequence = {
+          ReferencedSOPClassUID: closestInstanceInfo.instance.SOPClassUID,
+          ReferencedSOPInstanceUID: closestInstanceInfo.instance.SOPInstanceUID,
+        };
+      }
+    }
   }
 
   return coords;
@@ -666,6 +766,9 @@ function _getReferencedImagesList(ImagingMeasurementReportContentSequence) {
       item.ConceptNameCodeSequence.CodeValue ===
       CodeNameCodeSequenceValues.ImageLibraryGroup
   );
+  if (!ImageLibraryGroup) {
+    return;
+  }
 
   const referencedImages = [];
 
