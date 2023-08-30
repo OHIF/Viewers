@@ -15,11 +15,10 @@ const { formatDate } = utils;
 function TrackedCornerstoneViewport(props) {
   const {
     displaySets,
-    viewportIndex,
+    viewportId,
     viewportLabel,
     servicesManager,
     extensionManager,
-    viewportOptions,
   } = props;
 
   const { t } = useTranslation('Common');
@@ -43,7 +42,6 @@ function TrackedCornerstoneViewport(props) {
   const [viewportElem, setViewportElem] = useState(null);
 
   const { trackedSeries } = trackedMeasurements.context;
-  const viewportId = viewportOptions.viewportId;
 
   const {
     SeriesDate,
@@ -64,8 +62,8 @@ function TrackedCornerstoneViewport(props) {
   } = displaySet.images[0];
 
   const updateIsTracked = useCallback(() => {
-    const viewport = cornerstoneViewportService.getCornerstoneViewportByIndex(
-      viewportIndex
+    const viewport = cornerstoneViewportService.getCornerstoneViewport(
+      viewportId
     );
 
     if (viewport instanceof BaseVolumeViewport) {
@@ -84,7 +82,7 @@ function TrackedCornerstoneViewport(props) {
     if (trackedSeries.includes(SeriesInstanceUID) !== isTracked) {
       setIsTracked(!isTracked);
     }
-  }, [isTracked, trackedMeasurements, viewportIndex, SeriesInstanceUID]);
+  }, [isTracked, trackedMeasurements, viewportId, SeriesInstanceUID]);
 
   const onElementEnabled = useCallback(
     evt => {
@@ -113,7 +111,7 @@ function TrackedCornerstoneViewport(props) {
     const { unsubscribe } = cornerstoneViewportService.subscribe(
       cornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED,
       props => {
-        if (props.viewportIndex !== viewportIndex) {
+        if (props.viewportId !== viewportId) {
           return;
         }
 
@@ -124,7 +122,7 @@ function TrackedCornerstoneViewport(props) {
     return () => {
       unsubscribe();
     };
-  }, [updateIsTracked, viewportIndex]);
+  }, [updateIsTracked, viewportId]);
 
   useEffect(() => {
     if (isTracked) {
@@ -169,12 +167,12 @@ function TrackedCornerstoneViewport(props) {
     [added, addedRaw].forEach(evt => {
       subscriptions.push(
         measurementService.subscribe(evt, ({ source, measurement }) => {
-          const { activeViewportIndex } = viewportGridService.getState();
+          const { activeViewportId } = viewportGridService.getState();
 
           // Each TrackedCornerstoneViewport receives the MeasurementService's events.
           // Only send the tracked measurements event for the active viewport to avoid
           // sending it more than once.
-          if (viewportIndex === activeViewportIndex) {
+          if (viewportId === activeViewportId) {
             const {
               referenceStudyUID: StudyInstanceUID,
               referenceSeriesUID: SeriesInstanceUID,
@@ -182,7 +180,7 @@ function TrackedCornerstoneViewport(props) {
 
             sendTrackedMeasurementsEvent('SET_DIRTY', { SeriesInstanceUID });
             sendTrackedMeasurementsEvent('TRACK_SERIES', {
-              viewportIndex,
+              viewportId,
               StudyInstanceUID,
               SeriesInstanceUID,
             });
@@ -199,7 +197,7 @@ function TrackedCornerstoneViewport(props) {
   }, [
     measurementService,
     sendTrackedMeasurementsEvent,
-    viewportIndex,
+    viewportId,
     viewportGridService,
   ]);
 
@@ -217,10 +215,7 @@ function TrackedCornerstoneViewport(props) {
 
     setTrackedMeasurementUID(newTrackedMeasurementUID);
 
-    measurementService.jumpToMeasurement(
-      viewportIndex,
-      newTrackedMeasurementUID
-    );
+    measurementService.jumpToMeasurement(viewportId, newTrackedMeasurementUID);
   }
 
   const getCornerstoneViewport = () => {
@@ -280,7 +275,7 @@ function TrackedCornerstoneViewport(props) {
 
 TrackedCornerstoneViewport.propTypes = {
   displaySets: PropTypes.arrayOf(PropTypes.object.isRequired).isRequired,
-  viewportIndex: PropTypes.number.isRequired,
+  viewportId: PropTypes.string.isRequired,
   dataSource: PropTypes.object,
   children: PropTypes.node,
   customProps: PropTypes.object,
@@ -299,10 +294,10 @@ function _getNextMeasurementUID(
   const { measurementService, viewportGridService } = servicesManager.services;
   const measurements = measurementService.getMeasurements();
 
-  const { activeViewportIndex, viewports } = viewportGridService.getState();
+  const { activeViewportId, viewports } = viewportGridService.getState();
   const {
     displaySetInstanceUIDs: activeViewportDisplaySetInstanceUIDs,
-  } = viewports[activeViewportIndex];
+  } = viewports.get(activeViewportId);
 
   const { trackedSeries } = trackedMeasurements.context;
 

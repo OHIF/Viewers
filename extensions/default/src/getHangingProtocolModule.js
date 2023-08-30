@@ -73,6 +73,7 @@ const defaultProtocol = {
         {
           viewportOptions: {
             viewportType: 'stack',
+            viewportId: 'default',
             toolGroupId: 'default',
             // This will specify the initial image options index if it matches in the URL
             // and will otherwise not specify anything.

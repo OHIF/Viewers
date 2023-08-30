@@ -2,7 +2,7 @@ import calculateViewportRegistrations from './calculateViewportRegistrations';
 
 // [ {
 //   synchronizerId: string,
-//   viewports: [ { viewportId: number, renderingEngineId: string, index: number } , ...]
+//   viewports: [ { viewportId: string, renderingEngineId: string, index: number } , ...]
 // ]}
 let STACK_IMAGE_SYNC_GROUPS_INFO = [];
 
@@ -37,32 +37,25 @@ export default function toggleStackImageSync({
   STACK_IMAGE_SYNC_GROUPS_INFO = [];
 
   // create synchronization groups and add viewports
-  let { viewports } = viewportGridService.getState();
+  const { viewports } = viewportGridService.getState();
 
   // filter empty viewports
-  viewports = viewports.filter(
-    viewport =>
-      viewport.displaySetInstanceUIDs && viewport.displaySetInstanceUIDs.length
-  );
+  const viewportsArray = Array.from(viewports.values())
+    .filter(viewport => viewport.displaySetInstanceUIDs?.length)
+    // filter reconstructable viewports
+    .filter(viewport => {
+      const { displaySetInstanceUIDs } = viewport;
 
-  // filter reconstructable viewports
-  viewports = viewports.filter(viewport => {
-    const { displaySetInstanceUIDs } = viewport;
+      for (const displaySetInstanceUID of displaySetInstanceUIDs) {
+        const displaySet = displaySetService.getDisplaySetByUID(
+          displaySetInstanceUID
+        );
 
-    for (const displaySetInstanceUID of displaySetInstanceUIDs) {
-      const displaySet = displaySetService.getDisplaySetByUID(
-        displaySetInstanceUID
-      );
-
-      if (displaySet && displaySet.isReconstructable) {
-        return true;
+        return !!displaySet?.isReconstructable;
       }
+    });
 
-      return false;
-    }
-  });
-
-  const viewportsByOrientation = viewports.reduce((acc, viewport) => {
+  const viewportsByOrientation = viewportsArray.reduce((acc, viewport) => {
     const { viewportId, viewportType } = viewport.viewportOptions;
 
     if (viewportType !== 'stack') {
@@ -71,9 +64,8 @@ export default function toggleStackImageSync({
     }
 
     const { element } = cornerstoneViewportService.getViewportInfo(viewportId);
-    const { viewport: csViewport, renderingEngineId } = getEnabledElement(
-      element
-    );
+    const { viewport: csViewport, renderingEngineId } =
+      getEnabledElement(element);
     const { viewPlaneNormal } = csViewport.getCamera();
 
     // Should we round here? I guess so, but not sure how much precision we need

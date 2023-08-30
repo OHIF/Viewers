@@ -25,7 +25,7 @@ export default function PanelMeasurementTable({
   extensionManager,
 }): React.FunctionComponent {
   const [viewportGrid, viewportGridService] = useViewportGrid();
-  const { activeViewportIndex, viewports } = viewportGrid;
+  const { activeViewportId, viewports } = viewportGrid;
   const {
     measurementService,
     uiDialogService,
@@ -80,7 +80,7 @@ export default function PanelMeasurementTable({
 
   async function createReport(): Promise<any> {
     // filter measurements that are added to the active study
-    const activeViewport = viewports[activeViewportIndex];
+    const activeViewport = viewports.get(activeViewportId);
     const measurements = measurementService.getMeasurements();
     const displaySet = displaySetService.getDisplaySetByUID(
       activeViewport.displaySetInstanceUIDs[0]
@@ -133,7 +133,7 @@ export default function PanelMeasurementTable({
   }
 
   const jumpToImage = ({ uid, isActive }) => {
-    measurementService.jumpToMeasurement(viewportGrid.activeViewportIndex, uid);
+    measurementService.jumpToMeasurement(viewportGrid.activeViewportId, uid);
 
     onMeasurementItemClickHandler({ uid, isActive });
   };

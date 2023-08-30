@@ -114,6 +114,9 @@ const ptAXIAL = {
         id: 'ptFusionWLSync',
         source: true,
         target: false,
+        options: {
+          syncInvertState: false,
+        },
       },
     ],
   },
@@ -155,6 +158,9 @@ const ptSAGITTAL = {
         id: 'ptFusionWLSync',
         source: true,
         target: false,
+        options: {
+          syncInvertState: false,
+        },
       },
     ],
   },
@@ -196,6 +202,9 @@ const ptCORONAL = {
         id: 'ptFusionWLSync',
         source: true,
         target: false,
+        options: {
+          syncInvertState: false,
+        },
       },
     ],
   },
@@ -246,6 +255,9 @@ const fusionAXIAL = {
         id: 'ptFusionWLSync',
         source: false,
         target: true,
+        options: {
+          syncInvertState: false,
+        },
       },
     ],
   },
@@ -306,6 +318,9 @@ const fusionSAGITTAL = {
         id: 'ptFusionWLSync',
         source: false,
         target: true,
+        options: {
+          syncInvertState: false,
+        },
       },
     ],
   },
@@ -366,6 +381,9 @@ const fusionCORONAL = {
         id: 'ptFusionWLSync',
         source: false,
         target: true,
+        options: {
+          syncInvertState: false,
+        },
       },
     ],
   },
@@ -411,6 +429,9 @@ const mipSAGITTAL = {
         id: 'ptFusionWLSync',
         source: true,
         target: false,
+        options: {
+          syncInvertState: false,
+        },
       },
     ],
 

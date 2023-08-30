@@ -271,7 +271,6 @@ PanelSegmentation.propTypes = {
   commandsManager: PropTypes.shape({
     runCommand: PropTypes.func.isRequired,
   }),
-  appConfig: PropTypes.object.isRequired,
   servicesManager: PropTypes.shape({
     services: PropTypes.shape({
       segmentationService: PropTypes.shape({

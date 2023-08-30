@@ -4,7 +4,7 @@
  * @typedef {Object} ViewportDialogProps
  * @property {ReactElement|HTMLElement} [content=null] Modal content.
  * @property {Object} [contentProps=null] Modal content props.
- * @property {boolean} [viewportIndex=false] Modal is dismissible via the esc key.
+ * @property {boolean} [viewportId=false] Modal is dismissible via the esc key.
  */
 
 const name = 'uiViewportDialogService';
@@ -22,12 +22,12 @@ const serviceImplementation = {
 };
 
 /**
- * Show a new UI viewport dialog on the specified viewportIndex;
+ * Show a new UI viewport dialog on the specified viewportId;
  *
- * @param {ViewportDialogProps} props { content, contentProps, viewportIndex }
+ * @param {ViewportDialogProps} props { content, contentProps, viewportId }
  */
 function _show({
-  viewportIndex,
+  viewportId,
   id,
   type,
   message,
@@ -36,7 +36,7 @@ function _show({
   onOutsideClick,
 }) {
   return serviceImplementation._show({
-    viewportIndex,
+    viewportId,
     id,
     type,
     message,
@@ -59,7 +59,7 @@ function _hide() {
  * @param {*} {
  *   hide: hideImplementation,
  *   show: showImplementation,
- *   viewportIndex,
+ *   viewportId,
  * }
  */
 function setServiceImplementation({

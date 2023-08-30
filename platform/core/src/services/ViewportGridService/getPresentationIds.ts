@@ -25,7 +25,7 @@ const addUniqueIndex = (arr, key, viewports, isUpdatingSameViewport) => {
     arr[arr.length - 1] = displayInstance;
     const testId = arr.join(JOIN_STR);
     if (
-      !viewports.find(
+      !Array.from(viewports.values()).find(
         viewport => viewport.viewportOptions?.presentationIds?.[key] === testId
       )
     ) {
@@ -126,11 +126,11 @@ const getPresentationIds = (viewport, viewports): PresentationIds => {
   }
 
   // only add unique index if the viewport is getting inserted and not updated
-  const isUpdatingSameViewport = viewports.some(v => {
+  const isUpdatingSameViewport = Array.from(viewports.values()).some(v => {
     return (
       v.displaySetInstanceUIDs.toString() ===
         viewport.displaySetInstanceUIDs.toString() &&
-      v.viewportIndex === viewport.viewportIndex
+      v.viewportId === viewport.viewportId
     );
   });
 

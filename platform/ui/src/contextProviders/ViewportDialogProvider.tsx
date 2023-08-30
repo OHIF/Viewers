@@ -8,7 +8,6 @@ import React, {
 import PropTypes from 'prop-types';
 
 const DEFAULT_STATE = {
-  viewportIndex: null,
   message: undefined,
   type: 'info', // "error" | "warning" | "info" | "success"
   actions: undefined, // array of { type, text, value }

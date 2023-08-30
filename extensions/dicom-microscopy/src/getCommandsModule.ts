@@ -122,19 +122,6 @@ export default function getCommandsModule({
         ]);
       }
     },
-
-    incrementActiveViewport: () => {
-      const { activeViewportIndex, viewports } = viewportGridService.getState();
-      const nextViewportIndex = (activeViewportIndex + 1) % viewports.length;
-      viewportGridService.setActiveViewportIndex(nextViewportIndex);
-    },
-    decrementActiveViewport: () => {
-      const { activeViewportIndex, viewports } = viewportGridService.getState();
-      const nextViewportIndex =
-        (activeViewportIndex - 1 + viewports.length) % viewports.length;
-      viewportGridService.setActiveViewportIndex(nextViewportIndex);
-    },
-
     toggleOverlays: () => {
       // overlay
       const overlays = document.getElementsByClassName(
@@ -149,8 +136,8 @@ export default function getCommandsModule({
       }
 
       // overview
-      const { activeViewportIndex, viewports } = viewportGridService.getState();
-      microscopyService.toggleOverviewMap(activeViewportIndex);
+      const { activeViewportId, viewports } = viewportGridService.getState();
+      microscopyService.toggleOverviewMap(activeViewportId);
     },
     toggleAnnotations: () => {
       microscopyService.toggleROIsVisibility();
@@ -172,14 +159,6 @@ export default function getCommandsModule({
       commandFn: actions.setToolActive,
       storeContexts: [] as any[],
       options: {},
-    },
-    incrementActiveViewport: {
-      commandFn: actions.incrementActiveViewport,
-      storeContexts: [] as any[],
-    },
-    decrementActiveViewport: {
-      commandFn: actions.decrementActiveViewport,
-      storeContexts: [] as any[],
     },
     toggleOverlays: {
       commandFn: actions.toggleOverlays,

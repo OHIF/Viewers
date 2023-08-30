@@ -11,7 +11,7 @@ function CornerstoneViewportOverlay({
   element,
   viewportData,
   imageSliceData,
-  viewportIndex,
+  viewportId,
   servicesManager,
 }) {
   const {
@@ -73,7 +73,7 @@ function CornerstoneViewportOverlay({
     return () => {
       element.removeEventListener(Enums.Events.VOI_MODIFIED, updateVOI);
     };
-  }, [viewportIndex, viewportData, voi, element]);
+  }, [viewportId, viewportData, voi, element]);
 
   /**
    * Updating the scale when the viewport changes its zoom
@@ -86,8 +86,8 @@ function CornerstoneViewportOverlay({
         previousCamera.parallelScale !== camera.parallelScale ||
         previousCamera.scale !== camera.scale
       ) {
-        const viewport = cornerstoneViewportService.getCornerstoneViewportByIndex(
-          viewportIndex
+        const viewport = cornerstoneViewportService.getCornerstoneViewport(
+          viewportId
         );
 
         if (!viewport) {
@@ -118,7 +118,7 @@ function CornerstoneViewportOverlay({
     return () => {
       element.removeEventListener(Enums.Events.CAMERA_MODIFIED, updateScale);
     };
-  }, [viewportIndex, viewportData]);
+  }, [viewportId, viewportData]);
 
   const getTopLeftContent = useCallback(() => {
     const { windowWidth, windowCenter } = voi;
@@ -168,7 +168,7 @@ function CornerstoneViewportOverlay({
       instanceNumber = _getInstanceNumberFromVolume(
         viewportData,
         imageIndex,
-        viewportIndex,
+        viewportId,
         cornerstoneViewportService
       );
     }
@@ -183,15 +183,13 @@ function CornerstoneViewportOverlay({
         </span>
       </div>
     );
-  }, [imageSliceData, viewportData, viewportIndex]);
+  }, [imageSliceData, viewportData, viewportId]);
 
   if (!viewportData) {
     return null;
   }
 
-  const ohifViewport = cornerstoneViewportService.getViewportInfoByIndex(
-    viewportIndex
-  );
+  const ohifViewport = cornerstoneViewportService.getViewportInfo(viewportId);
 
   if (!ohifViewport) {
     return null;
@@ -240,7 +238,7 @@ function _getInstanceNumberFromStack(viewportData, imageIndex) {
 function _getInstanceNumberFromVolume(
   viewportData,
   imageIndex,
-  viewportIndex,
+  viewportId,
   cornerstoneViewportService
 ) {
   const volumes = viewportData.volumes;
@@ -253,8 +251,8 @@ function _getInstanceNumberFromVolume(
   const volume = volumes[0];
   const { direction, imageIds } = volume;
 
-  const cornerstoneViewport = cornerstoneViewportService.getCornerstoneViewportByIndex(
-    viewportIndex
+  const cornerstoneViewport = cornerstoneViewportService.getCornerstoneViewport(
+    viewportId
   );
 
   if (!cornerstoneViewport) {
@@ -287,7 +285,7 @@ function _getInstanceNumberFromVolume(
 CornerstoneViewportOverlay.propTypes = {
   viewportData: PropTypes.object,
   imageIndex: PropTypes.number,
-  viewportIndex: PropTypes.number,
+  viewportId: PropTypes.string,
   servicesManager: PropTypes.instanceOf(ServicesManager),
 };
 

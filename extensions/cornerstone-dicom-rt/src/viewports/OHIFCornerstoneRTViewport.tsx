@@ -21,7 +21,6 @@ function OHIFCornerstoneRTViewport(props) {
     children,
     displaySets,
     viewportOptions,
-    viewportIndex,
     viewportLabel,
     servicesManager,
     extensionManager,
@@ -36,7 +35,9 @@ function OHIFCornerstoneRTViewport(props) {
     customizationService,
   } = servicesManager.services;
 
-  const toolGroupId = `${RT_TOOLGROUP_BASE_NAME}-${viewportIndex}`;
+  const viewportId = viewportOptions.viewportId;
+
+  const toolGroupId = `${RT_TOOLGROUP_BASE_NAME}-${viewportId}`;
 
   // RT viewport will always have a single display set
   if (displaySets.length > 1) {
@@ -67,7 +68,7 @@ function OHIFCornerstoneRTViewport(props) {
   // refs
   const referencedDisplaySetRef = useRef(null);
 
-  const { viewports, activeViewportIndex } = viewportGrid;
+  const { viewports, activeViewportId } = viewportGrid;
 
   const referencedDisplaySet = rtDisplaySet.getReferenceDisplaySet();
   const referencedDisplaySetMetadata = _getReferencedDisplaySetMetadata(
@@ -93,9 +94,9 @@ function OHIFCornerstoneRTViewport(props) {
   };
 
   const storePresentationState = useCallback(() => {
-    viewportGrid?.viewports.forEach(({ viewportIndex }) => {
+    viewportGrid?.viewports.forEach(({ viewportId }) => {
       commandsManager.runCommand('storePresentation', {
-        viewportIndex,
+        viewportId,
       });
     });
   }, [viewportGrid]);
@@ -124,7 +125,7 @@ function OHIFCornerstoneRTViewport(props) {
         onElementDisabled={onElementDisabled}
       ></Component>
     );
-  }, [viewportIndex, rtDisplaySet, toolGroupId]);
+  }, [viewportId, rtDisplaySet, toolGroupId]);
 
   const onSegmentChange = useCallback(
     direction => {
@@ -162,7 +163,7 @@ function OHIFCornerstoneRTViewport(props) {
 
     promptHydrateRT({
       servicesManager,
-      viewportIndex,
+      viewportId,
       rtDisplaySet,
       preHydrateCallbacks: [storePresentationState],
     }).then(isHydrated => {
@@ -170,7 +171,7 @@ function OHIFCornerstoneRTViewport(props) {
         setIsHydrated(true);
       }
     });
-  }, [servicesManager, viewportIndex, rtDisplaySet, rtIsLoading]);
+  }, [servicesManager, viewportId, rtDisplaySet, rtIsLoading]);
 
   useEffect(() => {
     const { unsubscribe } = segmentationService.subscribe(
@@ -222,12 +223,12 @@ function OHIFCornerstoneRTViewport(props) {
     const onDisplaySetsRemovedSubscription = displaySetService.subscribe(
       displaySetService.EVENTS.DISPLAY_SETS_REMOVED,
       ({ displaySetInstanceUIDs }) => {
-        const activeViewport = viewports[activeViewportIndex];
+        const activeViewport = viewports.get(activeViewportId);
         if (
           displaySetInstanceUIDs.includes(activeViewport.displaySetInstanceUID)
         ) {
           viewportGridService.setDisplaySetsForViewport({
-            viewportIndex: activeViewportIndex,
+            viewportId: activeViewportId,
             displaySetInstanceUIDs: [],
           });
         }
@@ -292,7 +293,7 @@ function OHIFCornerstoneRTViewport(props) {
       return (
         child &&
         React.cloneElement(child, {
-          viewportIndex,
+          viewportId,
           key: index,
         })
       );
@@ -322,7 +323,7 @@ function OHIFCornerstoneRTViewport(props) {
     storePresentationState();
     const isHydrated = await _hydrateRTDisplaySet({
       rtDisplaySet,
-      viewportIndex,
+      viewportId,
       servicesManager,
     });
 
@@ -384,7 +385,7 @@ function OHIFCornerstoneRTViewport(props) {
 
 OHIFCornerstoneRTViewport.propTypes = {
   displaySets: PropTypes.arrayOf(PropTypes.object),
-  viewportIndex: PropTypes.number.isRequired,
+  viewportId: PropTypes.string.isRequired,
   dataSource: PropTypes.object,
   children: PropTypes.node,
   customProps: PropTypes.object,

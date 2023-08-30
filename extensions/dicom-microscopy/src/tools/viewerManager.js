@@ -48,14 +48,14 @@ const EVENTS = {
 class ViewerManager extends PubSubService {
   constructor(
     viewer,
-    viewportIndex,
+    viewportId,
     container,
     studyInstanceUID,
     seriesInstanceUID
   ) {
     super(EVENTS);
     this.viewer = viewer;
-    this.viewportIndex = viewportIndex;
+    this.viewportId = viewportId;
     this.container = container;
     this.studyInstanceUID = studyInstanceUID;
     this.seriesInstanceUID = seriesInstanceUID;

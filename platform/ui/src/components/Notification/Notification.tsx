@@ -73,9 +73,7 @@ const Notification = ({
         <span className="ml-2 text-[13px] text-black">{message}</span>
       </div>
       <div className="flex flex-wrap gap-2 justify-end mt-2">
-        {actions.map((action, index) => {
-          const isFirst = index === 0;
-
+        {actions?.map((action, index) => {
           return (
             <Button
               name={action.id}
