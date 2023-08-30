@@ -145,10 +145,19 @@ class GoogleCloudDataSourceConfigurationAPI
 
     const url = dataSourceDefinition.configuration.wadoUriRoot;
     const projectsIndex = url.indexOf('projects');
+    // Split the configured URL into (essentially) pairs (i.e. item type followed by item)
+    // Explicitly: ['projects','aProject','locations','aLocation','datasets','aDataSet','dicomStores','aDicomStore']
+    // Note that a partial configuration will have a subset of the above.
     const urlSplit = url.substring(projectsIndex).split('/');
 
     const configuredItems = [];
-    for (let itemType = 0; itemType < 4; itemType += 1) {
+
+    for (
+      let itemType = 0;
+      // the number of configured items is either the max (4) or the number extracted from the url split
+      itemType < 4 && (itemType + 1) * 2 < urlSplit.length;
+      itemType += 1
+    ) {
       if (itemType === ItemType.projects) {
         const projectId = urlSplit[1];
         const projectUrl = `${initialUrl}/projects/${projectId}`;
