@@ -1,16 +1,22 @@
-import { DicomMetadataStore, classes, utils } from '@ohif/core';
+import {
+  Types,
+  DicomMetadataStore,
+  DisplaySetService,
+  utils,
+} from '@ohif/core';
 
 import * as cs from '@cornerstonejs/core';
 import * as csTools from '@cornerstonejs/tools';
 
 import { SOPClassHandlerName, SOPClassHandlerId } from './id';
 
+type InstanceMetadata = Types.InstanceMetadata;
+
 const { utilities: csToolsUtils } = csTools;
 
 const CHART_MODALITY = 'CHT';
 const LABELMAP = csTools.Enums.SegmentationRepresentations.Labelmap;
-const SegSeriesInstanceUidTemplate =
-  '1.3.6.1.4.1.12842.1.1.14.4.{date}.{time}.435.{id}';
+const SEG_CHART_INSTANCE_UID = utils.guid();
 
 // Private SOPClassUid for chart data
 const ChartDataSOPClassUid = '1.9.451.13215.7.3.2.7.6.1';
@@ -26,7 +32,6 @@ const makeChartDataDisplaySet = (instance, sopClassUids) => {
     SeriesNumber,
     SeriesDate,
     SOPClassUID,
-    chartData,
   } = instance;
 
   return {
@@ -47,7 +52,21 @@ const makeChartDataDisplaySet = (instance, sopClassUids) => {
     sopClassUids,
     instance,
     instances: [instance],
-    chartData,
+
+    /**
+     * Adds instances to the chart displaySet, rather than creating a new one
+     * when user moves to a different workflow step and gets back to a step that
+     * recreates the chart
+     */
+    addInstances: function(
+      instances: InstanceMetadata[],
+      _displaySetService: DisplaySetService
+    ) {
+      this.instances.push(...instances);
+      this.instance = this.instances[this.instances.length - 1];
+
+      return this;
+    },
   };
 };
 
@@ -91,15 +110,6 @@ function _getDateTimeStr() {
     ('0' + now.getUTCSeconds()).slice(-2);
 
   return { date, time };
-}
-
-function _getNewSeriesInstanceUid(seriesDate, seriesTime) {
-  return SegSeriesInstanceUidTemplate.replace('{date}', seriesDate)
-    .replace('{time}', seriesTime)
-    .replace(
-      '{id}',
-      `0000000000${Math.round(Math.random() * 1e12)}`.slice(-10)
-    );
 }
 
 function _getTimePointsDataByTagName(volume, timePointsTag) {
@@ -272,14 +282,14 @@ function _getInstanceFromSegmentations(segmentations) {
   );
 
   const { date: seriesDate, time: seriesTime } = _getDateTimeStr();
-  const seriesInstanceUid = _getNewSeriesInstanceUid(seriesDate, seriesTime);
 
   const instance = {
     SOPClassUID: ChartDataSOPClassUid,
     Modality: CHART_MODALITY,
+    SOPInstanceUID: utils.guid(),
     SeriesDate: seriesDate,
     SeriesTime: seriesTime,
-    SeriesInstanceUID: seriesInstanceUid,
+    SeriesInstanceUID: SEG_CHART_INSTANCE_UID,
     StudyInstanceUID: segmentationsData[0].StudyInstanceUID,
     StudyDescription: segmentationsData[0].StudyDescription,
     SeriesNumber: 100,
