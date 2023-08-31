@@ -136,11 +136,13 @@ function _convertTimePointsUnit(timePoints, timePointsUnit) {
   if (currentUnitIndex !== -1) {
     for (let i = currentUnitIndex; i < validUnits.length - 1; i++) {
       const newDivisor = divisor * divisors[i];
-      const greaterThanDivisor = timePoints.every(
+      const greaterThanDivisorCount = timePoints.filter(
         timePoint => timePoint > newDivisor
-      );
+      ).length;
 
-      if (!greaterThanDivisor) {
+      // Change the scale only if more than 50% of the time points are
+      // greater than the new divisor.
+      if (greaterThanDivisorCount <= timePoints.length / 2) {
         break;
       }
 
