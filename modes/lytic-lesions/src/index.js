@@ -132,6 +132,7 @@ function modeFactory() {
         'Capture',
         'Layout',
         'MPR',
+        'CMAP',
         'Crosshairs',
         'MoreTools',
         'setColormap',
@@ -210,7 +211,10 @@ function modeFactory() {
               viewports: [
                 {
                   namespace: tracked.viewport,
-                  displaySetsToDisplay: [ohif.sopClassHandler],
+                  displaySetsToDisplay: [
+                    ohif.sopClassHandler,
+                    ohif.sopClassHandler,
+                  ],
                 },
                 {
                   namespace: dicomsr.viewport,

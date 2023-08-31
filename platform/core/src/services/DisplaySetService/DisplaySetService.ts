@@ -149,7 +149,7 @@ export default class DisplaySetService extends PubSubService {
     displaySetInstanceUID: string,
     invalidateData = true
   ): void {
-    const displaySet = this.getDisplaySetByUID(displaySetInstanceUID);
+    constplaySetByUID(displaySetInstanceUID);
 
     if (!displaySet) {
       return;

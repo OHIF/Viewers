@@ -495,11 +495,10 @@ function commandsModule({
       );
       //get actor from the viewport
       const actorEntries = viewport.getActors();
-
+      console.log(actorEntries);
       const actorEntry = actorEntries.find(actorEntry => {
         return actorEntry.uid.includes(displaySetInstanceUID);
       });
-
       const { actor: volumeActor, uid: volumeId } = actorEntry;
       viewport.setProperties({ colormap, volumeActor }, volumeId);
       if (immediate) {
@@ -588,6 +587,7 @@ function commandsModule({
         };
       }
       stateSyncService.store(storeState);
+    },
     setDerviedDisplaySetsInGridViewports: ({ displaySet }) => {
       const displaySetCache = displaySetService.getDisplaySetCache();
       const cachedDisplaySetKeys = [displaySetCache.keys()];
@@ -755,6 +755,7 @@ function commandsModule({
     },
     setSingleViewportColormap: {
       commandFn: actions.setSingleViewportColormap,
+    },
     setDerviedDisplaySetsInGridViewports: {
       commandFn: actions.setDerviedDisplaySetsInGridViewports,
       storeContexts: [],

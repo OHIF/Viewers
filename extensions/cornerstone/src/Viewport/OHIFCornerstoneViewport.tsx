@@ -15,9 +15,9 @@ import {
   IStackViewport,
   IVolumeViewport,
 } from '@cornerstonejs/core/dist/esm/types';
-
+import { useViewportGrid } from '@ohif/ui';
 import { setEnabledElement } from '../state';
-
+import { useCine } from '@ohif/ui';
 import './OHIFCornerstoneViewport.css';
 import CornerstoneOverlays from './Overlays/CornerstoneOverlays';
 import getSOPInstanceAttributes from '../utils/measurementServiceMappings/utils/getSOPInstanceAttributes';

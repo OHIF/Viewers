@@ -259,9 +259,12 @@ const fusionAXIAL = {
         colormap: {
           name: 'hsv',
           opacity: [
-            { value: 0, opacity: 0 },
-            { value: 0.1, opacity: 0.9 },
-            { value: 1, opacity: 0.95 },
+            { value: 0, opacity: 1 },
+            { value: 0.2, opacity: 0.1 },
+            { value: 0.4, opacity: 1 },
+            { value: 0.6, opacity: 1 },
+            { value: 0.8, opacity: 1 },
+            { value: 1, opacity: 1 },
           ],
         },
         voi: {

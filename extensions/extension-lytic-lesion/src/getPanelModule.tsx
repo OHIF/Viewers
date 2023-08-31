@@ -4,7 +4,8 @@ import {
   PanelMeasurementTable,
   PanelPetSUV,
   PanelROIThresholdSegmentation,
-  HounsfieldRangeSelector
+  HounsfieldRangeSelector,
+  WindowLevelPanel
 } from './Panels';
 
 // TODO:
@@ -54,6 +55,15 @@ function getPanelModule({
       />
     );
   };
+  const wrappedWindowLevelPane = () => {
+    return (
+      <WindowLevelPanel
+        commandsManager={commandsManager}
+        extensionManager={extensionManager}
+        servicesManager={servicesManager}
+      />
+    )
+  }
   return [
     {
       name: 'seriesList',

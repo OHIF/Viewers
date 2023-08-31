@@ -14,7 +14,9 @@ import {
 const { Events } = Enums;
 
 const calcHistogram = (data, options) => {
-  if (options === undefined) options = {};
+  if (options === undefined) {
+    options = {};
+  }
   const histogram = {
     numBins: options.numBins || 256,
     range: { min: 0, max: 0 },
@@ -52,8 +54,12 @@ const calcHistogram = (data, options) => {
 
   for (let index = 0; index < data.length; index++) {
     const value = data[index];
-    if (value < minToUse) continue;
-    if (value > maxToUse) continue;
+    if (value < minToUse) {
+      continue;
+    }
+    if (value > maxToUse) {
+      continue;
+    }
     const bin = Math.floor((value - minToUse) * binScale);
     bins[bin] += 1;
   }
@@ -247,10 +253,10 @@ const ViewportWindowLevel = ({
       const { voiRange } = viewportProperties;
       const viewportVoi = voiRange
         ? {
-            windowWidth: voiRange.upper - voiRange.lower,
-            windowCenter:
-              voiRange.lower + (voiRange.upper - voiRange.lower) / 2,
-          }
+          windowWidth: voiRange.upper - voiRange.lower,
+          windowCenter:
+            voiRange.lower + (voiRange.upper - voiRange.lower) / 2,
+        }
         : undefined;
 
       const windowLevels = volumeIds
@@ -300,7 +306,8 @@ const ViewportWindowLevel = ({
             colormap,
             step: scaling?.PT ? 0.05 : 1,
             opacity,
-            showOpacitySlider: volumeIndex === 1 && opacity !== undefined,
+            // showOpacitySlider: volumeIndex === 1 && opacity !== undefined,
+            showOpacitySlider: true,
           };
         })
         .filter(windowLevel => !!windowLevel?.histogram);

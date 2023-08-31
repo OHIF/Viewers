@@ -3,6 +3,8 @@ import sopClassDictionary from '@ohif/core/src/utils/sopClassDictionary';
 import ImageSet from '@ohif/core/src/classes/ImageSet';
 import isDisplaySetReconstructable from '@ohif/core/src/utils/isDisplaySetReconstructable';
 import { id } from './id';
+import { utils } from '@ohif/core';
+import { util } from 'prettier';
 
 const sopClassHandlerName = 'stack';
 
@@ -21,7 +23,8 @@ const makeDisplaySet = instances => {
 
   // set appropriate attributes to image set...
   imageSet.setAttributes({
-    displaySetInstanceUID: imageSet.uid, // create a local alias for the imageSet UID
+    // displaySetInstanceUID: imageSet.uid, // create a local alias for the imageSet UID
+    displaySetInstanceUID: utils.guid(),
     SeriesDate: instance.SeriesDate,
     SeriesTime: instance.SeriesTime,
     SeriesInstanceUID: instance.SeriesInstanceUID,
@@ -65,7 +68,7 @@ const makeDisplaySet = instances => {
     // Volumes with gaps later on.
     imageSet.missingFrames = isReconstructable.missingFrames;
   }*/
-
+  console.log(imageSet);
   return imageSet;
 };
 
@@ -125,6 +128,7 @@ function getDisplaySetsFromSeries(instances) {
         acquisitionDatetime: instance.AcquisitionDateTime,
       });
       displaySets.push(displaySet);
+      console.log(displaySets);
     } else if (isSingleImageModality(instance.Modality)) {
       displaySet = makeDisplaySet([instance]);
       displaySet.setAttributes({

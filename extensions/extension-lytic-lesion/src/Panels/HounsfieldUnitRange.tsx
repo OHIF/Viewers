@@ -1,6 +1,7 @@
 import React from 'react';
 import { Input, Label, Select, Button, ButtonGroup } from '@ohif/ui';
 import { useTranslation } from 'react-i18next';
+import WindowLevelPanel from './WindowLevelPanel';
 
 const HOUNSFIELD_RANGE = 'hounsfield_range';
 
@@ -8,17 +9,21 @@ const options = [
   { value: HOUNSFIELD_RANGE, label: 'Hounsfield Range', placeHolder: 'Range' },
 ];
 
-function HounsfieldRangeSelector({ commandsManager }) {
+function HounsfieldRangeSelector({ commandsManager, servicesManager, extensionManager }) {
   const { t } = useTranslation('ROIThresholdConfiguration');
   const [targetNumber, setTargetNumber] = React.useState(233);
   const [minHU, setMinHU] = React.useState(-90);
   const [maxHU, setMaxHU] = React.useState(500);
+  const [lowHU, setLowHU] = React.useState(73);
+  const [highHU, setHighHU] = React.useState(365);
 
   const handleSetRange = () => {
     // Perform the action to set the Hounsfield range
     commandsManager.runCommand('setHounsfieldRange', {
       minHU: minHU,
       maxHU: maxHU,
+      lowHU: lowHU,
+      highHU: highHU,
       targetNumber: targetNumber,
     });
     commandsManager.runCommand('setColormap', { colormap: 'HUColormap' })
@@ -35,7 +40,7 @@ function HounsfieldRangeSelector({ commandsManager }) {
             variant="outlined"
             onClick={handleSetRange}
           >
-            {t('Set Range')}
+            {t('Set Viewport Range')}
           </Button>
         </div>
       </div>
@@ -66,6 +71,30 @@ function HounsfieldRangeSelector({ commandsManager }) {
             }}
           />
         </div>
+        <div className="flex justify-between">
+          <Input
+            label={t('Low HU')}
+            labelClassName="text-white"
+            className="mt-2 bg-black border-primary-main"
+            type="text"
+            containerClassName="mr-2"
+            value={lowHU}
+            onChange={(e) => {
+              setLowHU(e.target.value);
+            }}
+          />
+          <Input
+            label={t('High HU')}
+            labelClassName="text-white"
+            className="mt-2 bg-black border-primary-main"
+            type="text"
+            containerClassName="mr-2"
+            value={highHU}
+            onChange={(e) => {
+              setHighHU(e.target.value)
+            }}
+          />
+        </div>
       </div>
 
       <div className="text-sm mr-2">
@@ -80,6 +109,10 @@ function HounsfieldRangeSelector({ commandsManager }) {
           onChange={(e) => setTargetNumber(e.target.value)}
         />
       </div>
+      <WindowLevelPanel
+        extensionManager={extensionManager}
+        servicesManager={servicesManager}
+      ></WindowLevelPanel>
     </div>
   );
 }

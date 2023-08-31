@@ -4,6 +4,7 @@ import PanelMeasurementTable from './PanelMeasurementTable';
 import PanelROIThresholdSegmentation from './PanelROIThresholdSegmentation';
 import PanelPetSUV from './PanelPetSUV';
 import HounsfieldRangeSelector from './HounsfieldUnitRange';
+import WindowLevelPanel from './WindowLevelPanel';
 export {
   PanelStudyBrowser,
   WrappedPanelStudyBrowser,
@@ -11,4 +12,5 @@ export {
   PanelROIThresholdSegmentation,
   PanelPetSUV,
   HounsfieldRangeSelector,
+  WindowLevelPanel,
 };

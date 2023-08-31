@@ -359,7 +359,7 @@ const commandsModule = ({
         });
       }
     },
-    setHounsfieldRange: ({minHU, maxHU, targetNumber}) =>{
+    setHounsfieldRange: ({minHU, maxHU, lowHU, highHU, targetNumber}) =>{
       const { activeViewportIndex, viewports } = viewportGridService.getState();
       const activeViewportSpecificData = viewports[activeViewportIndex];
       const { displaySetInstanceUIDs } = activeViewportSpecificData;
@@ -371,7 +371,7 @@ const commandsModule = ({
       let props = viewport.getProperties();
       let windowLow = props.voiRange.lower;
       let windowHigh = props.voiRange.upper;
-      let newColormap = customColormap(minHU, maxHU, targetNumber, windowLow, windowHigh);
+      let newColormap = customColormap(minHU, maxHU, lowHU, highHU, targetNumber, windowLow, windowHigh);
       let colormap ={
         ColorSpace: 'RGB',
         Name: 'HUColormap',
@@ -390,15 +390,18 @@ const commandsModule = ({
       viewports.forEach(viewport =>{
         console.log(viewport);
         let displaySetInstanceUID = viewport.displaySetInstanceUIDs[0];
-        commandsManager.runCommand('setViewportColormap', {
+        commandsManager.runCommand('setSingleViewportColormap', {
           viewportIndex: viewport.viewportIndex,
           displaySetInstanceUID,
           colormap: {
             name: colormap,
             opacity: [
-              { value: 0, opacity: 0 },
-              { value: 0.1, opacity: .95 },
-              { value: 1, opacity: 1 },
+              { value: 0, opacity: 0.85 },
+              { value: 0.2, opacity: .92 },
+              { value: 0.34, opacity: 1 },
+              { value: 0.6, opacity: 1 },
+              { value: 0.8, opacity: .92 },
+              { value: 1, opacity: 0.85 }
             ],
           },
         });

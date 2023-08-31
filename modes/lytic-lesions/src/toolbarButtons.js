@@ -137,6 +137,7 @@ const toolbarButtons = [
         _createColormap('GE 256', 'ge_256'),
         _createColormap('GE', 'ge'),
         _createColormap('Siemens', 'siemens'),
+        _createColormap('Test', 'test'),
       ],
     },
   },
@@ -420,6 +421,24 @@ const toolbarButtons = [
           commandName: 'toggleHangingProtocol',
           commandOptions: {
             protocolId: 'mpr',
+          },
+          context: 'LYTIC',
+        },
+      ],
+    },
+  },
+  {
+    id: 'CMAP',
+    type: 'ohif.action',
+    props: {
+      type: 'toggle',
+      icon: 'tool-fusion-color',
+      label: 'Colormap and 3d',
+      commands: [
+        {
+          commandName: 'toggleHangingProtocol',
+          commandOptions: {
+            protocolId: 'colormapAnd3d',
           },
           context: 'LYTIC',
         },
