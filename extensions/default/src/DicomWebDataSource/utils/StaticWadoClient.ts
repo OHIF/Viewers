@@ -7,6 +7,7 @@ import { api } from 'dicomweb-client';
  * performing searches doesn't work.  This version fixes the query issue
  * by manually implementing a query option.
  */
+
 export default class StaticWadoClient extends api.DICOMwebClient {
   static studyFilterKeys = {
     studyinstanceuid: '0020000D',
@@ -67,29 +68,11 @@ export default class StaticWadoClient extends api.DICOMwebClient {
   }
 
   async searchForSeries(options) {
-    // asking to include Series Date, Series Time, Series Description
-    // and Series Number in the series metadata returned to better sort series
-    // in preLoad function
-    const commaSeparatedFields = [
-      '00080021',
-      '00080031',
-      '0008103E',
-      '00200011',
-    ].join(',');
-
-    const queryParamsMinimun = {
-      includefield: commaSeparatedFields,
-    };
-    const updatedOptions = {
-      ...options,
-      queryParams: queryParamsMinimun,
-    };
-
     if (!this.staticWado) {
-      return super.searchForSeries(updatedOptions);
+      return super.searchForSeries(options);
     }
 
-    const searchResult = await super.searchForSeries(updatedOptions);
+    const searchResult = await super.searchForSeries(options);
     const { queryParams } = options;
     if (!queryParams) {
       return searchResult;

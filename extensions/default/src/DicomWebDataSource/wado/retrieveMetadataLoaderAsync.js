@@ -5,6 +5,10 @@ import {
 } from '@ohif/core/src/utils/sortStudy';
 import RetrieveMetadataLoader from './retrieveMetadataLoader';
 
+// Series Date, Series Time, Series Description and Series Number to be included
+// in the series metadata query result
+const includeField = ['00080021', '00080031', '0008103E', '00200011'].join(',');
+
 /**
  * Creates an immutable series loader object which loads each series sequentially using the iterator interface
  * @param {DICOMWebClient} dicomWebClient The DICOMWebClient instance to be used for series load
@@ -49,15 +53,22 @@ export default class RetrieveMetadataLoaderAsync extends RetrieveMetadataLoader 
       client,
     } = this;
 
+    // asking to include Series Date, Series Time, Series Description
+    // and Series Number in the series metadata returned to better sort series
+    // in preLoad function
+    let options = {
+      studyInstanceUID,
+      queryParams: {
+        includefield: includeField,
+      },
+    };
+
     if (seriesInstanceUID) {
-      const options = {
-        studyInstanceUID,
-        queryParams: { SeriesInstanceUID: seriesInstanceUID },
-      };
+      options.queryParams.SeriesInstanceUID = seriesInstanceUID;
       preLoaders.push(client.searchForSeries.bind(client, options));
     }
     // Fallback preloader
-    preLoaders.push(client.searchForSeries.bind(client, { studyInstanceUID }));
+    preLoaders.push(client.searchForSeries.bind(client, options));
 
     yield* preLoaders;
   }
@@ -91,35 +102,27 @@ export default class RetrieveMetadataLoaderAsync extends RetrieveMetadataLoader 
     );
 
     const promises = [];
-
-    // if a large study, fetch first a small group of series to run hanging protocol
-    if (preLoadData.length > this.largeStudySeriesCountThreshold) {
-      const firstGroup = [];
-      while (seriesAsyncLoader.hasNext()) {
-        const promise = seriesAsyncLoader.next();
-        promises.push(promise);
-        firstGroup.push(promise);
-        if (firstGroup.length >= this.initialSeriesFetchSize) {
-          break;
-        }
-      }
-      // wait for all promises in the first group to be settled
-      await Promise.allSettled(firstGroup);
-    }
+    const firstGroupPromises = [];
 
     while (seriesAsyncLoader.hasNext()) {
-      promises.push(seriesAsyncLoader.next());
+      const promise = seriesAsyncLoader.next();
+      promises.push(promise);
+      if (firstGroupPromises.length < this.initialSeriesFetchSize) {
+        firstGroupPromises.push(promise);
+      }
     }
 
     return {
       preLoadData,
+      firstGroupPromises,
       promises,
     };
   }
 
-  async posLoad({ preLoadData, promises }) {
+  async posLoad({ preLoadData, firstGroupPromises, promises }) {
     return {
       preLoadData,
+      firstGroupPromises,
       promises,
     };
   }

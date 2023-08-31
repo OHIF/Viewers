@@ -7,12 +7,14 @@ const StudyMetaDataPromises = new Map();
 /**
  * Retrieves study metadata
  *
- * @param {Object} server Object with server configuration parameters
+ * @param {Object} dicomWebClient Object with server configuration parameters
  * @param {string} StudyInstanceUID The UID of the Study to be retrieved
  * @param {boolean} enabledStudyLazyLoad Whether the study metadata should be loaded asynchronusly.
- * @param {function} storeInstancesCallback A callback used to store the retrieved instance metadata.
  * @param {Object} [filters] - Object containing filters to be applied on retrieve metadata process
  * @param {string} [filter.seriesInstanceUID] - series instance uid to filter results against
+ * @param {Object} [sortCriteria] - Custom sort criteria used for series
+ * @param {Function} [sortFunction] - Custom sort function for series
+ * @param {Object} [clientConfig] - Specific parameters of the dicomweb client
  * @returns {Promise} that will be resolved with the metadata or rejected with the error
  */
 export function retrieveStudyMetadata(
@@ -21,7 +23,8 @@ export function retrieveStudyMetadata(
   enableStudyLazyLoad,
   filters,
   sortCriteria,
-  sortFunction
+  sortFunction,
+  clientConfig
 ) {
   // @TODO: Whenever a study metadata request has failed, its related promise will be rejected once and for all
   // and further requests for that metadata will always fail. On failure, we probably need to remove the
@@ -51,8 +54,9 @@ export function retrieveStudyMetadata(
       enableStudyLazyLoad,
       filters,
       sortCriteria,
-      sortFunction
-    ).then(function(data) {
+      sortFunction,
+      clientConfig
+    ).then(function (data) {
       resolve(data);
     }, reject);
   });

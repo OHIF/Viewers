@@ -9,6 +9,9 @@ import RetrieveMetadataLoaderAsync from './retrieveMetadataLoaderAsync';
  * @param {string} studyInstanceUid The Study Instance UID of the study which needs to be loaded
  * @param {Object} [filters] - Object containing filters to be applied on retrieve metadata process
  * @param {string} [filter.seriesInstanceUID] - series instance uid to filter results against
+ * @param {Object} [sortCriteria] - Custom sort criteria used for series
+ * @param {Function} [sortFunction] - Custom sort function for series
+ * @param {Object} [clientOptions] - Specific parameters of the dicomweb client
  * @returns {Object} A study descriptor object
  */
 async function RetrieveMetadata(
@@ -17,7 +20,8 @@ async function RetrieveMetadata(
   enableStudyLazyLoad,
   filters = {},
   sortCriteria,
-  sortFunction
+  sortFunction,
+  clientOptions
 ) {
   const RetrieveMetadataLoader =
     enableStudyLazyLoad !== false
@@ -29,7 +33,8 @@ async function RetrieveMetadata(
     studyInstanceUid,
     filters,
     sortCriteria,
-    sortFunction
+    sortFunction,
+    clientOptions
   );
   const data = await retrieveMetadataLoader.execLoad();
 

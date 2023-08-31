@@ -103,6 +103,9 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
         singlepart: dicomWebConfig.singlepart,
         headers: userAuthenticationService.getAuthorizationHeader(),
         errorInterceptor: errorHandler.getHTTPErrorHandler(),
+        largeStudySeriesCountThreshold:
+          dicomWebConfig.largeStudySeriesCountThreshold,
+        initialSeriesFetchSize: dicomWebConfig.initialSeriesFetchSize,
       };
 
       wadoConfig = {
@@ -111,6 +114,9 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
         singlepart: dicomWebConfig.singlepart,
         headers: userAuthenticationService.getAuthorizationHeader(),
         errorInterceptor: errorHandler.getHTTPErrorHandler(),
+        largeStudySeriesCountThreshold:
+          dicomWebConfig.largeStudySeriesCountThreshold,
+        initialSeriesFetchSize: dicomWebConfig.initialSeriesFetchSize,
       };
 
       // TODO -> Two clients sucks, but its better than 1000.
@@ -126,7 +132,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
     query: {
       studies: {
         mapParams: mapParams.bind(),
-        search: async function(origParams) {
+        search: async function (origParams) {
           qidoDicomWebClient.headers = getAuthrorizationHeader();
           const { studyInstanceUid, seriesInstanceUid, ...mappedParams } =
             mapParams(origParams, {
@@ -147,7 +153,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
       },
       series: {
         // mapParams: mapParams.bind(),
-        search: async function(studyInstanceUid) {
+        search: async function (studyInstanceUid) {
           qidoDicomWebClient.headers = getAuthrorizationHeader();
           const results = await seriesInStudy(
             qidoDicomWebClient,
@@ -366,7 +372,8 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
         enableStudyLazyLoad,
         filters,
         sortCriteria,
-        sortFunction
+        sortFunction,
+        wadoConfig
       );
 
       /**

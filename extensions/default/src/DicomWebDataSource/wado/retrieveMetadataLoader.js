@@ -14,8 +14,7 @@ export default class RetrieveMetadataLoader {
    * @param {string} [filter.seriesInstanceUID] - series instance uid to filter results against
    * @param {Object} [sortCriteria] - Custom sort criteria used for series
    * @param {Function} [sortFunction] - Custom sort function for series
-   * @param {number} [largeStudySeriesCountThreshold ] - Threshold used for classify a study as a large studies
-   * @param {number} [initialSeriesFetchSize] - In case of a large study, fetch first <firstGroupSize> series to display the first image fast to the user
+   * @param {Object} [clientOptions ] - parameters related to the dicomweb client
    */
   constructor(
     client,
@@ -23,16 +22,18 @@ export default class RetrieveMetadataLoader {
     filters = {},
     sortCriteria = undefined,
     sortFunction = undefined,
-    largeStudySeriesCountThreshold = 100,
-    initialSeriesFetchSize = 10
+    clientOptions = undefined
   ) {
     this.client = client;
     this.studyInstanceUID = studyInstanceUID;
     this.filters = filters;
     this.sortCriteria = sortCriteria;
     this.sortFunction = sortFunction;
-    this.largeStudySeriesCountThreshold = largeStudySeriesCountThreshold;
-    this.initialSeriesFetchSize = initialSeriesFetchSize;
+    // Threshold used for classify a study as a large studies
+    this.largeStudySeriesCountThreshold =
+      clientOptions?.largeStudySeriesCountThreshold || 50;
+    // In case of a large study, fetch first <initialSeriesFetchSize> series to display the first image fast to the user
+    this.initialSeriesFetchSize = clientOptions?.initialSeriesFetchSize || 10;
   }
 
   async execLoad() {
