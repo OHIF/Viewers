@@ -111,7 +111,6 @@ window.config = ({ servicesManager } = {}) => {
 ## Configuration Options
 
 Here are a list of some options available:
-- `minDisplaySetsToRunHP`:  If configured, sets the minimum display sets needed to run the hanging protocol and start displaying images. Used when OHIF needs to handle studies with several series and it is required that the first image should be loaded faster. Only changed if really necessary, because there is a chance the hanging protocol break without full metadata.
 - `disableEditing`:  If true, it disables editing in OHIF, hiding edit buttons in segmentation
   panel and locking already stored measurements.
 - `maxNumberOfWebWorkers`: The maximum number of web workers to use for

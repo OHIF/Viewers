@@ -1,8 +1,5 @@
 import dcmjs from 'dcmjs';
-import {
-  sortStudySeries,
-  sortingCriteria,
-} from '@ohif/core/src/utils/sortStudy';
+import { sortStudySeries } from '@ohif/core/src/utils/sortStudy';
 import RetrieveMetadataLoader from './retrieveMetadataLoader';
 
 // Series Date, Series Time, Series Description and Series Number to be included
@@ -82,12 +79,7 @@ export default class RetrieveMetadataLoaderAsync extends RetrieveMetadataLoader 
     const { naturalizeDataset } = dcmjs.data.DicomMetaDictionary;
     const naturalized = result.map(naturalizeDataset);
 
-    return sortStudySeries(
-      naturalized,
-      sortCriteria ||
-      sortingCriteria.seriesSortCriteria.seriesInfoSortingCriteria,
-      sortFunction
-    );
+    return sortStudySeries(naturalized, sortCriteria, sortFunction);
   }
 
   async load(preLoadData) {
@@ -107,9 +99,14 @@ export default class RetrieveMetadataLoaderAsync extends RetrieveMetadataLoader 
     while (seriesAsyncLoader.hasNext()) {
       const promise = seriesAsyncLoader.next();
       promises.push(promise);
-      if (firstGroupPromises.length < this.initialSeriesFetchSize) {
-        firstGroupPromises.push(promise);
+      firstGroupPromises.push(promise);
+      if (firstGroupPromises.length >= this.initialSeriesFetchSize) {
+        break;
       }
+    }
+    while (seriesAsyncLoader.hasNext()) {
+      const promise = seriesAsyncLoader.next();
+      promises.push(promise);
     }
 
     return {

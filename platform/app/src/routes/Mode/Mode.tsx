@@ -12,6 +12,7 @@ import getStudies from './studiesList';
 import { history } from '../../utils/history';
 import loadModules from '../../pluginImports';
 import isSeriesFilterUsed from '../../utils/isSeriesFilterUsed';
+import { sortingCriteria } from '@ohif/core/src/utils/sortStudy';
 
 const { getSplitParam } = utils;
 
@@ -32,8 +33,13 @@ function defaultRouteInit(
     displaySetService,
     hangingProtocolService,
     uiNotificationService,
+    customizationService,
   } = servicesManager.services;
-  const minDisplaySetsToRunHP = appConfig?.minDisplaySetsToRunHP;
+
+  const minSeriesLoadedToRunHP = hangingProtocolService.getProtocolById(
+    hangingProtocolId
+  )?.minSeriesLoadedToRunHP;
+  let hangingProtocolApplied = false;
 
   /**
    * Function to apply the hanging protocol when the minimum number of display sets were
@@ -42,7 +48,7 @@ function defaultRouteInit(
    */
   function applyHangingProtocol() {
     // check if a hanging protocol is already applied. If so abort execution
-    if (hangingProtocolService.getActiveProtocol().protocol) {
+    if (hangingProtocolApplied) {
       return;
     }
     const displaySets = displaySetService.getActiveDisplaySets();
@@ -59,6 +65,7 @@ function defaultRouteInit(
 
     // run the hanging protocol matching on the displaySets with the predefined
     // hanging protocol in the mode configuration
+    hangingProtocolApplied = true;
     hangingProtocolService.run(
       { studies, activeStudy, displaySets },
       hangingProtocolId
@@ -97,11 +104,11 @@ function defaultRouteInit(
 
       // if minimum number of display sets to run a hanging protocol is defined
       // check if it was reached to apply a hanging protocol
-      if (minDisplaySetsToRunHP) {
+      if (minSeriesLoadedToRunHP) {
         const displaySets = displaySetService.getActiveDisplaySets();
         if (
-          displaySets?.length > minDisplaySetsToRunHP &&
-          !hangingProtocolService.getActiveProtocol().protocol
+          displaySets?.length > minSeriesLoadedToRunHP &&
+          !hangingProtocolApplied
         ) {
           applyHangingProtocol();
         }
@@ -115,6 +122,9 @@ function defaultRouteInit(
     dataSource.retrieve.series.metadata({
       StudyInstanceUID,
       filters,
+      sortCriteria:
+        customizationService.get('sortingCriteria') ||
+        sortingCriteria.seriesSortCriteria.seriesInfoSortingCriteria,
     })
   );
 
@@ -125,7 +135,9 @@ function defaultRouteInit(
   // until we run the hanging protocol matching service.
 
   Promise.allSettled(allRetrieves).then(() => {
-    applyHangingProtocol();
+    if (!hangingProtocolApplied) {
+      applyHangingProtocol();
+    }
   });
 
   return unsubscriptions;
