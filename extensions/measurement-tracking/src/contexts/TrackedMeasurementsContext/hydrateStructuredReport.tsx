@@ -6,7 +6,7 @@ function hydrateStructuredReport(
   evt
 ) {
   const { displaySetService } = servicesManager.services;
-  const { viewportIndex, displaySetInstanceUID } = evt;
+  const { viewportId, displaySetInstanceUID } = evt;
   const srDisplaySet = displaySetService.getDisplaySetByUID(
     displaySetInstanceUID
   );
@@ -23,7 +23,7 @@ function hydrateStructuredReport(
     resolve({
       displaySetInstanceUID: evt.displaySetInstanceUID,
       srSeriesInstanceUID: srDisplaySet.SeriesInstanceUID,
-      viewportIndex,
+      viewportId,
       StudyInstanceUID,
       SeriesInstanceUIDs,
     });

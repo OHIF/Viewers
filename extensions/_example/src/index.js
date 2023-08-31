@@ -121,7 +121,7 @@ const getSopClassHandlerModule = (/* ... */) => {
 
 const getToolbarModule = () => {};
 
-// displaySet, viewportIndex, dataSource
+// displaySet, dataSource
 const getViewportModule = () => {
   const wrappedViewport = props => {
     return (

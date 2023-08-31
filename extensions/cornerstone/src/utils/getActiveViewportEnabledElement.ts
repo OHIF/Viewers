@@ -6,8 +6,8 @@ import { getEnabledElement as OHIFgetEnabledElement } from '../state';
 export default function getActiveViewportEnabledElement(
   viewportGridService
 ): IEnabledElement {
-  const { activeViewportIndex } = viewportGridService.getState();
-  const { element } = OHIFgetEnabledElement(activeViewportIndex) || {};
+  const { activeViewportId } = viewportGridService.getState();
+  const { element } = OHIFgetEnabledElement(activeViewportId) || {};
   const enabledElement = getEnabledElement(element);
   return enabledElement;
 }
