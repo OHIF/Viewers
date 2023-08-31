@@ -45,6 +45,10 @@ COPY preinstall.js /usr/src/app/preinstall.js
 COPY version.txt /usr/src/app/version.txt
 COPY commit.txt /usr/src/app/commit.txt
 
+# For arm builds since parcel doesn't have prebuilt binaries for arm yet
+RUN apt-get update && apt-get install -y build-essential python3
+
+
 # ADD . /usr/src/app/
 RUN yarn config set workspaces-experimental true
 RUN yarn install
