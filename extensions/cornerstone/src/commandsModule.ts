@@ -748,11 +748,6 @@ function commandsModule({
     toggleReferenceLines: {
       commandFn: actions.toggleReferenceLines,
     },
-    storePresentation: {
-      commandFn: actions.storePresentation,
-      storeContexts: [],
-      options: {},
-    },
     setSingleViewportColormap: {
       commandFn: actions.setSingleViewportColormap,
     },
