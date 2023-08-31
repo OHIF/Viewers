@@ -63,7 +63,6 @@ function initContextMenu({
       customizationService.get('cornerstoneViewportClickCommands') ||
       DEFAULT_CONTEXT_MENU_CLICKS;
     const toRun = customizations[name];
-    console.log('initContextMenu::cornerstoneViewportHandleEvent', name, toRun);
     const options = {
       nearbyToolData: findNearbyToolData(commandsManager, evt),
       event: evt,
@@ -82,9 +81,8 @@ function initContextMenu({
     if (!viewportInfo) {
       return;
     }
-    const viewportIndex = viewportInfo.getViewportIndex();
     // TODO check update upstream
-    setEnabledElement(viewportIndex, element);
+    setEnabledElement(viewportId, element);
 
     element.addEventListener(
       cs3DToolsEvents.MOUSE_CLICK,

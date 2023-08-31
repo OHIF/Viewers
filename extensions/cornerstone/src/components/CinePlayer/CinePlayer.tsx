@@ -2,14 +2,10 @@ import React, { useEffect } from 'react';
 import { CinePlayer, useCine, useViewportGrid } from '@ohif/ui';
 import { Enums, eventTarget } from '@cornerstonejs/core';
 
-function WrappedCinePlayer({
-  enabledVPElement,
-  viewportIndex,
-  servicesManager,
-}) {
+function WrappedCinePlayer({ enabledVPElement, viewportId, servicesManager }) {
   const { toolbarService, customizationService } = servicesManager.services;
   const [{ isCineEnabled, cines }, cineService] = useCine();
-  const [{ activeViewportIndex }] = useViewportGrid();
+  const [{ activeViewportId }] = useViewportGrid();
 
   const { component: CinePlayerComponent = CinePlayer } =
     customizationService.get('cinePlayer') ?? {};
@@ -30,11 +26,11 @@ function WrappedCinePlayer({
   };
 
   const cineHandler = () => {
-    if (!cines || !cines[viewportIndex] || !enabledVPElement) {
+    if (!cines || !cines[viewportId] || !enabledVPElement) {
       return;
     }
 
-    const cine = cines[viewportIndex];
+    const cine = cines[viewportId];
     const isPlaying = cine.isPlaying || false;
     const frameRate = cine.frameRate || 24;
 
@@ -56,7 +52,7 @@ function WrappedCinePlayer({
     );
 
     return () => {
-      cineService.setCine({ id: viewportIndex, isPlaying: false });
+      cineService.setCine({ id: viewportId, isPlaying: false });
       eventTarget.removeEventListener(
         Enums.Events.STACK_VIEWPORT_NEW_STACK,
         cineHandler
@@ -65,20 +61,20 @@ function WrappedCinePlayer({
   }, [enabledVPElement]);
 
   useEffect(() => {
-    if (!cines || !cines[viewportIndex] || !enabledVPElement) {
+    if (!cines || !cines[viewportId] || !enabledVPElement) {
       return;
     }
 
     cineHandler();
 
     return () => {
-      if (enabledVPElement && cines?.[viewportIndex]?.isPlaying) {
+      if (enabledVPElement && cines?.[viewportId]?.isPlaying) {
         cineService.stopClip(enabledVPElement);
       }
     };
-  }, [cines, viewportIndex, cineService, enabledVPElement, cineHandler]);
+  }, [cines, viewportId, cineService, enabledVPElement, cineHandler]);
 
-  const cine = cines[viewportIndex];
+  const cine = cines[viewportId];
   const isPlaying = (cine && cine.isPlaying) || false;
 
   return (
@@ -89,13 +85,13 @@ function WrappedCinePlayer({
         onClose={handleCineClose}
         onPlayPauseChange={isPlaying =>
           cineService.setCine({
-            id: activeViewportIndex,
+            id: activeViewportId,
             isPlaying,
           })
         }
         onFrameRateChange={frameRate =>
           cineService.setCine({
-            id: activeViewportIndex,
+            id: activeViewportId,
             frameRate,
           })
         }

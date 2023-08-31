@@ -65,7 +65,6 @@ const cornerstoneExtension: Types.Extensions.Extension = {
       imageRetrievalPoolManager.clearRequestStack(type);
     });
 
-    csWADOImageLoader.destroy();
     enabledElementReset();
   },
 

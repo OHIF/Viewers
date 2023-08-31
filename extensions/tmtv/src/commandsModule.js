@@ -39,8 +39,8 @@ const commandsModule = ({
   const { getEnabledElement } = utilityModule.exports;
 
   function _getActiveViewportsEnabledElement() {
-    const { activeViewportIndex } = viewportGridService.getState();
-    const { element } = getEnabledElement(activeViewportIndex) || {};
+    const { activeViewportId } = viewportGridService.getState();
+    const { element } = getEnabledElement(activeViewportId) || {};
     const enabledElement = cs.getEnabledElement(element);
     return enabledElement;
   }
@@ -48,8 +48,8 @@ const commandsModule = ({
   function _getMatchedViewportsToolGroupIds() {
     const { viewportMatchDetails } = hangingProtocolService.getMatchDetails();
     const toolGroupIds = [];
-    viewportMatchDetails.forEach((value, key) => {
-      const { viewportOptions } = value;
+    viewportMatchDetails.forEach(viewport => {
+      const { viewportOptions } = viewport;
       const { toolGroupId } = viewportOptions;
       if (toolGroupIds.indexOf(toolGroupId) === -1) {
         toolGroupIds.push(toolGroupId);
@@ -77,7 +77,7 @@ const commandsModule = ({
       // corrected PT vs the non-attenuation correct PT)
 
       let ptDisplaySet = null;
-      for (const [viewportIndex, viewportDetails] of viewportMatchDetails) {
+      for (const [viewportId, viewportDetails] of viewportMatchDetails) {
         const { displaySetsInfo } = viewportDetails;
         const displaySets = displaySetsInfo.map(({ displaySetInstanceUID }) =>
           displaySetService.getDisplaySetByUID(displaySetInstanceUID)
@@ -151,7 +151,6 @@ const commandsModule = ({
 
       // Add Segmentation to all toolGroupIds in the viewer
       const toolGroupIds = _getMatchedViewportsToolGroupIds();
-
       const representationType = LABELMAP;
 
       for (const toolGroupId of toolGroupIds) {
@@ -571,13 +570,8 @@ const commandsModule = ({
 
       let viewports = [];
       fusionViewportIds.forEach(viewportId => {
-        const viewportInfo = cornerstoneViewportService.getViewportInfo(
-          viewportId
-        );
-
-        const viewportIndex = viewportInfo.getViewportIndex();
         commandsManager.runCommand('setViewportColormap', {
-          viewportIndex,
+          viewportId,
           displaySetInstanceUID: ptDisplaySet.displaySetInstanceUID,
           colormap: {
             name: colormap,
