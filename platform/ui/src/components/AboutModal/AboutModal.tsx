@@ -7,7 +7,11 @@ import Icon from '../Icon';
 
 const Link = ({ href, children, showIcon = false }) => {
   return (
-    <a href={href} target="_blank" rel="noopener noreferrer">
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+    >
       <Typography
         variant="subtitle"
         component="p"
@@ -16,7 +20,10 @@ const Link = ({ href, children, showIcon = false }) => {
       >
         {children}
         {!!showIcon && (
-          <Icon name="external-link" className="ml-2 w-5 text-white" />
+          <Icon
+            name="external-link"
+            className="ml-2 w-5 text-white"
+          />
         )}
       </Typography>
     </a>
@@ -26,7 +33,11 @@ const Link = ({ href, children, showIcon = false }) => {
 const Row = ({ title, value, link }) => {
   return (
     <div className="mb-4 flex">
-      <Typography variant="subtitle" component="p" className="w-48 text-white">
+      <Typography
+        variant="subtitle"
+        component="p"
+        className="w-48 text-white"
+      >
         {title}
       </Typography>
 
@@ -64,7 +75,10 @@ const AboutModal = ({ buildNumber, versionNumber, commitHash }) => {
     <div>
       {renderRowTitle('Important Links')}
       <div className="mb-8 flex">
-        <Link href="https://community.ohif.org/" showIcon={true}>
+        <Link
+          href="https://community.ohif.org/"
+          showIcon={true}
+        >
           Visit the forum
         </Link>
         <span className="ml-4">
@@ -76,7 +90,10 @@ const AboutModal = ({ buildNumber, versionNumber, commitHash }) => {
           </Link>
         </span>
         <span className="ml-4">
-          <Link href="https://ohif.org/" showIcon={true}>
+          <Link
+            href="https://ohif.org/"
+            showIcon={true}
+          >
             More details
           </Link>
         </span>
@@ -99,11 +116,30 @@ const AboutModal = ({ buildNumber, versionNumber, commitHash }) => {
           value="https://github.com/OHIF/Viewers/"
           link="https://github.com/OHIF/Viewers/"
         /> */}
-        <Row title="Version number" value={versionNumber} />
-        {buildNumber && <Row title="Build number" value={buildNumber} />}
-        {commitHash && <Row title="Commit Hash" value={commitHash} />}
-        <Row title="Browser" value={browser} />
-        <Row title="OS" value={os} />
+        <Row
+          title="Version number"
+          value={versionNumber}
+        />
+        {buildNumber && (
+          <Row
+            title="Build number"
+            value={buildNumber}
+          />
+        )}
+        {commitHash && (
+          <Row
+            title="Commit Hash"
+            value={commitHash}
+          />
+        )}
+        <Row
+          title="Browser"
+          value={browser}
+        />
+        <Row
+          title="OS"
+          value={os}
+        />
       </div>
     </div>
   );

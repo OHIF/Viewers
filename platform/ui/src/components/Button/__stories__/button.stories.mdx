@@ -10,11 +10,17 @@ export const argTypes = {
   title: 'Components/Button',
 };
 
-<Meta title="Components/Button" component={Button} />
+<Meta
+  title="Components/Button"
+  component={Button}
+/>
 
 export const buttonTemplate = createComponentTemplate(Button);
 
-<Heading title="Button" componentRelativePath="Button/Button.tsx" />
+<Heading
+  title="Button"
+  componentRelativePath="Button/Button.tsx"
+/>
 
 - [Overview](#overview)
 - [Props](#props)
@@ -27,7 +33,10 @@ You can use the button component to create a button. It can be used in different
 ways, the default button is a simple button with text.
 
 <Canvas>
-  <Story name="Overview" args={{ children: 'Button', color: 'default' }}>
+  <Story
+    name="Overview"
+    args={{ children: 'Button', color: 'default' }}
+  >
     {buttonTemplate.bind({})}
   </Story>
 </Canvas>
@@ -71,7 +80,10 @@ You can mix different props together to create a button.
 
 <Canvas>
   <Story name="Custom">
-    <Button type={ButtonEnums.type.secondary} size={ButtonEnums.size.small}>
+    <Button
+      type={ButtonEnums.type.secondary}
+      size={ButtonEnums.size.small}
+    >
       Small, Secondary Button
     </Button>
   </Story>
@@ -143,7 +155,10 @@ End Icon is the same as start icon, but for the end of the button.
         );
       };
       return (
-        <Button startIcon={<Github />} endIcon={<Github />}>
+        <Button
+          startIcon={<Github />}
+          endIcon={<Github />}
+        >
           Start and End Icon Button
         </Button>
       );

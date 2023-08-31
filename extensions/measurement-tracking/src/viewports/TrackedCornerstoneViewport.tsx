@@ -348,7 +348,10 @@ function _getStatusComponent(isTracked) {
         content={
           <div className="flex py-2">
             <div className="flex pt-1">
-              <Icon name="info-link" className="text-primary-main w-4" />
+              <Icon
+                name="info-link"
+                className="text-primary-main w-4"
+              />
             </div>
             <div className="ml-4 flex">
               <span className="text-common-light text-base">
@@ -371,7 +374,10 @@ function _getStatusComponent(isTracked) {
           </div>
         }
       >
-        <Icon name={trackedIcon} className="text-aqua-pale" />
+        <Icon
+          name={trackedIcon}
+          className="text-aqua-pale"
+        />
       </Tooltip>
     </div>
   );

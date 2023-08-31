@@ -42,7 +42,11 @@ const LegacyCinePlayer = ({
         className="text-primary-active ml-4 mr-3"
         onClick={onPlayPauseChangeHandler}
       >
-        <Icon width="15px" height="15px" name={action[isPlaying].icon} />
+        <Icon
+          width="15px"
+          height="15px"
+          name={action[isPlaying].icon}
+        />
       </IconButton>
       <div className="mr-3 flex h-full flex-col justify-center pt-2 pl-1 pr-1">
         <input

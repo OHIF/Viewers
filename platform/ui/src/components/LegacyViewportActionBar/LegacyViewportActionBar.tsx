@@ -103,7 +103,10 @@ const LegacyViewportActionBar = ({
         </div>
       </div>
       {showNavArrows && !showCine && (
-        <div className="mt-2" style={{ pointerEvents: 'all' }}>
+        <div
+          className="mt-2"
+          style={{ pointerEvents: 'all' }}
+        >
           {/* TODO Revisit design of ButtonGroup later - for now use LegacyButton for its children.*/}
           <ButtonGroup>
             <LegacyButton
@@ -112,7 +115,10 @@ const LegacyViewportActionBar = ({
               border="light"
               onClick={() => onArrowsClick('left')}
             >
-              <Icon name="chevron-left" className="w-4 text-white" />
+              <Icon
+                name="chevron-left"
+                className="w-4 text-white"
+              />
             </LegacyButton>
             <LegacyButton
               size="initial"
@@ -120,7 +126,10 @@ const LegacyViewportActionBar = ({
               className="bg-black px-2 py-1"
               onClick={() => onArrowsClick('right')}
             >
-              <Icon name="chevron-right" className="w-4 text-white" />
+              <Icon
+                name="chevron-right"
+                className="w-4 text-white"
+              />
             </LegacyButton>
           </ButtonGroup>
         </div>
@@ -130,7 +139,10 @@ const LegacyViewportActionBar = ({
           <LegacyCinePlayer {...cineProps} />
         </div>
       )}
-      <div className="mt-2 ml-4 mr-2 flex h-8" onClick={onPatientInfoClick}>
+      <div
+        className="mt-2 ml-4 mr-2 flex h-8"
+        onClick={onPatientInfoClick}
+      >
         <LegacyPatientInfo
           showPatientInfoRef={showPatientInfoRef}
           isOpen={showPatientInfo}

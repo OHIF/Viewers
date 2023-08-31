@@ -40,7 +40,10 @@ function PatientInfo({
           isOpen && (
             <div className="flex py-2">
               <div className="flex pt-1">
-                <Icon name="info-link" className="text-primary-main w-4" />
+                <Icon
+                  name="info-link"
+                  className="text-primary-main w-4"
+                />
               </div>
               <div className="ml-2 flex flex-col">
                 <span
@@ -76,7 +79,10 @@ function PatientInfo({
                     <span className={classnames(classes.infoHeader)}>
                       {t('MRN')}
                     </span>
-                    <span className={classnames(classes.infoText)} title={MRN}>
+                    <span
+                      className={classnames(classes.infoText)}
+                      title={MRN}
+                    >
                       {MRN}
                     </span>
                   </div>

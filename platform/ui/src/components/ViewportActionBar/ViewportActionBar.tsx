@@ -165,7 +165,10 @@ const ViewportActionBar = ({
           />
         </>
       )}
-      <div className={patientInfoClasses()} onClick={onPatientInfoClick}>
+      <div
+        className={patientInfoClasses()}
+        onClick={onPatientInfoClick}
+      >
         <PatientInfo
           showPatientInfoRef={showPatientInfoElemRef}
           isOpen={showPatientInfo}

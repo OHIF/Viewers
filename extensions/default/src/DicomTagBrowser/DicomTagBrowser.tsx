@@ -110,7 +110,10 @@ const DicomTagBrowser = ({ displaySets, displaySetInstanceUID }) => {
     <div className="dicom-tag-browser-content">
       <div className="mb-6 flex flex-row items-center pl-1">
         <div className="flex w-1/2 flex-row items-center">
-          <Typography variant="subtitle" className="mr-4">
+          <Typography
+            variant="subtitle"
+            className="mr-4"
+          >
             Series
           </Typography>
           <div className="mr-8 grow">
@@ -128,7 +131,10 @@ const DicomTagBrowser = ({ displaySets, displaySetInstanceUID }) => {
         </div>
         <div className="flex w-1/2 flex-row items-center">
           {showInstanceList && (
-            <Typography variant="subtitle" className="mr-4">
+            <Typography
+              variant="subtitle"
+              className="mr-4"
+            >
               Instance Number
             </Typography>
           )}

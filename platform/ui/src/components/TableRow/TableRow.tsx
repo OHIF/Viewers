@@ -12,7 +12,10 @@ const TableRow = ({ children, className, isTableHead, style }) => {
   });
 
   return (
-    <div className={classnames('flex w-full', className)} style={style}>
+    <div
+      className={classnames('flex w-full', className)}
+      style={style}
+    >
       {childrens}
     </div>
   );

@@ -19,8 +19,14 @@ const AddNewSegmentRow = ({
     <div>
       <div className="text-primary-active flex cursor-pointer items-center bg-black py-1 pl-[29px] text-[12px] hover:opacity-80">
         {showAddSegment && !disableEditing && (
-          <div className="flex items-center" onClick={() => onSegmentAdd()}>
-            <Icon name="row-add" className="h-5 w-5" />
+          <div
+            className="flex items-center"
+            onClick={() => onSegmentAdd()}
+          >
+            <Icon
+              name="row-add"
+              className="h-5 w-5"
+            />
             <div className="">Add Segment</div>
           </div>
         )}
@@ -32,9 +38,15 @@ const AddNewSegmentRow = ({
           }}
         >
           {isVisible ? (
-            <Icon name="row-show-all" className="h-5 w-5" />
+            <Icon
+              name="row-show-all"
+              className="h-5 w-5"
+            />
           ) : (
-            <Icon name="row-hide-all" className="h-5 w-5" />
+            <Icon
+              name="row-hide-all"
+              className="h-5 w-5"
+            />
           )}
         </div>
       </div>
@@ -190,7 +202,10 @@ const SegmentationGroup = ({
                 const { segmentIndex, color, label, isVisible, isLocked } =
                   segment;
                 return (
-                  <div className="mb-[1px]" key={segmentIndex}>
+                  <div
+                    className="mb-[1px]"
+                    key={segmentIndex}
+                  >
                     <SegmentationGroupSegment
                       segmentationId={id}
                       segmentIndex={segmentIndex}

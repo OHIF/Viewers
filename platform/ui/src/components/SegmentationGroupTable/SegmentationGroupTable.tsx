@@ -89,7 +89,10 @@ const SegmentationGroupTable = ({
           className="text-primary-active flex h-[45px] cursor-pointer items-center bg-black pl-1 text-[12px] hover:opacity-80"
           onClick={() => onSegmentationAdd()}
         >
-          <Icon name="row-add" className="h-5 w-5" />
+          <Icon
+            name="row-add"
+            className="h-5 w-5"
+          />
           <div className="pl-1">Add New Segmentation</div>
         </div>
       )}

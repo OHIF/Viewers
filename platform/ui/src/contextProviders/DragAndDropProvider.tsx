@@ -25,7 +25,10 @@ function DragAndDropProvider({ children }) {
   console.log('using... touch backend?', isTouchDevice);
 
   return (
-    <DndProvider backend={backend} opts={opts}>
+    <DndProvider
+      backend={backend}
+      opts={opts}
+    >
       {children}
     </DndProvider>
   );

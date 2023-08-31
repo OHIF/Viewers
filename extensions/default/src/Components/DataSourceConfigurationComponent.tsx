@@ -102,7 +102,10 @@ function DataSourceConfigurationComponent({
       ></Icon>
       {configuredItems.map((item, itemIndex) => {
         return (
-          <div key={itemIndex} className="flex overflow-hidden">
+          <div
+            key={itemIndex}
+            className="flex overflow-hidden"
+          >
             <div
               key={itemIndex}
               className="overflow-hidden text-ellipsis whitespace-nowrap"

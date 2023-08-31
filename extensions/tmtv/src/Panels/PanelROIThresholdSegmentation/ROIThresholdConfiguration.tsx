@@ -85,7 +85,10 @@ function ROIThresholdConfiguration({ config, dispatch, runCommand }) {
           <table>
             <tbody>
               <tr className="mt-2">
-                <td className="pr-4 pt-2" colSpan="3">
+                <td
+                  className="pr-4 pt-2"
+                  colSpan="3"
+                >
                   <Label
                     className="text-white"
                     text="Lower & Upper Ranges"
@@ -94,7 +97,10 @@ function ROIThresholdConfiguration({ config, dispatch, runCommand }) {
               </tr>
               <tr className="mt-2">
                 <td className="pr-4 pt-2 text-center">
-                  <Label className="text-white" text="CT"></Label>
+                  <Label
+                    className="text-white"
+                    text="CT"
+                  ></Label>
                 </td>
                 <td>
                   <div className="flex justify-between">
@@ -135,7 +141,10 @@ function ROIThresholdConfiguration({ config, dispatch, runCommand }) {
               </tr>
               <tr>
                 <td className="pr-4 pt-2 text-center">
-                  <Label className="text-white" text="PT"></Label>
+                  <Label
+                    className="text-white"
+                    text="PT"
+                  ></Label>
                 </td>
                 <td>
                   <div className="flex justify-between">

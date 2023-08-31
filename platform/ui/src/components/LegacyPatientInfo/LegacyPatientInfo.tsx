@@ -40,7 +40,10 @@ function LegacyPatientInfo({
           isOpen && (
             <div className="flex py-2">
               <div className="flex pt-1">
-                <Icon name="info-link" className="text-primary-main w-4" />
+                <Icon
+                  name="info-link"
+                  className="text-primary-main w-4"
+                />
               </div>
               <div className="ml-2 flex flex-col">
                 <span
@@ -76,7 +79,10 @@ function LegacyPatientInfo({
                     <span className={classnames(classes.infoHeader)}>
                       {t('MRN')}
                     </span>
-                    <span className={classnames(classes.infoText)} title={MRN}>
+                    <span
+                      className={classnames(classes.infoText)}
+                      title={MRN}
+                    >
                       {MRN}
                     </span>
                   </div>
@@ -123,7 +129,10 @@ function LegacyPatientInfo({
       >
         <div className="relative flex cursor-pointer justify-end">
           <div className="relative">
-            <Icon name="profile" className="w-5 text-white" />
+            <Icon
+              name="profile"
+              className="w-5 text-white"
+            />
             <Icon
               name="info-link"
               className="absolute w-5 bg-black text-white"

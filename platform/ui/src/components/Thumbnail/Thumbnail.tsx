@@ -77,7 +77,10 @@ const Thumbnail = ({
             {seriesNumber}
           </div>
           <div className="flex flex-1 flex-row items-center">
-            <Icon name={countIcon || 'group-layers'} className="mr-2 w-3" />
+            <Icon
+              name={countIcon || 'group-layers'}
+              className="mr-2 w-3"
+            />
             {` ${numInstances}`}
           </div>
           <DisplaySetMessageListTooltip

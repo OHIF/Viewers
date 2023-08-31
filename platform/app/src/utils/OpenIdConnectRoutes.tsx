@@ -182,7 +182,10 @@ function OpenIdConnectRoutes({
 
   return (
     <Routes basename={routerBasename}>
-      <Route path={silent_refresh_uri} onEnter={window.location.reload} />
+      <Route
+        path={silent_refresh_uri}
+        onEnter={window.location.reload}
+      />
       <Route
         path={post_logout_redirect_uri}
         element={

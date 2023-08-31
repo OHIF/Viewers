@@ -41,7 +41,10 @@ const ExpandableToolbarButton = ({
   };
 
   return (
-    <div key={id} className="ExpandableToolbarButton">
+    <div
+      key={id}
+      className="ExpandableToolbarButton"
+    >
       <IconButton
         variant={isActive ? 'contained' : 'text'}
         className={classnames(
@@ -61,7 +64,10 @@ const ExpandableToolbarButton = ({
             className
           )}
         >
-          <Content {...contentProps} onClick={onChildClickHandler} />
+          <Content
+            {...contentProps}
+            onClick={onChildClickHandler}
+          />
         </div>
       </div>
     </div>

@@ -222,7 +222,10 @@ const DialogProvider = ({ children, service }) => {
             style={{ zIndex: '999', position: 'absolute', width: '350px' }}
             onClick={() => _bringToFront(id)}
           >
-            <DialogContent {...dialog} {...contentProps} />
+            <DialogContent
+              {...dialog}
+              {...contentProps}
+            />
           </div>
         </Draggable>
       );
@@ -231,7 +234,10 @@ const DialogProvider = ({ children, service }) => {
         const background = 'bg-black bg-opacity-50';
         const overlay = 'fixed z-50 left-0 top-0 w-full h-full overflow-auto';
         return (
-          <div className={classNames(overlay, background)} key={id}>
+          <div
+            className={classNames(overlay, background)}
+            key={id}
+          >
             {component}
           </div>
         );
@@ -245,7 +251,10 @@ const DialogProvider = ({ children, service }) => {
 
       if (typeof onClickOutside === 'function') {
         result = (
-          <OutsideAlerter key={id} onClickOutside={onClickOutside}>
+          <OutsideAlerter
+            key={id}
+            onClickOutside={onClickOutside}
+          >
             {result}
           </OutsideAlerter>
         );
@@ -280,7 +289,10 @@ const DialogProvider = ({ children, service }) => {
   return (
     <DialogContext.Provider value={{ create, dismiss, dismissAll, isEmpty }}>
       {!isEmpty() && (
-        <div className="absolute h-full w-full" onKeyDown={onKeyDownHandler}>
+        <div
+          className="absolute h-full w-full"
+          onKeyDown={onKeyDownHandler}
+        >
           {renderDialogs()}
         </div>
       )}
@@ -298,7 +310,10 @@ export const withDialog = Component => {
   return function WrappedComponent(props) {
     const { create, dismiss, dismissAll, isEmpty } = useDialog();
     return (
-      <Component {...props} dialog={{ create, dismiss, dismissAll, isEmpty }} />
+      <Component
+        {...props}
+        dialog={{ create, dismiss, dismissAll, isEmpty }}
+      />
     );
   };
 };

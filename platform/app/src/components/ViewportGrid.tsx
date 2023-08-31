@@ -361,7 +361,10 @@ function ViewerViewportGrid(props) {
   }
 
   return (
-    <ViewportGrid numRows={numRows} numCols={numCols}>
+    <ViewportGrid
+      numRows={numRows}
+      numCols={numCols}
+    >
       {/* {ViewportPanes} */}
       {getViewportPanes()}
     </ViewportGrid>

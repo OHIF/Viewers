@@ -500,7 +500,10 @@ function _getStatusComponent({
       break;
     case 3:
       StatusIcon = () => (
-        <Icon className="text-aqua-pale" name="status-untracked" />
+        <Icon
+          className="text-aqua-pale"
+          name="status-untracked"
+        />
       );
 
       ToolTipMessage = () => (
@@ -529,7 +532,10 @@ function _getStatusComponent({
   return (
     <>
       {ToolTipMessage && (
-        <Tooltip content={<ToolTipMessage />} position="bottom-left">
+        <Tooltip
+          content={<ToolTipMessage />}
+          position="bottom-left"
+        >
           <StatusArea />
         </Tooltip>
       )}

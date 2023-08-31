@@ -87,7 +87,10 @@ const Tooltip = ({
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
           >
-            <path fill="currentColor" d="M24 22l-12-20l-12 20" />
+            <path
+              fill="currentColor"
+              d="M24 22l-12-20l-12 20"
+            />
           </svg>
         </div>
       </div>

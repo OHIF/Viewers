@@ -10,7 +10,10 @@ function ExportReports({ segmentations, tmtvValue, config, commandsManager }) {
       {segmentations?.length ? (
         <div className="mt-4 flex justify-center space-x-2">
           {/* TODO Revisit design of ButtonGroup later - for now use LegacyButton for its children.*/}
-          <ButtonGroup color="black" size="inherit">
+          <ButtonGroup
+            color="black"
+            size="inherit"
+          >
             <LegacyButton
               className="px-2 py-2 text-base"
               disabled={tmtvValue === null}
@@ -25,7 +28,10 @@ function ExportReports({ segmentations, tmtvValue, config, commandsManager }) {
               {t('Export CSV')}
             </LegacyButton>
           </ButtonGroup>
-          <ButtonGroup color="black" size="inherit">
+          <ButtonGroup
+            color="black"
+            size="inherit"
+          >
             <LegacyButton
               className="px-2 py-2 text-base"
               onClick={() => {

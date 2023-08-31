@@ -308,7 +308,11 @@ function DicomUploadProgress({
             } ${
               dicomFileUploaderArr.length > 1 ? 'files' : 'file'
             } completed.`}</span>
-            <Button disabled={false} className="ml-auto" onClick={onComplete}>
+            <Button
+              disabled={false}
+              className="ml-auto"
+              onClick={onComplete}
+            >
               {'Close'}
             </Button>
           </>
@@ -352,7 +356,10 @@ function DicomUploadProgress({
               setShowFailedOnly(currentShowFailedOnly => !currentShowFailedOnly)
             }
           >
-            <Icon className="cursor-pointer" name="icon-status-alert"></Icon>
+            <Icon
+              className="cursor-pointer"
+              name="icon-status-alert"
+            ></Icon>
           </div>
         )}
       </div>
@@ -376,7 +383,10 @@ function DicomUploadProgress({
             </>
           ) : (
             <>
-              <div ref={progressBarContainerRef} className="flex-grow">
+              <div
+                ref={progressBarContainerRef}
+                className="flex-grow"
+              >
                 <ProgressLoadingBar
                   progress={
                     showInfiniteProgressBar()

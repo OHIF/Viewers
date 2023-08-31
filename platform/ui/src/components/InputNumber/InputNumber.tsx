@@ -83,7 +83,12 @@ const InputNumber: React.FC<{
 
   return (
     <div className={'flex flex-1 flex-col'}>
-      {label && <Label className={labelClassName} text={label}></Label>}
+      {label && (
+        <Label
+          className={labelClassName}
+          text={label}
+        ></Label>
+      )}
       <div
         className={`border-secondary-light flex items-center justify-center overflow-hidden rounded-md border-2 bg-black px-1 ${
           sizesClasses[size]

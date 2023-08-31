@@ -38,7 +38,10 @@ const StudyListExpandedRow = ({
                 {Object.keys(row).map(cellKey => {
                   const content = row[cellKey];
                   return (
-                    <TableCell key={cellKey} className="truncate">
+                    <TableCell
+                      key={cellKey}
+                      className="truncate"
+                    >
                       {content}
                     </TableCell>
                   );

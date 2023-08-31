@@ -31,8 +31,14 @@ function OHIFCornerstoneVideoViewport({ displaySets }) {
         className="h-full w-full"
         crossOrigin="anonymous"
       >
-        <source src={url} type={mimeType} />
-        <source src={url} type={mimeType} />
+        <source
+          src={url}
+          type={mimeType}
+        />
+        <source
+          src={url}
+          type={mimeType}
+        />
         Video src/type not supported:{' '}
         <a href={url}>
           {url} of type {mimeType}

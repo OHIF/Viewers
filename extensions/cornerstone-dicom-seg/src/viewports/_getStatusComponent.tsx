@@ -19,7 +19,10 @@ export default function _getStatusComponent({ isHydrated, onStatusClick }) {
       break;
     case false:
       StatusIcon = () => (
-        <Icon className="text-aqua-pale" name="status-untracked" />
+        <Icon
+          className="text-aqua-pale"
+          name="status-untracked"
+        />
       );
 
       ToolTipMessage = () => <div>Click LOAD to load segmentation.</div>;
@@ -46,7 +49,10 @@ export default function _getStatusComponent({ isHydrated, onStatusClick }) {
   return (
     <>
       {ToolTipMessage && (
-        <Tooltip content={<ToolTipMessage />} position="bottom-left">
+        <Tooltip
+          content={<ToolTipMessage />}
+          position="bottom-left"
+        >
           <StatusArea />
         </Tooltip>
       )}

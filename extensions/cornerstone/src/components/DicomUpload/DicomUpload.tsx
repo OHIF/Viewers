@@ -43,17 +43,26 @@ function DicomUpload({
             className="dicom-upload-drop-area-border-dash m-5 flex h-full flex-col items-center justify-center"
           >
             <div className="flex gap-3">
-              <Dropzone onDrop={onDrop} noDrag>
+              <Dropzone
+                onDrop={onDrop}
+                noDrag
+              >
                 {({ getRootProps, getInputProps }) => (
                   <div {...getRootProps()}>
-                    <Button disabled={false} onClick={() => {}}>
+                    <Button
+                      disabled={false}
+                      onClick={() => {}}
+                    >
                       {'Add files'}
                       <input {...getInputProps()} />
                     </Button>
                   </div>
                 )}
               </Dropzone>
-              <Dropzone onDrop={onDrop} noDrag>
+              <Dropzone
+                onDrop={onDrop}
+                noDrag
+              >
                 {({ getRootProps, getInputProps }) => (
                   <div {...getRootProps()}>
                     <Button

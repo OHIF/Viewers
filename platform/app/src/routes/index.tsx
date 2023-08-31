@@ -36,7 +36,10 @@ const NotFoundStudy = () => {
         <h4>
           One or more of the requested studies are not available at this time.
           Return to the{' '}
-          <Link className="text-primary-light" to={'/'}>
+          <Link
+            className="text-primary-light"
+            to={'/'}
+          >
             study list
           </Link>{' '}
           to select a different study to view.
@@ -119,7 +122,10 @@ const createRoutes = ({
   function RouteWithErrorBoundary({ route, ...rest }) {
     // eslint-disable-next-line react/jsx-props-no-spreading
     return (
-      <ErrorBoundary context={`Route ${route.path}`} fallbackRoute="/">
+      <ErrorBoundary
+        context={`Route ${route.path}`}
+        fallbackRoute="/"
+      >
         <route.children
           {...rest}
           {...route.props}

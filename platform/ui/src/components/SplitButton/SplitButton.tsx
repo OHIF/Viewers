@@ -173,7 +173,10 @@ const SplitButton = ({
       >
         {icon && (
           <span className="mr-4">
-            <Icon name={icon} className="h-5 w-5" />
+            <Icon
+              name={icon}
+              className="h-5 w-5"
+            />
           </span>
         )}
         <span className="mr-5">{t(label)}</span>
@@ -188,7 +191,10 @@ const SplitButton = ({
       onOutsideClick={outsideClickHandler}
       disabled={!state.isExpanded}
     >
-      <div name="SplitButton" className="relative">
+      <div
+        name="SplitButton"
+        className="relative"
+      >
         <div
           className={classes.Button({
             ...state,

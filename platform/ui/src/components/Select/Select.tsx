@@ -29,7 +29,10 @@ const Option = props => {
             <Icon name={'checkbox-default'} />
           )}
         </div>
-        <label id={props.data.value} className="ml-3 mt-1">
+        <label
+          id={props.data.value}
+          className="ml-3 mt-1"
+        >
           <span>{props.value}</span>
         </label>
       </div>

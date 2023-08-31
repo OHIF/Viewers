@@ -27,7 +27,11 @@ const Header = ({ title, noCloseButton, onClose }) => {
 
   return (
     <div className={classNames(theme, flex, padding)}>
-      <Typography variant="h6" color="primaryLight" className="!leading-[1.2]">
+      <Typography
+        variant="h6"
+        color="primaryLight"
+        className="!leading-[1.2]"
+      >
         {title}
       </Typography>
       {!noCloseButton && <CloseButton onClick={onClose} />}

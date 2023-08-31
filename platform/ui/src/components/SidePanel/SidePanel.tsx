@@ -271,13 +271,19 @@ const SidePanel = ({
           {/** only show carousel nav if tabs are more than 3 tabs */}
           {tabs.length > 3 && (
             <div className="text-primary-active bg-primary-dark flex w-full justify-end gap-2 py-1 px-2">
-              <button ref={prevRef} className="swiper-button-prev-custom">
+              <button
+                ref={prevRef}
+                className="swiper-button-prev-custom"
+              >
                 <Icon
                   name={'icon-prev'}
                   className={classnames('text-primary-active')}
                 />
               </button>
-              <button ref={nextRef} className="swiper-button-next-custom">
+              <button
+                ref={nextRef}
+                className="swiper-button-next-custom"
+              >
                 <Icon
                   name={'icon-next'}
                   className={classnames('text-primary-active')}

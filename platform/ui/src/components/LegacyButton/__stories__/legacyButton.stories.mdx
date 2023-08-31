@@ -10,7 +10,10 @@ export const argTypes = {
   title: 'Components/LegacyButton',
 };
 
-<Meta title="Components/LegacyButton" component={LegacyButton} />
+<Meta
+  title="Components/LegacyButton"
+  component={LegacyButton}
+/>
 
 export const buttonTemplate = createComponentTemplate(LegacyButton);
 
@@ -30,7 +33,10 @@ You can use the legacy button component to create a button. It can be used in
 different ways, the default button is a simple button with a text.
 
 <Canvas>
-  <Story name="Overview" args={{ children: 'LegacyButton', color: 'default' }}>
+  <Story
+    name="Overview"
+    args={{ children: 'LegacyButton', color: 'default' }}
+  >
     {buttonTemplate.bind({})}
   </Story>
 </Canvas>
@@ -82,7 +88,10 @@ You can mix different props together to create a legacy button.
 
 <Canvas>
   <Story name="Custom">
-    <LegacyButton color="secondary" variant="outlined">
+    <LegacyButton
+      color="secondary"
+      variant="outlined"
+    >
       Custom LegacyButton
     </LegacyButton>
   </Story>
@@ -159,7 +168,10 @@ End Icon is the same as start icon, but for the end of the legacy button.
         );
       };
       return (
-        <LegacyButton startIcon={<Github />} endIcon={<Github />}>
+        <LegacyButton
+          startIcon={<Github />}
+          endIcon={<Github />}
+        >
           Start and End Icon LegacyButton
         </LegacyButton>
       );
@@ -174,7 +186,10 @@ You can make the legacy button full width by setting the `fullWidth` prop to
 
 <Canvas>
   <Story name="Full Width">
-    <LegacyButton fullWidth color="secondary">
+    <LegacyButton
+      fullWidth
+      color="secondary"
+    >
       Full Width LegacyButton
     </LegacyButton>
   </Story>

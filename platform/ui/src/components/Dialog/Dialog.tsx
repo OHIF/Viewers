@@ -55,7 +55,11 @@ const Dialog = ({
         value={value}
         setValue={setValue}
       />
-      <BodyComponent text={text} value={value} setValue={setValue} />
+      <BodyComponent
+        text={text}
+        value={value}
+        setValue={setValue}
+      />
       <FooterComponent
         actions={actions}
         onSubmit={onSubmit}

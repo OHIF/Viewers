@@ -36,7 +36,10 @@ const renderYearsOptions = () => {
   for (let i = 0; i < 20; i++) {
     const year = currentYear - i;
     options.push(
-      <option key={year} value={year}>
+      <option
+        key={year}
+        value={year}
+      >
         {year}
       </option>
     );
@@ -101,7 +104,10 @@ const DateRange = props => {
             onBlur={handleOnBlur}
           >
             {moment.months().map((label, value) => (
-              <option key={value} value={value}>
+              <option
+                key={value}
+                value={value}
+              >
                 {label}
               </option>
             ))}

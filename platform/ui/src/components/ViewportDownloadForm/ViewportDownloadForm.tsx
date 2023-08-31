@@ -164,7 +164,10 @@ const ViewportDownloadForm = ({
     }
 
     return (
-      <Typography className="mt-2 pl-1" color="error">
+      <Typography
+        className="mt-2 pl-1"
+        color="error"
+      >
         {error_messages[errorType]}
       </Typography>
     );
@@ -359,7 +362,10 @@ const ViewportDownloadForm = ({
               </InputLabelWrapper>
             </div>
             <div className="mt-4 ml-2">
-              <label htmlFor="show-annotations" className="flex items-center">
+              <label
+                htmlFor="show-annotations"
+                className="flex items-center"
+              >
                 <input
                   id="show-annotations"
                   data-cy="show-annotations"

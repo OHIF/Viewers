@@ -53,7 +53,10 @@ const HotkeysPreferences = ({
       <div className="flex w-full flex-row justify-evenly">
         {splitedHotkeys.map((hotkeys, index) => {
           return (
-            <div key={`HotkeyGroup@${index}`} className="flex flex-row">
+            <div
+              key={`HotkeyGroup@${index}`}
+              className="flex flex-row"
+            >
               <div className="flex flex-col p-2 text-right">
                 {hotkeys.map((hotkey, hotkeyIndex) => {
                   const [id, definition] = hotkey;

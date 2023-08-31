@@ -12,7 +12,10 @@ const Header = () => {
               className="text-primary-active w-8 cursor-pointer"
               onClick={() => alert('Navigate to previous page')}
             />
-            <a href="#" className="ml-4">
+            <a
+              href="#"
+              className="ml-4"
+            >
               <Svg name="logo-ohif" />
             </a>
           </div>

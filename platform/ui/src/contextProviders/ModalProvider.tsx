@@ -96,7 +96,11 @@ const ModalProvider = ({ children, modal: Modal, service }) => {
           onClose={hide}
           shouldCloseOnOverlayClick={shouldCloseOnOverlayClick}
         >
-          <ModalContent {...contentProps} show={show} hide={hide} />
+          <ModalContent
+            {...contentProps}
+            show={show}
+            hide={hide}
+          />
         </Modal>
       )}
       {children}
@@ -112,7 +116,12 @@ const ModalProvider = ({ children, modal: Modal, service }) => {
 export const withModal = Component => {
   return function WrappedComponent(props) {
     const { show, hide } = useModal();
-    return <Component {...props} modal={{ show, hide }} />;
+    return (
+      <Component
+        {...props}
+        modal={{ show, hide }}
+      />
+    );
   };
 };
 

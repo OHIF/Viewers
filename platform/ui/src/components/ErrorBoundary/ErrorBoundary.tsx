@@ -18,7 +18,10 @@ const DefaultFallback = ({
   const title = `Something went wrong${!isProduction && ` in ${context}`}.`;
   const subtitle = `Sorry, something went wrong there. Try again.`;
   return (
-    <div className="ErrorFallback bg-primary-dark h-full w-full" role="alert">
+    <div
+      className="ErrorFallback bg-primary-dark h-full w-full"
+      role="alert"
+    >
       <p className="text-primary-light text-xl">{title}</p>
       <p className="text-primary-light text-base">{subtitle}</p>
       {!isProduction && (
@@ -35,7 +38,11 @@ const DefaultFallback = ({
           >
             <React.Fragment>
               <div>{'Stack Trace'}</div>
-              <Icon width="15px" height="15px" name="chevron-down" />
+              <Icon
+                width="15px"
+                height="15px"
+                name="chevron-down"
+              />
             </React.Fragment>
           </IconButton>
 
@@ -100,7 +107,11 @@ const ErrorBoundary = ({
   return (
     <ReactErrorBoundary
       fallbackRender={props => (
-        <Fallback {...props} context={context} fallbackRoute={fallbackRoute} />
+        <Fallback
+          {...props}
+          context={context}
+          fallbackRoute={fallbackRoute}
+        />
       )}
       onReset={onResetHandler}
       onError={onErrorHandler}

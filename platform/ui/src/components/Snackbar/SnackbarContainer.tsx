@@ -8,7 +8,11 @@ const SnackbarContainer = () => {
   const { snackbarItems, hide } = useSnackbar();
 
   const renderItem = item => (
-    <SnackbarItem key={item.itemId} options={item} onClose={hide} />
+    <SnackbarItem
+      key={item.itemId}
+      options={item}
+      onClose={hide}
+    />
   );
 
   const renderItems = () => {

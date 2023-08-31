@@ -142,7 +142,10 @@ const TooltipClipboard = ({ children, text }) => {
             <>
               {children}
               <div className="border-secondary-light ml-2 border-l pl-2">
-                <Icon name="clipboard" className="w-4 text-white" />
+                <Icon
+                  name="clipboard"
+                  className="w-4 text-white"
+                />
               </div>
             </>
           )}

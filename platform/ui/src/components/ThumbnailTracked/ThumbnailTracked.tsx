@@ -47,7 +47,10 @@ const ThumbnailTracked = ({
               </div>
             }
           >
-            <Icon name="tool-more-menu" className="py-2 text-white" />
+            <Icon
+              name="tool-more-menu"
+              className="py-2 text-white"
+            />
           </Tooltip>
         </div>
       );
@@ -76,7 +79,10 @@ const ThumbnailTracked = ({
             content={
               <div className="flex flex-1 flex-row">
                 <div className="flex-2 flex items-center justify-center pr-4">
-                  <Icon name="info-link" className="text-primary-active" />
+                  <Icon
+                    name="info-link"
+                    className="text-primary-active"
+                  />
                 </div>
                 <div className="flex flex-1 flex-col">
                   <span>
@@ -97,7 +103,10 @@ const ThumbnailTracked = ({
               </div>
             }
           >
-            <Icon name={trackedIcon} className="text-primary-light mb-2 w-4" />
+            <Icon
+              name={trackedIcon}
+              className="text-primary-light mb-2 w-4"
+            />
           </Tooltip>
 
           <div
@@ -109,7 +118,10 @@ const ThumbnailTracked = ({
         </div>
         {isTracked && (
           <div onClick={onClickUntrack}>
-            <Icon name="cancel" className="text-primary-active w-4" />
+            <Icon
+              name="cancel"
+              className="text-primary-active w-4"
+            />
           </div>
         )}
       </div>

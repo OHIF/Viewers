@@ -137,7 +137,12 @@ export const withSnackbar = Component => {
     const snackbarContext = {
       ...useSnackbar(),
     };
-    return <Component {...props} snackbarContext={snackbarContext} />;
+    return (
+      <Component
+        {...props}
+        snackbarContext={snackbarContext}
+      />
+    );
   };
 };
 

@@ -73,7 +73,10 @@ const Viewport: React.FC<ViewportProps> = ({
       </div>
 
       {/* STUDY IMAGE */}
-      <div className="h-full w-full" id={viewportId}>
+      <div
+        className="h-full w-full"
+        id={viewportId}
+      >
         {children}
       </div>
     </div>

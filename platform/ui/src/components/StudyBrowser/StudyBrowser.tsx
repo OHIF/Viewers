@@ -82,7 +82,11 @@ const StudyBrowser = ({
         data-cy={'studyBrowser-panel'}
       >
         {/* TODO Revisit design of ButtonGroup later - for now use LegacyButton for its children.*/}
-        <ButtonGroup variant="outlined" color="secondary" splitBorder={false}>
+        <ButtonGroup
+          variant="outlined"
+          color="secondary"
+          splitBorder={false}
+        >
           {tabs.map(tab => {
             const { name, label, studies } = tab;
             const isActive = activeTabName === name;

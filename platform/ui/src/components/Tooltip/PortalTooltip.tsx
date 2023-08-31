@@ -44,7 +44,10 @@ export default class PortalTooltip extends React.Component {
     let parentEl =
       typeof parent === 'string' ? document.querySelector(parent) : parent;
     ReactDOM.render(
-      <Card parentEl={parentEl} {...other} />,
+      <Card
+        parentEl={parentEl}
+        {...other}
+      />,
       portalNodes[this.props.group].node
     );
   }

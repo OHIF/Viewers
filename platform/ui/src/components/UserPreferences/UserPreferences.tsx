@@ -83,7 +83,10 @@ const UserPreferences = ({
     <>
       <Section title={t('General')}>
         <div className="flex w-72 flex-row items-center justify-center">
-          <Typography variant="subtitle" className="mr-5 h-full text-right">
+          <Typography
+            variant="subtitle"
+            className="mr-5 h-full text-right"
+          >
             {t('Language')}
           </Typography>
           <Select
@@ -112,7 +115,10 @@ const UserPreferences = ({
           {t('Reset to Defaults')}
         </Button>
         <div className="flex flex-row">
-          <Button type={ButtonEnums.type.secondary} onClick={onCancelHandler}>
+          <Button
+            type={ButtonEnums.type.secondary}
+            onClick={onCancelHandler}
+          >
             {t('Cancel')}
           </Button>
           <Button

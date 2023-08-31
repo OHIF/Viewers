@@ -12,7 +12,10 @@ import { Icon, Button, LoadingIndicatorProgress } from '@ohif/ui';
 
 const getLoadButton = (onDrop, text, isDir) => {
   return (
-    <Dropzone onDrop={onDrop} noDrag>
+    <Dropzone
+      onDrop={onDrop}
+      noDrag
+    >
       {({ getRootProps, getInputProps }) => (
         <div {...getRootProps()}>
           <Button
@@ -119,7 +122,10 @@ function Local({ modePath }: LocalProps) {
       noClick
     >
       {({ getRootProps }) => (
-        <div {...getRootProps()} style={{ width: '100%', height: '100%' }}>
+        <div
+          {...getRootProps()}
+          style={{ width: '100%', height: '100%' }}
+        >
           <div className="flex h-screen w-screen items-center justify-center ">
             <div className="bg-secondary-dark mx-auto space-y-2 rounded-lg py-8 px-8 drop-shadow-md">
               <img

@@ -37,7 +37,10 @@ const Input = ({
 }) => {
   return (
     <div className={classnames('flex flex-1 flex-col', containerClassName)}>
-      <Label className={labelClassName} text={label}></Label>
+      <Label
+        className={labelClassName}
+        text={label}
+      ></Label>
       <input
         data-cy={`input-${id}`}
         className={classnames(

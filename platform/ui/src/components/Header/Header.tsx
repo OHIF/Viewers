@@ -45,7 +45,10 @@ function Header({
             onClick={onClickReturn}
           >
             {isReturnEnabled && (
-              <Icon name="chevron-left" className="text-primary-active w-8" />
+              <Icon
+                name="chevron-left"
+                className="text-primary-active w-8"
+              />
             )}
             <div className="ml-4">
               {WhiteLabeling?.createLogoComponentFn?.(React, props) || (
@@ -59,7 +62,11 @@ function Header({
           <span className="text-common-light mr-3 text-lg">
             {t('INVESTIGATIONAL USE ONLY')}
           </span>
-          <Dropdown id="options" showDropdownIcon={false} list={menuOptions}>
+          <Dropdown
+            id="options"
+            showDropdownIcon={false}
+            list={menuOptions}
+          >
             <IconButton
               id={'options-settings-icon'}
               variant="text"
