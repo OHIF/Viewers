@@ -52,7 +52,7 @@ const formatLength = (length, unit) => {
 
 interface IMicroscopyPanelProps extends WithTranslation {
   viewports: PropTypes.array;
-  activeViewportIndex: PropTypes.number;
+  activeViewportId: PropTypes.string;
 
   //
   onSaveComplete?: PropTypes.func; // callback when successfully saved annotations
@@ -83,7 +83,7 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
   const { uiDialogService, displaySetService } = servicesManager.services;
 
   useEffect(() => {
-    const viewport = props.viewports[props.activeViewportIndex];
+    const viewport = props.viewports[props.activeViewportId];
     if (viewport.displaySetInstanceUIDs[0]) {
       const displaySet = displaySetService.getDisplaySetByUID(
         viewport.displaySetInstanceUIDs[0]
@@ -92,7 +92,7 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
         setStudyInstanceUID(displaySet.StudyInstanceUID);
       }
     }
-  }, [props.viewports, props.activeViewportIndex]);
+  }, [props.viewports, props.activeViewportId]);
 
   useEffect(() => {
     const onAnnotationUpdated = () => {
@@ -265,7 +265,7 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
    */
   const onDeleteCurrentSRHandler = async () => {
     try {
-      const activeViewport = props.viewports[props.activeViewportIndex];
+      const activeViewport = props.viewports[props.activeViewportId];
       const { StudyInstanceUID } = activeViewport;
 
       // TODO: studies?
@@ -307,7 +307,7 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
   const onMeasurementItemClickHandler = ({ uid }: { uid: string }) => {
     const roiAnnotation = microscopyService.getAnnotation(uid);
     microscopyService.selectAnnotation(roiAnnotation);
-    microscopyService.focusAnnotation(roiAnnotation, props.activeViewportIndex);
+    microscopyService.focusAnnotation(roiAnnotation, props.activeViewportId);
   };
 
   /**

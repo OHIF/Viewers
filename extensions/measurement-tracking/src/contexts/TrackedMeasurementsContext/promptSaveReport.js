@@ -13,10 +13,8 @@ function promptSaveReport(
     measurementService,
     displaySetService,
   } = servicesManager.services;
-  const viewportIndex =
-    evt.viewportIndex === undefined
-      ? evt.data.viewportIndex
-      : evt.viewportIndex;
+  const viewportId =
+    evt.viewportId === undefined ? evt.data.viewportId : evt.viewportId;
   const isBackupSave =
     evt.isBackupSave === undefined ? evt.data.isBackupSave : evt.isBackupSave;
   const StudyInstanceUID = evt?.data?.StudyInstanceUID;
@@ -66,7 +64,7 @@ function promptSaveReport(
       createdDisplaySetInstanceUIDs: displaySetInstanceUIDs,
       StudyInstanceUID,
       SeriesInstanceUID,
-      viewportIndex,
+      viewportId,
       isBackupSave,
     });
   });

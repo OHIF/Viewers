@@ -241,8 +241,7 @@ function commandsModule({
         return;
       }
 
-      const viewportIndex = viewportInfo.getViewportIndex();
-      viewportGridService.setActiveViewportIndex(viewportIndex);
+      viewportGridService.setActiveViewportId(viewportId);
     },
     arrowTextCallback: ({ callback, data }) => {
       callInputDialog(uiDialogService, data, callback);
@@ -297,14 +296,82 @@ function commandsModule({
 
     setToolActive: ({ toolName, toolGroupId = null }) => {
       toolGroupService.setPrimaryToolActive(toolName, toolGroupId);
+      if (toolName === 'Crosshairs') {
+        const activeViewportToolGroup = toolGroupService.getToolGroup(null);
+
+        if (!activeViewportToolGroup._toolInstances.Crosshairs) {
+          uiNotificationService.show({
+            title: 'Crosshairs',
+            message:
+              'You need to be in a MPR view to use Crosshairs. Click on MPR button in the toolbar to activate it.',
+            type: 'info',
+            duration: 3000,
+          });
+
+          throw new Error('Crosshairs tool is not available in this viewport');
+        }
+      }
+
+      const { viewports } = viewportGridService.getState();
+
+      if (!viewports.size) {
+        return;
+      }
+
+      const toolGroup = toolGroupService.getToolGroup(toolGroupId);
+      const toolGroupViewportIds = toolGroup?.getViewportIds?.();
+
+      // if toolGroup has been destroyed, or its viewports have been removed
+      if (!toolGroupViewportIds || !toolGroupViewportIds.length) {
+        return;
+      }
+
+      const filteredViewports = Array.from(viewports.values()).filter(
+        viewport => {
+          return toolGroupViewportIds.includes(viewport.viewportId);
+        }
+      );
+
+      if (!filteredViewports.length) {
+        return;
+      }
+
+      if (!toolGroup.getToolInstance(toolName)) {
+        uiNotificationService.show({
+          title: `${toolName} tool`,
+          message: `The ${toolName} tool is not available in this viewport.`,
+          type: 'info',
+          duration: 3000,
+        });
+
+        throw new Error(`ToolGroup ${toolGroup.id} does not have this tool.`);
+      }
+
+      const activeToolName = toolGroup.getActivePrimaryMouseButtonTool();
+
+      if (activeToolName) {
+        // Todo: this is a hack to prevent the crosshairs to stick around
+        // after another tool is selected. We should find a better way to do this
+        if (activeToolName === 'Crosshairs') {
+          toolGroup.setToolDisabled(activeToolName);
+        } else {
+          toolGroup.setToolPassive(activeToolName);
+        }
+      }
+      // Set the new toolName to be active
+      toolGroup.setToolActive(toolName, {
+        bindings: [
+          {
+            mouseButton: Enums.MouseBindings.Primary,
+          },
+        ],
+      });
     },
     showDownloadViewportModal: () => {
-      const { activeViewportIndex } = viewportGridService.getState();
+      const { activeViewportId } = viewportGridService.getState();
 
       if (
-        !cornerstoneViewportService.getCornerstoneViewportByIndex(
-          activeViewportIndex
-        )
+        !cornerstoneViewportService.getCornerstoneViewport(activeViewportId)
       ) {
         // Cannot download a non-cornerstone viewport (image).
         uiNotificationService.show({
@@ -322,7 +389,7 @@ function commandsModule({
           content: CornerstoneViewportDownloadForm,
           title: 'Download High Quality Image',
           contentProps: {
-            activeViewportIndex,
+            activeViewportId,
             onClose: uiModalService.hide,
             cornerstoneViewportService,
           },
@@ -485,13 +552,13 @@ function commandsModule({
       cstUtils.scroll(viewport, options);
     },
     setViewportColormap: ({
-      viewportIndex,
+      viewportId,
       displaySetInstanceUID,
       colormap,
       immediate = false,
     }) => {
-      const viewport = cornerstoneViewportService.getCornerstoneViewportByIndex(
-        viewportIndex
+      const viewport = cornerstoneViewportService.getCornerstoneViewport(
+        viewportId
       );
       //get actor from the viewport
       const actorEntries = viewport.getActors();
@@ -519,17 +586,17 @@ function commandsModule({
         viewport.render();
       }
     },
-    incrementActiveViewport: () => {
-      const { activeViewportIndex, viewports } = viewportGridService.getState();
-      const nextViewportIndex = (activeViewportIndex + 1) % viewports.length;
-      viewportGridService.setActiveViewportIndex(nextViewportIndex);
-    },
-    decrementActiveViewport: () => {
-      const { activeViewportIndex, viewports } = viewportGridService.getState();
+    changeActiveViewport: ({ direction = 1 }) => {
+      const { activeViewportId, viewports } = viewportGridService.getState();
+      const viewportIds = Array.from(viewports.keys());
+      const currentIndex = viewportIds.indexOf(activeViewportId);
       const nextViewportIndex =
-        (activeViewportIndex - 1 + viewports.length) % viewports.length;
-      viewportGridService.setActiveViewportIndex(nextViewportIndex);
+        (currentIndex + direction + viewportIds.length) % viewportIds.length;
+      viewportGridService.setActiveViewportId(
+        viewportIds[nextViewportIndex] as string
+      );
     },
+
     toggleStackImageSync: ({ toggledState }) => {
       toggleStackImageSync({
         getEnabledElement,
@@ -538,9 +605,9 @@ function commandsModule({
       });
     },
     toggleReferenceLines: ({ toggledState }) => {
-      const { activeViewportIndex } = viewportGridService.getState();
-      const viewportInfo = cornerstoneViewportService.getViewportInfoByIndex(
-        activeViewportIndex
+      const { activeViewportId } = viewportGridService.getState();
+      const viewportInfo = cornerstoneViewportService.getViewportInfo(
+        activeViewportId
       );
 
       const viewportId = viewportInfo.getViewportId();
@@ -559,34 +626,8 @@ function commandsModule({
       );
       toolGroup.setToolEnabled(ReferenceLinesTool.toolName);
     },
-    storePresentation: ({ viewportIndex }) => {
-      const presentation = cornerstoneViewportService.getPresentation(
-        viewportIndex
-      );
-      if (!presentation || !presentation.presentationIds) {
-        return;
-      }
-      const {
-        lutPresentationStore,
-        positionPresentationStore,
-      } = stateSyncService.getState();
-      const { presentationIds } = presentation;
-      const { lutPresentationId, positionPresentationId } =
-        presentationIds || {};
-      const storeState = {};
-      if (lutPresentationId) {
-        storeState.lutPresentationStore = {
-          ...lutPresentationStore,
-          [lutPresentationId]: presentation,
-        };
-      }
-      if (positionPresentationId) {
-        storeState.positionPresentationStore = {
-          ...positionPresentationStore,
-          [positionPresentationId]: presentation,
-        };
-      }
-      stateSyncService.store(storeState);
+    storePresentation: ({ viewportId }) => {
+      cornerstoneViewportService.storePresentation({ viewportId });
     },
     setDerviedDisplaySetsInGridViewports: ({ displaySet }) => {
       const displaySetCache = displaySetService.getDisplaySetCache();
@@ -679,10 +720,11 @@ function commandsModule({
       options: { rotation: -90 },
     },
     incrementActiveViewport: {
-      commandFn: actions.incrementActiveViewport,
+      commandFn: actions.changeActiveViewport,
     },
     decrementActiveViewport: {
-      commandFn: actions.decrementActiveViewport,
+      commandFn: actions.changeActiveViewport,
+      options: { direction: -1 },
     },
     flipViewportHorizontal: {
       commandFn: actions.flipViewportHorizontal,

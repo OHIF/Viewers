@@ -1,10 +1,9 @@
 import dcmjs from 'dcmjs';
 import moment from 'moment';
-import React, { useState, useMemo, useEffect, useRef } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { classes } from '@ohif/core';
-import { Icon, InputRange, Select, Typography } from '@ohif/ui';
+import { InputRange, Select, Typography, InputFilterText } from '@ohif/ui';
 import debounce from 'lodash.debounce';
-import classNames from 'classnames';
 
 import DicomTagTable from './DicomTagTable';
 import './DicomTagBrowser.css';
@@ -33,8 +32,6 @@ const DicomTagBrowser = ({ displaySets, displaySetInstanceUID }) => {
     setSelectedDisplaySetInstanceUID(value.value);
     setInstanceNumber(1);
   };
-
-  const searchInputRef = useRef(null);
 
   const activeDisplaySet = displaySets.find(
     ds => ds.displaySetInstanceUID === selectedDisplaySetInstanceUID
@@ -158,33 +155,11 @@ const DicomTagBrowser = ({ displaySets, displaySetInstanceUID }) => {
       </div>
       <div className="w-full h-1 bg-black"></div>
       <div className="flex flex-row my-3 w-1/2">
-        {/* TODO - refactor the following into its own reusable component */}
-        <label className="relative block w-full mr-8">
-          <span className="absolute inset-y-0 left-0 flex items-center pl-2">
-            <Icon name="icon-search"></Icon>
-          </span>
-          <input
-            ref={searchInputRef}
-            type="text"
-            className="block bg-black w-full shadow transition duration-300 appearance-none border border-inputfield-main focus:border-inputfield-focus focus:outline-none disabled:border-inputfield-disabled rounded w-full py-2 px-9 text-base leading-tight placeholder:text-inputfield-placeholder"
-            placeholder="Search metadata..."
-            onChange={event => debouncedSetFilterValue(event.target.value)}
-            autoComplete="off"
-          ></input>
-          <span className="absolute inset-y-0 right-0 flex items-center pr-2">
-            <Icon
-              name="icon-clear-field"
-              className={classNames(
-                'cursor-pointer',
-                filterValue ? '' : 'hidden'
-              )}
-              onClick={() => {
-                searchInputRef.current.value = '';
-                debouncedSetFilterValue('');
-              }}
-            ></Icon>
-          </span>
-        </label>
+        <InputFilterText
+          className="block w-full mr-8"
+          placeholder="Search metadata..."
+          onDebounceChange={setFilterValue}
+        ></InputFilterText>
       </div>
       <DicomTagTable rows={filteredRows} />
     </div>

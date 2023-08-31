@@ -68,7 +68,7 @@ There are seven events that get publish in `MeasurementService`:
   - `toMeasurementSchema`: A function to get the `data` into the same shape as
     the source definition.
 
-- `jumpToMeasurement(viewportIndex, id)`: calls the listeners who have
+- `jumpToMeasurement(viewportId, id)`: calls the listeners who have
   subscribed to `JUMP_TO_MEASUREMENT`.
 
 ## Source / Mappers
