@@ -15,7 +15,7 @@ function promptHydrateSEG({
 }) {
   const { uiViewportDialogService } = servicesManager.services;
 
-  return new Promise(async function(resolve, reject) {
+  return new Promise(async function (resolve, reject) {
     const promptResult = await _askHydrate(uiViewportDialogService, viewportId);
 
     if (promptResult === RESPONSE.HYDRATE_SEG) {
@@ -35,7 +35,7 @@ function promptHydrateSEG({
 }
 
 function _askHydrate(uiViewportDialogService, viewportId) {
-  return new Promise(function(resolve, reject) {
+  return new Promise(function (resolve, reject) {
     const message = 'Do you want to open this Segmentation?';
     const actions = [
       {

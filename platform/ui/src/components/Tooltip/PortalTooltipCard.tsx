@@ -161,11 +161,8 @@ export default class PortalTooltipCard extends Component {
       }
     }
 
-    let {
-      color,
-      borderColor,
-      ...propsArrowStyle
-    } = this.props.style.arrowStyle;
+    let { color, borderColor, ...propsArrowStyle } =
+      this.props.style.arrowStyle;
 
     const state = {
       fgStyle: this.mergeStyle(fgStyle, propsArrowStyle),

@@ -14,10 +14,7 @@ export const DragSimulator = {
   },
   get dropped() {
     const currentSourcePosition = this.source.getBoundingClientRect();
-    return !this.rectsEqual(
-      this.initialSourcePosition,
-      currentSourcePosition
-    );
+    return !this.rectsEqual(this.initialSourcePosition, currentSourcePosition);
   },
   get hasTriesLeft() {
     return this.counter < this.MAX_TRIES;

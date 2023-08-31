@@ -13,7 +13,7 @@ function promptTrackNewSeries({ servicesManager, extensionManager }, ctx, evt) {
   const { UIViewportDialogService } = servicesManager.services;
   const { viewportId, StudyInstanceUID, SeriesInstanceUID } = evt;
 
-  return new Promise(async function(resolve, reject) {
+  return new Promise(async function (resolve, reject) {
     let promptResult = await _askShouldAddMeasurements(
       UIViewportDialogService,
       viewportId
@@ -36,7 +36,7 @@ function promptTrackNewSeries({ servicesManager, extensionManager }, ctx, evt) {
 }
 
 function _askShouldAddMeasurements(uiViewportDialogService, viewportId) {
-  return new Promise(function(resolve, reject) {
+  return new Promise(function (resolve, reject) {
     const message =
       'Do you want to add this measurement to the existing report?';
     const actions = [
@@ -76,7 +76,7 @@ function _askShouldAddMeasurements(uiViewportDialogService, viewportId) {
 }
 
 function _askSaveDiscardOrCancel(UIViewportDialogService, viewportId) {
-  return new Promise(function(resolve, reject) {
+  return new Promise(function (resolve, reject) {
     const message =
       'You have existing tracked measurements. What would you like to do with your existing tracked measurements?';
     const actions = [

@@ -39,14 +39,10 @@ function PanelStudyBrowserTracking({
   // doesn't have to have such an intense shape. This works well enough for now.
   // Tabs --> Studies --> DisplaySets --> Thumbnails
   const { StudyInstanceUIDs } = useImageViewer();
-  const [
-    { activeViewportId, viewports },
-    viewportGridService,
-  ] = useViewportGrid();
-  const [
-    trackedMeasurements,
-    sendTrackedMeasurementsEvent,
-  ] = useTrackedMeasurements();
+  const [{ activeViewportId, viewports }, viewportGridService] =
+    useViewportGrid();
+  const [trackedMeasurements, sendTrackedMeasurementsEvent] =
+    useTrackedMeasurements();
   const [activeTabName, setActiveTabName] = useState('primary');
   const [expandedStudyInstanceUIDs, setExpandedStudyInstanceUIDs] = useState([
     ...StudyInstanceUIDs,
@@ -78,8 +74,8 @@ function PanelStudyBrowserTracking({
     viewportGridService.setDisplaySetsForViewports(updatedViewports);
   };
 
-  const activeViewportDisplaySetInstanceUIDs = viewports.get(activeViewportId)
-    ?.displaySetInstanceUIDs;
+  const activeViewportDisplaySetInstanceUIDs =
+    viewports.get(activeViewportId)?.displaySetInstanceUIDs;
 
   const { trackedSeries } = trackedMeasurements.context;
 
@@ -102,9 +98,8 @@ function PanelStudyBrowserTracking({
       // try to fetch the prior studies based on the patientID if the
       // server can respond.
       try {
-        qidoStudiesForPatient = await getStudiesForPatientByMRN(
-          qidoForStudyUID
-        );
+        qidoStudiesForPatient =
+          await getStudiesForPatientByMRN(qidoForStudyUID);
       } catch (error) {
         console.warn(error);
       }
@@ -158,9 +153,8 @@ function PanelStudyBrowserTracking({
       // TODO: Is it okay that imageIds are not returned here for SR displaysets?
       if (imageId && !displaySet?.unsupported) {
         // When the image arrives, render it and store the result in the thumbnailImgSrcMap
-        newImageSrcEntry[dSet.displaySetInstanceUID] = await getImageSrc(
-          imageId
-        );
+        newImageSrcEntry[dSet.displaySetInstanceUID] =
+          await getImageSrc(imageId);
         setThumbnailImageSrcMap(prevState => {
           return { ...prevState, ...newImageSrcEntry };
         });
@@ -223,9 +217,8 @@ function PanelStudyBrowserTracking({
             // TODO: Is it okay that imageIds are not returned here for SR displaysets?
             if (imageId) {
               // When the image arrives, render it and store the result in the thumbnailImgSrcMap
-              newImageSrcEntry[displaySetInstanceUID] = await getImageSrc(
-                imageId
-              );
+              newImageSrcEntry[displaySetInstanceUID] =
+                await getImageSrc(imageId);
               setThumbnailImageSrcMap(prevState => {
                 return { ...prevState, ...newImageSrcEntry };
               });
@@ -256,24 +249,25 @@ function PanelStudyBrowserTracking({
       }
     );
 
-    const SubscriptionDisplaySetMetaDataInvalidated = displaySetService.subscribe(
-      displaySetService.EVENTS.DISPLAY_SET_SERIES_METADATA_INVALIDATED,
-      () => {
-        const mappedDisplaySets = _mapDisplaySets(
-          displaySetService.getActiveDisplaySets(),
-          thumbnailImageSrcMap,
-          trackedSeries,
-          viewports,
-          viewportGridService,
-          dataSource,
-          displaySetService,
-          uiDialogService,
-          uiNotificationService
-        );
+    const SubscriptionDisplaySetMetaDataInvalidated =
+      displaySetService.subscribe(
+        displaySetService.EVENTS.DISPLAY_SET_SERIES_METADATA_INVALIDATED,
+        () => {
+          const mappedDisplaySets = _mapDisplaySets(
+            displaySetService.getActiveDisplaySets(),
+            thumbnailImageSrcMap,
+            trackedSeries,
+            viewports,
+            viewportGridService,
+            dataSource,
+            displaySetService,
+            uiDialogService,
+            uiNotificationService
+          );
 
-        setDisplaySets(mappedDisplaySets);
-      }
-    );
+          setDisplaySets(mappedDisplaySets);
+        }
+      );
 
     return () => {
       SubscriptionDisplaySetsAdded.unsubscribe();
@@ -299,9 +293,8 @@ function PanelStudyBrowserTracking({
 
   // TODO: Should not fire this on "close"
   function _handleStudyClick(StudyInstanceUID) {
-    const shouldCollapseStudy = expandedStudyInstanceUIDs.includes(
-      StudyInstanceUID
-    );
+    const shouldCollapseStudy =
+      expandedStudyInstanceUIDs.includes(StudyInstanceUID);
     const updatedExpandedStudyInstanceUIDs = shouldCollapseStudy
       ? [
           ...expandedStudyInstanceUIDs.filter(
@@ -503,7 +496,7 @@ function _mapDisplaySets(
               contentProps: {
                 title: 'Delete Report',
                 body: () => (
-                  <div className="p-4 text-white bg-primary-dark">
+                  <div className="bg-primary-dark p-4 text-white">
                     <p>Are you sure you want to delete this report?</p>
                     <p>This action cannot be undone.</p>
                   </div>
@@ -523,9 +516,8 @@ function _mapDisplaySets(
                 ],
                 onClose: () => uiDialogService.dismiss({ id: 'ds-reject-sr' }),
                 onShow: () => {
-                  const yesButton = document.querySelector(
-                    '.reject-yes-button'
-                  );
+                  const yesButton =
+                    document.querySelector('.reject-yes-button');
 
                   yesButton.focus();
                 },

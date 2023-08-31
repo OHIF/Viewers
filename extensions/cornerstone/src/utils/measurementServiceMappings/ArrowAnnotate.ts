@@ -31,15 +31,12 @@ const Length = {
       throw new Error('Tool not supported');
     }
 
-    const {
-      SOPInstanceUID,
-      SeriesInstanceUID,
-      StudyInstanceUID,
-    } = getSOPInstanceAttributes(
-      referencedImageId,
-      cornerstoneViewportService,
-      viewportId
-    );
+    const { SOPInstanceUID, SeriesInstanceUID, StudyInstanceUID } =
+      getSOPInstanceAttributes(
+        referencedImageId,
+        cornerstoneViewportService,
+        viewportId
+      );
 
     let displaySet;
 
@@ -91,11 +88,8 @@ function getMappedAnnotations(annotation, displaySetService) {
 
   const annotations = [];
 
-  const {
-    SOPInstanceUID,
-    SeriesInstanceUID,
-    frameNumber,
-  } = getSOPInstanceAttributes(referencedImageId);
+  const { SOPInstanceUID, SeriesInstanceUID, frameNumber } =
+    getSOPInstanceAttributes(referencedImageId);
 
   const displaySet = displaySetService.getDisplaySetForSOPInstanceUID(
     SOPInstanceUID,

@@ -78,9 +78,8 @@ export default function PanelSegmentation({
   };
 
   const getToolGroupIds = segmentationId => {
-    const toolGroupIds = segmentationService.getToolGroupIdsWithSegmentation(
-      segmentationId
-    );
+    const toolGroupIds =
+      segmentationService.getToolGroupIdsWithSegmentation(segmentationId);
 
     return toolGroupIds;
   };
@@ -191,7 +190,7 @@ export default function PanelSegmentation({
   );
 
   return (
-    <div className="flex flex-col flex-auto min-h-0 justify-between mt-1">
+    <div className="mt-1 flex min-h-0 flex-auto flex-col justify-between">
       {/* show segmentation table */}
       {segmentations?.length ? (
         <SegmentationGroupTable

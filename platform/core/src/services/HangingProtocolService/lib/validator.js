@@ -20,7 +20,7 @@ import validate from 'validate.js';
  *           = 'Attenuation' (Fail)
  *
  * */
-validate.validators.equals = function(value, options, key) {
+validate.validators.equals = function (value, options, key) {
   const testValue = getTestValue(options);
   const dicomArrayValue = dicomTagToArray(value);
 
@@ -60,7 +60,7 @@ validate.validators.equals = function(value, options, key) {
  *           = 'Attenuation Corrected' (Fail)
  *           = 'Attenuation' (Fail)
  * */
-validate.validators.doesNotEqual = function(value, options, key) {
+validate.validators.doesNotEqual = function (value, options, key) {
   const testValue = getTestValue(options);
   const dicomArrayValue = dicomTagToArray(value);
 
@@ -103,7 +103,7 @@ validate.validators.doesNotEqual = function(value, options, key) {
  * testValue = ['Attenuation Corrected', 'Corrected'] (Valid)
  *           = ['Attenuation', 'Corrected'] (Fail)
  * */
-validate.validators.includes = function(value, options, key) {
+validate.validators.includes = function (value, options, key) {
   const testValue = getTestValue(options);
   const dicomArrayValue = dicomTagToArray(value);
 
@@ -141,7 +141,7 @@ validate.validators.includes = function(value, options, key) {
  * testValue = ['Attenuation Corrected', 'Corrected'] (Fail)
  *           = ['Attenuation', 'Corrected'] (Valid)
  * */
-validate.validators.doesNotInclude = function(value, options, key) {
+validate.validators.doesNotInclude = function (value, options, key) {
   const testValue = getTestValue(options);
   const dicomArrayValue = dicomTagToArray(value);
 
@@ -175,7 +175,7 @@ validate.validators.doesNotInclude = function(value, options, key) {
  *           = ['cat', 'dog'] (Fail)
  *
  * */
-validate.validators.containsI = function(value, options, key) {
+validate.validators.containsI = function (value, options, key) {
   const testValue = getTestValue(options);
   if (Array.isArray(value)) {
     if (
@@ -224,7 +224,7 @@ validate.validators.containsI = function(value, options, key) {
  *           = ['cat', 'dog'] (Fail)
  *
  * */
-validate.validators.contains = function(value, options, key) {
+validate.validators.contains = function (value, options, key) {
   const testValue = getTestValue(options);
   if (Array.isArray(value)) {
     if (value.some(item => !validate.validators.contains(item, options, key))) {
@@ -264,7 +264,7 @@ validate.validators.contains = function(value, options, key) {
  *           = ['cat', 'dog'] (Valid)
  *
  * */
-validate.validators.doesNotContain = function(value, options, key) {
+validate.validators.doesNotContain = function (value, options, key) {
   const containsResult = validate.validators.contains(value, options, key);
   if (!containsResult) {
     return `No item of ${value} should contain ${getTestValue(options)}`;
@@ -287,7 +287,7 @@ validate.validators.doesNotContain = function(value, options, key) {
  *           = ['cat', 'dog'] (Valid)
  *
  * */
-validate.validators.doesNotContainI = function(value, options, key) {
+validate.validators.doesNotContainI = function (value, options, key) {
   const containsResult = validate.validators.containsI(value, options, key);
   if (!containsResult) {
     return `No item of ${value} should not contain ${getTestValue(options)}`;
@@ -308,7 +308,7 @@ validate.validators.doesNotContainI = function(value, options, key) {
  *           = ['cat', 'dog'] (Fail)
  *
  * */
-validate.validators.startsWith = function(value, options, key) {
+validate.validators.startsWith = function (value, options, key) {
   let testValues = getTestValue(options);
 
   if (typeof testValues === 'string') {
@@ -356,7 +356,7 @@ validate.validators.startsWith = function(value, options, key) {
  *           = ['cat', 'dog'] (Fail)
  *
  * */
-validate.validators.endsWith = function(value, options, key) {
+validate.validators.endsWith = function (value, options, key) {
   let testValues = getTestValue(options);
 
   if (typeof testValues === 'string') {
@@ -395,7 +395,7 @@ validate.validators.endsWith = function(value, options, key) {
  *           = 40 (Fail)
  *
  * */
-validate.validators.greaterThan = function(value, options, key) {
+validate.validators.greaterThan = function (value, options, key) {
   const testValue = getTestValue(options);
   if (Array.isArray(value) || typeof value === 'string') {
     return `${key} is not allowed as an array or string`;
@@ -421,7 +421,7 @@ validate.validators.greaterThan = function(value, options, key) {
  *           = 20 (Fail)
  *
  * */
-validate.validators.lessThan = function(value, options, key) {
+validate.validators.lessThan = function (value, options, key) {
   const testValue = getTestValue(options);
   if (Array.isArray(testValue)) {
     if (testValue.length === 1) {
@@ -450,7 +450,7 @@ validate.validators.lessThan = function(value, options, key) {
  *           = [45] (Fail)
  *
  * */
-validate.validators.range = function(value, options, key) {
+validate.validators.range = function (value, options, key) {
   const testValue = getTestValue(options);
   if (Array.isArray(testValue) && testValue.length === 2) {
     const min = Math.min(testValue[0], testValue[1]);

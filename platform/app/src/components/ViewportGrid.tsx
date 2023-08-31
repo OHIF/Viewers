@@ -5,7 +5,6 @@ import { ViewportGrid, ViewportPane, useViewportGrid } from '@ohif/ui';
 import EmptyViewport from './EmptyViewport';
 import classNames from 'classnames';
 
-
 function ViewerViewportGrid(props) {
   const { servicesManager, viewportComponents, dataSource } = props;
   const [viewportGrid, viewportGridService] = useViewportGrid();
@@ -78,10 +77,11 @@ function ViewerViewportGrid(props) {
         displaySetUIDsToHang
       );
 
-      const computedDisplaySetOptions = hangingProtocolService.getComputedOptions(
-        displaySetUIDsToHangOptions,
-        displaySetUIDsToHang
-      );
+      const computedDisplaySetOptions =
+        hangingProtocolService.getComputedOptions(
+          displaySetUIDsToHangOptions,
+          displaySetUIDsToHang
+        );
 
       return {
         displaySetInstanceUIDs: displaySetUIDsToHang,
@@ -266,24 +266,21 @@ function ViewerViewportGrid(props) {
         viewportLabel,
       } = paneMetadata;
 
-      const viewportId = viewportOptions.viewportId
+      const viewportId = viewportOptions.viewportId;
       const isActive = activeViewportId === viewportId;
-
 
       const displaySetInstanceUIDsToUse = displaySetInstanceUIDs || [];
 
       // This is causing the viewport components re-render when the activeViewportId changes
-      const displaySets = displaySetInstanceUIDsToUse.map(
-        displaySetInstanceUID => {
+      const displaySets = displaySetInstanceUIDsToUse
+        .map(displaySetInstanceUID => {
           return (
             displaySetService.getDisplaySetByUID(displaySetInstanceUID) || {}
           );
-        }
-      ).filter(
-        (displaySet) => {
+        })
+        .filter(displaySet => {
           return !displaySet?.unsupported;
-        }
-      );
+        });
 
       const ViewportComponent = _getViewportComponent(
         displaySets,
@@ -335,7 +332,7 @@ function ViewerViewportGrid(props) {
         >
           <div
             data-cy="viewport-pane"
-            className={classNames('h-full w-full flex flex-col', {
+            className={classNames('flex h-full w-full flex-col', {
               'pointer-events-none': !isActive,
             })}
           >

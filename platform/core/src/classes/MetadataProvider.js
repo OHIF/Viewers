@@ -58,12 +58,8 @@ class MetadataProvider {
       return;
     }
 
-    const {
-      StudyInstanceUID,
-      SeriesInstanceUID,
-      SOPInstanceUID,
-      frameNumber,
-    } = uids;
+    const { StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID, frameNumber } =
+      uids;
 
     const instance = DicomMetadataStore.getInstance(
       StudyInstanceUID,

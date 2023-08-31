@@ -46,9 +46,10 @@ export function UserAuthenticationProvider({ children, service }) {
     DEFAULT_STATE
   );
 
-  const getState = useCallback(() => userAuthenticationState, [
-    userAuthenticationState,
-  ]);
+  const getState = useCallback(
+    () => userAuthenticationState,
+    [userAuthenticationState]
+  );
 
   const setUser = useCallback(
     user =>
@@ -61,9 +62,10 @@ export function UserAuthenticationProvider({ children, service }) {
     [dispatch]
   );
 
-  const getUser = useCallback(() => userAuthenticationState.user, [
-    userAuthenticationState,
-  ]);
+  const getUser = useCallback(
+    () => userAuthenticationState.user,
+    [userAuthenticationState]
+  );
 
   const reset = useCallback(
     () =>

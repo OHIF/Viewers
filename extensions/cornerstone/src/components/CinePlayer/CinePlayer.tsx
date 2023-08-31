@@ -80,7 +80,7 @@ function WrappedCinePlayer({ enabledVPElement, viewportId, servicesManager }) {
   return (
     isCineEnabled && (
       <CinePlayerComponent
-        className="absolute left-1/2 -translate-x-1/2 bottom-3"
+        className="absolute left-1/2 bottom-3 -translate-x-1/2"
         isPlaying={isPlaying}
         onClose={handleCineClose}
         onPlayPauseChange={isPlaying =>

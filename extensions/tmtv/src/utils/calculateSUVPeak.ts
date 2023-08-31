@@ -122,7 +122,7 @@ function calculateSuvPeak(
   vec3.scaleAndAdd(topWorld, secondaryCircleWorld, direction, diameter / 2);
   const suvPeakCirclePoints = [bottomWorld, topWorld] as [
     Types.Point3,
-    Types.Point3
+    Types.Point3,
   ];
 
   /**

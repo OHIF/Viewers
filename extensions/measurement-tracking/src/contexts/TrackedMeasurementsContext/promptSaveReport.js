@@ -8,11 +8,8 @@ function promptSaveReport(
   ctx,
   evt
 ) {
-  const {
-    uiDialogService,
-    measurementService,
-    displaySetService,
-  } = servicesManager.services;
+  const { uiDialogService, measurementService, displaySetService } =
+    servicesManager.services;
   const viewportId =
     evt.viewportId === undefined ? evt.data.viewportId : evt.viewportId;
   const isBackupSave =
@@ -23,7 +20,7 @@ function promptSaveReport(
   const { trackedStudy, trackedSeries } = ctx;
   let displaySetInstanceUIDs;
 
-  return new Promise(async function(resolve, reject) {
+  return new Promise(async function (resolve, reject) {
     // TODO: Fallback if (uiDialogService) {
     const promptResult = await createReportDialogPrompt(uiDialogService);
 

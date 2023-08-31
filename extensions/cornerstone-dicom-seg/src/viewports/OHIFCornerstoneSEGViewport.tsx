@@ -106,9 +106,8 @@ function OHIFCornerstoneSEGViewport(props) {
       '@ohif/extension-cornerstone.viewportModule.cornerstone'
     );
 
-    const {
-      displaySet: referencedDisplaySet,
-    } = referencedDisplaySetRef.current;
+    const { displaySet: referencedDisplaySet } =
+      referencedDisplaySetRef.current;
 
     // Todo: jump to the center of the first segment
     return (
@@ -370,10 +369,10 @@ function OHIFCornerstoneSEGViewport(props) {
         }}
       />
 
-      <div className="relative flex flex-row w-full h-full overflow-hidden">
+      <div className="relative flex h-full w-full flex-row overflow-hidden">
         {segIsLoading && (
           <LoadingIndicatorTotalPercent
-            className="w-full h-full"
+            className="h-full w-full"
             totalNumbers={processingProgress.totalSegments}
             percentComplete={processingProgress.percentComplete}
             loadingText="Loading SEG..."

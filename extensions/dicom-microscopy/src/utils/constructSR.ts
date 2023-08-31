@@ -31,11 +31,10 @@ export default function constructSR(
         schemeDesignator: 'DCM',
         meaning: 'Person',
       }),
-      observerIdentifyingAttributes: new dcmjs.sr.templates.PersonObserverIdentifyingAttributes(
-        {
+      observerIdentifyingAttributes:
+        new dcmjs.sr.templates.PersonObserverIdentifyingAttributes({
           name: '@ohif/extension-dicom-microscopy',
-        }
-      ),
+        }),
     }),
     observerDeviceContext: new dcmjs.sr.templates.ObserverContext({
       observerType: new dcmjs.sr.coding.CodedConcept({
@@ -43,11 +42,10 @@ export default function constructSR(
         schemeDesignator: 'DCM',
         meaning: 'Device',
       }),
-      observerIdentifyingAttributes: new dcmjs.sr.templates.DeviceObserverIdentifyingAttributes(
-        {
+      observerIdentifyingAttributes:
+        new dcmjs.sr.templates.DeviceObserverIdentifyingAttributes({
           uid: DEVICE_OBSERVER_UID,
-        }
-      ),
+        }),
     }),
     subjectContext: new dcmjs.sr.templates.SubjectContext({
       subjectClass: new dcmjs.sr.coding.CodedConcept({
@@ -55,28 +53,23 @@ export default function constructSR(
         schemeDesignator: 'DCM',
         meaning: 'Specimen',
       }),
-      subjectClassSpecificContext: new dcmjs.sr.templates.SubjectContextSpecimen(
-        {
+      subjectClassSpecificContext:
+        new dcmjs.sr.templates.SubjectContextSpecimen({
           uid: SpecimenDescriptionSequence.SpecimenUID,
           identifier:
             SpecimenDescriptionSequence.SpecimenIdentifier ||
             metadata.SeriesInstanceUID,
           containerIdentifier:
             metadata.ContainerIdentifier || metadata.SeriesInstanceUID,
-        }
-      ),
+        }),
     }),
   });
 
   const imagingMeasurements = [];
   for (let i = 0; i < annotations.length; i++) {
     const { roiGraphic: roi, label } = annotations[i];
-    let {
-      measurements,
-      evaluations,
-      marker,
-      presentationState,
-    } = roi.properties;
+    let { measurements, evaluations, marker, presentationState } =
+      roi.properties;
 
     console.debug('[SR] storing marker...', marker);
     console.debug('[SR] storing measurements...', measurements);
@@ -136,8 +129,8 @@ export default function constructSR(
     });
 
     const identifier = `ROI #${i + 1}`;
-    const group = new dcmjs.sr.templates.PlanarROIMeasurementsAndQualitativeEvaluations(
-      {
+    const group =
+      new dcmjs.sr.templates.PlanarROIMeasurementsAndQualitativeEvaluations({
         trackingIdentifier: new dcmjs.sr.templates.TrackingIdentifier({
           uid: roi.uid,
           identifier: presentationState
@@ -157,15 +150,13 @@ export default function constructSR(
         /** Evaluations will conflict with current tracking identifier */
         /** qualitativeEvaluations: evaluations, */
         measurements,
-      }
-    );
+      });
     imagingMeasurements.push(...group);
   }
 
   const measurementReport = new dcmjs.sr.templates.MeasurementReport({
-    languageOfContentItemAndDescendants: new dcmjs.sr.templates.LanguageOfContentItemAndDescendants(
-      {}
-    ),
+    languageOfContentItemAndDescendants:
+      new dcmjs.sr.templates.LanguageOfContentItemAndDescendants({}),
     observationContext,
     procedureReported: new dcmjs.sr.coding.CodedConcept({
       value: '112703',

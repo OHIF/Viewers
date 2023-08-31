@@ -11,7 +11,7 @@ export default function createReportDialogPrompt(
   uiDialogService,
   { extensionManager }
 ) {
-  return new Promise(function(resolve, reject) {
+  return new Promise(function (resolve, reject) {
     let dialogId = undefined;
 
     const _handleClose = () => {
@@ -105,7 +105,7 @@ export default function createReportDialogPrompt(
               {dataSourcesOpts.length > 1 && (
                 <Select
                   closeMenuOnSelect={true}
-                  className="mr-2 bg-black border-primary-main"
+                  className="border-primary-main mr-2 bg-black"
                   options={dataSourcesOpts}
                   placeholder={
                     dataSourcesOpts.find(
@@ -123,7 +123,7 @@ export default function createReportDialogPrompt(
                 autoFocus
                 label="Enter the report name"
                 labelClassName="text-white text-[14px] leading-[1.2]"
-                className="bg-black border-primary-main"
+                className="border-primary-main bg-black"
                 type="text"
                 value={value.label}
                 onChange={onChangeHandler}

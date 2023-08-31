@@ -63,7 +63,7 @@ const InputRange: React.FC<{
 
   return (
     <div
-      className={`flex items-center cursor-pointer space-x-1 ${
+      className={`flex cursor-pointer items-center space-x-1 ${
         containerClassName ? containerClassName : ''
       }`}
     >
@@ -82,14 +82,15 @@ const InputRange: React.FC<{
         min={minValue}
         max={maxValue}
         value={rangeValue}
-        className={`appearance-none h-[3px] rounded-lg input-range-thumb-design ${
+        className={`input-range-thumb-design h-[3px] appearance-none rounded-lg ${
           inputClassName ? inputClassName : ''
         }`}
         style={{
           background:
             trackColor ||
-            `linear-gradient(to right, #5acce6 0%, #5acce6 ${rangeValuePercentage -
-              10}%, #3a3f99 ${rangeValuePercentage + 10}%, #3a3f99 100%)`,
+            `linear-gradient(to right, #5acce6 0%, #5acce6 ${
+              rangeValuePercentage - 10
+            }%, #3a3f99 ${rangeValuePercentage + 10}%, #3a3f99 100%)`,
         }}
         onChange={handleChange}
         id="myRange"

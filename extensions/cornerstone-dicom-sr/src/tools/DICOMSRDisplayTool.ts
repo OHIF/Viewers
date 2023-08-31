@@ -66,14 +66,11 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
       return;
     }
 
-    const trackingUniqueIdentifiersForElement = getTrackingUniqueIdentifiersForElement(
-      element
-    );
+    const trackingUniqueIdentifiersForElement =
+      getTrackingUniqueIdentifiersForElement(element);
 
-    const {
-      activeIndex,
-      trackingUniqueIdentifiers,
-    } = trackingUniqueIdentifiersForElement;
+    const { activeIndex, trackingUniqueIdentifiers } =
+      trackingUniqueIdentifiersForElement;
 
     const activeTrackingUniqueIdentifier =
       trackingUniqueIdentifiers[activeIndex];
@@ -370,9 +367,8 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
       adaptedCanvasCoordinates
     );
 
-    annotation.data.handles.textBox.worldPosition = viewport.canvasToWorld(
-      canvasTextBoxCoords
-    );
+    annotation.data.handles.textBox.worldPosition =
+      viewport.canvasToWorld(canvasTextBoxCoords);
 
     const textBoxPosition = viewport.worldToCanvas(
       annotation.data.handles.textBox.worldPosition

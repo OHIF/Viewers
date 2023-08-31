@@ -47,11 +47,12 @@ export default class RTSSReport {
       );
 
       // ReferencedFrameOfReferenceSequence
-      dataset.ReferencedFrameOfReferenceSequence = getReferencedFrameOfReferenceSequence(
-        annotation,
-        metadataProvider,
-        dataset
-      );
+      dataset.ReferencedFrameOfReferenceSequence =
+        getReferencedFrameOfReferenceSequence(
+          annotation,
+          metadataProvider,
+          dataset
+        );
     });
 
     const fileMetaInformationVersionArray = new Uint8Array(2);
@@ -98,10 +99,8 @@ function initializeDataset(annotations, metadataProvider) {
   const rtSOPInstanceUID = DicomMetaDictionary.uid();
 
   // get the first annotation data
-  const {
-    referencedImageId: imageId,
-    FrameOfReferenceUID,
-  } = annotations[0].metadata;
+  const { referencedImageId: imageId, FrameOfReferenceUID } =
+    annotations[0].metadata;
 
   const { studyInstanceUID } = metadataProvider.get(
     'generalSeriesModule',

@@ -48,9 +48,9 @@ async function run() {
       nextVersion = semver.inc(currentVersion, 'prerelease', 'beta');
     } else if (isBumpBeta && prereleaseComponents.includes('beta')) {
       console.log('Bumping beta version to be fresh beta');
-      nextVersion = `${semver.major(currentVersion)}.${semver.minor(
-        currentVersion
-      ) + 1}.0-beta.0`;
+      nextVersion = `${semver.major(currentVersion)}.${
+        semver.minor(currentVersion) + 1
+      }.0-beta.0`;
     } else {
       console.log('Bumping minor version for beta release');
       const nextMinorVersion = semver.inc(currentVersion, 'minor');

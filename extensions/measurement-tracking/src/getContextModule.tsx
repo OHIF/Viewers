@@ -9,10 +9,12 @@ function getContextModule({
   extensionManager,
   commandsManager,
 }) {
-  const BoundTrackedMeasurementsContextProvider = TrackedMeasurementsContextProvider.bind(
-    null,
-    { servicesManager, extensionManager, commandsManager }
-  );
+  const BoundTrackedMeasurementsContextProvider =
+    TrackedMeasurementsContextProvider.bind(null, {
+      servicesManager,
+      extensionManager,
+      commandsManager,
+    });
 
   return [
     {

@@ -103,12 +103,10 @@ class DicomMicroscopyViewport extends Component {
   // you should only do this once.
   async installOpenLayersRenderer(container, displaySet) {
     const loadViewer = async metadata => {
-      const {
-        viewer: DicomMicroscopyViewer,
-        metadata: metadataUtils,
-      } = await import(
-        /* webpackChunkName: "dicom-microscopy-viewer" */ 'dicom-microscopy-viewer'
-      );
+      const { viewer: DicomMicroscopyViewer, metadata: metadataUtils } =
+        await import(
+          /* webpackChunkName: "dicom-microscopy-viewer" */ 'dicom-microscopy-viewer'
+        );
       const microscopyViewer = DicomMicroscopyViewer.VolumeImageViewer;
 
       const client = getDicomWebClient({
@@ -343,7 +341,7 @@ class DicomMicroscopyViewport extends Component {
           <div style={style} ref={this.container} />
         )}
         {this.state.isLoaded ? null : (
-          <LoadingIndicatorProgress className={'w-full h-full bg-black'} />
+          <LoadingIndicatorProgress className={'h-full w-full bg-black'} />
         )}
       </div>
     );

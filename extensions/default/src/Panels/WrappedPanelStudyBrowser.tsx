@@ -25,13 +25,10 @@ function WrappedPanelStudyBrowser({
     null,
     dataSource
   );
-  const _getImageSrcFromImageId = _createGetImageSrcFromImageIdFn(
-    extensionManager
-  );
-  const _requestDisplaySetCreationForStudy = requestDisplaySetCreationForStudy.bind(
-    null,
-    dataSource
-  );
+  const _getImageSrcFromImageId =
+    _createGetImageSrcFromImageIdFn(extensionManager);
+  const _requestDisplaySetCreationForStudy =
+    requestDisplaySetCreationForStudy.bind(null, dataSource);
 
   return (
     <PanelStudyBrowser

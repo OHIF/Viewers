@@ -18,11 +18,11 @@ const DefaultFallback = ({
   const title = `Something went wrong${!isProduction && ` in ${context}`}.`;
   const subtitle = `Sorry, something went wrong there. Try again.`;
   return (
-    <div className="ErrorFallback bg-primary-dark w-full h-full" role="alert">
+    <div className="ErrorFallback bg-primary-dark h-full w-full" role="alert">
       <p className="text-primary-light text-xl">{title}</p>
       <p className="text-primary-light text-base">{subtitle}</p>
       {!isProduction && (
-        <div className="rounded-md bg-secondary-dark p-5 mt-5 font-mono space-y-2">
+        <div className="bg-secondary-dark mt-5 space-y-2 rounded-md p-5 font-mono">
           <p className="text-primary-light">Context: {context}</p>
           <p className="text-primary-light">Error Message: {error.message}</p>
 
@@ -40,7 +40,7 @@ const DefaultFallback = ({
           </IconButton>
 
           {showDetails && (
-            <p className="px-4 text-primary-light">Stack: {error.stack}</p>
+            <p className="text-primary-light px-4">Stack: {error.stack}</p>
           )}
         </div>
       )}

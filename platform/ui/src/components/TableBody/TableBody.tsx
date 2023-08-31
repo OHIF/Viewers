@@ -6,7 +6,7 @@ const TableBody = ({ children, className, style }) => {
   return (
     <div
       className={classnames(
-        'mt-2 max-h-48 overflow-y-scroll ohif-scrollbar',
+        'ohif-scrollbar mt-2 max-h-48 overflow-y-scroll',
         className
       )}
       style={style}
@@ -26,7 +26,7 @@ TableBody.defaultProps = {
 };
 
 TableBody.propTypes = {
-  children: function(props, propName, componentName) {
+  children: function (props, propName, componentName) {
     const elements = React.Children.toArray(props.children);
     const isString = elements.some(child => typeof child === 'string');
 

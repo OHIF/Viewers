@@ -77,9 +77,8 @@ function getFilteredCornerstoneToolState(
   for (let i = 0; i < framesOfReference.length; i++) {
     const frameOfReference = framesOfReference[i];
 
-    const frameOfReferenceAnnotations = annotationManager.getAnnotations(
-      frameOfReference
-    );
+    const frameOfReferenceAnnotations =
+      annotationManager.getAnnotations(frameOfReference);
 
     const toolTypes = Object.keys(frameOfReferenceAnnotations);
 

@@ -17,44 +17,44 @@ function ColumnHeaders({ tagRef, vrRef, keywordRef, valueRef }) {
   return (
     <div
       className={classNames(
-        'flex flex-row w-full bg-secondary-dark ohif-scrollbar overflow-y-scroll'
+        'bg-secondary-dark ohif-scrollbar flex w-full flex-row overflow-y-scroll'
       )}
       style={rowVerticalPaddingStyle}
     >
-      <div className="px-3 w-4/24">
+      <div className="w-4/24 px-3">
         <label
           ref={tagRef}
-          className="flex flex-col flex-1 text-white text-lg pl-1 select-none"
+          className="flex flex-1 select-none flex-col pl-1 text-lg text-white"
         >
           <span className="flex flex-row items-center focus:outline-none">
             Tag
           </span>
         </label>
       </div>
-      <div className="px-3 w-2/24">
+      <div className="w-2/24 px-3">
         <label
           ref={vrRef}
-          className="flex flex-col flex-1 text-white text-lg pl-1 select-none"
+          className="flex flex-1 select-none flex-col pl-1 text-lg text-white"
         >
           <span className="flex flex-row items-center focus:outline-none">
             VR
           </span>
         </label>
       </div>
-      <div className="px-3 w-6/24">
+      <div className="w-6/24 px-3">
         <label
           ref={keywordRef}
-          className="flex flex-col flex-1 text-white text-lg pl-1 select-none"
+          className="flex flex-1 select-none flex-col pl-1 text-lg text-white"
         >
           <span className="flex flex-row items-center focus:outline-none">
             Keyword
           </span>
         </label>
       </div>
-      <div className="px-3 w-5/24 grow">
+      <div className="w-5/24 grow px-3">
         <label
           ref={valueRef}
-          className="flex flex-col flex-1 text-white text-lg pl-1 select-none"
+          className="flex flex-1 select-none flex-col pl-1 text-lg text-white"
         >
           <span className="flex flex-row items-center focus:outline-none">
             Value
@@ -135,15 +135,15 @@ function DicomTagTable({ rows }) {
         <div
           style={{ ...style, ...rowStyle }}
           className={classNames(
-            'hover:bg-secondary-main transition duration-300 bg-black flex flex-row w-full border-secondary-light items-center text-base break-all',
+            'hover:bg-secondary-main border-secondary-light flex w-full flex-row items-center break-all bg-black text-base transition duration-300',
             lineHeightClassName
           )}
           key={`DICOMTagRow-${index}`}
         >
-          <div className="px-3 w-4/24">{row[0]}</div>
-          <div className="px-3 w-2/24">{row[1]}</div>
-          <div className="px-3 w-6/24">{row[2]}</div>
-          <div className="px-3 w-5/24 grow">{row[3]}</div>
+          <div className="w-4/24 px-3">{row[0]}</div>
+          <div className="w-2/24 px-3">{row[1]}</div>
+          <div className="w-6/24 px-3">{row[2]}</div>
+          <div className="w-5/24 grow px-3">{row[3]}</div>
         </div>
       );
     },
@@ -154,9 +154,10 @@ function DicomTagTable({ rows }) {
    * Whenever any one of the column headers is set, then the header is rendered.
    * Here we chose the tag header.
    */
-  const isHeaderRendered = useCallback(() => tagHeaderElem !== null, [
-    tagHeaderElem,
-  ]);
+  const isHeaderRendered = useCallback(
+    () => tagHeaderElem !== null,
+    [tagHeaderElem]
+  );
 
   /**
    * Get the item/row size. We use the header column widths to calculate the various row heights.
@@ -204,7 +205,7 @@ function DicomTagTable({ rows }) {
         valueRef={valueRef}
       />
       <div
-        className="m-auto relative border-2 border-black bg-black"
+        className="relative m-auto border-2 border-black bg-black"
         style={{ height: '32rem' }}
       >
         {isHeaderRendered() && (

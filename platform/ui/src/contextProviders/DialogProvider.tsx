@@ -280,7 +280,7 @@ const DialogProvider = ({ children, service }) => {
   return (
     <DialogContext.Provider value={{ create, dismiss, dismissAll, isEmpty }}>
       {!isEmpty() && (
-        <div className="w-full h-full absolute" onKeyDown={onKeyDownHandler}>
+        <div className="absolute h-full w-full" onKeyDown={onKeyDownHandler}>
           {renderDialogs()}
         </div>
       )}

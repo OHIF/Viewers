@@ -131,9 +131,10 @@ const commandsModule = ({
         return;
       }
 
-      const segmentationId = await segmentationService.createSegmentationForDisplaySet(
-        ptDisplaySet.displaySetInstanceUID
-      );
+      const segmentationId =
+        await segmentationService.createSegmentationForDisplaySet(
+          ptDisplaySet.displaySetInstanceUID
+        );
 
       // Add Segmentation to all toolGroupIds in the viewer
       const toolGroupIds = _getMatchedViewportsToolGroupIds();
@@ -167,14 +168,12 @@ const commandsModule = ({
       });
     },
     thresholdSegmentationByRectangleROITool: ({ segmentationId, config }) => {
-      const segmentation = csTools.segmentation.state.getSegmentation(
-        segmentationId
-      );
+      const segmentation =
+        csTools.segmentation.state.getSegmentation(segmentationId);
 
       const { representationData } = segmentation;
-      const {
-        displaySetMatchDetails: matchDetails,
-      } = hangingProtocolService.getMatchDetails();
+      const { displaySetMatchDetails: matchDetails } =
+        hangingProtocolService.getMatchDetails();
       const volumeLoaderScheme = 'cornerstoneStreamingImageVolume'; // Loader id which defines which volume loader to use
 
       const ctDisplaySet = matchDetails.get('ctDisplaySet');
@@ -195,9 +194,10 @@ const commandsModule = ({
         throw new Error('No Reference labelmap found');
       }
 
-      const annotationUIDs = csTools.annotation.selection.getAnnotationsSelectedByToolName(
-        RECTANGLE_ROI_THRESHOLD_MANUAL
-      );
+      const annotationUIDs =
+        csTools.annotation.selection.getAnnotationsSelectedByToolName(
+          RECTANGLE_ROI_THRESHOLD_MANUAL
+        );
 
       if (annotationUIDs.length === 0) {
         uiNotificationService.show({
@@ -229,9 +229,10 @@ const commandsModule = ({
 
       const referencedVolume = cs.cache.getVolume(referencedVolumeId);
 
-      const annotationUIDs = csTools.annotation.selection.getAnnotationsSelectedByToolName(
-        RECTANGLE_ROI_THRESHOLD_MANUAL
-      );
+      const annotationUIDs =
+        csTools.annotation.selection.getAnnotationsSelectedByToolName(
+          RECTANGLE_ROI_THRESHOLD_MANUAL
+        );
 
       const annotations = annotationUIDs.map(annotationUID =>
         csTools.annotation.state.getAnnotation(annotationUID)
@@ -325,9 +326,10 @@ const commandsModule = ({
       // merge labelmap will through an error if labels maps are not the same size
       // or same direction or ....
       try {
-        mergedLabelmap = csTools.utilities.segmentation.createMergedLabelmapForIndex(
-          labelmapVolumes
-        );
+        mergedLabelmap =
+          csTools.utilities.segmentation.createMergedLabelmapForIndex(
+            labelmapVolumes
+          );
       } catch (e) {
         console.error('commandsModule::getTotalLesionGlycolysis', e);
         return;
@@ -378,9 +380,10 @@ const commandsModule = ({
       const { viewport } = _getActiveViewportsEnabledElement();
       const { focalPoint, viewPlaneNormal } = viewport.getCamera();
 
-      const selectedAnnotationUIDs = csTools.annotation.selection.getAnnotationsSelectedByToolName(
-        RECTANGLE_ROI_THRESHOLD_MANUAL
-      );
+      const selectedAnnotationUIDs =
+        csTools.annotation.selection.getAnnotationsSelectedByToolName(
+          RECTANGLE_ROI_THRESHOLD_MANUAL
+        );
 
       const annotationUID = selectedAnnotationUIDs[0];
 
@@ -416,9 +419,10 @@ const commandsModule = ({
     setEndSliceForROIThresholdTool: () => {
       const { viewport } = _getActiveViewportsEnabledElement();
 
-      const selectedAnnotationUIDs = csTools.annotation.selection.getAnnotationsSelectedByToolName(
-        RECTANGLE_ROI_THRESHOLD_MANUAL
-      );
+      const selectedAnnotationUIDs =
+        csTools.annotation.selection.getAnnotationsSelectedByToolName(
+          RECTANGLE_ROI_THRESHOLD_MANUAL
+        );
 
       const annotationUID = selectedAnnotationUIDs[0];
 
@@ -488,9 +492,8 @@ const commandsModule = ({
         const referencedVolumeId = labelmapVolume.referencedVolumeId;
         segReport.referencedVolumeId = referencedVolumeId;
 
-        const referencedVolume = segmentationService.getLabelmapVolume(
-          referencedVolumeId
-        );
+        const referencedVolume =
+          segmentationService.getLabelmapVolume(referencedVolumeId);
 
         if (!referencedVolume) {
           report[id] = segReport;

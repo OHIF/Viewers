@@ -64,9 +64,10 @@ function Local({ modePath }: LocalProps) {
   const firstLocalDataSource = localDataSources[0];
   const dataSource = firstLocalDataSource.createDataSource({});
 
-  const microscopyExtensionLoaded = extensionManager.registeredExtensionIds.includes(
-    '@ohif/extension-dicom-microscopy'
-  );
+  const microscopyExtensionLoaded =
+    extensionManager.registeredExtensionIds.includes(
+      '@ohif/extension-dicom-microscopy'
+    );
 
   const onDrop = async acceptedFiles => {
     const studies = await filesToStudies(acceptedFiles, dataSource);
@@ -119,30 +120,30 @@ function Local({ modePath }: LocalProps) {
     >
       {({ getRootProps }) => (
         <div {...getRootProps()} style={{ width: '100%', height: '100%' }}>
-          <div className="h-screen w-screen flex justify-center items-center ">
-            <div className="py-8 px-8 mx-auto bg-secondary-dark drop-shadow-md space-y-2 rounded-lg">
+          <div className="flex h-screen w-screen items-center justify-center ">
+            <div className="bg-secondary-dark mx-auto space-y-2 rounded-lg py-8 px-8 drop-shadow-md">
               <img
-                className="block mx-auto h-14"
+                className="mx-auto block h-14"
                 src="./ohif-logo.svg"
                 alt="OHIF"
               />
-              <div className="text-center space-y-2 pt-4">
+              <div className="space-y-2 pt-4 text-center">
                 {dropInitiated ? (
                   <div className="flex flex-col items-center justify-center pt-48">
                     <LoadingIndicatorProgress
-                      className={'w-full h-full bg-black'}
+                      className={'h-full w-full bg-black'}
                     />
                   </div>
                 ) : (
                   <div className="space-y-2">
-                    <p className="text-blue-300 text-base">
+                    <p className="text-base text-blue-300">
                       Note: You data is not uploaded to any server, it will stay
                       in your local browser application
                     </p>
-                    <p className="text-xg text-primary-active font-semibold pt-6">
+                    <p className="text-xg text-primary-active pt-6 font-semibold">
                       Drag and Drop DICOM files here to load them in the Viewer
                     </p>
-                    <p className="text-blue-300 text-lg">Or click to </p>
+                    <p className="text-lg text-blue-300">Or click to </p>
                   </div>
                 )}
               </div>

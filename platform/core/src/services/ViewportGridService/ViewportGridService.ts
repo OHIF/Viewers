@@ -158,7 +158,9 @@ class ViewportGridService extends PubSubService {
     return this.serviceImplementation._getNumViewportPanes();
   }
 
-  public getLayoutOptionsFromState(state: any): { x: number; y: number; width: number; height: number }[] {
+  public getLayoutOptionsFromState(
+    state: any
+  ): { x: number; y: number; width: number; height: number }[] {
     return Array.from(state.viewports.entries()).map(([_, viewport]) => {
       return {
         x: viewport.x,

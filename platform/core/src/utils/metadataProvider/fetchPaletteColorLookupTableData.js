@@ -59,9 +59,8 @@ function _getPaletteColor(paletteColorLookupTableData, lutDescriptor) {
         atob(paletteColorLookupTableData.InlineBinary),
         c => c.charCodeAt(0)
       );
-      return (paletteColorLookupTableData.palette = arrayBufferToPaletteColorLUT(
-        arraybuffer
-      ));
+      return (paletteColorLookupTableData.palette =
+        arrayBufferToPaletteColorLUT(arraybuffer));
     } catch (e) {
       console.log(
         "Couldn't decode",
@@ -77,9 +76,8 @@ function _getPaletteColor(paletteColorLookupTableData, lutDescriptor) {
       .retrieveBulkData()
       .then(
         val =>
-          (paletteColorLookupTableData.palette = arrayBufferToPaletteColorLUT(
-            val
-          ))
+          (paletteColorLookupTableData.palette =
+            arrayBufferToPaletteColorLUT(val))
       );
   }
 

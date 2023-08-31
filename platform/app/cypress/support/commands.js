@@ -95,10 +95,7 @@ Cypress.Commands.add('openStudyModality', Modality => {
     .type(Modality)
     .waitQueryList();
 
-  cy.get('[data-cy="study-list-results"]')
-    .contains(Modality)
-    .first()
-    .click();
+  cy.get('[data-cy="study-list-results"]').contains(Modality).first().click();
 });
 
 /**
@@ -443,10 +440,7 @@ Cypress.Commands.add('openPreferences', () => {
         .scrollIntoView()
         .click()
         .then(() => {
-          cy.get('[data-cy="options-dropdown"]')
-            .last()
-            .click()
-            .wait(200);
+          cy.get('[data-cy="options-dropdown"]').last().click().wait(200);
         });
     }
   });
@@ -481,9 +475,7 @@ Cypress.Commands.add('closePreferences', () => {
   cy.get('body').then(body => {
     // Close notification if displayed
     if (body.find('.sb-closeIcon').length > 0) {
-      cy.get('.sb-closeIcon')
-        .first()
-        .click({ force: true });
+      cy.get('.sb-closeIcon').first().click({ force: true });
     }
 
     // Close User Preferences Modal (if displayed)
@@ -495,9 +487,7 @@ Cypress.Commands.add('closePreferences', () => {
 
 Cypress.Commands.add('selectPreferencesTab', tabAlias => {
   cy.initPreferencesModalAliases();
-  cy.get(tabAlias)
-    .click()
-    .should('have.class', 'active');
+  cy.get(tabAlias).click().should('have.class', 'active');
   initPreferencesModalFooterBtnAliases();
 });
 
@@ -513,9 +503,7 @@ Cypress.Commands.add('resetUserHotkeyPreferences', () => {
   // Close Success Message overlay (if displayed)
   cy.get('body').then(body => {
     if (body.find('.sb-closeIcon').length > 0) {
-      cy.get('.sb-closeIcon')
-        .first()
-        .click({ force: true });
+      cy.get('.sb-closeIcon').first().click({ force: true });
     }
     // Click on Save Button
     cy.get('@saveBtn').click();
@@ -534,9 +522,7 @@ Cypress.Commands.add('resetUserGeneralPreferences', () => {
   // Close Success Message overlay (if displayed)
   cy.get('body').then(body => {
     if (body.find('.sb-closeIcon').length > 0) {
-      cy.get('.sb-closeIcon')
-        .first()
-        .click({ force: true });
+      cy.get('.sb-closeIcon').first().click({ force: true });
     }
     // Click on Save Button
     cy.get('@saveBtn').click();
@@ -590,9 +576,7 @@ Cypress.Commands.add(
 
 Cypress.Commands.add('openDownloadImageModal', () => {
   // Click on More button
-  cy.get('[data-cy="Capture"]')
-    .as('captureBtn')
-    .click();
+  cy.get('[data-cy="Capture"]').as('captureBtn').click();
 });
 
 Cypress.Commands.add('setLanguage', (language, save = true) => {
@@ -609,16 +593,12 @@ Cypress.Commands.add('setLanguage', (language, save = true) => {
   // Close Success Message overlay (if displayed)
   cy.get('body').then(body => {
     if (body.find('.sb-closeIcon').length > 0) {
-      cy.get('.sb-closeIcon')
-        .first()
-        .click({ force: true });
+      cy.get('.sb-closeIcon').first().click({ force: true });
     }
 
     //Click on Save/Cancel button
     const toClick = save ? '@saveBtn' : '@cancelBtn';
-    cy.get(toClick)
-      .scrollIntoView()
-      .click();
+    cy.get(toClick).scrollIntoView().click();
   });
 });
 
@@ -626,7 +606,7 @@ Cypress.Commands.add('setLanguage', (language, save = true) => {
 // https://github.com/cypress-io/cypress/issues/7362
 // uncomment this if you really need the network logs
 const origLog = Cypress.log;
-Cypress.log = function(opts, ...other) {
+Cypress.log = function (opts, ...other) {
   if (opts.displayName === 'script' || opts.name === 'request') {
     return;
   }

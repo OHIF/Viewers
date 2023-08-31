@@ -186,7 +186,7 @@ export default function PanelMeasurementTable({
               labelClassName="text-white text-[14px] leading-[1.2]"
               autoFocus
               id="annotation"
-              className="bg-black border-primary-main"
+              className="border-primary-main bg-black"
               type="text"
               value={value.label}
               onChange={onChangeHandler}
@@ -217,7 +217,7 @@ export default function PanelMeasurementTable({
   return (
     <>
       <div
-        className="overflow-x-hidden overflow-y-auto ohif-scrollbar"
+        className="ohif-scrollbar overflow-y-auto overflow-x-hidden"
         data-cy={'measurements-panel'}
       >
         <MeasurementTable

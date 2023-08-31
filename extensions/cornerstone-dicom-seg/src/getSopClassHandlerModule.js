@@ -194,12 +194,13 @@ async function _loadSegments({
     );
   });
 
-  const results = await adaptersSEG.Cornerstone3D.Segmentation.generateToolState(
-    imageIds,
-    arrayBuffer,
-    metaData,
-    { skipOverlapping, tolerance, eventTarget, triggerEvent }
-  );
+  const results =
+    await adaptersSEG.Cornerstone3D.Segmentation.generateToolState(
+      imageIds,
+      arrayBuffer,
+      metaData,
+      { skipOverlapping, tolerance, eventTarget, triggerEvent }
+    );
 
   results.segMetadata.data.forEach((data, i) => {
     if (i > 0) {

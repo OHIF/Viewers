@@ -60,9 +60,8 @@ function TrackedMeasurementsContextProvider(
       );
 
       const referencedImages = referencedDisplaySet.images;
-      const isVolumeIdReferenced = referencedImages[0].imageId.startsWith(
-        'volumeId'
-      );
+      const isVolumeIdReferenced =
+        referencedImages[0].imageId.startsWith('volumeId');
 
       const measurementData = trackedMeasurements[0].data;
 

@@ -120,9 +120,8 @@ export default async function loadRTStruct(
   const { bulkDataURI } = dataSource.getConfig?.() || {};
 
   const { dicomLoaderService } = utilityModule.exports;
-  const imageIdSopInstanceUidPairs = _getImageIdSopInstanceUidPairsForDisplaySet(
-    referencedDisplaySet
-  );
+  const imageIdSopInstanceUidPairs =
+    _getImageIdSopInstanceUidPairsForDisplaySet(referencedDisplaySet);
 
   // Set here is loading is asynchronous.
   // If this function throws its set back to false.

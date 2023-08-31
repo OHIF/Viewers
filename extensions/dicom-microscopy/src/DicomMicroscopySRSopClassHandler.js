@@ -58,9 +58,8 @@ function _getDisplaySetsFromSeries(
     instance.StudyInstanceUID,
     instance.SeriesInstanceUID
   ).instances[0];
-  const ReferencedFrameOfReferenceUID = _getReferencedFrameOfReferenceUID(
-    naturalizedDataset
-  );
+  const ReferencedFrameOfReferenceUID =
+    _getReferencedFrameOfReferenceUID(naturalizedDataset);
 
   const {
     FrameOfReferenceUID,
@@ -98,7 +97,7 @@ function _getDisplaySetsFromSeries(
     loadError: false,
   };
 
-  displaySet.load = function(referencedDisplaySet) {
+  displaySet.load = function (referencedDisplaySet) {
     return loadSR(microscopyService, displaySet, referencedDisplaySet).catch(
       error => {
         displaySet.isLoaded = false;
@@ -108,7 +107,7 @@ function _getDisplaySetsFromSeries(
     );
   };
 
-  displaySet.getSourceDisplaySet = function() {
+  displaySet.getSourceDisplaySet = function () {
     let allDisplaySets = [];
     const studyMetadata = DicomMetadataStore.getStudy(StudyInstanceUID);
     studyMetadata.series.forEach(series => {

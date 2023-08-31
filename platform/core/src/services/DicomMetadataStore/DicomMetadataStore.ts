@@ -161,9 +161,8 @@ const BaseImplementation = {
     let naturalizedDataset;
 
     if (dicomJSONDataset['SeriesInstanceUID'] === undefined) {
-      naturalizedDataset = dcmjs.data.DicomMetaDictionary.naturalizeDataset(
-        dicomJSONDataset
-      );
+      naturalizedDataset =
+        dcmjs.data.DicomMetaDictionary.naturalizeDataset(dicomJSONDataset);
     } else {
       naturalizedDataset = dicomJSONDataset;
     }

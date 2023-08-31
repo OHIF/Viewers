@@ -11,7 +11,7 @@ function promptTrackNewStudy({ servicesManager, extensionManager }, ctx, evt) {
   const { UIViewportDialogService } = servicesManager.services;
   const { viewportId, StudyInstanceUID, SeriesInstanceUID } = evt;
 
-  return new Promise(async function(resolve, reject) {
+  return new Promise(async function (resolve, reject) {
     let promptResult = await _askTrackMeasurements(
       UIViewportDialogService,
       viewportId
@@ -34,7 +34,7 @@ function promptTrackNewStudy({ servicesManager, extensionManager }, ctx, evt) {
 }
 
 function _askTrackMeasurements(UIViewportDialogService, viewportId) {
-  return new Promise(function(resolve, reject) {
+  return new Promise(function (resolve, reject) {
     const message = 'Track measurements for this series?';
     const actions = [
       { type: 'cancel', text: 'No', value: RESPONSE.CANCEL },
@@ -69,7 +69,7 @@ function _askTrackMeasurements(UIViewportDialogService, viewportId) {
 }
 
 function _askSaveDiscardOrCancel(UIViewportDialogService, viewportId) {
-  return new Promise(function(resolve, reject) {
+  return new Promise(function (resolve, reject) {
     const message =
       'Measurements cannot span across multiple studies. Do you want to save your tracked measurements?';
     const actions = [

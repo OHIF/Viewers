@@ -185,9 +185,8 @@ const OHIFCornerstoneViewport = React.memo(props => {
       }
 
       const { viewportId, element } = evt.detail;
-      const viewportInfo = cornerstoneViewportService.getViewportInfo(
-        viewportId
-      );
+      const viewportInfo =
+        cornerstoneViewportService.getViewportInfo(viewportId);
       setEnabledElement(viewportId, element);
       setEnabledVPElement(element);
 
@@ -226,9 +225,8 @@ const OHIFCornerstoneViewport = React.memo(props => {
     setImageScrollBarHeight();
 
     return () => {
-      const viewportInfo = cornerstoneViewportService.getViewportInfo(
-        viewportId
-      );
+      const viewportInfo =
+        cornerstoneViewportService.getViewportInfo(viewportId);
 
       if (!viewportInfo) {
         return;
@@ -267,18 +265,18 @@ const OHIFCornerstoneViewport = React.memo(props => {
           return;
         }
 
-        const viewportInfo = cornerstoneViewportService.getViewportInfo(
-          viewportId
-        );
+        const viewportInfo =
+          cornerstoneViewportService.getViewportInfo(viewportId);
 
         if (viewportInfo.hasDisplaySet(invalidatedDisplaySetInstanceUID)) {
           const viewportData = viewportInfo.getViewportData();
-          const newViewportData = await cornerstoneCacheService.invalidateViewportData(
-            viewportData,
-            invalidatedDisplaySetInstanceUID,
-            dataSource,
-            displaySetService
-          );
+          const newViewportData =
+            await cornerstoneCacheService.invalidateViewportData(
+              viewportData,
+              invalidatedDisplaySetInstanceUID,
+              dataSource,
+              displaySetService
+            );
 
           const keepCamera = true;
           cornerstoneViewportService.updateViewport(
@@ -311,10 +309,8 @@ const OHIFCornerstoneViewport = React.memo(props => {
       // The presentation state will have been stored previously by closing
       // a viewport.  Otherwise, this viewport will be unchanged and the
       // presentation information will be directly carried over.
-      const {
-        lutPresentationStore,
-        positionPresentationStore,
-      } = stateSyncService.getState();
+      const { lutPresentationStore, positionPresentationStore } =
+        stateSyncService.getState();
       const { presentationIds } = viewportOptions;
       const presentations = {
         positionPresentation:
@@ -370,15 +366,16 @@ const OHIFCornerstoneViewport = React.memo(props => {
       return;
     }
 
-    const unsubscribeFromJumpToMeasurementEvents = _subscribeToJumpToMeasurementEvents(
-      measurementService,
-      displaySetService,
-      elementRef,
-      viewportId,
-      displaySets,
-      viewportGridService,
-      cornerstoneViewportService
-    );
+    const unsubscribeFromJumpToMeasurementEvents =
+      _subscribeToJumpToMeasurementEvents(
+        measurementService,
+        displaySetService,
+        elementRef,
+        viewportId,
+        displaySets,
+        viewportGridService,
+        cornerstoneViewportService
+      );
 
     _checkForCachedJumpToMeasurementEvents(
       measurementService,
@@ -459,11 +456,12 @@ function _subscribeToJumpToMeasurementEvents(
       }
       if (cacheJumpToMeasurementEvent.cornerstoneViewport === undefined) {
         // Decide on which viewport should handle this
-        cacheJumpToMeasurementEvent.cornerstoneViewport = cornerstoneViewportService.getViewportIdToJump(
-          jumpId,
-          measurement.displaySetInstanceUID,
-          { referencedImageId: measurement.referencedImageId }
-        );
+        cacheJumpToMeasurementEvent.cornerstoneViewport =
+          cornerstoneViewportService.getViewportIdToJump(
+            jumpId,
+            measurement.displaySetInstanceUID,
+            { referencedImageId: measurement.referencedImageId }
+          );
       }
       if (cacheJumpToMeasurementEvent.cornerstoneViewport !== viewportId) {
         return;
@@ -565,10 +563,8 @@ function _jumpToMeasurement(
     if (viewport instanceof StackViewport) {
       const imageIds = viewport.getImageIds();
       imageIdIndex = imageIds.findIndex(imageId => {
-        const {
-          SOPInstanceUID: aSOPInstanceUID,
-          frameNumber: aFrameNumber,
-        } = getSOPInstanceAttributes(imageId);
+        const { SOPInstanceUID: aSOPInstanceUID, frameNumber: aFrameNumber } =
+          getSOPInstanceAttributes(imageId);
         return (
           aSOPInstanceUID === SOPInstanceUID &&
           (!frameNumber || frameNumber === aFrameNumber)

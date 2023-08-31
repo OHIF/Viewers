@@ -168,7 +168,6 @@ class ViewportInfo {
     return this.viewportData;
   }
 
-
   public getElement(): HTMLDivElement {
     return this.element;
   }
@@ -187,7 +186,7 @@ class ViewportInfo {
 
     this.setDisplaySetOptions(displaySetOptions);
 
-    return this.displaySetOptions
+    return this.displaySetOptions;
   }
 
   public hasDisplaySet(displaySetInstanceUID: string): boolean {
@@ -196,8 +195,9 @@ class ViewportInfo {
     // via cornerstoneViewportService
     let viewportData = this.getViewportData();
 
-    if (viewportData.viewportType === Enums.ViewportType.ORTHOGRAPHIC ||
-        viewportData.viewportType === Enums.ViewportType.VOLUME_3D
+    if (
+      viewportData.viewportType === Enums.ViewportType.ORTHOGRAPHIC ||
+      viewportData.viewportType === Enums.ViewportType.VOLUME_3D
     ) {
       viewportData = viewportData as VolumeViewportData;
       return viewportData.data.some(
@@ -213,10 +213,8 @@ class ViewportInfo {
     viewportOptionsEntry: PublicViewportOptions
   ): ViewportOptions {
     let viewportType = viewportOptionsEntry.viewportType;
-    const {
-      toolGroupId = DEFAULT_TOOLGROUP_ID,
-      presentationIds,
-    } = viewportOptionsEntry;
+    const { toolGroupId = DEFAULT_TOOLGROUP_ID, presentationIds } =
+      viewportOptionsEntry;
     let orientation;
 
     if (!viewportType) {

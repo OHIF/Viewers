@@ -355,9 +355,8 @@ class ViewerManager extends PubSubService {
         interaction => interaction[0] === availableInteractionName
       );
       if (!interaction) {
-        const deactivateInteractionMethod = interactionsMap[
-          availableInteractionName
-        ](false);
+        const deactivateInteractionMethod =
+          interactionsMap[availableInteractionName](false);
         this.viewer[deactivateInteractionMethod]();
       } else {
         const [name, config] = interaction;

@@ -96,9 +96,8 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
 
   useEffect(() => {
     const onAnnotationUpdated = () => {
-      const roiAnnotations = microscopyService.getAnnotationsForStudy(
-        studyInstanceUID
-      );
+      const roiAnnotations =
+        microscopyService.getAnnotationsForStudy(studyInstanceUID);
       setRoiAnnotations(roiAnnotations);
     };
 
@@ -111,24 +110,21 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
       onAnnotationUpdated();
     };
 
-    const {
-      unsubscribe: unsubscribeAnnotationUpdated,
-    } = microscopyService.subscribe(
-      MicroscopyEvents.ANNOTATION_UPDATED,
-      onAnnotationUpdated
-    );
-    const {
-      unsubscribe: unsubscribeAnnotationSelected,
-    } = microscopyService.subscribe(
-      MicroscopyEvents.ANNOTATION_SELECTED,
-      onAnnotationSelected
-    );
-    const {
-      unsubscribe: unsubscribeAnnotationRemoved,
-    } = microscopyService.subscribe(
-      MicroscopyEvents.ANNOTATION_REMOVED,
-      onAnnotationRemoved
-    );
+    const { unsubscribe: unsubscribeAnnotationUpdated } =
+      microscopyService.subscribe(
+        MicroscopyEvents.ANNOTATION_UPDATED,
+        onAnnotationUpdated
+      );
+    const { unsubscribe: unsubscribeAnnotationSelected } =
+      microscopyService.subscribe(
+        MicroscopyEvents.ANNOTATION_SELECTED,
+        onAnnotationSelected
+      );
+    const { unsubscribe: unsubscribeAnnotationRemoved } =
+      microscopyService.subscribe(
+        MicroscopyEvents.ANNOTATION_REMOVED,
+        onAnnotationRemoved
+      );
     onAnnotationUpdated();
     onAnnotationSelected();
 
@@ -147,9 +143,8 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
    * @returns
    */
   const promptSave = () => {
-    const annotations = microscopyService.getAnnotationsForStudy(
-      studyInstanceUID
-    );
+    const annotations =
+      microscopyService.getAnnotationsForStudy(studyInstanceUID);
 
     if (!annotations || saving) {
       return;
@@ -189,9 +184,8 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
   const saveFunction = async (SeriesDescription: string) => {
     const dataSource = extensionManager.getActiveDataSource()[0];
     const { onSaveComplete } = props;
-    const annotations = microscopyService.getAnnotationsForStudy(
-      studyInstanceUID
-    );
+    const annotations =
+      microscopyService.getAnnotationsForStudy(studyInstanceUID);
 
     saving = true;
 
@@ -368,7 +362,7 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
   return (
     <>
       <div
-        className="overflow-x-hidden overflow-y-auto ohif-scrollbar"
+        className="ohif-scrollbar overflow-y-auto overflow-x-hidden"
         data-cy={'measurements-panel'}
       >
         <MeasurementTable

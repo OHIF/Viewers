@@ -172,10 +172,8 @@ export function ViewportGridProvider({ children, service }) {
             viewportLabel: getViewportLabel(viewports, viewportId),
           };
 
-          viewportOptions.presentationIds = ViewportGridService.getPresentationIds(
-            newViewport,
-            viewports
-          );
+          viewportOptions.presentationIds =
+            ViewportGridService.getPresentationIds(newViewport, viewports);
 
           viewports.set(viewportId, {
             ...viewports.get(viewportId),
@@ -243,9 +241,12 @@ export function ViewportGridProvider({ children, service }) {
 
             let xPos, yPos, w, h;
             if (layoutOptions && layoutOptions[position]) {
-              ({ x: xPos, y: yPos, width: w, height: h } = layoutOptions[
-                position
-              ]);
+              ({
+                x: xPos,
+                y: yPos,
+                width: w,
+                height: h,
+              } = layoutOptions[position]);
             } else {
               w = 1 / numCols;
               h = 1 / numRows;
@@ -266,10 +267,8 @@ export function ViewportGridProvider({ children, service }) {
             );
 
             if (!viewport.viewportOptions.presentationIds) {
-              viewport.viewportOptions.presentationIds = ViewportGridService.getPresentationIds(
-                viewport,
-                viewports
-              );
+              viewport.viewportOptions.presentationIds =
+                ViewportGridService.getPresentationIds(viewport, viewports);
             }
           }
         }

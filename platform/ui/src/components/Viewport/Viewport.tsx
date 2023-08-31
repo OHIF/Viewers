@@ -36,7 +36,7 @@ const Viewport: React.FC<ViewportProps> = ({
   children,
 }) => {
   return (
-    <div className="relative flex flex-col h-full">
+    <div className="relative flex h-full flex-col">
       <div className="absolute top-0 left-0 w-full">
         <LegacyViewportActionBar
           onArrowsClick={onArrowsClick}
@@ -73,7 +73,7 @@ const Viewport: React.FC<ViewportProps> = ({
       </div>
 
       {/* STUDY IMAGE */}
-      <div className="w-full h-full" id={viewportId}>
+      <div className="h-full w-full" id={viewportId}>
         {children}
       </div>
     </div>

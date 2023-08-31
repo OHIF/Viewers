@@ -29,11 +29,8 @@ function OHIFCornerstoneSRViewport(props) {
 
   const [appConfig] = useAppConfig();
 
-  const {
-    displaySetService,
-    cornerstoneViewportService,
-    measurementService,
-  } = servicesManager.services;
+  const { displaySetService, cornerstoneViewportService, measurementService } =
+    servicesManager.services;
 
   const viewportId = viewportOptions.viewportId;
 
@@ -47,13 +44,10 @@ function OHIFCornerstoneSRViewport(props) {
   const [viewportGrid, viewportGridService] = useViewportGrid();
   const [measurementSelected, setMeasurementSelected] = useState(0);
   const [measurementCount, setMeasurementCount] = useState(1);
-  const [activeImageDisplaySetData, setActiveImageDisplaySetData] = useState(
-    null
-  );
-  const [
-    referencedDisplaySetMetadata,
-    setReferencedDisplaySetMetadata,
-  ] = useState(null);
+  const [activeImageDisplaySetData, setActiveImageDisplaySetData] =
+    useState(null);
+  const [referencedDisplaySetMetadata, setReferencedDisplaySetMetadata] =
+    useState(null);
   const [element, setElement] = useState(null);
   const { viewports, activeViewportId } = viewportGrid;
 
@@ -61,9 +55,10 @@ function OHIFCornerstoneSRViewport(props) {
   let trackedMeasurements;
   let sendTrackedMeasurementsEvent;
 
-  const hasMeasurementTrackingExtension = extensionManager.registeredExtensionIds.includes(
-    MEASUREMENT_TRACKING_EXTENSION_ID
-  );
+  const hasMeasurementTrackingExtension =
+    extensionManager.registeredExtensionIds.includes(
+      MEASUREMENT_TRACKING_EXTENSION_ID
+    );
 
   if (hasMeasurementTrackingExtension) {
     const contextModule = extensionManager.getModuleEntry(
@@ -127,11 +122,8 @@ function OHIFCornerstoneSRViewport(props) {
 
   const updateViewport = useCallback(
     newMeasurementSelected => {
-      const {
-        StudyInstanceUID,
-        displaySetInstanceUID,
-        sopClassUids,
-      } = srDisplaySet;
+      const { StudyInstanceUID, displaySetInstanceUID, sopClassUids } =
+        srDisplaySet;
 
       if (!StudyInstanceUID || !displaySetInstanceUID) {
         return;
@@ -164,9 +156,8 @@ function OHIFCornerstoneSRViewport(props) {
           // imageIdIndex will handle it by updating the viewport, but if they
           // are the same we just need to use measurementService to jump to the
           // new measurement
-          const csViewport = cornerstoneViewportService.getCornerstoneViewport(
-            viewportId
-          );
+          const csViewport =
+            cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
           const imageIds = csViewport.getImageIds();
 
@@ -400,7 +391,7 @@ function OHIFCornerstoneSRViewport(props) {
         }}
       />
 
-      <div className="relative flex flex-row w-full h-full overflow-hidden">
+      <div className="relative flex h-full w-full flex-row overflow-hidden">
         {getCornerstoneViewport()}
         {childrenWithProps}
       </div>
@@ -518,14 +509,14 @@ function _getStatusComponent({
   }
 
   const StatusArea = () => (
-    <div className="flex h-6 leading-6 cursor-default text-sm text-white">
-      <div className="min-w-[45px] flex items-center p-1 rounded-l-xl rounded-r bg-customgray-100">
+    <div className="flex h-6 cursor-default text-sm leading-6 text-white">
+      <div className="bg-customgray-100 flex min-w-[45px] items-center rounded-l-xl rounded-r p-1">
         <StatusIcon />
         <span className="ml-1">SR</span>
       </div>
       {state === 3 && (
         <div
-          className="ml-1 px-1.5 rounded cursor-pointer hover:text-black bg-primary-main hover:bg-primary-light"
+          className="bg-primary-main hover:bg-primary-light ml-1 cursor-pointer rounded px-1.5 hover:text-black"
           // Using onMouseUp here because onClick is not working when the viewport is not active and is styled with pointer-events:none
           onMouseUp={handleMouseUp}
         >

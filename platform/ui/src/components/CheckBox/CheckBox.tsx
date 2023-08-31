@@ -36,7 +36,7 @@ const CheckBox: React.FC<{
 
   return (
     <div
-      className={`flex items-center cursor-pointer space-x-1 ${
+      className={`flex cursor-pointer items-center space-x-1 ${
         className ? className : ''
       }`}
       onClick={handleClick}

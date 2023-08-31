@@ -106,7 +106,8 @@ const ViewportActionBar = ({
     }
 
     const studyDateElemBBox = studyDateElemRef.current.getBoundingClientRect();
-    const showPatientInfoElemBBox = showPatientInfoElemRef.current.getBoundingClientRect();
+    const showPatientInfoElemBBox =
+      showPatientInfoElemRef.current.getBoundingClientRect();
 
     if (
       showPatientInfoElemBBox.left - studyDateElemBBox.right <=
@@ -124,12 +125,12 @@ const ViewportActionBar = ({
   return (
     <div
       ref={componentRootElemRef}
-      className="pointer-events-auto select-none text-base flex overflow-visible whitespace-nowrap h-8 items-center px-2 shrink-0"
+      className="pointer-events-auto flex h-8 shrink-0 select-none items-center overflow-visible whitespace-nowrap px-2 text-base"
       onDoubleClick={onDoubleClick}
     >
       {getStatusComponent()}
       {!!label?.length && (
-        <span className="ml-1 text-aqua-pale text-large">{label}</span>
+        <span className="text-aqua-pale text-large ml-1">{label}</span>
       )}
       <div className={separatorClasses}></div>
       <span
@@ -144,7 +145,7 @@ const ViewportActionBar = ({
           <div className={separatorClasses}></div>
           <span
             ref={seriesDescElemRef}
-            className={`mr-1 text-aqua-pale ${textEllipsisClasses}`}
+            className={`text-aqua-pale mr-1 ${textEllipsisClasses}`}
           >
             {seriesDescription}
           </span>

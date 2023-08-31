@@ -11,11 +11,8 @@ export default function getCommandsModule({
   commandsManager: CommandsManager;
   extensionManager: ExtensionManager;
 }) {
-  const {
-    viewportGridService,
-    uiDialogService,
-    microscopyService,
-  } = servicesManager.services;
+  const { viewportGridService, uiDialogService, microscopyService } =
+    servicesManager.services;
 
   const actions = {
     // Measurement tool commands:

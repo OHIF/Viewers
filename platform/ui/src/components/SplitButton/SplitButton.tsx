@@ -163,8 +163,8 @@ const SplitButton = ({
     return (
       <div
         className={classNames(
-          'flex flex-row items-center p-3 h-8 w-full hover:bg-primary-dark',
-          'text-base whitespace-pre',
+          'hover:bg-primary-dark flex h-8 w-full flex-row items-center p-3',
+          'whitespace-pre text-base',
           isActive && 'bg-primary-dark',
           isActive
             ? 'text-[#348CFD]'
@@ -173,7 +173,7 @@ const SplitButton = ({
       >
         {icon && (
           <span className="mr-4">
-            <Icon name={icon} className="w-5 h-5" />
+            <Icon name={icon} className="h-5 w-5" />
           </span>
         )}
         <span className="mr-5">{t(label)}</span>

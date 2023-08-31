@@ -17,21 +17,16 @@ function PanelStudyBrowser({
   requestDisplaySetCreationForStudy,
   dataSource,
 }) {
-  const {
-    hangingProtocolService,
-    displaySetService,
-    uiNotificationService,
-  } = servicesManager.services;
+  const { hangingProtocolService, displaySetService, uiNotificationService } =
+    servicesManager.services;
   const navigate = useNavigate();
 
   // Normally you nest the components so the tree isn't so deep, and the data
   // doesn't have to have such an intense shape. This works well enough for now.
   // Tabs --> Studies --> DisplaySets --> Thumbnails
   const { StudyInstanceUIDs } = useImageViewer();
-  const [
-    { activeViewportId, viewports },
-    viewportGridService,
-  ] = useViewportGrid();
+  const [{ activeViewportId, viewports }, viewportGridService] =
+    useViewportGrid();
   const [activeTabName, setActiveTabName] = useState('primary');
   const [expandedStudyInstanceUIDs, setExpandedStudyInstanceUIDs] = useState([
     ...StudyInstanceUIDs,
@@ -82,9 +77,8 @@ function PanelStudyBrowser({
       // try to fetch the prior studies based on the patientID if the
       // server can respond.
       try {
-        qidoStudiesForPatient = await getStudiesForPatientByMRN(
-          qidoForStudyUID
-        );
+        qidoStudiesForPatient =
+          await getStudiesForPatientByMRN(qidoForStudyUID);
       } catch (error) {
         console.warn(error);
       }
@@ -133,9 +127,8 @@ function PanelStudyBrowser({
       // TODO: Is it okay that imageIds are not returned here for SR displaySets?
       if (imageId && !displaySet?.unsupported) {
         // When the image arrives, render it and store the result in the thumbnailImgSrcMap
-        newImageSrcEntry[dSet.displaySetInstanceUID] = await getImageSrc(
-          imageId
-        );
+        newImageSrcEntry[dSet.displaySetInstanceUID] =
+          await getImageSrc(imageId);
         if (isMounted.current) {
           setThumbnailImageSrcMap(prevState => {
             return { ...prevState, ...newImageSrcEntry };
@@ -210,17 +203,18 @@ function PanelStudyBrowser({
       }
     );
 
-    const SubscriptionDisplaySetMetaDataInvalidated = displaySetService.subscribe(
-      displaySetService.EVENTS.DISPLAY_SET_SERIES_METADATA_INVALIDATED,
-      () => {
-        const mappedDisplaySets = _mapDisplaySets(
-          displaySetService.getActiveDisplaySets(),
-          thumbnailImageSrcMap
-        );
+    const SubscriptionDisplaySetMetaDataInvalidated =
+      displaySetService.subscribe(
+        displaySetService.EVENTS.DISPLAY_SET_SERIES_METADATA_INVALIDATED,
+        () => {
+          const mappedDisplaySets = _mapDisplaySets(
+            displaySetService.getActiveDisplaySets(),
+            thumbnailImageSrcMap
+          );
 
-        setDisplaySets(mappedDisplaySets);
-      }
-    );
+          setDisplaySets(mappedDisplaySets);
+        }
+      );
 
     return () => {
       SubscriptionDisplaySetsAdded.unsubscribe();
@@ -238,9 +232,8 @@ function PanelStudyBrowser({
 
   // TODO: Should not fire this on "close"
   function _handleStudyClick(StudyInstanceUID) {
-    const shouldCollapseStudy = expandedStudyInstanceUIDs.includes(
-      StudyInstanceUID
-    );
+    const shouldCollapseStudy =
+      expandedStudyInstanceUIDs.includes(StudyInstanceUID);
     const updatedExpandedStudyInstanceUIDs = shouldCollapseStudy
       ? // eslint-disable-next-line prettier/prettier
         [
@@ -262,8 +255,8 @@ function PanelStudyBrowser({
     }
   }
 
-  const activeDisplaySetInstanceUIDs = viewports.get(activeViewportId)
-    ?.displaySetInstanceUIDs;
+  const activeDisplaySetInstanceUIDs =
+    viewports.get(activeViewportId)?.displaySetInstanceUIDs;
 
   return (
     <StudyBrowser

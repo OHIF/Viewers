@@ -127,11 +127,8 @@ const initMeasurementService = (
 };
 
 const connectToolsToMeasurementService = servicesManager => {
-  const {
-    measurementService,
-    displaySetService,
-    cornerstoneViewportService,
-  } = servicesManager.services;
+  const { measurementService, displaySetService, cornerstoneViewportService } =
+    servicesManager.services;
   const csTools3DVer1MeasurementSource = initMeasurementService(
     measurementService,
     displaySetService,
@@ -351,11 +348,8 @@ const connectMeasurementServiceToTools = (
         return;
       }
 
-      const {
-        referenceSeriesUID,
-        referenceStudyUID,
-        SOPInstanceUID,
-      } = measurement;
+      const { referenceSeriesUID, referenceStudyUID, SOPInstanceUID } =
+        measurement;
 
       const instance = DicomMetadataStore.getInstance(
         referenceStudyUID,

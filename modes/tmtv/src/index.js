@@ -99,9 +99,8 @@ function modeFactory({ modeConfiguration }) {
           // For fusion toolGroup we need to add the volumeIds for the crosshairs
           // since in the fusion viewport we don't want both PT and CT to render MIP
           // when slabThickness is modified
-          const {
-            displaySetMatchDetails,
-          } = hangingProtocolService.getMatchDetails();
+          const { displaySetMatchDetails } =
+            hangingProtocolService.getMatchDetails();
 
           setCrosshairsConfiguration(
             displaySetMatchDetails,

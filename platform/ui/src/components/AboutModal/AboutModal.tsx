@@ -16,7 +16,7 @@ const Link = ({ href, children, showIcon = false }) => {
       >
         {children}
         {!!showIcon && (
-          <Icon name="external-link" className="w-5 ml-2 text-white" />
+          <Icon name="external-link" className="ml-2 w-5 text-white" />
         )}
       </Typography>
     </a>
@@ -25,7 +25,7 @@ const Link = ({ href, children, showIcon = false }) => {
 
 const Row = ({ title, value, link }) => {
   return (
-    <div className="flex mb-4">
+    <div className="mb-4 flex">
       <Typography variant="subtitle" component="p" className="w-48 text-white">
         {title}
       </Typography>
@@ -50,7 +50,7 @@ const AboutModal = ({ buildNumber, versionNumber, commitHash }) => {
   const browser = `${name[0].toUpperCase()}${name.substr(1)} ${version}`;
 
   const renderRowTitle = title => (
-    <div className="pb-3 mb-3 border-b-2 border-black">
+    <div className="mb-3 border-b-2 border-black pb-3">
       <Typography
         variant="inherit"
         color="primaryLight"
@@ -63,7 +63,7 @@ const AboutModal = ({ buildNumber, versionNumber, commitHash }) => {
   return (
     <div>
       {renderRowTitle('Important Links')}
-      <div className="flex mb-8">
+      <div className="mb-8 flex">
         <Link href="https://community.ohif.org/" showIcon={true}>
           Visit the forum
         </Link>

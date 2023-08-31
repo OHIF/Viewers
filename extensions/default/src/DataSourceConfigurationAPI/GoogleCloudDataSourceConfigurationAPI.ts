@@ -29,7 +29,8 @@ const initialUrl = 'https://cloudresourcemanager.googleapis.com/v1';
 const baseHealthcareUrl = 'https://healthcare.googleapis.com/v1';
 
 class GoogleCloudDataSourceConfigurationAPIItem
-  implements Types.BaseDataSourceConfigurationAPIItem {
+  implements Types.BaseDataSourceConfigurationAPIItem
+{
   id: string;
   name: string;
   url: string;
@@ -37,7 +38,8 @@ class GoogleCloudDataSourceConfigurationAPIItem
 }
 
 class GoogleCloudDataSourceConfigurationAPI
-  implements Types.BaseDataSourceConfigurationAPI {
+  implements Types.BaseDataSourceConfigurationAPI
+{
   private _extensionManager: ExtensionManager;
   private _fetchOptions: { method: string; headers: unknown };
   private _dataSourceName: string;
@@ -113,11 +115,12 @@ class GoogleCloudDataSourceConfigurationAPI
 
     const url = `${googleCloudItem.url}/${subItemField}`;
 
-    const fetchedSubItems = await GoogleCloudDataSourceConfigurationAPI._doFetch(
-      url,
-      subItemType,
-      this._fetchOptions
-    );
+    const fetchedSubItems =
+      await GoogleCloudDataSourceConfigurationAPI._doFetch(
+        url,
+        subItemType,
+        this._fetchOptions
+      );
 
     if (!fetchedSubItems?.length) {
       return [];
@@ -216,9 +219,8 @@ class GoogleCloudDataSourceConfigurationAPI
             fetchOptions,
             fetchSearchParams
           );
-          data[ItemType[fetchItemType]] = data[ItemType[fetchItemType]].concat(
-            subPageData
-          );
+          data[ItemType[fetchItemType]] =
+            data[ItemType[fetchItemType]].concat(subPageData);
         }
         if (data[ItemType[fetchItemType]]) {
           return data[ItemType[fetchItemType]];

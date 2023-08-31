@@ -60,9 +60,10 @@ function _getDisplaySetsFromSeries(
     instance.ReferencedFrameOfReferenceSequence &&
     !instance.ReferencedSeriesSequence
   ) {
-    instance.ReferencedSeriesSequence = _deriveReferencedSeriesSequenceFromFrameOfReferenceSequence(
-      instance.ReferencedFrameOfReferenceSequence
-    );
+    instance.ReferencedSeriesSequence =
+      _deriveReferencedSeriesSequenceFromFrameOfReferenceSequence(
+        instance.ReferencedFrameOfReferenceSequence
+      );
     referencedSeriesSequence = instance.ReferencedSeriesSequence;
   }
 

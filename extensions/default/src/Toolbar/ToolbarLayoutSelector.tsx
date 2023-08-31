@@ -13,10 +13,9 @@ function LayoutSelector({
 }) {
   const [isOpen, setIsOpen] = useState(false);
 
-  const {
-    hangingProtocolService,
-    toolbarService,
-  } = (servicesManager as ServicesManager).services;
+  const { hangingProtocolService, toolbarService } = (
+    servicesManager as ServicesManager
+  ).services;
 
   const closeOnOutsideClick = () => {
     if (isOpen) {

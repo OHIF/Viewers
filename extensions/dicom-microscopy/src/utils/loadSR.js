@@ -16,9 +16,8 @@ export default async function loadSR(
 
   const { StudyInstanceUID, FrameOfReferenceUID } = referencedDisplaySet;
 
-  const managedViewers = microscopyService.getManagedViewersForStudy(
-    StudyInstanceUID
-  );
+  const managedViewers =
+    microscopyService.getManagedViewersForStudy(StudyInstanceUID);
 
   if (!managedViewers || !managedViewers.length) {
     return;
@@ -58,9 +57,8 @@ async function _getROIsFromToolState(naturalizedDataset, FrameOfReferenceUID) {
     /* webpackChunkName: "dicom-microscopy-viewer" */ 'dicom-microscopy-viewer'
   );
 
-  const measurementGroupContentItems = _getMeasurementGroups(
-    naturalizedDataset
-  );
+  const measurementGroupContentItems =
+    _getMeasurementGroups(naturalizedDataset);
 
   const rois = [];
   const labels = [];
@@ -71,8 +69,8 @@ async function _getROIsFromToolState(naturalizedDataset, FrameOfReferenceUID) {
 
     const capsToolType = t.toUpperCase();
 
-    const measurementGroupContentItemsForTool = measurementGroupContentItems.filter(
-      mg => {
+    const measurementGroupContentItemsForTool =
+      measurementGroupContentItems.filter(mg => {
         const imageRegionContentItem = toArray(mg.ContentSequence).find(
           ci =>
             ci.ConceptNameCodeSequence.CodeValue ===
@@ -80,8 +78,7 @@ async function _getROIsFromToolState(naturalizedDataset, FrameOfReferenceUID) {
         );
 
         return imageRegionContentItem.GraphicType === capsToolType;
-      }
-    );
+      });
 
     toolSpecificToolState.forEach((coordinates, index) => {
       const properties = {};

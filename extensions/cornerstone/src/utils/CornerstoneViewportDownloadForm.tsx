@@ -27,10 +27,8 @@ const CornerstoneViewportDownloadForm = ({
   const activeViewportElement = enabledElement?.element;
   const activeViewportEnabledElement = getEnabledElement(activeViewportElement);
 
-  const {
-    viewportId: activeViewportId,
-    renderingEngineId,
-  } = activeViewportEnabledElement;
+  const { viewportId: activeViewportId, renderingEngineId } =
+    activeViewportEnabledElement;
 
   const toolGroup = ToolGroupManager.getToolGroupForViewport(
     activeViewportId,
@@ -201,10 +199,8 @@ const CornerstoneViewportDownloadForm = ({
 
     const downloadViewportElement = getEnabledElement(viewportElement);
 
-    const {
-      viewportId: activeViewportId,
-      renderingEngineId,
-    } = activeViewportEnabledElement;
+    const { viewportId: activeViewportId, renderingEngineId } =
+      activeViewportEnabledElement;
     const { viewportId: downloadViewportId } = downloadViewportElement;
 
     if (!activeViewportEnabledElement || !downloadViewportElement) {

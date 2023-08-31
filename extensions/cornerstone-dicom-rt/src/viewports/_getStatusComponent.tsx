@@ -26,14 +26,14 @@ export default function _getStatusComponent({ isHydrated, onStatusClick }) {
   }
 
   const StatusArea = () => (
-    <div className="flex h-6 leading-6 cursor-default text-sm text-white">
-      <div className="min-w-[45px] flex items-center p-1 rounded-l-xl rounded-r bg-customgray-100">
+    <div className="flex h-6 cursor-default text-sm leading-6 text-white">
+      <div className="bg-customgray-100 flex min-w-[45px] items-center rounded-l-xl rounded-r p-1">
         <StatusIcon />
         <span className="ml-1">RTSTRUCT</span>
       </div>
       {!isHydrated && (
         <div
-          className="ml-1 px-1.5 rounded cursor-pointer hover:text-black bg-primary-main hover:bg-primary-light"
+          className="bg-primary-main hover:bg-primary-light ml-1 cursor-pointer rounded px-1.5 hover:text-black"
           // Using onMouseUp here because onClick is not working when the viewport is not active and is styled with pointer-events:none
           onMouseUp={onStatusClick}
         >

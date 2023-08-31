@@ -149,10 +149,10 @@ function waitOn(list, thenable) {
   const task = increaseList(list);
   if (isTask(task)) {
     task.awaiting = Promise.resolve(thenable).then(
-      function() {
+      function () {
         finish(task);
       },
-      function() {
+      function () {
         task.failed = true;
         finish(task);
       }
@@ -304,7 +304,7 @@ function notify(list, data) {
     Array.isArray(list.observers) &&
     list.observers.length > 0
   ) {
-    list.observers.slice().forEach(function(observer) {
+    list.observers.slice().forEach(function (observer) {
       if (typeof observer === 'function') {
         try {
           observer(data, list);

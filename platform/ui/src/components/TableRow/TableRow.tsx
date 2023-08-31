@@ -12,7 +12,7 @@ const TableRow = ({ children, className, isTableHead, style }) => {
   });
 
   return (
-    <div className={classnames('w-full flex', className)} style={style}>
+    <div className={classnames('flex w-full', className)} style={style}>
       {childrens}
     </div>
   );
@@ -26,7 +26,7 @@ TableRow.defaultProps = {
 
 TableRow.propTypes = {
   isTableHead: PropTypes.bool,
-  children: function(props, propName, componentName) {
+  children: function (props, propName, componentName) {
     const elements = React.Children.toArray(props.children);
     const isString = elements.some(child => typeof child === 'string');
 

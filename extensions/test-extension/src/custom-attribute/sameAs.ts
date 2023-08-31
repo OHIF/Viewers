@@ -6,7 +6,7 @@
  *    `sameDisplaySetId` as the display set id to look for
  * From `options`, it looks for
  */
-export default function(displaySet, options) {
+export default function (displaySet, options) {
   const { sameAttribute, sameDisplaySetId } = this;
   if (!sameAttribute) {
     console.log('sameAttribute not defined in', this);

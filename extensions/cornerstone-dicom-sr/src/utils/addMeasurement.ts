@@ -207,9 +207,8 @@ function _getRenderableData(
         throw new Error('imageId does not have imagePlaneModule metadata');
       }
 
-      const {
-        columnCosines,
-      }: { columnCosines: csTypes.Point3 } = imagePlaneModule;
+      const { columnCosines }: { columnCosines: csTypes.Point3 } =
+        imagePlaneModule;
 
       // find which axis is parallel to the columnCosines
       const columnCosinesVec = vec3.fromValues(...columnCosines);

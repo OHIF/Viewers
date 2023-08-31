@@ -41,11 +41,8 @@ function modeFactory({ modeConfiguration }) {
      * Services and other resources.
      */
     onModeEnter: ({ servicesManager, extensionManager, commandsManager }) => {
-      const {
-        measurementService,
-        toolbarService,
-        toolGroupService,
-      } = servicesManager.services;
+      const { measurementService, toolbarService, toolGroupService } =
+        servicesManager.services;
 
       measurementService.clearMeasurements();
 

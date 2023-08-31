@@ -40,7 +40,7 @@ function DicomUpload({
         {({ getRootProps }) => (
           <div
             {...getRootProps()}
-            className="m-5 dicom-upload-drop-area-border-dash flex flex-col items-center justify-center h-full"
+            className="dicom-upload-drop-area-border-dash m-5 flex h-full flex-col items-center justify-center"
           >
             <div className="flex gap-3">
               <Dropzone onDrop={onDrop} noDrag>
@@ -73,7 +73,7 @@ function DicomUpload({
               </Dropzone>
             </div>
             <div className="pt-5">or drag images or folders here</div>
-            <div className="pt-3 text-aqua-pale text-lg">
+            <div className="text-aqua-pale pt-3 text-lg">
               (DICOM files supported)
             </div>
           </div>

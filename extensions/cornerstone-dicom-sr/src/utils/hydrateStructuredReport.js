@@ -49,11 +49,8 @@ export default function hydrateStructuredReport(
   const annotationManager = CsAnnotation.state.getAnnotationManager();
   const disableEditing = appConfig?.disableEditing;
   const dataSource = extensionManager.getActiveDataSource()[0];
-  const {
-    measurementService,
-    displaySetService,
-    customizationService,
-  } = servicesManager.services;
+  const { measurementService, displaySetService, customizationService } =
+    servicesManager.services;
 
   const codingValues = customizationService.getCustomization(
     'codingValues',
@@ -231,9 +228,8 @@ export default function hydrateStructuredReport(
       );
 
       if (disableEditing) {
-        const addedAnnotation = annotationManager.getAnnotation(
-          newAnnotationUID
-        );
+        const addedAnnotation =
+          annotationManager.getAnnotation(newAnnotationUID);
         locking.setAnnotationLocked(addedAnnotation, true);
       }
 
@@ -304,7 +300,7 @@ function _mapLegacyDataSet(dataset) {
   return dataset;
 }
 
-const toArray = function(x) {
+const toArray = function (x) {
   return Array.isArray(x) ? x : [x];
 };
 

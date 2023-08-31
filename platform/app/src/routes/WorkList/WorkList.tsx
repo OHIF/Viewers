@@ -305,7 +305,7 @@ function WorkList({
             <>
               <Icon
                 name="group-layers"
-                className={classnames('inline-flex mr-2 w-4', {
+                className={classnames('mr-2 inline-flex w-4', {
                   'text-primary-active': isExpanded,
                   'text-secondary-light': !isExpanded,
                 })}
@@ -366,9 +366,9 @@ function WorkList({
                   <Link
                     className={isValidMode ? '' : 'cursor-not-allowed'}
                     key={i}
-                    to={`${dataPath ? '../../' : ''}${
-                      mode.routeName
-                    }${dataPath || ''}?${query.toString()}`}
+                    to={`${dataPath ? '../../' : ''}${mode.routeName}${
+                      dataPath || ''
+                    }?${query.toString()}`}
                     onClick={event => {
                       // In case any event bubbles up for an invalid mode, prevent the navigation.
                       // For example, the event bubbles up when the icon embedded in the disabled button is clicked.
@@ -426,9 +426,8 @@ function WorkList({
           title: t('UserPreferencesModal:User Preferences'),
           content: UserPreferences,
           contentProps: {
-            hotkeyDefaults: hotkeysManager.getValidHotkeyDefinitions(
-              hotkeyDefaults
-            ),
+            hotkeyDefaults:
+              hotkeysManager.getValidHotkeyDefinitions(hotkeyDefaults),
             hotkeyDefinitions,
             onCancel: hide,
             currentLanguage: currentLanguage(),
@@ -489,14 +488,14 @@ function WorkList({
     customizationService.get('ohif.dataSourceConfigurationComponent') ?? {};
 
   return (
-    <div className="bg-black h-screen flex flex-col ">
+    <div className="flex h-screen flex-col bg-black ">
       <Header
         isSticky
         menuOptions={menuOptions}
         isReturnEnabled={false}
         WhiteLabeling={appConfig.whiteLabeling}
       />
-      <div className="overflow-y-auto ohif-scrollbar flex flex-col grow">
+      <div className="ohif-scrollbar flex grow flex-col overflow-y-auto">
         <StudyListFilter
           numOfStudies={pageNumber * resultsPerPage > 100 ? 101 : numOfStudies}
           filtersMeta={filtersMeta}
@@ -512,7 +511,7 @@ function WorkList({
           }
         />
         {hasStudies ? (
-          <div className="grow flex flex-col">
+          <div className="flex grow flex-col">
             <StudyListTable
               tableDataSource={tableDataSource.slice(offset, offsetAndTake)}
               numOfStudies={numOfStudies}
@@ -531,7 +530,7 @@ function WorkList({
         ) : (
           <div className="flex flex-col items-center justify-center pt-48">
             {appConfig.showLoadingIndicator && isLoadingData ? (
-              <LoadingIndicatorProgress className={'w-full h-full bg-black'} />
+              <LoadingIndicatorProgress className={'h-full w-full bg-black'} />
             ) : (
               <EmptyStudies />
             )}

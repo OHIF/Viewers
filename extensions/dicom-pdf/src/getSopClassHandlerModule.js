@@ -17,10 +17,8 @@ const _getDisplaySetsFromSeries = (
   const dataSource = extensionManager.getActiveDataSource()[0];
   return instances.map(instance => {
     const { Modality, SOPInstanceUID, EncapsulatedDocument } = instance;
-    const {
-      SeriesDescription = 'PDF',
-      MIMETypeOfEncapsulatedDocument,
-    } = instance;
+    const { SeriesDescription = 'PDF', MIMETypeOfEncapsulatedDocument } =
+      instance;
     const {
       SeriesNumber,
       SeriesDate,

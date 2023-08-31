@@ -71,10 +71,12 @@ function setServiceImplementation({
     serviceImplementation._getUser = getUserImplementation;
   }
   if (getAuthorizationHeaderImplementation) {
-    serviceImplementation._getAuthorizationHeader = getAuthorizationHeaderImplementation;
+    serviceImplementation._getAuthorizationHeader =
+      getAuthorizationHeaderImplementation;
   }
   if (handleUnauthenticatedImplementation) {
-    serviceImplementation._handleUnauthenticated = handleUnauthenticatedImplementation;
+    serviceImplementation._handleUnauthenticated =
+      handleUnauthenticatedImplementation;
   }
   if (resetImplementation) {
     serviceImplementation._reset = resetImplementation;

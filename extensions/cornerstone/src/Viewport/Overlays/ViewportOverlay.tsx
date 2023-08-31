@@ -14,10 +14,8 @@ function CornerstoneViewportOverlay({
   viewportId,
   servicesManager,
 }) {
-  const {
-    cornerstoneViewportService,
-    toolbarService,
-  } = servicesManager.services;
+  const { cornerstoneViewportService, toolbarService } =
+    servicesManager.services;
   const [voi, setVOI] = useState({ windowCenter: null, windowWidth: null });
   const [scale, setScale] = useState(1);
   const [activeTools, setActiveTools] = useState([]);
@@ -86,9 +84,8 @@ function CornerstoneViewportOverlay({
         previousCamera.parallelScale !== camera.parallelScale ||
         previousCamera.scale !== camera.scale
       ) {
-        const viewport = cornerstoneViewportService.getCornerstoneViewport(
-          viewportId
-        );
+        const viewport =
+          cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
         if (!viewport) {
           return;
@@ -251,9 +248,8 @@ function _getInstanceNumberFromVolume(
   const volume = volumes[0];
   const { direction, imageIds } = volume;
 
-  const cornerstoneViewport = cornerstoneViewportService.getCornerstoneViewport(
-    viewportId
-  );
+  const cornerstoneViewport =
+    cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
   if (!cornerstoneViewport) {
     return;

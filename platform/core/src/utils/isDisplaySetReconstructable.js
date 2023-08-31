@@ -54,8 +54,8 @@ function hasPixelMeasurements(multiFrameInstance) {
     Boolean(sharedSequence?.PixelMeasuresSequence) ||
     Boolean(
       multiFrameInstance.PixelSpacing &&
-      (multiFrameInstance.SliceThickness ||
-        multiFrameInstance.SpacingBetweenFrames)
+        (multiFrameInstance.SliceThickness ||
+          multiFrameInstance.SpacingBetweenFrames)
     )
   );
 }
@@ -70,8 +70,8 @@ function hasOrientation(multiFrameInstance) {
     Boolean(perFrameSequence?.PlaneOrientationSequence) ||
     Boolean(
       multiFrameInstance.ImageOrientationPatient ||
-      multiFrameInstance.DetectorInformationSequence?.[0]
-        ?.ImageOrientationPatient
+        multiFrameInstance.DetectorInformationSequence?.[0]
+          ?.ImageOrientationPatient
     )
   );
 }
@@ -85,8 +85,8 @@ function hasPosition(multiFrameInstance) {
     Boolean(perFrameSequence?.CTPositionSequence) ||
     Boolean(
       multiFrameInstance.ImagePositionPatient ||
-      multiFrameInstance.DetectorInformationSequence?.[0]
-        ?.ImagePositionPatient
+        multiFrameInstance.DetectorInformationSequence?.[0]
+          ?.ImagePositionPatient
     )
   );
 }
@@ -141,12 +141,8 @@ function processSingleframe(instances) {
   // -- Have different orientations within a displaySet.
   for (let i = 1; i < instances.length; i++) {
     const instance = instances[i];
-    const {
-      Rows,
-      Columns,
-      SamplesPerPixel,
-      ImageOrientationPatient,
-    } = instance;
+    const { Rows, Columns, SamplesPerPixel, ImageOrientationPatient } =
+      instance;
 
     const imageOrientationPatient = toNumber(ImageOrientationPatient);
 
@@ -264,8 +260,8 @@ function _getSpacingIssue(spacing, averageSpacing) {
 function _getPerpendicularDistance(a, b) {
   return Math.sqrt(
     Math.pow(a[0] - b[0], 2) +
-    Math.pow(a[1] - b[1], 2) +
-    Math.pow(a[2] - b[2], 2)
+      Math.pow(a[1] - b[1], 2) +
+      Math.pow(a[2] - b[2], 2)
   );
 }
 

@@ -176,7 +176,7 @@ function modeFactory({ modeConfiguration }) {
       series: [],
     },
 
-    isValidMode: function({ modalities }) {
+    isValidMode: function ({ modalities }) {
       const modalities_list = modalities.split('\\');
 
       // Exclude non-image modalities

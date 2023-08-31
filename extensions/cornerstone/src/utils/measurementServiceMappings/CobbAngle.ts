@@ -32,15 +32,12 @@ const CobbAngle = {
       throw new Error('Tool not supported');
     }
 
-    const {
-      SOPInstanceUID,
-      SeriesInstanceUID,
-      StudyInstanceUID,
-    } = getSOPInstanceAttributes(
-      referencedImageId,
-      CornerstoneViewportService,
-      viewportId
-    );
+    const { SOPInstanceUID, SeriesInstanceUID, StudyInstanceUID } =
+      getSOPInstanceAttributes(
+        referencedImageId,
+        CornerstoneViewportService,
+        viewportId
+      );
 
     let displaySet;
 
@@ -104,11 +101,8 @@ function getMappedAnnotations(annotation, DisplaySetService) {
       );
     }
 
-    const {
-      SOPInstanceUID,
-      SeriesInstanceUID,
-      frameNumber,
-    } = getSOPInstanceAttributes(referencedImageId);
+    const { SOPInstanceUID, SeriesInstanceUID, frameNumber } =
+      getSOPInstanceAttributes(referencedImageId);
 
     const displaySet = DisplaySetService.getDisplaySetForSOPInstanceUID(
       SOPInstanceUID,
@@ -179,13 +173,8 @@ function getDisplayText(mappedAnnotations, displaySet) {
   const displayText = [];
 
   // Area is the same for all series
-  const {
-    angle,
-    unit,
-    SeriesNumber,
-    SOPInstanceUID,
-    frameNumber,
-  } = mappedAnnotations[0];
+  const { angle, unit, SeriesNumber, SOPInstanceUID, frameNumber } =
+    mappedAnnotations[0];
 
   const instance = displaySet.images.find(
     image => image.SOPInstanceUID === SOPInstanceUID

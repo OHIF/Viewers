@@ -14,7 +14,10 @@ export const argTypes = {
 
 export const buttonTemplate = createComponentTemplate(LegacyButton);
 
-<Heading title="LegacyButton" componentRelativePath="LegacyButton/LegacyButton.tsx" />
+<Heading
+  title="LegacyButton"
+  componentRelativePath="LegacyButton/LegacyButton.tsx"
+/>
 
 - [Overview](#overview)
 - [Props](#props)
@@ -23,8 +26,8 @@ export const buttonTemplate = createComponentTemplate(LegacyButton);
 
 ## Overview
 
-You can use the legacy button component to create a button. It can be used in different
-ways, the default button is a simple button with a text.
+You can use the legacy button component to create a button. It can be used in
+different ways, the default button is a simple button with a text.
 
 <Canvas>
   <Story name="Overview" args={{ children: 'LegacyButton', color: 'default' }}>
@@ -56,8 +59,8 @@ There can be different variants of buttons: `text`, `outlined`, `contained`, and
 
 ### Colors
 
-There are different colors for the legacy button: `default`, `primary`, `secondary`,
-`white`, `black`, `inherit`, `light`.
+There are different colors for the legacy button: `default`, `primary`,
+`secondary`, `white`, `black`, `inherit`, `light`.
 
 <Canvas>
   <Story name="Colors">
@@ -97,7 +100,8 @@ You can disable the legacy button by setting the variant to `disabled`.
 
 ### Start/End Icons
 
-You can add an icon to the start of the legacy button. It accepts an icon component.
+You can add an icon to the start of the legacy button. It accepts an icon
+component.
 
 <Canvas>
   <Story name="Start Icon">
@@ -121,7 +125,11 @@ You can add an icon to the start of the legacy button. It accepts an icon compon
           </svg>
         );
       };
-      return <LegacyButton startIcon={<Github />}>Start Icon LegacyButton</LegacyButton>;
+      return (
+        <LegacyButton startIcon={<Github />}>
+          Start Icon LegacyButton
+        </LegacyButton>
+      );
     }}
   </Story>
 </Canvas>
@@ -161,7 +169,8 @@ End Icon is the same as start icon, but for the end of the legacy button.
 
 ### Full width
 
-You can make the legacy button full width by setting the `fullWidth` prop to `true`.
+You can make the legacy button full width by setting the `fullWidth` prop to
+`true`.
 
 <Canvas>
   <Story name="Full Width">

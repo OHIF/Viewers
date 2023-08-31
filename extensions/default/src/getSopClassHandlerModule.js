@@ -16,10 +16,8 @@ const makeDisplaySet = instances => {
   const instance = instances[0];
   const imageSet = new ImageSet(instances);
 
-  const {
-    value: isReconstructable,
-    averageSpacingBetweenFrames,
-  } = isDisplaySetReconstructable(instances);
+  const { value: isReconstructable, averageSpacingBetweenFrames } =
+    isDisplaySetReconstructable(instances);
   // set appropriate attributes to image set...
   const messages = getDisplaySetMessages(instances, isReconstructable);
 

@@ -33,15 +33,10 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     measurementChangeTimestamp,
     200
   );
-  const {
-    measurementService,
-    uiDialogService,
-    displaySetService,
-  } = servicesManager.services;
-  const [
-    trackedMeasurements,
-    sendTrackedMeasurementsEvent,
-  ] = useTrackedMeasurements();
+  const { measurementService, uiDialogService, displaySetService } =
+    servicesManager.services;
+  const [trackedMeasurements, sendTrackedMeasurementsEvent] =
+    useTrackedMeasurements();
   const { trackedStudy, trackedSeries } = trackedMeasurements.context;
   const [displayStudySummary, setDisplayStudySummary] = useState(
     DISPLAY_STUDY_SUMMARY_INITIAL_VALUE
@@ -209,7 +204,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
               labelClassName="text-white grow text-[14px] leading-[1.2]"
               autoFocus
               id="annotation"
-              className="bg-black border-primary-main"
+              className="border-primary-main bg-black"
               type="text"
               value={value.label}
               onChange={onChangeHandler}
@@ -247,7 +242,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
   return (
     <>
       <div
-        className="overflow-x-hidden overflow-y-auto invisible-scrollbar"
+        className="invisible-scrollbar overflow-y-auto overflow-x-hidden"
         ref={measurementsPanelRef}
         data-cy={'trackedMeasurements-panel'}
       >
@@ -318,9 +313,8 @@ function _mapMeasurementToDisplay(measurement, types, displaySetService) {
     SOPInstanceUID
   );
 
-  const displaySets = displaySetService.getDisplaySetsForSeries(
-    referenceSeriesUID
-  );
+  const displaySets =
+    displaySetService.getDisplaySetsForSeries(referenceSeriesUID);
 
   if (!displaySets[0] || !displaySets[0].images) {
     throw new Error(

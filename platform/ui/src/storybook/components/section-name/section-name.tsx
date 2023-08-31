@@ -3,11 +3,7 @@ import { useMemo } from 'react';
 
 export const SectionName = ({ className, children, ...props }) => {
   const id = useMemo(
-    () =>
-      children
-        .toLowerCase()
-        .split(' ')
-        .join('-'),
+    () => children.toLowerCase().split(' ').join('-'),
     [children]
   );
   // eslint-disable-next-line jsx-a11y/heading-has-content

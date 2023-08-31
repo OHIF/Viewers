@@ -213,9 +213,8 @@ export default class ToolbarService extends PubSubService {
 
   _buttonTypes() {
     const buttonTypes = {};
-    const registeredToolbarModules = this.extensionManager.modules[
-      'toolbarModule'
-    ];
+    const registeredToolbarModules =
+      this.extensionManager.modules['toolbarModule'];
 
     if (
       Array.isArray(registeredToolbarModules) &&

@@ -30,15 +30,12 @@ const RectangleROIStartEndThreshold = {
       throw new Error('Tool not supported');
     }
 
-    const {
-      SOPInstanceUID,
-      SeriesInstanceUID,
-      StudyInstanceUID,
-    } = getSOPInstanceAttributes(
-      referencedImageId,
-      cornerstoneViewportService,
-      viewportId
-    );
+    const { SOPInstanceUID, SeriesInstanceUID, StudyInstanceUID } =
+      getSOPInstanceAttributes(
+        referencedImageId,
+        cornerstoneViewportService,
+        viewportId
+      );
 
     let displaySet;
 

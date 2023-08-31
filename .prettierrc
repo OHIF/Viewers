@@ -1,4 +1,5 @@
 {
+  "plugins": ["prettier-plugin-tailwindcss"],
   "trailingComma": "es5",
   "printWidth": 80,
   "proseWrap": "always",

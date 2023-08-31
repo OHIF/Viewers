@@ -49,20 +49,20 @@ const SegmentationTable = ({
 
   return (
     <div>
-      <div className="flex justify-between px-2 py-1 bg-secondary-main">
-        <span className="text-base font-bold tracking-widest text-white uppercase">
+      <div className="bg-secondary-main flex justify-between px-2 py-1">
+        <span className="text-base font-bold uppercase tracking-widest text-white">
           {title}
         </span>
         <div className="flex">
           <span className="text-base font-bold text-white">{amount}</span>
           <Icon
             name="eye-hidden"
-            className="w-6 ml-2 text-white transition duration-300 cursor-pointer hover:opacity-80"
+            className="ml-2 w-6 cursor-pointer text-white transition duration-300 hover:opacity-80"
             onClick={() => handleToggleAll()}
           />
         </div>
       </div>
-      <div className="overflow-x-hidden overflow-y-auto ohif-scrollbar max-h-64">
+      <div className="ohif-scrollbar max-h-64 overflow-y-auto overflow-x-hidden">
         {!!segmentations.length &&
           segmentations.map((segmentation, i) => {
             const { id, label, displayText = [] } = segmentation;

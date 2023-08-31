@@ -7,9 +7,7 @@ describe('OHIF Cornerstone Toolbar', () => {
     cy.initCornerstoneToolsAliases();
     cy.initCommonElementsAliases();
 
-    cy.get('[data-cy="study-browser-thumbnail"]')
-      .eq(1)
-      .click();
+    cy.get('[data-cy="study-browser-thumbnail"]').eq(1).click();
 
     //const expectedText = 'Ser: 1';
     //cy.get('@viewportInfoBottomLeft').should('contains.text', expectedText);
@@ -89,9 +87,7 @@ describe('OHIF Cornerstone Toolbar', () => {
     // The exact text is slightly dependent on the viewport resolution, so leave a range
     cy.get('@viewportInfoTopLeft').should($txt => {
       const text = $txt.text();
-      expect(text)
-        .to.include('W:193')
-        .include('L:479');
+      expect(text).to.include('W:193').include('L:479');
     });
   });
 

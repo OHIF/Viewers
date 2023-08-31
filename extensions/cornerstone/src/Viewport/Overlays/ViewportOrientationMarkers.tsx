@@ -13,10 +13,8 @@ import { vec3 } from 'gl-matrix';
 
 import './ViewportOrientationMarkers.css';
 
-const {
-  getOrientationStringLPS,
-  invertOrientationStringLPS,
-} = utilities.orientation;
+const { getOrientationStringLPS, invertOrientationStringLPS } =
+  utilities.orientation;
 
 function ViewportOrientationMarkers({
   element,

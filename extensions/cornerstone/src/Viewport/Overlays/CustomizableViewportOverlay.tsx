@@ -55,11 +55,11 @@ function VOIOverlayItem({ voi, customization }: OverlayItemProps) {
       style={{ color: (customization && customization.color) || undefined }}
     >
       <span className="mr-1 shrink-0">W:</span>
-      <span className="ml-1 mr-2 font-light shrink-0">
+      <span className="ml-1 mr-2 shrink-0 font-light">
         {windowWidth.toFixed(0)}
       </span>
       <span className="mr-1 shrink-0">L:</span>
-      <span className="ml-1 font-light shrink-0">
+      <span className="ml-1 shrink-0 font-light">
         {windowCenter.toFixed(0)}
       </span>
     </div>
@@ -116,11 +116,8 @@ function CustomizableViewportOverlay({
   viewportId,
   servicesManager,
 }) {
-  const {
-    toolbarService,
-    cornerstoneViewportService,
-    customizationService,
-  } = servicesManager.services;
+  const { toolbarService, cornerstoneViewportService, customizationService } =
+    servicesManager.services;
   const [voi, setVOI] = useState({ windowCenter: null, windowWidth: null });
   const [scale, setScale] = useState(1);
   const [activeTools, setActiveTools] = useState([]);
@@ -204,9 +201,8 @@ function CustomizableViewportOverlay({
         previousCamera.parallelScale !== camera.parallelScale ||
         previousCamera.scale !== camera.scale
       ) {
-        const viewport = cornerstoneViewportService.getCornerstoneViewport(
-          viewportId
-        );
+        const viewport =
+          cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
         if (!viewport) {
           return;
@@ -450,9 +446,8 @@ function _getInstanceNumberFromVolume(
   const volume = volumes[0];
   const { direction, imageIds } = volume;
 
-  const cornerstoneViewport = cornerstoneViewportService.getCornerstoneViewport(
-    viewportId
-  );
+  const cornerstoneViewport =
+    cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
   if (!cornerstoneViewport) {
     return;

@@ -12,7 +12,7 @@ export const RangeInputTemplate = args => (
   <div className="w-3">
     <InputRange {...args} />
   </div>
-)
+);
 
 <Heading title="InputRange" componentRelativePath="InputRange/InputRange.tsx" />
 
@@ -34,7 +34,7 @@ InputRange is a component that allows you to use as a boolean value
       step: 10,
       unit: '%',
       onChange: () => console.log('input range change'),
-      labelClassName: 'text-black'
+      labelClassName: 'text-black',
     }}
   >
     {RangeInputTemplate.bind({})}

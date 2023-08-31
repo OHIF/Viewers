@@ -166,9 +166,8 @@ export default async function init({
   initWADOImageLoader(userAuthenticationService, appConfig, extensionManager);
 
   /* Measurement Service */
-  this.measurementServiceSource = connectToolsToMeasurementService(
-    servicesManager
-  );
+  this.measurementServiceSource =
+    connectToolsToMeasurementService(servicesManager);
 
   initCineService(cineService);
 
@@ -178,18 +177,14 @@ export default async function init({
     volumeInputArrayMap => {
       for (const entry of volumeInputArrayMap.entries()) {
         const [viewportId, volumeInputArray] = entry;
-        const viewport = cornerstoneViewportService.getCornerstoneViewport(
-          viewportId
-        );
+        const viewport =
+          cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
-        const ohifViewport = cornerstoneViewportService.getViewportInfo(
-          viewportId
-        );
+        const ohifViewport =
+          cornerstoneViewportService.getViewportInfo(viewportId);
 
-        const {
-          lutPresentationStore,
-          positionPresentationStore,
-        } = stateSyncService.getState();
+        const { lutPresentationStore, positionPresentationStore } =
+          stateSyncService.getState();
         const { presentationIds } = ohifViewport.getViewportOptions();
         const presentations = {
           positionPresentation:
@@ -225,9 +220,8 @@ export default async function init({
 
   const resetCrosshairs = evt => {
     const { element } = evt.detail;
-    const { viewportId, renderingEngineId } = cornerstone.getEnabledElement(
-      element
-    );
+    const { viewportId, renderingEngineId } =
+      cornerstone.getEnabledElement(element);
 
     const toolGroup = cornerstoneTools.ToolGroupManager.getToolGroupForViewport(
       viewportId,

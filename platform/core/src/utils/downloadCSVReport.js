@@ -17,12 +17,8 @@ export default function downloadCSVReport(measurementData) {
 
   const reportMap = {};
   measurementData.forEach(measurement => {
-    const {
-      referenceStudyUID,
-      referenceSeriesUID,
-      getReport,
-      uid,
-    } = measurement;
+    const { referenceStudyUID, referenceSeriesUID, getReport, uid } =
+      measurement;
 
     if (!getReport) {
       console.warn('Measurement does not have a getReport function');

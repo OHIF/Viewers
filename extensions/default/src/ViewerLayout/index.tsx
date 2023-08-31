@@ -105,9 +105,8 @@ function ViewerLayout({
           title: t('UserPreferencesModal:User Preferences'),
           content: UserPreferences,
           contentProps: {
-            hotkeyDefaults: hotkeysManager.getValidHotkeyDefinitions(
-              hotkeyDefaults
-            ),
+            hotkeyDefaults:
+              hotkeysManager.getValidHotkeyDefinitions(hotkeyDefaults),
             hotkeyDefinitions,
             currentLanguage: currentLanguage(),
             availableLanguages,
@@ -234,7 +233,7 @@ function ViewerLayout({
         </ErrorBoundary>
       </Header>
       <div
-        className="bg-black flex flex-row items-stretch w-full overflow-hidden flex-nowrap relative"
+        className="relative flex w-full flex-row flex-nowrap items-stretch overflow-hidden bg-black"
         style={{ height: 'calc(100vh - 52px' }}
       >
         <React.Fragment>
@@ -253,8 +252,8 @@ function ViewerLayout({
             </ErrorBoundary>
           ) : null}
           {/* TOOLBAR + GRID */}
-          <div className="flex flex-col flex-1 h-full">
-            <div className="flex items-center justify-center flex-1 h-full overflow-hidden bg-black relative">
+          <div className="flex h-full flex-1 flex-col">
+            <div className="relative flex h-full flex-1 items-center justify-center overflow-hidden bg-black">
               <ErrorBoundary context="Grid">
                 <ViewportGridComp
                   servicesManager={servicesManager}

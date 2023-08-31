@@ -300,7 +300,7 @@ function DicomUploadProgress({
 
   const getNumCompletedAndTimeRemainingComponent = (): ReactElement => {
     return (
-      <div className="text-lg px-1 pb-4 h-14 flex bg-primary-dark items-center">
+      <div className="bg-primary-dark flex h-14 items-center px-1 pb-4 text-lg">
         {numFilesCompleted === dicomFileUploaderArr.length ? (
           <>
             <span className={NO_WRAP_ELLIPSIS_CLASS_NAMES}>{`${
@@ -331,7 +331,7 @@ function DicomUploadProgress({
             <span
               className={classNames(
                 NO_WRAP_ELLIPSIS_CLASS_NAMES,
-                'cursor-pointer text-primary-active hover:text-primary-light active:text-aqua-pale ml-auto'
+                'text-primary-active hover:text-primary-light active:text-aqua-pale ml-auto cursor-pointer'
               )}
               onClick={cancelAllUploads}
             >
@@ -345,7 +345,7 @@ function DicomUploadProgress({
 
   const getShowFailedOnlyIconComponent = (): ReactElement => {
     return (
-      <div className="ml-auto flex justify-center w-6">
+      <div className="ml-auto flex w-6 justify-center">
         {numFails > 0 && (
           <div
             onClick={() =>
@@ -361,11 +361,11 @@ function DicomUploadProgress({
 
   const getPercentCompleteComponent = (): ReactElement => {
     return (
-      <div className="overflow-y-scroll ohif-scrollbar px-2 border-b border-secondary-light">
-        <div className="flex w-full p-2.5 items-center min-h-14">
+      <div className="ohif-scrollbar border-secondary-light overflow-y-scroll border-b px-2">
+        <div className="min-h-14 flex w-full items-center p-2.5">
           {numFilesCompleted === dicomFileUploaderArr.length ? (
             <>
-              <div className="text-xl text-primary-light">
+              <div className="text-primary-light text-xl">
                 {numFails > 0
                   ? `Completed with ${numFails} ${
                       numFails > 1 ? 'errors' : 'error'
@@ -385,7 +385,7 @@ function DicomUploadProgress({
                   }
                 ></ProgressLoadingBar>
               </div>
-              <div className="w-24 ml-1 flex items-center">
+              <div className="ml-1 flex w-24 items-center">
                 <div className="w-10 text-right">{`${getPercentCompleteRounded()}%`}</div>
                 {getShowFailedOnlyIconComponent()}
               </div>
@@ -397,11 +397,11 @@ function DicomUploadProgress({
   };
 
   return (
-    <div className="flex flex-col grow">
+    <div className="flex grow flex-col">
       {getNumCompletedAndTimeRemainingComponent()}
-      <div className="flex flex-col bg-black text-lg overflow-hidden grow">
+      <div className="flex grow flex-col overflow-hidden bg-black text-lg">
         {getPercentCompleteComponent()}
-        <div className="overflow-y-scroll ohif-scrollbar px-2 grow h-1">
+        <div className="ohif-scrollbar h-1 grow overflow-y-scroll px-2">
           {dicomFileUploaderArr
             .filter(
               dicomFileUploader =>

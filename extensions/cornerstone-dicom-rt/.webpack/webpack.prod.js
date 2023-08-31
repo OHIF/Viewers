@@ -3,8 +3,8 @@ const { merge } = require('webpack-merge');
 const path = require('path');
 const webpackCommon = require('./../../../.webpack/webpack.base.js');
 const pkg = require('./../package.json');
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
-  .BundleAnalyzerPlugin;
+const BundleAnalyzerPlugin =
+  require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 const ROOT_DIR = path.join(__dirname, './..');
 const SRC_DIR = path.join(__dirname, '../src');

@@ -28,43 +28,42 @@ function defaultRouteInit(
   { servicesManager, studyInstanceUIDs, dataSource, filters },
   hangingProtocolId
 ) {
-  const {
-    displaySetService,
-    hangingProtocolService,
-    uiNotificationService,
-  } = servicesManager.services;
+  const { displaySetService, hangingProtocolService, uiNotificationService } =
+    servicesManager.services;
 
   const unsubscriptions = [];
   const issuedWarningSeries = [];
-  const {
-    unsubscribe: instanceAddedUnsubscribe,
-  } = DicomMetadataStore.subscribe(
-    DicomMetadataStore.EVENTS.INSTANCES_ADDED,
-    function({ StudyInstanceUID, SeriesInstanceUID, madeInClient = false }) {
-      const seriesMetadata = DicomMetadataStore.getSeries(
-        StudyInstanceUID,
-        SeriesInstanceUID
-      );
+  const { unsubscribe: instanceAddedUnsubscribe } =
+    DicomMetadataStore.subscribe(
+      DicomMetadataStore.EVENTS.INSTANCES_ADDED,
+      function ({ StudyInstanceUID, SeriesInstanceUID, madeInClient = false }) {
+        const seriesMetadata = DicomMetadataStore.getSeries(
+          StudyInstanceUID,
+          SeriesInstanceUID
+        );
 
-      // checks if the series filter was used, if it exists
-      const seriesInstanceUIDs = filters?.seriesInstanceUID;
-      if (
-        seriesInstanceUIDs?.length &&
-        !isSeriesFilterUsed(seriesMetadata.instances, filters) &&
-        !issuedWarningSeries.includes(seriesInstanceUIDs[0])
-      ) {
-        // stores the series instance filter so it shows only once the warning
-        issuedWarningSeries.push(seriesInstanceUIDs[0]);
-        uiNotificationService.show({
-          title: 'Series filter',
-          message: `Each of the series in filter: ${seriesInstanceUIDs} are not part of the current study. The entire study is being displayed`,
-          type: 'error',
-          duration: 7000,
-        });
+        // checks if the series filter was used, if it exists
+        const seriesInstanceUIDs = filters?.seriesInstanceUID;
+        if (
+          seriesInstanceUIDs?.length &&
+          !isSeriesFilterUsed(seriesMetadata.instances, filters) &&
+          !issuedWarningSeries.includes(seriesInstanceUIDs[0])
+        ) {
+          // stores the series instance filter so it shows only once the warning
+          issuedWarningSeries.push(seriesInstanceUIDs[0]);
+          uiNotificationService.show({
+            title: 'Series filter',
+            message: `Each of the series in filter: ${seriesInstanceUIDs} are not part of the current study. The entire study is being displayed`,
+            type: 'error',
+            duration: 7000,
+          });
+        }
+        displaySetService.makeDisplaySets(
+          seriesMetadata.instances,
+          madeInClient
+        );
       }
-      displaySetService.makeDisplaySets(seriesMetadata.instances, madeInClient);
-    }
-  );
+    );
 
   unsubscriptions.push(instanceAddedUnsubscribe);
 
@@ -128,10 +127,8 @@ export default function ModeRoute({
   const [studyInstanceUIDs, setStudyInstanceUIDs] = useState();
 
   const [refresh, setRefresh] = useState(false);
-  const [
-    ExtensionDependenciesLoaded,
-    setExtensionDependenciesLoaded,
-  ] = useState(false);
+  const [ExtensionDependenciesLoaded, setExtensionDependenciesLoaded] =
+    useState(false);
 
   const layoutTemplateData = useRef(false);
   const locationRef = useRef(null);
@@ -158,9 +155,8 @@ export default function ModeRoute({
     hangingProtocol,
   } = mode;
 
-  const runTimeHangingProtocolId = lowerCaseSearchParams.get(
-    'hangingprotocolid'
-  );
+  const runTimeHangingProtocolId =
+    lowerCaseSearchParams.get('hangingprotocolid');
   const token = lowerCaseSearchParams.get('token');
 
   if (token) {

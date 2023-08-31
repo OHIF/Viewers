@@ -52,7 +52,7 @@ export function retrieveStudyMetadata(
       filters,
       sortCriteria,
       sortFunction
-    ).then(function(data) {
+    ).then(function (data) {
       resolve(data);
     }, reject);
   });

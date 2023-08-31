@@ -38,13 +38,9 @@ describe('OHIF Double Click', () => {
         .not('.pointer-events-none');
 
       // The actual double click.
-      cy.get('[data-cy="viewport-pane"]')
-        .eq(i)
-        .trigger('dblclick', 'center');
+      cy.get('[data-cy="viewport-pane"]').eq(i).trigger('dblclick', 'center');
 
-      cy.get('[data-cy="viewport-pane"]')
-        .its('length')
-        .should('be.eq', 1);
+      cy.get('[data-cy="viewport-pane"]').its('length').should('be.eq', 1);
 
       cy.get('[data-cy="viewport-pane"]')
         .trigger('mousedown', 'center', {
@@ -54,9 +50,7 @@ describe('OHIF Double Click', () => {
           force: true,
         });
 
-      cy.get('[data-cy="viewport-pane"]')
-        .eq(0)
-        .trigger('dblclick', 'center');
+      cy.get('[data-cy="viewport-pane"]').eq(0).trigger('dblclick', 'center');
     }
   });
 });

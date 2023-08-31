@@ -18,11 +18,8 @@ const CORNERSTONE_3D_TOOLS_SOURCE_VERSION = '0.1';
  * @param {Object|Array} configuration.csToolsConfig
  */
 export default function init({ servicesManager, extensionManager }) {
-  const {
-    measurementService,
-    displaySetService,
-    cornerstoneViewportService,
-  } = servicesManager.services;
+  const { measurementService, displaySetService, cornerstoneViewportService } =
+    servicesManager.services;
 
   addTool(RectangleROIStartEndThresholdTool);
 

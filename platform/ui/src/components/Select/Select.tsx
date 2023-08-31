@@ -22,7 +22,7 @@ const Option = props => {
   return (
     <components.Option {...props}>
       <div className="flex items-center">
-        <div className="w-2 h-2">
+        <div className="h-2 w-2">
           {props.isSelected ? (
             <Icon name={'checkbox-active'} />
           ) : (
@@ -78,7 +78,7 @@ const Select = ({
       inputId={`input-${id}`}
       className={classnames(
         className,
-        'ohif-select flex flex-col flex-1 customSelect__wrapper'
+        'ohif-select customSelect__wrapper flex flex-1 flex-col'
       )}
       data-cy={`input-${id}`}
       classNamePrefix="customSelect"

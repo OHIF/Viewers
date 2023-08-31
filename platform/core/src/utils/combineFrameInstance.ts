@@ -17,16 +17,18 @@ const combineFrameInstance = (frame, instance) => {
 
   if (PerFrameFunctionalGroupsSequence || NumberOfFrames > 1) {
     const frameNumber = Number.parseInt(frame || 1);
-    const shared = (SharedFunctionalGroupsSequence
-      ? Object.values(SharedFunctionalGroupsSequence[0])
-      : []
+    const shared = (
+      SharedFunctionalGroupsSequence
+        ? Object.values(SharedFunctionalGroupsSequence[0])
+        : []
     )
       .filter(it => !!it)
       .map(it => it[0])
       .filter(it => it !== undefined && typeof it === 'object');
-    const perFrame = (PerFrameFunctionalGroupsSequence
-      ? Object.values(PerFrameFunctionalGroupsSequence[frameNumber - 1])
-      : []
+    const perFrame = (
+      PerFrameFunctionalGroupsSequence
+        ? Object.values(PerFrameFunctionalGroupsSequence[frameNumber - 1])
+        : []
     )
       .filter(it => !!it)
       .map(it => it[0])

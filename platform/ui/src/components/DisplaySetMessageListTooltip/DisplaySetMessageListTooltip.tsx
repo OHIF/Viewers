@@ -29,9 +29,9 @@ const DisplaySetMessageListTooltip = ({ messages, id }): React.ReactNode => {
           arrow="center"
           parent={`#${id}`}
         >
-          <div className="bg-primary-dark border border-secondary-light text-white text-base rounded text-left max-w-64">
+          <div className="bg-primary-dark border-secondary-light max-w-64 rounded border text-left text-base text-white">
             <div
-              className="break-normal text-base text-blue-300 font-bold"
+              className="break-normal text-base font-bold text-blue-300"
               style={{
                 marginLeft: '12px',
                 marginTop: '12px',

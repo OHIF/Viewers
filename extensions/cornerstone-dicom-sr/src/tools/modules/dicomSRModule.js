@@ -38,9 +38,10 @@ function setActiveTrackingUniqueIdentifierForElement(
     state.trackingIdentifiersByViewportId[viewport.id];
 
   if (trackingIdentifiersForElement) {
-    const activeIndex = trackingIdentifiersForElement.trackingUniqueIdentifiers.findIndex(
-      tuid => tuid === TrackingUniqueIdentifier
-    );
+    const activeIndex =
+      trackingIdentifiersForElement.trackingUniqueIdentifiers.findIndex(
+        tuid => tuid === TrackingUniqueIdentifier
+      );
 
     trackingIdentifiersForElement.activeIndex = activeIndex;
   }

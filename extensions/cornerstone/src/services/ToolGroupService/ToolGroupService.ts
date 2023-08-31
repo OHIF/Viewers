@@ -40,10 +40,8 @@ export default class ToolGroupService {
   EVENTS: { [key: string]: string };
 
   constructor(serviceManager) {
-    const {
-      cornerstoneViewportService,
-      viewportGridService,
-    } = serviceManager.services;
+    const { cornerstoneViewportService, viewportGridService } =
+      serviceManager.services;
     this.cornerstoneViewportService = cornerstoneViewportService;
     this.viewportGridService = viewportGridService;
     this.listeners = {};
@@ -102,7 +100,8 @@ export default class ToolGroupService {
   }
 
   public getToolGroupForViewport(viewportId: string): Types.IToolGroup | void {
-    const renderingEngine = this.cornerstoneViewportService.getRenderingEngine();
+    const renderingEngine =
+      this.cornerstoneViewportService.getRenderingEngine();
     return ToolGroupManager.getToolGroupForViewport(
       viewportId,
       renderingEngine.id

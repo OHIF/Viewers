@@ -305,8 +305,7 @@ const toolbarButtons = [
           commandName: 'displayNotification',
           commandOptions: {
             title: 'RectangleROI Threshold Tip',
-            text:
-              'RectangleROI Threshold tool should be used on PT Axial Viewport',
+            text: 'RectangleROI Threshold tool should be used on PT Axial Viewport',
             type: 'info',
           },
         },

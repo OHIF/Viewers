@@ -24,10 +24,7 @@ function calculateTMTV(
   );
 
   const { imageData, spacing } = mergedLabelmap;
-  const values = imageData
-    .getPointData()
-    .getScalars()
-    .getData();
+  const values = imageData.getPointData().getScalars().getData();
 
   // count non-zero values inside the outputData, this would
   // consider the overlapping regions to be only counted once

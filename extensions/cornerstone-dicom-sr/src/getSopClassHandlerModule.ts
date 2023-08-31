@@ -257,9 +257,8 @@ function _checkIfCanAddMeasurementsToDisplaySet(
     });
   });
 
-  const imageIdsForDisplaySet = dataSource.getImageIdsForDisplaySet(
-    newDisplaySet
-  );
+  const imageIdsForDisplaySet =
+    dataSource.getImageIdsForDisplaySet(newDisplaySet);
 
   for (const imageId of imageIdsForDisplaySet) {
     if (!unloadedMeasurements.length) {
@@ -267,9 +266,8 @@ function _checkIfCanAddMeasurementsToDisplaySet(
       return;
     }
 
-    const { SOPInstanceUID, frameNumber } = metadataProvider.getUIDsFromImageID(
-      imageId
-    );
+    const { SOPInstanceUID, frameNumber } =
+      metadataProvider.getUIDsFromImageID(imageId);
 
     if (SOPInstanceUIDs.includes(SOPInstanceUID)) {
       for (let j = unloadedMeasurements.length - 1; j >= 0; j--) {
@@ -355,9 +353,8 @@ function _getMeasurements(ImagingMeasurementReportContentSequence) {
       CodeNameCodeSequenceValues.MeasurementGroup
   );
 
-  const mergedContentSequencesByTrackingUniqueIdentifiers = _getMergedContentSequencesByTrackingUniqueIdentifiers(
-    MeasurementGroups
-  );
+  const mergedContentSequencesByTrackingUniqueIdentifiers =
+    _getMergedContentSequencesByTrackingUniqueIdentifiers(MeasurementGroups);
 
   const measurements = [];
 
@@ -567,11 +564,8 @@ function _processNonGeometricallyDefinedMeasurement(mergedContentSequence) {
   }
 
   NUMContentItems.forEach(item => {
-    const {
-      ConceptNameCodeSequence,
-      ContentSequence,
-      MeasuredValueSequence,
-    } = item;
+    const { ConceptNameCodeSequence, ContentSequence, MeasuredValueSequence } =
+      item;
 
     const { ValueType } = ContentSequence;
 
@@ -628,7 +622,8 @@ function _getCoordsFromSCOORDOrSCOORD3D(item) {
   } else if (ValueType === 'SCOORD3D') {
     const { ReferencedFrameOfReferenceSequence } = item.ContentSequence;
 
-    coords.ReferencedFrameOfReferenceSequence = ReferencedFrameOfReferenceSequence;
+    coords.ReferencedFrameOfReferenceSequence =
+      ReferencedFrameOfReferenceSequence;
   }
 
   return coords;

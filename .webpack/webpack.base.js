@@ -7,8 +7,8 @@ const fs = require('fs');
 const webpack = require('webpack');
 
 // ~~ PLUGINS
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
-  .BundleAnalyzerPlugin;
+const BundleAnalyzerPlugin =
+  require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const TerserJSPlugin = require('terser-webpack-plugin');
 
 // ~~ PackageJSON
@@ -135,7 +135,7 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
         fs: false,
         path: false,
         zlib: false,
-        "buffer": require.resolve("buffer")
+        buffer: require.resolve('buffer'),
       },
     },
     plugins: [

@@ -3,19 +3,17 @@ import * as csTools from '@cornerstonejs/tools';
 function getRoiStats(referencedVolume, annotations) {
   // roiStats
   const { imageData } = referencedVolume;
-  const values = imageData
-    .getPointData()
-    .getScalars()
-    .getData();
+  const values = imageData.getPointData().getScalars().getData();
 
   // Todo: add support for other strategies
   const { fn, baseValue } = _getStrategyFn('max');
   let value = baseValue;
 
-  const boundsIJK = csTools.utilities.rectangleROITool.getBoundsIJKFromRectangleAnnotations(
-    annotations,
-    referencedVolume
-  );
+  const boundsIJK =
+    csTools.utilities.rectangleROITool.getBoundsIJKFromRectangleAnnotations(
+      annotations,
+      referencedVolume
+    );
 
   const [[iMin, iMax], [jMin, jMax], [kMin, kMax]] = boundsIJK;
 
@@ -59,9 +57,10 @@ function getThresholdValues(
   };
 }
 
-function _getStrategyFn(
-  statistic
-): { fn: (a: number, b: number) => number; baseValue: number } {
+function _getStrategyFn(statistic): {
+  fn: (a: number, b: number) => number;
+  baseValue: number;
+} {
   const baseValue = -Infinity;
   const fn = (number, maxValue) => {
     if (number > maxValue) {

@@ -71,9 +71,8 @@ function OHIFCornerstoneRTViewport(props) {
   const { viewports, activeViewportId } = viewportGrid;
 
   const referencedDisplaySet = rtDisplaySet.getReferenceDisplaySet();
-  const referencedDisplaySetMetadata = _getReferencedDisplaySetMetadata(
-    referencedDisplaySet
-  );
+  const referencedDisplaySetMetadata =
+    _getReferencedDisplaySetMetadata(referencedDisplaySet);
 
   referencedDisplaySetRef.current = {
     displaySet: referencedDisplaySet,
@@ -106,9 +105,8 @@ function OHIFCornerstoneRTViewport(props) {
       '@ohif/extension-cornerstone.viewportModule.cornerstone'
     );
 
-    const {
-      displaySet: referencedDisplaySet,
-    } = referencedDisplaySetRef.current;
+    const { displaySet: referencedDisplaySet } =
+      referencedDisplaySetRef.current;
 
     // Todo: jump to the center of the first segment
     return (
@@ -367,10 +365,10 @@ function OHIFCornerstoneRTViewport(props) {
         }}
       />
 
-      <div className="relative flex flex-row w-full h-full overflow-hidden">
+      <div className="relative flex h-full w-full flex-row overflow-hidden">
         {rtIsLoading && (
           <LoadingIndicatorTotalPercent
-            className="w-full h-full"
+            className="h-full w-full"
             totalNumbers={processingProgress.totalSegments}
             percentComplete={processingProgress.percentComplete}
             loadingText="Loading RTSTRUCT..."

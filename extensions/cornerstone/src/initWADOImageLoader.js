@@ -55,7 +55,7 @@ export default function initWADOImageLoader(
       // we should set this flag to false.
       convertFloatPixelDataToInt: false,
     },
-    beforeSend: function(xhr) {
+    beforeSend: function (xhr) {
       //TODO should be removed in the future and request emitted by DicomWebDataSource
       const sourceConfig =
         extensionManager.getActiveDataSource()?.[0].getConfig() ?? {};

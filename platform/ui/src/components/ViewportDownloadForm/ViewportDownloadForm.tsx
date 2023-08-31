@@ -164,7 +164,7 @@ const ViewportDownloadForm = ({
     }
 
     return (
-      <Typography className="pl-1 mt-2" color="error">
+      <Typography className="mt-2 pl-1" color="error">
         {error_messages[errorType]}
       </Typography>
     );
@@ -277,8 +277,8 @@ const ViewportDownloadForm = ({
         )}
       </Typography>
 
-      <div className="flex flex-col mt-6">
-        <div className="w-full mb-4">
+      <div className="mt-6 flex flex-col">
+        <div className="mb-4 w-full">
           <Input
             data-cy="file-name"
             value={filename}
@@ -289,7 +289,7 @@ const ViewportDownloadForm = ({
         </div>
         <div className="flex">
           <div className="flex w-1/3">
-            <div className="flex flex-col grow">
+            <div className="flex grow flex-col">
               <div className="w-full">
                 <Input
                   type="number"
@@ -304,7 +304,7 @@ const ViewportDownloadForm = ({
                 />
                 {renderErrorHandler('width')}
               </div>
-              <div className="w-full mt-4">
+              <div className="mt-4 w-full">
                 <Input
                   type="number"
                   min={minimumSize}
@@ -320,7 +320,7 @@ const ViewportDownloadForm = ({
               </div>
             </div>
 
-            <div className="flex items-center mt-8">
+            <div className="mt-8 flex items-center">
               <Tooltip
                 position="right"
                 content={keepAspect ? 'Dismiss Aspect' : 'Keep Aspect'}
@@ -336,7 +336,7 @@ const ViewportDownloadForm = ({
             </div>
           </div>
 
-          <div className="w-1/4 pl-6 ml-6 border-l border-secondary-dark">
+          <div className="border-secondary-dark ml-6 w-1/4 border-l pl-6">
             <div>
               <InputLabelWrapper
                 sortDirection="none"
@@ -377,7 +377,7 @@ const ViewportDownloadForm = ({
 
       <div className="mt-8">
         <div
-          className="p-4 rounded bg-secondary-dark border-secondary-primary w-max-content min-w-full"
+          className="bg-secondary-dark border-secondary-primary w-max-content min-w-full rounded p-4"
           data-cy="image-preview"
         >
           <Typography variant="h5">{t('Image preview')}</Typography>
@@ -399,7 +399,7 @@ const ViewportDownloadForm = ({
         </div>
       </div>
 
-      <div className="flex justify-end mt-4">
+      <div className="mt-4 flex justify-end">
         <Button
           name="cancel"
           type={ButtonEnums.type.secondary}

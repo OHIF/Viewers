@@ -126,7 +126,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
     query: {
       studies: {
         mapParams: mapParams.bind(),
-        search: async function(origParams) {
+        search: async function (origParams) {
           qidoDicomWebClient.headers = getAuthrorizationHeader();
           const { studyInstanceUid, seriesInstanceUid, ...mappedParams } =
             mapParams(origParams, {
@@ -147,7 +147,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
       },
       series: {
         // mapParams: mapParams.bind(),
-        search: async function(studyInstanceUid) {
+        search: async function (studyInstanceUid) {
           qidoDicomWebClient.headers = getAuthrorizationHeader();
           const results = await seriesInStudy(
             qidoDicomWebClient,
@@ -357,17 +357,15 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
       const enableStudyLazyLoad = true;
       wadoDicomWebClient.headers = generateWadoHeader();
       // Get Series
-      const {
-        preLoadData: seriesSummaryMetadata,
-        promises: seriesPromises,
-      } = await retrieveStudyMetadata(
-        wadoDicomWebClient,
-        StudyInstanceUID,
-        enableStudyLazyLoad,
-        filters,
-        sortCriteria,
-        sortFunction
-      );
+      const { preLoadData: seriesSummaryMetadata, promises: seriesPromises } =
+        await retrieveStudyMetadata(
+          wadoDicomWebClient,
+          StudyInstanceUID,
+          enableStudyLazyLoad,
+          filters,
+          sortCriteria,
+          sortFunction
+        );
 
       /**
        * naturalizes the dataset, and adds a retrieve bulkdata method
