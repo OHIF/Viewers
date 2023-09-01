@@ -51,64 +51,40 @@ function initDefaultToolGroup(
       { toolName: toolNames.StackScrollMouseWheel, bindings: [] },
     ],
     passive: [
-      { toolName: toolNames.Length },
+      { toolName: toolNames.CircleScissors },
+      { toolName: toolNames.RectangleScissors },
+      { toolName: toolNames.SphereScissors },
       {
-        toolName: 'CircularBrush',
+        toolName: brushInstanceNames.CircularBrush,
         parentTool: 'Brush',
         configuration: {
           activeStrategy: brushStrategies.CircularBrush,
         },
       },
       {
-        toolName: 'CircularEraser',
+        toolName: brushInstanceNames.CircularEraser,
         parentTool: 'Brush',
         configuration: {
           activeStrategy: brushStrategies.CircularEraser,
         },
       },
       {
-        toolName: 'SphereEraser',
+        toolName: brushInstanceNames.SphereEraser,
         parentTool: 'Brush',
         configuration: {
           activeStrategy: brushStrategies.SphereEraser,
         },
       },
       {
-        toolName: 'SphereBrush',
+        toolName: brushInstanceNames.SphereBrush,
         parentTool: 'Brush',
         configuration: {
           activeStrategy: brushStrategies.SphereBrush,
         },
       },
-      {
-        toolName: toolNames.ArrowAnnotate,
-        configuration: {
-          getTextCallback: (callback, eventDetails) =>
-            commandsManager.runCommand('arrowTextCallback', {
-              callback,
-              eventDetails,
-            }),
-
-          changeTextCallback: (data, eventDetails, callback) =>
-            commandsManager.runCommand('arrowTextCallback', {
-              callback,
-              data,
-              eventDetails,
-            }),
-        },
-      },
-      { toolName: toolNames.Bidirectional },
-      { toolName: toolNames.DragProbe },
-      { toolName: toolNames.EllipticalROI },
-      { toolName: toolNames.CircleROI },
-      { toolName: toolNames.RectangleROI },
       { toolName: toolNames.StackScroll },
-      { toolName: toolNames.Angle },
-      { toolName: toolNames.CobbAngle },
-      { toolName: toolNames.PlanarFreehandROI },
       { toolName: toolNames.Magnify },
       { toolName: toolNames.SegmentationDisplay },
-      { toolName: toolNames.CalibrationLine },
     ],
     // enabled
     // disabled
@@ -142,61 +118,37 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
       { toolName: toolNames.StackScrollMouseWheel, bindings: [] },
     ],
     passive: [
-      { toolName: toolNames.Length },
+      { toolName: toolNames.CircleScissors },
+      { toolName: toolNames.RectangleScissors },
+      { toolName: toolNames.SphereScissors },
       {
-        toolName: 'CircularBrush',
+        toolName: brushInstanceNames.CircularBrush,
         parentTool: 'Brush',
         configuration: {
           activeStrategy: brushStrategies.CircularBrush,
         },
       },
       {
-        toolName: 'CircularEraser',
+        toolName: brushInstanceNames.CircularEraser,
         parentTool: 'Brush',
         configuration: {
           activeStrategy: brushStrategies.CircularEraser,
         },
       },
       {
-        toolName: 'SphereEraser',
+        toolName: brushInstanceNames.SphereEraser,
         parentTool: 'Brush',
         configuration: {
           activeStrategy: brushStrategies.SphereEraser,
         },
       },
       {
-        toolName: 'SphereBrush',
+        toolName: brushInstanceNames.SphereBrush,
         parentTool: 'Brush',
         configuration: {
           activeStrategy: brushStrategies.SphereBrush,
         },
       },
-      {
-        toolName: toolNames.ArrowAnnotate,
-        configuration: {
-          getTextCallback: (callback, eventDetails) =>
-            commandsManager.runCommand('arrowTextCallback', {
-              callback,
-              eventDetails,
-            }),
-
-          changeTextCallback: (data, eventDetails, callback) =>
-            commandsManager.runCommand('arrowTextCallback', {
-              callback,
-              data,
-              eventDetails,
-            }),
-        },
-      },
-      { toolName: toolNames.Bidirectional },
-      { toolName: toolNames.DragProbe },
-      { toolName: toolNames.EllipticalROI },
-      { toolName: toolNames.CircleROI },
-      { toolName: toolNames.RectangleROI },
-      { toolName: toolNames.StackScroll },
-      { toolName: toolNames.Angle },
-      { toolName: toolNames.CobbAngle },
-      { toolName: toolNames.PlanarFreehandROI },
       { toolName: toolNames.SegmentationDisplay },
     ],
     disabled: [
@@ -212,7 +164,6 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
       },
       { toolName: toolNames.ReferenceLines },
     ],
-
     // enabled
     // disabled
   };

@@ -280,7 +280,7 @@ const ICONS = {
   'icon-tool-brush': iconToolBrush,
   'icon-tool-eraser': iconToolEraser,
   'icon-tool-scissor': iconToolScissor,
-  'icon-tool-wthreshold': iconToolThreshold,
+  'icon-tool-threshold': iconToolThreshold,
 
   /** Old OHIF */
   'old-trash': oldTrash,

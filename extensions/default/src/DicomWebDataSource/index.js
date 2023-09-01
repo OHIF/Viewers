@@ -325,6 +325,8 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
         });
 
         instance.imageId = imageId;
+        instance.wadoRoot = dicomWebConfig.wadoRoot;
+        instance.wadoUri = dicomWebConfig.wadoUri;
 
         metadataProvider.addImageIdToUIDs(imageId, {
           StudyInstanceUID,

@@ -1,13 +1,12 @@
 import React from 'react';
 import classNames from 'classnames';
-import {
-  ButtonGroup,
-  InputNumber,
-  InputRange,
-  LegacyButton,
-} from '../../components';
+import { ButtonGroup, InputRange, LegacyButton } from '../../components';
 
 function ToolSettings({ options }) {
+  if (!options) {
+    return null;
+  }
+
   return (
     <div className="text-white py-2 space-y-2">
       {options?.map(option => {

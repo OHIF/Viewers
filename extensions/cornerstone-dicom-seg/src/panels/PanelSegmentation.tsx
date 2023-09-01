@@ -221,8 +221,8 @@ export default function PanelSegmentation({
   };
 
   return (
-    <div>
-      <div className="flex flex-col flex-auto min-h-0 justify-between mt-1 select-none">
+    <>
+      <div className="flex flex-col flex-auto min-h-0 justify-between select-none">
         <SegmentationGroupTable
           title={t('Segmentations')}
           segmentations={segmentations}
@@ -295,7 +295,7 @@ export default function PanelSegmentation({
           }
         />
       </div>
-    </div>
+    </>
   );
 }
 

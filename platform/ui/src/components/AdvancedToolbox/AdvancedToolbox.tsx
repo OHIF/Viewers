@@ -46,7 +46,7 @@ const AdvancedToolbox = ({ title, items, name }) => {
             );
           })}
         </div>
-        <div className="h-auto bg-black px-2">
+        <div className="h-auto bg-primary-dark px-2">
           <ToolSettings
             options={items?.find(item => item.name === isActive)?.options}
           />

@@ -52,9 +52,9 @@ const variantClasses = {
       'border-primary-main group-hover:bg-primary-main group-hover:border-black',
   },
   contained: {
-    default: 'border-white',
-    primary: 'border-white',
-    secondary: 'border-white',
+    default: 'border-white ',
+    primary: 'border-white ',
+    secondary: 'border-white ',
     white: 'border-black',
     black: 'border-primary-main',
   },
@@ -74,7 +74,7 @@ const nonFirstLastClasses = {
   horizontal: 'border-l-0 last:border-r-0',
 };
 
-const ButtonGroup = ({
+const LegacyButtonGroup = ({
   children,
   className,
   disabled = false,
@@ -82,13 +82,11 @@ const ButtonGroup = ({
   color = 'default',
   orientation = 'horizontal',
   rounded = 'medium',
-  type = 'primary',
   size = 'medium',
   variant = 'outlined',
   splitBorder = true,
   ...other
 }) => {
-  console.debug('🚀 ~ type:', type);
   const ref = useRef(null);
 
   const buttonClasses = classnames(
@@ -129,15 +127,18 @@ const ButtonGroup = ({
             !splitBorder && isLast && 'last:border-l-0'
           ),
           disabled: child.props.disabled || disabled,
+          color: child.props.color || color,
+          fullWidth,
+          rounded: 'none',
           size: child.props.size || size,
-          type: child.props.type || type,
+          variant: child.props.variant || variant,
         });
       })}
     </div>
   );
 };
 
-ButtonGroup.propTypes = {
+LegacyButtonGroup.propTypes = {
   children: PropTypes.node.isRequired,
   className: PropTypes.string,
   color: PropTypes.oneOf([
@@ -156,4 +157,4 @@ ButtonGroup.propTypes = {
   variant: PropTypes.oneOf(['text', 'outlined', 'contained']),
 };
 
-export default ButtonGroup;
+export default LegacyButtonGroup;

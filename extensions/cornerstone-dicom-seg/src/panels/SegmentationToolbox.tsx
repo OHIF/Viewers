@@ -1,12 +1,11 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { AdvancedToolbox, useViewportGrid } from '@ohif/ui';
-import { eventTarget } from '@cornerstonejs/core';
 import { utilities, Enums } from '@cornerstonejs/tools';
 import { Types } from '@ohif/extension-cornerstone';
 
 const { segmentation: segmentationUtils } = utilities;
 
-function SegmentationToolbox({ servicesManager }) {
+function SegmentationToolbox({ servicesManager, extensionManager }) {
   const {
     toolbarService,
     segmentationService,
@@ -73,7 +72,6 @@ function SegmentationToolbox({ servicesManager }) {
   }, [activeViewportIndex, viewports]);
 
   const setToolActive = toolName => {
-    console.debug('🚀 ~ toolName:', toolName);
     toolbarService.recordInteraction({
       groupId: 'SegmentationTools',
       itemId: 'Brush',
@@ -139,10 +137,10 @@ function SegmentationToolbox({ servicesManager }) {
             {
               name: 'Radius (mm)',
               type: 'range',
-              min: 15,
-              max: 40,
+              min: 0.01,
+              max: 100,
               value: brushSize || 15,
-              step: 1,
+              step: 0.5,
               onChange: onBrushSizeChange,
             },
             {
@@ -152,6 +150,28 @@ function SegmentationToolbox({ servicesManager }) {
               values: [
                 { value: 'CircularEraser', label: 'Circle' },
                 { value: 'SphereEraser', label: 'Sphere' },
+              ],
+              onChange: value => setToolActive(value),
+            },
+          ],
+        },
+        {
+          name: 'Scissor',
+          icon: 'icon-tool-scissor',
+          active:
+            activeTool === 'CircleScissor' ||
+            activeTool === 'RectangleScissor' ||
+            activeTool === 'SphereScissor',
+          onClick: () => setToolActive('CircleScissor'),
+          options: [
+            {
+              name: 'Mode',
+              type: 'radio',
+              value: activeTool,
+              values: [
+                { value: 'CircleScissor', label: 'Circle' },
+                { value: 'RectangleScissor', label: 'Rectangle' },
+                { value: 'SphereScissor', label: 'Sphere' },
               ],
               onChange: value => setToolActive(value),
             },

@@ -76,6 +76,7 @@ import ProgressLoadingBar from './ProgressLoadingBar';
 import PanelSection from './PanelSection';
 import AdvancedToolbox from './AdvancedToolbox';
 import InputDoubleRange from './InputDoubleRange';
+import LegacyButtonGroup from './LegacyButtonGroup';
 
 export {
   AboutModal,
@@ -112,6 +113,7 @@ export {
   Label,
   LayoutSelector,
   LegacyButton,
+  LegacyButtonGroup,
   LegacyCinePlayer,
   LegacyViewportActionBar,
   LoadingIndicatorProgress,
