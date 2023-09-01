@@ -217,6 +217,18 @@ export default class HangingProtocolService extends PubSubService {
     };
   }
 
+  public filterSeriesRequiredForRun(protocolId, seriesPromises) {
+    const minSeriesLoadedToRunHP =
+      this.getProtocolById(protocolId)?.minSeriesLoadedToRunHP ||
+      seriesPromises.length;
+    const requiredSeries = seriesPromises.slice(0, minSeriesLoadedToRunHP);
+    const remaining = seriesPromises.slice(minSeriesLoadedToRunHP);
+    return {
+      requiredSeries,
+      remaining,
+    };
+  }
+
   /** Gets the protocol with id 'default' */
   public getDefaultProtocol(): HangingProtocol.Protocol {
     return this.getProtocolById('default');
@@ -278,9 +290,8 @@ export default class HangingProtocolService extends PubSubService {
 
     if (protocol instanceof Function) {
       try {
-        const { protocol: generatedProtocol } = this._getProtocolFromGenerator(
-          protocol
-        );
+        const { protocol: generatedProtocol } =
+          this._getProtocolFromGenerator(protocol);
 
         return generatedProtocol;
       } catch (error) {
@@ -483,9 +494,8 @@ export default class HangingProtocolService extends PubSubService {
    * if no strategy is set, the default strategy is used
    */
   runImageLoadStrategy(data): boolean {
-    const loader = this.registeredImageLoadStrategies[
-      this.activeImageLoadStrategyName
-    ];
+    const loader =
+      this.registeredImageLoadStrategies[this.activeImageLoadStrategyName];
     const loadedData = loader({
       data,
       displaySetsMatchDetails: this.displaySetMatchDetails,
@@ -643,10 +653,8 @@ export default class HangingProtocolService extends PubSubService {
     // if the viewport is not empty, then we check the displaySets it is showing
     // currently, which means we need to check if the requested updated displaySet
     // follow the same rules as the current displaySets
-    const {
-      id: displaySetSelectorId,
-      matchedDisplaySetsIndex = 0,
-    } = protocolViewport.displaySets[0];
+    const { id: displaySetSelectorId, matchedDisplaySetsIndex = 0 } =
+      protocolViewport.displaySets[0];
     const displaySetSelector =
       protocol.displaySetSelectors[displaySetSelectorId];
 
@@ -751,9 +759,8 @@ export default class HangingProtocolService extends PubSubService {
       const { id } = displaySet;
       const displaySetMatchDetail = displaySetMatchDetails.get(id);
 
-      const {
-        displaySetInstanceUID: oldDisplaySetInstanceUID,
-      } = displaySetMatchDetail;
+      const { displaySetInstanceUID: oldDisplaySetInstanceUID } =
+        displaySetMatchDetail;
 
       const displaySetInstanceUID =
         displaySet.id === displaySetSelectorId
@@ -806,8 +813,8 @@ export default class HangingProtocolService extends PubSubService {
         );
       }
 
-      const callback = this.customAttributeRetrievalCallbacks[customKey]
-        .callback;
+      const callback =
+        this.customAttributeRetrievalCallbacks[customKey].callback;
       let newOptions = callback.call(options, displaySets);
 
       if (newOptions === undefined) {
@@ -1296,9 +1303,8 @@ export default class HangingProtocolService extends PubSubService {
         console.warn('No display set selector for', displaySetId);
         continue;
       }
-      const { bestMatch, matchingScores } = this._matchImages(
-        displaySetSelector
-      );
+      const { bestMatch, matchingScores } =
+        this._matchImages(displaySetSelector);
       displaySetMatchDetails.set(displaySetId, bestMatch);
 
       if (bestMatch) {
@@ -1504,11 +1510,8 @@ export default class HangingProtocolService extends PubSubService {
         studyDisplaySets.length
       );
       studyDisplaySets.forEach(displaySet => {
-        const {
-          StudyInstanceUID,
-          SeriesInstanceUID,
-          displaySetInstanceUID,
-        } = displaySet;
+        const { StudyInstanceUID, SeriesInstanceUID, displaySetInstanceUID } =
+          displaySet;
         const seriesMatchDetails = this.protocolEngine.findMatch(
           displaySet,
           seriesMatchingRules,

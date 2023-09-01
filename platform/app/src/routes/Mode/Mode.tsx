@@ -35,22 +35,12 @@ function defaultRouteInit(
     uiNotificationService,
     customizationService,
   } = servicesManager.services;
-
-  const minSeriesLoadedToRunHP = hangingProtocolService.getProtocolById(
-    hangingProtocolId
-  )?.minSeriesLoadedToRunHP;
-  let hangingProtocolApplied = false;
-
   /**
    * Function to apply the hanging protocol when the minimum number of display sets were
    * received or all display sets retrieval were completed
    * @returns
    */
   function applyHangingProtocol() {
-    // check if a hanging protocol is already applied. If so abort execution
-    if (hangingProtocolApplied) {
-      return;
-    }
     const displaySets = displaySetService.getActiveDisplaySets();
 
     if (!displaySets || !displaySets.length) {
@@ -65,7 +55,6 @@ function defaultRouteInit(
 
     // run the hanging protocol matching on the displaySets with the predefined
     // hanging protocol in the mode configuration
-    hangingProtocolApplied = true;
     hangingProtocolService.run(
       { studies, activeStudy, displaySets },
       hangingProtocolId
@@ -74,47 +63,37 @@ function defaultRouteInit(
 
   const unsubscriptions = [];
   const issuedWarningSeries = [];
-  const {
-    unsubscribe: instanceAddedUnsubscribe,
-  } = DicomMetadataStore.subscribe(
-    DicomMetadataStore.EVENTS.INSTANCES_ADDED,
-    function({ StudyInstanceUID, SeriesInstanceUID, madeInClient = false }) {
-      const seriesMetadata = DicomMetadataStore.getSeries(
-        StudyInstanceUID,
-        SeriesInstanceUID
-      );
+  const { unsubscribe: instanceAddedUnsubscribe } =
+    DicomMetadataStore.subscribe(
+      DicomMetadataStore.EVENTS.INSTANCES_ADDED,
+      function ({ StudyInstanceUID, SeriesInstanceUID, madeInClient = false }) {
+        const seriesMetadata = DicomMetadataStore.getSeries(
+          StudyInstanceUID,
+          SeriesInstanceUID
+        );
 
-      // checks if the series filter was used, if it exists
-      const seriesInstanceUIDs = filters?.seriesInstanceUID;
-      if (
-        seriesInstanceUIDs?.length &&
-        !isSeriesFilterUsed(seriesMetadata.instances, filters) &&
-        !issuedWarningSeries.includes(seriesInstanceUIDs[0])
-      ) {
-        // stores the series instance filter so it shows only once the warning
-        issuedWarningSeries.push(seriesInstanceUIDs[0]);
-        uiNotificationService.show({
-          title: 'Series filter',
-          message: `Each of the series in filter: ${seriesInstanceUIDs} are not part of the current study. The entire study is being displayed`,
-          type: 'error',
-          duration: 7000,
-        });
-      }
-      displaySetService.makeDisplaySets(seriesMetadata.instances, madeInClient);
-
-      // if minimum number of display sets to run a hanging protocol is defined
-      // check if it was reached to apply a hanging protocol
-      if (minSeriesLoadedToRunHP) {
-        const displaySets = displaySetService.getActiveDisplaySets();
+        // checks if the series filter was used, if it exists
+        const seriesInstanceUIDs = filters?.seriesInstanceUID;
         if (
-          displaySets?.length > minSeriesLoadedToRunHP &&
-          !hangingProtocolApplied
+          seriesInstanceUIDs?.length &&
+          !isSeriesFilterUsed(seriesMetadata.instances, filters) &&
+          !issuedWarningSeries.includes(seriesInstanceUIDs[0])
         ) {
-          applyHangingProtocol();
+          // stores the series instance filter so it shows only once the warning
+          issuedWarningSeries.push(seriesInstanceUIDs[0]);
+          uiNotificationService.show({
+            title: 'Series filter',
+            message: `Each of the series in filter: ${seriesInstanceUIDs} are not part of the current study. The entire study is being displayed`,
+            type: 'error',
+            duration: 7000,
+          });
         }
+        displaySetService.makeDisplaySets(
+          seriesMetadata.instances,
+          madeInClient
+        );
       }
-    }
-  );
+    );
 
   unsubscriptions.push(instanceAddedUnsubscribe);
 
@@ -122,6 +101,7 @@ function defaultRouteInit(
     dataSource.retrieve.series.metadata({
       StudyInstanceUID,
       filters,
+      returnPromises: true,
       sortCriteria:
         customizationService.get('sortingCriteria') ||
         sortingCriteria.seriesSortCriteria.seriesInfoSortingCriteria,
@@ -130,16 +110,44 @@ function defaultRouteInit(
 
   // The hanging protocol matching service is fairly expensive to run multiple
   // times, and doesn't allow partial matches to be made (it will simply fail
-  // to display anything if a required match fails), so we wait here until all metadata
-  // is retrieved (which will synchronously trigger the display set creation)
+  // to display anything if a required match fails), so we wait here until all
+  // required metadata is retrieved (which will synchronously trigger the display set creation)
   // until we run the hanging protocol matching service.
 
-  Promise.allSettled(allRetrieves).then(() => {
-    if (!hangingProtocolApplied) {
+  Promise.allSettled(allRetrieves).then(studiesPromiseArray => {
+    const allStudiesRequiredSeries = [];
+    studiesPromiseArray.forEach(studyPromiseArrayPromise => {
+      // here the promise could be an array of promises or a promise for the
+      // execution of the function dataSource.retrieve.series.metadata.
+      // If its an array, ask hangingProtocolService to filter promises and start
+      // the required and after that the remaining promises
+      const studyPromiseArray = studyPromiseArrayPromise.value;
+      if (Array.isArray(studyPromiseArray)) {
+        const { requiredSeries, remaining } =
+          hangingProtocolService.filterSeriesRequiredForRun(
+            hangingProtocolId,
+            studyPromiseArray
+          );
+        const requiredSeriesPromises = requiredSeries.map(promise =>
+          promise.start()
+        );
+        allStudiesRequiredSeries.push(
+          Promise.allSettled(requiredSeriesPromises)
+        );
+        Promise.allSettled(requiredSeriesPromises).then(() => {
+          remaining.forEach(promise => promise.start());
+        });
+      }
+    });
+
+    if (allStudiesRequiredSeries.length) {
+      Promise.allSettled(allStudiesRequiredSeries).then(() =>
+        applyHangingProtocol()
+      );
+    } else {
       applyHangingProtocol();
     }
   });
-
   return unsubscriptions;
 }
 
@@ -166,10 +174,8 @@ export default function ModeRoute({
   const [studyInstanceUIDs, setStudyInstanceUIDs] = useState();
 
   const [refresh, setRefresh] = useState(false);
-  const [
-    ExtensionDependenciesLoaded,
-    setExtensionDependenciesLoaded,
-  ] = useState(false);
+  const [ExtensionDependenciesLoaded, setExtensionDependenciesLoaded] =
+    useState(false);
 
   const layoutTemplateData = useRef(false);
   const locationRef = useRef(null);
@@ -196,9 +202,8 @@ export default function ModeRoute({
     hangingProtocol,
   } = mode;
 
-  const runTimeHangingProtocolId = lowerCaseSearchParams.get(
-    'hangingprotocolid'
-  );
+  const runTimeHangingProtocolId =
+    lowerCaseSearchParams.get('hangingprotocolid');
   const token = lowerCaseSearchParams.get('token');
 
   if (token) {

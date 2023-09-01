@@ -217,6 +217,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
           sortCriteria,
           sortFunction,
           madeInClient = false,
+          returnPromises = false,
         } = {}) => {
           if (!StudyInstanceUID) {
             throw new Error(
@@ -230,7 +231,8 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
               filters,
               sortCriteria,
               sortFunction,
-              madeInClient
+              madeInClient,
+              returnPromises
             );
           }
 
@@ -358,23 +360,22 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
       filters,
       sortCriteria,
       sortFunction,
-      madeInClient = false
+      madeInClient = false,
+      returnPromises = false
     ) => {
       const enableStudyLazyLoad = true;
       wadoDicomWebClient.headers = generateWadoHeader();
       // Get Series
-      const {
-        preLoadData: seriesSummaryMetadata,
-        promises: seriesPromises,
-      } = await retrieveStudyMetadata(
-        wadoDicomWebClient,
-        StudyInstanceUID,
-        enableStudyLazyLoad,
-        filters,
-        sortCriteria,
-        sortFunction,
-        wadoConfig
-      );
+      const { preLoadData: seriesSummaryMetadata, promises: seriesPromises } =
+        await retrieveStudyMetadata(
+          wadoDicomWebClient,
+          StudyInstanceUID,
+          enableStudyLazyLoad,
+          filters,
+          sortCriteria,
+          sortFunction,
+          wadoConfig
+        );
 
       /**
        * naturalizes the dataset, and adds a retrieve bulkdata method
@@ -478,13 +479,21 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
 
       DicomMetadataStore.addSeriesMetadata(seriesSummaryMetadata, madeInClient);
 
-      const seriesDeliveredPromises = seriesPromises.map(promise =>
+      const seriesDeliveredPromises = seriesPromises.map(promise => {
+        if (!returnPromises) {
+          promise?.start();
+        }
         promise.then(instances => {
           storeInstances(instances);
-        })
-      );
-      await Promise.all(seriesDeliveredPromises);
-      setSuccessFlag();
+        });
+      });
+      if (returnPromises) {
+        Promise.all(seriesDeliveredPromises).then(() => setSuccessFlag());
+        return seriesPromises;
+      } else {
+        await Promise.all(seriesDeliveredPromises);
+        setSuccessFlag();
+      }
     },
     deleteStudyMetadataPromise,
     getImageIdsForDisplaySet(displaySet) {
