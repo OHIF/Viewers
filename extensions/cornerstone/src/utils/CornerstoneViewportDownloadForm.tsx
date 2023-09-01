@@ -20,10 +20,10 @@ const VIEWPORT_ID = 'cornerstone-viewport-download-form';
 
 const CornerstoneViewportDownloadForm = ({
   onClose,
-  activeViewportIndex,
+  activeViewportId: activeViewportIdProp,
   cornerstoneViewportService,
 }) => {
-  const enabledElement = OHIFgetEnabledElement(activeViewportIndex);
+  const enabledElement = OHIFgetEnabledElement(activeViewportIdProp);
   const activeViewportElement = enabledElement?.element;
   const activeViewportEnabledElement = getEnabledElement(activeViewportElement);
 
@@ -268,7 +268,7 @@ const CornerstoneViewportDownloadForm = ({
 
 CornerstoneViewportDownloadForm.propTypes = {
   onClose: PropTypes.func,
-  activeViewportIndex: PropTypes.number.isRequired,
+  activeViewportId: PropTypes.string.isRequired,
 };
 
 export default CornerstoneViewportDownloadForm;

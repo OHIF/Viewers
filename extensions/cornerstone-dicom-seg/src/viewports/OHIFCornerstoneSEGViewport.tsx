@@ -20,7 +20,6 @@ function OHIFCornerstoneSEGViewport(props) {
     children,
     displaySets,
     viewportOptions,
-    viewportIndex,
     viewportLabel,
     servicesManager,
     extensionManager,
@@ -28,6 +27,7 @@ function OHIFCornerstoneSEGViewport(props) {
   } = props;
 
   const { t } = useTranslation('SEGViewport');
+  const viewportId = viewportOptions.viewportId;
 
   const {
     displaySetService,
@@ -37,7 +37,7 @@ function OHIFCornerstoneSEGViewport(props) {
     customizationService,
   } = servicesManager.services;
 
-  const toolGroupId = `${SEG_TOOLGROUP_BASE_NAME}-${viewportIndex}`;
+  const toolGroupId = `${SEG_TOOLGROUP_BASE_NAME}-${viewportId}`;
 
   // SEG viewport will always have a single display set
   if (displaySets.length > 1) {
@@ -67,7 +67,7 @@ function OHIFCornerstoneSEGViewport(props) {
   // refs
   const referencedDisplaySetRef = useRef(null);
 
-  const { viewports, activeViewportIndex } = viewportGrid;
+  const { viewports, activeViewportId } = viewportGrid;
 
   const referencedDisplaySet = segDisplaySet.getReferenceDisplaySet();
   const referencedDisplaySetMetadata = _getReferencedDisplaySetMetadata(
@@ -94,9 +94,9 @@ function OHIFCornerstoneSEGViewport(props) {
   };
 
   const storePresentationState = useCallback(() => {
-    viewportGrid?.viewports.forEach(({ viewportIndex }) => {
+    viewportGrid?.viewports.forEach(({ viewportId }) => {
       commandsManager.runCommand('storePresentation', {
-        viewportIndex,
+        viewportId,
       });
     });
   }, [viewportGrid]);
@@ -126,7 +126,7 @@ function OHIFCornerstoneSEGViewport(props) {
         // initialImageIndex={initialImageIndex}
       ></Component>
     );
-  }, [viewportIndex, segDisplaySet, toolGroupId]);
+  }, [viewportId, segDisplaySet, toolGroupId]);
 
   const onSegmentChange = useCallback(
     direction => {
@@ -165,7 +165,7 @@ function OHIFCornerstoneSEGViewport(props) {
 
     promptHydrateSEG({
       servicesManager,
-      viewportIndex,
+      viewportId,
       segDisplaySet,
       preHydrateCallbacks: [storePresentationState],
     }).then(isHydrated => {
@@ -173,7 +173,7 @@ function OHIFCornerstoneSEGViewport(props) {
         setIsHydrated(true);
       }
     });
-  }, [servicesManager, viewportIndex, segDisplaySet, segIsLoading]);
+  }, [servicesManager, viewportId, segDisplaySet, segIsLoading]);
 
   useEffect(() => {
     const { unsubscribe } = segmentationService.subscribe(
@@ -225,12 +225,12 @@ function OHIFCornerstoneSEGViewport(props) {
     const onDisplaySetsRemovedSubscription = displaySetService.subscribe(
       displaySetService.EVENTS.DISPLAY_SETS_REMOVED,
       ({ displaySetInstanceUIDs }) => {
-        const activeViewport = viewports[activeViewportIndex];
+        const activeViewport = viewports.get(activeViewportId);
         if (
           displaySetInstanceUIDs.includes(activeViewport.displaySetInstanceUID)
         ) {
           viewportGridService.setDisplaySetsForViewport({
-            viewportIndex: activeViewportIndex,
+            viewportId: activeViewportId,
             displaySetInstanceUIDs: [],
           });
         }
@@ -296,7 +296,7 @@ function OHIFCornerstoneSEGViewport(props) {
       return (
         child &&
         React.cloneElement(child, {
-          viewportIndex,
+          viewportId,
           key: index,
         })
       );
@@ -325,7 +325,7 @@ function OHIFCornerstoneSEGViewport(props) {
     storePresentationState();
     const isHydrated = await hydrateSEGDisplaySet({
       segDisplaySet,
-      viewportIndex,
+      viewportId,
       servicesManager,
     });
 
@@ -388,7 +388,7 @@ function OHIFCornerstoneSEGViewport(props) {
 
 OHIFCornerstoneSEGViewport.propTypes = {
   displaySets: PropTypes.arrayOf(PropTypes.object),
-  viewportIndex: PropTypes.number.isRequired,
+  viewportId: PropTypes.string.isRequired,
   dataSource: PropTypes.object,
   children: PropTypes.node,
   customProps: PropTypes.object,

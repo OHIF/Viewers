@@ -21,7 +21,6 @@ interface OverlayItemProps {
   element: any;
   viewportData: any;
   imageSliceData: ImageSliceData;
-  viewportIndex: number | null;
   servicesManager: ServicesManager;
   instance: InstanceMetadata;
   customization: any;
@@ -114,7 +113,7 @@ function CustomizableViewportOverlay({
   element,
   viewportData,
   imageSliceData,
-  viewportIndex,
+  viewportId,
   servicesManager,
 }) {
   const {
@@ -152,13 +151,13 @@ function CustomizableViewportOverlay({
     if (viewportData != null) {
       return _getInstanceNumber(
         viewportData,
-        viewportIndex,
+        viewportId,
         imageIndex,
         cornerstoneViewportService
       );
     }
     return null;
-  }, [viewportData, viewportIndex, imageIndex, cornerstoneViewportService]);
+  }, [viewportData, viewportId, imageIndex, cornerstoneViewportService]);
 
   /**
    * Initial toolbar state
@@ -192,7 +191,7 @@ function CustomizableViewportOverlay({
     return () => {
       element.removeEventListener(Enums.Events.VOI_MODIFIED, updateVOI);
     };
-  }, [viewportIndex, viewportData, voi, element]);
+  }, [viewportId, viewportData, voi, element]);
 
   /**
    * Updating the scale when the viewport changes its zoom
@@ -205,8 +204,8 @@ function CustomizableViewportOverlay({
         previousCamera.parallelScale !== camera.parallelScale ||
         previousCamera.scale !== camera.scale
       ) {
-        const viewport = cornerstoneViewportService.getCornerstoneViewportByIndex(
-          viewportIndex
+        const viewport = cornerstoneViewportService.getCornerstoneViewport(
+          viewportId
         );
 
         if (!viewport) {
@@ -237,7 +236,7 @@ function CustomizableViewportOverlay({
     return () => {
       element.removeEventListener(Enums.Events.CAMERA_MODIFIED, updateScale);
     };
-  }, [viewportIndex, viewportData, cornerstoneViewportService, element]);
+  }, [viewportId, viewportData, cornerstoneViewportService, element]);
 
   /**
    * Updating the active tools when the toolbar changes
@@ -262,7 +261,7 @@ function CustomizableViewportOverlay({
         element,
         viewportData,
         imageSliceData,
-        viewportIndex,
+        viewportId,
         servicesManager,
         customization: item,
         formatters: {
@@ -296,7 +295,7 @@ function CustomizableViewportOverlay({
       element,
       viewportData,
       imageSliceData,
-      viewportIndex,
+      viewportId,
       servicesManager,
       customizationService,
       instance,
@@ -390,7 +389,7 @@ function _getViewportInstance(viewportData, imageIndex) {
 
 function _getInstanceNumber(
   viewportData,
-  viewportIndex,
+  viewportId,
   imageIndex,
   cornerstoneViewportService
 ) {
@@ -406,7 +405,7 @@ function _getInstanceNumber(
     instanceNumber = _getInstanceNumberFromVolume(
       viewportData,
       imageIndex,
-      viewportIndex,
+      viewportId,
       cornerstoneViewportService
     );
   }
@@ -438,8 +437,7 @@ function _getInstanceNumberFromStack(viewportData, imageIndex) {
 // Here we check if viewport is in the acquisition direction and if so, we get the instanceNumber
 function _getInstanceNumberFromVolume(
   viewportData,
-  imageIndex,
-  viewportIndex,
+  viewportId,
   cornerstoneViewportService
 ) {
   const volumes = viewportData.volumes;
@@ -452,8 +450,8 @@ function _getInstanceNumberFromVolume(
   const volume = volumes[0];
   const { direction, imageIds } = volume;
 
-  const cornerstoneViewport = cornerstoneViewportService.getCornerstoneViewportByIndex(
-    viewportIndex
+  const cornerstoneViewport = cornerstoneViewportService.getCornerstoneViewport(
+    viewportId
   );
 
   if (!cornerstoneViewport) {
@@ -486,7 +484,7 @@ function _getInstanceNumberFromVolume(
 CustomizableViewportOverlay.propTypes = {
   viewportData: PropTypes.object,
   imageIndex: PropTypes.number,
-  viewportIndex: PropTypes.number,
+  viewportId: PropTypes.string,
 };
 
 export default CustomizableViewportOverlay;

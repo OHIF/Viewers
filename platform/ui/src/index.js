@@ -59,6 +59,7 @@ export {
   InputRange,
   InputNumber,
   InputDateRange,
+  InputFilterText,
   InputGroup,
   InputLabelWrapper,
   InputMultiSelect,

@@ -485,6 +485,9 @@ function WorkList({
         }
       : undefined;
 
+  const { component: dataSourceConfigurationComponent } =
+    customizationService.get('ohif.dataSourceConfigurationComponent') ?? {};
+
   return (
     <div className="bg-black h-screen flex flex-col ">
       <Header
@@ -502,6 +505,11 @@ function WorkList({
           clearFilters={() => setFilterValues(defaultFilterValues)}
           isFiltering={isFiltering(filterValues, defaultFilterValues)}
           onUploadClick={uploadProps ? () => show(uploadProps) : undefined}
+          getDataSourceConfigurationComponent={
+            dataSourceConfigurationComponent
+              ? () => dataSourceConfigurationComponent()
+              : undefined
+          }
         />
         {hasStudies ? (
           <div className="grow flex flex-col">

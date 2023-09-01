@@ -286,31 +286,31 @@ export default class MicroscopyService extends PubSubService {
   }
 
   /**
-   * Creates a managed viewer instance for the given thrid-party API's viewer.
+   * Creates a managed viewer instance for the given third-party API's viewer.
    * Restores existing annotations for the given study/series.
    * Adds event subscriptions for the viewer being added.
    * Focuses the selected annotation when the viewer is being loaded into the
    * active viewport.
    *
-   * @param {Object} viewer Third-party viewer API's object to be managed
-   * @param {Number} viewportIndex The index of the viewport to load the viewer
-   * @param {HTMLElement} container The DOM element where it will be renderd
-   * @param {String} studyInstanceUID The study UID of the loaded image
-   * @param {String} seriesInstanceUID The series UID of the loaded image
-   * @param {Array} displaySets All displaySets related to the same StudyInstanceUID
+   * @param viewer - Third-party viewer API's object to be managed
+   * @param viewportId - The viewport Id where the viewer will be loaded
+   * @param container - The DOM element where it will be rendered
+   * @param studyInstanceUID - The study UID of the loaded image
+   * @param seriesInstanceUID - The series UID of the loaded image
+   * @param displaySets - All displaySets related to the same StudyInstanceUID
    *
    * @returns {ViewerManager} managed viewer
    */
   addViewer(
     viewer,
-    viewportIndex,
+    viewportId,
     container,
     studyInstanceUID,
     seriesInstanceUID
   ) {
     const managedViewer = new ViewerManager(
       viewer,
-      viewportIndex,
+      viewportId,
       container,
       studyInstanceUID,
       seriesInstanceUID
@@ -325,7 +325,7 @@ export default class MicroscopyService extends PubSubService {
 
     if (this.pendingFocus) {
       this.pendingFocus = false;
-      this.focusAnnotation(this.selectedAnnotation, viewportIndex);
+      this.focusAnnotation(this.selectedAnnotation, viewportId);
     }
 
     return managedViewer;
@@ -502,13 +502,13 @@ export default class MicroscopyService extends PubSubService {
   /**
    * Toggles overview map
    *
-   * @param viewportIndex The active viewport index
+   * @param viewportId The active viewport index
    * @returns {void}
    */
-  toggleOverviewMap(viewportIndex) {
+  toggleOverviewMap(viewportId) {
     const managedViewers = Array.from(this.managedViewers);
     const managedViewer = managedViewers.find(
-      mv => mv.viewportIndex === viewportIndex
+      mv => mv.viewportId === viewportId
     );
     if (managedViewer) {
       managedViewer.toggleOverviewMap();
@@ -550,10 +550,10 @@ export default class MicroscopyService extends PubSubService {
    * the managed viewer instance is created.
    *
    * @param {RoiAnnotation} roiAnnotation RoiAnnotation instance to be focused
-   * @param {Number} viewportIndex Index of the viewport to focus
+   * @param {string} viewportId Index of the viewport to focus
    */
-  focusAnnotation(roiAnnotation, viewportIndex) {
-    const filter = mv => mv.viewportIndex === viewportIndex;
+  focusAnnotation(roiAnnotation, viewportId) {
+    const filter = mv => mv.viewportId === viewportId;
     const managedViewer = Array.from(this.managedViewers).find(filter);
     if (managedViewer) {
       managedViewer.setViewStateByExtent(roiAnnotation);
