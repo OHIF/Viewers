@@ -17,7 +17,7 @@ const NotFoundServer = ({
   message = 'Unable to query for studies at this time. Check your data source configuration or network connection',
 }) => {
   return (
-    <div className="absolute w-full h-full flex justify-center items-center text-white">
+    <div className="absolute flex h-full w-full items-center justify-center text-white">
       <div>
         <h4>{message}</h4>
       </div>
@@ -31,12 +31,14 @@ NotFoundServer.propTypes = {
 
 const NotFoundStudy = () => {
   return (
-    <div className="absolute w-full h-full flex justify-center items-center text-white">
+    <div className="absolute flex h-full w-full items-center justify-center text-white">
       <div>
         <h4>
-          One or more of the requested studies are not available at this time.
-          Return to the{' '}
-          <Link className="text-primary-light" to={'/'}>
+          One or more of the requested studies are not available at this time. Return to the{' '}
+          <Link
+            className="text-primary-light"
+            to={'/'}
+          >
             study list
           </Link>{' '}
           to select a different study to view.
@@ -106,9 +108,7 @@ const createRoutes = ({
     props: { children: WorkList, servicesManager, extensionManager },
   };
 
-  const customRoutes = customizationService.getGlobalCustomization(
-    'customRoutes'
-  );
+  const customRoutes = customizationService.getGlobalCustomization('customRoutes');
   const allRoutes = [
     ...routes,
     ...(showStudyList ? [WorkListRoute] : []),
@@ -120,7 +120,10 @@ const createRoutes = ({
   function RouteWithErrorBoundary({ route, ...rest }) {
     // eslint-disable-next-line react/jsx-props-no-spreading
     return (
-      <ErrorBoundary context={`Route ${route.path}`} fallbackRoute="/">
+      <ErrorBoundary
+        context={`Route ${route.path}`}
+        fallbackRoute="/"
+      >
         <route.children
           {...rest}
           {...route.props}
@@ -146,11 +149,7 @@ const createRoutes = ({
             exact
             path={route.path}
             element={
-              <PrivateRoute
-                handleUnauthenticated={
-                  userAuthenticationService.handleUnauthenticated
-                }
-              >
+              <PrivateRoute handleUnauthenticated={userAuthenticationService.handleUnauthenticated}>
                 <RouteWithErrorBoundary route={route} />
               </PrivateRoute>
             }

@@ -11,16 +11,14 @@ const sizeClasses = {
 const layoutClasses =
   'box-content inline-flex flex-row items-center justify-center gap-[5px] justify center px-[10px] outline-none rounded';
 
-const baseFontTextClasses =
-  'leading-[1.2] font-sans text-center whitespace-nowrap';
+const baseFontTextClasses = 'leading-[1.2] font-sans text-center whitespace-nowrap';
 
 const fontTextClasses = {
   [ButtonEnums.type.primary]: classnames(baseFontTextClasses, 'font-semibold'),
   [ButtonEnums.type.secondary]: classnames(baseFontTextClasses, 'font-400'),
 };
 
-const baseEnabledEffectClasses =
-  'transition duration-300 ease-in-out focus:outline-none';
+const baseEnabledEffectClasses = 'transition duration-300 ease-in-out focus:outline-none';
 
 const enabledEffectClasses = {
   [ButtonEnums.type.primary]: classnames(
@@ -48,8 +46,7 @@ const enabledClasses = {
   ),
 };
 
-const disabledClasses =
-  'bg-inputfield-placeholder text-common-light cursor-default';
+const disabledClasses = 'bg-inputfield-placeholder text-common-light cursor-default';
 
 const defaults = {
   color: 'default',

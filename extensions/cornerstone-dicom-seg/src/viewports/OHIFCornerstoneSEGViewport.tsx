@@ -2,11 +2,7 @@ import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import OHIF, { utils } from '@ohif/core';
-import {
-  LoadingIndicatorTotalPercent,
-  useViewportGrid,
-  ViewportActionBar,
-} from '@ohif/ui';
+import { LoadingIndicatorTotalPercent, useViewportGrid, ViewportActionBar } from '@ohif/ui';
 import createSEGToolGroupAndAddTools from '../utils/initSEGToolGroup';
 import promptHydrateSEG from '../utils/promptHydrateSEG';
 import hydrateSEGDisplaySet from '../utils/_hydrateSEG';
@@ -106,9 +102,7 @@ function OHIFCornerstoneSEGViewport(props) {
       '@ohif/extension-cornerstone.viewportModule.cornerstone'
     );
 
-    const {
-      displaySet: referencedDisplaySet,
-    } = referencedDisplaySetRef.current;
+    const { displaySet: referencedDisplaySet } = referencedDisplaySetRef.current;
 
     // Todo: jump to the center of the first segment
     return (
@@ -148,11 +142,7 @@ function OHIFCornerstoneSEGViewport(props) {
         newSelectedSegmentIndex = numberOfSegments - 1;
       }
 
-      segmentationService.jumpToSegmentCenter(
-        segmentationId,
-        newSelectedSegmentIndex,
-        toolGroupId
-      );
+      segmentationService.jumpToSegmentCenter(segmentationId, newSelectedSegmentIndex, toolGroupId);
       setSelectedSegment(newSelectedSegmentIndex);
     },
     [selectedSegment]
@@ -179,18 +169,14 @@ function OHIFCornerstoneSEGViewport(props) {
     const { unsubscribe } = segmentationService.subscribe(
       segmentationService.EVENTS.SEGMENTATION_LOADING_COMPLETE,
       evt => {
-        if (
-          evt.segDisplaySet.displaySetInstanceUID ===
-          segDisplaySet.displaySetInstanceUID
-        ) {
+        if (evt.segDisplaySet.displaySetInstanceUID === segDisplaySet.displaySetInstanceUID) {
           setSegIsLoading(false);
         }
 
         if (evt.overlappingSegments) {
           uiNotificationService.show({
             title: 'Overlapping Segments',
-            message:
-              'Overlapping segments detected which is not currently supported',
+            message: 'Overlapping segments detected which is not currently supported',
             type: 'warning',
           });
         }
@@ -226,9 +212,7 @@ function OHIFCornerstoneSEGViewport(props) {
       displaySetService.EVENTS.DISPLAY_SETS_REMOVED,
       ({ displaySetInstanceUIDs }) => {
         const activeViewport = viewports.get(activeViewportId);
-        if (
-          displaySetInstanceUIDs.includes(activeViewport.displaySetInstanceUID)
-        ) {
+        if (displaySetInstanceUIDs.includes(activeViewport.displaySetInstanceUID)) {
           viewportGridService.setDisplaySetsForViewport({
             viewportId: activeViewportId,
             displaySetInstanceUIDs: [],
@@ -251,17 +235,11 @@ function OHIFCornerstoneSEGViewport(props) {
 
     // This creates a custom tool group which has the lifetime of this view
     // only, and does NOT interfere with currently displayed segmentations.
-    toolGroup = createSEGToolGroupAndAddTools(
-      toolGroupService,
-      customizationService,
-      toolGroupId
-    );
+    toolGroup = createSEGToolGroupAndAddTools(toolGroupService, customizationService, toolGroupId);
 
     return () => {
       // remove the segmentation representations if seg displayset changed
-      segmentationService.removeSegmentationRepresentationFromToolGroup(
-        toolGroupId
-      );
+      segmentationService.removeSegmentationRepresentationFromToolGroup(toolGroupId);
 
       // Only destroy the viewport specific implementation
       toolGroupService.destroyToolGroup(toolGroupId);
@@ -273,9 +251,7 @@ function OHIFCornerstoneSEGViewport(props) {
 
     return () => {
       // remove the segmentation representations if seg displayset changed
-      segmentationService.removeSegmentationRepresentationFromToolGroup(
-        toolGroupId
-      );
+      segmentationService.removeSegmentationRepresentationFromToolGroup(toolGroupId);
       referencedDisplaySetRef.current = null;
     };
   }, [segDisplaySet]);
@@ -351,29 +327,23 @@ function OHIFCornerstoneSEGViewport(props) {
           studyDate: formatDate(StudyDate),
           seriesDescription: `SEG Viewport ${SeriesDescription}`,
           patientInformation: {
-            patientName: PatientName
-              ? OHIF.utils.formatPN(PatientName.Alphabetic)
-              : '',
+            patientName: PatientName ? OHIF.utils.formatPN(PatientName.Alphabetic) : '',
             patientSex: PatientSex || '',
             patientAge: PatientAge || '',
             MRN: PatientID || '',
-            thickness: SliceThickness
-              ? utils.roundNumber(SliceThickness, 2)
-              : '',
+            thickness: SliceThickness ? utils.roundNumber(SliceThickness, 2) : '',
             thicknessUnits: SliceThickness !== undefined ? 'mm' : '',
             spacing:
-              SpacingBetweenSlices !== undefined
-                ? utils.roundNumber(SpacingBetweenSlices, 2)
-                : '',
+              SpacingBetweenSlices !== undefined ? utils.roundNumber(SpacingBetweenSlices, 2) : '',
             scanner: ManufacturerModelName || '',
           },
         }}
       />
 
-      <div className="relative flex flex-row w-full h-full overflow-hidden">
+      <div className="relative flex h-full w-full flex-row overflow-hidden">
         {segIsLoading && (
           <LoadingIndicatorTotalPercent
-            className="w-full h-full"
+            className="h-full w-full"
             totalNumbers={processingProgress.totalSegments}
             percentComplete={processingProgress.percentComplete}
             loadingText="Loading SEG..."

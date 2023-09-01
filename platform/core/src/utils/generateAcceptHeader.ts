@@ -25,8 +25,7 @@ const generateAcceptHeader = (
         return quotedParam;
       }
       if (mime.startsWith('transfer-syntax=')) {
-        const quotedParam =
-          'transfer-syntax="' + mime.substring(16, mime.length) + '"';
+        const quotedParam = 'transfer-syntax="' + mime.substring(16, mime.length) + '"';
         return quotedParam;
       } else {
         return mime;

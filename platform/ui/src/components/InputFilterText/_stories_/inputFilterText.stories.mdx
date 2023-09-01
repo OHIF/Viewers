@@ -6,15 +6,21 @@ export const argTypes = {
   title: 'Components/InputFilterText',
 };
 
-<Meta title="Components/InputFilterText" component={InputFilterText} />
+<Meta
+  title="Components/InputFilterText"
+  component={InputFilterText}
+/>
 
 export const InputFilterTextTemplate = args => (
   <div className="w-80">
     <InputFilterText {...args} />
   </div>
-)
+);
 
-<Heading title="InputFilterText" componentRelativePath="InputFilterText/InputFilterText.tsx" />
+<Heading
+  title="InputFilterText"
+  componentRelativePath="InputFilterText/InputFilterText.tsx"
+/>
 
 - [Overview](#overview)
 - [Props](#props)
@@ -22,21 +28,20 @@ export const InputFilterTextTemplate = args => (
 
 ## Overview
 
-InputFilterText is a component that is styled such that it can be used as a text input to
-filter a list of textual items. It allows you to enter any text. There are two (optional)
-callbacks that can be invoked as the characters of the text are entered: one
-callback is invoked as each character is typed and another is debounced so that
-any filtering can occur once the user has entered a significant amount of info and
-pausing by a configurable amount of time in milliseconds. The component also
-provides a button on the far right of the component that when clicked will clear the input
-text. The button only appears when there is text in the component.
+InputFilterText is a component that is styled such that it can be used as a text input to filter a
+list of textual items. It allows you to enter any text. There are two (optional) callbacks that can
+be invoked as the characters of the text are entered: one callback is invoked as each character is
+typed and another is debounced so that any filtering can occur once the user has entered a
+significant amount of info and pausing by a configurable amount of time in milliseconds. The
+component also provides a button on the far right of the component that when clicked will clear the
+input text. The button only appears when there is text in the component.
 
 <Canvas>
   <Story
     name="Overview"
     args={{
-      className: "w-full text-white",
-      placeholder: "Search for...",
+      className: 'w-full text-white',
+      placeholder: 'Search for...',
       onChange: () => console.log('input text changed'),
       onDebounceChange: () => console.log('debounce text changed'),
     }}

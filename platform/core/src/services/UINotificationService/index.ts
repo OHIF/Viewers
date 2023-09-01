@@ -38,10 +38,7 @@ class UINotificationService {
    *   show: showImplementation,
    * }
    */
-  public setServiceImplementation({
-    hide: hideImplementation,
-    show: showImplementation,
-  }): void {
+  public setServiceImplementation({ hide: hideImplementation, show: showImplementation }): void {
     if (hideImplementation) {
       serviceImplementation._hide = hideImplementation;
     }

@@ -17,10 +17,16 @@ const AddNewSegmentRow = ({
 }) => {
   return (
     <div>
-      <div className="flex items-center pl-[29px] bg-black text-primary-active hover:opacity-80 cursor-pointer text-[12px] py-1">
+      <div className="text-primary-active flex cursor-pointer items-center bg-black py-1 pl-[29px] text-[12px] hover:opacity-80">
         {showAddSegment && !disableEditing && (
-          <div className="flex items-center" onClick={() => onSegmentAdd()}>
-            <Icon name="row-add" className="w-5 h-5" />
+          <div
+            className="flex items-center"
+            onClick={() => onSegmentAdd()}
+          >
+            <Icon
+              name="row-add"
+              className="h-5 w-5"
+            />
             <div className="">Add Segment</div>
           </div>
         )}
@@ -32,9 +38,15 @@ const AddNewSegmentRow = ({
           }}
         >
           {isVisible ? (
-            <Icon name="row-show-all" className="w-5 h-5" />
+            <Icon
+              name="row-show-all"
+              className="h-5 w-5"
+            />
           ) : (
-            <Icon name="row-hide-all" className="w-5 h-5" />
+            <Icon
+              name="row-hide-all"
+              className="h-5 w-5"
+            />
           )}
         </div>
       </div>
@@ -60,7 +72,7 @@ const SegmentGroupHeader = ({
   return (
     <div
       className={classnames(
-        'flex flex-static items-center pr-2 pl-[3px] h-[27px] gap-2 rounded-t-md border-b border-secondary-light cursor-pointer text-[12px]',
+        'flex-static border-secondary-light flex h-[27px] cursor-pointer items-center gap-2 rounded-t-md border-b pr-2 pl-[3px] text-[12px]',
         {
           'bg-secondary-main': isActive,
           'bg-secondary-dark': !isActive,
@@ -77,14 +89,11 @@ const SegmentGroupHeader = ({
           evt.stopPropagation();
           onToggleMinimizeSegmentation(id);
         }}
-        className={classnames(
-          'w-5 h-5 text-white transition duration-300 cursor-pointer',
-          {
-            'transform rotate-90': !isMinimized,
-          }
-        )}
+        className={classnames('h-5 w-5 cursor-pointer text-white transition duration-300', {
+          'rotate-90 transform': !isMinimized,
+        })}
       />
-      <span className="text-white w-full whitespace-nowrap text-ellipsis overflow-hidden">
+      <span className="w-full overflow-hidden text-ellipsis whitespace-nowrap text-white">
         {label.toUpperCase()}
       </span>
       <div className="flex-grow" />
@@ -156,7 +165,7 @@ const SegmentationGroup = ({
   onSegmentEdit,
 }) => {
   return (
-    <div className="flex flex-col flex-auto min-h-0">
+    <div className="flex min-h-0 flex-auto flex-col">
       <SegmentGroupHeader
         id={id}
         label={label}
@@ -170,7 +179,7 @@ const SegmentationGroup = ({
         disableEditing={disableEditing}
       />
       {!isMinimized && (
-        <div className="flex flex-col flex-auto min-h-0">
+        <div className="flex min-h-0 flex-auto flex-col">
           <AddNewSegmentRow
             onConfigChange={onSegmentationConfigChange}
             onSegmentAdd={onSegmentAdd}
@@ -180,22 +189,19 @@ const SegmentationGroup = ({
             disableEditing={disableEditing}
             showAddSegment={showAddSegment}
           />
-          <div className="flex flex-col min-h-0 ohif-scrollbar overflow-y-hidden">
+          <div className="ohif-scrollbar flex min-h-0 flex-col overflow-y-hidden">
             {!!segments.length &&
               segments.map(segment => {
                 if (segment === undefined || segment === null) {
                   return null;
                 }
 
-                const {
-                  segmentIndex,
-                  color,
-                  label,
-                  isVisible,
-                  isLocked,
-                } = segment;
+                const { segmentIndex, color, label, isVisible, isLocked } = segment;
                 return (
-                  <div className="mb-[1px]" key={segmentIndex}>
+                  <div
+                    className="mb-[1px]"
+                    key={segmentIndex}
+                  >
                     <SegmentationGroupSegment
                       segmentationId={id}
                       segmentIndex={segmentIndex}

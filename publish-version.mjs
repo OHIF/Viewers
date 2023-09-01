@@ -4,11 +4,7 @@ import glob from 'glob';
 import path from 'path';
 
 async function run() {
-  const { stdout: branchName } = await execa('git', [
-    'rev-parse',
-    '--abbrev-ref',
-    'HEAD',
-  ]);
+  const { stdout: branchName } = await execa('git', ['rev-parse', '--abbrev-ref', 'HEAD']);
   console.log('Current branch:', branchName);
   const lernaJson = JSON.parse(await fs.readFile('lerna.json', 'utf-8'));
 
@@ -34,17 +30,13 @@ async function run() {
       const packageJsonPath = path.join(packageDirectory, 'package.json');
 
       try {
-        const packageJson = JSON.parse(
-          await fs.readFile(packageJsonPath, 'utf-8')
-        );
+        const packageJson = JSON.parse(await fs.readFile(packageJsonPath, 'utf-8'));
 
         if (!packageJson.peerDependencies) {
           continue;
         }
 
-        for (const peerDependency of Object.keys(
-          packageJson.peerDependencies
-        )) {
+        for (const peerDependency of Object.keys(packageJson.peerDependencies)) {
           if (peerDependency.startsWith('@ohif/')) {
             packageJson.peerDependencies[peerDependency] = nextVersion;
 
@@ -55,10 +47,7 @@ async function run() {
           }
         }
 
-        await fs.writeFile(
-          packageJsonPath,
-          JSON.stringify(packageJson, null, 2) + '\n'
-        );
+        await fs.writeFile(packageJsonPath, JSON.stringify(packageJson, null, 2) + '\n');
 
         console.log(`Updated ${packageJsonPath}`);
       } catch (err) {
@@ -80,11 +69,7 @@ async function run() {
 
   console.log('Committing and pushing changes...');
   await execa('git', ['add', '-A']);
-  await execa('git', [
-    'commit',
-    '-m',
-    'chore(version): version.json [skip ci]',
-  ]);
+  await execa('git', ['commit', '-m', 'chore(version): version.json [skip ci]']);
   await execa('git', ['push', 'origin', branchName]);
 
   console.log('Setting the version using lerna...');

@@ -40,11 +40,7 @@ describe('progressTrackingUtils', () => {
 
     it('should call observer twice for each task', () => {
       const { list, observer } = context;
-      const promises = [
-        Promise.resolve('A'),
-        Promise.resolve('B'),
-        Promise.resolve('C'),
-      ];
+      const promises = [Promise.resolve('A'), Promise.resolve('B'), Promise.resolve('C')];
       promises.forEach(promise => void utils.waitOn(list, promise));
       return Promise.all(promises).then(() => {
         expect(observer).toBeCalledTimes(6);

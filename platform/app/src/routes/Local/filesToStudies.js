@@ -10,11 +10,7 @@ const processFile = async file => {
 
     DicomMetadataStore.addInstance(dicomJSONDataset);
   } catch (error) {
-    console.log(
-      error.name,
-      ':Error when trying to load and process local files:',
-      error.message
-    );
+    console.log(error.name, ':Error when trying to load and process local files:', error.message);
   }
 };
 

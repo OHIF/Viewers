@@ -9,11 +9,7 @@ const SOP_CLASS_UIDS = {
 const SOPClassHandlerId =
   '@ohif/extension-dicom-microscopy.sopClassHandlerModule.DicomMicroscopySopClassHandler';
 
-function _getDisplaySetsFromSeries(
-  instances,
-  servicesManager,
-  extensionManager
-) {
+function _getDisplaySetsFromSeries(instances, servicesManager, extensionManager) {
   // If the series has no instances, stop here
   if (!instances || !instances.length) {
     throw new Error('No instances were provided');
@@ -112,16 +108,9 @@ function _getDisplaySetsFromSeries(
   return [displaySet];
 }
 
-export default function getDicomMicroscopySopClassHandler({
-  servicesManager,
-  extensionManager,
-}) {
+export default function getDicomMicroscopySopClassHandler({ servicesManager, extensionManager }) {
   const getDisplaySetsFromSeries = instances => {
-    return _getDisplaySetsFromSeries(
-      instances,
-      servicesManager,
-      extensionManager
-    );
+    return _getDisplaySetsFromSeries(instances, servicesManager, extensionManager);
   };
 
   return {

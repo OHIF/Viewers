@@ -1,13 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { utils, ServicesManager } from '@ohif/core';
-import {
-  MeasurementTable,
-  Dialog,
-  Input,
-  useViewportGrid,
-  ButtonEnums,
-} from '@ohif/ui';
+import { MeasurementTable, Dialog, Input, useViewportGrid, ButtonEnums } from '@ohif/ui';
 import ActionButtons from './ActionButtons';
 import debounce from 'lodash.debounce';
 
@@ -26,19 +20,13 @@ export default function PanelMeasurementTable({
 }): React.FunctionComponent {
   const [viewportGrid, viewportGridService] = useViewportGrid();
   const { activeViewportId, viewports } = viewportGrid;
-  const {
-    measurementService,
-    uiDialogService,
-    uiNotificationService,
-    displaySetService,
-  } = (servicesManager as ServicesManager).services;
+  const { measurementService, uiDialogService, uiNotificationService, displaySetService } = (
+    servicesManager as ServicesManager
+  ).services;
   const [displayMeasurements, setDisplayMeasurements] = useState([]);
 
   useEffect(() => {
-    const debouncedSetDisplayMeasurements = debounce(
-      setDisplayMeasurements,
-      100
-    );
+    const debouncedSetDisplayMeasurements = debounce(setDisplayMeasurements, 100);
     // ~~ Initial
     setDisplayMeasurements(_getMappedMeasurements(measurementService));
 
@@ -53,9 +41,7 @@ export default function PanelMeasurementTable({
     [added, addedRaw, updated, removed, cleared].forEach(evt => {
       subscriptions.push(
         measurementService.subscribe(evt, () => {
-          debouncedSetDisplayMeasurements(
-            _getMappedMeasurements(measurementService)
-          );
+          debouncedSetDisplayMeasurements(_getMappedMeasurements(measurementService));
         }).unsubscribe
       );
     });
@@ -104,9 +90,7 @@ export default function PanelMeasurementTable({
     });
 
     if (promptResult.action === CREATE_REPORT_DIALOG_RESPONSE.CREATE_REPORT) {
-      const dataSources = extensionManager.getDataSources(
-        promptResult.dataSourceName
-      );
+      const dataSources = extensionManager.getDataSources(promptResult.dataSourceName);
       const dataSource = dataSources[0];
 
       const SeriesDescription =
@@ -117,10 +101,7 @@ export default function PanelMeasurementTable({
 
       // Re-use an existing series having the same series description to avoid
       // creating too many series instances.
-      const options = findSRWithSameSeriesDescription(
-        SeriesDescription,
-        displaySetService
-      );
+      const options = findSRWithSameSeriesDescription(SeriesDescription, displaySetService);
 
       return createReportAsync(
         servicesManager,
@@ -186,7 +167,7 @@ export default function PanelMeasurementTable({
               labelClassName="text-white text-[14px] leading-[1.2]"
               autoFocus
               id="annotation"
-              className="bg-black border-primary-main"
+              className="border-primary-main bg-black"
               type="text"
               value={value.label}
               onChange={onChangeHandler}
@@ -217,7 +198,7 @@ export default function PanelMeasurementTable({
   return (
     <>
       <div
-        className="overflow-x-hidden overflow-y-auto ohif-scrollbar"
+        className="ohif-scrollbar overflow-y-auto overflow-x-hidden"
         data-cy={'measurements-panel'}
       >
         <MeasurementTable

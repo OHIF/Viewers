@@ -31,9 +31,9 @@ const SegmentationItem = ({
   return (
     <div
       className={classnames(
-        'group relative flex cursor-pointer items-stretch bg-black border outline-none border-transparent transition duration-300',
+        'group relative flex cursor-pointer items-stretch border border-transparent bg-black outline-none transition duration-300',
         {
-          'rounded overflow-hidden border-primary-light': isActive,
+          'border-primary-light overflow-hidden rounded': isActive,
         }
       )}
       onMouseEnter={onMouseEnter}
@@ -45,7 +45,7 @@ const SegmentationItem = ({
     >
       <div
         className={classnames(
-          'text-center flex items-center justify-center w-6 h-auto text-base transition duration-300',
+          'flex h-auto w-6 items-center justify-center text-center text-base transition duration-300',
           {
             'bg-primary-light text-black': isActive,
             'bg-primary-dark text-primary-light group-hover:bg-secondary-main': !isActive,
@@ -55,13 +55,10 @@ const SegmentationItem = ({
         {isHovering ? (
           <Icon
             name="close"
-            className={classnames(
-              'w-[10px] transition duration-500 text-center hover:opacity-80',
-              {
-                'bg-primary-light text-black': isActive,
-                'bg-primary-dark text-primary-light group-hover:bg-secondary-main': !isActive,
-              }
-            )}
+            className={classnames('w-[10px] text-center transition duration-500 hover:opacity-80', {
+              'bg-primary-light text-black': isActive,
+              'bg-primary-dark text-primary-light group-hover:bg-secondary-main': !isActive,
+            })}
             onClick={e => {
               e.stopPropagation();
               onDelete(id);
@@ -71,22 +68,22 @@ const SegmentationItem = ({
           <span>{index}</span>
         )}
       </div>
-      <div className="relative flex flex-col w-full p-1">
-        <div className="flex items-center ml-2">
-          <div className="flex flex-1 text-base text-primary-light">
+      <div className="relative flex w-full flex-col p-1">
+        <div className="ml-2 flex items-center">
+          <div className="text-primary-light flex flex-1 text-base">
             <div
-              className="w-3 h-3 mt-1 mr-2 rounded-full"
+              className="mt-1 mr-2 h-3 w-3 rounded-full"
               style={{ backgroundColor: 'red' }}
             ></div>
             {label}
           </div>
-          <div className="flex items-center w-1/4">
+          <div className="flex w-1/4 items-center">
             <div>
               <Icon
                 className={classnames(
-                  'text-white w-3 absolute cursor-pointer transition duration-300 hover:opacity-80',
-                  { 'invisible opacity-0 mr-2': !isActive && !isHovering },
-                  { 'visible opacity-1': !isActive && isHovering }
+                  'absolute w-3 cursor-pointer text-white transition duration-300 hover:opacity-80',
+                  { 'invisible mr-2 opacity-0': !isActive && !isHovering },
+                  { 'opacity-1 visible': !isActive && isHovering }
                 )}
                 name="pencil"
                 style={{
@@ -100,7 +97,7 @@ const SegmentationItem = ({
             <div>
               <Icon
                 className={classnames(
-                  'text-white w-4 cursor-pointer transition duration-300 hover:opacity-80'
+                  'w-4 cursor-pointer text-white transition duration-300 hover:opacity-80'
                 )}
                 name={isVisible ? 'eye-visible' : 'eye-hidden'}
                 onClick={e => {
@@ -117,7 +114,7 @@ const SegmentationItem = ({
             displayText.map(line => (
               <span
                 key={line}
-                className="pl-2 text-base text-white border-l border-primary-light"
+                className="border-primary-light border-l pl-2 text-base text-white"
               >
                 {line}
               </span>
@@ -129,10 +126,7 @@ const SegmentationItem = ({
 };
 
 SegmentationItem.propTypes = {
-  id: PropTypes.oneOfType([
-    PropTypes.number.isRequired,
-    PropTypes.string.isRequired,
-  ]),
+  id: PropTypes.oneOfType([PropTypes.number.isRequired, PropTypes.string.isRequired]),
   index: PropTypes.number.isRequired,
   label: PropTypes.string,
   displayText: PropTypes.arrayOf(PropTypes.string),
