@@ -1,11 +1,25 @@
 import React from 'react';
-import classNames from 'classnames';
-import { ButtonGroup, InputRange, LegacyButton } from '../../components';
+import { ButtonGroup, InputRange, ButtonEnums } from '../../components';
 
 function ToolSettings({ options }) {
   if (!options) {
     return null;
   }
+
+  const getButtons = option => {
+    const buttons = [];
+
+    option.values?.map(({ label, value: optionValue }) => {
+      const isActive = option.value === optionValue;
+
+      buttons.push({
+        children: label,
+        onClick: () => option.onChange(optionValue),
+      });
+    });
+
+    return buttons;
+  };
 
   return (
     <div className="text-white py-2 space-y-2">
@@ -36,31 +50,14 @@ function ToolSettings({ options }) {
               className="flex justify-between items-center text-[13px]"
               key={option.name}
             >
-              <span className="w-1/3">{option.name}</span>
-              <div className="">
+              <span>{option.name}</span>
+              <div className="max-w-1/2">
                 <ButtonGroup
-                  color="secondary"
-                  splitBorder={false}
-                  className={'ml-auto'}
-                >
-                  {option.values?.map(({ label, value: optionValue }) => {
-                    const isActive = option.value === optionValue;
-                    return (
-                      <LegacyButton
-                        key={label}
-                        className={classNames(
-                          `${isActive ? 'text-white' : 'text-primary-active'}`,
-                          'p-1 w-20'
-                        )}
-                        size="inherit"
-                        bgColor={isActive ? 'bg-primary-main' : 'bg-black'}
-                        onClick={() => option.onChange(optionValue)}
-                      >
-                        {label}
-                      </LegacyButton>
-                    );
-                  })}
-                </ButtonGroup>
+                  buttons={getButtons(option)}
+                  defaultActiveIndex={option.defaultActiveIndex}
+                  key={option.name}
+                  size={ButtonEnums.size.small}
+                />
               </div>
             </div>
           );

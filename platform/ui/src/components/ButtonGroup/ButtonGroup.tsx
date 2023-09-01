@@ -1,15 +1,13 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import { Button, ButtonEnums } from '../../components';
+import { ButtonEnums } from '../../components';
 
 const ButtonGroup = ({
   buttons,
   onActiveIndexChange,
   className,
   orientation = ButtonEnums.orientation.horizontal,
-  type = ButtonEnums.type.primary,
-  size = ButtonEnums.size.medium,
   defaultActiveIndex = 0,
 }) => {
   const [activeIndex, setActiveIndex] = useState(defaultActiveIndex);
@@ -26,35 +24,30 @@ const ButtonGroup = ({
   };
 
   const wrapperClasses = classnames(
-    'flex ',
+    'inline-flex',
     orientationClasses[orientation],
     className
   );
 
   return (
-    <div className={wrapperClasses}>
+    <div
+      className={classnames(
+        wrapperClasses,
+        'border border-secondary-light rounded-[5px] bg-black text-[13px] '
+      )}
+    >
       {buttons.map((buttonProps, index) => {
         const isActive = index === activeIndex;
         return (
-          <Button
+          <button
             {...buttonProps}
             key={index}
-            type={
-              isActive ? ButtonEnums.type.primary : ButtonEnums.type.secondary
-            }
-            size={size}
-            className={classnames(buttonProps.className, {
-              'rounded-l-[4px] rounded-r-none border border-secondary-light border-r-0':
-                index === 0 && orientation === 'horizontal',
-              'rounded-t-[4px] rounded-b-none border border-secondary-light border-b-0':
-                index === 0 && orientation === 'vertical',
-              'rounded-r-[4px] rounded-l-none border border-secondary-light border-l-0':
-                index === buttons.length - 1 && orientation === 'horizontal',
-              'rounded-b-[4px] rounded-t-none border border-secondary-light border-t-0':
-                index === buttons.length - 1 && orientation === 'vertical',
-              'rounded-none border border-secondary-light border-l-0 border-r-0':
-                index !== 0 && index !== buttons.length - 1,
-            })}
+            className={classnames(
+              'px-2 py-1 rounded-[4px]',
+              isActive
+                ? 'bg-customblue-40 text-white'
+                : 'bg-black text-primary-active'
+            )}
             onClick={e => handleButtonClick(e, index)}
           />
         );
