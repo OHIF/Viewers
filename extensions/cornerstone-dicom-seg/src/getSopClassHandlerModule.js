@@ -62,8 +62,7 @@ function _getDisplaySetsFromSeries(instances, servicesManager, extensionManager)
 
   const referencedSeries = referencedSeriesSequence[0];
 
-  displaySet.referencedImages =
-    instance.ReferencedSeriesSequence.ReferencedInstanceSequence;
+  displaySet.referencedImages = instance.ReferencedSeriesSequence.ReferencedInstanceSequence;
   displaySet.referencedSeriesInstanceUID = referencedSeries.SeriesInstanceUID;
 
   displaySet.getReferenceDisplaySet = () => {
@@ -78,8 +77,7 @@ function _getDisplaySetsFromSeries(instances, servicesManager, extensionManager)
 
     const referencedDisplaySet = referencedDisplaySets[0];
 
-    displaySet.referencedDisplaySetInstanceUID =
-      referencedDisplaySet.displaySetInstanceUID;
+    displaySet.referencedDisplaySetInstanceUID = referencedDisplaySet.displaySetInstanceUID;
 
     // Todo: this needs to be able to work with other reference volumes (other than streaming) such as nifti, etc.
     displaySet.referencedVolumeURI = referencedDisplaySet.displaySetInstanceUID;
@@ -137,12 +135,7 @@ function _load(segDisplaySet, servicesManager, extensionManager, headers) {
   return loadPromises[SOPInstanceUID];
 }
 
-async function _loadSegments({
-  extensionManager,
-  servicesManager,
-  segDisplaySet,
-  headers,
-}) {
+async function _loadSegments({ extensionManager, servicesManager, segDisplaySet, headers }) {
   const utilityModule = extensionManager.getModuleEntry(
     '@ohif/extension-cornerstone.utilityModule.common'
   );
@@ -150,11 +143,7 @@ async function _loadSegments({
   const { segmentationService } = servicesManager.services;
 
   const { dicomLoaderService } = utilityModule.exports;
-  const arrayBuffer = await dicomLoaderService.findDicomDataPromise(
-    segDisplaySet,
-    null,
-    headers
-  );
+  const arrayBuffer = await dicomLoaderService.findDicomDataPromise(segDisplaySet, null, headers);
 
   const cachedReferencedVolume = cache.getVolume(segDisplaySet.referencedVolumeId);
 
@@ -172,12 +161,9 @@ async function _loadSegments({
 
   eventTarget.addEventListener(Enums.Events.SEGMENTATION_LOAD_PROGRESS, evt => {
     const { percentComplete } = evt.detail;
-    segmentationService._broadcastEvent(
-      segmentationService.EVENTS.SEGMENT_LOADING_COMPLETE,
-      {
-        percentComplete,
-      }
-    );
+    segmentationService._broadcastEvent(segmentationService.EVENTS.SEGMENT_LOADING_COMPLETE, {
+      percentComplete,
+    });
   });
 
   const results = await adaptersSEG.Cornerstone3D.Segmentation.generateToolState(

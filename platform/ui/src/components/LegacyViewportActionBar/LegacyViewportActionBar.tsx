@@ -22,14 +22,8 @@ const LegacyViewportActionBar = ({
 }) => {
   const [showPatientInfo, setShowPatientInfo] = useState(patientInfoVisibility);
 
-  const {
-    label,
-    useAltStyling,
-    studyDate,
-    currentSeries,
-    seriesDescription,
-    patientInformation,
-  } = studyData;
+  const { label, useAltStyling, studyDate, currentSeries, seriesDescription, patientInformation } =
+    studyData;
 
   const { patientName, patientSex, patientAge, MRN, thickness, spacing, scanner } =
     patientInformation;
@@ -86,9 +80,7 @@ const LegacyViewportActionBar = ({
                 Can clean up by setting percentage widths + calc on parent
                 containers
              */}
-            <p className="max-w-40 text-primary-light truncate text-base">
-              {seriesDescription}
-            </p>
+            <p className="max-w-40 text-primary-light truncate text-base">{seriesDescription}</p>
           </div>
         </div>
       </div>

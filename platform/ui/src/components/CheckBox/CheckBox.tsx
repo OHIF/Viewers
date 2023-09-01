@@ -29,9 +29,7 @@ const CheckBox: React.FC<{
 
   return (
     <div
-      className={`flex cursor-pointer items-center space-x-1 ${
-        className ? className : ''
-      }`}
+      className={`flex cursor-pointer items-center space-x-1 ${className ? className : ''}`}
       onClick={handleClick}
     >
       {isChecked ? <Icon name="checkbox-checked" /> : <Icon name="checkbox-unchecked" />}

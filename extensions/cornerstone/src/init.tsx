@@ -83,8 +83,7 @@ export default async function init({
   if (appConfig.showWarningMessageForCrossOrigin && !window.crossOriginIsolated) {
     uiNotificationService.show({
       title: 'Cross Origin Isolation',
-      message:
-        'Cross Origin Isolation is not enabled, volume rendering will not work (e.g., MPR)',
+      message: 'Cross Origin Isolation is not enabled, volume rendering will not work (e.g., MPR)',
       type: 'warning',
     });
   }
@@ -109,18 +108,14 @@ export default async function init({
     clearOnModeExit: true,
   });
 
-  const labelmapRepresentation =
-    cornerstoneTools.Enums.SegmentationRepresentations.Labelmap;
+  const labelmapRepresentation = cornerstoneTools.Enums.SegmentationRepresentations.Labelmap;
 
-  cornerstoneTools.segmentation.config.setGlobalRepresentationConfig(
-    labelmapRepresentation,
-    {
-      fillAlpha: 0.3,
-      fillAlphaInactive: 0.2,
-      outlineOpacity: 1,
-      outlineOpacityInactive: 0.65,
-    }
-  );
+  cornerstoneTools.segmentation.config.setGlobalRepresentationConfig(labelmapRepresentation, {
+    fillAlpha: 0.3,
+    fillAlphaInactive: 0.2,
+    outlineOpacity: 1,
+    outlineOpacityInactive: 0.65,
+  });
 
   const metadataProvider = OHIF.classes.MetadataProvider;
 
@@ -129,14 +124,8 @@ export default async function init({
     cornerstoneStreamingImageVolumeLoader
   );
 
-  hangingProtocolService.registerImageLoadStrategy(
-    'interleaveCenter',
-    interleaveCenterLoader
-  );
-  hangingProtocolService.registerImageLoadStrategy(
-    'interleaveTopToBottom',
-    interleaveTopToBottom
-  );
+  hangingProtocolService.registerImageLoadStrategy('interleaveCenter', interleaveCenterLoader);
+  hangingProtocolService.registerImageLoadStrategy('interleaveTopToBottom', interleaveTopToBottom);
   hangingProtocolService.registerImageLoadStrategy('nth', nthLoader);
 
   // add metadata providers
@@ -170,20 +159,14 @@ export default async function init({
 
         const ohifViewport = cornerstoneViewportService.getViewportInfo(viewportId);
 
-        const { lutPresentationStore, positionPresentationStore } =
-          stateSyncService.getState();
+        const { lutPresentationStore, positionPresentationStore } = stateSyncService.getState();
         const { presentationIds } = ohifViewport.getViewportOptions();
         const presentations = {
-          positionPresentation:
-            positionPresentationStore[presentationIds?.positionPresentationId],
+          positionPresentation: positionPresentationStore[presentationIds?.positionPresentationId],
           lutPresentation: lutPresentationStore[presentationIds?.lutPresentationId],
         };
 
-        cornerstoneViewportService.setVolumesForViewport(
-          viewport,
-          volumeInputArray,
-          presentations
-        );
+        cornerstoneViewportService.setVolumesForViewport(viewport, volumeInputArray, presentations);
       }
     }
   );
@@ -249,10 +232,7 @@ export default async function init({
 
   eventTarget.addEventListener(EVENTS.ELEMENT_ENABLED, elementEnabledHandler.bind(null));
 
-  eventTarget.addEventListener(
-    EVENTS.ELEMENT_DISABLED,
-    elementDisabledHandler.bind(null)
-  );
+  eventTarget.addEventListener(EVENTS.ELEMENT_DISABLED, elementDisabledHandler.bind(null));
 
   viewportGridService.subscribe(
     viewportGridService.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED,
@@ -290,10 +270,9 @@ function CPUModal() {
   return (
     <div>
       <p>
-        Your computer does not have enough GPU power to support the default GPU rendering
-        mode. OHIF has switched to CPU rendering mode. Please note that CPU rendering does
-        not support all features such as Volume Rendering, Multiplanar Reconstruction, and
-        Segmentation Overlays.
+        Your computer does not have enough GPU power to support the default GPU rendering mode. OHIF
+        has switched to CPU rendering mode. Please note that CPU rendering does not support all
+        features such as Volume Rendering, Multiplanar Reconstruction, and Segmentation Overlays.
       </p>
     </div>
   );

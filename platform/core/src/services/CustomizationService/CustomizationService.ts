@@ -107,10 +107,7 @@ export default class CustomizationService extends PubSubService {
     return this.modeCustomizations;
   }
 
-  public setModeCustomization(
-    customizationId: string,
-    customization: Customization
-  ): void {
+  public setModeCustomization(customizationId: string, customization: Customization): void {
     this.modeCustomizations[customizationId] = merge(
       this.modeCustomizations[customizationId] || {},
       customization
@@ -155,10 +152,7 @@ export default class CustomizationService extends PubSubService {
   }
 
   public hasModeCustomization(customizationId: string) {
-    return (
-      this.globalCustomizations[customizationId] ||
-      this.modeCustomizations[customizationId]
-    );
+    return this.globalCustomizations[customizationId] || this.modeCustomizations[customizationId];
   }
   /**
    * get is an alias for getModeCustomization, as it is the generic getter
@@ -186,9 +180,7 @@ export default class CustomizationService extends PubSubService {
       return customization;
     }
     const parent = this.getCustomization(customizationType);
-    const result = parent
-      ? Object.assign(Object.create(parent), customization)
-      : customization;
+    const result = parent ? Object.assign(Object.create(parent), customization) : customization;
     // Execute an nested type information
     return result.transform?.(this) || result;
   }
@@ -225,10 +217,7 @@ export default class CustomizationService extends PubSubService {
   protected setConfigGlobalCustomization(configuration: AppConfigCustomization): void {
     this.globalCustomizations = {};
     const keys = flattenNestedStrings(configuration.globalCustomizations);
-    this.readCustomizationTypes(
-      v => keys[v.name] && v.customization,
-      this.globalCustomizations
-    );
+    this.readCustomizationTypes(v => keys[v.name] && v.customization, this.globalCustomizations);
 
     // TODO - iterate over customizations, loading them from the extension
     // manager.
@@ -259,10 +248,7 @@ export default class CustomizationService extends PubSubService {
       this.addReferences(value, isGlobal);
     } else {
       const useId = value.id || id;
-      this[isGlobal ? 'setGlobalCustomization' : 'setModeCustomization'](
-        useId as string,
-        value
-      );
+      this[isGlobal ? 'setGlobalCustomization' : 'setModeCustomization'](useId as string, value);
     }
   }
 

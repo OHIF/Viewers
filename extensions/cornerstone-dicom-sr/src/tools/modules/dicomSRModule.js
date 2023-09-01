@@ -31,8 +31,7 @@ function setActiveTrackingUniqueIdentifierForElement(element, TrackingUniqueIden
   const enabledElement = getEnabledElement(element);
   const { viewport } = enabledElement;
 
-  const trackingIdentifiersForElement =
-    state.trackingIdentifiersByViewportId[viewport.id];
+  const trackingIdentifiersForElement = state.trackingIdentifiersByViewportId[viewport.id];
 
   if (trackingIdentifiersForElement) {
     const activeIndex = trackingIdentifiersForElement.trackingUniqueIdentifiers.findIndex(

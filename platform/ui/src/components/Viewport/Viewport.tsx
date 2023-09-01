@@ -29,12 +29,7 @@ interface ViewportProps {
   children: React.ReactNode;
 }
 
-const Viewport: React.FC<ViewportProps> = ({
-  viewportId,
-  onArrowsClick,
-  studyData,
-  children,
-}) => {
+const Viewport: React.FC<ViewportProps> = ({ viewportId, onArrowsClick, studyData, children }) => {
   return (
     <div className="relative flex h-full flex-col">
       <div className="absolute top-0 left-0 w-full">

@@ -58,9 +58,7 @@ const LegacyCinePlayer = ({
           value={frameRate}
           onChange={onFrameRateChangeHandler}
         />
-        <p className="text-primary-light -mt-2 text-sm">{`${frameRate.toFixed(
-          1
-        )} fps`}</p>
+        <p className="text-primary-light -mt-2 text-sm">{`${frameRate.toFixed(1)} fps`}</p>
       </div>
       <IconButton
         color="inherit"

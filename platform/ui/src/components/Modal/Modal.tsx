@@ -81,8 +81,7 @@ Modal.propTypes = {
   title: PropTypes.string,
   onClose: PropTypes.func,
   /** The modal's content */
-  children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node])
-    .isRequired,
+  children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]).isRequired,
   shouldCloseOnOverlayClick: PropTypes.bool,
 };
 

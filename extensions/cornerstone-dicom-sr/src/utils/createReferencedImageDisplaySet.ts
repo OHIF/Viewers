@@ -4,8 +4,7 @@ const ImageSet = classes.ImageSet;
 
 const findInstance = (measurement, displaySetService: DisplaySetService) => {
   const { displaySetInstanceUID, ReferencedSOPInstanceUID: sopUid } = measurement;
-  const referencedDisplaySet =
-    displaySetService.getDisplaySetByUID(displaySetInstanceUID);
+  const referencedDisplaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
   if (!referencedDisplaySet.images) {
     return;
   }

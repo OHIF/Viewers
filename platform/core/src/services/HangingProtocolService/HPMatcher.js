@@ -9,12 +9,7 @@ import validate from './lib/validator';
  * @param {object[]} options.displaySets is a list of the display sets
  * @return {Object}      Matching Object with score and details (which rule passed or failed)
  */
-const match = (
-  metadataInstance,
-  rules = [],
-  customAttributeRetrievalCallbacks,
-  options
-) => {
+const match = (metadataInstance, rules = [], customAttributeRetrievalCallbacks, options) => {
   const validateOptions = {
     format: 'grouped',
   };

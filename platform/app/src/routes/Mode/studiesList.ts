@@ -39,11 +39,7 @@ const getStudiesfromDisplaySets = (displaysets): StudyMetadata[] => {
   }, []);
   // Return the sorted studies, first on study date and second on study instance UID
   ret.sort((a, b) => {
-    return compare(
-      a.StudyDate,
-      b.StudyDate,
-      compare(a.StudyInstanceUID, b.StudyInstanceUID)
-    );
+    return compare(a.StudyDate, b.StudyDate, compare(a.StudyInstanceUID, b.StudyInstanceUID));
   });
   return ret;
 };

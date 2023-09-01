@@ -5,24 +5,18 @@
  * @param {*} microscopySRDisplaySet
  * @returns
  */
-export default function getSourceDisplaySet(
-  allDisplaySets,
-  microscopySRDisplaySet
-) {
+export default function getSourceDisplaySet(allDisplaySets, microscopySRDisplaySet) {
   const { ReferencedFrameOfReferenceUID } = microscopySRDisplaySet;
 
   const otherDisplaySets = allDisplaySets.filter(
-    ds =>
-      ds.displaySetInstanceUID !== microscopySRDisplaySet.displaySetInstanceUID
+    ds => ds.displaySetInstanceUID !== microscopySRDisplaySet.displaySetInstanceUID
   );
   const referencedDisplaySet = otherDisplaySets.find(
     displaySet =>
       displaySet.Modality === 'SM' &&
       (displaySet.FrameOfReferenceUID === ReferencedFrameOfReferenceUID ||
         // sometimes each depth instance has the different FrameOfReferenceID
-        displaySet.othersFrameOfReferenceUID.includes(
-          ReferencedFrameOfReferenceUID
-        ))
+        displaySet.othersFrameOfReferenceUID.includes(ReferencedFrameOfReferenceUID))
   );
 
   if (!referencedDisplaySet && otherDisplaySets.length >= 1) {

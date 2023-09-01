@@ -142,9 +142,7 @@ program
   .action(packageDir => {
     if (!fs.existsSync(packageDir)) {
       console.log(
-        chalk.red(
-          'The Extension directory does not exist, please provide a valid directory'
-        )
+        chalk.red('The Extension directory does not exist, please provide a valid directory')
       );
       process.exit(1);
     }
@@ -168,9 +166,7 @@ program
   .description('Links a local OHIF Mode to the Viewer to be used for development')
   .action(packageDir => {
     if (!fs.existsSync(packageDir)) {
-      console.log(
-        chalk.red('The Mode directory does not exist, please provide a valid directory')
-      );
+      console.log(chalk.red('The Mode directory does not exist, please provide a valid directory'));
       process.exit(1);
     }
     linkMode(packageDir, { viewerDirectory });

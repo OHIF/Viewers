@@ -55,14 +55,10 @@ const SegmentationItem = ({
         {isHovering ? (
           <Icon
             name="close"
-            className={classnames(
-              'w-[10px] text-center transition duration-500 hover:opacity-80',
-              {
-                'bg-primary-light text-black': isActive,
-                'bg-primary-dark text-primary-light group-hover:bg-secondary-main':
-                  !isActive,
-              }
-            )}
+            className={classnames('w-[10px] text-center transition duration-500 hover:opacity-80', {
+              'bg-primary-light text-black': isActive,
+              'bg-primary-dark text-primary-light group-hover:bg-secondary-main': !isActive,
+            })}
             onClick={e => {
               e.stopPropagation();
               onDelete(id);

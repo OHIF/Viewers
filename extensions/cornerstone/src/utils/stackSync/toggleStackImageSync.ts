@@ -6,28 +6,16 @@ import calculateViewportRegistrations from './calculateViewportRegistrations';
 // ]}
 let STACK_IMAGE_SYNC_GROUPS_INFO = [];
 
-export default function toggleStackImageSync({
-  toggledState,
-  servicesManager,
-  getEnabledElement,
-}) {
-  const {
-    syncGroupService,
-    viewportGridService,
-    displaySetService,
-    cornerstoneViewportService,
-  } = servicesManager.services;
+export default function toggleStackImageSync({ toggledState, servicesManager, getEnabledElement }) {
+  const { syncGroupService, viewportGridService, displaySetService, cornerstoneViewportService } =
+    servicesManager.services;
 
   if (!toggledState) {
     STACK_IMAGE_SYNC_GROUPS_INFO.forEach(syncGroupInfo => {
       const { viewports, synchronizerId } = syncGroupInfo;
 
       viewports.forEach(({ viewportId, renderingEngineId }) => {
-        syncGroupService.removeViewportFromSyncGroup(
-          viewportId,
-          renderingEngineId,
-          synchronizerId
-        );
+        syncGroupService.removeViewportFromSyncGroup(viewportId, renderingEngineId, synchronizerId);
       });
     });
 

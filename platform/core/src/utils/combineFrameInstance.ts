@@ -9,18 +9,13 @@
  * single frame data. (eg frame is undefined is the same as frame===1).
  */
 const combineFrameInstance = (frame, instance) => {
-  const {
-    PerFrameFunctionalGroupsSequence,
-    SharedFunctionalGroupsSequence,
-    NumberOfFrames,
-  } = instance;
+  const { PerFrameFunctionalGroupsSequence, SharedFunctionalGroupsSequence, NumberOfFrames } =
+    instance;
 
   if (PerFrameFunctionalGroupsSequence || NumberOfFrames > 1) {
     const frameNumber = Number.parseInt(frame || 1);
     const shared = (
-      SharedFunctionalGroupsSequence
-        ? Object.values(SharedFunctionalGroupsSequence[0])
-        : []
+      SharedFunctionalGroupsSequence ? Object.values(SharedFunctionalGroupsSequence[0]) : []
     )
       .filter(it => !!it)
       .map(it => it[0])
@@ -41,8 +36,7 @@ const combineFrameInstance = (frame, instance) => {
         instance.DetectorInformationSequence[0].ImageOrientationPatient;
     }
     if (!instance.ImagePositionPatient && instance.DetectorInformationSequence) {
-      instance.ImagePositionPatient =
-        instance.DetectorInformationSequence[0].ImagePositionPatient;
+      instance.ImagePositionPatient = instance.DetectorInformationSequence[0].ImagePositionPatient;
     }
 
     const newInstance = Object.assign(instance, { frameNumber: frameNumber });

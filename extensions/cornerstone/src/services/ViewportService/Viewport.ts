@@ -1,9 +1,6 @@
 import { Types, Enums } from '@cornerstonejs/core';
 import { Types as UITypes } from '@ohif/ui';
-import {
-  StackViewportData,
-  VolumeViewportData,
-} from '../../types/CornerstoneCacheService';
+import { StackViewportData, VolumeViewportData } from '../../types/CornerstoneCacheService';
 import getCornerstoneBlendMode from '../../utils/getCornerstoneBlendMode';
 import getCornerstoneOrientation from '../../utils/getCornerstoneOrientation';
 import getCornerstoneViewportType from '../../utils/getCornerstoneViewportType';
@@ -124,9 +121,7 @@ class ViewportInfo {
     }
 
     if (this.viewportData.data.length) {
-      return !!this.viewportData.data.find(data =>
-        dataContains(data, displaySetUID, imageId)
-      );
+      return !!this.viewportData.data.find(data => dataContains(data, displaySetUID, imageId));
     }
     return dataContains(this.viewportData.data, displaySetUID, imageId);
   }
@@ -201,9 +196,7 @@ class ViewportInfo {
     return viewportData.data.displaySetInstanceUID === displaySetInstanceUID;
   }
 
-  public setPublicViewportOptions(
-    viewportOptionsEntry: PublicViewportOptions
-  ): ViewportOptions {
+  public setPublicViewportOptions(viewportOptionsEntry: PublicViewportOptions): ViewportOptions {
     let viewportType = viewportOptionsEntry.viewportType;
     const { toolGroupId = DEFAULT_TOOLGROUP_ID, presentationIds } = viewportOptionsEntry;
     let orientation;

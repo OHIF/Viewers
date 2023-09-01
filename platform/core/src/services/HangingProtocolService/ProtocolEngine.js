@@ -92,12 +92,7 @@ export default class ProtocolEngine {
    * @returns
    */
   findMatch(metaData, rules, options) {
-    return HPMatcher.match(
-      metaData,
-      rules,
-      this.customAttributeRetrievalCallbacks,
-      options
-    );
+    return HPMatcher.match(metaData, rules, this.customAttributeRetrievalCallbacks, options);
   }
 
   /**

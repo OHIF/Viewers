@@ -36,13 +36,7 @@ const InputGroup = ({
     }
   };
 
-  const renderFieldInputComponent = ({
-    name,
-    displayName,
-    inputProps,
-    isSortable,
-    inputType,
-  }) => {
+  const renderFieldInputComponent = ({ name, displayName, inputProps, isSortable, inputType }) => {
     const _isSortable = isSortable && isSortingEnabled;
     const _sortDirection = sortBy !== name ? 'none' : sortDirection;
 
@@ -129,10 +123,7 @@ const InputGroup = ({
           return (
             <div
               key={inputMeta.name}
-              className={classnames(
-                'pl-4 first:pl-12',
-                getGridWidthClass(inputMeta.gridCol)
-              )}
+              className={classnames('pl-4 first:pl-12', getGridWidthClass(inputMeta.gridCol))}
             >
               {renderFieldInputComponent(inputMeta)}
             </div>

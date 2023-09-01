@@ -37,9 +37,7 @@ class GoogleCloudDataSourceConfigurationAPIItem
   itemType: ItemType;
 }
 
-class GoogleCloudDataSourceConfigurationAPI
-  implements Types.BaseDataSourceConfigurationAPI
-{
+class GoogleCloudDataSourceConfigurationAPI implements Types.BaseDataSourceConfigurationAPI {
   private _extensionManager: ExtensionManager;
   private _fetchOptions: { method: string; headers: unknown };
   private _dataSourceName: string;
@@ -90,9 +88,7 @@ class GoogleCloudDataSourceConfigurationAPI
       // Last configurable item, so update the data source configuration.
       const url = `${googleCloudItem.url}/dicomWeb`;
       const dataSourceDefCopy = JSON.parse(
-        JSON.stringify(
-          this._extensionManager.getDataSourceDefinition(this._dataSourceName)
-        )
+        JSON.stringify(this._extensionManager.getDataSourceDefinition(this._dataSourceName))
       );
       dataSourceDefCopy.configuration = {
         ...dataSourceDefCopy.configuration,
@@ -215,8 +211,7 @@ class GoogleCloudDataSourceConfigurationAPI
             fetchOptions,
             fetchSearchParams
           );
-          data[ItemType[fetchItemType]] =
-            data[ItemType[fetchItemType]].concat(subPageData);
+          data[ItemType[fetchItemType]] = data[ItemType[fetchItemType]].concat(subPageData);
         }
         if (data[ItemType[fetchItemType]]) {
           return data[ItemType[fetchItemType]];

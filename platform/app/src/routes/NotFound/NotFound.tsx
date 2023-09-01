@@ -4,10 +4,7 @@ import { Link } from 'react-router-dom';
 
 import { useAppConfig } from '@state';
 
-const NotFound = ({
-  message = 'Sorry, this page does not exist.',
-  showGoBackButton = true,
-}) => {
+const NotFound = ({ message = 'Sorry, this page does not exist.', showGoBackButton = true }) => {
   const [appConfig] = useAppConfig();
   const { showStudyList } = appConfig;
 

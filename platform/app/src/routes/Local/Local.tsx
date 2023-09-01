@@ -83,9 +83,7 @@ function Local({ modePath }: LocalProps) {
       const smStudies = studies.filter(id => {
         const study = DicomMetadataStore.getStudy(id);
         return (
-          study.series.findIndex(
-            s => s.Modality === 'SM' || s.instances[0].Modality === 'SM'
-          ) >= 0
+          study.series.findIndex(s => s.Modality === 'SM' || s.instances[0].Modality === 'SM') >= 0
         );
       });
 
@@ -140,8 +138,8 @@ function Local({ modePath }: LocalProps) {
                 ) : (
                   <div className="space-y-2">
                     <p className="text-base text-blue-300">
-                      Note: You data is not uploaded to any server, it will stay in your
-                      local browser application
+                      Note: You data is not uploaded to any server, it will stay in your local
+                      browser application
                     </p>
                     <p className="text-xg text-primary-active pt-6 font-semibold">
                       Drag and Drop DICOM files here to load them in the Viewer

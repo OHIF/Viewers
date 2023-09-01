@@ -54,10 +54,8 @@ function createDicomWebProxyApi(dicomWebProxyConfig, UserAuthenticationService) 
     store: {
       dicom: (...args) => dicomWebDelegate.store(...args),
     },
-    deleteStudyMetadataPromise: (...args) =>
-      dicomWebDelegate.deleteStudyMetadataPromise(...args),
-    getImageIdsForDisplaySet: (...args) =>
-      dicomWebDelegate.getImageIdsForDisplaySet(...args),
+    deleteStudyMetadataPromise: (...args) => dicomWebDelegate.deleteStudyMetadataPromise(...args),
+    getImageIdsForDisplaySet: (...args) => dicomWebDelegate.getImageIdsForDisplaySet(...args),
     getImageIdsForInstance: (...args) => dicomWebDelegate.getImageIdsForInstance(...args),
     getStudyInstanceUIDs({ params, query }) {
       let studyInstanceUIDs = [];

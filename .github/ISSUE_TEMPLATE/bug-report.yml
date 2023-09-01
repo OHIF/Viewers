@@ -79,6 +79,6 @@ body:
   - type: markdown
     attributes:
       value: >
-        > :warning: Reports we cannot reproduce are at risk of being marked stale and >
-        closed. The more information you can provide, the more likely we are to look >
-        into and address your issue.
+        > :warning: Reports we cannot reproduce are at risk of being marked stale and > closed. The
+        more information you can provide, the more likely we are to look > into and address your
+        issue.

@@ -52,8 +52,9 @@ function OHIFCornerstoneSRViewport(props) {
   let trackedMeasurements;
   let sendTrackedMeasurementsEvent;
 
-  const hasMeasurementTrackingExtension =
-    extensionManager.registeredExtensionIds.includes(MEASUREMENT_TRACKING_EXTENSION_ID);
+  const hasMeasurementTrackingExtension = extensionManager.registeredExtensionIds.includes(
+    MEASUREMENT_TRACKING_EXTENSION_ID
+  );
 
   if (hasMeasurementTrackingExtension) {
     const contextModule = extensionManager.getModuleEntry(
@@ -73,9 +74,7 @@ function OHIFCornerstoneSRViewport(props) {
         { servicesManager, extensionManager, appConfig },
         displaySetInstanceUID
       );
-      const displaySets = displaySetService.getDisplaySetsForSeries(
-        SeriesInstanceUIDs[0]
-      );
+      const displaySets = displaySetService.getDisplaySetsForSeries(SeriesInstanceUIDs[0]);
       if (displaySets.length) {
         viewportGridService.setDisplaySetsForViewports([
           {
@@ -126,9 +125,7 @@ function OHIFCornerstoneSRViewport(props) {
       if (sopClassUids && sopClassUids.length > 1) {
         // Todo: what happens if there are multiple SOP Classes? Why we are
         // not throwing an error?
-        console.warn(
-          'More than one SOPClassUID in the same series is not yet supported.'
-        );
+        console.warn('More than one SOPClassUID in the same series is not yet supported.');
       }
 
       _getViewportReferencedDisplaySetData(
@@ -150,14 +147,11 @@ function OHIFCornerstoneSRViewport(props) {
           // imageIdIndex will handle it by updating the viewport, but if they
           // are the same we just need to use measurementService to jump to the
           // new measurement
-          const csViewport =
-            cornerstoneViewportService.getCornerstoneViewport(viewportId);
+          const csViewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
           const imageIds = csViewport.getImageIds();
 
-          const imageIdIndex = imageIds.indexOf(
-            measurements[newMeasurementSelected].imageId
-          );
+          const imageIdIndex = imageIds.indexOf(measurements[newMeasurementSelected].imageId);
 
           if (imageIdIndex !== -1) {
             csViewport.setImageIdIndex(imageIdIndex);
@@ -368,9 +362,7 @@ function OHIFCornerstoneSRViewport(props) {
             MRN: PatientID || '',
             thickness: SliceThickness ? `${SliceThickness.toFixed(2)}mm` : '',
             spacing:
-              SpacingBetweenSlices !== undefined
-                ? `${SpacingBetweenSlices.toFixed(2)}mm`
-                : '',
+              SpacingBetweenSlices !== undefined ? `${SpacingBetweenSlices.toFixed(2)}mm` : '',
             scanner: ManufacturerModelName || '',
           },
         }}
@@ -411,8 +403,7 @@ async function _getViewportReferencedDisplaySetData(
 
   const { displaySetInstanceUID } = measurement;
 
-  const referencedDisplaySet =
-    displaySetService.getDisplaySetByUID(displaySetInstanceUID);
+  const referencedDisplaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
 
   const image0 = referencedDisplaySet.images[0];
   const referencedDisplaySetMetadata = {

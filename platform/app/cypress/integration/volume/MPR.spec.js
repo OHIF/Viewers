@@ -84,10 +84,7 @@ describe('OHIF MPR', () => {
     cy.get('.cornerstone-canvas').should('have.length', 1);
 
     // should not have any div under it
-    cy.get('[data-cy="thumbnail-viewport-labels"]')
-      .eq(2)
-      .find('div')
-      .should('have.length', 0);
+    cy.get('[data-cy="thumbnail-viewport-labels"]').eq(2).find('div').should('have.length', 0);
   });
 
   it('should correctly render Crosshairs for MPR', () => {

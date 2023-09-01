@@ -6,27 +6,9 @@
       transparent 50%,
       transparent 100%
     ),
-    repeating-linear-gradient(
-      to right,
-      #7bb2ce 0%,
-      #7bb2ce 50%,
-      transparent 50%,
-      transparent 100%
-    ),
-    repeating-linear-gradient(
-      to bottom,
-      #7bb2ce 0%,
-      #7bb2ce 50%,
-      transparent 50%,
-      transparent 100%
-    ),
-    repeating-linear-gradient(
-      to bottom,
-      #7bb2ce 0%,
-      #7bb2ce 50%,
-      transparent 50%,
-      transparent 100%
-    );
+    repeating-linear-gradient(to right, #7bb2ce 0%, #7bb2ce 50%, transparent 50%, transparent 100%),
+    repeating-linear-gradient(to bottom, #7bb2ce 0%, #7bb2ce 50%, transparent 50%, transparent 100%),
+    repeating-linear-gradient(to bottom, #7bb2ce 0%, #7bb2ce 50%, transparent 50%, transparent 100%);
   background-position:
     left top,
     left bottom,

@@ -41,8 +41,7 @@ const StudyListFilter = ({
                 >
                   {t('StudyList')}
                 </Typography>
-                {getDataSourceConfigurationComponent &&
-                  getDataSourceConfigurationComponent()}
+                {getDataSourceConfigurationComponent && getDataSourceConfigurationComponent()}
                 {onUploadClick && (
                   <div
                     className="text-primary-active flex cursor-pointer items-center gap-2 self-center text-lg font-semibold"

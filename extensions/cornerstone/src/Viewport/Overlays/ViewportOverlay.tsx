@@ -57,10 +57,7 @@ function CornerstoneViewportOverlay({
       }
 
       const { lower, upper } = range;
-      const { windowWidth, windowCenter } = utilities.windowLevel.toWindowLevel(
-        lower,
-        upper
-      );
+      const { windowWidth, windowCenter } = utilities.windowLevel.toWindowLevel(lower, upper);
 
       setVOI({ windowCenter, windowWidth });
     };
@@ -243,8 +240,7 @@ function _getInstanceNumberFromVolume(
   const volume = volumes[0];
   const { direction, imageIds } = volume;
 
-  const cornerstoneViewport =
-    cornerstoneViewportService.getCornerstoneViewport(viewportId);
+  const cornerstoneViewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
   if (!cornerstoneViewport) {
     return;

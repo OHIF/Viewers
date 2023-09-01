@@ -296,8 +296,7 @@
             (_rollbarConfig.rollbarJsUrl =
               _rollbarConfig.rollbarJsUrl ||
               'https://cdnjs.cloudflare.com/ajax/libs/rollbar.js/2.7.1/rollbar.min.js'),
-            (_rollbarConfig.async =
-              void 0 === _rollbarConfig.async || _rollbarConfig.async);
+            (_rollbarConfig.async = void 0 === _rollbarConfig.async || _rollbarConfig.async);
           var a = n.setupShim(window, _rollbarConfig),
             l = t(_rollbarConfig);
           (window.rollbar = n.Rollbar),
@@ -445,18 +444,14 @@
                     ((a._rollbarOldOnError = r.onerror),
                     n.captureUncaughtExceptions(r, a, !0),
                     n.wrapGlobals(r, a, !0)),
-                    e.captureUnhandledRejections &&
-                      n.captureUnhandledRejections(r, a, !0);
+                    e.captureUnhandledRejections && n.captureUnhandledRejections(r, a, !0);
                   var t = e.autoInstrument;
                   return (
                     !1 !== e.enabled &&
                       (void 0 === t || !0 === t || ('object' == typeof t && t.network)) &&
                       r.addEventListener &&
                       (r.addEventListener('load', a.captureLoad.bind(a)),
-                      r.addEventListener(
-                        'DOMContentLoaded',
-                        a.captureDomContentLoaded.bind(a)
-                      )),
+                      r.addEventListener('DOMContentLoaded', a.captureDomContentLoaded.bind(a))),
                     (r[o] = a),
                     a
                   );
@@ -475,18 +470,12 @@
                 n.call(this, e, r.wrap(o), t);
               };
               (t._rollbarOldAdd = n), (t.belongsToShim = o), (e.addEventListener = t);
-              for (
-                var a = e.removeEventListener;
-                a._rollbarOldRemove && a.belongsToShim;
-
-              )
+              for (var a = e.removeEventListener; a._rollbarOldRemove && a.belongsToShim; )
                 a = a._rollbarOldRemove;
               var l = function (r, e, o) {
                 a.call(this, r, (e && e._rollbar_wrapped) || e, o);
               };
-              (l._rollbarOldRemove = a),
-                (l.belongsToShim = o),
-                (e.removeEventListener = l);
+              (l._rollbarOldRemove = a), (l.belongsToShim = o), (e.removeEventListener = l);
             }
           }
           r.exports = {

@@ -43,12 +43,8 @@ function modeFactory({ modeConfiguration }) {
      * Lifecycle hooks
      */
     onModeEnter: ({ servicesManager, extensionManager, commandsManager }) => {
-      const {
-        toolbarService,
-        toolGroupService,
-        hangingProtocolService,
-        displaySetService,
-      } = servicesManager.services;
+      const { toolbarService, toolGroupService, hangingProtocolService, displaySetService } =
+        servicesManager.services;
 
       const utilityModule = extensionManager.getModuleEntry(
         '@ohif/extension-cornerstone.utilityModule.tools'
@@ -194,8 +190,7 @@ function modeFactory({ modeConfiguration }) {
         // StudyInstanceUID to identify the study
         // Todo: when we add the 4D mode which comes with a mechanism to identify
         // 4D studies we can use that
-        study.studyInstanceUid !==
-          '1.3.6.1.4.1.12842.1.1.14.3.20220915.105557.468.2963630849';
+        study.studyInstanceUid !== '1.3.6.1.4.1.12842.1.1.14.3.20220915.105557.468.2963630849';
 
       // there should be both CT and PT modalities and the modality should not be SM
       return isValid;

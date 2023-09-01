@@ -1,11 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import OHIF, { utils } from '@ohif/core';
-import {
-  ViewportActionBar,
-  useViewportGrid,
-  LoadingIndicatorTotalPercent,
-} from '@ohif/ui';
+import { ViewportActionBar, useViewportGrid, LoadingIndicatorTotalPercent } from '@ohif/ui';
 
 import _hydrateRTdisplaySet from '../utils/_hydrateRT';
 import promptHydrateRT from '../utils/promptHydrateRT';
@@ -71,8 +67,7 @@ function OHIFCornerstoneRTViewport(props) {
   const { viewports, activeViewportId } = viewportGrid;
 
   const referencedDisplaySet = rtDisplaySet.getReferenceDisplaySet();
-  const referencedDisplaySetMetadata =
-    _getReferencedDisplaySetMetadata(referencedDisplaySet);
+  const referencedDisplaySetMetadata = _getReferencedDisplaySetMetadata(referencedDisplaySet);
 
   referencedDisplaySetRef.current = {
     displaySet: referencedDisplaySet,
@@ -143,11 +138,7 @@ function OHIFCornerstoneRTViewport(props) {
         newSelectedSegmentIndex = numberOfSegments - 1;
       }
 
-      segmentationService.jumpToSegmentCenter(
-        segmentationId,
-        newSelectedSegmentIndex,
-        toolGroupId
-      );
+      segmentationService.jumpToSegmentCenter(segmentationId, newSelectedSegmentIndex, toolGroupId);
       setSelectedSegment(newSelectedSegmentIndex);
     },
     [selectedSegment]
@@ -174,9 +165,7 @@ function OHIFCornerstoneRTViewport(props) {
     const { unsubscribe } = segmentationService.subscribe(
       segmentationService.EVENTS.SEGMENTATION_LOADING_COMPLETE,
       evt => {
-        if (
-          evt.rtDisplaySet.displaySetInstanceUID === rtDisplaySet.displaySetInstanceUID
-        ) {
+        if (evt.rtDisplaySet.displaySetInstanceUID === rtDisplaySet.displaySetInstanceUID) {
           setRtIsLoading(false);
         }
 
@@ -240,11 +229,7 @@ function OHIFCornerstoneRTViewport(props) {
       return;
     }
 
-    toolGroup = createRTToolGroupAndAddTools(
-      toolGroupService,
-      customizationService,
-      toolGroupId
-    );
+    toolGroup = createRTToolGroupAndAddTools(toolGroupService, customizationService, toolGroupId);
 
     setToolGroupCreated(true);
 
@@ -346,9 +331,7 @@ function OHIFCornerstoneRTViewport(props) {
             MRN: PatientID || '',
             thickness: SliceThickness ? `${SliceThickness.toFixed(2)}mm` : '',
             spacing:
-              SpacingBetweenSlices !== undefined
-                ? `${SpacingBetweenSlices.toFixed(2)}mm`
-                : '',
+              SpacingBetweenSlices !== undefined ? `${SpacingBetweenSlices.toFixed(2)}mm` : '',
             scanner: ManufacturerModelName || '',
           },
         }}

@@ -25,8 +25,7 @@ const QUICK_BUILD = process.env.QUICK_BUILD;
 const BUILD_NUM = process.env.CIRCLE_BUILD_NUM || '0';
 
 // read from ../version.txt
-const VERSION_NUMBER =
-  fs.readFileSync(path.join(__dirname, '../version.txt'), 'utf8') || '';
+const VERSION_NUMBER = fs.readFileSync(path.join(__dirname, '../version.txt'), 'utf8') || '';
 
 const COMMIT_HASH = fs.readFileSync(path.join(__dirname, '../commit.txt'), 'utf8') || '';
 
@@ -145,13 +144,9 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
         'process.env.COMMIT_HASH': JSON.stringify(COMMIT_HASH),
         /* i18n */
         'process.env.USE_LOCIZE': JSON.stringify(process.env.USE_LOCIZE || ''),
-        'process.env.LOCIZE_PROJECTID': JSON.stringify(
-          process.env.LOCIZE_PROJECTID || ''
-        ),
+        'process.env.LOCIZE_PROJECTID': JSON.stringify(process.env.LOCIZE_PROJECTID || ''),
         'process.env.LOCIZE_API_KEY': JSON.stringify(process.env.LOCIZE_API_KEY || ''),
-        'process.env.REACT_APP_I18N_DEBUG': JSON.stringify(
-          process.env.REACT_APP_I18N_DEBUG || ''
-        ),
+        'process.env.REACT_APP_I18N_DEBUG': JSON.stringify(process.env.REACT_APP_I18N_DEBUG || ''),
       }),
       new webpack.ProvidePlugin({
         Buffer: ['buffer', 'Buffer'],

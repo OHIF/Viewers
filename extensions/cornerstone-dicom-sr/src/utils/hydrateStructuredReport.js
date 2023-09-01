@@ -49,8 +49,7 @@ export default function hydrateStructuredReport(
   const annotationManager = CsAnnotation.state.getAnnotationManager();
   const disableEditing = appConfig?.disableEditing;
   const dataSource = extensionManager.getActiveDataSource()[0];
-  const { measurementService, displaySetService, customizationService } =
-    servicesManager.services;
+  const { measurementService, displaySetService, customizationService } = servicesManager.services;
 
   const codingValues = customizationService.getCustomization('codingValues', {});
   const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
@@ -124,8 +123,7 @@ export default function hydrateStructuredReport(
       // dcmjs and Cornerstone3D has structural defect in supporting multi-frame
       // files, and looking up the imageId from sopInstanceUIDToImageId results
       // in the wrong value.
-      const frameNumber =
-        (toolData.annotation.data && toolData.annotation.data.frameNumber) || 1;
+      const frameNumber = (toolData.annotation.data && toolData.annotation.data.frameNumber) || 1;
       const imageId =
         imageIdsForToolState[toolData.sopInstanceUid][frameNumber] ||
         sopInstanceUIDToImageId[toolData.sopInstanceUid];
@@ -162,8 +160,7 @@ export default function hydrateStructuredReport(
       // dcmjs and Cornerstone3D has structural defect in supporting multi-frame
       // files, and looking up the imageId from sopInstanceUIDToImageId results
       // in the wrong value.
-      const frameNumber =
-        (toolData.annotation.data && toolData.annotation.data.frameNumber) || 1;
+      const frameNumber = (toolData.annotation.data && toolData.annotation.data.frameNumber) || 1;
       const imageId =
         imageIdsForToolState[toolData.sopInstanceUid][frameNumber] ||
         sopInstanceUIDToImageId[toolData.sopInstanceUid];
@@ -244,8 +241,7 @@ function _mapLegacyDataSet(dataset) {
   // For each of the supported measurement types, compute the measurement data
   const measurementData = {};
 
-  const cornerstoneToolClasses =
-    MeasurementReport.CORNERSTONE_TOOL_CLASSES_BY_UTILITY_TYPE;
+  const cornerstoneToolClasses = MeasurementReport.CORNERSTONE_TOOL_CLASSES_BY_UTILITY_TYPE;
 
   const registeredToolClasses = [];
 
@@ -258,8 +254,7 @@ function _mapLegacyDataSet(dataset) {
     const measurementGroupContentSequence = toArray(measurementGroup.ContentSequence);
 
     const TrackingIdentifierGroup = measurementGroupContentSequence.find(
-      contentItem =>
-        contentItem.ConceptNameCodeSequence.CodeMeaning === TRACKING_IDENTIFIER
+      contentItem => contentItem.ConceptNameCodeSequence.CodeMeaning === TRACKING_IDENTIFIER
     );
 
     const TrackingIdentifier = TrackingIdentifierGroup.TextValue;

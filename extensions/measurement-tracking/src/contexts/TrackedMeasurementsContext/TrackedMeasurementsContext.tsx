@@ -16,8 +16,7 @@ const TrackedMeasurementsContext = React.createContext();
 TrackedMeasurementsContext.displayName = 'TrackedMeasurementsContext';
 const useTrackedMeasurements = () => useContext(TrackedMeasurementsContext);
 
-const SR_SOPCLASSHANDLERID =
-  '@ohif/extension-cornerstone-dicom-sr.sopClassHandlerModule.dicom-sr';
+const SR_SOPCLASSHANDLERID = '@ohif/extension-cornerstone-dicom-sr.sopClassHandlerModule.dicom-sr';
 
 /**
  *
@@ -39,9 +38,7 @@ function TrackedMeasurementsContextProvider(
       const { trackedStudy, trackedSeries } = ctx;
       const measurements = measurementService.getMeasurements();
       const trackedMeasurements = measurements.filter(
-        m =>
-          trackedStudy === m.referenceStudyUID &&
-          trackedSeries.includes(m.referenceSeriesUID)
+        m => trackedStudy === m.referenceStudyUID && trackedSeries.includes(m.referenceSeriesUID)
       );
 
       console.log(
@@ -51,9 +48,7 @@ function TrackedMeasurementsContextProvider(
       );
 
       const referencedDisplaySetUID = trackedMeasurements[0].displaySetInstanceUID;
-      const referencedDisplaySet = displaySetService.getDisplaySetByUID(
-        referencedDisplaySetUID
-      );
+      const referencedDisplaySet = displaySetService.getDisplaySetByUID(referencedDisplaySetUID);
 
       const referencedImages = referencedDisplaySet.images;
       const isVolumeIdReferenced = referencedImages[0].imageId.startsWith('volumeId');
@@ -220,12 +215,7 @@ function TrackedMeasurementsContextProvider(
         });
       }
     }
-  }, [
-    activeViewportId,
-    sendTrackedMeasurementsEvent,
-    servicesManager.services,
-    viewports,
-  ]);
+  }, [activeViewportId, sendTrackedMeasurementsEvent, servicesManager.services, viewports]);
 
   return (
     <TrackedMeasurementsContext.Provider
@@ -244,8 +234,4 @@ TrackedMeasurementsContextProvider.propTypes = {
   appConfig: PropTypes.object,
 };
 
-export {
-  TrackedMeasurementsContext,
-  TrackedMeasurementsContextProvider,
-  useTrackedMeasurements,
-};
+export { TrackedMeasurementsContext, TrackedMeasurementsContextProvider, useTrackedMeasurements };

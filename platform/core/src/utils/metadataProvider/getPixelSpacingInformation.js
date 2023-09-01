@@ -87,10 +87,7 @@ export default function getPixelSpacingInformation(instance) {
       PixelSpacing: CorrectedImagerPixelSpacing,
       isProjection,
     };
-  } else if (
-    SequenceOfUltrasoundRegions &&
-    typeof SequenceOfUltrasoundRegions === 'object'
-  ) {
+  } else if (SequenceOfUltrasoundRegions && typeof SequenceOfUltrasoundRegions === 'object') {
     const { PhysicalDeltaX, PhysicalDeltaY } = SequenceOfUltrasoundRegions;
     const USPixelSpacing = [PhysicalDeltaX * 10, PhysicalDeltaY * 10];
 

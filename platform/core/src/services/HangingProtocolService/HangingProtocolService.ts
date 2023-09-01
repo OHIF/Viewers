@@ -8,10 +8,7 @@ import IDisplaySet from '../DisplaySetService/IDisplaySet';
 import { CommandsManager } from '../../classes';
 import ServicesManager from '../ServicesManager';
 import * as HangingProtocol from '../../types/HangingProtocol';
-import {
-  isDisplaySetFromUrl,
-  sopInstanceLocation,
-} from './custom-attribute/isDisplaySetFromUrl';
+import { isDisplaySetFromUrl, sopInstanceLocation } from './custom-attribute/isDisplaySetFromUrl';
 import numberOfDisplaySetsWithImages from './custom-attribute/numberOfDisplaySetsWithImages';
 import seriesDescriptionsFromDisplaySets from './custom-attribute/seriesDescriptionsFromDisplaySets';
 import uuidv4 from '../../utils/uuidv4';
@@ -73,8 +70,7 @@ export default class HangingProtocolService extends PubSubService {
   customAttributeRetrievalCallbacks = {
     NumberOfStudyRelatedSeries: {
       name: 'The number of series in the study',
-      callback: metadata =>
-        metadata.NumberOfStudyRelatedSeries ?? metadata.series?.length,
+      callback: metadata => metadata.NumberOfStudyRelatedSeries ?? metadata.series?.length,
     },
     NumberOfSeriesRelatedInstances: {
       name: 'The number of instances in the display set',
@@ -301,9 +297,7 @@ export default class HangingProtocolService extends PubSubService {
    */
   public addProtocol(protocolId: string, protocol: Protocol): void {
     if (this.protocols.has(protocolId)) {
-      console.warn(
-        `A protocol with id ${protocolId} already exists. It will be overwritten.`
-      );
+      console.warn(`A protocol with id ${protocolId} already exists. It will be overwritten.`);
     }
 
     if (!(protocol instanceof Function)) {
@@ -405,8 +399,7 @@ export default class HangingProtocolService extends PubSubService {
   public hasCustomImageLoadStrategy(): boolean {
     return (
       this.activeImageLoadStrategyName !== null &&
-      this.registeredImageLoadStrategies[this.activeImageLoadStrategyName] instanceof
-        Function
+      this.registeredImageLoadStrategies[this.activeImageLoadStrategyName] instanceof Function
     );
   }
 
@@ -456,10 +449,7 @@ export default class HangingProtocolService extends PubSubService {
   public addCustomAttribute(
     attributeId: string,
     attributeName: string,
-    callback: (
-      metadata: Record<string, unknown>,
-      extraData?: Record<string, unknown>
-    ) => unknown,
+    callback: (metadata: Record<string, unknown>, extraData?: Record<string, unknown>) => unknown,
     options: Record<string, unknown> = {}
   ): void {
     this.customAttributeRetrievalCallbacks[attributeId] = {
@@ -558,9 +548,7 @@ export default class HangingProtocolService extends PubSubService {
     return protocol;
   }
 
-  private _getProtocolFromGenerator(
-    protocolGenerator: HangingProtocol.ProtocolGenerator
-  ): {
+  private _getProtocolFromGenerator(protocolGenerator: HangingProtocol.ProtocolGenerator): {
     protocol: HangingProtocol.Protocol;
   } {
     const { protocol } = protocolGenerator({
@@ -912,9 +900,7 @@ export default class HangingProtocolService extends PubSubService {
     });
   }
 
-  private _findStageIndex(
-    options = null as HangingProtocol.SetProtocolOptions
-  ): number | void {
+  private _findStageIndex(options = null as HangingProtocol.SetProtocolOptions): number | void {
     const stageId = options?.stageId;
     const protocol = this.protocol;
     const stages = protocol.stages;
@@ -973,9 +959,7 @@ export default class HangingProtocolService extends PubSubService {
 
       const stage = this._findStageIndex(options);
       if (stage === undefined) {
-        throw new Error(
-          `Can't find applicable stage ${protocol.id} ${options?.stageIndex}`
-        );
+        throw new Error(`Can't find applicable stage ${protocol.id} ${options?.stageIndex}`);
       }
       this.stageIndex = stage as number;
       this._updateViewports(options);
@@ -1197,9 +1181,7 @@ export default class HangingProtocolService extends PubSubService {
         return matchDetails;
       }
       for (let i = 0; i < matchDetails.matchingScores.length; i++) {
-        if (
-          inDisplay.indexOf(matchDetails.matchingScores[i].displaySetInstanceUID) === -1
-        ) {
+        if (inDisplay.indexOf(matchDetails.matchingScores[i].displaySetInstanceUID) === -1) {
           const match = matchDetails.matchingScores[i];
           return match.matchingScore > 0
             ? {
@@ -1270,8 +1252,7 @@ export default class HangingProtocolService extends PubSubService {
     viewport.displaySets.forEach(displaySetOptions => {
       const { id, matchedDisplaySetsIndex = 0 } = displaySetOptions;
       const reuseDisplaySetUID =
-        id &&
-        displaySetSelectorMap[`${activeStudyUID}:${id}:${matchedDisplaySetsIndex || 0}`];
+        id && displaySetSelectorMap[`${activeStudyUID}:${id}:${matchedDisplaySetsIndex || 0}`];
       const viewportDisplaySetMain = this.displaySetMatchDetails.get(id);
 
       const viewportDisplaySet = this.findDeduplicatedMatchDetails(
@@ -1327,8 +1308,7 @@ export default class HangingProtocolService extends PubSubService {
   ): void {
     const { displaySetService } = this._servicesManager.services;
     const protocolViewportDisplaySets = protocolViewport.displaySets;
-    const numDisplaySetsToSet =
-      displaySetAndViewportOptions.displaySetInstanceUIDs.length;
+    const numDisplaySetsToSet = displaySetAndViewportOptions.displaySetInstanceUIDs.length;
 
     if (
       protocolViewportDisplaySets.length > 0 &&
@@ -1426,12 +1406,7 @@ export default class HangingProtocolService extends PubSubService {
         return;
       }
 
-      this.debug(
-        'study',
-        study.StudyInstanceUID,
-        'display sets #',
-        studyDisplaySets.length
-      );
+      this.debug('study', study.StudyInstanceUID, 'display sets #', studyDisplaySets.length);
       studyDisplaySets.forEach(displaySet => {
         const { StudyInstanceUID, SeriesInstanceUID, displaySetInstanceUID } = displaySet;
         const seriesMatchDetails = this.protocolEngine.findMatch(
@@ -1453,29 +1428,18 @@ export default class HangingProtocolService extends PubSubService {
         }
 
         this.debug('Found displaySet for rules', displaySet);
-        highestSeriesMatchingScore = Math.max(
-          seriesMatchDetails.score,
-          highestSeriesMatchingScore
-        );
+        highestSeriesMatchingScore = Math.max(seriesMatchDetails.score, highestSeriesMatchingScore);
 
         const matchDetails = {
           passed: [],
           failed: [],
         };
 
-        matchDetails.passed = matchDetails.passed.concat(
-          seriesMatchDetails.details.passed
-        );
-        matchDetails.passed = matchDetails.passed.concat(
-          studyMatchDetails.details.passed
-        );
+        matchDetails.passed = matchDetails.passed.concat(seriesMatchDetails.details.passed);
+        matchDetails.passed = matchDetails.passed.concat(studyMatchDetails.details.passed);
 
-        matchDetails.failed = matchDetails.failed.concat(
-          seriesMatchDetails.details.failed
-        );
-        matchDetails.failed = matchDetails.failed.concat(
-          studyMatchDetails.details.failed
-        );
+        matchDetails.failed = matchDetails.failed.concat(seriesMatchDetails.details.failed);
+        matchDetails.failed = matchDetails.failed.concat(studyMatchDetails.details.failed);
 
         const totalMatchScore = seriesMatchDetails.score + studyMatchDetails.score;
 

@@ -3,13 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 import { utils } from '@ohif/core';
-import {
-  StudyBrowser,
-  useImageViewer,
-  useViewportGrid,
-  Dialog,
-  ButtonEnums,
-} from '@ohif/ui';
+import { StudyBrowser, useImageViewer, useViewportGrid, Dialog, ButtonEnums } from '@ohif/ui';
 import { useTrackedMeasurements } from '../../getContextModule';
 
 const { formatDate } = utils;
@@ -25,12 +19,8 @@ function PanelStudyBrowserTracking({
   requestDisplaySetCreationForStudy,
   dataSource,
 }) {
-  const {
-    displaySetService,
-    uiDialogService,
-    hangingProtocolService,
-    uiNotificationService,
-  } = servicesManager.services;
+  const { displaySetService, uiDialogService, hangingProtocolService, uiNotificationService } =
+    servicesManager.services;
   const navigate = useNavigate();
 
   const { t } = useTranslation('Common');
@@ -261,14 +251,7 @@ function PanelStudyBrowserTracking({
       SubscriptionDisplaySetMetaDataInvalidated.unsubscribe();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    displaySetService,
-    dataSource,
-    getImageSrc,
-    thumbnailImageSrcMap,
-    trackedSeries,
-    viewports,
-  ]);
+  }, [displaySetService, dataSource, getImageSrc, thumbnailImageSrcMap, trackedSeries, viewports]);
 
   const tabs = _createStudyBrowserTabs(
     StudyInstanceUIDs,
@@ -288,11 +271,7 @@ function PanelStudyBrowserTracking({
 
     if (!shouldCollapseStudy) {
       const madeInClient = true;
-      requestDisplaySetCreationForStudy(
-        displaySetService,
-        StudyInstanceUID,
-        madeInClient
-      );
+      requestDisplaySetCreationForStudy(displaySetService, StudyInstanceUID, madeInClient);
     }
   }
 
@@ -328,10 +307,7 @@ function PanelStudyBrowserTracking({
     setActiveTabName(tabName);
     const studyExpanded = expandedStudyInstanceUIDs.includes(StudyInstanceUID);
     if (!studyExpanded) {
-      const updatedExpandedStudyInstanceUIDs = [
-        ...expandedStudyInstanceUIDs,
-        StudyInstanceUID,
-      ];
+      const updatedExpandedStudyInstanceUIDs = [...expandedStudyInstanceUIDs, StudyInstanceUID];
       setExpandedStudyInstanceUIDs(updatedExpandedStudyInstanceUIDs);
     }
   }, [expandedStudyInstanceUIDs, jumpToDisplaySet, tabs]);
@@ -425,9 +401,7 @@ function _mapDisplaySets(
       }
 
       const array =
-        componentType === 'thumbnailTracked'
-          ? thumbnailDisplaySets
-          : thumbnailNoImageDisplaySets;
+        componentType === 'thumbnailTracked' ? thumbnailDisplaySets : thumbnailNoImageDisplaySets;
 
       const { displaySetInstanceUID } = ds;
 
@@ -494,10 +468,7 @@ function _mapDisplaySets(
                   switch (action.id) {
                     case 'yes':
                       try {
-                        await dataSource.reject.series(
-                          ds.StudyInstanceUID,
-                          ds.SeriesInstanceUID
-                        );
+                        await dataSource.reject.series(ds.StudyInstanceUID, ds.SeriesInstanceUID);
                         displaySetService.deleteDisplaySet(displaySetInstanceUID);
                         uiDialogService.dismiss({ id: 'ds-reject-sr' });
                         uiNotificationService.show({
@@ -533,16 +504,7 @@ function _mapDisplaySets(
   return [...thumbnailDisplaySets, ...thumbnailNoImageDisplaySets];
 }
 
-const thumbnailNoImageModalities = [
-  'SR',
-  'SEG',
-  'SM',
-  'RTSTRUCT',
-  'RTPLAN',
-  'RTDOSE',
-  'DOC',
-  'OT',
-];
+const thumbnailNoImageModalities = ['SR', 'SEG', 'SM', 'RTSTRUCT', 'RTPLAN', 'RTDOSE', 'DOC', 'OT'];
 
 function _getComponentType(ds) {
   if (thumbnailNoImageModalities.includes(ds.Modality) || ds?.unsupported) {

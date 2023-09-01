@@ -40,9 +40,7 @@ const StudyItem = ({
         </div>
         <div className="flex flex-row py-1">
           <div className="pr-5 text-xl text-blue-300">{modalities}</div>
-          <div className="truncate-2-lines break-words text-base text-blue-300">
-            {description}
-          </div>
+          <div className="truncate-2-lines break-words text-base text-blue-300">{description}</div>
         </div>
       </div>
       {!!trackedSeries && (

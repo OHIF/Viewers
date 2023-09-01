@@ -183,10 +183,7 @@ const machineConfiguration = {
           // - show DICOM SR
           {
             target: 'idle',
-            actions: [
-              'clearAllMeasurements',
-              'showStructuredReportDisplaySetInActiveViewport',
-            ],
+            actions: ['clearAllMeasurements', 'showStructuredReportDisplaySetInActiveViewport'],
             cond: 'shouldSaveAndContinueWithSameReport',
           },
           // "starting a new report"
@@ -331,12 +328,8 @@ const defaultOptions = {
       trackedSeries: [...ctx.trackedSeries, evt.data.SeriesInstanceUID],
     })),
     removeTrackedSeries: assign((ctx, evt) => ({
-      prevTrackedSeries: ctx.trackedSeries
-        .slice()
-        .filter(ser => ser !== evt.SeriesInstanceUID),
-      trackedSeries: ctx.trackedSeries
-        .slice()
-        .filter(ser => ser !== evt.SeriesInstanceUID),
+      prevTrackedSeries: ctx.trackedSeries.slice().filter(ser => ser !== evt.SeriesInstanceUID),
+      trackedSeries: ctx.trackedSeries.slice().filter(ser => ser !== evt.SeriesInstanceUID),
     })),
   },
   guards: {
@@ -360,22 +353,18 @@ const defaultOptions = {
     shouldSetDirty: (ctx, evt) => {
       return (
         // When would this happen?
-        evt.SeriesInstanceUID === undefined ||
-        ctx.trackedSeries.includes(evt.SeriesInstanceUID)
+        evt.SeriesInstanceUID === undefined || ctx.trackedSeries.includes(evt.SeriesInstanceUID)
       );
     },
-    shouldKillMachine: (ctx, evt) =>
-      evt.data && evt.data.userResponse === RESPONSE.NO_NEVER,
-    shouldAddSeries: (ctx, evt) =>
-      evt.data && evt.data.userResponse === RESPONSE.ADD_SERIES,
+    shouldKillMachine: (ctx, evt) => evt.data && evt.data.userResponse === RESPONSE.NO_NEVER,
+    shouldAddSeries: (ctx, evt) => evt.data && evt.data.userResponse === RESPONSE.ADD_SERIES,
     shouldSetStudyAndSeries: (ctx, evt) =>
       evt.data && evt.data.userResponse === RESPONSE.SET_STUDY_AND_SERIES,
     shouldAddIgnoredSeries: (ctx, evt) =>
       evt.data && evt.data.userResponse === RESPONSE.NO_NOT_FOR_SERIES,
     shouldPromptSaveReport: (ctx, evt) =>
       evt.data && evt.data.userResponse === RESPONSE.CREATE_REPORT,
-    shouldIgnoreHydrationForSR: (ctx, evt) =>
-      evt.data && evt.data.userResponse === RESPONSE.CANCEL,
+    shouldIgnoreHydrationForSR: (ctx, evt) => evt.data && evt.data.userResponse === RESPONSE.CANCEL,
     shouldSaveAndContinueWithSameReport: (ctx, evt) =>
       evt.data &&
       evt.data.userResponse === RESPONSE.CREATE_REPORT &&

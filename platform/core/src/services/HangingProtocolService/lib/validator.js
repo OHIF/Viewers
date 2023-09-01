@@ -110,9 +110,7 @@ validate.validators.includes = function (value, options, key) {
   if (Array.isArray(testValue)) {
     const includedValues = testValue.filter(el => dicomArrayValue.includes(el));
     if (includedValues.length === 0) {
-      return `${key} must include at least one of the following values: ${testValue.join(
-        ', '
-      )}`;
+      return `${key} must include at least one of the following values: ${testValue.join(', ')}`;
     }
   } else {
     return `${key} ${testValue} must be an array`;
@@ -178,28 +176,20 @@ validate.validators.doesNotInclude = function (value, options, key) {
 validate.validators.containsI = function (value, options, key) {
   const testValue = getTestValue(options);
   if (Array.isArray(value)) {
-    if (
-      value.some(item => !validate.validators.containsI(item.toLowerCase(), options, key))
-    ) {
+    if (value.some(item => !validate.validators.containsI(item.toLowerCase(), options, key))) {
       return undefined;
     }
     return `No item of ${value.join(',')} contains ${JSON.stringify(testValue)}`;
   }
   if (Array.isArray(testValue)) {
     if (
-      testValue.some(
-        subTest => !validate.validators.containsI(value, subTest.toLowerCase(), key)
-      )
+      testValue.some(subTest => !validate.validators.containsI(value, subTest.toLowerCase(), key))
     ) {
       return;
     }
     return `${key} must contain at least one of ${testValue.join(',')}`;
   }
-  if (
-    testValue &&
-    value.indexOf &&
-    value.toLowerCase().indexOf(testValue.toLowerCase()) === -1
-  ) {
+  if (testValue && value.indexOf && value.toLowerCase().indexOf(testValue.toLowerCase()) === -1) {
     return key + 'must contain any case of' + testValue;
   }
 };

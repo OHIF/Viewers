@@ -15,9 +15,7 @@ const isDisplaySetFromUrl = (displaySet): boolean => {
   }
   const isSeriesMatch =
     !initialSeriesInstanceUID ||
-    initialSeriesInstanceUID.some(
-      seriesUID => displaySet.SeriesInstanceUID === seriesUID
-    );
+    initialSeriesInstanceUID.some(seriesUID => displaySet.SeriesInstanceUID === seriesUID);
   const isSopMatch =
     !initialSOPInstanceUID ||
     displaySet.instances?.some?.(instance =>

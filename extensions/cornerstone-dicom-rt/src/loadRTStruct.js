@@ -125,8 +125,7 @@ export default async function loadRTStruct(
     await checkAndLoadContourData(instance, dataSource);
   }
 
-  const { StructureSetROISequence, ROIContourSequence, RTROIObservationsSequence } =
-    instance;
+  const { StructureSetROISequence, ROIContourSequence, RTROIObservationsSequence } = instance;
 
   // Define our structure set entry and add it to the rtstruct module state.
   const structureSet = {
@@ -150,12 +149,8 @@ export default async function loadRTStruct(
 
     const contourPoints = [];
     for (let c = 0; c < ContourSequenceArray.length; c++) {
-      const {
-        ContourImageSequence,
-        ContourData,
-        NumberOfContourPoints,
-        ContourGeometricType,
-      } = ContourSequenceArray[c];
+      const { ContourImageSequence, ContourData, NumberOfContourPoints, ContourGeometricType } =
+        ContourSequenceArray[c];
 
       let isSupported = false;
 
@@ -266,23 +261,15 @@ function _setROIContourDataColor(ROIContour, ROIContourData) {
   }
 }
 
-function _setROIContourRTROIObservations(
-  ROIContourData,
-  RTROIObservationsSequence,
-  ROINumber
-) {
+function _setROIContourRTROIObservations(ROIContourData, RTROIObservationsSequence, ROINumber) {
   const RTROIObservations = RTROIObservationsSequence.find(
     RTROIObservations => RTROIObservations.ReferencedROINumber === ROINumber
   );
 
   if (RTROIObservations) {
     // Deep copy so we don't keep the reference to the dcmjs dataset entry.
-    const {
-      ObservationNumber,
-      ROIObservationDescription,
-      RTROIInterpretedType,
-      ROIInterpreter,
-    } = RTROIObservations;
+    const { ObservationNumber, ROIObservationDescription, RTROIInterpretedType, ROIInterpreter } =
+      RTROIObservations;
 
     ROIContourData.RTROIObservations = {
       ObservationNumber,

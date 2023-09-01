@@ -414,8 +414,8 @@ workflows:
           store_artifacts: false
           working_directory: platform/app
           build:
-            yarn test:data && npx cross-env QUICK_BUILD=true
-            APP_CONFIG=config/dicomweb-server.js yarn run build
+            yarn test:data && npx cross-env QUICK_BUILD=true APP_CONFIG=config/dicomweb-server.js
+            yarn run build
           # start server --> verify running --> percy + chrome + cypress
           command: yarn run test:e2e:dist
           cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'

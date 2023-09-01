@@ -23,9 +23,7 @@ export default function (displaySet, options) {
     return false;
   }
   const { displaySetInstanceUID } = match;
-  const altDisplaySet = displaySets.find(
-    it => it.displaySetInstanceUID == displaySetInstanceUID
-  );
+  const altDisplaySet = displaySets.find(it => it.displaySetInstanceUID == displaySetInstanceUID);
   if (!altDisplaySet) {
     console.log('No display set found with', displaySetInstanceUID, 'in', displaySets);
     return false;

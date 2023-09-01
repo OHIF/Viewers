@@ -145,12 +145,8 @@ export default class ExtensionManager extends PubSubService {
   }
 
   public onModeExit(): void {
-    const {
-      registeredExtensionIds,
-      _servicesManager,
-      _commandsManager,
-      _extensionLifeCycleHooks,
-    } = this;
+    const { registeredExtensionIds, _servicesManager, _commandsManager, _extensionLifeCycleHooks } =
+      this;
 
     registeredExtensionIds.forEach(extensionId => {
       const onModeExit = _extensionLifeCycleHooks.onModeExit[extensionId];
@@ -446,10 +442,7 @@ export default class ExtensionManager extends PubSubService {
 
     if (this.activeDataSource === dataSourceName) {
       // When the active data source is changed/set, fire an event to indicate that its configuration has changed.
-      this._broadcastEvent(
-        ExtensionManager.EVENTS.ACTIVE_DATA_SOURCE_CHANGED,
-        dataSourceDef
-      );
+      this._broadcastEvent(ExtensionManager.EVENTS.ACTIVE_DATA_SOURCE_CHANGED, dataSourceDef);
     }
   }
 
@@ -483,8 +476,7 @@ export default class ExtensionManager extends PubSubService {
     dataSources: Array<DataSourceDefinition> = []
   ): void {
     extensionModule.forEach(element => {
-      this.modulesMap[`${extensionId}.${MODULE_TYPES.DATA_SOURCE}.${element.name}`] =
-        element;
+      this.modulesMap[`${extensionId}.${MODULE_TYPES.DATA_SOURCE}.${element.name}`] = element;
     });
 
     extensionModule.forEach(element => {
@@ -519,8 +511,7 @@ export default class ExtensionManager extends PubSubService {
     Object.keys(definitions).forEach(commandName => {
       const commandDefinition = definitions[commandName];
       const commandHasContextThatDoesNotExist =
-        commandDefinition.context &&
-        !this._commandsManager.getContext(commandDefinition.context);
+        commandDefinition.context && !this._commandsManager.getContext(commandDefinition.context);
 
       if (commandHasContextThatDoesNotExist) {
         this._commandsManager.createContext(commandDefinition.context);

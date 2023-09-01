@@ -11,11 +11,7 @@ const RESPONSE = {
   HYDRATE_REPORT: 5,
 };
 
-function promptHydrateStructuredReport(
-  { servicesManager, extensionManager, appConfig },
-  ctx,
-  evt
-) {
+function promptHydrateStructuredReport({ servicesManager, extensionManager, appConfig }, ctx, evt) {
   const { uiViewportDialogService, displaySetService } = servicesManager.services;
   const { viewportId, displaySetInstanceUID } = evt;
   const srDisplaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);

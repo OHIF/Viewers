@@ -1,9 +1,7 @@
 import { readPluginConfigFile } from './private/index.js';
 import getYarnInfo from './getYarnInfo.js';
 
-export default async function findOhifExtensionsToRemoveAfterRemovingMode(
-  removedModeYarnInfo
-) {
+export default async function findOhifExtensionsToRemoveAfterRemovingMode(removedModeYarnInfo) {
   const pluginConfig = readPluginConfigFile();
 
   if (!pluginConfig) {

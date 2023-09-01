@@ -10,10 +10,7 @@ const findConflictingCommand = (hotkeys, currentCommandName, pressedKeys) => {
     const toolHotkeys = hotkeys[commandName].keys;
     const formatedToolHotkeys = formatPressedKeys(toolHotkeys);
 
-    if (
-      formatedPressedHotkeys === formatedToolHotkeys &&
-      commandName !== currentCommandName
-    ) {
+    if (formatedPressedHotkeys === formatedToolHotkeys && commandName !== currentCommandName) {
       firstConflictingCommand = hotkeys[commandName];
       break;
     }
@@ -23,8 +20,7 @@ const findConflictingCommand = (hotkeys, currentCommandName, pressedKeys) => {
 };
 
 const ERROR_MESSAGES = {
-  MODIFIER:
-    "It's not possible to define only modifier keys (ctrl, alt and shift) as a shortcut",
+  MODIFIER: "It's not possible to define only modifier keys (ctrl, alt and shift) as a shortcut",
   EMPTY: "Field can't be empty.",
 };
 

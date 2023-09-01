@@ -17,9 +17,7 @@ function createStudyMetadata(StudyInstanceUID) {
       if (!this.StudyDescription) {
         this.StudyDescription = instance.StudyDescription;
       }
-      const existingSeries = this.series.find(
-        s => s.SeriesInstanceUID === SeriesInstanceUID
-      );
+      const existingSeries = this.series.find(s => s.SeriesInstanceUID === SeriesInstanceUID);
 
       if (existingSeries) {
         existingSeries.instances.push(instance);
@@ -44,9 +42,7 @@ function createStudyMetadata(StudyInstanceUID) {
       if (!this.StudyDescription) {
         this.StudyDescription = instances[0].StudyDescription;
       }
-      const existingSeries = this.series.find(
-        s => s.SeriesInstanceUID === SeriesInstanceUID
-      );
+      const existingSeries = this.series.find(s => s.SeriesInstanceUID === SeriesInstanceUID);
 
       if (existingSeries) {
         // Only add instances not already present, so generate a map
@@ -63,9 +59,7 @@ function createStudyMetadata(StudyInstanceUID) {
     },
 
     setSeriesMetadata: function (SeriesInstanceUID, seriesMetadata) {
-      let existingSeries = this.series.find(
-        s => s.SeriesInstanceUID === SeriesInstanceUID
-      );
+      let existingSeries = this.series.find(s => s.SeriesInstanceUID === SeriesInstanceUID);
 
       if (existingSeries) {
         existingSeries = Object.assign(existingSeries, seriesMetadata);

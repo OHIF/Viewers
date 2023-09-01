@@ -30,15 +30,7 @@ const arrowPositionStyle = {
   },
 };
 
-const Tooltip = ({
-  content,
-  isSticky,
-  position,
-  className,
-  tight,
-  children,
-  isDisabled,
-}) => {
+const Tooltip = ({ content, isSticky, position, className, tight, children, isDisabled }) => {
   const [isActive, setIsActive] = useState(false);
   const { t } = useTranslation('Buttons');
 
@@ -109,14 +101,7 @@ Tooltip.propTypes = {
   /** prevents tooltip from rendering despite hover/active/sticky */
   isDisabled: PropTypes.bool,
   content: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
-  position: PropTypes.oneOf([
-    'bottom',
-    'bottom-left',
-    'bottom-right',
-    'left',
-    'right',
-    'top',
-  ]),
+  position: PropTypes.oneOf(['bottom', 'bottom-left', 'bottom-right', 'left', 'right', 'top']),
   isSticky: PropTypes.bool,
   tight: PropTypes.bool,
   children: PropTypes.node.isRequired,

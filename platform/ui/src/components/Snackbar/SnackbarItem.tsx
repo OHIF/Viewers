@@ -31,10 +31,7 @@ const SnackbarItem = ({ options, onClose }) => {
 
   return (
     <div
-      className={classNames(
-        `${options.visible ? '' : hidden} sb-item`,
-        typeClasses[options.type]
-      )}
+      className={classNames(`${options.visible ? '' : hidden} sb-item`, typeClasses[options.type])}
     >
       <div className="flex">
         <Icon
@@ -44,9 +41,7 @@ const SnackbarItem = ({ options, onClose }) => {
         <div className="mx-2 flex-col">
           {/* </span> */}
           {options.title && (
-            <div className="break-normal text-lg font-bold text-black">
-              {options.title}
-            </div>
+            <div className="break-normal text-lg font-bold text-black">{options.title}</div>
           )}
           {options.message && (
             <div className="break-normal text-base text-black">{options.message}</div>

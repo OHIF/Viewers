@@ -20,10 +20,7 @@ import ViewportInfo, {
   DisplaySetOptions,
   PublicViewportOptions,
 } from './Viewport';
-import {
-  StackViewportData,
-  VolumeViewportData,
-} from '../../types/CornerstoneCacheService';
+import { StackViewportData, VolumeViewportData } from '../../types/CornerstoneCacheService';
 import { Presentation, Presentations } from '../../types/Presentation';
 
 import JumpPresets from '../../utils/JumpPresets';
@@ -196,8 +193,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     if (!presentation || !presentation.presentationIds) {
       return;
     }
-    const { lutPresentationStore, positionPresentationStore } =
-      stateSyncService.getState();
+    const { lutPresentationStore, positionPresentationStore } = stateSyncService.getState();
     const { presentationIds } = presentation;
     const { lutPresentationId, positionPresentationId } = presentationIds || {};
     const storeState = {};
@@ -250,9 +246,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
 
     // override the viewportOptions and displaySetOptions with the public ones
     // since those are the newly set ones, we set them here so that it handles defaults
-    const displaySetOptions = viewportInfo.setPublicDisplaySetOptions(
-      publicDisplaySetOptions
-    );
+    const displaySetOptions = viewportInfo.setPublicDisplaySetOptions(publicDisplaySetOptions);
     const viewportOptions = viewportInfo.setPublicViewportOptions(publicViewportOptions);
 
     const element = viewportInfo.getElement();
@@ -336,8 +330,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       presentations?.positionPresentation?.initialImageIndex ?? initialImageIndex;
 
     if (initialImageIndexToUse === undefined || initialImageIndexToUse === null) {
-      initialImageIndexToUse =
-        this._getInitialImageIndexForViewport(viewportInfo, imageIds) || 0;
+      initialImageIndexToUse = this._getInitialImageIndexForViewport(viewportInfo, imageIds) || 0;
     }
 
     const properties = { ...presentations.lutPresentation?.properties };
@@ -397,11 +390,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     return this._getInitialImageIndex(numberOfSlices, index, preset);
   }
 
-  _getInitialImageIndex(
-    numberOfSlices: number,
-    imageIndex?: number,
-    preset?: JumpPresets
-  ): number {
+  _getInitialImageIndex(numberOfSlices: number, imageIndex?: number, preset?: JumpPresets): number {
     const lastSliceIndex = numberOfSlices - 1;
 
     if (imageIndex !== undefined) {
@@ -555,10 +544,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       // associated with the primary displaySet
 
       // get segmentations only returns the hydrated segmentations
-      this._addSegmentationRepresentationToToolGroupIfNecessary(
-        displaySetInstanceUIDs,
-        viewport
-      );
+      this._addSegmentationRepresentationToToolGroupIfNecessary(displaySetInstanceUIDs, viewport);
     }
 
     const toolGroup = toolGroupService.getToolGroupForViewport(viewport.id);
@@ -588,8 +574,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
 
     for (const segmentation of segmentations) {
       const toolGroupSegmentationRepresentations =
-        segmentationService.getSegmentationRepresentationsForToolGroup(toolGroup.id) ||
-        [];
+        segmentationService.getSegmentationRepresentationsForToolGroup(toolGroup.id) || [];
 
       // if there is already a segmentation representation for this segmentation
       // for this toolGroup, don't bother at all
@@ -604,15 +589,12 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       // otherwise, check if the hydrated segmentations are in the same FOR
       // as the primary displaySet, if so add the representation (since it was not there)
       const { id: segDisplaySetInstanceUID, type } = segmentation;
-      const segFrameOfReferenceUID = this._getFrameOfReferenceUID(
-        segDisplaySetInstanceUID
-      );
+      const segFrameOfReferenceUID = this._getFrameOfReferenceUID(segDisplaySetInstanceUID);
 
       let shouldDisplaySeg = false;
 
       for (const displaySetInstanceUID of displaySetInstanceUIDs) {
-        const primaryFrameOfReferenceUID =
-          this._getFrameOfReferenceUID(displaySetInstanceUID);
+        const primaryFrameOfReferenceUID = this._getFrameOfReferenceUID(displaySetInstanceUID);
 
         if (segFrameOfReferenceUID === primaryFrameOfReferenceUID) {
           shouldDisplaySeg = true;
@@ -691,10 +673,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
         viewportInfo,
         presentations
       );
-    } else if (
-      viewport instanceof VolumeViewport ||
-      viewport instanceof VolumeViewport3D
-    ) {
+    } else if (viewport instanceof VolumeViewport || viewport instanceof VolumeViewport3D) {
       this._setVolumeViewport(
         viewport,
         viewportData as VolumeViewportData,

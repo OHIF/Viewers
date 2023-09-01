@@ -77,10 +77,7 @@ const Select = ({
   return (
     <ReactSelect
       inputId={`input-${id}`}
-      className={classnames(
-        className,
-        'ohif-select customSelect__wrapper flex flex-1 flex-col'
-      )}
+      className={classnames(className, 'ohif-select customSelect__wrapper flex flex-1 flex-col')}
       data-cy={`input-${id}`}
       classNamePrefix="customSelect"
       isDisabled={isDisabled}

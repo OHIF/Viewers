@@ -31,8 +31,11 @@ const PlanarFreehandROI = {
       throw new Error('Tool not supported');
     }
 
-    const { SOPInstanceUID, SeriesInstanceUID, StudyInstanceUID } =
-      getSOPInstanceAttributes(referencedImageId, CornerstoneViewportService, viewportId);
+    const { SOPInstanceUID, SeriesInstanceUID, StudyInstanceUID } = getSOPInstanceAttributes(
+      referencedImageId,
+      CornerstoneViewportService,
+      viewportId
+    );
 
     let displaySet;
 

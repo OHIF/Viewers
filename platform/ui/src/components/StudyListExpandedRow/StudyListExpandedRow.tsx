@@ -8,11 +8,7 @@ import TableBody from '../TableBody';
 import TableRow from '../TableRow';
 import TableCell from '../TableCell';
 
-const StudyListExpandedRow = ({
-  seriesTableColumns,
-  seriesTableDataSource,
-  children,
-}) => {
+const StudyListExpandedRow = ({ seriesTableColumns, seriesTableDataSource, children }) => {
   const { t } = useTranslation('StudyList');
 
   return (
@@ -23,11 +19,7 @@ const StudyListExpandedRow = ({
           <TableHead>
             <TableRow>
               {Object.keys(seriesTableColumns).map(columnKey => {
-                return (
-                  <TableCell key={columnKey}>
-                    {t(seriesTableColumns[columnKey])}
-                  </TableCell>
-                );
+                return <TableCell key={columnKey}>{t(seriesTableColumns[columnKey])}</TableCell>;
               })}
             </TableRow>
           </TableHead>

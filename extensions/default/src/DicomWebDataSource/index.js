@@ -1,11 +1,5 @@
 import { api } from 'dicomweb-client';
-import {
-  DicomMetadataStore,
-  IWebApiDataSource,
-  utils,
-  errorHandler,
-  classes,
-} from '@ohif/core';
+import { DicomMetadataStore, IWebApiDataSource, utils, errorHandler, classes } from '@ohif/core';
 
 import {
   mapParams,
@@ -18,10 +12,7 @@ import dcm4cheeReject from './dcm4cheeReject';
 
 import getImageId from './utils/getImageId';
 import dcmjs from 'dcmjs';
-import {
-  retrieveStudyMetadata,
-  deleteStudyMetadataPromise,
-} from './retrieveStudyMetadata.js';
+import { retrieveStudyMetadata, deleteStudyMetadataPromise } from './retrieveStudyMetadata.js';
 import StaticWadoClient from './utils/StaticWadoClient';
 import getDirectURL from '../utils/getDirectURL';
 import { fixBulkDataURI } from './utils/fixBulkDataURI';
@@ -60,10 +51,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
 
   const implementation = {
     initialize: ({ params, query }) => {
-      if (
-        dicomWebConfig.onConfiguration &&
-        typeof dicomWebConfig.onConfiguration === 'function'
-      ) {
+      if (dicomWebConfig.onConfiguration && typeof dicomWebConfig.onConfiguration === 'function') {
         dicomWebConfig = dicomWebConfig.onConfiguration(dicomWebConfig, {
           params,
           query,
@@ -133,12 +121,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
               supportsWildcard: dicomWebConfig.supportsWildcard,
             }) || {};
 
-          const results = await qidoSearch(
-            qidoDicomWebClient,
-            undefined,
-            undefined,
-            mappedParams
-          );
+          const results = await qidoSearch(qidoDicomWebClient, undefined, undefined, mappedParams);
 
           return processResults(results);
         },
@@ -157,13 +140,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
       instances: {
         search: (studyInstanceUid, queryParameters) => {
           qidoDicomWebClient.headers = getAuthrorizationHeader();
-          qidoSearch.call(
-            undefined,
-            qidoDicomWebClient,
-            studyInstanceUid,
-            null,
-            queryParameters
-          );
+          qidoSearch.call(undefined, qidoDicomWebClient, studyInstanceUid, null, queryParameters);
         },
       },
     },
@@ -209,9 +186,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
           madeInClient = false,
         } = {}) => {
           if (!StudyInstanceUID) {
-            throw new Error(
-              'Unable to query for SeriesMetadata without StudyInstanceUID'
-            );
+            throw new Error('Unable to query for SeriesMetadata without StudyInstanceUID');
           }
 
           if (dicomWebConfig.enableStudyLazyLoad) {
@@ -335,10 +310,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
       DicomMetadataStore.addSeriesMetadata(seriesMetadata, madeInClient);
 
       Object.keys(instancesPerSeries).forEach(seriesInstanceUID =>
-        DicomMetadataStore.addInstances(
-          instancesPerSeries[seriesInstanceUID],
-          madeInClient
-        )
+        DicomMetadataStore.addInstances(instancesPerSeries[seriesInstanceUID], madeInClient)
       );
     },
 
@@ -405,8 +377,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
                 // the bulk data and DICOM video cases where the second ArrayBuffer is
                 // the bulk data. Here we play it safe and do a find.
                 const ret =
-                  (val instanceof Array &&
-                    val.find(arrayBuffer => arrayBuffer?.byteLength)) ||
+                  (val instanceof Array && val.find(arrayBuffer => arrayBuffer?.byteLength)) ||
                   undefined;
                 value.Value = ret;
                 return ret;
@@ -513,8 +484,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
       const queryStudyInstanceUIDs = utils.splitComma(query.getAll('StudyInstanceUIDs'));
 
       const StudyInstanceUIDs =
-        (queryStudyInstanceUIDs.length && queryStudyInstanceUIDs) ||
-        paramsStudyInstanceUIDs;
+        (queryStudyInstanceUIDs.length && queryStudyInstanceUIDs) || paramsStudyInstanceUIDs;
       const StudyInstanceUIDsAsArray =
         StudyInstanceUIDs && Array.isArray(StudyInstanceUIDs)
           ? StudyInstanceUIDs

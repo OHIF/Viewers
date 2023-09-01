@@ -23,8 +23,7 @@ export default function isRehydratable(displaySet, mappings) {
 
   const adapterKeys = Object.keys(cornerstoneAdapters).filter(
     adapterKey =>
-      typeof cornerstoneAdapters[adapterKey].isValidCornerstoneTrackingIdentifier ===
-      'function'
+      typeof cornerstoneAdapters[adapterKey].isValidCornerstoneTrackingIdentifier === 'function'
   );
 
   const adapters = [];

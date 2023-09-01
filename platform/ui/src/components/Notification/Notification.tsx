@@ -101,8 +101,7 @@ Notification.propTypes = {
     PropTypes.shape({
       text: PropTypes.string.isRequired,
       value: PropTypes.any.isRequired,
-      type: PropTypes.oneOf([ButtonEnums.type.primary, ButtonEnums.type.secondary])
-        .isRequired,
+      type: PropTypes.oneOf([ButtonEnums.type.primary, ButtonEnums.type.secondary]).isRequired,
       size: PropTypes.oneOf([ButtonEnums.size.small, ButtonEnums.size.medium]),
     })
   ).isRequired,

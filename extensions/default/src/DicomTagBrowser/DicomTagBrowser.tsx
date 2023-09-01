@@ -122,9 +122,7 @@ const DicomTagBrowser = ({ displaySets, displaySetInstanceUID }) => {
               isClearable={false}
               onChange={onSelectChange}
               options={displaySetList}
-              value={displaySetList.find(
-                ds => ds.value === selectedDisplaySetInstanceUID
-              )}
+              value={displaySetList.find(ds => ds.value === selectedDisplaySetInstanceUID)}
               className="text-white"
             />
           </div>
@@ -193,17 +191,10 @@ function getFormattedRowsFromTags(tags, metadata) {
           const originalTagInfo = metadata[tag];
           tagInfo.vr = originalTagInfo.vr;
         } catch (error) {
-          console.error(
-            `Failed to parse value representation for tag '${tagInfo.keyword}'`
-          );
+          console.error(`Failed to parse value representation for tag '${tagInfo.keyword}'`);
         }
       }
-      rows.push([
-        `${tagInfo.tagIndent}${tagInfo.tag}`,
-        tagInfo.vr,
-        tagInfo.keyword,
-        tagInfo.value,
-      ]);
+      rows.push([`${tagInfo.tagIndent}${tagInfo.tag}`, tagInfo.vr, tagInfo.keyword, tagInfo.value]);
     }
   });
 

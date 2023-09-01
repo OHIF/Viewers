@@ -187,18 +187,13 @@ export default class DisplaySetService extends PubSubService {
    * @param {*} param1: settings: initialViewportSettings by HP or callbacks after rendering
    * @returns {string[]} - added displaySetInstanceUIDs
    */
-  makeDisplaySets = (
-    input,
-    { batch = false, madeInClient = false, settings = {} } = {}
-  ) => {
+  makeDisplaySets = (input, { batch = false, madeInClient = false, settings = {} } = {}) => {
     if (!input || !input.length) {
       throw new Error('No instances were provided.');
     }
 
     if (batch && !input[0].length) {
-      throw new Error(
-        'Batch displaySet creation does not contain array of array of instances.'
-      );
+      throw new Error('Batch displaySet creation does not contain array of array of instances.');
     }
 
     // If array of instances => One instance.
@@ -261,10 +256,7 @@ export default class DisplaySetService extends PubSubService {
    * @param settings
    * @returns
    */
-  public makeDisplaySetForInstances(
-    instancesSrc: InstanceMetadata[],
-    settings
-  ): DisplaySet[] {
+  public makeDisplaySetForInstances(instancesSrc: InstanceMetadata[], settings): DisplaySet[] {
     // creating a sopClassUID list and for each sopClass associate its respective
     // instance list
     const instancesForSetSOPClasses = instancesSrc.reduce((sopClassList, instance) => {
@@ -305,17 +297,13 @@ export default class DisplaySetService extends PubSubService {
    * @param settings are settings to add
    * @returns Array of the display sets added.
    */
-  private _makeDisplaySetForInstances(
-    instancesSrc: InstanceMetadata[],
-    settings
-  ): DisplaySet[] {
+  private _makeDisplaySetForInstances(instancesSrc: InstanceMetadata[], settings): DisplaySet[] {
     // Some of the sop class handlers take a direct reference to instances
     // so make sure it gets copied here so that they have their own ref
     let instances = [...instancesSrc];
     const instance = instances[0];
 
-    const existingDisplaySets =
-      this.getDisplaySetsForSeries(instance.SeriesInstanceUID) || [];
+    const existingDisplaySets = this.getDisplaySetsForSeries(instance.SeriesInstanceUID) || [];
 
     const SOPClassHandlerIds = this.SOPClassHandlerIds;
     const allDisplaySets = [];
@@ -389,9 +377,7 @@ export default class DisplaySetService extends PubSubService {
     // applying the default sopClassUID handler
     if (allDisplaySets.length === 0) {
       // applying hp-defined viewport settings to the displaysets
-      const handler = this.extensionManager.getModuleEntry(
-        this.unsuportedSOPClassHandler
-      );
+      const handler = this.extensionManager.getModuleEntry(this.unsuportedSOPClassHandler);
       const displaySets = handler.getDisplaySetsFromSeries(instances);
       if (displaySets?.length) {
         displaySets.forEach(ds => {

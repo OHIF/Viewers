@@ -115,18 +115,11 @@ export default function interleaveCenterLoader({
   const requestType = Enums.RequestType.Prefetch;
   const priority = 0;
 
-  finalRequests.forEach(
-    ({ callLoadImage, additionalDetails, imageId, imageIdIndex, options }) => {
-      const callLoadImageBound = callLoadImage.bind(null, imageId, imageIdIndex, options);
+  finalRequests.forEach(({ callLoadImage, additionalDetails, imageId, imageIdIndex, options }) => {
+    const callLoadImageBound = callLoadImage.bind(null, imageId, imageIdIndex, options);
 
-      imageLoadPoolManager.addRequest(
-        callLoadImageBound,
-        requestType,
-        additionalDetails,
-        priority
-      );
-    }
-  );
+    imageLoadPoolManager.addRequest(callLoadImageBound, requestType, additionalDetails, priority);
+  });
 
   // clear the volumeIdMapsToLoad
   volumeIdMapsToLoad.clear();

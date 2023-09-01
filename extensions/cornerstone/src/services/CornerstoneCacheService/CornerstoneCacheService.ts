@@ -1,16 +1,8 @@
 import { ServicesManager, Types } from '@ohif/core';
-import {
-  cache as cs3DCache,
-  Enums,
-  volumeLoader,
-  utilities as utils,
-} from '@cornerstonejs/core';
+import { cache as cs3DCache, Enums, volumeLoader, utilities as utils } from '@cornerstonejs/core';
 
 import getCornerstoneViewportType from '../../utils/getCornerstoneViewportType';
-import {
-  StackViewportData,
-  VolumeViewportData,
-} from '../../types/CornerstoneCacheService';
+import { StackViewportData, VolumeViewportData } from '../../types/CornerstoneCacheService';
 
 const VOLUME_LOADER_SCHEME = 'cornerstoneStreamingImageVolume';
 
@@ -18,9 +10,7 @@ class CornerstoneCacheService {
   static REGISTRATION = {
     name: 'cornerstoneCacheService',
     altName: 'CornerstoneCacheService',
-    create: ({
-      servicesManager,
-    }: Types.Extensions.ExtensionParams): CornerstoneCacheService => {
+    create: ({ servicesManager }: Types.Extensions.ExtensionParams): CornerstoneCacheService => {
       return new CornerstoneCacheService(servicesManager);
     },
   };
@@ -77,11 +67,7 @@ class CornerstoneCacheService {
       cs3DViewportType === Enums.ViewportType.ORTHOGRAPHIC ||
       cs3DViewportType === Enums.ViewportType.VOLUME_3D
     ) {
-      viewportData = await this._getVolumeViewportData(
-        dataSource,
-        displaySets,
-        cs3DViewportType
-      );
+      viewportData = await this._getVolumeViewportData(dataSource, displaySets, cs3DViewportType);
     }
 
     viewportData.viewportType = cs3DViewportType;

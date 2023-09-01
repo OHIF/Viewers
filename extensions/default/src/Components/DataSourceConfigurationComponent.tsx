@@ -18,8 +18,7 @@ function DataSourceConfigurationComponent({
 
   const { customizationService } = servicesManager.services;
 
-  const [configurationAPI, setConfigurationAPI] =
-    useState<Types.BaseDataSourceConfigurationAPI>();
+  const [configurationAPI, setConfigurationAPI] = useState<Types.BaseDataSourceConfigurationAPI>();
 
   const [configuredItems, setConfiguredItems] =
     useState<Array<Types.BaseDataSourceConfigurationAPIItem>>();
@@ -35,8 +34,7 @@ function DataSourceConfigurationComponent({
       }
 
       const { factory: configurationAPIFactory } =
-        customizationService.get(activeDataSourceDef.configuration.configurationAPI) ??
-        {};
+        customizationService.get(activeDataSourceDef.configuration.configurationAPI) ?? {};
 
       if (!configurationAPIFactory) {
         return;

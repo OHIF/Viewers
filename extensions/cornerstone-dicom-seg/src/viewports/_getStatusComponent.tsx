@@ -13,9 +13,7 @@ export default function _getStatusComponent({ isHydrated, onStatusClick }) {
     case true:
       StatusIcon = () => <Icon name="status-alert" />;
 
-      ToolTipMessage = () => (
-        <div>This Segmentation is loaded in the segmentation panel</div>
-      );
+      ToolTipMessage = () => <div>This Segmentation is loaded in the segmentation panel</div>;
       break;
     case false:
       StatusIcon = () => (

@@ -149,10 +149,7 @@ describe('HangingProtocolService', () => {
       },
     },
   };
-  const hangingProtocolService = new HangingProtocolService(
-    commandsManager,
-    servicesManager
-  );
+  const hangingProtocolService = new HangingProtocolService(commandsManager, servicesManager);
   let initialScaling;
 
   afterEach(() => {

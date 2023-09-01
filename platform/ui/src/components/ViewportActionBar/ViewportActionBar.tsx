@@ -27,16 +27,8 @@ const ViewportActionBar = ({
   getStatusComponent,
 }: ViewportActionBarProps): JSX.Element => {
   const { label, studyDate, seriesDescription, patientInformation } = studyData;
-  const {
-    patientName,
-    patientSex,
-    patientAge,
-    MRN,
-    thickness,
-    thicknessUnits,
-    spacing,
-    scanner,
-  } = patientInformation;
+  const { patientName, patientSex, patientAge, MRN, thickness, thicknessUnits, spacing, scanner } =
+    patientInformation;
 
   // The minimum width that the viewport must be to show the next/prev arrows.
   const arrowsPresentViewportMinWidth = 300;
@@ -72,10 +64,7 @@ const ViewportActionBar = ({
 
   const patientInfoClasses = () => (showArrows ? '' : 'pl-1 ml-auto');
 
-  const clickOutsideListener = useOnClickOutside(
-    showPatientInfoElemRef,
-    closePatientInfo
-  );
+  const clickOutsideListener = useOnClickOutside(showPatientInfoElemRef, closePatientInfo);
 
   useEffect(() => {
     if (showPatientInfo) {
@@ -105,13 +94,9 @@ const ViewportActionBar = ({
     }
 
     const studyDateElemBBox = studyDateElemRef.current.getBoundingClientRect();
-    const showPatientInfoElemBBox =
-      showPatientInfoElemRef.current.getBoundingClientRect();
+    const showPatientInfoElemBBox = showPatientInfoElemRef.current.getBoundingClientRect();
 
-    if (
-      showPatientInfoElemBBox.left - studyDateElemBBox.right <=
-      zeroWidthSeriesDescriptionSpace
-    ) {
+    if (showPatientInfoElemBBox.left - studyDateElemBBox.right <= zeroWidthSeriesDescriptionSpace) {
       // The area to display the series description is zero, so don't show the series description element.
       setShowSeriesDesc(false);
     } else {

@@ -90,11 +90,9 @@ export default class ToolbarService extends PubSubService {
       }
       case 'tool': {
         try {
-          commands.forEach(
-            ({ commandName = 'setToolActive', commandOptions, context }) => {
-              commandsManager.runCommand(commandName, commandOptions, context);
-            }
-          );
+          commands.forEach(({ commandName = 'setToolActive', commandOptions, context }) => {
+            commandsManager.runCommand(commandName, commandOptions, context);
+          });
 
           // only set the primary tool if no error was thrown
           this.state.primaryToolId = itemId;

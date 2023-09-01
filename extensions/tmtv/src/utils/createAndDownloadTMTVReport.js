@@ -8,9 +8,7 @@ export default function createAndDownloadTMTVReport(segReport, additionalReportR
     columns.forEach(column => {
       // if it is array then we need to replace , with space to avoid csv parsing error
       row.push(
-        Array.isArray(segmentation[column])
-          ? segmentation[column].join(' ')
-          : segmentation[column]
+        Array.isArray(segmentation[column]) ? segmentation[column].join(' ') : segmentation[column]
       );
     });
     csv.push(row.join(','));

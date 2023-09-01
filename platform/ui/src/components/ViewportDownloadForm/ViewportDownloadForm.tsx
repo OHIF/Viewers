@@ -195,11 +195,7 @@ const ViewportDownloadForm = ({
       dataUrl,
       width: viewportElementWidth,
       height: viewportElementHeight,
-    } = await updateViewportPreview(
-      viewportElement,
-      downloadCanvas.ref.current,
-      fileType
-    );
+    } = await updateViewportPreview(viewportElement, downloadCanvas.ref.current, fileType);
 
     setViewportPreview(state => ({
       ...state,
@@ -267,9 +263,7 @@ const ViewportDownloadForm = ({
   return (
     <div>
       <Typography variant="h6">
-        {t(
-          'Please specify the dimensions, filename, and desired type for the output image.'
-        )}
+        {t('Please specify the dimensions, filename, and desired type for the output image.')}
       </Typography>
 
       <div className="mt-6 flex flex-col">
@@ -386,9 +380,7 @@ const ViewportDownloadForm = ({
             ></div>
           )}
           {!activeViewportElement && (
-            <Typography className="mt-4">
-              {t('Active viewport has no displayed image')}
-            </Typography>
+            <Typography className="mt-4">{t('Active viewport has no displayed image')}</Typography>
           )}
         </div>
       </div>

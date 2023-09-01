@@ -20,12 +20,9 @@ export default function PanelMeasurementTable({
 }): React.FunctionComponent {
   const [viewportGrid, viewportGridService] = useViewportGrid();
   const { activeViewportId, viewports } = viewportGrid;
-  const {
-    measurementService,
-    uiDialogService,
-    uiNotificationService,
-    displaySetService,
-  } = (servicesManager as ServicesManager).services;
+  const { measurementService, uiDialogService, uiNotificationService, displaySetService } = (
+    servicesManager as ServicesManager
+  ).services;
   const [displayMeasurements, setDisplayMeasurements] = useState([]);
 
   useEffect(() => {
@@ -104,10 +101,7 @@ export default function PanelMeasurementTable({
 
       // Re-use an existing series having the same series description to avoid
       // creating too many series instances.
-      const options = findSRWithSameSeriesDescription(
-        SeriesDescription,
-        displaySetService
-      );
+      const options = findSRWithSameSeriesDescription(SeriesDescription, displaySetService);
 
       return createReportAsync(
         servicesManager,

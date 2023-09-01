@@ -39,10 +39,7 @@ export default function initWADOImageLoader(
   dicomImageLoader.external.cornerstone = cornerstone;
   dicomImageLoader.external.dicomParser = dicomParser;
 
-  registerVolumeLoader(
-    'cornerstoneStreamingImageVolume',
-    cornerstoneStreamingImageVolumeLoader
-  );
+  registerVolumeLoader('cornerstoneStreamingImageVolume', cornerstoneStreamingImageVolumeLoader);
 
   dicomImageLoader.configure({
     decodeConfig: {

@@ -1,10 +1,4 @@
-import React, {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useReducer,
-} from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useReducer } from 'react';
 import PropTypes from 'prop-types';
 
 const DEFAULT_STATE = {

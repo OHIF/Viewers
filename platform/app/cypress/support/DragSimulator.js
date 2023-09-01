@@ -6,10 +6,7 @@ export const DragSimulator = {
   counter: 0,
   rectsEqual(r1, r2) {
     return (
-      r1.top === r2.top &&
-      r1.right === r2.right &&
-      r1.bottom === r2.bottom &&
-      r1.left === r2.left
+      r1.top === r2.top && r1.right === r2.right && r1.bottom === r2.bottom && r1.left === r2.left
     );
   },
   get dropped() {
@@ -68,8 +65,6 @@ export const DragSimulator = {
   simulate(sourceWrapper, targetSelector, position = 'center') {
     return cy
       .get(targetSelector)
-      .then(targetWrapper =>
-        this.init(sourceWrapper.get(0), targetWrapper.get(0), position)
-      );
+      .then(targetWrapper => this.init(sourceWrapper.get(0), targetWrapper.get(0), position));
   },
 };

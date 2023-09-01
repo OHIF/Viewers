@@ -53,9 +53,7 @@ const ThumbnailNoImage = ({
               name="list-bullets"
               className={classnames(
                 'w-12',
-                isHydratedForDerivedDisplaySet
-                  ? 'text-primary-light'
-                  : 'text-secondary-light'
+                isHydratedForDerivedDisplaySet ? 'text-primary-light' : 'text-secondary-light'
               )}
             />
             <Tooltip

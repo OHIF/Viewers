@@ -40,10 +40,7 @@ function DicomUploadProgress({
   onComplete,
 }: DicomUploadProgressProps): ReactElement {
   const [totalUploadSize] = useState(
-    dicomFileUploaderArr.reduce(
-      (acc, fileUploader) => acc + fileUploader.getFileSize(),
-      0
-    )
+    dicomFileUploaderArr.reduce((acc, fileUploader) => acc + fileUploader.getFileSize(), 0)
   );
 
   const currentUploadSizeRef = useRef<number>(0);
@@ -76,8 +73,7 @@ function DicomUploadProgress({
     let intervalStartTime = Date.now();
 
     const setUploadRateRef = () => {
-      const uploadSizeFromStartOfInterval =
-        currentUploadSizeRef.current - intervalStartUploadSize;
+      const uploadSizeFromStartOfInterval = currentUploadSizeRef.current - intervalStartUploadSize;
 
       const now = Date.now();
       const timeSinceStartOfInterval = now - intervalStartTime;
@@ -126,9 +122,7 @@ function DicomUploadProgress({
       const updateProgress = (percentComplete: number) => {
         const previousFileUploadSize = currentFileUploadSize;
 
-        currentFileUploadSize = Math.round(
-          (percentComplete / 100) * fileUploader.getFileSize()
-        );
+        currentFileUploadSize = Math.round((percentComplete / 100) * fileUploader.getFileSize());
 
         currentUploadSizeRef.current = Math.min(
           totalUploadSize,
@@ -276,9 +270,9 @@ function DicomUploadProgress({
       <div className="bg-primary-dark flex h-14 items-center px-1 pb-4 text-lg">
         {numFilesCompleted === dicomFileUploaderArr.length ? (
           <>
-            <span className={NO_WRAP_ELLIPSIS_CLASS_NAMES}>{`${
-              dicomFileUploaderArr.length
-            } ${dicomFileUploaderArr.length > 1 ? 'files' : 'file'} completed.`}</span>
+            <span className={NO_WRAP_ELLIPSIS_CLASS_NAMES}>{`${dicomFileUploaderArr.length} ${
+              dicomFileUploaderArr.length > 1 ? 'files' : 'file'
+            } completed.`}</span>
             <Button
               disabled={false}
               className="ml-auto"
@@ -295,13 +289,9 @@ function DicomUploadProgress({
             >
               {`${numFilesCompleted} of ${dicomFileUploaderArr.length}`}&nbsp;
             </span>
+            <span className={NO_WRAP_ELLIPSIS_CLASS_NAMES}>{' files completed.'}&nbsp;</span>
             <span className={NO_WRAP_ELLIPSIS_CLASS_NAMES}>
-              {' files completed.'}&nbsp;
-            </span>
-            <span className={NO_WRAP_ELLIPSIS_CLASS_NAMES}>
-              {timeRemaining
-                ? `Less than ${getFormattedTimeRemaining()} remaining. `
-                : ''}
+              {timeRemaining ? `Less than ${getFormattedTimeRemaining()} remaining. ` : ''}
             </span>
             <span
               className={classNames(
@@ -322,11 +312,7 @@ function DicomUploadProgress({
     return (
       <div className="ml-auto flex w-6 justify-center">
         {numFails > 0 && (
-          <div
-            onClick={() =>
-              setShowFailedOnly(currentShowFailedOnly => !currentShowFailedOnly)
-            }
-          >
+          <div onClick={() => setShowFailedOnly(currentShowFailedOnly => !currentShowFailedOnly)}>
             <Icon
               className="cursor-pointer"
               name="icon-status-alert"
@@ -357,9 +343,7 @@ function DicomUploadProgress({
                 className="flex-grow"
               >
                 <ProgressLoadingBar
-                  progress={
-                    showInfiniteProgressBar() ? undefined : Math.min(100, percentComplete)
-                  }
+                  progress={showInfiniteProgressBar() ? undefined : Math.min(100, percentComplete)}
                 ></ProgressLoadingBar>
               </div>
               <div className="ml-1 flex w-24 items-center">
@@ -397,8 +381,7 @@ function DicomUploadProgress({
 }
 
 DicomUploadProgress.propTypes = {
-  dicomFileUploaderArr: PropTypes.arrayOf(PropTypes.instanceOf(DicomFileUploader))
-    .isRequired,
+  dicomFileUploaderArr: PropTypes.arrayOf(PropTypes.instanceOf(DicomFileUploader)).isRequired,
   onComplete: PropTypes.func.isRequired,
 };
 

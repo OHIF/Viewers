@@ -25,9 +25,7 @@ async function validateExtensionYarnInfo(packageName) {
 function validateYarnInfo(packageName, keyword) {
   return new Promise(async (resolve, reject) => {
     function rejectIfNotFound() {
-      const error = new Error(
-        `${chalk.red.bold('Error')} extension ${packageName} not installed`
-      );
+      const error = new Error(`${chalk.red.bold('Error')} extension ${packageName} not installed`);
       reject(error);
     }
 
@@ -120,9 +118,7 @@ function validate(packageName, version, keyword) {
     const json = await response.json();
 
     if (json.error && json.error === NOT_FOUND) {
-      const error = new Error(
-        `${chalk.red.bold('Error')} package ${packageName} not found`
-      );
+      const error = new Error(`${chalk.red.bold('Error')} package ${packageName} not found`);
       reject(error);
       return;
     }
@@ -146,18 +142,11 @@ function validate(packageName, version, keyword) {
     } else {
       // Particular version undefined
       const error = new Error(
-        `${chalk.red.bold(
-          'Error'
-        )} version ${packageVersion} of package ${packageName} not found`
+        `${chalk.red.bold('Error')} version ${packageVersion} of package ${packageName} not found`
       );
       reject(error);
     }
   });
 }
 
-export {
-  validateMode,
-  validateExtension,
-  validateModeYarnInfo,
-  validateExtensionYarnInfo,
-};
+export { validateMode, validateExtension, validateModeYarnInfo, validateExtensionYarnInfo };

@@ -86,16 +86,12 @@ const ThumbnailTracked = ({
                 <div className="flex flex-1 flex-col">
                   <span>
                     Series is
-                    <span className="text-white">
-                      {isTracked ? ' tracked' : ' untracked'}
-                    </span>
+                    <span className="text-white">{isTracked ? ' tracked' : ' untracked'}</span>
                   </span>
                   {!!viewportIdentificator.length && (
                     <span>
                       in viewport
-                      <span className="ml-1 text-white">
-                        {viewportIdentificatorLabel}
-                      </span>
+                      <span className="ml-1 text-white">{viewportIdentificatorLabel}</span>
                     </span>
                   )}
                 </div>

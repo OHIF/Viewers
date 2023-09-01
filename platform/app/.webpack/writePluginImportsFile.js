@@ -97,8 +97,7 @@ const createCopyPluginToDistForLink = (srcDir, distDir, plugins, folderName) => 
   return plugins
     .map(plugin => {
       const fromDir = fromDirectory(srcDir, plugin.directory);
-      const from =
-        fromDir || `${srcDir}/../node_modules/${plugin.packageName}/${folderName}/`;
+      const from = fromDir || `${srcDir}/../node_modules/${plugin.packageName}/${folderName}/`;
       const exists = fs.existsSync(from);
       return exists
         ? {
@@ -147,17 +146,12 @@ function writePluginImportsFile(SRC_DIR, DIST_DIR) {
     ...pluginConfig.modes,
   ]);
 
-  fs.writeFileSync(
-    `${SRC_DIR}/pluginImports.js`,
-    pluginImportsJsContent,
-    { flag: 'w+' },
-    err => {
-      if (err) {
-        console.error(err);
-        return;
-      }
+  fs.writeFileSync(`${SRC_DIR}/pluginImports.js`, pluginImportsJsContent, { flag: 'w+' }, err => {
+    if (err) {
+      console.error(err);
+      return;
     }
-  );
+  });
 
   // Build packages using cli add-mode and add-extension
   // will get added to the root node_modules, but the linked packages

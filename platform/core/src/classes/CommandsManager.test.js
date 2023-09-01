@@ -144,11 +144,7 @@ describe('CommandsManager', () => {
       };
 
       commandsManager.createContext(contextName);
-      commandsManager.registerCommand(
-        contextName,
-        'TestCommand',
-        commandWithNoCommmandFn
-      );
+      commandsManager.registerCommand(contextName, 'TestCommand', commandWithNoCommmandFn);
       const result = commandsManager.runCommand('TestCommand', null, contextName);
 
       expect(result).toBe(undefined);

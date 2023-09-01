@@ -79,11 +79,8 @@ export function formatPN(name) {
  */
 export function getCompression(imageId) {
   const generalImageModule = metaData.get('generalImageModule', imageId) || {};
-  const {
-    lossyImageCompression,
-    lossyImageCompressionRatio,
-    lossyImageCompressionMethod,
-  } = generalImageModule;
+  const { lossyImageCompression, lossyImageCompressionRatio, lossyImageCompressionMethod } =
+    generalImageModule;
 
   if (lossyImageCompression === '01' && lossyImageCompressionRatio !== '') {
     const compressionMethod = lossyImageCompressionMethod || 'Lossy: ';

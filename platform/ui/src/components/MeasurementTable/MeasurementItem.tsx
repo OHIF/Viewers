@@ -4,16 +4,7 @@ import classnames from 'classnames';
 
 import Icon from '../Icon';
 
-const MeasurementItem = ({
-  uid,
-  index,
-  label,
-  displayText,
-  isActive,
-  onClick,
-  onEdit,
-  item,
-}) => {
+const MeasurementItem = ({ uid, index, label, displayText, isActive, onClick, onEdit, item }) => {
   const [isHovering, setIsHovering] = useState(false);
 
   const onEditHandler = event => {

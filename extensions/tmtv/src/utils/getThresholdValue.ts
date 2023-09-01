@@ -9,11 +9,10 @@ function getRoiStats(referencedVolume, annotations) {
   const { fn, baseValue } = _getStrategyFn('max');
   let value = baseValue;
 
-  const boundsIJK =
-    csTools.utilities.rectangleROITool.getBoundsIJKFromRectangleAnnotations(
-      annotations,
-      referencedVolume
-    );
+  const boundsIJK = csTools.utilities.rectangleROITool.getBoundsIJKFromRectangleAnnotations(
+    annotations,
+    referencedVolume
+  );
 
   const [[iMin, iMax], [jMin, jMax], [kMin, kMax]] = boundsIJK;
 

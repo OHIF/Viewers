@@ -32,8 +32,7 @@ export type UpdateViewportDisplaySetParams = {
  */
 const isHangingProtocolCommand = command =>
   command &&
-  (command.commandName === 'setHangingProtocol' ||
-    command.commandName === 'toggleHangingProtocol');
+  (command.commandName === 'setHangingProtocol' || command.commandName === 'toggleHangingProtocol');
 
 const commandsModule = ({
   servicesManager,
@@ -51,10 +50,7 @@ const commandsModule = ({
   } = (servicesManager as ServicesManager).services;
 
   // Define a context menu controller for use with any context menus
-  const contextMenuController = new ContextMenuController(
-    servicesManager,
-    commandsManager
-  );
+  const contextMenuController = new ContextMenuController(servicesManager, commandsManager);
 
   const actions = {
     /**
@@ -181,11 +177,7 @@ const commandsModule = ({
         const state = viewportGridService.getState();
         const hpInfo = hangingProtocolService.getState();
         const { protocol: oldProtocol } = hangingProtocolService.getActiveProtocol();
-        const stateSyncReduce = reuseCachedLayouts(
-          state,
-          hangingProtocolService,
-          stateSyncService
-        );
+        const stateSyncReduce = reuseCachedLayouts(state, hangingProtocolService, stateSyncService);
         const { hangingProtocolStageIndexMap, viewportGridStore, displaySetSelectorMap } =
           stateSyncReduce;
 
@@ -212,9 +204,9 @@ const commandsModule = ({
           hangingProtocolService.setActiveStudyUID(activeStudyUID);
         }
 
-        const storedHanging = `${
-          hangingProtocolService.getState().activeStudyUID
-        }:${protocolId}:${useStageIdx || 0}`;
+        const storedHanging = `${hangingProtocolService.getState().activeStudyUID}:${protocolId}:${
+          useStageIdx || 0
+        }`;
 
         const restoreProtocol = !reset && viewportGridStore[storedHanging];
 
@@ -272,19 +264,14 @@ const commandsModule = ({
       }
     },
 
-    toggleHangingProtocol: ({
-      protocolId,
-      stageIndex,
-    }: HangingProtocolParams): boolean => {
+    toggleHangingProtocol: ({ protocolId, stageIndex }: HangingProtocolParams): boolean => {
       const {
         protocol,
         stageIndex: desiredStageIndex,
         activeStudy,
       } = hangingProtocolService.getActiveProtocol();
       const { toggleHangingProtocol } = stateSyncService.getState();
-      const storedHanging = `${activeStudy.StudyInstanceUID}:${protocolId}:${
-        stageIndex | 0
-      }`;
+      const storedHanging = `${activeStudy.StudyInstanceUID}:${protocolId}:${stageIndex | 0}`;
       if (
         protocol.id === protocolId &&
         (stageIndex === undefined || stageIndex === desiredStageIndex)
@@ -349,11 +336,7 @@ const commandsModule = ({
 
       const completeLayout = () => {
         const state = viewportGridService.getState();
-        const stateReduce = findViewportsByPosition(
-          state,
-          { numRows, numCols },
-          stateSyncService
-        );
+        const stateReduce = findViewportsByPosition(state, { numRows, numCols }, stateSyncService);
         const findOrCreateViewport = layoutFindOrCreate.bind(
           null,
           hangingProtocolService,
@@ -411,17 +394,17 @@ const commandsModule = ({
           // the current one up viewport might have a new displaySet dragged and dropped on it
           // so we should prioritize the current one in the old grid store layout viewports
 
-          const newViewports = Array.from(
-            toggleOneUpViewportGridStore.viewports.values()
-          ).map(viewport => {
-            if (viewport.viewportId === currentOneUpViewport.viewportId) {
-              return {
-                ...currentOneUpViewport,
-              };
-            }
+          const newViewports = Array.from(toggleOneUpViewportGridStore.viewports.values()).map(
+            viewport => {
+              if (viewport.viewportId === currentOneUpViewport.viewportId) {
+                return {
+                  ...currentOneUpViewport,
+                };
+              }
 
-            return viewport;
-          });
+              return viewport;
+            }
+          );
 
           // However, we also need to take into account that the current one up viewport
           // might have been part of a bigger hanging protocol layout, so going back
@@ -483,10 +466,7 @@ const commandsModule = ({
           });
         };
 
-        subscribeToNextViewportGridChange(
-          viewportGridService,
-          clearToggleOneUpViewportGridStore
-        );
+        subscribeToNextViewportGridChange(viewportGridService, clearToggleOneUpViewportGridStore);
       }
     },
 
@@ -558,9 +538,7 @@ const commandsModule = ({
 
       const thumbnailListBounds = thumbnailList.getBoundingClientRect();
 
-      const thumbnail = document.querySelector(
-        `#thumbnail-${activeDisplaySetInstanceUID}`
-      );
+      const thumbnail = document.querySelector(`#thumbnail-${activeDisplaySetInstanceUID}`);
 
       if (!thumbnail) {
         return;
@@ -615,10 +593,7 @@ const commandsModule = ({
         }
       }
 
-      if (
-        displaySetIndexToShow < 0 ||
-        displaySetIndexToShow >= currentDisplaySets.length
-      ) {
+      if (displaySetIndexToShow < 0 || displaySetIndexToShow >= currentDisplaySets.length) {
         return;
       }
 

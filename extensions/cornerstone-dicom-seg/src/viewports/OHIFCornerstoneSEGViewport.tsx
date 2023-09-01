@@ -2,11 +2,7 @@ import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import OHIF, { utils } from '@ohif/core';
-import {
-  LoadingIndicatorTotalPercent,
-  useViewportGrid,
-  ViewportActionBar,
-} from '@ohif/ui';
+import { LoadingIndicatorTotalPercent, useViewportGrid, ViewportActionBar } from '@ohif/ui';
 import createSEGToolGroupAndAddTools from '../utils/initSEGToolGroup';
 import promptHydrateSEG from '../utils/promptHydrateSEG';
 import hydrateSEGDisplaySet from '../utils/_hydrateSEG';
@@ -146,11 +142,7 @@ function OHIFCornerstoneSEGViewport(props) {
         newSelectedSegmentIndex = numberOfSegments - 1;
       }
 
-      segmentationService.jumpToSegmentCenter(
-        segmentationId,
-        newSelectedSegmentIndex,
-        toolGroupId
-      );
+      segmentationService.jumpToSegmentCenter(segmentationId, newSelectedSegmentIndex, toolGroupId);
       setSelectedSegment(newSelectedSegmentIndex);
     },
     [selectedSegment]
@@ -177,9 +169,7 @@ function OHIFCornerstoneSEGViewport(props) {
     const { unsubscribe } = segmentationService.subscribe(
       segmentationService.EVENTS.SEGMENTATION_LOADING_COMPLETE,
       evt => {
-        if (
-          evt.segDisplaySet.displaySetInstanceUID === segDisplaySet.displaySetInstanceUID
-        ) {
+        if (evt.segDisplaySet.displaySetInstanceUID === segDisplaySet.displaySetInstanceUID) {
           setSegIsLoading(false);
         }
 
@@ -245,11 +235,7 @@ function OHIFCornerstoneSEGViewport(props) {
 
     // This creates a custom tool group which has the lifetime of this view
     // only, and does NOT interfere with currently displayed segmentations.
-    toolGroup = createSEGToolGroupAndAddTools(
-      toolGroupService,
-      customizationService,
-      toolGroupId
-    );
+    toolGroup = createSEGToolGroupAndAddTools(toolGroupService, customizationService, toolGroupId);
 
     return () => {
       // remove the segmentation representations if seg displayset changed
@@ -348,9 +334,7 @@ function OHIFCornerstoneSEGViewport(props) {
             thickness: SliceThickness ? utils.roundNumber(SliceThickness, 2) : '',
             thicknessUnits: SliceThickness !== undefined ? 'mm' : '',
             spacing:
-              SpacingBetweenSlices !== undefined
-                ? utils.roundNumber(SpacingBetweenSlices, 2)
-                : '',
+              SpacingBetweenSlices !== undefined ? utils.roundNumber(SpacingBetweenSlices, 2) : '',
             scanner: ManufacturerModelName || '',
           },
         }}

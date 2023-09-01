@@ -53,10 +53,9 @@ function _getDisplaySetsFromSeries(instances, servicesManager, extensionManager)
 
   let referencedSeriesSequence = instance.ReferencedSeriesSequence;
   if (instance.ReferencedFrameOfReferenceSequence && !instance.ReferencedSeriesSequence) {
-    instance.ReferencedSeriesSequence =
-      _deriveReferencedSeriesSequenceFromFrameOfReferenceSequence(
-        instance.ReferencedFrameOfReferenceSequence
-      );
+    instance.ReferencedSeriesSequence = _deriveReferencedSeriesSequenceFromFrameOfReferenceSequence(
+      instance.ReferencedFrameOfReferenceSequence
+    );
     referencedSeriesSequence = instance.ReferencedSeriesSequence;
   }
 
@@ -66,8 +65,7 @@ function _getDisplaySetsFromSeries(instances, servicesManager, extensionManager)
 
   const referencedSeries = referencedSeriesSequence[0];
 
-  displaySet.referencedImages =
-    instance.ReferencedSeriesSequence.ReferencedInstanceSequence;
+  displaySet.referencedImages = instance.ReferencedSeriesSequence.ReferencedInstanceSequence;
   displaySet.referencedSeriesInstanceUID = referencedSeries.SeriesInstanceUID;
 
   displaySet.getReferenceDisplaySet = () => {
@@ -82,14 +80,12 @@ function _getDisplaySetsFromSeries(instances, servicesManager, extensionManager)
 
     const referencedDisplaySet = referencedDisplaySets[0];
 
-    displaySet.referencedDisplaySetInstanceUID =
-      referencedDisplaySet.displaySetInstanceUID;
+    displaySet.referencedDisplaySetInstanceUID = referencedDisplaySet.displaySetInstanceUID;
 
     return referencedDisplaySet;
   };
 
-  displaySet.load = ({ headers }) =>
-    _load(displaySet, servicesManager, extensionManager, headers);
+  displaySet.load = ({ headers }) => _load(displaySet, servicesManager, extensionManager, headers);
 
   return [displaySet];
 }

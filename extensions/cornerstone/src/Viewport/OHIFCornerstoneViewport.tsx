@@ -150,11 +150,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
 
       toolGroupService.removeViewportFromToolGroup(viewportId, renderingEngineId);
 
-      syncGroupService.removeViewportFromSyncGroup(
-        viewportId,
-        renderingEngineId,
-        syncGroups
-      );
+      syncGroupService.removeViewportFromSyncGroup(viewportId, renderingEngineId, syncGroups);
     },
     [viewportId]
   );
@@ -208,10 +204,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
         onElementDisabled(viewportInfo);
       }
 
-      eventTarget.removeEventListener(
-        Enums.Events.ELEMENT_ENABLED,
-        elementEnabledHandler
-      );
+      eventTarget.removeEventListener(Enums.Events.ELEMENT_ENABLED, elementEnabledHandler);
     };
   }, []);
 
@@ -246,11 +239,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
           );
 
           const keepCamera = true;
-          cornerstoneViewportService.updateViewport(
-            viewportId,
-            newViewportData,
-            keepCamera
-          );
+          cornerstoneViewportService.updateViewport(viewportId, newViewportData, keepCamera);
         }
       }
     );
@@ -276,12 +265,10 @@ const OHIFCornerstoneViewport = React.memo(props => {
       // The presentation state will have been stored previously by closing
       // a viewport.  Otherwise, this viewport will be unchanged and the
       // presentation information will be directly carried over.
-      const { lutPresentationStore, positionPresentationStore } =
-        stateSyncService.getState();
+      const { lutPresentationStore, positionPresentationStore } = stateSyncService.getState();
       const { presentationIds } = viewportOptions;
       const presentations = {
-        positionPresentation:
-          positionPresentationStore[presentationIds?.positionPresentationId],
+        positionPresentation: positionPresentationStore[presentationIds?.positionPresentationId],
         lutPresentation: lutPresentationStore[presentationIds?.lutPresentationId],
       };
       let measurement;
@@ -502,8 +489,7 @@ function _jumpToMeasurement(
     return;
   }
 
-  const referencedDisplaySet =
-    displaySetService.getDisplaySetByUID(displaySetInstanceUID);
+  const referencedDisplaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
 
   // Todo: setCornerstoneMeasurementActive should be handled by the toolGroupManager
   //  to set it properly
@@ -525,10 +511,7 @@ function _jumpToMeasurement(
       imageIdIndex = imageIds.findIndex(imageId => {
         const { SOPInstanceUID: aSOPInstanceUID, frameNumber: aFrameNumber } =
           getSOPInstanceAttributes(imageId);
-        return (
-          aSOPInstanceUID === SOPInstanceUID &&
-          (!frameNumber || frameNumber === aFrameNumber)
-        );
+        return aSOPInstanceUID === SOPInstanceUID && (!frameNumber || frameNumber === aFrameNumber);
       });
     } else {
       // for volume viewport we can't rely on the imageIdIndex since it can be
@@ -543,10 +526,7 @@ function _jumpToMeasurement(
       // should compare abs for both planes since the direction can be flipped
       if (
         measurementViewPlane &&
-        !csUtils.isEqual(
-          measurementViewPlane.map(Math.abs),
-          viewportViewPlane.map(Math.abs)
-        )
+        !csUtils.isEqual(measurementViewPlane.map(Math.abs), viewportViewPlane.map(Math.abs))
       ) {
         viewportCameraDirectionMatch = false;
       }

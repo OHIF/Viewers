@@ -1,10 +1,4 @@
-import React, {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useReducer,
-} from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useReducer } from 'react';
 import PropTypes from 'prop-types';
 
 const DEFAULT_STATE = {
@@ -41,10 +35,7 @@ export function UserAuthenticationProvider({ children, service }) {
     }
   };
 
-  const [userAuthenticationState, dispatch] = useReducer(
-    userAuthenticationReducer,
-    DEFAULT_STATE
-  );
+  const [userAuthenticationState, dispatch] = useReducer(userAuthenticationReducer, DEFAULT_STATE);
 
   const getState = useCallback(() => userAuthenticationState, [userAuthenticationState]);
 
@@ -59,10 +50,7 @@ export function UserAuthenticationProvider({ children, service }) {
     [dispatch]
   );
 
-  const getUser = useCallback(
-    () => userAuthenticationState.user,
-    [userAuthenticationState]
-  );
+  const getUser = useCallback(() => userAuthenticationState.user, [userAuthenticationState]);
 
   const reset = useCallback(
     () =>

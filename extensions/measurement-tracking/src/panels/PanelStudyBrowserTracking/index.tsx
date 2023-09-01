@@ -21,11 +21,7 @@ function _getStudyForPatientUtility(extensionManager) {
  * @param {object} commandsManager
  * @param {object} extensionManager
  */
-function WrappedPanelStudyBrowserTracking({
-  commandsManager,
-  extensionManager,
-  servicesManager,
-}) {
+function WrappedPanelStudyBrowserTracking({ commandsManager, extensionManager, servicesManager }) {
   const dataSource = extensionManager.getActiveDataSource()[0];
 
   const getStudiesForPatientByMRN = _getStudyForPatientUtility(extensionManager);

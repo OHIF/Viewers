@@ -1,9 +1,6 @@
 import OHIF from '@ohif/core';
 
-import {
-  InstanceMetadata,
-  PhilipsPETPrivateGroup,
-} from '@cornerstonejs/calculate-suv/src/types';
+import { InstanceMetadata, PhilipsPETPrivateGroup } from '@cornerstonejs/calculate-suv/src/types';
 
 const metadataProvider = OHIF.classes.MetadataProvider;
 
@@ -20,17 +17,15 @@ export default function getPTImageIdInstanceMetadata(imageId: string): InstanceM
     dicomMetaData.CorrectedImage === undefined ||
     dicomMetaData.Units === undefined ||
     !dicomMetaData.RadiopharmaceuticalInformationSequence ||
-    dicomMetaData.RadiopharmaceuticalInformationSequence[0].RadionuclideHalfLife ===
-      undefined ||
-    dicomMetaData.RadiopharmaceuticalInformationSequence[0].RadionuclideTotalDose ===
-      undefined ||
+    dicomMetaData.RadiopharmaceuticalInformationSequence[0].RadionuclideHalfLife === undefined ||
+    dicomMetaData.RadiopharmaceuticalInformationSequence[0].RadionuclideTotalDose === undefined ||
     dicomMetaData.DecayCorrection === undefined ||
     dicomMetaData.AcquisitionDate === undefined ||
     dicomMetaData.AcquisitionTime === undefined ||
-    (dicomMetaData.RadiopharmaceuticalInformationSequence[0]
-      .RadiopharmaceuticalStartDateTime === undefined &&
-      dicomMetaData.RadiopharmaceuticalInformationSequence[0]
-        .RadiopharmaceuticalStartTime === undefined)
+    (dicomMetaData.RadiopharmaceuticalInformationSequence[0].RadiopharmaceuticalStartDateTime ===
+      undefined &&
+      dicomMetaData.RadiopharmaceuticalInformationSequence[0].RadiopharmaceuticalStartTime ===
+        undefined)
   ) {
     throw new Error('required metadata are missing');
   }
@@ -47,11 +42,9 @@ export default function getPTImageIdInstanceMetadata(imageId: string): InstanceM
     RadionuclideTotalDose:
       dicomMetaData.RadiopharmaceuticalInformationSequence[0].RadionuclideTotalDose,
     RadiopharmaceuticalStartDateTime:
-      dicomMetaData.RadiopharmaceuticalInformationSequence[0]
-        .RadiopharmaceuticalStartDateTime,
+      dicomMetaData.RadiopharmaceuticalInformationSequence[0].RadiopharmaceuticalStartDateTime,
     RadiopharmaceuticalStartTime:
-      dicomMetaData.RadiopharmaceuticalInformationSequence[0]
-        .RadiopharmaceuticalStartTime,
+      dicomMetaData.RadiopharmaceuticalInformationSequence[0].RadiopharmaceuticalStartTime,
     DecayCorrection: dicomMetaData.DecayCorrection,
     PatientWeight: dicomMetaData.PatientWeight,
     SeriesDate: dicomMetaData.SeriesDate,
@@ -77,17 +70,11 @@ export default function getPTImageIdInstanceMetadata(imageId: string): InstanceM
     instanceMetadata.GEPrivatePostInjectionDateTime = dicomMetaData['0009100d'];
   }
 
-  if (
-    dicomMetaData.FrameReferenceTime &&
-    dicomMetaData.FrameReferenceTime !== undefined
-  ) {
+  if (dicomMetaData.FrameReferenceTime && dicomMetaData.FrameReferenceTime !== undefined) {
     instanceMetadata.FrameReferenceTime = dicomMetaData.FrameReferenceTime;
   }
 
-  if (
-    dicomMetaData.ActualFrameDuration &&
-    dicomMetaData.ActualFrameDuration !== undefined
-  ) {
+  if (dicomMetaData.ActualFrameDuration && dicomMetaData.ActualFrameDuration !== undefined) {
     instanceMetadata.ActualFrameDuration = dicomMetaData.ActualFrameDuration;
   }
 

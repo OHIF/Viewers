@@ -186,8 +186,7 @@ export default class PortalTooltipCard extends Component {
 
   mergeStyle(style, theme) {
     if (theme) {
-      let { position, top, left, right, bottom, marginLeft, marginRight, ...validTheme } =
-        theme;
+      let { position, top, left, right, bottom, marginLeft, marginRight, ...validTheme } = theme;
 
       return {
         ...style,
@@ -267,8 +266,7 @@ export default class PortalTooltipCard extends Component {
         style.left = left + parentSize.width / 2 - this.margin + alignOffset;
       },
       right: () => {
-        style.left =
-          left - this.state.width + parentSize.width / 2 + this.margin + alignOffset;
+        style.left = left - this.state.width + parentSize.width / 2 + this.margin + alignOffset;
       },
       top: () => {
         style.top = top + parentSize.height / 2 - this.margin;

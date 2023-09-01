@@ -206,10 +206,8 @@ const connectToolsToMeasurementService = servicesManager => {
     try {
       const annotationSelectionEventDetail = csToolsEvent.detail;
 
-      const {
-        added: addedSelectedAnnotationUIDs,
-        removed: removedSelectedAnnotationUIDs,
-      } = annotationSelectionEventDetail;
+      const { added: addedSelectedAnnotationUIDs, removed: removedSelectedAnnotationUIDs } =
+        annotationSelectionEventDetail;
 
       if (removedSelectedAnnotationUIDs) {
         removedSelectedAnnotationUIDs.forEach(annotationUID =>
@@ -277,12 +275,8 @@ const connectMeasurementServiceToTools = (
   cornerstoneViewportService,
   measurementSource
 ) => {
-  const {
-    MEASUREMENT_REMOVED,
-    MEASUREMENTS_CLEARED,
-    MEASUREMENT_UPDATED,
-    RAW_MEASUREMENT_ADDED,
-  } = measurementService.EVENTS;
+  const { MEASUREMENT_REMOVED, MEASUREMENTS_CLEARED, MEASUREMENT_UPDATED, RAW_MEASUREMENT_ADDED } =
+    measurementService.EVENTS;
 
   const csTools3DVer1MeasurementSource = measurementService.getSource(
     CORNERSTONE_3D_TOOLS_SOURCE_NAME,
@@ -358,9 +352,7 @@ const connectMeasurementServiceToTools = (
 
       if (measurement?.metadata?.referencedImageId) {
         imageId = measurement.metadata.referencedImageId;
-        frameNumber = getSOPInstanceAttributes(
-          measurement.metadata.referencedImageId
-        ).frameNumber;
+        frameNumber = getSOPInstanceAttributes(measurement.metadata.referencedImageId).frameNumber;
       } else {
         imageId = dataSource.getImageIdsForInstance({ instance });
       }

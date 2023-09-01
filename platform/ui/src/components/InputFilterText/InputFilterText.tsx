@@ -1,13 +1,6 @@
 import classNames from 'classnames';
 import debounce from 'lodash.debounce';
-import React, {
-  ReactElement,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import Icon from '../Icon';
 

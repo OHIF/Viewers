@@ -100,11 +100,9 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }) 
           RadionuclideHalfLife:
             instance.RadiopharmaceuticalInformationSequence[0].RadionuclideHalfLife,
           RadiopharmaceuticalStartTime:
-            instance.RadiopharmaceuticalInformationSequence[0]
-              .RadiopharmaceuticalStartTime,
+            instance.RadiopharmaceuticalInformationSequence[0].RadiopharmaceuticalStartTime,
           RadiopharmaceuticalStartDateTime:
-            instance.RadiopharmaceuticalInformationSequence[0]
-              .RadiopharmaceuticalStartDateTime,
+            instance.RadiopharmaceuticalInformationSequence[0].RadiopharmaceuticalStartDateTime,
         },
       };
 
@@ -140,10 +138,7 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }) 
           representationType
         );
 
-        segmentationService.setActiveSegmentationForToolGroup(
-          segmentationId,
-          toolGroupId
-        );
+        segmentationService.setActiveSegmentationForToolGroup(segmentationId, toolGroupId);
       }
 
       return segmentationId;
@@ -152,18 +147,14 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }) 
       const toolGroupIds = _getMatchedViewportsToolGroupIds();
 
       toolGroupIds.forEach(toolGroupId => {
-        segmentationService.setActiveSegmentationForToolGroup(
-          segmentationId,
-          toolGroupId
-        );
+        segmentationService.setActiveSegmentationForToolGroup(segmentationId, toolGroupId);
       });
     },
     thresholdSegmentationByRectangleROITool: ({ segmentationId, config }) => {
       const segmentation = csTools.segmentation.state.getSegmentation(segmentationId);
 
       const { representationData } = segmentation;
-      const { displaySetMatchDetails: matchDetails } =
-        hangingProtocolService.getMatchDetails();
+      const { displaySetMatchDetails: matchDetails } = hangingProtocolService.getMatchDetails();
       const volumeLoaderScheme = 'cornerstoneStreamingImageVolume'; // Loader id which defines which volume loader to use
 
       const ctDisplaySet = matchDetails.get('ctDisplaySet');
@@ -184,10 +175,9 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }) 
         throw new Error('No Reference labelmap found');
       }
 
-      const annotationUIDs =
-        csTools.annotation.selection.getAnnotationsSelectedByToolName(
-          RECTANGLE_ROI_THRESHOLD_MANUAL
-        );
+      const annotationUIDs = csTools.annotation.selection.getAnnotationsSelectedByToolName(
+        RECTANGLE_ROI_THRESHOLD_MANUAL
+      );
 
       if (annotationUIDs.length === 0) {
         uiNotificationService.show({
@@ -219,10 +209,9 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }) 
 
       const referencedVolume = cs.cache.getVolume(referencedVolumeId);
 
-      const annotationUIDs =
-        csTools.annotation.selection.getAnnotationsSelectedByToolName(
-          RECTANGLE_ROI_THRESHOLD_MANUAL
-        );
+      const annotationUIDs = csTools.annotation.selection.getAnnotationsSelectedByToolName(
+        RECTANGLE_ROI_THRESHOLD_MANUAL
+      );
 
       const annotations = annotationUIDs.map(annotationUID =>
         csTools.annotation.state.getAnnotation(annotationUID)
@@ -239,9 +228,7 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }) 
     getLesionStats: ({ labelmap, segmentIndex = 1 }) => {
       const { scalarData, spacing } = labelmap;
 
-      const { scalarData: referencedScalarData } = cs.cache.getVolume(
-        labelmap.referencedVolumeId
-      );
+      const { scalarData: referencedScalarData } = cs.cache.getVolume(labelmap.referencedVolumeId);
 
       let segmentationMax = -Infinity;
       let segmentationMin = Infinity;
@@ -283,9 +270,7 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }) 
       };
     },
     calculateTMTV: ({ segmentations }) => {
-      const labelmaps = segmentations.map(s =>
-        segmentationService.getLabelmapVolume(s.id)
-      );
+      const labelmaps = segmentations.map(s => segmentationService.getLabelmapVolume(s.id));
 
       if (!labelmaps.length) {
         return;
@@ -308,9 +293,7 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }) 
       createAndDownloadTMTVReport(segReport, additionalReportRows);
     },
     getTotalLesionGlycolysis: ({ segmentations }) => {
-      const labelmapVolumes = segmentations.map(s =>
-        segmentationService.getLabelmapVolume(s.id)
-      );
+      const labelmapVolumes = segmentations.map(s => segmentationService.getLabelmapVolume(s.id));
 
       let mergedLabelmap;
       // merge labelmap will through an error if labels maps are not the same size
@@ -327,9 +310,7 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }) 
       const { referencedVolumeId, spacing } = labelmapVolumes[0];
 
       if (!referencedVolumeId) {
-        console.error(
-          'commandsModule::getTotalLesionGlycolysis:No referencedVolumeId found'
-        );
+        console.error('commandsModule::getTotalLesionGlycolysis:No referencedVolumeId found');
       }
 
       const ptVolume = cs.cache.getVolume(referencedVolumeId);
@@ -355,18 +336,15 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }) 
       const averageSuv = suv / totalLesionVoxelCount;
 
       // total Lesion Glycolysis [suv * ml]
-      return (
-        averageSuv * totalLesionVoxelCount * spacing[0] * spacing[1] * spacing[2] * 1e-3
-      );
+      return averageSuv * totalLesionVoxelCount * spacing[0] * spacing[1] * spacing[2] * 1e-3;
     },
     setStartSliceForROIThresholdTool: () => {
       const { viewport } = _getActiveViewportsEnabledElement();
       const { focalPoint, viewPlaneNormal } = viewport.getCamera();
 
-      const selectedAnnotationUIDs =
-        csTools.annotation.selection.getAnnotationsSelectedByToolName(
-          RECTANGLE_ROI_THRESHOLD_MANUAL
-        );
+      const selectedAnnotationUIDs = csTools.annotation.selection.getAnnotationsSelectedByToolName(
+        RECTANGLE_ROI_THRESHOLD_MANUAL
+      );
 
       const annotationUID = selectedAnnotationUIDs[0];
 
@@ -402,10 +380,9 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }) 
     setEndSliceForROIThresholdTool: () => {
       const { viewport } = _getActiveViewportsEnabledElement();
 
-      const selectedAnnotationUIDs =
-        csTools.annotation.selection.getAnnotationsSelectedByToolName(
-          RECTANGLE_ROI_THRESHOLD_MANUAL
-        );
+      const selectedAnnotationUIDs = csTools.annotation.selection.getAnnotationsSelectedByToolName(
+        RECTANGLE_ROI_THRESHOLD_MANUAL
+      );
 
       const annotationUID = selectedAnnotationUIDs[0];
 
@@ -475,8 +452,7 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }) 
         const referencedVolumeId = labelmapVolume.referencedVolumeId;
         segReport.referencedVolumeId = referencedVolumeId;
 
-        const referencedVolume =
-          segmentationService.getLabelmapVolume(referencedVolumeId);
+        const referencedVolume = segmentationService.getLabelmapVolume(referencedVolumeId);
 
         if (!referencedVolume) {
           report[id] = segReport;

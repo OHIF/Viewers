@@ -103,10 +103,9 @@ class DicomMicroscopyViewport extends Component {
   // you should only do this once.
   async installOpenLayersRenderer(container, displaySet) {
     const loadViewer = async metadata => {
-      const { viewer: DicomMicroscopyViewer, metadata: metadataUtils } =
-        await import(
-          /* webpackChunkName: "dicom-microscopy-viewer" */ 'dicom-microscopy-viewer'
-        );
+      const { viewer: DicomMicroscopyViewer, metadata: metadataUtils } = await import(
+        /* webpackChunkName: "dicom-microscopy-viewer" */ 'dicom-microscopy-viewer'
+      );
       const microscopyViewer = DicomMicroscopyViewer.VolumeImageViewer;
 
       const client = getDicomWebClient({
@@ -161,10 +160,7 @@ class DicomMicroscopyViewport extends Component {
       metadata.forEach(m => {
         // NOTE: depending on different data source, image.ImageType sometimes
         //    is a string, not a string array.
-        m.ImageType =
-          typeof m.ImageType === 'string'
-            ? m.ImageType.split('\\')
-            : m.ImageType;
+        m.ImageType = typeof m.ImageType === 'string' ? m.ImageType.split('\\') : m.ImageType;
 
         const inst = cleanDenaturalizedDataset(
           dcmjs.data.DicomMetaDictionary.denaturalizeDataset(m),
@@ -209,11 +205,7 @@ class DicomMicroscopyViewport extends Component {
 
       this.viewer = new microscopyViewer(options);
 
-      if (
-        this.overlayElement &&
-        this.overlayElement.current &&
-        this.viewer.addViewportOverlay
-      ) {
+      if (this.overlayElement && this.overlayElement.current && this.viewer.addViewportOverlay) {
         this.viewer.addViewportOverlay({
           element: this.overlayElement.current,
           coordinates: [0, 0], // TODO: dicom-microscopy-viewer documentation says this can be false to be automatically, but it is not.
@@ -261,22 +253,13 @@ class DicomMicroscopyViewport extends Component {
     const { viewportId } = viewportOptions;
     // Todo-rename: this is always getting the 0
     const displaySet = displaySets[0];
-    this.installOpenLayersRenderer(this.container.current, displaySet).then(
-      () => {
-        this.setState({ isLoaded: true });
-      }
-    );
+    this.installOpenLayersRenderer(this.container.current, displaySet).then(() => {
+      this.setState({ isLoaded: true });
+    });
   }
 
-  componentDidUpdate(
-    prevProps: Readonly<{}>,
-    prevState: Readonly<{}>,
-    snapshot?: any
-  ): void {
-    if (
-      this.managedViewer &&
-      prevProps.displaySets !== this.props.displaySets
-    ) {
+  componentDidUpdate(prevProps: Readonly<{}>, prevState: Readonly<{}>, snapshot?: any): void {
+    if (this.managedViewer && prevProps.displaySets !== this.props.displaySets) {
       const { displaySets } = this.props;
       const displaySet = displaySets[0];
 
@@ -315,9 +298,7 @@ class DicomMicroscopyViewport extends Component {
       >
         <div style={{ ...style, display: 'none' }}>
           <div style={{ ...style }} ref={this.overlayElement}>
-            <div
-              style={{ position: 'relative', height: '100%', width: '100%' }}
-            >
+            <div style={{ position: 'relative', height: '100%', width: '100%' }}>
               {displaySet && firstInstance.imageId && (
                 <ViewportOverlay
                   displaySet={displaySet}
@@ -329,11 +310,7 @@ class DicomMicroscopyViewport extends Component {
           </div>
         </div>
         {ReactResizeDetector && (
-          <ReactResizeDetector
-            handleWidth
-            handleHeight
-            onResize={this.onWindowResize}
-          />
+          <ReactResizeDetector handleWidth handleHeight onResize={this.onWindowResize} />
         )}
         {this.state.error ? (
           <h2>{JSON.stringify(this.state.error)}</h2>

@@ -27,8 +27,11 @@ const Bidirectional = {
       throw new Error('Tool not supported');
     }
 
-    const { SOPInstanceUID, SeriesInstanceUID, StudyInstanceUID } =
-      getSOPInstanceAttributes(referencedImageId, cornerstoneViewportService, viewportId);
+    const { SOPInstanceUID, SeriesInstanceUID, StudyInstanceUID } = getSOPInstanceAttributes(
+      referencedImageId,
+      cornerstoneViewportService,
+      viewportId
+    );
 
     let displaySet;
 
@@ -159,14 +162,11 @@ function getDisplayText(mappedAnnotations, displaySet) {
   const displayText = [];
 
   // Area is the same for all series
-  const { length, width, SeriesNumber, SOPInstanceUID, frameNumber } =
-    mappedAnnotations[0];
+  const { length, width, SeriesNumber, SOPInstanceUID, frameNumber } = mappedAnnotations[0];
   const roundedLength = utils.roundNumber(length, 2);
   const roundedWidth = utils.roundNumber(width, 2);
 
-  const instance = displaySet.images.find(
-    image => image.SOPInstanceUID === SOPInstanceUID
-  );
+  const instance = displaySet.images.find(image => image.SOPInstanceUID === SOPInstanceUID);
 
   let InstanceNumber;
   if (instance) {
@@ -176,9 +176,7 @@ function getDisplayText(mappedAnnotations, displaySet) {
   const instanceText = InstanceNumber ? ` I: ${InstanceNumber}` : '';
   const frameText = displaySet.isMultiFrame ? ` F: ${frameNumber}` : '';
 
-  displayText.push(
-    `L: ${roundedLength} mm (S: ${SeriesNumber}${instanceText}${frameText})`
-  );
+  displayText.push(`L: ${roundedLength} mm (S: ${SeriesNumber}${instanceText}${frameText})`);
   displayText.push(`W: ${roundedWidth} mm`);
 
   return displayText;

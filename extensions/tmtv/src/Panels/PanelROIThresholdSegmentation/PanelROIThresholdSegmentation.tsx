@@ -42,19 +42,14 @@ function reducer(state, action) {
   }
 }
 
-export default function PanelRoiThresholdSegmentation({
-  servicesManager,
-  commandsManager,
-}) {
+export default function PanelRoiThresholdSegmentation({ servicesManager, commandsManager }) {
   const { segmentationService } = servicesManager.services;
 
   const { t } = useTranslation('PanelSUV');
   const [showConfig, setShowConfig] = useState(false);
   const [labelmapLoading, setLabelmapLoading] = useState(false);
   const [selectedSegmentationId, setSelectedSegmentationId] = useState(null);
-  const [segmentations, setSegmentations] = useState(() =>
-    segmentationService.getSegmentations()
-  );
+  const [segmentations, setSegmentations] = useState(() => segmentationService.getSegmentations());
 
   const [config, dispatch] = useReducer(reducer, {
     strategy: DEFAULT_STRATEGY,
@@ -197,9 +192,7 @@ export default function PanelRoiThresholdSegmentation({
               setShowConfig(!showConfig);
             }}
           >
-            <div className="px-4 text-base text-white">
-              {t('ROI Threshold Configuration')}
-            </div>
+            <div className="px-4 text-base text-white">{t('ROI Threshold Configuration')}</div>
           </div>
           {showConfig && (
             <ROIThresholdConfiguration
@@ -261,10 +254,7 @@ export default function PanelRoiThresholdSegmentation({
         className="mt-auto mb-4 flex cursor-pointer items-center justify-center text-blue-400 opacity-50 hover:opacity-80"
         onClick={() => {
           // navigate to a url in a new tab
-          window.open(
-            'https://github.com/OHIF/Viewers/blob/master/modes/tmtv/README.md',
-            '_blank'
-          );
+          window.open('https://github.com/OHIF/Viewers/blob/master/modes/tmtv/README.md', '_blank');
         }}
       >
         <Icon

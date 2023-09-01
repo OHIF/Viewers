@@ -152,9 +152,7 @@ function PanelStudyBrowser({
         const { displaySetsAdded } = data;
         displaySetsAdded.forEach(async dSet => {
           const newImageSrcEntry = {};
-          const displaySet = displaySetService.getDisplaySetByUID(
-            dSet.displaySetInstanceUID
-          );
+          const displaySet = displaySetService.getDisplaySetByUID(dSet.displaySetInstanceUID);
           if (!displaySet?.unsupported) {
             const imageIds = dataSource.getImageIdsForDisplaySet(displaySet);
             const imageId = imageIds[Math.floor(imageIds.length / 2)];
@@ -182,10 +180,7 @@ function PanelStudyBrowser({
     const SubscriptionDisplaySetsChanged = displaySetService.subscribe(
       displaySetService.EVENTS.DISPLAY_SETS_CHANGED,
       changedDisplaySets => {
-        const mappedDisplaySets = _mapDisplaySets(
-          changedDisplaySets,
-          thumbnailImageSrcMap
-        );
+        const mappedDisplaySets = _mapDisplaySets(changedDisplaySets, thumbnailImageSrcMap);
         setDisplaySets(mappedDisplaySets);
       }
     );
@@ -224,16 +219,11 @@ function PanelStudyBrowser({
 
     if (!shouldCollapseStudy) {
       const madeInClient = true;
-      requestDisplaySetCreationForStudy(
-        displaySetService,
-        StudyInstanceUID,
-        madeInClient
-      );
+      requestDisplaySetCreationForStudy(displaySetService, StudyInstanceUID, madeInClient);
     }
   }
 
-  const activeDisplaySetInstanceUIDs =
-    viewports.get(activeViewportId)?.displaySetInstanceUIDs;
+  const activeDisplaySetInstanceUIDs = viewports.get(activeViewportId)?.displaySetInstanceUIDs;
 
   return (
     <StudyBrowser
@@ -296,9 +286,7 @@ function _mapDisplaySets(displaySets, thumbnailImageSrcMap) {
       const componentType = _getComponentType(ds);
 
       const array =
-        componentType === 'thumbnail'
-          ? thumbnailDisplaySets
-          : thumbnailNoImageDisplaySets;
+        componentType === 'thumbnail' ? thumbnailDisplaySets : thumbnailNoImageDisplaySets;
 
       array.push({
         displaySetInstanceUID: ds.displaySetInstanceUID,
@@ -348,11 +336,7 @@ function _getComponentType(ds) {
  * @param {object[]} displaySets
  * @returns tabs - The prop object expected by the StudyBrowser component
  */
-function _createStudyBrowserTabs(
-  primaryStudyInstanceUIDs,
-  studyDisplayList,
-  displaySets
-) {
+function _createStudyBrowserTabs(primaryStudyInstanceUIDs, studyDisplayList, displaySets) {
   const primaryStudies = [];
   const recentStudies = [];
   const allStudies = [];

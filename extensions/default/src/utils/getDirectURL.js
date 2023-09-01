@@ -38,9 +38,7 @@ const getDirectURL = (config, params) => {
   if (!singlepart || (singlepart !== true && singlepart.indexOf(fetchPart) === -1)) {
     if (value.retrieveBulkData) {
       return value.retrieveBulkData().then(arr => {
-        value.DirectRetrieveURL = URL.createObjectURL(
-          new Blob([arr], { type: defaultType })
-        );
+        value.DirectRetrieveURL = URL.createObjectURL(new Blob([arr], { type: defaultType }));
         return value.DirectRetrieveURL;
       });
     }

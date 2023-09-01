@@ -138,14 +138,7 @@ const ButtonGroup = ({
 ButtonGroup.propTypes = {
   children: PropTypes.node.isRequired,
   className: PropTypes.string,
-  color: PropTypes.oneOf([
-    'default',
-    'inherit',
-    'primary',
-    'secondary',
-    'white',
-    'black',
-  ]),
+  color: PropTypes.oneOf(['default', 'inherit', 'primary', 'secondary', 'white', 'black']),
   disabled: PropTypes.bool,
   fullWidth: PropTypes.bool,
   orientation: PropTypes.oneOf(['vertical', 'horizontal']),

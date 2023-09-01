@@ -14,8 +14,7 @@ const _getDisplaySetsFromSeries = (instances, servicesManager, extensionManager)
   return instances.map(instance => {
     const { Modality, SOPInstanceUID, EncapsulatedDocument } = instance;
     const { SeriesDescription = 'PDF', MIMETypeOfEncapsulatedDocument } = instance;
-    const { SeriesNumber, SeriesDate, SeriesInstanceUID, StudyInstanceUID, SOPClassUID } =
-      instance;
+    const { SeriesNumber, SeriesDate, SeriesInstanceUID, StudyInstanceUID, SOPClassUID } = instance;
     const pdfUrl = dataSource.retrieve.directURL({
       instance,
       tag: 'EncapsulatedDocument',

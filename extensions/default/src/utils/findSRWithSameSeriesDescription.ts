@@ -23,14 +23,8 @@ export default function findSRWithSameSeriesDescription(
   if (sameSeries) {
     console.log('Storing to same series', sameSeries);
     const { instance } = sameSeries;
-    const {
-      SeriesInstanceUID,
-      SeriesDescription,
-      SeriesDate,
-      SeriesTime,
-      SeriesNumber,
-      Modality,
-    } = instance;
+    const { SeriesInstanceUID, SeriesDescription, SeriesDate, SeriesTime, SeriesNumber, Modality } =
+      instance;
     return {
       SeriesInstanceUID,
       SeriesDescription,

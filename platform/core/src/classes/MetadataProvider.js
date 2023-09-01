@@ -100,11 +100,7 @@ class MetadataProvider {
     return this.get(INSTANCE, imageId);
   }
 
-  getTagFromInstance(
-    naturalizedTagOrWADOImageLoaderTag,
-    instance,
-    options = { fallback: false }
-  ) {
+  getTagFromInstance(naturalizedTagOrWADOImageLoaderTag, instance, options = { fallback: false }) {
     if (!instance) {
       return;
     }
@@ -115,10 +111,7 @@ class MetadataProvider {
     }
 
     // Maybe its a legacy dicomImageLoader tag then:
-    return this._getCornerstoneDICOMImageLoaderTag(
-      naturalizedTagOrWADOImageLoaderTag,
-      instance
-    );
+    return this._getCornerstoneDICOMImageLoaderTag(naturalizedTagOrWADOImageLoaderTag, instance);
   }
 
   _getCornerstoneDICOMImageLoaderTag(wadoImageLoaderTag, instance) {
@@ -283,16 +276,11 @@ class MetadataProvider {
             ? RadiopharmaceuticalInformationSequence[0]
             : RadiopharmaceuticalInformationSequence;
 
-          const {
-            RadiopharmaceuticalStartTime,
-            RadionuclideTotalDose,
-            RadionuclideHalfLife,
-          } = RadiopharmaceuticalInformation;
+          const { RadiopharmaceuticalStartTime, RadionuclideTotalDose, RadionuclideHalfLife } =
+            RadiopharmaceuticalInformation;
 
           const radiopharmaceuticalInfo = {
-            radiopharmaceuticalStartTime: dicomParser.parseTM(
-              RadiopharmaceuticalStartTime
-            ),
+            radiopharmaceuticalStartTime: dicomParser.parseTM(RadiopharmaceuticalStartTime),
             radionuclideTotalDose: RadionuclideTotalDose,
             radionuclideHalfLife: RadionuclideHalfLife,
           };

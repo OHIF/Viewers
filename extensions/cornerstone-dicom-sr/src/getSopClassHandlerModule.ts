@@ -66,10 +66,7 @@ const CORNERSTONE_FREETEXT_CODE_VALUE = 'CORNERSTONEFREETEXT';
  * @param instances is a list of instances from THIS series that are not
  *     in this DICOM SR Display Set already.
  */
-function addInstances(
-  instances: InstanceMetadata[],
-  displaySetService: DisplaySetService
-) {
+function addInstances(instances: InstanceMetadata[], displaySetService: DisplaySetService) {
   this.instances.push(...instances);
   utils.sortStudyInstances(this.instances);
   // The last instance is the newest one, so is the one most interesting.
@@ -114,8 +111,7 @@ function _getDisplaySetsFromSeries(instances, servicesManager, extensionManager)
 
   if (
     !ConceptNameCodeSequence ||
-    ConceptNameCodeSequence.CodeValue !==
-      CodeNameCodeSequenceValues.ImagingMeasurementReport
+    ConceptNameCodeSequence.CodeValue !== CodeNameCodeSequenceValues.ImagingMeasurementReport
   ) {
     servicesManager.services.uiNotificationService.show({
       title: 'DICOM SR',
@@ -245,9 +241,7 @@ function _checkIfCanAddMeasurementsToDisplaySet(srDisplaySet, newDisplaySet, dat
     if (SOPInstanceUIDs.includes(SOPInstanceUID)) {
       for (let j = unloadedMeasurements.length - 1; j >= 0; j--) {
         const measurement = unloadedMeasurements[j];
-        if (
-          _measurementReferencesSOPInstanceUID(measurement, SOPInstanceUID, frameNumber)
-        ) {
+        if (_measurementReferencesSOPInstanceUID(measurement, SOPInstanceUID, frameNumber)) {
           addMeasurement(measurement, imageId, newDisplaySet.displaySetInstanceUID);
 
           unloadedMeasurements.splice(j, 1);
@@ -298,16 +292,11 @@ function getSopClassHandlerModule({ servicesManager, extensionManager }) {
 function _getMeasurements(ImagingMeasurementReportContentSequence) {
   const ImagingMeasurements = ImagingMeasurementReportContentSequence.find(
     item =>
-      item.ConceptNameCodeSequence.CodeValue ===
-      CodeNameCodeSequenceValues.ImagingMeasurements
+      item.ConceptNameCodeSequence.CodeValue === CodeNameCodeSequenceValues.ImagingMeasurements
   );
 
-  const MeasurementGroups = _getSequenceAsArray(
-    ImagingMeasurements.ContentSequence
-  ).filter(
-    item =>
-      item.ConceptNameCodeSequence.CodeValue ===
-      CodeNameCodeSequenceValues.MeasurementGroup
+  const MeasurementGroups = _getSequenceAsArray(ImagingMeasurements.ContentSequence).filter(
+    item => item.ConceptNameCodeSequence.CodeValue === CodeNameCodeSequenceValues.MeasurementGroup
   );
 
   const mergedContentSequencesByTrackingUniqueIdentifiers =
@@ -349,10 +338,7 @@ function _getMergedContentSequencesByTrackingUniqueIdentifiers(MeasurementGroups
 
     const trackingUniqueIdentifier = TrackingUniqueIdentifierItem.UID;
 
-    if (
-      mergedContentSequencesByTrackingUniqueIdentifiers[trackingUniqueIdentifier] ===
-      undefined
-    ) {
+    if (mergedContentSequencesByTrackingUniqueIdentifiers[trackingUniqueIdentifier] === undefined) {
       // Add the full ContentSequence
       mergedContentSequencesByTrackingUniqueIdentifiers[trackingUniqueIdentifier] = [
         ...ContentSequence,
@@ -365,9 +351,7 @@ function _getMergedContentSequencesByTrackingUniqueIdentifiers(MeasurementGroups
           item.ConceptNameCodeSequence.CodeValue !==
           CodeNameCodeSequenceValues.TrackingUniqueIdentifier
         ) {
-          mergedContentSequencesByTrackingUniqueIdentifiers[
-            trackingUniqueIdentifier
-          ].push(item);
+          mergedContentSequencesByTrackingUniqueIdentifiers[trackingUniqueIdentifier].push(item);
         }
       });
     }
@@ -394,14 +378,10 @@ function _processTID1410Measurement(mergedContentSequence) {
 
   const graphicItem = mergedContentSequence.find(group => group.ValueType === 'SCOORD');
 
-  const UIDREFContentItem = mergedContentSequence.find(
-    group => group.ValueType === 'UIDREF'
-  );
+  const UIDREFContentItem = mergedContentSequence.find(group => group.ValueType === 'UIDREF');
 
   const TrackingIdentifierContentItem = mergedContentSequence.find(
-    item =>
-      item.ConceptNameCodeSequence.CodeValue ===
-      CodeNameCodeSequenceValues.TrackingIdentifier
+    item => item.ConceptNameCodeSequence.CodeValue === CodeNameCodeSequenceValues.TrackingIdentifier
   );
 
   if (!graphicItem) {
@@ -411,9 +391,7 @@ function _processTID1410Measurement(mergedContentSequence) {
     return;
   }
 
-  const NUMContentItems = mergedContentSequence.filter(
-    group => group.ValueType === 'NUM'
-  );
+  const NUMContentItems = mergedContentSequence.filter(group => group.ValueType === 'NUM');
 
   const measurement = {
     loaded: false,
@@ -437,18 +415,12 @@ function _processTID1410Measurement(mergedContentSequence) {
 }
 
 function _processNonGeometricallyDefinedMeasurement(mergedContentSequence) {
-  const NUMContentItems = mergedContentSequence.filter(
-    group => group.ValueType === 'NUM'
-  );
+  const NUMContentItems = mergedContentSequence.filter(group => group.ValueType === 'NUM');
 
-  const UIDREFContentItem = mergedContentSequence.find(
-    group => group.ValueType === 'UIDREF'
-  );
+  const UIDREFContentItem = mergedContentSequence.find(group => group.ValueType === 'UIDREF');
 
   const TrackingIdentifierContentItem = mergedContentSequence.find(
-    item =>
-      item.ConceptNameCodeSequence.CodeValue ===
-      CodeNameCodeSequenceValues.TrackingIdentifier
+    item => item.ConceptNameCodeSequence.CodeValue === CodeNameCodeSequenceValues.TrackingIdentifier
   );
 
   const finding = mergedContentSequence.find(
@@ -457,8 +429,7 @@ function _processNonGeometricallyDefinedMeasurement(mergedContentSequence) {
 
   const findingSites = mergedContentSequence.filter(
     item =>
-      item.ConceptNameCodeSequence.CodingSchemeDesignator ===
-        CodingSchemeDesignators.SRT &&
+      item.ConceptNameCodeSequence.CodingSchemeDesignator === CodingSchemeDesignators.SRT &&
       item.ConceptNameCodeSequence.CodeValue === CodeNameCodeSequenceValues.FindingSite
   );
 
@@ -475,8 +446,7 @@ function _processNonGeometricallyDefinedMeasurement(mergedContentSequence) {
     CodingSchemeDesignators.CornerstoneCodeSchemes.includes(
       finding.ConceptCodeSequence.CodingSchemeDesignator
     ) &&
-    finding.ConceptCodeSequence.CodeValue ===
-      CodeNameCodeSequenceValues.CornerstoneFreeText
+    finding.ConceptCodeSequence.CodeValue === CodeNameCodeSequenceValues.CornerstoneFreeText
   ) {
     measurement.labels.push({
       label: CORNERSTONE_FREETEXT_CODE_VALUE,
@@ -491,8 +461,7 @@ function _processNonGeometricallyDefinedMeasurement(mergedContentSequence) {
         CodingSchemeDesignators.CornerstoneCodeSchemes.includes(
           FindingSite.ConceptCodeSequence.CodingSchemeDesignator
         ) &&
-        FindingSite.ConceptCodeSequence.CodeValue ===
-          CodeNameCodeSequenceValues.CornerstoneFreeText
+        FindingSite.ConceptCodeSequence.CodeValue === CodeNameCodeSequenceValues.CornerstoneFreeText
     );
 
     if (cornerstoneFreeTextFindingSite) {
@@ -562,10 +531,7 @@ function _getCoordsFromSCOORDOrSCOORD3D(item) {
   return coords;
 }
 
-function _getLabelFromMeasuredValueSequence(
-  ConceptNameCodeSequence,
-  MeasuredValueSequence
-) {
+function _getLabelFromMeasuredValueSequence(ConceptNameCodeSequence, MeasuredValueSequence) {
   const { CodeMeaning } = ConceptNameCodeSequence;
   const { NumericValue, MeasurementUnitsCodeSequence } = MeasuredValueSequence;
   const { CodeValue } = MeasurementUnitsCodeSequence;
@@ -580,14 +546,11 @@ function _getLabelFromMeasuredValueSequence(
 
 function _getReferencedImagesList(ImagingMeasurementReportContentSequence) {
   const ImageLibrary = ImagingMeasurementReportContentSequence.find(
-    item =>
-      item.ConceptNameCodeSequence.CodeValue === CodeNameCodeSequenceValues.ImageLibrary
+    item => item.ConceptNameCodeSequence.CodeValue === CodeNameCodeSequenceValues.ImageLibrary
   );
 
   const ImageLibraryGroup = _getSequenceAsArray(ImageLibrary.ContentSequence).find(
-    item =>
-      item.ConceptNameCodeSequence.CodeValue ===
-      CodeNameCodeSequenceValues.ImageLibraryGroup
+    item => item.ConceptNameCodeSequence.CodeValue === CodeNameCodeSequenceValues.ImageLibraryGroup
   );
 
   const referencedImages = [];

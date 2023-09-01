@@ -7,8 +7,7 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 
 // TODO: this is false when it should not be :thinking:
 const isTouchDevice =
-  typeof window !== `undefined` &&
-  !!('ontouchstart' in window || navigator.maxTouchPoints);
+  typeof window !== `undefined` && !!('ontouchstart' in window || navigator.maxTouchPoints);
 
 /**
  * Relevant:

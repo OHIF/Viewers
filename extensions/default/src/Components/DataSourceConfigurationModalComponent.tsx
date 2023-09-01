@@ -20,8 +20,7 @@ function DataSourceConfigurationModalComponent({
 }: DataSourceConfigurationModalComponentProps) {
   const { t } = useTranslation('DataSourceConfiguration');
 
-  const [itemList, setItemList] =
-    useState<Array<Types.BaseDataSourceConfigurationAPIItem>>();
+  const [itemList, setItemList] = useState<Array<Types.BaseDataSourceConfigurationAPIItem>>();
 
   const [selectedItems, setSelectedItems] = useState(configuredItems);
 
@@ -102,9 +101,7 @@ function DataSourceConfigurationModalComponent({
     itemIndex < selectedItems.length
       ? classNames(
           'bg-black/[.4]',
-          itemIndex !== itemLabels.length - 1
-            ? 'hover:bg-transparent active:bg-secondary-dark'
-            : ''
+          itemIndex !== itemLabels.length - 1 ? 'hover:bg-transparent active:bg-secondary-dark' : ''
         )
       : 'bg-transparent';
 
@@ -159,17 +156,10 @@ function DataSourceConfigurationModalComponent({
                 ) : (
                   <Icon name="status-untracked" />
                 )}
-                <div className={classNames(NO_WRAP_ELLIPSIS_CLASS_NAMES)}>
-                  {t(itemLabel)}
-                </div>
+                <div className={classNames(NO_WRAP_ELLIPSIS_CLASS_NAMES)}>{t(itemLabel)}</div>
               </div>
               {itemLabelIndex < selectedItems.length ? (
-                <div
-                  className={classNames(
-                    'text-[14px] text-white',
-                    NO_WRAP_ELLIPSIS_CLASS_NAMES
-                  )}
-                >
+                <div className={classNames('text-[14px] text-white', NO_WRAP_ELLIPSIS_CLASS_NAMES)}>
                   {selectedItems[itemLabelIndex].name}
                 </div>
               ) : (
@@ -194,10 +184,7 @@ function DataSourceConfigurationModalComponent({
           itemList={itemList}
           onItemClicked={item => {
             setShowFullConfig(false);
-            setSelectedItems(theList => [
-              ...theList.slice(0, currentSelectedItemIndex + 1),
-              item,
-            ]);
+            setSelectedItems(theList => [...theList.slice(0, currentSelectedItemIndex + 1), item]);
           }}
         ></ItemListComponent>
       )}

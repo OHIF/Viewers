@@ -77,9 +77,7 @@ function WorkList({
   const shouldUseDefaultSort = sortBy === '' || !sortBy;
   const sortModifier = sortDirection === 'descending' ? 1 : -1;
   const defaultSortValues =
-    shouldUseDefaultSort && canSort
-      ? { sortBy: 'studyDate', sortDirection: 'ascending' }
-      : {};
+    shouldUseDefaultSort && canSort ? { sortBy: 'studyDate', sortDirection: 'ascending' } : {};
   const sortedStudies = studies;
 
   if (canSort) {
@@ -496,9 +494,7 @@ function WorkList({
           isFiltering={isFiltering(filterValues, defaultFilterValues)}
           onUploadClick={uploadProps ? () => show(uploadProps) : undefined}
           getDataSourceConfigurationComponent={
-            dataSourceConfigurationComponent
-              ? () => dataSourceConfigurationComponent()
-              : undefined
+            dataSourceConfigurationComponent ? () => dataSourceConfigurationComponent() : undefined
           }
         />
         {hasStudies ? (

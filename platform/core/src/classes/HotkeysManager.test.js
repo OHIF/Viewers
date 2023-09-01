@@ -136,8 +136,7 @@ describe('HotkeysManager', () => {
         commandName: definition.commandName,
         commandOptions: definition.commandOptions,
       });
-      const hotkeyDefinitionForRegisteredCommand =
-        hotkeysManager.hotkeyDefinitions[commandHash];
+      const hotkeyDefinitionForRegisteredCommand = hotkeysManager.hotkeyDefinitions[commandHash];
 
       expect(numOfHotkeyDefinitions).toBe(1);
       expect(Object.keys(hotkeysManager.hotkeyDefinitions)[0]).toEqual(commandHash);
@@ -174,9 +173,7 @@ describe('HotkeysManager', () => {
 
       hotkeysManager.restoreDefaultBindings();
 
-      expect(hotkeysManager.setHotkeys.mock.calls[0][0]).toEqual(
-        hotkeysManager.hotkeyDefaults
-      );
+      expect(hotkeysManager.setHotkeys.mock.calls[0][0]).toEqual(hotkeysManager.hotkeyDefaults);
     });
   });
 

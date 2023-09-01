@@ -7,12 +7,7 @@ const RESPONSE = {
   HYDRATE_SEG: 5,
 };
 
-function promptHydrateSEG({
-  servicesManager,
-  segDisplaySet,
-  viewportId,
-  preHydrateCallbacks,
-}) {
+function promptHydrateSEG({ servicesManager, segDisplaySet, viewportId, preHydrateCallbacks }) {
   const { uiViewportDialogService } = servicesManager.services;
 
   return new Promise(async function (resolve, reject) {

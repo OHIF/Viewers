@@ -51,11 +51,7 @@ const commandsModule = ({}) => {
      * that you wish to serialize.
      */
     downloadReport: ({ measurementData, additionalFindingTypes, options = {} }) => {
-      const srDataset = actions.generateReport(
-        measurementData,
-        additionalFindingTypes,
-        options
-      );
+      const srDataset = actions.generateReport(measurementData, additionalFindingTypes, options);
       const reportBlob = dcmjs.data.datasetToBlob(srDataset);
 
       //Create a URL for the binary.
@@ -88,11 +84,7 @@ const commandsModule = ({}) => {
       }
 
       try {
-        const naturalizedReport = _generateReport(
-          measurementData,
-          additionalFindingTypes,
-          options
-        );
+        const naturalizedReport = _generateReport(measurementData, additionalFindingTypes, options);
 
         const { StudyInstanceUID, ContentSequence } = naturalizedReport;
         // The content sequence has 5 or more elements, of which

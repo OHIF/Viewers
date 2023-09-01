@@ -20,9 +20,7 @@ const StudyListPagination = ({ onChangePage, currentPage, perPage, onChangePerPa
     { value: '50', label: '50' },
     { value: '100', label: '100' },
   ];
-  const [selectedRange, setSelectedRange] = useState(
-    ranges.find(r => r.value === perPage)
-  );
+  const [selectedRange, setSelectedRange] = useState(ranges.find(r => r.value === perPage));
   const onSelectedRange = selectedRange => {
     setSelectedRange(selectedRange);
     onChangePerPage(selectedRange.value);
@@ -45,9 +43,7 @@ const StudyListPagination = ({ onChangePage, currentPage, perPage, onChangePerPa
               hideSelectedOptions={true}
               onChange={onSelectedRange}
             />
-            <Typography className="text-base opacity-60">
-              {t('ResultsPerPage')}
-            </Typography>
+            <Typography className="text-base opacity-60">{t('ResultsPerPage')}</Typography>
           </div>
           <div className="">
             <div className="flex items-center">

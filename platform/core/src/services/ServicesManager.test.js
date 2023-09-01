@@ -91,9 +91,7 @@ describe('ServicesManager', () => {
 
       servicesManager.registerService(fakeService, configuration);
 
-      expect(fakeService.create.mock.calls[0][0].configuration.config).toBe(
-        configuration.config
-      );
+      expect(fakeService.create.mock.calls[0][0].configuration.config).toBe(configuration.config);
     });
   });
 });

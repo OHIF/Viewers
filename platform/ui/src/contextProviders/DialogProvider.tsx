@@ -1,11 +1,4 @@
-import React, {
-  useState,
-  createContext,
-  useContext,
-  useCallback,
-  useEffect,
-  useRef,
-} from 'react';
+import React, { useState, createContext, useContext, useCallback, useEffect, useRef } from 'react';
 
 import PropTypes from 'prop-types';
 import Draggable from 'react-draggable';
@@ -126,9 +119,7 @@ const DialogProvider = ({ children, service }) => {
   const _bringToFront = useCallback(id => {
     setDialogs(dialogs => {
       const topDialog = dialogs.find(dialog => dialog.id === id);
-      return topDialog
-        ? [...dialogs.filter(dialog => dialog.id !== id), topDialog]
-        : dialogs;
+      return topDialog ? [...dialogs.filter(dialog => dialog.id !== id), topDialog] : dialogs;
     });
   }, []);
 
@@ -314,11 +305,8 @@ DialogProvider.defaultProps = {
 };
 
 DialogProvider.propTypes = {
-  children: PropTypes.oneOfType([
-    PropTypes.arrayOf(PropTypes.node),
-    PropTypes.node,
-    PropTypes.func,
-  ]).isRequired,
+  children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node, PropTypes.func])
+    .isRequired,
   service: PropTypes.shape({
     setServiceImplementation: PropTypes.func,
   }),

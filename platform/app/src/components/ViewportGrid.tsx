@@ -13,12 +13,9 @@ function ViewerViewportGrid(props) {
   const { numCols, numRows } = layout;
 
   // TODO -> Need some way of selecting which displaySets hit the viewports.
-  const {
-    displaySetService,
-    measurementService,
-    hangingProtocolService,
-    uiNotificationService,
-  } = (servicesManager as ServicesManager).services;
+  const { displaySetService, measurementService, hangingProtocolService, uiNotificationService } = (
+    servicesManager as ServicesManager
+  ).services;
 
   /**
    * This callback runs after the viewports structure has changed in any way.
@@ -125,12 +122,7 @@ function ViewerViewportGrid(props) {
     const { unsubscribe } = hangingProtocolService.subscribe(
       hangingProtocolService.EVENTS.PROTOCOL_CHANGED,
       ({ protocol, stage, activeStudyUID, viewportMatchDetails }) => {
-        updateDisplaySetsFromProtocol(
-          protocol,
-          stage,
-          activeStudyUID,
-          viewportMatchDetails
-        );
+        updateDisplaySetsFromProtocol(protocol, stage, activeStudyUID, viewportMatchDetails);
       }
     );
 
@@ -151,10 +143,7 @@ function ViewerViewportGrid(props) {
         // the event.
         const { displaySetInstanceUID: referencedDisplaySetInstanceUID } = measurement;
 
-        const updatedViewports = _getUpdatedViewports(
-          viewportId,
-          referencedDisplaySetInstanceUID
-        );
+        const updatedViewports = _getUpdatedViewports(viewportId, referencedDisplaySetInstanceUID);
         // Arbitrarily assign the viewport to element 0
         const viewport = updatedViewports?.[0];
 
@@ -169,9 +158,7 @@ function ViewerViewportGrid(props) {
         viewport.viewportOptions ||= {};
         viewport.viewportOptions.orientation = 'acquisition';
 
-        const displaySet = displaySetService.getDisplaySetByUID(
-          referencedDisplaySetInstanceUID
-        );
+        const displaySet = displaySetService.getDisplaySetByUID(referencedDisplaySetInstanceUID);
         // jump straight to the initial image index if we can
         if (displaySet.images && measurement.SOPInstanceUID) {
           for (let index = 0; index < displaySet.images.length; index++) {

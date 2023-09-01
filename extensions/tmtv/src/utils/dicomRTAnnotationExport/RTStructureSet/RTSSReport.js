@@ -134,10 +134,7 @@ function getPatientModule(imageId, metadataProvider) {
   const generalStudyModule = metadataProvider.get('generalStudyModule', imageId);
   const patientStudyModule = metadataProvider.get('patientStudyModule', imageId);
   const patientModule = metadataProvider.get('patientModule', imageId);
-  const patientDemographicModule = metadataProvider.get(
-    'patientDemographicModule',
-    imageId
-  );
+  const patientDemographicModule = metadataProvider.get('patientDemographicModule', imageId);
 
   return {
     Modality: generalSeriesModule.modality,
@@ -171,9 +168,7 @@ function getReferencedFrameOfReferenceSequence(toolData, metadataProvider, datas
           RTReferencedSeriesSequence: [
             {
               SeriesInstanceUID,
-              ContourImageSequence: [
-                ...ReferencedSeriesSequence[0].ReferencedInstanceSequence,
-              ],
+              ContourImageSequence: [...ReferencedSeriesSequence[0].ReferencedInstanceSequence],
             },
           ],
         },

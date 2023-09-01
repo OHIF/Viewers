@@ -298,9 +298,7 @@ const toolbarButtons = [
       icon: 'tool-create-threshold',
       label: 'Rectangle ROI Threshold',
       commands: [
-        ..._createCommands('setToolActive', 'RectangleROIStartEndThreshold', [
-          toolGroupIds.PT,
-        ]),
+        ..._createCommands('setToolActive', 'RectangleROIStartEndThreshold', [toolGroupIds.PT]),
         {
           commandName: 'displayNotification',
           commandOptions: {

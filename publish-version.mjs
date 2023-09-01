@@ -4,11 +4,7 @@ import glob from 'glob';
 import path from 'path';
 
 async function run() {
-  const { stdout: branchName } = await execa('git', [
-    'rev-parse',
-    '--abbrev-ref',
-    'HEAD',
-  ]);
+  const { stdout: branchName } = await execa('git', ['rev-parse', '--abbrev-ref', 'HEAD']);
   console.log('Current branch:', branchName);
   const lernaJson = JSON.parse(await fs.readFile('lerna.json', 'utf-8'));
 

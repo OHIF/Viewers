@@ -16,8 +16,7 @@ export const cornerstone = {
 };
 
 const dicomvideo = {
-  sopClassHandler:
-    '@ohif/extension-dicom-video.sopClassHandlerModule.dicom-video',
+  sopClassHandler: '@ohif/extension-dicom-video.sopClassHandlerModule.dicom-video',
   viewport: '@ohif/extension-dicom-video.viewportModule.dicom-video',
 };
 
@@ -52,10 +51,7 @@ function modeFactory({ modeConfiguration }) {
 
       toolbarService.init(extensionManager);
       toolbarService.addButtons(toolbarButtons);
-      toolbarService.createButtonSection('primary', [
-        'MeasurementTools',
-        'dragPan',
-      ]);
+      toolbarService.createButtonSection('primary', ['MeasurementTools', 'dragPan']);
     },
 
     onModeExit: ({ servicesManager }) => {
@@ -89,13 +85,10 @@ function modeFactory({ modeConfiguration }) {
               leftPanels: [ohif.leftPanel],
               leftPanelDefaultClosed: true, // we have problem with rendering thumbnails for microscopy images
               rightPanelDefaultClosed: true, // we do not have the save microscopy measurements yet
-              rightPanels: [
-                '@ohif/extension-dicom-microscopy.panelModule.measure',
-              ],
+              rightPanels: ['@ohif/extension-dicom-microscopy.panelModule.measure'],
               viewports: [
                 {
-                  namespace:
-                    '@ohif/extension-dicom-microscopy.viewportModule.microscopy-dicom',
+                  namespace: '@ohif/extension-dicom-microscopy.viewportModule.microscopy-dicom',
                   displaySetsToDisplay: [
                     '@ohif/extension-dicom-microscopy.sopClassHandlerModule.DicomMicroscopySopClassHandler',
                     '@ohif/extension-dicom-microscopy.sopClassHandlerModule.DicomMicroscopySRSopClassHandler',

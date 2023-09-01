@@ -33,9 +33,7 @@ const _getDisplaySetsFromSeries = (instances, servicesManager, extensionManager)
   return instances
     .filter(metadata => {
       const tsuid =
-        metadata.AvailableTransferSyntaxUID ||
-        metadata.TransferSyntaxUID ||
-        metadata['00083002'];
+        metadata.AvailableTransferSyntaxUID || metadata.TransferSyntaxUID || metadata['00083002'];
 
       if (supportedTransferSyntaxUIDs.includes(tsuid)) {
         return true;
@@ -48,19 +46,13 @@ const _getDisplaySetsFromSeries = (instances, servicesManager, extensionManager)
       // Assume that an instance with one of the secondary capture SOPClassUIDs and
       // with at least 90 frames (i.e. typically 3 seconds of video) is indeed a video.
       return (
-        secondaryCaptureSopClassUids.includes(metadata.SOPClassUID) &&
-        metadata.NumberOfFrames >= 90
+        secondaryCaptureSopClassUids.includes(metadata.SOPClassUID) && metadata.NumberOfFrames >= 90
       );
     })
     .map(instance => {
       const { Modality, SOPInstanceUID, SeriesDescription = 'VIDEO' } = instance;
-      const {
-        SeriesNumber,
-        SeriesDate,
-        SeriesInstanceUID,
-        StudyInstanceUID,
-        NumberOfFrames,
-      } = instance;
+      const { SeriesNumber, SeriesDate, SeriesInstanceUID, StudyInstanceUID, NumberOfFrames } =
+        instance;
       const displaySet = {
         //plugin: id,
         Modality,

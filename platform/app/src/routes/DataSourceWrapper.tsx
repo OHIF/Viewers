@@ -169,23 +169,19 @@ function DataSourceWrapper(props) {
       // - And we didn't cross a result offset range
       const isSamePage = data.pageNumber === queryFilterValues.pageNumber;
       const previousOffset =
-        Math.floor((data.pageNumber * data.resultsPerPage) / STUDIES_LIMIT) *
-        (STUDIES_LIMIT - 1);
+        Math.floor((data.pageNumber * data.resultsPerPage) / STUDIES_LIMIT) * (STUDIES_LIMIT - 1);
       const newOffset =
         Math.floor(
-          (queryFilterValues.pageNumber * queryFilterValues.resultsPerPage) /
-            STUDIES_LIMIT
+          (queryFilterValues.pageNumber * queryFilterValues.resultsPerPage) / STUDIES_LIMIT
         ) *
         (STUDIES_LIMIT - 1);
       // Simply checking data.location !== location is not sufficient because even though the location href (i.e. entire URL)
       // has not changed, the React Router still provides a new location reference and would result in two study queries
       // on initial load. Alternatively, window.location.href could be used.
       const isLocationUpdated =
-        typeof data.location === 'string' ||
-        !areLocationsTheSame(data.location, location);
+        typeof data.location === 'string' || !areLocationsTheSame(data.location, location);
       const isDataInvalid =
-        !isSamePage ||
-        (!isLoading && (newOffset !== previousOffset || isLocationUpdated));
+        !isSamePage || (!isLoading && (newOffset !== previousOffset || isLocationUpdated));
 
       if (isDataInvalid) {
         getData().catch(() => {
@@ -203,15 +199,7 @@ function DataSourceWrapper(props) {
       console.warn(ex);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    data,
-    location,
-    params,
-    isLoading,
-    setIsLoading,
-    dataSource,
-    isDataSourceInitialized,
-  ]);
+  }, [data, location, params, isLoading, setIsLoading, dataSource, isDataSourceInitialized]);
   // queryFilterValues
 
   // TODO: Better way to pass DataSource?

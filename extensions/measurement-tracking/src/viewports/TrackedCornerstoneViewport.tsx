@@ -13,8 +13,7 @@ import { BaseVolumeViewport, Enums } from '@cornerstonejs/core';
 const { formatDate } = utils;
 
 function TrackedCornerstoneViewport(props) {
-  const { displaySets, viewportId, viewportLabel, servicesManager, extensionManager } =
-    props;
+  const { displaySets, viewportId, viewportLabel, servicesManager, extensionManager } = props;
 
   const { t } = useTranslation('Common');
 
@@ -81,10 +80,7 @@ function TrackedCornerstoneViewport(props) {
   );
 
   const onElementDisabled = useCallback(() => {
-    viewportElem?.removeEventListener(
-      Enums.Events.VOLUME_VIEWPORT_NEW_VOLUME,
-      updateIsTracked
-    );
+    viewportElem?.removeEventListener(Enums.Events.VOLUME_VIEWPORT_NEW_VOLUME, updateIsTracked);
   }, [updateIsTracked, viewportElem]);
 
   useEffect(updateIsTracked, [updateIsTracked]);
@@ -153,10 +149,8 @@ function TrackedCornerstoneViewport(props) {
           // Only send the tracked measurements event for the active viewport to avoid
           // sending it more than once.
           if (viewportId === activeViewportId) {
-            const {
-              referenceStudyUID: StudyInstanceUID,
-              referenceSeriesUID: SeriesInstanceUID,
-            } = measurement;
+            const { referenceStudyUID: StudyInstanceUID, referenceSeriesUID: SeriesInstanceUID } =
+              measurement;
 
             sendTrackedMeasurementsEvent('SET_DIRTY', { SeriesInstanceUID });
             sendTrackedMeasurementsEvent('TRACK_SERIES', {
@@ -337,8 +331,8 @@ function _getStatusComponent(isTracked) {
                 {isTracked ? (
                   <>
                     Series is
-                    <span className="font-bold text-white"> tracked</span> and can be
-                    viewed <br /> in the measurement panel
+                    <span className="font-bold text-white"> tracked</span> and can be viewed <br />{' '}
+                    in the measurement panel
                   </>
                 ) : (
                   <>

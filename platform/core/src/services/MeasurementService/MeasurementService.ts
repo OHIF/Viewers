@@ -267,13 +267,7 @@ class MeasurementService extends PubSubService {
    * @param {Function} toMeasurementSchema Mapping function to measurement schema
    * @return void
    */
-  addMapping(
-    source,
-    annotationType,
-    matchingCriteria,
-    toAnnotationSchema,
-    toMeasurementSchema
-  ) {
+  addMapping(source, annotationType, matchingCriteria, toAnnotationSchema, toMeasurementSchema) {
     if (!this._isValidSource(source)) {
       throw new Error('Invalid source.');
     }
@@ -307,9 +301,7 @@ class MeasurementService extends PubSubService {
       this.mappings[source.uid] = [mapping];
     }
 
-    log.info(
-      `New measurement mapping added to source '${this._getSourceToString(source)}'.`
-    );
+    log.info(`New measurement mapping added to source '${this._getSourceToString(source)}'.`);
   }
 
   /**
@@ -393,9 +385,7 @@ class MeasurementService extends PubSubService {
     }
 
     if (!this._sourceHasMappings(source)) {
-      log.warn(
-        `No measurement mappings found for '${sourceInfo}' source. Exiting early.`
-      );
+      log.warn(`No measurement mappings found for '${sourceInfo}' source. Exiting early.`);
       return;
     }
 
@@ -464,12 +454,7 @@ class MeasurementService extends PubSubService {
    * @param {boolean} isUpdate is this an update or an add/completed instead?
    * @return {string} A measurement uid
    */
-  annotationToMeasurement(
-    source,
-    annotationType,
-    sourceAnnotationDetail,
-    isUpdate = false
-  ) {
+  annotationToMeasurement(source, annotationType, sourceAnnotationDetail, isUpdate = false) {
     if (!this._isValidSource(source)) {
       throw new Error('Invalid source.');
     }
@@ -480,9 +465,7 @@ class MeasurementService extends PubSubService {
     const sourceInfo = this._getSourceToString(source);
 
     if (!this._sourceHasMappings(source)) {
-      throw new Error(
-        `No measurement mappings found for '${sourceInfo}' source. Exiting early.`
-      );
+      throw new Error(`No measurement mappings found for '${sourceInfo}' source. Exiting early.`);
     }
 
     let measurement = {};
@@ -567,8 +550,7 @@ class MeasurementService extends PubSubService {
   remove(measurementUID, source, eventDetails) {
     if (
       !measurementUID ||
-      (!this.measurements.has(measurementUID) &&
-        !this.unmappedMeasurements.has(measurementUID))
+      (!this.measurements.has(measurementUID) && !this.unmappedMeasurements.has(measurementUID))
     ) {
       log.warn(`No uid provided, or unable to find measurement by uid.`);
       return;
@@ -647,9 +629,7 @@ class MeasurementService extends PubSubService {
 
   _getMappingByMeasurementSource(measurement, annotationType) {
     if (this._isValidSource(measurement.source)) {
-      return this.mappings[measurement.source.uid].find(
-        m => m.annotationType === annotationType
-      );
+      return this.mappings[measurement.source.uid].find(m => m.annotationType === annotationType);
     }
   }
 

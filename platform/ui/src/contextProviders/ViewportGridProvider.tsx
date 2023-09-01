@@ -1,10 +1,4 @@
-import React, {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useReducer,
-} from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useReducer } from 'react';
 import merge from 'lodash.merge';
 
 import PropTypes from 'prop-types';
@@ -81,8 +75,7 @@ const determineActiveViewportId = (state: DefaultState, newViewports: Map) => {
 
   // for the new viewports, we should rank them by the displaySetInstanceUIDs
   // they are displaying and the orientation then we can find the active viewport
-  const currentActiveDisplaySetInstanceUIDs =
-    currentActiveViewport.displaySetInstanceUIDs;
+  const currentActiveDisplaySetInstanceUIDs = currentActiveViewport.displaySetInstanceUIDs;
 
   // This doesn't take into account where stack viewport is converting to volumeViewport
   // since in stack viewport we don't have a concept of "orientation" as a string
@@ -255,16 +248,16 @@ export function ViewportGridProvider({ children, service }) {
             viewport.viewportLabel = getViewportLabel(viewports, viewport.viewportId);
 
             if (!viewport.viewportOptions.presentationIds) {
-              viewport.viewportOptions.presentationIds =
-                ViewportGridService.getPresentationIds(viewport, viewports);
+              viewport.viewportOptions.presentationIds = ViewportGridService.getPresentationIds(
+                viewport,
+                viewports
+              );
             }
           }
         }
 
         activeViewportIdToSet =
-          activeViewportIdToSet ??
-          determineActiveViewportId(state, viewports) ??
-          'default';
+          activeViewportIdToSet ?? determineActiveViewportId(state, viewports) ?? 'default';
 
         const ret = {
           ...state,

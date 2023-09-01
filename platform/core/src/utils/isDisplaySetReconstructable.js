@@ -36,9 +36,7 @@ export default function isDisplaySetReconstructable(instances) {
 
   const sortedInstances = sortInstancesByPosition(instances);
 
-  return isMultiframe
-    ? processMultiframe(sortedInstances[0])
-    : processSingleframe(sortedInstances);
+  return isMultiframe ? processMultiframe(sortedInstances[0]) : processSingleframe(sortedInstances);
 }
 
 function hasPixelMeasurements(multiFrameInstance) {
@@ -105,10 +103,7 @@ function processMultiframe(multiFrameInstance) {
     return { value: false };
   }
 
-  if (
-    multiFrameInstance.Modality.includes('NM') &&
-    !isNMReconstructable(multiFrameInstance)
-  ) {
+  if (multiFrameInstance.Modality.includes('NM') && !isNMReconstructable(multiFrameInstance)) {
     return { value: false };
   }
 
@@ -159,8 +154,7 @@ function processSingleframe(instances) {
     }
 
     averageSpacingBetweenFrames =
-      _getPerpendicularDistance(firstImagePositionPatient, lastIpp) /
-      (instances.length - 1);
+      _getPerpendicularDistance(firstImagePositionPatient, lastIpp) / (instances.length - 1);
 
     let previousImagePositionPatient = firstImagePositionPatient;
 
@@ -173,10 +167,7 @@ function processSingleframe(instances) {
         imagePositionPatient,
         previousImagePositionPatient
       );
-      const spacingIssue = _getSpacingIssue(
-        spacingBetweenFrames,
-        averageSpacingBetweenFrames
-      );
+      const spacingIssue = _getSpacingIssue(spacingBetweenFrames, averageSpacingBetweenFrames);
 
       if (spacingIssue) {
         const issue = spacingIssue.issue;
@@ -244,9 +235,7 @@ function _getSpacingIssue(spacing, averageSpacing) {
 }
 
 function _getPerpendicularDistance(a, b) {
-  return Math.sqrt(
-    Math.pow(a[0] - b[0], 2) + Math.pow(a[1] - b[1], 2) + Math.pow(a[2] - b[2], 2)
-  );
+  return Math.sqrt(Math.pow(a[0] - b[0], 2) + Math.pow(a[1] - b[1], 2) + Math.pow(a[2] - b[2], 2));
 }
 
 const constructableModalities = ['MR', 'CT', 'PT', 'NM'];

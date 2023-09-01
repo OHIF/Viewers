@@ -154,9 +154,7 @@ function createDicomJSONApi(dicomJsonConfig) {
       series: {
         metadata: ({ StudyInstanceUID, madeInClient = false, customSort } = {}) => {
           if (!StudyInstanceUID) {
-            throw new Error(
-              'Unable to query for SeriesMetadata without StudyInstanceUID'
-            );
+            throw new Error('Unable to query for SeriesMetadata without StudyInstanceUID');
           }
 
           const study = findStudies('StudyInstanceUID', StudyInstanceUID)[0];

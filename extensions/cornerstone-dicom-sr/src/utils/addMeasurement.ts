@@ -27,12 +27,7 @@ export default function addMeasurement(measurement, imageId, displaySetInstanceU
     }
 
     measurementData.renderableData[GraphicType].push(
-      _getRenderableData(
-        GraphicType,
-        GraphicData,
-        imageId,
-        measurement.TrackingIdentifier
-      )
+      _getRenderableData(GraphicType, GraphicData, imageId, measurement.TrackingIdentifier)
     );
   });
 
@@ -203,12 +198,8 @@ function _getRenderableData(GraphicType, GraphicData, imageId, TrackingIdentifie
       // find which axis is parallel to the columnCosines
       const columnCosinesVec = vec3.fromValues(...columnCosines);
 
-      const projectedMajorAxisOnColVec = Math.abs(
-        vec3.dot(columnCosinesVec, majorAxisVec)
-      );
-      const projectedMinorAxisOnColVec = Math.abs(
-        vec3.dot(columnCosinesVec, minorAxisVec)
-      );
+      const projectedMajorAxisOnColVec = Math.abs(vec3.dot(columnCosinesVec, majorAxisVec));
+      const projectedMinorAxisOnColVec = Math.abs(vec3.dot(columnCosinesVec, minorAxisVec));
 
       const absoluteOfMajorDotProduct = Math.abs(projectedMajorAxisOnColVec);
       const absoluteOfMinorDotProduct = Math.abs(projectedMinorAxisOnColVec);

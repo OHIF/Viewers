@@ -23,8 +23,7 @@ function setAnnotationSelected(annotationUID: string, selected: boolean): void {
 }
 
 function getFirstAnnotationSelected(element) {
-  const [selectedAnnotationUID] =
-    cs3dToolAnnotationUtils.selection.getAnnotationsSelected() || [];
+  const [selectedAnnotationUID] = cs3dToolAnnotationUtils.selection.getAnnotationsSelected() || [];
 
   if (selectedAnnotationUID) {
     return cs3dToolAnnotationUtils.state.getAnnotation(selectedAnnotationUID);

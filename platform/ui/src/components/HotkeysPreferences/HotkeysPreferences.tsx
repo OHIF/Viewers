@@ -101,9 +101,7 @@ const HotkeysPreferences = ({
                         >
                           {t('Shortcut')}
                         </Typography>
-                        <div
-                          className={classNames('flex w-32 flex-col', isFirst && 'mt-5')}
-                        >
+                        <div className={classNames('flex w-32 flex-col', isFirst && 'mt-5')}>
                           <HotkeyField
                             disabled={disabled}
                             keys={definition.keys}
@@ -113,9 +111,7 @@ const HotkeysPreferences = ({
                             className="h-8 text-lg"
                           />
                           {error && (
-                            <span className="p-2 text-left text-sm text-red-600">
-                              {error}
-                            </span>
+                            <span className="p-2 text-left text-sm text-red-600">{error}</span>
                           )}
                         </div>
                       </div>

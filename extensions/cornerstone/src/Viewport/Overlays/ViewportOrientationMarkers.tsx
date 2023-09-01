@@ -158,13 +158,7 @@ ViewportOrientationMarkers.defaultProps = {
  * @param {*} rotation in degrees
  * @returns
  */
-function _getOrientationMarkers(
-  rowCosines,
-  columnCosines,
-  rotation,
-  flipVertical,
-  flipHorizontal
-) {
+function _getOrientationMarkers(rowCosines, columnCosines, rotation, flipVertical, flipHorizontal) {
   const rowString = getOrientationStringLPS(rowCosines);
   const columnString = getOrientationStringLPS(columnCosines);
   const oppositeRowString = invertOrientationStringLPS(rowString);

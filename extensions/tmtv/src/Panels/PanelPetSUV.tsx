@@ -24,8 +24,9 @@ const DEFAULT_MEATADATA = {
  */
 export default function PanelPetSUV({ servicesManager, commandsManager }) {
   const { t } = useTranslation('PanelSUV');
-  const { displaySetService, toolGroupService, toolbarService, hangingProtocolService } =
-    (servicesManager as ServicesManager).services;
+  const { displaySetService, toolGroupService, toolbarService, hangingProtocolService } = (
+    servicesManager as ServicesManager
+  ).services;
   const [metadata, setMetadata] = useState(DEFAULT_MEATADATA);
   const [ptDisplaySet, setPtDisplaySet] = useState(null);
 
@@ -133,9 +134,7 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
     );
 
     // update the displaySets
-    displaySetService.setDisplaySetMetadataInvalidated(
-      ptDisplaySet.displaySetInstanceUID
-    );
+    displaySetService.setDisplaySetMetadataInvalidated(ptDisplaySet.displaySetInstanceUID);
   }
   return (
     <div className="invisible-scrollbar overflow-y-auto overflow-x-hidden">
@@ -168,10 +167,7 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
               label={t('Total Dose (bq)')}
               labelClassName="text-white mb-2"
               className="mt-1"
-              value={
-                metadata.RadiopharmaceuticalInformationSequence.RadionuclideTotalDose ||
-                ''
-              }
+              value={metadata.RadiopharmaceuticalInformationSequence.RadionuclideTotalDose || ''}
               onChange={e => {
                 handleMetadataChange({
                   RadiopharmaceuticalInformationSequence: {
@@ -184,9 +180,7 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
               label={t('Half Life (s)')}
               labelClassName="text-white mb-2"
               className="mt-1"
-              value={
-                metadata.RadiopharmaceuticalInformationSequence.RadionuclideHalfLife || ''
-              }
+              value={metadata.RadiopharmaceuticalInformationSequence.RadionuclideHalfLife || ''}
               onChange={e => {
                 handleMetadataChange({
                   RadiopharmaceuticalInformationSequence: {
@@ -200,8 +194,7 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
               labelClassName="text-white mb-2"
               className="mt-1"
               value={
-                metadata.RadiopharmaceuticalInformationSequence
-                  .RadiopharmaceuticalStartTime || ''
+                metadata.RadiopharmaceuticalInformationSequence.RadiopharmaceuticalStartTime || ''
               }
               onChange={e => {
                 handleMetadataChange({

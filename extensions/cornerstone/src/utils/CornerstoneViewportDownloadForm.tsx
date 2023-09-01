@@ -27,29 +27,22 @@ const CornerstoneViewportDownloadForm = ({
   const activeViewportElement = enabledElement?.element;
   const activeViewportEnabledElement = getEnabledElement(activeViewportElement);
 
-  const { viewportId: activeViewportId, renderingEngineId } =
-    activeViewportEnabledElement;
+  const { viewportId: activeViewportId, renderingEngineId } = activeViewportEnabledElement;
 
-  const toolGroup = ToolGroupManager.getToolGroupForViewport(
-    activeViewportId,
-    renderingEngineId
-  );
+  const toolGroup = ToolGroupManager.getToolGroupForViewport(activeViewportId, renderingEngineId);
 
-  const toolModeAndBindings = Object.keys(toolGroup.toolOptions).reduce(
-    (acc, toolName) => {
-      const tool = toolGroup.toolOptions[toolName];
-      const { mode, bindings } = tool;
+  const toolModeAndBindings = Object.keys(toolGroup.toolOptions).reduce((acc, toolName) => {
+    const tool = toolGroup.toolOptions[toolName];
+    const { mode, bindings } = tool;
 
-      return {
-        ...acc,
-        [toolName]: {
-          mode,
-          bindings,
-        },
-      };
-    },
-    {}
-  );
+    return {
+      ...acc,
+      [toolName]: {
+        mode,
+        bindings,
+      },
+    };
+  }, {});
 
   useEffect(() => {
     return () => {
@@ -125,10 +118,7 @@ const CornerstoneViewportDownloadForm = ({
 
           resolve({ dataUrl, width: newWidth, height: newHeight });
 
-          downloadViewportElement.removeEventListener(
-            Enums.Events.IMAGE_RENDERED,
-            updateViewport
-          );
+          downloadViewportElement.removeEventListener(Enums.Events.IMAGE_RENDERED, updateViewport);
         }
       );
     });
@@ -182,18 +172,14 @@ const CornerstoneViewportDownloadForm = ({
 
     const downloadViewportElement = getEnabledElement(viewportElement);
 
-    const { viewportId: activeViewportId, renderingEngineId } =
-      activeViewportEnabledElement;
+    const { viewportId: activeViewportId, renderingEngineId } = activeViewportEnabledElement;
     const { viewportId: downloadViewportId } = downloadViewportElement;
 
     if (!activeViewportEnabledElement || !downloadViewportElement) {
       return;
     }
 
-    const toolGroup = ToolGroupManager.getToolGroupForViewport(
-      activeViewportId,
-      renderingEngineId
-    );
+    const toolGroup = ToolGroupManager.getToolGroupForViewport(activeViewportId, renderingEngineId);
 
     // add the viewport to the toolGroup
     toolGroup.addViewport(downloadViewportId, renderingEngineId);

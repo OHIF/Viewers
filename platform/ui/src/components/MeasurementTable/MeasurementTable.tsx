@@ -20,9 +20,7 @@ const MeasurementTable = ({ data, title, onClick, onEdit, servicesManager }) => 
   return (
     <div>
       <div className="bg-secondary-main flex justify-between px-2 py-1">
-        <span className="text-base font-bold uppercase tracking-widest text-white">
-          {t(title)}
-        </span>
+        <span className="text-base font-bold uppercase tracking-widest text-white">{t(title)}</span>
         <span className="text-base font-bold text-white">{amount}</span>
       </div>
       <div className="ohif-scrollbar max-h-112 overflow-hidden">

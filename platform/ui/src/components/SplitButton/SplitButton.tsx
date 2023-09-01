@@ -26,9 +26,7 @@ const classes = {
   Button: ({ isExpanded, primary }) =>
     classNames(
       baseClasses.Button,
-      !isExpanded &&
-        !primary.isActive &&
-        'hover:!bg-primary-dark hover:border-primary-dark'
+      !isExpanded && !primary.isActive && 'hover:!bg-primary-dark hover:border-primary-dark'
     ),
   Interface: 'h-full flex flex-row items-center',
   Primary: ({ primary, isExpanded }) =>
@@ -63,19 +61,14 @@ const classes = {
   SecondaryIcon: ({ isExpanded }) =>
     classNames(
       baseClasses.SecondaryIcon,
-      isExpanded
-        ? 'text-primary-dark'
-        : 'text-[#348cfd] group-hover/secondary:text-primary-light'
+      isExpanded ? 'text-primary-dark' : 'text-[#348cfd] group-hover/secondary:text-primary-light'
     ),
   Separator: ({ primary, isExpanded, isHovering }) =>
     classNames(
       baseClasses.Separator,
-      isHovering || isExpanded || primary.isActive
-        ? 'border-transparent'
-        : 'border-primary-active'
+      isHovering || isExpanded || primary.isActive ? 'border-transparent' : 'border-primary-active'
     ),
-  Content: ({ isExpanded }) =>
-    classNames(baseClasses.Content, isExpanded ? 'block' : 'hidden'),
+  Content: ({ isExpanded }) => classNames(baseClasses.Content, isExpanded ? 'block' : 'hidden'),
 };
 
 const SplitButton = ({

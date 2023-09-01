@@ -25,9 +25,7 @@ function getFilteredCornerstoneToolState(measurementData, additionalFindingTypes
       };
     }
 
-    const measurementDataI = measurementData.find(
-      md => md.uid === annotation.annotationUID
-    );
+    const measurementDataI = measurementData.find(md => md.uid === annotation.annotationUID);
     const toolData = imageIdSpecificToolState[toolType].data;
 
     let { finding } = measurementDataI;
@@ -72,8 +70,7 @@ function getFilteredCornerstoneToolState(measurementData, additionalFindingTypes
   for (let i = 0; i < framesOfReference.length; i++) {
     const frameOfReference = framesOfReference[i];
 
-    const frameOfReferenceAnnotations =
-      annotationManager.getAnnotations(frameOfReference);
+    const frameOfReferenceAnnotations = annotationManager.getAnnotations(frameOfReference);
 
     const toolTypes = Object.keys(frameOfReferenceAnnotations);
 

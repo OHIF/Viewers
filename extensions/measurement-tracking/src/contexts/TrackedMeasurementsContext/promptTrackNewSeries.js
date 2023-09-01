@@ -14,10 +14,7 @@ function promptTrackNewSeries({ servicesManager, extensionManager }, ctx, evt) {
   const { viewportId, StudyInstanceUID, SeriesInstanceUID } = evt;
 
   return new Promise(async function (resolve, reject) {
-    let promptResult = await _askShouldAddMeasurements(
-      UIViewportDialogService,
-      viewportId
-    );
+    let promptResult = await _askShouldAddMeasurements(UIViewportDialogService, viewportId);
 
     if (promptResult === RESPONSE.CREATE_REPORT) {
       promptResult = ctx.isDirty

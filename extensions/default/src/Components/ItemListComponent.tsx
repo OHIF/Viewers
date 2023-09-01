@@ -51,8 +51,7 @@ function ItemListComponent({
               {itemList
                 .filter(
                   item =>
-                    !filterValue ||
-                    item.name.toLowerCase().includes(filterValue.toLowerCase())
+                    !filterValue || item.name.toLowerCase().includes(filterValue.toLowerCase())
                 )
                 .map(item => {
                   const border =

@@ -103,9 +103,7 @@ function _updateMetadataForSeries(StudyInstanceUID, SeriesInstanceUID, metadata)
     return;
   }
 
-  const series = study.series.find(
-    aSeries => aSeries.SeriesInstanceUID === SeriesInstanceUID
-  );
+  const series = study.series.find(aSeries => aSeries.SeriesInstanceUID === SeriesInstanceUID);
 
   const { instances } = series;
   // update all instances metadata for this series with the new metadata
@@ -139,9 +137,7 @@ const BaseImplementation = {
 
     // If Arraybuffer, parse to DICOMJSON before naturalizing.
     if (dicomJSONDatasetOrP10ArrayBuffer instanceof ArrayBuffer) {
-      const dicomData = dcmjs.data.DicomMessage.readFile(
-        dicomJSONDatasetOrP10ArrayBuffer
-      );
+      const dicomData = dcmjs.data.DicomMessage.readFile(dicomJSONDatasetOrP10ArrayBuffer);
 
       dicomJSONDataset = dicomData.dict;
     } else {
@@ -151,8 +147,7 @@ const BaseImplementation = {
     let naturalizedDataset;
 
     if (dicomJSONDataset['SeriesInstanceUID'] === undefined) {
-      naturalizedDataset =
-        dcmjs.data.DicomMetaDictionary.naturalizeDataset(dicomJSONDataset);
+      naturalizedDataset = dcmjs.data.DicomMetaDictionary.naturalizeDataset(dicomJSONDataset);
     } else {
       naturalizedDataset = dicomJSONDataset;
     }
@@ -221,9 +216,7 @@ const BaseImplementation = {
   addStudy(study) {
     const { StudyInstanceUID } = study;
 
-    const existingStudy = _model.studies.find(
-      study => study.StudyInstanceUID === StudyInstanceUID
-    );
+    const existingStudy = _model.studies.find(study => study.StudyInstanceUID === StudyInstanceUID);
 
     if (!existingStudy) {
       const newStudy = createStudyMetadata(StudyInstanceUID);

@@ -16,9 +16,7 @@ export default function PanelSegmentation({ servicesManager, commandsManager }) 
     segmentationService.getConfiguration()
   );
 
-  const [segmentations, setSegmentations] = useState(() =>
-    segmentationService.getSegmentations()
-  );
+  const [segmentations, setSegmentations] = useState(() => segmentationService.getSegmentations());
 
   const [isMinimized, setIsMinimized] = useState({});
 
@@ -75,8 +73,7 @@ export default function PanelSegmentation({ servicesManager, commandsManager }) 
   };
 
   const getToolGroupIds = segmentationId => {
-    const toolGroupIds =
-      segmentationService.getToolGroupIdsWithSegmentation(segmentationId);
+    const toolGroupIds = segmentationService.getToolGroupIdsWithSegmentation(segmentationId);
 
     return toolGroupIds;
   };
@@ -104,11 +101,7 @@ export default function PanelSegmentation({ servicesManager, commandsManager }) 
         return;
       }
 
-      segmentationService.setSegmentLabelForSegmentation(
-        segmentationId,
-        segmentIndex,
-        label
-      );
+      segmentationService.setSegmentLabelForSegmentation(segmentationId, segmentIndex, label);
     });
   };
 
@@ -215,21 +208,13 @@ export default function PanelSegmentation({ servicesManager, commandsManager }) 
             )
           }
           setOutlineWidthActive={value =>
-            _setSegmentationConfiguration(
-              selectedSegmentationId,
-              'outlineWidthActive',
-              value
-            )
+            _setSegmentationConfiguration(selectedSegmentationId, 'outlineWidthActive', value)
           }
           setFillAlpha={value =>
             _setSegmentationConfiguration(selectedSegmentationId, 'fillAlpha', value)
           }
           setFillAlphaInactive={value =>
-            _setSegmentationConfiguration(
-              selectedSegmentationId,
-              'fillAlphaInactive',
-              value
-            )
+            _setSegmentationConfiguration(selectedSegmentationId, 'fillAlphaInactive', value)
           }
         />
       ) : null}

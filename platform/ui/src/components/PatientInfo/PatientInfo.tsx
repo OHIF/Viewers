@@ -83,9 +83,7 @@ function PatientInfo({
                 </div>
                 <div className="flex">
                   <div className={classnames(classes.firstRow)}>
-                    <span className={classnames(classes.infoHeader)}>
-                      {t('Thickness')}
-                    </span>
+                    <span className={classnames(classes.infoHeader)}>{t('Thickness')}</span>
                     <span
                       className={classnames(classes.infoText)}
                       title={thickness}

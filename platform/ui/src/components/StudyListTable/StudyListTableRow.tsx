@@ -65,10 +65,7 @@ const StudyListTableRow = props => {
                             </div>
                           )}
                           <div
-                            className={classnames(
-                              { 'overflow-hidden': true },
-                              { truncate: true }
-                            )}
+                            className={classnames({ 'overflow-hidden': true }, { truncate: true })}
                           >
                             {content}
                           </div>

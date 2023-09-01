@@ -1,9 +1,4 @@
-function initDefaultToolGroup(
-  extensionManager,
-  toolGroupService,
-  commandsManager,
-  toolGroupId
-) {
+function initDefaultToolGroup(extensionManager, toolGroupService, commandsManager, toolGroupId) {
   const utilityModule = extensionManager.getModuleEntry(
     '@ohif/extension-cornerstone.utilityModule.tools'
   );
@@ -183,10 +178,7 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
       { toolName: toolNames.PlanarFreehandROI },
       { toolName: toolNames.SegmentationDisplay },
     ],
-    disabled: [
-      { toolName: toolNames.Crosshairs },
-      { toolName: toolNames.ReferenceLines },
-    ],
+    disabled: [{ toolName: toolNames.Crosshairs }, { toolName: toolNames.ReferenceLines }],
 
     // enabled
     // disabled

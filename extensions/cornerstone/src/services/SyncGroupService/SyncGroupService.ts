@@ -56,11 +56,7 @@ export default class SyncGroupService {
     Object.assign(this, pubSubServiceInterface);
   }
 
-  private _createSynchronizer(
-    type: string,
-    id: string,
-    options
-  ): Synchronizer | undefined {
+  private _createSynchronizer(type: string, id: string, options): Synchronizer | undefined {
     const syncCreator = this.synchronizerCreators[type.toLowerCase()];
     if (syncCreator) {
       return syncCreator(id, options);
@@ -104,13 +100,7 @@ export default class SyncGroupService {
 
     syncGroupsArray.forEach(syncGroup => {
       const syncGroupObj = asSyncGroup(syncGroup);
-      const {
-        type,
-        target = true,
-        source = true,
-        options = {},
-        id = type,
-      } = syncGroupObj;
+      const { type, target = true, source = true, options = {}, id = type } = syncGroupObj;
 
       const synchronizer = this._getOrCreateSynchronizer(type, id, options);
       synchronizer.setOptions(viewportId, options);

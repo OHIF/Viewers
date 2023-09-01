@@ -158,10 +158,7 @@ const SidePanel = ({
         >
           <Icon
             name={'navigation-panel-right-reveal'}
-            className={classnames(
-              'text-primary-active',
-              side === 'left' && 'rotate-180 transform'
-            )}
+            className={classnames('text-primary-active', side === 'left' && 'rotate-180 transform')}
           />
         </div>
         <div className={classnames('mt-3 flex flex-col space-y-3')}>
@@ -343,9 +340,7 @@ function _getMoreThanOneTabLayout(
             <SwiperSlide key={index}>
               <div
                 className={classnames(
-                  index === activeTabIndex
-                    ? 'bg-secondary-main text-white'
-                    : 'text-aqua-pale',
+                  index === activeTabIndex ? 'bg-secondary-main text-white' : 'text-aqua-pale',
                   'flex cursor-pointer flex-col items-center justify-center  rounded-[4px] px-4 py-1 text-center hover:text-white'
                 )}
                 key={index}

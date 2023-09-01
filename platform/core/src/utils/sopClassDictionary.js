@@ -48,8 +48,7 @@ export const sopClassDictionary = {
   BreastProjectionXRayImageStorageForProcessing: '1.2.840.10008.5.1.4.1.1.13.1.5',
   IntravascularOpticalCoherenceTomographyImageStorageForPresentation:
     '1.2.840.10008.5.1.4.1.1.14.1',
-  IntravascularOpticalCoherenceTomographyImageStorageForProcessing:
-    '1.2.840.10008.5.1.4.1.1.14.2',
+  IntravascularOpticalCoherenceTomographyImageStorageForProcessing: '1.2.840.10008.5.1.4.1.1.14.2',
   NuclearMedicineImageStorage: '1.2.840.10008.5.1.4.1.1.20',
   RawDataStorage: '1.2.840.10008.5.1.4.1.1.66',
   SpatialRegistrationStorage: '1.2.840.10008.5.1.4.1.1.66.1',

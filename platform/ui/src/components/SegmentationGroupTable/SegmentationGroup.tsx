@@ -89,12 +89,9 @@ const SegmentGroupHeader = ({
           evt.stopPropagation();
           onToggleMinimizeSegmentation(id);
         }}
-        className={classnames(
-          'h-5 w-5 cursor-pointer text-white transition duration-300',
-          {
-            'rotate-90 transform': !isMinimized,
-          }
-        )}
+        className={classnames('h-5 w-5 cursor-pointer text-white transition duration-300', {
+          'rotate-90 transform': !isMinimized,
+        })}
       />
       <span className="w-full overflow-hidden text-ellipsis whitespace-nowrap text-white">
         {label.toUpperCase()}

@@ -1,11 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import {
-  ServicesManager,
-  ExtensionManager,
-  CommandsManager,
-  DicomMetadataStore,
-} from '@ohif/core';
+import { ServicesManager, ExtensionManager, CommandsManager, DicomMetadataStore } from '@ohif/core';
 import { MeasurementTable, Icon, ButtonGroup, Button } from '@ohif/ui';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { EVENTS as MicroscopyEvents } from '../../services/MicroscopyService';
@@ -73,9 +68,7 @@ interface IMicroscopyPanelProps extends WithTranslation {
 function MicroscopyPanel(props: IMicroscopyPanelProps) {
   const { microscopyService } = props.servicesManager.services;
 
-  const [studyInstanceUID, setStudyInstanceUID] = useState(
-    null as string | null
-  );
+  const [studyInstanceUID, setStudyInstanceUID] = useState(null as string | null);
   const [roiAnnotations, setRoiAnnotations] = useState([] as any[]);
   const [selectedAnnotation, setSelectedAnnotation] = useState(null as any);
   const { servicesManager, extensionManager } = props;
@@ -85,9 +78,7 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
   useEffect(() => {
     const viewport = props.viewports[props.activeViewportId];
     if (viewport.displaySetInstanceUIDs[0]) {
-      const displaySet = displaySetService.getDisplaySetByUID(
-        viewport.displaySetInstanceUIDs[0]
-      );
+      const displaySet = displaySetService.getDisplaySetByUID(viewport.displaySetInstanceUIDs[0]);
       if (displaySet) {
         setStudyInstanceUID(displaySet.StudyInstanceUID);
       }
@@ -96,8 +87,7 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
 
   useEffect(() => {
     const onAnnotationUpdated = () => {
-      const roiAnnotations =
-        microscopyService.getAnnotationsForStudy(studyInstanceUID);
+      const roiAnnotations = microscopyService.getAnnotationsForStudy(studyInstanceUID);
       setRoiAnnotations(roiAnnotations);
     };
 
@@ -110,21 +100,18 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
       onAnnotationUpdated();
     };
 
-    const { unsubscribe: unsubscribeAnnotationUpdated } =
-      microscopyService.subscribe(
-        MicroscopyEvents.ANNOTATION_UPDATED,
-        onAnnotationUpdated
-      );
-    const { unsubscribe: unsubscribeAnnotationSelected } =
-      microscopyService.subscribe(
-        MicroscopyEvents.ANNOTATION_SELECTED,
-        onAnnotationSelected
-      );
-    const { unsubscribe: unsubscribeAnnotationRemoved } =
-      microscopyService.subscribe(
-        MicroscopyEvents.ANNOTATION_REMOVED,
-        onAnnotationRemoved
-      );
+    const { unsubscribe: unsubscribeAnnotationUpdated } = microscopyService.subscribe(
+      MicroscopyEvents.ANNOTATION_UPDATED,
+      onAnnotationUpdated
+    );
+    const { unsubscribe: unsubscribeAnnotationSelected } = microscopyService.subscribe(
+      MicroscopyEvents.ANNOTATION_SELECTED,
+      onAnnotationSelected
+    );
+    const { unsubscribe: unsubscribeAnnotationRemoved } = microscopyService.subscribe(
+      MicroscopyEvents.ANNOTATION_REMOVED,
+      onAnnotationRemoved
+    );
     onAnnotationUpdated();
     onAnnotationSelected();
 
@@ -143,8 +130,7 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
    * @returns
    */
   const promptSave = () => {
-    const annotations =
-      microscopyService.getAnnotationsForStudy(studyInstanceUID);
+    const annotations = microscopyService.getAnnotationsForStudy(studyInstanceUID);
 
     if (!annotations || saving) {
       return;
@@ -167,9 +153,7 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
   const getAllDisplaySets = (studyMetadata: any) => {
     let allDisplaySets = [] as any[];
     studyMetadata.series.forEach((series: any) => {
-      const displaySets = displaySetService.getDisplaySetsForSeries(
-        series.SeriesInstanceUID
-      );
+      const displaySets = displaySetService.getDisplaySetsForSeries(series.SeriesInstanceUID);
       allDisplaySets = allDisplaySets.concat(displaySets);
     });
     return allDisplaySets;
@@ -184,8 +168,7 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
   const saveFunction = async (SeriesDescription: string) => {
     const dataSource = extensionManager.getActiveDataSource()[0];
     const { onSaveComplete } = props;
-    const annotations =
-      microscopyService.getAnnotationsForStudy(studyInstanceUID);
+    const annotations = microscopyService.getAnnotationsForStudy(studyInstanceUID);
 
     saving = true;
 
@@ -200,10 +183,7 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
     // Get the next available series number after 4700.
 
     const dsWithMetadata = displaySets.filter(
-      ds =>
-        ds.metadata &&
-        ds.metadata.SeriesNumber &&
-        typeof ds.metadata.SeriesNumber === 'number'
+      ds => ds.metadata && ds.metadata.SeriesNumber && typeof ds.metadata.SeriesNumber === 'number'
     );
 
     // Generate next series number
@@ -214,11 +194,7 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
     const { instance: metadata } = smDisplaySet;
 
     // construct SR dataset
-    const dataset = constructSR(
-      metadata,
-      { SeriesDescription, SeriesNumber },
-      annotations
-    );
+    const dataset = constructSR(metadata, { SeriesDescription, SeriesNumber }, annotations);
 
     // Save in DICOM format
     try {
@@ -265,13 +241,11 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
       // TODO: studies?
       const study = DicomMetadataStore.getStudy(StudyInstanceUID);
 
-      const lastDerivedDisplaySet = study.derivedDisplaySets.sort(
-        (ds1: any, ds2: any) => {
-          const dateTime1 = Number(`${ds1.SeriesDate}${ds1.SeriesTime}`);
-          const dateTime2 = Number(`${ds2.SeriesDate}${ds2.SeriesTime}`);
-          return dateTime1 > dateTime2;
-        }
-      )[study.derivedDisplaySets.length - 1];
+      const lastDerivedDisplaySet = study.derivedDisplaySets.sort((ds1: any, ds2: any) => {
+        const dateTime1 = Number(`${ds1.SeriesDate}${ds1.SeriesTime}`);
+        const dateTime2 = Number(`${ds2.SeriesDate}${ds2.SeriesTime}`);
+        return dateTime1 > dateTime2;
+      })[study.derivedDisplaySets.length - 1];
 
       // TODO: use dataSource.reject.dicom()
       // await DICOMSR.rejectMeasurements(
@@ -308,13 +282,7 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
    * Handler for "Edit" action of an annotation item
    * @param param0
    */
-  const onMeasurementItemEditHandler = ({
-    uid,
-    isActive,
-  }: {
-    uid: string;
-    isActive: boolean;
-  }) => {
+  const onMeasurementItemEditHandler = ({ uid, isActive }: { uid: string; isActive: boolean }) => {
     props.commandsManager.runCommand('setLabel', { uid }, 'MICROSCOPY');
   };
 
@@ -338,10 +306,7 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
     } else if (length !== undefined) {
       displayText.push(
         shortAxisLength
-          ? `${formatLength(length, 'μm')} x ${formatLength(
-              shortAxisLength,
-              'μm'
-            )}`
+          ? `${formatLength(length, 'μm')} x ${formatLength(shortAxisLength, 'μm')}`
           : `${formatLength(length, 'μm')}`
       );
     }
@@ -400,8 +365,6 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
   );
 }
 
-const connectedMicroscopyPanel = withTranslation(['MicroscopyTable', 'Common'])(
-  MicroscopyPanel
-);
+const connectedMicroscopyPanel = withTranslation(['MicroscopyTable', 'Common'])(MicroscopyPanel);
 
 export default connectedMicroscopyPanel;

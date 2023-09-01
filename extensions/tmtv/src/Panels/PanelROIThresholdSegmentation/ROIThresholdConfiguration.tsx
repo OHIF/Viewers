@@ -22,9 +22,7 @@ function ROIThresholdConfiguration({ config, dispatch, runCommand }) {
             closeMenuOnSelect={true}
             className="border-primary-main mr-2 bg-black text-white "
             options={options}
-            placeholder={
-              options.find(option => option.value === config.strategy).placeHolder
-            }
+            placeholder={options.find(option => option.value === config.strategy).placeHolder}
             value={config.strategy}
             onChange={({ value }) => {
               dispatch({

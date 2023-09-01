@@ -63,10 +63,7 @@ export function onCompletedCalibrationLine(servicesManager, csToolsEvent) {
 
   const length =
     Math.round(
-      calculateLength3(
-        annotationData.handles.points[0],
-        annotationData.handles.points[1]
-      ) * 100
+      calculateLength3(annotationData.handles.points[0], annotationData.handles.points[1]) * 100
     ) / 100;
 
   // calculate the currently applied pixel spacing on the viewport

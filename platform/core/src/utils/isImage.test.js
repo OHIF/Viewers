@@ -8,16 +8,12 @@ describe('isImage', () => {
   });
 
   test('should return true when the image is of type sopClassDictionary.DigitalXRayImageStorageForPresentation', () => {
-    const isImageStatus = isImage(
-      sopClassDictionary.DigitalXRayImageStorageForPresentation
-    );
+    const isImageStatus = isImage(sopClassDictionary.DigitalXRayImageStorageForPresentation);
     expect(isImageStatus).toBe(true);
   });
 
   test('should return true when the image is of type sopClassDictionary.DigitalXRayImageStorageForProcessing', () => {
-    const isImageStatus = isImage(
-      sopClassDictionary.DigitalXRayImageStorageForProcessing
-    );
+    const isImageStatus = isImage(sopClassDictionary.DigitalXRayImageStorageForProcessing);
     expect(isImageStatus).toBe(true);
   });
 
@@ -43,9 +39,7 @@ describe('isImage', () => {
   });
 
   test('should return true when the image is of type sopClassDictionary.DigitalIntraOralXRayImageStorageForProcessing', () => {
-    const isImageStatus = isImage(
-      sopClassDictionary.DigitalIntraOralXRayImageStorageForProcessing
-    );
+    const isImageStatus = isImage(sopClassDictionary.DigitalIntraOralXRayImageStorageForProcessing);
     expect(isImageStatus).toBe(true);
   });
 
@@ -60,9 +54,7 @@ describe('isImage', () => {
   });
 
   test('should return true when the image is of type sopClassDictionary.LegacyConvertedEnhancedCTImageStorage', () => {
-    const isImageStatus = isImage(
-      sopClassDictionary.LegacyConvertedEnhancedCTImageStorage
-    );
+    const isImageStatus = isImage(sopClassDictionary.LegacyConvertedEnhancedCTImageStorage);
     expect(isImageStatus).toBe(true);
   });
 
@@ -87,9 +79,7 @@ describe('isImage', () => {
   });
 
   test('should return true when the image is of type sopClassDictionary.LegacyConvertedEnhancedMRImageStorage', () => {
-    const isImageStatus = isImage(
-      sopClassDictionary.LegacyConvertedEnhancedMRImageStorage
-    );
+    const isImageStatus = isImage(sopClassDictionary.LegacyConvertedEnhancedMRImageStorage);
     expect(isImageStatus).toBe(true);
   });
 
@@ -174,9 +164,7 @@ describe('isImage', () => {
   });
 
   test('should return true when the image is of type sopClassDictionary.BreastProjectionXRayImageStorageForProcessing', () => {
-    const isImageStatus = isImage(
-      sopClassDictionary.BreastProjectionXRayImageStorageForProcessing
-    );
+    const isImageStatus = isImage(sopClassDictionary.BreastProjectionXRayImageStorageForProcessing);
     expect(isImageStatus).toBe(true);
   });
 
@@ -220,9 +208,7 @@ describe('isImage', () => {
   });
 
   test('should return true when the image is of type sopClassDictionary.VLSlideCoordinatesMicroscopicImageStorage', () => {
-    const isImageStatus = isImage(
-      sopClassDictionary.VLSlideCoordinatesMicroscopicImageStorage
-    );
+    const isImageStatus = isImage(sopClassDictionary.VLSlideCoordinatesMicroscopicImageStorage);
     expect(isImageStatus).toBe(true);
   });
 
@@ -237,16 +223,12 @@ describe('isImage', () => {
   });
 
   test('should return true when the image is of type sopClassDictionary.OphthalmicPhotography8BitImageStorage', () => {
-    const isImageStatus = isImage(
-      sopClassDictionary.OphthalmicPhotography8BitImageStorage
-    );
+    const isImageStatus = isImage(sopClassDictionary.OphthalmicPhotography8BitImageStorage);
     expect(isImageStatus).toBe(true);
   });
 
   test('should return true when the image is of type sopClassDictionary.OphthalmicPhotography16BitImageStorage', () => {
-    const isImageStatus = isImage(
-      sopClassDictionary.OphthalmicPhotography16BitImageStorage
-    );
+    const isImageStatus = isImage(sopClassDictionary.OphthalmicPhotography16BitImageStorage);
     expect(isImageStatus).toBe(true);
   });
 
@@ -261,9 +243,7 @@ describe('isImage', () => {
   });
 
   test('should return true when the image is of type sopClassDictionary.PositronEmissionTomographyImageStorage', () => {
-    const isImageStatus = isImage(
-      sopClassDictionary.PositronEmissionTomographyImageStorage
-    );
+    const isImageStatus = isImage(sopClassDictionary.PositronEmissionTomographyImageStorage);
     expect(isImageStatus).toBe(true);
   });
 
@@ -273,9 +253,7 @@ describe('isImage', () => {
   });
 
   test('should return true when the image is of type sopClassDictionary.LegacyConvertedEnhancedPETImageStorage', () => {
-    const isImageStatus = isImage(
-      sopClassDictionary.LegacyConvertedEnhancedPETImageStorage
-    );
+    const isImageStatus = isImage(sopClassDictionary.LegacyConvertedEnhancedPETImageStorage);
     expect(isImageStatus).toBe(true);
   });
 

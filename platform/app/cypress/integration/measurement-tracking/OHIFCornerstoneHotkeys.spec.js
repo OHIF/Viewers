@@ -7,9 +7,7 @@ describe('OHIF Cornerstone Hotkeys', () => {
       .then(cornerstone => {
         // For debugging issues where tests pass locally but fail on CI
         // - Sometimes Cypress orb seems to use CPU rendering pathway
-        cy.log(
-          `Cornerstone using CPU Rendering?: ${cornerstone.getShouldUseCPURendering()}`
-        );
+        cy.log(`Cornerstone using CPU Rendering?: ${cornerstone.getShouldUseCPURendering()}`);
       });
 
     cy.expectMinimumThumbnails(3);

@@ -182,9 +182,7 @@ export class HotkeysManager {
     }
 
     const commandHash = objectHash({ commandName, commandOptions });
-    const options = Object.keys(commandOptions).length
-      ? JSON.stringify(commandOptions)
-      : 'no';
+    const options = Object.keys(commandOptions).length ? JSON.stringify(commandOptions) : 'no';
     const previouslyRegisteredDefinition = this.hotkeyDefinitions[commandHash];
 
     if (previouslyRegisteredDefinition) {

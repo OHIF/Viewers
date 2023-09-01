@@ -14,19 +14,13 @@ type DicomUploadProps = {
   onStarted: () => void;
 };
 
-function DicomUpload({
-  dataSource,
-  onComplete,
-  onStarted,
-}: DicomUploadProps): ReactElement {
+function DicomUpload({ dataSource, onComplete, onStarted }: DicomUploadProps): ReactElement {
   const baseClassNames = 'min-h-[480px] flex flex-col bg-black select-none';
   const [dicomFileUploaderArr, setDicomFileUploaderArr] = useState([]);
 
   const onDrop = useCallback(async acceptedFiles => {
     onStarted();
-    setDicomFileUploaderArr(
-      acceptedFiles.map(file => new DicomFileUploader(file, dataSource))
-    );
+    setDicomFileUploaderArr(acceptedFiles.map(file => new DicomFileUploader(file, dataSource)));
   }, []);
 
   const getDropZoneComponent = (): ReactElement => {
@@ -99,9 +93,7 @@ function DicomUpload({
           />
         </div>
       ) : (
-        <div className={classNames('h-[480px]', baseClassNames)}>
-          {getDropZoneComponent()}
-        </div>
+        <div className={classNames('h-[480px]', baseClassNames)}>{getDropZoneComponent()}</div>
       )}
     </>
   );

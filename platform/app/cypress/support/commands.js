@@ -59,10 +59,7 @@ Cypress.Commands.add(
   (StudyInstanceUID, otherParams = '', mode = '/basic-test') => {
     cy.location('pathname').then($url => {
       cy.log($url);
-      if (
-        $url === 'blank' ||
-        !$url.includes(`${mode}/${StudyInstanceUID}${otherParams}`)
-      ) {
+      if ($url === 'blank' || !$url.includes(`${mode}/${StudyInstanceUID}${otherParams}`)) {
         cy.openStudyInViewer(StudyInstanceUID, otherParams, mode);
         cy.waitDicomImage();
         // Very short wait to ensure pending updates are handled
@@ -199,9 +196,7 @@ Cypress.Commands.add('waitDicomImage', (mode = '/basic-test', timeout = 50000) =
       const enabled = $cornerstone.getEnabledElements();
       if (enabled?.length) {
         enabled.forEach((item, i) => {
-          if (
-            item.viewport.viewportStatus !== $cornerstone.Enums.ViewportStatus.RENDERED
-          ) {
+          if (item.viewport.viewportStatus !== $cornerstone.Enums.ViewportStatus.RENDERED) {
             throw new Error(`Viewport ${i} in state ${item.viewport.viewportStatus}`);
           }
         });
@@ -383,9 +378,7 @@ function convertCanvas(documentClone) {
 
 function unconvertCanvas(documentClone) {
   // Remove previously generated images
-  documentClone
-    .querySelectorAll('[data-percy-image]')
-    .forEach(selector => selector.remove());
+  documentClone.querySelectorAll('[data-percy-image]').forEach(selector => selector.remove());
   // Restore canvas visibility
   documentClone.querySelectorAll('[data-percy-canvas]').forEach(selector => {
     selector.removeAttribute('data-percy-canvas');
@@ -395,9 +388,7 @@ function unconvertCanvas(documentClone) {
 
 function canvasToImage(selectorOrEl) {
   let canvas =
-    typeof selectorOrEl === 'object'
-      ? selectorOrEl
-      : document.querySelector(selectorOrEl);
+    typeof selectorOrEl === 'object' ? selectorOrEl : document.querySelector(selectorOrEl);
   let image = document.createElement('img');
   let canvasImageBase64 = canvas.toDataURL('image/png');
 
@@ -514,19 +505,16 @@ Cypress.Commands.add('resetUserGeneralPreferences', () => {
   });
 });
 
-Cypress.Commands.add(
-  'setNewHotkeyShortcutOnUserPreferencesModal',
-  (function_label, shortcut) => {
-    // Within scopes all `.get` and `.contains` to within the matched elements
-    // dom instead of checking from document
-    cy.get('.HotkeysPreferences').within(() => {
-      cy.contains(function_label) // label we're looking for
-        .parent()
-        .find('input') // closest input to that label
-        .type(shortcut, { force: true }); // Set new shortcut for that function
-    });
-  }
-);
+Cypress.Commands.add('setNewHotkeyShortcutOnUserPreferencesModal', (function_label, shortcut) => {
+  // Within scopes all `.get` and `.contains` to within the matched elements
+  // dom instead of checking from document
+  cy.get('.HotkeysPreferences').within(() => {
+    cy.contains(function_label) // label we're looking for
+      .parent()
+      .find('input') // closest input to that label
+      .type(shortcut, { force: true }); // Set new shortcut for that function
+  });
+});
 
 Cypress.Commands.add(
   'setWindowLevelPreset',

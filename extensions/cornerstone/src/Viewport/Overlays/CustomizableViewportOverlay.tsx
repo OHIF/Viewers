@@ -3,12 +3,7 @@ import { vec3 } from 'gl-matrix';
 import PropTypes from 'prop-types';
 import { metaData, Enums, utilities } from '@cornerstonejs/core';
 import { ViewportOverlay } from '@ohif/ui';
-import {
-  formatPN,
-  formatDICOMDate,
-  formatDICOMTime,
-  formatNumberPrecision,
-} from './utils';
+import { formatPN, formatDICOMDate, formatDICOMTime, formatNumberPrecision } from './utils';
 import { InstanceMetadata } from 'platform/core/src/types';
 import { ServicesManager } from '@ohif/core';
 import { ImageSliceData } from '@cornerstonejs/core/dist/esm/types';
@@ -142,12 +137,7 @@ function CustomizableViewportOverlay({
 
   const instanceNumber = useMemo(() => {
     if (viewportData != null) {
-      return _getInstanceNumber(
-        viewportData,
-        viewportId,
-        imageIndex,
-        cornerstoneViewportService
-      );
+      return _getInstanceNumber(viewportData, viewportId, imageIndex, cornerstoneViewportService);
     }
     return null;
   }, [viewportData, viewportId, imageIndex, cornerstoneViewportService]);
@@ -171,10 +161,7 @@ function CustomizableViewportOverlay({
       }
 
       const { lower, upper } = range;
-      const { windowWidth, windowCenter } = utilities.windowLevel.toWindowLevel(
-        lower,
-        upper
-      );
+      const { windowWidth, windowCenter } = utilities.windowLevel.toWindowLevel(lower, upper);
 
       setVOI({ windowCenter, windowWidth });
     };
@@ -373,12 +360,7 @@ function _getViewportInstance(viewportData, imageIndex) {
   return imageId ? metaData.get('instance', imageId) || {} : {};
 }
 
-function _getInstanceNumber(
-  viewportData,
-  viewportId,
-  imageIndex,
-  cornerstoneViewportService
-) {
+function _getInstanceNumber(viewportData, viewportId, imageIndex, cornerstoneViewportService) {
   let instanceNumber;
 
   if (viewportData.viewportType === Enums.ViewportType.STACK) {
@@ -421,11 +403,7 @@ function _getInstanceNumberFromStack(viewportData, imageIndex) {
 // Since volume viewports can be in any view direction, they can render
 // a reconstructed image which don't have imageIds; therefore, no instance and instanceNumber
 // Here we check if viewport is in the acquisition direction and if so, we get the instanceNumber
-function _getInstanceNumberFromVolume(
-  viewportData,
-  viewportId,
-  cornerstoneViewportService
-) {
+function _getInstanceNumberFromVolume(viewportData, viewportId, cornerstoneViewportService) {
   const volumes = viewportData.volumes;
 
   // Todo: support fusion of acquisition plane which has instanceNumber
@@ -436,8 +414,7 @@ function _getInstanceNumberFromVolume(
   const volume = volumes[0];
   const { direction, imageIds } = volume;
 
-  const cornerstoneViewport =
-    cornerstoneViewportService.getCornerstoneViewport(viewportId);
+  const cornerstoneViewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
   if (!cornerstoneViewport) {
     return;
