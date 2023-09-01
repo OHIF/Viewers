@@ -106,15 +106,13 @@ const dataContains = (
 
 class ViewportInfo {
   private viewportId = '';
-  private viewportIndex: number;
   private element: HTMLDivElement;
   private viewportOptions: ViewportOptions;
   private displaySetOptions: Array<DisplaySetOptions>;
   private viewportData: StackViewportData | VolumeViewportData;
   private renderingEngineId: string;
 
-  constructor(viewportIndex: number, viewportId: string) {
-    this.viewportIndex = viewportIndex;
+  constructor(viewportId: string) {
     this.viewportId = viewportId;
     this.setPublicViewportOptions({});
     this.setPublicDisplaySetOptions([{}]);
@@ -155,9 +153,6 @@ class ViewportInfo {
   public setViewportId(viewportId: string): void {
     this.viewportId = viewportId;
   }
-  public setViewportIndex(viewportIndex: number): void {
-    this.viewportIndex = viewportIndex;
-  }
 
   public setElement(element: HTMLDivElement): void {
     this.element = element;
@@ -173,9 +168,6 @@ class ViewportInfo {
     return this.viewportData;
   }
 
-  public getViewportIndex(): number {
-    return this.viewportIndex;
-  }
 
   public getElement(): HTMLDivElement {
     return this.element;
@@ -187,13 +179,15 @@ class ViewportInfo {
 
   public setPublicDisplaySetOptions(
     publicDisplaySetOptions: PublicDisplaySetOptions[] | DisplaySetSelector[]
-  ): void {
+  ): Array<DisplaySetOptions> {
     // map the displaySetOptions and check if they are undefined then set them to default values
     const displaySetOptions = this.mapDisplaySetOptions(
       publicDisplaySetOptions
     );
 
     this.setDisplaySetOptions(displaySetOptions);
+
+    return this.displaySetOptions
   }
 
   public hasDisplaySet(displaySetInstanceUID: string): boolean {
@@ -217,7 +211,7 @@ class ViewportInfo {
 
   public setPublicViewportOptions(
     viewportOptionsEntry: PublicViewportOptions
-  ): void {
+  ): ViewportOptions {
     let viewportType = viewportOptionsEntry.viewportType;
     const {
       toolGroupId = DEFAULT_TOOLGROUP_ID,
@@ -250,6 +244,8 @@ class ViewportInfo {
       toolGroupId,
       presentationIds,
     });
+
+    return this.viewportOptions;
   }
 
   public setViewportOptions(viewportOptions: ViewportOptions): void {

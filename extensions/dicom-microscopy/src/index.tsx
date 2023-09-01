@@ -52,7 +52,7 @@ export default {
      *
      * @param props {*}
      * @param props.displaySets
-     * @param props.viewportIndex
+     * @param props.viewportId
      * @param props.viewportLabel
      * @param props.dataSource
      * @param props.viewportOptions
@@ -63,16 +63,16 @@ export default {
       const { viewportOptions } = props;
 
       const [viewportGrid, viewportGridService] = useViewportGrid();
-      const { viewports, activeViewportIndex } = viewportGrid;
+      const { activeViewportId } = viewportGrid;
 
       return (
         <MicroscopyViewport
           servicesManager={servicesManager}
           extensionManager={extensionManager}
           commandsManager={commandsManager}
-          activeViewportIndex={activeViewportIndex}
-          setViewportActive={(viewportIndex: number) => {
-            viewportGridService.setActiveViewportIndex(viewportIndex);
+          activeViewportId={activeViewportId}
+          setViewportActive={(viewportId: string) => {
+            viewportGridService.setActiveViewportId(viewportId);
           }}
           viewportData={viewportOptions}
           {...props}

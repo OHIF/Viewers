@@ -40,7 +40,7 @@ function PanelStudyBrowserTracking({
   // Tabs --> Studies --> DisplaySets --> Thumbnails
   const { StudyInstanceUIDs } = useImageViewer();
   const [
-    { activeViewportIndex, viewports },
+    { activeViewportId, viewports },
     viewportGridService,
   ] = useViewportGrid();
   const [
@@ -58,10 +58,10 @@ function PanelStudyBrowserTracking({
 
   const onDoubleClickThumbnailHandler = displaySetInstanceUID => {
     let updatedViewports = [];
-    const viewportIndex = activeViewportIndex;
+    const viewportId = activeViewportId;
     try {
       updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
-        viewportIndex,
+        viewportId,
         displaySetInstanceUID
       );
     } catch (error) {
@@ -78,8 +78,8 @@ function PanelStudyBrowserTracking({
     viewportGridService.setDisplaySetsForViewports(updatedViewports);
   };
 
-  const activeViewportDisplaySetInstanceUIDs =
-    viewports[activeViewportIndex]?.displaySetInstanceUIDs;
+  const activeViewportDisplaySetInstanceUIDs = viewports.get(activeViewportId)
+    ?.displaySetInstanceUIDs;
 
   const { trackedSeries } = trackedMeasurements.context;
 
@@ -447,20 +447,19 @@ function _mapDisplaySets(
       const imageSrc = thumbnailImageSrcMap[ds.displaySetInstanceUID];
       const componentType = _getComponentType(ds);
       const numPanes = viewportGridService.getNumViewportPanes();
-      const viewportIdentificator =
-        numPanes === 1
-          ? []
-          : viewports.reduce((acc, viewportData, index) => {
-              if (
-                index < numPanes &&
-                viewportData?.displaySetInstanceUIDs?.includes(
-                  ds.displaySetInstanceUID
-                )
-              ) {
-                acc.push(viewportData.viewportLabel);
-              }
-              return acc;
-            }, []);
+      const viewportIdentificator = [];
+
+      if (numPanes !== 1) {
+        viewports.forEach(viewportData => {
+          if (
+            viewportData?.displaySetInstanceUIDs?.includes(
+              ds.displaySetInstanceUID
+            )
+          ) {
+            viewportIdentificator.push(viewportData.viewportLabel);
+          }
+        });
+      }
 
       const array =
         componentType === 'thumbnailTracked'

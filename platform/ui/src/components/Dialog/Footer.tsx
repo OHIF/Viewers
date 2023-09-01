@@ -10,7 +10,7 @@ const Footer = ({ actions, className, onSubmit, value }) => {
 
   return (
     <div className={classNames(flex, padding, className)}>
-      {actions.map((action, index) => {
+      {actions?.map((action, index) => {
         const isFirst = index === 0;
 
         const onClickHandler = event => onSubmit({ action, value, event });
