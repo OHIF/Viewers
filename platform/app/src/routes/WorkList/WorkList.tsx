@@ -129,8 +129,7 @@ function WorkList({
     const rollingPageNumberMod = Math.floor(101 / filterValues.resultsPerPage);
     const rollingPageNumber = oldPageNumber % rollingPageNumberMod;
     const isNextPage = newPageNumber > oldPageNumber;
-    const hasNextPage =
-      Math.max(rollingPageNumber, 1) * resultsPerPage < numOfStudies;
+    const hasNextPage = Math.max(rollingPageNumber, 1) * resultsPerPage < numOfStudies;
 
     if (isNextPage && !hasNextPage) {
       return;
@@ -168,10 +167,7 @@ function WorkList({
 
       // TODO: nesting/recursion?
       if (key === 'studyDate') {
-        if (
-          currValue.startDate &&
-          defaultValue.startDate !== currValue.startDate
-        ) {
+        if (currValue.startDate && defaultValue.startDate !== currValue.startDate) {
           queryString.startDate = currValue.startDate;
         }
         if (currValue.endDate && defaultValue.endDate !== currValue.endDate) {
@@ -396,9 +392,7 @@ function WorkList({
         </StudyListExpandedRow>
       ),
       onClickRow: () =>
-        setExpandedRows(s =>
-          isExpanded ? s.filter(n => rowKey !== n) : [...s, rowKey]
-        ),
+        setExpandedRows(s => (isExpanded ? s.filter(n => rowKey !== n) : [...s, rowKey])),
       isExpanded,
     };
   });
@@ -426,8 +420,7 @@ function WorkList({
           title: t('UserPreferencesModal:User Preferences'),
           content: UserPreferences,
           contentProps: {
-            hotkeyDefaults:
-              hotkeysManager.getValidHotkeyDefinitions(hotkeyDefaults),
+            hotkeyDefaults: hotkeysManager.getValidHotkeyDefinitions(hotkeyDefaults),
             hotkeyDefinitions,
             onCancel: hide,
             currentLanguage: currentLanguage(),
@@ -450,9 +443,7 @@ function WorkList({
       icon: 'power-off',
       title: t('Header:Logout'),
       onClick: () => {
-        navigate(
-          `/logout?redirect_uri=${encodeURIComponent(window.location.href)}`
-        );
+        navigate(`/logout?redirect_uri=${encodeURIComponent(window.location.href)}`);
       },
     });
   }
@@ -588,9 +579,7 @@ function _getQueryFilterValues(params) {
       endDate: params.get('enddate') || null,
     },
     description: params.get('description'),
-    modalities: params.get('modalities')
-      ? params.get('modalities').split(',')
-      : [],
+    modalities: params.get('modalities') ? params.get('modalities').split(',') : [],
     accession: params.get('accession'),
     sortBy: params.get('sortby'),
     sortDirection: params.get('sortdirection'),
@@ -614,9 +603,7 @@ function _sortStringDates(s1, s2, sortModifier) {
   const s2Date = moment(s2.date, ['YYYYMMDD', 'YYYY.MM.DD'], true);
 
   if (s1Date.isValid() && s2Date.isValid()) {
-    return (
-      (s1Date.toISOString() > s2Date.toISOString() ? 1 : -1) * sortModifier
-    );
+    return (s1Date.toISOString() > s2Date.toISOString() ? 1 : -1) * sortModifier;
   } else if (s1Date.isValid()) {
     return sortModifier;
   } else if (s2Date.isValid()) {

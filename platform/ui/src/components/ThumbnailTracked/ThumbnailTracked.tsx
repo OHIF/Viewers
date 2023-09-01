@@ -42,8 +42,7 @@ const ThumbnailTracked = ({
             position="right"
             content={
               <div className="max-w-40 text-left">
-                Series is displayed <br /> in viewport{' '}
-                {viewportIdentificatorLabel}
+                Series is displayed <br /> in viewport {viewportIdentificatorLabel}
               </div>
             }
           >

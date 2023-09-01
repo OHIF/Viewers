@@ -28,16 +28,13 @@ function WrappedPanelStudyBrowserTracking({
 }) {
   const dataSource = extensionManager.getActiveDataSource()[0];
 
-  const getStudiesForPatientByMRN =
-    _getStudyForPatientUtility(extensionManager);
-  const _getStudiesForPatientByMRN = getStudiesForPatientByMRN.bind(
+  const getStudiesForPatientByMRN = _getStudyForPatientUtility(extensionManager);
+  const _getStudiesForPatientByMRN = getStudiesForPatientByMRN.bind(null, dataSource);
+  const _getImageSrcFromImageId = _createGetImageSrcFromImageIdFn(extensionManager);
+  const _requestDisplaySetCreationForStudy = requestDisplaySetCreationForStudy.bind(
     null,
     dataSource
   );
-  const _getImageSrcFromImageId =
-    _createGetImageSrcFromImageIdFn(extensionManager);
-  const _requestDisplaySetCreationForStudy =
-    requestDisplaySetCreationForStudy.bind(null, dataSource);
 
   return (
     <PanelStudyBrowserTracking

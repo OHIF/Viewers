@@ -17,11 +17,7 @@ const { log } = OHIF;
  * @param options Naturalized DICOM JSON headers to merge into the displaySet.
  *
  */
-const _generateReport = (
-  measurementData,
-  additionalFindingTypes,
-  options = {}
-) => {
+const _generateReport = (measurementData, additionalFindingTypes, options = {}) => {
   const filteredToolState = getFilteredCornerstoneToolState(
     measurementData,
     additionalFindingTypes
@@ -54,11 +50,7 @@ const commandsModule = ({}) => {
      * as opposed to Finding Sites.
      * that you wish to serialize.
      */
-    downloadReport: ({
-      measurementData,
-      additionalFindingTypes,
-      options = {},
-    }) => {
+    downloadReport: ({ measurementData, additionalFindingTypes, options = {} }) => {
       const srDataset = actions.generateReport(
         measurementData,
         additionalFindingTypes,
@@ -91,9 +83,7 @@ const commandsModule = ({}) => {
       log.info('[DICOMSR] storeMeasurements');
 
       if (!dataSource || !dataSource.store || !dataSource.store.dicom) {
-        log.error(
-          '[DICOMSR] datasource has no dataSource.store.dicom endpoint!'
-        );
+        log.error('[DICOMSR] datasource has no dataSource.store.dicom endpoint!');
         return Promise.reject({});
       }
 
@@ -109,10 +99,7 @@ const commandsModule = ({}) => {
         // the `[4]` element contains the annotation data, so this is
         // checking that there is some annotation data present.
         if (!ContentSequence?.[4].ContentSequence?.length) {
-          console.log(
-            'naturalizedReport missing imaging content',
-            naturalizedReport
-          );
+          console.log('naturalizedReport missing imaging content', naturalizedReport);
           throw new Error('Invalid report, no content');
         }
 
@@ -130,12 +117,8 @@ const commandsModule = ({}) => {
         return naturalizedReport;
       } catch (error) {
         console.warn(error);
-        log.error(
-          `[DICOMSR] Error while saving the measurements: ${error.message}`
-        );
-        throw new Error(
-          error.message || 'Error while saving the measurements.'
-        );
+        log.error(`[DICOMSR] Error while saving the measurements: ${error.message}`);
+        throw new Error(error.message || 'Error while saving the measurements.');
       }
     },
   };

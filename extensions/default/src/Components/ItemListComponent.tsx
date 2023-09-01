@@ -1,12 +1,7 @@
 import classNames from 'classnames';
 import React, { ReactElement, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  Button,
-  Icon,
-  InputFilterText,
-  LoadingIndicatorProgress,
-} from '@ohif/ui';
+import { Button, Icon, InputFilterText, LoadingIndicatorProgress } from '@ohif/ui';
 import { Types } from '@ohif/core';
 
 type ItemListComponentProps = {
@@ -30,9 +25,7 @@ function ItemListComponent({
   return (
     <div className="flex min-h-[1px] grow flex-col gap-4">
       <div className="flex items-center justify-between">
-        <div className="text-primary-light text-[20px]">
-          {t(`Select ${itemLabel}`)}
-        </div>
+        <div className="text-primary-light text-[20px]">{t(`Select ${itemLabel}`)}</div>
         <InputFilterText
           className="max-w-[40%] grow"
           value={filterValue}
@@ -53,9 +46,7 @@ function ItemListComponent({
           </div>
         ) : (
           <>
-            <div className="bg-secondary-dark px-3 py-1.5 text-white">
-              {t(itemLabel)}
-            </div>
+            <div className="bg-secondary-dark px-3 py-1.5 text-white">{t(itemLabel)}</div>
             <div className="ohif-scrollbar overflow-auto">
               {itemList
                 .filter(

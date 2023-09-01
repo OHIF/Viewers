@@ -84,10 +84,7 @@ function initContextMenu({
     // TODO check update upstream
     setEnabledElement(viewportId, element);
 
-    element.addEventListener(
-      cs3DToolsEvents.MOUSE_CLICK,
-      cornerstoneViewportHandleClick
-    );
+    element.addEventListener(cs3DToolsEvents.MOUSE_CLICK, cornerstoneViewportHandleClick);
   }
 
   function elementDisabledHandler(evt) {
@@ -99,10 +96,7 @@ function initContextMenu({
     );
   }
 
-  eventTarget.addEventListener(
-    EVENTS.ELEMENT_ENABLED,
-    elementEnabledHandler.bind(null)
-  );
+  eventTarget.addEventListener(EVENTS.ELEMENT_ENABLED, elementEnabledHandler.bind(null));
 
   eventTarget.addEventListener(
     EVENTS.ELEMENT_DISABLED,

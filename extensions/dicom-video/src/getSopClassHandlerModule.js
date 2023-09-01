@@ -7,8 +7,7 @@ const SOP_CLASS_UIDS = {
   VIDEO_ENDOSCOPIC_IMAGE_STORAGE: '1.2.840.10008.5.1.4.1.1.77.1.1.1',
   /** Need to use fallback, could be video or image */
   SECONDARY_CAPTURE_IMAGE_STORAGE: '1.2.840.10008.5.1.4.1.1.7',
-  MULTIFRAME_TRUE_COLOR_SECONDARY_CAPTURE_IMAGE_STORAGE:
-    '1.2.840.10008.5.1.4.1.1.7.4',
+  MULTIFRAME_TRUE_COLOR_SECONDARY_CAPTURE_IMAGE_STORAGE: '1.2.840.10008.5.1.4.1.1.7.4',
 };
 
 const sopClassUids = Object.values(SOP_CLASS_UIDS);
@@ -29,11 +28,7 @@ const SupportedTransferSyntaxes = {
 
 const supportedTransferSyntaxUIDs = Object.values(SupportedTransferSyntaxes);
 
-const _getDisplaySetsFromSeries = (
-  instances,
-  servicesManager,
-  extensionManager
-) => {
+const _getDisplaySetsFromSeries = (instances, servicesManager, extensionManager) => {
   const dataSource = extensionManager.getActiveDataSource()[0];
   return instances
     .filter(metadata => {
@@ -46,9 +41,7 @@ const _getDisplaySetsFromSeries = (
         return true;
       }
 
-      if (
-        metadata.SOPClassUID === SOP_CLASS_UIDS.VIDEO_PHOTOGRAPHIC_IMAGE_STORAGE
-      ) {
+      if (metadata.SOPClassUID === SOP_CLASS_UIDS.VIDEO_PHOTOGRAPHIC_IMAGE_STORAGE) {
         return true;
       }
 
@@ -60,11 +53,7 @@ const _getDisplaySetsFromSeries = (
       );
     })
     .map(instance => {
-      const {
-        Modality,
-        SOPInstanceUID,
-        SeriesDescription = 'VIDEO',
-      } = instance;
+      const { Modality, SOPInstanceUID, SeriesDescription = 'VIDEO' } = instance;
       const {
         SeriesNumber,
         SeriesDate,
@@ -107,16 +96,9 @@ const _getDisplaySetsFromSeries = (
     });
 };
 
-export default function getSopClassHandlerModule({
-  servicesManager,
-  extensionManager,
-}) {
+export default function getSopClassHandlerModule({ servicesManager, extensionManager }) {
   const getDisplaySetsFromSeries = instances => {
-    return _getDisplaySetsFromSeries(
-      instances,
-      servicesManager,
-      extensionManager
-    );
+    return _getDisplaySetsFromSeries(instances, servicesManager, extensionManager);
   };
 
   return [

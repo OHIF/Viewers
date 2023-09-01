@@ -11,11 +11,7 @@
  * @returns Array view containing the palette data, or a promise to return one.
  * Returns undefined if the palette data is absent.
  */
-export default function fetchPaletteColorLookupTableData(
-  item,
-  tag,
-  descriptorTag
-) {
+export default function fetchPaletteColorLookupTableData(item, tag, descriptorTag) {
   const { PaletteColorLookupTableUID } = item;
   const paletteData = item[tag];
   if (paletteData === undefined && PaletteColorLookupTableUID === undefined) {
@@ -62,11 +58,7 @@ function _getPaletteColor(paletteColorLookupTableData, lutDescriptor) {
       return (paletteColorLookupTableData.palette =
         arrayBufferToPaletteColorLUT(arraybuffer));
     } catch (e) {
-      console.log(
-        "Couldn't decode",
-        paletteColorLookupTableData.InlineBinary,
-        e
-      );
+      console.log("Couldn't decode", paletteColorLookupTableData.InlineBinary, e);
       return undefined;
     }
   }
@@ -75,9 +67,7 @@ function _getPaletteColor(paletteColorLookupTableData, lutDescriptor) {
     return paletteColorLookupTableData
       .retrieveBulkData()
       .then(
-        val =>
-          (paletteColorLookupTableData.palette =
-            arrayBufferToPaletteColorLUT(val))
+        val => (paletteColorLookupTableData.palette = arrayBufferToPaletteColorLUT(val))
       );
   }
 

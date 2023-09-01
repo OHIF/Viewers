@@ -59,25 +59,17 @@ const createPackage = async options => {
 
   await tasks.run();
   console.log();
-  console.log(
-    chalk.green(`Done: ${packageType} is ready at`, options.targetDir)
-  );
+  console.log(chalk.green(`Done: ${packageType} is ready at`, options.targetDir));
   console.log();
 
+  console.log(chalk.green(`NOTE: In order to use this ${packageType} for development,`));
   console.log(
-    chalk.green(`NOTE: In order to use this ${packageType} for development,`)
-  );
-  console.log(
-    chalk.green(
-      `run the following command inside the root of the OHIF monorepo`
-    )
+    chalk.green(`run the following command inside the root of the OHIF monorepo`)
   );
 
   console.log();
   console.log(
-    chalk.green.bold(
-      `    yarn run cli link-${packageType} ${options.targetDir}`
-    )
+    chalk.green.bold(`    yarn run cli link-${packageType} ${options.targetDir}`)
   );
   console.log();
   console.log(
@@ -86,9 +78,7 @@ const createPackage = async options => {
     )
   );
   console.log();
-  console.log(
-    chalk.yellow(`    yarn run cli unlink-${packageType} ${options.name}`)
-  );
+  console.log(chalk.yellow(`    yarn run cli unlink-${packageType} ${options.name}`));
   console.log();
 
   return true;

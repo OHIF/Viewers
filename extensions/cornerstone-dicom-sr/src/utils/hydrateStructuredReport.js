@@ -52,13 +52,8 @@ export default function hydrateStructuredReport(
   const { measurementService, displaySetService, customizationService } =
     servicesManager.services;
 
-  const codingValues = customizationService.getCustomization(
-    'codingValues',
-    {}
-  );
-  const displaySet = displaySetService.getDisplaySetByUID(
-    displaySetInstanceUID
-  );
+  const codingValues = customizationService.getCustomization('codingValues', {});
+  const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
 
   // TODO -> We should define a strict versioning somewhere.
   const mappings = measurementService.getSourceMappings(
@@ -122,8 +117,7 @@ export default function hydrateStructuredReport(
 
   // TODO: notification if no hydratable?
   Object.keys(hydratableMeasurementsInSR).forEach(annotationType => {
-    const toolDataForAnnotationType =
-      hydratableMeasurementsInSR[annotationType];
+    const toolDataForAnnotationType = hydratableMeasurementsInSR[annotationType];
 
     toolDataForAnnotationType.forEach(toolData => {
       // Add the measurement to toolState
@@ -147,10 +141,7 @@ export default function hydrateStructuredReport(
 
   for (let i = 0; i < imageIds.length; i++) {
     const imageId = imageIds[i];
-    const { SeriesInstanceUID, StudyInstanceUID } = metaData.get(
-      'instance',
-      imageId
-    );
+    const { SeriesInstanceUID, StudyInstanceUID } = metaData.get('instance', imageId);
 
     if (!SeriesInstanceUIDs.includes(SeriesInstanceUID)) {
       SeriesInstanceUIDs.push(SeriesInstanceUID);
@@ -159,15 +150,12 @@ export default function hydrateStructuredReport(
     if (!targetStudyInstanceUID) {
       targetStudyInstanceUID = StudyInstanceUID;
     } else if (targetStudyInstanceUID !== StudyInstanceUID) {
-      console.warn(
-        'NO SUPPORT FOR SRs THAT HAVE MEASUREMENTS FROM MULTIPLE STUDIES.'
-      );
+      console.warn('NO SUPPORT FOR SRs THAT HAVE MEASUREMENTS FROM MULTIPLE STUDIES.');
     }
   }
 
   Object.keys(hydratableMeasurementsInSR).forEach(annotationType => {
-    const toolDataForAnnotationType =
-      hydratableMeasurementsInSR[annotationType];
+    const toolDataForAnnotationType = hydratableMeasurementsInSR[annotationType];
 
     toolDataForAnnotationType.forEach(toolData => {
       // Add the measurement to toolState
@@ -205,19 +193,11 @@ export default function hydrateStructuredReport(
         CORNERSTONE_3D_TOOLS_SOURCE_VERSION
       );
       annotation.data.label = getLabelFromDCMJSImportedToolData(toolData);
-      annotation.data.finding = convertCode(
-        codingValues,
-        toolData.finding?.[0]
-      );
-      annotation.data.findingSites = convertSites(
-        codingValues,
-        toolData.findingSites
-      );
+      annotation.data.finding = convertCode(codingValues, toolData.finding?.[0]);
+      annotation.data.findingSites = convertSites(codingValues, toolData.findingSites);
       annotation.data.site = annotation.data.findingSites?.[0];
 
-      const matchingMapping = mappings.find(
-        m => m.annotationType === annotationType
-      );
+      const matchingMapping = mappings.find(m => m.annotationType === annotationType);
 
       const newAnnotationUID = measurementService.addRawMeasurement(
         source,
@@ -228,8 +208,7 @@ export default function hydrateStructuredReport(
       );
 
       if (disableEditing) {
-        const addedAnnotation =
-          annotationManager.getAnnotation(newAnnotationUID);
+        const addedAnnotation = annotationManager.getAnnotation(newAnnotationUID);
         locking.setAnnotationLocked(addedAnnotation, true);
       }
 
@@ -258,9 +237,9 @@ function _mapLegacyDataSet(dataset) {
   );
 
   // Retrieve the Measurements themselves
-  const measurementGroups = toArray(
-    imagingMeasurementContent.ContentSequence
-  ).filter(codeMeaningEquals(GROUP));
+  const measurementGroups = toArray(imagingMeasurementContent.ContentSequence).filter(
+    codeMeaningEquals(GROUP)
+  );
 
   // For each of the supported measurement types, compute the measurement data
   const measurementData = {};
@@ -276,9 +255,7 @@ function _mapLegacyDataSet(dataset) {
   });
 
   measurementGroups.forEach((measurementGroup, index) => {
-    const measurementGroupContentSequence = toArray(
-      measurementGroup.ContentSequence
-    );
+    const measurementGroupContentSequence = toArray(measurementGroup.ContentSequence);
 
     const TrackingIdentifierGroup = measurementGroupContentSequence.find(
       contentItem =>

@@ -25,8 +25,7 @@ function PanelStudyBrowser({
   // doesn't have to have such an intense shape. This works well enough for now.
   // Tabs --> Studies --> DisplaySets --> Thumbnails
   const { StudyInstanceUIDs } = useImageViewer();
-  const [{ activeViewportId, viewports }, viewportGridService] =
-    useViewportGrid();
+  const [{ activeViewportId, viewports }, viewportGridService] = useViewportGrid();
   const [activeTabName, setActiveTabName] = useState('primary');
   const [expandedStudyInstanceUIDs, setExpandedStudyInstanceUIDs] = useState([
     ...StudyInstanceUIDs,
@@ -48,8 +47,7 @@ function PanelStudyBrowser({
       console.warn(error);
       uiNotificationService.show({
         title: 'Thumbnail Double Click',
-        message:
-          'The selected display sets could not be added to the viewport.',
+        message: 'The selected display sets could not be added to the viewport.',
         type: 'info',
         duration: 3000,
       });
@@ -77,8 +75,7 @@ function PanelStudyBrowser({
       // try to fetch the prior studies based on the patientID if the
       // server can respond.
       try {
-        qidoStudiesForPatient =
-          await getStudiesForPatientByMRN(qidoForStudyUID);
+        qidoStudiesForPatient = await getStudiesForPatientByMRN(qidoForStudyUID);
       } catch (error) {
         console.warn(error);
       }
@@ -97,11 +94,7 @@ function PanelStudyBrowser({
       setStudyDisplayList(prevArray => {
         const ret = [...prevArray];
         for (const study of actuallyMappedStudies) {
-          if (
-            !prevArray.find(
-              it => it.studyInstanceUid === study.studyInstanceUid
-            )
-          ) {
+          if (!prevArray.find(it => it.studyInstanceUid === study.studyInstanceUid)) {
             ret.push(study);
           }
         }
@@ -118,17 +111,14 @@ function PanelStudyBrowser({
     const currentDisplaySets = displaySetService.activeDisplaySets;
     currentDisplaySets.forEach(async dSet => {
       const newImageSrcEntry = {};
-      const displaySet = displaySetService.getDisplaySetByUID(
-        dSet.displaySetInstanceUID
-      );
+      const displaySet = displaySetService.getDisplaySetByUID(dSet.displaySetInstanceUID);
       const imageIds = dataSource.getImageIdsForDisplaySet(displaySet);
       const imageId = imageIds[Math.floor(imageIds.length / 2)];
 
       // TODO: Is it okay that imageIds are not returned here for SR displaySets?
       if (imageId && !displaySet?.unsupported) {
         // When the image arrives, render it and store the result in the thumbnailImgSrcMap
-        newImageSrcEntry[dSet.displaySetInstanceUID] =
-          await getImageSrc(imageId);
+        newImageSrcEntry[dSet.displaySetInstanceUID] = await getImageSrc(imageId);
         if (isMounted.current) {
           setThumbnailImageSrcMap(prevState => {
             return { ...prevState, ...newImageSrcEntry };
@@ -146,10 +136,7 @@ function PanelStudyBrowser({
   useEffect(() => {
     // TODO: Are we sure `activeDisplaySets` will always be accurate?
     const currentDisplaySets = displaySetService.activeDisplaySets;
-    const mappedDisplaySets = _mapDisplaySets(
-      currentDisplaySets,
-      thumbnailImageSrcMap
-    );
+    const mappedDisplaySets = _mapDisplaySets(currentDisplaySets, thumbnailImageSrcMap);
     sortStudyInstances(mappedDisplaySets);
 
     setDisplaySets(mappedDisplaySets);
@@ -203,18 +190,17 @@ function PanelStudyBrowser({
       }
     );
 
-    const SubscriptionDisplaySetMetaDataInvalidated =
-      displaySetService.subscribe(
-        displaySetService.EVENTS.DISPLAY_SET_SERIES_METADATA_INVALIDATED,
-        () => {
-          const mappedDisplaySets = _mapDisplaySets(
-            displaySetService.getActiveDisplaySets(),
-            thumbnailImageSrcMap
-          );
+    const SubscriptionDisplaySetMetaDataInvalidated = displaySetService.subscribe(
+      displaySetService.EVENTS.DISPLAY_SET_SERIES_METADATA_INVALIDATED,
+      () => {
+        const mappedDisplaySets = _mapDisplaySets(
+          displaySetService.getActiveDisplaySets(),
+          thumbnailImageSrcMap
+        );
 
-          setDisplaySets(mappedDisplaySets);
-        }
-      );
+        setDisplaySets(mappedDisplaySets);
+      }
+    );
 
     return () => {
       SubscriptionDisplaySetsAdded.unsubscribe();
@@ -224,23 +210,14 @@ function PanelStudyBrowser({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const tabs = _createStudyBrowserTabs(
-    StudyInstanceUIDs,
-    studyDisplayList,
-    displaySets
-  );
+  const tabs = _createStudyBrowserTabs(StudyInstanceUIDs, studyDisplayList, displaySets);
 
   // TODO: Should not fire this on "close"
   function _handleStudyClick(StudyInstanceUID) {
-    const shouldCollapseStudy =
-      expandedStudyInstanceUIDs.includes(StudyInstanceUID);
+    const shouldCollapseStudy = expandedStudyInstanceUIDs.includes(StudyInstanceUID);
     const updatedExpandedStudyInstanceUIDs = shouldCollapseStudy
       ? // eslint-disable-next-line prettier/prettier
-        [
-          ...expandedStudyInstanceUIDs.filter(
-            stdyUid => stdyUid !== StudyInstanceUID
-          ),
-        ]
+        [...expandedStudyInstanceUIDs.filter(stdyUid => stdyUid !== StudyInstanceUID)]
       : [...expandedStudyInstanceUIDs, StudyInstanceUID];
 
     setExpandedStudyInstanceUIDs(updatedExpandedStudyInstanceUIDs);
@@ -348,14 +325,7 @@ function _mapDisplaySets(displaySets, thumbnailImageSrcMap) {
   return [...thumbnailDisplaySets, ...thumbnailNoImageDisplaySets];
 }
 
-const thumbnailNoImageModalities = [
-  'SR',
-  'SEG',
-  'SM',
-  'RTSTRUCT',
-  'RTPLAN',
-  'RTDOSE',
-];
+const thumbnailNoImageModalities = ['SR', 'SEG', 'SM', 'RTSTRUCT', 'RTPLAN', 'RTDOSE'];
 
 function _getComponentType(ds) {
   if (thumbnailNoImageModalities.includes(ds.Modality) || ds?.unsupported) {

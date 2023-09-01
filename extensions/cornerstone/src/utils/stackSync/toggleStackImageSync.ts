@@ -47,9 +47,7 @@ export default function toggleStackImageSync({
       const { displaySetInstanceUIDs } = viewport;
 
       for (const displaySetInstanceUID of displaySetInstanceUIDs) {
-        const displaySet = displaySetService.getDisplaySetByUID(
-          displaySetInstanceUID
-        );
+        const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
 
         return !!displaySet?.isReconstructable;
       }
@@ -64,8 +62,7 @@ export default function toggleStackImageSync({
     }
 
     const { element } = cornerstoneViewportService.getViewportInfo(viewportId);
-    const { viewport: csViewport, renderingEngineId } =
-      getEnabledElement(element);
+    const { viewport: csViewport, renderingEngineId } = getEnabledElement(element);
     const { viewPlaneNormal } = csViewport.getCamera();
 
     // Should we round here? I guess so, but not sure how much precision we need
@@ -82,9 +79,7 @@ export default function toggleStackImageSync({
 
   // create synchronizer for each group
   Object.values(viewportsByOrientation).map(viewports => {
-    let synchronizerId = viewports
-      .map(({ viewportId }) => viewportId)
-      .join(',');
+    let synchronizerId = viewports.map(({ viewportId }) => viewportId).join(',');
 
     synchronizerId = `imageSync_${synchronizerId}`;
 

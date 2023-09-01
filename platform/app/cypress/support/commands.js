@@ -91,9 +91,7 @@ Cypress.Commands.add('openStudyModality', Modality => {
   cy.initRouteAliases();
   cy.visit('/');
 
-  cy.get('#filter-accessionOrModalityOrDescription')
-    .type(Modality)
-    .waitQueryList();
+  cy.get('#filter-accessionOrModalityOrDescription').type(Modality).waitQueryList();
 
   cy.get('[data-cy="study-list-results"]').contains(Modality).first().click();
 });
@@ -172,60 +170,49 @@ Cypress.Commands.add('addLine', (viewport, firstClick, secondClick) => {
  * @param {number[]} secondClick - Click position [x, y]
  * @param {number[]} thirdClick - Click position [x, y]
  */
-Cypress.Commands.add(
-  'addAngle',
-  (viewport, firstClick, secondClick, thirdClick) => {
-    cy.get(viewport).then($viewport => {
-      const [x1, y1] = firstClick;
-      const [x2, y2] = secondClick;
-      const [x3, y3] = thirdClick;
+Cypress.Commands.add('addAngle', (viewport, firstClick, secondClick, thirdClick) => {
+  cy.get(viewport).then($viewport => {
+    const [x1, y1] = firstClick;
+    const [x2, y2] = secondClick;
+    const [x3, y3] = thirdClick;
 
-      cy.wrap($viewport)
-        .click(x1, y1, { force: true })
-        .trigger('mousemove', { clientX: x2, clientY: y2 })
-        .click(x2, y2, { force: true })
-        .trigger('mousemove', { clientX: x3, clientY: y3 })
-        .click(x3, y3, { force: true });
-    });
-  }
-);
+    cy.wrap($viewport)
+      .click(x1, y1, { force: true })
+      .trigger('mousemove', { clientX: x2, clientY: y2 })
+      .click(x2, y2, { force: true })
+      .trigger('mousemove', { clientX: x3, clientY: y3 })
+      .click(x3, y3, { force: true });
+  });
+});
 
 Cypress.Commands.add('expectMinimumThumbnails', (seriesToWait = 1) => {
-  cy.get('[data-cy="study-browser-thumbnail"]', { timeout: 50000 }).should(
-    $itemList => {
-      expect($itemList.length >= seriesToWait).to.be.true;
-    }
-  );
+  cy.get('[data-cy="study-browser-thumbnail"]', { timeout: 50000 }).should($itemList => {
+    expect($itemList.length >= seriesToWait).to.be.true;
+  });
 });
 
 //Command to wait DICOM image to load into the viewport
-Cypress.Commands.add(
-  'waitDicomImage',
-  (mode = '/basic-test', timeout = 50000) => {
-    cy.window()
-      .its('cornerstone')
-      .should($cornerstone => {
-        const enabled = $cornerstone.getEnabledElements();
-        if (enabled?.length) {
-          enabled.forEach((item, i) => {
-            if (
-              item.viewport.viewportStatus !==
-              $cornerstone.Enums.ViewportStatus.RENDERED
-            ) {
-              throw new Error(
-                `Viewport ${i} in state ${item.viewport.viewportStatus}`
-              );
-            }
-          });
-        } else {
-          throw new Error('No enabled elements');
-        }
-      });
-    // This shouldn't be necessary, but seems to be.
-    cy.wait(250);
-    cy.log('DICOM image loaded');
-  }
-);
+Cypress.Commands.add('waitDicomImage', (mode = '/basic-test', timeout = 50000) => {
+  cy.window()
+    .its('cornerstone')
+    .should($cornerstone => {
+      const enabled = $cornerstone.getEnabledElements();
+      if (enabled?.length) {
+        enabled.forEach((item, i) => {
+          if (
+            item.viewport.viewportStatus !== $cornerstone.Enums.ViewportStatus.RENDERED
+          ) {
+            throw new Error(`Viewport ${i} in state ${item.viewport.viewportStatus}`);
+          }
+        });
+      } else {
+        throw new Error('No enabled elements');
+      }
+    });
+  // This shouldn't be necessary, but seems to be.
+  cy.wait(250);
+  cy.log('DICOM image loaded');
+});
 
 //Command to reset and clear all the changes made to the viewport
 Cypress.Commands.add('resetViewport', () => {
@@ -389,9 +376,7 @@ Cypress.Commands.add('setLayout', (columns = 1, rows = 1) => {
 });
 
 function convertCanvas(documentClone) {
-  documentClone
-    .querySelectorAll('canvas')
-    .forEach(selector => canvasToImage(selector));
+  documentClone.querySelectorAll('canvas').forEach(selector => canvasToImage(selector));
 
   return documentClone;
 }

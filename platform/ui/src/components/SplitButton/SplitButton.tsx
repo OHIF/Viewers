@@ -10,8 +10,7 @@ import ListMenu from '../ListMenu';
 import ToolbarButton from '../ToolbarButton';
 
 const baseClasses = {
-  Button:
-    'flex items-center rounded-md border-transparent cursor-pointer group/button',
+  Button: 'flex items-center rounded-md border-transparent cursor-pointer group/button',
   Primary:
     // By default border on left, top and bottom for hover effect and only rounded on left side.
     // Extra padding on right to componensate for no right border.
@@ -136,12 +135,9 @@ const SplitButton = ({
 
   const onSecondaryClickHandler = () =>
     setState(state => ({ ...state, isExpanded: !state.isExpanded }));
-  const onMouseEnterHandler = () =>
-    setState(state => ({ ...state, isHovering: true }));
-  const onMouseLeaveHandler = () =>
-    setState(state => ({ ...state, isHovering: false }));
-  const outsideClickHandler = () =>
-    setState(state => ({ ...state, isExpanded: false }));
+  const onMouseEnterHandler = () => setState(state => ({ ...state, isHovering: true }));
+  const onMouseLeaveHandler = () => setState(state => ({ ...state, isHovering: false }));
+  const outsideClickHandler = () => setState(state => ({ ...state, isExpanded: false }));
 
   const isPrimaryToggle = state.primary.type === 'toggle';
   const isPrimaryActive =
@@ -149,8 +145,7 @@ const SplitButton = ({
     (isPrimaryToggle && toggles[state.primary.id] === true);
 
   const PrimaryButtonComponent =
-    toolbarService?.getButtonComponentForUIType(state.primary.uiType) ??
-    ToolbarButton;
+    toolbarService?.getButtonComponentForUIType(state.primary.uiType) ?? ToolbarButton;
 
   const primaryButtonClassName = classes.Primary({
     ...state,

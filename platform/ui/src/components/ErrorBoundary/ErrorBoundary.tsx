@@ -8,12 +8,7 @@ import IconButton from '../IconButton';
 
 const isProduction = process.env.NODE_ENV === 'production';
 
-const DefaultFallback = ({
-  error,
-  context,
-  resetErrorBoundary,
-  fallbackRoute,
-}) => {
+const DefaultFallback = ({ error, context, resetErrorBoundary, fallbackRoute }) => {
   const [showDetails, setShowDetails] = useState(false);
   const title = `Something went wrong${!isProduction && ` in ${context}`}.`;
   const subtitle = `Sorry, something went wrong there. Try again.`;
@@ -46,9 +41,7 @@ const DefaultFallback = ({
             </React.Fragment>
           </IconButton>
 
-          {showDetails && (
-            <p className="text-primary-light px-4">Stack: {error.stack}</p>
-          )}
+          {showDetails && <p className="text-primary-light px-4">Stack: {error.stack}</p>}
         </div>
       )}
     </div>

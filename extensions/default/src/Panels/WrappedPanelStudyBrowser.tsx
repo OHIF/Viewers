@@ -21,14 +21,12 @@ function WrappedPanelStudyBrowser({
   // TODO: This should be made available a different way; route should have
   // already determined our datasource
   const dataSource = extensionManager.getDataSources()[0];
-  const _getStudiesForPatientByMRN = getStudiesForPatientByMRN.bind(
+  const _getStudiesForPatientByMRN = getStudiesForPatientByMRN.bind(null, dataSource);
+  const _getImageSrcFromImageId = _createGetImageSrcFromImageIdFn(extensionManager);
+  const _requestDisplaySetCreationForStudy = requestDisplaySetCreationForStudy.bind(
     null,
     dataSource
   );
-  const _getImageSrcFromImageId =
-    _createGetImageSrcFromImageIdFn(extensionManager);
-  const _requestDisplaySetCreationForStudy =
-    requestDisplaySetCreationForStudy.bind(null, dataSource);
 
   return (
     <PanelStudyBrowser

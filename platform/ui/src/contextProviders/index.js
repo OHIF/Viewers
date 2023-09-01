@@ -1,8 +1,4 @@
-export {
-  default as DialogProvider,
-  useDialog,
-  withDialog,
-} from './DialogProvider';
+export { default as DialogProvider, useDialog, withDialog } from './DialogProvider';
 
 export { default as DragAndDropProvider } from './DragAndDropProvider';
 

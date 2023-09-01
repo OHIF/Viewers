@@ -1,8 +1,4 @@
-import {
-  synchronizers,
-  SynchronizerManager,
-  Synchronizer,
-} from '@cornerstonejs/tools';
+import { synchronizers, SynchronizerManager, Synchronizer } from '@cornerstonejs/tools';
 
 import { pubSubServiceInterface, Types, ServicesManager } from '@ohif/core';
 
@@ -14,10 +10,7 @@ const EVENTS = {
  * @params options - are an optional set of options associated with the first
  * sync group declared.
  */
-export type SyncCreator = (
-  id: string,
-  options?: Record<string, unknown>
-) => Synchronizer;
+export type SyncCreator = (id: string, options?: Record<string, unknown>) => Synchronizer;
 
 export type SyncGroup = {
   type: string;
@@ -40,9 +33,7 @@ export default class SyncGroupService {
   static REGISTRATION = {
     name: 'syncGroupService',
     altName: 'SyncGroupService',
-    create: ({
-      servicesManager,
-    }: Types.Extensions.ExtensionParams): SyncGroupService => {
+    create: ({ servicesManager }: Types.Extensions.ExtensionParams): SyncGroupService => {
       return new SyncGroupService(servicesManager);
     },
   };
@@ -109,9 +100,7 @@ export default class SyncGroupService {
       return;
     }
 
-    const syncGroupsArray = Array.isArray(syncGroups)
-      ? syncGroups
-      : [syncGroups];
+    const syncGroupsArray = Array.isArray(syncGroups) ? syncGroups : [syncGroups];
 
     syncGroupsArray.forEach(syncGroup => {
       const syncGroupObj = asSyncGroup(syncGroup);

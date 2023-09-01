@@ -27,9 +27,7 @@ const SegmentationTable = ({
     // if there is set all to invisible state
     if (visibleSegmentationsIds.length > 0) {
       // make all invisible
-      setHiddenSegmentationIds(
-        segmentations.map(segmentation => segmentation.id)
-      );
+      setHiddenSegmentationIds(segmentations.map(segmentation => segmentation.id));
 
       // toggle those that are visible
       onToggleVisibilityAll(visibleSegmentationsIds);

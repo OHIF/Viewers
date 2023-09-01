@@ -7,12 +7,7 @@ import ButtonGroup from '../ButtonGroup';
 import Typography from '../Typography';
 import Select from '../Select';
 
-const StudyListPagination = ({
-  onChangePage,
-  currentPage,
-  perPage,
-  onChangePerPage,
-}) => {
+const StudyListPagination = ({ onChangePage, currentPage, perPage, onChangePerPage }) => {
   const { t } = useTranslation('StudyList');
 
   const navigateToPage = page => {

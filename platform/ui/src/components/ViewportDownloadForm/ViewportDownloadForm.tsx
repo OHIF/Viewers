@@ -1,10 +1,4 @@
-import React, {
-  useCallback,
-  useEffect,
-  useState,
-  createRef,
-  useRef,
-} from 'react';
+import React, { useCallback, useEffect, useState, createRef, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import Typography from '../Typography';
@@ -122,9 +116,7 @@ const ViewportDownloadForm = ({
     const sanitizedTargetValue = value.replace(/\D/, '');
     const isEmpty = sanitizedTargetValue === '';
     const newDimensions = { ...dimensions };
-    const updatedDimension = isEmpty
-      ? ''
-      : Math.min(sanitizedTargetValue, maximumSize);
+    const updatedDimension = isEmpty ? '' : Math.min(sanitizedTargetValue, maximumSize);
 
     if (updatedDimension === dimensions[dimension]) {
       return;
@@ -300,9 +292,7 @@ const ViewportDownloadForm = ({
                   max={maximumSize}
                   label={t('Image width (px)')}
                   value={dimensions.width}
-                  onChange={evt =>
-                    onDimensionsChange(evt.target.value, 'width')
-                  }
+                  onChange={evt => onDimensionsChange(evt.target.value, 'width')}
                   data-cy="image-width"
                 />
                 {renderErrorHandler('width')}
@@ -314,9 +304,7 @@ const ViewportDownloadForm = ({
                   max={maximumSize}
                   label={t('Image height (px)')}
                   value={dimensions.height}
-                  onChange={evt =>
-                    onDimensionsChange(evt.target.value, 'height')
-                  }
+                  onChange={evt => onDimensionsChange(evt.target.value, 'height')}
                   data-cy="image-height"
                 />
                 {renderErrorHandler('height')}

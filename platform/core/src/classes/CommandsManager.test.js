@@ -94,10 +94,7 @@ describe('CommandsManager', () => {
 
   describe('getCommand()', () => {
     it('returns undefined if context does not exist', () => {
-      const result = commandsManager.getCommand(
-        'TestCommand',
-        'NonExistentContext'
-      );
+      const result = commandsManager.getCommand('TestCommand', 'NonExistentContext');
 
       expect(result).toBe(undefined);
     });
@@ -131,9 +128,7 @@ describe('CommandsManager', () => {
 
   describe('runCommand()', () => {
     it('Logs a warning if commandName not found in context', () => {
-      const result = commandsManager.runCommand(
-        'CommandThatDoesNotExistInAnyContext'
-      );
+      const result = commandsManager.runCommand('CommandThatDoesNotExistInAnyContext');
 
       expect(result).toBe(undefined);
       expect(log.warn.mock.calls[0][0]).toEqual(
@@ -154,11 +149,7 @@ describe('CommandsManager', () => {
         'TestCommand',
         commandWithNoCommmandFn
       );
-      const result = commandsManager.runCommand(
-        'TestCommand',
-        null,
-        contextName
-      );
+      const result = commandsManager.runCommand('TestCommand', null, contextName);
 
       expect(result).toBe(undefined);
       expect(log.warn.mock.calls[0][0]).toEqual(
@@ -192,9 +183,7 @@ describe('CommandsManager', () => {
       commandsManager.runCommand('TestCommand', runCommandOptions, 'VIEWER');
 
       expect(command.commandFn.mock.calls.length).toBe(1);
-      expect(command.commandFn.mock.calls[0][0].test).toEqual(
-        runCommandOptions.test
-      );
+      expect(command.commandFn.mock.calls[0][0].test).toEqual(runCommandOptions.test);
     });
 
     it('Returns the result of commandFn', () => {

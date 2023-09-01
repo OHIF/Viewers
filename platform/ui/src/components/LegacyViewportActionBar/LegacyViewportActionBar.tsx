@@ -31,23 +31,13 @@ const LegacyViewportActionBar = ({
     patientInformation,
   } = studyData;
 
-  const {
-    patientName,
-    patientSex,
-    patientAge,
-    MRN,
-    thickness,
-    spacing,
-    scanner,
-  } = patientInformation;
+  const { patientName, patientSex, patientAge, MRN, thickness, spacing, scanner } =
+    patientInformation;
 
   const onPatientInfoClick = () => setShowPatientInfo(!showPatientInfo);
   const closePatientInfo = () => setShowPatientInfo(false);
   const showPatientInfoRef = useRef(null);
-  const clickOutsideListener = useOnClickOutside(
-    showPatientInfoRef,
-    closePatientInfo
-  );
+  const clickOutsideListener = useOnClickOutside(showPatientInfoRef, closePatientInfo);
 
   useEffect(() => {
     if (showPatientInfo) {

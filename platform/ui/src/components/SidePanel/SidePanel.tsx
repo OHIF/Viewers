@@ -2,13 +2,7 @@ import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import SwiperCore, {
-  A11y,
-  Controller,
-  Navigation,
-  Pagination,
-  Scrollbar,
-} from 'swiper';
+import SwiperCore, { A11y, Controller, Navigation, Pagination, Scrollbar } from 'swiper';
 import { Swiper, SwiperSlide } from 'swiper/react';
 
 import { PanelService, ServicesManager, Types } from '@ohif/core';
@@ -84,9 +78,7 @@ const SidePanel = ({
 
   // Tracks whether this SidePanel has been opened at least once since this SidePanel was inserted into the DOM.
   // Thus going to the Study List page and back to the viewer resets this flag for a SidePanel.
-  const [hasBeenOpened, setHasBeenOpened] = useState(
-    activeTabIndexProp !== null
-  );
+  const [hasBeenOpened, setHasBeenOpened] = useState(activeTabIndexProp !== null);
   const [panelOpen, setPanelOpen] = useState(activeTabIndexProp !== null);
   const [activeTabIndex, setActiveTabIndex] = useState(activeTabIndexProp ?? 0);
   const swiperRef = useRef() as any;
@@ -136,9 +128,7 @@ const SidePanel = ({
         panelService.EVENTS.ACTIVATE_PANEL,
         (activatePanelEvent: Types.ActivatePanelEvent) => {
           if (!hasBeenOpened || activatePanelEvent.forceActive) {
-            const tabIndex = tabs.findIndex(
-              tab => tab.id === activatePanelEvent.panelId
-            );
+            const tabIndex = tabs.findIndex(tab => tab.id === activatePanelEvent.panelId);
             if (tabIndex !== -1) {
               updateActiveTabIndex(tabIndex);
             }
@@ -213,11 +203,7 @@ const SidePanel = ({
 
   return (
     <div
-      className={classnames(
-        className,
-        baseClasses,
-        classesMap[openStatus][side]
-      )}
+      className={classnames(className, baseClasses, classesMap[openStatus][side])}
       style={style}
     >
       {panelOpen ? (
@@ -372,9 +358,7 @@ function _getMoreThanOneTabLayout(
                   <Icon
                     name={obj.iconName}
                     className={classnames(
-                      index === activeTabIndex
-                        ? 'text-white'
-                        : 'text-primary-active'
+                      index === activeTabIndex ? 'text-white' : 'text-primary-active'
                     )}
                     style={{
                       width: '22px',

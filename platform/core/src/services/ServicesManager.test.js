@@ -38,9 +38,7 @@ describe('ServicesManager', () => {
         [{ name: 'UIModalTestService', create: jest.fn() }, fakeConfiguration],
       ]);
 
-      expect(servicesManager.registerService.mock.calls[1][1]).toEqual(
-        fakeConfiguration
-      );
+      expect(servicesManager.registerService.mock.calls[1][1]).toEqual(fakeConfiguration);
     });
   });
 
@@ -78,9 +76,7 @@ describe('ServicesManager', () => {
     it('tracks which services have been registered', () => {
       servicesManager.registerService(fakeService);
 
-      expect(servicesManager.registeredServiceNames).toContain(
-        fakeService.name
-      );
+      expect(servicesManager.registeredServiceNames).toContain(fakeService.name);
     });
 
     it('logs a warning if the service has an name that has already been registered', () => {

@@ -179,21 +179,16 @@ validate.validators.containsI = function (value, options, key) {
   const testValue = getTestValue(options);
   if (Array.isArray(value)) {
     if (
-      value.some(
-        item => !validate.validators.containsI(item.toLowerCase(), options, key)
-      )
+      value.some(item => !validate.validators.containsI(item.toLowerCase(), options, key))
     ) {
       return undefined;
     }
-    return `No item of ${value.join(',')} contains ${JSON.stringify(
-      testValue
-    )}`;
+    return `No item of ${value.join(',')} contains ${JSON.stringify(testValue)}`;
   }
   if (Array.isArray(testValue)) {
     if (
       testValue.some(
-        subTest =>
-          !validate.validators.containsI(value, subTest.toLowerCase(), key)
+        subTest => !validate.validators.containsI(value, subTest.toLowerCase(), key)
       )
     ) {
       return;
@@ -230,16 +225,10 @@ validate.validators.contains = function (value, options, key) {
     if (value.some(item => !validate.validators.contains(item, options, key))) {
       return undefined;
     }
-    return `No item of ${value.join(',')} contains ${JSON.stringify(
-      testValue
-    )}`;
+    return `No item of ${value.join(',')} contains ${JSON.stringify(testValue)}`;
   }
   if (Array.isArray(testValue)) {
-    if (
-      testValue.some(
-        subTest => !validate.validators.contains(value, subTest, key)
-      )
-    ) {
+    if (testValue.some(subTest => !validate.validators.contains(value, subTest, key))) {
       return;
     }
     return `${key} must contain at least one of ${testValue.join(',')}`;

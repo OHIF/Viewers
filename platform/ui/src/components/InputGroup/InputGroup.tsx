@@ -148,11 +148,9 @@ InputGroup.propTypes = {
     PropTypes.shape({
       name: PropTypes.string.isRequired,
       displayName: PropTypes.string.isRequired,
-      inputType: PropTypes.oneOf(['Text', 'MultiSelect', 'DateRange', 'None'])
-        .isRequired,
+      inputType: PropTypes.oneOf(['Text', 'MultiSelect', 'DateRange', 'None']).isRequired,
       isSortable: PropTypes.bool.isRequired,
-      gridCol: PropTypes.oneOf([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12])
-        .isRequired,
+      gridCol: PropTypes.oneOf([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]).isRequired,
       option: PropTypes.arrayOf(
         PropTypes.shape({
           value: PropTypes.string,

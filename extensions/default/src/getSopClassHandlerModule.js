@@ -46,9 +46,7 @@ const makeDisplaySet = instances => {
   if (shallSort) {
     imageSet.sortBy((a, b) => {
       // Sort by InstanceNumber (0020,0013)
-      return (
-        (parseInt(a.InstanceNumber) || 0) - (parseInt(b.InstanceNumber) || 0)
-      );
+      return (parseInt(a.InstanceNumber) || 0) - (parseInt(b.InstanceNumber) || 0);
     });
   }
 

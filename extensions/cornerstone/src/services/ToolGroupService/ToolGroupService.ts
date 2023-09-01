@@ -40,8 +40,7 @@ export default class ToolGroupService {
   EVENTS: { [key: string]: string };
 
   constructor(serviceManager) {
-    const { cornerstoneViewportService, viewportGridService } =
-      serviceManager.services;
+    const { cornerstoneViewportService, viewportGridService } = serviceManager.services;
     this.cornerstoneViewportService = cornerstoneViewportService;
     this.viewportGridService = viewportGridService;
     this.listeners = {};
@@ -64,9 +63,7 @@ export default class ToolGroupService {
 
     if (!toolGroupIdToUse) {
       // Use the active viewport's tool group if no tool group id is provided
-      const enabledElement = getActiveViewportEnabledElement(
-        this.viewportGridService
-      );
+      const enabledElement = getActiveViewportEnabledElement(this.viewportGridService);
 
       if (!enabledElement) {
         return;
@@ -100,12 +97,8 @@ export default class ToolGroupService {
   }
 
   public getToolGroupForViewport(viewportId: string): Types.IToolGroup | void {
-    const renderingEngine =
-      this.cornerstoneViewportService.getRenderingEngine();
-    return ToolGroupManager.getToolGroupForViewport(
-      viewportId,
-      renderingEngine.id
-    );
+    const renderingEngine = this.cornerstoneViewportService.getRenderingEngine();
+    return ToolGroupManager.getToolGroupForViewport(viewportId, renderingEngine.id);
   }
 
   public getActiveToolForViewport(viewportId: string): string {

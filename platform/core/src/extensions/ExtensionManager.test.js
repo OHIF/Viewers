@@ -106,13 +106,9 @@ describe('ExtensionManager.ts', () => {
 
       await expect(
         extensionManager.registerExtension(undefinedExtension)
-      ).rejects.toThrow(
-        new Error('Attempting to register a null/undefined extension.')
-      );
+      ).rejects.toThrow(new Error('Attempting to register a null/undefined extension.'));
 
-      await expect(
-        extensionManager.registerExtension(nullExtension)
-      ).rejects.toThrow(
+      await expect(extensionManager.registerExtension(nullExtension)).rejects.toThrow(
         new Error('Attempting to register a null/undefined extension.')
       );
     });

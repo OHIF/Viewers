@@ -33,8 +33,9 @@ export default async function removeMode(packageName) {
       {
         title: 'Detecting extensions that can be removed...',
         task: async ctx => {
-          ctx.ohifExtensionsToRemove =
-            await findOhifExtensionsToRemoveAfterRemovingMode(ctx.yarnInfo);
+          ctx.ohifExtensionsToRemove = await findOhifExtensionsToRemoveAfterRemovingMode(
+            ctx.yarnInfo
+          );
         },
       },
     ],

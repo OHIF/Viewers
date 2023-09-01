@@ -102,10 +102,7 @@ const HotkeysPreferences = ({
                           {t('Shortcut')}
                         </Typography>
                         <div
-                          className={classNames(
-                            'flex w-32 flex-col',
-                            isFirst && 'mt-5'
-                          )}
+                          className={classNames('flex w-32 flex-col', isFirst && 'mt-5')}
                         >
                           <HotkeyField
                             disabled={disabled}

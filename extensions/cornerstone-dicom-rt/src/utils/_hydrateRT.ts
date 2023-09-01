@@ -1,8 +1,4 @@
-async function _hydrateRTDisplaySet({
-  rtDisplaySet,
-  viewportId,
-  servicesManager,
-}) {
+async function _hydrateRTDisplaySet({ rtDisplaySet, viewportId, servicesManager }) {
   const { segmentationService, hangingProtocolService, viewportGridService } =
     servicesManager.services;
 

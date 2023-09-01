@@ -104,10 +104,7 @@ export default class DicomFileUploader extends PubSubService {
           );
         },
         abort: () => {
-          this._reject(
-            reject,
-            new UploadRejection(UploadStatus.Cancelled, 'Cancelled')
-          );
+          this._reject(reject, new UploadRejection(UploadStatus.Cancelled, 'Cancelled'));
         },
         error: () => {
           this._reject(
@@ -133,10 +130,7 @@ export default class DicomFileUploader extends PubSubService {
             // The file is not DICOM
             this._reject(
               reject,
-              new UploadRejection(
-                UploadStatus.Failed,
-                'Not a valid DICOM file.'
-              )
+              new UploadRejection(UploadStatus.Failed, 'Not a valid DICOM file.')
             );
             return;
           }
@@ -165,8 +159,7 @@ export default class DicomFileUploader extends PubSubService {
 
   private _isRejected(): boolean {
     return (
-      this._status === UploadStatus.Failed ||
-      this._status === UploadStatus.Cancelled
+      this._status === UploadStatus.Failed || this._status === UploadStatus.Cancelled
     );
   }
 

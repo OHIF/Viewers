@@ -11,8 +11,7 @@ import { useAppConfig } from '@state';
 
 const { formatDate } = utils;
 
-const MEASUREMENT_TRACKING_EXTENSION_ID =
-  '@ohif/extension-measurement-tracking';
+const MEASUREMENT_TRACKING_EXTENSION_ID = '@ohif/extension-measurement-tracking';
 
 const SR_TOOLGROUP_BASE_NAME = 'SRToolGroup';
 
@@ -44,10 +43,8 @@ function OHIFCornerstoneSRViewport(props) {
   const [viewportGrid, viewportGridService] = useViewportGrid();
   const [measurementSelected, setMeasurementSelected] = useState(0);
   const [measurementCount, setMeasurementCount] = useState(1);
-  const [activeImageDisplaySetData, setActiveImageDisplaySetData] =
-    useState(null);
-  const [referencedDisplaySetMetadata, setReferencedDisplaySetMetadata] =
-    useState(null);
+  const [activeImageDisplaySetData, setActiveImageDisplaySetData] = useState(null);
+  const [referencedDisplaySetMetadata, setReferencedDisplaySetMetadata] = useState(null);
   const [element, setElement] = useState(null);
   const { viewports, activeViewportId } = viewportGrid;
 
@@ -56,9 +53,7 @@ function OHIFCornerstoneSRViewport(props) {
   let sendTrackedMeasurementsEvent;
 
   const hasMeasurementTrackingExtension =
-    extensionManager.registeredExtensionIds.includes(
-      MEASUREMENT_TRACKING_EXTENSION_ID
-    );
+    extensionManager.registeredExtensionIds.includes(MEASUREMENT_TRACKING_EXTENSION_ID);
 
   if (hasMeasurementTrackingExtension) {
     const contextModule = extensionManager.getModuleEntry(
@@ -122,8 +117,7 @@ function OHIFCornerstoneSRViewport(props) {
 
   const updateViewport = useCallback(
     newMeasurementSelected => {
-      const { StudyInstanceUID, displaySetInstanceUID, sopClassUids } =
-        srDisplaySet;
+      const { StudyInstanceUID, displaySetInstanceUID, sopClassUids } = srDisplaySet;
 
       if (!StudyInstanceUID || !displaySetInstanceUID) {
         return;
@@ -242,12 +236,7 @@ function OHIFCornerstoneSRViewport(props) {
       setTrackingIdentifiers(newMeasurementSelected);
       updateViewport(newMeasurementSelected);
     },
-    [
-      measurementSelected,
-      measurementCount,
-      updateViewport,
-      setTrackingIdentifiers,
-    ]
+    [measurementSelected, measurementCount, updateViewport, setTrackingIdentifiers]
   );
 
   /**
@@ -258,9 +247,7 @@ function OHIFCornerstoneSRViewport(props) {
       displaySetService.EVENTS.DISPLAY_SETS_REMOVED,
       ({ displaySetInstanceUIDs }) => {
         const activeViewport = viewports[activeViewportId];
-        if (
-          displaySetInstanceUIDs.includes(activeViewport.displaySetInstanceUID)
-        ) {
+        if (displaySetInstanceUIDs.includes(activeViewport.displaySetInstanceUID)) {
           viewportGridService.setDisplaySetsForViewport({
             viewportId: activeViewportId,
             displaySetInstanceUIDs: [],
@@ -375,9 +362,7 @@ function OHIFCornerstoneSRViewport(props) {
           currentSeries: SeriesNumber,
           seriesDescription: SeriesDescription || '',
           patientInformation: {
-            patientName: PatientName
-              ? OHIF.utils.formatPN(PatientName.Alphabetic)
-              : '',
+            patientName: PatientName ? OHIF.utils.formatPN(PatientName.Alphabetic) : '',
             patientSex: PatientSex || '',
             patientAge: PatientAge || '',
             MRN: PatientID || '',
@@ -426,9 +411,8 @@ async function _getViewportReferencedDisplaySetData(
 
   const { displaySetInstanceUID } = measurement;
 
-  const referencedDisplaySet = displaySetService.getDisplaySetByUID(
-    displaySetInstanceUID
-  );
+  const referencedDisplaySet =
+    displaySetService.getDisplaySetByUID(displaySetInstanceUID);
 
   const image0 = referencedDisplaySet.images[0];
   const referencedDisplaySetMetadata = {
@@ -468,8 +452,7 @@ function _getStatusComponent({
   // 1 - Incompatible
   // 2 - Locked
   // 3 - Rehydratable / Open
-  const state =
-    isRehydratable && !isLocked ? 3 : isRehydratable && isLocked ? 2 : 1;
+  const state = isRehydratable && !isLocked ? 3 : isRehydratable && isLocked ? 2 : 1;
   let ToolTipMessage = null;
   let StatusIcon = null;
 
@@ -506,9 +489,7 @@ function _getStatusComponent({
         />
       );
 
-      ToolTipMessage = () => (
-        <div>{`Click ${loadStr} to restore measurements.`}</div>
-      );
+      ToolTipMessage = () => <div>{`Click ${loadStr} to restore measurements.`}</div>;
   }
 
   const StatusArea = () => (

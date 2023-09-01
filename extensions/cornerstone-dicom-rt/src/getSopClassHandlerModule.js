@@ -7,11 +7,7 @@ const sopClassUids = ['1.2.840.10008.5.1.4.1.1.481.3'];
 
 let loadPromises = {};
 
-function _getDisplaySetsFromSeries(
-  instances,
-  servicesManager,
-  extensionManager
-) {
+function _getDisplaySetsFromSeries(instances, servicesManager, extensionManager) {
   const instance = instances[0];
 
   const {
@@ -56,10 +52,7 @@ function _getDisplaySetsFromSeries(
   };
 
   let referencedSeriesSequence = instance.ReferencedSeriesSequence;
-  if (
-    instance.ReferencedFrameOfReferenceSequence &&
-    !instance.ReferencedSeriesSequence
-  ) {
+  if (instance.ReferencedFrameOfReferenceSequence && !instance.ReferencedSeriesSequence) {
     instance.ReferencedSeriesSequence =
       _deriveReferencedSeriesSequenceFromFrameOfReferenceSequence(
         instance.ReferencedFrameOfReferenceSequence
@@ -195,11 +188,7 @@ function getSopClassHandlerModule({ servicesManager, extensionManager }) {
       name: 'dicom-rt',
       sopClassUids,
       getDisplaySetsFromSeries: instances => {
-        return _getDisplaySetsFromSeries(
-          instances,
-          servicesManager,
-          extensionManager
-        );
+        return _getDisplaySetsFromSeries(instances, servicesManager, extensionManager);
       },
     },
   ];

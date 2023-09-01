@@ -133,10 +133,7 @@ function createDicomLocalApi(dicomLocalConfig) {
           }
 
           // Instances metadata already added via local upload
-          const study = DicomMetadataStore.getStudy(
-            StudyInstanceUID,
-            madeInClient
-          );
+          const study = DicomMetadataStore.getStudy(StudyInstanceUID, madeInClient);
 
           // Series metadata already added via local upload
           DicomMetadataStore._broadcastEvent(EVENTS.SERIES_ADDED, {
@@ -236,8 +233,7 @@ function createDicomLocalApi(dicomLocalConfig) {
       const { StudyInstanceUIDs: paramsStudyInstanceUIDs } = params;
       const queryStudyInstanceUIDs = query.getAll('StudyInstanceUIDs');
 
-      const StudyInstanceUIDs =
-        queryStudyInstanceUIDs || paramsStudyInstanceUIDs;
+      const StudyInstanceUIDs = queryStudyInstanceUIDs || paramsStudyInstanceUIDs;
       const StudyInstanceUIDsAsArray =
         StudyInstanceUIDs && Array.isArray(StudyInstanceUIDs)
           ? StudyInstanceUIDs

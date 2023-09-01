@@ -14,8 +14,7 @@ function CornerstoneViewportOverlay({
   viewportId,
   servicesManager,
 }) {
-  const { cornerstoneViewportService, toolbarService } =
-    servicesManager.services;
+  const { cornerstoneViewportService, toolbarService } = servicesManager.services;
   const [voi, setVOI] = useState({ windowCenter: null, windowWidth: null });
   const [scale, setScale] = useState(1);
   const [activeTools, setActiveTools] = useState([]);
@@ -84,8 +83,7 @@ function CornerstoneViewportOverlay({
         previousCamera.parallelScale !== camera.parallelScale ||
         previousCamera.scale !== camera.scale
       ) {
-        const viewport =
-          cornerstoneViewportService.getCornerstoneViewport(viewportId);
+        const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
         if (!viewport) {
           return;
@@ -104,8 +102,7 @@ function CornerstoneViewportOverlay({
 
         const { spacing } = imageData;
         // convert parallel scale to scale
-        const scale =
-          (element.clientHeight * spacing[0] * 0.5) / camera.parallelScale;
+        const scale = (element.clientHeight * spacing[0] * 0.5) / camera.parallelScale;
         setScale(scale);
       }
     };
@@ -196,9 +193,7 @@ function CornerstoneViewportOverlay({
 
   // Todo: probably this can be done in a better way in which we identify bright
   // background
-  const isLight = backgroundColor
-    ? utilities.isEqual(backgroundColor, [1, 1, 1])
-    : false;
+  const isLight = backgroundColor ? utilities.isEqual(backgroundColor, [1, 1, 1]) : false;
 
   return (
     <ViewportOverlay
@@ -272,8 +267,7 @@ function _getInstanceNumberFromVolume(
       return {};
     }
 
-    const { instanceNumber } =
-      metaData.get('generalImageModule', imageId) || {};
+    const { instanceNumber } = metaData.get('generalImageModule', imageId) || {};
     return parseInt(instanceNumber);
   }
 }

@@ -2,17 +2,12 @@ import OHIF from '@ohif/core';
 import { annotation } from '@cornerstonejs/tools';
 const { log } = OHIF;
 
-function getFilteredCornerstoneToolState(
-  measurementData,
-  additionalFindingTypes
-) {
+function getFilteredCornerstoneToolState(measurementData, additionalFindingTypes) {
   const filteredToolState = {};
 
   function addToFilteredToolState(annotation, toolType) {
     if (!annotation.metadata?.referencedImageId) {
-      log.warn(
-        `[DICOMSR] No referencedImageId found for ${toolType} ${annotation.id}`
-      );
+      log.warn(`[DICOMSR] No referencedImageId found for ${toolType} ${annotation.id}`);
       return;
     }
 
@@ -90,9 +85,7 @@ function getFilteredCornerstoneToolState(
       if (annotations) {
         for (let k = 0; k < annotations.length; k++) {
           const annotation = annotations[k];
-          const uidIndex = uids.findIndex(
-            uid => uid === annotation.annotationUID
-          );
+          const uidIndex = uids.findIndex(uid => uid === annotation.annotationUID);
 
           if (uidIndex !== -1) {
             addToFilteredToolState(annotation, toolType);

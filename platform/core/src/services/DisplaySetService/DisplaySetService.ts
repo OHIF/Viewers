@@ -19,15 +19,11 @@ const filterInstances = (
     if (!dsInstances) {
       console.warn('No instances in', ds);
     } else {
-      dsInstances.forEach(instance =>
-        dsInstancesSOP.add(instance.SOPInstanceUID)
-      );
+      dsInstances.forEach(instance => dsInstancesSOP.add(instance.SOPInstanceUID));
     }
   });
 
-  return instances.filter(
-    instance => !dsInstancesSOP.has(instance.SOPInstanceUID)
-  );
+  return instances.filter(instance => !dsInstancesSOP.has(instance.SOPInstanceUID));
 };
 
 export default class DisplaySetService extends PubSubService {
@@ -119,9 +115,7 @@ export default class DisplaySetService extends PubSubService {
     return this.activeDisplaySets;
   }
 
-  public getDisplaySetsForSeries = (
-    seriesInstanceUID: string
-  ): DisplaySet[] => {
+  public getDisplaySetsForSeries = (seriesInstanceUID: string): DisplaySet[] => {
     return [...displaySetCache.values()].filter(
       displaySet => displaySet.SeriesInstanceUID === seriesInstanceUID
     );
@@ -137,9 +131,7 @@ export default class DisplaySetService extends PubSubService {
       : [...this.getDisplaySetCache().values()];
 
     const displaySet = displaySets.find(ds => {
-      return (
-        ds.images && ds.images.some(i => i.SOPInstanceUID === sopInstanceUID)
-      );
+      return ds.images && ds.images.some(i => i.SOPInstanceUID === sopInstanceUID);
     });
 
     return displaySet;
@@ -215,10 +207,7 @@ export default class DisplaySetService extends PubSubService {
     if (batch) {
       for (let i = 0; i < input.length; i++) {
         const instances = input[i];
-        const displaySets = this.makeDisplaySetForInstances(
-          instances,
-          settings
-        );
+        const displaySets = this.makeDisplaySetForInstances(instances, settings);
 
         displaySetsAdded.push(...displaySets);
       }
@@ -278,16 +267,13 @@ export default class DisplaySetService extends PubSubService {
   ): DisplaySet[] {
     // creating a sopClassUID list and for each sopClass associate its respective
     // instance list
-    const instancesForSetSOPClasses = instancesSrc.reduce(
-      (sopClassList, instance) => {
-        if (!(instance.SOPClassUID in sopClassList)) {
-          sopClassList[instance.SOPClassUID] = [];
-        }
-        sopClassList[instance.SOPClassUID].push(instance);
-        return sopClassList;
-      },
-      {}
-    );
+    const instancesForSetSOPClasses = instancesSrc.reduce((sopClassList, instance) => {
+      if (!(instance.SOPClassUID in sopClassList)) {
+        sopClassList[instance.SOPClassUID] = [];
+      }
+      sopClassList[instance.SOPClassUID].push(instance);
+      return sopClassList;
+    }, {});
     // for each sopClassUID, call the old makeDisplaySetForInstances with a
     // instance list composed only by instances with the same sopClassUID and
     // accumulate the displaySets in the variable allDisplaySets
@@ -357,9 +343,7 @@ export default class DisplaySetService extends PubSubService {
               this.activeDisplaySetsChanged = true;
               instances = filterInstances(instances, [addedDs]);
               this._addActiveDisplaySets([addedDs]);
-              this.setDisplaySetMetadataInvalidated(
-                addedDs.displaySetInstanceUID
-              );
+              this.setDisplaySetMetadataInvalidated(addedDs.displaySetInstanceUID);
             }
             // This means that all instances already existed or got added to
             // existing display sets, and had an invalidated event fired

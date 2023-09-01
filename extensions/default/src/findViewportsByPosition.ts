@@ -44,9 +44,7 @@ export const findOrCreateViewport = (
     options.inDisplay.push(...displaySetInstanceUIDs);
     return {
       displaySetInstanceUIDs,
-      displaySetOptions: missing.displaySetsInfo.map(
-        it => it.displaySetOptions
-      ),
+      displaySetOptions: missing.displaySetsInfo.map(it => it.displaySetOptions),
       viewportOptions: {
         ...missing.viewportOptions,
       },

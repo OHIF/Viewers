@@ -84,10 +84,7 @@ function initDoubleClick({
     );
   }
 
-  eventTarget.addEventListener(
-    EVENTS.ELEMENT_ENABLED,
-    elementEnabledHandler.bind(null)
-  );
+  eventTarget.addEventListener(EVENTS.ELEMENT_ENABLED, elementEnabledHandler.bind(null));
 
   eventTarget.addEventListener(
     EVENTS.ELEMENT_DISABLED,

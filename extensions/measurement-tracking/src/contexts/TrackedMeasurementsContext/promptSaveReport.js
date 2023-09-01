@@ -10,8 +10,7 @@ function promptSaveReport(
 ) {
   const { uiDialogService, measurementService, displaySetService } =
     servicesManager.services;
-  const viewportId =
-    evt.viewportId === undefined ? evt.data.viewportId : evt.viewportId;
+  const viewportId = evt.viewportId === undefined ? evt.data.viewportId : evt.viewportId;
   const isBackupSave =
     evt.isBackupSave === undefined ? evt.data.isBackupSave : evt.isBackupSave;
   const StudyInstanceUID = evt?.data?.StudyInstanceUID;

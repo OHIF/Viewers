@@ -26,11 +26,7 @@ const CircleROI = {
     }
 
     const { SOPInstanceUID, SeriesInstanceUID, StudyInstanceUID } =
-      getSOPInstanceAttributes(
-        referencedImageId,
-        CornerstoneViewportService,
-        viewportId
-      );
+      getSOPInstanceAttributes(referencedImageId, CornerstoneViewportService, viewportId);
 
     let displaySet;
 
@@ -45,14 +41,10 @@ const CircleROI = {
 
     const { points } = data.handles;
 
-    const mappedAnnotations = getMappedAnnotations(
-      annotation,
-      DisplaySetService
-    );
+    const mappedAnnotations = getMappedAnnotations(annotation, DisplaySetService);
 
     const displayText = getDisplayText(mappedAnnotations, displaySet);
-    const getReport = () =>
-      _getReport(mappedAnnotations, points, FrameOfReferenceUID);
+    const getReport = () => _getReport(mappedAnnotations, points, FrameOfReferenceUID);
 
     return {
       uid: annotationUID,
@@ -90,9 +82,7 @@ function getMappedAnnotations(annotation, DisplaySetService) {
 
     if (!referencedImageId) {
       // Todo: Non-acquisition plane measurement mapping not supported yet
-      throw new Error(
-        'Non-acquisition plane measurement mapping not supported'
-      );
+      throw new Error('Non-acquisition plane measurement mapping not supported');
     }
 
     const { SOPInstanceUID, SeriesInstanceUID, frameNumber } =
@@ -144,12 +134,7 @@ function _getReport(mappedAnnotations, points, FrameOfReferenceUID) {
       return;
     }
 
-    columns.push(
-      `max (${unit})`,
-      `mean (${unit})`,
-      `std (${unit})`,
-      `area (mm2)`
-    );
+    columns.push(`max (${unit})`, `mean (${unit})`, `std (${unit})`, `area (mm2)`);
     values.push(max, mean, stdDev, area);
   });
 

@@ -215,12 +215,7 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
 }
 
 function initToolGroups(extensionManager, toolGroupService, commandsManager) {
-  initDefaultToolGroup(
-    extensionManager,
-    toolGroupService,
-    commandsManager,
-    'default'
-  );
+  initDefaultToolGroup(extensionManager, toolGroupService, commandsManager, 'default');
   initSRToolGroup(extensionManager, toolGroupService, commandsManager);
   initMPRToolGroup(extensionManager, toolGroupService, commandsManager);
 }

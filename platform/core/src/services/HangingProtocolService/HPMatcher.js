@@ -46,12 +46,13 @@ const match = (
     const { attribute, from = 'metadataInstance' } = rule;
     // Do not use the custom attribute from the metadataInstance since it is subject to change
     if (customAttributeRetrievalCallbacks.hasOwnProperty(attribute)) {
-      readValues[attribute] = customAttributeRetrievalCallbacks[
-        attribute
-      ].callback.call(rule, metadataInstance, options);
+      readValues[attribute] = customAttributeRetrievalCallbacks[attribute].callback.call(
+        rule,
+        metadataInstance,
+        options
+      );
     } else {
-      readValues[attribute] =
-        fromSrc[from]?.[attribute] ?? instance?.[attribute];
+      readValues[attribute] = fromSrc[from]?.[attribute] ?? instance?.[attribute];
     }
 
     // Format the constraint as required by Validate.js

@@ -1,9 +1,6 @@
 import { ServicesManager, utils, Types } from '@ohif/core';
 
-import {
-  ContextMenuController,
-  defaultContextMenu,
-} from './CustomizableContextMenu';
+import { ContextMenuController, defaultContextMenu } from './CustomizableContextMenu';
 import DicomTagBrowser from './DicomTagBrowser/DicomTagBrowser';
 import reuseCachedLayouts from './utils/reuseCachedLayouts';
 import findViewportsByPosition, {
@@ -95,11 +92,7 @@ const commandsModule = ({
         ...selectorProps,
       };
 
-      contextMenuController.showContextMenu(
-        optionsToUse,
-        element,
-        defaultPointsPosition
-      );
+      contextMenuController.showContextMenu(optionsToUse, element, defaultPointsPosition);
     },
 
     /** Close a context menu currently displayed */
@@ -187,18 +180,14 @@ const commandsModule = ({
         // the activeViewportId
         const state = viewportGridService.getState();
         const hpInfo = hangingProtocolService.getState();
-        const { protocol: oldProtocol } =
-          hangingProtocolService.getActiveProtocol();
+        const { protocol: oldProtocol } = hangingProtocolService.getActiveProtocol();
         const stateSyncReduce = reuseCachedLayouts(
           state,
           hangingProtocolService,
           stateSyncService
         );
-        const {
-          hangingProtocolStageIndexMap,
-          viewportGridStore,
-          displaySetSelectorMap,
-        } = stateSyncReduce;
+        const { hangingProtocolStageIndexMap, viewportGridStore, displaySetSelectorMap } =
+          stateSyncReduce;
 
         if (!protocolId) {
           // Re-use the previous protocol id, and optionally stage
@@ -208,9 +197,7 @@ const commandsModule = ({
           }
         } else if (stageIndex === undefined && stageId === undefined) {
           // Re-set the same stage as was previously used
-          const hangingId = `${
-            activeStudyUID || hpInfo.activeStudyUID
-          }:${protocolId}`;
+          const hangingId = `${activeStudyUID || hpInfo.activeStudyUID}:${protocolId}`;
           stageIndex = hangingProtocolStageIndexMap[hangingId]?.stageIndex;
         }
 
@@ -326,8 +313,7 @@ const commandsModule = ({
     },
 
     deltaStage: ({ direction }) => {
-      const { protocolId, stageIndex: oldStageIndex } =
-        hangingProtocolService.getState();
+      const { protocolId, stageIndex: oldStageIndex } = hangingProtocolService.getState();
       const { protocol } = hangingProtocolService.getActiveProtocol();
       for (
         let stageIndex = oldStageIndex + direction;
@@ -356,12 +342,7 @@ const commandsModule = ({
       const { protocol } = hangingProtocolService.getActiveProtocol();
       const onLayoutChange = protocol.callbacks?.onLayoutChange;
       if (commandsManager.run(onLayoutChange, { numRows, numCols }) === false) {
-        console.log(
-          'setViewportGridLayout running',
-          onLayoutChange,
-          numRows,
-          numCols
-        );
+        console.log('setViewportGridLayout running', onLayoutChange, numRows, numCols);
         // Don't apply the layout if the run command returns false
         return;
       }
@@ -405,8 +386,7 @@ const commandsModule = ({
         }
         // There is a state to toggle back to. The viewport that was
         // originally toggled to one up was the former active viewport.
-        const viewportIdToUpdate =
-          toggleOneUpViewportGridStore.activeViewportId;
+        const viewportIdToUpdate = toggleOneUpViewportGridStore.activeViewportId;
 
         const updatedViewportsViaHP =
           displaySetInstanceUIDs.length > 1
@@ -446,8 +426,7 @@ const commandsModule = ({
           // However, we also need to take into account that the current one up viewport
           // might have been part of a bigger hanging protocol layout, so going back
           // from one up we should apply those viewports as well.
-          return updatedViewportsViaHP.length > 1 &&
-            updatedViewportsViaHP[position]
+          return updatedViewportsViaHP.length > 1 && updatedViewportsViaHP[position]
             ? {
                 viewportOptions,
                 displaySetOptions,
@@ -569,8 +548,7 @@ const commandsModule = ({
       const { activeViewportId, viewports } = viewportGridService.getState();
 
       const activeViewport = viewports.get(activeViewportId);
-      const activeDisplaySetInstanceUID =
-        activeViewport.displaySetInstanceUIDs[0];
+      const activeDisplaySetInstanceUID = activeViewport.displaySetInstanceUIDs[0];
 
       const thumbnailList = document.querySelector('#ohif-thumbnail-list');
 
@@ -605,14 +583,7 @@ const commandsModule = ({
       direction,
       excludeNonImageModalities,
     }: UpdateViewportDisplaySetParams) => {
-      const nonImageModalities = [
-        'SR',
-        'SEG',
-        'SM',
-        'RTSTRUCT',
-        'RTPLAN',
-        'RTDOSE',
-      ];
+      const nonImageModalities = ['SR', 'SEG', 'SM', 'RTSTRUCT', 'RTPLAN', 'RTDOSE'];
 
       // Sort the display sets as per the hanging protocol service viewport/display set scoring system.
       // The thumbnail list uses the same sorting.
@@ -633,15 +604,12 @@ const commandsModule = ({
 
       for (
         displaySetIndexToShow = activeDisplaySetIndex + direction;
-        displaySetIndexToShow > -1 &&
-        displaySetIndexToShow < currentDisplaySets.length;
+        displaySetIndexToShow > -1 && displaySetIndexToShow < currentDisplaySets.length;
         displaySetIndexToShow += direction
       ) {
         if (
           !excludeNonImageModalities ||
-          !nonImageModalities.includes(
-            currentDisplaySets[displaySetIndexToShow].Modality
-          )
+          !nonImageModalities.includes(currentDisplaySets[displaySetIndexToShow].Modality)
         ) {
           break;
         }
@@ -654,8 +622,7 @@ const commandsModule = ({
         return;
       }
 
-      const { displaySetInstanceUID } =
-        currentDisplaySets[displaySetIndexToShow];
+      const { displaySetInstanceUID } = currentDisplaySets[displaySetIndexToShow];
 
       let updatedViewports = [];
 

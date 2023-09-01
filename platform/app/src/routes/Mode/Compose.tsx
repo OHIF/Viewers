@@ -12,9 +12,7 @@ export default function Compose(props) {
   return (
     <React.Fragment>
       {components.reduceRight((acc, curr) => {
-        const [Comp, props] = Array.isArray(curr)
-          ? [curr[0], curr[1]]
-          : [curr, {}];
+        const [Comp, props] = Array.isArray(curr) ? [curr[0], curr[1]] : [curr, {}];
         return <Comp {...props}>{acc}</Comp>;
       }, children)}
     </React.Fragment>

@@ -33,11 +33,7 @@ const Angle = {
     }
 
     const { SOPInstanceUID, SeriesInstanceUID, StudyInstanceUID } =
-      getSOPInstanceAttributes(
-        referencedImageId,
-        CornerstoneViewportService,
-        viewportId
-      );
+      getSOPInstanceAttributes(referencedImageId, CornerstoneViewportService, viewportId);
 
     let displaySet;
 
@@ -52,14 +48,10 @@ const Angle = {
 
     const { points } = data.handles;
 
-    const mappedAnnotations = getMappedAnnotations(
-      annotation,
-      displaySetService
-    );
+    const mappedAnnotations = getMappedAnnotations(annotation, displaySetService);
 
     const displayText = getDisplayText(mappedAnnotations, displaySet);
-    const getReport = () =>
-      _getReport(mappedAnnotations, points, FrameOfReferenceUID);
+    const getReport = () => _getReport(mappedAnnotations, points, FrameOfReferenceUID);
 
     return {
       uid: annotationUID,
@@ -96,9 +88,7 @@ function getMappedAnnotations(annotation, DisplaySetService) {
     const targetStats = cachedStats[targetId];
 
     if (!referencedImageId) {
-      throw new Error(
-        'Non-acquisition plane measurement mapping not supported'
-      );
+      throw new Error('Non-acquisition plane measurement mapping not supported');
     }
 
     const { SOPInstanceUID, SeriesInstanceUID, frameNumber } =
@@ -173,8 +163,7 @@ function getDisplayText(mappedAnnotations, displaySet) {
   const displayText = [];
 
   // Area is the same for all series
-  const { angle, unit, SeriesNumber, SOPInstanceUID, frameNumber } =
-    mappedAnnotations[0];
+  const { angle, unit, SeriesNumber, SOPInstanceUID, frameNumber } = mappedAnnotations[0];
 
   const instance = displaySet.images.find(
     image => image.SOPInstanceUID === SOPInstanceUID

@@ -20,9 +20,7 @@ export default function areAllImageSpacingEqual(
     return;
   }
   const firstImagePositionPatient = toNumber(instances[0].ImagePositionPatient);
-  const lastIpp = toNumber(
-    instances[instances.length - 1].ImagePositionPatient
-  );
+  const lastIpp = toNumber(instances[instances.length - 1].ImagePositionPatient);
 
   const averageSpacingBetweenFrames =
     _getPerpendicularDistance(firstImagePositionPatient, lastIpp) /

@@ -105,8 +105,7 @@ function OHIFCornerstoneRTViewport(props) {
       '@ohif/extension-cornerstone.viewportModule.cornerstone'
     );
 
-    const { displaySet: referencedDisplaySet } =
-      referencedDisplaySetRef.current;
+    const { displaySet: referencedDisplaySet } = referencedDisplaySetRef.current;
 
     // Todo: jump to the center of the first segment
     return (
@@ -176,8 +175,7 @@ function OHIFCornerstoneRTViewport(props) {
       segmentationService.EVENTS.SEGMENTATION_LOADING_COMPLETE,
       evt => {
         if (
-          evt.rtDisplaySet.displaySetInstanceUID ===
-          rtDisplaySet.displaySetInstanceUID
+          evt.rtDisplaySet.displaySetInstanceUID === rtDisplaySet.displaySetInstanceUID
         ) {
           setRtIsLoading(false);
         }
@@ -185,8 +183,7 @@ function OHIFCornerstoneRTViewport(props) {
         if (evt.overlappingSegments) {
           uiNotificationService.show({
             title: 'Overlapping Segments',
-            message:
-              'Overlapping segments detected which is not currently supported',
+            message: 'Overlapping segments detected which is not currently supported',
             type: 'warning',
           });
         }
@@ -222,9 +219,7 @@ function OHIFCornerstoneRTViewport(props) {
       displaySetService.EVENTS.DISPLAY_SETS_REMOVED,
       ({ displaySetInstanceUIDs }) => {
         const activeViewport = viewports.get(activeViewportId);
-        if (
-          displaySetInstanceUIDs.includes(activeViewport.displaySetInstanceUID)
-        ) {
+        if (displaySetInstanceUIDs.includes(activeViewport.displaySetInstanceUID)) {
           viewportGridService.setDisplaySetsForViewport({
             viewportId: activeViewportId,
             displaySetInstanceUIDs: [],
@@ -255,9 +250,7 @@ function OHIFCornerstoneRTViewport(props) {
 
     return () => {
       // remove the segmentation representations if seg displayset changed
-      segmentationService.removeSegmentationRepresentationFromToolGroup(
-        toolGroupId
-      );
+      segmentationService.removeSegmentationRepresentationFromToolGroup(toolGroupId);
 
       toolGroupService.destroyToolGroup(toolGroupId);
     };
@@ -268,9 +261,7 @@ function OHIFCornerstoneRTViewport(props) {
 
     return () => {
       // remove the segmentation representations if seg displayset changed
-      segmentationService.removeSegmentationRepresentationFromToolGroup(
-        toolGroupId
-      );
+      segmentationService.removeSegmentationRepresentationFromToolGroup(toolGroupId);
       referencedDisplaySetRef.current = null;
     };
   }, [rtDisplaySet]);
@@ -349,9 +340,7 @@ function OHIFCornerstoneRTViewport(props) {
           currentSeries: SeriesNumber,
           seriesDescription: `RT Viewport ${SeriesDescription}`,
           patientInformation: {
-            patientName: PatientName
-              ? OHIF.utils.formatPN(PatientName.Alphabetic)
-              : '',
+            patientName: PatientName ? OHIF.utils.formatPN(PatientName.Alphabetic) : '',
             patientSex: PatientSex || '',
             patientAge: PatientAge || '',
             MRN: PatientID || '',

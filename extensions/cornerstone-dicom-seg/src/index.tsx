@@ -9,9 +9,7 @@ import getHangingProtocolModule from './getHangingProtocolModule';
 import hydrateSEGDisplaySet from './utils/_hydrateSEG';
 
 const Component = React.lazy(() => {
-  return import(
-    /* webpackPrefetch: true */ './viewports/OHIFCornerstoneSEGViewport'
-  );
+  return import(/* webpackPrefetch: true */ './viewports/OHIFCornerstoneSEGViewport');
 });
 
 const OHIFCornerstoneSEGViewport = props => {
@@ -76,9 +74,7 @@ const extension = {
       );
     };
 
-    return [
-      { name: 'dicom-seg', component: ExtendedOHIFCornerstoneSEGViewport },
-    ];
+    return [{ name: 'dicom-seg', component: ExtendedOHIFCornerstoneSEGViewport }];
   },
   /**
    * SopClassHandlerModule should provide a list of sop class handlers that will be

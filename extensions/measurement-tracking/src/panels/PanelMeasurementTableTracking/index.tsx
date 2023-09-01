@@ -35,8 +35,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
   );
   const { measurementService, uiDialogService, displaySetService } =
     servicesManager.services;
-  const [trackedMeasurements, sendTrackedMeasurementsEvent] =
-    useTrackedMeasurements();
+  const [trackedMeasurements, sendTrackedMeasurementsEvent] = useTrackedMeasurements();
   const { trackedStudy, trackedSeries } = trackedMeasurements.context;
   const [displayStudySummary, setDisplayStudySummary] = useState(
     DISPLAY_STUDY_SUMMARY_INITIAL_VALUE
@@ -53,11 +52,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     );
 
     const mappedMeasurements = filteredMeasurements.map(m =>
-      _mapMeasurementToDisplay(
-        m,
-        measurementService.VALUE_TYPES,
-        displaySetService
-      )
+      _mapMeasurementToDisplay(m, measurementService.VALUE_TYPES, displaySetService)
     );
     setDisplayMeasurements(mappedMeasurements);
     // eslint-ignore-next-line
@@ -313,8 +308,7 @@ function _mapMeasurementToDisplay(measurement, types, displaySetService) {
     SOPInstanceUID
   );
 
-  const displaySets =
-    displaySetService.getDisplaySetsForSeries(referenceSeriesUID);
+  const displaySets = displaySetService.getDisplaySetsForSeries(referenceSeriesUID);
 
   if (!displaySets[0] || !displaySets[0].images) {
     throw new Error(

@@ -58,12 +58,7 @@ const ExpandableToolbarButton = ({
         <Icon name={icon} />
       </IconButton>
       <div className="absolute z-10 pt-4">
-        <div
-          className={classnames(
-            'ExpandableToolbarButton__content w-48',
-            className
-          )}
-        >
+        <div className={classnames('ExpandableToolbarButton__content w-48', className)}>
           <Content
             {...contentProps}
             onClick={onChildClickHandler}

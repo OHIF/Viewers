@@ -27,10 +27,7 @@ function setTrackingUniqueIdentifiersForElement(
   };
 }
 
-function setActiveTrackingUniqueIdentifierForElement(
-  element,
-  TrackingUniqueIdentifier
-) {
+function setActiveTrackingUniqueIdentifierForElement(element, TrackingUniqueIdentifier) {
   const enabledElement = getEnabledElement(element);
   const { viewport } = enabledElement;
 
@@ -38,10 +35,9 @@ function setActiveTrackingUniqueIdentifierForElement(
     state.trackingIdentifiersByViewportId[viewport.id];
 
   if (trackingIdentifiersForElement) {
-    const activeIndex =
-      trackingIdentifiersForElement.trackingUniqueIdentifiers.findIndex(
-        tuid => tuid === TrackingUniqueIdentifier
-      );
+    const activeIndex = trackingIdentifiersForElement.trackingUniqueIdentifiers.findIndex(
+      tuid => tuid === TrackingUniqueIdentifier
+    );
 
     trackingIdentifiersForElement.activeIndex = activeIndex;
   }

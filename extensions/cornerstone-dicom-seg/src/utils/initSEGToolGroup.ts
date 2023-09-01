@@ -3,8 +3,7 @@ function createSEGToolGroupAndAddTools(
   customizationService,
   toolGroupId
 ) {
-  const { tools } =
-    customizationService.get('cornerstone.overlayViewportTools') ?? {};
+  const { tools } = customizationService.get('cornerstone.overlayViewportTools') ?? {};
 
   return ToolGroupService.createToolGroupAndAddTools(toolGroupId, tools, {});
 }

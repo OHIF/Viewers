@@ -33,37 +33,33 @@ function defaultRouteInit(
 
   const unsubscriptions = [];
   const issuedWarningSeries = [];
-  const { unsubscribe: instanceAddedUnsubscribe } =
-    DicomMetadataStore.subscribe(
-      DicomMetadataStore.EVENTS.INSTANCES_ADDED,
-      function ({ StudyInstanceUID, SeriesInstanceUID, madeInClient = false }) {
-        const seriesMetadata = DicomMetadataStore.getSeries(
-          StudyInstanceUID,
-          SeriesInstanceUID
-        );
+  const { unsubscribe: instanceAddedUnsubscribe } = DicomMetadataStore.subscribe(
+    DicomMetadataStore.EVENTS.INSTANCES_ADDED,
+    function ({ StudyInstanceUID, SeriesInstanceUID, madeInClient = false }) {
+      const seriesMetadata = DicomMetadataStore.getSeries(
+        StudyInstanceUID,
+        SeriesInstanceUID
+      );
 
-        // checks if the series filter was used, if it exists
-        const seriesInstanceUIDs = filters?.seriesInstanceUID;
-        if (
-          seriesInstanceUIDs?.length &&
-          !isSeriesFilterUsed(seriesMetadata.instances, filters) &&
-          !issuedWarningSeries.includes(seriesInstanceUIDs[0])
-        ) {
-          // stores the series instance filter so it shows only once the warning
-          issuedWarningSeries.push(seriesInstanceUIDs[0]);
-          uiNotificationService.show({
-            title: 'Series filter',
-            message: `Each of the series in filter: ${seriesInstanceUIDs} are not part of the current study. The entire study is being displayed`,
-            type: 'error',
-            duration: 7000,
-          });
-        }
-        displaySetService.makeDisplaySets(
-          seriesMetadata.instances,
-          madeInClient
-        );
+      // checks if the series filter was used, if it exists
+      const seriesInstanceUIDs = filters?.seriesInstanceUID;
+      if (
+        seriesInstanceUIDs?.length &&
+        !isSeriesFilterUsed(seriesMetadata.instances, filters) &&
+        !issuedWarningSeries.includes(seriesInstanceUIDs[0])
+      ) {
+        // stores the series instance filter so it shows only once the warning
+        issuedWarningSeries.push(seriesInstanceUIDs[0]);
+        uiNotificationService.show({
+          title: 'Series filter',
+          message: `Each of the series in filter: ${seriesInstanceUIDs} are not part of the current study. The entire study is being displayed`,
+          type: 'error',
+          duration: 7000,
+        });
       }
-    );
+      displaySetService.makeDisplaySets(seriesMetadata.instances, madeInClient);
+    }
+  );
 
   unsubscriptions.push(instanceAddedUnsubscribe);
 
@@ -95,10 +91,7 @@ function defaultRouteInit(
 
     // run the hanging protocol matching on the displaySets with the predefined
     // hanging protocol in the mode configuration
-    hangingProtocolService.run(
-      { studies, activeStudy, displaySets },
-      hangingProtocolId
-    );
+    hangingProtocolService.run({ studies, activeStudy, displaySets }, hangingProtocolId);
   });
 
   return unsubscriptions;
@@ -127,8 +120,7 @@ export default function ModeRoute({
   const [studyInstanceUIDs, setStudyInstanceUIDs] = useState();
 
   const [refresh, setRefresh] = useState(false);
-  const [ExtensionDependenciesLoaded, setExtensionDependenciesLoaded] =
-    useState(false);
+  const [ExtensionDependenciesLoaded, setExtensionDependenciesLoaded] = useState(false);
 
   const layoutTemplateData = useRef(false);
   const locationRef = useRef(null);
@@ -142,21 +134,13 @@ export default function ModeRoute({
     locationRef.current = location;
   }
 
-  const {
-    displaySetService,
-    hangingProtocolService,
-    userAuthenticationService,
-  } = (servicesManager as ServicesManager).services;
+  const { displaySetService, hangingProtocolService, userAuthenticationService } = (
+    servicesManager as ServicesManager
+  ).services;
 
-  const {
-    extensions,
-    sopClassHandlers,
-    hotkeys: hotkeyObj,
-    hangingProtocol,
-  } = mode;
+  const { extensions, sopClassHandlers, hotkeys: hotkeyObj, hangingProtocol } = mode;
 
-  const runTimeHangingProtocolId =
-    lowerCaseSearchParams.get('hangingprotocolid');
+  const runTimeHangingProtocolId = lowerCaseSearchParams.get('hangingprotocolid');
   const token = lowerCaseSearchParams.get('token');
 
   if (token) {
@@ -169,9 +153,7 @@ export default function ModeRoute({
     });
 
     // Create a URL object with the current location
-    const urlObj = new URL(
-      window.location.origin + location.pathname + location.search
-    );
+    const urlObj = new URL(window.location.origin + location.pathname + location.search);
 
     // Remove the token from the URL object
     urlObj.searchParams.delete('token');
@@ -228,9 +210,7 @@ export default function ModeRoute({
       const loadedExtensions = await loadModules(Object.keys(extensions));
       for (const extension of loadedExtensions) {
         const { id: extensionId } = extension;
-        if (
-          extensionManager.registeredExtensionIds.indexOf(extensionId) === -1
-        ) {
+        if (extensionManager.registeredExtensionIds.indexOf(extensionId) === -1) {
           await extensionManager.registerExtension(extension);
         }
       }
@@ -365,24 +345,21 @@ export default function ModeRoute({
        * }
        */
       const filters =
-        Array.from(query.keys()).reduce(
-          (acc: Record<string, string>, val: string) => {
-            const lowerVal = val.toLowerCase();
-            if (lowerVal !== 'studyinstanceuids') {
-              // Not sure why the case matters here - it doesn't in the URL
-              if (lowerVal === 'seriesinstanceuid') {
-                const seriesUIDs = getSplitParam(lowerVal, query);
-                return {
-                  ...acc,
-                  seriesInstanceUID: seriesUIDs,
-                };
-              }
-
-              return { ...acc, [val]: getSplitParam(lowerVal, query) };
+        Array.from(query.keys()).reduce((acc: Record<string, string>, val: string) => {
+          const lowerVal = val.toLowerCase();
+          if (lowerVal !== 'studyinstanceuids') {
+            // Not sure why the case matters here - it doesn't in the URL
+            if (lowerVal === 'seriesinstanceuid') {
+              const seriesUIDs = getSplitParam(lowerVal, query);
+              return {
+                ...acc,
+                seriesInstanceUID: seriesUIDs,
+              };
             }
-          },
-          {}
-        ) ?? {};
+
+            return { ...acc, [val]: getSplitParam(lowerVal, query) };
+          }
+        }, {}) ?? {};
 
       if (route.init) {
         return await route.init(

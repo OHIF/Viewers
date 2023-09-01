@@ -36,9 +36,7 @@ TableHead.propTypes = {
       );
     }
 
-    const isInvalidElement = elements.some(
-      child => !React.isValidElement(child)
-    );
+    const isInvalidElement = elements.some(child => !React.isValidElement(child));
 
     if (isInvalidElement) {
       return new Error(

@@ -246,12 +246,7 @@ function initVolume3DToolGroup(extensionManager, toolGroupService) {
 }
 
 function initToolGroups(extensionManager, toolGroupService, commandsManager) {
-  initDefaultToolGroup(
-    extensionManager,
-    toolGroupService,
-    commandsManager,
-    'default'
-  );
+  initDefaultToolGroup(extensionManager, toolGroupService, commandsManager, 'default');
   initSRToolGroup(extensionManager, toolGroupService, commandsManager);
   initMPRToolGroup(extensionManager, toolGroupService, commandsManager);
   initVolume3DToolGroup(extensionManager, toolGroupService);

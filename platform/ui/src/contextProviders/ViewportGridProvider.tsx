@@ -93,10 +93,8 @@ const determineActiveViewportId = (state: DefaultState, newViewports: Map) => {
 
   const sortedViewports = Array.from(newViewports.values()).sort((a, b) => {
     // Compare orientations
-    const aOrientationMatch =
-      a.viewportOptions.orientation === currentOrientation;
-    const bOrientationMatch =
-      b.viewportOptions.orientation === currentOrientation;
+    const aOrientationMatch = a.viewportOptions.orientation === currentOrientation;
+    const bOrientationMatch = b.viewportOptions.orientation === currentOrientation;
     if (aOrientationMatch !== bOrientationMatch) {
       return bOrientationMatch - aOrientationMatch;
     }
@@ -172,8 +170,10 @@ export function ViewportGridProvider({ children, service }) {
             viewportLabel: getViewportLabel(viewports, viewportId),
           };
 
-          viewportOptions.presentationIds =
-            ViewportGridService.getPresentationIds(newViewport, viewports);
+          viewportOptions.presentationIds = ViewportGridService.getPresentationIds(
+            newViewport,
+            viewports
+          );
 
           viewports.set(viewportId, {
             ...viewports.get(viewportId),
@@ -215,11 +215,7 @@ export function ViewportGridProvider({ children, service }) {
               continue;
             }
 
-            const viewport = findOrCreateViewport(
-              position,
-              positionId,
-              options
-            );
+            const viewport = findOrCreateViewport(position, positionId, options);
 
             if (!viewport) {
               continue;
@@ -241,12 +237,7 @@ export function ViewportGridProvider({ children, service }) {
 
             let xPos, yPos, w, h;
             if (layoutOptions && layoutOptions[position]) {
-              ({
-                x: xPos,
-                y: yPos,
-                width: w,
-                height: h,
-              } = layoutOptions[position]);
+              ({ x: xPos, y: yPos, width: w, height: h } = layoutOptions[position]);
             } else {
               w = 1 / numCols;
               h = 1 / numRows;
@@ -261,10 +252,7 @@ export function ViewportGridProvider({ children, service }) {
               y: yPos,
             });
 
-            viewport.viewportLabel = getViewportLabel(
-              viewports,
-              viewport.viewportId
-            );
+            viewport.viewportLabel = getViewportLabel(viewports, viewport.viewportId);
 
             if (!viewport.viewportOptions.presentationIds) {
               viewport.viewportOptions.presentationIds =
@@ -307,10 +295,7 @@ export function ViewportGridProvider({ children, service }) {
     }
   };
 
-  const [viewportGridState, dispatch] = useReducer(
-    viewportGridReducer,
-    DEFAULT_STATE
-  );
+  const [viewportGridState, dispatch] = useReducer(viewportGridReducer, DEFAULT_STATE);
 
   const getState = useCallback(() => {
     return viewportGridState;
@@ -410,10 +395,8 @@ export function ViewportGridProvider({ children, service }) {
   const api = {
     getState,
     setActiveViewportId: index => service.setActiveViewportId(index),
-    setDisplaySetsForViewport: props =>
-      service.setDisplaySetsForViewports([props]),
-    setDisplaySetsForViewports: props =>
-      service.setDisplaySetsForViewports(props),
+    setDisplaySetsForViewport: props => service.setDisplaySetsForViewports([props]),
+    setDisplaySetsForViewports: props => service.setDisplaySetsForViewports(props),
     setLayout: layout => service.setLayout(layout),
     reset: () => service.reset(),
     set: gridLayoutState => service.setState(gridLayoutState), // run it through the service itself since we want to publish events

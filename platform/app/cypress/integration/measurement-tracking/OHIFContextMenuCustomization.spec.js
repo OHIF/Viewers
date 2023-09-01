@@ -1,8 +1,6 @@
 describe('OHIF Context Menu', function () {
   beforeEach(function () {
-    cy.checkStudyRouteInViewer(
-      '1.2.840.113619.2.5.1762583153.215519.978957063.78'
-    );
+    cy.checkStudyRouteInViewer('1.2.840.113619.2.5.1762583153.215519.978957063.78');
 
     cy.expectMinimumThumbnails(3);
     cy.initCommonElementsAliases();
@@ -32,9 +30,7 @@ describe('OHIF Context Menu', function () {
     cy.get('[data-cy="context-menu-item"]').contains('Finding').click();
 
     // Click "Finding" subMenu
-    cy.get('[data-cy="context-menu-item"]')
-      .contains('Aortic insufficiency')
-      .click();
+    cy.get('[data-cy="context-menu-item"]').contains('Aortic insufficiency').click();
     cy.get('[data-cy="measurement-item"]').contains('Aortic insufficiency');
   });
 });

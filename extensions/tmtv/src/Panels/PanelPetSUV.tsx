@@ -24,12 +24,8 @@ const DEFAULT_MEATADATA = {
  */
 export default function PanelPetSUV({ servicesManager, commandsManager }) {
   const { t } = useTranslation('PanelSUV');
-  const {
-    displaySetService,
-    toolGroupService,
-    toolbarService,
-    hangingProtocolService,
-  } = (servicesManager as ServicesManager).services;
+  const { displaySetService, toolGroupService, toolbarService, hangingProtocolService } =
+    (servicesManager as ServicesManager).services;
   const [metadata, setMetadata] = useState(DEFAULT_MEATADATA);
   const [ptDisplaySet, setPtDisplaySet] = useState(null);
 
@@ -127,9 +123,7 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
     });
 
     toolbarService.state.toggles['Crosshairs'] = false;
-    toolbarService._broadcastEvent(
-      toolbarService.EVENTS.TOOL_BAR_STATE_MODIFIED
-    );
+    toolbarService._broadcastEvent(toolbarService.EVENTS.TOOL_BAR_STATE_MODIFIED);
 
     // metadata should be dcmjs naturalized
     DicomMetadataStore.updateMetadataForSeries(
@@ -175,8 +169,8 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
               labelClassName="text-white mb-2"
               className="mt-1"
               value={
-                metadata.RadiopharmaceuticalInformationSequence
-                  .RadionuclideTotalDose || ''
+                metadata.RadiopharmaceuticalInformationSequence.RadionuclideTotalDose ||
+                ''
               }
               onChange={e => {
                 handleMetadataChange({
@@ -191,8 +185,7 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
               labelClassName="text-white mb-2"
               className="mt-1"
               value={
-                metadata.RadiopharmaceuticalInformationSequence
-                  .RadionuclideHalfLife || ''
+                metadata.RadiopharmaceuticalInformationSequence.RadionuclideHalfLife || ''
               }
               onChange={e => {
                 handleMetadataChange({

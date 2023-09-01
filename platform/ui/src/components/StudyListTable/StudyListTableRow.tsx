@@ -59,9 +59,7 @@ const StudyListTableRow = props => {
                           {index === 0 && (
                             <div>
                               <Icon
-                                name={
-                                  isExpanded ? 'chevron-down' : 'chevron-right'
-                                }
+                                name={isExpanded ? 'chevron-down' : 'chevron-right'}
                                 className="mr-4 inline-flex"
                               />
                             </div>

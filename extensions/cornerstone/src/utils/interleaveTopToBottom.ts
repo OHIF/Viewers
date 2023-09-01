@@ -94,9 +94,7 @@ export default function interleaveTopToBottom({
     const { imageId } = request;
 
     AllRequests.forEach(volumeRequests => {
-      const volumeImageIdRequest = volumeRequests.find(
-        req => req.imageId === imageId
-      );
+      const volumeImageIdRequest = volumeRequests.find(req => req.imageId === imageId);
       if (volumeImageIdRequest) {
         finalRequests.push(volumeImageIdRequest);
       }
@@ -108,12 +106,7 @@ export default function interleaveTopToBottom({
 
   finalRequests.forEach(
     ({ callLoadImage, additionalDetails, imageId, imageIdIndex, options }) => {
-      const callLoadImageBound = callLoadImage.bind(
-        null,
-        imageId,
-        imageIdIndex,
-        options
-      );
+      const callLoadImageBound = callLoadImage.bind(null, imageId, imageIdIndex, options);
 
       imageLoadPoolManager.addRequest(
         callLoadImageBound,
@@ -128,9 +121,7 @@ export default function interleaveTopToBottom({
   volumeIdMapsToLoad.clear();
 
   // copy the viewportIdVolumeInputArrayMap
-  const viewportIdVolumeInputArrayMapCopy = new Map(
-    viewportIdVolumeInputArrayMap
-  );
+  const viewportIdVolumeInputArrayMapCopy = new Map(viewportIdVolumeInputArrayMap);
 
   // reset the viewportIdVolumeInputArrayMap
   viewportIdVolumeInputArrayMap.clear();

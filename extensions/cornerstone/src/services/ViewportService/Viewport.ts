@@ -90,11 +90,7 @@ const DEFAULT_TOOLGROUP_ID = 'default';
 
 // Return true if the data contains the given display set UID OR the imageId
 // if it is a composite object.
-const dataContains = (
-  data,
-  displaySetUID: string,
-  imageId?: string
-): boolean => {
+const dataContains = (data, displaySetUID: string, imageId?: string): boolean => {
   if (data.displaySetInstanceUID === displaySetUID) {
     return true;
   }
@@ -158,9 +154,7 @@ class ViewportInfo {
     this.element = element;
   }
 
-  public setViewportData(
-    viewportData: StackViewportData | VolumeViewportData
-  ): void {
+  public setViewportData(viewportData: StackViewportData | VolumeViewportData): void {
     this.viewportData = viewportData;
   }
 
@@ -180,9 +174,7 @@ class ViewportInfo {
     publicDisplaySetOptions: PublicDisplaySetOptions[] | DisplaySetSelector[]
   ): Array<DisplaySetOptions> {
     // map the displaySetOptions and check if they are undefined then set them to default values
-    const displaySetOptions = this.mapDisplaySetOptions(
-      publicDisplaySetOptions
-    );
+    const displaySetOptions = this.mapDisplaySetOptions(publicDisplaySetOptions);
 
     this.setDisplaySetOptions(displaySetOptions);
 
@@ -213,16 +205,13 @@ class ViewportInfo {
     viewportOptionsEntry: PublicViewportOptions
   ): ViewportOptions {
     let viewportType = viewportOptionsEntry.viewportType;
-    const { toolGroupId = DEFAULT_TOOLGROUP_ID, presentationIds } =
-      viewportOptionsEntry;
+    const { toolGroupId = DEFAULT_TOOLGROUP_ID, presentationIds } = viewportOptionsEntry;
     let orientation;
 
     if (!viewportType) {
       viewportType = getCornerstoneViewportType(STACK);
     } else {
-      viewportType = getCornerstoneViewportType(
-        viewportOptionsEntry.viewportType
-      );
+      viewportType = getCornerstoneViewportType(viewportOptionsEntry.viewportType);
     }
 
     // map SAGITTAL, AXIAL, CORONAL orientation to be used by cornerstone
@@ -254,9 +243,7 @@ class ViewportInfo {
     return this.viewportOptions;
   }
 
-  public setDisplaySetOptions(
-    displaySetOptions: Array<DisplaySetOptions>
-  ): void {
+  public setDisplaySetOptions(displaySetOptions: Array<DisplaySetOptions>): void {
     this.displaySetOptions = displaySetOptions;
   }
 

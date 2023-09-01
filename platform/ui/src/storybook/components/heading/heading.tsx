@@ -25,9 +25,7 @@ export const Heading = ({ title, componentRelativePath }) => {
   return (
     <div className="flex w-full items-center space-x-2">
       <div>
-        <h1 className="font-inter text-4xl font-normal text-blue-600">
-          {title}
-        </h1>
+        <h1 className="font-inter text-4xl font-normal text-blue-600">{title}</h1>
       </div>
       {componentRelativePath && (
         <div>

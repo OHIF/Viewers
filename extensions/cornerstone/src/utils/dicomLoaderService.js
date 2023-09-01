@@ -8,9 +8,7 @@ const getImageId = imageObj => {
     return;
   }
 
-  return typeof imageObj.getImageId === 'function'
-    ? imageObj.getImageId()
-    : imageObj.url;
+  return typeof imageObj.getImageId === 'function' ? imageObj.getImageId() : imageObj.url;
 };
 
 const findImageIdOnStudies = (studies, displaySetInstanceUID) => {

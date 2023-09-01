@@ -4,17 +4,15 @@ import {
   useTrackedMeasurements,
 } from './contexts';
 
-function getContextModule({
-  servicesManager,
-  extensionManager,
-  commandsManager,
-}) {
-  const BoundTrackedMeasurementsContextProvider =
-    TrackedMeasurementsContextProvider.bind(null, {
+function getContextModule({ servicesManager, extensionManager, commandsManager }) {
+  const BoundTrackedMeasurementsContextProvider = TrackedMeasurementsContextProvider.bind(
+    null,
+    {
       servicesManager,
       extensionManager,
       commandsManager,
-    });
+    }
+  );
 
   return [
     {

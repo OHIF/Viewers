@@ -46,11 +46,7 @@ const emptyValidator = ({ pressedKeys = [] }) => {
 };
 
 const conflictingValidator = ({ commandName, pressedKeys, hotkeys }) => {
-  const conflictingCommand = findConflictingCommand(
-    hotkeys,
-    commandName,
-    pressedKeys
-  );
+  const conflictingCommand = findConflictingCommand(hotkeys, commandName, pressedKeys);
 
   if (conflictingCommand) {
     return {
@@ -61,9 +57,7 @@ const conflictingValidator = ({ commandName, pressedKeys, hotkeys }) => {
 
 const disallowedValidator = ({ pressedKeys = [] }) => {
   const lastPressedKey = pressedKeys[pressedKeys.length - 1];
-  const modifierCommand = formatPressedKeys(
-    pressedKeys.slice(0, pressedKeys.length - 1)
-  );
+  const modifierCommand = formatPressedKeys(pressedKeys.slice(0, pressedKeys.length - 1));
 
   const disallowedCombination = DISALLOWED_COMBINATIONS[modifierCommand];
   const hasDisallowedCombinations = disallowedCombination
@@ -72,9 +66,7 @@ const disallowedValidator = ({ pressedKeys = [] }) => {
 
   if (hasDisallowedCombinations) {
     return {
-      error: `"${formatPressedKeys(
-        pressedKeys
-      )}" shortcut combination is not allowed`,
+      error: `"${formatPressedKeys(pressedKeys)}" shortcut combination is not allowed`,
     };
   }
 };

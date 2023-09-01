@@ -28,17 +28,15 @@ function DataSourceConfigurationComponent({
     let shouldUpdate = true;
 
     const dataSourceChangedCallback = async () => {
-      const activeDataSourceDef =
-        extensionManager.getActiveDataSourceDefinition();
+      const activeDataSourceDef = extensionManager.getActiveDataSourceDefinition();
 
       if (!activeDataSourceDef.configuration.configurationAPI) {
         return;
       }
 
       const { factory: configurationAPIFactory } =
-        customizationService.get(
-          activeDataSourceDef.configuration.configurationAPI
-        ) ?? {};
+        customizationService.get(activeDataSourceDef.configuration.configurationAPI) ??
+        {};
 
       if (!configurationAPIFactory) {
         return;
@@ -112,9 +110,7 @@ function DataSourceConfigurationComponent({
             >
               {item.name}
             </div>
-            {itemIndex !== configuredItems.length - 1 && (
-              <div className="px-2.5">|</div>
-            )}
+            {itemIndex !== configuredItems.length - 1 && <div className="px-2.5">|</div>}
           </div>
         );
       })}

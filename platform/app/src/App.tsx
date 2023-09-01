@@ -38,9 +38,7 @@ function App({ config, defaultExtensions, defaultModes }) {
   const [init, setInit] = useState(null);
   useEffect(() => {
     const run = async () => {
-      appInit(config, defaultExtensions, defaultModes)
-        .then(setInit)
-        .catch(console.error);
+      appInit(config, defaultExtensions, defaultModes).then(setInit).catch(console.error);
     };
 
     run();
@@ -58,8 +56,7 @@ function App({ config, defaultExtensions, defaultModes }) {
 
   // Set appConfig
   const appConfigState = init.appConfig;
-  const { routerBasename, modes, dataSources, oidc, showStudyList } =
-    appConfigState;
+  const { routerBasename, modes, dataSources, oidc, showStudyList } = appConfigState;
 
   const {
     uiDialogService,

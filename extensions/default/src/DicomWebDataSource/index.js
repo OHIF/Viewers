@@ -30,8 +30,7 @@ const { DicomMetaDictionary, DicomDict } = dcmjs.data;
 
 const { naturalizeDataset, denaturalizeDataset } = DicomMetaDictionary;
 
-const ImplementationClassUID =
-  '2.25.270695996825855179949881587723571202391.2.0.0';
+const ImplementationClassUID = '2.25.270695996825855179949881587723571202391.2.0.0';
 const ImplementationVersionName = 'OHIF-VIEWER-2.0.0';
 const EXPLICIT_VR_LITTLE_ENDIAN = '1.2.840.10008.1.2.1';
 
@@ -149,10 +148,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
         // mapParams: mapParams.bind(),
         search: async function (studyInstanceUid) {
           qidoDicomWebClient.headers = getAuthrorizationHeader();
-          const results = await seriesInStudy(
-            qidoDicomWebClient,
-            studyInstanceUid
-          );
+          const results = await seriesInStudy(qidoDicomWebClient, studyInstanceUid);
 
           return processSeriesResults(results);
         },
@@ -250,8 +246,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
           await wadoDicomWebClient.storeInstances(options);
         } else {
           const meta = {
-            FileMetaInformationVersion:
-              dataset._meta.FileMetaInformationVersion.Value,
+            FileMetaInformationVersion: dataset._meta.FileMetaInformationVersion.Value,
             MediaStorageSOPClassUID: dataset.SOPClassUID,
             MediaStorageSOPInstanceUID: dataset.SOPInstanceUID,
             TransferSyntaxUID: EXPLICIT_VR_LITTLE_ENDIAN,
@@ -454,10 +449,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
       }
 
       function setSuccessFlag() {
-        const study = DicomMetadataStore.getStudy(
-          StudyInstanceUID,
-          madeInClient
-        );
+        const study = DicomMetadataStore.getStudy(StudyInstanceUID, madeInClient);
         study.isLoaded = true;
       }
 
@@ -518,9 +510,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
     },
     getStudyInstanceUIDs({ params, query }) {
       const { StudyInstanceUIDs: paramsStudyInstanceUIDs } = params;
-      const queryStudyInstanceUIDs = utils.splitComma(
-        query.getAll('StudyInstanceUIDs')
-      );
+      const queryStudyInstanceUIDs = utils.splitComma(query.getAll('StudyInstanceUIDs'));
 
       const StudyInstanceUIDs =
         (queryStudyInstanceUIDs.length && queryStudyInstanceUIDs) ||

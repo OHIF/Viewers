@@ -105,8 +105,7 @@ function ViewerLayout({
           title: t('UserPreferencesModal:User Preferences'),
           content: UserPreferences,
           contentProps: {
-            hotkeyDefaults:
-              hotkeysManager.getValidHotkeyDefinitions(hotkeyDefaults),
+            hotkeyDefaults: hotkeysManager.getValidHotkeyDefinitions(hotkeyDefaults),
             hotkeyDefinitions,
             currentLanguage: currentLanguage(),
             availableLanguages,
@@ -133,9 +132,7 @@ function ViewerLayout({
       title: t('Header:Logout'),
       icon: 'power-off',
       onClick: async () => {
-        navigate(
-          `/logout?redirect_uri=${encodeURIComponent(window.location.href)}`
-        );
+        navigate(`/logout?redirect_uri=${encodeURIComponent(window.location.href)}`);
       },
     });
   }

@@ -25,9 +25,7 @@ function DataSourceSelector() {
           <div className="space-y-2 pt-4 text-center">
             {dsConfigs
               .filter(
-                it =>
-                  it.sourceName !== 'dicomjson' &&
-                  it.sourceName !== 'dicomlocal'
+                it => it.sourceName !== 'dicomjson' && it.sourceName !== 'dicomlocal'
               )
               .map(ds => (
                 <div key={ds.sourceName}>

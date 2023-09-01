@@ -11,9 +11,7 @@ describe('OHIF Video Display', function () {
   });
 
   it('performs double-click to load thumbnail in active viewport', () => {
-    cy.get(
-      '[data-cy="study-browser-thumbnail-no-image"]:nth-child(2)'
-    ).dblclick();
+    cy.get('[data-cy="study-browser-thumbnail-no-image"]:nth-child(2)').dblclick();
 
     //const expectedText = 'Ser: 3';
     //cy.get('@viewportInfoBottomLeft').should('contains.text', expectedText);

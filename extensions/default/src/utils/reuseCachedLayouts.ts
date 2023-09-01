@@ -57,8 +57,7 @@ const reuseCachedLayout = (
         continue;
       }
       if (viewportId === activeViewportId && i === 0) {
-        displaySetSelectorMap[`${activeStudyUID}:activeDisplaySet:0`] =
-          displaySetUID;
+        displaySetSelectorMap[`${activeStudyUID}:activeDisplaySet:0`] = displaySetUID;
       }
       if (displaySetOptions[i]?.id) {
         displaySetSelectorMap[

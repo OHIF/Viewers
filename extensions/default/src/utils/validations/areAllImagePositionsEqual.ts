@@ -25,10 +25,7 @@ function _checkSeriesPositionShift(
     scanAxisNormal,
     averageSpacingBetweenFrames
   );
-  return (
-    vec3.distance(actualPosition, predictedPosition) >
-    averageSpacingBetweenFrames
-  );
+  return vec3.distance(actualPosition, predictedPosition) > averageSpacingBetweenFrames;
 }
 
 /**
@@ -36,20 +33,14 @@ function _checkSeriesPositionShift(
  * @param {*} instances
  * @returns
  */
-export default function areAllImagePositionsEqual(
-  instances: Array<any>
-): boolean {
+export default function areAllImagePositionsEqual(instances: Array<any>): boolean {
   if (!instances?.length) {
     return false;
   }
-  const firstImageOrientationPatient = toNumber(
-    instances[0].ImageOrientationPatient
-  );
+  const firstImageOrientationPatient = toNumber(instances[0].ImageOrientationPatient);
   const scanAxisNormal = calculateScanAxisNormal(firstImageOrientationPatient);
   const firstImagePositionPatient = toNumber(instances[0].ImagePositionPatient);
-  const lastIpp = toNumber(
-    instances[instances.length - 1].ImagePositionPatient
-  );
+  const lastIpp = toNumber(instances[instances.length - 1].ImagePositionPatient);
 
   const averageSpacingBetweenFrames =
     _getPerpendicularDistance(firstImagePositionPatient, lastIpp) /

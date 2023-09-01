@@ -9,10 +9,7 @@ import { createDicomWebApi } from '../DicomWebDataSource/index';
  * dicomWeb configuration array
  *
  */
-function createDicomWebProxyApi(
-  dicomWebProxyConfig,
-  UserAuthenticationService
-) {
+function createDicomWebProxyApi(dicomWebProxyConfig, UserAuthenticationService) {
   const { name } = dicomWebProxyConfig;
   let dicomWebDelegate = undefined;
 
@@ -45,17 +42,13 @@ function createDicomWebProxyApi(
       },
       instances: {
         search: (studyInstanceUid, queryParameters) =>
-          dicomWebDelegate.query.instances.search(
-            studyInstanceUid,
-            queryParameters
-          ),
+          dicomWebDelegate.query.instances.search(studyInstanceUid, queryParameters),
       },
     },
     retrieve: {
       directURL: (...args) => dicomWebDelegate.retrieve.directURL(...args),
       series: {
-        metadata: (...args) =>
-          dicomWebDelegate.retrieve.series.metadata(...args),
+        metadata: (...args) => dicomWebDelegate.retrieve.series.metadata(...args),
       },
     },
     store: {
@@ -65,8 +58,7 @@ function createDicomWebProxyApi(
       dicomWebDelegate.deleteStudyMetadataPromise(...args),
     getImageIdsForDisplaySet: (...args) =>
       dicomWebDelegate.getImageIdsForDisplaySet(...args),
-    getImageIdsForInstance: (...args) =>
-      dicomWebDelegate.getImageIdsForInstance(...args),
+    getImageIdsForInstance: (...args) => dicomWebDelegate.getImageIdsForInstance(...args),
     getStudyInstanceUIDs({ params, query }) {
       let studyInstanceUIDs = [];
 

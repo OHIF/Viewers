@@ -100,9 +100,7 @@ const StudyListFilter = ({
         {numOfStudies > 100 && (
           <div className="container m-auto">
             <div className="bg-primary-main rounded-b py-1 text-center text-base">
-              <p className="text-white">
-                {t('NumOfStudiesHiggerThan100Message')}
-              </p>
+              <p className="text-white">{t('NumOfStudiesHiggerThan100Message')}</p>
             </div>
           </div>
         )}
@@ -119,12 +117,10 @@ StudyListFilter.propTypes = {
       /** Friendly label for filter field */
       displayName: PropTypes.string.isRequired,
       /** One of the supported filter field input types */
-      inputType: PropTypes.oneOf(['Text', 'MultiSelect', 'DateRange', 'None'])
-        .isRequired,
+      inputType: PropTypes.oneOf(['Text', 'MultiSelect', 'DateRange', 'None']).isRequired,
       isSortable: PropTypes.bool.isRequired,
       /** Size of filter field in a 12-grid system */
-      gridCol: PropTypes.oneOf([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12])
-        .isRequired,
+      gridCol: PropTypes.oneOf([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]).isRequired,
       /** Options for a "MultiSelect" inputType */
       option: PropTypes.arrayOf(
         PropTypes.shape({

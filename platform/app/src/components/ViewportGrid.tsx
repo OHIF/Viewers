@@ -62,26 +62,23 @@ function ViewerViewportGrid(props) {
       const displaySetUIDsToHang = [];
       const displaySetUIDsToHangOptions = [];
 
-      displaySetsInfo.forEach(
-        ({ displaySetInstanceUID, displaySetOptions }) => {
-          if (displaySetInstanceUID) {
-            displaySetUIDsToHang.push(displaySetInstanceUID);
-          }
-
-          displaySetUIDsToHangOptions.push(displaySetOptions);
+      displaySetsInfo.forEach(({ displaySetInstanceUID, displaySetOptions }) => {
+        if (displaySetInstanceUID) {
+          displaySetUIDsToHang.push(displaySetInstanceUID);
         }
-      );
+
+        displaySetUIDsToHangOptions.push(displaySetOptions);
+      });
 
       const computedViewportOptions = hangingProtocolService.getComputedOptions(
         viewportOptions,
         displaySetUIDsToHang
       );
 
-      const computedDisplaySetOptions =
-        hangingProtocolService.getComputedOptions(
-          displaySetUIDsToHangOptions,
-          displaySetUIDsToHang
-        );
+      const computedDisplaySetOptions = hangingProtocolService.getComputedOptions(
+        displaySetUIDsToHangOptions,
+        displaySetUIDsToHang
+      );
 
       return {
         displaySetInstanceUIDs: displaySetUIDsToHang,
@@ -152,8 +149,7 @@ function ViewerViewportGrid(props) {
         // This occurs when no viewport has elected to consume the event
         // so we need to change layouts into a layout which can consume
         // the event.
-        const { displaySetInstanceUID: referencedDisplaySetInstanceUID } =
-          measurement;
+        const { displaySetInstanceUID: referencedDisplaySetInstanceUID } = measurement;
 
         const updatedViewports = _getUpdatedViewports(
           viewportId,
@@ -242,10 +238,7 @@ function ViewerViewportGrid(props) {
   */
 
   const onDropHandler = (viewportId, { displaySetInstanceUID }) => {
-    const updatedViewports = _getUpdatedViewports(
-      viewportId,
-      displaySetInstanceUID
-    );
+    const updatedViewports = _getUpdatedViewports(viewportId, displaySetInstanceUID);
     viewportGridService.setDisplaySetsForViewports(updatedViewports);
   };
 
@@ -274,9 +267,7 @@ function ViewerViewportGrid(props) {
       // This is causing the viewport components re-render when the activeViewportId changes
       const displaySets = displaySetInstanceUIDsToUse
         .map(displaySetInstanceUID => {
-          return (
-            displaySetService.getDisplaySetByUID(displaySetInstanceUID) || {}
-          );
+          return displaySetService.getDisplaySetByUID(displaySetInstanceUID) || {};
         })
         .filter(displaySet => {
           return !displaySet?.unsupported;
@@ -380,11 +371,7 @@ ViewerViewportGrid.defaultProps = {
   viewportComponents: [],
 };
 
-function _getViewportComponent(
-  displaySets,
-  viewportComponents,
-  uiNotificationService
-) {
+function _getViewportComponent(displaySets, viewportComponents, uiNotificationService) {
   if (!displaySets || !displaySets.length) {
     return EmptyViewport;
   }
@@ -399,9 +386,7 @@ function _getViewportComponent(
     if (!viewportComponents[i].displaySetsToDisplay) {
       throw new Error('displaySetsToDisplay is null');
     }
-    if (
-      viewportComponents[i].displaySetsToDisplay.includes(SOPClassHandlerId)
-    ) {
+    if (viewportComponents[i].displaySetsToDisplay.includes(SOPClassHandlerId)) {
       const { component } = viewportComponents[i];
       return component;
     }

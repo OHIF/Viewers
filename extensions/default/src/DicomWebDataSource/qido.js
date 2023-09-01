@@ -55,9 +55,7 @@ function processResults(qidoStudies) {
       instances: Number(getString(qidoStudy['00201208'])) || 0, // number
       description: getString(qidoStudy['00081030']) || '',
       modalities:
-        getString(
-          getModalities(qidoStudy['00080060'], qidoStudy['00080061'])
-        ) || '',
+        getString(getModalities(qidoStudy['00080060'], qidoStudy['00080061'])) || '',
     })
   );
 
@@ -136,10 +134,7 @@ export function seriesInStudy(dicomWebClient, studyInstanceUID) {
 }
 
 export default function searchStudies(server, filter) {
-  const queryParams = getQIDOQueryParams(
-    filter,
-    server.qidoSupportsIncludeField
-  );
+  const queryParams = getQIDOQueryParams(filter, server.qidoSupportsIncludeField);
   const options = {
     queryParams,
   };

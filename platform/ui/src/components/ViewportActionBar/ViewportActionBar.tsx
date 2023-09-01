@@ -50,8 +50,7 @@ const ViewportActionBar = ({
 
   const separatorClasses = 'border-l py-2 mx-2 border-secondary-light';
   const textEllipsisClasses = 'overflow-hidden shrink text-ellipsis';
-  const arrowClasses =
-    'cursor-pointer shrink-0 mr-2 text-white hover:text-primary-light';
+  const arrowClasses = 'cursor-pointer shrink-0 mr-2 text-white hover:text-primary-light';
 
   const componentRootElemRef = (elem: HTMLElement) => {
     setComponentRootElem(elem);
@@ -129,9 +128,7 @@ const ViewportActionBar = ({
       onDoubleClick={onDoubleClick}
     >
       {getStatusComponent()}
-      {!!label?.length && (
-        <span className="text-aqua-pale text-large ml-1">{label}</span>
-      )}
+      {!!label?.length && <span className="text-aqua-pale text-large ml-1">{label}</span>}
       <div className={separatorClasses}></div>
       <span
         data-cy="studyDate"

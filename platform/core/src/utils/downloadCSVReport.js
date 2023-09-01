@@ -17,8 +17,7 @@ export default function downloadCSVReport(measurementData) {
 
   const reportMap = {};
   measurementData.forEach(measurement => {
-    const { referenceStudyUID, referenceSeriesUID, getReport, uid } =
-      measurement;
+    const { referenceStudyUID, referenceSeriesUID, getReport, uid } = measurement;
 
     if (!getReport) {
       console.warn('Measurement does not have a getReport function');
@@ -54,8 +53,7 @@ export default function downloadCSVReport(measurementData) {
   const results = _mapReportsToRowArray(reportMap, columns);
 
   let csvContent =
-    'data:text/csv;charset=utf-8,' +
-    results.map(res => res.join(',')).join('\n');
+    'data:text/csv;charset=utf-8,' + results.map(res => res.join(',')).join('\n');
 
   _createAndDownloadFile(csvContent);
 }

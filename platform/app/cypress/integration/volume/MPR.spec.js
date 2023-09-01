@@ -1,8 +1,6 @@
 describe('OHIF MPR', () => {
   beforeEach(() => {
-    cy.checkStudyRouteInViewer(
-      '1.3.6.1.4.1.25403.345050719074.3824.20170125113417.1'
-    );
+    cy.checkStudyRouteInViewer('1.3.6.1.4.1.25403.345050719074.3824.20170125113417.1');
     cy.expectMinimumThumbnails(3);
     cy.initCornerstoneToolsAliases();
     cy.initCommonElementsAliases();
@@ -76,10 +74,7 @@ describe('OHIF MPR', () => {
         cy.wrap(imageData2).should('not.be', undefined);
         cy.wrap(imageData3).should('not.be', undefined);
 
-        cy.wrap(imageData1.dimensions).should(
-          'deep.equal',
-          imageData2.dimensions
-        );
+        cy.wrap(imageData1.dimensions).should('deep.equal', imageData2.dimensions);
 
         cy.wrap(imageData1.origin).should('deep.equal', imageData2.origin);
       });

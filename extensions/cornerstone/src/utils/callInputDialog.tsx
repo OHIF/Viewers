@@ -21,11 +21,7 @@ function callInputDialog(
   dialogConfig: any = {}
 ) {
   const dialogId = 'dialog-enter-annotation';
-  const label = data
-    ? isArrowAnnotateInputDialog
-      ? data.text
-      : data.label
-    : '';
+  const label = data ? (isArrowAnnotateInputDialog ? data.text : data.label) : '';
   const {
     dialogTitle = 'Annotation',
     inputLabel = 'Enter your annotation',

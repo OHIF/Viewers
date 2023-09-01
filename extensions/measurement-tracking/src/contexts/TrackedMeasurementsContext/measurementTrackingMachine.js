@@ -194,10 +194,7 @@ const machineConfiguration = {
           // - start tracking a new study + report
           {
             target: 'tracking',
-            actions: [
-              'discardPreviouslyTrackedMeasurements',
-              'setTrackedStudyAndSeries',
-            ],
+            actions: ['discardPreviouslyTrackedMeasurements', 'setTrackedStudyAndSeries'],
             cond: 'shouldSaveAndStartNewReport',
           },
           // Cancel, back to tracking
@@ -279,9 +276,7 @@ const defaultOptions = {
       console.warn('jumpToFirstMeasurementInActiveViewport: not implemented');
     },
     showStructuredReportDisplaySetInActiveViewport: (ctx, evt) => {
-      console.warn(
-        'showStructuredReportDisplaySetInActiveViewport: not implemented'
-      );
+      console.warn('showStructuredReportDisplaySetInActiveViewport: not implemented');
     },
     clearContext: assign({
       trackedStudy: '',
@@ -302,10 +297,8 @@ const defaultOptions = {
       ignoredSeries: [],
     })),
     setTrackedStudyAndMultipleSeries: assign((ctx, evt) => {
-      const studyInstanceUID =
-        evt.StudyInstanceUID || evt.data.StudyInstanceUID;
-      const seriesInstanceUIDs =
-        evt.SeriesInstanceUIDs || evt.data.SeriesInstanceUIDs;
+      const studyInstanceUID = evt.StudyInstanceUID || evt.data.StudyInstanceUID;
+      const seriesInstanceUIDs = evt.SeriesInstanceUIDs || evt.data.SeriesInstanceUIDs;
 
       return {
         prevTrackedStudy: ctx.trackedStudy,
@@ -396,8 +389,7 @@ const defaultOptions = {
     // Has more than 1, or SeriesInstanceUID is not in list
     // --> Post removal would have non-empty trackedSeries array
     hasRemainingTrackedSeries: (ctx, evt) =>
-      ctx.trackedSeries.length > 1 ||
-      !ctx.trackedSeries.includes(evt.SeriesInstanceUID),
+      ctx.trackedSeries.length > 1 || !ctx.trackedSeries.includes(evt.SeriesInstanceUID),
     hasNotIgnoredSRSeriesForHydration: (ctx, evt) => {
       return !ctx.ignoredSRSeriesForHydration.includes(evt.SeriesInstanceUID);
     },

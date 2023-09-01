@@ -39,10 +39,8 @@ function PanelStudyBrowserTracking({
   // doesn't have to have such an intense shape. This works well enough for now.
   // Tabs --> Studies --> DisplaySets --> Thumbnails
   const { StudyInstanceUIDs } = useImageViewer();
-  const [{ activeViewportId, viewports }, viewportGridService] =
-    useViewportGrid();
-  const [trackedMeasurements, sendTrackedMeasurementsEvent] =
-    useTrackedMeasurements();
+  const [{ activeViewportId, viewports }, viewportGridService] = useViewportGrid();
+  const [trackedMeasurements, sendTrackedMeasurementsEvent] = useTrackedMeasurements();
   const [activeTabName, setActiveTabName] = useState('primary');
   const [expandedStudyInstanceUIDs, setExpandedStudyInstanceUIDs] = useState([
     ...StudyInstanceUIDs,
@@ -98,8 +96,7 @@ function PanelStudyBrowserTracking({
       // try to fetch the prior studies based on the patientID if the
       // server can respond.
       try {
-        qidoStudiesForPatient =
-          await getStudiesForPatientByMRN(qidoForStudyUID);
+        qidoStudiesForPatient = await getStudiesForPatientByMRN(qidoForStudyUID);
       } catch (error) {
         console.warn(error);
       }
@@ -118,11 +115,7 @@ function PanelStudyBrowserTracking({
       setStudyDisplayList(prevArray => {
         const ret = [...prevArray];
         for (const study of actuallyMappedStudies) {
-          if (
-            !prevArray.find(
-              it => it.studyInstanceUid === study.studyInstanceUid
-            )
-          ) {
+          if (!prevArray.find(it => it.studyInstanceUid === study.studyInstanceUid)) {
             ret.push(study);
           }
         }
@@ -144,17 +137,14 @@ function PanelStudyBrowserTracking({
 
     currentDisplaySets.forEach(async dSet => {
       const newImageSrcEntry = {};
-      const displaySet = displaySetService.getDisplaySetByUID(
-        dSet.displaySetInstanceUID
-      );
+      const displaySet = displaySetService.getDisplaySetByUID(dSet.displaySetInstanceUID);
       const imageIds = dataSource.getImageIdsForDisplaySet(displaySet);
       const imageId = imageIds[Math.floor(imageIds.length / 2)];
 
       // TODO: Is it okay that imageIds are not returned here for SR displaysets?
       if (imageId && !displaySet?.unsupported) {
         // When the image arrives, render it and store the result in the thumbnailImgSrcMap
-        newImageSrcEntry[dSet.displaySetInstanceUID] =
-          await getImageSrc(imageId);
+        newImageSrcEntry[dSet.displaySetInstanceUID] = await getImageSrc(imageId);
         setThumbnailImageSrcMap(prevState => {
           return { ...prevState, ...newImageSrcEntry };
         });
@@ -203,9 +193,7 @@ function PanelStudyBrowserTracking({
           const displaySetInstanceUID = dSet.displaySetInstanceUID;
 
           const newImageSrcEntry = {};
-          const displaySet = displaySetService.getDisplaySetByUID(
-            displaySetInstanceUID
-          );
+          const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
           if (!displaySet?.unsupported) {
             if (options.madeInClient) {
               setJumpToDisplaySet(displaySetInstanceUID);
@@ -217,8 +205,7 @@ function PanelStudyBrowserTracking({
             // TODO: Is it okay that imageIds are not returned here for SR displaysets?
             if (imageId) {
               // When the image arrives, render it and store the result in the thumbnailImgSrcMap
-              newImageSrcEntry[displaySetInstanceUID] =
-                await getImageSrc(imageId);
+              newImageSrcEntry[displaySetInstanceUID] = await getImageSrc(imageId);
               setThumbnailImageSrcMap(prevState => {
                 return { ...prevState, ...newImageSrcEntry };
               });
@@ -249,25 +236,24 @@ function PanelStudyBrowserTracking({
       }
     );
 
-    const SubscriptionDisplaySetMetaDataInvalidated =
-      displaySetService.subscribe(
-        displaySetService.EVENTS.DISPLAY_SET_SERIES_METADATA_INVALIDATED,
-        () => {
-          const mappedDisplaySets = _mapDisplaySets(
-            displaySetService.getActiveDisplaySets(),
-            thumbnailImageSrcMap,
-            trackedSeries,
-            viewports,
-            viewportGridService,
-            dataSource,
-            displaySetService,
-            uiDialogService,
-            uiNotificationService
-          );
+    const SubscriptionDisplaySetMetaDataInvalidated = displaySetService.subscribe(
+      displaySetService.EVENTS.DISPLAY_SET_SERIES_METADATA_INVALIDATED,
+      () => {
+        const mappedDisplaySets = _mapDisplaySets(
+          displaySetService.getActiveDisplaySets(),
+          thumbnailImageSrcMap,
+          trackedSeries,
+          viewports,
+          viewportGridService,
+          dataSource,
+          displaySetService,
+          uiDialogService,
+          uiNotificationService
+        );
 
-          setDisplaySets(mappedDisplaySets);
-        }
-      );
+        setDisplaySets(mappedDisplaySets);
+      }
+    );
 
     return () => {
       SubscriptionDisplaySetsAdded.unsubscribe();
@@ -293,14 +279,9 @@ function PanelStudyBrowserTracking({
 
   // TODO: Should not fire this on "close"
   function _handleStudyClick(StudyInstanceUID) {
-    const shouldCollapseStudy =
-      expandedStudyInstanceUIDs.includes(StudyInstanceUID);
+    const shouldCollapseStudy = expandedStudyInstanceUIDs.includes(StudyInstanceUID);
     const updatedExpandedStudyInstanceUIDs = shouldCollapseStudy
-      ? [
-          ...expandedStudyInstanceUIDs.filter(
-            stdyUid => stdyUid !== StudyInstanceUID
-          ),
-        ]
+      ? [...expandedStudyInstanceUIDs.filter(stdyUid => stdyUid !== StudyInstanceUID)]
       : [...expandedStudyInstanceUIDs, StudyInstanceUID];
 
     setExpandedStudyInstanceUIDs(updatedExpandedStudyInstanceUIDs);
@@ -319,9 +300,7 @@ function PanelStudyBrowserTracking({
     if (jumpToDisplaySet) {
       // Get element by displaySetInstanceUID
       const displaySetInstanceUID = jumpToDisplaySet;
-      const element = document.getElementById(
-        `thumbnail-${displaySetInstanceUID}`
-      );
+      const element = document.getElementById(`thumbnail-${displaySetInstanceUID}`);
 
       if (element && typeof element.scrollIntoView === 'function') {
         // TODO: Any way to support IE here?
@@ -339,10 +318,7 @@ function PanelStudyBrowserTracking({
 
     const displaySetInstanceUID = jumpToDisplaySet;
     // Set the activeTabName and expand the study
-    const thumbnailLocation = _findTabAndStudyOfDisplaySet(
-      displaySetInstanceUID,
-      tabs
-    );
+    const thumbnailLocation = _findTabAndStudyOfDisplaySet(displaySetInstanceUID, tabs);
     if (!thumbnailLocation) {
       console.warn('jumpToThumbnail: displaySet thumbnail not found.');
 
@@ -371,9 +347,7 @@ function PanelStudyBrowserTracking({
         setActiveTabName(clickedTabName);
       }}
       onClickUntrack={displaySetInstanceUID => {
-        const displaySet = displaySetService.getDisplaySetByUID(
-          displaySetInstanceUID
-        );
+        const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
         // TODO: shift this somewhere else where we're centralizing this logic?
         // Potentially a helper from displaySetInstanceUID to this
         sendTrackedMeasurementsEvent('UNTRACK_SERIES', {
@@ -444,11 +418,7 @@ function _mapDisplaySets(
 
       if (numPanes !== 1) {
         viewports.forEach(viewportData => {
-          if (
-            viewportData?.displaySetInstanceUIDs?.includes(
-              ds.displaySetInstanceUID
-            )
-          ) {
+          if (viewportData?.displaySetInstanceUIDs?.includes(ds.displaySetInstanceUID)) {
             viewportIdentificator.push(viewportData.viewportLabel);
           }
         });
@@ -516,8 +486,7 @@ function _mapDisplaySets(
                 ],
                 onClose: () => uiDialogService.dismiss({ id: 'ds-reject-sr' }),
                 onShow: () => {
-                  const yesButton =
-                    document.querySelector('.reject-yes-button');
+                  const yesButton = document.querySelector('.reject-yes-button');
 
                   yesButton.focus();
                 },
@@ -529,9 +498,7 @@ function _mapDisplaySets(
                           ds.StudyInstanceUID,
                           ds.SeriesInstanceUID
                         );
-                        displaySetService.deleteDisplaySet(
-                          displaySetInstanceUID
-                        );
+                        displaySetService.deleteDisplaySet(displaySetInstanceUID);
                         uiDialogService.dismiss({ id: 'ds-reject-sr' });
                         uiNotificationService.show({
                           title: 'Delete Report',
@@ -659,23 +626,17 @@ function _createStudyBrowserTabs(
     {
       name: 'primary',
       label: 'Primary',
-      studies: primaryStudies.sort((studyA, studyB) =>
-        _byDate(studyA.date, studyB.date)
-      ),
+      studies: primaryStudies.sort((studyA, studyB) => _byDate(studyA.date, studyB.date)),
     },
     {
       name: 'recent',
       label: 'Recent',
-      studies: recentStudies.sort((studyA, studyB) =>
-        _byDate(studyA.date, studyB.date)
-      ),
+      studies: recentStudies.sort((studyA, studyB) => _byDate(studyA.date, studyB.date)),
     },
     {
       name: 'all',
       label: 'All',
-      studies: allStudies.sort((studyA, studyB) =>
-        _byDate(studyA.date, studyB.date)
-      ),
+      studies: allStudies.sort((studyA, studyB) => _byDate(studyA.date, studyB.date)),
     },
   ];
 

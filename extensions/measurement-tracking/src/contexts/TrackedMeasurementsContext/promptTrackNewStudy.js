@@ -12,10 +12,7 @@ function promptTrackNewStudy({ servicesManager, extensionManager }, ctx, evt) {
   const { viewportId, StudyInstanceUID, SeriesInstanceUID } = evt;
 
   return new Promise(async function (resolve, reject) {
-    let promptResult = await _askTrackMeasurements(
-      UIViewportDialogService,
-      viewportId
-    );
+    let promptResult = await _askTrackMeasurements(UIViewportDialogService, viewportId);
 
     if (promptResult === RESPONSE.SET_STUDY_AND_SERIES) {
       promptResult = ctx.isDirty

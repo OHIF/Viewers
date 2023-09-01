@@ -12,10 +12,7 @@ import {
   Enums as csEnums,
 } from '@cornerstonejs/core';
 
-import {
-  utilities as csToolsUtils,
-  Enums as csToolsEnums,
-} from '@cornerstonejs/tools';
+import { utilities as csToolsUtils, Enums as csToolsEnums } from '@cornerstonejs/tools';
 import { IViewportService } from './IViewportService';
 import { RENDERING_ENGINE_ID } from './constants';
 import ViewportInfo, {
@@ -32,18 +29,14 @@ import { Presentation, Presentations } from '../../types/Presentation';
 import JumpPresets from '../../utils/JumpPresets';
 
 const EVENTS = {
-  VIEWPORT_DATA_CHANGED:
-    'event::cornerstoneViewportService:viewportDataChanged',
+  VIEWPORT_DATA_CHANGED: 'event::cornerstoneViewportService:viewportDataChanged',
 };
 
 /**
  * Handles cornerstone viewport logic including enabling, disabling, and
  * updating the viewport.
  */
-class CornerstoneViewportService
-  extends PubSubService
-  implements IViewportService
-{
+class CornerstoneViewportService extends PubSubService implements IViewportService {
   static REGISTRATION = {
     name: 'cornerstoneViewportService',
     altName: 'CornerstoneViewportService',
@@ -184,8 +177,7 @@ class CornerstoneViewportService
     const camera = csViewport.getCamera();
     return {
       presentationIds,
-      viewportType:
-        !viewportType || viewportType === 'stack' ? 'stack' : 'volume',
+      viewportType: !viewportType || viewportType === 'stack' ? 'stack' : 'volume',
       properties,
       initialImageIndex,
       camera,
@@ -261,9 +253,7 @@ class CornerstoneViewportService
     const displaySetOptions = viewportInfo.setPublicDisplaySetOptions(
       publicDisplaySetOptions
     );
-    const viewportOptions = viewportInfo.setPublicViewportOptions(
-      publicViewportOptions
-    );
+    const viewportOptions = viewportInfo.setPublicViewportOptions(publicViewportOptions);
 
     const element = viewportInfo.getElement();
     const type = viewportInfo.getViewportType();
@@ -317,11 +307,7 @@ class CornerstoneViewportService
   ): Types.IStackViewport | Types.IVolumeViewport | null {
     const viewportInfo = this.getViewportInfo(viewportId);
 
-    if (
-      !viewportInfo ||
-      !this.renderingEngine ||
-      this.renderingEngine.hasBeenDestroyed
-    ) {
+    if (!viewportInfo || !this.renderingEngine || this.renderingEngine.hasBeenDestroyed) {
       return null;
     }
 
@@ -342,19 +328,14 @@ class CornerstoneViewportService
   ): void {
     const displaySetOptions = viewportInfo.getDisplaySetOptions();
 
-    const { imageIds, initialImageIndex, displaySetInstanceUID } =
-      viewportData.data;
+    const { imageIds, initialImageIndex, displaySetInstanceUID } = viewportData.data;
 
     this.viewportsDisplaySets.set(viewport.id, [displaySetInstanceUID]);
 
     let initialImageIndexToUse =
-      presentations?.positionPresentation?.initialImageIndex ??
-      initialImageIndex;
+      presentations?.positionPresentation?.initialImageIndex ?? initialImageIndex;
 
-    if (
-      initialImageIndexToUse === undefined ||
-      initialImageIndexToUse === null
-    ) {
+    if (initialImageIndexToUse === undefined || initialImageIndexToUse === null) {
       initialImageIndexToUse =
         this._getInitialImageIndexForViewport(viewportInfo, imageIds) || 0;
     }
@@ -401,11 +382,8 @@ class CornerstoneViewportService
     if (viewportType === csEnums.ViewportType.STACK) {
       numberOfSlices = imageIds.length;
     } else if (viewportType === csEnums.ViewportType.ORTHOGRAPHIC) {
-      const viewport = this.getCornerstoneViewport(
-        viewportInfo.getViewportId()
-      );
-      const imageSliceData =
-        csUtils.getImageSliceDataForVolumeViewport(viewport);
+      const viewport = this.getCornerstoneViewport(viewportInfo.getViewportId());
+      const imageSliceData = csUtils.getImageSliceDataForVolumeViewport(viewport);
 
       if (!imageSliceData) {
         return;
@@ -445,9 +423,7 @@ class CornerstoneViewportService
       // it will jump to a different slice than the middle one which
       // was the initial slice, and we have some tools such as Crosshairs
       // which rely on a relative camera modifications and those will break.
-      return lastSliceIndex % 2 === 0
-        ? lastSliceIndex / 2
-        : (lastSliceIndex + 1) / 2;
+      return lastSliceIndex % 2 === 0 ? lastSliceIndex / 2 : (lastSliceIndex + 1) / 2;
     }
 
     return 0;
@@ -517,20 +493,11 @@ class CornerstoneViewportService
     });
 
     // This returns the async continuation only
-    return this.setVolumesForViewport(
-      viewport,
-      volumeInputArray,
-      presentations
-    );
+    return this.setVolumesForViewport(viewport, volumeInputArray, presentations);
   }
 
-  public async setVolumesForViewport(
-    viewport,
-    volumeInputArray,
-    presentations
-  ) {
-    const { displaySetService, toolGroupService } =
-      this.servicesManager.services;
+  public async setVolumesForViewport(viewport, volumeInputArray, presentations) {
+    const { displaySetService, toolGroupService } = this.servicesManager.services;
 
     const viewportInfo = this.getViewportInfo(viewport.id);
     const displaySetOptions = viewportInfo.getDisplaySetOptions();
@@ -612,8 +579,7 @@ class CornerstoneViewportService
     displaySetInstanceUIDs: string[],
     viewport: any
   ) {
-    const { segmentationService, toolGroupService } =
-      this.servicesManager.services;
+    const { segmentationService, toolGroupService } = this.servicesManager.services;
 
     const toolGroup = toolGroupService.getToolGroupForViewport(viewport.id);
 
@@ -622,16 +588,14 @@ class CornerstoneViewportService
 
     for (const segmentation of segmentations) {
       const toolGroupSegmentationRepresentations =
-        segmentationService.getSegmentationRepresentationsForToolGroup(
-          toolGroup.id
-        ) || [];
+        segmentationService.getSegmentationRepresentationsForToolGroup(toolGroup.id) ||
+        [];
 
       // if there is already a segmentation representation for this segmentation
       // for this toolGroup, don't bother at all
-      const isSegmentationInToolGroup =
-        toolGroupSegmentationRepresentations.find(
-          representation => representation.segmentationId === segmentation.id
-        );
+      const isSegmentationInToolGroup = toolGroupSegmentationRepresentations.find(
+        representation => representation.segmentationId === segmentation.id
+      );
 
       if (isSegmentationInToolGroup) {
         continue;
@@ -647,9 +611,8 @@ class CornerstoneViewportService
       let shouldDisplaySeg = false;
 
       for (const displaySetInstanceUID of displaySetInstanceUIDs) {
-        const primaryFrameOfReferenceUID = this._getFrameOfReferenceUID(
-          displaySetInstanceUID
-        );
+        const primaryFrameOfReferenceUID =
+          this._getFrameOfReferenceUID(displaySetInstanceUID);
 
         if (segFrameOfReferenceUID === primaryFrameOfReferenceUID) {
           shouldDisplaySeg = true;
@@ -670,12 +633,8 @@ class CornerstoneViewportService
     }
   }
 
-  private addOverlayRepresentationForDisplaySet(
-    displaySet: any,
-    viewport: any
-  ) {
-    const { segmentationService, toolGroupService } =
-      this.servicesManager.services;
+  private addOverlayRepresentationForDisplaySet(displaySet: any, viewport: any) {
+    const { segmentationService, toolGroupService } = this.servicesManager.services;
 
     const { referencedVolumeId } = displaySet;
     const segmentationId = displaySet.displaySetInstanceUID;
@@ -702,10 +661,7 @@ class CornerstoneViewportService
     const viewport = this.getCornerstoneViewport(viewportId);
     const viewportCamera = viewport.getCamera();
 
-    if (
-      viewport instanceof VolumeViewport ||
-      viewport instanceof VolumeViewport3D
-    ) {
+    if (viewport instanceof VolumeViewport || viewport instanceof VolumeViewport3D) {
       this._setVolumeViewport(viewport, viewportData, viewportInfo).then(() => {
         if (keepCamera) {
           viewport.setCamera(viewportCamera);
@@ -761,10 +717,7 @@ class CornerstoneViewportService
 
   _getSlabThickness(displaySetOptions, volumeId) {
     const { blendMode } = displaySetOptions;
-    if (
-      blendMode === undefined ||
-      displaySetOptions.slabThickness === undefined
-    ) {
+    if (blendMode === undefined || displaySetOptions.slabThickness === undefined) {
       return;
     }
 
@@ -790,9 +743,7 @@ class CornerstoneViewportService
 
   _getFrameOfReferenceUID(displaySetInstanceUID) {
     const { displaySetService } = this.servicesManager.services;
-    const displaySet = displaySetService.getDisplaySetByUID(
-      displaySetInstanceUID
-    );
+    const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
 
     if (!displaySet) {
       return;

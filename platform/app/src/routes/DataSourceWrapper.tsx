@@ -60,8 +60,7 @@ function DataSourceWrapper(props) {
     if (!dataSourceName) {
       // Gets the first defined datasource with the right name
       // Mostly for historical reasons - new configs should use the defaultDataSourceName
-      const dataSourceModules =
-        extensionManager.modules[MODULE_TYPES.DATA_SOURCE];
+      const dataSourceModules = extensionManager.modules[MODULE_TYPES.DATA_SOURCE];
       // TODO: Good usecase for flatmap?
       const webApiDataSources = dataSourceModules.reduce((acc, curr) => {
         const mods = [];
@@ -145,10 +144,7 @@ function DataSourceWrapper(props) {
       return;
     }
 
-    const queryFilterValues = _getQueryFilterValues(
-      location.search,
-      STUDIES_LIMIT
-    );
+    const queryFilterValues = _getQueryFilterValues(location.search, STUDIES_LIMIT);
 
     // 204: no content
     async function getData() {
@@ -256,8 +252,7 @@ function _getQueryFilterValues(query, queryLimit) {
     patientId: query.get('mrn'),
     patientName: query.get('patientName'),
     studyDescription: query.get('description'),
-    modalitiesInStudy:
-      query.get('modalities') && query.get('modalities').split(','),
+    modalitiesInStudy: query.get('modalities') && query.get('modalities').split(','),
     accessionNumber: query.get('accession'),
     //
     startDate: query.get('startDate'),
@@ -269,8 +264,7 @@ function _getQueryFilterValues(query, queryLimit) {
     sortBy: query.get('sortBy'),
     sortDirection: query.get('sortDirection'),
     // Offset...
-    offset:
-      Math.floor((pageNumber * resultsPerPage) / queryLimit) * (queryLimit - 1),
+    offset: Math.floor((pageNumber * resultsPerPage) / queryLimit) * (queryLimit - 1),
     config: query.get('configUrl'),
   };
 

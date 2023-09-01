@@ -39,9 +39,7 @@ export default async function addMode(packageName, version) {
       {
         title: 'Detecting required ohif-extensions...',
         task: async ctx => {
-          ctx.ohifExtensions = await findRequiredOhifExtensionsForMode(
-            ctx.yarnInfo
-          );
+          ctx.ohifExtensions = await findRequiredOhifExtensionsForMode(ctx.yarnInfo);
         },
       },
     ],
@@ -54,9 +52,7 @@ export default async function addMode(packageName, version) {
     .run()
     .then(async ctx => {
       console.log(
-        `${chalk.green.bold(
-          `Added ohif-mode ${packageName}@${ctx.yarnInfo.version}`
-        )} `
+        `${chalk.green.bold(`Added ohif-mode ${packageName}@${ctx.yarnInfo.version}`)} `
       );
 
       const ohifExtensions = ctx.ohifExtensions;

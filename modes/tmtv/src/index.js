@@ -99,8 +99,7 @@ function modeFactory({ modeConfiguration }) {
           // For fusion toolGroup we need to add the volumeIds for the crosshairs
           // since in the fusion viewport we don't want both PT and CT to render MIP
           // when slabThickness is modified
-          const { displaySetMatchDetails } =
-            hangingProtocolService.getMatchDetails();
+          const { displaySetMatchDetails } = hangingProtocolService.getMatchDetails();
 
           setCrosshairsConfiguration(
             displaySetMatchDetails,
@@ -142,22 +141,16 @@ function modeFactory({ modeConfiguration }) {
         'getPTVOIRange',
         'get PT VOI based on corrected or not',
         props => {
-          const ptDisplaySet = props.find(
-            imageSet => imageSet.Modality === 'PT'
-          );
+          const ptDisplaySet = props.find(imageSet => imageSet.Modality === 'PT');
 
           if (!ptDisplaySet) {
             return;
           }
 
           const { imageId } = ptDisplaySet.images[0];
-          const imageIdScalingFactor = MetadataProvider.get(
-            'scalingModule',
-            imageId
-          );
+          const imageIdScalingFactor = MetadataProvider.get('scalingModule', imageId);
 
-          const isSUVAvailable =
-            imageIdScalingFactor && imageIdScalingFactor.suvbw;
+          const isSUVAvailable = imageIdScalingFactor && imageIdScalingFactor.suvbw;
 
           if (isSUVAvailable) {
             return {
@@ -195,9 +188,7 @@ function modeFactory({ modeConfiguration }) {
       const isValid =
         modalities_list.includes('CT') &&
         modalities_list.includes('PT') &&
-        !invalidModalities.some(modality =>
-          modalities_list.includes(modality)
-        ) &&
+        !invalidModalities.some(modality => modalities_list.includes(modality)) &&
         // This is study is a 4D study with PT and CT and not a 3D study for the tmtv
         // mode, until we have a better way to identify 4D studies we will use the
         // StudyInstanceUID to identify the study

@@ -134,17 +134,14 @@ class CornerstoneCacheService {
     // For Stack Viewport we don't have fusion currently
     const displaySet = displaySets[0];
 
-    let stackImageIds = this.stackImageIds.get(
-      displaySet.displaySetInstanceUID
-    );
+    let stackImageIds = this.stackImageIds.get(displaySet.displaySetInstanceUID);
 
     if (!stackImageIds) {
       stackImageIds = this._getCornerstoneStackImageIds(displaySet, dataSource);
       this.stackImageIds.set(displaySet.displaySetInstanceUID, stackImageIds);
     }
 
-    const { displaySetInstanceUID, StudyInstanceUID, isCompositeStack } =
-      displaySet;
+    const { displaySetInstanceUID, StudyInstanceUID, isCompositeStack } = displaySet;
 
     const StackViewportData: StackViewportData = {
       viewportType,
@@ -193,31 +190,22 @@ class CornerstoneCacheService {
         continue;
       }
 
-      const volumeLoaderSchema =
-        displaySet.volumeLoaderSchema ?? VOLUME_LOADER_SCHEME;
+      const volumeLoaderSchema = displaySet.volumeLoaderSchema ?? VOLUME_LOADER_SCHEME;
 
       const volumeId = `${volumeLoaderSchema}:${displaySet.displaySetInstanceUID}`;
 
-      let volumeImageIds = this.volumeImageIds.get(
-        displaySet.displaySetInstanceUID
-      );
+      let volumeImageIds = this.volumeImageIds.get(displaySet.displaySetInstanceUID);
 
       let volume = cs3DCache.getVolume(volumeId);
 
       if (!volumeImageIds || !volume) {
-        volumeImageIds = this._getCornerstoneVolumeImageIds(
-          displaySet,
-          dataSource
-        );
+        volumeImageIds = this._getCornerstoneVolumeImageIds(displaySet, dataSource);
 
         volume = await volumeLoader.createAndCacheVolume(volumeId, {
           imageIds: volumeImageIds,
         });
 
-        this.volumeImageIds.set(
-          displaySet.displaySetInstanceUID,
-          volumeImageIds
-        );
+        this.volumeImageIds.set(displaySet.displaySetInstanceUID, volumeImageIds);
       }
 
       volumeData.push({
@@ -265,10 +253,7 @@ class CornerstoneCacheService {
   }
 
   private _getCornerstoneVolumeImageIds(displaySet, dataSource): string[] {
-    const stackImageIds = this._getCornerstoneStackImageIds(
-      displaySet,
-      dataSource
-    );
+    const stackImageIds = this._getCornerstoneStackImageIds(displaySet, dataSource);
 
     return stackImageIds;
   }

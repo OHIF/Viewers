@@ -116,10 +116,7 @@ function validate(packageName, version, keyword) {
         Authorization: `Bearer ${process.env.NPM_TOKEN}`,
       };
     }
-    const response = await fetch(
-      `${registryUrlOfPackage}${packageName}`,
-      options
-    );
+    const response = await fetch(`${registryUrlOfPackage}${packageName}`, options);
     const json = await response.json();
 
     if (json.error && json.error === NOT_FOUND) {
@@ -142,9 +139,7 @@ function validate(packageName, version, keyword) {
         resolve(true);
       } else {
         const error = new Error(
-          `${chalk.red.bold(
-            'Error'
-          )} package ${packageName} is not an ${keyword}`
+          `${chalk.red.bold('Error')} package ${packageName} is not an ${keyword}`
         );
         reject(error);
       }

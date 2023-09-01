@@ -5,10 +5,7 @@ import callInputDialog from './callInputDialog';
 import { useAppConfig } from '@state';
 import { useTranslation } from 'react-i18next';
 
-export default function PanelSegmentation({
-  servicesManager,
-  commandsManager,
-}) {
+export default function PanelSegmentation({ servicesManager, commandsManager }) {
   const { segmentationService, uiDialogService } = servicesManager.services;
   const [appConfig] = useAppConfig();
   const disableEditing = appConfig?.disableEditing;
@@ -85,24 +82,14 @@ export default function PanelSegmentation({
   };
 
   const onSegmentClick = (segmentationId, segmentIndex) => {
-    segmentationService.setActiveSegmentForSegmentation(
-      segmentationId,
-      segmentIndex
-    );
+    segmentationService.setActiveSegmentForSegmentation(segmentationId, segmentIndex);
 
     const toolGroupIds = getToolGroupIds(segmentationId);
 
     toolGroupIds.forEach(toolGroupId => {
       // const toolGroupId =
-      segmentationService.setActiveSegmentationForToolGroup(
-        segmentationId,
-        toolGroupId
-      );
-      segmentationService.jumpToSegmentCenter(
-        segmentationId,
-        segmentIndex,
-        toolGroupId
-      );
+      segmentationService.setActiveSegmentationForToolGroup(segmentationId, toolGroupId);
+      segmentationService.jumpToSegmentCenter(segmentationId, segmentIndex, toolGroupId);
     });
   };
 
@@ -212,25 +199,13 @@ export default function PanelSegmentation({
           onToggleMinimizeSegmentation={onToggleMinimizeSegmentation}
           segmentationConfig={{ initialConfig: segmentationConfiguration }}
           setRenderOutline={value =>
-            _setSegmentationConfiguration(
-              selectedSegmentationId,
-              'renderOutline',
-              value
-            )
+            _setSegmentationConfiguration(selectedSegmentationId, 'renderOutline', value)
           }
           setOutlineOpacityActive={value =>
-            _setSegmentationConfiguration(
-              selectedSegmentationId,
-              'outlineOpacity',
-              value
-            )
+            _setSegmentationConfiguration(selectedSegmentationId, 'outlineOpacity', value)
           }
           setRenderFill={value =>
-            _setSegmentationConfiguration(
-              selectedSegmentationId,
-              'renderFill',
-              value
-            )
+            _setSegmentationConfiguration(selectedSegmentationId, 'renderFill', value)
           }
           setRenderInactiveSegmentations={value =>
             _setSegmentationConfiguration(
@@ -247,11 +222,7 @@ export default function PanelSegmentation({
             )
           }
           setFillAlpha={value =>
-            _setSegmentationConfiguration(
-              selectedSegmentationId,
-              'fillAlpha',
-              value
-            )
+            _setSegmentationConfiguration(selectedSegmentationId, 'fillAlpha', value)
           }
           setFillAlphaInactive={value =>
             _setSegmentationConfiguration(

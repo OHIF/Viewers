@@ -37,17 +37,7 @@ const Dialog = ({
   }, [onShow]);
 
   return (
-    <div
-      className={classNames(
-        theme,
-        flex,
-        border,
-        outline,
-        position,
-        width,
-        padding
-      )}
-    >
+    <div className={classNames(theme, flex, border, outline, position, width, padding)}>
       <HeaderComponent
         title={title}
         noCloseButton={noCloseButton}

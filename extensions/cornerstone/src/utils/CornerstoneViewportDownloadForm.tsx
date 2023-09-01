@@ -62,9 +62,7 @@ const CornerstoneViewportDownloadForm = ({
 
   const enableViewport = viewportElement => {
     if (viewportElement) {
-      const { renderingEngine, viewport } = getEnabledElement(
-        activeViewportElement
-      );
+      const { renderingEngine, viewport } = getEnabledElement(activeViewportElement);
 
       const viewportInput = {
         viewportId: VIEWPORT_ID,
@@ -89,11 +87,7 @@ const CornerstoneViewportDownloadForm = ({
     }
   };
 
-  const updateViewportPreview = (
-    downloadViewportElement,
-    internalCanvas,
-    fileType
-  ) =>
+  const updateViewportPreview = (downloadViewportElement, internalCanvas, fileType) =>
     new Promise(resolve => {
       const enabledElement = getEnabledElement(downloadViewportElement);
 
@@ -142,9 +136,7 @@ const CornerstoneViewportDownloadForm = ({
   const loadImage = (activeViewportElement, viewportElement, width, height) =>
     new Promise(resolve => {
       if (activeViewportElement && viewportElement) {
-        const activeViewportEnabledElement = getEnabledElement(
-          activeViewportElement
-        );
+        const activeViewportEnabledElement = getEnabledElement(activeViewportElement);
 
         if (!activeViewportEnabledElement) {
           return;
@@ -163,10 +155,7 @@ const CornerstoneViewportDownloadForm = ({
             downloadViewport.setProperties(properties);
 
             const newWidth = Math.min(width || image.width, MAX_TEXTURE_SIZE);
-            const newHeight = Math.min(
-              height || image.height,
-              MAX_TEXTURE_SIZE
-            );
+            const newHeight = Math.min(height || image.height, MAX_TEXTURE_SIZE);
 
             resolve({ width: newWidth, height: newHeight });
           });
@@ -188,14 +177,8 @@ const CornerstoneViewportDownloadForm = ({
       }
     });
 
-  const toggleAnnotations = (
-    toggle,
-    viewportElement,
-    activeViewportElement
-  ) => {
-    const activeViewportEnabledElement = getEnabledElement(
-      activeViewportElement
-    );
+  const toggleAnnotations = (toggle, viewportElement, activeViewportElement) => {
+    const activeViewportEnabledElement = getEnabledElement(activeViewportElement);
 
     const downloadViewportElement = getEnabledElement(viewportElement);
 

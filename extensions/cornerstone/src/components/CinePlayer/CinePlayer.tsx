@@ -46,17 +46,11 @@ function WrappedCinePlayer({ enabledVPElement, viewportId, servicesManager }) {
   };
 
   useEffect(() => {
-    eventTarget.addEventListener(
-      Enums.Events.STACK_VIEWPORT_NEW_STACK,
-      cineHandler
-    );
+    eventTarget.addEventListener(Enums.Events.STACK_VIEWPORT_NEW_STACK, cineHandler);
 
     return () => {
       cineService.setCine({ id: viewportId, isPlaying: false });
-      eventTarget.removeEventListener(
-        Enums.Events.STACK_VIEWPORT_NEW_STACK,
-        cineHandler
-      );
+      eventTarget.removeEventListener(Enums.Events.STACK_VIEWPORT_NEW_STACK, cineHandler);
     };
   }, [enabledVPElement]);
 

@@ -5,9 +5,7 @@ import { SegmentationTable, Button, Icon } from '@ohif/ui';
 import { useTranslation } from 'react-i18next';
 import segmentationEditHandler from './segmentationEditHandler';
 import ExportReports from './ExportReports';
-import ROIThresholdConfiguration, {
-  ROI_STAT,
-} from './ROIThresholdConfiguration';
+import ROIThresholdConfiguration, { ROI_STAT } from './ROIThresholdConfiguration';
 
 const LOWER_CT_THRESHOLD_DEFAULT = -1024;
 const UPPER_CT_THRESHOLD_DEFAULT = 1024;
@@ -95,9 +93,7 @@ export default function PanelRoiThresholdSegmentation({
     const lesionGlyoclysisStats = lesionStats.volume * lesionStats.meanValue;
 
     // update segDetails with the suv peak for the active segmentation
-    const segmentation = segmentationService.getSegmentation(
-      selectedSegmentationId
-    );
+    const segmentation = segmentationService.getSegmentation(selectedSegmentationId);
 
     const cachedStats = {
       lesionStats,

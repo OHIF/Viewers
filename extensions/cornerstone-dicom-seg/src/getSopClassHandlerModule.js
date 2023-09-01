@@ -1,10 +1,5 @@
 import { utils } from '@ohif/core';
-import {
-  metaData,
-  cache,
-  triggerEvent,
-  eventTarget,
-} from '@cornerstonejs/core';
+import { metaData, cache, triggerEvent, eventTarget } from '@cornerstonejs/core';
 import { adaptersSEG, Enums } from '@cornerstonejs/adapters';
 
 import { SOPClassHandlerId } from './id';
@@ -14,11 +9,7 @@ const sopClassUids = ['1.2.840.10008.5.1.4.1.1.66.4'];
 
 let loadPromises = {};
 
-function _getDisplaySetsFromSeries(
-  instances,
-  servicesManager,
-  extensionManager
-) {
+function _getDisplaySetsFromSeries(instances, servicesManager, extensionManager) {
   const instance = instances[0];
 
   const {
@@ -121,10 +112,7 @@ function _load(segDisplaySet, servicesManager, extensionManager, headers) {
   // We don't want to fire multiple loads, so we'll wait for the first to finish
   // and also return the same promise to any other callers.
   loadPromises[SOPInstanceUID] = new Promise(async (resolve, reject) => {
-    if (
-      !segDisplaySet.segments ||
-      Object.keys(segDisplaySet.segments).length === 0
-    ) {
+    if (!segDisplaySet.segments || Object.keys(segDisplaySet.segments).length === 0) {
       await _loadSegments({
         extensionManager,
         servicesManager,
@@ -168,9 +156,7 @@ async function _loadSegments({
     headers
   );
 
-  const cachedReferencedVolume = cache.getVolume(
-    segDisplaySet.referencedVolumeId
-  );
+  const cachedReferencedVolume = cache.getVolume(segDisplaySet.referencedVolumeId);
 
   if (!cachedReferencedVolume) {
     throw new Error(
@@ -194,13 +180,12 @@ async function _loadSegments({
     );
   });
 
-  const results =
-    await adaptersSEG.Cornerstone3D.Segmentation.generateToolState(
-      imageIds,
-      arrayBuffer,
-      metaData,
-      { skipOverlapping, tolerance, eventTarget, triggerEvent }
-    );
+  const results = await adaptersSEG.Cornerstone3D.Segmentation.generateToolState(
+    imageIds,
+    arrayBuffer,
+    metaData,
+    { skipOverlapping, tolerance, eventTarget, triggerEvent }
+  );
 
   results.segMetadata.data.forEach((data, i) => {
     if (i > 0) {
@@ -213,18 +198,12 @@ async function _loadSegments({
 
 function _segmentationExists(segDisplaySet, segmentationService) {
   // This should be abstracted with the CornerstoneCacheService
-  return segmentationService.getSegmentation(
-    segDisplaySet.displaySetInstanceUID
-  );
+  return segmentationService.getSegmentation(segDisplaySet.displaySetInstanceUID);
 }
 
 function getSopClassHandlerModule({ servicesManager, extensionManager }) {
   const getDisplaySetsFromSeries = instances => {
-    return _getDisplaySetsFromSeries(
-      instances,
-      servicesManager,
-      extensionManager
-    );
+    return _getDisplaySetsFromSeries(instances, servicesManager, extensionManager);
   };
 
   return [

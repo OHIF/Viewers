@@ -150,10 +150,7 @@ const connectToolsToMeasurementService = servicesManager => {
       } = annotationAddedEventDetail;
       const { toolName } = metadata;
 
-      if (
-        csToolsEvent.type === completedEvt &&
-        toolName === toolNames.CalibrationLine
-      ) {
+      if (csToolsEvent.type === completedEvt && toolName === toolNames.CalibrationLine) {
         // show modal to input the measurement (mm)
         onCompletedCalibrationLine(servicesManager, csToolsEvent)
           .then(
@@ -348,8 +345,7 @@ const connectMeasurementServiceToTools = (
         return;
       }
 
-      const { referenceSeriesUID, referenceStudyUID, SOPInstanceUID } =
-        measurement;
+      const { referenceSeriesUID, referenceStudyUID, SOPInstanceUID } = measurement;
 
       const instance = DicomMetadataStore.getInstance(
         referenceStudyUID,

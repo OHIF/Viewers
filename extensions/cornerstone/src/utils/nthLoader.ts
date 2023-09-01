@@ -51,9 +51,7 @@ export default function interleaveNthLoader({
     .map(volume => volume.getImageLoadRequests())
     .filter(requests => requests?.[0]?.imageId);
 
-  const orderedRequests = originalRequests.map(request =>
-    getNthFrames(request)
-  );
+  const orderedRequests = originalRequests.map(request => getNthFrames(request));
 
   // set the finalRequests to the imageLoadPoolManager
   const finalRequests = interleave(orderedRequests);
@@ -63,12 +61,7 @@ export default function interleaveNthLoader({
 
   finalRequests.forEach(
     ({ callLoadImage, additionalDetails, imageId, imageIdIndex, options }) => {
-      const callLoadImageBound = callLoadImage.bind(
-        null,
-        imageId,
-        imageIdIndex,
-        options
-      );
+      const callLoadImageBound = callLoadImage.bind(null, imageId, imageIdIndex, options);
 
       imageLoadPoolManager.addRequest(
         callLoadImageBound,
@@ -83,9 +76,7 @@ export default function interleaveNthLoader({
   volumeIdMapsToLoad.clear();
 
   // copy the viewportIdVolumeInputArrayMap
-  const viewportIdVolumeInputArrayMapCopy = new Map(
-    viewportIdVolumeInputArrayMap
-  );
+  const viewportIdVolumeInputArrayMapCopy = new Map(viewportIdVolumeInputArrayMap);
 
   // reset the viewportIdVolumeInputArrayMap
   viewportIdVolumeInputArrayMap.clear();

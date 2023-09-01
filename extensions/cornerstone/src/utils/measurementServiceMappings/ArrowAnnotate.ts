@@ -32,11 +32,7 @@ const Length = {
     }
 
     const { SOPInstanceUID, SeriesInstanceUID, StudyInstanceUID } =
-      getSOPInstanceAttributes(
-        referencedImageId,
-        cornerstoneViewportService,
-        viewportId
-      );
+      getSOPInstanceAttributes(referencedImageId, cornerstoneViewportService, viewportId);
 
     let displaySet;
 
@@ -51,10 +47,7 @@ const Length = {
 
     const { points } = data.handles;
 
-    const mappedAnnotations = getMappedAnnotations(
-      annotation,
-      displaySetService
-    );
+    const mappedAnnotations = getMappedAnnotations(annotation, displaySetService);
 
     const displayText = getDisplayText(mappedAnnotations, displaySet);
 

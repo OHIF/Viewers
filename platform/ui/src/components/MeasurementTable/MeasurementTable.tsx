@@ -5,25 +5,16 @@ import { useTranslation } from 'react-i18next';
 
 import MeasurementItem from './MeasurementItem';
 
-const MeasurementTable = ({
-  data,
-  title,
-  onClick,
-  onEdit,
-  servicesManager,
-}) => {
+const MeasurementTable = ({ data, title, onClick, onEdit, servicesManager }) => {
   servicesManager = servicesManager as ServicesManager;
   const { customizationService } = servicesManager.services;
   const { t } = useTranslation('MeasurementTable');
   const amount = data.length;
 
-  const itemCustomization = customizationService.getCustomization(
-    'MeasurementItem',
-    {
-      content: MeasurementItem,
-      contentProps: {},
-    }
-  );
+  const itemCustomization = customizationService.getCustomization('MeasurementItem', {
+    content: MeasurementItem,
+    contentProps: {},
+  });
   const CustomMeasurementItem = itemCustomization.content;
 
   return (

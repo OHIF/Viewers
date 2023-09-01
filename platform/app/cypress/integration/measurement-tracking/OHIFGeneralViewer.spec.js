@@ -1,8 +1,6 @@
 describe('OHIF Study Viewer Page', function () {
   beforeEach(function () {
-    cy.checkStudyRouteInViewer(
-      '1.2.840.113619.2.5.1762583153.215519.978957063.78'
-    );
+    cy.checkStudyRouteInViewer('1.2.840.113619.2.5.1762583153.215519.978957063.78');
 
     cy.expectMinimumThumbnails(3);
     cy.initCommonElementsAliases();
@@ -25,11 +23,9 @@ describe('OHIF Study Viewer Page', function () {
         cy.wrap($zoomBtn).should('have.class', 'active');
       });
 
-    const zoomLevelInitial = cy
-      .get('@viewportInfoTopLeft')
-      .then($viewportInfo => {
-        return $viewportInfo.text().substring(6, 9);
-      });
+    const zoomLevelInitial = cy.get('@viewportInfoTopLeft').then($viewportInfo => {
+      return $viewportInfo.text().substring(6, 9);
+    });
 
     //Right click on viewport
     cy.get('@viewport')

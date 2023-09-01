@@ -28,14 +28,10 @@ export function retrieveStudyMetadata(
   // corresponding promise from the "StudyMetaDataPromises" map...
 
   if (!dicomWebClient) {
-    throw new Error(
-      `${moduleName}: Required 'dicomWebClient' parameter not provided.`
-    );
+    throw new Error(`${moduleName}: Required 'dicomWebClient' parameter not provided.`);
   }
   if (!StudyInstanceUID) {
-    throw new Error(
-      `${moduleName}: Required 'StudyInstanceUID' parameter not provided.`
-    );
+    throw new Error(`${moduleName}: Required 'StudyInstanceUID' parameter not provided.`);
   }
 
   // Already waiting on result? Return cached promise

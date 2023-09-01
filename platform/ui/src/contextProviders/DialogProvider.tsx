@@ -97,8 +97,7 @@ const DialogProvider = ({ children, service }) => {
    * @returns void
    */
   const dismiss = useCallback(
-    ({ id }) =>
-      setDialogs(dialogs => dialogs.filter(dialog => dialog.id !== id)),
+    ({ id }) => setDialogs(dialogs => dialogs.filter(dialog => dialog.id !== id)),
     []
   );
 
@@ -163,8 +162,7 @@ const DialogProvider = ({ children, service }) => {
         showOverlay,
       } = dialog;
 
-      let position =
-        (preservePosition && lastDialogPosition) || defaultPosition;
+      let position = (preservePosition && lastDialogPosition) || defaultPosition;
       if (centralize) {
         position = centerPositions.find(position => position.id === id);
       }
@@ -179,14 +177,7 @@ const DialogProvider = ({ children, service }) => {
           onStart={event => {
             const e = event || (typeof window !== 'undefined' && window.event);
             const target = e.target || e.srcElement;
-            const BLACKLIST = [
-              'SVG',
-              'BUTTON',
-              'PATH',
-              'INPUT',
-              'SPAN',
-              'LABEL',
-            ];
+            const BLACKLIST = ['SVG', 'BUTTON', 'PATH', 'INPUT', 'SPAN', 'LABEL'];
             if (BLACKLIST.includes(target.tagName.toUpperCase())) {
               return false;
             }

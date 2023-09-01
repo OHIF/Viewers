@@ -49,8 +49,7 @@ export default async function init({
     ...cornerstone.getConfiguration(),
     rendering: {
       ...cornerstone.getConfiguration().rendering,
-      strictZSpacingForVolumeViewport:
-        appConfig.strictZSpacingForVolumeViewport,
+      strictZSpacingForVolumeViewport: appConfig.strictZSpacingForVolumeViewport,
     },
   });
 
@@ -62,10 +61,7 @@ export default async function init({
 
   initCornerstoneTools();
 
-  Settings.getRuntimeSettings().set(
-    'useCursors',
-    Boolean(appConfig.useCursors)
-  );
+  Settings.getRuntimeSettings().set('useCursors', Boolean(appConfig.useCursors));
 
   const {
     userAuthenticationService,
@@ -84,10 +80,7 @@ export default async function init({
   window.extensionManager = extensionManager;
   window.commandsManager = commandsManager;
 
-  if (
-    appConfig.showWarningMessageForCrossOrigin &&
-    !window.crossOriginIsolated
-  ) {
+  if (appConfig.showWarningMessageForCrossOrigin && !window.crossOriginIsolated) {
     uiNotificationService.show({
       title: 'Cross Origin Isolation',
       message:
@@ -96,10 +89,7 @@ export default async function init({
     });
   }
 
-  if (
-    appConfig.showCPUFallbackMessage &&
-    cornerstone.getShouldUseCPURendering()
-  ) {
+  if (appConfig.showCPUFallbackMessage && cornerstone.getShouldUseCPURendering()) {
     _showCPURenderingModal(uiModalService, hangingProtocolService);
   }
 
@@ -166,8 +156,7 @@ export default async function init({
   initWADOImageLoader(userAuthenticationService, appConfig, extensionManager);
 
   /* Measurement Service */
-  this.measurementServiceSource =
-    connectToolsToMeasurementService(servicesManager);
+  this.measurementServiceSource = connectToolsToMeasurementService(servicesManager);
 
   initCineService(cineService);
 
@@ -177,11 +166,9 @@ export default async function init({
     volumeInputArrayMap => {
       for (const entry of volumeInputArrayMap.entries()) {
         const [viewportId, volumeInputArray] = entry;
-        const viewport =
-          cornerstoneViewportService.getCornerstoneViewport(viewportId);
+        const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
-        const ohifViewport =
-          cornerstoneViewportService.getViewportInfo(viewportId);
+        const ohifViewport = cornerstoneViewportService.getViewportInfo(viewportId);
 
         const { lutPresentationStore, positionPresentationStore } =
           stateSyncService.getState();
@@ -189,8 +176,7 @@ export default async function init({
         const presentations = {
           positionPresentation:
             positionPresentationStore[presentationIds?.positionPresentationId],
-          lutPresentation:
-            lutPresentationStore[presentationIds?.lutPresentationId],
+          lutPresentation: lutPresentationStore[presentationIds?.lutPresentationId],
         };
 
         cornerstoneViewportService.setVolumesForViewport(
@@ -220,8 +206,7 @@ export default async function init({
 
   const resetCrosshairs = evt => {
     const { element } = evt.detail;
-    const { viewportId, renderingEngineId } =
-      cornerstone.getEnabledElement(element);
+    const { viewportId, renderingEngineId } = cornerstone.getEnabledElement(element);
 
     const toolGroup = cornerstoneTools.ToolGroupManager.getToolGroupForViewport(
       viewportId,
@@ -247,10 +232,7 @@ export default async function init({
     const { element } = evt.detail;
     element.addEventListener(EVENTS.CAMERA_RESET, resetCrosshairs);
 
-    eventTarget.addEventListener(
-      EVENTS.STACK_VIEWPORT_NEW_STACK,
-      newStackCallback
-    );
+    eventTarget.addEventListener(EVENTS.STACK_VIEWPORT_NEW_STACK, newStackCallback);
   }
 
   function elementDisabledHandler(evt) {
@@ -265,10 +247,7 @@ export default async function init({
     // );
   }
 
-  eventTarget.addEventListener(
-    EVENTS.ELEMENT_ENABLED,
-    elementEnabledHandler.bind(null)
-  );
+  eventTarget.addEventListener(EVENTS.ELEMENT_ENABLED, elementEnabledHandler.bind(null));
 
   eventTarget.addEventListener(
     EVENTS.ELEMENT_DISABLED,
@@ -286,8 +265,7 @@ export default async function init({
 
       // check if reference lines are active
       const referenceLinesEnabled =
-        toolGroup._toolInstances['ReferenceLines'].mode ===
-        Enums.ToolModes.Enabled;
+        toolGroup._toolInstances['ReferenceLines'].mode === Enums.ToolModes.Enabled;
 
       if (!referenceLinesEnabled) {
         return;
@@ -312,10 +290,10 @@ function CPUModal() {
   return (
     <div>
       <p>
-        Your computer does not have enough GPU power to support the default GPU
-        rendering mode. OHIF has switched to CPU rendering mode. Please note
-        that CPU rendering does not support all features such as Volume
-        Rendering, Multiplanar Reconstruction, and Segmentation Overlays.
+        Your computer does not have enough GPU power to support the default GPU rendering
+        mode. OHIF has switched to CPU rendering mode. Please note that CPU rendering does
+        not support all features such as Volume Rendering, Multiplanar Reconstruction, and
+        Segmentation Overlays.
       </p>
     </div>
   );

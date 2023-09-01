@@ -54,9 +54,7 @@ function PatientInfo({
                 </span>
                 <div className="border-secondary-main mt-4 mb-4 flex border-b pb-4">
                   <div className={classnames(classes.firstRow)}>
-                    <span className={classnames(classes.infoHeader)}>
-                      {t('Sex')}
-                    </span>
+                    <span className={classnames(classes.infoHeader)}>{t('Sex')}</span>
                     <span
                       className={classnames(classes.infoText)}
                       title={patientSex}
@@ -65,9 +63,7 @@ function PatientInfo({
                     </span>
                   </div>
                   <div className={classnames(classes.row)}>
-                    <span className={classnames(classes.infoHeader)}>
-                      {t('Age')}
-                    </span>
+                    <span className={classnames(classes.infoHeader)}>{t('Age')}</span>
                     <span
                       className={classnames(classes.infoText)}
                       title={patientAge}
@@ -76,9 +72,7 @@ function PatientInfo({
                     </span>
                   </div>
                   <div className={classnames(classes.row)}>
-                    <span className={classnames(classes.infoHeader)}>
-                      {t('MRN')}
-                    </span>
+                    <span className={classnames(classes.infoHeader)}>{t('MRN')}</span>
                     <span
                       className={classnames(classes.infoText)}
                       title={MRN}
@@ -96,15 +90,11 @@ function PatientInfo({
                       className={classnames(classes.infoText)}
                       title={thickness}
                     >
-                      {thicknessUnits
-                        ? `${thickness}${thicknessUnits}`
-                        : `${thickness}`}
+                      {thicknessUnits ? `${thickness}${thicknessUnits}` : `${thickness}`}
                     </span>
                   </div>
                   <div className={classnames(classes.row)}>
-                    <span className={classnames(classes.infoHeader)}>
-                      {t('Spacing')}
-                    </span>
+                    <span className={classnames(classes.infoHeader)}>{t('Spacing')}</span>
                     <span
                       className={classnames(classes.infoText)}
                       title={spacing}
@@ -113,9 +103,7 @@ function PatientInfo({
                     </span>
                   </div>
                   <div className={classnames(classes.row)}>
-                    <span className={classnames(classes.infoHeader)}>
-                      {t('Scanner')}
-                    </span>
+                    <span className={classnames(classes.infoHeader)}>{t('Scanner')}</span>
                     <span
                       className={classnames(classes.infoText)}
                       title={scanner}

@@ -5,8 +5,7 @@ import { Icon } from '@ohif/ui';
 import { Types } from '@ohif/core';
 import ItemListComponent from './ItemListComponent';
 
-const NO_WRAP_ELLIPSIS_CLASS_NAMES =
-  'text-ellipsis whitespace-nowrap overflow-hidden';
+const NO_WRAP_ELLIPSIS_CLASS_NAMES = 'text-ellipsis whitespace-nowrap overflow-hidden';
 
 type DataSourceConfigurationModalComponentProps = {
   configurationAPI: Types.BaseDataSourceConfigurationAPI;
@@ -117,9 +116,7 @@ function DataSourceConfigurationModalComponent({
       : 'border border-dashed border-secondary-light';
 
   const getSelectedItemTextClasses = itemIndex =>
-    itemIndex <= selectedItems.length
-      ? 'text-primary-light'
-      : 'text-primary-active';
+    itemIndex <= selectedItems.length ? 'text-primary-light' : 'text-primary-active';
 
   const getErrorComponent = (): ReactElement => {
     return (
@@ -151,9 +148,7 @@ function DataSourceConfigurationModalComponent({
                 itemLabelIndex <= currentSelectedItemIndex
                   ? () => {
                       setShowFullConfig(false);
-                      setSelectedItems(theList =>
-                        theList.slice(0, itemLabelIndex)
-                      );
+                      setSelectedItems(theList => theList.slice(0, itemLabelIndex));
                     }
                   : undefined
               }

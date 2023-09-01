@@ -3,9 +3,7 @@ export function initCornerstoneToolsAliases() {
   cy.get('[data-cy="StackScroll"]').as('stackScrollBtn');
   cy.get('[data-cy="Zoom"]').as('zoomBtn');
   cy.get('[data-cy="WindowLevel-split-button-primary"]').as('wwwcBtnPrimary');
-  cy.get('[data-cy="WindowLevel-split-button-secondary"]').as(
-    'wwwcBtnSecondary'
-  );
+  cy.get('[data-cy="WindowLevel-split-button-secondary"]').as('wwwcBtnSecondary');
   cy.get('[data-cy="Pan"]').as('panBtn');
   cy.get('[data-cy="MeasurementTools-split-button-primary"]').as(
     'measurementToolsBtnPrimary'
@@ -37,12 +35,8 @@ export function initCommonElementsAliases() {
   cy.get('[data-cy="studyBrowser-panel"]').as('seriesPanel');
   cy.get('[data-cy="viewport-overlay-top-right"]').as('viewportInfoTopRight');
   cy.get('[data-cy="viewport-overlay-top-left"]').as('viewportInfoTopLeft');
-  cy.get('[data-cy="viewport-overlay-bottom-right"]').as(
-    'viewportInfoBottomRight'
-  );
-  cy.get('[data-cy="viewport-overlay-bottom-left"]').as(
-    'viewportInfoBottomLeft'
-  );
+  cy.get('[data-cy="viewport-overlay-bottom-right"]').as('viewportInfoBottomRight');
+  cy.get('[data-cy="viewport-overlay-bottom-left"]').as('viewportInfoBottomLeft');
 
   cy.get('.left-mid.orientation-marker').as('viewportInfoMidLeft');
   cy.get('.top-mid.orientation-marker').as('viewportInfoMidTop');
@@ -50,9 +44,7 @@ export function initCommonElementsAliases() {
 
 //Creating aliases for Routes
 export function initRouteAliases() {
-  cy.intercept('GET', '**/series**', { statusCode: 200, body: [] }).as(
-    'getStudySeries'
-  );
+  cy.intercept('GET', '**/series**', { statusCode: 200, body: [] }).as('getStudySeries');
 
   // Todo: for some reason cypress does not redirect to the correct url
   // so we intercept the request and redirect it to the correct url

@@ -41,10 +41,8 @@ Footer.propTypes = {
       id: PropTypes.string.isRequired,
       text: PropTypes.string.isRequired,
       value: PropTypes.any,
-      type: PropTypes.oneOf([
-        ButtonEnums.type.primary,
-        ButtonEnums.type.secondary,
-      ]).isRequired,
+      type: PropTypes.oneOf([ButtonEnums.type.primary, ButtonEnums.type.secondary])
+        .isRequired,
       classes: PropTypes.arrayOf(PropTypes.string),
     })
   ).isRequired,

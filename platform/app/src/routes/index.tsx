@@ -34,8 +34,8 @@ const NotFoundStudy = () => {
     <div className="absolute flex h-full w-full items-center justify-center text-white">
       <div>
         <h4>
-          One or more of the requested studies are not available at this time.
-          Return to the{' '}
+          One or more of the requested studies are not available at this time. Return to
+          the{' '}
           <Link
             className="text-primary-light"
             to={'/'}
@@ -109,8 +109,7 @@ const createRoutes = ({
     props: { children: WorkList, servicesManager, extensionManager },
   };
 
-  const customRoutes =
-    customizationService.getGlobalCustomization('customRoutes');
+  const customRoutes = customizationService.getGlobalCustomization('customRoutes');
   const allRoutes = [
     ...routes,
     ...(showStudyList ? [WorkListRoute] : []),
@@ -152,9 +151,7 @@ const createRoutes = ({
             path={route.path}
             element={
               <PrivateRoute
-                handleUnauthenticated={
-                  userAuthenticationService.handleUnauthenticated
-                }
+                handleUnauthenticated={userAuthenticationService.handleUnauthenticated}
               >
                 <RouteWithErrorBoundary route={route} />
               </PrivateRoute>

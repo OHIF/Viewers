@@ -7,8 +7,7 @@ const fs = require('fs');
 const webpack = require('webpack');
 
 // ~~ PLUGINS
-const BundleAnalyzerPlugin =
-  require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const TerserJSPlugin = require('terser-webpack-plugin');
 
 // ~~ PackageJSON
@@ -29,8 +28,7 @@ const BUILD_NUM = process.env.CIRCLE_BUILD_NUM || '0';
 const VERSION_NUMBER =
   fs.readFileSync(path.join(__dirname, '../version.txt'), 'utf8') || '';
 
-const COMMIT_HASH =
-  fs.readFileSync(path.join(__dirname, '../commit.txt'), 'utf8') || '';
+const COMMIT_HASH = fs.readFileSync(path.join(__dirname, '../commit.txt'), 'utf8') || '';
 
 //
 dotenv.config();
@@ -105,10 +103,7 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
       alias: {
         // Viewer project
         '@': path.resolve(__dirname, '../platform/app/src'),
-        '@components': path.resolve(
-          __dirname,
-          '../platform/app/src/components'
-        ),
+        '@components': path.resolve(__dirname, '../platform/app/src/components'),
         '@hooks': path.resolve(__dirname, '../platform/app/src/hooks'),
         '@routes': path.resolve(__dirname, '../platform/app/src/routes'),
         '@state': path.resolve(__dirname, '../platform/app/src/state'),
@@ -153,9 +148,7 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
         'process.env.LOCIZE_PROJECTID': JSON.stringify(
           process.env.LOCIZE_PROJECTID || ''
         ),
-        'process.env.LOCIZE_API_KEY': JSON.stringify(
-          process.env.LOCIZE_API_KEY || ''
-        ),
+        'process.env.LOCIZE_API_KEY': JSON.stringify(process.env.LOCIZE_API_KEY || ''),
         'process.env.REACT_APP_I18N_DEBUG': JSON.stringify(
           process.env.REACT_APP_I18N_DEBUG || ''
         ),

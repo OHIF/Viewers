@@ -55,13 +55,9 @@ function VOIOverlayItem({ voi, customization }: OverlayItemProps) {
       style={{ color: (customization && customization.color) || undefined }}
     >
       <span className="mr-1 shrink-0">W:</span>
-      <span className="ml-1 mr-2 shrink-0 font-light">
-        {windowWidth.toFixed(0)}
-      </span>
+      <span className="ml-1 mr-2 shrink-0 font-light">{windowWidth.toFixed(0)}</span>
       <span className="mr-1 shrink-0">L:</span>
-      <span className="ml-1 shrink-0 font-light">
-        {windowCenter.toFixed(0)}
-      </span>
+      <span className="ml-1 shrink-0 font-light">{windowCenter.toFixed(0)}</span>
     </div>
   );
 }
@@ -201,8 +197,7 @@ function CustomizableViewportOverlay({
         previousCamera.parallelScale !== camera.parallelScale ||
         previousCamera.scale !== camera.scale
       ) {
-        const viewport =
-          cornerstoneViewportService.getCornerstoneViewport(viewportId);
+        const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
         if (!viewport) {
           return;
@@ -221,8 +216,7 @@ function CustomizableViewportOverlay({
 
         const { spacing } = imageData;
         // convert parallel scale to scale
-        const scale =
-          (element.clientHeight * spacing[0] * 0.5) / camera.parallelScale;
+        const scale = (element.clientHeight * spacing[0] * 0.5) / camera.parallelScale;
         setScale(scale);
       }
     };
@@ -338,9 +332,7 @@ function CustomizableViewportOverlay({
     return (
       <>
         {items.map((item, i) => (
-          <div key={`bottomLeftOverlayItem_${i}`}>
-            {_renderOverlayItem(item)}
-          </div>
+          <div key={`bottomLeftOverlayItem_${i}`}>{_renderOverlayItem(item)}</div>
         ))}
       </>
     );
@@ -351,9 +343,7 @@ function CustomizableViewportOverlay({
     return (
       <>
         {items.map((item, i) => (
-          <div key={`bottomRightOverlayItem_${i}`}>
-            {_renderOverlayItem(item)}
-          </div>
+          <div key={`bottomRightOverlayItem_${i}`}>{_renderOverlayItem(item)}</div>
         ))}
       </>
     );
@@ -470,8 +460,7 @@ function _getInstanceNumberFromVolume(
       return {};
     }
 
-    const { instanceNumber } =
-      metaData.get('generalImageModule', imageId) || {};
+    const { instanceNumber } = metaData.get('generalImageModule', imageId) || {};
     return parseInt(instanceNumber);
   }
 }

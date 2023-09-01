@@ -27,8 +27,7 @@ const SnackbarItem = ({ options, onClose }) => {
     [SnackbarTypes.ERROR]: 'bg-[#dabdbe]',
   };
 
-  const hidden =
-    'duration-300 transition-all ease-in-out h-0 opacity-0 pt-0 mb-0 pb-0';
+  const hidden = 'duration-300 transition-all ease-in-out h-0 opacity-0 pt-0 mb-0 pb-0';
 
   return (
     <div
@@ -50,9 +49,7 @@ const SnackbarItem = ({ options, onClose }) => {
             </div>
           )}
           {options.message && (
-            <div className="break-normal text-base text-black">
-              {options.message}
-            </div>
+            <div className="break-normal text-base text-black">{options.message}</div>
           )}
         </div>
         <div

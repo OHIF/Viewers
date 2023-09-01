@@ -16,10 +16,7 @@ async function run() {
 
   console.log('Current version:', currentVersion);
 
-  const { stdout: currentCommitHash } = await execa('git', [
-    'rev-parse',
-    'HEAD',
-  ]);
+  const { stdout: currentCommitHash } = await execa('git', ['rev-parse', 'HEAD']);
   console.log('Current commit hash:', currentCommitHash);
 
   const { stdout: lastCommitMessage } = await execa('git', [
@@ -40,11 +37,7 @@ async function run() {
     const isBumpBeta = lastCommitMessage.trim().endsWith('[BUMP BETA]');
     console.log('isBumpBeta', isBumpBeta);
 
-    if (
-      prereleaseComponents &&
-      prereleaseComponents.includes('beta') &&
-      !isBumpBeta
-    ) {
+    if (prereleaseComponents && prereleaseComponents.includes('beta') && !isBumpBeta) {
       nextVersion = semver.inc(currentVersion, 'prerelease', 'beta');
     } else if (isBumpBeta && prereleaseComponents.includes('beta')) {
       console.log('Bumping beta version to be fresh beta');

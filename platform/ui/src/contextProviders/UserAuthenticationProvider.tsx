@@ -46,10 +46,7 @@ export function UserAuthenticationProvider({ children, service }) {
     DEFAULT_STATE
   );
 
-  const getState = useCallback(
-    () => userAuthenticationState,
-    [userAuthenticationState]
-  );
+  const getState = useCallback(() => userAuthenticationState, [userAuthenticationState]);
 
   const setUser = useCallback(
     user =>
@@ -145,5 +142,4 @@ UserAuthenticationProvider.propTypes = {
   }).isRequired,
 };
 
-export const useUserAuthentication = () =>
-  useContext(UserAuthenticationContext);
+export const useUserAuthentication = () => useContext(UserAuthenticationContext);

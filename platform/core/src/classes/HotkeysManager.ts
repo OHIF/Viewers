@@ -174,14 +174,7 @@ export class HotkeysManager {
    * @returns {undefined}
    */
   registerHotkeys(
-    {
-      commandName,
-      commandOptions = {},
-      context,
-      keys,
-      label,
-      isEditable,
-    }: Hotkey = {},
+    { commandName, commandOptions = {}, context, keys, label, isEditable }: Hotkey = {},
     extension
   ) {
     if (!commandName) {
@@ -255,11 +248,7 @@ export class HotkeysManager {
     hotkeys.bind(combinedKeys, evt => {
       evt.preventDefault();
       evt.stopPropagation();
-      this._commandsManager.runCommand(
-        commandName,
-        { evt, ...commandOptions },
-        context
-      );
+      this._commandsManager.runCommand(commandName, { evt, ...commandOptions }, context);
     });
   }
 

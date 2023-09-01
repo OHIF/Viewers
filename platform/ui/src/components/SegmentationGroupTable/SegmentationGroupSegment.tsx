@@ -58,8 +58,7 @@ const SegmentItem = ({
               isActive,
             'rounded-l-sm  border-l border-l-[#1d3c58] bg-[#1d3c58]':
               !isActive && isHovering,
-            'bg-primary-dark text-aqua-pale':
-              !isActive && !isHovering && isVisible,
+            'bg-primary-dark text-aqua-pale': !isActive && !isHovering && isVisible,
             'bg-[#140e2e] text-[#537594] opacity-60': !isActive && !isVisible,
           }
         )}
@@ -76,9 +75,7 @@ const SegmentItem = ({
             }}
           />
         ) : (
-          <div className={classnames('flex items-center pr-2 ')}>
-            {segmentIndex}
-          </div>
+          <div className={classnames('flex items-center pr-2 ')}>{segmentIndex}</div>
         )}
       </div>
       <div

@@ -7,9 +7,7 @@ import {
 
 const metadataProvider = OHIF.classes.MetadataProvider;
 
-export default function getPTImageIdInstanceMetadata(
-  imageId: string
-): InstanceMetadata {
+export default function getPTImageIdInstanceMetadata(imageId: string): InstanceMetadata {
   const dicomMetaData = metadataProvider.get('instance', imageId);
 
   if (!dicomMetaData) {
@@ -22,10 +20,10 @@ export default function getPTImageIdInstanceMetadata(
     dicomMetaData.CorrectedImage === undefined ||
     dicomMetaData.Units === undefined ||
     !dicomMetaData.RadiopharmaceuticalInformationSequence ||
-    dicomMetaData.RadiopharmaceuticalInformationSequence[0]
-      .RadionuclideHalfLife === undefined ||
-    dicomMetaData.RadiopharmaceuticalInformationSequence[0]
-      .RadionuclideTotalDose === undefined ||
+    dicomMetaData.RadiopharmaceuticalInformationSequence[0].RadionuclideHalfLife ===
+      undefined ||
+    dicomMetaData.RadiopharmaceuticalInformationSequence[0].RadionuclideTotalDose ===
+      undefined ||
     dicomMetaData.DecayCorrection === undefined ||
     dicomMetaData.AcquisitionDate === undefined ||
     dicomMetaData.AcquisitionTime === undefined ||
@@ -45,11 +43,9 @@ export default function getPTImageIdInstanceMetadata(
     CorrectedImage: dicomMetaData.CorrectedImage,
     Units: dicomMetaData.Units,
     RadionuclideHalfLife:
-      dicomMetaData.RadiopharmaceuticalInformationSequence[0]
-        .RadionuclideHalfLife,
+      dicomMetaData.RadiopharmaceuticalInformationSequence[0].RadionuclideHalfLife,
     RadionuclideTotalDose:
-      dicomMetaData.RadiopharmaceuticalInformationSequence[0]
-        .RadionuclideTotalDose,
+      dicomMetaData.RadiopharmaceuticalInformationSequence[0].RadionuclideTotalDose,
     RadiopharmaceuticalStartDateTime:
       dicomMetaData.RadiopharmaceuticalInformationSequence[0]
         .RadiopharmaceuticalStartDateTime,
@@ -111,10 +107,7 @@ function convertInterfaceTimeToString(time): string {
   const minutes = `${time.minutes || '00'}`.padStart(2, '0');
   const seconds = `${time.seconds || '00'}`.padStart(2, '0');
 
-  const fractionalSeconds = `${time.fractionalSeconds || '000000'}`.padEnd(
-    6,
-    '0'
-  );
+  const fractionalSeconds = `${time.fractionalSeconds || '000000'}`.padEnd(6, '0');
 
   const timeString = `${hours}${minutes}${seconds}.${fractionalSeconds}`;
   return timeString;

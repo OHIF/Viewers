@@ -67,10 +67,9 @@ function Local({ modePath }: LocalProps) {
   const firstLocalDataSource = localDataSources[0];
   const dataSource = firstLocalDataSource.createDataSource({});
 
-  const microscopyExtensionLoaded =
-    extensionManager.registeredExtensionIds.includes(
-      '@ohif/extension-dicom-microscopy'
-    );
+  const microscopyExtensionLoaded = extensionManager.registeredExtensionIds.includes(
+    '@ohif/extension-dicom-microscopy'
+  );
 
   const onDrop = async acceptedFiles => {
     const studies = await filesToStudies(acceptedFiles, dataSource);
@@ -136,15 +135,13 @@ function Local({ modePath }: LocalProps) {
               <div className="space-y-2 pt-4 text-center">
                 {dropInitiated ? (
                   <div className="flex flex-col items-center justify-center pt-48">
-                    <LoadingIndicatorProgress
-                      className={'h-full w-full bg-black'}
-                    />
+                    <LoadingIndicatorProgress className={'h-full w-full bg-black'} />
                   </div>
                 ) : (
                   <div className="space-y-2">
                     <p className="text-base text-blue-300">
-                      Note: You data is not uploaded to any server, it will stay
-                      in your local browser application
+                      Note: You data is not uploaded to any server, it will stay in your
+                      local browser application
                     </p>
                     <p className="text-xg text-primary-active pt-6 font-semibold">
                       Drag and Drop DICOM files here to load them in the Viewer

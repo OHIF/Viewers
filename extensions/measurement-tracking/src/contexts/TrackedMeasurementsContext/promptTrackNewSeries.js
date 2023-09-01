@@ -37,8 +37,7 @@ function promptTrackNewSeries({ servicesManager, extensionManager }, ctx, evt) {
 
 function _askShouldAddMeasurements(uiViewportDialogService, viewportId) {
   return new Promise(function (resolve, reject) {
-    const message =
-      'Do you want to add this measurement to the existing report?';
+    const message = 'Do you want to add this measurement to the existing report?';
     const actions = [
       {
         type: ButtonEnums.type.secondary,

@@ -24,9 +24,7 @@ function LoadingIndicatorTotalPercent({
   const progress = percentComplete;
   const totalNumbersText = totalNumbers !== null ? `${totalNumbers}` : '';
   const numTargetsLoadedText =
-    percentComplete !== null
-      ? Math.floor((percentComplete * totalNumbers) / 100)
-      : '';
+    percentComplete !== null ? Math.floor((percentComplete * totalNumbers) / 100) : '';
 
   const textBlock =
     !totalNumbers && percentComplete === null ? (

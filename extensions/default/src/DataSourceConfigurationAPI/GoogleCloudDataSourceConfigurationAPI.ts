@@ -47,8 +47,7 @@ class GoogleCloudDataSourceConfigurationAPI
   constructor(dataSourceName, servicesManager, extensionManager) {
     this._dataSourceName = dataSourceName;
     this._extensionManager = extensionManager;
-    const userAuthenticationService =
-      servicesManager.services.userAuthenticationService;
+    const userAuthenticationService = servicesManager.services.userAuthenticationService;
     this._fetchOptions = {
       method: 'GET',
       headers: userAuthenticationService.getAuthorizationHeader(),
@@ -115,12 +114,11 @@ class GoogleCloudDataSourceConfigurationAPI
 
     const url = `${googleCloudItem.url}/${subItemField}`;
 
-    const fetchedSubItems =
-      await GoogleCloudDataSourceConfigurationAPI._doFetch(
-        url,
-        subItemType,
-        this._fetchOptions
-      );
+    const fetchedSubItems = await GoogleCloudDataSourceConfigurationAPI._doFetch(
+      url,
+      subItemType,
+      this._fetchOptions
+    );
 
     if (!fetchedSubItems?.length) {
       return [];
@@ -139,9 +137,7 @@ class GoogleCloudDataSourceConfigurationAPI
     return subItems;
   }
 
-  async getConfiguredItems(): Promise<
-    Array<GoogleCloudDataSourceConfigurationAPIItem>
-  > {
+  async getConfiguredItems(): Promise<Array<GoogleCloudDataSourceConfigurationAPIItem>> {
     const dataSourceDefinition = this._extensionManager.getDataSourceDefinition(
       this._dataSourceName
     );

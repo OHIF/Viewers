@@ -175,24 +175,14 @@ function getFormattedRowsFromTags(tags, metadata) {
 
   tags.forEach(tagInfo => {
     if (tagInfo.vr === 'SQ') {
-      rows.push([
-        `${tagInfo.tagIndent}${tagInfo.tag}`,
-        tagInfo.vr,
-        tagInfo.keyword,
-        '',
-      ]);
+      rows.push([`${tagInfo.tagIndent}${tagInfo.tag}`, tagInfo.vr, tagInfo.keyword, '']);
 
       const { values } = tagInfo;
 
       values.forEach((item, index) => {
         const formatedRowsFromTags = getFormattedRowsFromTags(item, metadata);
 
-        rows.push([
-          `${item[0].tagIndent}(FFFE,E000)`,
-          '',
-          `Item #${index}`,
-          '',
-        ]);
+        rows.push([`${item[0].tagIndent}(FFFE,E000)`, '', `Item #${index}`, '']);
 
         rows.push(...formatedRowsFromTags);
       });

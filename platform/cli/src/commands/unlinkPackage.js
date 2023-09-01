@@ -19,11 +19,7 @@ const linkPackage = async (packageName, options, removeFromConfig) => {
   const results = await execa(`yarn`, ['unlink', packageName]);
   console.log(results.stdout);
 
-  const webpackPwaPath = path.join(
-    viewerDirectory,
-    '.webpack',
-    'webpack.pwa.js'
-  );
+  const webpackPwaPath = path.join(viewerDirectory, '.webpack', 'webpack.pwa.js');
 
   await removePathFromWebpackConfig(webpackPwaPath, packageName);
 

@@ -1,10 +1,4 @@
-import React, {
-  ReactElement,
-  memo,
-  useCallback,
-  useEffect,
-  useState,
-} from 'react';
+import React, { ReactElement, memo, useCallback, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import DicomFileUploader, {
   DicomFileUploaderProgressEvent,

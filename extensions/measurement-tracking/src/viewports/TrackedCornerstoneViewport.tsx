@@ -13,27 +13,18 @@ import { BaseVolumeViewport, Enums } from '@cornerstonejs/core';
 const { formatDate } = utils;
 
 function TrackedCornerstoneViewport(props) {
-  const {
-    displaySets,
-    viewportId,
-    viewportLabel,
-    servicesManager,
-    extensionManager,
-  } = props;
+  const { displaySets, viewportId, viewportLabel, servicesManager, extensionManager } =
+    props;
 
   const { t } = useTranslation('Common');
 
-  const {
-    measurementService,
-    cornerstoneViewportService,
-    viewportGridService,
-  } = servicesManager.services;
+  const { measurementService, cornerstoneViewportService, viewportGridService } =
+    servicesManager.services;
 
   // Todo: handling more than one displaySet on the same viewport
   const displaySet = displaySets[0];
 
-  const [trackedMeasurements, sendTrackedMeasurementsEvent] =
-    useTrackedMeasurements();
+  const [trackedMeasurements, sendTrackedMeasurementsEvent] = useTrackedMeasurements();
 
   const [isTracked, setIsTracked] = useState(false);
   const [trackedMeasurementUID, setTrackedMeasurementUID] = useState(null);
@@ -41,8 +32,7 @@ function TrackedCornerstoneViewport(props) {
 
   const { trackedSeries } = trackedMeasurements.context;
 
-  const { SeriesDate, SeriesDescription, SeriesInstanceUID, SeriesNumber } =
-    displaySet;
+  const { SeriesDate, SeriesDescription, SeriesInstanceUID, SeriesNumber } = displaySet;
 
   const {
     PatientID,
@@ -56,8 +46,7 @@ function TrackedCornerstoneViewport(props) {
   } = displaySet.images[0];
 
   const updateIsTracked = useCallback(() => {
-    const viewport =
-      cornerstoneViewportService.getCornerstoneViewport(viewportId);
+    const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
     if (viewport instanceof BaseVolumeViewport) {
       // A current image id will only exist for volume viewports that can have measurements tracked.
@@ -125,9 +114,7 @@ function TrackedCornerstoneViewport(props) {
         },
       });
 
-      cornerstoneViewportService
-        .getRenderingEngine()
-        .renderViewport(viewportId);
+      cornerstoneViewportService.getRenderingEngine().renderViewport(viewportId);
 
       return;
     }
@@ -187,12 +174,7 @@ function TrackedCornerstoneViewport(props) {
         unsub();
       });
     };
-  }, [
-    measurementService,
-    sendTrackedMeasurementsEvent,
-    viewportId,
-    viewportGridService,
-  ]);
+  }, [measurementService, sendTrackedMeasurementsEvent, viewportId, viewportGridService]);
 
   function switchMeasurement(direction) {
     const newTrackedMeasurementUID = _getNextMeasurementUID(
@@ -237,8 +219,7 @@ function TrackedCornerstoneViewport(props) {
         getStatusComponent={() => _getStatusComponent(isTracked)}
         studyData={{
           label: viewportLabel,
-          studyDate:
-            formatDate(SeriesDate) || formatDate(StudyDate) || t('NoStudyDate'),
+          studyDate: formatDate(SeriesDate) || formatDate(StudyDate) || t('NoStudyDate'),
           currentSeries: SeriesNumber, // TODO - switch entire currentSeries to be UID based or actual position based
           seriesDescription: SeriesDescription,
           patientInformation: {
@@ -246,9 +227,7 @@ function TrackedCornerstoneViewport(props) {
             patientSex: PatientSex || '',
             patientAge: PatientAge || '',
             MRN: PatientID || '',
-            thickness: SliceThickness
-              ? `${parseFloat(SliceThickness).toFixed(2)}`
-              : '',
+            thickness: SliceThickness ? `${parseFloat(SliceThickness).toFixed(2)}` : '',
             thicknessUnits: 'mm',
             spacing:
               SpacingBetweenSlices !== undefined
@@ -358,15 +337,14 @@ function _getStatusComponent(isTracked) {
                 {isTracked ? (
                   <>
                     Series is
-                    <span className="font-bold text-white"> tracked</span> and
-                    can be viewed <br /> in the measurement panel
+                    <span className="font-bold text-white"> tracked</span> and can be
+                    viewed <br /> in the measurement panel
                   </>
                 ) : (
                   <>
                     Measurements for
                     <span className="font-bold text-white"> untracked </span>
-                    series <br /> will not be shown in the <br /> measurements
-                    panel
+                    series <br /> will not be shown in the <br /> measurements panel
                   </>
                 )}
               </span>

@@ -18,9 +18,7 @@ export function ImageViewerProvider({
   }, [StudyInstanceUIDs]);
 
   return (
-    <ImageViewerContext.Provider value={value}>
-      {children}
-    </ImageViewerContext.Provider>
+    <ImageViewerContext.Provider value={value}>{children}</ImageViewerContext.Provider>
   );
 }
 

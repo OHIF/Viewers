@@ -46,8 +46,7 @@ const variantClasses = {
   contained: {
     default: 'text-black hover:opacity-80 active:opacity-100 focus:opacity-80',
     primary: 'text-white hover:opacity-80 active:opacity-100 focus:opacity-80',
-    secondary:
-      'text-white hover:opacity-80 active:opacity-100 focus:opacity-80',
+    secondary: 'text-white hover:opacity-80 active:opacity-100 focus:opacity-80',
     white: 'text-black hover:opacity-80 active:opacity-100 focus:opacity-80',
     black: 'text-white hover:opacity-80 active:opacity-100 focus:opacity-80',
   },

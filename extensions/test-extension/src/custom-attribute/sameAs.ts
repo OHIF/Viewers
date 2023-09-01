@@ -27,12 +27,7 @@ export default function (displaySet, options) {
     it => it.displaySetInstanceUID == displaySetInstanceUID
   );
   if (!altDisplaySet) {
-    console.log(
-      'No display set found with',
-      displaySetInstanceUID,
-      'in',
-      displaySets
-    );
+    console.log('No display set found with', displaySetInstanceUID, 'in', displaySets);
     return false;
   }
   const testValue = altDisplaySet[sameAttribute];

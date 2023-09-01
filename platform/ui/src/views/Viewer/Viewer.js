@@ -33,9 +33,7 @@ const Viewer = () => {
             componentLabel="Measurements"
             defaultIsOpen={false}
           >
-            <div className="flex justify-center p-2 text-white">
-              panel placeholder
-            </div>
+            <div className="flex justify-center p-2 text-white">panel placeholder</div>
           </SidePanel>
         </div>
       </div>

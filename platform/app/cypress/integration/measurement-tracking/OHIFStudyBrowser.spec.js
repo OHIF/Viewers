@@ -1,8 +1,6 @@
 describe('OHIF Study Viewer Page', function () {
   beforeEach(function () {
-    cy.checkStudyRouteInViewer(
-      '1.2.840.113619.2.5.1762583153.215519.978957063.78'
-    );
+    cy.checkStudyRouteInViewer('1.2.840.113619.2.5.1762583153.215519.978957063.78');
 
     cy.expectMinimumThumbnails(3);
     cy.initCommonElementsAliases();
@@ -11,9 +9,7 @@ describe('OHIF Study Viewer Page', function () {
   });
 
   it('checks if series thumbnails are being displayed', function () {
-    cy.get('[data-cy="study-browser-thumbnail"]')
-      .its('length')
-      .should('be.gt', 1);
+    cy.get('[data-cy="study-browser-thumbnail"]').its('length').should('be.gt', 1);
   });
 
   it('drags and drop a series thumbnail into viewport', function () {

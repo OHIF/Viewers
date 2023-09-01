@@ -55,11 +55,9 @@ const InputRange: React.FC<{
     [onChange, setRangeValue]
   );
 
-  const rangeValuePercentage =
-    ((rangeValue - minValue) / (maxValue - minValue)) * 100;
+  const rangeValuePercentage = ((rangeValue - minValue) / (maxValue - minValue)) * 100;
 
-  const rangeValueForStr =
-    step >= 1 ? rangeValue.toFixed(0) : rangeValue.toFixed(1);
+  const rangeValueForStr = step >= 1 ? rangeValue.toFixed(0) : rangeValue.toFixed(1);
 
   return (
     <div

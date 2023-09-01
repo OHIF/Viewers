@@ -35,10 +35,7 @@ const getDirectURL = (config, params) => {
     value.DirectRetrieveURL = URL.createObjectURL(blob);
     return value.DirectRetrieveURL;
   }
-  if (
-    !singlepart ||
-    (singlepart !== true && singlepart.indexOf(fetchPart) === -1)
-  ) {
+  if (!singlepart || (singlepart !== true && singlepart.indexOf(fetchPart) === -1)) {
     if (value.retrieveBulkData) {
       return value.retrieveBulkData().then(arr => {
         value.DirectRetrieveURL = URL.createObjectURL(
@@ -58,8 +55,7 @@ const getDirectURL = (config, params) => {
   const hasQuery = BulkDataURI.indexOf('?') !== -1;
   const hasAccept = BulkDataURI.indexOf('accept=') !== -1;
   const acceptUri =
-    BulkDataURI +
-    (hasAccept ? '' : (hasQuery ? '&' : '?') + `accept=${defaultType}`);
+    BulkDataURI + (hasAccept ? '' : (hasQuery ? '&' : '?') + `accept=${defaultType}`);
 
   if (tag === 'PixelData' || tag === 'EncapsulatedDocument') {
     return `${wadoRoot}/studies/${StudyInstanceUID}/series/${SeriesInstanceUID}/instances/${SOPInstanceUID}/rendered`;

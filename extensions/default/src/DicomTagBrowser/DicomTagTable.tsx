@@ -26,9 +26,7 @@ function ColumnHeaders({ tagRef, vrRef, keywordRef, valueRef }) {
           ref={tagRef}
           className="flex flex-1 select-none flex-col pl-1 text-lg text-white"
         >
-          <span className="flex flex-row items-center focus:outline-none">
-            Tag
-          </span>
+          <span className="flex flex-row items-center focus:outline-none">Tag</span>
         </label>
       </div>
       <div className="w-2/24 px-3">
@@ -36,9 +34,7 @@ function ColumnHeaders({ tagRef, vrRef, keywordRef, valueRef }) {
           ref={vrRef}
           className="flex flex-1 select-none flex-col pl-1 text-lg text-white"
         >
-          <span className="flex flex-row items-center focus:outline-none">
-            VR
-          </span>
+          <span className="flex flex-row items-center focus:outline-none">VR</span>
         </label>
       </div>
       <div className="w-6/24 px-3">
@@ -46,9 +42,7 @@ function ColumnHeaders({ tagRef, vrRef, keywordRef, valueRef }) {
           ref={keywordRef}
           className="flex flex-1 select-none flex-col pl-1 text-lg text-white"
         >
-          <span className="flex flex-row items-center focus:outline-none">
-            Keyword
-          </span>
+          <span className="flex flex-row items-center focus:outline-none">Keyword</span>
         </label>
       </div>
       <div className="w-5/24 grow px-3">
@@ -56,9 +50,7 @@ function ColumnHeaders({ tagRef, vrRef, keywordRef, valueRef }) {
           ref={valueRef}
           className="flex flex-1 select-none flex-col pl-1 text-lg text-white"
         >
-          <span className="flex flex-row items-center focus:outline-none">
-            Value
-          </span>
+          <span className="flex flex-row items-center focus:outline-none">Value</span>
         </label>
       </div>
     </div>
@@ -114,10 +106,7 @@ function DicomTagTable({ rows }) {
    * When the browser window resizes, update the row virtualization (i.e. row heights)
    */
   useEffect(() => {
-    const debouncedResize = debounce(
-      () => listRef.current.resetAfterIndex(0),
-      100
-    );
+    const debouncedResize = debounce(() => listRef.current.resetAfterIndex(0), 100);
 
     window.addEventListener('resize', debouncedResize);
 
@@ -154,10 +143,7 @@ function DicomTagTable({ rows }) {
    * Whenever any one of the column headers is set, then the header is rendered.
    * Here we chose the tag header.
    */
-  const isHeaderRendered = useCallback(
-    () => tagHeaderElem !== null,
-    [tagHeaderElem]
-  );
+  const isHeaderRendered = useCallback(() => tagHeaderElem !== null, [tagHeaderElem]);
 
   /**
    * Get the item/row size. We use the header column widths to calculate the various row heights.
@@ -180,11 +166,7 @@ function DicomTagTable({ rows }) {
         .map((colText, index) => {
           const colOneLineWidth = context.measureText(colText).width;
           const numLines = Math.ceil(colOneLineWidth / headerWidths[index]);
-          return (
-            numLines * lineHeightPx +
-            2 * rowVerticalPaddingPx +
-            rowBottomBorderPx
-          );
+          return numLines * lineHeightPx + 2 * rowVerticalPaddingPx + rowBottomBorderPx;
         })
         .reduce((maxHeight, colHeight) => Math.max(maxHeight, colHeight));
     },

@@ -194,14 +194,8 @@ describe('MeasurementService.js', () => {
         toSourceSchema,
         toMeasurement
       );
-      const measurementId = source.annotationToMeasurement(
-        annotationType,
-        annotation
-      );
-      const mappedAnnotation = source.getAnnotation(
-        annotationType,
-        measurementId
-      );
+      const measurementId = source.annotationToMeasurement(annotationType, annotation);
+      const mappedAnnotation = source.getAnnotation(annotationType, measurementId);
 
       expect(annotation).toBe(mappedAnnotation);
     });
@@ -214,14 +208,8 @@ describe('MeasurementService.js', () => {
         toSourceSchema,
         toMeasurement
       );
-      const measurementId = source.annotationToMeasurement(
-        annotationType,
-        annotation
-      );
-      const mappedAnnotation = source.getAnnotation(
-        annotationType,
-        measurementId
-      );
+      const measurementId = source.annotationToMeasurement(annotationType, annotation);
+      const mappedAnnotation = source.getAnnotation(annotationType, measurementId);
 
       expect(annotation).toBe(mappedAnnotation);
     });
@@ -323,9 +311,7 @@ describe('MeasurementService.js', () => {
 
       /* Add new measurement */
       source.annotationToMeasurement(annotationType, newMeasurement);
-      const savedMeasurement = measurementService.getMeasurement(
-        newMeasurement.uid
-      );
+      const savedMeasurement = measurementService.getMeasurement(newMeasurement.uid);
 
       /* Clear dynamic data */
       delete newMeasurement.modifiedTimestamp;
@@ -418,11 +404,7 @@ describe('MeasurementService.js', () => {
       const uid = source.annotationToMeasurement(annotationType, measurement);
 
       /* Update measurement */
-      source.annotationToMeasurement(
-        annotationType,
-        { uid, ...measurement },
-        true
-      );
+      source.annotationToMeasurement(annotationType, { uid, ...measurement }, true);
 
       expect(updateCallbackWasCalled).toBe(true);
     });

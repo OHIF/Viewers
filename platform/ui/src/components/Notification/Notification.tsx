@@ -5,14 +5,7 @@ import PropTypes from 'prop-types';
 import Button, { ButtonEnums } from '../Button';
 import Icon from '../Icon';
 
-const Notification = ({
-  id,
-  type,
-  message,
-  actions,
-  onSubmit,
-  onOutsideClick,
-}) => {
+const Notification = ({ id, type, message, actions, onSubmit, onOutsideClick }) => {
   const notificationRef = useRef(null);
 
   useEffect(() => {
@@ -108,10 +101,8 @@ Notification.propTypes = {
     PropTypes.shape({
       text: PropTypes.string.isRequired,
       value: PropTypes.any.isRequired,
-      type: PropTypes.oneOf([
-        ButtonEnums.type.primary,
-        ButtonEnums.type.secondary,
-      ]).isRequired,
+      type: PropTypes.oneOf([ButtonEnums.type.primary, ButtonEnums.type.secondary])
+        .isRequired,
       size: PropTypes.oneOf([ButtonEnums.size.small, ButtonEnums.size.medium]),
     })
   ).isRequired,

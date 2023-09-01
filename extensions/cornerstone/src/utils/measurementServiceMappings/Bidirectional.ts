@@ -28,11 +28,7 @@ const Bidirectional = {
     }
 
     const { SOPInstanceUID, SeriesInstanceUID, StudyInstanceUID } =
-      getSOPInstanceAttributes(
-        referencedImageId,
-        cornerstoneViewportService,
-        viewportId
-      );
+      getSOPInstanceAttributes(referencedImageId, cornerstoneViewportService, viewportId);
 
     let displaySet;
 
@@ -47,14 +43,10 @@ const Bidirectional = {
 
     const { points } = data.handles;
 
-    const mappedAnnotations = getMappedAnnotations(
-      annotation,
-      displaySetService
-    );
+    const mappedAnnotations = getMappedAnnotations(annotation, displaySetService);
 
     const displayText = getDisplayText(mappedAnnotations, displaySet);
-    const getReport = () =>
-      _getReport(mappedAnnotations, points, FrameOfReferenceUID);
+    const getReport = () => _getReport(mappedAnnotations, points, FrameOfReferenceUID);
 
     return {
       uid: annotationUID,
@@ -91,9 +83,7 @@ function getMappedAnnotations(annotation, displaySetService) {
     const targetStats = cachedStats[targetId];
 
     if (!referencedImageId) {
-      throw new Error(
-        'Non-acquisition plane measurement mapping not supported'
-      );
+      throw new Error('Non-acquisition plane measurement mapping not supported');
     }
 
     const { SOPInstanceUID, SeriesInstanceUID, frameNumber } =

@@ -8,10 +8,7 @@ import { getSplitParam } from '../../../utils';
  */
 const isDisplaySetFromUrl = (displaySet): boolean => {
   const params = new URLSearchParams(window.location.search);
-  const initialSeriesInstanceUID = getSplitParam(
-    'initialseriesinstanceuid',
-    params
-  );
+  const initialSeriesInstanceUID = getSplitParam('initialseriesinstanceuid', params);
   const initialSOPInstanceUID = getSplitParam('initialsopinstanceuid', params);
   if (!initialSeriesInstanceUID && !initialSOPInstanceUID) {
     return false;

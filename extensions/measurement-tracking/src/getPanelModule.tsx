@@ -1,8 +1,5 @@
 import { Types } from '@ohif/core';
-import {
-  PanelMeasurementTableTracking,
-  PanelStudyBrowserTracking,
-} from './panels';
+import { PanelMeasurementTableTracking, PanelStudyBrowserTracking } from './panels';
 
 // TODO:
 // - No loading UI exists yet

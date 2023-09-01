@@ -102,8 +102,7 @@ const getPresentationIds = (viewport, viewports): PresentationIds => {
   if (!viewport) {
     return;
   }
-  const { viewportOptions, displaySetInstanceUIDs, displaySetOptions } =
-    viewport;
+  const { viewportOptions, displaySetInstanceUIDs, displaySetOptions } = viewport;
   if (!viewportOptions || !displaySetInstanceUIDs?.length) {
     return;
   }
@@ -126,8 +125,7 @@ const getPresentationIds = (viewport, viewports): PresentationIds => {
   const isUpdatingSameViewport = Array.from(viewports.values()).some(v => {
     return (
       v.displaySetInstanceUIDs.toString() ===
-        viewport.displaySetInstanceUIDs.toString() &&
-      v.viewportId === viewport.viewportId
+        viewport.displaySetInstanceUIDs.toString() && v.viewportId === viewport.viewportId
     );
   });
 

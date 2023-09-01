@@ -48,8 +48,7 @@ const SegmentationItem = ({
           'flex h-auto w-6 items-center justify-center text-center text-base transition duration-300',
           {
             'bg-primary-light text-black': isActive,
-            'bg-primary-dark text-primary-light group-hover:bg-secondary-main':
-              !isActive,
+            'bg-primary-dark text-primary-light group-hover:bg-secondary-main': !isActive,
           }
         )}
       >
@@ -131,10 +130,7 @@ const SegmentationItem = ({
 };
 
 SegmentationItem.propTypes = {
-  id: PropTypes.oneOfType([
-    PropTypes.number.isRequired,
-    PropTypes.string.isRequired,
-  ]),
+  id: PropTypes.oneOfType([PropTypes.number.isRequired, PropTypes.string.isRequired]),
   index: PropTypes.number.isRequired,
   label: PropTypes.string,
   displayText: PropTypes.arrayOf(PropTypes.string),

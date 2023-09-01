@@ -61,9 +61,7 @@ const getStudiesFromUIDs = (studyUids: string[]): StudyMetadata[] => {
 
 /** Gets the array of studies */
 const getStudies = (studyUids?: string[], displaySets): StudyMetadata[] => {
-  return (
-    getStudiesFromUIDs(studyUids) || getStudiesfromDisplaySets(displaySets)
-  );
+  return getStudiesFromUIDs(studyUids) || getStudiesfromDisplaySets(displaySets);
 };
 
 export default getStudies;

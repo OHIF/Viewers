@@ -90,8 +90,7 @@ function commandsModule({
 
     getNearbyToolData({ nearbyToolData, element, canvasCoordinates }) {
       return (
-        nearbyToolData ??
-        cstUtils.getAnnotationNearPoint(element, canvasCoordinates)
+        nearbyToolData ?? cstUtils.getAnnotationNearPoint(element, canvasCoordinates)
       );
     },
     getNearbyAnnotation({ element, canvasCoordinates }) {
@@ -153,11 +152,7 @@ function commandsModule({
             label,
           });
 
-          measurementService.update(
-            updatedMeasurement.uid,
-            updatedMeasurement,
-            true
-          );
+          measurementService.update(updatedMeasurement.uid, updatedMeasurement, true);
         },
         false
       );
@@ -211,29 +206,23 @@ function commandsModule({
         // TODO - remove this line once the measurements table customizations are in
         if (measurementKey !== 'finding') {
           if (updatedMeasurement.findingSites) {
-            updatedMeasurement.findingSites =
-              updatedMeasurement.findingSites.filter(
-                it => it.type !== measurementKey
-              );
+            updatedMeasurement.findingSites = updatedMeasurement.findingSites.filter(
+              it => it.type !== measurementKey
+            );
             updatedMeasurement.findingSites.push(code);
           } else {
             updatedMeasurement.findingSites = [code];
           }
         }
       }
-      measurementService.update(
-        updatedMeasurement.uid,
-        updatedMeasurement,
-        true
-      );
+      measurementService.update(updatedMeasurement.uid, updatedMeasurement, true);
     },
 
     // Retrieve value commands
     getActiveViewportEnabledElement: _getActiveViewportEnabledElement,
 
     setViewportActive: ({ viewportId }) => {
-      const viewportInfo =
-        cornerstoneViewportService.getViewportInfo(viewportId);
+      const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
       if (!viewportInfo) {
         console.warn('No viewport found for viewportId:', viewportId);
         return;
@@ -259,8 +248,7 @@ function commandsModule({
       const windowCenterNum = Number(level);
 
       const { viewportId } = _getActiveViewportEnabledElement();
-      const viewportToolGroupId =
-        toolGroupService.getToolGroupForViewport(viewportId);
+      const viewportToolGroupId = toolGroupService.getToolGroupForViewport(viewportId);
 
       if (toolGroupId && toolGroupId !== viewportToolGroupId) {
         return;
@@ -322,11 +310,9 @@ function commandsModule({
         return;
       }
 
-      const filteredViewports = Array.from(viewports.values()).filter(
-        viewport => {
-          return toolGroupViewportIds.includes(viewport.viewportId);
-        }
-      );
+      const filteredViewports = Array.from(viewports.values()).filter(viewport => {
+        return toolGroupViewportIds.includes(viewport.viewportId);
+      });
 
       if (!filteredViewports.length) {
         return;
@@ -366,9 +352,7 @@ function commandsModule({
     showDownloadViewportModal: () => {
       const { activeViewportId } = viewportGridService.getState();
 
-      if (
-        !cornerstoneViewportService.getCornerstoneViewport(activeViewportId)
-      ) {
+      if (!cornerstoneViewportService.getCornerstoneViewport(activeViewportId)) {
         // Cannot download a non-cornerstone viewport (image).
         uiNotificationService.show({
           title: 'Download Image',
@@ -507,9 +491,7 @@ function commandsModule({
         }
         viewport = enabledElement.viewport;
       } else {
-        viewport = cornerstoneViewportService.getCornerstoneViewport(
-          gridViewport.id
-        );
+        viewport = cornerstoneViewportService.getCornerstoneViewport(gridViewport.id);
       }
 
       // Get number of slices
@@ -525,8 +507,7 @@ function commandsModule({
         throw new Error('Unsupported viewport type');
       }
 
-      const jumpIndex =
-        imageIndex < 0 ? numberOfSlices + imageIndex : imageIndex;
+      const jumpIndex = imageIndex < 0 ? numberOfSlices + imageIndex : imageIndex;
       if (jumpIndex >= numberOfSlices || jumpIndex < 0) {
         throw new Error(`Can't jump to ${imageIndex}`);
       }
@@ -553,8 +534,7 @@ function commandsModule({
       colormap,
       immediate = false,
     }) => {
-      const viewport =
-        cornerstoneViewportService.getCornerstoneViewport(viewportId);
+      const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
       const actorEntries = viewport.getActors();
 
@@ -576,9 +556,7 @@ function commandsModule({
       const currentIndex = viewportIds.indexOf(activeViewportId);
       const nextViewportIndex =
         (currentIndex + direction + viewportIds.length) % viewportIds.length;
-      viewportGridService.setActiveViewportId(
-        viewportIds[nextViewportIndex] as string
-      );
+      viewportGridService.setActiveViewportId(viewportIds[nextViewportIndex] as string);
     },
 
     toggleStackImageSync: ({ toggledState }) => {
@@ -590,8 +568,7 @@ function commandsModule({
     },
     toggleReferenceLines: ({ toggledState }) => {
       const { activeViewportId } = viewportGridService.getState();
-      const viewportInfo =
-        cornerstoneViewportService.getViewportInfo(activeViewportId);
+      const viewportInfo = cornerstoneViewportService.getViewportInfo(activeViewportId);
 
       const viewportId = viewportInfo.getViewportId();
       const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);

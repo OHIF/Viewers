@@ -48,10 +48,7 @@ const ModalProvider = ({ children, modal: Modal, service }) => {
    * @param {ModalProps} props { content, contentProps, shouldCloseOnEsc, isOpen, closeButton, title, customClassName }
    * @returns void
    */
-  const show = useCallback(
-    props => setOptions({ ...options, ...props }),
-    [options]
-  );
+  const show = useCallback(props => setOptions({ ...options, ...props }), [options]);
 
   /**
    * Hide the modal and set its properties to default.
@@ -130,10 +127,8 @@ ModalProvider.defaultProps = {
 };
 
 ModalProvider.propTypes = {
-  children: PropTypes.oneOfType([
-    PropTypes.arrayOf(PropTypes.node),
-    PropTypes.node,
-  ]).isRequired,
+  children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node])
+    .isRequired,
   modal: PropTypes.oneOfType([
     PropTypes.arrayOf(PropTypes.node),
     PropTypes.node,

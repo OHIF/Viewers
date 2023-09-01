@@ -213,10 +213,7 @@ export default class CustomizationService extends PubSubService {
    * the modes.  They include things like settings for the search screen.
    * Reset does NOT clear global customizations.
    */
-  getGlobalCustomization(
-    id: string,
-    defaultValue?: Customization
-  ): Customization | void {
+  getGlobalCustomization(id: string, defaultValue?: Customization): Customization | void {
     return this.transform(this.globalCustomizations[id] ?? defaultValue);
   }
 
@@ -225,9 +222,7 @@ export default class CustomizationService extends PubSubService {
     this._broadcastGlobalCustomizationModified();
   }
 
-  protected setConfigGlobalCustomization(
-    configuration: AppConfigCustomization
-  ): void {
+  protected setConfigGlobalCustomization(configuration: AppConfigCustomization): void {
     this.globalCustomizations = {};
     const keys = flattenNestedStrings(configuration.globalCustomizations);
     this.readCustomizationTypes(

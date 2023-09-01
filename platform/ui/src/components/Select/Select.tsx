@@ -61,9 +61,7 @@ const Select = ({
     IndicatorSeparator: () => null,
   };
   let _components = isMulti ? { Option, MultiValue } : {};
-  _components = noIcons
-    ? { ..._components, ..._noIconComponents }
-    : _components;
+  _components = noIcons ? { ..._components, ..._noIconComponents } : _components;
   const selectedOptions = [];
 
   // Map array of values to an array of selected options
@@ -137,10 +135,7 @@ Select.propTypes = {
     })
   ),
   placeholder: PropTypes.string,
-  value: PropTypes.oneOfType([
-    PropTypes.arrayOf(PropTypes.string),
-    PropTypes.any,
-  ]),
+  value: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.string), PropTypes.any]),
 };
 
 export default Select;

@@ -93,18 +93,12 @@ const fromDirectory = (srcDir, path) => {
   return path;
 };
 
-const createCopyPluginToDistForLink = (
-  srcDir,
-  distDir,
-  plugins,
-  folderName
-) => {
+const createCopyPluginToDistForLink = (srcDir, distDir, plugins, folderName) => {
   return plugins
     .map(plugin => {
       const fromDir = fromDirectory(srcDir, plugin.directory);
       const from =
-        fromDir ||
-        `${srcDir}/../node_modules/${plugin.packageName}/${folderName}/`;
+        fromDir || `${srcDir}/../node_modules/${plugin.packageName}/${folderName}/`;
       const exists = fs.existsSync(from);
       return exists
         ? {
@@ -117,12 +111,7 @@ const createCopyPluginToDistForLink = (
     .filter(x => !!x);
 };
 
-const createCopyPluginToDistForBuild = (
-  SRC_DIR,
-  DIST_DIR,
-  plugins,
-  folderName
-) => {
+const createCopyPluginToDistForBuild = (SRC_DIR, DIST_DIR, plugins, folderName) => {
   return plugins
     .map(plugin => {
       const from = `${SRC_DIR}/../../../node_modules/${plugin.packageName}/${folderName}/`;

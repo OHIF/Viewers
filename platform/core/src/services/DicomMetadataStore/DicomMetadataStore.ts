@@ -54,9 +54,7 @@ function _getStudyInstanceUIDs() {
 }
 
 function _getStudy(StudyInstanceUID) {
-  return _model.studies.find(
-    aStudy => aStudy.StudyInstanceUID === StudyInstanceUID
-  );
+  return _model.studies.find(aStudy => aStudy.StudyInstanceUID === StudyInstanceUID);
 }
 
 function _getSeries(StudyInstanceUID, SeriesInstanceUID) {
@@ -66,9 +64,7 @@ function _getSeries(StudyInstanceUID, SeriesInstanceUID) {
     return;
   }
 
-  return study.series.find(
-    aSeries => aSeries.SeriesInstanceUID === SeriesInstanceUID
-  );
+  return study.series.find(aSeries => aSeries.SeriesInstanceUID === SeriesInstanceUID);
 }
 
 function _getInstance(StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID) {
@@ -78,9 +74,7 @@ function _getInstance(StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID) {
     return;
   }
 
-  return series.instances.find(
-    instance => instance.SOPInstanceUID === SOPInstanceUID
-  );
+  return series.instances.find(instance => instance.SOPInstanceUID === SOPInstanceUID);
 }
 
 function _getInstanceByImageId(imageId) {
@@ -102,11 +96,7 @@ function _getInstanceByImageId(imageId) {
  * @param {*} metadata metadata inform of key value pairs
  * @returns
  */
-function _updateMetadataForSeries(
-  StudyInstanceUID,
-  SeriesInstanceUID,
-  metadata
-) {
+function _updateMetadataForSeries(StudyInstanceUID, SeriesInstanceUID, metadata) {
   const study = _getStudy(StudyInstanceUID);
 
   if (!study) {
@@ -169,9 +159,7 @@ const BaseImplementation = {
 
     const { StudyInstanceUID } = naturalizedDataset;
 
-    let study = _model.studies.find(
-      study => study.StudyInstanceUID === StudyInstanceUID
-    );
+    let study = _model.studies.find(study => study.StudyInstanceUID === StudyInstanceUID);
 
     if (!study) {
       _model.studies.push(createStudyMetadata(StudyInstanceUID));
@@ -183,9 +171,7 @@ const BaseImplementation = {
   addInstances(instances, madeInClient = false) {
     const { StudyInstanceUID, SeriesInstanceUID } = instances[0];
 
-    let study = _model.studies.find(
-      study => study.StudyInstanceUID === StudyInstanceUID
-    );
+    let study = _model.studies.find(study => study.StudyInstanceUID === StudyInstanceUID);
 
     if (!study) {
       _model.studies.push(createStudyMetadata(StudyInstanceUID));

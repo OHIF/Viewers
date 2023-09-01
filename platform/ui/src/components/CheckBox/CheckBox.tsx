@@ -19,14 +19,7 @@ const CheckBox: React.FC<{
   label: string;
   labelClassName?: string;
   labelVariant?: string;
-}> = ({
-  checked,
-  onChange,
-  label,
-  labelClassName,
-  labelVariant = 'body',
-  className,
-}) => {
+}> = ({ checked, onChange, label, labelClassName, labelVariant = 'body', className }) => {
   const [isChecked, setIsChecked] = useState(checked);
 
   const handleClick = useCallback(() => {
@@ -41,11 +34,7 @@ const CheckBox: React.FC<{
       }`}
       onClick={handleClick}
     >
-      {isChecked ? (
-        <Icon name="checkbox-checked" />
-      ) : (
-        <Icon name="checkbox-unchecked" />
-      )}
+      {isChecked ? <Icon name="checkbox-checked" /> : <Icon name="checkbox-unchecked" />}
 
       <Typography
         variant={labelVariant ?? 'subtitle'}

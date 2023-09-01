@@ -87,10 +87,7 @@ export function getCompression(imageId) {
 
   if (lossyImageCompression === '01' && lossyImageCompressionRatio !== '') {
     const compressionMethod = lossyImageCompressionMethod || 'Lossy: ';
-    const compressionRatio = formatNumberPrecision(
-      lossyImageCompressionRatio,
-      2
-    );
+    const compressionRatio = formatNumberPrecision(lossyImageCompressionRatio, 2);
     return compressionMethod + compressionRatio + ' : 1';
   }
 

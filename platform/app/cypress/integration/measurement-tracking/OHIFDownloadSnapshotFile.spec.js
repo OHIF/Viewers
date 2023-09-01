@@ -1,8 +1,6 @@
 describe('OHIF Download Snapshot File', () => {
   beforeEach(() => {
-    cy.checkStudyRouteInViewer(
-      '1.2.840.113619.2.5.1762583153.215519.978957063.78'
-    );
+    cy.checkStudyRouteInViewer('1.2.840.113619.2.5.1762583153.215519.978957063.78');
     cy.expectMinimumThumbnails(3);
     cy.openDownloadImageModal();
   });

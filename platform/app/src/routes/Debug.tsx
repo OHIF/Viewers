@@ -19,9 +19,7 @@ function Debug() {
                 Debug Information
               </p>
               <div className="mt-4 flex items-center space-x-2">
-                <p className="text-md text-white">
-                  Cross Origin Isolated (COOP/COEP)
-                </p>
+                <p className="text-md text-white">Cross Origin Isolated (COOP/COEP)</p>
                 <Icon
                   name={
                     window.crossOriginIsolated
@@ -32,10 +30,9 @@ function Debug() {
                 />
                 {!window.crossOriginIsolated && (
                   <div className="text-md flex-1 text-white">
-                    We use SharedArrayBuffer to render volume data (e.g., MPR).
-                    If you are seeing this message, it means that your browser
-                    has not enabled COOP/COEP. Please see the following link for
-                    more information:{' '}
+                    We use SharedArrayBuffer to render volume data (e.g., MPR). If you are
+                    seeing this message, it means that your browser has not enabled
+                    COOP/COEP. Please see the following link for more information:{' '}
                     <a
                       href="https://web.dev/coop-coep/"
                       target="_blank"

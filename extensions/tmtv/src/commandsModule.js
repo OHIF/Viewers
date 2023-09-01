@@ -14,11 +14,7 @@ const metadataProvider = classes.MetadataProvider;
 const RECTANGLE_ROI_THRESHOLD_MANUAL = 'RectangleROIStartEndThreshold';
 const LABELMAP = csTools.Enums.SegmentationRepresentations.Labelmap;
 
-const commandsModule = ({
-  servicesManager,
-  commandsManager,
-  extensionManager,
-}) => {
+const commandsModule = ({ servicesManager, commandsManager, extensionManager }) => {
   const {
     viewportGridService,
     uiNotificationService,
@@ -74,9 +70,7 @@ const commandsModule = ({
           continue;
         }
 
-        ptDisplaySet = displaySets.find(
-          displaySet => displaySet.Modality === 'PT'
-        );
+        ptDisplaySet = displaySets.find(displaySet => displaySet.Modality === 'PT');
 
         if (ptDisplaySet) {
           break;
@@ -102,11 +96,9 @@ const commandsModule = ({
         PatientWeight: instance.PatientWeight,
         RadiopharmaceuticalInformationSequence: {
           RadionuclideTotalDose:
-            instance.RadiopharmaceuticalInformationSequence[0]
-              .RadionuclideTotalDose,
+            instance.RadiopharmaceuticalInformationSequence[0].RadionuclideTotalDose,
           RadionuclideHalfLife:
-            instance.RadiopharmaceuticalInformationSequence[0]
-              .RadionuclideHalfLife,
+            instance.RadiopharmaceuticalInformationSequence[0].RadionuclideHalfLife,
           RadiopharmaceuticalStartTime:
             instance.RadiopharmaceuticalInformationSequence[0]
               .RadiopharmaceuticalStartTime,
@@ -131,10 +123,9 @@ const commandsModule = ({
         return;
       }
 
-      const segmentationId =
-        await segmentationService.createSegmentationForDisplaySet(
-          ptDisplaySet.displaySetInstanceUID
-        );
+      const segmentationId = await segmentationService.createSegmentationForDisplaySet(
+        ptDisplaySet.displaySetInstanceUID
+      );
 
       // Add Segmentation to all toolGroupIds in the viewer
       const toolGroupIds = _getMatchedViewportsToolGroupIds();
@@ -168,8 +159,7 @@ const commandsModule = ({
       });
     },
     thresholdSegmentationByRectangleROITool: ({ segmentationId, config }) => {
-      const segmentation =
-        csTools.segmentation.state.getSegmentation(segmentationId);
+      const segmentation = csTools.segmentation.state.getSegmentation(segmentationId);
 
       const { representationData } = segmentation;
       const { displaySetMatchDetails: matchDetails } =
@@ -327,9 +317,7 @@ const commandsModule = ({
       // or same direction or ....
       try {
         mergedLabelmap =
-          csTools.utilities.segmentation.createMergedLabelmapForIndex(
-            labelmapVolumes
-          );
+          csTools.utilities.segmentation.createMergedLabelmapForIndex(labelmapVolumes);
       } catch (e) {
         console.error('commandsModule::getTotalLesionGlycolysis', e);
         return;
@@ -368,12 +356,7 @@ const commandsModule = ({
 
       // total Lesion Glycolysis [suv * ml]
       return (
-        averageSuv *
-        totalLesionVoxelCount *
-        spacing[0] *
-        spacing[1] *
-        spacing[2] *
-        1e-3
+        averageSuv * totalLesionVoxelCount * spacing[0] * spacing[1] * spacing[2] * 1e-3
       );
     },
     setStartSliceForROIThresholdTool: () => {
@@ -506,10 +489,7 @@ const commandsModule = ({
         }
 
         const firstImageId = referencedVolume.imageIds[0];
-        const instance = OHIF.classes.MetadataProvider.get(
-          'instance',
-          firstImageId
-        );
+        const instance = OHIF.classes.MetadataProvider.get('instance', firstImageId);
 
         if (!instance) {
           report[id] = segReport;
@@ -562,9 +542,7 @@ const commandsModule = ({
           },
         });
 
-        viewports.push(
-          cornerstoneViewportService.getCornerstoneViewport(viewportId)
-        );
+        viewports.push(cornerstoneViewportService.getCornerstoneViewport(viewportId));
       });
 
       viewports.forEach(viewport => {

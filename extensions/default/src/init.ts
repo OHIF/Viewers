@@ -55,10 +55,7 @@ export default function init({ servicesManager, configuration = {} }): void {
 }
 
 const handlePETImageMetadata = ({ SeriesInstanceUID, StudyInstanceUID }) => {
-  const { instances } = DicomMetadataStore.getSeries(
-    StudyInstanceUID,
-    SeriesInstanceUID
-  );
+  const { instances } = DicomMetadataStore.getSeries(StudyInstanceUID, SeriesInstanceUID);
 
   const modality = instances[0].Modality;
   if (modality !== 'PT') {

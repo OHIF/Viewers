@@ -42,14 +42,10 @@ const MeasurementItem = ({
       data-cy={'measurement-item'}
     >
       <div
-        className={classnames(
-          'w-6 py-1 text-center text-base transition duration-300',
-          {
-            'bg-primary-light active text-black': isActive,
-            'bg-primary-dark text-primary-light group-hover:bg-secondary-main':
-              !isActive,
-          }
-        )}
+        className={classnames('w-6 py-1 text-center text-base transition duration-300', {
+          'bg-primary-light active text-black': isActive,
+          'bg-primary-dark text-primary-light group-hover:bg-secondary-main': !isActive,
+        })}
       >
         {index}
       </div>
@@ -82,10 +78,7 @@ const MeasurementItem = ({
 };
 
 MeasurementItem.propTypes = {
-  uid: PropTypes.oneOfType([
-    PropTypes.number.isRequired,
-    PropTypes.string.isRequired,
-  ]),
+  uid: PropTypes.oneOfType([PropTypes.number.isRequired, PropTypes.string.isRequired]),
   index: PropTypes.number.isRequired,
   label: PropTypes.string,
   displayText: PropTypes.array.isRequired,

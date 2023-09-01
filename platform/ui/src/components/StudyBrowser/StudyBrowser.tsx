@@ -92,13 +92,12 @@ const StudyBrowser = ({
             const isActive = activeTabName === name;
             const isDisabled = !studies.length;
             // Apply the contrasting color for brighter button color visibility
-            const classStudyBrowser =
-              customizationService?.getModeCustomization(
-                'class:StudyBrowser'
-              ) || {
-                true: 'default',
-                false: 'default',
-              };
+            const classStudyBrowser = customizationService?.getModeCustomization(
+              'class:StudyBrowser'
+            ) || {
+              true: 'default',
+              false: 'default',
+            };
             const color = classStudyBrowser[`${isActive}`];
             return (
               <LegacyButton

@@ -1,13 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { utils, ServicesManager } from '@ohif/core';
-import {
-  MeasurementTable,
-  Dialog,
-  Input,
-  useViewportGrid,
-  ButtonEnums,
-} from '@ohif/ui';
+import { MeasurementTable, Dialog, Input, useViewportGrid, ButtonEnums } from '@ohif/ui';
 import ActionButtons from './ActionButtons';
 import debounce from 'lodash.debounce';
 
@@ -35,10 +29,7 @@ export default function PanelMeasurementTable({
   const [displayMeasurements, setDisplayMeasurements] = useState([]);
 
   useEffect(() => {
-    const debouncedSetDisplayMeasurements = debounce(
-      setDisplayMeasurements,
-      100
-    );
+    const debouncedSetDisplayMeasurements = debounce(setDisplayMeasurements, 100);
     // ~~ Initial
     setDisplayMeasurements(_getMappedMeasurements(measurementService));
 
@@ -53,9 +44,7 @@ export default function PanelMeasurementTable({
     [added, addedRaw, updated, removed, cleared].forEach(evt => {
       subscriptions.push(
         measurementService.subscribe(evt, () => {
-          debouncedSetDisplayMeasurements(
-            _getMappedMeasurements(measurementService)
-          );
+          debouncedSetDisplayMeasurements(_getMappedMeasurements(measurementService));
         }).unsubscribe
       );
     });
@@ -104,9 +93,7 @@ export default function PanelMeasurementTable({
     });
 
     if (promptResult.action === CREATE_REPORT_DIALOG_RESPONSE.CREATE_REPORT) {
-      const dataSources = extensionManager.getDataSources(
-        promptResult.dataSourceName
-      );
+      const dataSources = extensionManager.getDataSources(promptResult.dataSourceName);
       const dataSource = dataSources[0];
 
       const SeriesDescription =

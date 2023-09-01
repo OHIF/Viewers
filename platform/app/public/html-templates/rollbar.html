@@ -245,8 +245,7 @@
         (o.m = r),
           (o.c = e),
           (o.d = function (r, e, n) {
-            o.o(r, e) ||
-              Object.defineProperty(r, e, { enumerable: !0, get: n });
+            o.o(r, e) || Object.defineProperty(r, e, { enumerable: !0, get: n });
           }),
           (o.r = function (r) {
             'undefined' != typeof Symbol &&
@@ -302,13 +301,7 @@
           var a = n.setupShim(window, _rollbarConfig),
             l = t(_rollbarConfig);
           (window.rollbar = n.Rollbar),
-            a.loadFull(
-              window,
-              document,
-              !_rollbarConfig.async,
-              _rollbarConfig,
-              l
-            );
+            a.loadFull(window, document, !_rollbarConfig.async, _rollbarConfig, l);
         },
         function (r, e, o) {
           var n = o(2);
@@ -375,11 +368,7 @@
                         var e;
                         if (void 0 === r._rollbarDidLoad) {
                           e = new Error('rollbar.js did not load');
-                          for (
-                            var o, n, t, l, i = 0;
-                            (o = r._rollbarShims[i++]);
-
-                          )
+                          for (var o, n, t, l, i = 0; (o = r._rollbarShims[i++]); )
                             for (o = o.messages || []; (n = o.shift()); )
                               for (t = n.args || [], i = 0; i < t.length; ++i)
                                 if ('function' == typeof (l = t[i])) {
@@ -428,8 +417,7 @@
                   (r._rollbar_wrapped._isWrap = !0),
                   r.hasOwnProperty)
                 )
-                  for (var t in r)
-                    r.hasOwnProperty(t) && (r._rollbar_wrapped[t] = r[t]);
+                  for (var t in r) r.hasOwnProperty(t) && (r._rollbar_wrapped[t] = r[t]);
                 return r._rollbar_wrapped;
               } catch (e) {
                 return r;
@@ -462,9 +450,7 @@
                   var t = e.autoInstrument;
                   return (
                     !1 !== e.enabled &&
-                      (void 0 === t ||
-                        !0 === t ||
-                        ('object' == typeof t && t.network)) &&
+                      (void 0 === t || !0 === t || ('object' == typeof t && t.network)) &&
                       r.addEventListener &&
                       (r.addEventListener('load', a.captureLoad.bind(a)),
                       r.addEventListener(
@@ -483,18 +469,12 @@
         function (r, e) {
           function o(r, e, o) {
             if (e.hasOwnProperty && e.hasOwnProperty('addEventListener')) {
-              for (
-                var n = e.addEventListener;
-                n._rollbarOldAdd && n.belongsToShim;
-
-              )
+              for (var n = e.addEventListener; n._rollbarOldAdd && n.belongsToShim; )
                 n = n._rollbarOldAdd;
               var t = function (e, o, t) {
                 n.call(this, e, r.wrap(o), t);
               };
-              (t._rollbarOldAdd = n),
-                (t.belongsToShim = o),
-                (e.addEventListener = t);
+              (t._rollbarOldAdd = n), (t.belongsToShim = o), (e.addEventListener = t);
               for (
                 var a = e.removeEventListener;
                 a._rollbarOldRemove && a.belongsToShim;
@@ -513,11 +493,9 @@
             captureUncaughtExceptions: function (r, e, o) {
               if (r) {
                 var n;
-                if ('function' == typeof e._rollbarOldOnError)
-                  n = e._rollbarOldOnError;
+                if ('function' == typeof e._rollbarOldOnError) n = e._rollbarOldOnError;
                 else if (r.onerror) {
-                  for (n = r.onerror; n._rollbarOldOnError; )
-                    n = n._rollbarOldOnError;
+                  for (n = r.onerror; n._rollbarOldOnError; ) n = n._rollbarOldOnError;
                   e._rollbarOldOnError = n;
                 }
                 var t = function () {
@@ -549,19 +527,13 @@
                   try {
                     n = r.promise;
                   } catch (r) {
-                    n =
-                      '[unhandledrejection] error getting `promise` from event';
+                    n = '[unhandledrejection] error getting `promise` from event';
                   }
                   try {
-                    (t = r.detail),
-                      !o && t && ((o = t.reason), (n = t.promise));
+                    (t = r.detail), !o && t && ((o = t.reason), (n = t.promise));
                   } catch (r) {}
-                  o ||
-                    (o =
-                      '[unhandledrejection] error getting `reason` from event'),
-                    e &&
-                      e.handleUnhandledRejection &&
-                      e.handleUnhandledRejection(o, n);
+                  o || (o = '[unhandledrejection] error getting `reason` from event'),
+                    e && e.handleUnhandledRejection && e.handleUnhandledRejection(o, n);
                 };
                 (n.belongsToShim = o),
                   (r._rollbarURH = n),
@@ -591,8 +563,7 @@
                   var e = function (r) {
                       return function () {
                         var e = Array.prototype.slice.call(arguments, 0);
-                        if (this.impl[r])
-                          return this.impl[r].apply(this.impl, e);
+                        if (this.impl[r]) return this.impl[r].apply(this.impl, e);
                       };
                     },
                     o =
@@ -636,8 +607,7 @@
                   (o = window._rollbarShims[i++]);
 
                 )
-                  n || (n = o.handler),
-                    o.handler._swapAndProcessMessages(l, o.messages);
+                  n || (n = o.handler), o.handler._swapAndProcessMessages(l, o.messages);
                 (window[t] = n), (window._rollbarInitialized = !0);
               }
             };
