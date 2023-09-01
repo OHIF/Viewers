@@ -9,8 +9,7 @@ const DEFAULT_MOCKED_STUDIES_LIMIT = 1000;
  * @returns {array} Study list
  */
 const getMockedStudies = (items = 50) => {
-  const num =
-    items > DEFAULT_MOCKED_STUDIES_LIMIT ? DEFAULT_MOCKED_STUDIES_LIMIT : items;
+  const num = items > DEFAULT_MOCKED_STUDIES_LIMIT ? DEFAULT_MOCKED_STUDIES_LIMIT : items;
   return new Array(num).fill(studyListMock.studies[0]);
 };
 

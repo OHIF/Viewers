@@ -1,4 +1,4 @@
-import { PubSubService } from "../services";
+import { PubSubService } from '../services';
 
 type Panel = {
   id?: string;
@@ -11,8 +11,8 @@ type Panel = {
 
 type ActivatePanelTriggers = {
   sourcePubSubService: PubSubService;
-  sourceEvents: string[]
-}
+  sourceEvents: string[];
+};
 
 interface PanelEvent {
   panelId: string;
@@ -22,9 +22,4 @@ interface ActivatePanelEvent extends PanelEvent {
   forceActive: boolean;
 }
 
-export type {
-  ActivatePanelEvent,
-  ActivatePanelTriggers,
-  Panel,
-  PanelEvent,
-};
+export type { ActivatePanelEvent, ActivatePanelTriggers, Panel, PanelEvent };

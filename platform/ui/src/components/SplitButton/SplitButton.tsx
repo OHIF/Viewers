@@ -10,8 +10,7 @@ import ListMenu from '../ListMenu';
 import ToolbarButton from '../ToolbarButton';
 
 const baseClasses = {
-  Button:
-    'flex items-center rounded-md border-transparent cursor-pointer group/button',
+  Button: 'flex items-center rounded-md border-transparent cursor-pointer group/button',
   Primary:
     // By default border on left, top and bottom for hover effect and only rounded on left side.
     // Extra padding on right to componensate for no right border.
@@ -27,9 +26,7 @@ const classes = {
   Button: ({ isExpanded, primary }) =>
     classNames(
       baseClasses.Button,
-      !isExpanded &&
-        !primary.isActive &&
-        'hover:!bg-primary-dark hover:border-primary-dark'
+      !isExpanded && !primary.isActive && 'hover:!bg-primary-dark hover:border-primary-dark'
     ),
   Interface: 'h-full flex flex-row items-center',
   Primary: ({ primary, isExpanded }) =>
@@ -64,19 +61,14 @@ const classes = {
   SecondaryIcon: ({ isExpanded }) =>
     classNames(
       baseClasses.SecondaryIcon,
-      isExpanded
-        ? 'text-primary-dark'
-        : 'text-[#348cfd] group-hover/secondary:text-primary-light'
+      isExpanded ? 'text-primary-dark' : 'text-[#348cfd] group-hover/secondary:text-primary-light'
     ),
   Separator: ({ primary, isExpanded, isHovering }) =>
     classNames(
       baseClasses.Separator,
-      isHovering || isExpanded || primary.isActive
-        ? 'border-transparent'
-        : 'border-primary-active'
+      isHovering || isExpanded || primary.isActive ? 'border-transparent' : 'border-primary-active'
     ),
-  Content: ({ isExpanded }) =>
-    classNames(baseClasses.Content, isExpanded ? 'block' : 'hidden'),
+  Content: ({ isExpanded }) => classNames(baseClasses.Content, isExpanded ? 'block' : 'hidden'),
 };
 
 const SplitButton = ({
@@ -136,12 +128,9 @@ const SplitButton = ({
 
   const onSecondaryClickHandler = () =>
     setState(state => ({ ...state, isExpanded: !state.isExpanded }));
-  const onMouseEnterHandler = () =>
-    setState(state => ({ ...state, isHovering: true }));
-  const onMouseLeaveHandler = () =>
-    setState(state => ({ ...state, isHovering: false }));
-  const outsideClickHandler = () =>
-    setState(state => ({ ...state, isExpanded: false }));
+  const onMouseEnterHandler = () => setState(state => ({ ...state, isHovering: true }));
+  const onMouseLeaveHandler = () => setState(state => ({ ...state, isHovering: false }));
+  const outsideClickHandler = () => setState(state => ({ ...state, isExpanded: false }));
 
   const isPrimaryToggle = state.primary.type === 'toggle';
   const isPrimaryActive =
@@ -149,8 +138,7 @@ const SplitButton = ({
     (isPrimaryToggle && toggles[state.primary.id] === true);
 
   const PrimaryButtonComponent =
-    toolbarService?.getButtonComponentForUIType(state.primary.uiType) ??
-    ToolbarButton;
+    toolbarService?.getButtonComponentForUIType(state.primary.uiType) ?? ToolbarButton;
 
   const primaryButtonClassName = classes.Primary({
     ...state,
@@ -163,8 +151,8 @@ const SplitButton = ({
     return (
       <div
         className={classNames(
-          'flex flex-row items-center p-3 h-8 w-full hover:bg-primary-dark',
-          'text-base whitespace-pre',
+          'hover:bg-primary-dark flex h-8 w-full flex-row items-center p-3',
+          'whitespace-pre text-base',
           isActive && 'bg-primary-dark',
           isActive
             ? 'text-[#348CFD]'
@@ -173,7 +161,10 @@ const SplitButton = ({
       >
         {icon && (
           <span className="mr-4">
-            <Icon name={icon} className="w-5 h-5" />
+            <Icon
+              name={icon}
+              className="h-5 w-5"
+            />
           </span>
         )}
         <span className="mr-5">{t(label)}</span>
@@ -188,7 +179,10 @@ const SplitButton = ({
       onOutsideClick={outsideClickHandler}
       disabled={!state.isExpanded}
     >
-      <div name="SplitButton" className="relative">
+      <div
+        name="SplitButton"
+        className="relative"
+      >
         <div
           className={classes.Button({
             ...state,

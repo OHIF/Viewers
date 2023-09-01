@@ -14,7 +14,7 @@ const Dropdown = ({ id, children, showDropdownIcon, list, titleClassName }) => {
       <div
         key={title}
         className={classnames(
-          'flex px-4 py-2 cursor-pointer items-center transition duration-300 hover:bg-secondary-main border-b last:border-b-0 border-secondary-main'
+          'hover:bg-secondary-main border-secondary-main flex cursor-pointer items-center border-b px-4 py-2 transition duration-300 last:border-b-0'
         )}
         onClick={() => {
           setOpen(false);
@@ -22,7 +22,12 @@ const Dropdown = ({ id, children, showDropdownIcon, list, titleClassName }) => {
         }}
         data-cy={id}
       >
-        {!!icon && <Icon name={icon} className="w-4 mr-2 text-white" />}
+        {!!icon && (
+          <Icon
+            name={icon}
+            className="mr-2 w-4 text-white"
+          />
+        )}
         <Typography className={titleClassName}>{title}</Typography>
       </div>
     );
@@ -43,7 +48,12 @@ const Dropdown = ({ id, children, showDropdownIcon, list, titleClassName }) => {
     return (
       <div className="flex items-center">
         {children}
-        {showDropdownIcon && <Icon name="chevron-down" className="ml-1" />}
+        {showDropdownIcon && (
+          <Icon
+            name="chevron-down"
+            className="ml-1"
+          />
+        )}
       </div>
     );
   };
@@ -62,7 +72,7 @@ const Dropdown = ({ id, children, showDropdownIcon, list, titleClassName }) => {
     return (
       <div
         className={classnames(
-          'absolute top-100 right-0 mt-2 z-10 origin-top-right transition duration-300 transform bg-primary-dark border border-secondary-main rounded shadow',
+          'top-100 bg-primary-dark border-secondary-main absolute right-0 z-10 mt-2 origin-top-right transform rounded border shadow transition duration-300',
           {
             'scale-0': !open,
             'scale-100': open,
@@ -92,8 +102,15 @@ const Dropdown = ({ id, children, showDropdownIcon, list, titleClassName }) => {
   }, [open]);
 
   return (
-    <div data-cy="dropdown" ref={element} className="relative">
-      <div className="flex items-center cursor-pointer" onClick={toggleList}>
+    <div
+      data-cy="dropdown"
+      ref={element}
+      className="relative"
+    >
+      <div
+        className="flex cursor-pointer items-center"
+        onClick={toggleList}
+      >
         {renderTitleElement()}
       </div>
 

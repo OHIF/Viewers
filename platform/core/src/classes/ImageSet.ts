@@ -107,7 +107,7 @@ class ImageSet {
       )
     );
 
-    const distanceImagePairs = images.map(function(image: Image) {
+    const distanceImagePairs = images.map(function (image: Image) {
       const ippVec = new Vector3(..._getImagePositionPatient(image));
       const positionVector = refIppVec.clone().sub(ippVec);
       const distance = positionVector.dot(scanAxisNormal);
@@ -118,13 +118,13 @@ class ImageSet {
       };
     });
 
-    distanceImagePairs.sort(function(a, b) {
+    distanceImagePairs.sort(function (a, b) {
       return b.distance - a.distance;
     });
 
     const sortedImages = distanceImagePairs.map(a => a.image);
 
-    images.sort(function(a, b) {
+    images.sort(function (a, b) {
       return sortedImages.indexOf(a) - sortedImages.indexOf(b);
     });
   }

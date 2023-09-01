@@ -60,8 +60,7 @@ function DataSourceWrapper(props) {
     if (!dataSourceName) {
       // Gets the first defined datasource with the right name
       // Mostly for historical reasons - new configs should use the defaultDataSourceName
-      const dataSourceModules =
-        extensionManager.modules[MODULE_TYPES.DATA_SOURCE];
+      const dataSourceModules = extensionManager.modules[MODULE_TYPES.DATA_SOURCE];
       // TODO: Good usecase for flatmap?
       const webApiDataSources = dataSourceModules.reduce((acc, curr) => {
         const mods = [];
@@ -145,10 +144,7 @@ function DataSourceWrapper(props) {
       return;
     }
 
-    const queryFilterValues = _getQueryFilterValues(
-      location.search,
-      STUDIES_LIMIT
-    );
+    const queryFilterValues = _getQueryFilterValues(location.search, STUDIES_LIMIT);
 
     // 204: no content
     async function getData() {
@@ -173,23 +169,19 @@ function DataSourceWrapper(props) {
       // - And we didn't cross a result offset range
       const isSamePage = data.pageNumber === queryFilterValues.pageNumber;
       const previousOffset =
-        Math.floor((data.pageNumber * data.resultsPerPage) / STUDIES_LIMIT) *
-        (STUDIES_LIMIT - 1);
+        Math.floor((data.pageNumber * data.resultsPerPage) / STUDIES_LIMIT) * (STUDIES_LIMIT - 1);
       const newOffset =
         Math.floor(
-          (queryFilterValues.pageNumber * queryFilterValues.resultsPerPage) /
-            STUDIES_LIMIT
+          (queryFilterValues.pageNumber * queryFilterValues.resultsPerPage) / STUDIES_LIMIT
         ) *
         (STUDIES_LIMIT - 1);
       // Simply checking data.location !== location is not sufficient because even though the location href (i.e. entire URL)
       // has not changed, the React Router still provides a new location reference and would result in two study queries
       // on initial load. Alternatively, window.location.href could be used.
       const isLocationUpdated =
-        typeof data.location === 'string' ||
-        !areLocationsTheSame(data.location, location);
+        typeof data.location === 'string' || !areLocationsTheSame(data.location, location);
       const isDataInvalid =
-        !isSamePage ||
-        (!isLoading && (newOffset !== previousOffset || isLocationUpdated));
+        !isSamePage || (!isLoading && (newOffset !== previousOffset || isLocationUpdated));
 
       if (isDataInvalid) {
         getData().catch(() => {
@@ -207,15 +199,7 @@ function DataSourceWrapper(props) {
       console.warn(ex);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    data,
-    location,
-    params,
-    isLoading,
-    setIsLoading,
-    dataSource,
-    isDataSourceInitialized,
-  ]);
+  }, [data, location, params, isLoading, setIsLoading, dataSource, isDataSourceInitialized]);
   // queryFilterValues
 
   // TODO: Better way to pass DataSource?
@@ -256,8 +240,7 @@ function _getQueryFilterValues(query, queryLimit) {
     patientId: query.get('mrn'),
     patientName: query.get('patientName'),
     studyDescription: query.get('description'),
-    modalitiesInStudy:
-      query.get('modalities') && query.get('modalities').split(','),
+    modalitiesInStudy: query.get('modalities') && query.get('modalities').split(','),
     accessionNumber: query.get('accession'),
     //
     startDate: query.get('startDate'),
@@ -269,8 +252,7 @@ function _getQueryFilterValues(query, queryLimit) {
     sortBy: query.get('sortBy'),
     sortDirection: query.get('sortDirection'),
     // Offset...
-    offset:
-      Math.floor((pageNumber * resultsPerPage) / queryLimit) * (queryLimit - 1),
+    offset: Math.floor((pageNumber * resultsPerPage) / queryLimit) * (queryLimit - 1),
     config: query.get('configUrl'),
   };
 

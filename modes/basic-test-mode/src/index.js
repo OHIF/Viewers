@@ -14,22 +14,18 @@ const ohif = {
 };
 
 const tracked = {
-  measurements:
-    '@ohif/extension-measurement-tracking.panelModule.trackedMeasurements',
+  measurements: '@ohif/extension-measurement-tracking.panelModule.trackedMeasurements',
   thumbnailList: '@ohif/extension-measurement-tracking.panelModule.seriesList',
-  viewport:
-    '@ohif/extension-measurement-tracking.viewportModule.cornerstone-tracked',
+  viewport: '@ohif/extension-measurement-tracking.viewportModule.cornerstone-tracked',
 };
 
 const dicomsr = {
-  sopClassHandler:
-    '@ohif/extension-cornerstone-dicom-sr.sopClassHandlerModule.dicom-sr',
+  sopClassHandler: '@ohif/extension-cornerstone-dicom-sr.sopClassHandlerModule.dicom-sr',
   viewport: '@ohif/extension-cornerstone-dicom-sr.viewportModule.dicom-sr',
 };
 
 const dicomvideo = {
-  sopClassHandler:
-    '@ohif/extension-dicom-video.sopClassHandlerModule.dicom-video',
+  sopClassHandler: '@ohif/extension-dicom-video.sopClassHandlerModule.dicom-video',
   viewport: '@ohif/extension-dicom-video.viewportModule.dicom-video',
 };
 
@@ -39,8 +35,7 @@ const dicompdf = {
 };
 
 const dicomSeg = {
-  sopClassHandler:
-    '@ohif/extension-cornerstone-dicom-seg.sopClassHandlerModule.dicom-seg',
+  sopClassHandler: '@ohif/extension-cornerstone-dicom-seg.sopClassHandlerModule.dicom-seg',
   viewport: '@ohif/extension-cornerstone-dicom-seg.viewportModule.dicom-seg',
   panel: '@ohif/extension-cornerstone-dicom-seg.panelModule.panelSegmentation',
 };
@@ -68,12 +63,8 @@ function modeFactory() {
      * Lifecycle hooks
      */
     onModeEnter: ({ servicesManager, extensionManager, commandsManager }) => {
-      const {
-        measurementService,
-        toolbarService,
-        toolGroupService,
-        customizationService,
-      } = servicesManager.services;
+      const { measurementService, toolbarService, toolGroupService, customizationService } =
+        servicesManager.services;
 
       measurementService.clearMeasurements();
 
@@ -147,13 +138,12 @@ function modeFactory() {
       series: [],
     },
 
-    isValidMode: function({ modalities }) {
+    isValidMode: function ({ modalities }) {
       const modalities_list = modalities.split('\\');
 
       // Exclude non-image modalities
-      return !!modalities_list.filter(
-        modality => NON_IMAGE_MODALITIES.indexOf(modality) === -1
-      ).length;
+      return !!modalities_list.filter(modality => NON_IMAGE_MODALITIES.indexOf(modality) === -1)
+        .length;
     },
     routes: [
       {

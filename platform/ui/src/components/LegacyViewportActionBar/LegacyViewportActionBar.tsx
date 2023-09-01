@@ -22,32 +22,16 @@ const LegacyViewportActionBar = ({
 }) => {
   const [showPatientInfo, setShowPatientInfo] = useState(patientInfoVisibility);
 
-  const {
-    label,
-    useAltStyling,
-    studyDate,
-    currentSeries,
-    seriesDescription,
-    patientInformation,
-  } = studyData;
+  const { label, useAltStyling, studyDate, currentSeries, seriesDescription, patientInformation } =
+    studyData;
 
-  const {
-    patientName,
-    patientSex,
-    patientAge,
-    MRN,
-    thickness,
-    spacing,
-    scanner,
-  } = patientInformation;
+  const { patientName, patientSex, patientAge, MRN, thickness, spacing, scanner } =
+    patientInformation;
 
   const onPatientInfoClick = () => setShowPatientInfo(!showPatientInfo);
   const closePatientInfo = () => setShowPatientInfo(false);
   const showPatientInfoRef = useRef(null);
-  const clickOutsideListener = useOnClickOutside(
-    showPatientInfoRef,
-    closePatientInfo
-  );
+  const clickOutsideListener = useOnClickOutside(showPatientInfoRef, closePatientInfo);
 
   useEffect(() => {
     if (showPatientInfo) {
@@ -68,7 +52,7 @@ const LegacyViewportActionBar = ({
 
   return (
     <div
-      className="flex flex-wrap items-center p-2 -mt-2 border-b select-none"
+      className="-mt-2 flex select-none flex-wrap items-center border-b p-2"
       style={{
         borderColor: borderColor,
         backgroundColor: backgroundColor,
@@ -76,15 +60,15 @@ const LegacyViewportActionBar = ({
       onDoubleClick={onDoubleClick}
       onContextMenu={e => e.preventDefault()}
     >
-      <div className="flex flex-1 grow mt-2 min-w-48">
+      <div className="min-w-48 mt-2 flex flex-1 grow">
         <div className="flex items-center">
-          <span className="mr-2 text-white text-large">{label}</span>
+          <span className="text-large mr-2 text-white">{label}</span>
           {showStatus && getStatusComponent && getStatusComponent()}
         </div>
-        <div className="flex flex-col justify-start ml-4">
+        <div className="ml-4 flex flex-col justify-start">
           <div className="flex">
             <span className="text-base text-white">{studyDate}</span>
-            <span className="pl-2 ml-2 text-base border-l border-primary-light text-primary-light">
+            <span className="border-primary-light text-primary-light ml-2 border-l pl-2 text-base">
               S: {currentSeries}
             </span>
           </div>
@@ -96,41 +80,51 @@ const LegacyViewportActionBar = ({
                 Can clean up by setting percentage widths + calc on parent
                 containers
              */}
-            <p className="text-base truncate max-w-40 text-primary-light">
-              {seriesDescription}
-            </p>
+            <p className="max-w-40 text-primary-light truncate text-base">{seriesDescription}</p>
           </div>
         </div>
       </div>
       {showNavArrows && !showCine && (
-        <div className="mt-2" style={{ pointerEvents: 'all' }}>
+        <div
+          className="mt-2"
+          style={{ pointerEvents: 'all' }}
+        >
           {/* TODO Revisit design of ButtonGroup later - for now use LegacyButton for its children.*/}
           <ButtonGroup>
             <LegacyButton
               size="initial"
-              className="px-2 py-1 bg-black"
+              className="bg-black px-2 py-1"
               border="light"
               onClick={() => onArrowsClick('left')}
             >
-              <Icon name="chevron-left" className="w-4 text-white" />
+              <Icon
+                name="chevron-left"
+                className="w-4 text-white"
+              />
             </LegacyButton>
             <LegacyButton
               size="initial"
               border="light"
-              className="px-2 py-1 bg-black"
+              className="bg-black px-2 py-1"
               onClick={() => onArrowsClick('right')}
             >
-              <Icon name="chevron-right" className="w-4 text-white" />
+              <Icon
+                name="chevron-right"
+                className="w-4 text-white"
+              />
             </LegacyButton>
           </ButtonGroup>
         </div>
       )}
       {showCine && !showNavArrows && (
-        <div className="mt-2 mr-auto min-w-48 max-w-48">
+        <div className="min-w-48 max-w-48 mt-2 mr-auto">
           <LegacyCinePlayer {...cineProps} />
         </div>
       )}
-      <div className="flex h-8 mt-2 ml-4 mr-2" onClick={onPatientInfoClick}>
+      <div
+        className="mt-2 ml-4 mr-2 flex h-8"
+        onClick={onPatientInfoClick}
+      >
         <LegacyPatientInfo
           showPatientInfoRef={showPatientInfoRef}
           isOpen={showPatientInfo}

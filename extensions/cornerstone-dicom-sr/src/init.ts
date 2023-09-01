@@ -18,9 +18,7 @@ import toolNames from './tools/toolNames';
 /**
  * @param {object} configuration
  */
-export default function init({
-  configuration = {},
-}: Types.Extensions.ExtensionParams): void {
+export default function init({ configuration = {} }: Types.Extensions.ExtensionParams): void {
   addTool(DICOMSRDisplayTool);
   addToolInstance(toolNames.SRLength, LengthTool, {});
   addToolInstance(toolNames.SRBidirectional, BidirectionalTool);

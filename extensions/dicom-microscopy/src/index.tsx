@@ -30,15 +30,8 @@ export default {
    */
   id,
 
-  async preRegistration({
-    servicesManager,
-    commandsManager,
-    configuration = {},
-    appConfig,
-  }) {
-    servicesManager.registerService(
-      MicroscopyService.REGISTRATION(servicesManager)
-    );
+  async preRegistration({ servicesManager, commandsManager, configuration = {}, appConfig }) {
+    servicesManager.registerService(MicroscopyService.REGISTRATION(servicesManager));
   },
 
   /**
@@ -94,11 +87,7 @@ export default {
    * Each sop class handler is defined by a { name, sopClassUids, getDisplaySetsFromSeries}.
    * Examples include the default sop class handler provided by the default extension
    */
-  getSopClassHandlerModule({
-    servicesManager,
-    commandsManager,
-    extensionManager,
-  }) {
+  getSopClassHandlerModule({ servicesManager, commandsManager, extensionManager }) {
     return [
       getDicomMicroscopySopClassHandler({
         servicesManager,

@@ -26,9 +26,7 @@ describe('getString', () => {
 
     expect(getString(nullElement, defaultValue)).toEqual(defaultValue);
     expect(getString(undefinedElement, defaultValue)).toEqual(defaultValue);
-    expect(getString(noValuePresentElement, defaultValue)).toEqual(
-      defaultValue
-    );
+    expect(getString(noValuePresentElement, defaultValue)).toEqual(defaultValue);
   });
 
   it('should return A,B,C,D for element when element.Value[0] = [A, B, C, D]', () => {

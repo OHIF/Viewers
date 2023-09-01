@@ -1,10 +1,6 @@
 import { Types } from '@cornerstonejs/core';
 import { StackData, VolumeData } from '../../types/CornerstoneCacheService';
-import {
-  DisplaySetOptions,
-  PublicViewportOptions,
-  ViewportOptions,
-} from './Viewport';
+import { DisplaySetOptions, PublicViewportOptions, ViewportOptions } from './Viewport';
 
 /**
  * Handles cornerstone viewport logic including enabling, disabling, and

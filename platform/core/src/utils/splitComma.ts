@@ -23,9 +23,7 @@ const getSplitParam = (
   lowerCaseKey: string,
   params = new URLSearchParams(window.location.search)
 ): string[] => {
-  const sourceKey = [...params.keys()].find(
-    it => it.toLowerCase() === lowerCaseKey
-  );
+  const sourceKey = [...params.keys()].find(it => it.toLowerCase() === lowerCaseKey);
   if (!sourceKey) {
     return;
   }

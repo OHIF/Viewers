@@ -19,15 +19,11 @@ const filterInstances = (
     if (!dsInstances) {
       console.warn('No instances in', ds);
     } else {
-      dsInstances.forEach(instance =>
-        dsInstancesSOP.add(instance.SOPInstanceUID)
-      );
+      dsInstances.forEach(instance => dsInstancesSOP.add(instance.SOPInstanceUID));
     }
   });
 
-  return instances.filter(
-    instance => !dsInstancesSOP.has(instance.SOPInstanceUID)
-  );
+  return instances.filter(instance => !dsInstancesSOP.has(instance.SOPInstanceUID));
 };
 
 export default class DisplaySetService extends PubSubService {
@@ -119,9 +115,7 @@ export default class DisplaySetService extends PubSubService {
     return this.activeDisplaySets;
   }
 
-  public getDisplaySetsForSeries = (
-    seriesInstanceUID: string
-  ): DisplaySet[] => {
+  public getDisplaySetsForSeries = (seriesInstanceUID: string): DisplaySet[] => {
     return [...displaySetCache.values()].filter(
       displaySet => displaySet.SeriesInstanceUID === seriesInstanceUID
     );
@@ -137,9 +131,7 @@ export default class DisplaySetService extends PubSubService {
       : [...this.getDisplaySetCache().values()];
 
     const displaySet = displaySets.find(ds => {
-      return (
-        ds.images && ds.images.some(i => i.SOPInstanceUID === sopInstanceUID)
-      );
+      return ds.images && ds.images.some(i => i.SOPInstanceUID === sopInstanceUID);
     });
 
     return displaySet;
@@ -195,18 +187,13 @@ export default class DisplaySetService extends PubSubService {
    * @param {*} param1: settings: initialViewportSettings by HP or callbacks after rendering
    * @returns {string[]} - added displaySetInstanceUIDs
    */
-  makeDisplaySets = (
-    input,
-    { batch = false, madeInClient = false, settings = {} } = {}
-  ) => {
+  makeDisplaySets = (input, { batch = false, madeInClient = false, settings = {} } = {}) => {
     if (!input || !input.length) {
       throw new Error('No instances were provided.');
     }
 
     if (batch && !input[0].length) {
-      throw new Error(
-        'Batch displaySet creation does not contain array of array of instances.'
-      );
+      throw new Error('Batch displaySet creation does not contain array of array of instances.');
     }
 
     // If array of instances => One instance.
@@ -215,10 +202,7 @@ export default class DisplaySetService extends PubSubService {
     if (batch) {
       for (let i = 0; i < input.length; i++) {
         const instances = input[i];
-        const displaySets = this.makeDisplaySetForInstances(
-          instances,
-          settings
-        );
+        const displaySets = this.makeDisplaySetForInstances(instances, settings);
 
         displaySetsAdded.push(...displaySets);
       }
@@ -272,22 +256,16 @@ export default class DisplaySetService extends PubSubService {
    * @param settings
    * @returns
    */
-  public makeDisplaySetForInstances(
-    instancesSrc: InstanceMetadata[],
-    settings
-  ): DisplaySet[] {
+  public makeDisplaySetForInstances(instancesSrc: InstanceMetadata[], settings): DisplaySet[] {
     // creating a sopClassUID list and for each sopClass associate its respective
     // instance list
-    const instancesForSetSOPClasses = instancesSrc.reduce(
-      (sopClassList, instance) => {
-        if (!(instance.SOPClassUID in sopClassList)) {
-          sopClassList[instance.SOPClassUID] = [];
-        }
-        sopClassList[instance.SOPClassUID].push(instance);
-        return sopClassList;
-      },
-      {}
-    );
+    const instancesForSetSOPClasses = instancesSrc.reduce((sopClassList, instance) => {
+      if (!(instance.SOPClassUID in sopClassList)) {
+        sopClassList[instance.SOPClassUID] = [];
+      }
+      sopClassList[instance.SOPClassUID].push(instance);
+      return sopClassList;
+    }, {});
     // for each sopClassUID, call the old makeDisplaySetForInstances with a
     // instance list composed only by instances with the same sopClassUID and
     // accumulate the displaySets in the variable allDisplaySets
@@ -319,17 +297,13 @@ export default class DisplaySetService extends PubSubService {
    * @param settings are settings to add
    * @returns Array of the display sets added.
    */
-  private _makeDisplaySetForInstances(
-    instancesSrc: InstanceMetadata[],
-    settings
-  ): DisplaySet[] {
+  private _makeDisplaySetForInstances(instancesSrc: InstanceMetadata[], settings): DisplaySet[] {
     // Some of the sop class handlers take a direct reference to instances
     // so make sure it gets copied here so that they have their own ref
     let instances = [...instancesSrc];
     const instance = instances[0];
 
-    const existingDisplaySets =
-      this.getDisplaySetsForSeries(instance.SeriesInstanceUID) || [];
+    const existingDisplaySets = this.getDisplaySetsForSeries(instance.SeriesInstanceUID) || [];
 
     const SOPClassHandlerIds = this.SOPClassHandlerIds;
     const allDisplaySets = [];
@@ -357,9 +331,7 @@ export default class DisplaySetService extends PubSubService {
               this.activeDisplaySetsChanged = true;
               instances = filterInstances(instances, [addedDs]);
               this._addActiveDisplaySets([addedDs]);
-              this.setDisplaySetMetadataInvalidated(
-                addedDs.displaySetInstanceUID
-              );
+              this.setDisplaySetMetadataInvalidated(addedDs.displaySetInstanceUID);
             }
             // This means that all instances already existed or got added to
             // existing display sets, and had an invalidated event fired
@@ -405,9 +377,7 @@ export default class DisplaySetService extends PubSubService {
     // applying the default sopClassUID handler
     if (allDisplaySets.length === 0) {
       // applying hp-defined viewport settings to the displaysets
-      const handler = this.extensionManager.getModuleEntry(
-        this.unsuportedSOPClassHandler
-      );
+      const handler = this.extensionManager.getModuleEntry(this.unsuportedSOPClassHandler);
       const displaySets = handler.getDisplaySetsFromSeries(instances);
       if (displaySets?.length) {
         displaySets.forEach(ds => {

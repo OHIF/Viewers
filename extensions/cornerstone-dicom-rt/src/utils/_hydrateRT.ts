@@ -1,13 +1,6 @@
-async function _hydrateRTDisplaySet({
-  rtDisplaySet,
-  viewportId,
-  servicesManager,
-}) {
-  const {
-    segmentationService,
-    hangingProtocolService,
-    viewportGridService,
-  } = servicesManager.services;
+async function _hydrateRTDisplaySet({ rtDisplaySet, viewportId, servicesManager }) {
+  const { segmentationService, hangingProtocolService, viewportGridService } =
+    servicesManager.services;
 
   const displaySetInstanceUID = rtDisplaySet.referencedDisplaySetInstanceUID;
 

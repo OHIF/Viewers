@@ -83,9 +83,7 @@ export default class PortalTooltipCard extends Component {
       ...this.defaultArrowStyle,
       ...this.props.style.arrowStyle,
     };
-    let bgBorderColor = arrowStyle.borderColor
-      ? arrowStyle.borderColor
-      : 'transparent';
+    let bgBorderColor = arrowStyle.borderColor ? arrowStyle.borderColor : 'transparent';
 
     let fgColorBorder = `10px solid ${arrowStyle.color}`;
     let fgTransBorder = `${FG_SIZE}px solid transparent`;
@@ -161,11 +159,7 @@ export default class PortalTooltipCard extends Component {
       }
     }
 
-    let {
-      color,
-      borderColor,
-      ...propsArrowStyle
-    } = this.props.style.arrowStyle;
+    let { color, borderColor, ...propsArrowStyle } = this.props.style.arrowStyle;
 
     const state = {
       fgStyle: this.mergeStyle(fgStyle, propsArrowStyle),
@@ -192,16 +186,7 @@ export default class PortalTooltipCard extends Component {
 
   mergeStyle(style, theme) {
     if (theme) {
-      let {
-        position,
-        top,
-        left,
-        right,
-        bottom,
-        marginLeft,
-        marginRight,
-        ...validTheme
-      } = theme;
+      let { position, top, left, right, bottom, marginLeft, marginRight, ...validTheme } = theme;
 
       return {
         ...style,
@@ -217,10 +202,8 @@ export default class PortalTooltipCard extends Component {
     let parent = this.props.parentEl;
     let align = this.props.align;
     let tooltipPosition = parent.getBoundingClientRect();
-    let scrollY =
-      window.scrollY !== undefined ? window.scrollY : window.pageYOffset;
-    let scrollX =
-      window.scrollX !== undefined ? window.scrollX : window.pageXOffset;
+    let scrollY = window.scrollY !== undefined ? window.scrollY : window.pageYOffset;
+    let scrollX = window.scrollX !== undefined ? window.scrollX : window.pageXOffset;
     let top = scrollY + tooltipPosition.top;
     let left = scrollX + tooltipPosition.left;
     let style = {};
@@ -228,8 +211,7 @@ export default class PortalTooltipCard extends Component {
     if (this.rootRef.current) {
       const newHeight = this.rootRef.current.offsetHeight / 2;
       const bottomPosition = tooltipPosition.bottom + newHeight;
-      const isOffscreen =
-        tooltipPosition.bottom + newHeight > window.innerHeight;
+      const isOffscreen = tooltipPosition.bottom + newHeight > window.innerHeight;
       const offscreenDifference = bottomPosition - window.innerHeight;
       if (isOffscreen) {
         const padding = 3;
@@ -270,13 +252,11 @@ export default class PortalTooltipCard extends Component {
         style.left = left + parentSize.width + this.margin;
       },
       top: () => {
-        style.left =
-          left - this.state.width / 2 + parentSize.width / 2 + alignOffset;
+        style.left = left - this.state.width / 2 + parentSize.width / 2 + alignOffset;
         style.top = top - this.state.height - this.margin;
       },
       bottom: () => {
-        style.left =
-          left - this.state.width / 2 + parentSize.width / 2 + alignOffset;
+        style.left = left - this.state.width / 2 + parentSize.width / 2 + alignOffset;
         style.top = top + parentSize.height + this.margin;
       },
     };
@@ -286,19 +266,13 @@ export default class PortalTooltipCard extends Component {
         style.left = left + parentSize.width / 2 - this.margin + alignOffset;
       },
       right: () => {
-        style.left =
-          left -
-          this.state.width +
-          parentSize.width / 2 +
-          this.margin +
-          alignOffset;
+        style.left = left - this.state.width + parentSize.width / 2 + this.margin + alignOffset;
       },
       top: () => {
         style.top = top + parentSize.height / 2 - this.margin;
       },
       bottom: () => {
-        style.top =
-          top + parentSize.height / 2 - this.state.height + this.margin;
+        style.top = top + parentSize.height / 2 - this.state.height + this.margin;
       },
     };
 
@@ -319,9 +293,7 @@ export default class PortalTooltipCard extends Component {
           if (!bgStyleRight) {
             bgStyleRight = tooltipWidth / 2 - BG_SIZE;
           }
-          const newBgRight = Math.round(
-            bgStyleRight - style.left + this.margin
-          );
+          const newBgRight = Math.round(bgStyleRight - style.left + this.margin);
           arrowStyle = {
             ...arrowStyle,
             bgStyle: {

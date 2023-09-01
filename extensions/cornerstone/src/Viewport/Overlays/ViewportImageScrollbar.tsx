@@ -14,15 +14,10 @@ function CornerstoneImageScrollbar({
   scrollbarHeight,
   servicesManager,
 }) {
-  const {
-    cineService,
-    cornerstoneViewportService,
-  } = (servicesManager as ServicesManger).services;
+  const { cineService, cornerstoneViewportService } = (servicesManager as ServicesManger).services;
 
   const onImageScrollbarChange = (imageIndex, viewportId) => {
-    const viewport = cornerstoneViewportService.getCornerstoneViewport(
-      viewportId
-    );
+    const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
     const { isCineEnabled } = cineService.getState();
 
@@ -43,9 +38,7 @@ function CornerstoneImageScrollbar({
       return;
     }
 
-    const viewport = cornerstoneViewportService.getCornerstoneViewport(
-      viewportId
-    );
+    const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
     if (!viewport) {
       return;
@@ -90,16 +83,10 @@ function CornerstoneImageScrollbar({
       });
     };
 
-    element.addEventListener(
-      Enums.Events.STACK_VIEWPORT_SCROLL,
-      updateStackIndex
-    );
+    element.addEventListener(Enums.Events.STACK_VIEWPORT_SCROLL, updateStackIndex);
 
     return () => {
-      element.removeEventListener(
-        Enums.Events.STACK_VIEWPORT_SCROLL,
-        updateStackIndex
-      );
+      element.removeEventListener(Enums.Events.STACK_VIEWPORT_SCROLL, updateStackIndex);
     };
   }, [viewportData, element]);
 
@@ -117,19 +104,14 @@ function CornerstoneImageScrollbar({
     element.addEventListener(Enums.Events.VOLUME_NEW_IMAGE, updateVolumeIndex);
 
     return () => {
-      element.removeEventListener(
-        Enums.Events.VOLUME_NEW_IMAGE,
-        updateVolumeIndex
-      );
+      element.removeEventListener(Enums.Events.VOLUME_NEW_IMAGE, updateVolumeIndex);
     };
   }, [viewportData, element]);
 
   return (
     <ImageScrollbar
       onChange={evt => onImageScrollbarChange(evt, viewportId)}
-      max={
-        imageSliceData.numberOfSlices ? imageSliceData.numberOfSlices - 1 : 0
-      }
+      max={imageSliceData.numberOfSlices ? imageSliceData.numberOfSlices - 1 : 0}
       height={scrollbarHeight}
       value={imageSliceData.imageIndex}
     />

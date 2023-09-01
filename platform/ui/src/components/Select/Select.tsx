@@ -22,14 +22,17 @@ const Option = props => {
   return (
     <components.Option {...props}>
       <div className="flex items-center">
-        <div className="w-2 h-2">
+        <div className="h-2 w-2">
           {props.isSelected ? (
             <Icon name={'checkbox-active'} />
           ) : (
             <Icon name={'checkbox-default'} />
           )}
         </div>
-        <label id={props.data.value} className="ml-3 mt-1">
+        <label
+          id={props.data.value}
+          className="ml-3 mt-1"
+        >
           <span>{props.value}</span>
         </label>
       </div>
@@ -58,9 +61,7 @@ const Select = ({
     IndicatorSeparator: () => null,
   };
   let _components = isMulti ? { Option, MultiValue } : {};
-  _components = noIcons
-    ? { ..._components, ..._noIconComponents }
-    : _components;
+  _components = noIcons ? { ..._components, ..._noIconComponents } : _components;
   const selectedOptions = [];
 
   // Map array of values to an array of selected options
@@ -76,10 +77,7 @@ const Select = ({
   return (
     <ReactSelect
       inputId={`input-${id}`}
-      className={classnames(
-        className,
-        'ohif-select flex flex-col flex-1 customSelect__wrapper'
-      )}
+      className={classnames(className, 'ohif-select customSelect__wrapper flex flex-1 flex-col')}
       data-cy={`input-${id}`}
       classNamePrefix="customSelect"
       isDisabled={isDisabled}
@@ -134,10 +132,7 @@ Select.propTypes = {
     })
   ),
   placeholder: PropTypes.string,
-  value: PropTypes.oneOfType([
-    PropTypes.arrayOf(PropTypes.string),
-    PropTypes.any,
-  ]),
+  value: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.string), PropTypes.any]),
 };
 
 export default Select;

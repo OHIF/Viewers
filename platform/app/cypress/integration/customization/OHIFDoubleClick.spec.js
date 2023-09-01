@@ -11,9 +11,7 @@ describe('OHIF Double Click', () => {
 
   it('Should double click each viewport to one up and back', () => {
     const numExpectedViewports = 3;
-    cy.get('[data-cy="viewport-pane"]')
-      .its('length')
-      .should('be.eq', numExpectedViewports);
+    cy.get('[data-cy="viewport-pane"]').its('length').should('be.eq', numExpectedViewports);
 
     for (let i = 0; i < numExpectedViewports; i += 1) {
       cy.wait(2000);
@@ -38,13 +36,9 @@ describe('OHIF Double Click', () => {
         .not('.pointer-events-none');
 
       // The actual double click.
-      cy.get('[data-cy="viewport-pane"]')
-        .eq(i)
-        .trigger('dblclick', 'center');
+      cy.get('[data-cy="viewport-pane"]').eq(i).trigger('dblclick', 'center');
 
-      cy.get('[data-cy="viewport-pane"]')
-        .its('length')
-        .should('be.eq', 1);
+      cy.get('[data-cy="viewport-pane"]').its('length').should('be.eq', 1);
 
       cy.get('[data-cy="viewport-pane"]')
         .trigger('mousedown', 'center', {
@@ -54,9 +48,7 @@ describe('OHIF Double Click', () => {
           force: true,
         });
 
-      cy.get('[data-cy="viewport-pane"]')
-        .eq(0)
-        .trigger('dblclick', 'center');
+      cy.get('[data-cy="viewport-pane"]').eq(0).trigger('dblclick', 'center');
     }
   });
 });

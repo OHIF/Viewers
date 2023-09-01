@@ -127,16 +127,11 @@ function createDicomLocalApi(dicomLocalConfig) {
       series: {
         metadata: async ({ StudyInstanceUID, madeInClient = false } = {}) => {
           if (!StudyInstanceUID) {
-            throw new Error(
-              'Unable to query for SeriesMetadata without StudyInstanceUID'
-            );
+            throw new Error('Unable to query for SeriesMetadata without StudyInstanceUID');
           }
 
           // Instances metadata already added via local upload
-          const study = DicomMetadataStore.getStudy(
-            StudyInstanceUID,
-            madeInClient
-          );
+          const study = DicomMetadataStore.getStudy(StudyInstanceUID, madeInClient);
 
           // Series metadata already added via local upload
           DicomMetadataStore._broadcastEvent(EVENTS.SERIES_ADDED, {
@@ -236,8 +231,7 @@ function createDicomLocalApi(dicomLocalConfig) {
       const { StudyInstanceUIDs: paramsStudyInstanceUIDs } = params;
       const queryStudyInstanceUIDs = query.getAll('StudyInstanceUIDs');
 
-      const StudyInstanceUIDs =
-        queryStudyInstanceUIDs || paramsStudyInstanceUIDs;
+      const StudyInstanceUIDs = queryStudyInstanceUIDs || paramsStudyInstanceUIDs;
       const StudyInstanceUIDsAsArray =
         StudyInstanceUIDs && Array.isArray(StudyInstanceUIDs)
           ? StudyInstanceUIDs

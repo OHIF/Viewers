@@ -3,8 +3,7 @@ const { merge } = require('webpack-merge');
 const path = require('path');
 const webpackCommon = require('./../../../.webpack/webpack.base.js');
 const pkg = require('./../package.json');
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
-  .BundleAnalyzerPlugin;
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 const ROOT_DIR = path.join(__dirname, './..');
 const SRC_DIR = path.join(__dirname, '../src');
@@ -38,13 +37,7 @@ module.exports = (env, argv) => {
       libraryTarget: 'umd',
       filename: pkg.main,
     },
-    externals: [
-      /\b(vtk.js)/,
-      /\b(dcmjs)/,
-      /\b(gl-matrix)/,
-      /^@ohif/,
-      /^@cornerstonejs/,
-    ],
+    externals: [/\b(vtk.js)/, /\b(dcmjs)/, /\b(gl-matrix)/, /^@ohif/, /^@cornerstonejs/],
     plugins: [
       new webpack.optimize.LimitChunkCountPlugin({
         maxChunks: 1,

@@ -1,7 +1,5 @@
 import ViewerManager, { EVENTS as ViewerEvents } from '../tools/viewerManager';
-import RoiAnnotation, {
-  EVENTS as AnnotationEvents,
-} from '../utils/RoiAnnotation';
+import RoiAnnotation, { EVENTS as AnnotationEvents } from '../utils/RoiAnnotation';
 import styles from '../utils/styles';
 import { DicomMetadataStore, PubSubService } from '@ohif/core';
 
@@ -158,10 +156,7 @@ export default class MicroscopyService extends PubSubService {
   _onRoiUpdated(data) {
     const { roiGraphic, managedViewer } = data;
     this.synchronizeViewers(managedViewer);
-    this._broadcastEvent(
-      EVENTS.ANNOTATION_UPDATED,
-      this.getAnnotation(roiGraphic.uid)
-    );
+    this._broadcastEvent(EVENTS.ANNOTATION_UPDATED, this.getAnnotation(roiGraphic.uid));
   }
 
   /**
@@ -175,10 +170,7 @@ export default class MicroscopyService extends PubSubService {
   _onRoiSelected(data) {
     const { roiGraphic } = data;
     const selectedAnnotation = this.getAnnotation(roiGraphic.uid);
-    if (
-      selectedAnnotation &&
-      selectedAnnotation !== this.getSelectedAnnotation()
-    ) {
+    if (selectedAnnotation && selectedAnnotation !== this.getSelectedAnnotation()) {
       if (this.selectedAnnotation) {
         this.clearSelection();
       }
@@ -221,16 +213,11 @@ export default class MicroscopyService extends PubSubService {
    * @param {ViewerManager} managedViewer The viewer being removed
    */
   _removeManagedViewerSubscriptions(managedViewer) {
-    managedViewer._roiAddedSubscription &&
-      managedViewer._roiAddedSubscription.unsubscribe();
-    managedViewer._roiModifiedSubscription &&
-      managedViewer._roiModifiedSubscription.unsubscribe();
-    managedViewer._roiRemovedSubscription &&
-      managedViewer._roiRemovedSubscription.unsubscribe();
-    managedViewer._roiUpdatedSubscription &&
-      managedViewer._roiUpdatedSubscription.unsubscribe();
-    managedViewer._roiSelectedSubscription &&
-      managedViewer._roiSelectedSubscription.unsubscribe();
+    managedViewer._roiAddedSubscription && managedViewer._roiAddedSubscription.unsubscribe();
+    managedViewer._roiModifiedSubscription && managedViewer._roiModifiedSubscription.unsubscribe();
+    managedViewer._roiRemovedSubscription && managedViewer._roiRemovedSubscription.unsubscribe();
+    managedViewer._roiUpdatedSubscription && managedViewer._roiUpdatedSubscription.unsubscribe();
+    managedViewer._roiSelectedSubscription && managedViewer._roiSelectedSubscription.unsubscribe();
 
     managedViewer._roiAddedSubscription = null;
     managedViewer._roiModifiedSubscription = null;
@@ -264,8 +251,7 @@ export default class MicroscopyService extends PubSubService {
    * @returns {Array} The managed viewers for the given series UID
    */
   getManagedViewersForStudy(studyInstanceUID) {
-    const filter = managedViewer =>
-      managedViewer.studyInstanceUID === studyInstanceUID;
+    const filter = managedViewer => managedViewer.studyInstanceUID === studyInstanceUID;
     return Array.from(this.managedViewers).filter(filter);
   }
 
@@ -276,10 +262,7 @@ export default class MicroscopyService extends PubSubService {
    */
   _restoreAnnotations(managedViewer) {
     const { studyInstanceUID, seriesInstanceUID } = managedViewer;
-    const annotations = this.getAnnotationsForSeries(
-      studyInstanceUID,
-      seriesInstanceUID
-    );
+    const annotations = this.getAnnotationsForSeries(studyInstanceUID, seriesInstanceUID);
     annotations.forEach(roiAnnotation => {
       managedViewer.addRoiGraphic(roiAnnotation.roiGraphic);
     });
@@ -301,13 +284,7 @@ export default class MicroscopyService extends PubSubService {
    *
    * @returns {ViewerManager} managed viewer
    */
-  addViewer(
-    viewer,
-    viewportId,
-    container,
-    studyInstanceUID,
-    seriesInstanceUID
-  ) {
+  addViewer(viewer, viewportId, container, studyInstanceUID, seriesInstanceUID) {
     const managedViewer = new ViewerManager(
       viewer,
       viewportId,
@@ -507,9 +484,7 @@ export default class MicroscopyService extends PubSubService {
    */
   toggleOverviewMap(viewportId) {
     const managedViewers = Array.from(this.managedViewers);
-    const managedViewer = managedViewers.find(
-      mv => mv.viewportId === viewportId
-    );
+    const managedViewer = managedViewers.find(mv => mv.viewportId === viewportId);
     if (managedViewer) {
       managedViewer.toggleOverviewMap();
     }
@@ -529,9 +504,7 @@ export default class MicroscopyService extends PubSubService {
 
     const managedViewers = Array.from(this.managedViewers).filter(filter);
 
-    managedViewers.forEach(managedViewer =>
-      managedViewer.removeRoiGraphic(uid)
-    );
+    managedViewers.forEach(managedViewer => managedViewer.removeRoiGraphic(uid));
 
     if (this.annotations[uid]) {
       this.roiUids.delete(uid);
@@ -570,34 +543,24 @@ export default class MicroscopyService extends PubSubService {
    */
   synchronizeViewers(baseManagedViewer) {
     const { studyInstanceUID, seriesInstanceUID } = baseManagedViewer;
-    const managedViewers = this._getManagedViewersForSeries(
-      studyInstanceUID,
-      seriesInstanceUID
-    );
+    const managedViewers = this._getManagedViewersForSeries(studyInstanceUID, seriesInstanceUID);
 
     // Prevent infinite loops arrising from updates.
-    managedViewers.forEach(managedViewer =>
-      this._removeManagedViewerSubscriptions(managedViewer)
-    );
+    managedViewers.forEach(managedViewer => this._removeManagedViewerSubscriptions(managedViewer));
 
     managedViewers.forEach(managedViewer => {
       if (managedViewer === baseManagedViewer) {
         return;
       }
 
-      const annotations = this.getAnnotationsForSeries(
-        studyInstanceUID,
-        seriesInstanceUID
-      );
+      const annotations = this.getAnnotationsForSeries(studyInstanceUID, seriesInstanceUID);
       managedViewer.clearRoiGraphics();
       annotations.forEach(roiAnnotation => {
         managedViewer.addRoiGraphic(roiAnnotation.roiGraphic);
       });
     });
 
-    managedViewers.forEach(managedViewer =>
-      this._addManagedViewerSubscriptions(managedViewer)
-    );
+    managedViewers.forEach(managedViewer => this._addManagedViewerSubscriptions(managedViewer));
   }
 
   /**

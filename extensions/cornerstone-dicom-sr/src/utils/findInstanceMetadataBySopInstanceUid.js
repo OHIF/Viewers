@@ -14,8 +14,7 @@ const findInstanceMetadataBySopInstanceUID = (displaySets, SOPInstanceUID) => {
     }
 
     instanceFound = displaySet.images.find(
-      instanceMetadata =>
-        instanceMetadata.getSOPInstanceUID() === SOPInstanceUID
+      instanceMetadata => instanceMetadata.getSOPInstanceUID() === SOPInstanceUID
     );
 
     return !!instanceFound;

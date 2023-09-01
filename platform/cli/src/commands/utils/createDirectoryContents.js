@@ -1,11 +1,7 @@
 import fs from 'fs';
 
 // https://github.dev/leoroese/template-cli/blob/628dd24db7df399ebb520edd0bc301bc7b5e8b66/index.js#L19
-const createDirectoryContents = (
-  templatePath,
-  targetDirPath,
-  copyPrettierRules
-) => {
+const createDirectoryContents = (templatePath, targetDirPath, copyPrettierRules) => {
   const filesToCreate = fs.readdirSync(templatePath);
 
   filesToCreate.forEach(file => {

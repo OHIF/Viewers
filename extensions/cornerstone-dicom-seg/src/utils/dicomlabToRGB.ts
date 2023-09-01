@@ -6,9 +6,7 @@ import dcmjs from 'dcmjs';
  * @returns The RGB color as an array of three integers between 0 and 255.
  */
 function dicomlabToRGB(cielab: number[]): number[] {
-  const rgb = dcmjs.data.Colors.dicomlab2RGB(cielab).map(x =>
-    Math.round(x * 255)
-  );
+  const rgb = dcmjs.data.Colors.dicomlab2RGB(cielab).map(x => Math.round(x * 255));
 
   return rgb;
 }

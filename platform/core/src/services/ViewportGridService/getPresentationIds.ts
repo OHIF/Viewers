@@ -102,11 +102,7 @@ const getPresentationIds = (viewport, viewports): PresentationIds => {
   if (!viewport) {
     return;
   }
-  const {
-    viewportOptions,
-    displaySetInstanceUIDs,
-    displaySetOptions,
-  } = viewport;
+  const { viewportOptions, displaySetInstanceUIDs, displaySetOptions } = viewport;
   if (!viewportOptions || !displaySetInstanceUIDs?.length) {
     return;
   }
@@ -128,8 +124,7 @@ const getPresentationIds = (viewport, viewports): PresentationIds => {
   // only add unique index if the viewport is getting inserted and not updated
   const isUpdatingSameViewport = Array.from(viewports.values()).some(v => {
     return (
-      v.displaySetInstanceUIDs.toString() ===
-        viewport.displaySetInstanceUIDs.toString() &&
+      v.displaySetInstanceUIDs.toString() === viewport.displaySetInstanceUIDs.toString() &&
       v.viewportId === viewport.viewportId
     );
   });
@@ -143,12 +138,7 @@ const getPresentationIds = (viewport, viewports): PresentationIds => {
     viewports,
     isUpdatingSameViewport
   );
-  addUniqueIndex(
-    lutPresentationArr,
-    'lutPresentationId',
-    viewports,
-    isUpdatingSameViewport
-  );
+  addUniqueIndex(lutPresentationArr, 'lutPresentationId', viewports, isUpdatingSameViewport);
 
   const lutPresentationId = lutPresentationArr.join(JOIN_STR);
   const positionPresentationId = positionPresentationArr.join(JOIN_STR);

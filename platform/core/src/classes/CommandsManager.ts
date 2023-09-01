@@ -181,30 +181,27 @@ export class CommandsManager {
     const commands =
       (Array.isArray(toRun) && toRun) ||
       ((toRun as Command).commandName && [toRun]) ||
-      (Array.isArray((toRun as Commands).commands) &&
-        (toRun as Commands).commands);
+      (Array.isArray((toRun as Commands).commands) && (toRun as Commands).commands);
     if (!commands) {
       console.log("Command isn't runnable", toRun);
       return;
     }
 
     let result;
-    (commands as Command[]).forEach(
-      ({ commandName, commandOptions, context }) => {
-        if (commandName) {
-          result = this.runCommand(
-            commandName,
-            {
-              ...commandOptions,
-              ...options,
-            },
-            context
-          );
-        } else {
-          console.warn('No command name supplied in', toRun);
-        }
+    (commands as Command[]).forEach(({ commandName, commandOptions, context }) => {
+      if (commandName) {
+        result = this.runCommand(
+          commandName,
+          {
+            ...commandOptions,
+            ...options,
+          },
+          context
+        );
+      } else {
+        console.warn('No command name supplied in', toRun);
       }
-    );
+    });
 
     return result;
   }

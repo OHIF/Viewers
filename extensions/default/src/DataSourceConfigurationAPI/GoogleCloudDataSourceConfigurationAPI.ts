@@ -29,15 +29,15 @@ const initialUrl = 'https://cloudresourcemanager.googleapis.com/v1';
 const baseHealthcareUrl = 'https://healthcare.googleapis.com/v1';
 
 class GoogleCloudDataSourceConfigurationAPIItem
-  implements Types.BaseDataSourceConfigurationAPIItem {
+  implements Types.BaseDataSourceConfigurationAPIItem
+{
   id: string;
   name: string;
   url: string;
   itemType: ItemType;
 }
 
-class GoogleCloudDataSourceConfigurationAPI
-  implements Types.BaseDataSourceConfigurationAPI {
+class GoogleCloudDataSourceConfigurationAPI implements Types.BaseDataSourceConfigurationAPI {
   private _extensionManager: ExtensionManager;
   private _fetchOptions: { method: string; headers: unknown };
   private _dataSourceName: string;
@@ -45,8 +45,7 @@ class GoogleCloudDataSourceConfigurationAPI
   constructor(dataSourceName, servicesManager, extensionManager) {
     this._dataSourceName = dataSourceName;
     this._extensionManager = extensionManager;
-    const userAuthenticationService =
-      servicesManager.services.userAuthenticationService;
+    const userAuthenticationService = servicesManager.services.userAuthenticationService;
     this._fetchOptions = {
       method: 'GET',
       headers: userAuthenticationService.getAuthorizationHeader(),
@@ -89,9 +88,7 @@ class GoogleCloudDataSourceConfigurationAPI
       // Last configurable item, so update the data source configuration.
       const url = `${googleCloudItem.url}/dicomWeb`;
       const dataSourceDefCopy = JSON.parse(
-        JSON.stringify(
-          this._extensionManager.getDataSourceDefinition(this._dataSourceName)
-        )
+        JSON.stringify(this._extensionManager.getDataSourceDefinition(this._dataSourceName))
       );
       dataSourceDefCopy.configuration = {
         ...dataSourceDefCopy.configuration,
@@ -136,9 +133,7 @@ class GoogleCloudDataSourceConfigurationAPI
     return subItems;
   }
 
-  async getConfiguredItems(): Promise<
-    Array<GoogleCloudDataSourceConfigurationAPIItem>
-  > {
+  async getConfiguredItems(): Promise<Array<GoogleCloudDataSourceConfigurationAPIItem>> {
     const dataSourceDefinition = this._extensionManager.getDataSourceDefinition(
       this._dataSourceName
     );
@@ -216,9 +211,7 @@ class GoogleCloudDataSourceConfigurationAPI
             fetchOptions,
             fetchSearchParams
           );
-          data[ItemType[fetchItemType]] = data[ItemType[fetchItemType]].concat(
-            subPageData
-          );
+          data[ItemType[fetchItemType]] = data[ItemType[fetchItemType]].concat(subPageData);
         }
         if (data[ItemType[fetchItemType]]) {
           return data[ItemType[fetchItemType]];

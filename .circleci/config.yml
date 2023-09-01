@@ -269,8 +269,7 @@ jobs:
             git config --global user.name "ohif-bot"
       - run:
           name: Authenticate with NPM registry
-          command:
-            echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/repo/.npmrc
+          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/repo/.npmrc
       - run:
           name: Increase the event emitter limit
           command: |
@@ -289,8 +288,7 @@ jobs:
             node ./publish-version.mjs
       - run:
           name: Again set the NPM registry (was deleted in the version script)
-          command:
-            echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/repo/.npmrc
+          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/repo/.npmrc
       - run:
           name: publish package dist
           command: |
@@ -337,8 +335,7 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: false
       - run:
-          name:
-            Build and push Docker image from the master branch (beta releases)
+          name: Build and push Docker image from the master branch (beta releases)
           command: |
             echo $(ls -l)
 
@@ -417,8 +414,8 @@ workflows:
           store_artifacts: false
           working_directory: platform/app
           build:
-            yarn test:data && npx cross-env QUICK_BUILD=true
-            APP_CONFIG=config/dicomweb-server.js yarn run build
+            yarn test:data && npx cross-env QUICK_BUILD=true APP_CONFIG=config/dicomweb-server.js
+            yarn run build
           # start server --> verify running --> percy + chrome + cypress
           command: yarn run test:e2e:dist
           cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'

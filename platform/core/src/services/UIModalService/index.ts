@@ -71,10 +71,7 @@ class UIModalService {
    *   show: showImplementation,
    * }
    */
-  setServiceImplementation({
-    hide: hideImplementation,
-    show: showImplementation,
-  }) {
+  setServiceImplementation({ hide: hideImplementation, show: showImplementation }) {
     if (hideImplementation) {
       serviceImplementation._hide = hideImplementation;
     }

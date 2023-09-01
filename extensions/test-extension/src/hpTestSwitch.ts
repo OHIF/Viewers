@@ -220,14 +220,7 @@ const hpTestSwitch: Types.HangingProtocol.Protocol = {
       viewportStructure: viewportStructure32,
       // Note the following structure simply preserves the viewportId for
       // a given screen position
-      viewports: [
-        viewport0a,
-        viewport1b,
-        viewport4e,
-        viewport2c,
-        viewport3d,
-        viewport5f,
-      ],
+      viewports: [viewport0a, viewport1b, viewport4e, viewport2c, viewport3d, viewport5f],
     },
     {
       name: '2x2 1c0d3a2b',

@@ -36,7 +36,10 @@ const renderYearsOptions = () => {
   for (let i = 0; i < 20; i++) {
     const year = currentYear - i;
     options.push(
-      <option key={year} value={year}>
+      <option
+        key={year}
+        value={year}
+      >
         {year}
       </option>
     );
@@ -58,7 +61,7 @@ const DateRange = props => {
             <button
               key={text}
               type="button"
-              className={`m-0 py-2 px-3 bg-primary-main border-0 rounded text-white text-base transition duration-300 hover:opacity-80`}
+              className={`bg-primary-main m-0 rounded border-0 py-2 px-3 text-base text-white transition duration-300 hover:opacity-80`}
               onClick={() =>
                 onChange({
                   startDate: start ? start.format('YYYYMMDD') : undefined,
@@ -101,7 +104,10 @@ const DateRange = props => {
             onBlur={handleOnBlur}
           >
             {moment.months().map((label, value) => (
-              <option key={value} value={value}>
+              <option
+                key={value}
+                value={value}
+              >
                 {label}
               </option>
             ))}

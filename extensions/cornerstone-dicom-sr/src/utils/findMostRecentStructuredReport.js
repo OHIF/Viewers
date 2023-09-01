@@ -18,10 +18,7 @@ const findMostRecentStructuredReport = studies => {
       }
 
       if (isStructuredReportSeries(series)) {
-        if (
-          !mostRecentStructuredReport ||
-          compareSeriesDate(series, mostRecentStructuredReport)
-        ) {
+        if (!mostRecentStructuredReport || compareSeriesDate(series, mostRecentStructuredReport)) {
           mostRecentStructuredReport = series;
         }
       }
@@ -38,10 +35,7 @@ const findMostRecentStructuredReport = studies => {
  * @returns {boolean}
  */
 const isStructuredReportSeries = series => {
-  const supportedSopClassUIDs = [
-    '1.2.840.10008.5.1.4.1.1.88.22',
-    '1.2.840.10008.5.1.4.1.1.11.1',
-  ];
+  const supportedSopClassUIDs = ['1.2.840.10008.5.1.4.1.1.88.22', '1.2.840.10008.5.1.4.1.1.11.1'];
 
   const firstInstance = series.getFirstInstance();
   const SOPClassUID = firstInstance.getData().metadata.SOPClassUID;

@@ -33,33 +33,36 @@ function Header({
       className="justify-between border-b-4 border-black"
       isSticky={isSticky}
     >
-      <div className="flex justify-between flex-1">
+      <div className="flex flex-1 justify-between">
         <div className="flex items-center">
           {/* // TODO: Should preserve filter/sort
               // Either injected service? Or context (like react router's `useLocation`?) */}
           <div
             className={classNames(
-              'inline-flex items-center mr-3',
+              'mr-3 inline-flex items-center',
               isReturnEnabled && 'cursor-pointer'
             )}
             onClick={onClickReturn}
           >
             {isReturnEnabled && (
-              <Icon name="chevron-left" className="w-8 text-primary-active" />
+              <Icon
+                name="chevron-left"
+                className="text-primary-active w-8"
+              />
             )}
             <div className="ml-4">
-              {WhiteLabeling?.createLogoComponentFn?.(React, props) || (
-                <Svg name="logo-ohif" />
-              )}
+              {WhiteLabeling?.createLogoComponentFn?.(React, props) || <Svg name="logo-ohif" />}
             </div>
           </div>
         </div>
         <div className="flex items-center">{children}</div>
         <div className="flex items-center">
-          <span className="mr-3 text-lg text-common-light">
-            {t('INVESTIGATIONAL USE ONLY')}
-          </span>
-          <Dropdown id="options" showDropdownIcon={false} list={menuOptions}>
+          <span className="text-common-light mr-3 text-lg">{t('INVESTIGATIONAL USE ONLY')}</span>
+          <Dropdown
+            id="options"
+            showDropdownIcon={false}
+            list={menuOptions}
+          >
             <IconButton
               id={'options-settings-icon'}
               variant="text"

@@ -39,8 +39,7 @@ class ViewportGridService extends PubSubService {
       this.serviceImplementation._getState = getStateImplementation;
     }
     if (setActiveViewportIdImplementation) {
-      this.serviceImplementation._setActiveViewport =
-        setActiveViewportIdImplementation;
+      this.serviceImplementation._setActiveViewport = setActiveViewportIdImplementation;
     }
     if (setDisplaySetsForViewportsImplementation) {
       this.serviceImplementation._setDisplaySetsForViewports =
@@ -59,8 +58,7 @@ class ViewportGridService extends PubSubService {
       this.serviceImplementation._set = setImplementation;
     }
     if (getNumViewportPanesImplementation) {
-      this.serviceImplementation._getNumViewportPanes =
-        getNumViewportPanesImplementation;
+      this.serviceImplementation._getNumViewportPanes = getNumViewportPanesImplementation;
     }
   }
 
@@ -91,10 +89,7 @@ class ViewportGridService extends PubSubService {
       if (updatedViewport) {
         viewports.push(updatedViewport);
       } else {
-        console.warn(
-          "ViewportGridService::Didn't find updated viewport",
-          viewport
-        );
+        console.warn("ViewportGridService::Didn't find updated viewport", viewport);
       }
     }
     this._broadcastEvent(ViewportGridService.EVENTS.GRID_STATE_CHANGED, {
@@ -158,7 +153,9 @@ class ViewportGridService extends PubSubService {
     return this.serviceImplementation._getNumViewportPanes();
   }
 
-  public getLayoutOptionsFromState(state: any): { x: number; y: number; width: number; height: number }[] {
+  public getLayoutOptionsFromState(
+    state: any
+  ): { x: number; y: number; width: number; height: number }[] {
     return Array.from(state.viewports.entries()).map(([_, viewport]) => {
       return {
         x: viewport.x,

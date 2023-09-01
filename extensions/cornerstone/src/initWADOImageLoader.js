@@ -1,9 +1,7 @@
 import * as cornerstone from '@cornerstonejs/core';
 import { volumeLoader } from '@cornerstonejs/core';
 import { cornerstoneStreamingImageVolumeLoader } from '@cornerstonejs/streaming-image-volume-loader';
-import dicomImageLoader, {
-  webWorkerManager,
-} from '@cornerstonejs/dicom-image-loader';
+import dicomImageLoader, { webWorkerManager } from '@cornerstonejs/dicom-image-loader';
 import dicomParser from 'dicom-parser';
 import { errorHandler, utils } from '@ohif/core';
 
@@ -41,10 +39,7 @@ export default function initWADOImageLoader(
   dicomImageLoader.external.cornerstone = cornerstone;
   dicomImageLoader.external.dicomParser = dicomParser;
 
-  registerVolumeLoader(
-    'cornerstoneStreamingImageVolume',
-    cornerstoneStreamingImageVolumeLoader
-  );
+  registerVolumeLoader('cornerstoneStreamingImageVolume', cornerstoneStreamingImageVolumeLoader);
 
   dicomImageLoader.configure({
     decodeConfig: {
@@ -55,10 +50,9 @@ export default function initWADOImageLoader(
       // we should set this flag to false.
       convertFloatPixelDataToInt: false,
     },
-    beforeSend: function(xhr) {
+    beforeSend: function (xhr) {
       //TODO should be removed in the future and request emitted by DicomWebDataSource
-      const sourceConfig =
-        extensionManager.getActiveDataSource()?.[0].getConfig() ?? {};
+      const sourceConfig = extensionManager.getActiveDataSource()?.[0].getConfig() ?? {};
       const headers = userAuthenticationService.getAuthorizationHeader();
       const acceptHeader = utils.generateAcceptHeader(
         sourceConfig.acceptHeader,

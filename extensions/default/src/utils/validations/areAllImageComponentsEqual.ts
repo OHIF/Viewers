@@ -5,9 +5,7 @@ import toNumber from '@ohif/core/src/utils/toNumber';
  * @param {*} instances
  * @returns
  */
-export default function areAllImageComponentsEqual(
-  instances: Array<any>
-): boolean {
+export default function areAllImageComponentsEqual(instances: Array<any>): boolean {
   if (!instances?.length) {
     return false;
   }

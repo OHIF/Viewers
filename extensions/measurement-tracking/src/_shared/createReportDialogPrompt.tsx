@@ -4,7 +4,7 @@ import { ButtonEnums, Dialog, Input } from '@ohif/ui';
 import RESPONSE from './PROMPT_RESPONSES';
 
 export default function createReportDialogPrompt(uiDialogService) {
-  return new Promise(function(resolve, reject) {
+  return new Promise(function (resolve, reject) {
     let dialogId = undefined;
 
     const _handleClose = () => {
@@ -72,7 +72,7 @@ export default function createReportDialogPrompt(uiDialogService) {
                 label="Enter the report name"
                 labelClassName="text-white grow leading-[1.2] text-[14px]"
                 autoFocus
-                className="bg-black border-primary-main grow"
+                className="border-primary-main grow bg-black"
                 type="text"
                 value={value.label}
                 onChange={onChangeHandler}

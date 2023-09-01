@@ -3,10 +3,7 @@ import PropTypes from 'prop-types';
 import { Machine } from 'xstate';
 import { useMachine } from '@xstate/react';
 import { useViewportGrid } from '@ohif/ui';
-import {
-  machineConfiguration,
-  defaultOptions,
-} from './measurementTrackingMachine';
+import { machineConfiguration, defaultOptions } from './measurementTrackingMachine';
 import promptBeginTracking from './promptBeginTracking';
 import promptTrackNewSeries from './promptTrackNewSeries';
 import promptTrackNewStudy from './promptTrackNewStudy';
@@ -19,8 +16,7 @@ const TrackedMeasurementsContext = React.createContext();
 TrackedMeasurementsContext.displayName = 'TrackedMeasurementsContext';
 const useTrackedMeasurements = () => useContext(TrackedMeasurementsContext);
 
-const SR_SOPCLASSHANDLERID =
-  '@ohif/extension-cornerstone-dicom-sr.sopClassHandlerModule.dicom-sr';
+const SR_SOPCLASSHANDLERID = '@ohif/extension-cornerstone-dicom-sr.sopClassHandlerModule.dicom-sr';
 
 /**
  *
@@ -42,9 +38,7 @@ function TrackedMeasurementsContextProvider(
       const { trackedStudy, trackedSeries } = ctx;
       const measurements = measurementService.getMeasurements();
       const trackedMeasurements = measurements.filter(
-        m =>
-          trackedStudy === m.referenceStudyUID &&
-          trackedSeries.includes(m.referenceSeriesUID)
+        m => trackedStudy === m.referenceStudyUID && trackedSeries.includes(m.referenceSeriesUID)
       );
 
       console.log(
@@ -53,16 +47,11 @@ function TrackedMeasurementsContextProvider(
         trackedMeasurements[0]
       );
 
-      const referencedDisplaySetUID =
-        trackedMeasurements[0].displaySetInstanceUID;
-      const referencedDisplaySet = displaySetService.getDisplaySetByUID(
-        referencedDisplaySetUID
-      );
+      const referencedDisplaySetUID = trackedMeasurements[0].displaySetInstanceUID;
+      const referencedDisplaySet = displaySetService.getDisplaySetByUID(referencedDisplaySetUID);
 
       const referencedImages = referencedDisplaySet.images;
-      const isVolumeIdReferenced = referencedImages[0].imageId.startsWith(
-        'volumeId'
-      );
+      const isVolumeIdReferenced = referencedImages[0].imageId.startsWith('volumeId');
 
       const measurementData = trackedMeasurements[0].data;
 
@@ -76,9 +65,7 @@ function TrackedMeasurementsContextProvider(
         });
 
         if (imageIndex === -1) {
-          console.warn(
-            'Could not find image index for tracked measurement, using 0'
-          );
+          console.warn('Could not find image index for tracked measurement, using 0');
           imageIndex = 0;
         }
       }
@@ -167,10 +154,7 @@ function TrackedMeasurementsContextProvider(
   // - Fix viewport border resize
   // - created/destroyed hooks for extensions (cornerstone measurement subscriptions in it's `init`)
 
-  const measurementTrackingMachine = Machine(
-    machineConfiguration,
-    machineOptions
-  );
+  const measurementTrackingMachine = Machine(machineConfiguration, machineOptions);
 
   const [trackedMeasurements, sendTrackedMeasurementsEvent] = useMachine(
     measurementTrackingMachine
@@ -231,12 +215,7 @@ function TrackedMeasurementsContextProvider(
         });
       }
     }
-  }, [
-    activeViewportId,
-    sendTrackedMeasurementsEvent,
-    servicesManager.services,
-    viewports,
-  ]);
+  }, [activeViewportId, sendTrackedMeasurementsEvent, servicesManager.services, viewports]);
 
   return (
     <TrackedMeasurementsContext.Provider
@@ -255,8 +234,4 @@ TrackedMeasurementsContextProvider.propTypes = {
   appConfig: PropTypes.object,
 };
 
-export {
-  TrackedMeasurementsContext,
-  TrackedMeasurementsContextProvider,
-  useTrackedMeasurements,
-};
+export { TrackedMeasurementsContext, TrackedMeasurementsContextProvider, useTrackedMeasurements };

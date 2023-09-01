@@ -19,14 +19,12 @@ const cs3d = {
 };
 
 const dicomsr = {
-  sopClassHandler:
-    '@ohif/extension-cornerstone-dicom-sr.sopClassHandlerModule.dicom-sr',
+  sopClassHandler: '@ohif/extension-cornerstone-dicom-sr.sopClassHandlerModule.dicom-sr',
   viewport: '@ohif/extension-cornerstone-dicom-sr.viewportModule.dicom-sr',
 };
 
 const dicomvideo = {
-  sopClassHandler:
-    '@ohif/extension-dicom-video.sopClassHandlerModule.dicom-video',
+  sopClassHandler: '@ohif/extension-dicom-video.sopClassHandlerModule.dicom-video',
   viewport: '@ohif/extension-dicom-video.viewportModule.dicom-video',
 };
 
@@ -134,11 +132,7 @@ function modeFactory({ modeConfiguration }) {
       ]);
     },
     onModeExit: ({ servicesManager }) => {
-      const {
-        toolGroupService,
-        measurementService,
-        toolbarService,
-      } = servicesManager.services;
+      const { toolGroupService, measurementService, toolbarService } = servicesManager.services;
 
       toolGroupService.destroy();
     },

@@ -32,12 +32,7 @@ describe('getName', () => {
   it('should return A for element when Alphabetic is [A, B, C, D]', () => {
     const returnValue = 'A';
     const element = {
-      Value: [
-        { Alphabetic: 'A' },
-        { Alphabetic: 'B' },
-        { Alphabetic: 'C' },
-        { Alphabetic: 'D' },
-      ],
+      Value: [{ Alphabetic: 'A' }, { Alphabetic: 'B' }, { Alphabetic: 'C' }, { Alphabetic: 'D' }],
     };
     expect(getName(element, null)).toEqual(returnValue);
   });

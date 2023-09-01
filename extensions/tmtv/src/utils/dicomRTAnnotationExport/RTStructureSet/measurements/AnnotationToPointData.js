@@ -20,18 +20,13 @@ class AnnotationToPointData {
     const toolClass = AnnotationToPointData.TOOL_NAMES[toolName];
 
     if (!toolClass) {
-      throw new Error(
-        `Unknown tool type: ${toolName}, cannot convert to RTSSReport`
-      );
+      throw new Error(`Unknown tool type: ${toolName}, cannot convert to RTSSReport`);
     }
 
     // Each toolData should become a list of contours, ContourSequence
     // contains a list of contours with their pointData, their geometry
     // type and their length.
-    const ContourSequence = toolClass.getContourSequence(
-      annotation,
-      metadataProvider
-    );
+    const ContourSequence = toolClass.getContourSequence(annotation, metadataProvider);
 
     // Todo: random rgb color for now, options should be passed in
     const color = [

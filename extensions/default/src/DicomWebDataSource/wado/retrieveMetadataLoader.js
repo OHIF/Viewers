@@ -14,13 +14,7 @@ export default class RetrieveMetadataLoader {
    * @param {string} [filter.seriesInstanceUID] - series instance uid to filter results against
    * @param {Function} [sortSeries] - Custom sort function for series
    */
-  constructor(
-    client,
-    studyInstanceUID,
-    filters = {},
-    sortCriteria,
-    sortFunction
-  ) {
+  constructor(client, studyInstanceUID, filters = {}, sortCriteria, sortFunction) {
     this.client = client;
     this.studyInstanceUID = studyInstanceUID;
     this.filters = filters;

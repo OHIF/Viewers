@@ -14,18 +14,15 @@ function ROIThresholdConfiguration({ config, dispatch, runCommand }) {
   const { t } = useTranslation('ROIThresholdConfiguration');
 
   return (
-    <div className="flex flex-col px-4 space-y-4 bg-primary-dark py-2">
+    <div className="bg-primary-dark flex flex-col space-y-4 px-4 py-2">
       <div className="flex items-end space-x-2">
-        <div className="flex flex-col w-1/2">
+        <div className="flex w-1/2 flex-col">
           <Select
             label={t('Strategy')}
             closeMenuOnSelect={true}
-            className="mr-2 bg-black border-primary-main text-white "
+            className="border-primary-main mr-2 bg-black text-white "
             options={options}
-            placeholder={
-              options.find(option => option.value === config.strategy)
-                .placeHolder
-            }
+            placeholder={options.find(option => option.value === config.strategy).placeHolder}
             value={config.strategy}
             onChange={({ value }) => {
               dispatch({
@@ -66,7 +63,7 @@ function ROIThresholdConfiguration({ config, dispatch, runCommand }) {
         <Input
           label={t('Percentage of Max SUV')}
           labelClassName="text-white"
-          className="mt-2 bg-black border-primary-main"
+          className="border-primary-main mt-2 bg-black"
           type="text"
           containerClassName="mr-2"
           value={config.weight}
@@ -81,11 +78,14 @@ function ROIThresholdConfiguration({ config, dispatch, runCommand }) {
         />
       )}
       {config.strategy !== ROI_STAT && (
-        <div className="text-sm mr-2">
+        <div className="mr-2 text-sm">
           <table>
             <tbody>
               <tr className="mt-2">
-                <td className="pr-4 pt-2" colSpan="3">
+                <td
+                  className="pr-4 pt-2"
+                  colSpan="3"
+                >
                   <Label
                     className="text-white"
                     text="Lower & Upper Ranges"
@@ -93,15 +93,18 @@ function ROIThresholdConfiguration({ config, dispatch, runCommand }) {
                 </td>
               </tr>
               <tr className="mt-2">
-                <td className="text-center pr-4 pt-2">
-                  <Label className="text-white" text="CT"></Label>
+                <td className="pr-4 pt-2 text-center">
+                  <Label
+                    className="text-white"
+                    text="CT"
+                  ></Label>
                 </td>
                 <td>
                   <div className="flex justify-between">
                     <Input
                       label={t('')}
                       labelClassName="text-white"
-                      className="mt-2 bg-black border-primary-main"
+                      className="border-primary-main mt-2 bg-black"
                       type="text"
                       containerClassName="mr-2"
                       value={config.ctLower}
@@ -117,7 +120,7 @@ function ROIThresholdConfiguration({ config, dispatch, runCommand }) {
                     <Input
                       label={t('')}
                       labelClassName="text-white"
-                      className="mt-2 bg-black border-primary-main"
+                      className="border-primary-main mt-2 bg-black"
                       type="text"
                       containerClassName="mr-2"
                       value={config.ctUpper}
@@ -134,15 +137,18 @@ function ROIThresholdConfiguration({ config, dispatch, runCommand }) {
                 </td>
               </tr>
               <tr>
-                <td className="text-center pr-4 pt-2">
-                  <Label className="text-white" text="PT"></Label>
+                <td className="pr-4 pt-2 text-center">
+                  <Label
+                    className="text-white"
+                    text="PT"
+                  ></Label>
                 </td>
                 <td>
                   <div className="flex justify-between">
                     <Input
                       label={t('')}
                       labelClassName="text-white"
-                      className="mt-2 bg-black border-primary-main"
+                      className="border-primary-main mt-2 bg-black"
                       type="text"
                       containerClassName="mr-2"
                       value={config.ptLower}
@@ -158,7 +164,7 @@ function ROIThresholdConfiguration({ config, dispatch, runCommand }) {
                     <Input
                       label={t('')}
                       labelClassName="text-white"
-                      className="mt-2 bg-black border-primary-main"
+                      className="border-primary-main mt-2 bg-black"
                       type="text"
                       containerClassName="mr-2"
                       value={config.ptUpper}

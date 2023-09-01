@@ -18,24 +18,16 @@ function setAnnotationSelected(annotationUID: string, selected: boolean): void {
   const isCurrentSelected = isAnnotationSelected(annotationUID);
   // branch cut, avoid invoking imaging library unnecessarily.
   if (isCurrentSelected !== selected) {
-    cs3dToolAnnotationUtils.selection.setAnnotationSelected(
-      annotationUID,
-      selected
-    );
+    cs3dToolAnnotationUtils.selection.setAnnotationSelected(annotationUID, selected);
   }
 }
 
 function getFirstAnnotationSelected(element) {
-  const [selectedAnnotationUID] =
-    cs3dToolAnnotationUtils.selection.getAnnotationsSelected() || [];
+  const [selectedAnnotationUID] = cs3dToolAnnotationUtils.selection.getAnnotationsSelected() || [];
 
   if (selectedAnnotationUID) {
     return cs3dToolAnnotationUtils.state.getAnnotation(selectedAnnotationUID);
   }
 }
 
-export {
-  isAnnotationSelected,
-  setAnnotationSelected,
-  getFirstAnnotationSelected,
-};
+export { isAnnotationSelected, setAnnotationSelected, getFirstAnnotationSelected };

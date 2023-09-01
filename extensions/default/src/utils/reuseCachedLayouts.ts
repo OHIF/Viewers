@@ -57,14 +57,13 @@ const reuseCachedLayout = (
         continue;
       }
       if (viewportId === activeViewportId && i === 0) {
-        displaySetSelectorMap[
-          `${activeStudyUID}:activeDisplaySet:0`
-        ] = displaySetUID;
+        displaySetSelectorMap[`${activeStudyUID}:activeDisplaySet:0`] = displaySetUID;
       }
       if (displaySetOptions[i]?.id) {
         displaySetSelectorMap[
-          `${activeStudyUID}:${displaySetOptions[i].id}:${displaySetOptions[i]
-            .matchedDisplaySetsIndex || 0}`
+          `${activeStudyUID}:${displaySetOptions[i].id}:${
+            displaySetOptions[i].matchedDisplaySetsIndex || 0
+          }`
         ] = displaySetUID;
       }
     }

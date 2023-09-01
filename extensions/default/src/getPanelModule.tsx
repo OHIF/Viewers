@@ -6,11 +6,7 @@ import { WrappedPanelStudyBrowser, PanelMeasurementTable } from './Panels';
 // - cancel promises when component is destroyed
 // - show errors in UI for thumbnails if promise fails
 
-function getPanelModule({
-  commandsManager,
-  extensionManager,
-  servicesManager,
-}) {
+function getPanelModule({ commandsManager, extensionManager, servicesManager }) {
   const wrappedMeasurementPanel = () => {
     return (
       <PanelMeasurementTable

@@ -12,7 +12,7 @@ function extractStyleChunks(isProdBuild) {
           },
         },
         'css-loader',
-        'postcss-loader'
+        'postcss-loader',
       ],
     },
   ];

@@ -32,7 +32,7 @@ const SegmentItem = ({
   return (
     <div
       className={classnames(
-        'group relative flex cursor-pointer bg-primary-dark transition duration-300 text-[12px] overflow-hidden border',
+        'bg-primary-dark group relative flex cursor-pointer overflow-hidden border text-[12px] transition duration-300',
         {
           'border-primary-light rounded-[3px]': isActive,
         },
@@ -52,14 +52,12 @@ const SegmentItem = ({
     >
       <div
         className={classnames(
-          'w-[27px] flex items-center justify-center border-r border-r-black text-[12px]',
+          'flex w-[27px] items-center justify-center border-r border-r-black text-[12px]',
           {
-            'bg-primary-light text-black border-l border-l-primary-light rounded-l-sm': isActive,
-            'bg-[#1d3c58]  border-l border-l-[#1d3c58] rounded-l-sm':
-              !isActive && isHovering,
-            'bg-primary-dark text-aqua-pale':
-              !isActive && !isHovering && isVisible,
-            'bg-[#140e2e] opacity-60 text-[#537594]': !isActive && !isVisible,
+            'bg-primary-light border-l-primary-light rounded-l-sm border-l text-black': isActive,
+            'rounded-l-sm  border-l border-l-[#1d3c58] bg-[#1d3c58]': !isActive && isHovering,
+            'bg-primary-dark text-aqua-pale': !isActive && !isHovering && isVisible,
+            'bg-[#140e2e] text-[#537594] opacity-60': !isActive && !isVisible,
           }
         )}
         onMouseEnter={() => setIsSegmentIndexHovering(true)}
@@ -75,24 +73,22 @@ const SegmentItem = ({
             }}
           />
         ) : (
-          <div className={classnames('flex items-center pr-2 ')}>
-            {segmentIndex}
-          </div>
+          <div className={classnames('flex items-center pr-2 ')}>{segmentIndex}</div>
         )}
       </div>
       <div
         className={classnames(
-          'flex items-center justify-between w-full pl-2 py-1 text-white border-r border-r-black relative ',
+          'relative flex w-full items-center justify-between border-r border-r-black py-1 pl-2 text-white ',
           {
             'bg-primary-dark text-primary-light': isActive,
             'bg-primary-dark text-aqua-pale': !isActive && isVisible,
-            'bg-[#140e2e] opacity-60 text-[#3d5871]': !isVisible,
+            'bg-[#140e2e] text-[#3d5871] opacity-60': !isVisible,
           }
         )}
       >
         <div className={classnames('flex items-baseline gap-2')}>
           <div
-            className={classnames('shrink-0 w-[8px] h-[8px] rounded-full')}
+            className={classnames('h-[8px] w-[8px] shrink-0 rounded-full')}
             style={{ backgroundColor: cssColor }}
             onClick={e => {
               e.stopPropagation();
@@ -102,12 +98,12 @@ const SegmentItem = ({
           <div className="">{label}</div>
         </div>
         {/* with faded background */}
-        <div className="absolute right-0 bg-black/15 rounded-lg pr-[7px]">
+        <div className="bg-black/15 absolute right-0 rounded-lg pr-[7px]">
           {!isVisible && !isHovering && (
             <div>
               <Icon
                 name="row-hidden"
-                className={classnames('w-5 h-5 text-[#3d5871] ')}
+                className={classnames('h-5 w-5 text-[#3d5871] ')}
                 onClick={e => {
                   e.stopPropagation();
                   onToggleVisibility(segmentationId, segmentIndex);
@@ -120,7 +116,7 @@ const SegmentItem = ({
               {!disableEditing && (
                 <Icon
                   name="row-edit"
-                  className={classnames('w-5 h-5', {
+                  className={classnames('h-5 w-5', {
                     'text-white': isLocked,
                     'text-primary-light': !isLocked,
                   })}
@@ -133,7 +129,7 @@ const SegmentItem = ({
               {isVisible ? (
                 <Icon
                   name="row-hide"
-                  className={classnames('w-5 h-5', {
+                  className={classnames('h-5 w-5', {
                     'text-white': isLocked,
                     'text-primary-light': !isLocked,
                   })}
@@ -145,7 +141,7 @@ const SegmentItem = ({
               ) : (
                 <Icon
                   name="row-unhide"
-                  className={classnames('w-5 h-5', {
+                  className={classnames('h-5 w-5', {
                     'text-white': isLocked,
                     'text-primary-light': !isLocked,
                   })}

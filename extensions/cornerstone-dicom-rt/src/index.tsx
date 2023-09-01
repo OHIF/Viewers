@@ -5,9 +5,7 @@ import getSopClassHandlerModule from './getSopClassHandlerModule';
 import hydrateRTDisplaySet from './utils/_hydrateRT';
 
 const Component = React.lazy(() => {
-  return import(
-    /* webpackPrefetch: true */ './viewports/OHIFCornerstoneRTViewport'
-  );
+  return import(/* webpackPrefetch: true */ './viewports/OHIFCornerstoneRTViewport');
 });
 
 const OHIFCornerstoneRTViewport = props => {

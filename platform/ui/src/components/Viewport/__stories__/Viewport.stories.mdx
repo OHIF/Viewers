@@ -8,15 +8,21 @@ export const argTypes = {
   title: 'Components/Viewport',
 };
 
-<Meta title="Components/Viewport" component={Viewport} />
+<Meta
+  title="Components/Viewport"
+  component={Viewport}
+/>
 
 export const ViewportTemplate = args => (
-  <div className="h-40 bg-primary-dark">
+  <div className="bg-primary-dark h-40">
     <Viewport {...args} />
   </div>
 );
 
-<Heading title="Viewport" componentRelativePath="Viewport/Viewport.tsx" />
+<Heading
+  title="Viewport"
+  componentRelativePath="Viewport/Viewport.tsx"
+/>
 
 - [Overview](#overview)
 - [Props](#props)

@@ -85,9 +85,7 @@ export class ObjectPath {
    * @return {Boolean} Returns "true" if the object is a real Object instance and "false" otherwise.
    */
   static isValidObject(object) {
-    return (
-      typeof object === 'object' && object !== null && object instanceof Object
-    );
+    return typeof object === 'object' && object !== null && object instanceof Object;
   }
 
   static getPathComponents(path) {

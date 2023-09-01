@@ -71,26 +71,10 @@ input[type='password']:hover {
 input[type='submit'] {
   border: none;
 
-  background: -webkit-linear-gradient(
-    top,
-    rgba(255, 255, 255, 0.8),
-    rgba(255, 255, 255, 0.1)
-  );
-  background: -moz-linear-gradient(
-    top,
-    rgba(255, 255, 255, 0.8),
-    rgba(255, 255, 255, 0.1)
-  );
-  background: -ms-linear-gradient(
-    top,
-    rgba(255, 255, 255, 0.8),
-    rgba(255, 255, 255, 0.1)
-  );
-  background: -o-linear-gradient(
-    top,
-    rgba(255, 255, 255, 0.8),
-    rgba(255, 255, 255, 0.1)
-  );
+  background: -webkit-linear-gradient(top, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.1));
+  background: -moz-linear-gradient(top, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.1));
+  background: -ms-linear-gradient(top, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.1));
+  background: -o-linear-gradient(top, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.1));
 
   box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.5);
 

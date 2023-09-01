@@ -82,10 +82,15 @@ const InputNumber: React.FC<{
   );
 
   return (
-    <div className={'flex flex-col flex-1'}>
-      {label && <Label className={labelClassName} text={label}></Label>}
+    <div className={'flex flex-1 flex-col'}>
+      {label && (
+        <Label
+          className={labelClassName}
+          text={label}
+        ></Label>
+      )}
       <div
-        className={`flex items-center bg-black border-2 px-1 overflow-hidden justify-center border-secondary-light rounded-md ${
+        className={`border-secondary-light flex items-center justify-center overflow-hidden rounded-md border-2 bg-black px-1 ${
           sizesClasses[size]
         } ${className ? className : ''}`}
       >
@@ -94,7 +99,7 @@ const InputNumber: React.FC<{
             type="text"
             value={numberValue}
             onChange={handleChange}
-            className={`bg-black text-white text-[12px] w-full text-center input-number`}
+            className={`input-number w-full bg-black text-center text-[12px] text-white`}
           />
 
           <div className="up-arrowsize flex flex-col items-center justify-around">
@@ -103,7 +108,7 @@ const InputNumber: React.FC<{
               variant="text"
               color="inherit"
               size="initial"
-              className="text-[#726f7e] transform rotate-180"
+              className="rotate-180 transform text-[#726f7e]"
               onClick={handleIncrement}
             >
               <Icon name="ui-arrow-down" />

@@ -5,36 +5,25 @@ import { useTranslation } from 'react-i18next';
 
 import MeasurementItem from './MeasurementItem';
 
-const MeasurementTable = ({
-  data,
-  title,
-  onClick,
-  onEdit,
-  servicesManager,
-}) => {
+const MeasurementTable = ({ data, title, onClick, onEdit, servicesManager }) => {
   servicesManager = servicesManager as ServicesManager;
   const { customizationService } = servicesManager.services;
   const { t } = useTranslation('MeasurementTable');
   const amount = data.length;
 
-  const itemCustomization = customizationService.getCustomization(
-    'MeasurementItem',
-    {
-      content: MeasurementItem,
-      contentProps: {},
-    }
-  );
+  const itemCustomization = customizationService.getCustomization('MeasurementItem', {
+    content: MeasurementItem,
+    contentProps: {},
+  });
   const CustomMeasurementItem = itemCustomization.content;
 
   return (
     <div>
-      <div className="flex justify-between px-2 py-1 bg-secondary-main">
-        <span className="text-base font-bold tracking-widest text-white uppercase">
-          {t(title)}
-        </span>
+      <div className="bg-secondary-main flex justify-between px-2 py-1">
+        <span className="text-base font-bold uppercase tracking-widest text-white">{t(title)}</span>
         <span className="text-base font-bold text-white">{amount}</span>
       </div>
-      <div className="overflow-hidden ohif-scrollbar max-h-112">
+      <div className="ohif-scrollbar max-h-112 overflow-hidden">
         {data.length !== 0 &&
           data.map((measurementItem, index) => (
             <CustomMeasurementItem
@@ -50,10 +39,10 @@ const MeasurementTable = ({
             />
           ))}
         {data.length === 0 && (
-          <div className="flex transition duration-300 bg-black border border-transparent cursor-default group">
-            <div className="w-6 py-1 text-base text-center transition duration-300 bg-primary-dark text-primary-light group-hover:bg-secondary-main"></div>
-            <div className="flex items-center justify-between flex-1 px-2 py-4">
-              <span className="flex items-center flex-1 mb-1 text-base text-primary-light">
+          <div className="group flex cursor-default border border-transparent bg-black transition duration-300">
+            <div className="bg-primary-dark text-primary-light group-hover:bg-secondary-main w-6 py-1 text-center text-base transition duration-300"></div>
+            <div className="flex flex-1 items-center justify-between px-2 py-4">
+              <span className="text-primary-light mb-1 flex flex-1 items-center text-base">
                 {t('No tracked measurements')}
               </span>
             </div>

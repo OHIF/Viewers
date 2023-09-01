@@ -5,7 +5,6 @@ import { ViewportGrid, ViewportPane, useViewportGrid } from '@ohif/ui';
 import EmptyViewport from './EmptyViewport';
 import classNames from 'classnames';
 
-
 function ViewerViewportGrid(props) {
   const { servicesManager, viewportComponents, dataSource } = props;
   const [viewportGrid, viewportGridService] = useViewportGrid();
@@ -14,12 +13,9 @@ function ViewerViewportGrid(props) {
   const { numCols, numRows } = layout;
 
   // TODO -> Need some way of selecting which displaySets hit the viewports.
-  const {
-    displaySetService,
-    measurementService,
-    hangingProtocolService,
-    uiNotificationService,
-  } = (servicesManager as ServicesManager).services;
+  const { displaySetService, measurementService, hangingProtocolService, uiNotificationService } = (
+    servicesManager as ServicesManager
+  ).services;
 
   /**
    * This callback runs after the viewports structure has changed in any way.
@@ -63,15 +59,13 @@ function ViewerViewportGrid(props) {
       const displaySetUIDsToHang = [];
       const displaySetUIDsToHangOptions = [];
 
-      displaySetsInfo.forEach(
-        ({ displaySetInstanceUID, displaySetOptions }) => {
-          if (displaySetInstanceUID) {
-            displaySetUIDsToHang.push(displaySetInstanceUID);
-          }
-
-          displaySetUIDsToHangOptions.push(displaySetOptions);
+      displaySetsInfo.forEach(({ displaySetInstanceUID, displaySetOptions }) => {
+        if (displaySetInstanceUID) {
+          displaySetUIDsToHang.push(displaySetInstanceUID);
         }
-      );
+
+        displaySetUIDsToHangOptions.push(displaySetOptions);
+      });
 
       const computedViewportOptions = hangingProtocolService.getComputedOptions(
         viewportOptions,
@@ -128,12 +122,7 @@ function ViewerViewportGrid(props) {
     const { unsubscribe } = hangingProtocolService.subscribe(
       hangingProtocolService.EVENTS.PROTOCOL_CHANGED,
       ({ protocol, stage, activeStudyUID, viewportMatchDetails }) => {
-        updateDisplaySetsFromProtocol(
-          protocol,
-          stage,
-          activeStudyUID,
-          viewportMatchDetails
-        );
+        updateDisplaySetsFromProtocol(protocol, stage, activeStudyUID, viewportMatchDetails);
       }
     );
 
@@ -152,13 +141,9 @@ function ViewerViewportGrid(props) {
         // This occurs when no viewport has elected to consume the event
         // so we need to change layouts into a layout which can consume
         // the event.
-        const { displaySetInstanceUID: referencedDisplaySetInstanceUID } =
-          measurement;
+        const { displaySetInstanceUID: referencedDisplaySetInstanceUID } = measurement;
 
-        const updatedViewports = _getUpdatedViewports(
-          viewportId,
-          referencedDisplaySetInstanceUID
-        );
+        const updatedViewports = _getUpdatedViewports(viewportId, referencedDisplaySetInstanceUID);
         // Arbitrarily assign the viewport to element 0
         const viewport = updatedViewports?.[0];
 
@@ -173,9 +158,7 @@ function ViewerViewportGrid(props) {
         viewport.viewportOptions ||= {};
         viewport.viewportOptions.orientation = 'acquisition';
 
-        const displaySet = displaySetService.getDisplaySetByUID(
-          referencedDisplaySetInstanceUID
-        );
+        const displaySet = displaySetService.getDisplaySetByUID(referencedDisplaySetInstanceUID);
         // jump straight to the initial image index if we can
         if (displaySet.images && measurement.SOPInstanceUID) {
           for (let index = 0; index < displaySet.images.length; index++) {
@@ -242,10 +225,7 @@ function ViewerViewportGrid(props) {
   */
 
   const onDropHandler = (viewportId, { displaySetInstanceUID }) => {
-    const updatedViewports = _getUpdatedViewports(
-      viewportId,
-      displaySetInstanceUID
-    );
+    const updatedViewports = _getUpdatedViewports(viewportId, displaySetInstanceUID);
     viewportGridService.setDisplaySetsForViewports(updatedViewports);
   };
 
@@ -266,24 +246,19 @@ function ViewerViewportGrid(props) {
         viewportLabel,
       } = paneMetadata;
 
-      const viewportId = viewportOptions.viewportId
+      const viewportId = viewportOptions.viewportId;
       const isActive = activeViewportId === viewportId;
-
 
       const displaySetInstanceUIDsToUse = displaySetInstanceUIDs || [];
 
       // This is causing the viewport components re-render when the activeViewportId changes
-      const displaySets = displaySetInstanceUIDsToUse.map(
-        displaySetInstanceUID => {
-          return (
-            displaySetService.getDisplaySetByUID(displaySetInstanceUID) || {}
-          );
-        }
-      ).filter(
-        (displaySet) => {
+      const displaySets = displaySetInstanceUIDsToUse
+        .map(displaySetInstanceUID => {
+          return displaySetService.getDisplaySetByUID(displaySetInstanceUID) || {};
+        })
+        .filter(displaySet => {
           return !displaySet?.unsupported;
-        }
-      );
+        });
 
       const ViewportComponent = _getViewportComponent(
         displaySets,
@@ -335,7 +310,7 @@ function ViewerViewportGrid(props) {
         >
           <div
             data-cy="viewport-pane"
-            className={classNames('h-full w-full flex flex-col', {
+            className={classNames('flex h-full w-full flex-col', {
               'pointer-events-none': !isActive,
             })}
           >
@@ -364,7 +339,10 @@ function ViewerViewportGrid(props) {
   }
 
   return (
-    <ViewportGrid numRows={numRows} numCols={numCols}>
+    <ViewportGrid
+      numRows={numRows}
+      numCols={numCols}
+    >
       {/* {ViewportPanes} */}
       {getViewportPanes()}
     </ViewportGrid>
@@ -380,11 +358,7 @@ ViewerViewportGrid.defaultProps = {
   viewportComponents: [],
 };
 
-function _getViewportComponent(
-  displaySets,
-  viewportComponents,
-  uiNotificationService
-) {
+function _getViewportComponent(displaySets, viewportComponents, uiNotificationService) {
   if (!displaySets || !displaySets.length) {
     return EmptyViewport;
   }
@@ -399,9 +373,7 @@ function _getViewportComponent(
     if (!viewportComponents[i].displaySetsToDisplay) {
       throw new Error('displaySetsToDisplay is null');
     }
-    if (
-      viewportComponents[i].displaySetsToDisplay.includes(SOPClassHandlerId)
-    ) {
+    if (viewportComponents[i].displaySetsToDisplay.includes(SOPClassHandlerId)) {
       const { component } = viewportComponents[i];
       return component;
     }

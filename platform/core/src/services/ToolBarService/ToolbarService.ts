@@ -90,11 +90,9 @@ export default class ToolbarService extends PubSubService {
       }
       case 'tool': {
         try {
-          commands.forEach(
-            ({ commandName = 'setToolActive', commandOptions, context }) => {
-              commandsManager.runCommand(commandName, commandOptions, context);
-            }
-          );
+          commands.forEach(({ commandName = 'setToolActive', commandOptions, context }) => {
+            commandsManager.runCommand(commandName, commandOptions, context);
+          });
 
           // only set the primary tool if no error was thrown
           this.state.primaryToolId = itemId;
@@ -110,9 +108,7 @@ export default class ToolbarService extends PubSubService {
 
         // only toggle if a command was executed
         this.state.toggles[itemId] =
-          this.state.toggles[itemId] === undefined
-            ? true
-            : !this.state.toggles[itemId];
+          this.state.toggles[itemId] === undefined ? true : !this.state.toggles[itemId];
 
         if (!commands) {
           break;
@@ -213,14 +209,9 @@ export default class ToolbarService extends PubSubService {
 
   _buttonTypes() {
     const buttonTypes = {};
-    const registeredToolbarModules = this.extensionManager.modules[
-      'toolbarModule'
-    ];
+    const registeredToolbarModules = this.extensionManager.modules['toolbarModule'];
 
-    if (
-      Array.isArray(registeredToolbarModules) &&
-      registeredToolbarModules.length
-    ) {
+    if (Array.isArray(registeredToolbarModules) && registeredToolbarModules.length) {
       registeredToolbarModules.forEach(toolbarModule =>
         toolbarModule.module.forEach(def => {
           buttonTypes[def.name] = def;
@@ -302,8 +293,6 @@ export default class ToolbarService extends PubSubService {
   }
 
   getButtonComponentForUIType(uiType: string) {
-    return uiType
-      ? this._buttonTypes()[uiType]?.defaultComponent ?? null
-      : null;
+    return uiType ? this._buttonTypes()[uiType]?.defaultComponent ?? null : null;
   }
 }

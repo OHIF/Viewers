@@ -98,15 +98,9 @@ function initializeDataset(annotations, metadataProvider) {
   const rtSOPInstanceUID = DicomMetaDictionary.uid();
 
   // get the first annotation data
-  const {
-    referencedImageId: imageId,
-    FrameOfReferenceUID,
-  } = annotations[0].metadata;
+  const { referencedImageId: imageId, FrameOfReferenceUID } = annotations[0].metadata;
 
-  const { studyInstanceUID } = metadataProvider.get(
-    'generalSeriesModule',
-    imageId
-  );
+  const { studyInstanceUID } = metadataProvider.get('generalSeriesModule', imageId);
 
   const patientModule = getPatientModule(imageId, metadataProvider);
   const rtSeriesModule = getRTSeriesModule(imageId, metadataProvider);
@@ -136,23 +130,11 @@ function initializeDataset(annotations, metadataProvider) {
 }
 
 function getPatientModule(imageId, metadataProvider) {
-  const generalSeriesModule = metadataProvider.get(
-    'generalSeriesModule',
-    imageId
-  );
-  const generalStudyModule = metadataProvider.get(
-    'generalStudyModule',
-    imageId
-  );
-  const patientStudyModule = metadataProvider.get(
-    'patientStudyModule',
-    imageId
-  );
+  const generalSeriesModule = metadataProvider.get('generalSeriesModule', imageId);
+  const generalStudyModule = metadataProvider.get('generalStudyModule', imageId);
+  const patientStudyModule = metadataProvider.get('patientStudyModule', imageId);
   const patientModule = metadataProvider.get('patientModule', imageId);
-  const patientDemographicModule = metadataProvider.get(
-    'patientDemographicModule',
-    imageId
-  );
+  const patientDemographicModule = metadataProvider.get('patientDemographicModule', imageId);
 
   return {
     Modality: generalSeriesModule.modality,
@@ -169,11 +151,7 @@ function getPatientModule(imageId, metadataProvider) {
   };
 }
 
-function getReferencedFrameOfReferenceSequence(
-  toolData,
-  metadataProvider,
-  dataset
-) {
+function getReferencedFrameOfReferenceSequence(toolData, metadataProvider, dataset) {
   const { referencedImageId: imageId, FrameOfReferenceUID } = toolData.metadata;
   const instance = metadataProvider.get('instance', imageId);
   const { SeriesInstanceUID } = instance;
@@ -190,9 +168,7 @@ function getReferencedFrameOfReferenceSequence(
           RTReferencedSeriesSequence: [
             {
               SeriesInstanceUID,
-              ContourImageSequence: [
-                ...ReferencedSeriesSequence[0].ReferencedInstanceSequence,
-              ],
+              ContourImageSequence: [...ReferencedSeriesSequence[0].ReferencedInstanceSequence],
             },
           ],
         },
@@ -209,10 +185,7 @@ function getReferencedSeriesSequence(toolData, index, metadataProvider) {
 
   const ReferencedSeriesSequence = [];
   if (SeriesInstanceUID) {
-    const series = DicomMetadataStore.getSeries(
-      StudyInstanceUID,
-      SeriesInstanceUID
-    );
+    const series = DicomMetadataStore.getSeries(StudyInstanceUID, SeriesInstanceUID);
 
     const ReferencedSeries = {
       SeriesInstanceUID,

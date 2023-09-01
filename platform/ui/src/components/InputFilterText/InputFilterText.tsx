@@ -1,13 +1,6 @@
 import classNames from 'classnames';
 import debounce from 'lodash.debounce';
-import React, {
-  ReactElement,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import Icon from '../Icon';
 
@@ -68,7 +61,7 @@ const InputFilterText = ({
       <input
         ref={searchInputRef}
         type="text"
-        className="block bg-black w-full shadow transition duration-300 appearance-none border border-inputfield-main focus:border-inputfield-focus focus:outline-none disabled:border-inputfield-disabled rounded-md w-full py-2 px-9 text-base leading-tight placeholder:text-inputfield-placeholder"
+        className="border-inputfield-main focus:border-inputfield-focus disabled:border-inputfield-disabled placeholder:text-inputfield-placeholder block w-full w-full appearance-none rounded-md border bg-black py-2 px-9 text-base leading-tight shadow transition duration-300 focus:outline-none"
         placeholder={placeholder}
         onChange={event => handleFilterTextChanged(event.target.value)}
         autoComplete="off"

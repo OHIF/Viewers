@@ -10,7 +10,7 @@ const Viewer = () => {
       <div>
         <Header />
         <div
-          className="flex flex-row flex-nowrap items-stretch flex-1 w-full overflow-hidden"
+          className="flex w-full flex-1 flex-row flex-nowrap items-stretch overflow-hidden"
           style={{ height: 'calc(100vh - 52px' }}
         >
           <SidePanel
@@ -22,7 +22,7 @@ const Viewer = () => {
           >
             <StudyBrowser />
           </SidePanel>
-          <div className="flex items-center justify-center flex-1 overflow-hidden text-white h-100 bg-primary-main">
+          <div className="h-100 bg-primary-main flex flex-1 items-center justify-center overflow-hidden text-white">
             {/* <ViewportToolbar /> */}
             <div>CONTENT</div>
           </div>
@@ -33,9 +33,7 @@ const Viewer = () => {
             componentLabel="Measurements"
             defaultIsOpen={false}
           >
-            <div className="flex justify-center p-2 text-white">
-              panel placeholder
-            </div>
+            <div className="flex justify-center p-2 text-white">panel placeholder</div>
           </SidePanel>
         </div>
       </div>

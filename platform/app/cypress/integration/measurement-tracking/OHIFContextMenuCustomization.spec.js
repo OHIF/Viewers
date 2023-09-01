@@ -1,8 +1,6 @@
-describe('OHIF Context Menu', function() {
-  beforeEach(function() {
-    cy.checkStudyRouteInViewer(
-      '1.2.840.113619.2.5.1762583153.215519.978957063.78'
-    );
+describe('OHIF Context Menu', function () {
+  beforeEach(function () {
+    cy.checkStudyRouteInViewer('1.2.840.113619.2.5.1762583153.215519.978957063.78');
 
     cy.expectMinimumThumbnails(3);
     cy.initCommonElementsAliases();
@@ -10,7 +8,7 @@ describe('OHIF Context Menu', function() {
     cy.resetViewport().wait(50);
   });
 
-  it('checks context menu customization', function() {
+  it('checks context menu customization', function () {
     // Add length measurement
     cy.addLengthMeasurement();
     cy.get('[data-cy="prompt-begin-tracking-yes-btn"]').click();
@@ -29,14 +27,10 @@ describe('OHIF Context Menu', function() {
     cy.get('[data-cy="context-menu"]').should('be.visible');
 
     // Click "Finding" subMenu
-    cy.get('[data-cy="context-menu-item"]')
-      .contains('Finding')
-      .click();
+    cy.get('[data-cy="context-menu-item"]').contains('Finding').click();
 
     // Click "Finding" subMenu
-    cy.get('[data-cy="context-menu-item"]')
-      .contains('Aortic insufficiency')
-      .click();
+    cy.get('[data-cy="context-menu-item"]').contains('Aortic insufficiency').click();
     cy.get('[data-cy="measurement-item"]').contains('Aortic insufficiency');
   });
 });

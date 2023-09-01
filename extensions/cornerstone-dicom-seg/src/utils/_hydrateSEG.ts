@@ -3,11 +3,8 @@ async function _hydrateSEGDisplaySet({
   viewportId: targetViewportId,
   servicesManager,
 }) {
-  const {
-    segmentationService,
-    hangingProtocolService,
-    viewportGridService,
-  } = servicesManager.services;
+  const { segmentationService, hangingProtocolService, viewportGridService } =
+    servicesManager.services;
 
   const displaySetInstanceUID = segDisplaySet.referencedDisplaySetInstanceUID;
 

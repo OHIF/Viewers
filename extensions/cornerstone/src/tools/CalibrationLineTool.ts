@@ -25,8 +25,7 @@ class CalibrationLineTool extends LengthTool {
       this._renderingViewport.worldToCanvas(p)
     );
     // for display, round to 2 decimal points
-    const lengthPx =
-      Math.round(calculateLength2(canvasPoint1, canvasPoint2) * 100) / 100;
+    const lengthPx = Math.round(calculateLength2(canvasPoint1, canvasPoint2) * 100) / 100;
 
     const textLines = [`${lengthPx}px`];
 
@@ -64,17 +63,11 @@ export function onCompletedCalibrationLine(servicesManager, csToolsEvent) {
 
   const length =
     Math.round(
-      calculateLength3(
-        annotationData.handles.points[0],
-        annotationData.handles.points[1]
-      ) * 100
+      calculateLength3(annotationData.handles.points[0], annotationData.handles.points[1]) * 100
     ) / 100;
 
   // calculate the currently applied pixel spacing on the viewport
-  const calibratedPixelSpacing = metaData.get(
-    'calibratedPixelSpacing',
-    imageId
-  );
+  const calibratedPixelSpacing = metaData.get('calibratedPixelSpacing', imageId);
   const imagePlaneModule = metaData.get('imagePlaneModule', imageId);
   const currentRowPixelSpacing =
     calibratedPixelSpacing?.[0] || imagePlaneModule?.rowPixelSpacing || 1;
@@ -87,12 +80,7 @@ export function onCompletedCalibrationLine(servicesManager, csToolsEvent) {
     const colSpacing = spacingScale * currentColumnPixelSpacing;
 
     // trigger resize of the viewport to adjust the world/pixel mapping
-    calibrateImageSpacing(
-      imageId,
-      viewport.getRenderingEngine(),
-      rowSpacing,
-      colSpacing
-    );
+    calibrateImageSpacing(imageId, viewport.getRenderingEngine(), rowSpacing, colSpacing);
   };
 
   return new Promise((resolve, reject) => {

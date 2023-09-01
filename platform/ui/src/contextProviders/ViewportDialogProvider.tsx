@@ -1,10 +1,4 @@
-import React, {
-  useState,
-  createContext,
-  useContext,
-  useCallback,
-  useEffect,
-} from 'react';
+import React, { useState, createContext, useContext, useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 const DEFAULT_STATE = {
@@ -44,19 +38,12 @@ const ViewportDialogProvider = ({ children, service }) => {
     }
   }, [hide, service, show]);
 
-  return (
-    <Provider value={[viewportDialogState, { show, hide }]}>
-      {children}
-    </Provider>
-  );
+  return <Provider value={[viewportDialogState, { show, hide }]}>{children}</Provider>;
 };
 
 ViewportDialogProvider.propTypes = {
   /** Children that will be wrapped with Modal Context */
-  children: PropTypes.oneOfType([
-    PropTypes.arrayOf(PropTypes.node),
-    PropTypes.node,
-  ]).isRequired,
+  children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]).isRequired,
   service: PropTypes.shape({
     setServiceImplementation: PropTypes.func,
   }),
