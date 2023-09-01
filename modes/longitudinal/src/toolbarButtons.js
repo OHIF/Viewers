@@ -7,6 +7,8 @@ import {
 } from '@ohif/ui';
 import { defaults } from '@ohif/core';
 
+export const toggles = {};
+
 const { windowLevelPresets } = defaults;
 /**
  *
@@ -15,7 +17,10 @@ const { windowLevelPresets } = defaults;
  * @param {*} icon
  * @param {*} label
  */
-function _createButton(type, id, icon, label, commands, tooltip, uiType) {
+function _createButton(type, id, icon, label, commands, tooltip, uiType, isActive) {
+  if (type === 'toggle' && isActive != null) {
+    toggles[id] = isActive;
+  }
   return {
     id,
     icon,
@@ -432,22 +437,41 @@ const toolbarButtons = [
           'ReferenceLines',
           'tool-referenceLines', // change this with the new icon
           'Reference Lines',
+          // two commands for the reference lines tool:
+          // - the first to set the source viewport for the tool when it is enabled
+          // - the second to toggle the tool
           [
             {
-              commandName: 'toggleReferenceLines',
+              commandName: 'setSourceViewportForReferenceLinesTool',
               commandOptions: {},
+              context: 'CORNERSTONE',
+            },
+            {
+              commandName: 'setToolActive',
+              commandOptions: {
+                toolName: 'ReferenceLines',
+              },
               context: 'CORNERSTONE',
             },
           ]
         ),
-        // TODO: we need a new icon for image overlay toggler button
-        _createToggleButton('ImageOverlay', 'link', 'Image Overlay', [
-          {
-            commandName: 'toggleImageOverlay',
-            commandOptions: {},
-            context: 'CORNERSTONE',
-          },
-        ]),
+        _createToggleButton(
+          'ImageOverlayViewer',
+          'toggle-dicom-overlay',
+          'Image Overlay',
+          [
+            {
+              commandName: 'setToolActive',
+              commandOptions: {
+                toolName: 'ImageOverlayViewer',
+              },
+              context: 'CORNERSTONE',
+            },
+          ],
+          'Image Overlay',
+          null,
+          true
+        ),
         _createToolButton(
           'StackScroll',
           'tool-stack-scroll',
