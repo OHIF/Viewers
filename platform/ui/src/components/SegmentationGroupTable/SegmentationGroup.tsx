@@ -187,13 +187,8 @@ const SegmentationGroup = ({
                   return null;
                 }
 
-                const {
-                  segmentIndex,
-                  color,
-                  label,
-                  isVisible,
-                  isLocked,
-                } = segment;
+                const { segmentIndex, color, label, isVisible, isLocked } =
+                  segment;
                 return (
                   <div className="mb-[1px]" key={segmentIndex}>
                     <SegmentationGroupSegment

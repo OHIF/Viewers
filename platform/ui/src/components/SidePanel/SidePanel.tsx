@@ -20,6 +20,7 @@ import Tooltip from '../Tooltip';
 
 import 'swiper/css';
 import 'swiper/css/navigation';
+import 'swiper/css/scrollbar';
 import './style.css';
 
 const borderSize = 4;
@@ -334,9 +335,12 @@ function _getMoreThanOneTabLayout(
     >
       <div className="w-full">
         <Swiper
+          className="mySwiper"
+          pagination={{ clickable: true }}
           onInit={(core: SwiperCore) => {
             swiperRef.current = core.el;
           }}
+          scrollbar={{ draggable: true, hide: false }}
           simulateTouch={false}
           modules={[Navigation, Pagination, Scrollbar, A11y, Controller]}
           slidesPerView={3}
