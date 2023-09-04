@@ -483,7 +483,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
         if (!returnPromises) {
           promise?.start();
         }
-        promise.then(instances => {
+        return promise.then(instances => {
           storeInstances(instances);
         });
       });
