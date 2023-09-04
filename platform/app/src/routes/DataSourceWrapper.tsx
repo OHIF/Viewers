@@ -136,7 +136,10 @@ function DataSourceWrapper(props) {
       ExtensionManager.EVENTS.ACTIVE_DATA_SOURCE_CHANGED,
       dataSourceChangedCallback
     );
-    return () => sub.unsubscribe();
+
+    return () => {
+      sub.unsubscribe();
+    };
   }, []);
 
   useEffect(() => {

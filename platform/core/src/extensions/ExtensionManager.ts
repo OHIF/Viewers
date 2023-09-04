@@ -45,6 +45,7 @@ export interface Extension {
   getUtilityModule?: (p: ExtensionParams) => unknown;
   getCustomizationModule?: (p: ExtensionParams) => unknown;
   getSopClassHandlerModule?: (p: ExtensionParams) => unknown;
+  onModeInit?: () => void;
   onModeEnter?: () => void;
   onModeExit?: () => void;
 }
@@ -89,7 +90,7 @@ export default class ExtensionManager extends PubSubService {
     this.moduleTypeNames.forEach(moduleType => {
       this.modules[moduleType] = [];
     });
-    this._extensionLifeCycleHooks = { onModeEnter: {}, onModeExit: {} };
+    this._extensionLifeCycleHooks = { onModeInit: {}, onModeEnter: {}, onModeExit: {} };
     this.dataSourceMap = {};
     this.dataSourceDefs = {};
     this.defaultDataSourceName = appConfig.defaultDataSourceName;
@@ -102,11 +103,47 @@ export default class ExtensionManager extends PubSubService {
     }
 
     this.activeDataSource = dataSource;
+    console.debug('>> New datasource', this.activeDataSource)
 
     this._broadcastEvent(
       ExtensionManager.EVENTS.ACTIVE_DATA_SOURCE_CHANGED,
       this.dataSourceDefs[this.activeDataSource]
     );
+  }
+
+  /**
+   * Calls all the services and extension on mode init.
+   * The service onModeInit is called first then registered extensions onModeInit is called.
+   * This is supposed to setup the extension for custom initial setup.
+   */
+  public onModeInit(): void {
+    const {
+      registeredExtensionIds,
+      _servicesManager,
+      _commandsManager,
+      _hotkeysManager,
+      _extensionLifeCycleHooks,
+    } = this;
+
+    // The onModeInit of the service must occur BEFORE the extension
+    // onModeInit in order to reset the state to a standard state
+    // before the extension restores and cached data.
+    for (const service of Object.values(_servicesManager.services)) {
+      service?.onModeInit?.();
+    }
+
+    registeredExtensionIds.forEach(extensionId => {
+      const onModeInit = _extensionLifeCycleHooks.onModeInit[extensionId];
+
+      if (typeof onModeInit === 'function') {
+        onModeInit({
+          servicesManager: _servicesManager,
+          commandsManager: _commandsManager,
+          hotkeysManager: _hotkeysManager,
+          appConfig: this._appConfig,
+        });
+      }
+    });
   }
 
   /**
@@ -139,14 +176,20 @@ export default class ExtensionManager extends PubSubService {
           servicesManager: _servicesManager,
           commandsManager: _commandsManager,
           hotkeysManager: _hotkeysManager,
+          appConfig: this._appConfig,
         });
       }
     });
   }
 
   public onModeExit(): void {
-    const { registeredExtensionIds, _servicesManager, _commandsManager, _extensionLifeCycleHooks } =
-      this;
+    const { 
+      registeredExtensionIds, 
+      _servicesManager, 
+      _commandsManager, 
+      _hotkeysManager, 
+      _extensionLifeCycleHooks 
+    } = this;
 
     registeredExtensionIds.forEach(extensionId => {
       const onModeExit = _extensionLifeCycleHooks.onModeExit[extensionId];
@@ -155,6 +198,8 @@ export default class ExtensionManager extends PubSubService {
         onModeExit({
           servicesManager: _servicesManager,
           commandsManager: _commandsManager,
+          hotkeysManager: _hotkeysManager,
+          appConfig: this._appConfig,
         });
       }
     });
@@ -246,6 +291,10 @@ export default class ExtensionManager extends PubSubService {
         appConfig: this._appConfig,
         configuration,
       });
+    }
+
+    if (extension.onModeInit) {
+      this._extensionLifeCycleHooks.onModeInit[extensionId] = extension.onModeInit;
     }
 
     if (extension.onModeEnter) {

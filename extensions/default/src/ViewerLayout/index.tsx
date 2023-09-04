@@ -33,6 +33,7 @@ function ViewerLayout({
   rightPanels = [],
   leftPanelDefaultClosed = false,
   rightPanelDefaultClosed = false,
+  returnDefaultHidden = false,
 }): React.FunctionComponent {
   const [appConfig] = useAppConfig();
   const navigate = useNavigate();
@@ -212,7 +213,7 @@ function ViewerLayout({
     <div>
       <Header
         menuOptions={menuOptions}
-        isReturnEnabled={!!appConfig.showStudyList}
+        isReturnEnabled={!returnDefaultHidden && !!appConfig.showStudyList}
         onClickReturnButton={onClickReturnButton}
         WhiteLabeling={appConfig.whiteLabeling}
       >

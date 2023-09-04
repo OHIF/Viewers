@@ -7,15 +7,53 @@ sidebar_label: Lifecycle Hooks
 
 ## Overview
 
-Currently, there are two hooks that are called for modes:
+Currently, there are three hooks that are called for modes:
 
+- onModeInit
 - onModeEnter
 - onModeExit
 
+## onModeInit
+
+This hook gets run after the defined route has been entered by the mode and the mode
+has been initialized. This hook can be used to initialize the data after entering the mode
+e.g. services and appearance of the viewer upon the first render, in any way that is custom to the mode.
+
+This is called after service `onModeInit` calls so that the entry into a mode
+is done in a predefined/fixed state. That allows any restoring of existing state
+to be performed.
+
+:::note Tip
+
+In OHIF Version 3.1, there is a new service `ToolGroupService` that is used to
+define and manage tools for the group of viewports. This is a new concept
+borrowed from the Cornerstone ToolGroup, and you can read more
+[here](https://www.cornerstonejs.org/docs/concepts/cornerstone-tools/toolgroups/)
+
+:::
+
+```js
+function modeFactory() {
+  return {
+    id: '',
+    version: '',
+    displayName: '',
+    onModeInit: ({ servicesManager, extensionManager }) => {
+      if (true) {
+        extensionManager.setActiveDataSource('conditional-datasource');
+      }
+    },
+    /*
+    ...
+    */
+  };
+}
+```
+
 ## onModeEnter
 
-This hook gets run after the defined route has been entered by the mode. This
-hook can be used to initialize the data, services and appearance of the viewer
+This hook gets run after the defined route has been entered by the mode and the mode
+was initialized. This hook can be used to initialize the data, services and appearance of the viewer
 upon the first render, in any way that is custom to the mode.
 
 This is called after service `onModeEnter` calls so that the entry into a mode

@@ -238,10 +238,11 @@ This is used in the viewer for fetching the series list for a study to use for t
 ## LifeCycle Hooks
 
 OHIF v2 had `preRegistration` hook for extensions for initialization. In OHIF v3 you have
-even more control using `onModeEnter` and `onModeExit` hooks on the extensions and on the modes.
+even more control using `onModeInit`, `onModeEnter` and `onModeExit` hooks on the extensions and on the modes.
 
 - `preRegistration`: is called before the extension is registered to the viewer. So very early in the lifecycle of the viewer.
-- `onModeEnter` is called when the mode is entered (component on the route is mounted, e.g., when you click on the mode to enter it)
+- `onModeInit` is called right before the mode is entered (component on the route is mounted but not initialized, e.g., when you click on the mode to enter it)
+- `onModeEnter` is called when the mode is entered and initialized (component on the route is mounted and initialized, e.g., when you click on the mode to enter it)
 - `onModeExit` is called when the mode is exited (component on the route is unmounted, e.g., when you navigate back to the worklist)
 
 ## Extensions

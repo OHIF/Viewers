@@ -53,6 +53,7 @@ export default {
 
   // Lifecyle
   preRegistration() { /* */ },
+  onModeInit() { /* */ },
   onModeEnter() { /* */ },
   onModeExit() { /* */ },
   // Modules
@@ -200,8 +201,12 @@ lifecycle hook, it is called before any modules are registered in the
 [services](./../services/index.md) and [commands](./modules/commands.md), and to
 bootstrap 3rd party libraries.
 
-[`onModeEnter`](./lifecycle#onModeEnter): This hook is called whenever a new
+[`onModeInit`](./lifecycle#onModeEnter): This hook is called whenever a new
 mode is entered, or a mode’s data or datasource is switched. This hook can be
+used to setup data and configuration before initalization.
+
+[`onModeEnter`](./lifecycle#onModeEnter): This hook is called whenever a new
+mode is entered and initialized, or a mode’s data or datasource is switched. This hook can be
 used to initialize data.
 
 [`onModeExit`](./lifecycle#onModeExit): Similarly to onModeEnter, this hook is

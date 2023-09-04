@@ -65,6 +65,7 @@ function modeFactory() {
     id: '',
     version: '',
     displayName: '',
+    onModeInit: () => {},
     onModeEnter: () => {},
     onModeExit: () => {},
     validationTags: {},

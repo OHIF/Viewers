@@ -10,6 +10,7 @@ sidebar_label: Lifecycle Hooks
 Extensions can implement specific lifecycle methods.
 
 - preRegistration
+- onModeInit
 - onModeEnter
 - onModeExit
 
@@ -74,6 +75,28 @@ export default {
     // Registering new services
     servicesManager.registerService(MyNewService(servicesManager));
   },
+  },
+};
+```
+
+## onModeInit
+
+If an extension defines the `onModeInit` lifecycle hook, it is called when a
+new mode right before the mode enters, or a mode's data or datasource is switched.
+
+For instance, in DICOM structured report extension (`dicom-sr`), we are using
+`onModeInit` to re-create the displaySets after a new mode is entered.
+
+_Example `onModeInit` hook implementation_
+
+```js
+export default {
+  id: '@ohif/extension-cornerstone-dicom-sr',
+
+  onModeInit({ servicesManager, extensionManager }) {
+    if (true) {
+      extensionManager.setActiveDataSource('conditional-datasource');
+    }
   },
 };
 ```

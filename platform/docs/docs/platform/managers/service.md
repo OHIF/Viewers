@@ -187,15 +187,18 @@ state the service is in on mode entry shall be the same whether the mode was
 entered or was exited and entered again.
 
 To implement storage/recovery of state, the mode must store the data on
-exiting the mode, and restore the data in it's onModeEnter.  For example,
+exiting the mode, and restore the data in it's onModeEnter. For example,
 the mode may decide to preserve measurement data in the onModeExit, and
-to restore it in the onModeEnter.  This does not violate the contract since
+to restore it in the onModeEnter. This does not violate the contract since
 it is the mode's decision to apply the stored state, and to cache it.
+
+## onModeInit
+A service may implement an onModeInit call to initialize the service to
+be ready before entering a mode. This is called before the mode `onModeInit` is called.
 
 ## onModeEnter
 A service may implement an onModeEnter call to initialize the service to
-be ready for entering a mode.
-This is called before the mode `onModeEnter` is called.
+be ready when entering a mode (first rendering). This is called before the mode `onModeEnter` is called.
 
 ## onModeExit
 When entering a mode, the service contract states that the service needs to

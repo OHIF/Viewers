@@ -104,6 +104,15 @@ export default function ModeRoute({
 }) {
   const [appConfig] = useAppConfig();
 
+  if (mode?.onModeInit) {
+    mode?.onModeInit({
+      servicesManager,
+      extensionManager,
+      commandsManager,
+      appConfig,
+    });
+  }
+
   // Parse route params/querystring
   const location = useLocation();
 
@@ -328,6 +337,7 @@ export default function ModeRoute({
         servicesManager,
         extensionManager,
         commandsManager,
+        appConfig,
       });
 
       /**
