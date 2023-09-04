@@ -1,4 +1,5 @@
 import { adaptersSR } from '@cornerstonejs/adapters';
+import checkUnmappedMeasurement from './checkUnmappedMeasurement';
 
 const cornerstoneAdapters =
   adaptersSR.Cornerstone3D.MeasurementReport.CORNERSTONE_TOOL_CLASSES_BY_UTILITY_TYPE;
@@ -51,17 +52,8 @@ export default function isRehydratable(displaySet, mappings) {
 
     if (hydratable) {
       return true;
-    } else {
-      if (
-        TrackingIdentifier === 'Lesion' &&
-        measurements[i].coords.length === 1 &&
-        measurements[i].coords[0].GraphicType === 'POLYLINE' &&
-        measurements[i].coords[0].ValueType === 'SCOORD' &&
-        Array.isArray(measurements[i].coords[0].GraphicData) &&
-        measurements[i].coords[0].GraphicData.length % 2 === 0
-      ) {
-        return true;
-      }
+    } else if (checkUnmappedMeasurement(measurements[i])) {
+      return true;
     }
     console.log('Measurement is not rehydratable', TrackingIdentifier, measurements[i]);
   }

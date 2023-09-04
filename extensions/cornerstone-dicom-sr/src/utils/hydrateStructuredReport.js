@@ -3,6 +3,8 @@ import OHIF, { DicomMetadataStore } from '@ohif/core';
 import getLabelFromDCMJSImportedToolData from './getLabelFromDCMJSImportedToolData';
 import { adaptersSR } from '@cornerstonejs/adapters';
 import { annotation as CsAnnotation } from '@cornerstonejs/tools';
+import checkUnmappedTrackingIdentifierGroup from './checkUnmappedTrackingIdentifierGroup';
+
 const { locking } = CsAnnotation;
 
 const { guid } = OHIF.utils;
@@ -264,6 +266,11 @@ function _mapLegacyDataSet(dataset) {
       cornerstoneTag = CORNERSTONE_3D_TAG;
     }
 
+    if (!toolName) {
+      const trackingIdentifierInfo = checkUnmappedTrackingIdentifierGroup(measurementGroupContentSequence);
+      cornerstoneTag = trackingIdentifierInfo.cornerstoneTag;
+      toolName = trackingIdentifierInfo.toolName;
+    }
     const mappedTrackingIdentifier = `${cornerstoneTag}:${toolName}`;
 
     TrackingIdentifierGroup.TextValue = mappedTrackingIdentifier;
