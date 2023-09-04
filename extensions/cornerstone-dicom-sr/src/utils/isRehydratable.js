@@ -55,6 +55,17 @@ export default function isRehydratable(displaySet, mappings) {
 
     if (hydratable) {
       return true;
+    } else {
+      if (
+        TrackingIdentifier === 'Lesion' &&
+        measurements[i].coords.length === 1 &&
+        measurements[i].coords[0].GraphicType === 'POLYLINE' &&
+        measurements[i].coords[0].ValueType === 'SCOORD' &&
+        Array.isArray(measurements[i].coords[0].GraphicData) &&
+        measurements[i].coords[0].GraphicData.length % 2 === 0
+      ) {
+        return true;
+      }
     }
     console.log(
       'Measurement is not rehydratable',
