@@ -10,8 +10,6 @@ export default function resolveObjectPath(root, path, defaultValue) {
       );
     }
     value = root[path];
-    return value === undefined && defaultValue !== undefined
-      ? defaultValue
-      : value;
+    return value === undefined && defaultValue !== undefined ? defaultValue : value;
   }
 }

@@ -298,10 +298,7 @@ export type Protocol = {
  * to the GUI when this is used, and it can be expensive to apply.
  * Alternatives include using the custom attributes where possible.
  */
-export type ProtocolGenerator = ({
-  servicesManager: any,
-  commandsManager: any,
-}) => {
+export type ProtocolGenerator = ({ servicesManager: any, commandsManager: any }) => {
   protocol: Protocol;
 };
 

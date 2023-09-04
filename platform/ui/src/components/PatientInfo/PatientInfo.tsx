@@ -40,20 +40,21 @@ function PatientInfo({
           isOpen && (
             <div className="flex py-2">
               <div className="flex pt-1">
-                <Icon name="info-link" className="w-4 text-primary-main" />
+                <Icon
+                  name="info-link"
+                  className="text-primary-main w-4"
+                />
               </div>
-              <div className="flex flex-col ml-2">
+              <div className="ml-2 flex flex-col">
                 <span
                   className="text-base font-bold text-white"
                   title={patientName}
                 >
                   {patientName}
                 </span>
-                <div className="flex pb-4 mt-4 mb-4 border-b border-secondary-main">
+                <div className="border-secondary-main mt-4 mb-4 flex border-b pb-4">
                   <div className={classnames(classes.firstRow)}>
-                    <span className={classnames(classes.infoHeader)}>
-                      {t('Sex')}
-                    </span>
+                    <span className={classnames(classes.infoHeader)}>{t('Sex')}</span>
                     <span
                       className={classnames(classes.infoText)}
                       title={patientSex}
@@ -62,9 +63,7 @@ function PatientInfo({
                     </span>
                   </div>
                   <div className={classnames(classes.row)}>
-                    <span className={classnames(classes.infoHeader)}>
-                      {t('Age')}
-                    </span>
+                    <span className={classnames(classes.infoHeader)}>{t('Age')}</span>
                     <span
                       className={classnames(classes.infoText)}
                       title={patientAge}
@@ -73,32 +72,27 @@ function PatientInfo({
                     </span>
                   </div>
                   <div className={classnames(classes.row)}>
-                    <span className={classnames(classes.infoHeader)}>
-                      {t('MRN')}
-                    </span>
-                    <span className={classnames(classes.infoText)} title={MRN}>
+                    <span className={classnames(classes.infoHeader)}>{t('MRN')}</span>
+                    <span
+                      className={classnames(classes.infoText)}
+                      title={MRN}
+                    >
                       {MRN}
                     </span>
                   </div>
                 </div>
                 <div className="flex">
                   <div className={classnames(classes.firstRow)}>
-                    <span className={classnames(classes.infoHeader)}>
-                      {t('Thickness')}
-                    </span>
+                    <span className={classnames(classes.infoHeader)}>{t('Thickness')}</span>
                     <span
                       className={classnames(classes.infoText)}
                       title={thickness}
                     >
-                      {thicknessUnits
-                        ? `${thickness}${thicknessUnits}`
-                        : `${thickness}`}
+                      {thicknessUnits ? `${thickness}${thicknessUnits}` : `${thickness}`}
                     </span>
                   </div>
                   <div className={classnames(classes.row)}>
-                    <span className={classnames(classes.infoHeader)}>
-                      {t('Spacing')}
-                    </span>
+                    <span className={classnames(classes.infoHeader)}>{t('Spacing')}</span>
                     <span
                       className={classnames(classes.infoText)}
                       title={spacing}
@@ -107,9 +101,7 @@ function PatientInfo({
                     </span>
                   </div>
                   <div className={classnames(classes.row)}>
-                    <span className={classnames(classes.infoHeader)}>
-                      {t('Scanner')}
-                    </span>
+                    <span className={classnames(classes.infoHeader)}>{t('Scanner')}</span>
                     <span
                       className={classnames(classes.infoText)}
                       title={scanner}
@@ -124,7 +116,7 @@ function PatientInfo({
         }
       >
         <Icon
-          className="cursor-pointer text-white hover:text-primary-light"
+          className="hover:text-primary-light cursor-pointer text-white"
           name="info-action"
         />
       </Tooltip>

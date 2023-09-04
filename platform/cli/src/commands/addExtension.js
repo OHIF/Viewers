@@ -44,9 +44,7 @@ export default async function addExtension(packageName, version) {
     .run()
     .then(ctx => {
       console.log(
-        `${chalk.green.bold(
-          `Added ohif-extension ${packageName}@${ctx.yarnInfo.version}`
-        )} `
+        `${chalk.green.bold(`Added ohif-extension ${packageName}@${ctx.yarnInfo.version}`)} `
       );
     })
     .catch(error => {

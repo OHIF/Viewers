@@ -64,8 +64,7 @@ function displayConstraint(attributeId, constraint, attributes) {
   }
 
   const attributeText = getAttributeText(attributeId, attributes);
-  const constraintText =
-    attributeText + ' ' + humanize(comparator).toLowerCase() + ' ' + value;
+  const constraintText = attributeText + ' ' + humanize(comparator).toLowerCase() + ' ' + value;
 
   return constraintText;
 }

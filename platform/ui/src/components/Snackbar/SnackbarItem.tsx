@@ -27,36 +27,34 @@ const SnackbarItem = ({ options, onClose }) => {
     [SnackbarTypes.ERROR]: 'bg-[#dabdbe]',
   };
 
-  const hidden =
-    'duration-300 transition-all ease-in-out h-0 opacity-0 pt-0 mb-0 pb-0';
+  const hidden = 'duration-300 transition-all ease-in-out h-0 opacity-0 pt-0 mb-0 pb-0';
 
   return (
     <div
-      className={classNames(
-        `${options.visible ? '' : hidden} sb-item`,
-        typeClasses[options.type]
-      )}
+      className={classNames(`${options.visible ? '' : hidden} sb-item`, typeClasses[options.type])}
     >
       <div className="flex">
-        <Icon name={iconClasses[options.type]} className="w-5 h-5 mt-[1px]" />
-        <div className="flex-col mx-2">
+        <Icon
+          name={iconClasses[options.type]}
+          className="mt-[1px] h-5 w-5"
+        />
+        <div className="mx-2 flex-col">
           {/* </span> */}
           {options.title && (
-            <div className="break-normal text-lg font-bold text-black">
-              {options.title}
-            </div>
+            <div className="break-normal text-lg font-bold text-black">{options.title}</div>
           )}
           {options.message && (
-            <div className="break-normal text-base text-black">
-              {options.message}
-            </div>
+            <div className="break-normal text-base text-black">{options.message}</div>
           )}
         </div>
         <div
           onClick={handleClose}
-          className="w-5 h-5 rounded-full flex items-center justify-center self-start ml-auto relative left-[3px] top-[-3px] text-[#0944b3]"
+          className="relative left-[3px] top-[-3px] ml-auto flex h-5 w-5 items-center justify-center self-start rounded-full text-[#0944b3]"
         >
-          <Icon name="close" className="text-black" />
+          <Icon
+            name="close"
+            className="text-black"
+          />
         </div>
       </div>
     </div>

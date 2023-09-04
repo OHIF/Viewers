@@ -30,9 +30,7 @@ const validateSameStudyUID = (uid: string, instances): void => {
   instances.forEach(it => {
     if (it.StudyInstanceUID !== uid) {
       console.warn('Not all instances have the same UID', uid, it);
-      throw new Error(
-        `Instances ${it.SOPInstanceUID} does not belong to ${uid}`
-      );
+      throw new Error(`Instances ${it.SOPInstanceUID} does not belong to ${uid}`);
     }
   });
 };
@@ -52,10 +50,7 @@ const CodeNameCodeSequenceValues = {
 
 const CodingSchemeDesignators = {
   SRT: 'SRT',
-  CornerstoneCodeSchemes: [
-    Cornerstone3DCodeScheme.CodingSchemeDesignator,
-    'CST4',
-  ],
+  CornerstoneCodeSchemes: [Cornerstone3DCodeScheme.CodingSchemeDesignator, 'CST4'],
 };
 
 const RELATIONSHIP_TYPE = {
@@ -170,10 +165,7 @@ function getClosestInstanceInfo(targetPoint, frameOfReferenceUID, displaySets) {
  * @param instances is a list of instances from THIS series that are not
  *     in this DICOM SR Display Set already.
  */
-function addInstances(
-  instances: InstanceMetadata[],
-  displaySetService: DisplaySetService
-) {
+function addInstances(instances: InstanceMetadata[], displaySetService: DisplaySetService) {
   this.instances.push(...instances);
   utils.sortStudyInstances(this.instances);
   // The last instance is the newest one, so is the one most interesting.
@@ -192,11 +184,7 @@ function addInstances(
  * @param servicesManager is the services that can be used for creating
  * @returns The list of display sets created for the given instances object
  */
-function _getDisplaySetsFromSeries(
-  instances,
-  servicesManager,
-  extensionManager
-) {
+function _getDisplaySetsFromSeries(instances, servicesManager, extensionManager) {
   // If the series has no instances, stop here
   if (!instances || !instances.length) {
     throw new Error('No instances were provided');
@@ -222,8 +210,7 @@ function _getDisplaySetsFromSeries(
 
   if (
     !ConceptNameCodeSequence ||
-    ConceptNameCodeSequence.CodeValue !==
-      CodeNameCodeSequenceValues.ImagingMeasurementReport
+    ConceptNameCodeSequence.CodeValue !== CodeNameCodeSequenceValues.ImagingMeasurementReport
   ) {
     servicesManager.services.uiNotificationService.show({
       title: 'DICOM SR',
@@ -286,36 +273,21 @@ function _load(displaySet, servicesManager, extensionManager) {
 
   // Check currently added displaySets and add measurements if the sources exist.
   displaySetService.activeDisplaySets.forEach(activeDisplaySet => {
-    _checkIfCanAddMeasurementsToDisplaySet(
-      displaySet,
-      activeDisplaySet,
-      dataSource
-    );
+    _checkIfCanAddMeasurementsToDisplaySet(displaySet, activeDisplaySet, dataSource);
   });
 
   // Subscribe to new displaySets as the source may come in after.
-  displaySetService.subscribe(
-    displaySetService.EVENTS.DISPLAY_SETS_ADDED,
-    data => {
-      const { displaySetsAdded } = data;
-      // If there are still some measurements that have not yet been loaded into cornerstone,
-      // See if we can load them onto any of the new displaySets.
-      displaySetsAdded.forEach(newDisplaySet => {
-        _checkIfCanAddMeasurementsToDisplaySet(
-          displaySet,
-          newDisplaySet,
-          dataSource
-        );
-      });
-    }
-  );
+  displaySetService.subscribe(displaySetService.EVENTS.DISPLAY_SETS_ADDED, data => {
+    const { displaySetsAdded } = data;
+    // If there are still some measurements that have not yet been loaded into cornerstone,
+    // See if we can load them onto any of the new displaySets.
+    displaySetsAdded.forEach(newDisplaySet => {
+      _checkIfCanAddMeasurementsToDisplaySet(displaySet, newDisplaySet, dataSource);
+    });
+  });
 }
 
-function _checkIfCanAddMeasurementsToDisplaySet(
-  srDisplaySet,
-  newDisplaySet,
-  dataSource
-) {
+function _checkIfCanAddMeasurementsToDisplaySet(srDisplaySet, newDisplaySet, dataSource) {
   let unloadedMeasurements = srDisplaySet.measurements.filter(
     measurement => measurement.loaded === false
   );
@@ -350,8 +322,7 @@ function _checkIfCanAddMeasurementsToDisplaySet(
     const { coords } = measurement;
 
     coords.forEach(coord => {
-      const SOPInstanceUID =
-        coord.ReferencedSOPSequence.ReferencedSOPInstanceUID;
+      const SOPInstanceUID = coord.ReferencedSOPSequence.ReferencedSOPInstanceUID;
 
       if (!SOPInstanceUIDs.includes(SOPInstanceUID)) {
         SOPInstanceUIDs.push(SOPInstanceUID);
@@ -359,9 +330,7 @@ function _checkIfCanAddMeasurementsToDisplaySet(
     });
   });
 
-  const imageIdsForDisplaySet = dataSource.getImageIdsForDisplaySet(
-    newDisplaySet
-  );
+  const imageIdsForDisplaySet = dataSource.getImageIdsForDisplaySet(newDisplaySet);
 
   for (const imageId of imageIdsForDisplaySet) {
     if (!unloadedMeasurements.length) {
@@ -369,25 +338,13 @@ function _checkIfCanAddMeasurementsToDisplaySet(
       return;
     }
 
-    const { SOPInstanceUID, frameNumber } = metadataProvider.getUIDsFromImageID(
-      imageId
-    );
+    const { SOPInstanceUID, frameNumber } = metadataProvider.getUIDsFromImageID(imageId);
 
     if (SOPInstanceUIDs.includes(SOPInstanceUID)) {
       for (let j = unloadedMeasurements.length - 1; j >= 0; j--) {
         const measurement = unloadedMeasurements[j];
-        if (
-          _measurementReferencesSOPInstanceUID(
-            measurement,
-            SOPInstanceUID,
-            frameNumber
-          )
-        ) {
-          addMeasurement(
-            measurement,
-            imageId,
-            newDisplaySet.displaySetInstanceUID
-          );
+        if (_measurementReferencesSOPInstanceUID(measurement, SOPInstanceUID, frameNumber)) {
+          addMeasurement(measurement, imageId, newDisplaySet.displaySetInstanceUID);
 
           unloadedMeasurements.splice(j, 1);
         }
@@ -396,11 +353,7 @@ function _checkIfCanAddMeasurementsToDisplaySet(
   }
 }
 
-function _measurementReferencesSOPInstanceUID(
-  measurement,
-  SOPInstanceUID,
-  frameNumber
-) {
+function _measurementReferencesSOPInstanceUID(measurement, SOPInstanceUID, frameNumber) {
   const { coords } = measurement;
 
   // NOTE: The ReferencedFrameNumber can be multiple values according to the DICOM
@@ -426,11 +379,7 @@ function _measurementReferencesSOPInstanceUID(
 
 function getSopClassHandlerModule({ servicesManager, extensionManager }) {
   const getDisplaySetsFromSeries = instances => {
-    return _getDisplaySetsFromSeries(
-      instances,
-      servicesManager,
-      extensionManager
-    );
+    return _getDisplaySetsFromSeries(instances, servicesManager, extensionManager);
   };
 
   return [
@@ -448,30 +397,22 @@ function _getMeasurements(
 ) {
   const ImagingMeasurements = ImagingMeasurementReportContentSequence.find(
     item =>
-      item.ConceptNameCodeSequence.CodeValue ===
-      CodeNameCodeSequenceValues.ImagingMeasurements
+      item.ConceptNameCodeSequence.CodeValue === CodeNameCodeSequenceValues.ImagingMeasurements
   );
 
-  const MeasurementGroups = _getSequenceAsArray(
-    ImagingMeasurements.ContentSequence
-  ).filter(
-    item =>
-      item.ConceptNameCodeSequence.CodeValue ===
-      CodeNameCodeSequenceValues.MeasurementGroup
+  const MeasurementGroups = _getSequenceAsArray(ImagingMeasurements.ContentSequence).filter(
+    item => item.ConceptNameCodeSequence.CodeValue === CodeNameCodeSequenceValues.MeasurementGroup
   );
 
-  const mergedContentSequencesByTrackingUniqueIdentifiers = _getMergedContentSequencesByTrackingUniqueIdentifiers(
-    MeasurementGroups
-  );
+  const mergedContentSequencesByTrackingUniqueIdentifiers =
+    _getMergedContentSequencesByTrackingUniqueIdentifiers(MeasurementGroups);
 
   const measurements = [];
 
   Object.keys(mergedContentSequencesByTrackingUniqueIdentifiers).forEach(
     trackingUniqueIdentifier => {
       const mergedContentSequence =
-        mergedContentSequencesByTrackingUniqueIdentifiers[
-          trackingUniqueIdentifier
-        ];
+        mergedContentSequencesByTrackingUniqueIdentifiers[trackingUniqueIdentifier];
 
       const measurement = _processMeasurement(
         mergedContentSequence,
@@ -487,15 +428,11 @@ function _getMeasurements(
   return measurements;
 }
 
-function _getMergedContentSequencesByTrackingUniqueIdentifiers(
-  MeasurementGroups
-) {
+function _getMergedContentSequencesByTrackingUniqueIdentifiers(MeasurementGroups) {
   const mergedContentSequencesByTrackingUniqueIdentifiers = {};
 
   MeasurementGroups.forEach(MeasurementGroup => {
-    const ContentSequence = _getSequenceAsArray(
-      MeasurementGroup.ContentSequence
-    );
+    const ContentSequence = _getSequenceAsArray(MeasurementGroup.ContentSequence);
 
     const TrackingUniqueIdentifierItem = ContentSequence.find(
       item =>
@@ -504,22 +441,16 @@ function _getMergedContentSequencesByTrackingUniqueIdentifiers(
     );
 
     if (!TrackingUniqueIdentifierItem) {
-      console.warn(
-        'No Tracking Unique Identifier, skipping ambiguous measurement.'
-      );
+      console.warn('No Tracking Unique Identifier, skipping ambiguous measurement.');
     }
 
     const trackingUniqueIdentifier = TrackingUniqueIdentifierItem.UID;
 
-    if (
-      mergedContentSequencesByTrackingUniqueIdentifiers[
-        trackingUniqueIdentifier
-      ] === undefined
-    ) {
+    if (mergedContentSequencesByTrackingUniqueIdentifiers[trackingUniqueIdentifier] === undefined) {
       // Add the full ContentSequence
-      mergedContentSequencesByTrackingUniqueIdentifiers[
-        trackingUniqueIdentifier
-      ] = [...ContentSequence];
+      mergedContentSequencesByTrackingUniqueIdentifiers[trackingUniqueIdentifier] = [
+        ...ContentSequence,
+      ];
     } else {
       // Add the ContentSequence minus the tracking identifier, as we have this
       // Information in the merged ContentSequence anyway.
@@ -528,9 +459,7 @@ function _getMergedContentSequencesByTrackingUniqueIdentifiers(
           item.ConceptNameCodeSequence.CodeValue !==
           CodeNameCodeSequenceValues.TrackingUniqueIdentifier
         ) {
-          mergedContentSequencesByTrackingUniqueIdentifiers[
-            trackingUniqueIdentifier
-          ].push(item);
+          mergedContentSequencesByTrackingUniqueIdentifiers[trackingUniqueIdentifier].push(item);
         }
       });
     }
@@ -565,14 +494,10 @@ function _processTID1410Measurement(mergedContentSequence, displaySetService) {
     );
   }
 
-  const UIDREFContentItem = mergedContentSequence.find(
-    group => group.ValueType === 'UIDREF'
-  );
+  const UIDREFContentItem = mergedContentSequence.find(group => group.ValueType === 'UIDREF');
 
   const TrackingIdentifierContentItem = mergedContentSequence.find(
-    item =>
-      item.ConceptNameCodeSequence.CodeValue ===
-      CodeNameCodeSequenceValues.TrackingIdentifier
+    item => item.ConceptNameCodeSequence.CodeValue === CodeNameCodeSequenceValues.TrackingIdentifier
   );
 
   if (!graphicItem) {
@@ -582,9 +507,7 @@ function _processTID1410Measurement(mergedContentSequence, displaySetService) {
     return;
   }
 
-  const NUMContentItems = mergedContentSequence.filter(
-    group => group.ValueType === 'NUM'
-  );
+  const NUMContentItems = mergedContentSequence.filter(group => group.ValueType === 'NUM');
 
   const measurement = {
     loaded: false,
@@ -599,10 +522,7 @@ function _processTID1410Measurement(mergedContentSequence, displaySetService) {
 
     if (MeasuredValueSequence) {
       measurement.labels.push(
-        _getLabelFromMeasuredValueSequence(
-          ConceptNameCodeSequence,
-          MeasuredValueSequence
-        )
+        _getLabelFromMeasuredValueSequence(ConceptNameCodeSequence, MeasuredValueSequence)
       );
     }
   });
@@ -611,32 +531,22 @@ function _processTID1410Measurement(mergedContentSequence, displaySetService) {
 }
 
 function _processNonGeometricallyDefinedMeasurement(mergedContentSequence) {
-  const NUMContentItems = mergedContentSequence.filter(
-    group => group.ValueType === 'NUM'
-  );
+  const NUMContentItems = mergedContentSequence.filter(group => group.ValueType === 'NUM');
 
-  const UIDREFContentItem = mergedContentSequence.find(
-    group => group.ValueType === 'UIDREF'
-  );
+  const UIDREFContentItem = mergedContentSequence.find(group => group.ValueType === 'UIDREF');
 
   const TrackingIdentifierContentItem = mergedContentSequence.find(
-    item =>
-      item.ConceptNameCodeSequence.CodeValue ===
-      CodeNameCodeSequenceValues.TrackingIdentifier
+    item => item.ConceptNameCodeSequence.CodeValue === CodeNameCodeSequenceValues.TrackingIdentifier
   );
 
   const finding = mergedContentSequence.find(
-    item =>
-      item.ConceptNameCodeSequence.CodeValue ===
-      CodeNameCodeSequenceValues.Finding
+    item => item.ConceptNameCodeSequence.CodeValue === CodeNameCodeSequenceValues.Finding
   );
 
   const findingSites = mergedContentSequence.filter(
     item =>
-      item.ConceptNameCodeSequence.CodingSchemeDesignator ===
-        CodingSchemeDesignators.SRT &&
-      item.ConceptNameCodeSequence.CodeValue ===
-        CodeNameCodeSequenceValues.FindingSite
+      item.ConceptNameCodeSequence.CodingSchemeDesignator === CodingSchemeDesignators.SRT &&
+      item.ConceptNameCodeSequence.CodeValue === CodeNameCodeSequenceValues.FindingSite
   );
 
   const measurement = {
@@ -652,8 +562,7 @@ function _processNonGeometricallyDefinedMeasurement(mergedContentSequence) {
     CodingSchemeDesignators.CornerstoneCodeSchemes.includes(
       finding.ConceptCodeSequence.CodingSchemeDesignator
     ) &&
-    finding.ConceptCodeSequence.CodeValue ===
-      CodeNameCodeSequenceValues.CornerstoneFreeText
+    finding.ConceptCodeSequence.CodeValue === CodeNameCodeSequenceValues.CornerstoneFreeText
   ) {
     measurement.labels.push({
       label: CORNERSTONE_FREETEXT_CODE_VALUE,
@@ -668,8 +577,7 @@ function _processNonGeometricallyDefinedMeasurement(mergedContentSequence) {
         CodingSchemeDesignators.CornerstoneCodeSchemes.includes(
           FindingSite.ConceptCodeSequence.CodingSchemeDesignator
         ) &&
-        FindingSite.ConceptCodeSequence.CodeValue ===
-          CodeNameCodeSequenceValues.CornerstoneFreeText
+        FindingSite.ConceptCodeSequence.CodeValue === CodeNameCodeSequenceValues.CornerstoneFreeText
     );
 
     if (cornerstoneFreeTextFindingSite) {
@@ -681,18 +589,12 @@ function _processNonGeometricallyDefinedMeasurement(mergedContentSequence) {
   }
 
   NUMContentItems.forEach(item => {
-    const {
-      ConceptNameCodeSequence,
-      ContentSequence,
-      MeasuredValueSequence,
-    } = item;
+    const { ConceptNameCodeSequence, ContentSequence, MeasuredValueSequence } = item;
 
     const { ValueType } = ContentSequence;
 
     if (!ValueType === 'SCOORD') {
-      console.warn(
-        `Graphic ${ValueType} not currently supported, skipping annotation.`
-      );
+      console.warn(`Graphic ${ValueType} not currently supported, skipping annotation.`);
 
       return;
     }
@@ -705,10 +607,7 @@ function _processNonGeometricallyDefinedMeasurement(mergedContentSequence) {
 
     if (MeasuredValueSequence) {
       measurement.labels.push(
-        _getLabelFromMeasuredValueSequence(
-          ConceptNameCodeSequence,
-          MeasuredValueSequence
-        )
+        _getLabelFromMeasuredValueSequence(ConceptNameCodeSequence, MeasuredValueSequence)
       );
     }
   });
@@ -769,17 +668,12 @@ function _getCoordsFromSCOORDOrSCOORD3D(item, displaySetService) {
   return coords;
 }
 
-function _getLabelFromMeasuredValueSequence(
-  ConceptNameCodeSequence,
-  MeasuredValueSequence
-) {
+function _getLabelFromMeasuredValueSequence(ConceptNameCodeSequence, MeasuredValueSequence) {
   const { CodeMeaning } = ConceptNameCodeSequence;
   const { NumericValue, MeasurementUnitsCodeSequence } = MeasuredValueSequence;
   const { CodeValue } = MeasurementUnitsCodeSequence;
 
-  const formatedNumericValue = NumericValue
-    ? Number(NumericValue).toFixed(2)
-    : '';
+  const formatedNumericValue = NumericValue ? Number(NumericValue).toFixed(2) : '';
 
   return {
     label: CodeMeaning,
@@ -789,17 +683,11 @@ function _getLabelFromMeasuredValueSequence(
 
 function _getReferencedImagesList(ImagingMeasurementReportContentSequence) {
   const ImageLibrary = ImagingMeasurementReportContentSequence.find(
-    item =>
-      item.ConceptNameCodeSequence.CodeValue ===
-      CodeNameCodeSequenceValues.ImageLibrary
+    item => item.ConceptNameCodeSequence.CodeValue === CodeNameCodeSequenceValues.ImageLibrary
   );
 
-  const ImageLibraryGroup = _getSequenceAsArray(
-    ImageLibrary.ContentSequence
-  ).find(
-    item =>
-      item.ConceptNameCodeSequence.CodeValue ===
-      CodeNameCodeSequenceValues.ImageLibraryGroup
+  const ImageLibraryGroup = _getSequenceAsArray(ImageLibrary.ContentSequence).find(
+    item => item.ConceptNameCodeSequence.CodeValue === CodeNameCodeSequenceValues.ImageLibraryGroup
   );
   if (!ImageLibraryGroup) {
     return;

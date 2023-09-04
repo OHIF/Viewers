@@ -3,11 +3,7 @@ const { extendDefaultPlugins } = require('svgo');
 
 module.exports = {
   babelrcRoots: ['./platform/*', './extensions/*', './modes/*'],
-  presets: [
-    '@babel/preset-env',
-    '@babel/preset-react',
-    '@babel/preset-typescript',
-  ],
+  presets: ['@babel/preset-env', '@babel/preset-react', '@babel/preset-typescript'],
   plugins: [
     [
       'inline-react-svg',

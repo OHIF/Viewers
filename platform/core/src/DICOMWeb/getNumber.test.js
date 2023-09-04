@@ -26,9 +26,7 @@ describe('getNumber', () => {
 
     expect(getNumber(nullElement, defaultValue)).toEqual(defaultValue);
     expect(getNumber(undefinedElement, defaultValue)).toEqual(defaultValue);
-    expect(getNumber(noValuePresentElement, defaultValue)).toEqual(
-      defaultValue
-    );
+    expect(getNumber(noValuePresentElement, defaultValue)).toEqual(defaultValue);
   });
 
   it('should return 2.0 for element when element.Value[0] = 2', () => {

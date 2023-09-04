@@ -28,9 +28,7 @@ export default async function removeExtensions(ohifExtensionsToRemove) {
         extensonsString += ` ${packageName}`;
       });
 
-      console.log(
-        `${chalk.green.bold(`Extensions removed:${extensonsString}`)} `
-      );
+      console.log(`${chalk.green.bold(`Extensions removed:${extensonsString}`)} `);
     })
     .catch(error => {
       console.log(error.message);

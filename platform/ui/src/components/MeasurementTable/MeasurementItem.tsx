@@ -4,16 +4,7 @@ import classnames from 'classnames';
 
 import Icon from '../Icon';
 
-const MeasurementItem = ({
-  uid,
-  index,
-  label,
-  displayText,
-  isActive,
-  onClick,
-  onEdit,
-  item,
-}) => {
+const MeasurementItem = ({ uid, index, label, displayText, isActive, onClick, onEdit, item }) => {
   const [isHovering, setIsHovering] = useState(false);
 
   const onEditHandler = event => {
@@ -29,9 +20,9 @@ const MeasurementItem = ({
   return (
     <div
       className={classnames(
-        'group flex cursor-pointer bg-black border outline-none border-transparent transition duration-300',
+        'group flex cursor-pointer border border-transparent bg-black outline-none transition duration-300',
         {
-          'rounded overflow-hidden border-primary-light': isActive,
+          'border-primary-light overflow-hidden rounded': isActive,
         }
       )}
       onMouseEnter={onMouseEnter}
@@ -42,30 +33,27 @@ const MeasurementItem = ({
       data-cy={'measurement-item'}
     >
       <div
-        className={classnames(
-          'text-center w-6 py-1 text-base transition duration-300',
-          {
-            'bg-primary-light text-black active': isActive,
-            'bg-primary-dark text-primary-light group-hover:bg-secondary-main': !isActive,
-          }
-        )}
+        className={classnames('w-6 py-1 text-center text-base transition duration-300', {
+          'bg-primary-light active text-black': isActive,
+          'bg-primary-dark text-primary-light group-hover:bg-secondary-main': !isActive,
+        })}
       >
         {index}
       </div>
-      <div className="relative flex flex-col flex-1 px-2 py-1">
-        <span className="mb-1 text-base text-primary-light">{label}</span>
+      <div className="relative flex flex-1 flex-col px-2 py-1">
+        <span className="text-primary-light mb-1 text-base">{label}</span>
         {displayText.map((line, i) => (
           <span
             key={i}
-            className="pl-2 text-base text-white border-l border-primary-light"
+            className="border-primary-light border-l pl-2 text-base text-white"
             dangerouslySetInnerHTML={{ __html: line }}
           ></span>
         ))}
         <Icon
           className={classnames(
-            'text-white w-4 absolute cursor-pointer transition duration-300',
-            { 'invisible opacity-0 mr-2': !isActive && !isHovering },
-            { 'visible opacity-1': !isActive && isHovering }
+            'absolute w-4 cursor-pointer text-white transition duration-300',
+            { 'invisible mr-2 opacity-0': !isActive && !isHovering },
+            { 'opacity-1 visible': !isActive && isHovering }
           )}
           name="pencil"
           style={{
@@ -81,10 +69,7 @@ const MeasurementItem = ({
 };
 
 MeasurementItem.propTypes = {
-  uid: PropTypes.oneOfType([
-    PropTypes.number.isRequired,
-    PropTypes.string.isRequired,
-  ]),
+  uid: PropTypes.oneOfType([PropTypes.number.isRequired, PropTypes.string.isRequired]),
   index: PropTypes.number.isRequired,
   label: PropTypes.string,
   displayText: PropTypes.array.isRequired,

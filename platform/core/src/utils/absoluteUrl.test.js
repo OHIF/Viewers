@@ -13,9 +13,7 @@ describe('absoluteUrl', () => {
       writable: true,
     });
     const absoluteUrlOutput = absoluteUrl('/path_3/path_to_destination');
-    expect(absoluteUrlOutput).toEqual(
-      '/path_1/path_2/path_3/path_to_destination'
-    );
+    expect(absoluteUrlOutput).toEqual('/path_1/path_2/path_3/path_to_destination');
   });
 
   test('should return / when the path is not defined', () => {
