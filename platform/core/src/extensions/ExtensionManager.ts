@@ -103,7 +103,6 @@ export default class ExtensionManager extends PubSubService {
     }
 
     this.activeDataSource = dataSource;
-    console.debug('>> New datasource', this.activeDataSource)
 
     this._broadcastEvent(
       ExtensionManager.EVENTS.ACTIVE_DATA_SOURCE_CHANGED,
