@@ -111,7 +111,7 @@ import toolPolygon from './../../assets/icons/tool-polygon.svg';
 import toolBrush from './../../assets/icons/tool-brush.svg';
 import toolEraser from './../../assets/icons/tool-eraser.svg';
 import toolScissorRect from './../../assets/icons/tool-scissor-rect.svg';
-import toolScissorCircle from './../../assets/icons/tool-scissor-circle-2.svg';
+import toolScissorCircle from './../../assets/icons/tool-scissor-circle.svg';
 import toolPaintFill from './../../assets/icons/tool-paint-fill.svg';
 import editPatient from './../../assets/icons/edit-patient.svg';
 import panelGroupMore from './../../assets/icons/panel-group-more.svg';
