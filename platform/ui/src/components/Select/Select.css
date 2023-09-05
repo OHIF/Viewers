@@ -48,11 +48,11 @@
 }
 
 .customSelect__wrapper.customSelect--is-disabled {
-  @apply cursor-not-allowed pointer-events-auto;
+  @apply pointer-events-auto cursor-not-allowed;
 }
 
 .customSelect__wrapper .customSelect__value-container--is-multi {
-  @apply px-3 py-2 inline-block truncate;
+  @apply inline-block truncate px-3 py-2;
 }
 
 .customSelect__menu {

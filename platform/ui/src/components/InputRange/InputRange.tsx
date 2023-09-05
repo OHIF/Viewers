@@ -59,8 +59,7 @@ const InputRange: React.FC<InputRangeProps> = ({
     [onChange]
   );
 
-  const rangeValuePercentage =
-    ((rangeValue - minValue) / (maxValue - minValue)) * 100;
+  const rangeValuePercentage = ((rangeValue - minValue) / (maxValue - minValue)) * 100;
 
   const LabelOrEditableNumber = allowNumberEdit ? (
     <InputNumber

@@ -81,7 +81,12 @@ const Dropdown = ({
     return (
       <div className="flex items-center">
         {children}
-        {showDropdownIcon && <Icon name="chevron-down" className="ml-1" />}
+        {showDropdownIcon && (
+          <Icon
+            name="chevron-down"
+            className="ml-1"
+          />
+        )}
       </div>
     );
   };
@@ -132,8 +137,15 @@ const Dropdown = ({
   }, [open]);
 
   return (
-    <div data-cy="dropdown" ref={element} className="relative">
-      <div className="flex items-center cursor-pointer" onClick={toggleList}>
+    <div
+      data-cy="dropdown"
+      ref={element}
+      className="relative"
+    >
+      <div
+        className="flex cursor-pointer items-center"
+        onClick={toggleList}
+      >
         {renderTitleElement()}
       </div>
 

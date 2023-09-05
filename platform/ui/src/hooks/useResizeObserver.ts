@@ -9,10 +9,7 @@ import { useEffect } from 'react';
  * @param elem the element to listen for resizing
  * @param callback the callback to invoke when the element is resized
  */
-const useResizeObserver = (
-  elem: HTMLElement,
-  callback: ResizeObserverCallback
-): void => {
+const useResizeObserver = (elem: HTMLElement, callback: ResizeObserverCallback): void => {
   useEffect(() => {
     if (!elem || !callback) {
       return;

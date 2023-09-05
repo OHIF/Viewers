@@ -12,8 +12,6 @@ const ENTRY = {
   app: `${SRC_DIR}/index.js`,
 };
 
-
-
 module.exports = (env, argv) => {
   const commonConfig = webpackCommon(env, argv, { SRC_DIR, DIST_DIR, ENTRY });
 

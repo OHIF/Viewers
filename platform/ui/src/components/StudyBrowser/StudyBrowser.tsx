@@ -37,14 +37,7 @@ const StudyBrowser = ({
   const getTabContent = () => {
     const tabData = tabs.find(tab => tab.name === activeTabName);
     return tabData.studies.map(
-      ({
-        studyInstanceUid,
-        date,
-        description,
-        numInstances,
-        modalities,
-        displaySets,
-      }) => {
+      ({ studyInstanceUid, date, description, numInstances, modalities, displaySets }) => {
         const isExpanded = expandedStudyInstanceUIDs.includes(studyInstanceUid);
         return (
           <React.Fragment key={studyInstanceUid}>
@@ -78,7 +71,7 @@ const StudyBrowser = ({
   return (
     <React.Fragment>
       <div
-        className="flex flex-row items-center justify-center h-16 p-4 border-b w-100 border-secondary-light bg-primary-dark"
+        className="w-100 border-secondary-light bg-primary-dark flex h-16 flex-row items-center justify-center border-b p-4"
         data-cy={'studyBrowser-panel'}
       >
         {/* TODO Revisit design of LegacyButtonGroup later - for now use LegacyButton for its children.*/}
@@ -102,7 +95,7 @@ const StudyBrowser = ({
             return (
               <LegacyButton
                 key={name}
-                className={'text-white text-base p-2 min-w-18'}
+                className={'min-w-18 p-2 text-base text-white'}
                 size="initial"
                 color={color}
                 bgColor={isActive ? 'bg-primary-main' : 'bg-black'}
@@ -117,7 +110,7 @@ const StudyBrowser = ({
           })}
         </LegacyButtonGroup>
       </div>
-      <div className="flex flex-col flex-1 overflow-auto ohif-scrollbar invisible-scrollbar">
+      <div className="ohif-scrollbar invisible-scrollbar flex flex-1 flex-col overflow-auto">
         {getTabContent()}
       </div>
     </React.Fragment>
@@ -153,11 +146,8 @@ StudyBrowser.propTypes = {
               seriesNumber: StringNumber,
               numInstances: PropTypes.number,
               description: PropTypes.string,
-              componentType: PropTypes.oneOf([
-                'thumbnail',
-                'thumbnailTracked',
-                'thumbnailNoImage',
-              ]).isRequired,
+              componentType: PropTypes.oneOf(['thumbnail', 'thumbnailTracked', 'thumbnailNoImage'])
+                .isRequired,
               isTracked: PropTypes.bool,
               viewportIdentificator: PropTypes.arrayOf(PropTypes.string),
               /**

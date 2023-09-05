@@ -105,7 +105,7 @@ const SegmentItem = ({
             <div>
               <Icon
                 name="row-hidden"
-                className={classnames('w-5 h-5 text-[#3d5871] ')}
+                className={classnames('h-5 w-5 text-[#3d5871] ')}
                 onClick={e => {
                   e.stopPropagation();
                   onToggleVisibility(segmentationId, segmentIndex);

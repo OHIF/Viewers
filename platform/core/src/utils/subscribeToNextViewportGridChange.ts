@@ -20,10 +20,7 @@ function subscribeToNextViewportGridChange(
     };
 
     const subscriptions = [
-      viewportGridService.subscribe(
-        viewportGridService.EVENTS.LAYOUT_CHANGED,
-        callback
-      ),
+      viewportGridService.subscribe(viewportGridService.EVENTS.LAYOUT_CHANGED, callback),
     ];
   };
 

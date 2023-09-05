@@ -1,9 +1,7 @@
 import { segmentation } from '@cornerstonejs/tools';
 
 function removeToolGroupSegmentationRepresentations(toolGroupId) {
-  const representations = segmentation.state.getSegmentationRepresentations(
-    toolGroupId
-  );
+  const representations = segmentation.state.getSegmentationRepresentations(toolGroupId);
 
   if (!representations || !representations.length) {
     return;

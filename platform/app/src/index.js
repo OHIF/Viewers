@@ -16,10 +16,7 @@ import { history } from './utils/history';
  * pluginImports.js imports all of the modes and extensions and adds them
  * to the window for processing.
  */
-import {
-  modes as defaultModes,
-  extensions as defaultExtensions,
-} from './pluginImports';
+import { modes as defaultModes, extensions as defaultExtensions } from './pluginImports';
 import loadDynamicConfig from './loadDynamicConfig';
 
 loadDynamicConfig(window.config).then(config_json => {

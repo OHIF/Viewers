@@ -5,9 +5,7 @@ import toNumber from '@ohif/core/src/utils/toNumber';
  * @param {*} instances
  * @returns
  */
-export default function areAllImageDimensionsEqual(
-  instances: Array<any>
-): boolean {
+export default function areAllImageDimensionsEqual(instances: Array<any>): boolean {
   if (!instances?.length) {
     return false;
   }

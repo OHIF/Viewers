@@ -16,7 +16,7 @@ const ActiveSegmentationConfig = ({
   return (
     <div className="flex justify-between text-[12px] pt-[13px] px-3">
       <div className="flex flex-col items-start">
-        <div className="text-white mb-[12px]">Active</div>
+        <div className="mb-[12px] text-white">Active</div>
         <CheckBox
           label="Outline"
           checked={config.renderOutline}
@@ -33,8 +33,8 @@ const ActiveSegmentationConfig = ({
         />
       </div>
 
-      <div className="flex flex-col items-center col-span-2">
-        <div className="text-[#b3b3b3] text-[10px] mb-[12px]">Opacity</div>
+      <div className="col-span-2 flex flex-col items-center">
+        <div className="mb-[12px] text-[10px] text-[#b3b3b3]">Opacity</div>
         <InputRange
           minValue={0}
           maxValue={100}
@@ -60,7 +60,7 @@ const ActiveSegmentationConfig = ({
       </div>
 
       <div className="flex flex-col items-center">
-        <div className="text-[#b3b3b3] text-[10px] mb-[12px]">Size</div>
+        <div className="mb-[12px] text-[10px] text-[#b3b3b3]">Size</div>
         <InputNumber
           value={config.outlineWidthActive}
           onChange={setOutlineWidthActive}
@@ -88,7 +88,7 @@ const InactiveSegmentationConfig = ({
         onChange={setRenderInactiveSegmentations}
       />
 
-      <div className="flex pl-4 items-center space-x-2">
+      <div className="flex items-center space-x-2 pl-4">
         <span className="text-[10px] text-[#b3b3b3]">Opacity</span>
         <InputRange
           minValue={0}

@@ -24,9 +24,7 @@ export default class ToolGroupService {
   public static REGISTRATION = {
     name: 'toolGroupService',
     altName: 'ToolGroupService',
-    create: ({
-      servicesManager,
-    }: OhifTypes.Extensions.ExtensionParams): ToolGroupService => {
+    create: ({ servicesManager }: OhifTypes.Extensions.ExtensionParams): ToolGroupService => {
       return new ToolGroupService(servicesManager);
     },
   };
@@ -40,10 +38,7 @@ export default class ToolGroupService {
   EVENTS: { [key: string]: string };
 
   constructor(serviceManager) {
-    const {
-      cornerstoneViewportService,
-      viewportGridService,
-    } = serviceManager.services;
+    const { cornerstoneViewportService, viewportGridService } = serviceManager.services;
     this.cornerstoneViewportService = cornerstoneViewportService;
     this.viewportGridService = viewportGridService;
     this.listeners = {};
@@ -66,19 +61,14 @@ export default class ToolGroupService {
 
     if (!toolGroupIdToUse) {
       // Use the active viewport's tool group if no tool group id is provided
-      const enabledElement = getActiveViewportEnabledElement(
-        this.viewportGridService
-      );
+      const enabledElement = getActiveViewportEnabledElement(this.viewportGridService);
 
       if (!enabledElement) {
         return;
       }
 
       const { renderingEngineId, viewportId } = enabledElement;
-      const toolGroup = ToolGroupManager.getToolGroupForViewport(
-        viewportId,
-        renderingEngineId
-      );
+      const toolGroup = ToolGroupManager.getToolGroupForViewport(viewportId, renderingEngineId);
 
       if (!toolGroup) {
         console.warn(
@@ -103,10 +93,7 @@ export default class ToolGroupService {
 
   public getToolGroupForViewport(viewportId: string): Types.IToolGroup | void {
     const renderingEngine = this.cornerstoneViewportService.getRenderingEngine();
-    return ToolGroupManager.getToolGroupForViewport(
-      viewportId,
-      renderingEngine.id
-    );
+    return ToolGroupManager.getToolGroupForViewport(viewportId, renderingEngine.id);
   }
 
   public getActiveToolForViewport(viewportId: string): string {
@@ -133,10 +120,7 @@ export default class ToolGroupService {
     renderingEngineId: string,
     deleteToolGroupIfEmpty?: boolean
   ): void {
-    const toolGroup = ToolGroupManager.getToolGroupForViewport(
-      viewportId,
-      renderingEngineId
-    );
+    const toolGroup = ToolGroupManager.getToolGroupForViewport(viewportId, renderingEngineId);
 
     if (!toolGroup) {
       return;
@@ -193,11 +177,7 @@ export default class ToolGroupService {
     return toolGroup;
   }
 
-  public addToolsToToolGroup(
-    toolGroupId: string,
-    tools: Array<Tool>,
-    configs: any = {}
-  ): void {
+  public addToolsToToolGroup(toolGroupId: string, tools: Array<Tool>, configs: any = {}): void {
     const toolGroup = ToolGroupManager.getToolGroup(toolGroupId);
     // this.changeConfigurationIfNecessary(toolGroup, volumeId);
     this._addTools(toolGroup, tools, configs);

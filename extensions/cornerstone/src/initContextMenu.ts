@@ -61,8 +61,7 @@ function initContextMenu({
    */
   const cornerstoneViewportHandleEvent = (name, evt) => {
     const customizations =
-      customizationService.get('cornerstoneViewportClickCommands') ||
-      DEFAULT_CONTEXT_MENU_CLICKS;
+      customizationService.get('cornerstoneViewportClickCommands') || DEFAULT_CONTEXT_MENU_CLICKS;
     const toRun = customizations[name];
 
     if (!toRun) {
@@ -101,30 +100,18 @@ function initContextMenu({
     // TODO check update upstream
     setEnabledElement(viewportId, element);
 
-    element.addEventListener(
-      cs3DToolsEvents.MOUSE_CLICK,
-      cornerstoneViewportHandleClick
-    );
+    element.addEventListener(cs3DToolsEvents.MOUSE_CLICK, cornerstoneViewportHandleClick);
   }
 
   function elementDisabledHandler(evt) {
     const { element } = evt.detail;
 
-    element.removeEventListener(
-      cs3DToolsEvents.MOUSE_CLICK,
-      cornerstoneViewportHandleClick
-    );
+    element.removeEventListener(cs3DToolsEvents.MOUSE_CLICK, cornerstoneViewportHandleClick);
   }
 
-  eventTarget.addEventListener(
-    EVENTS.ELEMENT_ENABLED,
-    elementEnabledHandler.bind(null)
-  );
+  eventTarget.addEventListener(EVENTS.ELEMENT_ENABLED, elementEnabledHandler.bind(null));
 
-  eventTarget.addEventListener(
-    EVENTS.ELEMENT_DISABLED,
-    elementDisabledHandler.bind(null)
-  );
+  eventTarget.addEventListener(EVENTS.ELEMENT_DISABLED, elementDisabledHandler.bind(null));
 }
 
 export default initContextMenu;

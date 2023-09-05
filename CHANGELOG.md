@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.7.0-beta.64](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.63...v3.7.0-beta.64) (2023-09-05)
+
+
+### Bug Fixes
+
+* **nginx archive recipe:** Fixes to various configuration files. ([#3624](https://github.com/OHIF/Viewers/issues/3624)) ([3ce7225](https://github.com/OHIF/Viewers/commit/3ce72254b390f32c9aa207a0589e688805e2659d))
+
+
+
+
+
+# [3.7.0-beta.63](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.62...v3.7.0-beta.63) (2023-09-01)
+
+
+### Features
+
+* **grid:** remove viewportIndex and only rely on viewportId ([#3591](https://github.com/OHIF/Viewers/issues/3591)) ([4c6ff87](https://github.com/OHIF/Viewers/commit/4c6ff873e887cc30ffc09223f5cb99e5f94c9cdd))
+
+
+
+
+
 # [3.7.0-beta.62](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.61...v3.7.0-beta.62) (2023-08-30)
 
 

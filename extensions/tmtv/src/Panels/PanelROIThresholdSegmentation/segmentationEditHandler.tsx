@@ -46,7 +46,7 @@ function segmentationItemEditHandler({ id, servicesManager }) {
         return (
           <Input
             autoFocus
-            className="bg-black border-primary-main"
+            className="border-primary-main bg-black"
             type="text"
             containerClassName="mr-2"
             value={value.label}

@@ -94,7 +94,7 @@ const InputNumber: React.FC<{
     <div className="flex flex-col flex-1">
       {label && <Label className={labelClassName} text={label} />}
       <div
-        className={`flex items-center bg-black border-2 px-1 overflow-hidden justify-center border-secondary-light rounded-md ${
+        className={`border-secondary-light flex items-center justify-center overflow-hidden rounded-md border-2 bg-black px-1 ${
           sizesClasses[size]
         } ${className || ''}`}
         style={{ width: containerWidth }}

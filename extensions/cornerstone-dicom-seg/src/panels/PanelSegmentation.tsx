@@ -80,15 +80,8 @@ export default function PanelSegmentation({
 
     toolGroupIds.forEach(toolGroupId => {
       // const toolGroupId =
-      segmentationService.setActiveSegmentationForToolGroup(
-        segmentationId,
-        toolGroupId
-      );
-      segmentationService.jumpToSegmentCenter(
-        segmentationId,
-        segmentIndex,
-        toolGroupId
-      );
+      segmentationService.setActiveSegmentationForToolGroup(segmentationId, toolGroupId);
+      segmentationService.jumpToSegmentCenter(segmentationId, segmentIndex, toolGroupId);
     });
   };
 
@@ -245,25 +238,13 @@ export default function PanelSegmentation({
           showDeleteSegment={true}
           segmentationConfig={{ initialConfig: segmentationConfiguration }}
           setRenderOutline={value =>
-            _setSegmentationConfiguration(
-              selectedSegmentationId,
-              'renderOutline',
-              value
-            )
+            _setSegmentationConfiguration(selectedSegmentationId, 'renderOutline', value)
           }
           setOutlineOpacityActive={value =>
-            _setSegmentationConfiguration(
-              selectedSegmentationId,
-              'outlineOpacity',
-              value
-            )
+            _setSegmentationConfiguration(selectedSegmentationId, 'outlineOpacity', value)
           }
           setRenderFill={value =>
-            _setSegmentationConfiguration(
-              selectedSegmentationId,
-              'renderFill',
-              value
-            )
+            _setSegmentationConfiguration(selectedSegmentationId, 'renderFill', value)
           }
           setRenderInactiveSegmentations={value =>
             _setSegmentationConfiguration(
@@ -273,25 +254,13 @@ export default function PanelSegmentation({
             )
           }
           setOutlineWidthActive={value =>
-            _setSegmentationConfiguration(
-              selectedSegmentationId,
-              'outlineWidthActive',
-              value
-            )
+            _setSegmentationConfiguration(selectedSegmentationId, 'outlineWidthActive', value)
           }
           setFillAlpha={value =>
-            _setSegmentationConfiguration(
-              selectedSegmentationId,
-              'fillAlpha',
-              value
-            )
+            _setSegmentationConfiguration(selectedSegmentationId, 'fillAlpha', value)
           }
           setFillAlphaInactive={value =>
-            _setSegmentationConfiguration(
-              selectedSegmentationId,
-              'fillAlphaInactive',
-              value
-            )
+            _setSegmentationConfiguration(selectedSegmentationId, 'fillAlphaInactive', value)
           }
         />
       </div>
