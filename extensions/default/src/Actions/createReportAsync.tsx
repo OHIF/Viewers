@@ -5,16 +5,8 @@ import { DicomMetadataStore } from '@ohif/core';
  *
  * @param {*} servicesManager
  */
-async function createReportAsync({
-  servicesManager,
-  getReport,
-  reportType = 'measurement',
-}) {
-  const {
-    displaySetService,
-    uiNotificationService,
-    uiDialogService,
-  } = servicesManager.services;
+async function createReportAsync({ servicesManager, getReport, reportType = 'measurement' }) {
+  const { displaySetService, uiNotificationService, uiDialogService } = servicesManager.services;
   const loadingDialogId = uiDialogService.create({
     showOverlay: true,
     isDraggable: false,

@@ -207,9 +207,7 @@ const SidePanel = ({
         <React.Fragment>
           {/** Panel Header with Arrow and Close Actions */}
           <div
-            className={classnames(
-              'flex flex-static px-[10px] bg-primary-dark h-9 cursor-pointer'
-            )}
+            className={classnames('flex-static bg-primary-dark flex h-9 cursor-pointer px-[10px]')}
             onClick={() => {
               updatePanelOpen(prev => !prev);
               // slideToActivePanel();

@@ -39,29 +39,20 @@ const InputDoubleRange: React.FC<InputDoubleRangeProps> = ({
   showAdjustmentArrows,
 }) => {
   // Set initial thumb positions as percentages
-  const initialPercentageStart = Math.round(
-    ((values[0] - minValue) / (maxValue - minValue)) * 100
-  );
-  const initialPercentageEnd = Math.round(
-    ((values[1] - minValue) / (maxValue - minValue)) * 100
-  );
-  const [percentageStart, setPercentageStart] = useState(
-    initialPercentageStart
-  );
+  const initialPercentageStart = Math.round(((values[0] - minValue) / (maxValue - minValue)) * 100);
+  const initialPercentageEnd = Math.round(((values[1] - minValue) / (maxValue - minValue)) * 100);
+  const [percentageStart, setPercentageStart] = useState(initialPercentageStart);
   const [percentageEnd, setPercentageEnd] = useState(initialPercentageEnd);
 
   const [rangeValue, setRangeValue] = useState(values);
 
   const updateRangeValues = (newValues, index = null) => {
-    const updatedRangeValue = Array.isArray(newValues)
-      ? [...newValues]
-      : [...rangeValue];
+    const updatedRangeValue = Array.isArray(newValues) ? [...newValues] : [...rangeValue];
     if (index !== null) {
       updatedRangeValue[index] = newValues;
     }
 
-    const calculatePercentage = value =>
-      ((value - minValue) / (maxValue - minValue)) * 100;
+    const calculatePercentage = value => ((value - minValue) / (maxValue - minValue)) * 100;
 
     const newPercentageStart = calculatePercentage(updatedRangeValue[0]);
     const newPercentageEnd = calculatePercentage(updatedRangeValue[1]);
@@ -143,9 +134,7 @@ const InputDoubleRange: React.FC<InputDoubleRangeProps> = ({
       const rect = e.currentTarget.getBoundingClientRect();
       const x = e.clientX - rect.left;
       const newValue =
-        Math.round(
-          ((x / rect.width) * (maxValue - minValue) + minValue) / step
-        ) * step;
+        Math.round(((x / rect.width) * (maxValue - minValue) + minValue) / step) * step;
 
       // Make sure newValue is within [minValue, maxValue]
       const clampedValue = Math.min(Math.max(newValue, minValue), maxValue);
@@ -167,9 +156,7 @@ const InputDoubleRange: React.FC<InputDoubleRangeProps> = ({
       onChange(updatedRangeValue);
 
       // Update the thumb position
-      const percentage = Math.round(
-        ((clampedValue - minValue) / (maxValue - minValue)) * 100
-      );
+      const percentage = Math.round(((clampedValue - minValue) / (maxValue - minValue)) * 100);
       if (selectedThumb === 0) {
         setPercentageStart(percentage);
       } else {
@@ -179,34 +166,32 @@ const InputDoubleRange: React.FC<InputDoubleRangeProps> = ({
   };
 
   // Calculate the range values percentages for gradient background
-  const rangeValuePercentageStart =
-    ((rangeValue[0] - minValue) / (maxValue - minValue)) * 100;
-  const rangeValuePercentageEnd =
-    ((rangeValue[1] - minValue) / (maxValue - minValue)) * 100;
+  const rangeValuePercentageStart = ((rangeValue[0] - minValue) / (maxValue - minValue)) * 100;
+  const rangeValuePercentageEnd = ((rangeValue[1] - minValue) / (maxValue - minValue)) * 100;
 
   return (
     <div className={`flex items-center space-x-2${containerClassName ?? ''}`}>
       {showLabel && LabelOrEditableNumber(rangeValue[0], 0)}
       <div
-        className="flex w-full relative items-center h-10"
+        className="relative flex h-10 w-full items-center"
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
       >
         <div
-          className="w-full h-[3px] rounded-lg"
+          className="h-[3px] w-full rounded-lg"
           style={{
             background: `linear-gradient(to right, #3a3f99 0%, #3a3f99 ${rangeValuePercentageStart}%, #5acce6 ${rangeValuePercentageStart}%, #5acce6 ${rangeValuePercentageEnd}%, #3a3f99 ${rangeValuePercentageEnd}%, #3a3f99 100%)`,
           }}
         ></div>
         <div
-          className="absolute h-3 w-3 cursor-pointer input-range-thumb-design"
+          className="input-range-thumb-design absolute h-3 w-3 cursor-pointer"
           style={{
             left: `calc(${percentageStart}% - 3px)`,
           }}
         ></div>
         <div
-          className="absolute h-3 w-3  cursor-pointer rounded-full input-range-thumb-design"
+          className="input-range-thumb-design absolute h-3  w-3 cursor-pointer rounded-full"
           style={{ left: `calc(${percentageEnd}% - 3px)` }}
         ></div>
       </div>

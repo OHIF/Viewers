@@ -55,8 +55,7 @@ const commandsModule = ({
       if (displaySetInstanceUIDs.length > 1) {
         uiNotificationService.show({
           title: 'Segmentation',
-          message:
-            'Segmentation is not supported for multiple display sets yet',
+          message: 'Segmentation is not supported for multiple display sets yet',
           type: 'error',
         });
         return;
@@ -92,42 +91,36 @@ const commandsModule = ({
         ]);
       }
 
-      csViewport.element.addEventListener(
-        Enums.Events.VOLUME_VIEWPORT_NEW_VOLUME,
-        async () => {
-          const activeViewport = viewports.get(activeViewportId);
+      csViewport.element.addEventListener(Enums.Events.VOLUME_VIEWPORT_NEW_VOLUME, async () => {
+        const activeViewport = viewports.get(activeViewportId);
 
-          const volumeViewport =
-            cornerstoneViewportService.getCornerstoneViewport(
-              activeViewport?.viewportOptions?.viewportId
-            );
+        const volumeViewport = cornerstoneViewportService.getCornerstoneViewport(
+          activeViewport?.viewportOptions?.viewportId
+        );
 
-          volumeViewport.setCamera(prevCamera);
+        volumeViewport.setCamera(prevCamera);
 
-          const segmentationId =
-            await segmentationService.createSegmentationForDisplaySet(
-              displaySetInstanceUID,
-              { label: 'New Segmentation' }
-            );
+        const segmentationId = await segmentationService.createSegmentationForDisplaySet(
+          displaySetInstanceUID,
+          { label: 'New Segmentation' }
+        );
 
-          await segmentationService.addSegmentationRepresentationToToolGroup(
-            activeViewport.viewportOptions.toolGroupId,
-            segmentationId,
-            true // hydrateSegmentation,
-          );
+        await segmentationService.addSegmentationRepresentationToToolGroup(
+          activeViewport.viewportOptions.toolGroupId,
+          segmentationId,
+          true // hydrateSegmentation,
+        );
 
-          // Todo: handle other toolgroups than default
-          segmentationService.addSegment(segmentationId, {
-            properties: {
-              label: 'Segment 1',
-            },
-          });
-        }
-      );
+        // Todo: handle other toolgroups than default
+        segmentationService.addSegment(segmentationId, {
+          properties: {
+            label: 'Segment 1',
+          },
+        });
+      });
     },
     generateSegmentation: ({ segmentationId, options = {} }) => {
-      const segmentation =
-        cornerstoneToolsSegmentation.state.getSegmentation(segmentationId);
+      const segmentation = cornerstoneToolsSegmentation.state.getSegmentation(segmentationId);
 
       const { referencedVolumeId } = segmentation.representationData.LABELMAP;
 
@@ -140,8 +133,7 @@ const commandsModule = ({
       // Generate fake metadata as an example
       labelmapObj.metadata = [];
 
-      const segmentationInOHIF =
-        segmentationService.getSegmentation(segmentationId);
+      const segmentationInOHIF = segmentationService.getSegmentation(segmentationId);
       labelmapObj.segmentsOnLabelmap.forEach(segmentIndex => {
         // segmentation service already has a color for each segment
         const segment = segmentationInOHIF?.segments[segmentIndex];
@@ -181,16 +173,12 @@ const commandsModule = ({
       return generatedSegmentation;
     },
     downloadSegmentation: ({ segmentationId }) => {
-      const segmentationInOHIF =
-        segmentationService.getSegmentation(segmentationId);
+      const segmentationInOHIF = segmentationService.getSegmentation(segmentationId);
       const generatedSegmentation = actions.generateSegmentation({
         segmentationId,
       });
 
-      downloadDicomData(
-        generatedSegmentation.dataset,
-        `${segmentationInOHIF.label}`
-      );
+      downloadDicomData(generatedSegmentation.dataset, `${segmentationInOHIF.label}`);
     },
     storeSegmentation: async ({ segmentationId, dataSource }) => {
       const promptResult = await createReportDialogPrompt(uiDialogService, {

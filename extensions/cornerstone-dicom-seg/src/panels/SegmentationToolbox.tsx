@@ -18,9 +18,7 @@ function SegmentationToolbox({ servicesManager, extensionManager }) {
 
   const getActiveViewportToolGroupId = useCallback(() => {
     const viewport = viewports.get(activeViewportId);
-    const toolGroup = toolGroupService.getToolGroupForViewport(
-      viewport.viewportId
-    );
+    const toolGroup = toolGroupService.getToolGroupForViewport(viewport.viewportId);
     return toolGroup.id;
   }, [viewports, activeViewportId]);
 
@@ -35,9 +33,7 @@ function SegmentationToolbox({ servicesManager, extensionManager }) {
       return;
     }
 
-    const activeTool = toolGroupService.getActiveToolForViewport(
-      viewport.viewportId
-    );
+    const activeTool = toolGroupService.getActiveToolForViewport(viewport.viewportId);
     setActiveTool(activeTool);
   }, [activeViewportId, viewports]);
 
@@ -97,10 +93,7 @@ function SegmentationToolbox({ servicesManager, extensionManager }) {
 
   const handleRangeChange = useCallback(
     newRange => {
-      if (
-        newRange[0] !== thresholdRange[0] ||
-        newRange[1] !== thresholdRange[1]
-      ) {
+      if (newRange[0] !== thresholdRange[0] || newRange[1] !== thresholdRange[1]) {
         toolGroupService.getToolGroupIds()?.forEach(toolGroupId => {
           const toolGroup = toolGroupService.getToolGroup(toolGroupId);
           toolGroup.setToolConfiguration('ThresholdCircularBrush', {
@@ -125,8 +118,7 @@ function SegmentationToolbox({ servicesManager, extensionManager }) {
         {
           name: 'Brush',
           icon: 'icon-tool-brush',
-          active:
-            activeTool === 'CircularBrush' || activeTool === 'SphereBrush',
+          active: activeTool === 'CircularBrush' || activeTool === 'SphereBrush',
           onClick: () => setToolActive('CircularBrush'),
           options: [
             {
@@ -153,8 +145,7 @@ function SegmentationToolbox({ servicesManager, extensionManager }) {
         {
           name: 'Eraser',
           icon: 'icon-tool-eraser',
-          active:
-            activeTool === 'CircularEraser' || activeTool === 'SphereEraser',
+          active: activeTool === 'CircularEraser' || activeTool === 'SphereEraser',
           onClick: () => setToolActive('CircularEraser'),
           options: [
             {
@@ -203,9 +194,7 @@ function SegmentationToolbox({ servicesManager, extensionManager }) {
         {
           name: 'Threshold Tool',
           icon: 'icon-tool-threshold',
-          active:
-            activeTool === 'ThresholdCircularBrush' ||
-            activeTool === 'ThresholdSphereBrush',
+          active: activeTool === 'ThresholdCircularBrush' || activeTool === 'ThresholdSphereBrush',
           onClick: () => setToolActive('ThresholdCircularBrush'),
           options: [
             {
@@ -232,8 +221,8 @@ function SegmentationToolbox({ servicesManager, extensionManager }) {
               children: () => {
                 return (
                   <div>
-                    <div className="h-[1px] bg-secondary-light"></div>
-                    <div className="text-white text-[13px] mt-1">Threshold</div>
+                    <div className="bg-secondary-light h-[1px]"></div>
+                    <div className="mt-1 text-[13px] text-white">Threshold</div>
                     <InputDoubleRange
                       values={thresholdRange}
                       onChange={handleRangeChange}

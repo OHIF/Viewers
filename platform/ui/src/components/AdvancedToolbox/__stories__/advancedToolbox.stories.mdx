@@ -11,10 +11,13 @@ export const argTypes = {
   title: 'Components/AdvancedToolbox',
 };
 
-<Meta title="Components/AdvancedToolbox" component={AdvancedToolbox} />
+<Meta
+  title="Components/AdvancedToolbox"
+  component={AdvancedToolbox}
+/>
 
 export const advancedToolboxTemplate = args => (
-  <div className="w-64 h-96 bg-primary-dark">
+  <div className="bg-primary-dark h-96 w-64">
     <AdvancedToolbox {...args} />
   </div>
 );
@@ -31,8 +34,7 @@ export const advancedToolboxTemplate = args => (
 
 ## Overview
 
-OHIF advanced toolbox which can host set of tools that require more space for
-customization.
+OHIF advanced toolbox which can host set of tools that require more space for customization.
 
 <Canvas>
   <Story

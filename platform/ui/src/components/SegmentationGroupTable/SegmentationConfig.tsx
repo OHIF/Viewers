@@ -14,7 +14,7 @@ const ActiveSegmentationConfig = ({
   setFillAlpha,
 }) => {
   return (
-    <div className="flex justify-between text-[12px] pt-[13px] px-3">
+    <div className="flex justify-between px-3 pt-[13px] text-[12px]">
       <div className="flex flex-col items-start">
         <div className="mb-[12px] text-white">Active</div>
         <CheckBox
@@ -129,23 +129,18 @@ const SegmentationConfig = ({
           setRenderFill={setRenderFill}
           setRenderOutline={setRenderOutline}
         />
-        <div className="h-[1px] bg-[#212456] mb-[8px] mx-1"></div>
+        <div className="mx-1 mb-[8px] h-[1px] bg-[#212456]"></div>
         <div
           onClick={() => setIsMinimized(!isMinimized)}
-          className="flex items-center cursor-pointer pl-2 pb-[9px]"
+          className="flex cursor-pointer items-center pl-2 pb-[9px]"
         >
           <Icon
             name="panel-group-open-close"
-            className={classNames(
-              'w-5 h-5 text-white transition duration-300 cursor-pointer',
-              {
-                'transform rotate-90': !isMinimized,
-              }
-            )}
+            className={classNames('h-5 w-5 cursor-pointer text-white transition duration-300', {
+              'rotate-90 transform': !isMinimized,
+            })}
           />
-          <span className="text-[#d8d8d8] text-[12px] font-[300]">
-            {'Inactive Segmentations'}
-          </span>
+          <span className="text-[12px] font-[300] text-[#d8d8d8]">{'Inactive Segmentations'}</span>
         </div>
         {!isMinimized && (
           <InactiveSegmentationConfig

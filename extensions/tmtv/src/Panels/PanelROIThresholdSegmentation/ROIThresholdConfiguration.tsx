@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  Input,
-  Label,
-  Select,
-  LegacyButton,
-  LegacyButtonGroup,
-} from '@ohif/ui';
+import { Input, Label, Select, LegacyButton, LegacyButtonGroup } from '@ohif/ui';
 import { useTranslation } from 'react-i18next';
 
 export const ROI_STAT = 'roi_stat';

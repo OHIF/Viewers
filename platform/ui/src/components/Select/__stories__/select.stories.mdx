@@ -1,4 +1,4 @@
-import {Select} from '../../../components';
+import { Select } from '../../../components';
 import { ArgsTable, Story, Canvas, Meta } from '@storybook/addon-docs';
 
 export const argTypes = {
@@ -6,15 +6,21 @@ export const argTypes = {
   title: 'Components/Select',
 };
 
-<Meta title="Components/Select" component={Select} />
+<Meta
+  title="Components/Select"
+  component={Select}
+/>
 
 export const SelectTemplate = args => (
-  <div className="w-40 h-80">
+  <div className="h-80 w-40">
     <Select {...args} />
   </div>
-)
+);
 
-<Heading title="Select" componentRelativePath="Select/Select.tsx" />
+<Heading
+  title="Select"
+  componentRelativePath="Select/Select.tsx"
+/>
 
 - [Overview](#overview)
 - [Props](#props)
@@ -28,10 +34,13 @@ Select is a component that allows you to select from a list
   <Story
     name="Overview"
     args={{
-      isClearable:false,
+      isClearable: false,
       onChange: item => alert(item.label),
-      options: [{label:'item1', value: 1 }, {label:'item2', value:2}],
-      value: 2
+      options: [
+        { label: 'item1', value: 1 },
+        { label: 'item2', value: 2 },
+      ],
+      value: 2,
     }}
   >
     {SelectTemplate.bind({})}

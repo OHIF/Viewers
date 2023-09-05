@@ -4,20 +4,13 @@ import { useAppConfig } from '@state';
 import PanelSegmentation from './panels/PanelSegmentation';
 import SegmentationToolbox from './panels/SegmentationToolbox';
 
-const getPanelModule = ({
-  commandsManager,
-  servicesManager,
-  extensionManager,
-  configuration,
-}) => {
+const getPanelModule = ({ commandsManager, servicesManager, extensionManager, configuration }) => {
   const { customizationService } = servicesManager.services;
 
   const wrappedPanelSegmentation = configuration => {
     const [appConfig] = useAppConfig();
 
-    const disableEditingForMode = customizationService.get(
-      'segmentation.disableEditing'
-    );
+    const disableEditingForMode = customizationService.get('segmentation.disableEditing');
 
     return (
       <PanelSegmentation
@@ -26,8 +19,7 @@ const getPanelModule = ({
         extensionManager={extensionManager}
         configuration={{
           ...configuration,
-          disableEditing:
-            appConfig.disableEditing || disableEditingForMode?.value,
+          disableEditing: appConfig.disableEditing || disableEditingForMode?.value,
         }}
       />
     );

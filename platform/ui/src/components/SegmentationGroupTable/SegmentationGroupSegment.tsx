@@ -28,9 +28,7 @@ const SegmentItem = ({
 
   return (
     <div
-      className={classnames(
-        'flex text-aqua-pale bg-black group/row min-h-[28px]'
-      )}
+      className={classnames('text-aqua-pale group/row flex min-h-[28px] bg-black')}
       onMouseEnter={() => setRowIsHovering(true)}
       onMouseLeave={() => setRowIsHovering(false)}
       onClick={e => {
@@ -41,20 +39,17 @@ const SegmentItem = ({
       data-cy={'segment-item'}
     >
       <div
-        className={classnames(
-          'grid place-items-center w-[32px] bg-primary-dark group/number',
-          {
-            'bg-primary-light text-black border border-primary-light rounded-l-[4px]': isActive,
-            'border border-primary-dark': !isActive,
-          }
-        )}
+        className={classnames('bg-primary-dark group/number grid w-[32px] place-items-center', {
+          'bg-primary-light border-primary-light rounded-l-[4px] border text-black': isActive,
+          'border-primary-dark border': !isActive,
+        })}
         onMouseEnter={() => setIsNumberBoxHovering(true)}
         onMouseLeave={() => setIsNumberBoxHovering(false)}
       >
         {isNumberBoxHovering && showDelete ? (
           <Icon
             name="close"
-            className={classnames('w-[8px] h-[8px]', {
+            className={classnames('h-[8px] w-[8px]', {
               'hover:cursor-pointer hover:opacity-60': !disableEditing,
             })}
             onClick={e => {
@@ -71,14 +66,14 @@ const SegmentItem = ({
       </div>
       <div
         className={classnames('relative flex w-full', {
-          'border border-primary-light bg-primary-dark border-l-0 rounded-r-[4px]': isActive,
-          'border border-transparent border-l-0': !isActive,
+          'border-primary-light bg-primary-dark rounded-r-[4px] border border-l-0': isActive,
+          'border border-l-0 border-transparent': !isActive,
         })}
       >
-        <div className="flex flex-grow items-center group-hover/row:bg-primary-dark w-full h-full">
+        <div className="group-hover/row:bg-primary-dark flex h-full w-full flex-grow items-center">
           <div className="pl-2 pr-1.5">
             <div
-              className={classnames('grow-0 w-[8px] h-[8px] rounded-full', {
+              className={classnames('h-[8px] w-[8px] grow-0 rounded-full', {
                 'hover:cursor-pointer hover:opacity-60': !disableEditing,
               })}
               style={{ backgroundColor: cssColor }}
@@ -91,13 +86,11 @@ const SegmentItem = ({
               }}
             />
           </div>
-          <div className="flex items-center py-1 hover:cursor-pointer">
-            {label}
-          </div>
+          <div className="flex items-center py-1 hover:cursor-pointer">{label}</div>
         </div>
         <div
           className={classnames(
-            'absolute right-0 top-0 rounded-lg pr-[8px] pt-[3px] flex flex-row-reverse',
+            'absolute right-0 top-0 flex flex-row-reverse rounded-lg pr-[8px] pt-[3px]',
             {}
           )}
         >
@@ -118,7 +111,7 @@ const SegmentItem = ({
               <div>
                 <Icon
                   name="row-locked"
-                  className={classnames('w-5 h-5')}
+                  className={classnames('h-5 w-5')}
                   onClick={e => {
                     e.stopPropagation();
                     onToggleLocked(segmentationId, segmentIndex);
@@ -129,7 +122,7 @@ const SegmentItem = ({
                 <div>
                   <Icon
                     name="row-hidden"
-                    className={classnames('opacity-0 w-5 h-5')}
+                    className={classnames('h-5 w-5 opacity-0')}
                   />
                 </div>
               )}

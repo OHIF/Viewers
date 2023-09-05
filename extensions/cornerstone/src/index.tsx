@@ -135,5 +135,10 @@ const cornerstoneExtension: Types.Extensions.Extension = {
 };
 
 export type { PublicViewportOptions };
-export { measurementMappingUtils, CornerstoneExtensionTypes as Types, toolNames , getActiveViewportEnabledElement};
+export {
+  measurementMappingUtils,
+  CornerstoneExtensionTypes as Types,
+  toolNames,
+  getActiveViewportEnabledElement,
+};
 export default cornerstoneExtension;

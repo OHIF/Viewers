@@ -9,9 +9,15 @@ function ActionButtons({ onExportClick, onCreateReportClick }) {
 
   return (
     <React.Fragment>
-      <LegacyButtonGroup color="black" size="inherit">
+      <LegacyButtonGroup
+        color="black"
+        size="inherit"
+      >
         {/* TODO Revisit design of LegacyButtonGroup later - for now use LegacyButton for its children.*/}
-        <LegacyButton className="px-2 py-2 text-base" onClick={onExportClick}>
+        <LegacyButton
+          className="px-2 py-2 text-base"
+          onClick={onExportClick}
+        >
           {t('Export CSV')}
         </LegacyButton>
         <LegacyButton

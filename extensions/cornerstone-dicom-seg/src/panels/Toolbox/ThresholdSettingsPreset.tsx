@@ -36,10 +36,7 @@ function ThresholdSettings({ onRangeChange }) {
   const handleRangeChange = newRange => {
     const selectedOption = options.find(o => o.value === selectedPreset);
 
-    if (
-      newRange[0] === selectedOption.range[0] &&
-      newRange[1] === selectedOption.range[1]
-    ) {
+    if (newRange[0] === selectedOption.range[0] && newRange[1] === selectedOption.range[1]) {
       return;
     }
 
@@ -58,15 +55,13 @@ function ThresholdSettings({ onRangeChange }) {
     setOptions(updatedOptions);
   };
 
-  const selectedPresetRange = options.find(
-    ds => ds.value === selectedPreset
-  ).range;
+  const selectedPresetRange = options.find(ds => ds.value === selectedPreset).range;
 
   return (
     <div>
-      <div className="h-[1px] bg-secondary-light"></div>
-      <div className="text-white text-[13px] mt-1">Threshold</div>
-      <div className="w-1/2 mt-1">
+      <div className="bg-secondary-light h-[1px]"></div>
+      <div className="mt-1 text-[13px] text-white">Threshold</div>
+      <div className="mt-1 w-1/2">
         <Select
           isClearable={false}
           onChange={handlePresetChange}

@@ -22,9 +22,7 @@ export default function PanelSegmentation({
     segmentationService.getConfiguration()
   );
 
-  const [segmentations, setSegmentations] = useState(() =>
-    segmentationService.getSegmentations()
-  );
+  const [segmentations, setSegmentations] = useState(() => segmentationService.getSegmentations());
 
   useEffect(() => {
     // ~~ Subscription
@@ -50,9 +48,7 @@ export default function PanelSegmentation({
   }, []);
 
   const getToolGroupIds = segmentationId => {
-    const toolGroupIds = segmentationService.getToolGroupIdsWithSegmentation(
-      segmentationId
-    );
+    const toolGroupIds = segmentationService.getToolGroupIdsWithSegmentation(segmentationId);
 
     return toolGroupIds;
   };
@@ -133,22 +129,18 @@ export default function PanelSegmentation({
       a: opacity / 255.0,
     };
 
-    callColorPickerDialog(
-      uiDialogService,
-      rgbaColor,
-      (newRgbaColor, actionId) => {
-        if (actionId === 'cancel') {
-          return;
-        }
-
-        segmentationService.setSegmentRGBAColor(segmentationId, segmentIndex, [
-          newRgbaColor.r,
-          newRgbaColor.g,
-          newRgbaColor.b,
-          newRgbaColor.a * 255.0,
-        ]);
+    callColorPickerDialog(uiDialogService, rgbaColor, (newRgbaColor, actionId) => {
+      if (actionId === 'cancel') {
+        return;
       }
-    );
+
+      segmentationService.setSegmentRGBAColor(segmentationId, segmentIndex, [
+        newRgbaColor.r,
+        newRgbaColor.g,
+        newRgbaColor.b,
+        newRgbaColor.a * 255.0,
+      ]);
+    });
   };
 
   const onSegmentDelete = (segmentationId, segmentIndex) => {
@@ -215,7 +207,7 @@ export default function PanelSegmentation({
 
   return (
     <>
-      <div className="flex flex-col flex-auto min-h-0 justify-between select-none">
+      <div className="flex min-h-0 flex-auto select-none flex-col justify-between">
         <SegmentationGroupTable
           title={t('Segmentations')}
           segmentations={segmentations}

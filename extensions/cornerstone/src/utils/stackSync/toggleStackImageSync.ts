@@ -28,16 +28,14 @@ export default function toggleStackImageSync({ toggledState, servicesManager, ge
   let { viewports } = viewportGridService.getState();
 
   // filter empty viewports
-  viewports = viewports.filter(
-    viewport => viewport.displaySetInstanceUIDs?.length
-  );
+  viewports = viewports.filter(viewport => viewport.displaySetInstanceUIDs?.length);
 
   // filter reconstructable viewports
   viewports = viewports.filter(viewport => {
     const { displaySetInstanceUIDs } = viewport;
 
-      for (const displaySetInstanceUID of displaySetInstanceUIDs) {
-        const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
+    for (const displaySetInstanceUID of displaySetInstanceUIDs) {
+      const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
 
       if (displaySet && displaySet.isReconstructable) {
         return true;

@@ -1,4 +1,4 @@
-import {PanelSection, SidePanel} from '../../../components';
+import { PanelSection, SidePanel } from '../../../components';
 
 import { ArgsTable, Story, Canvas, Meta } from '@storybook/addon-docs';
 import { createComponentTemplate } from '../../../storybook/functions/create-component-story';
@@ -8,23 +8,26 @@ export const argTypes = {
   title: 'Components/PanelSection',
 };
 
-<Meta title="Components/PanelSection" component={PanelSection} />
+<Meta
+  title="Components/PanelSection"
+  component={PanelSection}
+/>
 
-export const PanelSectionTemplate = (args) => (
+export const PanelSectionTemplate = args => (
   <div className="w-96">
     <SidePanel
       side="left"
       defaultComponentOpen="Example"
       tabs={[
         {
-          id: "tab1",
-          name: "tab1",
-          label: "Tab 1",
-          iconName: "group-layers",
-          iconLabel: "group-layers",
+          id: 'tab1',
+          name: 'tab1',
+          label: 'Tab 1',
+          iconName: 'group-layers',
+          iconLabel: 'group-layers',
           content: () => (
             <PanelSection {...args}>
-              <div className="text-white">{"this is children"}</div>
+              <div className="text-white">{'this is children'}</div>
             </PanelSection>
           ),
         },
@@ -33,8 +36,10 @@ export const PanelSectionTemplate = (args) => (
   </div>
 );
 
-
-<Heading title="PanelSection" componentRelativePath="PanelSection/PanelSection.tsx" />
+<Heading
+  title="PanelSection"
+  componentRelativePath="PanelSection/PanelSection.tsx"
+/>
 
 - [Overview](#overview)
 - [Props](#props)
@@ -55,14 +60,11 @@ PanelSection is a component that renders the PanelSections.
   </Story>
 </Canvas>
 
-
-
 ## Props
 
 <ArgsTable of={PanelSection} />
 
 ## Usage
-
 
 ## Contribute
 

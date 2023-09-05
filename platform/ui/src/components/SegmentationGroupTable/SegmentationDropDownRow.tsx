@@ -28,7 +28,7 @@ function SegmentationDropDownRow({
   }
 
   return (
-    <div className="flex items-center mt-[8px] group mx-0.5">
+    <div className="group mx-0.5 mt-[8px] flex items-center">
       <div
         onClick={e => {
           e.stopPropagation();
@@ -89,7 +89,7 @@ function SegmentationDropDownRow({
             name="icon-more-menu"
             className="w-[20px] h-[20px] grid place-items-center hover:bg-secondary-dark cursor-pointer text-primary-active rounded-[4px] "
           ></Icon> */}
-          <div className="w-[28px] h-[28px] rounded-[4px] grid place-items-center  hover:bg-secondary-dark cursor-pointer mx-1">
+          <div className="hover:bg-secondary-dark mx-1 grid h-[28px] w-[28px]  cursor-pointer place-items-center rounded-[4px]">
             <Icon name="icon-more-menu"></Icon>
           </div>
         </Dropdown>
@@ -101,7 +101,10 @@ function SegmentationDropDownRow({
           onChange={handleChange}
           components={{
             DropdownIndicator: () => (
-              <Icon name={'chevron-down-new'} className="mr-2" />
+              <Icon
+                name={'chevron-down-new'}
+                className="mr-2"
+              />
             ),
           }}
           isSearchable={false}
@@ -110,9 +113,9 @@ function SegmentationDropDownRow({
           className="text-aqua-pale h-[26px] w-1/2 text-[13px]"
         />
       )}
-      <div className="items-center flex">
+      <div className="flex items-center">
         <div
-          className="w-[28px] h-[28px] rounded-[4px] grid place-items-center  hover:bg-secondary-dark cursor-pointer ml-3 mr-1"
+          className="hover:bg-secondary-dark ml-3 mr-1 grid h-[28px]  w-[28px] cursor-pointer place-items-center rounded-[4px]"
           onClick={() => onToggleSegmentationVisibility(activeSegmentation.id)}
         >
           {activeSegmentation.isVisible ? (

@@ -12,13 +12,12 @@ const AdvancedToolbox = ({ title, items }) => {
     setIsActive(activeItem ? activeItem.name : null);
   }, [items]);
 
-  const activeItemOptions = items?.find(item => item.name === isActive)
-    ?.options;
+  const activeItemOptions = items?.find(item => item.name === isActive)?.options;
 
   return (
     <PanelSection title={title}>
-      <div className="bg-black flex flex-col">
-        <div className="flex mt-0.5 flex-wrap bg-primary-dark py-2">
+      <div className="flex flex-col bg-black">
+        <div className="bg-primary-dark mt-0.5 flex flex-wrap py-2">
           {items?.map(item => {
             return (
               <div
@@ -32,24 +31,25 @@ const AdvancedToolbox = ({ title, items }) => {
                 <Tooltip
                   position="bottom"
                   delay={1750}
-                  content={
-                    <span className="text-white text-xs">{item.name}</span>
-                  }
+                  content={<span className="text-xs text-white">{item.name}</span>}
                 >
                   <div
                     className={classnames(
-                      'w-[40px] h-[40px] text-primary-active bg-black grid place-items-center hover:bg-primary-light hover:text-black hover:cursor-pointer rounded-md',
+                      'text-primary-active hover:bg-primary-light grid h-[40px] w-[40px] place-items-center rounded-md bg-black hover:cursor-pointer hover:text-black',
                       isActive === item.name && 'bg-primary-light text-black'
                     )}
                   >
-                    <Icon name={item.icon} className="" />
+                    <Icon
+                      name={item.icon}
+                      className=""
+                    />
                   </div>
                 </Tooltip>
               </div>
             );
           })}
         </div>
-        <div className="h-auto bg-primary-dark px-2">
+        <div className="bg-primary-dark h-auto px-2">
           <ToolSettings options={activeItemOptions} />
         </div>
       </div>

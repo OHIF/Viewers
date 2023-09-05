@@ -82,13 +82,13 @@ const InputRange: React.FC<InputRangeProps> = ({
 
   return (
     <div
-      className={`flex items-center cursor-pointer ${containerClassName ?? ''}`}
+      className={`flex cursor-pointer items-center ${containerClassName ?? ''}`}
       onClick={e => {
         e.stopPropagation();
         e.preventDefault();
       }}
     >
-      <div className="flex items-center w-full relative">
+      <div className="relative flex w-full items-center">
         {showLabel && labelPosition === 'left' && LabelOrEditableNumber}
         <div className="range-track"></div>
         <input
@@ -96,9 +96,7 @@ const InputRange: React.FC<InputRangeProps> = ({
           min={minValue}
           max={maxValue}
           value={rangeValue}
-          className={`appearance-none h-[3px] rounded-md ${
-            inputClassName ?? ''
-          }`}
+          className={`h-[3px] appearance-none rounded-md ${inputClassName ?? ''}`}
           style={{
             background: `linear-gradient(to right, #5acce6 0%, #5acce6 ${rangeValuePercentage}%, #3a3f99 ${rangeValuePercentage}%, #3a3f99 100%)`,
           }}

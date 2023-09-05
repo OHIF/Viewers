@@ -12,7 +12,7 @@ const PanelSection = ({ title, children, actionIcons = [] }) => {
   return (
     <>
       <div
-        className="flex justify-between h-7 bg-secondary-dark pl-2.5 items-center cursor-pointer select-none text-[13px] rounded-[4px] mt-[2px]"
+        className="bg-secondary-dark mt-[2px] flex h-7 cursor-pointer select-none items-center justify-between rounded-[4px] pl-2.5 text-[13px]"
         onClick={handleHeaderClick}
       >
         <div className="text-aqua-pale">{title}</div>
@@ -30,10 +30,8 @@ const PanelSection = ({ title, children, actionIcons = [] }) => {
               }}
             />
           ))}
-          <div className="w-[28px] h-[28px] grid place-items-center">
-            <Icon
-              name={isChildrenVisible ? 'chevron-down-new' : 'chevron-left-new'}
-            />
+          <div className="grid h-[28px] w-[28px] place-items-center">
+            <Icon name={isChildrenVisible ? 'chevron-down-new' : 'chevron-left-new'} />
           </div>
         </div>
       </div>

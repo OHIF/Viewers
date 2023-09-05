@@ -184,10 +184,7 @@ export default class ToolGroupService {
     this._setToolsMode(toolGroup, tools);
   }
 
-  public createToolGroupAndAddTools(
-    toolGroupId: string,
-    tools: Array<Tool>
-  ): Types.IToolGroup {
+  public createToolGroupAndAddTools(toolGroupId: string, tools: Array<Tool>): Types.IToolGroup {
     const toolGroup = this.createToolGroup(toolGroupId);
     this.addToolsToToolGroup(toolGroupId, tools);
     return toolGroup;

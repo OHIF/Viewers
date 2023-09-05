@@ -1,5 +1,5 @@
 .customSelect__wrapper .customSelect__control {
-  @apply bg-black border-secondary-light shadow transition duration-300 border rounded w-full text-sm text-white leading-tight;
+  @apply border-secondary-light w-full rounded border bg-black text-sm leading-tight text-white shadow transition duration-300;
   min-height: 28px;
 }
 .customSelect__wrapper .customSelect__control:hover {

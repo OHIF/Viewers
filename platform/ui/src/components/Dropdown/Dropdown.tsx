@@ -44,7 +44,7 @@ const Dropdown = ({
       <div
         key={title}
         className={classnames(
-          'flex px-4 py-2 cursor-pointer items-center transition duration-300 hover:bg-secondary-main ',
+          'hover:bg-secondary-main flex cursor-pointer items-center px-4 py-2 transition duration-300 ',
           titleClassName,
           showBorders && borderStyle
         )}
@@ -54,7 +54,12 @@ const Dropdown = ({
         }}
         data-cy={id}
       >
-        {!!icon && <Icon name={icon} className="w-4 mr-2 text-white" />}
+        {!!icon && (
+          <Icon
+            name={icon}
+            className="mr-2 w-4 text-white"
+          />
+        )}
         <div
           style={{
             whiteSpace: 'nowrap',
@@ -63,7 +68,10 @@ const Dropdown = ({
           {title.length > maxCharactersPerLine && (
             <div>
               {lines.map((line, index) => (
-                <Typography key={index} className={itemsClassName}>
+                <Typography
+                  key={index}
+                  className={itemsClassName}
+                >
                   {line}
                 </Typography>
               ))}
@@ -105,7 +113,7 @@ const Dropdown = ({
     return (
       <div
         className={classnames(
-          'absolute top-100 mt-2 z-10 transition duration-300 transform bg-primary-dark border border-secondary-main rounded shadow',
+          'top-100 bg-primary-dark border-secondary-main absolute z-10 mt-2 transform rounded border shadow transition duration-300',
           {
             'right-0 origin-top-right': alignment === 'right',
             'left-0 origin-top-left': alignment === 'left',

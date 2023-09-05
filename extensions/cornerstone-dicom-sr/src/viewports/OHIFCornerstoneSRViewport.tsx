@@ -241,9 +241,7 @@ function OHIFCornerstoneSRViewport(props) {
       displaySetService.EVENTS.DISPLAY_SETS_REMOVED,
       ({ displaySetInstanceUIDs }) => {
         const activeViewport = viewports.get(activeViewportId);
-        if (
-          displaySetInstanceUIDs.includes(activeViewport.displaySetInstanceUID)
-        ) {
+        if (displaySetInstanceUIDs.includes(activeViewport.displaySetInstanceUID)) {
           viewportGridService.setDisplaySetsForViewport({
             viewportId: activeViewportId,
             displaySetInstanceUIDs: [],

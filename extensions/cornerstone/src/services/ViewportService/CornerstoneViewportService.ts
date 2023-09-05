@@ -589,9 +589,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       // otherwise, check if the hydrated segmentations are in the same FOR
       // as the primary displaySet, if so add the representation (since it was not there)
       const { id: segDisplaySetInstanceUID, type } = segmentation;
-      let segFrameOfReferenceUID = this._getFrameOfReferenceUID(
-        segDisplaySetInstanceUID
-      );
+      let segFrameOfReferenceUID = this._getFrameOfReferenceUID(segDisplaySetInstanceUID);
 
       if (!segFrameOfReferenceUID) {
         // if the segmentation does not have a FOR, we might check the

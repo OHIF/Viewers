@@ -20,8 +20,7 @@ const sizesClasses = {
 
 const getMaxDigits = (maxValue: number, step: number) => {
   const integerDigits = maxValue.toString().length;
-  const decimalDigits =
-    step % 1 === 0 ? 0 : step.toString().split('.')[1].length;
+  const decimalDigits = step % 1 === 0 ? 0 : step.toString().split('.')[1].length;
   return integerDigits + (decimalDigits ? decimalDigits + 1 : 0);
 };
 
@@ -91,8 +90,13 @@ const InputNumber: React.FC<{
   const decrement = () => updateValue(numberValue - step);
 
   return (
-    <div className="flex flex-col flex-1">
-      {label && <Label className={labelClassName} text={label} />}
+    <div className="flex flex-1 flex-col">
+      {label && (
+        <Label
+          className={labelClassName}
+          text={label}
+        />
+      )}
       <div
         className={`border-secondary-light flex items-center justify-center overflow-hidden rounded-md border-2 bg-black px-1 ${
           sizesClasses[size]
@@ -104,14 +108,15 @@ const InputNumber: React.FC<{
             type="text"
             value={numberValue}
             onChange={handleChange}
-            className={
-              'bg-black text-white text-[12px] w-full text-center input-number'
-            }
+            className={'input-number w-full bg-black text-center text-[12px] text-white'}
             style={{ width: inputWidth }}
           />
           {showAdjustmentArrows && (
             <div className="up-arrowsize flex flex-col items-center justify-around">
-              <ArrowButton onClick={increment} rotate />
+              <ArrowButton
+                onClick={increment}
+                rotate
+              />
               <ArrowButton onClick={decrement} />
             </div>
           )}
@@ -121,19 +126,13 @@ const InputNumber: React.FC<{
   );
 };
 
-const ArrowButton = ({
-  onClick,
-  rotate = false,
-}: {
-  onClick: () => void;
-  rotate?: boolean;
-}) => (
+const ArrowButton = ({ onClick, rotate = false }: { onClick: () => void; rotate?: boolean }) => (
   <IconButton
     id="arrow-icon"
     variant="text"
     color="inherit"
     size="initial"
-    className={`text-[#726f7e] ${rotate ? 'transform rotate-180' : ''}`}
+    className={`text-[#726f7e] ${rotate ? 'rotate-180 transform' : ''}`}
     onClick={onClick}
   >
     <Icon name="ui-arrow-down" />

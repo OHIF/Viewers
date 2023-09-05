@@ -1,7 +1,4 @@
-import {
-  createReportAsync,
-  createReportDialogPrompt,
-} from '@ohif/extension-default';
+import { createReportAsync, createReportDialogPrompt } from '@ohif/extension-default';
 import getNextSRSeriesNumber from '../../_shared/getNextSRSeriesNumber';
 import RESPONSE from '../../_shared/PROMPT_RESPONSES';
 

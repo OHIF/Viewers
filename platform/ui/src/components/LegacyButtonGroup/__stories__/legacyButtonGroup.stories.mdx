@@ -10,7 +10,10 @@ export const argTypes = {
   title: 'Components/LegacyButtonGroup',
 };
 
-<Meta title="Components/LegacyButtonGroup" component={LegacyButtonGroup} />
+<Meta
+  title="Components/LegacyButtonGroup"
+  component={LegacyButtonGroup}
+/>
 
 export const LegacybuttonGroupTemplate = args => (
   <LegacyButtonGroup {...args}>
@@ -72,8 +75,7 @@ There are three different variants of LegacyButtonGroup:
 
 ### Orientation
 
-You can change the orientation of the buttons in the group by setting the
-`orientation` prop.
+You can change the orientation of the buttons in the group by setting the `orientation` prop.
 
 <Canvas>
   <Story name="Orientation Horizontal">

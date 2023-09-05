@@ -51,9 +51,7 @@ const SegmentationGroupTable = ({
 
   useEffect(() => {
     // find the first active segmentation to set
-    let activeSegmentationIdToSet = segmentations?.find(
-      segmentation => segmentation.isActive
-    )?.id;
+    let activeSegmentationIdToSet = segmentations?.find(segmentation => segmentation.isActive)?.id;
 
     // If there is no active segmentation, set the first one to be active
     if (!activeSegmentationIdToSet && segmentations?.length > 0) {
@@ -73,7 +71,7 @@ const SegmentationGroupTable = ({
   );
 
   return (
-    <div className="flex flex-col min-h-0 font-[300] text-[13px] bg-black">
+    <div className="flex min-h-0 flex-col bg-black text-[13px] font-[300]">
       <PanelSection
         title="Segmentation"
         actionIcons={[
@@ -117,14 +115,12 @@ const SegmentationGroupTable = ({
                 onToggleSegmentationVisibility={onToggleSegmentationVisibility}
               />
               {!disableEditing && showAddSegment && (
-                <AddSegmentRow
-                  onClick={() => onSegmentAdd(activeSegmentationId)}
-                />
+                <AddSegmentRow onClick={() => onSegmentAdd(activeSegmentationId)} />
               )}
             </div>
           )}
         </div>
-        <div className="flex flex-col min-h-0 ohif-scrollbar overflow-y-hidden mt-1">
+        <div className="ohif-scrollbar mt-1 flex min-h-0 flex-col overflow-y-hidden">
           {activeSegmentation?.segments?.map(segment => {
             if (segment === undefined || segment === null) {
               return null;
@@ -132,15 +128,16 @@ const SegmentationGroupTable = ({
 
             const { segmentIndex, color, label, isVisible, isLocked } = segment;
             return (
-              <div className="mb-[1px]" key={segmentIndex}>
+              <div
+                className="mb-[1px]"
+                key={segmentIndex}
+              >
                 <SegmentationGroupSegment
                   segmentationId={activeSegmentationId}
                   segmentIndex={segmentIndex}
                   label={label}
                   color={color}
-                  isActive={
-                    activeSegmentation.activeSegmentIndex === segmentIndex
-                  }
+                  isActive={activeSegmentation.activeSegmentIndex === segmentIndex}
                   disableEditing={disableEditing}
                   isLocked={isLocked}
                   isVisible={isVisible}

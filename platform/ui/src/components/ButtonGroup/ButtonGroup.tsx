@@ -23,17 +23,13 @@ const ButtonGroup = ({
     vertical: 'flex-col',
   };
 
-  const wrapperClasses = classnames(
-    'inline-flex',
-    orientationClasses[orientation],
-    className
-  );
+  const wrapperClasses = classnames('inline-flex', orientationClasses[orientation], className);
 
   return (
     <div
       className={classnames(
         wrapperClasses,
-        'border border-secondary-light rounded-[5px] bg-black text-[13px] '
+        'border-secondary-light rounded-[5px] border bg-black text-[13px] '
       )}
     >
       {buttons.map((buttonProps, index) => {
@@ -43,10 +39,8 @@ const ButtonGroup = ({
             {...buttonProps}
             key={index}
             className={classnames(
-              'px-2 py-1 rounded-[4px]',
-              isActive
-                ? 'bg-customblue-40 text-white'
-                : 'bg-black text-primary-active'
+              'rounded-[4px] px-2 py-1',
+              isActive ? 'bg-customblue-40 text-white' : 'text-primary-active bg-black'
             )}
             onClick={e => handleButtonClick(e, index)}
           />

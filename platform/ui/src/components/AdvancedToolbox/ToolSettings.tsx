@@ -21,12 +21,15 @@ function ToolSettings({ options }) {
   };
 
   return (
-    <div className="text-white py-2 space-y-2">
+    <div className="space-y-2 py-2 text-white">
       {options?.map(option => {
         if (option.type === 'range') {
           return (
-            <div className="flex items-center" key={option.name}>
-              <div className="text-xs w-1/3 text-[13px]">{option.name}</div>
+            <div
+              className="flex items-center"
+              key={option.name}
+            >
+              <div className="w-1/3 text-xs text-[13px]">{option.name}</div>
               <div className="w-2/3">
                 <InputRange
                   minValue={option.min}
@@ -46,7 +49,7 @@ function ToolSettings({ options }) {
         if (option.type === 'radio') {
           return (
             <div
-              className="flex justify-between items-center text-[13px]"
+              className="flex items-center justify-between text-[13px]"
               key={option.name}
             >
               <span>{option.name}</span>
@@ -64,9 +67,7 @@ function ToolSettings({ options }) {
         if (option.type === 'custom') {
           return (
             <div key={option.name}>
-              {typeof option.children === 'function'
-                ? option.children()
-                : option.children}
+              {typeof option.children === 'function' ? option.children() : option.children}
             </div>
           );
         }
