@@ -89,7 +89,7 @@ export default function hydrateStructuredReport(
     }
   });
 
-  const datasetToUse = _mapLegacyDataSet(instance);
+  const datasetToUse = _mapLegacyDataSet(instance, displaySetService);
 
   // Use dcmjs to generate toolState.
   const storedMeasurementByAnnotationType = MeasurementReport.generateToolState(
@@ -225,7 +225,7 @@ export default function hydrateStructuredReport(
   };
 }
 
-function _mapLegacyDataSet(dataset) {
+function _mapLegacyDataSet(dataset, displaySetService) {
   const REPORT = 'Imaging Measurements';
   const GROUP = 'Measurement Group';
   const TRACKING_IDENTIFIER = 'Tracking Identifier';
@@ -267,7 +267,8 @@ function _mapLegacyDataSet(dataset) {
     }
 
     if (!toolName) {
-      const trackingIdentifierInfo = checkUnmappedTrackingIdentifierGroup(measurementGroupContentSequence);
+      const displaySets = [...displaySetService.getDisplaySetCache().values()];
+      const trackingIdentifierInfo = checkUnmappedTrackingIdentifierGroup(measurementGroupContentSequence, displaySets);
       cornerstoneTag = trackingIdentifierInfo.cornerstoneTag;
       toolName = trackingIdentifierInfo.toolName;
     }
