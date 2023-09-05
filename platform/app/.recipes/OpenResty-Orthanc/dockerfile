@@ -23,24 +23,19 @@
 
 
 # Stage 1: Build the application
-FROM node:12.22.1-slim as builder
+FROM node:16.15.0-slim as builder
 
 RUN mkdir /usr/src/app
 WORKDIR /usr/src/app
 
-# Copy Files
-COPY .docker /usr/src/app/.docker
-COPY .webpack /usr/src/app/.webpack
-COPY extensions /usr/src/app/extensions
-COPY modes /usr/src/app/modes
-COPY platform /usr/src/app/platform
-COPY .browserslistrc /usr/src/app/.browserslistrc
-COPY aliases.config.js /usr/src/app/aliases.config.js
-COPY babel.config.js /usr/src/app/babel.config.js
-COPY lerna.json /usr/src/app/lerna.json
-COPY package.json /usr/src/app/package.json
-COPY postcss.config.js /usr/src/app/postcss.config.js
-COPY yarn.lock /usr/src/app/yarn.lock
+# Copy all files from the root of the OHIF source and note
+# that the Docker ignore file at the root (i.e. ./dockerignore) will filter
+# out files and directories that are not needed.
+COPY ./ /usr/src/app/
+
+# For arm builds since parcel doesn't have prebuilt binaries for arm yet
+RUN apt-get update && apt-get install -y build-essential python3
+
 
 # ADD . /usr/src/app/
 RUN yarn config set workspaces-experimental true

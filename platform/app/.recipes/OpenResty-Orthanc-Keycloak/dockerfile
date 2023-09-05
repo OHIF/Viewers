@@ -23,7 +23,7 @@
 
 
 # Stage 1: Build the application
-FROM node:11.2.0-slim as builder
+FROM node:16.15.0-slim as builder
 
 RUN mkdir /usr/src/app
 WORKDIR /usr/src/app
@@ -31,12 +31,15 @@ WORKDIR /usr/src/app
 ENV APP_CONFIG=config/docker_openresty-orthanc-keycloak.js
 ENV PATH /usr/src/app/node_modules/.bin:$PATH
 
-COPY package.json /usr/src/app/package.json
-COPY yarn.lock /usr/src/app/yarn.lock
+# Copy all files from the root of the OHIF source and note
+# that the Docker ignore file at the root (i.e. ./dockerignore) will filter
+# out files and directories that are not needed.
+COPY ./ /usr/src/app/
 
 ADD . /usr/src/app/
+RUN yarn config set workspaces-experimental true
 RUN yarn install
-RUN yarn run build:web
+RUN yarn run build
 
 # Stage 2: Bundle the built application into a Docker container
 # which runs openresty (nginx) using Alpine Linux
@@ -60,6 +63,6 @@ RUN luarocks install lua-resty-openidc
 RUN luarocks install luacrypto
 
 # Copy build output to image
-COPY --from=builder /usr/src/app/build /var/www/html
+COPY --from=builder /usr/src/app/platform/app/dist /var/www/html
 
 ENTRYPOINT ["/usr/local/openresty/nginx/sbin/nginx", "-g", "daemon off;"]
