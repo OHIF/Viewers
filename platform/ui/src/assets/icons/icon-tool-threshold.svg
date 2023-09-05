@@ -6,12 +6,12 @@
             <g id="icon-tool-threshold" transform="translate(169, 105)">
                 <g id="Group-16" transform="translate(1, 5)" stroke-width="1.5">
                     <g id="Group-13">
-                        <line x1="19.5" y1="12.5" x2="23" y2="12.5" id="Line-2" stroke="#090C29" stroke-linecap="round"></line>
-                        <line x1="7.63278329e-17" y1="12.5" x2="14" y2="12.5" id="Line-2" stroke="#090C29" stroke-linecap="round"></line>
-                        <circle id="Oval" stroke="#000000" cx="16.5" cy="12.5" r="2.5"></circle>
-                        <line x1="10.5" y1="2.5" x2="22.5" y2="2.5" id="Line-2" stroke="#090C29" stroke-linecap="round"></line>
-                        <line x1="2.27456942e-13" y1="2.5" x2="5.5" y2="2.5" id="Line-2" stroke="#090C29" stroke-linecap="round"></line>
-                        <circle id="Oval" stroke="#000000" cx="8" cy="2.5" r="2.5"></circle>
+                        <line x1="19.5" y1="12.5" x2="23" y2="12.5" id="Line-2" stroke="currentColor" stroke-linecap="round"></line>
+                        <line x1="7.63278329e-17" y1="12.5" x2="14" y2="12.5" id="Line-2" stroke="currentColor" stroke-linecap="round"></line>
+                        <circle id="Oval" stroke="currentColor" cx="16.5" cy="12.5" r="2.5"></circle>
+                        <line x1="10.5" y1="2.5" x2="22.5" y2="2.5" id="Line-2" stroke="currentColor" stroke-linecap="round"></line>
+                        <line x1="2.27456942e-13" y1="2.5" x2="5.5" y2="2.5" id="Line-2" stroke="currentColor" stroke-linecap="round"></line>
+                        <circle id="Oval" stroke="currentColor" cx="8" cy="2.5" r="2.5"></circle>
                     </g>
                 </g>
                 <rect id="Rectangle" x="0" y="0" width="25" height="25"></rect>

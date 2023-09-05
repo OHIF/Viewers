@@ -3,7 +3,8 @@ const brushInstanceNames = {
   CircularEraser: 'CircularEraser',
   SphereBrush: 'SphereBrush',
   SphereEraser: 'SphereEraser',
-  ThresholdBrush: 'ThresholdBrush',
+  ThresholdCircularBrush: 'ThresholdCircularBrush',
+  ThresholdSphereBrush: 'ThresholdSphereBrush',
 };
 
 const brushStrategies = {
@@ -11,16 +12,9 @@ const brushStrategies = {
   [brushInstanceNames.CircularEraser]: 'ERASE_INSIDE_CIRCLE',
   [brushInstanceNames.SphereBrush]: 'FILL_INSIDE_SPHERE',
   [brushInstanceNames.SphereEraser]: 'ERASE_INSIDE_SPHERE',
-  [brushInstanceNames.ThresholdBrush]: 'THRESHOLD_INSIDE_CIRCLE',
+  [brushInstanceNames.ThresholdCircularBrush]: 'THRESHOLD_INSIDE_CIRCLE',
+  [brushInstanceNames.ThresholdSphereBrush]: 'THRESHOLD_INSIDE_SPHERE',
 };
-
-const brushValues = [
-  brushInstanceNames.CircularBrush,
-  brushInstanceNames.CircularEraser,
-  brushInstanceNames.SphereBrush,
-  brushInstanceNames.SphereEraser,
-  brushInstanceNames.ThresholdBrush,
-];
 
 function initDefaultToolGroup(
   extensionManager,
@@ -80,6 +74,20 @@ function initDefaultToolGroup(
         parentTool: 'Brush',
         configuration: {
           activeStrategy: brushStrategies.SphereBrush,
+        },
+      },
+      {
+        toolName: brushInstanceNames.ThresholdCircularBrush,
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: brushStrategies.ThresholdCircularBrush,
+        },
+      },
+      {
+        toolName: brushInstanceNames.ThresholdSphereBrush,
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: brushStrategies.ThresholdSphereBrush,
         },
       },
       { toolName: toolNames.StackScroll },
@@ -147,6 +155,20 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
         parentTool: 'Brush',
         configuration: {
           activeStrategy: brushStrategies.SphereBrush,
+        },
+      },
+      {
+        toolName: brushInstanceNames.ThresholdCircularBrush,
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: brushStrategies.ThresholdCircularBrush,
+        },
+      },
+      {
+        toolName: brushInstanceNames.ThresholdSphereBrush,
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: brushStrategies.ThresholdSphereBrush,
         },
       },
       { toolName: toolNames.SegmentationDisplay },

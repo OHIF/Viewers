@@ -2,7 +2,7 @@ import calculateViewportRegistrations from './calculateViewportRegistrations';
 
 // [ {
 //   synchronizerId: string,
-//   viewports: [ { viewportId: string, renderingEngineId: string, index: number } , ...]
+//   viewports: [ { viewportId: number, renderingEngineId: string, index: number } , ...]
 // ]}
 let STACK_IMAGE_SYNC_GROUPS_INFO = [];
 
@@ -37,7 +37,7 @@ export default function toggleStackImageSync({
   STACK_IMAGE_SYNC_GROUPS_INFO = [];
 
   // create synchronization groups and add viewports
-  const { viewports } = viewportGridService.getState();
+  let { viewports } = viewportGridService.getState();
 
   // filter empty viewports
   viewports = viewports.filter(
@@ -47,22 +47,21 @@ export default function toggleStackImageSync({
   // filter reconstructable viewports
   viewports = viewports.filter(viewport => {
     const { displaySetInstanceUIDs } = viewport;
-  const viewportsArray = Array.from(viewports.values())
-    .filter(viewport => viewport.displaySetInstanceUIDs?.length)
-    // filter reconstructable viewports
-    .filter(viewport => {
-      const { displaySetInstanceUIDs } = viewport;
 
     for (const displaySetInstanceUID of displaySetInstanceUIDs) {
       const displaySet = displaySetService.getDisplaySetByUID(
         displaySetInstanceUID
       );
 
-        return !!displaySet?.isReconstructable;
+      if (displaySet && displaySet.isReconstructable) {
+        return true;
       }
-    });
 
-  const viewportsByOrientation = viewportsArray.reduce((acc, viewport) => {
+      return false;
+    }
+  });
+
+  const viewportsByOrientation = viewports.reduce((acc, viewport) => {
     const { viewportId, viewportType } = viewport.viewportOptions;
 
     if (viewportType !== 'stack') {

@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import classNames from 'classnames';
-import { Typography, InputNumber } from '../../components';
+import { InputNumber } from '../../components';
 import './InputRange.css';
 
 /**
@@ -84,6 +84,10 @@ const InputRange: React.FC<InputRangeProps> = ({
   return (
     <div
       className={`flex items-center cursor-pointer ${containerClassName ?? ''}`}
+      onClick={e => {
+        e.stopPropagation();
+        e.preventDefault();
+      }}
     >
       <div className="flex items-center w-full relative">
         {showLabel && labelPosition === 'left' && LabelOrEditableNumber}
@@ -93,8 +97,9 @@ const InputRange: React.FC<InputRangeProps> = ({
           min={minValue}
           max={maxValue}
           value={rangeValue}
-          className={`appearance-none h-[3px] rounded-lg input-range-thumb-design ${inputClassName ??
-            ''}`}
+          className={`appearance-none h-[3px] rounded-md ${
+            inputClassName ?? ''
+          }`}
           style={{
             background: `linear-gradient(to right, #5acce6 0%, #5acce6 ${rangeValuePercentage}%, #3a3f99 ${rangeValuePercentage}%, #3a3f99 100%)`,
           }}

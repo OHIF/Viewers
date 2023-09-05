@@ -42,8 +42,8 @@ const commandsModule = ({
      * @param options.selectorProps is the set of selection properties to use
      */
     addSegmentationForActiveViewport: () => {
-      const { viewports, activeViewportIndex } = viewportGridService.getState();
-      const activeViewport = viewports[activeViewportIndex];
+      const { viewports, activeViewportId } = viewportGridService.getState();
+      const activeViewport = viewports.get(activeViewportId);
 
       if (!activeViewport) {
         return;
@@ -83,12 +83,9 @@ const commandsModule = ({
         // so that we can restore it after changing to volume viewport
         viewportGridService.setDisplaySetsForViewports([
           {
-            viewportIndex: activeViewportIndex,
+            viewportId: activeViewportId,
             displaySetInstanceUIDs: [displaySetInstanceUID],
             viewportOptions: {
-              // initialImageOptions: {
-              //   index:
-              // },
               viewportType: 'volume',
             },
           },
@@ -98,18 +95,20 @@ const commandsModule = ({
       csViewport.element.addEventListener(
         Enums.Events.VOLUME_VIEWPORT_NEW_VOLUME,
         async () => {
-          const activeViewport = viewports[activeViewportIndex];
+          const activeViewport = viewports.get(activeViewportId);
 
-          const volumeViewport = cornerstoneViewportService.getCornerstoneViewport(
-            activeViewport?.viewportOptions?.viewportId
-          );
+          const volumeViewport =
+            cornerstoneViewportService.getCornerstoneViewport(
+              activeViewport?.viewportOptions?.viewportId
+            );
 
           volumeViewport.setCamera(prevCamera);
 
-          const segmentationId = await segmentationService.createSegmentationForDisplaySet(
-            displaySetInstanceUID,
-            { label: 'New Segmentation' }
-          );
+          const segmentationId =
+            await segmentationService.createSegmentationForDisplaySet(
+              displaySetInstanceUID,
+              { label: 'New Segmentation' }
+            );
 
           await segmentationService.addSegmentationRepresentationToToolGroup(
             activeViewport.viewportOptions.toolGroupId,
@@ -127,9 +126,8 @@ const commandsModule = ({
       );
     },
     generateSegmentation: ({ segmentationId, options = {} }) => {
-      const segmentation = cornerstoneToolsSegmentation.state.getSegmentation(
-        segmentationId
-      );
+      const segmentation =
+        cornerstoneToolsSegmentation.state.getSegmentation(segmentationId);
 
       const { referencedVolumeId } = segmentation.representationData.LABELMAP;
 
@@ -142,9 +140,8 @@ const commandsModule = ({
       // Generate fake metadata as an example
       labelmapObj.metadata = [];
 
-      const segmentationInOHIF = segmentationService.getSegmentation(
-        segmentationId
-      );
+      const segmentationInOHIF =
+        segmentationService.getSegmentation(segmentationId);
       labelmapObj.segmentsOnLabelmap.forEach(segmentIndex => {
         // segmentation service already has a color for each segment
         const segment = segmentationInOHIF?.segments[segmentIndex];
@@ -184,9 +181,8 @@ const commandsModule = ({
       return generatedSegmentation;
     },
     downloadSegmentation: ({ segmentationId }) => {
-      const segmentationInOHIF = segmentationService.getSegmentation(
-        segmentationId
-      );
+      const segmentationInOHIF =
+        segmentationService.getSegmentation(segmentationId);
       const generatedSegmentation = actions.generateSegmentation({
         segmentationId,
       });

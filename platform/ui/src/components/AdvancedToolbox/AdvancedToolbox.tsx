@@ -3,7 +3,7 @@ import classnames from 'classnames';
 import { PanelSection, Icon, Tooltip } from '../../components';
 import ToolSettings from './ToolSettings';
 
-const AdvancedToolbox = ({ title, items, name }) => {
+const AdvancedToolbox = ({ title, items }) => {
   const [isActive, setIsActive] = useState(null);
 
   useEffect(() => {
@@ -11,6 +11,9 @@ const AdvancedToolbox = ({ title, items, name }) => {
     const activeItem = items?.find(item => item.active);
     setIsActive(activeItem ? activeItem.name : null);
   }, [items]);
+
+  const activeItemOptions = items?.find(item => item.name === isActive)
+    ?.options;
 
   return (
     <PanelSection title={title}>
@@ -47,9 +50,7 @@ const AdvancedToolbox = ({ title, items, name }) => {
           })}
         </div>
         <div className="h-auto bg-primary-dark px-2">
-          <ToolSettings
-            options={items?.find(item => item.name === isActive)?.options}
-          />
+          <ToolSettings options={activeItemOptions} />
         </div>
       </div>
     </PanelSection>

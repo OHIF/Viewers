@@ -3,14 +3,26 @@ import classNames from 'classnames';
 import { InputNumber } from '../../components'; // Import InputNumber component
 import './InputDoubleRange.css';
 
-type InputRangeProps = {
-  value: [number, number];
-  onChange: (value: [number, number]) => void;
-  // ... (rest of the props)
+type InputDoubleRangeProps = {
+  values: [number, number];
+  onChange: (values: [number, number]) => void;
+  minValue?: number;
+  maxValue?: number;
+  step?: number;
+  unit?: string;
+  containerClassName?: string;
+  inputClassName?: string;
+  labelClassName?: string;
+  labelVariant?: string;
+  showLabel?: boolean;
+  labelPosition?: 'left' | 'right';
+  trackColor?: string;
+  allowNumberEdit?: boolean;
+  showAdjustmentArrows?: boolean;
 };
 
-const InputRange: React.FC<InputRangeProps> = ({
-  value,
+const InputDoubleRange: React.FC<InputDoubleRangeProps> = ({
+  values,
   onChange,
   minValue,
   maxValue,
@@ -28,46 +40,54 @@ const InputRange: React.FC<InputRangeProps> = ({
 }) => {
   // Set initial thumb positions as percentages
   const initialPercentageStart = Math.round(
-    ((value[0] - minValue) / (maxValue - minValue)) * 100
+    ((values[0] - minValue) / (maxValue - minValue)) * 100
   );
   const initialPercentageEnd = Math.round(
-    ((value[1] - minValue) / (maxValue - minValue)) * 100
+    ((values[1] - minValue) / (maxValue - minValue)) * 100
   );
   const [percentageStart, setPercentageStart] = useState(
     initialPercentageStart
   );
   const [percentageEnd, setPercentageEnd] = useState(initialPercentageEnd);
 
-  const [rangeValue, setRangeValue] = useState(value);
-  console.debug('🚀 ~ rangeValue:', rangeValue);
+  const [rangeValue, setRangeValue] = useState(values);
+
+  const updateRangeValues = (newValues, index = null) => {
+    const updatedRangeValue = Array.isArray(newValues)
+      ? [...newValues]
+      : [...rangeValue];
+    if (index !== null) {
+      updatedRangeValue[index] = newValues;
+    }
+
+    const calculatePercentage = value =>
+      ((value - minValue) / (maxValue - minValue)) * 100;
+
+    const newPercentageStart = calculatePercentage(updatedRangeValue[0]);
+    const newPercentageEnd = calculatePercentage(updatedRangeValue[1]);
+
+    setRangeValue(updatedRangeValue);
+    onChange(updatedRangeValue);
+
+    setPercentageStart(newPercentageStart);
+    setPercentageEnd(newPercentageEnd);
+  };
 
   useEffect(() => {
-    setRangeValue(value);
-  }, [value]);
+    updateRangeValues(values);
+  }, [values, minValue, maxValue]);
 
-  const handleChange = useCallback(
-    (index, e) => {
-      const updatedRangeValue = [...rangeValue];
-      updatedRangeValue[index] = Number(e.target.value);
-      setRangeValue(updatedRangeValue);
-      onChange(updatedRangeValue);
-    },
-    [rangeValue, onChange]
-  );
-
-  const LabelOrEditableNumber = (val, index) =>
-    allowNumberEdit ? (
+  const LabelOrEditableNumber = (val, index) => {
+    return allowNumberEdit ? (
       <InputNumber
         minValue={minValue}
         maxValue={maxValue}
         value={val}
         onChange={newValue => {
-          const updatedRangeValue = [...rangeValue];
-          updatedRangeValue[index] = newValue;
-          setRangeValue(updatedRangeValue);
-          onChange(updatedRangeValue);
+          updateRangeValues(newValue, index);
         }}
         step={step}
+        labelClassName="text-white"
         showAdjustmentArrows={showAdjustmentArrows}
       />
     ) : (
@@ -76,8 +96,27 @@ const InputRange: React.FC<InputRangeProps> = ({
         {unit}
       </span>
     );
+  };
+
+  useEffect(() => {
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleGlobalMouseUp);
+    };
+  }, []);
 
   const [selectedThumb, setSelectedThumb] = useState(null);
+
+  const handleMouseUp = () => {
+    setSelectedThumb(null);
+  };
+
+  const handleGlobalMouseUp = () => {
+    // Remove global mouse event listeners
+    window.removeEventListener('mousemove', handleMouseMove);
+    window.removeEventListener('mouseup', handleGlobalMouseUp);
+    setSelectedThumb(null); // Stop the dragging
+  };
 
   const handleMouseDown = e => {
     const rect = e.currentTarget.getBoundingClientRect(); // Use currentTarget instead of target
@@ -94,6 +133,9 @@ const InputRange: React.FC<InputRangeProps> = ({
     } else if (distanceToEndThumb < 10) {
       setSelectedThumb(1);
     }
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleGlobalMouseUp);
   };
 
   const handleMouseMove = e => {
@@ -116,12 +158,13 @@ const InputRange: React.FC<InputRangeProps> = ({
         return;
       }
 
-      // Update the correct value in the rangeValue array
+      // Update the correct values in the rangeValue array
       const updatedRangeValue = [...rangeValue];
       updatedRangeValue[selectedThumb] = clampedValue;
       setRangeValue(updatedRangeValue);
 
-      // No need to call onChange here, since we're updating local state
+      // No need to call onChange here, since we're updating local state+
+      onChange(updatedRangeValue);
 
       // Update the thumb position
       const percentage = Math.round(
@@ -135,23 +178,17 @@ const InputRange: React.FC<InputRangeProps> = ({
     }
   };
 
-  const handleMouseUp = () => {
-    setSelectedThumb(null);
-  };
-
-  // Calculate the range value percentages for gradient background
+  // Calculate the range values percentages for gradient background
   const rangeValuePercentageStart =
     ((rangeValue[0] - minValue) / (maxValue - minValue)) * 100;
   const rangeValuePercentageEnd =
     ((rangeValue[1] - minValue) / (maxValue - minValue)) * 100;
 
   return (
-    <div className={`flex items-center ${containerClassName ?? ''}`}>
-      {showLabel &&
-        labelPosition === 'left' &&
-        LabelOrEditableNumber(rangeValue[0], 0)}
+    <div className={`flex items-center space-x-2${containerClassName ?? ''}`}>
+      {showLabel && LabelOrEditableNumber(rangeValue[0], 0)}
       <div
-        className="flex w-full relative items-center"
+        className="flex w-full relative items-center h-10"
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
@@ -163,21 +200,35 @@ const InputRange: React.FC<InputRangeProps> = ({
           }}
         ></div>
         <div
-          className="absolute h-2 w-2 cursor-pointer input-range-thumb-design"
+          className="absolute h-3 w-3 cursor-pointer input-range-thumb-design"
           style={{
             left: `calc(${percentageStart}% - 3px)`,
           }}
         ></div>
         <div
-          className="absolute h-2 w-2 rounded-full input-range-thumb-design"
+          className="absolute h-3 w-3  cursor-pointer rounded-full input-range-thumb-design"
           style={{ left: `calc(${percentageEnd}% - 3px)` }}
         ></div>
       </div>
-      {showLabel &&
-        labelPosition === 'right' &&
-        LabelOrEditableNumber(rangeValue[1], 1)}
+      {showLabel && LabelOrEditableNumber(rangeValue[1], 1)}
     </div>
   );
 };
 
-export default InputRange;
+InputDoubleRange.defaultProps = {
+  minValue: 0,
+  maxValue: 100,
+  step: 1,
+  unit: '',
+  containerClassName: '',
+  inputClassName: '',
+  labelClassName: '',
+  labelVariant: 'body1',
+  showLabel: false,
+  labelPosition: 'left',
+  trackColor: 'primary',
+  allowNumberEdit: false,
+  showAdjustmentArrows: false,
+};
+
+export default InputDoubleRange;

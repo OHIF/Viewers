@@ -9,12 +9,11 @@ function ToolSettings({ options }) {
   const getButtons = option => {
     const buttons = [];
 
-    option.values?.map(({ label, value: optionValue }) => {
-      const isActive = option.value === optionValue;
-
+    option.values?.map(({ label, value: optionValue }, index) => {
       buttons.push({
         children: label,
         onClick: () => option.onChange(optionValue),
+        key: `button-${option.name}-${index}`, // A unique key
       });
     });
 
@@ -59,6 +58,15 @@ function ToolSettings({ options }) {
                   size={ButtonEnums.size.small}
                 />
               </div>
+            </div>
+          );
+        }
+        if (option.type === 'custom') {
+          return (
+            <div key={option.name}>
+              {typeof option.children === 'function'
+                ? option.children()
+                : option.children}
             </div>
           );
         }

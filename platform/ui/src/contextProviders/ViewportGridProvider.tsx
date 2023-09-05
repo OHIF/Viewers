@@ -151,8 +151,8 @@ export function ViewportGridProvider({ children, service }) {
           // That allows for easy updates of just the display set.
           const viewportOptions = merge(
             {},
-            updatedViewport?.viewportOptions,
-            previousViewport?.viewportOptions
+            previousViewport?.viewportOptions,
+            updatedViewport?.viewportOptions
           );
 
           const displaySetOptions = updatedViewport.displaySetOptions || [];

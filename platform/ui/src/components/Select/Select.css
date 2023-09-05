@@ -70,6 +70,9 @@
   width: 6px;
   border-radius: 10px;
 }
+.ohif-select .customSelect__placeholder {
+  @apply text-aqua-pale pl-1.5;
+}
 
 .ohif-select .customSelect__menu-list::-webkit-scrollbar-thumb {
   background-color: #0944b3;

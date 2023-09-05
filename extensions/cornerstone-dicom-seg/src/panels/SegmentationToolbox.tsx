@@ -1,37 +1,35 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { AdvancedToolbox, useViewportGrid } from '@ohif/ui';
-import { utilities, Enums } from '@cornerstonejs/tools';
+import { AdvancedToolbox, InputDoubleRange, useViewportGrid } from '@ohif/ui';
 import { Types } from '@ohif/extension-cornerstone';
+import { utilities } from '@cornerstonejs/tools';
 
 const { segmentation: segmentationUtils } = utilities;
 
 function SegmentationToolbox({ servicesManager, extensionManager }) {
-  const {
-    toolbarService,
-    segmentationService,
-    toolGroupService,
-  } = servicesManager.services as Types.CornerstoneServices;
+  const { toolbarService, segmentationService, toolGroupService } =
+    servicesManager.services as Types.CornerstoneServices;
 
   const [viewportGrid = {}] = useViewportGrid();
-  const { viewports, activeViewportIndex } = viewportGrid;
+  const { viewports, activeViewportId } = viewportGrid;
 
   const [brushSize, setBrushSize] = useState(null);
+  const [thresholdRange, setThresholdRange] = useState([-500, 500]);
   const [activeTool, setActiveTool] = useState(null);
 
   const getActiveViewportToolGroupId = useCallback(() => {
-    const viewport = viewports[activeViewportIndex];
+    const viewport = viewports.get(activeViewportId);
     const toolGroup = toolGroupService.getToolGroupForViewport(
       viewport.viewportId
     );
     return toolGroup.id;
-  }, [viewports, activeViewportIndex]);
+  }, [viewports, activeViewportId]);
 
   const updateActiveTool = useCallback(() => {
-    if (!viewports?.length || activeViewportIndex === undefined) {
+    if (!viewports?.length || activeViewportId === undefined) {
       return;
     }
 
-    const viewport = viewports[activeViewportIndex];
+    const viewport = viewports.get(activeViewportId);
 
     if (!viewport.viewportId) {
       return;
@@ -41,7 +39,7 @@ function SegmentationToolbox({ servicesManager, extensionManager }) {
       viewport.viewportId
     );
     setActiveTool(activeTool);
-  }, [activeViewportIndex, viewports]);
+  }, [activeViewportId, viewports]);
 
   useEffect(() => {
     const { unsubscribe: unsub1 } = segmentationService.subscribe(
@@ -65,13 +63,13 @@ function SegmentationToolbox({ servicesManager, extensionManager }) {
       unsub1();
       unsub2();
     };
-  }, [activeViewportIndex, viewports]);
+  }, [activeViewportId, viewports]);
 
   useEffect(() => {
     updateActiveTool();
-  }, [activeViewportIndex, viewports]);
+  }, [activeViewportId, viewports]);
 
-  const setToolActive = toolName => {
+  const setToolActive = useCallback(toolName => {
     toolbarService.recordInteraction({
       groupId: 'SegmentationTools',
       itemId: 'Brush',
@@ -85,15 +83,40 @@ function SegmentationToolbox({ servicesManager, extensionManager }) {
         },
       ],
     });
-  };
 
-  const onBrushSizeChange = valueAsStringOrNumber => {
+    setActiveTool(toolName);
+  }, []);
+
+  const onBrushSizeChange = useCallback(valueAsStringOrNumber => {
     const value = Number(valueAsStringOrNumber);
     toolGroupService.getToolGroupIds()?.forEach(toolGroupId => {
       segmentationUtils.setBrushSizeForToolGroup(toolGroupId, value);
     });
     setBrushSize(value);
-  };
+  }, []);
+
+  const handleRangeChange = useCallback(
+    newRange => {
+      if (
+        newRange[0] !== thresholdRange[0] ||
+        newRange[1] !== thresholdRange[1]
+      ) {
+        toolGroupService.getToolGroupIds()?.forEach(toolGroupId => {
+          const toolGroup = toolGroupService.getToolGroup(toolGroupId);
+          toolGroup.setToolConfiguration('ThresholdCircularBrush', {
+            strategySpecificConfiguration: {
+              THRESHOLD_INSIDE_CIRCLE: {
+                threshold: newRange,
+              },
+            },
+          });
+        });
+
+        setThresholdRange(newRange);
+      }
+    },
+    [activeViewportId, viewports, thresholdRange]
+  );
 
   return (
     <AdvancedToolbox
@@ -174,6 +197,56 @@ function SegmentationToolbox({ servicesManager, extensionManager }) {
                 { value: 'SphereScissor', label: 'Sphere' },
               ],
               onChange: value => setToolActive(value),
+            },
+          ],
+        },
+        {
+          name: 'Threshold Tool',
+          icon: 'icon-tool-threshold',
+          active:
+            activeTool === 'ThresholdCircularBrush' ||
+            activeTool === 'ThresholdSphereBrush',
+          onClick: () => setToolActive('ThresholdCircularBrush'),
+          options: [
+            {
+              name: 'Radius (mm)',
+              type: 'range',
+              min: 0.01,
+              max: 100,
+              value: brushSize || 15,
+              step: 0.5,
+              onChange: onBrushSizeChange,
+            },
+            {
+              name: 'Mode',
+              type: 'radio',
+              value: activeTool,
+              values: [
+                { value: 'ThresholdCircularBrush', label: 'Circle' },
+                { value: 'ThresholdSphereBrush', label: 'Sphere' },
+              ],
+              onChange: value => setToolActive(value),
+            },
+            {
+              type: 'custom',
+              children: () => {
+                return (
+                  <div>
+                    <div className="h-[1px] bg-secondary-light"></div>
+                    <div className="text-white text-[13px] mt-1">Threshold</div>
+                    <InputDoubleRange
+                      values={thresholdRange}
+                      onChange={handleRangeChange}
+                      minValue={-1000}
+                      maxValue={1000}
+                      step={1}
+                      showLabel={true}
+                      allowNumberEdit={true}
+                      showAdjustmentArrows={false}
+                    />
+                  </div>
+                );
+              },
             },
           ],
         },

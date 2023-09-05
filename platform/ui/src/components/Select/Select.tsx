@@ -108,7 +108,7 @@ const Select = ({
 Select.defaultProps = {
   className: '',
   closeMenuOnSelect: true,
-  hideSelectedOptions: true,
+  hideSelectedOptions: false,
   isClearable: true,
   components: {},
   isDisabled: false,

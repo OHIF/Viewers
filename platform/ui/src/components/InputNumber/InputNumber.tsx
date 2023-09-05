@@ -64,8 +64,22 @@ const InputNumber: React.FC<{
     [maxValue, minValue]
   );
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-    updateValue(Number(e.target.value));
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const inputValue = e.target.value;
+
+    // Allow negative sign or empty string for user flexibility
+    if (inputValue === '-' || inputValue === '') {
+      setNumberValue(inputValue);
+      return;
+    }
+
+    const number = Number(inputValue);
+
+    // Filter out invalid inputs like 'NaN'
+    if (!isNaN(number)) {
+      updateValue(number);
+    }
+  };
 
   const updateValue = (val: number) => {
     const newValue = handleMinMax(val);

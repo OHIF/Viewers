@@ -4,7 +4,7 @@ input[type='range'] {
 
 input[type='range']::-webkit-slider-thumb {
   -webkit-appearance: none;
-  border: none;
+  border: 2px solid #090c29;
   height: 13px;
   width: 13px;
   border-radius: 50%;
@@ -12,16 +12,19 @@ input[type='range']::-webkit-slider-thumb {
 }
 
 input[type='range']::-moz-range-thumb {
-  -webkit-appearance: none;
-  border: none;
+  border: 2px solid #090c29;
   height: 13px;
   width: 13px;
   border-radius: 50%;
   background: #5acce6;
 }
 
-.input-range-thumb-design[type='range']::-webkit-slider-thumb {
-  border: 2px solid #090c29;
+input[type='range']::-webkit-slider-runnable-track {
+  border: none !important;
+}
+
+input[type='range']::-moz-range-track {
+  border: none !important;
 }
 
 .range-track {
@@ -29,6 +32,4 @@ input[type='range']::-moz-range-thumb {
   top: 0;
   left: 0;
   right: 0;
-  height: 3px;
-  border-radius: inherit;
 }
