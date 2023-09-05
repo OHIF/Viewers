@@ -1,4 +1,5 @@
 import { id } from './id';
+import commandsModule from './commandsModule';
 import getSopClassHandlerModule from './getSopClassHandlerModule';
 import getViewportModule from './getViewportModule';
 import getPanelModule from './getPanelModule';
@@ -8,7 +9,7 @@ import { cache } from '@cornerstonejs/core';
 /**
  * You can remove any of the following modules if you don't need them.
  */
-export default {
+const dynamicVolumeExtension = {
   /**
    * Only required property. Should be a unique value across all extensions.
    * You ID can be anything you want, but it should be unique.
@@ -93,7 +94,13 @@ export default {
     servicesManager,
     commandsManager,
     extensionManager,
-  }) => {},
+  }) => {
+    return commandsModule({
+      servicesManager,
+      commandsManager,
+      extensionManager,
+    });
+  },
   /**
    * ContextModule should provide a list of context that will be available in OHIF
    * and will be provided to the Modes. A context is a state that is shared OHIF.
@@ -116,3 +123,5 @@ export default {
     extensionManager,
   }) => {},
 };
+
+export { dynamicVolumeExtension as default };

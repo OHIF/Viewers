@@ -101,12 +101,8 @@ const workflowSettings = {
         protocolId: 'default4D',
         stageId: 'kinectAnalysis',
       },
-      onBeforeActivate: ({ extensionManager, servicesManager }) => {
-        const sopClassHandler = extensionManager.getModuleEntry(
-          dynamicVolume.sopClassHandler
-        );
-
-        sopClassHandler.updateSegmentationsDisplaySets();
+      onBeforeActivate: ({ commandsManager }) => {
+        commandsManager.runCommand('updateSegmentationsChartDisplaySet');
       },
     },
   ],
