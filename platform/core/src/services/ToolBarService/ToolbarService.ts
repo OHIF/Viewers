@@ -260,17 +260,29 @@ export default class ToolbarService extends PubSubService {
    * @param {object[]} buttons
    * @param {string} buttons[].id
    */
-  addButtons(buttons, toggles) {
+  addButtons(buttons) {
     buttons.forEach(button => {
       if (!this.buttons[button.id]) {
         this.buttons[button.id] = button;
       }
+      this._setTogglesForButtonItems(button.props?.items);
     });
 
-    if (toggles) {
-      this.state.toggles = { ...this.state.toggles, ...toggles };
-    }
     this._broadcastEvent(this.EVENTS.TOOL_BAR_MODIFIED, {});
+  }
+
+  _setTogglesForButtonItems(buttonItems) {
+    if (!buttonItems) {
+      return;
+    }
+
+    buttonItems.forEach(buttonItem => {
+      if (buttonItem.type === 'toggle') {
+        this.state.toggles[buttonItem.id] = buttonItem.isActive;
+      } else {
+        this._setTogglesForButtonItems(buttonItem.props?.items);
+      }
+    });
   }
 
   /**

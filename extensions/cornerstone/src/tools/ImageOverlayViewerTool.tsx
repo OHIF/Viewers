@@ -3,6 +3,17 @@ import { utilities } from '@cornerstonejs/core';
 import { AnnotationDisplayTool, drawing } from '@cornerstonejs/tools';
 import { guid } from '@ohif/core/src/utils';
 
+interface CachedStat {
+  color: number[]; // [r, g, b, a]
+  overlays: {
+    // ...overlayPlaneModule
+    _id: string;
+    type: 'G' | 'R'; // G for Graphics, R for ROI
+    color?: number[]; // Rendered color [r, g, b, a]
+    dataUrl?: string; // Rendered image in Data URL expression
+  }[];
+}
+
 /**
  * Image Overlay Viewer tool is not a traditional tool that requires user interactin.
  * But it is used to display Pixel Overlays. And it will provide toggling capability.
@@ -48,19 +59,17 @@ class ImageOverlayViewerTool extends AnnotationDisplayTool {
       metaData.get('overlayPlaneModule', imageId)?.overlays;
 
     // no overlays
-    if (!overlays || overlays.length <= 0) {
+    if (!overlays?.length) {
       return;
     }
 
     this._cachedOverlayMetadata.set(imageId, overlays);
 
-    this._getCachedStat(imageId, overlays, this.configuration.fillColor).then(
-      cachedStat => {
-        cachedStat.overlays.forEach(overlay => {
-          this._renderOverlay(enabledElement, svgDrawingHelper, overlay);
-        });
-      }
-    );
+    this._getCachedStat(imageId, overlays, this.configuration.fillColor).then(cachedStat => {
+      cachedStat.overlays.forEach(overlay => {
+        this._renderOverlay(enabledElement, svgDrawingHelper, overlay);
+      });
+    });
 
     return true;
   };
@@ -86,16 +95,9 @@ class ImageOverlayViewerTool extends AnnotationDisplayTool {
       x - 1, // Remind that top-left corner's (x, y) is be (1, 1)
       y - 1,
     ]);
-    const overlayTopLeftOnCanvas = viewport.worldToCanvas(
-      overlayTopLeftWorldPos
-    );
-    const overlayBottomRightWorldPos = utilities.imageToWorldCoords(imageId, [
-      width,
-      height,
-    ]);
-    const overlayBottomRightOnCanvas = viewport.worldToCanvas(
-      overlayBottomRightWorldPos
-    );
+    const overlayTopLeftOnCanvas = viewport.worldToCanvas(overlayTopLeftWorldPos);
+    const overlayBottomRightWorldPos = utilities.imageToWorldCoords(imageId, [width, height]);
+    const overlayBottomRightOnCanvas = viewport.worldToCanvas(overlayBottomRightWorldPos);
 
     // add image to the annotations svg layer
     const svgns = 'http://www.w3.org/2000/svg';
@@ -117,10 +119,7 @@ class ImageOverlayViewerTool extends AnnotationDisplayTool {
       isNaN(attributes.width) ||
       isNaN(attributes.height)
     ) {
-      console.warn(
-        'Invalid rendering attribute for image overlay',
-        attributes['data-id']
-      );
+      console.warn('Invalid rendering attribute for image overlay', attributes['data-id']);
       return false;
     }
 
@@ -140,10 +139,7 @@ class ImageOverlayViewerTool extends AnnotationDisplayTool {
     overlayMetadata: any[],
     color: number[]
   ): Promise<CachedStat> {
-    if (
-      this._cachedStats[imageId] &&
-      this._isSameColor(this._cachedStats[imageId].color, color)
-    ) {
+    if (this._cachedStats[imageId] && this._isSameColor(this._cachedStats[imageId].color, color)) {
       return this._cachedStats[imageId];
     }
 
@@ -246,17 +242,6 @@ class ImageOverlayViewerTool extends AnnotationDisplayTool {
 
     return canvas.toDataURL();
   }
-}
-
-interface CachedStat {
-  color: number[]; // [r, g, b, a]
-  overlays: {
-    // ...overlayPlaneModule
-    _id: string;
-    type: 'G' | 'R'; // G for Graphics, R for ROI
-    color?: number[]; // Rendered color [r, g, b, a]
-    dataUrl?: string; // Rendered image in Data URL expression
-  }[];
 }
 
 export default ImageOverlayViewerTool;

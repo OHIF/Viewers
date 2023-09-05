@@ -7,8 +7,6 @@ import {
 } from '@ohif/ui';
 import { defaults } from '@ohif/core';
 
-export const toggles = {};
-
 const { windowLevelPresets } = defaults;
 /**
  *
@@ -18,9 +16,6 @@ const { windowLevelPresets } = defaults;
  * @param {*} label
  */
 function _createButton(type, id, icon, label, commands, tooltip, uiType, isActive) {
-  if (type === 'toggle' && isActive != null) {
-    toggles[id] = isActive;
-  }
   return {
     id,
     icon,
@@ -29,6 +24,7 @@ function _createButton(type, id, icon, label, commands, tooltip, uiType, isActiv
     commands,
     tooltip,
     uiType,
+    isActive,
   };
 }
 

@@ -1,5 +1,5 @@
 import { hotkeys } from '@ohif/core';
-import toolbarButtons, { toggles } from './toolbarButtons.js';
+import toolbarButtons from './toolbarButtons.js';
 import { id } from './id.js';
 import initToolGroups from './initToolGroups.js';
 
@@ -113,7 +113,7 @@ function modeFactory({ modeConfiguration }) {
       ));
 
       toolbarService.init(extensionManager);
-      toolbarService.addButtons(toolbarButtons, toggles);
+      toolbarService.addButtons(toolbarButtons);
       toolbarService.createButtonSection('primary', [
         'MeasurementTools',
         'Zoom',

@@ -704,11 +704,6 @@ function commandsModule({
       storeContexts: [],
       options: {},
     },
-    toggleImageOverlay: {
-      commandFn: actions.toggleImageOverlay,
-      storeContexts: [],
-      options: {},
-    },
   };
 
   return {
