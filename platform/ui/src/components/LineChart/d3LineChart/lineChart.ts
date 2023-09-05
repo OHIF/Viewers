@@ -1,5 +1,9 @@
-import * as d3 from 'd3';
-import { min, max } from 'd3-array';
+import * as d3Array from 'd3-array';
+import * as d3Axis from 'd3-axis';
+import * as d3Scale from 'd3-scale';
+import * as d3ScaleChromatic from 'd3-scale-chromatic';
+import * as d3Selection from 'd3-selection';
+import * as d3Shape from 'd3-shape';
 
 import chart from './chart';
 import events from './events';
@@ -32,13 +36,13 @@ const {
  * @return {any} max value
  */
 function _getMaxValue(array, index) {
-  return max(array, arrayItem => {
+  return d3Array.max(array, arrayItem => {
     return arrayItem[index];
   });
 }
 
 function _getMinValue(array, index) {
-  return min(array, arrayItem => {
+  return d3Array.min(array, arrayItem => {
     return arrayItem[index];
   });
 }
@@ -47,7 +51,7 @@ const LEGEND = { width: 100, margin: 10 };
 const MARGIN = { top: 20, right: 20, bottom: 50, left: 50 };
 
 function _createAxisScale(domainBottom, domainUpper, rangeBottom, rangeUpper) {
-  return d3
+  return d3Scale
     .scaleLinear()
     .domain([domainBottom, domainUpper * 1.05])
     .range([rangeBottom, rangeUpper]);
@@ -59,10 +63,10 @@ const _getSeriesColor = series => {
     []
   );
 
-  return d3
+  return d3Scale
     .scaleOrdinal()
     .domain(seriesLabels)
-    .range(d3.schemeSet2);
+    .range(d3ScaleChromatic.schemeSet2);
 };
 
 const _updateSeriesColors = series => {
@@ -76,7 +80,7 @@ const _updateSeriesColors = series => {
 
 const _textEllipses = (width, padding = 0) => {
   return function(...args) {
-    const self = d3.select(this);
+    const self = d3Selection.select(this);
     let textLength = self.node().getComputedTextLength();
     let text = self.text();
 
@@ -201,7 +205,7 @@ const addLineChartNode = ({
   );
 
   // call the x axis in a group tag
-  const xAxisGenerator = d3.axisBottom(xAxisScale);
+  const xAxisGenerator = d3Axis.axisBottom(xAxisScale);
 
   if (showAxisGrid) {
     xAxisGenerator.tickSize(-_height).tickPadding(10);
@@ -219,7 +223,7 @@ const addLineChartNode = ({
     undefined,
     showAxisGrid
   );
-  const yAxisGenerator = d3.axisLeft(yAxisScale);
+  const yAxisGenerator = d3Axis.axisLeft(yAxisScale);
 
   if (showAxisGrid) {
     yAxisGenerator.tickSize(-_width).tickPadding(10);
@@ -246,7 +250,7 @@ const addLineChartNode = ({
 
   series.forEach((currentSeries, seriesIndex) => {
     const { points } = currentSeries;
-    const line = d3
+    const line = d3Shape
       .line()
       .x(parseXPoint(xAxisScale))
       .y(parseYPoint(yAxisScale));

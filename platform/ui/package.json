@@ -33,6 +33,13 @@
   "dependencies": {
     "browser-detect": "^0.2.28",
     "classnames": "^2.3.2",
+    "d3-array": "3",
+    "d3-axis": "3",
+    "d3-scale": "4",
+    "d3-scale-chromatic": "3",
+    "d3-selection": "3",
+    "d3-shape": "3",
+    "d3-zoom": "3",
     "lodash.debounce": "4.0.8",
     "moment": "2.29.4",
     "mousetrap": "^1.6.5",

@@ -1,8 +1,8 @@
 import React, { useEffect, useLayoutEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
+import * as d3Selection from 'd3-selection';
 import { lineChart } from './d3LineChart';
-import * as d3 from 'd3';
 import './LineChart.css';
 
 const LineChart = ({
@@ -38,7 +38,7 @@ const LineChart = ({
     const chartContainer = chartContainerRef.current;
     const containerWidth = chartContainer.offsetWidth;
     const containerHeight = chartContainer.offsetHeight;
-    const d3Container = d3
+    const d3Container = d3Selection
       .create('svg')
       .attr('viewBox', [0, 0, containerWidth, containerHeight])
       .style('max-width', `${containerWidth}px`)

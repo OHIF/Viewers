@@ -1,6 +1,5 @@
-import { zoom } from 'd3-zoom';
-import { line } from 'd3-shape';
-import { zoomIdentity } from 'd3';
+import * as d3Shape from 'd3-shape';
+import * as d3Zoom from 'd3-zoom';
 
 import chart from './chart';
 
@@ -37,13 +36,13 @@ const _resetZoom = (root, zoom) => {
     root
       .transition()
       .duration(750)
-      .call(zoom.transform, zoomIdentity);
+      .call(zoom.transform, d3Zoom.zoomIdentity);
   }
 };
 
 const DEFAULT_MAX_ZOOM_SCALE = 20;
 
-const _zoom = zoom().scaleExtent([1, DEFAULT_MAX_ZOOM_SCALE]);
+const _zoom = d3Zoom.zoom().scaleExtent([1, DEFAULT_MAX_ZOOM_SCALE]);
 
 const _bindZoom = (
   root,
@@ -92,11 +91,12 @@ const _bindZoom = (
     datasets.forEach((dataset, seriesIndex) => {
       const seriesContainer = root.select(`#series_${seriesIndex}`);
       // create line
-      const _line = line()
+      const line = d3Shape
+        .line()
         .x(parseXPoint(transformedXAxisScale))
         .y(parseYPoint(transformedYAxisScale));
 
-      chart.lines.updateNode(seriesContainer, dataset, _line);
+      chart.lines.updateNode(seriesContainer, dataset, line);
 
       chart.points.updateNode(
         seriesContainer,
