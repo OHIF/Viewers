@@ -40,6 +40,12 @@ export default function interleaveTopToBottom({
   const filteredMatchDetails = [];
   const displaySetsToLoad = new Set();
 
+  // Check all viewports that have a displaySet to be loaded. In some cases
+  // (eg: line chart viewports which is not a Cornerstone viewport) the
+  // displaySet is created on the client and there are no instances to be
+  // downloaded. For those viewports the displaySet may have the `skipLoading`
+  // option set to true otherwise it may block the download of all other
+  // instances resulting in blank viewports.
   Array.from(matchDetails.values()).forEach(curMatchDetails => {
     const { displaySetsInfo } = curMatchDetails;
     let numDisplaySetsToLoad = 0;
