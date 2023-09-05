@@ -7,21 +7,12 @@ import React, { createContext, useContext, useReducer, useMemo } from 'react';
 
 export const ImageViewerContext = createContext();
 
-export function ImageViewerProvider({
-  StudyInstanceUIDs,
-  reducer,
-  initialState,
-  children,
-}) {
+export function ImageViewerProvider({ StudyInstanceUIDs, reducer, initialState, children }) {
   const value = useMemo(() => {
     return { StudyInstanceUIDs };
   }, [StudyInstanceUIDs]);
 
-  return (
-    <ImageViewerContext.Provider value={value}>
-      {children}
-    </ImageViewerContext.Provider>
-  );
+  return <ImageViewerContext.Provider value={value}>{children}</ImageViewerContext.Provider>;
 }
 
 export const useImageViewer = () => useContext(ImageViewerContext);

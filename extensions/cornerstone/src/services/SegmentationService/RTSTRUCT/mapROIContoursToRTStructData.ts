@@ -7,32 +7,27 @@
  * @returns An array of object that includes data, id, segmentIndex, color
  * and geometry Id
  */
-export function mapROIContoursToRTStructData(
-  structureSet: unknown,
-  rtDisplaySetUID: unknown
-) {
-  return structureSet.ROIContours.map(
-    ({ contourPoints, ROINumber, ROIName, colorArray }) => {
-      const data = contourPoints.map(({ points, ...rest }) => {
-        const newPoints = points.map(({ x, y, z }) => {
-          return [x, y, z];
-        });
-
-        return {
-          ...rest,
-          points: newPoints,
-        };
+export function mapROIContoursToRTStructData(structureSet: unknown, rtDisplaySetUID: unknown) {
+  return structureSet.ROIContours.map(({ contourPoints, ROINumber, ROIName, colorArray }) => {
+    const data = contourPoints.map(({ points, ...rest }) => {
+      const newPoints = points.map(({ x, y, z }) => {
+        return [x, y, z];
       });
 
-      const id = ROIName || ROINumber;
-
       return {
-        data,
-        id,
-        segmentIndex: ROINumber,
-        color: colorArray,
-        geometryId: `${rtDisplaySetUID}:${id}:segmentIndex-${ROINumber}`,
+        ...rest,
+        points: newPoints,
       };
-    }
-  );
+    });
+
+    const id = ROIName || ROINumber;
+
+    return {
+      data,
+      id,
+      segmentIndex: ROINumber,
+      color: colorArray,
+      geometryId: `${rtDisplaySetUID}:${id}:segmentIndex-${ROINumber}`,
+    };
+  });
 }

@@ -30,10 +30,7 @@ export default function getDisplaySetMessages(
 
   const isMultiframe = firstInstance.NumberOfFrames > 1;
   // Can't reconstruct if all instances don't have the ImagePositionPatient.
-  if (
-    !isMultiframe &&
-    !instances.every(instance => instance.ImagePositionPatient)
-  ) {
+  if (!isMultiframe && !instances.every(instance => instance.ImagePositionPatient)) {
     messages.addMessage(DisplaySetMessage.CODES.NO_POSITION_INFORMATION);
   }
 

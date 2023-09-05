@@ -3,13 +3,8 @@ import { DisplaySetService, classes } from '@ohif/core';
 const ImageSet = classes.ImageSet;
 
 const findInstance = (measurement, displaySetService: DisplaySetService) => {
-  const {
-    displaySetInstanceUID,
-    ReferencedSOPInstanceUID: sopUid,
-  } = measurement;
-  const referencedDisplaySet = displaySetService.getDisplaySetByUID(
-    displaySetInstanceUID
-  );
+  const { displaySetInstanceUID, ReferencedSOPInstanceUID: sopUid } = measurement;
+  const referencedDisplaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
   if (!referencedDisplaySet.images) {
     return;
   }
@@ -20,10 +15,7 @@ const findInstance = (measurement, displaySetService: DisplaySetService) => {
  * contained within the provided display set.
  * @return an array of instances referenced.
  */
-const findReferencedInstances = (
-  displaySetService: DisplaySetService,
-  displaySet
-) => {
+const findReferencedInstances = (displaySetService: DisplaySetService, displaySet) => {
   const instances = [];
   const instanceById = {};
   for (const measurement of displaySet.measurements) {
@@ -58,7 +50,7 @@ const findReferencedInstances = (
 const createReferencedImageDisplaySet = (displaySetService, displaySet) => {
   const instances = findReferencedInstances(displaySetService, displaySet);
   // This will be a  member function of the created image set
-  const updateInstances = function() {
+  const updateInstances = function () {
     this.images.splice(
       0,
       this.images.length,

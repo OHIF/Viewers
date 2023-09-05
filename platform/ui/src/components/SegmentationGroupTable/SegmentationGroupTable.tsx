@@ -32,7 +32,7 @@ const SegmentationGroupTable = ({
   setRenderOutline,
 }) => {
   return (
-    <div className="flex flex-col min-h-0 font-inter font-[300]">
+    <div className="font-inter flex min-h-0 flex-col font-[300]">
       <SegmentationConfig
         setFillAlpha={setFillAlpha}
         setFillAlphaInactive={setFillAlphaInactive}
@@ -43,7 +43,7 @@ const SegmentationGroupTable = ({
         setRenderOutline={setRenderOutline}
         segmentationConfig={segmentationConfig}
       />
-      <div className="flex flex-col min-h-0 pr-[1px] mt-1">
+      <div className="mt-1 flex min-h-0 flex-col pr-[1px]">
         {!!segmentations.length &&
           segmentations.map((segmentation, index) => {
             const {
@@ -86,10 +86,13 @@ const SegmentationGroupTable = ({
       </div>
       {showAddSegmentation && !disableEditing && (
         <div
-          className="flex items-center cursor-pointer hover:opacity-80 text-primary-active bg-black text-[12px] pl-1 h-[45px]"
+          className="text-primary-active flex h-[45px] cursor-pointer items-center bg-black pl-1 text-[12px] hover:opacity-80"
           onClick={() => onSegmentationAdd()}
         >
-          <Icon name="row-add" className="w-5 h-5" />
+          <Icon
+            name="row-add"
+            className="h-5 w-5"
+          />
           <div className="pl-1">Add New Segmentation</div>
         </div>
       )}

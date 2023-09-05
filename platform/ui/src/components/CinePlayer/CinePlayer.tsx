@@ -52,12 +52,12 @@ const CinePlayer: React.FC<CinePlayerProps> = ({
     <div
       className={classNames(
         className,
-        'select-none flex items-center gap-2 px-2 py-2 rounded border border-secondary-light/60 bg-primary-dark'
+        'border-secondary-light/60 bg-primary-dark flex select-none items-center gap-2 rounded border px-2 py-2'
       )}
     >
       <Icon
         name={getPlayPauseIconName()}
-        className="cursor-pointer text-white active:text-primary-light hover:bg-customblue-300 hover:rounded"
+        className="active:text-primary-light hover:bg-customblue-300 cursor-pointer text-white hover:rounded"
         onClick={() => onPlayPauseChange(!isPlaying)}
       />
       <Tooltip
@@ -77,14 +77,14 @@ const CinePlayer: React.FC<CinePlayerProps> = ({
           />
         }
       >
-        <div className="border border-secondary-light flex h-6 items-stretch rounded gap-1">
+        <div className="border-secondary-light flex h-6 items-stretch gap-1 rounded border">
           <div
             className={`${fpsButtonClassNames} rounded-l`}
             onClick={() => handleSetFrameRate(frameRate - 1)}
           >
             <Icon name="arrow-left-small" />
           </div>
-          <div className="w-11 text-sm text-white text-center group-hover/fps:text-primary-light leading-[22px]">
+          <div className="group-hover/fps:text-primary-light w-11 text-center text-sm leading-[22px] text-white">
             {`${frameRate} FPS`}
           </div>
           <div
@@ -97,7 +97,7 @@ const CinePlayer: React.FC<CinePlayerProps> = ({
       </Tooltip>
       <Icon
         name="icon-close"
-        className="cursor-pointer text-primary-active active:text-primary-light hover:bg-customblue-300 hover:rounded"
+        className="text-primary-active active:text-primary-light hover:bg-customblue-300 cursor-pointer hover:rounded"
         onClick={onClose}
       />
     </div>

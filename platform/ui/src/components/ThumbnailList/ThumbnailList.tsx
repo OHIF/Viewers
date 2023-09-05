@@ -16,7 +16,7 @@ const ThumbnailList = ({
   return (
     <div
       id="ohif-thumbnail-list"
-      className="py-3 bg-black overflow-y-hidden ohif-scrollbar study-min-height"
+      className="ohif-scrollbar study-min-height overflow-y-hidden bg-black py-3"
     >
       {thumbnails.map(
         ({
@@ -38,9 +38,7 @@ const ThumbnailList = ({
           imageAltText,
           isHydratedForDerivedDisplaySet,
         }) => {
-          const isActive = activeDisplaySetInstanceUIDs.includes(
-            displaySetInstanceUID
-          );
+          const isActive = activeDisplaySetInstanceUIDs.includes(displaySetInstanceUID);
           switch (componentType) {
             case 'thumbnail':
               return (
@@ -58,9 +56,7 @@ const ThumbnailList = ({
                   viewportIdentificator={viewportIdentificator}
                   isActive={isActive}
                   onClick={() => onThumbnailClick(displaySetInstanceUID)}
-                  onDoubleClick={() =>
-                    onThumbnailDoubleClick(displaySetInstanceUID)
-                  }
+                  onDoubleClick={() => onThumbnailDoubleClick(displaySetInstanceUID)}
                 />
               );
             case 'thumbnailTracked':
@@ -80,9 +76,7 @@ const ThumbnailList = ({
                   isTracked={isTracked}
                   isActive={isActive}
                   onClick={() => onThumbnailClick(displaySetInstanceUID)}
-                  onDoubleClick={() =>
-                    onThumbnailDoubleClick(displaySetInstanceUID)
-                  }
+                  onDoubleClick={() => onThumbnailDoubleClick(displaySetInstanceUID)}
                   onClickUntrack={() => onClickUntrack(displaySetInstanceUID)}
                 />
               );
@@ -101,13 +95,9 @@ const ThumbnailList = ({
                   canReject={canReject}
                   onReject={onReject}
                   onClick={() => onThumbnailClick(displaySetInstanceUID)}
-                  onDoubleClick={() =>
-                    onThumbnailDoubleClick(displaySetInstanceUID)
-                  }
+                  onDoubleClick={() => onThumbnailDoubleClick(displaySetInstanceUID)}
                   viewportIdentificator={viewportIdentificator}
-                  isHydratedForDerivedDisplaySet={
-                    isHydratedForDerivedDisplaySet
-                  }
+                  isHydratedForDerivedDisplaySet={isHydratedForDerivedDisplaySet}
                 />
               );
             default:

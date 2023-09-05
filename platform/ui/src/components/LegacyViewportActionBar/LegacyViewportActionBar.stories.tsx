@@ -7,7 +7,7 @@ export default {
 };
 
 export const Default = () => (
-  <div className="w-1/2 p-4 h-64">
+  <div className="h-64 w-1/2 p-4">
     <LegacyViewportActionBar
       onArrowsClick={direction => alert(`Series ${direction}`)}
       studyData={{

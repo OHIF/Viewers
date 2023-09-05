@@ -7,19 +7,11 @@ const RESPONSE = {
   HYDRATE_SEG: 5,
 };
 
-function promptHydrateSEG({
-  servicesManager,
-  segDisplaySet,
-  viewportIndex,
-  preHydrateCallbacks,
-}) {
+function promptHydrateSEG({ servicesManager, segDisplaySet, viewportId, preHydrateCallbacks }) {
   const { uiViewportDialogService } = servicesManager.services;
 
-  return new Promise(async function(resolve, reject) {
-    const promptResult = await _askHydrate(
-      uiViewportDialogService,
-      viewportIndex
-    );
+  return new Promise(async function (resolve, reject) {
+    const promptResult = await _askHydrate(uiViewportDialogService, viewportId);
 
     if (promptResult === RESPONSE.HYDRATE_SEG) {
       preHydrateCallbacks?.forEach(callback => {
@@ -28,7 +20,7 @@ function promptHydrateSEG({
 
       const isHydrated = await hydrateSEGDisplaySet({
         segDisplaySet,
-        viewportIndex,
+        viewportId,
         servicesManager,
       });
 
@@ -37,8 +29,8 @@ function promptHydrateSEG({
   });
 }
 
-function _askHydrate(uiViewportDialogService, viewportIndex) {
-  return new Promise(function(resolve, reject) {
+function _askHydrate(uiViewportDialogService, viewportId) {
+  return new Promise(function (resolve, reject) {
     const message = 'Do you want to open this Segmentation?';
     const actions = [
       {
@@ -58,7 +50,7 @@ function _askHydrate(uiViewportDialogService, viewportIndex) {
     };
 
     uiViewportDialogService.show({
-      viewportIndex,
+      viewportId,
       type: 'info',
       message,
       actions,

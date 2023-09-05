@@ -14,12 +14,7 @@ import {
   LoadingIndicatorProgress,
 } from '@ohif/ui';
 import i18n from '@ohif/i18n';
-import {
-  ServicesManager,
-  HangingProtocolService,
-  hotkeys,
-  CommandsManager,
-} from '@ohif/core';
+import { ServicesManager, HangingProtocolService, hotkeys, CommandsManager } from '@ohif/core';
 import { useAppConfig } from '@state';
 import Toolbar from '../Toolbar/Toolbar';
 
@@ -76,9 +71,7 @@ function ViewerLayout({
   const { t } = useTranslation();
   const { show, hide } = useModal();
 
-  const [showLoadingIndicator, setShowLoadingIndicator] = useState(
-    appConfig.showLoadingIndicator
-  );
+  const [showLoadingIndicator, setShowLoadingIndicator] = useState(appConfig.showLoadingIndicator);
 
   const { hangingProtocolService } = servicesManager.services;
 
@@ -105,9 +98,7 @@ function ViewerLayout({
           title: t('UserPreferencesModal:User Preferences'),
           content: UserPreferences,
           contentProps: {
-            hotkeyDefaults: hotkeysManager.getValidHotkeyDefinitions(
-              hotkeyDefaults
-            ),
+            hotkeyDefaults: hotkeysManager.getValidHotkeyDefinitions(hotkeyDefaults),
             hotkeyDefinitions,
             currentLanguage: currentLanguage(),
             availableLanguages,
@@ -134,9 +125,7 @@ function ViewerLayout({
       title: t('Header:Logout'),
       icon: 'power-off',
       onClick: async () => {
-        navigate(
-          `/logout?redirect_uri=${encodeURIComponent(window.location.href)}`
-        );
+        navigate(`/logout?redirect_uri=${encodeURIComponent(window.location.href)}`);
       },
     });
   }
@@ -234,13 +223,11 @@ function ViewerLayout({
         </ErrorBoundary>
       </Header>
       <div
-        className="bg-black flex flex-row items-stretch w-full overflow-hidden flex-nowrap relative"
+        className="relative flex w-full flex-row flex-nowrap items-stretch overflow-hidden bg-black"
         style={{ height: 'calc(100vh - 52px' }}
       >
         <React.Fragment>
-          {showLoadingIndicator && (
-            <LoadingIndicatorProgress className="h-full w-full bg-black" />
-          )}
+          {showLoadingIndicator && <LoadingIndicatorProgress className="h-full w-full bg-black" />}
           {/* LEFT SIDEPANELS */}
           {leftPanelComponents.length ? (
             <ErrorBoundary context="Left Panel">
@@ -253,8 +240,8 @@ function ViewerLayout({
             </ErrorBoundary>
           ) : null}
           {/* TOOLBAR + GRID */}
-          <div className="flex flex-col flex-1 h-full">
-            <div className="flex items-center justify-center flex-1 h-full overflow-hidden bg-black relative">
+          <div className="flex h-full flex-1 flex-col">
+            <div className="relative flex h-full flex-1 items-center justify-center overflow-hidden bg-black">
               <ErrorBoundary context="Grid">
                 <ViewportGridComp
                   servicesManager={servicesManager}

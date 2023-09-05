@@ -1,20 +1,37 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import LegacyViewportActionBar from '../LegacyViewportActionBar';
 import Notification from '../Notification';
 
-const Viewport = ({
-  viewportId,
-  viewportIndex,
-  onArrowsClick,
-  studyData,
-  children,
-}) => {
-  if (!viewportId) {
-    viewportId = `viewport-${viewportIndex}`;
-  }
+interface StudyData {
+  label: string;
+  isTracked: boolean;
+  isLocked: boolean;
+  isRehydratable: boolean;
+  studyDate: string;
+  currentSeries: number;
+  seriesDescription: string;
+  modality: string;
+  patientInformation: {
+    patientName: string;
+    patientSex: string;
+    patientAge: string;
+    MRN: string;
+    thickness: string;
+    spacing: string;
+    scanner: string;
+  };
+}
+
+interface ViewportProps {
+  viewportId: string;
+  onArrowsClick: () => void;
+  studyData: StudyData;
+  children: React.ReactNode;
+}
+
+const Viewport: React.FC<ViewportProps> = ({ viewportId, onArrowsClick, studyData, children }) => {
   return (
-    <div className="relative flex flex-col h-full">
+    <div className="relative flex h-full flex-col">
       <div className="absolute top-0 left-0 w-full">
         <LegacyViewportActionBar
           onArrowsClick={onArrowsClick}
@@ -51,37 +68,15 @@ const Viewport = ({
       </div>
 
       {/* STUDY IMAGE */}
-      <div className="w-full h-full" id={viewportId}>
+      <div
+        className="h-full w-full"
+        id={viewportId}
+      >
         {children}
       </div>
     </div>
   );
 };
 
-Viewport.propTypes = {
-  viewportIndex: PropTypes.number.isRequired,
-  onArrowsClick: PropTypes.func.isRequired,
-  studyData: PropTypes.shape({
-    label: PropTypes.string.isRequired,
-    isTracked: PropTypes.bool.isRequired,
-    /* Specific to SR Viewports only... */
-    isLocked: PropTypes.bool.isRequired,
-    isRehydratable: PropTypes.bool.isRequired,
-    studyDate: PropTypes.string.isRequired,
-    currentSeries: PropTypes.number.isRequired,
-    seriesDescription: PropTypes.string.isRequired,
-    modality: PropTypes.string.isRequired,
-    patientInformation: PropTypes.shape({
-      patientName: PropTypes.string.isRequired,
-      patientSex: PropTypes.string.isRequired,
-      patientAge: PropTypes.string.isRequired,
-      MRN: PropTypes.string.isRequired,
-      thickness: PropTypes.string.isRequired,
-      spacing: PropTypes.string.isRequired,
-      scanner: PropTypes.string.isRequired,
-    }),
-  }).isRequired,
-  children: PropTypes.node.isRequired,
-};
-
 export default Viewport;
+export type { ViewportProps, StudyData };

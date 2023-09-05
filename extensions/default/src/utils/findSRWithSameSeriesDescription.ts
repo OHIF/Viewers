@@ -19,20 +19,12 @@ export default function findSRWithSameSeriesDescription(
 ): Types.SeriesMetadata {
   const activeDisplaySets = displaySetService.getActiveDisplaySets();
   const srDisplaySets = activeDisplaySets.filter(ds => ds.Modality === 'SR');
-  const sameSeries = srDisplaySets.find(
-    ds => ds.SeriesDescription === SeriesDescription
-  );
+  const sameSeries = srDisplaySets.find(ds => ds.SeriesDescription === SeriesDescription);
   if (sameSeries) {
     console.log('Storing to same series', sameSeries);
     const { instance } = sameSeries;
-    const {
-      SeriesInstanceUID,
-      SeriesDescription,
-      SeriesDate,
-      SeriesTime,
-      SeriesNumber,
-      Modality,
-    } = instance;
+    const { SeriesInstanceUID, SeriesDescription, SeriesDate, SeriesTime, SeriesNumber, Modality } =
+      instance;
     return {
       SeriesInstanceUID,
       SeriesDescription,

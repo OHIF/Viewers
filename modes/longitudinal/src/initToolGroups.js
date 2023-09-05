@@ -1,9 +1,4 @@
-function initDefaultToolGroup(
-  extensionManager,
-  toolGroupService,
-  commandsManager,
-  toolGroupId
-) {
+function initDefaultToolGroup(extensionManager, toolGroupService, commandsManager, toolGroupId) {
   const utilityModule = extensionManager.getModuleEntry(
     '@ohif/extension-cornerstone.utilityModule.tools'
   );
@@ -184,10 +179,7 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
       { toolName: toolNames.PlanarFreehandROI },
       { toolName: toolNames.SegmentationDisplay },
     ],
-    disabled: [
-      { toolName: toolNames.Crosshairs },
-      { toolName: toolNames.ReferenceLines },
-    ],
+    disabled: [{ toolName: toolNames.Crosshairs }, { toolName: toolNames.ReferenceLines }],
 
     // enabled
     // disabled
@@ -247,12 +239,7 @@ function initVolume3DToolGroup(extensionManager, toolGroupService) {
 }
 
 function initToolGroups(extensionManager, toolGroupService, commandsManager) {
-  initDefaultToolGroup(
-    extensionManager,
-    toolGroupService,
-    commandsManager,
-    'default'
-  );
+  initDefaultToolGroup(extensionManager, toolGroupService, commandsManager, 'default');
   initSRToolGroup(extensionManager, toolGroupService, commandsManager);
   initMPRToolGroup(extensionManager, toolGroupService, commandsManager);
   initVolume3DToolGroup(extensionManager, toolGroupService);

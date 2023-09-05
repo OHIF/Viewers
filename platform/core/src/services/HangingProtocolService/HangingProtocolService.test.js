@@ -118,7 +118,7 @@ function checkHpsBestMatch(hps) {
   hps.run({ studies: [studyMatch], displaySets: studyMatchDisplaySets });
   const { viewportMatchDetails } = hps.getMatchDetails();
   expect(viewportMatchDetails.size).toBe(1);
-  expect(viewportMatchDetails.get(0)).toMatchObject({
+  expect(viewportMatchDetails.get('ctAXIAL')).toMatchObject({
     viewportOptions: {
       viewportId: 'ctAXIAL',
       viewportType: 'volume',
@@ -149,10 +149,7 @@ describe('HangingProtocolService', () => {
       },
     },
   };
-  const hangingProtocolService = new HangingProtocolService(
-    commandsManager,
-    servicesManager
-  );
+  const hangingProtocolService = new HangingProtocolService(commandsManager, servicesManager);
   let initialScaling;
 
   afterEach(() => {
@@ -177,10 +174,7 @@ describe('HangingProtocolService', () => {
 
   describe('with protocol generator', () => {
     beforeAll(() => {
-      hangingProtocolService.addProtocol(
-        testProtocol.id,
-        testProtocolGenerator
-      );
+      hangingProtocolService.addProtocol(testProtocol.id, testProtocolGenerator);
     });
 
     it('has one protocol', () => {

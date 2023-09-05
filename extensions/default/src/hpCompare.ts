@@ -163,12 +163,7 @@ const hpMNCompare: Types.HangingProtocol.Protocol = {
           columns: 2,
         },
       },
-      viewports: [
-        currentViewport0,
-        priorViewport0,
-        currentViewport1,
-        priorViewport1,
-      ],
+      viewports: [currentViewport0, priorViewport0, currentViewport1, priorViewport1],
     },
 
     {
