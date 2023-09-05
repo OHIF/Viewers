@@ -3,13 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 import { utils } from '@ohif/core';
-import {
-  StudyBrowser,
-  useImageViewer,
-  useViewportGrid,
-  Dialog,
-  ButtonEnums,
-} from '@ohif/ui';
+import { StudyBrowser, useImageViewer, useViewportGrid, Dialog, ButtonEnums } from '@ohif/ui';
 import { useTrackedMeasurements } from '../../getContextModule';
 
 const { formatDate } = utils;
@@ -25,12 +19,8 @@ function PanelStudyBrowserTracking({
   requestDisplaySetCreationForStudy,
   dataSource,
 }) {
-  const {
-    displaySetService,
-    uiDialogService,
-    hangingProtocolService,
-    uiNotificationService,
-  } = servicesManager.services;
+  const { displaySetService, uiDialogService, hangingProtocolService, uiNotificationService } =
+    servicesManager.services;
   const navigate = useNavigate();
 
   const { t } = useTranslation('Common');
@@ -39,14 +29,8 @@ function PanelStudyBrowserTracking({
   // doesn't have to have such an intense shape. This works well enough for now.
   // Tabs --> Studies --> DisplaySets --> Thumbnails
   const { StudyInstanceUIDs } = useImageViewer();
-  const [
-    { activeViewportId, viewports },
-    viewportGridService,
-  ] = useViewportGrid();
-  const [
-    trackedMeasurements,
-    sendTrackedMeasurementsEvent,
-  ] = useTrackedMeasurements();
+  const [{ activeViewportId, viewports }, viewportGridService] = useViewportGrid();
+  const [trackedMeasurements, sendTrackedMeasurementsEvent] = useTrackedMeasurements();
   const [activeTabName, setActiveTabName] = useState('primary');
   const [expandedStudyInstanceUIDs, setExpandedStudyInstanceUIDs] = useState([
     ...StudyInstanceUIDs,
@@ -78,8 +62,8 @@ function PanelStudyBrowserTracking({
     viewportGridService.setDisplaySetsForViewports(updatedViewports);
   };
 
-  const activeViewportDisplaySetInstanceUIDs = viewports.get(activeViewportId)
-    ?.displaySetInstanceUIDs;
+  const activeViewportDisplaySetInstanceUIDs =
+    viewports.get(activeViewportId)?.displaySetInstanceUIDs;
 
   const { trackedSeries } = trackedMeasurements.context;
 
@@ -102,9 +86,7 @@ function PanelStudyBrowserTracking({
       // try to fetch the prior studies based on the patientID if the
       // server can respond.
       try {
-        qidoStudiesForPatient = await getStudiesForPatientByMRN(
-          qidoForStudyUID
-        );
+        qidoStudiesForPatient = await getStudiesForPatientByMRN(qidoForStudyUID);
       } catch (error) {
         console.warn(error);
       }
@@ -123,11 +105,7 @@ function PanelStudyBrowserTracking({
       setStudyDisplayList(prevArray => {
         const ret = [...prevArray];
         for (const study of actuallyMappedStudies) {
-          if (
-            !prevArray.find(
-              it => it.studyInstanceUid === study.studyInstanceUid
-            )
-          ) {
+          if (!prevArray.find(it => it.studyInstanceUid === study.studyInstanceUid)) {
             ret.push(study);
           }
         }
@@ -285,14 +263,7 @@ function PanelStudyBrowserTracking({
       SubscriptionDisplaySetMetaDataInvalidated.unsubscribe();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    displaySetService,
-    dataSource,
-    getImageSrc,
-    thumbnailImageSrcMap,
-    trackedSeries,
-    viewports,
-  ]);
+  }, [displaySetService, dataSource, getImageSrc, thumbnailImageSrcMap, trackedSeries, viewports]);
 
   const tabs = _createStudyBrowserTabs(
     StudyInstanceUIDs,
@@ -303,26 +274,16 @@ function PanelStudyBrowserTracking({
 
   // TODO: Should not fire this on "close"
   function _handleStudyClick(StudyInstanceUID) {
-    const shouldCollapseStudy = expandedStudyInstanceUIDs.includes(
-      StudyInstanceUID
-    );
+    const shouldCollapseStudy = expandedStudyInstanceUIDs.includes(StudyInstanceUID);
     const updatedExpandedStudyInstanceUIDs = shouldCollapseStudy
-      ? [
-          ...expandedStudyInstanceUIDs.filter(
-            stdyUid => stdyUid !== StudyInstanceUID
-          ),
-        ]
+      ? [...expandedStudyInstanceUIDs.filter(stdyUid => stdyUid !== StudyInstanceUID)]
       : [...expandedStudyInstanceUIDs, StudyInstanceUID];
 
     setExpandedStudyInstanceUIDs(updatedExpandedStudyInstanceUIDs);
 
     if (!shouldCollapseStudy) {
       const madeInClient = true;
-      requestDisplaySetCreationForStudy(
-        displaySetService,
-        StudyInstanceUID,
-        madeInClient
-      );
+      requestDisplaySetCreationForStudy(displaySetService, StudyInstanceUID, madeInClient);
     }
   }
 
@@ -330,9 +291,7 @@ function PanelStudyBrowserTracking({
     if (jumpToDisplaySet) {
       // Get element by displaySetInstanceUID
       const displaySetInstanceUID = jumpToDisplaySet;
-      const element = document.getElementById(
-        `thumbnail-${displaySetInstanceUID}`
-      );
+      const element = document.getElementById(`thumbnail-${displaySetInstanceUID}`);
 
       if (element && typeof element.scrollIntoView === 'function') {
         // TODO: Any way to support IE here?
@@ -350,10 +309,7 @@ function PanelStudyBrowserTracking({
 
     const displaySetInstanceUID = jumpToDisplaySet;
     // Set the activeTabName and expand the study
-    const thumbnailLocation = _findTabAndStudyOfDisplaySet(
-      displaySetInstanceUID,
-      tabs
-    );
+    const thumbnailLocation = _findTabAndStudyOfDisplaySet(displaySetInstanceUID, tabs);
     if (!thumbnailLocation) {
       console.warn('jumpToThumbnail: displaySet thumbnail not found.');
 
@@ -363,10 +319,7 @@ function PanelStudyBrowserTracking({
     setActiveTabName(tabName);
     const studyExpanded = expandedStudyInstanceUIDs.includes(StudyInstanceUID);
     if (!studyExpanded) {
-      const updatedExpandedStudyInstanceUIDs = [
-        ...expandedStudyInstanceUIDs,
-        StudyInstanceUID,
-      ];
+      const updatedExpandedStudyInstanceUIDs = [...expandedStudyInstanceUIDs, StudyInstanceUID];
       setExpandedStudyInstanceUIDs(updatedExpandedStudyInstanceUIDs);
     }
   }, [expandedStudyInstanceUIDs, jumpToDisplaySet, tabs]);
@@ -382,9 +335,7 @@ function PanelStudyBrowserTracking({
         setActiveTabName(clickedTabName);
       }}
       onClickUntrack={displaySetInstanceUID => {
-        const displaySet = displaySetService.getDisplaySetByUID(
-          displaySetInstanceUID
-        );
+        const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
         // TODO: shift this somewhere else where we're centralizing this logic?
         // Potentially a helper from displaySetInstanceUID to this
         sendTrackedMeasurementsEvent('UNTRACK_SERIES', {
@@ -455,20 +406,14 @@ function _mapDisplaySets(
 
       if (numPanes !== 1) {
         viewports.forEach(viewportData => {
-          if (
-            viewportData?.displaySetInstanceUIDs?.includes(
-              ds.displaySetInstanceUID
-            )
-          ) {
+          if (viewportData?.displaySetInstanceUIDs?.includes(ds.displaySetInstanceUID)) {
             viewportIdentificator.push(viewportData.viewportLabel);
           }
         });
       }
 
       const array =
-        componentType === 'thumbnailTracked'
-          ? thumbnailDisplaySets
-          : thumbnailNoImageDisplaySets;
+        componentType === 'thumbnailTracked' ? thumbnailDisplaySets : thumbnailNoImageDisplaySets;
 
       const { displaySetInstanceUID } = ds;
 
@@ -507,7 +452,7 @@ function _mapDisplaySets(
               contentProps: {
                 title: 'Delete Report',
                 body: () => (
-                  <div className="p-4 text-white bg-primary-dark">
+                  <div className="bg-primary-dark p-4 text-white">
                     <p>Are you sure you want to delete this report?</p>
                     <p>This action cannot be undone.</p>
                   </div>
@@ -527,9 +472,7 @@ function _mapDisplaySets(
                 ],
                 onClose: () => uiDialogService.dismiss({ id: 'ds-reject-sr' }),
                 onShow: () => {
-                  const yesButton = document.querySelector(
-                    '.reject-yes-button'
-                  );
+                  const yesButton = document.querySelector('.reject-yes-button');
 
                   yesButton.focus();
                 },
@@ -537,13 +480,8 @@ function _mapDisplaySets(
                   switch (action.id) {
                     case 'yes':
                       try {
-                        await dataSource.reject.series(
-                          ds.StudyInstanceUID,
-                          ds.SeriesInstanceUID
-                        );
-                        displaySetService.deleteDisplaySet(
-                          displaySetInstanceUID
-                        );
+                        await dataSource.reject.series(ds.StudyInstanceUID, ds.SeriesInstanceUID);
+                        displaySetService.deleteDisplaySet(displaySetInstanceUID);
                         uiDialogService.dismiss({ id: 'ds-reject-sr' });
                         uiNotificationService.show({
                           title: 'Delete Report',
@@ -578,16 +516,7 @@ function _mapDisplaySets(
   return [...thumbnailDisplaySets, ...thumbnailNoImageDisplaySets];
 }
 
-const thumbnailNoImageModalities = [
-  'SR',
-  'SEG',
-  'SM',
-  'RTSTRUCT',
-  'RTPLAN',
-  'RTDOSE',
-  'DOC',
-  'OT',
-];
+const thumbnailNoImageModalities = ['SR', 'SEG', 'SM', 'RTSTRUCT', 'RTPLAN', 'RTDOSE', 'DOC', 'OT'];
 
 function _getComponentType(ds) {
   if (thumbnailNoImageModalities.includes(ds.Modality) || ds?.unsupported) {
@@ -671,23 +600,17 @@ function _createStudyBrowserTabs(
     {
       name: 'primary',
       label: 'Primary',
-      studies: primaryStudies.sort((studyA, studyB) =>
-        _byDate(studyA.date, studyB.date)
-      ),
+      studies: primaryStudies.sort((studyA, studyB) => _byDate(studyA.date, studyB.date)),
     },
     {
       name: 'recent',
       label: 'Recent',
-      studies: recentStudies.sort((studyA, studyB) =>
-        _byDate(studyA.date, studyB.date)
-      ),
+      studies: recentStudies.sort((studyA, studyB) => _byDate(studyA.date, studyB.date)),
     },
     {
       name: 'all',
       label: 'All',
-      studies: allStudies.sort((studyA, studyB) =>
-        _byDate(studyA.date, studyB.date)
-      ),
+      studies: allStudies.sort((studyA, studyB) => _byDate(studyA.date, studyB.date)),
     },
   ];
 

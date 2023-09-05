@@ -17,9 +17,7 @@ function removeModeFromConfigJson(pluginConfig, { packageName }) {
 function removeFromList(listName, pluginConfig, { packageName }) {
   const list = pluginConfig[listName];
 
-  const indexOfExistingEntry = list.findIndex(
-    entry => entry.packageName === packageName
-  );
+  const indexOfExistingEntry = list.findIndex(entry => entry.packageName === packageName);
 
   if (indexOfExistingEntry !== -1) {
     pluginConfig[listName].splice(indexOfExistingEntry, 1);

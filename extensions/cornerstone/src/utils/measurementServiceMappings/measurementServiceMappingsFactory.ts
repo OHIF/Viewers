@@ -23,15 +23,8 @@ const measurementServiceMappingsFactory = (
    */
 
   const _getValueTypeFromToolType = toolType => {
-    const {
-      POLYLINE,
-      ELLIPSE,
-      CIRCLE,
-      RECTANGLE,
-      BIDIRECTIONAL,
-      POINT,
-      ANGLE,
-    } = MeasurementService.VALUE_TYPES;
+    const { POLYLINE, ELLIPSE, CIRCLE, RECTANGLE, BIDIRECTIONAL, POINT, ANGLE } =
+      MeasurementService.VALUE_TYPES;
 
     // TODO -> I get why this was attempted, but its not nearly flexible enough.
     // A single measurement may have an ellipse + a bidirectional measurement, for instances.

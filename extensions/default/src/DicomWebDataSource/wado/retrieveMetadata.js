@@ -24,9 +24,7 @@ async function RetrieveMetadata(
   clientOptions
 ) {
   const RetrieveMetadataLoader =
-    enableStudyLazyLoad !== false
-      ? RetrieveMetadataLoaderAsync
-      : RetrieveMetadataLoaderSync;
+    enableStudyLazyLoad !== false ? RetrieveMetadataLoaderAsync : RetrieveMetadataLoaderSync;
 
   const retrieveMetadataLoader = new RetrieveMetadataLoader(
     dicomWebClient,

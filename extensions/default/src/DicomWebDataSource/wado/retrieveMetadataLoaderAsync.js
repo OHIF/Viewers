@@ -60,11 +60,7 @@ export class PromiseLateStart {
  * @param {Array} seriesInstanceUIDList A list of Series Instance UIDs
  * @returns {Object} Returns an object which supports loading of instances from each of given Series Instance UID
  */
-function makeSeriesAsyncLoader(
-  client,
-  studyInstanceUID,
-  seriesInstanceUIDList
-) {
+function makeSeriesAsyncLoader(client, studyInstanceUID, seriesInstanceUIDList) {
   return Object.freeze({
     hasNext() {
       return seriesInstanceUIDList.length > 0;
@@ -141,11 +137,7 @@ export default class RetrieveMetadataLoaderAsync extends RetrieveMetadataLoader 
       return { seriesInstanceUID: s.SeriesInstanceUID, metadata: s };
     });
 
-    const seriesAsyncLoader = makeSeriesAsyncLoader(
-      client,
-      studyInstanceUID,
-      seriesInstanceUIDs
-    );
+    const seriesAsyncLoader = makeSeriesAsyncLoader(client, studyInstanceUID, seriesInstanceUIDs);
 
     const promises = [];
 

@@ -11,7 +11,7 @@ const extensionManager = {
   registeredExtensionIds: [],
   moduleEntries: {},
 
-  getModuleEntry: function(id) {
+  getModuleEntry: function (id) {
     return this.moduleEntries[id];
   },
 };
@@ -20,7 +20,7 @@ const commandsManager = {};
 
 const ohifOverlayItem = {
   id: 'ohif.overlayItem',
-  content: function(props) {
+  content: function (props) {
     return {
       label: this.label,
       value: props[this.attribute],
@@ -59,29 +59,27 @@ describe('CustomizationService.ts', () => {
     it('configurationRegistered', () => {
       configuration.testItem = testItem;
       customizationService.init(extensionManager);
-      expect(customizationService.getGlobalCustomization('testItem')).toBe(
-        testItem
-      );
+      expect(customizationService.getGlobalCustomization('testItem')).toBe(testItem);
     });
 
     it('defaultRegistered', () => {
       extensionManager.registeredExtensionIds.push('@testExtension');
-      extensionManager.moduleEntries[
-        '@testExtension.customizationModule.default'
-      ] = { name: 'default', value: [testItem] };
+      extensionManager.moduleEntries['@testExtension.customizationModule.default'] = {
+        name: 'default',
+        value: [testItem],
+      };
       customizationService.init(extensionManager);
-      expect(customizationService.getGlobalCustomization('testItem')).toBe(
-        testItem
-      );
+      expect(customizationService.getGlobalCustomization('testItem')).toBe(testItem);
     });
   });
 
   describe('customizationType', () => {
     it('inherits type', () => {
       extensionManager.registeredExtensionIds.push('@testExtension');
-      extensionManager.moduleEntries[
-        '@testExtension.customizationModule.default'
-      ] = { name: 'default', value: [ohifOverlayItem] };
+      extensionManager.moduleEntries['@testExtension.customizationModule.default'] = {
+        name: 'default',
+        value: [ohifOverlayItem],
+      };
       configuration.testItem = testItem;
       customizationService.init(extensionManager);
 
@@ -96,9 +94,10 @@ describe('CustomizationService.ts', () => {
 
     it('inline default inherits type', () => {
       extensionManager.registeredExtensionIds.push('@testExtension');
-      extensionManager.moduleEntries[
-        '@testExtension.customizationModule.default'
-      ] = { name: 'default', value: [ohifOverlayItem] };
+      extensionManager.moduleEntries['@testExtension.customizationModule.default'] = {
+        name: 'default',
+        value: [ohifOverlayItem],
+      };
       configuration.testItem = testItem;
       customizationService.init(extensionManager);
 
@@ -121,20 +120,17 @@ describe('CustomizationService.ts', () => {
   describe('mode customization', () => {
     it('onModeEnter can add extensions', () => {
       extensionManager.registeredExtensionIds.push('@testExtension');
-      extensionManager.moduleEntries[
-        '@testExtension.customizationModule.default'
-      ] = { name: 'default', value: [ohifOverlayItem] };
+      extensionManager.moduleEntries['@testExtension.customizationModule.default'] = {
+        name: 'default',
+        value: [ohifOverlayItem],
+      };
       customizationService.init(extensionManager);
 
-      expect(
-        customizationService.getModeCustomization('testItem')
-      ).toBeUndefined();
+      expect(customizationService.getModeCustomization('testItem')).toBeUndefined();
 
       customizationService.addModeCustomizations([testItem]);
 
-      expect(
-        customizationService.getGlobalCustomization('testItem')
-      ).toBeUndefined();
+      expect(customizationService.getGlobalCustomization('testItem')).toBeUndefined();
 
       const item = customizationService.getModeCustomization('testItem');
 
@@ -147,16 +143,15 @@ describe('CustomizationService.ts', () => {
 
     it('global customizations override modes', () => {
       extensionManager.registeredExtensionIds.push('@testExtension');
-      extensionManager.moduleEntries[
-        '@testExtension.customizationModule.default'
-      ] = { name: 'default', value: [ohifOverlayItem] };
+      extensionManager.moduleEntries['@testExtension.customizationModule.default'] = {
+        name: 'default',
+        value: [ohifOverlayItem],
+      };
       configuration.testItem = testItem;
       customizationService.init(extensionManager);
 
       // Add a mode customization that would otherwise fail below
-      customizationService.addModeCustomizations([
-        { ...testItem, label: 'other' },
-      ]);
+      customizationService.addModeCustomizations([{ ...testItem, label: 'other' }]);
 
       const item = customizationService.getModeCustomization('testItem');
 

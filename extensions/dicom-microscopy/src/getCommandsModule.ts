@@ -11,11 +11,7 @@ export default function getCommandsModule({
   commandsManager: CommandsManager;
   extensionManager: ExtensionManager;
 }) {
-  const {
-    viewportGridService,
-    uiDialogService,
-    microscopyService,
-  } = servicesManager.services;
+  const { viewportGridService, uiDialogService, microscopyService } = servicesManager.services;
 
   const actions = {
     // Measurement tool commands:
@@ -63,15 +59,9 @@ export default function getCommandsModule({
         },
       ];
       if (
-        [
-          'line',
-          'box',
-          'circle',
-          'point',
-          'polygon',
-          'freehandpolygon',
-          'freehandline',
-        ].indexOf(toolName) >= 0
+        ['line', 'box', 'circle', 'point', 'polygon', 'freehandpolygon', 'freehandline'].indexOf(
+          toolName
+        ) >= 0
       ) {
         // TODO: read from configuration
         const options = {
@@ -124,9 +114,7 @@ export default function getCommandsModule({
     },
     toggleOverlays: () => {
       // overlay
-      const overlays = document.getElementsByClassName(
-        'microscopy-viewport-overlay'
-      );
+      const overlays = document.getElementsByClassName('microscopy-viewport-overlay');
       let onoff = false; // true if this will toggle on
       for (let i = 0; i < overlays.length; i++) {
         if (i === 0) {

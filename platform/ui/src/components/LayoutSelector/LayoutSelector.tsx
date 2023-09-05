@@ -24,7 +24,7 @@ function LayoutSelector({ onSelection, rows, columns }) {
       className="p-2"
     >
       {Array.apply(null, Array(rows * columns))
-        .map(function(_, i) {
+        .map(function (_, i) {
           return i;
         })
         .map(index => (

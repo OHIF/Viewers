@@ -57,9 +57,7 @@ function commandsModule({
         // filter by allowed selected tools from config property (if there is any)
         const isToolAllowed =
           !optionsToUse.allowedSelectedTools ||
-          optionsToUse.allowedSelectedTools.includes(
-            firstAnnotationSelected?.metadata?.toolName
-          );
+          optionsToUse.allowedSelectedTools.includes(firstAnnotationSelected?.metadata?.toolName);
         if (isToolAllowed) {
           optionsToUse.nearbyToolData = firstAnnotationSelected;
         } else {
@@ -89,10 +87,7 @@ function commandsModule({
     },
 
     getNearbyToolData({ nearbyToolData, element, canvasCoordinates }) {
-      return (
-        nearbyToolData ??
-        cstUtils.getAnnotationNearPoint(element, canvasCoordinates)
-      );
+      return nearbyToolData ?? cstUtils.getAnnotationNearPoint(element, canvasCoordinates);
     },
     getNearbyAnnotation({ element, canvasCoordinates }) {
       const nearbyToolData = actions.getNearbyToolData({
@@ -109,18 +104,14 @@ function commandsModule({
         }
 
         const { renderingEngineId, viewportId } = enabledElement;
-        const toolGroup = ToolGroupManager.getToolGroupForViewport(
-          viewportId,
-          renderingEngineId
-        );
+        const toolGroup = ToolGroupManager.getToolGroupForViewport(viewportId, renderingEngineId);
 
         const toolInstance = toolGroup.getToolInstance(toolName);
 
         return toolInstance?.constructor?.isAnnotation ?? true;
       };
 
-      return nearbyToolData?.metadata?.toolName &&
-        isAnnotation(nearbyToolData.metadata.toolName)
+      return nearbyToolData?.metadata?.toolName && isAnnotation(nearbyToolData.metadata.toolName)
         ? nearbyToolData
         : null;
     },
@@ -153,11 +144,7 @@ function commandsModule({
             label,
           });
 
-          measurementService.update(
-            updatedMeasurement.uid,
-            updatedMeasurement,
-            true
-          );
+          measurementService.update(updatedMeasurement.uid, updatedMeasurement, true);
         },
         false
       );
@@ -220,20 +207,14 @@ function commandsModule({
           }
         }
       }
-      measurementService.update(
-        updatedMeasurement.uid,
-        updatedMeasurement,
-        true
-      );
+      measurementService.update(updatedMeasurement.uid, updatedMeasurement, true);
     },
 
     // Retrieve value commands
     getActiveViewportEnabledElement: _getActiveViewportEnabledElement,
 
     setViewportActive: ({ viewportId }) => {
-      const viewportInfo = cornerstoneViewportService.getViewportInfo(
-        viewportId
-      );
+      const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
       if (!viewportInfo) {
         console.warn('No viewport found for viewportId:', viewportId);
         return;
@@ -249,9 +230,7 @@ function commandsModule({
       const { isCineEnabled } = cineService.getState();
       cineService.setIsCineEnabled(!isCineEnabled);
       toolbarService.setButton('Cine', { props: { isActive: !isCineEnabled } });
-      viewports.forEach((_, index) =>
-        cineService.setCine({ id: index, isPlaying: false })
-      );
+      viewports.forEach((_, index) => cineService.setCine({ id: index, isPlaying: false }));
     },
     setWindowLevel({ window, level, toolGroupId }) {
       // convert to numbers
@@ -259,9 +238,7 @@ function commandsModule({
       const windowCenterNum = Number(level);
 
       const { viewportId } = _getActiveViewportEnabledElement();
-      const viewportToolGroupId = toolGroupService.getToolGroupForViewport(
-        viewportId
-      );
+      const viewportToolGroupId = toolGroupService.getToolGroupForViewport(viewportId);
 
       if (toolGroupId && toolGroupId !== viewportToolGroupId) {
         return;
@@ -271,10 +248,7 @@ function commandsModule({
       const renderingEngine = cornerstoneViewportService.getRenderingEngine();
       const viewport = renderingEngine.getViewport(viewportId);
 
-      const { lower, upper } = csUtils.windowLevel.toLowHighRange(
-        windowWidthNum,
-        windowCenterNum
-      );
+      const { lower, upper } = csUtils.windowLevel.toLowHighRange(windowWidthNum, windowCenterNum);
 
       viewport.setProperties({
         voiRange: {
@@ -323,11 +297,9 @@ function commandsModule({
         return;
       }
 
-      const filteredViewports = Array.from(viewports.values()).filter(
-        viewport => {
-          return toolGroupViewportIds.includes(viewport.viewportId);
-        }
-      );
+      const filteredViewports = Array.from(viewports.values()).filter(viewport => {
+        return toolGroupViewportIds.includes(viewport.viewportId);
+      });
 
       if (!filteredViewports.length) {
         return;
@@ -367,9 +339,7 @@ function commandsModule({
     showDownloadViewportModal: () => {
       const { activeViewportId } = viewportGridService.getState();
 
-      if (
-        !cornerstoneViewportService.getCornerstoneViewport(activeViewportId)
-      ) {
+      if (!cornerstoneViewportService.getCornerstoneViewport(activeViewportId)) {
         // Cannot download a non-cornerstone viewport (image).
         uiNotificationService.show({
           title: 'Download Image',
@@ -508,9 +478,7 @@ function commandsModule({
         }
         viewport = enabledElement.viewport;
       } else {
-        viewport = cornerstoneViewportService.getCornerstoneViewport(
-          gridViewport.id
-        );
+        viewport = cornerstoneViewportService.getCornerstoneViewport(gridViewport.id);
       }
 
       // Get number of slices
@@ -520,14 +488,12 @@ function commandsModule({
       if (viewport instanceof StackViewport) {
         numberOfSlices = viewport.getImageIds().length;
       } else if (viewport instanceof VolumeViewport) {
-        numberOfSlices = csUtils.getImageSliceDataForVolumeViewport(viewport)
-          .numberOfSlices;
+        numberOfSlices = csUtils.getImageSliceDataForVolumeViewport(viewport).numberOfSlices;
       } else {
         throw new Error('Unsupported viewport type');
       }
 
-      const jumpIndex =
-        imageIndex < 0 ? numberOfSlices + imageIndex : imageIndex;
+      const jumpIndex = imageIndex < 0 ? numberOfSlices + imageIndex : imageIndex;
       if (jumpIndex >= numberOfSlices || jumpIndex < 0) {
         throw new Error(`Can't jump to ${imageIndex}`);
       }
@@ -548,15 +514,8 @@ function commandsModule({
 
       cstUtils.scroll(viewport, options);
     },
-    setViewportColormap: ({
-      viewportId,
-      displaySetInstanceUID,
-      colormap,
-      immediate = false,
-    }) => {
-      const viewport = cornerstoneViewportService.getCornerstoneViewport(
-        viewportId
-      );
+    setViewportColormap: ({ viewportId, displaySetInstanceUID, colormap, immediate = false }) => {
+      const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
       const actorEntries = viewport.getActors();
 
@@ -578,9 +537,7 @@ function commandsModule({
       const currentIndex = viewportIds.indexOf(activeViewportId);
       const nextViewportIndex =
         (currentIndex + direction + viewportIds.length) % viewportIds.length;
-      viewportGridService.setActiveViewportId(
-        viewportIds[nextViewportIndex] as string
-      );
+      viewportGridService.setActiveViewportId(viewportIds[nextViewportIndex] as string);
     },
 
     toggleStackImageSync: ({ toggledState }) => {
@@ -592,9 +549,7 @@ function commandsModule({
     },
     toggleReferenceLines: ({ toggledState }) => {
       const { activeViewportId } = viewportGridService.getState();
-      const viewportInfo = cornerstoneViewportService.getViewportInfo(
-        activeViewportId
-      );
+      const viewportInfo = cornerstoneViewportService.getViewportInfo(activeViewportId);
 
       const viewportId = viewportInfo.getViewportId();
       const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);

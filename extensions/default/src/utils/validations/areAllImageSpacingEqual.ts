@@ -20,13 +20,10 @@ export default function areAllImageSpacingEqual(
     return;
   }
   const firstImagePositionPatient = toNumber(instances[0].ImagePositionPatient);
-  const lastIpp = toNumber(
-    instances[instances.length - 1].ImagePositionPatient
-  );
+  const lastIpp = toNumber(instances[instances.length - 1].ImagePositionPatient);
 
   const averageSpacingBetweenFrames =
-    _getPerpendicularDistance(firstImagePositionPatient, lastIpp) /
-    (instances.length - 1);
+    _getPerpendicularDistance(firstImagePositionPatient, lastIpp) / (instances.length - 1);
 
   let previousImagePositionPatient = firstImagePositionPatient;
 
@@ -40,10 +37,7 @@ export default function areAllImageSpacingEqual(
       previousImagePositionPatient
     );
 
-    const spacingIssue = _getSpacingIssue(
-      spacingBetweenFrames,
-      averageSpacingBetweenFrames
-    );
+    const spacingIssue = _getSpacingIssue(spacingBetweenFrames, averageSpacingBetweenFrames);
 
     if (spacingIssue) {
       const issue = spacingIssue.issue;

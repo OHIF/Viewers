@@ -149,10 +149,7 @@ describe('HangingProtocolService', () => {
       },
     },
   };
-  const hangingProtocolService = new HangingProtocolService(
-    commandsManager,
-    servicesManager
-  );
+  const hangingProtocolService = new HangingProtocolService(commandsManager, servicesManager);
   let initialScaling;
 
   afterEach(() => {
@@ -177,10 +174,7 @@ describe('HangingProtocolService', () => {
 
   describe('with protocol generator', () => {
     beforeAll(() => {
-      hangingProtocolService.addProtocol(
-        testProtocol.id,
-        testProtocolGenerator
-      );
+      hangingProtocolService.addProtocol(testProtocol.id, testProtocolGenerator);
     });
 
     it('has one protocol', () => {

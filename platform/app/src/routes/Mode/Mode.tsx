@@ -189,21 +189,13 @@ export default function ModeRoute({
     locationRef.current = location;
   }
 
-  const {
-    displaySetService,
-    hangingProtocolService,
-    userAuthenticationService,
-  } = (servicesManager as ServicesManager).services;
+  const { displaySetService, hangingProtocolService, userAuthenticationService } = (
+    servicesManager as ServicesManager
+  ).services;
 
-  const {
-    extensions,
-    sopClassHandlers,
-    hotkeys: hotkeyObj,
-    hangingProtocol,
-  } = mode;
+  const { extensions, sopClassHandlers, hotkeys: hotkeyObj, hangingProtocol } = mode;
 
-  const runTimeHangingProtocolId =
-    lowerCaseSearchParams.get('hangingprotocolid');
+  const runTimeHangingProtocolId = lowerCaseSearchParams.get('hangingprotocolid');
   const token = lowerCaseSearchParams.get('token');
 
   if (token) {
@@ -216,9 +208,7 @@ export default function ModeRoute({
     });
 
     // Create a URL object with the current location
-    const urlObj = new URL(
-      window.location.origin + location.pathname + location.search
-    );
+    const urlObj = new URL(window.location.origin + location.pathname + location.search);
 
     // Remove the token from the URL object
     urlObj.searchParams.delete('token');
@@ -275,9 +265,7 @@ export default function ModeRoute({
       const loadedExtensions = await loadModules(Object.keys(extensions));
       for (const extension of loadedExtensions) {
         const { id: extensionId } = extension;
-        if (
-          extensionManager.registeredExtensionIds.indexOf(extensionId) === -1
-        ) {
+        if (extensionManager.registeredExtensionIds.indexOf(extensionId) === -1) {
           await extensionManager.registerExtension(extension);
         }
       }
@@ -413,24 +401,21 @@ export default function ModeRoute({
        * }
        */
       const filters =
-        Array.from(query.keys()).reduce(
-          (acc: Record<string, string>, val: string) => {
-            const lowerVal = val.toLowerCase();
-            if (lowerVal !== 'studyinstanceuids') {
-              // Not sure why the case matters here - it doesn't in the URL
-              if (lowerVal === 'seriesinstanceuid') {
-                const seriesUIDs = getSplitParam(lowerVal, query);
-                return {
-                  ...acc,
-                  seriesInstanceUID: seriesUIDs,
-                };
-              }
-
-              return { ...acc, [val]: getSplitParam(lowerVal, query) };
+        Array.from(query.keys()).reduce((acc: Record<string, string>, val: string) => {
+          const lowerVal = val.toLowerCase();
+          if (lowerVal !== 'studyinstanceuids') {
+            // Not sure why the case matters here - it doesn't in the URL
+            if (lowerVal === 'seriesinstanceuid') {
+              const seriesUIDs = getSplitParam(lowerVal, query);
+              return {
+                ...acc,
+                seriesInstanceUID: seriesUIDs,
+              };
             }
-          },
-          {}
-        ) ?? {};
+
+            return { ...acc, [val]: getSplitParam(lowerVal, query) };
+          }
+        }, {}) ?? {};
 
       if (route.init) {
         return await route.init(

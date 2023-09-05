@@ -1,10 +1,4 @@
-import React, {
-  ReactElement,
-  memo,
-  useCallback,
-  useEffect,
-  useState,
-} from 'react';
+import React, { ReactElement, memo, useCallback, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import DicomFileUploader, {
   DicomFileUploaderProgressEvent,
@@ -21,9 +15,7 @@ type DicomUploadProgressItemProps = {
 // eslint-disable-next-line react/display-name
 const DicomUploadProgressItem = memo(
   ({ dicomFileUploader }: DicomUploadProgressItemProps): ReactElement => {
-    const [percentComplete, setPercentComplete] = useState(
-      dicomFileUploader.getPercentComplete()
-    );
+    const [percentComplete, setPercentComplete] = useState(dicomFileUploader.getPercentComplete());
     const [failedReason, setFailedReason] = useState('');
     const [status, setStatus] = useState(dicomFileUploader.getStatus());
 
@@ -62,7 +54,10 @@ const DicomUploadProgressItem = memo(
       switch (dicomFileUploader.getStatus()) {
         case UploadStatus.Success:
           return (
-            <Icon name="status-tracked" className="text-primary-light"></Icon>
+            <Icon
+              name="status-tracked"
+              className="text-primary-light"
+            ></Icon>
           );
         case UploadStatus.InProgress:
           return <Icon name="icon-transferring"></Icon>;
@@ -76,27 +71,25 @@ const DicomUploadProgressItem = memo(
     };
 
     return (
-      <div className="flex w-full p-2.5 text-lg min-h-14 items-center border-b border-secondary-light overflow-hidden">
-        <div className="flex flex-col gap-1 self-top w-0 grow shrink">
+      <div className="min-h-14 border-secondary-light flex w-full items-center overflow-hidden border-b p-2.5 text-lg">
+        <div className="self-top flex w-0 shrink grow flex-col gap-1">
           <div className="flex gap-4">
-            <div className="flex w-6 justify-center items-center shrink-0">
-              {getStatusIcon()}
-            </div>
-            <div className="text-ellipsis whitespace-nowrap overflow-hidden">
+            <div className="flex w-6 shrink-0 items-center justify-center">{getStatusIcon()}</div>
+            <div className="overflow-hidden text-ellipsis whitespace-nowrap">
               {dicomFileUploader.getFileName()}
             </div>
           </div>
           {failedReason && <div className="pl-10">{failedReason}</div>}
         </div>
-        <div className="w-24 flex items-center">
+        <div className="flex w-24 items-center">
           {!isComplete() && (
             <>
               {dicomFileUploader.getStatus() === UploadStatus.InProgress && (
                 <div className="w-10 text-right">{percentComplete}%</div>
               )}
-              <div className="flex cursor-pointer ml-auto">
+              <div className="ml-auto flex cursor-pointer">
                 <Icon
-                  className="self-center text-primary-active"
+                  className="text-primary-active self-center"
                   name="close"
                   onClick={cancelUpload}
                 />

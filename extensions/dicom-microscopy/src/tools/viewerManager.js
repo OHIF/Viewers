@@ -46,13 +46,7 @@ const EVENTS = {
  * expose only the features/behaviors that are relevant to the application
  */
 class ViewerManager extends PubSubService {
-  constructor(
-    viewer,
-    viewportId,
-    container,
-    studyInstanceUID,
-    seriesInstanceUID
-  ) {
+  constructor(viewer, viewportId, container, studyInstanceUID, seriesInstanceUID) {
     super(EVENTS);
     this.viewer = viewer;
     this.viewportId = viewportId;
@@ -119,18 +113,9 @@ class ViewerManager extends PubSubService {
    */
   unregisterEvents() {
     this.container.removeEventListener(ApiEvents.ROI_ADDED, this.onRoiAdded);
-    this.container.removeEventListener(
-      ApiEvents.ROI_MODIFIED,
-      this.onRoiModified
-    );
-    this.container.removeEventListener(
-      ApiEvents.ROI_REMOVED,
-      this.onRoiRemoved
-    );
-    this.container.removeEventListener(
-      ApiEvents.ROI_SELECTED,
-      this.onRoiSelected
-    );
+    this.container.removeEventListener(ApiEvents.ROI_MODIFIED, this.onRoiModified);
+    this.container.removeEventListener(ApiEvents.ROI_REMOVED, this.onRoiRemoved);
+    this.container.removeEventListener(ApiEvents.ROI_SELECTED, this.onRoiSelected);
   }
 
   /**
@@ -327,26 +312,16 @@ class ViewerManager extends PubSubService {
    */
   activateInteractions(interactions) {
     const interactionsMap = {
-      draw: activate =>
-        activate ? 'activateDrawInteraction' : 'deactivateDrawInteraction',
-      modify: activate =>
-        activate ? 'activateModifyInteraction' : 'deactivateModifyInteraction',
+      draw: activate => (activate ? 'activateDrawInteraction' : 'deactivateDrawInteraction'),
+      modify: activate => (activate ? 'activateModifyInteraction' : 'deactivateModifyInteraction'),
       translate: activate =>
-        activate
-          ? 'activateTranslateInteraction'
-          : 'deactivateTranslateInteraction',
-      snap: activate =>
-        activate ? 'activateSnapInteraction' : 'deactivateSnapInteraction',
+        activate ? 'activateTranslateInteraction' : 'deactivateTranslateInteraction',
+      snap: activate => (activate ? 'activateSnapInteraction' : 'deactivateSnapInteraction'),
       dragPan: activate =>
-        activate
-          ? 'activateDragPanInteraction'
-          : 'deactivateDragPanInteraction',
+        activate ? 'activateDragPanInteraction' : 'deactivateDragPanInteraction',
       dragZoom: activate =>
-        activate
-          ? 'activateDragZoomInteraction'
-          : 'deactivateDragZoomInteraction',
-      select: activate =>
-        activate ? 'activateSelectInteraction' : 'deactivateSelectInteraction',
+        activate ? 'activateDragZoomInteraction' : 'deactivateDragZoomInteraction',
+      select: activate => (activate ? 'activateSelectInteraction' : 'deactivateSelectInteraction'),
     };
 
     const availableInteractionsName = Object.keys(interactionsMap);
@@ -355,9 +330,7 @@ class ViewerManager extends PubSubService {
         interaction => interaction[0] === availableInteractionName
       );
       if (!interaction) {
-        const deactivateInteractionMethod = interactionsMap[
-          availableInteractionName
-        ](false);
+        const deactivateInteractionMethod = interactionsMap[availableInteractionName](false);
         this.viewer[deactivateInteractionMethod]();
       } else {
         const [name, config] = interaction;

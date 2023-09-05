@@ -44,9 +44,11 @@
 
 .sb-item {
   animation: fadein 1s;
-  box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.2), 0 1px 18px 0 rgba(0, 0, 0, 0.12),
+  box-shadow:
+    0 6px 10px 0 rgba(0, 0, 0, 0.2),
+    0 1px 18px 0 rgba(0, 0, 0, 0.12),
     0 3px 5px -1px rgba(0, 0, 0, 0.14);
-  @apply relative p-3 text-white overflow-hidden rounded-md transition-height ease-in-out duration-300;
+  @apply transition-height relative overflow-hidden rounded-md p-3 text-white duration-300 ease-in-out;
 }
 
 @keyframes fadein {
@@ -55,7 +57,7 @@
     @apply opacity-0;
   }
   to {
-    @apply opacity-100 top-0;
+    @apply top-0 opacity-100;
   }
 }
 

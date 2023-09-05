@@ -4,15 +4,7 @@ import PropTypes from 'prop-types';
 import Input from '../Input';
 import InputLabelWrapper from '../InputLabelWrapper';
 
-const InputText = ({
-  id,
-  label,
-  isSortable,
-  sortDirection,
-  onLabelClick,
-  value,
-  onChange,
-}) => {
+const InputText = ({ id, label, isSortable, sortDirection, onLabelClick, value, onChange }) => {
   return (
     <InputLabelWrapper
       label={label}

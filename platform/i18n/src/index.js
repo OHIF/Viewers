@@ -128,7 +128,7 @@ function initI18n(
       });
   }
 
-  return initialized.then(function(t) {
+  return initialized.then(function (t) {
     i18n.T = t;
     customDebug(`T function available.`, 'info');
   });
