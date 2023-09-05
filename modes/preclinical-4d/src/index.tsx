@@ -64,10 +64,10 @@ function modeFactory({ modeConfiguration }) {
 
       toolbarService.init(extensionManager);
     },
-    onSetupRouteComplete: ({ servicesManager }) => {
+    onSetupRouteComplete: appContext => {
       // This needs to run after hanging protocol matching process because
       // it may change the protocol/stage based on workflow stage settings
-      initWorkflowSteps(servicesManager);
+      initWorkflowSteps(appContext);
     },
     onModeExit: ({ servicesManager }) => {
       const {

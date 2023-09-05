@@ -1,21 +1,9 @@
 import * as actions from './actions';
 
-const commandsModule = ({
-  servicesManager,
-  commandsManager,
-  extensionManager,
-}) => {
-  const appContext = {
-    servicesManager,
-    commandsManager,
-    extensionManager,
-  };
-
-  const wrapAction = fnAction => (...params) => fnAction(appContext, ...params);
-
+const commandsModule = () => {
   const definitions = {
     updateSegmentationsChartDisplaySet: {
-      commandFn: wrapAction(actions.updateSegmentationsChartDisplaySet),
+      commandFn: actions.updateSegmentationsChartDisplaySet,
       storeContexts: [],
       options: {},
     },

@@ -233,7 +233,7 @@ function _getInstanceFromSegmentations(segmentations) {
   return { seriesMetadata, instance };
 }
 
-function updateSegmentationsChartDisplaySet(appContext): void {
+function updateSegmentationsChartDisplaySet({ appContext }): void {
   const { servicesManager } = appContext;
   const { segmentationService } = servicesManager.services;
   const segmentations = segmentationService.getSegmentations();

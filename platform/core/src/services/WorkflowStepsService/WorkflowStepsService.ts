@@ -55,6 +55,11 @@ export const EVENTS = {
   step is set as active during mode initialization.
 */
 
+type CommandCallback = {
+  commandName: string;
+  options: Record<string, unknown>;
+};
+
 export type WorkflowStep = {
   id: string;
   name: string;
@@ -75,6 +80,7 @@ export type WorkflowStep = {
       right?: string[];
     };
   };
+  onEnter: () => void | CommandCallback[];
 };
 
 class WorkflowStepsService extends PubSubService {
@@ -168,6 +174,31 @@ class WorkflowStepsService extends PubSubService {
     });
   }
 
+  private _invokeCallbacks(callbacks) {
+    if (!callbacks) {
+      return;
+    }
+
+    const commandsManager = this._commandsManager;
+
+    if (!Array.isArray) {
+      callbacks = [callbacks];
+    }
+
+    // Invoke all callbacks which may be a function or an object like
+    // { commandName: string, options?: object }
+    callbacks.forEach(callback => {
+      let fn = callback;
+
+      if (callback?.commandName) {
+        const { commandName, options } = callback;
+        fn = () => commandsManager.runCommand(commandName, options);
+      }
+
+      fn();
+    });
+  }
+
   public setActiveWorkflowStep(workflowStepId: string): void {
     const previousWorkflowStep = this._activeWorkflowStep;
 
@@ -183,14 +214,11 @@ class WorkflowStepsService extends PubSubService {
       throw new Error(`Invalid workflowStepId (${workflowStepId})`);
     }
 
-    const appContext = {
-      extensionManager: this._extensionManager,
-      servicesManager: this._servicesManager,
-      commandsManager: this._commandsManager,
-    };
-
-    previousWorkflowStep?.onBeforeInactivate?.(appContext);
-    newWorkflowStep?.onBeforeActivate?.(appContext);
+    // onEnter needs to be called before updating the Hanging Protocol because
+    // some displaySets need to be created before moving to the next HP stage
+    // (eg: convert segmentations into a chart displaySet). If needed we can
+    // change it to onBeforeEnter and onAfterEnter in the future.
+    this._invokeCallbacks(newWorkflowStep.onEnter);
 
     this._activeWorkflowStep = newWorkflowStep;
     this._updateToolBar(newWorkflowStep);
@@ -199,9 +227,6 @@ class WorkflowStepsService extends PubSubService {
     this._broadcastEvent(EVENTS.ACTIVE_STEP_CHANGED, {
       activeWorkflowStep: newWorkflowStep,
     });
-
-    previousWorkflowStep?.onAfterInactivate?.(appContext);
-    newWorkflowStep?.onAfterActivate?.(appContext);
   }
 
   public reset(): void {
