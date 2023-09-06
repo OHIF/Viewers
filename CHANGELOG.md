@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.7.0-beta.67](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.66...v3.7.0-beta.67) (2023-09-06)
+
+
+### Bug Fixes
+
+* **hotkeys:** preserve hotkeys if changed, and reduce re-rendering ([#3635](https://github.com/OHIF/Viewers/issues/3635)) ([94f7cfb](https://github.com/OHIF/Viewers/commit/94f7cfb08e3490488394efc42ef089ebe55e86be))
+
+
+
+
+
 # [3.7.0-beta.66](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.65...v3.7.0-beta.66) (2023-09-06)
 
 **Note:** Version bump only for package ohif-monorepo-root
