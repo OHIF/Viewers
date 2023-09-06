@@ -38,7 +38,7 @@ window.config = {
     {
       namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
       sourceName: 'dicomweb',
-      configuration: [{
+      configuration: {
         friendlyName: 'dcmjs DICOMWeb Server',
         name: 'aws',
         // old server
@@ -68,33 +68,6 @@ window.config = {
         },
         omitQuotationForMultipartRequest: true,
       },
-      {
-        friendlyName: 'Orthanc Server Local',
-        name: 'orthancLocal',
-
-        // new server
-        wadoUriRoot: 'http://localhost/dicom-web',
-        qidoRoot: 'http://localhost/dicom-web',
-        wadoRoot: 'http://localhost/dicom-web',
-        qidoSupportsIncludeField: false,
-        supportsReject: false,
-        imageRendering: 'wadors',
-        thumbnailRendering: 'wadors',
-        enableStudyLazyLoad: true,
-        supportsFuzzyMatching: false,
-        supportsWildcard: true,
-        staticWado: true,
-        singlepart: 'bulkdata,video',
-        // whether the data source should use retrieveBulkData to grab metadata,
-        // and in case of relative path, what would it be relative to, options
-        // are in the series level or study level (some servers like series some study)
-        bulkDataURI: {
-          enabled: true,
-          relativeResolution: 'studies',
-        },
-        omitQuotationForMultipartRequest: true,
-      },]
-
     },
     {
       namespace: '@ohif/extension-default.dataSourcesModule.dicomwebproxy',
