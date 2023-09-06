@@ -1,4 +1,8 @@
 const DEFAULT_COLORMAP = '2hot';
+const toolGroupIds = {
+  pt: 'dynamic4D-pt',
+  fusion: 'dynamic4D-fusion',
+};
 
 function getPTOptions({
   colormap,
@@ -45,7 +49,7 @@ function getPTViewports() {
         viewportId: 'ptAxial',
         viewportType: 'volume',
         orientation: 'axial',
-        toolGroupId: 'dynamic4D-pt',
+        toolGroupId: toolGroupIds.pt,
         initialImageOptions: {
           preset: 'middle', // 'first', 'last', 'middle'
         },
@@ -76,7 +80,7 @@ function getPTViewports() {
         viewportId: 'ptSagittal',
         viewportType: 'volume',
         orientation: 'sagittal',
-        toolGroupId: 'dynamic4D-pt',
+        toolGroupId: toolGroupIds.pt,
         initialImageOptions: {
           // preset: 'middle', // 'first', 'last', 'middle'
           index: 140,
@@ -108,7 +112,7 @@ function getPTViewports() {
         viewportId: 'ptCoronal',
         viewportType: 'volume',
         orientation: 'coronal',
-        toolGroupId: 'dynamic4D-pt',
+        toolGroupId: toolGroupIds.pt,
         initialImageOptions: {
           // preset: 'middle', // 'first', 'last', 'middle'
           index: 160,
@@ -156,7 +160,7 @@ function getFusionViewports() {
         viewportId: 'fusionAxial',
         viewportType: 'volume',
         orientation: 'axial',
-        toolGroupId: 'dynamic4D-fusion',
+        toolGroupId: toolGroupIds.fusion,
         initialImageOptions: {
           preset: 'middle', // 'first', 'last', 'middle'
         },
@@ -196,7 +200,7 @@ function getFusionViewports() {
         viewportId: 'fusionSagittal',
         viewportType: 'volume',
         orientation: 'sagittal',
-        toolGroupId: 'dynamic4D-fusion',
+        toolGroupId: toolGroupIds.fusion,
         initialImageOptions: {
           // preset: 'middle', // 'first', 'last', 'middle'
           index: 600,
@@ -237,7 +241,7 @@ function getFusionViewports() {
         viewportId: 'fusionCoronal',
         viewportType: 'volume',
         orientation: 'coronal',
-        toolGroupId: 'dynamic4D-fusion',
+        toolGroupId: toolGroupIds.fusion,
         initialImageOptions: {
           // preset: 'middle', // 'first', 'last', 'middle'
           index: 600,
@@ -274,6 +278,26 @@ function getFusionViewports() {
       ],
     },
   ];
+}
+
+function getSeriesChartViewport() {
+  return {
+    viewportOptions: {
+      viewportId: 'seriesChart',
+    },
+    displaySets: [
+      {
+        id: 'chartDisplaySet',
+        options: {
+          // This dataset does not require the download of any instance since it is pre-computed locally,
+          // but interleaveTopToBottom.ts was not loading any series because it consider that all viewports
+          // are a Cornerstone viewport which is not true in this case and it waits for all viewports to
+          // have called interleaveTopToBottom(...).
+          skipLoading: true,
+        },
+      },
+    ],
+  };
 }
 
 const defaultProtocol = {
@@ -389,6 +413,22 @@ const defaultProtocol = {
       // Can be used to select matching studies
       // studyMatchingRules: [],
     },
+    chartDisplaySet: {
+      // Unused currently
+      imageMatchingRules: [],
+      // Matches displaysets, NOT series
+      seriesMatchingRules: [
+        {
+          attribute: 'Modality',
+          constraint: {
+            equals: {
+              value: 'CHT',
+            },
+          },
+          required: true,
+        },
+      ],
+    },
   },
   stages: [
     {
@@ -453,11 +493,37 @@ const defaultProtocol = {
       viewportStructure: {
         layoutType: 'grid',
         properties: {
-          rows: 1,
+          rows: 2,
           columns: 3,
+          layoutOptions: [
+            {
+              x: 0,
+              y: 0,
+              width: 1 / 3,
+              height: 1 / 2,
+            },
+            {
+              x: 1 / 3,
+              y: 0,
+              width: 1 / 3,
+              height: 1 / 2,
+            },
+            {
+              x: 2 / 3,
+              y: 0,
+              width: 1 / 3,
+              height: 1 / 2,
+            },
+            {
+              x: 0,
+              y: 1 / 2,
+              width: 1,
+              height: 1 / 2,
+            },
+          ],
         },
       },
-      viewports: [...getPTViewports()],
+      viewports: [...getPTViewports(), getSeriesChartViewport()],
       createdDate: '2023-01-01T00:00:00.000Z',
     },
   ],

@@ -1,4 +1,7 @@
 import { id } from './id';
+import commandsModule from './commandsModule';
+import getSopClassHandlerModule from './getSopClassHandlerModule';
+import getViewportModule from './getViewportModule';
 import getPanelModule from './getPanelModule';
 import getHangingProtocolModule from './getHangingProtocolModule';
 import { cache } from '@cornerstonejs/core';
@@ -6,7 +9,7 @@ import { cache } from '@cornerstonejs/core';
 /**
  * You can remove any of the following modules if you don't need them.
  */
-export default {
+const dynamicVolumeExtension = {
   /**
    * Only required property. Should be a unique value across all extensions.
    * You ID can be anything you want, but it should be unique.
@@ -40,11 +43,7 @@ export default {
    * {name, component} object. Example of a viewport module is the CornerstoneViewport
    * that is provided by the Cornerstone extension in OHIF.
    */
-  getViewportModule: ({
-    servicesManager,
-    commandsManager,
-    extensionManager,
-  }) => {},
+  getViewportModule,
   /**
    * ToolbarModule should provide a list of tool buttons that will be available in OHIF
    * for Modes to consume and use in the toolbar. Each tool button is defined by
@@ -75,11 +74,7 @@ export default {
    * Each sop class handler is defined by a { name, sopClassUids, getDisplaySetsFromSeries}.
    * Examples include the default sop class handler provided by the default extension
    */
-  getSopClassHandlerModule: ({
-    servicesManager,
-    commandsManager,
-    extensionManager,
-  }) => {},
+  getSopClassHandlerModule,
   /**
    * HangingProtocolModule should provide a list of hanging protocols that will be
    * available in OHIF for Modes to use to decide on the structure of the viewports
@@ -99,7 +94,13 @@ export default {
     servicesManager,
     commandsManager,
     extensionManager,
-  }) => {},
+  }) => {
+    return commandsModule({
+      servicesManager,
+      commandsManager,
+      extensionManager,
+    });
+  },
   /**
    * ContextModule should provide a list of context that will be available in OHIF
    * and will be provided to the Modes. A context is a state that is shared OHIF.
@@ -122,3 +123,5 @@ export default {
     extensionManager,
   }) => {},
 };
+
+export { dynamicVolumeExtension as default };

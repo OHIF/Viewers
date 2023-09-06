@@ -48,6 +48,7 @@ input[type='range'] {
 }
 .thumb--left {
   z-index: 3;
+  height: 2px;
 }
 .thumb--right {
   z-index: 4;

@@ -203,7 +203,7 @@ function _createPanToolButton() {
 function _createCircularBrush() {
   return _createToolButton(
     'CircularBrush',
-    'notifications-warning',
+    'tool-brush',
     'Circular Brush',
     [..._createCommands('setToolActive', 'CircularBrush')],
     'Circular Brush'
@@ -213,7 +213,7 @@ function _createCircularBrush() {
 function _createCircularEraser() {
   return _createToolButton(
     'CircularEraser',
-    'notifications-warning',
+    'tool-eraser',
     'Circular Eraser',
     [..._createCommands('setToolActive', 'CircularEraser')],
     'Circular Eraser'
@@ -287,7 +287,7 @@ function _createRectangleROIThreshold() {
 function _createRectangleScissor() {
   return _createToolButton(
     'RectangleScissor',
-    'notifications-warning',
+    'tool-scissor-rect',
     'Rectangle Scissor',
     [..._createCommands('setToolActive', 'RectangleScissor')],
     'Rectangle Scissor'
@@ -297,7 +297,7 @@ function _createRectangleScissor() {
 function _createCircleScissor() {
   return _createToolButton(
     'CircleScissor',
-    'notifications-warning',
+    'tool-scissor-circle',
     'Circle Scissor',
     [..._createCommands('setToolActive', 'CircleScissor')],
     'Circle Scissor'
@@ -317,7 +317,7 @@ function _createSphereScissor() {
 function _createPaintFill() {
   return _createToolButton(
     'PaintFill',
-    'notifications-warning',
+    'tool-paint-fill',
     'Paint Fill',
     [..._createCommands('setToolActive', 'PaintFill')],
     'Paint Fill'
@@ -361,57 +361,6 @@ function _createFusionPTColormap() {
   };
 }
 
-// function _createCaptureToolButton() {
-//   return {
-//     id: 'Capture',
-//     type: 'ohif.action',
-//     props: {
-//       icon: 'tool-capture',
-//       label: 'Capture',
-//       type: 'action',
-//       commands: [
-//         {
-//           commandName: 'showDownloadViewportModal',
-//           commandOptions: {},
-//           context: 'CORNERSTONE',
-//         },
-//       ],
-//     },
-//   };
-// }
-
-// function _createLayoutToolbarButton() {
-//   return {
-//     id: 'Layout',
-//     type: 'ohif.layoutSelector',
-//     props: {
-//       rows: 3,
-//       columns: 3,
-//     },
-//   };
-// }
-
-// function _createMprToolButton() {
-//   return {
-//     id: 'MPR',
-//     type: 'ohif.action',
-//     props: {
-//       type: 'toggle',
-//       icon: 'icon-mpr',
-//       label: 'MPR',
-//       commands: [
-//         {
-//           commandName: 'toggleHangingProtocol',
-//           commandOptions: {
-//             protocolId: 'mpr',
-//           },
-//           context: 'DEFAULT',
-//         },
-//       ],
-//     },
-//   };
-// }
-
 function _createCrosshairsToolButton() {
   return {
     id: 'Crosshairs',
@@ -424,115 +373,6 @@ function _createCrosshairsToolButton() {
     },
   };
 }
-
-// function _createResetToolbarButton() {
-//   return _createActionButton(
-//     'Reset',
-//     'tool-reset',
-//     'Reset View',
-//     [
-//       {
-//         commandName: 'resetViewport',
-//         commandOptions: {},
-//         context: 'CORNERSTONE',
-//       },
-//     ],
-//     'Reset'
-//   );
-// }
-
-// function _createRotateRightToolbarButton() {
-//   return _createActionButton(
-//     'rotate-right',
-//     'tool-rotate-right',
-//     'Rotate Right',
-//     [
-//       {
-//         commandName: 'rotateViewportCW',
-//         commandOptions: {},
-//         context: 'CORNERSTONE',
-//       },
-//     ],
-//     'Rotate +90'
-//   );
-// }
-
-// function _createFlipHorizontalToolbarButton() {
-//   return _createActionButton(
-//     'flip-horizontal',
-//     'tool-flip-horizontal',
-//     'Flip Horizontally',
-//     [
-//       {
-//         commandName: 'flipViewportHorizontal',
-//         commandOptions: {},
-//         context: 'CORNERSTONE',
-//       },
-//     ],
-//     'Flip Horizontal'
-//   );
-// }
-
-// function _createStackImageSyncToolbarButton() {
-//   return _createToggleButton('StackImageSync', 'link', 'Stack Image Sync', [
-//     {
-//       commandName: 'toggleStackImageSync',
-//       commandOptions: {},
-//       context: 'CORNERSTONE',
-//     },
-//   ]);
-// }
-
-// function _createReferenceLineToolbarButton() {
-//   return _createToggleButton(
-//     'ReferenceLines',
-//     'tool-referenceLines', // change this with the new icon
-//     'Reference Lines',
-//     [
-//       {
-//         commandName: 'toggleReferenceLines',
-//         commandOptions: {},
-//         context: 'CORNERSTONE',
-//       },
-//     ]
-//   );
-// }
-
-// function _createStackScrollToolbarButton() {
-//   return _createToolButton(
-//     'StackScroll',
-//     'tool-stack-scroll',
-//     'Stack Scroll',
-//     [..._createCommands('setToolActive', 'StackScroll')],
-//     'Stack Scroll'
-//   );
-// }
-
-// function _createInvertToolbarButton() {
-//   return _createActionButton(
-//     'invert',
-//     'tool-invert',
-//     'Invert',
-//     [
-//       {
-//         commandName: 'invertViewport',
-//         commandOptions: {},
-//         context: 'CORNERSTONE',
-//       },
-//     ],
-//     'Invert Colors'
-//   );
-// }
-
-// function _createProbeToolbarButton() {
-//   return _createToolButton(
-//     'Probe',
-//     'tool-probe',
-//     'Probe',
-//     [..._createCommands('setToolActive', 'DragProbe')],
-//     'Probe'
-//   );
-// }
 
 function _createCineToolbarButton() {
   return {
@@ -551,82 +391,6 @@ function _createCineToolbarButton() {
     },
   };
 }
-
-// function _createAngleToolbarButton() {
-//   return _createToolButton(
-//     'Angle',
-//     'tool-angle',
-//     'Angle',
-//     [..._createCommands('setToolActive', 'Angle')],
-//     'Angle'
-//   );
-// }
-
-// function _createCobbAngleToolbarButton() {
-//   return _createToolButton(
-//     'Cobb Angle',
-//     'tool-cobb-angle',
-//     'Cobb Angle',
-//     [..._createCommands('setToolActive', 'CobbAngle')],
-//     'Cobb Angle'
-//   );
-// }
-
-// function _createPlanarFreehandROIToolbarButton() {
-//   return _createToolButton(
-//     'Planar Freehand ROI',
-//     'tool-freehand',
-//     'PlanarFreehandROI',
-//     [..._createCommands('setToolActive', 'PlanarFreehandROI')],
-//     'Planar Freehand ROI'
-//   );
-// }
-
-// function _createMagnifyToolbarButton() {
-//   return _createToolButton(
-//     'Magnify',
-//     'tool-magnify',
-//     'Magnify',
-//     [..._createCommands('setToolActive', 'Magnify')],
-//     'Magnify'
-//   );
-// }
-
-// function _createRectangleToolbarButton() {
-//   return _createToolButton(
-//     'Rectangle',
-//     'tool-rectangle',
-//     'Rectangle',
-//     [..._createCommands('setToolActive', 'RectangleROI')],
-//     'Rectangle'
-//   );
-// }
-
-// function _createCalibrationLineToolbarButton() {
-//   return _createToolButton(
-//     'CalibrationLine',
-//     'tool-calibration',
-//     'Calibration',
-//     [..._createCommands('setToolActive', 'CalibrationLine')],
-//     'Calibration Line'
-//   );
-// }
-
-// function _createTagBrowserToolbarButton() {
-//   return _createActionButton(
-//     'TagBrowser',
-//     'list-bullets',
-//     'Dicom Tag Browser',
-//     [
-//       {
-//         commandName: 'openDICOMTagViewer',
-//         commandOptions: {},
-//         context: 'DEFAULT',
-//       },
-//     ],
-//     'Dicom Tag Browser'
-//   );
-// }
 
 const toolbarButtons = [
   {
@@ -684,46 +448,6 @@ const toolbarButtons = [
       ],
     },
   },
-
-  // _createCaptureToolButton(),
-  // _createLayoutToolbarButton(),
-  // _createMprToolButton(),
-  // {
-  //   id: 'MoreTools',
-  //   type: 'ohif.splitButton',
-  //   props: {
-  //     isRadio: true,
-  //     groupId: 'MoreTools',
-  //     primary: _createResetToolbarButton(),
-  //     secondary: {
-  //       icon: 'chevron-down',
-  //       label: '',
-  //       isActive: true,
-  //       tooltip: 'More Tools',
-  //     },
-  //     items: [
-  //       _createResetToolbarButton(),
-  //       _createRotateRightToolbarButton(),
-  //       _createFlipHorizontalToolbarButton(),
-  //       _createStackImageSyncToolbarButton(),
-  //       _createReferenceLineToolbarButton(),
-  //       _createStackScrollToolbarButton(),
-  //       _createInvertToolbarButton(),
-  //       _createProbeToolbarButton(),
-  //       _createCineToolbarButton(),
-  //       _createAngleToolbarButton(),
-
-  //       // Next two tools can be added once icons are added
-  //       // _createCobbAngleToolbarButton(),
-  //       // _createPlanarFreehandROIToolbarButton(),
-
-  //       _createMagnifyToolbarButton(),
-  //       _createRectangleToolbarButton(),
-  //       _createCalibrationLineToolbarButton(),
-  //       _createTagBrowserToolbarButton(),
-  //     ],
-  //   },
-  // },
 ];
 
 export default toolbarButtons;

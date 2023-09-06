@@ -1,4 +1,5 @@
 import { CommandsManager } from '../../classes';
+import { ExtensionManager } from '../../extensions';
 import { ServicesManager } from '../../services';
 import { PubSubService } from '../_shared/pubSubServiceInterface';
 
@@ -54,6 +55,11 @@ export const EVENTS = {
   step is set as active during mode initialization.
 */
 
+type CommandCallback = {
+  commandName: string;
+  options: Record<string, unknown>;
+};
+
 export type WorkflowStep = {
   id: string;
   name: string;
@@ -74,21 +80,25 @@ export type WorkflowStep = {
       right?: string[];
     };
   };
+  onEnter: () => void | CommandCallback[];
 };
 
 class WorkflowStepsService extends PubSubService {
+  private _extensionManager: ExtensionManager;
   private _servicesManager: ServicesManager;
   private _commandsManager: CommandsManager;
   private _workflowSteps: WorkflowStep[];
   private _activeWorkflowStep: WorkflowStep;
 
   constructor(
+    extensionManager: ExtensionManager,
     commandsManager: CommandsManager,
     servicesManager: ServicesManager
   ) {
     super(EVENTS);
     this._workflowSteps = [];
     this._activeWorkflowStep = null;
+    this._extensionManager = extensionManager;
     this._commandsManager = commandsManager;
     this._servicesManager = servicesManager;
   }
@@ -164,24 +174,59 @@ class WorkflowStepsService extends PubSubService {
     });
   }
 
-  public setActiveWorkflowStep(workflowStepId: string): void {
-    if (workflowStepId === this._activeWorkflowStep?.id) {
+  private _invokeCallbacks(callbacks) {
+    if (!callbacks) {
       return;
     }
 
-    const activeWorkflowStep = this._workflowSteps.find(
+    const commandsManager = this._commandsManager;
+
+    if (!Array.isArray) {
+      callbacks = [callbacks];
+    }
+
+    // Invoke all callbacks which may be a function or an object like
+    // { commandName: string, options?: object }
+    callbacks.forEach(callback => {
+      let fn = callback;
+
+      if (callback?.commandName) {
+        const { commandName, options } = callback;
+        fn = () => commandsManager.runCommand(commandName, options);
+      }
+
+      fn();
+    });
+  }
+
+  public setActiveWorkflowStep(workflowStepId: string): void {
+    const previousWorkflowStep = this._activeWorkflowStep;
+
+    if (workflowStepId === previousWorkflowStep?.id) {
+      return;
+    }
+
+    const newWorkflowStep = this._workflowSteps.find(
       step => step.id === workflowStepId
     );
 
-    if (!activeWorkflowStep) {
+    if (!newWorkflowStep) {
       throw new Error(`Invalid workflowStepId (${workflowStepId})`);
     }
 
-    this._activeWorkflowStep = activeWorkflowStep;
-    this._updateToolBar(activeWorkflowStep);
-    this._updatePanels(activeWorkflowStep);
-    this._updateHangingProtocol(activeWorkflowStep);
-    this._broadcastEvent(EVENTS.ACTIVE_STEP_CHANGED, { activeWorkflowStep });
+    // onEnter needs to be called before updating the Hanging Protocol because
+    // some displaySets need to be created before moving to the next HP stage
+    // (eg: convert segmentations into a chart displaySet). If needed we can
+    // change it to onBeforeEnter and onAfterEnter in the future.
+    this._invokeCallbacks(newWorkflowStep.onEnter);
+
+    this._activeWorkflowStep = newWorkflowStep;
+    this._updateToolBar(newWorkflowStep);
+    this._updatePanels(newWorkflowStep);
+    this._updateHangingProtocol(newWorkflowStep);
+    this._broadcastEvent(EVENTS.ACTIVE_STEP_CHANGED, {
+      activeWorkflowStep: newWorkflowStep,
+    });
   }
 
   public reset(): void {
@@ -195,8 +240,16 @@ class WorkflowStepsService extends PubSubService {
 
   public static REGISTRATION = {
     name: 'workflowStepsService',
-    create: ({ commandsManager, servicesManager }): WorkflowStepsService => {
-      return new WorkflowStepsService(commandsManager, servicesManager);
+    create: ({
+      extensionManager,
+      commandsManager,
+      servicesManager,
+    }): WorkflowStepsService => {
+      return new WorkflowStepsService(
+        extensionManager,
+        commandsManager,
+        servicesManager
+      );
     },
   };
 }
