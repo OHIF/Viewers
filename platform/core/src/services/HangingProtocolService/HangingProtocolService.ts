@@ -521,18 +521,20 @@ export default class HangingProtocolService extends PubSubService {
           stage.viewports.push({
             viewportOptions: {
               ...defaultViewportOptions,
-              viewportId: uuidv4(),
+              // Use 'default' for the first viewport, and UUIDs for the rest.
+              viewportId: i === 0 ? 'default' : uuidv4(),
             },
             displaySets: [],
           });
         }
       } else {
         // Clone each viewport to ensure independent objects
-        stage.viewports = stage.viewports.map(viewport => ({
+        stage.viewports = stage.viewports.map((viewport, index) => ({
           ...viewport,
           viewportOptions: {
             ...(viewport.viewportOptions || defaultViewportOptions),
-            viewportId: viewport.viewportOptions?.viewportId || uuidv4(),
+            // Use 'default' for the first viewport, and either existing or new UUIDs for the rest.
+            viewportId: index === 0 ? 'default' : viewport.viewportOptions?.viewportId || uuidv4(),
           },
           displaySets: viewport.displaySets || [],
         }));

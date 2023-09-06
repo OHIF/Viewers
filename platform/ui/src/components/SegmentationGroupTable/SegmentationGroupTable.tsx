@@ -120,39 +120,41 @@ const SegmentationGroupTable = ({
             </div>
           )}
         </div>
-        <div className="ohif-scrollbar mt-1 flex min-h-0 flex-col overflow-y-hidden">
-          {activeSegmentation?.segments?.map(segment => {
-            if (segment === undefined || segment === null) {
-              return null;
-            }
+        {activeSegmentation && (
+          <div className="ohif-scrollbar mt-1 flex min-h-0 flex-col overflow-y-hidden">
+            {activeSegmentation?.segments?.map(segment => {
+              if (segment === undefined || segment === null) {
+                return null;
+              }
 
-            const { segmentIndex, color, label, isVisible, isLocked } = segment;
-            return (
-              <div
-                className="mb-[1px]"
-                key={segmentIndex}
-              >
-                <SegmentationGroupSegment
-                  segmentationId={activeSegmentationId}
-                  segmentIndex={segmentIndex}
-                  label={label}
-                  color={color}
-                  isActive={activeSegmentation.activeSegmentIndex === segmentIndex}
-                  disableEditing={disableEditing}
-                  isLocked={isLocked}
-                  isVisible={isVisible}
-                  onClick={onSegmentClick}
-                  onEdit={onSegmentEdit}
-                  onDelete={onSegmentDelete}
-                  showDelete={showDeleteSegment}
-                  onColor={onSegmentColorClick}
-                  onToggleVisibility={onToggleSegmentVisibility}
-                  onToggleLocked={onToggleSegmentLock}
-                />
-              </div>
-            );
-          })}
-        </div>
+              const { segmentIndex, color, label, isVisible, isLocked } = segment;
+              return (
+                <div
+                  className="mb-[1px]"
+                  key={segmentIndex}
+                >
+                  <SegmentationGroupSegment
+                    segmentationId={activeSegmentationId}
+                    segmentIndex={segmentIndex}
+                    label={label}
+                    color={color}
+                    isActive={activeSegmentation.activeSegmentIndex === segmentIndex}
+                    disableEditing={disableEditing}
+                    isLocked={isLocked}
+                    isVisible={isVisible}
+                    onClick={onSegmentClick}
+                    onEdit={onSegmentEdit}
+                    onDelete={onSegmentDelete}
+                    showDelete={showDeleteSegment}
+                    onColor={onSegmentColorClick}
+                    onToggleVisibility={onToggleSegmentVisibility}
+                    onToggleLocked={onToggleSegmentLock}
+                  />
+                </div>
+              );
+            })}
+          </div>
+        )}
       </PanelSection>
     </div>
   );
