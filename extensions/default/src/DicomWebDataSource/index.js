@@ -47,22 +47,17 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
         mapParams: mapParams.bind(),
         search: async function (origParams) {
           clientManagerObj.setQidoHeaders();
-          let results = [];
-          const clients = clientManagerObj.getClients();
-          for (let i = 0; i < clients.length; i++) {
-            const { studyInstanceUid, seriesInstanceUid, ...mappedParams } =
-              mapParams(origParams, {
-                supportsFuzzyMatching: clients[i].supportsFuzzyMatching,
-                supportsWildcard: clients[i].supportsWildcard,
-              }) || {};
-            const clientResult = await qidoSearch(
-              clients[i].qidoDicomWebClient,
-              undefined,
-              undefined,
-              mappedParams
-            );
-            results = results.concat(clientResult);
-          }
+          const { studyInstanceUid, seriesInstanceUid, ...mappedParams } =
+            mapParams(origParams, {
+              supportsFuzzyMatching: clientManagerObj.getClient().supportsFuzzyMatching,
+              supportsWildcard: clientManagerObj.getClient().supportsWildcard,
+            }) || {};
+          const results = await qidoSearch(
+            clientManagerObj.getQidoClient(),
+            undefined,
+            undefined,
+            mappedParams
+          );
           return processResults(results);
         },
         processResults: processResults.bind(),
@@ -310,8 +305,8 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
           );
         seriesSummaryMetadata = seriesSummaryMetadata.concat(clientSeriesSummaryMetadata);
         seriesPromises = seriesPromises.concat(clientSeriesPromises);
-        for (let j = 0; j < seriesSummaryMetadata.length; j++) {
-          seriesClientsMapping[seriesSummaryMetadata[j].SeriesInstanceUID] = clients[i].name;
+        for (let j = 0; j < clientSeriesSummaryMetadata.length; j++) {
+          seriesClientsMapping[clientSeriesSummaryMetadata[j].SeriesInstanceUID] = clients[i].name;
         }
       }
 
@@ -339,7 +334,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
             // Provide a method to fetch bulkdata
             value.retrieveBulkData = () => {
               // handle the scenarios where bulkDataURI is relative path
-              fixBulkDataURI(value, naturalized, clientManagerObj.getClient());
+              fixBulkDataURI(value, naturalized, clientManagerObj.getClient(clientName));
 
               const options = {
                 // The bulkdata fetches work with either multipart or
