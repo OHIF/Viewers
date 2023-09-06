@@ -201,13 +201,14 @@ function modeFactory() {
           return {
             id: ohif.layout,
             props: {
-              leftPanels: [tracked.thumbnailList, ohif.HounsfieldUnitPanel],
-              rightPanels: [
-                dicomSeg.panel,
-                tracked.measurements,
-                tracked.ROIThresholdPanel,
-              ],
-              rightPanelDefaultClosed: true,
+              leftPanels: [tracked.thumbnailList],
+              rightPanels: [ohif.HounsfieldUnitPanel],
+              // rightPanels: [
+              //   dicomSeg.panel,
+              //   tracked.measurements,
+              //   tracked.ROIThresholdPanel,
+              // ],
+              // rightPanelDefaultClosed: true,
               viewports: [
                 {
                   namespace: tracked.viewport,

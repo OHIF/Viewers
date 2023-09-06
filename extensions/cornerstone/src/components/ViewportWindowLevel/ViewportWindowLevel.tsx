@@ -80,10 +80,10 @@ const calcHistogram = (data, options) => {
 
 const ViewportWindowLevel = ({
   servicesManager,
-  viewportIndex,
+  viewportId,
 }: {
   servicesManager: ServicesManager;
-  viewportIndex: number;
+  viewportId: number;
 }): ReactElement => {
   const { cornerstoneViewportService } = servicesManager.services;
   const [windowLevels, setWindowLevels] = useState([]);
@@ -235,9 +235,9 @@ const ViewportWindowLevel = ({
   }, []);
 
   const getWindowLevelsData = useCallback(
-    (viewportIndex: number) => {
+    (viewportId: number) => {
       const viewport = cornerstoneViewportService.getCornerstoneViewportByIndex(
-        viewportIndex
+        viewportId
       );
 
       if (!viewport) {
@@ -245,7 +245,7 @@ const ViewportWindowLevel = ({
       }
 
       const viewportInfo = cornerstoneViewportService.getViewportInfoByIndex(
-        viewportIndex
+        viewportId
       );
 
       const volumeIds = viewport.getActors().map(actor => actor.uid);
@@ -297,7 +297,7 @@ const ViewportWindowLevel = ({
             : displaySetVOI;
 
           return {
-            viewportIndex,
+            viewportId,
             modality,
             volumeId,
             volumeIndex,
@@ -323,8 +323,8 @@ const ViewportWindowLevel = ({
   );
 
   const updateViewportHistograms = useCallback(() => {
-    setWindowLevels(() => getWindowLevelsData(viewportIndex));
-  }, [viewportIndex, getWindowLevelsData]);
+    setWindowLevels(() => getWindowLevelsData(viewportId));
+  }, [viewportId, getWindowLevelsData]);
 
   const handleCornerstoneVOIModified = useCallback(
     e => {
@@ -372,7 +372,7 @@ const ViewportWindowLevel = ({
   const handleVOIChange = useCallback(
     (volumeId, voi) => {
       const viewport = cornerstoneViewportService.getCornerstoneViewportByIndex(
-        viewportIndex
+        viewportId
       );
 
       const newRange = {
@@ -383,13 +383,13 @@ const ViewportWindowLevel = ({
       viewport.setProperties({ voiRange: newRange }, volumeId);
       viewport.render();
     },
-    [cornerstoneViewportService, viewportIndex]
+    [cornerstoneViewportService, viewportId]
   );
 
   const handleOpacityChange = useCallback(
-    (viewportIndex, _volumeIndex, volumeId, opacity) => {
+    (viewportId, _volumeIndex, volumeId, opacity) => {
       const viewport = cornerstoneViewportService.getCornerstoneViewportByIndex(
-        viewportIndex
+        viewportId
       );
 
       if (!viewport) {
@@ -424,7 +424,7 @@ const ViewportWindowLevel = ({
 
   // Updates the histogram when the viewport index prop has changed
   useEffect(() => updateViewportHistograms(), [
-    viewportIndex,
+    viewportId,
     updateViewportHistograms,
   ]);
 
@@ -462,7 +462,7 @@ const ViewportWindowLevel = ({
     const { unsubscribe } = cornerstoneViewportService.subscribe(
       cornerstoneViewportService.EVENTS.VIEWPORT_VOLUMES_CHANGED,
       ({ viewportInfo }) => {
-        if (viewportInfo.viewportIndex === viewportIndex) {
+        if (viewportInfo.viewportId === viewportId) {
           updateViewportHistograms();
         }
       }
@@ -471,7 +471,7 @@ const ViewportWindowLevel = ({
     return () => {
       unsubscribe();
     };
-  }, [viewportIndex, cornerstoneViewportService, updateViewportHistograms]);
+  }, [viewportId, cornerstoneViewportService, updateViewportHistograms]);
 
   return (
     <>
@@ -488,7 +488,7 @@ const ViewportWindowLevel = ({
           opacity={windowLevel.opacity}
           onOpacityChange={opacity =>
             handleOpacityChange(
-              windowLevel.viewportIndex,
+              windowLevel.viewportId,
               i,
               windowLevel.volumeId,
               opacity
@@ -502,7 +502,7 @@ const ViewportWindowLevel = ({
 
 ViewportWindowLevel.propTypes = {
   servicesManager: PropTypes.instanceOf(ServicesManager),
-  viewportIndex: PropTypes.number.isRequired,
+  viewportId: PropTypes.number.isRequired,
 };
 
 export default ViewportWindowLevel;
