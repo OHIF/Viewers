@@ -57,8 +57,8 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
           clientManagerObj.setQidoHeaders();
           const { studyInstanceUid, seriesInstanceUid, ...mappedParams } =
             mapParams(origParams, {
-              supportsFuzzyMatching: clientManagerObj.getDefaultConfig().supportsFuzzyMatching,
-              supportsWildcard: clientManagerObj.getDefaultConfig().supportsWildcard,
+              supportsFuzzyMatching: clientManagerObj.getClient().supportsFuzzyMatching,
+              supportsWildcard: clientManagerObj.getClient().supportsWildcard,
             }) || {};
 
           const results = await qidoSearch(
@@ -76,8 +76,15 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
         // mapParams: mapParams.bind(),
         search: async function (studyInstanceUid) {
           clientManagerObj.setQidoHeaders();
-          const results = await seriesInStudy(clientManagerObj.getQidoClient(), studyInstanceUid);
-
+          let results = [];
+          const clients = clientManagerObj.getClients();
+          for (let i = 0; i < clients.length; i++) {
+            const clientResult = await seriesInStudy(
+              clients[i].qidoDicomWebClient,
+              studyInstanceUid
+            );
+            results = results.concat(clientResult);
+          }
           return processSeriesResults(results);
         },
         // processResults: processResults.bind(),
@@ -110,8 +117,8 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
       directURL: params => {
         return getDirectURL(
           {
-            wadoRoot: clientManagerObj.getDefaultConfig().wadoRoot,
-            singlepart: clientManagerObj.getDefaultConfig().singlepart,
+            wadoRoot: clientManagerObj.getClient().wadoRoot,
+            singlepart: clientManagerObj.getClient().singlepart,
           },
           params
         );
@@ -143,7 +150,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
             throw new Error('Unable to query for SeriesMetadata without StudyInstanceUID');
           }
 
-          if (clientManagerObj.getDefaultConfig().enableStudyLazyLoad) {
+          if (clientManagerObj.getClient().enableStudyLazyLoad) {
             return implementation._retrieveSeriesMetadataAsync(
               StudyInstanceUID,
               filters,
@@ -278,15 +285,22 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
       const enableStudyLazyLoad = true;
       clientManagerObj.setWadoHeaders();
       // Get Series
-      const { preLoadData: seriesSummaryMetadata, promises: seriesPromises } =
-        await retrieveStudyMetadata(
-          clientManagerObj.getWadoClient(),
-          StudyInstanceUID,
-          enableStudyLazyLoad,
-          filters,
-          sortCriteria,
-          sortFunction
-        );
+      const clients = clientManagerObj.getClients();
+      let seriesSummaryMetadata = [];
+      let seriesPromises = [];
+      for (let i = 0; i < clients.length; i++) {
+        const { preLoadData: clientSeriesSummaryMetadata, promises: clientSeriesPromises } =
+          await retrieveStudyMetadata(
+            clients[i].wadoDicomWebClient,
+            StudyInstanceUID,
+            enableStudyLazyLoad,
+            filters,
+            sortCriteria,
+            sortFunction
+          );
+        seriesSummaryMetadata = seriesSummaryMetadata.concat(clientSeriesSummaryMetadata);
+        seriesPromises = seriesPromises.concat(clientSeriesPromises);
+      }
 
       /**
        * naturalizes the dataset, and adds a retrieve bulkdata method
@@ -298,7 +312,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
         const naturalized = naturalizeDataset(instance);
 
         // if we konw the server doesn't use bulkDataURI, then don't
-        if (!clientManagerObj.getDefaultConfig().bulkDataURI?.enabled) {
+        if (!clientManagerObj.getClient().bulkDataURI?.enabled) {
           return naturalized;
         }
 
@@ -311,7 +325,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
             // Provide a method to fetch bulkdata
             value.retrieveBulkData = () => {
               // handle the scenarios where bulkDataURI is relative path
-              fixBulkDataURI(value, naturalized, clientManagerObj.getDefaultConfig());
+              fixBulkDataURI(value, naturalized, clientManagerObj.getClient());
 
               const options = {
                 // The bulkdata fetches work with either multipart or
@@ -346,13 +360,13 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
       };
 
       // Async load series, store as retrieved
-      function storeInstances(instances) {
+      function storeInstances(instances, clientName) {
         const naturalizedInstances = instances.map(addRetrieveBulkData);
 
         // Adding instanceMetadata to OHIF MetadataProvider
         naturalizedInstances.forEach((instance, index) => {
-          instance.wadoRoot = clientManagerObj.getDefaultConfig().wadoRoot;
-          instance.wadoUri = clientManagerObj.getDefaultConfig().wadoUri;
+          instance.wadoRoot = clientManagerObj.getClient(clientName).wadoRoot;
+          instance.wadoUri = clientManagerObj.getClient(clientName).wadoUri;
 
           const imageId = implementation.getImageIdsForInstance({
             instance,
@@ -391,7 +405,10 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
 
       const seriesDeliveredPromises = seriesPromises.map(promise =>
         promise.then(instances => {
-          storeInstances(instances);
+          const seriesMetadata = seriesSummaryMetadata.find(
+            s => s.SeriesInstanceUID === instances[0]['0020000E'].Value[0]
+          );
+          storeInstances(instances, seriesMetadata?.clientName);
         })
       );
       await Promise.all(seriesDeliveredPromises);
@@ -429,7 +446,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
       const imageIds = getImageId({
         instance,
         frame,
-        config: clientManagerObj.getDefaultConfig(),
+        config: clientManagerObj.getClient(),
       });
       return imageIds;
     },

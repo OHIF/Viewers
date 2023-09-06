@@ -5,7 +5,6 @@ import dcm4cheeReject from '../dcm4cheeReject';
 import { errorHandler, utils } from '@ohif/core';
 
 export default class clientManager {
-
   clients;
   userAuthenticationService;
 
@@ -40,10 +39,12 @@ export default class clientManager {
       ? new StaticWadoClient(config.qidoConfig)
       : new api.DICOMwebClient(config.qidoConfig);
 
-      config.wadoDicomWebClient = config.staticWado
+    config.wadoDicomWebClient = config.staticWado
       ? new StaticWadoClient(config.wadoConfig)
       : new api.DICOMwebClient(config.wadoConfig);
 
+    config.qidoDicomWebClient.name = config.name;
+    config.wadoDicomWebClient.name = config.name;
     this.clients.push(config);
   }
 
@@ -54,12 +55,12 @@ export default class clientManager {
       xhrRequestHeaders.Authorization = authHeaders.Authorization;
     }
     return xhrRequestHeaders;
-  };
+  }
 
   public generateWadoHeader(config) {
-    let authorizationHeader = this.getAuthorizationHeader();
+    const authorizationHeader = this.getAuthorizationHeader();
     //Generate accept header depending on config params
-    let formattedAcceptHeader = utils.generateAcceptHeader(
+    const formattedAcceptHeader = utils.generateAcceptHeader(
       config.acceptHeader,
       config.requestTransferSyntaxUID,
       config.omitQuotationForMultipartRequest
@@ -69,51 +70,64 @@ export default class clientManager {
       ...authorizationHeader,
       Accept: formattedAcceptHeader,
     };
-  };
+  }
 
   public setQidoHeaders() {
     this.clients.forEach(
-      (client) => client.qidoDicomWebClient.headers = this.getAuthorizationHeader()
-    )
+      client => (client.qidoDicomWebClient.headers = this.getAuthorizationHeader())
+    );
   }
 
   public setWadoHeaders(tipo = 1) {
-      if (tipo === 1) {
-        this.clients.forEach(
-          (client) => client.wadoDicomWebClient.headers = this.generateWadoHeader(client)
-        )
-      } else {
-        this.clients.forEach(
-          (client) => client.wadoDicomWebClient.headers = this.getAuthorizationHeader()
-        )
-      }
+    if (tipo === 1) {
+      this.clients.forEach(
+        client => (client.wadoDicomWebClient.headers = this.generateWadoHeader(client))
+      );
+    } else {
+      this.clients.forEach(
+        client => (client.wadoDicomWebClient.headers = this.getAuthorizationHeader())
+      );
+    }
   }
 
   public reject() {
-    this.clients.forEach(
-      (config) => {
-        if (config.supportsReject) {
-          dcm4cheeReject(config.wadoRoot);
-        }
+    this.clients.forEach(config => {
+      if (config.supportsReject) {
+        dcm4cheeReject(config.wadoRoot);
       }
-    )
+    });
   }
 
-  public getQidoClient() {
+  public getQidoClient(name = undefined) {
     if (this.clients.length) {
-      return this.clients[0].qidoDicomWebClient;
+      if (name) {
+        const client = this.clients.find(client => client.name === name);
+        return client.qidoDicomWebClient;
+      } else {
+        return this.clients[0].qidoDicomWebClient;
+      }
     }
   }
 
-  public getWadoClient() {
+  public getWadoClient(name = undefined) {
     if (this.clients.length) {
-      return this.clients[0].wadoDicomWebClient;
+      if (name) {
+        const client = this.clients.find(client => client.name === name);
+        return client.wadoDicomWebClient;
+      } else {
+        return this.clients[0].wadoDicomWebClient;
+      }
     }
   }
 
-  public getDefaultConfig() {
+  public getClient(name = undefined) {
     if (this.clients.length) {
-      return this.clients[0];
+      if (name) {
+        const client = this.clients.find(client => client.name === name);
+        return client;
+      } else {
+        return this.clients[0];
+      }
     }
   }
 
@@ -123,16 +137,17 @@ export default class clientManager {
     }
   }
 
+  public getClients() {
+    return this.clients;
+  }
+
   constructor({ params, query, dicomWebConfig, userAuthenticationService }) {
     this.clients = [];
     this.userAuthenticationService = userAuthenticationService;
     if (Array.isArray(dicomWebConfig)) {
-      dicomWebConfig.forEach(
-        (config) => this.addConfiguration(params, query, config)
-      )
+      dicomWebConfig.forEach(config => this.addConfiguration(params, query, config));
     } else {
       this.addConfiguration(params, query, dicomWebConfig);
     }
   }
-
 }

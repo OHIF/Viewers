@@ -35,8 +35,9 @@ export function retrieveStudyMetadata(
   }
 
   // Already waiting on result? Return cached promise
-  if (StudyMetaDataPromises.has(StudyInstanceUID)) {
-    return StudyMetaDataPromises.get(StudyInstanceUID);
+  const studyRetrieveId = dicomWebClient.name + StudyInstanceUID;
+  if (StudyMetaDataPromises.has(studyRetrieveId)) {
+    return StudyMetaDataPromises.get(studyRetrieveId);
   }
 
   // Create a promise to handle the data retrieval
@@ -54,7 +55,7 @@ export function retrieveStudyMetadata(
   });
 
   // Store the promise in cache
-  StudyMetaDataPromises.set(StudyInstanceUID, promise);
+  StudyMetaDataPromises.set(studyRetrieveId, promise);
 
   return promise;
 }
