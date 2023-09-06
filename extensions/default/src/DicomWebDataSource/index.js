@@ -63,10 +63,10 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
         processResults: processResults.bind(),
       },
       series: {
-        // mapParams: mapParams.bind(),
         search: async function (studyInstanceUid) {
           clientManagerObj.setQidoHeaders();
           let results = [];
+          // concatenate series metadata from all servers
           const clients = clientManagerObj.getClients();
           for (let i = 0; i < clients.length; i++) {
             const clientResult = await seriesInStudy(
@@ -77,11 +77,11 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
           }
           return processSeriesResults(results);
         },
-        // processResults: processResults.bind(),
       },
       instances: {
         search: (studyInstanceUid, queryParameters) => {
           clientManagerObj.setQidoHeaders();
+          // concatenate instance metadata from all servers
           const clients = clientManagerObj.getClients();
           for (let i = 0; i < clients.length; i++) {
             qidoSearch.call(
@@ -100,10 +100,6 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
        * Generates a URL that can be used for direct retrieve of the bulkdata
        *
        * @param {object} params
-       * @param {string} params.tag is the tag name of the URL to retrieve
-       * @param {object} params.instance is the instance object that the tag is in
-       * @param {string} params.defaultType is the mime type of the response
-       * @param {string} params.singlepart is the type of the part to retrieve
        * @returns an absolute URL to the resource, if the absolute URL can be retrieved as singlepart,
        *    or is already retrieved, or a promise to a URL for such use if a BulkDataURI
        */
@@ -210,8 +206,9 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
     ) => {
       const enableStudyLazyLoad = false;
       clientManagerObj.generateWadoHeader();
-      // data is all SOPInstanceUIDs
+
       let naturalizedInstancesMetadata = [];
+      // search and retrieve in all servers
       const clients = clientManagerObj.getClients();
       for (let i = 0; i < clients.length; i++) {
         const data = await retrieveStudyMetadata(
@@ -222,6 +219,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
           sortCriteria,
           sortFunction
         );
+        // attach the client Name in each metadata
         const clientNaturalizedInstancesMetadata = data.map(item => {
           const converted = naturalizeDataset(item);
           converted.clientName = clients[i].name;
@@ -305,6 +303,8 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
           );
         seriesSummaryMetadata = seriesSummaryMetadata.concat(clientSeriesSummaryMetadata);
         seriesPromises = seriesPromises.concat(clientSeriesPromises);
+
+        // create a mapping between SeriesInstanceUID <--> clientName
         for (let j = 0; j < clientSeriesSummaryMetadata.length; j++) {
           seriesClientsMapping[clientSeriesSummaryMetadata[j].SeriesInstanceUID] = clients[i].name;
         }
@@ -374,6 +374,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
 
         // Adding instanceMetadata to OHIF MetadataProvider
         naturalizedInstances.forEach((instance, index) => {
+          // attach client specific information in each instance
           instance.wadoRoot = clientManagerObj.getClient(clientName).wadoRoot;
           instance.wadoUri = clientManagerObj.getClient(clientName).wadoUri;
           instance.clientName = clientName;
@@ -459,7 +460,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
       return imageIds;
     },
     getConfig() {
-      return clientManagerObj.getConfig();
+      return clientManagerObj.getClient();
     },
     getStudyInstanceUIDs({ params, query }) {
       const { StudyInstanceUIDs: paramsStudyInstanceUIDs } = params;

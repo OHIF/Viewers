@@ -8,6 +8,7 @@ export default class clientManager {
   clients;
   userAuthenticationService;
 
+  // adds a dicomweb server configuration in the clients list
   public addConfiguration(params, query, config) {
     if (config.onConfiguration && typeof config.onConfiguration === 'function') {
       config = config.onConfiguration(config, {
@@ -15,7 +16,6 @@ export default class clientManager {
         query,
       });
     }
-    config.copy = JSON.parse(JSON.stringify(config));
 
     config.qidoConfig = {
       url: config.qidoRoot,
@@ -72,6 +72,7 @@ export default class clientManager {
     };
   }
 
+  // sets authorization headers before queries
   public setQidoHeaders() {
     this.clients.forEach(
       client => (client.qidoDicomWebClient.headers = this.getAuthorizationHeader())
@@ -90,14 +91,16 @@ export default class clientManager {
     }
   }
 
+  // calls reject for each client that supports it
   public reject() {
-    this.clients.forEach(config => {
-      if (config.supportsReject) {
-        dcm4cheeReject(config.wadoRoot);
+    this.clients.forEach(client => {
+      if (client.supportsReject) {
+        dcm4cheeReject(client.wadoRoot);
       }
     });
   }
 
+  // returns the qido client given the client name
   public getQidoClient(name = undefined) {
     if (this.clients.length) {
       if (name) {
@@ -109,6 +112,7 @@ export default class clientManager {
     }
   }
 
+  // returns the wado client given the client name
   public getWadoClient(name = undefined) {
     if (this.clients.length) {
       if (name) {
@@ -120,6 +124,7 @@ export default class clientManager {
     }
   }
 
+  // returns client configuration given the client name
   public getClient(name = undefined) {
     if (this.clients.length) {
       if (name) {
@@ -131,12 +136,7 @@ export default class clientManager {
     }
   }
 
-  public getConfig() {
-    if (this.clients.length) {
-      return this.clients[0].copy;
-    }
-  }
-
+  // returns the client list
   public getClients() {
     return this.clients;
   }
