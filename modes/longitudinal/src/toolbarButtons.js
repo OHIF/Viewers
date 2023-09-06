@@ -15,7 +15,7 @@ const { windowLevelPresets } = defaults;
  * @param {*} icon
  * @param {*} label
  */
-function _createButton(type, id, icon, label, commands, tooltip, uiType) {
+function _createButton(type, id, icon, label, commands, tooltip, uiType, isActive) {
   return {
     id,
     icon,
@@ -24,6 +24,7 @@ function _createButton(type, id, icon, label, commands, tooltip, uiType) {
     commands,
     tooltip,
     uiType,
+    isActive,
   };
 }
 
@@ -432,13 +433,40 @@ const toolbarButtons = [
           'ReferenceLines',
           'tool-referenceLines', // change this with the new icon
           'Reference Lines',
+          // two commands for the reference lines tool:
+          // - the first to set the source viewport for the tool when it is enabled
+          // - the second to toggle the tool
           [
             {
-              commandName: 'toggleReferenceLines',
+              commandName: 'setSourceViewportForReferenceLinesTool',
               commandOptions: {},
               context: 'CORNERSTONE',
             },
+            {
+              commandName: 'setToolActive',
+              commandOptions: {
+                toolName: 'ReferenceLines',
+              },
+              context: 'CORNERSTONE',
+            },
           ]
+        ),
+        _createToggleButton(
+          'ImageOverlayViewer',
+          'toggle-dicom-overlay',
+          'Image Overlay',
+          [
+            {
+              commandName: 'setToolActive',
+              commandOptions: {
+                toolName: 'ImageOverlayViewer',
+              },
+              context: 'CORNERSTONE',
+            },
+          ],
+          'Image Overlay',
+          null,
+          true
         ),
         _createToolButton(
           'StackScroll',
