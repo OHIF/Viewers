@@ -70,7 +70,6 @@ export default class RetrieveMetadataLoaderAsync extends RetrieveMetadataLoader 
   async load(preLoadData) {
     const { client, studyInstanceUID } = this;
 
-    preLoadData.forEach(s => (s.clientName = client.name));
     const seriesInstanceUIDs = preLoadData.map(s => s.SeriesInstanceUID);
 
     const seriesAsyncLoader = makeSeriesAsyncLoader(client, studyInstanceUID, seriesInstanceUIDs);
