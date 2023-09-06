@@ -425,7 +425,9 @@ function WorkList({
             availableLanguages,
             defaultLanguage,
             onSubmit: state => {
-              i18n.changeLanguage(state.language.value);
+              if (state.language.value !== currentLanguage().value) {
+                i18n.changeLanguage(state.language.value);
+              }
               hotkeysManager.setHotkeys(state.hotkeyDefinitions);
               hide();
             },
