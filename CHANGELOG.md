@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.7.0-beta.65](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.64...v3.7.0-beta.65) (2023-09-06)
+
+
+### Features
+
+* **ImageOverlayViewerTool:** add ImageOverlayViewer tool that can render image overlay (pixel overlay) of the DICOM images ([#3163](https://github.com/OHIF/Viewers/issues/3163)) ([69115da](https://github.com/OHIF/Viewers/commit/69115da06d2d437b57e66608b435bb0bc919a90f))
+
+
+
+
+
 # [3.7.0-beta.64](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.63...v3.7.0-beta.64) (2023-09-05)
 
 
