@@ -48,7 +48,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
         search: async function (origParams) {
           clientManagerObj.setQidoHeaders();
           let results = [];
-          const studyInstanceUIDs = [];
+          const studyInstanceUIDs = {};
           // concatenate series metadata from all servers
           const clients = clientManagerObj.getClients();
           for (let i = 0; i < clients.length; i++) {
@@ -65,9 +65,29 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
             );
             for (let j = 0; j < clientResults.length; j++) {
               const studyInstanceUID = clientResults[j]['0020000D'].Value[0];
-              if (!studyInstanceUIDs.includes(studyInstanceUID)) {
-                studyInstanceUIDs.push(studyInstanceUID);
+              if (!(studyInstanceUID in studyInstanceUIDs)) {
+                studyInstanceUIDs[studyInstanceUID] = clientResults[j];
                 results.push(clientResults[j]);
+              } else {
+                // updates number of series in study
+                if (
+                  studyInstanceUIDs[studyInstanceUID]['00201206'] &&
+                  clientResults[j]['00201206']
+                ) {
+                  studyInstanceUIDs[studyInstanceUID]['00201206'].Value[0] =
+                    studyInstanceUIDs[studyInstanceUID]['00201206'].Value[0] +
+                    clientResults[j]['00201206'].Value[0];
+                }
+
+                // updates number of instances in study
+                if (
+                  studyInstanceUIDs[studyInstanceUID]['00201208'] &&
+                  clientResults[j]['00201208']
+                ) {
+                  studyInstanceUIDs[studyInstanceUID]['00201208'].Value[0] =
+                    studyInstanceUIDs[studyInstanceUID]['00201208'].Value[0] +
+                    clientResults[j]['00201208'].Value[0];
+                }
               }
             }
           }
