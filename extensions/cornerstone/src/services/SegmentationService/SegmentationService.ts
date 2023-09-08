@@ -1310,8 +1310,6 @@ class SegmentationService extends PubSubService {
       }
     }
 
-    this._setDisplaySetIsHydrated(segmentationId, false);
-
     this._broadcastEvent(this.EVENTS.SEGMENTATION_REMOVED, {
       segmentationId,
     });
