@@ -2,6 +2,7 @@ import React, { useState, useCallback, useEffect } from 'react';
 import classNames from 'classnames';
 import { InputNumber } from '../../components';
 import './InputRange.css';
+import getMaxDigits from '../../utils/getMaxDigits';
 
 /**
  * React Range Input component
@@ -47,6 +48,9 @@ const InputRange: React.FC<InputRangeProps> = ({
   showAdjustmentArrows = true,
 }) => {
   const [rangeValue, setRangeValue] = useState(value);
+
+  const maxDigits = getMaxDigits(maxValue, step);
+  const labelWidth = `${maxDigits * 10}px`;
 
   useEffect(() => setRangeValue(value), [value]);
 
@@ -104,7 +108,7 @@ const InputRange: React.FC<InputRangeProps> = ({
           id="myRange"
           step={step}
         />
-        <div className="ml-2">
+        <div style={{ width: labelWidth }}>
           {showLabel && labelPosition === 'right' && LabelOrEditableNumber}
         </div>
       </div>

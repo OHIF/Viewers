@@ -50,7 +50,6 @@ function SegmentationToolbox({ servicesManager, extensionManager }) {
       const { unsubscribe } = segmentationService.subscribe(event, () => {
         // update segmentations so that we enable brushes
         const segmentations = segmentationService.getSegmentations();
-        console.debug('🚀 ~ segmentations:', segmentations);
         setSegmentations(segmentations);
 
         const brushSize = segmentationUtils.getBrushSizeForToolGroup(

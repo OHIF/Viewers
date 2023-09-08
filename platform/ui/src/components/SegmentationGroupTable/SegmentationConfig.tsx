@@ -5,6 +5,10 @@ import CheckBox from '../CheckBox';
 import InputNumber from '../InputNumber';
 import classNames from 'classnames';
 
+const getRoundedValue = value => {
+  return Math.round(value * 100) / 100;
+};
+
 const ActiveSegmentationConfig = ({
   config,
   setRenderOutline,
@@ -38,7 +42,7 @@ const ActiveSegmentationConfig = ({
         <InputRange
           minValue={0}
           maxValue={100}
-          value={config.outlineOpacity * 100}
+          value={getRoundedValue(config.outlineOpacity * 100)}
           onChange={setOutlineOpacityActive}
           step={1}
           containerClassName="mt-[4px] mb-[9px]"
@@ -49,7 +53,7 @@ const ActiveSegmentationConfig = ({
         <InputRange
           minValue={0}
           maxValue={100}
-          value={config.fillAlpha * 100}
+          value={getRoundedValue(config.fillAlpha * 100)}
           onChange={setFillAlpha}
           step={1}
           containerClassName="mt-[4px] mb-[9px]"
@@ -93,7 +97,7 @@ const InactiveSegmentationConfig = ({
         <InputRange
           minValue={0}
           maxValue={100}
-          value={config.fillAlphaInactive * 100}
+          value={getRoundedValue(config.fillAlphaInactive * 100)}
           onChange={setFillAlphaInactive}
           step={1}
           containerClassName="mt-[4px]"

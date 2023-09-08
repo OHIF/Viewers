@@ -74,12 +74,14 @@ const SegmentationGroupTable = ({
     <div className="flex min-h-0 flex-col bg-black text-[13px] font-[300]">
       <PanelSection
         title="Segmentation"
-        actionIcons={[
-          {
-            name: 'settings-bars',
-            onClick: () => setIsConfigOpen(!isConfigOpen),
-          },
-        ]}
+        actionIcons={
+          activeSegmentation && [
+            {
+              name: 'settings-bars',
+              onClick: () => setIsConfigOpen(!isConfigOpen),
+            },
+          ]
+        }
       >
         {isConfigOpen && (
           <SegmentationConfig

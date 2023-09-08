@@ -3,6 +3,7 @@ import IconButton from '../IconButton';
 import Icon from '../Icon';
 import './InputNumber.css';
 import Label from '../Label';
+import getMaxDigits from '../../utils/getMaxDigits';
 
 /**
  *  React Number Input component'
@@ -16,12 +17,6 @@ import Label from '../Label';
 const sizesClasses = {
   sm: 'w-[45px] h-[28px]',
   lg: 'w-[206px] h-[35px]',
-};
-
-const getMaxDigits = (maxValue: number, step: number) => {
-  const integerDigits = maxValue.toString().length;
-  const decimalDigits = step % 1 === 0 ? 0 : step.toString().split('.')[1].length;
-  return integerDigits + (decimalDigits ? decimalDigits + 1 : 0);
 };
 
 const InputNumber: React.FC<{
