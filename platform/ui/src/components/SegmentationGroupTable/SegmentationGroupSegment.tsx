@@ -154,7 +154,7 @@ const HoveringIcons = ({
   segmentationId,
   segmentIndex,
 }) => {
-  const iconClass = 'w-5 h-5 hover:cursor-pointer hover:opacity-60';
+  const iconClass = 'w-5 h-5 hover:cursor-pointer hover:opacity-60 text-white';
 
   const handleIconClick = (e, action) => {
     e.stopPropagation();

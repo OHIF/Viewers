@@ -11,24 +11,17 @@ const {
   },
 } = adaptersSEG;
 
-const { downloadDicomData } = helpers;
+const { downloadDICOMData } = helpers;
 
 const commandsModule = ({
   servicesManager,
-  commandsManager,
   extensionManager,
 }: Types.Extensions.ExtensionParams): Types.Extensions.CommandsModule => {
   const {
-    customizationService,
-    measurementService,
-    hangingProtocolService,
     cornerstoneViewportService,
     uiNotificationService,
     viewportGridService,
     segmentationService,
-    displaySetService,
-    stateSyncService,
-    toolbarService,
     uiDialogService,
   } = (servicesManager as ServicesManager).services;
 
@@ -179,7 +172,7 @@ const commandsModule = ({
         segmentationId,
       });
 
-      downloadDicomData(generatedSegmentation.dataset, `${segmentationInOHIF.label}`);
+      downloadDICOMData(generatedSegmentation.dataset, `${segmentationInOHIF.label}`);
     },
     storeSegmentation: async ({ segmentationId, dataSource }) => {
       const promptResult = await createReportDialogPrompt(uiDialogService, {

@@ -61,8 +61,8 @@ const InputNumber: React.FC<{
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
 
-    // Allow negative sign or empty string for user flexibility
-    if (inputValue === '-' || inputValue === '') {
+    // Allow negative sign, empty string, or single decimal point for user flexibility
+    if (inputValue === '-' || inputValue === '' || inputValue === '.') {
       setNumberValue(inputValue);
       return;
     }
@@ -100,8 +100,9 @@ const InputNumber: React.FC<{
       >
         <div className="flex">
           <input
-            type="text"
+            type="number"
             value={numberValue}
+            step={step}
             onChange={handleChange}
             className={'input-number w-full bg-black text-center text-[12px] text-white'}
             style={{ width: inputWidth }}

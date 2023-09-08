@@ -121,7 +121,7 @@ import rowHide from './../../assets/icons/row-hide.svg';
 import rowLocked from './../../assets/icons/row-locked.svg';
 import rowShowAll from './../../assets/icons/row-show-all.svg';
 import rowUnhide from './../../assets/icons/row-unhide.svg';
-import rowUnlocked from './../../assets/icons/row-unlocked.svg';
+import rowUnlocked from './../../assets/icons/row-unlockeds.svg';
 import iconMPR from './../../assets/icons/icon-mpr-alt.svg';
 import checkboxDefault from './../../assets/icons/checkbox-default.svg';
 import checkboxActive from './../../assets/icons/checkbox-active.svg';
