@@ -37,6 +37,17 @@ import {
 // -- This is will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 
+Cypress.Commands.overwrite('log', function (log, ...args) {
+  if (Cypress.browser.isHeadless) {
+    return cy.task('log', args, { log: false }).then(() => {
+      return log(...args);
+    });
+  } else {
+    console.log(...args);
+    return log(...args);
+  }
+});
+
 /**
  * Command to search for a patient name and open his/her study.
  *
@@ -58,9 +69,15 @@ Cypress.Commands.add(
   'checkStudyRouteInViewer',
   (StudyInstanceUID, otherParams = '', mode = '/basic-test') => {
     cy.location('pathname').then($url => {
+      if ($url !== 'blank') {
       cy.log($url);
-      if ($url === 'blank' || !$url.includes(`${mode}/${StudyInstanceUID}${otherParams}`)) {
+      }
+      if (
+        $url === 'blank' ||
+        !$url.includes(`${mode}/${StudyInstanceUID}${otherParams}`)
+      ) {
         cy.openStudyInViewer(StudyInstanceUID, otherParams, mode);
+        cy.wait(25);
         cy.waitDicomImage();
         // Very short wait to ensure pending updates are handled
         cy.wait(25);
@@ -206,7 +223,6 @@ Cypress.Commands.add('waitDicomImage', (mode = '/basic-test', timeout = 50000) =
     });
   // This shouldn't be necessary, but seems to be.
   cy.wait(250);
-  cy.log('DICOM image loaded');
 });
 
 //Command to reset and clear all the changes made to the viewport

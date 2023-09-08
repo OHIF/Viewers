@@ -21,6 +21,7 @@ export type ViewportOptions = {
   presentationIds?: UITypes.PresentationIds;
   orientation?: Enums.OrientationAxis;
   background?: Types.Point3;
+  displayArea?: Types.DisplayArea;
   syncGroups?: SyncGroup[];
   initialImageOptions?: InitialImageOptions;
   customViewportProps?: Record<string, unknown>;
@@ -29,6 +30,7 @@ export type ViewportOptions = {
    * doesn't show them initially.  Displays initially blank if no required match
    */
   allowUnmatchedView?: boolean;
+  interpolationType?: 0 | 1 | 2;
 };
 
 export type PublicViewportOptions = {
@@ -39,6 +41,7 @@ export type PublicViewportOptions = {
   viewportId?: string;
   orientation?: Enums.OrientationAxis;
   background?: Types.Point3;
+  displayArea?: Types.DisplayArea;
   syncGroups?: SyncGroup[];
   initialImageOptions?: InitialImageOptions;
   customViewportProps?: Record<string, unknown>;
@@ -261,6 +264,10 @@ class ViewportInfo {
     return this.viewportOptions.background || [0, 0, 0];
   }
 
+  public getDisplayArea(): Types.DisplayArea {
+    return this.viewportOptions.displayArea;
+  }
+
   public getOrientation(): Enums.OrientationAxis {
     return this.viewportOptions.orientation;
   }
@@ -285,6 +292,7 @@ class ViewportInfo {
           colormap: undefined,
           voi: {},
           voiInverted: false,
+          displayArea: undefined,
         };
       }
       const blendMode = getCornerstoneBlendMode(option.blendMode);
@@ -296,6 +304,7 @@ class ViewportInfo {
         slabThickness: option.slabThickness,
         blendMode,
         displayPreset: option.displayPreset,
+        displayArea: option.displayArea,
       });
     });
 

@@ -64,7 +64,7 @@ const Thumbnail = ({
             <img
               src={imageSrc}
               alt={imageAltText}
-              className="min-h-32 object-none"
+                className="object-contain min-h-16 max-h-32"
               crossOrigin="anonymous"
             />
           ) : (

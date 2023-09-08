@@ -6,7 +6,12 @@ function getImageSrcFromImageId(cornerstone, imageId) {
   return new Promise((resolve, reject) => {
     const canvas = document.createElement('canvas');
     cornerstone.utilities
-      .loadImageToCanvas({ canvas, imageId })
+      .loadImageToCanvas({
+        canvas,
+        imageId,
+        thumbnail: true,
+        imageAspect: true,
+      })
       .then(imageId => {
         resolve(canvas.toDataURL());
       })
