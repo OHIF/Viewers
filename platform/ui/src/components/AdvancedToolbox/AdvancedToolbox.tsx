@@ -20,21 +20,20 @@ const AdvancedToolbox = ({ title, items }) => {
         <div className="bg-primary-dark mt-0.5 flex flex-wrap py-2">
           {items?.map(item => {
             return (
-              <div
-                className="ml-2 mb-2"
+              <Tooltip
+                position="bottom"
+                content={<span className="text-white">{item.name}</span>}
                 key={item.name}
-                onClick={() => {
-                  if (item.disabled) {
-                    return;
-                  }
-                  setIsActive(item.name);
-                  item.onClick(item.name);
-                }}
               >
-                <Tooltip
-                  position="bottom"
-                  delay={1750}
-                  content={<span className="text-xs text-white">{item.name}</span>}
+                <div
+                  className="ml-2 mb-2"
+                  onClick={() => {
+                    if (item.disabled) {
+                      return;
+                    }
+                    setIsActive(item.name);
+                    item.onClick(item.name);
+                  }}
                 >
                   <div
                     className={classnames(
@@ -47,8 +46,8 @@ const AdvancedToolbox = ({ title, items }) => {
                   >
                     <Icon name={item.icon} />
                   </div>
-                </Tooltip>
-              </div>
+                </div>
+              </Tooltip>
             );
           })}
         </div>
