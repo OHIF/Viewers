@@ -39,6 +39,7 @@ async function checkAndLoadContourData(instance, datasource) {
           StudyInstanceUID: instance.StudyInstanceUID,
           SeriesInstanceUID: instance.SeriesInstanceUID,
           SOPInstanceUID: instance.SOPInstanceUID,
+          clientName: instance?.clientName,
         });
 
         promisesMap.has(referencedROINumber)

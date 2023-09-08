@@ -155,7 +155,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
           params
         );
       },
-      bulkDataURI: async ({ StudyInstanceUID, BulkDataURI }) => {
+      bulkDataURI: async ({ StudyInstanceUID, BulkDataURI, clientName }) => {
         clientManagerObj.setQidoHeaders();
         const options = {
           multipart: false,
@@ -163,7 +163,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
           StudyInstanceUID,
         };
         return clientManagerObj
-          .getQidoClient()
+          .getQidoClient(clientName)
           .retrieveBulkData(options)
           .then(val => {
             const ret = (val && val[0]) || undefined;
@@ -206,12 +206,13 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
     store: {
       dicom: async (dataset, request) => {
         clientManagerObj.setWadoHeaders(2);
+        const clientName = dataset?.clientName;
         if (dataset instanceof ArrayBuffer) {
           const options = {
             datasets: [dataset],
             request,
           };
-          await clientManagerObj.getWadoClient().storeInstances(options);
+          await clientManagerObj.getWadoClient(clientName).storeInstances(options);
         } else {
           const meta = {
             FileMetaInformationVersion: dataset._meta.FileMetaInformationVersion.Value,
@@ -234,7 +235,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
             request,
           };
 
-          await clientManagerObj.getWadoClient().storeInstances(options);
+          await clientManagerObj.getWadoClient(clientName).storeInstances(options);
         }
       },
     },
