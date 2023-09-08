@@ -51,7 +51,7 @@ const commandsModule = ({
 
       const { displaySetInstanceUIDs } = activeViewport;
 
-      // if more than one show notification that this is not supported
+      // if more than one, show notification that this is not supported
       if (displaySetInstanceUIDs.length > 1) {
         uiNotificationService.show({
           title: 'Segmentation',
@@ -63,10 +63,6 @@ const commandsModule = ({
 
       const displaySetInstanceUID = displaySetInstanceUIDs[0];
 
-      // identify if the viewport is a stack viewport then we need to convert
-      // the viewport to a volume viewport first and mount on the same element
-      // otherwise we are good
-
       const { viewportOptions } = activeViewport;
       const csViewport = cornerstoneViewportService.getCornerstoneViewport(
         viewportOptions.viewportId
@@ -74,24 +70,8 @@ const commandsModule = ({
 
       const prevCamera = csViewport.getCamera();
 
-      if (viewportOptions.viewportType === 'stack') {
-        // Todo: handle finding out other viewports in the grid
-        // that require to change to volume viewport
-
-        // Todo: add current imageIdIndex to the viewportOptions
-        // so that we can restore it after changing to volume viewport
-        viewportGridService.setDisplaySetsForViewports([
-          {
-            viewportId: activeViewportId,
-            displaySetInstanceUIDs: [displaySetInstanceUID],
-            viewportOptions: {
-              viewportType: 'volume',
-            },
-          },
-        ]);
-      }
-
-      csViewport.element.addEventListener(Enums.Events.VOLUME_VIEWPORT_NEW_VOLUME, async () => {
+      // Callback function
+      const handleVolumeEvent = async () => {
         const activeViewport = viewports.get(activeViewportId);
 
         const volumeViewport = cornerstoneViewportService.getCornerstoneViewport(
@@ -100,9 +80,11 @@ const commandsModule = ({
 
         volumeViewport.setCamera(prevCamera);
 
+        const currentSegmentations = segmentationService.getSegmentations();
+
         const segmentationId = await segmentationService.createSegmentationForDisplaySet(
           displaySetInstanceUID,
-          { label: 'New Segmentation' }
+          { label: `Segmentation ${currentSegmentations.length + 1}` }
         );
 
         await segmentationService.addSegmentationRepresentationToToolGroup(
@@ -117,7 +99,26 @@ const commandsModule = ({
             label: 'Segment 1',
           },
         });
-      });
+      };
+
+      if (viewportOptions.viewportType === 'stack') {
+        viewportGridService.setDisplaySetsForViewports([
+          {
+            viewportId: activeViewportId,
+            displaySetInstanceUIDs: [displaySetInstanceUID],
+            viewportOptions: {
+              viewportType: 'volume',
+            },
+          },
+        ]);
+
+        csViewport.element.addEventListener(
+          Enums.Events.VOLUME_VIEWPORT_NEW_VOLUME,
+          handleVolumeEvent
+        );
+      } else {
+        handleVolumeEvent();
+      }
     },
     generateSegmentation: ({ segmentationId, options = {} }) => {
       const segmentation = cornerstoneToolsSegmentation.state.getSegmentation(segmentationId);
