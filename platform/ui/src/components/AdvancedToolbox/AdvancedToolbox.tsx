@@ -24,6 +24,9 @@ const AdvancedToolbox = ({ title, items }) => {
                 className="ml-2 mb-2"
                 key={item.name}
                 onClick={() => {
+                  if (item.disabled) {
+                    return;
+                  }
                   setIsActive(item.name);
                   item.onClick(item.name);
                 }}
@@ -42,10 +45,7 @@ const AdvancedToolbox = ({ title, items }) => {
                         'hover:bg-primary-light cursor-pointer hover:cursor-pointer hover:text-black'
                     )}
                   >
-                    <Icon
-                      name={item.icon}
-                      className=""
-                    />
+                    <Icon name={item.icon} />
                   </div>
                 </Tooltip>
               </div>

@@ -27,7 +27,7 @@ function ToolSettings({ options }) {
           return (
             <div
               className="flex items-center"
-              key={option.name}
+              key={option.id}
             >
               <div className="w-1/3 text-xs text-[13px]">{option.name}</div>
               <div className="w-2/3">
@@ -50,14 +50,13 @@ function ToolSettings({ options }) {
           return (
             <div
               className="flex items-center justify-between text-[13px]"
-              key={option.name}
+              key={option.id}
             >
               <span>{option.name}</span>
               <div className="max-w-1/2">
                 <ButtonGroup
                   buttons={getButtons(option)}
                   defaultActiveIndex={option.defaultActiveIndex}
-                  key={option.name}
                   size={ButtonEnums.size.small}
                 />
               </div>
@@ -66,7 +65,7 @@ function ToolSettings({ options }) {
         }
         if (option.type === 'custom') {
           return (
-            <div key={option.name}>
+            <div key={option.id}>
               {typeof option.children === 'function' ? option.children() : option.children}
             </div>
           );
