@@ -44,6 +44,6 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.20.13",
-    "@cornerstonejs/calculate-suv": "^1.0.3"
+    "@cornerstonejs/calculate-suv": "^1.1.0"
   }
 }
