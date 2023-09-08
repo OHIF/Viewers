@@ -47,17 +47,30 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
         mapParams: mapParams.bind(),
         search: async function (origParams) {
           clientManagerObj.setQidoHeaders();
-          const { studyInstanceUid, seriesInstanceUid, ...mappedParams } =
-            mapParams(origParams, {
-              supportsFuzzyMatching: clientManagerObj.getClient().supportsFuzzyMatching,
-              supportsWildcard: clientManagerObj.getClient().supportsWildcard,
-            }) || {};
-          const results = await qidoSearch(
-            clientManagerObj.getQidoClient(),
-            undefined,
-            undefined,
-            mappedParams
-          );
+          let results = [];
+          const studyInstanceUIDs = [];
+          // concatenate series metadata from all servers
+          const clients = clientManagerObj.getClients();
+          for (let i = 0; i < clients.length; i++) {
+            const { studyInstanceUid, seriesInstanceUid, ...mappedParams } =
+              mapParams(origParams, {
+                supportsFuzzyMatching: clients[i].supportsFuzzyMatching,
+                supportsWildcard: clients[i].supportsWildcard,
+              }) || {};
+            const clientResults = await qidoSearch(
+              clients[i].qidoDicomWebClient,
+              undefined,
+              undefined,
+              mappedParams
+            );
+            for (let j = 0; j < clientResults.length; j++) {
+              const studyInstanceUID = clientResults[j]['0020000D'].Value[0];
+              if (!studyInstanceUIDs.includes(studyInstanceUID)) {
+                studyInstanceUIDs.push(studyInstanceUID);
+                results.push(clientResults[j]);
+              }
+            }
+          }
           return processResults(results);
         },
         processResults: processResults.bind(),
@@ -66,14 +79,23 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
         search: async function (studyInstanceUid) {
           clientManagerObj.setQidoHeaders();
           let results = [];
+          const seriesInstanceUIDs = [];
           // concatenate series metadata from all servers
           const clients = clientManagerObj.getClients();
           for (let i = 0; i < clients.length; i++) {
-            const clientResult = await seriesInStudy(
-              clients[i].qidoDicomWebClient,
-              studyInstanceUid
-            );
-            results = results.concat(clientResult);
+            let clientResults;
+            try {
+              clientResults = await seriesInStudy(clients[i].qidoDicomWebClient, studyInstanceUid);
+            } catch {
+              clientResults = [];
+            }
+            for (let j = 0; j < clientResults.length; j++) {
+              const seriesInstanceUID = clientResults[j]['0020000E'].Value[0];
+              if (!seriesInstanceUIDs.includes(seriesInstanceUID)) {
+                seriesInstanceUIDs.push(seriesInstanceUID);
+                results.push(clientResults[j]);
+              }
+            }
           }
           return processSeriesResults(results);
         },
@@ -292,8 +314,9 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
       let seriesPromises = [];
       const seriesClientsMapping = {};
       for (let i = 0; i < clients.length; i++) {
-        const { preLoadData: clientSeriesSummaryMetadata, promises: clientSeriesPromises } =
-          await retrieveStudyMetadata(
+        let clientSeriesSummaryMetadata, clientSeriesPromises;
+        try {
+          const { preLoadData, promises } = await retrieveStudyMetadata(
             clients[i].wadoDicomWebClient,
             StudyInstanceUID,
             enableStudyLazyLoad,
@@ -301,6 +324,12 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
             sortCriteria,
             sortFunction
           );
+          clientSeriesSummaryMetadata = preLoadData;
+          clientSeriesPromises = promises;
+        } catch {
+          clientSeriesSummaryMetadata = [];
+          clientSeriesPromises = [];
+        }
         seriesSummaryMetadata = seriesSummaryMetadata.concat(clientSeriesSummaryMetadata);
         seriesPromises = seriesPromises.concat(clientSeriesPromises);
 
