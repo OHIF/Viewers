@@ -291,13 +291,16 @@ export type Protocol = {
    */
   numberOfPriorsReferenced?: number;
   syncDataForViewports?: boolean;
-  /* If configured, sets the minimum number of series needed to run the hanging
-   * protocol and start displaying images. Used when OHIF needs to handle studies
-   * with several series and it is required that the first image should be loaded
-   * faster. Only changed if really necessary, because there is a chance the hanging
-   *  protocol break without full metadata.
+  /* Set of minimal conditions necessary to run the hanging protocol
    */
-  minSeriesLoadedToRunHP?: number;
+  runHPCondition?: {
+    /* If configured, sets the minimum number of series needed to run the hanging
+     * protocol and start displaying images. Used when OHIF needs to handle studies
+     * with several series and it is required that the first image should be loaded
+     * faster.
+     */
+    minSeriesLoaded: number;
+  };
 };
 
 /** Used to dynamically generate protocols.

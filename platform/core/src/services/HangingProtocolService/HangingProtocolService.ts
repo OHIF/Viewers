@@ -217,8 +217,7 @@ export default class HangingProtocolService extends PubSubService {
       protocolId = protocolId[0];
     }
     const minSeriesLoadedToRunHP =
-      this.getProtocolById(protocolId)?.minSeriesLoadedToRunHP ||
-      seriesPromises.length;
+      this.getProtocolById(protocolId)?.runHPCondition?.minSeriesLoaded || seriesPromises.length;
     const requiredSeries = seriesPromises.slice(0, minSeriesLoadedToRunHP);
     const remaining = seriesPromises.slice(minSeriesLoadedToRunHP);
     return {
