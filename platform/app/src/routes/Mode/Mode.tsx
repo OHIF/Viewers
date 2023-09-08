@@ -29,12 +29,8 @@ function defaultRouteInit(
   { servicesManager, studyInstanceUIDs, dataSource, filters, appConfig },
   hangingProtocolId
 ) {
-  const {
-    displaySetService,
-    hangingProtocolService,
-    uiNotificationService,
-    customizationService,
-  } = servicesManager.services;
+  const { displaySetService, hangingProtocolService, uiNotificationService, customizationService } =
+    servicesManager.services;
   /**
    * Function to apply the hanging protocol when the minimum number of display sets were
    * received or all display sets retrieval were completed
@@ -55,45 +51,35 @@ function defaultRouteInit(
 
     // run the hanging protocol matching on the displaySets with the predefined
     // hanging protocol in the mode configuration
-    hangingProtocolService.run(
-      { studies, activeStudy, displaySets },
-      hangingProtocolId
-    );
+    hangingProtocolService.run({ studies, activeStudy, displaySets }, hangingProtocolId);
   }
 
   const unsubscriptions = [];
   const issuedWarningSeries = [];
-  const { unsubscribe: instanceAddedUnsubscribe } =
-    DicomMetadataStore.subscribe(
-      DicomMetadataStore.EVENTS.INSTANCES_ADDED,
-      function ({ StudyInstanceUID, SeriesInstanceUID, madeInClient = false }) {
-        const seriesMetadata = DicomMetadataStore.getSeries(
-          StudyInstanceUID,
-          SeriesInstanceUID
-        );
+  const { unsubscribe: instanceAddedUnsubscribe } = DicomMetadataStore.subscribe(
+    DicomMetadataStore.EVENTS.INSTANCES_ADDED,
+    function ({ StudyInstanceUID, SeriesInstanceUID, madeInClient = false }) {
+      const seriesMetadata = DicomMetadataStore.getSeries(StudyInstanceUID, SeriesInstanceUID);
 
-        // checks if the series filter was used, if it exists
-        const seriesInstanceUIDs = filters?.seriesInstanceUID;
-        if (
-          seriesInstanceUIDs?.length &&
-          !isSeriesFilterUsed(seriesMetadata.instances, filters) &&
-          !issuedWarningSeries.includes(seriesInstanceUIDs[0])
-        ) {
-          // stores the series instance filter so it shows only once the warning
-          issuedWarningSeries.push(seriesInstanceUIDs[0]);
-          uiNotificationService.show({
-            title: 'Series filter',
-            message: `Each of the series in filter: ${seriesInstanceUIDs} are not part of the current study. The entire study is being displayed`,
-            type: 'error',
-            duration: 7000,
-          });
-        }
-        displaySetService.makeDisplaySets(
-          seriesMetadata.instances,
-          madeInClient
-        );
+      // checks if the series filter was used, if it exists
+      const seriesInstanceUIDs = filters?.seriesInstanceUID;
+      if (
+        seriesInstanceUIDs?.length &&
+        !isSeriesFilterUsed(seriesMetadata.instances, filters) &&
+        !issuedWarningSeries.includes(seriesInstanceUIDs[0])
+      ) {
+        // stores the series instance filter so it shows only once the warning
+        issuedWarningSeries.push(seriesInstanceUIDs[0]);
+        uiNotificationService.show({
+          title: 'Series filter',
+          message: `Each of the series in filter: ${seriesInstanceUIDs} are not part of the current study. The entire study is being displayed`,
+          type: 'error',
+          duration: 7000,
+        });
       }
-    );
+      displaySetService.makeDisplaySets(seriesMetadata.instances, madeInClient);
+    }
+  );
 
   unsubscriptions.push(instanceAddedUnsubscribe);
 
@@ -116,6 +102,23 @@ function defaultRouteInit(
 
   Promise.allSettled(allRetrieves).then(studiesPromiseArray => {
     const allStudiesRequiredSeries = [];
+    const allRemainingSeries = [];
+    function startRemainingSeriesDownload(allRemainingSeries) {
+      allRemainingSeries.forEach(remainingSeriesStudy => {
+        remainingSeriesStudy.forEach(promise => promise.start());
+      });
+    }
+    function runHP() {
+      // give time to hanging protocol execute to restart remaining series download
+      const { unsubscribe } = hangingProtocolService.subscribe(
+        hangingProtocolService.EVENTS.PROTOCOL_CHANGED,
+        () => {
+          startRemainingSeriesDownload(allRemainingSeries);
+          unsubscribe();
+        }
+      );
+      applyHangingProtocol();
+    }
     studiesPromiseArray.forEach(studyPromiseArrayPromise => {
       // here the promise could be an array of promises or a promise for the
       // execution of the function dataSource.retrieve.series.metadata.
@@ -123,29 +126,22 @@ function defaultRouteInit(
       // the required and after that the remaining promises
       const studyPromiseArray = studyPromiseArrayPromise.value;
       if (Array.isArray(studyPromiseArray)) {
-        const { requiredSeries, remaining } =
-          hangingProtocolService.filterSeriesRequiredForRun(
-            hangingProtocolId,
-            studyPromiseArray
-          );
-        const requiredSeriesPromises = requiredSeries.map(promise =>
-          promise.start()
+        const { requiredSeries, remaining } = hangingProtocolService.filterSeriesRequiredForRun(
+          hangingProtocolId,
+          studyPromiseArray
         );
-        allStudiesRequiredSeries.push(
-          Promise.allSettled(requiredSeriesPromises)
-        );
-        Promise.allSettled(requiredSeriesPromises).then(() => {
-          remaining.forEach(promise => promise.start());
-        });
+        const requiredSeriesPromises = requiredSeries.map(promise => promise.start());
+        allStudiesRequiredSeries.push(Promise.allSettled(requiredSeriesPromises));
+        allRemainingSeries.push(remaining);
       }
     });
 
     if (allStudiesRequiredSeries.length) {
-      Promise.allSettled(allStudiesRequiredSeries).then(() =>
-        applyHangingProtocol()
-      );
+      Promise.allSettled(allStudiesRequiredSeries).then(() => {
+        runHP();
+      });
     } else {
-      applyHangingProtocol();
+      runHP;
     }
   });
   return unsubscriptions;
@@ -174,8 +170,7 @@ export default function ModeRoute({
   const [studyInstanceUIDs, setStudyInstanceUIDs] = useState();
 
   const [refresh, setRefresh] = useState(false);
-  const [ExtensionDependenciesLoaded, setExtensionDependenciesLoaded] =
-    useState(false);
+  const [ExtensionDependenciesLoaded, setExtensionDependenciesLoaded] = useState(false);
 
   const layoutTemplateData = useRef(false);
   const locationRef = useRef(null);
