@@ -15,6 +15,7 @@ function SegmentationToolbox({ servicesManager, extensionManager }) {
   const [brushSize, setBrushSize] = useState(null);
   const [thresholdRange, setThresholdRange] = useState([-500, 500]);
   const [activeTool, setActiveTool] = useState(null);
+  const [segmentations, setSegmentations] = useState([]);
 
   const getActiveViewportToolGroupId = useCallback(() => {
     const viewport = viewports.get(activeViewportId);
@@ -38,26 +39,40 @@ function SegmentationToolbox({ servicesManager, extensionManager }) {
   }, [activeViewportId, viewports]);
 
   useEffect(() => {
-    const { unsubscribe: unsub1 } = segmentationService.subscribe(
+    const events = [
       segmentationService.EVENTS.SEGMENTATION_ADDED,
-      () => {
+      segmentationService.EVENTS.SEGMENTATION_UPDATED,
+    ];
+
+    const unsubscriptions = [];
+
+    events.forEach(event => {
+      const { unsubscribe } = segmentationService.subscribe(event, () => {
+        // update segmentations so that we enable brushes
+        const segmentations = segmentationService.getSegmentations();
+        console.debug('🚀 ~ segmentations:', segmentations);
+        setSegmentations(segmentations);
+
         const brushSize = segmentationUtils.getBrushSizeForToolGroup(
           getActiveViewportToolGroupId()
         );
         setBrushSize(brushSize);
-      }
-    );
+      });
 
-    const { unsubscribe: unsub2 } = toolbarService.subscribe(
+      unsubscriptions.push(unsubscribe);
+    });
+
+    const { unsubscribe } = toolbarService.subscribe(
       toolbarService.EVENTS.TOOL_BAR_STATE_MODIFIED,
       () => {
         updateActiveTool();
       }
     );
 
+    unsubscriptions.push(unsubscribe);
+
     return () => {
-      unsub1();
-      unsub2();
+      unsubscriptions.forEach(unsubscribe => unsubscribe());
     };
   }, [activeViewportId, viewports]);
 
@@ -118,6 +133,7 @@ function SegmentationToolbox({ servicesManager, extensionManager }) {
         {
           name: 'Brush',
           icon: 'icon-tool-brush',
+          disabled: segmentations.length === 0,
           active: activeTool === 'CircularBrush' || activeTool === 'SphereBrush',
           onClick: () => setToolActive('CircularBrush'),
           options: [
@@ -145,6 +161,7 @@ function SegmentationToolbox({ servicesManager, extensionManager }) {
         {
           name: 'Eraser',
           icon: 'icon-tool-eraser',
+          disabled: segmentations.length === 0,
           active: activeTool === 'CircularEraser' || activeTool === 'SphereEraser',
           onClick: () => setToolActive('CircularEraser'),
           options: [
@@ -172,6 +189,7 @@ function SegmentationToolbox({ servicesManager, extensionManager }) {
         {
           name: 'Scissor',
           icon: 'icon-tool-scissor',
+          disabled: segmentations.length === 0,
           active:
             activeTool === 'CircleScissor' ||
             activeTool === 'RectangleScissor' ||
@@ -194,6 +212,7 @@ function SegmentationToolbox({ servicesManager, extensionManager }) {
         {
           name: 'Threshold Tool',
           icon: 'icon-tool-threshold',
+          disabled: segmentations.length === 0,
           active: activeTool === 'ThresholdCircularBrush' || activeTool === 'ThresholdSphereBrush',
           onClick: () => setToolActive('ThresholdCircularBrush'),
           options: [

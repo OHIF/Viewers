@@ -35,8 +35,11 @@ const AdvancedToolbox = ({ title, items }) => {
                 >
                   <div
                     className={classnames(
-                      'text-primary-active hover:bg-primary-light grid h-[40px] w-[40px] place-items-center rounded-md bg-black hover:cursor-pointer hover:text-black',
-                      isActive === item.name && 'bg-primary-light text-black'
+                      'text-primary-active grid h-[40px] w-[40px] place-items-center rounded-md bg-black  ',
+                      isActive === item.name && 'bg-primary-light text-black',
+                      item.disabled && 'opacity-50',
+                      !item.disabled &&
+                        'hover:bg-primary-light cursor-pointer hover:cursor-pointer hover:text-black'
                     )}
                   >
                     <Icon
