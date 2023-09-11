@@ -1,8 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { SidePanel } from '@ohif/ui';
-import { PanelService } from '@ohif/core';
+import { PanelService, ServicesManager } from '@ohif/core';
 
-// TODO add component property types
+export type SidePanelWithServicesProps = {
+  servicesManager: ServicesManager;
+  side: 'left' | 'right';
+  className: string;
+  activeTabIndex: number;
+  tabs: Array<any>;
+};
 
 const SidePanelWithServices = ({
   servicesManager,
