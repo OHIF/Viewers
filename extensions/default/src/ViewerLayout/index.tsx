@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
-
+import { useParams, useLocation, useNavigate } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import {
   ErrorBoundary,
   UserPreferences,
@@ -14,7 +15,7 @@ import { ServicesManager, HangingProtocolService, hotkeys, CommandsManager } fro
 import { useAppConfig } from '@state';
 import Toolbar from '../Toolbar/Toolbar';
 import SidePanelWithService from '../components/SidePanelWithService';
-
+import ViewerHeader from './ViewerHeader';
 const { availableLanguages, defaultLanguage, currentLanguage } = i18n;
 
 function ViewerLayout({

@@ -345,7 +345,7 @@ const commandsModule = ({
       console.log(displaySetInstanceUID);
       console.log(colormap);
       commandsManager.runCommand('setSingleViewportColormap', {
-        viewportIndex: activeViewportIndex,
+        viewportId: activeViewportIndex,
         displaySetInstanceUID,
         colormap,
       });
@@ -380,8 +380,7 @@ const commandsModule = ({
         return;
       }
 
-      const viewportIndex = viewportInfo.getViewportIndex();
-      viewportGridService.setActiveViewportIndex(viewportIndex);
+      viewportGridService.setActiveViewportIndex(viewportId);
     },
     /**
      * Changes the viewport grid layout in terms of the MxN layout.
@@ -760,7 +759,7 @@ const commandsModule = ({
       // corrected PT vs the non-attenuation correct PT)
 
       let ptDisplaySet = null;
-      for (const [viewportIndex, viewportDetails] of viewportMatchDetails) {
+      for (const [viewportId, viewportDetails] of viewportMatchDetails) {
         const { displaySetsInfo } = viewportDetails;
         const displaySets = displaySetsInfo.map(({ displaySetInstanceUID }) =>
           displaySetService.getDisplaySetByUID(displaySetInstanceUID)

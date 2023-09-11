@@ -20,36 +20,15 @@ export default function CineProvider({ children, service }) {
       case 'SET_CINE': {
         const { id, frameRate, isPlaying = undefined } = action.payload;
         const cines = state.cines;
-        const syncedCineIds = service
-          .getSyncedViewports(id)
-          .map(({ viewportIndex }) => viewportIndex);
-        const cineIdsToUpdate = [id, ...syncedCineIds].filter(curId => {
-          const currentCine = cines[curId] ?? {};
-          const shouldUpdateFrameRate =
-            currentCine.frameRate !== (frameRate ?? currentCine.frameRate);
-          const shouldUpdateIsPlaying =
-            currentCine.isPlaying !== (isPlaying ?? currentCine.isPlaying);
 
-          if (!cines[id]) {
-            cines[id] = { id, ...DEFAULT_CINE };
-          }
-          cines[id].frameRate = frameRate || cines[id].frameRate;
-          cines[id].isPlaying = isPlaying !== undefined ? isPlaying : cines[id].isPlaying;
-
-          cineIdsToUpdate.forEach(currId => {
-            let cine = cines[currId];
-
-            if (!cine) {
-              cine = { id, ...DEFAULT_CINE };
-              cines[currId] = cine;
-            }
-
-            cine.frameRate = frameRate ?? cine.frameRate;
-            cine.isPlaying = isPlaying ?? cine.isPlaying;
-          });
-
-          return { ...state, cines: { ...cines } };
+        if (!cines[id]) {
+          cines[id] = { id, ...DEFAULT_CINE };
         }
+        cines[id].frameRate = frameRate || cines[id].frameRate;
+        cines[id].isPlaying = isPlaying !== undefined ? isPlaying : cines[id].isPlaying;
+
+        return { ...state, ...{ cines } };
+      }
       case 'SET_IS_CINE_ENABLED': {
         return { ...state, ...{ isCineEnabled: action.payload } };
       }

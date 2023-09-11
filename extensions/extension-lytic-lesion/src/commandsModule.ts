@@ -391,7 +391,7 @@ const commandsModule = ({
         console.log(viewport);
         let displaySetInstanceUID = viewport.displaySetInstanceUIDs[0];
         commandsManager.runCommand('setSingleViewportColormap', {
-          viewportIndex: viewport.viewportIndex,
+          viewportId: viewport.viewportId,
           displaySetInstanceUID,
           colormap: {
             name: colormap,
@@ -451,8 +451,7 @@ const commandsModule = ({
         return;
       }
 
-      const viewportIndex = viewportInfo.getViewportIndex();
-      viewportGridService.setActiveViewportIndex(viewportIndex);
+      viewportGridService.setActiveViewportIndex(viewportId);
     },
     /**
      * Changes the viewport grid layout in terms of the MxN layout.
@@ -513,7 +512,7 @@ const commandsModule = ({
         }
         // There is a state to toggle back to. The viewport that was
         // originally toggled to one up was the former active viewport.
-        const viewportIndexToUpdate =
+        const viewportIdToUpdate =
           toggleOneUpViewportGridStore.activeViewportIndex;
 
         // Determine which viewports need to be updated. This is particularly
@@ -526,7 +525,7 @@ const commandsModule = ({
             : displaySetInstanceUIDs
                 .map(displaySetInstanceUID =>
                   hangingProtocolService.getViewportsRequireUpdate(
-                    viewportIndexToUpdate,
+                    viewportIdToUpdate,
                     displaySetInstanceUID
                   )
                 )
@@ -535,14 +534,14 @@ const commandsModule = ({
         // This findOrCreateViewport returns either one of the updatedViewports
         // returned from the HP service OR if there is not one from the HP service then
         // simply returns what was in the previous state.
-        const findOrCreateViewport = (viewportIndex: number) => {
+        const findOrCreateViewport = (viewportId: number) => {
           const viewport = updatedViewports.find(
-            viewport => viewport.viewportIndex === viewportIndex
+            viewport => viewport.viewportId === viewportId
           );
 
           return viewport
             ? { viewportOptions, displaySetOptions, ...viewport }
-            : toggleOneUpViewportGridStore.viewports[viewportIndex];
+            : toggleOneUpViewportGridStore.viewports[viewportId];
         };
 
         const layoutOptions = viewportGridService.getLayoutOptionsFromState(
@@ -553,7 +552,7 @@ const commandsModule = ({
         viewportGridService.setLayout({
           numRows: toggleOneUpViewportGridStore.layout.numRows,
           numCols: toggleOneUpViewportGridStore.layout.numCols,
-          activeViewportIndex: viewportIndexToUpdate,
+          activeViewportIndex: viewportIdToUpdate,
           layoutOptions,
           findOrCreateViewport,
         });
@@ -859,7 +858,7 @@ const commandsModule = ({
       // corrected PT vs the non-attenuation correct PT)
 
       let ptDisplaySet = null;
-      for (const [viewportIndex, viewportDetails] of viewportMatchDetails) {
+      for (const [viewportId, viewportDetails] of viewportMatchDetails) {
         const { displaySetsInfo } = viewportDetails;
         const displaySets = displaySetsInfo.map(({ displaySetInstanceUID }) =>
           displaySetService.getDisplaySetByUID(displaySetInstanceUID)

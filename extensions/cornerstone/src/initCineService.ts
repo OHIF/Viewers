@@ -29,7 +29,7 @@ function _getSyncedViewports(servicesManager, srcViewportIndex) {
 
   const { viewports: viewportsStates } = viewportGridService.getState();
   const srcViewportState = viewportsStates.find(
-    ({ viewportIndex }) => viewportIndex === srcViewportIndex
+    ({ viewportId }) => viewportId === srcViewportIndex
   );
 
   if (srcViewportState?.viewportOptions?.viewportType !== 'volume') {
@@ -49,23 +49,23 @@ function _getSyncedViewports(servicesManager, srcViewportIndex) {
   const { volumeId: srcVolumeId } = srcVolume;
 
   return viewportsStates
-    .filter(({ viewportIndex }) => {
+    .filter(({ viewportId }) => {
       const viewport = cornerstoneViewportService.getCornerstoneViewportByIndex(
-        viewportIndex
+        viewportId
       );
 
       return (
-        viewportIndex !== srcViewportIndex && viewport?.hasVolumeId(srcVolumeId)
+        viewportId !== srcViewportIndex && viewport?.hasVolumeId(srcVolumeId)
       );
     })
-    .map(({ viewportIndex }) => ({ viewportIndex }));
+    .map(({ viewportId }) => ({ viewportId }));
 }
 
 function initCineService(servicesManager) {
   const { cineService } = servicesManager.services;
 
-  const getSyncedViewports = viewportIndex => {
-    return _getSyncedViewports(servicesManager, viewportIndex);
+  const getSyncedViewports = viewportId => {
+    return _getSyncedViewports(servicesManager, viewportId);
   };
 
   const playClip = (element, playClipOptions) => {

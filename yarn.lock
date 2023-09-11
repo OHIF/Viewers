@@ -3239,175 +3239,6 @@
   dependencies:
     "@octokit/openapi-types" "^18.0.0"
 
-"@ohif/core@3.7.0-beta.27":
-  version "3.7.0-beta.27"
-  resolved "https://registry.yarnpkg.com/@ohif/core/-/core-3.7.0-beta.27.tgz#5fdf7f7269e628955b86c868678c63f0712b1e6a"
-  integrity sha512-GAMatSafyh50Czd1T/4itTKU685OPhxVV++hVHCw/jbYB2Qxn1VS3RuLgqgCTiE4iYJzAgcFpmp211USSvy3+w==
-  dependencies:
-    "@babel/runtime" "^7.20.13"
-    dcmjs "^0.29.5"
-    dicomweb-client "^0.10.2"
-    gl-matrix "^3.4.3"
-    isomorphic-base64 "^1.0.2"
-    lodash.clonedeep "^4.5.0"
-    lodash.merge "^4.6.1"
-    moment "^2.24.0"
-    object-hash "2.1.1"
-    query-string "^6.14.0"
-    validate.js "^0.12.0"
-
-"@ohif/extension-cornerstone-dicom-rt@3.7.0-beta.27":
-  version "3.7.0-beta.27"
-  resolved "https://registry.yarnpkg.com/@ohif/extension-cornerstone-dicom-rt/-/extension-cornerstone-dicom-rt-3.7.0-beta.27.tgz#245ede1cc70ababd171d3b71e9b04cb6d4d651e9"
-  integrity sha512-yQiyrlGTU8+bvBxU4WUiFtk1njL1pI6f77w8xLW0SQEHEyOeVUvPcjB0G5nvNpAI6ZKMNMwWb9LcjGxph1egMg==
-  dependencies:
-    "@babel/runtime" "^7.20.13"
-    react-color "^2.19.3"
-
-"@ohif/extension-cornerstone-dicom-seg@3.7.0-beta.27":
-  version "3.7.0-beta.27"
-  resolved "https://registry.yarnpkg.com/@ohif/extension-cornerstone-dicom-seg/-/extension-cornerstone-dicom-seg-3.7.0-beta.27.tgz#6517bc5e298614bb47f8bda46ba815fe39d2788b"
-  integrity sha512-giRArG21HDaPBWKHo23YTRcYbSZ33hIwlykEMpMrQnW6C59BD3OIrNeyzcAkLTMPgR8WNwLcudp7T9MaY/k8Ng==
-  dependencies:
-    "@babel/runtime" "^7.20.13"
-    react-color "^2.19.3"
-
-"@ohif/extension-cornerstone-dicom-sr@3.7.0-beta.27":
-  version "3.7.0-beta.27"
-  resolved "https://registry.yarnpkg.com/@ohif/extension-cornerstone-dicom-sr/-/extension-cornerstone-dicom-sr-3.7.0-beta.27.tgz#8797841c1faced7a452ada767d3833f2214b5da1"
-  integrity sha512-pgy6bYMV0A55az6x/N6e2mgJ97dWf0vuYvL2hSFdsgE6llgOHaGwf69uyheoR3hKZeoNkpHLRSo2VJmzKsfJhg==
-  dependencies:
-    "@babel/runtime" "^7.20.13"
-    "@cornerstonejs/adapters" "^1.4.1"
-    "@cornerstonejs/core" "^1.4.1"
-    "@cornerstonejs/tools" "^1.4.1"
-    classnames "^2.3.2"
-
-"@ohif/extension-cornerstone@3.7.0-beta.27":
-  version "3.7.0-beta.27"
-  resolved "https://registry.yarnpkg.com/@ohif/extension-cornerstone/-/extension-cornerstone-3.7.0-beta.27.tgz#32eca219e520dc058017e4e7ee290ff62fdffa7f"
-  integrity sha512-1hZVD332Wcgy2gVp2ufwIdRQp2mHyamfL8zD2xV3wc8L7iyStZ+DDPXmJPlFRjFDluSli0JeVvMdYX0ABc18jw==
-  dependencies:
-    "@babel/runtime" "^7.20.13"
-    "@cornerstonejs/adapters" "^1.4.1"
-    "@cornerstonejs/core" "^1.4.1"
-    "@cornerstonejs/streaming-image-volume-loader" "^1.4.1"
-    "@cornerstonejs/tools" "^1.4.1"
-    "@kitware/vtk.js" "27.3.1"
-    html2canvas "^1.4.1"
-    lodash.debounce "4.0.8"
-    lodash.merge "^4.6.2"
-    shader-loader "^1.3.1"
-    worker-loader "^3.0.8"
-
-"@ohif/extension-default@3.7.0-beta.27":
-  version "3.7.0-beta.27"
-  resolved "https://registry.yarnpkg.com/@ohif/extension-default/-/extension-default-3.7.0-beta.27.tgz#5664a610f74a205d4ddd9bae69399808437f0bb8"
-  integrity sha512-+4S9ovJA1uQovOIcPYSrWIVgJj5ZHzuju0MTx8QNOQ3C8iBQH9V2EEgdZSHNi4x3rWV2kJMFLNIpuwJO1ybXjg==
-  dependencies:
-    "@babel/runtime" "^7.20.13"
-    "@cornerstonejs/calculate-suv" "^1.0.3"
-
-"@ohif/extension-dicom-microscopy@3.7.0-beta.27":
-  version "3.7.0-beta.27"
-  resolved "https://registry.yarnpkg.com/@ohif/extension-dicom-microscopy/-/extension-dicom-microscopy-3.7.0-beta.27.tgz#845d533345a86d1eebcd6e1c4a10b0b629414e4f"
-  integrity sha512-r1vUpEWWUi6b96x9UzY5imEztnjGYr8S3v5fvv9IQm3QtiIz3NBXwQ7lPEBWH943UOotZfgn2yjT28BvMYydBg==
-  dependencies:
-    "@babel/runtime" "^7.20.13"
-    "@cornerstonejs/codec-charls" "^1.2.3"
-    "@cornerstonejs/codec-libjpeg-turbo-8bit" "^1.2.2"
-    "@cornerstonejs/codec-openjpeg" "^1.2.2"
-    colormap "^2.3"
-    dicom-microscopy-viewer "^0.44.0"
-    dicomicc "^0.1"
-
-"@ohif/extension-dicom-pdf@3.7.0-beta.27":
-  version "3.7.0-beta.27"
-  resolved "https://registry.yarnpkg.com/@ohif/extension-dicom-pdf/-/extension-dicom-pdf-3.7.0-beta.27.tgz#ff4e3a8663066af94bbfbdeba6f0eda4ac856e64"
-  integrity sha512-/atlRLrQ4RTruWFDgYelY/BiCt9NcOjZHWJf9+Tw62Zy32YBQ55SzOR0Vq68TwDS3MxfIBtpbiyBrNM0XvdaIw==
-  dependencies:
-    "@babel/runtime" "^7.20.13"
-    classnames "^2.3.2"
-
-"@ohif/extension-dicom-video@3.7.0-beta.27":
-  version "3.7.0-beta.27"
-  resolved "https://registry.yarnpkg.com/@ohif/extension-dicom-video/-/extension-dicom-video-3.7.0-beta.27.tgz#03d081e4a47b9a2bec2b267a106aa868eb88f3c8"
-  integrity sha512-uiwB/LQxDSKz/OF477bOuQ+VWzBpSbTc0LEfjg+zWMrQWyPRj6DS+7NpNQ4M9aHYPI8KJywZ4KsmZ8m/PypvKg==
-  dependencies:
-    "@babel/runtime" "^7.20.13"
-    classnames "^2.3.2"
-
-"@ohif/extension-test@3.7.0-beta.27":
-  version "3.7.0-beta.27"
-  resolved "https://registry.yarnpkg.com/@ohif/extension-test/-/extension-test-3.7.0-beta.27.tgz#64695f4541f09f00ba6386cc5c07ca0114ed97d3"
-  integrity sha512-v/GkNN4IYuIXi/t5C7I4pyxvLAc2asCb0AIxYb3YVd9HOajcJsmWeSQOUuUU6vDXIl/eHhW5SBXVFBfu3a8q6g==
-  dependencies:
-    "@babel/runtime" "^7.20.13"
-    classnames "^2.3.2"
-
-"@ohif/i18n@3.7.0-beta.27":
-  version "3.7.0-beta.27"
-  resolved "https://registry.yarnpkg.com/@ohif/i18n/-/i18n-3.7.0-beta.27.tgz#b1df21d45276da82c25cf80ad657e6ffb325fca5"
-  integrity sha512-W6foZpkaiLvovKSNVPI7cCdTSwO6rO0CdK4mZXc4mGJbwA2k0XxxPbcdR0+XDq3dQtmc5qF0gbn0Iot+fXWazQ==
-  dependencies:
-    "@babel/runtime" "^7.20.13"
-    i18next-locize-backend "^2.0.0"
-    locize-editor "^2.0.0"
-    locize-lastused "^1.1.0"
-
-"@ohif/mode-basic-dev-mode@3.7.0-beta.27":
-  version "3.7.0-beta.27"
-  resolved "https://registry.yarnpkg.com/@ohif/mode-basic-dev-mode/-/mode-basic-dev-mode-3.7.0-beta.27.tgz#0468cc798fd2597113f7a78c6c80e64f7069a12a"
-  integrity sha512-U0bguji4qTMV1aO7AB6hBXo5sWH99mPSBKM1HJakm6xcsCzknU/cOAvtOUOBqVY56PY9e7+sc2hWGgmEMYG75Q==
-  dependencies:
-    "@babel/runtime" "^7.20.13"
-
-"@ohif/mode-longitudinal@3.7.0-beta.27":
-  version "3.7.0-beta.27"
-  resolved "https://registry.yarnpkg.com/@ohif/mode-longitudinal/-/mode-longitudinal-3.7.0-beta.27.tgz#234bd3ff3f3e674d62e770742f48eac505e5029a"
-  integrity sha512-tmlvEXz1uSZ6SufDchwvQWfy8uA+bEvTn3/8TTABFEnhBN/IY3nhZBfO7EWzC/ugBbsWPE1ecb9/NK90mggZYw==
-  dependencies:
-    "@babel/runtime" "^7.20.13"
-
-"@ohif/mode-microscopy@3.7.0-beta.27":
-  version "3.7.0-beta.27"
-  resolved "https://registry.yarnpkg.com/@ohif/mode-microscopy/-/mode-microscopy-3.7.0-beta.27.tgz#6f6549176eee9da1987204a261a0fbeed1f0285b"
-  integrity sha512-khQmxvT3TYxvcWD2DDP6hDBPn4jcS2g2YAGFOXVrZI3zRbQNtNSU/Z29Jp9/TRcVb9wUVFUuf0TpICHXYcd/WQ==
-  dependencies:
-    "@babel/runtime" "^7.20.13"
-
-"@ohif/mode-test@3.7.0-beta.27":
-  version "3.7.0-beta.27"
-  resolved "https://registry.yarnpkg.com/@ohif/mode-test/-/mode-test-3.7.0-beta.27.tgz#4ba9d17322d906c90b838396ed53ba1457a46a4d"
-  integrity sha512-RnPVWx/F5g3uvn+kJ5f/4pnh34bYdt/nxIMuk35IDz6HpOM+yC3j6l6ldV4npQ8AbA71x1zvkHN36Vkl/iiySQ==
-  dependencies:
-    "@babel/runtime" "^7.20.13"
-
-"@ohif/ui@3.7.0-beta.27":
-  version "3.7.0-beta.27"
-  resolved "https://registry.yarnpkg.com/@ohif/ui/-/ui-3.7.0-beta.27.tgz#c4a8618167e0202d3338aeefaff262d186af9873"
-  integrity sha512-SoJ5U1frfiQ628IFBHhwhRemmqy3psKphz/L4jtCy7uVElf+KAjj3mVzcWtJoDm/E/6PVbgl/WuFKz5hyPlCDA==
-  dependencies:
-    browser-detect "^0.2.28"
-    classnames "^2.3.2"
-    lodash.debounce "4.0.8"
-    moment "2.29.4"
-    mousetrap "^1.6.5"
-    react "^17.0.2"
-    react-dates "^21.8.0"
-    react-dnd "14.0.2"
-    react-dnd-html5-backend "14.0.0"
-    react-dom "^17.0.2"
-    react-draggable "4.4.3"
-    react-error-boundary "^3.1.3"
-    react-modal "3.11.2"
-    react-outside-click-handler "^1.3.0"
-    react-select "3.0.8"
-    react-window "^1.8.9"
-    react-with-direction "^1.3.1"
-    swiper "^8.4.2"
-    webpack "^5.81.0"
-
 "@oozcitak/dom@1.15.10":
   version "1.15.10"
   resolved "https://registry.yarnpkg.com/@oozcitak/dom/-/dom-1.15.10.tgz#dca7289f2b292cff2a901ea4fbbcc0a1ab0b05c2"
@@ -8990,7 +8821,7 @@ dotenv@^14.1.0:
   resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-14.3.2.tgz#7c30b3a5f777c79a3429cb2db358eef6751e8369"
   integrity sha512-vwEppIphpFdvaMCaHfCEv9IgwcxMljMw2TnAQBB4VWPvzXQLTb82jwmdOKzlEVUL3gNFT4l4TPKO+Bn+sqcrVQ==
 
-dotenv@^16.0.0:
+dotenv@^16.0.0, dotenv@~16.3.1:
   version "16.3.1"
   resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-16.3.1.tgz#369034de7d7e5b120972693352a3bf112172cc3e"
   integrity sha512-IPzF4w4/Rd94bA9imS68tZBaYyBWSCE47V1RGuMrB94iyTOIEwRmVL2x/4An+6mETpLrKJ5hQkB8W4kFAadeIQ==
@@ -10324,14 +10155,6 @@ find-root@^1.0.0, find-root@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/find-root/-/find-root-1.1.0.tgz#abcfc8ba76f708c42a97b3d685b7e9450bfb9ce4"
   integrity sha512-NKfW6bec6GfKc0SGx1e07QZY9PE99u0Bft/0rzSD5k3sO/vwkVUpDUKVm5Gpp5Ue3YfShPFTX2070tDs5kB9Ng==
-
-find-up@5.0.0, find-up@^5.0.0:
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/find-up/-/find-up-5.0.0.tgz#4c92819ecb7083561e4f4a240a86be5198f536fc"
-  integrity sha512-78/PXT1wlLLDgTzDs7sjq9hzz0vXD+zn+7wypEe4fXQxCmdmqfGsEPQxmiCSQI3ajFV91bVSsvNtrJRiW6nGng==
-  dependencies:
-    locate-path "^6.0.0"
-    path-exists "^4.0.0"
 
 find-up@^1.0.0:
   version "1.1.2"
@@ -11759,27 +11582,6 @@ inline-style-parser@0.1.1:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/inline-style-parser/-/inline-style-parser-0.1.1.tgz#ec8a3b429274e9c0a1f1c4ffa9453a7fef72cea1"
   integrity sha512-7NXolsK4CAS5+xvdj5OMMbI962hU/wvwoxk+LWR9Ek9bVtyuuYScDN6eS0rUm6TxApFpw7CX1o4uJzcd4AyD3Q==
-
-inquirer@8.2.4:
-  version "8.2.4"
-  resolved "https://registry.yarnpkg.com/inquirer/-/inquirer-8.2.4.tgz#ddbfe86ca2f67649a67daa6f1051c128f684f0b4"
-  integrity sha512-nn4F01dxU8VeKfq192IjLsxu0/OmMZ4Lg3xKAns148rCaXP6ntAoEkVYZThWjwON8AlzdZZi6oqnhNbxUG9hVg==
-  dependencies:
-    ansi-escapes "^4.2.1"
-    chalk "^4.1.1"
-    cli-cursor "^3.1.0"
-    cli-width "^3.0.0"
-    external-editor "^3.0.3"
-    figures "^3.0.0"
-    lodash "^4.17.21"
-    mute-stream "0.0.8"
-    ora "^5.4.1"
-    run-async "^2.4.0"
-    rxjs "^7.5.5"
-    string-width "^4.1.0"
-    strip-ansi "^6.0.0"
-    through "^2.3.6"
-    wrap-ansi "^7.0.0"
 
 inquirer@^6.2.2:
   version "6.5.2"
@@ -14681,7 +14483,7 @@ mute-stream@0.0.7:
   resolved "https://registry.yarnpkg.com/mute-stream/-/mute-stream-0.0.7.tgz#3075ce93bc21b8fab43e1bc4da7e8115ed1e7bab"
   integrity sha512-r65nCZhrbXXb6dXOACihYApHw2Q6pV0M3V0PSxd74N0+D8nzAdEAITq2oAjA1jVnKI+tGvEBUpqiMh0+rW6zDQ==
 
-mute-stream@0.0.8, mute-stream@~0.0.4:
+mute-stream@0.0.8:
   version "0.0.8"
   resolved "https://registry.yarnpkg.com/mute-stream/-/mute-stream-0.0.8.tgz#1630c42b2251ff81e2a283de96a5497ea92e5e0d"
   integrity sha512-nnbWWOkoWyUsTjKrhgD0dcz22mdkSnpYqbEjIm2nhwhuxlSkpywJmBo8h0ZqJdkp73mb90SssHkN4rsRaBAfAA==
@@ -15566,34 +15368,10 @@ package-json@^6.3.0, package-json@^8.1.0:
     registry-url "^6.0.0"
     semver "^7.3.7"
 
-pacote@15.1.1:
-  version "15.1.1"
-  resolved "https://registry.yarnpkg.com/pacote/-/pacote-15.1.1.tgz#94d8c6e0605e04d427610b3aacb0357073978348"
-  integrity sha512-eeqEe77QrA6auZxNHIp+1TzHQ0HBKf5V6c8zcaYZ134EJe1lCi+fjXATkNiEEfbG+e50nu02GLvUtmZcGOYabQ==
-  dependencies:
-    "@npmcli/git" "^4.0.0"
-    "@npmcli/installed-package-contents" "^2.0.1"
-    "@npmcli/promise-spawn" "^6.0.1"
-    "@npmcli/run-script" "^6.0.0"
-    cacache "^17.0.0"
-    fs-minipass "^3.0.0"
-    minipass "^4.0.0"
-    npm-package-arg "^10.0.0"
-    npm-packlist "^7.0.0"
-    npm-pick-manifest "^8.0.0"
-    npm-registry-fetch "^14.0.0"
-    proc-log "^3.0.0"
-    promise-retry "^2.0.1"
-    read-package-json "^6.0.0"
-    read-package-json-fast "^3.0.0"
-    sigstore "^1.0.0"
-    ssri "^10.0.0"
-    tar "^6.1.11"
-
-pacote@^15.0.0, pacote@^15.0.8:
-  version "15.1.3"
-  resolved "https://registry.yarnpkg.com/pacote/-/pacote-15.1.3.tgz#4c0e7fb5e7ab3b27fb3f86514b451ad4c4f64e9d"
-  integrity sha512-aRts8cZqxiJVDitmAh+3z+FxuO3tLNWEmwDRPEpDDiZJaRz06clP4XX112ynMT5uF0QNoMPajBBHnaStUEPJXA==
+pacote@^15.2.0:
+  version "15.2.0"
+  resolved "https://registry.yarnpkg.com/pacote/-/pacote-15.2.0.tgz#0f0dfcc3e60c7b39121b2ac612bf8596e95344d3"
+  integrity sha512-rJVZeIwHTUta23sIZgEIM62WYwbmGbThdbnkt81ravBplQv+HjyroqnLRNH2+sLJHcGZmLRmhPwACqhfTcOmnA==
   dependencies:
     "@npmcli/git" "^4.0.0"
     "@npmcli/installed-package-contents" "^2.0.1"
@@ -18156,7 +17934,6 @@ rtlcss@^3.5.0:
     postcss "^8.3.11"
     strip-json-comments "^3.1.1"
 
-run-async@^2.2.0, run-async@^2.4.0:
 run-applescript@^5.0.0:
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/run-applescript/-/run-applescript-5.0.0.tgz#e11e1c932e055d5c6b40d98374e0268d9b11899c"
@@ -18164,7 +17941,7 @@ run-applescript@^5.0.0:
   dependencies:
     execa "^5.0.0"
 
-run-async@^2.4.0:
+run-async@^2.2.0, run-async@^2.4.0:
   version "2.4.1"
   resolved "https://registry.yarnpkg.com/run-async/-/run-async-2.4.1.tgz#8440eccf99ea3e70bd409d49aab88e10c189a455"
   integrity sha512-tvVnVv01b8c1RrA6Ep7JkStj85Guv/YrMcwqYQnwjsAS2cTmmPGBBjAjpCW7RrSodNSoE2/qg9O4bceNvUuDgQ==
@@ -19388,6 +19165,14 @@ synchronous-promise@^2.0.15:
   resolved "https://registry.yarnpkg.com/synchronous-promise/-/synchronous-promise-2.0.17.tgz#38901319632f946c982152586f2caf8ddc25c032"
   integrity sha512-AsS729u2RHUfEra9xJrE39peJcc2stq2+poBXX8bcM08Y6g9j/i/PUzwNQqkaJde7Ntg1TO7bSREbR5sdosQ+g==
 
+synckit@^0.8.5:
+  version "0.8.5"
+  resolved "https://registry.yarnpkg.com/synckit/-/synckit-0.8.5.tgz#b7f4358f9bb559437f9f167eb6bc46b3c9818fa3"
+  integrity sha512-L1dapNV6vu2s/4Sputv8xGsCdAVlb5nRDMFU/E27D44l5U6cw1g0dGd45uLc+OXjNMmF4ntiMdCimzcjFKQI8Q==
+  dependencies:
+    "@pkgr/utils" "^2.3.1"
+    tslib "^2.5.0"
+
 table@^5.2.3:
   version "5.4.6"
   resolved "https://registry.yarnpkg.com/table/-/table-5.4.6.tgz#1292d19500ce3f86053b05f0e8e7e4a3bb21079e"
@@ -19397,13 +19182,6 @@ table@^5.2.3:
     lodash "^4.17.14"
     slice-ansi "^2.1.0"
     string-width "^3.0.0"
-synckit@^0.8.5:
-  version "0.8.5"
-  resolved "https://registry.yarnpkg.com/synckit/-/synckit-0.8.5.tgz#b7f4358f9bb559437f9f167eb6bc46b3c9818fa3"
-  integrity sha512-L1dapNV6vu2s/4Sputv8xGsCdAVlb5nRDMFU/E27D44l5U6cw1g0dGd45uLc+OXjNMmF4ntiMdCimzcjFKQI8Q==
-  dependencies:
-    "@pkgr/utils" "^2.3.1"
-    tslib "^2.5.0"
 
 table@^6.0.9:
   version "6.8.1"

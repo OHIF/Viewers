@@ -108,6 +108,14 @@ function getPanelModule({
       component: wrappedHounsfieldUnitRange,
       context: 'LYTIC',
     },
+    {
+      name: 'WindowLevelPane',
+      iconName: 'tab-roi-threshold',
+      iconLabel: 'Window Level',
+      label: 'Window Level',
+      component: wrappedWindowLevelPane,
+      context: 'LYTIC',
+    }
   ];
 }
 

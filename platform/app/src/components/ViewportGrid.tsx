@@ -291,7 +291,7 @@ function ViewerViewportGrid(props) {
           // by React, and also in the hanging protocol and stage changes if the
           // same viewportId is used, React, by default, will only move (not re-render)
           // those components. For instance, if we have a 2x3 layout, and we move
-          // from 2x3 to 1x1 (second viewport), if the key is the viewportIndex,
+          // from 2x3 to 1x1 (second viewport), if the key is the viewportId,
           // React will RE-RENDER the resulting viewport as the key will be different.
           // however, if the key is the viewportId, React will only move the component
           // and not re-render it.

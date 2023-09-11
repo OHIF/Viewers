@@ -1,7 +1,6 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import debounce from 'lodash.debounce';
 import { useTranslation } from 'react-i18next';
 
 import './tooltip.css';
@@ -33,37 +32,21 @@ const arrowPositionStyle = {
 
 const Tooltip = ({ content, isSticky, position, className, tight, children, isDisabled }) => {
   const [isActive, setIsActive] = useState(false);
-  const isOpen = useMemo(
-    () => (isSticky || isActive) && !isDisabled,
-    [isSticky, isActive, isDisabled]
-  );
   const { t } = useTranslation('Buttons');
 
-  const handleMouseOverDebounced = useMemo(
-    () => debounce(() => setIsActive(true), showHideDelay),
-    [showHideDelay]
-  );
-
-  const handleMouseOutDebounced = useMemo(
-    () => debounce(() => setIsActive(false), showHideDelay),
-    [showHideDelay]
-  );
-
   const handleMouseOver = () => {
-    handleMouseOutDebounced.cancel();
-    handleMouseOverDebounced();
+    if (!isActive) {
+      setIsActive(true);
+    }
   };
 
   const handleMouseOut = () => {
-    handleMouseOverDebounced.cancel();
-    handleMouseOutDebounced();
+    if (isActive) {
+      setIsActive(false);
+    }
   };
 
-  useEffect(() => {
-    if (!isOpen && onHide) {
-      onHide();
-    }
-  }, [isOpen, onHide]);
+  const isOpen = (isSticky || isActive) && !isDisabled;
 
   return (
     <div
@@ -86,8 +69,7 @@ const Tooltip = ({ content, isSticky, position, className, tight, children, isDi
             'tooltip-box bg-primary-dark border-secondary-light w-max-content relative inset-x-auto top-full rounded border text-base text-white',
             {
               'py-1 px-4': !tight,
-            },
-            tooltipBoxClassName
+            }
           )}
         >
           {typeof content === 'string' ? t(content) : content}
@@ -113,7 +95,6 @@ Tooltip.defaultProps = {
   isSticky: false,
   position: 'bottom',
   isDisabled: false,
-  showHideDelay: 300,
 };
 
 Tooltip.propTypes = {
@@ -125,9 +106,6 @@ Tooltip.propTypes = {
   tight: PropTypes.bool,
   children: PropTypes.node.isRequired,
   className: PropTypes.string,
-  tooltipBoxClassName: PropTypes.string,
-  showHideDelay: PropTypes.number,
-  onHide: PropTypes.func,
 };
 
 export default Tooltip;

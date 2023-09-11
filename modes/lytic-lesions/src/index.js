@@ -170,7 +170,7 @@ function modeFactory() {
         cornerstoneViewportService,
       } = servicesManager.services;
 
-      _activatePanelTriggersSubscriptions.forEach(sub => sub.unsubscribe());
+      _activatePanelTriggersSubscriptions.forEach((sub) => sub.unsubscribe());
       _activatePanelTriggersSubscriptions = [];
 
       toolGroupService.destroy();
@@ -183,12 +183,12 @@ function modeFactory() {
       series: [],
     },
 
-    isValidMode: function({ modalities }) {
+    isValidMode: function ({ modalities }) {
       const modalities_list = modalities.split('\\');
 
       // Exclude non-image modalities
       return !!modalities_list.filter(
-        modality => NON_IMAGE_MODALITIES.indexOf(modality) === -1
+        (modality) => NON_IMAGE_MODALITIES.indexOf(modality) === -1
       ).length;
     },
     routes: [

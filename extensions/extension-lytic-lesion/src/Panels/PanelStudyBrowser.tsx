@@ -40,10 +40,10 @@ function PanelStudyBrowser({
 
   const onDoubleClickThumbnailHandler = displaySetInstanceUID => {
     let updatedViewports = [];
-    const viewportIndex = activeViewportIndex;
+    const viewportId = activeViewportIndex;
     try {
       updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
-        viewportIndex,
+        viewportId,
         displaySetInstanceUID
       );
     } catch (error) {
@@ -220,11 +220,11 @@ function PanelStudyBrowser({
     );
     const updatedExpandedStudyInstanceUIDs = shouldCollapseStudy
       ? // eslint-disable-next-line prettier/prettier
-        [
-          ...expandedStudyInstanceUIDs.filter(
-            stdyUid => stdyUid !== StudyInstanceUID
-          ),
-        ]
+      [
+        ...expandedStudyInstanceUIDs.filter(
+          stdyUid => stdyUid !== StudyInstanceUID
+        ),
+      ]
       : [...expandedStudyInstanceUIDs, StudyInstanceUID];
 
     setExpandedStudyInstanceUIDs(updatedExpandedStudyInstanceUIDs);

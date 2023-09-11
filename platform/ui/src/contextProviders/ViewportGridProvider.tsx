@@ -38,7 +38,7 @@ const DEFAULT_STATE: DefaultState = {
     layoutType: 'grid',
   },
   // Viewports structure has been changed to Map (previously it was
-  // tied to the viewportIndex which caused multiple issues. Now we have
+  // tied to the viewportId which caused multiple issues. Now we have
   // moved completely to viewportId which is unique for each viewport.
   viewports: new Map(
     Object.entries({

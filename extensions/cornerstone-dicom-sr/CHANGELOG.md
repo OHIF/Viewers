@@ -59,7 +59,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
-* **grid:** remove viewportIndex and only rely on viewportId ([#3591](https://github.com/OHIF/Viewers/issues/3591)) ([4c6ff87](https://github.com/OHIF/Viewers/commit/4c6ff873e887cc30ffc09223f5cb99e5f94c9cdd))
+* **grid:** remove viewportId and only rely on viewportId ([#3591](https://github.com/OHIF/Viewers/issues/3591)) ([4c6ff87](https://github.com/OHIF/Viewers/commit/4c6ff873e887cc30ffc09223f5cb99e5f94c9cdd))
 
 
 

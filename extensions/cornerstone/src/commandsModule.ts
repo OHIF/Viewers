@@ -540,13 +540,8 @@ function commandsModule({
         viewport.render();
       }
     },
-    setSingleViewportColormap: ({
-      viewportIndex,
-      displaySetInstanceUID,
-      colormap,
-      immediate = false,
-    }) => {
-      const { viewportId, viewport } = _getActiveViewportEnabledElement();
+    setSingleViewportColormap: ({ displaySetInstanceUID, colormap, immediate = false }) => {
+      const { viewport } = _getActiveViewportEnabledElement();
       const renderingEngine = cornerstoneViewportService.getRenderingEngine();
       console.log(viewport);
       viewport.setProperties({ colormap: colormap });
@@ -602,7 +597,7 @@ function commandsModule({
       const { viewports } = viewportGridService.getState();
 
       const viewportsToUpdate = viewports.map((viewport, index) => ({
-        viewportIndex: index,
+        viewportId: index,
         displaySetInstanceUIDs: [displaySetKey],
         viewportOptions: {
           initialImageOptions: viewport.viewportOptions.initialImageOptions,

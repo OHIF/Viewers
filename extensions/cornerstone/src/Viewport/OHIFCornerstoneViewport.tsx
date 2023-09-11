@@ -134,11 +134,11 @@ const OHIFCornerstoneViewport = React.memo(props => {
   const [viewportDialogState] = useViewportDialog();
 
   const cineHandler = useCallback(() => {
-    if (!cines || !cines[viewportIndex] || !enabledVPElement) {
+    if (!cines || !cines[viewportId] || !enabledVPElement) {
       return;
     }
 
-    const cine = cines[viewportIndex];
+    const cine = cines[viewportId];
     const isPlaying = cine.isPlaying || false;
     const frameRate = cine.frameRate || 24;
 
@@ -151,32 +151,32 @@ const OHIFCornerstoneViewport = React.memo(props => {
     } else {
       cineService.stopClip(enabledVPElement);
     }
-  }, [cines, viewportIndex, cineService, enabledVPElement]);
+  }, [cines, viewportId, cineService, enabledVPElement]);
 
   useEffect(() => {
     eventTarget.addEventListener(Enums.Events.STACK_VIEWPORT_NEW_STACK, cineHandler);
 
     return () => {
-      cineService.setCine({ id: viewportIndex, isPlaying: false });
+      cineService.setCine({ id: viewportId, isPlaying: false });
       eventTarget.removeEventListener(Enums.Events.STACK_VIEWPORT_NEW_STACK, cineHandler);
     };
   }, [enabledVPElement]);
 
   useEffect(() => {
-    if (!cines || !cines[viewportIndex] || !enabledVPElement) {
+    if (!cines || !cines[viewportId] || !enabledVPElement) {
       return;
     }
 
     cineHandler();
 
     return () => {
-      if (enabledVPElement && cines?.[viewportIndex]?.isPlaying) {
+      if (enabledVPElement && cines?.[viewportId]?.isPlaying) {
         cineService.stopClip(enabledVPElement);
       }
     };
-  }, [cines, viewportIndex, cineService, enabledVPElement, cineHandler]);
+  }, [cines, viewportId, cineService, enabledVPElement, cineHandler]);
 
-  const cine = cines[viewportIndex];
+  const cine = cines[viewportId];
   const isPlaying = cine?.isPlaying ?? false;
   const frameRate = cine?.frameRate ?? 24;
 
