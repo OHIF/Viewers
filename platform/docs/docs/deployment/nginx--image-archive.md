@@ -83,7 +83,7 @@ in command prompt or terminal_
 
 ### Setup
 
-- Navigate to `viewer` folder inside `platform`
+- Navigate to `app` folder inside `platform`
 - then: `cd .recipes/OpenResty-Orthanc`
 - run: `docker-compose up --build`
 - Navigate to `127.0.0.1` for the viewer

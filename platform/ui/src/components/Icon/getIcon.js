@@ -80,6 +80,7 @@ import notificationsError from './../../assets/icons/notifications-error.svg';
 import notificationsSuccess from './../../assets/icons/notifications-success.svg';
 
 /** Tools */
+import toggleDicomOverlay from './../../assets/icons/toggle-dicom-overlay.svg';
 import toolZoom from './../../assets/icons/tool-zoom.svg';
 import toolCapture from './../../assets/icons/tool-capture.svg';
 import toolLayout from './../../assets/icons/tool-layout.svg';
@@ -209,6 +210,7 @@ const ICONS = {
   'notifications-warning': notificationsWarning,
 
   /** Tools */
+  'toggle-dicom-overlay': toggleDicomOverlay,
   'tool-zoom': toolZoom,
   'tool-capture': toolCapture,
   'tool-layout': toolLayout,
