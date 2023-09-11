@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.7.0-beta.69](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.68...v3.7.0-beta.69) (2023-09-11)
+
+**Note:** Version bump only for package @ohif/cli
+
+
+
+
+
 # [3.7.0-beta.68](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.67...v3.7.0-beta.68) (2023-09-11)
 
 **Note:** Version bump only for package @ohif/cli
