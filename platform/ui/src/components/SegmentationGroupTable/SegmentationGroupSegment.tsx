@@ -110,7 +110,7 @@ const SegmentItem = ({
             <div className="flex">
               <div>
                 <Icon
-                  name="row-locked"
+                  name="row-lock"
                   className={classnames('h-5 w-5')}
                   onClick={e => {
                     e.stopPropagation();
@@ -172,7 +172,7 @@ const HoveringIcons = ({
   return (
     <div className="flex items-center">
       {createIcon('row-edit', onEdit)}
-      {createIcon(isLocked ? 'row-locked' : 'row-unlocked', onToggleLocked)}
+      {createIcon(isLocked ? 'row-lock' : 'row-unlock', onToggleLocked)}
       {createIcon(isVisible ? 'row-hide' : 'row-unhide', onToggleVisibility)}
     </div>
   );

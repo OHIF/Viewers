@@ -118,10 +118,10 @@ import rowEdit from './../../assets/icons/row-edit.svg';
 import rowHidden from './../../assets/icons/row-hidden.svg';
 import rowHideAll from './../../assets/icons/row-hide-all.svg';
 import rowHide from './../../assets/icons/row-hide.svg';
-import rowLocked from './../../assets/icons/row-locked.svg';
 import rowShowAll from './../../assets/icons/row-show-all.svg';
 import rowUnhide from './../../assets/icons/row-unhide.svg';
-import rowUnlocked from './../../assets/icons/row-unlockeds.svg';
+import rowLock from './../../assets/icons/row-lock.svg';
+import rowUnlock from './../../assets/icons/row-unlock.svg';
 import iconMPR from './../../assets/icons/icon-mpr-alt.svg';
 import checkboxDefault from './../../assets/icons/checkbox-default.svg';
 import checkboxActive from './../../assets/icons/checkbox-active.svg';
@@ -207,11 +207,11 @@ const ICONS = {
   'row-edit': rowEdit,
   'row-hidden': rowHidden,
   'row-hide-all': rowHideAll,
-  'row-hide': rowHide,
-  'row-locked': rowLocked,
+  'row-lock': rowLock,
+  'row-unlock': rowUnlock,
   'row-show-all': rowShowAll,
+  'row-hide': rowHide,
   'row-unhide': rowUnhide,
-  'row-unlocked': rowUnlocked,
   'checkbox-checked': checkboxChecked,
   'checkbox-unchecked': checkboxUnchecked,
   'loading-ohif-mark': loadingOHIFMark,

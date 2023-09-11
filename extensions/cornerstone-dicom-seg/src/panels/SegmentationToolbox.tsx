@@ -86,7 +86,10 @@ function SegmentationToolbox({ servicesManager, extensionManager }) {
     events.forEach(event => {
       const { unsubscribe } = segmentationService.subscribe(event, () => {
         const segmentations = segmentationService.getSegmentations();
-        setToolsEnabled(segmentations.length > 0);
+
+        const activeSegmentation = segmentations?.find(seg => seg.isActive);
+
+        setToolsEnabled(activeSegmentation?.segmentCount > 0);
       });
 
       unsubscriptions.push(unsubscribe);
