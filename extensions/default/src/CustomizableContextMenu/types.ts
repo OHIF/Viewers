@@ -69,7 +69,7 @@ export interface MenuItem {
   // or more importantly, if the delegating subMenu will be included.
   selector?: (props: SelectorProps) => boolean;
 
-  /** Adapts the item by filling in additional properties as requried */
+  /** Adapts the item by filling in additional properties as required */
   adaptItem?: (item: MenuItem, props: ContextMenuProps) => UIMenuItem;
 
   /** List of commands to run when this item's action is taken. */

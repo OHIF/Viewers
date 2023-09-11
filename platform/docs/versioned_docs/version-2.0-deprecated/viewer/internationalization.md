@@ -187,7 +187,7 @@ the following file tree:
             index.js
             | UK
                |-- Buttons.js
-               indes.js
+               index.js
             | US
                |-- Buttons.js
                index.js

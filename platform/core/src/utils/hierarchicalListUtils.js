@@ -36,7 +36,7 @@ function addToList(list, ...values) {
  * once for each leaf-node of the tree. The ancestors of the leaf-node being
  * visited are passed to the callback function along with the leaf-node in
  * the exact same order they appear on the tree (from root to leaf);
- *  @ For example, if the hierachy `a > b > c` appears on the tree ("a" being
+ *  @ For example, if the hierarchy `a > b > c` appears on the tree ("a" being
  *    the root and "c" being the leaf) the callback function will be called as:
  *  callback('a', 'b', 'c');
  * @param {Array} list The hierarchical list to be iterated

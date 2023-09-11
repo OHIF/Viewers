@@ -152,7 +152,7 @@ export default class ToolbarService extends PubSubService {
     //   unsubscribe = commandsManager.runCommand(commandName, commandOptions);
     // }
 
-    // // Storing the unsubscribe for later reseting
+    // // Storing the unsubscribe for later resetting
     // if (unsubscribe && typeof unsubscribe === 'function') {
     //   if (this.unsubscriptions.indexOf(unsubscribe) === -1) {
     //     this.unsubscriptions.push(unsubscribe);

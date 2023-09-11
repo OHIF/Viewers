@@ -182,7 +182,7 @@ const commandsModule = ({
           stateSyncReduce;
 
         if (!protocolId) {
-          // Re-use the previous protocol id, and optionally stage
+          // Reuse the previous protocol id, and optionally stage
           protocolId = hpInfo.protocolId;
           if (stageId === undefined && stageIndex === undefined) {
             stageIndex = hpInfo.stageIndex;
