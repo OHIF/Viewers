@@ -7,7 +7,7 @@ export type SidePanelWithServicesProps = {
   side: 'left' | 'right';
   className: string;
   activeTabIndex: number;
-  tabs: Array<any>;
+  tabs: any;
 };
 
 const SidePanelWithServices = ({

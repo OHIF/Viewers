@@ -57,6 +57,8 @@ import iconClose from './../../assets/icons/icon-close.svg';
 import iconClearField from './../../assets/icons/icon-clear-field.svg';
 import iconNextInactive from './../../assets/icons/icon-next-inactive.svg';
 import iconNext from './../../assets/icons/icon-next.svg';
+import iconPanelCloseLeft from './../../assets/icons/icon-panel-close-left.svg';
+import iconPanelCloseRight from './../../assets/icons/icon-panel-close-right.svg';
 import iconPlay from './../../assets/icons/icon-play.svg';
 import iconPause from './../../assets/icons/icon-pause.svg';
 import iconPrevInactive from './../../assets/icons/icon-prev-inactive.svg';
@@ -157,6 +159,8 @@ const ICONS = {
   'icon-alert-small': iconAlertSmall,
   'icon-clear-field': iconClearField,
   'icon-close': iconClose,
+  'icon-panel-close-left': iconPanelCloseLeft,
+  'icon-panel-close-right': iconPanelCloseRight,
   'icon-play': iconPlay,
   'icon-pause': iconPause,
   'icon-search': iconSearch,
