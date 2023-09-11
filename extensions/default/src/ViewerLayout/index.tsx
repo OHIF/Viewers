@@ -1,24 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import { useLocation } from 'react-router';
 
-import {
-  SidePanel,
-  ErrorBoundary,
-  UserPreferences,
-  AboutModal,
-  Header,
-  useModal,
-  LoadingIndicatorProgress,
-} from '@ohif/ui';
-import i18n from '@ohif/i18n';
-import { ServicesManager, HangingProtocolService, hotkeys, CommandsManager } from '@ohif/core';
+import { SidePanel, ErrorBoundary, LoadingIndicatorProgress } from '@ohif/ui';
+import { ServicesManager, HangingProtocolService, CommandsManager } from '@ohif/core';
 import { useAppConfig } from '@state';
-import Toolbar from '../Toolbar/Toolbar';
-
-const { availableLanguages, defaultLanguage, currentLanguage } = i18n;
+import ViewerHeader from './ViewerHeader';
 
 function ViewerLayout({
   // From Extension Module Params
@@ -35,100 +21,9 @@ function ViewerLayout({
   rightPanelDefaultClosed = false,
 }): React.FunctionComponent {
   const [appConfig] = useAppConfig();
-  const navigate = useNavigate();
-  const location = useLocation();
-
-  const onClickReturnButton = () => {
-    const { pathname } = location;
-    const dataSourceIdx = pathname.indexOf('/', 1);
-    // const search =
-    //   dataSourceIdx === -1
-    //     ? undefined
-    //     : `datasources=${pathname.substring(dataSourceIdx + 1)}`;
-
-    // Todo: Handle parameters in a better way.
-    const query = new URLSearchParams(window.location.search);
-    const configUrl = query.get('configUrl');
-
-    const dataSourceName = pathname.substring(dataSourceIdx + 1);
-    const existingDataSource = extensionManager.getDataSources(dataSourceName);
-
-    const searchQuery = new URLSearchParams();
-    if (dataSourceIdx !== -1 && existingDataSource) {
-      searchQuery.append('datasources', pathname.substring(dataSourceIdx + 1));
-    }
-
-    if (configUrl) {
-      searchQuery.append('configUrl', configUrl);
-    }
-
-    navigate({
-      pathname: '/',
-      search: decodeURIComponent(searchQuery.toString()),
-    });
-  };
-
-  const { t } = useTranslation();
-  const { show, hide } = useModal();
-
-  const [showLoadingIndicator, setShowLoadingIndicator] = useState(appConfig.showLoadingIndicator);
 
   const { hangingProtocolService } = servicesManager.services;
-
-  const { hotkeyDefinitions, hotkeyDefaults } = hotkeysManager;
-  const versionNumber = process.env.VERSION_NUMBER;
-  const commitHash = process.env.COMMIT_HASH;
-
-  const menuOptions = [
-    {
-      title: t('Header:About'),
-      icon: 'info',
-      onClick: () =>
-        show({
-          content: AboutModal,
-          title: 'About OHIF Viewer',
-          contentProps: { versionNumber, commitHash },
-        }),
-    },
-    {
-      title: t('Header:Preferences'),
-      icon: 'settings',
-      onClick: () =>
-        show({
-          title: t('UserPreferencesModal:User Preferences'),
-          content: UserPreferences,
-          contentProps: {
-            hotkeyDefaults: hotkeysManager.getValidHotkeyDefinitions(hotkeyDefaults),
-            hotkeyDefinitions,
-            currentLanguage: currentLanguage(),
-            availableLanguages,
-            defaultLanguage,
-            onCancel: () => {
-              hotkeys.stopRecord();
-              hotkeys.unpause();
-              hide();
-            },
-            onSubmit: ({ hotkeyDefinitions, language }) => {
-              i18n.changeLanguage(language.value);
-              hotkeysManager.setHotkeys(hotkeyDefinitions);
-              hide();
-            },
-            onReset: () => hotkeysManager.restoreDefaultBindings(),
-            hotkeysModule: hotkeys,
-          },
-        }),
-    },
-  ];
-
-  if (appConfig.oidc) {
-    menuOptions.push({
-      title: t('Header:Logout'),
-      icon: 'power-off',
-      onClick: async () => {
-        navigate(`/logout?redirect_uri=${encodeURIComponent(window.location.href)}`);
-      },
-    });
-  }
+  const [showLoadingIndicator, setShowLoadingIndicator] = useState(appConfig.showLoadingIndicator);
 
   /**
    * Set body classes (tailwindcss) that don't allow vertical
@@ -210,18 +105,11 @@ function ViewerLayout({
 
   return (
     <div>
-      <Header
-        menuOptions={menuOptions}
-        isReturnEnabled={!!appConfig.showStudyList}
-        onClickReturnButton={onClickReturnButton}
-        WhiteLabeling={appConfig.whiteLabeling}
-      >
-        <ErrorBoundary context="Primary Toolbar">
-          <div className="relative flex justify-center">
-            <Toolbar servicesManager={servicesManager} />
-          </div>
-        </ErrorBoundary>
-      </Header>
+      <ViewerHeader
+        hotkeysManager={hotkeysManager}
+        extensionManager={extensionManager}
+        servicesManager={servicesManager}
+      />
       <div
         className="relative flex w-full flex-row flex-nowrap items-stretch overflow-hidden bg-black"
         style={{ height: 'calc(100vh - 52px' }}
@@ -281,6 +169,7 @@ ViewerLayout.propTypes = {
   rightPanelDefaultClosed: PropTypes.bool.isRequired,
   /** Responsible for rendering our grid of viewports; provided by consuming application */
   children: PropTypes.oneOfType([PropTypes.node, PropTypes.func]).isRequired,
+  viewports: PropTypes.array,
 };
 
 export default ViewerLayout;

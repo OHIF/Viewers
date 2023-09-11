@@ -45,6 +45,7 @@ export {
   ButtonGroup,
   ButtonEnums,
   ContextMenu,
+  CheckBox,
   CinePlayer,
   DateRange,
   Dialog,

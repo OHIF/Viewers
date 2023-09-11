@@ -84,6 +84,7 @@ function modeFactory({ modeConfiguration }) {
           { toolName: toolNames.CalibrationLine },
         ],
         // enabled
+        enabled: [{ toolName: toolNames.ImageOverlayViewer }],
         // disabled
       };
 
