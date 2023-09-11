@@ -92,6 +92,11 @@ const commandsModule = ({
             label: 'Segment 1',
           },
         });
+
+        csViewport.element.removeEventListener(
+          Enums.Events.VOLUME_VIEWPORT_NEW_VOLUME,
+          handleVolumeEvent
+        );
       };
 
       if (viewportOptions.viewportType === 'stack') {
