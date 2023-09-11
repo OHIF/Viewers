@@ -41,10 +41,8 @@ Images can even be transcoded on the fly if this is desired.
     The principal (i.e. account) that is enabling the Cloud Healthcare API will require
     the following roles that can be set in the `IAM & Admin > IAM` console for the
     desired project.
-
     - Service Usage Viewer
     - Service Usage Admin
-
    :::
 
    :::tip
