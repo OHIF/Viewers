@@ -285,7 +285,7 @@ uses it's own internal class names.
 * Name: 'class:StudyBrowser'
 * Attributes:
 ** `true` for the is active true text color
-** `false` fo rhte is active false text color.
+** `false` for the is active false text color.
 ** Values are button colors, from the Button class, eg default, white, black
 
 ## customRoutes
