@@ -40,7 +40,7 @@ function addToList(list, ...values) {
  *    the root and "c" being the leaf) the callback function will be called as:
  *  callback('a', 'b', 'c');
  * @param {Array} list The hierarchical list to be iterated
- * @param {function} callback The callback which will be exected once for
+ * @param {function} callback The callback which will be executed once for
  *  each leaf-node of the hierarchical list;
  * @returns {Array} Returns the provided list or null for bad arguments;
  */
