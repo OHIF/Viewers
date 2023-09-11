@@ -5,7 +5,6 @@ import getSopClassHandlerModule from './getSopClassHandlerModule';
 import getHangingProtocolModule from './getHangingProtocolModule';
 import getPanelModule from './getPanelModule';
 import getCommandsModule from './commandsModule';
-import hydrateSEGDisplaySet from './utils/_hydrateSEG';
 import preRegistration from './init';
 
 const Component = React.lazy(() => {
@@ -65,4 +64,3 @@ const extension = {
 };
 
 export default extension;
-export { hydrateSEGDisplaySet };

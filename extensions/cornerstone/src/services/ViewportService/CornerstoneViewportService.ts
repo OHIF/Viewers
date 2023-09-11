@@ -15,11 +15,7 @@ import {
 import { utilities as csToolsUtils, Enums as csToolsEnums } from '@cornerstonejs/tools';
 import { IViewportService } from './IViewportService';
 import { RENDERING_ENGINE_ID } from './constants';
-import ViewportInfo, {
-  ViewportOptions,
-  DisplaySetOptions,
-  PublicViewportOptions,
-} from './Viewport';
+import ViewportInfo, { DisplaySetOptions, PublicViewportOptions } from './Viewport';
 import { StackViewportData, VolumeViewportData } from '../../types/CornerstoneCacheService';
 import { Presentation, Presentations } from '../../types/Presentation';
 

@@ -123,7 +123,7 @@ const SegmentationGroupTable = ({
           )}
         </div>
         {activeSegmentation && (
-          <div className="ohif-scrollbar mt-1 flex min-h-0 flex-col overflow-y-hidden">
+          <div className="ohif-scrollbar mt-1.5 flex min-h-0 flex-col overflow-y-hidden">
             {activeSegmentation?.segments?.map(segment => {
               if (segment === undefined || segment === null) {
                 return null;

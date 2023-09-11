@@ -1131,9 +1131,14 @@ class SegmentationService extends PubSubService {
       throw new Error(`Segmentation with segmentationId ${segmentationId} not found.`);
     }
 
-    this._setDisplaySetIsHydrated(segmentationId, true);
-
     segmentation.hydrated = true;
+
+    // Not all segmentations have dipslaysets, some of them are derived in the client
+    try {
+      this._setDisplaySetIsHydrated(segmentationId, true);
+    } catch (error) {
+      console.warn(error);
+    }
 
     if (!suppressEvents) {
       this._broadcastEvent(this.EVENTS.SEGMENTATION_UPDATED, {
@@ -1143,7 +1148,7 @@ class SegmentationService extends PubSubService {
   };
 
   private _setDisplaySetIsHydrated(displaySetUID: string, isHydrated: boolean): void {
-    const { DisplaySetService: displaySetService } = this.servicesManager.services;
+    const { displaySetService } = this.servicesManager.services;
     const displaySet = displaySetService.getDisplaySetByUID(displaySetUID);
     displaySet.isHydrated = isHydrated;
     displaySetService.setDisplaySetMetadataInvalidated(displaySetUID, false);
@@ -1464,18 +1469,14 @@ class SegmentationService extends PubSubService {
     }
   }
 
-  public shouldRenderSegmentation(viewportDisplaySetInstanceUIDs, segDisplaySetInstanceUID) {
-    if (!viewportDisplaySetInstanceUIDs || !viewportDisplaySetInstanceUIDs.length) {
+  public shouldRenderSegmentation(viewportDisplaySetInstanceUIDs, segmentationFrameOfReferenceUID) {
+    if (!viewportDisplaySetInstanceUIDs?.length) {
       return false;
     }
 
     const { displaySetService } = this.servicesManager.services;
 
     let shouldDisplaySeg = false;
-
-    const segDisplaySet = displaySetService.getDisplaySetByUID(segDisplaySetInstanceUID);
-
-    const segFrameOfReferenceUID = this._getFrameOfReferenceUIDForSeg(segDisplaySet);
 
     // check if the displaySet is sharing the same frameOfReferenceUID
     // with the new segmentation
@@ -1486,7 +1487,7 @@ class SegmentationService extends PubSubService {
       // don't want to show the segmentation for all the frames
       if (
         displaySet.isReconstructable &&
-        displaySet?.images?.[0]?.FrameOfReferenceUID === segFrameOfReferenceUID
+        displaySet?.images?.[0]?.FrameOfReferenceUID === segmentationFrameOfReferenceUID
       ) {
         shouldDisplaySeg = true;
         break;

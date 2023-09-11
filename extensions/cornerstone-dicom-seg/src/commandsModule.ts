@@ -23,9 +23,167 @@ const commandsModule = ({
     viewportGridService,
     segmentationService,
     uiDialogService,
+    displaySetService,
+    hangingProtocolService,
   } = (servicesManager as ServicesManager).services;
 
   const actions = {
+    /**
+     * It hydrates a segmentation display set on a target viewport. During such
+     * hydration, it also checks if there is any other viewport that require
+     * to be updated (is in the same FOR as the target viewport and is displaying)
+     *
+     * @param viewportId is the target viewport to hydrate the segmentation
+     * @param displaySet is the display set to hydrate (it can be a labelmap or RTSTRUCT)
+     */
+    hydrateSegmentationForViewport: async ({
+      viewportId: targetViewportId,
+      displaySet: segDisplaySet,
+    }: {
+      viewportId: string;
+      displaySet?: any;
+    }) => {
+      const { viewports, activeViewportId } = viewportGridService.getState();
+      const activeViewport = viewports.get(activeViewportId);
+
+      if (!activeViewport) {
+        return;
+      }
+
+      const { displaySetInstanceUIDs } = activeViewport;
+
+      // Validate the active viewport for segmentation
+      if (displaySetInstanceUIDs.length > 1) {
+        uiNotificationService.show({
+          title: 'Segmentation',
+          message: 'Segmentation is not supported for multiple display sets yet',
+          type: 'error',
+        });
+        return;
+      }
+
+      const referenceDisplaySetInstanceUID =
+        segDisplaySet?.referencedDisplaySetInstanceUID || displaySetInstanceUIDs[0];
+      const referencedDisplaySet = displaySetService.getDisplaySetByUID(
+        referenceDisplaySetInstanceUID
+      );
+      const segmentationFrameOfReferenceUID = referencedDisplaySet.instances[0].FrameOfReferenceUID;
+
+      const updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
+        targetViewportId,
+        referenceDisplaySetInstanceUID
+      );
+
+      viewports.forEach((viewport, viewportId) => {
+        if (targetViewportId === viewportId) {
+          return;
+        }
+        const shouldDisplaySeg = segmentationService.shouldRenderSegmentation(
+          viewport.displaySetInstanceUIDs,
+          segmentationFrameOfReferenceUID
+        );
+        if (shouldDisplaySeg) {
+          updatedViewports.push({
+            viewportId,
+            displaySetInstanceUIDs: viewport.displaySetInstanceUIDs,
+            viewportOptions: {
+              viewportType: 'volume',
+              needsRerendering: true,
+            },
+          });
+        }
+      });
+
+      // create Segmentation callback which needs to be waited until
+      // the volume is created (if coming from stack)
+      const createSegmentationForVolume = async () => {
+        debugger;
+        let segmentationId;
+        if (!segDisplaySet) {
+          const currentSegmentations = segmentationService.getSegmentations();
+          segmentationId = await segmentationService.createSegmentationForDisplaySet(
+            referenceDisplaySetInstanceUID,
+            { label: `Segmentation ${currentSegmentations.length + 1}` }
+          );
+
+          await segmentationService.addSegmentationRepresentationToToolGroup(
+            activeViewport.viewportOptions.toolGroupId,
+            segmentationId
+          );
+
+          // Todo: handle other toolGroups than default
+          segmentationService.addSegment(segmentationId, {
+            properties: {
+              label: 'Segment 1',
+            },
+          });
+        } else {
+          const suppressEvents = false;
+          const serviceFunction =
+            segDisplaySet.Modality === 'SEG'
+              ? 'createSegmentationForSEGDisplaySet'
+              : 'createSegmentationForRTDisplaySet';
+
+          const load = segmentationService[serviceFunction].bind(segmentationService);
+
+          segmentationId = await load(segDisplaySet, segmentationId, suppressEvents);
+        }
+
+        segmentationService.hydrateSegmentation(segmentationId);
+      };
+
+      // volume already exists so we can create the segmentation already
+      let volumeExists = false;
+      cache._volumeCache.forEach((volume, volumeId) => {
+        if (volumeId.includes(referenceDisplaySetInstanceUID)) {
+          volumeExists = true;
+        }
+      });
+
+      if (volumeExists) {
+        await createSegmentationForVolume();
+      }
+
+      // Update the viewports with volume type
+      updatedViewports.forEach(async viewport => {
+        viewport.viewportOptions = {
+          ...viewport.viewportOptions,
+          viewportType: 'volume',
+          needsRerendering: true,
+        };
+
+        const csViewport = cornerstoneViewportService.getCornerstoneViewport(viewport.viewportId);
+
+        const isActiveViewport = viewport.viewportId === activeViewportId;
+
+        // Keeping the camera
+        const prevCamera = csViewport.getCamera();
+
+        if (!volumeExists) {
+          await createSegmentationForVolume();
+        }
+
+        // Callback function
+        csViewport.element.addEventListener(Enums.Events.VOLUME_VIEWPORT_NEW_VOLUME, async () => {
+          // IMPORTANT: REGRAB the viewport since it has changed from stack to volume
+          const volumeViewport = cornerstoneViewportService.getCornerstoneViewport(
+            viewport.viewportId
+          );
+          volumeViewport.setCamera(prevCamera);
+
+          if (isActiveViewport) {
+            await createSegmentationForVolume();
+          }
+
+          csViewport.element.removeEventListener(Enums.Events.VOLUME_VIEWPORT_NEW_VOLUME, this);
+        });
+      });
+
+      viewportGridService.setDisplaySetsForViewports(updatedViewports);
+
+      return true;
+    },
+
     /**
      * Show the context menu.
      * @param options.menuId defines the menu name to lookup, from customizationService
@@ -56,67 +214,21 @@ const commandsModule = ({
 
       const displaySetInstanceUID = displaySetInstanceUIDs[0];
 
-      const { viewportOptions } = activeViewport;
-      const csViewport = cornerstoneViewportService.getCornerstoneViewport(
-        viewportOptions.viewportId
-      );
+      const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
+      console.debug('🚀 ~ displaySet:', displaySet);
 
-      const prevCamera = csViewport.getCamera();
-
-      // Callback function
-      const handleVolumeEvent = async () => {
-        const activeViewport = viewports.get(activeViewportId);
-
-        const volumeViewport = cornerstoneViewportService.getCornerstoneViewport(
-          activeViewport?.viewportOptions?.viewportId
-        );
-
-        volumeViewport.setCamera(prevCamera);
-
-        const currentSegmentations = segmentationService.getSegmentations();
-
-        const segmentationId = await segmentationService.createSegmentationForDisplaySet(
-          displaySetInstanceUID,
-          { label: `Segmentation ${currentSegmentations.length + 1}` }
-        );
-
-        await segmentationService.addSegmentationRepresentationToToolGroup(
-          activeViewport.viewportOptions.toolGroupId,
-          segmentationId,
-          true // hydrateSegmentation,
-        );
-
-        // Todo: handle other toolgroups than default
-        segmentationService.addSegment(segmentationId, {
-          properties: {
-            label: 'Segment 1',
-          },
+      if (!displaySet.isReconstructable) {
+        uiNotificationService.show({
+          title: 'Segmentation',
+          message: 'Segmentation is not supported for non-reconstructible displaysets yet',
+          type: 'error',
         });
-
-        csViewport.element.removeEventListener(
-          Enums.Events.VOLUME_VIEWPORT_NEW_VOLUME,
-          handleVolumeEvent
-        );
-      };
-
-      if (viewportOptions.viewportType === 'stack') {
-        viewportGridService.setDisplaySetsForViewports([
-          {
-            viewportId: activeViewportId,
-            displaySetInstanceUIDs: [displaySetInstanceUID],
-            viewportOptions: {
-              viewportType: 'volume',
-            },
-          },
-        ]);
-
-        csViewport.element.addEventListener(
-          Enums.Events.VOLUME_VIEWPORT_NEW_VOLUME,
-          handleVolumeEvent
-        );
-      } else {
-        handleVolumeEvent();
+        return;
       }
+
+      actions.hydrateSegmentationForViewport({
+        viewportId: activeViewportId,
+      });
     },
     generateSegmentation: ({ segmentationId, options = {} }) => {
       const segmentation = cornerstoneToolsSegmentation.state.getSegmentation(segmentationId);
@@ -235,6 +347,9 @@ const commandsModule = ({
     },
     storeSegmentation: {
       commandFn: actions.storeSegmentation,
+    },
+    hydrateSegmentationForViewport: {
+      commandFn: actions.hydrateSegmentationForViewport,
     },
   };
 
