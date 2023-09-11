@@ -32,10 +32,9 @@ Images can even be transcoded on the fly if this is desired.
 
     :::tip
     An API can be enabled through the `APIs & Services > Enabled APIs & Services` console and
-    clicking the `+ ENABLE APIS AND SERVICES` button.
+    clicking the `+ENABLE APIS AND SERVICES` button.
 
     ![Google enable apis](../assets/img/google-enable-apis.png)
-
     :::
 
     :::tip
@@ -45,7 +44,6 @@ Images can even be transcoded on the fly if this is desired.
 
     - Service Usage Viewer
     - Service Usage Admin
-
    :::
 
    :::tip
@@ -73,8 +71,7 @@ Images can even be transcoded on the fly if this is desired.
 
 6. Go to APIs & Services > OAuth Consent Screen to create an OAuth Consent screen and fill in your application details.
 
-   - Run through the three step process of adding an OAuth Consent Screen, clicking
-   `SAVE AND CONTINUE` and the end of each step.
+   - Run through the three step process of adding an OAuth Consent Screen, clicking `SAVE AND CONTINUE` at the end of each step.
    ![Google OAuth Consent Screen steps](../assets/img/google-oauth-consent-steps.png)
    - For the Scopes step, for Google APIs, click the `ADD OR REMOVE SCOPES` button.
    - In the `Update selected scopes` dialogue that flies in from the right, add the
