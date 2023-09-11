@@ -5,8 +5,6 @@ import { useTranslation } from 'react-i18next';
 import SwiperCore, { A11y, Controller, Navigation, Pagination, Scrollbar } from 'swiper';
 import { Swiper, SwiperSlide } from 'swiper/react';
 
-import { PanelService, ServicesManager, Types } from '@ohif/core';
-
 import LegacyButton from '../LegacyButton';
 import Icon from '../Icon';
 import IconButton from '../IconButton';
@@ -65,22 +63,12 @@ const position = {
   },
 };
 
-const SidePanel = ({
-  servicesManager,
-  side,
-  className,
-  activeTabIndex: activeTabIndexProp,
-  tabs,
-}) => {
-  const panelService: PanelService = servicesManager?.services?.panelService;
-
+const SidePanel = ({ side, className, activeTabIndex: activeTabIndexProp, tabs, onOpened }) => {
   const { t } = useTranslation('SidePanel');
 
-  // Tracks whether this SidePanel has been opened at least once since this SidePanel was inserted into the DOM.
-  // Thus going to the Study List page and back to the viewer resets this flag for a SidePanel.
-  const [hasBeenOpened, setHasBeenOpened] = useState(activeTabIndexProp !== null);
-  const [panelOpen, setPanelOpen] = useState(activeTabIndexProp !== null);
-  const [activeTabIndex, setActiveTabIndex] = useState(activeTabIndexProp ?? 0);
+  const [panelOpen, setPanelOpen] = useState();
+  const [activeTabIndex, setActiveTabIndex] = useState(0);
+
   const swiperRef = useRef() as any;
   const [swiper, setSwiper] = useState<any>();
 
@@ -110,12 +98,17 @@ const SidePanel = ({
   const updatePanelOpen = useCallback((panelOpen: boolean) => {
     setPanelOpen(panelOpen);
     if (panelOpen) {
-      setHasBeenOpened(true);
+      onOpened?.();
     }
   }, []);
 
   const updateActiveTabIndex = useCallback(
     (activeTabIndex: number) => {
+      if (activeTabIndex === null) {
+        updatePanelOpen(false);
+        return;
+      }
+
       setActiveTabIndex(activeTabIndex);
       updatePanelOpen(true);
     },
@@ -123,24 +116,8 @@ const SidePanel = ({
   );
 
   useEffect(() => {
-    if (panelService) {
-      const activatePanelSubscription = panelService.subscribe(
-        panelService.EVENTS.ACTIVATE_PANEL,
-        (activatePanelEvent: Types.ActivatePanelEvent) => {
-          if (!hasBeenOpened || activatePanelEvent.forceActive) {
-            const tabIndex = tabs.findIndex(tab => tab.id === activatePanelEvent.panelId);
-            if (tabIndex !== -1) {
-              updateActiveTabIndex(tabIndex);
-            }
-          }
-        }
-      );
-
-      return () => {
-        activatePanelSubscription.unsubscribe();
-      };
-    }
-  }, [tabs, hasBeenOpened, panelService, updateActiveTabIndex]);
+    updateActiveTabIndex(activeTabIndexProp);
+  }, [activeTabIndexProp, updateActiveTabIndex]);
 
   const getCloseStateComponent = () => {
     const _childComponents = Array.isArray(tabs) ? tabs : [tabs];
@@ -288,7 +265,6 @@ SidePanel.defaultProps = {
 };
 
 SidePanel.propTypes = {
-  servicesManager: PropTypes.instanceOf(ServicesManager),
   side: PropTypes.oneOf(['left', 'right']).isRequired,
   className: PropTypes.string,
   activeTabIndex: PropTypes.number,
@@ -303,6 +279,7 @@ SidePanel.propTypes = {
       })
     ),
   ]),
+  onOpened: PropTypes.func,
 };
 
 function _getMoreThanOneTabLayout(
