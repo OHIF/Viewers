@@ -31,8 +31,7 @@ Images can even be transcoded on the fly if this is desired.
 3. Enable the [Cloud Healthcare API](https://cloud.google.com/healthcare/) for your project
 
     :::tip
-    An API can be enabled through the `APIs & Services > Enabled APIs & Services` console and
-    clicking the `+ENABLE APIS AND SERVICES` button.
+    An API can be enabled through the `APIs & Services > Enabled APIs & Services` console and clicking the `+ENABLE APIS AND SERVICES` button.
 
     ![Google enable apis](../assets/img/google-enable-apis.png)
 
