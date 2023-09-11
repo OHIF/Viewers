@@ -14,10 +14,7 @@ import { GoogleCloudDataSourceConfigurationAPI } from './DataSourceConfiguration
  * custom page for the user to view their profile, or to add a custom
  * page for login etc.
  */
-export default function getCustomizationModule({
-  servicesManager,
-  extensionManager,
-}) {
+export default function getCustomizationModule({ servicesManager, extensionManager }) {
   return [
     {
       name: 'helloPage',
@@ -26,9 +23,7 @@ export default function getCustomizationModule({
         routes: [
           {
             path: '/custom',
-            children: () => (
-              <h1 style={{ color: 'white' }}>Hello Custom Route</h1>
-            ),
+            children: () => <h1 style={{ color: 'white' }}>Hello Custom Route</h1>,
           },
         ],
       },
@@ -111,9 +106,7 @@ export default function getCustomizationModule({
                 style={{ color: this.color || undefined }}
                 title={this.title || ''}
               >
-                {this.label && (
-                  <span className="mr-1 shrink-0">{this.label}</span>
-                )}
+                {this.label && <span className="mr-1 shrink-0">{this.label}</span>}
                 <span className="font-light">{value}</span>
               </span>
             );

@@ -19,14 +19,7 @@ const CheckBox: React.FC<{
   label: string;
   labelClassName?: string;
   labelVariant?: string;
-}> = ({
-  checked,
-  onChange,
-  label,
-  labelClassName,
-  labelVariant = 'body',
-  className,
-}) => {
+}> = ({ checked, onChange, label, labelClassName, labelVariant = 'body', className }) => {
   const [isChecked, setIsChecked] = useState(checked);
 
   const handleClick = useCallback(() => {
@@ -36,16 +29,10 @@ const CheckBox: React.FC<{
 
   return (
     <div
-      className={`flex items-center cursor-pointer space-x-1 ${
-        className ? className : ''
-      }`}
+      className={`flex cursor-pointer items-center space-x-1 ${className ? className : ''}`}
       onClick={handleClick}
     >
-      {isChecked ? (
-        <Icon name="checkbox-checked" />
-      ) : (
-        <Icon name="checkbox-unchecked" />
-      )}
+      {isChecked ? <Icon name="checkbox-checked" /> : <Icon name="checkbox-unchecked" />}
 
       <Typography
         variant={labelVariant ?? 'subtitle'}

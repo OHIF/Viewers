@@ -1,10 +1,4 @@
-import React, {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useReducer,
-} from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useReducer } from 'react';
 import PropTypes from 'prop-types';
 
 const DEFAULT_STATE = {
@@ -36,23 +30,26 @@ export default function CineProvider({ children, service }) {
           const shouldUpdateIsPlaying =
             currentCine.isPlaying !== (isPlaying ?? currentCine.isPlaying);
 
-          return shouldUpdateFrameRate || shouldUpdateIsPlaying;
-        });
-
-        cineIdsToUpdate.forEach(currId => {
-          let cine = cines[currId];
-
-          if (!cine) {
-            cine = { id, ...DEFAULT_CINE };
-            cines[currId] = cine;
+          if (!cines[id]) {
+            cines[id] = { id, ...DEFAULT_CINE };
           }
+          cines[id].frameRate = frameRate || cines[id].frameRate;
+          cines[id].isPlaying = isPlaying !== undefined ? isPlaying : cines[id].isPlaying;
 
-          cine.frameRate = frameRate ?? cine.frameRate;
-          cine.isPlaying = isPlaying ?? cine.isPlaying;
-        });
+          cineIdsToUpdate.forEach(currId => {
+            let cine = cines[currId];
 
-        return { ...state, cines: { ...cines } };
-      }
+            if (!cine) {
+              cine = { id, ...DEFAULT_CINE };
+              cines[currId] = cine;
+            }
+
+            cine.frameRate = frameRate ?? cine.frameRate;
+            cine.isPlaying = isPlaying ?? cine.isPlaying;
+          });
+
+          return { ...state, cines: { ...cines } };
+        }
       case 'SET_IS_CINE_ENABLED': {
         return { ...state, ...{ isCineEnabled: action.payload } };
       }
@@ -66,8 +63,7 @@ export default function CineProvider({ children, service }) {
   const getState = useCallback(() => state, [state]);
 
   const setIsCineEnabled = useCallback(
-    isCineEnabled =>
-      dispatch({ type: 'SET_IS_CINE_ENABLED', payload: isCineEnabled }),
+    isCineEnabled => dispatch({ type: 'SET_IS_CINE_ENABLED', payload: isCineEnabled }),
     [dispatch]
   );
 
@@ -99,14 +95,11 @@ export default function CineProvider({ children, service }) {
     getState,
     setCine,
     setIsCineEnabled,
-    playClip: (element, playClipOptions) =>
-      service.playClip(element, playClipOptions),
+    playClip: (element, playClipOptions) => service.playClip(element, playClipOptions),
     stopClip: element => service.stopClip(element),
   };
 
-  return (
-    <CineContext.Provider value={[state, api]}>{children}</CineContext.Provider>
-  );
+  return <CineContext.Provider value={[state, api]}>{children}</CineContext.Provider>;
 }
 
 CineProvider.propTypes = {

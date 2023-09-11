@@ -30,7 +30,7 @@ const Modal = ({
   const renderHeader = () => {
     return (
       title && (
-        <header className="flex items-center px-[20px] py-[13px] bg-primary-dark rounded-tl rounded-tr">
+        <header className="bg-primary-dark flex items-center rounded-tl rounded-tr px-[20px] py-[13px]">
           <Typography
             variant="h6"
             color="primaryLight"
@@ -43,7 +43,7 @@ const Modal = ({
             <Icon
               onClick={onClose}
               name="close"
-              className="cursor-pointer text-primary-active"
+              className="text-primary-active cursor-pointer"
             />
           )}
         </header>
@@ -53,7 +53,7 @@ const Modal = ({
 
   return (
     <ReactModal
-      className="relative w-11/12 lg:w-10/12 xl:w-1/2 max-h-full outline-none  text-white"
+      className="relative max-h-full w-11/12 text-white outline-none lg:w-10/12  xl:w-1/2"
       overlayClassName="fixed top-0 left-0 right-0 bottom-0 z-50 bg-overlay flex items-start justify-center py-16"
       shouldCloseOnEsc={shouldCloseOnEsc}
       onRequestClose={handleClose}
@@ -62,7 +62,7 @@ const Modal = ({
       shouldCloseOnOverlayClick={shouldCloseOnOverlayClick}
     >
       {renderHeader()}
-      <section className="ohif-scrollbar modal-content overflow-y-auto px-[20px] pt-2 pb-[20px] rounded-bl rounded-br bg-primary-dark">
+      <section className="ohif-scrollbar modal-content bg-primary-dark overflow-y-auto rounded-bl rounded-br px-[20px] pt-2 pb-[20px]">
         {children}
       </section>
     </ReactModal>
@@ -81,10 +81,7 @@ Modal.propTypes = {
   title: PropTypes.string,
   onClose: PropTypes.func,
   /** The modal's content */
-  children: PropTypes.oneOfType([
-    PropTypes.arrayOf(PropTypes.node),
-    PropTypes.node,
-  ]).isRequired,
+  children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]).isRequired,
   shouldCloseOnOverlayClick: PropTypes.bool,
 };
 

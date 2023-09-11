@@ -2,13 +2,7 @@ import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import SwiperCore, {
-  A11y,
-  Controller,
-  Navigation,
-  Pagination,
-  Scrollbar,
-} from 'swiper';
+import SwiperCore, { A11y, Controller, Navigation, Pagination, Scrollbar } from 'swiper';
 import { Swiper, SwiperSlide } from 'swiper/react';
 
 import LegacyButton from '../LegacyButton';
@@ -78,6 +72,10 @@ const SidePanel = ({
   onActiveTabIndexChange,
 }) => {
   const { t } = useTranslation('SidePanel');
+
+  // Tracks whether this SidePanel has been opened at least once since this SidePanel was inserted into the DOM.
+  // Thus going to the Study List page and back to the viewer resets this flag for a SidePanel.
+  const [hasBeenOpened, setHasBeenOpened] = useState(activeTabIndexProp !== null);
   const [panelOpen, setPanelOpen] = useState(activeTabIndexProp !== null);
   const [activeTabIndex, setActiveTabIndex] = useState(activeTabIndexProp ?? 0);
   const swiperRef = useRef() as any;
@@ -128,8 +126,22 @@ const SidePanel = ({
   );
 
   useEffect(() => {
-    if (activeTabIndexProp !== null) {
-      updateActiveTabIndex(activeTabIndexProp);
+    if (panelService) {
+      const activatePanelSubscription = panelService.subscribe(
+        panelService.EVENTS.ACTIVATE_PANEL,
+        (activatePanelEvent: Types.ActivatePanelEvent) => {
+          if (!hasBeenOpened || activatePanelEvent.forceActive) {
+            const tabIndex = tabs.findIndex(tab => tab.id === activatePanelEvent.panelId);
+            if (tabIndex !== -1) {
+              updateActiveTabIndex(tabIndex);
+            }
+          }
+        }
+      );
+
+      return () => {
+        activatePanelSubscription.unsubscribe();
+      };
     }
   }, [activeTabIndexProp, updateActiveTabIndex]);
 
@@ -139,8 +151,8 @@ const SidePanel = ({
       <>
         <div
           className={classnames(
-            'bg-secondary-dark h-[28px] flex items-center w-full rounded-md cursor-pointer',
-            side === 'left' ? 'pr-2 justify-end' : 'pl-2 justify-start'
+            'bg-secondary-dark flex h-[28px] w-full cursor-pointer items-center rounded-md',
+            side === 'left' ? 'justify-end pr-2' : 'justify-start pl-2'
           )}
           onClick={() => {
             updatePanelOpen(!panelOpen);
@@ -149,13 +161,10 @@ const SidePanel = ({
         >
           <Icon
             name={'navigation-panel-right-reveal'}
-            className={classnames(
-              'text-primary-active',
-              side === 'left' && 'transform rotate-180'
-            )}
+            className={classnames('text-primary-active', side === 'left' && 'rotate-180 transform')}
           />
         </div>
-        <div className={classnames('flex flex-col space-y-3 mt-3')}>
+        <div className={classnames('mt-3 flex flex-col space-y-3')}>
           {_childComponents.map((childComponent, index) => (
             <Tooltip
               position={side === 'left' ? 'right' : 'left'}
@@ -194,11 +203,7 @@ const SidePanel = ({
 
   return (
     <div
-      className={classnames(
-        className,
-        baseClasses,
-        classesMap[openStatus][side]
-      )}
+      className={classnames(className, baseClasses, classesMap[openStatus][side])}
       style={style}
     >
       {panelOpen ? (
@@ -206,7 +211,7 @@ const SidePanel = ({
           {/** Panel Header with Arrow and Close Actions */}
           <div
             className={classnames(
-              'flex flex-static px-[10px] bg-primary-dark h-9 cursor-pointer',
+              'flex-static bg-primary-dark flex h-9 cursor-pointer px-[10px]',
               tabs.length === 1 && 'mb-1'
             )}
             onClick={() => {
@@ -221,7 +226,7 @@ const SidePanel = ({
               color="inherit"
               border="none"
               rounded="none"
-              className="flex flex-row flex-static items-center px-3 relative w-full"
+              className="flex-static relative flex w-full flex-row items-center px-3"
               name={tabs.length === 1 ? `${tabs[activeTabIndex].name}` : ''}
             >
               <Icon
@@ -251,14 +256,20 @@ const SidePanel = ({
           {/** carousel navigation with the arrows */}
           {/** only show carousel nav if tabs are more than 3 tabs */}
           {tabs.length > 3 && (
-            <div className="text-primary-active w-full flex justify-end gap-2 bg-primary-dark py-1 px-2">
-              <button ref={prevRef} className="swiper-button-prev-custom">
+            <div className="text-primary-active bg-primary-dark flex w-full justify-end gap-2 py-1 px-2">
+              <button
+                ref={prevRef}
+                className="swiper-button-prev-custom"
+              >
                 <Icon
                   name={'icon-prev'}
                   className={classnames('text-primary-active')}
                 />
               </button>
-              <button ref={nextRef} className="swiper-button-next-custom">
+              <button
+                ref={nextRef}
+                className="swiper-button-next-custom"
+              >
                 <Icon
                   name={'icon-next'}
                   className={classnames('text-primary-active')}
@@ -341,10 +352,8 @@ function _getMoreThanOneTabLayout(
             <SwiperSlide key={index}>
               <div
                 className={classnames(
-                  index === activeTabIndex
-                    ? 'bg-secondary-main text-white'
-                    : 'text-aqua-pale',
-                  'flex cursor-pointer px-4 py-1 rounded-[4px]  flex-col justify-center items-center text-center hover:text-white'
+                  index === activeTabIndex ? 'bg-secondary-main text-white' : 'text-aqua-pale',
+                  'flex cursor-pointer flex-col items-center justify-center  rounded-[4px] px-4 py-1 text-center hover:text-white'
                 )}
                 key={index}
                 onClick={() => {
@@ -356,9 +365,7 @@ function _getMoreThanOneTabLayout(
                   <Icon
                     name={obj.iconName}
                     className={classnames(
-                      index === activeTabIndex
-                        ? 'text-white'
-                        : 'text-primary-active'
+                      index === activeTabIndex ? 'text-white' : 'text-primary-active'
                     )}
                     style={{
                       width: '22px',
@@ -366,7 +373,7 @@ function _getMoreThanOneTabLayout(
                     }}
                   />
                 </span>
-                <span className="text-[10px] select-none font-medium whitespace-nowrap mt-[5px]">
+                <span className="mt-[5px] select-none whitespace-nowrap text-[10px] font-medium">
                   {obj.label}
                 </span>
               </div>

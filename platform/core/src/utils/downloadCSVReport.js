@@ -17,22 +17,14 @@ export default function downloadCSVReport(measurementData) {
 
   const reportMap = {};
   measurementData.forEach(measurement => {
-    const {
-      referenceStudyUID,
-      referenceSeriesUID,
-      getReport,
-      uid,
-    } = measurement;
+    const { referenceStudyUID, referenceSeriesUID, getReport, uid } = measurement;
 
     if (!getReport) {
       console.warn('Measurement does not have a getReport function');
       return;
     }
 
-    const seriesMetadata = DicomMetadataStore.getSeries(
-      referenceStudyUID,
-      referenceSeriesUID
-    );
+    const seriesMetadata = DicomMetadataStore.getSeries(referenceStudyUID, referenceSeriesUID);
 
     const commonRowItems = _getCommonRowItems(measurement, seriesMetadata);
     const report = getReport(measurement);
@@ -57,9 +49,7 @@ export default function downloadCSVReport(measurementData) {
 
   const results = _mapReportsToRowArray(reportMap, columns);
 
-  let csvContent =
-    'data:text/csv;charset=utf-8,' +
-    results.map(res => res.join(',')).join('\n');
+  let csvContent = 'data:text/csv;charset=utf-8,' + results.map(res => res.join(',')).join('\n');
 
   _createAndDownloadFile(csvContent);
 }

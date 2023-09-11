@@ -36,10 +36,7 @@ import {
   WorkflowStepsService,
 } from './services';
 
-import {
-  DisplaySetMessage,
-  DisplaySetMessageList,
-} from './services/DisplaySetService';
+import { DisplaySetMessage, DisplaySetMessageList } from './services/DisplaySetService';
 
 import IWebApiDataSource from './DataSources/IWebApiDataSource';
 

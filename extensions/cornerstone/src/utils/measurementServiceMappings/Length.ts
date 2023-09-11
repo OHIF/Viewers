@@ -32,11 +32,7 @@ const Length = {
       throw new Error('Tool not supported');
     }
 
-    const {
-      SOPInstanceUID,
-      SeriesInstanceUID,
-      StudyInstanceUID,
-    } = getSOPInstanceAttributes(
+    const { SOPInstanceUID, SeriesInstanceUID, StudyInstanceUID } = getSOPInstanceAttributes(
       referencedImageId,
       cornerstoneViewportService,
       viewportId
@@ -55,14 +51,10 @@ const Length = {
 
     const { points } = data.handles;
 
-    const mappedAnnotations = getMappedAnnotations(
-      annotation,
-      displaySetService
-    );
+    const mappedAnnotations = getMappedAnnotations(annotation, displaySetService);
 
     const displayText = getDisplayText(mappedAnnotations, displaySet);
-    const getReport = () =>
-      _getReport(mappedAnnotations, points, FrameOfReferenceUID);
+    const getReport = () => _getReport(mappedAnnotations, points, FrameOfReferenceUID);
 
     return {
       uid: annotationUID,
@@ -99,16 +91,11 @@ function getMappedAnnotations(annotation, displaySetService) {
     const targetStats = cachedStats[targetId];
 
     if (!referencedImageId) {
-      throw new Error(
-        'Non-acquisition plane measurement mapping not supported'
-      );
+      throw new Error('Non-acquisition plane measurement mapping not supported');
     }
 
-    const {
-      SOPInstanceUID,
-      SeriesInstanceUID,
-      frameNumber,
-    } = getSOPInstanceAttributes(referencedImageId);
+    const { SOPInstanceUID, SeriesInstanceUID, frameNumber } =
+      getSOPInstanceAttributes(referencedImageId);
 
     const displaySet = displaySetService.getDisplaySetForSOPInstanceUID(
       SOPInstanceUID,
@@ -179,16 +166,9 @@ function getDisplayText(mappedAnnotations, displaySet) {
   const displayText = [];
 
   // Area is the same for all series
-  const {
-    length,
-    SeriesNumber,
-    SOPInstanceUID,
-    frameNumber,
-  } = mappedAnnotations[0];
+  const { length, SeriesNumber, SOPInstanceUID, frameNumber } = mappedAnnotations[0];
 
-  const instance = displaySet.images.find(
-    image => image.SOPInstanceUID === SOPInstanceUID
-  );
+  const instance = displaySet.images.find(image => image.SOPInstanceUID === SOPInstanceUID);
 
   let InstanceNumber;
   if (instance) {
@@ -202,9 +182,7 @@ function getDisplayText(mappedAnnotations, displaySet) {
     return displayText;
   }
   const roundedLength = utils.roundNumber(length, 2);
-  displayText.push(
-    `${roundedLength} mm (S: ${SeriesNumber}${instanceText}${frameText})`
-  );
+  displayText.push(`${roundedLength} mm (S: ${SeriesNumber}${instanceText}${frameText})`);
 
   return displayText;
 }

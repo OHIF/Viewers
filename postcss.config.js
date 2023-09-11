@@ -1,4 +1,4 @@
-module.exports = function(ctx) {
+module.exports = function (ctx) {
   ctx = ctx || {};
   ctx.env = ctx.env || 'development';
 

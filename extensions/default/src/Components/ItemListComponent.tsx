@@ -1,12 +1,7 @@
 import classNames from 'classnames';
 import React, { ReactElement, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  Button,
-  Icon,
-  InputFilterText,
-  LoadingIndicatorProgress,
-} from '@ohif/ui';
+import { Button, Icon, InputFilterText, LoadingIndicatorProgress } from '@ohif/ui';
 import { Types } from '@ohif/core';
 
 type ItemListComponentProps = {
@@ -28,37 +23,35 @@ function ItemListComponent({
   }, [itemList]);
 
   return (
-    <div className="flex flex-col gap-4 min-h-[1px] grow">
-      <div className="flex justify-between items-center">
-        <div className="text-primary-light text-[20px]">
-          {t(`Select ${itemLabel}`)}
-        </div>
+    <div className="flex min-h-[1px] grow flex-col gap-4">
+      <div className="flex items-center justify-between">
+        <div className="text-primary-light text-[20px]">{t(`Select ${itemLabel}`)}</div>
         <InputFilterText
-          className="grow max-w-[40%]"
+          className="max-w-[40%] grow"
           value={filterValue}
           onDebounceChange={setFilterValue}
           placeholder={t(`Search ${itemLabel} list`)}
         ></InputFilterText>
       </div>
-      <div className="flex flex-col relative min-h-[1px] grow text-[14px] bg-black">
+      <div className="relative flex min-h-[1px] grow flex-col bg-black text-[14px]">
         {itemList == null ? (
-          <LoadingIndicatorProgress className={'w-full h-full'} />
+          <LoadingIndicatorProgress className={'h-full w-full'} />
         ) : itemList.length === 0 ? (
-          <div className="flex flex-col h-full px-6 py-4 items-center justify-center text-primary-light">
-            <Icon name="magnifier" className="mb-4" />
+          <div className="text-primary-light flex h-full flex-col items-center justify-center px-6 py-4">
+            <Icon
+              name="magnifier"
+              className="mb-4"
+            />
             <span>{t(`No ${itemLabel} available`)}</span>
           </div>
         ) : (
           <>
-            <div className="bg-secondary-dark text-white px-3 py-1.5">
-              {t(itemLabel)}
-            </div>
-            <div className="overflow-auto ohif-scrollbar">
+            <div className="bg-secondary-dark px-3 py-1.5 text-white">{t(itemLabel)}</div>
+            <div className="ohif-scrollbar overflow-auto">
               {itemList
                 .filter(
                   item =>
-                    !filterValue ||
-                    item.name.toLowerCase().includes(filterValue.toLowerCase())
+                    !filterValue || item.name.toLowerCase().includes(filterValue.toLowerCase())
                 )
                 .map(item => {
                   const border =
@@ -66,7 +59,7 @@ function ItemListComponent({
                   return (
                     <div
                       className={classNames(
-                        'group mx-2 px-6 py-2 flex justify-between items-center hover:text-primary-light hover:bg-primary-dark',
+                        'hover:text-primary-light hover:bg-primary-dark group mx-2 flex items-center justify-between px-6 py-2',
                         border
                       )}
                       key={item.id}

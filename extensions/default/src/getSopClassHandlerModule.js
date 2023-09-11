@@ -22,9 +22,7 @@ const getDynamicVolumeInfo = instances => {
   const volumeLoaderUtility = extensionManager.getModuleEntry(
     '@ohif/extension-cornerstone.utilityModule.volumeLoader'
   );
-  const {
-    getDynamicVolumeInfo: csGetDynamicVolumeInfo,
-  } = volumeLoaderUtility.exports;
+  const { getDynamicVolumeInfo: csGetDynamicVolumeInfo } = volumeLoaderUtility.exports;
 
   return csGetDynamicVolumeInfo(imageIds);
 };
@@ -45,9 +43,7 @@ function getDisplaySetInfo(instances) {
     // O(n) to convert it into a map and O(1) to find each instance
     instances.forEach(instance => instancesMap.set(instance.imageId, instance));
 
-    const firstTimePointInstances = timePoint.map(imageId =>
-      instancesMap.get(imageId)
-    );
+    const firstTimePointInstances = timePoint.map(imageId => instancesMap.get(imageId));
 
     displaySetInfo = isDisplaySetReconstructable(firstTimePointInstances);
   } else {
@@ -103,9 +99,7 @@ const makeDisplaySet = instances => {
   if (shallSort) {
     imageSet.sortBy((a, b) => {
       // Sort by InstanceNumber (0020,0013)
-      return (
-        (parseInt(a.InstanceNumber) || 0) - (parseInt(b.InstanceNumber) || 0)
-      );
+      return (parseInt(a.InstanceNumber) || 0) - (parseInt(b.InstanceNumber) || 0);
     });
   }
 

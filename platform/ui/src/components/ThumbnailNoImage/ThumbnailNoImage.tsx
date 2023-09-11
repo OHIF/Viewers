@@ -25,7 +25,7 @@ const ThumbnailNoImage = ({
   const [collectedProps, drag, dragPreview] = useDrag({
     type: 'displayset',
     item: { ...dragData },
-    canDrag: function(monitor) {
+    canDrag: function (monitor) {
       return Object.keys(dragData).length !== 0;
     },
   });
@@ -33,8 +33,8 @@ const ThumbnailNoImage = ({
   return (
     <div
       className={classnames(
-        'flex flex-row flex-1 cursor-pointer outline-none hover:border-blue-300 focus:border-blue-300 rounded select-none',
-        isActive ? 'border-2 border-primary-light' : 'border border-transparent'
+        'flex flex-1 cursor-pointer select-none flex-row rounded outline-none hover:border-blue-300 focus:border-blue-300',
+        isActive ? 'border-primary-light border-2' : 'border border-transparent'
       )}
       style={{
         padding: isActive ? '11px' : '12px',
@@ -47,15 +47,13 @@ const ThumbnailNoImage = ({
       data-cy={`study-browser-thumbnail-no-image`}
     >
       <div ref={drag}>
-        <div className="flex flex-col flex-1">
-          <div className="flex flex-row items-center flex-1 mb-2">
+        <div className="flex flex-1 flex-col">
+          <div className="mb-2 flex flex-1 flex-row items-center">
             <Icon
               name="list-bullets"
               className={classnames(
                 'w-12',
-                isHydratedForDerivedDisplaySet
-                  ? 'text-primary-light'
-                  : 'text-secondary-light'
+                isHydratedForDerivedDisplaySet ? 'text-primary-light' : 'text-secondary-light'
               )}
             />
             <Tooltip
@@ -64,10 +62,10 @@ const ThumbnailNoImage = ({
             >
               <div
                 className={classnames(
-                  'px-3 text-lg  rounded-sm',
+                  'rounded-sm px-3  text-lg',
                   isHydratedForDerivedDisplaySet
-                    ? 'text-black bg-primary-light'
-                    : 'text-white bg-primary-main'
+                    ? 'bg-primary-light text-black'
+                    : 'bg-primary-main text-white'
                 )}
               >
                 {modality}
@@ -84,13 +82,11 @@ const ThumbnailNoImage = ({
               <Icon
                 name="old-trash"
                 style={{ minWidth: '12px' }}
-                className="w-3 ml-4 text-red-500"
+                className="ml-4 w-3 text-red-500"
                 onClick={onReject}
               />
             )}
-            <div className="ml-4 text-base text-white break-all">
-              {description}
-            </div>
+            <div className="ml-4 break-all text-base text-white">{description}</div>
           </div>
         </div>
       </div>

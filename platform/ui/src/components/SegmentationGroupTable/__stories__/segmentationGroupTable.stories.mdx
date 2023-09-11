@@ -14,7 +14,7 @@ export const argTypes = {
 />
 
 export const SegmentationGroupTableTemplate = args => (
-  <div className="w-64 h-96 bg-primary-dark">
+  <div className="bg-primary-dark h-96 w-64">
     <SegmentationGroupTable {...args} />
   </div>
 );
@@ -38,94 +38,78 @@ SegmentationGroupTable is a component that renders the SegmentationGroupTables.
     args={{
       activeSegmentationId: 'ed8d6f8d-4035-438d-9032-36d5912aaa3a',
       showAddSegmentation: true,
-      isMinimized: {"4be5-b9b2-ed33-fa86970568e7": false},
+      isMinimized: { '4be5-b9b2-ed33-fa86970568e7': false },
       showAddSegment: true,
-       segmentations: [
-  {
-    "id": "4be5-b9b2-ed33-fa86970568e7",
-    "volumeId": "a3b0f15f-4be5-b9b2-ed33-fa86970568e7",
-    "activeSegmentIndex": 1,
-    "cachedStats": {},
-    "label": "Segmentation",
-    "segmentsLocked": {},
-    "type": "LABELMAP",
-    "displayText": [],
-    "hydrated": true,
-    "segmentCount": 3,
-    "segments": [
-      null,
-      {
-        "label": "Segment 1",
-        "segmentIndex": 1,
-        "color": [
-          128,
-          174,
-          128
-        ],
-        "opacity": 255,
-        "isVisible": true,
-        "isLocked": false,
-      },
-      {
-        "label": "Segment 2",
-        "segmentIndex": 2,
-        "color": [
-          241,
-          214,
-          145
-        ],
-        "opacity": 255,
-        "isVisible": true,
-        "isLocked": false,
-      },
-      {
-        "label": "Segment 3",
-        "segmentIndex": 3,
-        "color": [
-          141,
-          114,
-          145
-        ],
-        "opacity": 255,
-        "isVisible": false,
-        "isLocked": false
-      }
-    ],
-    "isActive": false,
-    "colorLUTIndex": 1,
-    "isVisible": true
-  },
-  {
-    "id": "a3b0f15f-4be5-b9b2-ed33-fa86970568e7",
-    "volumeId": "a3b0f15f-4be5-b9b2-ed33-fa86970568e7",
-    "activeSegmentIndex": 1,
-    "cachedStats": {},
-    "label": "Segmentation2",
-    "segmentsLocked": {},
-    "type": "LABELMAP",
-    "displayText": [],
-    "hydrated": true,
-    "segmentCount": 2,
-    "segments": [
-      null,
-      {
-        "label": "Segment 1",
-        "segmentIndex": 1,
-        "color": [
-          228,
-          174,
-          128
-        ],
-        "opacity": 255,
-        "isVisible": true,
-        "isLocked": false,
-      },
-    ],
-    "isActive": true,
-    "colorLUTIndex": 1,
-    "isVisible": true
-  }
-]
+      segmentations: [
+        {
+          id: '4be5-b9b2-ed33-fa86970568e7',
+          volumeId: 'a3b0f15f-4be5-b9b2-ed33-fa86970568e7',
+          activeSegmentIndex: 1,
+          cachedStats: {},
+          label: 'Segmentation',
+          segmentsLocked: {},
+          type: 'LABELMAP',
+          displayText: [],
+          hydrated: true,
+          segmentCount: 3,
+          segments: [
+            null,
+            {
+              label: 'Segment 1',
+              segmentIndex: 1,
+              color: [128, 174, 128],
+              opacity: 255,
+              isVisible: true,
+              isLocked: false,
+            },
+            {
+              label: 'Segment 2',
+              segmentIndex: 2,
+              color: [241, 214, 145],
+              opacity: 255,
+              isVisible: true,
+              isLocked: false,
+            },
+            {
+              label: 'Segment 3',
+              segmentIndex: 3,
+              color: [141, 114, 145],
+              opacity: 255,
+              isVisible: false,
+              isLocked: false,
+            },
+          ],
+          isActive: false,
+          colorLUTIndex: 1,
+          isVisible: true,
+        },
+        {
+          id: 'a3b0f15f-4be5-b9b2-ed33-fa86970568e7',
+          volumeId: 'a3b0f15f-4be5-b9b2-ed33-fa86970568e7',
+          activeSegmentIndex: 1,
+          cachedStats: {},
+          label: 'Segmentation2',
+          segmentsLocked: {},
+          type: 'LABELMAP',
+          displayText: [],
+          hydrated: true,
+          segmentCount: 2,
+          segments: [
+            null,
+            {
+              label: 'Segment 1',
+              segmentIndex: 1,
+              color: [228, 174, 128],
+              opacity: 255,
+              isVisible: true,
+              isLocked: false,
+            },
+          ],
+          isActive: true,
+          colorLUTIndex: 1,
+          isVisible: true,
+        },
+      ],
     }}
   >
     {SegmentationGroupTableTemplate.bind({})}

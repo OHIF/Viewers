@@ -3,10 +3,7 @@ import { inv, multiply } from 'mathjs';
 // TODO -> This is pulled out of some internal logic from Dicom Microscopy Viewer,
 // We should likely just expose this there.
 
-export default function coordinateFormatScoord3d2Geometry(
-  coordinates,
-  pyramid
-) {
+export default function coordinateFormatScoord3d2Geometry(coordinates, pyramid) {
   let transform = false;
   if (!Array.isArray(coordinates[0])) {
     coordinates = [coordinates];

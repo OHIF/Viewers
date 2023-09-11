@@ -1,8 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import { useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import { useLocation } from 'react-router';
 
 import {
   ErrorBoundary,
@@ -13,12 +10,7 @@ import {
   LoadingIndicatorProgress,
 } from '@ohif/ui';
 import i18n from '@ohif/i18n';
-import {
-  ServicesManager,
-  HangingProtocolService,
-  hotkeys,
-  CommandsManager,
-} from '@ohif/core';
+import { ServicesManager, HangingProtocolService, hotkeys, CommandsManager } from '@ohif/core';
 import { useAppConfig } from '@state';
 import Toolbar from '../Toolbar/Toolbar';
 import SidePanelWithService from '../components/SidePanelWithService';
@@ -84,9 +76,7 @@ function ViewerLayout({
   const { t } = useTranslation();
   const { show, hide } = useModal();
 
-  const [showLoadingIndicator, setShowLoadingIndicator] = useState(
-    appConfig.showLoadingIndicator
-  );
+  const [showLoadingIndicator, setShowLoadingIndicator] = useState(appConfig.showLoadingIndicator);
 
   const { hotkeyDefinitions, hotkeyDefaults } = hotkeysManager;
   const versionNumber = process.env.VERSION_NUMBER;
@@ -111,9 +101,7 @@ function ViewerLayout({
           title: t('UserPreferencesModal:User Preferences'),
           content: UserPreferences,
           contentProps: {
-            hotkeyDefaults: hotkeysManager.getValidHotkeyDefinitions(
-              hotkeyDefaults
-            ),
+            hotkeyDefaults: hotkeysManager.getValidHotkeyDefinitions(hotkeyDefaults),
             hotkeyDefinitions,
             currentLanguage: currentLanguage(),
             availableLanguages,
@@ -140,9 +128,7 @@ function ViewerLayout({
       title: t('Header:Logout'),
       icon: 'power-off',
       onClick: async () => {
-        navigate(
-          `/logout?redirect_uri=${encodeURIComponent(window.location.href)}`
-        );
+        navigate(`/logout?redirect_uri=${encodeURIComponent(window.location.href)}`);
       },
     });
   }
@@ -209,13 +195,10 @@ function ViewerLayout({
   };
 
   useEffect(() => {
-    const { unsubscribe } = panelService.subscribe(
-      panelService.EVENTS.PANELS_CHANGED,
-      () => {
-        setHasLeftPanels(hasPanels('left'));
-        setHasRightPanels(hasPanels('right'));
-      }
-    );
+    const { unsubscribe } = panelService.subscribe(panelService.EVENTS.PANELS_CHANGED, () => {
+      setHasLeftPanels(hasPanels('left'));
+      setHasRightPanels(hasPanels('right'));
+    });
 
     return () => {
       unsubscribe();
@@ -226,26 +209,17 @@ function ViewerLayout({
 
   return (
     <div>
-      <Header
-        menuOptions={menuOptions}
-        isReturnEnabled={!!appConfig.showStudyList}
-        onClickReturnButton={onClickReturnButton}
-        WhiteLabeling={appConfig.whiteLabeling}
-      >
-        <ErrorBoundary context="Primary Toolbar">
-          <div className="relative flex justify-center">
-            <Toolbar servicesManager={servicesManager} />
-          </div>
-        </ErrorBoundary>
-      </Header>
+      <ViewerHeader
+        hotkeysManager={hotkeysManager}
+        extensionManager={extensionManager}
+        servicesManager={servicesManager}
+      />
       <div
-        className="bg-black flex flex-row items-stretch w-full overflow-hidden flex-nowrap relative"
+        className="relative flex w-full flex-row flex-nowrap items-stretch overflow-hidden bg-black"
         style={{ height: 'calc(100vh - 52px' }}
       >
         <React.Fragment>
-          {showLoadingIndicator && (
-            <LoadingIndicatorProgress className="h-full w-full bg-black" />
-          )}
+          {showLoadingIndicator && <LoadingIndicatorProgress className="h-full w-full bg-black" />}
           {/* LEFT SIDEPANELS */}
           {hasLeftPanels ? (
             <ErrorBoundary context="Left Panel">
@@ -257,8 +231,8 @@ function ViewerLayout({
             </ErrorBoundary>
           ) : null}
           {/* TOOLBAR + GRID */}
-          <div className="flex flex-col flex-1 h-full">
-            <div className="flex items-center justify-center flex-1 h-full overflow-hidden bg-black relative">
+          <div className="flex h-full flex-1 flex-col">
+            <div className="relative flex h-full flex-1 items-center justify-center overflow-hidden bg-black">
               <ErrorBoundary context="Grid">
                 <ViewportGridComp
                   servicesManager={servicesManager}
@@ -297,6 +271,7 @@ ViewerLayout.propTypes = {
   rightPanelDefaultClosed: PropTypes.bool.isRequired,
   /** Responsible for rendering our grid of viewports; provided by consuming application */
   children: PropTypes.oneOfType([PropTypes.node, PropTypes.func]).isRequired,
+  viewports: PropTypes.array,
 };
 
 export default ViewerLayout;

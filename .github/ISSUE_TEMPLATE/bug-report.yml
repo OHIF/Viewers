@@ -39,8 +39,7 @@ body:
     attributes:
       label: The current behavior
       description:
-        'A clear and concise description of what happens instead of the expected
-        behavior.'
+        'A clear and concise description of what happens instead of the expected behavior.'
     validations:
       required: true
 
@@ -48,8 +47,7 @@ body:
     id: expected_behavior
     attributes:
       label: The expected behavior
-      description:
-        'A clear and concise description of what you expected to happen.'
+      description: 'A clear and concise description of what you expected to happen.'
     validations:
       required: true
 
@@ -81,6 +79,6 @@ body:
   - type: markdown
     attributes:
       value: >
-        > :warning: Reports we cannot reproduce are at risk of being marked
-        stale and > closed. The more information you can provide, the more
-        likely we are to look > into and address your issue.
+        > :warning: Reports we cannot reproduce are at risk of being marked stale and > closed. The
+        more information you can provide, the more likely we are to look > into and address your
+        issue.

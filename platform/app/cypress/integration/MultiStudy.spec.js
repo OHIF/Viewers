@@ -12,17 +12,11 @@ describe('OHIF Multi Study', () => {
   it('Should display 2 comparison up', () => {
     beforeSetup();
 
-    cy.get('[data-cy="viewport-pane"]')
-      .its('length')
-      .should('be.eq', 4);
+    cy.get('[data-cy="viewport-pane"]').its('length').should('be.eq', 4);
     cy.get('[data-cy="studyDate"]').should(studyDate => {
       expect(studyDate.length).to.be.eq(4);
-      expect(studyDate.text())
-        .to.contain('2014')
-        .contain('2001');
-      expect(studyDate.text().indexOf('2014')).to.be.lessThan(
-        studyDate.text().indexOf('2001')
-      );
+      expect(studyDate.text()).to.contain('2014').contain('2001');
+      expect(studyDate.text().indexOf('2014')).to.be.lessThan(studyDate.text().indexOf('2001'));
     });
   });
 });

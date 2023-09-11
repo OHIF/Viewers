@@ -103,7 +103,7 @@ function print(list) {
   let text = '';
   if (Array.isArray(list)) {
     let prev = [];
-    forEachValue(list, function(...args) {
+    forEachValue(list, function (...args) {
       let prevLen = prev.length;
       for (let i = 0, l = args.length; i < l; ++i) {
         if (i < prevLen && args[i] === prev[i]) {

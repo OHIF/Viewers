@@ -298,15 +298,12 @@ const toolbarButtons = [
       icon: 'tool-create-threshold',
       label: 'Rectangle ROI Threshold',
       commands: [
-        ..._createCommands('setToolActive', 'RectangleROIStartEndThreshold', [
-          toolGroupIds.PT,
-        ]),
+        ..._createCommands('setToolActive', 'RectangleROIStartEndThreshold', [toolGroupIds.PT]),
         {
           commandName: 'displayNotification',
           commandOptions: {
             title: 'RectangleROI Threshold Tip',
-            text:
-              'RectangleROI Threshold tool should be used on PT Axial Viewport',
+            text: 'RectangleROI Threshold tool should be used on PT Axial Viewport',
             type: 'info',
           },
         },
