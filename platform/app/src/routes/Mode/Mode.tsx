@@ -141,7 +141,7 @@ function defaultRouteInit(
         runHP();
       });
     } else {
-      runHP;
+      runHP();
     }
   });
   return unsubscriptions;
