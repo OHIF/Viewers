@@ -74,6 +74,7 @@ import LoadingIndicatorProgress from './LoadingIndicatorProgress';
 import LoadingIndicatorTotalPercent from './LoadingIndicatorTotalPercent';
 import ViewportActionBar from './ViewportActionBar';
 import ProgressLoadingBar from './ProgressLoadingBar';
+import LegacySidePanel from './LegacySidePanel';
 
 export {
   AboutModal,
@@ -110,6 +111,7 @@ export {
   LayoutSelector,
   LegacyButton,
   LegacyCinePlayer,
+  LegacySidePanel,
   LegacyViewportActionBar,
   LoadingIndicatorProgress,
   LoadingIndicatorTotalPercent,

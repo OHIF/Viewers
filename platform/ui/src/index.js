@@ -68,6 +68,7 @@ export {
   LayoutSelector,
   LegacyButton,
   LegacyCinePlayer,
+  LegacySidePanel,
   LegacyViewportActionBar,
   LoadingIndicatorProgress,
   LoadingIndicatorTotalPercent,

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
-import { SidePanel, ErrorBoundary, LoadingIndicatorProgress } from '@ohif/ui';
+import { LegacySidePanel, ErrorBoundary, LoadingIndicatorProgress } from '@ohif/ui';
 import { ServicesManager, HangingProtocolService, CommandsManager } from '@ohif/core';
 import { useAppConfig } from '@state';
 import ViewerHeader from './ViewerHeader';
@@ -119,7 +119,7 @@ function ViewerLayout({
           {/* LEFT SIDEPANELS */}
           {leftPanelComponents.length ? (
             <ErrorBoundary context="Left Panel">
-              <SidePanel
+              <LegacySidePanel
                 side="left"
                 activeTabIndex={leftPanelDefaultClosed ? null : 0}
                 tabs={leftPanelComponents}
@@ -141,7 +141,7 @@ function ViewerLayout({
           </div>
           {rightPanelComponents.length ? (
             <ErrorBoundary context="Right Panel">
-              <SidePanel
+              <LegacySidePanel
                 side="right"
                 activeTabIndex={rightPanelDefaultClosed ? null : 0}
                 tabs={rightPanelComponents}
