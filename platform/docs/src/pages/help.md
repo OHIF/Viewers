@@ -19,7 +19,7 @@ Complex issues specific to your organization/situation are still okay to post,
 but they're less likely to receive a response. Unfortunately, we have limited
 resources and must be judicious with how we allocate them. If you find yourself
 in this situation and in need of assistance, it may be in your best interest to
-persue paid support.
+pursue paid support.
 
 If you need additional help, please [reach out to us](https://ohif.org/get-support) to get more information on
 how we can help you.

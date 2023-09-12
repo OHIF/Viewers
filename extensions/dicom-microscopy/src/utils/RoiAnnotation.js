@@ -151,7 +151,7 @@ class RoiAnnotation extends PubSubService {
   /**
    * Returns the geometry type of the annotation concatenated with the label
    * defined for the annotation.
-   * Difference with getDetailedLabel() is that this will return empty string for empy
+   * Difference with getDetailedLabel() is that this will return empty string for empty
    * label.
    *
    * @returns {String} Text with geometry type and label
