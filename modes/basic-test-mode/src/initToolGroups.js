@@ -147,7 +147,7 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
       { toolName: toolNames.Length },
       {
         toolName: toolNames.ArrowAnnotate,
-        configuratoin: {
+        configuration: {
           getTextCallback: (callback, eventDetails) =>
             commandsManager.runCommand('arrowTextCallback', {
               callback,

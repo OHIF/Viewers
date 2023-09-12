@@ -5,7 +5,6 @@ describe('OHIF Context Menu', function () {
     cy.expectMinimumThumbnails(3);
     cy.initCommonElementsAliases();
     cy.initCornerstoneToolsAliases();
-    cy.resetViewport().wait(50);
   });
 
   it('checks context menu customization', function () {

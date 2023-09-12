@@ -254,7 +254,7 @@ function CustomizableViewportOverlay({
         instanceNumber,
       };
 
-      if (item.customizationType === 'alireza') {
+      if (item.customizationType === 'ohif.overlayItem.windowLevel') {
         return <VOIOverlayItem {...overlayItemProps} />;
       } else if (item.customizationType === 'ohif.overlayItem.zoomLevel') {
         return <ZoomOverlayItem {...overlayItemProps} />;
