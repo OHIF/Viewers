@@ -44,7 +44,7 @@ const isStructuredReportSeries = series => {
 };
 
 /**
- *  Checkes if series1 is newer than series2
+ *  Checks if series1 is newer than series2
  *
  * @param {Object} series1 - Series Metadata 1
  * @param {Object} series2 - Series Metadata 2

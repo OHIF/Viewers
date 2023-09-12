@@ -42,7 +42,7 @@ function _getDisplaySetsFromSeries(instances, servicesManager, extensionManager)
   const instance = instances[0];
 
   // TODO ! Consumption of DICOMMicroscopySRSOPClassHandler to a derived dataset or normal dataset?
-  // TOOD -> Easy to swap this to a "non-derived" displaySet, but unfortunately need to put it in a different extension.
+  // TODO -> Easy to swap this to a "non-derived" displaySet, but unfortunately need to put it in a different extension.
   const naturalizedDataset = DicomMetadataStore.getSeries(
     instance.StudyInstanceUID,
     instance.SeriesInstanceUID

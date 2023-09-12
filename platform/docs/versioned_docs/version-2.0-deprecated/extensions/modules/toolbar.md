@@ -64,7 +64,7 @@ The simplest definition has the following properties:
 | `label`          | User/display friendly to show in UI                               | \*                                        |
 | `icon`           | A string name for an icon supported by the consuming application. | \*                                        |
 | `type`           | Used to determine the button's component and behavior             | `"setToolActive"`, `"command"`            |
-| `commandName`    | (optional) The command to run when the button is used.            | Any command registed by a `CommandModule` |
+| `commandName`    | (optional) The command to run when the button is used.            | Any command registered by a `CommandModule` |
 | `commandOptions` | (optional) Options to pass the target `commandName`               | \*                                        |
 | `context`        | (optional) Overrides module's `defaultContext`                    | Array of string context names             |
 

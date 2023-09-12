@@ -31,7 +31,7 @@ export default async function loadSR(
     // NOTE: When saving Microscopy SR, we are attaching identifier property
     // to each ROI, and when read for display, it is coming in as "TEXT"
     // evaluation.
-    // As the Dicom Microscopy Viewer will override styles for "Text" evalutations
+    // As the Dicom Microscopy Viewer will override styles for "Text" evaluations
     // to hide all other geometries, we are going to manually remove that
     // evaluation item.
     const roi = rois[i];

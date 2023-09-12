@@ -34,7 +34,7 @@ fixes, and target their minimum JS support whenever possible.
 An example of a polyfill is that you expect `Array.prototype.filter` to exist,
 but for some reason, the browser that's being used has not implemented that
 language feature yet. Our earlier transpilation will rectify _syntax_
-discrepencies, but unimplemented features require a "temporary" implementation.
+discrepancies, but unimplemented features require a "temporary" implementation.
 That's where polyfills step in.
 
 You can utilize a service like [polyfill.io](https://polyfill.io/v3/) to

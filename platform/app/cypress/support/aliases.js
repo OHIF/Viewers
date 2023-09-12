@@ -61,7 +61,7 @@ export function initStudyListAliasesOnDesktop() {
   cy.get('[data-cy="study-list-results"] > tr').as('searchResult2');
 
   // We can't use data attributes (e.g. data--cy) for these since
-  // they are using third party libraires (i.e. react-dates, react-select)
+  // they are using third party libraries (i.e. react-dates, react-select)
   cy.get('#date-range-studyDate-start-date').as('studyListStartDate');
   cy.get('#date-range-studyDate-end-date').as('studyListEndDate');
   cy.get('#input-modalities').as('modalities');
