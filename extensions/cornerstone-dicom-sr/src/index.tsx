@@ -1,8 +1,6 @@
 import React from 'react';
 import getSopClassHandlerModule from './getSopClassHandlerModule';
-import getHangingProtocolModule, {
-  srProtocol,
-} from './getHangingProtocolModule';
+import getHangingProtocolModule, { srProtocol } from './getHangingProtocolModule';
 import onModeEnter from './onModeEnter';
 import getCommandsModule from './commandsModule';
 import preRegistration from './init';
@@ -12,9 +10,7 @@ import hydrateStructuredReport from './utils/hydrateStructuredReport';
 import createReferencedImageDisplaySet from './utils/createReferencedImageDisplaySet';
 
 const Component = React.lazy(() => {
-  return import(
-    /* webpackPrefetch: true */ './viewports/OHIFCornerstoneSRViewport'
-  );
+  return import(/* webpackPrefetch: true */ './viewports/OHIFCornerstoneSRViewport');
 });
 
 const OHIFCornerstoneSRViewport = props => {

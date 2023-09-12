@@ -13,6 +13,7 @@ import Icon from './Icon';
 import IconButton from './IconButton';
 import Input from './Input';
 import InputDateRange from './InputDateRange';
+import InputFilterText from './InputFilterText';
 import InputGroup from './InputGroup';
 import InputLabelWrapper from './InputLabelWrapper';
 import InputMultiSelect from './InputMultiSelect';
@@ -74,9 +75,14 @@ import LoadingIndicatorProgress from './LoadingIndicatorProgress';
 import LoadingIndicatorTotalPercent from './LoadingIndicatorTotalPercent';
 import ViewportActionBar from './ViewportActionBar';
 import ProgressLoadingBar from './ProgressLoadingBar';
+import PanelSection from './PanelSection';
+import AdvancedToolbox from './AdvancedToolbox';
+import InputDoubleRange from './InputDoubleRange';
+import LegacyButtonGroup from './LegacyButtonGroup';
 
 export {
   AboutModal,
+  AdvancedToolbox,
   HotkeyField,
   Header,
   UserPreferences,
@@ -98,8 +104,10 @@ export {
   IconButton,
   Input,
   InputDateRange,
+  InputFilterText,
   InputGroup,
   InputRange,
+  InputDoubleRange,
   InputNumber,
   InputLabelWrapper,
   InputMultiSelect,
@@ -108,6 +116,7 @@ export {
   Label,
   LayoutSelector,
   LegacyButton,
+  LegacyButtonGroup,
   LegacyCinePlayer,
   LegacyViewportActionBar,
   LoadingIndicatorProgress,
@@ -117,6 +126,7 @@ export {
   NavBar,
   Notification,
   ProgressLoadingBar,
+  PanelSection,
   Select,
   SegmentationTable,
   SegmentationGroupTable,

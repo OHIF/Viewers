@@ -124,7 +124,9 @@ function getOverallProgress(list) {
       status.total++;
       if (isValidProgress(task.progress)) {
         status.partial += task.progress;
-        if (task.progress === 1.0 && task.failed) status.failures++;
+        if (task.progress === 1.0 && task.failed) {
+          status.failures++;
+        }
       }
       task = task.next;
     }
@@ -147,10 +149,10 @@ function waitOn(list, thenable) {
   const task = increaseList(list);
   if (isTask(task)) {
     task.awaiting = Promise.resolve(thenable).then(
-      function() {
+      function () {
         finish(task);
       },
-      function() {
+      function () {
         task.failed = true;
         finish(task);
       }
@@ -224,11 +226,7 @@ function getTaskByName(list, name) {
  * @returns {boolean} Returns true on success and false otherewise
  */
 function addObserver(list, observer) {
-  if (
-    isList(list) &&
-    Array.isArray(list.observers) &&
-    typeof observer === 'function'
-  ) {
+  if (isList(list) && Array.isArray(list.observers) && typeof observer === 'function') {
     list.observers.push(observer);
     return true;
   }
@@ -242,11 +240,7 @@ function addObserver(list, observer) {
  * @returns {boolean} Returns true on success and false otherewise
  */
 function removeObserver(list, observer) {
-  if (
-    isList(list) &&
-    Array.isArray(list.observers) &&
-    list.observers.length > 0
-  ) {
+  if (isList(list) && Array.isArray(list.observers) && list.observers.length > 0) {
     const index = list.observers.indexOf(observer);
     if (index >= 0) {
       list.observers.splice(index, 1);
@@ -274,9 +268,7 @@ function objectWithType(type, object) {
 }
 
 function isOfType(type, subject) {
-  return (
-    subject !== null && typeof subject === 'object' && subject[TYPE] === type
-  );
+  return subject !== null && typeof subject === 'object' && subject[TYPE] === type;
 }
 
 function isValidProgress(value) {
@@ -297,12 +289,8 @@ function contains(list, task) {
 }
 
 function notify(list, data) {
-  if (
-    isList(list) &&
-    Array.isArray(list.observers) &&
-    list.observers.length > 0
-  ) {
-    list.observers.slice().forEach(function(observer) {
+  if (isList(list) && Array.isArray(list.observers) && list.observers.length > 0) {
+    list.observers.slice().forEach(function (observer) {
       if (typeof observer === 'function') {
         try {
           observer(data, list);

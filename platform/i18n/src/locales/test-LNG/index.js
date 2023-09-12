@@ -32,6 +32,6 @@ export default {
     PatientInfo,
     Modes,
     SidePanel,
-    Modals
+    Modals,
   },
 };

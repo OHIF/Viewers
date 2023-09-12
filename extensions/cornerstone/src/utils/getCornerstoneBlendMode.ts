@@ -2,9 +2,7 @@ import { Enums } from '@cornerstonejs/core';
 
 const MIP = 'mip';
 
-export default function getCornerstoneBlendMode(
-  blendMode: string
-): Enums.BlendModes {
+export default function getCornerstoneBlendMode(blendMode: string): Enums.BlendModes {
   if (!blendMode) {
     return Enums.BlendModes.COMPOSITE;
   }

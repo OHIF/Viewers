@@ -89,6 +89,16 @@ Since the platform/viewer (@ohif/viewer) is already at v4.12.51, we opted to ren
 
 ## Configuration
 
+:::tip
+There are various configurations available to customize the viewer. Each configuration is represented by a custom-tailored object that should be used with the viewer to work effectively with a specific server. Here are some examples of configuration files found in the platform/app/public/config directory. Some server-specific configurations that you should be aware are: `supportsWildcard`, `bulkDataURI`, `omitQuotationForMultipartRequest`, `staticWado` (Read more about them [here](./configuration/configurationFiles.md)).
+
+- default.js: This is our default configuration designed for our main server, which uses a Static WADO datasource hosted on Amazon S3.
+- local_orthanc.js: Use this configuration when working with our local Orthanc server.
+- local_dcm4chee.js: This configuration is intended for our local dcm4chee server.
+- netlify.js: This configuration is the same as default.js and is used for deployment on Netlify.
+- google.js: Use this configuration to run the viewer against the Google Health API.
+:::
+
 OHIF v3 has a new configuration structure. The main difference is that the `servers` is renamed to `dataSources` and the configuration is now asynchronous. Datasources are more abstract and
 far more capable than servers. Read more about dataSources [here](./platform/extensions/modules/data-source.md).
 
@@ -98,6 +108,7 @@ far more capable than servers. Read more about dataSources [here](./platform/ext
 - The maxConcurrentMetadataRequests property has been removed in favor of `maxNumRequests`
 - The hotkeys array has been updated with different command names and options, and some keys have been removed.
 - New properties have been added, including `maxNumberOfWebWorkers`, `omitQuotationForMultipartRequest`, `showWarningMessageForCrossOrigin`, `showCPUFallbackMessage`, `showLoadingIndicator`, `strictZSpacingForVolumeViewport`.
+- you should see if `supportsWildcard` is supported in your server, some servers don't support it and you need to make it false.
 
 ## Modes
 

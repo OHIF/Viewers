@@ -1,19 +1,17 @@
 import isLowPriorityModality from './isLowPriorityModality';
 
 const compareSeriesDateTime = (a, b) => {
-  const seriesDateA = Date.parse(
-    `${a.seriesDate ?? a.SeriesDate} ${a.seriesTime ?? a.SeriesTime}`
-  );
-  const seriesDateB = Date.parse(
-    `${a.seriesDate ?? a.SeriesDate} ${a.seriesTime ?? a.SeriesTime}`
-  );
+  const seriesDateA = Date.parse(`${a.seriesDate ?? a.SeriesDate} ${a.seriesTime ?? a.SeriesTime}`);
+  const seriesDateB = Date.parse(`${a.seriesDate ?? a.SeriesDate} ${a.seriesTime ?? a.SeriesTime}`);
   return seriesDateA - seriesDateB;
 };
 
 const defaultSeriesSort = (a, b) => {
   const seriesNumberA = a.SeriesNumber ?? a.seriesNumber;
   const seriesNumberB = b.SeriesNumber ?? b.seriesNumber;
-  if (seriesNumberA === seriesNumberB) return compareSeriesDateTime(a, b);
+  if (seriesNumberA === seriesNumberB) {
+    return compareSeriesDateTime(a, b);
+  }
   return seriesNumberA - seriesNumberB;
 };
 
@@ -24,12 +22,8 @@ const defaultSeriesSort = (a, b) => {
  * @param {Object} secondSeries
  */
 function seriesInfoSortingCriteria(firstSeries, secondSeries) {
-  const aLowPriority = isLowPriorityModality(
-    firstSeries.Modality ?? firstSeries.modality
-  );
-  const bLowPriority = isLowPriorityModality(
-    secondSeries.Modality ?? secondSeries.modality
-  );
+  const aLowPriority = isLowPriorityModality(firstSeries.Modality ?? firstSeries.modality);
+  const bLowPriority = isLowPriorityModality(secondSeries.Modality ?? secondSeries.modality);
 
   if (aLowPriority) {
     return bLowPriority ? defaultSeriesSort(secondSeries, firstSeries) : 1;
@@ -67,8 +61,11 @@ const sortStudySeries = (
   seriesSortingCriteria = seriesSortCriteria.default,
   sortFunction = null
 ) => {
-  if (typeof sortFunction === 'function') return sortFunction(series);
-  else return series.sort(seriesSortingCriteria);
+  if (typeof sortFunction === 'function') {
+    return sortFunction(series);
+  } else {
+    return series.sort(seriesSortingCriteria);
+  }
 };
 
 /**
@@ -117,10 +114,4 @@ export default function sortStudy(
   return study;
 }
 
-export {
-  sortStudy,
-  sortStudySeries,
-  sortStudyInstances,
-  sortingCriteria,
-  seriesSortCriteria,
-};
+export { sortStudy, sortStudySeries, sortStudyInstances, sortingCriteria, seriesSortCriteria };

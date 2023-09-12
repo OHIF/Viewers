@@ -61,7 +61,7 @@ export type SetProtocolOptions = {
 
 export type HangingProtocolMatchDetails = {
   displaySetMatchDetails: Map<string, DisplaySetMatchDetails>;
-  viewportMatchDetails: Map<number, ViewportMatchDetails>;
+  viewportMatchDetails: Map<string, ViewportMatchDetails>;
 };
 
 export type ConstraintValue =
@@ -263,6 +263,8 @@ export type ProtocolNotifications = {
 export type Protocol = {
   // Mandatory
   id: string;
+  /** A description of this protocol.  Used as a tool tip for the user. */
+  description?: string;
   /** Maps ids to display set selectors to choose display sets */
   displaySetSelectors: Record<string, DisplaySetSelector>;
   /** A default viewport to use for any stage to select new viewport layouts. */
@@ -270,7 +272,6 @@ export type Protocol = {
   stages: ProtocolStage[];
   // Optional
   locked?: boolean;
-  hasUpdatedPriorsInformation?: boolean;
   name?: string;
   createdDate?: string;
   modifiedDate?: string;
@@ -284,7 +285,9 @@ export type Protocol = {
   /* The number of priors required for this hanging protocol.
    * -1 means that NO priors are referenced, and thus this HP matches
    * only the active study, whereas 0 means that an unknown number of
-   * priors is matched.
+   * priors is matched.  Positive values mean at least that many priors are
+   * required.
+   * Replaces hasUpdatedPriors
    */
   numberOfPriorsReferenced?: number;
   syncDataForViewports?: boolean;
@@ -295,10 +298,7 @@ export type Protocol = {
  * to the GUI when this is used, and it can be expensive to apply.
  * Alternatives include using the custom attributes where possible.
  */
-export type ProtocolGenerator = ({
-  servicesManager: any,
-  commandsManager: any,
-}) => {
+export type ProtocolGenerator = ({ servicesManager: any, commandsManager: any }) => {
   protocol: Protocol;
 };
 

@@ -1,6 +1,7 @@
 import ObjectPath from './objectPath';
 import absoluteUrl from './absoluteUrl';
 import guid from './guid';
+import uuidv4 from './uuidv4';
 import sortBy from './sortBy.js';
 import writeScript from './writeScript.js';
 import b64toBlob from './b64toBlob.js';
@@ -41,6 +42,7 @@ import { splitComma, getSplitParam } from './splitComma';
 
 const utils = {
   guid,
+  uuidv4,
   ObjectPath,
   absoluteUrl,
   sortBy,

@@ -5,16 +5,48 @@ import classnames from 'classnames';
 import Icon from '../Icon';
 import Typography from '../Typography';
 
-const Dropdown = ({ id, children, showDropdownIcon, list, titleClassName }) => {
+const borderStyle = 'border-b last:border-b-0 border-secondary-main';
+
+const Dropdown = ({
+  id,
+  children,
+  showDropdownIcon,
+  list,
+  itemsClassName,
+  titleClassName,
+  showBorders,
+  alignment,
+  // By default the max characters per line is the longest title
+  // if you wish to override this, you can pass in a number
+  maxCharactersPerLine,
+}) => {
   const [open, setOpen] = useState(false);
   const element = useRef(null);
 
+  // choose the max characters per line based on the longest title
+  const longestTitle = list.reduce((acc, item) => {
+    if (item.title.length > acc) {
+      return item.title.length;
+    }
+    return acc;
+  }, 0);
+
+  maxCharactersPerLine = maxCharactersPerLine ?? longestTitle;
+
   const DropdownItem = useCallback(({ id, title, icon, onClick }) => {
+    // Split the title into lines of length maxCharactersPerLine
+    const lines = [];
+    for (let i = 0; i < title.length; i += maxCharactersPerLine) {
+      lines.push(title.substring(i, i + maxCharactersPerLine));
+    }
+
     return (
       <div
         key={title}
         className={classnames(
-          'flex px-4 py-2 cursor-pointer items-center transition duration-300 hover:bg-secondary-main border-b last:border-b-0 border-secondary-main'
+          'hover:bg-secondary-main flex cursor-pointer items-center px-4 py-2 transition duration-300 ',
+          titleClassName,
+          showBorders && borderStyle
         )}
         onClick={() => {
           setOpen(false);
@@ -22,28 +54,47 @@ const Dropdown = ({ id, children, showDropdownIcon, list, titleClassName }) => {
         }}
         data-cy={id}
       >
-        {!!icon && <Icon name={icon} className="w-4 mr-2 text-white" />}
-        <Typography className={titleClassName}>{title}</Typography>
+        {!!icon && (
+          <Icon
+            name={icon}
+            className="mr-2 w-4 text-white"
+          />
+        )}
+        <div
+          style={{
+            whiteSpace: 'nowrap',
+          }}
+        >
+          {title.length > maxCharactersPerLine && (
+            <div>
+              {lines.map((line, index) => (
+                <Typography
+                  key={index}
+                  className={itemsClassName}
+                >
+                  {line}
+                </Typography>
+              ))}
+            </div>
+          )}
+          {title.length <= maxCharactersPerLine && (
+            <Typography className={itemsClassName}>{title}</Typography>
+          )}
+        </div>
       </div>
     );
   }, []);
-
-  DropdownItem.defaultProps = {
-    icon: '',
-  };
-
-  DropdownItem.propTypes = {
-    id: PropTypes.string,
-    title: PropTypes.string.isRequired,
-    icon: PropTypes.string,
-    onClick: PropTypes.func.isRequired,
-  };
 
   const renderTitleElement = () => {
     return (
       <div className="flex items-center">
         {children}
-        {showDropdownIcon && <Icon name="chevron-down" className="ml-1" />}
+        {showDropdownIcon && (
+          <Icon
+            name="chevron-down"
+            className="ml-1"
+          />
+        )}
       </div>
     );
   };
@@ -62,8 +113,10 @@ const Dropdown = ({ id, children, showDropdownIcon, list, titleClassName }) => {
     return (
       <div
         className={classnames(
-          'absolute top-100 right-0 mt-2 z-10 origin-top-right transition duration-300 transform bg-primary-dark border border-secondary-main rounded shadow',
+          'top-100 bg-primary-dark border-secondary-main absolute z-10 mt-2 transform rounded border shadow transition duration-300',
           {
+            'right-0 origin-top-right': alignment === 'right',
+            'left-0 origin-top-left': alignment === 'left',
             'scale-0': !open,
             'scale-100': open,
           }
@@ -92,8 +145,15 @@ const Dropdown = ({ id, children, showDropdownIcon, list, titleClassName }) => {
   }, [open]);
 
   return (
-    <div data-cy="dropdown" ref={element} className="relative">
-      <div className="flex items-center cursor-pointer" onClick={toggleList}>
+    <div
+      data-cy="dropdown"
+      ref={element}
+      className="relative"
+    >
+      <div
+        className="flex cursor-pointer items-center"
+        onClick={toggleList}
+      >
         {renderTitleElement()}
       </div>
 
@@ -101,9 +161,10 @@ const Dropdown = ({ id, children, showDropdownIcon, list, titleClassName }) => {
     </div>
   );
 };
-
 Dropdown.defaultProps = {
   showDropdownIcon: true,
+  maxTextLength: 10,
+  showBorders: true,
 };
 
 Dropdown.propTypes = {
@@ -119,6 +180,8 @@ Dropdown.propTypes = {
       onClick: PropTypes.func.isRequired,
     })
   ).isRequired,
+  alignment: PropTypes.oneOf(['left', 'right']),
+  maxCharactersPerLine: PropTypes.number,
 };
 
 export default Dropdown;

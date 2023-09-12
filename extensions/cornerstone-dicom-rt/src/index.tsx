@@ -4,9 +4,7 @@ import { Types } from '@ohif/core';
 import getSopClassHandlerModule from './getSopClassHandlerModule';
 
 const Component = React.lazy(() => {
-  return import(
-    /* webpackPrefetch: true */ './viewports/OHIFCornerstoneRTViewport'
-  );
+  return import(/* webpackPrefetch: true */ './viewports/OHIFCornerstoneRTViewport');
 });
 
 const OHIFCornerstoneRTViewport = props => {
@@ -36,12 +34,14 @@ const extension: Types.Extensions.Extension = {
   getViewportModule({
     servicesManager,
     extensionManager,
+    commandsManager,
   }: Types.Extensions.ExtensionParams) {
     const ExtendedOHIFCornerstoneRTViewport = props => {
       return (
         <OHIFCornerstoneRTViewport
           servicesManager={servicesManager}
           extensionManager={extensionManager}
+          commandsManager={commandsManager}
           {...props}
         />
       );

@@ -6,11 +6,11 @@ const StudySummary = ({ date, modality, description }) => {
     <div className="p-2">
       <div className="leading-none">
         <span className="mr-2 text-base text-white">{date}</span>
-        <span className="px-1 text-base font-bold text-black rounded-sm bg-common-bright">
+        <span className="bg-common-bright rounded-sm px-1 text-base font-bold text-black">
           {modality}
         </span>
       </div>
-      <div className="pt-2 text-base leading-none truncate text-primary-light ellipse">
+      <div className="text-primary-light ellipse truncate pt-2 text-base leading-none">
         {description || ''}
       </div>
     </div>

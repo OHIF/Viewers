@@ -36,10 +36,7 @@ function PanelStudyBrowser({
   // doesn't have to have such an intense shape. This works well enough for now.
   // Tabs --> Studies --> DisplaySets --> Thumbnails
   const { StudyInstanceUIDs } = useImageViewer();
-  const [
-    { activeViewportIndex, viewports },
-    viewportGridService,
-  ] = useViewportGrid();
+  const [{ activeViewportId, viewports }, viewportGridService] = useViewportGrid();
   const [activeTabName, setActiveTabName] = useState('primary');
   const [expandedStudyInstanceUIDs, setExpandedStudyInstanceUIDs] = useState([
     ...StudyInstanceUIDs,
@@ -51,10 +48,10 @@ function PanelStudyBrowser({
 
   const onDoubleClickThumbnailHandler = displaySetInstanceUID => {
     let updatedViewports = [];
-    const viewportIndex = activeViewportIndex;
+    const viewportId = activeViewportId;
     try {
       updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
-        viewportIndex,
+        viewportId,
         displaySetInstanceUID
       );
     } catch (error) {
@@ -83,14 +80,17 @@ function PanelStudyBrowser({
         studyInstanceUid: StudyInstanceUID,
       });
 
+      if (!qidoForStudyUID?.length) {
+        navigate('/notfoundstudy', '_self');
+        throw new Error('Invalid study URL');
+      }
+
       let qidoStudiesForPatient = qidoForStudyUID;
 
       // try to fetch the prior studies based on the patientID if the
       // server can respond.
       try {
-        qidoStudiesForPatient = await getStudiesForPatientByMRN(
-          qidoForStudyUID
-        );
+        qidoStudiesForPatient = await getStudiesForPatientByMRN(qidoForStudyUID);
       } catch (error) {
         console.warn(error);
       }
@@ -109,11 +109,7 @@ function PanelStudyBrowser({
       setStudyDisplayList(prevArray => {
         const ret = [...prevArray];
         for (const study of actuallyMappedStudies) {
-          if (
-            !prevArray.find(
-              it => it.studyInstanceUid === study.studyInstanceUid
-            )
-          ) {
+          if (!prevArray.find(it => it.studyInstanceUid === study.studyInstanceUid)) {
             ret.push(study);
           }
         }
@@ -135,9 +131,7 @@ function PanelStudyBrowser({
 
     currentDisplaySets.forEach(async dSet => {
       const newImageSrcEntry = {};
-      const displaySet = displaySetService.getDisplaySetByUID(
-        dSet.displaySetInstanceUID
-      );
+      const displaySet = displaySetService.getDisplaySetByUID(dSet.displaySetInstanceUID);
       const imageIds = dataSource.getImageIdsForDisplaySet(displaySet);
       const imageId = imageIds[Math.floor(imageIds.length / 2)];
 
@@ -223,6 +217,14 @@ function PanelStudyBrowser({
     const SubscriptionDisplaySetsChanged = displaySetService.subscribe(
       displaySetService.EVENTS.DISPLAY_SETS_CHANGED,
       changedDisplaySets => {
+        const mappedDisplaySets = _mapDisplaySets(changedDisplaySets, thumbnailImageSrcMap);
+        setDisplaySets(mappedDisplaySets);
+      }
+    );
+
+    const SubscriptionDisplaySetMetaDataInvalidated = displaySetService.subscribe(
+      displaySetService.EVENTS.DISPLAY_SET_SERIES_METADATA_INVALIDATED,
+      () => {
         const mappedDisplaySets = _mapDisplaySets(
           changedDisplaySets,
           thumbnailImageSrcMap,
@@ -234,6 +236,7 @@ function PanelStudyBrowser({
           uiNotificationService
         );
 
+
         setDisplaySets(mappedDisplaySets);
       }
     );
@@ -241,6 +244,7 @@ function PanelStudyBrowser({
     return () => {
       SubscriptionDisplaySetsAdded.unsubscribe();
       SubscriptionDisplaySetsChanged.unsubscribe();
+      SubscriptionDisplaySetMetaDataInvalidated.unsubscribe();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
@@ -260,9 +264,7 @@ function PanelStudyBrowser({
 
   // TODO: Should not fire this on "close"
   function _handleStudyClick(StudyInstanceUID) {
-    const shouldCollapseStudy = expandedStudyInstanceUIDs.includes(
-      StudyInstanceUID
-    );
+    const shouldCollapseStudy = expandedStudyInstanceUIDs.includes(StudyInstanceUID);
     const updatedExpandedStudyInstanceUIDs = shouldCollapseStudy
       ? [
           ...expandedStudyInstanceUIDs.filter(
@@ -275,11 +277,7 @@ function PanelStudyBrowser({
 
     if (!shouldCollapseStudy) {
       const madeInClient = true;
-      requestDisplaySetCreationForStudy(
-        displaySetService,
-        StudyInstanceUID,
-        madeInClient
-      );
+      requestDisplaySetCreationForStudy(displaySetService, StudyInstanceUID, madeInClient);
     }
   }
 
@@ -413,9 +411,7 @@ function _mapDisplaySets(
             }, []);
 
       const array =
-        componentType === 'thumbnail'
-          ? thumbnailDisplaySets
-          : thumbnailNoImageDisplaySets;
+        componentType === 'thumbnail' ? thumbnailDisplaySets : thumbnailNoImageDisplaySets;
 
       const { displaySetInstanceUID } = ds;
 
@@ -428,6 +424,7 @@ function _mapDisplaySets(
         numInstances: ds.numImageFrames,
         countIcon: ds.countIcon,
         StudyInstanceUID: ds.StudyInstanceUID,
+        messages: ds.messages,
         componentType,
         imageSrc,
         dragData: {

@@ -5,9 +5,7 @@ export default function areaOfPolygon(coordinates) {
   let j = n - 1;
 
   for (let i = 0; i < n; i++) {
-    area +=
-      (coordinates[j][0] + coordinates[i][0]) *
-      (coordinates[j][1] - coordinates[i][1]);
+    area += (coordinates[j][0] + coordinates[i][0]) * (coordinates[j][1] - coordinates[i][1]);
     j = i; // j is previous vertex to i
   }
 

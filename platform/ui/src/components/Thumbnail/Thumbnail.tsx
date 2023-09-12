@@ -4,6 +4,7 @@ import classnames from 'classnames';
 import { useDrag } from 'react-dnd';
 import Icon from '../Icon';
 import { StringNumber } from '../../types';
+import DisplaySetMessageListTooltip from '../DisplaySetMessageListTooltip';
 
 /**
  * Display a thumbnail for a display set.
@@ -17,6 +18,7 @@ const Thumbnail = ({
   seriesNumber,
   numInstances,
   countIcon,
+  messages,
   dragData,
   isActive,
   onClick,
@@ -28,7 +30,7 @@ const Thumbnail = ({
   const [collectedProps, drag, dragPreview] = useDrag({
     type: 'displayset',
     item: { ...dragData },
-    canDrag: function(monitor) {
+    canDrag: function (monitor) {
       return Object.keys(dragData).length !== 0;
     },
   });
@@ -37,7 +39,7 @@ const Thumbnail = ({
     <div
       className={classnames(
         className,
-        'flex flex-col flex-1 px-3 mb-8 cursor-pointer outline-none select-none group'
+        'group mb-8 flex flex-1 cursor-pointer select-none flex-col px-3 outline-none'
       )}
       id={`thumbnail-${displaySetInstanceUID}`}
       data-cy={`study-browser-thumbnail`}
@@ -49,10 +51,10 @@ const Thumbnail = ({
       <div ref={drag}>
         <div
           className={classnames(
-            'flex flex-1 items-center justify-center rounded-md bg-black text-base text-white overflow-hidden min-h-32',
+            'min-h-32 flex flex-1 items-center justify-center overflow-hidden rounded-md bg-black text-base text-white',
             isActive
-              ? 'border-2 border-primary-light'
-              : 'border border-secondary-light hover:border-blue-300'
+              ? 'border-primary-light border-2'
+              : 'border-secondary-light border hover:border-blue-300'
           )}
           style={{
             margin: isActive ? '0' : '1px',
@@ -62,24 +64,31 @@ const Thumbnail = ({
             <img
               src={imageSrc}
               alt={imageAltText}
-              className="object-none min-h-32"
+              className="min-h-32 object-none"
               crossOrigin="anonymous"
             />
           ) : (
             <div>{imageAltText}</div>
           )}
         </div>
-        <div className="flex flex-row items-center flex-1 pt-2 text-base text-blue-300">
+        <div className="flex flex-1 flex-row items-center pt-2 text-base text-blue-300">
           <div className="mr-4">
-            <span className="font-bold text-primary-main">{'S: '}</span>
+            <span className="text-primary-main font-bold">{'S: '}</span>
             {seriesNumber}
           </div>
-          <div className="flex flex-row items-center flex-1">
-            <Icon name={countIcon || 'group-layers'} className="w-3 mr-2" />
+          <div className="flex flex-1 flex-row items-center">
+            <Icon
+              name={countIcon || 'group-layers'}
+              className="mr-2 w-3"
+            />
             {` ${numInstances}`}
           </div>
+          <DisplaySetMessageListTooltip
+            messages={messages}
+            id={`display-set-tooltip-${displaySetInstanceUID}`}
+          />
         </div>
-        <div className="text-base text-white break-all">{description}</div>
+        <div className="break-all text-base text-white">{description}</div>
       </div>
     </div>
   );
@@ -104,6 +113,7 @@ Thumbnail.propTypes = {
   description: PropTypes.string.isRequired,
   seriesNumber: StringNumber.isRequired,
   numInstances: PropTypes.number.isRequired,
+  messages: PropTypes.object,
   isActive: PropTypes.bool.isRequired,
   onClick: PropTypes.func.isRequired,
   onDoubleClick: PropTypes.func.isRequired,

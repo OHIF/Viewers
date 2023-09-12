@@ -26,9 +26,7 @@ describe('getAttribute', () => {
 
     expect(getAttribute(nullElement, defaultValue)).toEqual(defaultValue);
     expect(getAttribute(undefinedElement, defaultValue)).toEqual(defaultValue);
-    expect(getAttribute(noValuePresentElement, defaultValue)).toEqual(
-      defaultValue
-    );
+    expect(getAttribute(noValuePresentElement, defaultValue)).toEqual(defaultValue);
   });
 
   it('should return 48 for element with value 0', () => {
