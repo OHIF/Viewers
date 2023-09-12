@@ -5,7 +5,7 @@ import { Enums, cache, metaData } from '@cornerstonejs/core';
 import { segmentation as cornerstoneToolsSegmentation } from '@cornerstonejs/tools';
 import { adaptersSEG, helpers } from '@cornerstonejs/adapters';
 import {
-  hydrateUsingNewSegmentation,
+  hydrateUsingEmptySegmentation,
   hydrateUsingDisplaySets,
   hydrateUsingSegmentations,
 } from './utils/hydrationUtils';
@@ -69,7 +69,10 @@ const commandsModule = ({
       );
 
       viewports.forEach((viewport, viewportId) => {
-        if (targetViewportId === viewportId) {
+        if (
+          targetViewportId === viewportId ||
+          updatedViewports.find(v => v.viewportId === viewportId)
+        ) {
           return;
         }
 
@@ -169,7 +172,7 @@ const commandsModule = ({
             activeViewport,
           });
         } else {
-          segmentationId = await hydrateUsingNewSegmentation({
+          segmentationId = await hydrateUsingEmptySegmentation({
             displaySetInstanceUID: referenceDisplaySetInstanceUID,
             activeViewport,
             segmentationService,
@@ -224,7 +227,9 @@ const commandsModule = ({
             return;
           }
 
-          await createSegmentationForVolume();
+          if (viewportId === targetViewportId) {
+            await createSegmentationForVolume();
+          }
         };
 
         csViewport.element.addEventListener(
