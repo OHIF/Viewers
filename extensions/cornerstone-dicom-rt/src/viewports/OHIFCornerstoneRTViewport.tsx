@@ -94,8 +94,8 @@ function OHIFCornerstoneRTViewport(props) {
   }, [viewportGrid]);
 
   const hydrateRTDisplaySet = ({ rtDisplaySet, viewportId }) => {
-    commandsManager.runCommand('hydrateSegmentationForViewport', {
-      displaySet: rtDisplaySet,
+    commandsManager.runCommand('hydrateSegmentationsForViewport', {
+      displaySets: [rtDisplaySet],
       viewportId,
     });
   };

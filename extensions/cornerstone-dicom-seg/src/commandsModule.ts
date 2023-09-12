@@ -4,6 +4,11 @@ import { ServicesManager, Types } from '@ohif/core';
 import { Enums, cache, metaData } from '@cornerstonejs/core';
 import { segmentation as cornerstoneToolsSegmentation } from '@cornerstonejs/tools';
 import { adaptersSEG, helpers } from '@cornerstonejs/adapters';
+import {
+  hydrateUsingNewSegmentation,
+  hydrateUsingDisplaySets,
+  hydrateUsingSegmentations,
+} from './utils/hydrationUtils';
 
 const {
   Cornerstone3D: {
@@ -29,41 +34,30 @@ const commandsModule = ({
 
   const actions = {
     /**
-     * It hydrates a segmentation display set on a target viewport. During such
-     * hydration, it also checks if there is any other viewport that require
-     * to be updated (is in the same FOR as the target viewport and is displaying)
+     * It checks if there is any other viewport that require to be updated
+     * (is in the same FOR as the target viewport and is displaying) since
+     * the segmentation is being hydrated and we only have support for volume
+     * viewports to display segmentations.
      *
-     * @param viewportId is the target viewport to hydrate the segmentation
-     * @param displaySet is the display set to hydrate (it can be a labelmap or RTSTRUCT)
+     * @param segmentationDisplaySet - the segmentation display set to hydrate
+     * @param viewportId - the target viewport to hydrate the segmentation
+     * @returns an array of viewports that require to be updated
      */
-    hydrateSegmentationForViewport: async ({
-      viewportId: targetViewportId,
-      displaySet: segDisplaySet,
+    getUpdatedViewportsForSegmentation: ({
+      segmentationDisplaySet,
+      viewportId,
     }: {
-      viewportId: string;
-      displaySet?: any;
+      segmentationDisplaySet: any;
+      viewportId?: string;
     }) => {
       const { viewports, activeViewportId } = viewportGridService.getState();
-      const activeViewport = viewports.get(activeViewportId);
+      const targetViewportId = viewportId || activeViewportId;
 
-      if (!activeViewport) {
-        return;
-      }
-
-      const { displaySetInstanceUIDs } = activeViewport;
-
-      // Validate the active viewport for segmentation
-      if (displaySetInstanceUIDs.length > 1) {
-        uiNotificationService.show({
-          title: 'Segmentation',
-          message: 'Segmentation is not supported for multiple display sets yet',
-          type: 'error',
-        });
-        return;
-      }
+      const displaySetInstanceUIDs = viewports.get(targetViewportId).displaySetInstanceUIDs;
 
       const referenceDisplaySetInstanceUID =
-        segDisplaySet?.referencedDisplaySetInstanceUID || displaySetInstanceUIDs[0];
+        segmentationDisplaySet?.referencedDisplaySetInstanceUID || displaySetInstanceUIDs[0];
+
       const referencedDisplaySet = displaySetService.getDisplaySetByUID(
         referenceDisplaySetInstanceUID
       );
@@ -78,10 +72,12 @@ const commandsModule = ({
         if (targetViewportId === viewportId) {
           return;
         }
+
         const shouldDisplaySeg = segmentationService.shouldRenderSegmentation(
           viewport.displaySetInstanceUIDs,
           segmentationFrameOfReferenceUID
         );
+
         if (shouldDisplaySeg) {
           updatedViewports.push({
             viewportId,
@@ -93,108 +89,151 @@ const commandsModule = ({
           });
         }
       });
+      return updatedViewports;
+    },
+    /**
+     * It hydrates a segmentation display set on a target viewport. During such
+     * hydration, it also checks if there is any other viewport that require
+     * to be updated (is in the same FOR as the target viewport and is displaying)
+     *
+     * If no viewportId is provided, it will hydrate the active viewport.
+     *
+     * This function is capable of hydrating both RTSTRUCT and Labelmaps segmentations.
+     *
+     * 1) If the displaySets for the segmentations are provided (RTSTRUCT or DICOM SEG)
+     *   then it will hydrate the segmentation for the target viewport.
+     * 2) If segmentations array of objects is provided, then it will hydrate the segmentations
+     *    for the target viewport.
+     * 3) if none of the above is provided, then it will create a new segmentation for the target viewport.
+     *
+     *
+     * @param viewportId is the target viewport to hydrate the segmentation
+     * @param displaySet is the display set to hydrate (it can be a labelmap or RTSTRUCT)
+     * @param segmentations is the list of segmentation objects to be hydrated
+     */
+    loadSegmentationsForViewport: async ({
+      viewportId: targetViewportId,
+      displaySets: segDisplaySets,
+      segmentations,
+    }: {
+      viewportId?: string;
+      displaySets?: any[];
+      segmentations?: any[];
+    }) => {
+      const { viewports, activeViewportId } = viewportGridService.getState();
+      const activeViewport = viewports.get(activeViewportId);
+
+      targetViewportId = targetViewportId || activeViewportId;
+      segDisplaySets = segDisplaySets || [];
+
+      const { displaySetInstanceUIDs } = activeViewport;
+
+      // Validate the active viewport for segmentation
+      if (displaySetInstanceUIDs.length > 1) {
+        uiNotificationService.show({
+          title: 'Segmentation',
+          message: 'Segmentation is not supported for multiple display sets yet',
+          type: 'error',
+        });
+        return;
+      }
+
+      // Based on the segmentations provided, we might have to update other viewports
+      // that are displaying the same frameOfReference to be a volume viewport,
+      // so that the segmentation can be displayed (currently we only have support
+      // for volume viewports to display segmentations)
+      const segDisplaySet = segDisplaySets[0];
+      const updatedViewports = actions.getUpdatedViewportsForSegmentation({
+        segmentationDisplaySet: segDisplaySet,
+        viewportId: targetViewportId,
+      });
+
+      const referenceDisplaySetInstanceUID =
+        segDisplaySet?.referencedDisplaySetInstanceUID || displaySetInstanceUIDs[0];
 
       // create Segmentation callback which needs to be waited until
       // the volume is created (if coming from stack)
       const createSegmentationForVolume = async () => {
         let segmentationId;
-        if (!segDisplaySet) {
-          const currentSegmentations = segmentationService.getSegmentations();
-          segmentationId = await segmentationService.createSegmentationForDisplaySet(
-            referenceDisplaySetInstanceUID,
-            { label: `Segmentation ${currentSegmentations.length + 1}` }
-          );
-
-          await segmentationService.addSegmentationRepresentationToToolGroup(
-            activeViewport.viewportOptions.toolGroupId,
-            segmentationId
-          );
-
-          // Todo: handle other toolGroups than default
-          segmentationService.addSegment(segmentationId, {
-            properties: {
-              label: 'Segment 1',
-            },
+        if (segDisplaySets[0]) {
+          segmentationId = await hydrateUsingDisplaySets({
+            segDisplaySet,
+            segmentationService,
+            segmentationId,
+          });
+        } else if (segmentations?.length) {
+          segmentationId = await hydrateUsingSegmentations({
+            segmentations,
+            segmentationService,
+            displaySetInstanceUID: referenceDisplaySetInstanceUID,
+            activeViewport,
           });
         } else {
-          const suppressEvents = false;
-          const serviceFunction =
-            segDisplaySet.Modality === 'SEG'
-              ? 'createSegmentationForSEGDisplaySet'
-              : 'createSegmentationForRTDisplaySet';
-
-          const load = segmentationService[serviceFunction].bind(segmentationService);
-
-          segmentationId = await load(segDisplaySet, segmentationId, suppressEvents);
+          segmentationId = await hydrateUsingNewSegmentation({
+            displaySetInstanceUID: referenceDisplaySetInstanceUID,
+            activeViewport,
+            segmentationService,
+          });
         }
 
         segmentationService.hydrateSegmentation(segmentationId);
       };
 
-      // volume already exists so we can create the segmentation already
-      let volumeExists = false;
-      cache._volumeCache.forEach((volume, volumeId) => {
-        if (volumeId.includes(referenceDisplaySetInstanceUID)) {
-          volumeExists = true;
-        }
-      });
+      // the reference volume that is used to draw the segmentation. so check if the
+      // volume exists in the cache (the target Viewport is already a volume viewport)
+      const volumeExists = Array.from(cache._volumeCache.keys()).some(volumeId =>
+        volumeId.includes(referenceDisplaySetInstanceUID)
+      );
 
-      if (volumeExists) {
-        await createSegmentationForVolume();
-      }
-
-      // Define boundFunction at a higher scope
-      const boundFunctionMap = new Map();
-
-      async function createNewSegmentation({ viewportId, prevCamera, isActiveViewport, element }) {
-        // IMPORTANT: re-grab the viewport since it has changed from stack to volume
-        const volumeViewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
-        volumeViewport.setCamera(prevCamera);
-
-        if (isActiveViewport) {
-          await createSegmentationForVolume();
-        }
-
-        const boundFunction = boundFunctionMap.get(viewportId);
-
-        if (boundFunction) {
-          // Remove the event listener with the same function reference
-          element.removeEventListener(Enums.Events.VOLUME_VIEWPORT_NEW_VOLUME, boundFunction);
-        }
-      }
-
-      // Update the viewports with volume type
       updatedViewports.forEach(async viewport => {
         viewport.viewportOptions = {
           ...viewport.viewportOptions,
           viewportType: 'volume',
           needsRerendering: true,
         };
-        const isActiveViewport = viewport.viewportId === activeViewportId;
+        const viewportId = viewport.viewportId;
 
-        const csViewport = cornerstoneViewportService.getCornerstoneViewport(viewport.viewportId);
-
-        // Keeping the camera
+        const csViewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
         const prevCamera = csViewport.getCamera();
 
-        if (volumeExists) {
+        // only run the createSegmentationForVolume for the targetViewportId
+        // since the rest will get handled by cornerstoneViewportService
+        if (volumeExists && viewportId === targetViewportId) {
           await createSegmentationForVolume();
+          return;
         }
 
-        const boundFunction = createNewSegmentation.bind(null, {
-          viewportId: viewport.viewportId,
-          prevCamera: prevCamera,
-          isActiveViewport: isActiveViewport,
-          element: csViewport.element,
-        });
+        const createNewSegmentationWhenVolumeMounts = async evt => {
+          const isTheActiveViewportVolumeMounted = evt.detail.volumeActors?.find(ac =>
+            ac.uid.includes(referenceDisplaySetInstanceUID)
+          );
 
-        // Store the bound function in the map
-        boundFunctionMap.set(viewport.viewportId, boundFunction);
+          // Note: make sure to re-grab the viewport since it might have changed
+          // during the time it took for the volume to be mounted, for instance
+          // the stack viewport has been changed to a volume viewport
+          const volumeViewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+          volumeViewport.setCamera(prevCamera);
 
-        // Callback function means the volume did not exist, and we need to wait for it
-        csViewport.element.addEventListener(Enums.Events.VOLUME_VIEWPORT_NEW_VOLUME, boundFunction);
+          volumeViewport.element.removeEventListener(
+            Enums.Events.VOLUME_VIEWPORT_NEW_VOLUME,
+            createNewSegmentationWhenVolumeMounts
+          );
+
+          if (!isTheActiveViewportVolumeMounted) {
+            // it means it is one of those other updated viewports so just update the camera
+            return;
+          }
+
+          await createSegmentationForVolume();
+        };
+
+        csViewport.element.addEventListener(
+          Enums.Events.VOLUME_VIEWPORT_NEW_VOLUME,
+          createNewSegmentationWhenVolumeMounts
+        );
       });
 
+      // Set the displaySets for the viewports that require to be updated
       viewportGridService.setDisplaySetsForViewports(updatedViewports);
 
       return true;
@@ -241,7 +280,7 @@ const commandsModule = ({
         return;
       }
 
-      actions.hydrateSegmentationForViewport({
+      actions.loadSegmentationsForViewport({
         viewportId: activeViewportId,
       });
     },
@@ -363,8 +402,11 @@ const commandsModule = ({
     storeSegmentation: {
       commandFn: actions.storeSegmentation,
     },
-    hydrateSegmentationForViewport: {
-      commandFn: actions.hydrateSegmentationForViewport,
+    loadSegmentationsForViewport: {
+      commandFn: actions.loadSegmentationsForViewport,
+    },
+    getUpdatedViewportsForSegmentation: {
+      commandFn: actions.getUpdatedViewportsForSegmentation,
     },
   };
 

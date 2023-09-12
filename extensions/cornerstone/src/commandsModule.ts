@@ -590,95 +590,6 @@ function commandsModule({
     storePresentation: ({ viewportId }) => {
       cornerstoneViewportService.storePresentation({ viewportId });
     },
-    loadSegmentationsForDisplaySet: async ({
-      displaySetInstanceUID,
-      segmentations,
-      onCompleteCallback,
-      calculateCentroids = false,
-    }) => {
-      const toolGroupIds = _getMatchedViewportsToolGroupIds();
-      for (let i = 0; i < segmentations.length; i++) {
-        const segmentation = segmentations[i];
-        const segmentationId = segmentation.id;
-        const label = segmentation.label;
-
-        const segments = segmentation.segments;
-
-        // Remove segments, we shall add them through the API so that all the
-        // appropriate cornerstone logic is applied.
-        delete segmentation.segments;
-
-        await segmentationService.createSegmentationForDisplaySet(
-          displaySetInstanceUID,
-          { segmentationId, label }
-        );
-
-        const labelmapVolume = segmentationService.getLabelmapVolume(
-          segmentationId
-        );
-
-        labelmapVolume.scalarData.set(segmentation.scalarData);
-        segmentationService.addOrUpdateSegmentation(segmentation);
-
-        for (const toolGroupId of toolGroupIds) {
-          await segmentationService.addSegmentationRepresentationToToolGroup(
-            toolGroupId,
-            segmentationId
-          );
-
-          segments.forEach(segment => {
-            if (segment === null) {
-              return;
-            }
-
-            segmentationService.addSegment(
-              segmentationId,
-              segment.segmentIndex,
-              toolGroupId,
-              {
-                color: segment.color,
-                label: segment.label,
-                opacity: segment.opacity,
-                isLocked: segment.isLocked,
-                visibility: segment.isVisible,
-                active:
-                  segmentation.activeSegmentIndex === segment.segmentIndex,
-              }
-            );
-          });
-
-          segmentationService.hydrateSegmentation(segmentation.id);
-        }
-
-        if (segmentation.centroidsIJK) {
-          segmentationService.setCentroids(
-            segmentation.id,
-            segmentation.centroidsIJK
-          );
-        }
-      }
-
-      const segmentationToSetActive = segmentations.find(
-        segmentation => segmentation.isActive
-      );
-
-      if (segmentationToSetActive !== undefined) {
-        toolGroupIds.forEach(toolGroupId => {
-          segmentationService.setActiveSegmentationForToolGroup(
-            segmentationToSetActive.id,
-            toolGroupId
-          );
-        });
-      }
-
-      onCompleteCallback?.();
-
-      if (calculateCentroids) {
-        segmentations.forEach(segmentation => {
-          segmentationService.calculateCentroids(segmentation.id);
-        });
-      }
-    },
   };
 
   const definitions = {
@@ -806,11 +717,6 @@ function commandsModule({
     },
     storePresentation: {
       commandFn: actions.storePresentation,
-      storeContexts: [],
-      options: {},
-    },
-    loadSegmentationsForDisplaySet: {
-      commandFn: actions.loadSegmentationsForDisplaySet,
       storeContexts: [],
       options: {},
     },
