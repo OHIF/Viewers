@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.7.0-beta.73](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.72...v3.7.0-beta.73) (2023-09-12)
+
+
+### Bug Fixes
+
+* **health imaging:** studies not loading from healthimaging if imagepositionpatient is missing ([#3646](https://github.com/OHIF/Viewers/issues/3646)) ([74e62a1](https://github.com/OHIF/Viewers/commit/74e62a176374f720080d4e777972f70e7f2d8b2b))
+
+
+
+
+
 # [3.7.0-beta.72](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.71...v3.7.0-beta.72) (2023-09-12)
 
 **Note:** Version bump only for package ohif-monorepo-root
