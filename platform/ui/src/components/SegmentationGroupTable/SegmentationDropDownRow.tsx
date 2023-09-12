@@ -70,7 +70,7 @@ function SegmentationDropDownRow({
             ...(!disableEditing
               ? [
                   {
-                    title: 'Create Report',
+                    title: 'Export DICOM SEG',
                     onClick: () => {
                       storeSegmentation(activeSegmentation.id);
                     },

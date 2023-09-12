@@ -97,7 +97,6 @@ const commandsModule = ({
       // create Segmentation callback which needs to be waited until
       // the volume is created (if coming from stack)
       const createSegmentationForVolume = async () => {
-        debugger;
         let segmentationId;
         if (!segDisplaySet) {
           const currentSegmentations = segmentationService.getSegmentations();
@@ -144,6 +143,26 @@ const commandsModule = ({
         await createSegmentationForVolume();
       }
 
+      // Define boundFunction at a higher scope
+      const boundFunctionMap = new Map();
+
+      async function createNewSegmentation({ viewportId, prevCamera, isActiveViewport, element }) {
+        // IMPORTANT: re-grab the viewport since it has changed from stack to volume
+        const volumeViewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+        volumeViewport.setCamera(prevCamera);
+
+        if (isActiveViewport) {
+          await createSegmentationForVolume();
+        }
+
+        const boundFunction = boundFunctionMap.get(viewportId);
+
+        if (boundFunction) {
+          // Remove the event listener with the same function reference
+          element.removeEventListener(Enums.Events.VOLUME_VIEWPORT_NEW_VOLUME, boundFunction);
+        }
+      }
+
       // Update the viewports with volume type
       updatedViewports.forEach(async viewport => {
         viewport.viewportOptions = {
@@ -151,32 +170,29 @@ const commandsModule = ({
           viewportType: 'volume',
           needsRerendering: true,
         };
+        const isActiveViewport = viewport.viewportId === activeViewportId;
 
         const csViewport = cornerstoneViewportService.getCornerstoneViewport(viewport.viewportId);
-
-        const isActiveViewport = viewport.viewportId === activeViewportId;
 
         // Keeping the camera
         const prevCamera = csViewport.getCamera();
 
-        if (!volumeExists) {
+        if (volumeExists) {
           await createSegmentationForVolume();
         }
 
-        // Callback function
-        csViewport.element.addEventListener(Enums.Events.VOLUME_VIEWPORT_NEW_VOLUME, async () => {
-          // IMPORTANT: REGRAB the viewport since it has changed from stack to volume
-          const volumeViewport = cornerstoneViewportService.getCornerstoneViewport(
-            viewport.viewportId
-          );
-          volumeViewport.setCamera(prevCamera);
-
-          if (isActiveViewport) {
-            await createSegmentationForVolume();
-          }
-
-          csViewport.element.removeEventListener(Enums.Events.VOLUME_VIEWPORT_NEW_VOLUME, this);
+        const boundFunction = createNewSegmentation.bind(null, {
+          viewportId: viewport.viewportId,
+          prevCamera: prevCamera,
+          isActiveViewport: isActiveViewport,
+          element: csViewport.element,
         });
+
+        // Store the bound function in the map
+        boundFunctionMap.set(viewport.viewportId, boundFunction);
+
+        // Callback function means the volume did not exist, and we need to wait for it
+        csViewport.element.addEventListener(Enums.Events.VOLUME_VIEWPORT_NEW_VOLUME, boundFunction);
       });
 
       viewportGridService.setDisplaySetsForViewports(updatedViewports);
@@ -215,7 +231,6 @@ const commandsModule = ({
       const displaySetInstanceUID = displaySetInstanceUIDs[0];
 
       const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
-      console.debug('🚀 ~ displaySet:', displaySet);
 
       if (!displaySet.isReconstructable) {
         uiNotificationService.show({

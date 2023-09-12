@@ -293,6 +293,10 @@ export default class ToolbarService extends PubSubService {
    * @param {*} props - Props set by the Viewer layer
    */
   _mapButtonToDisplay(btn, btnSection, metadata, props) {
+    if (!btn) {
+      return;
+    }
+
     const { id, type, component } = btn;
     const buttonType = this._buttonTypes()[type];
 
