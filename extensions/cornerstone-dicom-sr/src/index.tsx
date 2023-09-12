@@ -54,7 +54,7 @@ const dicomSRExtension = {
   },
   getCommandsModule,
   getSopClassHandlerModule,
-  // Include dynmically computed values such as toolNames not known till instantiation
+  // Include dynamically computed values such as toolNames not known till instantiation
   getUtilityModule({ servicesManager }) {
     return [
       {

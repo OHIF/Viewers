@@ -99,7 +99,7 @@ export default function PanelMeasurementTable({
           ? 'Research Derived Series' // default
           : promptResult.value; // provided value
 
-      // Re-use an existing series having the same series description to avoid
+      // Reuse an existing series having the same series description to avoid
       // creating too many series instances.
       const options = findSRWithSameSeriesDescription(SeriesDescription, displaySetService);
 
@@ -236,7 +236,7 @@ function _getMappedMeasurements(measurementService) {
 
 /**
  * Map the measurements to the display text.
- * Adds finding and site inforamtion to the displayText and/or label,
+ * Adds finding and site information to the displayText and/or label,
  * and provides as 'displayText' and 'label', while providing the original
  * values as baseDisplayText and baseLabel
  */

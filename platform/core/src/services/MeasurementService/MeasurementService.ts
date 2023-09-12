@@ -517,7 +517,7 @@ class MeasurementService extends PubSubService {
     };
 
     if (oldMeasurement) {
-      // TODO: Ultimately, each annotation should have a selected flag right from the soure.
+      // TODO: Ultimately, each annotation should have a selected flag right from the source.
       // For now, it is just added in OHIF here and in setMeasurementSelected.
       this.measurements.set(internalUID, newMeasurement);
       if (isUpdate) {

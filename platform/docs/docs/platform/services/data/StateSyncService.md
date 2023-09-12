@@ -47,7 +47,7 @@ grid store state as a modal state.
 ```
 
 ### getState
-The `getState` call returns an object containing all of the reigstered states,
+The `getState` call returns an object containing all of the registered states,
 by id.  The values can be read directly, but should not be modified.
 
 ### reduce

@@ -362,7 +362,7 @@ export default class HangingProtocolService extends PubSubService {
    * @param params is the dataset to run the hanging protocol on.
    * @param params.activeStudy is the "primary" study to hang  This may or may
    *        not be displayed by the actual viewports.
-   * @param params.studies is the list of studies to hang.  If absent, will re-use the previous set.
+   * @param params.studies is the list of studies to hang.  If absent, will reuse the previous set.
    * @param params.displaySets is the list of display sets associated with
    *        the studies to display in viewports.
    * @param protocol is a specific protocol to apply.

@@ -21,7 +21,7 @@ Free, Open Source Tools for Research: MONAI and OHIF Viewer
 We participated in the 38th Project Week with three projects around OHIF. [[Website](https://projectweek.na-mic.org/PW38_2023_GranCanaria/)]
 
 - PolySeg representations for OHIF Viewer ([link](https://projectweek.na-mic.org/PW38_2023_GranCanaria/Projects/OHIF_PolySeg/))
-- Cross study sychronizer for OHIF Crosshair ([link](https://projectweek.na-mic.org/PW38_2023_GranCanaria/Projects/OHIF_SyncCrosshair/))
+- Cross study synchronizer for OHIF Crosshair ([link](https://projectweek.na-mic.org/PW38_2023_GranCanaria/Projects/OHIF_SyncCrosshair/))
 - DATSCAN Viewer implementation in OHIF ([link](https://projectweek.na-mic.org/PW38_2023_GranCanaria/Projects/OHIF_DATSCAN/))
 
 

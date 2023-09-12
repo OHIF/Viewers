@@ -93,7 +93,7 @@ export default withTranslation('MyNameSpace')(MyComponent);
 
 > Important: if you are using React outside the OHIF Viewer, check the
 > [I18nextProvider](#using-outside-of-ohif-viewer) section, `withTranslation`
-> HOC doesnt works without a I18nextProvider
+> HOC doesn't works without a I18nextProvider
 
 #### Using Hooks
 
@@ -187,7 +187,7 @@ the following file tree:
             index.js
             | UK
                |-- Buttons.js
-               indes.js
+               index.js
             | US
                |-- Buttons.js
                index.js

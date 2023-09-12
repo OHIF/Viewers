@@ -99,7 +99,7 @@ support it yet, but it is gaining wider adoption.
 
 If you have an existing archive and intend to host the OHIF Viewer at the same
 domain name as your archive, then connecting the two is as simple as following
-the steps layed out in our
+the steps laid out in our
 [Configuration Essentials Guide](./../configuring/index.md).
 
 #### What if I don't have an imaging archive?
@@ -273,7 +273,7 @@ You can find an example of this setup in our
 
 In general, we recommend using the "Authorization Code Flow" ( [see
 `response_type=code` here][code-flows]); however, the "Implicit Flow" ( [see
-`response_type=token` here][code-flows]) can work if additonal precautions are
+`response_type=token` here][code-flows]) can work if additional precautions are
 taken. If the flow you've chosen produces a JWT Token, it's validity can be used
 to secure access to your Image Archive as well.
 

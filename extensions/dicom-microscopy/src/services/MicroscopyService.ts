@@ -48,7 +48,7 @@ export default class MicroscopyService extends PubSubService {
   }
 
   /**
-   * Cleares all the annotations and managed viewers, setting the manager state
+   * Clears all the annotations and managed viewers, setting the manager state
    * to its initial state
    */
   clear() {
@@ -357,7 +357,7 @@ export default class MicroscopyService extends PubSubService {
 
   /**
    * Removes the given third-party viewer API's object from the managed viewers
-   * and cleares all its event subscriptions
+   * and clears all its event subscriptions
    *
    * @param {Object} viewer Third-party viewer API's object to be removed
    */

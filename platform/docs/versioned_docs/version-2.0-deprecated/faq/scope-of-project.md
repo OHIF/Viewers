@@ -4,7 +4,7 @@ sidebar_position: 2
 # Scope of Project
 
 The OHIF Viewer is a web based medical imaging viewer. This allows it to be used
-on almost any device, anywhere. The OHIF Viewer is what is commonly reffered to
+on almost any device, anywhere. The OHIF Viewer is what is commonly referred to
 as a ["Dumb Client"][simplicable]
 
 > A dumb client is software that fully depends on a connection to a server or
@@ -12,7 +12,7 @@ as a ["Dumb Client"][simplicable]
 > software offers nothing useful. - [simplicable.com][simplicable]
 
 While the Viewer persists some data, it's scope is limited to caching things
-like user preferences and previous query paramaters. Because of this, the Viewer
+like user preferences and previous query parameters. Because of this, the Viewer
 has been built to be highly configurable to work with almost any web accessible
 data source.
 
@@ -56,7 +56,7 @@ the OHIF Viewer as a desktop application.
 _Does the OHIF Viewer work with the local filesystem?_
 
 It is possible to accomplish this through extensions; however, for an user
-experience that accomodates a large number of studies, you would likely need to
+experience that accommodates a large number of studies, you would likely need to
 package the OHIF Viewer as an [Electron app][electron].
 
 <!--

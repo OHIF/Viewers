@@ -120,7 +120,7 @@ function ViewerLayout({
           commandsManager={commandsManager}
         />
 
-        {/* Rigth SIDEPANELS */}
+        {/* Right SIDEPANELS */}
         <SidePanel
           side="right"
           defaultComponentOpen={rightPanelComponents[0].name}

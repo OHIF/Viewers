@@ -9,7 +9,7 @@ const StudyMetaDataPromises = new Map();
  *
  * @param {Object} server Object with server configuration parameters
  * @param {string} StudyInstanceUID The UID of the Study to be retrieved
- * @param {boolean} enabledStudyLazyLoad Whether the study metadata should be loaded asynchronusly.
+ * @param {boolean} enabledStudyLazyLoad Whether the study metadata should be loaded asynchronously.
  * @param {function} storeInstancesCallback A callback used to store the retrieved instance metadata.
  * @param {Object} [filters] - Object containing filters to be applied on retrieve metadata process
  * @param {string} [filter.seriesInstanceUID] - series instance uid to filter results against

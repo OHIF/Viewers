@@ -6,7 +6,7 @@ const TableCell = ({
   children,
   className,
   colSpan,
-  // ignored because we don't wan't to expose this prop
+  // ignored because we don't want to expose this prop
   // eslint-disable-next-line react/prop-types
   cellsNum,
   isTableHead,

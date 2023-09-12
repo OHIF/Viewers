@@ -343,7 +343,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
       const addRetrieveBulkData = instance => {
         const naturalized = naturalizeDataset(instance);
 
-        // if we konw the server doesn't use bulkDataURI, then don't
+        // if we know the server doesn't use bulkDataURI, then don't
         if (!dicomWebConfig.bulkDataURI?.enabled) {
           return naturalized;
         }

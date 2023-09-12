@@ -18,7 +18,7 @@ Key features:
   Offers a Data Source API for communicating with archives over proprietary API
   formats.
 - Provides a plugin framework for creating task-based workflow modes which can
-  re-use core functionality.
+  reuse core functionality.
 - Beautiful user interface (UI) designed with extensibility in mind. UI
   components available in a reusable component library built with React.js and
   Tailwind CSS

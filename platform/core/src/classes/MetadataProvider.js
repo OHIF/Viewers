@@ -498,7 +498,7 @@ const WADO_IMAGE_LOADER_TAGS = {
   OVERLAY_PLANE_MODULE: 'overlayPlaneModule',
   PATIENT_DEMOGRAPHIC_MODULE: 'patientDemographicModule',
 
-  // react-cornerstone-viewport specifc
+  // react-cornerstone-viewport specific
   PATIENT_MODULE: 'patientModule',
   GENERAL_IMAGE_MODULE: 'generalImageModule',
   GENERAL_STUDY_MODULE: 'generalStudyModule',

@@ -7,7 +7,7 @@ import classNames from 'classnames';
 /*
  * This is a workaround to import things from ohif/core as docz does
  * not allow us to access window element and @ohif/core does use it once
- * we import to instanciate cornerstone
+ * we import to instantiate cornerstone
  */
 import guid from './../../../core/src/utils/guid';
 

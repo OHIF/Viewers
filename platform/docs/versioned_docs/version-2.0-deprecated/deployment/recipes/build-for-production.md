@@ -75,7 +75,7 @@ directory. Our build process knows which configuration file to use based on the
 and registered extension's features, are configured using this file.
 
 The easiest way to apply your own configuration is to modify the `default.js`
-file. For more advanced cofiguration options, check out our
+file. For more advanced configuration options, check out our
 [configuration essentials guide](/configuring/index.md).
 
 ## Next Steps
