@@ -529,16 +529,24 @@ export default class HangingProtocolService extends PubSubService {
         }
       } else {
         // Clone each viewport to ensure independent objects
-        stage.viewports = stage.viewports.map((viewport, index) => ({
-          ...viewport,
-          viewportOptions: {
-            ...(viewport.viewportOptions || defaultViewportOptions),
-            // Use 'default' for the first viewport, and either existing or new UUIDs for the rest.
-            viewportId: index === 0 ? 'default' : viewport.viewportOptions?.viewportId || uuidv4(),
-          },
-          displaySets: viewport.displaySets || [],
-        }));
+        stage.viewports = stage.viewports.map((viewport, index) => {
+          const existingViewportId = viewport.viewportOptions?.viewportId;
 
+          return {
+            ...viewport,
+            viewportOptions: {
+              ...(viewport.viewportOptions || defaultViewportOptions),
+              // use provided viewportId when available, otherwise use default for first viewport
+              // and uuid for the rest
+              viewportId: existingViewportId
+                ? existingViewportId
+                : index === 0
+                ? 'default'
+                : uuidv4(),
+            },
+            displaySets: viewport.displaySets || [],
+          };
+        });
         stage.viewports.forEach(viewport => {
           viewport.displaySets.forEach(displaySet => {
             displaySet.options = displaySet.options || {};
@@ -1383,7 +1391,7 @@ export default class HangingProtocolService extends PubSubService {
     const matchingScores = [];
     let highestSeriesMatchingScore = 0;
 
-    console.log('ProtocolEngine::matchImages', studyMatchingRules, seriesMatchingRules);
+    // console.log('ProtocolEngine::matchImages', studyMatchingRules, seriesMatchingRules);
     const matchActiveOnly = this.protocol.numberOfPriorsReferenced === -1;
     this.studies.forEach((study, studyInstanceUIDsIndex) => {
       // Skip non-active if active only

@@ -179,21 +179,6 @@ const commandsModule = ({
         segmentationService.hydrateSegmentation(segmentationId);
       };
 
-      const boundFunctionMap = new Map();
-
-      async function createNewSegmentationWhenVolumeMounts({ viewportId, prevCamera, element }) {
-        const volumeViewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
-        volumeViewport.setCamera(prevCamera);
-
-        await createSegmentationForVolume();
-
-        const boundFunction = boundFunctionMap.get(viewportId);
-
-        if (boundFunction) {
-          element.removeEventListener(Enums.Events.VOLUME_VIEWPORT_NEW_VOLUME, boundFunction);
-        }
-      }
-
       // the reference volume that is used to draw the segmentation. so check if the
       // volume exists in the cache (the target Viewport is already a volume viewport)
       const volumeExists = Array.from(cache._volumeCache.keys()).some(volumeId =>
@@ -218,22 +203,34 @@ const commandsModule = ({
           return;
         }
 
-        const boundFunction = createNewSegmentationWhenVolumeMounts.bind(null, {
-          viewportId: viewportId,
-          prevCamera: prevCamera,
-          element: csViewport.element,
-        });
+        const createNewSegmentationWhenVolumeMounts = async evt => {
+          const isTheActiveViewportVolumeMounted = evt.detail.volumeActors?.find(ac =>
+            ac.uid.includes(referenceDisplaySetInstanceUID)
+          );
 
-        boundFunctionMap.set(targetViewportId, boundFunction);
+          // Note: make sure to re-grab the viewport since it might have changed
+          // during the time it took for the volume to be mounted, for instance
+          // the stack viewport has been changed to a volume viewport
+          const volumeViewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+          volumeViewport.setCamera(prevCamera);
 
-        csViewport.element.addEventListener(Enums.Events.VOLUME_VIEWPORT_NEW_VOLUME, evt => {
-          if (evt.detail.volumeId.includes(referenceDisplaySetInstanceUID)) {
-            // only run it if the volumeId matches the referenceDisplaySetInstanceUID
-            // otherwise it might be other volumes that are not related to the segmentation
-            // or even the segmentation volume added itself
-            boundFunction();
+          volumeViewport.element.removeEventListener(
+            Enums.Events.VOLUME_VIEWPORT_NEW_VOLUME,
+            createNewSegmentationWhenVolumeMounts
+          );
+
+          if (!isTheActiveViewportVolumeMounted) {
+            // it means it is one of those other updated viewports so just update the camera
+            return;
           }
-        });
+
+          await createSegmentationForVolume();
+        };
+
+        csViewport.element.addEventListener(
+          Enums.Events.VOLUME_VIEWPORT_NEW_VOLUME,
+          createNewSegmentationWhenVolumeMounts
+        );
       });
 
       // Set the displaySets for the viewports that require to be updated
