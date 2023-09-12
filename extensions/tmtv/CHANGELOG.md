@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.7.0-beta.71](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.70...v3.7.0-beta.71) (2023-09-12)
+
+**Note:** Version bump only for package @ohif/extension-tmtv
+
+
+
+
+
 # [3.7.0-beta.70](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.69...v3.7.0-beta.70) (2023-09-12)
 
 **Note:** Version bump only for package @ohif/extension-tmtv
