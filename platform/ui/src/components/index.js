@@ -30,7 +30,6 @@ import Notification from './Notification';
 import Select from './Select';
 import SegmentationTable from './SegmentationTable';
 import SegmentationGroupTable from './SegmentationGroupTable';
-import SegmentationGroup from './SegmentationGroupTable/SegmentationGroup';
 import SidePanel from './SidePanel';
 import SplitButton from './SplitButton';
 import StudyBrowser from './StudyBrowser';
@@ -130,7 +129,6 @@ export {
   Select,
   SegmentationTable,
   SegmentationGroupTable,
-  SegmentationGroup,
   SidePanel,
   SplitButton,
   StudyBrowser,
