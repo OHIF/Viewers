@@ -113,7 +113,7 @@ const Dropdown = ({
     return (
       <div
         className={classnames(
-          'top-100 bg-primary-dark border-secondary-main absolute z-10 mt-2 transform rounded border shadow transition duration-300',
+          'top-100 border-secondary-main absolute z-10 mt-2 transform rounded border bg-black shadow transition duration-300',
           {
             'right-0 origin-top-right': alignment === 'right',
             'left-0 origin-top-left': alignment === 'left',

@@ -85,10 +85,6 @@ function SegmentationDropDownRow({
               : []),
           ]}
         >
-          {/* <Icon
-            name="icon-more-menu"
-            className="w-[20px] h-[20px] grid place-items-center hover:bg-secondary-dark cursor-pointer text-primary-active rounded-[4px] "
-          ></Icon> */}
           <div className="hover:bg-secondary-dark mx-1 grid h-[28px] w-[28px]  cursor-pointer place-items-center rounded-[4px]">
             <Icon name="icon-more-menu"></Icon>
           </div>
