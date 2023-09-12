@@ -1,15 +1,3 @@
-const checkActiveViewportForSegmentation = ({ displaySetInstanceUIDs, uiNotificationService }) => {
-  if (displaySetInstanceUIDs.length > 1) {
-    uiNotificationService.show({
-      title: 'Segmentation',
-      message: 'Segmentation is not supported for multiple display sets yet',
-      type: 'error',
-    });
-    return false;
-  }
-  return true;
-};
-
 const hydrateUsingDisplaySets = async ({ segDisplaySet, segmentationService, segmentationId }) => {
   const suppressEvents = false;
   const serviceFunction =
@@ -74,7 +62,7 @@ const hydrateUsingSegmentations = async ({
   return segmentationId;
 };
 
-const hydrateUsingNewSegmentation = async ({
+const hydrateUsingEmptySegmentation = async ({
   displaySetInstanceUID,
   activeViewport,
   segmentationService,
@@ -85,12 +73,14 @@ const hydrateUsingNewSegmentation = async ({
     { label: `Segmentation ${currentSegmentations.length + 1}` }
   );
 
-  await segmentationService.addSegmentationRepresentationToToolGroup(
-    activeViewport.viewportOptions.toolGroupId,
-    segmentationId
-  );
+  const toolGroupId = activeViewport.viewportOptions.toolGroupId;
 
+  await segmentationService.addSegmentationRepresentationToToolGroup(toolGroupId, segmentationId);
+
+  // Add only one segment for now
   segmentationService.addSegment(segmentationId, {
+    toolGroupId,
+    segmentIndex: 1,
     properties: {
       label: 'Segment 1',
     },
@@ -99,9 +89,4 @@ const hydrateUsingNewSegmentation = async ({
   return segmentationId;
 };
 
-export {
-  checkActiveViewportForSegmentation,
-  hydrateUsingDisplaySets,
-  hydrateUsingSegmentations,
-  hydrateUsingNewSegmentation,
-};
+export { hydrateUsingDisplaySets, hydrateUsingSegmentations, hydrateUsingEmptySegmentation };

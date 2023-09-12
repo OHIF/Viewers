@@ -66,6 +66,10 @@ function SegmentationToolbox({ servicesManager, extensionManager }) {
 
     const viewport = viewports.get(activeViewportId);
 
+    if (!viewport) {
+      return;
+    }
+
     dispatch({
       type: ACTIONS.SET_ACTIVE_TOOL,
       payload: toolGroupService.getActiveToolForViewport(viewport.viewportId),

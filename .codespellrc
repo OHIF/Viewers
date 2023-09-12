@@ -1,0 +1,6 @@
+[codespell]
+skip = .git,*.pdf,*.svg,yarn.lock,*.min.js,locales
+# ignore words ending with … and some camelcased variables and names
+ignore-regex = \b\S+…\S*|\b(doubleClick|afterAll|PostgresSQL)\b|\bWee, L\.|.*te.*Telugu.*
+# some odd variables
+ignore-words-list = datea,ser,childrens

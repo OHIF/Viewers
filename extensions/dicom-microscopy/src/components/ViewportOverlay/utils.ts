@@ -78,7 +78,7 @@ export function formatPN(name) {
  * Gets compression type
  *
  * @param {number} imageId
- * @returns {string} comrpession type.
+ * @returns {string} compression type.
  */
 export function getCompression(imageId) {
   const generalImageModule = cornerstone.metaData.get('generalImageModule', imageId) || {};
