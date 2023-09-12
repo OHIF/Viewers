@@ -1388,10 +1388,10 @@
     lodash.clonedeep "^4.5.0"
     ndarray "^1.0.19"
 
-"@cornerstonejs/calculate-suv@^1.0.3":
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/calculate-suv/-/calculate-suv-1.0.3.tgz#6d99a72032c0f90cebf44dc6f0b12a5f1102e884"
-  integrity sha512-2SwVJKzC1DzyxdxJtCht9dhTND2GFjLwhhkDyyC7vJq5tIgbhxgPk1CSwovO1pxmoybAXzjOxnaubllxLgoT+w==
+"@cornerstonejs/calculate-suv@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/calculate-suv/-/calculate-suv-1.1.0.tgz#35c8049d3eea03611225a8398d398cd81bf0031a"
+  integrity sha512-Q9XraiDJif9aMFArD2iEuDO/HXbcRVCqB7KfaHgDrdTTjgDFovS91Psbdim7crypRSvE6dh/+HKeFNHdvNkA6w==
 
 "@cornerstonejs/codec-charls@^0.1.1":
   version "0.1.1"
