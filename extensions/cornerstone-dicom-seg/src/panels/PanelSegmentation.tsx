@@ -54,7 +54,7 @@ export default function PanelSegmentation({
   };
 
   const onSegmentationAdd = async () => {
-    commandsManager.runCommand('addSegmentationForActiveViewport');
+    commandsManager.runCommand('createEmptySegmentationForViewport');
   };
 
   const onSegmentationClick = (segmentationId: string) => {
