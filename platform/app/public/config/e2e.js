@@ -12,10 +12,10 @@ window.config = {
   defaultDataSourceName: 'e2e',
   dataSources: [
     {
-      friendlyName: 'StaticWado test data',
       namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
       sourceName: 'e2e',
       configuration: {
+        friendlyName: 'StaticWado test data',
         // The most important field to set for static WADO
         staticWado: true,
         name: 'StaticWADO',
@@ -34,10 +34,10 @@ window.config = {
       },
     },
     {
-      friendlyName: 'Static WADO Local Data',
       namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
       sourceName: 'local',
       configuration: {
+        friendlyName: 'Static WADO Local Data',
         name: 'DCM4CHEE',
         qidoRoot: '/dicomweb',
         wadoRoot: '/dicomweb',
@@ -54,10 +54,10 @@ window.config = {
       },
     },
     {
-      friendlyName: 'dcmjs DICOMWeb Server',
       namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
       sourceName: 'ohif',
       configuration: {
+        friendlyName: 'dcmjs DICOMWeb Server',
         name: 'aws',
         // old server
         // wadoUriRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/wado',
@@ -98,18 +98,19 @@ window.config = {
     //   },
     // },
     {
-      friendlyName: 'dicom json',
       namespace: '@ohif/extension-default.dataSourcesModule.dicomjson',
       sourceName: 'dicomjson',
       configuration: {
+        friendlyName: 'dicom json',
         name: 'json',
       },
     },
     {
-      friendlyName: 'dicom local',
       namespace: '@ohif/extension-default.dataSourcesModule.dicomlocal',
       sourceName: 'dicomlocal',
-      configuration: {},
+      configuration: {
+        friendlyName: 'dicom local',
+      },
     },
   ],
   httpErrorHandler: error => {

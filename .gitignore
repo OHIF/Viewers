@@ -42,3 +42,4 @@ platform/app/src/pluginImports.js
 /Viewers.iml
 platform/app/.recipes/Nginx-Dcm4Che/dcm4che/dcm4che-arc/*
 platform/app/.recipes/OpenResty-Orthanc/logs/*
+.vercel

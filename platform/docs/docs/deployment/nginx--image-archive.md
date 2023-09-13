@@ -1,5 +1,5 @@
 ---
-sidebar_position: 5
+sidebar_position: 8
 ---
 
 # Nginx + Image Archive
@@ -14,9 +14,7 @@ control.
 
 Do not use this recipe to host sensitive medical data on the open web. Depending
 on your company's policies, this may be an appropriate setup on an internal
-network when protected with a server's basic authentication. For a more robust
-setup, check out our [user account control recipe](./user-account-control)
-that builds on the lessons learned here.
+network when protected with a server's basic authentication.
 
 ## Overview
 
@@ -85,7 +83,7 @@ in command prompt or terminal_
 
 ### Setup
 
-- Navigate to `viewer` folder inside `platform`
+- Navigate to `app` folder inside `platform`
 - then: `cd .recipes/OpenResty-Orthanc`
 - run: `docker-compose up --build`
 - Navigate to `127.0.0.1` for the viewer
@@ -97,7 +95,7 @@ You can see the overview of the mentioned steps:
 
 
 <div style={{padding:"56.25% 0 0 0", position:"relative"}}>
-    <iframe src="https://player.vimeo.com/video/554726410?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479"  frameBorder="0" allow="autoplay; fullscreen; picture-in-picture" allowFullScreen style= {{ position:"absolute",top:0,left:0,width:"100%",height:"100%"}} title="measurement-report"></iframe>
+    <iframe src="https://player.vimeo.com/video/843233827?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479"  frameBorder="0" allow="autoplay; fullscreen; picture-in-picture" allowFullScreen style= {{ position:"absolute",top:0,left:0,width:"100%",height:"100%"}} title="measurement-report"></iframe>
 </div>
 
 <!-- ### Setup

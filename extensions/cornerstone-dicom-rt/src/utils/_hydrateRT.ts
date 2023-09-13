@@ -1,13 +1,6 @@
-async function _hydrateRTDisplaySet({
-  rtDisplaySet,
-  viewportIndex,
-  servicesManager,
-}) {
-  const {
-    segmentationService,
-    hangingProtocolService,
-    viewportGridService,
-  } = servicesManager.services;
+async function _hydrateRTDisplaySet({ rtDisplaySet, viewportId, servicesManager }) {
+  const { segmentationService, hangingProtocolService, viewportGridService } =
+    servicesManager.services;
 
   const displaySetInstanceUID = rtDisplaySet.referencedDisplaySetInstanceUID;
 
@@ -27,7 +20,7 @@ async function _hydrateRTDisplaySet({
   const { viewports } = viewportGridService.getState();
 
   const updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
-    viewportIndex,
+    viewportId,
     displaySetInstanceUID
   );
 
@@ -39,8 +32,8 @@ async function _hydrateRTDisplaySet({
   // is being displayed, if so we need to update the viewport to use volume viewport
   // (if already is not using it) since Cornerstone3D currently only supports
   // volume viewport for segmentation
-  viewports.forEach((viewport, index) => {
-    if (index === viewportIndex) {
+  viewports.forEach(viewport => {
+    if (viewport.viewportId === viewportId) {
       return;
     }
 
@@ -51,9 +44,16 @@ async function _hydrateRTDisplaySet({
 
     if (shouldDisplaySeg) {
       updatedViewports.push({
-        viewportIndex: index,
+        viewportId: viewport.viewportId,
         displaySetInstanceUIDs: viewport.displaySetInstanceUIDs,
         viewportOptions: {
+          // Note: This is a hack to get the grid to re-render the OHIFCornerstoneViewport component
+          // Used for segmentation hydration right now, since the logic to decide whether
+          // a viewport needs to render a segmentation lives inside the CornerstoneViewportService
+          // so we need to re-render (force update via change of the needsRerendering) so that React
+          // does the diffing and decides we should render this again (although the id and element has not changed)
+          // so that the CornerstoneViewportService can decide whether to render the segmentation or not.
+          needsRerendering: true,
           initialImageOptions: {
             preset: 'middle',
           },

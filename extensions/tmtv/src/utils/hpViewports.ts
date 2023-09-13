@@ -114,6 +114,9 @@ const ptAXIAL = {
         id: 'ptFusionWLSync',
         source: true,
         target: false,
+        options: {
+          syncInvertState: false,
+        },
       },
     ],
   },
@@ -155,6 +158,9 @@ const ptSAGITTAL = {
         id: 'ptFusionWLSync',
         source: true,
         target: false,
+        options: {
+          syncInvertState: false,
+        },
       },
     ],
   },
@@ -196,6 +202,9 @@ const ptCORONAL = {
         id: 'ptFusionWLSync',
         source: true,
         target: false,
+        options: {
+          syncInvertState: false,
+        },
       },
     ],
   },
@@ -246,6 +255,9 @@ const fusionAXIAL = {
         id: 'ptFusionWLSync',
         source: false,
         target: true,
+        options: {
+          syncInvertState: false,
+        },
       },
     ],
   },
@@ -254,16 +266,20 @@ const fusionAXIAL = {
       id: 'ctDisplaySet',
     },
     {
+      id: 'ptDisplaySet',
       options: {
         colormap: {
           name: 'hsv',
-          opacityMapping: [{ value: 0.1, opacity: 0.9 }],
+          opacity: [
+            { value: 0, opacity: 0 },
+            { value: 0.1, opacity: 0.9 },
+            { value: 1, opacity: 0.95 },
+          ],
         },
         voi: {
           custom: 'getPTVOIRange',
         },
       },
-      id: 'ptDisplaySet',
     },
   ],
 };
@@ -302,6 +318,9 @@ const fusionSAGITTAL = {
         id: 'ptFusionWLSync',
         source: false,
         target: true,
+        options: {
+          syncInvertState: false,
+        },
       },
     ],
   },
@@ -310,16 +329,20 @@ const fusionSAGITTAL = {
       id: 'ctDisplaySet',
     },
     {
+      id: 'ptDisplaySet',
       options: {
         colormap: {
           name: 'hsv',
-          opacityMapping: [{ value: 0.1, opacity: 0.9 }],
+          opacity: [
+            { value: 0, opacity: 0 },
+            { value: 0.1, opacity: 0.9 },
+            { value: 1, opacity: 0.95 },
+          ],
         },
         voi: {
           custom: 'getPTVOIRange',
         },
       },
-      id: 'ptDisplaySet',
     },
   ],
 };
@@ -358,6 +381,9 @@ const fusionCORONAL = {
         id: 'ptFusionWLSync',
         source: false,
         target: true,
+        options: {
+          syncInvertState: false,
+        },
       },
     ],
   },
@@ -366,16 +392,20 @@ const fusionCORONAL = {
       id: 'ctDisplaySet',
     },
     {
+      id: 'ptDisplaySet',
       options: {
         colormap: {
           name: 'hsv',
-          opacityMapping: [{ value: 0.1, opacity: 0.9 }],
+          opacity: [
+            { value: 0, opacity: 0 },
+            { value: 0.1, opacity: 0.9 },
+            { value: 1, opacity: 0.95 },
+          ],
         },
         voi: {
           custom: 'getPTVOIRange',
         },
       },
-      id: 'ptDisplaySet',
     },
   ],
 };
@@ -399,6 +429,9 @@ const mipSAGITTAL = {
         id: 'ptFusionWLSync',
         source: true,
         target: false,
+        options: {
+          syncInvertState: false,
+        },
       },
     ],
 

@@ -24,12 +24,9 @@ const DEFAULT_MEATADATA = {
  */
 export default function PanelPetSUV({ servicesManager, commandsManager }) {
   const { t } = useTranslation('PanelSUV');
-  const {
-    displaySetService,
-    toolGroupService,
-    toolbarService,
-    hangingProtocolService,
-  } = (servicesManager as ServicesManager).services;
+  const { displaySetService, toolGroupService, toolbarService, hangingProtocolService } = (
+    servicesManager as ServicesManager
+  ).services;
   const [metadata, setMetadata] = useState(DEFAULT_MEATADATA);
   const [ptDisplaySet, setPtDisplaySet] = useState(null);
 
@@ -127,9 +124,7 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
     });
 
     toolbarService.state.toggles['Crosshairs'] = false;
-    toolbarService._broadcastEvent(
-      toolbarService.EVENTS.TOOL_BAR_STATE_MODIFIED
-    );
+    toolbarService._broadcastEvent(toolbarService.EVENTS.TOOL_BAR_STATE_MODIFIED);
 
     // metadata should be dcmjs naturalized
     DicomMetadataStore.updateMetadataForSeries(
@@ -139,15 +134,13 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
     );
 
     // update the displaySets
-    displaySetService.setDisplaySetMetadataInvalidated(
-      ptDisplaySet.displaySetInstanceUID
-    );
+    displaySetService.setDisplaySetMetadataInvalidated(ptDisplaySet.displaySetInstanceUID);
   }
   return (
-    <div className="overflow-x-hidden overflow-y-auto invisible-scrollbar">
+    <div className="invisible-scrollbar overflow-y-auto overflow-x-hidden">
       {
         <div className="flex flex-col">
-          <div className="flex flex-col p-4 space-y-4 bg-primary-dark">
+          <div className="bg-primary-dark flex flex-col space-y-4 p-4">
             <Input
               label={t('Patient Sex')}
               labelClassName="text-white mb-2"
@@ -174,10 +167,7 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
               label={t('Total Dose (bq)')}
               labelClassName="text-white mb-2"
               className="mt-1"
-              value={
-                metadata.RadiopharmaceuticalInformationSequence
-                  .RadionuclideTotalDose || ''
-              }
+              value={metadata.RadiopharmaceuticalInformationSequence.RadionuclideTotalDose || ''}
               onChange={e => {
                 handleMetadataChange({
                   RadiopharmaceuticalInformationSequence: {
@@ -190,10 +180,7 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
               label={t('Half Life (s)')}
               labelClassName="text-white mb-2"
               className="mt-1"
-              value={
-                metadata.RadiopharmaceuticalInformationSequence
-                  .RadionuclideHalfLife || ''
-              }
+              value={metadata.RadiopharmaceuticalInformationSequence.RadionuclideHalfLife || ''}
               onChange={e => {
                 handleMetadataChange({
                   RadiopharmaceuticalInformationSequence: {
@@ -207,8 +194,7 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
               labelClassName="text-white mb-2"
               className="mt-1"
               value={
-                metadata.RadiopharmaceuticalInformationSequence
-                  .RadiopharmaceuticalStartTime || ''
+                metadata.RadiopharmaceuticalInformationSequence.RadiopharmaceuticalStartTime || ''
               }
               onChange={e => {
                 handleMetadataChange({

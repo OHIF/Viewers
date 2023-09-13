@@ -3,7 +3,7 @@ export default function sortBy() {
   var fields = [].slice.call(arguments),
     n_fields = fields.length;
 
-  return function(A, B) {
+  return function (A, B) {
     var a, b, field, key, reverse, result, i;
 
     for (i = 0; i < n_fields; i++) {

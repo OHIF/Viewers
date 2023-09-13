@@ -31,16 +31,11 @@ export function findMenuById(menus: Menu[], menuId?: string): Menu {
  * @param {*} subProps
  * @returns
  */
-export function findMenuDefault(
-  menus: Menu[],
-  subProps: Record<string, unknown>
-): Menu {
+export function findMenuDefault(menus: Menu[], subProps: Record<string, unknown>): Menu {
   if (!menus) {
     return null;
   }
-  return menus.find(
-    menu => !menu.selector || menu.selector(subProps.selectorProps)
-  );
+  return menus.find(menu => !menu.selector || menu.selector(subProps.selectorProps));
 }
 
 /**
@@ -53,11 +48,7 @@ export function findMenuDefault(
  * @param menuIdFilter - menu id identifier (to be considered on selection)
  *      This is intended to support other types of filtering in the future.
  */
-export function findMenu(
-  menus: Menu[],
-  props?: Types.IProps,
-  menuIdFilter?: string
-) {
+export function findMenu(menus: Menu[], props?: Types.IProps, menuIdFilter?: string) {
   const { subMenu } = props;
 
   function* findMenuIterator() {
@@ -137,10 +128,7 @@ export function getMenuItems(
 
     if (!selector || selector(selectorProps)) {
       if (delegating) {
-        menuItems = [
-          ...menuItems,
-          ...getMenuItems(selectorProps, event, menus, subMenu),
-        ];
+        menuItems = [...menuItems, ...getMenuItems(selectorProps, event, menus, subMenu)];
       } else {
         const toAdd = adaptItem(item, subProps);
         menuItems.push(toAdd);
@@ -161,10 +149,7 @@ export function getMenuItems(
  * @returns a MenuItem that is compatible with the base ContextMenu
  *    This requires having a label and set of actions to be called.
  */
-export function adaptItem(
-  item: MenuItem,
-  subProps: ContextMenuProps
-): ContextMenuItem {
+export function adaptItem(item: MenuItem, subProps: ContextMenuProps): ContextMenuItem {
   const newItem: ContextMenuItem = {
     ...item,
     value: subProps.selectorProps?.value,

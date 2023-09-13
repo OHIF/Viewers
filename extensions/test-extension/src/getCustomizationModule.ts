@@ -1,8 +1,4 @@
-import {
-  codingValues,
-  contextMenuCodeItem,
-  findingsContextMenu,
-} from './custom-context-menu';
+import { codingValues, contextMenuCodeItem, findingsContextMenu } from './custom-context-menu';
 
 export default function getCustomizationModule() {
   return [

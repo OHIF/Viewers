@@ -13,6 +13,7 @@ import Icon from './Icon';
 import IconButton from './IconButton';
 import Input from './Input';
 import InputDateRange from './InputDateRange';
+import InputFilterText from './InputFilterText';
 import InputGroup from './InputGroup';
 import InputLabelWrapper from './InputLabelWrapper';
 import InputMultiSelect from './InputMultiSelect';
@@ -97,6 +98,7 @@ export {
   IconButton,
   Input,
   InputDateRange,
+  InputFilterText,
   InputGroup,
   InputRange,
   InputNumber,

@@ -2,9 +2,10 @@ import React, { useState, useCallback } from 'react';
 import IconButton from '../IconButton';
 import Icon from '../Icon';
 import './InputNumber.css';
+import Label from '../Label';
 
 /**
- * React Number Input component'
+ *  React Number Input component'
  * it has two props, value and onChange
  * value is a number value
  * onChange is a function that will be called when the number input is changed
@@ -14,6 +15,7 @@ import './InputNumber.css';
 
 const sizesClasses = {
   sm: 'w-[45px] h-[28px]',
+  lg: 'w-[206px] h-[35px]',
 };
 
 const InputNumber: React.FC<{
@@ -24,6 +26,8 @@ const InputNumber: React.FC<{
   step: number;
   size?: string;
   className?: string;
+  labelClassName?: string;
+  label?: string;
 }> = ({
   value,
   onChange,
@@ -32,6 +36,8 @@ const InputNumber: React.FC<{
   size = 'sm',
   minValue = 0,
   maxValue = 100,
+  labelClassName,
+  label,
 }) => {
   const [numberValue, setNumberValue] = useState(value);
 
@@ -76,39 +82,48 @@ const InputNumber: React.FC<{
   );
 
   return (
-    <div
-      className={`flex items-center bg-black border-2 px-1 overflow-hidden justify-center border-secondary-light rounded-md ${sizesClasses[size]
+    <div className={'flex flex-1 flex-col'}>
+      {label && (
+        <Label
+          className={labelClassName}
+          text={label}
+        ></Label>
+      )}
+      <div
+        className={`border-secondary-light flex items-center justify-center overflow-hidden rounded-md border-2 bg-black px-1 ${
+          sizesClasses[size]
         } ${className ? className : ''}`}
-    >
-      <div className="flex">
-        <input
-          type="text"
-          value={numberValue}
-          onChange={handleChange}
-          className={`bg-black text-white text-[12px] w-full text-center input-number`}
-        />
+      >
+        <div className="flex">
+          <input
+            type="text"
+            value={numberValue}
+            onChange={handleChange}
+            className={`input-number w-full bg-black text-center text-[12px] text-white`}
+          />
 
-        <div className="up-arrowsize flex flex-col items-center justify-around">
-          <IconButton
-            id={'down-arrow-icon'}
-            variant="text"
-            color="inherit"
-            size="initial"
-            className="text-[#726f7e] transform rotate-180"
-            onClick={handleIncrement}
-          >
-            <Icon name="ui-arrow-down" />
-          </IconButton>
-          <IconButton
-            id={'down-arrow-icon'}
-            variant="text"
-            color="inherit"
-            size="initial"
-            className="text-[#726f7e]"
-            onClick={handleDecrement}
-          >
-            <Icon name="ui-arrow-down" />
-          </IconButton>
+          <div className="up-arrowsize flex flex-col items-center justify-around">
+            <IconButton
+              id={'down-arrow-icon'}
+              variant="text"
+              color="inherit"
+              size="initial"
+              className="rotate-180 transform text-[#726f7e]"
+              onClick={handleIncrement}
+            >
+              <Icon name="ui-arrow-down" />
+            </IconButton>
+            <IconButton
+              id={'down-arrow-icon'}
+              variant="text"
+              color="inherit"
+              size="initial"
+              className="text-[#726f7e]"
+              onClick={handleDecrement}
+            >
+              <Icon name="ui-arrow-down" />
+            </IconButton>
+          </div>
         </div>
       </div>
     </div>

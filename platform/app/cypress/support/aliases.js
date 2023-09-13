@@ -3,16 +3,10 @@ export function initCornerstoneToolsAliases() {
   cy.get('[data-cy="StackScroll"]').as('stackScrollBtn');
   cy.get('[data-cy="Zoom"]').as('zoomBtn');
   cy.get('[data-cy="WindowLevel-split-button-primary"]').as('wwwcBtnPrimary');
-  cy.get('[data-cy="WindowLevel-split-button-secondary"]').as(
-    'wwwcBtnSecondary'
-  );
+  cy.get('[data-cy="WindowLevel-split-button-secondary"]').as('wwwcBtnSecondary');
   cy.get('[data-cy="Pan"]').as('panBtn');
-  cy.get('[data-cy="MeasurementTools-split-button-primary"]').as(
-    'measurementToolsBtnPrimary'
-  );
-  cy.get('[data-cy="MeasurementTools-split-button-secondary"]').as(
-    'measurementToolsBtnSecondary'
-  );
+  cy.get('[data-cy="MeasurementTools-split-button-primary"]').as('measurementToolsBtnPrimary');
+  cy.get('[data-cy="MeasurementTools-split-button-secondary"]').as('measurementToolsBtnSecondary');
   // cy.get('[data-cy="Angle"]').as('angleBtn');
   cy.get('[data-cy="MoreTools-split-button-primary"]').as('moreBtnPrimary');
   cy.get('[data-cy="MoreTools-split-button-secondary"]').as('moreBtnSecondary');
@@ -37,12 +31,8 @@ export function initCommonElementsAliases() {
   cy.get('[data-cy="studyBrowser-panel"]').as('seriesPanel');
   cy.get('[data-cy="viewport-overlay-top-right"]').as('viewportInfoTopRight');
   cy.get('[data-cy="viewport-overlay-top-left"]').as('viewportInfoTopLeft');
-  cy.get('[data-cy="viewport-overlay-bottom-right"]').as(
-    'viewportInfoBottomRight'
-  );
-  cy.get('[data-cy="viewport-overlay-bottom-left"]').as(
-    'viewportInfoBottomLeft'
-  );
+  cy.get('[data-cy="viewport-overlay-bottom-right"]').as('viewportInfoBottomRight');
+  cy.get('[data-cy="viewport-overlay-bottom-left"]').as('viewportInfoBottomLeft');
 
   cy.get('.left-mid.orientation-marker').as('viewportInfoMidLeft');
   cy.get('.top-mid.orientation-marker').as('viewportInfoMidTop');
@@ -50,9 +40,7 @@ export function initCommonElementsAliases() {
 
 //Creating aliases for Routes
 export function initRouteAliases() {
-  cy.intercept('GET', '**/series**', { statusCode: 200, body: [] }).as(
-    'getStudySeries'
-  );
+  cy.intercept('GET', '**/series**', { statusCode: 200, body: [] }).as('getStudySeries');
 
   // Todo: for some reason cypress does not redirect to the correct url
   // so we intercept the request and redirect it to the correct url
@@ -73,7 +61,7 @@ export function initStudyListAliasesOnDesktop() {
   cy.get('[data-cy="study-list-results"] > tr').as('searchResult2');
 
   // We can't use data attributes (e.g. data--cy) for these since
-  // they are using third party libraires (i.e. react-dates, react-select)
+  // they are using third party libraries (i.e. react-dates, react-select)
   cy.get('#date-range-studyDate-start-date').as('studyListStartDate');
   cy.get('#date-range-studyDate-end-date').as('studyListEndDate');
   cy.get('#input-modalities').as('modalities');

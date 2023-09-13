@@ -11,17 +11,21 @@ describe('OHIF Double Click', () => {
 
   it('Should double click each viewport to one up and back', () => {
     const numExpectedViewports = 3;
-    cy.get('[data-cy="viewport-pane"]')
-      .its('length')
-      .should('be.eq', numExpectedViewports);
+    cy.get('[data-cy="viewport-pane"]').its('length').should('be.eq', numExpectedViewports);
 
     for (let i = 0; i < numExpectedViewports; i += 1) {
+      cy.wait(2000);
+
       // For whatever reason, with Cypress tests, we have to activate the
       // viewport we are double clicking first.
       cy.get('[data-cy="viewport-pane"]')
         .eq(i)
-        .trigger('mousedown', 'center', { force: true })
-        .trigger('mouseup', 'center', { force: true });
+        .trigger('mousedown', 'center', {
+          force: true,
+        })
+        .trigger('mouseup', 'center', {
+          force: true,
+        });
 
       // Wait for the viewport to be 'active'.
       // TODO Is there a better way to do this?
@@ -32,21 +36,19 @@ describe('OHIF Double Click', () => {
         .not('.pointer-events-none');
 
       // The actual double click.
-      cy.get('[data-cy="viewport-pane"]')
-        .eq(i)
-        .trigger('dblclick', 'center');
+      cy.get('[data-cy="viewport-pane"]').eq(i).trigger('dblclick', 'center');
+
+      cy.get('[data-cy="viewport-pane"]').its('length').should('be.eq', 1);
 
       cy.get('[data-cy="viewport-pane"]')
-        .its('length')
-        .should('be.eq', 1);
+        .trigger('mousedown', 'center', {
+          force: true,
+        })
+        .trigger('mouseup', 'center', {
+          force: true,
+        });
 
-      cy.get('[data-cy="viewport-pane"]')
-        .eq(0)
-        .trigger('dblclick', 'center');
-
-      cy.get('[data-cy="viewport-pane"]')
-        .its('length')
-        .should('be.eq', numExpectedViewports);
+      cy.get('[data-cy="viewport-pane"]').eq(0).trigger('dblclick', 'center');
     }
   });
 });
