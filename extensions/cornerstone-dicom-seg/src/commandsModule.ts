@@ -119,6 +119,7 @@ const commandsModule = ({
         loadFn: async () => {
           // Todo: handle adding more than one segmentation
           const viewport = getTargetViewport({ viewportId, viewportGridService });
+          const displaySetInstanceUID = viewport.displaySetInstanceUIDs[0];
 
           const segmentation = segmentations[0];
           const segmentationId = segmentation.id;
