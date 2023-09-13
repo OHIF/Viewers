@@ -256,7 +256,11 @@ export default class ToolGroupService {
     return this.getToolGroup(toolGroupId)?.getActivePrimaryMouseButtonTool();
   }
 
-  public setPrimaryToolActive(toolName: string, toolGroupId?: string): void {
+  public setPrimaryToolActive(
+    toolName: string,
+    toolGroupId?: string,
+    toggledState?: boolean
+  ): void {
     if (toolName === 'Crosshairs') {
       const activeViewportToolGroup = this.getToolGroup(null);
 
@@ -319,6 +323,16 @@ export default class ToolGroupService {
         toolGroup.setToolPassive(activeToolName);
       }
     }
+
+    // If there is a toggle state, then simply set the enabled/disabled state without
+    // setting the tool active.
+    if (toggledState != null) {
+      toggledState
+        ? toolGroup.setToolEnabled(toolName)
+        : toolGroup.setToolDisabled(toolName);
+      return;
+    }
+
     // Set the new toolName to be active
     toolGroup.setToolActive(toolName, {
       bindings: [

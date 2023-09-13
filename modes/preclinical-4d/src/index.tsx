@@ -7,11 +7,11 @@ import toolbarButtons from './toolbarButtons';
 const REQUIRED_MODALITIES = ['PT', 'CT'];
 
 const extensionDependencies = {
-  '@ohif/extension-default': '3.7.0-beta.27',
-  '@ohif/extension-cornerstone': '3.7.0-beta.27',
-  '@ohif/extension-cornerstone-dynamic-volume': '3.7.0-beta.27',
-  '@ohif/extension-cornerstone-dicom-seg': '3.7.0-beta.27',
-  '@ohif/extension-tmtv': '3.7.0-beta.27',
+  '@ohif/extension-default': '3.7.0-beta.73',
+  '@ohif/extension-cornerstone': '3.7.0-beta.73',
+  '@ohif/extension-cornerstone-dynamic-volume': '3.7.0-beta.73',
+  '@ohif/extension-cornerstone-dicom-seg': '3.7.0-beta.73',
+  '@ohif/extension-tmtv': '3.7.0-beta.73',
 };
 
 const ohif = {
