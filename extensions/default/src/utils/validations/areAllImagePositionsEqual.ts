@@ -38,6 +38,9 @@ export default function areAllImagePositionsEqual(instances: Array<any>): boolea
     return false;
   }
   const firstImageOrientationPatient = toNumber(instances[0].ImageOrientationPatient);
+  if (!firstImageOrientationPatient) {
+    return false;
+  }
   const scanAxisNormal = calculateScanAxisNormal(firstImageOrientationPatient);
   const firstImagePositionPatient = toNumber(instances[0].ImagePositionPatient);
   const lastIpp = toNumber(instances[instances.length - 1].ImagePositionPatient);
