@@ -514,8 +514,8 @@ function commandsModule({
       // Get all viewports and their corresponding indexs
       const { viewports } = viewportGridService.getState();
 
-      const viewportsToUpdate = viewports.map((viewport, index) => ({
-        viewportIndex: index,
+      const viewportsToUpdate = Array.from(viewports.values()).map(viewport => ({
+        viewportId: viewport.viewportId,
         displaySetInstanceUIDs: [displaySetKey],
         viewportOptions: {
           initialImageOptions: viewport.viewportOptions.initialImageOptions,

@@ -289,7 +289,7 @@ export default class ToolGroupService {
       return;
     }
 
-    const filteredViewports = viewports.filter(viewport => {
+    const filteredViewports = Array.from(viewports.values()).filter(viewport => {
       if (!viewport.viewportOptions) {
         return false;
       }
@@ -327,9 +327,7 @@ export default class ToolGroupService {
     // If there is a toggle state, then simply set the enabled/disabled state without
     // setting the tool active.
     if (toggledState != null) {
-      toggledState
-        ? toolGroup.setToolEnabled(toolName)
-        : toolGroup.setToolDisabled(toolName);
+      toggledState ? toolGroup.setToolEnabled(toolName) : toolGroup.setToolDisabled(toolName);
       return;
     }
 

@@ -2,9 +2,7 @@ import { cache } from '@cornerstonejs/core';
 import { utilities } from '@cornerstonejs/tools';
 
 function _getVolumesFromViewport(viewport) {
-  return viewport
-    ? viewport.getActors().map(actor => cache.getVolume(actor.uid))
-    : [];
+  return viewport ? viewport.getActors().map(actor => cache.getVolume(actor.uid)) : [];
 }
 
 function _getVolumeFromViewport(viewport) {
@@ -21,24 +19,17 @@ function _getVolumeFromViewport(viewport) {
  * @param srcViewportIndex Source viewport index
  * @returns array with viewport information.
  */
-function _getSyncedViewports(servicesManager, srcViewportIndex) {
-  const {
-    viewportGridService,
-    cornerstoneViewportService,
-  } = servicesManager.services;
+function _getSyncedViewports(servicesManager, srcViewportId) {
+  const { viewportGridService, cornerstoneViewportService } = servicesManager.services;
 
   const { viewports: viewportsStates } = viewportGridService.getState();
-  const srcViewportState = viewportsStates.find(
-    ({ viewportIndex }) => viewportIndex === srcViewportIndex
-  );
+  const srcViewportState = viewportsStates.get(srcViewportId);
 
   if (srcViewportState?.viewportOptions?.viewportType !== 'volume') {
     return [];
   }
 
-  const srcViewport = cornerstoneViewportService.getCornerstoneViewportByIndex(
-    srcViewportIndex
-  );
+  const srcViewport = cornerstoneViewportService.getCornerstoneViewport(srcViewportId);
 
   const srcVolume = srcViewport ? _getVolumeFromViewport(srcViewport) : null;
 
@@ -48,24 +39,20 @@ function _getSyncedViewports(servicesManager, srcViewportIndex) {
 
   const { volumeId: srcVolumeId } = srcVolume;
 
-  return viewportsStates
-    .filter(({ viewportIndex }) => {
-      const viewport = cornerstoneViewportService.getCornerstoneViewportByIndex(
-        viewportIndex
-      );
+  return Array.from(viewportsStates.values())
+    .filter(({ viewportId }) => {
+      const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
-      return (
-        viewportIndex !== srcViewportIndex && viewport?.hasVolumeId(srcVolumeId)
-      );
+      return viewportId !== srcViewportId && viewport?.hasVolumeId(srcVolumeId);
     })
-    .map(({ viewportIndex }) => ({ viewportIndex }));
+    .map(({ viewportId }) => ({ viewportId }));
 }
 
 function initCineService(servicesManager) {
   const { cineService } = servicesManager.services;
 
-  const getSyncedViewports = viewportIndex => {
-    return _getSyncedViewports(servicesManager, viewportIndex);
+  const getSyncedViewports = viewportId => {
+    return _getSyncedViewports(servicesManager, viewportId);
   };
 
   const playClip = (element, playClipOptions) => {
