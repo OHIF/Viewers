@@ -29,11 +29,6 @@ export default class RetrieveMetadataLoader {
     this.filters = filters;
     this.sortCriteria = sortCriteria;
     this.sortFunction = sortFunction;
-    // Threshold used for classify a study as a large studies
-    this.largeStudySeriesCountThreshold =
-      clientOptions?.largeStudySeriesCountThreshold || 50;
-    // In case of a large study, fetch first <initialSeriesFetchSize> series to display the first image fast to the user
-    this.initialSeriesFetchSize = clientOptions?.initialSeriesFetchSize || 10;
   }
 
   async execLoad() {

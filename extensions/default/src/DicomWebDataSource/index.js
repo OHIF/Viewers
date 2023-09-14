@@ -90,9 +90,6 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
         singlepart: dicomWebConfig.singlepart,
         headers: userAuthenticationService.getAuthorizationHeader(),
         errorInterceptor: errorHandler.getHTTPErrorHandler(),
-        largeStudySeriesCountThreshold:
-          dicomWebConfig.largeStudySeriesCountThreshold,
-        initialSeriesFetchSize: dicomWebConfig.initialSeriesFetchSize,
       };
 
       wadoConfig = {
@@ -101,9 +98,6 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
         singlepart: dicomWebConfig.singlepart,
         headers: userAuthenticationService.getAuthorizationHeader(),
         errorInterceptor: errorHandler.getHTTPErrorHandler(),
-        largeStudySeriesCountThreshold:
-          dicomWebConfig.largeStudySeriesCountThreshold,
-        initialSeriesFetchSize: dicomWebConfig.initialSeriesFetchSize,
       };
 
       // TODO -> Two clients sucks, but its better than 1000.
