@@ -5,8 +5,19 @@ import { utilities } from '@cornerstonejs/tools';
 
 const { segmentation: segmentationUtils } = utilities;
 
+const TOOL_TYPES = {
+  CIRCULAR_BRUSH: 'CircularBrush',
+  SPHERE_BRUSH: 'SphereBrush',
+  CIRCULAR_ERASER: 'CircularEraser',
+  SPHERE_ERASER: 'SphereEraser',
+  CIRCLE_SCISSOR: 'CircleScissor',
+  RECTANGLE_SCISSOR: 'RectangleScissor',
+  SPHERE_SCISSOR: 'SphereScissor',
+  THRESHOLD_CIRCULAR_BRUSH: 'ThresholdCircularBrush',
+  THRESHOLD_SPHERE_BRUSH: 'ThresholdSphereBrush',
+};
+
 const ACTIONS = {
-  SET_BRUSH_SIZE: 'SET_BRUSH_SIZE',
   SET_TOOL_CONFIG: 'SET_TOOL_CONFIG',
   SET_ACTIVE_TOOL: 'SET_ACTIVE_TOOL',
 };
@@ -212,8 +223,10 @@ function SegmentationToolbox({ servicesManager, extensionManager }) {
           name: 'Brush',
           icon: 'icon-tool-brush',
           disabled: !toolsEnabled,
-          active: state.activeTool === 'CircularBrush' || state.activeTool === 'SphereBrush',
-          onClick: () => setToolActive('CircularBrush'),
+          active:
+            state.activeTool === TOOL_TYPES.CIRCULAR_BRUSH ||
+            state.activeTool === TOOL_TYPES.SPHERE_BRUSH,
+          onClick: () => setToolActive(TOOL_TYPES.CIRCULAR_BRUSH),
           options: [
             {
               name: 'Radius (mm)',
@@ -231,8 +244,8 @@ function SegmentationToolbox({ servicesManager, extensionManager }) {
               id: 'brush-mode',
               value: state.Brush.mode,
               values: [
-                { value: 'CircularBrush', label: 'Circle' },
-                { value: 'SphereBrush', label: 'Sphere' },
+                { value: TOOL_TYPES.CIRCULAR_BRUSH, label: 'Circle' },
+                { value: TOOL_TYPES.SPHERE_BRUSH, label: 'Sphere' },
               ],
               onChange: value => setToolActive(value),
             },
@@ -242,8 +255,10 @@ function SegmentationToolbox({ servicesManager, extensionManager }) {
           name: 'Eraser',
           icon: 'icon-tool-eraser',
           disabled: !toolsEnabled,
-          active: state.activeTool === 'CircularEraser' || state.activeTool === 'SphereEraser',
-          onClick: () => setToolActive('CircularEraser'),
+          active:
+            state.activeTool === TOOL_TYPES.CIRCULAR_ERASER ||
+            state.activeTool === TOOL_TYPES.SPHERE_ERASER,
+          onClick: () => setToolActive(TOOL_TYPES.CIRCULAR_ERASER),
           options: [
             {
               name: 'Radius (mm)',
@@ -261,8 +276,8 @@ function SegmentationToolbox({ servicesManager, extensionManager }) {
               id: 'eraser-mode',
               value: state.Eraser.mode,
               values: [
-                { value: 'CircularEraser', label: 'Circle' },
-                { value: 'SphereEraser', label: 'Sphere' },
+                { value: TOOL_TYPES.CIRCULAR_ERASER, label: 'Circle' },
+                { value: TOOL_TYPES.SPHERE_ERASER, label: 'Sphere' },
               ],
               onChange: value => setToolActive(value),
             },
@@ -273,10 +288,10 @@ function SegmentationToolbox({ servicesManager, extensionManager }) {
           icon: 'icon-tool-scissor',
           disabled: !toolsEnabled,
           active:
-            state.activeTool === 'CircleScissor' ||
-            state.activeTool === 'RectangleScissor' ||
-            state.activeTool === 'SphereScissor',
-          onClick: () => setToolActive('CircleScissor'),
+            state.activeTool === TOOL_TYPES.CIRCLE_SCISSOR ||
+            state.activeTool === TOOL_TYPES.RECTANGLE_SCISSOR ||
+            state.activeTool === TOOL_TYPES.SPHERE_SCISSOR,
+          onClick: () => setToolActive(TOOL_TYPES.CIRCLE_SCISSOR),
           options: [
             {
               name: 'Mode',
@@ -284,9 +299,9 @@ function SegmentationToolbox({ servicesManager, extensionManager }) {
               value: state.Scissors.mode,
               id: 'scissor-mode',
               values: [
-                { value: 'CircleScissor', label: 'Circle' },
-                { value: 'RectangleScissor', label: 'Rectangle' },
-                { value: 'SphereScissor', label: 'Sphere' },
+                { value: TOOL_TYPES.CIRCLE_SCISSOR, label: 'Circle' },
+                { value: TOOL_TYPES.RECTANGLE_SCISSOR, label: 'Rectangle' },
+                { value: TOOL_TYPES.SPHERE_SCISSOR, label: 'Sphere' },
               ],
               onChange: value => setToolActive(value),
             },
@@ -297,9 +312,9 @@ function SegmentationToolbox({ servicesManager, extensionManager }) {
           icon: 'icon-tool-threshold',
           disabled: !toolsEnabled,
           active:
-            state.activeTool === 'ThresholdCircularBrush' ||
-            state.activeTool === 'ThresholdSphereBrush',
-          onClick: () => setToolActive('ThresholdCircularBrush'),
+            state.activeTool === TOOL_TYPES.THRESHOLD_CIRCULAR_BRUSH ||
+            state.activeTool === TOOL_TYPES.THRESHOLD_SPHERE_BRUSH,
+          onClick: () => setToolActive(TOOL_TYPES.THRESHOLD_CIRCULAR_BRUSH),
           options: [
             {
               name: 'Radius (mm)',
@@ -317,8 +332,8 @@ function SegmentationToolbox({ servicesManager, extensionManager }) {
               id: 'threshold-mode',
               value: state.activeTool,
               values: [
-                { value: 'ThresholdCircularBrush', label: 'Circle' },
-                { value: 'ThresholdSphereBrush', label: 'Sphere' },
+                { value: TOOL_TYPES.THRESHOLD_CIRCULAR_BRUSH, label: 'Circle' },
+                { value: TOOL_TYPES.THRESHOLD_SPHERE_BRUSH, label: 'Sphere' },
               ],
               onChange: value => setToolActive(value),
             },

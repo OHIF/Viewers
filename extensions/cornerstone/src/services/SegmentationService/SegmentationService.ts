@@ -297,16 +297,16 @@ class SegmentationService extends PubSubService {
     this._setSegmentLocked(segmentationId, segmentIndex, isLocked, suppressEvents);
   }
 
+  /**
+   * Toggles the locked state of a segment in a segmentation.
+   * @param segmentationId - The ID of the segmentation.
+   * @param segmentIndex - The index of the segment to toggle.
+   */
   public toggleSegmentLocked(segmentationId: string, segmentIndex: number): void {
-    const suppressEvents = false;
     const segmentation = this.getSegmentation(segmentationId);
     const segment = this._getSegmentInfo(segmentation, segmentIndex);
     const isLocked = !segment.isLocked;
     this._setSegmentLocked(segmentationId, segmentIndex, isLocked);
-  }
-
-  public setSegmentLabel(segmentationId: string, segmentIndex: number, segmentLabel: string): void {
-    this._setSegmentLabel(segmentationId, segmentIndex, segmentLabel);
   }
 
   public setSegmentColor(

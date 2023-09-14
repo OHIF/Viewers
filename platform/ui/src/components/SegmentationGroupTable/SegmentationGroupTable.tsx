@@ -64,7 +64,7 @@ const SegmentationGroupTable = ({
     }
 
     setActiveSegmentationId(activeSegmentationIdToSet);
-  }, [segmentations, activeSegmentationId]);
+  }, [segmentations]);
 
   const activeSegmentation = segmentations?.find(
     segmentation => segmentation.id === activeSegmentationId
@@ -78,7 +78,7 @@ const SegmentationGroupTable = ({
           activeSegmentation && [
             {
               name: 'settings-bars',
-              onClick: () => setIsConfigOpen(!isConfigOpen),
+              onClick: () => setIsConfigOpen(isOpen => !isOpen),
             },
           ]
         }

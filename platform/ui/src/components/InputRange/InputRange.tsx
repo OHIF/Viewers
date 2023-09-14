@@ -79,7 +79,7 @@ const InputRange: React.FC<InputRangeProps> = ({
     />
   ) : (
     <span className={classNames(labelClassName ?? 'text-white')}>
-      {value}
+      {rangeValue}
       {unit}
     </span>
   );
@@ -108,9 +108,9 @@ const InputRange: React.FC<InputRangeProps> = ({
           id="myRange"
           step={step}
         />
-        <div style={{ width: labelWidth }}>
-          {showLabel && labelPosition === 'right' && LabelOrEditableNumber}
-        </div>
+        {showLabel && labelPosition === 'right' && (
+          <div style={{ width: labelWidth }}>{LabelOrEditableNumber}</div>
+        )}
       </div>
     </div>
   );

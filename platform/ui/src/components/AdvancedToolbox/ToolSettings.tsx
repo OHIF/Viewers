@@ -1,6 +1,12 @@
 import React from 'react';
 import { ButtonGroup, InputRange, ButtonEnums } from '../../components';
 
+const SETTING_TYPES = {
+  RANGE: 'range',
+  RADIO: 'radio',
+  CUSTOM: 'custom',
+};
+
 function ToolSettings({ options }) {
   if (!options) {
     return null;
@@ -23,7 +29,7 @@ function ToolSettings({ options }) {
   return (
     <div className="space-y-2 py-2 text-white">
       {options?.map(option => {
-        if (option.type === 'range') {
+        if (option.type === SETTING_TYPES.RANGE) {
           return (
             <div
               className="flex items-center"
@@ -46,7 +52,7 @@ function ToolSettings({ options }) {
           );
         }
 
-        if (option.type === 'radio') {
+        if (option.type === SETTING_TYPES.RADIO) {
           return (
             <div
               className="flex items-center justify-between text-[13px]"
@@ -63,7 +69,7 @@ function ToolSettings({ options }) {
             </div>
           );
         }
-        if (option.type === 'custom') {
+        if (option.type === SETTING_TYPES.CUSTOM) {
           return (
             <div key={option.id}>
               {typeof option.children === 'function' ? option.children() : option.children}

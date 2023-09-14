@@ -52,7 +52,7 @@ const ButtonGroup = ({
 
 ButtonGroup.propTypes = {
   buttons: PropTypes.arrayOf(PropTypes.object).isRequired,
-  orientation: PropTypes.oneOf(['horizontal', 'vertical']),
+  orientation: PropTypes.oneOf(Object.values(ButtonEnums.orientation)),
   type: PropTypes.oneOf(Object.values(ButtonEnums.type)),
   size: PropTypes.oneOf(Object.values(ButtonEnums.size)),
   defaultActiveIndex: PropTypes.number,

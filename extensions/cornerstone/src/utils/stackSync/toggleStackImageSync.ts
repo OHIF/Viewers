@@ -2,7 +2,7 @@ import calculateViewportRegistrations from './calculateViewportRegistrations';
 
 // [ {
 //   synchronizerId: string,
-//   viewports: [ { viewportId: number, renderingEngineId: string, index: number } , ...]
+//   viewports: [ { viewportId: string, renderingEngineId: string, index: number } , ...]
 // ]}
 let STACK_IMAGE_SYNC_GROUPS_INFO = [];
 
@@ -37,11 +37,7 @@ export default function toggleStackImageSync({ toggledState, servicesManager, ge
     for (const displaySetInstanceUID of displaySetInstanceUIDs) {
       const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
 
-      if (displaySet && displaySet.isReconstructable) {
-        return true;
-      }
-
-      return false;
+      return displaySet && displaySet.isReconstructable;
     }
   });
 
