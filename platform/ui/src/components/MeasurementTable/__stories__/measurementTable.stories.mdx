@@ -8,10 +8,13 @@ export const argTypes = {
   title: 'Components/MeasurementTable',
 };
 
-<Meta title="Components/MeasurementTable" component={MeasurementTable} />
+<Meta
+  title="Components/MeasurementTable"
+  component={MeasurementTable}
+/>
 
 export const MeasurementTableTemplate = args => (
-  <div className="w-64 h-64 bg-primary-dark">
+  <div className="bg-primary-dark h-64 w-64">
     <MeasurementTable {...args} />
   </div>
 );
@@ -38,7 +41,7 @@ MeasurementTable is a component that renders the MeasurementTables.
         services: {
           customizationService: {
             getCustomization: (title, data) => data.content,
-          }
+          },
         },
       },
     }}
@@ -73,7 +76,7 @@ With data
         services: {
           customizationService: {
             getCustomization: (title, data) => data,
-          }
+          },
         },
       },
     }}

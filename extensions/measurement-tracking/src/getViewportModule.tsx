@@ -1,9 +1,7 @@
 import React from 'react';
 
 const Component = React.lazy(() => {
-  return import(
-    /* webpackPrefetch: true */ './viewports/TrackedCornerstoneViewport'
-  );
+  return import(/* webpackPrefetch: true */ './viewports/TrackedCornerstoneViewport');
 });
 
 const OHIFCornerstoneViewport = props => {
@@ -14,11 +12,7 @@ const OHIFCornerstoneViewport = props => {
   );
 };
 
-function getViewportModule({
-  servicesManager,
-  commandsManager,
-  extensionManager,
-}) {
+function getViewportModule({ servicesManager, commandsManager, extensionManager }) {
   const ExtendedOHIFCornerstoneTrackingViewport = props => {
     return (
       <OHIFCornerstoneViewport

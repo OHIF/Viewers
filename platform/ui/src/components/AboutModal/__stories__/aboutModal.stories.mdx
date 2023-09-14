@@ -10,7 +10,10 @@ export const argTypes = {
   title: 'Modals/About',
 };
 
-<Meta title="Modals/About" component={AboutModal} />
+<Meta
+  title="Modals/About"
+  component={AboutModal}
+/>
 
 export const aboutTemplate = args => (
   <div className="bg-primary-dark">
@@ -30,8 +33,7 @@ export const aboutTemplate = args => (
 
 ## Overview
 
-OHIF about modal component provides information about the application version
-and build number
+OHIF about modal component provides information about the application version and build number
 
 <Canvas>
   <Story name="Overview">{aboutTemplate.bind({})}</Story>

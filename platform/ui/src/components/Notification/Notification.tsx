@@ -5,19 +5,12 @@ import PropTypes from 'prop-types';
 import Button, { ButtonEnums } from '../Button';
 import Icon from '../Icon';
 
-const Notification = ({
-  id,
-  type,
-  message,
-  actions,
-  onSubmit,
-  onOutsideClick,
-}) => {
+const Notification = ({ id, type, message, actions, onSubmit, onOutsideClick }) => {
   const notificationRef = useRef(null);
 
   useEffect(() => {
     const notificationElement = notificationRef.current;
-    const handleClick = function(event) {
+    const handleClick = function (event) {
       const isClickInside = notificationElement.contains(event.target);
 
       if (!isClickInside) {
@@ -65,17 +58,18 @@ const Notification = ({
   return (
     <div
       ref={notificationRef}
-      className="flex flex-col p-2 mx-2 mt-2 border-2 rounded-md border-customblue-10 bg-customblue-400"
+      className="border-customblue-10 bg-customblue-400 mx-2 mt-2 flex flex-col rounded-md border-2 p-2"
       data-cy={id}
     >
-      <div className="flex items-center grow">
-        <Icon name={icon} className={classnames('w-6 h-6', color)} />
+      <div className="flex grow items-center">
+        <Icon
+          name={icon}
+          className={classnames('h-6 w-6', color)}
+        />
         <span className="ml-2 text-[13px] text-black">{message}</span>
       </div>
-      <div className="flex flex-wrap gap-2 justify-end mt-2">
-        {actions.map((action, index) => {
-          const isFirst = index === 0;
-
+      <div className="mt-2 flex flex-wrap justify-end gap-2">
+        {actions?.map((action, index) => {
           return (
             <Button
               name={action.id}
@@ -107,10 +101,7 @@ Notification.propTypes = {
     PropTypes.shape({
       text: PropTypes.string.isRequired,
       value: PropTypes.any.isRequired,
-      type: PropTypes.oneOf([
-        ButtonEnums.type.primary,
-        ButtonEnums.type.secondary,
-      ]).isRequired,
+      type: PropTypes.oneOf([ButtonEnums.type.primary, ButtonEnums.type.secondary]).isRequired,
       size: PropTypes.oneOf([ButtonEnums.size.small, ButtonEnums.size.medium]),
     })
   ).isRequired,

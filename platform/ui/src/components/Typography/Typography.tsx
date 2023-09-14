@@ -88,8 +88,7 @@ const Typography = ({
   className,
   ...rest
 }) => {
-  const Component =
-    component || (paragraph ? 'p' : defaultVariantMapping[variant]) || 'span';
+  const Component = component || (paragraph ? 'p' : defaultVariantMapping[variant]) || 'span';
   return (
     <Component
       className={classnames(

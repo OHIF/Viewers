@@ -12,14 +12,12 @@ function createStudyMetadata(StudyInstanceUID) {
      * @param {object} instance
      * @returns {bool} true if series were added; false if series already exist
      */
-    addInstanceToSeries: function(instance) {
+    addInstanceToSeries: function (instance) {
       const { SeriesInstanceUID } = instance;
       if (!this.StudyDescription) {
         this.StudyDescription = instance.StudyDescription;
       }
-      const existingSeries = this.series.find(
-        s => s.SeriesInstanceUID === SeriesInstanceUID
-      );
+      const existingSeries = this.series.find(s => s.SeriesInstanceUID === SeriesInstanceUID);
 
       if (existingSeries) {
         existingSeries.instances.push(instance);
@@ -39,23 +37,19 @@ function createStudyMetadata(StudyInstanceUID) {
      * @param {string} instances[].StudyDescription
      * @returns {bool} true if series were added; false if series already exist
      */
-    addInstancesToSeries: function(instances) {
+    addInstancesToSeries: function (instances) {
       const { SeriesInstanceUID } = instances[0];
       if (!this.StudyDescription) {
         this.StudyDescription = instances[0].StudyDescription;
       }
-      const existingSeries = this.series.find(
-        s => s.SeriesInstanceUID === SeriesInstanceUID
-      );
+      const existingSeries = this.series.find(s => s.SeriesInstanceUID === SeriesInstanceUID);
 
       if (existingSeries) {
         // Only add instances not already present, so generate a map
         // of existing instances and filter the to add by things
         // already present.
         const sopMap = {};
-        existingSeries.instances.forEach(
-          it => (sopMap[it.SOPInstanceUID] = it)
-        );
+        existingSeries.instances.forEach(it => (sopMap[it.SOPInstanceUID] = it));
         const newInstances = instances.filter(it => !sopMap[it.SOPInstanceUID]);
         existingSeries.instances.push(...newInstances);
       } else {
@@ -64,10 +58,8 @@ function createStudyMetadata(StudyInstanceUID) {
       }
     },
 
-    setSeriesMetadata: function(SeriesInstanceUID, seriesMetadata) {
-      let existingSeries = this.series.find(
-        s => s.SeriesInstanceUID === SeriesInstanceUID
-      );
+    setSeriesMetadata: function (SeriesInstanceUID, seriesMetadata) {
+      let existingSeries = this.series.find(s => s.SeriesInstanceUID === SeriesInstanceUID);
 
       if (existingSeries) {
         existingSeries = Object.assign(existingSeries, seriesMetadata);

@@ -100,7 +100,7 @@ quality and test coverage must not changed by a significant margin. For some
 repositories, visual screenshot-based tests are also included, and video
 recordings of end-to-end tests are stored for later review.
 
-[You can read more about our continous integration efforts here](/development/continous-integration.md)
+[You can read more about our continuous integration efforts here](/development/continuous-integration.md)
 
 ## Releases
 

@@ -33,8 +33,7 @@ const versions = fs.readFileSync('../../version.txt', 'utf8').split('\n');
 
 const isDev = process.env.NODE_ENV === 'development';
 
-const isDeployPreview =
-  process.env.NETLIFY && process.env.CONTEXT === 'deploy-preview';
+const isDeployPreview = process.env.NETLIFY && process.env.CONTEXT === 'deploy-preview';
 
 const baseUrl = process.env.BASE_URL || '/';
 const isBootstrapPreset = process.env.DOCUSAURUS_PRESET === 'bootstrap';
@@ -255,13 +254,11 @@ module.exports = {
         disableSwitch: false,
         // respectPrefersColorScheme: true,
       },
-      /*
-    announcementBar: {
-      id: 'supportus',
-      content:
-        '⭐️ If you like Docusaurus, give it a star on <a target="_blank" rel="noopener noreferrer" href="https://github.com/OHIF/Viewers">GitHub</a>! ⭐️',
-    },
-     */
+      announcementBar: {
+        id: 'healthimaging',
+        content:
+          '🚀 AWS has announced the general availability of <a target="_blank" rel="noopener noreferrer" href=" https://aws.amazon.com/about-aws/whats-new/2023/07/general-availability-aws-healthimaging/">HealthImaging!</a> Easily connect your OHIF to it. Learn more <a target="_blank" rel="noopener noreferrer" href="https://github.com/RadicalImaging/ohif-aws-healthimaging">Here!</a>! 🌟',
+      },
       prism: {
         theme: require('prism-react-renderer/themes/github'),
         darkTheme: require('prism-react-renderer/themes/dracula'),

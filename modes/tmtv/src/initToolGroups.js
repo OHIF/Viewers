@@ -66,34 +66,19 @@ function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager) {
     },
   };
 
-  toolGroupService.createToolGroupAndAddTools(
-    toolGroupIds.CT,
-    tools,
-    toolsConfig
-  );
+  toolGroupService.createToolGroupAndAddTools(toolGroupIds.CT, tools, toolsConfig);
   toolGroupService.createToolGroupAndAddTools(
     toolGroupIds.PT,
     {
       active: tools.active,
-      passive: [
-        ...tools.passive,
-        { toolName: 'RectangleROIStartEndThreshold' },
-      ],
+      passive: [...tools.passive, { toolName: 'RectangleROIStartEndThreshold' }],
       enabled: tools.enabled,
       disabled: tools.disabled,
     },
     toolsConfig
   );
-  toolGroupService.createToolGroupAndAddTools(
-    toolGroupIds.Fusion,
-    tools,
-    toolsConfig
-  );
-  toolGroupService.createToolGroupAndAddTools(
-    toolGroupIds.default,
-    tools,
-    toolsConfig
-  );
+  toolGroupService.createToolGroupAndAddTools(toolGroupIds.Fusion, tools, toolsConfig);
+  toolGroupService.createToolGroupAndAddTools(toolGroupIds.default, tools, toolsConfig);
 
   const mipTools = {
     active: [
@@ -113,15 +98,11 @@ function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager) {
       rotateIncrementDegrees: 0.1,
     },
     [toolNames.MipJumpToClick]: {
-      targetViewportIds: ['ptAXIAL', 'ptCORONAL', 'ptSAGITTAL'],
+      toolGroupId: toolGroupIds.PT,
     },
   };
 
-  toolGroupService.createToolGroupAndAddTools(
-    toolGroupIds.MIP,
-    mipTools,
-    mipToolsConfig
-  );
+  toolGroupService.createToolGroupAndAddTools(toolGroupIds.MIP, mipTools, mipToolsConfig);
 }
 
 function initMPRToolGroup(toolNames, Enums, toolGroupService, commandsManager) {

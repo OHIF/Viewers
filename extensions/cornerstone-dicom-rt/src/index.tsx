@@ -2,11 +2,10 @@ import { id } from './id';
 import React from 'react';
 import { Types } from '@ohif/core';
 import getSopClassHandlerModule from './getSopClassHandlerModule';
+import hydrateRTDisplaySet from './utils/_hydrateRT';
 
 const Component = React.lazy(() => {
-  return import(
-    /* webpackPrefetch: true */ './viewports/OHIFCornerstoneRTViewport'
-  );
+  return import(/* webpackPrefetch: true */ './viewports/OHIFCornerstoneRTViewport');
 });
 
 const OHIFCornerstoneRTViewport = props => {
@@ -36,12 +35,14 @@ const extension: Types.Extensions.Extension = {
   getViewportModule({
     servicesManager,
     extensionManager,
+    commandsManager,
   }: Types.Extensions.ExtensionParams) {
     const ExtendedOHIFCornerstoneRTViewport = props => {
       return (
         <OHIFCornerstoneRTViewport
           servicesManager={servicesManager}
           extensionManager={extensionManager}
+          commandsManager={commandsManager}
           {...props}
         />
       );
@@ -59,3 +60,4 @@ const extension: Types.Extensions.Extension = {
 };
 
 export default extension;
+export { hydrateRTDisplaySet };

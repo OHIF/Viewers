@@ -161,3 +161,9 @@ devServer: {
   }
 }
 ```
+
+:::tip
+Take a look at how other people have integrated OHIF in their react app
+
+example1: https://github.com/OHIF/Viewers/issues/3371#issuecomment-1630405255
+:::

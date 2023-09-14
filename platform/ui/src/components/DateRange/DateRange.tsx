@@ -36,7 +36,10 @@ const renderYearsOptions = () => {
   for (let i = 0; i < 20; i++) {
     const year = currentYear - i;
     options.push(
-      <option key={year} value={year}>
+      <option
+        key={year}
+        value={year}
+      >
         {year}
       </option>
     );
@@ -45,7 +48,7 @@ const renderYearsOptions = () => {
   return options;
 };
 
-const DateRange = (props) => {
+const DateRange = props => {
   const { id, onChange, startDate, endDate } = props;
   const [focusedInput, setFocusedInput] = useState(null);
   const renderYearsOptionsCallback = useCallback(renderYearsOptions, []);
@@ -58,7 +61,7 @@ const DateRange = (props) => {
             <button
               key={text}
               type="button"
-              className={`m-0 py-2 px-3 bg-primary-main border-0 rounded text-white text-base transition duration-300 hover:opacity-80`}
+              className={`bg-primary-main m-0 rounded border-0 py-2 px-3 text-base text-white transition duration-300 hover:opacity-80`}
               onClick={() =>
                 onChange({
                   startDate: start ? start.format('YYYYMMDD') : undefined,
@@ -81,15 +84,15 @@ const DateRange = (props) => {
       onYearSelect: PropTypes.func,
     };
 
-    const handleMonthChange = (event) => {
+    const handleMonthChange = event => {
       onMonthSelect(month, event.target.value);
     };
 
-    const handleYearChange = (event) => {
+    const handleYearChange = event => {
       onYearSelect(month, event.target.value);
     };
 
-    const handleOnBlur = () => { };
+    const handleOnBlur = () => {};
 
     return (
       <div className="flex justify-center">
@@ -101,7 +104,10 @@ const DateRange = (props) => {
             onBlur={handleOnBlur}
           >
             {moment.months().map((label, value) => (
-              <option key={value} value={value}>
+              <option
+                key={value}
+                value={value}
+              >
                 {label}
               </option>
             ))}
@@ -136,10 +142,10 @@ const DateRange = (props) => {
         onChange({
           startDate: newStartDate ? newStartDate.format('YYYYMMDD') : undefined,
           endDate: newEndDate ? newEndDate.format('YYYYMMDD') : undefined,
-        })
+        });
       }}
       focusedInput={focusedInput}
-      onFocusChange={(updatedVal) => setFocusedInput(updatedVal)}
+      onFocusChange={updatedVal => setFocusedInput(updatedVal)}
       /** OPTIONAL */
       renderCalendarInfo={renderDatePresets}
       renderMonthElement={renderMonthElement}
@@ -149,7 +155,7 @@ const DateRange = (props) => {
         closeDatePicker: 'Close',
         clearDates: 'Clear dates',
       }}
-      isOutsideRange={(day) => !isInclusivelyBeforeDay(day, moment())}
+      isOutsideRange={day => !isInclusivelyBeforeDay(day, moment())}
       hideKeyboardShortcutsPanel={true}
       numberOfMonths={1}
       showClearDates={false}

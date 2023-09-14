@@ -63,16 +63,14 @@ export default function buildModeRoutes({
       });
     });
 
-    const defaultDataSourceName = extensionManager.defaultDataSourceName;
-
-    // Add default DataSource route.
+    // Add active DataSource route.
+    // This is the DataSource route for the active data source defined in ExtensionManager.getActiveDataSource
     const path = `/${mode.routeName}`;
 
     // TODO move up.
     const children = () => (
       <ModeRoute
         mode={mode}
-        dataSourceName={defaultDataSourceName}
         extensionManager={extensionManager}
         servicesManager={servicesManager}
         commandsManager={commandsManager}

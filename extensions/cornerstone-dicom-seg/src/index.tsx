@@ -3,16 +3,13 @@ import React from 'react';
 
 import { Types } from '@ohif/core';
 
-import getSopClassHandlerModule, {
-  protocols,
-} from './getSopClassHandlerModule';
+import getSopClassHandlerModule, { protocols } from './getSopClassHandlerModule';
 import PanelSegmentation from './panels/PanelSegmentation';
 import getHangingProtocolModule from './getHangingProtocolModule';
+import hydrateSEGDisplaySet from './utils/_hydrateSEG';
 
 const Component = React.lazy(() => {
-  return import(
-    /* webpackPrefetch: true */ './viewports/OHIFCornerstoneSEGViewport'
-  );
+  return import(/* webpackPrefetch: true */ './viewports/OHIFCornerstoneSEGViewport');
 });
 
 const OHIFCornerstoneSEGViewport = props => {
@@ -39,11 +36,7 @@ const extension = {
    * iconName, iconLabel, label, component} object. Example of a panel module
    * is the StudyBrowserPanel that is provided by the default extension in OHIF.
    */
-  getPanelModule: ({
-    servicesManager,
-    commandsManager,
-    extensionManager,
-  }): Types.Panel[] => {
+  getPanelModule: ({ servicesManager, commandsManager, extensionManager }): Types.Panel[] => {
     const wrappedPanelSegmentation = () => {
       return (
         <PanelSegmentation
@@ -71,14 +64,13 @@ const extension = {
         <OHIFCornerstoneSEGViewport
           servicesManager={servicesManager}
           extensionManager={extensionManager}
+          commandsManager={commandsManager}
           {...props}
         />
       );
     };
 
-    return [
-      { name: 'dicom-seg', component: ExtendedOHIFCornerstoneSEGViewport },
-    ];
+    return [{ name: 'dicom-seg', component: ExtendedOHIFCornerstoneSEGViewport }];
   },
   /**
    * SopClassHandlerModule should provide a list of sop class handlers that will be
@@ -91,3 +83,4 @@ const extension = {
 };
 
 export default extension;
+export { hydrateSEGDisplaySet };

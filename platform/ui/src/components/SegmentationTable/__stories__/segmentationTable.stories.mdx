@@ -8,10 +8,13 @@ export const argTypes = {
   title: 'Components/SegmentationTable',
 };
 
-<Meta title="Components/SegmentationTable" component={SegmentationTable} />
+<Meta
+  title="Components/SegmentationTable"
+  component={SegmentationTable}
+/>
 
 export const SegmentationTableTemplate = args => (
-  <div className="w-64 h-96 bg-primary-dark">
+  <div className="bg-primary-dark h-96 w-64">
     <SegmentationTable {...args} />
   </div>
 );

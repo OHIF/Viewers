@@ -3,7 +3,7 @@ import { getPresentationIds, PresentationIds } from './getPresentationIds';
 
 class ViewportGridService extends PubSubService {
   public static readonly EVENTS = {
-    ACTIVE_VIEWPORT_INDEX_CHANGED: 'event::activeviewportindexchanged',
+    ACTIVE_VIEWPORT_ID_CHANGED: 'event::activeviewportidchanged',
     LAYOUT_CHANGED: 'event::layoutChanged',
     GRID_STATE_CHANGED: 'event::gridStateChanged',
   };
@@ -27,7 +27,7 @@ class ViewportGridService extends PubSubService {
 
   public setServiceImplementation({
     getState: getStateImplementation,
-    setActiveViewportIndex: setActiveViewportIndexImplementation,
+    setActiveViewportId: setActiveViewportIdImplementation,
     setDisplaySetsForViewports: setDisplaySetsForViewportsImplementation,
     setLayout: setLayoutImplementation,
     reset: resetImplementation,
@@ -38,9 +38,8 @@ class ViewportGridService extends PubSubService {
     if (getStateImplementation) {
       this.serviceImplementation._getState = getStateImplementation;
     }
-    if (setActiveViewportIndexImplementation) {
-      this.serviceImplementation._setActiveViewportIndex =
-        setActiveViewportIndexImplementation;
+    if (setActiveViewportIdImplementation) {
+      this.serviceImplementation._setActiveViewport = setActiveViewportIdImplementation;
     }
     if (setDisplaySetsForViewportsImplementation) {
       this.serviceImplementation._setDisplaySetsForViewports =
@@ -59,18 +58,15 @@ class ViewportGridService extends PubSubService {
       this.serviceImplementation._set = setImplementation;
     }
     if (getNumViewportPanesImplementation) {
-      this.serviceImplementation._getNumViewportPanes =
-        getNumViewportPanesImplementation;
+      this.serviceImplementation._getNumViewportPanes = getNumViewportPanesImplementation;
     }
   }
 
-  public setActiveViewportIndex(index) {
-    this.serviceImplementation._setActiveViewportIndex(index);
+  public setActiveViewportId(id: string) {
+    this.serviceImplementation._setActiveViewport(id);
     const state = this.getState();
-    const viewportId = state.viewports[index]?.viewportOptions?.viewportId;
-    this._broadcastEvent(this.EVENTS.ACTIVE_VIEWPORT_INDEX_CHANGED, {
-      viewportIndex: index,
-      viewportId,
+    this._broadcastEvent(this.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED, {
+      viewportId: id,
     });
   }
 
@@ -89,14 +85,11 @@ class ViewportGridService extends PubSubService {
     const viewports = [];
 
     for (const viewport of props) {
-      const updatedViewport = state.viewports[viewport.viewportIndex];
+      const updatedViewport = state.viewports.get(viewport.viewportId);
       if (updatedViewport) {
         viewports.push(updatedViewport);
       } else {
-        console.warn(
-          "ViewportGridService::Didn't find updated viewport",
-          viewport
-        );
+        console.warn("ViewportGridService::Didn't find updated viewport", viewport);
       }
     }
     this._broadcastEvent(ViewportGridService.EVENTS.GRID_STATE_CHANGED, {
@@ -118,7 +111,7 @@ class ViewportGridService extends PubSubService {
     numRows,
     layoutOptions,
     layoutType = 'grid',
-    activeViewportIndex = undefined,
+    activeViewportId = undefined,
     findOrCreateViewport = undefined,
   }) {
     this.serviceImplementation._setLayout({
@@ -126,7 +119,7 @@ class ViewportGridService extends PubSubService {
       numRows,
       layoutOptions,
       layoutType,
-      activeViewportIndex,
+      activeViewportId,
       findOrCreateViewport,
     });
     this._broadcastEvent(this.EVENTS.LAYOUT_CHANGED, {
@@ -160,8 +153,10 @@ class ViewportGridService extends PubSubService {
     return this.serviceImplementation._getNumViewportPanes();
   }
 
-  public getLayoutOptionsFromState(state) {
-    return state.viewports.map(viewport => {
+  public getLayoutOptionsFromState(
+    state: any
+  ): { x: number; y: number; width: number; height: number }[] {
+    return Array.from(state.viewports.entries()).map(([_, viewport]) => {
       return {
         x: viewport.x,
         y: viewport.y,

@@ -66,7 +66,9 @@ export default class ToolbarService extends PubSubService {
    *    called with {...commandOptions,...options}
    */
   recordInteraction(interaction, options?: Record<string, unknown>) {
-    if (!interaction) return;
+    if (!interaction) {
+      return;
+    }
     const commandsManager = this._commandsManager;
     const { groupId, itemId, interactionType, commands } = interaction;
 
@@ -88,11 +90,9 @@ export default class ToolbarService extends PubSubService {
       }
       case 'tool': {
         try {
-          commands.forEach(
-            ({ commandName = 'setToolActive', commandOptions, context }) => {
-              commandsManager.runCommand(commandName, commandOptions, context);
-            }
-          );
+          commands.forEach(({ commandName = 'setToolActive', commandOptions, context }) => {
+            commandsManager.runCommand(commandName, commandOptions, context);
+          });
 
           // only set the primary tool if no error was thrown
           this.state.primaryToolId = itemId;
@@ -108,9 +108,7 @@ export default class ToolbarService extends PubSubService {
 
         // only toggle if a command was executed
         this.state.toggles[itemId] =
-          this.state.toggles[itemId] === undefined
-            ? true
-            : !this.state.toggles[itemId];
+          this.state.toggles[itemId] === undefined ? true : !this.state.toggles[itemId];
 
         if (!commands) {
           break;
@@ -154,7 +152,7 @@ export default class ToolbarService extends PubSubService {
     //   unsubscribe = commandsManager.runCommand(commandName, commandOptions);
     // }
 
-    // // Storing the unsubscribe for later reseting
+    // // Storing the unsubscribe for later resetting
     // if (unsubscribe && typeof unsubscribe === 'function') {
     //   if (this.unsubscriptions.indexOf(unsubscribe) === -1) {
     //     this.unsubscriptions.push(unsubscribe);
@@ -211,14 +209,9 @@ export default class ToolbarService extends PubSubService {
 
   _buttonTypes() {
     const buttonTypes = {};
-    const registeredToolbarModules = this.extensionManager.modules[
-      'toolbarModule'
-    ];
+    const registeredToolbarModules = this.extensionManager.modules['toolbarModule'];
 
-    if (
-      Array.isArray(registeredToolbarModules) &&
-      registeredToolbarModules.length
-    ) {
+    if (Array.isArray(registeredToolbarModules) && registeredToolbarModules.length) {
       registeredToolbarModules.forEach(toolbarModule =>
         toolbarModule.module.forEach(def => {
           buttonTypes[def.name] = def;
@@ -272,9 +265,24 @@ export default class ToolbarService extends PubSubService {
       if (!this.buttons[button.id]) {
         this.buttons[button.id] = button;
       }
+      this._setTogglesForButtonItems(button.props?.items);
     });
 
     this._broadcastEvent(this.EVENTS.TOOL_BAR_MODIFIED, {});
+  }
+
+  _setTogglesForButtonItems(buttonItems) {
+    if (!buttonItems) {
+      return;
+    }
+
+    buttonItems.forEach(buttonItem => {
+      if (buttonItem.type === 'toggle') {
+        this.state.toggles[buttonItem.id] = buttonItem.isActive;
+      } else {
+        this._setTogglesForButtonItems(buttonItem.props?.items);
+      }
+    });
   }
 
   /**
@@ -300,8 +308,6 @@ export default class ToolbarService extends PubSubService {
   }
 
   getButtonComponentForUIType(uiType: string) {
-    return uiType
-      ? this._buttonTypes()[uiType]?.defaultComponent ?? null
-      : null;
+    return uiType ? this._buttonTypes()[uiType]?.defaultComponent ?? null : null;
   }
 }

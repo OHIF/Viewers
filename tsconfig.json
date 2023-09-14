@@ -19,10 +19,6 @@
       "@ohif/app": ["platform/app/src"]
     }
   },
-  "include": [
-    "platform/**/src/**/*",
-    "extensions/**/src/**/*",
-    "modes/**/src/**/*"
-  ],
+  "include": ["platform/**/src/**/*", "extensions/**/src/**/*", "modes/**/src/**/*"],
   "exclude": ["node_modules", "dist"]
 }

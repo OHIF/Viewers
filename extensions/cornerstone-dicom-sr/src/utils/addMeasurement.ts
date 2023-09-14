@@ -8,11 +8,7 @@ const EPSILON = 1e-4;
 
 const supportedLegacyCornerstoneTags = ['cornerstoneTools@^4.0.0'];
 
-export default function addMeasurement(
-  measurement,
-  imageId,
-  displaySetInstanceUID
-) {
+export default function addMeasurement(measurement, imageId, displaySetInstanceUID) {
   // TODO -> Render rotated ellipse .
   const toolName = toolNames.DICOMSRDisplay;
 
@@ -31,12 +27,7 @@ export default function addMeasurement(
     }
 
     measurementData.renderableData[GraphicType].push(
-      _getRenderableData(
-        GraphicType,
-        GraphicData,
-        imageId,
-        measurement.TrackingIdentifier
-      )
+      _getRenderableData(GraphicType, GraphicData, imageId, measurement.TrackingIdentifier)
     );
   });
 
@@ -86,12 +77,7 @@ export default function addMeasurement(
   delete measurement.coords;
 }
 
-function _getRenderableData(
-  GraphicType,
-  GraphicData,
-  imageId,
-  TrackingIdentifier
-) {
+function _getRenderableData(GraphicType, GraphicData, imageId, TrackingIdentifier) {
   const [cornerstoneTag, toolName] = TrackingIdentifier.split(':');
 
   let renderableData: csTypes.Point3[];
@@ -207,38 +193,22 @@ function _getRenderableData(
         throw new Error('imageId does not have imagePlaneModule metadata');
       }
 
-      const {
-        columnCosines,
-      }: { columnCosines: csTypes.Point3 } = imagePlaneModule;
+      const { columnCosines }: { columnCosines: csTypes.Point3 } = imagePlaneModule;
 
       // find which axis is parallel to the columnCosines
       const columnCosinesVec = vec3.fromValues(...columnCosines);
 
-      const projectedMajorAxisOnColVec = Math.abs(
-        vec3.dot(columnCosinesVec, majorAxisVec)
-      );
-      const projectedMinorAxisOnColVec = Math.abs(
-        vec3.dot(columnCosinesVec, minorAxisVec)
-      );
+      const projectedMajorAxisOnColVec = Math.abs(vec3.dot(columnCosinesVec, majorAxisVec));
+      const projectedMinorAxisOnColVec = Math.abs(vec3.dot(columnCosinesVec, minorAxisVec));
 
       const absoluteOfMajorDotProduct = Math.abs(projectedMajorAxisOnColVec);
       const absoluteOfMinorDotProduct = Math.abs(projectedMinorAxisOnColVec);
 
       renderableData = [];
       if (Math.abs(absoluteOfMajorDotProduct - 1) < EPSILON) {
-        renderableData = [
-          pointsWorld[0],
-          pointsWorld[1],
-          pointsWorld[2],
-          pointsWorld[3],
-        ];
+        renderableData = [pointsWorld[0], pointsWorld[1], pointsWorld[2], pointsWorld[3]];
       } else if (Math.abs(absoluteOfMinorDotProduct - 1) < EPSILON) {
-        renderableData = [
-          pointsWorld[2],
-          pointsWorld[3],
-          pointsWorld[0],
-          pointsWorld[1],
-        ];
+        renderableData = [pointsWorld[2], pointsWorld[3], pointsWorld[0], pointsWorld[1]];
       } else {
         console.warn('OBLIQUE ELLIPSE NOT YET SUPPORTED');
       }
