@@ -152,7 +152,7 @@ export default class ToolbarService extends PubSubService {
     //   unsubscribe = commandsManager.runCommand(commandName, commandOptions);
     // }
 
-    // // Storing the unsubscribe for later reseting
+    // // Storing the unsubscribe for later resetting
     // if (unsubscribe && typeof unsubscribe === 'function') {
     //   if (this.unsubscriptions.indexOf(unsubscribe) === -1) {
     //     this.unsubscriptions.push(unsubscribe);
@@ -265,9 +265,24 @@ export default class ToolbarService extends PubSubService {
       if (!this.buttons[button.id]) {
         this.buttons[button.id] = button;
       }
+      this._setTogglesForButtonItems(button.props?.items);
     });
 
     this._broadcastEvent(this.EVENTS.TOOL_BAR_MODIFIED, {});
+  }
+
+  _setTogglesForButtonItems(buttonItems) {
+    if (!buttonItems) {
+      return;
+    }
+
+    buttonItems.forEach(buttonItem => {
+      if (buttonItem.type === 'toggle') {
+        this.state.toggles[buttonItem.id] = buttonItem.isActive;
+      } else {
+        this._setTogglesForButtonItems(buttonItem.props?.items);
+      }
+    });
   }
 
   /**

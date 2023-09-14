@@ -19,7 +19,7 @@ const setEnabledElement = (viewportId: string, element: HTMLElement, context?: s
 };
 
 /**
- * Grabs the enabled element `dom` reference of an ative viewport.
+ * Grabs the enabled element `dom` reference of an active viewport.
  *
  * @return {HTMLElement} Active viewport element.
  */

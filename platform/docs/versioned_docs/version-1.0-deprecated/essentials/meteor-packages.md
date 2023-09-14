@@ -54,7 +54,7 @@ This package also stores Meteor components for the interactive lesion table used
 ### User (*ohif-user*)
 
 ### Basic Viewer Components (*ohif-viewerbase*)
-This is the largest package in the repository. It holds a large number of re-usable Meteor components that are used to build both the OHIF Viewer and Lesion Tracker.
+This is the largest package in the repository. It holds a large number of reusable Meteor components that are used to build both the OHIF Viewer and Lesion Tracker.
 
 ### WADO Proxy (*ohif-wadoproxy*)
 Proxy for CORS

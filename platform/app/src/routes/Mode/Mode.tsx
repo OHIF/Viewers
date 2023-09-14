@@ -67,6 +67,13 @@ function defaultRouteInit(
     })
   );
 
+  // log the error if this fails, otherwise it's so difficult to tell what went wrong...
+  allRetrieves.forEach(retrieve => {
+    retrieve.catch(error => {
+      console.error(error);
+    });
+  });
+
   // The hanging protocol matching service is fairly expensive to run multiple
   // times, and doesn't allow partial matches to be made (it will simply fail
   // to display anything if a required match fails), so we wait here until all metadata
@@ -164,7 +171,7 @@ export default function ModeRoute({
 
   // Preserve the old array interface for hotkeys
   const hotkeys = Array.isArray(hotkeyObj) ? hotkeyObj : hotkeyObj?.hotkeys;
-  const hotkeyName = hotkeyObj?.name || 'hotkey-definitions-v2';
+  const hotkeyName = hotkeyObj?.name || 'hotkey-definitions';
 
   // An undefined dataSourceName implies that the active data source that is already set in the ExtensionManager should be used.
   if (dataSourceName !== undefined) {
@@ -436,7 +443,7 @@ export default function ModeRoute({
     <ImageViewerProvider
       // initialState={{ StudyInstanceUIDs: StudyInstanceUIDs }}
       StudyInstanceUIDs={studyInstanceUIDs}
-      // reducer={reducer}
+    // reducer={reducer}
     >
       <CombinedContextProvider>
         <DragAndDropProvider>

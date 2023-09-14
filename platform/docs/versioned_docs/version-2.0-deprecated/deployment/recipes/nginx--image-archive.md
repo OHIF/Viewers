@@ -8,7 +8,7 @@ sidebar_position: 4
 
 At a certain point, you may want others to have access to your instance of the
 OHIF Viewer and its medical imaging data. This post covers one of many potential
-setups that accomplish that. Please note, noticably absent is user account
+setups that accomplish that. Please note, noticeably absent is user account
 control.
 
 Do not use this recipe to host sensitive medical data on the open web. Depending
@@ -21,12 +21,12 @@ that builds on the lessons learned here.
 
 Our two biggest hurdles when hosting our image archive and web client are:
 
-- Risks related to exposing our PACS to the netowrk
+- Risks related to exposing our PACS to the network
 - Cross-Origin Resource Sharing (CORS) requests
 
 ### Handling Web Requests
 
-We mittigate our first issue by allowing [Nginx][nginx] to handle incoming web
+We mitigate our first issue by allowing [Nginx][nginx] to handle incoming web
 requests. Nginx is open source software for web serving, reverse proxying,
 caching, and more. It's designed for maximum performance and stability --
 allowing us to more reliably serve content than Orthanc's built-in server can.
