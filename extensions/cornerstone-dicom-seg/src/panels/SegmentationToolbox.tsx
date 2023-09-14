@@ -87,6 +87,25 @@ function SegmentationToolbox({ servicesManager, extensionManager }) {
     });
   }, [activeViewportId, viewports, toolGroupService, dispatch]);
 
+  const setToolActive = useCallback(
+    toolName => {
+      toolbarService.recordInteraction({
+        interactionType: 'tool',
+        commands: [
+          {
+            commandName: 'setToolActive',
+            commandOptions: {
+              toolName,
+            },
+          },
+        ],
+      });
+
+      dispatch({ type: ACTIONS.SET_ACTIVE_TOOL, payload: toolName });
+    },
+    [toolbarService, dispatch]
+  );
+
   /**
    * sets the tools enabled IF there are segmentations
    */
@@ -131,26 +150,22 @@ function SegmentationToolbox({ servicesManager, extensionManager }) {
     };
   }, [toolbarService, updateActiveTool]);
 
-  const setToolActive = useCallback(
-    toolName => {
-      toolbarService.recordInteraction({
-        groupId: 'SegmentationTools',
-        itemId: 'Brush',
-        interactionType: 'tool',
-        commands: [
-          {
-            commandName: 'setToolActive',
-            commandOptions: {
-              toolName,
-            },
-          },
-        ],
-      });
+  useEffect(() => {
+    // if the active tool is not a brush tool then do nothing
+    if (!Object.values(TOOL_TYPES).includes(state.activeTool)) {
+      return;
+    }
 
-      dispatch({ type: ACTIONS.SET_ACTIVE_TOOL, payload: toolName });
-    },
-    [toolbarService, dispatch]
-  );
+    // if the tool is Segmentation and it is enabled then do nothing
+    if (toolsEnabled) {
+      return;
+    }
+
+    // if the tool is Segmentation and it is disabled, then switch
+    // back to the window level tool to not confuse the user when no
+    // segmentation is active or when there is no segment in the segmentation
+    setToolActive('WindowLevel');
+  }, [toolsEnabled, state.activeTool, setToolActive]);
 
   const updateBrushSize = useCallback(
     (toolName, brushSize) => {

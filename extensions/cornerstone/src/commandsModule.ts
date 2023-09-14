@@ -266,7 +266,6 @@ function commandsModule({
     toolbarServiceRecordInteraction: props => {
       toolbarService.recordInteraction(props);
     },
-
     setToolActive: ({ toolName, toolGroupId = null, toggledState }) => {
       if (toolName === 'Crosshairs') {
         const activeViewportToolGroup = toolGroupService.getToolGroup(null);

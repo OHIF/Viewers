@@ -319,12 +319,7 @@ const commandsModule = ({
       }
 
       const { label } = segmentation;
-      const SeriesDescription =
-        promptResult.value !== undefined && promptResult.value !== ''
-          ? promptResult.value
-          : label !== undefined && label !== ''
-          ? label
-          : 'Research Derived Series';
+      const SeriesDescription = promptResult.value || label || 'Research Derived Series';
 
       const generatedData = actions.generateSegmentation({
         segmentationId,

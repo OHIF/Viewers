@@ -125,7 +125,7 @@ const SegmentationGroupTable = ({
         {activeSegmentation && (
           <div className="ohif-scrollbar mt-1.5 flex min-h-0 flex-col overflow-y-hidden">
             {activeSegmentation?.segments?.map(segment => {
-              if (segment === undefined || segment === null) {
+              if (!segment) {
                 return null;
               }
 
@@ -163,43 +163,69 @@ const SegmentationGroupTable = ({
 };
 
 SegmentationGroupTable.propTypes = {
-  title: PropTypes.string.isRequired,
-  segmentations: PropTypes.array.isRequired,
-  activeSegmentationId: PropTypes.string.isRequired,
-  onClick: PropTypes.func.isRequired,
-  onEdit: PropTypes.func.isRequired,
-  onDelete: PropTypes.func.isRequired,
-  onToggleLocked: PropTypes.func,
-  onToggleVisibility: PropTypes.func.isRequired,
-  onToggleVisibilityAll: PropTypes.func.isRequired,
-  segmentationConfig: PropTypes.object,
+  segmentations: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      isActive: PropTypes.bool.isRequired,
+      segments: PropTypes.arrayOf(
+        PropTypes.shape({
+          segmentIndex: PropTypes.number.isRequired,
+          color: PropTypes.array.isRequired,
+          label: PropTypes.string.isRequired,
+          isVisible: PropTypes.bool.isRequired,
+          isLocked: PropTypes.bool.isRequired,
+        })
+      ),
+    })
+  ),
+  segmentationConfig: PropTypes.object.isRequired,
   disableEditing: PropTypes.bool,
+  showAddSegmentation: PropTypes.bool,
+  showAddSegment: PropTypes.bool,
+  showDeleteSegment: PropTypes.bool,
+  onSegmentationAdd: PropTypes.func.isRequired,
+  onSegmentationEdit: PropTypes.func.isRequired,
+  onSegmentationClick: PropTypes.func.isRequired,
+  onSegmentationDelete: PropTypes.func.isRequired,
+  onSegmentationDownload: PropTypes.func.isRequired,
+  storeSegmentation: PropTypes.func.isRequired,
+  onSegmentClick: PropTypes.func.isRequired,
+  onSegmentAdd: PropTypes.func.isRequired,
+  onSegmentDelete: PropTypes.func.isRequired,
+  onSegmentEdit: PropTypes.func.isRequired,
+  onToggleSegmentationVisibility: PropTypes.func.isRequired,
+  onToggleSegmentVisibility: PropTypes.func.isRequired,
+  onToggleSegmentLock: PropTypes.func.isRequired,
+  onSegmentColorClick: PropTypes.func.isRequired,
+  setFillAlpha: PropTypes.func.isRequired,
+  setFillAlphaInactive: PropTypes.func.isRequired,
+  setOutlineWidthActive: PropTypes.func.isRequired,
+  setOutlineOpacityActive: PropTypes.func.isRequired,
+  setRenderFill: PropTypes.func.isRequired,
+  setRenderInactiveSegmentations: PropTypes.func.isRequired,
+  setRenderOutline: PropTypes.func.isRequired,
 };
 
 SegmentationGroupTable.defaultProps = {
-  title: '',
   segmentations: [],
-  activeSegmentationId: '',
+  disableEditing: false,
   showAddSegmentation: true,
   showAddSegment: true,
-  onClick: () => {},
-  onEdit: () => {},
-  onDelete: () => {},
-  onToggleLocked: () => {},
-  onToggleVisibility: () => {},
-  onToggleVisibilityAll: () => {},
-  segmentationConfig: {
-    initialConfig: {
-      fillAlpha: 0.5,
-      fillAlphaInactive: 0.5,
-      outlineWidthActive: 1,
-      outlineOpacity: 1,
-      outlineOpacityInactive: 0.5,
-      renderFill: true,
-      renderInactiveSegmentations: true,
-      renderOutline: true,
-    },
-  },
+  showDeleteSegment: true,
+  onSegmentationAdd: () => {},
+  onSegmentationEdit: () => {},
+  onSegmentationClick: () => {},
+  onSegmentationDelete: () => {},
+  onSegmentationDownload: () => {},
+  storeSegmentation: () => {},
+  onSegmentClick: () => {},
+  onSegmentAdd: () => {},
+  onSegmentDelete: () => {},
+  onSegmentEdit: () => {},
+  onToggleSegmentationVisibility: () => {},
+  onToggleSegmentVisibility: () => {},
+  onToggleSegmentLock: () => {},
+  onSegmentColorClick: () => {},
   setFillAlpha: () => {},
   setFillAlphaInactive: () => {},
   setOutlineWidthActive: () => {},
@@ -208,5 +234,4 @@ SegmentationGroupTable.defaultProps = {
   setRenderInactiveSegmentations: () => {},
   setRenderOutline: () => {},
 };
-
 export default SegmentationGroupTable;
