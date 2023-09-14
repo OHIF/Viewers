@@ -1,22 +1,49 @@
 import { api } from 'dicomweb-client';
 import StaticWadoClient from './StaticWadoClient';
 import dcm4cheeReject from '../dcm4cheeReject';
-
 import { errorHandler, utils } from '@ohif/core';
 
 export default class clientManager {
   clients;
   userAuthenticationService;
 
-  // adds a dicomweb server configuration in the clients list
-  public addConfiguration(params, query, config) {
-    if (config.onConfiguration && typeof config.onConfiguration === 'function') {
-      config = config.onConfiguration(config, {
-        params,
-        query,
-      });
+  // check google server params
+  private checkGoogleServerParams(params) {
+    const { project, location, dataset, dicomStore } = params;
+    return project && location && dataset && dicomStore;
+  }
+
+  // parsers google server parameter
+  private parseGoogleServerParameter(param) {
+    // remove first slash
+    if (param[0] === '/') {
+      param = param.slice(1);
+    }
+    const tokens = param.split('/');
+    const params = {};
+
+    for (let i = 0; i < Math.floor(tokens.length / 2); i++) {
+      params[tokens[i * 2]] = tokens[i * 2 + 1];
     }
 
+    if (params['projects']) {
+      params['project'] = params['projects'];
+    }
+    if (params['locations']) {
+      params['location'] = params['locations'];
+    }
+    if (params['datasets']) {
+      params['dataset'] = params['datasets'];
+    }
+    if (params['dicomStores']) {
+      params['dicomStore'] = params['dicomStores'];
+    }
+    return params;
+  }
+
+  // adds a dicomweb server configuration in the clients list
+  private _addConfiguration(givenConfig) {
+    const config = Object.assign({}, givenConfig);
     config.qidoConfig = {
       url: config.qidoRoot,
       staticWado: config.staticWado,
@@ -33,8 +60,6 @@ export default class clientManager {
       errorInterceptor: errorHandler.getHTTPErrorHandler(),
     };
 
-    // TODO -> Two clients sucks, but its better than 1000.
-    // TODO -> We'll need to merge auth later.
     config.qidoDicomWebClient = config.staticWado
       ? new StaticWadoClient(config.qidoConfig)
       : new api.DICOMwebClient(config.qidoConfig);
@@ -46,6 +71,38 @@ export default class clientManager {
     config.qidoDicomWebClient.name = config.name;
     config.wadoDicomWebClient.name = config.name;
     this.clients.push(config);
+  }
+
+  public addConfiguration(params, query, config) {
+    if (
+      this.checkGoogleServerParams(params) &&
+      config.onConfiguration &&
+      typeof config.onConfiguration === 'function'
+    ) {
+      config = config.onConfiguration(config, {
+        params,
+        query,
+      });
+    }
+    this._addConfiguration(config);
+
+    // handle secondGoogleServer parameter
+    const parameters = [...query.keys()];
+    if (parameters.includes('secondGoogleServer')) {
+      const googleParams = this.parseGoogleServerParameter(query.get('secondGoogleServer'));
+      if (
+        this.checkGoogleServerParams(googleParams) &&
+        config.onConfiguration &&
+        typeof config.onConfiguration === 'function'
+      ) {
+        const googleConfig = config.onConfiguration(config, {
+          params: googleParams,
+          query,
+        });
+        googleConfig.name = '#googleSecondServerConfig';
+        this._addConfiguration(googleConfig);
+      }
+    }
   }
 
   public getAuthorizationHeader() {

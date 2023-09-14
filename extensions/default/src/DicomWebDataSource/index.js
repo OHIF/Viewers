@@ -57,12 +57,17 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
                 supportsFuzzyMatching: clients[i].supportsFuzzyMatching,
                 supportsWildcard: clients[i].supportsWildcard,
               }) || {};
-            const clientResults = await qidoSearch(
-              clients[i].qidoDicomWebClient,
-              undefined,
-              undefined,
-              mappedParams
-            );
+            let clientResults;
+            try {
+              clientResults = await qidoSearch(
+                clients[i].qidoDicomWebClient,
+                undefined,
+                undefined,
+                mappedParams
+              );
+            } catch {
+              clientResults = [];
+            }
             for (let j = 0; j < clientResults.length; j++) {
               const studyInstanceUID = clientResults[j]['0020000D'].Value[0];
               if (!(studyInstanceUID in studyInstanceUIDs)) {
@@ -361,7 +366,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
       }
 
       /**
-       * naturalizes the dataset, and adds a retrieve bulkdata method
+       * naturalizes the dataset, and adds a retrieve bulk data method
        * to any values containing BulkDataURI.
        * @param {*} instance
        * @returns naturalized dataset, with retrieveBulkData methods
@@ -370,7 +375,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
         const clientName = instance?.clientName;
         const naturalized = naturalizeDataset(instance);
 
-        // if we konw the server doesn't use bulkDataURI, then don't
+        // if we know the server doesn't use bulkDataURI, then don't
         if (!clientManagerObj.getClient(clientName).bulkDataURI?.enabled) {
           return naturalized;
         }
