@@ -20,10 +20,11 @@ export function getPointProjection(point, instance) {
   );
   const subtractedPoint = vec3.create();
   vec3.subtract(subtractedPoint, point, reference);
-  const x = vec3.dot(subtractedPoint, rowCosineVec);
-  const y = vec3.dot(subtractedPoint, colCosineVec);
-  vec3.scale(subtractedPoint, rowCosineVec, x);
-  return vec3.scaleAndAdd(subtractedPoint, subtractedPoint, colCosineVec, y);
+  const scanAxisNormal = vec3.cross(vec3.create(), rowCosineVec, colCosineVec);
+  const distance = Math.abs(vec3.dot(subtractedPoint, scanAxisNormal));
+  const pointProjected = vec3.create();
+  vec3.scaleAndAdd(pointProjected, point, scanAxisNormal, -distance);
+  return [pointProjected[0], pointProjected[1], pointProjected[2]];
 }
 /**
  * Calculates the minimum distance between a world point and an image plane
@@ -33,6 +34,7 @@ export function getPointProjection(point, instance) {
  */
 function planeDistance(point, instance) {
   const imageOrientation = instance.ImageOrientationPatient;
+  const imagePositionPatient = instance.ImagePositionPatient;
   const rowCosineVec = vec3.fromValues(
     imageOrientation[0],
     imageOrientation[1],
@@ -44,9 +46,14 @@ function planeDistance(point, instance) {
     imageOrientation[5]
   );
   const scanAxisNormal = vec3.cross(vec3.create(), rowCosineVec, colCosineVec);
-  vec3.normalize(scanAxisNormal, scanAxisNormal);
-  return Math.abs(vec3.dot(scanAxisNormal, point));
+  const [A, B, C] = scanAxisNormal;
+
+  const D =
+    -A * imagePositionPatient[0] - B * imagePositionPatient[1] - C * imagePositionPatient[2];
+
+  return Math.abs(A * point[0] + B * point[1] + C * point[2] + D); // Denominator is sqrt(A**2 + B**2 + C**2) which is 1 as its a normal vector
 }
+
 /**
  * Gets the closest instance of a displaySet related to a given world point
  * @param targetPoint            target world point
@@ -54,31 +61,25 @@ function planeDistance(point, instance) {
  * @param closestInstanceInfo    last closest instance
  * @returns
  */
-function getClosestInstance(targetPoint, displaySet, closestInstanceInfo) {
+function getClosestInstance(targetPoint, displaySet, closestInstanceInfos) {
   // todo: this does not assume orientation yet, but that can be added later
   const displaySetInstanceUID = displaySet.displaySetInstanceUID;
-  const distance = closestInstanceInfo
-    ? planeDistance(targetPoint, closestInstanceInfo.instance)
-    : Infinity;
-  return displaySet.instances.reduce(
-    (closestInstanceInfo, instance) => {
-      const distance = planeDistance(targetPoint, instance);
+  return displaySet.instances.reduce((closestInstanceInfos, instance) => {
+    const distance = planeDistance(targetPoint, instance);
 
-      if (distance < closestInstanceInfo.distance) {
-        return {
-          distance,
-          instance,
-          displaySetInstanceUID,
-        };
-      }
-      return closestInstanceInfo;
-    },
-    {
-      distance: distance,
-      instance: closestInstanceInfo?.instance,
-      displaySetInstanceUID: closestInstanceInfo?.displaySetInstanceUID,
+    // the threshold is half of the slicethickness or 5 mm
+    const threshold = 0.1; //(instance?.SliceThickness || 5) / 2;
+
+    if (distance < threshold) {
+      const closestInstanceInfo = {
+        distance,
+        instance,
+        displaySetInstanceUID,
+      };
+      closestInstanceInfos.push(closestInstanceInfo);
     }
-  );
+    return closestInstanceInfos;
+  }, closestInstanceInfos);
 }
 
 /**
@@ -89,11 +90,11 @@ function getClosestInstance(targetPoint, displaySet, closestInstanceInfo) {
  * @returns
  */
 export default function getClosestInstanceInfo(targetPoint, frameOfReferenceUID, displaySets) {
-  return displaySets.reduce((closestInstanceInfo, displaySet) => {
+  return displaySets.reduce((closestInstanceInfos, displaySet) => {
     if (displaySet.instance.FrameOfReferenceUID === frameOfReferenceUID) {
-      return getClosestInstance(targetPoint, displaySet, closestInstanceInfo);
+      return getClosestInstance(targetPoint, displaySet, closestInstanceInfos);
     } else {
-      return closestInstanceInfo;
+      return closestInstanceInfos;
     }
-  }, undefined);
+  }, []);
 }

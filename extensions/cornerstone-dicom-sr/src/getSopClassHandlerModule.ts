@@ -3,7 +3,7 @@ import { utils, classes, DisplaySetService, Types } from '@ohif/core';
 import addMeasurement from './utils/addMeasurement';
 import isRehydratable from './utils/isRehydratable';
 import { adaptersSR } from '@cornerstonejs/adapters';
-import getClosestInstanceInfo from './utils/getClosestInstanceInfo';
+import getClosestInstanceInfo, { getPointProjection } from './utils/getClosestInstanceInfo';
 
 type InstanceMetadata = Types.InstanceMetadata;
 
@@ -159,10 +159,7 @@ function _load(displaySet, servicesManager, extensionManager) {
   const { ContentSequence } = displaySet.instance;
 
   displaySet.referencedImages = _getReferencedImagesList(ContentSequence);
-  displaySet.measurements = _getMeasurements(
-    ContentSequence,
-    displaySetService
-  );
+  displaySet.measurements = _getMeasurements(ContentSequence, displaySetService);
 
   const mappings = measurementService.getSourceMappings(
     CORNERSTONE_3D_TOOLS_SOURCE_NAME,
@@ -293,10 +290,7 @@ function getSopClassHandlerModule({ servicesManager, extensionManager }) {
   ];
 }
 
-function _getMeasurements(
-  ImagingMeasurementReportContentSequence,
-  displaySetService
-) {
+function _getMeasurements(ImagingMeasurementReportContentSequence, displaySetService) {
   const ImagingMeasurements = ImagingMeasurementReportContentSequence.find(
     item =>
       item.ConceptNameCodeSequence.CodeValue === CodeNameCodeSequenceValues.ImagingMeasurements
@@ -316,10 +310,7 @@ function _getMeasurements(
       const mergedContentSequence =
         mergedContentSequencesByTrackingUniqueIdentifiers[trackingUniqueIdentifier];
 
-      const measurement = _processMeasurement(
-        mergedContentSequence,
-        displaySetService
-      );
+      const measurement = _processMeasurement(mergedContentSequence, displaySetService);
 
       if (measurement) {
         measurements.push(measurement);
@@ -386,14 +377,10 @@ function _processTID1410Measurement(mergedContentSequence, displaySetService) {
   // Need to deal with TID 1410 style measurements, which will have a SCOORD or SCOORD3D at the top level,
   // And non-geometric representations where each NUM has "INFERRED FROM" SCOORD/SCOORD3D
 
-  let graphicItem = mergedContentSequence.find(
-    group => group.ValueType === 'SCOORD'
-  );
+  let graphicItem = mergedContentSequence.find(group => group.ValueType === 'SCOORD');
 
   if (!graphicItem) {
-    graphicItem = mergedContentSequence.find(
-      group => group.ValueType === 'SCOORD3D'
-    );
+    graphicItem = mergedContentSequence.find(group => group.ValueType === 'SCOORD3D');
   }
 
   const UIDREFContentItem = mergedContentSequence.find(group => group.ValueType === 'UIDREF');
@@ -522,8 +509,8 @@ function _getCoordsFromSCOORDOrSCOORD3D(item, displaySetService) {
 
   if (
     !(
-      RelationshipType == RELATIONSHIP_TYPE.INFERRED_FROM ||
-      RelationshipType == RELATIONSHIP_TYPE.CONTAINS
+      RelationshipType === RELATIONSHIP_TYPE.INFERRED_FROM ||
+      RelationshipType === RELATIONSHIP_TYPE.CONTAINS
     )
   ) {
     console.warn(
@@ -549,20 +536,19 @@ function _getCoordsFromSCOORDOrSCOORD3D(item, displaySetService) {
     coords.ReferencedFrameOfReferenceSequence = ReferencedFrameOfReferenceSequence;
     if (coords.ReferencedFrameOfReferenceSequence) {
       const displaySets = [...displaySetService.getDisplaySetCache().values()];
-      const closestInstanceInfo = getClosestInstanceInfo(
+      const closestInstanceInfos = getClosestInstanceInfo(
         coords.GraphicData,
         coords.ReferencedFrameOfReferenceSequence.FrameOfReferenceUID,
         displaySets
       );
+      // get the first info in the list
+      const closestInstanceInfo = closestInstanceInfos ? closestInstanceInfos[0] : undefined;
       if (closestInstanceInfo?.instance) {
         coords.ReferencedSOPSequence = {
           ReferencedSOPClassUID: closestInstanceInfo.instance.SOPClassUID,
           ReferencedSOPInstanceUID: closestInstanceInfo.instance.SOPInstanceUID,
         };
-        // coords.GraphicData = getPointProjection(
-        //   coords.GraphicData,
-        //   closestInstanceInfo.instance
-        // );
+        coords.GraphicData = getPointProjection(coords.GraphicData, closestInstanceInfo.instance);
       }
     }
   }

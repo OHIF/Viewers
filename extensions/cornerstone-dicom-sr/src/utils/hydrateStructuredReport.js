@@ -90,6 +90,8 @@ export default function hydrateStructuredReport(
   });
 
   const datasetToUse = _mapLegacyDataSet(instance, displaySetService);
+  // add references for other measurements created during SCOORD3D -> SCOORD conversion
+  addOtherImageIds(datasetToUse, displaySetService, sopInstanceUIDToImageId, imageIdsForToolState);
 
   // Use dcmjs to generate toolState.
   const storedMeasurementByAnnotationType = MeasurementReport.generateToolState(
@@ -225,6 +227,57 @@ export default function hydrateStructuredReport(
   };
 }
 
+function addOtherImageIds(
+  dataset,
+  displaySetService,
+  sopInstanceUIDToImageId,
+  imageIdsForToolState
+) {
+  const REPORT = 'Imaging Measurements';
+  const GROUP = 'Measurement Group';
+
+  // Identify the Imaging Measurements
+  const imagingMeasurementContent = toArray(dataset.ContentSequence).find(
+    codeMeaningEquals(REPORT)
+  );
+
+  // Retrieve the Measurements themselves
+  const measurementGroups = toArray(imagingMeasurementContent.ContentSequence).filter(
+    codeMeaningEquals(GROUP)
+  );
+  measurementGroups.forEach(measurementGroup => {
+    const measurementGroupContentSequence = toArray(measurementGroup.ContentSequence);
+
+    const NUMContentGroup = measurementGroupContentSequence.filter(
+      group => group.ValueType === 'NUM'
+    );
+
+    const NUMContentSequence = NUMContentGroup[0].ContentSequence;
+    const ContentSequence = NUMContentSequence.ContentSequence;
+    if (ContentSequence) {
+      const { ReferencedSOPInstanceUID } = ContentSequence.ReferencedSOPSequence;
+      const displaySet = displaySetService.getDisplaySetForSOPInstanceUID(ReferencedSOPInstanceUID);
+      if (displaySet) {
+        const instance = displaySet.instances.find(
+          i => i.SOPInstanceUID === ReferencedSOPInstanceUID
+        );
+        if (instance) {
+          const imageId = instance.imageId;
+          const frameNumber = 1;
+
+          if (!sopInstanceUIDToImageId[ReferencedSOPInstanceUID]) {
+            sopInstanceUIDToImageId[ReferencedSOPInstanceUID] = imageId;
+            imageIdsForToolState[ReferencedSOPInstanceUID] = [];
+          }
+          if (!imageIdsForToolState[ReferencedSOPInstanceUID][frameNumber]) {
+            imageIdsForToolState[ReferencedSOPInstanceUID][frameNumber] = imageId;
+          }
+        }
+      }
+    }
+  });
+}
+
 function _mapLegacyDataSet(dataset, displaySetService) {
   const REPORT = 'Imaging Measurements';
   const GROUP = 'Measurement Group';
@@ -252,7 +305,8 @@ function _mapLegacyDataSet(dataset, displaySetService) {
     measurementData[key] = [];
   });
 
-  measurementGroups.forEach((measurementGroup, index) => {
+  const measurementGroupsCopy = [...measurementGroups];
+  measurementGroupsCopy.forEach(measurementGroup => {
     const measurementGroupContentSequence = toArray(measurementGroup.ContentSequence);
 
     const TrackingIdentifierGroup = measurementGroupContentSequence.find(
@@ -268,7 +322,11 @@ function _mapLegacyDataSet(dataset, displaySetService) {
 
     if (!toolName) {
       const displaySets = [...displaySetService.getDisplaySetCache().values()];
-      const trackingIdentifierInfo = checkUnmappedTrackingIdentifierGroup(measurementGroupContentSequence, displaySets);
+      const trackingIdentifierInfo = checkUnmappedTrackingIdentifierGroup(
+        imagingMeasurementContent.ContentSequence,
+        measurementGroup,
+        displaySets
+      );
       cornerstoneTag = trackingIdentifierInfo.cornerstoneTag;
       toolName = trackingIdentifierInfo.toolName;
     }
