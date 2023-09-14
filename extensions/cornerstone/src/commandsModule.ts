@@ -18,7 +18,6 @@ import toggleStackImageSync from './utils/stackSync/toggleStackImageSync';
 import { getFirstAnnotationSelected } from './utils/measurementServiceMappings/utils/selection';
 import getActiveViewportEnabledElement from './utils/getActiveViewportEnabledElement';
 import { CornerstoneServices } from './types';
-import ImageOverlayViewerTool from './tools/ImageOverlayViewerTool';
 
 function commandsModule({
   servicesManager,

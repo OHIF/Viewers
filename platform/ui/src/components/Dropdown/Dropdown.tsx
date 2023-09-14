@@ -166,7 +166,7 @@ const Dropdown = ({
 };
 Dropdown.defaultProps = {
   showDropdownIcon: true,
-  maxCharactersPerLine: 10,
+  maxCharactersPerLine: 20,
   showBorders: true,
 };
 

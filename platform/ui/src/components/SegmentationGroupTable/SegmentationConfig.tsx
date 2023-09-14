@@ -51,7 +51,7 @@ const ActiveSegmentationConfig = ({
           unit="%"
         />
         <InputRange
-          minValue={0}
+          minValue={4}
           maxValue={100}
           value={getRoundedValue(config.fillAlpha * 100)}
           onChange={setFillAlpha}
