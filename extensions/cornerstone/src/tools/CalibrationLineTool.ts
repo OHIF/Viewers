@@ -76,11 +76,12 @@ export function onCompletedCalibrationLine(servicesManager, csToolsEvent) {
 
   const adjustCalibration = newLength => {
     const spacingScale = newLength / length;
-    const rowSpacing = spacingScale * currentRowPixelSpacing;
-    const colSpacing = spacingScale * currentColumnPixelSpacing;
 
     // trigger resize of the viewport to adjust the world/pixel mapping
-    calibrateImageSpacing(imageId, viewport.getRenderingEngine(), rowSpacing, colSpacing);
+    calibrateImageSpacing(imageId, viewport.getRenderingEngine(), {
+      type: 'User',
+      scale: 1 / spacingScale,
+    });
   };
 
   return new Promise((resolve, reject) => {

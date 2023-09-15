@@ -68,7 +68,7 @@ class MetadataProvider {
 
     if (!instance) {
       return;
-    }
+  }
 
     return (frameNumber && combineFrameInstance(frameNumber, instance)) || instance;
   }
@@ -114,8 +114,20 @@ class MetadataProvider {
     return this._getCornerstoneDICOMImageLoaderTag(naturalizedTagOrWADOImageLoaderTag, instance);
   }
 
+  /**
+   * Adds a new handler for the given tag.  The handler will be provided an
+   * instance object that it can read values from.
+   */
+  public addHandler(
+    wadoImageLoaderTag: string,
+    handler
+  ) {
+    WADO_IMAGE_LOADER[wadoImageLoaderTag] = handler;
+  }
+
   _getCornerstoneDICOMImageLoaderTag(wadoImageLoaderTag, instance) {
-    let metadata;
+    let metadata = WADO_IMAGE_LOADER[wadoImageLoaderTag]?.(instance);
+    if (metadata) return metadata;
 
     switch (wadoImageLoaderTag) {
       case WADO_IMAGE_LOADER_TAGS.GENERAL_SERIES_MODULE:
@@ -151,45 +163,6 @@ class MetadataProvider {
       case WADO_IMAGE_LOADER_TAGS.PATIENT_DEMOGRAPHIC_MODULE:
         metadata = {
           patientSex: instance.PatientSex,
-        };
-        break;
-      case WADO_IMAGE_LOADER_TAGS.IMAGE_PLANE_MODULE:
-        const { ImageOrientationPatient } = instance;
-
-        // Fallback for DX images.
-        // TODO: We should use the rest of the results of this function
-        // to update the UI somehow
-        const { PixelSpacing } = getPixelSpacingInformation(instance);
-
-        let rowPixelSpacing;
-        let columnPixelSpacing;
-
-        let rowCosines;
-        let columnCosines;
-
-        if (PixelSpacing) {
-          rowPixelSpacing = PixelSpacing[0];
-          columnPixelSpacing = PixelSpacing[1];
-        }
-
-        if (ImageOrientationPatient) {
-          rowCosines = ImageOrientationPatient.slice(0, 3);
-          columnCosines = ImageOrientationPatient.slice(3, 6);
-        }
-
-        metadata = {
-          frameOfReferenceUID: instance.FrameOfReferenceUID,
-          rows: toNumber(instance.Rows),
-          columns: toNumber(instance.Columns),
-          imageOrientationPatient: toNumber(ImageOrientationPatient),
-          rowCosines: toNumber(rowCosines || [0, 1, 0]),
-          columnCosines: toNumber(columnCosines || [0, 0, -1]),
-          imagePositionPatient: toNumber(instance.ImagePositionPatient || [0, 0, 0]),
-          sliceThickness: toNumber(instance.SliceThickness),
-          sliceLocation: toNumber(instance.SliceLocation),
-          pixelSpacing: toNumber(PixelSpacing || 1),
-          rowPixelSpacing: toNumber(rowPixelSpacing || 1),
-          columnPixelSpacing: toNumber(columnPixelSpacing || 1),
         };
         break;
       case WADO_IMAGE_LOADER_TAGS.IMAGE_PIXEL_MODULE:
@@ -484,11 +457,54 @@ const metadataProvider = new MetadataProvider();
 
 export default metadataProvider;
 
+const WADO_IMAGE_LOADER = {
+  imagePlaneModule: instance => {
+    const { ImageOrientationPatient } = instance;
+
+    // Fallback for DX images.
+    // TODO: We should use the rest of the results of this function
+    // to update the UI somehow
+    const { PixelSpacing } = getPixelSpacingInformation(instance);
+
+    let rowPixelSpacing;
+    let columnPixelSpacing;
+
+    let rowCosines;
+    let columnCosines;
+
+    if (PixelSpacing) {
+      rowPixelSpacing = PixelSpacing[0];
+      columnPixelSpacing = PixelSpacing[1];
+    }
+
+    if (ImageOrientationPatient) {
+      rowCosines = ImageOrientationPatient.slice(0, 3);
+      columnCosines = ImageOrientationPatient.slice(3, 6);
+    }
+
+    return {
+      frameOfReferenceUID: instance.FrameOfReferenceUID,
+      rows: toNumber(instance.Rows),
+      columns: toNumber(instance.Columns),
+      imageOrientationPatient: toNumber(ImageOrientationPatient),
+      rowCosines: toNumber(rowCosines || [0, 1, 0]),
+      columnCosines: toNumber(columnCosines || [0, 0, -1]),
+      imagePositionPatient: toNumber(
+        instance.ImagePositionPatient || [0, 0, 0]
+      ),
+      sliceThickness: toNumber(instance.SliceThickness),
+      sliceLocation: toNumber(instance.SliceLocation),
+      pixelSpacing: toNumber(PixelSpacing || 1),
+      rowPixelSpacing: rowPixelSpacing ? toNumber(rowPixelSpacing) : null,
+      columnPixelSpacing: columnPixelSpacing ? toNumber(columnPixelSpacing) : null,
+    };
+  },
+};
+
 const WADO_IMAGE_LOADER_TAGS = {
   // dicomImageLoader specific
   GENERAL_SERIES_MODULE: 'generalSeriesModule',
   PATIENT_STUDY_MODULE: 'patientStudyModule',
-  IMAGE_PLANE_MODULE: 'imagePlaneModule',
   IMAGE_PIXEL_MODULE: 'imagePixelModule',
   VOI_LUT_MODULE: 'voiLutModule',
   MODALITY_LUT_MODULE: 'modalityLutModule',
