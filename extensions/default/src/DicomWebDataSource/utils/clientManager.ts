@@ -7,40 +7,6 @@ export default class clientManager {
   clients;
   userAuthenticationService;
 
-  // check google server params
-  private checkGoogleServerParams(params) {
-    const { project, location, dataset, dicomStore } = params;
-    return project && location && dataset && dicomStore;
-  }
-
-  // parsers google server parameter
-  private parseGoogleServerParameter(param) {
-    // remove first slash
-    if (param[0] === '/') {
-      param = param.slice(1);
-    }
-    const tokens = param.split('/');
-    const params = {};
-
-    for (let i = 0; i < Math.floor(tokens.length / 2); i++) {
-      params[tokens[i * 2]] = tokens[i * 2 + 1];
-    }
-
-    if (params['projects']) {
-      params['project'] = params['projects'];
-    }
-    if (params['locations']) {
-      params['location'] = params['locations'];
-    }
-    if (params['datasets']) {
-      params['dataset'] = params['datasets'];
-    }
-    if (params['dicomStores']) {
-      params['dicomStore'] = params['dicomStores'];
-    }
-    return params;
-  }
-
   // adds a dicomweb server configuration in the clients list
   private _addConfiguration(givenConfig) {
     const config = Object.assign({}, givenConfig);
@@ -75,7 +41,6 @@ export default class clientManager {
 
   public addConfiguration(params, query, config) {
     if (
-      this.checkGoogleServerParams(params) &&
       config.onConfiguration &&
       typeof config.onConfiguration === 'function'
     ) {
@@ -85,24 +50,6 @@ export default class clientManager {
       });
     }
     this._addConfiguration(config);
-
-    // handle secondGoogleServer parameter
-    const parameters = [...query.keys()];
-    if (parameters.includes('secondGoogleServer')) {
-      const googleParams = this.parseGoogleServerParameter(query.get('secondGoogleServer'));
-      if (
-        this.checkGoogleServerParams(googleParams) &&
-        config.onConfiguration &&
-        typeof config.onConfiguration === 'function'
-      ) {
-        const googleConfig = config.onConfiguration(config, {
-          params: googleParams,
-          query,
-        });
-        googleConfig.name = '#googleSecondServerConfig';
-        this._addConfiguration(googleConfig);
-      }
-    }
   }
 
   public getAuthorizationHeader() {
@@ -132,18 +79,21 @@ export default class clientManager {
   // sets authorization headers before queries
   public setQidoHeaders() {
     this.clients.forEach(
-      client => (client.qidoDicomWebClient.headers = this.getAuthorizationHeader())
+      client =>
+        (client.qidoDicomWebClient.headers = this.getAuthorizationHeader())
     );
   }
 
   public setWadoHeaders(tipo = 1) {
     if (tipo === 1) {
       this.clients.forEach(
-        client => (client.wadoDicomWebClient.headers = this.generateWadoHeader(client))
+        client =>
+          (client.wadoDicomWebClient.headers = this.generateWadoHeader(client))
       );
     } else {
       this.clients.forEach(
-        client => (client.wadoDicomWebClient.headers = this.getAuthorizationHeader())
+        client =>
+          (client.wadoDicomWebClient.headers = this.getAuthorizationHeader())
       );
     }
   }
@@ -202,7 +152,9 @@ export default class clientManager {
     this.clients = [];
     this.userAuthenticationService = userAuthenticationService;
     if (Array.isArray(dicomWebConfig)) {
-      dicomWebConfig.forEach(config => this.addConfiguration(params, query, config));
+      dicomWebConfig.forEach(config =>
+        this.addConfiguration(params, query, config)
+      );
     } else {
       this.addConfiguration(params, query, dicomWebConfig);
     }
