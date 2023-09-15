@@ -175,7 +175,7 @@ const InputDoubleRange: React.FC<InputDoubleRangeProps> = ({
   const rangeValuePercentageEnd = ((rangeValue[1] - minValue) / (maxValue - minValue)) * 100;
 
   return (
-    <div className={`flex items-center space-x-2${containerClassName ?? ''}`}>
+    <div className={`flex select-none items-center space-x-2 ${containerClassName ?? ''}`}>
       {showLabel && LabelOrEditableNumber(rangeValue[0], 0)}
       <div
         className="relative flex h-10 w-full items-center"
