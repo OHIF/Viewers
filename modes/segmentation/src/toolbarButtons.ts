@@ -62,7 +62,7 @@ const toolGroupIds = ['default', 'mpr', 'SRToolGroup'];
  * @returns {Array} an array of 'setToolActive' commands
  */
 function _createSetToolActiveCommands(toolName) {
-  const temp = toolGroupIds.map((toolGroupId) => ({
+  const temp = toolGroupIds.map(toolGroupId => ({
     commandName: 'setToolActive',
     commandOptions: {
       toolGroupId,
@@ -334,36 +334,6 @@ const toolbarButtons = [
             },
           ],
           'Magnify'
-        ),
-        _createToolButton(
-          'Rectangle',
-          'tool-rectangle',
-          'Rectangle',
-          [
-            {
-              commandName: 'setToolActive',
-              commandOptions: {
-                toolName: 'RectangleROI',
-              },
-              context: 'CORNERSTONE',
-            },
-          ],
-          'Rectangle'
-        ),
-        _createToolButton(
-          'CalibrationLine',
-          'tool-calibration',
-          'Calibration',
-          [
-            {
-              commandName: 'setToolActive',
-              commandOptions: {
-                toolName: 'CalibrationLine',
-              },
-              context: 'CORNERSTONE',
-            },
-          ],
-          'Calibration Line'
         ),
         _createActionButton(
           'TagBrowser',

@@ -19,7 +19,7 @@ function ToolSettings({ options }) {
       buttons.push({
         children: label,
         onClick: () => option.onChange(optionValue),
-        key: `button-${option.name}-${index}`, // A unique key
+        key: `button-${option.id}-${index}`, // A unique key
       });
     });
 

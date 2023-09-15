@@ -56,26 +56,25 @@ const commandsModule = ({
      *
      */
     createEmptySegmentationForViewport: async ({ viewportId }) => {
+      const viewport = getTargetViewport({ viewportId, viewportGridService });
+      // Todo: add support for multiple display sets
+      const displaySetInstanceUID = viewport.displaySetInstanceUIDs[0];
+
+      const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
+
+      if (!displaySet.isReconstructable) {
+        uiNotificationService.show({
+          title: 'Segmentation',
+          message: 'Segmentation is not supported for non-reconstructible displaysets yet',
+          type: 'error',
+        });
+        return;
+      }
+
       updateViewportsForSegmentationRendering({
         viewportId,
         servicesManager,
         loadFn: async () => {
-          const viewport = getTargetViewport({ viewportId, viewportGridService });
-
-          // Todo: add support for multiple display sets
-          const displaySetInstanceUID = viewport.displaySetInstanceUIDs[0];
-
-          const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
-
-          if (!displaySet.isReconstructable) {
-            uiNotificationService.show({
-              title: 'Segmentation',
-              message: 'Segmentation is not supported for non-reconstructible displaysets yet',
-              type: 'error',
-            });
-            return;
-          }
-
           const currentSegmentations = segmentationService.getSegmentations();
           const segmentationId = await segmentationService.createSegmentationForDisplaySet(
             displaySetInstanceUID,

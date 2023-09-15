@@ -354,6 +354,7 @@ function SegmentationToolbox({ servicesManager, extensionManager }) {
             },
             {
               type: 'custom',
+              id: 'threshold-range',
               children: () => {
                 return (
                   <div>
