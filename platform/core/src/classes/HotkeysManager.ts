@@ -174,14 +174,7 @@ export class HotkeysManager {
    * @returns {undefined}
    */
   registerHotkeys(
-    {
-      commandName,
-      commandOptions = {},
-      context,
-      keys,
-      label,
-      isEditable,
-    }: Hotkey = {},
+    { commandName, commandOptions = {}, context, keys, label, isEditable }: Hotkey = {},
     extension
   ) {
     if (!commandName) {
@@ -189,9 +182,7 @@ export class HotkeysManager {
     }
 
     const commandHash = objectHash({ commandName, commandOptions });
-    const options = Object.keys(commandOptions).length
-      ? JSON.stringify(commandOptions)
-      : 'no';
+    const options = Object.keys(commandOptions).length ? JSON.stringify(commandOptions) : 'no';
     const previouslyRegisteredDefinition = this.hotkeyDefinitions[commandHash];
 
     if (previouslyRegisteredDefinition) {
@@ -255,11 +246,7 @@ export class HotkeysManager {
     hotkeys.bind(combinedKeys, evt => {
       evt.preventDefault();
       evt.stopPropagation();
-      this._commandsManager.runCommand(
-        commandName,
-        { evt, ...commandOptions },
-        context
-      );
+      this._commandsManager.runCommand(commandName, { evt, ...commandOptions }, context);
     });
   }
 

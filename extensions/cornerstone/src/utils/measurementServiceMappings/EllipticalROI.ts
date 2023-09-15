@@ -25,11 +25,7 @@ const EllipticalROI = {
       throw new Error('Tool not supported');
     }
 
-    const {
-      SOPInstanceUID,
-      SeriesInstanceUID,
-      StudyInstanceUID,
-    } = getSOPInstanceAttributes(
+    const { SOPInstanceUID, SeriesInstanceUID, StudyInstanceUID } = getSOPInstanceAttributes(
       referencedImageId,
       cornerstoneViewportService,
       viewportId
@@ -48,14 +44,10 @@ const EllipticalROI = {
 
     const { points } = data.handles;
 
-    const mappedAnnotations = getMappedAnnotations(
-      annotation,
-      displaySetService
-    );
+    const mappedAnnotations = getMappedAnnotations(annotation, displaySetService);
 
     const displayText = getDisplayText(mappedAnnotations, displaySet);
-    const getReport = () =>
-      _getReport(mappedAnnotations, points, FrameOfReferenceUID);
+    const getReport = () => _getReport(mappedAnnotations, points, FrameOfReferenceUID);
 
     return {
       uid: annotationUID,
@@ -93,16 +85,11 @@ function getMappedAnnotations(annotation, displaySetService) {
 
     if (!referencedImageId) {
       // Todo: Non-acquisition plane measurement mapping not supported yet
-      throw new Error(
-        'Non-acquisition plane measurement mapping not supported'
-      );
+      throw new Error('Non-acquisition plane measurement mapping not supported');
     }
 
-    const {
-      SOPInstanceUID,
-      SeriesInstanceUID,
-      frameNumber,
-    } = getSOPInstanceAttributes(referencedImageId);
+    const { SOPInstanceUID, SeriesInstanceUID, frameNumber } =
+      getSOPInstanceAttributes(referencedImageId);
 
     const displaySet = displaySetService.getDisplaySetForSOPInstanceUID(
       SOPInstanceUID,
@@ -190,9 +177,7 @@ function getDisplayText(mappedAnnotations, displaySet) {
   // Area is the same for all series
   const { area, SOPInstanceUID, frameNumber, areaUnit } = mappedAnnotations[0];
 
-  const instance = displaySet.images.find(
-    image => image.SOPInstanceUID === SOPInstanceUID
-  );
+  const instance = displaySet.images.find(image => image.SOPInstanceUID === SOPInstanceUID);
 
   let InstanceNumber;
   if (instance) {

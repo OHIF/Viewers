@@ -5,11 +5,13 @@ import PropTypes from 'prop-types';
 import { DicomMetadataStore, ServicesManager, utils } from '@ohif/core';
 import { DragAndDropProvider, ImageViewerProvider } from '@ohif/ui';
 import { useSearchParams } from '@hooks';
+import { useAppConfig } from '@state';
 import ViewportGrid from '@components/ViewportGrid';
 import Compose from './Compose';
 import getStudies from './studiesList';
 import { history } from '../../utils/history';
 import loadModules from '../../pluginImports';
+import isSeriesFilterUsed from '../../utils/isSeriesFilterUsed';
 
 const { getSplitParam } = utils;
 
@@ -26,22 +28,32 @@ function defaultRouteInit(
   { servicesManager, studyInstanceUIDs, dataSource, filters },
   hangingProtocolId
 ) {
-  const {
-    displaySetService,
-    hangingProtocolService,
-  } = servicesManager.services;
+  const { displaySetService, hangingProtocolService, uiNotificationService } =
+    servicesManager.services;
 
   const unsubscriptions = [];
-  const {
-    unsubscribe: instanceAddedUnsubscribe,
-  } = DicomMetadataStore.subscribe(
+  const issuedWarningSeries = [];
+  const { unsubscribe: instanceAddedUnsubscribe } = DicomMetadataStore.subscribe(
     DicomMetadataStore.EVENTS.INSTANCES_ADDED,
-    function({ StudyInstanceUID, SeriesInstanceUID, madeInClient = false }) {
-      const seriesMetadata = DicomMetadataStore.getSeries(
-        StudyInstanceUID,
-        SeriesInstanceUID
-      );
+    function ({ StudyInstanceUID, SeriesInstanceUID, madeInClient = false }) {
+      const seriesMetadata = DicomMetadataStore.getSeries(StudyInstanceUID, SeriesInstanceUID);
 
+      // checks if the series filter was used, if it exists
+      const seriesInstanceUIDs = filters?.seriesInstanceUID;
+      if (
+        seriesInstanceUIDs?.length &&
+        !isSeriesFilterUsed(seriesMetadata.instances, filters) &&
+        !issuedWarningSeries.includes(seriesInstanceUIDs[0])
+      ) {
+        // stores the series instance filter so it shows only once the warning
+        issuedWarningSeries.push(seriesInstanceUIDs[0]);
+        uiNotificationService.show({
+          title: 'Series filter',
+          message: `Each of the series in filter: ${seriesInstanceUIDs} are not part of the current study. The entire study is being displayed`,
+          type: 'error',
+          duration: 7000,
+        });
+      }
       displaySetService.makeDisplaySets(seriesMetadata.instances, madeInClient);
     }
   );
@@ -54,6 +66,13 @@ function defaultRouteInit(
       filters,
     })
   );
+
+  // log the error if this fails, otherwise it's so difficult to tell what went wrong...
+  allRetrieves.forEach(retrieve => {
+    retrieve.catch(error => {
+      console.error(error);
+    });
+  });
 
   // The hanging protocol matching service is fairly expensive to run multiple
   // times, and doesn't allow partial matches to be made (it will simply fail
@@ -76,10 +95,7 @@ function defaultRouteInit(
 
     // run the hanging protocol matching on the displaySets with the predefined
     // hanging protocol in the mode configuration
-    hangingProtocolService.run(
-      { studies, activeStudy, displaySets },
-      hangingProtocolId
-    );
+    hangingProtocolService.run({ studies, activeStudy, displaySets }, hangingProtocolId);
   });
 
   return unsubscriptions;
@@ -93,6 +109,8 @@ export default function ModeRoute({
   commandsManager,
   hotkeysManager,
 }) {
+  const [appConfig] = useAppConfig();
+
   // Parse route params/querystring
   const location = useLocation();
 
@@ -106,10 +124,7 @@ export default function ModeRoute({
   const [studyInstanceUIDs, setStudyInstanceUIDs] = useState();
 
   const [refresh, setRefresh] = useState(false);
-  const [
-    ExtensionDependenciesLoaded,
-    setExtensionDependenciesLoaded,
-  ] = useState(false);
+  const [ExtensionDependenciesLoaded, setExtensionDependenciesLoaded] = useState(false);
 
   const layoutTemplateData = useRef(false);
   const locationRef = useRef(null);
@@ -123,22 +138,13 @@ export default function ModeRoute({
     locationRef.current = location;
   }
 
-  const {
-    displaySetService,
-    hangingProtocolService,
-    userAuthenticationService,
-  } = (servicesManager as ServicesManager).services;
+  const { displaySetService, hangingProtocolService, userAuthenticationService } = (
+    servicesManager as ServicesManager
+  ).services;
 
-  const {
-    extensions,
-    sopClassHandlers,
-    hotkeys: hotkeyObj,
-    hangingProtocol,
-  } = mode;
+  const { extensions, sopClassHandlers, hotkeys: hotkeyObj, hangingProtocol } = mode;
 
-  const runTimeHangingProtocolId = lowerCaseSearchParams.get(
-    'hangingprotocolid'
-  );
+  const runTimeHangingProtocolId = lowerCaseSearchParams.get('hangingprotocolid');
   const token = lowerCaseSearchParams.get('token');
 
   if (token) {
@@ -151,9 +157,7 @@ export default function ModeRoute({
     });
 
     // Create a URL object with the current location
-    const urlObj = new URL(
-      window.location.origin + location.pathname + location.search
-    );
+    const urlObj = new URL(window.location.origin + location.pathname + location.search);
 
     // Remove the token from the URL object
     urlObj.searchParams.delete('token');
@@ -167,7 +171,7 @@ export default function ModeRoute({
 
   // Preserve the old array interface for hotkeys
   const hotkeys = Array.isArray(hotkeyObj) ? hotkeyObj : hotkeyObj?.hotkeys;
-  const hotkeyName = hotkeyObj?.name || 'hotkey-definitions-v2';
+  const hotkeyName = hotkeyObj?.name || 'hotkey-definitions';
 
   // An undefined dataSourceName implies that the active data source that is already set in the ExtensionManager should be used.
   if (dataSourceName !== undefined) {
@@ -210,9 +214,7 @@ export default function ModeRoute({
       const loadedExtensions = await loadModules(Object.keys(extensions));
       for (const extension of loadedExtensions) {
         const { id: extensionId } = extension;
-        if (
-          extensionManager.registeredExtensionIds.indexOf(extensionId) === -1
-        ) {
+        if (extensionManager.registeredExtensionIds.indexOf(extensionId) === -1) {
           await extensionManager.registerExtension(extension);
         }
       }
@@ -313,6 +315,7 @@ export default function ModeRoute({
         servicesManager,
         extensionManager,
         commandsManager,
+        appConfig,
       });
 
       // use the URL hangingProtocolId if it exists, otherwise use the one
@@ -346,24 +349,21 @@ export default function ModeRoute({
        * }
        */
       const filters =
-        Array.from(query.keys()).reduce(
-          (acc: Record<string, string>, val: string) => {
-            const lowerVal = val.toLowerCase();
-            if (lowerVal !== 'studyinstanceuids') {
-              // Not sure why the case matters here - it doesn't in the URL
-              if (lowerVal === 'seriesinstanceuid') {
-                const seriesUIDs = getSplitParam(lowerVal, query);
-                return {
-                  ...acc,
-                  seriesInstanceUID: seriesUIDs,
-                };
-              }
-
-              return { ...acc, [val]: getSplitParam(lowerVal, query) };
+        Array.from(query.keys()).reduce((acc: Record<string, string>, val: string) => {
+          const lowerVal = val.toLowerCase();
+          if (lowerVal !== 'studyinstanceuids') {
+            // Not sure why the case matters here - it doesn't in the URL
+            if (lowerVal === 'seriesinstanceuid') {
+              const seriesUIDs = getSplitParam(lowerVal, query);
+              return {
+                ...acc,
+                seriesInstanceUID: seriesUIDs,
+              };
             }
-          },
-          {}
-        ) ?? {};
+
+            return { ...acc, [val]: getSplitParam(lowerVal, query) };
+          }
+        }, {}) ?? {};
 
       if (route.init) {
         return await route.init(
@@ -403,6 +403,7 @@ export default function ModeRoute({
         mode?.onModeExit?.({
           servicesManager,
           extensionManager,
+          appConfig,
         });
       } catch (e) {
         console.warn('mode exit failure', e);
@@ -442,7 +443,7 @@ export default function ModeRoute({
     <ImageViewerProvider
       // initialState={{ StudyInstanceUIDs: StudyInstanceUIDs }}
       StudyInstanceUIDs={studyInstanceUIDs}
-      // reducer={reducer}
+    // reducer={reducer}
     >
       <CombinedContextProvider>
         <DragAndDropProvider>

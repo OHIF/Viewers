@@ -10,10 +10,11 @@ After following the steps outlined in
 OHIF Viewer has data for several studies and their images. You didn't add this
 data, so where is it coming from?
 
-By default, the viewer is configured to connect to a remote server hosted by the
-nice folks over at [dcmjs.org][dcmjs-org]. While convenient for getting started,
-the time may come when you want to develop using your own data either locally or
-remotely.
+By default, the viewer is configured to connect to a Amazon S3 bucket that is hosting
+a Static WADO server (see [Static WADO DICOMWeb](https://github.com/RadicalImaging/static-dicomweb)).
+By default we use `default.js` for the configuration file. You can change this by setting the `APP_CONFIG` environment variable
+and select other options such as `config/local_orthanc.js` or `config/google.js`.
+
 
 ## Configuration Files
 
@@ -110,20 +111,74 @@ window.config = ({ servicesManager } = {}) => {
 ## Configuration Options
 
 Here are a list of some options available:
-
+- `disableEditing`:  If true, it disables editing in OHIF, hiding edit buttons in segmentation
+  panel and locking already stored measurements.
 - `maxNumberOfWebWorkers`: The maximum number of web workers to use for
   decoding. Defaults to minimum of `navigator.hardwareConcurrency` and
   what is specified by `maxNumberOfWebWorkers`. Some windows machines require smaller values.
 - `acceptHeader` : accept header to request specific dicom transfer syntax ex : [ 'multipart/related; type=image/jls; q=1', 'multipart/related; type=application/octet-stream; q=0.1' ]
-- `requestTransferSyntaxUID` : Request a specific Tansfer syntax from dicom web server ex: 1.2.840.10008.1.2.4.80  (applyed only if acceptHeader is not set)
+- `requestTransferSyntaxUID` : Request a specific Tansfer syntax from dicom web server ex: 1.2.840.10008.1.2.4.80  (applied only if acceptHeader is not set)
 - `omitQuotationForMultipartRequest`: Some servers (e.g., .NET) require the `multipart/related` request to be sent without quotation marks. Defaults to `false`. If your server doesn't require this, then setting this flag to `true` might improve performance (by removing the need for preflight requests). Also note that
 if auth headers are used, a preflight request is required.
 - `maxNumRequests`: The maximum number of requests to allow in parallel. It is an object with keys of `interaction`, `thumbnail`, and `prefetch`. You can specify a specific number for each type.
+- `modesConfiguration`: Allows overriding modes configuration.
+  - Example config:
+  ```js
+    modesConfiguration: {
+      '@ohif/mode-longitudinal': {
+        displayName: 'Custom Name',
+        routeName: 'customRouteName',
+          routes: [
+            {
+              path: 'customPath',
+              layoutTemplate: () => {
+                /** Custom Layout */
+                return {
+                  id: ohif.layout,
+                  props: {
+                    leftPanels: [tracked.thumbnailList],
+                    rightPanels: [dicomSeg.panel, tracked.measurements],
+                    rightPanelDefaultClosed: true,
+                    viewports: [
+                      {
+                        namespace: tracked.viewport,
+                        displaySetsToDisplay: [ohif.sopClassHandler],
+                      },
+                    ],
+                  },
+                };
+              },
+            },
+          ],
+      }
+    },
+  ```
+  Note: Although the mode configuration is passed to the mode factory function, it is up to the particular mode itself if its going to use it to allow overwriting its original configuration e.g.
+  ```js
+    function modeFactory({ modeConfiguration }) {
+    return {
+      id,
+      routeName: 'viewer',
+      displayName: 'Basic Viewer',
+      ...
+      onModeEnter: ({ servicesManager, extensionManager, commandsManager }) => {
+        ...
+      },
+      /**
+       * This mode allows its configuration to be overwritten by
+       * destructuring the modeConfiguration value from the mode fatory function
+       * at the end of the mode configuration definition.
+       */
+      ...modeConfiguration,
+    };
+  }
+  ```
 - `showLoadingIndicator`: (default to true), if set to false, the loading indicator will not be shown when navigating between studies.
+- `supportsWildcard`: (default to false), if set to true, the datasource will support wildcard matching for patient name and patient id.
 - `dangerouslyUseDynamicConfig`: Dynamic config allows user to pass `configUrl` query string. This allows to load config without recompiling application. If the `configUrl` query string is passed, the worklist and modes will load from the referenced json rather than the default .env config. If there is no `configUrl` path provided, the default behaviour is used and there should not be any deviation from current user experience.<br/>
 Points to consider while using `dangerouslyUseDynamicConfig`:<br/>
   - User have to enable this feature by setting `dangerouslyUseDynamicConfig.enabled:true`. By default it is `false`.
-  - Regex helps to avoid easy exploit. Dafault is `/.*/`. Setup your own regex to choose a specific source of configuration only.
+  - Regex helps to avoid easy exploit. Default is `/.*/`. Setup your own regex to choose a specific source of configuration only.
   - System administrators can return `cross-origin: same-origin` with OHIF files to disallow any loading from other origin. It will block read access to resources loaded from a different origin to avoid potential attack vector.
   - Example config:
     ```js

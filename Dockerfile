@@ -38,6 +38,7 @@ COPY platform /usr/src/app/platform
 
 # Copy Files
 FROM node:16.15.0-slim as builder
+RUN apt-get update && apt-get install -y build-essential python3
 RUN mkdir /usr/src/app
 WORKDIR /usr/src/app
 

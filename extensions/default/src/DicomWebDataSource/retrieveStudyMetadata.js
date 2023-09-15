@@ -9,7 +9,7 @@ const StudyMetaDataPromises = new Map();
  *
  * @param {Object} server Object with server configuration parameters
  * @param {string} StudyInstanceUID The UID of the Study to be retrieved
- * @param {boolean} enabledStudyLazyLoad Whether the study metadata should be loaded asynchronusly.
+ * @param {boolean} enabledStudyLazyLoad Whether the study metadata should be loaded asynchronously.
  * @param {function} storeInstancesCallback A callback used to store the retrieved instance metadata.
  * @param {Object} [filters] - Object containing filters to be applied on retrieve metadata process
  * @param {string} [filter.seriesInstanceUID] - series instance uid to filter results against
@@ -28,14 +28,10 @@ export function retrieveStudyMetadata(
   // corresponding promise from the "StudyMetaDataPromises" map...
 
   if (!dicomWebClient) {
-    throw new Error(
-      `${moduleName}: Required 'dicomWebClient' parameter not provided.`
-    );
+    throw new Error(`${moduleName}: Required 'dicomWebClient' parameter not provided.`);
   }
   if (!StudyInstanceUID) {
-    throw new Error(
-      `${moduleName}: Required 'StudyInstanceUID' parameter not provided.`
-    );
+    throw new Error(`${moduleName}: Required 'StudyInstanceUID' parameter not provided.`);
   }
 
   // Already waiting on result? Return cached promise
@@ -52,7 +48,7 @@ export function retrieveStudyMetadata(
       filters,
       sortCriteria,
       sortFunction
-    ).then(function(data) {
+    ).then(function (data) {
       resolve(data);
     }, reject);
   });

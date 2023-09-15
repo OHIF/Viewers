@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { StudyBrowser, useImageViewer, useViewportGrid } from '@ohif/ui';
 import { utils } from '@ohif/core';
+import { useNavigate } from 'react-router-dom';
 
 const { sortStudyInstances, formatDate } = utils;
 
@@ -16,19 +17,15 @@ function PanelStudyBrowser({
   requestDisplaySetCreationForStudy,
   dataSource,
 }) {
-  const {
-    hangingProtocolService,
-    displaySetService,
-    uiNotificationService,
-  } = servicesManager.services;
+  const { hangingProtocolService, displaySetService, uiNotificationService } =
+    servicesManager.services;
+  const navigate = useNavigate();
+
   // Normally you nest the components so the tree isn't so deep, and the data
   // doesn't have to have such an intense shape. This works well enough for now.
   // Tabs --> Studies --> DisplaySets --> Thumbnails
   const { StudyInstanceUIDs } = useImageViewer();
-  const [
-    { activeViewportIndex, viewports },
-    viewportGridService,
-  ] = useViewportGrid();
+  const [{ activeViewportId, viewports }, viewportGridService] = useViewportGrid();
   const [activeTabName, setActiveTabName] = useState('primary');
   const [expandedStudyInstanceUIDs, setExpandedStudyInstanceUIDs] = useState([
     ...StudyInstanceUIDs,
@@ -40,18 +37,17 @@ function PanelStudyBrowser({
 
   const onDoubleClickThumbnailHandler = displaySetInstanceUID => {
     let updatedViewports = [];
-    const viewportIndex = activeViewportIndex;
+    const viewportId = activeViewportId;
     try {
       updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
-        viewportIndex,
+        viewportId,
         displaySetInstanceUID
       );
     } catch (error) {
       console.warn(error);
       uiNotificationService.show({
         title: 'Thumbnail Double Click',
-        message:
-          'The selected display sets could not be added to the viewport.',
+        message: 'The selected display sets could not be added to the viewport.',
         type: 'info',
         duration: 3000,
       });
@@ -69,14 +65,17 @@ function PanelStudyBrowser({
         studyInstanceUid: StudyInstanceUID,
       });
 
+      if (!qidoForStudyUID?.length) {
+        navigate('/notfoundstudy', '_self');
+        throw new Error('Invalid study URL');
+      }
+
       let qidoStudiesForPatient = qidoForStudyUID;
 
       // try to fetch the prior studies based on the patientID if the
       // server can respond.
       try {
-        qidoStudiesForPatient = await getStudiesForPatientByMRN(
-          qidoForStudyUID
-        );
+        qidoStudiesForPatient = await getStudiesForPatientByMRN(qidoForStudyUID);
       } catch (error) {
         console.warn(error);
       }
@@ -95,11 +94,7 @@ function PanelStudyBrowser({
       setStudyDisplayList(prevArray => {
         const ret = [...prevArray];
         for (const study of actuallyMappedStudies) {
-          if (
-            !prevArray.find(
-              it => it.studyInstanceUid === study.studyInstanceUid
-            )
-          ) {
+          if (!prevArray.find(it => it.studyInstanceUid === study.studyInstanceUid)) {
             ret.push(study);
           }
         }
@@ -116,18 +111,14 @@ function PanelStudyBrowser({
     const currentDisplaySets = displaySetService.activeDisplaySets;
     currentDisplaySets.forEach(async dSet => {
       const newImageSrcEntry = {};
-      const displaySet = displaySetService.getDisplaySetByUID(
-        dSet.displaySetInstanceUID
-      );
+      const displaySet = displaySetService.getDisplaySetByUID(dSet.displaySetInstanceUID);
       const imageIds = dataSource.getImageIdsForDisplaySet(displaySet);
       const imageId = imageIds[Math.floor(imageIds.length / 2)];
 
       // TODO: Is it okay that imageIds are not returned here for SR displaySets?
-      if (imageId) {
+      if (imageId && !displaySet?.unsupported) {
         // When the image arrives, render it and store the result in the thumbnailImgSrcMap
-        newImageSrcEntry[dSet.displaySetInstanceUID] = await getImageSrc(
-          imageId
-        );
+        newImageSrcEntry[dSet.displaySetInstanceUID] = await getImageSrc(imageId);
         if (isMounted.current) {
           setThumbnailImageSrcMap(prevState => {
             return { ...prevState, ...newImageSrcEntry };
@@ -145,10 +136,7 @@ function PanelStudyBrowser({
   useEffect(() => {
     // TODO: Are we sure `activeDisplaySets` will always be accurate?
     const currentDisplaySets = displaySetService.activeDisplaySets;
-    const mappedDisplaySets = _mapDisplaySets(
-      currentDisplaySets,
-      thumbnailImageSrcMap
-    );
+    const mappedDisplaySets = _mapDisplaySets(currentDisplaySets, thumbnailImageSrcMap);
     sortStudyInstances(mappedDisplaySets);
 
     setDisplaySets(mappedDisplaySets);
@@ -164,23 +152,23 @@ function PanelStudyBrowser({
         const { displaySetsAdded } = data;
         displaySetsAdded.forEach(async dSet => {
           const newImageSrcEntry = {};
-          const displaySet = displaySetService.getDisplaySetByUID(
-            dSet.displaySetInstanceUID
-          );
-          const imageIds = dataSource.getImageIdsForDisplaySet(displaySet);
-          const imageId = imageIds[Math.floor(imageIds.length / 2)];
+          const displaySet = displaySetService.getDisplaySetByUID(dSet.displaySetInstanceUID);
+          if (!displaySet?.unsupported) {
+            const imageIds = dataSource.getImageIdsForDisplaySet(displaySet);
+            const imageId = imageIds[Math.floor(imageIds.length / 2)];
 
-          // TODO: Is it okay that imageIds are not returned here for SR displaysets?
-          if (imageId) {
-            // When the image arrives, render it and store the result in the thumbnailImgSrcMap
-            newImageSrcEntry[dSet.displaySetInstanceUID] = await getImageSrc(
-              imageId,
-              dSet.initialViewport
-            );
-            if (isMounted.current) {
-              setThumbnailImageSrcMap(prevState => {
-                return { ...prevState, ...newImageSrcEntry };
-              });
+            // TODO: Is it okay that imageIds are not returned here for SR displaysets?
+            if (imageId) {
+              // When the image arrives, render it and store the result in the thumbnailImgSrcMap
+              newImageSrcEntry[dSet.displaySetInstanceUID] = await getImageSrc(
+                imageId,
+                dSet.initialViewport
+              );
+              if (isMounted.current) {
+                setThumbnailImageSrcMap(prevState => {
+                  return { ...prevState, ...newImageSrcEntry };
+                });
+              }
             }
           }
         });
@@ -192,10 +180,19 @@ function PanelStudyBrowser({
     const SubscriptionDisplaySetsChanged = displaySetService.subscribe(
       displaySetService.EVENTS.DISPLAY_SETS_CHANGED,
       changedDisplaySets => {
+        const mappedDisplaySets = _mapDisplaySets(changedDisplaySets, thumbnailImageSrcMap);
+        setDisplaySets(mappedDisplaySets);
+      }
+    );
+
+    const SubscriptionDisplaySetMetaDataInvalidated = displaySetService.subscribe(
+      displaySetService.EVENTS.DISPLAY_SET_SERIES_METADATA_INVALIDATED,
+      () => {
         const mappedDisplaySets = _mapDisplaySets(
-          changedDisplaySets,
+          displaySetService.getActiveDisplaySets(),
           thumbnailImageSrcMap
         );
+
         setDisplaySets(mappedDisplaySets);
       }
     );
@@ -203,44 +200,30 @@ function PanelStudyBrowser({
     return () => {
       SubscriptionDisplaySetsAdded.unsubscribe();
       SubscriptionDisplaySetsChanged.unsubscribe();
+      SubscriptionDisplaySetMetaDataInvalidated.unsubscribe();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const tabs = _createStudyBrowserTabs(
-    StudyInstanceUIDs,
-    studyDisplayList,
-    displaySets
-  );
+  const tabs = _createStudyBrowserTabs(StudyInstanceUIDs, studyDisplayList, displaySets);
 
   // TODO: Should not fire this on "close"
   function _handleStudyClick(StudyInstanceUID) {
-    const shouldCollapseStudy = expandedStudyInstanceUIDs.includes(
-      StudyInstanceUID
-    );
+    const shouldCollapseStudy = expandedStudyInstanceUIDs.includes(StudyInstanceUID);
     const updatedExpandedStudyInstanceUIDs = shouldCollapseStudy
       ? // eslint-disable-next-line prettier/prettier
-        [
-          ...expandedStudyInstanceUIDs.filter(
-            stdyUid => stdyUid !== StudyInstanceUID
-          ),
-        ]
+        [...expandedStudyInstanceUIDs.filter(stdyUid => stdyUid !== StudyInstanceUID)]
       : [...expandedStudyInstanceUIDs, StudyInstanceUID];
 
     setExpandedStudyInstanceUIDs(updatedExpandedStudyInstanceUIDs);
 
     if (!shouldCollapseStudy) {
       const madeInClient = true;
-      requestDisplaySetCreationForStudy(
-        displaySetService,
-        StudyInstanceUID,
-        madeInClient
-      );
+      requestDisplaySetCreationForStudy(displaySetService, StudyInstanceUID, madeInClient);
     }
   }
 
-  const activeDisplaySetInstanceUIDs =
-    viewports[activeViewportIndex]?.displaySetInstanceUIDs;
+  const activeDisplaySetInstanceUIDs = viewports.get(activeViewportId)?.displaySetInstanceUIDs;
 
   return (
     <StudyBrowser
@@ -300,12 +283,10 @@ function _mapDisplaySets(displaySets, thumbnailImageSrcMap) {
     .filter(ds => !ds.excludeFromThumbnailBrowser)
     .forEach(ds => {
       const imageSrc = thumbnailImageSrcMap[ds.displaySetInstanceUID];
-      const componentType = _getComponentType(ds.Modality);
+      const componentType = _getComponentType(ds);
 
       const array =
-        componentType === 'thumbnail'
-          ? thumbnailDisplaySets
-          : thumbnailNoImageDisplaySets;
+        componentType === 'thumbnail' ? thumbnailDisplaySets : thumbnailNoImageDisplaySets;
 
       array.push({
         displaySetInstanceUID: ds.displaySetInstanceUID,
@@ -317,6 +298,7 @@ function _mapDisplaySets(displaySets, thumbnailImageSrcMap) {
         numInstances: ds.numImageFrames,
         countIcon: ds.countIcon,
         StudyInstanceUID: ds.StudyInstanceUID,
+        messages: ds.messages,
         componentType,
         imageSrc,
         dragData: {
@@ -324,23 +306,17 @@ function _mapDisplaySets(displaySets, thumbnailImageSrcMap) {
           displaySetInstanceUID: ds.displaySetInstanceUID,
           // .. Any other data to pass
         },
+        isHydratedForDerivedDisplaySet: ds.isHydrated,
       });
     });
 
   return [...thumbnailDisplaySets, ...thumbnailNoImageDisplaySets];
 }
 
-const thumbnailNoImageModalities = [
-  'SR',
-  'SEG',
-  'SM',
-  'RTSTRUCT',
-  'RTPLAN',
-  'RTDOSE',
-];
+const thumbnailNoImageModalities = ['SR', 'SEG', 'SM', 'RTSTRUCT', 'RTPLAN', 'RTDOSE'];
 
-function _getComponentType(Modality) {
-  if (thumbnailNoImageModalities.includes(Modality)) {
+function _getComponentType(ds) {
+  if (thumbnailNoImageModalities.includes(ds.Modality) || ds?.unsupported) {
     // TODO probably others.
     return 'thumbnailNoImage';
   }
@@ -360,11 +336,7 @@ function _getComponentType(Modality) {
  * @param {object[]} displaySets
  * @returns tabs - The prop object expected by the StudyBrowser component
  */
-function _createStudyBrowserTabs(
-  primaryStudyInstanceUIDs,
-  studyDisplayList,
-  displaySets
-) {
+function _createStudyBrowserTabs(primaryStudyInstanceUIDs, studyDisplayList, displaySets) {
   const primaryStudies = [];
   const recentStudies = [];
   const allStudies = [];

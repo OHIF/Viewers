@@ -48,14 +48,10 @@ const RectangleROI = {
 
     const { points } = data.handles;
 
-    const mappedAnnotations = getMappedAnnotations(
-      annotation,
-      DisplaySetService
-    );
+    const mappedAnnotations = getMappedAnnotations(annotation, DisplaySetService);
 
     const displayText = getDisplayText(mappedAnnotations, displaySet);
-    const getReport = () =>
-      _getReport(mappedAnnotations, points, FrameOfReferenceUID);
+    const getReport = () => _getReport(mappedAnnotations, points, FrameOfReferenceUID);
 
     return {
       uid: annotationUID,
@@ -93,9 +89,7 @@ function getMappedAnnotations(annotation, DisplaySetService) {
 
     if (!referencedImageId) {
       // Todo: Non-acquisition plane measurement mapping not supported yet
-      throw new Error(
-        'Non-acquisition plane measurement mapping not supported'
-      );
+      throw new Error('Non-acquisition plane measurement mapping not supported');
     }
 
     const {
@@ -184,9 +178,7 @@ function getDisplayText(mappedAnnotations, displaySet) {
   // Area is the same for all series
   const { area, SOPInstanceUID, frameNumber, areaUnit } = mappedAnnotations[0];
 
-  const instance = displaySet.images.find(
-    image => image.SOPInstanceUID === SOPInstanceUID
-  );
+  const instance = displaySet.images.find(image => image.SOPInstanceUID === SOPInstanceUID);
 
   let InstanceNumber;
   if (instance) {

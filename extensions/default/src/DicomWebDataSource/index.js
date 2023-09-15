@@ -1,11 +1,5 @@
 import { api } from 'dicomweb-client';
-import {
-  DicomMetadataStore,
-  IWebApiDataSource,
-  utils,
-  errorHandler,
-  classes,
-} from '@ohif/core';
+import { DicomMetadataStore, IWebApiDataSource, utils, errorHandler, classes } from '@ohif/core';
 
 import {
   mapParams,
@@ -18,10 +12,7 @@ import dcm4cheeReject from './dcm4cheeReject';
 
 import getImageId from './utils/getImageId';
 import dcmjs from 'dcmjs';
-import {
-  retrieveStudyMetadata,
-  deleteStudyMetadataPromise,
-} from './retrieveStudyMetadata.js';
+import { retrieveStudyMetadata, deleteStudyMetadataPromise } from './retrieveStudyMetadata.js';
 import StaticWadoClient from './utils/StaticWadoClient';
 import getDirectURL from '../utils/getDirectURL';
 import { fixBulkDataURI } from './utils/fixBulkDataURI';
@@ -30,8 +21,7 @@ const { DicomMetaDictionary, DicomDict } = dcmjs.data;
 
 const { naturalizeDataset, denaturalizeDataset } = DicomMetaDictionary;
 
-const ImplementationClassUID =
-  '2.25.270695996825855179949881587723571202391.2.0.0';
+const ImplementationClassUID = '2.25.270695996825855179949881587723571202391.2.0.0';
 const ImplementationVersionName = 'OHIF-VIEWER-2.0.0';
 const EXPLICIT_VR_LITTLE_ENDIAN = '1.2.840.10008.1.2.1';
 
@@ -61,10 +51,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
 
   const implementation = {
     initialize: ({ params, query }) => {
-      if (
-        dicomWebConfig.onConfiguration &&
-        typeof dicomWebConfig.onConfiguration === 'function'
-      ) {
+      if (dicomWebConfig.onConfiguration && typeof dicomWebConfig.onConfiguration === 'function') {
         dicomWebConfig = dicomWebConfig.onConfiguration(dicomWebConfig, {
           params,
           query,
@@ -126,7 +113,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
     query: {
       studies: {
         mapParams: mapParams.bind(),
-        search: async function(origParams) {
+        search: async function (origParams) {
           qidoDicomWebClient.headers = getAuthrorizationHeader();
           const { studyInstanceUid, seriesInstanceUid, ...mappedParams } =
             mapParams(origParams, {
@@ -134,12 +121,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
               supportsWildcard: dicomWebConfig.supportsWildcard,
             }) || {};
 
-          const results = await qidoSearch(
-            qidoDicomWebClient,
-            undefined,
-            undefined,
-            mappedParams
-          );
+          const results = await qidoSearch(qidoDicomWebClient, undefined, undefined, mappedParams);
 
           return processResults(results);
         },
@@ -147,12 +129,9 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
       },
       series: {
         // mapParams: mapParams.bind(),
-        search: async function(studyInstanceUid) {
+        search: async function (studyInstanceUid) {
           qidoDicomWebClient.headers = getAuthrorizationHeader();
-          const results = await seriesInStudy(
-            qidoDicomWebClient,
-            studyInstanceUid
-          );
+          const results = await seriesInStudy(qidoDicomWebClient, studyInstanceUid);
 
           return processSeriesResults(results);
         },
@@ -161,13 +140,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
       instances: {
         search: (studyInstanceUid, queryParameters) => {
           qidoDicomWebClient.headers = getAuthrorizationHeader();
-          qidoSearch.call(
-            undefined,
-            qidoDicomWebClient,
-            studyInstanceUid,
-            null,
-            queryParameters
-          );
+          qidoSearch.call(undefined, qidoDicomWebClient, studyInstanceUid, null, queryParameters);
         },
       },
     },
@@ -213,9 +186,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
           madeInClient = false,
         } = {}) => {
           if (!StudyInstanceUID) {
-            throw new Error(
-              'Unable to query for SeriesMetadata without StudyInstanceUID'
-            );
+            throw new Error('Unable to query for SeriesMetadata without StudyInstanceUID');
           }
 
           if (dicomWebConfig.enableStudyLazyLoad) {
@@ -250,8 +221,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
           await wadoDicomWebClient.storeInstances(options);
         } else {
           const meta = {
-            FileMetaInformationVersion:
-              dataset._meta.FileMetaInformationVersion.Value,
+            FileMetaInformationVersion: dataset._meta.FileMetaInformationVersion.Value,
             MediaStorageSOPClassUID: dataset.SOPClassUID,
             MediaStorageSOPInstanceUID: dataset.SOPInstanceUID,
             TransferSyntaxUID: EXPLICIT_VR_LITTLE_ENDIAN,
@@ -340,10 +310,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
       DicomMetadataStore.addSeriesMetadata(seriesMetadata, madeInClient);
 
       Object.keys(instancesPerSeries).forEach(seriesInstanceUID =>
-        DicomMetadataStore.addInstances(
-          instancesPerSeries[seriesInstanceUID],
-          madeInClient
-        )
+        DicomMetadataStore.addInstances(instancesPerSeries[seriesInstanceUID], madeInClient)
       );
     },
 
@@ -357,17 +324,15 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
       const enableStudyLazyLoad = true;
       wadoDicomWebClient.headers = generateWadoHeader();
       // Get Series
-      const {
-        preLoadData: seriesSummaryMetadata,
-        promises: seriesPromises,
-      } = await retrieveStudyMetadata(
-        wadoDicomWebClient,
-        StudyInstanceUID,
-        enableStudyLazyLoad,
-        filters,
-        sortCriteria,
-        sortFunction
-      );
+      const { preLoadData: seriesSummaryMetadata, promises: seriesPromises } =
+        await retrieveStudyMetadata(
+          wadoDicomWebClient,
+          StudyInstanceUID,
+          enableStudyLazyLoad,
+          filters,
+          sortCriteria,
+          sortFunction
+        );
 
       /**
        * naturalizes the dataset, and adds a retrieve bulkdata method
@@ -378,7 +343,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
       const addRetrieveBulkData = instance => {
         const naturalized = naturalizeDataset(instance);
 
-        // if we konw the server doesn't use bulkDataURI, then don't
+        // if we know the server doesn't use bulkDataURI, then don't
         if (!dicomWebConfig.bulkDataURI?.enabled) {
           return naturalized;
         }
@@ -412,8 +377,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
                 // the bulk data and DICOM video cases where the second ArrayBuffer is
                 // the bulk data. Here we play it safe and do a find.
                 const ret =
-                  (val instanceof Array &&
-                    val.find(arrayBuffer => arrayBuffer?.byteLength)) ||
+                  (val instanceof Array && val.find(arrayBuffer => arrayBuffer?.byteLength)) ||
                   undefined;
                 value.Value = ret;
                 return ret;
@@ -456,10 +420,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
       }
 
       function setSuccessFlag() {
-        const study = DicomMetadataStore.getStudy(
-          StudyInstanceUID,
-          madeInClient
-        );
+        const study = DicomMetadataStore.getStudy(StudyInstanceUID, madeInClient);
         study.isLoaded = true;
       }
 
@@ -520,13 +481,10 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
     },
     getStudyInstanceUIDs({ params, query }) {
       const { StudyInstanceUIDs: paramsStudyInstanceUIDs } = params;
-      const queryStudyInstanceUIDs = utils.splitComma(
-        query.getAll('StudyInstanceUIDs')
-      );
+      const queryStudyInstanceUIDs = utils.splitComma(query.getAll('StudyInstanceUIDs'));
 
       const StudyInstanceUIDs =
-        (queryStudyInstanceUIDs.length && queryStudyInstanceUIDs) ||
-        paramsStudyInstanceUIDs;
+        (queryStudyInstanceUIDs.length && queryStudyInstanceUIDs) || paramsStudyInstanceUIDs;
       const StudyInstanceUIDsAsArray =
         StudyInstanceUIDs && Array.isArray(StudyInstanceUIDs)
           ? StudyInstanceUIDs

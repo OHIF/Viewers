@@ -7,11 +7,8 @@ export const CREATE_REPORT_DIALOG_RESPONSE = {
   CREATE_REPORT: 1,
 };
 
-export default function createReportDialogPrompt(
-  uiDialogService,
-  { extensionManager }
-) {
-  return new Promise(function(resolve, reject) {
+export default function createReportDialogPrompt(uiDialogService, { extensionManager }) {
+  return new Promise(function (resolve, reject) {
     let dialogId = undefined;
 
     const _handleClose = () => {
@@ -52,10 +49,8 @@ export default function createReportDialogPrompt(
 
     const dataSourcesOpts = Object.keys(extensionManager.dataSourceMap)
       .filter(ds => {
-        const configuration =
-          extensionManager.dataSourceDefs[ds]?.configuration;
-        const supportsStow =
-          configuration?.supportsStow ?? configuration?.wadoRoot;
+        const configuration = extensionManager.dataSourceDefs[ds]?.configuration;
+        const supportsStow = configuration?.supportsStow ?? configuration?.wadoRoot;
         return supportsStow;
       })
       .map(ds => {
@@ -105,12 +100,11 @@ export default function createReportDialogPrompt(
               {dataSourcesOpts.length > 1 && (
                 <Select
                   closeMenuOnSelect={true}
-                  className="mr-2 bg-black border-primary-main"
+                  className="border-primary-main mr-2 bg-black"
                   options={dataSourcesOpts}
                   placeholder={
-                    dataSourcesOpts.find(
-                      option => option.value === value.dataSourceName
-                    ).placeHolder
+                    dataSourcesOpts.find(option => option.value === value.dataSourceName)
+                      .placeHolder
                   }
                   value={value.dataSourceName}
                   onChange={evt => {
@@ -123,7 +117,7 @@ export default function createReportDialogPrompt(
                 autoFocus
                 label="Enter the report name"
                 labelClassName="text-white text-[14px] leading-[1.2]"
-                className="bg-black border-primary-main"
+                className="border-primary-main bg-black"
                 type="text"
                 value={value.label}
                 onChange={onChangeHandler}
