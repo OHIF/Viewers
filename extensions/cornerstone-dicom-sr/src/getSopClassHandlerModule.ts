@@ -3,7 +3,7 @@ import { utils, classes, DisplaySetService, Types } from '@ohif/core';
 import addMeasurement from './utils/addMeasurement';
 import isRehydratable from './utils/isRehydratable';
 import { adaptersSR } from '@cornerstonejs/adapters';
-import { convertSCOORD3DAnnotations } from './utils/checkUnmappedTrackingIdentifierGroup';
+import { convertSCOORD3DAnnotations } from './utils/convertSCOORD3DAnnotations';
 type InstanceMetadata = Types.InstanceMetadata;
 
 const { CodeScheme: Cornerstone3DCodeScheme } = adaptersSR.Cornerstone3D;
