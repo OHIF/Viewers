@@ -13,5 +13,5 @@ module.exports = {
     '<rootDir>/extensions/*/jest.config.js',
     //'<rootDir>/modes/*/jest.config.js' // Enable if any mode definitions start including tests
   ],
-  coverageDirectory: "<rootDir>/coverage/"
+  coverageDirectory: '<rootDir>/coverage/',
 };

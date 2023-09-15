@@ -33,26 +33,14 @@ function ViewportImageSliceLoadingIndicator({ viewportData, element }) {
   };
 
   useEffect(() => {
-    element.addEventListener(
-      Enums.Events.STACK_VIEWPORT_SCROLL,
-      setLoadingState
-    );
+    element.addEventListener(Enums.Events.STACK_VIEWPORT_SCROLL, setLoadingState);
     element.addEventListener(Enums.Events.IMAGE_LOAD_ERROR, setErrorState);
-    element.addEventListener(
-      Enums.Events.STACK_NEW_IMAGE,
-      setFinishLoadingState
-    );
+    element.addEventListener(Enums.Events.STACK_NEW_IMAGE, setFinishLoadingState);
 
     return () => {
-      element.removeEventListener(
-        Enums.Events.STACK_VIEWPORT_SCROLL,
-        setLoadingState
-      );
+      element.removeEventListener(Enums.Events.STACK_VIEWPORT_SCROLL, setLoadingState);
 
-      element.removeEventListener(
-        Enums.Events.STACK_NEW_IMAGE,
-        setFinishLoadingState
-      );
+      element.removeEventListener(Enums.Events.STACK_NEW_IMAGE, setFinishLoadingState);
 
       element.removeEventListener(Enums.Events.IMAGE_LOAD_ERROR, setErrorState);
     };
@@ -61,8 +49,8 @@ function ViewportImageSliceLoadingIndicator({ viewportData, element }) {
   if (error) {
     return (
       <>
-        <div className="bg-black opacity-50 absolute h-full w-full top-0 left-0">
-          <div className="flex transparent items-center justify-center w-full h-full">
+        <div className="absolute top-0 left-0 h-full w-full bg-black opacity-50">
+          <div className="transparent flex h-full w-full items-center justify-center">
             <p className="text-primary-light text-xl font-light">
               <h4>Error Loading Image</h4>
               <p>An error has occurred.</p>
@@ -78,8 +66,8 @@ function ViewportImageSliceLoadingIndicator({ viewportData, element }) {
     return (
       // IMPORTANT: we need to use the pointer-events-none class to prevent the loading indicator from
       // interacting with the mouse, since scrolling should propagate to the viewport underneath
-      <div className="pointer-events-none bg-black opacity-50 absolute h-full w-full top-0 left-0">
-        <div className="flex transparent items-center justify-center w-full h-full">
+      <div className="pointer-events-none absolute top-0 left-0 h-full w-full bg-black opacity-50">
+        <div className="transparent flex h-full w-full items-center justify-center">
           <p className="text-primary-light text-xl font-light">Loading...</p>
         </div>
       </div>

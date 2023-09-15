@@ -27,6 +27,7 @@ export type ExtensionConfiguration = Record<string, unknown>;
  */
 export interface ExtensionParams extends ExtensionConstructor {
   extensionManager: ExtensionManager;
+  servicesManager: ServicesManager;
   configuration?: ExtensionConfiguration;
 }
 
@@ -43,6 +44,7 @@ export interface Extension {
   getViewportModule?: (p: ExtensionParams) => unknown;
   getUtilityModule?: (p: ExtensionParams) => unknown;
   getCustomizationModule?: (p: ExtensionParams) => unknown;
+  getSopClassHandlerModule?: (p: ExtensionParams) => unknown;
   onModeEnter?: () => void;
   onModeExit?: () => void;
 }
@@ -143,12 +145,8 @@ export default class ExtensionManager extends PubSubService {
   }
 
   public onModeExit(): void {
-    const {
-      registeredExtensionIds,
-      _servicesManager,
-      _commandsManager,
-      _extensionLifeCycleHooks,
-    } = this;
+    const { registeredExtensionIds, _servicesManager, _commandsManager, _extensionLifeCycleHooks } =
+      this;
 
     registeredExtensionIds.forEach(extensionId => {
       const onModeExit = _extensionLifeCycleHooks.onModeExit[extensionId];
@@ -179,10 +177,7 @@ export default class ExtensionManager extends PubSubService {
    * @param {Object[]} extensions - Array of extensions
    */
   public registerExtensions = async (
-    extensions: (
-      | ExtensionRegister
-      | [ExtensionRegister, ExtensionConfiguration]
-    )[],
+    extensions: (ExtensionRegister | [ExtensionRegister, ExtensionConfiguration])[],
     dataSources: unknown[] = []
   ): Promise<void> => {
     // Todo: we ideally should be able to run registrations in parallel
@@ -201,11 +196,7 @@ export default class ExtensionManager extends PubSubService {
           // for (const extension of extensions)
           const ohifExtension = extension[0];
           const configuration = extension[1];
-          await this.registerExtension(
-            ohifExtension,
-            configuration,
-            dataSources
-          );
+          await this.registerExtension(ohifExtension, configuration, dataSources);
         } else {
           await this.registerExtension(extension, {}, dataSources);
         }
@@ -258,13 +249,11 @@ export default class ExtensionManager extends PubSubService {
     }
 
     if (extension.onModeEnter) {
-      this._extensionLifeCycleHooks.onModeEnter[extensionId] =
-        extension.onModeEnter;
+      this._extensionLifeCycleHooks.onModeEnter[extensionId] = extension.onModeEnter;
     }
 
     if (extension.onModeExit) {
-      this._extensionLifeCycleHooks.onModeExit[extensionId] =
-        extension.onModeExit;
+      this._extensionLifeCycleHooks.onModeExit[extensionId] = extension.onModeExit;
     }
 
     // Register Modules
@@ -282,11 +271,7 @@ export default class ExtensionManager extends PubSubService {
             this._initCommandsModule(extensionModule);
             break;
           case MODULE_TYPES.DATA_SOURCE:
-            this._initDataSourcesModule(
-              extensionModule,
-              extensionId,
-              dataSources
-            );
+            this._initDataSourcesModule(extensionModule, extensionId, dataSources);
             break;
           case MODULE_TYPES.HANGING_PROTOCOL:
             this._initHangingProtocolsModule(extensionModule, extensionId);
@@ -352,13 +337,20 @@ export default class ExtensionManager extends PubSubService {
    * @param dataSourceName the data source name
    * @returns the data source definition
    */
-  getDataSourceDef = dataSourceName => {
+  getDataSourceDefinition = dataSourceName => {
     if (dataSourceName === undefined) {
       // Default to the activeDataSource
       dataSourceName = this.activeDataSource;
     }
 
     return this.dataSourceDefs[dataSourceName];
+  };
+
+  /**
+   * Gets the data source definition for the active data source.
+   */
+  getActiveDataSourceDefinition = () => {
+    return this.getDataSourceDefinition(this.activeDataSource);
   };
 
   /**
@@ -416,10 +408,7 @@ export default class ExtensionManager extends PubSubService {
    * @param dataSourceDef the data source definition to be added
    * @param activate flag to indicate if the added data source should be set to the active data source
    */
-  addDataSource(
-    dataSourceDef: DataSourceDefinition,
-    options = { activate: false }
-  ) {
+  addDataSource(dataSourceDef: DataSourceDefinition, options = { activate: false }) {
     const existingDataSource = this.getDataSources(dataSourceDef.sourceName);
     if (existingDataSource?.[0]) {
       // The data source already exists and cannot be added.
@@ -439,10 +428,7 @@ export default class ExtensionManager extends PubSubService {
    * @param dataSourceName the name of the data source to update
    * @param dataSourceConfiguration the new configuration to update the data source with
    */
-  updateDataSourceConfiguration(
-    dataSourceName: string,
-    dataSourceConfiguration: any
-  ) {
+  updateDataSourceConfiguration(dataSourceName: string, dataSourceConfiguration: any) {
     const existingDataSource = this.getDataSources(dataSourceName);
     if (!existingDataSource?.[0]) {
       // Cannot update a non existent data source.
@@ -456,10 +442,7 @@ export default class ExtensionManager extends PubSubService {
 
     if (this.activeDataSource === dataSourceName) {
       // When the active data source is changed/set, fire an event to indicate that its configuration has changed.
-      this._broadcastEvent(
-        ExtensionManager.EVENTS.ACTIVE_DATA_SOURCE_CHANGED,
-        dataSourceDef
-      );
+      this._broadcastEvent(ExtensionManager.EVENTS.ACTIVE_DATA_SOURCE_CHANGED, dataSourceDef);
     }
   }
 
@@ -493,9 +476,7 @@ export default class ExtensionManager extends PubSubService {
     dataSources: Array<DataSourceDefinition> = []
   ): void {
     extensionModule.forEach(element => {
-      this.modulesMap[
-        `${extensionId}.${MODULE_TYPES.DATA_SOURCE}.${element.name}`
-      ] = element;
+      this.modulesMap[`${extensionId}.${MODULE_TYPES.DATA_SOURCE}.${element.name}`] = element;
     });
 
     extensionModule.forEach(element => {
@@ -530,8 +511,7 @@ export default class ExtensionManager extends PubSubService {
     Object.keys(definitions).forEach(commandName => {
       const commandDefinition = definitions[commandName];
       const commandHasContextThatDoesNotExist =
-        commandDefinition.context &&
-        !this._commandsManager.getContext(commandDefinition.context);
+        commandDefinition.context && !this._commandsManager.getContext(commandDefinition.context);
 
       if (commandHasContextThatDoesNotExist) {
         this._commandsManager.createContext(commandDefinition.context);

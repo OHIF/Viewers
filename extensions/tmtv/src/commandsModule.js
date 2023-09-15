@@ -14,11 +14,7 @@ const metadataProvider = classes.MetadataProvider;
 const RECTANGLE_ROI_THRESHOLD_MANUAL = 'RectangleROIStartEndThreshold';
 const LABELMAP = csTools.Enums.SegmentationRepresentations.Labelmap;
 
-const commandsModule = ({
-  servicesManager,
-  commandsManager,
-  extensionManager,
-}) => {
+const commandsModule = ({ servicesManager, commandsManager, extensionManager }) => {
   const {
     viewportGridService,
     uiNotificationService,
@@ -36,8 +32,8 @@ const commandsModule = ({
   const { getEnabledElement } = utilityModule.exports;
 
   function _getActiveViewportsEnabledElement() {
-    const { activeViewportIndex } = viewportGridService.getState();
-    const { element } = getEnabledElement(activeViewportIndex) || {};
+    const { activeViewportId } = viewportGridService.getState();
+    const { element } = getEnabledElement(activeViewportId) || {};
     const enabledElement = cs.getEnabledElement(element);
     return enabledElement;
   }
@@ -45,8 +41,8 @@ const commandsModule = ({
   function _getMatchedViewportsToolGroupIds() {
     const { viewportMatchDetails } = hangingProtocolService.getMatchDetails();
     const toolGroupIds = [];
-    viewportMatchDetails.forEach((value, key) => {
-      const { viewportOptions } = value;
+    viewportMatchDetails.forEach(viewport => {
+      const { viewportOptions } = viewport;
       const { toolGroupId } = viewportOptions;
       if (toolGroupIds.indexOf(toolGroupId) === -1) {
         toolGroupIds.push(toolGroupId);
@@ -64,7 +60,7 @@ const commandsModule = ({
       // corrected PT vs the non-attenuation correct PT)
 
       let ptDisplaySet = null;
-      for (const [viewportIndex, viewportDetails] of viewportMatchDetails) {
+      for (const [viewportId, viewportDetails] of viewportMatchDetails) {
         const { displaySetsInfo } = viewportDetails;
         const displaySets = displaySetsInfo.map(({ displaySetInstanceUID }) =>
           displaySetService.getDisplaySetByUID(displaySetInstanceUID)
@@ -74,9 +70,7 @@ const commandsModule = ({
           continue;
         }
 
-        ptDisplaySet = displaySets.find(
-          displaySet => displaySet.Modality === 'PT'
-        );
+        ptDisplaySet = displaySets.find(displaySet => displaySet.Modality === 'PT');
 
         if (ptDisplaySet) {
           break;
@@ -102,17 +96,13 @@ const commandsModule = ({
         PatientWeight: instance.PatientWeight,
         RadiopharmaceuticalInformationSequence: {
           RadionuclideTotalDose:
-            instance.RadiopharmaceuticalInformationSequence[0]
-              .RadionuclideTotalDose,
+            instance.RadiopharmaceuticalInformationSequence[0].RadionuclideTotalDose,
           RadionuclideHalfLife:
-            instance.RadiopharmaceuticalInformationSequence[0]
-              .RadionuclideHalfLife,
+            instance.RadiopharmaceuticalInformationSequence[0].RadionuclideHalfLife,
           RadiopharmaceuticalStartTime:
-            instance.RadiopharmaceuticalInformationSequence[0]
-              .RadiopharmaceuticalStartTime,
+            instance.RadiopharmaceuticalInformationSequence[0].RadiopharmaceuticalStartTime,
           RadiopharmaceuticalStartDateTime:
-            instance.RadiopharmaceuticalInformationSequence[0]
-              .RadiopharmaceuticalStartDateTime,
+            instance.RadiopharmaceuticalInformationSequence[0].RadiopharmaceuticalStartDateTime,
         },
       };
 
@@ -137,7 +127,6 @@ const commandsModule = ({
 
       // Add Segmentation to all toolGroupIds in the viewer
       const toolGroupIds = _getMatchedViewportsToolGroupIds();
-
       const representationType = LABELMAP;
 
       for (const toolGroupId of toolGroupIds) {
@@ -149,10 +138,7 @@ const commandsModule = ({
           representationType
         );
 
-        segmentationService.setActiveSegmentationForToolGroup(
-          segmentationId,
-          toolGroupId
-        );
+        segmentationService.setActiveSegmentationForToolGroup(segmentationId, toolGroupId);
       }
 
       return segmentationId;
@@ -161,21 +147,14 @@ const commandsModule = ({
       const toolGroupIds = _getMatchedViewportsToolGroupIds();
 
       toolGroupIds.forEach(toolGroupId => {
-        segmentationService.setActiveSegmentationForToolGroup(
-          segmentationId,
-          toolGroupId
-        );
+        segmentationService.setActiveSegmentationForToolGroup(segmentationId, toolGroupId);
       });
     },
     thresholdSegmentationByRectangleROITool: ({ segmentationId, config }) => {
-      const segmentation = csTools.segmentation.state.getSegmentation(
-        segmentationId
-      );
+      const segmentation = csTools.segmentation.state.getSegmentation(segmentationId);
 
       const { representationData } = segmentation;
-      const {
-        displaySetMatchDetails: matchDetails,
-      } = hangingProtocolService.getMatchDetails();
+      const { displaySetMatchDetails: matchDetails } = hangingProtocolService.getMatchDetails();
       const volumeLoaderScheme = 'cornerstoneStreamingImageVolume'; // Loader id which defines which volume loader to use
 
       const ctDisplaySet = matchDetails.get('ctDisplaySet');
@@ -249,9 +228,7 @@ const commandsModule = ({
     getLesionStats: ({ labelmap, segmentIndex = 1 }) => {
       const { scalarData, spacing } = labelmap;
 
-      const { scalarData: referencedScalarData } = cs.cache.getVolume(
-        labelmap.referencedVolumeId
-      );
+      const { scalarData: referencedScalarData } = cs.cache.getVolume(labelmap.referencedVolumeId);
 
       let segmentationMax = -Infinity;
       let segmentationMin = Infinity;
@@ -293,9 +270,7 @@ const commandsModule = ({
       };
     },
     calculateTMTV: ({ segmentations }) => {
-      const labelmaps = segmentations.map(s =>
-        segmentationService.getLabelmapVolume(s.id)
-      );
+      const labelmaps = segmentations.map(s => segmentationService.getLabelmapVolume(s.id));
 
       if (!labelmaps.length) {
         return;
@@ -318,17 +293,14 @@ const commandsModule = ({
       createAndDownloadTMTVReport(segReport, additionalReportRows);
     },
     getTotalLesionGlycolysis: ({ segmentations }) => {
-      const labelmapVolumes = segmentations.map(s =>
-        segmentationService.getLabelmapVolume(s.id)
-      );
+      const labelmapVolumes = segmentations.map(s => segmentationService.getLabelmapVolume(s.id));
 
       let mergedLabelmap;
       // merge labelmap will through an error if labels maps are not the same size
       // or same direction or ....
       try {
-        mergedLabelmap = csTools.utilities.segmentation.createMergedLabelmapForIndex(
-          labelmapVolumes
-        );
+        mergedLabelmap =
+          csTools.utilities.segmentation.createMergedLabelmapForIndex(labelmapVolumes);
       } catch (e) {
         console.error('commandsModule::getTotalLesionGlycolysis', e);
         return;
@@ -338,9 +310,7 @@ const commandsModule = ({
       const { referencedVolumeId, spacing } = labelmapVolumes[0];
 
       if (!referencedVolumeId) {
-        console.error(
-          'commandsModule::getTotalLesionGlycolysis:No referencedVolumeId found'
-        );
+        console.error('commandsModule::getTotalLesionGlycolysis:No referencedVolumeId found');
       }
 
       const ptVolume = cs.cache.getVolume(referencedVolumeId);
@@ -366,14 +336,7 @@ const commandsModule = ({
       const averageSuv = suv / totalLesionVoxelCount;
 
       // total Lesion Glycolysis [suv * ml]
-      return (
-        averageSuv *
-        totalLesionVoxelCount *
-        spacing[0] *
-        spacing[1] *
-        spacing[2] *
-        1e-3
-      );
+      return averageSuv * totalLesionVoxelCount * spacing[0] * spacing[1] * spacing[2] * 1e-3;
     },
     setStartSliceForROIThresholdTool: () => {
       const { viewport } = _getActiveViewportsEnabledElement();
@@ -489,9 +452,7 @@ const commandsModule = ({
         const referencedVolumeId = labelmapVolume.referencedVolumeId;
         segReport.referencedVolumeId = referencedVolumeId;
 
-        const referencedVolume = segmentationService.getLabelmapVolume(
-          referencedVolumeId
-        );
+        const referencedVolume = segmentationService.getLabelmapVolume(referencedVolumeId);
 
         if (!referencedVolume) {
           report[id] = segReport;
@@ -504,10 +465,7 @@ const commandsModule = ({
         }
 
         const firstImageId = referencedVolume.imageIds[0];
-        const instance = OHIF.classes.MetadataProvider.get(
-          'instance',
-          firstImageId
-        );
+        const instance = OHIF.classes.MetadataProvider.get('instance', firstImageId);
 
         if (!instance) {
           report[id] = segReport;
@@ -545,13 +503,8 @@ const commandsModule = ({
 
       let viewports = [];
       fusionViewportIds.forEach(viewportId => {
-        const viewportInfo = cornerstoneViewportService.getViewportInfo(
-          viewportId
-        );
-
-        const viewportIndex = viewportInfo.getViewportIndex();
         commandsManager.runCommand('setViewportColormap', {
-          viewportIndex,
+          viewportId,
           displaySetInstanceUID: ptDisplaySet.displaySetInstanceUID,
           colormap: {
             name: colormap,
@@ -565,9 +518,7 @@ const commandsModule = ({
           },
         });
 
-        viewports.push(
-          cornerstoneViewportService.getCornerstoneViewport(viewportId)
-        );
+        viewports.push(cornerstoneViewportService.getCornerstoneViewport(viewportId));
       });
 
       viewports.forEach(viewport => {

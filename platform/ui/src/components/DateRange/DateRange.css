@@ -1,7 +1,7 @@
 /** CONTAINER STYLES **/
 
 .DateRangePickerInput {
-  @apply bg-transparent border-0 flex;
+  @apply flex border-0 bg-transparent;
 }
 
 .DateRangePicker_picker {
@@ -12,7 +12,7 @@
 
 .DateInput {
   background: transparent;
-  @apply flex flex-1 w-auto;
+  @apply flex w-auto flex-1;
 }
 
 /** INPUT FIELD COMMON STYLES **/
@@ -26,7 +26,7 @@
   @apply bg-no-repeat;
 }
 .DateInput_input {
-  @apply cursor-pointer border-primary-main mt-2 bg-black shadow transition duration-300 appearance-none border-t border-l border-r border-b border-solid rounded w-full py-2 px-3 text-sm text-white leading-tight pl-8 font-light;
+  @apply border-primary-main mt-2 w-full cursor-pointer appearance-none rounded border-t border-l border-r border-b border-solid bg-black py-2 px-3 pl-8 text-sm font-light leading-tight text-white shadow transition duration-300;
 }
 .DateInput_input:hover {
   @apply border-gray-500;
@@ -56,31 +56,35 @@
 
 /* SELECT MONTH PICKER */
 .DateRangePicker_select {
-  @apply bg-white text-secondary-active border rounded border-common-dark appearance-none cursor-pointer text-base pl-2 pr-5 py-1; /* NEEDED FOR ARROW DOWN */
+  @apply text-secondary-active border-common-dark cursor-pointer appearance-none rounded border bg-white py-1 pl-2 pr-5 text-base; /* NEEDED FOR ARROW DOWN */
   background-image: linear-gradient(45deg, transparent 50%, gray 50%),
     linear-gradient(135deg, gray 50%, transparent 50%);
-  background-position: calc(100% - 11px) 11px, calc(100% - 6px) calc(11px);
-  background-size: 5px 5px, 5px 5px;
+  background-position:
+    calc(100% - 11px) 11px,
+    calc(100% - 6px) calc(11px);
+  background-size:
+    5px 5px,
+    5px 5px;
   background-repeat: no-repeat;
 }
 /* CALENDAR DAYS */
 .CalendarDay {
-  @apply border-0 rounded-full;
+  @apply rounded-full border-0;
 }
 
 .CalendarDay:hover,
 .CalendarDay__selected,
 .CalendarDay__selected:active,
 .CalendarDay__selected:hover {
-  @apply bg-primary-main text-white border-0 border-primary-main;
+  @apply bg-primary-main border-primary-main border-0 text-white;
 }
 
 .CalendarDay__blocked_out_of_range:hover {
-  @apply border-0 bg-white cursor-not-allowed text-common-dark;
+  @apply text-common-dark cursor-not-allowed border-0 bg-white;
 }
 
 .CalendarDay__selected_span {
-  @apply border-0 bg-primary-light;
+  @apply bg-primary-light border-0;
 }
 
 /* MONTH NAVIGATION BUTTONS */

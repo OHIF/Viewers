@@ -1,8 +1,6 @@
 window.config = {
   routerBasename: '/',
-  customizationService: [
-    '@ohif/extension-default.customizationModule.helloPage',
-  ],
+  customizationService: ['@ohif/extension-default.customizationModule.helloPage'],
   extensions: [],
   modes: [],
   showStudyList: true,

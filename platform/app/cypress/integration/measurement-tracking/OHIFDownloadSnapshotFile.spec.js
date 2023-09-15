@@ -1,13 +1,11 @@
 describe('OHIF Download Snapshot File', () => {
   beforeEach(() => {
-    cy.checkStudyRouteInViewer(
-      '1.2.840.113619.2.5.1762583153.215519.978957063.78'
-    );
+    cy.checkStudyRouteInViewer('1.2.840.113619.2.5.1762583153.215519.978957063.78');
     cy.expectMinimumThumbnails(3);
     cy.openDownloadImageModal();
   });
 
-  it('checks displayed information for Desktop experience', function() {
+  it('checks displayed information for Desktop experience', function () {
     // Set Desktop resolution
     // cy.viewport(1750, 720);
     // Visual comparison
@@ -36,12 +34,8 @@ describe('OHIF Download Snapshot File', () => {
     //   .and('include', 'data:image');
 
     // Check buttons
-    cy.get('[data-cy="cancel-btn"]')
-      .scrollIntoView()
-      .should('be.visible');
-    cy.get('[data-cy="download-btn"]')
-      .scrollIntoView()
-      .should('be.visible');
+    cy.get('[data-cy="cancel-btn"]').scrollIntoView().should('be.visible');
+    cy.get('[data-cy="download-btn"]').scrollIntoView().should('be.visible');
   });
 
   /*it('cancel changes on download modal', function() {

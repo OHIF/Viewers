@@ -1,8 +1,5 @@
 import dcmjs from 'dcmjs';
-import {
-  sortStudySeries,
-  sortingCriteria,
-} from '@ohif/core/src/utils/sortStudy';
+import { sortStudySeries, sortingCriteria } from '@ohif/core/src/utils/sortStudy';
 import RetrieveMetadataLoader from './retrieveMetadataLoader';
 
 /**
@@ -12,11 +9,7 @@ import RetrieveMetadataLoader from './retrieveMetadataLoader';
  * @param {Array} seriesInstanceUIDList A list of Series Instance UIDs
  * @returns {Object} Returns an object which supports loading of instances from each of given Series Instance UID
  */
-function makeSeriesAsyncLoader(
-  client,
-  studyInstanceUID,
-  seriesInstanceUIDList
-) {
+function makeSeriesAsyncLoader(client, studyInstanceUID, seriesInstanceUIDList) {
   return Object.freeze({
     hasNext() {
       return seriesInstanceUIDList.length > 0;
@@ -43,11 +36,7 @@ export default class RetrieveMetadataLoaderAsync extends RetrieveMetadataLoader 
    */
   *getPreLoaders() {
     const preLoaders = [];
-    const {
-      studyInstanceUID,
-      filters: { seriesInstanceUID } = {},
-      client,
-    } = this;
+    const { studyInstanceUID, filters: { seriesInstanceUID } = {}, client } = this;
 
     if (seriesInstanceUID) {
       const options = {
@@ -73,8 +62,7 @@ export default class RetrieveMetadataLoaderAsync extends RetrieveMetadataLoader 
 
     return sortStudySeries(
       naturalized,
-      sortCriteria ||
-        sortingCriteria.seriesSortCriteria.seriesInfoSortingCriteria,
+      sortCriteria || sortingCriteria.seriesSortCriteria.seriesInfoSortingCriteria,
       sortFunction
     );
   }
@@ -84,11 +72,7 @@ export default class RetrieveMetadataLoaderAsync extends RetrieveMetadataLoader 
 
     const seriesInstanceUIDs = preLoadData.map(s => s.SeriesInstanceUID);
 
-    const seriesAsyncLoader = makeSeriesAsyncLoader(
-      client,
-      studyInstanceUID,
-      seriesInstanceUIDs
-    );
+    const seriesAsyncLoader = makeSeriesAsyncLoader(client, studyInstanceUID, seriesInstanceUIDs);
 
     const promises = [];
 

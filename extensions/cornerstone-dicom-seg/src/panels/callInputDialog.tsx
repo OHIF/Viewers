@@ -39,7 +39,7 @@ function callInputDialog(uiDialogService, label, callback) {
               label="Enter the segment label"
               labelClassName="text-white text-[14px] leading-[1.2]"
               autoFocus
-              className="bg-black border-primary-main"
+              className="border-primary-main bg-black"
               type="text"
               value={value.label}
               onChange={event => {

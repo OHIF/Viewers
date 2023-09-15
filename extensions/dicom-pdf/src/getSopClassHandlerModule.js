@@ -9,25 +9,12 @@ const SOP_CLASS_UIDS = {
 
 const sopClassUids = Object.values(SOP_CLASS_UIDS);
 
-const _getDisplaySetsFromSeries = (
-  instances,
-  servicesManager,
-  extensionManager
-) => {
+const _getDisplaySetsFromSeries = (instances, servicesManager, extensionManager) => {
   const dataSource = extensionManager.getActiveDataSource()[0];
   return instances.map(instance => {
     const { Modality, SOPInstanceUID, EncapsulatedDocument } = instance;
-    const {
-      SeriesDescription = 'PDF',
-      MIMETypeOfEncapsulatedDocument,
-    } = instance;
-    const {
-      SeriesNumber,
-      SeriesDate,
-      SeriesInstanceUID,
-      StudyInstanceUID,
-      SOPClassUID,
-    } = instance;
+    const { SeriesDescription = 'PDF', MIMETypeOfEncapsulatedDocument } = instance;
+    const { SeriesNumber, SeriesDate, SeriesInstanceUID, StudyInstanceUID, SOPClassUID } = instance;
     const pdfUrl = dataSource.retrieve.directURL({
       instance,
       tag: 'EncapsulatedDocument',
@@ -68,16 +55,9 @@ const _getDisplaySetsFromSeries = (
   });
 };
 
-export default function getSopClassHandlerModule({
-  servicesManager,
-  extensionManager,
-}) {
+export default function getSopClassHandlerModule({ servicesManager, extensionManager }) {
   const getDisplaySetsFromSeries = instances => {
-    return _getDisplaySetsFromSeries(
-      instances,
-      servicesManager,
-      extensionManager
-    );
+    return _getDisplaySetsFromSeries(instances, servicesManager, extensionManager);
   };
 
   return [

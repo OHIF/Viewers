@@ -1,15 +1,11 @@
 describe('OHIF Cornerstone Toolbar', () => {
   beforeEach(() => {
-    cy.checkStudyRouteInViewer(
-      '1.2.840.113619.2.5.1762583153.215519.978957063.78'
-    );
+    cy.checkStudyRouteInViewer('1.2.840.113619.2.5.1762583153.215519.978957063.78');
     cy.expectMinimumThumbnails(3);
     cy.initCornerstoneToolsAliases();
     cy.initCommonElementsAliases();
 
-    cy.get('[data-cy="study-browser-thumbnail"]')
-      .eq(1)
-      .click();
+    cy.get('[data-cy="study-browser-thumbnail"]').eq(1).click();
 
     //const expectedText = 'Ser: 1';
     //cy.get('@viewportInfoBottomLeft').should('contains.text', expectedText);
@@ -71,6 +67,7 @@ describe('OHIF Cornerstone Toolbar', () => {
 
   it('checks if Levels tool will change the window width and center of an image', () => {
     //Click on button and verify if icon is active on toolbar
+    cy.waitDicomImage();
     cy.get('@wwwcBtnPrimary')
       .click()
       .then($wwwcBtn => {
@@ -88,9 +85,7 @@ describe('OHIF Cornerstone Toolbar', () => {
     // The exact text is slightly dependent on the viewport resolution, so leave a range
     cy.get('@viewportInfoTopLeft').should($txt => {
       const text = $txt.text();
-      expect(text)
-        .to.include('W:193')
-        .include('L:479');
+      expect(text).to.include('W:193').include('L:479');
     });
   });
 
@@ -118,9 +113,7 @@ describe('OHIF Cornerstone Toolbar', () => {
     //Verify the measurement exists in the table
     cy.get('@measurementsPanel').should('be.visible');
 
-    cy.get('[data-cy="measurement-item"]')
-      .its('length')
-      .should('be.at.least', 1);
+    cy.get('[data-cy="measurement-item"]').its('length').should('be.at.least', 1);
   });
 
   /*it('checks if angle annotation can be added on viewport without causing any errors', () => {

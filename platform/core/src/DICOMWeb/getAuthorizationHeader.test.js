@@ -28,9 +28,7 @@ describe('getAuthorizationHeader', () => {
     };
 
     const expectedAuthorizationHeader = {
-      Authorization: `Basic ${btoa(
-        validServerWithoutPassword.requestOptions.auth
-      )}`,
+      Authorization: `Basic ${btoa(validServerWithoutPassword.requestOptions.auth)}`,
     };
 
     const authentication = getAuthorizationHeader(validServerWithoutPassword);

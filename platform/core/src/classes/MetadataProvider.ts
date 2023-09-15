@@ -58,21 +58,19 @@ class MetadataProvider {
       return;
     }
 
-    const {
-      StudyInstanceUID,
-      SeriesInstanceUID,
-      SOPInstanceUID,
-      frameNumber,
-    } = uids;
+    const { StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID, frameNumber } = uids;
 
     const instance = DicomMetadataStore.getInstance(
       StudyInstanceUID,
       SeriesInstanceUID,
       SOPInstanceUID
     );
-    return (
-      (frameNumber && combineFrameInstance(frameNumber, instance)) || instance
-    );
+
+    if (!instance) {
+      return;
+  }
+
+    return (frameNumber && combineFrameInstance(frameNumber, instance)) || instance;
   }
 
   get(query, imageId, options = { fallback: false }) {
@@ -102,11 +100,7 @@ class MetadataProvider {
     return this.get(INSTANCE, imageId);
   }
 
-  getTagFromInstance(
-    naturalizedTagOrWADOImageLoaderTag,
-    instance,
-    options = { fallback: false }
-  ) {
+  getTagFromInstance(naturalizedTagOrWADOImageLoaderTag, instance, options = { fallback: false }) {
     if (!instance) {
       return;
     }
@@ -117,14 +111,23 @@ class MetadataProvider {
     }
 
     // Maybe its a legacy dicomImageLoader tag then:
-    return this._getCornerstoneDICOMImageLoaderTag(
-      naturalizedTagOrWADOImageLoaderTag,
-      instance
-    );
+    return this._getCornerstoneDICOMImageLoaderTag(naturalizedTagOrWADOImageLoaderTag, instance);
+  }
+
+  /**
+   * Adds a new handler for the given tag.  The handler will be provided an
+   * instance object that it can read values from.
+   */
+  public addHandler(
+    wadoImageLoaderTag: string,
+    handler
+  ) {
+    WADO_IMAGE_LOADER[wadoImageLoaderTag] = handler;
   }
 
   _getCornerstoneDICOMImageLoaderTag(wadoImageLoaderTag, instance) {
-    let metadata;
+    let metadata = WADO_IMAGE_LOADER[wadoImageLoaderTag]?.(instance);
+    if (metadata) return metadata;
 
     switch (wadoImageLoaderTag) {
       case WADO_IMAGE_LOADER_TAGS.GENERAL_SERIES_MODULE:
@@ -160,47 +163,6 @@ class MetadataProvider {
       case WADO_IMAGE_LOADER_TAGS.PATIENT_DEMOGRAPHIC_MODULE:
         metadata = {
           patientSex: instance.PatientSex,
-        };
-        break;
-      case WADO_IMAGE_LOADER_TAGS.IMAGE_PLANE_MODULE:
-        const { ImageOrientationPatient } = instance;
-
-        // Fallback for DX images.
-        // TODO: We should use the rest of the results of this function
-        // to update the UI somehow
-        const { PixelSpacing } = getPixelSpacingInformation(instance);
-
-        let rowPixelSpacing;
-        let columnPixelSpacing;
-
-        let rowCosines;
-        let columnCosines;
-
-        if (PixelSpacing) {
-          rowPixelSpacing = PixelSpacing[0];
-          columnPixelSpacing = PixelSpacing[1];
-        }
-
-        if (ImageOrientationPatient) {
-          rowCosines = ImageOrientationPatient.slice(0, 3);
-          columnCosines = ImageOrientationPatient.slice(3, 6);
-        }
-
-        metadata = {
-          frameOfReferenceUID: instance.FrameOfReferenceUID,
-          rows: toNumber(instance.Rows),
-          columns: toNumber(instance.Columns),
-          imageOrientationPatient: toNumber(ImageOrientationPatient),
-          rowCosines: toNumber(rowCosines || [0, 1, 0]),
-          columnCosines: toNumber(columnCosines || [0, 0, -1]),
-          imagePositionPatient: toNumber(
-            instance.ImagePositionPatient || [0, 0, 0]
-          ),
-          sliceThickness: toNumber(instance.SliceThickness),
-          sliceLocation: toNumber(instance.SliceLocation),
-          pixelSpacing: toNumber(PixelSpacing || 1),
-          rowPixelSpacing: toNumber(rowPixelSpacing || 1),
-          columnPixelSpacing: toNumber(columnPixelSpacing || 1),
         };
         break;
       case WADO_IMAGE_LOADER_TAGS.IMAGE_PIXEL_MODULE:
@@ -249,12 +211,8 @@ class MetadataProvider {
         if (WindowCenter === undefined || WindowWidth === undefined) {
           return;
         }
-        const windowCenter = Array.isArray(WindowCenter)
-          ? WindowCenter
-          : [WindowCenter];
-        const windowWidth = Array.isArray(WindowWidth)
-          ? WindowWidth
-          : [WindowWidth];
+        const windowCenter = Array.isArray(WindowCenter) ? WindowCenter : [WindowCenter];
+        const windowWidth = Array.isArray(WindowWidth) ? WindowWidth : [WindowWidth];
 
         metadata = {
           windowCenter: toNumber(windowCenter),
@@ -291,16 +249,11 @@ class MetadataProvider {
             ? RadiopharmaceuticalInformationSequence[0]
             : RadiopharmaceuticalInformationSequence;
 
-          const {
-            RadiopharmaceuticalStartTime,
-            RadionuclideTotalDose,
-            RadionuclideHalfLife,
-          } = RadiopharmaceuticalInformation;
+          const { RadiopharmaceuticalStartTime, RadionuclideTotalDose, RadionuclideHalfLife } =
+            RadiopharmaceuticalInformation;
 
           const radiopharmaceuticalInfo = {
-            radiopharmaceuticalStartTime: dicomParser.parseTM(
-              RadiopharmaceuticalStartTime
-            ),
+            radiopharmaceuticalStartTime: dicomParser.parseTM(RadiopharmaceuticalStartTime),
             radionuclideTotalDose: RadionuclideTotalDose,
             radionuclideHalfLife: RadionuclideHalfLife,
           };
@@ -313,11 +266,7 @@ class MetadataProvider {
       case WADO_IMAGE_LOADER_TAGS.OVERLAY_PLANE_MODULE:
         const overlays = [];
 
-        for (
-          let overlayGroup = 0x00;
-          overlayGroup <= 0x1e;
-          overlayGroup += 0x02
-        ) {
+        for (let overlayGroup = 0x00; overlayGroup <= 0x1e; overlayGroup += 0x02) {
           let groupStr = `60${overlayGroup.toString(16)}`;
 
           if (groupStr.length === 3) {
@@ -449,7 +398,9 @@ class MetadataProvider {
   }
 
   getUIDsFromImageID(imageId) {
-    if (!imageId) throw new Error('MetadataProvider::Empty imageId');
+    if (!imageId) {
+      throw new Error('MetadataProvider::Empty imageId');
+    }
     // TODO: adding csiv here is not really correct. Probably need to use
     // metadataProvider.addImageIdToUIDs(imageId, {
     //   StudyInstanceUID,
@@ -506,11 +457,54 @@ const metadataProvider = new MetadataProvider();
 
 export default metadataProvider;
 
+const WADO_IMAGE_LOADER = {
+  imagePlaneModule: instance => {
+    const { ImageOrientationPatient } = instance;
+
+    // Fallback for DX images.
+    // TODO: We should use the rest of the results of this function
+    // to update the UI somehow
+    const { PixelSpacing } = getPixelSpacingInformation(instance);
+
+    let rowPixelSpacing;
+    let columnPixelSpacing;
+
+    let rowCosines;
+    let columnCosines;
+
+    if (PixelSpacing) {
+      rowPixelSpacing = PixelSpacing[0];
+      columnPixelSpacing = PixelSpacing[1];
+    }
+
+    if (ImageOrientationPatient) {
+      rowCosines = ImageOrientationPatient.slice(0, 3);
+      columnCosines = ImageOrientationPatient.slice(3, 6);
+    }
+
+    return {
+      frameOfReferenceUID: instance.FrameOfReferenceUID,
+      rows: toNumber(instance.Rows),
+      columns: toNumber(instance.Columns),
+      imageOrientationPatient: toNumber(ImageOrientationPatient),
+      rowCosines: toNumber(rowCosines || [0, 1, 0]),
+      columnCosines: toNumber(columnCosines || [0, 0, -1]),
+      imagePositionPatient: toNumber(
+        instance.ImagePositionPatient || [0, 0, 0]
+      ),
+      sliceThickness: toNumber(instance.SliceThickness),
+      sliceLocation: toNumber(instance.SliceLocation),
+      pixelSpacing: toNumber(PixelSpacing || 1),
+      rowPixelSpacing: rowPixelSpacing ? toNumber(rowPixelSpacing) : null,
+      columnPixelSpacing: columnPixelSpacing ? toNumber(columnPixelSpacing) : null,
+    };
+  },
+};
+
 const WADO_IMAGE_LOADER_TAGS = {
   // dicomImageLoader specific
   GENERAL_SERIES_MODULE: 'generalSeriesModule',
   PATIENT_STUDY_MODULE: 'patientStudyModule',
-  IMAGE_PLANE_MODULE: 'imagePlaneModule',
   IMAGE_PIXEL_MODULE: 'imagePixelModule',
   VOI_LUT_MODULE: 'voiLutModule',
   MODALITY_LUT_MODULE: 'modalityLutModule',
@@ -520,7 +514,7 @@ const WADO_IMAGE_LOADER_TAGS = {
   OVERLAY_PLANE_MODULE: 'overlayPlaneModule',
   PATIENT_DEMOGRAPHIC_MODULE: 'patientDemographicModule',
 
-  // react-cornerstone-viewport specifc
+  // react-cornerstone-viewport specific
   PATIENT_MODULE: 'patientModule',
   GENERAL_IMAGE_MODULE: 'generalImageModule',
   GENERAL_STUDY_MODULE: 'generalStudyModule',

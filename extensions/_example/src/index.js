@@ -54,11 +54,7 @@ const getCommandsModule = () => ({
 const ExampleContext = React.createContext();
 
 function ExampleContextProvider({ children }) {
-  return (
-    <ExampleContext.Provider value={{ example: 'value' }}>
-      {children}
-    </ExampleContext.Provider>
-  );
+  return <ExampleContext.Provider value={{ example: 'value' }}>{children}</ExampleContext.Provider>;
 }
 
 const getContextModule = () => [
@@ -121,7 +117,7 @@ const getSopClassHandlerModule = (/* ... */) => {
 
 const getToolbarModule = () => {};
 
-// displaySet, viewportIndex, dataSource
+// displaySet, dataSource
 const getViewportModule = () => {
   const wrappedViewport = props => {
     return (

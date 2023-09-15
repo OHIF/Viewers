@@ -30,7 +30,7 @@ export default function getInterleavedFrames(imageIds) {
     !prefetchQueuedFilled.currentPositionUpToMaximum
   ) {
     if (!prefetchQueuedFilled.currentPositionDownToMinimum) {
-      // Add imageId bellow
+      // Add imageId below
       lowerImageIdIndex--;
       imageIdsToPrefetch.push({
         imageId: imageIds[lowerImageIdIndex],

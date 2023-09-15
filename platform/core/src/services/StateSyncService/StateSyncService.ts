@@ -6,7 +6,7 @@ const EVENTS = {};
 type Obj = Record<string, unknown>;
 
 type StateConfig = {
-  /** clearOnModeExit defines state configuraion that is cleared automatically on
+  /** clearOnModeExit defines state configuration that is cleared automatically on
    * exiting a mode.  This clearing occurs after the mode onModeExit,
    * so it is possible to preserve desired state during exit to be restored
    * later.
@@ -40,7 +40,7 @@ export default class StateSyncService extends PubSubService {
     this.configuration = configuration || {};
   }
 
-  public init(extensionManager: ExtensionManager): void { }
+  public init(extensionManager: ExtensionManager): void {}
 
   /** Registers a new sync store called `id`.  The state
    * defines how the state is stored, and any default clearing of the

@@ -54,7 +54,7 @@ module.exports = (env, argv) => {
       path: DIST_DIR,
       filename: isProdBuild ? '[name].bundle.[chunkhash].js' : '[name].js',
       publicPath: PUBLIC_URL, // Used by HtmlWebPackPlugin for asset prefix
-      devtoolModuleFilenameTemplate: function(info) {
+      devtoolModuleFilenameTemplate: function (info) {
         if (isProdBuild) {
           return `webpack:///${info.resourcePath}`;
         } else {
@@ -102,8 +102,7 @@ module.exports = (env, argv) => {
           },
           // Copy Dicom Microscopy Viewer build files
           {
-            from:
-              '../../../node_modules/dicom-microscopy-viewer/dist/dynamic-import',
+            from: '../../../node_modules/dicom-microscopy-viewer/dist/dynamic-import',
             to: DIST_DIR,
             globOptions: {
               ignore: ['**/*.min.js.map'],
@@ -111,8 +110,7 @@ module.exports = (env, argv) => {
           },
           // Copy dicom-image-loader build files
           {
-            from:
-              '../../../node_modules/@cornerstonejs/dicom-image-loader/dist/dynamic-import',
+            from: '../../../node_modules/@cornerstonejs/dicom-image-loader/dist/dynamic-import',
             to: DIST_DIR,
           },
         ],

@@ -1,5 +1,5 @@
 .customSelect__wrapper .customSelect__control {
-  @apply bg-black border-primary-main shadow transition duration-300 border rounded w-full text-sm text-white leading-tight;
+  @apply border-primary-main w-full rounded border bg-black text-sm leading-tight text-white shadow transition duration-300;
   min-height: 33px;
 }
 .customSelect__wrapper .customSelect__control:hover {
@@ -40,11 +40,11 @@
 }
 
 .customSelect__wrapper.customSelect--is-disabled {
-  @apply cursor-not-allowed pointer-events-auto;
+  @apply pointer-events-auto cursor-not-allowed;
 }
 
 .customSelect__wrapper .customSelect__value-container--is-multi {
-  @apply px-3 py-2 inline-block truncate;
+  @apply inline-block truncate px-3 py-2;
 }
 
 .customSelect__menu {
@@ -73,7 +73,8 @@
   background-color: #0944b391 !important;
 }
 
-.ohif-select .customSelect__option, .ohif-select .customSelect__option label {
+.ohif-select .customSelect__option,
+.ohif-select .customSelect__option label {
   color: #d6d6d6;
   font-size: 14px;
   display: flex;
