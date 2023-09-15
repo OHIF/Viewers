@@ -39,6 +39,8 @@ type Segmentation = {
   isActive: boolean;
   // if the segmentation is visible in the viewer
   isVisible: boolean;
+  // the frame of reference UID of the segmentation
+  FrameOfReferenceUID: string;
   // the label of the segmentation
   label: string;
   // the number of segments in the segmentation

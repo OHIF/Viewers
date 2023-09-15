@@ -13,10 +13,10 @@ describe('OHIF Cornerstone Hotkeys', () => {
     cy.expectMinimumThumbnails(3);
     cy.initCornerstoneToolsAliases();
     cy.initCommonElementsAliases();
+    cy.waitDicomImage();
   });
 
   it('checks if hotkeys "R" and "L" can rotate the image', () => {
-    // Hotkey R
     cy.get('body').type('R');
     cy.get('@viewportInfoMidLeft').should('contains.text', 'P');
     cy.get('@viewportInfoMidTop').should('contains.text', 'R');

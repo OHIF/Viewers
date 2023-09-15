@@ -60,7 +60,7 @@ function _getDisplaySetsFromSeries(instances, servicesManager, extensionManager)
     throw new Error('ReferencedSeriesSequence is missing for the SEG');
   }
 
-  const referencedSeries = referencedSeriesSequence[0];
+  const referencedSeries = referencedSeriesSequence[0] || referencedSeriesSequence;
 
   displaySet.referencedImages = instance.ReferencedSeriesSequence.ReferencedInstanceSequence;
   displaySet.referencedSeriesInstanceUID = referencedSeries.SeriesInstanceUID;

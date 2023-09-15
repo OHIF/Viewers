@@ -69,8 +69,8 @@ export default class ContextMenuController {
       event,
       content: ContextMenu,
 
-      // This naming is part of hte uiDialogService convention
-      // Clicking outside simpy closes the dialog box.
+      // This naming is part of the uiDialogService convention
+      // Clicking outside simply closes the dialog box.
       onClickOutside: () => this.services.uiDialogService.dismiss({ id: 'context-menu' }),
 
       contentProps: {

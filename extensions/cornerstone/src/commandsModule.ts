@@ -18,7 +18,6 @@ import toggleStackImageSync from './utils/stackSync/toggleStackImageSync';
 import { getFirstAnnotationSelected } from './utils/measurementServiceMappings/utils/selection';
 import getActiveViewportEnabledElement from './utils/getActiveViewportEnabledElement';
 import { CornerstoneServices } from './types';
-import ImageOverlayViewerTool from './tools/ImageOverlayViewerTool';
 
 function commandsModule({
   servicesManager,
@@ -268,9 +267,7 @@ function commandsModule({
     toolbarServiceRecordInteraction: props => {
       toolbarService.recordInteraction(props);
     },
-
-    setToolActive: ({ toolName, toolGroupId = null }) => {
-      toolGroupService.setPrimaryToolActive(toolName, toolGroupId);
+    setToolActive: ({ toolName, toolGroupId = null, toggledState }) => {
       if (toolName === 'Crosshairs') {
         const activeViewportToolGroup = toolGroupService.getToolGroup(null);
 

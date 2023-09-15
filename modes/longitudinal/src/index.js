@@ -75,7 +75,7 @@ function modeFactory({ modeConfiguration }) {
         toolbarService,
         toolGroupService,
         panelService,
-        segmentationService,
+        customizationService,
       } = servicesManager.services;
 
       measurementService.clearMeasurements();
@@ -127,6 +127,13 @@ function modeFactory({ modeConfiguration }) {
         'MoreTools',
         'fusionPTColormap',
         'RectangleROIStartEndThreshold',
+      ]);
+
+      customizationService.addModeCustomizations([
+        {
+          id: 'segmentation.disableEditing',
+          value: true,
+        },
       ]);
 
       // // ActivatePanel event trigger for when a segmentation or measurement is added.

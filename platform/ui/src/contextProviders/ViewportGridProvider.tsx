@@ -70,7 +70,9 @@ const determineActiveViewportId = (state: DefaultState, newViewports: Map) => {
   const currentActiveViewport = state.viewports.get(activeViewportId);
 
   if (!currentActiveViewport) {
-    return null; // Return an appropriate value if the current active viewport is not found
+    // if there is no active viewport, we should just return the first viewport
+    const firstViewport = newViewports.values().next().value;
+    return firstViewport.viewportOptions.viewportId;
   }
 
   // for the new viewports, we should rank them by the displaySetInstanceUIDs
@@ -142,8 +144,8 @@ export function ViewportGridProvider({ children, service }) {
           // That allows for easy updates of just the display set.
           const viewportOptions = merge(
             {},
-            updatedViewport?.viewportOptions,
-            previousViewport?.viewportOptions
+            previousViewport?.viewportOptions,
+            updatedViewport?.viewportOptions
           );
 
           const displaySetOptions = updatedViewport.displaySetOptions || [];
@@ -257,7 +259,7 @@ export function ViewportGridProvider({ children, service }) {
         }
 
         activeViewportIdToSet =
-          activeViewportIdToSet ?? determineActiveViewportId(state, viewports) ?? 'default';
+          activeViewportIdToSet ?? determineActiveViewportId(state, viewports);
 
         const ret = {
           ...state,

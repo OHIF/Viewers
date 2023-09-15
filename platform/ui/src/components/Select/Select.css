@@ -1,6 +1,6 @@
 .customSelect__wrapper .customSelect__control {
-  @apply border-primary-main w-full rounded border bg-black text-sm leading-tight text-white shadow transition duration-300;
-  min-height: 33px;
+  @apply border-secondary-light w-full rounded border bg-black text-sm leading-tight text-white shadow transition duration-300;
+  min-height: 28px;
 }
 .customSelect__wrapper .customSelect__control:hover {
   @apply border-gray-500;
@@ -13,6 +13,10 @@
 
 .customSelect--is-disabled .customSelect__control--is-disabled {
   @apply pointer-events-none;
+}
+
+.css-1hwfws3 {
+  padding: 0;
 }
 
 .customSelect__wrapper .customSelect__indicator-separator {
@@ -36,7 +40,11 @@
 }
 
 .customSelect__wrapper .customSelect__single-value {
-  @apply text-white;
+  @apply text-aqua-pale pl-1;
+  max-width: calc(100% - 20px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .customSelect__wrapper.customSelect--is-disabled {
@@ -54,14 +62,16 @@
 
 .ohif-select .customSelect__menu-list {
   overflow-x: hidden !important;
-  margin-right: 4px;
-  margin-top: 4px;
+  margin: 4px;
   padding-top: 0px !important;
 }
 
 .ohif-select .customSelect__menu-list::-webkit-scrollbar {
   width: 6px;
   border-radius: 10px;
+}
+.ohif-select .customSelect__placeholder {
+  @apply text-aqua-pale pl-1.5;
 }
 
 .ohif-select .customSelect__menu-list::-webkit-scrollbar-thumb {
@@ -89,4 +99,8 @@
   border: 2px solid #0944b3;
   border-radius: 6px;
   background-color: #151515 !important;
+}
+
+.css-1hwfws3 {
+  all: unset !important;
 }

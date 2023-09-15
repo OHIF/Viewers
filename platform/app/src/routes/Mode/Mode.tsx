@@ -67,6 +67,13 @@ async function defaultRouteInit(
     })
   );
 
+  // log the error if this fails, otherwise it's so difficult to tell what went wrong...
+  allRetrieves.forEach(retrieve => {
+    retrieve.catch(error => {
+      console.error(error);
+    });
+  });
+
   // The hanging protocol matching service is fairly expensive to run multiple
   // times, and doesn't allow partial matches to be made (it will simply fail
   // to display anything if a required match fails), so we wait here until all metadata

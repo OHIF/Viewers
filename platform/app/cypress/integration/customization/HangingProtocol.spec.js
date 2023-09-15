@@ -7,6 +7,7 @@ describe('OHIF HP', () => {
     cy.expectMinimumThumbnails(3);
     cy.initCornerstoneToolsAliases();
     cy.initCommonElementsAliases();
+    cy.waitDicomImage();
   };
 
   it('Should display 3 up', () => {
