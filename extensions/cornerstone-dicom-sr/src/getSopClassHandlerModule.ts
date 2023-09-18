@@ -558,6 +558,7 @@ function _getReferencedImagesList(ImagingMeasurementReportContentSequence) {
   const ImageLibraryGroup = _getSequenceAsArray(ImageLibrary.ContentSequence).find(
     item => item.ConceptNameCodeSequence.CodeValue === CodeNameCodeSequenceValues.ImageLibraryGroup
   );
+
   const referencedImages = [];
 
   _getSequenceAsArray(ImageLibraryGroup.ContentSequence).forEach(item => {
