@@ -61,7 +61,7 @@ function planeDistance(point, instance) {
  * @param closestInstanceInfo    last closest instance
  * @returns
  */
-function getClosestInstance(targetPoint, displaySet, closestInstanceInfos) {
+function getClosestInstanceRelativeToPoint(targetPoint, displaySet, closestInstanceInfos) {
   // todo: this does not assume orientation yet, but that can be added later
   const displaySetInstanceUID = displaySet.displaySetInstanceUID;
   return displaySet.instances.reduce((closestInstanceInfos, instance) => {
@@ -89,10 +89,14 @@ function getClosestInstance(targetPoint, displaySet, closestInstanceInfos) {
  * @param displaySets
  * @returns
  */
-export default function getClosestInstanceInfo(targetPoint, frameOfReferenceUID, displaySets) {
+export default function getClosestInstanceInfoRelativeToPoint(
+  targetPoint,
+  frameOfReferenceUID,
+  displaySets
+) {
   return displaySets.reduce((closestInstanceInfos, displaySet) => {
     if (displaySet.instance.FrameOfReferenceUID === frameOfReferenceUID) {
-      return getClosestInstance(targetPoint, displaySet, closestInstanceInfos);
+      return getClosestInstanceRelativeToPoint(targetPoint, displaySet, closestInstanceInfos);
     } else {
       return closestInstanceInfos;
     }

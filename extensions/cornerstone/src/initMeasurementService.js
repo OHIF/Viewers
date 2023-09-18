@@ -369,6 +369,7 @@ const connectMeasurementServiceToTools = (
           referencedImageId: imageId,
         },
         data: {
+          ...data.annotation.data,
           text: data.annotation.data.text,
           handles: { ...data.annotation.data.handles },
           cachedStats: { ...data.annotation.data.cachedStats },

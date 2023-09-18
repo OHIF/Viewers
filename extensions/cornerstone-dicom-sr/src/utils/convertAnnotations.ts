@@ -1,4 +1,6 @@
-import getClosestInstanceInfo, { getPointProjection } from './getClosestInstanceInfo';
+import getClosestInstanceInfoRelativeToPoint, {
+  getPointProjection,
+} from './getClosestInstanceInfoRelativeToPoint';
 import { utilities as csUtils } from '@cornerstonejs/core';
 
 function toArray(x) {
@@ -105,7 +107,7 @@ export function convertSCOORD3DAnnotationsInMeasurementGroups(measurementGroup, 
         ...measurementGroupContentSequence[trackIDIndex],
       };
       const frameOfReference = SCOORD3DContentItems[0].ReferencedFrameOfReferenceUID;
-      const closestInstanceInfos = getClosestInstanceInfo(
+      const closestInstanceInfos = getClosestInstanceInfoRelativeToPoint(
         SCOORD3DContentItems[0].GraphicData,
         frameOfReference,
         displaySets
