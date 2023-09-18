@@ -202,11 +202,17 @@ export default function PanelSegmentation({
     });
 
     // Show the exported report in the active viewport as read only (similar to SR)
+    if (displaySetInstanceUIDs) {
+      // clear the segmentation that we exported, similar to the storeMeasurement
+      // where we remove the measurements and prompt again the user if they would like
+      // to re-read the measurements in a SR read only viewport
+      segmentationService.remove(segmentationId);
 
-    viewportGridService.setDisplaySetsForViewport({
-      viewportId: viewportGridService.getActiveViewportId(),
-      displaySetInstanceUIDs,
-    });
+      viewportGridService.setDisplaySetsForViewport({
+        viewportId: viewportGridService.getActiveViewportId(),
+        displaySetInstanceUIDs,
+      });
+    }
   };
 
   return (

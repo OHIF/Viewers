@@ -335,11 +335,6 @@ const commandsModule = ({
 
       const { dataset: naturalizedReport } = generatedData;
 
-      // clear the segmentation that we exported, similar to the storeMeasurement
-      // where we remove the measurements and prompt again the user if they would like
-      // to re-read the measurements in a SR read only viewport
-      segmentationService.remove(segmentation.id);
-
       await dataSource.store.dicom(naturalizedReport);
 
       // The "Mode" route listens for DicomMetadataStore changes
