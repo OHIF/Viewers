@@ -1,6 +1,4 @@
-import getClosestInstanceInfo, {
-  getPointProjection,
-} from './getClosestInstanceInfo';
+import getClosestInstanceInfo, { getPointProjection } from './getClosestInstanceInfo';
 import { utilities as csUtils } from '@cornerstonejs/core';
 
 function toArray(x) {
@@ -12,26 +10,6 @@ const codeMeaningEquals = codeMeaningName => {
     return contentItem.ConceptNameCodeSequence.CodeMeaning === codeMeaningName;
   };
 };
-
-export function checkUnmappedMeasurement(measurement): boolean {
-  const { TrackingIdentifier } = measurement || {};
-  const check1 =
-    TrackingIdentifier === 'Lesion' &&
-    measurement.coords.length === 1 &&
-    measurement.coords[0].GraphicType === 'POLYLINE' &&
-    measurement.coords[0].ValueType === 'SCOORD' &&
-    Array.isArray(measurement.coords[0].GraphicData) &&
-    measurement.coords[0].GraphicData.length % 2 === 0;
-
-  const check2 =
-    measurement.coords.length === 1 &&
-    measurement.coords[0].GraphicType === 'POINT' &&
-    measurement.coords[0].ValueType === 'SCOORD3D' &&
-    Array.isArray(measurement.coords[0].GraphicData) &&
-    measurement.coords[0].GraphicData.length === 3;
-
-  return check1 || check2;
-}
 
 function uid() {
   let uid = '2.25.' + Math.floor(1 + Math.random() * 9);
@@ -46,19 +24,52 @@ const REPORT = 'Imaging Measurements';
 const GROUP = 'Measurement Group';
 const TRACKING_IDENTIFIER_CODE = '112040';
 
-export function convertSCOORD3DAnnotationsInMeasurementGroups(
-  measurementGroup,
-  displaySets
-) {
+export function convertPolylineAnnotationsInMeasurementGroups(measurementGroup, displaySets) {
+  const referencedImages = [];
   const cornerstoneTag = 'Cornerstone3DTools@^0.1.0';
-  const toolName = 'ArrowAnnotate';
-  const newlyGeneratedMeasurementGroups = [];
-  const measurementGroupContentSequence = toArray(
-    measurementGroup.ContentSequence
-  );
+  const toolName = 'PlanarFreehandROI';
+  const measurementGroupContentSequence = toArray(measurementGroup.ContentSequence);
   const SCOORDContentItems = measurementGroupContentSequence.filter(
     group => group.ValueType === 'SCOORD'
   );
+  const NUMContentItems = measurementGroupContentSequence.filter(
+    group => group.ValueType === 'NUM'
+  );
+  if (!NUMContentItems.length) {
+    if (SCOORDContentItems.length) {
+      measurementGroupContentSequence[Object.keys(measurementGroupContentSequence).length] = {
+        ConceptNameCodeSequence: {
+          ...SCOORDContentItems[0].ConceptNameCodeSequence,
+        },
+        ContentSequence: SCOORDContentItems,
+        ValueType: 'NUM',
+      };
+      // add TrackingIdentifier in the new measurement group
+      const TrackingIdentifierGroup = measurementGroupContentSequence.find(
+        contentItem => contentItem.ConceptNameCodeSequence.CodeMeaning === TRACKING_IDENTIFIER
+      );
+
+      const mappedTrackingIdentifier = `${cornerstoneTag}:${toolName}`;
+      TrackingIdentifierGroup.TextValue = mappedTrackingIdentifier;
+
+      SCOORDContentItems[0].ContentSequence[0].ReferencedSOPSequence.forEach(item => {
+        const { ReferencedSOPClassUID, ReferencedSOPInstanceUID } = item;
+        referencedImages.push({
+          ReferencedSOPClassUID,
+          ReferencedSOPInstanceUID,
+        });
+      });
+    }
+  }
+  return referencedImages;
+}
+
+export function convertSCOORD3DAnnotationsInMeasurementGroups(measurementGroup, displaySets) {
+  const cornerstoneTag = 'Cornerstone3DTools@^0.1.0';
+  const toolName = 'ArrowAnnotate';
+  const newlyGeneratedMeasurementGroups = [];
+  const newlyFoundReferencedImages = [];
+  const measurementGroupContentSequence = toArray(measurementGroup.ContentSequence);
   const SCOORD3DContentItems = measurementGroupContentSequence.filter(
     group => group.ValueType === 'SCOORD3D'
   );
@@ -66,21 +77,7 @@ export function convertSCOORD3DAnnotationsInMeasurementGroups(
     group => group.ValueType === 'NUM'
   );
   if (!NUMContentItems.length) {
-    if (SCOORDContentItems.length) {
-      measurementGroupContentSequence[
-        Object.keys(measurementGroupContentSequence).length
-      ] = {
-        ConceptNameCodeSequence: {
-          ...SCOORDContentItems[0].ConceptNameCodeSequence,
-        },
-        ContentSequence: SCOORDContentItems,
-        ValueType: 'NUM',
-      };
-      return {
-        cornerstoneTag: 'Cornerstone3DTools@^0.1.0',
-        toolName: 'PlanarFreehandROI',
-      };
-    } else if (SCOORD3DContentItems.length) {
+    if (SCOORD3DContentItems.length) {
       // search SCOORD3D item
       let scoord3DIndex = -1;
       for (let i = 0; i < measurementGroupContentSequence.length; i++) {
@@ -93,8 +90,8 @@ export function convertSCOORD3DAnnotationsInMeasurementGroups(
       let trackIDIndex = -1;
       for (let i = 0; i < measurementGroupContentSequence.length; i++) {
         if (
-          measurementGroupContentSequence[i].ConceptNameCodeSequence
-            .CodeValue === TRACKING_IDENTIFIER_CODE
+          measurementGroupContentSequence[i].ConceptNameCodeSequence.CodeValue ===
+          TRACKING_IDENTIFIER_CODE
         ) {
           trackIDIndex = i;
           break;
@@ -107,8 +104,7 @@ export function convertSCOORD3DAnnotationsInMeasurementGroups(
       const trackingIdentifierContentItemsClone = {
         ...measurementGroupContentSequence[trackIDIndex],
       };
-      const frameOfReference =
-        SCOORD3DContentItems[0].ReferencedFrameOfReferenceUID;
+      const frameOfReference = SCOORD3DContentItems[0].ReferencedFrameOfReferenceUID;
       const closestInstanceInfos = getClosestInstanceInfo(
         SCOORD3DContentItems[0].GraphicData,
         frameOfReference,
@@ -123,10 +119,7 @@ export function convertSCOORD3DAnnotationsInMeasurementGroups(
           SCOORD3DContentItems[0].GraphicData,
           closestInstanceInfo.instance
         );
-        const imagePoint = csUtils.worldToImageCoords(
-          closestInstanceInfo.instance.imageId,
-          point
-        );
+        const imagePoint = csUtils.worldToImageCoords(closestInstanceInfo.instance.imageId, point);
 
         const newSCOORDContentItem = {
           RelationshipType: 'CONTAINS',
@@ -153,13 +146,14 @@ export function convertSCOORD3DAnnotationsInMeasurementGroups(
           GraphicData: imagePoint,
           GraphicType: 'POINT',
         };
+        newlyFoundReferencedImages.push({
+          ReferencedSOPClassUID: SOPClassUID,
+          ReferencedSOPInstanceUID: SOPInstanceUID,
+        });
         let contentSequence;
         if (i === 0) {
-          measurementGroupContentSequence[
-            Object.keys(measurementGroupContentSequence).length
-          ] = {
-            ConceptNameCodeSequence:
-              SCOORD3DContentItems[0].ConceptNameCodeSequence,
+          measurementGroupContentSequence[Object.keys(measurementGroupContentSequence).length] = {
+            ConceptNameCodeSequence: SCOORD3DContentItems[0].ConceptNameCodeSequence,
             ContentSequence: newSCOORDContentItem,
             ValueType: 'NUM',
           };
@@ -173,15 +167,11 @@ export function convertSCOORD3DAnnotationsInMeasurementGroups(
             },
           };
         } else {
-          const measurementGroupClone = Object.assign(
-            {},
-            measurementGroupMatrix
-          );
+          const measurementGroupClone = Object.assign({}, measurementGroupMatrix);
           measurementGroupClone.ContentSequence = [...contentSequenceMatrix];
           contentSequence = toArray(measurementGroupClone.ContentSequence);
           contentSequence[Object.keys(contentSequence).length] = {
-            ConceptNameCodeSequence:
-              SCOORD3DContentItems[0].ConceptNameCodeSequence,
+            ConceptNameCodeSequence: SCOORD3DContentItems[0].ConceptNameCodeSequence,
             ContentSequence: newSCOORDContentItem,
             ValueType: 'NUM',
           };
@@ -202,9 +192,7 @@ export function convertSCOORD3DAnnotationsInMeasurementGroups(
         }
         // add TrackingIdentifier in the new measurement group
         const TrackingIdentifierGroup = contentSequence.find(
-          contentItem =>
-            contentItem.ConceptNameCodeSequence.CodeMeaning ===
-            TRACKING_IDENTIFIER
+          contentItem => contentItem.ConceptNameCodeSequence.CodeMeaning === TRACKING_IDENTIFIER
         );
 
         const mappedTrackingIdentifier = `${cornerstoneTag}:${toolName}`;
@@ -212,31 +200,38 @@ export function convertSCOORD3DAnnotationsInMeasurementGroups(
       }
     }
   }
-  return newlyGeneratedMeasurementGroups;
+  return { newlyGeneratedMeasurementGroups, newlyFoundReferencedImages };
 }
 
-export function convertSCOORD3DAnnotations(dataset, displaySets) {
+export function convertAnnotations(dataset, displaySetService) {
+  // Get the displaySets loaded
+  const displaySets = [...displaySetService.getDisplaySetCache().values()];
   // Identify the Imaging Measurements
   const imagingMeasurementContent = toArray(dataset.ContentSequence).find(
     codeMeaningEquals(REPORT)
   );
 
   let additionalMeasurementGroups = [];
+  let referencedImages = [];
   // Retrieve the Measurements themselves
-  const measurementGroups = toArray(
-    imagingMeasurementContent.ContentSequence
-  ).filter(codeMeaningEquals(GROUP));
-  measurementGroups.forEach(measurementGroup => {
-    const newlyGeneratedMeasurementGroups =
-      convertSCOORD3DAnnotationsInMeasurementGroups(
-        measurementGroup,
-        displaySets
-      );
-    additionalMeasurementGroups = additionalMeasurementGroups.concat(
-      newlyGeneratedMeasurementGroups
-    );
-  });
-  additionalMeasurementGroups.map(group =>
-    imagingMeasurementContent.ContentSequence.push(group)
+  const measurementGroups = toArray(imagingMeasurementContent.ContentSequence).filter(
+    codeMeaningEquals(GROUP)
   );
+  measurementGroups.forEach(measurementGroup => {
+    const result = convertSCOORD3DAnnotationsInMeasurementGroups(measurementGroup, displaySets);
+    if (result) {
+      const { newlyGeneratedMeasurementGroups, newlyFoundReferencedImages } = result;
+      additionalMeasurementGroups = additionalMeasurementGroups.concat(
+        newlyGeneratedMeasurementGroups
+      );
+      referencedImages = referencedImages.concat(newlyFoundReferencedImages);
+    }
+    const newReferencedImages = convertPolylineAnnotationsInMeasurementGroups(
+      measurementGroup,
+      displaySets
+    );
+    referencedImages = referencedImages.concat(newReferencedImages);
+  });
+  additionalMeasurementGroups.map(group => imagingMeasurementContent.ContentSequence.push(group));
+  return referencedImages;
 }
