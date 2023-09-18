@@ -152,7 +152,7 @@ function createDicomJSONApi(dicomJsonConfig) {
         return getDirectURL(wadoRoot, params);
       },
       series: {
-        metadata: ({ StudyInstanceUID, madeInClient = false, customSort } = {}) => {
+        metadata: async ({ StudyInstanceUID, madeInClient = false, customSort } = {}) => {
           if (!StudyInstanceUID) {
             throw new Error('Unable to query for SeriesMetadata without StudyInstanceUID');
           }
