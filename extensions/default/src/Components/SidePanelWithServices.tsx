@@ -50,7 +50,7 @@ const SidePanelWithServices = ({
       className={className}
       activeTabIndex={activeTabIndex}
       tabs={tabs}
-      onOpened={() => {
+      onOpen={() => {
         setHasBeenOpened(true);
       }}
     ></SidePanel>

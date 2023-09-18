@@ -130,7 +130,7 @@ const getTabIconClassNames = (numTabs: number, isActiveTab: boolean) => {
   });
 };
 
-const SidePanel = ({ side, className, activeTabIndex: activeTabIndexProp, tabs, onOpened }) => {
+const SidePanel = ({ side, className, activeTabIndex: activeTabIndexProp, tabs, onOpen }) => {
   const { t } = useTranslation('SidePanel');
 
   const [panelOpen, setPanelOpen] = useState();
@@ -144,7 +144,7 @@ const SidePanel = ({ side, className, activeTabIndex: activeTabIndexProp, tabs, 
   const updatePanelOpen = useCallback((panelOpen: boolean) => {
     setPanelOpen(panelOpen);
     if (panelOpen) {
-      onOpened?.();
+      onOpen?.();
     }
   }, []);
 
@@ -356,7 +356,7 @@ SidePanel.propTypes = {
       })
     ),
   ]),
-  onOpened: PropTypes.func,
+  onOpen: PropTypes.func,
 };
 
 export default SidePanel;
