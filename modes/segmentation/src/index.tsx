@@ -17,10 +17,8 @@ const cornerstone = {
 
 const segmentation = {
   panel: '@ohif/extension-cornerstone-dicom-seg.panelModule.panelSegmentation',
-  panelTool:
-    '@ohif/extension-cornerstone-dicom-seg.panelModule.panelSegmentationWithTools',
-  sopClassHandler:
-    '@ohif/extension-cornerstone-dicom-seg.sopClassHandlerModule.dicom-seg',
+  panelTool: '@ohif/extension-cornerstone-dicom-seg.panelModule.panelSegmentationWithTools',
+  sopClassHandler: '@ohif/extension-cornerstone-dicom-seg.sopClassHandlerModule.dicom-seg',
   viewport: '@ohif/extension-cornerstone-dicom-seg.viewportModule.dicom-seg',
 };
 
@@ -52,8 +50,7 @@ function modeFactory({ modeConfiguration }) {
      * Services and other resources.
      */
     onModeEnter: ({ servicesManager, extensionManager, commandsManager }) => {
-      const { measurementService, toolbarService, toolGroupService } =
-        servicesManager.services;
+      const { measurementService, toolbarService, toolGroupService } = servicesManager.services;
 
       measurementService.clearMeasurements();
 

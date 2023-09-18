@@ -131,7 +131,6 @@ const InputDoubleRange: React.FC<InputDoubleRangeProps> = ({
   };
 
   const handleMouseMove = e => {
-    console.debug('🚀 ~ selectedThumb:', selectedThumbRef.current);
     const selectedThumbValue = selectedThumbRef.current;
 
     if (selectedThumbValue === null) {
@@ -180,7 +179,6 @@ const InputDoubleRange: React.FC<InputDoubleRangeProps> = ({
       <div
         className="relative flex h-10 w-full items-center"
         onMouseDown={handleMouseDown}
-        // onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         ref={sliderRef}
       >

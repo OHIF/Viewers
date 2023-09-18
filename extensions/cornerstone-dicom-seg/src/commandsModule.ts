@@ -4,6 +4,8 @@ import { ServicesManager, Types } from '@ohif/core';
 import { cache, metaData } from '@cornerstonejs/core';
 import { segmentation as cornerstoneToolsSegmentation } from '@cornerstonejs/tools';
 import { adaptersSEG, helpers } from '@cornerstonejs/adapters';
+import { DicomMetadataStore } from '@ohif/core';
+
 import {
   updateViewportsForSegmentationRendering,
   getUpdatedViewportsForSegmentation,
@@ -333,7 +335,21 @@ const commandsModule = ({
 
       const { dataset: naturalizedReport } = generatedData;
 
+      // clear the segmentation that we exported, similar to the storeMeasurement
+      // where we remove the measurements and prompt again the user if they would like
+      // to re-read the measurements in a SR read only viewport
+      segmentationService.remove(segmentation.id);
+
       await dataSource.store.dicom(naturalizedReport);
+
+      // The "Mode" route listens for DicomMetadataStore changes
+      // When a new instance is added, it listens and
+      // automatically calls makeDisplaySets
+
+      // add the information for where we stored it to the instance as well
+      naturalizedReport.wadoRoot = dataSource.getConfig().wadoRoot;
+
+      DicomMetadataStore.addInstances([naturalizedReport], true);
 
       return naturalizedReport;
     },

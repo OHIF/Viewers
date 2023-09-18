@@ -113,6 +113,7 @@ function SegmentationToolbox({ servicesManager, extensionManager }) {
     const events = [
       segmentationService.EVENTS.SEGMENTATION_ADDED,
       segmentationService.EVENTS.SEGMENTATION_UPDATED,
+      segmentationService.EVENTS.SEGMENTATION_REMOVED,
     ];
 
     const unsubscriptions = [];

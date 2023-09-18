@@ -13,7 +13,7 @@ export default function PanelSegmentation({
   extensionManager,
   configuration,
 }) {
-  const { segmentationService, uiDialogService } = servicesManager.services;
+  const { segmentationService, viewportGridService, uiDialogService } = servicesManager.services;
 
   const { t } = useTranslation('PanelSegmentation');
 
@@ -188,20 +188,24 @@ export default function PanelSegmentation({
     });
   };
 
-  const storeSegmentation = segmentationId => {
+  const storeSegmentation = async segmentationId => {
     const datasources = extensionManager.getActiveDataSource();
 
-    const getReport = async () => {
-      return await commandsManager.runCommand('storeSegmentation', {
-        segmentationId,
-        dataSource: datasources[0],
-      });
-    };
-
-    createReportAsync({
+    const displaySetInstanceUIDs = await createReportAsync({
       servicesManager,
-      getReport,
+      getReport: () =>
+        commandsManager.runCommand('storeSegmentation', {
+          segmentationId,
+          dataSource: datasources[0],
+        }),
       reportType: 'Segmentation',
+    });
+
+    // Show the exported report in the active viewport as read only (similar to SR)
+
+    viewportGridService.setDisplaySetsForViewport({
+      viewportId: viewportGridService.getActiveViewportId(),
+      displaySetInstanceUIDs,
     });
   };
 

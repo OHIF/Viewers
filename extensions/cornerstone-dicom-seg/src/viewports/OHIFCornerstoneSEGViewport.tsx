@@ -375,12 +375,18 @@ OHIFCornerstoneSEGViewport.defaultProps = {
 };
 
 function _getReferencedDisplaySetMetadata(referencedDisplaySet, segDisplaySet) {
-  const {
-    SharedFunctionalGroupsSequence: [SharedFunctionalGroup],
-  } = segDisplaySet.instance;
-  const {
-    PixelMeasuresSequence: [PixelMeasures],
-  } = SharedFunctionalGroup;
+  const { SharedFunctionalGroupsSequence } = segDisplaySet.instance;
+
+  const SharedFunctionalGroup = Array.isArray(SharedFunctionalGroupsSequence)
+    ? SharedFunctionalGroupsSequence[0]
+    : SharedFunctionalGroupsSequence;
+
+  const { PixelMeasuresSequence } = SharedFunctionalGroup;
+
+  const PixelMeasures = Array.isArray(PixelMeasuresSequence)
+    ? PixelMeasuresSequence[0]
+    : PixelMeasuresSequence;
+
   const { SpacingBetweenSlices, SliceThickness } = PixelMeasures;
 
   const image0 = referencedDisplaySet.images[0];

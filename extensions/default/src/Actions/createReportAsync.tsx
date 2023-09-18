@@ -22,7 +22,9 @@ async function createReportAsync({ servicesManager, getReport, reportType = 'mea
     // automatically calls makeDisplaySets
     DicomMetadataStore.addInstances([naturalizedReport], true);
 
-    const displaySetInstanceUID = displaySetService.getMostRecentDisplaySet();
+    const displaySet = displaySetService.getMostRecentDisplaySet();
+
+    const displaySetInstanceUID = displaySet.displaySetInstanceUID;
 
     uiNotificationService.show({
       title: 'Create Report',
