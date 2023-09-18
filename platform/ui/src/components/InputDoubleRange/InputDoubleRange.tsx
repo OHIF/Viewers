@@ -179,7 +179,6 @@ const InputDoubleRange: React.FC<InputDoubleRangeProps> = ({
       <div
         className="relative flex h-10 w-full items-center"
         onMouseDown={handleMouseDown}
-        onMouseUp={handleMouseUp}
         ref={sliderRef}
       >
         <div
