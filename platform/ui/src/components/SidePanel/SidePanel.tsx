@@ -133,7 +133,7 @@ const getTabIconClassNames = (numTabs: number, isActiveTab: boolean) => {
 const SidePanel = ({ side, className, activeTabIndex: activeTabIndexProp, tabs, onOpen }) => {
   const { t } = useTranslation('SidePanel');
 
-  const [panelOpen, setPanelOpen] = useState();
+  const [panelOpen, setPanelOpen] = useState(activeTabIndexProp !== null);
   const [activeTabIndex, setActiveTabIndex] = useState(0);
 
   const openStatus = panelOpen ? 'open' : 'closed';
