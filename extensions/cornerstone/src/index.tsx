@@ -7,31 +7,31 @@ import {
   imageRetrievalPoolManager,
 } from '@cornerstonejs/core';
 import { Enums as cs3DToolsEnums } from '@cornerstonejs/tools';
-import { Types } from '@ohif/core';
+import { ServicesManager, Types } from '@ohif/core';
 
 import init from './init';
+import getCustomizationModule from './getCustomizationModule';
 import getCommandsModule from './commandsModule';
 import getHangingProtocolModule from './getHangingProtocolModule';
 import ToolGroupService from './services/ToolGroupService';
 import SyncGroupService from './services/SyncGroupService';
 import SegmentationService from './services/SegmentationService';
 import CornerstoneCacheService from './services/CornerstoneCacheService';
+import CornerstoneViewportService from './services/ViewportService/CornerstoneViewportService';
+import * as CornerstoneExtensionTypes from './types';
 
 import { toolNames } from './initCornerstoneTools';
 import { getEnabledElement, reset as enabledElementReset } from './state';
-import CornerstoneViewportService from './services/ViewportService/CornerstoneViewportService';
 import dicomLoaderService from './utils/dicomLoaderService';
-import { registerColormap } from './utils/colormap/transferFunctionHelpers';
+import getActiveViewportEnabledElement from './utils/getActiveViewportEnabledElement';
 
 import { id } from './id';
 import * as csWADOImageLoader from './initWADOImageLoader.js';
 import { measurementMappingUtils } from './utils/measurementServiceMappings';
-import { PublicViewportOptions } from './services/ViewportService/Viewport';
+import type { PublicViewportOptions } from './services/ViewportService/Viewport';
 
 const Component = React.lazy(() => {
-  return import(
-    /* webpackPrefetch: true */ './Viewport/OHIFCornerstoneViewport'
-  );
+  return import(/* webpackPrefetch: true */ './Viewport/OHIFCornerstoneViewport');
 });
 
 const OHIFCornerstoneViewport = props => {
@@ -59,7 +59,6 @@ const cornerstoneExtension: Types.Extensions.Extension = {
       imageRetrievalPoolManager.clearRequestStack(type);
     });
 
-    csWADOImageLoader.destroy();
     enabledElementReset();
   },
 
@@ -68,22 +67,13 @@ const cornerstoneExtension: Types.Extensions.Extension = {
    *
    * @param configuration.csToolsConfig - Passed directly to `initCornerstoneTools`
    */
-  preRegistration: function (
-    props: Types.Extensions.ExtensionParams
-  ): Promise<void> {
+  preRegistration: function (props: Types.Extensions.ExtensionParams): Promise<void> {
     const { servicesManager } = props;
-    // Todo: we should be consistent with how services get registered. Use REGISTRATION static method for all
-    servicesManager.registerService(
-      CornerstoneViewportService(servicesManager)
-    );
-    servicesManager.registerService(
-      ToolGroupService.REGISTRATION(servicesManager)
-    );
-    servicesManager.registerService(SyncGroupService(servicesManager));
-    servicesManager.registerService(SegmentationService(servicesManager));
-    servicesManager.registerService(
-      CornerstoneCacheService.REGISTRATION(servicesManager)
-    );
+    servicesManager.registerService(CornerstoneViewportService.REGISTRATION);
+    servicesManager.registerService(ToolGroupService.REGISTRATION);
+    servicesManager.registerService(SyncGroupService.REGISTRATION);
+    servicesManager.registerService(SegmentationService.REGISTRATION);
+    servicesManager.registerService(CornerstoneCacheService.REGISTRATION);
 
     return init.call(this, props);
   },
@@ -99,7 +89,7 @@ const cornerstoneExtension: Types.Extensions.Extension = {
       return (
         <OHIFCornerstoneViewport
           {...props}
-          ToolbarService={toolbarService}
+          toolbarService={toolbarService}
           servicesManager={servicesManager}
           commandsManager={commandsManager}
         />
@@ -114,6 +104,7 @@ const cornerstoneExtension: Types.Extensions.Extension = {
     ];
   },
   getCommandsModule,
+  getCustomizationModule,
   getUtilityModule({ servicesManager }) {
     return [
       {
@@ -124,7 +115,6 @@ const cornerstoneExtension: Types.Extensions.Extension = {
           },
           getEnabledElement,
           dicomLoaderService,
-          registerColormap,
         },
       },
       {
@@ -145,5 +135,10 @@ const cornerstoneExtension: Types.Extensions.Extension = {
 };
 
 export type { PublicViewportOptions };
-export { measurementMappingUtils };
+export {
+  measurementMappingUtils,
+  CornerstoneExtensionTypes,
+  toolNames,
+  getActiveViewportEnabledElement,
+};
 export default cornerstoneExtension;

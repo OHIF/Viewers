@@ -9,16 +9,22 @@ export const argTypes = {
   title: 'Components/Icon',
 };
 
-<Meta title="Components/Icon" component={Icon} />
+<Meta
+  title="Components/Icon"
+  component={Icon}
+/>
 
 export const IconTemplate = args => (
   // Todo: Icon colors
-  <div className="w-8 h-8">
+  <div className="h-8 w-8">
     <Icon {...args} />
   </div>
 );
 
-<Heading title="Icon" componentRelativePath="Icon/Icon.tsx" />
+<Heading
+  title="Icon"
+  componentRelativePath="Icon/Icon.tsx"
+/>
 
 - [Overview](#overview)
 - [Props](#props)
@@ -46,8 +52,7 @@ Icon is a component that renders the Icons.
 
 ## Usage
 
-You can choose the icon from the list of icons. Here we have render all the
-icons.
+You can choose the icon from the list of icons. Here we have render all the icons.
 
 <Canvas>
   <Story name="All Icons">
@@ -58,8 +63,8 @@ icons.
           {icons
             .filter(ic => ic !== 'magnifier')
             .map(icon => (
-              <div className="m-4 flex flex-col justify-center items-center">
-                <div class="w-8 h-8">
+              <div className="m-4 flex flex-col items-center justify-center">
+                <div class="h-8 w-8">
                   <Icon name={icon} />
                 </div>
                 <div className="text-gray-600">{icon}</div>

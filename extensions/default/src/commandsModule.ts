@@ -1,16 +1,15 @@
-import { ServicesManager, utils } from '@ohif/core';
+import { ServicesManager, utils, Types } from '@ohif/core';
 
-import {
-  ContextMenuController,
-  defaultContextMenu,
-} from './CustomizeableContextMenu';
+import { ContextMenuController, defaultContextMenu } from './CustomizableContextMenu';
 import DicomTagBrowser from './DicomTagBrowser/DicomTagBrowser';
 import reuseCachedLayouts from './utils/reuseCachedLayouts';
 import findViewportsByPosition, {
   findOrCreateViewport as layoutFindOrCreate,
 } from './findViewportsByPosition';
 
-import { ContextMenuProps } from './CustomizeableContextMenu/types';
+import { ContextMenuProps } from './CustomizableContextMenu/types';
+import { NavigateHistory } from './types/commandModuleTypes';
+import { history } from '@ohif/app';
 
 const { subscribeToNextViewportGridChange } = utils;
 
@@ -21,6 +20,11 @@ export type HangingProtocolParams = {
   stageId?: string;
 };
 
+export type UpdateViewportDisplaySetParams = {
+  direction: number;
+  excludeNonImageModalities?: boolean;
+};
+
 /**
  * Determine if a command is a hanging protocol one.
  * For now, just use the two hanging protocol commands that are in this
@@ -28,8 +32,7 @@ export type HangingProtocolParams = {
  */
 const isHangingProtocolCommand = command =>
   command &&
-  (command.commandName === 'setHangingProtocol' ||
-    command.commandName === 'toggleHangingProtocol');
+  (command.commandName === 'setHangingProtocol' || command.commandName === 'toggleHangingProtocol');
 
 const commandsModule = ({
   servicesManager,
@@ -47,10 +50,7 @@ const commandsModule = ({
   } = (servicesManager as ServicesManager).services;
 
   // Define a context menu controller for use with any context menus
-  const contextMenuController = new ContextMenuController(
-    servicesManager,
-    commandsManager
-  );
+  const contextMenuController = new ContextMenuController(servicesManager, commandsManager);
 
   const actions = {
     /**
@@ -88,11 +88,7 @@ const commandsModule = ({
         ...selectorProps,
       };
 
-      contextMenuController.showContextMenu(
-        optionsToUse,
-        element,
-        defaultPointsPosition
-      );
+      contextMenuController.showContextMenu(optionsToUse, element, defaultPointsPosition);
     },
 
     /** Close a context menu currently displayed */
@@ -122,13 +118,17 @@ const commandsModule = ({
         stage,
       } = hangingProtocolService.getActiveProtocol();
       const enableListener = button => {
-        if (!button.id) return;
+        if (!button.id) {
+          return;
+        }
         const { commands, items } = button.props || button;
         if (items) {
           items.forEach(enableListener);
         }
         const hpCommand = commands?.find?.(isHangingProtocolCommand);
-        if (!hpCommand) return;
+        if (!hpCommand) {
+          return;
+        }
         const { protocolId, stageIndex, stageId } = hpCommand.commandOptions;
         const isActive =
           (!protocolId || protocolId === protocol.id) &&
@@ -171,35 +171,25 @@ const commandsModule = ({
       reset = false,
     }: HangingProtocolParams): boolean => {
       try {
-        // Stores in the state the reuseID to displaySetUID mapping
+        // Stores in the state the display set selector id to displaySetUID mapping
         // Pass in viewportId for the active viewport.  This item will get set as
         // the activeViewportId
         const state = viewportGridService.getState();
         const hpInfo = hangingProtocolService.getState();
-        const {
-          protocol: oldProtocol,
-        } = hangingProtocolService.getActiveProtocol();
-        const stateSyncReduce = reuseCachedLayouts(
-          state,
-          hangingProtocolService,
-          stateSyncService
-        );
-        const {
-          hangingProtocolStageIndexMap,
-          viewportGridStore,
-          displaySetSelectorMap,
-        } = stateSyncReduce;
+        const { protocol: oldProtocol } = hangingProtocolService.getActiveProtocol();
+        const stateSyncReduce = reuseCachedLayouts(state, hangingProtocolService, stateSyncService);
+        const { hangingProtocolStageIndexMap, viewportGridStore, displaySetSelectorMap } =
+          stateSyncReduce;
 
         if (!protocolId) {
-          // Re-use the previous protocol id, and optionally stage
+          // Reuse the previous protocol id, and optionally stage
           protocolId = hpInfo.protocolId;
           if (stageId === undefined && stageIndex === undefined) {
             stageIndex = hpInfo.stageIndex;
           }
         } else if (stageIndex === undefined && stageId === undefined) {
           // Re-set the same stage as was previously used
-          const hangingId = `${activeStudyUID ||
-            hpInfo.activeStudyUID}:${protocolId}`;
+          const hangingId = `${activeStudyUID || hpInfo.activeStudyUID}:${protocolId}`;
           stageIndex = hangingProtocolStageIndexMap[hangingId]?.stageIndex;
         }
 
@@ -214,9 +204,9 @@ const commandsModule = ({
           hangingProtocolService.setActiveStudyUID(activeStudyUID);
         }
 
-        const storedHanging = `${
-          hangingProtocolService.getState().activeStudyUID
-        }:${protocolId}:${useStageIdx || 0}`;
+        const storedHanging = `${hangingProtocolService.getState().activeStudyUID}:${protocolId}:${
+          useStageIdx || 0
+        }`;
 
         const restoreProtocol = !reset && viewportGridStore[storedHanging];
 
@@ -242,19 +232,25 @@ const commandsModule = ({
           }
         }
         // Do this after successfully applying the update
+        // Note, don't store the active display set - it is only needed while
+        // changing display sets.  This causes jump to measurement to fail on
+        // multi-study display.
+        delete displaySetSelectorMap[
+          `${activeStudyUID || hpInfo.activeStudyUID}:activeDisplaySet:0`
+        ];
         stateSyncService.store(stateSyncReduce);
         // This is a default action applied
-        actions.toggleHpTools(hangingProtocolService.getActiveProtocol());
+        const { protocol } = hangingProtocolService.getActiveProtocol();
+        actions.toggleHpTools(protocol);
         // Send the notification about updating the state
         if (protocolId !== hpInfo.protocolId) {
-          const { protocol } = hangingProtocolService.getActiveProtocol();
           // The old protocol callbacks are used for turning off things
           // like crosshairs when moving to the new HP
           commandsManager.run(oldProtocol.callbacks?.onProtocolExit);
           // The new protocol callback is used for things like
           // activating modes etc.
-          commandsManager.run(protocol.callbacks?.onProtocolEnter);
         }
+        commandsManager.run(protocol.callbacks?.onProtocolEnter);
         return true;
       } catch (e) {
         actions.toggleHpTools(hangingProtocolService.getActiveProtocol());
@@ -268,19 +264,14 @@ const commandsModule = ({
       }
     },
 
-    toggleHangingProtocol: ({
-      protocolId,
-      stageIndex,
-    }: HangingProtocolParams): boolean => {
+    toggleHangingProtocol: ({ protocolId, stageIndex }: HangingProtocolParams): boolean => {
       const {
         protocol,
         stageIndex: desiredStageIndex,
         activeStudy,
       } = hangingProtocolService.getActiveProtocol();
       const { toggleHangingProtocol } = stateSyncService.getState();
-      const storedHanging = `${
-        activeStudy.StudyInstanceUID
-      }:${protocolId}:${stageIndex | 0}`;
+      const storedHanging = `${activeStudy.StudyInstanceUID}:${protocolId}:${stageIndex | 0}`;
       if (
         protocol.id === protocolId &&
         (stageIndex === undefined || stageIndex === desiredStageIndex)
@@ -309,10 +300,7 @@ const commandsModule = ({
     },
 
     deltaStage: ({ direction }) => {
-      const {
-        protocolId,
-        stageIndex: oldStageIndex,
-      } = hangingProtocolService.getState();
+      const { protocolId, stageIndex: oldStageIndex } = hangingProtocolService.getState();
       const { protocol } = hangingProtocolService.getActiveProtocol();
       for (
         let stageIndex = oldStageIndex + direction;
@@ -329,7 +317,7 @@ const commandsModule = ({
       uiNotificationService.show({
         title: 'Change Stage',
         message: 'The hanging protocol has no more applicable stages',
-        type: 'error',
+        type: 'info',
         duration: 3000,
       });
     },
@@ -341,23 +329,14 @@ const commandsModule = ({
       const { protocol } = hangingProtocolService.getActiveProtocol();
       const onLayoutChange = protocol.callbacks?.onLayoutChange;
       if (commandsManager.run(onLayoutChange, { numRows, numCols }) === false) {
-        console.log(
-          'setViewportGridLayout running',
-          onLayoutChange,
-          numRows,
-          numCols
-        );
+        console.log('setViewportGridLayout running', onLayoutChange, numRows, numCols);
         // Don't apply the layout if the run command returns false
         return;
       }
 
       const completeLayout = () => {
         const state = viewportGridService.getState();
-        const stateReduce = findViewportsByPosition(
-          state,
-          { numRows, numCols },
-          stateSyncService
-        );
+        const stateReduce = findViewportsByPosition(state, { numRows, numCols }, stateSyncService);
         const findOrCreateViewport = layoutFindOrCreate.bind(
           null,
           hangingProtocolService,
@@ -377,12 +356,9 @@ const commandsModule = ({
 
     toggleOneUp() {
       const viewportGridState = viewportGridService.getState();
-      const { activeViewportIndex, viewports, layout } = viewportGridState;
-      const {
-        displaySetInstanceUIDs,
-        displaySetOptions,
-        viewportOptions,
-      } = viewports[activeViewportIndex];
+      const { activeViewportId, viewports, layout } = viewportGridState;
+      const { displaySetInstanceUIDs, displaySetOptions, viewportOptions } =
+        viewports.get(activeViewportId);
 
       if (layout.numCols === 1 && layout.numRows === 1) {
         // The viewer is in one-up. Check if there is a state to restore/toggle back to.
@@ -393,20 +369,15 @@ const commandsModule = ({
         }
         // There is a state to toggle back to. The viewport that was
         // originally toggled to one up was the former active viewport.
-        const viewportIndexToUpdate =
-          toggleOneUpViewportGridStore.activeViewportIndex;
+        const viewportIdToUpdate = toggleOneUpViewportGridStore.activeViewportId;
 
-        // Determine which viewports need to be updated. This is particularly
-        // important when MPR is toggled to one up and a different reconstructable
-        // is swapped in. Note that currently HangingProtocolService.getViewportsRequireUpdate
-        // does not support viewport with multiple display sets.
-        const updatedViewports =
+        const updatedViewportsViaHP =
           displaySetInstanceUIDs.length > 1
             ? []
             : displaySetInstanceUIDs
                 .map(displaySetInstanceUID =>
                   hangingProtocolService.getViewportsRequireUpdate(
-                    viewportIndexToUpdate,
+                    viewportIdToUpdate,
                     displaySetInstanceUID
                   )
                 )
@@ -415,14 +386,36 @@ const commandsModule = ({
         // This findOrCreateViewport returns either one of the updatedViewports
         // returned from the HP service OR if there is not one from the HP service then
         // simply returns what was in the previous state.
-        const findOrCreateViewport = (viewportIndex: number) => {
-          const viewport = updatedViewports.find(
-            viewport => viewport.viewportIndex === viewportIndex
+        const findOrCreateViewport = (position: number) => {
+          // get the viewportId in the current state (since we are in the one-up layout)
+          const currentOneUpViewport = Array.from(viewports.values())[0];
+
+          // we should restore the previous layout but take into the account the fact that
+          // the current one up viewport might have a new displaySet dragged and dropped on it
+          // so we should prioritize the current one in the old grid store layout viewports
+
+          const newViewports = Array.from(toggleOneUpViewportGridStore.viewports.values()).map(
+            viewport => {
+              if (viewport.viewportId === currentOneUpViewport.viewportId) {
+                return {
+                  ...currentOneUpViewport,
+                };
+              }
+
+              return viewport;
+            }
           );
 
-          return viewport
-            ? { viewportOptions, displaySetOptions, ...viewport }
-            : toggleOneUpViewportGridStore.viewports[viewportIndex];
+          // However, we also need to take into account that the current one up viewport
+          // might have been part of a bigger hanging protocol layout, so going back
+          // from one up we should apply those viewports as well.
+          return updatedViewportsViaHP.length > 1 && updatedViewportsViaHP[position]
+            ? {
+                viewportOptions,
+                displaySetOptions,
+                ...updatedViewportsViaHP[position],
+              }
+            : newViewports[position];
         };
 
         const layoutOptions = viewportGridService.getLayoutOptionsFromState(
@@ -433,7 +426,7 @@ const commandsModule = ({
         viewportGridService.setLayout({
           numRows: toggleOneUpViewportGridStore.layout.numRows,
           numCols: toggleOneUpViewportGridStore.layout.numCols,
-          activeViewportIndex: viewportIndexToUpdate,
+          activeViewportId: viewportIdToUpdate,
           layoutOptions,
           findOrCreateViewport,
         });
@@ -473,16 +466,35 @@ const commandsModule = ({
           });
         };
 
-        subscribeToNextViewportGridChange(
-          viewportGridService,
-          clearToggleOneUpViewportGridStore
-        );
+        subscribeToNextViewportGridChange(viewportGridService, clearToggleOneUpViewportGridStore);
       }
     },
 
+    /**
+     * Exposes the browser history navigation used by OHIF. This command can be used to either replace or
+     * push a new entry into the browser history. For example, the following will replace the current
+     * browser history entry with the specified relative URL which changes the study displayed to the
+     * study with study instance UID 1.2.3. Note that as a result of using `options.replace = true`, the
+     * page prior to invoking this command cannot be returned to via the browser back button.
+     *
+     * navigateHistory({
+     *   to: 'viewer?StudyInstanceUIDs=1.2.3',
+     *   options: { replace: true },
+     * });
+     *
+     * @param historyArgs - arguments for the history function;
+     *                      the `to` property is the URL;
+     *                      the `options.replace` is a boolean indicating if the current browser history entry
+     *                      should be replaced or a new entry pushed onto the history (stack); the default value
+     *                      for `replace` is false
+     */
+    navigateHistory(historyArgs: NavigateHistory) {
+      history.navigate(historyArgs.to, historyArgs.options);
+    },
+
     openDICOMTagViewer() {
-      const { activeViewportIndex, viewports } = viewportGridService.getState();
-      const activeViewportSpecificData = viewports[activeViewportIndex];
+      const { activeViewportId, viewports } = viewportGridService.getState();
+      const activeViewportSpecificData = viewports.get(activeViewportId);
       const { displaySetInstanceUIDs } = activeViewportSpecificData;
 
       const displaySets = displaySetService.activeDisplaySets;
@@ -510,6 +522,104 @@ const commandsModule = ({
       for (let i = 0; i < overlays.length; i++) {
         overlays.item(i).classList.toggle('hidden');
       }
+    },
+
+    scrollActiveThumbnailIntoView: () => {
+      const { activeViewportId, viewports } = viewportGridService.getState();
+
+      const activeViewport = viewports.get(activeViewportId);
+      const activeDisplaySetInstanceUID = activeViewport.displaySetInstanceUIDs[0];
+
+      const thumbnailList = document.querySelector('#ohif-thumbnail-list');
+
+      if (!thumbnailList) {
+        return;
+      }
+
+      const thumbnailListBounds = thumbnailList.getBoundingClientRect();
+
+      const thumbnail = document.querySelector(`#thumbnail-${activeDisplaySetInstanceUID}`);
+
+      if (!thumbnail) {
+        return;
+      }
+
+      const thumbnailBounds = thumbnail.getBoundingClientRect();
+
+      // This only handles a vertical thumbnail list.
+      if (
+        thumbnailBounds.top >= thumbnailListBounds.top &&
+        thumbnailBounds.top <= thumbnailListBounds.bottom
+      ) {
+        return;
+      }
+
+      thumbnail.scrollIntoView({ behavior: 'smooth' });
+    },
+
+    updateViewportDisplaySet: ({
+      direction,
+      excludeNonImageModalities,
+    }: UpdateViewportDisplaySetParams) => {
+      const nonImageModalities = ['SR', 'SEG', 'SM', 'RTSTRUCT', 'RTPLAN', 'RTDOSE'];
+
+      // Sort the display sets as per the hanging protocol service viewport/display set scoring system.
+      // The thumbnail list uses the same sorting.
+      const dsSortFn = hangingProtocolService.getDisplaySetSortFunction();
+      const currentDisplaySets = [...displaySetService.activeDisplaySets];
+
+      currentDisplaySets.sort(dsSortFn);
+
+      const { activeViewportId, viewports } = viewportGridService.getState();
+
+      const { displaySetInstanceUIDs } = viewports.get(activeViewportId);
+
+      const activeDisplaySetIndex = currentDisplaySets.findIndex(displaySet =>
+        displaySetInstanceUIDs.includes(displaySet.displaySetInstanceUID)
+      );
+
+      let displaySetIndexToShow: number;
+
+      for (
+        displaySetIndexToShow = activeDisplaySetIndex + direction;
+        displaySetIndexToShow > -1 && displaySetIndexToShow < currentDisplaySets.length;
+        displaySetIndexToShow += direction
+      ) {
+        if (
+          !excludeNonImageModalities ||
+          !nonImageModalities.includes(currentDisplaySets[displaySetIndexToShow].Modality)
+        ) {
+          break;
+        }
+      }
+
+      if (displaySetIndexToShow < 0 || displaySetIndexToShow >= currentDisplaySets.length) {
+        return;
+      }
+
+      const { displaySetInstanceUID } = currentDisplaySets[displaySetIndexToShow];
+
+      let updatedViewports = [];
+
+      try {
+        updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
+          activeViewportId,
+          displaySetInstanceUID
+        );
+      } catch (error) {
+        console.warn(error);
+        uiNotificationService.show({
+          title: 'Navigate Viewport Display Set',
+          message:
+            'The requested display sets could not be added to the viewport due to a mismatch in the Hanging Protocol rules.',
+          type: 'info',
+          duration: 3000,
+        });
+      }
+
+      viewportGridService.setDisplaySetsForViewports(updatedViewports);
+
+      setTimeout(() => actions.scrollActiveThumbnailIntoView(), 0);
     },
   };
 
@@ -540,6 +650,11 @@ const commandsModule = ({
       storeContexts: [],
       options: {},
     },
+    navigateHistory: {
+      commandFn: actions.navigateHistory,
+      storeContexts: [],
+      options: {},
+    },
     nextStage: {
       commandFn: actions.deltaStage,
       storeContexts: [],
@@ -562,6 +677,11 @@ const commandsModule = ({
     },
     openDICOMTagViewer: {
       commandFn: actions.openDICOMTagViewer,
+    },
+    updateViewportDisplaySet: {
+      commandFn: actions.updateViewportDisplaySet,
+      storeContexts: [],
+      options: {},
     },
   };
 

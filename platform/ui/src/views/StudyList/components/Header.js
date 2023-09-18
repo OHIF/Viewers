@@ -12,15 +12,16 @@ function Header({ appLogo = OHIFLogo(), children, t }) {
   };
 
   return (
-    <NavBar className="justify-between" isSticky>
+    <NavBar
+      className="justify-between"
+      isSticky
+    >
       <div className="flex items-center">
         <div className="mx-3">{appLogo}</div>
         <div>{children}</div>
       </div>
       <div className="flex items-center">
-        <span className="mr-3 text-common-light text-lg">
-          {t('FOR INVESTIGATIONAL USE ONLY')}
-        </span>
+        <span className="text-common-light mr-3 text-lg">{t('FOR INVESTIGATIONAL USE ONLY')}</span>
         <IconButton
           variant="text"
           color="inherit"

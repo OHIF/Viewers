@@ -1,34 +1,7 @@
-function createSEGToolGroupAndAddTools(
-  toolGroupService,
-  toolGroupId,
-  extensionManager
-) {
-  const utilityModule = extensionManager.getModuleEntry(
-    '@ohif/extension-cornerstone.utilityModule.tools'
-  );
+function createSEGToolGroupAndAddTools(ToolGroupService, customizationService, toolGroupId) {
+  const { tools } = customizationService.get('cornerstone.overlayViewportTools') ?? {};
 
-  const { toolNames, Enums } = utilityModule.exports;
-
-  const tools = {
-    active: [
-      {
-        toolName: toolNames.WindowLevel,
-        bindings: [{ mouseButton: Enums.MouseBindings.Primary }],
-      },
-      {
-        toolName: toolNames.Pan,
-        bindings: [{ mouseButton: Enums.MouseBindings.Auxiliary }],
-      },
-      {
-        toolName: toolNames.Zoom,
-        bindings: [{ mouseButton: Enums.MouseBindings.Secondary }],
-      },
-      { toolName: toolNames.StackScrollMouseWheel, bindings: [] },
-    ],
-    enabled: [{ toolName: toolNames.SegmentationDisplay }],
-  };
-
-  return toolGroupService.createToolGroupAndAddTools(toolGroupId, tools, {});
+  return ToolGroupService.createToolGroupAndAddTools(toolGroupId, tools, {});
 }
 
 export default createSEGToolGroupAndAddTools;

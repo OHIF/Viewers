@@ -10,69 +10,37 @@ import {
   utilities as cstUtils,
   ReferenceLinesTool,
 } from '@cornerstonejs/tools';
-import { ServicesManager } from '@ohif/core';
+import { Types as OhifTypes } from '@ohif/core';
 
 import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownloadForm';
 import callInputDialog from './utils/callInputDialog';
-import { setColormap } from './utils/colormap/transferFunctionHelpers';
 import toggleStackImageSync from './utils/stackSync/toggleStackImageSync';
 import { getFirstAnnotationSelected } from './utils/measurementServiceMappings/utils/selection';
 import getActiveViewportEnabledElement from './utils/getActiveViewportEnabledElement';
+import { CornerstoneServices } from './types';
+import ImageOverlayViewerTool from './tools/ImageOverlayViewerTool';
 
-function commandsModule({ servicesManager, commandsManager }) {
+function commandsModule({
+  servicesManager,
+  commandsManager,
+}: OhifTypes.Extensions.ExtensionParams): OhifTypes.Extensions.CommandsModule {
   const {
     viewportGridService,
     toolGroupService,
     cineService,
     toolbarService,
+    stateSyncService,
     uiDialogService,
     cornerstoneViewportService,
     uiNotificationService,
-    customizationService,
     measurementService,
-    hangingProtocolService,
-  } = (servicesManager as ServicesManager).services;
+  } = servicesManager.services as CornerstoneServices;
 
   const { measurementServiceSource } = this;
 
   function _getActiveViewportEnabledElement() {
     return getActiveViewportEnabledElement(viewportGridService);
   }
-
-  function _getToolGroup(toolGroupId) {
-    let toolGroupIdToUse = toolGroupId;
-
-    if (!toolGroupIdToUse) {
-      // Use the active viewport's tool group if no tool group id is provided
-      const enabledElement = _getActiveViewportEnabledElement();
-
-      if (!enabledElement) {
-        return;
-      }
-
-      const { renderingEngineId, viewportId } = enabledElement;
-      const toolGroup = ToolGroupManager.getToolGroupForViewport(
-        viewportId,
-        renderingEngineId
-      );
-
-      if (!toolGroup) {
-        console.warn(
-          'No tool group found for viewportId:',
-          viewportId,
-          'and renderingEngineId:',
-          renderingEngineId
-        );
-        return;
-      }
-
-      toolGroupIdToUse = toolGroup.id;
-    }
-
-    const toolGroup = toolGroupService.getToolGroup(toolGroupIdToUse);
-    return toolGroup;
-  }
-
   const actions = {
     /**
      * Generates the selector props for the context menu, specific to
@@ -90,9 +58,7 @@ function commandsModule({ servicesManager, commandsManager }) {
         // filter by allowed selected tools from config property (if there is any)
         const isToolAllowed =
           !optionsToUse.allowedSelectedTools ||
-          optionsToUse.allowedSelectedTools.includes(
-            firstAnnotationSelected?.metadata?.toolName
-          );
+          optionsToUse.allowedSelectedTools.includes(firstAnnotationSelected?.metadata?.toolName);
         if (isToolAllowed) {
           optionsToUse.nearbyToolData = firstAnnotationSelected;
         } else {
@@ -122,10 +88,33 @@ function commandsModule({ servicesManager, commandsManager }) {
     },
 
     getNearbyToolData({ nearbyToolData, element, canvasCoordinates }) {
-      return (
-        nearbyToolData ??
-        cstUtils.getAnnotationNearPoint(element, canvasCoordinates)
-      );
+      return nearbyToolData ?? cstUtils.getAnnotationNearPoint(element, canvasCoordinates);
+    },
+    getNearbyAnnotation({ element, canvasCoordinates }) {
+      const nearbyToolData = actions.getNearbyToolData({
+        nearbyToolData: null,
+        element,
+        canvasCoordinates,
+      });
+
+      const isAnnotation = toolName => {
+        const enabledElement = getEnabledElement(element);
+
+        if (!enabledElement) {
+          return;
+        }
+
+        const { renderingEngineId, viewportId } = enabledElement;
+        const toolGroup = ToolGroupManager.getToolGroupForViewport(viewportId, renderingEngineId);
+
+        const toolInstance = toolGroup.getToolInstance(toolName);
+
+        return toolInstance?.constructor?.isAnnotation ?? true;
+      };
+
+      return nearbyToolData?.metadata?.toolName && isAnnotation(nearbyToolData.metadata.toolName)
+        ? nearbyToolData
+        : null;
     },
 
     // Measurement tool commands:
@@ -156,11 +145,7 @@ function commandsModule({ servicesManager, commandsManager }) {
             label,
           });
 
-          measurementService.update(
-            updatedMeasurement.uid,
-            updatedMeasurement,
-            true
-          );
+          measurementService.update(updatedMeasurement.uid, updatedMeasurement, true);
         },
         false
       );
@@ -223,27 +208,20 @@ function commandsModule({ servicesManager, commandsManager }) {
           }
         }
       }
-      measurementService.update(
-        updatedMeasurement.uid,
-        updatedMeasurement,
-        true
-      );
+      measurementService.update(updatedMeasurement.uid, updatedMeasurement, true);
     },
 
     // Retrieve value commands
     getActiveViewportEnabledElement: _getActiveViewportEnabledElement,
 
     setViewportActive: ({ viewportId }) => {
-      const viewportInfo = cornerstoneViewportService.getViewportInfo(
-        viewportId
-      );
+      const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
       if (!viewportInfo) {
         console.warn('No viewport found for viewportId:', viewportId);
         return;
       }
 
-      const viewportIndex = viewportInfo.getViewportIndex();
-      viewportGridService.setActiveViewportIndex(viewportIndex);
+      viewportGridService.setActiveViewportId(viewportId);
     },
     arrowTextCallback: ({ callback, data }) => {
       callInputDialog(uiDialogService, data, callback);
@@ -253,9 +231,7 @@ function commandsModule({ servicesManager, commandsManager }) {
       const { isCineEnabled } = cineService.getState();
       cineService.setIsCineEnabled(!isCineEnabled);
       toolbarService.setButton('Cine', { props: { isActive: !isCineEnabled } });
-      viewports.forEach((_, index) =>
-        cineService.setCine({ id: index, isPlaying: false })
-      );
+      viewports.forEach((_, index) => cineService.setCine({ id: index, isPlaying: false }));
     },
     setWindowLevel({ window, level, toolGroupId }) {
       // convert to numbers
@@ -263,9 +239,7 @@ function commandsModule({ servicesManager, commandsManager }) {
       const windowCenterNum = Number(level);
 
       const { viewportId } = _getActiveViewportEnabledElement();
-      const viewportToolGroupId = toolGroupService.getToolGroupForViewport(
-        viewportId
-      );
+      const viewportToolGroupId = toolGroupService.getToolGroupForViewport(viewportId);
 
       if (toolGroupId && toolGroupId !== viewportToolGroupId) {
         return;
@@ -275,10 +249,7 @@ function commandsModule({ servicesManager, commandsManager }) {
       const renderingEngine = cornerstoneViewportService.getRenderingEngine();
       const viewport = renderingEngine.getViewport(viewportId);
 
-      const { lower, upper } = csUtils.windowLevel.toLowHighRange(
-        windowWidthNum,
-        windowCenterNum
-      );
+      const { lower, upper } = csUtils.windowLevel.toLowHighRange(windowWidthNum, windowCenterNum);
 
       viewport.setProperties({
         voiRange: {
@@ -296,9 +267,9 @@ function commandsModule({ servicesManager, commandsManager }) {
       toolbarService.recordInteraction(props);
     },
 
-    setToolActive: ({ toolName, toolGroupId = null }) => {
+    setToolActive: ({ toolName, toolGroupId = null, toggledState }) => {
       if (toolName === 'Crosshairs') {
-        const activeViewportToolGroup = _getToolGroup(null);
+        const activeViewportToolGroup = toolGroupService.getToolGroup(null);
 
         if (!activeViewportToolGroup._toolInstances.Crosshairs) {
           uiNotificationService.show({
@@ -313,11 +284,13 @@ function commandsModule({ servicesManager, commandsManager }) {
         }
       }
 
-      const { viewports } = viewportGridService.getState() || {
-        viewports: [],
-      };
+      const { viewports } = viewportGridService.getState();
 
-      const toolGroup = _getToolGroup(toolGroupId);
+      if (!viewports.size) {
+        return;
+      }
+
+      const toolGroup = toolGroupService.getToolGroup(toolGroupId);
       const toolGroupViewportIds = toolGroup?.getViewportIds?.();
 
       // if toolGroup has been destroyed, or its viewports have been removed
@@ -325,14 +298,8 @@ function commandsModule({ servicesManager, commandsManager }) {
         return;
       }
 
-      const filteredViewports = viewports.filter(viewport => {
-        if (!viewport.viewportOptions) {
-          return false;
-        }
-
-        return toolGroupViewportIds.includes(
-          viewport.viewportOptions.viewportId
-        );
+      const filteredViewports = Array.from(viewports.values()).filter(viewport => {
+        return toolGroupViewportIds.includes(viewport.viewportId);
       });
 
       if (!filteredViewports.length) {
@@ -361,6 +328,14 @@ function commandsModule({ servicesManager, commandsManager }) {
           toolGroup.setToolPassive(activeToolName);
         }
       }
+
+      // If there is a toggle state, then simply set the enabled/disabled state without
+      // setting the tool active.
+      if (toggledState != null) {
+        toggledState ? toolGroup.setToolEnabled(toolName) : toolGroup.setToolDisabled(toolName);
+        return;
+      }
+
       // Set the new toolName to be active
       toolGroup.setToolActive(toolName, {
         bindings: [
@@ -371,7 +346,18 @@ function commandsModule({ servicesManager, commandsManager }) {
       });
     },
     showDownloadViewportModal: () => {
-      const { activeViewportIndex } = viewportGridService.getState();
+      const { activeViewportId } = viewportGridService.getState();
+
+      if (!cornerstoneViewportService.getCornerstoneViewport(activeViewportId)) {
+        // Cannot download a non-cornerstone viewport (image).
+        uiNotificationService.show({
+          title: 'Download Image',
+          message: 'Image cannot be downloaded',
+          type: 'error',
+        });
+        return;
+      }
+
       const { uiModalService } = servicesManager.services;
 
       if (uiModalService) {
@@ -379,7 +365,7 @@ function commandsModule({ servicesManager, commandsManager }) {
           content: CornerstoneViewportDownloadForm,
           title: 'Download High Quality Image',
           contentProps: {
-            activeViewportIndex,
+            activeViewportId,
             onClose: uiModalService.hide,
             cornerstoneViewportService,
           },
@@ -446,11 +432,9 @@ function commandsModule({ servicesManager, commandsManager }) {
 
       const { viewport } = enabledElement;
 
-      if (viewport instanceof StackViewport) {
-        const { invert } = viewport.getProperties();
-        viewport.setProperties({ invert: !invert });
-        viewport.render();
-      }
+      const { invert } = viewport.getProperties();
+      viewport.setProperties({ invert: !invert });
+      viewport.render();
     },
     resetViewport: () => {
       const enabledElement = _getActiveViewportEnabledElement();
@@ -491,33 +475,20 @@ function commandsModule({ servicesManager, commandsManager }) {
         }
       }
     },
-    firstImage: () => {
-      // Get current active viewport (return if none active)
-      const enabledElement = _getActiveViewportEnabledElement();
-      if (!enabledElement) {
-        return;
-      }
-      const { viewport } = enabledElement;
 
-      // Check viewport is supported
-      if (
-        viewport! instanceof StackViewport &&
-        viewport! instanceof VolumeViewport
-      ) {
-        throw new Error('Unsupported viewport type');
-      }
-
-      // Set slice to first slice
-      const options = { imageIndex: 0 };
-      cstUtils.jumpToSlice(viewport.element, options);
-    },
-    lastImage: () => {
+    /** Jumps the active viewport or the specified one to the given slice index */
+    jumpToImage: ({ imageIndex, viewport: gridViewport }): void => {
       // Get current active viewport (return if none active)
-      const enabledElement = _getActiveViewportEnabledElement();
-      if (!enabledElement) {
-        return;
+      let viewport;
+      if (!gridViewport) {
+        const enabledElement = _getActiveViewportEnabledElement();
+        if (!enabledElement) {
+          return;
+        }
+        viewport = enabledElement.viewport;
+      } else {
+        viewport = cornerstoneViewportService.getCornerstoneViewport(gridViewport.id);
       }
-      const { viewport } = enabledElement;
 
       // Get number of slices
       // -> Copied from cornerstone3D jumpToSlice\_getImageSliceData()
@@ -526,14 +497,18 @@ function commandsModule({ servicesManager, commandsManager }) {
       if (viewport instanceof StackViewport) {
         numberOfSlices = viewport.getImageIds().length;
       } else if (viewport instanceof VolumeViewport) {
-        numberOfSlices = csUtils.getImageSliceDataForVolumeViewport(viewport)
-          .numberOfSlices;
+        numberOfSlices = csUtils.getImageSliceDataForVolumeViewport(viewport).numberOfSlices;
       } else {
         throw new Error('Unsupported viewport type');
       }
 
+      const jumpIndex = imageIndex < 0 ? numberOfSlices + imageIndex : imageIndex;
+      if (jumpIndex >= numberOfSlices || jumpIndex < 0) {
+        throw new Error(`Can't jump to ${imageIndex}`);
+      }
+
       // Set slice to last slice
-      const options = { imageIndex: numberOfSlices - 1 };
+      const options = { imageIndex: jumpIndex };
       cstUtils.jumpToSlice(viewport.element, options);
     },
     scroll: ({ direction }) => {
@@ -548,15 +523,8 @@ function commandsModule({ servicesManager, commandsManager }) {
 
       cstUtils.scroll(viewport, options);
     },
-    setViewportColormap: ({
-      viewportIndex,
-      displaySetInstanceUID,
-      colormap,
-      immediate = false,
-    }) => {
-      const viewport = cornerstoneViewportService.getCornerstoneViewportByIndex(
-        viewportIndex
-      );
+    setViewportColormap: ({ viewportId, displaySetInstanceUID, colormap, immediate = false }) => {
+      const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
       const actorEntries = viewport.getActors();
 
@@ -564,25 +532,23 @@ function commandsModule({ servicesManager, commandsManager }) {
         return actorEntry.uid.includes(displaySetInstanceUID);
       });
 
-      const { actor: volumeActor } = actorEntry;
+      const { actor: volumeActor, uid: volumeId } = actorEntry;
 
-      setColormap(volumeActor, colormap);
+      viewport.setProperties({ colormap, volumeActor }, volumeId);
 
       if (immediate) {
         viewport.render();
       }
     },
-    incrementActiveViewport: () => {
-      const { activeViewportIndex, viewports } = viewportGridService.getState();
-      const nextViewportIndex = (activeViewportIndex + 1) % viewports.length;
-      viewportGridService.setActiveViewportIndex(nextViewportIndex);
-    },
-    decrementActiveViewport: () => {
-      const { activeViewportIndex, viewports } = viewportGridService.getState();
+    changeActiveViewport: ({ direction = 1 }) => {
+      const { activeViewportId, viewports } = viewportGridService.getState();
+      const viewportIds = Array.from(viewports.keys());
+      const currentIndex = viewportIds.indexOf(activeViewportId);
       const nextViewportIndex =
-        (activeViewportIndex - 1 + viewports.length) % viewports.length;
-      viewportGridService.setActiveViewportIndex(nextViewportIndex);
+        (currentIndex + direction + viewportIds.length) % viewportIds.length;
+      viewportGridService.setActiveViewportId(viewportIds[nextViewportIndex] as string);
     },
+
     toggleStackImageSync: ({ toggledState }) => {
       toggleStackImageSync({
         getEnabledElement,
@@ -590,18 +556,12 @@ function commandsModule({ servicesManager, commandsManager }) {
         toggledState,
       });
     },
-    toggleReferenceLines: ({ toggledState }) => {
-      const { activeViewportIndex } = viewportGridService.getState();
-      const viewportInfo = cornerstoneViewportService.getViewportInfoByIndex(
-        activeViewportIndex
-      );
+    setSourceViewportForReferenceLinesTool: ({ toggledState }) => {
+      const { activeViewportId } = viewportGridService.getState();
+      const viewportInfo = cornerstoneViewportService.getViewportInfo(activeViewportId);
 
       const viewportId = viewportInfo.getViewportId();
       const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
-
-      if (!toggledState) {
-        toolGroup.setToolDisabled(ReferenceLinesTool.toolName);
-      }
 
       toolGroup.setToolConfiguration(
         ReferenceLinesTool.toolName,
@@ -610,7 +570,9 @@ function commandsModule({ servicesManager, commandsManager }) {
         },
         true // overwrite
       );
-      toolGroup.setToolEnabled(ReferenceLinesTool.toolName);
+    },
+    storePresentation: ({ viewportId }) => {
+      cornerstoneViewportService.storePresentation({ viewportId });
     },
   };
 
@@ -632,146 +594,113 @@ function commandsModule({ servicesManager, commandsManager }) {
 
     getNearbyToolData: {
       commandFn: actions.getNearbyToolData,
+    },
+    getNearbyAnnotation: {
+      commandFn: actions.getNearbyAnnotation,
       storeContexts: [],
       options: {},
     },
 
     deleteMeasurement: {
       commandFn: actions.deleteMeasurement,
-      storeContexts: [],
-      options: {},
     },
     setMeasurementLabel: {
       commandFn: actions.setMeasurementLabel,
-      storeContexts: [],
-      options: {},
     },
     updateMeasurement: {
       commandFn: actions.updateMeasurement,
-      storeContexts: [],
-      options: {},
     },
 
     setWindowLevel: {
       commandFn: actions.setWindowLevel,
-      storeContexts: [],
-      options: {},
     },
     toolbarServiceRecordInteraction: {
       commandFn: actions.toolbarServiceRecordInteraction,
-      storeContexts: [],
-      options: {},
     },
     setToolActive: {
       commandFn: actions.setToolActive,
-      storeContexts: [],
-      options: {},
     },
     rotateViewportCW: {
       commandFn: actions.rotateViewport,
-      storeContexts: [],
       options: { rotation: 90 },
     },
     rotateViewportCCW: {
       commandFn: actions.rotateViewport,
-      storeContexts: [],
       options: { rotation: -90 },
     },
     incrementActiveViewport: {
-      commandFn: actions.incrementActiveViewport,
-      storeContexts: [],
+      commandFn: actions.changeActiveViewport,
     },
     decrementActiveViewport: {
-      commandFn: actions.decrementActiveViewport,
-      storeContexts: [],
+      commandFn: actions.changeActiveViewport,
+      options: { direction: -1 },
     },
     flipViewportHorizontal: {
       commandFn: actions.flipViewportHorizontal,
-      storeContexts: [],
-      options: {},
     },
     flipViewportVertical: {
       commandFn: actions.flipViewportVertical,
-      storeContexts: [],
-      options: {},
     },
     invertViewport: {
       commandFn: actions.invertViewport,
-      storeContexts: [],
-      options: {},
     },
     resetViewport: {
       commandFn: actions.resetViewport,
-      storeContexts: [],
-      options: {},
     },
     scaleUpViewport: {
       commandFn: actions.scaleViewport,
-      storeContexts: [],
       options: { direction: 1 },
     },
     scaleDownViewport: {
       commandFn: actions.scaleViewport,
-      storeContexts: [],
       options: { direction: -1 },
     },
     fitViewportToWindow: {
       commandFn: actions.scaleViewport,
-      storeContexts: [],
       options: { direction: 0 },
     },
     nextImage: {
       commandFn: actions.scroll,
-      storeContexts: [],
       options: { direction: 1 },
     },
     previousImage: {
       commandFn: actions.scroll,
-      storeContexts: [],
       options: { direction: -1 },
     },
     firstImage: {
-      commandFn: actions.firstImage,
-      storeContexts: [],
-      options: {},
+      commandFn: actions.jumpToImage,
+      options: { imageIndex: 0 },
     },
     lastImage: {
-      commandFn: actions.lastImage,
-      storeContexts: [],
-      options: {},
+      commandFn: actions.jumpToImage,
+      options: { imageIndex: -1 },
+    },
+    jumpToImage: {
+      commandFn: actions.jumpToImage,
     },
     showDownloadViewportModal: {
       commandFn: actions.showDownloadViewportModal,
-      storeContexts: [],
-      options: {},
     },
     toggleCine: {
       commandFn: actions.toggleCine,
-      storeContexts: [],
-      options: {},
     },
     arrowTextCallback: {
       commandFn: actions.arrowTextCallback,
-      storeContexts: [],
-      options: {},
     },
     setViewportActive: {
       commandFn: actions.setViewportActive,
-      storeContexts: [],
-      options: {},
     },
     setViewportColormap: {
       commandFn: actions.setViewportColormap,
-      storeContexts: [],
-      options: {},
     },
     toggleStackImageSync: {
       commandFn: actions.toggleStackImageSync,
-      storeContexts: [],
-      options: {},
     },
-    toggleReferenceLines: {
-      commandFn: actions.toggleReferenceLines,
+    setSourceViewportForReferenceLinesTool: {
+      commandFn: actions.setSourceViewportForReferenceLinesTool,
+    },
+    storePresentation: {
+      commandFn: actions.storePresentation,
       storeContexts: [],
       options: {},
     },

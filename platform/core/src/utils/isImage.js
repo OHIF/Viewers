@@ -58,6 +58,8 @@ const imagesTypes = [
  * @returns {boolean} - true if it has image data
  */
 export const isImage = SOPClassUID => {
-  if (!SOPClassUID) return false;
+  if (!SOPClassUID) {
+    return false;
+  }
   return imagesTypes.indexOf(SOPClassUID) !== -1;
 };

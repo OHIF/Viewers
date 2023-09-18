@@ -2,7 +2,7 @@ import SUPPORTED_TOOLS from './constants/supportedTools';
 import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
 
 const PlanarFreehandROI = {
-  toAnnotation: measurement => { },
+  toAnnotation: measurement => {},
 
   /**
    * Maps cornerstone annotation event data to measurement service format.
@@ -31,11 +31,7 @@ const PlanarFreehandROI = {
       throw new Error('Tool not supported');
     }
 
-    const {
-      SOPInstanceUID,
-      SeriesInstanceUID,
-      StudyInstanceUID,
-    } = getSOPInstanceAttributes(
+    const { SOPInstanceUID, SeriesInstanceUID, StudyInstanceUID } = getSOPInstanceAttributes(
       referencedImageId,
       CornerstoneViewportService,
       viewportId
@@ -54,14 +50,10 @@ const PlanarFreehandROI = {
 
     const { points } = data.handles;
 
-    const mappedAnnotations = getMappedAnnotations(
-      annotation,
-      DisplaySetService
-    );
+    const mappedAnnotations = getMappedAnnotations(annotation, DisplaySetService);
 
     const displayText = getDisplayText(mappedAnnotations);
-    const getReport = () =>
-      _getReport(mappedAnnotations, points, FrameOfReferenceUID);
+    const getReport = () => _getReport(mappedAnnotations, points, FrameOfReferenceUID);
 
     return {
       uid: annotationUID,
@@ -96,10 +88,8 @@ function getMappedAnnotations(annotationData, DisplaySetService) {
 
   const annotations = [];
 
-  const {
-    SOPInstanceUID: _SOPInstanceUID,
-    SeriesInstanceUID: _SeriesInstanceUID,
-  } = getSOPInstanceAttributes(referencedImageId) || {};
+  const { SOPInstanceUID: _SOPInstanceUID, SeriesInstanceUID: _SeriesInstanceUID } =
+    getSOPInstanceAttributes(referencedImageId) || {};
 
   if (!_SOPInstanceUID || !_SeriesInstanceUID) {
     return annotations;

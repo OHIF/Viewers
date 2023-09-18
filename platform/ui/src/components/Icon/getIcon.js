@@ -8,7 +8,7 @@ import arrowRightSmall from './../../assets/icons/arrow-right-small.svg';
 import calendar from './../../assets/icons/calendar.svg';
 import cancel from './../../assets/icons/cancel.svg';
 import clipboard from './../../assets/icons/clipboard.svg';
-import close from './../../assets/icons/close.svg';
+import close from './../../assets/icons/closeIcon.svg';
 import dottedCircle from './../../assets/icons/dotted-circle.svg';
 import circledCheckmark from './../../assets/icons/circled-checkmark.svg';
 import chevronDown from './../../assets/icons/chevron-down.svg';
@@ -42,6 +42,7 @@ import settings from './../../assets/icons/settings.svg';
 import sorting from './../../assets/icons/sorting.svg';
 import sortingActiveDown from './../../assets/icons/sorting-active-down.svg';
 import sortingActiveUp from './../../assets/icons/sorting-active-up.svg';
+import statusAlertWarning from './../../assets/icons/status-alert-warning.svg';
 import statusAlert from './../../assets/icons/status-alert.svg';
 import statusLocked from './../../assets/icons/status-locked.svg';
 import statusTracked from './../../assets/icons/status-tracked.svg';
@@ -50,13 +51,20 @@ import tracked from './../../assets/icons/tracked.svg';
 import unlink from './../../assets/icons/unlink.svg';
 import checkboxChecked from './../../assets/icons/checkbox-checked.svg';
 import checkboxUnchecked from './../../assets/icons/checkbox-unchecked.svg';
+import iconAlertOutline from './../../assets/icons/icons-alert-outline.svg';
+import iconAlertSmall from './../../assets/icons/icon-alert-small.svg';
 import iconClose from './../../assets/icons/icon-close.svg';
+import iconClearField from './../../assets/icons/icon-clear-field.svg';
 import iconNextInactive from './../../assets/icons/icon-next-inactive.svg';
 import iconNext from './../../assets/icons/icon-next.svg';
 import iconPlay from './../../assets/icons/icon-play.svg';
 import iconPause from './../../assets/icons/icon-pause.svg';
 import iconPrevInactive from './../../assets/icons/icon-prev-inactive.svg';
 import iconPrev from './../../assets/icons/icon-prev.svg';
+import iconSearch from './../../assets/icons/icon-search.svg';
+import iconStatusAlert from './../../assets/icons/icon-status-alert.svg';
+import iconTransferring from './../../assets/icons/icon-transferring.svg';
+import iconUpload from './../../assets/icons/icon-upload.svg';
 import navigationPanelRightHide from './../../assets/icons/navigation-panel-right-hide.svg';
 import navigationPanelRightReveal from './../../assets/icons/navigation-panel-right-reveal.svg';
 import tabLinear from './../../assets/icons/tab-linear.svg';
@@ -72,6 +80,7 @@ import notificationsError from './../../assets/icons/notifications-error.svg';
 import notificationsSuccess from './../../assets/icons/notifications-success.svg';
 
 /** Tools */
+import toggleDicomOverlay from './../../assets/icons/toggle-dicom-overlay.svg';
 import toolZoom from './../../assets/icons/tool-zoom.svg';
 import toolCapture from './../../assets/icons/tool-capture.svg';
 import toolLayout from './../../assets/icons/tool-layout.svg';
@@ -81,6 +90,7 @@ import toolWindow from './../../assets/icons/tool-window-level.svg';
 import toolAnnotate from './../../assets/icons/tool-annotate.svg';
 import toolBidirectional from './../../assets/icons/tool-bidirectional.svg';
 import toolElipse from './../../assets/icons/tool-elipse.svg';
+import toolCircle from './../../assets/icons/tool-circle.svg';
 import toolLength from './../../assets/icons/tool-length.svg';
 import toolStackScroll from './../../assets/icons/tool-stack-scroll.svg';
 import toolMagnify from './../../assets/icons/tool-magnify.svg';
@@ -96,6 +106,9 @@ import toolRectangle from './../../assets/icons/tool-rectangle.svg';
 import toolFusionColor from './../../assets/icons/tool-fusion-color.svg';
 import toolCreateThreshold from './../../assets/icons/tool-create-threshold.svg';
 import toolCalibration from './../../assets/icons/tool-calibration.svg';
+import toolFreehand from './../../assets/icons/tool-freehand.svg';
+import toolFreehandPolygon from './../../assets/icons/tool-freehand-polygon.svg';
+import toolPolygon from './../../assets/icons/tool-polygon.svg';
 import editPatient from './../../assets/icons/edit-patient.svg';
 import panelGroupMore from './../../assets/icons/panel-group-more.svg';
 import panelGroupOpenClose from './../../assets/icons/panel-group-open-close.svg';
@@ -140,9 +153,15 @@ const ICONS = {
   'external-link': externalLink,
   'group-layers': groupLayers,
   info: info,
+  'icon-alert-outline': iconAlertOutline,
+  'icon-alert-small': iconAlertSmall,
+  'icon-clear-field': iconClearField,
   'icon-close': iconClose,
   'icon-play': iconPlay,
   'icon-pause': iconPause,
+  'icon-search': iconSearch,
+  'icon-status-alert': iconStatusAlert,
+  'icon-transferring': iconTransferring,
   'info-action': infoAction,
   'info-link': infoLink,
   'arrow-left': arrowLeft,
@@ -164,6 +183,7 @@ const ICONS = {
   'sorting-active-down': sortingActiveDown,
   'sorting-active-up': sortingActiveUp,
   'status-alert': statusAlert,
+  'status-alert-warning': statusAlertWarning,
   'status-locked': statusLocked,
   'status-tracked': statusTracked,
   'status-untracked': statusUntracked,
@@ -190,6 +210,7 @@ const ICONS = {
   'notifications-warning': notificationsWarning,
 
   /** Tools */
+  'toggle-dicom-overlay': toggleDicomOverlay,
   'tool-zoom': toolZoom,
   'tool-capture': toolCapture,
   'tool-layout': toolLayout,
@@ -199,6 +220,7 @@ const ICONS = {
   'tool-annotate': toolAnnotate,
   'tool-bidirectional': toolBidirectional,
   'tool-elipse': toolElipse,
+  'tool-circle': toolCircle,
   'tool-length': toolLength,
   'tool-stack-scroll': toolStackScroll,
   'tool-magnify': toolMagnify,
@@ -214,12 +236,18 @@ const ICONS = {
   'tool-fusion-color': toolFusionColor,
   'tool-create-threshold': toolCreateThreshold,
   'tool-calibration': toolCalibration,
+  'tool-point': toolCircle,
+  'tool-circle': toolCircle,
+  'tool-freehand-line': toolFreehand,
+  'tool-freehand-polygon': toolFreehandPolygon,
+  'tool-polygon': toolPolygon,
   'edit-patient': editPatient,
   'icon-mpr': iconMPR,
   'icon-next-inactive': iconNextInactive,
   'icon-next': iconNext,
   'icon-prev-inactive': iconPrevInactive,
   'icon-prev': iconPrev,
+  'icon-upload': iconUpload,
   'navigation-panel-right-hide': navigationPanelRightHide,
   'navigation-panel-right-reveal': navigationPanelRightReveal,
   'tab-linear': tabLinear,

@@ -2,7 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
-import { IconButton, Icon } from '../';
+import IconButton from '../IconButton';
+import Icon from '../Icon';
 
 import './ExpandableToolbarButton.css';
 
@@ -40,7 +41,10 @@ const ExpandableToolbarButton = ({
   };
 
   return (
-    <div key={id} className="ExpandableToolbarButton">
+    <div
+      key={id}
+      className="ExpandableToolbarButton"
+    >
       <IconButton
         variant={isActive ? 'contained' : 'text'}
         className={classnames(
@@ -54,13 +58,11 @@ const ExpandableToolbarButton = ({
         <Icon name={icon} />
       </IconButton>
       <div className="absolute z-10 pt-4">
-        <div
-          className={classnames(
-            'ExpandableToolbarButton__content w-48',
-            className
-          )}
-        >
-          <Content {...contentProps} onClick={onChildClickHandler} />
+        <div className={classnames('ExpandableToolbarButton__content w-48', className)}>
+          <Content
+            {...contentProps}
+            onClick={onChildClickHandler}
+          />
         </div>
       </div>
     </div>

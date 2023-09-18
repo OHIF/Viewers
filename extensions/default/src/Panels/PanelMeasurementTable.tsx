@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { utils, ServicesManager } from '@ohif/core';
-import { MeasurementTable, Dialog, Input, useViewportGrid } from '@ohif/ui';
+import { MeasurementTable, Dialog, Input, useViewportGrid, ButtonEnums } from '@ohif/ui';
 import ActionButtons from './ActionButtons';
 import debounce from 'lodash.debounce';
 
@@ -19,20 +19,14 @@ export default function PanelMeasurementTable({
   extensionManager,
 }): React.FunctionComponent {
   const [viewportGrid, viewportGridService] = useViewportGrid();
-  const { activeViewportIndex, viewports } = viewportGrid;
-  const {
-    measurementService,
-    uiDialogService,
-    uiNotificationService,
-    displaySetService,
-  } = (servicesManager as ServicesManager).services;
+  const { activeViewportId, viewports } = viewportGrid;
+  const { measurementService, uiDialogService, uiNotificationService, displaySetService } = (
+    servicesManager as ServicesManager
+  ).services;
   const [displayMeasurements, setDisplayMeasurements] = useState([]);
 
   useEffect(() => {
-    const debouncedSetDisplayMeasurements = debounce(
-      setDisplayMeasurements,
-      100
-    );
+    const debouncedSetDisplayMeasurements = debounce(setDisplayMeasurements, 100);
     // ~~ Initial
     setDisplayMeasurements(_getMappedMeasurements(measurementService));
 
@@ -47,9 +41,7 @@ export default function PanelMeasurementTable({
     [added, addedRaw, updated, removed, cleared].forEach(evt => {
       subscriptions.push(
         measurementService.subscribe(evt, () => {
-          debouncedSetDisplayMeasurements(
-            _getMappedMeasurements(measurementService)
-          );
+          debouncedSetDisplayMeasurements(_getMappedMeasurements(measurementService));
         }).unsubscribe
       );
     });
@@ -74,7 +66,7 @@ export default function PanelMeasurementTable({
 
   async function createReport(): Promise<any> {
     // filter measurements that are added to the active study
-    const activeViewport = viewports[activeViewportIndex];
+    const activeViewport = viewports.get(activeViewportId);
     const measurements = measurementService.getMeasurements();
     const displaySet = displaySetService.getDisplaySetByUID(
       activeViewport.displaySetInstanceUIDs[0]
@@ -98,9 +90,7 @@ export default function PanelMeasurementTable({
     });
 
     if (promptResult.action === CREATE_REPORT_DIALOG_RESPONSE.CREATE_REPORT) {
-      const dataSources = extensionManager.getDataSources(
-        promptResult.dataSourceName
-      );
+      const dataSources = extensionManager.getDataSources(promptResult.dataSourceName);
       const dataSource = dataSources[0];
 
       const SeriesDescription =
@@ -109,12 +99,9 @@ export default function PanelMeasurementTable({
           ? 'Research Derived Series' // default
           : promptResult.value; // provided value
 
-      // Re-use an existing series having the same series description to avoid
+      // Reuse an existing series having the same series description to avoid
       // creating too many series instances.
-      const options = findSRWithSameSeriesDescription(
-        SeriesDescription,
-        displaySetService
-      );
+      const options = findSRWithSameSeriesDescription(SeriesDescription, displaySetService);
 
       return createReportAsync(
         servicesManager,
@@ -127,7 +114,7 @@ export default function PanelMeasurementTable({
   }
 
   const jumpToImage = ({ uid, isActive }) => {
-    measurementService.jumpToMeasurement(viewportGrid.activeViewportIndex, uid);
+    measurementService.jumpToMeasurement(viewportGrid.activeViewportId, uid);
 
     onMeasurementItemClickHandler({ uid, isActive });
   };
@@ -160,7 +147,7 @@ export default function PanelMeasurementTable({
       showOverlay: true,
       content: Dialog,
       contentProps: {
-        title: 'Enter your annotation',
+        title: 'Annotation',
         noCloseButton: true,
         value: { label: measurement.label || '' },
         body: ({ value, setValue }) => {
@@ -175,24 +162,22 @@ export default function PanelMeasurementTable({
             }
           };
           return (
-            <div className="p-4 bg-primary-dark">
-              <Input
-                autoFocus
-                id="annotation"
-                className="mt-2 bg-black border-primary-main"
-                type="text"
-                containerClassName="mr-2"
-                value={value.label}
-                onChange={onChangeHandler}
-                onKeyPress={onKeyPressHandler}
-              />
-            </div>
+            <Input
+              label="Enter your annotation"
+              labelClassName="text-white text-[14px] leading-[1.2]"
+              autoFocus
+              id="annotation"
+              className="border-primary-main bg-black"
+              type="text"
+              value={value.label}
+              onChange={onChangeHandler}
+              onKeyPress={onKeyPressHandler}
+            />
           );
         },
         actions: [
-          // temp: swap button types until colors are updated
-          { id: 'cancel', text: 'Cancel', type: 'primary' },
-          { id: 'save', text: 'Save', type: 'secondary' },
+          { id: 'cancel', text: 'Cancel', type: ButtonEnums.type.secondary },
+          { id: 'save', text: 'Save', type: ButtonEnums.type.primary },
         ],
         onSubmit: onSubmitHandler,
       },
@@ -213,7 +198,7 @@ export default function PanelMeasurementTable({
   return (
     <>
       <div
-        className="overflow-x-hidden overflow-y-auto ohif-scrollbar"
+        className="ohif-scrollbar overflow-y-auto overflow-x-hidden"
         data-cy={'measurements-panel'}
       >
         <MeasurementTable
@@ -251,7 +236,7 @@ function _getMappedMeasurements(measurementService) {
 
 /**
  * Map the measurements to the display text.
- * Adds finding and site inforamtion to the displayText and/or label,
+ * Adds finding and site information to the displayText and/or label,
  * and provides as 'displayText' and 'label', while providing the original
  * values as baseDisplayText and baseLabel
  */
@@ -272,7 +257,9 @@ function _mapMeasurementToDisplay(measurement, index, types) {
   if (findingSites) {
     const siteText = [];
     findingSites.forEach(site => {
-      if (site?.text !== label) siteText.push(site.text);
+      if (site?.text !== label) {
+        siteText.push(site.text);
+      }
     });
     displayText = [...siteText, ...displayText];
   }

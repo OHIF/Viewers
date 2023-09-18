@@ -1,5 +1,3 @@
-import React, { useReducer } from 'react';
-
 // Todo: use defaults in cs3d
 const initialState = {
   renderOutline: true,

@@ -1,5 +1,5 @@
 import toolbarButtons from './toolbarButtons.js';
-import { hotkeys, ServicesManager } from '@ohif/core';
+import { hotkeys } from '@ohif/core';
 import { id } from './id';
 
 const configs = {
@@ -10,7 +10,6 @@ const configs = {
 const ohif = {
   layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
   sopClassHandler: '@ohif/extension-default.sopClassHandlerModule.stack',
-  hangingProtocol: '@ohif/extension-default.hangingProtocolModule.default',
   measurements: '@ohif/extension-default.panelModule.measure',
   thumbnailList: '@ohif/extension-default.panelModule.seriesList',
 };
@@ -20,14 +19,12 @@ const cs3d = {
 };
 
 const dicomsr = {
-  sopClassHandler:
-    '@ohif/extension-cornerstone-dicom-sr.sopClassHandlerModule.dicom-sr',
+  sopClassHandler: '@ohif/extension-cornerstone-dicom-sr.sopClassHandlerModule.dicom-sr',
   viewport: '@ohif/extension-cornerstone-dicom-sr.viewportModule.dicom-sr',
 };
 
 const dicomvideo = {
-  sopClassHandler:
-    '@ohif/extension-dicom-video.sopClassHandlerModule.dicom-video',
+  sopClassHandler: '@ohif/extension-dicom-video.sopClassHandlerModule.dicom-video',
   viewport: '@ohif/extension-dicom-video.viewportModule.dicom-video',
 };
 
@@ -47,8 +44,8 @@ const extensionDependencies = {
 function modeFactory({ modeConfiguration }) {
   return {
     id,
-    routeName: 'viewer',
-    displayName: 'Basic Viewer CS3D',
+    routeName: 'dev',
+    displayName: 'Basic Dev Viewer',
     /**
      * Lifecycle hooks
      */
@@ -81,11 +78,13 @@ function modeFactory({ modeConfiguration }) {
           { toolName: toolNames.Bidirectional },
           { toolName: toolNames.Probe },
           { toolName: toolNames.EllipticalROI },
+          { toolName: toolNames.CircleROI },
           { toolName: toolNames.RectangleROI },
           { toolName: toolNames.StackScroll },
           { toolName: toolNames.CalibrationLine },
         ],
         // enabled
+        enabled: [{ toolName: toolNames.ImageOverlayViewer }],
         // disabled
       };
 
@@ -134,11 +133,7 @@ function modeFactory({ modeConfiguration }) {
       ]);
     },
     onModeExit: ({ servicesManager }) => {
-      const {
-        toolGroupService,
-        measurementService,
-        toolbarService,
-      } = servicesManager.services;
+      const { toolGroupService, measurementService, toolbarService } = servicesManager.services;
 
       toolGroupService.destroy();
     },
@@ -185,7 +180,7 @@ function modeFactory({ modeConfiguration }) {
       },
     ],
     extensions: extensionDependencies,
-    hangingProtocol: [ohif.hangingProtocol],
+    hangingProtocol: 'default',
     sopClassHandlers: [
       dicomvideo.sopClassHandler,
       ohif.sopClassHandler,

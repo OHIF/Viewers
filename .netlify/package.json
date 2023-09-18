@@ -7,7 +7,7 @@
     "yarn": ">=1.16.0"
   },
   "scripts": {
-    "deploy": "netlify deploy --prod --dir ./../platform/viewer/dist"
+    "deploy": "netlify deploy --prod --dir ./../platform/app/dist"
   },
   "devDependencies": {
     "netlify-cli": "^2.21.0"

@@ -1,6 +1,6 @@
 import { metaData, utilities } from '@cornerstonejs/core';
 
-import OHIF from '@ohif/core';
+import OHIF, { DicomMetadataStore } from '@ohif/core';
 import dcmjs from 'dcmjs';
 import { adaptersSR } from '@cornerstonejs/adapters';
 
@@ -17,11 +17,7 @@ const { log } = OHIF;
  * @param options Naturalized DICOM JSON headers to merge into the displaySet.
  *
  */
-const _generateReport = (
-  measurementData,
-  additionalFindingTypes,
-  options = {}
-) => {
+const _generateReport = (measurementData, additionalFindingTypes, options = {}) => {
   const filteredToolState = getFilteredCornerstoneToolState(
     measurementData,
     additionalFindingTypes
@@ -41,7 +37,6 @@ const _generateReport = (
   if (typeof dataset.SpecificCharacterSet === 'undefined') {
     dataset.SpecificCharacterSet = 'ISO_IR 192';
   }
-
   return dataset;
 };
 
@@ -55,16 +50,8 @@ const commandsModule = ({}) => {
      * as opposed to Finding Sites.
      * that you wish to serialize.
      */
-    downloadReport: ({
-      measurementData,
-      additionalFindingTypes,
-      options = {},
-    }) => {
-      const srDataset = actions.generateReport(
-        measurementData,
-        additionalFindingTypes,
-        options
-      );
+    downloadReport: ({ measurementData, additionalFindingTypes, options = {} }) => {
+      const srDataset = actions.generateReport(measurementData, additionalFindingTypes, options);
       const reportBlob = dcmjs.data.datasetToBlob(srDataset);
 
       //Create a URL for the binary.
@@ -92,19 +79,21 @@ const commandsModule = ({}) => {
       log.info('[DICOMSR] storeMeasurements');
 
       if (!dataSource || !dataSource.store || !dataSource.store.dicom) {
-        log.error(
-          '[DICOMSR] datasource has no dataSource.store.dicom endpoint!'
-        );
+        log.error('[DICOMSR] datasource has no dataSource.store.dicom endpoint!');
         return Promise.reject({});
       }
 
       try {
-        const naturalizedReport = _generateReport(
-          measurementData,
-          additionalFindingTypes,
-          options
-        );
-        const { StudyInstanceUID } = naturalizedReport;
+        const naturalizedReport = _generateReport(measurementData, additionalFindingTypes, options);
+
+        const { StudyInstanceUID, ContentSequence } = naturalizedReport;
+        // The content sequence has 5 or more elements, of which
+        // the `[4]` element contains the annotation data, so this is
+        // checking that there is some annotation data present.
+        if (!ContentSequence?.[4].ContentSequence?.length) {
+          console.log('naturalizedReport missing imaging content', naturalizedReport);
+          throw new Error('Invalid report, no content');
+        }
 
         await dataSource.store.dicom(naturalizedReport);
 
@@ -112,15 +101,16 @@ const commandsModule = ({}) => {
           dataSource.deleteStudyMetadataPromise(StudyInstanceUID);
         }
 
+        // The "Mode" route listens for DicomMetadataStore changes
+        // When a new instance is added, it listens and
+        // automatically calls makeDisplaySets
+        DicomMetadataStore.addInstances([naturalizedReport], true);
+
         return naturalizedReport;
       } catch (error) {
         console.warn(error);
-        log.error(
-          `[DICOMSR] Error while saving the measurements: ${error.message}`
-        );
-        throw new Error(
-          error.message || 'Error while saving the measurements.'
-        );
+        log.error(`[DICOMSR] Error while saving the measurements: ${error.message}`);
+        throw new Error(error.message || 'Error while saving the measurements.');
       }
     },
   };

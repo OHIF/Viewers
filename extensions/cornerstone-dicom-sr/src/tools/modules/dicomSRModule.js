@@ -27,15 +27,11 @@ function setTrackingUniqueIdentifiersForElement(
   };
 }
 
-function setActiveTrackingUniqueIdentifierForElement(
-  element,
-  TrackingUniqueIdentifier
-) {
+function setActiveTrackingUniqueIdentifierForElement(element, TrackingUniqueIdentifier) {
   const enabledElement = getEnabledElement(element);
   const { viewport } = enabledElement;
 
-  const trackingIdentifiersForElement =
-    state.trackingIdentifiersByViewportId[viewport.id];
+  const trackingIdentifiersForElement = state.trackingIdentifiersByViewportId[viewport.id];
 
   if (trackingIdentifiersForElement) {
     const activeIndex = trackingIdentifiersForElement.trackingUniqueIdentifiers.findIndex(

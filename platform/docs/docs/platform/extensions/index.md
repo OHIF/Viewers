@@ -51,7 +51,7 @@ export default {
    */
   id,
 
-  // Lifecyle
+  // Lifecycle
   preRegistration() { /* */ },
   onModeEnter() { /* */ },
   onModeExit() { /* */ },
@@ -152,24 +152,24 @@ the top level [`extensions/`][ext-source] directory.
 `pluginConfig.json`, by default we register all extensions in the repo.
 
 
-```js title=platform/viewer/pluginConfig.json
+```js title=platform/app/pluginConfig.json
 // Simplified version of the `pluginConfig.json` file
 {
   "extensions": [
     {
       "packageName": "@ohif/extension-cornerstone",
-      "version": "3.0.0"
+      "version": "3.4.0"
     },
     {
       "packageName": "@ohif/extension-measurement-tracking",
-      "version": "3.0.0"
+      "version": "3.4.0"
     },
     // ...
   ],
   "modes": [
     {
       "packageName": "@ohif/mode-longitudinal",
-      "version": "0.0.1"
+      "version": "3.4.0"
     }
   ]
 }
@@ -182,7 +182,7 @@ Use the provided `cli` to add/remove/install/uninstall extensions. Read more [he
 
 The final registration and import of the extensions happen inside a non-tracked file `pluginImport.js` (this file is also for internal use only).
 
-After an extension gets registered withing the `viewer`,
+After an extension gets registered within the `viewer`,
 each [module](#modules) defined by the extension becomes available to the modes
 via the `ExtensionManager` by requesting it via its id.
 [Read more about Extension Manager](#extension-manager)
@@ -206,7 +206,7 @@ used to initialize data.
 
 [`onModeExit`](./lifecycle#onModeExit): Similarly to onModeEnter, this hook is
 called when navigating away from a mode, or before a mode’s data or datasource
-is changed. This can be used to cache data for re-use later, but since it
+is changed. This can be used to cache data for reuse later, but since it
 isn't known which mode will be entered next, the state after exiting should be
 clean, that is, the same as the state on a clean start.  This is called BEFORE
 service clean up, and after mode specific onModeExit handling.
@@ -319,7 +319,7 @@ documentation page.</span>
 
 ### Contexts
 
-The `@ohif/viewer` tracks "active contexts" that extensions can use to scope
+The `@ohif/app` tracks "active contexts" that extensions can use to scope
 their functionality. Some example contexts being:
 
 - Route: `ROUTE:VIEWER`, `ROUTE:STUDY_LIST`

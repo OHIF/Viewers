@@ -1,0 +1,23 @@
+.dicom-upload-drop-area-border-dash {
+  background-image: repeating-linear-gradient(
+      to right,
+      #7bb2ce 0%,
+      #7bb2ce 50%,
+      transparent 50%,
+      transparent 100%
+    ),
+    repeating-linear-gradient(to right, #7bb2ce 0%, #7bb2ce 50%, transparent 50%, transparent 100%),
+    repeating-linear-gradient(to bottom, #7bb2ce 0%, #7bb2ce 50%, transparent 50%, transparent 100%),
+    repeating-linear-gradient(to bottom, #7bb2ce 0%, #7bb2ce 50%, transparent 50%, transparent 100%);
+  background-position:
+    left top,
+    left bottom,
+    left top,
+    right top;
+  background-repeat: repeat-x, repeat-x, repeat-y, repeat-y;
+  background-size:
+    20px 3px,
+    20px 3px,
+    3px 20px,
+    3px 20px;
+}

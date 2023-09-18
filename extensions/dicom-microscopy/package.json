@@ -1,0 +1,51 @@
+{
+  "name": "@ohif/extension-dicom-microscopy",
+  "version": "3.7.0-beta.75",
+  "description": "OHIF extension for DICOM microscopy",
+  "author": "Bill Wallace, md-prog",
+  "license": "MIT",
+  "main": "dist/ohif-extension-dicom-microscopy.umd.js",
+  "files": [
+    "dist/**",
+    "public/**",
+    "README.md"
+  ],
+  "repository": "OHIF/Viewers",
+  "keywords": [
+    "ohif-extension"
+  ],
+  "module": "src/index.tsx",
+  "engines": {
+    "node": ">=14",
+    "npm": ">=6",
+    "yarn": ">=1.18.0"
+  },
+  "scripts": {
+    "dev": "cross-env NODE_ENV=development webpack --config .webpack/webpack.dev.js --watch --output-pathinfo",
+    "dev:dicom-pdf": "yarn run dev",
+    "build": "cross-env NODE_ENV=production webpack --config .webpack/webpack.prod.js",
+    "build:package-1": "yarn run build",
+    "start": "yarn run dev"
+  },
+  "peerDependencies": {
+    "@ohif/core": "3.7.0-beta.75",
+    "@ohif/extension-default": "3.7.0-beta.75",
+    "@ohif/i18n": "3.7.0-beta.75",
+    "@ohif/ui": "3.7.0-beta.75",
+    "prop-types": "^15.6.2",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-i18next": "^10.11.0",
+    "react-router": "^6.8.1",
+    "react-router-dom": "^6.8.1"
+  },
+  "dependencies": {
+    "@babel/runtime": "^7.20.13",
+    "@cornerstonejs/codec-charls": "^1.2.3",
+    "@cornerstonejs/codec-libjpeg-turbo-8bit": "^1.2.2",
+    "@cornerstonejs/codec-openjpeg": "^1.2.2",
+    "colormap": "^2.3",
+    "dicom-microscopy-viewer": "^0.44.0",
+    "dicomicc": "^0.1"
+  }
+}

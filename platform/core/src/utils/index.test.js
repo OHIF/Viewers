@@ -13,6 +13,8 @@ describe('Top level exports', () => {
       'sortStudyInstances',
       'sortStudySeries',
       'sortingCriteria',
+      'splitComma',
+      'getSplitParam',
       'isLowPriorityModality',
       'writeScript',
       'debounce',
@@ -22,6 +24,7 @@ describe('Top level exports', () => {
       'b64toBlob',
       'formatDate',
       'formatPN',
+      'generateAcceptHeader',
       'isEqualWithin',
       //'loadAndCacheDerivedDisplaySets',
       'isDisplaySetReconstructable',
@@ -36,6 +39,7 @@ describe('Top level exports', () => {
       'hierarchicalListUtils',
       'progressTrackingUtils',
       'subscribeToNextViewportGridChange',
+      'uuidv4',
     ].sort();
 
     const exports = Object.keys(utils.default).sort();

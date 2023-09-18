@@ -1,0 +1,22 @@
+server {
+  listen ${SSL_PORT} ssl http2 default_server;
+  listen [::]:${SSL_PORT} ssl http2 default_server;
+  ssl_certificate /etc/ssl/certs/ssl-certificate.crt;
+  ssl_certificate_key /etc/ssl/private/ssl-private-key.key;
+  location / {
+    root   /usr/share/nginx/html;
+    index  index.html index.htm;
+    try_files $uri $uri/ /index.html;
+    add_header Cross-Origin-Opener-Policy same-origin;
+    add_header Cross-Origin-Embedder-Policy require-corp;
+    add_header Cross-Origin-Resource-Policy same-origin;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $http_x_forwarded_proto;
+  }
+  error_page   500 502 503 504  /50x.html;
+  location = /50x.html {
+    root   /usr/share/nginx/html;
+  }
+}

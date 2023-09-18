@@ -2,31 +2,21 @@ import React, { useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { SegmentationGroupTable } from '@ohif/ui';
 import callInputDialog from './callInputDialog';
-
+import { useAppConfig } from '@state';
 import { useTranslation } from 'react-i18next';
 
-export default function PanelSegmentation({
-  servicesManager,
-  commandsManager,
-}) {
-  const {
-    segmentationService,
-    uiDialogService,
-    viewportGridService,
-    toolGroupService,
-    cornerstoneViewportService,
-  } = servicesManager.services;
+export default function PanelSegmentation({ servicesManager, commandsManager }) {
+  const { segmentationService, uiDialogService } = servicesManager.services;
+  const [appConfig] = useAppConfig();
+  const disableEditing = appConfig?.disableEditing;
 
   const { t } = useTranslation('PanelSegmentation');
   const [selectedSegmentationId, setSelectedSegmentationId] = useState(null);
-  const [
-    initialSegmentationConfigurations,
-    setInitialSegmentationConfigurations,
-  ] = useState(segmentationService.getConfiguration());
-
-  const [segmentations, setSegmentations] = useState(() =>
-    segmentationService.getSegmentations()
+  const [segmentationConfiguration, setSegmentationConfiguration] = useState(
+    segmentationService.getConfiguration()
   );
+
+  const [segmentations, setSegmentations] = useState(() => segmentationService.getSegmentations());
 
   const [isMinimized, setIsMinimized] = useState({});
 
@@ -62,6 +52,7 @@ export default function PanelSegmentation({
       const { unsubscribe } = segmentationService.subscribe(evt, () => {
         const segmentations = segmentationService.getSegmentations();
         setSegmentations(segmentations);
+        setSegmentationConfiguration(segmentationService.getConfiguration());
       });
       subscriptions.push(unsubscribe);
     });
@@ -82,32 +73,20 @@ export default function PanelSegmentation({
   };
 
   const getToolGroupIds = segmentationId => {
-    const toolGroupIds = segmentationService.getToolGroupIdsWithSegmentation(
-      segmentationId
-    );
+    const toolGroupIds = segmentationService.getToolGroupIdsWithSegmentation(segmentationId);
 
     return toolGroupIds;
   };
 
   const onSegmentClick = (segmentationId, segmentIndex) => {
-    segmentationService.setActiveSegmentForSegmentation(
-      segmentationId,
-      segmentIndex
-    );
+    segmentationService.setActiveSegmentForSegmentation(segmentationId, segmentIndex);
 
     const toolGroupIds = getToolGroupIds(segmentationId);
 
     toolGroupIds.forEach(toolGroupId => {
       // const toolGroupId =
-      segmentationService.setActiveSegmentationForToolGroup(
-        segmentationId,
-        toolGroupId
-      );
-      segmentationService.jumpToSegmentCenter(
-        segmentationId,
-        segmentIndex,
-        toolGroupId
-      );
+      segmentationService.setActiveSegmentationForToolGroup(segmentationId, toolGroupId);
+      segmentationService.jumpToSegmentCenter(segmentationId, segmentIndex, toolGroupId);
     });
   };
 
@@ -122,11 +101,7 @@ export default function PanelSegmentation({
         return;
       }
 
-      segmentationService.setSegmentLabelForSegmentation(
-        segmentationId,
-        segmentIndex,
-        label
-      );
+      segmentationService.setSegmentLabelForSegmentation(segmentationId, segmentIndex, label);
     });
   };
 
@@ -184,7 +159,7 @@ export default function PanelSegmentation({
     segmentationService.toggleSegmentationVisibility(segmentationId);
   };
 
-  const setSegmentationConfiguration = useCallback(
+  const _setSegmentationConfiguration = useCallback(
     (segmentationId, key, value) => {
       segmentationService.setConfiguration({
         segmentationId,
@@ -195,7 +170,7 @@ export default function PanelSegmentation({
   );
 
   return (
-    <div className="flex flex-col flex-auto min-h-0 justify-between mt-1">
+    <div className="mt-1 flex min-h-0 flex-auto flex-col justify-between">
       {/* show segmentation table */}
       {segmentations?.length ? (
         <SegmentationGroupTable
@@ -209,63 +184,37 @@ export default function PanelSegmentation({
           onSegmentationEdit={onSegmentationEdit}
           onSegmentClick={onSegmentClick}
           onSegmentEdit={onSegmentEdit}
+          disableEditing={disableEditing}
           onSegmentColorClick={onSegmentColorClick}
           onSegmentDelete={onSegmentDelete}
           onToggleSegmentVisibility={onToggleSegmentVisibility}
           onToggleSegmentationVisibility={onToggleSegmentationVisibility}
           onToggleMinimizeSegmentation={onToggleMinimizeSegmentation}
-          segmentationConfig={{
-            initialConfig: initialSegmentationConfigurations,
-            usePercentage: true,
-          }}
+          segmentationConfig={{ initialConfig: segmentationConfiguration }}
           setRenderOutline={value =>
-            setSegmentationConfiguration(
-              selectedSegmentationId,
-              'renderOutline',
-              value
-            )
+            _setSegmentationConfiguration(selectedSegmentationId, 'renderOutline', value)
           }
           setOutlineOpacityActive={value =>
-            setSegmentationConfiguration(
-              selectedSegmentationId,
-              'outlineOpacity',
-              value
-            )
+            _setSegmentationConfiguration(selectedSegmentationId, 'outlineOpacity', value)
           }
           setRenderFill={value =>
-            setSegmentationConfiguration(
-              selectedSegmentationId,
-              'renderFill',
-              value
-            )
+            _setSegmentationConfiguration(selectedSegmentationId, 'renderFill', value)
           }
           setRenderInactiveSegmentations={value =>
-            setSegmentationConfiguration(
+            _setSegmentationConfiguration(
               selectedSegmentationId,
               'renderInactiveSegmentations',
               value
             )
           }
           setOutlineWidthActive={value =>
-            setSegmentationConfiguration(
-              selectedSegmentationId,
-              'outlineWidthActive',
-              value
-            )
+            _setSegmentationConfiguration(selectedSegmentationId, 'outlineWidthActive', value)
           }
           setFillAlpha={value =>
-            setSegmentationConfiguration(
-              selectedSegmentationId,
-              'fillAlpha',
-              value
-            )
+            _setSegmentationConfiguration(selectedSegmentationId, 'fillAlpha', value)
           }
           setFillAlphaInactive={value =>
-            setSegmentationConfiguration(
-              selectedSegmentationId,
-              'fillAlphaInactive',
-              value
-            )
+            _setSegmentationConfiguration(selectedSegmentationId, 'fillAlphaInactive', value)
           }
         />
       ) : null}

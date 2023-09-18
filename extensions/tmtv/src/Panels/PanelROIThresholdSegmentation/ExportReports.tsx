@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, ButtonGroup } from '@ohif/ui';
+import { LegacyButton, ButtonGroup } from '@ohif/ui';
 import { useTranslation } from 'react-i18next';
 
 function ExportReports({ segmentations, tmtvValue, config, commandsManager }) {
@@ -8,9 +8,13 @@ function ExportReports({ segmentations, tmtvValue, config, commandsManager }) {
   return (
     <>
       {segmentations?.length ? (
-        <div className="flex justify-center mt-4 space-x-2">
-          <ButtonGroup color="black" size="inherit">
-            <Button
+        <div className="mt-4 flex justify-center space-x-2">
+          {/* TODO Revisit design of ButtonGroup later - for now use LegacyButton for its children.*/}
+          <ButtonGroup
+            color="black"
+            size="inherit"
+          >
+            <LegacyButton
               className="px-2 py-2 text-base"
               disabled={tmtvValue === null}
               onClick={() => {
@@ -22,10 +26,13 @@ function ExportReports({ segmentations, tmtvValue, config, commandsManager }) {
               }}
             >
               {t('Export CSV')}
-            </Button>
+            </LegacyButton>
           </ButtonGroup>
-          <ButtonGroup color="black" size="inherit">
-            <Button
+          <ButtonGroup
+            color="black"
+            size="inherit"
+          >
+            <LegacyButton
               className="px-2 py-2 text-base"
               onClick={() => {
                 commandsManager.runCommand('createTMTVRTReport');
@@ -33,7 +40,7 @@ function ExportReports({ segmentations, tmtvValue, config, commandsManager }) {
               disabled={tmtvValue === null}
             >
               {t('Create RT Report')}
-            </Button>
+            </LegacyButton>
           </ButtonGroup>
         </div>
       ) : null}

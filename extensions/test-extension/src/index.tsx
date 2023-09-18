@@ -2,14 +2,13 @@ import { Types } from '@ohif/core';
 
 import { id } from './id';
 
-import getHangingProtocolModule from './hp';
+import hpTestSwitch from './hpTestSwitch';
+
 import getCustomizationModule from './getCustomizationModule';
 // import {setViewportZoomPan, storeViewportZoomPan } from './custom-viewport/setViewportZoomPan';
 import sameAs from './custom-attribute/sameAs';
 import numberOfDisplaySets from './custom-attribute/numberOfDisplaySets';
-import numberOfDisplaySetsWithImages from './custom-attribute/numberOfDisplaySetsWithImages';
 import maxNumImageFrames from './custom-attribute/maxNumImageFrames';
-import seriesDescriptionsFromDisplaySets from './custom-attribute/seriesDescriptionsFromDisplaySets';
 
 /**
  * The test extension provides additional behaviour for testing various
@@ -32,19 +31,9 @@ const testExtension: Types.Extensions.Extension = {
   preRegistration: ({ servicesManager }: Types.Extensions.ExtensionParams) => {
     const { hangingProtocolService } = servicesManager.services;
     hangingProtocolService.addCustomAttribute(
-      'seriesDescriptions',
-      'Series Descriptions',
-      seriesDescriptionsFromDisplaySets
-    );
-    hangingProtocolService.addCustomAttribute(
       'numberOfDisplaySets',
       'Number of displays sets',
       numberOfDisplaySets
-    );
-    hangingProtocolService.addCustomAttribute(
-      'numberOfDisplaySetsWithImages',
-      'Number of displays sets with images',
-      numberOfDisplaySetsWithImages
     );
     hangingProtocolService.addCustomAttribute(
       'maxNumImageFrames',
@@ -58,11 +47,18 @@ const testExtension: Types.Extensions.Extension = {
     );
   },
 
-  /** Registers some additional hanging protocols.  See hp/index.tsx for more details */
-  getHangingProtocolModule,
-
   /** Registers some customizations */
   getCustomizationModule,
+
+  getHangingProtocolModule: () => {
+    return [
+      // Create a MxN hanging protocol available by default
+      {
+        name: hpTestSwitch.id,
+        protocol: hpTestSwitch,
+      },
+    ];
+  },
 };
 
 export default testExtension;

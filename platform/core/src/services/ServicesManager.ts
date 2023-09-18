@@ -19,9 +19,7 @@ export default class ServicesManager {
    */
   registerService(service, configuration = {}) {
     if (!service) {
-      log.warn(
-        'Attempting to register a null/undefined service. Exiting early.'
-      );
+      log.warn('Attempting to register a null/undefined service. Exiting early.');
       return;
     }
 

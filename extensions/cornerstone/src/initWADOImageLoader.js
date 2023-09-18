@@ -1,11 +1,9 @@
 import * as cornerstone from '@cornerstonejs/core';
 import { volumeLoader } from '@cornerstonejs/core';
 import { cornerstoneStreamingImageVolumeLoader } from '@cornerstonejs/streaming-image-volume-loader';
-import cornerstoneWADOImageLoader, {
-  webWorkerManager,
-} from 'cornerstone-wado-image-loader';
+import dicomImageLoader, { webWorkerManager } from '@cornerstonejs/dicom-image-loader';
 import dicomParser from 'dicom-parser';
-import { errorHandler } from '@ohif/core';
+import { errorHandler, utils } from '@ohif/core';
 
 const { registerVolumeLoader } = volumeLoader;
 
@@ -28,50 +26,47 @@ function initWebWorkers(appConfig) {
   };
 
   if (!initialized) {
-    cornerstoneWADOImageLoader.webWorkerManager.initialize(config);
+    dicomImageLoader.webWorkerManager.initialize(config);
     initialized = true;
   }
 }
 
 export default function initWADOImageLoader(
   userAuthenticationService,
-  appConfig
+  appConfig,
+  extensionManager
 ) {
-  cornerstoneWADOImageLoader.external.cornerstone = cornerstone;
-  cornerstoneWADOImageLoader.external.dicomParser = dicomParser;
+  dicomImageLoader.external.cornerstone = cornerstone;
+  dicomImageLoader.external.dicomParser = dicomParser;
 
-  registerVolumeLoader(
-    'cornerstoneStreamingImageVolume',
-    cornerstoneStreamingImageVolumeLoader
-  );
+  registerVolumeLoader('cornerstoneStreamingImageVolume', cornerstoneStreamingImageVolumeLoader);
 
-  cornerstoneWADOImageLoader.configure({
+  dicomImageLoader.configure({
     decodeConfig: {
       // !! IMPORTANT !!
-      // We should set this flag to false, since, by default cornerstone-wado-image-loader
+      // We should set this flag to false, since, by default @cornerstonejs/dicom-image-loader
       // will convert everything to integers (to be able to work with cornerstone-2d).
       // Until the default is set to true (which is the case for cornerstone3D),
       // we should set this flag to false.
       convertFloatPixelDataToInt: false,
       use16BitDataType: Boolean(appConfig.use16BitDataType),
     },
-    beforeSend: function(xhr) {
+    beforeSend: function (xhr) {
+      //TODO should be removed in the future and request emitted by DicomWebDataSource
+      const sourceConfig = extensionManager.getActiveDataSource()?.[0].getConfig() ?? {};
       const headers = userAuthenticationService.getAuthorizationHeader();
+      const acceptHeader = utils.generateAcceptHeader(
+        sourceConfig.acceptHeader,
+        sourceConfig.requestTransferSyntaxUID,
+        sourceConfig.omitQuotationForMultipartRequest
+      );
 
-      // Request:
-      // JPEG-LS Lossless (1.2.840.10008.1.2.4.80) if available, otherwise accept
-      // whatever transfer-syntax the origin server provides.
-      // For now we use image/jls and image/x-jls because some servers still use the old type
-      // http://dicom.nema.org/medical/dicom/current/output/html/part18.html
       const xhrRequestHeaders = {
-        Accept: appConfig.omitQuotationForMultipartRequest
-          ? 'multipart/related; type=application/octet-stream'
-          : 'multipart/related; type="application/octet-stream"',
-        // 'multipart/related; type="image/x-jls", multipart/related; type="image/jls"; transfer-syntax="1.2.840.10008.1.2.4.80", multipart/related; type="image/x-jls", multipart/related; type="application/octet-stream"; transfer-syntax=*',
+        Accept: acceptHeader,
       };
 
-      if (headers && headers.Authorization) {
-        xhrRequestHeaders.Authorization = headers.Authorization;
+      if (headers) {
+        Object.assign(xhrRequestHeaders, headers);
       }
 
       return xhrRequestHeaders;

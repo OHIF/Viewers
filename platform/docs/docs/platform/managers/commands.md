@@ -74,7 +74,7 @@ These methods are used internally to help determine which commands are currently
 valid, and how to provide them with any state they may need at the time they are
 called.
 
-```js title="platform/viewer/src/appInit.js"
+```js title="platform/app/src/appInit.js"
 const commandsManagerConfig = {
   getAppState: () => {},
   /** Used by commands to determine active context */

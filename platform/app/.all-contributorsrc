@@ -1,0 +1,82 @@
+{
+  "files": ["README.md"],
+  "imageSize": 100,
+  "commit": false,
+  "contributors": [
+    {
+      "login": "swederik",
+      "name": "Erik Ziegler",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/607793?v=4",
+      "profile": "https://github.com/swederik",
+      "contributions": ["code", "infra"]
+    },
+    {
+      "login": "evren217",
+      "name": "Evren Ozkan",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/4920551?v=4",
+      "profile": "https://github.com/evren217",
+      "contributions": ["code"]
+    },
+    {
+      "login": "galelis",
+      "name": "Gustavo André Lelis",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/2378326?v=4",
+      "profile": "https://github.com/galelis",
+      "contributions": ["code"]
+    },
+    {
+      "login": "dannyrb",
+      "name": "Danny Brown",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/5797588?v=4",
+      "profile": "http://dannyrb.com/",
+      "contributions": ["code", "infra"]
+    },
+    {
+      "login": "allcontributors",
+      "name": "allcontributors[bot]",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/46843839?v=4",
+      "profile": "https://github.com/all-contributors/all-contributors-bot",
+      "contributions": ["doc"]
+    },
+    {
+      "login": "EsrefDurna",
+      "name": "Esref Durna",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/1230575?v=4",
+      "profile": "https://www.linkedin.com/in/siliconvalleynextgeneration/",
+      "contributions": ["question"]
+    },
+    {
+      "login": "diego0020",
+      "name": "diego0020",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/7297450?v=4",
+      "profile": "https://github.com/diego0020",
+      "contributions": ["code"]
+    },
+    {
+      "login": "dlwire",
+      "name": "David Wire",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/1167291?v=4",
+      "profile": "https://github.com/dlwire",
+      "contributions": ["code"]
+    },
+    {
+      "login": "jfmedeiros1820",
+      "name": "João Felipe de Medeiros Moreira",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/2211708?v=4",
+      "profile": "https://github.com/jfmedeiros1820",
+      "contributions": ["test"]
+    },
+    {
+      "login": "pavertomato",
+      "name": "Egor Lezhnin",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/878990?v=4",
+      "profile": "http://egor.lezhn.in",
+      "contributions": ["code"]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "projectName": "Viewers",
+  "projectOwner": "OHIF",
+  "repoType": "github",
+  "repoHost": "https://github.com"
+}

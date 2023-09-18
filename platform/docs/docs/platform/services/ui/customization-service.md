@@ -43,7 +43,7 @@ automatically when the extension or mode is loaded.
 In the `value` of each customizations, you will define customization prototype(s).
 These customization prototype(s) can be considered like "Prototype" in Javascript.
 These can be used to extend the customization definitions from configurations.
-Default cutomizations will be often used to define all the customization prototypes,
+Default customizations will be often used to define all the customization prototypes,
 as they will be loaded automatically along with the defining extension or mode.
 
 
@@ -178,7 +178,7 @@ onModeEnter() {
       customizationType: 'ohif.cornerstoneOverlay',
       // The cornerstoneOverlay definition requires an items list here.
       items: [
-        // Custom definitions for hte context menu here.
+        // Custom definitions for the context menu here.
       ],
     };
   customizationService.addModeCustomizations(bottomRight);
@@ -285,7 +285,7 @@ uses it's own internal class names.
 * Name: 'class:StudyBrowser'
 * Attributes:
 ** `true` for the is active true text color
-** `false` fo rhte is active false text color.
+** `false` for the is active false text color.
 ** Values are button colors, from the Button class, eg default, white, black
 
 ## customRoutes
@@ -332,7 +332,7 @@ customizationService: [
 Below is the full example configuration of the customizable viewport overlay and the screenshot of the result overlay.
 
 ```javascript
-// this is one of the configuration files in `platform/viewer/public/config/*.js`
+// this is one of the configuration files in `platform/app/public/config/*.js`
 window.config = {
   // ...
 
@@ -490,7 +490,7 @@ are specific to the context used for where the menu is displayed.
 The default cornerstone context menu can be customized by setting the
 `cornerstoneContextMenu`.  For a full example, see `findingsContextMenu`.
 
-## Customizeable Cornerstone Viewport Click Behaviour
+## Customizable Cornerstone Viewport Click Behaviour
 
 The behaviour on clicking on the cornerstone viewport can be customized
 by setting the `cornerstoneViewportClickCommands`.  This is intended to

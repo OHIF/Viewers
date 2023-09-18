@@ -1,3 +1,4 @@
+import { ButtonEnums } from '@ohif/ui';
 import hydrateSEGDisplaySet from './_hydrateSEG';
 
 const RESPONSE = {
@@ -6,23 +7,20 @@ const RESPONSE = {
   HYDRATE_SEG: 5,
 };
 
-function promptHydrateSEG({
-  servicesManager,
-  segDisplaySet,
-  viewportIndex,
-}) {
+function promptHydrateSEG({ servicesManager, segDisplaySet, viewportId, preHydrateCallbacks }) {
   const { uiViewportDialogService } = servicesManager.services;
 
-  return new Promise(async function(resolve, reject) {
-    const promptResult = await _askHydrate(
-      uiViewportDialogService,
-      viewportIndex
-    );
+  return new Promise(async function (resolve, reject) {
+    const promptResult = await _askHydrate(uiViewportDialogService, viewportId);
 
     if (promptResult === RESPONSE.HYDRATE_SEG) {
+      preHydrateCallbacks?.forEach(callback => {
+        callback();
+      });
+
       const isHydrated = await hydrateSEGDisplaySet({
         segDisplaySet,
-        viewportIndex,
+        viewportId,
         servicesManager,
       });
 
@@ -31,17 +29,17 @@ function promptHydrateSEG({
   });
 }
 
-function _askHydrate(uiViewportDialogService, viewportIndex) {
-  return new Promise(function(resolve, reject) {
+function _askHydrate(uiViewportDialogService, viewportId) {
+  return new Promise(function (resolve, reject) {
     const message = 'Do you want to open this Segmentation?';
     const actions = [
       {
-        type: 'secondary',
+        type: ButtonEnums.type.secondary,
         text: 'No',
         value: RESPONSE.CANCEL,
       },
       {
-        type: 'primary',
+        type: ButtonEnums.type.primary,
         text: 'Yes',
         value: RESPONSE.HYDRATE_SEG,
       },
@@ -52,7 +50,7 @@ function _askHydrate(uiViewportDialogService, viewportIndex) {
     };
 
     uiViewportDialogService.show({
-      viewportIndex,
+      viewportId,
       type: 'info',
       message,
       actions,

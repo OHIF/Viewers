@@ -1,10 +1,6 @@
-import {
-  synchronizers,
-  SynchronizerManager,
-  Synchronizer,
-} from '@cornerstonejs/tools';
+import { synchronizers, SynchronizerManager, Synchronizer } from '@cornerstonejs/tools';
 
-import { pubSubServiceInterface } from '@ohif/core';
+import { pubSubServiceInterface, Types, ServicesManager } from '@ohif/core';
 
 const EVENTS = {
   TOOL_GROUP_CREATED: 'event::cornerstone::syncgroupservice:toolgroupcreated',
@@ -14,10 +10,7 @@ const EVENTS = {
  * @params options - are an optional set of options associated with the first
  * sync group declared.
  */
-export type SyncCreator = (
-  type: string,
-  options?: Record<string, unknown>
-) => Synchronizer;
+export type SyncCreator = (id: string, options?: Record<string, unknown>) => Synchronizer;
 
 export type SyncGroup = {
   type: string;
@@ -37,7 +30,15 @@ const asSyncGroup = (syncGroup: string | SyncGroup): SyncGroup =>
   typeof syncGroup === 'string' ? { type: syncGroup } : syncGroup;
 
 export default class SyncGroupService {
-  serviceManager: any;
+  static REGISTRATION = {
+    name: 'syncGroupService',
+    altName: 'SyncGroupService',
+    create: ({ servicesManager }: Types.Extensions.ExtensionParams): SyncGroupService => {
+      return new SyncGroupService(servicesManager);
+    },
+  };
+
+  servicesManager: ServicesManager;
   listeners: { [key: string]: (...args: any[]) => void } = {};
   EVENTS: { [key: string]: string };
   synchronizerCreators: Record<string, SyncCreator> = {
@@ -47,19 +48,15 @@ export default class SyncGroupService {
     [STACKIMAGE]: synchronizers.createStackImageSynchronizer,
   };
 
-  constructor(serviceManager) {
-    this.serviceManager = serviceManager;
+  constructor(serviceManager: ServicesManager) {
+    this.servicesManager = serviceManager;
     this.listeners = {};
     this.EVENTS = EVENTS;
     //
     Object.assign(this, pubSubServiceInterface);
   }
 
-  private _createSynchronizer(
-    type: string,
-    id: string,
-    options
-  ): Synchronizer | undefined {
+  private _createSynchronizer(type: string, id: string, options): Synchronizer | undefined {
     const syncCreator = this.synchronizerCreators[type.toLowerCase()];
     if (syncCreator) {
       return syncCreator(id, options);
@@ -73,7 +70,7 @@ export default class SyncGroupService {
    * @param type is the type of the synchronizer to create
    * @param creator
    */
-  public setSynchronizer(type: string, creator: SyncCreator): void {
+  public addSynchronizerType(type: string, creator: SyncCreator): void {
     this.synchronizerCreators[type.toLowerCase()] = creator;
   }
 
@@ -99,19 +96,11 @@ export default class SyncGroupService {
       return;
     }
 
-    const syncGroupsArray = Array.isArray(syncGroups)
-      ? syncGroups
-      : [syncGroups];
+    const syncGroupsArray = Array.isArray(syncGroups) ? syncGroups : [syncGroups];
 
     syncGroupsArray.forEach(syncGroup => {
       const syncGroupObj = asSyncGroup(syncGroup);
-      const {
-        type,
-        target = true,
-        source = true,
-        options = {},
-        id = type,
-      } = syncGroupObj;
+      const { type, target = true, source = true, options = {}, id = type } = syncGroupObj;
 
       const synchronizer = this._getOrCreateSynchronizer(type, id, options);
       synchronizer.setOptions(viewportId, options);

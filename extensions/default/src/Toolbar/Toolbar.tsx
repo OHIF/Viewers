@@ -29,7 +29,7 @@ export default function Toolbar({ servicesManager }) {
 
   return (
     <>
-      {toolbarButtons.map((toolDef, index) => {
+      {toolbarButtons.map(toolDef => {
         const { id, Component, componentProps } = toolDef;
         // TODO: ...
 
@@ -49,7 +49,10 @@ export default function Toolbar({ servicesManager }) {
         return (
           // The margin for separating the tools on the toolbar should go here and NOT in each individual component (button) item.
           // This allows for the individual items to be included in other UI components where perhaps alternative margins are desired.
-          <div key={id} className={classnames('mr-1')}>
+          <div
+            key={id}
+            className={classnames('mr-1')}
+          >
             <Component
               id={id}
               {...componentProps}

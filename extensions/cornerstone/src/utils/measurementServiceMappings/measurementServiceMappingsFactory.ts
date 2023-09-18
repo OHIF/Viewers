@@ -2,6 +2,7 @@ import { MeasurementService } from '@ohif/core';
 import Length from './Length';
 import Bidirectional from './Bidirectional';
 import EllipticalROI from './EllipticalROI';
+import CircleROI from './CircleROI';
 import ArrowAnnotate from './ArrowAnnotate';
 import CobbAngle from './CobbAngle';
 import Angle from './Angle';
@@ -22,14 +23,8 @@ const measurementServiceMappingsFactory = (
    */
 
   const _getValueTypeFromToolType = toolType => {
-    const {
-      POLYLINE,
-      ELLIPSE,
-      RECTANGLE,
-      BIDIRECTIONAL,
-      POINT,
-      ANGLE,
-    } = MeasurementService.VALUE_TYPES;
+    const { POLYLINE, ELLIPSE, CIRCLE, RECTANGLE, BIDIRECTIONAL, POINT, ANGLE } =
+      MeasurementService.VALUE_TYPES;
 
     // TODO -> I get why this was attempted, but its not nearly flexible enough.
     // A single measurement may have an ellipse + a bidirectional measurement, for instances.
@@ -37,6 +32,7 @@ const measurementServiceMappingsFactory = (
     const TOOL_TYPE_TO_VALUE_TYPE = {
       Length: POLYLINE,
       EllipticalROI: ELLIPSE,
+      CircleROI: CIRCLE,
       RectangleROI: RECTANGLE,
       PlanarFreehandROI: POLYLINE,
       Bidirectional: BIDIRECTIONAL,
@@ -100,6 +96,22 @@ const measurementServiceMappingsFactory = (
       matchingCriteria: [
         {
           valueType: MeasurementService.VALUE_TYPES.ELLIPSE,
+        },
+      ],
+    },
+
+    CircleROI: {
+      toAnnotation: CircleROI.toAnnotation,
+      toMeasurement: csToolsAnnotation =>
+        CircleROI.toMeasurement(
+          csToolsAnnotation,
+          displaySetService,
+          cornerstoneViewportService,
+          _getValueTypeFromToolType
+        ),
+      matchingCriteria: [
+        {
+          valueType: MeasurementService.VALUE_TYPES.CIRCLE,
         },
       ],
     },

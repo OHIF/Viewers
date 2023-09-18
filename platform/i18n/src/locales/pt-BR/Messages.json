@@ -1,0 +1,15 @@
+{
+  "1": "Série sem imagens.",
+  "2": "Série nao possui informação de posição.",
+  "3": "Serie não é reconstruível.",
+  "4": "Série nulti frame não possui informação de medidas.",
+  "5": "Série multi frame não possui informação de orientação.",
+  "6": "Série multi frame não possui informação de posição.",
+  "7": "Série não possui algumas imagens.",
+  "8": "Série possui espaçamento irregular.",
+  "9": "Série possui dimensões inconsistentes entre frames.",
+  "10": "Série possui frames com componentes inconsistentes.",
+  "11": "Série possui frames com orientações inconsistentes.",
+  "12": "Série possui informação de posição inconsistentes.",
+  "13": "Série não suportada."
+}

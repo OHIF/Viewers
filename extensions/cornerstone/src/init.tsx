@@ -1,4 +1,4 @@
-import OHIF from '@ohif/core';
+import OHIF, { Types } from '@ohif/core';
 import React from 'react';
 
 import * as cornerstone from '@cornerstonejs/core';
@@ -27,6 +27,7 @@ import nthLoader from './utils/nthLoader';
 import interleaveTopToBottom from './utils/interleaveTopToBottom';
 import initContextMenu from './initContextMenu';
 import initDoubleClick from './initDoubleClick';
+import { CornerstoneServices } from './types';
 
 // TODO: Cypress tests are currently grabbing this from the window?
 window.cornerstone = cornerstone;
@@ -37,6 +38,7 @@ window.cornerstoneTools = cornerstoneTools;
 export default async function init({
   servicesManager,
   commandsManager,
+  extensionManager,
   configuration,
   appConfig,
 }: Types.Extensions.ExtensionParams): Promise<void> {
@@ -60,27 +62,27 @@ export default async function init({
     default:
       cornerstone.setUseSharedArrayBuffer(csEnums.SharedArrayBufferModes.TRUE);
   }
+  cornerstone.setConfiguration({
+    ...cornerstone.getConfiguration(),
+    rendering: {
+      ...cornerstone.getConfiguration().rendering,
+      strictZSpacingForVolumeViewport: appConfig.strictZSpacingForVolumeViewport,
+    },
+  });
 
-  // For debugging large datasets
-  const MAX_CACHE_SIZE_1GB = 1073741824;
-  const maxCacheSize = appConfig.maxCacheSize;
-  cornerstone.cache.setMaxCacheSize(
-    maxCacheSize ? maxCacheSize : MAX_CACHE_SIZE_1GB
-  );
+  // For debugging large datasets, otherwise prefer the defaults
+  const { maxCacheSize } = appConfig;
+  if (maxCacheSize) {
+    cornerstone.cache.setMaxCacheSize(maxCacheSize);
+  }
 
   initCornerstoneTools();
 
-  Settings.getRuntimeSettings().set(
-    'useCursors',
-    Boolean(appConfig.useCursors)
-  );
+  Settings.getRuntimeSettings().set('useCursors', Boolean(appConfig.useCursors));
 
   const {
     userAuthenticationService,
-    measurementService,
     customizationService,
-    displaySetService,
-    uiDialogService,
     uiModalService,
     uiNotificationService,
     cineService,
@@ -89,26 +91,21 @@ export default async function init({
     toolGroupService,
     viewportGridService,
     stateSyncService,
-  } = servicesManager.services;
+  } = servicesManager.services as CornerstoneServices;
 
   window.services = servicesManager.services;
+  window.extensionManager = extensionManager;
+  window.commandsManager = commandsManager;
 
-  if (
-    appConfig.showWarningMessageForCrossOrigin &&
-    !window.crossOriginIsolated
-  ) {
+  if (appConfig.showWarningMessageForCrossOrigin && !window.crossOriginIsolated) {
     uiNotificationService.show({
       title: 'Cross Origin Isolation',
-      message:
-        'Cross Origin Isolation is not enabled, volume rendering will not work (e.g., MPR)',
+      message: 'Cross Origin Isolation is not enabled, volume rendering will not work (e.g., MPR)',
       type: 'warning',
     });
   }
 
-  if (
-    appConfig.showCPUFallbackMessage &&
-    cornerstone.getShouldUseCPURendering()
-  ) {
+  if (appConfig.showCPUFallbackMessage && cornerstone.getShouldUseCPURendering()) {
     _showCPURenderingModal(uiModalService, hangingProtocolService);
   }
 
@@ -128,18 +125,14 @@ export default async function init({
     clearOnModeExit: true,
   });
 
-  const labelmapRepresentation =
-    cornerstoneTools.Enums.SegmentationRepresentations.Labelmap;
+  const labelmapRepresentation = cornerstoneTools.Enums.SegmentationRepresentations.Labelmap;
 
-  cornerstoneTools.segmentation.config.setGlobalRepresentationConfig(
-    labelmapRepresentation,
-    {
-      fillAlpha: 0.3,
-      fillAlphaInactive: 0.2,
-      outlineOpacity: 1,
-      outlineOpacityInactive: 0.65,
-    }
-  );
+  cornerstoneTools.segmentation.config.setGlobalRepresentationConfig(labelmapRepresentation, {
+    fillAlpha: 0.3,
+    fillAlphaInactive: 0.2,
+    outlineOpacity: 1,
+    outlineOpacityInactive: 0.65,
+  });
 
   const metadataProvider = OHIF.classes.MetadataProvider;
 
@@ -148,14 +141,8 @@ export default async function init({
     cornerstoneStreamingImageVolumeLoader
   );
 
-  hangingProtocolService.registerImageLoadStrategy(
-    'interleaveCenter',
-    interleaveCenterLoader
-  );
-  hangingProtocolService.registerImageLoadStrategy(
-    'interleaveTopToBottom',
-    interleaveTopToBottom
-  );
+  hangingProtocolService.registerImageLoadStrategy('interleaveCenter', interleaveCenterLoader);
+  hangingProtocolService.registerImageLoadStrategy('interleaveTopToBottom', interleaveTopToBottom);
   hangingProtocolService.registerImageLoadStrategy('nth', nthLoader);
 
   // add metadata providers
@@ -172,12 +159,10 @@ export default async function init({
     prefetch: appConfig?.maxNumRequests?.prefetch || 10,
   };
 
-  initWADOImageLoader(userAuthenticationService, appConfig);
+  initWADOImageLoader(userAuthenticationService, appConfig, extensionManager);
 
   /* Measurement Service */
-  this.measurementServiceSource = connectToolsToMeasurementService(
-    servicesManager
-  );
+  this.measurementServiceSource = connectToolsToMeasurementService(servicesManager);
 
   initCineService(cineService);
 
@@ -187,31 +172,18 @@ export default async function init({
     volumeInputArrayMap => {
       for (const entry of volumeInputArrayMap.entries()) {
         const [viewportId, volumeInputArray] = entry;
-        const viewport = cornerstoneViewportService.getCornerstoneViewport(
-          viewportId
-        );
+        const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
-        const ohifViewport = cornerstoneViewportService.getViewportInfo(
-          viewportId
-        );
+        const ohifViewport = cornerstoneViewportService.getViewportInfo(viewportId);
 
-        const {
-          lutPresentationStore,
-          positionPresentationStore,
-        } = stateSyncService.getState();
+        const { lutPresentationStore, positionPresentationStore } = stateSyncService.getState();
         const { presentationIds } = ohifViewport.getViewportOptions();
         const presentations = {
-          positionPresentation:
-            positionPresentationStore[presentationIds?.positionPresentationId],
-          lutPresentation:
-            lutPresentationStore[presentationIds?.lutPresentationId],
+          positionPresentation: positionPresentationStore[presentationIds?.positionPresentationId],
+          lutPresentation: lutPresentationStore[presentationIds?.lutPresentationId],
         };
 
-        cornerstoneViewportService.setVolumesForViewport(
-          viewport,
-          volumeInputArray,
-          presentations
-        );
+        cornerstoneViewportService.setVolumesForViewport(viewport, volumeInputArray, presentations);
       }
     }
   );
@@ -234,9 +206,7 @@ export default async function init({
 
   const resetCrosshairs = evt => {
     const { element } = evt.detail;
-    const { viewportId, renderingEngineId } = cornerstone.getEnabledElement(
-      element
-    );
+    const { viewportId, renderingEngineId } = cornerstone.getEnabledElement(element);
 
     const toolGroup = cornerstoneTools.ToolGroupManager.getToolGroupForViewport(
       viewportId,
@@ -262,10 +232,7 @@ export default async function init({
     const { element } = evt.detail;
     element.addEventListener(EVENTS.CAMERA_RESET, resetCrosshairs);
 
-    eventTarget.addEventListener(
-      EVENTS.STACK_VIEWPORT_NEW_STACK,
-      newStackCallback
-    );
+    eventTarget.addEventListener(EVENTS.STACK_VIEWPORT_NEW_STACK, newStackCallback);
   }
 
   function elementDisabledHandler(evt) {
@@ -280,20 +247,13 @@ export default async function init({
     // );
   }
 
-  eventTarget.addEventListener(
-    EVENTS.ELEMENT_ENABLED,
-    elementEnabledHandler.bind(null)
-  );
+  eventTarget.addEventListener(EVENTS.ELEMENT_ENABLED, elementEnabledHandler.bind(null));
 
-  eventTarget.addEventListener(
-    EVENTS.ELEMENT_DISABLED,
-    elementDisabledHandler.bind(null)
-  );
+  eventTarget.addEventListener(EVENTS.ELEMENT_DISABLED, elementDisabledHandler.bind(null));
 
   viewportGridService.subscribe(
-    viewportGridService.EVENTS.ACTIVE_VIEWPORT_INDEX_CHANGED,
-    ({ viewportIndex, viewportId }) => {
-      viewportId = viewportId || `viewport-${viewportIndex}`;
+    viewportGridService.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED,
+    ({ viewportId }) => {
       const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
 
       if (!toolGroup || !toolGroup._toolInstances?.['ReferenceLines']) {
@@ -302,8 +262,7 @@ export default async function init({
 
       // check if reference lines are active
       const referenceLinesEnabled =
-        toolGroup._toolInstances['ReferenceLines'].mode ===
-        Enums.ToolModes.Enabled;
+        toolGroup._toolInstances['ReferenceLines'].mode === Enums.ToolModes.Enabled;
 
       if (!referenceLinesEnabled) {
         return;
@@ -328,10 +287,9 @@ function CPUModal() {
   return (
     <div>
       <p>
-        Your computer does not have enough GPU power to support the default GPU
-        rendering mode. OHIF has switched to CPU rendering mode. Please note
-        that CPU rendering does not support all features such as Volume
-        Rendering, Multiplanar Reconstruction, and Segmentation Overlays.
+        Your computer does not have enough GPU power to support the default GPU rendering mode. OHIF
+        has switched to CPU rendering mode. Please note that CPU rendering does not support all
+        features such as Volume Rendering, Multiplanar Reconstruction, and Segmentation Overlays.
       </p>
     </div>
   );

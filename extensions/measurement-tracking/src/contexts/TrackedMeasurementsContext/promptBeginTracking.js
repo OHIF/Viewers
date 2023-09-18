@@ -1,3 +1,5 @@
+import { ButtonEnums } from '@ohif/ui';
+
 const RESPONSE = {
   NO_NEVER: -1,
   CANCEL: 0,
@@ -8,42 +10,39 @@ const RESPONSE = {
 
 function promptBeginTracking({ servicesManager, extensionManager }, ctx, evt) {
   const { uiViewportDialogService } = servicesManager.services;
-  const { viewportIndex, StudyInstanceUID, SeriesInstanceUID } = evt;
+  const { viewportId, StudyInstanceUID, SeriesInstanceUID } = evt;
 
-  return new Promise(async function(resolve, reject) {
-    let promptResult = await _askTrackMeasurements(
-      uiViewportDialogService,
-      viewportIndex
-    );
+  return new Promise(async function (resolve, reject) {
+    let promptResult = await _askTrackMeasurements(uiViewportDialogService, viewportId);
 
     resolve({
       userResponse: promptResult,
       StudyInstanceUID,
       SeriesInstanceUID,
-      viewportIndex,
+      viewportId,
     });
   });
 }
 
-function _askTrackMeasurements(uiViewportDialogService, viewportIndex) {
-  return new Promise(function(resolve, reject) {
+function _askTrackMeasurements(uiViewportDialogService, viewportId) {
+  return new Promise(function (resolve, reject) {
     const message = 'Track measurements for this series?';
     const actions = [
       {
         id: 'prompt-begin-tracking-cancel',
-        type: 'cancel',
+        type: ButtonEnums.type.secondary,
         text: 'No',
         value: RESPONSE.CANCEL,
       },
       {
         id: 'prompt-begin-tracking-no-do-not-ask-again',
-        type: 'secondary',
+        type: ButtonEnums.type.secondary,
         text: 'No, do not ask again',
         value: RESPONSE.NO_NEVER,
       },
       {
         id: 'prompt-begin-tracking-yes',
-        type: 'primary',
+        type: ButtonEnums.type.primary,
         text: 'Yes',
         value: RESPONSE.SET_STUDY_AND_SERIES,
       },
@@ -54,7 +53,7 @@ function _askTrackMeasurements(uiViewportDialogService, viewportIndex) {
     };
 
     uiViewportDialogService.show({
-      viewportIndex,
+      viewportId,
       id: 'measurement-tracking-prompt-begin-tracking',
       type: 'info',
       message,

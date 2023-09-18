@@ -46,6 +46,7 @@ const classes = {
     inherit: 'text-inherit',
     primary: 'text-primary-main',
     primaryActive: 'text-primary-active',
+    primaryLight: 'text-primary-light',
     secondary: 'text-common-light',
     error: 'text-red-600',
   },
@@ -87,8 +88,7 @@ const Typography = ({
   className,
   ...rest
 }) => {
-  const Component =
-    component || (paragraph ? 'p' : defaultVariantMapping[variant]) || 'span';
+  const Component = component || (paragraph ? 'p' : defaultVariantMapping[variant]) || 'span';
   return (
     <Component
       className={classnames(
@@ -133,7 +133,7 @@ Typography.propTypes = {
     'primaryActive',
     'secondary',
     'error',
-    'primaryActive',
+    'primaryLight',
   ]),
   className: PropTypes.string,
   children: PropTypes.node,

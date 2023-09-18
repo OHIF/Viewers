@@ -1,0 +1,87 @@
+.DicomMicroscopyViewer .OpenLayersOverlay {
+  height: 100%;
+  width: 100%;
+  display: block !important;
+  pointer-events: none !important;
+}
+
+.DicomMicroscopyViewer .text-primary-light {
+  font-size: 14px;
+  color: yellow;
+  font-weight: normal;
+}
+
+.DicomMicroscopyViewer .text-primary-light span {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  max-width: 300px;
+  /* text-shadow: 0px 1px 1px rgba(225, 225, 225, 0.6),
+              0px 1px 1px rgba(225, 225, 225, 0.6),
+              1px 1px 3px rgba(225, 225, 225, 0.9),
+              1px 1px 3px rgba(225, 225, 225, 0.9),
+              1px 1px 3px rgba(225, 225, 225, 0.9),
+              1px 1px 3px rgba(225, 225, 225, 0.9); */
+}
+
+.DicomMicroscopyViewer .absolute {
+  position: absolute;
+}
+
+.DicomMicroscopyViewer .flex {
+  display: flex;
+}
+
+.DicomMicroscopyViewer .flex-row {
+  flex-direction: row;
+}
+
+.DicomMicroscopyViewer .flex-col {
+  flex-direction: column;
+}
+
+.DicomMicroscopyViewer .pointer-events-none {
+  pointer-events: none;
+}
+
+.DicomMicroscopyViewer .left-viewport-scrollbar {
+  left: 0.5rem;
+}
+
+.DicomMicroscopyViewer .right-viewport-scrollbar {
+  right: 1.3rem;
+}
+
+.DicomMicroscopyViewer .top-viewport {
+  top: 0.5rem;
+}
+
+.DicomMicroscopyViewer .bottom-viewport {
+  bottom: 0.5rem;
+}
+
+.DicomMicroscopyViewer .bottom-viewport.left-viewport {
+  bottom: 0.5rem;
+  left: calc(0.5rem + 250px);
+}
+
+.DicomMicroscopyViewer .right-viewport-scrollbar .flex {
+  justify-content: end;
+}
+
+.DicomMicroscopyViewer .microscopy-viewport-overlay {
+  padding: 0.5rem 1rem;
+  background: rgba(0, 0, 0, 0.5);
+  max-width: 40%;
+}
+
+.DicomMicroscopyViewer .microscopy-viewport-overlay .flex {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.DicomMicroscopyViewer .top-viewport .flex span:not(.font-light) {
+  flex-shrink: 0;
+}

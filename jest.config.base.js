@@ -5,9 +5,10 @@
 
 module.exports = {
   verbose: true,
-  roots: ['<rootDir>/src'],
+  // roots: ['<rootDir>/src'],
   testMatch: ['<rootDir>/src/**/*.test.js'],
   testPathIgnorePatterns: ['<rootDir>/node_modules/'],
+  testEnvironment: 'jsdom',
   moduleFileExtensions: ['js', 'jsx', 'ts', 'tsx'],
   moduleNameMapper: {
     '\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$':
