@@ -1,4 +1,4 @@
-import ContextMenuItemsBuilder from "./ContextMenuItemsBuilder";
+import ContextMenuItemsBuilder from './ContextMenuItemsBuilder';
 
 const menus = [
   {

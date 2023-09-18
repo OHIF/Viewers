@@ -126,13 +126,7 @@ describe('MeasurementService.js', () => {
 
     it('throws Error if no matching criteria provided', () => {
       expect(() => {
-        measurementService.addMapping(
-          source,
-          annotationType,
-          null,
-          toSourceSchema,
-          toMeasurement
-        );
+        measurementService.addMapping(source, annotationType, null, toSourceSchema, toMeasurement);
       }).toThrow(new Error('Matching criteria not provided.'));
     });
 
@@ -194,34 +188,16 @@ describe('MeasurementService.js', () => {
         toSourceSchema,
         toMeasurement
       );
-      const measurementId = source.annotationToMeasurement(
-        annotationType,
-        annotation
-      );
-      const mappedAnnotation = source.getAnnotation(
-        annotationType,
-        measurementId
-      );
+      const measurementId = source.annotationToMeasurement(annotationType, annotation);
+      const mappedAnnotation = source.getAnnotation(annotationType, measurementId);
 
       expect(annotation).toBe(mappedAnnotation);
     });
 
     it('get annotation based on source and annotationType', () => {
-      measurementService.addMapping(
-        source,
-        annotationType,
-        {},
-        toSourceSchema,
-        toMeasurement
-      );
-      const measurementId = source.annotationToMeasurement(
-        annotationType,
-        annotation
-      );
-      const mappedAnnotation = source.getAnnotation(
-        annotationType,
-        measurementId
-      );
+      measurementService.addMapping(source, annotationType, {}, toSourceSchema, toMeasurement);
+      const measurementId = source.annotationToMeasurement(annotationType, annotation);
+      const mappedAnnotation = source.getAnnotation(annotationType, measurementId);
 
       expect(annotation).toBe(mappedAnnotation);
     });
@@ -323,9 +299,7 @@ describe('MeasurementService.js', () => {
 
       /* Add new measurement */
       source.annotationToMeasurement(annotationType, newMeasurement);
-      const savedMeasurement = measurementService.getMeasurement(
-        newMeasurement.uid
-      );
+      const savedMeasurement = measurementService.getMeasurement(newMeasurement.uid);
 
       /* Clear dynamic data */
       delete newMeasurement.modifiedTimestamp;
@@ -384,10 +358,7 @@ describe('MeasurementService.js', () => {
       let addCallbackWasCalled = false;
 
       /* Subscribe to add event */
-      measurementService.subscribe(
-        MEASUREMENT_ADDED,
-        () => (addCallbackWasCalled = true)
-      );
+      measurementService.subscribe(MEASUREMENT_ADDED, () => (addCallbackWasCalled = true));
 
       /* Add new measurement - two calls needed for the start and the other for the completed*/
       const uid = source.annotationToMeasurement(annotationType, measurement);
@@ -409,20 +380,13 @@ describe('MeasurementService.js', () => {
       let updateCallbackWasCalled = false;
 
       /* Subscribe to update event */
-      measurementService.subscribe(
-        MEASUREMENT_UPDATED,
-        () => (updateCallbackWasCalled = true)
-      );
+      measurementService.subscribe(MEASUREMENT_UPDATED, () => (updateCallbackWasCalled = true));
 
       /* Create measurement */
       const uid = source.annotationToMeasurement(annotationType, measurement);
 
       /* Update measurement */
-      source.annotationToMeasurement(
-        annotationType,
-        { uid, ...measurement },
-        true
-      );
+      source.annotationToMeasurement(annotationType, { uid, ...measurement }, true);
 
       expect(updateCallbackWasCalled).toBe(true);
     });
@@ -468,10 +432,7 @@ describe('MeasurementService.js', () => {
       let addCallbackWasCalled = false;
 
       /* Subscribe to add event */
-      measurementService.subscribe(
-        MEASUREMENT_ADDED,
-        () => (addCallbackWasCalled = true)
-      );
+      measurementService.subscribe(MEASUREMENT_ADDED, () => (addCallbackWasCalled = true));
 
       /* Add new measurement - two calls needed for the start and the other for the completed*/
       // expect exceptions for unmapped measurements
@@ -502,10 +463,7 @@ describe('MeasurementService.js', () => {
       let removeCallbackWasCalled = false;
 
       /* Subscribe to add event */
-      measurementService.subscribe(
-        MEASUREMENT_REMOVED,
-        () => (removeCallbackWasCalled = true)
-      );
+      measurementService.subscribe(MEASUREMENT_REMOVED, () => (removeCallbackWasCalled = true));
 
       /* Add new measurement - two calls needed for the start and the other for the completed*/
       // expect exceptions for unmapped measurements

@@ -58,21 +58,19 @@ class MetadataProvider {
       return;
     }
 
-    const {
-      StudyInstanceUID,
-      SeriesInstanceUID,
-      SOPInstanceUID,
-      frameNumber,
-    } = uids;
+    const { StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID, frameNumber } = uids;
 
     const instance = DicomMetadataStore.getInstance(
       StudyInstanceUID,
       SeriesInstanceUID,
       SOPInstanceUID
     );
-    return (
-      (frameNumber && combineFrameInstance(frameNumber, instance)) || instance
-    );
+
+    if (!instance) {
+      return;
+    }
+
+    return (frameNumber && combineFrameInstance(frameNumber, instance)) || instance;
   }
 
   get(query, imageId, options = { fallback: false }) {
@@ -102,11 +100,7 @@ class MetadataProvider {
     return this.get(INSTANCE, imageId);
   }
 
-  getTagFromInstance(
-    naturalizedTagOrWADOImageLoaderTag,
-    instance,
-    options = { fallback: false }
-  ) {
+  getTagFromInstance(naturalizedTagOrWADOImageLoaderTag, instance, options = { fallback: false }) {
     if (!instance) {
       return;
     }
@@ -117,10 +111,7 @@ class MetadataProvider {
     }
 
     // Maybe its a legacy dicomImageLoader tag then:
-    return this._getCornerstoneDICOMImageLoaderTag(
-      naturalizedTagOrWADOImageLoaderTag,
-      instance
-    );
+    return this._getCornerstoneDICOMImageLoaderTag(naturalizedTagOrWADOImageLoaderTag, instance);
   }
 
   _getCornerstoneDICOMImageLoaderTag(wadoImageLoaderTag, instance) {
@@ -193,9 +184,7 @@ class MetadataProvider {
           imageOrientationPatient: toNumber(ImageOrientationPatient),
           rowCosines: toNumber(rowCosines || [0, 1, 0]),
           columnCosines: toNumber(columnCosines || [0, 0, -1]),
-          imagePositionPatient: toNumber(
-            instance.ImagePositionPatient || [0, 0, 0]
-          ),
+          imagePositionPatient: toNumber(instance.ImagePositionPatient || [0, 0, 0]),
           sliceThickness: toNumber(instance.SliceThickness),
           sliceLocation: toNumber(instance.SliceLocation),
           pixelSpacing: toNumber(PixelSpacing || 1),
@@ -249,12 +238,8 @@ class MetadataProvider {
         if (WindowCenter === undefined || WindowWidth === undefined) {
           return;
         }
-        const windowCenter = Array.isArray(WindowCenter)
-          ? WindowCenter
-          : [WindowCenter];
-        const windowWidth = Array.isArray(WindowWidth)
-          ? WindowWidth
-          : [WindowWidth];
+        const windowCenter = Array.isArray(WindowCenter) ? WindowCenter : [WindowCenter];
+        const windowWidth = Array.isArray(WindowWidth) ? WindowWidth : [WindowWidth];
 
         metadata = {
           windowCenter: toNumber(windowCenter),
@@ -297,16 +282,11 @@ class MetadataProvider {
             ? RadiopharmaceuticalInformationSequence[0]
             : RadiopharmaceuticalInformationSequence;
 
-          const {
-            RadiopharmaceuticalStartTime,
-            RadionuclideTotalDose,
-            RadionuclideHalfLife,
-          } = RadiopharmaceuticalInformation;
+          const { RadiopharmaceuticalStartTime, RadionuclideTotalDose, RadionuclideHalfLife } =
+            RadiopharmaceuticalInformation;
 
           const radiopharmaceuticalInfo = {
-            radiopharmaceuticalStartTime: dicomParser.parseTM(
-              RadiopharmaceuticalStartTime
-            ),
+            radiopharmaceuticalStartTime: dicomParser.parseTM(RadiopharmaceuticalStartTime),
             radionuclideTotalDose: RadionuclideTotalDose,
             radionuclideHalfLife: RadionuclideHalfLife,
           };
@@ -319,11 +299,7 @@ class MetadataProvider {
       case WADO_IMAGE_LOADER_TAGS.OVERLAY_PLANE_MODULE:
         const overlays = [];
 
-        for (
-          let overlayGroup = 0x00;
-          overlayGroup <= 0x1e;
-          overlayGroup += 0x02
-        ) {
+        for (let overlayGroup = 0x00; overlayGroup <= 0x1e; overlayGroup += 0x02) {
           let groupStr = `60${overlayGroup.toString(16)}`;
 
           if (groupStr.length === 3) {
@@ -411,6 +387,14 @@ class MetadataProvider {
         };
 
         break;
+      case WADO_IMAGE_LOADER_TAGS.PER_SERIES_MODULE:
+        metadata = {
+          correctedImage: instance.CorrectedImage,
+          units: instance.Units,
+          decayCorrection: instance.DecayCorrection,
+        };
+        break;
+
       default:
         return;
     }
@@ -447,7 +431,9 @@ class MetadataProvider {
   }
 
   getUIDsFromImageID(imageId) {
-    if (!imageId) throw new Error('MetadataProvider::Empty imageId');
+    if (!imageId) {
+      throw new Error('MetadataProvider::Empty imageId');
+    }
     // TODO: adding csiv here is not really correct. Probably need to use
     // metadataProvider.addImageIdToUIDs(imageId, {
     //   StudyInstanceUID,
@@ -515,10 +501,11 @@ const WADO_IMAGE_LOADER_TAGS = {
   SOP_COMMON_MODULE: 'sopCommonModule',
   PET_IMAGE_MODULE: 'petImageModule',
   PET_ISOTOPE_MODULE: 'petIsotopeModule',
+  PER_SERIES_MODULE: 'petSeriesModule',
   OVERLAY_PLANE_MODULE: 'overlayPlaneModule',
   PATIENT_DEMOGRAPHIC_MODULE: 'patientDemographicModule',
 
-  // react-cornerstone-viewport specifc
+  // react-cornerstone-viewport specific
   PATIENT_MODULE: 'patientModule',
   GENERAL_IMAGE_MODULE: 'generalImageModule',
   GENERAL_STUDY_MODULE: 'generalStudyModule',

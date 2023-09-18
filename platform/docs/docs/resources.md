@@ -21,7 +21,7 @@ Free, Open Source Tools for Research: MONAI and OHIF Viewer
 We participated in the 38th Project Week with three projects around OHIF. [[Website](https://projectweek.na-mic.org/PW38_2023_GranCanaria/)]
 
 - PolySeg representations for OHIF Viewer ([link](https://projectweek.na-mic.org/PW38_2023_GranCanaria/Projects/OHIF_PolySeg/))
-- Cross study sychronizer for OHIF Crosshair ([link](https://projectweek.na-mic.org/PW38_2023_GranCanaria/Projects/OHIF_SyncCrosshair/))
+- Cross study synchronizer for OHIF Crosshair ([link](https://projectweek.na-mic.org/PW38_2023_GranCanaria/Projects/OHIF_SyncCrosshair/))
 - DATSCAN Viewer implementation in OHIF ([link](https://projectweek.na-mic.org/PW38_2023_GranCanaria/Projects/OHIF_DATSCAN/))
 
 
@@ -43,7 +43,7 @@ The Imaging Network Ontario (ImNO) is an annual symposium that brings together
 medical imaging researchers and scientists from across Canada to share
 knowledge, ideas, and experiences.
 [[Slides]](https://docs.google.com/presentation/d/18XZDon4-Sitc2a70V5sFyhyUVZI_mIgfXHGtdxhZMjE/edit?usp=sharing)
-[[Video]](https://vimeo.com/691134870/ad7d308a44)
+[[Video]](https://vimeo.com/843234581/ad7d308a44)
 
 
 ### [NA-MIC Project Week 36th 2022 - Remote](https://github.com/NA-MIC/ProjectWeek/blob/master/PW36_2022_Virtual/README.md)
@@ -81,7 +81,7 @@ Healthcare Imaging with Cloud Healthcare API
 
 OHIF pitch for Informatics Technology for Cancer Research (ITCR)
 [[Slides]](https://docs.google.com/presentation/d/1MZXnZrVAnjmhVIWqC-aRSvJOoMMRLhLddACdCa1TybM/edit?usp=sharing)
-[[Video]](https://vimeo.com/678769373/625bdb8793)
+[[Video]](https://vimeo.com/843234613/625bdb8793)
 
 ## 2019
 

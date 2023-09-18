@@ -48,8 +48,7 @@ const variantClasses = {
     primary: '',
     secondary: 'border border-secondary-light',
     white: '',
-    black:
-      'border-primary-main group-hover:bg-primary-main group-hover:border-black',
+    black: 'border-primary-main group-hover:bg-primary-main group-hover:border-black',
   },
   contained: {
     default: 'border-white',
@@ -121,9 +120,7 @@ const ButtonGroup = ({
           className: classnames(
             buttonClasses,
             child.props.className,
-            !splitBorder &&
-              isNotFirstOrLast &&
-              nonFirstLastClasses[orientation],
+            !splitBorder && isNotFirstOrLast && nonFirstLastClasses[orientation],
             !splitBorder && isLast && 'last:border-l-0'
           ),
           disabled: child.props.disabled || disabled,
@@ -141,14 +138,7 @@ const ButtonGroup = ({
 ButtonGroup.propTypes = {
   children: PropTypes.node.isRequired,
   className: PropTypes.string,
-  color: PropTypes.oneOf([
-    'default',
-    'inherit',
-    'primary',
-    'secondary',
-    'white',
-    'black',
-  ]),
+  color: PropTypes.oneOf(['default', 'inherit', 'primary', 'secondary', 'white', 'black']),
   disabled: PropTypes.bool,
   fullWidth: PropTypes.bool,
   orientation: PropTypes.oneOf(['vertical', 'horizontal']),

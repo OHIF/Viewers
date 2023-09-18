@@ -31,11 +31,7 @@ export default class RetrieveMetadataLoaderSync extends RetrieveMetadataLoader {
    */
   *getLoaders() {
     const loaders = [];
-    const {
-      studyInstanceUID,
-      filters: { seriesInstanceUID } = {},
-      client,
-    } = this;
+    const { studyInstanceUID, filters: { seriesInstanceUID } = {}, client } = this;
 
     if (seriesInstanceUID) {
       loaders.push(
@@ -46,9 +42,7 @@ export default class RetrieveMetadataLoaderSync extends RetrieveMetadataLoader {
       );
     }
 
-    loaders.push(
-      client.retrieveStudyMetadata.bind(client, { studyInstanceUID })
-    );
+    loaders.push(client.retrieveStudyMetadata.bind(client, { studyInstanceUID }));
 
     yield* loaders;
   }

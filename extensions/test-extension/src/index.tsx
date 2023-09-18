@@ -2,6 +2,8 @@ import { Types } from '@ohif/core';
 
 import { id } from './id';
 
+import hpTestSwitch from './hpTestSwitch';
+
 import getCustomizationModule from './getCustomizationModule';
 // import {setViewportZoomPan, storeViewportZoomPan } from './custom-viewport/setViewportZoomPan';
 import sameAs from './custom-attribute/sameAs';
@@ -47,6 +49,16 @@ const testExtension: Types.Extensions.Extension = {
 
   /** Registers some customizations */
   getCustomizationModule,
+
+  getHangingProtocolModule: () => {
+    return [
+      // Create a MxN hanging protocol available by default
+      {
+        name: hpTestSwitch.id,
+        protocol: hpTestSwitch,
+      },
+    ];
+  },
 };
 
 export default testExtension;

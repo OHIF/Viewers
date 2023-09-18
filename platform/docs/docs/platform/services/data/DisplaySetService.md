@@ -33,6 +33,7 @@ There are three events that get broadcasted in `DisplaySetService`:
 | DISPLAY_SETS_ADDED   | Fires a displayset is added to the displaysets cache |
 | DISPLAY_SETS_CHANGED | Fires when a displayset is changed                   |
 | DISPLAY_SETS_REMOVED | Fires when a displayset is removed                   |
+| DISPLAY_SET_SERIES_METADATA_INVALIDATED | Fires when a displayset's series metadata has been altered. An object payload for the event is sent with properties: `displaySetInstanceUID` - the UID of the display set affected; `invalidateData` - boolean indicating if data should be invalidated
 
 
 ## API
@@ -60,3 +61,5 @@ Let's find out about the public API for `DisplaySetService`.
 - `deleteDisplaySet`: Deletes the displaySets from the displaySets cache
 
 - `addActiveDisplaySets`: Adds a new display set independently of the make operation.
+
+- `setDisplaySetMetadataInvalidated`: Fires the `DISPLAY_SET_SERIES_METADATA_INVALIDATED` event.

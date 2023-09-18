@@ -1,3 +1,4 @@
 [submodule "testdata"]
 	path = testdata
 	url = https://github.com/OHIF/viewer-testdata-dicomweb.git
+	branch = main

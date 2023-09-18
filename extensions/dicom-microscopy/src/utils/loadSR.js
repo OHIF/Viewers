@@ -3,8 +3,7 @@ import dcmjs from 'dcmjs';
 import DCM_CODE_VALUES from './dcmCodeValues';
 import toArray from './toArray';
 
-const MeasurementReport =
-  dcmjs.adapters.DICOMMicroscopyViewer.MeasurementReport;
+const MeasurementReport = dcmjs.adapters.DICOMMicroscopyViewer.MeasurementReport;
 
 // Define as async so that it returns a promise, expected by the ViewportGrid
 export default async function loadSR(
@@ -16,9 +15,7 @@ export default async function loadSR(
 
   const { StudyInstanceUID, FrameOfReferenceUID } = referencedDisplaySet;
 
-  const managedViewers = microscopyService.getManagedViewersForStudy(
-    StudyInstanceUID
-  );
+  const managedViewers = microscopyService.getManagedViewersForStudy(StudyInstanceUID);
 
   if (!managedViewers || !managedViewers.length) {
     return;
@@ -26,10 +23,7 @@ export default async function loadSR(
 
   microscopySRDisplaySet.isLoaded = true;
 
-  const { rois, labels } = await _getROIsFromToolState(
-    naturalizedDataset,
-    FrameOfReferenceUID
-  );
+  const { rois, labels } = await _getROIsFromToolState(naturalizedDataset, FrameOfReferenceUID);
 
   const managedViewer = managedViewers[0];
 
@@ -37,7 +31,7 @@ export default async function loadSR(
     // NOTE: When saving Microscopy SR, we are attaching identifier property
     // to each ROI, and when read for display, it is coming in as "TEXT"
     // evaluation.
-    // As the Dicom Microscopy Viewer will override styles for "Text" evalutations
+    // As the Dicom Microscopy Viewer will override styles for "Text" evaluations
     // to hide all other geometries, we are going to manually remove that
     // evaluation item.
     const roi = rois[i];
@@ -58,9 +52,7 @@ async function _getROIsFromToolState(naturalizedDataset, FrameOfReferenceUID) {
     /* webpackChunkName: "dicom-microscopy-viewer" */ 'dicom-microscopy-viewer'
   );
 
-  const measurementGroupContentItems = _getMeasurementGroups(
-    naturalizedDataset
-  );
+  const measurementGroupContentItems = _getMeasurementGroups(naturalizedDataset);
 
   const rois = [];
   const labels = [];
@@ -71,17 +63,13 @@ async function _getROIsFromToolState(naturalizedDataset, FrameOfReferenceUID) {
 
     const capsToolType = t.toUpperCase();
 
-    const measurementGroupContentItemsForTool = measurementGroupContentItems.filter(
-      mg => {
-        const imageRegionContentItem = toArray(mg.ContentSequence).find(
-          ci =>
-            ci.ConceptNameCodeSequence.CodeValue ===
-            DCM_CODE_VALUES.IMAGE_REGION
-        );
+    const measurementGroupContentItemsForTool = measurementGroupContentItems.filter(mg => {
+      const imageRegionContentItem = toArray(mg.ContentSequence).find(
+        ci => ci.ConceptNameCodeSequence.CodeValue === DCM_CODE_VALUES.IMAGE_REGION
+      );
 
-        return imageRegionContentItem.GraphicType === capsToolType;
-      }
-    );
+      return imageRegionContentItem.GraphicType === capsToolType;
+    });
 
     toolSpecificToolState.forEach((coordinates, index) => {
       const properties = {};
@@ -109,9 +97,7 @@ async function _getROIsFromToolState(naturalizedDataset, FrameOfReferenceUID) {
       );
 
       const trackingGroup = toArray(measurementGroup.ContentSequence).find(
-        ci =>
-          ci.ConceptNameCodeSequence.CodeValue ===
-          DCM_CODE_VALUES.TRACKING_UNIQUE_IDENTIFIER
+        ci => ci.ConceptNameCodeSequence.CodeValue === DCM_CODE_VALUES.TRACKING_UNIQUE_IDENTIFIER
       );
 
       /**
@@ -138,9 +124,7 @@ async function _getROIsFromToolState(naturalizedDataset, FrameOfReferenceUID) {
       );
 
       let evaluations = toArray(measurementGroup.ContentSequence).filter(ci =>
-        [DCM_CODE_VALUES.TRACKING_UNIQUE_IDENTIFIER].includes(
-          ci.ConceptNameCodeSequence.CodeValue
-        )
+        [DCM_CODE_VALUES.TRACKING_UNIQUE_IDENTIFIER].includes(ci.ConceptNameCodeSequence.CodeValue)
       );
 
       /**
@@ -191,17 +175,12 @@ function _getMeasurementGroups(naturalizedDataset) {
   const { ContentSequence } = naturalizedDataset;
 
   const imagingMeasurementsContentItem = ContentSequence.find(
-    ci =>
-      ci.ConceptNameCodeSequence.CodeValue ===
-      DCM_CODE_VALUES.IMAGING_MEASUREMENTS
+    ci => ci.ConceptNameCodeSequence.CodeValue === DCM_CODE_VALUES.IMAGING_MEASUREMENTS
   );
 
   const measurementGroupContentItems = toArray(
     imagingMeasurementsContentItem.ContentSequence
-  ).filter(
-    ci =>
-      ci.ConceptNameCodeSequence.CodeValue === DCM_CODE_VALUES.MEASUREMENT_GROUP
-  );
+  ).filter(ci => ci.ConceptNameCodeSequence.CodeValue === DCM_CODE_VALUES.MEASUREMENT_GROUP);
 
   return measurementGroupContentItems;
 }

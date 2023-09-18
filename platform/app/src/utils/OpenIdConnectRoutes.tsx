@@ -34,18 +34,13 @@ const initUserManager = (oidc, routerBasename) => {
   const baseUri = `${protocol}//${host}${routerBasename}`;
 
   const redirect_uri = firstOpenIdClient.redirect_uri || '/callback';
-  const silent_redirect_uri =
-    firstOpenIdClient.silent_redirect_uri || '/silent-refresh.html';
-  const post_logout_redirect_uri =
-    firstOpenIdClient.post_logout_redirect_uri || '/';
+  const silent_redirect_uri = firstOpenIdClient.silent_redirect_uri || '/silent-refresh.html';
+  const post_logout_redirect_uri = firstOpenIdClient.post_logout_redirect_uri || '/';
 
   const openIdConnectConfiguration = Object.assign({}, firstOpenIdClient, {
     redirect_uri: _makeAbsoluteIfNecessary(redirect_uri, baseUri),
     silent_redirect_uri: _makeAbsoluteIfNecessary(silent_redirect_uri, baseUri),
-    post_logout_redirect_uri: _makeAbsoluteIfNecessary(
-      post_logout_redirect_uri,
-      baseUri
-    ),
+    post_logout_redirect_uri: _makeAbsoluteIfNecessary(post_logout_redirect_uri, baseUri),
   });
 
   return getUserManagerForOpenIdConnectClient(openIdConnectConfiguration);
@@ -77,18 +72,12 @@ function LoginComponent(userManager) {
       const ohifRedirectTo = {
         pathname: new URL(targetLinkUri).pathname,
       };
-      sessionStorage.setItem(
-        'ohif-redirect-to',
-        JSON.stringify(ohifRedirectTo)
-      );
+      sessionStorage.setItem('ohif-redirect-to', JSON.stringify(ohifRedirectTo));
     } else {
       const ohifRedirectTo = {
         pathname: '/',
       };
-      sessionStorage.setItem(
-        'ohif-redirect-to',
-        JSON.stringify(ohifRedirectTo)
-      );
+      sessionStorage.setItem('ohif-redirect-to', JSON.stringify(ohifRedirectTo));
     }
 
     if (loginHint !== null) {
@@ -101,23 +90,25 @@ function LoginComponent(userManager) {
   return null;
 }
 
-function OpenIdConnectRoutes({
-  oidc,
-  routerBasename,
-  userAuthenticationService,
-}) {
+function OpenIdConnectRoutes({ oidc, routerBasename, userAuthenticationService }) {
   const userManager = initUserManager(oidc, routerBasename);
 
   const getAuthorizationHeader = () => {
     const user = userAuthenticationService.getUser();
+
+    // if the user is null return early, next time
+    // we hit this function we will have a user
+    if (!user) {
+      return;
+    }
 
     return {
       Authorization: `Bearer ${user.access_token}`,
     };
   };
 
-  const handleUnauthenticated = () => {
-    userManager.signinRedirect();
+  const handleUnauthenticated = async () => {
+    await userManager.signinRedirect();
 
     // return null because this is used in a react component
     return null;
@@ -131,9 +122,7 @@ function OpenIdConnectRoutes({
     const storageEventListener = event => {
       const signOutEvent = localStorage.getItem('signoutEvent');
       if (signOutEvent) {
-        navigate(
-          `/logout?redirect_uri=${encodeURIComponent(window.location.href)}`
-        );
+        navigate(`/logout?redirect_uri=${encodeURIComponent(window.location.href)}`);
       }
     };
 
@@ -159,24 +148,21 @@ function OpenIdConnectRoutes({
   const { pathname, search } = location;
 
   const redirect_uri = new URL(userManager.settings._redirect_uri).pathname; //.replace(routerBasename,'')
-  const silent_refresh_uri = new URL(userManager.settings._silent_redirect_uri)
-    .pathname; //.replace(routerBasename,'')
-  const post_logout_redirect_uri = new URL(
-    userManager.settings._post_logout_redirect_uri
-  ).pathname; //.replace(routerBasename,'');
+  const silent_refresh_uri = new URL(userManager.settings._silent_redirect_uri).pathname; //.replace(routerBasename,'')
+  const post_logout_redirect_uri = new URL(userManager.settings._post_logout_redirect_uri).pathname; //.replace(routerBasename,'');
 
   // const pathnameRelative = pathname.replace(routerBasename,'');
 
   if (pathname !== redirect_uri) {
-    sessionStorage.setItem(
-      'ohif-redirect-to',
-      JSON.stringify({ pathname, search })
-    );
+    sessionStorage.setItem('ohif-redirect-to', JSON.stringify({ pathname, search }));
   }
 
   return (
     <Routes basename={routerBasename}>
-      <Route path={silent_refresh_uri} onEnter={window.location.reload} />
+      <Route
+        path={silent_refresh_uri}
+        onEnter={window.location.reload}
+      />
       <Route
         path={post_logout_redirect_uri}
         element={

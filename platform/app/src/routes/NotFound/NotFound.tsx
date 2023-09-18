@@ -4,15 +4,12 @@ import { Link } from 'react-router-dom';
 
 import { useAppConfig } from '@state';
 
-const NotFound = ({
-  message = 'Sorry, this page does not exist.',
-  showGoBackButton = true,
-}) => {
+const NotFound = ({ message = 'Sorry, this page does not exist.', showGoBackButton = true }) => {
   const [appConfig] = useAppConfig();
   const { showStudyList } = appConfig;
 
   return (
-    <div className="w-full h-full flex justify-center items-center text-white">
+    <div className="flex h-full w-full items-center justify-center text-white">
       <div>
         <h4>{message}</h4>
         {showGoBackButton && showStudyList && (

@@ -17,8 +17,7 @@ const serviceImplementation = {
   _playClip: () => console.warn('playClip() NOT IMPLEMENTED'),
   _stopClip: () => console.warn('stopClip() NOT IMPLEMENTED'),
   _setIsCineEnabled: () => console.warn('setIsCineEnabled() NOT IMPLEMENTED'),
-  _getSyncedViewports: () =>
-    console.warn('getSyncedViewports() NOT IMPLEMENTED'),
+  _getSyncedViewports: () => console.warn('getSyncedViewports() NOT IMPLEMENTED'),
 };
 
 function _getState() {
@@ -41,8 +40,8 @@ function _stopClip(element) {
   return serviceImplementation._stopClip(element);
 }
 
-function _getSyncedViewports(srcViewportIndex) {
-  return serviceImplementation._getSyncedViewports(srcViewportIndex);
+function _getSyncedViewports(srcViewportId) {
+  return serviceImplementation._getSyncedViewports(srcViewportId);
 }
 
 function setServiceImplementation({

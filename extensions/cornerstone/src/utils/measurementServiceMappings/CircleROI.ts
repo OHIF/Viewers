@@ -1,6 +1,5 @@
 import SUPPORTED_TOOLS from './constants/supportedTools';
 import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
-import getModalityUnit from './utils/getModalityUnit';
 import { utils } from '@ohif/core';
 
 const CircleROI = {
@@ -26,11 +25,7 @@ const CircleROI = {
       throw new Error('Tool not supported');
     }
 
-    const {
-      SOPInstanceUID,
-      SeriesInstanceUID,
-      StudyInstanceUID,
-    } = getSOPInstanceAttributes(
+    const { SOPInstanceUID, SeriesInstanceUID, StudyInstanceUID } = getSOPInstanceAttributes(
       referencedImageId,
       CornerstoneViewportService,
       viewportId
@@ -49,14 +44,10 @@ const CircleROI = {
 
     const { points } = data.handles;
 
-    const mappedAnnotations = getMappedAnnotations(
-      annotation,
-      DisplaySetService
-    );
+    const mappedAnnotations = getMappedAnnotations(annotation, DisplaySetService);
 
     const displayText = getDisplayText(mappedAnnotations, displaySet);
-    const getReport = () =>
-      _getReport(mappedAnnotations, points, FrameOfReferenceUID);
+    const getReport = () => _getReport(mappedAnnotations, points, FrameOfReferenceUID);
 
     return {
       uid: annotationUID,
@@ -94,16 +85,11 @@ function getMappedAnnotations(annotation, DisplaySetService) {
 
     if (!referencedImageId) {
       // Todo: Non-acquisition plane measurement mapping not supported yet
-      throw new Error(
-        'Non-acquisition plane measurement mapping not supported'
-      );
+      throw new Error('Non-acquisition plane measurement mapping not supported');
     }
 
-    const {
-      SOPInstanceUID,
-      SeriesInstanceUID,
-      frameNumber,
-    } = getSOPInstanceAttributes(referencedImageId);
+    const { SOPInstanceUID, SeriesInstanceUID, frameNumber } =
+      getSOPInstanceAttributes(referencedImageId);
 
     const displaySet = DisplaySetService.getDisplaySetForSOPInstanceUID(
       SOPInstanceUID,
@@ -112,8 +98,7 @@ function getMappedAnnotations(annotation, DisplaySetService) {
     );
 
     const { SeriesNumber } = displaySet;
-    const { mean, stdDev, max, area, Modality } = targetStats;
-    const unit = getModalityUnit(Modality);
+    const { mean, stdDev, max, area, Modality, modalityUnit } = targetStats;
 
     annotations.push({
       SeriesInstanceUID,
@@ -121,7 +106,7 @@ function getMappedAnnotations(annotation, DisplaySetService) {
       SeriesNumber,
       frameNumber,
       Modality,
-      unit,
+      unit: modalityUnit,
       mean,
       stdDev,
       max,
@@ -152,12 +137,7 @@ function _getReport(mappedAnnotations, points, FrameOfReferenceUID) {
       return;
     }
 
-    columns.push(
-      `max (${unit})`,
-      `mean (${unit})`,
-      `std (${unit})`,
-      `area (mm2)`
-    );
+    columns.push(`max (${unit})`, `mean (${unit})`, `std (${unit})`, `area (mm2)`);
     values.push(max, mean, stdDev, area);
   });
 
@@ -190,9 +170,7 @@ function getDisplayText(mappedAnnotations, displaySet) {
   // Area is the same for all series
   const { area, SOPInstanceUID, frameNumber } = mappedAnnotations[0];
 
-  const instance = displaySet.images.find(
-    image => image.SOPInstanceUID === SOPInstanceUID
-  );
+  const instance = displaySet.images.find(image => image.SOPInstanceUID === SOPInstanceUID);
 
   let InstanceNumber;
   if (instance) {
