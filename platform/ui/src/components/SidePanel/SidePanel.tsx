@@ -51,8 +51,8 @@ const classesMap = {
 };
 
 const openStateIconName = {
-  left: 'icon-panel-close-left',
-  right: 'icon-panel-close-right',
+  left: 'side-panel-close-left',
+  right: 'side-panel-close-right',
 };
 
 const getTabWidth = (numTabs: number) => {

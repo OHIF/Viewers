@@ -39,6 +39,8 @@ import profile from './../../assets/icons/profile.svg';
 import pushLeft from './../../assets/icons/push-left.svg';
 import pushRight from './../../assets/icons/push-right.svg';
 import settings from './../../assets/icons/settings.svg';
+import sidePanelCloseLeft from './../../assets/icons/side-panel-close-left.svg';
+import sidePanelCloseRight from './../../assets/icons/side-panel-close-right.svg';
 import sorting from './../../assets/icons/sorting.svg';
 import sortingActiveDown from './../../assets/icons/sorting-active-down.svg';
 import sortingActiveUp from './../../assets/icons/sorting-active-up.svg';
@@ -57,8 +59,6 @@ import iconClose from './../../assets/icons/icon-close.svg';
 import iconClearField from './../../assets/icons/icon-clear-field.svg';
 import iconNextInactive from './../../assets/icons/icon-next-inactive.svg';
 import iconNext from './../../assets/icons/icon-next.svg';
-import iconPanelCloseLeft from './../../assets/icons/icon-panel-close-left.svg';
-import iconPanelCloseRight from './../../assets/icons/icon-panel-close-right.svg';
 import iconPlay from './../../assets/icons/icon-play.svg';
 import iconPause from './../../assets/icons/icon-pause.svg';
 import iconPrevInactive from './../../assets/icons/icon-prev-inactive.svg';
@@ -159,8 +159,6 @@ const ICONS = {
   'icon-alert-small': iconAlertSmall,
   'icon-clear-field': iconClearField,
   'icon-close': iconClose,
-  'icon-panel-close-left': iconPanelCloseLeft,
-  'icon-panel-close-right': iconPanelCloseRight,
   'icon-play': iconPlay,
   'icon-pause': iconPause,
   'icon-search': iconSearch,
@@ -184,6 +182,8 @@ const ICONS = {
   'push-left': pushLeft,
   'push-right': pushRight,
   settings: settings,
+  'side-panel-close-left': sidePanelCloseLeft,
+  'side-panel-close-right': sidePanelCloseRight,
   'sorting-active-down': sortingActiveDown,
   'sorting-active-up': sortingActiveUp,
   'status-alert': statusAlert,
