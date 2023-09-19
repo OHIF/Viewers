@@ -13,7 +13,7 @@ version: 2.1
 ##
 orbs:
   codecov: codecov/codecov@1.0.5
-  cypress: cypress-io/cypress@3
+  cypress: cypress-io/cypress@1.26.0
 executors:
   # Custom executor to override Cypress config
   deploy-to-prod-executor:
@@ -372,7 +372,7 @@ workflows:
       # E2E: PWA
       - cypress/run:
           name: 'E2E: PWA'
-          executor: cypress/default
+          executor: chrome-and-pacs
           browser: chrome
           pre-steps:
             - run: |
