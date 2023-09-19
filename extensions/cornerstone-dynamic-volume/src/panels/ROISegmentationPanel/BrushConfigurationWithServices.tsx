@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { utilities as cstUtils } from '@cornerstonejs/tools';
 import BrushConfiguration from './BrushConfiguration';
 import { ServicesManager } from '@ohif/core';
+import { useViewportGrid } from '@ohif/ui';
 
 const { segmentation: segmentationUtils } = cstUtils;
 
@@ -25,11 +26,6 @@ const brushThresholds = [
   },
 ];
 
-const getViewportIdByIndex = (servicesManager, viewportIndex) => {
-  const { viewportGridService } = servicesManager.services;
-  return viewportGridService.getState().viewports[viewportIndex]?.id;
-};
-
 const getToolGroupThresholdSettings = toolGroup => {
   const currentBrushThreshold = segmentationUtils.getBrushThresholdForToolGroup(toolGroup.id);
 
@@ -49,10 +45,9 @@ const getToolGroupThresholdSettings = toolGroup => {
   return brushThreshold ?? brushThresholds[0];
 };
 
-const getViewportBrushToolSettings = (servicesManager, viewportIndex) => {
+const getViewportBrushToolSettings = (servicesManager, activeViewportId) => {
   const { toolGroupService } = servicesManager.services;
-  const viewportId = getViewportIdByIndex(servicesManager, viewportIndex);
-  const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
+  const toolGroup = toolGroupService.getToolGroupForViewport(activeViewportId);
   const brushThreshold = getToolGroupThresholdSettings(toolGroup);
   const brushSize =
     (toolGroup && segmentationUtils.getBrushSizeForToolGroup(toolGroup.id)) ?? DEFAULT_BRUSH_SIZE;
@@ -66,15 +61,14 @@ function BrushConfigurationWithServices({
 }: {
   servicesManager: ServicesManager;
 }): ReactElement {
-  const { viewportGridService, toolGroupService } = servicesManager.services;
+  const { toolGroupService } = servicesManager.services;
+  const [viewportGrid, viewportGridService] = useViewportGrid();
 
-  const [activeViewportIndex, setActiveViewportIndex] = useState(
-    () => viewportGridService.getState().activeViewportIndex ?? 0
-  );
+  const { activeViewportId } = viewportGrid;
 
   const getActiveViewportBrushToolSettings = useCallback(
-    () => getViewportBrushToolSettings(servicesManager, activeViewportIndex),
-    [servicesManager, activeViewportIndex]
+    () => getViewportBrushToolSettings(servicesManager, activeViewportId),
+    [servicesManager, activeViewportId]
   );
 
   const [selectedBrushThresholdId, setSelectedBrushThresholdId] = useState(
@@ -124,21 +118,7 @@ function BrushConfigurationWithServices({
 
     setSelectedBrushThresholdId(brushThreshold.id);
     setBrushSize(brushSize);
-  }, [activeViewportIndex, getActiveViewportBrushToolSettings]);
-
-  // Updates the active viewport index whenever it changes
-  useEffect(() => {
-    const { unsubscribe } = viewportGridService.subscribe(
-      viewportGridService.EVENTS.ACTIVE_VIEWPORT_INDEX_CHANGED,
-      ({ viewportIndex, ...rest }) => {
-        setActiveViewportIndex(viewportIndex);
-      }
-    );
-
-    return () => {
-      unsubscribe();
-    };
-  }, [viewportGridService]);
+  }, [activeViewportId, getActiveViewportBrushToolSettings]);
 
   return (
     <BrushConfiguration

@@ -359,7 +359,7 @@ const ViewportWindowLevel = ({
 
   const handleOpacityChange = useCallback(
     (viewportId, _volumeIndex, volumeId, opacity) => {
-      const viewport = cornerstoneViewportService.getCornerstoneViewportByIndex(viewportId);
+      const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
       if (!viewport) {
         return;

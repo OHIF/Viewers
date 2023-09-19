@@ -312,7 +312,7 @@ const defaultProtocol = {
   modifiedDate: '2023-01-01T00:00:00.000Z',
   availableTo: {},
   editableBy: {},
-  imageLoadStrategy: 'interleaveTopToBottom', // "default" , "interleaveTopToBottom",  "interleaveCenter"
+  imageLoadStrategy: 'default', // "default" , "interleaveTopToBottom",  "interleaveCenter"
   protocolMatchingRules: [
     {
       attribute: 'ModalitiesInStudy',
