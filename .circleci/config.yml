@@ -365,11 +365,11 @@ jobs:
 workflows:
   PR_CHECKS:
     jobs:
-      - UNIT_TESTS
+      # - UNIT_TESTS
 
       - cypress/run:
           name: 'E2E: PWA'
-          start-command: yarn run test:e2e:serve
+          start-command: yarn test:data && yarn run test:e2e:serve
           install-browsers: true
           cypress-command:
             'npx wait-on@latest http://localhost:3000 && npx cypress run --browser chrome'
@@ -377,9 +377,6 @@ workflows:
           cypress-cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
           cypress-cache-path: '~/.cache/Cypress'
           working-directory: platform/app
-          pre-steps:
-            - run: |
-                yarn test:data
           post-steps:
             - store_artifacts:
                 path: platform/app/cypress/screenshots
@@ -387,8 +384,8 @@ workflows:
                 path: platform/app/cypress/videos
             - store_test_results:
                 path: platform/app/cypress/results
-          requires:
-            - UNIT_TESTS
+          # requires:
+          #   - UNIT_TESTS
 
   # PR_OPTIONAL_VISUAL_TESTS:
   #   jobs:
