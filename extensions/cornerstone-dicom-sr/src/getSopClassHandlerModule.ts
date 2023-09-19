@@ -3,7 +3,6 @@ import { utils, classes, DisplaySetService, Types } from '@ohif/core';
 import addMeasurement from './utils/addMeasurement';
 import isRehydratable from './utils/isRehydratable';
 import { adaptersSR } from '@cornerstonejs/adapters';
-import { convertAnnotations } from './utils/convertAnnotations';
 type InstanceMetadata = Types.InstanceMetadata;
 
 const { CodeScheme: Cornerstone3DCodeScheme } = adaptersSR.Cornerstone3D;
@@ -155,13 +154,29 @@ function _load(displaySet, servicesManager, extensionManager) {
   const dataSources = extensionManager.getDataSources();
   const dataSource = dataSources[0];
 
-  const referencedImages = convertAnnotations(displaySet.instance, displaySetService);
+  const { customizationService } = servicesManager.services;
 
   const { ContentSequence } = displaySet.instance;
 
-  if (referencedImages && referencedImages.length) {
-    displaySet.referencedImages = referencedImages;
-  } else {
+  // get the dicomSRExtensionCustomizations object, if exists
+  const dicomSrExtensionCustomizations = customizationService.getModeCustomization(
+    'dicomSrExtensionCustomizations'
+  );
+
+  if (
+    dicomSrExtensionCustomizations?.convertAnnotations &&
+    typeof dicomSrExtensionCustomizations?.convertAnnotations === 'function'
+  ) {
+    const referencedImages = dicomSrExtensionCustomizations.convertAnnotations(
+      displaySet.instance,
+      displaySetService
+    );
+    if (referencedImages && referencedImages.length) {
+      displaySet.referencedImages = referencedImages;
+    }
+  }
+
+  if (!displaySet.referencedImages) {
     displaySet.referencedImages = _getReferencedImagesList(ContentSequence);
   }
   displaySet.measurements = _getMeasurements(ContentSequence);
