@@ -3,13 +3,23 @@ import StaticWadoClient from './StaticWadoClient';
 import dcm4cheeReject from '../dcm4cheeReject';
 import { errorHandler, utils } from '@ohif/core';
 
-export default class clientManager {
+export default class ClientManager {
   clients;
   userAuthenticationService;
 
+  constructor({ params, query, dicomWebConfig, userAuthenticationService }) {
+    this.clients = [];
+    this.userAuthenticationService = userAuthenticationService;
+    if (Array.isArray(dicomWebConfig)) {
+      dicomWebConfig.forEach(config => this.addConfiguration(params, query, config));
+    } else {
+      this.addConfiguration(params, query, dicomWebConfig);
+    }
+  }
+
   // adds a dicomweb server configuration in the clients list
-  private _addConfiguration(givenConfig) {
-    const config = Object.assign({}, givenConfig);
+  private _addConfiguration(configToAdd) {
+    const config = Object.assign({}, configToAdd);
     config.qidoConfig = {
       url: config.qidoRoot,
       staticWado: config.staticWado,
@@ -39,11 +49,8 @@ export default class clientManager {
     this.clients.push(config);
   }
 
-  public addConfiguration(params, query, config) {
-    if (
-      config.onConfiguration &&
-      typeof config.onConfiguration === 'function'
-    ) {
+  private addConfiguration(params, query, config) {
+    if (config.onConfiguration && typeof config.onConfiguration === 'function') {
       config = config.onConfiguration(config, {
         params,
         query,
@@ -79,32 +86,29 @@ export default class clientManager {
   // sets authorization headers before queries
   public setQidoHeaders() {
     this.clients.forEach(
-      client =>
-        (client.qidoDicomWebClient.headers = this.getAuthorizationHeader())
+      client => (client.qidoDicomWebClient.headers = this.getAuthorizationHeader())
     );
   }
 
   public setWadoHeaders(tipo = 1) {
     if (tipo === 1) {
       this.clients.forEach(
-        client =>
-          (client.wadoDicomWebClient.headers = this.generateWadoHeader(client))
+        client => (client.wadoDicomWebClient.headers = this.generateWadoHeader(client))
       );
     } else {
       this.clients.forEach(
-        client =>
-          (client.wadoDicomWebClient.headers = this.getAuthorizationHeader())
+        client => (client.wadoDicomWebClient.headers = this.getAuthorizationHeader())
       );
     }
   }
 
-  // calls reject for each client that supports it
+  // returns reject function of the first client that supports it
   public reject() {
-    this.clients.forEach(client => {
-      if (client.supportsReject) {
-        dcm4cheeReject(client.wadoRoot);
+    for (let i = 0; i < this.clients.length; i++) {
+      if (this.clients[i].supportsReject) {
+        return dcm4cheeReject(this.clients[i].wadoRoot);
       }
-    });
+    }
   }
 
   // returns the qido client given the client name
@@ -146,17 +150,5 @@ export default class clientManager {
   // returns the client list
   public getClients() {
     return this.clients;
-  }
-
-  constructor({ params, query, dicomWebConfig, userAuthenticationService }) {
-    this.clients = [];
-    this.userAuthenticationService = userAuthenticationService;
-    if (Array.isArray(dicomWebConfig)) {
-      dicomWebConfig.forEach(config =>
-        this.addConfiguration(params, query, config)
-      );
-    } else {
-      this.addConfiguration(params, query, dicomWebConfig);
-    }
   }
 }

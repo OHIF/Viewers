@@ -35,7 +35,7 @@ export function retrieveStudyMetadata(
   }
 
   // Already waiting on result? Return cached promise
-  const studyRetrieveId = dicomWebClient.name + StudyInstanceUID;
+  const studyRetrieveId = `${dicomWebClient.name}/${StudyInstanceUID}`;
   if (StudyMetaDataPromises.has(studyRetrieveId)) {
     return StudyMetaDataPromises.get(studyRetrieveId);
   }
