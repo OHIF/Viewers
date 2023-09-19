@@ -13,18 +13,18 @@ version: 2.1
 ##
 orbs:
   codecov: codecov/codecov@1.0.5
-  cypress: cypress-io/cypress@3.1.4
-executors:
-  # Custom executor to override Cypress config
-  # deploy-to-prod-executor:
-  #   docker:
-  #     - image: cimg/node:16.14
-  #       environment:
-  #         CYPRESS_BASE_URL: https://ohif-staging.netlify.com/
-  # chrome-and-pacs:
-  #   docker:
-  #     # Primary container image where all steps run.
-  #     - image: 'cypress/browsers:node16.14.2-slim-chrome103-ff102'
+  cypress: cypress-io/cypress@3
+# executors:
+# Custom executor to override Cypress config
+# deploy-to-prod-executor:
+#   docker:
+#     - image: cimg/node:16.14
+#       environment:
+#         CYPRESS_BASE_URL: https://ohif-staging.netlify.com/
+# chrome-and-pacs:
+#   docker:
+#     # Primary container image where all steps run.
+#     - image: 'cypress/browsers:node16.14.2-slim-chrome103-ff102'
 
 defaults: &defaults
   docker:
