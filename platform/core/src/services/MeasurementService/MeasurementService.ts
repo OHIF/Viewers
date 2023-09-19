@@ -27,6 +27,7 @@ import { PubSubService } from '../_shared/pubSubServiceInterface';
  * @property {Array} points -
  * @property {MeasurementSource} source -
  * @property {boolean} selected -
+ * @property {string} text -
  */
 
 /* Measurement schema keys for object validation. */
@@ -58,6 +59,7 @@ const MEASUREMENT_SCHEMA_KEYS = [
   'longestDiameter',
   'cachedStats',
   'selected',
+  'text',
 ];
 
 const EVENTS = {
