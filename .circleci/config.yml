@@ -373,9 +373,11 @@ workflows:
       - cypress/run:
           name: 'E2E: PWA'
           start-command: yarn run test:e2e:serve
-          cypress-command: 'npx cypress run --browser chrome'
+          cypress-command:
+            'npx wait-on@latest http://localhost:3000 && npx cypress run --browser chrome'
           package-manager: 'yarn'
-          install-browsers: true
+          cypress-cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
+          working-directory: platform/app
           pre-steps:
             - run: |
                 # Clear yarn cache; use yarn from image (update image to update yarn)
