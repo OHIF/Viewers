@@ -363,8 +363,6 @@ jobs:
             fi
 
 workflows:
-  version: 2
-
   PR_CHECKS:
     jobs:
       - UNIT_TESTS
@@ -376,12 +374,12 @@ workflows:
           cypress-command:
             'npx wait-on@latest http://localhost:3000 && npx cypress run --browser chrome'
           package-manager: 'yarn'
+          cypress-cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
+          cypress-cache-path: '~/.cache/Cypress'
           working-directory: platform/app
           pre-steps:
             - run: |
-                # Clear yarn cache; use yarn from image (update image to update yarn)
-                rm -rf ~/.yarn
-                yarn -v
+                yarn test:data
           post-steps:
             - store_artifacts:
                 path: platform/app/cypress/screenshots
