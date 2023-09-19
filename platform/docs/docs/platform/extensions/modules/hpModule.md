@@ -295,6 +295,18 @@ value.  Some of the possible attributes are:
 * `options`: Gets the options object itself, eg if you want a simple top level
   value.
 
+If the `from` attribute is not defined, then:
+
+* Study level matches will use the study being tested as the value
+  For example, if the value is `ModalitiesInStudy`, then it will test
+  that for every study relevant at the given level.
+* Series level matches will use the first defined value from the display set or
+  the instance value.  That is, will test against
+  `displaySetUnderTest[attribute] || instance[attribute]`
+
+Note that if the top level defined match -1 priors, then ONLY the selected
+study gets matched for the from attributes.
+
 ### displaySetSelectors
 Defines the display sets that the protocol will use for arrangement.
 
