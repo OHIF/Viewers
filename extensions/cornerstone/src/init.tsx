@@ -42,6 +42,7 @@ export default async function init({
   configuration,
   appConfig,
 }: Types.Extensions.ExtensionParams): Promise<void> {
+
   await cs3DInit({
     rendering: {
       preferSizeOverAccuracy: Boolean(appConfig.use16BitDataType),
@@ -62,6 +63,7 @@ export default async function init({
     default:
       cornerstone.setUseSharedArrayBuffer(csEnums.SharedArrayBufferModes.TRUE);
   }
+
   cornerstone.setConfiguration({
     ...cornerstone.getConfiguration(),
     rendering: {
