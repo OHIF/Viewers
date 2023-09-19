@@ -172,7 +172,13 @@ export default class ToolbarService extends PubSubService {
   }
 
   getActiveTools() {
-    return [this.state.primaryToolId, ...Object.keys(this.state.toggles)];
+    const activeTools = [this.state.primaryToolId];
+    Object.keys(this.state.toggles).forEach(key => {
+      if (this.state.toggles[key]) {
+        activeTools.push(key);
+      }
+    });
+    return activeTools;
   }
 
   /** Sets the toggle state of a button to the isActive state */

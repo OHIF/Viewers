@@ -1,90 +1,81 @@
-import calculateViewportRegistrations from './calculateViewportRegistrations';
+const disableSync = (syncName, servicesManager) => {
+  const { syncGroupService, viewportGridService, displaySetService, cornerstoneViewportService } =
+    servicesManager.services;
+  const viewports = getViewports(viewportGridService, displaySetService);
+  viewports.forEach(gridViewport => {
+    const { viewportId } = gridViewport.viewportOptions;
+    const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+    if (!viewport) {
+      return;
+    }
+    syncGroupService.removeViewportFromSyncGroup(
+      viewport.id,
+      viewport.getRenderingEngine().id,
+      syncName
+    );
+  });
+};
 
-// [ {
-//   synchronizerId: string,
-//   viewports: [ { viewportId: string, renderingEngineId: string, index: number } , ...]
-// ]}
-let STACK_IMAGE_SYNC_GROUPS_INFO = [];
+const getViewports = (viewportGridService, displaySetService) => {
+  let { viewports } = viewportGridService.getState();
 
-export default function toggleStackImageSync({ toggledState, servicesManager, getEnabledElement }) {
+  viewports = [...viewports.values()];
+  // filter empty viewports
+  viewports = viewports.filter(
+    viewport => viewport.displaySetInstanceUIDs && viewport.displaySetInstanceUIDs.length
+  );
+
+  // filter reconstructable viewports
+  viewports = viewports.filter(viewport => {
+    const { displaySetInstanceUIDs } = viewport;
+
+    for (const displaySetInstanceUID of displaySetInstanceUIDs) {
+      const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
+
+      // TODO - add a better test than isReconstructable
+      if (displaySet && displaySet.isReconstructable) {
+        return true;
+      }
+
+      return false;
+    }
+  });
+
+  // viewports = viewports.filter(viewport => viewport.viewportOptions.viewportType === 'stack');
+
+  console.log('viewports=', viewports);
+  return viewports;
+};
+
+const STACK_SYNC_NAME = 'stackImageSync';
+
+export default function toggleStackImageSync({
+  toggledState,
+  servicesManager,
+  viewports: providedViewports,
+}) {
+  if (!toggledState) {
+    return disableSync(STACK_SYNC_NAME, servicesManager);
+  }
+
+  console.log('Toggling stack image sync');
   const { syncGroupService, viewportGridService, displaySetService, cornerstoneViewportService } =
     servicesManager.services;
 
-  if (!toggledState) {
-    STACK_IMAGE_SYNC_GROUPS_INFO.forEach(syncGroupInfo => {
-      const { viewports, synchronizerId } = syncGroupInfo;
+  const viewports = providedViewports || getViewports(viewportGridService, displaySetService);
 
-      viewports.forEach(({ viewportId, renderingEngineId }) => {
-        syncGroupService.removeViewportFromSyncGroup(viewportId, renderingEngineId, synchronizerId);
-      });
-    });
-
-    return;
-  }
-
-  STACK_IMAGE_SYNC_GROUPS_INFO = [];
-
-  // create synchronization groups and add viewports
-  const { viewports } = viewportGridService.getState();
-
-  // filter empty viewports
-  const viewportsArray = Array.from(viewports.values())
-    .filter(viewport => viewport.displaySetInstanceUIDs?.length)
-    // filter reconstructable viewports
-    .filter(viewport => {
-      const { displaySetInstanceUIDs } = viewport;
-
-      for (const displaySetInstanceUID of displaySetInstanceUIDs) {
-        const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
-
-        return !!displaySet?.isReconstructable;
-      }
-    });
-
-  const viewportsByOrientation = viewportsArray.reduce((acc, viewport) => {
-    const { viewportId, viewportType } = viewport.viewportOptions;
-
-    if (viewportType !== 'stack') {
-      console.warn('Viewport is not a stack, cannot sync images yet');
-      return acc;
+  // create synchronization group and add the viewports to it.
+  viewports.forEach(gridViewport => {
+    const { viewportId } = gridViewport.viewportOptions;
+    const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+    if (!viewport) {
+      return;
     }
-
-    const { element } = cornerstoneViewportService.getViewportInfo(viewportId);
-    const { viewport: csViewport, renderingEngineId } = getEnabledElement(element);
-    const { viewPlaneNormal } = csViewport.getCamera();
-
-    // Should we round here? I guess so, but not sure how much precision we need
-    const orientation = viewPlaneNormal.map(v => Math.round(v)).join(',');
-
-    if (!acc[orientation]) {
-      acc[orientation] = [];
-    }
-
-    acc[orientation].push({ viewportId, renderingEngineId });
-
-    return acc;
-  }, {});
-
-  // create synchronizer for each group
-  Object.values(viewportsByOrientation).map(viewports => {
-    let synchronizerId = viewports.map(({ viewportId }) => viewportId).join(',');
-
-    synchronizerId = `imageSync_${synchronizerId}`;
-
-    calculateViewportRegistrations(viewports);
-
-    viewports.forEach(({ viewportId, renderingEngineId }) => {
-      syncGroupService.addViewportToSyncGroup(viewportId, renderingEngineId, {
-        type: 'stackimage',
-        id: synchronizerId,
-        source: true,
-        target: true,
-      });
-    });
-
-    STACK_IMAGE_SYNC_GROUPS_INFO.push({
-      synchronizerId,
-      viewports,
+    syncGroupService.addViewportToSyncGroup(viewportId, viewport.getRenderingEngine().id, {
+      type: 'stackimage',
+      id: STACK_SYNC_NAME,
+      source: true,
+      target: true,
     });
   });
 }

@@ -15,16 +15,14 @@ const { windowLevelPresets } = defaults;
  * @param {*} icon
  * @param {*} label
  */
-function _createButton(type, id, icon, label, commands, tooltip, uiType, isActive) {
+function _createButton(type, id, icon, label, commands, tooltip, extraOptions = undefined) {
   return {
     id,
     icon,
     label,
     type,
     commands,
-    tooltip,
-    uiType,
-    isActive,
+    ...extraOptions,
   };
 }
 
@@ -75,6 +73,68 @@ function _createSetToolActiveCommands(toolName) {
   }));
   return temp;
 }
+
+const StackImageSync = _createToggleButton(
+  'StackImageSync',
+  'link',
+  'Stack Image Sync',
+  [
+    {
+      commandName: 'toggleStackImageSync',
+    },
+  ],
+  'Enable position synchronization on stack viewports',
+  {
+    listeners: {
+      newStack: {
+        commandName: 'toggleStackImageSync',
+        commandOptions: { toggledState: true },
+      },
+    },
+  }
+);
+
+const StackPrefetch = _createToggleButton(
+  'StackPrefetch',
+  'link',
+  'Stack Prefetch',
+  [],
+  'Enable Complete Stack Prefetch',
+  {
+    listeners: {
+      newStack: {
+        commandName: 'stackPrefetch',
+      },
+    },
+    isActive: true,
+  }
+);
+
+const ReferenceLines = _createToggleButton(
+  'ReferenceLines',
+  'tool-referenceLines', // change this with the new icon
+  'Reference Lines',
+  [
+    {
+      commandName: 'toggleReferenceLines',
+      commandOptions: {},
+      context: 'CORNERSTONE',
+    },
+  ],
+  'Show reference lines',
+  {
+    listeners: {
+      activeViewportIdChanged: {
+        commandName: 'toggleReferenceLines',
+        commandOptions: { toggledState: true },
+      },
+      newStack: {
+        commandName: 'toggleReferenceLines',
+        commandOptions: { toggledState: true },
+      },
+    },
+  }
+);
 
 const toolbarButtons = [
   // Measurement
@@ -422,35 +482,8 @@ const toolbarButtons = [
           ],
           'Flip Horizontal'
         ),
-        _createToggleButton('StackImageSync', 'link', 'Stack Image Sync', [
-          {
-            commandName: 'toggleStackImageSync',
-            commandOptions: {},
-            context: 'CORNERSTONE',
-          },
-        ]),
-        _createToggleButton(
-          'ReferenceLines',
-          'tool-referenceLines', // change this with the new icon
-          'Reference Lines',
-          // two commands for the reference lines tool:
-          // - the first to set the source viewport for the tool when it is enabled
-          // - the second to toggle the tool
-          [
-            {
-              commandName: 'setSourceViewportForReferenceLinesTool',
-              commandOptions: {},
-              context: 'CORNERSTONE',
-            },
-            {
-              commandName: 'setToolActive',
-              commandOptions: {
-                toolName: 'ReferenceLines',
-              },
-              context: 'CORNERSTONE',
-            },
-          ]
-        ),
+        StackImageSync,
+        ReferenceLines,
         _createToggleButton(
           'ImageOverlayViewer',
           'toggle-dicom-overlay',
@@ -466,7 +499,7 @@ const toolbarButtons = [
           ],
           'Image Overlay',
           null,
-          true
+          { isActive: true }
         ),
         _createToolButton(
           'StackScroll',
@@ -631,6 +664,11 @@ const toolbarButtons = [
       ],
     },
   },
+
+  // Register buttons that are used for top level actions
+  StackImageSync,
+  StackPrefetch,
+  ReferenceLines,
 ];
 
 export default toolbarButtons;

@@ -267,6 +267,18 @@ function commandsModule({
       toolbarService.recordInteraction(props);
     },
 
+    // Enable or disable a toggleable command, without calling the activation
+    // Used to setup already active tools from hanging protocols
+    toolbarSetActive: props => {
+      toolbarService.setActive(props.toolId, props.isActive ?? true);
+    },
+
+    // Enable stack prefetch on the given element
+    stackPrefetch: props => {
+      const { element } = props;
+      cstUtils.stackPrefetch.enable(element);
+    },
+
     setToolActive: ({ toolName, toolGroupId = null, toggledState }) => {
       if (toolName === 'Crosshairs') {
         const activeViewportToolGroup = toolGroupService.getToolGroup(null);
@@ -344,6 +356,28 @@ function commandsModule({
           },
         ],
       });
+    },
+    toggleReferenceLines: ({ toggledState }) => {
+      try {
+        const { viewportId } = _getActiveViewportEnabledElement();
+        const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
+
+        if (!toggledState) {
+          toolGroup.setToolDisabled(ReferenceLinesTool.toolName);
+          return;
+        }
+
+        toolGroup.setToolConfiguration(
+          ReferenceLinesTool.toolName,
+          {
+            sourceViewportId: viewportId,
+          },
+          true // overwrite
+        );
+        toolGroup.setToolEnabled(ReferenceLinesTool.toolName);
+      } catch (e) {
+        console.log("Couldn't activate reference lines");
+      }
     },
     showDownloadViewportModal: () => {
       const { activeViewportId } = viewportGridService.getState();
@@ -551,7 +585,6 @@ function commandsModule({
 
     toggleStackImageSync: ({ toggledState }) => {
       toggleStackImageSync({
-        getEnabledElement,
         servicesManager,
         toggledState,
       });
@@ -562,6 +595,11 @@ function commandsModule({
 
       const viewportId = viewportInfo.getViewportId();
       const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
+
+      if (!toggledState) {
+        toolGroup.setToolDisabled(ReferenceLinesTool.toolName);
+        return;
+      }
 
       toolGroup.setToolConfiguration(
         ReferenceLinesTool.toolName,
@@ -701,8 +739,15 @@ function commandsModule({
     },
     storePresentation: {
       commandFn: actions.storePresentation,
-      storeContexts: [],
-      options: {},
+    },
+    stackPrefetch: {
+      commandFn: actions.stackPrefetch,
+    },
+    toolbarSetActive: {
+      commandFn: actions.toolbarSetActive,
+    },
+    toggleReferenceLines: {
+      commandFn: actions.toggleReferenceLines,
     },
   };
 
