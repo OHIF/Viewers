@@ -3,10 +3,7 @@ import { LineChart } from '@ohif/ui';
 
 const LineChartViewport = ({ displaySets }) => {
   const displaySet = displaySets[0];
-  const {
-    axis: chartAxis,
-    series: chartSeries,
-  } = displaySet.instance.chartData;
+  const { axis: chartAxis, series: chartSeries } = displaySet.instance.chartData;
 
   return (
     <LineChart

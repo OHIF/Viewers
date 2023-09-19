@@ -12,9 +12,7 @@ const SidePanelWithService = ({
 }) => {
   // Tracks whether this SidePanel has been opened at least once since this SidePanel was inserted into the DOM.
   // Thus going to the Study List page and back to the viewer resets this flag for a SidePanel.
-  const [hasBeenOpened, setHasBeenOpened] = useState(
-    activeTabIndexProp !== null
-  );
+  const [hasBeenOpened, setHasBeenOpened] = useState(activeTabIndexProp !== null);
 
   const panelService: PanelService = servicesManager.services.panelService;
   const [tabs, setTabs] = useState(tabsProp ?? panelService.getPanels(side));
@@ -50,9 +48,7 @@ const SidePanelWithService = ({
       panelService.EVENTS.ACTIVATE_PANEL,
       (activatePanelEvent: Types.ActivatePanelEvent) => {
         if (!hasBeenOpened || activatePanelEvent.forceActive) {
-          const tabIndex = tabs.findIndex(
-            tab => tab.id === activatePanelEvent.panelId
-          );
+          const tabIndex = tabs.findIndex(tab => tab.id === activatePanelEvent.panelId);
           if (tabIndex !== -1) {
             setActiveTabIndex(tabIndex);
           }

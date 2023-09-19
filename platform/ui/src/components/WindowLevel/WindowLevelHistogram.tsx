@@ -19,11 +19,7 @@ const DEFAULT_COLORMAP = {
 const clamp = (value, min, max) => Math.min(Math.max(min, value), max);
 
 const interpolateVec3 = (a, b, t) => {
-  return [
-    a[0] * (1 - t) + b[0] * t,
-    a[1] * (1 - t) + b[1] * t,
-    a[2] * (1 - t) + b[2] * t,
-  ];
+  return [a[0] * (1 - t) + b[0] * t, a[1] * (1 - t) + b[1] * t, a[2] * (1 - t) + b[2] * t];
 };
 
 const drawBackground = (canvas, range, voiRange, colormap) => {
@@ -40,11 +36,7 @@ const drawBackground = (canvas, range, voiRange, colormap) => {
       ? {
           index,
           position: rgbPoints[offset],
-          color: [
-            rgbPoints[offset + 1],
-            rgbPoints[offset + 2],
-            rgbPoints[offset + 3],
-          ],
+          color: [rgbPoints[offset + 1], rgbPoints[offset + 2], rgbPoints[offset + 3]],
         }
       : undefined;
   };
@@ -81,16 +73,10 @@ const drawBackground = (canvas, range, voiRange, colormap) => {
         (tVoiRange - leftColorPoint.position) /
         (rightColorPoint.position - leftColorPoint.position);
 
-      normColor = interpolateVec3(
-        leftColorPoint.color,
-        rightColorPoint.color,
-        tColorRange
-      );
+      normColor = interpolateVec3(leftColorPoint.color, rightColorPoint.color, tColorRange);
     }
 
-    const color = normColor.map(color =>
-      clamp(Math.round(color * 255), 0, 255)
-    );
+    const color = normColor.map(color => clamp(Math.round(color * 255), 0, 255));
 
     context.fillStyle = `rgb(${color[0]}, ${color[1]}, ${color[2]})`;
     context.fillRect(x, 0, 1, height);
@@ -107,23 +93,16 @@ const drawPolygonHistogram = (canvas, context, histogram, options) => {
 
   context.beginPath();
   context.moveTo(0, canvas.height);
-  context.lineTo(
-    0,
-    canvas.height - (canvas.height * scale(histogram.bins[0])) / maxVal
-  );
+  context.lineTo(0, canvas.height - (canvas.height * scale(histogram.bins[0])) / maxVal);
 
   let x = xScale / 2;
   for (let bin = 0; bin < histogram.numBins; bin++) {
-    context.lineTo(
-      x,
-      canvas.height - (canvas.height * scale(histogram.bins[bin])) / maxVal
-    );
+    context.lineTo(x, canvas.height - (canvas.height * scale(histogram.bins[bin])) / maxVal);
     x += xScale;
   }
   context.lineTo(
     canvas.width,
-    canvas.height -
-      (canvas.height * scale(histogram.bins[histogram.numBins - 1])) / maxVal
+    canvas.height - (canvas.height * scale(histogram.bins[histogram.numBins - 1])) / maxVal
   );
   context.lineTo(canvas.width, canvas.height);
   context.lineTo(0, canvas.height);
@@ -190,10 +169,8 @@ const WindowLevelHistogram = ({
 }): ReactElement => {
   const containerRef = useRef(null);
   const canvasRef = useRef(null);
-  const minVOIPercent =
-    ((voiRange.min - range.min) / (range.max - range.min)) * 100;
-  const maxVoiPercent =
-    (1 - (range.max - voiRange.max) / (range.max - range.min)) * 100;
+  const minVOIPercent = ((voiRange.min - range.min) / (range.max - range.min)) * 100;
+  const maxVoiPercent = (1 - (range.max - voiRange.max) / (range.max - range.min)) * 100;
   const background =
     colormap.Name !== 'Grayscale'
       ? undefined
@@ -222,20 +199,19 @@ const WindowLevelHistogram = ({
 
     drawBackground(canvas, range, voiRange, colormap);
     drawHistogram(canvas, histogram, options);
-  }, [
-    range,
-    voiRange,
-    histogram,
-    colormap,
-    style,
-    fillColor,
-    lineColor,
-    canvasRef,
-  ]);
+  }, [range, voiRange, histogram, colormap, style, fillColor, lineColor, canvasRef]);
 
   return (
-    <div ref={containerRef} className="h-full" style={{ background }}>
-      <canvas ref={canvasRef} width="1" height="1"></canvas>
+    <div
+      ref={containerRef}
+      className="h-full"
+      style={{ background }}
+    >
+      <canvas
+        ref={canvasRef}
+        width="1"
+        height="1"
+      ></canvas>
     </div>
   );
 };

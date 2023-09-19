@@ -1,11 +1,4 @@
-import React, {
-  useEffect,
-  useState,
-  useMemo,
-  useCallback,
-  useReducer,
-  ReactElement,
-} from 'react';
+import React, { useEffect, useState, useMemo, useCallback, useReducer, ReactElement } from 'react';
 import PropTypes from 'prop-types';
 
 import * as cs from '@cornerstonejs/core';
@@ -14,9 +7,7 @@ import { SegmentationTable, LegacyButton, Button, ButtonGroup } from '@ohif/ui';
 import { useTranslation } from 'react-i18next';
 import BrushConfigurationWithServices from './BrushConfigurationWithServices';
 import segmentationEditHandler from './segmentationEditHandler';
-import RectangleROIThresholdConfiguration, {
-  ROI_STAT,
-} from './RectangleROIThresholdConfiguration';
+import RectangleROIThresholdConfiguration, { ROI_STAT } from './RectangleROIThresholdConfiguration';
 
 const LOWER_CT_THRESHOLD_DEFAULT = -1024;
 const UPPER_CT_THRESHOLD_DEFAULT = 1024;
@@ -129,9 +120,7 @@ export default function ROISegmentationPanel({
   const [showConfig, setShowConfig] = useState(false);
   const [labelmapLoading, setLabelmapLoading] = useState(false);
   const [processingSegmentation, setProcessingSegmentation] = useState(false);
-  const [segmentations, setSegmentations] = useState(() =>
-    segmentationService.getSegmentations()
-  );
+  const [segmentations, setSegmentations] = useState(() => segmentationService.getSegmentations());
   const selectedSegmentationId = useMemo(
     () => segmentations.find(segmentation => segmentation.isActive)?.id,
     [segmentations]
@@ -195,9 +184,7 @@ export default function ROISegmentationPanel({
 
   const handleRunClick = useCallback(() => {
     // It may currently be RectangleROIThreshold and RectangleROIStartEndThreshold
-    const rectangleROIToolActive = activePrimaryTool
-      .toLowerCase()
-      .startsWith('rectangleroi');
+    const rectangleROIToolActive = activePrimaryTool.toLowerCase().startsWith('rectangleroi');
 
     const labelmap = rectangleROIToolActive
       ? runCommand('thresholdSegmentationByRectangleROITool', {
@@ -212,16 +199,8 @@ export default function ROISegmentationPanel({
 
     // Give react some time to update the UI because it is currently taking
     // some time to process when there are no Rectangle ROI annotations
-    return runAsync(() =>
-      updateSegmentationDetails(selectedSegmentationId, labelmap)
-    );
-  }, [
-    config,
-    activePrimaryTool,
-    selectedSegmentationId,
-    runCommand,
-    updateSegmentationDetails,
-  ]);
+    return runAsync(() => updateSegmentationDetails(selectedSegmentationId, labelmap));
+  }, [config, activePrimaryTool, selectedSegmentationId, runCommand, updateSegmentationDetails]);
 
   /**
    * Update UI based on segmentation changes (added, removed, updated)
@@ -264,8 +243,8 @@ export default function ROISegmentationPanel({
   return (
     <>
       <div className="flex flex-col">
-        <div className="overflow-x-hidden overflow-y-auto invisible-scrollbar">
-          <div className="flex mx-4 my-4 mb-4 space-x-4">
+        <div className="invisible-scrollbar overflow-y-auto overflow-x-hidden">
+          <div className="mx-4 my-4 mb-4 flex space-x-4">
             <Button
               className="grow"
               onClick={() => {
@@ -297,14 +276,12 @@ export default function ROISegmentationPanel({
           {selectedSegmentationId && toolConfigInfo && (
             <>
               <div
-                className="flex items-center justify-around h-8 mb-2 border-t outline-none cursor-pointer select-none bg-secondary-dark first:border-0 border-secondary-light"
+                className="bg-secondary-dark border-secondary-light mb-2 flex h-8 cursor-pointer select-none items-center justify-around border-t outline-none first:border-0"
                 onClick={() => {
                   setShowConfig(!showConfig);
                 }}
               >
-                <div className="px-4 text-base text-white">
-                  {t(toolConfigInfo.title)}
-                </div>
+                <div className="px-4 text-base text-white">{t(toolConfigInfo.title)}</div>
               </div>
 
               {showConfig && <toolConfigInfo.component />}
@@ -335,8 +312,11 @@ export default function ROISegmentationPanel({
               />
             ) : null}
           </div>
-          <div className="flex justify-center mt-4 space-x-2">
-            <ButtonGroup color="black" size="inherit">
+          <div className="mt-4 flex justify-center space-x-2">
+            <ButtonGroup
+              color="black"
+              size="inherit"
+            >
               <LegacyButton
                 className="px-2 py-2 text-base"
                 disabled={!segmentations.length}

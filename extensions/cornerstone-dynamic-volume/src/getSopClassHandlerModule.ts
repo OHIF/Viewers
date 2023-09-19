@@ -46,10 +46,7 @@ const makeChartDataDisplaySet = (instance, sopClassUids) => {
      * when user moves to a different workflow step and gets back to a step that
      * recreates the chart
      */
-    addInstances: function(
-      instances: InstanceMetadata[],
-      _displaySetService: DisplaySetService
-    ) {
+    addInstances: function (instances: InstanceMetadata[], _displaySetService: DisplaySetService) {
       this.instances.push(...instances);
       this.instance = this.instances[this.instances.length - 1];
 
@@ -87,8 +84,7 @@ function _getDisplaySetsFromSeries(appContext, instances) {
 }
 
 function getSopClassHandlerModule(appContext) {
-  const getDisplaySetsFromSeries = instances =>
-    _getDisplaySetsFromSeries(appContext, instances);
+  const getDisplaySetsFromSeries = instances => _getDisplaySetsFromSeries(appContext, instances);
 
   return [
     {

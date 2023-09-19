@@ -14,7 +14,7 @@ function WorkflowPanel({ servicesManager, extensionManager }) {
   return (
     <div
       data-cy={'workflow-panel'}
-      className="px-3 py-4 mb-1 bg-secondary-dark"
+      className="bg-secondary-dark mb-1 px-3 py-4"
     >
       <div className="mb-1">Workflow</div>
       <div>

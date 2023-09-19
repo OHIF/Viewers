@@ -67,14 +67,12 @@ const InputDoubleRange: React.FC<{
     }
   }, [leftVal, rightVal, getPercent]);
 
-  const rangeValueLeftPercentage =
-    ((leftVal - minValue) / (maxValue - minValue)) * 100;
-  const rangeValueRightPercentage =
-    ((rightVal - minValue) / (maxValue - minValue)) * 100;
+  const rangeValueLeftPercentage = ((leftVal - minValue) / (maxValue - minValue)) * 100;
+  const rangeValueRightPercentage = ((rightVal - minValue) / (maxValue - minValue)) * 100;
 
   return (
     <div
-      className={`items-center cursor-pointer space-x-1 ${
+      className={`cursor-pointer items-center space-x-1 ${
         containerClassName ? containerClassName : ''
       }`}
     >
@@ -88,7 +86,7 @@ const InputDoubleRange: React.FC<{
           setLeftVal(value);
           handleSliderChange([value, rightVal]);
         }}
-        className="appearance-none h-[3px] rounded-lg thumb thumb--left"
+        className="thumb thumb--left h-[3px] appearance-none rounded-lg"
         style={{
           background: `linear-gradient(to right, #3a3f99 0%, #3a3f99 ${rangeValueLeftPercentage}%, #5acce6 ${rangeValueLeftPercentage}%, #5acce6 ${rangeValueRightPercentage}%, #3a3f99 ${rangeValueRightPercentage}%, #3a3f99 100%)`,
         }}
@@ -103,28 +101,21 @@ const InputDoubleRange: React.FC<{
           setRightVal(value);
           handleSliderChange([leftVal, value]);
         }}
-        className="appearance-none h-[3px] rounded-lg thumb thumb--right"
+        className="thumb thumb--right h-[3px] appearance-none rounded-lg"
         style={{
           background: `linear-gradient(to right, transparent 0%, transparent ${rangeValueLeftPercentage}%, #5acce6 ${rangeValueLeftPercentage}%, #5acce6 ${rangeValueRightPercentage}%, transparent ${rangeValueRightPercentage}%, #3a3f99 100%)`,
         }}
       />
       <div className="slider">
         <div className="slider__track" />
-        <div ref={rangeRef} className="slider__range" />
         <div
-          className={classNames(
-            labelClassName ?? 'text-white',
-            'slider__left-value'
-          )}
-        >
+          ref={rangeRef}
+          className="slider__range"
+        />
+        <div className={classNames(labelClassName ?? 'text-white', 'slider__left-value')}>
           {leftVal}
         </div>
-        <div
-          className={classNames(
-            labelClassName ?? 'text-white',
-            'slider__right-value'
-          )}
-        >
+        <div className={classNames(labelClassName ?? 'text-white', 'slider__right-value')}>
           {rightVal}
         </div>
       </div>

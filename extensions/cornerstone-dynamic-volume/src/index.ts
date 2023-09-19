@@ -22,11 +22,7 @@ const dynamicVolumeExtension = {
    * (e.g. cornerstone, cornerstoneTools, ...) or registering any services that
    * this extension is providing.
    */
-  preRegistration: ({
-    servicesManager,
-    commandsManager,
-    configuration = {},
-  }) => {
+  preRegistration: ({ servicesManager, commandsManager, configuration = {} }) => {
     // TODO: look for the right fix
     cache.setMaxCacheSize(5 * 1024 * 1024 * 1024);
   },
@@ -50,11 +46,7 @@ const dynamicVolumeExtension = {
    * {name, defaultComponent, clickHandler }. Examples include radioGroupIcons and
    * splitButton toolButton that the default extension is providing.
    */
-  getToolbarModule: ({
-    servicesManager,
-    commandsManager,
-    extensionManager,
-  }) => {},
+  getToolbarModule: ({ servicesManager, commandsManager, extensionManager }) => {},
   /**
    * LayoutTemplateMOdule should provide a list of layout templates that will be
    * available in OHIF for Modes to consume and use to layout the viewer.
@@ -63,11 +55,7 @@ const dynamicVolumeExtension = {
    * a Header, left and right sidebars, and a viewport section in the middle
    * of the viewer.
    */
-  getLayoutTemplateModule: ({
-    servicesManager,
-    commandsManager,
-    extensionManager,
-  }) => {},
+  getLayoutTemplateModule: ({ servicesManager, commandsManager, extensionManager }) => {},
   /**
    * SopClassHandlerModule should provide a list of sop class handlers that will be
    * available in OHIF for Modes to consume and use to create displaySets from Series.
@@ -90,11 +78,7 @@ const dynamicVolumeExtension = {
    * object of functions, definitions is an object of available commands, their
    * options, and defaultContext is the default context for the command to run against.
    */
-  getCommandsModule: ({
-    servicesManager,
-    commandsManager,
-    extensionManager,
-  }) => {
+  getCommandsModule: ({ servicesManager, commandsManager, extensionManager }) => {
     return commandsModule({
       servicesManager,
       commandsManager,
@@ -107,21 +91,13 @@ const dynamicVolumeExtension = {
    * Context is defined by an object of { name, context, provider }. Examples include
    * the measurementTracking context provided by the measurementTracking extension.
    */
-  getContextModule: ({
-    servicesManager,
-    commandsManager,
-    extensionManager,
-  }) => {},
+  getContextModule: ({ servicesManager, commandsManager, extensionManager }) => {},
   /**
    * DataSourceModule should provide a list of data sources to be used in OHIF.
    * DataSources can be used to map the external data formats to the OHIF's
    * native format. DataSources are defined by an object of { name, type, createDataSource }.
    */
-  getDataSourcesModule: ({
-    servicesManager,
-    commandsManager,
-    extensionManager,
-  }) => {},
+  getDataSourcesModule: ({ servicesManager, commandsManager, extensionManager }) => {},
 };
 
 export { dynamicVolumeExtension as default };

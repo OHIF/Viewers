@@ -123,10 +123,7 @@ function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager) {
     toolGroupIds.PT,
     {
       ...tools,
-      passive: [
-        ...tools.passive,
-        { toolName: 'RectangleROIStartEndThreshold' },
-      ],
+      passive: [...tools.passive, { toolName: 'RectangleROIStartEndThreshold' }],
     },
     toolsConfig
   );
@@ -135,27 +132,15 @@ function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager) {
     toolGroupIds.Fusion,
     {
       ...tools,
-      passive: [
-        ...tools.passive,
-        { toolName: 'RectangleROIStartEndThreshold' },
-      ],
+      passive: [...tools.passive, { toolName: 'RectangleROIStartEndThreshold' }],
     },
     toolsConfig
   );
 
-  toolGroupService.createToolGroupAndAddTools(
-    toolGroupIds.default,
-    tools,
-    toolsConfig
-  );
+  toolGroupService.createToolGroupAndAddTools(toolGroupIds.default, tools, toolsConfig);
 }
 
-function initToolGroups({
-  toolNames,
-  Enums,
-  toolGroupService,
-  commandsManager,
-}) {
+function initToolGroups({ toolNames, Enums, toolGroupService, commandsManager }) {
   _initToolGroups(toolNames, Enums, toolGroupService, commandsManager);
 }
 

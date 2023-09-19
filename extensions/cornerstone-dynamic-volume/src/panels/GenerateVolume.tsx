@@ -31,12 +31,9 @@ const GenerateVolume = ({
       <Select
         label={'Strategy'}
         closeMenuOnSelect={true}
-        className="mr-2 bg-black border-primary-main text-white "
+        className="border-primary-main mr-2 bg-black text-white "
         options={operationsUI}
-        placeholder={
-          operationsUI.find(option => option.value === options.Operation)
-            .placeHolder
-        }
+        placeholder={operationsUI.find(option => option.value === options.Operation).placeHolder}
         value={options.Operation}
         onChange={({ value }) => {
           handleGenerateOptionsChange({
@@ -44,10 +41,16 @@ const GenerateVolume = ({
           });
         }}
       />
-      <Button color="primary" onClick={onGenerateImage}>
+      <Button
+        color="primary"
+        onClick={onGenerateImage}
+      >
         Generate Image
       </Button>
-      <Button color="primary" onClick={returnTo4D}>
+      <Button
+        color="primary"
+        onClick={returnTo4D}
+      >
         Return To 4D
       </Button>
     </>

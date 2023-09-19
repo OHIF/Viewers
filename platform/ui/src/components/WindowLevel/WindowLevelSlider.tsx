@@ -13,10 +13,8 @@ const WindowLevelSlider = ({
   voiRange: VOIRange;
   onVOIRangeChange: (voiRange: VOIRange) => void;
 }): ReactElement => {
-  const minVOIPercent =
-    ((voiRange.min - range.min) / (range.max - range.min)) * 100;
-  const maxVoiPercent =
-    (1 - (range.max - voiRange.max) / (range.max - range.min)) * 100;
+  const minVOIPercent = ((voiRange.min - range.min) / (range.max - range.min)) * 100;
+  const maxVoiPercent = (1 - (range.max - voiRange.max) / (range.max - range.min)) * 100;
 
   const handleMinRangeChange = useCallback(
     e => {
@@ -58,7 +56,7 @@ const WindowLevelSlider = ({
         min={range.min}
         max={range.max}
         value={voiRange.min}
-        className="appearance-none h-[3px] w-full rounded-lg input-range-thumb-design pointer-events-none"
+        className="input-range-thumb-design pointer-events-none h-[3px] w-full appearance-none rounded-lg"
         style={{
           background: `linear-gradient(to right, #3a3f99 0%, #3a3f99 ${minVOIPercent}%, #5acce6 ${minVOIPercent}%, #5acce6 ${maxVoiPercent}%, #3a3f99 ${maxVoiPercent}%, #3a3f99 100%)`,
         }}
@@ -72,7 +70,7 @@ const WindowLevelSlider = ({
         min={range.min}
         max={range.max}
         value={voiRange.max}
-        className="appearance-none h-[3px] mt-[-3px] w-full rounded-lg input-range-thumb-design pointer-events-none bg-transparent"
+        className="input-range-thumb-design pointer-events-none mt-[-3px] h-[3px] w-full appearance-none rounded-lg bg-transparent"
         onChange={handleMaxRangeChange}
         step={step}
       />

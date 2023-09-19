@@ -51,11 +51,7 @@ const _formatAxisLabel = ({ label, unit }) => {
  * @return {object} appended chart container (svg element)
  */
 const _addChartContainer = (root, width, height, translateX, translateY) => {
-  root
-    .append('rect')
-    .attr('class', 'background')
-    .attr('width', width)
-    .attr('height', height);
+  root.append('rect').attr('class', 'background').attr('width', width).attr('height', height);
 
   return root
     .append('g')
@@ -80,14 +76,7 @@ const _addLegend = (root, width, height, posX, posY) => {
   return legendContainer;
 };
 
-const _setLegendLabels = (
-  root,
-  labels,
-  colors,
-  itemHeight,
-  itemWidth,
-  textEllipses
-) => {
+const _setLegendLabels = (root, labels, colors, itemHeight, itemWidth, textEllipses) => {
   const yOffset = itemHeight / 2;
   const textLeft = 20;
 
@@ -213,13 +202,7 @@ const _scaleAxisGraphics = (
  * @modifies {root}
  *
  */
-const _addChartClipPath = (
-  root,
-  width,
-  height,
-  transparent = false,
-  offset = 6
-) => {
+const _addChartClipPath = (root, width, height, transparent = false, offset = 6) => {
   const translateOffset = -offset / 2;
   root
     .append('clipPath')
@@ -335,10 +318,7 @@ const _getPoints = root => {
 const _updatePoints = (root, dataset = [], cxAttrValue, cyAttrValue) => {
   const dot = root.selectAll('.dot');
 
-  dot
-    .data(dataset)
-    .attr('cx', cxAttrValue)
-    .attr('cy', cyAttrValue);
+  dot.data(dataset).attr('cx', cxAttrValue).attr('cy', cyAttrValue);
 };
 
 /**

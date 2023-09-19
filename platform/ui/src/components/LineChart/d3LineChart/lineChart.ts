@@ -58,15 +58,9 @@ function _createAxisScale(domainBottom, domainUpper, rangeBottom, rangeUpper) {
 }
 
 const _getSeriesColor = series => {
-  const seriesLabels = series.reduce(
-    (labels, series) => [...labels, series.label],
-    []
-  );
+  const seriesLabels = series.reduce((labels, series) => [...labels, series.label], []);
 
-  return d3Scale
-    .scaleOrdinal()
-    .domain(seriesLabels)
-    .range(d3ScaleChromatic.schemeSet2);
+  return d3Scale.scaleOrdinal().domain(seriesLabels).range(d3ScaleChromatic.schemeSet2);
 };
 
 const _updateSeriesColors = series => {
@@ -79,7 +73,7 @@ const _updateSeriesColors = series => {
 };
 
 const _textEllipses = (width, padding = 0) => {
-  return function(...args) {
+  return function (...args) {
     const self = d3Selection.select(this);
     let textLength = self.node().getComputedTextLength();
     let text = self.text();
@@ -104,15 +98,9 @@ const _addLegend = (root, series, chartWidth, chartHeight, legendWidth) => {
     chartHeight / 2 - legendHeight / 2
   );
 
-  const seriesLabels = series.reduce(
-    (labels, series) => [...labels, series.label],
-    []
-  );
+  const seriesLabels = series.reduce((labels, series) => [...labels, series.label], []);
 
-  const seriesColors = series.reduce(
-    (colors, series) => [...colors, series.color],
-    []
-  );
+  const seriesColors = series.reduce((colors, series) => [...colors, series.color], []);
 
   chart.legend.setLabels(
     legendContainer,
@@ -148,9 +136,7 @@ const addLineChartNode = ({
   showLegend = false,
   transparentChartBackground = false,
 }) => {
-  const marginRight = showLegend
-    ? legendWidth + 2 * LEGEND.margin
-    : MARGIN.right;
+  const marginRight = showLegend ? legendWidth + 2 * LEGEND.margin : MARGIN.right;
   const _width = width - MARGIN.left - marginRight;
   const _height = height - MARGIN.top - MARGIN.bottom;
   const { x: XAxis, y: YAxis } = axis;
@@ -188,21 +174,10 @@ const addLineChartNode = ({
   // Remove old D3 elements
   chart.removeContents(d3SVGRef);
 
-  const chartWrapper = chart.container.addNode(
-    d3SVGRef,
-    width,
-    height,
-    MARGIN.left,
-    MARGIN.top
-  );
+  const chartWrapper = chart.container.addNode(d3SVGRef, width, height, MARGIN.left, MARGIN.top);
 
   // add background
-  chart.background.addNode(
-    chartWrapper,
-    _width,
-    _height,
-    transparentChartBackground
-  );
+  chart.background.addNode(chartWrapper, _width, _height, transparentChartBackground);
 
   // call the x axis in a group tag
   const xAxisGenerator = d3Axis.axisBottom(xAxisScale);
@@ -250,10 +225,7 @@ const addLineChartNode = ({
 
   series.forEach((currentSeries, seriesIndex) => {
     const { points } = currentSeries;
-    const line = d3Shape
-      .line()
-      .x(parseXPoint(xAxisScale))
-      .y(parseYPoint(yAxisScale));
+    const line = d3Shape.line().x(parseXPoint(xAxisScale)).y(parseYPoint(yAxisScale));
 
     const dataset = points.map((point, pointIndex) => {
       return { x: point[0], y: point[1], seriesIndex, pointIndex };

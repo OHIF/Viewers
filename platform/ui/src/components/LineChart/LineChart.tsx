@@ -99,7 +99,7 @@ const LineChart = ({
       <div
         id="chartContainer"
         ref={chartContainerRef}
-        className={classnames('w-full h-full', chartContainerClassName)}
+        className={classnames('h-full w-full', chartContainerClassName)}
       ></div>
     </div>
   );

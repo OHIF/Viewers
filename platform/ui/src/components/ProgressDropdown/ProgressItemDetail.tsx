@@ -1,18 +1,11 @@
 import React, { useState, useMemo, ReactElement } from 'react';
 import { Icon, Tooltip } from '../';
-import {
-  ProgressDropdownOption,
-  ProgressDropdownOptionPropType,
-} from './types';
+import { ProgressDropdownOption, ProgressDropdownOptionPropType } from './types';
 
 const MAX_TOOLTIP_LENGTH = 250;
 const iconClassNames = 'grow-0 text-primary-light h-4 w-4 mt-1 mr-2 mb-0 ml-1';
 
-const ProgressItemDetail = ({
-  option,
-}: {
-  option: ProgressDropdownOption;
-}): ReactElement => {
+const ProgressItemDetail = ({ option }: { option: ProgressDropdownOption }): ReactElement => {
   const { label, info, completed } = option;
   const [truncate, setTruncate] = useState(true);
   const handleOnHideTooltip = () => setTruncate(true);
@@ -50,7 +43,12 @@ const ProgressItemDetail = ({
 
   const iconContent = (
     <>
-      {icon && <Icon name={icon} className={iconClassNames} />}
+      {icon && (
+        <Icon
+          name={icon}
+          className={iconClassNames}
+        />
+      )}
       {!icon && <div className={iconClassNames} />}
     </>
   );

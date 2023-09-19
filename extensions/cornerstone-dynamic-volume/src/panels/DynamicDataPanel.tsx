@@ -3,14 +3,10 @@ import WorkflowPanel from './WorkflowPanel';
 import WindowLevelPanel from './WindowLevelPanel';
 import PanelGenerateImage from './PanelGenerateImage';
 
-function DynamicDataPanel({
-  servicesManager,
-  commandsManager,
-  extensionManager,
-}) {
+function DynamicDataPanel({ servicesManager, commandsManager, extensionManager }) {
   return (
     <div
-      className="flex flex-col flex-auto text-white"
+      className="flex flex-auto flex-col text-white"
       data-cy={'dynamic-volume-panel'}
     >
       <WorkflowPanel

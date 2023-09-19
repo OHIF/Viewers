@@ -6,15 +6,21 @@ export const argTypes = {
   title: 'Components/InputDoubleRange',
 };
 
-<Meta title="Components/InputDoubleRange" component={InputDoubleRange} />
+<Meta
+  title="Components/InputDoubleRange"
+  component={InputDoubleRange}
+/>
 
 export const RangeInputTemplate = args => (
   <div className="w-3">
     <InputDoubleRange {...args} />
   </div>
-)
+);
 
-<Heading title="InputDoubleRange" componentRelativePath="InputDoubleRange/InputDoubleRange.tsx" />
+<Heading
+  title="InputDoubleRange"
+  componentRelativePath="InputDoubleRange/InputDoubleRange.tsx"
+/>
 
 - [Overview](#overview)
 - [Props](#props)
@@ -36,7 +42,7 @@ InputDoubleRange is a component that allows you to use as a boolean value
       unit: '%',
       onSliderChange: () => console.log('onSliderChange'),
       onChange: () => console.log('input range change'),
-      labelClassName: 'text-black'
+      labelClassName: 'text-black',
     }}
   >
     {RangeInputTemplate.bind({})}

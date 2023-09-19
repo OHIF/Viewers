@@ -98,7 +98,7 @@ async function defaultRouteInit(
   // hanging protocol in the mode configuration
   hangingProtocolService.run({ studies, activeStudy, displaySets }, hangingProtocolId);
 
-  return unsubscriptions
+  return unsubscriptions;
 }
 
 export default function ModeRoute({
@@ -138,12 +138,9 @@ export default function ModeRoute({
     locationRef.current = location;
   }
 
-  const {
-    displaySetService,
-    panelService,
-    hangingProtocolService,
-    userAuthenticationService,
-  } = (servicesManager as ServicesManager).services;
+  const { displaySetService, panelService, hangingProtocolService, userAuthenticationService } = (
+    servicesManager as ServicesManager
+  ).services;
 
   const { extensions, sopClassHandlers, hotkeys: hotkeyObj, hangingProtocol } = mode;
 
@@ -268,11 +265,7 @@ export default function ModeRoute({
       });
 
       if (isMounted.current) {
-        const {
-          leftPanels = [],
-          rightPanels = [],
-          ...layoutProps
-        } = layoutData.props;
+        const { leftPanels = [], rightPanels = [], ...layoutProps } = layoutData.props;
 
         panelService.reset();
         panelService.addPanels(panelService.PanelPosition.Left, leftPanels);
@@ -472,7 +465,7 @@ export default function ModeRoute({
     <ImageViewerProvider
       // initialState={{ StudyInstanceUIDs: StudyInstanceUIDs }}
       StudyInstanceUIDs={studyInstanceUIDs}
-    // reducer={reducer}
+      // reducer={reducer}
     >
       <CombinedContextProvider>
         <DragAndDropProvider>

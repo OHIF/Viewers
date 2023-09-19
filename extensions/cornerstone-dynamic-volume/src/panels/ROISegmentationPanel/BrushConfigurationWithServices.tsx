@@ -31,9 +31,7 @@ const getViewportIdByIndex = (servicesManager, viewportIndex) => {
 };
 
 const getToolGroupThresholdSettings = toolGroup => {
-  const currentBrushThreshold = segmentationUtils.getBrushThresholdForToolGroup(
-    toolGroup.id
-  );
+  const currentBrushThreshold = segmentationUtils.getBrushThresholdForToolGroup(toolGroup.id);
 
   const brushThreshold = brushThresholds.find(
     brushThresholdItem =>
@@ -57,8 +55,7 @@ const getViewportBrushToolSettings = (servicesManager, viewportIndex) => {
   const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
   const brushThreshold = getToolGroupThresholdSettings(toolGroup);
   const brushSize =
-    (toolGroup && segmentationUtils.getBrushSizeForToolGroup(toolGroup.id)) ??
-    DEFAULT_BRUSH_SIZE;
+    (toolGroup && segmentationUtils.getBrushSizeForToolGroup(toolGroup.id)) ?? DEFAULT_BRUSH_SIZE;
 
   return { brushThreshold, brushSize };
 };
@@ -84,17 +81,13 @@ function BrushConfigurationWithServices({
     getActiveViewportBrushToolSettings().brushThreshold.id
   );
 
-  const [brushSize, setBrushSize] = useState(
-    () => getActiveViewportBrushToolSettings().brushSize
-  );
+  const [brushSize, setBrushSize] = useState(() => getActiveViewportBrushToolSettings().brushSize);
 
-  const brushThresholdOptions = brushThresholds.map(
-    ({ id, threshold, name }) => ({
-      value: id,
-      label: `${name} (${threshold.join(', ')})`,
-      placeHolder: `${name} (${threshold.join(', ')})`,
-    })
-  );
+  const brushThresholdOptions = brushThresholds.map(({ id, threshold, name }) => ({
+    value: id,
+    label: `${name} (${threshold.join(', ')})`,
+    placeHolder: `${name} (${threshold.join(', ')})`,
+  }));
 
   const handleBrushThresholdChange = brushThresholdId => {
     const brushThreshold = brushThresholds.find(
@@ -108,10 +101,7 @@ function BrushConfigurationWithServices({
       return;
     }
 
-    segmentationUtils.setBrushThresholdForToolGroup(
-      toolGroup.id,
-      brushThreshold.threshold
-    );
+    segmentationUtils.setBrushThresholdForToolGroup(toolGroup.id, brushThreshold.threshold);
 
     setSelectedBrushThresholdId(brushThreshold.id);
   };

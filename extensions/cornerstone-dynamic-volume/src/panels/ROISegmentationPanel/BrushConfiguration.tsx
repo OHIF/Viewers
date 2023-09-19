@@ -22,7 +22,7 @@ function BrushConfiguration({
   onBrushSizeChange: (brushSize: number) => void;
 }): ReactElement {
   return (
-    <div className="flex flex-col px-4 py-2 space-y-4 bg-primary-dark text-white">
+    <div className="bg-primary-dark flex flex-col space-y-4 px-4 py-2 text-white">
       {showThresholdSettings && (
         <>
           <div>Threshold</div>
@@ -30,12 +30,10 @@ function BrushConfiguration({
             <Select
               label="Brush Threshold"
               closeMenuOnSelect={true}
-              className="mr-2 bg-black border-primary-main text-white "
+              className="border-primary-main mr-2 bg-black text-white "
               options={brushThresholdOptions}
               placeholder={
-                brushThresholdOptions.find(
-                  option => option.value === brushThresholdId
-                ).placeHolder
+                brushThresholdOptions.find(option => option.value === brushThresholdId).placeHolder
               }
               value={brushThresholdId}
               onChange={({ value }) => onBrushThresholdChange(value)}

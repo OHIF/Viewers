@@ -7,10 +7,13 @@ export const argTypes = {
   title: 'Components/ProgressDropdown',
 };
 
-<Meta title="Components/ProgressDropdown" component={ProgressDropdown} />
+<Meta
+  title="Components/ProgressDropdown"
+  component={ProgressDropdown}
+/>
 
 export const ProgressDropdownTemplate = args => (
-  <div className="flex h-60 mb-2.5 max-w-xs">
+  <div className="mb-2.5 flex h-60 max-w-xs">
     <ProgressDropdown {...args} />
   </div>
 );
@@ -19,8 +22,10 @@ export const loremIpsumText = new Array(7)
   .join(` Lorem ipsum, dolor sit amet consectetur adipisicing elit`)
   .substring(1);
 
-
-<Heading title="ProgressDropdown" componentRelativePath="ProgressDropdown/ProgressDropdown.tsx" />
+<Heading
+  title="ProgressDropdown"
+  componentRelativePath="ProgressDropdown/ProgressDropdown.tsx"
+/>
 
 - [Overview](#overview)
 - [Props](#props)
@@ -32,10 +37,13 @@ export const loremIpsumText = new Array(7)
 Dropdown is a modal Dropdown component which enabled to show a modal Dropdown.
 
 <Canvas>
-  <Story name="ProgressDropdownOverview" args={{
-    options: [],
-    children: '[empty dropdown]'
-  }}>
+  <Story
+    name="ProgressDropdownOverview"
+    args={{
+      options: [],
+      children: '[empty dropdown]',
+    }}
+  >
     {ProgressDropdownTemplate.bind({})}
   </Story>
 </Canvas>
@@ -46,13 +54,13 @@ Dropdown is a modal Dropdown component which enabled to show a modal Dropdown.
 
 ## Usage
 
-You can list the items in the dropdown. The status of each item changes from
-black to dark blue in the status bar beneath the dropdown when the item is selected.
+You can list the items in the dropdown. The status of each item changes from black to dark blue in
+the status bar beneath the dropdown when the item is selected.
 
 <Canvas>
   <Story
     name="ProgressDropdownList"
-    onChange={ selectedItem => selectedItem.completed = true }
+    onChange={selectedItem => (selectedItem.completed = true)}
     args={{
       options: [
         {

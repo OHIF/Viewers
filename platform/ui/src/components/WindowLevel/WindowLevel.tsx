@@ -1,10 +1,4 @@
-import React, {
-  useEffect,
-  useCallback,
-  useState,
-  useMemo,
-  ReactElement,
-} from 'react';
+import React, { useEffect, useCallback, useState, useMemo, ReactElement } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import WindowLevelSlider from './WindowLevelSlider';
@@ -104,25 +98,21 @@ const WindowLevel = ({
   return (
     <div
       className={classnames(
-        'maxValue-w-sm p-0.5 text-white text-[0px] bg-secondary-dark',
+        'maxValue-w-sm bg-secondary-dark p-0.5 text-[0px] text-white',
         containerClassName
       )}
     >
       {/* <div className="p-1 text-base text-center">Window Level</div> */}
       <div className="px-2 pt-0 pb-2">
-        <fieldset className="border border-solid border-primary-main">
-          <legend className="text-white text-base"> {title}</legend>
+        <fieldset className="border-primary-main border border-solid">
+          <legend className="text-base text-white"> {title}</legend>
           <div className="p-1">
             <div className="flex h-4">
-              <div className="grow h-fit relative">
-                <span className="absolute text-base leading-3 left-0 bottom-px">
-                  {range.min}
-                </span>
+              <div className="relative h-fit grow">
+                <span className="absolute left-0 bottom-px text-base leading-3">{range.min}</span>
               </div>
-              <div className="grow h-fit relative text-right">
-                <span className="absolute text-base leading-3 right-0 bottom-px">
-                  {range.max}
-                </span>
+              <div className="relative h-fit grow text-right">
+                <span className="absolute right-0 bottom-px text-base leading-3">{range.max}</span>
               </div>
             </div>
             <div className="px-4 pb-2.5">
@@ -147,7 +137,7 @@ const WindowLevel = ({
               </div>
             </div>
             {showOpacitySlider && (
-              <div className="text-base py-4 px-4">
+              <div className="py-4 px-4 text-base">
                 <InputRange
                   inputClassName="grow"
                   showLabel={false}

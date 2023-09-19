@@ -57,11 +57,7 @@ function _createCommands(
   toolGroupIds?: string[],
   commandOptions?: any
 ) {
-  toolGroupIds = toolGroupIds ?? [
-    ToolGroupIds.default,
-    ToolGroupIds.PT,
-    ToolGroupIds.Fusion,
-  ];
+  toolGroupIds = toolGroupIds ?? [ToolGroupIds.default, ToolGroupIds.PT, ToolGroupIds.Fusion];
 
   return toolGroupIds.map(toolGroupId => ({
     /* It's a command that is being run when the button is clicked. */
@@ -78,12 +74,7 @@ function _createCommands(
 function _createWindowLevelCommands(windowLevelPreset) {
   const commandOptions = { ...windowLevelPreset };
 
-  return _createCommands(
-    'setWindowLevel',
-    undefined,
-    undefined,
-    commandOptions
-  );
+  return _createCommands('setWindowLevel', undefined, undefined, commandOptions);
 }
 
 function _createLengthToolButton() {
@@ -264,8 +255,7 @@ function _createRectangleROIStartEndThreshold() {
         commandName: 'displayNotification',
         commandOptions: {
           title: 'RectangleROI Threshold Tip',
-          text:
-            'RectangleROI Threshold tool should be used on PT Axial Viewport',
+          text: 'RectangleROI Threshold tool should be used on PT Axial Viewport',
           type: 'info',
         },
       },

@@ -33,10 +33,7 @@ const zoomEvents = {
  */
 const _resetZoom = (root, zoom) => {
   if (root) {
-    root
-      .transition()
-      .duration(750)
-      .call(zoom.transform, d3Zoom.zoomIdentity);
+    root.transition().duration(750).call(zoom.transform, d3Zoom.zoomIdentity);
   }
 };
 

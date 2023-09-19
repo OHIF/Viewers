@@ -2,11 +2,7 @@ import React from 'react';
 import { DynamicDataPanel } from './panels';
 import { ROISegmentationPanel } from './panels';
 
-function getPanelModule({
-  commandsManager,
-  extensionManager,
-  servicesManager,
-}) {
+function getPanelModule({ commandsManager, extensionManager, servicesManager }) {
   const wrappedDynamicDataPanel = () => {
     return (
       <DynamicDataPanel

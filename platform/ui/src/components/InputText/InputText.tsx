@@ -29,7 +29,7 @@ const InputText = ({ id, label, isSortable, sortDirection, onLabelClick, value, 
 InputText.defaultProps = {
   value: '',
   isSortable: false,
-  onLabelClick: () => { },
+  onLabelClick: () => {},
   sortDirection: 'none',
 };
 

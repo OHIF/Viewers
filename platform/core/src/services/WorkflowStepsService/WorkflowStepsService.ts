@@ -206,9 +206,7 @@ class WorkflowStepsService extends PubSubService {
       return;
     }
 
-    const newWorkflowStep = this._workflowSteps.find(
-      step => step.id === workflowStepId
-    );
+    const newWorkflowStep = this._workflowSteps.find(step => step.id === workflowStepId);
 
     if (!newWorkflowStep) {
       throw new Error(`Invalid workflowStepId (${workflowStepId})`);
@@ -240,16 +238,8 @@ class WorkflowStepsService extends PubSubService {
 
   public static REGISTRATION = {
     name: 'workflowStepsService',
-    create: ({
-      extensionManager,
-      commandsManager,
-      servicesManager,
-    }): WorkflowStepsService => {
-      return new WorkflowStepsService(
-        extensionManager,
-        commandsManager,
-        servicesManager
-      );
+    create: ({ extensionManager, commandsManager, servicesManager }): WorkflowStepsService => {
+      return new WorkflowStepsService(extensionManager, commandsManager, servicesManager);
     },
   };
 }

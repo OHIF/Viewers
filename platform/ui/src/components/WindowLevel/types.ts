@@ -47,10 +47,8 @@ export const voiPropType = PropTypes.shape({
 });
 
 export const histogramPropType = PropTypes.shape({
-  bins: PropTypes.oneOfType([
-    PropTypes.arrayOf(PropTypes.number),
-    PropTypes.instanceOf(Int32Array),
-  ]).isRequired,
+  bins: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.number), PropTypes.instanceOf(Int32Array)])
+    .isRequired,
   numBins: PropTypes.number.isRequired,
   maxBin: PropTypes.number.isRequired,
   maxBinValue: PropTypes.number.isRequired,

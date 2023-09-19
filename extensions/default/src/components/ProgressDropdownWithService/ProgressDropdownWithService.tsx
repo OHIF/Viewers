@@ -16,9 +16,7 @@ function ProgressDropdownWithService({
   servicesManager: ServicesManager;
 }): ReactElement {
   const { workflowStepsService } = servicesManager.services;
-  const [activeStepId, setActiveStepId] = useState(
-    workflowStepsService.activeWorkflowStep?.id
-  );
+  const [activeStepId, setActiveStepId] = useState(workflowStepsService.activeWorkflowStep?.id);
 
   const [dropdownOptions, setDropdownOptions] = useState(
     workflowStepsToDropdownOptions(workflowStepsService.workflowSteps)
@@ -31,9 +29,7 @@ function ProgressDropdownWithService({
 
     setDropdownOptions(prevOptions => {
       const newOptionsState = [...prevOptions];
-      const startIndex = newOptionsState.findIndex(
-        option => option.value === currentOption.value
-      );
+      const startIndex = newOptionsState.findIndex(option => option.value === currentOption.value);
 
       for (let i = startIndex; i >= 0; i--) {
         const option = newOptionsState[i];
@@ -83,19 +79,12 @@ function ProgressDropdownWithService({
   }, [activeStepId, workflowStepsService]);
 
   useEffect(() => {
-    const {
-      unsubscribe: unsubStepsChanged,
-    } = workflowStepsService.subscribe(
+    const { unsubscribe: unsubStepsChanged } = workflowStepsService.subscribe(
       workflowStepsService.EVENTS.STEPS_CHANGED,
-      () =>
-        setDropdownOptions(
-          workflowStepsToDropdownOptions(workflowStepsService.workflowSteps)
-        )
+      () => setDropdownOptions(workflowStepsToDropdownOptions(workflowStepsService.workflowSteps))
     );
 
-    const {
-      unsubscribe: unsubActiveStepChanged,
-    } = workflowStepsService.subscribe(
+    const { unsubscribe: unsubActiveStepChanged } = workflowStepsService.subscribe(
       workflowStepsService.EVENTS.ACTIVE_STEP_CHANGED,
 
       () => setActiveStepId(workflowStepsService.activeWorkflowStep.id)

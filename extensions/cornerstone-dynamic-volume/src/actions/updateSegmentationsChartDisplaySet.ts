@@ -15,9 +15,7 @@ const { utilities: csToolsUtils } = csTools;
 function _getDateTimeStr() {
   const now = new Date();
   const date =
-    now.getFullYear() +
-    ('0' + now.getUTCMonth()).slice(-2) +
-    ('0' + now.getUTCDate()).slice(-2);
+    now.getFullYear() + ('0' + now.getUTCMonth()).slice(-2) + ('0' + now.getUTCDate()).slice(-2);
   const time =
     ('0' + now.getUTCHours()).slice(-2) +
     ('0' + now.getUTCMinutes()).slice(-2) +
@@ -50,9 +48,7 @@ function _convertTimePointsUnit(timePoints, timePointsUnit) {
   if (currentUnitIndex !== -1) {
     for (let i = currentUnitIndex; i < validUnits.length - 1; i++) {
       const newDivisor = divisor * divisors[i];
-      const greaterThanDivisorCount = timePoints.filter(
-        timePoint => timePoint > newDivisor
-      ).length;
+      const greaterThanDivisorCount = timePoints.filter(timePoint => timePoint > newDivisor).length;
 
       // Change the scale only if more than 50% of the time points are
       // greater than the new divisor.
@@ -104,15 +100,10 @@ function _getTimePointsData(volume) {
   if (!timePoints.length) {
     const concatTagNames = timePointsTagNames.join(', ');
 
-    throw new Error(
-      `Could not extract time points data for the following tags: ${concatTagNames}`
-    );
+    throw new Error(`Could not extract time points data for the following tags: ${concatTagNames}`);
   }
 
-  const convertedTimePoints = _convertTimePointsUnit(
-    timePoints,
-    timePointsUnit
-  );
+  const convertedTimePoints = _convertTimePointsUnit(timePoints, timePointsUnit);
 
   timePoints = convertedTimePoints.timePoints;
   timePointsUnit = convertedTimePoints.timePointsUnit;
@@ -124,17 +115,13 @@ function _getSegmentationData(segmentation, volumesTimePointsCache) {
   const { representationData } = segmentation;
   const { referencedVolumeId } = representationData[LABELMAP];
   const referencedVolume = cs.cache.getVolume(referencedVolumeId);
-  const {
-    StudyInstanceUID,
-    StudyDescription,
-  } = DicomMetadataStore.getInstanceByImageId(referencedVolume.imageIds[0]);
+  const { StudyInstanceUID, StudyDescription } = DicomMetadataStore.getInstanceByImageId(
+    referencedVolume.imageIds[0]
+  );
 
-  const segPixelDataInTime = csToolsUtils.dynamicVolume.getDataInTime(
-    referencedVolume,
-    {
-      maskVolumeId: segmentation.id,
-    }
-  ) as number[][];
+  const segPixelDataInTime = csToolsUtils.dynamicVolume.getDataInTime(referencedVolume, {
+    maskVolumeId: segmentation.id,
+  }) as number[][];
 
   const pixelCount = segPixelDataInTime.length;
 
@@ -159,10 +146,7 @@ function _getSegmentationData(segmentation, volumesTimePointsCache) {
   const chartSeriesData = new Array(timepointsCount);
 
   for (let i = 0; i < timepointsCount; i++) {
-    const average = segPixelDataInTime.reduce(
-      (acc, cur) => acc + cur[i] / pixelCount,
-      0
-    );
+    const average = segPixelDataInTime.reduce((acc, cur) => acc + cur[i] / pixelCount, 0);
 
     chartSeriesData[i] = [timePoints[i], average];
   }
@@ -237,8 +221,7 @@ function updateSegmentationsChartDisplaySet({ appContext }): void {
   const { servicesManager } = appContext;
   const { segmentationService } = servicesManager.services;
   const segmentations = segmentationService.getSegmentations();
-  const { seriesMetadata, instance } =
-    _getInstanceFromSegmentations(segmentations) ?? {};
+  const { seriesMetadata, instance } = _getInstanceFromSegmentations(segmentations) ?? {};
 
   if (seriesMetadata && instance) {
     // An event is triggered after adding the instance and the displaySet is created

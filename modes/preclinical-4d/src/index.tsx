@@ -25,12 +25,9 @@ const ohif = {
 const dynamicVolume = {
   sopClassHandler:
     '@ohif/extension-cornerstone-dynamic-volume.sopClassHandlerModule.dynamic-volume',
-  viewport:
-    '@ohif/extension-cornerstone-dynamic-volume.viewportModule.chartViewport',
-  leftPanel:
-    '@ohif/extension-cornerstone-dynamic-volume.panelModule.dynamic-volume',
-  rightPanel:
-    '@ohif/extension-cornerstone-dynamic-volume.panelModule.ROISegmentation',
+  viewport: '@ohif/extension-cornerstone-dynamic-volume.viewportModule.chartViewport',
+  leftPanel: '@ohif/extension-cornerstone-dynamic-volume.panelModule.dynamic-volume',
+  rightPanel: '@ohif/extension-cornerstone-dynamic-volume.panelModule.ROISegmentation',
 };
 
 const cornerstone = {
@@ -42,16 +39,8 @@ function modeFactory({ modeConfiguration }) {
     id,
     routeName: 'dynamic-volume',
     displayName: '4D Volume',
-    onModeEnter: function({
-      servicesManager,
-      extensionManager,
-      commandsManager,
-    }) {
-      const {
-        measurementService,
-        toolbarService,
-        toolGroupService,
-      } = servicesManager.services;
+    onModeEnter: function ({ servicesManager, extensionManager, commandsManager }) {
+      const { measurementService, toolbarService, toolGroupService } = servicesManager.services;
 
       const utilityModule = extensionManager.getModuleEntry(
         '@ohif/extension-cornerstone.utilityModule.tools'
@@ -91,9 +80,7 @@ function modeFactory({ modeConfiguration }) {
     isValidMode: ({ modalities }) => {
       const modalities_list = modalities.split('\\');
 
-      return REQUIRED_MODALITIES.every(modality =>
-        modalities_list.includes(modality)
-      );
+      return REQUIRED_MODALITIES.every(modality => modalities_list.includes(modality));
     },
 
     /**

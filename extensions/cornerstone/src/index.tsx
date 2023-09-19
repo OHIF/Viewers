@@ -137,9 +137,9 @@ const cornerstoneExtension: Types.Extensions.Extension = {
       {
         name: 'volumeLoader',
         exports: {
-          getDynamicVolumeInfo
-        }
-      }
+          getDynamicVolumeInfo,
+        },
+      },
     ];
   },
 };
