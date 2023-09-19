@@ -150,10 +150,10 @@ Cypress.Commands.add('addLine', (viewport, firstClick, secondClick) => {
 
     // The wait is necessary because of double click testing
     cy.wrap($viewport)
-      .click(x1, y1, { force: true })
+      .click(x1, y1, { force: true, multiple: true })
       .wait(250)
       .trigger('mousemove', { clientX: x2, clientY: y2 })
-      .click(x2, y2, { force: true })
+      .click(x2, y2, { force: true, multiple: true })
       .wait(250);
   });
 });
