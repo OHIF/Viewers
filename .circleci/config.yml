@@ -376,7 +376,6 @@ workflows:
           cypress-command:
             'npx wait-on@latest http://localhost:3000 && npx cypress run --browser chrome'
           package-manager: 'yarn'
-          cypress-cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
           working-directory: platform/app
           pre-steps:
             - run: |
