@@ -290,11 +290,7 @@ export default class ToolGroupService {
     }
 
     const filteredViewports = Array.from(viewports.values()).filter(viewport => {
-      if (!viewport.viewportOptions) {
-        return false;
-      }
-
-      return toolGroupViewportIds.includes(viewport.viewportOptions.viewportId);
+      return toolGroupViewportIds.includes(viewport.viewportId);
     });
 
     if (!filteredViewports.length) {
