@@ -410,7 +410,7 @@ export default function ModeRoute({
 
       // Some code may need to run after hanging protocol initialization
       // (eg: workflowStepsService initialization on 4D mode)
-      mode?.onSetupRouteComplete({
+      mode?.onSetupRouteComplete?.({
         servicesManager,
         extensionManager,
         commandsManager,
