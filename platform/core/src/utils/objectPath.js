@@ -6,7 +6,7 @@ export class ObjectPath {
    * @param path {String} A string representing the property to be set, e.g. "user.study.series.timepoint".
    * @param value {Any} The value of the property that will be set.
    * @return {Boolean} Returns "true" on success, "false" if any intermediate component of the supplied path
-   * ... is not a valid Object, in which case the property cannot be set. No excpetions are thrown.
+   * ... is not a valid Object, in which case the property cannot be set. No exceptions are thrown.
    */
   static set(object, path, value) {
     let components = ObjectPath.getPathComponents(path),
@@ -85,9 +85,7 @@ export class ObjectPath {
    * @return {Boolean} Returns "true" if the object is a real Object instance and "false" otherwise.
    */
   static isValidObject(object) {
-    return (
-      typeof object === 'object' && object !== null && object instanceof Object
-    );
+    return typeof object === 'object' && object !== null && object instanceof Object;
   }
 
   static getPathComponents(path) {

@@ -98,22 +98,13 @@ export default class DicomFileUploader extends PubSubService {
           });
         },
         timeout: () => {
-          this._reject(
-            reject,
-            new UploadRejection(UploadStatus.Failed, 'The request timed out.')
-          );
+          this._reject(reject, new UploadRejection(UploadStatus.Failed, 'The request timed out.'));
         },
         abort: () => {
-          this._reject(
-            reject,
-            new UploadRejection(UploadStatus.Cancelled, 'Cancelled')
-          );
+          this._reject(reject, new UploadRejection(UploadStatus.Cancelled, 'Cancelled'));
         },
         error: () => {
-          this._reject(
-            reject,
-            new UploadRejection(UploadStatus.Failed, 'The request failed.')
-          );
+          this._reject(reject, new UploadRejection(UploadStatus.Failed, 'The request failed.'));
         },
       };
 
@@ -122,10 +113,7 @@ export default class DicomFileUploader extends PubSubService {
         .loadFileRequest(this._fileId)
         .then(dicomFile => {
           if (this._abortController.signal.aborted) {
-            this._reject(
-              reject,
-              new UploadRejection(UploadStatus.Cancelled, 'Cancelled')
-            );
+            this._reject(reject, new UploadRejection(UploadStatus.Cancelled, 'Cancelled'));
             return;
           }
 
@@ -133,10 +121,7 @@ export default class DicomFileUploader extends PubSubService {
             // The file is not DICOM
             this._reject(
               reject,
-              new UploadRejection(
-                UploadStatus.Failed,
-                'Not a valid DICOM file.'
-              )
+              new UploadRejection(UploadStatus.Failed, 'Not a valid DICOM file.')
             );
             return;
           }
@@ -164,10 +149,7 @@ export default class DicomFileUploader extends PubSubService {
   }
 
   private _isRejected(): boolean {
-    return (
-      this._status === UploadStatus.Failed ||
-      this._status === UploadStatus.Cancelled
-    );
+    return this._status === UploadStatus.Failed || this._status === UploadStatus.Cancelled;
   }
 
   private _reject(reject: (reason?: any) => void, reason: any) {

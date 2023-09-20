@@ -21,9 +21,6 @@ import {
   MagnifyTool,
   CrosshairsTool,
   SegmentationDisplayTool,
-  RectangleScissorsTool,
-  SphereScissorsTool,
-  CircleScissorsTool,
   BrushTool,
   PaintFillTool,
   init,
@@ -31,9 +28,13 @@ import {
   annotation,
   ReferenceLinesTool,
   TrackballRotateTool,
+  CircleScissorsTool,
+  RectangleScissorsTool,
+  SphereScissorsTool,
 } from '@cornerstonejs/tools';
 
 import CalibrationLineTool from './tools/CalibrationLineTool';
+import ImageOverlayViewerTool from './tools/ImageOverlayViewerTool';
 
 export default function initCornerstoneTools(configuration = {}) {
   CrosshairsTool.isAnnotation = false;
@@ -70,6 +71,7 @@ export default function initCornerstoneTools(configuration = {}) {
   addTool(ReferenceLinesTool);
   addTool(CalibrationLineTool);
   addTool(TrackballRotateTool);
+  addTool(ImageOverlayViewerTool);
 
   // Modify annotation tools to use dashed lines on SR
   const annotationStyle = {
@@ -117,6 +119,7 @@ const toolNames = {
   ReferenceLines: ReferenceLinesTool.toolName,
   CalibrationLine: CalibrationLineTool.toolName,
   TrackballRotateTool: TrackballRotateTool.toolName,
+  ImageOverlayViewer: ImageOverlayViewerTool.toolName,
 };
 
 export { toolNames };

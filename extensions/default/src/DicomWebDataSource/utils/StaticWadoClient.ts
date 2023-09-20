@@ -50,14 +50,7 @@ export default class StaticWadoClient extends api.DICOMwebClient {
     const lowerParams = this.toLowerParams(queryParams);
     const filtered = searchResult.filter(study => {
       for (const key of Object.keys(StaticWadoClient.studyFilterKeys)) {
-        if (
-          !this.filterItem(
-            key,
-            lowerParams,
-            study,
-            StaticWadoClient.studyFilterKeys
-          )
-        ) {
+        if (!this.filterItem(key, lowerParams, study, StaticWadoClient.studyFilterKeys)) {
           return false;
         }
       }
@@ -80,14 +73,7 @@ export default class StaticWadoClient extends api.DICOMwebClient {
 
     const filtered = searchResult.filter(series => {
       for (const key of Object.keys(StaticWadoClient.seriesFilterKeys)) {
-        if (
-          !this.filterItem(
-            key,
-            lowerParams,
-            series,
-            StaticWadoClient.seriesFilterKeys
-          )
-        ) {
+        if (!this.filterItem(key, lowerParams, series, StaticWadoClient.seriesFilterKeys)) {
           return false;
         }
       }
@@ -132,10 +118,7 @@ export default class StaticWadoClient extends api.DICOMwebClient {
       } else if (desired[desired.length - 1] === '*') {
         return actual.indexOf(desired.substring(0, desired.length - 1)) != -1;
       } else if (desired[0] === '*') {
-        return (
-          actual.indexOf(desired.substring(1)) ===
-          actual.length - desired.length + 1
-        );
+        return actual.indexOf(desired.substring(1)) === actual.length - desired.length + 1;
       }
     }
     return desired === actual;

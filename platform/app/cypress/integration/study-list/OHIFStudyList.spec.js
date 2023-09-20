@@ -1,8 +1,8 @@
 //We are keeping the hardcoded results values for the study list tests
-//this is intended to be running in a controled docker environment with test data.
-describe('OHIF Study List', function() {
-  context('Desktop resolution', function() {
-    beforeEach(function() {
+//this is intended to be running in a controlled docker environment with test data.
+describe('OHIF Study List', function () {
+  context('Desktop resolution', function () {
+    beforeEach(function () {
       cy.openStudyList();
 
       cy.viewport(1750, 720);
@@ -14,7 +14,7 @@ describe('OHIF Study List', function() {
       cy.get('@StudyDescription').clear();
     });
 
-    it('Displays several studies initially', function() {
+    it('Displays several studies initially', function () {
       cy.waitStudyList();
       cy.get('@searchResult2').should($list => {
         expect($list.length).to.be.greaterThan(1);
@@ -23,7 +23,7 @@ describe('OHIF Study List', function() {
       });
     });
 
-    it('searches Patient Name with exact string', function() {
+    it('searches Patient Name with exact string', function () {
       cy.get('@PatientName').type('Juno');
       //Wait result list to be displayed
       cy.waitStudyList();
@@ -33,7 +33,7 @@ describe('OHIF Study List', function() {
       });
     });
 
-    it('searches MRN with exact string', function() {
+    it('searches MRN with exact string', function () {
       cy.get('@MRN').type('0000003');
       //Wait result list to be displayed
       cy.waitStudyList();
@@ -43,7 +43,7 @@ describe('OHIF Study List', function() {
       });
     });
 
-    it('searches Accession with exact string', function() {
+    it('searches Accession with exact string', function () {
       cy.get('@AccessionNumber').type('321');
       //Wait result list to be displayed
       cy.waitStudyList();
@@ -53,7 +53,7 @@ describe('OHIF Study List', function() {
       });
     });
 
-    it('searches Description with exact string', function() {
+    it('searches Description with exact string', function () {
       cy.get('@StudyDescription').type('PETCT');
       //Wait result list to be displayed
       cy.waitStudyList();

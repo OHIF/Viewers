@@ -1,4 +1,4 @@
-/** Splits a list of stirngs by commas within the strings */
+/** Splits a list of strings by commas within the strings */
 const splitComma = (strings: string[]): string[] => {
   if (!strings) {
     return null;
@@ -23,9 +23,7 @@ const getSplitParam = (
   lowerCaseKey: string,
   params = new URLSearchParams(window.location.search)
 ): string[] => {
-  const sourceKey = [...params.keys()].find(
-    it => it.toLowerCase() === lowerCaseKey
-  );
+  const sourceKey = [...params.keys()].find(it => it.toLowerCase() === lowerCaseKey);
   if (!sourceKey) {
     return;
   }

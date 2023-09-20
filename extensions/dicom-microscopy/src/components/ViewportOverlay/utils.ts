@@ -78,23 +78,16 @@ export function formatPN(name) {
  * Gets compression type
  *
  * @param {number} imageId
- * @returns {string} comrpession type.
+ * @returns {string} compression type.
  */
 export function getCompression(imageId) {
-  const generalImageModule =
-    cornerstone.metaData.get('generalImageModule', imageId) || {};
-  const {
-    lossyImageCompression,
-    lossyImageCompressionRatio,
-    lossyImageCompressionMethod,
-  } = generalImageModule;
+  const generalImageModule = cornerstone.metaData.get('generalImageModule', imageId) || {};
+  const { lossyImageCompression, lossyImageCompressionRatio, lossyImageCompressionMethod } =
+    generalImageModule;
 
   if (lossyImageCompression === '01' && lossyImageCompressionRatio !== '') {
     const compressionMethod = lossyImageCompressionMethod || 'Lossy: ';
-    const compressionRatio = formatNumberPrecision(
-      lossyImageCompressionRatio,
-      2
-    );
+    const compressionRatio = formatNumberPrecision(lossyImageCompressionRatio, 2);
     return compressionMethod + compressionRatio + ' : 1';
   }
 

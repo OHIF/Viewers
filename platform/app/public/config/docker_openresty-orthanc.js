@@ -23,9 +23,17 @@ window.config = {
         wadoUriRoot: 'http://127.0.0.1/pacs/wado',
         qidoRoot: 'http://127.0.0.1/pacs/dicom-web',
         wadoRoot: 'http://127.0.0.1/pacs/dicom-web',
-        qidoSupportsIncludeField: false,
+        qidoSupportsIncludeField: true,
+        supportsReject: true,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
+        enableStudyLazyLoad: true,
+        supportsFuzzyMatching: true,
+        supportsWildcard: true,
+        dicomUploadEnabled: true,
+        bulkDataURI: {
+          enabled: true,
+        },
       },
     },
     {

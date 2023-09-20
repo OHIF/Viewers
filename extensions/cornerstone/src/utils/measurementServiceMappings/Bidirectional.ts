@@ -27,11 +27,7 @@ const Bidirectional = {
       throw new Error('Tool not supported');
     }
 
-    const {
-      SOPInstanceUID,
-      SeriesInstanceUID,
-      StudyInstanceUID,
-    } = getSOPInstanceAttributes(
+    const { SOPInstanceUID, SeriesInstanceUID, StudyInstanceUID } = getSOPInstanceAttributes(
       referencedImageId,
       cornerstoneViewportService,
       viewportId
@@ -50,14 +46,10 @@ const Bidirectional = {
 
     const { points } = data.handles;
 
-    const mappedAnnotations = getMappedAnnotations(
-      annotation,
-      displaySetService
-    );
+    const mappedAnnotations = getMappedAnnotations(annotation, displaySetService);
 
     const displayText = getDisplayText(mappedAnnotations, displaySet);
-    const getReport = () =>
-      _getReport(mappedAnnotations, points, FrameOfReferenceUID);
+    const getReport = () => _getReport(mappedAnnotations, points, FrameOfReferenceUID);
 
     return {
       uid: annotationUID,
@@ -94,16 +86,11 @@ function getMappedAnnotations(annotation, displaySetService) {
     const targetStats = cachedStats[targetId];
 
     if (!referencedImageId) {
-      throw new Error(
-        'Non-acquisition plane measurement mapping not supported'
-      );
+      throw new Error('Non-acquisition plane measurement mapping not supported');
     }
 
-    const {
-      SOPInstanceUID,
-      SeriesInstanceUID,
-      frameNumber,
-    } = getSOPInstanceAttributes(referencedImageId);
+    const { SOPInstanceUID, SeriesInstanceUID, frameNumber } =
+      getSOPInstanceAttributes(referencedImageId);
 
     const displaySet = displaySetService.getDisplaySetForSOPInstanceUID(
       SOPInstanceUID,
@@ -112,8 +99,7 @@ function getMappedAnnotations(annotation, displaySetService) {
     );
 
     const { SeriesNumber } = displaySet;
-    const { length, width } = targetStats;
-    const unit = 'mm';
+    const { length, width, unit } = targetStats;
 
     annotations.push({
       SeriesInstanceUID,
@@ -143,9 +129,9 @@ function _getReport(mappedAnnotations, points, FrameOfReferenceUID) {
   values.push('Cornerstone:Bidirectional');
 
   mappedAnnotations.forEach(annotation => {
-    const { length, width } = annotation;
-    columns.push(`Length (mm)`, `Width (mm)`);
-    values.push(length, width);
+    const { length, width, unit } = annotation;
+    columns.push(`Length`, `Width`, 'Unit');
+    values.push(length, width, unit);
   });
 
   if (FrameOfReferenceUID) {
@@ -178,6 +164,7 @@ function getDisplayText(mappedAnnotations, displaySet) {
   const {
     length,
     width,
+    unit,
     SeriesNumber,
     SOPInstanceUID,
     frameNumber,
@@ -185,9 +172,7 @@ function getDisplayText(mappedAnnotations, displaySet) {
   const roundedLength = utils.roundNumber(length, 2);
   const roundedWidth = utils.roundNumber(width, 2);
 
-  const instance = displaySet.images.find(
-    image => image.SOPInstanceUID === SOPInstanceUID
-  );
+  const instance = displaySet.images.find(image => image.SOPInstanceUID === SOPInstanceUID);
 
   let InstanceNumber;
   if (instance) {
@@ -198,9 +183,9 @@ function getDisplayText(mappedAnnotations, displaySet) {
   const frameText = displaySet.isMultiFrame ? ` F: ${frameNumber}` : '';
 
   displayText.push(
-    `L: ${roundedLength} mm (S: ${SeriesNumber}${instanceText}${frameText})`
+    `L: ${roundedLength} ${unit} (S: ${SeriesNumber}${instanceText}${frameText})`
   );
-  displayText.push(`W: ${roundedWidth} mm`);
+  displayText.push(`W: ${roundedWidth} ${unit}`);
 
   return displayText;
 }

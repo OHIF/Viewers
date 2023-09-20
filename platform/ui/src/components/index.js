@@ -76,10 +76,14 @@ import LoadingIndicatorProgress from './LoadingIndicatorProgress';
 import LoadingIndicatorTotalPercent from './LoadingIndicatorTotalPercent';
 import ViewportActionBar from './ViewportActionBar';
 import ProgressLoadingBar from './ProgressLoadingBar';
+import PanelSection from './PanelSection';
+import AdvancedToolbox from './AdvancedToolbox';
 import InputDoubleRange from './InputDoubleRange';
+import LegacyButtonGroup from './LegacyButtonGroup';
 
 export {
   AboutModal,
+  AdvancedToolbox,
   HotkeyField,
   Header,
   UserPreferences,
@@ -104,6 +108,7 @@ export {
   InputFilterText,
   InputGroup,
   InputRange,
+  InputDoubleRange,
   InputNumber,
   InputLabelWrapper,
   InputMultiSelect,
@@ -112,6 +117,7 @@ export {
   Label,
   LayoutSelector,
   LegacyButton,
+  LegacyButtonGroup,
   LegacyCinePlayer,
   LegacyViewportActionBar,
   LoadingIndicatorProgress,
@@ -122,6 +128,7 @@ export {
   Notification,
   ProgressDropdown,
   ProgressLoadingBar,
+  PanelSection,
   Select,
   SegmentationTable,
   SegmentationGroupTable,
@@ -158,5 +165,4 @@ export {
   ViewportOverlay,
   WindowLevel,
   WindowLevelMenuItem,
-  InputDoubleRange,
 };

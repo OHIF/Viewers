@@ -53,7 +53,7 @@ export default function callInputDialog({
               label="Enter your annotation"
               labelClassName="text-white text-[14px] leading-[1.2]"
               autoFocus
-              className="bg-black border-primary-main"
+              className="border-primary-main bg-black"
               type="text"
               value={value.defaultValue}
               onChange={event => {

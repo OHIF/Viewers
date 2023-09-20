@@ -55,14 +55,10 @@ const Length = {
 
     const { points } = data.handles;
 
-    const mappedAnnotations = getMappedAnnotations(
-      annotation,
-      displaySetService
-    );
+    const mappedAnnotations = getMappedAnnotations(annotation, displaySetService);
 
     const displayText = getDisplayText(mappedAnnotations, displaySet);
-    const getReport = () =>
-      _getReport(mappedAnnotations, points, FrameOfReferenceUID);
+    const getReport = () => _getReport(mappedAnnotations, points, FrameOfReferenceUID);
 
     return {
       uid: annotationUID,
@@ -99,9 +95,7 @@ function getMappedAnnotations(annotation, displaySetService) {
     const targetStats = cachedStats[targetId];
 
     if (!referencedImageId) {
-      throw new Error(
-        'Non-acquisition plane measurement mapping not supported'
-      );
+      throw new Error('Non-acquisition plane measurement mapping not supported');
     }
 
     const {
@@ -117,8 +111,7 @@ function getMappedAnnotations(annotation, displaySetService) {
     );
 
     const { SeriesNumber } = displaySet;
-    const { length } = targetStats;
-    const unit = 'mm';
+    const { length, unit = 'mm' } = targetStats;
 
     annotations.push({
       SeriesInstanceUID,
@@ -147,9 +140,11 @@ function _getReport(mappedAnnotations, points, FrameOfReferenceUID) {
   values.push('Cornerstone:Length');
 
   mappedAnnotations.forEach(annotation => {
-    const { length } = annotation;
-    columns.push(`Length (mm)`);
+    const { length, unit } = annotation;
+    columns.push(`Length`);
     values.push(length);
+    columns.push('Unit');
+    values.push(unit);
   });
 
   if (FrameOfReferenceUID) {
@@ -184,11 +179,10 @@ function getDisplayText(mappedAnnotations, displaySet) {
     SeriesNumber,
     SOPInstanceUID,
     frameNumber,
+    unit,
   } = mappedAnnotations[0];
 
-  const instance = displaySet.images.find(
-    image => image.SOPInstanceUID === SOPInstanceUID
-  );
+  const instance = displaySet.images.find(image => image.SOPInstanceUID === SOPInstanceUID);
 
   let InstanceNumber;
   if (instance) {
@@ -203,7 +197,7 @@ function getDisplayText(mappedAnnotations, displaySet) {
   }
   const roundedLength = utils.roundNumber(length, 2);
   displayText.push(
-    `${roundedLength} mm (S: ${SeriesNumber}${instanceText}${frameText})`
+    `${roundedLength} ${unit} (S: ${SeriesNumber}${instanceText}${frameText})`
   );
 
   return displayText;

@@ -7,4 +7,9 @@ enum size {
   small = 'small',
 }
 
-export { type, size };
+enum orientation {
+  horizontal = 'horizontal',
+  vertical = 'vertical',
+}
+
+export { type, size, orientation };

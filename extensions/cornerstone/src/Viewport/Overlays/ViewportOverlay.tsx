@@ -14,10 +14,7 @@ function CornerstoneViewportOverlay({
   viewportId,
   servicesManager,
 }) {
-  const {
-    cornerstoneViewportService,
-    toolbarService,
-  } = servicesManager.services;
+  const { cornerstoneViewportService, toolbarService } = servicesManager.services;
   const [voi, setVOI] = useState({ windowCenter: null, windowWidth: null });
   const [scale, setScale] = useState(1);
   const [activeTools, setActiveTools] = useState([]);
@@ -60,10 +57,7 @@ function CornerstoneViewportOverlay({
       }
 
       const { lower, upper } = range;
-      const { windowWidth, windowCenter } = utilities.windowLevel.toWindowLevel(
-        lower,
-        upper
-      );
+      const { windowWidth, windowCenter } = utilities.windowLevel.toWindowLevel(lower, upper);
 
       setVOI({ windowCenter, windowWidth });
     };
@@ -86,9 +80,7 @@ function CornerstoneViewportOverlay({
         previousCamera.parallelScale !== camera.parallelScale ||
         previousCamera.scale !== camera.scale
       ) {
-        const viewport = cornerstoneViewportService.getCornerstoneViewport(
-          viewportId
-        );
+        const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
         if (!viewport) {
           return;
@@ -107,8 +99,7 @@ function CornerstoneViewportOverlay({
 
         const { spacing } = imageData;
         // convert parallel scale to scale
-        const scale =
-          (element.clientHeight * spacing[0] * 0.5) / camera.parallelScale;
+        const scale = (element.clientHeight * spacing[0] * 0.5) / camera.parallelScale;
         setScale(scale);
       }
     };
@@ -199,9 +190,7 @@ function CornerstoneViewportOverlay({
 
   // Todo: probably this can be done in a better way in which we identify bright
   // background
-  const isLight = backgroundColor
-    ? utilities.isEqual(backgroundColor, [1, 1, 1])
-    : false;
+  const isLight = backgroundColor ? utilities.isEqual(backgroundColor, [1, 1, 1]) : false;
 
   return (
     <ViewportOverlay
@@ -251,9 +240,7 @@ function _getInstanceNumberFromVolume(
   const volume = volumes[0];
   const { direction, imageIds } = volume;
 
-  const cornerstoneViewport = cornerstoneViewportService.getCornerstoneViewport(
-    viewportId
-  );
+  const cornerstoneViewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
   if (!cornerstoneViewport) {
     return;
@@ -276,8 +263,7 @@ function _getInstanceNumberFromVolume(
       return {};
     }
 
-    const { instanceNumber } =
-      metaData.get('generalImageModule', imageId) || {};
+    const { instanceNumber } = metaData.get('generalImageModule', imageId) || {};
     return parseInt(instanceNumber);
   }
 }

@@ -77,9 +77,7 @@ function WorkList({
   const shouldUseDefaultSort = sortBy === '' || !sortBy;
   const sortModifier = sortDirection === 'descending' ? 1 : -1;
   const defaultSortValues =
-    shouldUseDefaultSort && canSort
-      ? { sortBy: 'studyDate', sortDirection: 'ascending' }
-      : {};
+    shouldUseDefaultSort && canSort ? { sortBy: 'studyDate', sortDirection: 'ascending' } : {};
   const sortedStudies = studies;
 
   if (canSort) {
@@ -129,8 +127,7 @@ function WorkList({
     const rollingPageNumberMod = Math.floor(101 / filterValues.resultsPerPage);
     const rollingPageNumber = oldPageNumber % rollingPageNumberMod;
     const isNextPage = newPageNumber > oldPageNumber;
-    const hasNextPage =
-      Math.max(rollingPageNumber, 1) * resultsPerPage < numOfStudies;
+    const hasNextPage = Math.max(rollingPageNumber, 1) * resultsPerPage < numOfStudies;
 
     if (isNextPage && !hasNextPage) {
       return;
@@ -168,10 +165,7 @@ function WorkList({
 
       // TODO: nesting/recursion?
       if (key === 'studyDate') {
-        if (
-          currValue.startDate &&
-          defaultValue.startDate !== currValue.startDate
-        ) {
+        if (currValue.startDate && defaultValue.startDate !== currValue.startDate) {
           queryString.startDate = currValue.startDate;
         }
         if (currValue.endDate && defaultValue.endDate !== currValue.endDate) {
@@ -305,7 +299,7 @@ function WorkList({
             <>
               <Icon
                 name="group-layers"
-                className={classnames('inline-flex mr-2 w-4', {
+                className={classnames('mr-2 inline-flex w-4', {
                   'text-primary-active': isExpanded,
                   'text-secondary-light': !isExpanded,
                 })}
@@ -366,9 +360,9 @@ function WorkList({
                   <Link
                     className={isValidMode ? '' : 'cursor-not-allowed'}
                     key={i}
-                    to={`${dataPath ? '../../' : ''}${
-                      mode.routeName
-                    }${dataPath || ''}?${query.toString()}`}
+                    to={`${dataPath ? '../../' : ''}${mode.routeName}${
+                      dataPath || ''
+                    }?${query.toString()}`}
                     onClick={event => {
                       // In case any event bubbles up for an invalid mode, prevent the navigation.
                       // For example, the event bubbles up when the icon embedded in the disabled button is clicked.
@@ -396,9 +390,7 @@ function WorkList({
         </StudyListExpandedRow>
       ),
       onClickRow: () =>
-        setExpandedRows(s =>
-          isExpanded ? s.filter(n => rowKey !== n) : [...s, rowKey]
-        ),
+        setExpandedRows(s => (isExpanded ? s.filter(n => rowKey !== n) : [...s, rowKey])),
       isExpanded,
     };
   });
@@ -426,16 +418,16 @@ function WorkList({
           title: t('UserPreferencesModal:User Preferences'),
           content: UserPreferences,
           contentProps: {
-            hotkeyDefaults: hotkeysManager.getValidHotkeyDefinitions(
-              hotkeyDefaults
-            ),
+            hotkeyDefaults: hotkeysManager.getValidHotkeyDefinitions(hotkeyDefaults),
             hotkeyDefinitions,
             onCancel: hide,
             currentLanguage: currentLanguage(),
             availableLanguages,
             defaultLanguage,
             onSubmit: state => {
-              i18n.changeLanguage(state.language.value);
+              if (state.language.value !== currentLanguage().value) {
+                i18n.changeLanguage(state.language.value);
+              }
               hotkeysManager.setHotkeys(state.hotkeyDefinitions);
               hide();
             },
@@ -451,9 +443,7 @@ function WorkList({
       icon: 'power-off',
       title: t('Header:Logout'),
       onClick: () => {
-        navigate(
-          `/logout?redirect_uri=${encodeURIComponent(window.location.href)}`
-        );
+        navigate(`/logout?redirect_uri=${encodeURIComponent(window.location.href)}`);
       },
     });
   }
@@ -489,14 +479,14 @@ function WorkList({
     customizationService.get('ohif.dataSourceConfigurationComponent') ?? {};
 
   return (
-    <div className="bg-black h-screen flex flex-col ">
+    <div className="flex h-screen flex-col bg-black ">
       <Header
         isSticky
         menuOptions={menuOptions}
         isReturnEnabled={false}
         WhiteLabeling={appConfig.whiteLabeling}
       />
-      <div className="overflow-y-auto ohif-scrollbar flex flex-col grow">
+      <div className="ohif-scrollbar flex grow flex-col overflow-y-auto">
         <StudyListFilter
           numOfStudies={pageNumber * resultsPerPage > 100 ? 101 : numOfStudies}
           filtersMeta={filtersMeta}
@@ -506,13 +496,11 @@ function WorkList({
           isFiltering={isFiltering(filterValues, defaultFilterValues)}
           onUploadClick={uploadProps ? () => show(uploadProps) : undefined}
           getDataSourceConfigurationComponent={
-            dataSourceConfigurationComponent
-              ? () => dataSourceConfigurationComponent()
-              : undefined
+            dataSourceConfigurationComponent ? () => dataSourceConfigurationComponent() : undefined
           }
         />
         {hasStudies ? (
-          <div className="grow flex flex-col">
+          <div className="flex grow flex-col">
             <StudyListTable
               tableDataSource={tableDataSource.slice(offset, offsetAndTake)}
               numOfStudies={numOfStudies}
@@ -531,7 +519,7 @@ function WorkList({
         ) : (
           <div className="flex flex-col items-center justify-center pt-48">
             {appConfig.showLoadingIndicator && isLoadingData ? (
-              <LoadingIndicatorProgress className={'w-full h-full bg-black'} />
+              <LoadingIndicatorProgress className={'h-full w-full bg-black'} />
             ) : (
               <EmptyStudies />
             )}
@@ -589,9 +577,7 @@ function _getQueryFilterValues(params) {
       endDate: params.get('enddate') || null,
     },
     description: params.get('description'),
-    modalities: params.get('modalities')
-      ? params.get('modalities').split(',')
-      : [],
+    modalities: params.get('modalities') ? params.get('modalities').split(',') : [],
     accession: params.get('accession'),
     sortBy: params.get('sortby'),
     sortDirection: params.get('sortdirection'),
@@ -615,9 +601,7 @@ function _sortStringDates(s1, s2, sortModifier) {
   const s2Date = moment(s2.date, ['YYYYMMDD', 'YYYY.MM.DD'], true);
 
   if (s1Date.isValid() && s2Date.isValid()) {
-    return (
-      (s1Date.toISOString() > s2Date.toISOString() ? 1 : -1) * sortModifier
-    );
+    return (s1Date.toISOString() > s2Date.toISOString() ? 1 : -1) * sortModifier;
   } else if (s1Date.isValid()) {
     return sortModifier;
   } else if (s2Date.isValid()) {

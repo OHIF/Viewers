@@ -44,9 +44,7 @@ function calculateSuvPeak(
   const referenceVolumeData = referenceVolume.getScalarData();
 
   if (labelmapData.length !== referenceVolumeData.length) {
-    throw new Error(
-      'labelmap and referenceVolume must have the same number of pixels'
-    );
+    throw new Error('labelmap and referenceVolume must have the same number of pixels');
   }
 
   const { dimensions, imageData: labelmapImageData } = labelmap;
@@ -64,10 +62,7 @@ function calculateSuvPeak(
       return ijk as Types.Point3;
     });
 
-    boundsIJK = utilities.boundingBox.getBoundingBoxAroundShape(
-      rectangleCornersIJK,
-      dimensions
-    );
+    boundsIJK = utilities.boundingBox.getBoundingBoxAroundShape(rectangleCornersIJK, dimensions);
   }
 
   let max = 0;
@@ -91,16 +86,9 @@ function calculateSuvPeak(
     }
   };
 
-  utilities.pointInShapeCallback(
-    labelmapImageData,
-    () => true,
-    callback,
-    boundsIJK
-  );
+  utilities.pointInShapeCallback(labelmapImageData, () => true, callback, boundsIJK);
 
-  const direction = labelmapImageData
-    .getDirection()
-    .slice(0, 3) as Types.Point3;
+  const direction = labelmapImageData.getDirection().slice(0, 3) as Types.Point3;
 
   /**
    * 2. Find the bottom and top of the great circle for the second sphere (1cc sphere)
@@ -115,10 +103,7 @@ function calculateSuvPeak(
   referenceVolumeImageData.indexToWorld(maxIJK as vec3, secondaryCircleWorld);
   vec3.scaleAndAdd(bottomWorld, secondaryCircleWorld, direction, -diameter / 2);
   vec3.scaleAndAdd(topWorld, secondaryCircleWorld, direction, diameter / 2);
-  const suvPeakCirclePoints = [bottomWorld, topWorld] as [
-    Types.Point3,
-    Types.Point3
-  ];
+  const suvPeakCirclePoints = [bottomWorld, topWorld] as [Types.Point3, Types.Point3];
 
   /**
    * 3. Find the Mean and Max of the 1cc sphere centered on the suv Max of the previous

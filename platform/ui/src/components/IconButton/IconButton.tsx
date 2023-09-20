@@ -38,16 +38,14 @@ const variantClasses = {
       'border border-primary-main text-primary-main hover:opacity-80 active:opacity-100 focus:opacity-80',
     secondary:
       'border border-secondary-light text-secondary-light hover:opacity-80 active:opacity-100 focus:opacity-80',
-    white:
-      'border border-white text-white hover:opacity-80 active:opacity-100 focus:opacity-80',
+    white: 'border border-white text-white hover:opacity-80 active:opacity-100 focus:opacity-80',
     black:
       'border border-primary-main text-white hover:bg-primary-main focus:bg-primary-main hover:border-black focus:border-black',
   },
   contained: {
     default: 'text-black hover:opacity-80 active:opacity-100 focus:opacity-80',
     primary: 'text-white hover:opacity-80 active:opacity-100 focus:opacity-80',
-    secondary:
-      'text-white hover:opacity-80 active:opacity-100 focus:opacity-80',
+    secondary: 'text-white hover:opacity-80 active:opacity-100 focus:opacity-80',
     white: 'text-black hover:opacity-80 active:opacity-100 focus:opacity-80',
     black: 'text-white hover:opacity-80 active:opacity-100 focus:opacity-80',
   },
@@ -166,14 +164,7 @@ IconButton.propTypes = {
   size: PropTypes.oneOf(['small', 'medium', 'large', 'initial', 'toolbar']),
   rounded: PropTypes.oneOf(['none', 'small', 'medium', 'large', 'full']),
   variant: PropTypes.oneOf(['text', 'outlined', 'contained']),
-  color: PropTypes.oneOf([
-    'default',
-    'primary',
-    'secondary',
-    'white',
-    'black',
-    'inherit',
-  ]),
+  color: PropTypes.oneOf(['default', 'primary', 'secondary', 'white', 'black', 'inherit']),
   fullWidth: PropTypes.bool,
   disabled: PropTypes.bool,
   type: PropTypes.string,

@@ -14,23 +14,19 @@ const ohif = {
 };
 
 const tracked = {
-  measurements:
-    '@ohif/extension-measurement-tracking.panelModule.trackedMeasurements',
+  measurements: '@ohif/extension-measurement-tracking.panelModule.trackedMeasurements',
   thumbnailList: '@ohif/extension-measurement-tracking.panelModule.seriesList',
-  viewport:
-    '@ohif/extension-measurement-tracking.viewportModule.cornerstone-tracked',
+  viewport: '@ohif/extension-measurement-tracking.viewportModule.cornerstone-tracked',
   ROIThresholdPanel: '@ohif/extension-default.panelModule.ROIThresholdSeg',
 };
 
 const dicomsr = {
-  sopClassHandler:
-    '@ohif/extension-cornerstone-dicom-sr.sopClassHandlerModule.dicom-sr',
+  sopClassHandler: '@ohif/extension-cornerstone-dicom-sr.sopClassHandlerModule.dicom-sr',
   viewport: '@ohif/extension-cornerstone-dicom-sr.viewportModule.dicom-sr',
 };
 
 const dicomvideo = {
-  sopClassHandler:
-    '@ohif/extension-dicom-video.sopClassHandlerModule.dicom-video',
+  sopClassHandler: '@ohif/extension-dicom-video.sopClassHandlerModule.dicom-video',
   viewport: '@ohif/extension-dicom-video.viewportModule.dicom-video',
 };
 
@@ -40,16 +36,14 @@ const dicompdf = {
 };
 
 const dicomSeg = {
-  sopClassHandler:
-    '@ohif/extension-cornerstone-dicom-seg.sopClassHandlerModule.dicom-seg',
+  sopClassHandler: '@ohif/extension-cornerstone-dicom-seg.sopClassHandlerModule.dicom-seg',
   viewport: '@ohif/extension-cornerstone-dicom-seg.viewportModule.dicom-seg',
   panel: '@ohif/extension-cornerstone-dicom-seg.panelModule.panelSegmentation',
 };
 
 const dicomRt = {
   viewport: '@ohif/extension-cornerstone-dicom-rt.viewportModule.dicom-rt',
-  sopClassHandler:
-    '@ohif/extension-cornerstone-dicom-rt.sopClassHandlerModule.dicom-rt',
+  sopClassHandler: '@ohif/extension-cornerstone-dicom-rt.sopClassHandlerModule.dicom-rt',
 };
 
 const extensionDependencies = {
@@ -81,7 +75,7 @@ function modeFactory({ modeConfiguration }) {
         toolbarService,
         toolGroupService,
         panelService,
-        segmentationService,
+        customizationService,
       } = servicesManager.services;
 
       measurementService.clearMeasurements();
@@ -135,6 +129,13 @@ function modeFactory({ modeConfiguration }) {
         'RectangleROIStartEndThreshold',
       ]);
 
+      customizationService.addModeCustomizations([
+        {
+          id: 'segmentation.disableEditing',
+          value: true,
+        },
+      ]);
+
       // // ActivatePanel event trigger for when a segmentation or measurement is added.
       // // Do not force activation so as to respect the state the user may have left the UI in.
       // _activatePanelTriggersSubscriptions = [
@@ -179,13 +180,12 @@ function modeFactory({ modeConfiguration }) {
       series: [],
     },
 
-    isValidMode: function({ modalities }) {
+    isValidMode: function ({ modalities }) {
       const modalities_list = modalities.split('\\');
 
       // Exclude non-image modalities
-      return !!modalities_list.filter(
-        modality => NON_IMAGE_MODALITIES.indexOf(modality) === -1
-      ).length;
+      return !!modalities_list.filter(modality => NON_IMAGE_MODALITIES.indexOf(modality) === -1)
+        .length;
     },
     routes: [
       {
@@ -198,11 +198,7 @@ function modeFactory({ modeConfiguration }) {
             id: ohif.layout,
             props: {
               leftPanels: [tracked.thumbnailList],
-              rightPanels: [
-                dicomSeg.panel,
-                tracked.measurements,
-                tracked.ROIThresholdPanel,
-              ],
+              rightPanels: [dicomSeg.panel, tracked.measurements, tracked.ROIThresholdPanel],
               rightPanelDefaultClosed: true,
               viewports: [
                 {

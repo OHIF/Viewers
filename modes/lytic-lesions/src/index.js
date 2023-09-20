@@ -23,7 +23,14 @@ const tracked = {
     '@ohif/extension-measurement-tracking.viewportModule.cornerstone-tracked',
   ROIThresholdPanel: '@ohif/extension-default.panelModule.ROIThresholdSeg',
 };
-
+const segmentation = {
+  panel: '@ohif/extension-cornerstone-dicom-seg.panelModule.panelSegmentation',
+  panelTool:
+    '@ohif/extension-cornerstone-dicom-seg.panelModule.panelSegmentationWithTools',
+  sopClassHandler:
+    '@ohif/extension-cornerstone-dicom-seg.sopClassHandlerModule.dicom-seg',
+  viewport: '@ohif/extension-cornerstone-dicom-seg.viewportModule.dicom-seg',
+};
 const dicomsr = {
   sopClassHandler:
     '@ohif/extension-cornerstone-dicom-sr.sopClassHandlerModule.dicom-sr',
@@ -170,7 +177,7 @@ function modeFactory() {
         cornerstoneViewportService,
       } = servicesManager.services;
 
-      _activatePanelTriggersSubscriptions.forEach(sub => sub.unsubscribe());
+      _activatePanelTriggersSubscriptions.forEach((sub) => sub.unsubscribe());
       _activatePanelTriggersSubscriptions = [];
 
       toolGroupService.destroy();
@@ -183,12 +190,12 @@ function modeFactory() {
       series: [],
     },
 
-    isValidMode: function({ modalities }) {
+    isValidMode: function ({ modalities }) {
       const modalities_list = modalities.split('\\');
 
       // Exclude non-image modalities
       return !!modalities_list.filter(
-        modality => NON_IMAGE_MODALITIES.indexOf(modality) === -1
+        (modality) => NON_IMAGE_MODALITIES.indexOf(modality) === -1
       ).length;
     },
     routes: [
@@ -202,13 +209,8 @@ function modeFactory() {
             id: ohif.layout,
             props: {
               leftPanels: [tracked.thumbnailList],
-              rightPanels: [ohif.HounsfieldUnitPanel],
-              // rightPanels: [
-              //   dicomSeg.panel,
-              //   tracked.measurements,
-              //   tracked.ROIThresholdPanel,
-              // ],
-              // rightPanelDefaultClosed: true,
+              rightPanels: [segmentation.panelTool, ohif.HounsfieldUnitPanel],
+              rightPanelDefaultClosed: true,
               viewports: [
                 {
                   namespace: tracked.viewport,

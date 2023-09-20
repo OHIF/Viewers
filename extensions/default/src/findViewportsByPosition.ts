@@ -3,7 +3,7 @@ import { StateSyncService } from '@ohif/core';
 /**
  * This find or create viewport is paired with the reduce results from
  * below, and the action of this viewport is to look for previously filled
- * viewports, and to re-use by position id.  If there is no filled viewport,
+ * viewports, and to reuse by position id.  If there is no filled viewport,
  * then one can be re-used from the display set if it isn't going to be displayed.
  * @param hangingProtocolService - bound parameter supplied before using this
  * @param viewportsByPosition - bound parameter supplied before using this
@@ -32,21 +32,13 @@ export const findOrCreateViewport = (
     options.inDisplay = [...viewportsByPosition.initialInDisplay];
   }
   // See if there is a default viewport for new views.
-  const missing = hangingProtocolService.getMissingViewport(
-    protocolId,
-    stageIndex,
-    options
-  );
+  const missing = hangingProtocolService.getMissingViewport(protocolId, stageIndex, options);
   if (missing) {
-    const displaySetInstanceUIDs = missing.displaySetsInfo.map(
-      it => it.displaySetInstanceUID
-    );
+    const displaySetInstanceUIDs = missing.displaySetsInfo.map(it => it.displaySetInstanceUID);
     options.inDisplay.push(...displaySetInstanceUIDs);
     return {
       displaySetInstanceUIDs,
-      displaySetOptions: missing.displaySetsInfo.map(
-        it => it.displaySetOptions
-      ),
+      displaySetOptions: missing.displaySetsInfo.map(it => it.displaySetOptions),
       viewportOptions: {
         ...missing.viewportOptions,
       },

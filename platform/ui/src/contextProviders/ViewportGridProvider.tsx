@@ -1,10 +1,4 @@
-import React, {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useReducer,
-} from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useReducer } from 'react';
 import merge from 'lodash.merge';
 
 import PropTypes from 'prop-types';
@@ -44,7 +38,7 @@ const DEFAULT_STATE: DefaultState = {
     layoutType: 'grid',
   },
   // Viewports structure has been changed to Map (previously it was
-  // tied to the viewportIndex which caused multiple issues. Now we have
+  // tied to the viewportId which caused multiple issues. Now we have
   // moved completely to viewportId which is unique for each viewport.
   viewports: new Map(
     Object.entries({
@@ -76,13 +70,14 @@ const determineActiveViewportId = (state: DefaultState, newViewports: Map) => {
   const currentActiveViewport = state.viewports.get(activeViewportId);
 
   if (!currentActiveViewport) {
-    return null; // Return an appropriate value if the current active viewport is not found
+    // if there is no active viewport, we should just return the first viewport
+    const firstViewport = newViewports.values().next().value;
+    return firstViewport.viewportOptions.viewportId;
   }
 
   // for the new viewports, we should rank them by the displaySetInstanceUIDs
   // they are displaying and the orientation then we can find the active viewport
-  const currentActiveDisplaySetInstanceUIDs =
-    currentActiveViewport.displaySetInstanceUIDs;
+  const currentActiveDisplaySetInstanceUIDs = currentActiveViewport.displaySetInstanceUIDs;
 
   // This doesn't take into account where stack viewport is converting to volumeViewport
   // since in stack viewport we don't have a concept of "orientation" as a string
@@ -93,10 +88,8 @@ const determineActiveViewportId = (state: DefaultState, newViewports: Map) => {
 
   const sortedViewports = Array.from(newViewports.values()).sort((a, b) => {
     // Compare orientations
-    const aOrientationMatch =
-      a.viewportOptions.orientation === currentOrientation;
-    const bOrientationMatch =
-      b.viewportOptions.orientation === currentOrientation;
+    const aOrientationMatch = a.viewportOptions.orientation === currentOrientation;
+    const bOrientationMatch = b.viewportOptions.orientation === currentOrientation;
     if (aOrientationMatch !== bOrientationMatch) {
       return bOrientationMatch - aOrientationMatch;
     }
@@ -151,8 +144,8 @@ export function ViewportGridProvider({ children, service }) {
           // That allows for easy updates of just the display set.
           const viewportOptions = merge(
             {},
-            updatedViewport?.viewportOptions,
-            previousViewport?.viewportOptions
+            previousViewport?.viewportOptions,
+            updatedViewport?.viewportOptions
           );
 
           const displaySetOptions = updatedViewport.displaySetOptions || [];
@@ -217,11 +210,7 @@ export function ViewportGridProvider({ children, service }) {
               continue;
             }
 
-            const viewport = findOrCreateViewport(
-              position,
-              positionId,
-              options
-            );
+            const viewport = findOrCreateViewport(position, positionId, options);
 
             if (!viewport) {
               continue;
@@ -243,9 +232,7 @@ export function ViewportGridProvider({ children, service }) {
 
             let xPos, yPos, w, h;
             if (layoutOptions && layoutOptions[position]) {
-              ({ x: xPos, y: yPos, width: w, height: h } = layoutOptions[
-                position
-              ]);
+              ({ x: xPos, y: yPos, width: w, height: h } = layoutOptions[position]);
             } else {
               w = 1 / numCols;
               h = 1 / numRows;
@@ -260,10 +247,7 @@ export function ViewportGridProvider({ children, service }) {
               y: yPos,
             });
 
-            viewport.viewportLabel = getViewportLabel(
-              viewports,
-              viewport.viewportId
-            );
+            viewport.viewportLabel = getViewportLabel(viewports, viewport.viewportId);
 
             if (!viewport.viewportOptions.presentationIds) {
               viewport.viewportOptions.presentationIds = ViewportGridService.getPresentationIds(
@@ -275,9 +259,7 @@ export function ViewportGridProvider({ children, service }) {
         }
 
         activeViewportIdToSet =
-          activeViewportIdToSet ??
-          determineActiveViewportId(state, viewports) ??
-          'default';
+          activeViewportIdToSet ?? determineActiveViewportId(state, viewports);
 
         const ret = {
           ...state,
@@ -308,10 +290,7 @@ export function ViewportGridProvider({ children, service }) {
     }
   };
 
-  const [viewportGridState, dispatch] = useReducer(
-    viewportGridReducer,
-    DEFAULT_STATE
-  );
+  const [viewportGridState, dispatch] = useReducer(viewportGridReducer, DEFAULT_STATE);
 
   const getState = useCallback(() => {
     return viewportGridState;
@@ -411,10 +390,8 @@ export function ViewportGridProvider({ children, service }) {
   const api = {
     getState,
     setActiveViewportId: index => service.setActiveViewportId(index),
-    setDisplaySetsForViewport: props =>
-      service.setDisplaySetsForViewports([props]),
-    setDisplaySetsForViewports: props =>
-      service.setDisplaySetsForViewports(props),
+    setDisplaySetsForViewport: props => service.setDisplaySetsForViewports([props]),
+    setDisplaySetsForViewports: props => service.setDisplaySetsForViewports(props),
     setLayout: layout => service.setLayout(layout),
     reset: () => service.reset(),
     set: gridLayoutState => service.setState(gridLayoutState), // run it through the service itself since we want to publish events

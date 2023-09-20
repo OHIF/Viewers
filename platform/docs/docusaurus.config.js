@@ -33,8 +33,7 @@ const versions = fs.readFileSync('../../version.txt', 'utf8').split('\n');
 
 const isDev = process.env.NODE_ENV === 'development';
 
-const isDeployPreview =
-  process.env.NETLIFY && process.env.CONTEXT === 'deploy-preview';
+const isDeployPreview = process.env.NETLIFY && process.env.CONTEXT === 'deploy-preview';
 
 const baseUrl = process.env.BASE_URL || '/';
 const isBootstrapPreset = process.env.DOCUSAURUS_PRESET === 'bootstrap';

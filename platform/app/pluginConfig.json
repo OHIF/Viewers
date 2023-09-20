@@ -64,6 +64,12 @@
   ],
   "modes": [
     {
+      "packageName": "@ohif/mode-longitudinal"
+    },
+    {
+      "packageName": "@ohif/mode-segmentation"
+    },
+    {
       "packageName": "@ohif/mode-tmtv"
     },
     {

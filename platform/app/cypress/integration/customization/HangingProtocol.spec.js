@@ -7,14 +7,13 @@ describe('OHIF HP', () => {
     cy.expectMinimumThumbnails(3);
     cy.initCornerstoneToolsAliases();
     cy.initCommonElementsAliases();
+    cy.waitDicomImage();
   };
 
   it('Should display 3 up', () => {
     beforeSetup();
 
-    cy.get('[data-cy="viewport-pane"]')
-      .its('length')
-      .should('be.eq', 3);
+    cy.get('[data-cy="viewport-pane"]').its('length').should('be.eq', 3);
   });
 
   it('Should navigate next/previous stage', () => {
@@ -22,15 +21,11 @@ describe('OHIF HP', () => {
 
     cy.get('body').type(',');
     cy.wait(250);
-    cy.get('[data-cy="viewport-pane"]')
-      .its('length')
-      .should('be.eq', 4);
+    cy.get('[data-cy="viewport-pane"]').its('length').should('be.eq', 4);
 
     cy.get('body').type('..');
     cy.wait(250);
-    cy.get('[data-cy="viewport-pane"]')
-      .its('length')
-      .should('be.eq', 2);
+    cy.get('[data-cy="viewport-pane"]').its('length').should('be.eq', 2);
   });
 
   it('Should navigate to display set specified', () => {

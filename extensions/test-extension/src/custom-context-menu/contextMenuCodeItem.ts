@@ -2,7 +2,7 @@ const codeMenuItem = {
   id: '@ohif/contextMenuAnnotationCode',
 
   /** Applies the code value setup for this item */
-  transform: function(customizationService) {
+  transform: function (customizationService) {
     const { code: codeRef } = this;
     if (!codeRef) {
       throw new Error(`item ${this} has no code ref`);

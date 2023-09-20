@@ -36,6 +36,7 @@ export {
 /** COMPONENTS */
 export {
   AboutModal,
+  AdvancedToolbox,
   HotkeyField,
   Header,
   UserPreferences,
@@ -44,6 +45,7 @@ export {
   ButtonGroup,
   ButtonEnums,
   ContextMenu,
+  CheckBox,
   CinePlayer,
   DateRange,
   Dialog,
@@ -67,6 +69,7 @@ export {
   Label,
   LayoutSelector,
   LegacyButton,
+  LegacyButtonGroup,
   LegacyCinePlayer,
   LegacyViewportActionBar,
   LoadingIndicatorProgress,
@@ -75,6 +78,7 @@ export {
   Modal,
   NavBar,
   Notification,
+  PanelSection,
   ProgressLoadingBar,
   Select,
   SegmentationTable,

@@ -1,10 +1,4 @@
-import React, {
-  useCallback,
-  useEffect,
-  useState,
-  createRef,
-  useRef,
-} from 'react';
+import React, { useCallback, useEffect, useState, createRef, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import Typography from '../Typography';
@@ -122,9 +116,7 @@ const ViewportDownloadForm = ({
     const sanitizedTargetValue = value.replace(/\D/, '');
     const isEmpty = sanitizedTargetValue === '';
     const newDimensions = { ...dimensions };
-    const updatedDimension = isEmpty
-      ? ''
-      : Math.min(sanitizedTargetValue, maximumSize);
+    const updatedDimension = isEmpty ? '' : Math.min(sanitizedTargetValue, maximumSize);
 
     if (updatedDimension === dimensions[dimension]) {
       return;
@@ -164,7 +156,10 @@ const ViewportDownloadForm = ({
     }
 
     return (
-      <Typography className="pl-1 mt-2" color="error">
+      <Typography
+        className="mt-2 pl-1"
+        color="error"
+      >
         {error_messages[errorType]}
       </Typography>
     );
@@ -200,11 +195,7 @@ const ViewportDownloadForm = ({
       dataUrl,
       width: viewportElementWidth,
       height: viewportElementHeight,
-    } = await updateViewportPreview(
-      viewportElement,
-      downloadCanvas.ref.current,
-      fileType
-    );
+    } = await updateViewportPreview(viewportElement, downloadCanvas.ref.current, fileType);
 
     setViewportPreview(state => ({
       ...state,
@@ -272,13 +263,11 @@ const ViewportDownloadForm = ({
   return (
     <div>
       <Typography variant="h6">
-        {t(
-          'Please specify the dimensions, filename, and desired type for the output image.'
-        )}
+        {t('Please specify the dimensions, filename, and desired type for the output image.')}
       </Typography>
 
-      <div className="flex flex-col mt-6">
-        <div className="w-full mb-4">
+      <div className="mt-6 flex flex-col">
+        <div className="mb-4 w-full">
           <Input
             data-cy="file-name"
             value={filename}
@@ -289,7 +278,7 @@ const ViewportDownloadForm = ({
         </div>
         <div className="flex">
           <div className="flex w-1/3">
-            <div className="flex flex-col grow">
+            <div className="flex grow flex-col">
               <div className="w-full">
                 <Input
                   type="number"
@@ -297,30 +286,26 @@ const ViewportDownloadForm = ({
                   max={maximumSize}
                   label={t('Image width (px)')}
                   value={dimensions.width}
-                  onChange={evt =>
-                    onDimensionsChange(evt.target.value, 'width')
-                  }
+                  onChange={evt => onDimensionsChange(evt.target.value, 'width')}
                   data-cy="image-width"
                 />
                 {renderErrorHandler('width')}
               </div>
-              <div className="w-full mt-4">
+              <div className="mt-4 w-full">
                 <Input
                   type="number"
                   min={minimumSize}
                   max={maximumSize}
                   label={t('Image height (px)')}
                   value={dimensions.height}
-                  onChange={evt =>
-                    onDimensionsChange(evt.target.value, 'height')
-                  }
+                  onChange={evt => onDimensionsChange(evt.target.value, 'height')}
                   data-cy="image-height"
                 />
                 {renderErrorHandler('height')}
               </div>
             </div>
 
-            <div className="flex items-center mt-8">
+            <div className="mt-8 flex items-center">
               <Tooltip
                 position="right"
                 content={keepAspect ? 'Dismiss Aspect' : 'Keep Aspect'}
@@ -336,7 +321,7 @@ const ViewportDownloadForm = ({
             </div>
           </div>
 
-          <div className="w-1/4 pl-6 ml-6 border-l border-secondary-dark">
+          <div className="border-secondary-dark ml-6 w-1/4 border-l pl-6">
             <div>
               <InputLabelWrapper
                 sortDirection="none"
@@ -359,7 +344,10 @@ const ViewportDownloadForm = ({
               </InputLabelWrapper>
             </div>
             <div className="mt-4 ml-2">
-              <label htmlFor="show-annotations" className="flex items-center">
+              <label
+                htmlFor="show-annotations"
+                className="flex items-center"
+              >
                 <input
                   id="show-annotations"
                   data-cy="show-annotations"
@@ -377,7 +365,7 @@ const ViewportDownloadForm = ({
 
       <div className="mt-8">
         <div
-          className="p-4 rounded bg-secondary-dark border-secondary-primary w-max-content min-w-full"
+          className="bg-secondary-dark border-secondary-primary w-max-content min-w-full rounded p-4"
           data-cy="image-preview"
         >
           <Typography variant="h5">{t('Image preview')}</Typography>
@@ -392,14 +380,12 @@ const ViewportDownloadForm = ({
             ></div>
           )}
           {!activeViewportElement && (
-            <Typography className="mt-4">
-              {t('Active viewport has no displayed image')}
-            </Typography>
+            <Typography className="mt-4">{t('Active viewport has no displayed image')}</Typography>
           )}
         </div>
       </div>
 
-      <div className="flex justify-end mt-4">
+      <div className="mt-4 flex justify-end">
         <Button
           name="cancel"
           type={ButtonEnums.type.secondary}

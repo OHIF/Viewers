@@ -6,9 +6,7 @@ function SignoutCallbackComponent({ userManager }) {
   const navigate = useNavigate();
 
   const onRedirectSuccess = (/* user */) => {
-    const { pathname, search = '' } = JSON.parse(
-      sessionStorage.getItem('ohif-redirect-to')
-    );
+    const { pathname, search = '' } = JSON.parse(sessionStorage.getItem('ohif-redirect-to'));
 
     navigate(`${pathname}?${search}`);
   };

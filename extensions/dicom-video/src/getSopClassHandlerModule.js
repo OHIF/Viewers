@@ -7,8 +7,7 @@ const SOP_CLASS_UIDS = {
   VIDEO_ENDOSCOPIC_IMAGE_STORAGE: '1.2.840.10008.5.1.4.1.1.77.1.1.1',
   /** Need to use fallback, could be video or image */
   SECONDARY_CAPTURE_IMAGE_STORAGE: '1.2.840.10008.5.1.4.1.1.7',
-  MULTIFRAME_TRUE_COLOR_SECONDARY_CAPTURE_IMAGE_STORAGE:
-    '1.2.840.10008.5.1.4.1.1.7.4',
+  MULTIFRAME_TRUE_COLOR_SECONDARY_CAPTURE_IMAGE_STORAGE: '1.2.840.10008.5.1.4.1.1.7.4',
 };
 
 const sopClassUids = Object.values(SOP_CLASS_UIDS);
@@ -29,49 +28,31 @@ const SupportedTransferSyntaxes = {
 
 const supportedTransferSyntaxUIDs = Object.values(SupportedTransferSyntaxes);
 
-const _getDisplaySetsFromSeries = (
-  instances,
-  servicesManager,
-  extensionManager
-) => {
+const _getDisplaySetsFromSeries = (instances, servicesManager, extensionManager) => {
   const dataSource = extensionManager.getActiveDataSource()[0];
   return instances
     .filter(metadata => {
       const tsuid =
-        metadata.AvailableTransferSyntaxUID ||
-        metadata.TransferSyntaxUID ||
-        metadata['00083002'];
+        metadata.AvailableTransferSyntaxUID || metadata.TransferSyntaxUID || metadata['00083002'];
 
       if (supportedTransferSyntaxUIDs.includes(tsuid)) {
         return true;
       }
 
-      if (
-        metadata.SOPClassUID === SOP_CLASS_UIDS.VIDEO_PHOTOGRAPHIC_IMAGE_STORAGE
-      ) {
+      if (metadata.SOPClassUID === SOP_CLASS_UIDS.VIDEO_PHOTOGRAPHIC_IMAGE_STORAGE) {
         return true;
       }
 
       // Assume that an instance with one of the secondary capture SOPClassUIDs and
       // with at least 90 frames (i.e. typically 3 seconds of video) is indeed a video.
       return (
-        secondaryCaptureSopClassUids.includes(metadata.SOPClassUID) &&
-        metadata.NumberOfFrames >= 90
+        secondaryCaptureSopClassUids.includes(metadata.SOPClassUID) && metadata.NumberOfFrames >= 90
       );
     })
     .map(instance => {
-      const {
-        Modality,
-        SOPInstanceUID,
-        SeriesDescription = 'VIDEO',
-      } = instance;
-      const {
-        SeriesNumber,
-        SeriesDate,
-        SeriesInstanceUID,
-        StudyInstanceUID,
-        NumberOfFrames,
-      } = instance;
+      const { Modality, SOPInstanceUID, SeriesDescription = 'VIDEO' } = instance;
+      const { SeriesNumber, SeriesDate, SeriesInstanceUID, StudyInstanceUID, NumberOfFrames } =
+        instance;
       const displaySet = {
         //plugin: id,
         Modality,
@@ -107,16 +88,9 @@ const _getDisplaySetsFromSeries = (
     });
 };
 
-export default function getSopClassHandlerModule({
-  servicesManager,
-  extensionManager,
-}) {
+export default function getSopClassHandlerModule({ servicesManager, extensionManager }) {
   const getDisplaySetsFromSeries = instances => {
-    return _getDisplaySetsFromSeries(
-      instances,
-      servicesManager,
-      extensionManager
-    );
+    return _getDisplaySetsFromSeries(instances, servicesManager, extensionManager);
   };
 
   return [

@@ -44,7 +44,7 @@ choice for asserting an element's border color.
 
 Modern tooling gives us this "for free". It can catch invalid regular
 expressions, unused variables, and guarantee we're calling methods/functions
-with the expected paramater types.
+with the expected parameter types.
 
 Example Tooling:
 
