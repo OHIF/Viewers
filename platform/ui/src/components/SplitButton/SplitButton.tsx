@@ -7,7 +7,6 @@ import { useTranslation } from 'react-i18next';
 import Icon from '../Icon';
 import Tooltip from '../Tooltip';
 import ListMenu from '../ListMenu';
-import ToolbarButton from '../ToolbarButton';
 
 const baseClasses = {
   Button: 'flex items-center rounded-md border-transparent cursor-pointer group/button',
@@ -74,22 +73,18 @@ const classes = {
 const SplitButton = ({
   isRadio,
   isAction,
-  //
-  bState,
-  //
+  isToggle,
   groupId,
   primary: _primary,
   secondary,
   items: _items,
   renderer,
+  isActive,
   onInteraction,
-  servicesManager,
+  Component,
 }) => {
   const { t } = useTranslation('Buttons');
 
-  const { toolbarService } = servicesManager?.services || {};
-
-  const { primaryToolId, toggles } = bState;
   /* Bubbles up individual item clicks */
   const getSplitButtonItems = items =>
     items.map((item, index) => ({
@@ -132,47 +127,10 @@ const SplitButton = ({
   const onMouseLeaveHandler = () => setState(state => ({ ...state, isHovering: false }));
   const outsideClickHandler = () => setState(state => ({ ...state, isExpanded: false }));
 
-  const isPrimaryToggle = state.primary.type === 'toggle';
-  const isPrimaryActive =
-    (state.primary.type === 'tool' && primaryToolId === state.primary.id) ||
-    (isPrimaryToggle && toggles[state.primary.id] === true);
-
-  const PrimaryButtonComponent =
-    toolbarService?.getButtonComponentForUIType(state.primary.uiType) ?? ToolbarButton;
-
   const primaryButtonClassName = classes.Primary({
     ...state,
-    primary: { isActive: isPrimaryActive, isToggle: isPrimaryToggle },
+    primary: { isActive, isToggle },
   });
-
-  const DefaultListItemRenderer = ({ type, icon, label, t, id }) => {
-    const isActive = type === 'toggle' && toggles[id] === true;
-
-    return (
-      <div
-        className={classNames(
-          'hover:bg-primary-dark flex h-8 w-full flex-row items-center p-3',
-          'whitespace-pre text-base',
-          isActive && 'bg-primary-dark',
-          isActive
-            ? 'text-[#348CFD]'
-            : 'text-common-bright hover:bg-primary-dark hover:text-primary-light'
-        )}
-      >
-        {icon && (
-          <span className="mr-4">
-            <Icon
-              name={icon}
-              className="h-5 w-5"
-            />
-          </span>
-        )}
-        <span className="mr-5">{t(label)}</span>
-      </div>
-    );
-  };
-
-  const listItemRenderer = renderer || DefaultListItemRenderer;
 
   return (
     <OutsideClickHandler
@@ -180,13 +138,13 @@ const SplitButton = ({
       disabled={!state.isExpanded}
     >
       <div
-        name="SplitButton"
+        id="SplitButton"
         className="relative"
       >
         <div
           className={classes.Button({
             ...state,
-            primary: { isActive: isPrimaryActive },
+            primary: { isActive },
           })}
           style={{ height: '40px' }}
           onMouseEnter={onMouseEnterHandler}
@@ -194,13 +152,11 @@ const SplitButton = ({
         >
           <div className={classes.Interface}>
             <div onClick={outsideClickHandler}>
-              <PrimaryButtonComponent
+              <Component
                 key={state.primary.id}
                 {...state.primary}
-                bState={bState}
-                isActive={isPrimaryActive}
-                onInteraction={args => toolbarService.recordInteraction(args)}
-                servicesManager={servicesManager}
+                isActive={isActive}
+                onInteraction={onInteraction}
                 // All rounding is taken care of by className
                 rounded="none"
                 className={primaryButtonClassName}
@@ -211,13 +167,13 @@ const SplitButton = ({
             <div
               className={classes.Separator({
                 ...state,
-                primary: { isActive: isPrimaryActive },
+                primary: { isActive },
               })}
             ></div>
             <div
               className={classes.Secondary({
                 ...state,
-                primary: { isActive: isPrimaryActive },
+                primary: { isActive },
               })}
               onClick={onSecondaryClickHandler}
               data-cy={`${groupId}-split-button-secondary`}
@@ -231,7 +187,7 @@ const SplitButton = ({
                   name={secondary.icon}
                   className={classes.SecondaryIcon({
                     ...state,
-                    primary: { isActive: isPrimaryActive },
+                    primary: { isActive },
                   })}
                 />
               </Tooltip>
@@ -245,8 +201,7 @@ const SplitButton = ({
         >
           <ListMenu
             items={state.items}
-            bState={bState}
-            renderer={args => listItemRenderer({ ...args, t })}
+            renderer={args => renderer({ ...args, t })}
           />
         </div>
       </div>
@@ -258,20 +213,26 @@ SplitButton.defaultProps = {
   isRadio: false,
   isAction: false,
   primary: {
+    id: null,
+    icon: null,
     label: null,
+    type: null,
     tooltip: null,
   },
   secondary: {
+    id: null,
     icon: 'chevron-down',
     label: null,
-    isActive: true,
     tooltip: 'More Measure Tools',
+    isActive: true,
   },
   items: [],
   renderer: null,
 };
 
 SplitButton.propTypes = {
+  isRadio: PropTypes.bool,
+  isAction: PropTypes.bool,
   primary: PropTypes.shape({
     id: PropTypes.string.isRequired,
     icon: PropTypes.string,
@@ -281,9 +242,9 @@ SplitButton.propTypes = {
   }),
   secondary: PropTypes.shape({
     id: PropTypes.string,
-    icon: PropTypes.string,
+    icon: PropTypes.string.isRequired,
     label: PropTypes.string,
-    tooltip: PropTypes.string,
+    tooltip: PropTypes.string.isRequired,
     isActive: PropTypes.bool,
   }),
   renderer: PropTypes.func,
@@ -297,7 +258,6 @@ SplitButton.propTypes = {
       isActive: PropTypes.bool,
     })
   ),
-  /** Callback function to inform toolbarService of important events */
   onInteraction: PropTypes.func.isRequired,
 };
 

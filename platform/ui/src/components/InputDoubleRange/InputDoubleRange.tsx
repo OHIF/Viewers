@@ -99,10 +99,6 @@ const InputDoubleRange: React.FC<InputDoubleRangeProps> = ({
     };
   }, []);
 
-  const handleMouseUp = () => {
-    selectedThumbRef.current = null;
-  };
-
   const handleGlobalMouseUp = () => {
     // Remove global mouse event listeners
     window.removeEventListener('mousemove', handleMouseMove);

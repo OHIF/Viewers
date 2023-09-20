@@ -144,18 +144,19 @@ Cypress.Commands.add('drag', { prevSubject: 'element' }, (...args) =>
  * @param {number[]} secondClick - Click position [x, y]
  */
 Cypress.Commands.add('addLine', (viewport, firstClick, secondClick) => {
-  cy.get(viewport).then($viewport => {
-    const [x1, y1] = firstClick;
-    const [x2, y2] = secondClick;
+  cy.get(viewport).as('viewportAlias');
+  const [x1, y1] = firstClick;
+  const [x2, y2] = secondClick;
 
-    // The wait is necessary because of double click testing
-    cy.wrap($viewport)
-      .click(x1, y1, { force: true, multiple: true })
-      .wait(250)
-      .trigger('mousemove', { clientX: x2, clientY: y2 })
-      .click(x2, y2, { force: true, multiple: true })
-      .wait(250);
-  });
+  // First click
+  cy.get('@viewportAlias').click(x1, y1, { force: true, multiple: true }).wait(250);
+
+  // Move the mouse and then click again
+  cy.get('@viewportAlias')
+    .trigger('mousemove', { clientX: x2, clientY: y2 })
+    .get('@viewportAlias')
+    .click(x2, y2, { force: true, multiple: true })
+    .wait(250);
 });
 
 /**
@@ -211,11 +212,13 @@ Cypress.Commands.add('waitDicomImage', (mode = '/basic-test', timeout = 50000) =
 
 //Command to reset and clear all the changes made to the viewport
 Cypress.Commands.add('resetViewport', () => {
-  //Click on More button
+  // Assign an alias to the More button
   cy.get('[data-cy="MoreTools-split-button-primary"]')
     .should('have.attr', 'data-tool', 'Reset')
-    .as('moreBtn')
-    .click();
+    .as('moreBtn');
+
+  // Use the alias to click on the More button
+  cy.get('@moreBtn').click();
 });
 
 Cypress.Commands.add('imageZoomIn', () => {
@@ -266,12 +269,13 @@ Cypress.Commands.add('initStudyListAliasesOnDesktop', () => {
 Cypress.Commands.add(
   'addLengthMeasurement',
   (firstClick = [150, 100], secondClick = [130, 170]) => {
-    cy.get('@measurementToolsBtnPrimary')
-      .should('have.attr', 'data-tool', 'Length')
-      .click()
-      .then($lengthBtn => {
-        cy.wrap($lengthBtn).should('have.class', 'active');
-      });
+    // Assign an alias to the button element
+    cy.get('@measurementToolsBtnPrimary').as('lengthButton');
+
+    cy.get('@lengthButton').should('have.attr', 'data-tool', 'Length');
+    cy.get('@lengthButton').click();
+
+    cy.get('@lengthButton').should('have.class', 'active');
 
     cy.addLine('.viewport-element', firstClick, secondClick);
   }
@@ -463,7 +467,11 @@ Cypress.Commands.add('closePreferences', () => {
 
 Cypress.Commands.add('selectPreferencesTab', tabAlias => {
   cy.initPreferencesModalAliases();
-  cy.get(tabAlias).click().should('have.class', 'active');
+
+  cy.get(tabAlias).as('selectedTab');
+  cy.get('@selectedTab').click();
+  cy.get('@selectedTab').should('have.class', 'active');
+
   initPreferencesModalFooterBtnAliases();
 });
 
