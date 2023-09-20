@@ -1307,8 +1307,12 @@ class SegmentationService extends PubSubService {
     if (wasActive) {
       const remainingSegmentations = this._getSegmentations();
 
-      if (remainingSegmentations.length) {
-        const { id } = remainingSegmentations[0];
+      const remainingHydratedSegmentations = remainingSegmentations.filter(
+        segmentation => segmentation.hydrated
+      );
+
+      if (remainingHydratedSegmentations.length) {
+        const { id } = remainingHydratedSegmentations[0];
 
         this._setActiveSegmentationForToolGroup(id, this._getFirstToolGroupId(), false);
       }

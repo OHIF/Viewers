@@ -365,7 +365,7 @@ jobs:
 workflows:
   PR_CHECKS:
     jobs:
-      # - UNIT_TESTS
+      - UNIT_TESTS
 
       - cypress/run:
           name: 'E2E: PWA'
@@ -384,8 +384,8 @@ workflows:
                 path: platform/app/cypress/videos
             - store_test_results:
                 path: platform/app/cypress/results
-          # requires:
-          #   - UNIT_TESTS
+          requires:
+            - UNIT_TESTS
 
   # PR_OPTIONAL_VISUAL_TESTS:
   #   jobs:

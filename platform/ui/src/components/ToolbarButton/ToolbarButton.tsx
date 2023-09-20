@@ -88,7 +88,7 @@ ToolbarButton.propTypes = {
       commandName: PropTypes.string.isRequired,
       commandOptions: PropTypes.object,
     })
-  ).isRequired,
+  ),
   onInteraction: PropTypes.func.isRequired,
   icon: PropTypes.string.isRequired,
   label: PropTypes.string.isRequired,

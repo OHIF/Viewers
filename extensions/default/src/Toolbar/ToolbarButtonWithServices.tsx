@@ -24,7 +24,9 @@ function ToolbarSplitButtonWithServices({
   useEffect(() => {
     const { unsubscribe } = toolbarService.subscribe(
       toolbarService.EVENTS.TOOL_BAR_STATE_MODIFIED,
-      () => setButtonState({ ...toolbarService.state })
+      state => {
+        setButtonState({ ...state });
+      }
     );
 
     return () => {
@@ -49,10 +51,10 @@ ToolbarSplitButtonWithServices.propTypes = {
   type: PropTypes.oneOf(['tool', 'action', 'toggle']).isRequired,
   commands: PropTypes.arrayOf(
     PropTypes.shape({
-      command: PropTypes.string.isRequired,
+      commandName: PropTypes.string.isRequired,
       context: PropTypes.string,
     })
-  ).isRequired,
+  ),
   onInteraction: PropTypes.func.isRequired,
   servicesManager: PropTypes.shape({
     services: PropTypes.shape({

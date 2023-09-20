@@ -74,7 +74,6 @@ function SegmentationToolbox({ servicesManager, extensionManager }) {
     if (!viewports?.size || activeViewportId === undefined) {
       return;
     }
-
     const viewport = viewports.get(activeViewportId);
 
     if (!viewport) {
@@ -130,10 +129,12 @@ function SegmentationToolbox({ servicesManager, extensionManager }) {
       unsubscriptions.push(unsubscribe);
     });
 
+    updateActiveTool();
+
     return () => {
       unsubscriptions.forEach(unsubscribe => unsubscribe());
     };
-  }, [activeViewportId, viewports, segmentationService]);
+  }, [activeViewportId, viewports, segmentationService, updateActiveTool]);
 
   /**
    * Update the active tool when the toolbar state changes

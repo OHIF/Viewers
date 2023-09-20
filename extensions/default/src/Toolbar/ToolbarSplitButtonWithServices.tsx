@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
 function ToolbarSplitButtonWithServices({
-  id,
   isRadio,
   isAction,
   groupId,
@@ -16,10 +15,6 @@ function ToolbarSplitButtonWithServices({
   servicesManager,
 }) {
   const { toolbarService } = servicesManager?.services;
-
-  if (id === 'Layout') {
-    debugger;
-  }
 
   const [buttonsState, setButtonState] = useState({
     primaryToolId: '',
@@ -33,7 +28,6 @@ function ToolbarSplitButtonWithServices({
   const isPrimaryActive =
     (primary.type === 'tool' && primaryToolId === primary.id) ||
     (isPrimaryToggle && toggles[primary.id] === true);
-  console.debug('🚀 ~ isPrimaryActive:', isPrimaryActive);
 
   const PrimaryButtonComponent =
     toolbarService?.getButtonComponentForUIType(primary.uiType) ?? ToolbarButton;
@@ -41,7 +35,9 @@ function ToolbarSplitButtonWithServices({
   useEffect(() => {
     const { unsubscribe } = toolbarService.subscribe(
       toolbarService.EVENTS.TOOL_BAR_STATE_MODIFIED,
-      () => setButtonState({ ...toolbarService.state })
+      state => {
+        setButtonState({ ...state });
+      }
     );
 
     return () => {

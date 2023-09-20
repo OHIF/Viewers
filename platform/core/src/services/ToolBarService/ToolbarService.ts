@@ -94,8 +94,9 @@ export default class ToolbarService extends PubSubService {
             commandsManager.runCommand(commandName, commandOptions, context);
           });
 
-          // only set the primary tool if no error was thrown
-          this.state.primaryToolId = itemId;
+          // only set the primary tool if no error was thrown and if the itemId is not
+          // undefined set the first tool as the primary tool
+          this.state.primaryToolId = itemId || commands[0].commandOptions?.toolName;
         } catch (error) {
           console.warn(error);
         }
@@ -164,7 +165,7 @@ export default class ToolbarService extends PubSubService {
       this.state.groups[groupId] = itemId;
     }
 
-    this._broadcastEvent(this.EVENTS.TOOL_BAR_STATE_MODIFIED, {});
+    this._broadcastEvent(this.EVENTS.TOOL_BAR_STATE_MODIFIED, { ...this.state });
   }
 
   getButtons() {
