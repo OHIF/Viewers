@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.7.0-beta.76](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.75...v3.7.0-beta.76) (2023-09-19)
+
+
+### Bug Fixes
+
+* **keyCloak:** fix openresty keycloak deployment recipe ([#3655](https://github.com/OHIF/Viewers/issues/3655)) ([2d7721c](https://github.com/OHIF/Viewers/commit/2d7721cb581f55dc49e3baeca2411b18dd78ad74))
+
+
+
+
+
 # [3.7.0-beta.75](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.74...v3.7.0-beta.75) (2023-09-18)
 
 **Note:** Version bump only for package ohif-docs
