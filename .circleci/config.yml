@@ -373,7 +373,7 @@ workflows:
           install-browsers: true
           cypress-command:
             'npx wait-on@latest http://localhost:3000 && cd platform/app &&  npx cypress run
-            --record --browser chrome'
+            --record --browser chrome --parallel'
           package-manager: 'yarn'
           cypress-cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
           cypress-cache-path: '~/.cache/Cypress'
