@@ -59,7 +59,7 @@ export default class ClientManager {
     this._addConfiguration(config);
   }
 
-  public getAuthorizationHeader() {
+  private getAuthorizationHeader() {
     const xhrRequestHeaders = {};
     const authHeaders = this.userAuthenticationService.getAuthorizationHeader();
     if (authHeaders && authHeaders.Authorization) {
@@ -68,7 +68,7 @@ export default class ClientManager {
     return xhrRequestHeaders;
   }
 
-  public generateWadoHeader(config) {
+  private generateWadoHeader(config) {
     const authorizationHeader = this.getAuthorizationHeader();
     //Generate accept header depending on config params
     const formattedAcceptHeader = utils.generateAcceptHeader(
@@ -90,16 +90,16 @@ export default class ClientManager {
     );
   }
 
-  public setWadoHeaders(tipo = 1) {
-    if (tipo === 1) {
-      this.clients.forEach(
-        client => (client.wadoDicomWebClient.headers = this.generateWadoHeader(client))
-      );
-    } else {
-      this.clients.forEach(
-        client => (client.wadoDicomWebClient.headers = this.getAuthorizationHeader())
-      );
-    }
+  public setWadoHeaders() {
+    this.clients.forEach(
+      client => (client.wadoDicomWebClient.headers = this.generateWadoHeader(client))
+    );
+  }
+
+  public setAuthorizationHeadersForWADO() {
+    this.clients.forEach(
+      client => (client.wadoDicomWebClient.headers = this.getAuthorizationHeader())
+    );
   }
 
   // returns reject function of the first client that supports it
@@ -116,7 +116,7 @@ export default class ClientManager {
     if (this.clients.length) {
       if (name) {
         const client = this.clients.find(client => client.name === name);
-        return client.qidoDicomWebClient;
+        return client?.qidoDicomWebClient;
       } else {
         return this.clients[0].qidoDicomWebClient;
       }
@@ -128,7 +128,7 @@ export default class ClientManager {
     if (this.clients.length) {
       if (name) {
         const client = this.clients.find(client => client.name === name);
-        return client.wadoDicomWebClient;
+        return client?.wadoDicomWebClient;
       } else {
         return this.clients[0].wadoDicomWebClient;
       }
