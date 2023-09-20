@@ -23,7 +23,14 @@ const tracked = {
     '@ohif/extension-measurement-tracking.viewportModule.cornerstone-tracked',
   ROIThresholdPanel: '@ohif/extension-default.panelModule.ROIThresholdSeg',
 };
-
+const segmentation = {
+  panel: '@ohif/extension-cornerstone-dicom-seg.panelModule.panelSegmentation',
+  panelTool:
+    '@ohif/extension-cornerstone-dicom-seg.panelModule.panelSegmentationWithTools',
+  sopClassHandler:
+    '@ohif/extension-cornerstone-dicom-seg.sopClassHandlerModule.dicom-seg',
+  viewport: '@ohif/extension-cornerstone-dicom-seg.viewportModule.dicom-seg',
+};
 const dicomsr = {
   sopClassHandler:
     '@ohif/extension-cornerstone-dicom-sr.sopClassHandlerModule.dicom-sr',
@@ -201,12 +208,14 @@ function modeFactory() {
           return {
             id: ohif.layout,
             props: {
-              leftPanels: [tracked.thumbnailList, ohif.HounsfieldUnitPanel],
-              rightPanels: [
-                dicomSeg.panel,
-                tracked.measurements,
-                tracked.ROIThresholdPanel,
-              ],
+              // leftPanels: [tracked.thumbnailList, ohif.HounsfieldUnitPanel],
+              // rightPanels: [
+              //   dicomSeg.panel,
+              //   tracked.measurements,
+              //   tracked.ROIThresholdPanel,
+              // ],
+              leftPanels: [tracked.thumbnailList],
+              rightPanels: [segmentation.panelTool, ohif.HounsfieldUnitPanel],
               rightPanelDefaultClosed: true,
               viewports: [
                 {

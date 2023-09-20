@@ -1,3 +1,21 @@
+const brushInstanceNames = {
+  CircularBrush: 'CircularBrush',
+  CircularEraser: 'CircularEraser',
+  SphereBrush: 'SphereBrush',
+  SphereEraser: 'SphereEraser',
+  ThresholdCircularBrush: 'ThresholdCircularBrush',
+  ThresholdSphereBrush: 'ThresholdSphereBrush',
+};
+
+const brushStrategies = {
+  CircularBrush: 'FILL_INSIDE_CIRCLE',
+  CircularEraser: 'ERASE_INSIDE_CIRCLE',
+  SphereBrush: 'FILL_INSIDE_SPHERE',
+  SphereEraser: 'ERASE_INSIDE_SPHERE',
+  ThresholdCircularBrush: 'THRESHOLD_INSIDE_CIRCLE',
+  ThresholdSphereBrush: 'THRESHOLD_INSIDE_SPHERE',
+};
+
 function initDefaultToolGroup(
   extensionManager,
   toolGroupService,
@@ -22,26 +40,40 @@ function initDefaultToolGroup(
       },
       { toolName: toolNames.StackScrollMouseWheel, bindings: [] },
     ],
-    passive: [
-      { toolName: toolNames.Length },
-      { toolName: toolNames.ArrowAnnotate },
-      { toolName: toolNames.Bidirectional },
-      { toolName: toolNames.DragProbe },
-      { toolName: toolNames.EllipticalROI },
-      { toolName: toolNames.CircleROI },
-      { toolName: toolNames.RectangleROI },
-      { toolName: toolNames.StackScroll },
-      { toolName: toolNames.Angle },
-      { toolName: toolNames.CobbAngle },
-      { toolName: toolNames.PlanarFreehandROI },
-      { toolName: toolNames.Magnify },
-      { toolName: toolNames.SegmentationDisplay },
-      { toolName: toolNames.CalibrationLine },
-      { toolName: 'RectangleROIStartEndThreshold' },
-    ],
+    passive: Object.keys(brushInstanceNames)
+      .map((brushName) => ({
+        toolName: brushName,
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: brushStrategies[brushName],
+        },
+      }))
+      .concat([
+        { toolName: toolNames.CircleScissors },
+        { toolName: toolNames.RectangleScissors },
+        { toolName: toolNames.SphereScissors },
+        { toolName: toolNames.StackScroll },
+        { toolName: toolNames.Magnify },
+        { toolName: toolNames.SegmentationDisplay },
+        { toolName: toolNames.Length },
+        { toolName: toolNames.ArrowAnnotate },
+        { toolName: toolNames.Bidirectional },
+        { toolName: toolNames.DragProbe },
+        { toolName: toolNames.EllipticalROI },
+        { toolName: toolNames.CircleROI },
+        { toolName: toolNames.RectangleROI },
+        { toolName: toolNames.StackScroll },
+        { toolName: toolNames.Angle },
+        { toolName: toolNames.CobbAngle },
+        { toolName: toolNames.PlanarFreehandROI },
+        { toolName: toolNames.Magnify },
+        { toolName: toolNames.SegmentationDisplay },
+        { toolName: toolNames.CalibrationLine },
+        { toolName: 'RectangleROIStartEndThreshold' },
+      ]),
     // enabled
     // disabled
-    enabled: [{ toolName: toolNames.SegmentationDisplay }],
+    enabled: [],
     disabled: [
       { toolName: toolNames.ReferenceLines },
       { toolName: toolNames.Crosshairs },
@@ -67,7 +99,7 @@ function initDefaultToolGroup(
         }),
     },
   };
-
+  console.log(tools);
   toolGroupService.createToolGroupAndAddTools(toolGroupId, tools, toolsConfig);
 }
 
@@ -174,21 +206,37 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
       },
       { toolName: toolNames.StackScrollMouseWheel, bindings: [] },
     ],
-    passive: [
-      { toolName: toolNames.Length },
-      { toolName: toolNames.ArrowAnnotate },
-      { toolName: toolNames.Bidirectional },
-      { toolName: toolNames.DragProbe },
-      { toolName: toolNames.EllipticalROI },
-      { toolName: toolNames.CircleROI },
-      { toolName: toolNames.RectangleROI },
-      { toolName: toolNames.StackScroll },
-      { toolName: toolNames.Angle },
-      { toolName: toolNames.CobbAngle },
-      { toolName: toolNames.PlanarFreehandROI },
-      { toolName: toolNames.SegmentationDisplay },
-      { toolName: 'RectangleROIStartEndThreshold' },
-    ],
+    passive: Object.keys(brushInstanceNames)
+      .map((brushName) => ({
+        toolName: brushName,
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: brushStrategies[brushName],
+        },
+      }))
+      .concat([
+        { toolName: toolNames.CircleScissors },
+        { toolName: toolNames.RectangleScissors },
+        { toolName: toolNames.SphereScissors },
+        { toolName: toolNames.StackScroll },
+        { toolName: toolNames.Magnify },
+        { toolName: toolNames.SegmentationDisplay },
+        { toolName: toolNames.Length },
+        { toolName: toolNames.ArrowAnnotate },
+        { toolName: toolNames.Bidirectional },
+        { toolName: toolNames.DragProbe },
+        { toolName: toolNames.EllipticalROI },
+        { toolName: toolNames.CircleROI },
+        { toolName: toolNames.RectangleROI },
+        { toolName: toolNames.StackScroll },
+        { toolName: toolNames.Angle },
+        { toolName: toolNames.CobbAngle },
+        { toolName: toolNames.PlanarFreehandROI },
+        { toolName: toolNames.Magnify },
+        { toolName: toolNames.SegmentationDisplay },
+        { toolName: toolNames.CalibrationLine },
+        { toolName: 'RectangleROIStartEndThreshold' },
+      ]),
     disabled: [
       { toolName: toolNames.Crosshairs },
       { toolName: toolNames.ReferenceLines },

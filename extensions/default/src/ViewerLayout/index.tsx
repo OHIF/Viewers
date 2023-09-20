@@ -1,22 +1,10 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { useParams, useLocation, useNavigate } from 'react-router';
-import { useTranslation } from 'react-i18next';
-import {
-  ErrorBoundary,
-  UserPreferences,
-  AboutModal,
-  Header,
-  useModal,
-  LoadingIndicatorProgress,
-} from '@ohif/ui';
-import i18n from '@ohif/i18n';
-import { ServicesManager, HangingProtocolService, hotkeys, CommandsManager } from '@ohif/core';
+
+import { SidePanel, ErrorBoundary, LoadingIndicatorProgress } from '@ohif/ui';
+import { ServicesManager, HangingProtocolService, CommandsManager } from '@ohif/core';
 import { useAppConfig } from '@state';
-import Toolbar from '../Toolbar/Toolbar';
-import SidePanelWithService from '../components/SidePanelWithService';
 import ViewerHeader from './ViewerHeader';
-const { availableLanguages, defaultLanguage, currentLanguage } = i18n;
 
 function ViewerLayout({
   // From Extension Module Params
@@ -27,112 +15,15 @@ function ViewerLayout({
   // From Modes
   viewports,
   ViewportGridComp,
+  leftPanels = [],
+  rightPanels = [],
   leftPanelDefaultClosed = false,
   rightPanelDefaultClosed = false,
 }): React.FunctionComponent {
   const [appConfig] = useAppConfig();
-  const navigate = useNavigate();
-  const location = useLocation();
 
-  const { panelService, hangingProtocolService } = servicesManager.services;
-
-  const hasPanels = useCallback(
-    (side): boolean => !!panelService.getPanels(side).length,
-    [panelService]
-  );
-
-  const [hasRightPanels, setHasRightPanels] = useState(hasPanels('right'));
-  const [hasLeftPanels, setHasLeftPanels] = useState(hasPanels('left'));
-
-  const onClickReturnButton = () => {
-    const { pathname } = location;
-    const dataSourceIdx = pathname.indexOf('/', 1);
-    // const search =
-    //   dataSourceIdx === -1
-    //     ? undefined
-    //     : `datasources=${pathname.substring(dataSourceIdx + 1)}`;
-
-    // Todo: Handle parameters in a better way.
-    const query = new URLSearchParams(window.location.search);
-    const configUrl = query.get('configUrl');
-
-    const dataSourceName = pathname.substring(dataSourceIdx + 1);
-    const existingDataSource = extensionManager.getDataSources(dataSourceName);
-
-    const searchQuery = new URLSearchParams();
-    if (dataSourceIdx !== -1 && existingDataSource) {
-      searchQuery.append('datasources', pathname.substring(dataSourceIdx + 1));
-    }
-
-    if (configUrl) {
-      searchQuery.append('configUrl', configUrl);
-    }
-
-    navigate({
-      pathname: '/',
-      search: decodeURIComponent(searchQuery.toString()),
-    });
-  };
-
-  const { t } = useTranslation();
-  const { show, hide } = useModal();
-
+  const { hangingProtocolService } = servicesManager.services;
   const [showLoadingIndicator, setShowLoadingIndicator] = useState(appConfig.showLoadingIndicator);
-
-  const { hotkeyDefinitions, hotkeyDefaults } = hotkeysManager;
-  const versionNumber = process.env.VERSION_NUMBER;
-  const commitHash = process.env.COMMIT_HASH;
-
-  const menuOptions = [
-    {
-      title: t('Header:About'),
-      icon: 'info',
-      onClick: () =>
-        show({
-          content: AboutModal,
-          title: 'About OHIF Viewer',
-          contentProps: { versionNumber, commitHash },
-        }),
-    },
-    {
-      title: t('Header:Preferences'),
-      icon: 'settings',
-      onClick: () =>
-        show({
-          title: t('UserPreferencesModal:User Preferences'),
-          content: UserPreferences,
-          contentProps: {
-            hotkeyDefaults: hotkeysManager.getValidHotkeyDefinitions(hotkeyDefaults),
-            hotkeyDefinitions,
-            currentLanguage: currentLanguage(),
-            availableLanguages,
-            defaultLanguage,
-            onCancel: () => {
-              hotkeys.stopRecord();
-              hotkeys.unpause();
-              hide();
-            },
-            onSubmit: ({ hotkeyDefinitions, language }) => {
-              i18n.changeLanguage(language.value);
-              hotkeysManager.setHotkeys(hotkeyDefinitions);
-              hide();
-            },
-            onReset: () => hotkeysManager.restoreDefaultBindings(),
-            hotkeysModule: hotkeys,
-          },
-        }),
-    },
-  ];
-
-  if (appConfig.oidc) {
-    menuOptions.push({
-      title: t('Header:Logout'),
-      icon: 'power-off',
-      onClick: async () => {
-        navigate(`/logout?redirect_uri=${encodeURIComponent(window.location.href)}`);
-      },
-    });
-  }
 
   /**
    * Set body classes (tailwindcss) that don't allow vertical
@@ -169,6 +60,19 @@ function ViewerLayout({
     return { entry, content };
   };
 
+  const getPanelData = id => {
+    const { content, entry } = getComponent(id);
+
+    return {
+      id: entry.id,
+      iconName: entry.iconName,
+      iconLabel: entry.iconLabel,
+      label: entry.label,
+      name: entry.name,
+      content,
+    };
+  };
+
   useEffect(() => {
     const { unsubscribe } = hangingProtocolService.subscribe(
       HangingProtocolService.EVENTS.PROTOCOL_CHANGED,
@@ -195,17 +99,8 @@ function ViewerLayout({
     };
   };
 
-  useEffect(() => {
-    const { unsubscribe } = panelService.subscribe(panelService.EVENTS.PANELS_CHANGED, () => {
-      setHasLeftPanels(hasPanels('left'));
-      setHasRightPanels(hasPanels('right'));
-    });
-
-    return () => {
-      unsubscribe();
-    };
-  }, [panelService, hasPanels]);
-
+  const leftPanelComponents = leftPanels.map(getPanelData);
+  const rightPanelComponents = rightPanels.map(getPanelData);
   const viewportComponents = viewports.map(getViewportComponentData);
 
   return (
@@ -222,11 +117,12 @@ function ViewerLayout({
         <React.Fragment>
           {showLoadingIndicator && <LoadingIndicatorProgress className="h-full w-full bg-black" />}
           {/* LEFT SIDEPANELS */}
-          {hasLeftPanels ? (
+          {leftPanelComponents.length ? (
             <ErrorBoundary context="Left Panel">
-              <SidePanelWithService
+              <SidePanel
                 side="left"
                 activeTabIndex={leftPanelDefaultClosed ? null : 0}
+                tabs={leftPanelComponents}
                 servicesManager={servicesManager}
               />
             </ErrorBoundary>
@@ -243,11 +139,12 @@ function ViewerLayout({
               </ErrorBoundary>
             </div>
           </div>
-          {hasRightPanels ? (
+          {rightPanelComponents.length ? (
             <ErrorBoundary context="Right Panel">
-              <SidePanelWithService
+              <SidePanel
                 side="right"
                 activeTabIndex={rightPanelDefaultClosed ? null : 0}
+                tabs={rightPanelComponents}
                 servicesManager={servicesManager}
               />
             </ErrorBoundary>

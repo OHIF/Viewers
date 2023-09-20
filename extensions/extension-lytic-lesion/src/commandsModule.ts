@@ -360,12 +360,10 @@ const commandsModule = ({
       }
     },
     setHounsfieldRange: ({minHU, maxHU, lowHU, highHU, targetNumber}) =>{
-      const { activeViewportIndex, viewports } = viewportGridService.getState();
-      const activeViewportSpecificData = viewports[activeViewportIndex];
-      const { displaySetInstanceUIDs } = activeViewportSpecificData;
-      const displaySets = displaySetService.activeDisplaySets;
-      const viewport = cornerstoneViewportService.getCornerstoneViewportByIndex(
-        activeViewportIndex
+      const { activeViewportId, viewports } = viewportGridService.getState();
+      console.log(activeViewportId)
+      const viewport = cornerstoneViewportService.getCornerstoneViewport(
+        activeViewportId
       );
 
       let props = viewport.getProperties();
@@ -382,10 +380,7 @@ const commandsModule = ({
     },
     setColorMap: ({ colormap }) => {
       const { activeViewportIndex, viewports } = viewportGridService.getState();
-      const activeViewportSpecificData = viewports[activeViewportIndex];
-      const { displaySetInstanceUIDs } = activeViewportSpecificData;
       const displaySets = displaySetService.activeDisplaySets;
-      console.log(displaySets);
       let views = []
       viewports.forEach(viewport =>{
         console.log(viewport);
@@ -629,14 +624,8 @@ const commandsModule = ({
         return;
       }
 
-      const filteredViewports = viewports.filter(viewport => {
-        if (!viewport.viewportOptions) {
-          return false;
-        }
-
-        return toolGroupViewportIds.includes(
-          viewport.viewportOptions.viewportId
-        );
+      const filteredViewports = Array.from(viewports.values()).filter(viewport => {
+        return toolGroupViewportIds.includes(viewport.viewportId);
       });
 
       if (!filteredViewports.length) {

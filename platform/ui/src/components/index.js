@@ -165,5 +165,4 @@ export {
   ViewportOverlay,
   WindowLevel,
   WindowLevelMenuItem,
-  InputDoubleRange,
 };

@@ -34,7 +34,7 @@ function HounsfieldRangeSelector({ commandsManager, servicesManager, extensionMa
       <div className="flex items-end space-x-2">
         <div>
           <Button
-            size="initial"
+            size="medium"
             className="px-2 py-2 text-base text-white"
             color="primary"
             variant="outlined"

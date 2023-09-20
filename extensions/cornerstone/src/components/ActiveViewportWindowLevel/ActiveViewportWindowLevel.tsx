@@ -15,7 +15,7 @@ const ActiveViewportWindowLevel = ({
 
   useEffect(() => {
     const { unsubscribe } = viewportGridService.subscribe(
-      viewportGridService.EVENTS.ACTIVE_VIEWPORT_INDEX_CHANGED,
+      viewportGridService.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED,
       ({ viewportId }) => setActiveViewportIndex(viewportId)
     );
 
