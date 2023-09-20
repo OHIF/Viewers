@@ -345,7 +345,7 @@ const ViewportWindowLevel = ({
 
   const handleVOIChange = useCallback(
     (volumeId, voi) => {
-      const viewport = cornerstoneViewportService.getCornerstoneViewportByIndex(viewportId);
+      const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
       const newRange = {
         lower: voi.windowCenter - voi.windowWidth / 2,
@@ -360,7 +360,7 @@ const ViewportWindowLevel = ({
 
   const handleOpacityChange = useCallback(
     (viewportId, _volumeIndex, volumeId, opacity) => {
-      const viewport = cornerstoneViewportService.getCornerstoneViewportByIndex(viewportId);
+      const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
       if (!viewport) {
         return;

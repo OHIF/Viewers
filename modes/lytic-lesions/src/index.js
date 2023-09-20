@@ -208,12 +208,6 @@ function modeFactory() {
           return {
             id: ohif.layout,
             props: {
-              // leftPanels: [tracked.thumbnailList, ohif.HounsfieldUnitPanel],
-              // rightPanels: [
-              //   dicomSeg.panel,
-              //   tracked.measurements,
-              //   tracked.ROIThresholdPanel,
-              // ],
               leftPanels: [tracked.thumbnailList],
               rightPanels: [segmentation.panelTool, ohif.HounsfieldUnitPanel],
               rightPanelDefaultClosed: true,
