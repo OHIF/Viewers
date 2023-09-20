@@ -376,7 +376,6 @@ workflows:
           package-manager: 'yarn'
           cypress-cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
           cypress-cache-path: '~/.cache/Cypress'
-          working-directory: platform/app
           post-steps:
             - store_artifacts:
                 path: platform/app/cypress/screenshots
