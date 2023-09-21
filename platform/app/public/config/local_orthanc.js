@@ -19,7 +19,7 @@ window.config = {
       namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
       sourceName: 'dicomweb',
       configuration: {
-        friendlyName: 'dcmjs DICOMWeb Server',
+        friendlyName: 'local Orthanc DICOMWeb Server',
         name: 'DCM4CHEE',
         wadoUriRoot: 'http://localhost/dicom-web',
         qidoRoot: 'http://localhost/dicom-web',
