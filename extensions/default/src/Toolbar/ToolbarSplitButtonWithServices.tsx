@@ -16,21 +16,58 @@ function ToolbarSplitButtonWithServices({
 }) {
   const { toolbarService } = servicesManager?.services;
 
+  const handleItemClick = (item, index) => {
+    const { id, type, commands } = item;
+    onInteraction({
+      groupId,
+      itemId: id,
+      interactionType: type,
+      commands,
+    });
+
+    setState(state => ({
+      ...state,
+      primary: !isAction && isRadio ? { ...item, index } : state.primary,
+      isExpanded: false,
+      items: getSplitButtonItems(items).filter(item =>
+        isRadio && !isAction ? item.index !== index : true
+      ),
+    }));
+  };
+
+  /* Bubbles up individual item clicks */
+  const getSplitButtonItems = items =>
+    items.map((item, index) => ({
+      ...item,
+      index,
+      onClick: () => handleItemClick(item, index),
+    }));
+
   const [buttonsState, setButtonState] = useState({
     primaryToolId: '',
     toggles: {},
     groups: {},
   });
+
+  const [state, setState] = useState({
+    primary,
+    items: getSplitButtonItems(items).filter(item =>
+      isRadio && !isAction ? item.id !== primary.id : true
+    ),
+    isHovering: false,
+    isExpanded: false,
+  });
+
   const { primaryToolId, toggles } = buttonsState;
 
-  const isPrimaryToggle = primary.type === 'toggle';
+  const isPrimaryToggle = state.primary.type === 'toggle';
 
   const isPrimaryActive =
-    (primary.type === 'tool' && primaryToolId === primary.id) ||
-    (isPrimaryToggle && toggles[primary.id] === true);
+    (state.primary.type === 'tool' && primaryToolId === state.primary.id) ||
+    (isPrimaryToggle && toggles[state.primary.id] === true);
 
   const PrimaryButtonComponent =
-    toolbarService?.getButtonComponentForUIType(primary.uiType) ?? ToolbarButton;
+    toolbarService?.getButtonComponentForUIType(state.primary.uiType) ?? ToolbarButton;
 
   useEffect(() => {
     const { unsubscribe } = toolbarService.subscribe(
@@ -45,8 +82,9 @@ function ToolbarSplitButtonWithServices({
     };
   }, [toolbarService]);
 
-  const updatedItems = items.map(item => {
+  const updatedItems = state.items.map(item => {
     const isActive = item.type === 'tool' && primaryToolId === item.id;
+
     // We could have added the
     // item.type === 'toggle' && toggles[item.id] === true
     // too but that makes the button active when the toggle is active under it
@@ -90,7 +128,7 @@ function ToolbarSplitButtonWithServices({
     <SplitButton
       isRadio={isRadio}
       isAction={isAction}
-      primary={primary}
+      primary={state.primary}
       secondary={secondary}
       items={updatedItems}
       groupId={groupId}

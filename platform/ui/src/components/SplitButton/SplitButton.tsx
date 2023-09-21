@@ -71,70 +71,39 @@ const classes = {
 };
 
 const SplitButton = ({
-  isRadio,
-  isAction,
   isToggle,
   groupId,
-  primary: _primary,
+  primary,
   secondary,
-  items: _items,
+  items,
   renderer,
   isActive,
   onInteraction,
   Component,
 }) => {
   const { t } = useTranslation('Buttons');
+  const [state, setState] = useState({ isHovering: false, isExpanded: false });
 
-  /* Bubbles up individual item clicks */
-  const getSplitButtonItems = items =>
-    items.map((item, index) => ({
-      ...item,
-      index,
-      onClick: () => {
-        onInteraction({
-          groupId,
-          //
-          itemId: item.id,
-          interactionType: item.type,
-          // splitButtonId? (so we can track group?)
-          // info to fire item's command/event?
-          commands: item.commands,
-        });
+  const toggleExpanded = () => setState({ ...state, isExpanded: !state.isExpanded });
+  const setHover = hovering => setState({ ...state, isHovering: hovering });
+  const collapse = () => setState({ ...state, isExpanded: false });
 
-        setState(state => ({
-          ...state,
-          primary: !isAction && isRadio ? { ...item, index } : state.primary,
-          isExpanded: false,
-          items: getSplitButtonItems(_items).filter(item =>
-            isRadio && !isAction ? item.index !== index : true
-          ),
-        }));
-      },
-    }));
-
-  const [state, setState] = useState({
-    primary: _primary,
-    items: getSplitButtonItems(_items).filter(item =>
-      isRadio && !isAction ? item.id !== _primary.id : true
-    ),
-    isHovering: false,
-    isExpanded: false,
-  });
-
-  const onSecondaryClickHandler = () =>
-    setState(state => ({ ...state, isExpanded: !state.isExpanded }));
-  const onMouseEnterHandler = () => setState(state => ({ ...state, isHovering: true }));
-  const onMouseLeaveHandler = () => setState(state => ({ ...state, isHovering: false }));
-  const outsideClickHandler = () => setState(state => ({ ...state, isExpanded: false }));
-
-  const primaryButtonClassName = classes.Primary({
-    ...state,
-    primary: { isActive, isToggle },
-  });
+  const renderPrimaryButton = () => (
+    <Component
+      key={primary.id}
+      {...primary}
+      isActive={isActive}
+      onInteraction={onInteraction}
+      rounded="none"
+      className={classes.Primary({ ...state, primary: { isActive, isToggle } })}
+      data-tool={primary.id}
+      data-cy={`${groupId}-split-button-primary`}
+    />
+  );
 
   return (
     <OutsideClickHandler
-      onOutsideClick={outsideClickHandler}
+      onOutsideClick={collapse}
       disabled={!state.isExpanded}
     >
       <div
@@ -142,40 +111,17 @@ const SplitButton = ({
         className="relative"
       >
         <div
-          className={classes.Button({
-            ...state,
-            primary: { isActive },
-          })}
+          className={classes.Button({ ...state, primary: { isActive } })}
           style={{ height: '40px' }}
-          onMouseEnter={onMouseEnterHandler}
-          onMouseLeave={onMouseLeaveHandler}
+          onMouseEnter={() => setHover(true)}
+          onMouseLeave={() => setHover(false)}
         >
           <div className={classes.Interface}>
-            <div onClick={outsideClickHandler}>
-              <Component
-                key={state.primary.id}
-                {...state.primary}
-                isActive={isActive}
-                onInteraction={onInteraction}
-                // All rounding is taken care of by className
-                rounded="none"
-                className={primaryButtonClassName}
-                data-tool={state.primary.id}
-                data-cy={`${groupId}-split-button-primary`}
-              />
-            </div>
+            <div onClick={collapse}>{renderPrimaryButton()}</div>
+            <div className={classes.Separator({ ...state, primary: { isActive } })}></div>
             <div
-              className={classes.Separator({
-                ...state,
-                primary: { isActive },
-              })}
-            ></div>
-            <div
-              className={classes.Secondary({
-                ...state,
-                primary: { isActive },
-              })}
-              onClick={onSecondaryClickHandler}
+              className={classes.Secondary({ ...state, primary: { isActive } })}
+              onClick={toggleExpanded}
               data-cy={`${groupId}-split-button-secondary`}
             >
               <Tooltip
@@ -185,22 +131,19 @@ const SplitButton = ({
               >
                 <Icon
                   name={secondary.icon}
-                  className={classes.SecondaryIcon({
-                    ...state,
-                    primary: { isActive },
-                  })}
+                  className={classes.SecondaryIcon({ ...state, primary: { isActive } })}
                 />
               </Tooltip>
             </div>
           </div>
         </div>
-        {/* EXPANDED LIST OF OPTIONS */}
         <div
           className={classes.Content({ ...state })}
           data-cy={`${groupId}-list-menu`}
         >
           <ListMenu
-            items={state.items}
+            items={items}
+            onClick={collapse}
             renderer={args => renderer({ ...args, t })}
           />
         </div>
@@ -209,56 +152,23 @@ const SplitButton = ({
   );
 };
 
-SplitButton.defaultProps = {
-  isRadio: false,
-  isAction: false,
-  primary: {
-    id: null,
-    icon: null,
-    label: null,
-    type: null,
-    tooltip: null,
-  },
-  secondary: {
-    id: null,
-    icon: 'chevron-down',
-    label: null,
-    tooltip: 'More Measure Tools',
-    isActive: true,
-  },
-  items: [],
-  renderer: null,
+SplitButton.propTypes = {
+  isToggle: PropTypes.bool,
+  groupId: PropTypes.string.isRequired,
+  primary: PropTypes.object.isRequired,
+  secondary: PropTypes.object.isRequired,
+  items: PropTypes.array.isRequired,
+  renderer: PropTypes.func,
+  isActive: PropTypes.bool,
+  onInteraction: PropTypes.func.isRequired,
+  Component: PropTypes.elementType,
 };
 
-SplitButton.propTypes = {
-  isRadio: PropTypes.bool,
-  isAction: PropTypes.bool,
-  primary: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    icon: PropTypes.string,
-    label: PropTypes.string,
-    type: PropTypes.oneOf(['tool', 'action', 'toggle']).isRequired,
-    tooltip: PropTypes.string,
-  }),
-  secondary: PropTypes.shape({
-    id: PropTypes.string,
-    icon: PropTypes.string.isRequired,
-    label: PropTypes.string,
-    tooltip: PropTypes.string.isRequired,
-    isActive: PropTypes.bool,
-  }),
-  renderer: PropTypes.func,
-  items: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      icon: PropTypes.string,
-      label: PropTypes.string,
-      type: PropTypes.oneOf(['tool', 'action', 'toggle']).isRequired,
-      tooltip: PropTypes.string,
-      isActive: PropTypes.bool,
-    })
-  ),
-  onInteraction: PropTypes.func.isRequired,
+SplitButton.defaultProps = {
+  isToggle: false,
+  renderer: null,
+  isActive: false,
+  Component: null,
 };
 
 export default SplitButton;

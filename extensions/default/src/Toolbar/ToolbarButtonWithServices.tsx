@@ -2,7 +2,7 @@ import { ToolbarButton } from '@ohif/ui';
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
-function ToolbarSplitButtonWithServices({
+function ToolbarButtonWithServices({
   id,
   type,
   commands,
@@ -48,7 +48,7 @@ function ToolbarSplitButtonWithServices({
   );
 }
 
-ToolbarSplitButtonWithServices.propTypes = {
+ToolbarButtonWithServices.propTypes = {
   id: PropTypes.string.isRequired,
   type: PropTypes.oneOf(['tool', 'action', 'toggle']).isRequired,
   commands: PropTypes.arrayOf(
@@ -72,4 +72,4 @@ ToolbarSplitButtonWithServices.propTypes = {
   }).isRequired,
 };
 
-export default ToolbarSplitButtonWithServices;
+export default ToolbarButtonWithServices;
