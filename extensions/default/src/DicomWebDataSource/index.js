@@ -22,7 +22,7 @@ const { naturalizeDataset, denaturalizeDataset } = DicomMetaDictionary;
 const ImplementationClassUID = '2.25.270695996825855179949881587723571202391.2.0.0';
 const ImplementationVersionName = 'OHIF-VIEWER-2.0.0';
 const EXPLICIT_VR_LITTLE_ENDIAN = '1.2.840.10008.1.2.1';
-const STUDY_INSTANCE_UID_DICOM_TAG = '0020000D';
+const STUDY_INSTANCE_UID = '0020000D';
 const NUMBER_STUDY_SERIES = '00201206';
 const NUMBER_STUDY_INSTANCES = '00201208';
 
@@ -74,7 +74,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
               clientResults = [];
             }
             for (let j = 0; j < clientResults.length; j++) {
-              const studyInstanceUID = clientResults[j][STUDY_INSTANCE_UID_DICOM_TAG].Value[0];
+              const studyInstanceUID = clientResults[j][STUDY_INSTANCE_UID].Value[0];
               if (!(studyInstanceUID in studyInstanceUIDs)) {
                 studyInstanceUIDs[studyInstanceUID] = clientResults[j];
                 results.push(clientResults[j]);
