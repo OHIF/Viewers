@@ -274,7 +274,7 @@ output.
 [dicom-web]: https://en.wikipedia.org/wiki/DICOMweb
 [storescu]: https://support.dcmtk.org/docs/storescu.html
 [webpack-proxy]: https://webpack.js.org/configuration/dev-server/#devserverproxy
-[orthanc-docker-compose]: https://github.com/OHIF/Viewers/tree/master/.docker/Nginx-Orthanc
+[orthanc-docker-compose]: https://github.com/OHIF/Viewers/tree/master/platform/app/.recipes/Nginx-Orthanc
 <!-- Archives -->
 [dcm4chee]: https://github.com/dcm4che/dcm4chee-arc-light
 [dcm4chee-docker]: https://github.com/dcm4che/dcm4chee-arc-light/wiki/Running-on-Docker

@@ -48,7 +48,7 @@ function createDicomWebProxyApi(dicomWebProxyConfig, UserAuthenticationService) 
     retrieve: {
       directURL: (...args) => dicomWebDelegate.retrieve.directURL(...args),
       series: {
-        metadata: (...args) => dicomWebDelegate.retrieve.series.metadata(...args),
+        metadata: async (...args) => dicomWebDelegate.retrieve.series.metadata(...args),
       },
     },
     store: {
