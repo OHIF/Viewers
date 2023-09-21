@@ -175,7 +175,7 @@ export default function PanelGenerateImage({ servicesManager, commandsManager })
 
     const { element } = viewportInfo;
     const cine = cines[activeViewportId];
-    if (!cine.isPlaying) {
+    if (cine && !cine.isPlaying) {
       cineService.playClip(element, { framesPerSecond: frameRate });
       cine.isPlaying = true;
     }
@@ -185,7 +185,7 @@ export default function PanelGenerateImage({ servicesManager, commandsManager })
     const viewportInfo = cornerstoneViewportService.getViewportInfo(activeViewportId);
     const { element } = viewportInfo;
     const cine = cines[activeViewportId];
-    if (cine.isPlaying) {
+    if (cine?.isPlaying) {
       cineService.stopClip(element);
       cine.isPlaying = false;
     }
@@ -196,7 +196,7 @@ export default function PanelGenerateImage({ servicesManager, commandsManager })
       setFrameRate(newFrameRate);
     }
     const cine = cines[activeViewportId];
-    if (cine.isPlaying) {
+    if (cine?.isPlaying) {
       handleStop();
       handlePlay();
     }

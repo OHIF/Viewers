@@ -74,7 +74,7 @@ function _getInstance(StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID) {
     return;
   }
 
-  return series.instances.find(instance => instance.SOPInstanceUID === SOPInstanceUID);
+  return series.getInstance(SOPInstanceUID);
 }
 
 function _getInstanceByImageId(imageId) {

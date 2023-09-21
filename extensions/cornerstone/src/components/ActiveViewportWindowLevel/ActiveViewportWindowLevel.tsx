@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { ServicesManager } from '@ohif/core';
 import { useViewportGrid } from '@ohif/ui';
@@ -13,10 +13,14 @@ const ActiveViewportWindowLevel = ({
   const { activeViewportId } = viewportGrid;
 
   return (
-    <ViewportWindowLevel
-      servicesManager={servicesManager}
-      viewportId={activeViewportId}
-    />
+    <>
+      {activeViewportId && (
+        <ViewportWindowLevel
+          servicesManager={servicesManager}
+          viewportId={activeViewportId}
+        />
+      )}
+    </>
   );
 };
 
