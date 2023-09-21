@@ -12,12 +12,13 @@ export * from '../services/CustomizationService/types';
 // Separate out some generic types
 export * from './AppConfig';
 export * from './Consumer';
-export * from './Command';
+export type * from './Command';
 export * from './DisplaySet';
 export * from './StudyMetadata';
 export * from './PanelModule';
 export * from './IPubSub';
 export * from './Color';
+export type * from '../services/ToolbarService/ToolbarService';
 
 /**
  * Export the types used within the various services and managers, but

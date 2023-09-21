@@ -357,28 +357,6 @@ function commandsModule({
         ],
       });
     },
-    toggleReferenceLines: ({ toggledState }) => {
-      try {
-        const { viewportId } = _getActiveViewportEnabledElement();
-        const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
-
-        if (!toggledState) {
-          toolGroup.setToolDisabled(ReferenceLinesTool.toolName);
-          return;
-        }
-
-        toolGroup.setToolConfiguration(
-          ReferenceLinesTool.toolName,
-          {
-            sourceViewportId: viewportId,
-          },
-          true // overwrite
-        );
-        toolGroup.setToolEnabled(ReferenceLinesTool.toolName);
-      } catch (e) {
-        console.log("Couldn't activate reference lines");
-      }
-    },
     showDownloadViewportModal: () => {
       const { activeViewportId } = viewportGridService.getState();
 
@@ -589,17 +567,13 @@ function commandsModule({
         toggledState,
       });
     },
-    setSourceViewportForReferenceLinesTool: ({ toggledState }) => {
-      const { activeViewportId } = viewportGridService.getState();
-      const viewportInfo = cornerstoneViewportService.getViewportInfo(activeViewportId);
-
-      const viewportId = viewportInfo.getViewportId();
-      const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
-
-      if (!toggledState) {
-        toolGroup.setToolDisabled(ReferenceLinesTool.toolName);
-        return;
+    setSourceViewportForReferenceLinesTool: ({ toggledState, viewportId }) => {
+      if (!viewportId) {
+        const { activeViewportId } = viewportGridService.getState();
+        viewportId = activeViewportId;
       }
+
+      const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
 
       toolGroup.setToolConfiguration(
         ReferenceLinesTool.toolName,
@@ -745,9 +719,6 @@ function commandsModule({
     },
     toolbarSetActive: {
       commandFn: actions.toolbarSetActive,
-    },
-    toggleReferenceLines: {
-      commandFn: actions.toggleReferenceLines,
     },
   };
 

@@ -195,7 +195,6 @@ export default async function init({
     activeTools.forEach(tool => {
       const toolData = toolbarService.getButton(tool);
       const commands = toolData?.listeners?.newStack;
-      console.log('Running', tool, commands);
       commandsManager.run(commands, { element, evt });
     });
   };
@@ -218,7 +217,7 @@ export default async function init({
         return;
       }
 
-      const toolData = toolbarService.getButton(tool);
+      const toolData = toolbarService.getNestedButton(tool);
       const commands = toolData?.listeners?.activeViewportIdChanged;
       commandsManager.run(commands, { viewportId, evt });
     });

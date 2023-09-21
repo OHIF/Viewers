@@ -6,7 +6,7 @@
   "license": "MIT",
   "repository": "OHIF/Viewers",
   "main": "dist/ohif-mode-test.umd.js",
-  "module": "src/index.js",
+  "module": "src/index.ts",
   "engines": {
     "node": ">=14",
     "npm": ">=6",

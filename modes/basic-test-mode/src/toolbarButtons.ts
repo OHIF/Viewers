@@ -5,30 +5,15 @@ import {
   // ListMenu,
   WindowLevelMenuItem,
 } from '@ohif/ui';
+import type { Button } from '@ohif/core/types';
+import { ToolbarService } from '@ohif/core';
 import { defaults } from '@ohif/core';
 
 const { windowLevelPresets } = defaults;
-/**
- *
- * @param {*} type - 'tool' | 'action' | 'toggle'
- * @param {*} id
- * @param {*} icon
- * @param {*} label
- */
-function _createButton(type, id, icon, label, commands, tooltip, extraOptions = undefined) {
-  return {
-    id,
-    icon,
-    label,
-    type,
-    commands,
-    ...extraOptions,
-  };
-}
 
-const _createActionButton = _createButton.bind(null, 'action');
-const _createToggleButton = _createButton.bind(null, 'toggle');
-const _createToolButton = _createButton.bind(null, 'tool');
+const _createActionButton = ToolbarService._createButton.bind(null, 'action');
+const _createToggleButton = ToolbarService._createButton.bind(null, 'toggle');
+const _createToolButton = ToolbarService._createButton.bind(null, 'tool');
 
 /**
  *
@@ -110,33 +95,35 @@ const StackPrefetch = _createToggleButton(
   }
 );
 
+const ReferenceLinesCommands = [
+  {
+    commandName: 'setSourceViewportForReferenceLinesTool',
+    context: 'CORNERSTONE',
+  },
+  {
+    commandName: 'setToolActive',
+    commandOptions: {
+      toolName: 'ReferenceLines',
+    },
+    context: 'CORNERSTONE',
+  },
+];
+
 const ReferenceLines = _createToggleButton(
   'ReferenceLines',
   'tool-referenceLines', // change this with the new icon
   'Reference Lines',
-  [
-    {
-      commandName: 'toggleReferenceLines',
-      commandOptions: {},
-      context: 'CORNERSTONE',
-    },
-  ],
+  ReferenceLinesCommands,
   'Show reference lines',
   {
     listeners: {
-      activeViewportIdChanged: {
-        commandName: 'toggleReferenceLines',
-        commandOptions: { toggledState: true },
-      },
-      newStack: {
-        commandName: 'toggleReferenceLines',
-        commandOptions: { toggledState: true },
-      },
+      activeViewportIdChanged: ReferenceLinesCommands,
+      newStack: ReferenceLinesCommands,
     },
   }
 );
 
-const toolbarButtons = [
+const toolbarButtons: Button[] = [
   // Measurement
   {
     id: 'MeasurementTools',
@@ -665,10 +652,8 @@ const toolbarButtons = [
     },
   },
 
-  // Register buttons that are used for top level actions
-  StackImageSync,
+  // Register buttons that are virtually active, but not actually visible
   StackPrefetch,
-  ReferenceLines,
 ];
 
 export default toolbarButtons;
