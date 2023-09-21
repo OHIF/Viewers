@@ -82,8 +82,7 @@ function getPTViewports() {
         orientation: 'sagittal',
         toolGroupId: toolGroupIds.pt,
         initialImageOptions: {
-          // preset: 'middle', // 'first', 'last', 'middle'
-          index: 140,
+          preset: 'middle', // 'first', 'last', 'middle'
         },
         syncGroups: [
           {
@@ -114,8 +113,7 @@ function getPTViewports() {
         orientation: 'coronal',
         toolGroupId: toolGroupIds.pt,
         initialImageOptions: {
-          // preset: 'middle', // 'first', 'last', 'middle'
-          index: 160,
+          preset: 'middle', // 'first', 'last', 'middle'
         },
         syncGroups: [
           {
