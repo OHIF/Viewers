@@ -13,6 +13,7 @@ const ohif = {
   thumbnailList: '@ohif/extension-default.panelModule.seriesList',
   HounsfieldUnitPanel:
     'extension-lytic-lesion.panelModule.HounsfieldRangeSelector',
+  // ROIThresholdPanel: '@ohif/extension-lytic-lesion.panelModule.ROIThresholdSeg',
 };
 
 const tracked = {
@@ -208,7 +209,7 @@ function modeFactory() {
           return {
             id: ohif.layout,
             props: {
-              leftPanels: [tracked.thumbnailList],
+              leftPanels: [tracked.thumbnailList, tracked.ROIThresholdPanel],
               rightPanels: [segmentation.panelTool, ohif.HounsfieldUnitPanel],
               rightPanelDefaultClosed: true,
               viewports: [

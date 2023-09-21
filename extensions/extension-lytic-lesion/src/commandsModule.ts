@@ -24,8 +24,6 @@ import calculateTMTV from './utils/calculateTMTV';
 import createAndDownloadTMTVReport from './utils/createAndDownloadTMTVReport';
 import { utilities } from '@cornerstonejs/core';
 import customColormap from './utils/colormaps/customColormap';
-import dicomRTAnnotationExport from './utils/dicomRTAnnotationExport/RTStructureSet';
-import { getEnabledElement } from './state';
 const { subscribeToNextViewportGridChange } = utils;
 const { registerColormap, getColormapNames } = utilities.colormap;
 
@@ -77,10 +75,14 @@ const commandsModule = ({
     servicesManager,
     commandsManager
   );
+  const utilityModule = extensionManager.getModuleEntry(
+    '@ohif/extension-cornerstone.utilityModule.common'
+  );
+  const { getEnabledElement } = utilityModule.exports;
 
   function _getActiveViewportsEnabledElement() {
-    const { activeViewportIndex } = viewportGridService.getState();
-    const { element } = getEnabledElement(activeViewportIndex) || {};
+    const { activeViewportId } = viewportGridService.getState();
+    const { element } = getEnabledElement(activeViewportId) || {};
     const enabledElement = cs.getEnabledElement(element);
     return enabledElement;
   }
@@ -379,8 +381,7 @@ const commandsModule = ({
       registerColormap(colormap);
     },
     setColorMap: ({ colormap }) => {
-      const { activeViewportIndex, viewports } = viewportGridService.getState();
-      const displaySets = displaySetService.activeDisplaySets;
+      const { viewports } = viewportGridService.getState();
       let views = []
       viewports.forEach(viewport =>{
         console.log(viewport);
@@ -446,7 +447,7 @@ const commandsModule = ({
         return;
       }
 
-      viewportGridService.setActiveViewportIndex(viewportId);
+      viewportGridService.setActiveViewportId(viewportId);
     },
     /**
      * Changes the viewport grid layout in terms of the MxN layout.
@@ -491,12 +492,12 @@ const commandsModule = ({
 
     toggleOneUp() {
       const viewportGridState = viewportGridService.getState();
-      const { activeViewportIndex, viewports, layout } = viewportGridState;
+      const { activeViewportId, viewports, layout } = viewportGridState;
       const {
         displaySetInstanceUIDs,
         displaySetOptions,
         viewportOptions,
-      } = viewports[activeViewportIndex];
+      } = viewports.get(activeViewportId);
 
       if (layout.numCols === 1 && layout.numRows === 1) {
         // The viewer is in one-up. Check if there is a state to restore/toggle back to.
@@ -508,7 +509,7 @@ const commandsModule = ({
         // There is a state to toggle back to. The viewport that was
         // originally toggled to one up was the former active viewport.
         const viewportIdToUpdate =
-          toggleOneUpViewportGridStore.activeViewportIndex;
+          toggleOneUpViewportGridStore.activeViewportId;
 
         // Determine which viewports need to be updated. This is particularly
         // important when MPR is toggled to one up and a different reconstructable
@@ -547,7 +548,7 @@ const commandsModule = ({
         viewportGridService.setLayout({
           numRows: toggleOneUpViewportGridStore.layout.numRows,
           numCols: toggleOneUpViewportGridStore.layout.numCols,
-          activeViewportIndex: viewportIdToUpdate,
+          activeViewportId: viewportIdToUpdate,
           layoutOptions,
           findOrCreateViewport,
         });
@@ -686,8 +687,8 @@ const commandsModule = ({
     },
 
     openDICOMTagViewer() {
-      const { activeViewportIndex, viewports } = viewportGridService.getState();
-      const activeViewportSpecificData = viewports[activeViewportIndex];
+      const { activeViewportId, viewports } = viewportGridService.getState();
+      const activeViewportSpecificData = viewports.get(activeViewportId);
       const { displaySetInstanceUIDs } = activeViewportSpecificData;
 
       const displaySets = displaySetService.activeDisplaySets;
@@ -718,17 +719,17 @@ const commandsModule = ({
     },
 
     scrollActiveThumbnailIntoView: () => {
-      const { activeViewportIndex, viewports } = viewportGridService.getState();
+      const { activeViewportId, viewports } = viewportGridService.getState();
 
       if (
         !viewports ||
-        activeViewportIndex < 0 ||
-        activeViewportIndex > viewports.length - 1
+        activeViewportId < 0 ||
+        activeViewportId > viewports.length - 1
       ) {
         return;
       }
 
-      const activeViewport = viewports[activeViewportIndex];
+      const activeViewport = viewports.get(activeViewportId);
       const activeDisplaySetInstanceUID =
         activeViewport.displaySetInstanceUIDs[0];
 
@@ -781,9 +782,9 @@ const commandsModule = ({
 
       currentDisplaySets.sort(dsSortFn);
 
-      const { activeViewportIndex, viewports } = viewportGridService.getState();
+      const { activeViewportId, viewports } = viewportGridService.getState();
 
-      const { displaySetInstanceUIDs } = viewports[activeViewportIndex];
+      const { displaySetInstanceUIDs } = viewports[activeViewportd];
 
       const activeDisplaySetIndex = currentDisplaySets.findIndex(displaySet =>
         displaySetInstanceUIDs.includes(displaySet.displaySetInstanceUID)
@@ -822,7 +823,7 @@ const commandsModule = ({
 
       try {
         updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
-          activeViewportIndex,
+          activeViewportId,
           displaySetInstanceUID
         );
       } catch (error) {
@@ -904,8 +905,8 @@ const commandsModule = ({
     createNewLabelmapFromPT: async () => {
       // Create a segmentation of the same resolution as the source data
       // using volumeLoader.createAndCacheDerivedVolume.
-      const { activeViewportIndex, viewports } = viewportGridService.getState();
-      const activeViewportSpecificData = viewports[activeViewportIndex];
+      const { activeViewportId, viewports } = viewportGridService.getState();
+      const activeViewportSpecificData = viewports.get(activeViewportId);
       const { displaySetInstanceUIDs } = activeViewportSpecificData;
 
       const displaySets = displaySetService.activeDisplaySets;
@@ -958,8 +959,8 @@ const commandsModule = ({
       const segmentation = csTools.segmentation.state.getSegmentation(
         segmentationId
       );
-      const { activeViewportIndex, viewports } = viewportGridService.getState();
-      const activeViewportSpecificData = viewports[activeViewportIndex];
+      const { activeViewportId, viewports } = viewportGridService.getState();
+      const activeViewportSpecificData = viewports.get(activeViewportId);
       const { displaySetInstanceUIDs } = activeViewportSpecificData;
 
       const displaySets = displaySetService.activeDisplaySets;
@@ -1184,9 +1185,8 @@ const commandsModule = ({
       const selectedAnnotationUIDs = csTools.annotation.selection.getAnnotationsSelectedByToolName(
         RECTANGLE_ROI_THRESHOLD_MANUAL
       );
-
+      console.log(selectedAnnotationUIDs)
       const annotationUID = selectedAnnotationUIDs[0];
-
       const annotation = csTools.annotation.state.getAnnotation(annotationUID);
 
       const { handles } = annotation.data;
