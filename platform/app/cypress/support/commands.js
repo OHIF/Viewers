@@ -184,8 +184,10 @@ Cypress.Commands.add('addAngle', (viewport, firstClick, secondClick, thirdClick)
 });
 
 Cypress.Commands.add('expectMinimumThumbnails', (seriesToWait = 1) => {
-  cy.get('[data-cy="study-browser-thumbnail"]', { timeout: 50000 }).should($itemList => {
-    expect($itemList.length >= seriesToWait).to.be.true;
+  cy.get('[data-cy="study-browser-thumbnail"]', { timeout: 50000 }).as('thumbnails');
+
+  cy.get('@thumbnails').should($itemList => {
+    expect($itemList.length).to.be.gte(seriesToWait);
   });
 });
 
