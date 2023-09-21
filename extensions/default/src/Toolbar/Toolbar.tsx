@@ -5,7 +5,6 @@ export default function Toolbar({ servicesManager }) {
   const { toolbarService } = servicesManager.services;
   const [toolbarButtons, setToolbarButtons] = useState([]);
 
-  // Could track buttons and state separately...?
   useEffect(() => {
     const { unsubscribe } = toolbarService.subscribe(toolbarService.EVENTS.TOOL_BAR_MODIFIED, () =>
       setToolbarButtons(toolbarService.getButtonSection('primary'))

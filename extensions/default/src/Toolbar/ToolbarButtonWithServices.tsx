@@ -19,7 +19,9 @@ function ToolbarSplitButtonWithServices({
   });
   const { primaryToolId } = buttonsState;
 
-  const isActive = type === 'tool' && id === primaryToolId;
+  const isActive =
+    (type === 'tool' && id === primaryToolId) ||
+    (type === 'toggle' && buttonsState.toggles[id] === true);
 
   useEffect(() => {
     const { unsubscribe } = toolbarService.subscribe(

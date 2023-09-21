@@ -12,7 +12,7 @@ const baseClasses = {
   Button: 'flex items-center rounded-md border-transparent cursor-pointer group/button',
   Primary:
     // By default border on left, top and bottom for hover effect and only rounded on left side.
-    // Extra padding on right to componensate for no right border.
+    // Extra padding on right to compensate for no right border.
     'h-full border-l-2 border-t-2 border-b-2 rounded-tl-md rounded-bl-md group/primary !pl-2 !py-2',
   Secondary:
     'h-full flex items-center justify-center rounded-tr-md rounded-br-md w-4 border-2 border-transparent group/secondary',

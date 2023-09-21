@@ -45,6 +45,18 @@ function ToolbarSplitButtonWithServices({
     };
   }, [toolbarService]);
 
+  const updatedItems = items.map(item => {
+    const isActive = item.type === 'tool' && primaryToolId === item.id;
+    // We could have added the
+    // item.type === 'toggle' && toggles[item.id] === true
+    // too but that makes the button active when the toggle is active under it
+    // which feels weird
+    return {
+      ...item,
+      isActive,
+    };
+  });
+
   const DefaultListItemRenderer = ({ type, icon, label, t, id }) => {
     const isActive = type === 'toggle' && toggles[id] === true;
 
@@ -80,10 +92,10 @@ function ToolbarSplitButtonWithServices({
       isAction={isAction}
       primary={primary}
       secondary={secondary}
-      items={items}
+      items={updatedItems}
       groupId={groupId}
       renderer={listItemRenderer}
-      isActive={isPrimaryActive}
+      isActive={isPrimaryActive || updatedItems.some(item => item.isActive)}
       isToggle={isPrimaryToggle}
       onInteraction={onInteraction}
       Component={props => (
