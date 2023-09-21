@@ -178,6 +178,7 @@ export default class HangingProtocolService extends PubSubService {
    */
   public getActiveProtocol(): {
     protocol: HangingProtocol.Protocol;
+    _originalProtocol: HangingProtocol.Protocol;
     stage: HangingProtocol.ProtocolStage;
     stageIndex: number;
     activeStudy?: StudyMetadata;
@@ -187,6 +188,7 @@ export default class HangingProtocolService extends PubSubService {
   } {
     return {
       protocol: this.protocol,
+      _originalProtocol: this._originalProtocol,
       stage: this.protocol?.stages?.[this.stageIndex],
       stageIndex: this.stageIndex,
       activeStudy: this.activeStudy,
