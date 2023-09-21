@@ -13,7 +13,7 @@ import {
   Settings,
   utilities as csUtilities,
 } from '@cornerstonejs/core';
-import { Enums, } from '@cornerstonejs/tools';
+import { Enums } from '@cornerstonejs/tools';
 import { cornerstoneStreamingImageVolumeLoader } from '@cornerstonejs/streaming-image-volume-loader';
 
 import initWADOImageLoader from './initWADOImageLoader';
@@ -193,7 +193,7 @@ export default async function init({
     const activeTools = toolbarService.getActiveTools();
 
     activeTools.forEach(tool => {
-      const toolData = toolbarService.getButton(tool);
+      const toolData = toolbarService.getNestedButton(tool);
       const commands = toolData?.listeners?.newStack;
       commandsManager.run(commands, { element, evt });
     });

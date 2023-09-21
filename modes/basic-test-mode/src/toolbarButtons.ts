@@ -5,9 +5,9 @@ import {
   // ListMenu,
   WindowLevelMenuItem,
 } from '@ohif/ui';
+import { defaults, ToolbarService } from '@ohif/core';
 import type { Button } from '@ohif/core/types';
-import { ToolbarService } from '@ohif/core';
-import { defaults } from '@ohif/core';
+import { RunCommand } from 'platform/core/src/types';
 
 const { windowLevelPresets } = defaults;
 
@@ -39,63 +39,7 @@ function _createWwwcPreset(preset, title, subtitle) {
   };
 }
 
-const toolGroupIds = ['default', 'mpr', 'SRToolGroup'];
-
-/**
- * Creates an array of 'setToolActive' commands for the given toolName - one for
- * each toolGroupId specified in toolGroupIds.
- * @param {string} toolName
- * @returns {Array} an array of 'setToolActive' commands
- */
-function _createSetToolActiveCommands(toolName) {
-  const temp = toolGroupIds.map(toolGroupId => ({
-    commandName: 'setToolActive',
-    commandOptions: {
-      toolGroupId,
-      toolName,
-    },
-    context: 'CORNERSTONE',
-  }));
-  return temp;
-}
-
-const StackImageSync = _createToggleButton(
-  'StackImageSync',
-  'link',
-  'Stack Image Sync',
-  [
-    {
-      commandName: 'toggleStackImageSync',
-    },
-  ],
-  'Enable position synchronization on stack viewports',
-  {
-    listeners: {
-      newStack: {
-        commandName: 'toggleStackImageSync',
-        commandOptions: { toggledState: true },
-      },
-    },
-  }
-);
-
-const StackPrefetch = _createToggleButton(
-  'StackPrefetch',
-  'link',
-  'Stack Prefetch',
-  [],
-  'Enable Complete Stack Prefetch',
-  {
-    listeners: {
-      newStack: {
-        commandName: 'stackPrefetch',
-      },
-    },
-    isActive: true,
-  }
-);
-
-const ReferenceLinesCommands = [
+const ReferenceLinesCommands: RunCommand = [
   {
     commandName: 'setSourceViewportForReferenceLinesTool',
     context: 'CORNERSTONE',
@@ -108,20 +52,6 @@ const ReferenceLinesCommands = [
     context: 'CORNERSTONE',
   },
 ];
-
-const ReferenceLines = _createToggleButton(
-  'ReferenceLines',
-  'tool-referenceLines', // change this with the new icon
-  'Reference Lines',
-  ReferenceLinesCommands,
-  'Show reference lines',
-  {
-    listeners: {
-      activeViewportIdChanged: ReferenceLinesCommands,
-      newStack: ReferenceLinesCommands,
-    },
-  }
-);
 
 const toolbarButtons: Button[] = [
   // Measurement
@@ -290,7 +220,15 @@ const toolbarButtons: Button[] = [
       type: 'tool',
       icon: 'tool-zoom',
       label: 'Zoom',
-      commands: _createSetToolActiveCommands('Zoom'),
+      commands: [
+        {
+          commandName: 'setToolActive',
+          commandOptions: {
+            toolName: 'Zoom',
+          },
+          context: 'CORNERSTONE',
+        },
+      ],
     },
   },
   // Window Level + Presets...
@@ -339,7 +277,15 @@ const toolbarButtons: Button[] = [
       type: 'tool',
       icon: 'tool-move',
       label: 'Pan',
-      commands: _createSetToolActiveCommands('Pan'),
+      commands: [
+        {
+          commandName: 'setToolActive',
+          commandOptions: {
+            toolName: 'Pan',
+          },
+          context: 'CORNERSTONE',
+        },
+      ],
     },
   },
   {
@@ -360,10 +306,96 @@ const toolbarButtons: Button[] = [
   },
   {
     id: 'Layout',
-    type: 'ohif.layoutSelector',
+    type: 'ohif.splitButton',
     props: {
-      rows: 3,
-      columns: 3,
+      groupId: 'LayoutTools',
+      isRadio: false,
+      primary: {
+        id: 'Layout',
+        type: 'action',
+        uiType: 'ohif.layoutSelector',
+        icon: 'tool-layout',
+        label: 'Grid Layout',
+        props: {
+          rows: 4,
+          columns: 4,
+          commands: [
+            {
+              commandName: 'setLayout',
+              commandOptions: {},
+              context: 'CORNERSTONE',
+            },
+          ],
+        },
+      },
+      secondary: {
+        icon: 'chevron-down',
+        label: '',
+        isActive: true,
+        tooltip: 'Hanging Protocols',
+      },
+      items: [
+        {
+          id: '2x2',
+          type: 'action',
+          label: '2x2',
+          commands: [
+            {
+              commandName: 'setHangingProtocol',
+              commandOptions: {
+                protocolId: '@ohif/mnGrid',
+                stageId: '2x2',
+              },
+              context: 'DEFAULT',
+            },
+          ],
+        },
+        {
+          id: '3x1',
+          type: 'action',
+          label: '3x1',
+          commands: [
+            {
+              commandName: 'setHangingProtocol',
+              commandOptions: {
+                protocolId: '@ohif/mnGrid',
+                stageId: '3x1',
+              },
+              context: 'DEFAULT',
+            },
+          ],
+        },
+        {
+          id: '2x1',
+          type: 'action',
+          label: '2x1',
+          commands: [
+            {
+              commandName: 'setHangingProtocol',
+              commandOptions: {
+                protocolId: '@ohif/mnGrid',
+                stageId: '2x1',
+              },
+              context: 'DEFAULT',
+            },
+          ],
+        },
+        {
+          id: '1x1',
+          type: 'action',
+          label: '1x1',
+          commands: [
+            {
+              commandName: 'setHangingProtocol',
+              commandOptions: {
+                protocolId: '@ohif/mnGrid',
+                stageId: '1x1',
+              },
+              context: 'DEFAULT',
+            },
+          ],
+        },
+      ],
     },
   },
   {
@@ -395,8 +427,8 @@ const toolbarButtons: Button[] = [
         {
           commandName: 'setToolActive',
           commandOptions: {
-            toolName: 'Crosshairs',
             toolGroupId: 'mpr',
+            toolName: 'Crosshairs',
           },
           context: 'CORNERSTONE',
         },
@@ -469,24 +501,37 @@ const toolbarButtons: Button[] = [
           ],
           'Flip Horizontal'
         ),
-        StackImageSync,
-        ReferenceLines,
         _createToggleButton(
-          'ImageOverlayViewer',
-          'toggle-dicom-overlay',
-          'Image Overlay',
+          'StackImageSync',
+          'link',
+          'Stack Image Sync',
           [
             {
-              commandName: 'setToolActive',
-              commandOptions: {
-                toolName: 'ImageOverlayViewer',
-              },
-              context: 'CORNERSTONE',
+              commandName: 'toggleStackImageSync',
             },
           ],
-          'Image Overlay',
-          null,
-          { isActive: true }
+          'Enable position synchronization on stack viewports',
+          {
+            listeners: {
+              newStack: {
+                commandName: 'toggleStackImageSync',
+                commandOptions: { toggledState: true },
+              },
+            },
+          }
+        ),
+        _createToggleButton(
+          'ReferenceLines',
+          'tool-referenceLines', // change this with the new icon
+          'Reference Lines',
+          ReferenceLinesCommands,
+          'Show Reference Lines',
+          {
+            listeners: {
+              newStack: ReferenceLinesCommands,
+              activeViewportIdChanged: ReferenceLinesCommands,
+            },
+          }
         ),
         _createToolButton(
           'StackScroll',
@@ -558,38 +603,6 @@ const toolbarButtons: Button[] = [
           ],
           'Angle'
         ),
-
-        // Next two tools can be added once icons are added
-        // _createToolButton(
-        //   'Cobb Angle',
-        //   'tool-cobb-angle',
-        //   'Cobb Angle',
-        //   [
-        //     {
-        //       commandName: 'setToolActive',
-        //       commandOptions: {
-        //         toolName: 'CobbAngle',
-        //       },
-        //       context: 'CORNERSTONE',
-        //     },
-        //   ],
-        //   'Cobb Angle'
-        // ),
-        // _createToolButton(
-        //   'Planar Freehand ROI',
-        //   'tool-freehand',
-        //   'PlanarFreehandROI',
-        //   [
-        //     {
-        //       commandName: 'setToolActive',
-        //       commandOptions: {
-        //         toolName: 'PlanarFreehandROI',
-        //       },
-        //       context: 'CORNERSTONE',
-        //     },
-        //   ],
-        //   'Planar Freehand ROI'
-        // ),
         _createToolButton(
           'Magnify',
           'tool-magnify',
@@ -620,21 +633,6 @@ const toolbarButtons: Button[] = [
           ],
           'Rectangle'
         ),
-        _createToolButton(
-          'CalibrationLine',
-          'tool-calibration',
-          'Calibration',
-          [
-            {
-              commandName: 'setToolActive',
-              commandOptions: {
-                toolName: 'CalibrationLine',
-              },
-              context: 'CORNERSTONE',
-            },
-          ],
-          'Calibration Line'
-        ),
         _createActionButton(
           'TagBrowser',
           'list-bullets',
@@ -651,9 +649,21 @@ const toolbarButtons: Button[] = [
       ],
     },
   },
-
-  // Register buttons that are virtually active, but not actually visible
-  StackPrefetch,
+  _createToggleButton(
+    'StackPrefetch',
+    'link',
+    'Stack Prefetch',
+    [],
+    'Enable Complete Stack Prefetch',
+    {
+      listeners: {
+        newStack: {
+          commandName: 'stackPrefetch',
+        },
+      },
+      isActive: true,
+    }
+  ),
 ];
 
 export default toolbarButtons;

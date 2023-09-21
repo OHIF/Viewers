@@ -5,9 +5,9 @@ import {
   // ListMenu,
   WindowLevelMenuItem,
 } from '@ohif/ui';
+import { defaults, ToolbarService } from '@ohif/core';
 import type { Button } from '@ohif/core/types';
-import { ToolbarService } from '@ohif/core';
-import { defaults } from '@ohif/core';
+import { RunCommand } from 'platform/core/src/types';
 
 const { windowLevelPresets } = defaults;
 
@@ -59,7 +59,8 @@ function _createSetToolActiveCommands(toolName) {
   return temp;
 }
 
-const ReferenceLinesCommands = [
+
+const ReferenceLinesCommands: RunCommand = [
   {
     commandName: 'setSourceViewportForReferenceLinesTool',
     context: 'CORNERSTONE',
@@ -443,11 +444,11 @@ const toolbarButtons: Button[] = [
           'tool-referenceLines', // change this with the new icon
           'Reference Lines',
           ReferenceLinesCommands,
-          'Show reference lines',
+          'Show Reference Lines',
           {
             listeners: {
-              activeViewportIdChanged: ReferenceLinesCommands,
               newStack: ReferenceLinesCommands,
+              activeViewportIdChanged: ReferenceLinesCommands,
             },
           }
         ),
@@ -466,7 +467,7 @@ const toolbarButtons: Button[] = [
           ],
           'Image Overlay',
           null,
-          { isActive: true }
+          true
         ),
         _createToolButton(
           'StackScroll',
@@ -631,7 +632,6 @@ const toolbarButtons: Button[] = [
       ],
     },
   },
-
   _createToggleButton(
     'StackPrefetch',
     'link',
