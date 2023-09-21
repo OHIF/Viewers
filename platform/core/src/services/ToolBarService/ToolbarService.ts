@@ -94,8 +94,9 @@ export default class ToolbarService extends PubSubService {
             commandsManager.runCommand(commandName, commandOptions, context);
           });
 
-          // only set the primary tool if no error was thrown and if the itemId is not
-          // undefined set the first tool as the primary tool
+          // only set the primary tool if no error was thrown.
+          // if the itemId is not undefined use it; otherwise, set the first tool in
+          // the commands as the primary tool
           this.state.primaryToolId = itemId || commands[0].commandOptions?.toolName;
         } catch (error) {
           console.warn(error);
