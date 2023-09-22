@@ -12,6 +12,7 @@ import {
   imageLoadPoolManager,
   Settings,
   utilities as csUtilities,
+  Enums as csEnums,
 } from '@cornerstonejs/core';
 import { Enums, utilities, ReferenceLinesTool } from '@cornerstonejs/tools';
 import { cornerstoneStreamingImageVolumeLoader } from '@cornerstonejs/streaming-image-volume-loader';
@@ -41,10 +42,28 @@ export default async function init({
   configuration,
   appConfig,
 }: Types.Extensions.ExtensionParams): Promise<void> {
-  await cs3DInit();
+
+  await cs3DInit({
+    rendering: {
+      preferSizeOverAccuracy: Boolean(appConfig.use16BitDataType),
+      useNorm16Texture: Boolean(appConfig.use16BitDataType),
+    },
+  });
 
   // For debugging e2e tests that are failing on CI
   cornerstone.setUseCPURendering(Boolean(appConfig.useCPURendering));
+
+  switch (appConfig.useSharedArrayBuffer) {
+    case 'AUTO':
+      cornerstone.setUseSharedArrayBuffer(csEnums.SharedArrayBufferModes.AUTO);
+      break;
+    case 'FALSE':
+      cornerstone.setUseSharedArrayBuffer(csEnums.SharedArrayBufferModes.FALSE);
+      break;
+    default:
+      cornerstone.setUseSharedArrayBuffer(csEnums.SharedArrayBufferModes.TRUE);
+  }
+
   cornerstone.setConfiguration({
     ...cornerstone.getConfiguration(),
     rendering: {
