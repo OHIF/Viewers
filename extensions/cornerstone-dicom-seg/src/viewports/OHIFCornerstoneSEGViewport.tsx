@@ -5,7 +5,6 @@ import OHIF, { utils } from '@ohif/core';
 import { LoadingIndicatorTotalPercent, useViewportGrid, ViewportActionBar } from '@ohif/ui';
 import createSEGToolGroupAndAddTools from '../utils/initSEGToolGroup';
 import promptHydrateSEG from '../utils/promptHydrateSEG';
-import hydrateSEGDisplaySet from '../utils/_hydrateSEG';
 import _getStatusComponent from './_getStatusComponent';
 
 const { formatDate } = utils;
@@ -158,6 +157,7 @@ function OHIFCornerstoneSEGViewport(props) {
       viewportId,
       segDisplaySet,
       preHydrateCallbacks: [storePresentationState],
+      hydrateSEGDisplaySet,
     }).then(isHydrated => {
       if (isHydrated) {
         setIsHydrated(true);
@@ -291,6 +291,13 @@ function OHIFCornerstoneSEGViewport(props) {
     SpacingBetweenSlices,
   } = referencedDisplaySetRef.current.metadata;
 
+  const hydrateSEGDisplaySet = ({ segDisplaySet, viewportId }) => {
+    commandsManager.runCommand('loadSegmentationDisplaySetsForViewport', {
+      displaySets: [segDisplaySet],
+      viewportId,
+    });
+  };
+
   const onStatusClick = async () => {
     // Before hydrating a SEG and make it added to all viewports in the grid
     // that share the same frameOfReferenceUID, we need to store the viewport grid
@@ -302,7 +309,6 @@ function OHIFCornerstoneSEGViewport(props) {
     const isHydrated = await hydrateSEGDisplaySet({
       segDisplaySet,
       viewportId,
-      servicesManager,
     });
 
     setIsHydrated(isHydrated);
@@ -369,12 +375,18 @@ OHIFCornerstoneSEGViewport.defaultProps = {
 };
 
 function _getReferencedDisplaySetMetadata(referencedDisplaySet, segDisplaySet) {
-  const {
-    SharedFunctionalGroupsSequence: [SharedFunctionalGroup],
-  } = segDisplaySet.instance;
-  const {
-    PixelMeasuresSequence: [PixelMeasures],
-  } = SharedFunctionalGroup;
+  const { SharedFunctionalGroupsSequence } = segDisplaySet.instance;
+
+  const SharedFunctionalGroup = Array.isArray(SharedFunctionalGroupsSequence)
+    ? SharedFunctionalGroupsSequence[0]
+    : SharedFunctionalGroupsSequence;
+
+  const { PixelMeasuresSequence } = SharedFunctionalGroup;
+
+  const PixelMeasures = Array.isArray(PixelMeasuresSequence)
+    ? PixelMeasuresSequence[0]
+    : PixelMeasuresSequence;
+
   const { SpacingBetweenSlices, SliceThickness } = PixelMeasures;
 
   const image0 = referencedDisplaySet.images[0];

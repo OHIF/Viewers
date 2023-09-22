@@ -3,11 +3,9 @@ import PropTypes from 'prop-types';
 import OHIF, { utils } from '@ohif/core';
 import { ViewportActionBar, useViewportGrid, LoadingIndicatorTotalPercent } from '@ohif/ui';
 
-import _hydrateRTdisplaySet from '../utils/_hydrateRT';
 import promptHydrateRT from '../utils/promptHydrateRT';
 import _getStatusComponent from './_getStatusComponent';
 import createRTToolGroupAndAddTools from '../utils/initRTToolGroup';
-import _hydrateRTDisplaySet from '../utils/_hydrateRT';
 
 const { formatDate } = utils;
 const RT_TOOLGROUP_BASE_NAME = 'RTToolGroup';
@@ -95,6 +93,13 @@ function OHIFCornerstoneRTViewport(props) {
     });
   }, [viewportGrid]);
 
+  const hydrateRTDisplaySet = ({ rtDisplaySet, viewportId }) => {
+    commandsManager.runCommand('loadSegmentationDisplaySetsForViewport', {
+      displaySets: [rtDisplaySet],
+      viewportId,
+    });
+  };
+
   const getCornerstoneViewport = useCallback(() => {
     const { component: Component } = extensionManager.getModuleEntry(
       '@ohif/extension-cornerstone.viewportModule.cornerstone'
@@ -154,6 +159,7 @@ function OHIFCornerstoneRTViewport(props) {
       viewportId,
       rtDisplaySet,
       preHydrateCallbacks: [storePresentationState],
+      hydrateRTDisplaySet,
     }).then(isHydrated => {
       if (isHydrated) {
         setIsHydrated(true);
@@ -295,10 +301,9 @@ function OHIFCornerstoneRTViewport(props) {
     // presentation state (w/l and invert) and then opens the RT. If we don't store
     // the presentation state, the viewport will be reset to the default presentation
     storePresentationState();
-    const isHydrated = await _hydrateRTDisplaySet({
+    const isHydrated = await hydrateRTDisplaySet({
       rtDisplaySet,
       viewportId,
-      servicesManager,
     });
 
     setIsHydrated(isHydrated);

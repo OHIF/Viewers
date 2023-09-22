@@ -3,6 +3,60 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.7.0-beta.79](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.78...v3.7.0-beta.79) (2023-09-22)
+
+
+### Performance Improvements
+
+* **memory:** add 16 bit texture via configuration - reduces memory by half ([#3662](https://github.com/OHIF/Viewers/issues/3662)) ([2bd3b26](https://github.com/OHIF/Viewers/commit/2bd3b26a6aa54b211ef988f3ad64ef1fe5648bab))
+
+
+
+
+
+# [3.7.0-beta.78](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.77...v3.7.0-beta.78) (2023-09-21)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.7.0-beta.77](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.76...v3.7.0-beta.77) (2023-09-21)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.7.0-beta.76](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.75...v3.7.0-beta.76) (2023-09-19)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.7.0-beta.75](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.74...v3.7.0-beta.75) (2023-09-18)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.7.0-beta.74](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.73...v3.7.0-beta.74) (2023-09-15)
+
+
+### Bug Fixes
+
+* **measurements:** Update the calibration tool to match changes in CS3D ([#3505](https://github.com/OHIF/Viewers/issues/3505)) ([38af311](https://github.com/OHIF/Viewers/commit/38af3112ec1f94f36c0ef64ff1cf9d21c0981c81))
+
+
+
+
+
 # [3.7.0-beta.73](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.72...v3.7.0-beta.73) (2023-09-12)
 
 **Note:** Version bump only for package @ohif/extension-cornerstone

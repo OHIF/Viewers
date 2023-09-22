@@ -2,7 +2,6 @@ import { id } from './id';
 import React from 'react';
 import { Types } from '@ohif/core';
 import getSopClassHandlerModule from './getSopClassHandlerModule';
-import hydrateRTDisplaySet from './utils/_hydrateRT';
 
 const Component = React.lazy(() => {
   return import(/* webpackPrefetch: true */ './viewports/OHIFCornerstoneRTViewport');
@@ -60,4 +59,3 @@ const extension: Types.Extensions.Extension = {
 };
 
 export default extension;
-export { hydrateRTDisplaySet };

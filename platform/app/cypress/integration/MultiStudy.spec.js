@@ -7,6 +7,7 @@ describe('OHIF Multi Study', () => {
     cy.expectMinimumThumbnails(4);
     cy.initCornerstoneToolsAliases();
     cy.initCommonElementsAliases();
+    cy.waitDicomImage();
   };
 
   it('Should display 2 comparison up', () => {
