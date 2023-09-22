@@ -17,7 +17,10 @@ export default class ClientManager {
     }
   }
 
-  // adds a dicomweb server configuration in the clients list
+  /**
+   * Adds a dicomweb server configuration in the clients list
+   * @param configToAdd
+   */
   private _addConfiguration(configToAdd) {
     const config = Object.assign({}, configToAdd);
     config.qidoConfig = {
@@ -49,6 +52,13 @@ export default class ClientManager {
     this.clients.push(config);
   }
 
+  /**
+   * Adds a dicomweb server configuration in the clients list. This function
+   * could change the configuration by calling the onConfiguration, if defined
+   * @param params
+   * @param query
+   * @param config
+   */
   private addConfiguration(params, query, config) {
     if (config.onConfiguration && typeof config.onConfiguration === 'function') {
       config = config.onConfiguration(config, {
@@ -59,6 +69,10 @@ export default class ClientManager {
     this._addConfiguration(config);
   }
 
+  /**
+   * Get authorization headers for wado and qido calls
+   * @returns
+   */
   private getAuthorizationHeader() {
     const xhrRequestHeaders = {};
     const authHeaders = this.userAuthenticationService.getAuthorizationHeader();
@@ -68,6 +82,11 @@ export default class ClientManager {
     return xhrRequestHeaders;
   }
 
+  /**
+   * Generates the header for wado messages fro a specific client
+   * @param config
+   * @returns
+   */
   private generateWadoHeader(config) {
     const authorizationHeader = this.getAuthorizationHeader();
     //Generate accept header depending on config params
@@ -83,26 +102,37 @@ export default class ClientManager {
     };
   }
 
-  // sets authorization headers before queries
+  /**
+   * Sets authorization headers for all clients before queries
+   */
   public setQidoHeaders() {
     this.clients.forEach(
       client => (client.qidoDicomWebClient.headers = this.getAuthorizationHeader())
     );
   }
 
+  /**
+   * Sets wado headers for all clients before queries
+   */
   public setWadoHeaders() {
     this.clients.forEach(
       client => (client.wadoDicomWebClient.headers = this.generateWadoHeader(client))
     );
   }
 
+  /**
+   * Sets authorization headers for wado clients before queries
+   */
   public setAuthorizationHeadersForWADO() {
     this.clients.forEach(
       client => (client.wadoDicomWebClient.headers = this.getAuthorizationHeader())
     );
   }
 
-  // returns if a client can reject
+  /**
+   * Returns if a client have reject abilities
+   * @returns
+   */
   public clientCanReject() {
     return name => {
       const client = this.clients.find(client => client.name === name);
@@ -110,7 +140,11 @@ export default class ClientManager {
     };
   }
 
-  // returns reject function of a client given its name
+  /**
+   * Returns reject function of a client
+   * @param name
+   * @returns
+   */
   public getClientReject(name) {
     const client = this.clients.find(client => client.name === name);
     if (client?.supportsReject) {
@@ -118,7 +152,11 @@ export default class ClientManager {
     }
   }
 
-  // returns the qido client given the client name
+  /**
+   * Returns the qido client
+   * @param name
+   * @returns
+   */
   public getQidoClient(name = undefined) {
     if (this.clients.length) {
       if (name) {
@@ -130,7 +168,11 @@ export default class ClientManager {
     }
   }
 
-  // returns the wado client given the client name
+  /**
+   * Returns the wado client
+   * @param name
+   * @returns
+   */
   public getWadoClient(name = undefined) {
     if (this.clients.length) {
       if (name) {
@@ -142,7 +184,11 @@ export default class ClientManager {
     }
   }
 
-  // returns client configuration given the client name
+  /**
+   * Returns the client configuration
+   * @param name
+   * @returns
+   */
   public getClient(name = undefined) {
     if (this.clients.length) {
       if (name) {
@@ -154,7 +200,10 @@ export default class ClientManager {
     }
   }
 
-  // returns the client list
+  /**
+   * Returns the client list
+   * @returns
+   */
   public getClients() {
     return this.clients;
   }
