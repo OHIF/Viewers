@@ -83,7 +83,7 @@ export default class ClientManager {
   }
 
   /**
-   * Generates the header for wado messages fro a specific client
+   * Generates the header for wado messages for a specific client
    * @param config
    * @returns
    */
