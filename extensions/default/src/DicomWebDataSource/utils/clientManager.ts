@@ -20,6 +20,7 @@ export default class ClientManager {
   /**
    * Adds a dicomweb server configuration in the clients list
    * @param configToAdd
+   * @returns {void}
    */
   private _addConfiguration(configToAdd): void {
     const config = Object.assign({}, configToAdd);
@@ -58,6 +59,7 @@ export default class ClientManager {
    * @param params
    * @param query
    * @param config
+   * @returns {void}
    */
   private addConfiguration(params, query, config): void {
     if (config.onConfiguration && typeof config.onConfiguration === 'function') {
@@ -71,7 +73,7 @@ export default class ClientManager {
 
   /**
    * Get authorization headers for wado and qido calls
-   * @returns
+   * @returns {object} xhrRequestHeaders
    */
   private getAuthorizationHeader(): object {
     const xhrRequestHeaders = {};
@@ -85,7 +87,7 @@ export default class ClientManager {
   /**
    * Generates the header for wado messages for a specific client
    * @param config
-   * @returns
+   * @returns {object} wado Headers
    */
   private generateWadoHeader(config): object {
     const authorizationHeader = this.getAuthorizationHeader();
@@ -104,6 +106,7 @@ export default class ClientManager {
 
   /**
    * Sets authorization headers for all clients before queries
+   * @returns {void}
    */
   public setQidoHeaders(): void {
     this.clients.forEach(
@@ -113,6 +116,7 @@ export default class ClientManager {
 
   /**
    * Sets wado headers for all clients before queries
+   * @returns {void}
    */
   public setWadoHeaders(): void {
     this.clients.forEach(
@@ -122,6 +126,7 @@ export default class ClientManager {
 
   /**
    * Sets authorization headers for wado clients before queries
+   * @returns {void}
    */
   public setAuthorizationHeadersForWADO(): void {
     this.clients.forEach(
@@ -131,7 +136,7 @@ export default class ClientManager {
 
   /**
    * Returns a function that returns if a client have reject abilities
-   * @returns
+   * @returns {function} function that returns if a client can reject
    */
   public clientCanReject() {
     return name => {
@@ -143,7 +148,7 @@ export default class ClientManager {
   /**
    * Returns reject function of a client
    * @param name
-   * @returns
+   * @returns {function} reject function
    */
   public getClientReject(name) {
     const client = this.clients.find(client => client.name === name);
@@ -155,7 +160,7 @@ export default class ClientManager {
   /**
    * Returns the qido client
    * @param name
-   * @returns
+   * @returns {object} qido client
    */
   public getQidoClient(name = undefined): object {
     if (this.clients.length) {
@@ -171,7 +176,7 @@ export default class ClientManager {
   /**
    * Returns the wado client
    * @param name
-   * @returns
+   * @returns {object} wado client
    */
   public getWadoClient(name = undefined): object {
     if (this.clients.length) {
@@ -187,7 +192,7 @@ export default class ClientManager {
   /**
    * Returns the client configuration
    * @param name
-   * @returns
+   * @returns {object} client configuration
    */
   public getClient(name = undefined): object {
     if (this.clients.length) {
@@ -202,7 +207,7 @@ export default class ClientManager {
 
   /**
    * Returns the client list
-   * @returns
+   * @returns {Array} client list
    */
   public getClients() {
     return this.clients;
