@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.7.0-beta.79](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.78...v3.7.0-beta.79) (2023-09-22)
+
+
+### Performance Improvements
+
+* **memory:** add 16 bit texture via configuration - reduces memory by half ([#3662](https://github.com/OHIF/Viewers/issues/3662)) ([2bd3b26](https://github.com/OHIF/Viewers/commit/2bd3b26a6aa54b211ef988f3ad64ef1fe5648bab))
+
+
+
+
+
 # [3.7.0-beta.78](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.77...v3.7.0-beta.78) (2023-09-21)
 
 **Note:** Version bump only for package @ohif/extension-measurement-tracking
