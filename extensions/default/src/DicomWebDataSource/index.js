@@ -45,7 +45,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
       });
       // here clientManager returns, if any, the reject function of the first
       // client that supports it. This server should be the first main server
-      implementation.reject = clientManager.reject();
+      implementation.clientCanReject = clientManager.clientCanReject();
     },
     query: {
       studies: {
@@ -281,7 +281,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
             !seriesConcatenated.includes(converted.SeriesInstanceUID) &&
             !newSeries.includes(converted.SeriesInstanceUID)
           ) {
-            newSeries.includes(converted.SeriesInstanceUID);
+            newSeries.push(converted.SeriesInstanceUID);
           }
           converted.clientName = clients[i].name;
           return converted;
@@ -295,7 +295,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
           }
         }
         // adding new series
-        newSeries.map(seriesUID => seriesConcatenated.push(seriesUID));
+        newSeries.forEach(seriesUID => seriesConcatenated.push(seriesUID));
       }
 
       const seriesSummaryMetadata = {};
@@ -375,12 +375,16 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
           clientSeriesSummaryMetadata = [];
           clientSeriesPromises = [];
         }
-        seriesSummaryMetadata = seriesSummaryMetadata.concat(clientSeriesSummaryMetadata);
-        seriesPromises = seriesPromises.concat(clientSeriesPromises);
 
         // create a mapping between SeriesInstanceUID <--> clientName
         for (let j = 0; j < clientSeriesSummaryMetadata.length; j++) {
-          seriesClientsMapping[clientSeriesSummaryMetadata[j].SeriesInstanceUID] = clients[i].name;
+          if (!seriesClientsMapping[clientSeriesSummaryMetadata[j].SeriesInstanceUID]) {
+            seriesClientsMapping[clientSeriesSummaryMetadata[j].SeriesInstanceUID] =
+              clients[i].name;
+
+            seriesSummaryMetadata.push(clientSeriesSummaryMetadata[j]);
+            seriesPromises.push(clientSeriesPromises[j]);
+          }
         }
       }
 

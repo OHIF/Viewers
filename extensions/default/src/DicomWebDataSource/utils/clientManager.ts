@@ -102,12 +102,19 @@ export default class ClientManager {
     );
   }
 
-  // returns reject function of the first client that supports it
-  public reject() {
-    for (let i = 0; i < this.clients.length; i++) {
-      if (this.clients[i].supportsReject) {
-        return dcm4cheeReject(this.clients[i].wadoRoot);
-      }
+  // returns if a client can reject
+  public clientCanReject() {
+    return name => {
+      const client = this.clients.find(client => client.name === name);
+      return client?.supportsReject;
+    };
+  }
+
+  // returns reject function of a client given its name
+  public getClientReject(name) {
+    const client = this.clients.find(client => client.name === name);
+    if (client?.supportsReject) {
+      return dcm4cheeReject(client.wadoRoot);
     }
   }
 
