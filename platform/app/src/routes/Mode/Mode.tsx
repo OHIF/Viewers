@@ -49,7 +49,7 @@ function defaultRouteInit(
         issuedWarningSeries.push(seriesInstanceUIDs[0]);
         uiNotificationService.show({
           title: 'Series filter',
-          message: `The series filter: ${seriesInstanceUIDs} was not used. All the study series retrieved from "${seriesMetadata.instances[0]?.clientName}" are being displayed`,
+          message: `The series filter ${seriesInstanceUIDs} was not used on "${seriesMetadata.instances[0]?.clientName}". All the study series retrieved from "${seriesMetadata.instances[0]?.clientName}" are being displayed`,
           type: 'error',
           duration: 7000,
         });
