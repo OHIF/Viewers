@@ -54,8 +54,6 @@ function ToolbarSplitButtonWithServices({
     items: getSplitButtonItems(items).filter(item =>
       isRadio && !isAction ? item.id !== primary.id : true
     ),
-    isHovering: false,
-    isExpanded: false,
   });
 
   const { primaryToolId, toggles } = buttonsState;
@@ -149,10 +147,6 @@ function ToolbarSplitButtonWithServices({
 ToolbarSplitButtonWithServices.propTypes = {
   isRadio: PropTypes.bool,
   isAction: PropTypes.bool,
-  bState: PropTypes.shape({
-    primaryToolId: PropTypes.string,
-    toggles: PropTypes.object,
-  }),
   groupId: PropTypes.string,
   primary: PropTypes.shape({
     id: PropTypes.string.isRequired,
