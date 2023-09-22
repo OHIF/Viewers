@@ -25,10 +25,15 @@ describe('OHIF Measurement Panel', function () {
     cy.addLengthMeasurement();
     cy.get('[data-cy="viewport-notification"]').should('exist');
     cy.get('[data-cy="viewport-notification"]').should('be.visible');
-    cy.get('[data-cy="prompt-begin-tracking-yes-btn"]').click();
-    cy.get('[data-cy="measurement-item"]').click();
 
-    cy.get('[data-cy="measurement-item"]').find('svg').click();
+    cy.get('[data-cy="prompt-begin-tracking-yes-btn"]').as('promptBeginTrackingYesBtn');
+    cy.get('@promptBeginTrackingYesBtn').click();
+
+    cy.get('[data-cy="measurement-item"]').as('measurementItem');
+    cy.get('@measurementItem').click();
+
+    cy.get('[data-cy="measurement-item"]').find('svg').as('measurementItemSvg');
+    cy.get('@measurementItemSvg').click();
 
     // enter Bone label
     cy.get('[data-cy="input-annotation"]').should('exist');
@@ -42,7 +47,8 @@ describe('OHIF Measurement Panel', function () {
   it('checks if image would jump when clicked on a measurement item', function () {
     // Add length measurement
     cy.addLengthMeasurement();
-    cy.get('[data-cy="prompt-begin-tracking-yes-btn"]').click();
+    cy.get('[data-cy="prompt-begin-tracking-yes-btn"]').as('promptBeginTrackingYesBtn');
+    cy.get('@promptBeginTrackingYesBtn').click();
 
     cy.scrollToIndex(13);
 
