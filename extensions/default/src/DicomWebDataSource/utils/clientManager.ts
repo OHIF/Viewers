@@ -21,7 +21,7 @@ export default class ClientManager {
    * Adds a dicomweb server configuration in the clients list
    * @param configToAdd
    */
-  private _addConfiguration(configToAdd) {
+  private _addConfiguration(configToAdd): void {
     const config = Object.assign({}, configToAdd);
     config.qidoConfig = {
       url: config.qidoRoot,
@@ -59,7 +59,7 @@ export default class ClientManager {
    * @param query
    * @param config
    */
-  private addConfiguration(params, query, config) {
+  private addConfiguration(params, query, config): void {
     if (config.onConfiguration && typeof config.onConfiguration === 'function') {
       config = config.onConfiguration(config, {
         params,
@@ -73,7 +73,7 @@ export default class ClientManager {
    * Get authorization headers for wado and qido calls
    * @returns
    */
-  private getAuthorizationHeader() {
+  private getAuthorizationHeader(): object {
     const xhrRequestHeaders = {};
     const authHeaders = this.userAuthenticationService.getAuthorizationHeader();
     if (authHeaders && authHeaders.Authorization) {
@@ -87,7 +87,7 @@ export default class ClientManager {
    * @param config
    * @returns
    */
-  private generateWadoHeader(config) {
+  private generateWadoHeader(config): object {
     const authorizationHeader = this.getAuthorizationHeader();
     //Generate accept header depending on config params
     const formattedAcceptHeader = utils.generateAcceptHeader(
@@ -105,7 +105,7 @@ export default class ClientManager {
   /**
    * Sets authorization headers for all clients before queries
    */
-  public setQidoHeaders() {
+  public setQidoHeaders(): void {
     this.clients.forEach(
       client => (client.qidoDicomWebClient.headers = this.getAuthorizationHeader())
     );
@@ -114,7 +114,7 @@ export default class ClientManager {
   /**
    * Sets wado headers for all clients before queries
    */
-  public setWadoHeaders() {
+  public setWadoHeaders(): void {
     this.clients.forEach(
       client => (client.wadoDicomWebClient.headers = this.generateWadoHeader(client))
     );
@@ -123,14 +123,14 @@ export default class ClientManager {
   /**
    * Sets authorization headers for wado clients before queries
    */
-  public setAuthorizationHeadersForWADO() {
+  public setAuthorizationHeadersForWADO(): void {
     this.clients.forEach(
       client => (client.wadoDicomWebClient.headers = this.getAuthorizationHeader())
     );
   }
 
   /**
-   * Returns if a client have reject abilities
+   * Returns a function that returns if a client have reject abilities
    * @returns
    */
   public clientCanReject() {
@@ -157,7 +157,7 @@ export default class ClientManager {
    * @param name
    * @returns
    */
-  public getQidoClient(name = undefined) {
+  public getQidoClient(name = undefined): object {
     if (this.clients.length) {
       if (name) {
         const client = this.clients.find(client => client.name === name);
@@ -173,7 +173,7 @@ export default class ClientManager {
    * @param name
    * @returns
    */
-  public getWadoClient(name = undefined) {
+  public getWadoClient(name = undefined): object {
     if (this.clients.length) {
       if (name) {
         const client = this.clients.find(client => client.name === name);
@@ -189,7 +189,7 @@ export default class ClientManager {
    * @param name
    * @returns
    */
-  public getClient(name = undefined) {
+  public getClient(name = undefined): object {
     if (this.clients.length) {
       if (name) {
         const client = this.clients.find(client => client.name === name);
