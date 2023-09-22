@@ -94,7 +94,7 @@
   "devDependencies": {
     "@babel/plugin-proposal-private-methods": "^7.18.6",
     "@percy/cypress": "^3.1.1",
-    "cypress": "^12.6.0",
+    "cypress": "^13.2.0",
     "cypress-file-upload": "^3.5.3",
     "glob": "^8.0.3",
     "identity-obj-proxy": "3.0.x",

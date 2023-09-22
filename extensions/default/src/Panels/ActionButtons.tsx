@@ -2,18 +2,18 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 
-import { LegacyButton, ButtonGroup } from '@ohif/ui';
+import { LegacyButton, LegacyButtonGroup } from '@ohif/ui';
 
 function ActionButtons({ onExportClick, onCreateReportClick }) {
   const { t } = useTranslation('MeasurementTable');
 
   return (
     <React.Fragment>
-      <ButtonGroup
+      <LegacyButtonGroup
         color="black"
         size="inherit"
       >
-        {/* TODO Revisit design of ButtonGroup later - for now use LegacyButton for its children.*/}
+        {/* TODO Revisit design of LegacyButtonGroup later - for now use LegacyButton for its children.*/}
         <LegacyButton
           className="px-2 py-2 text-base"
           onClick={onExportClick}
@@ -26,7 +26,7 @@ function ActionButtons({ onExportClick, onCreateReportClick }) {
         >
           {t('Create Report')}
         </LegacyButton>
-      </ButtonGroup>
+      </LegacyButtonGroup>
     </React.Fragment>
   );
 }
