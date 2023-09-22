@@ -119,6 +119,7 @@ function modeFactory() {
         'Crosshairs',
         'MoreTools',
       ]);
+      toolbarService.setToggled('StackPrefetch', true);
     },
     onModeExit: ({ servicesManager }) => {
       const {

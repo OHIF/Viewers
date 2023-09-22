@@ -217,8 +217,8 @@ export default async function init({
         return;
       }
 
-      const toolData = toolbarService.getNestedButton(tool);
-      const commands = toolData?.listeners?.activeViewportIdChanged;
+      const button = toolbarService.getNestedButton(tool);
+      const commands = button?.listeners?.activeViewportIdChanged;
       commandsManager.run(commands, { viewportId, evt });
     });
   };

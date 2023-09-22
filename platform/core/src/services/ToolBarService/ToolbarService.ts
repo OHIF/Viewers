@@ -9,10 +9,7 @@ const EVENTS = {
   TOOL_BAR_STATE_MODIFIED: 'event::toolBarService:toolBarStateModified',
 };
 
-export type ButtonListeners = {
-  newStack?: RunCommand;
-  activeViewportIdChanged?: RunCommand;
-};
+export type ButtonListeners = Record<string, RunCommand>;
 
 export interface ButtonProps {
   primary?: Button;
@@ -229,9 +226,9 @@ export default class ToolbarService extends PubSubService {
     return activeTools;
   }
 
-  /** Sets the toggle state of a button to the isActive state */
-  public setActive(id: string, isActive: boolean): void {
-    if (isActive) {
+  /** Sets the toggle state of a button to the isToggled state */
+  public setToggled(id: string, isToggled: boolean): void {
+    if (isToggled) {
       this.state.toggles[id] = true;
     } else {
       delete this.state.toggles[id];
@@ -260,7 +257,7 @@ export default class ToolbarService extends PubSubService {
     }
     for (const buttonId of Object.keys(this.buttons)) {
       const { primary, items } = this.buttons[buttonId].props || {};
-      if (primary?.id === id) return primary;
+      if (primary?.id === id) { return primary; }
       const found = items?.find(childButton => childButton.id === id);
       if (found) {
         return found;

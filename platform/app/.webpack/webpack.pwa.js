@@ -131,6 +131,7 @@ module.exports = (env, argv) => {
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
         // Need to exclude the theme as it is updated independently
         exclude: [/theme/],
+        maximumFileSizeToCacheInBytes: 1024 * 1024 * 50,
       }),
     ],
     // https://webpack.js.org/configuration/dev-server/

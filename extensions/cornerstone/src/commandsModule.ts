@@ -269,14 +269,15 @@ function commandsModule({
 
     // Enable or disable a toggleable command, without calling the activation
     // Used to setup already active tools from hanging protocols
-    toolbarSetActive: props => {
-      toolbarService.setActive(props.toolId, props.isActive ?? true);
+    setToolbarToggled: props => {
+      toolbarService.setToggled(props.toolId, props.isActive ?? true);
     },
 
     // Enable stack prefetch on the given element
     stackPrefetch: props => {
-      const { element } = props;
-      cstUtils.stackPrefetch.enable(element);
+      const { element, prefetchType = 'stackContextPrefetch' } = props;
+      console.log('Enabling', prefetchType);
+      cstUtils[prefetchType].enable(element);
     },
 
     setToolActive: ({ toolName, toolGroupId = null, toggledState }) => {
@@ -717,8 +718,8 @@ function commandsModule({
     stackPrefetch: {
       commandFn: actions.stackPrefetch,
     },
-    toolbarSetActive: {
-      commandFn: actions.toolbarSetActive,
+    setToolbarToggled: {
+      commandFn: actions.setToolbarToggled,
     },
   };
 

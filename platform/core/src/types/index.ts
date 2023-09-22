@@ -2,22 +2,22 @@ import * as Extensions from '../extensions/ExtensionManager';
 import * as HangingProtocol from './HangingProtocol';
 import Services from './Services';
 import Hotkey from '../classes/Hotkey';
-import { DataSourceDefinition } from './DataSource';
-import {
+import type { DataSourceDefinition } from './DataSource';
+import type {
   BaseDataSourceConfigurationAPI,
   BaseDataSourceConfigurationAPIItem,
 } from './DataSourceConfigurationAPI';
 
-export * from '../services/CustomizationService/types';
+export type * from '../services/CustomizationService/types';
 // Separate out some generic types
-export * from './AppConfig';
-export * from './Consumer';
+export type * from './AppConfig';
+export type * from './Consumer';
 export type * from './Command';
-export * from './DisplaySet';
-export * from './StudyMetadata';
-export * from './PanelModule';
-export * from './IPubSub';
-export * from './Color';
+export type * from './DisplaySet';
+export type * from './StudyMetadata';
+export type * from './PanelModule';
+export type * from './IPubSub';
+export type * from './Color';
 export type * from '../services/ToolbarService/ToolbarService';
 
 /**
