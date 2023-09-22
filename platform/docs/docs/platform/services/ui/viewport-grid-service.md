@@ -32,6 +32,7 @@ is expected to support, [check out it's interface in `@ohif/core`][interface]
 | `reset()`                                                             | Resets the default states                           |
 | `getNumViewportPanes()`                                               | Gets the number of visible viewport panes           |
 | `getLayoutOptionsFromState(gridState)`                                | Utility method that produces a `ViewportLayoutOptions` based on the passed in state|
+| `getActiveViewportId()`                                | Returns the viewport Id of the active viewport in the grid|
 
 ## Implementations
 

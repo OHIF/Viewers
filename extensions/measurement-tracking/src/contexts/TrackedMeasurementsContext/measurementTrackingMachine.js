@@ -15,6 +15,7 @@ const machineConfiguration = {
   id: 'measurementTracking',
   initial: 'idle',
   context: {
+    activeViewportId: null,
     trackedStudy: '',
     trackedSeries: [],
     ignoredSeries: [],
@@ -47,6 +48,11 @@ const machineConfiguration = {
         },
         RESTORE_PROMPT_HYDRATE_SR: 'promptHydrateStructuredReport',
         HYDRATE_SR: 'hydrateStructuredReport',
+        UPDATE_ACTIVE_VIEWPORT_ID: {
+          actions: assign({
+            activeViewportId: (_, event) => event.activeViewportId,
+          }),
+        },
       },
     },
     promptBeginTracking: {

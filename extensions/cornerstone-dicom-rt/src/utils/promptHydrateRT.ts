@@ -1,5 +1,4 @@
 import { ButtonEnums } from '@ohif/ui';
-import hydrateRTDisplaySet from './_hydrateRT';
 
 const RESPONSE = {
   NO_NEVER: -1,
@@ -13,6 +12,7 @@ function promptHydrateRT({
   viewportId,
   toolGroupId = 'default',
   preHydrateCallbacks,
+  hydrateRTDisplaySet,
 }) {
   const { uiViewportDialogService } = servicesManager.services;
 
