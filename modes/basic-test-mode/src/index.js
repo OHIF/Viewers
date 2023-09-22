@@ -81,7 +81,6 @@ function modeFactory() {
       const activateTool = () => {
         toolbarService.recordInteraction({
           groupId: 'WindowLevel',
-          itemId: 'WindowLevel',
           interactionType: 'tool',
           commands: [
             {

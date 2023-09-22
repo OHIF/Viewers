@@ -22,7 +22,6 @@ window.config = {
         wadoRoot: 'https://d33do7qe4w26qo.cloudfront.net/dicomweb',
 
         qidoSupportsIncludeField: false,
-        supportsReject: false,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
         enableStudyLazyLoad: true,

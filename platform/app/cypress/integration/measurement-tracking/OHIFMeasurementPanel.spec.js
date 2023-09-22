@@ -5,7 +5,6 @@ describe('OHIF Measurement Panel', function () {
     cy.expectMinimumThumbnails(3);
     cy.initCommonElementsAliases();
     cy.initCornerstoneToolsAliases();
-    cy.resetViewport().wait(50);
     cy.waitDicomImage();
   });
 

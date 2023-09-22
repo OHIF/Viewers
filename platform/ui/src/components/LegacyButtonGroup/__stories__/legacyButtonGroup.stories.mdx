@@ -1,0 +1,102 @@
+import { LegacyButtonGroup, LegacyButton } from '../../../components';
+import { ArgsTable, Story, Canvas, Meta } from '@storybook/addon-docs';
+import {
+  createComponentTemplate,
+  createStoryMetaSettings,
+} from '../../../storybook/functions/create-component-story';
+
+export const argTypes = {
+  component: LegacyButtonGroup,
+  title: 'Components/LegacyButtonGroup',
+};
+
+<Meta
+  title="Components/LegacyButtonGroup"
+  component={LegacyButtonGroup}
+/>
+
+export const LegacybuttonGroupTemplate = args => (
+  <LegacyButtonGroup {...args}>
+    <LegacyButton>One</LegacyButton>
+    <LegacyButton>Two</LegacyButton>
+    <LegacyButton>Three</LegacyButton>
+  </LegacyButtonGroup>
+);
+
+<Heading
+  title="LegacyButtonGroup"
+  componentRelativePath="LegacyButtonGroup/LegacyButtonGroup.tsx"
+/>
+
+- [Overview](#overview)
+- [Props](#props)
+- [Usage](#usage)
+- [Contribute](#contribute)
+
+## Overview
+
+LegacyButtonGroup is a container for a group of buttons.
+
+<Canvas>
+  <Story name="Overview">{LegacybuttonGroupTemplate.bind({})}</Story>
+</Canvas>
+
+## Props
+
+<ArgsTable of={LegacyButtonGroup} />
+
+## Usage
+
+### Variants
+
+There are three different variants of LegacyButtonGroup:
+
+<Canvas>
+  <Story name="Variants">
+    <div className="flex flex-col space-y-2">
+      <LegacyButtonGroup variant="text">
+        <LegacyButton>Text</LegacyButton>
+        <LegacyButton>Text</LegacyButton>
+        <LegacyButton>Text</LegacyButton>
+      </LegacyButtonGroup>
+      <LegacyButtonGroup variant="outlined">
+        <LegacyButton>Outlined</LegacyButton>
+        <LegacyButton>Outlined</LegacyButton>
+        <LegacyButton>Outlined</LegacyButton>
+      </LegacyButtonGroup>
+      <LegacyButtonGroup variant="contained">
+        <LegacyButton>Contained</LegacyButton>
+        <LegacyButton>Contained</LegacyButton>
+        <LegacyButton>Contained</LegacyButton>
+      </LegacyButtonGroup>
+    </div>
+  </Story>
+</Canvas>
+
+### Orientation
+
+You can change the orientation of the buttons in the group by setting the `orientation` prop.
+
+<Canvas>
+  <Story name="Orientation Horizontal">
+    <LegacyButtonGroup orientation="horizontal">
+      <LegacyButton>Horizontal-1</LegacyButton>
+      <LegacyButton>Horizontal-2</LegacyButton>
+    </LegacyButtonGroup>
+  </Story>
+</Canvas>
+
+Or vertical
+
+<Canvas>
+  <Story name="Orientation Vertical">
+    <LegacyButtonGroup orientation="vertical">
+      <LegacyButton>Vertical-1</LegacyButton>
+      <LegacyButton>Vertical-2</LegacyButton>
+    </LegacyButtonGroup>
+  </Story>
+</Canvas>
+
+## Contribute
+
+<Footer componentRelativePath="LEgacyButtonGroup/__stories__/legacyButtonGroup.stories.mdx" />

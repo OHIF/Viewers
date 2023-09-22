@@ -45,8 +45,8 @@ There are seven events that get publish in `MeasurementService`:
 
 ### Segment Behavior
 
-- setSegmentLockedForSegmentation, removeSegment, addSegment, setSegmentLockedForSegmentation, setSegmentLabel, setActiveSegmentForSegmentation,
-setSegmentRGBAColorForSegmentation
+- setSegmentLocked, removeSegment, addSegment, setSegmentLocked, setSegmentLabel, setActiveSegment,
+setSegmentRGBAColor
 
 ### Segmentation Configuration
 

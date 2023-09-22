@@ -54,6 +54,7 @@ const Select = ({
   placeholder,
   noIcons,
   menuPlacement,
+  components,
   value,
 }) => {
   const _noIconComponents = {
@@ -61,7 +62,10 @@ const Select = ({
     IndicatorSeparator: () => null,
   };
   let _components = isMulti ? { Option, MultiValue } : {};
-  _components = noIcons ? { ..._components, ..._noIconComponents } : _components;
+  _components = noIcons
+    ? { ..._components, ..._noIconComponents }
+    : { ..._components, ...components };
+
   const selectedOptions = [];
 
   // Map array of values to an array of selected options
@@ -104,8 +108,9 @@ const Select = ({
 Select.defaultProps = {
   className: '',
   closeMenuOnSelect: true,
-  hideSelectedOptions: true,
+  hideSelectedOptions: false,
   isClearable: true,
+  components: {},
   isDisabled: false,
   isMulti: false,
   isSearchable: true,

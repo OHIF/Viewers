@@ -149,12 +149,12 @@ async function _getROIsFromToolState(naturalizedDataset, FrameOfReferenceUID) {
 
       if (measurements && measurements.length) {
         properties.measurements = measurements;
-        console.debug('[SR] retrieving measurements...', measurements);
+        console.log('[SR] retrieving measurements...', measurements);
       }
 
       if (evaluations && evaluations.length) {
         properties.evaluations = evaluations;
-        console.debug('[SR] retrieving evaluations...', evaluations);
+        console.log('[SR] retrieving evaluations...', evaluations);
       }
 
       const roi = new DICOMMicroscopyViewer.roi.ROI({ scoord3d, properties });

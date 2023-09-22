@@ -9,6 +9,7 @@ describe('OHIF Cornerstone Toolbar', () => {
 
     //const expectedText = 'Ser: 1';
     //cy.get('@viewportInfoBottomLeft').should('contains.text', expectedText);
+    cy.waitDicomImage();
   });
 
   it('checks if all primary buttons are being displayed', () => {
@@ -66,13 +67,12 @@ describe('OHIF Cornerstone Toolbar', () => {
   // });
 
   it('checks if Levels tool will change the window width and center of an image', () => {
-    //Click on button and verify if icon is active on toolbar
-    cy.waitDicomImage();
-    cy.get('@wwwcBtnPrimary')
-      .click()
-      .then($wwwcBtn => {
-        cy.wrap($wwwcBtn).should('have.class', 'active');
-      });
+    // Wait for the DICOM image to load
+
+    // Assign an alias to the button element
+    cy.get('@wwwcBtnPrimary').as('wwwcButton');
+    cy.get('@wwwcButton').click();
+    cy.get('@wwwcButton').should('have.class', 'active');
 
     //drags the mouse inside the viewport to be able to interact with series
     cy.get('@viewport')
@@ -90,13 +90,16 @@ describe('OHIF Cornerstone Toolbar', () => {
   });
 
   it('checks if Pan tool will move the image inside the viewport', () => {
-    //Click on button and verify if icon is active on toolbar
-    cy.get('@panBtn')
-      .click()
-      .then($panBtn => {
-        cy.wrap($panBtn).should('have.class', 'active');
-      });
+    // Assign an alias to the button element
+    cy.get('@panBtn').as('panButton');
 
+    // Click on the button
+    cy.get('@panButton').click();
+
+    // Assert that the button has the 'active' class
+    cy.get('@panButton').should('have.class', 'active');
+
+    // Trigger the pan actions on the viewport
     cy.get('@viewport')
       .trigger('mousedown', 'center', { buttons: 1 })
       .trigger('mousemove', 'bottom', { buttons: 1 })

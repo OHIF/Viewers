@@ -74,6 +74,11 @@ class ViewportGridService extends PubSubService {
     return this.serviceImplementation._getState();
   }
 
+  public getActiveViewportId() {
+    const state = this.getState();
+    return state.activeViewportId;
+  }
+
   public setDisplaySetsForViewport(props) {
     // Just update a single viewport, but use the multi-viewport update for it.
     this.setDisplaySetsForViewports([props]);

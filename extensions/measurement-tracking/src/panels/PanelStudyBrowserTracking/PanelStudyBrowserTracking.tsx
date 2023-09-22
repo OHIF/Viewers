@@ -131,14 +131,16 @@ function PanelStudyBrowserTracking({
       const imageIds = dataSource.getImageIdsForDisplaySet(displaySet);
       const imageId = imageIds[Math.floor(imageIds.length / 2)];
 
-      // TODO: Is it okay that imageIds are not returned here for SR displaysets?
-      if (imageId && !displaySet?.unsupported) {
-        // When the image arrives, render it and store the result in the thumbnailImgSrcMap
-        newImageSrcEntry[dSet.displaySetInstanceUID] = await getImageSrc(imageId);
-        setThumbnailImageSrcMap(prevState => {
-          return { ...prevState, ...newImageSrcEntry };
-        });
+      // TODO: Is it okay that imageIds are not returned here for SR displaySets?
+      if (!imageId || displaySet?.unsupported) {
+        return;
       }
+      // When the image arrives, render it and store the result in the thumbnailImgSrcMap
+      newImageSrcEntry[dSet.displaySetInstanceUID] = await getImageSrc(imageId);
+
+      setThumbnailImageSrcMap(prevState => {
+        return { ...prevState, ...newImageSrcEntry };
+      });
     });
   }, [displaySetService, dataSource, getImageSrc]);
 
@@ -184,27 +186,38 @@ function PanelStudyBrowserTracking({
 
           const newImageSrcEntry = {};
           const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
-          if (!displaySet?.unsupported) {
-            if (options.madeInClient) {
-              setJumpToDisplaySet(displaySetInstanceUID);
-            }
-
-            const imageIds = dataSource.getImageIdsForDisplaySet(displaySet);
-            const imageId = imageIds[Math.floor(imageIds.length / 2)];
-
-            // TODO: Is it okay that imageIds are not returned here for SR displaysets?
-            if (imageId) {
-              // When the image arrives, render it and store the result in the thumbnailImgSrcMap
-              newImageSrcEntry[displaySetInstanceUID] = await getImageSrc(imageId);
-              setThumbnailImageSrcMap(prevState => {
-                return { ...prevState, ...newImageSrcEntry };
-              });
-            }
+          if (displaySet?.unsupported) {
+            return;
           }
+
+          if (options.madeInClient) {
+            setJumpToDisplaySet(displaySetInstanceUID);
+          }
+
+          const imageIds = dataSource.getImageIdsForDisplaySet(displaySet);
+          const imageId = imageIds[Math.floor(imageIds.length / 2)];
+
+          // TODO: Is it okay that imageIds are not returned here for SR displaysets?
+          if (!imageId) {
+            return;
+          }
+
+          // When the image arrives, render it and store the result in the thumbnailImgSrcMap
+          newImageSrcEntry[displaySetInstanceUID] = await getImageSrc(imageId);
+          setThumbnailImageSrcMap(prevState => {
+            return { ...prevState, ...newImageSrcEntry };
+          });
         });
       }
     );
 
+    return () => {
+      SubscriptionDisplaySetsAdded.unsubscribe();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [displaySetService, dataSource, getImageSrc, thumbnailImageSrcMap, trackedSeries, viewports]);
+
+  useEffect(() => {
     // TODO: Will this always hold _all_ the displaySets we care about?
     // DISPLAY_SETS_CHANGED returns `DisplaySerService.activeDisplaySets`
     const SubscriptionDisplaySetsChanged = displaySetService.subscribe(
@@ -246,12 +259,10 @@ function PanelStudyBrowserTracking({
     );
 
     return () => {
-      SubscriptionDisplaySetsAdded.unsubscribe();
       SubscriptionDisplaySetsChanged.unsubscribe();
       SubscriptionDisplaySetMetaDataInvalidated.unsubscribe();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [displaySetService, dataSource, getImageSrc, thumbnailImageSrcMap, trackedSeries, viewports]);
+  }, [thumbnailImageSrcMap, trackedSeries, viewports, dataSource, displaySetService]);
 
   const tabs = _createStudyBrowserTabs(
     StudyInstanceUIDs,
@@ -442,7 +453,7 @@ function _mapDisplaySets(
                 body: () => (
                   <div className="bg-primary-dark p-4 text-white">
                     <p>Are you sure you want to delete this report?</p>
-                    <p>This action cannot be undone.</p>
+                    <p className="mt-2">This action cannot be undone.</p>
                   </div>
                 ),
                 actions: [

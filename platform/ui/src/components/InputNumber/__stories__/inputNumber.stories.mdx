@@ -35,8 +35,11 @@ InputNumber is a component that allows you to use as a number value
     name="Overview"
     args={{
       step: 1,
-      value: 3,
+      value: 1000,
+      minValue: 0,
+      maxValue: 1000,
       size: 'sm',
+      showAdjustmentArrows: true,
       onChange: () => console.log('input range change'),
     }}
   >

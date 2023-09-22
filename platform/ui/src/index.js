@@ -36,6 +36,7 @@ export {
 /** COMPONENTS */
 export {
   AboutModal,
+  AdvancedToolbox,
   HotkeyField,
   Header,
   UserPreferences,
@@ -57,6 +58,7 @@ export {
   IconButton,
   Input,
   InputRange,
+  InputDoubleRange,
   InputNumber,
   InputDateRange,
   InputFilterText,
@@ -67,6 +69,7 @@ export {
   Label,
   LayoutSelector,
   LegacyButton,
+  LegacyButtonGroup,
   LegacyCinePlayer,
   LegacyViewportActionBar,
   LoadingIndicatorProgress,
@@ -75,6 +78,7 @@ export {
   Modal,
   NavBar,
   Notification,
+  PanelSection,
   ProgressLoadingBar,
   Select,
   SegmentationTable,

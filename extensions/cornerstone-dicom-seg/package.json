@@ -43,6 +43,7 @@
     "react-router-dom": "^6.8.1"
   },
   "dependencies": {
+    "@cornerstonejs/tools": "^1.16.4",
     "@babel/runtime": "^7.20.13",
     "react-color": "^2.19.3"
   }

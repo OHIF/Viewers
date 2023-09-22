@@ -35,7 +35,7 @@ function TrackedMeasurementsContextProvider(
   const machineOptions = Object.assign({}, defaultOptions);
   machineOptions.actions = Object.assign({}, machineOptions.actions, {
     jumpToFirstMeasurementInActiveViewport: (ctx, evt) => {
-      const { trackedStudy, trackedSeries } = ctx;
+      const { trackedStudy, trackedSeries, activeViewportId } = ctx;
       const measurements = measurementService.getMeasurements();
       const trackedMeasurements = measurements.filter(
         m => trackedStudy === m.referenceStudyUID && trackedSeries.includes(m.referenceSeriesUID)
@@ -43,7 +43,7 @@ function TrackedMeasurementsContextProvider(
 
       console.log(
         'jumping to measurement reset viewport',
-        viewportGrid.activeViewportId,
+        activeViewportId,
         trackedMeasurements[0]
       );
 
@@ -71,7 +71,7 @@ function TrackedMeasurementsContextProvider(
       }
 
       viewportGridService.setDisplaySetsForViewport({
-        viewportId: viewportGrid.activeViewportId,
+        viewportId: activeViewportId,
         displaySetInstanceUIDs: [referencedDisplaySetUID],
         viewportOptions: {
           initialImageOptions: {
@@ -82,8 +82,7 @@ function TrackedMeasurementsContextProvider(
     },
     showStructuredReportDisplaySetInActiveViewport: (ctx, evt) => {
       if (evt.data.createdDisplaySetInstanceUIDs.length > 0) {
-        const StructuredReportDisplaySetInstanceUID =
-          evt.data.createdDisplaySetInstanceUIDs[0].displaySetInstanceUID;
+        const StructuredReportDisplaySetInstanceUID = evt.data.createdDisplaySetInstanceUIDs[0];
 
         viewportGridService.setDisplaySetsForViewport({
           viewportId: evt.data.viewportId,
@@ -159,6 +158,13 @@ function TrackedMeasurementsContextProvider(
   const [trackedMeasurements, sendTrackedMeasurementsEvent] = useMachine(
     measurementTrackingMachine
   );
+
+  useEffect(() => {
+    // Update the state machine with the active viewport ID
+    sendTrackedMeasurementsEvent('UPDATE_ACTIVE_VIEWPORT_ID', {
+      activeViewportId,
+    });
+  }, [activeViewportId, sendTrackedMeasurementsEvent]);
 
   // ~~ Listen for changes to ViewportGrid for potential SRs hung in panes when idle
   useEffect(() => {

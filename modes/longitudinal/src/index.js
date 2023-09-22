@@ -74,7 +74,7 @@ function modeFactory({ modeConfiguration }) {
         toolbarService,
         toolGroupService,
         panelService,
-        segmentationService,
+        customizationService,
       } = servicesManager.services;
 
       measurementService.clearMeasurements();
@@ -87,7 +87,6 @@ function modeFactory({ modeConfiguration }) {
       const activateTool = () => {
         toolbarService.recordInteraction({
           groupId: 'WindowLevel',
-          itemId: 'WindowLevel',
           interactionType: 'tool',
           commands: [
             {
@@ -124,6 +123,13 @@ function modeFactory({ modeConfiguration }) {
         'MPR',
         'Crosshairs',
         'MoreTools',
+      ]);
+
+      customizationService.addModeCustomizations([
+        {
+          id: 'segmentation.disableEditing',
+          value: true,
+        },
       ]);
 
       // // ActivatePanel event trigger for when a segmentation or measurement is added.

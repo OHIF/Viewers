@@ -5,7 +5,6 @@ describe('OHIF Study Viewer Page', function () {
     cy.expectMinimumThumbnails(3);
     cy.initCommonElementsAliases();
     cy.initCornerstoneToolsAliases();
-    cy.resetViewport().wait(50);
   });
 
   it('checks if series thumbnails are being displayed', function () {

@@ -73,6 +73,8 @@ import tabROIThreshold from './../../assets/icons/tab-roi-threshold.svg';
 import tabSegmentation from './../../assets/icons/tab-segmentation.svg';
 import uiArrowDown from './../../assets/icons/ui-arrow-down.svg';
 import uiArrowUp from './../../assets/icons/ui-arrow-up.svg';
+import uiArrowLeft from './../../assets/icons/ui-arrow-left.svg';
+import uiArrowRight from './../../assets/icons/ui-arrow-right.svg';
 import loadingOHIFMark from './../../assets/icons/loading-ohif-mark.svg';
 import notificationsInfo from './../../assets/icons/notifications-info.svg';
 import notificationsWarning from './../../assets/icons/notifications-warning.svg';
@@ -115,16 +117,24 @@ import panelGroupOpenClose from './../../assets/icons/panel-group-open-close.svg
 import rowAdd from './../../assets/icons/row-add.svg';
 import rowEdit from './../../assets/icons/row-edit.svg';
 import rowHidden from './../../assets/icons/row-hidden.svg';
-import rowHideAll from './../../assets/icons/row-hide-all.svg';
-import rowHide from './../../assets/icons/row-hide.svg';
-import rowLocked from './../../assets/icons/row-locked.svg';
-import rowShowAll from './../../assets/icons/row-show-all.svg';
-import rowUnhide from './../../assets/icons/row-unhide.svg';
-import rowUnlocked from './../../assets/icons/row-unlocked.svg';
+import rowShown from './../../assets/icons/row-shown.svg';
+import rowLock from './../../assets/icons/row-lock.svg';
+import rowUnlock from './../../assets/icons/row-unlock.svg';
 import iconMPR from './../../assets/icons/icon-mpr-alt.svg';
 import checkboxDefault from './../../assets/icons/checkbox-default.svg';
 import checkboxActive from './../../assets/icons/checkbox-active.svg';
 import referenceLines from './../../assets/icons/reference-lines.svg';
+import chevronDownNew from './../../assets/icons/icon-disclosure-close.svg';
+import chevronLeftNew from './../../assets/icons/icon-disclosure-open.svg';
+import settingsBars from './../../assets/icons/icon-display-settings.svg';
+import iconAdd from './../../assets/icons/icon-add.svg';
+import iconRename from './../../assets/icons/icon-rename.svg';
+import iconDelete from './../../assets/icons/icon-delete.svg';
+import iconMoreMenu from './../../assets/icons/icon-more-menu.svg';
+import iconToolBrush from './../../assets/icons/icon-tool-brush.svg';
+import iconToolEraser from './../../assets/icons/icon-tool-eraser.svg';
+import iconToolScissor from './../../assets/icons/icon-tool-scissor.svg';
+import iconToolThreshold from './../../assets/icons/icon-tool-threshold.svg';
 
 /** Old OHIF */
 import oldTrash from './../../assets/icons/old-trash.svg';
@@ -164,7 +174,6 @@ const ICONS = {
   'icon-transferring': iconTransferring,
   'info-action': infoAction,
   'info-link': infoLink,
-  'arrow-left': arrowLeft,
   'launch-arrow': launchArrow,
   'launch-info': launchInfo,
   link: link,
@@ -195,12 +204,9 @@ const ICONS = {
   'row-add': rowAdd,
   'row-edit': rowEdit,
   'row-hidden': rowHidden,
-  'row-hide-all': rowHideAll,
-  'row-hide': rowHide,
-  'row-locked': rowLocked,
-  'row-show-all': rowShowAll,
-  'row-unhide': rowUnhide,
-  'row-unlocked': rowUnlocked,
+  'row-shown': rowShown,
+  'row-lock': rowLock,
+  'row-unlock': rowUnlock,
   'checkbox-checked': checkboxChecked,
   'checkbox-unchecked': checkboxUnchecked,
   'loading-ohif-mark': loadingOHIFMark,
@@ -237,7 +243,6 @@ const ICONS = {
   'tool-create-threshold': toolCreateThreshold,
   'tool-calibration': toolCalibration,
   'tool-point': toolCircle,
-  'tool-circle': toolCircle,
   'tool-freehand-line': toolFreehand,
   'tool-freehand-polygon': toolFreehandPolygon,
   'tool-polygon': toolPolygon,
@@ -256,9 +261,22 @@ const ICONS = {
   'tab-segmentation': tabSegmentation,
   'ui-arrow-down': uiArrowDown,
   'ui-arrow-up': uiArrowUp,
+  'ui-arrow-left': uiArrowLeft,
+  'ui-arrow-right': uiArrowRight,
   'checkbox-default': checkboxDefault,
   'checkbox-active': checkboxActive,
   'tool-referenceLines': referenceLines,
+  'chevron-left-new': chevronLeftNew,
+  'chevron-down-new': chevronDownNew,
+  'settings-bars': settingsBars,
+  'icon-rename': iconRename,
+  'icon-add': iconAdd,
+  'icon-delete': iconDelete,
+  'icon-more-menu': iconMoreMenu,
+  'icon-tool-brush': iconToolBrush,
+  'icon-tool-eraser': iconToolEraser,
+  'icon-tool-scissor': iconToolScissor,
+  'icon-tool-threshold': iconToolThreshold,
 
   /** Old OHIF */
   'old-trash': oldTrash,
