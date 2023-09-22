@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-cornerstone-dicom-seg",
-  "version": "3.7.0-beta.79",
+  "version": "3.7.0-beta.80",
   "description": "DICOM SEG read workflow",
   "author": "OHIF",
   "license": "MIT",
@@ -43,8 +43,8 @@
     "react-router-dom": "^6.8.1"
   },
   "dependencies": {
-    "@cornerstonejs/tools": "^1.16.4",
     "@babel/runtime": "^7.20.13",
+    "@cornerstonejs/tools": "^1.16.4",
     "react-color": "^2.19.3"
   }
 }
