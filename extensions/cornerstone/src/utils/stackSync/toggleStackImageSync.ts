@@ -1,7 +1,39 @@
-const disableSync = (syncName, servicesManager) => {
+const STACK_SYNC_NAME = 'stackImageSync';
+
+export default function toggleStackImageSync({
+  toggledState,
+  servicesManager,
+  viewports: providedViewports,
+}) {
+  if (!toggledState) {
+    return disableSync(STACK_SYNC_NAME, servicesManager);
+  }
+
   const { syncGroupService, viewportGridService, displaySetService, cornerstoneViewportService } =
     servicesManager.services;
-  const viewports = getViewports(viewportGridService, displaySetService);
+
+  const viewports = providedViewports || getReconstructableStackViewports(viewportGridService, displaySetService);
+
+  // create synchronization group and add the viewports to it.
+  viewports.forEach(gridViewport => {
+    const { viewportId } = gridViewport.viewportOptions;
+    const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+    if (!viewport) {
+      return;
+    }
+    syncGroupService.addViewportToSyncGroup(viewportId, viewport.getRenderingEngine().id, {
+      type: 'stackimage',
+      id: STACK_SYNC_NAME,
+      source: true,
+      target: true,
+    });
+  });
+}
+
+function disableSync(syncName, servicesManager) {
+  const { syncGroupService, viewportGridService, displaySetService, cornerstoneViewportService } =
+    servicesManager.services;
+  const viewports = getReconstructableStackViewports(viewportGridService, displaySetService);
   viewports.forEach(gridViewport => {
     const { viewportId } = gridViewport.viewportOptions;
     const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
@@ -16,7 +48,11 @@ const disableSync = (syncName, servicesManager) => {
   });
 };
 
-const getViewports = (viewportGridService, displaySetService) => {
+/**
+ * Gets the consistent spacing stack viewport types, which are the ones which
+ * can be navigated using the stack image sync right now.
+ */
+function getReconstructableStackViewports(viewportGridService, displaySetService) {
   let { viewports } = viewportGridService.getState();
 
   viewports = [...viewports.values()];
@@ -40,42 +76,5 @@ const getViewports = (viewportGridService, displaySetService) => {
       return false;
     }
   });
-
-  // viewports = viewports.filter(viewport => viewport.viewportOptions.viewportType === 'stack');
-
-  console.log('viewports=', viewports);
   return viewports;
 };
-
-const STACK_SYNC_NAME = 'stackImageSync';
-
-export default function toggleStackImageSync({
-  toggledState,
-  servicesManager,
-  viewports: providedViewports,
-}) {
-  if (!toggledState) {
-    return disableSync(STACK_SYNC_NAME, servicesManager);
-  }
-
-  console.log('Toggling stack image sync');
-  const { syncGroupService, viewportGridService, displaySetService, cornerstoneViewportService } =
-    servicesManager.services;
-
-  const viewports = providedViewports || getViewports(viewportGridService, displaySetService);
-
-  // create synchronization group and add the viewports to it.
-  viewports.forEach(gridViewport => {
-    const { viewportId } = gridViewport.viewportOptions;
-    const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
-    if (!viewport) {
-      return;
-    }
-    syncGroupService.addViewportToSyncGroup(viewportId, viewport.getRenderingEngine().id, {
-      type: 'stackimage',
-      id: STACK_SYNC_NAME,
-      source: true,
-      target: true,
-    });
-  });
-}
