@@ -39,6 +39,8 @@ import profile from './../../assets/icons/profile.svg';
 import pushLeft from './../../assets/icons/push-left.svg';
 import pushRight from './../../assets/icons/push-right.svg';
 import settings from './../../assets/icons/settings.svg';
+import sidePanelCloseLeft from './../../assets/icons/side-panel-close-left.svg';
+import sidePanelCloseRight from './../../assets/icons/side-panel-close-right.svg';
 import sorting from './../../assets/icons/sorting.svg';
 import sortingActiveDown from './../../assets/icons/sorting-active-down.svg';
 import sortingActiveUp from './../../assets/icons/sorting-active-up.svg';
@@ -71,6 +73,7 @@ import tabLinear from './../../assets/icons/tab-linear.svg';
 import tabPatientInfo from './../../assets/icons/tab-patient-info.svg';
 import tabROIThreshold from './../../assets/icons/tab-roi-threshold.svg';
 import tabSegmentation from './../../assets/icons/tab-segmentation.svg';
+import tabStudies from './../../assets/icons/tab-studies.svg';
 import uiArrowDown from './../../assets/icons/ui-arrow-down.svg';
 import uiArrowUp from './../../assets/icons/ui-arrow-up.svg';
 import uiArrowLeft from './../../assets/icons/ui-arrow-left.svg';
@@ -189,6 +192,8 @@ const ICONS = {
   'push-left': pushLeft,
   'push-right': pushRight,
   settings: settings,
+  'side-panel-close-left': sidePanelCloseLeft,
+  'side-panel-close-right': sidePanelCloseRight,
   'sorting-active-down': sortingActiveDown,
   'sorting-active-up': sortingActiveUp,
   'status-alert': statusAlert,
@@ -259,6 +264,7 @@ const ICONS = {
   'tab-patient-info': tabPatientInfo,
   'tab-roi-threshold': tabROIThreshold,
   'tab-segmentation': tabSegmentation,
+  'tab-studies': tabStudies,
   'ui-arrow-down': uiArrowDown,
   'ui-arrow-up': uiArrowUp,
   'ui-arrow-left': uiArrowLeft,

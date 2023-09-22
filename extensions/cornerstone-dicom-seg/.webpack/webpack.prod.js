@@ -45,10 +45,10 @@ module.exports = (env, argv) => {
       new webpack.optimize.LimitChunkCountPlugin({
         maxChunks: 1,
       }),
-      // new MiniCssExtractPlugin({
-      //   filename: `./dist/${outputName}.css`,
-      //   chunkFilename: `./dist/${outputName}.css`,
-      // }),
+      new MiniCssExtractPlugin({
+        filename: `./dist/${outputName}.css`,
+        chunkFilename: `./dist/${outputName}.css`,
+      }),
     ],
   });
 };

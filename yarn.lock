@@ -1523,6 +1523,16 @@
     gl-matrix "^3.4.3"
     lodash.clonedeep "4.5.0"
 
+"@cornerstonejs/core@^1.16.6":
+  version "1.16.6"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/core/-/core-1.16.6.tgz#a216fc655f3c4b110196e63dcf129e02839d0890"
+  integrity sha512-ysd+t2N2KVk88TLYg0Nx174uYd47wQRBdFQZ4ApHhI/IHq5lY/qrP8prrtLR/DEtyLyUERIxDyGFRr+lEBZpxg==
+  dependencies:
+    "@kitware/vtk.js" "27.3.1"
+    detect-gpu "^5.0.22"
+    gl-matrix "^3.4.3"
+    lodash.clonedeep "4.5.0"
+
 "@cornerstonejs/dicom-image-loader@^1.16.5":
   version "1.16.5"
   resolved "https://registry.yarnpkg.com/@cornerstonejs/dicom-image-loader/-/dicom-image-loader-1.16.5.tgz#23ca3e27e29b88cd05840c777578b37de60e5b87"
@@ -1543,6 +1553,15 @@
   integrity sha512-98NsgeBPaEPMJnCsYKLDvGydREBh4Gue62o4AwcMyMOmH3tVC1neeMPzRNh0YTHHkQJJfjT5vD18+vYP86hnUw==
   dependencies:
     "@cornerstonejs/core" "^1.16.5"
+
+"@cornerstonejs/tools@^1.16.4":
+  version "1.16.6"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/tools/-/tools-1.16.6.tgz#0debc17fb9830288bff263bbf3a34cb940b726c2"
+  integrity sha512-qLjtEC0OGW+bpvvKXQPQs8TEE/ze+NIiBbg1qBSXo2vm7O3YO1DRWbWthJMVL7tIWYuVxZx5OsAI2WOkydQUOA==
+  dependencies:
+    "@cornerstonejs/core" "^1.16.6"
+    lodash.clonedeep "4.5.0"
+    lodash.get "^4.4.2"
 
 "@cornerstonejs/tools@^1.16.5":
   version "1.16.5"
