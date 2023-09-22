@@ -18,6 +18,7 @@ const DEFAULT_CONTEXT_MENU_CLICKS = {
       {
         commandName: 'showCornerstoneContextMenu',
         commandOptions: {
+          requireNearbyToolData: true,
           menuId: 'measurementsContextMenu',
         },
       },
@@ -62,8 +63,20 @@ function initContextMenu({
     const customizations =
       customizationService.get('cornerstoneViewportClickCommands') || DEFAULT_CONTEXT_MENU_CLICKS;
     const toRun = customizations[name];
+
+    if (!toRun) {
+      return;
+    }
+
+    // only find nearbyToolData if required, for the click (which closes the context menu
+    // we don't need to find nearbyToolData)
+    let nearbyToolData = null;
+    if (toRun.commands.some(command => command.commandOptions?.requireNearbyToolData)) {
+      nearbyToolData = findNearbyToolData(commandsManager, evt);
+    }
+
     const options = {
-      nearbyToolData: findNearbyToolData(commandsManager, evt),
+      nearbyToolData,
       event: evt,
     };
     commandsManager.run(toRun, options);

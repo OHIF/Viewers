@@ -97,9 +97,9 @@ export default class ToolGroupService {
   }
 
   public getActiveToolForViewport(viewportId: string): string {
-    const toolGroup = ToolGroupManager.getToolGroupForViewport(viewportId);
+    const toolGroup = this.getToolGroupForViewport(viewportId);
     if (!toolGroup) {
-      return null;
+      return;
     }
 
     return toolGroup.getActivePrimaryMouseButtonTool();
@@ -184,13 +184,9 @@ export default class ToolGroupService {
     this._setToolsMode(toolGroup, tools);
   }
 
-  public createToolGroupAndAddTools(
-    toolGroupId: string,
-    tools: Array<Tool>,
-    configs: any = {}
-  ): Types.IToolGroup {
+  public createToolGroupAndAddTools(toolGroupId: string, tools: Array<Tool>): Types.IToolGroup {
     const toolGroup = this.createToolGroup(toolGroupId);
-    this.addToolsToToolGroup(toolGroupId, tools, configs);
+    this.addToolsToToolGroup(toolGroupId, tools);
     return toolGroup;
   }
 
@@ -239,34 +235,6 @@ export default class ToolGroupService {
     toolInstance.configuration = config;
   }
 
-  private _getToolNames(toolGroupTools: Tools): string[] {
-    const toolNames = [];
-    if (toolGroupTools.active) {
-      toolGroupTools.active.forEach(tool => {
-        toolNames.push(tool.toolName);
-      });
-    }
-    if (toolGroupTools.passive) {
-      toolGroupTools.passive.forEach(tool => {
-        toolNames.push(tool.toolName);
-      });
-    }
-
-    if (toolGroupTools.enabled) {
-      toolGroupTools.enabled.forEach(tool => {
-        toolNames.push(tool.toolName);
-      });
-    }
-
-    if (toolGroupTools.disabled) {
-      toolGroupTools.disabled.forEach(tool => {
-        toolNames.push(tool.toolName);
-      });
-    }
-
-    return toolNames;
-  }
-
   private _setToolsMode(toolGroup, tools) {
     const { active, passive, enabled, disabled } = tools;
 
@@ -295,17 +263,33 @@ export default class ToolGroupService {
     }
   }
 
-  private _addTools(toolGroup, tools, configs) {
-    const toolNames = this._getToolNames(tools);
-    toolNames.forEach(toolName => {
-      // Initialize the toolConfig if no configuration is provided
-      const toolConfig = configs[toolName] ?? {};
+  private _addTools(toolGroup, tools) {
+    const addTools = tools => {
+      tools.forEach(({ toolName, parentTool, configuration }) => {
+        if (parentTool) {
+          toolGroup.addToolInstance(toolName, parentTool, {
+            ...configuration,
+          });
+        } else {
+          toolGroup.addTool(toolName, { ...configuration });
+        }
+      });
+    };
 
-      // if (volumeUID) {
-      //   toolConfig.volumeUID = volumeUID;
-      // }
+    if (tools.active) {
+      addTools(tools.active);
+    }
 
-      toolGroup.addTool(toolName, { ...toolConfig });
-    });
+    if (tools.passive) {
+      addTools(tools.passive);
+    }
+
+    if (tools.enabled) {
+      addTools(tools.enabled);
+    }
+
+    if (tools.disabled) {
+      addTools(tools.disabled);
+    }
   }
 }

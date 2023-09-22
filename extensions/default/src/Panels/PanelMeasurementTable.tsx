@@ -103,13 +103,20 @@ export default function PanelMeasurementTable({
       // creating too many series instances.
       const options = findSRWithSameSeriesDescription(SeriesDescription, displaySetService);
 
-      return createReportAsync(
-        servicesManager,
-        commandsManager,
-        dataSource,
-        trackedMeasurements,
-        options
-      );
+      const getReport = async () => {
+        return commandsManager.runCommand(
+          'storeMeasurements',
+          {
+            measurementData: trackedMeasurements,
+            dataSource,
+            additionalFindingTypes: ['ArrowAnnotate'],
+            options,
+          },
+          'CORNERSTONE_STRUCTURED_REPORT'
+        );
+      };
+
+      return createReportAsync({ servicesManager, getReport });
     }
   }
 
