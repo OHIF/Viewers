@@ -62,6 +62,7 @@ function Header({
             id="options"
             showDropdownIcon={false}
             list={menuOptions}
+            alignment="right"
           >
             <IconButton
               id={'options-settings-icon'}
