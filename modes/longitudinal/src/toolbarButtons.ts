@@ -466,8 +466,7 @@ const toolbarButtons: Button[] = [
             },
           ],
           'Image Overlay',
-          null,
-          true
+          { isActive: true }
         ),
         _createToolButton(
           'StackScroll',

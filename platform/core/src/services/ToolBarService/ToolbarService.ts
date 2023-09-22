@@ -344,10 +344,9 @@ export default class ToolbarService extends PubSubService {
 
     buttonItems.forEach(buttonItem => {
       if (buttonItem.type === 'toggle') {
-        this.state.toggles[buttonItem.id] = buttonItem.isActive;
-      } else {
-        this._setTogglesForButtonItems(buttonItem.props?.items);
+        this.setToggled(buttonItem.id, buttonItem.isActive);
       }
+      this._setTogglesForButtonItems(buttonItem.props?.items);
     });
   }
 
