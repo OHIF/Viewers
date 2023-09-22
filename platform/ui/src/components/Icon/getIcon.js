@@ -73,6 +73,7 @@ import tabLinear from './../../assets/icons/tab-linear.svg';
 import tabPatientInfo from './../../assets/icons/tab-patient-info.svg';
 import tabROIThreshold from './../../assets/icons/tab-roi-threshold.svg';
 import tabSegmentation from './../../assets/icons/tab-segmentation.svg';
+import tabStudies from './../../assets/icons/tab-studies.svg';
 import uiArrowDown from './../../assets/icons/ui-arrow-down.svg';
 import uiArrowUp from './../../assets/icons/ui-arrow-up.svg';
 import uiArrowLeft from './../../assets/icons/ui-arrow-left.svg';
@@ -263,6 +264,7 @@ const ICONS = {
   'tab-patient-info': tabPatientInfo,
   'tab-roi-threshold': tabROIThreshold,
   'tab-segmentation': tabSegmentation,
+  'tab-studies': tabStudies,
   'ui-arrow-down': uiArrowDown,
   'ui-arrow-up': uiArrowUp,
   'ui-arrow-left': uiArrowLeft,
