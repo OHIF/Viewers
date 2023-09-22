@@ -178,6 +178,7 @@ export default class HangingProtocolService extends PubSubService {
    */
   public getActiveProtocol(): {
     protocol: HangingProtocol.Protocol;
+    _originalProtocol: HangingProtocol.Protocol;
     stage: HangingProtocol.ProtocolStage;
     stageIndex: number;
     activeStudy?: StudyMetadata;
@@ -187,6 +188,7 @@ export default class HangingProtocolService extends PubSubService {
   } {
     return {
       protocol: this.protocol,
+      _originalProtocol: this._originalProtocol,
       stage: this.protocol?.stages?.[this.stageIndex],
       stageIndex: this.stageIndex,
       activeStudy: this.activeStudy,
@@ -521,22 +523,32 @@ export default class HangingProtocolService extends PubSubService {
           stage.viewports.push({
             viewportOptions: {
               ...defaultViewportOptions,
-              viewportId: uuidv4(),
+              // Use 'default' for the first viewport, and UUIDs for the rest.
+              viewportId: i === 0 ? 'default' : uuidv4(),
             },
             displaySets: [],
           });
         }
       } else {
         // Clone each viewport to ensure independent objects
-        stage.viewports = stage.viewports.map(viewport => ({
-          ...viewport,
-          viewportOptions: {
-            ...(viewport.viewportOptions || defaultViewportOptions),
-            viewportId: viewport.viewportOptions?.viewportId || uuidv4(),
-          },
-          displaySets: viewport.displaySets || [],
-        }));
+        stage.viewports = stage.viewports.map((viewport, index) => {
+          const existingViewportId = viewport.viewportOptions?.viewportId;
 
+          return {
+            ...viewport,
+            viewportOptions: {
+              ...(viewport.viewportOptions || defaultViewportOptions),
+              // use provided viewportId when available, otherwise use default for first viewport
+              // and uuid for the rest
+              viewportId: existingViewportId
+                ? existingViewportId
+                : index === 0
+                ? 'default'
+                : uuidv4(),
+            },
+            displaySets: viewport.displaySets || [],
+          };
+        });
         stage.viewports.forEach(viewport => {
           viewport.displaySets.forEach(displaySet => {
             displaySet.options = displaySet.options || {};

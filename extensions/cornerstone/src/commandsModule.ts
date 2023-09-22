@@ -18,7 +18,6 @@ import toggleStackImageSync from './utils/stackSync/toggleStackImageSync';
 import { getFirstAnnotationSelected } from './utils/measurementServiceMappings/utils/selection';
 import getActiveViewportEnabledElement from './utils/getActiveViewportEnabledElement';
 import { CornerstoneServices } from './types';
-import ImageOverlayViewerTool from './tools/ImageOverlayViewerTool';
 
 function commandsModule({
   servicesManager,
@@ -266,7 +265,6 @@ function commandsModule({
     toolbarServiceRecordInteraction: props => {
       toolbarService.recordInteraction(props);
     },
-
     // Enable or disable a toggleable command, without calling the activation
     // Used to setup already active tools from hanging protocols
     setToolbarToggled: props => {
