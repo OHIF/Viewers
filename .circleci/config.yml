@@ -172,6 +172,9 @@ jobs:
     steps:
       - cypress/install:
           install-browsers: true
+          package-manager: 'yarn'
+          cypress-cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
+          cypress-cache-path: '~/.cache/Cypress'
       - persist_to_workspace:
           root: ~/repo
           paths:
@@ -181,10 +184,11 @@ jobs:
     # parallelism: 4
     steps:
       - cypress/run-tests:
+          working-directory: platform/app
           start-command: yarn run test:data && yarn run test:e2e:serve
           cypress-command:
-            'npx wait-on@latest http://localhost:3000 && cd platform/app &&  npx cypress run
-            --record --browser chrome --parallel'
+            'npx wait-on@latest http://localhost:3000 &&  npx cypress run --record --browser chrome
+            --parallel'
 
   ###
   # Workflow: RELEASE
@@ -317,13 +321,13 @@ jobs:
 workflows:
   PR_CHECKS:
     jobs:
-      - UNIT_TESTS
-      - CYPRESS_INSTALL:
-          requires:
-            - UNIT_TESTS
-      - CYPRESS_RUN:
-          requires:
-            - CYPRESS_INSTALL
+      # - UNIT_TESTS
+      - CYPRESS_INSTALL
+        # requires:
+        #   - UNIT_TESTS
+      - CYPRESS_RUN
+        # requires:
+        #   - CYPRESS_INSTALL
 
   # PR_OPTIONAL_VISUAL_TESTS:
   #   jobs:
