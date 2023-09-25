@@ -211,9 +211,11 @@ export default async function init({
     const { element } = evt.detail;
     const activeTools = toolbarService.getActiveTools();
 
+    // TODO - get the event name from evt
+    console.log("event name should come from", evt);
     activeTools.forEach(tool => {
       const toolData = toolbarService.getNestedButton(tool);
-      const commands = toolData?.listeners?.newStack;
+      const commands = toolData?.listeners?.[EVENTS.STACK_NEW_IMAGE];
       commandsManager.run(commands, { element, evt });
     });
   };
@@ -237,7 +239,7 @@ export default async function init({
       }
 
       const button = toolbarService.getNestedButton(tool);
-      const commands = button?.listeners?.activeViewportIdChanged;
+      const commands = button?.listeners?.[EVENTS.ACTIVE_VIEWPORT_ID_CHANGED];
       commandsManager.run(commands, { viewportId, evt });
     });
   };

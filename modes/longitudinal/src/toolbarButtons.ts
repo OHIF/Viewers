@@ -6,8 +6,8 @@ import {
   WindowLevelMenuItem,
 } from '@ohif/ui';
 import { defaults, ToolbarService } from '@ohif/core';
-import type { Button } from '@ohif/core/types';
-import { RunCommand } from 'platform/core/src/types';
+import type { Button, RunCommand } from '@ohif/core/types';
+import { EVENTS } from '@cornerstonejs/core';
 
 const { windowLevelPresets } = defaults;
 
@@ -58,7 +58,6 @@ function _createSetToolActiveCommands(toolName) {
   }));
   return temp;
 }
-
 
 const ReferenceLinesCommands: RunCommand = [
   {
@@ -432,7 +431,7 @@ const toolbarButtons: Button[] = [
           'Enable position synchronization on stack viewports',
           {
             listeners: {
-              newStack: {
+              [EVENTS.STACK_VIEWPORT_NEW_STACK]: {
                 commandName: 'toggleStackImageSync',
                 commandOptions: { toggledState: true },
               },
@@ -447,8 +446,8 @@ const toolbarButtons: Button[] = [
           'Show Reference Lines',
           {
             listeners: {
-              newStack: ReferenceLinesCommands,
-              activeViewportIdChanged: ReferenceLinesCommands,
+              [EVENTS.STACK_VIEWPORT_NEW_STACK]: ReferenceLinesCommands,
+              [EVENTS.ACTIVE_VIEWPORT_ID_CHANGED]: ReferenceLinesCommands,
             },
           }
         ),
@@ -639,7 +638,7 @@ const toolbarButtons: Button[] = [
     'Enable Complete Stack Prefetch',
     {
       listeners: {
-        newStack: {
+        [EVENTS.STACK_VIEWPORT_NEW_STACK]: {
           commandName: 'stackPrefetch',
         },
       },
