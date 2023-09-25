@@ -14,6 +14,10 @@ version: 2.1
 orbs:
   codecov: codecov/codecov@1.0.5
   cypress: cypress-io/cypress@3.1.4
+executors:
+  with-chrome-and-firefox:
+    docker:
+      - image: 'cypress/browsers:node-18.15.0-chrome-106.0.5249.61-1-ff-99.0.1-edge-114.0.1823.51-1'
 
 defaults: &defaults
   docker:
@@ -325,9 +329,9 @@ workflows:
       - CYPRESS_INSTALL
         # requires:
         #   - UNIT_TESTS
-      - CYPRESS_RUN
-        # requires:
-        #   - CYPRESS_INSTALL
+      # - CYPRESS_RUN:
+      #   requires:
+      #     - CYPRESS_INSTALL
 
   # PR_OPTIONAL_VISUAL_TESTS:
   #   jobs:
