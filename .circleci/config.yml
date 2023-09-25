@@ -32,6 +32,7 @@ jobs:
     steps:
       # Update yarn
       - run: yarn -v
+      - run: node --version
       # Checkout code and ALL Git Tags
       - checkout
       - restore_cache:
