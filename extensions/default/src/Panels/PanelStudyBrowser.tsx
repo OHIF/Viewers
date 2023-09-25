@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
+
 import PropTypes from 'prop-types';
 import { utils } from '@ohif/core';
 import { StudyBrowser, useImageViewer, useViewportGrid, Dialog, ButtonEnums } from '@ohif/ui';
@@ -19,6 +21,7 @@ function PanelStudyBrowser({
 }) {
   const { displaySetService, uiDialogService, hangingProtocolService, uiNotificationService } =
     servicesManager.services;
+  const navigate = useNavigate();
 
   const { t } = useTranslation('Common');
 
