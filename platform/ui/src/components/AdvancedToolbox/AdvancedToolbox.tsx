@@ -4,15 +4,15 @@ import { PanelSection, Icon, Tooltip } from '../../components';
 import ToolSettings from './ToolSettings';
 
 const AdvancedToolbox = ({ title, items }) => {
-  const [isActive, setIsActive] = useState(null);
+  const [activeItemName, setActiveItemName] = useState(null);
 
   useEffect(() => {
     // see if any of the items are active from the outside
     const activeItem = items?.find(item => item.active);
-    setIsActive(activeItem ? activeItem.name : null);
+    setActiveItemName(activeItem ? activeItem.name : null);
   }, [items]);
 
-  const activeItemOptions = items?.find(item => item.name === isActive)?.options;
+  const activeItemOptions = items?.find(item => item.name === activeItemName)?.options;
 
   return (
     <PanelSection title={title}>
@@ -31,14 +31,14 @@ const AdvancedToolbox = ({ title, items }) => {
                     if (item.disabled) {
                       return;
                     }
-                    setIsActive(item.name);
+                    setActiveItemName(item.name);
                     item.onClick(item.name);
                   }}
                 >
                   <div
                     className={classnames(
                       'text-primary-active grid h-[40px] w-[40px] place-items-center rounded-md bg-black  ',
-                      isActive === item.name && 'bg-primary-light text-black',
+                      activeItemName === item.name && 'bg-primary-light text-black',
                       item.disabled && 'opacity-50',
                       !item.disabled &&
                         'hover:bg-primary-light cursor-pointer hover:cursor-pointer hover:text-black'

@@ -297,16 +297,16 @@ class SegmentationService extends PubSubService {
     this._setSegmentLocked(segmentationId, segmentIndex, isLocked, suppressEvents);
   }
 
+  /**
+   * Toggles the locked state of a segment in a segmentation.
+   * @param segmentationId - The ID of the segmentation.
+   * @param segmentIndex - The index of the segment to toggle.
+   */
   public toggleSegmentLocked(segmentationId: string, segmentIndex: number): void {
-    const suppressEvents = false;
     const segmentation = this.getSegmentation(segmentationId);
     const segment = this._getSegmentInfo(segmentation, segmentIndex);
     const isLocked = !segment.isLocked;
     this._setSegmentLocked(segmentationId, segmentIndex, isLocked);
-  }
-
-  public setSegmentLabel(segmentationId: string, segmentIndex: number, segmentLabel: string): void {
-    this._setSegmentLabel(segmentationId, segmentIndex, segmentLabel);
   }
 
   public setSegmentColor(
@@ -397,10 +397,7 @@ class SegmentationService extends PubSubService {
 
   private _getSegmentations(): Segmentation[] {
     const segmentations = this.arrayOfObjects(this.segmentations);
-    return (
-      segmentations &&
-      segmentations.map(m => this.segmentations[Object.keys(m)[0]])
-    );
+    return segmentations && segmentations.map(m => this.segmentations[Object.keys(m)[0]]);
   }
 
   public getActiveSegmentation(): Segmentation {
@@ -1149,15 +1146,10 @@ class SegmentationService extends PubSubService {
     if (!segmentation) {
       throw new Error(`Segmentation with segmentationId ${segmentationId} not found.`);
     }
-
     segmentation.hydrated = true;
 
     // Not all segmentations have dipslaysets, some of them are derived in the client
-    try {
-      this._setDisplaySetIsHydrated(segmentationId, true);
-    } catch (error) {
-      console.warn(error);
-    }
+    this._setDisplaySetIsHydrated(segmentationId, true);
 
     if (!suppressEvents) {
       this._broadcastEvent(this.EVENTS.SEGMENTATION_UPDATED, {
@@ -1166,72 +1158,14 @@ class SegmentationService extends PubSubService {
     }
   };
 
-  private calculateCentroids = (
-    segmentationId: string,
-    segmentIndex?: number
-  ): Map<number, { x: number; y: number; z: number; world: number[] }> => {
-    const segmentation = this.getSegmentation(segmentationId);
-    // ... rest of the code remains same ...
-
-    // Returning centroids without setting them
-    const result = new Map();
-    for (const [segmentIndex, centroid] of centroids) {
-      const count = centroid.count;
-
-      centroid.x /= count;
-      centroid.y /= count;
-      centroid.z /= count;
-
-      centroid.world = imageData.indexToWorld([
-        centroid.x,
-        centroid.y,
-        centroid.z,
-      ]);
-
-      result.set(segmentIndex, {
-        image: [centroid.x, centroid.y, centroid.z],
-        world: centroid.world,
-      });
-    }
-
-    return result;
-  };
-
-  private setCentroids = (
-    segmentationId: string,
-    centroids: Map<number, { image: number[]; world?: number[] }>
-  ): void => {
-    const segmentation = this.getSegmentation(segmentationId);
-    const imageData = this.getLabelmapVolume(segmentationId).imageData; // Assuming this method returns imageData
-
-    if (!segmentation.cachedStats) {
-      segmentation.cachedStats = { segmentCenter: {} };
-    } else if (!segmentation.cachedStats.segmentCenter) {
-      segmentation.cachedStats.segmentCenter = {};
-    }
-
-    for (const [segmentIndex, centroid] of centroids) {
-      let world = centroid.world;
-
-      // If world coordinates are not provided, calculate them
-      if (!world || world.length === 0) {
-        world = imageData.indexToWorld(centroid.image);
-      }
-
-      segmentation.cachedStats.segmentCenter[segmentIndex] = {
-        center: {
-          image: centroid.image,
-          world: world,
-        },
-      };
-    }
-
-    this.addOrUpdateSegmentation(segmentation, true, true);
-  };
-
   private _setDisplaySetIsHydrated(displaySetUID: string, isHydrated: boolean): void {
     const { displaySetService } = this.servicesManager.services;
     const displaySet = displaySetService.getDisplaySetByUID(displaySetUID);
+
+    if (!displaySet) {
+      return;
+    }
+
     displaySet.isHydrated = isHydrated;
     displaySetService.setDisplaySetMetadataInvalidated(displaySetUID, false);
   }
@@ -1376,7 +1310,6 @@ class SegmentationService extends PubSubService {
     }
 
     const { colorLUTIndex } = segmentation;
-
     this._removeSegmentationFromCornerstone(segmentationId);
 
     // Delete associated colormap
@@ -1390,8 +1323,12 @@ class SegmentationService extends PubSubService {
     if (wasActive) {
       const remainingSegmentations = this._getSegmentations();
 
-      if (remainingSegmentations.length) {
-        const { id } = remainingSegmentations[0];
+      const remainingHydratedSegmentations = remainingSegmentations.filter(
+        segmentation => segmentation.hydrated
+      );
+
+      if (remainingHydratedSegmentations.length) {
+        const { id } = remainingHydratedSegmentations[0];
 
         this._setActiveSegmentationForToolGroup(id, this._getFirstToolGroupId(), false);
       }

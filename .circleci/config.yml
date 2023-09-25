@@ -13,18 +13,18 @@ version: 2.1
 ##
 orbs:
   codecov: codecov/codecov@1.0.5
-  cypress: cypress-io/cypress@1.26.0
-executors:
-  # Custom executor to override Cypress config
-  deploy-to-prod-executor:
-    docker:
-      - image: cimg/node:16.14
-        environment:
-          CYPRESS_BASE_URL: https://ohif-staging.netlify.com/
-  chrome-and-pacs:
-    docker:
-      # Primary container image where all steps run.
-      - image: 'cypress/browsers:node16.14.2-slim-chrome103-ff102'
+  cypress: cypress-io/cypress@3
+# executors:
+#   # Custom executor to override Cypress config
+#   deploy-to-prod-executor:
+#     docker:
+#       - image: cimg/node:16.14
+#         environment:
+#           CYPRESS_BASE_URL: https://ohif-staging.netlify.com/
+#   chrome-and-pacs:
+#     docker:
+#       # Primary container image where all steps run.
+#       - image: 'cypress/browsers:node18.12.0-chrome106-ff106'
 
 defaults: &defaults
   docker:
@@ -363,32 +363,20 @@ jobs:
             fi
 
 workflows:
-  version: 2
-
   PR_CHECKS:
     jobs:
       - UNIT_TESTS
 
-      # E2E: PWA
       - cypress/run:
           name: 'E2E: PWA'
-          executor: chrome-and-pacs
-          browser: chrome
-          pre-steps:
-            - run: |
-                # Clear yarn cache; use yarn from image (update image to update yarn)
-                rm -rf ~/.yarn
-                yarn -v
-          yarn: true
-          record: true
-          store_artifacts: true
-          working_directory: platform/app
-          build: yarn test:data
-          start: yarn run test:e2e:serve
-          spec: 'cypress/integration/**/*'
-          wait-on: 'http://localhost:3000'
-          cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
-          no-workspace: true # Don't persist workspace
+          start-command: yarn run test:data && yarn run test:e2e:serve
+          install-browsers: true
+          cypress-command:
+            'npx wait-on@latest http://localhost:3000 && cd platform/app &&  npx cypress run
+            --record --browser chrome --parallel'
+          package-manager: 'yarn'
+          cypress-cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
+          cypress-cache-path: '~/.cache/Cypress'
           post-steps:
             - store_artifacts:
                 path: platform/app/cypress/screenshots
@@ -399,34 +387,34 @@ workflows:
           requires:
             - UNIT_TESTS
 
-  PR_OPTIONAL_VISUAL_TESTS:
-    jobs:
-      - AWAIT_APPROVAL:
-          type: approval
-      # Update hub.docker.org
-      - cypress/run:
-          name: 'Generate Percy Snapshots'
-          executor: cypress/browsers-chrome76
-          browser: chrome
-          pre-steps:
-            - run: 'rm -rf ~/.yarn && yarn -v && yarn global add wait-on'
-          yarn: true
-          store_artifacts: false
-          working_directory: platform/app
-          build:
-            yarn test:data && npx cross-env QUICK_BUILD=true APP_CONFIG=config/dicomweb-server.js
-            yarn run build
-          # start server --> verify running --> percy + chrome + cypress
-          command: yarn run test:e2e:dist
-          cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
-          no-workspace: true # Don't persist workspace
-          post-steps:
-            - store_artifacts:
-                path: platform/app/cypress/screenshots
-            - store_artifacts:
-                path: platform/app/cypress/videos
-          requires:
-            - AWAIT_APPROVAL
+  # PR_OPTIONAL_VISUAL_TESTS:
+  #   jobs:
+  #     - AWAIT_APPROVAL:
+  #         type: approval
+  #     # Update hub.docker.org
+  #     - cypress/run:
+  #         name: 'Generate Percy Snapshots'
+  #         executor: cypress/browsers-chrome76
+  #         browser: chrome
+  #         pre-steps:
+  #           - run: 'rm -rf ~/.yarn && yarn -v && yarn global add wait-on'
+  #         yarn: true
+  #         store_artifacts: false
+  #         working_directory: platform/app
+  #         build:
+  #           yarn test:data && npx cross-env QUICK_BUILD=true APP_CONFIG=config/dicomweb-server.js
+  #           yarn run build
+  #         # start server --> verify running --> percy + chrome + cypress
+  #         command: yarn run test:e2e:dist
+  #         cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
+  #         no-workspace: true # Don't persist workspace
+  #         post-steps:
+  #           - store_artifacts:
+  #               path: platform/app/cypress/screenshots
+  #           - store_artifacts:
+  #               path: platform/app/cypress/videos
+  #         requires:
+  #           - AWAIT_APPROVAL
 
   # Our master branch deploys to viewer-dev.ohif.org, the viewer.ohif.org is
   # deployed from the release branch which is more stable and less frequently updated.

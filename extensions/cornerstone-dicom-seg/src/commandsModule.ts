@@ -4,6 +4,8 @@ import { ServicesManager, Types } from '@ohif/core';
 import { cache, metaData } from '@cornerstonejs/core';
 import { segmentation as cornerstoneToolsSegmentation } from '@cornerstonejs/tools';
 import { adaptersSEG, helpers } from '@cornerstonejs/adapters';
+import { DicomMetadataStore } from '@ohif/core';
+
 import {
   updateViewportsForSegmentationRendering,
   getUpdatedViewportsForSegmentation,
@@ -56,26 +58,25 @@ const commandsModule = ({
      *
      */
     createEmptySegmentationForViewport: async ({ viewportId }) => {
+      const viewport = getTargetViewport({ viewportId, viewportGridService });
+      // Todo: add support for multiple display sets
+      const displaySetInstanceUID = viewport.displaySetInstanceUIDs[0];
+
+      const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
+
+      if (!displaySet.isReconstructable) {
+        uiNotificationService.show({
+          title: 'Segmentation',
+          message: 'Segmentation is not supported for non-reconstructible displaysets yet',
+          type: 'error',
+        });
+        return;
+      }
+
       updateViewportsForSegmentationRendering({
         viewportId,
         servicesManager,
         loadFn: async () => {
-          const viewport = getTargetViewport({ viewportId, viewportGridService });
-
-          // Todo: add support for multiple display sets
-          const displaySetInstanceUID = viewport.displaySetInstanceUIDs[0];
-
-          const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
-
-          if (!displaySet.isReconstructable) {
-            uiNotificationService.show({
-              title: 'Segmentation',
-              message: 'Segmentation is not supported for non-reconstructible displaysets yet',
-              type: 'error',
-            });
-            return;
-          }
-
           const currentSegmentations = segmentationService.getSegmentations();
           const segmentationId = await segmentationService.createSegmentationForDisplaySet(
             displaySetInstanceUID,
@@ -319,12 +320,7 @@ const commandsModule = ({
       }
 
       const { label } = segmentation;
-      const SeriesDescription =
-        promptResult.value !== undefined && promptResult.value !== ''
-          ? promptResult.value
-          : label !== undefined && label !== ''
-          ? label
-          : 'Research Derived Series';
+      const SeriesDescription = promptResult.value || label || 'Research Derived Series';
 
       const generatedData = actions.generateSegmentation({
         segmentationId,
@@ -340,6 +336,15 @@ const commandsModule = ({
       const { dataset: naturalizedReport } = generatedData;
 
       await dataSource.store.dicom(naturalizedReport);
+
+      // The "Mode" route listens for DicomMetadataStore changes
+      // When a new instance is added, it listens and
+      // automatically calls makeDisplaySets
+
+      // add the information for where we stored it to the instance as well
+      naturalizedReport.wadoRoot = dataSource.getConfig().wadoRoot;
+
+      DicomMetadataStore.addInstances([naturalizedReport], true);
 
       return naturalizedReport;
     },

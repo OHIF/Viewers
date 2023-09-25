@@ -115,9 +115,15 @@ function SegmentationDropDownRow({
           onClick={() => onToggleSegmentationVisibility(activeSegmentation.id)}
         >
           {activeSegmentation.isVisible ? (
-            <Icon name="row-show-all" />
+            <Icon
+              name="row-shown"
+              className="text-primary-active"
+            />
           ) : (
-            <Icon name="row-hide-all" />
+            <Icon
+              name="row-hidden"
+              className="text-primary-active"
+            />
           )}
         </div>
       </div>
@@ -132,7 +138,23 @@ SegmentationDropDownRow.propTypes = {
       label: PropTypes.string.isRequired,
     })
   ).isRequired,
+  activeSegmentation: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    isVisible: PropTypes.bool.isRequired,
+  }),
   onActiveSegmentationChange: PropTypes.func.isRequired,
+  disableEditing: PropTypes.bool,
+  onToggleSegmentationVisibility: PropTypes.func,
+  onSegmentationEdit: PropTypes.func,
+  onSegmentationDownload: PropTypes.func,
+  storeSegmentation: PropTypes.func,
+  onSegmentationDelete: PropTypes.func,
+  onSegmentationAdd: PropTypes.func,
+};
+
+SegmentationDropDownRow.defaultProps = {
+  segmentations: [],
+  disableEditing: false,
 };
 
 export default SegmentationDropDownRow;

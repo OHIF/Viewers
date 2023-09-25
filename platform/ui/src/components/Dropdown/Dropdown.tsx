@@ -33,57 +33,60 @@ const Dropdown = ({
 
   maxCharactersPerLine = maxCharactersPerLine ?? longestTitle;
 
-  const DropdownItem = useCallback(({ id, title, icon, onClick }) => {
-    // Split the title into lines of length maxCharactersPerLine
-    const lines = [];
-    for (let i = 0; i < title.length; i += maxCharactersPerLine) {
-      lines.push(title.substring(i, i + maxCharactersPerLine));
-    }
+  const DropdownItem = useCallback(
+    ({ id, title, icon, onClick }) => {
+      // Split the title into lines of length maxCharactersPerLine
+      const lines = [];
+      for (let i = 0; i < title.length; i += maxCharactersPerLine) {
+        lines.push(title.substring(i, i + maxCharactersPerLine));
+      }
 
-    return (
-      <div
-        key={title}
-        className={classnames(
-          'hover:bg-secondary-main flex cursor-pointer items-center px-4 py-2 transition duration-300 ',
-          titleClassName,
-          showBorders && borderStyle
-        )}
-        onClick={() => {
-          setOpen(false);
-          onClick();
-        }}
-        data-cy={id}
-      >
-        {!!icon && (
-          <Icon
-            name={icon}
-            className="mr-2 w-4 text-white"
-          />
-        )}
+      return (
         <div
-          style={{
-            whiteSpace: 'nowrap',
+          key={title}
+          className={classnames(
+            'hover:bg-secondary-main flex cursor-pointer items-center px-4 py-2 transition duration-300 ',
+            titleClassName,
+            showBorders && borderStyle
+          )}
+          onClick={() => {
+            setOpen(false);
+            onClick();
           }}
+          data-cy={id}
         >
-          {title.length > maxCharactersPerLine && (
-            <div>
-              {lines.map((line, index) => (
-                <Typography
-                  key={index}
-                  className={itemsClassName}
-                >
-                  {line}
-                </Typography>
-              ))}
-            </div>
+          {!!icon && (
+            <Icon
+              name={icon}
+              className="mr-2 w-4 text-white"
+            />
           )}
-          {title.length <= maxCharactersPerLine && (
-            <Typography className={itemsClassName}>{title}</Typography>
-          )}
+          <div
+            style={{
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {title.length > maxCharactersPerLine && (
+              <div>
+                {lines.map((line, index) => (
+                  <Typography
+                    key={index}
+                    className={itemsClassName}
+                  >
+                    {line}
+                  </Typography>
+                ))}
+              </div>
+            )}
+            {title.length <= maxCharactersPerLine && (
+              <Typography className={itemsClassName}>{title}</Typography>
+            )}
+          </div>
         </div>
-      </div>
-    );
-  }, []);
+      );
+    },
+    [maxCharactersPerLine, itemsClassName, titleClassName, showBorders]
+  );
 
   const renderTitleElement = () => {
     return (
@@ -163,7 +166,7 @@ const Dropdown = ({
 };
 Dropdown.defaultProps = {
   showDropdownIcon: true,
-  maxTextLength: 10,
+  maxCharactersPerLine: 20,
   showBorders: true,
 };
 
@@ -182,6 +185,7 @@ Dropdown.propTypes = {
   ).isRequired,
   alignment: PropTypes.oneOf(['left', 'right']),
   maxCharactersPerLine: PropTypes.number,
+  showBorders: PropTypes.bool,
 };
 
 export default Dropdown;

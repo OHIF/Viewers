@@ -71,6 +71,7 @@ export {
   LegacyButton,
   LegacyButtonGroup,
   LegacyCinePlayer,
+  LegacySidePanel,
   LegacyViewportActionBar,
   LoadingIndicatorProgress,
   LoadingIndicatorTotalPercent,

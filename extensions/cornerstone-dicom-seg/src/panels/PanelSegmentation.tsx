@@ -13,7 +13,7 @@ export default function PanelSegmentation({
   extensionManager,
   configuration,
 }) {
-  const { segmentationService, uiDialogService } = servicesManager.services;
+  const { segmentationService, viewportGridService, uiDialogService } = servicesManager.services;
 
   const { t } = useTranslation('PanelSegmentation');
 
@@ -188,21 +188,31 @@ export default function PanelSegmentation({
     });
   };
 
-  const storeSegmentation = segmentationId => {
+  const storeSegmentation = async segmentationId => {
     const datasources = extensionManager.getActiveDataSource();
 
-    const getReport = async () => {
-      return await commandsManager.runCommand('storeSegmentation', {
-        segmentationId,
-        dataSource: datasources[0],
-      });
-    };
-
-    createReportAsync({
+    const displaySetInstanceUIDs = await createReportAsync({
       servicesManager,
-      getReport,
+      getReport: () =>
+        commandsManager.runCommand('storeSegmentation', {
+          segmentationId,
+          dataSource: datasources[0],
+        }),
       reportType: 'Segmentation',
     });
+
+    // Show the exported report in the active viewport as read only (similar to SR)
+    if (displaySetInstanceUIDs) {
+      // clear the segmentation that we exported, similar to the storeMeasurement
+      // where we remove the measurements and prompt again the user if they would like
+      // to re-read the measurements in a SR read only viewport
+      segmentationService.remove(segmentationId);
+
+      viewportGridService.setDisplaySetsForViewport({
+        viewportId: viewportGridService.getActiveViewportId(),
+        displaySetInstanceUIDs,
+      });
+    }
   };
 
   return (

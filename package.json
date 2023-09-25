@@ -32,7 +32,7 @@
     "dev:orthanc": "lerna run dev:orthanc --stream",
     "dev:dcm4chee": "lerna run dev:dcm4chee --stream",
     "dev:static": "lerna run dev:static --stream",
-    "orthanc:up": "docker-compose -f .docker/Nginx-Orthanc/docker-compose.yml up",
+    "orthanc:up": "docker-compose -f platform/app/.recipes/Nginx-Orthanc/docker-compose.yml up",
     "preinstall": "node preinstall.js",
     "start": "yarn run dev",
     "test": "yarn run test:unit",

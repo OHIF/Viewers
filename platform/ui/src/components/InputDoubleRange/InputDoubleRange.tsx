@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import classNames from 'classnames';
 import { InputNumber } from '../../components'; // Import InputNumber component
 import './InputDoubleRange.css';
@@ -41,10 +41,13 @@ const InputDoubleRange: React.FC<InputDoubleRangeProps> = ({
   // Set initial thumb positions as percentages
   const initialPercentageStart = Math.round(((values[0] - minValue) / (maxValue - minValue)) * 100);
   const initialPercentageEnd = Math.round(((values[1] - minValue) / (maxValue - minValue)) * 100);
+
   const [percentageStart, setPercentageStart] = useState(initialPercentageStart);
   const [percentageEnd, setPercentageEnd] = useState(initialPercentageEnd);
 
   const [rangeValue, setRangeValue] = useState(values);
+  const selectedThumbRef = useRef(null);
+  const sliderRef = useRef(null);
 
   const updateRangeValues = (newValues, index = null) => {
     const updatedRangeValue = Array.isArray(newValues) ? [...newValues] : [...rangeValue];
@@ -96,21 +99,15 @@ const InputDoubleRange: React.FC<InputDoubleRangeProps> = ({
     };
   }, []);
 
-  const [selectedThumb, setSelectedThumb] = useState(null);
-
-  const handleMouseUp = () => {
-    setSelectedThumb(null);
-  };
-
   const handleGlobalMouseUp = () => {
     // Remove global mouse event listeners
     window.removeEventListener('mousemove', handleMouseMove);
     window.removeEventListener('mouseup', handleGlobalMouseUp);
-    setSelectedThumb(null); // Stop the dragging
+    selectedThumbRef.current = null;
   };
 
   const handleMouseDown = e => {
-    const rect = e.currentTarget.getBoundingClientRect(); // Use currentTarget instead of target
+    const rect = sliderRef.current.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const percentageClicked = (x / rect.width) * 100;
 
@@ -120,9 +117,9 @@ const InputDoubleRange: React.FC<InputDoubleRangeProps> = ({
 
     // Check if the clicked point is within a threshold distance to either thumb
     if (distanceToStartThumb < 10) {
-      setSelectedThumb(0);
+      selectedThumbRef.current = 0;
     } else if (distanceToEndThumb < 10) {
-      setSelectedThumb(1);
+      selectedThumbRef.current = 1;
     }
 
     window.addEventListener('mousemove', handleMouseMove);
@@ -130,38 +127,41 @@ const InputDoubleRange: React.FC<InputDoubleRangeProps> = ({
   };
 
   const handleMouseMove = e => {
-    if (selectedThumb !== null) {
-      const rect = e.currentTarget.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const newValue =
-        Math.round(((x / rect.width) * (maxValue - minValue) + minValue) / step) * step;
+    const selectedThumbValue = selectedThumbRef.current;
 
-      // Make sure newValue is within [minValue, maxValue]
-      const clampedValue = Math.min(Math.max(newValue, minValue), maxValue);
+    if (selectedThumbValue === null) {
+      return;
+    }
 
-      // Ensure that left and right thumbs don't switch positions
-      if (selectedThumb === 0 && clampedValue >= rangeValue[1]) {
-        return;
-      }
-      if (selectedThumb === 1 && clampedValue <= rangeValue[0]) {
-        return;
-      }
+    const rect = sliderRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const newValue =
+      Math.round(((x / rect.width) * (maxValue - minValue) + minValue) / step) * step;
 
-      // Update the correct values in the rangeValue array
-      const updatedRangeValue = [...rangeValue];
-      updatedRangeValue[selectedThumb] = clampedValue;
-      setRangeValue(updatedRangeValue);
+    // Make sure newValue is within [minValue, maxValue]
+    const clampedValue = Math.min(Math.max(newValue, minValue), maxValue);
 
-      // No need to call onChange here, since we're updating local state+
-      onChange(updatedRangeValue);
+    // Ensure that left and right thumbs don't switch positions
+    if (selectedThumbValue === 0 && clampedValue >= rangeValue[1]) {
+      return;
+    }
+    if (selectedThumbValue === 1 && clampedValue <= rangeValue[0]) {
+      return;
+    }
 
-      // Update the thumb position
-      const percentage = Math.round(((clampedValue - minValue) / (maxValue - minValue)) * 100);
-      if (selectedThumb === 0) {
-        setPercentageStart(percentage);
-      } else {
-        setPercentageEnd(percentage);
-      }
+    // Update the correct values in the rangeValue array
+    const updatedRangeValue = [...rangeValue];
+    updatedRangeValue[selectedThumbValue] = clampedValue;
+    setRangeValue(updatedRangeValue);
+
+    onChange(updatedRangeValue);
+
+    // Update the thumb position
+    const percentage = Math.round(((clampedValue - minValue) / (maxValue - minValue)) * 100);
+    if (selectedThumbValue === 0) {
+      setPercentageStart(percentage);
+    } else {
+      setPercentageEnd(percentage);
     }
   };
 
@@ -170,13 +170,12 @@ const InputDoubleRange: React.FC<InputDoubleRangeProps> = ({
   const rangeValuePercentageEnd = ((rangeValue[1] - minValue) / (maxValue - minValue)) * 100;
 
   return (
-    <div className={`flex items-center space-x-2${containerClassName ?? ''}`}>
+    <div className={`flex select-none items-center space-x-2 ${containerClassName ?? ''}`}>
       {showLabel && LabelOrEditableNumber(rangeValue[0], 0)}
       <div
         className="relative flex h-10 w-full items-center"
         onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
+        ref={sliderRef}
       >
         <div
           className="h-[3px] w-full rounded-lg"

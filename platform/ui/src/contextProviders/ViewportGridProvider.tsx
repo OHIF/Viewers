@@ -137,6 +137,10 @@ export function ViewportGridProvider({ children, service }) {
         payload.forEach(updatedViewport => {
           const { viewportId, displaySetInstanceUIDs } = updatedViewport;
 
+          if (!viewportId) {
+            throw new Error('ViewportId is required to set display sets for viewport');
+          }
+
           const previousViewport = viewports.get(viewportId);
 
           // Use the newly provide viewportOptions and display set options

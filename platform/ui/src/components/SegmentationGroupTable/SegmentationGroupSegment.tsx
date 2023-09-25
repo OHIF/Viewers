@@ -21,7 +21,6 @@ const SegmentItem = ({
   onToggleVisibility,
   onToggleLocked,
 }) => {
-  const [isRowHovering, setRowIsHovering] = useState(false);
   const [isNumberBoxHovering, setIsNumberBoxHovering] = useState(false);
 
   const cssColor = `rgb(${color[0]},${color[1]},${color[2]})`;
@@ -29,8 +28,6 @@ const SegmentItem = ({
   return (
     <div
       className={classnames('text-aqua-pale group/row flex min-h-[28px] bg-black')}
-      onMouseEnter={() => setRowIsHovering(true)}
-      onMouseLeave={() => setRowIsHovering(false)}
       onClick={e => {
         e.stopPropagation();
         onClick(segmentationId, segmentIndex);
@@ -90,45 +87,49 @@ const SegmentItem = ({
         </div>
         <div
           className={classnames(
-            'absolute right-0 top-0 flex flex-row-reverse rounded-lg pr-[8px] pt-[3px]',
+            'absolute right-3 top-0 flex flex-row-reverse rounded-lg pt-[3px]',
             {}
           )}
         >
-          {!isVisible && !isRowHovering && (
-            <div>
+          <div className="group-hover/row:hidden">
+            {!isVisible && (
               <Icon
                 name="row-hidden"
-                className={classnames('h-5 w-5 text-[#3d5871] ')}
+                className="h-5 w-5 text-[#3d5871]"
                 onClick={e => {
                   e.stopPropagation();
                   onToggleVisibility(segmentationId, segmentIndex);
                 }}
               />
-            </div>
-          )}
-          {isLocked && !isRowHovering && (
-            <div className="flex">
-              <div>
+            )}
+          </div>
+
+          {/* Icon for 'row-lock' that shows when NOT hovering and 'isLocked' is true */}
+          <div className="group-hover/row:hidden">
+            {isLocked && (
+              <div className="flex">
                 <Icon
                   name="row-lock"
-                  className={classnames('h-5 w-5')}
+                  className="h-5 w-5 text-[#3d5871]"
                   onClick={e => {
                     e.stopPropagation();
                     onToggleLocked(segmentationId, segmentIndex);
                   }}
                 />
-              </div>
-              {isVisible && (
-                <div>
+
+                {/* This icon is visible when 'isVisible' is true */}
+                {isVisible && (
                   <Icon
                     name="row-hidden"
-                    className={classnames('h-5 w-5 opacity-0')}
+                    className="h-5 w-5 opacity-0"
                   />
-                </div>
-              )}
-            </div>
-          )}
-          {isRowHovering && (
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Icons that show only when hovering */}
+          <div className="hidden group-hover/row:flex">
             <HoveringIcons
               onEdit={onEdit}
               isLocked={isLocked}
@@ -138,7 +139,7 @@ const SegmentItem = ({
               segmentationId={segmentationId}
               segmentIndex={segmentIndex}
             />
-          )}
+          </div>
         </div>
       </div>
     </div>
@@ -154,17 +155,17 @@ const HoveringIcons = ({
   segmentationId,
   segmentIndex,
 }) => {
-  const iconClass = 'w-5 h-5 hover:cursor-pointer hover:opacity-60 text-white';
+  const iconClass = 'w-5 h-5 hover:cursor-pointer hover:opacity-60';
 
   const handleIconClick = (e, action) => {
     e.stopPropagation();
     action(segmentationId, segmentIndex);
   };
 
-  const createIcon = (name, action) => (
+  const createIcon = (name, action, color = null) => (
     <Icon
       name={name}
-      className={iconClass}
+      className={classnames(iconClass, color ?? 'text-white')}
       onClick={e => handleIconClick(e, action)}
     />
   );
@@ -172,8 +173,16 @@ const HoveringIcons = ({
   return (
     <div className="flex items-center">
       {createIcon('row-edit', onEdit)}
-      {createIcon(isLocked ? 'row-lock' : 'row-unlock', onToggleLocked)}
-      {createIcon(isVisible ? 'row-hide' : 'row-unhide', onToggleVisibility)}
+      {createIcon(
+        isLocked ? 'row-lock' : 'row-unlock',
+        onToggleLocked,
+        isLocked ? 'text-[#3d5871]' : null
+      )}
+      {createIcon(
+        isVisible ? 'row-shown' : 'row-hidden',
+        onToggleVisibility,
+        !isVisible ? 'text-[#3d5871]' : null
+      )}
     </div>
   );
 };

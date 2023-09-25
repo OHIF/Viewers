@@ -381,7 +381,7 @@ function _getViewportComponent(displaySets, viewportComponents, uiNotificationSe
 
   uiNotificationService.show({
     title: 'Viewport Not Supported Yet',
-    message: `Cannot display SOPClassId of ${displaySets[0].SOPClassUID} yet`,
+    message: `Cannot display SOPClassUID of ${displaySets[0].SOPClassUID} yet`,
     type: 'error',
   });
 

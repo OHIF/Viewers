@@ -39,6 +39,8 @@ import profile from './../../assets/icons/profile.svg';
 import pushLeft from './../../assets/icons/push-left.svg';
 import pushRight from './../../assets/icons/push-right.svg';
 import settings from './../../assets/icons/settings.svg';
+import sidePanelCloseLeft from './../../assets/icons/side-panel-close-left.svg';
+import sidePanelCloseRight from './../../assets/icons/side-panel-close-right.svg';
 import sorting from './../../assets/icons/sorting.svg';
 import sortingActiveDown from './../../assets/icons/sorting-active-down.svg';
 import sortingActiveUp from './../../assets/icons/sorting-active-up.svg';
@@ -71,6 +73,7 @@ import tabLinear from './../../assets/icons/tab-linear.svg';
 import tabPatientInfo from './../../assets/icons/tab-patient-info.svg';
 import tabROIThreshold from './../../assets/icons/tab-roi-threshold.svg';
 import tabSegmentation from './../../assets/icons/tab-segmentation.svg';
+import tabStudies from './../../assets/icons/tab-studies.svg';
 import uiArrowDown from './../../assets/icons/ui-arrow-down.svg';
 import uiArrowUp from './../../assets/icons/ui-arrow-up.svg';
 import uiArrowLeft from './../../assets/icons/ui-arrow-left.svg';
@@ -117,10 +120,7 @@ import panelGroupOpenClose from './../../assets/icons/panel-group-open-close.svg
 import rowAdd from './../../assets/icons/row-add.svg';
 import rowEdit from './../../assets/icons/row-edit.svg';
 import rowHidden from './../../assets/icons/row-hidden.svg';
-import rowHideAll from './../../assets/icons/row-hide-all.svg';
-import rowHide from './../../assets/icons/row-hide.svg';
-import rowShowAll from './../../assets/icons/row-show-all.svg';
-import rowUnhide from './../../assets/icons/row-unhide.svg';
+import rowShown from './../../assets/icons/row-shown.svg';
 import rowLock from './../../assets/icons/row-lock.svg';
 import rowUnlock from './../../assets/icons/row-unlock.svg';
 import iconMPR from './../../assets/icons/icon-mpr-alt.svg';
@@ -192,6 +192,8 @@ const ICONS = {
   'push-left': pushLeft,
   'push-right': pushRight,
   settings: settings,
+  'side-panel-close-left': sidePanelCloseLeft,
+  'side-panel-close-right': sidePanelCloseRight,
   'sorting-active-down': sortingActiveDown,
   'sorting-active-up': sortingActiveUp,
   'status-alert': statusAlert,
@@ -207,12 +209,9 @@ const ICONS = {
   'row-add': rowAdd,
   'row-edit': rowEdit,
   'row-hidden': rowHidden,
-  'row-hide-all': rowHideAll,
+  'row-shown': rowShown,
   'row-lock': rowLock,
   'row-unlock': rowUnlock,
-  'row-show-all': rowShowAll,
-  'row-hide': rowHide,
-  'row-unhide': rowUnhide,
   'checkbox-checked': checkboxChecked,
   'checkbox-unchecked': checkboxUnchecked,
   'loading-ohif-mark': loadingOHIFMark,
@@ -265,6 +264,7 @@ const ICONS = {
   'tab-patient-info': tabPatientInfo,
   'tab-roi-threshold': tabROIThreshold,
   'tab-segmentation': tabSegmentation,
+  'tab-studies': tabStudies,
   'ui-arrow-down': uiArrowDown,
   'ui-arrow-up': uiArrowUp,
   'ui-arrow-left': uiArrowLeft,

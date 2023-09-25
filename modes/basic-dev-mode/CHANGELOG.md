@@ -3,6 +3,65 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.7.0-beta.80](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.79...v3.7.0-beta.80) (2023-09-22)
+
+
+### Features
+
+* **segmentation mode:** Add create, and export SEG with Brushes ([#3632](https://github.com/OHIF/Viewers/issues/3632)) ([48bbd62](https://github.com/OHIF/Viewers/commit/48bbd6281a497ea68670239f5426a10ee6c56dc1))
+
+
+
+
+
+# [3.7.0-beta.79](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.78...v3.7.0-beta.79) (2023-09-22)
+
+**Note:** Version bump only for package @ohif/mode-basic-dev-mode
+
+
+
+
+
+# [3.7.0-beta.78](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.77...v3.7.0-beta.78) (2023-09-21)
+
+**Note:** Version bump only for package @ohif/mode-basic-dev-mode
+
+
+
+
+
+# [3.7.0-beta.77](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.76...v3.7.0-beta.77) (2023-09-21)
+
+**Note:** Version bump only for package @ohif/mode-basic-dev-mode
+
+
+
+
+
+# [3.7.0-beta.76](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.75...v3.7.0-beta.76) (2023-09-19)
+
+**Note:** Version bump only for package @ohif/mode-basic-dev-mode
+
+
+
+
+
+# [3.7.0-beta.75](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.74...v3.7.0-beta.75) (2023-09-18)
+
+**Note:** Version bump only for package @ohif/mode-basic-dev-mode
+
+
+
+
+
+# [3.7.0-beta.74](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.73...v3.7.0-beta.74) (2023-09-15)
+
+**Note:** Version bump only for package @ohif/mode-basic-dev-mode
+
+
+
+
+
 # [3.7.0-beta.73](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.72...v3.7.0-beta.73) (2023-09-12)
 
 **Note:** Version bump only for package @ohif/mode-basic-dev-mode
