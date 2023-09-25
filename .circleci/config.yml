@@ -13,13 +13,11 @@ version: 2.1
 ##
 orbs:
   codecov: codecov/codecov@1.0.5
-  cypress: cypress-io/cypress@3
-
-executors:
-  cypress-node:
-    docker:
-      # Primary container image where all steps run.
-      - image: 'node-18.15.0-chrome-106.0.5249.61-1-ff-99.0.1-edge-114.0.1823.51-1'
+  cypress: cypress-io/cypress@3.1.4
+executor:
+  docker:
+    # Primary container image where all steps run.
+    - image: 'node-18.15.0-chrome-106.0.5249.61-1-ff-99.0.1-edge-114.0.1823.51-1'
 
 defaults: &defaults
   docker:
@@ -365,7 +363,6 @@ workflows:
 
       - cypress/run:
           name: 'E2E: PWA'
-          executor: cypress-node
           start-command: yarn run test:data && yarn run test:e2e:serve
           install-browsers: true
           cypress-command:
