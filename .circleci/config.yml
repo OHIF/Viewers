@@ -12,7 +12,6 @@ version: 2.1
 ## https://github.com/cypress-io/circleci-orb
 ##
 orbs:
-  codecov: codecov/codecov@1.0.5
   cypress: cypress-io/cypress@3.1.4
 executor:
   docker:
@@ -67,9 +66,9 @@ jobs:
             echo "\<<\<<\<< EOF" >> "${viewerCov}/reports"
             cat "${viewerCov}/lcov.info" >>"${viewerCov}/reports"
             echo "\<<\<<\<< EOF" >> "${viewerCov}/reports"
-      - codecov/upload:
-          file: '/home/circleci/repo/platform/app/coverage/reports'
-          flags: 'viewer'
+      # - codecov/upload:
+      #     file: '/home/circleci/repo/platform/app/coverage/reports'
+      #     flags: 'viewer'
       # PLATFORM/CORE
       - run:
           name: 'CORE: Combine report output'
@@ -80,9 +79,9 @@ jobs:
             echo "\<<\<<\<< EOF" >> "${coreCov}/reports"
             cat "${coreCov}/lcov.info" >> "${coreCov}/reports"
             echo "\<<\<<\<< EOF" >> "${coreCov}/reports"
-      - codecov/upload:
-          file: '/home/circleci/repo/platform/core/coverage/reports'
-          flags: 'core'
+      # - codecov/upload:
+      #     file: '/home/circleci/repo/platform/core/coverage/reports'
+      #     flags: 'core'
 
   ###
   # Workflow: PR_OPTIONAL_DOCKER_PUBLISH
