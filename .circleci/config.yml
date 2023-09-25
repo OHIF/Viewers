@@ -14,10 +14,6 @@ version: 2.1
 orbs:
   codecov: codecov/codecov@1.0.5
   cypress: cypress-io/cypress@3.1.4
-executor:
-  docker:
-    # Primary container image where all steps run.
-    - image: 'node-18.15.0-chrome-106.0.5249.61-1-ff-99.0.1-edge-114.0.1823.51-1'
 
 defaults: &defaults
   docker:
@@ -171,62 +167,24 @@ jobs:
             - commit.txt
             - version.json
 
-  # DEPLOY_TO_DEV:
-  #   docker:
-  #     - image: circleci/node:18.18.0
-  #       environment:
-  #         TERM: xterm
-  #         NETLIFY_SITE_ID: 32708787-c9b0-4634-b50f-7ca41952da77
-  #   working_directory: ~/repo
-  #   steps:
-  #     - attach_workspace:
-  #         at: ~/repo
-  #     - run: cd .netlify && npm install
-  #     - run: cp .netlify/deploy-workflow/_redirects platform/app/dist/_redirects
-  #     - run: cd .netlify && npm run deploy
-
-  # DEPLOY_TO_STAGING:
-  #   docker:
-  #     - image: circleci/node:18.18.0
-  #       environment:
-  #         TERM: xterm
-  #         NETLIFY_SITE_ID: c7502ae3-b150-493c-8422-05701e44a969
-  #   working_directory: ~/repo
-  #   steps:
-  #     - attach_workspace:
-  #         at: ~/repo
-  #     - run: cd .netlify && npm install
-  #     - run: cp .netlify/deploy-workflow/_redirects platform/app/dist/_redirects
-  #     - run: cd .netlify && npm run deploy
-
-  # DEPLOY_TO_PRODUCTION:
-  #   docker:
-  #     - image: circleci/node:18.18.0
-  #       environment:
-  #         TERM: xterm
-  #         NETLIFY_SITE_ID: 79c4a5da-5c95-4dc9-84f7-45fd9dfe21b0
-  #   working_directory: ~/repo
-  #   steps:
-  #     - attach_workspace:
-  #         at: ~/repo
-  #     - run: cd .netlify && npm install
-  #     - run: cp .netlify/deploy-workflow/_redirects platform/app/dist/_redirects
-  #     - run: cd .netlify && npm run deploy
-
-  #   DEPLOY_TO_RELEASE_DEV:
-  #     docker:
-  #       - image: circleci/node:18.18.0
-  #         environment:
-  #           TERM: xterm
-  #           NETLIFY_SITE_ID: 3270878-22
-  #     working_directory: ~/repo
-  #     steps:
-  #       - attach_workspace:
-  #           at: ~/repo
-  #       - run: cd .netlify && npm install
-  #       - run:
-  #           cp .netlify/deploy-workflow/_redirects platform/app/dist/_redirects
-  #       - run: cd .netlify && npm run deploy
+  CYPRESS_INSTALL:
+    executor: cypress/default
+    steps:
+      - cypress/install:
+          install-browsers: true
+      - persist_to_workspace:
+          root: ~/repo
+          paths:
+            - platform/app/cypress
+  CYPRESS_RUN:
+    executor: cypress/default
+    # parallelism: 4
+    steps:
+      - cypress/run-tests:
+          start-command: yarn run test:data && yarn run test:e2e:serve
+          cypress-command:
+            'npx wait-on@latest http://localhost:3000 && cd platform/app &&  npx cypress run
+            --record --browser chrome --parallel'
 
   ###
   # Workflow: RELEASE
@@ -360,26 +318,12 @@ workflows:
   PR_CHECKS:
     jobs:
       - UNIT_TESTS
-
-      - cypress/run:
-          name: 'E2E: PWA'
-          start-command: yarn run test:data && yarn run test:e2e:serve
-          install-browsers: true
-          cypress-command:
-            'npx wait-on@latest http://localhost:3000 && cd platform/app &&  npx cypress run
-            --record --browser chrome --parallel'
-          package-manager: 'yarn'
-          cypress-cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
-          cypress-cache-path: '~/.cache/Cypress'
-          post-steps:
-            - store_artifacts:
-                path: platform/app/cypress/screenshots
-            - store_artifacts:
-                path: platform/app/cypress/videos
-            - store_test_results:
-                path: platform/app/cypress/results
+      - CYPRESS_INSTALL:
           requires:
             - UNIT_TESTS
+      - CYPRESS_RUN:
+          requires:
+            - CYPRESS_INSTALL
 
   # PR_OPTIONAL_VISUAL_TESTS:
   #   jobs:
