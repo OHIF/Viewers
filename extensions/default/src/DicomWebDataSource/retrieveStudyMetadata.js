@@ -7,12 +7,13 @@ const StudyMetaDataPromises = new Map();
 /**
  * Retrieves study metadata
  *
- * @param {Object} server Object with server configuration parameters
+ * @param {Object} dicomWebClient Object with server configuration parameters
  * @param {string} StudyInstanceUID The UID of the Study to be retrieved
  * @param {boolean} enabledStudyLazyLoad Whether the study metadata should be loaded asynchronously.
- * @param {function} storeInstancesCallback A callback used to store the retrieved instance metadata.
  * @param {Object} [filters] - Object containing filters to be applied on retrieve metadata process
  * @param {string} [filter.seriesInstanceUID] - series instance uid to filter results against
+ * @param {Object} sortCriteria - defines the sort criteria for series
+ * @param {function} sortFunction - defines a function to sort series. If defined, it has precedence over sortCriteria param
  * @returns {Promise} that will be resolved with the metadata or rejected with the error
  */
 export function retrieveStudyMetadata(
@@ -34,7 +35,9 @@ export function retrieveStudyMetadata(
     throw new Error(`${moduleName}: Required 'StudyInstanceUID' parameter not provided.`);
   }
 
-  // Already waiting on result? Return cached promise
+  // Already waiting on result? Return cached promise. The StudyMetaDataPromises
+  // key is a combination of the client name and StudyInstanceUID, because OHIF
+  // can retrieve dicom series belonging to a study from different servers.
   const studyRetrieveId = `${dicomWebClient.name}/${StudyInstanceUID}`;
   if (StudyMetaDataPromises.has(studyRetrieveId)) {
     return StudyMetaDataPromises.get(studyRetrieveId);

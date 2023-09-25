@@ -3,6 +3,32 @@ import StaticWadoClient from './StaticWadoClient';
 import dcm4cheeReject from '../dcm4cheeReject';
 import { errorHandler, utils } from '@ohif/core';
 
+/**
+ * This object plays the central role in OHIF's multiple server handling ability.
+ * It stores all servers configurations and handles all request headers generations
+ */
+interface ConfigToAdd {
+  url: string;
+  qidoRoot: string;
+  wadoRoot: string;
+  staticWado: boolean;
+  singlepart: boolean;
+  name: string;
+  qidoConfig: {
+    url: string;
+    staticWado: boolean;
+    singlepart: boolean;
+    headers: object;
+  };
+  wadoConfig: {
+    url: string;
+    staticWado: boolean;
+    singlepart: boolean;
+    headers: object;
+  };
+  qidoDicomWebClient: api.DICOMwebClient | StaticWadoClient;
+  wadoDicomWebClient: api.DICOMwebClient | StaticWadoClient;
+}
 export default class ClientManager {
   clients;
   userAuthenticationService;
@@ -10,19 +36,16 @@ export default class ClientManager {
   constructor({ params, query, dicomWebConfig, userAuthenticationService }) {
     this.clients = [];
     this.userAuthenticationService = userAuthenticationService;
-    if (Array.isArray(dicomWebConfig)) {
-      dicomWebConfig.forEach(config => this.addConfiguration(params, query, config));
-    } else {
-      this.addConfiguration(params, query, dicomWebConfig);
-    }
+    const configArray = Array.isArray(dicomWebConfig) ? dicomWebConfig : [dicomWebConfig];
+    configArray.forEach(config => this.addConfiguration(params, query, config));
   }
 
   /**
-   * Adds a dicomweb server configuration in the clients list
+   * Adds a client to client list given a dicomweb server configuration
    * @param configToAdd
    * @returns {void}
    */
-  private _addConfiguration(configToAdd): void {
+  private addClient(configToAdd: ConfigToAdd): void {
     const config = Object.assign({}, configToAdd);
     config.qidoConfig = {
       url: config.qidoRoot,
@@ -54,11 +77,12 @@ export default class ClientManager {
   }
 
   /**
-   * Adds a dicomweb server configuration in the clients list. This function
-   * could change the configuration by calling the onConfiguration, if defined
-   * @param params
-   * @param query
-   * @param config
+   * Process a dicomweb server configuration and add it to the clients list.
+   * This function could change the configuration by calling the onConfiguration,
+   * if defined
+   * @param {object} params key / pair mapping of the URL parameters
+   * @param {object} query URLSearchParams object generated for the URL
+   * @param {object} config client configuration
    * @returns {void}
    */
   private addConfiguration(params, query, config): void {
@@ -68,7 +92,7 @@ export default class ClientManager {
         query,
       });
     }
-    this._addConfiguration(config);
+    this.addClient(config);
   }
 
   /**
@@ -78,7 +102,7 @@ export default class ClientManager {
   private getAuthorizationHeader(): object {
     const xhrRequestHeaders = {};
     const authHeaders = this.userAuthenticationService.getAuthorizationHeader();
-    if (authHeaders && authHeaders.Authorization) {
+    if (authHeaders?.Authorization) {
       xhrRequestHeaders.Authorization = authHeaders.Authorization;
     }
     return xhrRequestHeaders;
@@ -89,7 +113,7 @@ export default class ClientManager {
    * @param config
    * @returns {object} wado Headers
    */
-  private generateWadoHeader(config): object {
+  private getWadoHeader(config): object {
     const authorizationHeader = this.getAuthorizationHeader();
     //Generate accept header depending on config params
     const formattedAcceptHeader = utils.generateAcceptHeader(
@@ -120,7 +144,7 @@ export default class ClientManager {
    */
   public setWadoHeaders(): void {
     this.clients.forEach(
-      client => (client.wadoDicomWebClient.headers = this.generateWadoHeader(client))
+      client => (client.wadoDicomWebClient.headers = this.getWadoHeader(client))
     );
   }
 
@@ -135,23 +159,20 @@ export default class ClientManager {
   }
 
   /**
-   * Returns a function that returns if a client have reject abilities
-   * @returns {function} function that returns if a client can reject
+   * Returns a boolean indicating if a client have reject abilities
+   * @returns {boolean} client reject support
    */
-  public clientCanReject() {
-    return name => {
-      const client = this.clients.find(client => client.name === name);
-      return client?.supportsReject;
-    };
+  public clientCanReject(name) {
+    return this.getClient(name)?.supportsReject;
   }
 
   /**
-   * Returns reject function of a client
+   * Returns the reject function of a client
    * @param name
-   * @returns {function} reject function
+   * @returns {object} client reject object
    */
-  public getClientReject(name) {
-    const client = this.clients.find(client => client.name === name);
+  public getClientRejectObject(name) {
+    const client = this.getClient(name);
     if (client?.supportsReject) {
       return dcm4cheeReject(client.wadoRoot);
     }
@@ -162,15 +183,9 @@ export default class ClientManager {
    * @param name
    * @returns {object} qido client
    */
-  public getQidoClient(name = undefined): object {
-    if (this.clients.length) {
-      if (name) {
-        const client = this.clients.find(client => client.name === name);
-        return client?.qidoDicomWebClient;
-      } else {
-        return this.clients[0].qidoDicomWebClient;
-      }
-    }
+  public getQidoClient(name?: string): object {
+    const client = this.getClient(name);
+    return client?.qidoDicomWebClient;
   }
 
   /**
@@ -178,15 +193,9 @@ export default class ClientManager {
    * @param name
    * @returns {object} wado client
    */
-  public getWadoClient(name = undefined): object {
-    if (this.clients.length) {
-      if (name) {
-        const client = this.clients.find(client => client.name === name);
-        return client?.wadoDicomWebClient;
-      } else {
-        return this.clients[0].wadoDicomWebClient;
-      }
-    }
+  public getWadoClient(name?: string): object {
+    const client = this.getClient(name);
+    return client?.wadoDicomWebClient;
   }
 
   /**
@@ -194,15 +203,35 @@ export default class ClientManager {
    * @param name
    * @returns {object} client configuration
    */
-  public getClient(name = undefined): object {
-    if (this.clients.length) {
-      if (name) {
-        const client = this.clients.find(client => client.name === name);
-        return client;
-      } else {
-        return this.clients[0];
-      }
-    }
+  public getConfig(name?: string): object {
+    return name ? this.clients.find(client => client.name === name) : this.clients[0];
+  }
+
+  /**
+   * Returns the client configuration
+   * @param name
+   * @returns {object} client configuration
+   */
+  private getClient(name?: string): object {
+    return name ? this.clients.find(client => client.name === name) : this.clients[0];
+  }
+
+  /**
+   * Gets the client list already setting the necessary wado headers
+   * @returns {Array} client list
+   */
+  public getClientsForWadoRequests() {
+    this.setWadoHeaders();
+    return this.getClients();
+  }
+
+  /**
+   * Gets the client list already setting the necessary qido headers
+   * @returns {Array} client list
+   */
+  public getClientsForQidoRequests() {
+    this.setQidoHeaders();
+    return this.getClients();
   }
 
   /**

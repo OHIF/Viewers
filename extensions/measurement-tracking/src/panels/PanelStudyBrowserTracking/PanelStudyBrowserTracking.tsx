@@ -439,10 +439,7 @@ function _mapDisplaySets(
       };
 
       if (componentType === 'thumbnailNoImage') {
-        if (
-          (dataSource.reject && dataSource.reject.series) ||
-          (dataSource?.clientCanReject && dataSource.clientCanReject(ds.instances[0].clientName))
-        ) {
+        if (dataSource.clientCanReject && dataSource.clientCanReject(ds.instances[0].clientName)) {
           thumbnailProps.canReject = !ds?.unsupported;
           thumbnailProps.onReject = () => {
             uiDialogService.create({
@@ -482,12 +479,11 @@ function _mapDisplaySets(
                   switch (action.id) {
                     case 'yes':
                       try {
-                        if (dataSource.reject) {
-                          await dataSource.reject.series(ds.StudyInstanceUID, ds.SeriesInstanceUID);
-                        } else {
-                          const reject = dataSource.getClientReject(ds.instances[0].clientName);
-                          await reject.series(ds.StudyInstanceUID, ds.SeriesInstanceUID);
-                        }
+                        await dataSource.reject.series(
+                          ds.StudyInstanceUID,
+                          ds.SeriesInstanceUID,
+                          ds.instances[0].clientName
+                        );
                         displaySetService.deleteDisplaySet(displaySetInstanceUID);
                         uiDialogService.dismiss({ id: 'ds-reject-sr' });
                         uiNotificationService.show({
