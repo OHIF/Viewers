@@ -5,6 +5,7 @@ import { SidePanel, ErrorBoundary, LoadingIndicatorProgress } from '@ohif/ui';
 import { ServicesManager, HangingProtocolService, CommandsManager } from '@ohif/core';
 import { useAppConfig } from '@state';
 import ViewerHeader from './ViewerHeader';
+import SidePanelWithServices from '../Components/SidePanelWithServices';
 
 function ViewerLayout({
   // From Extension Module Params
@@ -44,7 +45,7 @@ function ViewerLayout({
 
     if (!entry) {
       throw new Error(
-        `${id} is not a valid entry for an extension module, please check your configuration or make sure the extension is registered.`
+        `${id} is not valid for an extension module. Please verify your configuration or ensure that the extension is properly registered. It's also possible that your mode is utilizing a module from an extension that hasn't been included in its dependencies (add the extension to the "extensionDependencies" array in your mode's index.js file)`
       );
     }
 
@@ -119,7 +120,7 @@ function ViewerLayout({
           {/* LEFT SIDEPANELS */}
           {leftPanelComponents.length ? (
             <ErrorBoundary context="Left Panel">
-              <SidePanel
+              <SidePanelWithServices
                 side="left"
                 activeTabIndex={leftPanelDefaultClosed ? null : 0}
                 tabs={leftPanelComponents}
@@ -141,7 +142,7 @@ function ViewerLayout({
           </div>
           {rightPanelComponents.length ? (
             <ErrorBoundary context="Right Panel">
-              <SidePanel
+              <SidePanelWithServices
                 side="right"
                 activeTabIndex={rightPanelDefaultClosed ? null : 0}
                 tabs={rightPanelComponents}

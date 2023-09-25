@@ -1,5 +1,4 @@
 import { ButtonEnums } from '@ohif/ui';
-import hydrateSEGDisplaySet from './_hydrateSEG';
 
 const RESPONSE = {
   NO_NEVER: -1,
@@ -7,7 +6,13 @@ const RESPONSE = {
   HYDRATE_SEG: 5,
 };
 
-function promptHydrateSEG({ servicesManager, segDisplaySet, viewportId, preHydrateCallbacks }) {
+function promptHydrateSEG({
+  servicesManager,
+  segDisplaySet,
+  viewportId,
+  preHydrateCallbacks,
+  hydrateSEGDisplaySet,
+}) {
   const { uiViewportDialogService } = servicesManager.services;
 
   return new Promise(async function (resolve, reject) {
@@ -21,7 +26,6 @@ function promptHydrateSEG({ servicesManager, segDisplaySet, viewportId, preHydra
       const isHydrated = await hydrateSEGDisplaySet({
         segDisplaySet,
         viewportId,
-        servicesManager,
       });
 
       resolve(isHydrated);

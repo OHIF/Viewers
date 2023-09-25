@@ -5,7 +5,7 @@ import { StringNumber } from '../../types';
 
 import LegacyPatientInfo from '../LegacyPatientInfo';
 import Icon from '../Icon';
-import ButtonGroup from '../ButtonGroup';
+import LegacyButtonGroup from '../LegacyButtonGroup';
 import LegacyButton from '../LegacyButton';
 import LegacyCinePlayer from '../LegacyCinePlayer';
 
@@ -89,8 +89,8 @@ const LegacyViewportActionBar = ({
           className="mt-2"
           style={{ pointerEvents: 'all' }}
         >
-          {/* TODO Revisit design of ButtonGroup later - for now use LegacyButton for its children.*/}
-          <ButtonGroup>
+          {/* TODO Revisit design of LegacyButtonGroup later - for now use LegacyButton for its children.*/}
+          <LegacyButtonGroup>
             <LegacyButton
               size="initial"
               className="bg-black px-2 py-1"
@@ -113,7 +113,7 @@ const LegacyViewportActionBar = ({
                 className="w-4 text-white"
               />
             </LegacyButton>
-          </ButtonGroup>
+          </LegacyButtonGroup>
         </div>
       )}
       {showCine && !showNavArrows && (

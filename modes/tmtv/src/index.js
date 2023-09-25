@@ -58,7 +58,6 @@ function modeFactory({ modeConfiguration }) {
       const setWindowLevelActive = () => {
         toolbarService.recordInteraction({
           groupId: 'WindowLevel',
-          itemId: 'WindowLevel',
           interactionType: 'tool',
           commands: [
             {

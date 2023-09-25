@@ -1,32 +1,43 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { LayoutSelector as OHIFLayoutSelector, ToolbarButton } from '@ohif/ui';
-
 import { ServicesManager } from '@ohif/core';
 
-function LayoutSelector({ rows, columns, className, servicesManager, ...rest }) {
-  const [isOpen, setIsOpen] = useState(false);
+function ToolbarLayoutSelectorWithServices({ servicesManager, ...props }) {
+  const { toolbarService } = servicesManager.services;
 
-  const { hangingProtocolService, toolbarService } = (servicesManager as ServicesManager).services;
+  const onSelection = useCallback(
+    props => {
+      toolbarService.recordInteraction({
+        interactionType: 'action',
+        commands: [
+          {
+            commandName: 'setViewportGridLayout',
+            commandOptions: { ...props },
+            context: 'DEFAULT',
+          },
+        ],
+      });
+    },
+    [toolbarService]
+  );
+
+  return (
+    <LayoutSelector
+      {...props}
+      onSelection={onSelection}
+    />
+  );
+}
+
+function LayoutSelector({ rows, columns, className, onSelection, ...rest }) {
+  const [isOpen, setIsOpen] = useState(false);
 
   const closeOnOutsideClick = () => {
     if (isOpen) {
       setIsOpen(false);
     }
   };
-
-  useEffect(() => {
-    const { unsubscribe } = hangingProtocolService.subscribe(
-      hangingProtocolService.EVENTS.PROTOCOL_CHANGED,
-      evt => {
-        const { protocol } = evt;
-      }
-    );
-
-    return () => {
-      unsubscribe();
-    };
-  }, [hangingProtocolService]);
 
   useEffect(() => {
     window.addEventListener('click', closeOnOutsideClick);
@@ -37,19 +48,6 @@ function LayoutSelector({ rows, columns, className, servicesManager, ...rest }) 
 
   const onInteractionHandler = () => setIsOpen(!isOpen);
   const DropdownContent = isOpen ? OHIFLayoutSelector : null;
-
-  const onSelectionHandler = props => {
-    toolbarService.recordInteraction({
-      interactionType: 'action',
-      commands: [
-        {
-          commandName: 'setViewportGridLayout',
-          commandOptions: { ...props },
-          context: 'DEFAULT',
-        },
-      ],
-    });
-  };
 
   return (
     <ToolbarButton
@@ -64,7 +62,7 @@ function LayoutSelector({ rows, columns, className, servicesManager, ...rest }) 
           <DropdownContent
             rows={rows}
             columns={columns}
-            onSelection={onSelectionHandler}
+            onSelection={onSelection}
           />
         )
       }
@@ -87,4 +85,4 @@ LayoutSelector.defaultProps = {
   onLayoutChange: () => {},
 };
 
-export default LayoutSelector;
+export default ToolbarLayoutSelectorWithServices;
