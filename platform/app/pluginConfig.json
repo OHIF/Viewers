@@ -55,6 +55,12 @@
   ],
   "modes": [
     {
+      "packageName": "ohif-idc-mode"
+    },
+    {
+      "packageName": "ohif-gcp-mode"
+    },
+    {
       "packageName": "@ohif/mode-longitudinal"
     },
     {
