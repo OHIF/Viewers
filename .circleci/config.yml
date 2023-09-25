@@ -12,6 +12,7 @@ version: 2.1
 ## https://github.com/cypress-io/circleci-orb
 ##
 orbs:
+  codecov: codecov/codecov@1.0.5
   cypress: cypress-io/cypress@3.1.4
 executor:
   docker:
@@ -20,7 +21,7 @@ executor:
 
 defaults: &defaults
   docker:
-    - image: cimg/node:18.16.1
+    - image: cimg/node:18.16.1-browsers
       environment:
         TERM: xterm # Enable colors in term
         QUICK_BUILD: true
@@ -66,9 +67,9 @@ jobs:
             echo "\<<\<<\<< EOF" >> "${viewerCov}/reports"
             cat "${viewerCov}/lcov.info" >>"${viewerCov}/reports"
             echo "\<<\<<\<< EOF" >> "${viewerCov}/reports"
-      # - codecov/upload:
-      #     file: '/home/circleci/repo/platform/app/coverage/reports'
-      #     flags: 'viewer'
+      - codecov/upload:
+          file: '/home/circleci/repo/platform/app/coverage/reports'
+          flags: 'viewer'
       # PLATFORM/CORE
       - run:
           name: 'CORE: Combine report output'
@@ -79,9 +80,9 @@ jobs:
             echo "\<<\<<\<< EOF" >> "${coreCov}/reports"
             cat "${coreCov}/lcov.info" >> "${coreCov}/reports"
             echo "\<<\<<\<< EOF" >> "${coreCov}/reports"
-      # - codecov/upload:
-      #     file: '/home/circleci/repo/platform/core/coverage/reports'
-      #     flags: 'core'
+      - codecov/upload:
+          file: '/home/circleci/repo/platform/core/coverage/reports'
+          flags: 'core'
 
   ###
   # Workflow: PR_OPTIONAL_DOCKER_PUBLISH
@@ -172,7 +173,7 @@ jobs:
 
   # DEPLOY_TO_DEV:
   #   docker:
-  #     - image: circleci/node:18.16.1
+  #     - image: circleci/node:18.18.0
   #       environment:
   #         TERM: xterm
   #         NETLIFY_SITE_ID: 32708787-c9b0-4634-b50f-7ca41952da77
@@ -186,7 +187,7 @@ jobs:
 
   # DEPLOY_TO_STAGING:
   #   docker:
-  #     - image: circleci/node:18.16.1
+  #     - image: circleci/node:18.18.0
   #       environment:
   #         TERM: xterm
   #         NETLIFY_SITE_ID: c7502ae3-b150-493c-8422-05701e44a969
@@ -200,7 +201,7 @@ jobs:
 
   # DEPLOY_TO_PRODUCTION:
   #   docker:
-  #     - image: circleci/node:18.16.1
+  #     - image: circleci/node:18.18.0
   #       environment:
   #         TERM: xterm
   #         NETLIFY_SITE_ID: 79c4a5da-5c95-4dc9-84f7-45fd9dfe21b0
@@ -214,7 +215,7 @@ jobs:
 
   #   DEPLOY_TO_RELEASE_DEV:
   #     docker:
-  #       - image: circleci/node:18.16.1
+  #       - image: circleci/node:18.18.0
   #         environment:
   #           TERM: xterm
   #           NETLIFY_SITE_ID: 3270878-22
