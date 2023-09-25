@@ -15,13 +15,14 @@ orbs:
   codecov: codecov/codecov@1.0.5
   cypress: cypress-io/cypress@3.1.4
 executors:
-  with-chrome-and-firefox:
+  cypress-node:
     docker:
-      - image: 'cypress/browsers:node-18.15.0-chrome-106.0.5249.61-1-ff-99.0.1-edge-114.0.1823.51-1'
+      # Primary container image where all steps run.
+      - image: 'node-18.15.0-chrome-106.0.5249.61-1-ff-99.0.1-edge-114.0.1823.51-1'
 
 defaults: &defaults
   docker:
-    - image: cimg/node:18.16.1-browsers
+    - image: cimg/node:18.18
       environment:
         TERM: xterm # Enable colors in term
         QUICK_BUILD: true
@@ -87,39 +88,39 @@ jobs:
   ###
   # Workflow: PR_OPTIONAL_DOCKER_PUBLISH
   ###
-  DOCKER_PR_PUBLISH:
-    <<: *defaults
-    steps:
-      # Enable yarn workspaces
-      - run: yarn config set workspaces-experimental true
+  # DOCKER_PR_PUBLISH:
+  #   <<: *defaults
+  #   steps:
+  #     # Enable yarn workspaces
+  #     - run: yarn config set workspaces-experimental true
 
-      # Checkout code and ALL Git Tags
-      - checkout
-      - restore_cache:
-          name: Restore Yarn and Cypress Package Cache
-          keys:
-            # when lock file changes, use increasingly general patterns to restore cache
-            - yarn-packages-{{ checksum "yarn.lock" }}
-            - yarn-packages-
+  #     # Checkout code and ALL Git Tags
+  #     - checkout
+  #     - restore_cache:
+  #         name: Restore Yarn and Cypress Package Cache
+  #         keys:
+  #           # when lock file changes, use increasingly general patterns to restore cache
+  #           - yarn-packages-{{ checksum "yarn.lock" }}
+  #           - yarn-packages-
 
-      - run:
-          name: Install Dependencies
-          command: yarn install --frozen-lockfile
+  #     - run:
+  #         name: Install Dependencies
+  #         command: yarn install --frozen-lockfile
 
-      - setup_remote_docker:
-          docker_layer_caching: false
+  #     - setup_remote_docker:
+  #         docker_layer_caching: false
 
-      - run:
-          name: Build and push Docker image
-          command: |
-            # Remove npm config
-            rm -f ./.npmrc
-            # Set our version number using vars
-            echo $CIRCLE_BUILD_NUM
-            # Build our image, auth, and push
-            docker build --tag ohif/app:PR_BUILD-$CIRCLE_BUILD_NUM .
-            echo $DOCKER_PWD | docker login -u $DOCKER_LOGIN --password-stdin
-            docker push ohif/app:PR_BUILD-$CIRCLE_BUILD_NUM
+  #     - run:
+  #         name: Build and push Docker image
+  #         command: |
+  #           # Remove npm config
+  #           rm -f ./.npmrc
+  #           # Set our version number using vars
+  #           echo $CIRCLE_BUILD_NUM
+  #           # Build our image, auth, and push
+  #           docker build --tag ohif/app:PR_BUILD-$CIRCLE_BUILD_NUM .
+  #           echo $DOCKER_PWD | docker login -u $DOCKER_LOGIN --password-stdin
+  #           docker push ohif/app:PR_BUILD-$CIRCLE_BUILD_NUM
 
   ###
   # Workflow: DEPLOY
@@ -170,29 +171,6 @@ jobs:
             - version.txt
             - commit.txt
             - version.json
-
-  CYPRESS_INSTALL:
-    executor: cypress/default
-    steps:
-      - cypress/install:
-          install-browsers: true
-          package-manager: 'yarn'
-          cypress-cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
-          cypress-cache-path: '~/.cache/Cypress'
-      - persist_to_workspace:
-          root: ~/repo
-          paths:
-            - platform/app/cypress
-  CYPRESS_RUN:
-    executor: cypress/default
-    # parallelism: 4
-    steps:
-      - cypress/run-tests:
-          working-directory: platform/app
-          start-command: yarn run test:data && yarn run test:e2e:serve
-          cypress-command:
-            'npx wait-on@latest http://localhost:3000 &&  npx cypress run --record --browser chrome
-            --parallel'
 
   ###
   # Workflow: RELEASE
@@ -322,16 +300,51 @@ jobs:
               docker push ohif/app:$IMAGE_VERSION_FULL
             fi
 
+  HANDLE_NODE_SWAP:
+    executor: cypress/default
+    steps:
+      - run:
+          name:
+            Swap node versions for E2E tests since there is some issue with the default version of
+            cypress
+          command: |
+            set +e
+            wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+            nvm install v18
+            nvm alias default 18.16.1
+
+            echo 'export NVM_DIR="$HOME/.nvm"' >> $BASH_ENV
+            echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> $BASH_ENV
+
 workflows:
   PR_CHECKS:
     jobs:
-      # - UNIT_TESTS
-      - CYPRESS_INSTALL
-        # requires:
-        #   - UNIT_TESTS
-      # - CYPRESS_RUN:
-      #   requires:
-      #     - CYPRESS_INSTALL
+      - UNIT_TESTS
+      - HANDLE_NODE_SWAP
+
+      - cypress/run:
+          name: 'E2E: PWA'
+
+          start-command: yarn run test:data && yarn run test:e2e:serve
+          install-browsers: true
+          cypress-command:
+            'npx wait-on@latest http://localhost:3000 && cd platform/app &&  npx cypress run
+            --record --browser chrome --parallel'
+          package-manager: 'yarn'
+          cypress-cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
+          cypress-cache-path: '~/.cache/Cypress'
+          post-steps:
+            - store_artifacts:
+                path: platform/app/cypress/screenshots
+            - store_artifacts:
+                path: platform/app/cypress/videos
+            - store_test_results:
+                path: platform/app/cypress/results
+          requires:
+            - HANDLE_NODE_SWAP
 
   # PR_OPTIONAL_VISUAL_TESTS:
   #   jobs:
