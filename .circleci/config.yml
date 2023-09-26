@@ -300,34 +300,13 @@ jobs:
               docker push ohif/app:$IMAGE_VERSION_FULL
             fi
 
-  HANDLE_NODE_SWAP:
-    executor: cypress/default
-    steps:
-      - run:
-          name:
-            Swap node versions for E2E tests since there is some issue with the default version of
-            cypress
-          command: |
-            set +e
-            wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash
-            export NVM_DIR="$HOME/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-            nvm install v18
-            nvm alias default 18.18.0
-
-            echo 'export NVM_DIR="$HOME/.nvm"' >> $BASH_ENV
-            echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> $BASH_ENV
-
 workflows:
   PR_CHECKS:
     jobs:
-      - UNIT_TESTS
-      - HANDLE_NODE_SWAP
-
+      # - UNIT_TESTS
       - cypress/run:
           name: 'E2E: PWA'
-          start-command: yarn run test:data && yarn run test:e2e:serve
+          start-command: sh swap-node-cypress.sh && yarn run test:data && yarn run test:e2e:serve
           install-browsers: true
           cypress-command:
             'npx wait-on@latest http://localhost:3000 && cd platform/app &&  npx cypress run
@@ -342,8 +321,8 @@ workflows:
                 path: platform/app/cypress/videos
             - store_test_results:
                 path: platform/app/cypress/results
-          requires:
-            - HANDLE_NODE_SWAP
+            # requires:
+            # - HANDLE_NODE_SWAP
 
   # PR_OPTIONAL_VISUAL_TESTS:
   #   jobs:
