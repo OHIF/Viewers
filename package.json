@@ -12,7 +12,7 @@
     ]
   },
   "engines": {
-    "node": ">=14",
+    "node": ">=16",
     "npm": ">=6",
     "yarn": ">=1.16.0"
   },
@@ -104,7 +104,7 @@
     "eslint-plugin-react-hooks": "^4.4.0",
     "eslint-plugin-tsdoc": "^0.2.11",
     "eslint-webpack-plugin": "^2.5.3",
-    "execa": "^7.1.1",
+    "execa": "^8.0.1",
     "extract-css-chunks-webpack-plugin": "^4.5.4",
     "html-webpack-plugin": "^5.3.2",
     "husky": "^3.0.0",

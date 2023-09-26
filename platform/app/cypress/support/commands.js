@@ -145,7 +145,7 @@ Cypress.Commands.add('drag', { prevSubject: 'element' }, (...args) =>
  */
 Cypress.Commands.add('addLine', (viewport, firstClick, secondClick) => {
   const performClick = (alias, x, y) => {
-    cy.get(alias).click(x, y, { force: true, multiple: true }).wait(250);
+    cy.get(alias).as(`axu-${alias}`).click(x, y, { force: true, multiple: true }).wait(250);
   };
 
   cy.get(viewport).as('viewportAlias');
@@ -187,11 +187,10 @@ Cypress.Commands.add('addAngle', (viewport, firstClick, secondClick, thirdClick)
 });
 
 Cypress.Commands.add('expectMinimumThumbnails', (seriesToWait = 1) => {
-  cy.get('[data-cy="study-browser-thumbnail"]', { timeout: 50000 }).as('thumbnails');
-
-  cy.get('@thumbnails').should($itemList => {
-    expect($itemList.length).to.be.gte(seriesToWait);
-  });
+  cy.get('[data-cy="study-browser-thumbnail"]', { timeout: 50000 }).should(
+    'have.length.gte',
+    seriesToWait
+  );
 });
 
 //Command to wait DICOM image to load into the viewport
