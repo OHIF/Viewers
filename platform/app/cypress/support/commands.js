@@ -145,7 +145,7 @@ Cypress.Commands.add('drag', { prevSubject: 'element' }, (...args) =>
  */
 Cypress.Commands.add('addLine', (viewport, firstClick, secondClick) => {
   const performClick = (alias, x, y) => {
-    cy.get(alias).as(`axu-${alias}`).click(x, y, { force: true, multiple: true }).wait(250);
+    cy.get(alias).as(`axu-${alias}`).click(x, y, { force: true, multiple: true }).wait(1000);
   };
 
   cy.get(viewport).as('viewportAlias');
@@ -155,11 +155,10 @@ Cypress.Commands.add('addLine', (viewport, firstClick, secondClick) => {
   // First click
   performClick('@viewportAlias', x1, y1);
 
-  // Move the mouse
-  cy.get('@viewportAlias').trigger('mousemove', { clientX: x2, clientY: y2 }).wait(250);
-
   // Second click
   performClick('@viewportAlias', x2, y2);
+
+  cy.wait(1000);
 });
 
 /**
@@ -281,7 +280,7 @@ Cypress.Commands.add(
 
     cy.get('@lengthButton').should('have.class', 'active');
 
-    cy.addLine('.viewport-element', firstClick, secondClick);
+    cy.addLine('.cornerstone-canvas', firstClick, secondClick);
   }
 );
 
@@ -292,7 +291,7 @@ Cypress.Commands.add(
     cy.get('[data-cy="MeasurementTools-split-button-secondary"]').click();
     cy.get('[data-cy="Angle"]').click();
 
-    cy.addAngle('.viewport-element', initPos, midPos, finalPos);
+    cy.addAngle('.cornerstone-canvas', initPos, midPos, finalPos);
   }
 );
 
