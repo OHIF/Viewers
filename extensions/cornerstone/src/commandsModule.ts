@@ -274,7 +274,6 @@ function commandsModule({
     // Enable stack prefetch on the given element
     stackPrefetch: props => {
       const { element, prefetchType = 'stackContextPrefetch' } = props;
-      console.log('Enabling', prefetchType);
       cstUtils[prefetchType].enable(element);
     },
 

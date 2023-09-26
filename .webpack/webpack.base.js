@@ -46,6 +46,8 @@ const defineValues = {
   'process.env.LOCIZE_API_KEY': JSON.stringify(process.env.LOCIZE_API_KEY || ''),
   'process.env.REACT_APP_I18N_DEBUG': JSON.stringify(process.env.REACT_APP_I18N_DEBUG || ''),
 };
+
+// Only redefine updated values.  This avoids warning messages in the logs
 if (!process.env.APP_CONFIG) {
   defineValues['process.env.APP_CONFIG'] = '';
 }
