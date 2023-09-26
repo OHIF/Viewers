@@ -42,7 +42,6 @@ export default async function init({
   configuration,
   appConfig,
 }: Types.Extensions.ExtensionParams): Promise<void> {
-
   await cs3DInit({
     rendering: {
       preferSizeOverAccuracy: Boolean(appConfig.use16BitDataType),
@@ -207,20 +206,20 @@ export default async function init({
    * active tools in the toolbar, and call any commands registered in the
    * toolbar service with a callback to re-enable on displaying the viewport.
    */
-  const newStackCallback = evt => {
+  const toolbarEventListener = evt => {
     const { element } = evt.detail;
     const activeTools = toolbarService.getActiveTools();
 
     // TODO - get the event name from evt
-    console.log("event name should come from", evt);
     activeTools.forEach(tool => {
       const toolData = toolbarService.getNestedButton(tool);
-      const commands = toolData?.listeners?.[EVENTS.STACK_NEW_IMAGE];
+      const commands = toolData?.listeners?.[evt.type];
       commandsManager.run(commands, { element, evt });
     });
   };
 
-  const activeViewportIdChangedListener = evt => {
+  /** Listens for active viewport events and fires the toolbar listeners */
+  const activeViewportEventListener = evt => {
     const { viewportId } = evt;
     const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
 
@@ -239,7 +238,7 @@ export default async function init({
       }
 
       const button = toolbarService.getNestedButton(tool);
-      const commands = button?.listeners?.[EVENTS.ACTIVE_VIEWPORT_ID_CHANGED];
+      const commands = button?.listeners?.[evt.type];
       commandsManager.run(commands, { viewportId, evt });
     });
   };
@@ -272,7 +271,7 @@ export default async function init({
     const { element } = evt.detail;
     element.addEventListener(EVENTS.CAMERA_RESET, resetCrosshairs);
 
-    eventTarget.addEventListener(EVENTS.STACK_VIEWPORT_NEW_STACK, newStackCallback);
+    eventTarget.addEventListener(EVENTS.STACK_VIEWPORT_NEW_STACK, toolbarEventListener);
   }
 
   function elementDisabledHandler(evt) {
@@ -293,7 +292,7 @@ export default async function init({
 
   viewportGridService.subscribe(
     viewportGridService.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED,
-    activeViewportIdChangedListener
+    activeViewportEventListener
   );
 }
 
