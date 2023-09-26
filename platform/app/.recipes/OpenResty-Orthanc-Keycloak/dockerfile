@@ -23,7 +23,7 @@
 
 
 # Stage 1: Build the application
-FROM node:16.15.0-slim as builder
+FROM node:18.16.1-slim as builder
 
 RUN mkdir /usr/src/app
 WORKDIR /usr/src/app

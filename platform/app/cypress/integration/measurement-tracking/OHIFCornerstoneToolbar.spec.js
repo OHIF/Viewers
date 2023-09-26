@@ -109,14 +109,14 @@ describe('OHIF Cornerstone Toolbar', () => {
   it('checks if Length annotation can be added to viewport and shows up in the measurements panel', () => {
     //Click on button and verify if icon is active on toolbar
     cy.addLengthMeasurement();
-    cy.get('[data-cy="viewport-notification"]').should('exist');
-    cy.get('[data-cy="viewport-notification"]').should('be.visible');
-    cy.get('[data-cy="prompt-begin-tracking-yes-btn"]').click();
+    cy.get('[data-cy="viewport-notification"]').as('notif').should('exist');
+    cy.get('[data-cy="viewport-notification"]').as('notif').should('be.visible');
+    cy.get('[data-cy="prompt-begin-tracking-yes-btn"]').as('yesBtn').click();
 
     //Verify the measurement exists in the table
     cy.get('@measurementsPanel').should('be.visible');
 
-    cy.get('[data-cy="measurement-item"]').its('length').should('be.at.least', 1);
+    cy.get('[data-cy="measurement-item"]').as('measure').its('length').should('be.at.least', 1);
   });
 
   /*it('checks if angle annotation can be added on viewport without causing any errors', () => {
