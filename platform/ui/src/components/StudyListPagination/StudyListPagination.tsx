@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 
 import LegacyButton from '../LegacyButton';
-import ButtonGroup from '../ButtonGroup';
+import LegacyButtonGroup from '../LegacyButtonGroup';
 import Typography from '../Typography';
 import Select from '../Select';
 
@@ -50,8 +50,8 @@ const StudyListPagination = ({ onChangePage, currentPage, perPage, onChangePerPa
               <Typography className="mr-4 text-base opacity-60">
                 {t('Page')} {currentPage}
               </Typography>
-              {/* TODO Revisit design of ButtonGroup later - for now use LegacyButton for its children.*/}
-              <ButtonGroup>
+              {/* TODO Revisit design of LegacyButtonGroup later - for now use LegacyButton for its children.*/}
+              <LegacyButtonGroup>
                 <LegacyButton
                   size="initial"
                   className="px-4 py-2 text-base"
@@ -82,7 +82,7 @@ const StudyListPagination = ({ onChangePage, currentPage, perPage, onChangePerPa
                 >
                   {t('Next')}
                 </LegacyButton>
-              </ButtonGroup>
+              </LegacyButtonGroup>
             </div>
           </div>
         </div>

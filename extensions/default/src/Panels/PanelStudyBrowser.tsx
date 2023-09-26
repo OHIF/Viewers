@@ -103,8 +103,7 @@ function PanelStudyBrowser({
     }
 
     StudyInstanceUIDs.forEach(sid => fetchStudiesForPatient(sid));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [StudyInstanceUIDs, getStudiesForPatientByMRN]);
+  }, [StudyInstanceUIDs, dataSource, getStudiesForPatientByMRN, navigate]);
 
   // // ~~ Initial Thumbnails
   useEffect(() => {
@@ -116,21 +115,23 @@ function PanelStudyBrowser({
       const imageId = imageIds[Math.floor(imageIds.length / 2)];
 
       // TODO: Is it okay that imageIds are not returned here for SR displaySets?
-      if (imageId && !displaySet?.unsupported) {
-        // When the image arrives, render it and store the result in the thumbnailImgSrcMap
-        newImageSrcEntry[dSet.displaySetInstanceUID] = await getImageSrc(imageId);
-        if (isMounted.current) {
-          setThumbnailImageSrcMap(prevState => {
-            return { ...prevState, ...newImageSrcEntry };
-          });
-        }
+      if (!imageId || displaySet?.unsupported) {
+        return;
       }
+      // When the image arrives, render it and store the result in the thumbnailImgSrcMap
+      newImageSrcEntry[dSet.displaySetInstanceUID] = await getImageSrc(imageId);
+      if (!isMounted.current) {
+        return;
+      }
+
+      setThumbnailImageSrcMap(prevState => {
+        return { ...prevState, ...newImageSrcEntry };
+      });
     });
     return () => {
       isMounted.current = false;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [StudyInstanceUIDs, dataSource, displaySetService, getImageSrc]);
 
   // ~~ displaySets
   useEffect(() => {
@@ -140,8 +141,7 @@ function PanelStudyBrowser({
     sortStudyInstances(mappedDisplaySets);
 
     setDisplaySets(mappedDisplaySets);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [thumbnailImageSrcMap]);
+  }, [StudyInstanceUIDs, thumbnailImageSrcMap, displaySetService]);
 
   // ~~ subscriptions --> displaySets
   useEffect(() => {
@@ -149,32 +149,40 @@ function PanelStudyBrowser({
     const SubscriptionDisplaySetsAdded = displaySetService.subscribe(
       displaySetService.EVENTS.DISPLAY_SETS_ADDED,
       data => {
-        const { displaySetsAdded } = data;
+        const { displaySetsAdded, options } = data;
         displaySetsAdded.forEach(async dSet => {
           const newImageSrcEntry = {};
           const displaySet = displaySetService.getDisplaySetByUID(dSet.displaySetInstanceUID);
-          if (!displaySet?.unsupported) {
-            const imageIds = dataSource.getImageIdsForDisplaySet(displaySet);
-            const imageId = imageIds[Math.floor(imageIds.length / 2)];
-
-            // TODO: Is it okay that imageIds are not returned here for SR displaysets?
-            if (imageId) {
-              // When the image arrives, render it and store the result in the thumbnailImgSrcMap
-              newImageSrcEntry[dSet.displaySetInstanceUID] = await getImageSrc(
-                imageId,
-                dSet.initialViewport
-              );
-              if (isMounted.current) {
-                setThumbnailImageSrcMap(prevState => {
-                  return { ...prevState, ...newImageSrcEntry };
-                });
-              }
-            }
+          if (displaySet?.unsupported) {
+            return;
           }
+
+          const imageIds = dataSource.getImageIdsForDisplaySet(displaySet);
+          const imageId = imageIds[Math.floor(imageIds.length / 2)];
+
+          // TODO: Is it okay that imageIds are not returned here for SR displaysets?
+          if (!imageId) {
+            return;
+          }
+          // When the image arrives, render it and store the result in the thumbnailImgSrcMap
+          newImageSrcEntry[dSet.displaySetInstanceUID] = await getImageSrc(
+            imageId,
+            dSet.initialViewport
+          );
+
+          setThumbnailImageSrcMap(prevState => {
+            return { ...prevState, ...newImageSrcEntry };
+          });
         });
       }
     );
 
+    return () => {
+      SubscriptionDisplaySetsAdded.unsubscribe();
+    };
+  }, [getImageSrc, dataSource, displaySetService]);
+
+  useEffect(() => {
     // TODO: Will this always hold _all_ the displaySets we care about?
     // DISPLAY_SETS_CHANGED returns `DisplaySerService.activeDisplaySets`
     const SubscriptionDisplaySetsChanged = displaySetService.subscribe(
@@ -198,12 +206,10 @@ function PanelStudyBrowser({
     );
 
     return () => {
-      SubscriptionDisplaySetsAdded.unsubscribe();
       SubscriptionDisplaySetsChanged.unsubscribe();
       SubscriptionDisplaySetMetaDataInvalidated.unsubscribe();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [StudyInstanceUIDs, thumbnailImageSrcMap, displaySetService]);
 
   const tabs = _createStudyBrowserTabs(StudyInstanceUIDs, studyDisplayList, displaySets);
 

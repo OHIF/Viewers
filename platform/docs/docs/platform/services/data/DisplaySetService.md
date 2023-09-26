@@ -8,6 +8,14 @@ sidebar_label: DisplaySet Service
 ## Overview
 `DisplaySetService` handles converting the `instanceMetadata` into `DisplaySet` that `OHIF` uses for the visualization. `DisplaySetService` gets initialized at service startup time, but is then cleared in the `Mode.jsx`. During the initialization `SOPClassHandlerIds` of the `modes` gets registered with the `DisplaySetService`.
 
+:::tip
+
+DisplaySet is a general set of entities and contains links to bunch of displayable objects (images, etc.) Some series might get split up into different displaySets e.g., MG might have mixed views in a single series, but users might want to have separate LCC, RCC, etc. for hanging protocol usage. A viewport renders a display set into a displayable object.
+
+imageSet is a particular implementation of image displays.
+:::
+
+
 > Based on the instanceMetadata's `SOPClassHandlerId`, the correct module from the registered extensions is found by `OHIF` and its `getDisplaySetsFromSeries` runs to create a DisplaySet for the Series.  Note
 that this is an ordered operation, and consumes the instances as it proceeds, with the first registered
 handlers being able to consume instances first.
