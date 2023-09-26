@@ -15,11 +15,6 @@ orbs:
   codecov: codecov/codecov@1.0.5
   cypress: cypress-io/cypress@3.1.4
 
-references:
-  node_supported_lts_versions: &node_supported_lts_versions
-    - &node_min_supported_version '18.12'
-    - '18.16.1'
-
 executors:
   cypress-custom:
     description: |
@@ -313,6 +308,8 @@ jobs:
               docker push ohif/app:$IMAGE_VERSION_FULL
             fi
 
+  # This is copied from the Cypress orb since the default for cypress/run is node 16 and
+  # we migrated to 18
   CYPRESS_CUSTOM_RUN:
     description: |
       A single, complete job to run Cypress end-to-end tests in your application.
@@ -421,16 +418,8 @@ workflows:
                 - 'yarn-packages-{{ checksum "yarn.lock" }}'
               cypress-cache-path:
                 - '~/.cache/Cypress'
-              # post-steps:
-              #   - store_artifacts:
-              #       path: platform/app/cypress/screenshots
-              #   - store_artifacts:
-              #       path: platform/app/cypress/videos
-              #   - store_test_results:
-              #       path: platform/app/cypress/results
-
-      # requires:
-      # - HANDLE_NODE_SWAP
+          requires:
+            - UNIT_TESTS
 
   # PR_OPTIONAL_VISUAL_TESTS:
   #   jobs:
