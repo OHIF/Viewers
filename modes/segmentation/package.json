@@ -20,7 +20,7 @@
   "module": "src/index.tsx",
   "engines": {
     "node": ">=14",
-    "npm": ">=6",
+    "npm": ">=7",
     "yarn": ">=1.16.0"
   },
   "scripts": {
