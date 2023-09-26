@@ -145,7 +145,7 @@ Cypress.Commands.add('drag', { prevSubject: 'element' }, (...args) =>
  */
 Cypress.Commands.add('addLine', (viewport, firstClick, secondClick) => {
   const performClick = (alias, x, y) => {
-    cy.get(alias).click(x, y, { force: true, multiple: true }).wait(250);
+    cy.get(alias).as(`axu-${alias}`).click(x, y, { force: true, multiple: true }).wait(250);
   };
 
   cy.get(viewport).as('viewportAlias');
