@@ -23,6 +23,7 @@ describe('OHIF Measurement Panel', function () {
   it('checks if measurement item can be Relabeled under Measurements panel', function () {
     // Add length measurement
     cy.addLengthMeasurement();
+
     cy.get('[data-cy="viewport-notification"]').as('viewportNotification').should('exist');
     cy.get('[data-cy="viewport-notification"]').as('viewportNotification').should('be.visible');
 

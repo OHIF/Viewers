@@ -229,6 +229,14 @@ jobs:
           command: |
             yarn run build:package-all-1
       - run:
+          name: increase min time out
+          command: |
+            npm config set fetch-retry-mintimeout 20000
+      - run:
+          name: increase max time out
+          command: |
+            npm config set fetch-retry-maxtimeout 120000
+      - run:
           name: publish package versions
           command: |
             node ./publish-version.mjs
