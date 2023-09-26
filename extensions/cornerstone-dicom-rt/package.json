@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-cornerstone-dicom-rt",
-  "version": "3.7.0-beta.82",
+  "version": "3.7.0-beta.83",
   "description": "DICOM RT read workflow",
   "author": "OHIF",
   "license": "MIT",
