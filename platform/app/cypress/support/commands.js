@@ -156,19 +156,22 @@ Cypress.Commands.add('drag', { prevSubject: 'element' }, (...args) =>
  * @param {number[]} secondClick - Click position [x, y]
  */
 Cypress.Commands.add('addLine', (viewport, firstClick, secondClick) => {
+  const performClick = (alias, x, y) => {
+    cy.get(alias).as(`axu-${alias}`).click(x, y, { force: true, multiple: true }).wait(250);
+  };
+
   cy.get(viewport).as('viewportAlias');
   const [x1, y1] = firstClick;
   const [x2, y2] = secondClick;
 
   // First click
-  cy.get('@viewportAlias').click(x1, y1, { force: true, multiple: true }).wait(250);
+  performClick('@viewportAlias', x1, y1);
 
-  // Move the mouse and then click again
-  cy.get('@viewportAlias')
-    .trigger('mousemove', { clientX: x2, clientY: y2 })
-    .get('@viewportAlias')
-    .click(x2, y2, { force: true, multiple: true })
-    .wait(250);
+  // Move the mouse
+  cy.get('@viewportAlias').trigger('mousemove', { clientX: x2, clientY: y2 }).wait(250);
+
+  // Second click
+  performClick('@viewportAlias', x2, y2);
 });
 
 /**
@@ -196,11 +199,10 @@ Cypress.Commands.add('addAngle', (viewport, firstClick, secondClick, thirdClick)
 });
 
 Cypress.Commands.add('expectMinimumThumbnails', (seriesToWait = 1) => {
-  cy.get('[data-cy="study-browser-thumbnail"]', { timeout: 50000 }).as('thumbnails');
-
-  cy.get('@thumbnails').should($itemList => {
-    expect($itemList.length).to.be.gte(seriesToWait);
-  });
+  cy.get('[data-cy="study-browser-thumbnail"]', { timeout: 50000 }).should(
+    'have.length.gte',
+    seriesToWait
+  );
 });
 
 //Command to wait DICOM image to load into the viewport

@@ -74,6 +74,19 @@ module.exports = {
   // },
   themes: ['@docusaurus/theme-live-codeblock'],
   plugins: [
+    () => ({
+      name: 'resolve-react',
+      configureWebpack() {
+        return {
+          resolve: {
+            alias: {
+              // assuming root node_modules is up from "./packages/<your-docusaurus>
+              react: path.resolve('../../node_modules/react'),
+            },
+          },
+        };
+      },
+    }),
     path.resolve(__dirname, './pluginOHIFWebpackConfig.js'),
     'plugin-image-zoom', // 3rd party plugin for image click to pop
     [

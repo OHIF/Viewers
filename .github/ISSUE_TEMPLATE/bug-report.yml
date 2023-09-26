@@ -64,7 +64,7 @@ body:
     attributes:
       label: 'Node version'
       description: 'Your Node.js version.'
-      placeholder: 'e.g., 16.14.0'
+      placeholder: 'e.g., 18.16.1'
     validations:
       required: true
   - type: input
