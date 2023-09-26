@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.7.0-beta.85](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.84...v3.7.0-beta.85) (2023-09-26)
+
+**Note:** Version bump only for package @ohif/extension-dicom-video
+
+
+
+
+
 # [3.7.0-beta.84](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.83...v3.7.0-beta.84) (2023-09-26)
 
 **Note:** Version bump only for package @ohif/extension-dicom-video
