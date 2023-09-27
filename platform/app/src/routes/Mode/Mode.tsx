@@ -62,8 +62,6 @@ function defaultRouteInit(
 
   unsubscriptions.push(instanceAddedUnsubscribe);
 
-  log.time(TimingEnum.STUDY_TO_DISPLAY_SETS);
-  log.time(TimingEnum.STUDY_TO_FIRST_IMAGE);
   const allRetrieves = studyInstanceUIDs.map(StudyInstanceUID =>
     dataSource.retrieve.series.metadata({
       StudyInstanceUID,
@@ -85,9 +83,6 @@ function defaultRouteInit(
   // until we run the hanging protocol matching service.
 
   Promise.allSettled(allRetrieves).then(() => {
-    log.timeEnd(TimingEnum.STUDY_TO_DISPLAY_SETS);
-    log.time(TimingEnum.DISPLAY_SETS_TO_FIRST_IMAGE);
-    log.time(TimingEnum.DISPLAY_SETS_TO_ALL_IMAGES);
     const displaySets = displaySetService.getActiveDisplaySets();
 
     if (!displaySets || !displaySets.length) {
