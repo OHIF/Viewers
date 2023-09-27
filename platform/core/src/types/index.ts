@@ -2,8 +2,8 @@ import * as Extensions from '../extensions/ExtensionManager';
 import * as HangingProtocol from './HangingProtocol';
 import Services from './Services';
 import Hotkey from '../classes/Hotkey';
-import { DataSourceDefinition } from './DataSource';
-import {
+import type { DataSourceDefinition } from './DataSource';
+import type {
   BaseDataSourceConfigurationAPI,
   BaseDataSourceConfigurationAPIItem,
 } from './DataSourceConfigurationAPI';
