@@ -1,7 +1,7 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useCallback, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { ExtensionManager, MODULE_TYPES, } from '@ohif/core';
+import { ExtensionManager, MODULE_TYPES } from '@ohif/core';
 //
 import { extensionManager } from '../App.tsx';
 import { useParams, useLocation } from 'react-router';
@@ -149,6 +149,7 @@ function DataSourceWrapper(props) {
     // 204: no content
     async function getData() {
       setIsLoading(true);
+
       const studies = await dataSource.query.studies.search(queryFilterValues);
 
       setData({
