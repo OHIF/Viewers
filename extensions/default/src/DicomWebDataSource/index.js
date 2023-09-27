@@ -95,10 +95,10 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
           let results = [];
           const studyInstanceUIDs = {};
           // here remove duplicate studies
-          for (let i = 0; i < clientResultsPromises.length; i++) {
+          await clientResultsPromises.forEach(async clientResultPromise => {
             let clientResults;
             try {
-              clientResults = await clientResultsPromises[i];
+              clientResults = await clientResultPromise;
             } catch {
               clientResults = [];
             }
@@ -109,7 +109,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
                 results.push(clientResults[j]);
               }
             }
-          }
+          });
           return processResults(results);
         },
         processResults: processResults.bind(),
@@ -117,17 +117,28 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
       series: {
         search: async function (studyInstanceUid) {
           const clients = clientManager.getClientsForQidoRequests();
-          let results = [];
-          const seriesInstanceUIDs = [];
           // concatenate series metadata from all servers
-          for (let i = 0; i < clients.length; i++) {
+          const clientResultsPromises = clients.map(client => {
             let clientResults;
             try {
-              clientResults = await seriesInStudy(clients[i].qidoDicomWebClient, studyInstanceUid);
+              clientResults = seriesInStudy(client.qidoDicomWebClient, studyInstanceUid);
             } catch {
               clientResults = [];
             }
-            // remove duplicate series in results
+            return clientResults;
+          });
+          await Promise.allSettled(clientResultsPromises);
+          let results = [];
+          const seriesInstanceUIDs = [];
+
+          // remove duplicate series in results
+          await clientResultsPromises.forEach(async clientResultPromise => {
+            let clientResults;
+            try {
+              clientResults = await clientResultPromise;
+            } catch {
+              clientResults = [];
+            }
             for (let j = 0; j < clientResults.length; j++) {
               const seriesInstanceUID = clientResults[j][SERIES_INSTANCE_UID].Value[0];
               if (!seriesInstanceUIDs.includes(seriesInstanceUID)) {
@@ -135,7 +146,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
                 results.push(clientResults[j]);
               }
             }
-          }
+          });
           return processSeriesResults(results);
         },
       },
@@ -294,12 +305,11 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
         });
 
         // adding only instances belonging to new series
-        for (let i = 0; i < clientNaturalizedInstancesMetadata.length; i++) {
-          const item = clientNaturalizedInstancesMetadata[i];
+        clientNaturalizedInstancesMetadata.forEach(item => {
           if (newSeries.includes(item.SeriesInstanceUID)) {
             naturalizedInstancesMetadata.push(item);
           }
-        }
+        });
         // adding new series
         newSeries.forEach(seriesUID => seriesConcatenated.push(seriesUID));
       }

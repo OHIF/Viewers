@@ -41,6 +41,110 @@ export default class ClientManager {
   }
 
   /**
+   * Sets authorization headers for all clients before queries
+   * @returns {void}
+   */
+  public setQidoHeaders(): void {
+    this.clients.forEach(
+      client => (client.qidoDicomWebClient.headers = this.getAuthorizationHeader())
+    );
+  }
+
+  /**
+   * Sets wado headers for all clients before queries
+   * @returns {void}
+   */
+  public setWadoHeaders(): void {
+    this.clients.forEach(
+      client => (client.wadoDicomWebClient.headers = this.getWadoHeader(client))
+    );
+  }
+
+  /**
+   * Sets authorization headers for wado clients before queries
+   * @returns {void}
+   */
+  public setAuthorizationHeadersForWADO(): void {
+    this.clients.forEach(
+      client => (client.wadoDicomWebClient.headers = this.getAuthorizationHeader())
+    );
+  }
+
+  /**
+   * Returns a boolean indicating if a client have reject abilities
+   * @returns {boolean} client reject support
+   */
+  public clientCanReject(name) {
+    return this.getClient(name)?.supportsReject;
+  }
+
+  /**
+   * Returns the reject function of a client
+   * @param name
+   * @returns {object} client reject object
+   */
+  public getClientRejectObject(name) {
+    const client = this.getClient(name);
+    if (client?.supportsReject) {
+      return dcm4cheeReject(client.wadoRoot);
+    }
+  }
+
+  /**
+   * Returns the qido client
+   * @param name
+   * @returns {object} qido client
+   */
+  public getQidoClient(name?: string): object {
+    const client = this.getClient(name);
+    return client?.qidoDicomWebClient;
+  }
+
+  /**
+   * Returns the wado client
+   * @param name
+   * @returns {object} wado client
+   */
+  public getWadoClient(name?: string): object {
+    const client = this.getClient(name);
+    return client?.wadoDicomWebClient;
+  }
+
+  /**
+   * Returns the client configuration
+   * @param name
+   * @returns {object} client configuration
+   */
+  public getConfig(name?: string): object {
+    return name ? this.clients.find(client => client.name === name) : this.clients[0];
+  }
+
+  /**
+   * Gets the client list already setting the necessary wado headers
+   * @returns {Array} client list
+   */
+  public getClientsForWadoRequests() {
+    this.setWadoHeaders();
+    return this.getClients();
+  }
+
+  /**
+   * Gets the client list already setting the necessary qido headers
+   * @returns {Array} client list
+   */
+  public getClientsForQidoRequests() {
+    this.setQidoHeaders();
+    return this.getClients();
+  }
+
+  /**
+   * Returns the client list
+   * @returns {Array} client list
+   */
+  public getClients() {
+    return this.clients;
+  }
+  /**
    * Adds a client to client list given a dicomweb server configuration
    * @param configToAdd
    * @returns {void}
@@ -129,116 +233,11 @@ export default class ClientManager {
   }
 
   /**
-   * Sets authorization headers for all clients before queries
-   * @returns {void}
-   */
-  public setQidoHeaders(): void {
-    this.clients.forEach(
-      client => (client.qidoDicomWebClient.headers = this.getAuthorizationHeader())
-    );
-  }
-
-  /**
-   * Sets wado headers for all clients before queries
-   * @returns {void}
-   */
-  public setWadoHeaders(): void {
-    this.clients.forEach(
-      client => (client.wadoDicomWebClient.headers = this.getWadoHeader(client))
-    );
-  }
-
-  /**
-   * Sets authorization headers for wado clients before queries
-   * @returns {void}
-   */
-  public setAuthorizationHeadersForWADO(): void {
-    this.clients.forEach(
-      client => (client.wadoDicomWebClient.headers = this.getAuthorizationHeader())
-    );
-  }
-
-  /**
-   * Returns a boolean indicating if a client have reject abilities
-   * @returns {boolean} client reject support
-   */
-  public clientCanReject(name) {
-    return this.getClient(name)?.supportsReject;
-  }
-
-  /**
-   * Returns the reject function of a client
-   * @param name
-   * @returns {object} client reject object
-   */
-  public getClientRejectObject(name) {
-    const client = this.getClient(name);
-    if (client?.supportsReject) {
-      return dcm4cheeReject(client.wadoRoot);
-    }
-  }
-
-  /**
-   * Returns the qido client
-   * @param name
-   * @returns {object} qido client
-   */
-  public getQidoClient(name?: string): object {
-    const client = this.getClient(name);
-    return client?.qidoDicomWebClient;
-  }
-
-  /**
-   * Returns the wado client
-   * @param name
-   * @returns {object} wado client
-   */
-  public getWadoClient(name?: string): object {
-    const client = this.getClient(name);
-    return client?.wadoDicomWebClient;
-  }
-
-  /**
-   * Returns the client configuration
-   * @param name
-   * @returns {object} client configuration
-   */
-  public getConfig(name?: string): object {
-    return name ? this.clients.find(client => client.name === name) : this.clients[0];
-  }
-
-  /**
    * Returns the client configuration
    * @param name
    * @returns {object} client configuration
    */
   private getClient(name?: string): object {
     return name ? this.clients.find(client => client.name === name) : this.clients[0];
-  }
-
-  /**
-   * Gets the client list already setting the necessary wado headers
-   * @returns {Array} client list
-   */
-  public getClientsForWadoRequests() {
-    this.setWadoHeaders();
-    return this.getClients();
-  }
-
-  /**
-   * Gets the client list already setting the necessary qido headers
-   * @returns {Array} client list
-   */
-  public getClientsForQidoRequests() {
-    this.setQidoHeaders();
-    return this.getClients();
-  }
-
-  /**
-   * Returns the client list
-   * @returns {Array} client list
-   */
-  public getClients() {
-    return this.clients;
   }
 }
