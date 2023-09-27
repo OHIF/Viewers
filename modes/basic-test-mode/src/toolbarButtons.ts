@@ -651,7 +651,7 @@ const toolbarButtons: Button[] = [
   },
 
   // There are buttons that are used for defining active controls which
-  // arent shown to the user, but still need to be activated.
+  // aren't shown to the user, but still need to be activated.
   _createToggleButton(
     'StackPrefetch',
     'link',
