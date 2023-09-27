@@ -371,6 +371,11 @@ const commandsModule = ({
         // originally toggled to one up was the former active viewport.
         const viewportIdToUpdate = toggleOneUpViewportGridStore.activeViewportId;
 
+        // We are restoring the previous layout but taking into the account that
+        // the current one up viewport might have a new displaySet dragged and dropped on it.
+        // updatedViewportsViaHP below contains the viewports applicable to the HP that existed
+        // prior to the toggle to one-up - including the updated viewports if a display
+        // set swap were to have occurred.
         const updatedViewportsViaHP =
           displaySetInstanceUIDs.length > 1
             ? []
@@ -383,39 +388,25 @@ const commandsModule = ({
                 )
                 .flat();
 
-        // This findOrCreateViewport returns either one of the updatedViewports
+        // findOrCreateViewport returns either one of the updatedViewportsViaHP
         // returned from the HP service OR if there is not one from the HP service then
-        // simply returns what was in the previous state.
-        const findOrCreateViewport = (position: number) => {
-          // get the viewportId in the current state (since we are in the one-up layout)
-          const currentOneUpViewport = Array.from(viewports.values())[0];
-
-          // we should restore the previous layout but take into the account the fact that
-          // the current one up viewport might have a new displaySet dragged and dropped on it
-          // so we should prioritize the current one in the old grid store layout viewports
-
-          const newViewports = Array.from(toggleOneUpViewportGridStore.viewports.values()).map(
-            viewport => {
-              if (viewport.viewportId === currentOneUpViewport.viewportId) {
-                return {
-                  ...currentOneUpViewport,
-                };
-              }
-
-              return viewport;
-            }
+        // simply returns what was in the previous state for a given position in the layout.
+        const findOrCreateViewport = (position: number, positionId: string) => {
+          // Find the viewport for the given position prior to the toggle to one-up.
+          const preOneUpViewport = Array.from(toggleOneUpViewportGridStore.viewports.values()).find(
+            viewport => viewport.positionId === positionId
           );
 
-          // However, we also need to take into account that the current one up viewport
-          // might have been part of a bigger hanging protocol layout, so going back
-          // from one up we should apply those viewports as well.
-          return updatedViewportsViaHP.length > 1 && updatedViewportsViaHP[position]
-            ? {
-                viewportOptions,
-                displaySetOptions,
-                ...updatedViewportsViaHP[position],
-              }
-            : newViewports[position];
+          // Use the viewport id from before the toggle to one-up to find any updates to the viewport.
+          const viewport = updatedViewportsViaHP.find(
+            viewport => viewport.viewportId === preOneUpViewport.viewportId
+          );
+
+          return viewport
+            ? // Use the applicable viewport from the HP updated viewports
+              { viewportOptions, displaySetOptions, ...viewport }
+            : // Use the previous viewport for the given position
+              preOneUpViewport;
         };
 
         const layoutOptions = viewportGridService.getLayoutOptionsFromState(
