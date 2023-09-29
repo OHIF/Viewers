@@ -15,11 +15,21 @@
 # limitations under the License.
 
 
-cd ~/Viewers/platform/viewer/dist/
+cd ~/ViewersV3/platform/viewer/dist/
+
+WORKING=`pwd`
+echo ${WORKING}
+ls -las
+
+if [ ! "${}WORKING}" == "~/ViewersV3/platform/viewer/dist/"]; then
+  echo "Wrong location"
+  exit
+fi
+
+exit
 # Don't want to have to run whole script as sudo, so need to fix ownership here:
 sudo chown -R circleci /home/circleci/.gsutil
 sudo chgrp -R circleci /home/circleci/.gsutil
-
 
 if [ "${CONFIG_ONLY}" != "True" ]; then
   gsutil web set -m index.html -e index.html gs://${WBUCKET}
