@@ -42,17 +42,7 @@ export default async function init({
   configuration,
   appConfig,
 }: Types.Extensions.ExtensionParams): Promise<void> {
-
-  await cs3DInit({
-    rendering: {
-      preferSizeOverAccuracy: Boolean(appConfig.use16BitDataType),
-      useNorm16Texture: Boolean(appConfig.use16BitDataType),
-    },
-  });
-
-  // For debugging e2e tests that are failing on CI
-  cornerstone.setUseCPURendering(Boolean(appConfig.useCPURendering));
-
+  // Note: this should run first before initializing the cornerstone
   switch (appConfig.useSharedArrayBuffer) {
     case 'AUTO':
       cornerstone.setUseSharedArrayBuffer(csEnums.SharedArrayBufferModes.AUTO);
@@ -63,6 +53,16 @@ export default async function init({
     default:
       cornerstone.setUseSharedArrayBuffer(csEnums.SharedArrayBufferModes.TRUE);
   }
+
+  await cs3DInit({
+    rendering: {
+      preferSizeOverAccuracy: Boolean(appConfig.use16BitDataType),
+      useNorm16Texture: Boolean(appConfig.use16BitDataType),
+    },
+  });
+
+  // For debugging e2e tests that are failing on CI
+  cornerstone.setUseCPURendering(Boolean(appConfig.useCPURendering));
 
   cornerstone.setConfiguration({
     ...cornerstone.getConfiguration(),
