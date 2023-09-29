@@ -20,8 +20,10 @@ cd ~/ViewersV3/platform/viewer/dist/
 WORKING=`pwd`
 echo ${WORKING}
 ls -las
+cd ..
+ls -las
 
-if [ ! "${}WORKING}" == "~/ViewersV3/platform/viewer/dist/"]; then
+if [ ! "${WORKING}" == "~/ViewersV3/platform/viewer/dist/"]; then
   echo "Wrong location"
   exit
 fi
