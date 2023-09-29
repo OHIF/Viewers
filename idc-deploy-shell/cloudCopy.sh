@@ -15,7 +15,7 @@
 # limitations under the License.
 
 
-cd ~/ViewersV3/platform/viewer/dist/
+cd /home/circleci/ViewersV3/platform/viewer/dist/
 
 WORKING=`pwd`
 echo ${WORKING}
@@ -23,9 +23,9 @@ ls -las
 cd ..
 ls -las
 
-if [ ! "${WORKING}" == "~/ViewersV3/platform/viewer/dist/"]; then
+if [ ! "${WORKING}" == "/home/circleci/ViewersV3/platform/viewer/dist/" ]; then
   echo "Wrong location"
-  exit
+  exit 1
 fi
 
 exit

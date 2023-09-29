@@ -112,11 +112,12 @@ jobs:
             ./idc-deploy-shell/pingJob.sh &
             /bin/bash ./idc-deploy-shell/buildViewer.sh
             ./idc-deploy-shell/killPing.sh
+            ls -las 
 
       - save_cache:
           key: idc-viewerV3-{{ epoch }}
           paths:
-            - ./platform/viewer/dist
+            - ./platform/app/dist
             - ./idc-deploy-shell
             - ./idc-assets
 
