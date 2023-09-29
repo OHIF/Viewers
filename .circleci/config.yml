@@ -84,7 +84,7 @@ jobs:
   build_job:
     environment:
       TZ: '/usr/share/zoneinfo/America/Los_Angeles'
-    working_directory: ~/Viewers
+    working_directory: ~/ViewersV3
     docker:
       - image: cimg/python:3.8
     resource_class: large
@@ -101,9 +101,9 @@ jobs:
 #      - run:
 #          name: Copy in IDC favicons
 #          command: |
-#            cp ~/Viewers/idc-assets/favicon-nci.ico ~/ViewersV3/platform/viewer/public/assets/favicon.ico
-#            cp ~/Viewers/idc-assets/favicon-nci-16x16.png ~/ViewersV3/platform/viewer/public/assets/favicon-16x16.png
-#            cp ~/Viewers/idc-assets/favicon-nci-32x32.png ~/ViewersV3/platform/viewer/public/assets/favicon-32x32.png
+#            cp ~/ViewersV3/idc-assets/favicon-nci.ico ~/ViewersV3/platform/viewer/public/assets/favicon.ico
+#            cp ~/ViewersV3/idc-assets/favicon-nci-16x16.png ~/ViewersV3/platform/viewer/public/assets/favicon-16x16.png
+#            cp ~/ViewersV3/idc-assets/favicon-nci-32x32.png ~/ViewersV3/platform/viewer/public/assets/favicon-32x32.png
       - run:
           name: Build Viewer
           command: |
@@ -114,7 +114,7 @@ jobs:
             ./idc-deploy-shell/killPing.sh
 
       - save_cache:
-          key: idc-viewer-{{ epoch }}
+          key: idc-viewerV3-{{ epoch }}
           paths:
             - ./platform/viewer/dist
             - ./idc-deploy-shell
@@ -125,11 +125,11 @@ jobs:
       TZ: '/usr/share/zoneinfo/America/Los_Angeles'
     docker:
       - image: cimg/python:3.8
-    working_directory: ~/Viewers
+    working_directory: ~/ViewersV3
     steps:
       - restore_cache:
           keys:
-            - idc-viewer-
+            - idc-viewerV3-
       - install_cloud_sdk
       - deployment_setup
       - auth
@@ -138,7 +138,7 @@ jobs:
 #          name: Customize Config
 #          command: |
 #            /bin/bash ./idc-deploy-shell/prepare_config.sh > platform/viewer/dist/app-config.js
-#            cp ~/Viewers/idc-assets/IDC-Logo-WHITE.svg platform/viewer/dist/IDC-Logo-WHITE.svg
+#            cp ~/ViewersV3/idc-assets/IDC-Logo-WHITE.svg platform/viewer/dist/IDC-Logo-WHITE.svg
       - run:
           name: Copy to cloud
           command: |
