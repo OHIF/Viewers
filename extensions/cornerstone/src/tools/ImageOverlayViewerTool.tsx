@@ -160,6 +160,8 @@ class ImageOverlayViewerTool extends AnnotationDisplayTool {
           let pixelData = null;
           if (overlay.pixelData.Value) {
             pixelData = overlay.pixelData.Value;
+          } else if (overlay.pixelData instanceof Array) {
+            pixelData = overlay.pixelData[0];
           } else if (overlay.pixelData.retrieveBulkData) {
             pixelData = await overlay.pixelData.retrieveBulkData();
           }
