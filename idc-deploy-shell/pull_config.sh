@@ -5,8 +5,7 @@ if [ ! -f "/home/circleci/${CIRCLE_PROJECT_REPONAME}/viewer3_deployment_config.t
     # Suddenly gsutil does not like trailing slashes as gs destinations?
     echo /home/circleci/${CIRCLE_PROJECT_REPONAME}
     gsutil cp gs://${DEPLOYMENT_BUCKET}/viewer3_deployment_config.txt /home/circleci/${CIRCLE_PROJECT_REPONAME}
-    echo "chmod ugo+r /home/circleci/${CIRCLE_PROJECT_REPONAME}/viewer3_deployment_config.txt"
-    ls -las /home/circleci/${CIRCLE_PROJECT_REPONAME}/viewer3_deployment_config.txt
+    ls -lasR /home/circleci/${CIRCLE_PROJECT_REPONAME}
     chmod ugo+r /home/circleci/${CIRCLE_PROJECT_REPONAME}/viewer3_deployment_config.txt
     if [ ! -f "/home/circleci/${CIRCLE_PROJECT_REPONAME}/viewer3_deployment_config.txt" ]; then
       echo "[ERROR] Couldn't assign viewer deployment configuration file - exiting."
