@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.7.0-beta.86](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.85...v3.7.0-beta.86) (2023-09-29)
+
+
+### Bug Fixes
+
+* **cli:** various fixes for adding custom modes and extensions ([#3683](https://github.com/OHIF/Viewers/issues/3683)) ([dc73b18](https://github.com/OHIF/Viewers/commit/dc73b187484da029a2664bb1302f30137c973b8c))
+
+
+
+
+
 # [3.7.0-beta.85](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.84...v3.7.0-beta.85) (2023-09-26)
 
 
