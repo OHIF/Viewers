@@ -3,6 +3,118 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.7.0-beta.86](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.85...v3.7.0-beta.86) (2023-09-29)
+
+
+### Bug Fixes
+
+* **cli:** various fixes for adding custom modes and extensions ([#3683](https://github.com/OHIF/Viewers/issues/3683)) ([dc73b18](https://github.com/OHIF/Viewers/commit/dc73b187484da029a2664bb1302f30137c973b8c))
+
+
+
+
+
+# [3.7.0-beta.85](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.84...v3.7.0-beta.85) (2023-09-26)
+
+
+### Bug Fixes
+
+* **toggleOneUp:** fixed one up for main tmtv layout ([#3677](https://github.com/OHIF/Viewers/issues/3677)) ([86f54d0](https://github.com/OHIF/Viewers/commit/86f54d0d07042750a863ae876aa8dd5fb16029a5))
+
+
+
+
+
+# [3.7.0-beta.84](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.83...v3.7.0-beta.84) (2023-09-26)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.7.0-beta.83](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.82...v3.7.0-beta.83) (2023-09-26)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.7.0-beta.82](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.81...v3.7.0-beta.82) (2023-09-26)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.7.0-beta.81](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.80...v3.7.0-beta.81) (2023-09-26)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.7.0-beta.80](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.79...v3.7.0-beta.80) (2023-09-22)
+
+
+### Bug Fixes
+
+* **react-select:** update react select package ([#3622](https://github.com/OHIF/Viewers/issues/3622)) ([04ca10d](https://github.com/OHIF/Viewers/commit/04ca10d8779dd15454920002f3d48afa8830de8a))
+
+
+### Features
+
+* **segmentation mode:** Add create, and export SEG with Brushes ([#3632](https://github.com/OHIF/Viewers/issues/3632)) ([48bbd62](https://github.com/OHIF/Viewers/commit/48bbd6281a497ea68670239f5426a10ee6c56dc1))
+* **SidePanel:** new side panel tab look-and-feel ([#3657](https://github.com/OHIF/Viewers/issues/3657)) ([85c899b](https://github.com/OHIF/Viewers/commit/85c899b399e2521480724be145538993721b9378))
+
+
+
+
+
+# [3.7.0-beta.79](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.78...v3.7.0-beta.79) (2023-09-22)
+
+
+### Performance Improvements
+
+* **memory:** add 16 bit texture via configuration - reduces memory by half ([#3662](https://github.com/OHIF/Viewers/issues/3662)) ([2bd3b26](https://github.com/OHIF/Viewers/commit/2bd3b26a6aa54b211ef988f3ad64ef1fe5648bab))
+
+
+
+
+
+# [3.7.0-beta.78](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.77...v3.7.0-beta.78) (2023-09-21)
+
+
+### Bug Fixes
+
+* **mpr:** Return the original/raw hanging protocol when fetching and preserving the current active protocol. ([#3670](https://github.com/OHIF/Viewers/issues/3670)) ([221dedd](https://github.com/OHIF/Viewers/commit/221dedde5dd4df086276406a9fa2da1cc23b4eb1))
+
+
+
+
+
+# [3.7.0-beta.77](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.76...v3.7.0-beta.77) (2023-09-21)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.7.0-beta.76](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.75...v3.7.0-beta.76) (2023-09-19)
+
+
+### Bug Fixes
+
+* **keyCloak:** fix openresty keycloak deployment recipe ([#3655](https://github.com/OHIF/Viewers/issues/3655)) ([2d7721c](https://github.com/OHIF/Viewers/commit/2d7721cb581f55dc49e3baeca2411b18dd78ad74))
+
+
+
+
+
 # [3.7.0-beta.75](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.74...v3.7.0-beta.75) (2023-09-18)
 
 

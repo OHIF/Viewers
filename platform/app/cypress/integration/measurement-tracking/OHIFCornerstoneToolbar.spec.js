@@ -9,6 +9,7 @@ describe('OHIF Cornerstone Toolbar', () => {
 
     //const expectedText = 'Ser: 1';
     //cy.get('@viewportInfoBottomLeft').should('contains.text', expectedText);
+    cy.waitDicomImage();
   });
 
   it('checks if all primary buttons are being displayed', () => {
@@ -66,13 +67,12 @@ describe('OHIF Cornerstone Toolbar', () => {
   // });
 
   it('checks if Levels tool will change the window width and center of an image', () => {
-    //Click on button and verify if icon is active on toolbar
-    cy.waitDicomImage();
-    cy.get('@wwwcBtnPrimary')
-      .click()
-      .then($wwwcBtn => {
-        cy.wrap($wwwcBtn).should('have.class', 'active');
-      });
+    // Wait for the DICOM image to load
+
+    // Assign an alias to the button element
+    cy.get('@wwwcBtnPrimary').as('wwwcButton');
+    cy.get('@wwwcButton').click();
+    cy.get('@wwwcButton').should('have.class', 'active');
 
     //drags the mouse inside the viewport to be able to interact with series
     cy.get('@viewport')
@@ -90,13 +90,16 @@ describe('OHIF Cornerstone Toolbar', () => {
   });
 
   it('checks if Pan tool will move the image inside the viewport', () => {
-    //Click on button and verify if icon is active on toolbar
-    cy.get('@panBtn')
-      .click()
-      .then($panBtn => {
-        cy.wrap($panBtn).should('have.class', 'active');
-      });
+    // Assign an alias to the button element
+    cy.get('@panBtn').as('panButton');
 
+    // Click on the button
+    cy.get('@panButton').click();
+
+    // Assert that the button has the 'active' class
+    cy.get('@panButton').should('have.class', 'active');
+
+    // Trigger the pan actions on the viewport
     cy.get('@viewport')
       .trigger('mousedown', 'center', { buttons: 1 })
       .trigger('mousemove', 'bottom', { buttons: 1 })
@@ -106,14 +109,14 @@ describe('OHIF Cornerstone Toolbar', () => {
   it('checks if Length annotation can be added to viewport and shows up in the measurements panel', () => {
     //Click on button and verify if icon is active on toolbar
     cy.addLengthMeasurement();
-    cy.get('[data-cy="viewport-notification"]').should('exist');
-    cy.get('[data-cy="viewport-notification"]').should('be.visible');
-    cy.get('[data-cy="prompt-begin-tracking-yes-btn"]').click();
+    cy.get('[data-cy="viewport-notification"]').as('notif').should('exist');
+    cy.get('[data-cy="viewport-notification"]').as('notif').should('be.visible');
+    cy.get('[data-cy="prompt-begin-tracking-yes-btn"]').as('yesBtn').click();
 
     //Verify the measurement exists in the table
     cy.get('@measurementsPanel').should('be.visible');
 
-    cy.get('[data-cy="measurement-item"]').its('length').should('be.at.least', 1);
+    cy.get('[data-cy="measurement-item"]').as('measure').its('length').should('be.at.least', 1);
   });
 
   /*it('checks if angle annotation can be added on viewport without causing any errors', () => {

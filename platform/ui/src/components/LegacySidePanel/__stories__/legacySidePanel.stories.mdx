@@ -1,0 +1,74 @@
+import LegacySidePanel from '../LegacySidePanel';
+
+import { ArgsTable, Story, Canvas, Meta } from '@storybook/addon-docs';
+import { createComponentTemplate } from '../../../storybook/functions/create-component-story';
+
+export const argTypes = {
+  component: LegacySidePanel,
+  title: 'Components/LegacySidePanel',
+};
+
+<Meta
+  title="Components/LegacySidePanel"
+  component={LegacySidePanel}
+/>
+
+export const LegacySidePanelTemplate = args => (
+  <div className="w-96">
+    <LegacySidePanel {...args} />
+  </div>
+);
+
+<Heading
+  title="LegacySidePanel"
+  componentRelativePath="LegacySidePanel/LegacySidePanel.tsx"
+/>
+
+- [Overview](#overview)
+- [Props](#props)
+- [Contribute](#contribute)
+
+## Overview
+
+LegacySidePanel is a component that renders the LegacySidePanels.
+
+<Canvas>
+  <Story
+    name="Overview"
+    args={{
+      side: 'left',
+      defaultComponentOpen: 'Example',
+      tabs: [
+        {
+          id: 'tab1',
+          name: 'tab1',
+          label: 'Tab 1',
+          iconName: 'group-layers',
+          iconLabel: 'group-layers',
+          content: () => <div class="text-primary-light p-3">Hello</div>,
+        },
+      ],
+      childComponents: [
+        {
+          iconName: 'home',
+          iconLabel: 'launch-info',
+          name: 'Example',
+          label: 'home',
+          content: () => <div>Hello world</div>,
+        },
+      ],
+    }}
+  >
+    {LegacySidePanelTemplate.bind({})}
+  </Story>
+</Canvas>
+
+## Props
+
+<ArgsTable of={LegacySidePanel} />
+
+## Usage
+
+## Contribute
+
+<Footer componentRelativePath="LegacySidePanel/__stories__/legacySidePanel.stories.mdx" />
