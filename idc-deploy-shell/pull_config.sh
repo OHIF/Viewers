@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 
 if [ ! -f "/home/circleci/${CIRCLE_PROJECT_REPONAME}/viewer3_deployment_config.txt" ]; then
+    echo gs://${DEPLOYMENT_BUCKET}/viewer3_deployment_config.txt
+    echo /home/circleci/${CIRCLE_PROJECT_REPONAME}/
     gsutil cp gs://${DEPLOYMENT_BUCKET}/viewer3_deployment_config.txt /home/circleci/${CIRCLE_PROJECT_REPONAME}/
-    chmod ugo+r /home/circleci/${CIRCLE_PROJECT_REPONAME}/viewe3_deployment_config.txt
+    chmod ugo+r /home/circleci/${CIRCLE_PROJECT_REPONAME}/viewer3_deployment_config.txt
     if [ ! -f "/home/circleci/${CIRCLE_PROJECT_REPONAME}/viewer3_deployment_config.txt" ]; then
       echo "[ERROR] Couldn't assign viewer deployment configuration file - exiting."
       exit 1

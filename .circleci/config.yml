@@ -59,7 +59,7 @@ commands:
           name: 'Set tier-specific configuration file'
           command: |
             sudo -E /bin/bash ./idc-deploy-shell/pull_config.sh
-            xargs -a viewer_deployment_config.txt -I{} echo "export {}" >> $BASH_ENV
+            xargs -a viewer3_deployment_config.txt -I{} echo "export {}" >> $BASH_ENV
 
   auth:
     steps:
