@@ -292,6 +292,7 @@ class MetadataProvider {
 
           let rows = 0;
           if (instance[OverlayRowsTag] instanceof Array) {
+            // The DICOM VR for overlay rows is US (unsigned short).
             const rowsInt16Array = new Uint16Array(instance[OverlayRowsTag][0]);
             rows = rowsInt16Array[0];
           } else {
@@ -300,6 +301,7 @@ class MetadataProvider {
 
           let columns = 0;
           if (instance[OverlayColumnsTag] instanceof Array) {
+            // The DICOM VR for overlay columns is US (unsigned short).
             const columnsInt16Array = new Uint16Array(instance[OverlayColumnsTag][0]);
             columns = columnsInt16Array[0];
           } else {
@@ -309,6 +311,7 @@ class MetadataProvider {
           let x = 0;
           let y = 0;
           if (OverlayOrigin.length === 1) {
+            // The DICOM VR for overlay origin is SS (signed short) with a multiplicity of 2.
             const originInt16Array = new Int16Array(OverlayOrigin[0]);
             x = originInt16Array[0];
             y = originInt16Array[1];
