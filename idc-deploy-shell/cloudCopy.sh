@@ -26,7 +26,7 @@ echo ${WORKING}
 # to the public cloud bucket:
 #
 
-if [ ! "${WORKING}" == "/home/circleci/ViewersV3/platform/app/dist/" ]; then
+if [ ! "${WORKING}" == "/home/circleci/ViewersV3/platform/app/dist" ]; then
   echo "Wrong location"
   exit 1
 fi
