@@ -28,7 +28,6 @@ import interleaveTopToBottom from './utils/interleaveTopToBottom';
 import initContextMenu from './initContextMenu';
 import initDoubleClick from './initDoubleClick';
 import { CornerstoneServices } from './types';
-import initViewTiming from './utils/initViewTiming';
 
 // TODO: Cypress tests are currently grabbing this from the window?
 window.cornerstone = cornerstone;
@@ -211,7 +210,6 @@ export default async function init({
     const { element } = evt.detail;
     const activeTools = toolbarService.getActiveTools();
 
-    // TODO - get the event name from evt
     activeTools.forEach(tool => {
       const toolData = toolbarService.getNestedButton(tool);
       const commands = toolData?.listeners?.[evt.type];
@@ -273,8 +271,6 @@ export default async function init({
     element.addEventListener(EVENTS.CAMERA_RESET, resetCrosshairs);
 
     eventTarget.addEventListener(EVENTS.STACK_VIEWPORT_NEW_STACK, toolbarEventListener);
-
-    initViewTiming({ element, eventTarget });
   }
 
   function elementDisabledHandler(evt) {

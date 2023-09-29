@@ -333,18 +333,18 @@ export default class ToolbarService extends PubSubService {
       if (!this.buttons[button.id]) {
         this.buttons[button.id] = button;
       }
-      this._setTogglesForButtonItems(button.props?.items);
     });
+    this._setTogglesForButtonItems(buttons);
 
     this._broadcastEvent(this.EVENTS.TOOL_BAR_MODIFIED, {});
   }
 
-  _setTogglesForButtonItems(buttonItems) {
-    if (!buttonItems) {
+  _setTogglesForButtonItems(buttons) {
+    if (!buttons) {
       return;
     }
 
-    buttonItems.forEach(buttonItem => {
+    buttons.forEach(buttonItem => {
       if (buttonItem.type === 'toggle') {
         this.setToggled(buttonItem.id, buttonItem.isActive);
       }
