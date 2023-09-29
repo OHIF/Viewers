@@ -15,20 +15,22 @@
 # limitations under the License.
 
 
-cd /home/circleci/ViewersV3/platform/viewer/dist/
+cd /home/circleci/ViewersV3/platform/app/dist/
 
 WORKING=`pwd`
 echo ${WORKING}
-ls -las
-cd ..
-ls -las
 
-if [ ! "${WORKING}" == "/home/circleci/ViewersV3/platform/viewer/dist/" ]; then
+#
+# We want to make sure we are where we think we should be, otherwise if the above
+# cd fails we might find ourselves copying the keys in the current directory
+# to the public cloud bucket:
+#
+
+if [ ! "${WORKING}" == "/home/circleci/ViewersV3/platform/app/dist/" ]; then
   echo "Wrong location"
   exit 1
 fi
 
-exit
 # Don't want to have to run whole script as sudo, so need to fix ownership here:
 sudo chown -R circleci /home/circleci/.gsutil
 sudo chgrp -R circleci /home/circleci/.gsutil
