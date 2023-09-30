@@ -16,7 +16,7 @@
 
 
 if [ "${CONFIG_ONLY}" != "True" ]; then
-  export PUBLIC_URL='/v3'
+  export PUBLIC_URL='/v3/'
   yarn install
   yarn run build
 else
