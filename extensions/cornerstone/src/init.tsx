@@ -43,15 +43,15 @@ export default async function init({
   appConfig,
 }: Types.Extensions.ExtensionParams): Promise<void> {
   // Note: this should run first before initializing the cornerstone
-  switch (appConfig.useSharedArrayBuffer) {
-    case 'AUTO':
-      cornerstone.setUseSharedArrayBuffer(csEnums.SharedArrayBufferModes.AUTO);
-      break;
-    case 'FALSE':
-      cornerstone.setUseSharedArrayBuffer(csEnums.SharedArrayBufferModes.FALSE);
-      break;
-    default:
-      cornerstone.setUseSharedArrayBuffer(csEnums.SharedArrayBufferModes.TRUE);
+  // DO NOT CHANGE THE ORDER
+  const value = appConfig.useSharedArrayBuffer;
+
+  if (value === 'AUTO') {
+    cornerstone.setUseSharedArrayBuffer(csEnums.SharedArrayBufferModes.AUTO);
+  } else if (value === 'FALSE' || value === false) {
+    cornerstone.setUseSharedArrayBuffer(csEnums.SharedArrayBufferModes.FALSE);
+  } else {
+    cornerstone.setUseSharedArrayBuffer(csEnums.SharedArrayBufferModes.TRUE);
   }
 
   await cs3DInit({
