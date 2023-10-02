@@ -102,13 +102,13 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
             } catch {
               clientResults = [];
             }
-            for (let j = 0; j < clientResults.length; j++) {
-              const studyInstanceUID = clientResults[j][STUDY_INSTANCE_UID].Value[0];
+            clientResults.forEach(clientResult => {
+              const studyInstanceUID = clientResult[STUDY_INSTANCE_UID].Value[0];
               if (!(studyInstanceUID in studyInstanceUIDs)) {
-                studyInstanceUIDs[studyInstanceUID] = clientResults[j];
-                results.push(clientResults[j]);
+                studyInstanceUIDs[studyInstanceUID] = clientResult;
+                results.push(clientResult);
               }
-            }
+            });
           });
           return processResults(results);
         },
@@ -139,13 +139,13 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
             } catch {
               clientResults = [];
             }
-            for (let j = 0; j < clientResults.length; j++) {
-              const seriesInstanceUID = clientResults[j][SERIES_INSTANCE_UID].Value[0];
+            clientResults.forEach(clientResult => {
+              const seriesInstanceUID = clientResult[SERIES_INSTANCE_UID].Value[0];
               if (!seriesInstanceUIDs.includes(seriesInstanceUID)) {
                 seriesInstanceUIDs.push(seriesInstanceUID);
-                results.push(clientResults[j]);
+                results.push(clientResult);
               }
-            }
+            });
           });
           return processSeriesResults(results);
         },
