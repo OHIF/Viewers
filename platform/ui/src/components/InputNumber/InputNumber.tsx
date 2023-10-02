@@ -48,6 +48,7 @@ const InputNumber: React.FC<{
   const inputWidth = Math.max(maxDigits * 10, showAdjustmentArrows ? 20 : 28);
   const arrowWidth = showAdjustmentArrows ? 20 : 0;
   const containerWidth = `${inputWidth + arrowWidth}px`;
+  const decimalPlaces = Number.isInteger(step) ? 0 : step.toString().split('.')[1].length;
 
   useEffect(() => {
     setNumberValue(value);
@@ -101,7 +102,7 @@ const InputNumber: React.FC<{
         <div className="flex">
           <input
             type="number"
-            value={numberValue}
+            value={Number(numberValue).toFixed(decimalPlaces)}
             step={step}
             onChange={handleChange}
             className={'input-number w-full bg-black text-center text-[12px] text-white'}
