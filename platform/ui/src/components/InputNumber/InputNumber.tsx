@@ -43,6 +43,7 @@ const InputNumber: React.FC<{
   showAdjustmentArrows = true,
 }) => {
   const [numberValue, setNumberValue] = useState(value);
+  const [isFocused, setIsFocused] = useState(false);
 
   const maxDigits = getMaxDigits(maxValue, step);
   const inputWidth = Math.max(maxDigits * 10, showAdjustmentArrows ? 20 : 28);
@@ -82,8 +83,17 @@ const InputNumber: React.FC<{
     onChange(newValue);
   };
 
-  const increment = () => updateValue(numberValue + step);
-  const decrement = () => updateValue(numberValue - step);
+  const handleFocus = () => {
+    setIsFocused(true);
+  };
+
+  const handleBlur = () => {
+    setIsFocused(false);
+    setNumberValue(parseFloat(numberValue).toFixed(decimalPlaces));
+  };
+
+  const increment = () => updateValue(parseFloat(numberValue) + step);
+  const decrement = () => updateValue(parseFloat(numberValue) - step);
 
   return (
     <div className="flex flex-1 flex-col">
@@ -102,8 +112,10 @@ const InputNumber: React.FC<{
         <div className="flex">
           <input
             type="number"
-            value={Number(numberValue).toFixed(decimalPlaces)}
+            value={isFocused ? numberValue : parseFloat(numberValue).toFixed(decimalPlaces)}
             step={step}
+            onFocus={handleFocus}
+            onBlur={handleBlur}
             onChange={handleChange}
             className={'input-number w-full bg-black text-center text-[12px] text-white'}
             style={{ width: inputWidth }}
