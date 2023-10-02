@@ -20,8 +20,7 @@
     "@ohif/core": "^{LATEST_OHIF_VERSION}"
   },
   "dependencies": {
-    "@babel/runtime": "^7.20.13",
-    "@ohif/mode-longitudinal": "^{LATEST_OHIF_VERSION}"
+    "@babel/runtime": "^7.20.13"
   },
   "devDependencies": {
     "@babel/core": "^7.21.4",
