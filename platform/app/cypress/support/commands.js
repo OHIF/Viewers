@@ -153,10 +153,14 @@ Cypress.Commands.add('addLine', (viewport, firstClick, secondClick) => {
   const [x2, y2] = secondClick;
 
   // First click
-  performClick('@viewportAlias', x1, y1);
+  cy.get('@viewportAlias').then(() => {
+    performClick('@viewportAlias', x1, y1);
+  });
 
   // Second click
-  performClick('@viewportAlias', x2, y2);
+  cy.get('@viewportAlias').then(() => {
+    performClick('@viewportAlias', x2, y2);
+  });
 
   cy.wait(1000);
 });
