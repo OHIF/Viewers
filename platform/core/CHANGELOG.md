@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.7.0-beta.90](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.89...v3.7.0-beta.90) (2023-10-03)
+
+
+### Bug Fixes
+
+* **typescript error:** Change pubSubServiceInterface file type to typescript ([#3546](https://github.com/OHIF/Viewers/issues/3546)) ([eb22328](https://github.com/OHIF/Viewers/commit/eb22328fc05d06fc4411805e7a30f826659d796a))
+
+
+
+
+
 # [3.7.0-beta.89](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.88...v3.7.0-beta.89) (2023-10-03)
 
 
