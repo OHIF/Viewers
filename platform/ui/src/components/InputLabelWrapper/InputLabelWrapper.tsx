@@ -3,10 +3,9 @@ import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { useTranslation } from 'react-i18next';
 
-import { Icon } from '../';
+import Icon from '../Icon';
 
-const baseLabelClassName =
-  'flex flex-col flex-1 text-white text-lg pl-1 select-none';
+const baseLabelClassName = 'flex flex-col flex-1 text-white text-lg pl-1 select-none';
 const spanClassName = 'flex flex-row items-center cursor-pointer focus:outline-none';
 const sortIconMap = {
   descending: 'sorting-active-up',
@@ -22,7 +21,7 @@ const InputLabelWrapper = ({
   className,
   children,
 }) => {
-  const { t } = useTranslation("StudyList")
+  const { t } = useTranslation('StudyList');
 
   const onClickHandler = e => {
     if (!isSortable) {
@@ -47,9 +46,7 @@ const InputLabelWrapper = ({
             name={sortIconMap[sortDirection]}
             className={classnames(
               'mx-2 w-2',
-              sortDirection !== 'none'
-                ? 'text-primary-light'
-                : 'text-primary-main'
+              sortDirection !== 'none' ? 'text-primary-light' : 'text-primary-main'
             )}
           />
         )}
@@ -66,8 +63,7 @@ InputLabelWrapper.defaultProps = {
 InputLabelWrapper.propTypes = {
   label: PropTypes.string.isRequired,
   isSortable: PropTypes.bool.isRequired,
-  sortDirection: PropTypes.oneOf(['ascending', 'descending', 'none'])
-    .isRequired,
+  sortDirection: PropTypes.oneOf(['ascending', 'descending', 'none']).isRequired,
   onLabelClick: PropTypes.func.isRequired,
   className: PropTypes.string,
   children: PropTypes.node,

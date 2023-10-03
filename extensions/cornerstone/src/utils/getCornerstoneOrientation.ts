@@ -1,13 +1,10 @@
 import { Enums } from '@cornerstonejs/core';
-import { log } from '@ohif/core';
 
 const AXIAL = 'axial';
 const SAGITTAL = 'sagittal';
 const CORONAL = 'coronal';
 
-export default function getCornerstoneOrientation(
-  orientation: string
-): Enums.OrientationAxis {
+export default function getCornerstoneOrientation(orientation: string): Enums.OrientationAxis {
   if (orientation) {
     switch (orientation.toLowerCase()) {
       case AXIAL:

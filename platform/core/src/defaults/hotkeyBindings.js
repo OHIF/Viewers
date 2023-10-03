@@ -76,18 +76,38 @@ const bindings = [
     keys: ['left'],
     isEditable: true,
   },
-  // {
-  //   commandName: 'nextViewportDisplaySet',
-  //   label: 'Next Series',
-  //   keys: ['pageup'],
-  //   isEditable: true,
-  // },
-  // {
-  //   commandName: 'previousViewportDisplaySet',
-  //   label: 'Previous Series',
-  //   keys: ['pagedown'],
-  //   isEditable: true,
-  // },
+  {
+    commandName: 'updateViewportDisplaySet',
+    commandOptions: {
+      direction: -1,
+    },
+    label: 'Previous Series',
+    keys: ['pageup'],
+    isEditable: true,
+  },
+  {
+    commandName: 'updateViewportDisplaySet',
+    commandOptions: {
+      direction: 1,
+    },
+    label: 'Next Series',
+    keys: ['pagedown'],
+    isEditable: true,
+  },
+  {
+    commandName: 'nextStage',
+    context: 'DEFAULT',
+    label: 'Next Stage',
+    keys: ['.'],
+    isEditable: true,
+  },
+  {
+    commandName: 'previousStage',
+    context: 'DEFAULT',
+    label: 'Previous Stage',
+    keys: [','],
+    isEditable: true,
+  },
   {
     commandName: 'nextImage',
     label: 'Next Image',
@@ -153,30 +173,31 @@ const bindings = [
     label: 'W/L Preset 5',
     keys: ['5'],
   },
-  {
-    commandName: 'setWindowLevel',
-    commandOptions: windowLevelPresets[6],
-    label: 'W/L Preset 6',
-    keys: ['6'],
-  },
-  {
-    commandName: 'setWindowLevel',
-    commandOptions: windowLevelPresets[7],
-    label: 'W/L Preset 7',
-    keys: ['7'],
-  },
-  {
-    commandName: 'setWindowLevel',
-    commandOptions: windowLevelPresets[8],
-    label: 'W/L Preset 8',
-    keys: ['8'],
-  },
-  {
-    commandName: 'setWindowLevel',
-    commandOptions: windowLevelPresets[9],
-    label: 'W/L Preset 9',
-    keys: ['9'],
-  },
+  // These don't exist, so don't try applying them....
+  // {
+  //   commandName: 'setWindowLevel',
+  //   commandOptions: windowLevelPresets[6],
+  //   label: 'W/L Preset 6',
+  //   keys: ['6'],
+  // },
+  // {
+  //   commandName: 'setWindowLevel',
+  //   commandOptions: windowLevelPresets[7],
+  //   label: 'W/L Preset 7',
+  //   keys: ['7'],
+  // },
+  // {
+  //   commandName: 'setWindowLevel',
+  //   commandOptions: windowLevelPresets[8],
+  //   label: 'W/L Preset 8',
+  //   keys: ['8'],
+  // },
+  // {
+  //   commandName: 'setWindowLevel',
+  //   commandOptions: windowLevelPresets[9],
+  //   label: 'W/L Preset 9',
+  //   keys: ['9'],
+  // },
 ];
 
 export default bindings;

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import {
   StudySummary,
@@ -6,11 +6,13 @@ import {
   Dialog,
   Input,
   useViewportGrid,
+  ButtonEnums,
 } from '@ohif/ui';
 import { DicomMetadataStore, utils } from '@ohif/core';
 import { useDebounce } from '@hooks';
 import ActionButtons from './ActionButtons';
 import { useTrackedMeasurements } from '../../getContextModule';
+import debounce from 'lodash.debounce';
 
 const { downloadCSVReport } = utils;
 const { formatDate } = utils;
@@ -23,52 +25,30 @@ const DISPLAY_STUDY_SUMMARY_INITIAL_VALUE = {
 };
 
 function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
-  const [viewportGrid, viewportGridService] = useViewportGrid();
-  const [measurementChangeTimestamp, setMeasurementsUpdated] = useState(
-    Date.now().toString()
-  );
-  const debouncedMeasurementChangeTimestamp = useDebounce(
-    measurementChangeTimestamp,
-    200
-  );
-  const {
-    MeasurementService,
-    UIDialogService,
-    DisplaySetService,
-  } = servicesManager.services;
-  const [
-    trackedMeasurements,
-    sendTrackedMeasurementsEvent,
-  ] = useTrackedMeasurements();
+  const [viewportGrid] = useViewportGrid();
+  const [measurementChangeTimestamp, setMeasurementsUpdated] = useState(Date.now().toString());
+  const debouncedMeasurementChangeTimestamp = useDebounce(measurementChangeTimestamp, 200);
+  const { measurementService, uiDialogService, displaySetService } = servicesManager.services;
+  const [trackedMeasurements, sendTrackedMeasurementsEvent] = useTrackedMeasurements();
   const { trackedStudy, trackedSeries } = trackedMeasurements.context;
   const [displayStudySummary, setDisplayStudySummary] = useState(
     DISPLAY_STUDY_SUMMARY_INITIAL_VALUE
   );
   const [displayMeasurements, setDisplayMeasurements] = useState([]);
+  const measurementsPanelRef = useRef(null);
 
   useEffect(() => {
-    const measurements = MeasurementService.getMeasurements();
+    const measurements = measurementService.getMeasurements();
     const filteredMeasurements = measurements.filter(
-      m =>
-        trackedStudy === m.referenceStudyUID &&
-        trackedSeries.includes(m.referenceSeriesUID)
+      m => trackedStudy === m.referenceStudyUID && trackedSeries.includes(m.referenceSeriesUID)
     );
 
     const mappedMeasurements = filteredMeasurements.map(m =>
-      _mapMeasurementToDisplay(
-        m,
-        MeasurementService.VALUE_TYPES,
-        DisplaySetService
-      )
+      _mapMeasurementToDisplay(m, measurementService.VALUE_TYPES, displaySetService)
     );
     setDisplayMeasurements(mappedMeasurements);
     // eslint-ignore-next-line
-  }, [
-    MeasurementService,
-    trackedStudy,
-    trackedSeries,
-    debouncedMeasurementChangeTimestamp,
-  ]);
+  }, [measurementService, trackedStudy, trackedSeries, debouncedMeasurementChangeTimestamp]);
 
   const updateDisplayStudySummary = async () => {
     if (trackedMeasurements.matches('tracking')) {
@@ -101,30 +81,30 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
   // ~~ DisplayStudySummary
   useEffect(() => {
     updateDisplayStudySummary();
-  }, [
-    displayStudySummary.key,
-    trackedMeasurements,
-    trackedStudy,
-    updateDisplayStudySummary,
-  ]);
+  }, [displayStudySummary.key, trackedMeasurements, trackedStudy, updateDisplayStudySummary]);
 
   // TODO: Better way to consolidated, debounce, check on change?
   // Are we exposing the right API for measurementService?
-  // This watches for ALL MeasurementService changes. It updates a timestamp,
+  // This watches for ALL measurementService changes. It updates a timestamp,
   // which is debounced. After a brief period of inactivity, this triggers
   // a re-render where we grab up-to-date measurements
   useEffect(() => {
-    const added = MeasurementService.EVENTS.MEASUREMENT_ADDED;
-    const addedRaw = MeasurementService.EVENTS.RAW_MEASUREMENT_ADDED;
-    const updated = MeasurementService.EVENTS.MEASUREMENT_UPDATED;
-    const removed = MeasurementService.EVENTS.MEASUREMENT_REMOVED;
-    const cleared = MeasurementService.EVENTS.MEASUREMENTS_CLEARED;
+    const added = measurementService.EVENTS.MEASUREMENT_ADDED;
+    const addedRaw = measurementService.EVENTS.RAW_MEASUREMENT_ADDED;
+    const updated = measurementService.EVENTS.MEASUREMENT_UPDATED;
+    const removed = measurementService.EVENTS.MEASUREMENT_REMOVED;
+    const cleared = measurementService.EVENTS.MEASUREMENTS_CLEARED;
     const subscriptions = [];
 
     [added, addedRaw, updated, removed, cleared].forEach(evt => {
       subscriptions.push(
-        MeasurementService.subscribe(evt, () => {
+        measurementService.subscribe(evt, () => {
           setMeasurementsUpdated(Date.now().toString());
+          if (evt === added) {
+            debounce(() => {
+              measurementsPanelRef.current.scrollTop = measurementsPanelRef.current.scrollHeight;
+            }, 300)();
+          }
         }).unsubscribe
       );
     });
@@ -134,33 +114,31 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
         unsub();
       });
     };
-  }, [MeasurementService, sendTrackedMeasurementsEvent]);
+  }, [measurementService, sendTrackedMeasurementsEvent]);
 
   async function exportReport() {
-    const measurements = MeasurementService.getMeasurements();
+    const measurements = measurementService.getMeasurements();
     const trackedMeasurements = measurements.filter(
-      m =>
-        trackedStudy === m.referenceStudyUID &&
-        trackedSeries.includes(m.referenceSeriesUID)
+      m => trackedStudy === m.referenceStudyUID && trackedSeries.includes(m.referenceSeriesUID)
     );
 
-    downloadCSVReport(trackedMeasurements, MeasurementService);
+    downloadCSVReport(trackedMeasurements, measurementService);
   }
 
   const jumpToImage = ({ uid, isActive }) => {
-    MeasurementService.jumpToMeasurement(viewportGrid.activeViewportIndex, uid);
+    measurementService.jumpToMeasurement(viewportGrid.activeViewportId, uid);
 
     onMeasurementItemClickHandler({ uid, isActive });
   };
 
   const onMeasurementItemEditHandler = ({ uid, isActive }) => {
-    const measurement = MeasurementService.getMeasurement(uid);
+    const measurement = measurementService.getMeasurement(uid);
     jumpToImage({ uid, isActive });
 
     const onSubmitHandler = ({ action, value }) => {
       switch (action.id) {
         case 'save': {
-          MeasurementService.update(
+          measurementService.update(
             uid,
             {
               ...measurement,
@@ -170,17 +148,17 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
           );
         }
       }
-      UIDialogService.dismiss({ id: 'enter-annotation' });
+      uiDialogService.dismiss({ id: 'enter-annotation' });
     };
 
-    UIDialogService.create({
+    uiDialogService.create({
       id: 'enter-annotation',
       centralize: true,
       isDraggable: false,
       showOverlay: true,
       content: Dialog,
       contentProps: {
-        title: 'Enter your annotation',
+        title: 'Annotation',
         noCloseButton: true,
         value: { label: measurement.label || '' },
         body: ({ value, setValue }) => {
@@ -195,23 +173,22 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
             }
           };
           return (
-            <div className="p-4 bg-primary-dark">
-              <Input
-                autoFocus
-                className="mt-2 bg-black border-primary-main"
-                type="text"
-                containerClassName="mr-2"
-                value={value.label}
-                onChange={onChangeHandler}
-                onKeyPress={onKeyPressHandler}
-              />
-            </div>
+            <Input
+              label="Enter your annotation"
+              labelClassName="text-white grow text-[14px] leading-[1.2]"
+              autoFocus
+              id="annotation"
+              className="border-primary-main bg-black"
+              type="text"
+              value={value.label}
+              onChange={onChangeHandler}
+              onKeyPress={onKeyPressHandler}
+            />
           );
         },
         actions: [
-          // temp: swap button types until colors are updated
-          { id: 'cancel', text: 'Cancel', type: 'primary' },
-          { id: 'save', text: 'Save', type: 'secondary' },
+          { id: 'cancel', text: 'Cancel', type: ButtonEnums.type.secondary },
+          { id: 'save', text: 'Save', type: ButtonEnums.type.primary },
         ],
         onSubmit: onSubmitHandler,
       },
@@ -230,16 +207,17 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
   };
 
   const displayMeasurementsWithoutFindings = displayMeasurements.filter(
-    dm => dm.measurementType !== MeasurementService.VALUE_TYPES.POINT
+    dm => dm.measurementType !== measurementService.VALUE_TYPES.POINT
   );
   const additionalFindings = displayMeasurements.filter(
-    dm => dm.measurementType === MeasurementService.VALUE_TYPES.POINT
+    dm => dm.measurementType === measurementService.VALUE_TYPES.POINT
   );
 
   return (
     <>
       <div
-        className="overflow-x-hidden overflow-y-auto invisible-scrollbar"
+        className="invisible-scrollbar overflow-y-auto overflow-x-hidden"
+        ref={measurementsPanelRef}
         data-cy={'trackedMeasurements-panel'}
       >
         {displayStudySummary.key && (
@@ -252,6 +230,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
         <MeasurementTable
           title="Measurements"
           data={displayMeasurementsWithoutFindings}
+          servicesManager={servicesManager}
           onClick={jumpToImage}
           onEdit={onMeasurementItemEditHandler}
         />
@@ -259,6 +238,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
           <MeasurementTable
             title="Additional Findings"
             data={additionalFindings}
+            servicesManager={servicesManager}
             onClick={jumpToImage}
             onEdit={onMeasurementItemEditHandler}
           />
@@ -269,13 +249,12 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
           onExportClick={exportReport}
           onCreateReportClick={() => {
             sendTrackedMeasurementsEvent('SAVE_REPORT', {
-              viewportIndex: viewportGrid.activeViewportIndex,
+              viewportId: viewportGrid.activeViewportId,
               isBackupSave: true,
             });
           }}
           disabled={
-            additionalFindings.length === 0 &&
-            displayMeasurementsWithoutFindings.length === 0
+            additionalFindings.length === 0 && displayMeasurementsWithoutFindings.length === 0
           }
         />
       </div>
@@ -286,7 +265,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
 PanelMeasurementTableTracking.propTypes = {
   servicesManager: PropTypes.shape({
     services: PropTypes.shape({
-      MeasurementService: PropTypes.shape({
+      measurementService: PropTypes.shape({
         getMeasurements: PropTypes.func.isRequired,
         VALUE_TYPES: PropTypes.object.isRequired,
       }).isRequired,
@@ -294,8 +273,8 @@ PanelMeasurementTableTracking.propTypes = {
   }).isRequired,
 };
 
-// TODO: This could be a MeasurementService mapper
-function _mapMeasurementToDisplay(measurement, types, DisplaySetService) {
+// TODO: This could be a measurementService mapper
+function _mapMeasurementToDisplay(measurement, types, displaySetService) {
   const { referenceStudyUID, referenceSeriesUID, SOPInstanceUID } = measurement;
 
   // TODO: We don't deal with multiframe well yet, would need to update
@@ -307,23 +286,48 @@ function _mapMeasurementToDisplay(measurement, types, DisplaySetService) {
     SOPInstanceUID
   );
 
-  const displaySets = DisplaySetService.getDisplaySetsForSeries(
-    referenceSeriesUID
-  );
+  const displaySets = displaySetService.getDisplaySetsForSeries(referenceSeriesUID);
 
   if (!displaySets[0] || !displaySets[0].images) {
-    throw new Error(
-      'The tracked measurements panel should only be tracking "stack" displaySets.'
-    );
+    throw new Error('The tracked measurements panel should only be tracking "stack" displaySets.');
   }
 
-  const { displayText } = measurement;
+  const {
+    displayText: baseDisplayText,
+    uid,
+    label: baseLabel,
+    type,
+    selected,
+    findingSites,
+    finding,
+  } = measurement;
+
+  const firstSite = findingSites?.[0];
+  const label = baseLabel || finding?.text || firstSite?.text || '(empty)';
+  let displayText = baseDisplayText || [];
+  if (findingSites) {
+    const siteText = [];
+    findingSites.forEach(site => {
+      if (site?.text !== label) {
+        siteText.push(site.text);
+      }
+    });
+    displayText = [...siteText, ...displayText];
+  }
+  if (finding && finding?.text !== label) {
+    displayText = [finding.text, ...displayText];
+  }
+
   return {
-    uid: measurement.uid,
-    label: measurement.label || '(empty)',
-    measurementType: measurement.type,
-    displayText: displayText || [],
-    isActive: measurement.selected,
+    uid,
+    label,
+    baseLabel,
+    measurementType: type,
+    displayText,
+    baseDisplayText,
+    isActive: selected,
+    finding,
+    findingSites,
   };
 }
 

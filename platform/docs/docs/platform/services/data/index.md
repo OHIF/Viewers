@@ -17,9 +17,11 @@ We maintain the following non-ui Services:
 - [DicomMetadata Store](./../data/DicomMetadataStore.md)
 - [DisplaySet Service](./../data/DisplaySetService.md)
 - [Hanging Protocol Service](../data/HangingProtocolService.md)
-- [Toolbar Service](../data/ToolBarService.md)
+- [Toolbar Service](./ToolbarService.md)
 - [Measurement Service](../data/MeasurementService.md)
-- [Customization Service](customization-service.md)
+- [Customization Service](./../ui/customization-service.md)
+- [State Sync Service](../data/StateSyncService.md)
+- [Panel Service](../data/PanelService.md)
 
 ## Service Architecture
 

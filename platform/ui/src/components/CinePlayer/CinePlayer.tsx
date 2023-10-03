@@ -1,11 +1,31 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import debounce from 'lodash.debounce';
-import { IconButton, Icon } from '../';
 
-import './CinePlayerCustomInputRange.css';
+import Icon from '../Icon';
+import Tooltip from '../Tooltip';
+import InputRange from '../InputRange';
 
-const CinePlayer = ({
+import './CinePlayer.css';
+import classNames from 'classnames';
+
+export type CinePlayerProps = {
+  className: string;
+  isPlaying: boolean;
+  minFrameRate?: number;
+  maxFrameRate?: number;
+  stepFrameRate?: number;
+  frameRate?: number;
+  onFrameRateChange: (value: number) => void;
+  onPlayPauseChange: (value: boolean) => void;
+  onClose: () => void;
+};
+
+const fpsButtonClassNames =
+  'cursor-pointer text-primary-active active:text-primary-light hover:bg-customblue-300 w-4 flex items-center justify-center';
+
+const CinePlayer: React.FC<CinePlayerProps> = ({
+  className,
   isPlaying,
   minFrameRate,
   maxFrameRate,
@@ -18,52 +38,68 @@ const CinePlayer = ({
   const [frameRate, setFrameRate] = useState(defaultFrameRate);
   const debouncedSetFrameRate = debounce(onFrameRateChange, 300);
 
-  const onFrameRateChangeHandler = ({ target }) => {
-    const frameRate = parseFloat(target.value);
-    debouncedSetFrameRate(frameRate);
+  const getPlayPauseIconName = () => (isPlaying ? 'icon-pause' : 'icon-play');
+
+  const handleSetFrameRate = (frameRate: number) => {
+    if (frameRate < minFrameRate || frameRate > maxFrameRate) {
+      return;
+    }
     setFrameRate(frameRate);
-  };
-
-  const onPlayPauseChangeHandler = () => onPlayPauseChange(!isPlaying);
-
-  const action = {
-    false: { icon: 'old-play' },
-    true: { icon: 'old-stop' },
+    debouncedSetFrameRate(frameRate);
   };
 
   return (
-    <div className="flex flex-row items-center justify-center h-10 border rounded-full CinePlayer border-primary-light">
-      <IconButton
-        variant="text"
-        color="inherit"
-        size="initial"
-        className="ml-4 mr-3 text-primary-active"
-        onClick={onPlayPauseChangeHandler}
+    <div
+      className={classNames(
+        className,
+        'border-secondary-light/60 bg-primary-dark flex select-none items-center gap-2 rounded border px-2 py-2'
+      )}
+    >
+      <Icon
+        name={getPlayPauseIconName()}
+        className="active:text-primary-light hover:bg-customblue-300 cursor-pointer text-white hover:rounded"
+        onClick={() => onPlayPauseChange(!isPlaying)}
+      />
+      <Tooltip
+        position="top"
+        className="group/fps cine-fps-range-tooltip"
+        tight={true}
+        content={
+          <InputRange
+            containerClassName="h-9 px-2"
+            inputClassName="w-40"
+            value={frameRate}
+            minValue={minFrameRate}
+            maxValue={maxFrameRate}
+            step={stepFrameRate}
+            onChange={handleSetFrameRate}
+            showLabel={false}
+          />
+        }
       >
-        <Icon width="15px" height="15px" name={action[isPlaying].icon} />
-      </IconButton>
-      <div className="flex flex-col justify-center h-full pt-2 pl-1 pr-1 mr-3">
-        <input
-          type="range"
-          name="frameRate"
-          min={minFrameRate}
-          max={maxFrameRate}
-          step={stepFrameRate}
-          value={frameRate}
-          onChange={onFrameRateChangeHandler}
-        />
-        <p className="-mt-2 text-sm text-primary-light">{`${frameRate.toFixed(
-          1
-        )} fps`}</p>
-      </div>
-      <IconButton
-        color="inherit"
-        size="initial"
-        className="mr-3 border rounded-full text-primary-active border-primary-active"
+        <div className="border-secondary-light flex h-6 items-stretch gap-1 rounded border">
+          <div
+            className={`${fpsButtonClassNames} rounded-l`}
+            onClick={() => handleSetFrameRate(frameRate - 1)}
+          >
+            <Icon name="arrow-left-small" />
+          </div>
+          <div className="group-hover/fps:text-primary-light w-11 text-center text-sm leading-[22px] text-white">
+            {`${frameRate} FPS`}
+          </div>
+          <div
+            className={`${fpsButtonClassNames} rounded-r`}
+            onClick={() => handleSetFrameRate(frameRate + 1)}
+          >
+            <Icon name="arrow-right-small" />
+          </div>
+        </div>
+      </Tooltip>
+      <Icon
+        name="icon-close"
+        className="text-primary-active active:text-primary-light hover:bg-customblue-300 cursor-pointer hover:rounded"
         onClick={onClose}
-      >
-        <Icon name="close" width="15px" height="15px" />
-      </IconButton>
+      />
     </div>
   );
 };
@@ -83,12 +119,12 @@ CinePlayer.defaultProps = {
 
 CinePlayer.propTypes = {
   /** Minimum value for range slider */
-  minFrameRate: PropTypes.number.isRequired,
+  minFrameRate: PropTypes.number,
   /** Maximum value for range slider */
-  maxFrameRate: PropTypes.number.isRequired,
+  maxFrameRate: PropTypes.number,
   /** Increment range slider can "step" in either direction */
-  stepFrameRate: PropTypes.number.isRequired,
-  frameRate: PropTypes.number.isRequired,
+  stepFrameRate: PropTypes.number,
+  frameRate: PropTypes.number,
   /** 'true' if playing, 'false' if paused */
   isPlaying: PropTypes.bool.isRequired,
   onPlayPauseChange: PropTypes.func,

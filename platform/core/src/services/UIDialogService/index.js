@@ -25,7 +25,7 @@
  * @property {Function} onDrag Called while dragging.
  */
 
-const name = 'UIDialogService';
+const name = 'uiDialogService';
 
 const publicAPI = {
   name,
@@ -119,9 +119,13 @@ function setServiceImplementation({
   }
 }
 
+// TODO - export type here
 export default {
-  name,
-  create: ({ configuration = {} }) => {
-    return publicAPI;
+  REGISTRATION: {
+    name,
+    altName: 'UIDialogService',
+    create: ({ configuration = {} }) => {
+      return publicAPI;
+    },
   },
 };

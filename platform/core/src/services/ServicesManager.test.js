@@ -1,9 +1,9 @@
-import ServicesManager from './ServicesManager.js';
-import log from '../log.js';
+import ServicesManager from './ServicesManager';
+import log from '../log';
 
-jest.mock('./../log.js');
+jest.mock('./../log');
 
-describe('ServicesManager.js', () => {
+describe('ServicesManager', () => {
   let servicesManager, commandsManager;
 
   beforeEach(() => {
@@ -38,9 +38,7 @@ describe('ServicesManager.js', () => {
         [{ name: 'UIModalTestService', create: jest.fn() }, fakeConfiguration],
       ]);
 
-      expect(servicesManager.registerService.mock.calls[1][1]).toEqual(
-        fakeConfiguration
-      );
+      expect(servicesManager.registerService.mock.calls[1][1]).toEqual(fakeConfiguration);
     });
   });
 
@@ -78,9 +76,7 @@ describe('ServicesManager.js', () => {
     it('tracks which services have been registered', () => {
       servicesManager.registerService(fakeService);
 
-      expect(servicesManager.registeredServiceNames).toContain(
-        fakeService.name
-      );
+      expect(servicesManager.registeredServiceNames).toContain(fakeService.name);
     });
 
     it('logs a warning if the service has an name that has already been registered', () => {
@@ -95,9 +91,7 @@ describe('ServicesManager.js', () => {
 
       servicesManager.registerService(fakeService, configuration);
 
-      expect(fakeService.create.mock.calls[0][0].configuration.config).toBe(
-        configuration.config
-      );
+      expect(fakeService.create.mock.calls[0][0].configuration.config).toBe(configuration.config);
     });
   });
 });

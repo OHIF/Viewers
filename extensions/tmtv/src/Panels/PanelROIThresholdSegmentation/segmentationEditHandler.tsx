@@ -1,27 +1,28 @@
 import React from 'react';
-import { Input, Dialog } from '@ohif/ui';
+import { Input, Dialog, ButtonEnums } from '@ohif/ui';
 
 function segmentationItemEditHandler({ id, servicesManager }) {
-  const { SegmentationService, UIDialogService } = servicesManager.services;
+  const { segmentationService, uiDialogService } = servicesManager.services;
 
-  const segmentation = SegmentationService.getSegmentation(id);
+  const segmentation = segmentationService.getSegmentation(id);
 
   const onSubmitHandler = ({ action, value }) => {
     switch (action.id) {
       case 'save': {
-        SegmentationService.addOrUpdateSegmentation(
+        segmentationService.addOrUpdateSegmentation(
           {
             ...segmentation,
             ...value,
           },
-          true
+          false, // don't suppress event
+          true // it should update cornerstone
         );
       }
     }
-    UIDialogService.dismiss({ id: 'enter-annotation' });
+    uiDialogService.dismiss({ id: 'enter-annotation' });
   };
 
-  UIDialogService.create({
+  uiDialogService.create({
     id: 'enter-annotation',
     centralize: true,
     isDraggable: false,
@@ -43,23 +44,20 @@ function segmentationItemEditHandler({ id, servicesManager }) {
           }
         };
         return (
-          <div className="p-4 bg-primary-dark">
-            <Input
-              autoFocus
-              className="mt-2 bg-black border-primary-main"
-              type="text"
-              containerClassName="mr-2"
-              value={value.label}
-              onChange={onChangeHandler}
-              onKeyPress={onKeyPressHandler}
-            />
-          </div>
+          <Input
+            autoFocus
+            className="border-primary-main bg-black"
+            type="text"
+            containerClassName="mr-2"
+            value={value.label}
+            onChange={onChangeHandler}
+            onKeyPress={onKeyPressHandler}
+          />
         );
       },
       actions: [
-        // temp: swap button types until colors are updated
-        { id: 'cancel', text: 'Cancel', type: 'primary' },
-        { id: 'save', text: 'Save', type: 'secondary' },
+        { id: 'cancel', text: 'Cancel', type: ButtonEnums.type.secondary },
+        { id: 'save', text: 'Save', type: ButtonEnums.type.primary },
       ],
       onSubmit: onSubmitHandler,
     },

@@ -81,13 +81,18 @@ export default class ProtocolEngine {
     });
   }
 
+  /**
+   * finds the match results against the given display set or
+   * study instance by testing the given rules against this, and using
+   * the provided options for testing.
+   *
+   * @param {*} metaData to match against as primary value
+   * @param {*} rules to apply
+   * @param {*} options are additional values that can be used for matching
+   * @returns
+   */
   findMatch(metaData, rules, options) {
-    return HPMatcher.match(
-      metaData,
-      rules,
-      this.customAttributeRetrievalCallbacks,
-      options
-    );
+    return HPMatcher.match(metaData, rules, this.customAttributeRetrievalCallbacks, options);
   }
 
   /**
@@ -109,7 +114,7 @@ export default class ProtocolEngine {
       let rules = protocol.protocolMatchingRules.slice();
       if (!rules || !rules.length) {
         console.warn(
-          'ProtocolEngine::findMatchByStudy no matching rules - specify protocolMatchingRules',
+          'ProtocolEngine::findMatchByStudy no matching rules - specify protocolMatchingRules for',
           protocol.id
         );
         return;
@@ -132,8 +137,7 @@ export default class ProtocolEngine {
     // if not select the first protocol in the list
     if (!matched.length) {
       const protocol =
-        this.protocols.find(protocol => protocol.id === 'default') ??
-        this.protocols[0];
+        this.protocols.find(protocol => protocol.id === 'default') ?? this.protocols[0];
       console.log('No protocol matches, defaulting to', protocol);
       return [
         {
@@ -164,9 +168,7 @@ export default class ProtocolEngine {
     if (!Object.keys(this.matchedProtocolScores).length) {
       return;
     }
-    const highestScoringProtocolId = this._largestKeyByValue(
-      this.matchedProtocolScores
-    );
+    const highestScoringProtocolId = this._largestKeyByValue(this.matchedProtocolScores);
     return this.matchedProtocols.get(highestScoringProtocolId);
   }
 }

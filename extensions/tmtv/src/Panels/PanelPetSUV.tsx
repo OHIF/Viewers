@@ -1,7 +1,7 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Input, Button } from '@ohif/ui';
-import { DicomMetadataStore } from '@ohif/core';
+import { DicomMetadataStore, ServicesManager } from '@ohif/core';
 import { useTranslation } from 'react-i18next';
 
 const DEFAULT_MEATADATA = {
@@ -24,12 +24,9 @@ const DEFAULT_MEATADATA = {
  */
 export default function PanelPetSUV({ servicesManager, commandsManager }) {
   const { t } = useTranslation('PanelSUV');
-  const {
-    DisplaySetService,
-    ToolGroupService,
-    ToolBarService,
-    HangingProtocolService,
-  } = servicesManager.services;
+  const { displaySetService, toolGroupService, toolbarService, hangingProtocolService } = (
+    servicesManager as ServicesManager
+  ).services;
   const [metadata, setMetadata] = useState(DEFAULT_MEATADATA);
   const [ptDisplaySet, setPtDisplaySet] = useState(null);
 
@@ -70,8 +67,8 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
   };
 
   useEffect(() => {
-    const displaySets = DisplaySetService.getActiveDisplaySets();
-    const { viewportMatchDetails } = HangingProtocolService.getMatchDetails();
+    const displaySets = displaySetService.getActiveDisplaySets();
+    const { viewportMatchDetails } = hangingProtocolService.getMatchDetails();
     if (!displaySets.length) {
       return;
     }
@@ -89,8 +86,8 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
 
   // get the patientMetadata from the StudyInstanceUIDs and update the state
   useEffect(() => {
-    const { unsubscribe } = HangingProtocolService.subscribe(
-      HangingProtocolService.EVENTS.PROTOCOL_CHANGED,
+    const { unsubscribe } = hangingProtocolService.subscribe(
+      hangingProtocolService.EVENTS.PROTOCOL_CHANGED,
       ({ viewportMatchDetails }) => {
         const displaySetInfo = getMatchingPTDisplaySet(viewportMatchDetails);
 
@@ -112,7 +109,7 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
       throw new Error('No ptDisplaySet found');
     }
 
-    const toolGroupIds = ToolGroupService.getToolGroupIds();
+    const toolGroupIds = toolGroupService.getToolGroupIds();
 
     // Todo: we don't have a proper way to perform a toggle command and update the
     // state for the toolbar, so here, we manually toggle the toolbar
@@ -126,10 +123,8 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
       });
     });
 
-    ToolBarService.state.toggles['Crosshairs'] = false;
-    ToolBarService._broadcastEvent(
-      ToolBarService.EVENTS.TOOL_BAR_STATE_MODIFIED
-    );
+    toolbarService.state.toggles['Crosshairs'] = false;
+    toolbarService._broadcastEvent(toolbarService.EVENTS.TOOL_BAR_STATE_MODIFIED);
 
     // metadata should be dcmjs naturalized
     DicomMetadataStore.updateMetadataForSeries(
@@ -139,15 +134,13 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
     );
 
     // update the displaySets
-    DisplaySetService.setDisplaySetMetadataInvalidated(
-      ptDisplaySet.displaySetInstanceUID
-    );
+    displaySetService.setDisplaySetMetadataInvalidated(ptDisplaySet.displaySetInstanceUID);
   }
   return (
-    <div className="overflow-x-hidden overflow-y-auto invisible-scrollbar">
+    <div className="invisible-scrollbar overflow-y-auto overflow-x-hidden">
       {
         <div className="flex flex-col">
-          <div className="flex flex-col p-4 space-y-4 bg-primary-dark">
+          <div className="bg-primary-dark flex flex-col space-y-4 p-4">
             <Input
               label={t('Patient Sex')}
               labelClassName="text-white mb-2"
@@ -174,10 +167,7 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
               label={t('Total Dose (bq)')}
               labelClassName="text-white mb-2"
               className="mt-1"
-              value={
-                metadata.RadiopharmaceuticalInformationSequence
-                  .RadionuclideTotalDose || ''
-              }
+              value={metadata.RadiopharmaceuticalInformationSequence.RadionuclideTotalDose || ''}
               onChange={e => {
                 handleMetadataChange({
                   RadiopharmaceuticalInformationSequence: {
@@ -190,10 +180,7 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
               label={t('Half Life (s)')}
               labelClassName="text-white mb-2"
               className="mt-1"
-              value={
-                metadata.RadiopharmaceuticalInformationSequence
-                  .RadionuclideHalfLife || ''
-              }
+              value={metadata.RadiopharmaceuticalInformationSequence.RadionuclideHalfLife || ''}
               onChange={e => {
                 handleMetadataChange({
                   RadiopharmaceuticalInformationSequence: {
@@ -207,8 +194,7 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
               labelClassName="text-white mb-2"
               className="mt-1"
               value={
-                metadata.RadiopharmaceuticalInformationSequence
-                  .RadiopharmaceuticalStartTime || ''
+                metadata.RadiopharmaceuticalInformationSequence.RadiopharmaceuticalStartTime || ''
               }
               onChange={e => {
                 handleMetadataChange({
@@ -225,9 +211,7 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
               value={metadata.SeriesTime || ''}
               onChange={() => {}}
             />
-            <Button color="primary" onClick={updateMetadata}>
-              Reload Data
-            </Button>
+            <Button onClick={updateMetadata}>Reload Data</Button>
           </div>
         </div>
       }
@@ -238,7 +222,7 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
 PanelPetSUV.propTypes = {
   servicesManager: PropTypes.shape({
     services: PropTypes.shape({
-      MeasurementService: PropTypes.shape({
+      measurementService: PropTypes.shape({
         getMeasurements: PropTypes.func.isRequired,
         subscribe: PropTypes.func.isRequired,
         EVENTS: PropTypes.object.isRequired,

@@ -1,4 +1,4 @@
-const name = 'UserAuthenticationService';
+const name = 'userAuthenticationService';
 
 const publicAPI = {
   name,
@@ -18,8 +18,7 @@ const serviceImplementation = {
   _getUser: () => console.warn('_setUser() NOT IMPLEMENTED'),
   _getAuthorizationHeader: () => {}, // TODO: have enabled/disabled state?
   //console.warn('_getAuthorizationHeader() NOT IMPLEMENTED'),
-  _handleUnauthenticated: () =>
-    console.warn('_handleUnauthenticated() NOT IMPLEMENTED'),
+  _handleUnauthenticated: () => console.warn('_handleUnauthenticated() NOT IMPLEMENTED'),
   _reset: () => console.warn('reset() NOT IMPLEMENTED'),
   _set: () => console.warn('set() NOT IMPLEMENTED'),
 };
@@ -85,8 +84,11 @@ function setServiceImplementation({
 }
 
 export default {
-  name,
-  create: ({ configuration = {} }) => {
-    return publicAPI;
+  REGISTRATION: {
+    name,
+    altName: 'UserAuthenticationService',
+    create: ({ configuration = {} }) => {
+      return publicAPI;
+    },
   },
 };

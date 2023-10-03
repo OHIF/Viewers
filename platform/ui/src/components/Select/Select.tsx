@@ -2,7 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import ReactSelect, { components } from 'react-select';
-import { Icon } from '@ohif/ui';
+
+import Icon from '../Icon';
 
 import './Select.css';
 
@@ -21,14 +22,17 @@ const Option = props => {
   return (
     <components.Option {...props}>
       <div className="flex items-center">
-        <div className="w-2 h-2">
+        <div className="h-2 w-2">
           {props.isSelected ? (
             <Icon name={'checkbox-active'} />
           ) : (
             <Icon name={'checkbox-default'} />
           )}
         </div>
-        <label id={props.data.value} className="ml-3 mt-1">
+        <label
+          id={props.data.value}
+          className="ml-3 mt-1"
+        >
           <span>{props.value}</span>
         </label>
       </div>
@@ -50,6 +54,7 @@ const Select = ({
   placeholder,
   noIcons,
   menuPlacement,
+  components,
   value,
 }) => {
   const _noIconComponents = {
@@ -59,7 +64,8 @@ const Select = ({
   let _components = isMulti ? { Option, MultiValue } : {};
   _components = noIcons
     ? { ..._components, ..._noIconComponents }
-    : _components;
+    : { ..._components, ...components };
+
   const selectedOptions = [];
 
   // Map array of values to an array of selected options
@@ -75,10 +81,8 @@ const Select = ({
   return (
     <ReactSelect
       inputId={`input-${id}`}
-      className={classnames(
-        className,
-        'flex flex-col flex-1 customSelect__wrapper'
-      )}
+      className={classnames(className, 'ohif-select customSelect__wrapper flex flex-1 flex-col')}
+      data-cy={`input-${id}`}
       classNamePrefix="customSelect"
       isDisabled={isDisabled}
       isClearable={isClearable}
@@ -104,8 +108,9 @@ const Select = ({
 Select.defaultProps = {
   className: '',
   closeMenuOnSelect: true,
-  hideSelectedOptions: true,
+  hideSelectedOptions: false,
   isClearable: true,
+  components: {},
   isDisabled: false,
   isMulti: false,
   isSearchable: true,
@@ -132,10 +137,7 @@ Select.propTypes = {
     })
   ),
   placeholder: PropTypes.string,
-  value: PropTypes.oneOfType([
-    PropTypes.arrayOf(PropTypes.string),
-    PropTypes.any,
-  ]),
+  value: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.string), PropTypes.any]),
 };
 
 export default Select;

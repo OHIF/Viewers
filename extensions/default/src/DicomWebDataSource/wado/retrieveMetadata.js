@@ -20,9 +20,7 @@ async function RetrieveMetadata(
   sortFunction
 ) {
   const RetrieveMetadataLoader =
-    enableStudyLazyLoad !== false
-      ? RetrieveMetadataLoaderAsync
-      : RetrieveMetadataLoaderSync;
+    enableStudyLazyLoad !== false ? RetrieveMetadataLoaderAsync : RetrieveMetadataLoaderSync;
 
   const retrieveMetadataLoader = new RetrieveMetadataLoader(
     dicomWebClient,

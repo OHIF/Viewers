@@ -10,7 +10,6 @@ const configs = {
 const ohif = {
   layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
   sopClassHandler: '@ohif/extension-default.sopClassHandlerModule.stack',
-  hangingProtocol: '@ohif/extension-default.hangingProtocolModule.default',
   measurements: '@ohif/extension-default.panelModule.measure',
   thumbnailList: '@ohif/extension-default.panelModule.seriesList',
 };
@@ -20,14 +19,12 @@ const cs3d = {
 };
 
 const dicomsr = {
-  sopClassHandler:
-    '@ohif/extension-cornerstone-dicom-sr.sopClassHandlerModule.dicom-sr',
+  sopClassHandler: '@ohif/extension-cornerstone-dicom-sr.sopClassHandlerModule.dicom-sr',
   viewport: '@ohif/extension-cornerstone-dicom-sr.viewportModule.dicom-sr',
 };
 
 const dicomvideo = {
-  sopClassHandler:
-    '@ohif/extension-dicom-video.sopClassHandlerModule.dicom-video',
+  sopClassHandler: '@ohif/extension-dicom-video.sopClassHandlerModule.dicom-video',
   viewport: '@ohif/extension-dicom-video.viewportModule.dicom-video',
 };
 
@@ -47,13 +44,13 @@ const extensionDependencies = {
 function modeFactory({ modeConfiguration }) {
   return {
     id,
-    routeName: 'viewer',
-    displayName: 'Basic Viewer CS3D',
+    routeName: 'dev',
+    displayName: 'Basic Dev Viewer',
     /**
      * Lifecycle hooks
      */
     onModeEnter: ({ servicesManager, extensionManager }) => {
-      const { ToolBarService, ToolGroupService } = servicesManager.services;
+      const { toolbarService, toolGroupService } = servicesManager.services;
       const utilityModule = extensionManager.getModuleEntry(
         '@ohif/extension-cornerstone.utilityModule.tools'
       );
@@ -81,22 +78,24 @@ function modeFactory({ modeConfiguration }) {
           { toolName: toolNames.Bidirectional },
           { toolName: toolNames.Probe },
           { toolName: toolNames.EllipticalROI },
+          { toolName: toolNames.CircleROI },
           { toolName: toolNames.RectangleROI },
           { toolName: toolNames.StackScroll },
+          { toolName: toolNames.CalibrationLine },
         ],
         // enabled
+        enabled: [{ toolName: toolNames.ImageOverlayViewer }],
         // disabled
       };
 
       const toolGroupId = 'default';
-      ToolGroupService.createToolGroupAndAddTools(toolGroupId, tools, configs);
+      toolGroupService.createToolGroupAndAddTools(toolGroupId, tools);
 
       let unsubscribe;
 
       const activateTool = () => {
-        ToolBarService.recordInteraction({
+        toolbarService.recordInteraction({
           groupId: 'WindowLevel',
-          itemId: 'WindowLevel',
           interactionType: 'tool',
           commands: [
             {
@@ -116,14 +115,14 @@ function modeFactory({ modeConfiguration }) {
 
       // Since we only have one viewport for the basic cs3d mode and it has
       // only one hanging protocol, we can just use the first viewport
-      ({ unsubscribe } = ToolGroupService.subscribe(
-        ToolGroupService.EVENTS.VIEWPORT_ADDED,
+      ({ unsubscribe } = toolGroupService.subscribe(
+        toolGroupService.EVENTS.VIEWPORT_ADDED,
         activateTool
       ));
 
-      ToolBarService.init(extensionManager);
-      ToolBarService.addButtons(toolbarButtons);
-      ToolBarService.createButtonSection('primary', [
+      toolbarService.init(extensionManager);
+      toolbarService.addButtons(toolbarButtons);
+      toolbarService.createButtonSection('primary', [
         'MeasurementTools',
         'Zoom',
         'WindowLevel',
@@ -133,14 +132,9 @@ function modeFactory({ modeConfiguration }) {
       ]);
     },
     onModeExit: ({ servicesManager }) => {
-      const {
-        ToolGroupService,
-        MeasurementService,
-        ToolBarService,
-      } = servicesManager.services;
+      const { toolGroupService, measurementService, toolbarService } = servicesManager.services;
 
-      ToolBarService.reset();
-      ToolGroupService.destroy();
+      toolGroupService.destroy();
     },
     validationTags: {
       study: [],
@@ -185,7 +179,7 @@ function modeFactory({ modeConfiguration }) {
       },
     ],
     extensions: extensionDependencies,
-    hangingProtocol: [ohif.hangingProtocol],
+    hangingProtocol: 'default',
     sopClassHandlers: [
       dicomvideo.sopClassHandler,
       ohif.sopClassHandler,

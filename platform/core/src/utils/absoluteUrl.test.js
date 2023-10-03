@@ -13,9 +13,7 @@ describe('absoluteUrl', () => {
       writable: true,
     });
     const absoluteUrlOutput = absoluteUrl('/path_3/path_to_destination');
-    expect(absoluteUrlOutput).toEqual(
-      '/path_1/path_2/path_3/path_to_destination'
-    );
+    expect(absoluteUrlOutput).toEqual('/path_1/path_2/path_3/path_to_destination');
   });
 
   test('should return / when the path is not defined', () => {
@@ -24,27 +22,22 @@ describe('absoluteUrl', () => {
   });
 
   test('should return the original path when there path in the window.origin after the domain and port', () => {
-    global.window = Object.create(window);
+    delete global.window.location;
     const url = 'http://dummy.com';
-    Object.defineProperty(window, 'location', {
-      value: {
-        origin: url,
-      },
-      writable: true,
-    });
+    global.window.location = {
+      origin: url,
+    };
     const absoluteUrlOutput = absoluteUrl('path_1/path_2/path_3');
     expect(absoluteUrlOutput).toEqual('/path_1/path_2/path_3');
   });
 
   test('should be able to return the absolute path even when the path contains duplicates', () => {
-    global.window = Object.create(window);
+    global.window ||= Object.create(window);
     const url = 'http://dummy.com';
-    Object.defineProperty(window, 'location', {
-      value: {
-        origin: url,
-      },
-      writable: true,
-    });
+    delete global.window.location;
+    global.window.location = {
+      origin: url,
+    };
     const absoluteUrlOutput = absoluteUrl('path_1/path_1/path_1');
     expect(absoluteUrlOutput).toEqual('/path_1/path_1/path_1');
   });

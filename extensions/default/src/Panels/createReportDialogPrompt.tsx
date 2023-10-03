@@ -1,22 +1,19 @@
 /* eslint-disable react/display-name */
 import React from 'react';
-import { Dialog, Input, Select } from '@ohif/ui';
+import { ButtonEnums, Dialog, Input, Select } from '@ohif/ui';
 
 export const CREATE_REPORT_DIALOG_RESPONSE = {
   CANCEL: 0,
   CREATE_REPORT: 1,
 };
 
-export default function createReportDialogPrompt(
-  UIDialogService,
-  { extensionManager }
-) {
+export default function createReportDialogPrompt(uiDialogService, { extensionManager }) {
   return new Promise(function (resolve, reject) {
     let dialogId = undefined;
 
     const _handleClose = () => {
       // Dismiss dialog
-      UIDialogService.dismiss({ id: dialogId });
+      uiDialogService.dismiss({ id: dialogId });
       // Notify of cancel action
       resolve({
         action: CREATE_REPORT_DIALOG_RESPONSE.CANCEL,
@@ -31,7 +28,7 @@ export default function createReportDialogPrompt(
      * @param {string} param0.value - value from input field
      */
     const _handleFormSubmit = ({ action, value }) => {
-      UIDialogService.dismiss({ id: dialogId });
+      uiDialogService.dismiss({ id: dialogId });
       switch (action.id) {
         case 'save':
           resolve({
@@ -52,10 +49,8 @@ export default function createReportDialogPrompt(
 
     const dataSourcesOpts = Object.keys(extensionManager.dataSourceMap)
       .filter(ds => {
-        const configuration =
-          extensionManager.dataSourceDefs[ds]?.configuration;
-        const supportsStow =
-          configuration?.supportsStow ?? configuration?.wadoRoot;
+        const configuration = extensionManager.dataSourceDefs[ds]?.configuration;
+        const supportsStow = configuration?.supportsStow ?? configuration?.wadoRoot;
         return supportsStow;
       })
       .map(ds => {
@@ -66,14 +61,14 @@ export default function createReportDialogPrompt(
         };
       });
 
-    dialogId = UIDialogService.create({
+    dialogId = uiDialogService.create({
       centralize: true,
       isDraggable: false,
       content: Dialog,
       useLastPosition: false,
       showOverlay: true,
       contentProps: {
-        title: 'Provide a name for your report',
+        title: 'Create Report',
         value: {
           label: '',
           dataSourceName: extensionManager.activeDataSource,
@@ -81,8 +76,8 @@ export default function createReportDialogPrompt(
         noCloseButton: true,
         onClose: _handleClose,
         actions: [
-          { id: 'cancel', text: 'Cancel', type: 'primary' },
-          { id: 'save', text: 'Save', type: 'secondary' },
+          { id: 'cancel', text: 'Cancel', type: ButtonEnums.type.secondary },
+          { id: 'save', text: 'Save', type: ButtonEnums.type.primary },
         ],
         // TODO: Should be on button press...
         onSubmit: _handleFormSubmit,
@@ -93,7 +88,7 @@ export default function createReportDialogPrompt(
           };
           const onKeyPressHandler = event => {
             if (event.key === 'Enter') {
-              UIDialogService.dismiss({ id: dialogId });
+              uiDialogService.dismiss({ id: dialogId });
               resolve({
                 action: CREATE_REPORT_DIALOG_RESPONSE.CREATE_REPORT,
                 value: value.label,
@@ -102,38 +97,33 @@ export default function createReportDialogPrompt(
           };
           return (
             <>
-              <div className="p-4 bg-primary-dark">
-                {dataSourcesOpts.length > 1 && (
-                  <Select
-                    closeMenuOnSelect={true}
-                    className="mr-2 bg-black border-primary-main"
-                    options={dataSourcesOpts}
-                    placeholder={
-                      dataSourcesOpts.find(
-                        option => option.value === value.dataSourceName
-                      ).placeHolder
-                    }
-                    value={value.dataSourceName}
-                    onChange={evt => {
-                      setValue(v => ({ ...v, dataSourceName: evt.value }));
-                    }}
-                    isClearable={false}
-                  />
-                )}
-              </div>
-              <div className="p-4 bg-primary-dark">
-                <Input
-                  autoFocus
-                  className="mt-2 bg-black border-primary-main"
-                  type="text"
-                  placeholder="Enter Report Name"
-                  containerClassName="mr-2"
-                  value={value.label}
-                  onChange={onChangeHandler}
-                  onKeyPress={onKeyPressHandler}
-                  required
+              {dataSourcesOpts.length > 1 && (
+                <Select
+                  closeMenuOnSelect={true}
+                  className="border-primary-main mr-2 bg-black"
+                  options={dataSourcesOpts}
+                  placeholder={
+                    dataSourcesOpts.find(option => option.value === value.dataSourceName)
+                      .placeHolder
+                  }
+                  value={value.dataSourceName}
+                  onChange={evt => {
+                    setValue(v => ({ ...v, dataSourceName: evt.value }));
+                  }}
+                  isClearable={false}
                 />
-              </div>
+              )}
+              <Input
+                autoFocus
+                label="Enter the report name"
+                labelClassName="text-white text-[14px] leading-[1.2]"
+                className="border-primary-main bg-black"
+                type="text"
+                value={value.label}
+                onChange={onChangeHandler}
+                onKeyPress={onKeyPressHandler}
+                required
+              />
             </>
           );
         },

@@ -3,34 +3,28 @@ import PropTypes from 'prop-types';
 import { Enums, Types, utilities } from '@cornerstonejs/core';
 import { utilities as csToolsUtils } from '@cornerstonejs/tools';
 import { ImageScrollbar } from '@ohif/ui';
+import { ServicesManger } from '@ohif/core';
 
 function CornerstoneImageScrollbar({
   viewportData,
-  viewportIndex,
+  viewportId,
   element,
   imageSliceData,
   setImageSliceData,
   scrollbarHeight,
   servicesManager,
 }) {
-  const { CineService, CornerstoneViewportService } = servicesManager.services;
+  const { cineService, cornerstoneViewportService } = (servicesManager as ServicesManger).services;
 
-  const onImageScrollbarChange = (imageIndex, viewportIndex) => {
-    const viewportInfo = CornerstoneViewportService.getViewportInfoByIndex(
-      viewportIndex
-    );
+  const onImageScrollbarChange = (imageIndex, viewportId) => {
+    const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
-    const viewportId = viewportInfo.getViewportId();
-    const viewport = CornerstoneViewportService.getCornerstoneViewport(
-      viewportId
-    );
-
-    const { isCineEnabled } = CineService.getState();
+    const { isCineEnabled } = cineService.getState();
 
     if (isCineEnabled) {
       // on image scrollbar change, stop the CINE if it is playing
-      CineService.stopClip(element);
-      CineService.setCine({ id: viewportIndex, isPlaying: false });
+      cineService.stopClip(element);
+      cineService.setCine({ id: viewportId, isPlaying: false });
     }
 
     csToolsUtils.jumpToSlice(viewport.element, {
@@ -44,9 +38,7 @@ function CornerstoneImageScrollbar({
       return;
     }
 
-    const viewport = CornerstoneViewportService.getCornerstoneViewportByIndex(
-      viewportIndex
-    );
+    const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
     if (!viewport) {
       return;
@@ -75,7 +67,7 @@ function CornerstoneImageScrollbar({
       const { imageIndex, numberOfSlices } = sliceData;
       setImageSliceData({ imageIndex, numberOfSlices });
     }
-  }, [viewportIndex, viewportData]);
+  }, [viewportId, viewportData]);
 
   useEffect(() => {
     if (viewportData?.viewportType !== Enums.ViewportType.STACK) {
@@ -91,16 +83,10 @@ function CornerstoneImageScrollbar({
       });
     };
 
-    element.addEventListener(
-      Enums.Events.STACK_VIEWPORT_SCROLL,
-      updateStackIndex
-    );
+    element.addEventListener(Enums.Events.STACK_VIEWPORT_SCROLL, updateStackIndex);
 
     return () => {
-      element.removeEventListener(
-        Enums.Events.STACK_VIEWPORT_SCROLL,
-        updateStackIndex
-      );
+      element.removeEventListener(Enums.Events.STACK_VIEWPORT_SCROLL, updateStackIndex);
     };
   }, [viewportData, element]);
 
@@ -118,19 +104,14 @@ function CornerstoneImageScrollbar({
     element.addEventListener(Enums.Events.VOLUME_NEW_IMAGE, updateVolumeIndex);
 
     return () => {
-      element.removeEventListener(
-        Enums.Events.VOLUME_NEW_IMAGE,
-        updateVolumeIndex
-      );
+      element.removeEventListener(Enums.Events.VOLUME_NEW_IMAGE, updateVolumeIndex);
     };
   }, [viewportData, element]);
 
   return (
     <ImageScrollbar
-      onChange={evt => onImageScrollbarChange(evt, viewportIndex)}
-      max={
-        imageSliceData.numberOfSlices ? imageSliceData.numberOfSlices - 1 : 0
-      }
+      onChange={evt => onImageScrollbarChange(evt, viewportId)}
+      max={imageSliceData.numberOfSlices ? imageSliceData.numberOfSlices - 1 : 0}
       height={scrollbarHeight}
       value={imageSliceData.imageIndex}
     />
@@ -139,11 +120,12 @@ function CornerstoneImageScrollbar({
 
 CornerstoneImageScrollbar.propTypes = {
   viewportData: PropTypes.object,
-  viewportIndex: PropTypes.number.isRequired,
+  viewportId: PropTypes.string.isRequired,
   element: PropTypes.instanceOf(Element),
   scrollbarHeight: PropTypes.string,
   imageSliceData: PropTypes.object.isRequired,
   setImageSliceData: PropTypes.func.isRequired,
+  servicesManager: PropTypes.object.isRequired,
 };
 
 export default CornerstoneImageScrollbar;

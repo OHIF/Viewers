@@ -1,8 +1,7 @@
-import HangingProtocolServiceClass from './HangingProtocolService';
+import HangingProtocolService from './HangingProtocolService';
 
 const testProtocol = {
   id: 'test',
-  hasUpdatedPriorsInformation: false,
   name: 'Default',
   protocolMatchingRules: [
     {
@@ -117,10 +116,9 @@ const studyMatchDisplaySets = [displaySet3, displaySet2, displaySet1];
 
 function checkHpsBestMatch(hps) {
   hps.run({ studies: [studyMatch], displaySets: studyMatchDisplaySets });
-  const { hpAlreadyApplied, viewportMatchDetails } = hps.getMatchDetails();
-  expect(hpAlreadyApplied).toMatchObject(new Map([[0, false]]));
+  const { viewportMatchDetails } = hps.getMatchDetails();
   expect(viewportMatchDetails.size).toBe(1);
-  expect(viewportMatchDetails.get(0)).toMatchObject({
+  expect(viewportMatchDetails.get('ctAXIAL')).toMatchObject({
     viewportOptions: {
       viewportId: 'ctAXIAL',
       viewportType: 'volume',
@@ -131,9 +129,11 @@ function checkHpsBestMatch(hps) {
     // ds2 fails to match required and ds3 fails to match an optional.
     displaySetsInfo: [
       {
-        SeriesInstanceUID: 'ds1',
         displaySetInstanceUID: 'displaySet1',
-        displaySetOptions: {},
+        displaySetOptions: {
+          id: 'displaySetSelector',
+          options: {},
+        },
       },
     ],
   });
@@ -149,7 +149,7 @@ describe('HangingProtocolService', () => {
       },
     },
   };
-  const hps = new HangingProtocolServiceClass(commandsManager, servicesManager);
+  const hangingProtocolService = new HangingProtocolService(commandsManager, servicesManager);
   let initialScaling;
 
   afterEach(() => {
@@ -158,37 +158,32 @@ describe('HangingProtocolService', () => {
 
   describe('with a static protocol', () => {
     beforeAll(() => {
-      hps.addProtocol(testProtocol.id, testProtocol);
+      hangingProtocolService.addProtocol(testProtocol.id, testProtocol);
     });
 
     it('has one protocol', () => {
-      expect(hps.getProtocols().length).toBe(1);
+      expect(hangingProtocolService.getProtocols().length).toBe(1);
     });
 
     describe('run', () => {
       it('matches best image match', () => {
-        checkHpsBestMatch(hps);
+        checkHpsBestMatch(hangingProtocolService);
       });
     });
   });
 
   describe('with protocol generator', () => {
     beforeAll(() => {
-      hps.addProtocol(testProtocol.id, testProtocolGenerator);
+      hangingProtocolService.addProtocol(testProtocol.id, testProtocolGenerator);
     });
 
     it('has one protocol', () => {
-      expect(hps.getProtocols().length).toBe(1);
+      expect(hangingProtocolService.getProtocols().length).toBe(1);
     });
 
     describe('run', () => {
       it('matches best image match', () => {
-        checkHpsBestMatch(hps);
-      });
-
-      it('uses services manager', () => {
-        hps.run({ studies: [studyMatch], displaySets: studyMatchDisplaySets });
-        expect(mockedFunction).toHaveBeenCalledTimes(1);
+        checkHpsBestMatch(hangingProtocolService);
       });
     });
   });

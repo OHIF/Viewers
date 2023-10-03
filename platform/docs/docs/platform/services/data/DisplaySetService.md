@@ -6,24 +6,42 @@ sidebar_label: DisplaySet Service
 
 
 ## Overview
-`DisplaySetService` handles converting the `instanceMetadata` into `DisplaySet` that `OHIF` uses for the visualization. `DisplaySetService` gets initialized in the `Mode.jsx`. During the initialization `SOPClassHandlerIds` of the `modes` gets registered with the `DisplaySetService`.
+`DisplaySetService` handles converting the `instanceMetadata` into `DisplaySet` that `OHIF` uses for the visualization. `DisplaySetService` gets initialized at service startup time, but is then cleared in the `Mode.jsx`. During the initialization `SOPClassHandlerIds` of the `modes` gets registered with the `DisplaySetService`.
 
-> Based on the instanceMetadata's `SOPClassHandlerId`, the correct module from the registered extensions is found by `OHIF` and its `getDisplaySetsFromSeries` runs to create a DisplaySet for the Series.
+:::tip
 
-DisplaySets are created synchronously when the instances metadata is retrieved and added to the [DicomMetaDataStore](../data//DicomMetadataStore.md).
+DisplaySet is a general set of entities and contains links to bunch of displayable objects (images, etc.) Some series might get split up into different displaySets e.g., MG might have mixed views in a single series, but users might want to have separate LCC, RCC, etc. for hanging protocol usage. A viewport renders a display set into a displayable object.
+
+imageSet is a particular implementation of image displays.
+:::
+
+
+> Based on the instanceMetadata's `SOPClassHandlerId`, the correct module from the registered extensions is found by `OHIF` and its `getDisplaySetsFromSeries` runs to create a DisplaySet for the Series.  Note
+that this is an ordered operation, and consumes the instances as it proceeds, with the first registered
+handlers being able to consume instances first.
+
+DisplaySets are created synchronously when the instances metadata is retrieved and added to the [DicomMetaDataStore](../data//DicomMetadataStore.md).  They are ALSO updated when
+the DicommetaDataStore receives new data.  This update first checks the addInstances
+of existing `DisplaySet` values to see if the new instance belongs in an existing set.
+Then, the same process is used as was originally done to create new display sets.
+
+NOTE: Any instances not matched are NOT added to any display set and will not be displayed.
+
+## Adding `madeInClient` display sets
+It is possible to filter or combine display sets from different series by
+performing the filter operation desired, and then calling the `addActiveDisplaySets`
+on the new `DisplaySet` instances.  This allows operations like combining
+two series or sub-selecting a series.
 
 ## Events
 There are three events that get broadcasted in `DisplaySetService`:
-
-
 
 | Event                | Description                                          |
 | -------------------- | ---------------------------------------------------- |
 | DISPLAY_SETS_ADDED   | Fires a displayset is added to the displaysets cache |
 | DISPLAY_SETS_CHANGED | Fires when a displayset is changed                   |
 | DISPLAY_SETS_REMOVED | Fires when a displayset is removed                   |
-
-
+| DISPLAY_SET_SERIES_METADATA_INVALIDATED | Fires when a displayset's series metadata has been altered. An object payload for the event is sent with properties: `displaySetInstanceUID` - the UID of the display set affected; `invalidateData` - boolean indicating if data should be invalidated
 
 
 ## API
@@ -49,3 +67,7 @@ Let's find out about the public API for `DisplaySetService`.
 - `getActiveDisplaySets`: Returns the active displaySets
 
 - `deleteDisplaySet`: Deletes the displaySets from the displaySets cache
+
+- `addActiveDisplaySets`: Adds a new display set independently of the make operation.
+
+- `setDisplaySetMetadataInvalidated`: Fires the `DISPLAY_SET_SERIES_METADATA_INVALIDATED` event.

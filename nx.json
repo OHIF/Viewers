@@ -1,0 +1,57 @@
+{
+  "tasksRunnerOptions": {
+    "default": {
+      "runner": "nx/tasks-runners/default",
+      "options": {
+        "cacheableOperations": [
+          "dev",
+          "build",
+          "test:unit",
+          "test:unit:ci",
+          "test",
+          "test:e2e",
+          "test:e2e:ci",
+          "test:e2e:local",
+          "test:e2e:dist",
+          "test:e2e:serve",
+          "build:viewer",
+          "build:dev",
+          "build:aws",
+          "build:viewer:ci",
+          "build:viewer:qa",
+          "build:viewer:demo",
+          "build"
+        ]
+      }
+    }
+  },
+  "targetDefaults": {
+    "test:unit": {
+      "dependsOn": ["^test:unit"]
+    },
+    "test:unit:ci": {
+      "dependsOn": ["^test:unit:ci"]
+    },
+    "test": {
+      "dependsOn": ["^test"]
+    },
+    "test:e2e": {
+      "dependsOn": ["^test:e2e"]
+    },
+    "test:e2e:ci": {
+      "dependsOn": ["^test:e2e:ci"]
+    },
+    "test:e2e:local": {
+      "dependsOn": ["^test:e2e:local"]
+    },
+    "test:e2e:dist": {
+      "dependsOn": ["^test:e2e:dist"]
+    },
+    "test:e2e:serve": {
+      "dependsOn": ["^test:e2e:serve"]
+    },
+    "build": {
+      "outputs": ["{projectRoot}/platform/app/dist"]
+    }
+  }
+}

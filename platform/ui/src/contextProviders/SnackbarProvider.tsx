@@ -1,10 +1,4 @@
-import React, {
-  useState,
-  createContext,
-  useContext,
-  useCallback,
-  useEffect,
-} from 'react';
+import React, { useState, createContext, useContext, useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 import SnackbarTypes from '../components/Snackbar/SnackbarTypes';
@@ -30,9 +24,7 @@ const SnackbarProvider = ({ children, service }) => {
   const show = useCallback(
     options => {
       if (!options || (!options.title && !options.message)) {
-        console.warn(
-          'Snackbar cannot be rendered without required parameters: title | message'
-        );
+        console.warn('Snackbar cannot be rendered without required parameters: title | message');
 
         return null;
       }
@@ -117,11 +109,8 @@ SnackbarProvider.defaultProps = {
 };
 
 SnackbarProvider.propTypes = {
-  children: PropTypes.oneOfType([
-    PropTypes.arrayOf(PropTypes.node),
-    PropTypes.node,
-    PropTypes.func,
-  ]).isRequired,
+  children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node, PropTypes.func])
+    .isRequired,
   service: PropTypes.shape({
     setServiceImplementation: PropTypes.func,
   }),
@@ -137,7 +126,12 @@ export const withSnackbar = Component => {
     const snackbarContext = {
       ...useSnackbar(),
     };
-    return <Component {...props} snackbarContext={snackbarContext} />;
+    return (
+      <Component
+        {...props}
+        snackbarContext={snackbarContext}
+      />
+    );
   };
 };
 

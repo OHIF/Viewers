@@ -1,7 +1,11 @@
 import PropTypes from 'prop-types';
 import ThumbnailType from './ThumbnailType';
+import type { PresentationIds } from '../contextProviders/getPresentationIds';
 
 // A few miscellaneous types declared inline here.
+
+export * from './Predicate';
+export * from './ContextMenuItem';
 
 /**
  * StringNumber often comes back from DICOMweb for integer valued items.

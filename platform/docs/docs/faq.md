@@ -29,6 +29,9 @@ If you have resources and would like to fund the development of a feature,
 please [contact us](https://www.ohif.org) or work with community members that
 offer [consulting services][commercial-support].
 
+### Why do I keep seeing a Cross Origin Isolation warning
+If you encounter a warning while running OHIF indicating that your application is not cross-origin isolated, it implies that volume rendering, such as MPR, will not function properly since they depend on Shared Array Buffers. To resolve this issue, we recommend referring to our comprehensive guide on Cross Origin Isolation available at [./deployment/cors.md](./deployment/cors.md).
+
 ### Who should I contact about Academic Collaborations?
 
 [Gordon J. Harris](https://www.dfhcc.harvard.edu/insider/member-detail/member/gordon-j-harris-phd/)
@@ -37,11 +40,10 @@ collaborators. We are always happy to hear about new groups interested in using
 the OHIF framework, and may be able to provide development support if the
 proposed collaboration has an impact on cancer research.
 
-### Does OHIF offer commercial support?
+### Does OHIF offer support?
 
-The Open Health Imaging Foundation does not offer commercial support, however,
-some community members do offer consulting services. You can search our
-[Community Forum](https://community.ohif.org/) for more information.
+yes, you can contact us for more information [here](https://ohif.org/get-support)
+
 
 ### Does The OHIF Viewer have [510(k) Clearance][501k-clearance] from the U.S. F.D.A or [CE Marking][ce-marking] from the European Commission?
 

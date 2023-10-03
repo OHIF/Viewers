@@ -1,43 +1,49 @@
-import pubSubServiceInterface from './../_shared/pubSubServiceInterface';
+import { PubSubService } from '../_shared/pubSubServiceInterface';
+import { getPresentationIds, PresentationIds } from './getPresentationIds';
 
-const EVENTS = {
-  ACTIVE_VIEWPORT_INDEX_CHANGED: 'event::activeviewportindexchanged',
-};
+class ViewportGridService extends PubSubService {
+  public static readonly EVENTS = {
+    ACTIVE_VIEWPORT_ID_CHANGED: 'event::activeviewportidchanged',
+    LAYOUT_CHANGED: 'event::layoutChanged',
+    GRID_STATE_CHANGED: 'event::gridStateChanged',
+  };
 
-class ViewportGridService {
+  public static REGISTRATION = {
+    name: 'viewportGridService',
+    altName: 'ViewportGridService',
+    create: ({ configuration = {} }) => {
+      return new ViewportGridService();
+    },
+  };
+
+  public static getPresentationIds = getPresentationIds;
+
   serviceImplementation = {};
-  EVENTS: { [key: string]: string };
-  listeners = {};
 
   constructor() {
-    Object.assign(this, pubSubServiceInterface);
+    super(ViewportGridService.EVENTS);
     this.serviceImplementation = {};
-    this.EVENTS = EVENTS;
   }
 
-  setServiceImplementation({
+  public setServiceImplementation({
     getState: getStateImplementation,
-    setActiveViewportIndex: setActiveViewportIndexImplementation,
-    setDisplaySetsForViewport: setDisplaySetsForViewportImplementation,
+    setActiveViewportId: setActiveViewportIdImplementation,
     setDisplaySetsForViewports: setDisplaySetsForViewportsImplementation,
-    setCachedLayout: setCachedLayoutImplementation,
-    restoreCachedLayout: restoreCachedLayoutImplementation,
     setLayout: setLayoutImplementation,
     reset: resetImplementation,
     onModeExit: onModeExitImplementation,
     set: setImplementation,
-  }) {
+    getNumViewportPanes: getNumViewportPanesImplementation,
+  }): void {
     if (getStateImplementation) {
       this.serviceImplementation._getState = getStateImplementation;
     }
-    if (setActiveViewportIndexImplementation) {
-      this.serviceImplementation._setActiveViewportIndex = setActiveViewportIndexImplementation;
-    }
-    if (setDisplaySetsForViewportImplementation) {
-      this.serviceImplementation._setDisplaySetsForViewport = setDisplaySetsForViewportImplementation;
+    if (setActiveViewportIdImplementation) {
+      this.serviceImplementation._setActiveViewport = setActiveViewportIdImplementation;
     }
     if (setDisplaySetsForViewportsImplementation) {
-      this.serviceImplementation._setDisplaySetsForViewports = setDisplaySetsForViewportsImplementation;
+      this.serviceImplementation._setDisplaySetsForViewports =
+        setDisplaySetsForViewportsImplementation;
     }
     if (setLayoutImplementation) {
       this.serviceImplementation._setLayout = setLayoutImplementation;
@@ -45,24 +51,22 @@ class ViewportGridService {
     if (resetImplementation) {
       this.serviceImplementation._reset = resetImplementation;
     }
-    if (setCachedLayoutImplementation) {
-      this.serviceImplementation._setCachedLayout = setCachedLayoutImplementation;
-    }
-    if (restoreCachedLayoutImplementation) {
-      this.serviceImplementation._restoreCachedLayout = restoreCachedLayoutImplementation;
-    }
     if (onModeExitImplementation) {
       this.serviceImplementation._onModeExit = onModeExitImplementation;
     }
     if (setImplementation) {
       this.serviceImplementation._set = setImplementation;
     }
+    if (getNumViewportPanesImplementation) {
+      this.serviceImplementation._getNumViewportPanes = getNumViewportPanesImplementation;
+    }
   }
 
-  public setActiveViewportIndex(index) {
-    this.serviceImplementation._setActiveViewportIndex(index);
-    this._broadcastEvent(this.EVENTS.ACTIVE_VIEWPORT_INDEX_CHANGED, {
-      viewportIndex: index,
+  public setActiveViewportId(id: string) {
+    this.serviceImplementation._setActiveViewport(id);
+    const state = this.getState();
+    this._broadcastEvent(this.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED, {
+      viewportId: id,
     });
   }
 
@@ -70,26 +74,63 @@ class ViewportGridService {
     return this.serviceImplementation._getState();
   }
 
-  public setDisplaySetsForViewport({
-    viewportIndex,
-    displaySetInstanceUIDs,
-    viewportOptions,
-    displaySetOptions,
-  }) {
-    this.serviceImplementation._setDisplaySetsForViewport({
-      viewportIndex,
-      displaySetInstanceUIDs,
-      viewportOptions,
-      displaySetOptions,
+  public getActiveViewportId() {
+    const state = this.getState();
+    return state.activeViewportId;
+  }
+
+  public setDisplaySetsForViewport(props) {
+    // Just update a single viewport, but use the multi-viewport update for it.
+    this.setDisplaySetsForViewports([props]);
+  }
+
+  public setDisplaySetsForViewports(props) {
+    this.serviceImplementation._setDisplaySetsForViewports(props);
+    const state = this.getState();
+    const viewports = [];
+
+    for (const viewport of props) {
+      const updatedViewport = state.viewports.get(viewport.viewportId);
+      if (updatedViewport) {
+        viewports.push(updatedViewport);
+      } else {
+        console.warn("ViewportGridService::Didn't find updated viewport", viewport);
+      }
+    }
+    this._broadcastEvent(ViewportGridService.EVENTS.GRID_STATE_CHANGED, {
+      state,
+      viewports,
     });
   }
 
-  public setDisplaySetsForViewports(viewports) {
-    this.serviceImplementation._setDisplaySetsForViewports(viewports);
-  }
-
-  public setLayout({ numCols, numRows }) {
-    this.serviceImplementation._setLayout({ numCols, numRows });
+  /**
+   *
+   * @param numCols, numRows - the number of columns and rows to apply
+   * @param findOrCreateViewport is a function which takes the
+   *    index position of the viewport, the position id, and a set of
+   *    options that is initially provided as {} (eg to store intermediate state)
+   *    The function returns a viewport object to use at the given position.
+   */
+  public setLayout({
+    numCols,
+    numRows,
+    layoutOptions,
+    layoutType = 'grid',
+    activeViewportId = undefined,
+    findOrCreateViewport = undefined,
+  }) {
+    this.serviceImplementation._setLayout({
+      numCols,
+      numRows,
+      layoutOptions,
+      layoutType,
+      activeViewportId,
+      findOrCreateViewport,
+    });
+    this._broadcastEvent(this.EVENTS.LAYOUT_CHANGED, {
+      numCols,
+      numRows,
+    });
   }
 
   public reset() {
@@ -106,22 +147,31 @@ class ViewportGridService {
     this.serviceImplementation._onModeExit();
   }
 
-  public setCachedLayout({ cacheId, cachedLayout }) {
-    this.serviceImplementation._setCachedLayout({ cacheId, cachedLayout });
-  }
-
-  public restoreCachedLayout(cacheId) {
-    this.serviceImplementation._restoreCachedLayout(cacheId);
-  }
-
   public set(state) {
     this.serviceImplementation._set(state);
+    this._broadcastEvent(this.EVENTS.GRID_STATE_CHANGED, {
+      state,
+    });
+  }
+
+  public getNumViewportPanes() {
+    return this.serviceImplementation._getNumViewportPanes();
+  }
+
+  public getLayoutOptionsFromState(
+    state: any
+  ): { x: number; y: number; width: number; height: number }[] {
+    return Array.from(state.viewports.entries()).map(([_, viewport]) => {
+      return {
+        x: viewport.x,
+        y: viewport.y,
+        width: viewport.width,
+        height: viewport.height,
+      };
+    });
   }
 }
 
-export default {
-  name: 'ViewportGridService',
-  create: ({ configuration = {} }) => {
-    return new ViewportGridService();
-  },
-};
+export default ViewportGridService;
+
+export type { PresentationIds };

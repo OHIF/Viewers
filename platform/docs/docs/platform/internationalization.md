@@ -182,7 +182,7 @@ the following file tree:
             index.js
             | UK
                |-- Buttons.js
-               indes.js
+               index.js
             | US
                |-- Buttons.js
                index.js
@@ -347,7 +347,7 @@ https://viewer.ohif.org/viewer/1.2.840.113619.2.5.1762583153.215519.978957063.78
 Chinese:
 https://viewer.ohif.org/viewer/1.2.840.113619.2.5.1762583153.215519.978957063.78?lng=zh
 
-Portugese:
+Portuguese:
 https://viewer.ohif.org/viewer/1.2.840.113619.2.5.1762583153.215519.978957063.78?lng=pt-BR
 
 Here are some links you can use to sign up to help translate. All you have to do

@@ -122,7 +122,7 @@ export default function recordPlugin(Mousetrap, options = { timeout: 100 }) {
    */
   function _normalizeSequence(sequence) {
     for (let i = 0; i < sequence.length; ++i) {
-      sequence[i].sort(function(x, y) {
+      sequence[i].sort(function (x, y) {
         // modifier keys always come first, in alphabetical order
         if (x.length > 1 && y.length === 1) {
           return -1;
@@ -177,10 +177,10 @@ export default function recordPlugin(Mousetrap, options = { timeout: 100 }) {
    * @param {Function} callback
    * @returns void
    */
-  Mousetrap.prototype.record = function(callback) {
+  Mousetrap.prototype.record = function (callback) {
     var self = this;
     self.recording = true;
-    _recordedSequenceCallback = function() {
+    _recordedSequenceCallback = function () {
       self.recording = false;
       callback.apply(self, arguments);
     };
@@ -192,7 +192,7 @@ export default function recordPlugin(Mousetrap, options = { timeout: 100 }) {
    * @param {Function} callback
    * @returns void
    */
-  Mousetrap.prototype.stopRecord = function() {
+  Mousetrap.prototype.stopRecord = function () {
     var self = this;
     self.recording = false;
   };
@@ -203,11 +203,11 @@ export default function recordPlugin(Mousetrap, options = { timeout: 100 }) {
    * @param {Function} callback
    * @returns void
    */
-  Mousetrap.prototype.startRecording = function() {
+  Mousetrap.prototype.startRecording = function () {
     var self = this;
     self.recording = true;
   };
-  Mousetrap.prototype.handleKey = function() {
+  Mousetrap.prototype.handleKey = function () {
     var self = this;
     _handleKey.apply(self, arguments);
   };

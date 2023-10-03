@@ -1,0 +1,47 @@
+# Netlify Config
+#
+# TOML Reference:
+# https://www.netlify.com/docs/netlify-toml-reference/
+#
+# We use Netlify for deploy previews and for publishing docs (gh-pages branch).
+# https://viewer.ohif.org is created using a different process that is
+# managed by CircleCI and deployed to our Google Hosting
+#
+
+[build]
+  base = ""
+  build = "yarn run build:viewer:ci"
+  publish = "dist"
+
+
+# NODE_VERSION in root `.nvmrc` takes priority
+# YARN_FLAGS: https://www.netlify.com/docs/build-gotchas/#yarn
+[build.environment]
+  # If 'production', `yarn install` does not install devDependencies
+  NODE_ENV = "development"
+  NODE_VERSION = "18.16.1"
+  YARN_VERSION = "1.22.5"
+  RUBY_VERSION = "2.6.2"
+  YARN_FLAGS = "--no-ignore-optional --pure-lockfile"
+  NETLIFY_USE_YARN = "true"
+
+[[headers]]
+  # Define which paths this specific [[headers]] block will cover.
+  for = "/*"
+
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+
+    # Multi-key header rules are expressed with multi-line strings.
+    cache-control = '''
+    max-age=0,
+    no-cache,
+    no-store,
+    must-revalidate'''
+
+    # COMMENT: For sharedArrayBuffer, see https://developer.chrome.com/blog/enabling-shared-array-buffer/
+    Cross-Origin-Embedder-Policy = "require-corp"
+    Cross-Origin-Opener-Policy =  "same-origin"
+    # set CORP to cross-origin for anyone who wants to use the viewer in an iframe
+    Cross-Origin-Resource-Policy = "cross-origin"

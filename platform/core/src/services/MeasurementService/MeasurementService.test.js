@@ -1,20 +1,23 @@
-import MeasurementService from './MeasurementService.js';
+import MeasurementService from './MeasurementService';
 import log from '../../log';
 
-jest.mock('../../log.js', () => ({
+jest.mock('../../log', () => ({
   info: jest.fn(),
   warn: jest.fn(),
   error: jest.fn(),
 }));
 
 describe('MeasurementService.js', () => {
+  const unmappedMeasurementUID = 'unmappedMeasurementUId';
   let measurementService;
   let measurement;
+  let unmappedMeasurement;
   let source;
   let annotationType;
   let matchingCriteria;
   let toSourceSchema;
   let toMeasurement;
+  let toMeasurementThrowsError;
   let annotation;
 
   beforeEach(() => {
@@ -40,6 +43,25 @@ describe('MeasurementService.js', () => {
       ],
       source: source,
     };
+    // A measurement with various metadata missing (e.g. referenced SOPInstanceUID) that
+    // would not typically get mapped my the MeasurementService possibly because it was
+    // made in a non-acquisition plane of a volume.
+    unmappedMeasurement = {
+      uid: unmappedMeasurementUID,
+      SOPInstanceUID: undefined,
+      FrameOfReferenceUID: undefined,
+      referenceSeriesUID: undefined,
+      label: 'Label',
+      description: 'Description',
+      unit: 'mm',
+      area: 123,
+      type: measurementService.VALUE_TYPES.POLYLINE,
+      points: [
+        { x: 1, y: 2 },
+        { x: 1, y: 2 },
+      ],
+      source: source,
+    };
     toSourceSchema = () => annotation;
     toMeasurement = () => {
       if (Object.keys(measurement).includes('invalidProperty')) {
@@ -47,6 +69,9 @@ describe('MeasurementService.js', () => {
       }
 
       return measurement;
+    };
+    toMeasurementThrowsError = () => {
+      throw new Error('Unmapped measurement.');
     };
     matchingCriteria = {
       valueType: measurementService.VALUE_TYPES.POLYLINE,
@@ -101,13 +126,7 @@ describe('MeasurementService.js', () => {
 
     it('throws Error if no matching criteria provided', () => {
       expect(() => {
-        measurementService.addMapping(
-          source,
-          annotationType,
-          null,
-          toSourceSchema,
-          toMeasurement
-        );
+        measurementService.addMapping(source, annotationType, null, toSourceSchema, toMeasurement);
       }).toThrow(new Error('Matching criteria not provided.'));
     });
 
@@ -169,34 +188,16 @@ describe('MeasurementService.js', () => {
         toSourceSchema,
         toMeasurement
       );
-      const measurementId = source.annotationToMeasurement(
-        annotationType,
-        annotation
-      );
-      const mappedAnnotation = source.getAnnotation(
-        annotationType,
-        measurementId
-      );
+      const measurementId = source.annotationToMeasurement(annotationType, annotation);
+      const mappedAnnotation = source.getAnnotation(annotationType, measurementId);
 
       expect(annotation).toBe(mappedAnnotation);
     });
 
     it('get annotation based on source and annotationType', () => {
-      measurementService.addMapping(
-        source,
-        annotationType,
-        {},
-        toSourceSchema,
-        toMeasurement
-      );
-      const measurementId = source.annotationToMeasurement(
-        annotationType,
-        annotation
-      );
-      const mappedAnnotation = source.getAnnotation(
-        annotationType,
-        measurementId
-      );
+      measurementService.addMapping(source, annotationType, {}, toSourceSchema, toMeasurement);
+      const measurementId = source.annotationToMeasurement(annotationType, annotation);
+      const mappedAnnotation = source.getAnnotation(annotationType, measurementId);
 
       expect(annotation).toBe(mappedAnnotation);
     });
@@ -298,9 +299,7 @@ describe('MeasurementService.js', () => {
 
       /* Add new measurement */
       source.annotationToMeasurement(annotationType, newMeasurement);
-      const savedMeasurement = measurementService.getMeasurement(
-        newMeasurement.uid
-      );
+      const savedMeasurement = measurementService.getMeasurement(newMeasurement.uid);
 
       /* Clear dynamic data */
       delete newMeasurement.modifiedTimestamp;
@@ -359,10 +358,7 @@ describe('MeasurementService.js', () => {
       let addCallbackWasCalled = false;
 
       /* Subscribe to add event */
-      measurementService.subscribe(
-        MEASUREMENT_ADDED,
-        () => (addCallbackWasCalled = true)
-      );
+      measurementService.subscribe(MEASUREMENT_ADDED, () => (addCallbackWasCalled = true));
 
       /* Add new measurement - two calls needed for the start and the other for the completed*/
       const uid = source.annotationToMeasurement(annotationType, measurement);
@@ -384,20 +380,13 @@ describe('MeasurementService.js', () => {
       let updateCallbackWasCalled = false;
 
       /* Subscribe to update event */
-      measurementService.subscribe(
-        MEASUREMENT_UPDATED,
-        () => (updateCallbackWasCalled = true)
-      );
+      measurementService.subscribe(MEASUREMENT_UPDATED, () => (updateCallbackWasCalled = true));
 
       /* Create measurement */
       const uid = source.annotationToMeasurement(annotationType, measurement);
 
       /* Update measurement */
-      source.annotationToMeasurement(
-        annotationType,
-        { uid, ...measurement },
-        true
-      );
+      source.annotationToMeasurement(annotationType, { uid, ...measurement }, true);
 
       expect(updateCallbackWasCalled).toBe(true);
     });
@@ -428,6 +417,70 @@ describe('MeasurementService.js', () => {
       source.annotationToMeasurement(annotationType, { uid, ...measurement });
 
       expect(updateCallbackWasCalled).toBe(false);
+    });
+
+    it('subscribers do NOT receive add unmapped measurements event', () => {
+      measurementService.addMapping(
+        source,
+        annotationType,
+        matchingCriteria,
+        toSourceSchema,
+        toMeasurementThrowsError
+      );
+
+      const { MEASUREMENT_ADDED } = measurementService.EVENTS;
+      let addCallbackWasCalled = false;
+
+      /* Subscribe to add event */
+      measurementService.subscribe(MEASUREMENT_ADDED, () => (addCallbackWasCalled = true));
+
+      /* Add new measurement - two calls needed for the start and the other for the completed*/
+      // expect exceptions for unmapped measurements
+      expect(() => {
+        source.annotationToMeasurement(annotationType, unmappedMeasurement);
+      }).toThrow();
+
+      expect(() => {
+        source.annotationToMeasurement(annotationType, {
+          unmappedMeasurementUID,
+          ...unmappedMeasurement,
+        });
+      }).toThrow();
+
+      expect(addCallbackWasCalled).toBe(false);
+    });
+
+    it('subscribers do receive remove unmapped measurements event', () => {
+      measurementService.addMapping(
+        source,
+        annotationType,
+        matchingCriteria,
+        toSourceSchema,
+        toMeasurementThrowsError
+      );
+
+      const { MEASUREMENT_REMOVED } = measurementService.EVENTS;
+      let removeCallbackWasCalled = false;
+
+      /* Subscribe to add event */
+      measurementService.subscribe(MEASUREMENT_REMOVED, () => (removeCallbackWasCalled = true));
+
+      /* Add new measurement - two calls needed for the start and the other for the completed*/
+      // expect exceptions for unmapped measurements
+      expect(() => {
+        source.annotationToMeasurement(annotationType, unmappedMeasurement);
+      }).toThrow();
+
+      expect(() => {
+        source.annotationToMeasurement(annotationType, {
+          unmappedMeasurementUID,
+          ...unmappedMeasurement,
+        });
+      }).toThrow();
+
+      measurementService.remove(unmappedMeasurementUID);
+
+      expect(removeCallbackWasCalled).toBe(true);
     });
   });
 });

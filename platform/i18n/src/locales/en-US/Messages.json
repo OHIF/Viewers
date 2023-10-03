@@ -1,0 +1,15 @@
+{
+  "1": "No valid instances found in series.",
+  "2": "DisplaySet has missing position information.",
+  "3": "DisplaySet is not a reconstructable 3D volume.",
+  "4": "Multi frame displaySet don't have pixel measurement information.",
+  "5": "Multi frame displaySet don't have orientation information.",
+  "6": "Multi frame displaySet don't have position information.",
+  "7": "DisplaySet has missing frames.",
+  "8": "DisplaySet has irregular spacing.",
+  "9": "DisplaySet has inconsistent dimensions between frames.",
+  "10": "DisplaySet has frames with inconsistent number of components.",
+  "11": "DisplaySet has frames with inconsistent orientations.",
+  "12": "DisplaySet has inconsistent position information.",
+  "13": "Unsupported displaySet."
+}
