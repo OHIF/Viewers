@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.7.0-beta.89](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.88...v3.7.0-beta.89) (2023-10-03)
+
+
+### Bug Fixes
+
+* **dicom overlay:** Handle special cases of ArrayBuffer for various DICOM overlay attributes. ([#3684](https://github.com/OHIF/Viewers/issues/3684)) ([e36a604](https://github.com/OHIF/Viewers/commit/e36a6043315e900eeb6ce183772c7f852f478e96))
+* **StackSync:** Miscellaneous fixes for stack image sync ([#3663](https://github.com/OHIF/Viewers/issues/3663)) ([8a335bd](https://github.com/OHIF/Viewers/commit/8a335bd03d14ba87d65d7468d93f74040aa828d9))
+
+
+
+
+
 # [3.7.0-beta.88](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.87...v3.7.0-beta.88) (2023-10-03)
 
 **Note:** Version bump only for package @ohif/mode-test
