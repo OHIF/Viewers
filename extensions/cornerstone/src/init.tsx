@@ -43,15 +43,17 @@ export default async function init({
   appConfig,
 }: Types.Extensions.ExtensionParams): Promise<void> {
   // Note: this should run first before initializing the cornerstone
-  switch (appConfig.useSharedArrayBuffer) {
-    case 'AUTO':
-      cornerstone.setUseSharedArrayBuffer(csEnums.SharedArrayBufferModes.AUTO);
-      break;
-    case 'FALSE':
-      cornerstone.setUseSharedArrayBuffer(csEnums.SharedArrayBufferModes.FALSE);
-      break;
-    default:
-      cornerstone.setUseSharedArrayBuffer(csEnums.SharedArrayBufferModes.TRUE);
+  // DO NOT CHANGE THE ORDER
+  const value = appConfig.useSharedArrayBuffer;
+  let sharedArrayBufferDisabled = false;
+
+  if (value === 'AUTO') {
+    cornerstone.setUseSharedArrayBuffer(csEnums.SharedArrayBufferModes.AUTO);
+  } else if (value === 'FALSE' || value === false) {
+    cornerstone.setUseSharedArrayBuffer(csEnums.SharedArrayBufferModes.FALSE);
+    sharedArrayBufferDisabled = true;
+  } else {
+    cornerstone.setUseSharedArrayBuffer(csEnums.SharedArrayBufferModes.TRUE);
   }
 
   await cs3DInit({
@@ -99,10 +101,15 @@ export default async function init({
   window.extensionManager = extensionManager;
   window.commandsManager = commandsManager;
 
-  if (appConfig.showWarningMessageForCrossOrigin && !window.crossOriginIsolated) {
+  if (
+    appConfig.showWarningMessageForCrossOrigin &&
+    !window.crossOriginIsolated &&
+    !sharedArrayBufferDisabled
+  ) {
     uiNotificationService.show({
       title: 'Cross Origin Isolation',
-      message: 'Cross Origin Isolation is not enabled, volume rendering will not work (e.g., MPR)',
+      message:
+        'Cross Origin Isolation is not enabled, read more about it here: https://docs.ohif.org/faq/',
       type: 'warning',
     });
   }
