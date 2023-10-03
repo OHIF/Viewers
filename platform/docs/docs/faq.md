@@ -29,7 +29,7 @@ If you have resources and would like to fund the development of a feature,
 please [contact us](https://www.ohif.org) or work with community members that
 offer [consulting services][commercial-support].
 
-### Cross Origin Isolation
+### Why do I keep seeing a Cross Origin Isolation warning
 If you encounter a warning while running OHIF indicating that your application is not cross-origin isolated, it implies that volume rendering, such as MPR, will not function properly since they depend on Shared Array Buffers. To resolve this issue, we recommend referring to our comprehensive guide on Cross Origin Isolation available at [./deployment/cors.md](./deployment/cors.md).
 
 ### Who should I contact about Academic Collaborations?
