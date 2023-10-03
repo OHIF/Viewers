@@ -136,32 +136,6 @@ Cypress.Commands.add('drag', { prevSubject: 'element' }, (...args) =>
 );
 
 /**
- * Command to perform two clicks into two different positions. Each position must be [x, y].
- * The positions are considering the element as reference, therefore, top-left of the element will be (0, 0).
- *
- * @param {*} viewport - Selector for viewport we would like to interact with
- * @param {number[]} firstClick - Click position [x, y]
- * @param {number[]} secondClick - Click position [x, y]
- */
-Cypress.Commands.add('addLine', (viewport, firstClick, secondClick) => {
-  const performClick = (alias, x, y) => {
-    cy.get(alias).as(`axu-${alias}`).click(x, y, { force: true, multiple: true }).wait(1000);
-  };
-
-  cy.get(viewport).as('viewportAlias');
-  const [x1, y1] = firstClick;
-  const [x2, y2] = secondClick;
-
-  // First click
-  performClick('@viewportAlias', x1, y1);
-
-  // Second click
-  performClick('@viewportAlias', x2, y2);
-
-  cy.wait(1000);
-});
-
-/**
  * Command to perform three clicks into three different positions. Each position must be [x, y].
  * The positions are considering the element as reference, therefore, top-left of the element will be (0, 0).
  *
@@ -280,7 +254,16 @@ Cypress.Commands.add(
 
     cy.get('@lengthButton').should('have.class', 'active');
 
-    cy.addLine('.cornerstone-canvas', firstClick, secondClick);
+    cy.get('@viewport').then($viewport => {
+      const [x1, y1] = firstClick;
+      const [x2, y2] = secondClick;
+
+      cy.wrap($viewport)
+        .click(x1, y1, { force: true })
+        .wait(1000)
+        .click(x2, y2, { force: true })
+        .wait(1000);
+    });
   }
 );
 
