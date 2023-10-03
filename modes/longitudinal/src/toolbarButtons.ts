@@ -630,25 +630,6 @@ const toolbarButtons: Button[] = [
       ],
     },
   },
-
-  // There are toggleable items not actually shown as buttons in the GUI.
-  // Define those here so that they are controlled by the mode in the same
-  // way that other toggleable items are controlled.
-  _createToggleButton(
-    'StackPrefetch',
-    'link',
-    'Stack Prefetch',
-    [],
-    'Enable Complete Stack Prefetch',
-    {
-      listeners: {
-        [EVENTS.STACK_VIEWPORT_NEW_STACK]: {
-          commandName: 'stackPrefetch',
-        },
-      },
-      isActive: true,
-    }
-  ),
 ];
 
 export default toolbarButtons;

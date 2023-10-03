@@ -649,24 +649,6 @@ const toolbarButtons: Button[] = [
       ],
     },
   },
-
-  // There are buttons that are used for defining active controls which
-  // aren't shown to the user, but still need to be activated.
-  _createToggleButton(
-    'StackPrefetch',
-    'link',
-    'Stack Prefetch',
-    [],
-    'Enable Complete Stack Prefetch',
-    {
-      listeners: {
-        [EVENTS.STACK_VIEWPORT_NEW_STACK]: {
-          commandName: 'stackPrefetch',
-        },
-      },
-      isActive: true,
-    }
-  ),
 ];
 
 export default toolbarButtons;

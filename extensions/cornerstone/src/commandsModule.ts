@@ -270,13 +270,6 @@ function commandsModule({
     setToolbarToggled: props => {
       toolbarService.setToggled(props.toolId, props.isActive ?? true);
     },
-
-    // Enable stack prefetch on the given element
-    stackPrefetch: props => {
-      const { element, prefetchType = 'stackPrefetch' } = props;
-      cstUtils[prefetchType].enable(element);
-    },
-
     setToolActive: ({ toolName, toolGroupId = null, toggledState }) => {
       if (toolName === 'Crosshairs') {
         const activeViewportToolGroup = toolGroupService.getToolGroup(null);
@@ -711,9 +704,6 @@ function commandsModule({
     },
     storePresentation: {
       commandFn: actions.storePresentation,
-    },
-    stackPrefetch: {
-      commandFn: actions.stackPrefetch,
     },
     setToolbarToggled: {
       commandFn: actions.setToolbarToggled,

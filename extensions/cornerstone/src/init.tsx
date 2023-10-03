@@ -267,6 +267,11 @@ export default async function init({
     }
   };
 
+  eventTarget.addEventListener(EVENTS.STACK_VIEWPORT_NEW_STACK, evt => {
+    const { element } = evt.detail;
+    cornerstoneTools.utilities.stackContextPrefetch.enable(element);
+  });
+
   function elementEnabledHandler(evt) {
     const { element } = evt.detail;
     element.addEventListener(EVENTS.CAMERA_RESET, resetCrosshairs);
