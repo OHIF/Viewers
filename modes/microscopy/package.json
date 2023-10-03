@@ -1,6 +1,6 @@
 {
   "name": "@ohif/mode-microscopy",
-  "version": "3.7.0-beta.87",
+  "version": "3.7.0-beta.88",
   "description": "OHIF mode for DICOM microscopy",
   "author": "OHIF",
   "license": "MIT",
