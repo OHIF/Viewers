@@ -134,7 +134,7 @@ const commandsModule = ({
           (!protocolId || protocolId === protocol.id) &&
           (stageIndex === undefined || stageIndex === toggleStageIndex) &&
           (!stageId || stageId === stage.id);
-        toolbarService.setActive(button.id, isActive);
+        toolbarService.setToggled(button.id, isActive);
       };
       Object.values(toolbarService.getButtons()).forEach(enableListener);
     },
