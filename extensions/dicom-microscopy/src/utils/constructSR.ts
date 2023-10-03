@@ -9,11 +9,7 @@ import DEVICE_OBSERVER_UID from './DEVICE_OBSERVER_UID';
  *
  * @return Comprehensive3DSR dataset
  */
-export default function constructSR(
-  metadata,
-  { SeriesDescription, SeriesNumber },
-  annotations
-) {
+export default function constructSR(metadata, { SeriesDescription, SeriesNumber }, annotations) {
   // Handle malformed data
   if (!metadata.SpecimenDescriptionSequence) {
     metadata.SpecimenDescriptionSequence = {
@@ -31,11 +27,9 @@ export default function constructSR(
         schemeDesignator: 'DCM',
         meaning: 'Person',
       }),
-      observerIdentifyingAttributes: new dcmjs.sr.templates.PersonObserverIdentifyingAttributes(
-        {
-          name: '@ohif/extension-dicom-microscopy',
-        }
-      ),
+      observerIdentifyingAttributes: new dcmjs.sr.templates.PersonObserverIdentifyingAttributes({
+        name: '@ohif/extension-dicom-microscopy',
+      }),
     }),
     observerDeviceContext: new dcmjs.sr.templates.ObserverContext({
       observerType: new dcmjs.sr.coding.CodedConcept({
@@ -43,11 +37,9 @@ export default function constructSR(
         schemeDesignator: 'DCM',
         meaning: 'Device',
       }),
-      observerIdentifyingAttributes: new dcmjs.sr.templates.DeviceObserverIdentifyingAttributes(
-        {
-          uid: DEVICE_OBSERVER_UID,
-        }
-      ),
+      observerIdentifyingAttributes: new dcmjs.sr.templates.DeviceObserverIdentifyingAttributes({
+        uid: DEVICE_OBSERVER_UID,
+      }),
     }),
     subjectContext: new dcmjs.sr.templates.SubjectContext({
       subjectClass: new dcmjs.sr.coding.CodedConcept({
@@ -55,35 +47,27 @@ export default function constructSR(
         schemeDesignator: 'DCM',
         meaning: 'Specimen',
       }),
-      subjectClassSpecificContext: new dcmjs.sr.templates.SubjectContextSpecimen(
-        {
-          uid: SpecimenDescriptionSequence.SpecimenUID,
-          identifier:
-            SpecimenDescriptionSequence.SpecimenIdentifier ||
-            metadata.SeriesInstanceUID,
-          containerIdentifier:
-            metadata.ContainerIdentifier || metadata.SeriesInstanceUID,
-        }
-      ),
+      subjectClassSpecificContext: new dcmjs.sr.templates.SubjectContextSpecimen({
+        uid: SpecimenDescriptionSequence.SpecimenUID,
+        identifier: SpecimenDescriptionSequence.SpecimenIdentifier || metadata.SeriesInstanceUID,
+        containerIdentifier: metadata.ContainerIdentifier || metadata.SeriesInstanceUID,
+      }),
     }),
   });
 
   const imagingMeasurements = [];
   for (let i = 0; i < annotations.length; i++) {
     const { roiGraphic: roi, label } = annotations[i];
-    let {
-      measurements,
-      evaluations,
-      marker,
-      presentationState,
-    } = roi.properties;
+    let { measurements, evaluations, marker, presentationState } = roi.properties;
 
-    console.debug('[SR] storing marker...', marker);
-    console.debug('[SR] storing measurements...', measurements);
-    console.debug('[SR] storing evaluations...', evaluations);
-    console.debug('[SR] storing presentation state...', presentationState);
+    console.log('[SR] storing marker...', marker);
+    console.log('[SR] storing measurements...', measurements);
+    console.log('[SR] storing evaluations...', evaluations);
+    console.log('[SR] storing presentation state...', presentationState);
 
-    if (presentationState) presentationState.marker = marker;
+    if (presentationState) {
+      presentationState.marker = marker;
+    }
 
     /** Avoid incompatibility with dcmjs */
     measurements = measurements.map((measurement: any) => {
@@ -95,9 +79,7 @@ export default function constructSR(
         ? measurement.MeasuredValueSequence[0]
         : measurement.MeasuredValueSequence;
 
-      const MeasuredValueUnits = Array.isArray(
-        MeasuredValue.MeasurementUnitsCodeSequence
-      )
+      const MeasuredValueUnits = Array.isArray(MeasuredValue.MeasurementUnitsCodeSequence)
         ? MeasuredValue.MeasurementUnitsCodeSequence[0]
         : MeasuredValue.MeasurementUnitsCodeSequence;
 
@@ -134,29 +116,27 @@ export default function constructSR(
     });
 
     const identifier = `ROI #${i + 1}`;
-    const group = new dcmjs.sr.templates.PlanarROIMeasurementsAndQualitativeEvaluations(
-      {
-        trackingIdentifier: new dcmjs.sr.templates.TrackingIdentifier({
-          uid: roi.uid,
-          identifier: presentationState
-            ? identifier.concat(`(${JSON.stringify(presentationState)})`)
-            : identifier,
-        }),
-        referencedRegion: new dcmjs.sr.contentItems.ImageRegion3D({
-          graphicType: roi.scoord3d.graphicType,
-          graphicData: roi.scoord3d.graphicData,
-          frameOfReferenceUID: roi.scoord3d.frameOfReferenceUID,
-        }),
-        findingType: new dcmjs.sr.coding.CodedConcept({
-          value: label,
-          schemeDesignator: '@ohif/extension-dicom-microscopy',
-          meaning: 'FREETEXT',
-        }),
-        /** Evaluations will conflict with current tracking identifier */
-        /** qualitativeEvaluations: evaluations, */
-        measurements,
-      }
-    );
+    const group = new dcmjs.sr.templates.PlanarROIMeasurementsAndQualitativeEvaluations({
+      trackingIdentifier: new dcmjs.sr.templates.TrackingIdentifier({
+        uid: roi.uid,
+        identifier: presentationState
+          ? identifier.concat(`(${JSON.stringify(presentationState)})`)
+          : identifier,
+      }),
+      referencedRegion: new dcmjs.sr.contentItems.ImageRegion3D({
+        graphicType: roi.scoord3d.graphicType,
+        graphicData: roi.scoord3d.graphicData,
+        frameOfReferenceUID: roi.scoord3d.frameOfReferenceUID,
+      }),
+      findingType: new dcmjs.sr.coding.CodedConcept({
+        value: label,
+        schemeDesignator: '@ohif/extension-dicom-microscopy',
+        meaning: 'FREETEXT',
+      }),
+      /** Evaluations will conflict with current tracking identifier */
+      /** qualitativeEvaluations: evaluations, */
+      measurements,
+    });
     imagingMeasurements.push(...group);
   }
 
@@ -178,8 +158,7 @@ export default function constructSR(
     evidence: [metadata],
     seriesInstanceUID: dcmjs.data.DicomMetaDictionary.uid(),
     seriesNumber: SeriesNumber,
-    seriesDescription:
-      SeriesDescription || 'Whole slide imaging structured report',
+    seriesDescription: SeriesDescription || 'Whole slide imaging structured report',
     sopInstanceUID: dcmjs.data.DicomMetaDictionary.uid(),
     instanceNumber: 1,
     manufacturer: 'dcmjs-org',

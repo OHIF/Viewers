@@ -48,7 +48,7 @@ is expected to support, [check out it's interface in `@ohif/core`][interface]
 
 ```js
 const DEFAULT_STATE = {
-  viewportIndex: null,
+  viewportId: null,
   message: undefined,
   type: 'info', // "error" | "warning" | "info" | "success"
   actions: undefined, // array of { type, text, value }

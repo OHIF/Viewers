@@ -1,42 +1,29 @@
-import createReportAsync from './../../_shared/createReportAsync';
-import createReportDialogPrompt from '../../_shared/createReportDialogPrompt';
+import { createReportAsync, createReportDialogPrompt } from '@ohif/extension-default';
 import getNextSRSeriesNumber from '../../_shared/getNextSRSeriesNumber';
 import RESPONSE from '../../_shared/PROMPT_RESPONSES';
 
-function promptSaveReport(
-  { servicesManager, commandsManager, extensionManager },
-  ctx,
-  evt
-) {
-  const {
-    uiDialogService,
-    measurementService,
-    displaySetService,
-  } = servicesManager.services;
-  const viewportIndex =
-    evt.viewportIndex === undefined
-      ? evt.data.viewportIndex
-      : evt.viewportIndex;
-  const isBackupSave =
-    evt.isBackupSave === undefined ? evt.data.isBackupSave : evt.isBackupSave;
+function promptSaveReport({ servicesManager, commandsManager, extensionManager }, ctx, evt) {
+  const { uiDialogService, measurementService, displaySetService } = servicesManager.services;
+  const viewportId = evt.viewportId === undefined ? evt.data.viewportId : evt.viewportId;
+  const isBackupSave = evt.isBackupSave === undefined ? evt.data.isBackupSave : evt.isBackupSave;
   const StudyInstanceUID = evt?.data?.StudyInstanceUID;
   const SeriesInstanceUID = evt?.data?.SeriesInstanceUID;
 
   const { trackedStudy, trackedSeries } = ctx;
   let displaySetInstanceUIDs;
 
-  return new Promise(async function(resolve, reject) {
+  return new Promise(async function (resolve, reject) {
     // TODO: Fallback if (uiDialogService) {
-    const promptResult = await createReportDialogPrompt(uiDialogService);
+    const promptResult = await createReportDialogPrompt(uiDialogService, {
+      extensionManager,
+    });
 
     if (promptResult.action === RESPONSE.CREATE_REPORT) {
       const dataSources = extensionManager.getDataSources();
       const dataSource = dataSources[0];
       const measurements = measurementService.getMeasurements();
       const trackedMeasurements = measurements.filter(
-        m =>
-          trackedStudy === m.referenceStudyUID &&
-          trackedSeries.includes(m.referenceSeriesUID)
+        m => trackedStudy === m.referenceStudyUID && trackedSeries.includes(m.referenceSeriesUID)
       );
 
       const SeriesDescription =
@@ -47,16 +34,25 @@ function promptSaveReport(
 
       const SeriesNumber = getNextSRSeriesNumber(displaySetService);
 
-      displaySetInstanceUIDs = await createReportAsync(
+      const getReport = async () => {
+        return commandsManager.runCommand(
+          'storeMeasurements',
+          {
+            measurementData: trackedMeasurements,
+            dataSource,
+            additionalFindingTypes: ['ArrowAnnotate'],
+            options: {
+              SeriesDescription,
+              SeriesNumber,
+            },
+          },
+          'CORNERSTONE_STRUCTURED_REPORT'
+        );
+      };
+      displaySetInstanceUIDs = await createReportAsync({
         servicesManager,
-        commandsManager,
-        dataSource,
-        trackedMeasurements,
-        {
-          SeriesDescription,
-          SeriesNumber,
-        }
-      );
+        getReport,
+      });
     } else if (promptResult.action === RESPONSE.CANCEL) {
       // Do nothing
     }
@@ -66,7 +62,7 @@ function promptSaveReport(
       createdDisplaySetInstanceUIDs: displaySetInstanceUIDs,
       StudyInstanceUID,
       SeriesInstanceUID,
-      viewportIndex,
+      viewportId,
       isBackupSave,
     });
   });

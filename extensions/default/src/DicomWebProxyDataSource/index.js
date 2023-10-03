@@ -9,24 +9,12 @@ import { createDicomWebApi } from '../DicomWebDataSource/index';
  * dicomWeb configuration array
  *
  */
-function createDicomWebProxyApi(
-  dicomWebProxyConfig,
-  UserAuthenticationService
-) {
+function createDicomWebProxyApi(dicomWebProxyConfig, UserAuthenticationService) {
   const { name } = dicomWebProxyConfig;
   let dicomWebDelegate = undefined;
 
   const implementation = {
     initialize: async ({ params, query }) => {
-      let studyInstanceUIDs = [];
-
-      // there seem to be a couple of variations of the case for this parameter
-      const queryStudyInstanceUIDs =
-        query.get('studyInstanceUIDs') || query.get('studyInstanceUids');
-      if (!queryStudyInstanceUIDs) {
-        throw new Error(`No studyInstanceUids in request for '${name}'`);
-      }
-
       const url = query.get('url');
 
       if (!url) {
@@ -39,12 +27,11 @@ function createDicomWebProxyApi(
         }
 
         dicomWebDelegate = createDicomWebApi(
-          data.servers.dicomWeb[0],
+          data.servers.dicomWeb[0].configuration,
           UserAuthenticationService
         );
-        studyInstanceUIDs = queryStudyInstanceUIDs.split(';');
+        dicomWebDelegate.initialize({ params, query });
       }
-      return studyInstanceUIDs;
     },
     query: {
       studies: {
@@ -55,28 +42,33 @@ function createDicomWebProxyApi(
       },
       instances: {
         search: (studyInstanceUid, queryParameters) =>
-          dicomWebDelegate.query.instances.search(
-            studyInstanceUid,
-            queryParameters
-          ),
+          dicomWebDelegate.query.instances.search(studyInstanceUid, queryParameters),
       },
     },
     retrieve: {
       directURL: (...args) => dicomWebDelegate.retrieve.directURL(...args),
       series: {
-        metadata: (...args) =>
-          dicomWebDelegate.retrieve.series.metadata(...args),
+        metadata: async (...args) => dicomWebDelegate.retrieve.series.metadata(...args),
       },
     },
     store: {
       dicom: (...args) => dicomWebDelegate.store(...args),
     },
-    deleteStudyMetadataPromise: (...args) =>
-      dicomWebDelegate.deleteStudyMetadataPromise(...args),
-    getImageIdsForDisplaySet: (...args) =>
-      dicomWebDelegate.getImageIdsForDisplaySet(...args),
-    getImageIdsForInstance: (...args) =>
-      dicomWebDelegate.getImageIdsForInstance(...args),
+    deleteStudyMetadataPromise: (...args) => dicomWebDelegate.deleteStudyMetadataPromise(...args),
+    getImageIdsForDisplaySet: (...args) => dicomWebDelegate.getImageIdsForDisplaySet(...args),
+    getImageIdsForInstance: (...args) => dicomWebDelegate.getImageIdsForInstance(...args),
+    getStudyInstanceUIDs({ params, query }) {
+      let studyInstanceUIDs = [];
+
+      // there seem to be a couple of variations of the case for this parameter
+      const queryStudyInstanceUIDs =
+        query.get('studyInstanceUIDs') || query.get('studyInstanceUids');
+      if (!queryStudyInstanceUIDs) {
+        throw new Error(`No studyInstanceUids in request for '${name}'`);
+      }
+      studyInstanceUIDs = queryStudyInstanceUIDs.split(';');
+      return studyInstanceUIDs;
+    },
   };
   return IWebApiDataSource.create(implementation);
 }

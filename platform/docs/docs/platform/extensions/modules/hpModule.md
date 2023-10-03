@@ -36,7 +36,6 @@ Here is an example protocol which if used will hang a 1x3 layout with the first 
 const oneByThreeProtocol = {
   id: 'oneByThreeProtocol',
   locked: true,
-  hasUpdatedPriorsInformation: false,
   name: 'Default',
   createdDate: '2021-02-23T19:22:08.894Z',
   modifiedDate: '2022-10-04T19:22:08.894Z',
@@ -241,6 +240,9 @@ A list of criteria for the protocol along with the provided points for ranking.
     "StudyDescription", "ModalitiesInStudy", "NumberOfStudyRelatedSeries", "NumberOfSeriesRelatedInstances"
     In addition to these tags, you can also use a custom attribute that you have registered before.
     We will learn more about this later.
+  - `from`: Indicates the source of the attribute.  This allows getting values
+    from other objects such as the `prior` instance object instead of from the
+    current one.
 
 
 
@@ -278,6 +280,20 @@ A list of criteria for the protocol along with the provided points for ranking.
       required: false,
     },
     ```
+
+### `from` attribute
+The from attribute allows getting the attribute to test from some other object
+such as the prior study, the list of studies overall or another module provided
+value.  Some of the possible attributes are:
+
+* `prior`: To get the value from the prior study.
+* `activeStudy`: To match the active study
+* `studies`: To match the list of studies to display
+* `displaySets`: The display sets for the current study
+* `allDisplaySets`: Alll available display sets
+* `instance`: An instance from the current display set being tested
+* `options`: Gets the options object itself, eg if you want a simple top level
+  value.
 
 ### displaySetSelectors
 Defines the display sets that the protocol will use for arrangement.
@@ -475,22 +491,70 @@ HangingProtocolService.addCustomAttribute(
 ```
 
 
-
 ## Matching on Prior Study with UID
 
 Often it is desired to match a new study to a prior study (e.g., follow up on
 a surgery). Since the hanging protocols run on displaySets we need to have a
 way to let OHIF knows that it needs to load the prior study as well. This can
-be done by specifying both StudyInstanceUIDs in the URL. Below we are
-running OHIF with two studies
+be done by specifying both StudyInstanceUIDs in the URL. The additional studies
+are then accessible to the hanging protocol.  Below we are
+running OHIF with two studies, and a comparison hanging protocol available by
+default.
 
 ```bash
-http://localhost:3000/viewer?StudyInstanceUIDs=1.3.6.1.4.1.25403.345050719074.3824.20170125095438.5&StudyInstanceUIDs=1.3.6.1.4.1.25403.345050719074.3824.20170125095722.1
+http://localhost:3000/viewer?StudyInstanceUIDs=1.3.6.1.4.1.25403.345050719074.3824.20170125095438.5&StudyInstanceUIDs=1.3.6.1.4.1.25403.345050719074.3824.20170125095722.1&hangingprotocolId=@ohif/hpCompare
 ```
 
-Now you have access to both studies and you can use matchingRules to match
-displaySets.
+The `&hangingProtocolId` option forces the specific hanging protocol to be
+applied, but the mode can also add the hanging protocols to the default set,
+and then the best matching hanging protocol will be applied by the run method.
 
+To match any other studies, it is required to enable the prior matching rules
+capability using:
 
+```javascript
+  // Indicate number of priors used - 0 means any number, -1 means none.
+  numberOfPriorsReferenced: 1,
+```
 
-Our roadmap includes enabling matching on prior studies without the UID (e.g., baseline, most recent and index).
+The matching rule that allows the hanging protocol to be runnable is:
+
+```javascript
+  protocolMatchingRules: [
+    {
+      id: 'Two Studies',
+      weight: 1000,
+      // This will generate 1.3.6.1.4.1.25403.345050719074.3824.20170125095722.1
+      // since that is study instance UID in the prior from instance.
+      attribute: 'StudyInstanceUID',
+      // The 'from' attribute says where to get the 'attribute' value from.  In this case
+      // prior means the second study in the study list.
+      from: 'prior',
+      required: true,
+      constraint: {
+        notNull: true,
+      },
+    },
+  ],
+```
+
+The display set selector selecting the specific study to display is included
+in the studyMatchingRules.  Note that this rule will cause ONLY the second study
+to be matched, so it won't attempt to match anything in other studies.
+Additional series level criteria, such as modality rules must be included at the
+`seriesMatchingRules`.
+
+```javascript
+  studyMatchingRules: [
+    {
+      // The priorInstance is a study counter that indicates what position this study is in
+      // and the value comes from the options parameter.
+      attribute: 'studyInstanceUIDsIndex',
+      from: 'options',
+      required: true,
+      constraint: {
+        equals: { value: 1 },
+      },
+    },
+  ],
+```

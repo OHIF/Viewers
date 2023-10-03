@@ -25,10 +25,18 @@ function convertToInt(input) {
   function padFour(input) {
     const l = input.length;
 
-    if (l == 0) return '0000';
-    if (l == 1) return '000' + input;
-    if (l == 2) return '00' + input;
-    if (l == 3) return '0' + input;
+    if (l === 0) {
+      return '0000';
+    }
+    if (l === 1) {
+      return '000' + input;
+    }
+    if (l === 2) {
+      return '00' + input;
+    }
+    if (l === 3) {
+      return '0' + input;
+    }
 
     return input;
   }

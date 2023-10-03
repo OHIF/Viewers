@@ -23,9 +23,7 @@ describe('getModalities', () => {
       vr: 'MOCKED_VALUE',
     };
 
-    expect(getModalities(Modality, ModalitiesInStudy)).toEqual(
-      ModalitiesInStudy
-    );
+    expect(getModalities(Modality, ModalitiesInStudy)).toEqual(ModalitiesInStudy);
   });
 
   test('should return only the modalitues that exists in ModalitiesInStudy', () => {
@@ -67,8 +65,6 @@ describe('getModalities', () => {
       vr: 'ANOTHER_VR',
     };
 
-    expect(getModalities(Modality, ModalitiesInStudy)).toEqual(
-      ModalitiesInStudy
-    );
+    expect(getModalities(Modality, ModalitiesInStudy)).toEqual(ModalitiesInStudy);
   });
 });

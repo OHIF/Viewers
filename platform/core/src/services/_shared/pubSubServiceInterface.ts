@@ -124,6 +124,6 @@ export class PubSubService {
       consume: function Consume() {
         this.isConsumed = true;
       },
-    }
+    };
   }
 }

@@ -7,8 +7,12 @@
  * @returns [] reordered to be breadth first traversal of lists
  */
 export default function interleave(lists) {
-  if (!lists || !lists.length) return [];
-  if (lists.length === 1) return lists[0];
+  if (!lists || !lists.length) {
+    return [];
+  }
+  if (lists.length === 1) {
+    return lists[0];
+  }
   console.time('interleave');
   const useLists = [...lists];
   const ret = [];

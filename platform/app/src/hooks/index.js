@@ -1,5 +1,4 @@
 import useDebounce from './useDebounce.js';
-import useQuery from './useQuery.js';
-import useSearchParams from './useSearchParams.js';
+import useSearchParams from './useSearchParams';
 
-export { useDebounce, useQuery, useSearchParams };
+export { useDebounce, useSearchParams };

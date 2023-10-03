@@ -84,10 +84,10 @@ Check out the complete press announcement [here](https://ohif.org/newsletters/20
 - New UI components have been built with Tailwind CSS
 - Addition of workflow modes
   - Often, medical imaging use cases involves lots of specific workflows that
-    re-use functionalities. We have added the capability of workflow modes, that
+    reuse functionalities. We have added the capability of workflow modes, that
     enable people to customize user interface and configure application for
     specific workflow.
-  - The idea is to re-use the functionalities that extensions provide and create
+  - The idea is to reuse the functionalities that extensions provide and create
     a workflow. Brain segmentation workflow is different from prostate
     segmentation in UI for sure; however, they share the segmentation tools that
     can be re-used.

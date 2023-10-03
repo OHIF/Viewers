@@ -14,9 +14,7 @@ export default function setFusionActiveVolume(
 
   const { SeriesInstanceUID } = matchDetails;
 
-  const displaySets = displaySetService.getDisplaySetsForSeries(
-    SeriesInstanceUID
-  );
+  const displaySets = displaySetService.getDisplaySetsForSeries(SeriesInstanceUID);
 
   if (!displaySets || displaySets.length === 0) {
     return;
