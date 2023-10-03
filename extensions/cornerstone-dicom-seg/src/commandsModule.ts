@@ -363,8 +363,6 @@ const commandsModule = ({
     downloadRTSS: ({}) => {
       const segmentations = segmentationService.getSegmentations();
 
-      console.log(segmentations);
-
       adaptersSEG.Cornerstone3D.RTStruct.RTSS.generateRTSS(
         segmentations,
         classes.MetadataProvider,
@@ -372,7 +370,6 @@ const commandsModule = ({
         cache,
         cornerstoneToolsEnums
       ).then(RTSS => {
-        console.log(RTSS);
         try {
           const reportBlob = datasetToBlob(RTSS);
 
