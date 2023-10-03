@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.7.0-beta.93](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.92...v3.7.0-beta.93) (2023-10-03)
+
+
+### Features
+
+* **displayArea:** add display area to hanging protocol ([#3691](https://github.com/OHIF/Viewers/issues/3691)) ([5e7fe91](https://github.com/OHIF/Viewers/commit/5e7fe91617d7399f85702d82e7bfa028b8010a89))
+
+
+
+
+
 # [3.7.0-beta.92](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.91...v3.7.0-beta.92) (2023-10-03)
 
 **Note:** Version bump only for package ohif-monorepo-root
