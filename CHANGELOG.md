@@ -3,6 +3,62 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.7.0-beta.90](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.89...v3.7.0-beta.90) (2023-10-03)
+
+
+### Bug Fixes
+
+* **typescript error:** Change pubSubServiceInterface file type to typescript ([#3546](https://github.com/OHIF/Viewers/issues/3546)) ([eb22328](https://github.com/OHIF/Viewers/commit/eb22328fc05d06fc4411805e7a30f826659d796a))
+
+
+
+
+
+# [3.7.0-beta.89](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.88...v3.7.0-beta.89) (2023-10-03)
+
+
+### Bug Fixes
+
+* **dicom overlay:** Handle special cases of ArrayBuffer for various DICOM overlay attributes. ([#3684](https://github.com/OHIF/Viewers/issues/3684)) ([e36a604](https://github.com/OHIF/Viewers/commit/e36a6043315e900eeb6ce183772c7f852f478e96))
+* **StackSync:** Miscellaneous fixes for stack image sync ([#3663](https://github.com/OHIF/Viewers/issues/3663)) ([8a335bd](https://github.com/OHIF/Viewers/commit/8a335bd03d14ba87d65d7468d93f74040aa828d9))
+
+
+
+
+
+# [3.7.0-beta.88](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.87...v3.7.0-beta.88) (2023-10-03)
+
+
+### Bug Fixes
+
+* **config:** support more values for the useSharedArrayBuffer ([#3688](https://github.com/OHIF/Viewers/issues/3688)) ([1129c15](https://github.com/OHIF/Viewers/commit/1129c155d2c7d46c98a5df7c09879aa3d459fa7e))
+
+
+
+
+
+# [3.7.0-beta.87](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.86...v3.7.0-beta.87) (2023-09-29)
+
+
+### Bug Fixes
+
+* **no sab:** should work when shared array buffer is not required ([#3686](https://github.com/OHIF/Viewers/issues/3686)) ([a67d72d](https://github.com/OHIF/Viewers/commit/a67d72de85238b369a18c010bf6d147daefc6df5))
+
+
+
+
+
+# [3.7.0-beta.86](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.85...v3.7.0-beta.86) (2023-09-29)
+
+
+### Bug Fixes
+
+* **cli:** various fixes for adding custom modes and extensions ([#3683](https://github.com/OHIF/Viewers/issues/3683)) ([dc73b18](https://github.com/OHIF/Viewers/commit/dc73b187484da029a2664bb1302f30137c973b8c))
+
+
+
+
+
 # [3.7.0-beta.85](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.84...v3.7.0-beta.85) (2023-09-26)
 
 

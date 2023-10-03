@@ -3,6 +3,49 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.7.0-beta.90](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.89...v3.7.0-beta.90) (2023-10-03)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.7.0-beta.89](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.88...v3.7.0-beta.89) (2023-10-03)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.7.0-beta.88](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.87...v3.7.0-beta.88) (2023-10-03)
+
+
+### Bug Fixes
+
+* **config:** support more values for the useSharedArrayBuffer ([#3688](https://github.com/OHIF/Viewers/issues/3688)) ([1129c15](https://github.com/OHIF/Viewers/commit/1129c155d2c7d46c98a5df7c09879aa3d459fa7e))
+
+
+
+
+
+# [3.7.0-beta.87](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.86...v3.7.0-beta.87) (2023-09-29)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.7.0-beta.86](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.85...v3.7.0-beta.86) (2023-09-29)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
 # [3.7.0-beta.85](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.84...v3.7.0-beta.85) (2023-09-26)
 
 **Note:** Version bump only for package @ohif/extension-measurement-tracking
