@@ -2,15 +2,20 @@ import dcmjs from 'dcmjs';
 import { createReportDialogPrompt } from '@ohif/extension-default';
 import { ServicesManager, Types } from '@ohif/core';
 import { cache, metaData } from '@cornerstonejs/core';
-import { segmentation as cornerstoneToolsSegmentation } from '@cornerstonejs/tools';
+import {
+  segmentation as cornerstoneToolsSegmentation,
+  Enums as cornerstoneToolsEnums,
+} from '@cornerstonejs/tools';
 import { adaptersSEG, helpers } from '@cornerstonejs/adapters';
-import { DicomMetadataStore } from '@ohif/core';
+import { classes, DicomMetadataStore } from '@ohif/core';
 
 import {
   updateViewportsForSegmentationRendering,
   getUpdatedViewportsForSegmentation,
   getTargetViewport,
 } from './utils/hydrationUtils';
+
+const { datasetToBlob } = dcmjs.data;
 
 const {
   Cornerstone3D: {
@@ -348,6 +353,37 @@ const commandsModule = ({
 
       return naturalizedReport;
     },
+    /**
+     * Converts segmentations into RTSS for download.
+     * This sample function retrieves all segentations and passes to
+     * cornerstone tool adapter to convert to DICOM RTSS format. It then
+     * converts dataset to downloadable blob.
+     *
+     */
+    downloadRTSS: ({}) => {
+      const segmentations = segmentationService.getSegmentations();
+
+      console.log(segmentations);
+
+      adaptersSEG.Cornerstone3D.RTStruct.RTSS.generateRTSS(
+        segmentations,
+        classes.MetadataProvider,
+        DicomMetadataStore,
+        cache,
+        cornerstoneToolsEnums
+      ).then(RTSS => {
+        console.log(RTSS);
+        try {
+          const reportBlob = datasetToBlob(RTSS);
+
+          //Create a URL for the binary.
+          const objectUrl = URL.createObjectURL(reportBlob);
+          window.location.assign(objectUrl);
+        } catch (e) {
+          console.warn(e);
+        }
+      });
+    },
   };
 
   const definitions = {
@@ -371,6 +407,9 @@ const commandsModule = ({
     },
     storeSegmentation: {
       commandFn: actions.storeSegmentation,
+    },
+    downloadRTSS: {
+      commandFn: actions.downloadRTSS,
     },
   };
 

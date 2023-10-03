@@ -1,7 +1,7 @@
 import { createReportAsync } from '@ohif/extension-default';
 import React, { useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import { SegmentationGroupTable } from '@ohif/ui';
+import { SegmentationGroupTable, LegacyButtonGroup, LegacyButton } from '@ohif/ui';
 
 import callInputDialog from './callInputDialog';
 import callColorPickerDialog from './colorPickerDialog';
@@ -215,6 +215,10 @@ export default function PanelSegmentation({
     }
   };
 
+  const onDownloadRTSSClick = async () => {
+    commandsManager.runCommand('downloadRTSS', {});
+  };
+
   return (
     <>
       <div className="flex min-h-0 flex-auto select-none flex-col justify-between">
@@ -265,6 +269,19 @@ export default function PanelSegmentation({
             _setSegmentationConfiguration(selectedSegmentationId, 'fillAlphaInactive', value)
           }
         />
+      </div>
+      <div>
+        <LegacyButtonGroup
+          color="black"
+          size="inherit"
+        >
+          <LegacyButton
+            className="px-2 py-2 text-base"
+            onClick={onDownloadRTSSClick}
+          >
+            {t('Export RTSS')}
+          </LegacyButton>
+        </LegacyButtonGroup>
       </div>
     </>
   );
