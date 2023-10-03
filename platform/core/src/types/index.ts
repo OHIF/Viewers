@@ -1,7 +1,7 @@
-import * as Extensions from '../extensions/ExtensionManager';
-import * as HangingProtocol from './HangingProtocol';
-import Services from './Services';
-import Hotkey from '../classes/Hotkey';
+import type * as Extensions from '../extensions/ExtensionManager';
+import type * as HangingProtocol from './HangingProtocol';
+import type Services from './Services';
+import type Hotkey from '../classes/Hotkey';
 import type { DataSourceDefinition } from './DataSource';
 import type {
   BaseDataSourceConfigurationAPI,
@@ -18,7 +18,6 @@ export type * from './StudyMetadata';
 export type * from './PanelModule';
 export type * from './IPubSub';
 export type * from './Color';
-export type * from '../services/ToolbarService/ToolBarService';
 
 /**
  * Export the types used within the various services and managers, but
