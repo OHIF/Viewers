@@ -416,11 +416,13 @@ jobs:
 workflows:
   PR_CHECKS:
     jobs:
-      - BUILD_PACKAGES_QUICK
+      - BUILD_PACKAGES_QUICK:
+          filters:
+            branches:
+              ignore: master
       - UNIT_TESTS:
           requires:
             - BUILD_PACKAGES_QUICK
-
       - CYPRESS_CUSTOM_RUN:
           name: 'Cypress Tests'
           context: cypress
