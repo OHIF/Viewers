@@ -148,6 +148,12 @@ export type initialImageOptions = {
   preset?: string; // todo: type more
 };
 
+
+export type DisplayArea = {
+  type?: 'SCALE' | 'TRUE_SIZE' | 'FIT';
+  scale?: number;
+};
+
 export type ViewportOptions = {
   toolGroupId?: CustomOption<string>;
   viewportType?: CustomOption<string>;
@@ -157,9 +163,12 @@ export type ViewportOptions = {
   initialImageOptions?: CustomOption<initialImageOptions>;
   syncGroups?: CustomOption<SyncGroup>[];
   customViewportProps?: Record<string, unknown>;
+  displayArea?: DisplayArea;
+  background?: string | [number, number, number];
   // Set to true to allow non-matching drag and drop or options provided
   // from options.displaySetSelectorsMap
   allowUnmatchedView?: boolean;
+  interpolationType?: 0 | 1 | 2;
 };
 
 // The options here includes both the display set selector and matching index

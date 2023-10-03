@@ -1,4 +1,5 @@
 import hpMNGrid from './hpMNGrid';
+import hpScale from './hpScale';
 import hpMNCompare from './hpCompare';
 
 const defaultProtocol = {
@@ -114,6 +115,11 @@ function getHangingProtocolModule() {
       name: hpMNCompare.id,
       protocol: hpMNCompare,
     },
+    // Create a 1:1 scale hanging protocol
+    {
+      name: hpScale.id,
+      protocol: hpScale,
+    }
   ];
 }
 

@@ -249,6 +249,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     const type = viewportInfo.getViewportType();
     const background = viewportInfo.getBackground();
     const orientation = viewportInfo.getOrientation();
+    const displayArea = viewportInfo.getDisplayArea();
 
     const viewportInput: Types.PublicViewportInput = {
       viewportId,
@@ -257,6 +258,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       defaultOptions: {
         background,
         orientation,
+        displayArea,
       },
     };
 
@@ -317,6 +319,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     presentations: Presentations
   ): void {
     const displaySetOptions = viewportInfo.getDisplaySetOptions();
+    const viewportOptions = viewportInfo.getViewportOptions();
 
     const { imageIds, initialImageIndex, displaySetInstanceUID } = viewportData.data;
 
@@ -329,7 +332,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       initialImageIndexToUse = this._getInitialImageIndexForViewport(viewportInfo, imageIds) || 0;
     }
 
-    const properties = { ...presentations.lutPresentation?.properties };
+    const properties: Record<string, unknown> = { ...presentations.lutPresentation?.properties };
     if (!presentations.lutPresentation?.properties) {
       const { voi, voiInverted } = displaySetOptions[0];
       if (voi && (voi.windowWidth || voi.windowCenter)) {
@@ -343,6 +346,11 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       if (voiInverted !== undefined) {
         properties.invert = voiInverted;
       }
+    }
+
+    properties.interpolationType = viewportOptions.interpolationType;
+    if (viewportOptions.interpolationType !== undefined) {
+      properties.interpolationType = viewportOptions.interpolationType;
     }
 
     viewport.setStack(imageIds, initialImageIndexToUse).then(() => {

@@ -5,7 +5,14 @@ export default defineConfig({
   e2e: {
     experimentalRunAllSpecs: true,
     supportFile: 'cypress/support/index.js',
+
     setupNodeEvents(on, config) {
+      on("task", {
+        log(args) {
+          console.log(...args);
+          return null;
+        }
+      });
       on('before:browser:launch', (browser, launchOptions) => {
         // `args` is an array of all the arguments that will
         // be passed to browsers when it launches
