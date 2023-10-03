@@ -94,43 +94,6 @@ jobs:
           flags: 'core'
 
   ###
-  # Workflow: PR_OPTIONAL_DOCKER_PUBLISH
-  ###
-  # DOCKER_PR_PUBLISH:
-  #   <<: *defaults
-  #   steps:
-  #     # Enable yarn workspaces
-  #     - run: yarn config set workspaces-experimental true
-
-  #     # Checkout code and ALL Git Tags
-  #     - checkout
-  #     - restore_cache:
-  #         name: Restore Yarn and Cypress Package Cache
-  #         keys:
-  #           # when lock file changes, use increasingly general patterns to restore cache
-  #           - yarn-packages-{{ checksum "yarn.lock" }}
-  #           - yarn-packages-
-
-  #     - run:
-  #         name: Install Dependencies
-  #         command: yarn install --frozen-lockfile
-
-  #     - setup_remote_docker:
-  #         docker_layer_caching: false
-
-  #     - run:
-  #         name: Build and push Docker image
-  #         command: |
-  #           # Remove npm config
-  #           rm -f ./.npmrc
-  #           # Set our version number using vars
-  #           echo $CIRCLE_BUILD_NUM
-  #           # Build our image, auth, and push
-  #           docker build --tag ohif/app:PR_BUILD-$CIRCLE_BUILD_NUM .
-  #           echo $DOCKER_PWD | docker login -u $DOCKER_LOGIN --password-stdin
-  #           docker push ohif/app:PR_BUILD-$CIRCLE_BUILD_NUM
-
-  ###
   # Workflow: DEPLOY
   ###
   BUILD:
@@ -179,6 +142,53 @@ jobs:
             - version.txt
             - commit.txt
             - version.json
+
+  # just to make sure later on we can publish them
+  BUILD_PACKAGES_QUICK:
+    <<: *defaults
+    steps:
+      - run: yarn -v
+      # Checkout code and ALL Git Tags
+      - checkout
+      - attach_workspace:
+          at: ~/repo
+      # Use increasingly general patterns to restore cache
+      - restore_cache:
+          name: Restore Yarn and Cypress Package Cache
+          keys:
+            - yarn-packages-{{ checksum "yarn.lock" }}
+            - yarn-packages-
+      - run:
+          name: Install Dependencies
+          command: yarn install --frozen-lockfile
+      - save_cache:
+          name: Save Yarn Package Cache
+          paths:
+            - ~/.cache/yarn
+          key: yarn-packages-{{ checksum "yarn.lock" }}
+      - run:
+          name: Avoid hosts unknown for github
+          command: |
+            rm -rf ~/.ssh
+            mkdir ~/.ssh/
+            echo -e "Host github.com\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
+            git config --global user.email "danny.ri.brown+ohif-bot@gmail.com"
+            git config --global user.name "ohif-bot"
+      - run:
+          name: Authenticate with NPM registry
+          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/repo/.npmrc
+      - run:
+          name: Increase the event emitter limit
+          command: |
+            node ./increaseEventEmitterLimit.mjs
+      - run:
+          name: build half of the packages (to avoid out of memory in circleci)
+          command: |
+            yarn run build:package-all
+      - run:
+          name: build the other half of the packages
+          command: |
+            yarn run build:package-all-1
 
   ###
   # Workflow: RELEASE
@@ -406,7 +416,10 @@ jobs:
 workflows:
   PR_CHECKS:
     jobs:
-      - UNIT_TESTS
+      - BUILD_PACKAGES_QUICK
+      - UNIT_TESTS:
+          requires:
+            - BUILD_PACKAGES_QUICK
 
       - CYPRESS_CUSTOM_RUN:
           name: 'Cypress Tests'
@@ -427,7 +440,7 @@ workflows:
               cypress-cache-path:
                 - '~/.cache/Cypress'
           requires:
-            - UNIT_TESTS
+            - BUILD_PACKAGES_QUICK
 
   # PR_OPTIONAL_VISUAL_TESTS:
   #   jobs:

@@ -443,7 +443,7 @@ export default function ModeRoute({
     <ImageViewerProvider
       // initialState={{ StudyInstanceUIDs: StudyInstanceUIDs }}
       StudyInstanceUIDs={studyInstanceUIDs}
-    // reducer={reducer}
+      // reducer={reducer}
     >
       <CombinedContextProvider>
         <DragAndDropProvider>
