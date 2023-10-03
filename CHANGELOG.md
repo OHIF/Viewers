@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.7.0-beta.91](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.90...v3.7.0-beta.91) (2023-10-03)
+
+
+### Bug Fixes
+
+* **editing:** regression bug in disable editing ([#3687](https://github.com/OHIF/Viewers/issues/3687)) ([4dc2acd](https://github.com/OHIF/Viewers/commit/4dc2acdefa872dd1d8df47f465e9e9656f95f67f))
+
+
+
+
+
 # [3.7.0-beta.90](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.89...v3.7.0-beta.90) (2023-10-03)
 
 
