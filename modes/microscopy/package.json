@@ -33,8 +33,8 @@
     "test:unit:ci": "jest --ci --runInBand --collectCoverage --passWithNoTests"
   },
   "peerDependencies": {
-    "@ohif/core": "3.7.0-beta.92",
-    "@ohif/extension-dicom-microscopy": "3.7.0-beta.92"
+    "@ohif/core": "3.7.0-beta.93",
+    "@ohif/extension-dicom-microscopy": "3.7.0-beta.93"
   },
   "dependencies": {
     "@babel/runtime": "^7.20.13"
