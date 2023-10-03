@@ -14,7 +14,7 @@ import {
   utilities as csUtilities,
   Enums as csEnums,
 } from '@cornerstonejs/core';
-import { Enums, utilities, ReferenceLinesTool } from '@cornerstonejs/tools';
+import { Enums } from '@cornerstonejs/tools';
 import { cornerstoneStreamingImageVolumeLoader } from '@cornerstonejs/streaming-image-volume-loader';
 
 import initWADOImageLoader from './initWADOImageLoader';
@@ -93,6 +93,7 @@ export default async function init({
     cornerstoneViewportService,
     hangingProtocolService,
     toolGroupService,
+    toolbarService,
     viewportGridService,
     stateSyncService,
   } = servicesManager.services as CornerstoneServices;
@@ -208,9 +209,45 @@ export default async function init({
     commandsManager,
   });
 
-  const newStackCallback = evt => {
+  /**
+   * When a viewport gets a new display set, this call will go through all the
+   * active tools in the toolbar, and call any commands registered in the
+   * toolbar service with a callback to re-enable on displaying the viewport.
+   */
+  const toolbarEventListener = evt => {
     const { element } = evt.detail;
-    utilities.stackPrefetch.enable(element);
+    const activeTools = toolbarService.getActiveTools();
+
+    activeTools.forEach(tool => {
+      const toolData = toolbarService.getNestedButton(tool);
+      const commands = toolData?.listeners?.[evt.type];
+      commandsManager.run(commands, { element, evt });
+    });
+  };
+
+  /** Listens for active viewport events and fires the toolbar listeners */
+  const activeViewportEventListener = evt => {
+    const { viewportId } = evt;
+    const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
+
+    const activeTools = toolbarService.getActiveTools();
+
+    activeTools.forEach(tool => {
+      if (!toolGroup?._toolInstances?.[tool]) {
+        return;
+      }
+
+      // check if tool is active on the new viewport
+      const toolEnabled = toolGroup._toolInstances[tool].mode === Enums.ToolModes.Enabled;
+
+      if (!toolEnabled) {
+        return;
+      }
+
+      const button = toolbarService.getNestedButton(tool);
+      const commands = button?.listeners?.[evt.type];
+      commandsManager.run(commands, { viewportId, evt });
+    });
   };
 
   const resetCrosshairs = evt => {
@@ -237,11 +274,16 @@ export default async function init({
     }
   };
 
+  eventTarget.addEventListener(EVENTS.STACK_VIEWPORT_NEW_STACK, evt => {
+    const { element } = evt.detail;
+    cornerstoneTools.utilities.stackContextPrefetch.enable(element);
+  });
+
   function elementEnabledHandler(evt) {
     const { element } = evt.detail;
     element.addEventListener(EVENTS.CAMERA_RESET, resetCrosshairs);
 
-    eventTarget.addEventListener(EVENTS.STACK_VIEWPORT_NEW_STACK, newStackCallback);
+    eventTarget.addEventListener(EVENTS.STACK_VIEWPORT_NEW_STACK, toolbarEventListener);
   }
 
   function elementDisabledHandler(evt) {
@@ -262,33 +304,7 @@ export default async function init({
 
   viewportGridService.subscribe(
     viewportGridService.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED,
-    ({ viewportId }) => {
-      const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
-
-      if (!toolGroup || !toolGroup._toolInstances?.['ReferenceLines']) {
-        return;
-      }
-
-      // check if reference lines are active
-      const referenceLinesEnabled =
-        toolGroup._toolInstances['ReferenceLines'].mode === Enums.ToolModes.Enabled;
-
-      if (!referenceLinesEnabled) {
-        return;
-      }
-
-      toolGroup.setToolConfiguration(
-        ReferenceLinesTool.toolName,
-        {
-          sourceViewportId: viewportId,
-        },
-        true // overwrite
-      );
-
-      // make sure to set it to enabled again since we want to recalculate
-      // the source-target lines
-      toolGroup.setToolEnabled(ReferenceLinesTool.toolName);
-    }
+    activeViewportEventListener
   );
 }
 
