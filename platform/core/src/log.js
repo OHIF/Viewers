@@ -17,8 +17,10 @@ const log = {
   },
   // Store the timing keys to allow knowing whether or not to log events
   timingKeys: {
-    // script time values are added before log is loaded, and the log
-    // shouldn't depend on the enums, so for this case recreate the string.
+    // script time values are added during the index.html initial load,
+    // before log (this file) is loaded, and the log
+    // can't depend on the enums, so for this case recreate the string.
+    // See TimingEnum for details
     scriptToView: true,
   },
 };
