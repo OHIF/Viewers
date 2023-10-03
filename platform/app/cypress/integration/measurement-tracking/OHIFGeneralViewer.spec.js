@@ -1,11 +1,9 @@
-describe('OHIF Study Viewer Page', function () {
-  beforeEach(function () {
-    cy.checkStudyRouteInViewer('1.2.840.113619.2.5.1762583153.215519.978957063.78');
-
-    cy.expectMinimumThumbnails(3);
-    cy.initCommonElementsAliases();
-    cy.initCornerstoneToolsAliases();
-  });
+describe('OHIF General Viewer', function () {
+  beforeEach(() =>
+    cy.initViewer('1.2.840.113619.2.5.1762583153.215519.978957063.78', {
+      minimumThumbnails: 3,
+    })
+  );
 
   it('scrolls series stack using scrollbar', function () {
     cy.scrollToIndex(13);

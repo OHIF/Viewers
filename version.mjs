@@ -23,20 +23,37 @@ async function run() {
     console.log('Branch: release');
     nextVersion = semver.inc(currentVersion, 'minor');
   } else {
-    console.log('Branch: master/main');
+    console.log('Branch: master');
     const prereleaseComponents = semver.prerelease(currentVersion);
     const isBumpBeta = lastCommitMessage.trim().endsWith('[BUMP BETA]');
     console.log('isBumpBeta', isBumpBeta);
 
-    if (prereleaseComponents && prereleaseComponents.includes('beta') && !isBumpBeta) {
-      nextVersion = semver.inc(currentVersion, 'prerelease', 'beta');
-    } else if (isBumpBeta && prereleaseComponents.includes('beta')) {
-      console.log('Bumping beta version to be fresh beta');
-      nextVersion = `${semver.major(currentVersion)}.${semver.minor(currentVersion) + 1}.0-beta.0`;
+    if (prereleaseComponents?.includes('beta')) {
+      // if the version includes beta
+      if (isBumpBeta) {
+        // if the commit message includes [BUMP BETA]
+        // which means that we should reset to beta 0 for next major version
+        // e.g., from 2.11.0-beta.11 to 2.12.0-beta.0
+        console.log(
+          'Bumping beta version to be fresh beta, e.g., from 2.11.0-beta.11 to 2.12.0-beta.0'
+        );
+        nextVersion = `${semver.major(currentVersion)}.${
+          semver.minor(currentVersion) + 1
+        }.0-beta.0`;
+      } else {
+        // this means that the current version is already a beta version
+        // and we should bump the beta version to the next beta version
+        // e.g., from 2.11.0-beta.11 to 2.11.0-beta.12
+        console.log(
+          'Bumping beta version to be next beta, e.g., from 2.11.0-beta.11 to 2.11.0-beta.12'
+        );
+        nextVersion = semver.inc(currentVersion, 'prerelease', 'beta');
+      }
     } else {
-      console.log('Bumping minor version for beta release');
-      const nextMinorVersion = semver.inc(currentVersion, 'minor');
-      nextVersion = `${semver.major(nextMinorVersion)}.${semver.minor(nextMinorVersion)}.0-beta.0`;
+      // if the version does not include the beta, might be that a recent merge into the release branch
+      // that later has been pulled into this PR
+      console.log('Bumping beta version to be fresh beta e.g., from 2.11.0 to 2.12.0-beta.0');
+      nextVersion = `${semver.major(currentVersion)}.${semver.minor(currentVersion) + 1}.0-beta.0`;
     }
   }
 
