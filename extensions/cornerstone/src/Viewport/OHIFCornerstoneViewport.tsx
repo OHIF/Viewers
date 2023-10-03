@@ -21,6 +21,7 @@ import getSOPInstanceAttributes from '../utils/measurementServiceMappings/utils/
 import CornerstoneServices from '../types/CornerstoneServices';
 import CinePlayer from '../components/CinePlayer';
 import { Types } from '@ohif/core';
+import OHIFViewportActionCorners from '../components/OHIFViewportActionCorners';
 
 const STACK = 'stack';
 
@@ -373,7 +374,8 @@ const OHIFCornerstoneViewport = React.memo(props => {
           servicesManager={servicesManager}
         />
       </div>
-      <div className="absolute w-full">
+      {/* top offset of 24px to account for ViewportActionCorners. */}
+      <div className="absolute top-[24px] w-full">
         {viewportDialogState.viewportId === viewportId && (
           <Notification
             id="viewport-notification"
@@ -385,6 +387,8 @@ const OHIFCornerstoneViewport = React.memo(props => {
           />
         )}
       </div>
+      {/* The OHIFViewportActionCorners follows the viewport in the DOM so that it is naturally at a higher z-index.*/}
+      <OHIFViewportActionCorners viewportId={viewportId}></OHIFViewportActionCorners>
     </React.Fragment>
   );
 }, areEqual);

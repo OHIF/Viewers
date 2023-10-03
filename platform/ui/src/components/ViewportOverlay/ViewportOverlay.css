@@ -10,6 +10,12 @@
   text-shadow: 1px 1px #000;
   pointer-events: none;
 }
+.overlay-top {
+  top: 28px;
+}
+.overlay-bottom {
+  bottom: 28px;
+}
 .ViewportOverlay .top-left {
   top: 20px;
   left: 20px;

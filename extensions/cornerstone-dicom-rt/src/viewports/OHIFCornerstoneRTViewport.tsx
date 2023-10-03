@@ -1,13 +1,17 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
-import OHIF, { utils } from '@ohif/core';
-import { ViewportActionBar, useViewportGrid, LoadingIndicatorTotalPercent } from '@ohif/ui';
+import { utils } from '@ohif/core';
+import {
+  useViewportGrid,
+  LoadingIndicatorTotalPercent,
+  ViewportActionCornersLocations,
+  ViewportActionArrows,
+} from '@ohif/ui';
 
 import promptHydrateRT from '../utils/promptHydrateRT';
 import _getStatusComponent from './_getStatusComponent';
 import createRTToolGroupAndAddTools from '../utils/initRTToolGroup';
 
-const { formatDate } = utils;
 const RT_TOOLGROUP_BASE_NAME = 'RTToolGroup';
 
 function OHIFCornerstoneRTViewport(props) {
@@ -15,7 +19,6 @@ function OHIFCornerstoneRTViewport(props) {
     children,
     displaySets,
     viewportOptions,
-    viewportLabel,
     servicesManager,
     extensionManager,
     commandsManager,
@@ -27,6 +30,7 @@ function OHIFCornerstoneRTViewport(props) {
     segmentationService,
     uiNotificationService,
     customizationService,
+    viewportActionCornersService,
   } = servicesManager.services;
 
   const viewportId = viewportOptions.viewportId;
@@ -280,20 +284,7 @@ function OHIFCornerstoneRTViewport(props) {
     });
   }
 
-  const {
-    PatientID,
-    PatientName,
-    PatientSex,
-    PatientAge,
-    SliceThickness,
-    ManufacturerModelName,
-    StudyDate,
-    SeriesDescription,
-    SpacingBetweenSlices,
-    SeriesNumber,
-  } = referencedDisplaySetRef.current.metadata;
-
-  const onStatusClick = async () => {
+  const onStatusClick = useCallback(async () => {
     // Before hydrating a RT and make it added to all viewports in the grid
     // that share the same frameOfReferenceUID, we need to store the viewport grid
     // presentation state, so that we can restore it after hydrating the RT. This is
@@ -307,41 +298,32 @@ function OHIFCornerstoneRTViewport(props) {
     });
 
     setIsHydrated(isHydrated);
-  };
+  }, [hydrateRTDisplaySet, rtDisplaySet, storePresentationState, viewportId]);
+
+  useEffect(() => {
+    viewportActionCornersService.setActionComponent({
+      viewportId,
+      componentId: 'viewportStatusComponent',
+      component: _getStatusComponent({
+        isHydrated,
+        onStatusClick,
+      }),
+    });
+
+    viewportActionCornersService.setActionComponent({
+      viewportId,
+      componentId: 'viewportActionArrowsComponent',
+      component: (
+        <ViewportActionArrows
+          key="actionArrows"
+          onArrowsClick={onSegmentChange}
+        ></ViewportActionArrows>
+      ),
+    });
+  }, [isHydrated, onSegmentChange, onStatusClick, viewportActionCornersService, viewportId]);
 
   return (
     <>
-      <ViewportActionBar
-        onDoubleClick={evt => {
-          evt.stopPropagation();
-          evt.preventDefault();
-        }}
-        onArrowsClick={onSegmentChange}
-        getStatusComponent={() => {
-          return _getStatusComponent({
-            isHydrated,
-            onStatusClick,
-          });
-        }}
-        studyData={{
-          label: viewportLabel,
-          useAltStyling: true,
-          studyDate: formatDate(StudyDate),
-          currentSeries: SeriesNumber,
-          seriesDescription: `RT Viewport ${SeriesDescription}`,
-          patientInformation: {
-            patientName: PatientName ? OHIF.utils.formatPN(PatientName.Alphabetic) : '',
-            patientSex: PatientSex || '',
-            patientAge: PatientAge || '',
-            MRN: PatientID || '',
-            thickness: SliceThickness ? `${SliceThickness.toFixed(2)}mm` : '',
-            spacing:
-              SpacingBetweenSlices !== undefined ? `${SpacingBetweenSlices.toFixed(2)}mm` : '',
-            scanner: ManufacturerModelName || '',
-          },
-        }}
-      />
-
       <div className="relative flex h-full w-full flex-row overflow-hidden">
         {rtIsLoading && (
           <LoadingIndicatorTotalPercent

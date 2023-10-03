@@ -5,7 +5,13 @@ import i18n from '@ohif/i18n';
 import { I18nextProvider } from 'react-i18next';
 import { BrowserRouter } from 'react-router-dom';
 import Compose from './routes/Mode/Compose';
-import { ServicesManager, ExtensionManager, CommandsManager, HotkeysManager } from '@ohif/core';
+import {
+  ServicesManager,
+  ExtensionManager,
+  CommandsManager,
+  HotkeysManager,
+  ServiceProvidersManager,
+} from '@ohif/core';
 import {
   DialogProvider,
   Modal,
@@ -27,6 +33,7 @@ import OpenIdConnectRoutes from './utils/OpenIdConnectRoutes';
 let commandsManager: CommandsManager,
   extensionManager: ExtensionManager,
   servicesManager: ServicesManager,
+  serviceProvidersManager: ServiceProvidersManager,
   hotkeysManager: HotkeysManager;
 
 function App({ config, defaultExtensions, defaultModes }) {
@@ -47,6 +54,7 @@ function App({ config, defaultExtensions, defaultModes }) {
   commandsManager = init.commandsManager;
   extensionManager = init.extensionManager;
   servicesManager = init.servicesManager;
+  serviceProvidersManager = init.serviceProvidersManager;
   hotkeysManager = init.hotkeysManager;
 
   // Set appConfig
@@ -76,6 +84,12 @@ function App({ config, defaultExtensions, defaultModes }) {
     [DialogProvider, { service: uiDialogService }],
     [ModalProvider, { service: uiModalService, modal: Modal }],
   ];
+
+  // Loop through and register each of the service providers registered with the ServiceProvidersManager.
+  Object.entries(serviceProvidersManager.providers).forEach(([serviceName, provider]) => {
+    providers.push([provider, { service: servicesManager.services[serviceName] }]);
+  });
+
   const CombinedProviders = ({ children }) => Compose({ components: providers, children });
 
   let authRoutes = null;

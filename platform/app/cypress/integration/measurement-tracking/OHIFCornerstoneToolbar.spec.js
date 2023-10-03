@@ -83,7 +83,7 @@ describe('OHIF Cornerstone Toolbar', () => {
       .trigger('mouseup', { buttons: 1 });
 
     // The exact text is slightly dependent on the viewport resolution, so leave a range
-    cy.get('@viewportInfoTopLeft').should($txt => {
+    cy.get('@viewportInfoBottomLeft').should($txt => {
       const text = $txt.text();
       expect(text).to.include('W:193').include('L:479');
     });
@@ -143,7 +143,7 @@ describe('OHIF Cornerstone Toolbar', () => {
     cy.resetViewport();
 
     const expectedText = 'W:958L:479';
-    cy.get('@viewportInfoTopLeft').should('have.text', expectedText);
+    cy.get('@viewportInfoBottomLeft').should('have.text', expectedText);
   });
 
   /*it('checks if CINE tool will prompt a modal with working controls', () => {
@@ -447,15 +447,15 @@ describe('OHIF Cornerstone Toolbar', () => {
     // The following lines assist in troubleshooting when/if this test were to fail.
     cy.get('[data-cy="viewport-pane"]')
       .eq(0)
-      .find('[data-cy="viewport-overlay-top-right"]')
+      .find('[data-cy="viewport-overlay-bottom-right"]')
       .should('contains.text', 'I:2 (2/20)');
     cy.get('[data-cy="viewport-pane"]')
       .eq(1)
-      .find('[data-cy="viewport-overlay-top-right"]')
+      .find('[data-cy="viewport-overlay-bottom-right"]')
       .should('contains.text', 'I:2 (2/20)');
 
     cy.get('body').type('{leftarrow}');
     cy.setLayout(1, 1);
-    cy.get('@viewportInfoTopRight').should('contains.text', 'I:2 (2/20)');
+    cy.get('@viewportInfoBottomRight').should('contains.text', 'I:2 (2/20)');
   });
 });

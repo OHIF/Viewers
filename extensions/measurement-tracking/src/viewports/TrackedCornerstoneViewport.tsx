@@ -1,24 +1,21 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import OHIF, { utils } from '@ohif/core';
 
-import { ViewportActionBar, Tooltip, Icon } from '@ohif/ui';
-
-import { useTranslation } from 'react-i18next';
+import { Tooltip, Icon, ViewportActionArrows } from '@ohif/ui';
 
 import { annotation } from '@cornerstonejs/tools';
 import { useTrackedMeasurements } from './../getContextModule';
 import { BaseVolumeViewport, Enums } from '@cornerstonejs/core';
 
-const { formatDate } = utils;
-
 function TrackedCornerstoneViewport(props) {
-  const { displaySets, viewportId, viewportLabel, servicesManager, extensionManager } = props;
+  const { displaySets, viewportId, servicesManager, extensionManager } = props;
 
-  const { t } = useTranslation('Common');
-
-  const { measurementService, cornerstoneViewportService, viewportGridService } =
-    servicesManager.services;
+  const {
+    measurementService,
+    cornerstoneViewportService,
+    viewportGridService,
+    viewportActionCornersService,
+  } = servicesManager.services;
 
   // Todo: handling more than one displaySet on the same viewport
   const displaySet = displaySets[0];
@@ -31,18 +28,7 @@ function TrackedCornerstoneViewport(props) {
 
   const { trackedSeries } = trackedMeasurements.context;
 
-  const { SeriesDate, SeriesDescription, SeriesInstanceUID, SeriesNumber } = displaySet;
-
-  const {
-    PatientID,
-    PatientName,
-    PatientSex,
-    PatientAge,
-    SliceThickness,
-    SpacingBetweenSlices,
-    StudyDate,
-    ManufacturerModelName,
-  } = displaySet.images[0];
+  const { SeriesInstanceUID } = displaySet;
 
   const updateIsTracked = useCallback(() => {
     const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
@@ -170,22 +156,42 @@ function TrackedCornerstoneViewport(props) {
     };
   }, [measurementService, sendTrackedMeasurementsEvent, viewportId, viewportGridService]);
 
-  function switchMeasurement(direction) {
-    const newTrackedMeasurementUID = _getNextMeasurementUID(
-      direction,
-      servicesManager,
-      trackedMeasurementUID,
-      trackedMeasurements
-    );
+  const switchMeasurement = useCallback(
+    direction => {
+      const newTrackedMeasurementUID = _getNextMeasurementUID(
+        direction,
+        servicesManager,
+        trackedMeasurementUID,
+        trackedMeasurements
+      );
 
-    if (!newTrackedMeasurementUID) {
-      return;
-    }
+      if (!newTrackedMeasurementUID) {
+        return;
+      }
 
-    setTrackedMeasurementUID(newTrackedMeasurementUID);
+      setTrackedMeasurementUID(newTrackedMeasurementUID);
 
-    measurementService.jumpToMeasurement(viewportId, newTrackedMeasurementUID);
-  }
+      measurementService.jumpToMeasurement(viewportId, newTrackedMeasurementUID);
+    },
+    [measurementService, servicesManager, trackedMeasurementUID, trackedMeasurements, viewportId]
+  );
+
+  useEffect(() => {
+    const statusComponent = _getStatusComponent(isTracked);
+    const arrowsComponent = _getArrowsComponent(isTracked, switchMeasurement);
+
+    viewportActionCornersService.setActionComponent({
+      viewportId,
+      componentId: 'viewportStatusComponent',
+      component: statusComponent,
+    });
+
+    viewportActionCornersService.setActionComponent({
+      viewportId,
+      componentId: 'viewportActionArrowsComponent',
+      component: arrowsComponent,
+    });
+  }, [isTracked, switchMeasurement, viewportActionCornersService, viewportId]);
 
   const getCornerstoneViewport = () => {
     const { component: Component } = extensionManager.getModuleEntry(
@@ -203,35 +209,6 @@ function TrackedCornerstoneViewport(props) {
 
   return (
     <>
-      <ViewportActionBar
-        onDoubleClick={evt => {
-          evt.stopPropagation();
-          evt.preventDefault();
-        }}
-        useAltStyling={isTracked}
-        onArrowsClick={direction => switchMeasurement(direction)}
-        getStatusComponent={() => _getStatusComponent(isTracked)}
-        studyData={{
-          label: viewportLabel,
-          studyDate: formatDate(SeriesDate) || formatDate(StudyDate) || t('NoStudyDate'),
-          currentSeries: SeriesNumber, // TODO - switch entire currentSeries to be UID based or actual position based
-          seriesDescription: SeriesDescription,
-          patientInformation: {
-            patientName: PatientName ? OHIF.utils.formatPN(PatientName) : '',
-            patientSex: PatientSex || '',
-            patientAge: PatientAge || '',
-            MRN: PatientID || '',
-            thickness: SliceThickness ? `${parseFloat(SliceThickness).toFixed(2)}` : '',
-            thicknessUnits: 'mm',
-            spacing:
-              SpacingBetweenSlices !== undefined
-                ? `${parseFloat(SpacingBetweenSlices).toFixed(2)}mm`
-                : '',
-            scanner: ManufacturerModelName || '',
-          },
-        }}
-      />
-      {/* TODO: Viewport interface to accept stack or layers of content like this? */}
       <div className="relative flex h-full w-full flex-row overflow-hidden">
         {getCornerstoneViewport()}
       </div>
@@ -311,11 +288,25 @@ function _getNextMeasurementUID(
   return newTrackedMeasurementId;
 }
 
-function _getStatusComponent(isTracked) {
-  const trackedIcon = isTracked ? 'status-tracked' : 'status-untracked';
+const _getArrowsComponent = (isTracked, switchMeasurement) => {
+  if (!isTracked) {
+    return null;
+  }
 
   return (
-    <div className="relative">
+    <ViewportActionArrows
+      onArrowsClick={direction => switchMeasurement(direction)}
+    ></ViewportActionArrows>
+  );
+};
+
+function _getStatusComponent(isTracked) {
+  if (!isTracked) {
+    return null;
+  }
+
+  return (
+    <div className="relative px-[4px]">
       <Tooltip
         position="bottom-left"
         content={
@@ -347,7 +338,7 @@ function _getStatusComponent(isTracked) {
         }
       >
         <Icon
-          name={trackedIcon}
+          name={'viewport-status-tracked'}
           className="text-aqua-pale"
         />
       </Tooltip>

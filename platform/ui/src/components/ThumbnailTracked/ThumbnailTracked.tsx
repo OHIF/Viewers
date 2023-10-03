@@ -21,42 +21,10 @@ const ThumbnailTracked = ({
   onClick,
   onDoubleClick,
   onClickUntrack,
-  viewportIdentificator,
   isTracked,
   isActive,
 }) => {
   const trackedIcon = isTracked ? 'circled-checkmark' : 'dotted-circle';
-  const viewportIdentificatorLabel = viewportIdentificator.join(', ');
-  const renderViewportLabels = () => {
-    const MAX_LABELS_PER_COL = 3;
-    const shouldShowStack = viewportIdentificator.length > MAX_LABELS_PER_COL;
-    if (shouldShowStack) {
-      return (
-        <div>
-          <div>
-            {viewportIdentificator.slice(0, MAX_LABELS_PER_COL).map(label => (
-              <div key={label}>{label}</div>
-            ))}
-          </div>
-          <Tooltip
-            position="right"
-            content={
-              <div className="max-w-40 text-left">
-                Series is displayed <br /> in viewport {viewportIdentificatorLabel}
-              </div>
-            }
-          >
-            <Icon
-              name="tool-more-menu"
-              className="py-2 text-white"
-            />
-          </Tooltip>
-        </div>
-      );
-    }
-
-    return viewportIdentificator.map(label => <div key={label}>{label}</div>);
-  };
 
   return (
     <div
@@ -88,12 +56,6 @@ const ThumbnailTracked = ({
                     Series is
                     <span className="text-white">{isTracked ? ' tracked' : ' untracked'}</span>
                   </span>
-                  {!!viewportIdentificator.length && (
-                    <span>
-                      in viewport
-                      <span className="ml-1 text-white">{viewportIdentificatorLabel}</span>
-                    </span>
-                  )}
                 </div>
               </div>
             }
@@ -103,13 +65,6 @@ const ThumbnailTracked = ({
               className="text-primary-light mb-2 w-4"
             />
           </Tooltip>
-
-          <div
-            className="text-center text-xl leading-tight text-white"
-            data-cy={'thumbnail-viewport-labels'}
-          >
-            {renderViewportLabels()}
-          </div>
         </div>
         {isTracked && (
           <div onClick={onClickUntrack}>
@@ -160,7 +115,6 @@ ThumbnailTracked.propTypes = {
   onClick: PropTypes.func.isRequired,
   onDoubleClick: PropTypes.func.isRequired,
   onClickUntrack: PropTypes.func.isRequired,
-  viewportIdentificator: PropTypes.array,
   isTracked: PropTypes.bool,
   messages: PropTypes.object,
   isActive: PropTypes.bool.isRequired,
