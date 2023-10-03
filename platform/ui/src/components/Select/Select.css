@@ -1,6 +1,6 @@
 .customSelect__wrapper .customSelect__control {
-  @apply border-primary-main w-full rounded border bg-black text-sm leading-tight text-white shadow transition duration-300;
-  min-height: 33px;
+  @apply border-secondary-light w-full rounded border bg-black text-sm leading-tight text-white shadow transition duration-300;
+  min-height: 28px;
 }
 .customSelect__wrapper .customSelect__control:hover {
   @apply border-gray-500;
@@ -15,6 +15,10 @@
   @apply pointer-events-none;
 }
 
+.css-1hwfws3 {
+  padding: 0;
+}
+
 .customSelect__wrapper .customSelect__indicator-separator {
   @apply hidden;
 }
@@ -24,11 +28,11 @@
 }
 
 .customSelect__wrapper .customSelect__option {
+  color: #d6d6d6;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
   @apply flex flex-row items-center;
-}
-
-.customSelect__wrapper .customSelect__option:focus {
-  @apply bg-primary-main;
 }
 
 .customSelect__wrapper .customSelect__option--is-selected {
@@ -36,7 +40,11 @@
 }
 
 .customSelect__wrapper .customSelect__single-value {
-  @apply text-white;
+  @apply text-aqua-pale pl-1;
+  max-width: calc(100% - 20px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .customSelect__wrapper.customSelect--is-disabled {
@@ -47,15 +55,14 @@
   @apply inline-block truncate px-3 py-2;
 }
 
-.customSelect__menu {
+.ohif-select .customSelect__menu {
   background-color: transparent !important;
   border-radius: 6px;
 }
 
 .ohif-select .customSelect__menu-list {
   overflow-x: hidden !important;
-  margin-right: 4px;
-  margin-top: 4px;
+  margin: 4px;
   padding-top: 0px !important;
 }
 
@@ -63,22 +70,17 @@
   width: 6px;
   border-radius: 10px;
 }
+.ohif-select .customSelect__placeholder {
+  @apply text-aqua-pale pl-1.5;
+}
 
 .ohif-select .customSelect__menu-list::-webkit-scrollbar-thumb {
   background-color: #0944b3;
   border-radius: 10px;
 }
 
-.customSelect__option:focus {
+.customSelect__option--is-focused {
   background-color: #0944b391 !important;
-}
-
-.ohif-select .customSelect__option,
-.ohif-select .customSelect__option label {
-  color: #d6d6d6;
-  font-size: 14px;
-  display: flex;
-  align-items: center;
 }
 
 .ohif-select .customSelect__option:hover {
@@ -89,4 +91,8 @@
   border: 2px solid #0944b3;
   border-radius: 6px;
   background-color: #151515 !important;
+}
+
+.css-1hwfws3 {
+  all: unset !important;
 }

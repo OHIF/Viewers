@@ -89,7 +89,7 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
 
   const loadedModes = await loadModules([...(appConfig.modes || []), ...defaultModes]);
 
-  // This is the name for the loaded istance object
+  // This is the name for the loaded instance object
   appConfig.loadedModes = [];
   const modesById = new Set();
   for (let i = 0; i < loadedModes.length; i++) {

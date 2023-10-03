@@ -3,7 +3,7 @@ import { StateSyncService } from '@ohif/core';
 /**
  * This find or create viewport is paired with the reduce results from
  * below, and the action of this viewport is to look for previously filled
- * viewports, and to re-use by position id.  If there is no filled viewport,
+ * viewports, and to reuse by position id.  If there is no filled viewport,
  * then one can be re-used from the display set if it isn't going to be displayed.
  * @param hangingProtocolService - bound parameter supplied before using this
  * @param viewportsByPosition - bound parameter supplied before using this

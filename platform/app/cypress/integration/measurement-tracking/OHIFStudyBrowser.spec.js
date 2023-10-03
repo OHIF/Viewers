@@ -1,11 +1,10 @@
-describe('OHIF Study Viewer Page', function () {
+describe('OHIF Study Browser', function () {
   beforeEach(function () {
     cy.checkStudyRouteInViewer('1.2.840.113619.2.5.1762583153.215519.978957063.78');
 
     cy.expectMinimumThumbnails(3);
     cy.initCommonElementsAliases();
     cy.initCornerstoneToolsAliases();
-    cy.resetViewport().wait(50);
   });
 
   it('checks if series thumbnails are being displayed', function () {

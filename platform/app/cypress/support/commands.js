@@ -69,6 +69,18 @@ Cypress.Commands.add(
   }
 );
 
+Cypress.Commands.add('initViewer', (StudyInstanceUID, other = {}) => {
+  const { mode = '/basic-test', minimumThumbnails = 1, params = '' } = other;
+  cy.openStudyInViewer(StudyInstanceUID, params, mode);
+  cy.waitDicomImage();
+  // Very short wait to ensure pending updates are handled
+  cy.wait(25);
+
+  cy.expectMinimumThumbnails(minimumThumbnails);
+  cy.initCommonElementsAliases();
+  cy.initCornerstoneToolsAliases();
+});
+
 Cypress.Commands.add(
   'openStudyInViewer',
   (StudyInstanceUID, otherParams = '', mode = '/basic-test') => {
@@ -136,29 +148,6 @@ Cypress.Commands.add('drag', { prevSubject: 'element' }, (...args) =>
 );
 
 /**
- * Command to perform two clicks into two different positions. Each position must be [x, y].
- * The positions are considering the element as reference, therefore, top-left of the element will be (0, 0).
- *
- * @param {*} viewport - Selector for viewport we would like to interact with
- * @param {number[]} firstClick - Click position [x, y]
- * @param {number[]} secondClick - Click position [x, y]
- */
-Cypress.Commands.add('addLine', (viewport, firstClick, secondClick) => {
-  cy.get(viewport).then($viewport => {
-    const [x1, y1] = firstClick;
-    const [x2, y2] = secondClick;
-
-    // The wait is necessary because of double click testing
-    cy.wrap($viewport)
-      .click(x1, y1)
-      .wait(250)
-      .trigger('mousemove', { clientX: x2, clientY: y2 })
-      .click(x2, y2)
-      .wait(250);
-  });
-});
-
-/**
  * Command to perform three clicks into three different positions. Each position must be [x, y].
  * The positions are considering the element as reference, therefore, top-left of the element will be (0, 0).
  *
@@ -183,9 +172,10 @@ Cypress.Commands.add('addAngle', (viewport, firstClick, secondClick, thirdClick)
 });
 
 Cypress.Commands.add('expectMinimumThumbnails', (seriesToWait = 1) => {
-  cy.get('[data-cy="study-browser-thumbnail"]', { timeout: 50000 }).should($itemList => {
-    expect($itemList.length >= seriesToWait).to.be.true;
-  });
+  cy.get('[data-cy="study-browser-thumbnail"]', { timeout: 50000 }).should(
+    'have.length.gte',
+    seriesToWait
+  );
 });
 
 //Command to wait DICOM image to load into the viewport
@@ -211,11 +201,13 @@ Cypress.Commands.add('waitDicomImage', (mode = '/basic-test', timeout = 50000) =
 
 //Command to reset and clear all the changes made to the viewport
 Cypress.Commands.add('resetViewport', () => {
-  //Click on More button
+  // Assign an alias to the More button
   cy.get('[data-cy="MoreTools-split-button-primary"]')
     .should('have.attr', 'data-tool', 'Reset')
-    .as('moreBtn')
-    .click();
+    .as('moreBtn');
+
+  // Use the alias to click on the More button
+  cy.get('@moreBtn').click();
 });
 
 Cypress.Commands.add('imageZoomIn', () => {
@@ -266,14 +258,24 @@ Cypress.Commands.add('initStudyListAliasesOnDesktop', () => {
 Cypress.Commands.add(
   'addLengthMeasurement',
   (firstClick = [150, 100], secondClick = [130, 170]) => {
-    cy.get('@measurementToolsBtnPrimary')
-      .should('have.attr', 'data-tool', 'Length')
-      .click()
-      .then($lengthBtn => {
-        cy.wrap($lengthBtn).should('have.class', 'active');
-      });
+    // Assign an alias to the button element
+    cy.get('@measurementToolsBtnPrimary').as('lengthButton');
 
-    cy.addLine('.viewport-element', firstClick, secondClick);
+    cy.get('@lengthButton').should('have.attr', 'data-tool', 'Length');
+    cy.get('@lengthButton').click();
+
+    cy.get('@lengthButton').should('have.class', 'active');
+
+    cy.get('@viewport').then($viewport => {
+      const [x1, y1] = firstClick;
+      const [x2, y2] = secondClick;
+
+      cy.wrap($viewport)
+        .click(x1, y1, { force: true })
+        .wait(1000)
+        .click(x2, y2, { force: true })
+        .wait(1000);
+    });
   }
 );
 
@@ -284,7 +286,7 @@ Cypress.Commands.add(
     cy.get('[data-cy="MeasurementTools-split-button-secondary"]').click();
     cy.get('[data-cy="Angle"]').click();
 
-    cy.addAngle('.viewport-element', initPos, midPos, finalPos);
+    cy.addAngle('.cornerstone-canvas', initPos, midPos, finalPos);
   }
 );
 
@@ -357,14 +359,9 @@ Cypress.Commands.add('percyCanvasSnapshot', (name, options = {}) => {
 });
 
 Cypress.Commands.add('setLayout', (columns = 1, rows = 1) => {
-  cy.get('[data-cy="layout"]').click();
+  cy.get('[data-cy="Layout"]').click();
 
-  cy.get('.layoutChooser')
-    .find('tr')
-    .eq(rows - 1)
-    .find('td')
-    .eq(columns - 1)
-    .click();
+  cy.get(`[data-cy="Layout-${columns - 1}-${rows - 1}"]`).click();
 
   cy.wait(10);
   cy.waitDicomImage();
@@ -463,7 +460,11 @@ Cypress.Commands.add('closePreferences', () => {
 
 Cypress.Commands.add('selectPreferencesTab', tabAlias => {
   cy.initPreferencesModalAliases();
-  cy.get(tabAlias).click().should('have.class', 'active');
+
+  cy.get(tabAlias).as('selectedTab');
+  cy.get('@selectedTab').click();
+  cy.get('@selectedTab').should('have.class', 'active');
+
   initPreferencesModalFooterBtnAliases();
 });
 

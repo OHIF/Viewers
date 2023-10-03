@@ -45,7 +45,7 @@ export default function getHangingProtocolModule() {
 }
 ```
 
-Within the protocol itself, the structure is layed out as described in the HangingProtocol.ts
+Within the protocol itself, the structure is laid out as described in the HangingProtocol.ts
 type definition, starting with `Protocol`.  See the type definition for more details.
 
 ## Events
@@ -71,7 +71,7 @@ the stage activate.  The status values are:
 
 * enabled - meaning that the stage is fully applicable
 * passive - meaning that the stage can be applied, but might be missing details
-* disabled - meaning that the study has insuffient information for this stage
+* disabled - meaning that the study has insufficient information for this stage
 
 The default values for no `stageActivation` are to assume that `enabled` has `minViewports` of 1,
 and `passive` has `minViewports=0`.  That is, enable the stage if at least one
@@ -118,7 +118,7 @@ stageActivation: {
   stable as to exactly what this returns, as internal details can change.
 
 - `getState`: Returns the currently applied protocol ID, stage index and active study UID.
-   This information is storable/useable as state information to be used elsewhere.
+   This information is storable/usable as state information to be used elsewhere.
 
 - `getDefaultProtocol`: Returns the default protocol to apply.
 

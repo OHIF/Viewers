@@ -1,5 +1,4 @@
-import createReportAsync from './../../_shared/createReportAsync';
-import createReportDialogPrompt from '../../_shared/createReportDialogPrompt';
+import { createReportAsync, createReportDialogPrompt } from '@ohif/extension-default';
 import getNextSRSeriesNumber from '../../_shared/getNextSRSeriesNumber';
 import RESPONSE from '../../_shared/PROMPT_RESPONSES';
 
@@ -15,7 +14,9 @@ function promptSaveReport({ servicesManager, commandsManager, extensionManager }
 
   return new Promise(async function (resolve, reject) {
     // TODO: Fallback if (uiDialogService) {
-    const promptResult = await createReportDialogPrompt(uiDialogService);
+    const promptResult = await createReportDialogPrompt(uiDialogService, {
+      extensionManager,
+    });
 
     if (promptResult.action === RESPONSE.CREATE_REPORT) {
       const dataSources = extensionManager.getDataSources();
@@ -33,16 +34,25 @@ function promptSaveReport({ servicesManager, commandsManager, extensionManager }
 
       const SeriesNumber = getNextSRSeriesNumber(displaySetService);
 
-      displaySetInstanceUIDs = await createReportAsync(
+      const getReport = async () => {
+        return commandsManager.runCommand(
+          'storeMeasurements',
+          {
+            measurementData: trackedMeasurements,
+            dataSource,
+            additionalFindingTypes: ['ArrowAnnotate'],
+            options: {
+              SeriesDescription,
+              SeriesNumber,
+            },
+          },
+          'CORNERSTONE_STRUCTURED_REPORT'
+        );
+      };
+      displaySetInstanceUIDs = await createReportAsync({
         servicesManager,
-        commandsManager,
-        dataSource,
-        trackedMeasurements,
-        {
-          SeriesDescription,
-          SeriesNumber,
-        }
-      );
+        getReport,
+      });
     } else if (promptResult.action === RESPONSE.CANCEL) {
       // Do nothing
     }

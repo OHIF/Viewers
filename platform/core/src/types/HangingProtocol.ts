@@ -257,7 +257,7 @@ export type ProtocolNotifications = {
  * It is a set of rules about when the protocol can be applied at all,
  * as well as a set of stages that represent indivividual views.
  * Additionally, the display set selectors are used to choose from the existing
- * display sets.  The hanging protcol definition here does NOT allow
+ * display sets.  The hanging protocol definition here does NOT allow
  * redefining the display sets to use, but only selects the views to show.
  */
 export type Protocol = {
