@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.7.0-beta.95](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.94...v3.7.0-beta.95) (2023-10-04)
+
+
+### Bug Fixes
+
+* **cli:** Add npm packaged mode not working ([#3689](https://github.com/OHIF/Viewers/issues/3689)) ([28cec04](https://github.com/OHIF/Viewers/commit/28cec04ff43b81e218c3e9addef4665b3833a6fe))
+
+
+
+
+
 # [3.7.0-beta.94](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.93...v3.7.0-beta.94) (2023-10-03)
 
 
