@@ -213,7 +213,7 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
         }
         onSaveComplete({
           title: 'SR Saved',
-          meassage: 'Measurements downloaded successfully',
+          message: 'Measurements downloaded successfully',
           type: 'success',
         });
       } else {

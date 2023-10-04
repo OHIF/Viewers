@@ -448,6 +448,7 @@ As you can see in the hanging protocol we defined three viewports (but only show
    - `toolGroupId`: tool group that will be used for the viewport (optional)
    - `initialImageOptions`: initial image options (optional - can be specific imageIndex number or preset (first, middle, last))
    - `syncGroups`: sync groups for the viewport (optional)
+   -The `displayArea` parameter refers to the designated area within the viewport where a specific portion of the image can be displayed. This parameter is optional and allows you to choose the location of the image within the viewport. For example, in mammography images, you can display the left breast on the left side of the viewport and the right breast on the right side, with the chest wall positioned in the middle. To understand how to define the display area, you can refer to the live example provided by CornerstoneJS [here](https://www.cornerstonejs.org/live-examples/programaticpanzoom).
 
 
 2. `displaySets`: defines the display sets that are displayed on a viewport. It is an array of objects, each object being one display set.

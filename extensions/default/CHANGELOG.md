@@ -3,6 +3,127 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.7.0-beta.94](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.93...v3.7.0-beta.94) (2023-10-03)
+
+
+### Features
+
+* **debug:** Add timing information about time to first image/all images, and query time ([#3681](https://github.com/OHIF/Viewers/issues/3681)) ([108383b](https://github.com/OHIF/Viewers/commit/108383b9ef51e4bef82d9c932b9bc7aa5354e799))
+
+
+
+
+
+# [3.7.0-beta.93](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.92...v3.7.0-beta.93) (2023-10-03)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.7.0-beta.92](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.91...v3.7.0-beta.92) (2023-10-03)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.7.0-beta.91](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.90...v3.7.0-beta.91) (2023-10-03)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.7.0-beta.90](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.89...v3.7.0-beta.90) (2023-10-03)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.7.0-beta.89](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.88...v3.7.0-beta.89) (2023-10-03)
+
+
+### Bug Fixes
+
+* **StackSync:** Miscellaneous fixes for stack image sync ([#3663](https://github.com/OHIF/Viewers/issues/3663)) ([8a335bd](https://github.com/OHIF/Viewers/commit/8a335bd03d14ba87d65d7468d93f74040aa828d9))
+
+
+
+
+
+# [3.7.0-beta.88](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.87...v3.7.0-beta.88) (2023-10-03)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.7.0-beta.87](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.86...v3.7.0-beta.87) (2023-09-29)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.7.0-beta.86](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.85...v3.7.0-beta.86) (2023-09-29)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.7.0-beta.85](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.84...v3.7.0-beta.85) (2023-09-26)
+
+
+### Bug Fixes
+
+* **toggleOneUp:** fixed one up for main tmtv layout ([#3677](https://github.com/OHIF/Viewers/issues/3677)) ([86f54d0](https://github.com/OHIF/Viewers/commit/86f54d0d07042750a863ae876aa8dd5fb16029a5))
+
+
+
+
+
+# [3.7.0-beta.84](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.83...v3.7.0-beta.84) (2023-09-26)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.7.0-beta.83](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.82...v3.7.0-beta.83) (2023-09-26)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.7.0-beta.82](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.81...v3.7.0-beta.82) (2023-09-26)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.7.0-beta.81](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.80...v3.7.0-beta.81) (2023-09-26)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
 # [3.7.0-beta.80](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.79...v3.7.0-beta.80) (2023-09-22)
 
 

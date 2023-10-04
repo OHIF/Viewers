@@ -131,6 +131,7 @@ const SegmentItem = ({
           {/* Icons that show only when hovering */}
           <div className="hidden group-hover/row:flex">
             <HoveringIcons
+              disableEditing={disableEditing}
               onEdit={onEdit}
               isLocked={isLocked}
               isVisible={isVisible}
@@ -147,6 +148,7 @@ const SegmentItem = ({
 };
 
 const HoveringIcons = ({
+  disableEditing,
   onEdit,
   isLocked,
   isVisible,
@@ -172,7 +174,7 @@ const HoveringIcons = ({
 
   return (
     <div className="flex items-center">
-      {createIcon('row-edit', onEdit)}
+      {!disableEditing && createIcon('row-edit', onEdit)}
       {createIcon(
         isLocked ? 'row-lock' : 'row-unlock',
         onToggleLocked,
