@@ -35,7 +35,7 @@ function ToolSettings({ options }) {
               className="flex items-center"
               key={option.id}
             >
-              <div className="w-1/3 text-xs text-[13px]">{option.name}</div>
+              <div className="w-1/3 text-[13px]">{option.name}</div>
               <div className="w-2/3">
                 <InputRange
                   minValue={option.min}
@@ -45,7 +45,7 @@ function ToolSettings({ options }) {
                   onChange={e => option.onChange(e)}
                   allowNumberEdit={true}
                   showAdjustmentArrows={false}
-                  inputClassName="ml-2 w-4/5"
+                  inputClassName="ml-1 w-4/5"
                 />
               </div>
             </div>

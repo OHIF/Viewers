@@ -57,10 +57,11 @@ const InputRange: React.FC<InputRangeProps> = ({
   const handleChange = useCallback(
     e => {
       const val = Number(e.target.value);
-      setRangeValue(val);
-      onChange(val);
+      const roundedVal = Math.round(val / step) * step;
+      setRangeValue(roundedVal);
+      onChange(roundedVal);
     },
-    [onChange]
+    [onChange, step]
   );
 
   const rangeValuePercentage = ((rangeValue - minValue) / (maxValue - minValue)) * 100;
@@ -92,8 +93,10 @@ const InputRange: React.FC<InputRangeProps> = ({
         e.preventDefault();
       }}
     >
-      <div className="relative flex w-full items-center">
-        {showLabel && labelPosition === 'left' && LabelOrEditableNumber}
+      <div className="relative flex w-full items-center space-x-2">
+        {showLabel && labelPosition === 'left' && (
+          <div style={{ width: labelWidth }}>{LabelOrEditableNumber}</div>
+        )}
         <div className="range-track"></div>
         <input
           type="range"

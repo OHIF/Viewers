@@ -42,6 +42,10 @@
       name="msapplication-config"
       content="<%= PUBLIC_URL %>assets/browserconfig.xml"
     />
+    <script type="text/javascript">
+      console.time('scriptToView');
+      window.PUBLIC_URL = '<%= PUBLIC_URL %>';
+    </script>
     <link
       rel="manifest"
       href="<%= PUBLIC_URL %>manifest.json"
@@ -183,9 +187,6 @@
     <!-- Targets IE11 -->
     <!-- <script
     src="https://polyfill.io/v3/polyfill.min.js?flags=gated&features=default%2CObject.values%2CArray.prototype.flat%2CObject.entries%2CSymbol%2CArray.prototype.includes%2CString.prototype.repeat%2CArray.prototype.find"></script>!-->
-    <script type="text/javascript">
-      window.PUBLIC_URL = '<%= PUBLIC_URL %>';
-    </script>
     <script
       rel="preload"
       as="script"

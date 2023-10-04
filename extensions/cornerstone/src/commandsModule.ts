@@ -265,6 +265,11 @@ function commandsModule({
     toolbarServiceRecordInteraction: props => {
       toolbarService.recordInteraction(props);
     },
+    // Enable or disable a toggleable command, without calling the activation
+    // Used to setup already active tools from hanging protocols
+    setToolbarToggled: props => {
+      toolbarService.setToggled(props.toolId, props.isActive ?? true);
+    },
     setToolActive: ({ toolName, toolGroupId = null, toggledState }) => {
       if (toolName === 'Crosshairs') {
         const activeViewportToolGroup = toolGroupService.getToolGroup(null);
@@ -549,16 +554,16 @@ function commandsModule({
 
     toggleStackImageSync: ({ toggledState }) => {
       toggleStackImageSync({
-        getEnabledElement,
         servicesManager,
         toggledState,
       });
     },
-    setSourceViewportForReferenceLinesTool: ({ toggledState }) => {
-      const { activeViewportId } = viewportGridService.getState();
-      const viewportInfo = cornerstoneViewportService.getViewportInfo(activeViewportId);
+    setSourceViewportForReferenceLinesTool: ({ toggledState, viewportId }) => {
+      if (!viewportId) {
+        const { activeViewportId } = viewportGridService.getState();
+        viewportId = activeViewportId;
+      }
 
-      const viewportId = viewportInfo.getViewportId();
       const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
 
       toolGroup.setToolConfiguration(
@@ -699,8 +704,9 @@ function commandsModule({
     },
     storePresentation: {
       commandFn: actions.storePresentation,
-      storeContexts: [],
-      options: {},
+    },
+    setToolbarToggled: {
+      commandFn: actions.setToolbarToggled,
     },
   };
 
