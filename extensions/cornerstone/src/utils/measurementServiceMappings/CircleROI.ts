@@ -1,4 +1,5 @@
 import SUPPORTED_TOOLS from './constants/supportedTools';
+import { getDisplayUnit } from './utils';
 import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
 import { utils } from '@ohif/core';
 
@@ -138,13 +139,7 @@ function _getReport(mappedAnnotations, points, FrameOfReferenceUID) {
       return;
     }
 
-    columns.push(
-      `max (${unit})`,
-      `mean (${unit})`,
-      `std (${unit})`,
-      'Area',
-      'Unit'
-    );
+    columns.push(`max (${unit})`, `mean (${unit})`, `std (${unit})`, 'Area', 'Unit');
     values.push(max, mean, stdDev, area, areaUnit);
   });
 
@@ -189,7 +184,7 @@ function getDisplayText(mappedAnnotations, displaySet) {
 
   // Area sometimes becomes undefined if `preventHandleOutsideImage` is off.
   const roundedArea = utils.roundNumber(area || 0, 2);
-  displayText.push(`${roundedArea} ${areaUnit}`);
+  displayText.push(`${roundedArea} ${getDisplayUnit(areaUnit)}`);
 
   // Todo: we need a better UI for displaying all these information
   mappedAnnotations.forEach(mappedAnnotation => {
@@ -198,7 +193,7 @@ function getDisplayText(mappedAnnotations, displaySet) {
     let maxStr = '';
     if (max) {
       const roundedMax = utils.roundNumber(max, 2);
-      maxStr = `Max: ${roundedMax} <small>${unit}</small> `;
+      maxStr = `Max: ${roundedMax} <small>${getDisplayUnit(unit)}</small> `;
     }
 
     const str = `${maxStr}(S:${SeriesNumber}${instanceText}${frameText})`;
