@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.7.0-beta.96](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.95...v3.7.0-beta.96) (2023-10-04)
+
+
+### Bug Fixes
+
+* **translation:** Side panel translate fix ([#3156](https://github.com/OHIF/Viewers/issues/3156)) ([29748d4](https://github.com/OHIF/Viewers/commit/29748d46a14d23817dbe196e0f64363fc61a8aed))
+
+
+
+
+
 # [3.7.0-beta.95](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.94...v3.7.0-beta.95) (2023-10-04)
 
 **Note:** Version bump only for package @ohif/i18n
