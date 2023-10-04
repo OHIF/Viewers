@@ -1,0 +1,38 @@
+import LegacyCinePlayer from '../LegacyCinePlayer';
+import { ArgsTable, Story, Canvas, Meta } from '@storybook/addon-docs';
+import { createComponentTemplate } from '../../../storybook/functions/create-component-story';
+
+export const argTypes = {
+  component: LegacyCinePlayer,
+  title: 'Components/LegacyCinePlayer',
+};
+
+<Meta
+  title="Components/LegacyCinePlayer"
+  component={LegacyCinePlayer}
+/>
+
+export const cineTemplate = createComponentTemplate(LegacyCinePlayer);
+
+<Heading
+  title="LegacyCinePlayer"
+  componentRelativePath="LegacyCinePlayer/LegacyCinePlayer.tsx"
+/>
+
+- [Overview](#overview)
+- [Props](#props)
+- [Contribute](#contribute)
+
+## Overview
+
+<Canvas>
+  <Story name="Overview">{cineTemplate.bind({})}</Story>
+</Canvas>
+
+## Props
+
+<ArgsTable of={LegacyCinePlayer} />
+
+## Contribute
+
+<Footer componentRelativePath="LegacyCinePlayer/__stories__/legacyCinePlayer.stories.mdx" />

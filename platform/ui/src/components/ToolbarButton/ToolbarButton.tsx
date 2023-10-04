@@ -2,7 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
-import { IconButton, Icon, Tooltip } from '../';
+import IconButton from '../IconButton';
+import Icon from '../Icon';
+import Tooltip from '../Tooltip';
 
 const ToolbarButton = ({
   type = 'tool',
@@ -13,24 +15,21 @@ const ToolbarButton = ({
   onInteraction,
   dropdownContent,
   //
-  isActive: _isActive,
+  isActive,
   className,
-  bState = {},
   ...rest
   //
 }) => {
-  const { primaryToolId } = bState;
-  const isActive = _isActive || (type === 'tool' && id === primaryToolId);
   const classes = {
     tool: isActive
       ? 'text-black'
-      : 'text-common-bright hover:bg-primary-dark hover:text-primary-light',
+      : 'text-common-bright hover:!bg-primary-dark hover:text-primary-light',
     toggle: isActive
-      ? 'text-[#348CFD]'
-      : 'text-common-bright hover:bg-primary-dark hover:text-primary-light',
+      ? '!text-[#348CFD]'
+      : 'text-common-bright hover:!bg-primary-dark hover:text-primary-light',
     action: isActive
       ? 'text-black'
-      : 'text-common-bright hover:bg-primary-dark hover:text-primary-light',
+      : 'text-common-bright hover:!bg-primary-dark hover:text-primary-light',
   };
 
   const bgClasses = {
@@ -39,6 +38,7 @@ const ToolbarButton = ({
 
   const activeClass = isActive ? 'active' : '';
   const shouldShowDropdown = !!isActive && !!dropdownContent;
+  const iconEl = icon ? <Icon name={icon} /> : <div>{label || 'Missing icon and label'}</div>;
 
   return (
     <div key={id}>
@@ -64,7 +64,7 @@ const ToolbarButton = ({
           id={id}
           {...rest}
         >
-          <Icon name={icon} />
+          {iconEl}
         </IconButton>
       </Tooltip>
     </div>
@@ -82,6 +82,13 @@ ToolbarButton.propTypes = {
   type: PropTypes.oneOf(['action', 'toggle', 'tool']),
   id: PropTypes.string.isRequired,
   isActive: PropTypes.bool,
+  className: PropTypes.string,
+  commands: PropTypes.arrayOf(
+    PropTypes.shape({
+      commandName: PropTypes.string.isRequired,
+      commandOptions: PropTypes.object,
+    })
+  ),
   onInteraction: PropTypes.func.isRequired,
   icon: PropTypes.string.isRequired,
   label: PropTypes.string.isRequired,

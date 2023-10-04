@@ -1,7 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { DateRange, InputLabelWrapper } from '../';
+import DateRange from '../DateRange';
+import InputLabelWrapper from '../InputLabelWrapper';
 
 const InputDateRange = ({
   id,
@@ -14,7 +15,7 @@ const InputDateRange = ({
 }) => {
   const { startDate, endDate } = value;
 
-  const onClickHandler = (event) => {
+  const onClickHandler = event => {
     event.preventDefault();
     onLabelClick(event);
   };
@@ -38,19 +39,18 @@ const InputDateRange = ({
   );
 };
 
-const noop = () => { };
+const noop = () => {};
 
 InputDateRange.defaultProps = {
   value: {},
-  onLabelClick: noop
+  onLabelClick: noop,
 };
 
 InputDateRange.propTypes = {
   id: PropTypes.string,
   label: PropTypes.string.isRequired,
   isSortable: PropTypes.bool.isRequired,
-  sortDirection: PropTypes.oneOf(['ascending', 'descending', 'none'])
-    .isRequired,
+  sortDirection: PropTypes.oneOf(['ascending', 'descending', 'none']).isRequired,
   onLabelClick: PropTypes.func.isRequired,
   value: PropTypes.shape({
     /** YYYYMMDD (19921022) */

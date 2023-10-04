@@ -1,7 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { Thumbnail, ThumbnailNoImage, ThumbnailTracked } from '../';
+import Thumbnail from '../Thumbnail';
+import ThumbnailNoImage from '../ThumbnailNoImage';
+import ThumbnailTracked from '../ThumbnailTracked';
 import * as Types from '../../types';
 
 const ThumbnailList = ({
@@ -12,7 +14,10 @@ const ThumbnailList = ({
   activeDisplaySetInstanceUIDs = [],
 }) => {
   return (
-    <div className="py-3 bg-black overflow-y-hidden ohif-scrollbar">
+    <div
+      id="ohif-thumbnail-list"
+      className="ohif-scrollbar study-min-height overflow-y-hidden bg-black py-3"
+    >
       {thumbnails.map(
         ({
           displaySetInstanceUID,
@@ -23,17 +28,17 @@ const ThumbnailList = ({
           modality,
           componentType,
           seriesDate,
+          countIcon,
           viewportIdentificator,
           isTracked,
           canReject,
           onReject,
           imageSrc,
+          messages,
           imageAltText,
+          isHydratedForDerivedDisplaySet,
         }) => {
-          const isActive = activeDisplaySetInstanceUIDs.includes(
-            displaySetInstanceUID
-          );
-
+          const isActive = activeDisplaySetInstanceUIDs.includes(displaySetInstanceUID);
           switch (componentType) {
             case 'thumbnail':
               return (
@@ -44,14 +49,14 @@ const ThumbnailList = ({
                   description={description}
                   seriesNumber={seriesNumber}
                   numInstances={numInstances}
+                  countIcon={countIcon}
                   imageSrc={imageSrc}
                   imageAltText={imageAltText}
+                  messages={messages}
                   viewportIdentificator={viewportIdentificator}
                   isActive={isActive}
                   onClick={() => onThumbnailClick(displaySetInstanceUID)}
-                  onDoubleClick={() =>
-                    onThumbnailDoubleClick(displaySetInstanceUID)
-                  }
+                  onDoubleClick={() => onThumbnailDoubleClick(displaySetInstanceUID)}
                 />
               );
             case 'thumbnailTracked':
@@ -63,15 +68,15 @@ const ThumbnailList = ({
                   description={description}
                   seriesNumber={seriesNumber}
                   numInstances={numInstances}
+                  countIcon={countIcon}
                   imageSrc={imageSrc}
                   imageAltText={imageAltText}
+                  messages={messages}
                   viewportIdentificator={viewportIdentificator}
                   isTracked={isTracked}
                   isActive={isActive}
                   onClick={() => onThumbnailClick(displaySetInstanceUID)}
-                  onDoubleClick={() =>
-                    onThumbnailDoubleClick(displaySetInstanceUID)
-                  }
+                  onDoubleClick={() => onThumbnailDoubleClick(displaySetInstanceUID)}
                   onClickUntrack={() => onClickUntrack(displaySetInstanceUID)}
                 />
               );
@@ -84,15 +89,15 @@ const ThumbnailList = ({
                   dragData={dragData}
                   modality={modality}
                   modalityTooltip={_getModalityTooltip(modality)}
+                  messages={messages}
                   seriesDate={seriesDate}
                   description={description}
                   canReject={canReject}
                   onReject={onReject}
                   onClick={() => onThumbnailClick(displaySetInstanceUID)}
-                  onDoubleClick={() =>
-                    onThumbnailDoubleClick(displaySetInstanceUID)
-                  }
+                  onDoubleClick={() => onThumbnailDoubleClick(displaySetInstanceUID)}
                   viewportIdentificator={viewportIdentificator}
+                  isHydratedForDerivedDisplaySet={isHydratedForDerivedDisplaySet}
                 />
               );
             default:
@@ -148,7 +153,7 @@ function _getModalityTooltip(modality) {
 const _modalityTooltips = {
   SR: 'Structured Report',
   SEG: 'Segmentation',
-  RT: 'RT Structure Set',
+  RTSTRUCT: 'RT Structure Set',
 };
 
 export default ThumbnailList;

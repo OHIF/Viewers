@@ -1,15 +1,16 @@
 import DICOMSRDisplayTool from './DICOMSRDisplayTool';
-import SRLengthTool from './tools/SRLength';
-import SRBidirectional from './tools/SRBidirectional';
-import SREllipticalROI from './tools/SREllipticalROI';
-import SRArrowAnnotate from './tools/SRArrowAnnotate';
 
 const toolNames = {
   DICOMSRDisplay: DICOMSRDisplayTool.toolName,
-  SRLength: SRLengthTool.toolName,
-  SRBidirectional: SRBidirectional.toolName,
-  SREllipticalROI: SREllipticalROI.toolName,
-  SRArrowAnnotate: SRArrowAnnotate.toolName,
+  SRLength: 'SRLength',
+  SRBidirectional: 'SRBidirectional',
+  SREllipticalROI: 'SREllipticalROI',
+  SRCircleROI: 'SRCircleROI',
+  SRArrowAnnotate: 'SRArrowAnnotate',
+  SRAngle: 'SRAngle',
+  SRCobbAngle: 'SRCobbAngle',
+  SRRectangleROI: 'SRRectangleROI',
+  SRPlanarFreehandROI: 'SRPlanarFreehandROI',
 };
 
 export default toolNames;

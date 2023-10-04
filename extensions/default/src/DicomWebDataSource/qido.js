@@ -54,10 +54,7 @@ function processResults(qidoStudies) {
       patientName: utils.formatPN(getName(qidoStudy['00100010'])) || '',
       instances: Number(getString(qidoStudy['00201208'])) || 0, // number
       description: getString(qidoStudy['00081030']) || '',
-      modalities:
-        getString(
-          getModalities(qidoStudy['00080060'], qidoStudy['00080061'])
-        ) || '',
+      modalities: getString(getModalities(qidoStudy['00080060'], qidoStudy['00080061'])) || '',
     })
   );
 
@@ -105,12 +102,7 @@ export function processSeriesResults(qidoSeries) {
  * @param {string} [queryParamaters]
  * @returns {Promise<results>} - Promise that resolves results
  */
-async function search(
-  dicomWebClient,
-  studyInstanceUid,
-  seriesInstanceUid,
-  queryParameters
-) {
+async function search(dicomWebClient, studyInstanceUid, seriesInstanceUid, queryParameters) {
   let searchResult = await dicomWebClient.searchForStudies({
     studyInstanceUid: undefined,
     queryParams: queryParameters,
@@ -136,10 +128,7 @@ export function seriesInStudy(dicomWebClient, studyInstanceUID) {
 }
 
 export default function searchStudies(server, filter) {
-  const queryParams = getQIDOQueryParams(
-    filter,
-    server.qidoSupportsIncludeField
-  );
+  const queryParams = getQIDOQueryParams(filter, server.qidoSupportsIncludeField);
   const options = {
     queryParams,
   };

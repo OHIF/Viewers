@@ -1,5 +1,5 @@
 import React from 'react';
-import { Input, Dialog } from '@ohif/ui';
+import { Input, Dialog, ButtonEnums } from '@ohif/ui';
 
 /**
  *
@@ -9,69 +9,78 @@ import { Input, Dialog } from '@ohif/ui';
  * @param {*} event
  * @param {*} callback
  * @param {*} isArrowAnnotateInputDialog
+ * @param {*} dialogConfig
+ * @param {string?} dialogConfig.dialogTitle - title of the input dialog
+ * @param {string?} dialogConfig.inputLabel - show label above the input
  */
 function callInputDialog(
-  UIDialogService,
+  uiDialogService,
   data,
   callback,
-  isArrowAnnotateInputDialog = true
+  isArrowAnnotateInputDialog = true,
+  dialogConfig: any = {}
 ) {
-  const dialogId = 'enter-annotation';
-  const label = data
-    ? isArrowAnnotateInputDialog
-      ? data.text
-      : data.label
-    : '';
+  const dialogId = 'dialog-enter-annotation';
+  const label = data ? (isArrowAnnotateInputDialog ? data.text : data.label) : '';
+  const {
+    dialogTitle = 'Annotation',
+    inputLabel = 'Enter your annotation',
+    validateFunc = value => true,
+  } = dialogConfig;
 
   const onSubmitHandler = ({ action, value }) => {
     switch (action.id) {
       case 'save':
+        if (typeof validateFunc === 'function' && !validateFunc(value.label)) {
+          return;
+        }
+
         callback(value.label, action.id);
         break;
       case 'cancel':
         callback('', action.id);
         break;
     }
-    UIDialogService.dismiss({ id: dialogId });
+    uiDialogService.dismiss({ id: dialogId });
   };
 
-  if (UIDialogService) {
-    UIDialogService.create({
+  if (uiDialogService) {
+    uiDialogService.create({
       id: dialogId,
       centralize: true,
       isDraggable: false,
       showOverlay: true,
       content: Dialog,
       contentProps: {
-        title: 'Enter your annotation',
+        title: dialogTitle,
         value: { label },
         noCloseButton: true,
-        onClose: () => UIDialogService.dismiss({ id: dialogId }),
+        onClose: () => uiDialogService.dismiss({ id: dialogId }),
         actions: [
-          { id: 'cancel', text: 'Cancel', type: 'primary' },
-          { id: 'save', text: 'Save', type: 'secondary' },
+          { id: 'cancel', text: 'Cancel', type: ButtonEnums.type.secondary },
+          { id: 'save', text: 'Save', type: ButtonEnums.type.primary },
         ],
         onSubmit: onSubmitHandler,
         body: ({ value, setValue }) => {
           return (
-            <div className="p-4 bg-primary-dark">
-              <Input
-                autoFocus
-                className="mt-2 bg-black border-primary-main"
-                type="text"
-                containerClassName="mr-2"
-                value={value.label}
-                onChange={event => {
-                  event.persist();
-                  setValue(value => ({ ...value, label: event.target.value }));
-                }}
-                onKeyPress={event => {
-                  if (event.key === 'Enter') {
-                    onSubmitHandler({ value, action: { id: 'save' } });
-                  }
-                }}
-              />
-            </div>
+            <Input
+              autoFocus
+              className="border-primary-main bg-black"
+              type="text"
+              id="annotation"
+              label={inputLabel}
+              labelClassName="text-white text-[14px] leading-[1.2]"
+              value={value.label}
+              onChange={event => {
+                event.persist();
+                setValue(value => ({ ...value, label: event.target.value }));
+              }}
+              onKeyPress={event => {
+                if (event.key === 'Enter') {
+                  onSubmitHandler({ value, action: { id: 'save' } });
+                }
+              }}
+            />
           );
         },
       },

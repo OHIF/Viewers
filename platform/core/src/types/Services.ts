@@ -5,6 +5,9 @@ import {
   ViewportGridService,
   ToolbarService,
   DisplaySetService,
+  StateSyncService,
+  UINotificationService,
+  UIModalService,
 } from '../services';
 
 /**
@@ -15,13 +18,19 @@ export default interface Services {
   customizationService?: CustomizationService;
   measurementService?: MeasurementService;
   displaySetService?: DisplaySetService;
-  cineService?: Record<string, unknown>;
   toolbarService?: ToolbarService;
-  cornerstoneViewportService?: Record<string, unknown>;
-  uiDialogService?: Record<string, unknown>;
-  toolGroupService?: Record<string, unknown>;
-  uiNotificationService?: Record<string, unknown>;
   viewportGridService?: ViewportGridService;
-  syncGroupService?: Record<string, unknown>;
-  cornerstoneCacheService?: Record<string, unknown>;
+  uiModalService?: UIModalService;
+  uiNotificationService?: UINotificationService;
+  stateSyncService?: StateSyncService;
+  cineService?: unknown;
+  userAuthenticationService?: unknown;
+  cornerstoneViewportService?: unknown;
+  uiDialogService?: unknown;
+  toolGroupService?: unknown;
+  uiViewportDialogService?: unknown;
+  syncGroupService?: unknown;
+  cornerstoneCacheService?: unknown;
+  segmentationService?: unknown;
+  panelService?: unknown;
 }

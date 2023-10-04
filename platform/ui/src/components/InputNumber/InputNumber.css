@@ -2,7 +2,19 @@ input[type='text'] {
   -webkit-appearance: none;
 }
 
-input[type='text']:focus {
+/* For most modern browsers */
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* For Firefox */
+input[type='number'] {
+  -moz-appearance: textfield;
+}
+
+.input-number:focus {
   border: none;
   outline: none;
 }
@@ -14,4 +26,8 @@ input[type='text']:focus {
 
 .up-arrowsize svg path {
   fill: #726f7e;
+}
+
+.input-small {
+  height: 26px;
 }

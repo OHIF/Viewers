@@ -1,46 +1,71 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import classNames from 'classnames';
-import { NavBar, Svg, Icon, IconButton, Dropdown } from '../';
 
-function Header({ children, menuOptions, isReturnEnabled, onClickReturnButton, isSticky, WhiteLabeling }) {
+import NavBar from '../NavBar';
+import Svg from '../Svg';
+import Icon from '../Icon';
+import IconButton from '../IconButton';
+import Dropdown from '../Dropdown';
+
+function Header({
+  children,
+  menuOptions,
+  isReturnEnabled,
+  onClickReturnButton,
+  isSticky,
+  WhiteLabeling,
+  ...props
+}): ReactNode {
   const { t } = useTranslation('Header');
 
   // TODO: this should be passed in as a prop instead and the react-router-dom
   // dependency should be dropped
   const onClickReturn = () => {
     if (isReturnEnabled && onClickReturnButton) {
-      onClickReturnButton()
+      onClickReturnButton();
     }
   };
 
-  const CustomLogo = (React) => {
-    return WhiteLabeling.createLogoComponentFn(React)
-  }
-
   return (
-    <NavBar className='justify-between border-b-4 border-black' isSticky={isSticky}>
-      <div className="flex justify-between flex-1">
+    <NavBar
+      className="justify-between border-b-4 border-black"
+      isSticky={isSticky}
+    >
+      <div className="flex flex-1 justify-between">
         <div className="flex items-center">
           {/* // TODO: Should preserve filter/sort
               // Either injected service? Or context (like react router's `useLocation`?) */}
           <div
-            className={classNames("inline-flex items-center mr-3", isReturnEnabled && 'cursor-pointer')}
+            className={classNames(
+              'mr-3 inline-flex items-center',
+              isReturnEnabled && 'cursor-pointer'
+            )}
             onClick={onClickReturn}
           >
-            {isReturnEnabled && <Icon name="chevron-left" className="w-8 text-primary-active" />}
-            <div className="ml-4">{WhiteLabeling ? CustomLogo(React) : <Svg name="logo-ohif" />}</div>
+            {isReturnEnabled && (
+              <Icon
+                name="chevron-left"
+                className="text-primary-active w-8"
+              />
+            )}
+            <div className="ml-4">
+              {WhiteLabeling?.createLogoComponentFn?.(React, props) || <Svg name="logo-ohif" />}
+            </div>
           </div>
         </div>
         <div className="flex items-center">{children}</div>
         <div className="flex items-center">
-          <span className="mr-3 text-lg text-common-light">
-            {t('INVESTIGATIONAL USE ONLY')}
-          </span>
-          <Dropdown id="options" showDropdownIcon={false} list={menuOptions}>
+          <span className="text-common-light mr-3 text-lg">{t('INVESTIGATIONAL USE ONLY')}</span>
+          <Dropdown
+            id="options"
+            showDropdownIcon={false}
+            list={menuOptions}
+            alignment="right"
+          >
             <IconButton
-              id={"options-settings-icon"}
+              id={'options-settings-icon'}
               variant="text"
               color="inherit"
               size="initial"
@@ -49,7 +74,7 @@ function Header({ children, menuOptions, isReturnEnabled, onClickReturnButton, i
               <Icon name="settings" />
             </IconButton>
             <IconButton
-              id={"options-chevron-down-icon"}
+              id={'options-chevron-down-icon'}
               variant="text"
               color="inherit"
               size="initial"
@@ -81,7 +106,7 @@ Header.propTypes = {
 
 Header.defaultProps = {
   isReturnEnabled: true,
-  isSticky: false
+  isSticky: false,
 };
 
 export default Header;

@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import { Icon } from '../';
+
+import Icon from '../Icon';
 
 const DELAY_TO_SHOW = 1000;
 const DELAY_TO_HIDE = 10; // it needs at least a little delay to prevent tooltip to suddenly hide
@@ -134,14 +135,17 @@ const TooltipClipboard = ({ children, text }) => {
       >
         <div
           className={classnames(
-            'flex items-center relative bg-primary-dark border border-secondary-main text-white text-base rounded px-2 py-2'
+            'bg-primary-dark border-secondary-main relative flex items-center rounded border px-2 py-2 text-base text-white'
           )}
         >
           {message || (
             <>
               {children}
-              <div className="ml-2 pl-2 border-l border-secondary-light">
-                <Icon name="clipboard" className="w-4 text-white" />
+              <div className="border-secondary-light ml-2 border-l pl-2">
+                <Icon
+                  name="clipboard"
+                  className="w-4 text-white"
+                />
               </div>
             </>
           )}

@@ -1,13 +1,11 @@
 import { Types, Enums } from '@cornerstonejs/core';
+import { Types as UITypes } from '@ohif/ui';
+import { StackViewportData, VolumeViewportData } from '../../types/CornerstoneCacheService';
 import getCornerstoneBlendMode from '../../utils/getCornerstoneBlendMode';
 import getCornerstoneOrientation from '../../utils/getCornerstoneOrientation';
 import getCornerstoneViewportType from '../../utils/getCornerstoneViewportType';
 import JumpPresets from '../../utils/JumpPresets';
 import { SyncGroup } from '../SyncGroupService/SyncGroupService';
-import {
-  StackViewportData,
-  VolumeViewportData,
-} from './CornerstoneCacheService';
 
 export type InitialImageOptions = {
   index?: number;
@@ -15,11 +13,15 @@ export type InitialImageOptions = {
 };
 
 export type ViewportOptions = {
+  id?: string;
   viewportType: Enums.ViewportType;
   toolGroupId: string;
   viewportId: string;
-  orientation?: Types.Orientation;
+  // Presentation ID to store/load presentation state from
+  presentationIds?: UITypes.PresentationIds;
+  orientation?: Enums.OrientationAxis;
   background?: Types.Point3;
+  displayArea?: Types.DisplayArea;
   syncGroups?: SyncGroup[];
   initialImageOptions?: InitialImageOptions;
   customViewportProps?: Record<string, unknown>;
@@ -31,31 +33,46 @@ export type ViewportOptions = {
 };
 
 export type PublicViewportOptions = {
+  id?: string;
   viewportType?: string;
   toolGroupId?: string;
+  presentationIds?: UITypes.PresentationIds;
   viewportId?: string;
-  orientation?: string;
+  orientation?: Enums.OrientationAxis;
   background?: Types.Point3;
+  displayArea?: Types.DisplayArea;
   syncGroups?: SyncGroup[];
   initialImageOptions?: InitialImageOptions;
   customViewportProps?: Record<string, unknown>;
   allowUnmatchedView?: boolean;
 };
 
+export type DisplaySetSelector = {
+  id?: string;
+  options?: PublicDisplaySetOptions;
+};
+
 export type PublicDisplaySetOptions = {
+  /** The display set options can have an id in order to distinguish
+   * it from other similar items.
+   */
+  id?: string;
   voi?: VOI;
   voiInverted?: boolean;
   blendMode?: string;
   slabThickness?: number;
   colormap?: string;
+  displayPreset?: string;
 };
 
 export type DisplaySetOptions = {
+  id?: string;
   voi?: VOI;
   voiInverted: boolean;
   blendMode?: Enums.BlendModes;
   slabThickness?: number;
   colormap?: string;
+  displayPreset?: string;
 };
 
 type VOI = {
@@ -68,23 +85,47 @@ export type DisplaySet = {
 };
 
 const STACK = 'stack';
-const VOLUME = 'volume';
 const DEFAULT_TOOLGROUP_ID = 'default';
+
+// Return true if the data contains the given display set UID OR the imageId
+// if it is a composite object.
+const dataContains = (data, displaySetUID: string, imageId?: string): boolean => {
+  if (data.displaySetInstanceUID === displaySetUID) {
+    return true;
+  }
+  if (imageId && data.isCompositeStack && data.imageIds) {
+    return !!data.imageIds.find(dataId => dataId === imageId);
+  }
+  return false;
+};
 
 class ViewportInfo {
   private viewportId = '';
-  private viewportIndex: number;
   private element: HTMLDivElement;
   private viewportOptions: ViewportOptions;
   private displaySetOptions: Array<DisplaySetOptions>;
   private viewportData: StackViewportData | VolumeViewportData;
   private renderingEngineId: string;
 
-  constructor(viewportIndex: number, viewportId: string) {
-    this.viewportIndex = viewportIndex;
+  constructor(viewportId: string) {
     this.viewportId = viewportId;
     this.setPublicViewportOptions({});
     this.setPublicDisplaySetOptions([{}]);
+  }
+
+  /**
+   * Return true if the viewport contains the given display set UID,
+   * OR if it is a composite stack and contains the given imageId
+   */
+  public contains(displaySetUID: string, imageId: string): boolean {
+    if (!this.viewportData?.data) {
+      return false;
+    }
+
+    if (this.viewportData.data.length) {
+      return !!this.viewportData.data.find(data => dataContains(data, displaySetUID, imageId));
+    }
+    return dataContains(this.viewportData.data, displaySetUID, imageId);
   }
 
   public destroy = (): void => {
@@ -105,26 +146,17 @@ class ViewportInfo {
   public setViewportId(viewportId: string): void {
     this.viewportId = viewportId;
   }
-  public setViewportIndex(viewportIndex: number): void {
-    this.viewportIndex = viewportIndex;
-  }
 
   public setElement(element: HTMLDivElement): void {
     this.element = element;
   }
 
-  public setViewportData(
-    viewportData: StackViewportData | VolumeViewportData
-  ): void {
+  public setViewportData(viewportData: StackViewportData | VolumeViewportData): void {
     this.viewportData = viewportData;
   }
 
   public getViewportData(): StackViewportData | VolumeViewportData {
     return this.viewportData;
-  }
-
-  public getViewportIndex(): number {
-    return this.viewportIndex;
   }
 
   public getElement(): HTMLDivElement {
@@ -136,14 +168,14 @@ class ViewportInfo {
   }
 
   public setPublicDisplaySetOptions(
-    publicDisplaySetOptions: Array<PublicDisplaySetOptions>
-  ): void {
+    publicDisplaySetOptions: PublicDisplaySetOptions[] | DisplaySetSelector[]
+  ): Array<DisplaySetOptions> {
     // map the displaySetOptions and check if they are undefined then set them to default values
-    const displaySetOptions = this.mapDisplaySetOptions(
-      publicDisplaySetOptions
-    );
+    const displaySetOptions = this.mapDisplaySetOptions(publicDisplaySetOptions);
 
     this.setDisplaySetOptions(displaySetOptions);
+
+    return this.displaySetOptions;
   }
 
   public hasDisplaySet(displaySetInstanceUID: string): boolean {
@@ -152,7 +184,10 @@ class ViewportInfo {
     // via cornerstoneViewportService
     let viewportData = this.getViewportData();
 
-    if (viewportData.viewportType === Enums.ViewportType.ORTHOGRAPHIC) {
+    if (
+      viewportData.viewportType === Enums.ViewportType.ORTHOGRAPHIC ||
+      viewportData.viewportType === Enums.ViewportType.VOLUME_3D
+    ) {
       viewportData = viewportData as VolumeViewportData;
       return viewportData.data.some(
         ({ displaySetInstanceUID: dsUID }) => dsUID === displaySetInstanceUID
@@ -163,26 +198,20 @@ class ViewportInfo {
     return viewportData.data.displaySetInstanceUID === displaySetInstanceUID;
   }
 
-  public setPublicViewportOptions(
-    viewportOptionsEntry: PublicViewportOptions
-  ): void {
+  public setPublicViewportOptions(viewportOptionsEntry: PublicViewportOptions): ViewportOptions {
     let viewportType = viewportOptionsEntry.viewportType;
-    let toolGroupId = viewportOptionsEntry.toolGroupId;
+    const { toolGroupId = DEFAULT_TOOLGROUP_ID, presentationIds } = viewportOptionsEntry;
     let orientation;
 
     if (!viewportType) {
       viewportType = getCornerstoneViewportType(STACK);
     } else {
-      viewportType = getCornerstoneViewportType(
-        viewportOptionsEntry.viewportType
-      );
+      viewportType = getCornerstoneViewportType(viewportOptionsEntry.viewportType);
     }
 
     // map SAGITTAL, AXIAL, CORONAL orientation to be used by cornerstone
-    if (viewportOptionsEntry.viewportType?.toLowerCase() === VOLUME) {
+    if (viewportOptionsEntry.viewportType?.toLowerCase() !== STACK) {
       orientation = getCornerstoneOrientation(viewportOptionsEntry.orientation);
-    } else {
-      orientation = Enums.OrientationAxis.AXIAL;
     }
 
     if (!toolGroupId) {
@@ -195,7 +224,10 @@ class ViewportInfo {
       viewportType: viewportType as Enums.ViewportType,
       orientation,
       toolGroupId,
+      presentationIds,
     });
+
+    return this.viewportOptions;
   }
 
   public setViewportOptions(viewportOptions: ViewportOptions): void {
@@ -206,14 +238,13 @@ class ViewportInfo {
     return this.viewportOptions;
   }
 
-  public setDisplaySetOptions(
-    displaySetOptions: Array<DisplaySetOptions>
-  ): void {
+  public setDisplaySetOptions(displaySetOptions: Array<DisplaySetOptions>): void {
     this.displaySetOptions = displaySetOptions;
   }
 
   public getSyncGroups(): SyncGroup[] {
-    return this.viewportOptions.syncGroups || [];
+    this.viewportOptions.syncGroups ||= [];
+    return this.viewportOptions.syncGroups;
   }
 
   public getDisplaySetOptions(): Array<DisplaySetOptions> {
@@ -232,20 +263,27 @@ class ViewportInfo {
     return this.viewportOptions.background || [0, 0, 0];
   }
 
-  public getOrientation(): Types.Orientation {
+  public getOrientation(): Enums.OrientationAxis {
     return this.viewportOptions.orientation;
+  }
+
+  public getDisplayArea(): Types.DisplayArea {
+    return this.viewportOptions.displayArea;
   }
 
   public getInitialImageOptions(): InitialImageOptions {
     return this.viewportOptions.initialImageOptions;
   }
 
+  // Handle incoming public display set options or a display set select
+  // with a contained options.
   private mapDisplaySetOptions(
-    publicDisplaySetOptions: Array<PublicDisplaySetOptions>
+    options: PublicDisplaySetOptions[] | DisplaySetSelector[] = [{}]
   ): Array<DisplaySetOptions> {
     const displaySetOptions: Array<DisplaySetOptions> = [];
 
-    publicDisplaySetOptions.forEach(option => {
+    options.forEach(item => {
+      let option = item?.options || item;
       if (!option) {
         option = {
           blendMode: undefined,
@@ -263,6 +301,7 @@ class ViewportInfo {
         colormap: option.colormap,
         slabThickness: option.slabThickness,
         blendMode,
+        displayPreset: option.displayPreset,
       });
     });
 

@@ -1,4 +1,4 @@
-import hydrateSEGDisplaySet from './_hydrateSEG';
+import { ButtonEnums } from '@ohif/ui';
 
 const RESPONSE = {
   NO_NEVER: -1,
@@ -9,23 +9,23 @@ const RESPONSE = {
 function promptHydrateSEG({
   servicesManager,
   segDisplaySet,
-  viewportIndex,
-  toolGroupId = 'default',
+  viewportId,
+  preHydrateCallbacks,
+  hydrateSEGDisplaySet,
 }) {
-  const { UIViewportDialogService } = servicesManager.services;
+  const { uiViewportDialogService } = servicesManager.services;
 
-  return new Promise(async function(resolve, reject) {
-    const promptResult = await _askHydrate(
-      UIViewportDialogService,
-      viewportIndex
-    );
+  return new Promise(async function (resolve, reject) {
+    const promptResult = await _askHydrate(uiViewportDialogService, viewportId);
 
     if (promptResult === RESPONSE.HYDRATE_SEG) {
+      preHydrateCallbacks?.forEach(callback => {
+        callback();
+      });
+
       const isHydrated = await hydrateSEGDisplaySet({
         segDisplaySet,
-        viewportIndex,
-        toolGroupId,
-        servicesManager,
+        viewportId,
       });
 
       resolve(isHydrated);
@@ -33,34 +33,34 @@ function promptHydrateSEG({
   });
 }
 
-function _askHydrate(UIViewportDialogService, viewportIndex) {
-  return new Promise(function(resolve, reject) {
+function _askHydrate(uiViewportDialogService, viewportId) {
+  return new Promise(function (resolve, reject) {
     const message = 'Do you want to open this Segmentation?';
     const actions = [
       {
-        type: 'secondary',
+        type: ButtonEnums.type.secondary,
         text: 'No',
         value: RESPONSE.CANCEL,
       },
       {
-        type: 'primary',
+        type: ButtonEnums.type.primary,
         text: 'Yes',
         value: RESPONSE.HYDRATE_SEG,
       },
     ];
     const onSubmit = result => {
-      UIViewportDialogService.hide();
+      uiViewportDialogService.hide();
       resolve(result);
     };
 
-    UIViewportDialogService.show({
-      viewportIndex,
+    uiViewportDialogService.show({
+      viewportId,
       type: 'info',
       message,
       actions,
       onSubmit,
       onOutsideClick: () => {
-        UIViewportDialogService.hide();
+        uiViewportDialogService.hide();
         resolve(RESPONSE.CANCEL);
       },
     });

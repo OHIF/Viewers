@@ -29,7 +29,11 @@ import {
   PubSubService,
   UserAuthenticationService,
   CustomizationService,
+  StateSyncService,
+  PanelService,
 } from './services';
+
+import { DisplaySetMessage, DisplaySetMessageList } from './services/DisplaySetService';
 
 import IWebApiDataSource from './DataSources/IWebApiDataSource';
 
@@ -60,6 +64,7 @@ const OHIF = {
   //
   CineService,
   CustomizationService,
+  StateSyncService,
   UIDialogService,
   UIModalService,
   UINotificationService,
@@ -74,6 +79,7 @@ const OHIF = {
   DicomMetadataStore,
   pubSubServiceInterface,
   PubSubService,
+  PanelService,
 };
 
 export {
@@ -97,11 +103,14 @@ export {
   //
   CineService,
   CustomizationService,
+  StateSyncService,
   UIDialogService,
   UIModalService,
   UINotificationService,
   UIViewportDialogService,
   DisplaySetService,
+  DisplaySetMessage,
+  DisplaySetMessageList,
   MeasurementService,
   ToolbarService,
   ViewportGridService,
@@ -112,6 +121,7 @@ export {
   pubSubServiceInterface,
   PubSubService,
   Types,
+  PanelService,
 };
 
 export { OHIF };

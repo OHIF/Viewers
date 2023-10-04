@@ -1,10 +1,37 @@
 import merge from 'lodash.merge';
+import { CommandsManager } from '../../classes';
+import { ExtensionManager } from '../../extensions';
 import { PubSubService } from '../_shared/pubSubServiceInterface';
+import type { RunCommand, Commands } from '../../types/Command';
 
 const EVENTS = {
   TOOL_BAR_MODIFIED: 'event::toolBarService:toolBarModified',
   TOOL_BAR_STATE_MODIFIED: 'event::toolBarService:toolBarStateModified',
 };
+
+export type ButtonListeners = Record<string, RunCommand>;
+
+export interface ButtonProps {
+  primary?: Button;
+  secondary?: Button;
+  items?: Button[];
+}
+
+export interface Button extends Commands {
+  id: string;
+  icon?: string;
+  label?: string;
+  type?: string;
+  tooltip?: string;
+  isActive?: boolean;
+  listeners?: ButtonListeners;
+  props?: ButtonProps;
+}
+
+export interface ExtraButtonOptions {
+  listeners?: ButtonListeners;
+  isActive?: boolean;
+}
 
 export default class ToolbarService extends PubSubService {
   public static REGISTRATION = {
@@ -16,37 +43,51 @@ export default class ToolbarService extends PubSubService {
     },
   };
 
-  constructor(commandsManager) {
-    super(EVENTS);
-    this._commandsManager = commandsManager;
-    //
-    this.buttons = {};
-    this.unsubscriptions = []; // if tools need to unsubscribe from events
-    this.buttonSections = {
-      /**
-       * primary: ['Zoom', 'Wwwc'],
-       * secondary: ['Length', 'RectangleRoi']
-       */
-    };
-
-    // TODO: Do we need to track per context? Or do we allow for a mixed
-    // definition that adapts based on context?
-    this.state = {
-      primaryToolId: 'WindowLevel',
-      toggles: {
-        /* id: true/false */
-      },
-      groups: {
-        /* track most recent click per group...? */
-      },
+  public static _createButton(
+    type: string,
+    id: string,
+    icon: string,
+    label: string,
+    commands: Command | Commands,
+    tooltip?: string,
+    extraOptions?: ExtraButtonOptions
+  ): Button {
+    return {
+      id,
+      icon,
+      label,
+      type,
+      commands,
+      tooltip,
+      ...extraOptions,
     };
   }
 
-  init(extensionManager) {
+  buttons: Record<string, Button> = {};
+  state: {
+    primaryToolId: string;
+    toggles: Record<string, boolean>;
+    groups: Record<string, unknown>;
+  } = { primaryToolId: 'WindowLevel', toggles: {}, groups: {} };
+  buttonSections: Record<string, unknown> = {
+    /**
+     * primary: ['Zoom', 'Wwwc'],
+     * secondary: ['Length', 'RectangleRoi']
+     */
+  };
+  _commandsManager: CommandsManager;
+  extensionManager: ExtensionManager;
+
+  constructor(commandsManager: CommandsManager) {
+    super(EVENTS);
+    this._commandsManager = commandsManager;
+  }
+
+  public init(extensionManager: ExtensionManager): void {
     this.extensionManager = extensionManager;
   }
 
-  reset() {
+  public reset(): void {
     this.unsubscriptions.forEach(unsub => unsub());
     this.state = {
       primaryToolId: 'WindowLevel',
@@ -58,7 +99,7 @@ export default class ToolbarService extends PubSubService {
     this.buttons = {};
   }
 
-  onModeEnter() {
+  public onModeEnter(): void {
     this.reset();
   }
 
@@ -69,8 +110,10 @@ export default class ToolbarService extends PubSubService {
    *    used for calling the specified interaction.  That is, the command is
    *    called with {...commandOptions,...options}
    */
-  recordInteraction(interaction, options) {
-    if (!interaction) return;
+  public recordInteraction(interaction, options?: Record<string, unknown>) {
+    if (!interaction) {
+      return;
+    }
     const commandsManager = this._commandsManager;
     const { groupId, itemId, interactionType, commands } = interaction;
 
@@ -92,14 +135,14 @@ export default class ToolbarService extends PubSubService {
       }
       case 'tool': {
         try {
-          commands.forEach(
-            ({ commandName = 'setToolActive', commandOptions, context }) => {
-              commandsManager.runCommand(commandName, commandOptions, context);
-            }
-          );
+          commands.forEach(({ commandName = 'setToolActive', commandOptions, context }) => {
+            commandsManager.runCommand(commandName, commandOptions, context);
+          });
 
-          // only set the primary tool if no error was thrown
-          this.state.primaryToolId = itemId;
+          // only set the primary tool if no error was thrown.
+          // if the itemId is not undefined use it; otherwise, set the first tool in
+          // the commands as the primary tool
+          this.state.primaryToolId = itemId || commands[0].commandOptions?.toolName;
         } catch (error) {
           console.warn(error);
         }
@@ -112,9 +155,7 @@ export default class ToolbarService extends PubSubService {
 
         // only toggle if a command was executed
         this.state.toggles[itemId] =
-          this.state.toggles[itemId] === undefined
-            ? true
-            : !this.state.toggles[itemId];
+          this.state.toggles[itemId] === undefined ? true : !this.state.toggles[itemId];
 
         if (!commands) {
           break;
@@ -158,7 +199,7 @@ export default class ToolbarService extends PubSubService {
     //   unsubscribe = commandsManager.runCommand(commandName, commandOptions);
     // }
 
-    // // Storing the unsubscribe for later reseting
+    // // Storing the unsubscribe for later resetting
     // if (unsubscribe && typeof unsubscribe === 'function') {
     //   if (this.unsubscriptions.indexOf(unsubscribe) === -1) {
     //     this.unsubscriptions.push(unsubscribe);
@@ -170,7 +211,7 @@ export default class ToolbarService extends PubSubService {
       this.state.groups[groupId] = itemId;
     }
 
-    this._broadcastEvent(this.EVENTS.TOOL_BAR_STATE_MODIFIED, {});
+    this._broadcastEvent(this.EVENTS.TOOL_BAR_STATE_MODIFIED, { ...this.state });
   }
 
   getButtons() {
@@ -178,7 +219,22 @@ export default class ToolbarService extends PubSubService {
   }
 
   getActiveTools() {
-    return [this.state.primaryToolId, ...Object.keys(this.state.toggles)];
+    const activeTools = [this.state.primaryToolId];
+    Object.keys(this.state.toggles).forEach(key => {
+      if (this.state.toggles[key]) {
+        activeTools.push(key);
+      }
+    });
+    return activeTools;
+  }
+
+  /** Sets the toggle state of a button to the isToggled state */
+  public setToggled(id: string, isToggled: boolean): void {
+    if (isToggled) {
+      this.state.toggles[id] = true;
+    } else {
+      delete this.state.toggles[id];
+    }
   }
 
   setButton(id, button) {
@@ -192,8 +248,23 @@ export default class ToolbarService extends PubSubService {
     }
   }
 
-  getButton(id) {
+  public getButton(id: string): Button {
     return this.buttons[id];
+  }
+
+  /** Gets a nested button, found in the items/props for the children */
+  public getNestedButton(id: string): Button {
+    if (this.buttons[id]) {
+      return this.buttons[id];
+    }
+    for (const buttonId of Object.keys(this.buttons)) {
+      const { primary, items } = this.buttons[buttonId].props || {};
+      if (primary?.id === id) { return primary; }
+      const found = items?.find(childButton => childButton.id === id);
+      if (found) {
+        return found;
+      }
+    }
   }
 
   setButtons(buttons) {
@@ -206,14 +277,9 @@ export default class ToolbarService extends PubSubService {
 
   _buttonTypes() {
     const buttonTypes = {};
-    const registeredToolbarModules = this.extensionManager.modules[
-      'toolbarModule'
-    ];
+    const registeredToolbarModules = this.extensionManager.modules['toolbarModule'];
 
-    if (
-      Array.isArray(registeredToolbarModules) &&
-      registeredToolbarModules.length
-    ) {
+    if (Array.isArray(registeredToolbarModules) && registeredToolbarModules.length) {
       registeredToolbarModules.forEach(toolbarModule =>
         toolbarModule.module.forEach(def => {
           buttonTypes[def.name] = def;
@@ -268,8 +334,22 @@ export default class ToolbarService extends PubSubService {
         this.buttons[button.id] = button;
       }
     });
+    this._setTogglesForButtonItems(buttons);
 
     this._broadcastEvent(this.EVENTS.TOOL_BAR_MODIFIED, {});
+  }
+
+  _setTogglesForButtonItems(buttons) {
+    if (!buttons) {
+      return;
+    }
+
+    buttons.forEach(buttonItem => {
+      if (buttonItem.type === 'toggle') {
+        this.setToggled(buttonItem.id, buttonItem.isActive);
+      }
+      this._setTogglesForButtonItems(buttonItem.props?.items);
+    });
   }
 
   /**
@@ -280,6 +360,10 @@ export default class ToolbarService extends PubSubService {
    * @param {*} props - Props set by the Viewer layer
    */
   _mapButtonToDisplay(btn, btnSection, metadata, props) {
+    if (!btn) {
+      return;
+    }
+
     const { id, type, component } = btn;
     const buttonType = this._buttonTypes()[type];
 
@@ -295,8 +379,6 @@ export default class ToolbarService extends PubSubService {
   }
 
   getButtonComponentForUIType(uiType: string) {
-    return uiType
-      ? this._buttonTypes()[uiType]?.defaultComponent ?? null
-      : null;
+    return uiType ? this._buttonTypes()[uiType]?.defaultComponent ?? null : null;
   }
 }

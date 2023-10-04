@@ -1,5 +1,4 @@
 import React from 'react';
-import { addParameters } from '@storybook/react';
 import { DocsPage, DocsContainer } from '@storybook/addon-docs';
 import {
   Heading,
@@ -13,7 +12,8 @@ import '../src/tailwind.css';
 import './custom.css';
 
 // https://github.com/mondaycom/monday-ui-react-core/tree/master/.storybook
-addParameters({
+
+export const parameters = {
   docs: {
     inlineStories: true,
     container: ({ children, context }) => (
@@ -24,14 +24,10 @@ addParameters({
       Heading,
       Footer,
       h2: SectionName,
-      h3: ({ children }) => (
-        <h3 className="my-2 text-xl to-blue-900">{children}</h3>
-      ),
+      h3: ({ children }) => <h3 className="my-2 to-blue-900 text-xl">{children}</h3>,
       li: AnchorListItem,
       a: LinkComponent,
-      p: ({ children }) => (
-        <p className="my-2 text-gray-800 font-inter">{children}</p>
-      ),
+      p: ({ children }) => <p className="font-inter my-2 text-gray-800">{children}</p>,
       // todo: add pre and code
     },
   },
@@ -78,6 +74,6 @@ addParameters({
       order: ['Welcome', 'Contribute', 'Foundations', 'Modals', '*'],
     },
   },
-});
+};
 
 export const decorators = [];

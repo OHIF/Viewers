@@ -1,7 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { Select, InputLabelWrapper } from '../';
+import Select from '../Select';
+import InputLabelWrapper from '../InputLabelWrapper';
 
 const InputMultiSelect = ({
   id,
@@ -59,8 +60,7 @@ InputMultiSelect.propTypes = {
   id: PropTypes.string,
   label: PropTypes.string.isRequired,
   isSortable: PropTypes.bool.isRequired,
-  sortDirection: PropTypes.oneOf(['ascending', 'descending', 'none'])
-    .isRequired,
+  sortDirection: PropTypes.oneOf(['ascending', 'descending', 'none']).isRequired,
   onLabelClick: PropTypes.func.isRequired,
   onChange: PropTypes.func.isRequired,
   placeholder: PropTypes.string,

@@ -1,7 +1,7 @@
 import React from 'react';
-import { Input, Dialog } from '@ohif/ui';
+import { Input, Dialog, ButtonEnums } from '@ohif/ui';
 
-function callInputDialog(UIDialogService, label, callback) {
+function callInputDialog(uiDialogService, label, callback) {
   const dialogId = 'enter-segment-label';
 
   const onSubmitHandler = ({ action, value }) => {
@@ -13,46 +13,45 @@ function callInputDialog(UIDialogService, label, callback) {
         callback('', action.id);
         break;
     }
-    UIDialogService.dismiss({ id: dialogId });
+    uiDialogService.dismiss({ id: dialogId });
   };
 
-  if (UIDialogService) {
-    UIDialogService.create({
+  if (uiDialogService) {
+    uiDialogService.create({
       id: dialogId,
       centralize: true,
       isDraggable: false,
       showOverlay: true,
       content: Dialog,
       contentProps: {
-        title: 'Enter Segment Label',
+        title: 'Segment',
         value: { label },
         noCloseButton: true,
-        onClose: () => UIDialogService.dismiss({ id: dialogId }),
+        onClose: () => uiDialogService.dismiss({ id: dialogId }),
         actions: [
-          { id: 'cancel', text: 'Cancel', type: 'primary' },
-          { id: 'save', text: 'Confirm', type: 'secondary' },
+          { id: 'cancel', text: 'Cancel', type: ButtonEnums.type.secondary },
+          { id: 'save', text: 'Confirm', type: ButtonEnums.type.primary },
         ],
         onSubmit: onSubmitHandler,
         body: ({ value, setValue }) => {
           return (
-            <div className="p-4 bg-primary-dark">
-              <Input
-                autoFocus
-                className="mt-2 bg-black border-primary-main"
-                type="text"
-                containerClassName="mr-2"
-                value={value.label}
-                onChange={event => {
-                  event.persist();
-                  setValue(value => ({ ...value, label: event.target.value }));
-                }}
-                onKeyPress={event => {
-                  if (event.key === 'Enter') {
-                    onSubmitHandler({ value, action: { id: 'save' } });
-                  }
-                }}
-              />
-            </div>
+            <Input
+              label="Enter the segment label"
+              labelClassName="text-white text-[14px] leading-[1.2]"
+              autoFocus
+              className="border-primary-main bg-black"
+              type="text"
+              value={value.label}
+              onChange={event => {
+                event.persist();
+                setValue(value => ({ ...value, label: event.target.value }));
+              }}
+              onKeyPress={event => {
+                if (event.key === 'Enter') {
+                  onSubmitHandler({ value, action: { id: 'save' } });
+                }
+              }}
+            />
           );
         },
       },

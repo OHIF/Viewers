@@ -1,14 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import getGridWidthClass from '../../utils/getGridWidthClass'
+import getGridWidthClass from '../../utils/getGridWidthClass';
 
-import {
-  InputText,
-  InputDateRange,
-  InputMultiSelect,
-  InputLabelWrapper,
-} from '../';
+import InputText from '../InputText';
+import InputDateRange from '../InputDateRange';
+import InputMultiSelect from '../InputMultiSelect';
+import InputLabelWrapper from '../InputLabelWrapper';
 
 const InputGroup = ({
   inputMeta,
@@ -38,13 +36,7 @@ const InputGroup = ({
     }
   };
 
-  const renderFieldInputComponent = ({
-    name,
-    displayName,
-    inputProps,
-    isSortable,
-    inputType,
-  }) => {
+  const renderFieldInputComponent = ({ name, displayName, inputProps, isSortable, inputType }) => {
     const _isSortable = isSortable && isSortingEnabled;
     const _sortDirection = sortBy !== name ? 'none' : sortDirection;
 
@@ -125,16 +117,13 @@ const InputGroup = ({
     }
   };
   return (
-    <div className="container m-auto relative flex flex-col">
-      <div className="flex flex-row w-full">
+    <div className="container relative m-auto flex flex-col">
+      <div className="flex w-full flex-row">
         {inputMeta.map(inputMeta => {
           return (
             <div
               key={inputMeta.name}
-              className={classnames(
-                'pl-4 first:pl-12',
-                getGridWidthClass(inputMeta.gridCol)
-              )}
+              className={classnames('pl-4 first:pl-12', getGridWidthClass(inputMeta.gridCol))}
             >
               {renderFieldInputComponent(inputMeta)}
             </div>
@@ -150,11 +139,9 @@ InputGroup.propTypes = {
     PropTypes.shape({
       name: PropTypes.string.isRequired,
       displayName: PropTypes.string.isRequired,
-      inputType: PropTypes.oneOf(['Text', 'MultiSelect', 'DateRange', 'None'])
-        .isRequired,
+      inputType: PropTypes.oneOf(['Text', 'MultiSelect', 'DateRange', 'None']).isRequired,
       isSortable: PropTypes.bool.isRequired,
-      gridCol: PropTypes.oneOf([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12])
-        .isRequired,
+      gridCol: PropTypes.oneOf([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]).isRequired,
       option: PropTypes.arrayOf(
         PropTypes.shape({
           value: PropTypes.string,

@@ -6,9 +6,14 @@ export default function formatPN(name) {
     return;
   }
 
+  let nameToUse = name.Alphabetic ?? name;
+  if (typeof nameToUse === 'object') {
+    nameToUse = '';
+  }
+
   // Convert the first ^ to a ', '. String.replace() only affects
   // the first appearance of the character.
-  const commaBetweenFirstAndLast = name.replace('^', ', ');
+  const commaBetweenFirstAndLast = nameToUse.replace('^', ', ');
 
   // Replace any remaining '^' characters with spaces
   const cleaned = commaBetweenFirstAndLast.replace(/\^/g, ' ');

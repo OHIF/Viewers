@@ -10,8 +10,8 @@ function _getStudyForPatientUtility(extensionManager) {
     '@ohif/extension-default.utilityModule.common'
   );
 
-  const { getStudiesForPatientByStudyInstanceUID } = utilityModule.exports;
-  return getStudiesForPatientByStudyInstanceUID;
+  const { getStudiesForPatientByMRN } = utilityModule.exports;
+  return getStudiesForPatientByMRN;
 }
 
 /**
@@ -21,23 +21,12 @@ function _getStudyForPatientUtility(extensionManager) {
  * @param {object} commandsManager
  * @param {object} extensionManager
  */
-function WrappedPanelStudyBrowserTracking({
-  commandsManager,
-  extensionManager,
-  servicesManager,
-}) {
+function WrappedPanelStudyBrowserTracking({ commandsManager, extensionManager, servicesManager }) {
   const dataSource = extensionManager.getActiveDataSource()[0];
 
-  const getStudiesForPatientByStudyInstanceUID = _getStudyForPatientUtility(
-    extensionManager
-  );
-  const _getStudiesForPatientByStudyInstanceUID = getStudiesForPatientByStudyInstanceUID.bind(
-    null,
-    dataSource
-  );
-  const _getImageSrcFromImageId = _createGetImageSrcFromImageIdFn(
-    extensionManager
-  );
+  const getStudiesForPatientByMRN = _getStudyForPatientUtility(extensionManager);
+  const _getStudiesForPatientByMRN = getStudiesForPatientByMRN.bind(null, dataSource);
+  const _getImageSrcFromImageId = _createGetImageSrcFromImageIdFn(extensionManager);
   const _requestDisplaySetCreationForStudy = requestDisplaySetCreationForStudy.bind(
     null,
     dataSource
@@ -48,9 +37,7 @@ function WrappedPanelStudyBrowserTracking({
       servicesManager={servicesManager}
       dataSource={dataSource}
       getImageSrc={_getImageSrcFromImageId}
-      getStudiesForPatientByStudyInstanceUID={
-        _getStudiesForPatientByStudyInstanceUID
-      }
+      getStudiesForPatientByMRN={_getStudiesForPatientByMRN}
       requestDisplaySetCreationForStudy={_requestDisplaySetCreationForStudy}
     />
   );

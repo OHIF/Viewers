@@ -1,6 +1,5 @@
-import OHIF from '@ohif/core';
+import OHIF, { Types } from '@ohif/core';
 import React from 'react';
-import { ContextMenuMeasurements } from '@ohif/ui';
 
 import * as cornerstone from '@cornerstonejs/core';
 import * as cornerstoneTools from '@cornerstonejs/tools';
@@ -12,23 +11,24 @@ import {
   volumeLoader,
   imageLoadPoolManager,
   Settings,
+  utilities as csUtilities,
+  Enums as csEnums,
 } from '@cornerstonejs/core';
-import { Enums, utilities, ReferenceLinesTool } from '@cornerstonejs/tools';
+import { Enums } from '@cornerstonejs/tools';
 import { cornerstoneStreamingImageVolumeLoader } from '@cornerstonejs/streaming-image-volume-loader';
 
 import initWADOImageLoader from './initWADOImageLoader';
 import initCornerstoneTools from './initCornerstoneTools';
 
 import { connectToolsToMeasurementService } from './initMeasurementService';
-import callInputDialog from './utils/callInputDialog';
 import initCineService from './initCineService';
 import interleaveCenterLoader from './utils/interleaveCenterLoader';
 import nthLoader from './utils/nthLoader';
 import interleaveTopToBottom from './utils/interleaveTopToBottom';
-
-const cs3DToolsEvents = Enums.Events;
-
-let CONTEXT_MENU_OPEN = false;
+import initContextMenu from './initContextMenu';
+import initDoubleClick from './initDoubleClick';
+import { CornerstoneServices } from './types';
+import initViewTiming from './utils/initViewTiming';
 
 // TODO: Cypress tests are currently grabbing this from the window?
 window.cornerstone = cornerstone;
@@ -39,69 +39,111 @@ window.cornerstoneTools = cornerstoneTools;
 export default async function init({
   servicesManager,
   commandsManager,
+  extensionManager,
   configuration,
   appConfig,
-}) {
-  await cs3DInit();
+}: Types.Extensions.ExtensionParams): Promise<void> {
+  // Note: this should run first before initializing the cornerstone
+  // DO NOT CHANGE THE ORDER
+  const value = appConfig.useSharedArrayBuffer;
+  let sharedArrayBufferDisabled = false;
+
+  if (value === 'AUTO') {
+    cornerstone.setUseSharedArrayBuffer(csEnums.SharedArrayBufferModes.AUTO);
+  } else if (value === 'FALSE' || value === false) {
+    cornerstone.setUseSharedArrayBuffer(csEnums.SharedArrayBufferModes.FALSE);
+    sharedArrayBufferDisabled = true;
+  } else {
+    cornerstone.setUseSharedArrayBuffer(csEnums.SharedArrayBufferModes.TRUE);
+  }
+
+  await cs3DInit({
+    rendering: {
+      preferSizeOverAccuracy: Boolean(appConfig.use16BitDataType),
+      useNorm16Texture: Boolean(appConfig.use16BitDataType),
+    },
+  });
 
   // For debugging e2e tests that are failing on CI
   cornerstone.setUseCPURendering(Boolean(appConfig.useCPURendering));
 
-  // For debugging large datasets
-  const MAX_CACHE_SIZE_1GB = 1073741824;
-  const maxCacheSize = appConfig.maxCacheSize;
-  cornerstone.cache.setMaxCacheSize(
-    maxCacheSize ? maxCacheSize : MAX_CACHE_SIZE_1GB
-  );
+  cornerstone.setConfiguration({
+    ...cornerstone.getConfiguration(),
+    rendering: {
+      ...cornerstone.getConfiguration().rendering,
+      strictZSpacingForVolumeViewport: appConfig.strictZSpacingForVolumeViewport,
+    },
+  });
+
+  // For debugging large datasets, otherwise prefer the defaults
+  const { maxCacheSize } = appConfig;
+  if (maxCacheSize) {
+    cornerstone.cache.setMaxCacheSize(maxCacheSize);
+  }
 
   initCornerstoneTools();
 
-  Settings.getRuntimeSettings().set(
-    'useCursors',
-    Boolean(appConfig.useCursors)
-  );
+  Settings.getRuntimeSettings().set('useCursors', Boolean(appConfig.useCursors));
 
   const {
-    UserAuthenticationService,
-    MeasurementService,
-    DisplaySetService,
-    UIDialogService,
-    UIModalService,
-    UINotificationService,
+    userAuthenticationService,
+    customizationService,
+    uiModalService,
+    uiNotificationService,
     cineService,
-    CornerstoneViewportService,
-    HangingProtocolService,
-    ToolGroupService,
-    ViewportGridService,
-  } = servicesManager.services;
+    cornerstoneViewportService,
+    hangingProtocolService,
+    toolGroupService,
+    toolbarService,
+    viewportGridService,
+    stateSyncService,
+  } = servicesManager.services as CornerstoneServices;
 
   window.services = servicesManager.services;
+  window.extensionManager = extensionManager;
+  window.commandsManager = commandsManager;
 
-  if (!window.crossOriginIsolated) {
-    UINotificationService.show({
+  if (
+    appConfig.showWarningMessageForCrossOrigin &&
+    !window.crossOriginIsolated &&
+    !sharedArrayBufferDisabled
+  ) {
+    uiNotificationService.show({
       title: 'Cross Origin Isolation',
       message:
-        'Cross Origin Isolation is not enabled, volume rendering will not work (e.g., MPR)',
+        'Cross Origin Isolation is not enabled, read more about it here: https://docs.ohif.org/faq/',
       type: 'warning',
     });
   }
 
-  if (cornerstone.getShouldUseCPURendering()) {
-    _showCPURenderingModal(UIModalService, HangingProtocolService);
+  if (appConfig.showCPUFallbackMessage && cornerstone.getShouldUseCPURendering()) {
+    _showCPURenderingModal(uiModalService, hangingProtocolService);
   }
 
-  const labelmapRepresentation =
-    cornerstoneTools.Enums.SegmentationRepresentations.Labelmap;
+  // Stores a map from `lutPresentationId` to a Presentation object so that
+  // an OHIFCornerstoneViewport can be redisplayed with the same LUT
+  stateSyncService.register('lutPresentationStore', { clearOnModeExit: true });
 
-  cornerstoneTools.segmentation.config.setGlobalRepresentationConfig(
-    labelmapRepresentation,
-    {
-      fillAlpha: 0.3,
-      fillAlphaInactive: 0.2,
-      outlineOpacity: 1,
-      outlineOpacityInactive: 0.65,
-    }
-  );
+  // Stores a map from `positionPresentationId` to a Presentation object so that
+  // an OHIFCornerstoneViewport can be redisplayed with the same position
+  stateSyncService.register('positionPresentationStore', {
+    clearOnModeExit: true,
+  });
+
+  // Stores the entire ViewportGridService getState when toggling to one up
+  // (e.g. via a double click) so that it can be restored when toggling back.
+  stateSyncService.register('toggleOneUpViewportGridStore', {
+    clearOnModeExit: true,
+  });
+
+  const labelmapRepresentation = cornerstoneTools.Enums.SegmentationRepresentations.Labelmap;
+
+  cornerstoneTools.segmentation.config.setGlobalRepresentationConfig(labelmapRepresentation, {
+    fillAlpha: 0.3,
+    fillAlphaInactive: 0.2,
+    outlineOpacity: 1,
+    outlineOpacityInactive: 0.65,
+  });
 
   const metadataProvider = OHIF.classes.MetadataProvider;
 
@@ -110,16 +152,16 @@ export default async function init({
     cornerstoneStreamingImageVolumeLoader
   );
 
-  HangingProtocolService.registerImageLoadStrategy(
-    'interleaveCenter',
-    interleaveCenterLoader
-  );
-  HangingProtocolService.registerImageLoadStrategy(
-    'interleaveTopToBottom',
-    interleaveTopToBottom
-  );
-  HangingProtocolService.registerImageLoadStrategy('nth', nthLoader);
+  hangingProtocolService.registerImageLoadStrategy('interleaveCenter', interleaveCenterLoader);
+  hangingProtocolService.registerImageLoadStrategy('interleaveTopToBottom', interleaveTopToBottom);
+  hangingProtocolService.registerImageLoadStrategy('nth', nthLoader);
 
+  // add metadata providers
+  metaData.addProvider(
+    csUtilities.calibratedPixelSpacingMetadataProvider.get.bind(
+      csUtilities.calibratedPixelSpacingMetadataProvider
+    )
+  ); // this provider is required for Calibration tool
   metaData.addProvider(metadataProvider.get.bind(metadataProvider), 9999);
 
   imageLoadPoolManager.maxNumRequests = {
@@ -128,170 +170,90 @@ export default async function init({
     prefetch: appConfig?.maxNumRequests?.prefetch || 10,
   };
 
-  initWADOImageLoader(UserAuthenticationService, appConfig);
+  initWADOImageLoader(userAuthenticationService, appConfig, extensionManager);
 
   /* Measurement Service */
-  const measurementServiceSource = connectToolsToMeasurementService(
-    MeasurementService,
-    DisplaySetService,
-    CornerstoneViewportService
-  );
+  this.measurementServiceSource = connectToolsToMeasurementService(servicesManager);
 
   initCineService(cineService);
 
-  const _getDefaultPosition = event => ({
-    x: (event && event.currentPoints.client[0]) || 0,
-    y: (event && event.currentPoints.client[1]) || 0,
-  });
-
-  const onRightClick = event => {
-    if (!UIDialogService) {
-      console.warn('Unable to show dialog; no UI Dialog Service available.');
-      return;
-    }
-
-    const onGetMenuItems = defaultMenuItems => {
-      const { element, currentPoints } = event.detail;
-
-      const nearbyToolData = utilities.getAnnotationNearPoint(
-        element,
-        currentPoints.canvas
-      );
-
-      const menuItems = [];
-      if (nearbyToolData && nearbyToolData.metadata.toolName !== 'Crosshairs') {
-        defaultMenuItems.forEach(item => {
-          item.value = nearbyToolData;
-          item.element = element;
-          menuItems.push(item);
-        });
-      }
-
-      return menuItems;
-    };
-
-    CONTEXT_MENU_OPEN = true;
-
-    UIDialogService.dismiss({ id: 'context-menu' });
-    UIDialogService.create({
-      id: 'context-menu',
-      isDraggable: false,
-      preservePosition: false,
-      defaultPosition: _getDefaultPosition(event.detail),
-      content: ContextMenuMeasurements,
-      onClickOutside: () => {
-        UIDialogService.dismiss({ id: 'context-menu' });
-        CONTEXT_MENU_OPEN = false;
-      },
-      contentProps: {
-        onGetMenuItems,
-        eventData: event.detail,
-        onDelete: item => {
-          const { annotationUID } = item.value;
-
-          const uid = annotationUID;
-          // Sync'd w/ Measurement Service
-          if (uid) {
-            measurementServiceSource.remove(uid, {
-              element: item.element,
-            });
-          }
-          CONTEXT_MENU_OPEN = false;
-        },
-        onClose: () => {
-          CONTEXT_MENU_OPEN = false;
-          UIDialogService.dismiss({ id: 'context-menu' });
-        },
-        onSetLabel: item => {
-          const { annotationUID } = item.value;
-
-          const measurement = MeasurementService.getMeasurement(annotationUID);
-
-          callInputDialog(
-            UIDialogService,
-            measurement,
-            (label, actionId) => {
-              if (actionId === 'cancel') {
-                return;
-              }
-
-              const updatedMeasurement = Object.assign({}, measurement, {
-                label,
-              });
-
-              MeasurementService.update(
-                updatedMeasurement.uid,
-                updatedMeasurement,
-                true
-              );
-            },
-            false
-          );
-
-          CONTEXT_MENU_OPEN = false;
-        },
-      },
-    });
-  };
-
-  const resetContextMenu = () => {
-    if (!UIDialogService) {
-      console.warn('Unable to show dialog; no UI Dialog Service available.');
-      return;
-    }
-
-    CONTEXT_MENU_OPEN = false;
-
-    UIDialogService.dismiss({ id: 'context-menu' });
-  };
-
   // When a custom image load is performed, update the relevant viewports
-  HangingProtocolService.subscribe(
-    HangingProtocolService.EVENTS.CUSTOM_IMAGE_LOAD_PERFORMED,
+  hangingProtocolService.subscribe(
+    hangingProtocolService.EVENTS.CUSTOM_IMAGE_LOAD_PERFORMED,
     volumeInputArrayMap => {
       for (const entry of volumeInputArrayMap.entries()) {
         const [viewportId, volumeInputArray] = entry;
-        const viewport = CornerstoneViewportService.getCornerstoneViewport(
-          viewportId
-        );
+        const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
-        CornerstoneViewportService.setVolumesForViewport(
-          viewport,
-          volumeInputArray
-        );
+        const ohifViewport = cornerstoneViewportService.getViewportInfo(viewportId);
+
+        const { lutPresentationStore, positionPresentationStore } = stateSyncService.getState();
+        const { presentationIds } = ohifViewport.getViewportOptions();
+        const presentations = {
+          positionPresentation: positionPresentationStore[presentationIds?.positionPresentationId],
+          lutPresentation: lutPresentationStore[presentationIds?.lutPresentationId],
+        };
+
+        cornerstoneViewportService.setVolumesForViewport(viewport, volumeInputArray, presentations);
       }
     }
   );
 
-  /*
-   * Because click gives us the native "mouse up", buttons will always be `0`
-   * Need to fallback to event.which;
-   *
-   */
-  const contextMenuHandleClick = evt => {
-    const mouseUpEvent = evt.detail.event;
-    const isRightClick = mouseUpEvent.which === 3;
+  initContextMenu({
+    cornerstoneViewportService,
+    customizationService,
+    commandsManager,
+  });
 
-    const clickMethodHandler = isRightClick ? onRightClick : resetContextMenu;
-    clickMethodHandler(evt);
+  initDoubleClick({
+    customizationService,
+    commandsManager,
+  });
+
+  /**
+   * When a viewport gets a new display set, this call will go through all the
+   * active tools in the toolbar, and call any commands registered in the
+   * toolbar service with a callback to re-enable on displaying the viewport.
+   */
+  const toolbarEventListener = evt => {
+    const { element } = evt.detail;
+    const activeTools = toolbarService.getActiveTools();
+
+    activeTools.forEach(tool => {
+      const toolData = toolbarService.getNestedButton(tool);
+      const commands = toolData?.listeners?.[evt.type];
+      commandsManager.run(commands, { element, evt });
+    });
   };
 
-  // const cancelContextMenuIfOpen = evt => {
-  //   if (CONTEXT_MENU_OPEN) {
-  //     resetContextMenu();
-  //   }
-  // };
+  /** Listens for active viewport events and fires the toolbar listeners */
+  const activeViewportEventListener = evt => {
+    const { viewportId } = evt;
+    const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
 
-  const newStackCallback = evt => {
-    const { element } = evt.detail;
-    utilities.stackPrefetch.enable(element);
+    const activeTools = toolbarService.getActiveTools();
+
+    activeTools.forEach(tool => {
+      if (!toolGroup?._toolInstances?.[tool]) {
+        return;
+      }
+
+      // check if tool is active on the new viewport
+      const toolEnabled = toolGroup._toolInstances[tool].mode === Enums.ToolModes.Enabled;
+
+      if (!toolEnabled) {
+        return;
+      }
+
+      const button = toolbarService.getNestedButton(tool);
+      const commands = button?.listeners?.[evt.type];
+      commandsManager.run(commands, { viewportId, evt });
+    });
   };
 
   const resetCrosshairs = evt => {
     const { element } = evt.detail;
-    const { viewportId, renderingEngineId } = cornerstone.getEnabledElement(
-      element
-    );
+    const { viewportId, renderingEngineId } = cornerstone.getEnabledElement(element);
 
     const toolGroup = cornerstoneTools.ToolGroupManager.getToolGroupForViewport(
       viewportId,
@@ -313,29 +275,22 @@ export default async function init({
     }
   };
 
+  eventTarget.addEventListener(EVENTS.STACK_VIEWPORT_NEW_STACK, evt => {
+    const { element } = evt.detail;
+    cornerstoneTools.utilities.stackContextPrefetch.enable(element);
+  });
+
   function elementEnabledHandler(evt) {
     const { element } = evt.detail;
-
-    element.addEventListener(
-      cs3DToolsEvents.MOUSE_CLICK,
-      contextMenuHandleClick
-    );
-
     element.addEventListener(EVENTS.CAMERA_RESET, resetCrosshairs);
 
-    eventTarget.addEventListener(
-      EVENTS.STACK_VIEWPORT_NEW_STACK,
-      newStackCallback
-    );
+    eventTarget.addEventListener(EVENTS.STACK_VIEWPORT_NEW_STACK, toolbarEventListener);
+
+    initViewTiming({ element, eventTarget });
   }
 
   function elementDisabledHandler(evt) {
     const { element } = evt.detail;
-
-    element.removeEventListener(
-      cs3DToolsEvents.MOUSE_CLICK,
-      contextMenuHandleClick
-    );
 
     element.removeEventListener(EVENTS.CAMERA_RESET, resetCrosshairs);
 
@@ -346,67 +301,32 @@ export default async function init({
     // );
   }
 
-  eventTarget.addEventListener(
-    EVENTS.ELEMENT_ENABLED,
-    elementEnabledHandler.bind(null)
-  );
+  eventTarget.addEventListener(EVENTS.ELEMENT_ENABLED, elementEnabledHandler.bind(null));
 
-  eventTarget.addEventListener(
-    EVENTS.ELEMENT_DISABLED,
-    elementDisabledHandler.bind(null)
-  );
+  eventTarget.addEventListener(EVENTS.ELEMENT_DISABLED, elementDisabledHandler.bind(null));
 
-  ViewportGridService.subscribe(
-    ViewportGridService.EVENTS.ACTIVE_VIEWPORT_INDEX_CHANGED,
-    ({ viewportIndex }) => {
-      const viewportId = `viewport-${viewportIndex}`;
-      const toolGroup = ToolGroupService.getToolGroupForViewport(viewportId);
-
-      if (!toolGroup || !toolGroup._toolInstances?.['ReferenceLines']) {
-        return;
-      }
-
-      // check if reference lines are active
-      const referenceLinesEnabled =
-        toolGroup._toolInstances['ReferenceLines'].mode ===
-        Enums.ToolModes.Enabled;
-
-      if (!referenceLinesEnabled) {
-        return;
-      }
-
-      toolGroup.setToolConfiguration(
-        ReferenceLinesTool.toolName,
-        {
-          sourceViewportId: viewportId,
-        },
-        true // overwrite
+  viewportGridService.subscribe(
+    viewportGridService.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED,
+    activeViewportEventListener
       );
-
-      // make sure to set it to enabled again since we want to recalculate
-      // the source-target lines
-      toolGroup.setToolEnabled(ReferenceLinesTool.toolName);
     }
-  );
-}
 
 function CPUModal() {
   return (
     <div>
       <p>
-        Your computer does not have enough GPU power to support the default GPU
-        rendering mode. OHIF has switched to CPU rendering mode. Please note
-        that CPU rendering does not support all features such as Volume
-        Rendering, Multiplanar Reconstruction, and Segmentation Overlays.
+        Your computer does not have enough GPU power to support the default GPU rendering mode. OHIF
+        has switched to CPU rendering mode. Please note that CPU rendering does not support all
+        features such as Volume Rendering, Multiplanar Reconstruction, and Segmentation Overlays.
       </p>
     </div>
   );
 }
 
-function _showCPURenderingModal(UIModalService, HangingProtocolService) {
+function _showCPURenderingModal(uiModalService, hangingProtocolService) {
   const callback = progress => {
     if (progress === 100) {
-      UIModalService.show({
+      uiModalService.show({
         content: CPUModal,
         title: 'OHIF Fell Back to CPU Rendering',
       });
@@ -415,10 +335,10 @@ function _showCPURenderingModal(UIModalService, HangingProtocolService) {
     }
   };
 
-  const { unsubscribe } = HangingProtocolService.subscribe(
-    HangingProtocolService.EVENTS.HANGING_PROTOCOL_APPLIED_FOR_VIEWPORT,
-    ({ progress }) => {
-      const done = callback(progress);
+  const { unsubscribe } = hangingProtocolService.subscribe(
+    hangingProtocolService.EVENTS.PROTOCOL_CHANGED,
+    () => {
+      const done = callback(100);
 
       if (done) {
         unsubscribe();

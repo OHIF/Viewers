@@ -11,13 +11,10 @@ function CornerstoneViewportOverlay({
   element,
   viewportData,
   imageSliceData,
-  viewportIndex,
+  viewportId,
   servicesManager,
 }) {
-  const {
-    CornerstoneViewportService,
-    toolbarService,
-  } = servicesManager.services;
+  const { cornerstoneViewportService, toolbarService } = servicesManager.services;
   const [voi, setVOI] = useState({ windowCenter: null, windowWidth: null });
   const [scale, setScale] = useState(1);
   const [activeTools, setActiveTools] = useState([]);
@@ -60,10 +57,7 @@ function CornerstoneViewportOverlay({
       }
 
       const { lower, upper } = range;
-      const { windowWidth, windowCenter } = utilities.windowLevel.toWindowLevel(
-        lower,
-        upper
-      );
+      const { windowWidth, windowCenter } = utilities.windowLevel.toWindowLevel(lower, upper);
 
       setVOI({ windowCenter, windowWidth });
     };
@@ -73,7 +67,7 @@ function CornerstoneViewportOverlay({
     return () => {
       element.removeEventListener(Enums.Events.VOI_MODIFIED, updateVOI);
     };
-  }, [viewportIndex, viewportData, voi, element]);
+  }, [viewportId, viewportData, voi, element]);
 
   /**
    * Updating the scale when the viewport changes its zoom
@@ -86,9 +80,7 @@ function CornerstoneViewportOverlay({
         previousCamera.parallelScale !== camera.parallelScale ||
         previousCamera.scale !== camera.scale
       ) {
-        const viewport = CornerstoneViewportService.getCornerstoneViewportByIndex(
-          viewportIndex
-        );
+        const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
         if (!viewport) {
           return;
@@ -107,8 +99,7 @@ function CornerstoneViewportOverlay({
 
         const { spacing } = imageData;
         // convert parallel scale to scale
-        const scale =
-          (element.clientHeight * spacing[0] * 0.5) / camera.parallelScale;
+        const scale = (element.clientHeight * spacing[0] * 0.5) / camera.parallelScale;
         setScale(scale);
       }
     };
@@ -118,7 +109,7 @@ function CornerstoneViewportOverlay({
     return () => {
       element.removeEventListener(Enums.Events.CAMERA_MODIFIED, updateScale);
     };
-  }, [viewportIndex, viewportData]);
+  }, [viewportId, viewportData]);
 
   const getTopLeftContent = useCallback(() => {
     const { windowWidth, windowCenter } = voi;
@@ -129,7 +120,7 @@ function CornerstoneViewportOverlay({
       }
 
       return (
-        <div className="flex flex-row">
+        <div className="flex flex-row text-base">
           <span className="mr-1">W:</span>
           <span className="ml-1 mr-2 font-light">{windowWidth.toFixed(0)}</span>
           <span className="mr-1">L:</span>
@@ -140,7 +131,7 @@ function CornerstoneViewportOverlay({
 
     if (activeTools.includes('Zoom')) {
       return (
-        <div className="flex flex-row">
+        <div className="flex flex-row text-base">
           <span className="mr-1">Zoom:</span>
           <span className="font-light">{scale.toFixed(2)}x</span>
         </div>
@@ -168,13 +159,13 @@ function CornerstoneViewportOverlay({
       instanceNumber = _getInstanceNumberFromVolume(
         viewportData,
         imageIndex,
-        viewportIndex,
-        CornerstoneViewportService
+        viewportId,
+        cornerstoneViewportService
       );
     }
 
     return (
-      <div className="flex flex-row">
+      <div className="flex flex-row text-base">
         <span className="mr-1">I:</span>
         <span className="font-light">
           {instanceNumber !== undefined
@@ -183,15 +174,13 @@ function CornerstoneViewportOverlay({
         </span>
       </div>
     );
-  }, [imageSliceData, viewportData, viewportIndex]);
+  }, [imageSliceData, viewportData, viewportId]);
 
   if (!viewportData) {
     return null;
   }
 
-  const ohifViewport = CornerstoneViewportService.getViewportInfoByIndex(
-    viewportIndex
-  );
+  const ohifViewport = cornerstoneViewportService.getViewportInfo(viewportId);
 
   if (!ohifViewport) {
     return null;
@@ -201,9 +190,7 @@ function CornerstoneViewportOverlay({
 
   // Todo: probably this can be done in a better way in which we identify bright
   // background
-  const isLight = backgroundColor
-    ? utilities.isEqual(backgroundColor, [1, 1, 1])
-    : false;
+  const isLight = backgroundColor ? utilities.isEqual(backgroundColor, [1, 1, 1]) : false;
 
   return (
     <ViewportOverlay
@@ -240,8 +227,8 @@ function _getInstanceNumberFromStack(viewportData, imageIndex) {
 function _getInstanceNumberFromVolume(
   viewportData,
   imageIndex,
-  viewportIndex,
-  CornerstoneViewportService
+  viewportId,
+  cornerstoneViewportService
 ) {
   const volumes = viewportData.volumes;
 
@@ -253,9 +240,7 @@ function _getInstanceNumberFromVolume(
   const volume = volumes[0];
   const { direction, imageIds } = volume;
 
-  const cornerstoneViewport = CornerstoneViewportService.getCornerstoneViewportByIndex(
-    viewportIndex
-  );
+  const cornerstoneViewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
   if (!cornerstoneViewport) {
     return;
@@ -278,8 +263,7 @@ function _getInstanceNumberFromVolume(
       return {};
     }
 
-    const { instanceNumber } =
-      metaData.get('generalImageModule', imageId) || {};
+    const { instanceNumber } = metaData.get('generalImageModule', imageId) || {};
     return parseInt(instanceNumber);
   }
 }
@@ -287,8 +271,8 @@ function _getInstanceNumberFromVolume(
 CornerstoneViewportOverlay.propTypes = {
   viewportData: PropTypes.object,
   imageIndex: PropTypes.number,
-  viewportIndex: PropTypes.number,
-  servicesManager: ServicesManager,
+  viewportId: PropTypes.string,
+  servicesManager: PropTypes.instanceOf(ServicesManager),
 };
 
 export default CornerstoneViewportOverlay;

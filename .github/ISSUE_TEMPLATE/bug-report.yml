@@ -1,0 +1,84 @@
+name: 'Bug report'
+description: Create a report to help us improve
+title: '[Bug] '
+labels: ['Community: Report :bug:', 'Awaiting Reproduction']
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        👋 Hello, and thank you for contributing to our project! Your support is greatly appreciated.
+
+        🔍 Before proceeding, please make sure to read our [Rules of Conduct](https://github.com/OHIF/Viewers/blob/master/CODE_OF_CONDUCT.md) and familiarize yourself with our [development process](https:/docs.ohif.org/development/our-process).
+
+        ❓ If you're here to seek general support or ask a question, we encourage you to visit our [community discussion board](https://community.ohif.org/)
+
+        🐞 For bug reports, please complete the following template in as much detail as possible. This will help us reproduce and address the issue efficiently.
+
+        🧪 Finally, ensure that you're using the latest version of the software and check if your issue has already been reported to avoid duplicates.
+
+  - type: textarea
+    id: bug_description
+    attributes:
+      label: Describe the Bug
+      description: 'A clear and concise description of what the bug is.'
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction_steps
+    attributes:
+      label: Steps to Reproduce
+      description: 'Please describe the steps to reproduce the issue.'
+      placeholder: "1. First step\n2. Second step\n3. ..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: current_behavior
+    attributes:
+      label: The current behavior
+      description:
+        'A clear and concise description of what happens instead of the expected behavior.'
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected_behavior
+    attributes:
+      label: The expected behavior
+      description: 'A clear and concise description of what you expected to happen.'
+    validations:
+      required: true
+
+  - type: input
+    id: os
+    attributes:
+      label: 'OS'
+      description: 'Your operating system.'
+      placeholder: 'e.g., Windows 10, macOS 10.15.4'
+    validations:
+      required: true
+  - type: input
+    id: node-version
+    attributes:
+      label: 'Node version'
+      description: 'Your Node.js version.'
+      placeholder: 'e.g., 18.16.1'
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: 'Browser'
+      description: 'Your browser.'
+      placeholder: 'e.g., Chrome 83.0.4103.116, Firefox 77.0.1, Safari 13.1.1'
+    validations:
+      required: true
+
+  - type: markdown
+    attributes:
+      value: >
+        > :warning: Reports we cannot reproduce are at risk of being marked stale and > closed. The
+        more information you can provide, the more likely we are to look > into and address your
+        issue.

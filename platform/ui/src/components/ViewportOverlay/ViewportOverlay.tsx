@@ -10,14 +10,8 @@ const classes = {
   bottomLeft: 'bottom-viewport left-viewport',
 };
 
-const ViewportOverlay = ({
-  topLeft,
-  topRight,
-  bottomRight,
-  bottomLeft,
-  color,
-}) => {
-  const overlay = 'absolute pointer-events-none';
+const ViewportOverlay = ({ topLeft, topRight, bottomRight, bottomLeft, color }) => {
+  const overlay = 'absolute pointer-events-none viewport-overlay';
   return (
     <div className={classnames(color ? color : 'text-primary-light')}>
       <div

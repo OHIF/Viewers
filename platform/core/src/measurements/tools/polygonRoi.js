@@ -11,7 +11,7 @@ export const polygonRoi = {
   id: 'PolygonRoi',
   name: 'Polygon',
   toolGroup: 'allTools',
-  cornerstoneToolType: 'FreehandRoiTool',
+  cornerstoneToolType: 'PlanarFreehandROITool',
   options: {
     measurementTable: {
       displayFunction,

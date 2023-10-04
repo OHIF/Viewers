@@ -1,5 +1,5 @@
 import { imageLoader } from '@cornerstonejs/core';
-import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
+import dicomImageLoader from '@cornerstonejs/dicom-image-loader';
 import { api } from 'dicomweb-client';
 import { DICOMWeb, errorHandler } from '@ohif/core';
 
@@ -8,9 +8,7 @@ const getImageId = imageObj => {
     return;
   }
 
-  return typeof imageObj.getImageId === 'function'
-    ? imageObj.getImageId()
-    : imageObj.url;
+  return typeof imageObj.getImageId === 'function' ? imageObj.getImageId() : imageObj.url;
 };
 
 const findImageIdOnStudies = (studies, displaySetInstanceUID) => {
@@ -99,7 +97,7 @@ class DicomLoaderService {
 
     if (
       (!imageInstance && !nonImageInstance) ||
-      !nonImageInstance.imageId.startsWith('dicomfile')
+      !nonImageInstance.imageId?.startsWith('dicomfile')
     ) {
       return;
     }
@@ -114,7 +112,7 @@ class DicomLoaderService {
     }
 
     if (!someInvalidStrings(imageId)) {
-      return cornerstoneWADOImageLoader.wadouri.loadFileRequest(imageId);
+      return dicomImageLoader.wadouri.loadFileRequest(imageId);
     }
   }
 
@@ -163,9 +161,7 @@ class DicomLoaderService {
           getDicomDataMethod = fetchIt.bind(this, imageId);
           break;
         default:
-          throw new Error(
-            `Unsupported image type: ${loaderType} for imageId: ${imageId}`
-          );
+          throw new Error(`Unsupported image type: ${loaderType} for imageId: ${imageId}`);
       }
 
       return getDicomDataMethod();

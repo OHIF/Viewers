@@ -6,13 +6,10 @@
  */
 
 const path = require('path');
-const versions = require('./versions.json');
-const VersionsArchived = require('./versionsArchived.json');
 
-const ArchivedVersionsDropdownItems = Object.entries(VersionsArchived).splice(
-  0,
-  5
-);
+// read this text file
+const fs = require('fs');
+const versions = fs.readFileSync('../../version.txt', 'utf8').split('\n');
 
 // This probably only makes sense for the beta phase, temporary
 // function getNextBetaVersionName() {
@@ -36,8 +33,7 @@ const ArchivedVersionsDropdownItems = Object.entries(VersionsArchived).splice(
 
 const isDev = process.env.NODE_ENV === 'development';
 
-const isDeployPreview =
-  process.env.NETLIFY && process.env.CONTEXT === 'deploy-preview';
+const isDeployPreview = process.env.NETLIFY && process.env.CONTEXT === 'deploy-preview';
 
 const baseUrl = process.env.BASE_URL || '/';
 const isBootstrapPreset = process.env.DOCUSAURUS_PRESET === 'bootstrap';
@@ -57,7 +53,7 @@ module.exports = {
   projectName: 'OHIF',
   baseUrl,
   baseUrlIssueBanner: true,
-  url: 'https://v3-docs.ohif.org',
+  url: 'https://docs.ohif.org',
   i18n: {
     defaultLocale: 'en',
     locales: isDeployPreview
@@ -78,14 +74,21 @@ module.exports = {
   // },
   themes: ['@docusaurus/theme-live-codeblock'],
   plugins: [
+    () => ({
+      name: 'resolve-react',
+      configureWebpack() {
+        return {
+          resolve: {
+            alias: {
+              // assuming root node_modules is up from "./packages/<your-docusaurus>
+              react: path.resolve('../../node_modules/react'),
+            },
+          },
+        };
+      },
+    }),
     path.resolve(__dirname, './pluginOHIFWebpackConfig.js'),
     'plugin-image-zoom', // 3rd party plugin for image click to pop
-    [
-      '@docusaurus/plugin-google-gtag',
-      {
-        trackingID: 'UA-110573590-2',
-      },
-    ],
     [
       '@docusaurus/plugin-client-redirects',
       {
@@ -93,7 +96,7 @@ module.exports = {
         redirects: [
           {
             // we need this for https://cloud.google.com/healthcare/docs/how-tos/dicom-viewers
-            to: '/2.0/deployment/recipes/google-cloud-healthcare',
+            to: '/2.0-deprecated/deployment/recipes/google-cloud-healthcare',
             from: [
               '/connecting-to-image-archives/google-cloud-healthcare',
               '/connecting-to-image-archives/google-cloud-healthcare.html',
@@ -218,7 +221,7 @@ module.exports = {
 
             // We want users to submit doc updates to the upstream/next version!
             // Otherwise we risk losing the update on the next release.
-            return `https://github.com/OHIF/Viewers/edit/v3-stable/platform/docs/docs/${docPath}`;
+            return `https://github.com/OHIF/Viewers/edit/master/platform/docs/docs/${docPath}`;
           },
           showLastUpdateAuthor: true,
           showLastUpdateTime: true,
@@ -233,15 +236,16 @@ module.exports = {
           //     : undefined,
           versions: {
             current: {
-              label: 'Version 3.3 - Segmentation Support 🚧',
-            },
-            '2.0': {
-              label: 'Version 2.0 - Master branch',
+              label: `${versions} (Latest)`,
             },
           },
         },
         theme: {
           customCss: [require.resolve('./src/css/custom.css')],
+        },
+        gtag: {
+          trackingID: 'G-DDBJFE34EG',
+          anonymizeIP: true,
         },
       }),
     ],
@@ -263,13 +267,11 @@ module.exports = {
         disableSwitch: false,
         // respectPrefersColorScheme: true,
       },
-      /*
-    announcementBar: {
-      id: 'supportus',
-      content:
-        '⭐️ If you like Docusaurus, give it a star on <a target="_blank" rel="noopener noreferrer" href="https://github.com/OHIF/Viewers">GitHub</a>! ⭐️',
-    },
-     */
+      announcementBar: {
+        id: 'healthimaging',
+        content:
+          '🚀 AWS has announced the general availability of <a target="_blank" rel="noopener noreferrer" href=" https://aws.amazon.com/about-aws/whats-new/2023/07/general-availability-aws-healthimaging/">HealthImaging!</a> Easily connect your OHIF to it. Learn more <a target="_blank" rel="noopener noreferrer" href="https://github.com/RadicalImaging/ohif-aws-healthimaging">Here!</a>! 🌟',
+      },
       prism: {
         theme: require('prism-react-renderer/themes/github'),
         darkTheme: require('prism-react-renderer/themes/dracula'),
@@ -288,15 +290,9 @@ module.exports = {
         },
         items: [
           {
-            to: 'https://ohif.org/get-started',
-            label: 'Get Started',
-            target: '_self',
-            position: 'left',
-          },
-          {
-            to: 'https://ohif.org/examples',
-            label: 'Examples',
-            target: '_self',
+            href: 'https://ohif.org/showcase',
+            label: 'Showcase',
+            target: '_blank',
             position: 'left',
           },
           {
@@ -307,10 +303,16 @@ module.exports = {
             label: 'Docs',
           },
           {
-            to: 'https://ohif.org/community',
-            label: 'Community',
-            target: '_self',
+            href: 'https://ohif.org/collaborate',
+            label: 'Collaborate',
+            target: '_blank',
             position: 'left',
+          },
+          {
+            to: '/migration-guide',
+            label: 'Migration Guides',
+            position: 'left',
+            className: 'new-badge',
           },
           {
             to: '/help',
@@ -323,21 +325,6 @@ module.exports = {
             position: 'right',
             dropdownActiveClassDisabled: true,
             dropdownItemsAfter: [
-              {
-                type: 'html',
-                value: '<hr class="dropdown-separator">',
-              },
-              {
-                type: 'html',
-                className: 'dropdown-archived-versions',
-                value: '<b>Archived versions</b>',
-              },
-              ...ArchivedVersionsDropdownItems.map(
-                ([versionName, versionUrl]) => ({
-                  label: versionName,
-                  href: versionUrl,
-                })
-              ),
               {
                 type: 'html',
                 value: '<hr class="dropdown-separator">',
@@ -390,8 +377,16 @@ module.exports = {
                 to: '/',
               },
               {
-                label: 'Installation',
+                label: 'Getting Started',
                 to: 'development/getting-started',
+              },
+              {
+                label: 'FAQ',
+                to: '/faq',
+              },
+              {
+                label: 'Resources',
+                to: '/resources',
               },
             ],
           },
@@ -400,7 +395,7 @@ module.exports = {
             items: [
               {
                 label: 'Discussion board',
-                to: 'https://community.ohif.org/',
+                href: 'https://community.ohif.org/',
               },
               {
                 label: 'Help',
@@ -413,15 +408,15 @@ module.exports = {
             items: [
               {
                 label: 'Donate',
-                to: 'https://giving.massgeneral.org/ohif',
+                href: 'https://giving.massgeneral.org/ohif',
               },
               {
                 label: 'GitHub',
-                to: 'https://github.com/OHIF/Viewers',
+                href: 'https://github.com/OHIF/Viewers',
               },
               {
                 label: 'Twitter',
-                to: 'https://twitter.com/OHIFviewer',
+                href: 'https://twitter.com/OHIFviewer',
               },
             ],
           },
@@ -429,7 +424,7 @@ module.exports = {
         logo: {
           alt: 'OHIF ',
           src: 'img/netlify-color-accent.svg',
-          href: 'https://v3-demo.ohif.org/',
+          href: 'https://viewer.ohif.org/',
         },
         copyright: `OHIF is open source software released under the MIT license.`,
       },

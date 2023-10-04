@@ -29,12 +29,7 @@ function getPointData(points) {
   // Since this is a closed contour, the order of the points is important.
   // re-order the points to be in the correct order clockwise
   // Spread to make sure Float32Arrays are converted to arrays
-  const orderedPoints = [
-    ...points[0],
-    ...points[1],
-    ...points[3],
-    ...points[2],
-  ];
+  const orderedPoints = [...points[0], ...points[1], ...points[3], ...points[2]];
   const pointsArray = orderedPoints.flat();
 
   // reduce the precision of the points to 2 decimal places
