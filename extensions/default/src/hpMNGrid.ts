@@ -29,6 +29,7 @@ const hpMN: Types.HangingProtocol.Protocol = {
           constraint: {
             greaterThan: { value: 0 },
           },
+          required: true,
         },
         // This display set will select the specified items by preference
         // It has no affect if nothing is specified in the URL.
