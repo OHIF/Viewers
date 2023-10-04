@@ -1,5 +1,5 @@
 describe('OHIF HP', () => {
-  const beforeSetup = () => {
+  beforeEach(() => {
     cy.checkStudyRouteInViewer(
       '1.3.6.1.4.1.25403.345050719074.3824.20170125113417.1',
       '&hangingProtocolId=@ohif/mnGrid'
@@ -7,17 +7,14 @@ describe('OHIF HP', () => {
     cy.expectMinimumThumbnails(3);
     cy.initCornerstoneToolsAliases();
     cy.initCommonElementsAliases();
-  };
+    cy.waitDicomImage();
+  });
 
   it('Should display 3 up', () => {
-    beforeSetup();
-
     cy.get('[data-cy="viewport-pane"]').its('length').should('be.eq', 3);
   });
 
   it('Should navigate next/previous stage', () => {
-    beforeSetup();
-
     cy.get('body').type(',');
     cy.wait(250);
     cy.get('[data-cy="viewport-pane"]').its('length').should('be.eq', 4);

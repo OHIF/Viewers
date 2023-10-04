@@ -12,8 +12,9 @@ import {
   imageLoadPoolManager,
   Settings,
   utilities as csUtilities,
+  Enums as csEnums,
 } from '@cornerstonejs/core';
-import { Enums, utilities, ReferenceLinesTool } from '@cornerstonejs/tools';
+import { Enums } from '@cornerstonejs/tools';
 import { cornerstoneStreamingImageVolumeLoader } from '@cornerstonejs/streaming-image-volume-loader';
 
 import initWADOImageLoader from './initWADOImageLoader';
@@ -27,6 +28,7 @@ import interleaveTopToBottom from './utils/interleaveTopToBottom';
 import initContextMenu from './initContextMenu';
 import initDoubleClick from './initDoubleClick';
 import { CornerstoneServices } from './types';
+import initViewTiming from './utils/initViewTiming';
 
 // TODO: Cypress tests are currently grabbing this from the window?
 window.cornerstone = cornerstone;
@@ -41,10 +43,30 @@ export default async function init({
   configuration,
   appConfig,
 }: Types.Extensions.ExtensionParams): Promise<void> {
-  await cs3DInit();
+  // Note: this should run first before initializing the cornerstone
+  // DO NOT CHANGE THE ORDER
+  const value = appConfig.useSharedArrayBuffer;
+  let sharedArrayBufferDisabled = false;
+
+  if (value === 'AUTO') {
+    cornerstone.setUseSharedArrayBuffer(csEnums.SharedArrayBufferModes.AUTO);
+  } else if (value === 'FALSE' || value === false) {
+    cornerstone.setUseSharedArrayBuffer(csEnums.SharedArrayBufferModes.FALSE);
+    sharedArrayBufferDisabled = true;
+  } else {
+    cornerstone.setUseSharedArrayBuffer(csEnums.SharedArrayBufferModes.TRUE);
+  }
+
+  await cs3DInit({
+    rendering: {
+      preferSizeOverAccuracy: Boolean(appConfig.use16BitDataType),
+      useNorm16Texture: Boolean(appConfig.use16BitDataType),
+    },
+  });
 
   // For debugging e2e tests that are failing on CI
   cornerstone.setUseCPURendering(Boolean(appConfig.useCPURendering));
+
   cornerstone.setConfiguration({
     ...cornerstone.getConfiguration(),
     rendering: {
@@ -72,6 +94,7 @@ export default async function init({
     cornerstoneViewportService,
     hangingProtocolService,
     toolGroupService,
+    toolbarService,
     viewportGridService,
     stateSyncService,
   } = servicesManager.services as CornerstoneServices;
@@ -80,10 +103,15 @@ export default async function init({
   window.extensionManager = extensionManager;
   window.commandsManager = commandsManager;
 
-  if (appConfig.showWarningMessageForCrossOrigin && !window.crossOriginIsolated) {
+  if (
+    appConfig.showWarningMessageForCrossOrigin &&
+    !window.crossOriginIsolated &&
+    !sharedArrayBufferDisabled
+  ) {
     uiNotificationService.show({
       title: 'Cross Origin Isolation',
-      message: 'Cross Origin Isolation is not enabled, volume rendering will not work (e.g., MPR)',
+      message:
+        'Cross Origin Isolation is not enabled, read more about it here: https://docs.ohif.org/faq/',
       type: 'warning',
     });
   }
@@ -182,9 +210,45 @@ export default async function init({
     commandsManager,
   });
 
-  const newStackCallback = evt => {
+  /**
+   * When a viewport gets a new display set, this call will go through all the
+   * active tools in the toolbar, and call any commands registered in the
+   * toolbar service with a callback to re-enable on displaying the viewport.
+   */
+  const toolbarEventListener = evt => {
     const { element } = evt.detail;
-    utilities.stackPrefetch.enable(element);
+    const activeTools = toolbarService.getActiveTools();
+
+    activeTools.forEach(tool => {
+      const toolData = toolbarService.getNestedButton(tool);
+      const commands = toolData?.listeners?.[evt.type];
+      commandsManager.run(commands, { element, evt });
+    });
+  };
+
+  /** Listens for active viewport events and fires the toolbar listeners */
+  const activeViewportEventListener = evt => {
+    const { viewportId } = evt;
+    const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
+
+    const activeTools = toolbarService.getActiveTools();
+
+    activeTools.forEach(tool => {
+      if (!toolGroup?._toolInstances?.[tool]) {
+        return;
+      }
+
+      // check if tool is active on the new viewport
+      const toolEnabled = toolGroup._toolInstances[tool].mode === Enums.ToolModes.Enabled;
+
+      if (!toolEnabled) {
+        return;
+      }
+
+      const button = toolbarService.getNestedButton(tool);
+      const commands = button?.listeners?.[evt.type];
+      commandsManager.run(commands, { viewportId, evt });
+    });
   };
 
   const resetCrosshairs = evt => {
@@ -211,11 +275,18 @@ export default async function init({
     }
   };
 
+  eventTarget.addEventListener(EVENTS.STACK_VIEWPORT_NEW_STACK, evt => {
+    const { element } = evt.detail;
+    cornerstoneTools.utilities.stackContextPrefetch.enable(element);
+  });
+
   function elementEnabledHandler(evt) {
     const { element } = evt.detail;
     element.addEventListener(EVENTS.CAMERA_RESET, resetCrosshairs);
 
-    eventTarget.addEventListener(EVENTS.STACK_VIEWPORT_NEW_STACK, newStackCallback);
+    eventTarget.addEventListener(EVENTS.STACK_VIEWPORT_NEW_STACK, toolbarEventListener);
+
+    initViewTiming({ element, eventTarget });
   }
 
   function elementDisabledHandler(evt) {
@@ -236,35 +307,9 @@ export default async function init({
 
   viewportGridService.subscribe(
     viewportGridService.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED,
-    ({ viewportId }) => {
-      const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
-
-      if (!toolGroup || !toolGroup._toolInstances?.['ReferenceLines']) {
-        return;
-      }
-
-      // check if reference lines are active
-      const referenceLinesEnabled =
-        toolGroup._toolInstances['ReferenceLines'].mode === Enums.ToolModes.Enabled;
-
-      if (!referenceLinesEnabled) {
-        return;
-      }
-
-      toolGroup.setToolConfiguration(
-        ReferenceLinesTool.toolName,
-        {
-          sourceViewportId: viewportId,
-        },
-        true // overwrite
+    activeViewportEventListener
       );
-
-      // make sure to set it to enabled again since we want to recalculate
-      // the source-target lines
-      toolGroup.setToolEnabled(ReferenceLinesTool.toolName);
     }
-  );
-}
 
 function CPUModal() {
   return (

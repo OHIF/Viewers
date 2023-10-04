@@ -213,7 +213,7 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
         }
         onSaveComplete({
           title: 'SR Saved',
-          meassage: 'Measurements downloaded successfully',
+          message: 'Measurements downloaded successfully',
           type: 'success',
         });
       } else {
@@ -337,29 +337,6 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
           onClick={onMeasurementItemClickHandler}
           onEdit={onMeasurementItemEditHandler}
         />
-      </div>
-      <div className="flex justify-center p-4">
-        <ButtonGroup color="black" size="inherit">
-          {/* Let's hide the save button for now, as export SR for SM is a proof of concept */}
-          {/*{promptSave && (
-            <Button
-              className="px-2 py-2 text-base"
-              size="initial"
-              variant={disabled ? 'disabled' : 'outlined'}
-              color="black"
-              border="primaryActive"
-              onClick={promptSave}
-            >
-              {props.t('Create Report')}
-            </Button>
-          )} */}
-          {/* <Button
-            className="px-2 py-2 text-base"
-            onClick={onDeleteCurrentSRHandler}
-          >
-            {props.t('Reject latest report')}
-          </Button> */}
-        </ButtonGroup>
       </div>
     </>
   );

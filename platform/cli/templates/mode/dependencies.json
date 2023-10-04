@@ -17,7 +17,7 @@
     "test:unit:ci": "jest --ci --runInBand --collectCoverage --passWithNoTests"
   },
   "peerDependencies": {
-    "@ohif/core": "^3.0.0"
+    "@ohif/core": "^{LATEST_OHIF_VERSION}"
   },
   "dependencies": {
     "@babel/runtime": "^7.20.13"

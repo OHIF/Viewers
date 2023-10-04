@@ -1,7 +1,8 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import classNames from 'classnames';
-import Typography from '../Typography';
+import { InputNumber } from '../../components';
 import './InputRange.css';
+import getMaxDigits from '../../utils/getMaxDigits';
 
 /**
  * React Range Input component
@@ -11,10 +12,9 @@ import './InputRange.css';
  *
  *
  */
-
-const InputRange: React.FC<{
+type InputRangeProps = {
   value: number;
-  onChange: (value) => void;
+  onChange: (value: number) => void;
   minValue: number;
   maxValue: number;
   step: number;
@@ -26,7 +26,11 @@ const InputRange: React.FC<{
   showLabel?: boolean;
   labelPosition?: string;
   trackColor?: string;
-}> = ({
+  allowNumberEdit?: boolean;
+  showAdjustmentArrows?: boolean;
+};
+
+const InputRange: React.FC<InputRangeProps> = ({
   value,
   onChange,
   minValue,
@@ -38,72 +42,79 @@ const InputRange: React.FC<{
   labelClassName,
   labelVariant,
   showLabel = true,
-  labelPosition = '',
+  labelPosition = 'right',
   trackColor,
+  allowNumberEdit = false,
+  showAdjustmentArrows = true,
 }) => {
   const [rangeValue, setRangeValue] = useState(value);
 
-  // Allow for the value property to update the range value.
+  const maxDigits = getMaxDigits(maxValue, step);
+  const labelWidth = `${maxDigits * 10}px`;
+
   useEffect(() => setRangeValue(value), [value]);
 
   const handleChange = useCallback(
     e => {
-      const rangeValue = Number(e.target.value);
-      setRangeValue(rangeValue);
-      onChange(rangeValue);
+      const val = Number(e.target.value);
+      const roundedVal = Math.round(val / step) * step;
+      setRangeValue(roundedVal);
+      onChange(roundedVal);
     },
-    [onChange, setRangeValue]
+    [onChange, step]
   );
 
   const rangeValuePercentage = ((rangeValue - minValue) / (maxValue - minValue)) * 100;
 
-  const rangeValueForStr = step >= 1 ? rangeValue.toFixed(0) : rangeValue.toFixed(1);
+  const LabelOrEditableNumber = allowNumberEdit ? (
+    <InputNumber
+      minValue={minValue}
+      maxValue={maxValue}
+      value={rangeValue}
+      onChange={val => {
+        setRangeValue(val);
+        onChange(val);
+      }}
+      step={step}
+      showAdjustmentArrows={showAdjustmentArrows}
+    />
+  ) : (
+    <span className={classNames(labelClassName ?? 'text-white')}>
+      {rangeValue}
+      {unit}
+    </span>
+  );
 
   return (
     <div
-      className={`flex cursor-pointer items-center space-x-1 ${
-        containerClassName ? containerClassName : ''
-      }`}
+      className={`flex cursor-pointer items-center ${containerClassName ?? ''}`}
+      onClick={e => {
+        e.stopPropagation();
+        e.preventDefault();
+      }}
     >
-      {showLabel && labelPosition === 'left' && (
-        <Typography
-          variant={labelVariant ?? 'subtitle'}
-          component="p"
-          className={classNames('w-8', labelClassName ?? 'text-white')}
-        >
-          {rangeValueForStr}
-          {unit}
-        </Typography>
-      )}
-      <input
-        type="range"
-        min={minValue}
-        max={maxValue}
-        value={rangeValue}
-        className={`input-range-thumb-design h-[3px] appearance-none rounded-lg ${
-          inputClassName ? inputClassName : ''
-        }`}
-        style={{
-          background:
-            trackColor ||
-            `linear-gradient(to right, #5acce6 0%, #5acce6 ${rangeValuePercentage - 10}%, #3a3f99 ${
-              rangeValuePercentage + 10
-            }%, #3a3f99 100%)`,
-        }}
-        onChange={handleChange}
-        id="myRange"
-        step={step}
-      />
-      {showLabel && (!labelPosition || labelPosition === 'right') && (
-        <Typography
-          variant={labelVariant ?? 'subtitle'}
-          component="p"
-          className={classNames('w-8', labelClassName ?? 'text-white')}
-        >
-          {rangeValueForStr}
-          {unit}
-        </Typography>
-      )}
+      <div className="relative flex w-full items-center space-x-2">
+        {showLabel && labelPosition === 'left' && (
+          <div style={{ width: labelWidth }}>{LabelOrEditableNumber}</div>
+        )}
+        <div className="range-track"></div>
+        <input
+          type="range"
+          min={minValue}
+          max={maxValue}
+          value={rangeValue}
+          className={`h-[3px] appearance-none rounded-md ${inputClassName ?? ''}`}
+          style={{
+            background: `linear-gradient(to right, #5acce6 0%, #5acce6 ${rangeValuePercentage}%, #3a3f99 ${rangeValuePercentage}%, #3a3f99 100%)`,
+          }}
+          onChange={handleChange}
+          id="myRange"
+          step={step}
+        />
+        {showLabel && labelPosition === 'right' && (
+          <div style={{ width: labelWidth }}>{LabelOrEditableNumber}</div>
+        )}
+      </div>
     </div>
   );
 };

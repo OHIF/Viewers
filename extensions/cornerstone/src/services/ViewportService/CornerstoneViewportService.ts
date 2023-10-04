@@ -15,11 +15,7 @@ import {
 import { utilities as csToolsUtils, Enums as csToolsEnums } from '@cornerstonejs/tools';
 import { IViewportService } from './IViewportService';
 import { RENDERING_ENGINE_ID } from './constants';
-import ViewportInfo, {
-  ViewportOptions,
-  DisplaySetOptions,
-  PublicViewportOptions,
-} from './Viewport';
+import ViewportInfo, { DisplaySetOptions, PublicViewportOptions } from './Viewport';
 import { StackViewportData, VolumeViewportData } from '../../types/CornerstoneCacheService';
 import { Presentation, Presentations } from '../../types/Presentation';
 
@@ -253,6 +249,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     const type = viewportInfo.getViewportType();
     const background = viewportInfo.getBackground();
     const orientation = viewportInfo.getOrientation();
+    const displayArea = viewportInfo.getDisplayArea();
 
     const viewportInput: Types.PublicViewportInput = {
       viewportId,
@@ -261,6 +258,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       defaultOptions: {
         background,
         orientation,
+        displayArea,
       },
     };
 
@@ -586,10 +584,23 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
         continue;
       }
 
-      // otherwise, check if the hydrated segmentations are in the same FOR
+      // otherwise, check if the hydrated segmentations are in the same FrameOfReferenceUID
       // as the primary displaySet, if so add the representation (since it was not there)
-      const { id: segDisplaySetInstanceUID, type } = segmentation;
-      const segFrameOfReferenceUID = this._getFrameOfReferenceUID(segDisplaySetInstanceUID);
+      const { id: segDisplaySetInstanceUID } = segmentation;
+      let segFrameOfReferenceUID = this._getFrameOfReferenceUID(segDisplaySetInstanceUID);
+
+      if (!segFrameOfReferenceUID) {
+        // if the segmentation displaySet does not have a FrameOfReferenceUID, we might check the
+        // segmentation itself maybe it has a FrameOfReferenceUID
+        const { FrameOfReferenceUID } = segmentation;
+        if (FrameOfReferenceUID) {
+          segFrameOfReferenceUID = FrameOfReferenceUID;
+        }
+      }
+
+      if (!segFrameOfReferenceUID) {
+        return;
+      }
 
       let shouldDisplaySeg = false;
 
