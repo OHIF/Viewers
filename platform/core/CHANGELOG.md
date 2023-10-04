@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.7.0-beta.99](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.98...v3.7.0-beta.99) (2023-10-04)
+
+
+### Bug Fixes
+
+* **measurement and microscopy:**  various small fixes for measurement and microscopy side panel ([#3696](https://github.com/OHIF/Viewers/issues/3696)) ([c1d5ee7](https://github.com/OHIF/Viewers/commit/c1d5ee7e3f7f4c0c6bed9ae81eba5519741c5155))
+
+
+
+
+
 # [3.7.0-beta.98](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.97...v3.7.0-beta.98) (2023-10-04)
 
 **Note:** Version bump only for package @ohif/core
