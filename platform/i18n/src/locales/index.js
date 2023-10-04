@@ -1,3 +1,4 @@
+import tr_TR from './tr-TR/';
 import ar from './ar/';
 import en_US from './en-US/';
 import es from './es/';
@@ -11,6 +12,7 @@ import test_lng from './test-LNG/';
 
 export default {
   ...ar,
+  ...tr_TR,
   ...en_US,
   ...es,
   ...fr,

@@ -1,6 +1,6 @@
 {
   "name": "@ohif/mode-segmentation",
-  "version": "3.7.0-beta.95",
+  "version": "3.7.0-beta.96",
   "description": "OHIF segmentation mode which enables labelmap segmentation read/edit/export",
   "author": "@ohif",
   "license": "MIT",
@@ -33,7 +33,7 @@
     "test:unit:ci": "jest --ci --runInBand --collectCoverage --passWithNoTests"
   },
   "peerDependencies": {
-    "@ohif/core": "3.7.0-beta.95"
+    "@ohif/core": "3.7.0-beta.96"
   },
   "dependencies": {
     "@babel/runtime": "^7.20.13"
