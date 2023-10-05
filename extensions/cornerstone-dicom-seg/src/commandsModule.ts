@@ -9,6 +9,10 @@ import {
 import { adaptersSEG, helpers } from '@cornerstonejs/adapters';
 import { classes, DicomMetadataStore } from '@ohif/core';
 
+import vtkImageMarchingSquares from '@kitware/vtk.js/Filters/General/ImageMarchingSquares';
+import vtkDataArray from '@kitware/vtk.js/Common/Core/DataArray';
+import vtkImageData from '@kitware/vtk.js/Common/DataModel/ImageData';
+
 import {
   updateViewportsForSegmentationRendering,
   getUpdatedViewportsForSegmentation,
@@ -362,13 +366,19 @@ const commandsModule = ({
      */
     downloadRTSS: ({}) => {
       const segmentations = segmentationService.getSegmentations();
+      const vtkUtils = {
+        vtkImageMarchingSquares,
+        vtkDataArray,
+        vtkImageData,
+      };
 
       adaptersSEG.Cornerstone3D.RTStruct.RTSS.generateRTSSFromSegmentations(
         segmentations,
         classes.MetadataProvider,
         DicomMetadataStore,
         cache,
-        cornerstoneToolsEnums
+        cornerstoneToolsEnums,
+        vtkUtils
       ).then(RTSS => {
         try {
           const reportBlob = datasetToBlob(RTSS);
