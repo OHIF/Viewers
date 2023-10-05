@@ -38,9 +38,7 @@ const PanelSection = ({ title, children, actionIcons = [] }) => {
       {areChildrenVisible && (
         <>
           <div className="h-[2px] bg-black"></div>
-          <div className="bg-primary-dark flex flex-col overflow-hidden rounded-b-[4px]">
-            {children}
-          </div>
+          <div className="bg-primary-dark rounded-b-[4px]">{children}</div>
         </>
       )}
     </>
