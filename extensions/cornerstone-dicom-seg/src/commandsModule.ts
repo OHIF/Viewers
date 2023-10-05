@@ -363,7 +363,7 @@ const commandsModule = ({
     downloadRTSS: ({}) => {
       const segmentations = segmentationService.getSegmentations();
 
-      adaptersSEG.Cornerstone3D.RTStruct.RTSS.generateRTSS(
+      adaptersSEG.Cornerstone3D.RTStruct.RTSS.generateRTSSFromSegmentations(
         segmentations,
         classes.MetadataProvider,
         DicomMetadataStore,
