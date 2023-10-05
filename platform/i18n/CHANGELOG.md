@@ -3,6 +3,71 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.7.0-beta.99](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.98...v3.7.0-beta.99) (2023-10-04)
+
+**Note:** Version bump only for package @ohif/i18n
+
+
+
+
+
+# [3.7.0-beta.98](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.97...v3.7.0-beta.98) (2023-10-04)
+
+
+### Features
+
+* **locale:** add German translations - community PR ([#3697](https://github.com/OHIF/Viewers/issues/3697)) ([ebe8f71](https://github.com/OHIF/Viewers/commit/ebe8f71da22c1d24b58f889c5d803951e19817b6))
+
+
+
+
+
+# [3.7.0-beta.97](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.96...v3.7.0-beta.97) (2023-10-04)
+
+
+### Features
+
+* **locale:** Added Turkish language support (tr-TR) - Community PR ([#3695](https://github.com/OHIF/Viewers/issues/3695)) ([745050a](https://github.com/OHIF/Viewers/commit/745050a28ec7c2ef2e9a4d4e590040050b2177b2))
+
+
+
+
+
+# [3.7.0-beta.96](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.95...v3.7.0-beta.96) (2023-10-04)
+
+
+### Bug Fixes
+
+* **translation:** Side panel translate fix ([#3156](https://github.com/OHIF/Viewers/issues/3156)) ([29748d4](https://github.com/OHIF/Viewers/commit/29748d46a14d23817dbe196e0f64363fc61a8aed))
+
+
+
+
+
+# [3.7.0-beta.95](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.94...v3.7.0-beta.95) (2023-10-04)
+
+**Note:** Version bump only for package @ohif/i18n
+
+
+
+
+
+# [3.7.0-beta.94](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.93...v3.7.0-beta.94) (2023-10-03)
+
+**Note:** Version bump only for package @ohif/i18n
+
+
+
+
+
+# [3.7.0-beta.93](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.92...v3.7.0-beta.93) (2023-10-03)
+
+**Note:** Version bump only for package @ohif/i18n
+
+
+
+
+
 # [3.7.0-beta.92](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.91...v3.7.0-beta.92) (2023-10-03)
 
 **Note:** Version bump only for package @ohif/i18n

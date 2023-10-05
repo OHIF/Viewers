@@ -3,6 +3,83 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.7.0-beta.99](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.98...v3.7.0-beta.99) (2023-10-04)
+
+
+### Bug Fixes
+
+* **measurement and microscopy:**  various small fixes for measurement and microscopy side panel ([#3696](https://github.com/OHIF/Viewers/issues/3696)) ([c1d5ee7](https://github.com/OHIF/Viewers/commit/c1d5ee7e3f7f4c0c6bed9ae81eba5519741c5155))
+
+
+
+
+
+# [3.7.0-beta.98](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.97...v3.7.0-beta.98) (2023-10-04)
+
+
+### Features
+
+* **locale:** add German translations - community PR ([#3697](https://github.com/OHIF/Viewers/issues/3697)) ([ebe8f71](https://github.com/OHIF/Viewers/commit/ebe8f71da22c1d24b58f889c5d803951e19817b6))
+
+
+
+
+
+# [3.7.0-beta.97](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.96...v3.7.0-beta.97) (2023-10-04)
+
+
+### Features
+
+* **locale:** Added Turkish language support (tr-TR) - Community PR ([#3695](https://github.com/OHIF/Viewers/issues/3695)) ([745050a](https://github.com/OHIF/Viewers/commit/745050a28ec7c2ef2e9a4d4e590040050b2177b2))
+
+
+
+
+
+# [3.7.0-beta.96](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.95...v3.7.0-beta.96) (2023-10-04)
+
+
+### Bug Fixes
+
+* **translation:** Side panel translate fix ([#3156](https://github.com/OHIF/Viewers/issues/3156)) ([29748d4](https://github.com/OHIF/Viewers/commit/29748d46a14d23817dbe196e0f64363fc61a8aed))
+
+
+
+
+
+# [3.7.0-beta.95](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.94...v3.7.0-beta.95) (2023-10-04)
+
+
+### Bug Fixes
+
+* **cli:** Add npm packaged mode not working ([#3689](https://github.com/OHIF/Viewers/issues/3689)) ([28cec04](https://github.com/OHIF/Viewers/commit/28cec04ff43b81e218c3e9addef4665b3833a6fe))
+
+
+
+
+
+# [3.7.0-beta.94](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.93...v3.7.0-beta.94) (2023-10-03)
+
+
+### Features
+
+* **debug:** Add timing information about time to first image/all images, and query time ([#3681](https://github.com/OHIF/Viewers/issues/3681)) ([108383b](https://github.com/OHIF/Viewers/commit/108383b9ef51e4bef82d9c932b9bc7aa5354e799))
+
+
+
+
+
+# [3.7.0-beta.93](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.92...v3.7.0-beta.93) (2023-10-03)
+
+
+### Features
+
+* **displayArea:** add display area to hanging protocol ([#3691](https://github.com/OHIF/Viewers/issues/3691)) ([5e7fe91](https://github.com/OHIF/Viewers/commit/5e7fe91617d7399f85702d82e7bfa028b8010a89))
+
+
+
+
+
 # [3.7.0-beta.92](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.91...v3.7.0-beta.92) (2023-10-03)
 
 **Note:** Version bump only for package ohif-monorepo-root

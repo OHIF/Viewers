@@ -3,6 +3,65 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.7.0-beta.99](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.98...v3.7.0-beta.99) (2023-10-04)
+
+
+### Bug Fixes
+
+* **measurement and microscopy:**  various small fixes for measurement and microscopy side panel ([#3696](https://github.com/OHIF/Viewers/issues/3696)) ([c1d5ee7](https://github.com/OHIF/Viewers/commit/c1d5ee7e3f7f4c0c6bed9ae81eba5519741c5155))
+
+
+
+
+
+# [3.7.0-beta.98](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.97...v3.7.0-beta.98) (2023-10-04)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.7.0-beta.97](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.96...v3.7.0-beta.97) (2023-10-04)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.7.0-beta.96](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.95...v3.7.0-beta.96) (2023-10-04)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.7.0-beta.95](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.94...v3.7.0-beta.95) (2023-10-04)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.7.0-beta.94](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.93...v3.7.0-beta.94) (2023-10-03)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.7.0-beta.93](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.92...v3.7.0-beta.93) (2023-10-03)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
 # [3.7.0-beta.92](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.91...v3.7.0-beta.92) (2023-10-03)
 
 **Note:** Version bump only for package @ohif/extension-measurement-tracking

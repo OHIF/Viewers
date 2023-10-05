@@ -19,6 +19,9 @@ export type * from './PanelModule';
 export type * from './IPubSub';
 export type * from './Color';
 
+// Enum exports
+export * from './TimingEnum';
+
 /**
  * Export the types used within the various services and managers, but
  * not the services/managers themselves, which are exported at the top level.

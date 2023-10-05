@@ -3,6 +3,62 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.7.0-beta.99](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.98...v3.7.0-beta.99) (2023-10-04)
+
+**Note:** Version bump only for package @ohif/extension-tmtv
+
+
+
+
+
+# [3.7.0-beta.98](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.97...v3.7.0-beta.98) (2023-10-04)
+
+**Note:** Version bump only for package @ohif/extension-tmtv
+
+
+
+
+
+# [3.7.0-beta.97](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.96...v3.7.0-beta.97) (2023-10-04)
+
+**Note:** Version bump only for package @ohif/extension-tmtv
+
+
+
+
+
+# [3.7.0-beta.96](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.95...v3.7.0-beta.96) (2023-10-04)
+
+**Note:** Version bump only for package @ohif/extension-tmtv
+
+
+
+
+
+# [3.7.0-beta.95](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.94...v3.7.0-beta.95) (2023-10-04)
+
+**Note:** Version bump only for package @ohif/extension-tmtv
+
+
+
+
+
+# [3.7.0-beta.94](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.93...v3.7.0-beta.94) (2023-10-03)
+
+**Note:** Version bump only for package @ohif/extension-tmtv
+
+
+
+
+
+# [3.7.0-beta.93](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.92...v3.7.0-beta.93) (2023-10-03)
+
+**Note:** Version bump only for package @ohif/extension-tmtv
+
+
+
+
+
 # [3.7.0-beta.92](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.91...v3.7.0-beta.92) (2023-10-03)
 
 **Note:** Version bump only for package @ohif/extension-tmtv
