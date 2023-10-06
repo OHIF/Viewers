@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.7.0-beta.102](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.101...v3.7.0-beta.102) (2023-10-06)
+
+
+### Features
+
+* **Segmentation:** download RTSS from Labelmap([#3692](https://github.com/OHIF/Viewers/issues/3692)) ([40673f6](https://github.com/OHIF/Viewers/commit/40673f64b36b1150149c55632aa1825178a39e65))
+
+
+
+
+
 # [3.7.0-beta.101](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.100...v3.7.0-beta.101) (2023-10-06)
 
 
