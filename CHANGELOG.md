@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.7.0-beta.100](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.99...v3.7.0-beta.100) (2023-10-06)
+
+
+### Bug Fixes
+
+* **segmentation scroll:** and hydration bugs ([#3701](https://github.com/OHIF/Viewers/issues/3701)) ([1fd98d9](https://github.com/OHIF/Viewers/commit/1fd98d922094d10fe0c6e9df726314ec9fce49e8))
+
+
+
+
+
 # [3.7.0-beta.99](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.98...v3.7.0-beta.99) (2023-10-04)
 
 
