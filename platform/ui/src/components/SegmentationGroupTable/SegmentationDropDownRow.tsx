@@ -10,6 +10,7 @@ function SegmentationDropDownRow({
   onToggleSegmentationVisibility,
   onSegmentationEdit,
   onSegmentationDownload,
+  onSegmentationDownloadRTSS,
   storeSegmentation,
   onSegmentationDelete,
   onSegmentationAdd,
@@ -81,6 +82,12 @@ function SegmentationDropDownRow({
                       onSegmentationDownload(activeSegmentation.id);
                     },
                   },
+                  {
+                    title: 'Download as RTSS',
+                    onClick: () => {
+                      onSegmentationDownloadRTSS(activeSegmentation.id);
+                    },
+                  },
                 ]
               : []),
           ]}
@@ -147,6 +154,7 @@ SegmentationDropDownRow.propTypes = {
   onToggleSegmentationVisibility: PropTypes.func,
   onSegmentationEdit: PropTypes.func,
   onSegmentationDownload: PropTypes.func,
+  onSegmentationDownloadRTSS: PropTypes.func,
   storeSegmentation: PropTypes.func,
   onSegmentationDelete: PropTypes.func,
   onSegmentationAdd: PropTypes.func,

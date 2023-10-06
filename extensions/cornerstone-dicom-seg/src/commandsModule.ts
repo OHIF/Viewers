@@ -364,8 +364,8 @@ const commandsModule = ({
      * converts dataset to downloadable blob.
      *
      */
-    downloadRTSS: ({}) => {
-      const segmentations = segmentationService.getSegmentations();
+    downloadRTSS: ({ segmentationId }) => {
+      const segmentations = segmentationService.getSegmentation(segmentationId);
       const vtkUtils = {
         vtkImageMarchingSquares,
         vtkDataArray,

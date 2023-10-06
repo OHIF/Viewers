@@ -215,8 +215,10 @@ export default function PanelSegmentation({
     }
   };
 
-  const onDownloadRTSSClick = async () => {
-    commandsManager.runCommand('downloadRTSS', {});
+  const onSegmentationDownloadRTSS = segmentationId => {
+    commandsManager.runCommand('downloadRTSS', {
+      segmentationId,
+    });
   };
 
   return (
@@ -231,6 +233,7 @@ export default function PanelSegmentation({
           onSegmentationClick={onSegmentationClick}
           onSegmentationDelete={onSegmentationDelete}
           onSegmentationDownload={onSegmentationDownload}
+          onSegmentationDownloadRTSS={onSegmentationDownloadRTSS}
           storeSegmentation={storeSegmentation}
           onSegmentationEdit={onSegmentationEdit}
           onSegmentClick={onSegmentClick}
@@ -269,19 +272,6 @@ export default function PanelSegmentation({
             _setSegmentationConfiguration(selectedSegmentationId, 'fillAlphaInactive', value)
           }
         />
-      </div>
-      <div>
-        <LegacyButtonGroup
-          color="black"
-          size="inherit"
-        >
-          <LegacyButton
-            className="px-2 py-2 text-base"
-            onClick={onDownloadRTSSClick}
-          >
-            {t('Export RTSS')}
-          </LegacyButton>
-        </LegacyButtonGroup>
       </div>
     </>
   );
