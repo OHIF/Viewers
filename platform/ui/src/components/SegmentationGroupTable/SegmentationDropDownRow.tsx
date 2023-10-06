@@ -10,6 +10,7 @@ function SegmentationDropDownRow({
   onToggleSegmentationVisibility,
   onSegmentationEdit,
   onSegmentationDownload,
+  onSegmentationDownloadRTSS,
   storeSegmentation,
   onSegmentationDelete,
   onSegmentationAdd,
@@ -40,6 +41,7 @@ function SegmentationDropDownRow({
           alignment="left"
           itemsClassName="text-primary-active"
           showBorders={false}
+          maxCharactersPerLine={30}
           list={[
             ...(!disableEditing
               ? [
@@ -79,9 +81,15 @@ function SegmentationDropDownRow({
               : []),
             ...[
               {
-                title: 'Download',
+                title: 'Download DICOM SEG',
                 onClick: () => {
                   onSegmentationDownload(activeSegmentation.id);
+                },
+              },
+              {
+                title: 'Download DICOM RTSTRUCT',
+                onClick: () => {
+                  onSegmentationDownloadRTSS(activeSegmentation.id);
                 },
               },
             ],
@@ -149,6 +157,7 @@ SegmentationDropDownRow.propTypes = {
   onToggleSegmentationVisibility: PropTypes.func,
   onSegmentationEdit: PropTypes.func,
   onSegmentationDownload: PropTypes.func,
+  onSegmentationDownloadRTSS: PropTypes.func,
   storeSegmentation: PropTypes.func,
   onSegmentationDelete: PropTypes.func,
   onSegmentationAdd: PropTypes.func,
