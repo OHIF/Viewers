@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.7.0-beta.101](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.100...v3.7.0-beta.101) (2023-10-06)
+
+
+### Bug Fixes
+
+* **bugs:** fixing lots of bugs regarding release candidate ([#3700](https://github.com/OHIF/Viewers/issues/3700)) ([8bc12a3](https://github.com/OHIF/Viewers/commit/8bc12a37d0353160ae5ea4624dc0b244b7d59c07))
+
+
+
+
+
 # [3.7.0-beta.100](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.99...v3.7.0-beta.100) (2023-10-06)
 
 **Note:** Version bump only for package @ohif/extension-default
