@@ -6,7 +6,7 @@ import {
   segmentation as cornerstoneToolsSegmentation,
   Enums as cornerstoneToolsEnums,
 } from '@cornerstonejs/tools';
-import { adaptersSEG, helpers } from '@cornerstonejs/adapters';
+import { adaptersRT, helpers, adaptersSEG } from '@cornerstonejs/adapters';
 import { classes, DicomMetadataStore } from '@ohif/core';
 
 import vtkImageMarchingSquares from '@kitware/vtk.js/Filters/General/ImageMarchingSquares';
@@ -26,6 +26,12 @@ const {
     Segmentation: { generateLabelMaps2DFrom3D, generateSegmentation },
   },
 } = adaptersSEG;
+
+const {
+  Cornerstone3D: {
+    RTSS: { generateRTSSFromSegmentations },
+  },
+} = adaptersRT;
 
 const { downloadDICOMData } = helpers;
 
@@ -372,24 +378,24 @@ const commandsModule = ({
         vtkImageData,
       };
 
-      adaptersSEG.Cornerstone3D.RTStruct.RTSS.generateRTSSFromSegmentations(
+      const RTSS = generateRTSSFromSegmentations(
         segmentations,
         classes.MetadataProvider,
         DicomMetadataStore,
         cache,
         cornerstoneToolsEnums,
         vtkUtils
-      ).then(RTSS => {
-        try {
-          const reportBlob = datasetToBlob(RTSS);
+      );
 
-          //Create a URL for the binary.
-          const objectUrl = URL.createObjectURL(reportBlob);
-          window.location.assign(objectUrl);
-        } catch (e) {
-          console.warn(e);
-        }
-      });
+      try {
+        const reportBlob = datasetToBlob(RTSS);
+
+        //Create a URL for the binary.
+        const objectUrl = URL.createObjectURL(reportBlob);
+        window.location.assign(objectUrl);
+      } catch (e) {
+        console.warn(e);
+      }
     },
   };
 
