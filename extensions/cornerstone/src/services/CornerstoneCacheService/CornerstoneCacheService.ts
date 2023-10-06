@@ -224,9 +224,11 @@ class CornerstoneCacheService {
       const segDisplaySetInstanceUID = segmentation.displaySetInstanceUID;
       const segDisplaySet = displaySetService.getDisplaySetByUID(segDisplaySetInstanceUID);
 
+      const instance = segDisplaySet.instances?.[0] || segDisplaySet.instance;
+
       const shouldDisplaySeg = segmentationService.shouldRenderSegmentation(
         viewportDisplaySetInstanceUIDs,
-        segDisplaySet.instances[0].FrameOfReferenceUID
+        instance.FrameOfReferenceUID
       );
 
       if (shouldDisplaySeg) {

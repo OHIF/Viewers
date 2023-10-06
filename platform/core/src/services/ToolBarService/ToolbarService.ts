@@ -115,7 +115,13 @@ export default class ToolbarService extends PubSubService {
       return;
     }
     const commandsManager = this._commandsManager;
-    const { groupId, itemId, interactionType, commands } = interaction;
+    const { groupId, itemId, commands, type } = interaction;
+    let { interactionType } = interaction;
+
+    // if not interaction type, assume the type can be used
+    if (!interactionType) {
+      interactionType = type;
+    }
 
     switch (interactionType) {
       case 'action': {
@@ -228,6 +234,10 @@ export default class ToolbarService extends PubSubService {
     return activeTools;
   }
 
+  getActivePrimaryTool() {
+    return this.state.primaryToolId;
+  }
+
   /** Sets the toggle state of a button to the isToggled state */
   public setToggled(id: string, isToggled: boolean): void {
     if (isToggled) {
@@ -259,7 +269,9 @@ export default class ToolbarService extends PubSubService {
     }
     for (const buttonId of Object.keys(this.buttons)) {
       const { primary, items } = this.buttons[buttonId].props || {};
-      if (primary?.id === id) { return primary; }
+      if (primary?.id === id) {
+        return primary;
+      }
       const found = items?.find(childButton => childButton.id === id);
       if (found) {
         return found;

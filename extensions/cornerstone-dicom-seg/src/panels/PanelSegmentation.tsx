@@ -223,7 +223,7 @@ export default function PanelSegmentation({
 
   return (
     <>
-      <div className="flex min-h-0 flex-auto select-none flex-col justify-between">
+      <div className="ohif-scrollbar flex min-h-0 flex-auto select-none flex-col justify-between overflow-auto">
         <SegmentationGroupTable
           title={t('Segmentations')}
           segmentations={segmentations}
