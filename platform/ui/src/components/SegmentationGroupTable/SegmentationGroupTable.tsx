@@ -104,20 +104,18 @@ const SegmentationGroupTable = ({
             </div>
           ) : (
             <div className="mt-1 select-none">
-              {!disableEditing && (
-                <SegmentationDropDownRow
-                  segmentations={segmentations}
-                  disableEditing={disableEditing}
-                  activeSegmentation={activeSegmentation}
-                  onActiveSegmentationChange={onActiveSegmentationChange}
-                  onSegmentationDelete={onSegmentationDelete}
-                  onSegmentationEdit={onSegmentationEdit}
-                  onSegmentationDownload={onSegmentationDownload}
-                  storeSegmentation={storeSegmentation}
-                  onSegmentationAdd={onSegmentationAdd}
-                  onToggleSegmentationVisibility={onToggleSegmentationVisibility}
-                />
-              )}
+              <SegmentationDropDownRow
+                segmentations={segmentations}
+                disableEditing={disableEditing}
+                activeSegmentation={activeSegmentation}
+                onActiveSegmentationChange={onActiveSegmentationChange}
+                onSegmentationDelete={onSegmentationDelete}
+                onSegmentationEdit={onSegmentationEdit}
+                onSegmentationDownload={onSegmentationDownload}
+                storeSegmentation={storeSegmentation}
+                onSegmentationAdd={onSegmentationAdd}
+                onToggleSegmentationVisibility={onToggleSegmentationVisibility}
+              />
               {!disableEditing && showAddSegment && (
                 <AddSegmentRow onClick={() => onSegmentAdd(activeSegmentationId)} />
               )}
