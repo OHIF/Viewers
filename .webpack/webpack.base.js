@@ -35,6 +35,7 @@ dotenv.config();
 const defineValues = {
   /* Application */
   'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+  'process.env.NODE_DEBUG': JSON.stringify(process.env.NODE_DEBUG),
   'process.env.DEBUG': JSON.stringify(process.env.DEBUG),
   'process.env.PUBLIC_URL': JSON.stringify(process.env.PUBLIC_URL || '/'),
   'process.env.BUILD_NUM': JSON.stringify(BUILD_NUM),
