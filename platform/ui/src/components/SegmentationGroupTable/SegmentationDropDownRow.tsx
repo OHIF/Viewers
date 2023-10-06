@@ -41,6 +41,7 @@ function SegmentationDropDownRow({
           alignment="left"
           itemsClassName="text-primary-active"
           showBorders={false}
+          maxCharactersPerLine={30}
           list={[
             ...(!disableEditing
               ? [
@@ -77,13 +78,13 @@ function SegmentationDropDownRow({
                     },
                   },
                   {
-                    title: 'Download',
+                    title: 'Download DICOM SEG',
                     onClick: () => {
                       onSegmentationDownload(activeSegmentation.id);
                     },
                   },
                   {
-                    title: 'Download as RTSS',
+                    title: 'Download DICOM RTSTRUCT',
                     onClick: () => {
                       onSegmentationDownloadRTSS(activeSegmentation.id);
                     },
