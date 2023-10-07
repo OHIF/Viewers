@@ -28,6 +28,7 @@
     "build:package-all": "lerna run build:package --parallel --stream",
     "build:package-all-1": "lerna run build:package-1 --parallel --stream",
     "dev": "lerna run dev:viewer --stream",
+    "dev:no:cache": "lerna run dev:no:cache --stream",
     "dev:project": ".scripts/dev.sh",
     "dev:orthanc": "lerna run dev:orthanc --stream",
     "dev:dcm4chee": "lerna run dev:dcm4chee --stream",

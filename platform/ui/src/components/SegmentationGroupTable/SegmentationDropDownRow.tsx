@@ -10,6 +10,7 @@ function SegmentationDropDownRow({
   onToggleSegmentationVisibility,
   onSegmentationEdit,
   onSegmentationDownload,
+  onSegmentationDownloadRTSS,
   storeSegmentation,
   onSegmentationDelete,
   onSegmentationAdd,
@@ -40,6 +41,7 @@ function SegmentationDropDownRow({
           alignment="left"
           itemsClassName="text-primary-active"
           showBorders={false}
+          maxCharactersPerLine={30}
           list={[
             ...(!disableEditing
               ? [
@@ -75,14 +77,22 @@ function SegmentationDropDownRow({
                       storeSegmentation(activeSegmentation.id);
                     },
                   },
-                  {
-                    title: 'Download',
-                    onClick: () => {
-                      onSegmentationDownload(activeSegmentation.id);
-                    },
-                  },
                 ]
               : []),
+            ...[
+              {
+                title: 'Download DICOM SEG',
+                onClick: () => {
+                  onSegmentationDownload(activeSegmentation.id);
+                },
+              },
+              {
+                title: 'Download DICOM RTSTRUCT',
+                onClick: () => {
+                  onSegmentationDownloadRTSS(activeSegmentation.id);
+                },
+              },
+            ],
           ]}
         >
           <div className="hover:bg-secondary-dark mx-1 grid h-[28px] w-[28px]  cursor-pointer place-items-center rounded-[4px]">
@@ -147,6 +157,7 @@ SegmentationDropDownRow.propTypes = {
   onToggleSegmentationVisibility: PropTypes.func,
   onSegmentationEdit: PropTypes.func,
   onSegmentationDownload: PropTypes.func,
+  onSegmentationDownloadRTSS: PropTypes.func,
   storeSegmentation: PropTypes.func,
   onSegmentationDelete: PropTypes.func,
   onSegmentationAdd: PropTypes.func,

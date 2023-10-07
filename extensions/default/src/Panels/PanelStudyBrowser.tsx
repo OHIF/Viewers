@@ -37,7 +37,6 @@ function PanelStudyBrowser({
   const [studyDisplayList, setStudyDisplayList] = useState([]);
   const [displaySets, setDisplaySets] = useState([]);
   const [thumbnailImageSrcMap, setThumbnailImageSrcMap] = useState({});
-  const [jumpToDisplaySet, setJumpToDisplaySet] = useState(null);
 
   const onDoubleClickThumbnailHandler = displaySetInstanceUID => {
     let updatedViewports = [];
@@ -133,17 +132,11 @@ function PanelStudyBrowser({
       }
       // When the image arrives, render it and store the result in the thumbnailImgSrcMap
       newImageSrcEntry[dSet.displaySetInstanceUID] = await getImageSrc(imageId);
-      if (!isMounted.current) {
-        return;
-      }
 
       setThumbnailImageSrcMap(prevState => {
         return { ...prevState, ...newImageSrcEntry };
       });
     });
-    return () => {
-      isMounted.current = false;
-    };
   }, [StudyInstanceUIDs, dataSource, displaySetService, getImageSrc]);
 
   // ~~ displaySets

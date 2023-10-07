@@ -188,7 +188,8 @@ function DataSourceWrapper(props) {
         !isSamePage || (!isLoading && (newOffset !== previousOffset || isLocationUpdated));
 
       if (isDataInvalid) {
-        getData().catch(() => {
+        getData().catch(e => {
+          console.error(e);
           // If there is a data source configuration API, then the Worklist will popup the dialog to attempt to configure it
           // and attempt to resolve this issue.
           if (dataSource.getConfig().configurationAPI) {
