@@ -7,7 +7,6 @@ import {
   geometryLoader,
   eventTarget,
   getEnabledElementByIds,
-  metaData,
   utilities as csUtils,
   volumeLoader,
 } from '@cornerstonejs/core';
@@ -543,7 +542,7 @@ class SegmentationService extends PubSubService {
       volumeId: segmentationId,
       targetBuffer: {
         type: 'Uint8Array',
-        sharedArrayBuffer: true,
+        sharedArrayBuffer: window.SharedArrayBuffer,
       },
     });
     const derivedVolumeScalarData = derivedVolume.getScalarData();
@@ -964,7 +963,7 @@ class SegmentationService extends PubSubService {
       volumeId: segmentationId,
       targetBuffer: {
         type: 'Uint8Array',
-        sharedArrayBuffer: true,
+        sharedArrayBuffer: window.SharedArrayBuffer,
       },
     });
 
