@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.7.0-beta.103](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.102...v3.7.0-beta.103) (2023-10-09)
+
+
+### Bug Fixes
+
+* **segmentation:** do not use SAB if not specified ([#3705](https://github.com/OHIF/Viewers/issues/3705)) ([4911e47](https://github.com/OHIF/Viewers/commit/4911e4796cef5e22cb7cc0ca73dc5c956bc75339))
+
+
+
+
+
 # [3.7.0-beta.102](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.101...v3.7.0-beta.102) (2023-10-06)
 
 
