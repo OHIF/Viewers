@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.7.0-beta.107](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.106...v3.7.0-beta.107) (2023-10-10)
+
+
+### Bug Fixes
+
+* **modules:** add stylus loader as an option to be uncommented ([#3710](https://github.com/OHIF/Viewers/issues/3710)) ([7c57f67](https://github.com/OHIF/Viewers/commit/7c57f67844b790fc6e47ac3f9708bf9d576389c8))
+
+
+
+
+
 # [3.7.0-beta.106](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.105...v3.7.0-beta.106) (2023-10-10)
 
 **Note:** Version bump only for package @ohif/app
