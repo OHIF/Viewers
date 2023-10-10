@@ -150,6 +150,12 @@ export default class ClientManager {
    * @returns {void}
    */
   private addClient(configToAdd: ConfigToAdd): void {
+    // if no qidoRoot or wadoRoot, don't add the client. Could be the case for
+    // configurations that relies on onConfiguration function but lacks necessary
+    // additional information
+    if (!configToAdd?.qidoRoot || !configToAdd?.wadoRoot) {
+      return;
+    }
     const config = Object.assign({}, configToAdd);
     config.qidoConfig = {
       url: config.qidoRoot,
