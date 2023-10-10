@@ -40,7 +40,7 @@ const dicomSeg = {
   panel: '@ohif/extension-cornerstone-dicom-seg.panelModule.panelSegmentation',
 };
 
-const dicomRt = {
+const dicomRT = {
   viewport: '@ohif/extension-cornerstone-dicom-rt.viewportModule.dicom-rt',
   sopClassHandler: '@ohif/extension-cornerstone-dicom-rt.sopClassHandlerModule.dicom-rt',
 };
@@ -218,8 +218,8 @@ function modeFactory({ modeConfiguration }) {
                   displaySetsToDisplay: [dicomSeg.sopClassHandler],
                 },
                 {
-                  namespace: dicomRt.viewport,
-                  displaySetsToDisplay: [dicomRt.sopClassHandler],
+                  namespace: dicomRT.viewport,
+                  displaySetsToDisplay: [dicomRT.sopClassHandler],
                 },
               ],
             },
@@ -240,7 +240,7 @@ function modeFactory({ modeConfiguration }) {
       ohif.sopClassHandler,
       dicompdf.sopClassHandler,
       dicomsr.sopClassHandler,
-      dicomRt.sopClassHandler,
+      dicomRT.sopClassHandler,
     ],
     hotkeys: [...hotkeys.defaults.hotkeyBindings],
     ...modeConfiguration,

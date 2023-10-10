@@ -189,7 +189,7 @@ class SegmentationService extends PubSubService {
         );
       }
 
-      if (active !== undefined) {
+      if (active === true) {
         this._setActiveSegment(segmentationId, segmentIndex, suppressEvents);
       }
 
@@ -397,6 +397,23 @@ class SegmentationService extends PubSubService {
   private _getSegmentations(): Segmentation[] {
     const segmentations = this.arrayOfObjects(this.segmentations);
     return segmentations && segmentations.map(m => this.segmentations[Object.keys(m)[0]]);
+  }
+
+  public getActiveSegmentation(): Segmentation {
+    const segmentations = this.getSegmentations();
+
+    return segmentations.find(segmentation => segmentation.isActive);
+  }
+
+  public getActiveSegment() {
+    const activeSegmentation = this.getActiveSegmentation();
+    const { activeSegmentIndex, segments } = activeSegmentation;
+
+    if (activeSegmentIndex === null) {
+      return;
+    }
+
+    return segments[activeSegmentIndex];
   }
 
   /**
