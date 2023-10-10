@@ -106,6 +106,8 @@ yarn global add http-server
 # Serve the files in our current directory
 # Accessible at: `http://localhost:8080`
 npx http-server ./dist
+
+# you can use npx serve ./dist -l 8080 -s as an alternative to http-server
 ```
 
 :::caution

@@ -12,8 +12,13 @@ In particular, three of OHIF’s features depend on these configurations:
 - [XMLHttpRequests to fetch data from data sources](#cors-in-ohif)
 
 
+
 ## SharedArrayBuffer
 A `SharedArrayBuffer` is a JavaScript object that is similar to an `ArrayBuffer` but can be shared between web workers and the window that spawned them via the `postMessage` API. See [SharedArrayBuffer in MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer) for more information.
+
+:::tip
+To turn off Shared Array Buffer completely, just set `useSharedArrayBuffer` to `false` in the [OHIF configuration](../configuration/configurationFiles.md). But keep in mind that you will not get the performance boost that Shared Array Buffer offers for decoding and rendering big volumes where web workers write to the same memory space.
+:::
 
 ### Security Requirements
 
