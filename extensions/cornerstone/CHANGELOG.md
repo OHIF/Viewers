@@ -3,6 +3,50 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.7.0-beta.106](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.105...v3.7.0-beta.106) (2023-10-10)
+
+
+### Bug Fixes
+
+* **segmentation:**  Various fixes for segmentation mode and other ([#3709](https://github.com/OHIF/Viewers/issues/3709)) ([a9a6ad5](https://github.com/OHIF/Viewers/commit/a9a6ad50eae67b43b8b34efc07182d788cacdcfe))
+
+
+
+
+
+# [3.7.0-beta.105](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.104...v3.7.0-beta.105) (2023-10-10)
+
+
+### Bug Fixes
+
+* **voi:** should publish voi change event on reset ([#3707](https://github.com/OHIF/Viewers/issues/3707)) ([52f34c6](https://github.com/OHIF/Viewers/commit/52f34c64d014f433ec1661a39b47e7fb27f15332))
+
+
+
+
+
+# [3.7.0-beta.104](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.103...v3.7.0-beta.104) (2023-10-09)
+
+
+### Bug Fixes
+
+* **modality unit:** fix the modality unit per target via upgrade of cs3d ([#3706](https://github.com/OHIF/Viewers/issues/3706)) ([0a42d57](https://github.com/OHIF/Viewers/commit/0a42d573bbca7f2551a831a46d3aa6b56674a580))
+
+
+
+
+
+# [3.7.0-beta.103](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.102...v3.7.0-beta.103) (2023-10-09)
+
+
+### Bug Fixes
+
+* **segmentation:** do not use SAB if not specified ([#3705](https://github.com/OHIF/Viewers/issues/3705)) ([4911e47](https://github.com/OHIF/Viewers/commit/4911e4796cef5e22cb7cc0ca73dc5c956bc75339))
+
+
+
+
+
 # [3.7.0-beta.102](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.101...v3.7.0-beta.102) (2023-10-06)
 
 

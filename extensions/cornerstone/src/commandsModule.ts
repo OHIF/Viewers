@@ -476,7 +476,7 @@ function commandsModule({
         viewport.resetProperties();
         viewport.resetCamera();
       } else {
-        // Todo: add reset properties for volume viewport
+        viewport.resetProperties();
         viewport.resetCamera();
       }
 
