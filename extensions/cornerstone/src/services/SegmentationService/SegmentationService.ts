@@ -130,7 +130,7 @@ class SegmentationService extends PubSubService {
       throw new Error('Segment index 0 is reserved for "no label"');
     }
 
-    const toolGroupId = config.toolGroupId ?? this._getFirstToolGroupId();
+    const toolGroupId = config.toolGroupId ?? this._getApplicableToolGroupId();
 
     const { segmentationRepresentationUID, segmentation } = this._getSegmentationInfo(
       segmentationId,
@@ -361,7 +361,7 @@ class SegmentationService extends PubSubService {
   }
 
   public setActiveSegmentationForToolGroup(segmentationId: string, toolGroupId?: string): void {
-    toolGroupId = toolGroupId ?? this._getFirstToolGroupId();
+    toolGroupId = toolGroupId ?? this._getApplicableToolGroupId();
 
     const suppressEvents = false;
     this._setActiveSegmentationForToolGroup(segmentationId, toolGroupId, suppressEvents);
@@ -912,7 +912,7 @@ class SegmentationService extends PubSubService {
     }
 
     const segmentation = this.getSegmentation(segmentationId);
-    toolGroupId = toolGroupId ?? this._getFirstToolGroupId();
+    toolGroupId = toolGroupId ?? this._getApplicableToolGroupId();
 
     const segmentationRepresentation = this._getSegmentationRepresentation(
       segmentationId,
@@ -1313,7 +1313,7 @@ class SegmentationService extends PubSubService {
       if (remainingHydratedSegmentations.length) {
         const { id } = remainingHydratedSegmentations[0];
 
-        this._setActiveSegmentationForToolGroup(id, this._getFirstToolGroupId(), false);
+        this._setActiveSegmentationForToolGroup(id, this._getApplicableToolGroupId(), false);
       }
     }
 
@@ -1325,7 +1325,7 @@ class SegmentationService extends PubSubService {
   }
 
   public getConfiguration = (toolGroupId?: string): SegmentationConfig => {
-    toolGroupId = toolGroupId ?? this._getFirstToolGroupId();
+    toolGroupId = toolGroupId ?? this._getApplicableToolGroupId();
 
     const brushSize = 1;
     // const brushSize = cstUtils.segmentation.getBrushSizeForToolGroup(
@@ -1620,7 +1620,7 @@ class SegmentationService extends PubSubService {
       throw new Error(`Segment ${segmentIndex} not yet added to segmentation: ${segmentationId}`);
     }
 
-    toolGroupId = toolGroupId ?? this._getFirstToolGroupId();
+    toolGroupId = toolGroupId ?? this._getApplicableToolGroupId();
 
     const segmentationRepresentation = this._getSegmentationRepresentation(
       segmentationId,
@@ -1714,7 +1714,7 @@ class SegmentationService extends PubSubService {
     toolGroupId?: string,
     suppressEvents = false
   ) {
-    toolGroupId = toolGroupId ?? this._getFirstToolGroupId();
+    toolGroupId = toolGroupId ?? this._getApplicableToolGroupId();
 
     const { segmentationRepresentationUID, segmentation } = this._getSegmentationInfo(
       segmentationId,
@@ -1773,7 +1773,7 @@ class SegmentationService extends PubSubService {
       throw new Error(`Segment ${segmentIndex} not yet added to segmentation: ${segmentationId}`);
     }
 
-    toolGroupId = toolGroupId ?? this._getFirstToolGroupId();
+    toolGroupId = toolGroupId ?? this._getApplicableToolGroupId();
 
     const segmentationRepresentation = this._getSegmentationRepresentation(
       segmentationId,
@@ -2090,11 +2090,21 @@ class SegmentationService extends PubSubService {
     }
   }
 
-  private _getFirstToolGroupId = () => {
-    const { toolGroupService } = this.servicesManager.services;
-    const toolGroupIds = toolGroupService.getToolGroupIds();
+  private _getApplicableToolGroupId = () => {
+    const { toolGroupService, viewportGridService, cornerstoneViewportService } =
+      this.servicesManager.services;
 
-    return toolGroupIds[0];
+    const viewportInfo = cornerstoneViewportService.getViewportInfo(
+      viewportGridService.getActiveViewportId()
+    );
+
+    if (!viewportInfo) {
+      const toolGroupIds = toolGroupService.getToolGroupIds();
+
+      return toolGroupIds[0];
+    }
+
+    return viewportInfo.getToolGroupId();
   };
 
   private getNextColorLUTIndex = (): number => {
