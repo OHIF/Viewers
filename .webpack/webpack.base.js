@@ -113,7 +113,9 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
           },
         },
         cssToJavaScript,
-        stylusToJavaScript,
+        // Note: Only uncomment the following if you are using the old style of stylus in v2
+        // Also you need to uncomment this platform/app/.webpack/rules/extractStyleChunks.js
+        // stylusToJavaScript,
         {
           test: /\.wasm/,
           type: 'asset/resource',

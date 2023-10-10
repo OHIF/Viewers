@@ -533,6 +533,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     const overlayDisplaySet = displaySetInstanceUIDs
       .map(displaySetService.getDisplaySetByUID)
       .find(displaySet => displaySet?.isOverlayDisplaySet);
+
     if (overlayDisplaySet) {
       this.addOverlayRepresentationForDisplaySet(overlayDisplaySet, viewport);
     } else {

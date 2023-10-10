@@ -1393,7 +1393,7 @@ export default class HangingProtocolService extends PubSubService {
     const matchingScores = [];
     let highestSeriesMatchingScore = 0;
 
-    // console.log('ProtocolEngine::matchImages', studyMatchingRules, seriesMatchingRules);
+    console.log('ProtocolEngine::matchImages', studyMatchingRules, seriesMatchingRules);
     const matchActiveOnly = this.protocol.numberOfPriorsReferenced === -1;
     this.studies.forEach((study, studyInstanceUIDsIndex) => {
       // Skip non-active if active only

@@ -20,22 +20,13 @@ function createTools(utilityModule) {
   const { toolNames, Enums } = utilityModule.exports;
   return {
     active: [
-      {
-        toolName: toolNames.WindowLevel,
-        bindings: [{ mouseButton: Enums.MouseBindings.Primary }],
-      },
-      {
-        toolName: toolNames.Pan,
-        bindings: [{ mouseButton: Enums.MouseBindings.Auxiliary }],
-      },
-      {
-        toolName: toolNames.Zoom,
-        bindings: [{ mouseButton: Enums.MouseBindings.Secondary }],
-      },
+      { toolName: toolNames.WindowLevel, bindings: [{ mouseButton: Enums.MouseBindings.Primary }] },
+      { toolName: toolNames.Pan, bindings: [{ mouseButton: Enums.MouseBindings.Auxiliary }] },
+      { toolName: toolNames.Zoom, bindings: [{ mouseButton: Enums.MouseBindings.Secondary }] },
       { toolName: toolNames.StackScrollMouseWheel, bindings: [] },
     ],
     passive: Object.keys(brushInstanceNames)
-      .map((brushName) => ({
+      .map(brushName => ({
         toolName: brushName,
         parentTool: 'Brush',
         configuration: {
@@ -54,12 +45,7 @@ function createTools(utilityModule) {
   };
 }
 
-function initDefaultToolGroup(
-  extensionManager,
-  toolGroupService,
-  commandsManager,
-  toolGroupId
-) {
+function initDefaultToolGroup(extensionManager, toolGroupService, commandsManager, toolGroupId) {
   const utilityModule = extensionManager.getModuleEntry(
     '@ohif/extension-cornerstone.utilityModule.tools'
   );
@@ -89,12 +75,7 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
 }
 
 function initToolGroups(extensionManager, toolGroupService, commandsManager) {
-  initDefaultToolGroup(
-    extensionManager,
-    toolGroupService,
-    commandsManager,
-    'default'
-  );
+  initDefaultToolGroup(extensionManager, toolGroupService, commandsManager, 'default');
   initMPRToolGroup(extensionManager, toolGroupService, commandsManager);
 }
 

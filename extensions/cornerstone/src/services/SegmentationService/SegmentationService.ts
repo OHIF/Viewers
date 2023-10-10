@@ -415,6 +415,7 @@ class SegmentationService extends PubSubService {
 
     return segments[activeSegmentIndex];
   }
+
   /**
    * Get specific segmentation by its id.
    *
@@ -1332,6 +1333,8 @@ class SegmentationService extends PubSubService {
         this._setActiveSegmentationForToolGroup(id, this._getApplicableToolGroupId(), false);
       }
     }
+
+    this._setDisplaySetIsHydrated(segmentationId, false);
 
     this._broadcastEvent(this.EVENTS.SEGMENTATION_REMOVED, {
       segmentationId,

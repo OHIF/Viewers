@@ -12,8 +12,6 @@ import { useAppConfig } from '@state';
 import { useDebounce, useSearchParams } from '@hooks';
 import { utils, hotkeys, ServicesManager } from '@ohif/core';
 
-// New
-
 import {
   Icon,
   StudyListExpandedRow,

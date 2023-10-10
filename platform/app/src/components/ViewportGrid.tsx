@@ -379,6 +379,7 @@ function _getViewportComponent(displaySets, viewportComponents, uiNotificationSe
     }
   }
 
+  console.log("Can't show displaySet", SOPClassHandlerId, displaySets[0]);
   uiNotificationService.show({
     title: 'Viewport Not Supported Yet',
     message: `Cannot display SOPClassUID of ${displaySets[0].SOPClassUID} yet`,

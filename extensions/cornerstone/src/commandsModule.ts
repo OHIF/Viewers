@@ -32,25 +32,9 @@ function commandsModule({
     cornerstoneViewportService,
     uiNotificationService,
     measurementService,
-    hangingProtocolService,
-    segmentationService,
   } = servicesManager.services as CornerstoneServices;
 
   const { measurementServiceSource } = this;
-
-  function _getMatchedViewportsToolGroupIds() {
-    const { viewportMatchDetails } = hangingProtocolService.getMatchDetails();
-    const toolGroupIds = [];
-
-    viewportMatchDetails.forEach((matchDetails, viewportIndex) => {
-      const { toolGroupId } = matchDetails.viewportOptions;
-      if (toolGroupIds.indexOf(toolGroupId) === -1) {
-        toolGroupIds.push(toolGroupId);
-      }
-    });
-
-    return toolGroupIds;
-  }
 
   function _getActiveViewportEnabledElement() {
     return getActiveViewportEnabledElement(viewportGridService);

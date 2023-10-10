@@ -62,7 +62,7 @@ const toolGroupIds = ['default', 'mpr', 'SRToolGroup'];
  * @returns {Array} an array of 'setToolActive' commands
  */
 function _createSetToolActiveCommands(toolName) {
-  const temp = toolGroupIds.map((toolGroupId) => ({
+  const temp = toolGroupIds.map(toolGroupId => ({
     commandName: 'setToolActive',
     commandOptions: {
       toolGroupId,
