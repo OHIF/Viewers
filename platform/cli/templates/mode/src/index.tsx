@@ -6,49 +6,21 @@ const ohif = {
   layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
   sopClassHandler: '@ohif/extension-default.sopClassHandlerModule.stack',
   hangingProtocol: '@ohif/extension-default.hangingProtocolModule.default',
-  thumbnailList: '@ohif/extension-default.panelModule.seriesList',
-  thumbnailListTracking: '@ohif/extension-measurement-tracking.panelModule.seriesList',
-  viewport: '@ohif/extension-measurement-tracking.viewportModule.cornerstone-tracked',
-  measurements: '@ohif/extension-measurement-tracking.panelModule.trackedMeasurements',
-  measurementNoTracking: '@ohif/extension-default.panelModule.measure',
+  leftPanel: '@ohif/extension-default.panelModule.seriesList',
+  rightPanel: '@ohif/extension-default.panelModule.measure',
 };
 
-const dicomsr = {
-  sopClassHandler: '@ohif/extension-cornerstone-dicom-sr.sopClassHandlerModule.dicom-sr',
-  viewport: '@ohif/extension-cornerstone-dicom-sr.viewportModule.dicom-sr',
+const cornerstone = {
+  viewport: '@ohif/extension-cornerstone.viewportModule.cornerstone',
 };
 
-const dicomvideo = {
-  sopClassHandler: '@ohif/extension-dicom-video.sopClassHandlerModule.dicom-video',
-  viewport: '@ohif/extension-dicom-video.viewportModule.dicom-video',
-};
-
-const dicompdf = {
-  sopClassHandler: '@ohif/extension-dicom-pdf.sopClassHandlerModule.dicom-pdf',
-  viewport: '@ohif/extension-dicom-pdf.viewportModule.dicom-pdf',
-};
-
-const dicomSeg = {
-  sopClassHandler: '@ohif/extension-cornerstone-dicom-seg.sopClassHandlerModule.dicom-seg',
-  viewport: '@ohif/extension-cornerstone-dicom-seg.viewportModule.dicom-seg',
-  panel: '@ohif/extension-cornerstone-dicom-seg.panelModule.panelSegmentation',
-};
-
-const dicomRT = {
-  viewport: '@ohif/extension-cornerstone-dicom-rt.viewportModule.dicom-rt',
-  sopClassHandler: '@ohif/extension-cornerstone-dicom-rt.sopClassHandlerModule.dicom-rt',
-};
-
+/**
+ * Just two dependencies to be able to render a viewport with panels in order
+ * to make sure that the mode is working.
+ */
 const extensionDependencies = {
-  // Can derive the versions at least process.env.from npm_package_version
   '@ohif/extension-default': '^3.0.0',
   '@ohif/extension-cornerstone': '^3.0.0',
-  '@ohif/extension-measurement-tracking': '^3.0.0',
-  '@ohif/extension-cornerstone-dicom-sr': '^3.0.0',
-  '@ohif/extension-cornerstone-dicom-seg': '^3.0.0',
-  '@ohif/extension-cornerstone-dicom-rt': '^3.0.0',
-  '@ohif/extension-dicom-pdf': '^3.0.1',
-  '@ohif/extension-dicom-video': '^3.0.1',
 };
 
 function modeFactory({ modeConfiguration }) {
@@ -162,34 +134,12 @@ function modeFactory({ modeConfiguration }) {
           return {
             id: ohif.layout,
             props: {
-              leftPanels: [ohif.thumbnailList],
-              rightPanels: [ohif.measurementNoTracking],
-              // NOTE: You probably don't need all the following viewports to support
-              // pick the ones you need and remove the rest
+              leftPanels: [ohif.leftPanel],
+              rightPanels: [ohif.rightPanel],
               viewports: [
                 {
-                  namespace: ohif.viewport,
+                  namespace: cornerstone.viewport,
                   displaySetsToDisplay: [ohif.sopClassHandler],
-                },
-                {
-                  namespace: dicomsr.viewport,
-                  displaySetsToDisplay: [dicomsr.sopClassHandler],
-                },
-                {
-                  namespace: dicomvideo.viewport,
-                  displaySetsToDisplay: [dicomvideo.sopClassHandler],
-                },
-                {
-                  namespace: dicompdf.viewport,
-                  displaySetsToDisplay: [dicompdf.sopClassHandler],
-                },
-                {
-                  namespace: dicomSeg.viewport,
-                  displaySetsToDisplay: [dicomSeg.sopClassHandler],
-                },
-                {
-                  namespace: dicomRT.viewport,
-                  displaySetsToDisplay: [dicomRT.sopClassHandler],
                 },
               ],
             },
@@ -202,14 +152,7 @@ function modeFactory({ modeConfiguration }) {
     /** HangingProtocol used by the mode */
     // hangingProtocol: [''],
     /** SopClassHandlers used by the mode */
-    sopClassHandlers: [
-      dicomvideo.sopClassHandler,
-      dicomSeg.sopClassHandler,
-      ohif.sopClassHandler,
-      dicompdf.sopClassHandler,
-      dicomsr.sopClassHandler,
-      dicomRT.sopClassHandler,
-    ],
+    sopClassHandlers: [ohif.sopClassHandler],
     /** hotkeys for mode */
     hotkeys: [...hotkeys.defaults.hotkeyBindings],
   };
