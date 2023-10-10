@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.7.0-beta.105](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.104...v3.7.0-beta.105) (2023-10-10)
+
+
+### Bug Fixes
+
+* **voi:** should publish voi change event on reset ([#3707](https://github.com/OHIF/Viewers/issues/3707)) ([52f34c6](https://github.com/OHIF/Viewers/commit/52f34c64d014f433ec1661a39b47e7fb27f15332))
+
+
+
+
+
 # [3.7.0-beta.104](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.103...v3.7.0-beta.104) (2023-10-09)
 
 
