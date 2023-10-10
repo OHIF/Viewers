@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.7.0-beta.108](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.107...v3.7.0-beta.108) (2023-10-10)
+
+
+### Bug Fixes
+
+* **i18n:** display set(s) are two words for English messages ([#3711](https://github.com/OHIF/Viewers/issues/3711)) ([c3a5847](https://github.com/OHIF/Viewers/commit/c3a5847dcd3dce4f1c8d8b11af95f79e3f93f70d))
+
+
+
+
+
 # [3.7.0-beta.107](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.106...v3.7.0-beta.107) (2023-10-10)
 
 
