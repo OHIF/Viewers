@@ -1,13 +1,78 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { ServicesManager } from '@ohif/core';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
-
 import MeasurementItem from './MeasurementItem';
+import { eventTarget, EVENTS } from '@cornerstonejs/core';
+import { useAppConfig } from '@state';
 
-const MeasurementTable = ({ data, title, onClick, onEdit, servicesManager }) => {
+const MeasurementTable = ({ data: dataReceived, title, onClick, onEdit, servicesManager }) => {
   servicesManager = servicesManager as ServicesManager;
-  const { customizationService } = servicesManager.services;
+  const { customizationService, viewportGridService, measurementService } =
+    servicesManager.services;
+
+  const [appConfig] = useAppConfig();
+  const filterSRs = appConfig?.filterSRs;
+
+  const [data, _setData] = useState([]);
+  const [fullData, _setFullData] = useState([]);
+  const dataRef = useRef();
+  const fullDataRef = useRef();
+
+  const setData = param => {
+    dataRef.current = param;
+    _setData(param);
+  };
+
+  const setFullData = param => {
+    fullDataRef.current = param;
+    _setFullData(param);
+  };
+
+  function activeViewportChanged(evt) {
+    const { activeViewportId, viewports } = viewportGridService.getState();
+    const activeViewport = viewports.get(activeViewportId);
+    if (activeViewport?.displaySetInstanceUIDs?.length) {
+      const referenceDisplaySetUID = activeViewport.displaySetInstanceUIDs[0];
+      const actualData = fullDataRef.current;
+      if (actualData) {
+        const newData = actualData.filter(item => {
+          const measurement = measurementService.getMeasurement(item.uid);
+          return measurement.displaySetInstanceUID === referenceDisplaySetUID;
+        });
+        setData(newData);
+      }
+    } else {
+      setData(fullDataRef.current);
+    }
+  }
+
+  if (filterSRs) {
+    useEffect(() => {
+      activeViewportChanged({});
+    }, [fullData]);
+
+    useEffect(() => {
+      const unsubscriptionActiveViewportChanged = viewportGridService.subscribe(
+        viewportGridService.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED,
+        activeViewportChanged
+      );
+
+      eventTarget.addEventListener(EVENTS.STACK_VIEWPORT_NEW_STACK, activeViewportChanged);
+
+      return () => {
+        unsubscriptionActiveViewportChanged();
+      };
+    }, []);
+
+    if (fullData.length !== dataReceived.length) {
+      setFullData(dataReceived);
+    }
+  } else {
+    if (data.length !== dataReceived.length) {
+      setData(dataReceived);
+    }
+  }
   const { t } = useTranslation('MeasurementTable');
   const amount = data.length;
 
