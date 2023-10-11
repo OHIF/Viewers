@@ -97,7 +97,7 @@ export default function CreateReportDialogPrompt(uiDialogService, { extensionMan
           };
           return (
             <>
-              {dataSourcesOpts.length > 1 && window.config.allowMultipleExport && (
+              {dataSourcesOpts.length > 1 && window.config?.allowMultiSelectExport && (
                 <div>
                   <label className="text-[14px] leading-[1.2] text-white">Data Source</label>
                   <Select
