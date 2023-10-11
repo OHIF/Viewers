@@ -175,11 +175,12 @@ const HoveringIcons = ({
   return (
     <div className="flex items-center">
       {!disableEditing && createIcon('row-edit', onEdit)}
-      {createIcon(
-        isLocked ? 'row-lock' : 'row-unlock',
-        onToggleLocked,
-        isLocked ? 'text-[#3d5871]' : null
-      )}
+      {!disableEditing &&
+        createIcon(
+          isLocked ? 'row-lock' : 'row-unlock',
+          onToggleLocked,
+          isLocked ? 'text-[#3d5871]' : null
+        )}
       {createIcon(
         isVisible ? 'row-shown' : 'row-hidden',
         onToggleVisibility,

@@ -1,12 +1,12 @@
 import dcmjs from 'dcmjs';
 import { classes, DicomMetadataStore } from '@ohif/core';
-import { adaptersSEG } from '@cornerstonejs/adapters';
+import { adaptersRT } from '@cornerstonejs/adapters';
 
 const { datasetToBlob } = dcmjs.data;
 const metadataProvider = classes.MetadataProvider;
 
 export default function dicomRTAnnotationExport(annotations) {
-  const dataset = adaptersSEG.Cornerstone3D.RTStruct.RTSS.generateRTSSFromAnnotations(
+  const dataset = adaptersRT.Cornerstone3D.RTSS.generateRTSSFromAnnotations(
     annotations,
     metadataProvider,
     DicomMetadataStore
