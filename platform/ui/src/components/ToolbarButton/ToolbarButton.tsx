@@ -15,14 +15,11 @@ const ToolbarButton = ({
   onInteraction,
   dropdownContent,
   //
-  isActive: _isActive,
+  isActive,
   className,
-  bState = {},
   ...rest
   //
 }) => {
-  const { primaryToolId } = bState;
-  const isActive = _isActive || (type === 'tool' && id === primaryToolId);
   const classes = {
     tool: isActive
       ? 'text-black'
@@ -41,11 +38,7 @@ const ToolbarButton = ({
 
   const activeClass = isActive ? 'active' : '';
   const shouldShowDropdown = !!isActive && !!dropdownContent;
-  const iconEl = icon ? (
-    <Icon name={icon} />
-  ) : (
-    <div>{label || 'Missing icon and label'}</div>
-  );
+  const iconEl = icon ? <Icon name={icon} /> : <div>{label || 'Missing icon and label'}</div>;
 
   return (
     <div key={id}>
@@ -89,6 +82,13 @@ ToolbarButton.propTypes = {
   type: PropTypes.oneOf(['action', 'toggle', 'tool']),
   id: PropTypes.string.isRequired,
   isActive: PropTypes.bool,
+  className: PropTypes.string,
+  commands: PropTypes.arrayOf(
+    PropTypes.shape({
+      commandName: PropTypes.string.isRequired,
+      commandOptions: PropTypes.object,
+    })
+  ),
   onInteraction: PropTypes.func.isRequired,
   icon: PropTypes.string.isRequired,
   label: PropTypes.string.isRequired,

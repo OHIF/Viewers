@@ -7,7 +7,6 @@ import { Types } from '@ohif/core';
  * It is not included in the viewer mode by default.
  */
 const hpMN: Types.HangingProtocol.Protocol = {
-  hasUpdatedPriorsInformation: false,
   id: '@ohif/mnGrid',
   description: 'Has various hanging protocol grid layouts',
   name: '2x2',
@@ -30,6 +29,7 @@ const hpMN: Types.HangingProtocol.Protocol = {
           constraint: {
             greaterThan: { value: 0 },
           },
+          required: true,
         },
         // This display set will select the specified items by preference
         // It has no affect if nothing is specified in the URL.

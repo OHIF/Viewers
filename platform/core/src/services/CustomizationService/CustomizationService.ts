@@ -12,8 +12,12 @@ const flattenNestedStrings = (
   strs: NestedStrings | string,
   ret?: Record<string, string>
 ): Record<string, string> => {
-  if (!ret) ret = {};
-  if (!strs) return ret;
+  if (!ret) {
+    ret = {};
+  }
+  if (!strs) {
+    return ret;
+  }
   if (Array.isArray(strs)) {
     for (const val of strs) {
       flattenNestedStrings(val, ret);
@@ -81,7 +85,9 @@ export default class CustomizationService extends PubSubService {
     this.extensionManager.registeredExtensionIds.forEach(extensionId => {
       const key = `${extensionId}.customizationModule.default`;
       const defaultCustomizations = this.findExtensionValue(key);
-      if (!defaultCustomizations) return;
+      if (!defaultCustomizations) {
+        return;
+      }
       const { value } = defaultCustomizations;
       this.addReference(value, true);
     });
@@ -101,10 +107,7 @@ export default class CustomizationService extends PubSubService {
     return this.modeCustomizations;
   }
 
-  public setModeCustomization(
-    customizationId: string,
-    customization: Customization
-  ): void {
+  public setModeCustomization(customizationId: string, customization: Customization): void {
     this.modeCustomizations[customizationId] = merge(
       this.modeCustomizations[customizationId] || {},
       customization
@@ -149,10 +152,7 @@ export default class CustomizationService extends PubSubService {
   }
 
   public hasModeCustomization(customizationId: string) {
-    return (
-      this.globalCustomizations[customizationId] ||
-      this.modeCustomizations[customizationId]
-    );
+    return this.globalCustomizations[customizationId] || this.modeCustomizations[customizationId];
   }
   /**
    * get is an alias for getModeCustomization, as it is the generic getter
@@ -172,13 +172,15 @@ export default class CustomizationService extends PubSubService {
    * type into the new type, allowing default behaviour to be configured.
    */
   public transform(customization: Customization): Customization {
-    if (!customization) return customization;
+    if (!customization) {
+      return customization;
+    }
     const { customizationType } = customization;
-    if (!customizationType) return customization;
+    if (!customizationType) {
+      return customization;
+    }
     const parent = this.getCustomization(customizationType);
-    const result = parent
-      ? Object.assign(Object.create(parent), customization)
-      : customization;
+    const result = parent ? Object.assign(Object.create(parent), customization) : customization;
     // Execute an nested type information
     return result.transform?.(this) || result;
   }
@@ -203,10 +205,7 @@ export default class CustomizationService extends PubSubService {
    * the modes.  They include things like settings for the search screen.
    * Reset does NOT clear global customizations.
    */
-  getGlobalCustomization(
-    id: string,
-    defaultValue?: Customization
-  ): Customization | void {
+  getGlobalCustomization(id: string, defaultValue?: Customization): Customization | void {
     return this.transform(this.globalCustomizations[id] ?? defaultValue);
   }
 
@@ -215,15 +214,10 @@ export default class CustomizationService extends PubSubService {
     this._broadcastGlobalCustomizationModified();
   }
 
-  protected setConfigGlobalCustomization(
-    configuration: AppConfigCustomization
-  ): void {
+  protected setConfigGlobalCustomization(configuration: AppConfigCustomization): void {
     this.globalCustomizations = {};
     const keys = flattenNestedStrings(configuration.globalCustomizations);
-    this.readCustomizationTypes(
-      v => keys[v.name] && v.customization,
-      this.globalCustomizations
-    );
+    this.readCustomizationTypes(v => keys[v.name] && v.customization, this.globalCustomizations);
 
     // TODO - iterate over customizations, loading them from the extension
     // manager.
@@ -242,7 +236,9 @@ export default class CustomizationService extends PubSubService {
    * or a customization itself.
    */
   addReference(value?: Obj | string, isGlobal = true, id?: string): void {
-    if (!value) return;
+    if (!value) {
+      return;
+    }
     if (typeof value === 'string') {
       const extensionValue = this.findExtensionValue(value);
       // The child of a reference is only a set of references when an array,
@@ -252,10 +248,7 @@ export default class CustomizationService extends PubSubService {
       this.addReferences(value, isGlobal);
     } else {
       const useId = value.id || id;
-      this[isGlobal ? 'setGlobalCustomization' : 'setModeCustomization'](
-        useId as string,
-        value
-      );
+      this[isGlobal ? 'setGlobalCustomization' : 'setModeCustomization'](useId as string, value);
     }
   }
 
@@ -265,7 +258,9 @@ export default class CustomizationService extends PubSubService {
    * or customization.
    */
   addReferences(references?: Obj | Obj[], isGlobal = true): void {
-    if (!references) return;
+    if (!references) {
+      return;
+    }
     if (Array.isArray(references)) {
       references.forEach(item => {
         this.addReference(item, isGlobal);

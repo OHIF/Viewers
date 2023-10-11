@@ -4,7 +4,6 @@ window.config = {
   modes: ['@ohif/mode-test'],
   showStudyList: true,
   // below flag is for performance reasons, but it might not work for all servers
-  omitQuotationForMultipartRequest: true,
   maxNumberOfWebWorkers: 3,
   showWarningMessageForCrossOrigin: false,
   showCPUFallbackMessage: false,
@@ -13,10 +12,10 @@ window.config = {
   defaultDataSourceName: 'e2e',
   dataSources: [
     {
-      friendlyName: 'StaticWado test data',
       namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
       sourceName: 'e2e',
       configuration: {
+        friendlyName: 'StaticWado test data',
         // The most important field to set for static WADO
         staticWado: true,
         name: 'StaticWADO',
@@ -24,23 +23,23 @@ window.config = {
         qidoRoot: '/viewer-testdata',
         wadoRoot: '/viewer-testdata',
         qidoSupportsIncludeField: false,
-        supportsReject: false,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
         enableStudyLazyLoad: true,
         supportsFuzzyMatching: false,
         supportsWildcard: true,
         singlepart: 'video,thumbnail,pdf',
+        omitQuotationForMultipartRequest: true,
       },
     },
     {
-      friendlyName: 'Static WADO Local Data',
       namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
       sourceName: 'local',
       configuration: {
+        friendlyName: 'Static WADO Local Data',
         name: 'DCM4CHEE',
-        qidoRoot: '/dicomweb',
-        wadoRoot: '/dicomweb',
+        qidoRoot: 'http://localhost:5000/dicomweb',
+        wadoRoot: 'http://localhost:5000/dicomweb',
         qidoSupportsIncludeField: false,
         supportsReject: true,
         supportsStow: true,
@@ -54,21 +53,35 @@ window.config = {
       },
     },
     {
-      friendlyName: 'dcmjs DICOMWeb Server',
+      namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
+      sourceName: 'docker',
+      configuration: {
+        friendlyName: 'Static WADO Docker Data',
+        name: 'DCM4CHEE',
+        qidoRoot: 'http://localhost:25080/dicomweb',
+        wadoRoot: 'http://localhost:25080/dicomweb',
+        qidoSupportsIncludeField: false,
+        supportsReject: true,
+        supportsStow: true,
+        imageRendering: 'wadors',
+        thumbnailRendering: 'wadors',
+        enableStudyLazyLoad: true,
+        supportsFuzzyMatching: false,
+        supportsWildcard: true,
+        staticWado: true,
+        singlepart: 'bulkdata,video,pdf',
+      },
+    },
+    {
       namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
       sourceName: 'ohif',
       configuration: {
+        friendlyName: 'AWS S3 Static wado server',
         name: 'aws',
-        // old server
-        // wadoUriRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/wado',
-        // qidoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
-        // wadoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
-        // new server
         wadoUriRoot: 'https://d33do7qe4w26qo.cloudfront.net/dicomweb',
         qidoRoot: 'https://d33do7qe4w26qo.cloudfront.net/dicomweb',
         wadoRoot: 'https://d33do7qe4w26qo.cloudfront.net/dicomweb',
         qidoSupportsIncludeField: false,
-        supportsReject: false,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
         enableStudyLazyLoad: true,
@@ -98,18 +111,19 @@ window.config = {
     //   },
     // },
     {
-      friendlyName: 'dicom json',
       namespace: '@ohif/extension-default.dataSourcesModule.dicomjson',
       sourceName: 'dicomjson',
       configuration: {
+        friendlyName: 'dicom json',
         name: 'json',
       },
     },
     {
-      friendlyName: 'dicom local',
       namespace: '@ohif/extension-default.dataSourcesModule.dicomlocal',
       sourceName: 'dicomlocal',
-      configuration: {},
+      configuration: {
+        friendlyName: 'dicom local',
+      },
     },
   ],
   httpErrorHandler: error => {

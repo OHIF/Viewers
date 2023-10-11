@@ -50,8 +50,7 @@ InputDateRange.propTypes = {
   id: PropTypes.string,
   label: PropTypes.string.isRequired,
   isSortable: PropTypes.bool.isRequired,
-  sortDirection: PropTypes.oneOf(['ascending', 'descending', 'none'])
-    .isRequired,
+  sortDirection: PropTypes.oneOf(['ascending', 'descending', 'none']).isRequired,
   onLabelClick: PropTypes.func.isRequired,
   value: PropTypes.shape({
     /** YYYYMMDD (19921022) */

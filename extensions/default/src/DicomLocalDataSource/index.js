@@ -12,8 +12,12 @@ const END_MODALITIES = {
 };
 
 const compareValue = (v1, v2, def = 0) => {
-  if (v1 === v2) return def;
-  if (v1 < v2) return -1;
+  if (v1 === v2) {
+    return def;
+  }
+  if (v1 < v2) {
+    return -1;
+  }
   return 1;
 };
 
@@ -41,25 +45,7 @@ function createDicomLocalApi(dicomLocalConfig) {
   const { name } = dicomLocalConfig;
 
   const implementation = {
-    initialize: ({ params, query }) => {
-      const { StudyInstanceUIDs: paramsStudyInstanceUIDs } = params;
-      const queryStudyInstanceUIDs = query.getAll('StudyInstanceUIDs');
-
-      const StudyInstanceUIDs =
-        queryStudyInstanceUIDs || paramsStudyInstanceUIDs;
-      const StudyInstanceUIDsAsArray =
-        StudyInstanceUIDs && Array.isArray(StudyInstanceUIDs)
-          ? StudyInstanceUIDs
-          : [StudyInstanceUIDs];
-
-      // Put SRs at the end of series list to make sure images are loaded first
-      StudyInstanceUIDsAsArray.forEach(StudyInstanceUID => {
-        const study = DicomMetadataStore.getStudy(StudyInstanceUID);
-        study.series = study.series.sort(customSort);
-      });
-
-      return StudyInstanceUIDsAsArray;
-    },
+    initialize: ({ params, query }) => {},
     query: {
       studies: {
         mapParams: () => {},
@@ -99,7 +85,7 @@ function createDicomLocalApi(dicomLocalConfig) {
           });
         },
         processResults: () => {
-          console.debug(' DICOMLocal QUERY processResults');
+          console.warn(' DICOMLocal QUERY processResults not implemented');
         },
       },
       series: {
@@ -121,7 +107,7 @@ function createDicomLocalApi(dicomLocalConfig) {
       },
       instances: {
         search: () => {
-          console.debug(' DICOMLocal QUERY instances SEARCH');
+          console.warn(' DICOMLocal QUERY instances SEARCH not implemented');
         },
       },
     },
@@ -141,16 +127,11 @@ function createDicomLocalApi(dicomLocalConfig) {
       series: {
         metadata: async ({ StudyInstanceUID, madeInClient = false } = {}) => {
           if (!StudyInstanceUID) {
-            throw new Error(
-              'Unable to query for SeriesMetadata without StudyInstanceUID'
-            );
+            throw new Error('Unable to query for SeriesMetadata without StudyInstanceUID');
           }
 
           // Instances metadata already added via local upload
-          const study = DicomMetadataStore.getStudy(
-            StudyInstanceUID,
-            madeInClient
-          );
+          const study = DicomMetadataStore.getStudy(StudyInstanceUID, madeInClient);
 
           // Series metadata already added via local upload
           DicomMetadataStore._broadcastEvent(EVENTS.SERIES_ADDED, {
@@ -245,6 +226,28 @@ function createDicomLocalApi(dicomLocalConfig) {
     },
     deleteStudyMetadataPromise() {
       console.log('deleteStudyMetadataPromise not implemented');
+    },
+    getStudyInstanceUIDs: ({ params, query }) => {
+      const { StudyInstanceUIDs: paramsStudyInstanceUIDs } = params;
+      const queryStudyInstanceUIDs = query.getAll('StudyInstanceUIDs');
+
+      const StudyInstanceUIDs = queryStudyInstanceUIDs || paramsStudyInstanceUIDs;
+      const StudyInstanceUIDsAsArray =
+        StudyInstanceUIDs && Array.isArray(StudyInstanceUIDs)
+          ? StudyInstanceUIDs
+          : [StudyInstanceUIDs];
+
+      // Put SRs at the end of series list to make sure images are loaded first
+      let isStudyInCache = false;
+      StudyInstanceUIDsAsArray.forEach(StudyInstanceUID => {
+        const study = DicomMetadataStore.getStudy(StudyInstanceUID);
+        if (study) {
+          study.series = study.series.sort(customSort);
+          isStudyInCache = true;
+        }
+      });
+
+      return isStudyInCache ? StudyInstanceUIDsAsArray : [];
     },
   };
   return IWebApiDataSource.create(implementation);

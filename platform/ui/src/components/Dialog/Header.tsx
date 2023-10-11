@@ -11,7 +11,7 @@ const CloseButton = ({ onClick }) => {
       data-cy="close-button"
       onClick={onClick}
       name="close"
-      className="cursor-pointer text-primary-active"
+      className="text-primary-active cursor-pointer"
     />
   );
 };
@@ -27,7 +27,11 @@ const Header = ({ title, noCloseButton, onClose }) => {
 
   return (
     <div className={classNames(theme, flex, padding)}>
-      <Typography variant="h6" color="primaryLight" className="!leading-[1.2]">
+      <Typography
+        variant="h6"
+        color="primaryLight"
+        className="!leading-[1.2]"
+      >
         {title}
       </Typography>
       {!noCloseButton && <CloseButton onClick={onClose} />}

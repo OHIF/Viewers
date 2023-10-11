@@ -5,7 +5,6 @@ const srProtocol: Types.HangingProtocol.Protocol = {
   // Don't store this hanging protocol as it applies to the currently active
   // display set by default
   // cacheId: null,
-  hasUpdatedPriorsInformation: false,
   name: 'SR Key Images',
   // Just apply this one when specifically listed
   protocolMatchingRules: [],

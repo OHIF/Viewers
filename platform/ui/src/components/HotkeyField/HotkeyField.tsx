@@ -55,11 +55,11 @@ HotkeyField.propTypes = {
     unpause: PropTypes.func.isRequired,
     startRecording: PropTypes.func.isRequired,
     record: PropTypes.func.isRequired,
-  }).isRequired
+  }).isRequired,
 };
 
 HotkeyField.defaultProps = {
-  disabled: false
+  disabled: false,
 };
 
 export default HotkeyField;

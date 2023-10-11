@@ -1,10 +1,9 @@
 import dcmjs from 'dcmjs';
 import moment from 'moment';
-import React, { useState, useMemo, useEffect, useRef } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { classes } from '@ohif/core';
-import { Icon, InputRange, Select, Typography } from '@ohif/ui';
+import { InputRange, Select, Typography, InputFilterText } from '@ohif/ui';
 import debounce from 'lodash.debounce';
-import classNames from 'classnames';
 
 import DicomTagTable from './DicomTagTable';
 import './DicomTagBrowser.css';
@@ -22,10 +21,8 @@ const DicomTagBrowser = ({ displaySets, displaySetInstanceUID }) => {
   // 3: Value
   const excludedColumnIndicesForFilter: Set<number> = new Set([1]);
 
-  const [
-    selectedDisplaySetInstanceUID,
-    setSelectedDisplaySetInstanceUID,
-  ] = useState(displaySetInstanceUID);
+  const [selectedDisplaySetInstanceUID, setSelectedDisplaySetInstanceUID] =
+    useState(displaySetInstanceUID);
   const [instanceNumber, setInstanceNumber] = useState(1);
   const [filterValue, setFilterValue] = useState('');
 
@@ -33,8 +30,6 @@ const DicomTagBrowser = ({ displaySets, displaySetInstanceUID }) => {
     setSelectedDisplaySetInstanceUID(value.value);
     setInstanceNumber(1);
   };
-
-  const searchInputRef = useRef(null);
 
   const activeDisplaySet = displaySets.find(
     ds => ds.displaySetInstanceUID === selectedDisplaySetInstanceUID
@@ -113,27 +108,31 @@ const DicomTagBrowser = ({ displaySets, displaySetInstanceUID }) => {
 
   return (
     <div className="dicom-tag-browser-content">
-      <div className="flex flex-row mb-6 items-center pl-1">
-        <div className="flex flex-row items-center w-1/2">
-          <Typography variant="subtitle" className="mr-4">
+      <div className="mb-6 flex flex-row items-center pl-1">
+        <div className="flex w-1/2 flex-row items-center">
+          <Typography
+            variant="subtitle"
+            className="mr-4"
+          >
             Series
           </Typography>
-          <div className="grow mr-8">
+          <div className="mr-8 grow">
             <Select
               id="display-set-selector"
               isClearable={false}
               onChange={onSelectChange}
               options={displaySetList}
-              value={displaySetList.find(
-                ds => ds.value === selectedDisplaySetInstanceUID
-              )}
+              value={displaySetList.find(ds => ds.value === selectedDisplaySetInstanceUID)}
               className="text-white"
             />
           </div>
         </div>
-        <div className="flex flex-row items-center w-1/2">
+        <div className="flex w-1/2 flex-row items-center">
           {showInstanceList && (
-            <Typography variant="subtitle" className="mr-4">
+            <Typography
+              variant="subtitle"
+              className="mr-4"
+            >
               Instance Number
             </Typography>
           )}
@@ -156,35 +155,13 @@ const DicomTagBrowser = ({ displaySets, displaySetInstanceUID }) => {
           )}
         </div>
       </div>
-      <div className="w-full h-1 bg-black"></div>
-      <div className="flex flex-row my-3 w-1/2">
-        {/* TODO - refactor the following into its own reusable component */}
-        <label className="relative block w-full mr-8">
-          <span className="absolute inset-y-0 left-0 flex items-center pl-2">
-            <Icon name="icon-search"></Icon>
-          </span>
-          <input
-            ref={searchInputRef}
-            type="text"
-            className="block bg-black w-full shadow transition duration-300 appearance-none border border-inputfield-main focus:border-inputfield-focus focus:outline-none disabled:border-inputfield-disabled rounded w-full py-2 px-9 text-base leading-tight placeholder:text-inputfield-placeholder"
-            placeholder="Search metadata..."
-            onChange={event => debouncedSetFilterValue(event.target.value)}
-            autoComplete="off"
-          ></input>
-          <span className="absolute inset-y-0 right-0 flex items-center pr-2">
-            <Icon
-              name="icon-clear-field"
-              className={classNames(
-                'cursor-pointer',
-                filterValue ? '' : 'hidden'
-              )}
-              onClick={() => {
-                searchInputRef.current.value = '';
-                debouncedSetFilterValue('');
-              }}
-            ></Icon>
-          </span>
-        </label>
+      <div className="h-1 w-full bg-black"></div>
+      <div className="my-3 flex w-1/2 flex-row">
+        <InputFilterText
+          className="mr-8 block w-full"
+          placeholder="Search metadata..."
+          onDebounceChange={setFilterValue}
+        ></InputFilterText>
       </div>
       <DicomTagTable rows={filteredRows} />
     </div>
@@ -196,24 +173,14 @@ function getFormattedRowsFromTags(tags, metadata) {
 
   tags.forEach(tagInfo => {
     if (tagInfo.vr === 'SQ') {
-      rows.push([
-        `${tagInfo.tagIndent}${tagInfo.tag}`,
-        tagInfo.vr,
-        tagInfo.keyword,
-        '',
-      ]);
+      rows.push([`${tagInfo.tagIndent}${tagInfo.tag}`, tagInfo.vr, tagInfo.keyword, '']);
 
       const { values } = tagInfo;
 
       values.forEach((item, index) => {
         const formatedRowsFromTags = getFormattedRowsFromTags(item, metadata);
 
-        rows.push([
-          `${item[0].tagIndent}(FFFE,E000)`,
-          '',
-          `Item #${index}`,
-          '',
-        ]);
+        rows.push([`${item[0].tagIndent}(FFFE,E000)`, '', `Item #${index}`, '']);
 
         rows.push(...formatedRowsFromTags);
       });
@@ -224,17 +191,10 @@ function getFormattedRowsFromTags(tags, metadata) {
           const originalTagInfo = metadata[tag];
           tagInfo.vr = originalTagInfo.vr;
         } catch (error) {
-          console.error(
-            `Failed to parse value representation for tag '${tagInfo.keyword}'`
-          );
+          console.error(`Failed to parse value representation for tag '${tagInfo.keyword}'`);
         }
       }
-      rows.push([
-        `${tagInfo.tagIndent}${tagInfo.tag}`,
-        tagInfo.vr,
-        tagInfo.keyword,
-        tagInfo.value,
-      ]);
+      rows.push([`${tagInfo.tagIndent}${tagInfo.tag}`, tagInfo.vr, tagInfo.keyword, tagInfo.value]);
     }
   });
 

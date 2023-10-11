@@ -24,7 +24,6 @@ import { toolNames } from './initCornerstoneTools';
 import { getEnabledElement, reset as enabledElementReset } from './state';
 import dicomLoaderService from './utils/dicomLoaderService';
 import getActiveViewportEnabledElement from './utils/getActiveViewportEnabledElement';
-import { registerColormap } from './utils/colormap/transferFunctionHelpers';
 
 import { id } from './id';
 import * as csWADOImageLoader from './initWADOImageLoader.js';
@@ -32,9 +31,7 @@ import { measurementMappingUtils } from './utils/measurementServiceMappings';
 import type { PublicViewportOptions } from './services/ViewportService/Viewport';
 
 const Component = React.lazy(() => {
-  return import(
-    /* webpackPrefetch: true */ './Viewport/OHIFCornerstoneViewport'
-  );
+  return import(/* webpackPrefetch: true */ './Viewport/OHIFCornerstoneViewport');
 });
 
 const OHIFCornerstoneViewport = props => {
@@ -62,7 +59,6 @@ const cornerstoneExtension: Types.Extensions.Extension = {
       imageRetrievalPoolManager.clearRequestStack(type);
     });
 
-    csWADOImageLoader.destroy();
     enabledElementReset();
   },
 
@@ -71,9 +67,7 @@ const cornerstoneExtension: Types.Extensions.Extension = {
    *
    * @param configuration.csToolsConfig - Passed directly to `initCornerstoneTools`
    */
-  preRegistration: function (
-    props: Types.Extensions.ExtensionParams
-  ): Promise<void> {
+  preRegistration: function (props: Types.Extensions.ExtensionParams): Promise<void> {
     const { servicesManager } = props;
     servicesManager.registerService(CornerstoneViewportService.REGISTRATION);
     servicesManager.registerService(ToolGroupService.REGISTRATION);
@@ -141,5 +135,10 @@ const cornerstoneExtension: Types.Extensions.Extension = {
 };
 
 export type { PublicViewportOptions };
-export { measurementMappingUtils, CornerstoneExtensionTypes, toolNames , getActiveViewportEnabledElement};
+export {
+  measurementMappingUtils,
+  CornerstoneExtensionTypes as Types,
+  toolNames,
+  getActiveViewportEnabledElement,
+};
 export default cornerstoneExtension;

@@ -1,4 +1,6 @@
+import tr_TR from './tr-TR/';
 import ar from './ar/';
+import de from './de';
 import en_US from './en-US/';
 import es from './es/';
 import fr from './fr/';
@@ -11,6 +13,8 @@ import test_lng from './test-LNG/';
 
 export default {
   ...ar,
+  ...tr_TR,
+  ...de,
   ...en_US,
   ...es,
   ...fr,
@@ -19,5 +23,5 @@ export default {
   ...pt_BR,
   ...vi,
   ...zh,
-  ...test_lng
+  ...test_lng,
 };

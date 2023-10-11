@@ -4,17 +4,16 @@ window.config = {
   extensions: [],
   showStudyList: true,
   // below flag is for performance reasons, but it might not work for all servers
-  omitQuotationForMultipartRequest: true,
   showWarningMessageForCrossOrigin: true,
   strictZSpacingForVolumeViewport: true,
   showCPUFallbackMessage: true,
   defaultDataSourceName: 'dicomweb',
   dataSources: [
     {
-      friendlyName: 'DCM4CHEE Server',
       namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
       sourceName: 'dicomweb',
       configuration: {
+        friendlyName: 'DCM4CHEE Server',
         name: 'DCM4CHEE',
         wadoUriRoot: 'https://d33do7qe4w26qo.cloudfront.net/dicomweb',
         qidoRoot: 'https://d33do7qe4w26qo.cloudfront.net/dicomweb',
@@ -25,6 +24,7 @@ window.config = {
         bulkDataURI: {
           enabled: false,
         },
+        omitQuotationForMultipartRequest: true,
       },
     },
   ],

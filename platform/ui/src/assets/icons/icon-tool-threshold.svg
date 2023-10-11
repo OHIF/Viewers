@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="25px" height="25px" viewBox="0 0 25 25" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>icon-tool-threshold</title>
+    <g id="Artboards" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Segmentation---assets" transform="translate(-127, -145)">
+            <g id="icon-tool-threshold" transform="translate(127, 145)">
+                <line x1="19.4565217" y1="16.8695652" x2="22.5" y2="16.8695652" id="Line-2" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"></line>
+                <line x1="2.5" y1="16.8695652" x2="14.673913" y2="16.8695652" id="Line-2" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"></line>
+                <circle id="Oval" stroke="currentColor" stroke-width="1.25" cx="16.8478261" cy="16.8695652" r="2.17391304"></circle>
+                <line x1="11.6304348" y1="8.17391304" x2="22.0652174" y2="8.17391304" id="Line-2" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"></line>
+                <line x1="2.5" y1="8.17391304" x2="7.2826087" y2="8.17391304" id="Line-2" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"></line>
+                <circle id="Oval" stroke="currentColor" stroke-width="1.25" cx="9.45652174" cy="8.17391304" r="2.17391304"></circle>
+                <rect id="Rectangle" x="0" y="0" width="25" height="25"></rect>
+            </g>
+        </g>
+    </g>
+</svg>

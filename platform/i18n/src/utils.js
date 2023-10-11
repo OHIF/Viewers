@@ -49,6 +49,7 @@ const languagesMap = {
   te: 'Telugu',
   th: 'Thai',
   tr: 'Turkish',
+  'tr-TR': 'Turkish (Turkey)',
   uk: 'Ukrainian',
   vi: 'Vietnamese',
   zh: 'Chinese',
@@ -57,7 +58,7 @@ const languagesMap = {
   'test-LNG': 'Test Language',
 };
 
-const getLanguageLabel = (language) => {
+const getLanguageLabel = language => {
   return languagesMap[language];
 };
 

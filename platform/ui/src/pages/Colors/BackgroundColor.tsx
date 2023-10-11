@@ -6,7 +6,7 @@ export const BackgroundColor = ({ color }) => {
   return (
     <div
       className={classnames(
-        `mb-4 w-56 h-10 flex items-center justify-center flex-col text-white text-lg bg-${color} py-8`
+        `mb-4 flex h-10 w-56 flex-col items-center justify-center text-lg text-white bg-${color} py-8`
       )}
     >
       <p>bg-{color}</p>

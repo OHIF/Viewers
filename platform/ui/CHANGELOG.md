@@ -3,24 +3,471 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [1.4.4](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.4.3...@ohif/ui@1.4.4) (2020-05-04)
-
-
-### Bug Fixes
-
-* 🐛 Proper error handling for derived display sets ([#1708](https://github.com/OHIF/Viewers/issues/1708)) ([5b20d8f](https://github.com/OHIF/Viewers/commit/5b20d8f323e4b3ef9988f2f2ab672d697b6da409))
-
-
-
-
-
-## [1.4.3](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.4.2...@ohif/ui@1.4.3) (2020-04-09)
+# [3.7.0-beta.110](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.109...v3.7.0-beta.110) (2023-10-11)
 
 **Note:** Version bump only for package @ohif/ui
 
 
 
 
+
+# [3.7.0-beta.109](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.108...v3.7.0-beta.109) (2023-10-11)
+
+
+### Bug Fixes
+
+* **export:** wrong export for the tmtv RT function ([#3715](https://github.com/OHIF/Viewers/issues/3715)) ([a3f2a1a](https://github.com/OHIF/Viewers/commit/a3f2a1a7b0d16bfcc0ecddc2ab731e54c5e377c8))
+
+
+
+
+
+# [3.7.0-beta.108](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.107...v3.7.0-beta.108) (2023-10-10)
+
+
+### Bug Fixes
+
+* **i18n:** display set(s) are two words for English messages ([#3711](https://github.com/OHIF/Viewers/issues/3711)) ([c3a5847](https://github.com/OHIF/Viewers/commit/c3a5847dcd3dce4f1c8d8b11af95f79e3f93f70d))
+
+
+
+
+
+# [3.7.0-beta.107](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.106...v3.7.0-beta.107) (2023-10-10)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+# [3.7.0-beta.106](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.105...v3.7.0-beta.106) (2023-10-10)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+# [3.7.0-beta.105](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.104...v3.7.0-beta.105) (2023-10-10)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+# [3.7.0-beta.104](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.103...v3.7.0-beta.104) (2023-10-09)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+# [3.7.0-beta.103](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.102...v3.7.0-beta.103) (2023-10-09)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+# [3.7.0-beta.102](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.101...v3.7.0-beta.102) (2023-10-06)
+
+
+### Features
+
+* **Segmentation:** download RTSS from Labelmap([#3692](https://github.com/OHIF/Viewers/issues/3692)) ([40673f6](https://github.com/OHIF/Viewers/commit/40673f64b36b1150149c55632aa1825178a39e65))
+
+
+
+
+
+# [3.7.0-beta.101](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.100...v3.7.0-beta.101) (2023-10-06)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+# [3.7.0-beta.100](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.99...v3.7.0-beta.100) (2023-10-06)
+
+
+### Bug Fixes
+
+* **segmentation scroll:** and hydration bugs ([#3701](https://github.com/OHIF/Viewers/issues/3701)) ([1fd98d9](https://github.com/OHIF/Viewers/commit/1fd98d922094d10fe0c6e9df726314ec9fce49e8))
+
+
+
+
+
+# [3.7.0-beta.99](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.98...v3.7.0-beta.99) (2023-10-04)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+# [3.7.0-beta.98](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.97...v3.7.0-beta.98) (2023-10-04)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+# [3.7.0-beta.97](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.96...v3.7.0-beta.97) (2023-10-04)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+# [3.7.0-beta.96](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.95...v3.7.0-beta.96) (2023-10-04)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+# [3.7.0-beta.95](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.94...v3.7.0-beta.95) (2023-10-04)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+# [3.7.0-beta.94](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.93...v3.7.0-beta.94) (2023-10-03)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+# [3.7.0-beta.93](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.92...v3.7.0-beta.93) (2023-10-03)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+# [3.7.0-beta.92](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.91...v3.7.0-beta.92) (2023-10-03)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+# [3.7.0-beta.91](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.90...v3.7.0-beta.91) (2023-10-03)
+
+
+### Bug Fixes
+
+* **editing:** regression bug in disable editing ([#3687](https://github.com/OHIF/Viewers/issues/3687)) ([4dc2acd](https://github.com/OHIF/Viewers/commit/4dc2acdefa872dd1d8df47f465e9e9656f95f67f))
+
+
+
+
+
+# [3.7.0-beta.90](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.89...v3.7.0-beta.90) (2023-10-03)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+# [3.7.0-beta.89](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.88...v3.7.0-beta.89) (2023-10-03)
+
+
+### Bug Fixes
+
+* **StackSync:** Miscellaneous fixes for stack image sync ([#3663](https://github.com/OHIF/Viewers/issues/3663)) ([8a335bd](https://github.com/OHIF/Viewers/commit/8a335bd03d14ba87d65d7468d93f74040aa828d9))
+
+
+
+
+
+# [3.7.0-beta.88](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.87...v3.7.0-beta.88) (2023-10-03)
+
+
+### Bug Fixes
+
+* **config:** support more values for the useSharedArrayBuffer ([#3688](https://github.com/OHIF/Viewers/issues/3688)) ([1129c15](https://github.com/OHIF/Viewers/commit/1129c155d2c7d46c98a5df7c09879aa3d459fa7e))
+
+
+
+
+
+# [3.7.0-beta.87](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.86...v3.7.0-beta.87) (2023-09-29)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+# [3.7.0-beta.86](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.85...v3.7.0-beta.86) (2023-09-29)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+# [3.7.0-beta.85](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.84...v3.7.0-beta.85) (2023-09-26)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+# [3.7.0-beta.84](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.83...v3.7.0-beta.84) (2023-09-26)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+# [3.7.0-beta.83](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.82...v3.7.0-beta.83) (2023-09-26)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+# [3.7.0-beta.82](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.81...v3.7.0-beta.82) (2023-09-26)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+# [3.7.0-beta.81](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.80...v3.7.0-beta.81) (2023-09-26)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+# [3.7.0-beta.80](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.79...v3.7.0-beta.80) (2023-09-22)
+
+
+### Bug Fixes
+
+* **react-select:** update react select package ([#3622](https://github.com/OHIF/Viewers/issues/3622)) ([04ca10d](https://github.com/OHIF/Viewers/commit/04ca10d8779dd15454920002f3d48afa8830de8a))
+
+
+### Features
+
+* **segmentation mode:** Add create, and export SEG with Brushes ([#3632](https://github.com/OHIF/Viewers/issues/3632)) ([48bbd62](https://github.com/OHIF/Viewers/commit/48bbd6281a497ea68670239f5426a10ee6c56dc1))
+* **SidePanel:** new side panel tab look-and-feel ([#3657](https://github.com/OHIF/Viewers/issues/3657)) ([85c899b](https://github.com/OHIF/Viewers/commit/85c899b399e2521480724be145538993721b9378))
+
+
+
+
+
+# [3.7.0-beta.79](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.78...v3.7.0-beta.79) (2023-09-22)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+# [3.7.0-beta.78](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.77...v3.7.0-beta.78) (2023-09-21)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+# [3.7.0-beta.77](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.76...v3.7.0-beta.77) (2023-09-21)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+# [3.7.0-beta.76](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.75...v3.7.0-beta.76) (2023-09-19)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+# [3.7.0-beta.75](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.74...v3.7.0-beta.75) (2023-09-18)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+# [3.7.0-beta.74](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.73...v3.7.0-beta.74) (2023-09-15)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+# [3.7.0-beta.73](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.72...v3.7.0-beta.73) (2023-09-12)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+# [3.7.0-beta.72](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.71...v3.7.0-beta.72) (2023-09-12)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+# [3.7.0-beta.71](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.70...v3.7.0-beta.71) (2023-09-12)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+# [3.7.0-beta.70](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.69...v3.7.0-beta.70) (2023-09-12)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+# [3.7.0-beta.69](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.68...v3.7.0-beta.69) (2023-09-11)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+# [3.7.0-beta.68](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.67...v3.7.0-beta.68) (2023-09-11)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+# [3.7.0-beta.67](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.66...v3.7.0-beta.67) (2023-09-06)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+# [3.7.0-beta.66](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.65...v3.7.0-beta.66) (2023-09-06)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+# [3.7.0-beta.65](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.64...v3.7.0-beta.65) (2023-09-06)
+
+
+### Features
+
+* **ImageOverlayViewerTool:** add ImageOverlayViewer tool that can render image overlay (pixel overlay) of the DICOM images ([#3163](https://github.com/OHIF/Viewers/issues/3163)) ([69115da](https://github.com/OHIF/Viewers/commit/69115da06d2d437b57e66608b435bb0bc919a90f))
+
+
+
+
+
+# [3.7.0-beta.64](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.63...v3.7.0-beta.64) (2023-09-05)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+# [3.7.0-beta.63](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.62...v3.7.0-beta.63) (2023-09-01)
+
+
+### Features
+
+* **grid:** remove viewportIndex and only rely on viewportId ([#3591](https://github.com/OHIF/Viewers/issues/3591)) ([4c6ff87](https://github.com/OHIF/Viewers/commit/4c6ff873e887cc30ffc09223f5cb99e5f94c9cdd))
+
+
+
+
+
+# Change Log
+
+All notable changes to this project will be documented in this file. See
+[Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
+# [3.7.0-beta.62](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.61...v3.7.0-beta.62) (2023-08-30)
+
+**Note:** Version bump only for package @ohif/ui
+
+# [3.7.0-beta.61](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.60...v3.7.0-beta.61) (2023-08-29)
+
+**Note:** Version bump only for package @ohif/ui
+
+# [3.7.0-beta.60](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.59...v3.7.0-beta.60) (2023-08-29)
+
+**Note:** Version bump only for package @ohif/ui
+
+# [3.7.0-beta.59](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.58...v3.7.0-beta.59) (2023-08-29)
+
+**Note:** Version bump only for package @ohif/ui
+
+# [3.7.0-beta.58](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.57...v3.7.0-beta.58) (2023-08-25)
+
+### Features
+
+- **cloud data source config:** GUI and API for configuring a cloud data source
+  with Google cloud healthcare implementation
+  ([#3589](https://github.com/OHIF/Viewers/issues/3589))
+  ([a336992](https://github.com/OHIF/Viewers/commit/a336992971c07552c9dbb6e1de43169d37762ef1))
+
+# [3.7.0-beta.57](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.56...v3.7.0-beta.57) (2023-08-23)
+
+**Note:** Version bump only for package @ohif/ui
+
+## [1.4.4](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.4.3...@ohif/ui@1.4.4) (2020-05-04)
+
+### Bug Fixes
+
+- 🐛 Proper error handling for derived display sets
+  ([#1708](https://github.com/OHIF/Viewers/issues/1708))
+  ([5b20d8f](https://github.com/OHIF/Viewers/commit/5b20d8f323e4b3ef9988f2f2ab672d697b6da409))
+
+## [1.4.3](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.4.2...@ohif/ui@1.4.3) (2020-04-09)
+
+**Note:** Version bump only for package @ohif/ui
 
 # Change Log
 
@@ -31,31 +478,23 @@ All notable changes to this project will be documented in this file. See
 
 **Note:** Version bump only for package @ohif/ui
 
-
-
-
-
 ## [1.4.1](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.4.0...@ohif/ui@1.4.1) (2020-03-17)
-
 
 ### Bug Fixes
 
-* rendering delete button when text is too wide for parent div ([#1526](https://github.com/OHIF/Viewers/issues/1526)) ([b269415](https://github.com/OHIF/Viewers/commit/b269415048dfec50e2abb3dd4f4355a23d6ad75a))
-
-
-
-
+- rendering delete button when text is too wide for parent div
+  ([#1526](https://github.com/OHIF/Viewers/issues/1526))
+  ([b269415](https://github.com/OHIF/Viewers/commit/b269415048dfec50e2abb3dd4f4355a23d6ad75a))
 
 # [1.4.0](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.3.3...@ohif/ui@1.4.0) (2020-03-13)
 
-
 ### Features
 
-* Segmentations Settings UI - Phase 1 [#1391](https://github.com/OHIF/Viewers/issues/1391) ([#1392](https://github.com/OHIF/Viewers/issues/1392)) ([e8842cf](https://github.com/OHIF/Viewers/commit/e8842cf8aebde98db7fc123e4867c8288552331f)), closes [#1423](https://github.com/OHIF/Viewers/issues/1423)
-
-
-
-
+- Segmentations Settings UI - Phase 1
+  [#1391](https://github.com/OHIF/Viewers/issues/1391)
+  ([#1392](https://github.com/OHIF/Viewers/issues/1392))
+  ([e8842cf](https://github.com/OHIF/Viewers/commit/e8842cf8aebde98db7fc123e4867c8288552331f)),
+  closes [#1423](https://github.com/OHIF/Viewers/issues/1423)
 
 # Change Log
 
@@ -66,298 +505,217 @@ All notable changes to this project will be documented in this file. See
 
 **Note:** Version bump only for package @ohif/ui
 
-
-
-
-
 ## [1.3.2](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.3.1...@ohif/ui@1.3.2) (2020-03-09)
-
 
 ### Bug Fixes
 
-* Remove Eraser and ROI Window ([6c950a9](https://github.com/OHIF/Viewers/commit/6c950a9669f7fbf3c46e48679fa26ee514824156))
-
-
-
-
+- Remove Eraser and ROI Window
+  ([6c950a9](https://github.com/OHIF/Viewers/commit/6c950a9669f7fbf3c46e48679fa26ee514824156))
 
 ## [1.3.1](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.3.0...@ohif/ui@1.3.1) (2020-02-29)
 
-
 ### Bug Fixes
 
-* prevent the native context menu from appearing when right-clicking on a measurement or angle (https://github.com/OHIF/Viewers/issues/1406) ([#1469](https://github.com/OHIF/Viewers/issues/1469)) ([9b3be9b](https://github.com/OHIF/Viewers/commit/9b3be9b0c082c9a5b62f2a40f42e59381860fe73))
-
-
-
-
+- prevent the native context menu from appearing when right-clicking on a
+  measurement or angle (https://github.com/OHIF/Viewers/issues/1406)
+  ([#1469](https://github.com/OHIF/Viewers/issues/1469))
+  ([9b3be9b](https://github.com/OHIF/Viewers/commit/9b3be9b0c082c9a5b62f2a40f42e59381860fe73))
 
 # [1.3.0](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.2.1...@ohif/ui@1.3.0) (2020-02-20)
 
-
 ### Features
 
-* [#1342](https://github.com/OHIF/Viewers/issues/1342) - Window level tab ([#1429](https://github.com/OHIF/Viewers/issues/1429)) ([ebc01a8](https://github.com/OHIF/Viewers/commit/ebc01a8ca238d5a3437b44d81f75aa8a5e8d0574))
-
-
-
-
+- [#1342](https://github.com/OHIF/Viewers/issues/1342) - Window level tab
+  ([#1429](https://github.com/OHIF/Viewers/issues/1429))
+  ([ebc01a8](https://github.com/OHIF/Viewers/commit/ebc01a8ca238d5a3437b44d81f75aa8a5e8d0574))
 
 ## [1.2.1](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.2.0...@ohif/ui@1.2.1) (2020-02-12)
 
-
 ### Bug Fixes
 
-* Combined Hotkeys for special characters ([#1233](https://github.com/OHIF/Viewers/issues/1233)) ([2f30e7a](https://github.com/OHIF/Viewers/commit/2f30e7a821a238144c49c56f37d8e5565540b4bd))
-
-
-
-
+- Combined Hotkeys for special characters
+  ([#1233](https://github.com/OHIF/Viewers/issues/1233))
+  ([2f30e7a](https://github.com/OHIF/Viewers/commit/2f30e7a821a238144c49c56f37d8e5565540b4bd))
 
 # [1.2.0](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.1.9...@ohif/ui@1.2.0) (2020-02-10)
 
-
 ### Features
 
-* Lesion tracker right panel ([#1428](https://github.com/OHIF/Viewers/issues/1428)) ([98a649b](https://github.com/OHIF/Viewers/commit/98a649b455ffc712938fc5035cdef40695e58440))
-
-
-
-
+- Lesion tracker right panel
+  ([#1428](https://github.com/OHIF/Viewers/issues/1428))
+  ([98a649b](https://github.com/OHIF/Viewers/commit/98a649b455ffc712938fc5035cdef40695e58440))
 
 ## [1.1.9](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.1.8...@ohif/ui@1.1.9) (2020-01-30)
 
-
 ### Bug Fixes
 
-* download tool fixes & improvements ([#1235](https://github.com/OHIF/Viewers/issues/1235)) ([b9574b6](https://github.com/OHIF/Viewers/commit/b9574b6efcfeb85cde35b5cae63282f8e1b35be6))
-
-
-
-
+- download tool fixes & improvements
+  ([#1235](https://github.com/OHIF/Viewers/issues/1235))
+  ([b9574b6](https://github.com/OHIF/Viewers/commit/b9574b6efcfeb85cde35b5cae63282f8e1b35be6))
 
 ## [1.1.8](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.1.7...@ohif/ui@1.1.8) (2020-01-08)
 
-
 ### Bug Fixes
 
-* measurements panel css and delete button visibility ([#1352](https://github.com/OHIF/Viewers/issues/1352)) ([7ab0bbb](https://github.com/OHIF/Viewers/commit/7ab0bbb32581dcba16ee16b49b92406e2856ac76))
-
-
-
-
+- measurements panel css and delete button visibility
+  ([#1352](https://github.com/OHIF/Viewers/issues/1352))
+  ([7ab0bbb](https://github.com/OHIF/Viewers/commit/7ab0bbb32581dcba16ee16b49b92406e2856ac76))
 
 ## [1.1.7](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.1.6...@ohif/ui@1.1.7) (2019-12-20)
 
 **Note:** Version bump only for package @ohif/ui
 
-
-
-
-
 ## [1.1.6](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.1.5...@ohif/ui@1.1.6) (2019-12-20)
 
 **Note:** Version bump only for package @ohif/ui
 
-
-
-
-
 ## [1.1.5](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.1.4...@ohif/ui@1.1.5) (2019-12-19)
-
 
 ### Bug Fixes
 
-* 🐛 Fix drag-n-drop of local files into OHIF ([#1319](https://github.com/OHIF/Viewers/issues/1319)) ([23305ce](https://github.com/OHIF/Viewers/commit/23305cec9c0f514e73a8dd17f984ffc87ad8d131)), closes [#1307](https://github.com/OHIF/Viewers/issues/1307)
-
-
-
-
+- 🐛 Fix drag-n-drop of local files into OHIF
+  ([#1319](https://github.com/OHIF/Viewers/issues/1319))
+  ([23305ce](https://github.com/OHIF/Viewers/commit/23305cec9c0f514e73a8dd17f984ffc87ad8d131)),
+  closes [#1307](https://github.com/OHIF/Viewers/issues/1307)
 
 ## [1.1.4](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.1.3...@ohif/ui@1.1.4) (2019-12-16)
 
 **Note:** Version bump only for package @ohif/ui
 
-
-
-
-
 ## [1.1.3](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.1.2...@ohif/ui@1.1.3) (2019-12-13)
-
 
 ### Bug Fixes
 
-* allow empty values for dimensions ([#1295](https://github.com/OHIF/Viewers/issues/1295)) ([cd2da34](https://github.com/OHIF/Viewers/commit/cd2da349e5212cccdd8e65ffa3f7fdc6bad1057c))
-
-
-
-
+- allow empty values for dimensions
+  ([#1295](https://github.com/OHIF/Viewers/issues/1295))
+  ([cd2da34](https://github.com/OHIF/Viewers/commit/cd2da349e5212cccdd8e65ffa3f7fdc6bad1057c))
 
 ## [1.1.2](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.1.1...@ohif/ui@1.1.2) (2019-12-12)
 
-
 ### Bug Fixes
 
-* translations ([#1234](https://github.com/OHIF/Viewers/issues/1234)) ([30b9e44](https://github.com/OHIF/Viewers/commit/30b9e4422073557287ef26a80b38eeb3f3fcff4c))
-
-
-
-
+- translations ([#1234](https://github.com/OHIF/Viewers/issues/1234))
+  ([30b9e44](https://github.com/OHIF/Viewers/commit/30b9e4422073557287ef26a80b38eeb3f3fcff4c))
 
 ## [1.1.1](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.1.0...@ohif/ui@1.1.1) (2019-12-11)
 
 **Note:** Version bump only for package @ohif/ui
 
-
-
-
-
 # [1.1.0](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.0.1...@ohif/ui@1.1.0) (2019-12-11)
-
 
 ### Features
 
-* 🎸 DICOM SR STOW on MeasurementAPI ([#954](https://github.com/OHIF/Viewers/issues/954)) ([ebe1af8](https://github.com/OHIF/Viewers/commit/ebe1af8d4f75d2483eba869655906d7829bd9666)), closes [#758](https://github.com/OHIF/Viewers/issues/758)
-
-
-
-
+- 🎸 DICOM SR STOW on MeasurementAPI
+  ([#954](https://github.com/OHIF/Viewers/issues/954))
+  ([ebe1af8](https://github.com/OHIF/Viewers/commit/ebe1af8d4f75d2483eba869655906d7829bd9666)),
+  closes [#758](https://github.com/OHIF/Viewers/issues/758)
 
 ## [1.0.1](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.0.0...@ohif/ui@1.0.1) (2019-12-09)
 
 **Note:** Version bump only for package @ohif/ui
 
-
-
-
-
 # [1.0.0](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.65.4...@ohif/ui@1.0.0) (2019-12-09)
 
-
-* feat!: Ability to configure cornerstone tools via extension configuration (#1229) ([55a5806](https://github.com/OHIF/Viewers/commit/55a580659ecb74ca6433461d8f9a05c2a2b69533)), closes [#1229](https://github.com/OHIF/Viewers/issues/1229)
-
+- feat!: Ability to configure cornerstone tools via extension configuration
+  (#1229)
+  ([55a5806](https://github.com/OHIF/Viewers/commit/55a580659ecb74ca6433461d8f9a05c2a2b69533)),
+  closes [#1229](https://github.com/OHIF/Viewers/issues/1229)
 
 ### BREAKING CHANGES
 
-* modifies the exposed react <App /> components props. The contract for providing configuration for the app has changed. Please reference updated documentation for guidance.
-
-
-
-
+- modifies the exposed react <App /> components props. The contract for
+  providing configuration for the app has changed. Please reference updated
+  documentation for guidance.
 
 ## [0.65.4](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.65.3...@ohif/ui@0.65.4) (2019-12-07)
 
 **Note:** Version bump only for package @ohif/ui
 
-
-
-
-
 ## [0.65.3](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.65.2...@ohif/ui@0.65.3) (2019-12-07)
 
 **Note:** Version bump only for package @ohif/ui
-
-
-
-
 
 ## [0.65.2](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.65.1...@ohif/ui@0.65.2) (2019-12-07)
 
 **Note:** Version bump only for package @ohif/ui
 
-
-
-
-
 ## [0.65.1](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.65.0...@ohif/ui@0.65.1) (2019-11-28)
-
 
 ### Bug Fixes
 
-* User Preferences Issues ([#1207](https://github.com/OHIF/Viewers/issues/1207)) ([1df21a9](https://github.com/OHIF/Viewers/commit/1df21a9e075b5e6dfc10a429ae825826f46c71b8)), closes [#1161](https://github.com/OHIF/Viewers/issues/1161) [#1164](https://github.com/OHIF/Viewers/issues/1164) [#1177](https://github.com/OHIF/Viewers/issues/1177) [#1179](https://github.com/OHIF/Viewers/issues/1179) [#1180](https://github.com/OHIF/Viewers/issues/1180) [#1181](https://github.com/OHIF/Viewers/issues/1181) [#1182](https://github.com/OHIF/Viewers/issues/1182) [#1183](https://github.com/OHIF/Viewers/issues/1183) [#1184](https://github.com/OHIF/Viewers/issues/1184) [#1185](https://github.com/OHIF/Viewers/issues/1185)
-
-
-
-
+- User Preferences Issues ([#1207](https://github.com/OHIF/Viewers/issues/1207))
+  ([1df21a9](https://github.com/OHIF/Viewers/commit/1df21a9e075b5e6dfc10a429ae825826f46c71b8)),
+  closes [#1161](https://github.com/OHIF/Viewers/issues/1161)
+  [#1164](https://github.com/OHIF/Viewers/issues/1164)
+  [#1177](https://github.com/OHIF/Viewers/issues/1177)
+  [#1179](https://github.com/OHIF/Viewers/issues/1179)
+  [#1180](https://github.com/OHIF/Viewers/issues/1180)
+  [#1181](https://github.com/OHIF/Viewers/issues/1181)
+  [#1182](https://github.com/OHIF/Viewers/issues/1182)
+  [#1183](https://github.com/OHIF/Viewers/issues/1183)
+  [#1184](https://github.com/OHIF/Viewers/issues/1184)
+  [#1185](https://github.com/OHIF/Viewers/issues/1185)
 
 # [0.65.0](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.64.2...@ohif/ui@0.65.0) (2019-11-25)
 
-
 ### Features
 
-* Add new annotate tool using new dialog service ([#1211](https://github.com/OHIF/Viewers/issues/1211)) ([8fd3af1](https://github.com/OHIF/Viewers/commit/8fd3af1e137e793f1b482760a22591c64a072047))
-
-
-
-
+- Add new annotate tool using new dialog service
+  ([#1211](https://github.com/OHIF/Viewers/issues/1211))
+  ([8fd3af1](https://github.com/OHIF/Viewers/commit/8fd3af1e137e793f1b482760a22591c64a072047))
 
 ## [0.64.2](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.64.1...@ohif/ui@0.64.2) (2019-11-25)
 
-
 ### Bug Fixes
 
-* Issue branch from danny experimental changes pr 1128 ([#1150](https://github.com/OHIF/Viewers/issues/1150)) ([a870b3c](https://github.com/OHIF/Viewers/commit/a870b3cc6056cf824af422e46f1ad674910b534e)), closes [#1161](https://github.com/OHIF/Viewers/issues/1161) [#1164](https://github.com/OHIF/Viewers/issues/1164) [#1177](https://github.com/OHIF/Viewers/issues/1177) [#1179](https://github.com/OHIF/Viewers/issues/1179) [#1180](https://github.com/OHIF/Viewers/issues/1180) [#1181](https://github.com/OHIF/Viewers/issues/1181) [#1182](https://github.com/OHIF/Viewers/issues/1182) [#1183](https://github.com/OHIF/Viewers/issues/1183) [#1184](https://github.com/OHIF/Viewers/issues/1184) [#1185](https://github.com/OHIF/Viewers/issues/1185)
-
-
-
-
+- Issue branch from danny experimental changes pr 1128
+  ([#1150](https://github.com/OHIF/Viewers/issues/1150))
+  ([a870b3c](https://github.com/OHIF/Viewers/commit/a870b3cc6056cf824af422e46f1ad674910b534e)),
+  closes [#1161](https://github.com/OHIF/Viewers/issues/1161)
+  [#1164](https://github.com/OHIF/Viewers/issues/1164)
+  [#1177](https://github.com/OHIF/Viewers/issues/1177)
+  [#1179](https://github.com/OHIF/Viewers/issues/1179)
+  [#1180](https://github.com/OHIF/Viewers/issues/1180)
+  [#1181](https://github.com/OHIF/Viewers/issues/1181)
+  [#1182](https://github.com/OHIF/Viewers/issues/1182)
+  [#1183](https://github.com/OHIF/Viewers/issues/1183)
+  [#1184](https://github.com/OHIF/Viewers/issues/1184)
+  [#1185](https://github.com/OHIF/Viewers/issues/1185)
 
 ## [0.64.1](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.64.0...@ohif/ui@0.64.1) (2019-11-20)
 
 **Note:** Version bump only for package @ohif/ui
 
-
-
-
-
 # [0.64.0](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.63.0...@ohif/ui@0.64.0) (2019-11-19)
-
 
 ### Features
 
-* New dialog service ([#1202](https://github.com/OHIF/Viewers/issues/1202)) ([f65639c](https://github.com/OHIF/Viewers/commit/f65639c2b0dab01decd20cab2cef4263cb4fab37))
-
-
-
-
+- New dialog service ([#1202](https://github.com/OHIF/Viewers/issues/1202))
+  ([f65639c](https://github.com/OHIF/Viewers/commit/f65639c2b0dab01decd20cab2cef4263cb4fab37))
 
 # [0.63.0](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.62.4...@ohif/ui@0.63.0) (2019-11-19)
 
-
 ### Features
 
-* Issue 879 viewer route query param not filtering but promoting ([#1141](https://github.com/OHIF/Viewers/issues/1141)) ([b17f753](https://github.com/OHIF/Viewers/commit/b17f753e6222045252ef885e40233681541a32e1)), closes [#1118](https://github.com/OHIF/Viewers/issues/1118)
-
-
-
-
+- Issue 879 viewer route query param not filtering but promoting
+  ([#1141](https://github.com/OHIF/Viewers/issues/1141))
+  ([b17f753](https://github.com/OHIF/Viewers/commit/b17f753e6222045252ef885e40233681541a32e1)),
+  closes [#1118](https://github.com/OHIF/Viewers/issues/1118)
 
 ## [0.62.4](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.62.3...@ohif/ui@0.62.4) (2019-11-18)
 
-
 ### Bug Fixes
 
-* minor date picker UX improvements ([813ee5e](https://github.com/OHIF/Viewers/commit/813ee5ed4d78b7bda234922d5f3389efe346451c))
-
-
-
-
+- minor date picker UX improvements
+  ([813ee5e](https://github.com/OHIF/Viewers/commit/813ee5ed4d78b7bda234922d5f3389efe346451c))
 
 ## [0.62.3](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.62.2...@ohif/ui@0.62.3) (2019-11-15)
 
 **Note:** Version bump only for package @ohif/ui
 
-
-
-
-
 ## [0.62.2](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.62.1...@ohif/ui@0.62.2) (2019-11-15)
 
 **Note:** Version bump only for package @ohif/ui
-
-
-
-
 
 ## [0.62.1](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.62.0...@ohif/ui@0.62.1) (2019-11-14)
 

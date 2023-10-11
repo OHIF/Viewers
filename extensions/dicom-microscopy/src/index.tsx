@@ -30,15 +30,8 @@ export default {
    */
   id,
 
-  async preRegistration({
-    servicesManager,
-    commandsManager,
-    configuration = {},
-    appConfig,
-  }) {
-    servicesManager.registerService(
-      MicroscopyService.REGISTRATION(servicesManager)
-    );
+  async preRegistration({ servicesManager, commandsManager, configuration = {}, appConfig }) {
+    servicesManager.registerService(MicroscopyService.REGISTRATION(servicesManager));
   },
 
   /**
@@ -52,7 +45,7 @@ export default {
      *
      * @param props {*}
      * @param props.displaySets
-     * @param props.viewportIndex
+     * @param props.viewportId
      * @param props.viewportLabel
      * @param props.dataSource
      * @param props.viewportOptions
@@ -63,16 +56,16 @@ export default {
       const { viewportOptions } = props;
 
       const [viewportGrid, viewportGridService] = useViewportGrid();
-      const { viewports, activeViewportIndex } = viewportGrid;
+      const { activeViewportId } = viewportGrid;
 
       return (
         <MicroscopyViewport
           servicesManager={servicesManager}
           extensionManager={extensionManager}
           commandsManager={commandsManager}
-          activeViewportIndex={activeViewportIndex}
-          setViewportActive={(viewportIndex: number) => {
-            viewportGridService.setActiveViewportIndex(viewportIndex);
+          activeViewportId={activeViewportId}
+          setViewportActive={(viewportId: string) => {
+            viewportGridService.setActiveViewportId(viewportId);
           }}
           viewportData={viewportOptions}
           {...props}
@@ -94,11 +87,7 @@ export default {
    * Each sop class handler is defined by a { name, sopClassUids, getDisplaySetsFromSeries}.
    * Examples include the default sop class handler provided by the default extension
    */
-  getSopClassHandlerModule({
-    servicesManager,
-    commandsManager,
-    extensionManager,
-  }) {
+  getSopClassHandlerModule({ servicesManager, commandsManager, extensionManager }) {
     return [
       getDicomMicroscopySopClassHandler({
         servicesManager,

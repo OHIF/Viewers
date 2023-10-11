@@ -3,7 +3,7 @@
 <div align="center">
   <h1>OHIF Medical Imaging Viewer</h1>
   <p><strong>The OHIF Viewer</strong> is a zero-footprint medical image viewer
-provided by the <a href="https://ohif.org/">Open Health Imaging Foundation (OHIF)</a>. It is a configurable and extensible progressive web application with out-of-the-box support for image archives which support <a href="https://www.dicomstandard.org/dicomweb/">DICOMweb</a>.</p>
+provided by the <a href="https://ohif.org/">Open Health Imaging Foundation (OHIF)</a>. It is a configurable and extensible progressive web application with out-of-the-box support for image archives which support <a href="https://www.dicomstandard.org/using/dicomweb/">DICOMweb</a>.</p>
 </div>
 
 
@@ -38,7 +38,16 @@ provided by the <a href="https://ohif.org/">Open Health Imaging Foundation (OHIF
 <!-- [![All Contributors](https://img.shields.io/badge/all_contributors-10-orange.svg?style=flat-square)](#contributors) -->
 <!-- prettier-ignore-end -->
 
-![Alt text](platform/docs/docs/assets/img/OHIF-Viewer.jpg)
+
+|     |  | |
+| :-: | :---  | :--- |
+| <img src="platform/docs/docs/assets/img/demo-measurements.jpg" alt="Measurement tracking" width="350"/> | Measurement Tracking | [Demo](https://viewer.ohif.org/viewer?StudyInstanceUIDs=1.3.6.1.4.1.25403.345050719074.3824.20170125095438.5) |
+| <img src="platform/docs/docs/assets/img/demo-segmentation.png" alt="Segmentations" width="350"/> | Labelmap Segmentations  | [Demo](https://viewer.ohif.org/viewer?StudyInstanceUIDs=1.3.12.2.1107.5.2.32.35162.30000015050317233592200000046) |
+| <img src="platform/docs/docs/assets/img/demo-ptct.png" alt="Hanging Protocols" width="350"/> | Fusion and Custom Hanging protocols  | [Demo](https://viewer.ohif.org/tmtv?StudyInstanceUIDs=1.3.6.1.4.1.14519.5.2.1.7009.2403.334240657131972136850343327463) |
+| <img src="platform/docs/docs/assets/img/demo-microscopy.png" alt="Microscopy" width="350"/> | Slide Microscopy  | [Demo](https://viewer.ohif.org/microscopy?StudyInstanceUIDs=2.25.275741864483510678566144889372061815320) |
+| <img src="platform/docs/docs/assets/img/demo-volumeRendering.png" alt="Volume Rendering" width="350"/> | Volume Rendering  | [Demo](https://viewer.ohif.org/viewer?StudyInstanceUIDs=1.3.6.1.4.1.25403.345050719074.3824.20170125095438.5&hangingprotocolId=mprAnd3DVolumeViewport) |
+
+
 
 ## About
 
@@ -85,17 +94,14 @@ forking).
 
 ### Support
 
-We offer support through
-[GitHub Issues](https://github.com/OHIF/Viewers/issues/new/choose). You can:
-
 - [Report a Bug 🐛](https://github.com/OHIF/Viewers/issues/new?assignees=&labels=Community%3A+Report+%3Abug%3A%2CAwaiting+Reproduction&projects=&template=bug-report.yml&title=%5BBug%5D+)
 - [Request a Feature 🚀](https://github.com/OHIF/Viewers/issues/new?assignees=&labels=Community%3A+Request+%3Ahand%3A&projects=&template=feature-request.yml&title=%5BFeature+Request%5D+)
 - [Ask a Question 🤗](community.ohif.org)
 - [Slack Channel](https://join.slack.com/t/cornerstonejs/shared_invite/zt-1r8xb2zau-dOxlD6jit3TN0Uwf928w9Q)
 
 For commercial support, academic collaborations, and answers to common
-questions; please read our
-[documented FAQ](https://docs.ohif.org/faq/index.html#does-ohif-offer-commercial-support).
+questions; please use [Get Support](https://ohif.org/get-support/) to contact
+us.
 
 
 ## Developing
@@ -123,9 +129,6 @@ Note: `master` is always ahead of `release` branch. We publish both docker build
 Here is a schematic representation of our development workflow:
 
 ![Alt text](platform/docs/docs/assets/img/github-readme-branches.png)
-
-
-
 
 
 
@@ -164,7 +167,7 @@ yarn install
 
 These commands are available from the root directory. Each project directory
 also supports a number of commands that can be found in their respective
-`README.md` and `project.json` files.
+`README.md` and `package.json` files.
 
 | Yarn Commands                | Description                                                   |
 | ---------------------------- | ------------------------------------------------------------- |
@@ -222,15 +225,6 @@ you'll see the following:
 └── README.md                # This file
 ```
 
-Want to better understand why and how we've structured this repository? Read
-more about it in our [Architecture Documentation][ohif-architecture].
-
-
-
-| Name                                                 | Description                                           | Links                  |
-| ---------------------------------------------------- | ----------------------------------------------------- | ---------------------- |
-| [@ohif/extension-cornerstone][extension-cornerstone] | 2D image viewing, annotation, and segementation tools | [NPM][cornerstone-npm] |
-
 ## Acknowledgments
 
 To acknowledge the OHIF Viewer in an academic publication, please cite
@@ -259,7 +253,7 @@ or, for v1, please cite:
 > [10.1158/0008-5472.CAN-17-0334](https://www.doi.org/10.1158/0008-5472.CAN-17-0334)
 
 **Note:** If you use or find this repository helpful, please take the time to
-star this repository on Github. This is an easy way for us to assess adoption
+star this repository on GitHub. This is an easy way for us to assess adoption
 and it can help us obtain future funding for the project.
 
 This work is supported primarily by the National Institutes of Health, National
@@ -267,7 +261,11 @@ Cancer Institute, Informatics Technology for Cancer Research (ITCR) program,
 under a
 [grant to Dr. Gordon Harris at Massachusetts General Hospital (U24 CA199460)](https://projectreporter.nih.gov/project_info_description.cfm?aid=8971104).
 
-This project is tested with BrowserStack. Thank you for supporting open source
+[NCI Imaging Data Commons (IDC) project](https://imaging.datacommons.cancer.gov/) supported the development of new features and bug fixes marked with ["IDC:priority"](https://github.com/OHIF/Viewers/issues?q=is%3Aissue+is%3Aopen+label%3AIDC%3Apriority),
+["IDC:candidate"](https://github.com/OHIF/Viewers/issues?q=is%3Aissue+is%3Aopen+label%3AIDC%3Acandidate) or ["IDC:collaboration"](https://github.com/OHIF/Viewers/issues?q=is%3Aissue+is%3Aopen+label%3AIDC%3Acollaboration). NCI Imaging Data Commons is supported by contract number 19X037Q from
+Leidos Biomedical Research under Task Order HHSN26100071 from NCI. [IDC Viewer](https://learn.canceridc.dev/portal/visualization) is a customized version of the OHIF Viewer.
+
+This project is tested with BrowserStack. Thank you for supporting open-source!
 
 ## License
 

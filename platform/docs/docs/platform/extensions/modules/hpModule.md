@@ -36,7 +36,6 @@ Here is an example protocol which if used will hang a 1x3 layout with the first 
 const oneByThreeProtocol = {
   id: 'oneByThreeProtocol',
   locked: true,
-  hasUpdatedPriorsInformation: false,
   name: 'Default',
   createdDate: '2021-02-23T19:22:08.894Z',
   modifiedDate: '2022-10-04T19:22:08.894Z',
@@ -241,12 +240,31 @@ A list of criteria for the protocol along with the provided points for ranking.
     "StudyDescription", "ModalitiesInStudy", "NumberOfStudyRelatedSeries", "NumberOfSeriesRelatedInstances"
     In addition to these tags, you can also use a custom attribute that you have registered before.
     We will learn more about this later.
+  - `from`: Indicates the source of the attribute.  This allows getting values
+    from other objects such as the `prior` instance object instead of from the
+    current one.
 
 
 
   - `constraint`: the constraint that needs to be satisfied for the attribute. It accepts a `validator` which can be
     [`equals`, `doesNotEqual`, `contains`, `doesNotContain`, `startsWith`, `endsWidth`]
 
+  - | Rule 	| Single Value 	| Array Value 	| Example 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+    |---	|---	|---	|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+    | equals 	| === 	| All members are === in same order 	| value = ['abc', 'def', 'GHI']<br/>testValue = 'abc' (Fail)<br/><br/>          = ['abc'] (Fail)<br/><br/>          = ['abc', 'def', 'GHI'] (Valid)<br/><br/>          = ['abc', 'GHI', 'def'] (Fail)<br/><br/>          = ['abc', 'def'] (Fail)<br/><br/>value = 'Attenuation Corrected'<br/>testValue = 'Attenuation Corrected' (Valid)<br/>          = 'Attenuation' (Fail)<br/><br/> 	       value = ['Attenuation Corrected'] <br/>     testValue = ['Attenuation Corrected'] (Valid)<br/> = 'Attenuation Corrected' (Valid) <br/>  = 'Attenuation' (Fail) <br/>                                                            |
+    | doesNotEqual 	| !== 	| Any member is !== for the array, either in value, order, or length 	| value = ['abc', 'def', 'GHI']<br/>testValue = 'abc' (Valid)<br/>          = ['abc'] (Valid)<br/>          = ['abc', 'def', 'GHI'] (Fail)<br/>          = ['abc', 'GHI', 'def'] (Valid)<br/>          = ['abc', 'def'] (Valid)<br/><br/>value = 'Attenuation Corrected'<br/>testValue = 'Attenuation Corrected' (Fail)Valid<br/><br/>          = 'Attenuation' (Valid) 	<br/><br/>      value = ['Attenuation Corrected']<br/> testValue = ['Attenuation Corrected'] (Fail) <br/> = 'Attenuation Corrected' (Fail)  <br/> = 'Attenuation' (Fail)                                                                                |
+    | includes 	| Not allowed 	| Value is equal to one of the values of the array 	| value = ['abc', 'def', 'GHI']<br/>testValue = ['abc'] (Valid)<br/><br/>  = ‘abc’ (Fail)<br/><br/>= [‘abc’] (Fail)<br/><br/>        = ‘dog’ (Fail)<br/><br/>  =         = [‘att’, ‘abc’] (Valid)<br/><br/>          = ['abc', 'def', 'dog'] (Valid)<br/><br/>          = ['cat', 'dog'] (Fail)<br/><br/><br/> value = 'Attenuation Corrected' <br/> 	testValue = ['Attenuation Corrected', 'Corrected'] (Valid)<br/>= ['Attenuation', 'Corrected'] (Fail)<br/><br/><br/>value = ['Attenuation Corrected']<br/>testValue = 'Attenuation Corrected' (Fail)<br/> = ['Attenuation Corrected', 'Corrected'] (Valid)<br/> = ['Attenuation', 'Corrected'] (Fail) |
+    | doesNotInclude 	| Not allowed 	| Value is not in one of the values of the array 	| value = ['abc', 'def', 'GHI']<br/>testValue = ‘Corr’ (Valid)<br/><br/>          = ‘abc’ (Fail)<br/><br/>          = [‘att’, ‘cor’] (Valid)<br/><br/>          = ['abc', 'def', 'dog'] (Fail)<br/><br/><br/>value = 'Attenuation Corrected' <br/> testValue = ['Attenuation Corrected', 'Corrected'] (Fail) <br/> = ['Attenuation', 'Corrected'] (Valid) <br/><br/><br/>value = ['Attenuation Corrected'] <br/> testValue = 'Attenuation' (Fail)<br/> = ['Attenuation Corrected', 'Corrected'] (Fail)	<br/>= ['Attenuation', 'Corrected'] (Valid)                                                                                                                     |
+    | containsI 	| String containment (case insensitive) 	| String containment (case insensitive) is OK for one of the rule values 	| value = 'Attenuation Corrected'<br/>testValue = ‘Corr’ (Valid)<br/>          = ‘corr’ (Valid)<br/><br/>          = [‘att’, ‘cor’] (Valid)<br/><br/>          = [‘Att’, ‘Wall’] (Valid)<br/><br/>          = [‘cat’, ‘dog’] (Fail)<br/><br/><br/><br/>value = ['abc', 'def', 'GHI']<br/>testValue = 'def' (Valid)<br/><br/>          = 'dog' (Fail)<br/><br/>          = ['gh', 'de'] (Valid)<br/><br/>          = ['cat', 'dog'] (Fail)<br/> 	                                                                                                                                                                                 |
+    | contains 	| String containment (case sensitive) 	| String containment (case sensitive) is OK for one of the rule values 	| value = 'Attenuation Corrected'<br/>testValue = ‘Corr’ (Valid)<br/>          = ‘corr’ (Fail)<br/>          = [‘att’, ‘cor’] (Fail)<br/>          = [‘Att’, ‘Wall’] (Valid)<br/><br/>          = [‘cat’, ‘dog’] (Fail)<br/><br/><br/>value = ['abc', 'def', 'GHI']<br/><br/>testValue = 'def' (Valid)<br/>          = 'dog' (Fail)<br/><br/>          = ['cat', 'de'] (Valid)<br/><br/>          = ['cat', 'dog'] (Fail) 	                                                                                                                                                                                                      |
+    | doesNotContain 	| String containment is false 	| String containment is false for all values of the array 	| value = 'Attenuation Corrected'<br/>testValue = ‘Corr’ (Fail)<br/><br/><br/>          = ‘corr’ (Valid)<br/><br/>          = [‘att’, ‘cor’] (Valid)<br/><br/>          = [‘Att’, ‘Wall’] (Fail)<br/><br/>          = [‘cat’, ‘dog’] (Valid)<br/><br/>value = ['abc', 'def', 'GHI']<br/>testValue = 'def' (Fail)<br/><br/><br/>          = 'dog' (Valid)<br/><br/>          = ['cat', 'de'] (Fail)<br/><br/>          = ['cat', 'dog'] (Valid) 	                                                                                                                                                                                 |
+    | doesNotContainI 	| String containment is false (case insensitive) 	| String containment (case insensitive) is false for all values of the array 	| value = 'Attenuation Corrected'<br/>testValue = ‘Corr’ (Fail)<br/><br/>          = ‘corr’ (Fail)<br/><br/>          = [‘att’, ‘cor’] (Fail)<br/><br/>          = [‘Att’, ‘Wall’] (Fail)<br/><br/>          = [‘cat’, ‘dog’] (Valid)<br/><br/><br/>value = ['abc', 'def', 'GHI']<br/>testValue = 'DEF' (Fail)<br/><br/>          = 'dog' (Valid)<br/><br/>          = ['cat', 'gh'] (Fail)<br/><br/>          = ['cat', 'dog'] (Valid) 	                                                                                                                                                                                        |
+    | startsWith 	| Value begins with characters 	| Starts with one of the values of the array 	| value = 'Attenuation Corrected'<br/>testValue = ‘Corr’ (Fail)<br/><br/>          = ‘Att’ (Fail)<br/><br/>          = ['cat', 'dog', 'Att'] (Valid)<br/><br/>          = [‘cat’, ‘dog’] (Fail)<br/><br/><br/>value = ['abc', 'def', 'GHI']<br/>testValue = 'deg' (Valid)<br/><br/>          = ['cat', 'GH']  (Valid)<br/><br/>          = ['cat', 'gh'] (Fail)<br/><br/>          = ['cat', 'dog'] (Fail) 	                                                                                                                                                                                                                     |
+    | endsWith 	| Value ends with characters 	| ends with one of the value of the array 	| value = 'Attenuation Corrected'<br/>testValue = ‘TED’ (Fail)<br/><br/>          = ‘ted’ (Valid)<br/><br/>          = ['cat', 'dog', 'ted'] (Valid)<br/><br/>          = [‘cat’, ‘dog’] (Fail)<br/><br/><br/>value = ['abc', 'def', 'GHI']<br/>testValue = 'deg' (Valid)<br/><br/>          = ['cat', 'HI']  (Valid)<br/><br/>          = ['cat', 'hi'] (Fail)<br/><br/>          = ['cat', 'dog'] (Fail) 	                                                                                                                                                                                                                     |
+    | greaterThan 	| value is => to rule   	| Not applicable 	| value = 30<br/><br/>testValue = 20 (Valid)<br/>          = 40 (Fail)<br/><br/> 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+    | lessThan 	| value is <= to rule 	| Not applicable 	| value = 30<br/><br/>testValue = 40 (Valid)<br/>          = 20 (Fail)<br/> 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+    | range  	| Not applicable 	| 2 value requested (min and max) 	| value = 50<br/><br/>testValue = [10,60] (Valid)<br/>          = [60, 10] (Valid)<br/><br/>          = [0, 10] (Fail)<br/><br/>          = [70, 80] (Fail)<br/><br/>          = 45  (Fail)<br/><br/>          = [45] (Fail) 	                                                                                                                                                                                                                                                                                                                                                                                                   |
+    | notNull 	| Not Applicable 	| Not Applicable 	| No value 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
     A sample of the matching rule is above which matches against the study description to be PETCT
 
     ```js
@@ -262,6 +280,20 @@ A list of criteria for the protocol along with the provided points for ranking.
       required: false,
     },
     ```
+
+### `from` attribute
+The from attribute allows getting the attribute to test from some other object
+such as the prior study, the list of studies overall or another module provided
+value.  Some of the possible attributes are:
+
+* `prior`: To get the value from the prior study.
+* `activeStudy`: To match the active study
+* `studies`: To match the list of studies to display
+* `displaySets`: The display sets for the current study
+* `allDisplaySets`: Alll available display sets
+* `instance`: An instance from the current display set being tested
+* `options`: Gets the options object itself, eg if you want a simple top level
+  value.
 
 ### displaySetSelectors
 Defines the display sets that the protocol will use for arrangement.
@@ -416,6 +448,7 @@ As you can see in the hanging protocol we defined three viewports (but only show
    - `toolGroupId`: tool group that will be used for the viewport (optional)
    - `initialImageOptions`: initial image options (optional - can be specific imageIndex number or preset (first, middle, last))
    - `syncGroups`: sync groups for the viewport (optional)
+   -The `displayArea` parameter refers to the designated area within the viewport where a specific portion of the image can be displayed. This parameter is optional and allows you to choose the location of the image within the viewport. For example, in mammography images, you can display the left breast on the left side of the viewport and the right breast on the right side, with the chest wall positioned in the middle. To understand how to define the display area, you can refer to the live example provided by CornerstoneJS [here](https://www.cornerstonejs.org/live-examples/programaticpanzoom).
 
 
 2. `displaySets`: defines the display sets that are displayed on a viewport. It is an array of objects, each object being one display set.
@@ -423,7 +456,7 @@ As you can see in the hanging protocol we defined three viewports (but only show
    - `options` (optional): options for the display set
         - voi: windowing options for the display set (optional: windowWidth, windowCenter)
         - voiInverted: whether the VOI is inverted or not (optional)
-        - colormap: colormap for the display set (optional, it is an object with `{ name }` and optional extra `opacityMapping` property)
+        - colormap: colormap for the display set (optional, it is an object with `{ name }` and optional extra `opacity` property)
         - displayPreset: display preset for the display set (optional, used for 3D volume rendering. e.g., 'CT-Bone')
 
 
@@ -459,22 +492,70 @@ HangingProtocolService.addCustomAttribute(
 ```
 
 
-
 ## Matching on Prior Study with UID
 
 Often it is desired to match a new study to a prior study (e.g., follow up on
 a surgery). Since the hanging protocols run on displaySets we need to have a
 way to let OHIF knows that it needs to load the prior study as well. This can
-be done by specifying both StudyInstanceUIDs in the URL. Below we are
-running OHIF with two studies
+be done by specifying both StudyInstanceUIDs in the URL. The additional studies
+are then accessible to the hanging protocol.  Below we are
+running OHIF with two studies, and a comparison hanging protocol available by
+default.
 
 ```bash
-http://localhost:3000/viewer?StudyInstanceUIDs=1.3.6.1.4.1.25403.345050719074.3824.20170125095438.5&StudyInstanceUIDs=1.3.6.1.4.1.25403.345050719074.3824.20170125095722.1
+http://localhost:3000/viewer?StudyInstanceUIDs=1.3.6.1.4.1.25403.345050719074.3824.20170125095438.5&StudyInstanceUIDs=1.3.6.1.4.1.25403.345050719074.3824.20170125095722.1&hangingprotocolId=@ohif/hpCompare
 ```
 
-Now you have access to both studies and you can use matchingRules to match
-displaySets.
+The `&hangingProtocolId` option forces the specific hanging protocol to be
+applied, but the mode can also add the hanging protocols to the default set,
+and then the best matching hanging protocol will be applied by the run method.
 
+To match any other studies, it is required to enable the prior matching rules
+capability using:
 
+```javascript
+  // Indicate number of priors used - 0 means any number, -1 means none.
+  numberOfPriorsReferenced: 1,
+```
 
-Our roadmap includes enabling matching on prior studies without the UID (e.g., baseline, most recent and index).
+The matching rule that allows the hanging protocol to be runnable is:
+
+```javascript
+  protocolMatchingRules: [
+    {
+      id: 'Two Studies',
+      weight: 1000,
+      // This will generate 1.3.6.1.4.1.25403.345050719074.3824.20170125095722.1
+      // since that is study instance UID in the prior from instance.
+      attribute: 'StudyInstanceUID',
+      // The 'from' attribute says where to get the 'attribute' value from.  In this case
+      // prior means the second study in the study list.
+      from: 'prior',
+      required: true,
+      constraint: {
+        notNull: true,
+      },
+    },
+  ],
+```
+
+The display set selector selecting the specific study to display is included
+in the studyMatchingRules.  Note that this rule will cause ONLY the second study
+to be matched, so it won't attempt to match anything in other studies.
+Additional series level criteria, such as modality rules must be included at the
+`seriesMatchingRules`.
+
+```javascript
+  studyMatchingRules: [
+    {
+      // The priorInstance is a study counter that indicates what position this study is in
+      // and the value comes from the options parameter.
+      attribute: 'studyInstanceUIDsIndex',
+      from: 'options',
+      required: true,
+      constraint: {
+        equals: { value: 1 },
+      },
+    },
+  ],
+```

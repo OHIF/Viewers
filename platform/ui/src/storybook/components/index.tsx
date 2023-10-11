@@ -7,11 +7,4 @@ import { SectionName } from './section-name/section-name';
 import { Footer } from './footer/footer';
 import { WithImage } from './image/image';
 
-export {
-  Heading,
-  AnchorListItem,
-  LinkComponent,
-  SectionName,
-  Footer,
-  WithImage,
-};
+export { Heading, AnchorListItem, LinkComponent, SectionName, Footer, WithImage };

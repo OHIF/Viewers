@@ -1,4 +1,4 @@
-import Button from '../Button';
+import { Button, ButtonEnums } from '../../../components';
 import { ArgsTable, Story, Canvas, Meta } from '@storybook/addon-docs';
 import {
   createComponentTemplate,
@@ -10,11 +10,17 @@ export const argTypes = {
   title: 'Components/Button',
 };
 
-<Meta title="Components/Button" component={Button} />
+<Meta
+  title="Components/Button"
+  component={Button}
+/>
 
 export const buttonTemplate = createComponentTemplate(Button);
 
-<Heading title="Button" componentRelativePath="Button/Button.tsx" />
+<Heading
+  title="Button"
+  componentRelativePath="Button/Button.tsx"
+/>
 
 - [Overview](#overview)
 - [Props](#props)
@@ -23,11 +29,14 @@ export const buttonTemplate = createComponentTemplate(Button);
 
 ## Overview
 
-You can use the button component to create a button. It can be used in different
-ways, the default button is a simple button with a text.
+You can use the button component to create a button. It can be used in different ways, the default
+button is a simple button with text.
 
 <Canvas>
-  <Story name="Overview" args={{ children: 'Button', color: 'default' }}>
+  <Story
+    name="Overview"
+    args={{ children: 'Button', color: 'default' }}
+  >
     {buttonTemplate.bind({})}
   </Story>
 </Canvas>
@@ -38,37 +47,29 @@ ways, the default button is a simple button with a text.
 
 ## Usage
 
-### Variants
+### Types
 
-There can be different variants of buttons: `text`, `outlined`, `contained`, and
-`disabled`.
+There can be different types of buttons: `primary`, and `secondary`.
 
 <Canvas>
-  <Story name="Variants">
+  <Story name="Types">
     <div className="flex space-x-2">
-      <Button variant="text">Text Button</Button>
-      <Button variant="outlined">Outlined Button</Button>
-      <Button variant="contained">Contained Button</Button>
-      <Button variant="disabled">Disabled Button</Button>
+      <Button type={ButtonEnums.type.primary}>Primary Button</Button>
+      <Button type={ButtonEnums.type.secondary}>Secondary Button</Button>
     </div>
   </Story>
 </Canvas>
 
-### Colors
+### Sizes
 
-There are different colors for the button: `default`, `primary`, `secondary`,
-`white`, `black`, `inherit`, `light`.
+There are different sizes for the button: `small`, and `medium`. The size refers to the button's
+height.
 
 <Canvas>
-  <Story name="Colors">
-    <div className="flex space-x-2">
-      <Button color="default">Default Button</Button>
-      <Button color="primary">Primary Button</Button>
-      <Button color="secondary">Secondary Button</Button>
-      <Button color="white">White Button</Button>
-      <Button color="black">Black Button</Button>
-      <Button color="inherit">Inherit Button</Button>
-      <Button color="light">Light Button</Button>
+  <Story name="Sizes">
+    <div className="flex items-center space-x-2">
+      <Button size={ButtonEnums.size.small}>Small Button</Button>
+      <Button size={ButtonEnums.size.medium}>Medium Button</Button>
     </div>
   </Story>
 </Canvas>
@@ -79,19 +80,22 @@ You can mix different props together to create a button.
 
 <Canvas>
   <Story name="Custom">
-    <Button color="secondary" variant="outlined">
-      Custom Button
+    <Button
+      type={ButtonEnums.type.secondary}
+      size={ButtonEnums.size.small}
+    >
+      Small, Secondary Button
     </Button>
   </Story>
 </Canvas>
 
 ### Disabled
 
-You can disable the button by setting the variant to `disabled`.
+You can disable the button by setting the `disabled` property to true.
 
 <Canvas>
   <Story name="Disabled">
-    <Button variant="disabled">Disabled Button</Button>
+    <Button disabled={true}>Disabled Button</Button>
   </Story>
 </Canvas>
 
@@ -151,23 +155,14 @@ End Icon is the same as start icon, but for the end of the button.
         );
       };
       return (
-        <Button startIcon={<Github />} endIcon={<Github />}>
+        <Button
+          startIcon={<Github />}
+          endIcon={<Github />}
+        >
           Start and End Icon Button
         </Button>
       );
     }}
-  </Story>
-</Canvas>
-
-### Full width
-
-You can make the button full width by setting the `fullWidth` prop to `true`.
-
-<Canvas>
-  <Story name="Full Width">
-    <Button fullWidth color="secondary">
-      Full Width Button
-    </Button>
   </Story>
 </Canvas>
 

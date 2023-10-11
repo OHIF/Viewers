@@ -21,11 +21,7 @@ describe('HotkeysManager', () => {
   });
   it('has expected properties', () => {
     const allProperties = Object.keys(hotkeysManager);
-    const expectedProperties = [
-      'hotkeyDefinitions',
-      'hotkeyDefaults',
-      'isEnabled',
-    ];
+    const expectedProperties = ['hotkeyDefinitions', 'hotkeyDefaults', 'isEnabled'];
 
     const containsAllExpectedProperties = expectedProperties.every(expected =>
       allProperties.includes(expected)
@@ -134,21 +130,16 @@ describe('HotkeysManager', () => {
 
       hotkeysManager.registerHotkeys(definition);
 
-      const numOfHotkeyDefinitions = Object.keys(
-        hotkeysManager.hotkeyDefinitions
-      ).length;
+      const numOfHotkeyDefinitions = Object.keys(hotkeysManager.hotkeyDefinitions).length;
 
       const commandHash = objectHash({
         commandName: definition.commandName,
         commandOptions: definition.commandOptions,
       });
-      const hotkeyDefinitionForRegisteredCommand =
-        hotkeysManager.hotkeyDefinitions[commandHash];
+      const hotkeyDefinitionForRegisteredCommand = hotkeysManager.hotkeyDefinitions[commandHash];
 
       expect(numOfHotkeyDefinitions).toBe(1);
-      expect(Object.keys(hotkeysManager.hotkeyDefinitions)[0]).toEqual(
-        commandHash
-      );
+      expect(Object.keys(hotkeysManager.hotkeyDefinitions)[0]).toEqual(commandHash);
       expect(hotkeyDefinitionForRegisteredCommand).toEqual(definition);
     });
     it('calls hotkeys.bind for the group of keys', () => {
@@ -182,9 +173,7 @@ describe('HotkeysManager', () => {
 
       hotkeysManager.restoreDefaultBindings();
 
-      expect(hotkeysManager.setHotkeys.mock.calls[0][0]).toEqual(
-        hotkeysManager.hotkeyDefaults
-      );
+      expect(hotkeysManager.setHotkeys.mock.calls[0][0]).toEqual(hotkeysManager.hotkeyDefaults);
     });
   });
 

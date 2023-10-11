@@ -1,16 +1,14 @@
-describe('OHIF Measurement Panel', function() {
-  beforeEach(function() {
-    cy.checkStudyRouteInViewer(
-      '1.2.840.113619.2.5.1762583153.215519.978957063.78'
-    );
+describe('OHIF Measurement Panel', function () {
+  beforeEach(function () {
+    cy.checkStudyRouteInViewer('1.2.840.113619.2.5.1762583153.215519.978957063.78');
 
     cy.expectMinimumThumbnails(3);
     cy.initCommonElementsAliases();
     cy.initCornerstoneToolsAliases();
-    cy.resetViewport().wait(50);
+    cy.waitDicomImage();
   });
 
-  it('checks if Measurements right panel can be hidden/displayed', function() {
+  it('checks if Measurements right panel can be hidden/displayed', function () {
     cy.get('@measurementsPanel').should('exist');
     cy.get('@measurementsPanel').should('be.visible');
 
@@ -22,31 +20,31 @@ describe('OHIF Measurement Panel', function() {
     cy.get('@measurementsPanel').should('be.visible');
   });
 
-  it('checks if measurement item can be Relabeled under Measurements panel', function() {
+  it('checks if measurement item can be Relabeled under Measurements panel', function () {
     // Add length measurement
     cy.addLengthMeasurement();
-    cy.get('[data-cy="viewport-notification"]').should('exist');
-    cy.get('[data-cy="viewport-notification"]').should('be.visible');
-    cy.get('[data-cy="prompt-begin-tracking-yes"]').click();
-    cy.get('[data-cy="measurement-item"]').click();
 
-    cy.get('[data-cy="measurement-item"]')
-      .find('svg')
-      .click();
+    cy.get('[data-cy="viewport-notification"]').as('viewportNotification').should('exist');
+    cy.get('[data-cy="viewport-notification"]').as('viewportNotification').should('be.visible');
+
+    cy.get('[data-cy="prompt-begin-tracking-yes-btn"]').as('yesBtn').click();
+
+    cy.get('[data-cy="measurement-item"]').as('measurementItem').click();
+
+    cy.get('[data-cy="measurement-item"]').find('svg').as('measurementItemSvg').click();
 
     // enter Bone label
     cy.get('[data-cy="input-annotation"]').should('exist');
     cy.get('[data-cy="input-annotation"]').should('be.visible');
     cy.get('[data-cy="input-annotation"]').type('Bone{enter}');
 
-    // Verify if 'Bone' label was added
-    cy.get('[data-cy="measurement-item"]').should('contain.text', 'Bone');
+    cy.get('[data-cy="measurement-item"]').as('measurementItem').should('contain.text', 'Bone');
   });
 
-  it('checks if image would jump when clicked on a measurement item', function() {
+  it('checks if image would jump when clicked on a measurement item', function () {
     // Add length measurement
-    cy.addLengthMeasurement();
-    cy.get('[data-cy="prompt-begin-tracking-yes"]').click();
+    cy.addLengthMeasurement().wait(250);
+    cy.get('[data-cy="prompt-begin-tracking-yes-btn"]').as('yesBtn').click();
 
     cy.scrollToIndex(13);
 
@@ -55,9 +53,7 @@ describe('OHIF Measurement Panel', function() {
     cy.get('@viewportInfoTopRight').should('contains.text', '(14/');
 
     // Click on first measurement item
-    cy.get('[data-cy="measurement-item"]')
-      .eq(0)
-      .click();
+    cy.get('[data-cy="measurement-item"]').eq(0).click();
 
     cy.get('@viewportInfoTopRight').should('contains.text', '(1/');
     cy.get('@viewportInfoTopRight').should('not.contains.text', '(14/');

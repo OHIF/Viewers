@@ -21,23 +21,12 @@ function _getStudyForPatientUtility(extensionManager) {
  * @param {object} commandsManager
  * @param {object} extensionManager
  */
-function WrappedPanelStudyBrowserTracking({
-  commandsManager,
-  extensionManager,
-  servicesManager,
-}) {
+function WrappedPanelStudyBrowserTracking({ commandsManager, extensionManager, servicesManager }) {
   const dataSource = extensionManager.getActiveDataSource()[0];
 
-  const getStudiesForPatientByMRN = _getStudyForPatientUtility(
-    extensionManager
-  );
-  const _getStudiesForPatientByMRN = getStudiesForPatientByMRN.bind(
-    null,
-    dataSource
-  );
-  const _getImageSrcFromImageId = _createGetImageSrcFromImageIdFn(
-    extensionManager
-  );
+  const getStudiesForPatientByMRN = _getStudyForPatientUtility(extensionManager);
+  const _getStudiesForPatientByMRN = getStudiesForPatientByMRN.bind(null, dataSource);
+  const _getImageSrcFromImageId = _createGetImageSrcFromImageIdFn(extensionManager);
   const _requestDisplaySetCreationForStudy = requestDisplaySetCreationForStudy.bind(
     null,
     dataSource

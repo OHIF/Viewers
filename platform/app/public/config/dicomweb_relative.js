@@ -5,7 +5,6 @@ window.config = {
   showStudyList: true,
   maxNumberOfWebWorkers: 3,
   // below flag is for performance reasons, but it might not work for all servers
-  omitQuotationForMultipartRequest: true,
   showWarningMessageForCrossOrigin: true,
   showCPUFallbackMessage: true,
   showLoadingIndicator: true,
@@ -14,16 +13,15 @@ window.config = {
   defaultDataSourceName: 'dicomweb',
   dataSources: [
     {
-      friendlyName: 'Static WADO Local Data',
       namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
       sourceName: 'dicomweb',
       configuration: {
+        friendlyName: 'Static WADO Local Data',
         name: 'DCM4CHEE',
         wadoUriRoot: '/dicomweb',
         qidoRoot: '/dicomweb',
         wadoRoot: '/dicomweb',
         qidoSupportsIncludeField: false,
-        supportsReject: false,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
         enableStudyLazyLoad: true,
@@ -31,21 +29,23 @@ window.config = {
         supportsWildcard: true,
         staticWado: true,
         singlepart: 'bulkdata,video,pdf',
+        omitQuotationForMultipartRequest: true,
       },
     },
     {
-      friendlyName: 'dicom json',
       namespace: '@ohif/extension-default.dataSourcesModule.dicomjson',
       sourceName: 'dicomjson',
       configuration: {
+        friendlyName: 'dicom json',
         name: 'json',
       },
     },
     {
-      friendlyName: 'dicom local',
       namespace: '@ohif/extension-default.dataSourcesModule.dicomlocal',
       sourceName: 'dicomlocal',
-      configuration: {},
+      configuration: {
+        friendlyName: 'dicom local',
+      },
     },
   ],
   httpErrorHandler: error => {

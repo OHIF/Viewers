@@ -2,7 +2,6 @@ import HangingProtocolService from './HangingProtocolService';
 
 const testProtocol = {
   id: 'test',
-  hasUpdatedPriorsInformation: false,
   name: 'Default',
   protocolMatchingRules: [
     {
@@ -119,7 +118,7 @@ function checkHpsBestMatch(hps) {
   hps.run({ studies: [studyMatch], displaySets: studyMatchDisplaySets });
   const { viewportMatchDetails } = hps.getMatchDetails();
   expect(viewportMatchDetails.size).toBe(1);
-  expect(viewportMatchDetails.get(0)).toMatchObject({
+  expect(viewportMatchDetails.get('ctAXIAL')).toMatchObject({
     viewportOptions: {
       viewportId: 'ctAXIAL',
       viewportType: 'volume',
@@ -134,7 +133,7 @@ function checkHpsBestMatch(hps) {
         displaySetOptions: {
           id: 'displaySetSelector',
           options: {},
-      },
+        },
       },
     ],
   });
@@ -150,10 +149,7 @@ describe('HangingProtocolService', () => {
       },
     },
   };
-  const hangingProtocolService = new HangingProtocolService(
-    commandsManager,
-    servicesManager
-  );
+  const hangingProtocolService = new HangingProtocolService(commandsManager, servicesManager);
   let initialScaling;
 
   afterEach(() => {
@@ -178,10 +174,7 @@ describe('HangingProtocolService', () => {
 
   describe('with protocol generator', () => {
     beforeAll(() => {
-      hangingProtocolService.addProtocol(
-        testProtocol.id,
-        testProtocolGenerator
-      );
+      hangingProtocolService.addProtocol(testProtocol.id, testProtocolGenerator);
     });
 
     it('has one protocol', () => {
@@ -192,6 +185,6 @@ describe('HangingProtocolService', () => {
       it('matches best image match', () => {
         checkHpsBestMatch(hangingProtocolService);
       });
-      });
     });
   });
+});

@@ -19,10 +19,7 @@ export default class ContextMenuController {
   services: Types.Services;
   menuItems: Menu[] | MenuItem[];
 
-  constructor(
-    servicesManager: ServicesManager,
-    commandsManager: CommandsManager
-  ) {
+  constructor(servicesManager: ServicesManager, commandsManager: CommandsManager) {
     this.services = servicesManager.services as Obj;
     this.commandsManager = commandsManager;
   }
@@ -72,10 +69,9 @@ export default class ContextMenuController {
       event,
       content: ContextMenu,
 
-      // This naming is part of hte uiDialogService convention
-      // Clicking outside simpy closes the dialog box.
-      onClickOutside: () =>
-        this.services.uiDialogService.dismiss({ id: 'context-menu' }),
+      // This naming is part of the uiDialogService convention
+      // Clicking outside simply closes the dialog box.
+      onClickOutside: () => this.services.uiDialogService.dismiss({ id: 'context-menu' }),
 
       contentProps: {
         items,
@@ -170,9 +166,7 @@ export default class ContextMenuController {
   };
 
   static _isValidPosition = (source): boolean => {
-    return (
-      source && typeof source.x === 'number' && typeof source.y === 'number'
-    );
+    return source && typeof source.x === 'number' && typeof source.y === 'number';
   };
 
   /**
@@ -180,10 +174,7 @@ export default class ContextMenuController {
    */
   static _getDefaultPosition = (canvasPoints, eventDetail, viewerElement) => {
     function* getPositionIterator() {
-      yield ContextMenuController._getCanvasPointsPosition(
-        canvasPoints,
-        viewerElement
-      );
+      yield ContextMenuController._getCanvasPointsPosition(canvasPoints, viewerElement);
       yield ContextMenuController._getEventDefaultPosition(eventDetail);
       yield ContextMenuController._getElementDefaultPosition(viewerElement);
       yield ContextMenuController.getDefaultPosition();

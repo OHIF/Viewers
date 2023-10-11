@@ -15,6 +15,7 @@ const machineConfiguration = {
   id: 'measurementTracking',
   initial: 'idle',
   context: {
+    activeViewportId: null,
     trackedStudy: '',
     trackedSeries: [],
     ignoredSeries: [],
@@ -47,6 +48,11 @@ const machineConfiguration = {
         },
         RESTORE_PROMPT_HYDRATE_SR: 'promptHydrateStructuredReport',
         HYDRATE_SR: 'hydrateStructuredReport',
+        UPDATE_ACTIVE_VIEWPORT_ID: {
+          actions: assign({
+            activeViewportId: (_, event) => event.activeViewportId,
+          }),
+        },
       },
     },
     promptBeginTracking: {
@@ -183,10 +189,7 @@ const machineConfiguration = {
           // - show DICOM SR
           {
             target: 'idle',
-            actions: [
-              'clearAllMeasurements',
-              'showStructuredReportDisplaySetInActiveViewport',
-            ],
+            actions: ['clearAllMeasurements', 'showStructuredReportDisplaySetInActiveViewport'],
             cond: 'shouldSaveAndContinueWithSameReport',
           },
           // "starting a new report"
@@ -194,10 +197,7 @@ const machineConfiguration = {
           // - start tracking a new study + report
           {
             target: 'tracking',
-            actions: [
-              'discardPreviouslyTrackedMeasurements',
-              'setTrackedStudyAndSeries',
-            ],
+            actions: ['discardPreviouslyTrackedMeasurements', 'setTrackedStudyAndSeries'],
             cond: 'shouldSaveAndStartNewReport',
           },
           // Cancel, back to tracking
@@ -279,9 +279,7 @@ const defaultOptions = {
       console.warn('jumpToFirstMeasurementInActiveViewport: not implemented');
     },
     showStructuredReportDisplaySetInActiveViewport: (ctx, evt) => {
-      console.warn(
-        'showStructuredReportDisplaySetInActiveViewport: not implemented'
-      );
+      console.warn('showStructuredReportDisplaySetInActiveViewport: not implemented');
     },
     clearContext: assign({
       trackedStudy: '',
@@ -302,10 +300,8 @@ const defaultOptions = {
       ignoredSeries: [],
     })),
     setTrackedStudyAndMultipleSeries: assign((ctx, evt) => {
-      const studyInstanceUID =
-        evt.StudyInstanceUID || evt.data.StudyInstanceUID;
-      const seriesInstanceUIDs =
-        evt.SeriesInstanceUIDs || evt.data.SeriesInstanceUIDs;
+      const studyInstanceUID = evt.StudyInstanceUID || evt.data.StudyInstanceUID;
+      const seriesInstanceUIDs = evt.SeriesInstanceUIDs || evt.data.SeriesInstanceUIDs;
 
       return {
         prevTrackedStudy: ctx.trackedStudy,
@@ -338,12 +334,8 @@ const defaultOptions = {
       trackedSeries: [...ctx.trackedSeries, evt.data.SeriesInstanceUID],
     })),
     removeTrackedSeries: assign((ctx, evt) => ({
-      prevTrackedSeries: ctx.trackedSeries
-        .slice()
-        .filter(ser => ser !== evt.SeriesInstanceUID),
-      trackedSeries: ctx.trackedSeries
-        .slice()
-        .filter(ser => ser !== evt.SeriesInstanceUID),
+      prevTrackedSeries: ctx.trackedSeries.slice().filter(ser => ser !== evt.SeriesInstanceUID),
+      trackedSeries: ctx.trackedSeries.slice().filter(ser => ser !== evt.SeriesInstanceUID),
     })),
   },
   guards: {
@@ -367,22 +359,18 @@ const defaultOptions = {
     shouldSetDirty: (ctx, evt) => {
       return (
         // When would this happen?
-        evt.SeriesInstanceUID === undefined ||
-        ctx.trackedSeries.includes(evt.SeriesInstanceUID)
+        evt.SeriesInstanceUID === undefined || ctx.trackedSeries.includes(evt.SeriesInstanceUID)
       );
     },
-    shouldKillMachine: (ctx, evt) =>
-      evt.data && evt.data.userResponse === RESPONSE.NO_NEVER,
-    shouldAddSeries: (ctx, evt) =>
-      evt.data && evt.data.userResponse === RESPONSE.ADD_SERIES,
+    shouldKillMachine: (ctx, evt) => evt.data && evt.data.userResponse === RESPONSE.NO_NEVER,
+    shouldAddSeries: (ctx, evt) => evt.data && evt.data.userResponse === RESPONSE.ADD_SERIES,
     shouldSetStudyAndSeries: (ctx, evt) =>
       evt.data && evt.data.userResponse === RESPONSE.SET_STUDY_AND_SERIES,
     shouldAddIgnoredSeries: (ctx, evt) =>
       evt.data && evt.data.userResponse === RESPONSE.NO_NOT_FOR_SERIES,
     shouldPromptSaveReport: (ctx, evt) =>
       evt.data && evt.data.userResponse === RESPONSE.CREATE_REPORT,
-    shouldIgnoreHydrationForSR: (ctx, evt) =>
-      evt.data && evt.data.userResponse === RESPONSE.CANCEL,
+    shouldIgnoreHydrationForSR: (ctx, evt) => evt.data && evt.data.userResponse === RESPONSE.CANCEL,
     shouldSaveAndContinueWithSameReport: (ctx, evt) =>
       evt.data &&
       evt.data.userResponse === RESPONSE.CREATE_REPORT &&
@@ -396,8 +384,7 @@ const defaultOptions = {
     // Has more than 1, or SeriesInstanceUID is not in list
     // --> Post removal would have non-empty trackedSeries array
     hasRemainingTrackedSeries: (ctx, evt) =>
-      ctx.trackedSeries.length > 1 ||
-      !ctx.trackedSeries.includes(evt.SeriesInstanceUID),
+      ctx.trackedSeries.length > 1 || !ctx.trackedSeries.includes(evt.SeriesInstanceUID),
     hasNotIgnoredSRSeriesForHydration: (ctx, evt) => {
       return !ctx.ignoredSRSeriesForHydration.includes(evt.SeriesInstanceUID);
     },

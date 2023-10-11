@@ -10,10 +10,11 @@ After following the steps outlined in
 OHIF Viewer has data for several studies and their images. You didn't add this
 data, so where is it coming from?
 
-By default, the viewer is configured to connect to a remote server hosted by the
-nice folks over at [dcmjs.org][dcmjs-org]. While convenient for getting started,
-the time may come when you want to develop using your own data either locally or
-remotely.
+By default, the viewer is configured to connect to a Amazon S3 bucket that is hosting
+a Static WADO server (see [Static WADO DICOMWeb](https://github.com/RadicalImaging/static-dicomweb)).
+By default we use `default.js` for the configuration file. You can change this by setting the `APP_CONFIG` environment variable
+and select other options such as `config/local_orthanc.js` or `config/google.js`.
+
 
 ## Configuration Files
 
@@ -33,10 +34,10 @@ window.config = {
   showStudyList: true,
   dataSources: [
     {
-      friendlyName: 'dcmjs DICOMWeb Server',
       namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
       sourceName: 'dicomweb',
       configuration: {
+        friendlyName: 'dcmjs DICOMWeb Server',
         name: 'DCM4CHEE',
         wadoUriRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/wado',
         qidoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
@@ -48,6 +49,7 @@ window.config = {
         enableStudyLazyLoad: true,
         supportsFuzzyMatching: true,
         supportsWildcard: true,
+        omitQuotationForMultipartRequest: true,
       },
     },
   ],
@@ -82,10 +84,10 @@ window.config = ({ servicesManager } = {}) => {
     routerBasename: '/',
     dataSources: [
     {
-      friendlyName: 'dcmjs DICOMWeb Server',
       namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
       sourceName: 'dicomweb',
       configuration: {
+        friendlyName: 'dcmjs DICOMWeb Server',
         name: 'DCM4CHEE',
         wadoUriRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/wado',
         qidoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
@@ -97,6 +99,7 @@ window.config = ({ servicesManager } = {}) => {
         enableStudyLazyLoad: true,
         supportsFuzzyMatching: true,
         supportsWildcard: true,
+        omitQuotationForMultipartRequest: true,
       },
     },
   ],
@@ -105,21 +108,87 @@ window.config = ({ servicesManager } = {}) => {
 };
 ```
 
+
+
+
+
 ## Configuration Options
 
-Here are a list of some options available:
 
+Here are a list of some options available:
+- `disableEditing`:  If true, it disables editing in OHIF, hiding edit buttons in segmentation
+  panel and locking already stored measurements.
 - `maxNumberOfWebWorkers`: The maximum number of web workers to use for
   decoding. Defaults to minimum of `navigator.hardwareConcurrency` and
   what is specified by `maxNumberOfWebWorkers`. Some windows machines require smaller values.
+- `acceptHeader` : accept header to request specific dicom transfer syntax ex : [ 'multipart/related; type=image/jls; q=1', 'multipart/related; type=application/octet-stream; q=0.1' ]
+- `requestTransferSyntaxUID` : Request a specific Transfer syntax from dicom web server ex: 1.2.840.10008.1.2.4.80  (applied only if acceptHeader is not set)
 - `omitQuotationForMultipartRequest`: Some servers (e.g., .NET) require the `multipart/related` request to be sent without quotation marks. Defaults to `false`. If your server doesn't require this, then setting this flag to `true` might improve performance (by removing the need for preflight requests). Also note that
 if auth headers are used, a preflight request is required.
 - `maxNumRequests`: The maximum number of requests to allow in parallel. It is an object with keys of `interaction`, `thumbnail`, and `prefetch`. You can specify a specific number for each type.
+- `modesConfiguration`: Allows overriding modes configuration.
+  - Example config:
+  ```js
+    modesConfiguration: {
+      '@ohif/mode-longitudinal': {
+        displayName: 'Custom Name',
+        routeName: 'customRouteName',
+          routes: [
+            {
+              path: 'customPath',
+              layoutTemplate: () => {
+                /** Custom Layout */
+                return {
+                  id: ohif.layout,
+                  props: {
+                    leftPanels: [tracked.thumbnailList],
+                    rightPanels: [dicomSeg.panel, tracked.measurements],
+                    rightPanelDefaultClosed: true,
+                    viewports: [
+                      {
+                        namespace: tracked.viewport,
+                        displaySetsToDisplay: [ohif.sopClassHandler],
+                      },
+                    ],
+                  },
+                };
+              },
+            },
+          ],
+      }
+    },
+  ```
+  Note: Although the mode configuration is passed to the mode factory function, it is up to the particular mode itself if its going to use it to allow overwriting its original configuration e.g.
+  ```js
+    function modeFactory({ modeConfiguration }) {
+    return {
+      id,
+      routeName: 'viewer',
+      displayName: 'Basic Viewer',
+      ...
+      onModeEnter: ({ servicesManager, extensionManager, commandsManager }) => {
+        ...
+      },
+      /**
+       * This mode allows its configuration to be overwritten by
+       * destructuring the modeConfiguration value from the mode fatory function
+       * at the end of the mode configuration definition.
+       */
+      ...modeConfiguration,
+    };
+  }
+  ```
 - `showLoadingIndicator`: (default to true), if set to false, the loading indicator will not be shown when navigating between studies.
+- `use16BitDataType`: (default to false), if set to true, it will use 16 bit data type for the image data wherever possible which has
+  significant impact on reducing the memory usage. However, the 16Bit textures require EXT_texture_norm16 extension in webGL 2.0 (you can check if you have it here https://webglreport.com/?v=2). In addition to the extension, there are reported problems for Intel Macs that might cause the viewer to crash. In summary, it is great a configuration if you have support for it.
+- `useSharedArrayBuffer` (default to 'TRUE', options: 'AUTO', 'FALSE', 'TRUE', note that these are strings), for volume loading we use sharedArrayBuffer to be able to
+  load the volume progressively as the data arrives (each webworker has the shared buffer and can write to it). However, there might be certain environments that do not support sharedArrayBuffer. In that case, you can set this flag to false and the viewer will use the regular arrayBuffer which might be slower for large volume loading.
+- `supportsWildcard`: (default to false), if set to true, the datasource will support wildcard matching for patient name and patient id.
+- `allowMultiSelectExport`: (default to false), if set to true, the user will be able to select the datasource to export the report to.
 - `dangerouslyUseDynamicConfig`: Dynamic config allows user to pass `configUrl` query string. This allows to load config without recompiling application. If the `configUrl` query string is passed, the worklist and modes will load from the referenced json rather than the default .env config. If there is no `configUrl` path provided, the default behaviour is used and there should not be any deviation from current user experience.<br/>
 Points to consider while using `dangerouslyUseDynamicConfig`:<br/>
   - User have to enable this feature by setting `dangerouslyUseDynamicConfig.enabled:true`. By default it is `false`.
-  - Regex helps to avoid easy exploit. Dafault is `/.*/`. Setup your own regex to choose a specific source of configuration only.
+  - Regex helps to avoid easy exploit. Default is `/.*/`. Setup your own regex to choose a specific source of configuration only.
   - System administrators can return `cross-origin: same-origin` with OHIF files to disallow any loading from other origin. It will block read access to resources loaded from a different origin to avoid potential attack vector.
   - Example config:
     ```js
@@ -134,7 +203,38 @@ Example 2, to restricts to either hosptial.com or othersite.com.<br/>
 `regex: /(https:\/\/hospital.com(\/[0-9A-Za-z.]+)*)|(https:\/\/othersite.com(\/[0-9A-Za-z.]+)*)/` <br/>
 Example usage:<br/>
 `http://localhost:3000/?configUrl=http://localhost:3000/config/example.json`<br/>
-
+- `onConfiguration`: Currently only available for DicomWebDataSource, this option allows the interception of the data source configuration for dynamic values e.g. values coming from url params or query params. Here is an example of building the dicomweb datasource configuration object with values that are based on the route url params:
+   ```
+   {
+     namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
+     sourceName: 'gcpdicomweb',
+     configuration: {
+       friendlyName: 'GCP DICOMWeb Server',
+       name: 'gcpdicomweb',
+       qidoSupportsIncludeField: false,
+       imageRendering: 'wadors',
+       thumbnailRendering: 'wadors',
+       enableStudyLazyLoad: true,
+       supportsFuzzyMatching: false,
+       supportsWildcard: false,
+       singlepart: 'bulkdata,video,pdf',
+       useBulkDataURI: false,
+       onConfiguration: (dicomWebConfig, options) => {
+         const { params } = options;
+         const { project, location, dataset, dicomStore } = params;
+         const pathUrl = `https://healthcare.googleapis.com/v1/projects/${project}/locations/${location}/datasets/${dataset}/dicomStores/${dicomStore}/dicomWeb`;
+         return {
+           ...dicomWebConfig,
+           wadoRoot: pathUrl,
+           qidoRoot: pathUrl,
+           wadoUri: pathUrl,
+           wadoUriRoot: pathUrl,
+         };
+       },
+     },
+   },
+  ```
+This configuration would allow the user to build a dicomweb configuration from a GCP healthcare api path e.g. http://localhost:3000/projects/your-gcp-project/locations/us-central1/datasets/your-dataset/dicomStores/your-dicom-store/study/1.3.6.1.4.1.1234.5.2.1.1234.1234.123123123123123123123123123123
 
 
 <!-- **Embedded Use Note:**
@@ -184,7 +284,7 @@ output.
 [dicom-web]: https://en.wikipedia.org/wiki/DICOMweb
 [storescu]: https://support.dcmtk.org/docs/storescu.html
 [webpack-proxy]: https://webpack.js.org/configuration/dev-server/#devserverproxy
-[orthanc-docker-compose]: https://github.com/OHIF/Viewers/tree/master/.docker/Nginx-Orthanc
+[orthanc-docker-compose]: https://github.com/OHIF/Viewers/tree/master/platform/app/.recipes/Nginx-Orthanc
 <!-- Archives -->
 [dcm4chee]: https://github.com/dcm4che/dcm4chee-arc-light
 [dcm4chee-docker]: https://github.com/dcm4che/dcm4chee-arc-light/wiki/Running-on-Docker

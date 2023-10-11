@@ -11,7 +11,7 @@ There are a number of environment variables we use at build time to influence th
 NODE_ENV=< production | development >
 DEBUG=< true | false >
 APP_CONFIG=< relative path to application configuration file >
-PUBLIC_URL=<>
+PUBLIC_URL=< relative path to application root - default / >
 VERSION_NUMBER=<Set by CircleCI>
 BUILD_NUM=<Set by CircleCI>
 # i18n

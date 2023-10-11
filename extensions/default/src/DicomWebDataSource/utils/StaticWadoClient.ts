@@ -36,24 +36,21 @@ export default class StaticWadoClient extends api.DICOMwebClient {
    * @returns
    */
   async searchForStudies(options) {
-    if (!this.staticWado) return super.searchForStudies(options);
+    if (!this.staticWado) {
+      return super.searchForStudies(options);
+    }
 
     const searchResult = await super.searchForStudies(options);
     const { queryParams } = options;
 
-    if (!queryParams) return searchResult;
+    if (!queryParams) {
+      return searchResult;
+    }
 
     const lowerParams = this.toLowerParams(queryParams);
     const filtered = searchResult.filter(study => {
       for (const key of Object.keys(StaticWadoClient.studyFilterKeys)) {
-        if (
-          !this.filterItem(
-            key,
-            lowerParams,
-            study,
-            StaticWadoClient.studyFilterKeys
-          )
-        ) {
+        if (!this.filterItem(key, lowerParams, study, StaticWadoClient.studyFilterKeys)) {
           return false;
         }
       }
@@ -63,23 +60,20 @@ export default class StaticWadoClient extends api.DICOMwebClient {
   }
 
   async searchForSeries(options) {
-    if (!this.staticWado) return super.searchForSeries(options);
+    if (!this.staticWado) {
+      return super.searchForSeries(options);
+    }
 
     const searchResult = await super.searchForSeries(options);
     const { queryParams } = options;
-    if (!queryParams) return searchResult;
+    if (!queryParams) {
+      return searchResult;
+    }
     const lowerParams = this.toLowerParams(queryParams);
 
     const filtered = searchResult.filter(series => {
       for (const key of Object.keys(StaticWadoClient.seriesFilterKeys)) {
-        if (
-          !this.filterItem(
-            key,
-            lowerParams,
-            series,
-            StaticWadoClient.seriesFilterKeys
-          )
-        ) {
+        if (!this.filterItem(key, lowerParams, series, StaticWadoClient.seriesFilterKeys)) {
           return false;
         }
       }
@@ -112,18 +106,19 @@ export default class StaticWadoClient extends api.DICOMwebClient {
       actual = actual.Alphabetic;
     }
     if (typeof actual == 'string') {
-      if (actual.length === 0) return true;
-      if (desired.length === 0 || desired === '*') return true;
+      if (actual.length === 0) {
+        return true;
+      }
+      if (desired.length === 0 || desired === '*') {
+        return true;
+      }
       if (desired[0] === '*' && desired[desired.length - 1] === '*') {
         // console.log(`Comparing ${actual} to ${desired.substring(1, desired.length - 1)}`)
         return actual.indexOf(desired.substring(1, desired.length - 1)) != -1;
       } else if (desired[desired.length - 1] === '*') {
         return actual.indexOf(desired.substring(0, desired.length - 1)) != -1;
       } else if (desired[0] === '*') {
-        return (
-          actual.indexOf(desired.substring(1)) ===
-          actual.length - desired.length + 1
-        );
+        return actual.indexOf(desired.substring(1)) === actual.length - desired.length + 1;
       }
     }
     return desired === actual;
@@ -131,9 +126,13 @@ export default class StaticWadoClient extends api.DICOMwebClient {
 
   /** Compares a pair of dates to see if the value is within the range */
   compareDateRange(range, value) {
-    if (!value) return true;
+    if (!value) {
+      return true;
+    }
     const dash = range.indexOf('-');
-    if (dash === -1) return this.compareValues(range, value);
+    if (dash === -1) {
+      return this.compareValues(range, value);
+    }
     const start = range.substring(0, dash);
     const end = range.substring(dash + 1);
     return (!start || value >= start) && (!end || value <= end);
@@ -150,12 +149,18 @@ export default class StaticWadoClient extends api.DICOMwebClient {
    */
   filterItem(key: string, queryParams, study, sourceFilterMap) {
     const altKey = sourceFilterMap[key] || key;
-    if (!queryParams) return true;
+    if (!queryParams) {
+      return true;
+    }
     const testValue = queryParams[key] || queryParams[altKey];
-    if (!testValue) return true;
+    if (!testValue) {
+      return true;
+    }
     const valueElem = study[key] || study[altKey];
-    if (!valueElem) return false;
-    if (valueElem.vr == 'DA') {
+    if (!valueElem) {
+      return false;
+    }
+    if (valueElem.vr === 'DA' && valueElem.Value?.[0]) {
       return this.compareDateRange(testValue, valueElem.Value[0]);
     }
     const value = valueElem.Value;

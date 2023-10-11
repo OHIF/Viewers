@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="25px" height="25px" viewBox="0 0 25 25" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>icon-tool-brush</title>
+    <g id="Artboards" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Segmentation---assets" transform="translate(-40, -145)">
+            <g id="icon-tool-brush" transform="translate(40, 145)">
+                <path d="M3.24640621,22.3286833 C3.09173375,22.2551472 2.99513748,22.0971513 3.00018895,21.9259625 C3.00524042,21.7547737 3.11098486,21.6027485 3.26972426,21.5384606 C5.3260304,20.7059201 4.66362518,18.3620247 5.27421252,17.1088957 C6.02197747,15.6026514 7.84114758,14.9766383 9.35746132,15.7037675 C13.9485253,17.9422999 8.48346644,24.8211232 3.24640621,22.3286833 Z" id="Path" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M21.5968442,3.302022 C21.1256527,2.8826075 20.4094461,2.90228142 19.9619901,3.34693083 L9.69255027,13.5887345 C11.0536437,14.0051578 12.1843437,14.9616637 12.8206229,16.2349008 L21.7410706,4.93687606 C22.1347378,4.44008272 22.0714081,3.72222021 21.5968442,3.302022 Z" id="Path" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"></path>
+                <rect id="Rectangle" x="0" y="0" width="25" height="25"></rect>
+            </g>
+        </g>
+    </g>
+</svg>

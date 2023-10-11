@@ -1,6 +1,4 @@
-const debugMode = !!(
-  process.env.NODE_ENV !== 'production' && process.env.REACT_APP_I18N_DEBUG
-);
+const debugMode = !!(process.env.NODE_ENV !== 'production' && process.env.REACT_APP_I18N_DEBUG);
 
 const detectionOptions = {
   // order and from where user language should be detected
@@ -18,7 +16,7 @@ const detectionOptions = {
   excludeCacheFor: ['cimode'], // languages to not persist (cookie, localStorage)
 
   // optional htmlTag with lang attribute, the default is:
-  htmlTag: document.documentElement
+  htmlTag: document.documentElement,
 };
 
 export { debugMode, detectionOptions };

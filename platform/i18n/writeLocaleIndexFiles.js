@@ -21,7 +21,9 @@ const directories = getDirectories(directoryPath);
 
 function writeFile(filepath, name, content) {
   fs.writeFile(path.join(filepath, name), content, err => {
-    if (err) throw err;
+    if (err) {
+      throw err;
+    }
   });
 }
 

@@ -1,7 +1,7 @@
 import { hotkeys } from '@ohif/core';
-import toolbarButtons from './toolbarButtons.js';
-import { id } from './id.js';
-import initToolGroups from './initToolGroups.js';
+import toolbarButtons from './toolbarButtons';
+import { id } from './id';
+import initToolGroups from './initToolGroups';
 
 // Allow this mode by excluding non-imaging modalities such as SR, SEG
 // Also, SM is not a simple imaging modalities, so exclude it.
@@ -14,22 +14,18 @@ const ohif = {
 };
 
 const tracked = {
-  measurements:
-    '@ohif/extension-measurement-tracking.panelModule.trackedMeasurements',
+  measurements: '@ohif/extension-measurement-tracking.panelModule.trackedMeasurements',
   thumbnailList: '@ohif/extension-measurement-tracking.panelModule.seriesList',
-  viewport:
-    '@ohif/extension-measurement-tracking.viewportModule.cornerstone-tracked',
+  viewport: '@ohif/extension-measurement-tracking.viewportModule.cornerstone-tracked',
 };
 
 const dicomsr = {
-  sopClassHandler:
-    '@ohif/extension-cornerstone-dicom-sr.sopClassHandlerModule.dicom-sr',
+  sopClassHandler: '@ohif/extension-cornerstone-dicom-sr.sopClassHandlerModule.dicom-sr',
   viewport: '@ohif/extension-cornerstone-dicom-sr.viewportModule.dicom-sr',
 };
 
 const dicomvideo = {
-  sopClassHandler:
-    '@ohif/extension-dicom-video.sopClassHandlerModule.dicom-video',
+  sopClassHandler: '@ohif/extension-dicom-video.sopClassHandlerModule.dicom-video',
   viewport: '@ohif/extension-dicom-video.viewportModule.dicom-video',
 };
 
@@ -39,16 +35,14 @@ const dicompdf = {
 };
 
 const dicomSeg = {
-  sopClassHandler:
-    '@ohif/extension-cornerstone-dicom-seg.sopClassHandlerModule.dicom-seg',
+  sopClassHandler: '@ohif/extension-cornerstone-dicom-seg.sopClassHandlerModule.dicom-seg',
   viewport: '@ohif/extension-cornerstone-dicom-seg.viewportModule.dicom-seg',
   panel: '@ohif/extension-cornerstone-dicom-seg.panelModule.panelSegmentation',
 };
 
-const dicomRt = {
+const dicomRT = {
   viewport: '@ohif/extension-cornerstone-dicom-rt.viewportModule.dicom-rt',
-  sopClassHandler:
-    '@ohif/extension-cornerstone-dicom-rt.sopClassHandlerModule.dicom-rt',
+  sopClassHandler: '@ohif/extension-cornerstone-dicom-rt.sopClassHandlerModule.dicom-rt',
 };
 
 const extensionDependencies = {
@@ -63,7 +57,7 @@ const extensionDependencies = {
   '@ohif/extension-dicom-video': '^3.0.1',
 };
 
-function modeFactory() {
+function modeFactory({ modeConfiguration }) {
   let _activatePanelTriggersSubscriptions = [];
   return {
     // TODO: We're using this as a route segment
@@ -80,7 +74,7 @@ function modeFactory() {
         toolbarService,
         toolGroupService,
         panelService,
-        segmentationService,
+        customizationService,
       } = servicesManager.services;
 
       measurementService.clearMeasurements();
@@ -93,7 +87,6 @@ function modeFactory() {
       const activateTool = () => {
         toolbarService.recordInteraction({
           groupId: 'WindowLevel',
-          itemId: 'WindowLevel',
           interactionType: 'tool',
           commands: [
             {
@@ -130,6 +123,13 @@ function modeFactory() {
         'MPR',
         'Crosshairs',
         'MoreTools',
+      ]);
+
+      customizationService.addModeCustomizations([
+        {
+          id: 'segmentation.disableEditing',
+          value: true,
+        },
       ]);
 
       // // ActivatePanel event trigger for when a segmentation or measurement is added.
@@ -176,13 +176,12 @@ function modeFactory() {
       series: [],
     },
 
-    isValidMode: function({ modalities }) {
+    isValidMode: function ({ modalities }) {
       const modalities_list = modalities.split('\\');
 
       // Exclude non-image modalities
-      return !!modalities_list.filter(
-        modality => NON_IMAGE_MODALITIES.indexOf(modality) === -1
-      ).length;
+      return !!modalities_list.filter(modality => NON_IMAGE_MODALITIES.indexOf(modality) === -1)
+        .length;
     },
     routes: [
       {
@@ -219,8 +218,8 @@ function modeFactory() {
                   displaySetsToDisplay: [dicomSeg.sopClassHandler],
                 },
                 {
-                  namespace: dicomRt.viewport,
-                  displaySetsToDisplay: [dicomRt.sopClassHandler],
+                  namespace: dicomRT.viewport,
+                  displaySetsToDisplay: [dicomRT.sopClassHandler],
                 },
               ],
             },
@@ -241,9 +240,10 @@ function modeFactory() {
       ohif.sopClassHandler,
       dicompdf.sopClassHandler,
       dicomsr.sopClassHandler,
-      dicomRt.sopClassHandler,
+      dicomRT.sopClassHandler,
     ],
     hotkeys: [...hotkeys.defaults.hotkeyBindings],
+    ...modeConfiguration,
   };
 }
 

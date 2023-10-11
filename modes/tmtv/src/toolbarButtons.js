@@ -24,18 +24,10 @@ function _createButton(type, id, icon, label, commands, tooltip) {
 
 function _createColormap(label, colormap) {
   return {
-    id: label.toString(),
-    title: label,
-    subtitle: label,
+    id: label,
+    label,
     type: 'action',
     commands: [
-      {
-        commandName: 'setFusionPTColormap',
-        commandOptions: {
-          toolGroupId: toolGroupIds.Fusion,
-          colormap,
-        },
-      },
       {
         commandName: 'setFusionPTColormap',
         commandOptions: {
@@ -173,20 +165,6 @@ const toolbarButtons = [
           ],
           'Ellipse Tool'
         ),
-        _createToolButton(
-          'CircleROI',
-          'tool-circle',
-          'Circle',
-          [
-            ..._createCommands('setToolActive', 'CircleROI', [
-              toolGroupIds.CT,
-              toolGroupIds.PT,
-              toolGroupIds.Fusion,
-              // toolGroupIds.MPR,
-            ]),
-          ],
-          'Circle Tool'
-        ),
       ],
     },
   },
@@ -306,9 +284,7 @@ const toolbarButtons = [
       icon: 'tool-create-threshold',
       label: 'Rectangle ROI Threshold',
       commands: [
-        ..._createCommands('setToolActive', 'RectangleROIStartEndThreshold', [
-          toolGroupIds.PT,
-        ]),
+        ..._createCommands('setToolActive', 'RectangleROIStartEndThreshold', [toolGroupIds.PT]),
         {
           commandName: 'displayNotification',
           commandOptions: {
@@ -345,7 +321,6 @@ const toolbarButtons = [
         tooltip: 'PET Image Colormap',
       },
       isAction: true, // ?
-      renderer: WindowLevelMenuItem,
       items: [
         _createColormap('HSV', 'hsv'),
         _createColormap('Hot Iron', 'hot_iron'),

@@ -33,7 +33,11 @@ function transpileJavaScript(mode) {
       rootMode: 'upward',
       envName: mode,
       cacheCompression: false,
-      cacheDirectory: true,
+      // Note: This was causing a lot of issues with yarn link of the cornerstone
+      // only set this to true if you don't have a yarn link to external libs
+      // otherwise expect the lib changes not to be reflected in the dev server
+      // as it will be cached
+      cacheDirectory: false,
     },
   };
 }

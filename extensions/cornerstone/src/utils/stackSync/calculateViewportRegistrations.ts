@@ -1,8 +1,6 @@
 import { Types, getRenderingEngine, utilities } from '@cornerstonejs/core';
 
-export default function calculateViewportRegistrations(
-  viewports: Types.IViewportId[]
-) {
+export default function calculateViewportRegistrations(viewports: Types.IViewportId[]) {
   const viewportPairs = _getViewportPairs(viewports);
 
   for (const [viewport, nextViewport] of viewportPairs) {

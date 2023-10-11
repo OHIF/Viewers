@@ -50,10 +50,13 @@ const HotkeysPreferences = ({
 
   return (
     <div className="flex flex-row justify-center">
-      <div className="flex flex-row w-full justify-evenly">
+      <div className="flex w-full flex-row justify-evenly">
         {splitedHotkeys.map((hotkeys, index) => {
           return (
-            <div key={`HotkeyGroup@${index}`} className="flex flex-row">
+            <div
+              key={`HotkeyGroup@${index}`}
+              className="flex flex-row"
+            >
               <div className="flex flex-col p-2 text-right">
                 {hotkeys.map((hotkey, hotkeyIndex) => {
                   const [id, definition] = hotkey;
@@ -66,13 +69,13 @@ const HotkeysPreferences = ({
                   return (
                     <div
                       key={`HotkeyItem@${hotkeyIndex}`}
-                      className="flex flex-row justify-end mb-2"
+                      className="mb-2 flex flex-row justify-end"
                     >
                       <div className="flex flex-col items-center">
                         <Typography
                           variant="subtitle"
                           className={classNames(
-                            'pr-6 w-full text-right text-primary-light',
+                            'text-primary-light w-full pr-6 text-right',
                             !isFirst && 'hidden'
                           )}
                         >
@@ -81,7 +84,7 @@ const HotkeysPreferences = ({
                         <Typography
                           variant="subtitle"
                           className={classNames(
-                            'pr-6 h-full flex flex-row items-center whitespace-nowrap',
+                            'flex h-full flex-row items-center whitespace-nowrap pr-6',
                             isFirst && 'mt-5'
                           )}
                         >
@@ -92,18 +95,13 @@ const HotkeysPreferences = ({
                         <Typography
                           variant="subtitle"
                           className={classNames(
-                            'pr-6 pl-0 text-left text-primary-light',
+                            'text-primary-light pr-6 pl-0 text-left',
                             !isFirst && 'hidden'
                           )}
                         >
                           {t('Shortcut')}
                         </Typography>
-                        <div
-                          className={classNames(
-                            'flex flex-col w-32',
-                            isFirst && 'mt-5'
-                          )}
-                        >
+                        <div className={classNames('flex w-32 flex-col', isFirst && 'mt-5')}>
                           <HotkeyField
                             disabled={disabled}
                             keys={definition.keys}
@@ -113,9 +111,7 @@ const HotkeysPreferences = ({
                             className="h-8 text-lg"
                           />
                           {error && (
-                            <span className="p-2 text-sm text-left text-red-600">
-                              {error}
-                            </span>
+                            <span className="p-2 text-left text-sm text-red-600">{error}</span>
                           )}
                         </div>
                       </div>

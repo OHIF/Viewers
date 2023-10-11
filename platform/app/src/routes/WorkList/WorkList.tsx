@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import { Link, useNavigate } from 'react-router-dom';
@@ -15,7 +15,7 @@ import { utils, hotkeys, ServicesManager } from '@ohif/core';
 import {
   Icon,
   StudyListExpandedRow,
-  Button,
+  LegacyButton,
   EmptyStudies,
   StudyListTable,
   StudyListPagination,
@@ -77,9 +77,7 @@ function WorkList({
   const shouldUseDefaultSort = sortBy === '' || !sortBy;
   const sortModifier = sortDirection === 'descending' ? 1 : -1;
   const defaultSortValues =
-    shouldUseDefaultSort && canSort
-      ? { sortBy: 'studyDate', sortDirection: 'ascending' }
-      : {};
+    shouldUseDefaultSort && canSort ? { sortBy: 'studyDate', sortDirection: 'ascending' } : {};
   const sortedStudies = studies;
 
   if (canSort) {
@@ -112,6 +110,9 @@ function WorkList({
   const [expandedRows, setExpandedRows] = useState([]);
   const [studiesWithSeriesData, setStudiesWithSeriesData] = useState([]);
   const numOfStudies = studiesTotal;
+  const querying = useMemo(() => {
+    return isLoadingData || expandedRows.length > 0;
+  }, [isLoadingData, expandedRows]);
 
   const setFilterValues = val => {
     if (filterValues.pageNumber === val.pageNumber) {
@@ -126,8 +127,7 @@ function WorkList({
     const rollingPageNumberMod = Math.floor(101 / filterValues.resultsPerPage);
     const rollingPageNumber = oldPageNumber % rollingPageNumberMod;
     const isNextPage = newPageNumber > oldPageNumber;
-    const hasNextPage =
-      Math.max(rollingPageNumber, 1) * resultsPerPage < numOfStudies;
+    const hasNextPage = Math.max(rollingPageNumber, 1) * resultsPerPage < numOfStudies;
 
     if (isNextPage && !hasNextPage) {
       return;
@@ -165,10 +165,7 @@ function WorkList({
 
       // TODO: nesting/recursion?
       if (key === 'studyDate') {
-        if (
-          currValue.startDate &&
-          defaultValue.startDate !== currValue.startDate
-        ) {
+        if (currValue.startDate && defaultValue.startDate !== currValue.startDate) {
           queryString.startDate = currValue.startDate;
         }
         if (currValue.endDate && defaultValue.endDate !== currValue.endDate) {
@@ -218,6 +215,7 @@ function WorkList({
 
       fetchSeries(studyInstanceUid);
     }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [expandedRows, studies]);
 
@@ -301,7 +299,7 @@ function WorkList({
             <>
               <Icon
                 name="group-layers"
-                className={classnames('inline-flex mr-2 w-4', {
+                className={classnames('mr-2 inline-flex w-4', {
                   'text-primary-active': isExpanded,
                   'text-secondary-light': !isExpanded,
                 })}
@@ -336,52 +334,61 @@ function WorkList({
               : []
           }
         >
-          {appConfig.loadedModes.map((mode, i) => {
-            const isFirst = i === 0;
+          <div className="flex flex-row gap-2">
+            {appConfig.loadedModes.map((mode, i) => {
+              const modalitiesToCheck = modalities.replaceAll('/', '\\');
 
-            const modalitiesToCheck = modalities.replaceAll('/', '\\');
-
-            const isValidMode = mode.isValidMode({
-              modalities: modalitiesToCheck,
-              study,
-            });
-            // TODO: Modes need a default/target route? We mostly support a single one for now.
-            // We should also be using the route path, but currently are not
-            // mode.routeName
-            // mode.routes[x].path
-            // Don't specify default data source, and it should just be picked up... (this may not currently be the case)
-            // How do we know which params to pass? Today, it's just StudyInstanceUIDs and configUrl if exists
-            const query = new URLSearchParams();
-            if (filterValues.configUrl) {
-              query.append('configUrl', filterValues.configUrl);
-            }
-            query.append('StudyInstanceUIDs', studyInstanceUid);
-            return (
-              <Link
-                key={i}
-                to={`${dataPath ? '../../' : ''}${mode.routeName}${dataPath ||
-                  ''}?${query.toString()}`}
-                // to={`${mode.routeName}/dicomweb?StudyInstanceUIDs=${studyInstanceUid}`}
-              >
-                <Button
-                  rounded="full"
-                  variant={isValidMode ? 'contained' : 'disabled'}
-                  disabled={!isValidMode}
-                  endIcon={<Icon name="launch-arrow" />} // launch-arrow | launch-info
-                  className={classnames('font-medium	', { 'ml-2': !isFirst })}
-                  onClick={() => {}}
-                >
-                  {t(`Modes:${mode.displayName}`)}
-                </Button>
-              </Link>
-            );
-          })}
+              const isValidMode = mode.isValidMode({
+                modalities: modalitiesToCheck,
+                study,
+              });
+              // TODO: Modes need a default/target route? We mostly support a single one for now.
+              // We should also be using the route path, but currently are not
+              // mode.routeName
+              // mode.routes[x].path
+              // Don't specify default data source, and it should just be picked up... (this may not currently be the case)
+              // How do we know which params to pass? Today, it's just StudyInstanceUIDs and configUrl if exists
+              const query = new URLSearchParams();
+              if (filterValues.configUrl) {
+                query.append('configUrl', filterValues.configUrl);
+              }
+              query.append('StudyInstanceUIDs', studyInstanceUid);
+              return (
+                mode.displayName && (
+                  <Link
+                    className={isValidMode ? '' : 'cursor-not-allowed'}
+                    key={i}
+                    to={`${dataPath ? '../../' : ''}${mode.routeName}${
+                      dataPath || ''
+                    }?${query.toString()}`}
+                    onClick={event => {
+                      // In case any event bubbles up for an invalid mode, prevent the navigation.
+                      // For example, the event bubbles up when the icon embedded in the disabled button is clicked.
+                      if (!isValidMode) {
+                        event.preventDefault();
+                      }
+                    }}
+                    // to={`${mode.routeName}/dicomweb?StudyInstanceUIDs=${studyInstanceUid}`}
+                  >
+                    {/* TODO revisit the completely rounded style of buttons used for launching a mode from the worklist later - for now use LegacyButton*/}
+                    <LegacyButton
+                      rounded="full"
+                      variant={isValidMode ? 'contained' : 'disabled'}
+                      disabled={!isValidMode}
+                      endIcon={<Icon name="launch-arrow" />} // launch-arrow | launch-info
+                      onClick={() => {}}
+                    >
+                      {t(`Modes:${mode.displayName}`)}
+                    </LegacyButton>
+                  </Link>
+                )
+              );
+            })}
+          </div>
         </StudyListExpandedRow>
       ),
       onClickRow: () =>
-        setExpandedRows(s =>
-          isExpanded ? s.filter(n => rowKey !== n) : [...s, rowKey]
-        ),
+        setExpandedRows(s => (isExpanded ? s.filter(n => rowKey !== n) : [...s, rowKey])),
       isExpanded,
     };
   });
@@ -409,16 +416,16 @@ function WorkList({
           title: t('UserPreferencesModal:User Preferences'),
           content: UserPreferences,
           contentProps: {
-            hotkeyDefaults: hotkeysManager.getValidHotkeyDefinitions(
-              hotkeyDefaults
-            ),
+            hotkeyDefaults: hotkeysManager.getValidHotkeyDefinitions(hotkeyDefaults),
             hotkeyDefinitions,
             onCancel: hide,
             currentLanguage: currentLanguage(),
             availableLanguages,
             defaultLanguage,
             onSubmit: state => {
-              i18n.changeLanguage(state.language.value);
+              if (state.language.value !== currentLanguage().value) {
+                i18n.changeLanguage(state.language.value);
+              }
               hotkeysManager.setHotkeys(state.hotkeyDefinitions);
               hide();
             },
@@ -434,9 +441,7 @@ function WorkList({
       icon: 'power-off',
       title: t('Header:Logout'),
       onClick: () => {
-        navigate(
-          `/logout?redirect_uri=${encodeURIComponent(window.location.href)}`
-        );
+        navigate(`/logout?redirect_uri=${encodeURIComponent(window.location.href)}`);
       },
     });
   }
@@ -445,7 +450,7 @@ function WorkList({
   const { component: dicomUploadComponent } =
     customizationService.get('dicomUploadComponent') ?? {};
   const uploadProps =
-    dicomUploadComponent && dataSource.getConfig().dicomUploadEnabled
+    dicomUploadComponent && dataSource.getConfig()?.dicomUploadEnabled
       ? {
           title: 'Upload files',
           closeButton: true,
@@ -468,15 +473,18 @@ function WorkList({
         }
       : undefined;
 
+  const { component: dataSourceConfigurationComponent } =
+    customizationService.get('ohif.dataSourceConfigurationComponent') ?? {};
+
   return (
-    <div className="bg-black h-screen flex flex-col ">
+    <div className="flex h-screen flex-col bg-black ">
       <Header
         isSticky
         menuOptions={menuOptions}
         isReturnEnabled={false}
         WhiteLabeling={appConfig.whiteLabeling}
       />
-      <div className="overflow-y-auto ohif-scrollbar flex flex-col grow">
+      <div className="ohif-scrollbar flex grow flex-col overflow-y-auto">
         <StudyListFilter
           numOfStudies={pageNumber * resultsPerPage > 100 ? 101 : numOfStudies}
           filtersMeta={filtersMeta}
@@ -485,12 +493,16 @@ function WorkList({
           clearFilters={() => setFilterValues(defaultFilterValues)}
           isFiltering={isFiltering(filterValues, defaultFilterValues)}
           onUploadClick={uploadProps ? () => show(uploadProps) : undefined}
+          getDataSourceConfigurationComponent={
+            dataSourceConfigurationComponent ? () => dataSourceConfigurationComponent() : undefined
+          }
         />
         {hasStudies ? (
-          <div className="grow flex flex-col">
+          <div className="flex grow flex-col">
             <StudyListTable
               tableDataSource={tableDataSource.slice(offset, offsetAndTake)}
               numOfStudies={numOfStudies}
+              querying={querying}
               filtersMeta={filtersMeta}
             />
             <div className="grow">
@@ -505,7 +517,7 @@ function WorkList({
         ) : (
           <div className="flex flex-col items-center justify-center pt-48">
             {appConfig.showLoadingIndicator && isLoadingData ? (
-              <LoadingIndicatorProgress className={'w-full h-full bg-black'} />
+              <LoadingIndicatorProgress className={'h-full w-full bg-black'} />
             ) : (
               <EmptyStudies />
             )}
@@ -563,9 +575,7 @@ function _getQueryFilterValues(params) {
       endDate: params.get('enddate') || null,
     },
     description: params.get('description'),
-    modalities: params.get('modalities')
-      ? params.get('modalities').split(',')
-      : [],
+    modalities: params.get('modalities') ? params.get('modalities').split(',') : [],
     accession: params.get('accession'),
     sortBy: params.get('sortby'),
     sortDirection: params.get('sortdirection'),
@@ -589,9 +599,7 @@ function _sortStringDates(s1, s2, sortModifier) {
   const s2Date = moment(s2.date, ['YYYYMMDD', 'YYYY.MM.DD'], true);
 
   if (s1Date.isValid() && s2Date.isValid()) {
-    return (
-      (s1Date.toISOString() > s2Date.toISOString() ? 1 : -1) * sortModifier
-    );
+    return (s1Date.toISOString() > s2Date.toISOString() ? 1 : -1) * sortModifier;
   } else if (s1Date.isValid()) {
     return sortModifier;
   } else if (s2Date.isValid()) {

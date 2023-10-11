@@ -1,5 +1,5 @@
 import React from 'react';
-import { Input, Dialog } from '@ohif/ui';
+import { Input, Dialog, ButtonEnums } from '@ohif/ui';
 
 /**
  *
@@ -21,11 +21,7 @@ function callInputDialog(
   dialogConfig: any = {}
 ) {
   const dialogId = 'dialog-enter-annotation';
-  const label = data
-    ? isArrowAnnotateInputDialog
-      ? data.text
-      : data.label
-    : '';
+  const label = data ? (isArrowAnnotateInputDialog ? data.text : data.label) : '';
   const {
     dialogTitle = 'Annotation',
     inputLabel = 'Enter your annotation',
@@ -35,8 +31,9 @@ function callInputDialog(
   const onSubmitHandler = ({ action, value }) => {
     switch (action.id) {
       case 'save':
-        if (typeof validateFunc === 'function' && !validateFunc(value.label))
+        if (typeof validateFunc === 'function' && !validateFunc(value.label)) {
           return;
+        }
 
         callback(value.label, action.id);
         break;
@@ -60,15 +57,15 @@ function callInputDialog(
         noCloseButton: true,
         onClose: () => uiDialogService.dismiss({ id: dialogId }),
         actions: [
-          { id: 'cancel', text: 'Cancel', type: 'primary' },
-          { id: 'save', text: 'Save', type: 'secondary' },
+          { id: 'cancel', text: 'Cancel', type: ButtonEnums.type.secondary },
+          { id: 'save', text: 'Save', type: ButtonEnums.type.primary },
         ],
         onSubmit: onSubmitHandler,
         body: ({ value, setValue }) => {
           return (
             <Input
               autoFocus
-              className="bg-black border-primary-main"
+              className="border-primary-main bg-black"
               type="text"
               id="annotation"
               label={inputLabel}

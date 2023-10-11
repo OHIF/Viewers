@@ -11,7 +11,7 @@ export default async function findRequiredOhifExtensionsForMode(yarnInfo) {
   const dependencies = [];
   const ohifExtensions = [];
 
-  Object.keys(peerDependencies).forEach((packageName) => {
+  Object.keys(peerDependencies).forEach(packageName => {
     dependencies.push({
       packageName,
       version: peerDependencies[packageName],

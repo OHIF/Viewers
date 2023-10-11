@@ -8,5 +8,6 @@ import moment from 'moment';
  * @returns {string} Formatted date
  */
 export default (date, format = 'DD-MMM-YYYY') => {
-  return moment(date).format(format);
+  // moment(undefined) returns the current date, so return the empty string instead
+  return date ? moment(date).format(format) : '';
 };

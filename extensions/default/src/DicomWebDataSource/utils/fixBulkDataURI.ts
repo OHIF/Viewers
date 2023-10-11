@@ -20,10 +20,7 @@ function fixBulkDataURI(value, instance, dicomWebConfig) {
   // in case of the relative path, make it absolute. The current DICOM standard says
   // the bulkdataURI is relative to the series. However, there are situations where
   // it can be relative to the study too
-  if (
-    !value.BulkDataURI.startsWith('http') &&
-    !value.BulkDataURI.startsWith('/')
-  ) {
+  if (!value.BulkDataURI.startsWith('http') && !value.BulkDataURI.startsWith('/')) {
     if (dicomWebConfig.bulkDataURI?.relativeResolution === 'studies') {
       value.BulkDataURI = `${dicomWebConfig.wadoRoot}/studies/${instance.StudyInstanceUID}/${value.BulkDataURI}`;
     } else if (

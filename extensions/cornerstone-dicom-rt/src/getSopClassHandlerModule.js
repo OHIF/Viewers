@@ -7,11 +7,7 @@ const sopClassUids = ['1.2.840.10008.5.1.4.1.1.481.3'];
 
 let loadPromises = {};
 
-function _getDisplaySetsFromSeries(
-  instances,
-  servicesManager,
-  extensionManager
-) {
+function _getDisplaySetsFromSeries(instances, servicesManager, extensionManager) {
   const instance = instances[0];
 
   const {
@@ -56,10 +52,7 @@ function _getDisplaySetsFromSeries(
   };
 
   let referencedSeriesSequence = instance.ReferencedSeriesSequence;
-  if (
-    instance.ReferencedFrameOfReferenceSequence &&
-    !instance.ReferencedSeriesSequence
-  ) {
+  if (instance.ReferencedFrameOfReferenceSequence && !instance.ReferencedSeriesSequence) {
     instance.ReferencedSeriesSequence = _deriveReferencedSeriesSequenceFromFrameOfReferenceSequence(
       instance.ReferencedFrameOfReferenceSequence
     );
@@ -72,8 +65,7 @@ function _getDisplaySetsFromSeries(
 
   const referencedSeries = referencedSeriesSequence[0];
 
-  displaySet.referencedImages =
-    instance.ReferencedSeriesSequence.ReferencedInstanceSequence;
+  displaySet.referencedImages = instance.ReferencedSeriesSequence.ReferencedInstanceSequence;
   displaySet.referencedSeriesInstanceUID = referencedSeries.SeriesInstanceUID;
 
   displaySet.getReferenceDisplaySet = () => {
@@ -88,14 +80,12 @@ function _getDisplaySetsFromSeries(
 
     const referencedDisplaySet = referencedDisplaySets[0];
 
-    displaySet.referencedDisplaySetInstanceUID =
-      referencedDisplaySet.displaySetInstanceUID;
+    displaySet.referencedDisplaySetInstanceUID = referencedDisplaySet.displaySetInstanceUID;
 
     return referencedDisplaySet;
   };
 
-  displaySet.load = ({ headers }) =>
-    _load(displaySet, servicesManager, extensionManager, headers);
+  displaySet.load = ({ headers }) => _load(displaySet, servicesManager, extensionManager, headers);
 
   return [displaySet];
 }
@@ -194,11 +184,7 @@ function getSopClassHandlerModule({ servicesManager, extensionManager }) {
       name: 'dicom-rt',
       sopClassUids,
       getDisplaySetsFromSeries: instances => {
-        return _getDisplaySetsFromSeries(
-          instances,
-          servicesManager,
-          extensionManager
-        );
+        return _getDisplaySetsFromSeries(instances, servicesManager, extensionManager);
       },
     },
   ];

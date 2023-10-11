@@ -74,7 +74,7 @@ _Upload your first Study:_
 #### Orthanc: Learn More
 
 You can see the `docker-compose.yml` file this command runs at
-[`<project-root>/.docker/Nginx-Orthanc/`][orthanc-docker-compose], and more on
+[`<project-root>/platform/app/.recipes/Nginx-Orthanc`][orthanc-docker-compose], and more on
 Orthanc for Docker in [Orthanc's documentation][orthanc-docker].
 
 #### Connecting to Orthanc
@@ -131,10 +131,10 @@ window.config = {
   showStudyList: true,
   dataSources: [
     {
-      friendlyName: 'dcmjs DICOMWeb Server',
       namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
       sourceName: 'dicomweb',
       configuration: {
+        friendlyName: 'dcmjs DICOMWeb Server',
         name: 'DCM4CHEE',
         wadoUriRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/wado',
         qidoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
@@ -159,6 +159,13 @@ The following properties can be added to the `configuration` property of each da
 
 ##### `dicomUploadEnabled`
 A boolean indicating if the DICOM upload to the data source is permitted/accepted or not. A value of true provides a link on the OHIF work list page that allows for DICOM files from the local file system to be uploaded to the data source
+
+:::tip
+The [OHIF plugin for Orthanc](https://book.orthanc-server.com/plugins/ohif.html) by default utilizes the DICOM JSON data
+source and it has been discovered that only those studies uploaded to Orthanc AFTER the plugin has been installed are
+available as DICOM JSON. As such, if the OHIF plugin for Orthanc is desired for studies uploaded prior to installing the plugin,
+then consider switching to using [DICOMweb instead](https://book.orthanc-server.com/plugins/ohif.html#using-dicomweb).
+:::
 
 ![toolbarModule-layout](../../assets/img/uploader.gif)
 
@@ -212,7 +219,7 @@ An overview of steps for running OHIF Viewer using a local DCM4CHEE is shown
 below:
 
 <div style={{padding:"56.25% 0 0 0", position:"relative"}}>
-    <iframe src="https://player.vimeo.com/video/557570043?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" frameBorder="0" allow="autoplay; fullscreen; picture-in-picture" allowFullScreen style= {{ position:"absolute",top:0,left:0,width:"100%",height:"100%"}} title="measurement-report"></iframe>
+    <iframe src="https://player.vimeo.com/video/843233881?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" frameBorder="0" allow="autoplay; fullscreen; picture-in-picture" allowFullScreen style= {{ position:"absolute",top:0,left:0,width:"100%",height:"100%"}} title="measurement-report"></iframe>
 </div>
 
 [dcm4chee]: https://github.com/dcm4che/dcm4chee-arc-light
@@ -230,3 +237,5 @@ below:
   https://github.com/OHIF/Viewers/tree/master/platform/app/public/html-templates
 [config-files]:
   https://github.com/OHIF/Viewers/tree/master/platform/app/public/config
+[storescu]: http://support.dcmtk.org/docs/storescu.html
+[webpack-proxy]: https://webpack.js.org/configuration/dev-server/#devserverproxy

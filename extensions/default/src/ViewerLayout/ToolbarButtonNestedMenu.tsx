@@ -40,8 +40,8 @@ NestedMenu.propTypes = {
 };
 
 NestedMenu.defaultProps = {
-  icon: "tool-more-menu",
-  label: "More",
+  icon: 'tool-more-menu',
+  label: 'More',
 };
 
 export default NestedMenu;

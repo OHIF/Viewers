@@ -8,7 +8,6 @@ window.config = {
   extensions: [],
   modes: [],
   // below flag is for performance reasons, but it might not work for all servers
-  omitQuotationForMultipartRequest: true,
   showWarningMessageForCrossOrigin: true,
   showCPUFallbackMessage: true,
   showLoadingIndicator: true,
@@ -16,10 +15,10 @@ window.config = {
   defaultDataSourceName: 'dicomweb',
   dataSources: [
     {
-      friendlyName: 'DCM4CHEE Server',
       namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
       sourceName: 'dicomweb',
       configuration: {
+        friendlyName: 'DCM4CHEE Server',
         name: 'DCM4CHEE',
         wadoUriRoot: 'http://localhost:8080/dcm4chee-arc/aets/DCM4CHEE/wado',
         qidoRoot: 'http://localhost:8080/dcm4chee-arc/aets/DCM4CHEE/rs',
@@ -39,21 +38,23 @@ window.config = {
         bulkDataURI: {
           enabled: true,
         },
+        omitQuotationForMultipartRequest: true,
       },
     },
     {
-      friendlyName: 'dicom json',
       namespace: '@ohif/extension-default.dataSourcesModule.dicomjson',
       sourceName: 'dicomjson',
       configuration: {
+        friendlyName: 'dicom json',
         name: 'json',
       },
     },
     {
-      friendlyName: 'dicom local',
       namespace: '@ohif/extension-default.dataSourcesModule.dicomlocal',
       sourceName: 'dicomlocal',
-      configuration: {},
+      configuration: {
+        friendlyName: 'dicom local',
+      },
     },
   ],
   studyListFunctionsEnabled: true,

@@ -3,14 +3,10 @@ export const sopClassDictionary = {
   ComputedRadiographyImageStorage: '1.2.840.10008.5.1.4.1.1.1',
   DigitalXRayImageStorageForPresentation: '1.2.840.10008.5.1.4.1.1.1.1',
   DigitalXRayImageStorageForProcessing: '1.2.840.10008.5.1.4.1.1.1.1.1',
-  DigitalMammographyXRayImageStorageForPresentation:
-    '1.2.840.10008.5.1.4.1.1.1.2',
-  DigitalMammographyXRayImageStorageForProcessing:
-    '1.2.840.10008.5.1.4.1.1.1.2.1',
-  DigitalIntraOralXRayImageStorageForPresentation:
-    '1.2.840.10008.5.1.4.1.1.1.3',
-  DigitalIntraOralXRayImageStorageForProcessing:
-    '1.2.840.10008.5.1.4.1.1.1.3.1',
+  DigitalMammographyXRayImageStorageForPresentation: '1.2.840.10008.5.1.4.1.1.1.2',
+  DigitalMammographyXRayImageStorageForProcessing: '1.2.840.10008.5.1.4.1.1.1.2.1',
+  DigitalIntraOralXRayImageStorageForPresentation: '1.2.840.10008.5.1.4.1.1.1.3',
+  DigitalIntraOralXRayImageStorageForProcessing: '1.2.840.10008.5.1.4.1.1.1.3.1',
   CTImageStorage: '1.2.840.10008.5.1.4.1.1.2',
   EnhancedCTImageStorage: '1.2.840.10008.5.1.4.1.1.2.1',
   LegacyConvertedEnhancedCTImageStorage: '1.2.840.10008.5.1.4.1.1.2.2',
@@ -23,14 +19,10 @@ export const sopClassDictionary = {
   UltrasoundImageStorage: '1.2.840.10008.5.1.4.1.1.6.1',
   EnhancedUSVolumeStorage: '1.2.840.10008.5.1.4.1.1.6.2',
   SecondaryCaptureImageStorage: '1.2.840.10008.5.1.4.1.1.7',
-  MultiframeSingleBitSecondaryCaptureImageStorage:
-    '1.2.840.10008.5.1.4.1.1.7.1',
-  MultiframeGrayscaleByteSecondaryCaptureImageStorage:
-    '1.2.840.10008.5.1.4.1.1.7.2',
-  MultiframeGrayscaleWordSecondaryCaptureImageStorage:
-    '1.2.840.10008.5.1.4.1.1.7.3',
-  MultiframeTrueColorSecondaryCaptureImageStorage:
-    '1.2.840.10008.5.1.4.1.1.7.4',
+  MultiframeSingleBitSecondaryCaptureImageStorage: '1.2.840.10008.5.1.4.1.1.7.1',
+  MultiframeGrayscaleByteSecondaryCaptureImageStorage: '1.2.840.10008.5.1.4.1.1.7.2',
+  MultiframeGrayscaleWordSecondaryCaptureImageStorage: '1.2.840.10008.5.1.4.1.1.7.3',
+  MultiframeTrueColorSecondaryCaptureImageStorage: '1.2.840.10008.5.1.4.1.1.7.4',
   Sop12LeadECGWaveformStorage: '1.2.840.10008.5.1.4.1.1.9.1.1',
   GeneralECGWaveformStorage: '1.2.840.10008.5.1.4.1.1.9.1.2',
   AmbulatoryECGWaveformStorage: '1.2.840.10008.5.1.4.1.1.9.1.3',
@@ -44,8 +36,7 @@ export const sopClassDictionary = {
   ColorSoftcopyPresentationStateStorage: '1.2.840.10008.5.1.4.1.1.11.2',
   PseudoColorSoftcopyPresentationStateStorage: '1.2.840.10008.5.1.4.1.1.11.3',
   BlendingSoftcopyPresentationStateStorage: '1.2.840.10008.5.1.4.1.1.11.4',
-  XAXRFGrayscaleSoftcopyPresentationStateStorage:
-    '1.2.840.10008.5.1.4.1.1.11.5',
+  XAXRFGrayscaleSoftcopyPresentationStateStorage: '1.2.840.10008.5.1.4.1.1.11.5',
   XRayAngiographicImageStorage: '1.2.840.10008.5.1.4.1.1.12.1',
   EnhancedXAImageStorage: '1.2.840.10008.5.1.4.1.1.12.1.1',
   XRayRadiofluoroscopicImageStorage: '1.2.840.10008.5.1.4.1.1.12.2',
@@ -53,14 +44,11 @@ export const sopClassDictionary = {
   XRay3DAngiographicImageStorage: '1.2.840.10008.5.1.4.1.1.13.1.1',
   XRay3DCraniofacialImageStorage: '1.2.840.10008.5.1.4.1.1.13.1.2',
   BreastTomosynthesisImageStorage: '1.2.840.10008.5.1.4.1.1.13.1.3',
-  BreastProjectionXRayImageStorageForPresentation:
-    '1.2.840.10008.5.1.4.1.1.13.1.4',
-  BreastProjectionXRayImageStorageForProcessing:
-    '1.2.840.10008.5.1.4.1.1.13.1.5',
+  BreastProjectionXRayImageStorageForPresentation: '1.2.840.10008.5.1.4.1.1.13.1.4',
+  BreastProjectionXRayImageStorageForProcessing: '1.2.840.10008.5.1.4.1.1.13.1.5',
   IntravascularOpticalCoherenceTomographyImageStorageForPresentation:
     '1.2.840.10008.5.1.4.1.1.14.1',
-  IntravascularOpticalCoherenceTomographyImageStorageForProcessing:
-    '1.2.840.10008.5.1.4.1.1.14.2',
+  IntravascularOpticalCoherenceTomographyImageStorageForProcessing: '1.2.840.10008.5.1.4.1.1.14.2',
   NuclearMedicineImageStorage: '1.2.840.10008.5.1.4.1.1.20',
   RawDataStorage: '1.2.840.10008.5.1.4.1.1.66',
   SpatialRegistrationStorage: '1.2.840.10008.5.1.4.1.1.66.1',
@@ -92,8 +80,7 @@ export const sopClassDictionary = {
   OphthalmicAxialMeasurementsStorage: '1.2.840.10008.5.1.4.1.1.78.7',
   IntraocularLensCalculationsStorage: '1.2.840.10008.5.1.4.1.1.78.8',
   MacularGridThicknessandVolumeReport: '1.2.840.10008.5.1.4.1.1.79.1',
-  OphthalmicVisualFieldStaticPerimetryMeasurementsStorage:
-    '1.2.840.10008.5.1.4.1.1.80.1',
+  OphthalmicVisualFieldStaticPerimetryMeasurementsStorage: '1.2.840.10008.5.1.4.1.1.80.1',
   OphthalmicThicknessMapStorage: '1.2.840.10008.5.1.4.1.1.81.1',
   CornealTopographyMapStorage: '1.2.840.10008.5.1.4.1.1.82.1',
   BasicTextSR: '1.2.840.10008.5.1.4.1.1.88.11',

@@ -16,7 +16,7 @@ const ThumbnailList = ({
   return (
     <div
       id="ohif-thumbnail-list"
-      className="py-3 bg-black overflow-y-hidden ohif-scrollbar study-min-height"
+      className="ohif-scrollbar study-min-height overflow-y-hidden bg-black py-3"
     >
       {thumbnails.map(
         ({
@@ -34,11 +34,11 @@ const ThumbnailList = ({
           canReject,
           onReject,
           imageSrc,
+          messages,
           imageAltText,
+          isHydratedForDerivedDisplaySet,
         }) => {
-          const isActive = activeDisplaySetInstanceUIDs.includes(
-            displaySetInstanceUID
-          );
+          const isActive = activeDisplaySetInstanceUIDs.includes(displaySetInstanceUID);
           switch (componentType) {
             case 'thumbnail':
               return (
@@ -52,12 +52,11 @@ const ThumbnailList = ({
                   countIcon={countIcon}
                   imageSrc={imageSrc}
                   imageAltText={imageAltText}
+                  messages={messages}
                   viewportIdentificator={viewportIdentificator}
                   isActive={isActive}
                   onClick={() => onThumbnailClick(displaySetInstanceUID)}
-                  onDoubleClick={() =>
-                    onThumbnailDoubleClick(displaySetInstanceUID)
-                  }
+                  onDoubleClick={() => onThumbnailDoubleClick(displaySetInstanceUID)}
                 />
               );
             case 'thumbnailTracked':
@@ -72,13 +71,12 @@ const ThumbnailList = ({
                   countIcon={countIcon}
                   imageSrc={imageSrc}
                   imageAltText={imageAltText}
+                  messages={messages}
                   viewportIdentificator={viewportIdentificator}
                   isTracked={isTracked}
                   isActive={isActive}
                   onClick={() => onThumbnailClick(displaySetInstanceUID)}
-                  onDoubleClick={() =>
-                    onThumbnailDoubleClick(displaySetInstanceUID)
-                  }
+                  onDoubleClick={() => onThumbnailDoubleClick(displaySetInstanceUID)}
                   onClickUntrack={() => onClickUntrack(displaySetInstanceUID)}
                 />
               );
@@ -91,15 +89,15 @@ const ThumbnailList = ({
                   dragData={dragData}
                   modality={modality}
                   modalityTooltip={_getModalityTooltip(modality)}
+                  messages={messages}
                   seriesDate={seriesDate}
                   description={description}
                   canReject={canReject}
                   onReject={onReject}
                   onClick={() => onThumbnailClick(displaySetInstanceUID)}
-                  onDoubleClick={() =>
-                    onThumbnailDoubleClick(displaySetInstanceUID)
-                  }
+                  onDoubleClick={() => onThumbnailDoubleClick(displaySetInstanceUID)}
                   viewportIdentificator={viewportIdentificator}
+                  isHydratedForDerivedDisplaySet={isHydratedForDerivedDisplaySet}
                 />
               );
             default:
@@ -155,7 +153,7 @@ function _getModalityTooltip(modality) {
 const _modalityTooltips = {
   SR: 'Structured Report',
   SEG: 'Segmentation',
-  RT: 'RT Structure Set',
+  RTSTRUCT: 'RT Structure Set',
 };
 
 export default ThumbnailList;

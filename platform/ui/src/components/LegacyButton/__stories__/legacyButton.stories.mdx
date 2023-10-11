@@ -1,0 +1,193 @@
+import LegacyButton from '../LegacyButton';
+import { ArgsTable, Story, Canvas, Meta } from '@storybook/addon-docs';
+import {
+  createComponentTemplate,
+  createStoryMetaSettings,
+} from '../../../storybook/functions/create-component-story';
+
+export const argTypes = {
+  component: LegacyButton,
+  title: 'Components/LegacyButton',
+};
+
+<Meta
+  title="Components/LegacyButton"
+  component={LegacyButton}
+/>
+
+export const buttonTemplate = createComponentTemplate(LegacyButton);
+
+<Heading
+  title="LegacyButton"
+  componentRelativePath="LegacyButton/LegacyButton.tsx"
+/>
+
+- [Overview](#overview)
+- [Props](#props)
+- [Usage](#usage)
+- [Contribute](#contribute)
+
+## Overview
+
+You can use the legacy button component to create a button. It can be used in different ways, the
+default button is a simple button with a text.
+
+<Canvas>
+  <Story
+    name="Overview"
+    args={{ children: 'LegacyButton', color: 'default' }}
+  >
+    {buttonTemplate.bind({})}
+  </Story>
+</Canvas>
+
+## Props
+
+<ArgsTable of={LegacyButton} />
+
+## Usage
+
+### Variants
+
+There can be different variants of buttons: `text`, `outlined`, `contained`, and `disabled`.
+
+<Canvas>
+  <Story name="Variants">
+    <div className="flex space-x-2">
+      <LegacyButton variant="text">Text LegacyButton</LegacyButton>
+      <LegacyButton variant="outlined">Outlined LegacyButton</LegacyButton>
+      <LegacyButton variant="contained">Contained LegacyButton</LegacyButton>
+      <LegacyButton variant="disabled">Disabled LegacyButton</LegacyButton>
+    </div>
+  </Story>
+</Canvas>
+
+### Colors
+
+There are different colors for the legacy button: `default`, `primary`, `secondary`, `white`,
+`black`, `inherit`, `light`.
+
+<Canvas>
+  <Story name="Colors">
+    <div className="flex space-x-2">
+      <LegacyButton color="default">Default LegacyButton</LegacyButton>
+      <LegacyButton color="primary">Primary LegacyButton</LegacyButton>
+      <LegacyButton color="secondary">Secondary LegacyButton</LegacyButton>
+      <LegacyButton color="white">White LegacyButton</LegacyButton>
+      <LegacyButton color="black">Black LegacyButton</LegacyButton>
+      <LegacyButton color="inherit">Inherit LegacyButton</LegacyButton>
+      <LegacyButton color="light">Light LegacyButton</LegacyButton>
+    </div>
+  </Story>
+</Canvas>
+
+### Mixing props
+
+You can mix different props together to create a legacy button.
+
+<Canvas>
+  <Story name="Custom">
+    <LegacyButton
+      color="secondary"
+      variant="outlined"
+    >
+      Custom LegacyButton
+    </LegacyButton>
+  </Story>
+</Canvas>
+
+### Disabled
+
+You can disable the legacy button by setting the variant to `disabled`.
+
+<Canvas>
+  <Story name="Disabled">
+    <LegacyButton variant="disabled">Disabled LegacyButton</LegacyButton>
+  </Story>
+</Canvas>
+
+### Start/End Icons
+
+You can add an icon to the start of the legacy button. It accepts an icon component.
+
+<Canvas>
+  <Story name="Start Icon">
+    {() => {
+      // svg icon for github
+      const Github = () => {
+        return (
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="feather feather-github"
+          >
+            <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+          </svg>
+        );
+      };
+      return <LegacyButton startIcon={<Github />}>Start Icon LegacyButton</LegacyButton>;
+    }}
+  </Story>
+</Canvas>
+
+End Icon is the same as start icon, but for the end of the legacy button.
+
+<Canvas>
+  <Story name="End Icon">
+    {() => {
+      // svg icon for github
+      const Github = () => {
+        return (
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="feather feather-github"
+          >
+            <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+          </svg>
+        );
+      };
+      return (
+        <LegacyButton
+          startIcon={<Github />}
+          endIcon={<Github />}
+        >
+          Start and End Icon LegacyButton
+        </LegacyButton>
+      );
+    }}
+  </Story>
+</Canvas>
+
+### Full width
+
+You can make the legacy button full width by setting the `fullWidth` prop to `true`.
+
+<Canvas>
+  <Story name="Full Width">
+    <LegacyButton
+      fullWidth
+      color="secondary"
+    >
+      Full Width LegacyButton
+    </LegacyButton>
+  </Story>
+</Canvas>
+
+## Contribute
+
+<Footer componentRelativePath="LegacyButton/__stories__/legacyButton.stories.mdx" />

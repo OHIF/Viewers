@@ -4,10 +4,14 @@ import path from 'path';
 async function editPackageJson(options) {
   const { name, version, description, author, license, targetDir } = options;
 
+  const ohifVersion = fs.readFileSync('./version.txt', 'utf8');
+
   // read package.json from targetDir
   const dependenciesPath = path.join(targetDir, 'dependencies.json');
   const rawData = fs.readFileSync(dependenciesPath, 'utf8');
-  const packageJson = JSON.parse(rawData);
+
+  const dataWithOHIFVersion = rawData.replace(/\{LATEST_OHIF_VERSION\}/g, ohifVersion);
+  const packageJson = JSON.parse(dataWithOHIFVersion);
 
   // edit package.json
   const mergedObj = Object.assign(

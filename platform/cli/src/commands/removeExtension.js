@@ -19,8 +19,7 @@ export default async function removeExtension(packageName) {
       },
       {
         title: `Checking if ${packageName} is in use by an installed mode`,
-        task: async () =>
-          await throwIfExtensionUsedByInstalledMode(packageName),
+        task: async () => await throwIfExtensionUsedByInstalledMode(packageName),
       },
       {
         title: `Uninstalling npm package: ${packageName}`,
@@ -39,9 +38,7 @@ export default async function removeExtension(packageName) {
   await tasks
     .run()
     .then(() => {
-      console.log(
-        `${chalk.green.bold(`Removed ohif-extension ${packageName}`)} `
-      );
+      console.log(`${chalk.green.bold(`Removed ohif-extension ${packageName}`)} `);
     })
     .catch(error => {
       console.log(error.message);

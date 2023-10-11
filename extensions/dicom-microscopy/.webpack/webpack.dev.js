@@ -7,7 +7,6 @@ const ENTRY = {
   app: `${SRC_DIR}/index.tsx`,
 };
 
-
 module.exports = (env, argv) => {
   return webpackCommon(env, argv, { SRC_DIR, DIST_DIR, ENTRY });
 };

@@ -39,6 +39,8 @@ describe('Top level exports', () => {
       'UserAuthenticationService',
       'IWebApiDataSource',
       'DicomMetadataStore',
+      'DisplaySetMessage',
+      'DisplaySetMessageList',
       'pubSubServiceInterface',
       'PubSubService',
       'PanelService',

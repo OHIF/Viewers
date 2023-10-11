@@ -8,9 +8,15 @@ export const argTypes = {
   title: 'Foundations/Typography',
 };
 
-<Meta title="Foundations/Typography" component={Typography} />
+<Meta
+  title="Foundations/Typography"
+  component={Typography}
+/>
 
-<Heading title="Typography" componentRelativePath="Typography/Typography.js" />
+<Heading
+  title="Typography"
+  componentRelativePath="Typography/Typography.js"
+/>
 
 - [Overview](#overview)
 - [Props](#props)
@@ -23,7 +29,10 @@ Typography is a component that renders the Typographys.
 
 <Canvas>
   <Story name="Overview">
-    <Typography variant="h1" className="text-blue-800">
+    <Typography
+      variant="h1"
+      className="text-blue-800"
+    >
       Heading 1
     </Typography>
   </Story>
@@ -37,34 +46,64 @@ There are several variants of the Typography component.
 
 <Canvas>
   <Story name="Variants">
-    <Typography variant="h1" className="text-blue-800">
+    <Typography
+      variant="h1"
+      className="text-blue-800"
+    >
       Heading 1
     </Typography>
-    <Typography variant="h2" className="text-blue-800">
+    <Typography
+      variant="h2"
+      className="text-blue-800"
+    >
       Heading 2
     </Typography>
-    <Typography variant="h3" className="text-blue-800">
+    <Typography
+      variant="h3"
+      className="text-blue-800"
+    >
       Heading 3
     </Typography>
-    <Typography variant="h4" className="text-blue-800">
+    <Typography
+      variant="h4"
+      className="text-blue-800"
+    >
       Heading 4
     </Typography>
-    <Typography variant="h5" className="text-blue-800">
+    <Typography
+      variant="h5"
+      className="text-blue-800"
+    >
       Heading 5
     </Typography>
-    <Typography variant="h6" className="text-blue-800">
+    <Typography
+      variant="h6"
+      className="text-blue-800"
+    >
       Heading 6
     </Typography>
-    <Typography variant="p" className="text-blue-800">
+    <Typography
+      variant="p"
+      className="text-blue-800"
+    >
       Paragraph
     </Typography>
-    <Typography variant="subtitle" className="text-blue-800">
+    <Typography
+      variant="subtitle"
+      className="text-blue-800"
+    >
       Subtitle
     </Typography>
-    <Typography variant="caption" className="text-blue-800">
+    <Typography
+      variant="caption"
+      className="text-blue-800"
+    >
       Caption
     </Typography>
-    <Typography variant="body" className="text-blue-800">
+    <Typography
+      variant="body"
+      className="text-blue-800"
+    >
       Body
     </Typography>
   </Story>
@@ -76,16 +115,28 @@ You can use the `color` prop to change the color of the text.
 
 <Canvas>
   <Story name="Text Color">
-    <Typography variant="h5" color="primary">
+    <Typography
+      variant="h5"
+      color="primary"
+    >
       Primary Color
     </Typography>
-    <Typography variant="h5" color="secondary">
+    <Typography
+      variant="h5"
+      color="secondary"
+    >
       Secondary Color
     </Typography>
-    <Typography variant="h5" color="error">
+    <Typography
+      variant="h5"
+      color="error"
+    >
       Error Color
     </Typography>
-    <Typography variant="h5" color="inherit">
+    <Typography
+      variant="h5"
+      color="inherit"
+    >
       Inherit Color
     </Typography>
   </Story>
@@ -97,7 +148,10 @@ You can use the `className` prop to add a custom className to the Typography.
 
 <Canvas>
   <Story name="Custom Class">
-    <Typography variant="h5" className="text-red-400">
+    <Typography
+      variant="h5"
+      className="text-red-400"
+    >
       Custom Red Color
     </Typography>
   </Story>
@@ -107,36 +161,48 @@ You can use the `className` prop to add a custom className to the Typography.
 
 <Canvas>
   <Story name="Align">
-    <Typography variant="body" align="left" color="primary">
-      Align Left: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
-      tincidunt tempus ante, non blandit sem vehicula ac. Vestibulum in dolor
-      commodo, elementum massa scelerisque, molestie nulla. Aenean sed odio
-      interdum, rutrum ex at, volutpat diam. Donec vel tristique sem, eget
-      iaculis velit. Aenean placerat justo
+    <Typography
+      variant="body"
+      align="left"
+      color="primary"
+    >
+      Align Left: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed tincidunt tempus
+      ante, non blandit sem vehicula ac. Vestibulum in dolor commodo, elementum massa scelerisque,
+      molestie nulla. Aenean sed odio interdum, rutrum ex at, volutpat diam. Donec vel tristique
+      sem, eget iaculis velit. Aenean placerat justo
     </Typography>
     <br />
-    <Typography variant="body" align="center" color="primary">
-      Align Center: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
-      tincidunt tempus ante, non blandit sem vehicula ac. Vestibulum in dolor
-      commodo, elementum massa scelerisque, molestie nulla. Aenean sed odio
-      interdum, rutrum ex at, volutpat diam. Donec vel tristique sem, eget
-      iaculis velit. Aenean placerat justo
+    <Typography
+      variant="body"
+      align="center"
+      color="primary"
+    >
+      Align Center: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed tincidunt tempus
+      ante, non blandit sem vehicula ac. Vestibulum in dolor commodo, elementum massa scelerisque,
+      molestie nulla. Aenean sed odio interdum, rutrum ex at, volutpat diam. Donec vel tristique
+      sem, eget iaculis velit. Aenean placerat justo
     </Typography>
     <br />
-    <Typography variant="body" align="right" color="primary">
-      Align Right: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
-      tincidunt tempus ante, non blandit sem vehicula ac. Vestibulum in dolor
-      commodo, elementum massa scelerisque, molestie nulla. Aenean sed odio
-      interdum, rutrum ex at, volutpat diam. Donec vel tristique sem, eget
-      iaculis velit. Aenean placerat justo
+    <Typography
+      variant="body"
+      align="right"
+      color="primary"
+    >
+      Align Right: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed tincidunt tempus
+      ante, non blandit sem vehicula ac. Vestibulum in dolor commodo, elementum massa scelerisque,
+      molestie nulla. Aenean sed odio interdum, rutrum ex at, volutpat diam. Donec vel tristique
+      sem, eget iaculis velit. Aenean placerat justo
     </Typography>
     <br />
-    <Typography variant="body" align="justify" color="primary">
-      Align Justify: Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-      Sed tincidunt tempus ante, non blandit sem vehicula ac. Vestibulum in
-      dolor commodo, elementum massa scelerisque, molestie nulla. Aenean sed
-      odio interdum, rutrum ex at, volutpat diam. Donec vel tristique sem, eget
-      iaculis velit. Aenean placerat justo
+    <Typography
+      variant="body"
+      align="justify"
+      color="primary"
+    >
+      Align Justify: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed tincidunt tempus
+      ante, non blandit sem vehicula ac. Vestibulum in dolor commodo, elementum massa scelerisque,
+      molestie nulla. Aenean sed odio interdum, rutrum ex at, volutpat diam. Donec vel tristique
+      sem, eget iaculis velit. Aenean placerat justo
     </Typography>
   </Story>
 </Canvas>

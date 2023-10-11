@@ -1,6 +1,16 @@
 #!/bin/sh
 
-envsubst '${PORT}' < /usr/src/default.conf.template > /etc/nginx/conf.d/default.conf
+if [ -n "$SSL_PORT" ]
+  then
+    envsubst '${SSL_PORT}:${PORT}' < /usr/src/default.ssl.conf.template > /etc/nginx/conf.d/default.conf
+  else
+    envsubst '${PORT}' < /usr/src/default.conf.template > /etc/nginx/conf.d/default.conf
+fi
+
+if [ -n "$APP_CONFIG" ]
+  then
+    echo "$APP_CONFIG" > /usr/share/nginx/html/app-config.js
+fi
 
 if [ -n "$CLIENT_ID" ] || [ -n "$HEALTHCARE_API_ENDPOINT" ]
   then

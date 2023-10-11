@@ -13,16 +13,13 @@ import { vec3 } from 'gl-matrix';
 
 import './ViewportOrientationMarkers.css';
 
-const {
-  getOrientationStringLPS,
-  invertOrientationStringLPS,
-} = utilities.orientation;
+const { getOrientationStringLPS, invertOrientationStringLPS } = utilities.orientation;
 
 function ViewportOrientationMarkers({
   element,
   viewportData,
   imageSliceData,
-  viewportIndex,
+  viewportId,
   servicesManager,
   orientationMarkers = ['top', 'left'],
 }) {
@@ -33,9 +30,7 @@ function ViewportOrientationMarkers({
   const { cornerstoneViewportService } = servicesManager.services;
 
   useEffect(() => {
-    const cameraModifiedListener = (
-      evt: Types.EventTypes.CameraModifiedEvent
-    ) => {
+    const cameraModifiedListener = (evt: Types.EventTypes.CameraModifiedEvent) => {
       const { rotation, previousCamera, camera } = evt.detail;
 
       if (rotation !== undefined) {
@@ -57,16 +52,10 @@ function ViewportOrientationMarkers({
       }
     };
 
-    element.addEventListener(
-      Enums.Events.CAMERA_MODIFIED,
-      cameraModifiedListener
-    );
+    element.addEventListener(Enums.Events.CAMERA_MODIFIED, cameraModifiedListener);
 
     return () => {
-      element.removeEventListener(
-        Enums.Events.CAMERA_MODIFIED,
-        cameraModifiedListener
-      );
+      element.removeEventListener(Enums.Events.CAMERA_MODIFIED, cameraModifiedListener);
     };
   }, []);
 
@@ -85,8 +74,7 @@ function ViewportOrientationMarkers({
         return false;
       }
 
-      ({ rowCosines, columnCosines } =
-        metaData.get('imagePlaneModule', imageId) || {});
+      ({ rowCosines, columnCosines } = metaData.get('imagePlaneModule', imageId) || {});
     } else {
       if (!element || !getEnabledElement(element)) {
         return '';
@@ -114,9 +102,7 @@ function ViewportOrientationMarkers({
       flipHorizontal
     );
 
-    const ohifViewport = cornerstoneViewportService.getViewportInfoByIndex(
-      viewportIndex
-    );
+    const ohifViewport = cornerstoneViewportService.getViewportInfo(viewportId);
 
     if (!ohifViewport) {
       console.log('ViewportOrientationMarkers::No viewport');
@@ -126,9 +112,7 @@ function ViewportOrientationMarkers({
 
     // Todo: probably this can be done in a better way in which we identify bright
     // background
-    const isLight = backgroundColor
-      ? csUtils.isEqual(backgroundColor, [1, 1, 1])
-      : false;
+    const isLight = backgroundColor ? csUtils.isEqual(backgroundColor, [1, 1, 1]) : false;
 
     return orientationMarkers.map((m, index) => (
       <div
@@ -174,13 +158,7 @@ ViewportOrientationMarkers.defaultProps = {
  * @param {*} rotation in degrees
  * @returns
  */
-function _getOrientationMarkers(
-  rowCosines,
-  columnCosines,
-  rotation,
-  flipVertical,
-  flipHorizontal
-) {
+function _getOrientationMarkers(rowCosines, columnCosines, rotation, flipVertical, flipHorizontal) {
   const rowString = getOrientationStringLPS(rowCosines);
   const columnString = getOrientationStringLPS(columnCosines);
   const oppositeRowString = invertOrientationStringLPS(rowString);

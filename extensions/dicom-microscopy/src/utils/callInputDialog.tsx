@@ -1,5 +1,5 @@
 import React from 'react';
-import { Input, Dialog } from '@ohif/ui';
+import { Input, Dialog, ButtonEnums } from '@ohif/ui';
 
 /**
  *
@@ -14,7 +14,7 @@ export default function callInputDialog({
   uiDialogService,
   title = 'Annotation',
   defaultValue = '',
-  callback = (value: string, action: string) => {}
+  callback = (value: string, action: string) => {},
 }) {
   const dialogId = 'microscopy-input-dialog';
 
@@ -43,8 +43,8 @@ export default function callInputDialog({
         noCloseButton: true,
         onClose: () => uiDialogService.dismiss({ id: dialogId }),
         actions: [
-          { id: 'cancel', text: 'Cancel', type: 'primary' },
-          { id: 'save', text: 'Save', type: 'secondary' },
+          { id: 'cancel', text: 'Cancel', type: ButtonEnums.type.secondary },
+          { id: 'save', text: 'Save', type: ButtonEnums.type.primary },
         ],
         onSubmit: onSubmitHandler,
         body: ({ value, setValue }) => {
@@ -53,7 +53,7 @@ export default function callInputDialog({
               label="Enter your annotation"
               labelClassName="text-white text-[14px] leading-[1.2]"
               autoFocus
-              className="bg-black border-primary-main"
+              className="border-primary-main bg-black"
               type="text"
               value={value.defaultValue}
               onChange={event => {

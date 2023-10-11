@@ -20,38 +20,29 @@ const VIEWPORT_ID = 'cornerstone-viewport-download-form';
 
 const CornerstoneViewportDownloadForm = ({
   onClose,
-  activeViewportIndex,
+  activeViewportId: activeViewportIdProp,
   cornerstoneViewportService,
 }) => {
-  const enabledElement = OHIFgetEnabledElement(activeViewportIndex);
+  const enabledElement = OHIFgetEnabledElement(activeViewportIdProp);
   const activeViewportElement = enabledElement?.element;
   const activeViewportEnabledElement = getEnabledElement(activeViewportElement);
 
-  const {
-    viewportId: activeViewportId,
-    renderingEngineId,
-  } = activeViewportEnabledElement;
+  const { viewportId: activeViewportId, renderingEngineId } = activeViewportEnabledElement;
 
-  const toolGroup = ToolGroupManager.getToolGroupForViewport(
-    activeViewportId,
-    renderingEngineId
-  );
+  const toolGroup = ToolGroupManager.getToolGroupForViewport(activeViewportId, renderingEngineId);
 
-  const toolModeAndBindings = Object.keys(toolGroup.toolOptions).reduce(
-    (acc, toolName) => {
-      const tool = toolGroup.toolOptions[toolName];
-      const { mode, bindings } = tool;
+  const toolModeAndBindings = Object.keys(toolGroup.toolOptions).reduce((acc, toolName) => {
+    const tool = toolGroup.toolOptions[toolName];
+    const { mode, bindings } = tool;
 
-      return {
-        ...acc,
-        [toolName]: {
-          mode,
-          bindings,
-        },
-      };
-    },
-    {}
-  );
+    return {
+      ...acc,
+      [toolName]: {
+        mode,
+        bindings,
+      },
+    };
+  }, {});
 
   useEffect(() => {
     return () => {
@@ -64,9 +55,7 @@ const CornerstoneViewportDownloadForm = ({
 
   const enableViewport = viewportElement => {
     if (viewportElement) {
-      const { renderingEngine, viewport } = getEnabledElement(
-        activeViewportElement
-      );
+      const { renderingEngine, viewport } = getEnabledElement(activeViewportElement);
 
       const viewportInput = {
         viewportId: VIEWPORT_ID,
@@ -91,11 +80,7 @@ const CornerstoneViewportDownloadForm = ({
     }
   };
 
-  const updateViewportPreview = (
-    downloadViewportElement,
-    internalCanvas,
-    fileType
-  ) =>
+  const updateViewportPreview = (downloadViewportElement, internalCanvas, fileType) =>
     new Promise(resolve => {
       const enabledElement = getEnabledElement(downloadViewportElement);
 
@@ -133,10 +118,7 @@ const CornerstoneViewportDownloadForm = ({
 
           resolve({ dataUrl, width: newWidth, height: newHeight });
 
-          downloadViewportElement.removeEventListener(
-            Enums.Events.IMAGE_RENDERED,
-            updateViewport
-          );
+          downloadViewportElement.removeEventListener(Enums.Events.IMAGE_RENDERED, updateViewport);
         }
       );
     });
@@ -144,9 +126,7 @@ const CornerstoneViewportDownloadForm = ({
   const loadImage = (activeViewportElement, viewportElement, width, height) =>
     new Promise(resolve => {
       if (activeViewportElement && viewportElement) {
-        const activeViewportEnabledElement = getEnabledElement(
-          activeViewportElement
-        );
+        const activeViewportEnabledElement = getEnabledElement(activeViewportElement);
 
         if (!activeViewportEnabledElement) {
           return;
@@ -162,15 +142,16 @@ const CornerstoneViewportDownloadForm = ({
           const properties = viewport.getProperties();
 
           downloadViewport.setStack([imageId]).then(() => {
-            downloadViewport.setProperties(properties);
+            try {
+              downloadViewport.setProperties(properties);
+              const newWidth = Math.min(width || image.width, MAX_TEXTURE_SIZE);
+              const newHeight = Math.min(height || image.height, MAX_TEXTURE_SIZE);
 
-            const newWidth = Math.min(width || image.width, MAX_TEXTURE_SIZE);
-            const newHeight = Math.min(
-              height || image.height,
-              MAX_TEXTURE_SIZE
-            );
-
-            resolve({ width: newWidth, height: newHeight });
+              resolve({ width: newWidth, height: newHeight });
+            } catch (e) {
+              // Happens on clicking the cancel button
+              console.warn('Unable to set properties', e);
+            }
           });
         } else if (downloadViewport instanceof VolumeViewport) {
           const actors = viewport.getActors();
@@ -190,31 +171,19 @@ const CornerstoneViewportDownloadForm = ({
       }
     });
 
-  const toggleAnnotations = (
-    toggle,
-    viewportElement,
-    activeViewportElement
-  ) => {
-    const activeViewportEnabledElement = getEnabledElement(
-      activeViewportElement
-    );
+  const toggleAnnotations = (toggle, viewportElement, activeViewportElement) => {
+    const activeViewportEnabledElement = getEnabledElement(activeViewportElement);
 
     const downloadViewportElement = getEnabledElement(viewportElement);
 
-    const {
-      viewportId: activeViewportId,
-      renderingEngineId,
-    } = activeViewportEnabledElement;
+    const { viewportId: activeViewportId, renderingEngineId } = activeViewportEnabledElement;
     const { viewportId: downloadViewportId } = downloadViewportElement;
 
     if (!activeViewportEnabledElement || !downloadViewportElement) {
       return;
     }
 
-    const toolGroup = ToolGroupManager.getToolGroupForViewport(
-      activeViewportId,
-      renderingEngineId
-    );
+    const toolGroup = ToolGroupManager.getToolGroupForViewport(activeViewportId, renderingEngineId);
 
     // add the viewport to the toolGroup
     toolGroup.addViewport(downloadViewportId, renderingEngineId);
@@ -268,7 +237,7 @@ const CornerstoneViewportDownloadForm = ({
 
 CornerstoneViewportDownloadForm.propTypes = {
   onClose: PropTypes.func,
-  activeViewportIndex: PropTypes.number.isRequired,
+  activeViewportId: PropTypes.string.isRequired,
 };
 
 export default CornerstoneViewportDownloadForm;

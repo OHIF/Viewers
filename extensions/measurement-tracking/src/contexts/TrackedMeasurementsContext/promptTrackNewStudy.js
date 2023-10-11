@@ -9,17 +9,14 @@ const RESPONSE = {
 
 function promptTrackNewStudy({ servicesManager, extensionManager }, ctx, evt) {
   const { UIViewportDialogService } = servicesManager.services;
-  const { viewportIndex, StudyInstanceUID, SeriesInstanceUID } = evt;
+  const { viewportId, StudyInstanceUID, SeriesInstanceUID } = evt;
 
-  return new Promise(async function(resolve, reject) {
-    let promptResult = await _askTrackMeasurements(
-      UIViewportDialogService,
-      viewportIndex
-    );
+  return new Promise(async function (resolve, reject) {
+    let promptResult = await _askTrackMeasurements(UIViewportDialogService, viewportId);
 
     if (promptResult === RESPONSE.SET_STUDY_AND_SERIES) {
       promptResult = ctx.isDirty
-        ? await _askSaveDiscardOrCancel(UIViewportDialogService, viewportIndex)
+        ? await _askSaveDiscardOrCancel(UIViewportDialogService, viewportId)
         : RESPONSE.SET_STUDY_AND_SERIES;
     }
 
@@ -27,14 +24,14 @@ function promptTrackNewStudy({ servicesManager, extensionManager }, ctx, evt) {
       userResponse: promptResult,
       StudyInstanceUID,
       SeriesInstanceUID,
-      viewportIndex,
+      viewportId,
       isBackupSave: false,
     });
   });
 }
 
-function _askTrackMeasurements(UIViewportDialogService, viewportIndex) {
-  return new Promise(function(resolve, reject) {
+function _askTrackMeasurements(UIViewportDialogService, viewportId) {
+  return new Promise(function (resolve, reject) {
     const message = 'Track measurements for this series?';
     const actions = [
       { type: 'cancel', text: 'No', value: RESPONSE.CANCEL },
@@ -55,7 +52,7 @@ function _askTrackMeasurements(UIViewportDialogService, viewportIndex) {
     };
 
     UIViewportDialogService.show({
-      viewportIndex,
+      viewportId,
       type: 'info',
       message,
       actions,
@@ -68,8 +65,8 @@ function _askTrackMeasurements(UIViewportDialogService, viewportIndex) {
   });
 }
 
-function _askSaveDiscardOrCancel(UIViewportDialogService, viewportIndex) {
-  return new Promise(function(resolve, reject) {
+function _askSaveDiscardOrCancel(UIViewportDialogService, viewportId) {
+  return new Promise(function (resolve, reject) {
     const message =
       'Measurements cannot span across multiple studies. Do you want to save your tracked measurements?';
     const actions = [
@@ -91,7 +88,7 @@ function _askSaveDiscardOrCancel(UIViewportDialogService, viewportIndex) {
     };
 
     UIViewportDialogService.show({
-      viewportIndex,
+      viewportId,
       type: 'warning',
       message,
       actions,

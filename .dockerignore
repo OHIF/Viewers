@@ -1,6 +1,12 @@
 # Reduces size of context and hides
 # files from Docker (can't COPY or ADD these)
 
+# Note that typically the Docker context for various OHIF containers is the
+# directory of this file (i.e. the root of the source). As such, this is
+# the .dockerignore file for ALL Docker containers that are built. For example,
+# the Docker containers built from the recipes in ./platform/app/.recipes will
+# have this file as their .dockerignore.
+
 # Output
 dist/
 build/
@@ -28,3 +34,4 @@ dockerfile
 .vscode/
 coverage/
 docs/
+testdata/

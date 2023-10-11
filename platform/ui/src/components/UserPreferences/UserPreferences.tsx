@@ -6,6 +6,7 @@ import Select from '../Select';
 import Typography from '../Typography';
 import Button from '../Button';
 import HotkeysPreferences from '../HotkeysPreferences';
+import { ButtonEnums } from '../Button';
 
 const UserPreferences = ({
   availableLanguages,
@@ -65,11 +66,11 @@ const UserPreferences = ({
 
   const Section = ({ title, children }) => (
     <>
-      <div className="border-b-2 border-black mb-2">
+      <div className="mb-2 border-b-2 border-black">
         <Typography
           variant="inherit"
           color="primaryLight"
-          className="flex text-[16px] font-semibold pb-2 !leading-[1.2]"
+          className="flex pb-2 text-[16px] font-semibold !leading-[1.2]"
         >
           {title}
         </Typography>
@@ -81,8 +82,11 @@ const UserPreferences = ({
   return (
     <>
       <Section title={t('General')}>
-        <div className="flex flex-row justify-center items-center w-72">
-          <Typography variant="subtitle" className="mr-5 text-right h-full">
+        <div className="flex w-72 flex-row items-center justify-center">
+          <Typography
+            variant="subtitle"
+            className="mr-5 h-full text-right"
+          >
             {t('Language')}
           </Typography>
           <Select
@@ -104,22 +108,21 @@ const UserPreferences = ({
       </Section>
       <div className="flex flex-row justify-between">
         <Button
-          variant="outlined"
-          border="light"
+          type={ButtonEnums.type.secondary}
           onClick={onResetHandler}
           disabled={disabled}
         >
           {t('Reset to Defaults')}
         </Button>
         <div className="flex flex-row">
-          <Button variant="outlined" border="light" onClick={onCancelHandler}>
+          <Button
+            type={ButtonEnums.type.secondary}
+            onClick={onCancelHandler}
+          >
             {t('Cancel')}
           </Button>
           <Button
-            variant="contained"
             disabled={state.isDisabled}
-            color="light"
-            border="light"
             className="ml-2"
             onClick={onSubmitHandler}
           >

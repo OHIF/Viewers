@@ -15,10 +15,8 @@ export default function sortInstances(instances: Array<any>) {
     return instances;
   }
 
-  const {
-    ImagePositionPatient: referenceImagePositionPatient,
-    ImageOrientationPatient,
-  } = instances[Math.floor(instances.length / 2)]; // this prevents getting scout image as test image
+  const { ImagePositionPatient: referenceImagePositionPatient, ImageOrientationPatient } =
+    instances[Math.floor(instances.length / 2)]; // this prevents getting scout image as test image
 
   if (!referenceImagePositionPatient || !ImageOrientationPatient) {
     return instances;
@@ -49,11 +47,7 @@ export default function sortInstances(instances: Array<any>) {
 
     const positionVector = vec3.create();
 
-    vec3.sub(
-      positionVector,
-      referenceImagePositionPatient,
-      imagePositionPatient
-    );
+    vec3.sub(positionVector, referenceImagePositionPatient, imagePositionPatient);
 
     const distance = vec3.dot(positionVector, scanAxisNormal);
 

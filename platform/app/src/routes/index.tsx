@@ -10,9 +10,58 @@ import Debug from './Debug';
 import NotFound from './NotFound';
 import buildModeRoutes from './buildModeRoutes';
 import PrivateRoute from './PrivateRoute';
+import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
+
+const NotFoundServer = ({
+  message = 'Unable to query for studies at this time. Check your data source configuration or network connection',
+}) => {
+  return (
+    <div className="absolute flex h-full w-full items-center justify-center text-white">
+      <div>
+        <h4>{message}</h4>
+      </div>
+    </div>
+  );
+};
+
+NotFoundServer.propTypes = {
+  message: PropTypes.string,
+};
+
+const NotFoundStudy = () => {
+  return (
+    <div className="absolute flex h-full w-full items-center justify-center text-white">
+      <div>
+        <h4>
+          One or more of the requested studies are not available at this time. Return to the{' '}
+          <Link
+            className="text-primary-light"
+            to={'/'}
+          >
+            study list
+          </Link>{' '}
+          to select a different study to view.
+        </h4>
+      </div>
+    </div>
+  );
+};
+
+NotFoundStudy.propTypes = {
+  message: PropTypes.string,
+};
 
 // TODO: Include "routes" debug route if dev build
 const bakedInRoutes = [
+  {
+    path: '/notfoundserver',
+    children: NotFoundServer,
+  },
+  {
+    path: '/notfoundstudy',
+    children: NotFoundStudy,
+  },
   {
     path: '/debug',
     children: Debug,
@@ -56,12 +105,10 @@ const createRoutes = ({
     path: '/',
     children: DataSourceWrapper,
     private: true,
-    props: { children: WorkList, servicesManager },
+    props: { children: WorkList, servicesManager, extensionManager },
   };
 
-  const customRoutes = customizationService.getGlobalCustomization(
-    'customRoutes'
-  );
+  const customRoutes = customizationService.getGlobalCustomization('customRoutes');
   const allRoutes = [
     ...routes,
     ...(showStudyList ? [WorkListRoute] : []),
@@ -73,7 +120,10 @@ const createRoutes = ({
   function RouteWithErrorBoundary({ route, ...rest }) {
     // eslint-disable-next-line react/jsx-props-no-spreading
     return (
-      <ErrorBoundary context={`Route ${route.path}`} fallbackRoute="/">
+      <ErrorBoundary
+        context={`Route ${route.path}`}
+        fallbackRoute="/"
+      >
         <route.children
           {...rest}
           {...route.props}
@@ -99,11 +149,7 @@ const createRoutes = ({
             exact
             path={route.path}
             element={
-              <PrivateRoute
-                handleUnauthenticated={
-                  userAuthenticationService.handleUnauthenticated
-                }
-              >
+              <PrivateRoute handleUnauthenticated={userAuthenticationService.handleUnauthenticated}>
                 <RouteWithErrorBoundary route={route} />
               </PrivateRoute>
             }

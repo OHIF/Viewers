@@ -1,8 +1,5 @@
 function isObject(subject) {
-  return (
-    subject instanceof Object ||
-    (typeof subject === 'object' && subject !== null)
-  );
+  return subject instanceof Object || (typeof subject === 'object' && subject !== null);
 }
 
 function isString(subject) {

@@ -15,11 +15,7 @@ export function createComponentTemplate(ComponentClass) {
 //   { options: [], mapping: {} }
 // );
 
-export function createStoryMetaSettings({
-  component,
-  enumPropNamesArray,
-  iconPropNamesArray,
-}) {
+export function createStoryMetaSettings({ component, enumPropNamesArray, iconPropNamesArray }) {
   const argTypes = {};
 
   // set enum allowed values inside argsTypes object
@@ -32,7 +28,9 @@ export function createStoryMetaSettings({
     }
   });
 
-  if (component === Avatar) console.log(argTypes);
+  if (component === Avatar) {
+    console.log(argTypes);
+  }
 
   // set icon allowed values inside argsTypes object
   iconPropNamesArray?.forEach(propName => {

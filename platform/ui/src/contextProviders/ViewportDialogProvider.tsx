@@ -1,14 +1,7 @@
-import React, {
-  useState,
-  createContext,
-  useContext,
-  useCallback,
-  useEffect,
-} from 'react';
+import React, { useState, createContext, useContext, useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 const DEFAULT_STATE = {
-  viewportIndex: null,
   message: undefined,
   type: 'info', // "error" | "warning" | "info" | "success"
   actions: undefined, // array of { type, text, value }
@@ -19,7 +12,7 @@ const DEFAULT_STATE = {
     console.log('btn value?');
   },
   onOutsideClick: () => {
-    console.warn('default: onOutsideClick')
+    console.warn('default: onOutsideClick');
   },
   onDismiss: () => {
     console.log('dismiss? -1');
@@ -45,19 +38,12 @@ const ViewportDialogProvider = ({ children, service }) => {
     }
   }, [hide, service, show]);
 
-  return (
-    <Provider value={[viewportDialogState, { show, hide }]}>
-      {children}
-    </Provider>
-  );
+  return <Provider value={[viewportDialogState, { show, hide }]}>{children}</Provider>;
 };
 
 ViewportDialogProvider.propTypes = {
   /** Children that will be wrapped with Modal Context */
-  children: PropTypes.oneOfType([
-    PropTypes.arrayOf(PropTypes.node),
-    PropTypes.node,
-  ]).isRequired,
+  children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]).isRequired,
   service: PropTypes.shape({
     setServiceImplementation: PropTypes.func,
   }),

@@ -16,8 +16,7 @@ export const cornerstone = {
 };
 
 const dicomvideo = {
-  sopClassHandler:
-    '@ohif/extension-dicom-video.sopClassHandlerModule.dicom-video',
+  sopClassHandler: '@ohif/extension-dicom-video.sopClassHandlerModule.dicom-video',
   viewport: '@ohif/extension-dicom-video.viewportModule.dicom-video',
 };
 
@@ -36,7 +35,7 @@ const extensionDependencies = {
   '@ohif/extension-dicom-microscopy': '^3.0.0',
 };
 
-function modeFactory() {
+function modeFactory({ modeConfiguration }) {
   return {
     // TODO: We're using this as a route segment
     // We should not be.
@@ -52,10 +51,7 @@ function modeFactory() {
 
       toolbarService.init(extensionManager);
       toolbarService.addButtons(toolbarButtons);
-      toolbarService.createButtonSection('primary', [
-        'MeasurementTools',
-        'dragPan',
-      ]);
+      toolbarService.createButtonSection('primary', ['MeasurementTools', 'dragPan']);
     },
 
     onModeExit: ({ servicesManager }) => {
@@ -89,13 +85,10 @@ function modeFactory() {
               leftPanels: [ohif.leftPanel],
               leftPanelDefaultClosed: true, // we have problem with rendering thumbnails for microscopy images
               rightPanelDefaultClosed: true, // we do not have the save microscopy measurements yet
-              rightPanels: [
-                '@ohif/extension-dicom-microscopy.panelModule.measure',
-              ],
+              rightPanels: ['@ohif/extension-dicom-microscopy.panelModule.measure'],
               viewports: [
                 {
-                  namespace:
-                    '@ohif/extension-dicom-microscopy.viewportModule.microscopy-dicom',
+                  namespace: '@ohif/extension-dicom-microscopy.viewportModule.microscopy-dicom',
                   displaySetsToDisplay: [
                     '@ohif/extension-dicom-microscopy.sopClassHandlerModule.DicomMicroscopySopClassHandler',
                     '@ohif/extension-dicom-microscopy.sopClassHandlerModule.DicomMicroscopySRSopClassHandler',
@@ -130,6 +123,7 @@ function modeFactory() {
       dicompdf.sopClassHandler,
     ],
     hotkeys: [...hotkeys.defaults.hotkeyBindings],
+    ...modeConfiguration,
   };
 }
 
