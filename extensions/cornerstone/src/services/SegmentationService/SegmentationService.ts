@@ -40,7 +40,7 @@ const EVENTS = {
   SEGMENTATION_CONFIGURATION_CHANGED: 'event::segmentation_configuration_changed',
   // fired when the active segment is loaded in SEG or RTSTRUCT
   SEGMENT_LOADING_COMPLETE: 'event::segment_loading_complete',
-  // for all segments
+  // loading completed for all segments
   SEGMENTATION_LOADING_COMPLETE: 'event::segmentation_loading_complete',
 };
 
