@@ -5,9 +5,11 @@ import {
   PanelPetSUV,
   PanelROIThresholdSegmentation,
   HounsfieldRangeSelector,
-  WindowLevelPanel
+  WindowLevelPanel,
+  PanelSegmentation,
+  SegmentationToolbox
 } from './Panels';
-
+import { useAppConfig } from '@state';
 // TODO:
 // - No loading UI exists yet
 // - cancel promises when component is destroyed
@@ -18,6 +20,48 @@ function getPanelModule({
   extensionManager,
   servicesManager,
 }) {
+  const { customizationService } = servicesManager.services;
+  const wrappedPanelSegmentation = configuration => {
+    const [appConfig] = useAppConfig();
+    const { customizationService } = servicesManager.services;
+
+    const disableEditingForMode = customizationService.get('segmentation.disableEditing');
+
+    return (
+      <PanelSegmentation
+        commandsManager={commandsManager}
+        servicesManager={servicesManager}
+        extensionManager={extensionManager}
+        configuration={{
+          ...configuration,
+          disableEditing: appConfig.disableEditing || disableEditingForMode?.value,
+        }}
+      />
+    );
+  };
+  const wrappedPanelSegmentationWithTools = configuration => {
+    const [appConfig] = useAppConfig();
+    return (
+      <>
+        {/* <SegmentationToolbox
+          commandsManager={commandsManager}
+          servicesManager={servicesManager}
+          extensionManager={extensionManager}
+          configuration={{
+            ...configuration,
+          }}
+        /> */}
+        <PanelSegmentation
+          commandsManager={commandsManager}
+          servicesManager={servicesManager}
+          extensionManager={extensionManager}
+          configuration={{
+            ...configuration,
+          }}
+        />
+      </>
+    );
+  };
   const wrappedMeasurementPanel = () => {
     return (
       <PanelMeasurementTable
@@ -115,7 +159,23 @@ function getPanelModule({
       label: 'Window Level',
       component: wrappedWindowLevelPane,
       context: 'LYTIC',
-    }
+    },
+    {
+      name: 'panelSegmentation',
+      iconName: 'tab-segmentation',
+      iconLabel: 'Segmentation',
+      label: 'Segmentation',
+      component: wrappedPanelSegmentation,
+      context: 'LYTIC',
+    },
+    {
+      name: 'panelSegmentationWithTools',
+      iconName: 'tab-segmentation',
+      iconLabel: 'Segmentation',
+      label: 'Segmentation',
+      component: wrappedPanelSegmentationWithTools,
+      context: 'LYTIC',
+    },
   ];
 }
 

@@ -9,7 +9,11 @@ import {
   getUpdatedViewportsForSegmentation,
   getTargetViewport,
 } from './utils/hydrationUtils';
+import * as csTools from '@cornerstonejs/tools';
+import * as cs from '@cornerstonejs/core';
+import { thresholdSegmentationByRange } from '@cornerstonejs/tools/dist/esm/utilities/segmentation';
 
+const LABELMAP = csTools.Enums.SegmentationRepresentations.Labelmap;
 const {
   Cornerstone3D: {
     Segmentation: { generateLabelMaps2DFrom3D, generateSegmentation },
@@ -55,11 +59,50 @@ const commandsModule = ({
      * @param params.viewportId - the target viewport ID.
      *
      */
+    // createEmptySegmentationForViewport: async ({ viewportId, color }) => {
+    //   const viewport = getTargetViewport({ viewportId, viewportGridService });
+    //   // Todo: add support for multiple display sets
+    //   const displaySetInstanceUID = viewport.displaySetInstanceUIDs[0];
+    //   const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
+
+    //   if (!displaySet.isReconstructable) {
+    //     uiNotificationService.show({
+    //       title: 'Segmentation',
+    //       message: 'Segmentation is not supported for non-reconstructible displaysets yet',
+    //       type: 'error',
+    //     });
+    //     return;
+    //   }
+    //   const toolGroupId = viewport.viewportOptions.toolGroupId;
+    //   const segmentationIds = [];
+
+    //   updateViewportsForSegmentationRendering({
+    //     viewportId,
+    //     servicesManager,
+    //     loadFn: async () => {
+    //           await segmentationService.createSegmentationForDisplaySet(displaySetInstanceUID)
+
+    //         await segmentationService.addSegmentationRepresentationToToolGroup(
+    //           toolGroupId,
+    //           segmentationId
+    //         );
+    //         segmentationService.addSegment(segmentationId, {
+    //           segmentIndex: i + 1,
+    //           properties: {
+    //             color: [color[0], color[1], color[2]],
+    //             opacity: color[3],
+    //             label: `Segment ${i + 1}`,
+    //           },
+    //         });
+    //       }
+    //       return segmentationId;
+    //     },
+    //   },
     createEmptySegmentationForViewport: async ({ viewportId }) => {
+      console.log('emptySeg');
       const viewport = getTargetViewport({ viewportId, viewportGridService });
       // Todo: add support for multiple display sets
       const displaySetInstanceUID = viewport.displaySetInstanceUIDs[0];
-
       const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
 
       if (!displaySet.isReconstructable) {
@@ -75,31 +118,85 @@ const commandsModule = ({
         viewportId,
         servicesManager,
         loadFn: async () => {
+          const colors = [
+            [0, 128, 0, 64],
+            [0, 255, 0, 128],
+            [255, 0, 0, 255],
+            [0, 0, 255, 128],
+            [128, 128, 255, 64],
+          ];
           const currentSegmentations = segmentationService.getSegmentations();
           const segmentationId = await segmentationService.createSegmentationForDisplaySet(
             displaySetInstanceUID,
             { label: `Segmentation ${currentSegmentations.length + 1}` }
           );
-
           const toolGroupId = viewport.viewportOptions.toolGroupId;
 
           await segmentationService.addSegmentationRepresentationToToolGroup(
             toolGroupId,
             segmentationId
           );
-
           // Add only one segment for now
-          segmentationService.addSegment(segmentationId, {
-            toolGroupId,
-            segmentIndex: 1,
-            properties: {
-              label: 'Segment 1',
-            },
-          });
-
+          for (let i = 0; i < colors.length; i++) {
+            segmentationService.addSegment(segmentationId, {
+              toolGroupId,
+              segmentIndex: i + 1,
+              properties: {
+                color: [colors[i][0], colors[i][1], colors[i][2]],
+                opacity: colors[i][3],
+                label: `Segment ${i + 1}`,
+              },
+            });
+          }
           return segmentationId;
         },
       });
+      console.log(segmentationService.getSegmentations());
+    },
+    thresholdSegmentation: segmentationId => {
+      console.log(segmentationId);
+      const segmentation = csTools.segmentation.state.getSegmentation(segmentationId);
+      const { activeViewportId, viewports } = viewportGridService.getState();
+      const activeViewportSpecificData = viewports.get(activeViewportId);
+      const { displaySetInstanceUIDs } = activeViewportSpecificData;
+      const displaySetInstanceUID = displaySetInstanceUIDs[0];
+      const { representationData } = segmentation;
+      const volumeLoaderScheme = 'cornerstoneStreamingImageVolume'; // Loader id which defines which volume loader to use
+
+      const ctVolumeId = `${volumeLoaderScheme}:${displaySetInstanceUID}`; // VolumeId with loader id + volume id
+
+      const { volumeId: segVolumeId } = representationData[LABELMAP];
+      const { referencedVolumeId } = cs.cache.getVolume(segVolumeId);
+
+      const labelmapVolume = cs.cache.getVolume(segmentationId);
+      const referencedVolume = cs.cache.getVolume(referencedVolumeId);
+      const ctReferencedVolume = cs.cache.getVolume(ctVolumeId);
+      console.log(segmentationService.getSegmentations());
+      if (!referencedVolume) {
+        throw new Error('No Reference volume found');
+      }
+
+      if (!labelmapVolume) {
+        throw new Error('No Reference labelmap found');
+      }
+      console.log(
+        csTools.utilities.segmentation.thresholdVolumeByRange(
+          labelmapVolume,
+          [
+            { volume: referencedVolume, lower: -1000, upper: 1000 },
+            { volume: ctReferencedVolume, lower: 0, upper: 500 },
+          ],
+          { overwrite: true }
+        )
+      );
+      return csTools.utilities.segmentation.thresholdVolumeByRange(
+        labelmapVolume,
+        [
+          { volume: referencedVolume, lower: -1000, upper: 1000 },
+          { volume: ctReferencedVolume, lower: 0, upper: 500 },
+        ],
+        { overwrite: true }
+      );
     },
     /**
      * Loads segmentations for a specified viewport.

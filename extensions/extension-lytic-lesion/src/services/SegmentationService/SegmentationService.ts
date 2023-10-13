@@ -24,7 +24,7 @@ import { easeInOutBell, reverseEaseInOutBell } from '../../utils/transitions';
 import { Segment, Segmentation, SegmentationConfig } from './SegmentationServiceTypes';
 import { mapROIContoursToRTStructData } from './RTSTRUCT/mapROIContoursToRTStructData';
 
-const { COLOR_LUT } = cstConstants;
+const COLOR_LUT = [ [0,128,0,128], [0,255,0,255], [255,0,0,255], [0,0,255,255], [128,128,255,128]];
 const LABELMAP = csToolsEnums.SegmentationRepresentations.Labelmap;
 const CONTOUR = csToolsEnums.SegmentationRepresentations.Contour;
 
@@ -57,8 +57,8 @@ const VOLUME_LOADER_SCHEME = 'cornerstoneStreamingImageVolume';
 
 class SegmentationService extends PubSubService {
   static REGISTRATION = {
-    name: 'segmentationService',
-    altName: 'SegmentationService',
+    name: 'lyticSegmentationService',
+    altName: 'lyticSegmentationService',
     create: ({ servicesManager }: OhifTypes.Extensions.ExtensionParams): SegmentationService => {
       return new SegmentationService({ servicesManager });
     },
@@ -112,7 +112,6 @@ class SegmentationService extends PubSubService {
    *     - isLocked: (optional) Whether the new segment should be locked for editing. If not provided, the segment will not be locked by default.
    *     - active: (optional) Whether the new segment should be the active segment to be edited. If not provided, the segment will not be active by default.
    */
-
   public addSegment(
     segmentationId: string,
     config: {
@@ -131,6 +130,7 @@ class SegmentationService extends PubSubService {
     if (config?.segmentIndex === 0) {
       throw new Error('Segment index 0 is reserved for "no label"');
     }
+    console.log("SegService")
     const toolGroupId = config.toolGroupId ?? this._getFirstToolGroupId();
 
     const { segmentationRepresentationUID, segmentation } = this._getSegmentationInfo(
@@ -492,11 +492,11 @@ class SegmentationService extends PubSubService {
   ): Promise<string> {
     // Todo: we only support creating labelmap for SEG displaySets for now
     const representationType = LABELMAP;
-    console.log('CS:SEG');
 
     segmentationId = segmentationId ?? segDisplaySet.displaySetInstanceUID;
 
     const defaultScheme = this._getDefaultSegmentationScheme();
+    console.log("LYTIC:SEG");
 
     const segmentation: Segmentation = {
       ...defaultScheme,
@@ -624,7 +624,8 @@ class SegmentationService extends PubSubService {
     const representationType = CONTOUR;
     segmentationId = segmentationId ?? rtDisplaySet.displaySetInstanceUID;
     const { structureSet } = rtDisplaySet;
-    console.log('CS:RT');
+    console.log("LYTIC:RT");
+
     if (!structureSet) {
       throw new Error(
         'To create the contours from RT displaySet, the displaySet should be loaded first, you can perform rtDisplaySet.load() before calling this method.'
@@ -988,6 +989,7 @@ class SegmentationService extends PubSubService {
         },
       },
     };
+    console.log("LYTIC:BLANK");
     this.addOrUpdateSegmentation(segmentation);
 
     return segmentationId;
@@ -1015,6 +1017,7 @@ class SegmentationService extends PubSubService {
     if (!segmentation) {
       throw new Error(`Segmentation with segmentationId ${segmentationId} not found.`);
     }
+
     if (hydrateSegmentation) {
       // hydrate the segmentation if it's not hydrated yet
       segmentation.hydrated = true;
@@ -1125,6 +1128,7 @@ class SegmentationService extends PubSubService {
 
   public hydrateSegmentation = (segmentationId: string, suppressEvents = false): void => {
     const segmentation = this.getSegmentation(segmentationId);
+
     if (!segmentation) {
       throw new Error(`Segmentation with segmentationId ${segmentationId} not found.`);
     }
@@ -1148,9 +1152,6 @@ class SegmentationService extends PubSubService {
   private _setDisplaySetIsHydrated(displaySetUID: string, isHydrated: boolean): void {
     const { displaySetService } = this.servicesManager.services;
     const displaySet = displaySetService.getDisplaySetByUID(displaySetUID);
-    if (!displaySet) {
-      return;
-    }
     displaySet.isHydrated = isHydrated;
     displaySetService.setDisplaySetMetadataInvalidated(displaySetUID, false);
   }

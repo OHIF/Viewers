@@ -13,7 +13,7 @@ const ohif = {
   thumbnailList: '@ohif/extension-default.panelModule.seriesList',
   HounsfieldUnitPanel:
     'extension-lytic-lesion.panelModule.HounsfieldRangeSelector',
-  // ROIThresholdPanel: '@ohif/extension-lytic-lesion.panelModule.ROIThresholdSeg',
+  // ROIThresholdPanel: 'extension-lytic-lesion.panelModule.ROIThresholdSeg',
 };
 
 const tracked = {
@@ -25,9 +25,8 @@ const tracked = {
   ROIThresholdPanel: '@ohif/extension-default.panelModule.ROIThresholdSeg',
 };
 const segmentation = {
-  panel: '@ohif/extension-cornerstone-dicom-seg.panelModule.panelSegmentation',
-  panelTool:
-    '@ohif/extension-cornerstone-dicom-seg.panelModule.panelSegmentationWithTools',
+  panel: 'extension-lytic-lesion.panelModule.panelSegmentation',
+  panelTool: 'extension-lytic-lesion.panelModule.panelSegmentationWithTools',
   sopClassHandler:
     '@ohif/extension-cornerstone-dicom-seg.sopClassHandlerModule.dicom-seg',
   viewport: '@ohif/extension-cornerstone-dicom-seg.viewportModule.dicom-seg',

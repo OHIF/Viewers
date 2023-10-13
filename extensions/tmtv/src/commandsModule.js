@@ -207,7 +207,7 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }) 
         config
       );
 
-      return csTools.utilities.segmentation.rectangleROIThresholdVolumeByRange(
+      const result = csTools.utilities.segmentation.rectangleROIThresholdVolumeByRange(
         annotationUIDs,
         labelmapVolume,
         [
@@ -216,6 +216,8 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }) 
         ],
         { overwrite: true }
       );
+      console.log(result);
+      return result;
     },
     calculateSuvPeak: ({ labelmap }) => {
       const { referencedVolumeId } = labelmap;

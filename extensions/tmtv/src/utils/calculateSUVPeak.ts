@@ -49,7 +49,7 @@ function calculateSuvPeak(
 
   const { dimensions, imageData: labelmapImageData } = labelmap;
   const { imageData: referenceVolumeImageData } = referenceVolume;
-
+  console.log(dimensions);
   let boundsIJK;
   // Todo: using the first annotation for now
   if (annotations?.length && annotations[0].data?.cachedStats) {
@@ -61,8 +61,8 @@ function calculateSuvPeak(
       referenceVolumeImageData.worldToIndex(world, ijk);
       return ijk as Types.Point3;
     });
-
     boundsIJK = utilities.boundingBox.getBoundingBoxAroundShape(rectangleCornersIJK, dimensions);
+    console.log(boundsIJK);
   }
 
   let max = 0;

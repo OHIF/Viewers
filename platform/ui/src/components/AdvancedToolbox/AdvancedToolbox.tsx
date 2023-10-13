@@ -10,6 +10,7 @@ const AdvancedToolbox = ({ title, items }) => {
     // see if any of the items are active from the outside
     const activeItem = items?.find(item => item.active);
     setActiveItemName(activeItem ? activeItem.name : null);
+    console.log('Active item', activeItem);
   }, [items]);
 
   const activeItemOptions = items?.find(item => item.name === activeItemName)?.options;
@@ -41,7 +42,7 @@ const AdvancedToolbox = ({ title, items }) => {
                       activeItemName === item.name && 'bg-primary-light text-black',
                       item.disabled && 'opacity-50',
                       !item.disabled &&
-                        'hover:bg-primary-light cursor-pointer hover:cursor-pointer hover:text-black'
+                      'hover:bg-primary-light cursor-pointer hover:cursor-pointer hover:text-black'
                     )}
                   >
                     <Icon name={item.icon} />

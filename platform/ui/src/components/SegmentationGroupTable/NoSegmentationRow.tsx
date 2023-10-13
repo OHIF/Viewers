@@ -1,3 +1,4 @@
+import { commandsManager } from 'platform/app/src/App';
 import React from 'react';
 import Icon from '../Icon';
 

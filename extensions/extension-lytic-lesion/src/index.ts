@@ -10,7 +10,8 @@ import getHangingProtocolModule from './getHangingProtocolModule';
 import getStudiesForPatientByMRN from './Panels/getStudiesForPatientByMRN';
 import getCustomizationModule from './getCustomizationModule';
 import { id } from './id.js';
-import preRegistration from './init';
+import init from './init';
+import SegmentationService from './services/SegmentationService';
 import {
   ContextMenuController,
   CustomizableContextMenuTypes,
@@ -22,7 +23,9 @@ const defaultExtension: Types.Extensions.Extension = {
    * Only required property. Should be a unique value across all extensions.
    */
   id,
-  preRegistration,
+  preRegistration({ servicesManager }) {
+    servicesManager.registerService(SegmentationService.REGISTRATION);
+  },
   getDataSourcesModule,
   getLayoutTemplateModule,
   getPanelModule,

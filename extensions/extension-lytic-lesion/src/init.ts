@@ -8,6 +8,7 @@ import {
 import getPTImageIdInstanceMetadata from './getPTImageIdInstanceMetadata';
 import colormaps from './utils/colormaps';
 import measurementServiceMappingsFactory from './utils/measurementServiceMappings/measurementServiceMappingsFactory';
+import * as cornerstoneTools from '@cornerstonejs/tools';
 
 const { registerColormap } = utilities.colormap;
 const metadataProvider = classes.MetadataProvider;
@@ -65,6 +66,15 @@ export default function init({ servicesManager, configuration = {} }): void {
   // changes numRows and numCols, the viewports can be remembers and then replaced
   // afterwards.
   stateSyncService.register('viewportsByPosition', { clearOnModeExit: true });
+
+  const labelmapRepresentation = cornerstoneTools.Enums.SegmentationRepresentations.Labelmap;
+
+  cornerstoneTools.segmentation.config.setGlobalRepresentationConfig(labelmapRepresentation, {
+    fillAlpha: 0.3,
+    fillAlphaInactive: 0.2,
+    outlineOpacity: 1,
+    outlineOpacityInactive: 0.65,
+  });
 
   // addTool(RectangleROIStartEndThresholdTool);
 

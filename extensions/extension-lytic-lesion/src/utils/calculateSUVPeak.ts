@@ -74,7 +74,7 @@ function calculateSuvPeak(
       dimensions
     );
   }
-
+    console.log(boundsIJK);
   let max = 0;
   let maxIJK = [0, 0, 0];
   let maxLPS = [0, 0, 0];

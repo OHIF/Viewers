@@ -7,7 +7,7 @@ import segmentationEditHandler from './segmentationEditHandler';
 import ExportReports from './ExportReports';
 import ROIThresholdConfiguration, { ROI_STAT } from './ROIThresholdConfiguration';
 
-const LOWER_CT_THRESHOLD_DEFAULT = -1024;
+const LOWER_CT_THRESHOLD_DEFAULT = -90;
 const UPPER_CT_THRESHOLD_DEFAULT = 1024;
 const LOWER_PT_THRESHOLD_DEFAULT = 2.5;
 const UPPER_PT_THRESHOLD_DEFAULT = 100;

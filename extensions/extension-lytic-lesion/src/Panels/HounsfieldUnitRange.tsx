@@ -56,7 +56,7 @@ function HounsfieldRangeSelector({ commandsManager, servicesManager, extensionMa
             containerClassName="mr-2"
             value={minHU}
             onChange={(e) => {
-              setMinHU(e.target.value);
+              setMinHU(parseInt(e.target.value));
             }}
           />
           <Input
@@ -67,7 +67,7 @@ function HounsfieldRangeSelector({ commandsManager, servicesManager, extensionMa
             containerClassName="mr-2"
             value={maxHU}
             onChange={(e) => {
-              setMaxHU(e.target.value)
+              setMaxHU(parseInt(e.target.value))
             }}
           />
         </div>
@@ -80,7 +80,7 @@ function HounsfieldRangeSelector({ commandsManager, servicesManager, extensionMa
             containerClassName="mr-2"
             value={lowHU}
             onChange={(e) => {
-              setLowHU(e.target.value);
+              setLowHU(parseInt(e.target.value));
             }}
           />
           <Input
@@ -91,7 +91,7 @@ function HounsfieldRangeSelector({ commandsManager, servicesManager, extensionMa
             containerClassName="mr-2"
             value={highHU}
             onChange={(e) => {
-              setHighHU(e.target.value)
+              setHighHU(parseInt(e.target.value))
             }}
           />
         </div>
@@ -106,7 +106,7 @@ function HounsfieldRangeSelector({ commandsManager, servicesManager, extensionMa
           type="text"
           containerClassName="mr-2"
           value={targetNumber}
-          onChange={(e) => setTargetNumber(e.target.value)}
+          onChange={(e) => setTargetNumber(parseInt(e.target.value))}
         />
       </div>
       <WindowLevelPanel

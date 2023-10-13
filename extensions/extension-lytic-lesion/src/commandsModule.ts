@@ -1,8 +1,9 @@
 import { ServicesManager, utils, Types } from '@ohif/core';
 
-import { Enums, utilities as csUtils } from '@cornerstonejs/tools';
-import { Types as OhifTypes } from '@ohif/core';
+import { Enums, utilities as csUtils, annotation, Types as cstTypes } from '@cornerstonejs/tools';
 
+import { Types as OhifTypes } from '@ohif/core';
+import { vec3 } from 'gl-matrix';
 import {
   ContextMenuController,
   defaultContextMenu,
@@ -24,6 +25,9 @@ import calculateTMTV from './utils/calculateTMTV';
 import createAndDownloadTMTVReport from './utils/createAndDownloadTMTVReport';
 import { utilities } from '@cornerstonejs/core';
 import customColormap from './utils/colormaps/customColormap';
+import { extractURLParameters } from '@kitware/vtk.js/Common/Core/URLExtract';
+import { Segmentation } from 'platform/core/src/services/SegmentationService/SegmentationServiceTypes';
+
 const { subscribeToNextViewportGridChange } = utils;
 const { registerColormap, getColormapNames } = utilities.colormap;
 
@@ -68,6 +72,7 @@ const commandsModule = ({
     stateSyncService,
     cornerstoneViewportService,
     toolbarService,
+    segmentationService,
   } = (servicesManager as ServicesManager).services;
 
   // Define a context menu controller for use with any context menus
@@ -367,7 +372,7 @@ const commandsModule = ({
       const viewport = cornerstoneViewportService.getCornerstoneViewport(
         activeViewportId
       );
-
+      console.log({minHU, maxHU, lowHU, highHU, targetNumber});
       let props = viewport.getProperties();
       let windowLow = props.voiRange.lower;
       let windowHigh = props.voiRange.upper;
@@ -614,7 +619,6 @@ const commandsModule = ({
       const { viewports } = viewportGridService.getState() || {
         viewports: [],
       };
-      console.log(servicesManager.services.toolGroupService);
       const toolGroup = servicesManager.services.toolGroupService.getToolGroup(
         toolGroupId
       );
@@ -908,7 +912,6 @@ const commandsModule = ({
       const { activeViewportId, viewports } = viewportGridService.getState();
       const activeViewportSpecificData = viewports.get(activeViewportId);
       const { displaySetInstanceUIDs } = activeViewportSpecificData;
-
       const displaySets = displaySetService.activeDisplaySets;
 
       const displaySetInstanceUID = displaySetInstanceUIDs[0];
@@ -919,7 +922,7 @@ const commandsModule = ({
         return;
       }
 
-      const segmentationId = await servicesManager.services.segmentationService.createSegmentationForDisplaySet(
+      const segmentationId = await segmentationService.createSegmentationForDisplaySet(
         displaySetInstanceUID
       );
 
@@ -980,7 +983,9 @@ const commandsModule = ({
       const labelmapVolume = cs.cache.getVolume(segmentationId);
       const referencedVolume = cs.cache.getVolume(referencedVolumeId);
       const ctReferencedVolume = cs.cache.getVolume(ctVolumeId);
-
+      console.log(labelmapVolume);
+      console.log(referencedVolume);
+      console.log(ctReferencedVolume);
       if (!referencedVolume) {
         throw new Error('No Reference volume found');
       }
@@ -1001,32 +1006,77 @@ const commandsModule = ({
         });
         return;
       }
-      console.log(annotationUIDs);
       const { ptLower, ptUpper, ctLower, ctUpper } = getThresholdValues(
         annotationUIDs,
         [referencedVolume, ctReferencedVolume],
         config
       );
-      console.log(
-        csTools.utilities.segmentation.rectangleROIThresholdVolumeByRange(
-          annotationUIDs,
-          labelmapVolume,
-          [
-            { volume: referencedVolume, lower: ptLower, upper: ptUpper },
-            { volume: ctReferencedVolume, lower: ctLower, upper: ctUpper },
-          ],
-          { overwrite: true }
-        )
-      );
-      return csTools.utilities.segmentation.rectangleROIThresholdVolumeByRange(
+      const thresholdVolumeInformation = [
+        { volume: referencedVolume, lower: ptLower, upper: ptUpper },
+        { volume: ctReferencedVolume, lower: ctLower, upper: ctUpper },
+      ]
+      console.log(thresholdVolumeInformation);
+      const result = csTools.utilities.segmentation.rectangleROIThresholdVolumeByRange(
         annotationUIDs,
         labelmapVolume,
-        [
-          { volume: referencedVolume, lower: ptLower, upper: ptUpper },
-          { volume: ctReferencedVolume, lower: ctLower, upper: ctUpper },
-        ],
+        thresholdVolumeInformation,
         { overwrite: true }
       );
+      console.log(result);
+      return result;
+    },
+    getSegmentation:({segmentationId})=>{
+      return segmentationService.getSegmentation(
+        segmentationId
+      );
+    },
+    thresholdSegmentation: ({segmentationId, minHU, lowHU, highHU,maxHU, targetHUHigh, targetHULow, segmentIndex}) => {
+      const segmentation = segmentationService.getSegmentation(
+        segmentationId
+      );
+      const { activeViewportId, viewports } = viewportGridService.getState();
+      const activeViewportSpecificData = viewports.get(activeViewportId);
+      const { displaySetInstanceUIDs } = activeViewportSpecificData;
+      const displaySets = displaySetService.activeDisplaySets;
+
+      const displaySetInstanceUID = displaySetInstanceUIDs[0];
+      const { representationData } = segmentation;
+      const {
+        displaySetMatchDetails: matchDetails,
+      } = hangingProtocolService.getMatchDetails();
+      const volumeLoaderScheme = 'cornerstoneStreamingImageVolume'; // Loader id which defines which volume loader to use
+
+      const ctVolumeId = `${volumeLoaderScheme}:${displaySetInstanceUID}`; // VolumeId with loader id + volume id
+
+      const { volumeId: segVolumeId } = representationData[LABELMAP];
+      const { referencedVolumeId } = cs.cache.getVolume(segVolumeId);
+      const labelmapVolume = cs.cache.getVolume(segmentationId);
+      const referencedVolume = cs.cache.getVolume(referencedVolumeId);
+      const ctReferencedVolume = cs.cache.getVolume(ctVolumeId);
+      let boundsIJK: cstTypes.BoundsIJK = [
+        [0,labelmapVolume.dimensions[0]-1],
+        [0,labelmapVolume.dimensions[1]-1],
+        // [labelmapVolume.dimensions[2]-10,labelmapVolume.dimensions[2]-1]
+        [145,155]
+      ];
+      const { frameOfReferenceUID } = segmentation;
+      const updatePairs = [
+        [minHU, lowHU],
+        [lowHU, targetHULow],
+        [targetHULow, targetHUHigh],
+        [targetHUHigh, highHU],
+        [highHU, maxHU],
+    ];
+    const thresholdVolumeInformation = [
+      { volume: referencedVolume, lower: updatePairs[segmentIndex-1][0]+1, upper: updatePairs[segmentIndex-1][1]},
+      { volume: ctReferencedVolume, lower: updatePairs[segmentIndex-1][0]+1, upper: updatePairs[segmentIndex-1][1] },
+    ];
+    let result = csTools.utilities.segmentation.thresholdVolumeByRange(
+      labelmapVolume,
+      thresholdVolumeInformation,
+      { overwrite: true, boundsIJK: boundsIJK }
+    );
+      return result;
     },
     calculateSuvPeak: ({ labelmap }) => {
       const { referencedVolumeId } = labelmap;
@@ -1195,7 +1245,7 @@ const commandsModule = ({
       // get the current slice Index
       const sliceIndex = viewport.getCurrentImageIdIndex();
       annotation.data.startSlice = sliceIndex;
-
+      console.log(annotation);
       // distance between camera focal point and each point on the rectangle
       const newPoints = points.map(point => {
         const distance = vec3.create();
@@ -1336,6 +1386,12 @@ const commandsModule = ({
     setHounsfieldRange:{
       commandFn: actions.setHounsfieldRange,
     },
+    thresholdSegmentation:{
+      commandFn: actions.thresholdSegmentation,
+    },
+    getSegmentation:{
+      commandFn: actions.getSegmentation,
+    }
   };
 
   return {

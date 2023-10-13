@@ -1,8 +1,8 @@
 import { createReportAsync } from '@ohif/extension-default';
 import React, { useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import { SegmentationGroupTable } from '@ohif/ui';
-
+import { SegmentationGroupTable, Input, Label, Select, Button, ButtonGroup } from '@ohif/ui';
+import WindowLevelPanel from './WindowLevelPanel';
 import callInputDialog from './callInputDialog';
 import callColorPickerDialog from './colorPickerDialog';
 import { useTranslation } from 'react-i18next';
@@ -23,7 +23,23 @@ export default function PanelSegmentation({
   );
 
   const [segmentations, setSegmentations] = useState(() => segmentationService.getSegmentations());
+  const [targetNumber, setTargetNumber] = React.useState(233);
+  const [minHU, setMinHU] = React.useState(-90);
+  const [maxHU, setMaxHU] = React.useState(500);
+  const [lowHU, setLowHU] = React.useState(73);
+  const [highHU, setHighHU] = React.useState(365);
 
+  const handleSetRange = () => {
+    // Perform the action to set the Hounsfield range
+    commandsManager.runCommand('setHounsfieldRange', {
+      minHU: minHU,
+      maxHU: maxHU,
+      lowHU: lowHU,
+      highHU: highHU,
+      targetNumber: targetNumber,
+    });
+    commandsManager.runCommand('setColormap', { colormap: 'HUColormap' })
+  };
   useEffect(() => {
     // ~~ Subscription
     const added = segmentationService.EVENTS.SEGMENTATION_ADDED;
@@ -66,19 +82,7 @@ export default function PanelSegmentation({
   };
 
   const onSegmentAdd = segmentationId => {
-    console.log('onSegmentAdd');
-    const colors = [
-      [0, 128, 0, 128],
-      [0, 255, 0, 255],
-      [255, 0, 0, 255],
-      [0, 0, 255, 255],
-      [128, 128, 255, 128],
-    ];
-    for (let i = 0; i < colors.length; i++) {
-      const colorArray = colors[i];
-      const [r, g, b, a] = colorArray;
-      segmentationService.addSegment(segmentationId, { color: [r, g, b], opacity: a });
-    }
+    segmentationService.addSegment(segmentationId);
   };
 
   const onSegmentClick = (segmentationId, segmentIndex) => {

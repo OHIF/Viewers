@@ -27,7 +27,7 @@ async function updateViewportsForSegmentationRendering({
 }) {
   const { cornerstoneViewportService, segmentationService, viewportGridService } =
     servicesManager.services;
-
+  console.log('UpdateViewportshydrate');
   const viewport = getTargetViewport({ viewportId, viewportGridService });
   const targetViewportId = viewport.viewportOptions.viewportId;
 
@@ -52,7 +52,7 @@ async function updateViewportsForSegmentationRendering({
   const volumeExists = Array.from(cache._volumeCache.keys()).some(volumeId =>
     volumeId.includes(referencedDisplaySetInstanceUID)
   );
-
+  console.log(volumeExists);
   updatedViewports.forEach(async viewport => {
     viewport.viewportOptions = {
       ...viewport.viewportOptions,
