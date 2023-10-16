@@ -3,6 +3,114 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-beta.0](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.110...v3.8.0-beta.0) (2023-10-12)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+# [3.7.0-beta.110](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.109...v3.7.0-beta.110) (2023-10-11)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+# [3.7.0-beta.109](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.108...v3.7.0-beta.109) (2023-10-11)
+
+
+### Bug Fixes
+
+* **export:** wrong export for the tmtv RT function ([#3715](https://github.com/OHIF/Viewers/issues/3715)) ([a3f2a1a](https://github.com/OHIF/Viewers/commit/a3f2a1a7b0d16bfcc0ecddc2ab731e54c5e377c8))
+
+
+
+
+
+# [3.7.0-beta.108](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.107...v3.7.0-beta.108) (2023-10-10)
+
+
+### Bug Fixes
+
+* **i18n:** display set(s) are two words for English messages ([#3711](https://github.com/OHIF/Viewers/issues/3711)) ([c3a5847](https://github.com/OHIF/Viewers/commit/c3a5847dcd3dce4f1c8d8b11af95f79e3f93f70d))
+
+
+
+
+
+# [3.7.0-beta.107](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.106...v3.7.0-beta.107) (2023-10-10)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+# [3.7.0-beta.106](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.105...v3.7.0-beta.106) (2023-10-10)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+# [3.7.0-beta.105](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.104...v3.7.0-beta.105) (2023-10-10)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+# [3.7.0-beta.104](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.103...v3.7.0-beta.104) (2023-10-09)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+# [3.7.0-beta.103](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.102...v3.7.0-beta.103) (2023-10-09)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+# [3.7.0-beta.102](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.101...v3.7.0-beta.102) (2023-10-06)
+
+
+### Features
+
+* **Segmentation:** download RTSS from Labelmap([#3692](https://github.com/OHIF/Viewers/issues/3692)) ([40673f6](https://github.com/OHIF/Viewers/commit/40673f64b36b1150149c55632aa1825178a39e65))
+
+
+
+
+
+# [3.7.0-beta.101](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.100...v3.7.0-beta.101) (2023-10-06)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+# [3.7.0-beta.100](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.99...v3.7.0-beta.100) (2023-10-06)
+
+
+### Bug Fixes
+
+* **segmentation scroll:** and hydration bugs ([#3701](https://github.com/OHIF/Viewers/issues/3701)) ([1fd98d9](https://github.com/OHIF/Viewers/commit/1fd98d922094d10fe0c6e9df726314ec9fce49e8))
+
+
+
+
+
 # [3.7.0-beta.99](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.98...v3.7.0-beta.99) (2023-10-04)
 
 **Note:** Version bump only for package @ohif/ui

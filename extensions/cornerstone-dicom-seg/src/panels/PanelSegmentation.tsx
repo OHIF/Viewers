@@ -1,7 +1,7 @@
 import { createReportAsync } from '@ohif/extension-default';
 import React, { useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import { SegmentationGroupTable } from '@ohif/ui';
+import { SegmentationGroupTable, LegacyButtonGroup, LegacyButton } from '@ohif/ui';
 
 import callInputDialog from './callInputDialog';
 import callColorPickerDialog from './colorPickerDialog';
@@ -215,9 +215,15 @@ export default function PanelSegmentation({
     }
   };
 
+  const onSegmentationDownloadRTSS = segmentationId => {
+    commandsManager.runCommand('downloadRTSS', {
+      segmentationId,
+    });
+  };
+
   return (
     <>
-      <div className="flex min-h-0 flex-auto select-none flex-col justify-between">
+      <div className="ohif-scrollbar flex min-h-0 flex-auto select-none flex-col justify-between overflow-auto">
         <SegmentationGroupTable
           title={t('Segmentations')}
           segmentations={segmentations}
@@ -227,6 +233,7 @@ export default function PanelSegmentation({
           onSegmentationClick={onSegmentationClick}
           onSegmentationDelete={onSegmentationDelete}
           onSegmentationDownload={onSegmentationDownload}
+          onSegmentationDownloadRTSS={onSegmentationDownloadRTSS}
           storeSegmentation={storeSegmentation}
           onSegmentationEdit={onSegmentationEdit}
           onSegmentClick={onSegmentClick}

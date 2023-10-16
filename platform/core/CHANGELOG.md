@@ -3,6 +3,120 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-beta.0](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.110...v3.8.0-beta.0) (2023-10-12)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.7.0-beta.110](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.109...v3.7.0-beta.110) (2023-10-11)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.7.0-beta.109](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.108...v3.7.0-beta.109) (2023-10-11)
+
+
+### Bug Fixes
+
+* **export:** wrong export for the tmtv RT function ([#3715](https://github.com/OHIF/Viewers/issues/3715)) ([a3f2a1a](https://github.com/OHIF/Viewers/commit/a3f2a1a7b0d16bfcc0ecddc2ab731e54c5e377c8))
+
+
+
+
+
+# [3.7.0-beta.108](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.107...v3.7.0-beta.108) (2023-10-10)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.7.0-beta.107](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.106...v3.7.0-beta.107) (2023-10-10)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.7.0-beta.106](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.105...v3.7.0-beta.106) (2023-10-10)
+
+
+### Bug Fixes
+
+* **segmentation:**  Various fixes for segmentation mode and other ([#3709](https://github.com/OHIF/Viewers/issues/3709)) ([a9a6ad5](https://github.com/OHIF/Viewers/commit/a9a6ad50eae67b43b8b34efc07182d788cacdcfe))
+
+
+
+
+
+# [3.7.0-beta.105](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.104...v3.7.0-beta.105) (2023-10-10)
+
+
+### Bug Fixes
+
+* **voi:** should publish voi change event on reset ([#3707](https://github.com/OHIF/Viewers/issues/3707)) ([52f34c6](https://github.com/OHIF/Viewers/commit/52f34c64d014f433ec1661a39b47e7fb27f15332))
+
+
+
+
+
+# [3.7.0-beta.104](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.103...v3.7.0-beta.104) (2023-10-09)
+
+
+### Bug Fixes
+
+* **modality unit:** fix the modality unit per target via upgrade of cs3d ([#3706](https://github.com/OHIF/Viewers/issues/3706)) ([0a42d57](https://github.com/OHIF/Viewers/commit/0a42d573bbca7f2551a831a46d3aa6b56674a580))
+
+
+
+
+
+# [3.7.0-beta.103](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.102...v3.7.0-beta.103) (2023-10-09)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.7.0-beta.102](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.101...v3.7.0-beta.102) (2023-10-06)
+
+
+### Features
+
+* **Segmentation:** download RTSS from Labelmap([#3692](https://github.com/OHIF/Viewers/issues/3692)) ([40673f6](https://github.com/OHIF/Viewers/commit/40673f64b36b1150149c55632aa1825178a39e65))
+
+
+
+
+
+# [3.7.0-beta.101](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.100...v3.7.0-beta.101) (2023-10-06)
+
+
+### Bug Fixes
+
+* **bugs:** fixing lots of bugs regarding release candidate ([#3700](https://github.com/OHIF/Viewers/issues/3700)) ([8bc12a3](https://github.com/OHIF/Viewers/commit/8bc12a37d0353160ae5ea4624dc0b244b7d59c07))
+
+
+
+
+
+# [3.7.0-beta.100](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.99...v3.7.0-beta.100) (2023-10-06)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
 # [3.7.0-beta.99](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.98...v3.7.0-beta.99) (2023-10-04)
 
 

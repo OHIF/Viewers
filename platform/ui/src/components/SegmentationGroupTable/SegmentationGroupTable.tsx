@@ -22,6 +22,7 @@ const SegmentationGroupTable = ({
   onSegmentationClick,
   onSegmentationDelete,
   onSegmentationDownload,
+  onSegmentationDownloadRTSS,
   storeSegmentation,
   // segment handlers
   onSegmentClick,
@@ -104,20 +105,19 @@ const SegmentationGroupTable = ({
             </div>
           ) : (
             <div className="mt-1 select-none">
-              {!disableEditing && (
-                <SegmentationDropDownRow
-                  segmentations={segmentations}
-                  disableEditing={disableEditing}
-                  activeSegmentation={activeSegmentation}
-                  onActiveSegmentationChange={onActiveSegmentationChange}
-                  onSegmentationDelete={onSegmentationDelete}
-                  onSegmentationEdit={onSegmentationEdit}
-                  onSegmentationDownload={onSegmentationDownload}
-                  storeSegmentation={storeSegmentation}
-                  onSegmentationAdd={onSegmentationAdd}
-                  onToggleSegmentationVisibility={onToggleSegmentationVisibility}
-                />
-              )}
+              <SegmentationDropDownRow
+                segmentations={segmentations}
+                disableEditing={disableEditing}
+                activeSegmentation={activeSegmentation}
+                onActiveSegmentationChange={onActiveSegmentationChange}
+                onSegmentationDelete={onSegmentationDelete}
+                onSegmentationEdit={onSegmentationEdit}
+                onSegmentationDownload={onSegmentationDownload}
+                onSegmentationDownloadRTSS={onSegmentationDownloadRTSS}
+                storeSegmentation={storeSegmentation}
+                onSegmentationAdd={onSegmentationAdd}
+                onToggleSegmentationVisibility={onToggleSegmentationVisibility}
+              />
               {!disableEditing && showAddSegment && (
                 <AddSegmentRow onClick={() => onSegmentAdd(activeSegmentationId)} />
               )}
@@ -190,6 +190,7 @@ SegmentationGroupTable.propTypes = {
   onSegmentationClick: PropTypes.func.isRequired,
   onSegmentationDelete: PropTypes.func.isRequired,
   onSegmentationDownload: PropTypes.func.isRequired,
+  onSegmentationDownloadRTSS: PropTypes.func.isRequired,
   storeSegmentation: PropTypes.func.isRequired,
   onSegmentClick: PropTypes.func.isRequired,
   onSegmentAdd: PropTypes.func.isRequired,
@@ -219,6 +220,7 @@ SegmentationGroupTable.defaultProps = {
   onSegmentationClick: () => {},
   onSegmentationDelete: () => {},
   onSegmentationDownload: () => {},
+  onSemgnetationDownloadRTSS: () => {},
   storeSegmentation: () => {},
   onSegmentClick: () => {},
   onSegmentAdd: () => {},

@@ -3,6 +3,102 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-beta.0](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.110...v3.8.0-beta.0) (2023-10-12)
+
+**Note:** Version bump only for package @ohif/extension-test
+
+
+
+
+
+# [3.7.0-beta.110](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.109...v3.7.0-beta.110) (2023-10-11)
+
+**Note:** Version bump only for package @ohif/extension-test
+
+
+
+
+
+# [3.7.0-beta.109](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.108...v3.7.0-beta.109) (2023-10-11)
+
+**Note:** Version bump only for package @ohif/extension-test
+
+
+
+
+
+# [3.7.0-beta.108](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.107...v3.7.0-beta.108) (2023-10-10)
+
+**Note:** Version bump only for package @ohif/extension-test
+
+
+
+
+
+# [3.7.0-beta.107](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.106...v3.7.0-beta.107) (2023-10-10)
+
+**Note:** Version bump only for package @ohif/extension-test
+
+
+
+
+
+# [3.7.0-beta.106](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.105...v3.7.0-beta.106) (2023-10-10)
+
+**Note:** Version bump only for package @ohif/extension-test
+
+
+
+
+
+# [3.7.0-beta.105](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.104...v3.7.0-beta.105) (2023-10-10)
+
+**Note:** Version bump only for package @ohif/extension-test
+
+
+
+
+
+# [3.7.0-beta.104](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.103...v3.7.0-beta.104) (2023-10-09)
+
+**Note:** Version bump only for package @ohif/extension-test
+
+
+
+
+
+# [3.7.0-beta.103](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.102...v3.7.0-beta.103) (2023-10-09)
+
+**Note:** Version bump only for package @ohif/extension-test
+
+
+
+
+
+# [3.7.0-beta.102](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.101...v3.7.0-beta.102) (2023-10-06)
+
+**Note:** Version bump only for package @ohif/extension-test
+
+
+
+
+
+# [3.7.0-beta.101](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.100...v3.7.0-beta.101) (2023-10-06)
+
+**Note:** Version bump only for package @ohif/extension-test
+
+
+
+
+
+# [3.7.0-beta.100](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.99...v3.7.0-beta.100) (2023-10-06)
+
+**Note:** Version bump only for package @ohif/extension-test
+
+
+
+
+
 # [3.7.0-beta.99](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.98...v3.7.0-beta.99) (2023-10-04)
 
 **Note:** Version bump only for package @ohif/extension-test

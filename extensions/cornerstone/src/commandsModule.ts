@@ -28,7 +28,6 @@ function commandsModule({
     toolGroupService,
     cineService,
     toolbarService,
-    stateSyncService,
     uiDialogService,
     cornerstoneViewportService,
     uiNotificationService,
@@ -155,7 +154,7 @@ function commandsModule({
      * @param props - containing the updates to apply
      * @param props.measurementKey - chooses the measurement key to apply the
      *        code to.  This will typically be finding or site to apply a
-     *        finind code or a findingSites code.
+     *        finding code or a findingSites code.
      * @param props.code - A coding scheme value from DICOM, including:
      *       * CodeValue - the language independent code, for example '1234'
      *       * CodingSchemeDesignator - the issue of the code value
@@ -224,6 +223,25 @@ function commandsModule({
     },
     arrowTextCallback: ({ callback, data }) => {
       callInputDialog(uiDialogService, data, callback);
+    },
+    cleanUpCrosshairs: () => {
+      // if the crosshairs tool is active, deactivate it and set window level active
+      // since we are going back to main non-mpr HP
+      const activeViewportToolGroup = toolGroupService.getToolGroup(null);
+
+      if (activeViewportToolGroup._toolInstances?.Crosshairs?.mode === Enums.ToolModes.Active) {
+        actions.toolbarServiceRecordInteraction({
+          interactionType: 'tool',
+          commands: [
+            {
+              commandOptions: {
+                toolName: 'WindowLevel',
+              },
+              context: 'CORNERSTONE',
+            },
+          ],
+        });
+      }
     },
     toggleCine: () => {
       const { viewports } = viewportGridService.getState();
@@ -294,18 +312,8 @@ function commandsModule({
       }
 
       const toolGroup = toolGroupService.getToolGroup(toolGroupId);
-      const toolGroupViewportIds = toolGroup?.getViewportIds?.();
 
-      // if toolGroup has been destroyed, or its viewports have been removed
-      if (!toolGroupViewportIds || !toolGroupViewportIds.length) {
-        return;
-      }
-
-      const filteredViewports = Array.from(viewports.values()).filter(viewport => {
-        return toolGroupViewportIds.includes(viewport.viewportId);
-      });
-
-      if (!filteredViewports.length) {
+      if (!toolGroup) {
         return;
       }
 
@@ -452,7 +460,7 @@ function commandsModule({
         viewport.resetProperties();
         viewport.resetCamera();
       } else {
-        // Todo: add reset properties for volume viewport
+        viewport.resetProperties();
         viewport.resetCamera();
       }
 
@@ -707,6 +715,9 @@ function commandsModule({
     },
     setToolbarToggled: {
       commandFn: actions.setToolbarToggled,
+    },
+    cleanUpCrosshairs: {
+      commandFn: actions.cleanUpCrosshairs,
     },
   };
 

@@ -170,6 +170,7 @@ const commandsModule = ({
       stageIndex,
       reset = false,
     }: HangingProtocolParams): boolean => {
+      const primaryToolBeforeHPChange = toolbarService.getActivePrimaryTool();
       try {
         // Stores in the state the display set selector id to displaySetUID mapping
         // Pass in viewportId for the active viewport.  This item will get set as
@@ -241,7 +242,29 @@ const commandsModule = ({
         stateSyncService.store(stateSyncReduce);
         // This is a default action applied
         const { protocol } = hangingProtocolService.getActiveProtocol();
-        actions.toggleHpTools(protocol);
+        actions.toggleHpTools();
+
+        // try to use the same tool in the new hanging protocol stage
+        const primaryButton = toolbarService.getButton(primaryToolBeforeHPChange);
+        if (primaryButton) {
+          // is there any type of interaction on this button, if not it might be in the
+          // items. This is a bit of a hack, but it works for now.
+
+          let interactionType = primaryButton.props?.interactionType;
+
+          if (!interactionType && primaryButton.props?.items) {
+            const firstItem = primaryButton.props.items[0];
+            interactionType = firstItem.props?.interactionType || firstItem.props?.type;
+          }
+
+          if (interactionType) {
+            toolbarService.recordInteraction({
+              interactionType,
+              ...primaryButton.props,
+            });
+          }
+        }
+
         // Send the notification about updating the state
         if (protocolId !== hpInfo.protocolId) {
           // The old protocol callbacks are used for turning off things
@@ -253,7 +276,8 @@ const commandsModule = ({
         commandsManager.run(protocol.callbacks?.onProtocolEnter);
         return true;
       } catch (e) {
-        actions.toggleHpTools(hangingProtocolService.getActiveProtocol());
+        console.error(e);
+        actions.toggleHpTools();
         uiNotificationService.show({
           title: 'Apply Hanging Protocol',
           message: 'The hanging protocol could not be applied.',
