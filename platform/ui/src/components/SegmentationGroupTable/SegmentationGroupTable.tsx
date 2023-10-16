@@ -11,6 +11,7 @@ import { Input, Label, Select, Button, ButtonGroup } from '@ohif/ui';
 import { useTranslation } from 'react-i18next';
 import { useCallback } from 'react';
 import { servicesManager } from 'platform/app/src/App';
+import { getActiveViewportEnabledElement } from 'extensions/cornerstone/src';
 import {
   CONSTANTS as cstConstants,
   Enums as csToolsEnums,
@@ -18,6 +19,8 @@ import {
   Types as cstTypes,
   utilities as cstUtils,
 } from '@cornerstonejs/tools';
+import { getEnabledElement } from 'platform/core/src/state';
+import OHIFCornerstoneSEGViewport from 'extensions/cornerstone-dicom-seg/src/viewports/OHIFCornerstoneSEGViewport';
 
 const SegmentationGroupTable = ({
   segmentations,
@@ -53,7 +56,7 @@ const SegmentationGroupTable = ({
   setRenderInactiveSegmentations,
   setRenderOutline,
 }) => {
-  const { segmentationService } = servicesManager.services;
+  const { segmentationService, viewportGridService } = servicesManager.services;
   const [isConfigOpen, setIsConfigOpen] = useState(false);
   const [activeSegmentationId, setActiveSegmentationId] = useState(null);
   const { t } = useTranslation('ROIThresholdConfiguration');
@@ -71,6 +74,10 @@ const SegmentationGroupTable = ({
     });
     segmentationService.setActiveSegment(activeSegmentationId, activeIndex);
     console.log(segmentationService._getSegmentInfo(segmentation, activeIndex));
+    const element = getActiveViewportEnabledElement(viewportGridService);
+    console.log(element);
+    const enabledElement = getEnabledElement(element);
+    console.log(enabledElement);
     segmentationService.setSegmentColor(
       activeSegmentationId,
       activeIndex,
@@ -81,8 +88,6 @@ const SegmentationGroupTable = ({
       activeIndex,
       segmentation.segments[activeIndex].opacity
     );
-    const config = cstSegmentation.config.getSegmentSpecificConfig();
-    console.log(config);
     commandsManager.runCommand('thresholdSegmentation', {
       segmentationId: activeSegmentationId,
       minHU: minHU,

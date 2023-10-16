@@ -116,7 +116,7 @@ function OHIFCornerstoneSEGViewport(props) {
         }}
         onElementEnabled={onElementEnabled}
         onElementDisabled={onElementDisabled}
-        // initialImageIndex={initialImageIndex}
+      // initialImageIndex={initialImageIndex}
       ></Component>
     );
   }, [viewportId, segDisplaySet, toolGroupId]);
@@ -164,7 +164,6 @@ function OHIFCornerstoneSEGViewport(props) {
       }
     });
   }, [servicesManager, viewportId, segDisplaySet, segIsLoading]);
-
   useEffect(() => {
     const { unsubscribe } = segmentationService.subscribe(
       segmentationService.EVENTS.SEGMENTATION_LOADING_COMPLETE,
@@ -262,7 +261,7 @@ function OHIFCornerstoneSEGViewport(props) {
   if (
     !referencedDisplaySetRef.current ||
     referencedDisplaySet.displaySetInstanceUID !==
-      referencedDisplaySetRef.current.displaySet.displaySetInstanceUID
+    referencedDisplaySetRef.current.displaySet.displaySetInstanceUID
   ) {
     return null;
   }
