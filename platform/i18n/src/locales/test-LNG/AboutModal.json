@@ -1,7 +1,7 @@
 {
   "Browser": "Browser",
   "Build Number": "Build Number",
-  "Latest Master Commits": "Latest Master Commits",
+  "Last master commits": "Latest Master Commits",
   "More details": "More details",
   "Name": "Name",
   "OHIF Viewer - About": "OHIF Viewer - About",
@@ -9,6 +9,6 @@
   "Report an issue": "Report an issue",
   "Repository URL": "Repository URL",
   "Value": "Value",
-  "Version Information": "Version Information",
+  "Version information": "Version Information",
   "Visit the forum": "Visit the forum"
 }

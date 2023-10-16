@@ -1,7 +1,7 @@
 {
   "Browser": "Navegador",
-  "Build Number": "Número da compilação",
-  "Latest Master Commits": "Últimos Commits na Master",
+  "Build number": "Número da compilação",
+  "Last master commits": "Últimos Commits na Master",
   "More details": "Mais detalhes",
   "Name": "Nome",
   "OHIF Viewer - About": "OHIF Viewer - Sobre",
@@ -9,6 +9,6 @@
   "Report an issue": "Informar um problema",
   "Repository URL": "URL do Repositório",
   "Value": "Valor",
-  "Version Information": "Informação da Versão",
+  "Version information": "Informação da Versão",
   "Visit the forum": "Visite o fórum"
 }

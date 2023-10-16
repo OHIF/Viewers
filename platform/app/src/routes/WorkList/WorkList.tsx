@@ -404,7 +404,7 @@ function WorkList({
       onClick: () =>
         show({
           content: AboutModal,
-          title: 'About OHIF Viewer',
+          title: t('AboutModal:About OHIF Viewer'),
           contentProps: { versionNumber, commitHash },
         }),
     },
@@ -413,7 +413,7 @@ function WorkList({
       icon: 'settings',
       onClick: () =>
         show({
-          title: t('UserPreferencesModal:User Preferences'),
+          title: t('UserPreferencesModal:User preferences'),
           content: UserPreferences,
           contentProps: {
             hotkeyDefaults: hotkeysManager.getValidHotkeyDefinitions(hotkeyDefaults),
