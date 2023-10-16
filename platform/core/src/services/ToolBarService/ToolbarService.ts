@@ -76,6 +76,7 @@ export default class ToolbarService extends PubSubService {
       case 'action': {
         commands.forEach(({ commandName, commandOptions, context }) => {
           if (commandName) {
+            console.log(commandName);
             commandsManager.runCommand(
               commandName,
               {

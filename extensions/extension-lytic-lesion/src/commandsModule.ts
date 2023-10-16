@@ -1057,7 +1057,7 @@ const commandsModule = ({
         [0,labelmapVolume.dimensions[0]-1],
         [0,labelmapVolume.dimensions[1]-1],
         // [labelmapVolume.dimensions[2]-10,labelmapVolume.dimensions[2]-1]
-        [145,155]
+        [labelmapVolume.dimensions[2]-10, labelmapVolume.dimensions[2]-1]
       ];
       const { frameOfReferenceUID } = segmentation;
       const updatePairs = [
@@ -1074,7 +1074,7 @@ const commandsModule = ({
     let result = csTools.utilities.segmentation.thresholdVolumeByRange(
       labelmapVolume,
       thresholdVolumeInformation,
-      { overwrite: true, boundsIJK: boundsIJK }
+      { overwrite: false, boundsIJK: boundsIJK }
     );
       return result;
     },
