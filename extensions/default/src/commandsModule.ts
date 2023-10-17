@@ -178,6 +178,10 @@ const commandsModule = ({
         const state = viewportGridService.getState();
         const hpInfo = hangingProtocolService.getState();
         const { protocol: oldProtocol } = hangingProtocolService.getActiveProtocol();
+
+        if (!oldProtocol) {
+          return;
+        }
         const stateSyncReduce = reuseCachedLayouts(state, hangingProtocolService, stateSyncService);
         const { hangingProtocolStageIndexMap, viewportGridStore, displaySetSelectorMap } =
           stateSyncReduce;

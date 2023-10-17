@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import * as cs from '@cornerstonejs/core';
 import { CommandsManager, ServicesManager } from '@ohif/core';
-import { SegmentationTable, LegacyButton, Button, ButtonGroup } from '@ohif/ui';
+import { SegmentationTable, LegacyButton, Button, LegacyButtonGroup } from '@ohif/ui';
 import { useTranslation } from 'react-i18next';
 import BrushConfigurationWithServices from './BrushConfigurationWithServices';
 import segmentationEditHandler from './segmentationEditHandler';
@@ -313,7 +313,7 @@ export default function ROISegmentationPanel({
             ) : null}
           </div>
           <div className="mt-4 flex justify-center space-x-2">
-            <ButtonGroup
+            <LegacyButtonGroup
               color="black"
               size="inherit"
             >
@@ -332,7 +332,7 @@ export default function ROISegmentationPanel({
               >
                 {t('Export CSV')}
               </LegacyButton>
-            </ButtonGroup>
+            </LegacyButtonGroup>
           </div>
         </div>
       </div>

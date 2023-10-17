@@ -1,5 +1,5 @@
 import React from 'react';
-import { Input, Label, Select, LegacyButton, ButtonGroup } from '@ohif/ui';
+import { Input, Label, Select, LegacyButton, LegacyButtonGroup } from '@ohif/ui';
 import { useTranslation } from 'react-i18next';
 import classnames from 'classnames';
 
@@ -47,8 +47,8 @@ function RectangleROIThresholdConfiguration({
         </div>
         {showStartEndThresholdSettings && (
           <div className="w-1/2">
-            {/* TODO Revisit design of ButtonGroup later - for now use LegacyButton for its children.*/}
-            <ButtonGroup>
+            {/* TODO Revisit design of LegacyButtonGroup later - for now use LegacyButton for its children.*/}
+            <LegacyButtonGroup>
               <LegacyButton
                 size="initial"
                 className="px-2 py-2 text-base text-white"
@@ -67,7 +67,7 @@ function RectangleROIThresholdConfiguration({
               >
                 {t('End')}
               </LegacyButton>
-            </ButtonGroup>
+            </LegacyButtonGroup>
           </div>
         )}
       </div>
