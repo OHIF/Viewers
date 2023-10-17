@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router';
 import PropTypes from 'prop-types';
-// TODO: DicomMetadataStore should be injected?
 import { DicomMetadataStore, ServicesManager, utils, Types, log } from '@ohif/core';
 import { DragAndDropProvider, ImageViewerProvider } from '@ohif/ui';
 import { useSearchParams } from '@hooks';
@@ -89,19 +88,20 @@ async function defaultRouteInit(
     log.time(TimingEnum.DISPLAY_SETS_TO_ALL_IMAGES);
     const displaySets = displaySetService.getActiveDisplaySets();
 
-  if (!displaySets || !displaySets.length) {
-    return;
-  }
+    if (!displaySets || !displaySets.length) {
+      return;
+    }
 
-  // Gets the studies list to use
-  const studies = getStudies(studyInstanceUIDs, displaySets);
+    // Gets the studies list to use
+    const studies = getStudies(studyInstanceUIDs, displaySets);
 
-  // study being displayed, and is thus the "active" study.
-  const activeStudy = studies[0];
+    // study being displayed, and is thus the "active" study.
+    const activeStudy = studies[0];
 
-  // run the hanging protocol matching on the displaySets with the predefined
-  // hanging protocol in the mode configuration
-  hangingProtocolService.run({ studies, activeStudy, displaySets }, hangingProtocolId);
+    // run the hanging protocol matching on the displaySets with the predefined
+    // hanging protocol in the mode configuration
+    hangingProtocolService.run({ studies, activeStudy, displaySets }, hangingProtocolId);
+  });
 
   return unsubscriptions;
 }

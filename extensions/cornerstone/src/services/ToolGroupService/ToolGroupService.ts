@@ -273,28 +273,20 @@ export default class ToolGroupService {
       }
     }
 
-    const { viewports } = this.viewportGridService.getState() || {
-      viewports: [],
-    };
+    const { viewports } = viewportGridService.getState();
 
-    const toolGroup = this.getToolGroup(toolGroupId);
-    const toolGroupViewportIds = toolGroup?.getViewportIds?.();
-
-    // if toolGroup has been destroyed, or its viewports have been removed
-    if (!toolGroupViewportIds || !toolGroupViewportIds.length) {
+    if (!viewports.size) {
       return;
     }
 
-    const filteredViewports = Array.from(viewports.values()).filter(viewport => {
-      return toolGroupViewportIds.includes(viewport.viewportId);
-    });
+    const toolGroup = toolGroupService.getToolGroup(toolGroupId);
 
-    if (!filteredViewports.length) {
+    if (!toolGroup) {
       return;
     }
 
     if (!toolGroup.getToolInstance(toolName)) {
-      this.uiNotificationService.show({
+      uiNotificationService.show({
         title: `${toolName} tool`,
         message: `The ${toolName} tool is not available in this viewport.`,
         type: 'info',

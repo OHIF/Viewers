@@ -111,7 +111,6 @@ export {
   InputFilterText,
   InputGroup,
   InputRange,
-  InputDoubleRange,
   InputNumber,
   InputLabelWrapper,
   InputMultiSelect,

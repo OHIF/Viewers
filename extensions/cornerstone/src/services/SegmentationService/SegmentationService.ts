@@ -1327,6 +1327,9 @@ class SegmentationService extends PubSubService {
         segmentation => segmentation.hydrated
       );
 
+      if (remainingHydratedSegmentations.length) {
+        const { id } = remainingHydratedSegmentations[0];
+
         updatedToolGroupIds.forEach(toolGroupId => {
           this._setActiveSegmentationForToolGroup(id, toolGroupId, false);
         });
