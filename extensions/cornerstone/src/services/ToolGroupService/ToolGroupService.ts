@@ -257,6 +257,7 @@ export default class ToolGroupService {
     toolGroupId?: string,
     toggledState?: boolean
   ): void {
+    debugger;
     if (toolName === 'Crosshairs') {
       const activeViewportToolGroup = this.getToolGroup(null);
 
@@ -273,20 +274,20 @@ export default class ToolGroupService {
       }
     }
 
-    const { viewports } = viewportGridService.getState();
+    const { viewports } = this.viewportGridService.getState();
 
     if (!viewports.size) {
       return;
     }
 
-    const toolGroup = toolGroupService.getToolGroup(toolGroupId);
+    const toolGroup = this.getToolGroup(toolGroupId);
 
     if (!toolGroup) {
       return;
     }
 
     if (!toolGroup.getToolInstance(toolName)) {
-      uiNotificationService.show({
+      this.uiNotificationService.show({
         title: `${toolName} tool`,
         message: `The ${toolName} tool is not available in this viewport.`,
         type: 'info',
