@@ -23,7 +23,7 @@ const gridHorizontalPadding = 10;
 const tabSpacerWidth = 2;
 
 const baseClasses =
-    'transition-all duration-300 ease-in-out bg-black border-black justify-start box-content flex flex-col';
+  'transition-all duration-300 ease-in-out bg-black border-black justify-start box-content flex flex-col';
 
 const classesMap = {
   open: {
@@ -72,8 +72,8 @@ const getNumGridColumns = (numTabs: number, gridWidth: number) => {
 
   // But there is always one less spacer than tabs, so now check if an extra tab with one less spacer fits.
   if (
-      (numTabsWithOneSpacerEach + 1) * tabWidth + numTabsWithOneSpacerEach * tabSpacerWidth <=
-      gridWidth
+    (numTabsWithOneSpacerEach + 1) * tabWidth + numTabsWithOneSpacerEach * tabSpacerWidth <=
+    gridWidth
   ) {
     return numTabsWithOneSpacerEach + 1;
   }
@@ -91,16 +91,16 @@ const getGridStyle = (side: string, numTabs: number = 0, gridWidth: number, expa
 };
 
 const getTabClassNames = (
-    numColumns: number,
-    numTabs: number,
-    tabIndex: number,
-    isActiveTab: boolean
+  numColumns: number,
+  numTabs: number,
+  tabIndex: number,
+  isActiveTab: boolean
 ) =>
-    classnames('h-[28px] mb-[2px] cursor-pointer text-white bg-black', {
-      'hover:text-primary-active': !isActiveTab,
-      'rounded-l': tabIndex % numColumns === 0,
-      'rounded-r': (tabIndex + 1) % numColumns === 0 || tabIndex === numTabs - 1,
-    });
+  classnames('h-[28px] mb-[2px] cursor-pointer text-white bg-black', {
+    'hover:text-primary-active': !isActiveTab,
+    'rounded-l': tabIndex % numColumns === 0,
+    'rounded-r': (tabIndex + 1) % numColumns === 0 || tabIndex === numTabs - 1,
+  });
 
 const getTabStyle = (numTabs: number) => {
   return {
@@ -163,16 +163,16 @@ const SidePanel = ({ side, className, activeTabIndex: activeTabIndexProp, tabs, 
   }, []);
 
   const updateActiveTabIndex = useCallback(
-      (activeTabIndex: number) => {
-        if (activeTabIndex === null) {
-          updatePanelOpen(false);
-          return;
-        }
+    (activeTabIndex: number) => {
+      if (activeTabIndex === null) {
+        updatePanelOpen(false);
+        return;
+      }
 
-        setActiveTabIndex(activeTabIndex);
-        updatePanelOpen(true);
-      },
-      [updatePanelOpen]
+      setActiveTabIndex(activeTabIndex);
+      updatePanelOpen(true);
+    },
+    [updatePanelOpen]
   );
 
   useEffect(() => {
@@ -182,75 +182,75 @@ const SidePanel = ({ side, className, activeTabIndex: activeTabIndexProp, tabs, 
   const getCloseStateComponent = () => {
     const _childComponents = Array.isArray(tabs) ? tabs : [tabs];
     return (
-        <>
-          <div
-              className={classnames(
-                  'bg-secondary-dark flex h-[28px] w-full cursor-pointer items-center rounded-md',
-                  side === 'left' ? 'justify-end pr-2' : 'justify-start pl-2'
-              )}
-              onClick={() => {
-                updatePanelOpen(prev => !prev);
-              }}
-              data-cy={`side-panel-header-${side}`}
+       <>
+         <div
+           className={classnames(
+             'bg-secondary-dark flex h-[28px] w-full cursor-pointer items-center rounded-md',
+             side === 'left' ? 'justify-end pr-2' : 'justify-start pl-2'
+           )}
+           onClick={() => {
+             updatePanelOpen(prev => !prev);
+           }}
+           data-cy={`side-panel-header-${side}`}
           >
             <Icon
-                name={'navigation-panel-right-reveal'}
-                className={classnames('text-primary-active', side === 'left' && 'rotate-180 transform')}
+              name={'navigation-panel-right-reveal'}
+              className={classnames('text-primary-active', side === 'left' && 'rotate-180 transform')}
             />
           </div>
           <div className={classnames('mt-3 flex flex-col space-y-3')}>
             {_childComponents.map((childComponent, index) => (
-                <Tooltip
-                    position={side === 'left' ? 'right' : 'left'}
-                    key={index}
-                    content={`${childComponent.label}`}
-                    className={classnames(
-                        'flex items-center',
-                        side === 'left' ? 'justify-end ' : 'justify-start '
-                    )}
+              <Tooltip
+                position={side === 'left' ? 'right' : 'left'}
+                key={index}
+                content={`${childComponent.label}`}
+                className={classnames(
+                    'flex items-center',
+                    side === 'left' ? 'justify-end ' : 'justify-start '
+                )}
+              >
+                <div
+                  id={`${childComponent.name}-btn`}
+                  data-cy={`${childComponent.name}-btn`}
+                  className="text-primary-active hover:cursor-pointer"
+                  onClick={() => {
+                    updateActiveTabIndex(index);
+                  }}
                 >
-                  <div
-                      id={`${childComponent.name}-btn`}
-                      data-cy={`${childComponent.name}-btn`}
-                      className="text-primary-active hover:cursor-pointer"
-                      onClick={() => {
-                        updateActiveTabIndex(index);
-                      }}
-                  >
-                    <Icon
-                        name={childComponent.iconName}
-                        className="text-primary-active"
-                        style={{
-                          width: '22px',
-                          height: '22px',
-                        }}
-                    />
-                  </div>
-                </Tooltip>
+                  <Icon
+                    name={childComponent.iconName}
+                    className="text-primary-active"
+                    style={{
+                      width: '22px',
+                      height: '22px',
+                    }}
+                  />
+                </div>
+              </Tooltip>
             ))}
-          </div>
+         </div>
         </>
     );
   };
 
   const getCloseIcon = () => {
     return (
-        <div
-            className={classnames(
-                'flex h-[28px] cursor-pointer items-center justify-center',
-                side === 'left' ? 'order-last' : 'order-first'
-            )}
-            style={{ width: `${closeIconWidth}px` }}
-            onClick={() => {
-              updatePanelOpen(prev => !prev);
-            }}
-            data-cy={`side-panel-header-${side}`}
-        >
-          <Icon
-              name={openStateIconName[side]}
-              className="text-primary-active"
-          />
-        </div>
+      <div
+        className={classnames(
+          'flex h-[28px] cursor-pointer items-center justify-center',
+          side === 'left' ? 'order-last' : 'order-first'
+        )}
+        style={{ width: `${closeIconWidth}px` }}
+        onClick={() => {
+          updatePanelOpen(prev => !prev);
+        }}
+        data-cy={`side-panel-header-${side}`}
+      >
+        <Icon
+          name={openStateIconName[side]}
+          className="text-primary-active"
+        />
+      </div>
     );
   };
 
@@ -258,95 +258,95 @@ const SidePanel = ({ side, className, activeTabIndex: activeTabIndexProp, tabs, 
     const numCols = getNumGridColumns(tabs.length, gridWidth);
 
     return (
-        <div className={classnames('flex grow ', side === 'right' ? 'justify-start' : 'justify-end')}>
-          <div
-              className={classnames('bg-primary-dark text-primary-active flex flex-wrap')}
-              style={getGridStyle(side, tabs.length, gridWidth, expandedWidth)}
-          >
-            {tabs.map((tab, tabIndex) => {
-              return (
-                  <React.Fragment key={tabIndex}>
-                    {tabIndex % numCols !== 0 && (
-                        <div
-                            className={classnames(
-                                'flex h-[28px] w-[2px] items-center bg-black',
-                                tabSpacerWidth
-                            )}
-                        >
-                          <div className="bg-primary-dark h-[20px] w-full"></div>
-                        </div>
+      <div className={classnames('flex grow ', side === 'right' ? 'justify-start' : 'justify-end')}>
+        <div
+          className={classnames('bg-primary-dark text-primary-active flex flex-wrap')}
+          style={getGridStyle(side, tabs.length, gridWidth, expandedWidth)}
+        >
+          {tabs.map((tab, tabIndex) => {
+            return (
+              <React.Fragment key={tabIndex}>
+                {tabIndex % numCols !== 0 && (
+                  <div
+                    className={classnames(
+                      'flex h-[28px] w-[2px] items-center bg-black',
+                      tabSpacerWidth
                     )}
-                    <Tooltip
-                        position={'bottom'}
-                        key={tabIndex}
-                        content={`${tab.label}`}
-                    >
-                      <div
-                          className={getTabClassNames(
-                              numCols,
-                              tabs.length,
-                              tabIndex,
-                              tabIndex === activeTabIndex
-                          )}
-                          style={getTabStyle(tabs.length)}
-                          onClick={() => updateActiveTabIndex(tabIndex)}
-                          data-cy={`${tab.name}-btn`}
-                      >
-                        <div className={getTabIconClassNames(tabs.length, tabIndex === activeTabIndex)}>
-                          <Icon name={tab.iconName}></Icon>
-                        </div>
-                      </div>
-                    </Tooltip>
-                  </React.Fragment>
-              );
-            })}
-          </div>
+                  >
+                    <div className="bg-primary-dark h-[20px] w-full"></div>
+                  </div>
+                )}
+                <Tooltip
+                  position={'bottom'}
+                  key={tabIndex}
+                  content={`${tab.label}`}
+                >
+                  <div
+                    className={getTabClassNames(
+                      numCols,
+                      tabs.length,
+                      tabIndex,
+                      tabIndex === activeTabIndex
+                    )}
+                    style={getTabStyle(tabs.length)}
+                    onClick={() => updateActiveTabIndex(tabIndex)}
+                    data-cy={`${tab.name}-btn`}
+                  >
+                    <div className={getTabIconClassNames(tabs.length, tabIndex === activeTabIndex)}>
+                      <Icon name={tab.iconName}></Icon>
+                    </div>
+                  </div>
+                </Tooltip>
+              </React.Fragment>
+            );
+          })}
         </div>
+      </div>
     );
   };
 
   const getOneTabComponent = () => {
     return (
-        <div
-            className={classnames(
-                'text-primary-active flex grow cursor-pointer justify-center self-center text-[13px]'
-            )}
-            style={{
-              ...(side === 'left'
-                  ? { marginLeft: `${closeIconWidth}px` }
-                  : { marginRight: `${closeIconWidth}px` }),
-            }}
-            data-cy={`${tabs[0].name}-btn`}
-            onClick={() => updatePanelOpen(prev => !prev)}
-        >
-          <span>{tabs[0].label}</span>
-        </div>
+      <div
+        className={classnames(
+          'text-primary-active flex grow cursor-pointer justify-center self-center text-[13px]'
+        )}
+        style={{
+          ...(side === 'left'
+            ? { marginLeft: `${closeIconWidth}px` }
+            : { marginRight: `${closeIconWidth}px` }),
+        }}
+        data-cy={`${tabs[0].name}-btn`}
+        onClick={() => updatePanelOpen(prev => !prev)}
+      >
+        <span>{tabs[0].label}</span>
+      </div>
     );
   };
 
   const getOpenStateComponent = () => {
     return (
-        <div className="bg-primary-dark flex rounded-t pt-1.5 pb-[2px]">
-          {getCloseIcon()}
-          {tabs.length === 1 ? getOneTabComponent() : getTabGridComponent()}
-        </div>
+      <div className="bg-primary-dark flex rounded-t pt-1.5 pb-[2px]">
+        {getCloseIcon()}
+        {tabs.length === 1 ? getOneTabComponent() : getTabGridComponent()}
+      </div>
     );
   };
 
   return (
-      <div
-          className={classnames(className, baseClasses, classesMap[openStatus][side])}
-          style={style}
-      >
-        {panelOpen ? (
-            <>
-              {getOpenStateComponent()}
-              <ActiveComponent />
-            </>
-        ) : (
-            <React.Fragment>{getCloseStateComponent()}</React.Fragment>
-        )}
-      </div>
+    <div
+      className={classnames(className, baseClasses, classesMap[openStatus][side])}
+      style={style}
+    >
+      {panelOpen ? (
+        <>
+          {getOpenStateComponent()}
+          <ActiveComponent />
+        </>
+      ) : (
+        <React.Fragment>{getCloseStateComponent()}</React.Fragment>
+      )}
+    </div>
   );
 };
 
@@ -361,13 +361,13 @@ SidePanel.propTypes = {
   activeTabIndex: PropTypes.number,
   tabs: PropTypes.oneOfType([
     PropTypes.arrayOf(
-        PropTypes.shape({
-          iconName: PropTypes.string.isRequired,
-          iconLabel: PropTypes.string.isRequired,
-          name: PropTypes.string.isRequired,
-          label: PropTypes.string.isRequired,
-          content: PropTypes.func, // TODO: Should be node, but it keeps complaining?
-        })
+      PropTypes.shape({
+        iconName: PropTypes.string.isRequired,
+        iconLabel: PropTypes.string.isRequired,
+        name: PropTypes.string.isRequired,
+        label: PropTypes.string.isRequired,
+        content: PropTypes.func, // TODO: Should be node, but it keeps complaining?
+      })
     ),
   ]),
   onOpen: PropTypes.func,
