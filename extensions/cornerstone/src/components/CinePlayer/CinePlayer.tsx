@@ -13,12 +13,12 @@ function WrappedCinePlayer({ enabledVPElement, viewportId, servicesManager }) {
   const handleCineClose = () => {
     toolbarService.recordInteraction({
       groupId: 'MoreTools',
-      itemId: 'cine',
       interactionType: 'toggle',
       commands: [
         {
           commandName: 'toggleCine',
           commandOptions: {},
+          toolName: 'cine',
           context: 'CORNERSTONE',
         },
       ],

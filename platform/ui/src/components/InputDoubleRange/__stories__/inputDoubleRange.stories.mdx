@@ -1,0 +1,56 @@
+import { InputDoubleRange } from '../../../components';
+import { ArgsTable, Story, Canvas, Meta } from '@storybook/addon-docs';
+
+export const argTypes = {
+  component: InputDoubleRange,
+  title: 'Components/InputDoubleRange',
+};
+
+<Meta
+  title="Components/InputDoubleRange"
+  component={InputDoubleRange}
+/>
+
+export const RangeInputTemplate = args => (
+  <div className="w-12">
+    <InputDoubleRange {...args} />
+  </div>
+);
+
+<Heading
+  title="InputDoubleRange"
+  componentRelativePath="InputDoubleRange/InputDoubleRange.tsx"
+/>
+
+- [Overview](#overview)
+- [Props](#props)
+- [Contribute](#contribute)
+
+## Overview
+
+InputDoubleRange is a component that allows you to use as a boolean value
+
+<Canvas>
+  <Story
+    name="Overview"
+    args={{
+      values: [100, 200],
+      minValue: 0,
+      maxValue: 300,
+      step: 10,
+      unit: '%',
+      onChange: () => console.log('input range change'),
+      labelClassName: 'text-black',
+    }}
+  >
+    {RangeInputTemplate.bind({})}
+  </Story>
+</Canvas>
+
+## Props
+
+<ArgsTable of={InputDoubleRange} />
+
+## Contribute
+
+<Footer componentRelativePath="InputDoubleRange/__stories__/InputDoubleRange.stories.mdx" />

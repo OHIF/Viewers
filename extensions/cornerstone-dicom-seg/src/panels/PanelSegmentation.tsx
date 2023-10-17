@@ -1,45 +1,28 @@
+import { createReportAsync } from '@ohif/extension-default';
 import React, { useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import { SegmentationGroupTable } from '@ohif/ui';
+import { SegmentationGroupTable, LegacyButtonGroup, LegacyButton } from '@ohif/ui';
+
 import callInputDialog from './callInputDialog';
-import { useAppConfig } from '@state';
+import callColorPickerDialog from './colorPickerDialog';
 import { useTranslation } from 'react-i18next';
 
-export default function PanelSegmentation({ servicesManager, commandsManager }) {
-  const { segmentationService, uiDialogService } = servicesManager.services;
-  const [appConfig] = useAppConfig();
-  const disableEditing = appConfig?.disableEditing;
+export default function PanelSegmentation({
+  servicesManager,
+  commandsManager,
+  extensionManager,
+  configuration,
+}) {
+  const { segmentationService, viewportGridService, uiDialogService } = servicesManager.services;
 
   const { t } = useTranslation('PanelSegmentation');
+
   const [selectedSegmentationId, setSelectedSegmentationId] = useState(null);
   const [segmentationConfiguration, setSegmentationConfiguration] = useState(
     segmentationService.getConfiguration()
   );
 
   const [segmentations, setSegmentations] = useState(() => segmentationService.getSegmentations());
-
-  const [isMinimized, setIsMinimized] = useState({});
-
-  const onToggleMinimizeSegmentation = useCallback(
-    id => {
-      setIsMinimized(prevState => ({
-        ...prevState,
-        [id]: !prevState[id],
-      }));
-    },
-    [setIsMinimized]
-  );
-
-  // Only expand the last segmentation added to the list and collapse the rest
-  useEffect(() => {
-    const lastSegmentationId = segmentations[segmentations.length - 1]?.id;
-    if (lastSegmentationId) {
-      setIsMinimized(prevState => ({
-        ...prevState,
-        [lastSegmentationId]: false,
-      }));
-    }
-  }, [segmentations, setIsMinimized]);
 
   useEffect(() => {
     // ~~ Subscription
@@ -64,6 +47,16 @@ export default function PanelSegmentation({ servicesManager, commandsManager }) 
     };
   }, []);
 
+  const getToolGroupIds = segmentationId => {
+    const toolGroupIds = segmentationService.getToolGroupIdsWithSegmentation(segmentationId);
+
+    return toolGroupIds;
+  };
+
+  const onSegmentationAdd = async () => {
+    commandsManager.runCommand('createEmptySegmentationForViewport');
+  };
+
   const onSegmentationClick = (segmentationId: string) => {
     segmentationService.setActiveSegmentationForToolGroup(segmentationId);
   };
@@ -72,14 +65,12 @@ export default function PanelSegmentation({ servicesManager, commandsManager }) 
     segmentationService.remove(segmentationId);
   };
 
-  const getToolGroupIds = segmentationId => {
-    const toolGroupIds = segmentationService.getToolGroupIdsWithSegmentation(segmentationId);
-
-    return toolGroupIds;
+  const onSegmentAdd = segmentationId => {
+    segmentationService.addSegment(segmentationId);
   };
 
   const onSegmentClick = (segmentationId, segmentIndex) => {
-    segmentationService.setActiveSegmentForSegmentation(segmentationId, segmentIndex);
+    segmentationService.setActiveSegment(segmentationId, segmentIndex);
 
     const toolGroupIds = getToolGroupIds(segmentationId);
 
@@ -101,7 +92,7 @@ export default function PanelSegmentation({ servicesManager, commandsManager }) 
         return;
       }
 
-      segmentationService.setSegmentLabelForSegmentation(segmentationId, segmentIndex, label);
+      segmentationService.setSegmentLabel(segmentationId, segmentIndex, label);
     });
   };
 
@@ -126,16 +117,34 @@ export default function PanelSegmentation({ servicesManager, commandsManager }) 
   };
 
   const onSegmentColorClick = (segmentationId, segmentIndex) => {
-    // Todo: Implement color picker later
-    return;
+    const segmentation = segmentationService.getSegmentation(segmentationId);
+
+    const segment = segmentation.segments[segmentIndex];
+    const { color, opacity } = segment;
+
+    const rgbaColor = {
+      r: color[0],
+      g: color[1],
+      b: color[2],
+      a: opacity / 255.0,
+    };
+
+    callColorPickerDialog(uiDialogService, rgbaColor, (newRgbaColor, actionId) => {
+      if (actionId === 'cancel') {
+        return;
+      }
+
+      segmentationService.setSegmentRGBAColor(segmentationId, segmentIndex, [
+        newRgbaColor.r,
+        newRgbaColor.g,
+        newRgbaColor.b,
+        newRgbaColor.a * 255.0,
+      ]);
+    });
   };
 
   const onSegmentDelete = (segmentationId, segmentIndex) => {
-    // segmentationService.removeSegmentFromSegmentation(
-    //   segmentationId,
-    //   segmentIndex
-    // );
-    console.warn('not implemented yet');
+    segmentationService.removeSegment(segmentationId, segmentIndex);
   };
 
   const onToggleSegmentVisibility = (segmentationId, segmentIndex) => {
@@ -155,6 +164,10 @@ export default function PanelSegmentation({ servicesManager, commandsManager }) 
     });
   };
 
+  const onToggleSegmentLock = (segmentationId, segmentIndex) => {
+    segmentationService.toggleSegmentLocked(segmentationId, segmentIndex);
+  };
+
   const onToggleSegmentationVisibility = segmentationId => {
     segmentationService.toggleSegmentationVisibility(segmentationId);
   };
@@ -169,27 +182,69 @@ export default function PanelSegmentation({ servicesManager, commandsManager }) 
     [segmentationService]
   );
 
+  const onSegmentationDownload = segmentationId => {
+    commandsManager.runCommand('downloadSegmentation', {
+      segmentationId,
+    });
+  };
+
+  const storeSegmentation = async segmentationId => {
+    const datasources = extensionManager.getActiveDataSource();
+
+    const displaySetInstanceUIDs = await createReportAsync({
+      servicesManager,
+      getReport: () =>
+        commandsManager.runCommand('storeSegmentation', {
+          segmentationId,
+          dataSource: datasources[0],
+        }),
+      reportType: 'Segmentation',
+    });
+
+    // Show the exported report in the active viewport as read only (similar to SR)
+    if (displaySetInstanceUIDs) {
+      // clear the segmentation that we exported, similar to the storeMeasurement
+      // where we remove the measurements and prompt again the user if they would like
+      // to re-read the measurements in a SR read only viewport
+      segmentationService.remove(segmentationId);
+
+      viewportGridService.setDisplaySetsForViewport({
+        viewportId: viewportGridService.getActiveViewportId(),
+        displaySetInstanceUIDs,
+      });
+    }
+  };
+
+  const onSegmentationDownloadRTSS = segmentationId => {
+    commandsManager.runCommand('downloadRTSS', {
+      segmentationId,
+    });
+  };
+
   return (
-    <div className="mt-1 flex min-h-0 flex-auto flex-col justify-between">
-      {/* show segmentation table */}
-      {segmentations?.length ? (
+    <>
+      <div className="ohif-scrollbar flex min-h-0 flex-auto select-none flex-col justify-between overflow-auto">
         <SegmentationGroupTable
           title={t('Segmentations')}
-          showAddSegmentation={false}
           segmentations={segmentations}
-          isMinimized={isMinimized}
+          disableEditing={configuration.disableEditing}
           activeSegmentationId={selectedSegmentationId || ''}
+          onSegmentationAdd={onSegmentationAdd}
           onSegmentationClick={onSegmentationClick}
           onSegmentationDelete={onSegmentationDelete}
+          onSegmentationDownload={onSegmentationDownload}
+          onSegmentationDownloadRTSS={onSegmentationDownloadRTSS}
+          storeSegmentation={storeSegmentation}
           onSegmentationEdit={onSegmentationEdit}
           onSegmentClick={onSegmentClick}
           onSegmentEdit={onSegmentEdit}
-          disableEditing={disableEditing}
+          onSegmentAdd={onSegmentAdd}
           onSegmentColorClick={onSegmentColorClick}
           onSegmentDelete={onSegmentDelete}
           onToggleSegmentVisibility={onToggleSegmentVisibility}
+          onToggleSegmentLock={onToggleSegmentLock}
           onToggleSegmentationVisibility={onToggleSegmentationVisibility}
-          onToggleMinimizeSegmentation={onToggleMinimizeSegmentation}
+          showDeleteSegment={true}
           segmentationConfig={{ initialConfig: segmentationConfiguration }}
           setRenderOutline={value =>
             _setSegmentationConfiguration(selectedSegmentationId, 'renderOutline', value)
@@ -217,8 +272,8 @@ export default function PanelSegmentation({ servicesManager, commandsManager }) 
             _setSegmentationConfiguration(selectedSegmentationId, 'fillAlphaInactive', value)
           }
         />
-      ) : null}
-    </div>
+      </div>
+    </>
   );
 }
 

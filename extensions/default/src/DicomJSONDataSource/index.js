@@ -119,18 +119,18 @@ function createDicomJSONApi(dicomJsonConfig) {
           });
         },
         processResults: () => {
-          console.debug(' DICOMJson QUERY processResults');
+          console.warn(' DICOMJson QUERY processResults not implemented');
         },
       },
       series: {
         // mapParams: mapParams.bind(),
         search: () => {
-          console.debug(' DICOMJson QUERY SERIES SEARCH');
+          console.warn(' DICOMJson QUERY SERIES SEARCH not implemented');
         },
       },
       instances: {
         search: () => {
-          console.debug(' DICOMJson QUERY instances SEARCH');
+          console.warn(' DICOMJson QUERY instances SEARCH not implemented');
         },
       },
     },
@@ -211,7 +211,7 @@ function createDicomJSONApi(dicomJsonConfig) {
     },
     store: {
       dicom: () => {
-        console.debug(' DICOMJson store dicom');
+        console.warn(' DICOMJson store dicom not implemented');
       },
     },
     getImageIdsForDisplaySet(displaySet) {

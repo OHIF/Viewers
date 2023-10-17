@@ -10,13 +10,22 @@ conferences and "hackathons". In this page, we will provide the presentations
 and other resources that we have provided to the community in the past:
 
 ## 2023
+
+### ITCR 2023 Conference | September 11-13, 2023
+
+Dr. Gordon Harris presented an update on OHIF in [NCI Informatics Technology for Cancer Research Annual Meeting](https://www.itcr2023.org/). You can find the slides and poster here:
+[[Slides]](https://docs.google.com/presentation/d/1R38s95db_yZj0WoYdlUbaWGZsWVb3H-3u_hXBZXiTaE/edit?usp=sharing)[[Poster]](https://ohif-assets.s3.us-east-2.amazonaws.com/presentations/OHIF-ITCR-2023-FINAL-PRINT.pdf)
+
+
+
+
 ### SIIM 2023 Tech Tools Webinar |  April 12th, 2023
 
 Free, Open Source Tools for Research: MONAI and OHIF Viewer
 [[Slides](https://docs.google.com/presentation/d/1afJ5Y9Tzukgn7eAbaO1oiCtN7XvIimFdmZP-HcOUofA/edit?usp=sharing)][[Video](https://www.youtube.com/watch?v=lo8J5w5jUJI)]
 
 
-### [NA-MIC Project Week 38th 2023 - Remote]
+### NA-MIC Project Week 38th 2023 - Remote
 
 We participated in the 38th Project Week with three projects around OHIF. [[Website](https://projectweek.na-mic.org/PW38_2023_GranCanaria/)]
 

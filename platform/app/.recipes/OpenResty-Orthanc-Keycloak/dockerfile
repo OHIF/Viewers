@@ -23,10 +23,12 @@
 
 
 # Stage 1: Build the application
-FROM node:16.15.0-slim as builder
+FROM node:18.16.1-slim as builder
 
 RUN mkdir /usr/src/app
 WORKDIR /usr/src/app
+
+RUN apt-get update && apt-get install -y build-essential python3
 
 ENV APP_CONFIG=config/docker_openresty-orthanc-keycloak.js
 ENV PATH /usr/src/app/node_modules/.bin:$PATH
@@ -44,23 +46,38 @@ RUN yarn run build
 # Stage 2: Bundle the built application into a Docker container
 # which runs openresty (nginx) using Alpine Linux
 # LINK: https://hub.docker.com/r/openresty/openresty
-FROM openresty/openresty:1.15.8.1rc1-0-alpine-fat
+FROM openresty/openresty:1.21.4.2-0-bullseye-fat
 
 RUN mkdir /var/log/nginx
-RUN apk add --no-cache openssl
-RUN apk add --no-cache openssl-dev
-RUN apk add --no-cache git
-RUN apk add --no-cache gcc
+RUN apt-get update && \
+  apt-get install -y openssl libssl-dev git gcc wget unzip make&& \
+  apt-get clean
+
+RUN apt-get install --assume-yes lua5.4 libzmq3-dev lua5.4-dev
+RUN cd /tmp && \
+  wget http://luarocks.org/releases/luarocks-3.9.2.tar.gz && \
+  tar zxpf luarocks-3.9.2.tar.gz && \
+  cd luarocks-3.9.2 && \
+  ./configure && \
+  make && \
+  make install
+
 # !!!
+RUN luarocks install lua-resty-http
+# RUN luarocks install lua-nginx-module
+RUN luarocks install lua-cjson
+RUN luarocks install lua-resty-string
+RUN luarocks install lua-resty-session
+RUN luarocks install lua-resty-jwt
 RUN luarocks install lua-resty-openidc
 
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+
 #
-RUN luarocks install lua-resty-jwt
-RUN luarocks install lua-resty-session
 RUN luarocks install lua-resty-http
 # !!!
-RUN luarocks install lua-resty-openidc
-RUN luarocks install luacrypto
+RUN luarocks install lua-resty-auto-ssl
+
 
 # Copy build output to image
 COPY --from=builder /usr/src/app/platform/app/dist /var/www/html

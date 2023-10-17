@@ -5,7 +5,6 @@ describe('OHIF Measurement Panel', function () {
     cy.expectMinimumThumbnails(3);
     cy.initCommonElementsAliases();
     cy.initCornerstoneToolsAliases();
-    cy.resetViewport().wait(50);
     cy.waitDicomImage();
   });
 
@@ -24,26 +23,28 @@ describe('OHIF Measurement Panel', function () {
   it('checks if measurement item can be Relabeled under Measurements panel', function () {
     // Add length measurement
     cy.addLengthMeasurement();
-    cy.get('[data-cy="viewport-notification"]').should('exist');
-    cy.get('[data-cy="viewport-notification"]').should('be.visible');
-    cy.get('[data-cy="prompt-begin-tracking-yes-btn"]').click();
-    cy.get('[data-cy="measurement-item"]').click();
 
-    cy.get('[data-cy="measurement-item"]').find('svg').click();
+    cy.get('[data-cy="viewport-notification"]').as('viewportNotification').should('exist');
+    cy.get('[data-cy="viewport-notification"]').as('viewportNotification').should('be.visible');
+
+    cy.get('[data-cy="prompt-begin-tracking-yes-btn"]').as('yesBtn').click();
+
+    cy.get('[data-cy="measurement-item"]').as('measurementItem').click();
+
+    cy.get('[data-cy="measurement-item"]').find('svg').as('measurementItemSvg').click();
 
     // enter Bone label
     cy.get('[data-cy="input-annotation"]').should('exist');
     cy.get('[data-cy="input-annotation"]').should('be.visible');
     cy.get('[data-cy="input-annotation"]').type('Bone{enter}');
 
-    // Verify if 'Bone' label was added
-    cy.get('[data-cy="measurement-item"]').should('contain.text', 'Bone');
+    cy.get('[data-cy="measurement-item"]').as('measurementItem').should('contain.text', 'Bone');
   });
 
   it('checks if image would jump when clicked on a measurement item', function () {
     // Add length measurement
-    cy.addLengthMeasurement();
-    cy.get('[data-cy="prompt-begin-tracking-yes-btn"]').click();
+    cy.addLengthMeasurement().wait(250);
+    cy.get('[data-cy="prompt-begin-tracking-yes-btn"]').as('yesBtn').click();
 
     cy.scrollToIndex(13);
 
