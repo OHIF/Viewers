@@ -186,50 +186,50 @@ const SidePanel = ({ side, className, activeTabIndex: activeTabIndexProp, tabs, 
          <div
            className={classnames(
              'bg-secondary-dark flex h-[28px] w-full cursor-pointer items-center rounded-md',
-             side === 'left' ? 'justify-end pr-2' : 'justify-start pl-2'
+            side === 'left' ? 'justify-end pr-2' : 'justify-start pl-2'
            )}
            onClick={() => {
              updatePanelOpen(prev => !prev);
            }}
            data-cy={`side-panel-header-${side}`}
-          >
-            <Icon
-              name={'navigation-panel-right-reveal'}
-              className={classnames('text-primary-active', side === 'left' && 'rotate-180 transform')}
-            />
-          </div>
-          <div className={classnames('mt-3 flex flex-col space-y-3')}>
-            {_childComponents.map((childComponent, index) => (
-              <Tooltip
-                position={side === 'left' ? 'right' : 'left'}
-                key={index}
-                content={`${childComponent.label}`}
-                className={classnames(
-                    'flex items-center',
-                    side === 'left' ? 'justify-end ' : 'justify-start '
-                )}
-              >
-                <div
-                  id={`${childComponent.name}-btn`}
-                  data-cy={`${childComponent.name}-btn`}
-                  className="text-primary-active hover:cursor-pointer"
-                  onClick={() => {
-                    updateActiveTabIndex(index);
-                  }}
-                >
-                  <Icon
-                    name={childComponent.iconName}
-                    className="text-primary-active"
-                    style={{
-                      width: '22px',
-                      height: '22px',
-                    }}
-                  />
-                </div>
-              </Tooltip>
-            ))}
+         >
+           <Icon
+             name={'navigation-panel-right-reveal'}
+             className={classnames('text-primary-active', side === 'left' && 'rotate-180 transform')}
+           />
          </div>
-        </>
+         <div className={classnames('mt-3 flex flex-col space-y-3')}>
+           {_childComponents.map((childComponent, index) => (
+             <Tooltip
+               position={side === 'left' ? 'right' : 'left'}
+               key={index}
+               content={`${childComponent.label}`}
+               className={classnames(
+                   'flex items-center',
+                  side === 'left' ? 'justify-end ' : 'justify-start '
+               )}
+             >
+               <div
+                 id={`${childComponent.name}-btn`}
+                 data-cy={`${childComponent.name}-btn`}
+                 className="text-primary-active hover:cursor-pointer"
+                 onClick={() => {
+                   updateActiveTabIndex(index);
+                 }}
+               >
+                 <Icon
+                   name={childComponent.iconName}
+                   className="text-primary-active"
+                   style={{
+                     width: '22px',
+                     height: '22px',
+                   }}
+                 />
+               </div>
+             </Tooltip>
+           ))}
+         </div>
+       </>
     );
   };
 
