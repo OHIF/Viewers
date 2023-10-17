@@ -130,7 +130,14 @@ const getTabIconClassNames = (numTabs: number, isActiveTab: boolean) => {
   });
 };
 
-const SidePanel = ({ side, className, activeTabIndex: activeTabIndexProp, tabs, onOpen }) => {
+const SidePanel = ({
+  side,
+  className,
+  activeTabIndex: activeTabIndexProp,
+  tabs,
+  onOpen,
+  onActiveTabIndexChange,
+}) => {
   const { t } = useTranslation('SidePanel');
 
   const [panelOpen, setPanelOpen] = useState(activeTabIndexProp !== null);
@@ -139,14 +146,15 @@ const SidePanel = ({ side, className, activeTabIndex: activeTabIndexProp, tabs, 
   const openStatus = panelOpen ? 'open' : 'closed';
   const style = Object.assign({}, styleMap[openStatus][side], baseStyle);
 
-  const ActiveComponent = tabs[activeTabIndex]?.content;
-
-  const updatePanelOpen = useCallback((panelOpen: boolean) => {
-    setPanelOpen(panelOpen);
-    if (panelOpen) {
-      onOpen?.();
-    }
-  }, []);
+  const updatePanelOpen = useCallback(
+    (panelOpen: boolean) => {
+      setPanelOpen(panelOpen);
+      if (panelOpen && onOpen) {
+        onOpen?.();
+      }
+    },
+    [onOpen]
+  );
 
   const updateActiveTabIndex = useCallback(
     (activeTabIndex: number) => {
@@ -159,7 +167,7 @@ const SidePanel = ({ side, className, activeTabIndex: activeTabIndexProp, tabs, 
       updatePanelOpen(true);
 
       if (onActiveTabIndexChange) {
-        onActiveTabIndexChange({ activeTabIndex: activeTabIndexParam });
+        onActiveTabIndexChange({ activeTabIndex });
       }
     },
     [onActiveTabIndexChange, updatePanelOpen]
@@ -179,7 +187,7 @@ const SidePanel = ({ side, className, activeTabIndex: activeTabIndexProp, tabs, 
             side === 'left' ? 'justify-end pr-2' : 'justify-start pl-2'
           )}
           onClick={() => {
-            updatePanelOpen(!panelOpen);
+            updatePanelOpen(prev => !prev);
           }}
           data-cy={`side-panel-header-${side}`}
         >
@@ -331,7 +339,14 @@ const SidePanel = ({ side, className, activeTabIndex: activeTabIndexProp, tabs, 
       {panelOpen ? (
         <>
           {getOpenStateComponent()}
-          <ActiveComponent />
+          {tabs.map((tab, tabIndex) => (
+            <div
+              key={tab.id}
+              className={tabIndex === activeTabIndex ? '' : 'hidden'}
+            >
+              <tab.content />
+            </div>
+          ))}
         </>
       ) : (
         <React.Fragment>{getCloseStateComponent()}</React.Fragment>
@@ -361,6 +376,7 @@ SidePanel.propTypes = {
     ),
   ]),
   onOpen: PropTypes.func,
+  onActiveTabIndexChange: PropTypes.func,
 };
 
 export default SidePanel;

@@ -128,7 +128,7 @@ export default class PanelService extends PubSubService {
     this.reset();
   }
 
-  /**
+  /**5
    * Activates the panel with the given id. If the forceActive flag is false
    * then it is up to the component containing the panel whether to activate
    * it immediately or not. For instance, the panel might not be activated when

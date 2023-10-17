@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { SidePanel } from '@ohif/ui';
-import { PanelService, ServicesManager } from '@ohif/core';
+import { PanelService, ServicesManager, Types } from '@ohif/core';
 
 export type SidePanelWithServicesProps = {
   servicesManager: ServicesManager;
@@ -13,9 +13,9 @@ export type SidePanelWithServicesProps = {
 const SidePanelWithServices = ({
   servicesManager,
   side,
-  className,
   activeTabIndex: activeTabIndexProp,
-  tabs,
+  tabs: tabsProp,
+  ...props
 }) => {
   const panelService: PanelService = servicesManager?.services?.panelService;
 
@@ -23,36 +23,62 @@ const SidePanelWithServices = ({
   // Thus going to the Study List page and back to the viewer resets this flag for a SidePanel.
   const [hasBeenOpened, setHasBeenOpened] = useState(false);
   const [activeTabIndex, setActiveTabIndex] = useState(activeTabIndexProp);
+  const [tabs, setTabs] = useState(tabsProp ?? panelService.getPanels(side));
+
+  const handleSidePanelOpen = useCallback(() => {
+    setHasBeenOpened(true);
+  }, []);
+
+  const handleActiveTabIndexChange = useCallback(({ activeTabIndex }) => {
+    setActiveTabIndex(activeTabIndex);
+  }, []);
 
   useEffect(() => {
-    if (panelService) {
-      const activatePanelSubscription = panelService.subscribe(
-        panelService.EVENTS.ACTIVATE_PANEL,
-        (activatePanelEvent: Types.ActivatePanelEvent) => {
-          if (!hasBeenOpened || activatePanelEvent.forceActive) {
-            const tabIndex = tabs.findIndex(tab => tab.id === activatePanelEvent.panelId);
-            if (tabIndex !== -1) {
-              setActiveTabIndex(tabIndex);
-            }
+    const { unsubscribe } = panelService.subscribe(
+      panelService.EVENTS.PANELS_CHANGED,
+      panelChangedEvent => {
+        if (panelChangedEvent.position !== side) {
+          return;
+        }
+
+        setTabs(panelService.getPanels(side));
+      }
+    );
+
+    return () => {
+      unsubscribe();
+    };
+  }, [panelService, side]);
+
+  useEffect(() => {
+    const activatePanelSubscription = panelService.subscribe(
+      panelService.EVENTS.ACTIVATE_PANEL,
+      (activatePanelEvent: Types.ActivatePanelEvent) => {
+        if (!hasBeenOpened || activatePanelEvent.forceActive) {
+          const tabIndex = tabs.findIndex(tab => tab.id === activatePanelEvent.panelId);
+          if (tabIndex !== -1) {
+            setActiveTabIndex(tabIndex);
           }
         }
-      );
+      }
+    );
 
-      return () => {
-        activatePanelSubscription.unsubscribe();
-      };
-    }
+    return () => {
+      activatePanelSubscription.unsubscribe();
+    };
   }, [tabs, hasBeenOpened, panelService]);
 
   return (
     <SidePanel
+      {...props}
       side={side}
-      className={className}
-      activeTabIndex={activeTabIndex}
       tabs={tabs}
+      activeTabIndex={activeTabIndex}
       onOpen={() => {
         setHasBeenOpened(true);
+        handleSidePanelOpen();
       }}
+      onActiveTabIndexChange={handleActiveTabIndexChange}
     ></SidePanel>
   );
 };
