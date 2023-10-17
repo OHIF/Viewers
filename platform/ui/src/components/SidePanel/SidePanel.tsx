@@ -279,7 +279,13 @@ const SidePanel = ({ side, className, activeTabIndex: activeTabIndexProp, tabs, 
                     data-cy={`${tab.name}-btn`}
                   >
                     <div className={getTabIconClassNames(tabs.length, tabIndex === activeTabIndex)}>
-                      <Icon name={tab.iconName}></Icon>
+                      <Icon
+                        name={tab.iconName}
+                        style={{
+                          width: '22px',
+                          height: '22px',
+                        }}
+                      ></Icon>
                     </div>
                   </div>
                 </Tooltip>
