@@ -178,8 +178,15 @@ export default class DisplaySetService extends PubSubService {
    * @param {string} displaySetInstanceUID
    * @returns {object} displaySet
    */
-  public getDisplaySetByUID = (displaySetInstanceUid: string): DisplaySet =>
-    displaySetCache.get(displaySetInstanceUid);
+  public getDisplaySetByUID = (displaySetInstanceUid: string): DisplaySet => {
+    if (typeof displaySetInstanceUid !== 'string') {
+      throw new Error(
+        `getDisplaySetByUID: displaySetInstanceUid must be a string, you passed ${displaySetInstanceUid}`
+      );
+    }
+
+    return displaySetCache.get(displaySetInstanceUid);
+  };
 
   /**
    *

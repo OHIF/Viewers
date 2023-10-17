@@ -97,7 +97,7 @@ class DicomLoaderService {
 
     if (
       (!imageInstance && !nonImageInstance) ||
-      !nonImageInstance.imageId.startsWith('dicomfile')
+      !nonImageInstance.imageId?.startsWith('dicomfile')
     ) {
       return;
     }

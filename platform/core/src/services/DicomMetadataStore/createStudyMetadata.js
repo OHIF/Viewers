@@ -26,7 +26,7 @@ function createStudyMetadata(StudyInstanceUID) {
       let series = this.series.find(s => s.SeriesInstanceUID === SeriesInstanceUID);
 
       if (!series) {
-        const series = createSeriesMetadata(SeriesInstanceUID);
+        series = createSeriesMetadata(SeriesInstanceUID);
         this.series.push(series);
       }
 

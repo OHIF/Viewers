@@ -1,126 +1,218 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import classNames from 'classnames';
-import Typography from '../Typography';
+import { InputNumber } from '../../components'; // Import InputNumber component
 import './InputDoubleRange.css';
 
-/**
- * React Range Input component
- * it has two props, value and onChange
- * value is a number value
- * onChange is a function that will be called when the range input is changed
- *
- *
- */
-
-const InputDoubleRange: React.FC<{
-  valueLeft: number;
-  valueRight: number;
-  onSliderChange;
-  minValue: number;
-  maxValue: number;
-  step: number;
+type InputDoubleRangeProps = {
+  values: [number, number];
+  onChange: (values: [number, number]) => void;
+  minValue?: number;
+  maxValue?: number;
+  step?: number;
   unit?: string;
   containerClassName?: string;
+  inputClassName?: string;
   labelClassName?: string;
   labelVariant?: string;
-  showLabel: boolean;
-}> = ({
-  valueLeft,
-  valueRight,
-  onSliderChange,
+  showLabel?: boolean;
+  labelPosition?: 'left' | 'right';
+  trackColor?: string;
+  allowNumberEdit?: boolean;
+  showAdjustmentArrows?: boolean;
+};
+
+const InputDoubleRange: React.FC<InputDoubleRangeProps> = ({
+  values,
+  onChange,
   minValue,
   maxValue,
-  step = 1,
-  unit = '',
+  step,
+  unit,
   containerClassName,
+  inputClassName,
   labelClassName,
   labelVariant,
-  showLabel = true,
+  showLabel,
+  labelPosition,
+  trackColor,
+  allowNumberEdit,
+  showAdjustmentArrows,
 }) => {
-  const [leftVal, setLeftVal] = useState(valueLeft);
-  const [rightVal, setRightVal] = useState(valueRight);
-  const rangeRef = useRef(null);
+  // Set initial thumb positions as percentages
+  const initialPercentageStart = Math.round(((values[0] - minValue) / (maxValue - minValue)) * 100);
+  const initialPercentageEnd = Math.round(((values[1] - minValue) / (maxValue - minValue)) * 100);
 
-  // Convert to percentage
-  const getPercent = useCallback(
-    value => Math.round(((value - minValue) / (maxValue - minValue)) * 100),
-    [minValue, maxValue]
-  );
+  const [percentageStart, setPercentageStart] = useState(initialPercentageStart);
+  const [percentageEnd, setPercentageEnd] = useState(initialPercentageEnd);
 
-  function handleSliderChange(newValues) {
-    onSliderChange(newValues);
-  }
+  const [rangeValue, setRangeValue] = useState(values);
+  const selectedThumbRef = useRef(null);
+  const sliderRef = useRef(null);
 
-  // Get min and max values when their state changes
+  const updateRangeValues = (newValues, index = null) => {
+    const updatedRangeValue = Array.isArray(newValues) ? [...newValues] : [...rangeValue];
+    if (index !== null) {
+      updatedRangeValue[index] = newValues;
+    }
+
+    const calculatePercentage = value => ((value - minValue) / (maxValue - minValue)) * 100;
+
+    const newPercentageStart = calculatePercentage(updatedRangeValue[0]);
+    const newPercentageEnd = calculatePercentage(updatedRangeValue[1]);
+
+    setRangeValue(updatedRangeValue);
+    onChange(updatedRangeValue);
+
+    setPercentageStart(newPercentageStart);
+    setPercentageEnd(newPercentageEnd);
+  };
+
   useEffect(() => {
-    handleSliderChange([leftVal, rightVal]);
+    updateRangeValues(values);
+  }, [values, minValue, maxValue]);
+
+  const LabelOrEditableNumber = (val, index) => {
+    return allowNumberEdit ? (
+      <InputNumber
+        minValue={minValue}
+        maxValue={maxValue}
+        value={val}
+        onChange={newValue => {
+          updateRangeValues(newValue, index);
+        }}
+        step={step}
+        labelClassName="text-white"
+        showAdjustmentArrows={showAdjustmentArrows}
+      />
+    ) : (
+      <span className={classNames(labelClassName ?? 'text-white')}>
+        {val}
+        {unit}
+      </span>
+    );
+  };
+
+  useEffect(() => {
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleGlobalMouseUp);
+    };
   }, []);
 
-  // Set width of the range
-  useEffect(() => {
-    const minPercent = getPercent(leftVal);
-    const maxPercent = getPercent(rightVal);
+  const handleGlobalMouseUp = () => {
+    // Remove global mouse event listeners
+    window.removeEventListener('mousemove', handleMouseMove);
+    window.removeEventListener('mouseup', handleGlobalMouseUp);
+    selectedThumbRef.current = null;
+  };
 
-    if (rangeRef.current) {
-      rangeRef.current.style.left = `${minPercent}%`;
-      rangeRef.current.style.width = `${maxPercent - minPercent}%`;
+  const handleMouseDown = e => {
+    const rect = sliderRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const percentageClicked = (x / rect.width) * 100;
+
+    // Calculate the distances from the clicked point to both thumbs' positions
+    const distanceToStartThumb = Math.abs(percentageClicked - percentageStart);
+    const distanceToEndThumb = Math.abs(percentageClicked - percentageEnd);
+
+    // Check if the clicked point is within a threshold distance to either thumb
+    if (distanceToStartThumb < 10) {
+      selectedThumbRef.current = 0;
+    } else if (distanceToEndThumb < 10) {
+      selectedThumbRef.current = 1;
     }
-  }, [leftVal, rightVal, getPercent]);
 
-  const rangeValueLeftPercentage = ((leftVal - minValue) / (maxValue - minValue)) * 100;
-  const rangeValueRightPercentage = ((rightVal - minValue) / (maxValue - minValue)) * 100;
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleGlobalMouseUp);
+  };
+
+  const handleMouseMove = e => {
+    const selectedThumbValue = selectedThumbRef.current;
+
+    if (selectedThumbValue === null) {
+      return;
+    }
+
+    const rect = sliderRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const newValue =
+      Math.round(((x / rect.width) * (maxValue - minValue) + minValue) / step) * step;
+
+    // Make sure newValue is within [minValue, maxValue]
+    const clampedValue = Math.min(Math.max(newValue, minValue), maxValue);
+
+    // Ensure that left and right thumbs don't switch positions
+    if (selectedThumbValue === 0 && clampedValue >= rangeValue[1]) {
+      return;
+    }
+    if (selectedThumbValue === 1 && clampedValue <= rangeValue[0]) {
+      return;
+    }
+
+    // Update the correct values in the rangeValue array
+    const updatedRangeValue = [...rangeValue];
+    updatedRangeValue[selectedThumbValue] = clampedValue;
+    setRangeValue(updatedRangeValue);
+
+    onChange(updatedRangeValue);
+
+    // Update the thumb position
+    const percentage = Math.round(((clampedValue - minValue) / (maxValue - minValue)) * 100);
+    if (selectedThumbValue === 0) {
+      setPercentageStart(percentage);
+    } else {
+      setPercentageEnd(percentage);
+    }
+  };
+
+  // Calculate the range values percentages for gradient background
+  const rangeValuePercentageStart = ((rangeValue[0] - minValue) / (maxValue - minValue)) * 100;
+  const rangeValuePercentageEnd = ((rangeValue[1] - minValue) / (maxValue - minValue)) * 100;
 
   return (
-    <div
-      className={`cursor-pointer items-center space-x-1 ${
-        containerClassName ? containerClassName : ''
-      }`}
-    >
-      <input
-        type="range"
-        min={minValue}
-        max={maxValue}
-        value={leftVal}
-        onChange={event => {
-          const value = Math.min(Number(event.target.value), rightVal);
-          setLeftVal(value);
-          handleSliderChange([value, rightVal]);
-        }}
-        className="thumb thumb--left h-[3px] appearance-none rounded-lg"
-        style={{
-          background: `linear-gradient(to right, #3a3f99 0%, #3a3f99 ${rangeValueLeftPercentage}%, #5acce6 ${rangeValueLeftPercentage}%, #5acce6 ${rangeValueRightPercentage}%, #3a3f99 ${rangeValueRightPercentage}%, #3a3f99 100%)`,
-        }}
-      />
-      <input
-        type="range"
-        min={minValue}
-        max={maxValue}
-        value={rightVal}
-        onChange={event => {
-          const value = Math.max(Number(event.target.value), leftVal);
-          setRightVal(value);
-          handleSliderChange([leftVal, value]);
-        }}
-        className="thumb thumb--right h-[3px] appearance-none rounded-lg"
-        style={{
-          background: `linear-gradient(to right, transparent 0%, transparent ${rangeValueLeftPercentage}%, #5acce6 ${rangeValueLeftPercentage}%, #5acce6 ${rangeValueRightPercentage}%, transparent ${rangeValueRightPercentage}%, #3a3f99 100%)`,
-        }}
-      />
-      <div className="slider">
-        <div className="slider__track" />
+    <div className={`flex select-none items-center space-x-2 ${containerClassName ?? ''}`}>
+      {showLabel && LabelOrEditableNumber(rangeValue[0], 0)}
+      <div
+        className="relative flex h-10 w-full items-center"
+        onMouseDown={handleMouseDown}
+        ref={sliderRef}
+      >
         <div
-          ref={rangeRef}
-          className="slider__range"
-        />
-        <div className={classNames(labelClassName ?? 'text-white', 'slider__left-value')}>
-          {leftVal}
-        </div>
-        <div className={classNames(labelClassName ?? 'text-white', 'slider__right-value')}>
-          {rightVal}
-        </div>
+          className="h-[3px] w-full rounded-lg"
+          style={{
+            background: `linear-gradient(to right, #3a3f99 0%, #3a3f99 ${rangeValuePercentageStart}%, #5acce6 ${rangeValuePercentageStart}%, #5acce6 ${rangeValuePercentageEnd}%, #3a3f99 ${rangeValuePercentageEnd}%, #3a3f99 100%)`,
+          }}
+        ></div>
+        <div
+          className="input-range-thumb-design absolute h-3 w-3 cursor-pointer"
+          style={{
+            left: `calc(${percentageStart}% - 3px)`,
+          }}
+        ></div>
+        <div
+          className="input-range-thumb-design absolute h-3  w-3 cursor-pointer rounded-full"
+          style={{ left: `calc(${percentageEnd}% - 3px)` }}
+        ></div>
       </div>
+      {showLabel && LabelOrEditableNumber(rangeValue[1], 1)}
     </div>
   );
+};
+
+InputDoubleRange.defaultProps = {
+  minValue: 0,
+  maxValue: 100,
+  step: 1,
+  unit: '',
+  containerClassName: '',
+  inputClassName: '',
+  labelClassName: '',
+  labelVariant: 'body1',
+  showLabel: false,
+  labelPosition: 'left',
+  trackColor: 'primary',
+  allowNumberEdit: false,
+  showAdjustmentArrows: false,
 };
 
 export default InputDoubleRange;

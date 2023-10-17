@@ -1,5 +1,6 @@
-import { metaData } from '@cornerstonejs/core';
+import { VolumeViewport, metaData } from '@cornerstonejs/core';
 import { utilities } from '@cornerstonejs/core';
+import { IStackViewport, IVolumeViewport, Point3 } from '@cornerstonejs/core/dist/esm/types';
 import { AnnotationDisplayTool, drawing } from '@cornerstonejs/tools';
 import { guid } from '@ohif/core/src/utils';
 
@@ -45,6 +46,15 @@ class ImageOverlayViewerTool extends AnnotationDisplayTool {
     this._cachedStats = {};
     this._cachedOverlayMetadata = new Map();
   };
+
+  protected getReferencedImageId(viewport: IStackViewport | IVolumeViewport): string {
+    if (viewport instanceof VolumeViewport) {
+      return;
+    }
+
+    const targetId = this.getTargetId(viewport);
+    return targetId.split('imageId:')[1];
+  }
 
   renderAnnotation = (enabledElement, svgDrawingHelper) => {
     const { viewport } = enabledElement;
@@ -150,6 +160,8 @@ class ImageOverlayViewerTool extends AnnotationDisplayTool {
           let pixelData = null;
           if (overlay.pixelData.Value) {
             pixelData = overlay.pixelData.Value;
+          } else if (overlay.pixelData instanceof Array) {
+            pixelData = overlay.pixelData[0];
           } else if (overlay.pixelData.retrieveBulkData) {
             pixelData = await overlay.pixelData.retrieveBulkData();
           }

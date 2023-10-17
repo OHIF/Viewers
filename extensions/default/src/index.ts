@@ -13,6 +13,8 @@ import { id } from './id.js';
 import preRegistration from './init';
 import { ContextMenuController, CustomizableContextMenuTypes } from './CustomizableContextMenu';
 import * as dicomWebUtils from './DicomWebDataSource/utils';
+import { createReportDialogPrompt } from './Panels';
+import createReportAsync from './Actions/createReportAsync';
 
 const defaultExtension: Types.Extensions.Extension = {
   /**
@@ -48,4 +50,6 @@ export {
   CustomizableContextMenuTypes,
   getStudiesForPatientByMRN,
   dicomWebUtils,
+  createReportDialogPrompt,
+  createReportAsync,
 };

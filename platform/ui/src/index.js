@@ -36,6 +36,7 @@ export {
 /** COMPONENTS */
 export {
   AboutModal,
+  AdvancedToolbox,
   HotkeyField,
   Header,
   UserPreferences,
@@ -69,7 +70,9 @@ export {
   Label,
   LayoutSelector,
   LegacyButton,
+  LegacyButtonGroup,
   LegacyCinePlayer,
+  LegacySidePanel,
   LegacyViewportActionBar,
   LoadingIndicatorProgress,
   LoadingIndicatorTotalPercent,
@@ -77,6 +80,7 @@ export {
   Modal,
   NavBar,
   Notification,
+  PanelSection,
   ProgressLoadingBar,
   Select,
   SegmentationTable,

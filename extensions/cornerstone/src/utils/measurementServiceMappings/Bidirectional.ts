@@ -3,6 +3,7 @@ import { annotation } from '@cornerstonejs/tools';
 import SUPPORTED_TOOLS from './constants/supportedTools';
 import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
 import { utils } from '@ohif/core';
+import { getDisplayUnit } from './utils';
 
 const Bidirectional = {
   toAnnotation: measurement => {},
@@ -161,14 +162,7 @@ function getDisplayText(mappedAnnotations, displaySet) {
   const displayText = [];
 
   // Area is the same for all series
-  const {
-    length,
-    width,
-    unit,
-    SeriesNumber,
-    SOPInstanceUID,
-    frameNumber,
-  } = mappedAnnotations[0];
+  const { length, width, unit, SeriesNumber, SOPInstanceUID, frameNumber } = mappedAnnotations[0];
   const roundedLength = utils.roundNumber(length, 2);
   const roundedWidth = utils.roundNumber(width, 2);
 
@@ -183,9 +177,9 @@ function getDisplayText(mappedAnnotations, displaySet) {
   const frameText = displaySet.isMultiFrame ? ` F: ${frameNumber}` : '';
 
   displayText.push(
-    `L: ${roundedLength} ${unit} (S: ${SeriesNumber}${instanceText}${frameText})`
+    `L: ${roundedLength} ${getDisplayUnit(unit)} (S: ${SeriesNumber}${instanceText}${frameText})`
   );
-  displayText.push(`W: ${roundedWidth} ${unit}`);
+  displayText.push(`W: ${roundedWidth} ${getDisplayUnit(unit)}`);
 
   return displayText;
 }

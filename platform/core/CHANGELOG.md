@@ -3,6 +3,329 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-beta.0](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.110...v3.8.0-beta.0) (2023-10-12)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.7.0-beta.110](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.109...v3.7.0-beta.110) (2023-10-11)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.7.0-beta.109](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.108...v3.7.0-beta.109) (2023-10-11)
+
+
+### Bug Fixes
+
+* **export:** wrong export for the tmtv RT function ([#3715](https://github.com/OHIF/Viewers/issues/3715)) ([a3f2a1a](https://github.com/OHIF/Viewers/commit/a3f2a1a7b0d16bfcc0ecddc2ab731e54c5e377c8))
+
+
+
+
+
+# [3.7.0-beta.108](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.107...v3.7.0-beta.108) (2023-10-10)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.7.0-beta.107](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.106...v3.7.0-beta.107) (2023-10-10)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.7.0-beta.106](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.105...v3.7.0-beta.106) (2023-10-10)
+
+
+### Bug Fixes
+
+* **segmentation:**  Various fixes for segmentation mode and other ([#3709](https://github.com/OHIF/Viewers/issues/3709)) ([a9a6ad5](https://github.com/OHIF/Viewers/commit/a9a6ad50eae67b43b8b34efc07182d788cacdcfe))
+
+
+
+
+
+# [3.7.0-beta.105](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.104...v3.7.0-beta.105) (2023-10-10)
+
+
+### Bug Fixes
+
+* **voi:** should publish voi change event on reset ([#3707](https://github.com/OHIF/Viewers/issues/3707)) ([52f34c6](https://github.com/OHIF/Viewers/commit/52f34c64d014f433ec1661a39b47e7fb27f15332))
+
+
+
+
+
+# [3.7.0-beta.104](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.103...v3.7.0-beta.104) (2023-10-09)
+
+
+### Bug Fixes
+
+* **modality unit:** fix the modality unit per target via upgrade of cs3d ([#3706](https://github.com/OHIF/Viewers/issues/3706)) ([0a42d57](https://github.com/OHIF/Viewers/commit/0a42d573bbca7f2551a831a46d3aa6b56674a580))
+
+
+
+
+
+# [3.7.0-beta.103](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.102...v3.7.0-beta.103) (2023-10-09)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.7.0-beta.102](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.101...v3.7.0-beta.102) (2023-10-06)
+
+
+### Features
+
+* **Segmentation:** download RTSS from Labelmap([#3692](https://github.com/OHIF/Viewers/issues/3692)) ([40673f6](https://github.com/OHIF/Viewers/commit/40673f64b36b1150149c55632aa1825178a39e65))
+
+
+
+
+
+# [3.7.0-beta.101](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.100...v3.7.0-beta.101) (2023-10-06)
+
+
+### Bug Fixes
+
+* **bugs:** fixing lots of bugs regarding release candidate ([#3700](https://github.com/OHIF/Viewers/issues/3700)) ([8bc12a3](https://github.com/OHIF/Viewers/commit/8bc12a37d0353160ae5ea4624dc0b244b7d59c07))
+
+
+
+
+
+# [3.7.0-beta.100](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.99...v3.7.0-beta.100) (2023-10-06)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.7.0-beta.99](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.98...v3.7.0-beta.99) (2023-10-04)
+
+
+### Bug Fixes
+
+* **measurement and microscopy:**  various small fixes for measurement and microscopy side panel ([#3696](https://github.com/OHIF/Viewers/issues/3696)) ([c1d5ee7](https://github.com/OHIF/Viewers/commit/c1d5ee7e3f7f4c0c6bed9ae81eba5519741c5155))
+
+
+
+
+
+# [3.7.0-beta.98](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.97...v3.7.0-beta.98) (2023-10-04)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.7.0-beta.97](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.96...v3.7.0-beta.97) (2023-10-04)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.7.0-beta.96](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.95...v3.7.0-beta.96) (2023-10-04)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.7.0-beta.95](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.94...v3.7.0-beta.95) (2023-10-04)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.7.0-beta.94](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.93...v3.7.0-beta.94) (2023-10-03)
+
+
+### Features
+
+* **debug:** Add timing information about time to first image/all images, and query time ([#3681](https://github.com/OHIF/Viewers/issues/3681)) ([108383b](https://github.com/OHIF/Viewers/commit/108383b9ef51e4bef82d9c932b9bc7aa5354e799))
+
+
+
+
+
+# [3.7.0-beta.93](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.92...v3.7.0-beta.93) (2023-10-03)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.7.0-beta.92](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.91...v3.7.0-beta.92) (2023-10-03)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.7.0-beta.91](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.90...v3.7.0-beta.91) (2023-10-03)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.7.0-beta.90](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.89...v3.7.0-beta.90) (2023-10-03)
+
+
+### Bug Fixes
+
+* **typescript error:** Change pubSubServiceInterface file type to typescript ([#3546](https://github.com/OHIF/Viewers/issues/3546)) ([eb22328](https://github.com/OHIF/Viewers/commit/eb22328fc05d06fc4411805e7a30f826659d796a))
+
+
+
+
+
+# [3.7.0-beta.89](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.88...v3.7.0-beta.89) (2023-10-03)
+
+
+### Bug Fixes
+
+* **dicom overlay:** Handle special cases of ArrayBuffer for various DICOM overlay attributes. ([#3684](https://github.com/OHIF/Viewers/issues/3684)) ([e36a604](https://github.com/OHIF/Viewers/commit/e36a6043315e900eeb6ce183772c7f852f478e96))
+* **StackSync:** Miscellaneous fixes for stack image sync ([#3663](https://github.com/OHIF/Viewers/issues/3663)) ([8a335bd](https://github.com/OHIF/Viewers/commit/8a335bd03d14ba87d65d7468d93f74040aa828d9))
+
+
+
+
+
+# [3.7.0-beta.88](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.87...v3.7.0-beta.88) (2023-10-03)
+
+
+### Bug Fixes
+
+* **config:** support more values for the useSharedArrayBuffer ([#3688](https://github.com/OHIF/Viewers/issues/3688)) ([1129c15](https://github.com/OHIF/Viewers/commit/1129c155d2c7d46c98a5df7c09879aa3d459fa7e))
+
+
+
+
+
+# [3.7.0-beta.87](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.86...v3.7.0-beta.87) (2023-09-29)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.7.0-beta.86](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.85...v3.7.0-beta.86) (2023-09-29)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.7.0-beta.85](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.84...v3.7.0-beta.85) (2023-09-26)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.7.0-beta.84](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.83...v3.7.0-beta.84) (2023-09-26)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.7.0-beta.83](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.82...v3.7.0-beta.83) (2023-09-26)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.7.0-beta.82](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.81...v3.7.0-beta.82) (2023-09-26)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.7.0-beta.81](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.80...v3.7.0-beta.81) (2023-09-26)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.7.0-beta.80](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.79...v3.7.0-beta.80) (2023-09-22)
+
+
+### Features
+
+* **segmentation mode:** Add create, and export SEG with Brushes ([#3632](https://github.com/OHIF/Viewers/issues/3632)) ([48bbd62](https://github.com/OHIF/Viewers/commit/48bbd6281a497ea68670239f5426a10ee6c56dc1))
+
+
+
+
+
+# [3.7.0-beta.79](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.78...v3.7.0-beta.79) (2023-09-22)
+
+
+### Performance Improvements
+
+* **memory:** add 16 bit texture via configuration - reduces memory by half ([#3662](https://github.com/OHIF/Viewers/issues/3662)) ([2bd3b26](https://github.com/OHIF/Viewers/commit/2bd3b26a6aa54b211ef988f3ad64ef1fe5648bab))
+
+
+
+
+
+# [3.7.0-beta.78](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.77...v3.7.0-beta.78) (2023-09-21)
+
+
+### Bug Fixes
+
+* **mpr:** Return the original/raw hanging protocol when fetching and preserving the current active protocol. ([#3670](https://github.com/OHIF/Viewers/issues/3670)) ([221dedd](https://github.com/OHIF/Viewers/commit/221dedde5dd4df086276406a9fa2da1cc23b4eb1))
+
+
+
+
+
+# [3.7.0-beta.77](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.76...v3.7.0-beta.77) (2023-09-21)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
 # [3.7.0-beta.76](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.75...v3.7.0-beta.76) (2023-09-19)
 
 **Note:** Version bump only for package @ohif/core

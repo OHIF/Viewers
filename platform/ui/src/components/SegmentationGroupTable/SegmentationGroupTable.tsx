@@ -1,28 +1,39 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import Icon from '../Icon';
-import SegmentationGroup from './SegmentationGroup';
+import { PanelSection } from '../../components';
 import SegmentationConfig from './SegmentationConfig';
+import SegmentationDropDownRow from './SegmentationDropDownRow';
+import NoSegmentationRow from './NoSegmentationRow';
+import AddSegmentRow from './AddSegmentRow';
+import SegmentationGroupSegment from './SegmentationGroupSegment';
 
 const SegmentationGroupTable = ({
   segmentations,
+  // segmentation initial config
+  segmentationConfig,
+  // UI show/hide
+  disableEditing,
+  showAddSegmentation,
+  showAddSegment,
+  showDeleteSegment,
+  // segmentation/segment handlers
   onSegmentationAdd,
   onSegmentationEdit,
   onSegmentationClick,
   onSegmentationDelete,
-  showAddSegmentation,
-  showAddSegment,
+  onSegmentationDownload,
+  onSegmentationDownloadRTSS,
+  storeSegmentation,
+  // segment handlers
   onSegmentClick,
   onSegmentAdd,
-  segmentationConfig,
-  disableEditing,
   onSegmentDelete,
   onSegmentEdit,
   onToggleSegmentationVisibility,
   onToggleSegmentVisibility,
+  onToggleSegmentLock,
   onSegmentColorClick,
-  isMinimized,
-  onToggleMinimizeSegmentation,
+  // segmentation config handlers
   setFillAlpha,
   setFillAlphaInactive,
   setOutlineWidthActive,
@@ -31,111 +42,194 @@ const SegmentationGroupTable = ({
   setRenderInactiveSegmentations,
   setRenderOutline,
 }) => {
+  const [isConfigOpen, setIsConfigOpen] = useState(false);
+  const [activeSegmentationId, setActiveSegmentationId] = useState(null);
+
+  const onActiveSegmentationChange = segmentationId => {
+    onSegmentationClick(segmentationId);
+    setActiveSegmentationId(segmentationId);
+  };
+
+  useEffect(() => {
+    // find the first active segmentation to set
+    let activeSegmentationIdToSet = segmentations?.find(segmentation => segmentation.isActive)?.id;
+
+    // If there is no active segmentation, set the first one to be active
+    if (!activeSegmentationIdToSet && segmentations?.length > 0) {
+      activeSegmentationIdToSet = segmentations[0].id;
+    }
+
+    // If there is no segmentation, set the active segmentation to null
+    if (segmentations?.length === 0) {
+      activeSegmentationIdToSet = null;
+    }
+
+    setActiveSegmentationId(activeSegmentationIdToSet);
+  }, [segmentations]);
+
+  const activeSegmentation = segmentations?.find(
+    segmentation => segmentation.id === activeSegmentationId
+  );
+
   return (
-    <div className="font-inter flex min-h-0 flex-col font-[300]">
-      <SegmentationConfig
-        setFillAlpha={setFillAlpha}
-        setFillAlphaInactive={setFillAlphaInactive}
-        setOutlineWidthActive={setOutlineWidthActive}
-        setOutlineOpacityActive={setOutlineOpacityActive}
-        setRenderFill={setRenderFill}
-        setRenderInactiveSegmentations={setRenderInactiveSegmentations}
-        setRenderOutline={setRenderOutline}
-        segmentationConfig={segmentationConfig}
-      />
-      <div className="mt-1 flex min-h-0 flex-col pr-[1px]">
-        {!!segmentations.length &&
-          segmentations.map((segmentation, index) => {
-            const {
-              id,
-              label,
-              displayText = [],
-              segmentCount,
-              segments,
-              isVisible,
-              isActive,
-              activeSegmentIndex,
-            } = segmentation;
-            return (
-              <SegmentationGroup
-                id={id}
-                key={id}
-                label={label}
-                disableEditing={disableEditing}
-                isMinimized={isMinimized[id]}
-                segments={segments}
-                showAddSegment={showAddSegment}
-                segmentCount={segmentCount}
-                isActive={isActive}
-                isVisible={isVisible}
-                onSegmentColorClick={onSegmentColorClick}
-                onSegmentationClick={() => onSegmentationClick(id)}
-                activeSegmentIndex={activeSegmentIndex}
-                onToggleMinimizeSegmentation={onToggleMinimizeSegmentation}
-                onSegmentationEdit={onSegmentationEdit}
-                onSegmentationDelete={onSegmentationDelete}
-                onSegmentClick={onSegmentClick}
-                onSegmentEdit={onSegmentEdit}
-                onToggleSegmentVisibility={onToggleSegmentVisibility}
-                onToggleSegmentationVisibility={onToggleSegmentationVisibility}
-                onSegmentAdd={onSegmentAdd}
-                showSegmentDelete={false}
-              />
-            );
-          })}
-      </div>
-      {showAddSegmentation && !disableEditing && (
-        <div
-          className="text-primary-active flex h-[45px] cursor-pointer items-center bg-black pl-1 text-[12px] hover:opacity-80"
-          onClick={() => onSegmentationAdd()}
-        >
-          <Icon
-            name="row-add"
-            className="h-5 w-5"
+    <div className="flex min-h-0 flex-col bg-black text-[13px] font-[300]">
+      <PanelSection
+        title="Segmentation"
+        actionIcons={
+          activeSegmentation && [
+            {
+              name: 'settings-bars',
+              onClick: () => setIsConfigOpen(isOpen => !isOpen),
+            },
+          ]
+        }
+      >
+        {isConfigOpen && (
+          <SegmentationConfig
+            setFillAlpha={setFillAlpha}
+            setFillAlphaInactive={setFillAlphaInactive}
+            setOutlineWidthActive={setOutlineWidthActive}
+            setOutlineOpacityActive={setOutlineOpacityActive}
+            setRenderFill={setRenderFill}
+            setRenderInactiveSegmentations={setRenderInactiveSegmentations}
+            setRenderOutline={setRenderOutline}
+            segmentationConfig={segmentationConfig}
           />
-          <div className="pl-1">Add New Segmentation</div>
+        )}
+        <div className="bg-primary-dark">
+          {segmentations?.length === 0 ? (
+            <div className="select-none rounded-[4px]">
+              {showAddSegmentation && !disableEditing && (
+                <NoSegmentationRow onSegmentationAdd={onSegmentationAdd} />
+              )}
+            </div>
+          ) : (
+            <div className="mt-1 select-none">
+              <SegmentationDropDownRow
+                segmentations={segmentations}
+                disableEditing={disableEditing}
+                activeSegmentation={activeSegmentation}
+                onActiveSegmentationChange={onActiveSegmentationChange}
+                onSegmentationDelete={onSegmentationDelete}
+                onSegmentationEdit={onSegmentationEdit}
+                onSegmentationDownload={onSegmentationDownload}
+                onSegmentationDownloadRTSS={onSegmentationDownloadRTSS}
+                storeSegmentation={storeSegmentation}
+                onSegmentationAdd={onSegmentationAdd}
+                onToggleSegmentationVisibility={onToggleSegmentationVisibility}
+              />
+              {!disableEditing && showAddSegment && (
+                <AddSegmentRow onClick={() => onSegmentAdd(activeSegmentationId)} />
+              )}
+            </div>
+          )}
         </div>
-      )}
+        {activeSegmentation && (
+          <div className="ohif-scrollbar mt-1.5 flex min-h-0 flex-col overflow-y-hidden">
+            {activeSegmentation?.segments?.map(segment => {
+              if (!segment) {
+                return null;
+              }
+
+              const { segmentIndex, color, label, isVisible, isLocked } = segment;
+              return (
+                <div
+                  className="mb-[1px]"
+                  key={segmentIndex}
+                >
+                  <SegmentationGroupSegment
+                    segmentationId={activeSegmentationId}
+                    segmentIndex={segmentIndex}
+                    label={label}
+                    color={color}
+                    isActive={activeSegmentation.activeSegmentIndex === segmentIndex}
+                    disableEditing={disableEditing}
+                    isLocked={isLocked}
+                    isVisible={isVisible}
+                    onClick={onSegmentClick}
+                    onEdit={onSegmentEdit}
+                    onDelete={onSegmentDelete}
+                    showDelete={showDeleteSegment}
+                    onColor={onSegmentColorClick}
+                    onToggleVisibility={onToggleSegmentVisibility}
+                    onToggleLocked={onToggleSegmentLock}
+                  />
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </PanelSection>
     </div>
   );
 };
 
 SegmentationGroupTable.propTypes = {
-  title: PropTypes.string.isRequired,
-  segmentations: PropTypes.array.isRequired,
-  activeSegmentationId: PropTypes.string.isRequired,
-  onClick: PropTypes.func.isRequired,
-  onEdit: PropTypes.func.isRequired,
-  onDelete: PropTypes.func.isRequired,
-  onToggleLocked: PropTypes.func,
-  onToggleVisibility: PropTypes.func.isRequired,
-  onToggleVisibilityAll: PropTypes.func.isRequired,
-  segmentationConfig: PropTypes.object,
+  segmentations: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      isActive: PropTypes.bool.isRequired,
+      segments: PropTypes.arrayOf(
+        PropTypes.shape({
+          segmentIndex: PropTypes.number.isRequired,
+          color: PropTypes.array.isRequired,
+          label: PropTypes.string.isRequired,
+          isVisible: PropTypes.bool.isRequired,
+          isLocked: PropTypes.bool.isRequired,
+        })
+      ),
+    })
+  ),
+  segmentationConfig: PropTypes.object.isRequired,
   disableEditing: PropTypes.bool,
+  showAddSegmentation: PropTypes.bool,
+  showAddSegment: PropTypes.bool,
+  showDeleteSegment: PropTypes.bool,
+  onSegmentationAdd: PropTypes.func.isRequired,
+  onSegmentationEdit: PropTypes.func.isRequired,
+  onSegmentationClick: PropTypes.func.isRequired,
+  onSegmentationDelete: PropTypes.func.isRequired,
+  onSegmentationDownload: PropTypes.func.isRequired,
+  onSegmentationDownloadRTSS: PropTypes.func.isRequired,
+  storeSegmentation: PropTypes.func.isRequired,
+  onSegmentClick: PropTypes.func.isRequired,
+  onSegmentAdd: PropTypes.func.isRequired,
+  onSegmentDelete: PropTypes.func.isRequired,
+  onSegmentEdit: PropTypes.func.isRequired,
+  onToggleSegmentationVisibility: PropTypes.func.isRequired,
+  onToggleSegmentVisibility: PropTypes.func.isRequired,
+  onToggleSegmentLock: PropTypes.func.isRequired,
+  onSegmentColorClick: PropTypes.func.isRequired,
+  setFillAlpha: PropTypes.func.isRequired,
+  setFillAlphaInactive: PropTypes.func.isRequired,
+  setOutlineWidthActive: PropTypes.func.isRequired,
+  setOutlineOpacityActive: PropTypes.func.isRequired,
+  setRenderFill: PropTypes.func.isRequired,
+  setRenderInactiveSegmentations: PropTypes.func.isRequired,
+  setRenderOutline: PropTypes.func.isRequired,
 };
 
 SegmentationGroupTable.defaultProps = {
-  title: '',
   segmentations: [],
-  activeSegmentationId: '',
-  onClick: () => {},
-  onEdit: () => {},
-  onDelete: () => {},
-  onToggleLocked: () => {},
-  onToggleVisibility: () => {},
-  onToggleVisibilityAll: () => {},
-  segmentationConfig: {
-    initialConfig: {
-      fillAlpha: 0.5,
-      fillAlphaInactive: 0.5,
-      outlineWidthActive: 1,
-      outlineOpacity: 1,
-      outlineOpacityInactive: 0.5,
-      renderFill: true,
-      renderInactiveSegmentations: true,
-      renderOutline: true,
-    },
-  },
+  disableEditing: false,
+  showAddSegmentation: true,
+  showAddSegment: true,
+  showDeleteSegment: true,
+  onSegmentationAdd: () => {},
+  onSegmentationEdit: () => {},
+  onSegmentationClick: () => {},
+  onSegmentationDelete: () => {},
+  onSegmentationDownload: () => {},
+  onSemgnetationDownloadRTSS: () => {},
+  storeSegmentation: () => {},
+  onSegmentClick: () => {},
+  onSegmentAdd: () => {},
+  onSegmentDelete: () => {},
+  onSegmentEdit: () => {},
+  onToggleSegmentationVisibility: () => {},
+  onToggleSegmentVisibility: () => {},
+  onToggleSegmentLock: () => {},
+  onSegmentColorClick: () => {},
   setFillAlpha: () => {},
   setFillAlphaInactive: () => {},
   setOutlineWidthActive: () => {},
@@ -144,5 +238,4 @@ SegmentationGroupTable.defaultProps = {
   setRenderInactiveSegmentations: () => {},
   setRenderOutline: () => {},
 };
-
 export default SegmentationGroupTable;

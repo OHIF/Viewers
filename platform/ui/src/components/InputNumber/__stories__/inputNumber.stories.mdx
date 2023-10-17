@@ -34,9 +34,12 @@ InputNumber is a component that allows you to use as a number value
   <Story
     name="Overview"
     args={{
-      step: 1,
-      value: 3,
+      step: 0.5,
+      value: 15,
+      minValue: 0.5,
+      maxValue: 99.5,
       size: 'sm',
+      showAdjustmentArrows: true,
       onChange: () => console.log('input range change'),
     }}
   >

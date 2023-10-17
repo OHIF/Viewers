@@ -108,9 +108,9 @@ export default class ToolGroupService {
   }
 
   public getActiveToolForViewport(viewportId: string): string {
-    const toolGroup = ToolGroupManager.getToolGroupForViewport(viewportId);
+    const toolGroup = this.getToolGroupForViewport(viewportId);
     if (!toolGroup) {
-      return null;
+      return;
     }
 
     return toolGroup.getActivePrimaryMouseButtonTool();
@@ -197,13 +197,9 @@ export default class ToolGroupService {
     this._setToolsMode(toolGroup, tools);
   }
 
-  public createToolGroupAndAddTools(
-    toolGroupId: string,
-    tools: Array<Tool>,
-    configs: any = {}
-  ): Types.IToolGroup {
+  public createToolGroupAndAddTools(toolGroupId: string, tools: Array<Tool>): Types.IToolGroup {
     const toolGroup = this.createToolGroup(toolGroupId);
-    this.addToolsToToolGroup(toolGroupId, tools, configs);
+    this.addToolsToToolGroup(toolGroupId, tools);
     return toolGroup;
   }
 

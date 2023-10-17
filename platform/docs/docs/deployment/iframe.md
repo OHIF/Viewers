@@ -28,7 +28,7 @@ It is also required that the PUBLIC_URL environment variable is set to the same 
 `<iframe src="./ohif" />` (which means there is a `ohif` folder containing the build in your main app), then you need to:
 
 1. use a config (e.g. config/myConfig.js) file that is using the `routerBasename` of `/ohif` (note the one / - it is not /ohif/).
-2. build the viewer with `PUBLIC_URL=./ohif/ APP_CONFIG=config/myConfig.js yarn build` (note the one / - it is not /ohif/).
+2. build the viewer with `PUBLIC_URL=/ohif/ APP_CONFIG=config/myConfig.js yarn build` (note the two / - it is not /ohif).
 
 :::tip
 Check to make sure the `app-config.js` in the build is reflecting the correct routerBasename.
@@ -44,8 +44,10 @@ Download the index.html and the build (against the /ohif/ path) from [here](http
 
 Then run the
 
-```
+```bash
 npx http-server unzipped-folder
+
+# you can use npx serve ./dist -l 8080 -s as an alternative to http-server
 ```
 
 You should be able to see

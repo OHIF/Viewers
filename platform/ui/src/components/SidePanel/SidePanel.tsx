@@ -1,26 +1,27 @@
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { CSSProperties, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import SwiperCore, { A11y, Controller, Navigation, Pagination, Scrollbar } from 'swiper';
-import { Swiper, SwiperSlide } from 'swiper/react';
 
-import LegacyButton from '../LegacyButton';
 import Icon from '../Icon';
-import IconButton from '../IconButton';
 import Tooltip from '../Tooltip';
-
-import 'swiper/css';
-import 'swiper/css/navigation';
-import './style.css';
 
 const borderSize = 4;
 const expandedWidth = 248;
 const collapsedWidth = 25;
+const closeIconWidth = 30;
+const gridHorizontalPadding = 10;
+const tabSpacerWidth = 2;
+const gridAvailableWidth = expandedWidth - closeIconWidth - gridHorizontalPadding;
 
 const baseStyle = {
   maxWidth: `${expandedWidth}px`,
   width: `${expandedWidth}px`,
+  // To align the top of the side panel with the top of the viewport grid, use position relative and offset the
+  // top by the same top offset as the viewport grid. Also adjust the height so that there is no overflow.
+  position: 'relative',
+  top: '0.2%',
+  height: '99.8%',
 };
 
 const collapsedHideWidth = expandedWidth - collapsedWidth - borderSize;
@@ -36,7 +37,7 @@ const styleMap = {
 };
 
 const baseClasses =
-  'transition-all duration-300 ease-in-out h-100 bg-black border-black justify-start box-content flex flex-col';
+  'transition-all duration-300 ease-in-out bg-black border-black justify-start box-content flex flex-col';
 
 const classesMap = {
   open: {
@@ -50,68 +51,111 @@ const classesMap = {
 };
 
 const openStateIconName = {
-  left: 'push-left',
-  right: 'push-right',
+  left: 'side-panel-close-left',
+  right: 'side-panel-close-right',
 };
 
-const position = {
-  left: {
-    right: 5,
-  },
-  right: {
-    left: 5,
-  },
+const getTabWidth = (numTabs: number) => {
+  if (numTabs < 3) {
+    return 68;
+  } else {
+    return 40;
+  }
 };
 
-const SidePanel = ({
-  side,
-  className,
-  activeTabIndex: activeTabIndexProp,
-  tabs,
-  onSidePanelOpen,
-  onActiveTabIndexChange,
-}) => {
+const getGridWidth = (numTabs: number) => {
+  const spacersWidth = (numTabs - 1) * tabSpacerWidth;
+  const tabsWidth = getTabWidth(numTabs) * numTabs;
+
+  if (gridAvailableWidth > tabsWidth + spacersWidth) {
+    return tabsWidth + spacersWidth;
+  }
+
+  return gridAvailableWidth;
+};
+
+const getNumGridColumns = (numTabs: number) => {
+  if (numTabs === 1) {
+    return 1;
+  }
+
+  // Start by calculating the number of tabs assuming each tab was accompanied by a spacer.
+  const tabWidth = getTabWidth(numTabs);
+  const gridWidth = getGridWidth(numTabs);
+  const numTabsWithOneSpacerEach = Math.floor(gridWidth / (tabWidth + tabSpacerWidth));
+
+  // But there is always one less spacer than tabs, so now check if an extra tab with one less spacer fits.
+  if (
+    (numTabsWithOneSpacerEach + 1) * tabWidth + numTabsWithOneSpacerEach * tabSpacerWidth <=
+    gridWidth
+  ) {
+    return numTabsWithOneSpacerEach + 1;
+  }
+
+  return numTabsWithOneSpacerEach;
+};
+
+const getGridStyle = (side: string, numTabs: number = 0): CSSProperties => {
+  const gridWidth = getGridWidth(numTabs);
+  const relativePosition = Math.max(0, Math.floor(expandedWidth - gridWidth) / 2 - closeIconWidth);
+  return {
+    position: 'relative',
+    ...(side === 'left' ? { right: `${relativePosition}px` } : { left: `${relativePosition}px` }),
+    width: `${gridWidth}px`,
+  };
+};
+
+const getTabClassNames = (
+  numColumns: number,
+  numTabs: number,
+  tabIndex: number,
+  isActiveTab: boolean
+) =>
+  classnames('h-[28px] mb-[2px] cursor-pointer text-white bg-black', {
+    'hover:text-primary-active': !isActiveTab,
+    'rounded-l': tabIndex % numColumns === 0,
+    'rounded-r': (tabIndex + 1) % numColumns === 0 || tabIndex === numTabs - 1,
+  });
+
+const getTabStyle = (numTabs: number) => {
+  return {
+    width: `${getTabWidth(numTabs)}px`,
+  };
+};
+
+const getTabIconClassNames = (numTabs: number, isActiveTab: boolean) => {
+  return classnames('h-full w-full flex items-center justify-center', {
+    'bg-customblue-40': isActiveTab,
+    rounded: isActiveTab,
+  });
+};
+
+const SidePanel = ({ side, className, activeTabIndex: activeTabIndexProp, tabs, onOpen }) => {
   const { t } = useTranslation('SidePanel');
-  const [panelOpen, setPanelOpen] = useState(activeTabIndexProp !== null);
-  const [activeTabIndex, setActiveTabIndex] = useState(activeTabIndexProp ?? 0);
-  const swiperRef = useRef() as any;
-  const [swiper, setSwiper] = useState<any>();
 
-  const prevRef = React.useRef();
-  const nextRef = React.useRef();
+  const [panelOpen, setPanelOpen] = useState(activeTabIndexProp !== null);
+  const [activeTabIndex, setActiveTabIndex] = useState(0);
 
   const openStatus = panelOpen ? 'open' : 'closed';
   const style = Object.assign({}, styleMap[openStatus][side], baseStyle);
 
-  useEffect(() => {
-    if (panelOpen && swiper) {
-      swiper.slideTo(activeTabIndex, 500);
+  const ActiveComponent = tabs[activeTabIndex]?.content;
+
+  const updatePanelOpen = useCallback((panelOpen: boolean) => {
+    setPanelOpen(panelOpen);
+    if (panelOpen) {
+      onOpen?.();
     }
-  }, [panelOpen, swiper]);
-
-  useEffect(() => {
-    if (swiper) {
-      swiper.params.navigation.prevEl = prevRef.current;
-      swiper.params.navigation.nextEl = nextRef.current;
-      swiper.navigation.init();
-      swiper.navigation.update();
-    }
-  }, [swiper]);
-
-  const updatePanelOpen = useCallback(
-    (panelOpen: boolean) => {
-      setPanelOpen(panelOpen);
-
-      if (panelOpen && onSidePanelOpen) {
-        onSidePanelOpen();
-      }
-    },
-    [onSidePanelOpen]
-  );
+  }, []);
 
   const updateActiveTabIndex = useCallback(
-    (activeTabIndexParam: number) => {
-      setActiveTabIndex(activeTabIndexParam);
+    (activeTabIndex: number) => {
+      if (activeTabIndex === null) {
+        updatePanelOpen(false);
+        return;
+      }
+
+      setActiveTabIndex(activeTabIndex);
       updatePanelOpen(true);
 
       if (onActiveTabIndexChange) {
@@ -122,9 +166,7 @@ const SidePanel = ({
   );
 
   useEffect(() => {
-    if (activeTabIndexProp !== null) {
-      updateActiveTabIndex(activeTabIndexProp);
-    }
+    updateActiveTabIndex(activeTabIndexProp);
   }, [activeTabIndexProp, updateActiveTabIndex]);
 
   const getCloseStateComponent = () => {
@@ -157,12 +199,10 @@ const SidePanel = ({
                 side === 'left' ? 'justify-end ' : 'justify-start '
               )}
             >
-              <IconButton
+              <div
                 id={`${childComponent.name}-btn`}
-                variant="text"
-                color="inherit"
-                size="initial"
-                className="text-primary-active"
+                data-cy={`${childComponent.name}-btn`}
+                className="text-primary-active hover:cursor-pointer"
                 onClick={() => {
                   updateActiveTabIndex(index);
                 }}
@@ -175,11 +215,111 @@ const SidePanel = ({
                     height: '22px',
                   }}
                 />
-              </IconButton>
+              </div>
             </Tooltip>
           ))}
         </div>
       </>
+    );
+  };
+
+  const getCloseIcon = () => {
+    return (
+      <div
+        className={classnames(
+          'flex h-[28px] cursor-pointer items-center justify-center',
+          side === 'left' ? 'order-last' : 'order-first'
+        )}
+        style={{ width: `${closeIconWidth}px` }}
+        onClick={() => {
+          updatePanelOpen(prev => !prev);
+        }}
+        data-cy={`side-panel-header-${side}`}
+      >
+        <Icon
+          name={openStateIconName[side]}
+          className="text-primary-active"
+        />
+      </div>
+    );
+  };
+
+  const getTabGridComponent = () => {
+    const numCols = getNumGridColumns(tabs.length);
+
+    return (
+      <div className={classnames('flex grow ', side === 'right' ? 'justify-start' : 'justify-end')}>
+        <div
+          className={classnames('bg-primary-dark text-primary-active flex flex-wrap')}
+          style={getGridStyle(side, tabs.length)}
+        >
+          {tabs.map((tab, tabIndex) => {
+            return (
+              <React.Fragment key={tabIndex}>
+                {tabIndex % numCols !== 0 && (
+                  <div
+                    className={classnames(
+                      'flex h-[28px] w-[2px] items-center bg-black',
+                      tabSpacerWidth
+                    )}
+                  >
+                    <div className="bg-primary-dark h-[20px] w-full"></div>
+                  </div>
+                )}
+                <Tooltip
+                  position={'bottom'}
+                  key={tabIndex}
+                  content={`${tab.label}`}
+                >
+                  <div
+                    className={getTabClassNames(
+                      numCols,
+                      tabs.length,
+                      tabIndex,
+                      tabIndex === activeTabIndex
+                    )}
+                    style={getTabStyle(tabs.length)}
+                    onClick={() => updateActiveTabIndex(tabIndex)}
+                    data-cy={`${tab.name}-btn`}
+                  >
+                    <div className={getTabIconClassNames(tabs.length, tabIndex === activeTabIndex)}>
+                      <Icon name={tab.iconName}></Icon>
+                    </div>
+                  </div>
+                </Tooltip>
+              </React.Fragment>
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
+
+  const getOneTabComponent = () => {
+    return (
+      <div
+        className={classnames(
+          'text-primary-active flex grow cursor-pointer justify-center self-center text-[13px]'
+        )}
+        style={{
+          ...(side === 'left'
+            ? { marginLeft: `${closeIconWidth}px` }
+            : { marginRight: `${closeIconWidth}px` }),
+        }}
+        data-cy={`${tabs[0].name}-btn`}
+        onClick={() => updatePanelOpen(prev => !prev)}
+      >
+        <span>{tabs[0].label}</span>
+      </div>
+    );
+  };
+
+  const getOpenStateComponent = () => {
+    return (
+      <div className="bg-primary-dark flex rounded-t pt-1.5 pb-[2px]">
+        {getCloseIcon()}
+        {tabs.length === 1 ? getOneTabComponent() : getTabGridComponent()}
+      </div>
     );
   };
 
@@ -189,86 +329,10 @@ const SidePanel = ({
       style={style}
     >
       {panelOpen ? (
-        <React.Fragment>
-          {/** Panel Header with Arrow and Close Actions */}
-          <div
-            className={classnames(
-              'flex-static bg-primary-dark flex h-9 cursor-pointer px-[10px]',
-              tabs.length === 1 && 'mb-1'
-            )}
-            onClick={() => {
-              updatePanelOpen(!panelOpen);
-              // slideToActivePanel();
-            }}
-            data-cy={`side-panel-header-${side}`}
-          >
-            {/* TODO This should be redesigned to not be a button. */}
-            <LegacyButton
-              variant="text"
-              color="inherit"
-              border="none"
-              rounded="none"
-              className="flex-static relative flex w-full flex-row items-center px-3"
-              name={tabs.length === 1 ? `${tabs[activeTabIndex].name}` : ''}
-            >
-              <Icon
-                name={openStateIconName[side]}
-                className={classnames(
-                  'text-primary-active absolute',
-                  side === 'left' && 'order-last'
-                )}
-                style={{ ...position[side] }}
-              />
-              {/* Todo: ass secondary label here */}
-              <span className="text-primary-active">
-                {tabs.length === 1 && (t(tabs[activeTabIndex].label) as string)}
-              </span>
-            </LegacyButton>
-          </div>
-          {tabs.length > 1 &&
-            _getMoreThanOneTabLayout(
-              swiperRef,
-              setSwiper,
-              prevRef,
-              nextRef,
-              tabs,
-              activeTabIndex,
-              updateActiveTabIndex
-            )}
-          {/** carousel navigation with the arrows */}
-          {/** only show carousel nav if tabs are more than 3 tabs */}
-          {tabs.length > 3 && (
-            <div className="text-primary-active bg-primary-dark flex w-full justify-end gap-2 py-1 px-2">
-              <button
-                ref={prevRef}
-                className="swiper-button-prev-custom"
-              >
-                <Icon
-                  name={'icon-prev'}
-                  className={classnames('text-primary-active')}
-                />
-              </button>
-              <button
-                ref={nextRef}
-                className="swiper-button-next-custom"
-              >
-                <Icon
-                  name={'icon-next'}
-                  className={classnames('text-primary-active')}
-                />
-              </button>
-            </div>
-          )}
-
-          {tabs.map((tab, tabIndex) => (
-            <div
-              key={tab.id}
-              className={tabIndex === activeTabIndex ? '' : 'hidden'}
-            >
-              <tab.content />
-            </div>
-          ))}
-        </React.Fragment>
+        <>
+          {getOpenStateComponent()}
+          <ActiveComponent />
+        </>
       ) : (
         <React.Fragment>{getCloseStateComponent()}</React.Fragment>
       )}
@@ -278,6 +342,7 @@ const SidePanel = ({
 
 SidePanel.defaultProps = {
   defaultComponentOpen: null,
+  activeTabIndex: null, // the default is to close the side panel
 };
 
 SidePanel.propTypes = {
@@ -295,76 +360,7 @@ SidePanel.propTypes = {
       })
     ),
   ]),
-  onSidePanelOpen: PropTypes.func,
-  onActiveTabIndexChange: PropTypes.func,
+  onOpen: PropTypes.func,
 };
-
-function _getMoreThanOneTabLayout(
-  swiperRef: any,
-  setSwiper: React.Dispatch<any>,
-  prevRef: React.MutableRefObject<undefined>,
-  nextRef: React.MutableRefObject<undefined>,
-  tabs: any,
-  activeTabIndex: any,
-  updateActiveTabIndex
-) {
-  return (
-    <div
-      className="flex-static collapse-sidebar relative"
-      style={{
-        backgroundColor: '#06081f',
-      }}
-    >
-      <div className="w-full">
-        <Swiper
-          onInit={(core: SwiperCore) => {
-            swiperRef.current = core.el;
-          }}
-          simulateTouch={false}
-          modules={[Navigation, Pagination, Scrollbar, A11y, Controller]}
-          slidesPerView={3}
-          spaceBetween={5}
-          onSwiper={swiper => setSwiper(swiper)}
-          navigation={{
-            prevEl: prevRef?.current,
-            nextEl: nextRef?.current,
-          }}
-        >
-          {tabs.map((obj, index) => (
-            <SwiperSlide key={index}>
-              <div
-                className={classnames(
-                  index === activeTabIndex ? 'bg-secondary-main text-white' : 'text-aqua-pale',
-                  'flex cursor-pointer flex-col items-center justify-center  rounded-[4px] px-4 py-1 text-center hover:text-white'
-                )}
-                key={index}
-                onClick={() => {
-                  updateActiveTabIndex(index);
-                }}
-                data-cy={`${obj.name}-btn`}
-              >
-                <span>
-                  <Icon
-                    name={obj.iconName}
-                    className={classnames(
-                      index === activeTabIndex ? 'text-white' : 'text-primary-active'
-                    )}
-                    style={{
-                      width: '22px',
-                      height: '22px',
-                    }}
-                  />
-                </span>
-                <span className="mt-[5px] select-none whitespace-nowrap text-[10px] font-medium">
-                  {obj.label}
-                </span>
-              </div>
-            </SwiperSlide>
-          ))}
-        </Swiper>
-      </div>
-    </div>
-  );
-}
 
 export default SidePanel;

@@ -237,3 +237,5 @@ below:
   https://github.com/OHIF/Viewers/tree/master/platform/app/public/html-templates
 [config-files]:
   https://github.com/OHIF/Viewers/tree/master/platform/app/public/config
+[storescu]: http://support.dcmtk.org/docs/storescu.html
+[webpack-proxy]: https://webpack.js.org/configuration/dev-server/#devserverproxy

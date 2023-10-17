@@ -1,7 +1,7 @@
 import { hotkeys } from '@ohif/core';
-import toolbarButtons from './toolbarButtons.js';
-import { id } from './id.js';
-import initToolGroups from './initToolGroups.js';
+import toolbarButtons from './toolbarButtons';
+import { id } from './id';
+import initToolGroups from './initToolGroups';
 
 // Allow this mode by excluding non-imaging modalities such as SR, SEG
 // Also, SM is not a simple imaging modalities, so exclude it.
@@ -40,7 +40,7 @@ const dicomSeg = {
   panel: '@ohif/extension-cornerstone-dicom-seg.panelModule.panelSegmentation',
 };
 
-const dicomRt = {
+const dicomRT = {
   viewport: '@ohif/extension-cornerstone-dicom-rt.viewportModule.dicom-rt',
   sopClassHandler: '@ohif/extension-cornerstone-dicom-rt.sopClassHandlerModule.dicom-rt',
 };
@@ -74,7 +74,7 @@ function modeFactory({ modeConfiguration }) {
         toolbarService,
         toolGroupService,
         panelService,
-        segmentationService,
+        customizationService,
       } = servicesManager.services;
 
       measurementService.clearMeasurements();
@@ -87,7 +87,6 @@ function modeFactory({ modeConfiguration }) {
       const activateTool = () => {
         toolbarService.recordInteraction({
           groupId: 'WindowLevel',
-          itemId: 'WindowLevel',
           interactionType: 'tool',
           commands: [
             {
@@ -124,6 +123,13 @@ function modeFactory({ modeConfiguration }) {
         'MPR',
         'Crosshairs',
         'MoreTools',
+      ]);
+
+      customizationService.addModeCustomizations([
+        {
+          id: 'segmentation.disableEditing',
+          value: true,
+        },
       ]);
 
       // // ActivatePanel event trigger for when a segmentation or measurement is added.
@@ -212,8 +218,8 @@ function modeFactory({ modeConfiguration }) {
                   displaySetsToDisplay: [dicomSeg.sopClassHandler],
                 },
                 {
-                  namespace: dicomRt.viewport,
-                  displaySetsToDisplay: [dicomRt.sopClassHandler],
+                  namespace: dicomRT.viewport,
+                  displaySetsToDisplay: [dicomRT.sopClassHandler],
                 },
               ],
             },
@@ -234,7 +240,7 @@ function modeFactory({ modeConfiguration }) {
       ohif.sopClassHandler,
       dicompdf.sopClassHandler,
       dicomsr.sopClassHandler,
-      dicomRt.sopClassHandler,
+      dicomRT.sopClassHandler,
     ],
     hotkeys: [...hotkeys.defaults.hotkeyBindings],
     ...modeConfiguration,
