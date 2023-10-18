@@ -17,14 +17,14 @@ const GenerateVolume = ({
   return (
     <>
       <div className="marginBottom-10px">Frame Panel</div>
-      <div className="w-3">
+      <div className="">
         <InputDoubleRange
           values={rangeValues}
           onChange={handleSliderChange}
           minValue={rangeValues[0] || 1}
           maxValue={rangeValues[1] || 2}
-          step={10}
-          unit="%"
+          showLabel={true}
+          step={1}
         />
       </div>
       <Select
