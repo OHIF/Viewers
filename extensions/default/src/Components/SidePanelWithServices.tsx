@@ -74,10 +74,7 @@ const SidePanelWithServices = ({
       side={side}
       tabs={tabs}
       activeTabIndex={activeTabIndex}
-      onOpen={() => {
-        setHasBeenOpened(true);
-        handleSidePanelOpen();
-      }}
+      onOpen={handleSidePanelOpen}
       onActiveTabIndexChange={handleActiveTabIndexChange}
     ></SidePanel>
   );

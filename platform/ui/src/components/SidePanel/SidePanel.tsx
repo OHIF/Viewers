@@ -150,7 +150,7 @@ const SidePanel = ({
     (panelOpen: boolean) => {
       setPanelOpen(panelOpen);
       if (panelOpen && onOpen) {
-        onOpen?.();
+        onOpen();
       }
     },
     [onOpen]
@@ -187,7 +187,7 @@ const SidePanel = ({
             side === 'left' ? 'justify-end pr-2' : 'justify-start pl-2'
           )}
           onClick={() => {
-            updatePanelOpen(prev => !prev);
+            updatePanelOpen(!panelOpen);
           }}
           data-cy={`side-panel-header-${side}`}
         >
@@ -240,7 +240,7 @@ const SidePanel = ({
         )}
         style={{ width: `${closeIconWidth}px` }}
         onClick={() => {
-          updatePanelOpen(prev => !prev);
+          updatePanelOpen(!panelOpen);
         }}
         data-cy={`side-panel-header-${side}`}
       >
@@ -315,7 +315,7 @@ const SidePanel = ({
             : { marginRight: `${closeIconWidth}px` }),
         }}
         data-cy={`${tabs[0].name}-btn`}
-        onClick={() => updatePanelOpen(prev => !prev)}
+        onClick={() => updatePanelOpen(!panelOpen)}
       >
         <span>{tabs[0].label}</span>
       </div>

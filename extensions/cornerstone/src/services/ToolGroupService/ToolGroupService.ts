@@ -257,7 +257,6 @@ export default class ToolGroupService {
     toolGroupId?: string,
     toggledState?: boolean
   ): void {
-    debugger;
     if (toolName === 'Crosshairs') {
       const activeViewportToolGroup = this.getToolGroup(null);
 
