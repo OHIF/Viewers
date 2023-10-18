@@ -294,6 +294,11 @@ function initVolume3DToolGroup(extensionManager, toolGroupService) {
         bindings: [{ mouseButton: Enums.MouseBindings.Auxiliary }],
       },
     ],
+    passive: [
+      {
+        toolName: toolNames.SegmentationDisplay,
+      },
+    ],
   };
 
   toolGroupService.createToolGroupAndAddTools('volume3d', tools);
