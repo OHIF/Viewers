@@ -66,42 +66,83 @@ const SegmentationGroupTable = ({
   const [maxHU, setMaxHU] = useState(500);
   const [lowHU, setLowHU] = useState(73);
   const [highHU, setHighHU] = useState(365);
-  let activeIndex = 1;
-  const handleSetRange = useCallback(() => {
+  const [startSlice, setStart] = useState(1);
+  const [endSlice, setEnd] = useState(10);
+  let overwrite = false;
+  const handleSetRange = useCallback(async () => {
     // Perform the action to set the Hounsfield range
     const segmentation = commandsManager.runCommand('getSegmentation', {
       segmentationId: activeSegmentationId,
     });
-    segmentationService.setActiveSegment(activeSegmentationId, activeIndex);
-    console.log(segmentationService._getSegmentInfo(segmentation, activeIndex));
-    const element = getActiveViewportEnabledElement(viewportGridService);
-    console.log(element);
-    const enabledElement = getEnabledElement(element);
-    console.log(enabledElement);
-    segmentationService.setSegmentColor(
-      activeSegmentationId,
-      activeIndex,
-      segmentation.segments[activeIndex].color
-    );
-    segmentationService.setSegmentOpacity(
-      activeSegmentationId,
-      activeIndex,
-      segmentation.segments[activeIndex].opacity
-    );
-    commandsManager.runCommand('thresholdSegmentation', {
-      segmentationId: activeSegmentationId,
-      minHU: minHU,
-      maxHU: maxHU,
-      lowHU: lowHU,
-      highHU: highHU,
-      targetHUHigh: targetHUHigh,
-      targetHULow: targetHULow,
-      segmentIndex: activeIndex,
-    });
-    if (activeIndex >= segmentation.segmentCount) {
-      activeIndex = 1;
-    } else {
-      activeIndex++;
+
+    let newEndSlice;
+    for (let activeIndex = 1; activeIndex <= segmentation.segmentCount; activeIndex++) {
+      console.log(activeIndex);
+      segmentationService.setActiveSegment(activeSegmentationId, activeIndex);
+      segmentationService.setSegmentColor(
+        activeSegmentationId,
+        activeIndex,
+        segmentation.segments[activeIndex].color
+      );
+      segmentationService.setSegmentOpacity(
+        activeSegmentationId,
+        activeIndex,
+        segmentation.segments[activeIndex].opacity
+      );
+      if (endSlice - startSlice > 20) {
+        newEndSlice = startSlice + 20;
+        for (let newStartSlice = startSlice; newStartSlice < endSlice; newStartSlice += 20) {
+          if (newStartSlice + 20 > endSlice) {
+            await commandsManager.runCommand('thresholdSegmentation', {
+              segmentationId: activeSegmentationId,
+              minHU: minHU,
+              maxHU: maxHU,
+              lowHU: lowHU,
+              highHU: highHU,
+              targetHUHigh: targetHUHigh,
+              targetHULow: targetHULow,
+              startSlice: newStartSlice - 1,
+              endSlice: endSlice,
+              overwrite: overwrite,
+              segmentIndex: activeIndex,
+            });
+          } else {
+            await commandsManager.runCommand('thresholdSegmentation', {
+              segmentationId: activeSegmentationId,
+              minHU: minHU,
+              maxHU: maxHU,
+              lowHU: lowHU,
+              highHU: highHU,
+              targetHUHigh: targetHUHigh,
+              targetHULow: targetHULow,
+              startSlice: newStartSlice - 1,
+              endSlice: newEndSlice,
+              overwrite: overwrite,
+              segmentIndex: activeIndex,
+            });
+          }
+          newEndSlice += 20;
+        }
+      } else {
+        await commandsManager.runCommand('thresholdSegmentation', {
+          segmentationId: activeSegmentationId,
+          minHU: minHU,
+          maxHU: maxHU,
+          lowHU: lowHU,
+          highHU: highHU,
+          targetHUHigh: targetHUHigh,
+          targetHULow: targetHULow,
+          startSlice: startSlice - 1,
+          endSlice: endSlice,
+          overwrite: overwrite,
+          segmentIndex: activeIndex,
+        });
+      }
+      if (activeIndex === segmentation.segmentCount) {
+        overwrite = true;
+      } else {
+        overwrite = false;
+      }
     }
   }, [
     commandsManager,
@@ -112,6 +153,8 @@ const SegmentationGroupTable = ({
     highHU,
     targetHUHigh,
     targetHULow,
+    startSlice,
+    endSlice,
   ]);
   const onActiveSegmentationChange = segmentationId => {
     onSegmentationClick(segmentationId);
@@ -121,7 +164,6 @@ const SegmentationGroupTable = ({
   useEffect(() => {
     // find the first active segmentation to set
     let activeSegmentationIdToSet = segmentations?.find(segmentation => segmentation.isActive)?.id;
-    console.log(activeSegmentationIdToSet);
     // If there is no active segmentation, set the first one to be active
     if (!activeSegmentationIdToSet && segmentations?.length > 0) {
       activeSegmentationIdToSet = segmentations[0].id;
@@ -184,6 +226,44 @@ const SegmentationGroupTable = ({
                 }}
               />
               <Input
+                label={t('Low HU')}
+                labelClassName="text-white"
+                className="border-primary-main mt-2 bg-black"
+                type="text"
+                containerClassName="mr-2"
+                value={lowHU}
+                onChange={e => {
+                  if (e.target.value === '-') {
+                    setLowHU(e.target.value);
+                    return;
+                  }
+                  const value = parseInt(e.target.value, 10);
+                  if (!isNaN(value)) {
+                    setLowHU(value);
+                  }
+                }}
+              />
+            </div>
+            <div className="flex justify-between">
+              <Input
+                label={t('High HU')}
+                labelClassName="text-white"
+                className="border-primary-main mt-2 bg-black"
+                type="text"
+                containerClassName="mr-2"
+                value={highHU}
+                onChange={e => {
+                  if (e.target.value === '-') {
+                    setHighHU(e.target.value);
+                    return;
+                  }
+                  const value = parseInt(e.target.value, 10);
+                  if (!isNaN(value)) {
+                    setHighHU(value);
+                  }
+                }}
+              />
+              <Input
                 label={t('Max HU')}
                 labelClassName="text-white"
                 className="border-primary-main mt-2 bg-black"
@@ -204,48 +284,9 @@ const SegmentationGroupTable = ({
                 }}
               />
             </div>
-            <div className="flex justify-between">
-              <Input
-                label={t('Low HU')}
-                labelClassName="text-white"
-                className="border-primary-main mt-2 bg-black"
-                type="text"
-                containerClassName="mr-2"
-                value={lowHU}
-                onChange={e => {
-                  if (e.target.value === '-') {
-                    setLowHU(e.target.value);
-                    return;
-                  }
-                  const value = parseInt(e.target.value, 10);
-                  if (!isNaN(value)) {
-                    setLowHU(value);
-                  }
-                }}
-              />
-              <Input
-                label={t('High HU')}
-                labelClassName="text-white"
-                className="border-primary-main mt-2 bg-black"
-                type="text"
-                containerClassName="mr-2"
-                value={highHU}
-                onChange={e => {
-                  if (e.target.value === '-') {
-                    setHighHU(e.target.value);
-                    return;
-                  }
-                  const value = parseInt(e.target.value, 10);
-                  if (!isNaN(value)) {
-                    setHighHU(value);
-                  }
-                }}
-              />
-            </div>
           </div>
 
-          <div className="mr-2 text-sm">
-            <Label className="text-white" />
+          <div className="flex justify-between">
             <Input
               label={t('Target HU Low')}
               labelClassName="text-white"
@@ -264,9 +305,6 @@ const SegmentationGroupTable = ({
                 }
               }}
             />
-          </div>
-          <div className="mr-2 text-sm">
-            <Label className="text-white" />
             <Input
               label={t('Target HU High')}
               labelClassName="text-white"
@@ -285,6 +323,50 @@ const SegmentationGroupTable = ({
                 }
               }}
             />
+          </div>
+          <div className="flex justify-between">
+            <Input
+              label={t('Start Slice')}
+              labelClassName="text-white"
+              className="border-primary-main mt-2 bg-black"
+              type="text"
+              containerClassName="mr-2"
+              value={startSlice}
+              onChange={e => {
+                console.log(e.target.value);
+                if (e.target.value === '-') {
+                  setStart(e.target.value);
+                  return;
+                }
+                const value = parseInt(e.target.value, 10);
+                if (!isNaN(value)) {
+                  setStart(value);
+                }
+              }}
+            />
+            <Input
+              label={t('End Slice')}
+              labelClassName="text-white"
+              className="border-primary-main mt-2 bg-black"
+              type="text"
+              containerClassName="mr-2"
+              value={endSlice}
+              onChange={e => {
+                console.log(e.target.value);
+                if (e.target.value === '-') {
+                  setEnd(e.target.value);
+                  return;
+                }
+                const value = parseInt(e.target.value, 10);
+                if (!isNaN(value)) {
+                  setEnd(value);
+                }
+              }}
+            />
+          </div>
+          <div className="mr-2 text-sm">
+            <Label className="text-white" />
+
             <div>
               <Button
                 size="medium"

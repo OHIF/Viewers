@@ -70,9 +70,9 @@ export default function init({ servicesManager, configuration = {} }): void {
   const labelmapRepresentation = cornerstoneTools.Enums.SegmentationRepresentations.Labelmap;
 
   cornerstoneTools.segmentation.config.setGlobalRepresentationConfig(labelmapRepresentation, {
-    fillAlpha: 0.3,
+    fillAlpha: 1,
     fillAlphaInactive: 0.2,
-    outlineOpacity: 1,
+    outlineOpacity: 0,
     outlineOpacityInactive: 0.65,
   });
 

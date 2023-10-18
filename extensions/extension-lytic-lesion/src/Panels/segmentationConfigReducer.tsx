@@ -1,8 +1,8 @@
 // Todo: use defaults in cs3d
 const initialState = {
-  renderOutline: true,
+  renderOutline: false,
   renderFill: true,
-  outlineOpacity: 0.5,
+  outlineOpacity: 0,
   outlineWidth: 3,
   fillOpacity: 1,
   fillOpacityInactive: 1,

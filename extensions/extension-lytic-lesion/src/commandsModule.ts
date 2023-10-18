@@ -1,7 +1,7 @@
 import { ServicesManager, utils, Types } from '@ohif/core';
 
 import { Enums, utilities as csUtils, annotation, Types as cstTypes } from '@cornerstonejs/tools';
-
+import thresholdVolumeByRange from './utils/thresholdVolumeByRange';
 import { Types as OhifTypes } from '@ohif/core';
 import { vec3 } from 'gl-matrix';
 import {
@@ -1030,7 +1030,10 @@ const commandsModule = ({
         segmentationId
       );
     },
-    thresholdSegmentation: ({segmentationId, minHU, lowHU, highHU,maxHU, targetHUHigh, targetHULow, segmentIndex}) => {
+    thresholdSegmentation: ({segmentationId, minHU, lowHU, highHU,maxHU, targetHUHigh, targetHULow, startSlice, endSlice, overwrite, segmentIndex}) => {
+      console.log(segmentIndex);
+      console.log(startSlice);
+      console.log(endSlice);
       const segmentation = segmentationService.getSegmentation(
         segmentationId
       );
@@ -1056,27 +1059,27 @@ const commandsModule = ({
       let boundsIJK: cstTypes.BoundsIJK = [
         [0,labelmapVolume.dimensions[0]-1],
         [0,labelmapVolume.dimensions[1]-1],
-        // [labelmapVolume.dimensions[2]-10,labelmapVolume.dimensions[2]-1]
-        [labelmapVolume.dimensions[2]-10, labelmapVolume.dimensions[2]-1]
+        [labelmapVolume.dimensions[2]-endSlice,labelmapVolume.dimensions[2]-(startSlice+1)]
       ];
       const { frameOfReferenceUID } = segmentation;
       const updatePairs = [
         [minHU, lowHU],
-        [lowHU, targetHULow],
-        [targetHULow, targetHUHigh],
-        [targetHUHigh, highHU],
-        [highHU, maxHU],
+        [lowHU+1, targetHULow],
+        [targetHULow+1, targetHUHigh],
+        [targetHUHigh+1, highHU],
+        [highHU+1, maxHU],
     ];
     const thresholdVolumeInformation = [
-      { volume: referencedVolume, lower: updatePairs[segmentIndex-1][0]+1, upper: updatePairs[segmentIndex-1][1]},
-      { volume: ctReferencedVolume, lower: updatePairs[segmentIndex-1][0]+1, upper: updatePairs[segmentIndex-1][1] },
+      { volume: referencedVolume, lower: updatePairs[segmentIndex-1][0], upper: updatePairs[segmentIndex-1][1]},
+      { volume: ctReferencedVolume, lower: updatePairs[segmentIndex-1][0], upper: updatePairs[segmentIndex-1][1] },
     ];
-    let result = csTools.utilities.segmentation.thresholdVolumeByRange(
+    let result = thresholdVolumeByRange(
       labelmapVolume,
       thresholdVolumeInformation,
-      { overwrite: false, boundsIJK: boundsIJK }
+      segmentIndex ,
+      { overwrite: overwrite, boundsIJK: boundsIJK }
     );
-      return result;
+    return result;
     },
     calculateSuvPeak: ({ labelmap }) => {
       const { referencedVolumeId } = labelmap;

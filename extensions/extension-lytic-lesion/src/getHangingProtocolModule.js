@@ -189,33 +189,73 @@ const colormapAnd3d = {
           displaySets: [
             {
               id: 'activeDisplaySet',
-              options: {
-                voi: {
-                  windowWidth: '1180',
-                  windowCenter: '233',
-                },
-              },
             },
             {
               id: 'backgroundDisplaySet',
             },
           ],
         },
+        // {
+        //   viewportOptions: {
+        //     toolGroupId: 'volume3d',
+        //     viewportType: 'volume3d',
+        //     orientation: 'sagittal',
+        //     // background: [1, 1, 1],
+        //     customViewportProps: {
+        //       hideOverlays: true,
+        //       voiInverted: true,
+        //     },
+        //   },
+        //   displaySets: [
+        //     {
+        //       id: 'activeDisplaySet',
+        //       options: {
+        //         displayPreset: 'CT-Bone',
+        //       },
+        //     },
+        //   ],
+        // },
         {
           viewportOptions: {
+            viewportId: 'mipSagittal',
+            viewportType: 'volume',
+            orientation: 'sagittal',
             toolGroupId: 'volume3d',
-            viewportType: 'volume3d',
-            orientation: 'coronal',
+            // syncGroups: [
+            //   {
+            //     type: 'voi',
+            //     id: 'mpr',
+            //     source: true,
+            //     target: true,
+            //   },
+            //   {
+            //     type: 'voi',
+            //     id: 'mpr',
+            //     source: true,
+            //     target: false,
+            //     options: {
+            //       syncInvertState: false,
+            //     },
+            //   },
+            // ],
+
+            // Custom props can be used to set custom properties which extensions
+            // can react on.
             customViewportProps: {
+              // We use viewportDisplay to filter the viewports which are displayed
+              // in mip and we set the scrollbar according to their rotation index
+              // in the cornerstone extension.
               hideOverlays: true,
             },
           },
           displaySets: [
             {
-              id: 'activeDisplaySet',
               options: {
-                displayPreset: 'CT-Bone',
+                blendMode: 'MIP',
+                slabThickness: 'fullVolume',
+                syncInvertState: true,
               },
+              id: 'activeDisplaySet',
             },
           ],
         },
@@ -307,6 +347,7 @@ const mprAnd3DVolumeViewport = {
               id: 'mprDisplaySet',
               options: {
                 displayPreset: 'CT-Bone',
+                voiInverted: true,
               },
             },
           ],

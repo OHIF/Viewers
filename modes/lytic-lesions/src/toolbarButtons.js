@@ -31,7 +31,7 @@ const _createActionButton = _createButton.bind(null, 'action');
 const _createToggleButton = _createButton.bind(null, 'toggle');
 const _createToolButton = _createButton.bind(null, 'tool');
 function _createCommands(commandName, toolName, toolGroupIds) {
-  return toolGroupIds.map(toolGroupId => ({
+  return toolGroupIds.map((toolGroupId) => ({
     /* It's a command that is being run when the button is clicked. */
     commandName,
     commandOptions: {
@@ -84,7 +84,7 @@ function _createColormap(label, colormap) {
     ],
   };
 }
-const toolGroupIds = ['default', 'mpr', 'SRToolGroup'];
+const toolGroupIds = ['default', 'mpr', 'SRToolGroup', '3dVolume'];
 
 /**
  * Creates an array of 'setToolActive' commands for the given toolName - one for
@@ -93,7 +93,7 @@ const toolGroupIds = ['default', 'mpr', 'SRToolGroup'];
  * @returns {Array} an array of 'setToolActive' commands
  */
 function _createSetToolActiveCommands(toolName) {
-  const temp = toolGroupIds.map(toolGroupId => ({
+  const temp = toolGroupIds.map((toolGroupId) => ({
     commandName: 'setToolActive',
     commandOptions: {
       toolGroupId,
@@ -105,42 +105,42 @@ function _createSetToolActiveCommands(toolName) {
 }
 
 const toolbarButtons = [
-  {
-    id: 'setColormap',
-    type: 'ohif.splitButton',
-    props: {
-      groupId: 'fusionPTColormap',
-      primary: _createToolButton(
-        'setColormap',
-        'tool-fusion-color',
-        'Set Colormap',
-        [],
-        'Set Colormap'
-      ),
-      secondary: {
-        icon: 'chevron-down',
-        label: 'Colormap',
-        isActive: true,
-        tooltip: 'Colormap',
-      },
-      isAction: true, // ?
-      renderer: WindowLevelMenuItem,
-      items: [
-        _createColormap('DEFAULT', 'default'),
-        _createColormap('HSV', 'hsv'),
-        _createColormap('Hot Iron', 'hot_iron'),
-        _createColormap('S PET', 's_pet'),
-        _createColormap('Red Hot', 'red_hot'),
-        _createColormap('Perfusion', 'perfusion'),
-        _createColormap('Rainbow', 'rainbow_2'),
-        _createColormap('SUV', 'suv'),
-        _createColormap('GE 256', 'ge_256'),
-        _createColormap('GE', 'ge'),
-        _createColormap('Siemens', 'siemens'),
-        _createColormap('Test', 'test'),
-      ],
-    },
-  },
+  // {
+  //   id: 'setColormap',
+  //   type: 'ohif.splitButton',
+  //   props: {
+  //     groupId: 'fusionPTColormap',
+  //     primary: _createToolButton(
+  //       'setColormap',
+  //       'tool-fusion-color',
+  //       'Set Colormap',
+  //       [],
+  //       'Set Colormap'
+  //     ),
+  //     secondary: {
+  //       icon: 'chevron-down',
+  //       label: 'Colormap',
+  //       isActive: true,
+  //       tooltip: 'Colormap',
+  //     },
+  //     isAction: true, // ?
+  //     renderer: WindowLevelMenuItem,
+  //     items: [
+  //       _createColormap('DEFAULT', 'default'),
+  //       _createColormap('HSV', 'hsv'),
+  //       _createColormap('Hot Iron', 'hot_iron'),
+  //       _createColormap('S PET', 's_pet'),
+  //       _createColormap('Red Hot', 'red_hot'),
+  //       _createColormap('Perfusion', 'perfusion'),
+  //       _createColormap('Rainbow', 'rainbow_2'),
+  //       _createColormap('SUV', 'suv'),
+  //       _createColormap('GE 256', 'ge_256'),
+  //       _createColormap('GE', 'ge'),
+  //       _createColormap('Siemens', 'siemens'),
+  //       _createColormap('Test', 'test'),
+  //     ],
+  //   },
+  // },
   {
     id: 'RectangleROIStartEndThreshold',
     type: 'ohif.radioGroup',
@@ -407,24 +407,6 @@ const toolbarButtons = [
     props: {
       rows: 3,
       columns: 3,
-    },
-  },
-  {
-    id: 'MPR',
-    type: 'ohif.action',
-    props: {
-      type: 'toggle',
-      icon: 'icon-mpr',
-      label: 'MPR',
-      commands: [
-        {
-          commandName: 'toggleHangingProtocol',
-          commandOptions: {
-            protocolId: 'mpr',
-          },
-          context: 'LYTIC',
-        },
-      ],
     },
   },
   {

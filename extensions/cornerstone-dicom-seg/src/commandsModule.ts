@@ -120,9 +120,9 @@ const commandsModule = ({
         loadFn: async () => {
           const colors = [
             [0, 128, 0, 64],
-            [0, 255, 0, 128],
+            [0, 255, 0, 96],
             [255, 0, 0, 255],
-            [0, 0, 255, 128],
+            [0, 0, 255, 96],
             [128, 128, 255, 64],
           ];
           const currentSegmentations = segmentationService.getSegmentations();

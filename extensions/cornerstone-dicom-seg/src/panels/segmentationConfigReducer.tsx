@@ -2,7 +2,7 @@
 const initialState = {
   renderOutline: true,
   renderFill: true,
-  outlineOpacity: 0.5,
+  outlineOpacity: 0,
   outlineWidth: 3,
   fillOpacity: 1,
   fillOpacityInactive: 1,

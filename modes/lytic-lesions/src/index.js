@@ -138,11 +138,9 @@ function modeFactory() {
         'Pan',
         'Capture',
         'Layout',
-        'MPR',
         'CMAP',
         'Crosshairs',
         'MoreTools',
-        'setColormap',
         'RectangleROIStartEndThreshold',
       ]);
 
