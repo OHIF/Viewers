@@ -354,21 +354,34 @@ export default class ToolGroupService {
     }
   }
 
-  private _addTools(toolGroup, tools, configs) {
-    const toolModes = Object.values(Enums.ToolModes).map(toolMode => toolMode.toLowerCase());
-
-    toolModes.forEach(toolMode => {
-      (tools[toolMode] ?? []).forEach(tool => {
-        const { toolName, parentClassName } = tool;
-        const toolConfig = { ...(configs[toolName] ?? {}) };
-
-        if (parentClassName) {
-          toolGroup.addToolInstance(toolName, parentClassName, toolConfig);
+  private _addTools(toolGroup, tools) {
+    const addTools = tools => {
+      tools.forEach(({ toolName, parentTool, configuration }) => {
+        if (parentTool) {
+          toolGroup.addToolInstance(toolName, parentTool, {
+            ...configuration,
+          });
         } else {
-          toolGroup.addTool(toolName, toolConfig);
+          toolGroup.addTool(toolName, { ...configuration });
         }
       });
-    });
+    };
+
+    if (tools.active) {
+      addTools(tools.active);
+    }
+
+    if (tools.passive) {
+      addTools(tools.passive);
+    }
+
+    if (tools.enabled) {
+      addTools(tools.enabled);
+    }
+
+    if (tools.disabled) {
+      addTools(tools.disabled);
+    }
   }
 
   private _onToolActivated = (evt: Types.EventTypes.ToolActivatedEventType) => {
