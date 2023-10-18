@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { CinePlayer, useCine, useViewportGrid } from '@ohif/ui';
 import { Enums, eventTarget } from '@cornerstonejs/core';
+import { useAppConfig } from '@state';
 
 function WrappedCinePlayer({ enabledVPElement, viewportId, servicesManager }) {
   const {
@@ -12,6 +13,7 @@ function WrappedCinePlayer({ enabledVPElement, viewportId, servicesManager }) {
   } = servicesManager.services;
   const [{ isCineEnabled, cines }] = useCine();
   const [newStackFrameRate, setNewStackFrameRate] = useState(24);
+  const [appConfig] = useAppConfig();
 
   const { component: CinePlayerComponent = CinePlayer } =
     customizationService.get('cinePlayer') ?? {};
@@ -63,7 +65,7 @@ function WrappedCinePlayer({ enabledVPElement, viewportId, servicesManager }) {
         // displaySet.FrameRate corresponds to DICOM tag (0018,1063) which is defined as the the frame time in milliseconds
         // So a bit of math to get the actual frame rate.
         frameRate = Math.round(1000 / displaySet.FrameRate);
-        isPlaying = !!window.config.autoPlayCine;
+        isPlaying = !!appConfig.autoPlayCine;
       }
     });
 

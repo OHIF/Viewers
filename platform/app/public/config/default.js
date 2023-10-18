@@ -12,7 +12,6 @@ window.config = {
   showCPUFallbackMessage: true,
   showLoadingIndicator: true,
   strictZSpacingForVolumeViewport: true,
-  autoPlayCine: true,
   maxNumRequests: {
     interaction: 100,
     thumbnail: 75,
