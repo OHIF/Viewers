@@ -1,8 +1,9 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import { Button, Icon } from '@ohif/ui';
+import { Button, Icon, Select } from '@ohif/ui';
 import { useCine, useViewportGrid } from '@ohif/ui';
-import { cache, utilities as csUtils, volumeLoader } from '@cornerstonejs/core';
+import { cache, utilities as csUtils, volumeLoader, eventTarget } from '@cornerstonejs/core';
+import { Enums } from '@cornerstonejs/streaming-image-volume-loader';
 import { utilities as cstUtils } from '@cornerstonejs/tools';
 import GenerateVolume from './GenerateVolume';
 
@@ -30,12 +31,13 @@ export default function PanelGenerateImage({ servicesManager, commandsManager })
   const { viewportGridService, cornerstoneViewportService, hangingProtocolService } =
     servicesManager.services;
   const [options, setOptions] = useState(DEFAULT_OPTIONS);
-  const [rangeValues, setRangeValues] = useState([]);
-  const [timeFramesToUse, setTimeFramesToUse] = useState([]);
+  const [timePointsRange, setTimePointsRange] = useState([]);
+  const [timePointsToUseForGenerate, setTimePointsToUseForGenerate] = useState([]);
   const [computedDisplaySet, setComputedDisplaySet] = useState(null);
   const [dynamicVolume, setDynamicVolume] = useState(null);
   const [frameRate, setFrameRate] = useState(20);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [timePointRendered, setTimePointRendered] = useState(null); // eslint-disable-line no-unused-vars
   const [displayingComputedVolume, setDisplayingComputedVolume] = useState(false);
   const uuidComputedVolume = useRef(csUtils.uuidv4());
   const uuidDynamicVolume = useRef(null);
@@ -77,22 +79,35 @@ export default function PanelGenerateImage({ servicesManager, commandsManager })
   useEffect(() => {
     // ~~ Subscription
     const evt = cornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED;
-    let unsubscribe;
 
-    unsubscribe = cornerstoneViewportService.subscribe(evt, evtdetails => {
-      evtdetails.viewportData.data.forEach(volumeData => {
+    const { unsubscribe } = cornerstoneViewportService.subscribe(evt, evtDetails => {
+      evtDetails.viewportData.data.forEach(volumeData => {
         if (volumeData.volume.isDynamicVolume()) {
           setDynamicVolume(volumeData.volume);
           uuidDynamicVolume.current = volumeData.displaySetInstanceUID;
-          const range = [1, volumeData.volume.numTimePoints];
-          setRangeValues(range);
-          setTimeFramesToUse([0, 1]);
+          setTimePointsRange([1, volumeData.volume.numTimePoints]);
+          setTimePointsToUseForGenerate([0, 1]);
         }
       });
-    }).unsubscribe;
+    });
 
     return () => {
       unsubscribe();
+    };
+  }, [cornerstoneViewportService]);
+
+  useEffect(() => {
+    // ~~ Subscription
+    const evt = Enums.Events.DYNAMIC_VOLUME_TIME_POINT_INDEX_CHANGED;
+
+    const callback = evt => {
+      setTimePointRendered(evt.detail.timePointIndex);
+    };
+
+    eventTarget.addEventListener(evt, callback);
+
+    return () => {
+      eventTarget.removeEventListener(evt, callback);
     };
   }, [cornerstoneViewportService]);
 
@@ -117,7 +132,7 @@ export default function PanelGenerateImage({ servicesManager, commandsManager })
     const dataInTime = cstUtils.dynamicVolume.generateImageFromTimeData(
       dynamicVolume,
       options.Operation,
-      timeFramesToUse
+      timePointsToUseForGenerate
     );
     // Add loadStatus.loaded to computed volume and set to true
     computedVolume.loadStatus = {};
@@ -214,14 +229,68 @@ export default function PanelGenerateImage({ servicesManager, commandsManager })
       { length: newValues[1] - newValues[0] + 1 },
       (_, i) => i + newValues[0] - 1
     );
-    setTimeFramesToUse(timeFrameValuesArray);
+    setTimePointsToUseForGenerate(timeFrameValuesArray);
   }
 
   return (
     <div className="flex flex-col">
       <div className="bg-primary-dark flex flex-col space-y-4 p-4">
+        <div>
+          <div className="mb-2 text-white">Frame Controls</div>
+          <div className="flex space-x-2">
+            <div className="flex w-2/3 justify-between">
+              <Button
+                onClick={handlePlay}
+                className="mr-1 grow basis-0"
+                disabled={isPlaying}
+              >
+                Play
+              </Button>
+              <Button
+                onClick={handleStop}
+                className="ml-1 grow basis-0"
+                disabled={!isPlaying}
+              >
+                Pause
+              </Button>
+            </div>
+            <div className="flex w-1/3">
+              <Select
+                closeMenuOnSelect={true}
+                options={Array.from({ length: timePointsRange[1] }, (_, i) => ({
+                  value: (i + timePointsRange[0]).toString(),
+                  label: (i + timePointsRange[0]).toString(),
+                }))}
+                value={timePointRendered + 1}
+                placeholder={(timePointRendered + 1).toString()}
+                onChange={({ value }) => {
+                  dynamicVolume.timePointIndex = value - timePointsRange[0];
+                }}
+              />
+            </div>
+          </div>
+          <div className="space-between mt-3 flex items-center justify-center">
+            <div
+              className={
+                'text-primary-active active:text-primary-light hover:bg-customblue-300 flex  cursor-pointer items-center justify-center rounded-l'
+              }
+              onClick={() => handleSetFrameRate(frameRate - 1)}
+            >
+              <Icon name="icon-prev" />
+            </div>
+            <div className="border-secondary-light group-hover/fps:text-primary-light mx-1 border px-2 text-center leading-[22px] text-white">
+              {`${frameRate} FPS`}
+            </div>
+            <div
+              className={`${'text-primary-active active:text-primary-light hover:bg-customblue-300 flex cursor-pointer items-center justify-center'} rounded-r`}
+              onClick={() => handleSetFrameRate(frameRate + 1)}
+            >
+              <Icon name="icon-next" />
+            </div>
+          </div>
+        </div>
         <GenerateVolume
-          rangeValues={rangeValues}
+          rangeValues={timePointsRange}
           handleSliderChange={handleSliderChange}
           operationsUI={operationsUI}
           options={options}
@@ -230,61 +299,6 @@ export default function PanelGenerateImage({ servicesManager, commandsManager })
           returnTo4D={returnTo4D}
           displayingComputedVolume={displayingComputedVolume}
         />
-        <div className="flex justify-between">
-          <Button
-            onClick={() => {
-              dynamicVolume.timePointIndex = rangeValues[0] - 1;
-            }}
-            className="mr-1 grow basis-0"
-          >
-            First Frame
-          </Button>
-          <Button
-            onClick={() => {
-              dynamicVolume.timePointIndex = rangeValues[1] - 1;
-            }}
-            className="ml-1 grow basis-0"
-          >
-            Last Frame
-          </Button>
-        </div>
-        <div className="flex justify-between">
-          <Button
-            onClick={handlePlay}
-            startIcon={<Icon name="icon-play" />}
-            className="mr-1 grow basis-0"
-            disabled={isPlaying}
-          >
-            Play
-          </Button>
-          <Button
-            onClick={handleStop}
-            startIcon={<Icon name="icon-pause" />}
-            className="ml-1 grow basis-0"
-            disabled={!isPlaying}
-          >
-            Pause
-          </Button>
-        </div>
-        <div className="space-between flex items-center justify-center">
-          <div
-            className={
-              'text-primary-active active:text-primary-light hover:bg-customblue-300 flex  cursor-pointer items-center justify-center rounded-l'
-            }
-            onClick={() => handleSetFrameRate(frameRate - 1)}
-          >
-            <Icon name="icon-prev" />
-          </div>
-          <div className="border-secondary-light group-hover/fps:text-primary-light mx-1 border px-2 text-center leading-[22px] text-white">
-            {`${frameRate} FPS`}
-          </div>
-          <div
-            className={`${'text-primary-active active:text-primary-light hover:bg-customblue-300 flex cursor-pointer items-center justify-center'} rounded-r`}
-            onClick={() => handleSetFrameRate(frameRate + 1)}
-          >
-            <Icon name="icon-next" />
-          </div>
-        </div>
       </div>
     </div>
   );

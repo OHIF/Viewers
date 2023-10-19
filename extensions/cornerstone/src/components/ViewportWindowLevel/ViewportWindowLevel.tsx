@@ -98,13 +98,20 @@ const ViewportWindowLevel = ({
     const { imageData } = volumeImageData;
     let scalarData = volume.scalarData;
 
+    let prevTimePoint;
     if (volume.numTimePoints > 1) {
+      prevTimePoint = volume.timePointIndex;
       const middleTimePoint = Math.round(volume.numTimePoints / 2);
       volume.timePointIndex = middleTimePoint;
       scalarData = volume.getScalarData(middleTimePoint);
     }
 
     const range = imageData.computeHistogram(imageData.getBounds());
+
+    // after we calculate the range let's reset the timePointIndex
+    if (volume.numTimePoints > 1) {
+      volume.timePointIndex = prevTimePoint;
+    }
     const { minimum: min, maximum: max } = range;
     const calcHistOptions = {
       numBins: 256,

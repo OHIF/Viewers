@@ -16,8 +16,20 @@ const GenerateVolume = ({
 }) => {
   return (
     <>
-      <div className="marginBottom-10px">Frame Panel</div>
-      <div className="">
+      <div>
+        <div className="mb-2 text-white">Computed Image</div>
+        <Select
+          closeMenuOnSelect={true}
+          className="border-primary-main mr-2 bg-black text-white "
+          options={operationsUI}
+          placeholder={operationsUI.find(option => option.value === options.Operation).placeHolder}
+          value={options.Operation}
+          onChange={({ value }) => {
+            handleGenerateOptionsChange({
+              Operation: value,
+            });
+          }}
+        />
         <InputDoubleRange
           values={rangeValues}
           onChange={handleSliderChange}
@@ -26,32 +38,23 @@ const GenerateVolume = ({
           showLabel={true}
           step={1}
         />
+        <div className="flex space-x-2">
+          <Button
+            onClick={onGenerateImage}
+            disabled={displayingComputedVolume}
+            className="w-1/2"
+          >
+            Generate
+          </Button>
+          <Button
+            onClick={returnTo4D}
+            disabled={!displayingComputedVolume}
+            className="w-1/2"
+          >
+            Return To 4D
+          </Button>
+        </div>
       </div>
-      <Select
-        label={'Strategy'}
-        closeMenuOnSelect={true}
-        className="border-primary-main mr-2 bg-black text-white "
-        options={operationsUI}
-        placeholder={operationsUI.find(option => option.value === options.Operation).placeHolder}
-        value={options.Operation}
-        onChange={({ value }) => {
-          handleGenerateOptionsChange({
-            Operation: value,
-          });
-        }}
-      />
-      <Button
-        onClick={onGenerateImage}
-        disabled={displayingComputedVolume}
-      >
-        Generate Image
-      </Button>
-      <Button
-        onClick={returnTo4D}
-        disabled={!displayingComputedVolume}
-      >
-        Return To 4D
-      </Button>
     </>
   );
 };
