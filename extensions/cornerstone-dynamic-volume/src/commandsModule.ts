@@ -46,12 +46,12 @@ const commandsModule = ({ commandsManager, servicesManager }) => {
 
       const csv = [];
 
-      // CSV header information
-      csv.push(`Patient ID,${instance.PatientID}`);
-      csv.push(`Study Date,${instance.StudyDate}`);
-      csv.push(`StudyInstanceUID,${instance.StudyInstanceUID}`);
-      csv.push(`StudyDescription,${instance.StudyDescription}`);
-      csv.push(`SeriesInstanceUID,${instance.SeriesInstanceUID}`);
+      // CSV header information with placeholder empty values for the metadata lines
+      csv.push(`Patient ID,${instance.PatientID},`);
+      csv.push(`Study Date,${instance.StudyDate},`);
+      csv.push(`StudyInstanceUID,${instance.StudyInstanceUID},`);
+      csv.push(`StudyDescription,${instance.StudyDescription},`);
+      csv.push(`SeriesInstanceUID,${instance.SeriesInstanceUID},`);
 
       // Iterate through each segmentation to get the 2D array data and include it in the CSV
       for (let i = 0; i < segmentations.length; i++) {
@@ -63,14 +63,14 @@ const commandsModule = ({ commandsManager, servicesManager }) => {
         // Add column headers for this segmentation
         const numColumns = timeData.length; // Assuming timeData is 2D array [numColumns][numRows]
         for (let j = 1; j <= numColumns; j++) {
-          csv[0] += `,Seg_${i + 1}_Index_${j}`;
+          csv[0] += `,Seg_${i + 1}_Element_${j}`;
         }
 
         // Populate CSV rows with the 2D array data
         const numRows = timeData[0].length;
         for (let row = 0; row < numRows; row++) {
           if (csv[row + 5] === undefined) {
-            csv[row + 5] = '';
+            csv[row + 5] = ',';
           }
 
           for (let col = 0; col < numColumns; col++) {
