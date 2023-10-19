@@ -5,8 +5,7 @@ export default function unpackOverlay(arrayBuffer) {
   for (let byteIndex = 0; byteIndex < byteArray.length; byteIndex++) {
     const bitIndex = byteIndex % 8;
     const bitByteIndex = Math.floor(byteIndex / 8);
-    byteArray[byteIndex] =
-      1 * ((bitArray[bitByteIndex] & (1 << bitIndex)) >> bitIndex);
+    byteArray[byteIndex] = 1 * ((bitArray[bitByteIndex] & (1 << bitIndex)) >> bitIndex);
   }
 
   return byteArray;

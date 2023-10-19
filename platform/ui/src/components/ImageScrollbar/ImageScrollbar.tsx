@@ -21,7 +21,10 @@ class ImageScrollbar extends PureComponent {
     };
 
     return (
-      <div className="scroll" onContextMenu={this.props.onContextMenu}>
+      <div
+        className="scroll"
+        onContextMenu={this.props.onContextMenu}
+      >
         <div className="scroll-holder">
           <input
             // adding mousetrap let the mousetrap know about the scrollbar otherwise,

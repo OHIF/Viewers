@@ -28,7 +28,6 @@ function commandsModule({
     toolGroupService,
     cineService,
     toolbarService,
-    stateSyncService,
     uiDialogService,
     cornerstoneViewportService,
     uiNotificationService,
@@ -57,9 +56,7 @@ function commandsModule({
         // filter by allowed selected tools from config property (if there is any)
         const isToolAllowed =
           !optionsToUse.allowedSelectedTools ||
-          optionsToUse.allowedSelectedTools.includes(
-            firstAnnotationSelected?.metadata?.toolName
-          );
+          optionsToUse.allowedSelectedTools.includes(firstAnnotationSelected?.metadata?.toolName);
         if (isToolAllowed) {
           optionsToUse.nearbyToolData = firstAnnotationSelected;
         } else {
@@ -89,10 +86,7 @@ function commandsModule({
     },
 
     getNearbyToolData({ nearbyToolData, element, canvasCoordinates }) {
-      return (
-        nearbyToolData ??
-        cstUtils.getAnnotationNearPoint(element, canvasCoordinates)
-      );
+      return nearbyToolData ?? cstUtils.getAnnotationNearPoint(element, canvasCoordinates);
     },
     getNearbyAnnotation({ element, canvasCoordinates }) {
       const nearbyToolData = actions.getNearbyToolData({
@@ -109,18 +103,14 @@ function commandsModule({
         }
 
         const { renderingEngineId, viewportId } = enabledElement;
-        const toolGroup = ToolGroupManager.getToolGroupForViewport(
-          viewportId,
-          renderingEngineId
-        );
+        const toolGroup = ToolGroupManager.getToolGroupForViewport(viewportId, renderingEngineId);
 
         const toolInstance = toolGroup.getToolInstance(toolName);
 
         return toolInstance?.constructor?.isAnnotation ?? true;
       };
 
-      return nearbyToolData?.metadata?.toolName &&
-        isAnnotation(nearbyToolData.metadata.toolName)
+      return nearbyToolData?.metadata?.toolName && isAnnotation(nearbyToolData.metadata.toolName)
         ? nearbyToolData
         : null;
     },
@@ -153,11 +143,7 @@ function commandsModule({
             label,
           });
 
-          measurementService.update(
-            updatedMeasurement.uid,
-            updatedMeasurement,
-            true
-          );
+          measurementService.update(updatedMeasurement.uid, updatedMeasurement, true);
         },
         false
       );
@@ -168,7 +154,7 @@ function commandsModule({
      * @param props - containing the updates to apply
      * @param props.measurementKey - chooses the measurement key to apply the
      *        code to.  This will typically be finding or site to apply a
-     *        finind code or a findingSites code.
+     *        finding code or a findingSites code.
      * @param props.code - A coding scheme value from DICOM, including:
      *       * CodeValue - the language independent code, for example '1234'
      *       * CodingSchemeDesignator - the issue of the code value
@@ -220,39 +206,49 @@ function commandsModule({
           }
         }
       }
-      measurementService.update(
-        updatedMeasurement.uid,
-        updatedMeasurement,
-        true
-      );
+      measurementService.update(updatedMeasurement.uid, updatedMeasurement, true);
     },
 
     // Retrieve value commands
     getActiveViewportEnabledElement: _getActiveViewportEnabledElement,
 
     setViewportActive: ({ viewportId }) => {
-      const viewportInfo = cornerstoneViewportService.getViewportInfo(
-        viewportId
-      );
+      const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
       if (!viewportInfo) {
         console.warn('No viewport found for viewportId:', viewportId);
         return;
       }
 
-      const viewportIndex = viewportInfo.getViewportIndex();
-      viewportGridService.setActiveViewportIndex(viewportIndex);
+      viewportGridService.setActiveViewportId(viewportId);
     },
     arrowTextCallback: ({ callback, data }) => {
       callInputDialog(uiDialogService, data, callback);
+    },
+    cleanUpCrosshairs: () => {
+      // if the crosshairs tool is active, deactivate it and set window level active
+      // since we are going back to main non-mpr HP
+      const activeViewportToolGroup = toolGroupService.getToolGroup(null);
+
+      if (activeViewportToolGroup._toolInstances?.Crosshairs?.mode === Enums.ToolModes.Active) {
+        actions.toolbarServiceRecordInteraction({
+          interactionType: 'tool',
+          commands: [
+            {
+              commandOptions: {
+                toolName: 'WindowLevel',
+              },
+              context: 'CORNERSTONE',
+            },
+          ],
+        });
+      }
     },
     toggleCine: () => {
       const { viewports } = viewportGridService.getState();
       const { isCineEnabled } = cineService.getState();
       cineService.setIsCineEnabled(!isCineEnabled);
       toolbarService.setButton('Cine', { props: { isActive: !isCineEnabled } });
-      viewports.forEach((_, index) =>
-        cineService.setCine({ id: index, isPlaying: false })
-      );
+      viewports.forEach((_, index) => cineService.setCine({ id: index, isPlaying: false }));
     },
     setWindowLevel({ window, level, toolGroupId }) {
       // convert to numbers
@@ -260,9 +256,7 @@ function commandsModule({
       const windowCenterNum = Number(level);
 
       const { viewportId } = _getActiveViewportEnabledElement();
-      const viewportToolGroupId = toolGroupService.getToolGroupForViewport(
-        viewportId
-      );
+      const viewportToolGroupId = toolGroupService.getToolGroupForViewport(viewportId);
 
       if (toolGroupId && toolGroupId !== viewportToolGroupId) {
         return;
@@ -272,10 +266,7 @@ function commandsModule({
       const renderingEngine = cornerstoneViewportService.getRenderingEngine();
       const viewport = renderingEngine.getViewport(viewportId);
 
-      const { lower, upper } = csUtils.windowLevel.toLowHighRange(
-        windowWidthNum,
-        windowCenterNum
-      );
+      const { lower, upper } = csUtils.windowLevel.toLowHighRange(windowWidthNum, windowCenterNum);
 
       viewport.setProperties({
         voiRange: {
@@ -292,8 +283,12 @@ function commandsModule({
     toolbarServiceRecordInteraction: props => {
       toolbarService.recordInteraction(props);
     },
-
-    setToolActive: ({ toolName, toolGroupId = null }) => {
+    // Enable or disable a toggleable command, without calling the activation
+    // Used to setup already active tools from hanging protocols
+    setToolbarToggled: props => {
+      toolbarService.setToggled(props.toolId, props.isActive ?? true);
+    },
+    setToolActive: ({ toolName, toolGroupId = null, toggledState }) => {
       if (toolName === 'Crosshairs') {
         const activeViewportToolGroup = toolGroupService.getToolGroup(null);
 
@@ -310,29 +305,15 @@ function commandsModule({
         }
       }
 
-      const { viewports } = viewportGridService.getState() || {
-        viewports: [],
-      };
+      const { viewports } = viewportGridService.getState();
 
-      const toolGroup = toolGroupService.getToolGroup(toolGroupId);
-      const toolGroupViewportIds = toolGroup?.getViewportIds?.();
-
-      // if toolGroup has been destroyed, or its viewports have been removed
-      if (!toolGroupViewportIds || !toolGroupViewportIds.length) {
+      if (!viewports.size) {
         return;
       }
 
-      const filteredViewports = viewports.filter(viewport => {
-        if (!viewport.viewportOptions) {
-          return false;
-        }
+      const toolGroup = toolGroupService.getToolGroup(toolGroupId);
 
-        return toolGroupViewportIds.includes(
-          viewport.viewportOptions.viewportId
-        );
-      });
-
-      if (!filteredViewports.length) {
+      if (!toolGroup) {
         return;
       }
 
@@ -358,6 +339,14 @@ function commandsModule({
           toolGroup.setToolPassive(activeToolName);
         }
       }
+
+      // If there is a toggle state, then simply set the enabled/disabled state without
+      // setting the tool active.
+      if (toggledState != null) {
+        toggledState ? toolGroup.setToolEnabled(toolName) : toolGroup.setToolDisabled(toolName);
+        return;
+      }
+
       // Set the new toolName to be active
       toolGroup.setToolActive(toolName, {
         bindings: [
@@ -368,13 +357,9 @@ function commandsModule({
       });
     },
     showDownloadViewportModal: () => {
-      const { activeViewportIndex } = viewportGridService.getState();
+      const { activeViewportId } = viewportGridService.getState();
 
-      if (
-        !cornerstoneViewportService.getCornerstoneViewportByIndex(
-          activeViewportIndex
-        )
-      ) {
+      if (!cornerstoneViewportService.getCornerstoneViewport(activeViewportId)) {
         // Cannot download a non-cornerstone viewport (image).
         uiNotificationService.show({
           title: 'Download Image',
@@ -391,7 +376,7 @@ function commandsModule({
           content: CornerstoneViewportDownloadForm,
           title: 'Download High Quality Image',
           contentProps: {
-            activeViewportIndex,
+            activeViewportId,
             onClose: uiModalService.hide,
             cornerstoneViewportService,
           },
@@ -508,9 +493,7 @@ function commandsModule({
         }
         viewport = enabledElement.viewport;
       } else {
-        viewport = cornerstoneViewportService.getCornerstoneViewport(
-          gridViewport.id
-        );
+        viewport = cornerstoneViewportService.getCornerstoneViewport(gridViewport.id);
       }
 
       // Get number of slices
@@ -520,14 +503,12 @@ function commandsModule({
       if (viewport instanceof StackViewport) {
         numberOfSlices = viewport.getImageIds().length;
       } else if (viewport instanceof VolumeViewport) {
-        numberOfSlices = csUtils.getImageSliceDataForVolumeViewport(viewport)
-          .numberOfSlices;
+        numberOfSlices = csUtils.getImageSliceDataForVolumeViewport(viewport).numberOfSlices;
       } else {
         throw new Error('Unsupported viewport type');
       }
 
-      const jumpIndex =
-        imageIndex < 0 ? numberOfSlices + imageIndex : imageIndex;
+      const jumpIndex = imageIndex < 0 ? numberOfSlices + imageIndex : imageIndex;
       if (jumpIndex >= numberOfSlices || jumpIndex < 0) {
         throw new Error(`Can't jump to ${imageIndex}`);
       }
@@ -548,15 +529,8 @@ function commandsModule({
 
       cstUtils.scroll(viewport, options);
     },
-    setViewportColormap: ({
-      viewportIndex,
-      displaySetInstanceUID,
-      colormap,
-      immediate = false,
-    }) => {
-      const viewport = cornerstoneViewportService.getCornerstoneViewportByIndex(
-        viewportIndex
-      );
+    setViewportColormap: ({ viewportId, displaySetInstanceUID, colormap, immediate = false }) => {
+      const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
       const actorEntries = viewport.getActors();
 
@@ -572,36 +546,28 @@ function commandsModule({
         viewport.render();
       }
     },
-    incrementActiveViewport: () => {
-      const { activeViewportIndex, viewports } = viewportGridService.getState();
-      const nextViewportIndex = (activeViewportIndex + 1) % viewports.length;
-      viewportGridService.setActiveViewportIndex(nextViewportIndex);
-    },
-    decrementActiveViewport: () => {
-      const { activeViewportIndex, viewports } = viewportGridService.getState();
+    changeActiveViewport: ({ direction = 1 }) => {
+      const { activeViewportId, viewports } = viewportGridService.getState();
+      const viewportIds = Array.from(viewports.keys());
+      const currentIndex = viewportIds.indexOf(activeViewportId);
       const nextViewportIndex =
-        (activeViewportIndex - 1 + viewports.length) % viewports.length;
-      viewportGridService.setActiveViewportIndex(nextViewportIndex);
+        (currentIndex + direction + viewportIds.length) % viewportIds.length;
+      viewportGridService.setActiveViewportId(viewportIds[nextViewportIndex] as string);
     },
+
     toggleStackImageSync: ({ toggledState }) => {
       toggleStackImageSync({
-        getEnabledElement,
         servicesManager,
         toggledState,
       });
     },
-    toggleReferenceLines: ({ toggledState }) => {
-      const { activeViewportIndex } = viewportGridService.getState();
-      const viewportInfo = cornerstoneViewportService.getViewportInfoByIndex(
-        activeViewportIndex
-      );
-
-      const viewportId = viewportInfo.getViewportId();
-      const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
-
-      if (!toggledState) {
-        toolGroup.setToolDisabled(ReferenceLinesTool.toolName);
+    setSourceViewportForReferenceLinesTool: ({ toggledState, viewportId }) => {
+      if (!viewportId) {
+        const { activeViewportId } = viewportGridService.getState();
+        viewportId = activeViewportId;
       }
+
+      const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
 
       toolGroup.setToolConfiguration(
         ReferenceLinesTool.toolName,
@@ -610,36 +576,9 @@ function commandsModule({
         },
         true // overwrite
       );
-      toolGroup.setToolEnabled(ReferenceLinesTool.toolName);
     },
-    storePresentation: ({ viewportIndex }) => {
-      const presentation = cornerstoneViewportService.getPresentation(
-        viewportIndex
-      );
-      if (!presentation || !presentation.presentationIds) {
-        return;
-      }
-      const {
-        lutPresentationStore,
-        positionPresentationStore,
-      } = stateSyncService.getState();
-      const { presentationIds } = presentation;
-      const { lutPresentationId, positionPresentationId } =
-        presentationIds || {};
-      const storeState = {};
-      if (lutPresentationId) {
-        storeState.lutPresentationStore = {
-          ...lutPresentationStore,
-          [lutPresentationId]: presentation,
-        };
-      }
-      if (positionPresentationId) {
-        storeState.positionPresentationStore = {
-          ...positionPresentationStore,
-          [positionPresentationId]: presentation,
-        };
-      }
-      stateSyncService.store(storeState);
+    storePresentation: ({ viewportId }) => {
+      cornerstoneViewportService.storePresentation({ viewportId });
     },
   };
 
@@ -696,10 +635,11 @@ function commandsModule({
       options: { rotation: -90 },
     },
     incrementActiveViewport: {
-      commandFn: actions.incrementActiveViewport,
+      commandFn: actions.changeActiveViewport,
     },
     decrementActiveViewport: {
-      commandFn: actions.decrementActiveViewport,
+      commandFn: actions.changeActiveViewport,
+      options: { direction: -1 },
     },
     flipViewportHorizontal: {
       commandFn: actions.flipViewportHorizontal,
@@ -762,13 +702,17 @@ function commandsModule({
     toggleStackImageSync: {
       commandFn: actions.toggleStackImageSync,
     },
-    toggleReferenceLines: {
-      commandFn: actions.toggleReferenceLines,
+    setSourceViewportForReferenceLinesTool: {
+      commandFn: actions.setSourceViewportForReferenceLinesTool,
     },
     storePresentation: {
       commandFn: actions.storePresentation,
-      storeContexts: [],
-      options: {},
+    },
+    setToolbarToggled: {
+      commandFn: actions.setToolbarToggled,
+    },
+    cleanUpCrosshairs: {
+      commandFn: actions.cleanUpCrosshairs,
     },
   };
 

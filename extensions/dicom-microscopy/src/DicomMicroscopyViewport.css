@@ -62,7 +62,8 @@
   font-size: 10px;
   z-index: 11;
   color: var(--ol-foreground-color);
-  text-shadow: -1.5px 0 var(--ol-partial-background-color),
+  text-shadow:
+    -1.5px 0 var(--ol-partial-background-color),
     0 1.5px var(--ol-partial-background-color),
     1.5px 0 var(--ol-partial-background-color),
     0 -1.5px var(--ol-partial-background-color);
@@ -74,7 +75,8 @@
   text-align: center;
   bottom: 25px;
   color: var(--ol-foreground-color);
-  text-shadow: -1.5px 0 var(--ol-partial-background-color),
+  text-shadow:
+    -1.5px 0 var(--ol-partial-background-color),
     0 1.5px var(--ol-partial-background-color),
     1.5px 0 var(--ol-partial-background-color),
     0 -1.5px var(--ol-partial-background-color);
@@ -147,13 +149,17 @@
 .DicomMicroscopyViewer .ol-rotate {
   top: 0.5em;
   right: 0.5em;
-  transition: opacity 0.25s linear, visibility 0s linear;
+  transition:
+    opacity 0.25s linear,
+    visibility 0s linear;
 }
 
 .DicomMicroscopyViewer .ol-rotate.ol-hidden {
   opacity: 0;
   visibility: hidden;
-  transition: opacity 0.25s linear, visibility 0s linear 0.25s;
+  transition:
+    opacity 0.25s linear,
+    visibility 0s linear 0.25s;
 }
 
 .DicomMicroscopyViewer .ol-zoom-extent {

@@ -14,13 +14,6 @@ const DICOMWeb = {
   getString,
 };
 
-export {
-  getAttribute,
-  getAuthorizationHeader,
-  getModalities,
-  getName,
-  getNumber,
-  getString,
-};
+export { getAttribute, getAuthorizationHeader, getModalities, getName, getNumber, getString };
 
 export default DICOMWeb;

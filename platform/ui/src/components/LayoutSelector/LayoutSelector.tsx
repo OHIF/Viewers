@@ -24,7 +24,7 @@ function LayoutSelector({ onSelection, rows, columns }) {
       className="p-2"
     >
       {Array.apply(null, Array(rows * columns))
-        .map(function(_, i) {
+        .map(function (_, i) {
           return i;
         })
         .map(index => (
@@ -34,6 +34,7 @@ function LayoutSelector({ onSelection, rows, columns }) {
               border: '1px solid white',
               backgroundColor: isHovered(index) ? '#5acce6' : '#0b1a42',
             }}
+            data-cy={`Layout-${index % columns}-${Math.floor(index / columns)}`}
             className="cursor-pointer"
             onClick={() => {
               const x = index % columns;

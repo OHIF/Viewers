@@ -28,9 +28,7 @@ export default async function addExtensions(ohifExtensions) {
         extensonsString += ` ${packageName}@${version}`;
       });
 
-      console.log(
-        `${chalk.green.bold(`Extensions added:${extensonsString}`)} `
-      );
+      console.log(`${chalk.green.bold(`Extensions added:${extensonsString}`)} `);
     })
     .catch(error => {
       console.log(error.message);

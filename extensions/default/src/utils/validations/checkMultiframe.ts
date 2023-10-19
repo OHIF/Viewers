@@ -10,14 +10,9 @@ import { DisplaySetMessage, DisplaySetMessageList } from '@ohif/core';
  * @param {*} multiFrameInstance
  * @param {*} warnings
  */
-export default function checkMultiFrame(
-  multiFrameInstance,
-  messages: DisplaySetMessageList
-): void {
+export default function checkMultiFrame(multiFrameInstance, messages: DisplaySetMessageList): void {
   if (!hasPixelMeasurements(multiFrameInstance)) {
-    messages.addMessage(
-      DisplaySetMessage.CODES.MULTIFRAME_NO_PIXEL_MEASUREMENTS
-    );
+    messages.addMessage(DisplaySetMessage.CODES.MULTIFRAME_NO_PIXEL_MEASUREMENTS);
   }
 
   if (!hasOrientation(multiFrameInstance)) {
@@ -25,8 +20,6 @@ export default function checkMultiFrame(
   }
 
   if (!hasPosition(multiFrameInstance)) {
-    messages.addMessage(
-      DisplaySetMessage.CODES.MULTIFRAME_NO_POSITION_INFORMATION
-    );
+    messages.addMessage(DisplaySetMessage.CODES.MULTIFRAME_NO_POSITION_INFORMATION);
   }
 }

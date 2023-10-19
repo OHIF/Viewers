@@ -119,18 +119,18 @@ function createDicomJSONApi(dicomJsonConfig) {
           });
         },
         processResults: () => {
-          console.debug(' DICOMJson QUERY processResults');
+          console.warn(' DICOMJson QUERY processResults not implemented');
         },
       },
       series: {
         // mapParams: mapParams.bind(),
         search: () => {
-          console.debug(' DICOMJson QUERY SERIES SEARCH');
+          console.warn(' DICOMJson QUERY SERIES SEARCH not implemented');
         },
       },
       instances: {
         search: () => {
-          console.debug(' DICOMJson QUERY instances SEARCH');
+          console.warn(' DICOMJson QUERY instances SEARCH not implemented');
         },
       },
     },
@@ -152,15 +152,9 @@ function createDicomJSONApi(dicomJsonConfig) {
         return getDirectURL(wadoRoot, params);
       },
       series: {
-        metadata: ({
-          StudyInstanceUID,
-          madeInClient = false,
-          customSort,
-        } = {}) => {
+        metadata: async ({ StudyInstanceUID, madeInClient = false, customSort } = {}) => {
           if (!StudyInstanceUID) {
-            throw new Error(
-              'Unable to query for SeriesMetadata without StudyInstanceUID'
-            );
+            throw new Error('Unable to query for SeriesMetadata without StudyInstanceUID');
           }
 
           const study = findStudies('StudyInstanceUID', StudyInstanceUID)[0];
@@ -186,16 +180,10 @@ function createDicomJSONApi(dicomJsonConfig) {
             DicomMetadataStore.addInstances(naturalizedInstances, madeInClient);
           }
 
-          DicomMetadataStore.addSeriesMetadata(
-            seriesSummaryMetadata,
-            madeInClient
-          );
+          DicomMetadataStore.addSeriesMetadata(seriesSummaryMetadata, madeInClient);
 
           function setSuccessFlag() {
-            const study = DicomMetadataStore.getStudy(
-              StudyInstanceUID,
-              madeInClient
-            );
+            const study = DicomMetadataStore.getStudy(StudyInstanceUID, madeInClient);
             study.isLoaded = true;
           }
 
@@ -223,7 +211,7 @@ function createDicomJSONApi(dicomJsonConfig) {
     },
     store: {
       dicom: () => {
-        console.debug(' DICOMJson store dicom');
+        console.warn(' DICOMJson store dicom not implemented');
       },
     },
     getImageIdsForDisplaySet(displaySet) {

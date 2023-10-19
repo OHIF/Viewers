@@ -10,7 +10,7 @@ const Footer = ({ actions, className, onSubmit, value }) => {
 
   return (
     <div className={classNames(flex, padding, className)}>
-      {actions.map((action, index) => {
+      {actions?.map((action, index) => {
         const isFirst = index === 0;
 
         const onClickHandler = event => onSubmit({ action, value, event });
@@ -41,10 +41,7 @@ Footer.propTypes = {
       id: PropTypes.string.isRequired,
       text: PropTypes.string.isRequired,
       value: PropTypes.any,
-      type: PropTypes.oneOf([
-        ButtonEnums.type.primary,
-        ButtonEnums.type.secondary,
-      ]).isRequired,
+      type: PropTypes.oneOf([ButtonEnums.type.primary, ButtonEnums.type.secondary]).isRequired,
       classes: PropTypes.arrayOf(PropTypes.string),
     })
   ).isRequired,

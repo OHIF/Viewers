@@ -13,17 +13,11 @@ const metadataProvider = classes.MetadataProvider;
 export default function init({ servicesManager, configuration = {} }): void {
   const { stateSyncService } = servicesManager.services;
   // Add
-  DicomMetadataStore.subscribe(
-    DicomMetadataStore.EVENTS.INSTANCES_ADDED,
-    handlePETImageMetadata
-  );
+  DicomMetadataStore.subscribe(DicomMetadataStore.EVENTS.INSTANCES_ADDED, handlePETImageMetadata);
 
   // If the metadata for PET has changed by the user (e.g. manually changing the PatientWeight)
   // we need to recalculate the SUV Scaling Factors
-  DicomMetadataStore.subscribe(
-    DicomMetadataStore.EVENTS.SERIES_UPDATED,
-    handlePETImageMetadata
-  );
+  DicomMetadataStore.subscribe(DicomMetadataStore.EVENTS.SERIES_UPDATED, handlePETImageMetadata);
 
   // viewportGridStore is a sync state which stores the entire
   // ViewportGridService getState, by the keys `<activeStudyUID>:<protocolId>:<stageIndex>`
@@ -55,10 +49,7 @@ export default function init({ servicesManager, configuration = {} }): void {
 }
 
 const handlePETImageMetadata = ({ SeriesInstanceUID, StudyInstanceUID }) => {
-  const { instances } = DicomMetadataStore.getSeries(
-    StudyInstanceUID,
-    SeriesInstanceUID
-  );
+  const { instances } = DicomMetadataStore.getSeries(StudyInstanceUID, SeriesInstanceUID);
 
   const modality = instances[0].Modality;
   if (modality !== 'PT') {
@@ -90,10 +81,6 @@ const handlePETImageMetadata = ({ SeriesInstanceUID, StudyInstanceUID }) => {
   }
 
   instanceMetadataArray.forEach((instanceMetadata, index) => {
-    metadataProvider.addCustomMetadata(
-      imageIds[index],
-      'scalingModule',
-      suvScalingFactors[index]
-    );
+    metadataProvider.addCustomMetadata(imageIds[index], 'scalingModule', suvScalingFactors[index]);
   });
 };

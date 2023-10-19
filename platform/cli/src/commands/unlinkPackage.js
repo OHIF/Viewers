@@ -1,11 +1,7 @@
 import { execa } from 'execa';
 import fs from 'fs';
 import path from 'path';
-import {
-  validateYarn,
-  removeExtensionFromConfig,
-  removeModeFromConfig,
-} from './utils/index.js';
+import { validateYarn, removeExtensionFromConfig, removeModeFromConfig } from './utils/index.js';
 
 const linkPackage = async (packageName, options, removeFromConfig) => {
   const { viewerDirectory } = options;
@@ -19,11 +15,7 @@ const linkPackage = async (packageName, options, removeFromConfig) => {
   const results = await execa(`yarn`, ['unlink', packageName]);
   console.log(results.stdout);
 
-  const webpackPwaPath = path.join(
-    viewerDirectory,
-    '.webpack',
-    'webpack.pwa.js'
-  );
+  const webpackPwaPath = path.join(viewerDirectory, '.webpack', 'webpack.pwa.js');
 
   await removePathFromWebpackConfig(webpackPwaPath, packageName);
 
@@ -58,8 +50,7 @@ async function removePathFromWebpackConfig(webpackConfigPath, packageName) {
     endIndex++;
   }
 
-  const modifiedFileContent =
-    fileContent.slice(0, startIndex) + fileContent.slice(endIndex);
+  const modifiedFileContent = fileContent.slice(0, startIndex) + fileContent.slice(endIndex);
 
   await fs.promises.writeFile(webpackConfigPath, modifiedFileContent);
 }

@@ -1,0 +1,67 @@
+{
+  "name": "@ohif/mode-segmentation",
+  "version": "3.8.0-beta.0",
+  "description": "OHIF segmentation mode which enables labelmap segmentation read/edit/export",
+  "author": "@ohif",
+  "license": "MIT",
+  "main": "dist/umd/@ohif/mode-segmentation/index.umd.js",
+  "files": [
+    "dist/**",
+    "public/**",
+    "README.md"
+  ],
+  "repository": "OHIF/Viewers",
+  "keywords": [
+    "ohif-mode"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "module": "src/index.tsx",
+  "engines": {
+    "node": ">=14",
+    "npm": ">=7",
+    "yarn": ">=1.16.0"
+  },
+  "scripts": {
+    "dev": "cross-env NODE_ENV=development webpack --config .webpack/webpack.dev.js --watch --output-pathinfo",
+    "dev:cornerstone": "yarn run dev",
+    "build": "cross-env NODE_ENV=production webpack --config .webpack/webpack.prod.js",
+    "build:package": "yarn run build",
+    "start": "yarn run dev",
+    "test:unit": "jest --watchAll",
+    "test:unit:ci": "jest --ci --runInBand --collectCoverage --passWithNoTests"
+  },
+  "peerDependencies": {
+    "@ohif/core": "3.8.0-beta.0"
+  },
+  "dependencies": {
+    "@babel/runtime": "^7.20.13"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.21.4",
+    "@babel/plugin-proposal-class-properties": "^7.16.7",
+    "@babel/plugin-proposal-object-rest-spread": "^7.17.3",
+    "@babel/plugin-proposal-private-methods": "^7.18.6",
+    "@babel/plugin-syntax-dynamic-import": "^7.8.3",
+    "@babel/plugin-transform-arrow-functions": "^7.16.7",
+    "@babel/plugin-transform-regenerator": "^7.16.7",
+    "@babel/plugin-transform-runtime": "^7.17.0",
+    "@babel/plugin-transform-typescript": "^7.13.0",
+    "@babel/preset-env": "^7.16.11",
+    "@babel/preset-react": "^7.16.7",
+    "@babel/preset-typescript": "^7.13.0",
+    "babel-eslint": "^8.0.3",
+    "babel-loader": "^8.0.0-beta.4",
+    "babel-plugin-inline-react-svg": "^2.0.1",
+    "clean-webpack-plugin": "^4.0.0",
+    "copy-webpack-plugin": "^10.2.0",
+    "cross-env": "^7.0.3",
+    "dotenv": "^14.1.0",
+    "eslint": "^5.0.1",
+    "eslint-loader": "^2.0.0",
+    "webpack": "^5.50.0",
+    "webpack-cli": "^4.7.2",
+    "webpack-merge": "^5.7.3"
+  }
+}

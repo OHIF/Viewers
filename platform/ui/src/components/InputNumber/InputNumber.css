@@ -2,6 +2,18 @@ input[type='text'] {
   -webkit-appearance: none;
 }
 
+/* For most modern browsers */
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* For Firefox */
+input[type='number'] {
+  -moz-appearance: textfield;
+}
+
 .input-number:focus {
   border: none;
   outline: none;

@@ -33,8 +33,7 @@ const versions = fs.readFileSync('../../version.txt', 'utf8').split('\n');
 
 const isDev = process.env.NODE_ENV === 'development';
 
-const isDeployPreview =
-  process.env.NETLIFY && process.env.CONTEXT === 'deploy-preview';
+const isDeployPreview = process.env.NETLIFY && process.env.CONTEXT === 'deploy-preview';
 
 const baseUrl = process.env.BASE_URL || '/';
 const isBootstrapPreset = process.env.DOCUSAURUS_PRESET === 'bootstrap';
@@ -75,6 +74,19 @@ module.exports = {
   // },
   themes: ['@docusaurus/theme-live-codeblock'],
   plugins: [
+    () => ({
+      name: 'resolve-react',
+      configureWebpack() {
+        return {
+          resolve: {
+            alias: {
+              // assuming root node_modules is up from "./packages/<your-docusaurus>
+              react: path.resolve('../../node_modules/react'),
+            },
+          },
+        };
+      },
+    }),
     path.resolve(__dirname, './pluginOHIFWebpackConfig.js'),
     'plugin-image-zoom', // 3rd party plugin for image click to pop
     [
@@ -258,7 +270,7 @@ module.exports = {
       announcementBar: {
         id: 'healthimaging',
         content:
-          '🚀 AWS has announced the general availability of <a target="_blank" rel="noopener noreferrer" href=" https://aws.amazon.com/about-aws/whats-new/2023/07/general-availability-aws-healthimaging/">HealthImaging!</a> Easily connect your OHIF to it. Learn more <a target="_blank" rel="noopener noreferrer" href="https://github.com/RadicalImaging/ohif-aws-healthimaging">Here!</a>! 🌟',
+          '🚀 The latest version of OHIF, v3.7, has been released. You can find the release notes by following this <a target="_blank" rel="noopener noreferrer" href="https://ohif.org/release-notes/3p7/">Link!</a> 🌟',
       },
       prism: {
         theme: require('prism-react-renderer/themes/github'),

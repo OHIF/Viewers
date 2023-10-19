@@ -6,7 +6,7 @@ const TableCell = ({
   children,
   className,
   colSpan,
-  // ignored because we don't wan't to expose this prop
+  // ignored because we don't want to expose this prop
   // eslint-disable-next-line react/prop-types
   cellsNum,
   isTableHead,
@@ -29,7 +29,7 @@ const TableCell = ({
   return (
     <div
       className={classnames(
-        'px-2 last:border-r-0 break-all',
+        'break-all px-2 last:border-r-0',
         `w-${colSpan}/${cellsNum}`,
         classes.align[align],
         classes.isTableHead[isTableHead],

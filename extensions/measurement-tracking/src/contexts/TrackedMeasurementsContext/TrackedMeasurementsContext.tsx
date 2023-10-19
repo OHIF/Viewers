@@ -3,10 +3,7 @@ import PropTypes from 'prop-types';
 import { Machine } from 'xstate';
 import { useMachine } from '@xstate/react';
 import { useViewportGrid } from '@ohif/ui';
-import {
-  machineConfiguration,
-  defaultOptions,
-} from './measurementTrackingMachine';
+import { machineConfiguration, defaultOptions } from './measurementTrackingMachine';
 import promptBeginTracking from './promptBeginTracking';
 import promptTrackNewSeries from './promptTrackNewSeries';
 import promptTrackNewStudy from './promptTrackNewStudy';
@@ -19,8 +16,7 @@ const TrackedMeasurementsContext = React.createContext();
 TrackedMeasurementsContext.displayName = 'TrackedMeasurementsContext';
 const useTrackedMeasurements = () => useContext(TrackedMeasurementsContext);
 
-const SR_SOPCLASSHANDLERID =
-  '@ohif/extension-cornerstone-dicom-sr.sopClassHandlerModule.dicom-sr';
+const SR_SOPCLASSHANDLERID = '@ohif/extension-cornerstone-dicom-sr.sopClassHandlerModule.dicom-sr';
 
 /**
  *
@@ -33,36 +29,29 @@ function TrackedMeasurementsContextProvider(
   const [appConfig] = useAppConfig();
 
   const [viewportGrid, viewportGridService] = useViewportGrid();
-  const { activeViewportIndex, viewports } = viewportGrid;
+  const { activeViewportId, viewports } = viewportGrid;
   const { measurementService, displaySetService } = servicesManager.services;
 
   const machineOptions = Object.assign({}, defaultOptions);
   machineOptions.actions = Object.assign({}, machineOptions.actions, {
     jumpToFirstMeasurementInActiveViewport: (ctx, evt) => {
-      const { trackedStudy, trackedSeries } = ctx;
+      const { trackedStudy, trackedSeries, activeViewportId } = ctx;
       const measurements = measurementService.getMeasurements();
       const trackedMeasurements = measurements.filter(
-        m =>
-          trackedStudy === m.referenceStudyUID &&
-          trackedSeries.includes(m.referenceSeriesUID)
+        m => trackedStudy === m.referenceStudyUID && trackedSeries.includes(m.referenceSeriesUID)
       );
 
       console.log(
         'jumping to measurement reset viewport',
-        viewportGrid.activeViewportIndex,
+        activeViewportId,
         trackedMeasurements[0]
       );
 
-      const referencedDisplaySetUID =
-        trackedMeasurements[0].displaySetInstanceUID;
-      const referencedDisplaySet = displaySetService.getDisplaySetByUID(
-        referencedDisplaySetUID
-      );
+      const referencedDisplaySetUID = trackedMeasurements[0].displaySetInstanceUID;
+      const referencedDisplaySet = displaySetService.getDisplaySetByUID(referencedDisplaySetUID);
 
       const referencedImages = referencedDisplaySet.images;
-      const isVolumeIdReferenced = referencedImages[0].imageId.startsWith(
-        'volumeId'
-      );
+      const isVolumeIdReferenced = referencedImages[0].imageId.startsWith('volumeId');
 
       const measurementData = trackedMeasurements[0].data;
 
@@ -76,15 +65,13 @@ function TrackedMeasurementsContextProvider(
         });
 
         if (imageIndex === -1) {
-          console.warn(
-            'Could not find image index for tracked measurement, using 0'
-          );
+          console.warn('Could not find image index for tracked measurement, using 0');
           imageIndex = 0;
         }
       }
 
       viewportGridService.setDisplaySetsForViewport({
-        viewportIndex: viewportGrid.activeViewportIndex,
+        viewportId: activeViewportId,
         displaySetInstanceUIDs: [referencedDisplaySetUID],
         viewportOptions: {
           initialImageOptions: {
@@ -95,11 +82,10 @@ function TrackedMeasurementsContextProvider(
     },
     showStructuredReportDisplaySetInActiveViewport: (ctx, evt) => {
       if (evt.data.createdDisplaySetInstanceUIDs.length > 0) {
-        const StructuredReportDisplaySetInstanceUID =
-          evt.data.createdDisplaySetInstanceUIDs[0].displaySetInstanceUID;
+        const StructuredReportDisplaySetInstanceUID = evt.data.createdDisplaySetInstanceUIDs[0];
 
         viewportGridService.setDisplaySetsForViewport({
-          viewportIndex: evt.data.viewportIndex,
+          viewportId: evt.data.viewportId,
           displaySetInstanceUIDs: [StructuredReportDisplaySetInstanceUID],
         });
       }
@@ -167,21 +153,23 @@ function TrackedMeasurementsContextProvider(
   // - Fix viewport border resize
   // - created/destroyed hooks for extensions (cornerstone measurement subscriptions in it's `init`)
 
-  const measurementTrackingMachine = Machine(
-    machineConfiguration,
-    machineOptions
+  const measurementTrackingMachine = Machine(machineConfiguration, machineOptions);
+
+  const [trackedMeasurements, sendTrackedMeasurementsEvent] = useMachine(
+    measurementTrackingMachine
   );
 
-  const [
-    trackedMeasurements,
-    sendTrackedMeasurementsEvent,
-    trackedMeasurementsService,
-  ] = useMachine(measurementTrackingMachine);
+  useEffect(() => {
+    // Update the state machine with the active viewport ID
+    sendTrackedMeasurementsEvent('UPDATE_ACTIVE_VIEWPORT_ID', {
+      activeViewportId,
+    });
+  }, [activeViewportId, sendTrackedMeasurementsEvent]);
 
   // ~~ Listen for changes to ViewportGrid for potential SRs hung in panes when idle
   useEffect(() => {
-    if (viewports.length > 0) {
-      const activeViewport = viewports[activeViewportIndex];
+    if (viewports.size > 0) {
+      const activeViewport = viewports.get(activeViewportId);
 
       if (!activeViewport || !activeViewport?.displaySetInstanceUIDs?.length) {
         return;
@@ -229,16 +217,11 @@ function TrackedMeasurementsContextProvider(
         sendTrackedMeasurementsEvent('PROMPT_HYDRATE_SR', {
           displaySetInstanceUID: displaySet.displaySetInstanceUID,
           SeriesInstanceUID: displaySet.SeriesInstanceUID,
-          viewportIndex: activeViewportIndex,
+          viewportId: activeViewportId,
         });
       }
     }
-  }, [
-    activeViewportIndex,
-    sendTrackedMeasurementsEvent,
-    servicesManager.services,
-    viewports,
-  ]);
+  }, [activeViewportId, sendTrackedMeasurementsEvent, servicesManager.services, viewports]);
 
   return (
     <TrackedMeasurementsContext.Provider
@@ -257,8 +240,4 @@ TrackedMeasurementsContextProvider.propTypes = {
   appConfig: PropTypes.object,
 };
 
-export {
-  TrackedMeasurementsContext,
-  TrackedMeasurementsContextProvider,
-  useTrackedMeasurements,
-};
+export { TrackedMeasurementsContext, TrackedMeasurementsContextProvider, useTrackedMeasurements };

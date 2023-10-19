@@ -13,11 +13,7 @@ const Table = ({ children, className, fullWidth, style }) => {
 
   return (
     <div
-      className={classnames(
-        classes.base,
-        classes.fullWidth[fullWidth],
-        className
-      )}
+      className={classnames(classes.base, classes.fullWidth[fullWidth], className)}
       style={style}
     >
       {children}

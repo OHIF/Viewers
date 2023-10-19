@@ -25,23 +25,11 @@ const DISPLAY_STUDY_SUMMARY_INITIAL_VALUE = {
 };
 
 function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
-  const [viewportGrid, viewportGridService] = useViewportGrid();
-  const [measurementChangeTimestamp, setMeasurementsUpdated] = useState(
-    Date.now().toString()
-  );
-  const debouncedMeasurementChangeTimestamp = useDebounce(
-    measurementChangeTimestamp,
-    200
-  );
-  const {
-    measurementService,
-    uiDialogService,
-    displaySetService,
-  } = servicesManager.services;
-  const [
-    trackedMeasurements,
-    sendTrackedMeasurementsEvent,
-  ] = useTrackedMeasurements();
+  const [viewportGrid] = useViewportGrid();
+  const [measurementChangeTimestamp, setMeasurementsUpdated] = useState(Date.now().toString());
+  const debouncedMeasurementChangeTimestamp = useDebounce(measurementChangeTimestamp, 200);
+  const { measurementService, uiDialogService, displaySetService } = servicesManager.services;
+  const [trackedMeasurements, sendTrackedMeasurementsEvent] = useTrackedMeasurements();
   const { trackedStudy, trackedSeries } = trackedMeasurements.context;
   const [displayStudySummary, setDisplayStudySummary] = useState(
     DISPLAY_STUDY_SUMMARY_INITIAL_VALUE
@@ -52,26 +40,15 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
   useEffect(() => {
     const measurements = measurementService.getMeasurements();
     const filteredMeasurements = measurements.filter(
-      m =>
-        trackedStudy === m.referenceStudyUID &&
-        trackedSeries.includes(m.referenceSeriesUID)
+      m => trackedStudy === m.referenceStudyUID && trackedSeries.includes(m.referenceSeriesUID)
     );
 
     const mappedMeasurements = filteredMeasurements.map(m =>
-      _mapMeasurementToDisplay(
-        m,
-        measurementService.VALUE_TYPES,
-        displaySetService
-      )
+      _mapMeasurementToDisplay(m, measurementService.VALUE_TYPES, displaySetService)
     );
     setDisplayMeasurements(mappedMeasurements);
     // eslint-ignore-next-line
-  }, [
-    measurementService,
-    trackedStudy,
-    trackedSeries,
-    debouncedMeasurementChangeTimestamp,
-  ]);
+  }, [measurementService, trackedStudy, trackedSeries, debouncedMeasurementChangeTimestamp]);
 
   const updateDisplayStudySummary = async () => {
     if (trackedMeasurements.matches('tracking')) {
@@ -104,12 +81,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
   // ~~ DisplayStudySummary
   useEffect(() => {
     updateDisplayStudySummary();
-  }, [
-    displayStudySummary.key,
-    trackedMeasurements,
-    trackedStudy,
-    updateDisplayStudySummary,
-  ]);
+  }, [displayStudySummary.key, trackedMeasurements, trackedStudy, updateDisplayStudySummary]);
 
   // TODO: Better way to consolidated, debounce, check on change?
   // Are we exposing the right API for measurementService?
@@ -130,8 +102,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
           setMeasurementsUpdated(Date.now().toString());
           if (evt === added) {
             debounce(() => {
-              measurementsPanelRef.current.scrollTop =
-                measurementsPanelRef.current.scrollHeight;
+              measurementsPanelRef.current.scrollTop = measurementsPanelRef.current.scrollHeight;
             }, 300)();
           }
         }).unsubscribe
@@ -148,16 +119,14 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
   async function exportReport() {
     const measurements = measurementService.getMeasurements();
     const trackedMeasurements = measurements.filter(
-      m =>
-        trackedStudy === m.referenceStudyUID &&
-        trackedSeries.includes(m.referenceSeriesUID)
+      m => trackedStudy === m.referenceStudyUID && trackedSeries.includes(m.referenceSeriesUID)
     );
 
     downloadCSVReport(trackedMeasurements, measurementService);
   }
 
   const jumpToImage = ({ uid, isActive }) => {
-    measurementService.jumpToMeasurement(viewportGrid.activeViewportIndex, uid);
+    measurementService.jumpToMeasurement(viewportGrid.activeViewportId, uid);
 
     onMeasurementItemClickHandler({ uid, isActive });
   };
@@ -209,7 +178,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
               labelClassName="text-white grow text-[14px] leading-[1.2]"
               autoFocus
               id="annotation"
-              className="bg-black border-primary-main"
+              className="border-primary-main bg-black"
               type="text"
               value={value.label}
               onChange={onChangeHandler}
@@ -247,7 +216,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
   return (
     <>
       <div
-        className="overflow-x-hidden overflow-y-auto invisible-scrollbar"
+        className="invisible-scrollbar overflow-y-auto overflow-x-hidden"
         ref={measurementsPanelRef}
         data-cy={'trackedMeasurements-panel'}
       >
@@ -280,13 +249,12 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
           onExportClick={exportReport}
           onCreateReportClick={() => {
             sendTrackedMeasurementsEvent('SAVE_REPORT', {
-              viewportIndex: viewportGrid.activeViewportIndex,
+              viewportId: viewportGrid.activeViewportId,
               isBackupSave: true,
             });
           }}
           disabled={
-            additionalFindings.length === 0 &&
-            displayMeasurementsWithoutFindings.length === 0
+            additionalFindings.length === 0 && displayMeasurementsWithoutFindings.length === 0
           }
         />
       </div>
@@ -318,14 +286,10 @@ function _mapMeasurementToDisplay(measurement, types, displaySetService) {
     SOPInstanceUID
   );
 
-  const displaySets = displaySetService.getDisplaySetsForSeries(
-    referenceSeriesUID
-  );
+  const displaySets = displaySetService.getDisplaySetsForSeries(referenceSeriesUID);
 
   if (!displaySets[0] || !displaySets[0].images) {
-    throw new Error(
-      'The tracked measurements panel should only be tracking "stack" displaySets.'
-    );
+    throw new Error('The tracked measurements panel should only be tracking "stack" displaySets.');
   }
 
   const {

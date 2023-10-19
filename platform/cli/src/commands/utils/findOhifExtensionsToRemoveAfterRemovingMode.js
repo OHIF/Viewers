@@ -1,9 +1,7 @@
 import { readPluginConfigFile } from './private/index.js';
 import getYarnInfo from './getYarnInfo.js';
 
-export default async function findOhifExtensionsToRemoveAfterRemovingMode(
-  removedModeYarnInfo
-) {
+export default async function findOhifExtensionsToRemoveAfterRemovingMode(removedModeYarnInfo) {
   const pluginConfig = readPluginConfigFile();
 
   if (!pluginConfig) {
@@ -13,27 +11,21 @@ export default async function findOhifExtensionsToRemoveAfterRemovingMode(
 
   const { modes, extensions } = pluginConfig;
 
-  const registeredExtensions = extensions.map(
-    extension => extension.packageName
-  );
+  const registeredExtensions = extensions.map(extension => extension.packageName);
   // TODO this is not a function
-  const ohifExtensionsOfMode = Object.keys(
-    removedModeYarnInfo.peerDependencies
-  ).filter(peerDependency => registeredExtensions.includes(peerDependency));
-
-  const ohifExtensionsUsedInOtherModes = ohifExtensionsOfMode.map(
-    packageName => {
-      return {
-        packageName,
-        used: false,
-      };
-    }
+  const ohifExtensionsOfMode = Object.keys(removedModeYarnInfo.peerDependencies).filter(
+    peerDependency => registeredExtensions.includes(peerDependency)
   );
+
+  const ohifExtensionsUsedInOtherModes = ohifExtensionsOfMode.map(packageName => {
+    return {
+      packageName,
+      used: false,
+    };
+  });
 
   // Check if other modes use each extension used by this mode
-  const otherModes = modes.filter(
-    mode => mode.packageName !== removedModeYarnInfo.name
-  );
+  const otherModes = modes.filter(mode => mode.packageName !== removedModeYarnInfo.name);
 
   for (let i = 0; i < otherModes.length; i++) {
     const mode = otherModes[i];

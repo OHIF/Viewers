@@ -28,11 +28,7 @@ const createPackage = async options => {
       {
         title: 'Copying template files',
         task: () =>
-          createDirectoryContents(
-            options.templateDir,
-            options.targetDir,
-            options.prettier
-          ),
+          createDirectoryContents(options.templateDir, options.targetDir, options.prettier),
       },
       {
         title: 'Editing Package.json with provided information',
@@ -59,36 +55,20 @@ const createPackage = async options => {
 
   await tasks.run();
   console.log();
-  console.log(
-    chalk.green(`Done: ${packageType} is ready at`, options.targetDir)
-  );
+  console.log(chalk.green(`Done: ${packageType} is ready at`, options.targetDir));
   console.log();
 
-  console.log(
-    chalk.green(`NOTE: In order to use this ${packageType} for development,`)
-  );
-  console.log(
-    chalk.green(
-      `run the following command inside the root of the OHIF monorepo`
-    )
-  );
+  console.log(chalk.green(`NOTE: In order to use this ${packageType} for development,`));
+  console.log(chalk.green(`run the following command inside the root of the OHIF monorepo`));
 
   console.log();
-  console.log(
-    chalk.green.bold(
-      `    yarn run cli link-${packageType} ${options.targetDir}`
-    )
-  );
+  console.log(chalk.green.bold(`    yarn run cli link-${packageType} ${options.targetDir}`));
   console.log();
   console.log(
-    chalk.yellow(
-      "and when you don't need it anymore, run the following command to unlink it"
-    )
+    chalk.yellow("and when you don't need it anymore, run the following command to unlink it")
   );
   console.log();
-  console.log(
-    chalk.yellow(`    yarn run cli unlink-${packageType} ${options.name}`)
-  );
+  console.log(chalk.yellow(`    yarn run cli unlink-${packageType} ${options.name}`));
   console.log();
 
   return true;

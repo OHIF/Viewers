@@ -10,10 +10,7 @@ const findConflictingCommand = (hotkeys, currentCommandName, pressedKeys) => {
     const toolHotkeys = hotkeys[commandName].keys;
     const formatedToolHotkeys = formatPressedKeys(toolHotkeys);
 
-    if (
-      formatedPressedHotkeys === formatedToolHotkeys &&
-      commandName !== currentCommandName
-    ) {
+    if (formatedPressedHotkeys === formatedToolHotkeys && commandName !== currentCommandName) {
       firstConflictingCommand = hotkeys[commandName];
       break;
     }
@@ -23,8 +20,7 @@ const findConflictingCommand = (hotkeys, currentCommandName, pressedKeys) => {
 };
 
 const ERROR_MESSAGES = {
-  MODIFIER:
-    "It's not possible to define only modifier keys (ctrl, alt and shift) as a shortcut",
+  MODIFIER: "It's not possible to define only modifier keys (ctrl, alt and shift) as a shortcut",
   EMPTY: "Field can't be empty.",
 };
 
@@ -46,11 +42,7 @@ const emptyValidator = ({ pressedKeys = [] }) => {
 };
 
 const conflictingValidator = ({ commandName, pressedKeys, hotkeys }) => {
-  const conflictingCommand = findConflictingCommand(
-    hotkeys,
-    commandName,
-    pressedKeys
-  );
+  const conflictingCommand = findConflictingCommand(hotkeys, commandName, pressedKeys);
 
   if (conflictingCommand) {
     return {
@@ -61,9 +53,7 @@ const conflictingValidator = ({ commandName, pressedKeys, hotkeys }) => {
 
 const disallowedValidator = ({ pressedKeys = [] }) => {
   const lastPressedKey = pressedKeys[pressedKeys.length - 1];
-  const modifierCommand = formatPressedKeys(
-    pressedKeys.slice(0, pressedKeys.length - 1)
-  );
+  const modifierCommand = formatPressedKeys(pressedKeys.slice(0, pressedKeys.length - 1));
 
   const disallowedCombination = DISALLOWED_COMBINATIONS[modifierCommand];
   const hasDisallowedCombinations = disallowedCombination
@@ -72,9 +62,7 @@ const disallowedValidator = ({ pressedKeys = [] }) => {
 
   if (hasDisallowedCombinations) {
     return {
-      error: `"${formatPressedKeys(
-        pressedKeys
-      )}" shortcut combination is not allowed`,
+      error: `"${formatPressedKeys(pressedKeys)}" shortcut combination is not allowed`,
     };
   }
 };

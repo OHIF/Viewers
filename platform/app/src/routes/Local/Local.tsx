@@ -12,7 +12,10 @@ import { Icon, Button, LoadingIndicatorProgress } from '@ohif/ui';
 
 const getLoadButton = (onDrop, text, isDir) => {
   return (
-    <Dropzone onDrop={onDrop} noDrag>
+    <Dropzone
+      onDrop={onDrop}
+      noDrag
+    >
       {({ getRootProps, getInputProps }) => (
         <div {...getRootProps()}>
           <Button
@@ -80,9 +83,7 @@ function Local({ modePath }: LocalProps) {
       const smStudies = studies.filter(id => {
         const study = DicomMetadataStore.getStudy(id);
         return (
-          study.series.findIndex(
-            s => s.Modality === 'SM' || s.instances[0].Modality === 'SM'
-          ) >= 0
+          study.series.findIndex(s => s.Modality === 'SM' || s.instances[0].Modality === 'SM') >= 0
         );
       });
 
@@ -118,31 +119,32 @@ function Local({ modePath }: LocalProps) {
       noClick
     >
       {({ getRootProps }) => (
-        <div {...getRootProps()} style={{ width: '100%', height: '100%' }}>
-          <div className="h-screen w-screen flex justify-center items-center ">
-            <div className="py-8 px-8 mx-auto bg-secondary-dark drop-shadow-md space-y-2 rounded-lg">
+        <div
+          {...getRootProps()}
+          style={{ width: '100%', height: '100%' }}
+        >
+          <div className="flex h-screen w-screen items-center justify-center ">
+            <div className="bg-secondary-dark mx-auto space-y-2 rounded-lg py-8 px-8 drop-shadow-md">
               <img
-                className="block mx-auto h-14"
+                className="mx-auto block h-14"
                 src="./ohif-logo.svg"
                 alt="OHIF"
               />
-              <div className="text-center space-y-2 pt-4">
+              <div className="space-y-2 pt-4 text-center">
                 {dropInitiated ? (
                   <div className="flex flex-col items-center justify-center pt-48">
-                    <LoadingIndicatorProgress
-                      className={'w-full h-full bg-black'}
-                    />
+                    <LoadingIndicatorProgress className={'h-full w-full bg-black'} />
                   </div>
                 ) : (
                   <div className="space-y-2">
-                    <p className="text-blue-300 text-base">
-                      Note: You data is not uploaded to any server, it will stay
-                      in your local browser application
+                    <p className="text-base text-blue-300">
+                      Note: You data is not uploaded to any server, it will stay in your local
+                      browser application
                     </p>
-                    <p className="text-xg text-primary-active font-semibold pt-6">
+                    <p className="text-xg text-primary-active pt-6 font-semibold">
                       Drag and Drop DICOM files here to load them in the Viewer
                     </p>
-                    <p className="text-blue-300 text-lg">Or click to </p>
+                    <p className="text-lg text-blue-300">Or click to </p>
                   </div>
                 )}
               </div>

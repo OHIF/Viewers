@@ -30,7 +30,7 @@ export default defineConfig({
     responseTimeout: 10000,
     specPattern: 'cypress/integration/**/*.spec.[jt]s',
     projectId: '4oe38f',
-    video: false,
+    video: true,
     reporter: 'junit',
     reporterOptions: {
       mochaFile: 'cypress/results/test-output.xml',

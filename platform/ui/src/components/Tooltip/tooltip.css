@@ -4,7 +4,7 @@
 
 /* TOOLTIP WORKAROUND FOR ARROW UP */
 .tooltip.tooltip-bottom .tooltip-box::before {
-  @apply absolute z-10 bg-primary-dark;
+  @apply bg-primary-dark absolute z-10;
   content: '';
   width: 14px;
   height: 1px;
@@ -14,7 +14,7 @@
 }
 
 .tooltip.tooltip-top .tooltip-box::before {
-  @apply absolute z-10 bg-primary-dark;
+  @apply bg-primary-dark absolute z-10;
   content: '';
   width: 14px;
   height: 1px;
@@ -24,25 +24,25 @@
 }
 
 .tooltip.tooltip-bottom {
-  @apply pt-2 mt-1;
+  @apply mt-1 pt-2;
   left: 50%;
   transform: translateX(-50%);
 }
 
 .tooltip.tooltip-top {
-  @apply pb-2 mb-1;
+  @apply mb-1 pb-2;
   left: 50%;
   transform: translateX(-50%);
   bottom: 100%;
 }
 
 .tooltip.tooltip-bottom-left {
-  @apply pt-2 mt-1;
+  @apply mt-1 pt-2;
   left: 0;
 }
 
 .tooltip.tooltip-bottom-right {
-  @apply pt-2 mt-1;
+  @apply mt-1 pt-2;
   right: 0;
 }
 
@@ -61,7 +61,7 @@
 }
 
 .tooltip.tooltip-right .tooltip-box::before {
-  @apply absolute z-10 bg-primary-dark;
+  @apply bg-primary-dark absolute z-10;
   content: '';
   width: 2px;
   height: 15px;
@@ -71,7 +71,7 @@
 }
 
 .tooltip.tooltip-left .tooltip-box::before {
-  @apply absolute z-10 bg-primary-dark;
+  @apply bg-primary-dark absolute z-10;
   content: '';
   width: 2px;
   height: 15px;
@@ -81,7 +81,7 @@
 }
 
 .tooltip.tooltip-bottom-right .tooltip-box::before {
-  @apply absolute z-10 bg-primary-dark;
+  @apply bg-primary-dark absolute z-10;
   content: '';
   width: 15px;
   height: 2px;
@@ -90,7 +90,7 @@
 }
 
 .tooltip.tooltip-bottom-left .tooltip-box::before {
-  @apply absolute z-10 bg-primary-dark;
+  @apply bg-primary-dark absolute z-10;
   content: '';
   width: 15px;
   height: 2px;

@@ -1,7 +1,7 @@
 import { ViewportGridService } from '../services';
 
 /**
- * Subscribes to the very next LAYOUT_CHANGED or GRID_STATE_CHANGED event that
+ * Subscribes to the very next LAYOUT_CHANGED event that
  * is not currently on the event queue. The subscriptions are made on a 'zero'
  * timeout so as to avoid responding to any of those events currently on the event queue.
  * The subscription persists only for a single invocation of either event.
@@ -20,14 +20,7 @@ function subscribeToNextViewportGridChange(
     };
 
     const subscriptions = [
-      viewportGridService.subscribe(
-        viewportGridService.EVENTS.LAYOUT_CHANGED,
-        callback
-      ),
-      viewportGridService.subscribe(
-        viewportGridService.EVENTS.GRID_STATE_CHANGED,
-        callback
-      ),
+      viewportGridService.subscribe(viewportGridService.EVENTS.LAYOUT_CHANGED, callback),
     ];
   };
 

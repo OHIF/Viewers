@@ -1,4 +1,4 @@
-module.exports = function(context, options) {
+module.exports = function (context, options) {
   return {
     name: 'plugin-ohif-webpack-config',
     configureWebpack(config, isServer, utils) {

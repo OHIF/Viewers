@@ -27,17 +27,8 @@ const ViewportActionBar = ({
   getStatusComponent,
 }: ViewportActionBarProps): JSX.Element => {
   const { label, studyDate, seriesDescription, patientInformation } = studyData;
-
-  const {
-    patientName,
-    patientSex,
-    patientAge,
-    MRN,
-    thickness,
-    thicknessUnits,
-    spacing,
-    scanner,
-  } = patientInformation;
+  const { patientName, patientSex, patientAge, MRN, thickness, thicknessUnits, spacing, scanner } =
+    patientInformation;
 
   // The minimum width that the viewport must be to show the next/prev arrows.
   const arrowsPresentViewportMinWidth = 300;
@@ -51,8 +42,7 @@ const ViewportActionBar = ({
 
   const separatorClasses = 'border-l py-2 mx-2 border-secondary-light';
   const textEllipsisClasses = 'overflow-hidden shrink text-ellipsis';
-  const arrowClasses =
-    'cursor-pointer shrink-0 mr-2 text-white hover:text-primary-light';
+  const arrowClasses = 'cursor-pointer shrink-0 mr-2 text-white hover:text-primary-light';
 
   const componentRootElemRef = (elem: HTMLElement) => {
     setComponentRootElem(elem);
@@ -74,10 +64,7 @@ const ViewportActionBar = ({
 
   const patientInfoClasses = () => (showArrows ? '' : 'pl-1 ml-auto');
 
-  const clickOutsideListener = useOnClickOutside(
-    showPatientInfoElemRef,
-    closePatientInfo
-  );
+  const clickOutsideListener = useOnClickOutside(showPatientInfoElemRef, closePatientInfo);
 
   useEffect(() => {
     if (showPatientInfo) {
@@ -109,10 +96,7 @@ const ViewportActionBar = ({
     const studyDateElemBBox = studyDateElemRef.current.getBoundingClientRect();
     const showPatientInfoElemBBox = showPatientInfoElemRef.current.getBoundingClientRect();
 
-    if (
-      showPatientInfoElemBBox.left - studyDateElemBBox.right <=
-      zeroWidthSeriesDescriptionSpace
-    ) {
+    if (showPatientInfoElemBBox.left - studyDateElemBBox.right <= zeroWidthSeriesDescriptionSpace) {
       // The area to display the series description is zero, so don't show the series description element.
       setShowSeriesDesc(false);
     } else {
@@ -125,13 +109,11 @@ const ViewportActionBar = ({
   return (
     <div
       ref={componentRootElemRef}
-      className="pointer-events-auto select-none text-base flex overflow-visible whitespace-nowrap h-8 items-center px-2 shrink-0"
+      className="pointer-events-auto flex h-8 shrink-0 select-none items-center overflow-visible whitespace-nowrap px-2 text-base"
       onDoubleClick={onDoubleClick}
     >
       {getStatusComponent()}
-      {!!label?.length && (
-        <span className="ml-1 text-aqua-pale text-large">{label}</span>
-      )}
+      {!!label?.length && <span className="text-aqua-pale text-large ml-1">{label}</span>}
       <div className={separatorClasses}></div>
       <span
         data-cy="studyDate"
@@ -145,7 +127,7 @@ const ViewportActionBar = ({
           <div className={separatorClasses}></div>
           <span
             ref={seriesDescElemRef}
-            className={`mr-1 text-aqua-pale ${textEllipsisClasses}`}
+            className={`text-aqua-pale mr-1 ${textEllipsisClasses}`}
           >
             {seriesDescription}
           </span>
@@ -165,7 +147,10 @@ const ViewportActionBar = ({
           />
         </>
       )}
-      <div className={patientInfoClasses()} onClick={onPatientInfoClick}>
+      <div
+        className={patientInfoClasses()}
+        onClick={onPatientInfoClick}
+      >
         <PatientInfo
           showPatientInfoRef={showPatientInfoElemRef}
           isOpen={showPatientInfo}

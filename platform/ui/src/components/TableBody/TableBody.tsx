@@ -5,10 +5,7 @@ import classnames from 'classnames';
 const TableBody = ({ children, className, style }) => {
   return (
     <div
-      className={classnames(
-        'mt-2 max-h-48 overflow-y-scroll ohif-scrollbar',
-        className
-      )}
+      className={classnames('ohif-scrollbar mt-2 max-h-48 overflow-y-scroll', className)}
       style={style}
     >
       {React.isValidElement(children)
@@ -26,7 +23,7 @@ TableBody.defaultProps = {
 };
 
 TableBody.propTypes = {
-  children: function(props, propName, componentName) {
+  children: function (props, propName, componentName) {
     const elements = React.Children.toArray(props.children);
     const isString = elements.some(child => typeof child === 'string');
 
@@ -36,9 +33,7 @@ TableBody.propTypes = {
       );
     }
 
-    const isInvalidElement = elements.some(
-      child => !React.isValidElement(child)
-    );
+    const isInvalidElement = elements.some(child => !React.isValidElement(child));
 
     if (isInvalidElement) {
       return new Error(

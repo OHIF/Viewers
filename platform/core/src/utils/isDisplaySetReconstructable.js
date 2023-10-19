@@ -30,23 +30,17 @@ export default function isDisplaySetReconstructable(instances) {
   }
 
   // Can't reconstruct if all instances don't have the ImagePositionPatient.
-  if (
-    !isMultiframe &&
-    !instances.every(instance => instance.ImagePositionPatient)
-  ) {
+  if (!isMultiframe && !instances.every(instance => instance.ImagePositionPatient)) {
     return { value: false };
   }
 
   const sortedInstances = sortInstancesByPosition(instances);
 
-  return isMultiframe
-    ? processMultiframe(sortedInstances[0])
-    : processSingleframe(sortedInstances);
+  return isMultiframe ? processMultiframe(sortedInstances[0]) : processSingleframe(sortedInstances);
 }
 
 function hasPixelMeasurements(multiFrameInstance) {
-  const perFrameSequence =
-    multiFrameInstance.PerFrameFunctionalGroupsSequence?.[0];
+  const perFrameSequence = multiFrameInstance.PerFrameFunctionalGroupsSequence?.[0];
   const sharedSequence = multiFrameInstance.SharedFunctionalGroupsSequence;
 
   return (
@@ -54,39 +48,34 @@ function hasPixelMeasurements(multiFrameInstance) {
     Boolean(sharedSequence?.PixelMeasuresSequence) ||
     Boolean(
       multiFrameInstance.PixelSpacing &&
-      (multiFrameInstance.SliceThickness ||
-        multiFrameInstance.SpacingBetweenFrames)
+        (multiFrameInstance.SliceThickness || multiFrameInstance.SpacingBetweenFrames)
     )
   );
 }
 
 function hasOrientation(multiFrameInstance) {
   const sharedSequence = multiFrameInstance.SharedFunctionalGroupsSequence;
-  const perFrameSequence =
-    multiFrameInstance.PerFrameFunctionalGroupsSequence?.[0];
+  const perFrameSequence = multiFrameInstance.PerFrameFunctionalGroupsSequence?.[0];
 
   return (
     Boolean(sharedSequence?.PlaneOrientationSequence) ||
     Boolean(perFrameSequence?.PlaneOrientationSequence) ||
     Boolean(
       multiFrameInstance.ImageOrientationPatient ||
-      multiFrameInstance.DetectorInformationSequence?.[0]
-        ?.ImageOrientationPatient
+        multiFrameInstance.DetectorInformationSequence?.[0]?.ImageOrientationPatient
     )
   );
 }
 
 function hasPosition(multiFrameInstance) {
-  const perFrameSequence =
-    multiFrameInstance.PerFrameFunctionalGroupsSequence?.[0];
+  const perFrameSequence = multiFrameInstance.PerFrameFunctionalGroupsSequence?.[0];
 
   return (
     Boolean(perFrameSequence?.PlanePositionSequence) ||
     Boolean(perFrameSequence?.CTPositionSequence) ||
     Boolean(
       multiFrameInstance.ImagePositionPatient ||
-      multiFrameInstance.DetectorInformationSequence?.[0]
-        ?.ImagePositionPatient
+        multiFrameInstance.DetectorInformationSequence?.[0]?.ImagePositionPatient
     )
   );
 }
@@ -114,10 +103,7 @@ function processMultiframe(multiFrameInstance) {
     return { value: false };
   }
 
-  if (
-    multiFrameInstance.Modality.includes('NM') &&
-    !isNMReconstructable(multiFrameInstance)
-  ) {
+  if (multiFrameInstance.Modality.includes('NM') && !isNMReconstructable(multiFrameInstance)) {
     return { value: false };
   }
 
@@ -130,9 +116,7 @@ function processSingleframe(instances) {
   const firstImageRows = toNumber(firstImage.Rows);
   const firstImageColumns = toNumber(firstImage.Columns);
   const firstImageSamplesPerPixel = toNumber(firstImage.SamplesPerPixel);
-  const firstImageOrientationPatient = toNumber(
-    firstImage.ImageOrientationPatient
-  );
+  const firstImageOrientationPatient = toNumber(firstImage.ImageOrientationPatient);
   const firstImagePositionPatient = toNumber(firstImage.ImagePositionPatient);
 
   // Can't reconstruct if we:
@@ -141,12 +125,7 @@ function processSingleframe(instances) {
   // -- Have different orientations within a displaySet.
   for (let i = 1; i < instances.length; i++) {
     const instance = instances[i];
-    const {
-      Rows,
-      Columns,
-      SamplesPerPixel,
-      ImageOrientationPatient,
-    } = instance;
+    const { Rows, Columns, SamplesPerPixel, ImageOrientationPatient } = instance;
 
     const imageOrientationPatient = toNumber(ImageOrientationPatient);
 
@@ -167,9 +146,7 @@ function processSingleframe(instances) {
   // If spacing is on a uniform grid but we are missing frames,
   // Allow reconstruction, but pass back the number of missing frames.
   if (instances.length > 2) {
-    const lastIpp = toNumber(
-      instances[instances.length - 1].ImagePositionPatient
-    );
+    const lastIpp = toNumber(instances[instances.length - 1].ImagePositionPatient);
 
     // We can't reconstruct if we are missing ImagePositionPatient values
     if (!firstImagePositionPatient || !lastIpp) {
@@ -177,8 +154,7 @@ function processSingleframe(instances) {
     }
 
     averageSpacingBetweenFrames =
-      _getPerpendicularDistance(firstImagePositionPatient, lastIpp) /
-      (instances.length - 1);
+      _getPerpendicularDistance(firstImagePositionPatient, lastIpp) / (instances.length - 1);
 
     let previousImagePositionPatient = firstImagePositionPatient;
 
@@ -191,10 +167,7 @@ function processSingleframe(instances) {
         imagePositionPatient,
         previousImagePositionPatient
       );
-      const spacingIssue = _getSpacingIssue(
-        spacingBetweenFrames,
-        averageSpacingBetweenFrames
-      );
+      const spacingIssue = _getSpacingIssue(spacingBetweenFrames, averageSpacingBetweenFrames);
 
       if (spacingIssue) {
         const issue = spacingIssue.issue;
@@ -262,11 +235,7 @@ function _getSpacingIssue(spacing, averageSpacing) {
 }
 
 function _getPerpendicularDistance(a, b) {
-  return Math.sqrt(
-    Math.pow(a[0] - b[0], 2) +
-    Math.pow(a[1] - b[1], 2) +
-    Math.pow(a[2] - b[2], 2)
-  );
+  return Math.sqrt(Math.pow(a[0] - b[0], 2) + Math.pow(a[1] - b[1], 2) + Math.pow(a[2] - b[2], 2));
 }
 
 const constructableModalities = ['MR', 'CT', 'PT', 'NM'];

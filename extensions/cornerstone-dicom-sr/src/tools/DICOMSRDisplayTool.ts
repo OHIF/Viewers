@@ -40,49 +40,32 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
   isPointNearTool = () => null;
   getHandleNearImagePoint = () => null;
 
-  renderAnnotation = (
-    enabledElement: Types.IEnabledElement,
-    svgDrawingHelper: any
-  ): void => {
+  renderAnnotation = (enabledElement: Types.IEnabledElement, svgDrawingHelper: any): void => {
     const { viewport } = enabledElement;
     const { element } = viewport;
 
-    let annotations = annotation.state.getAnnotations(
-      this.getToolName(),
-      element
-    );
+    let annotations = annotation.state.getAnnotations(this.getToolName(), element);
 
     // Todo: We don't need this anymore, filtering happens in triggerAnnotationRender
     if (!annotations?.length) {
       return;
     }
 
-    annotations = this.filterInteractableAnnotationsForElement(
-      element,
-      annotations
-    );
+    annotations = this.filterInteractableAnnotationsForElement(element, annotations);
 
     if (!annotations?.length) {
       return;
     }
 
-    const trackingUniqueIdentifiersForElement = getTrackingUniqueIdentifiersForElement(
-      element
-    );
+    const trackingUniqueIdentifiersForElement = getTrackingUniqueIdentifiersForElement(element);
 
-    const {
-      activeIndex,
-      trackingUniqueIdentifiers,
-    } = trackingUniqueIdentifiersForElement;
+    const { activeIndex, trackingUniqueIdentifiers } = trackingUniqueIdentifiersForElement;
 
-    const activeTrackingUniqueIdentifier =
-      trackingUniqueIdentifiers[activeIndex];
+    const activeTrackingUniqueIdentifier = trackingUniqueIdentifiers[activeIndex];
 
     // Filter toolData to only render the data for the active SR.
     const filteredAnnotations = annotations.filter(annotation =>
-      trackingUniqueIdentifiers.includes(
-        annotation.data?.cachedStats?.TrackingUniqueIdentifier
-      )
+      trackingUniqueIdentifiers.includes(annotation.data?.cachedStats?.TrackingUniqueIdentifier)
     );
 
     if (!viewport._actors?.size) {
@@ -138,8 +121,7 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
             break;
           case SCOORD_TYPES.ELLIPSE:
             renderMethod = this.renderEllipse;
-            canvasCoordinatesAdapter =
-              utilities.math.ellipse.getCanvasEllipseCorners;
+            canvasCoordinatesAdapter = utilities.math.ellipse.getCanvasEllipseCorners;
             break;
           default:
             throw new Error(`Unsupported GraphicType: ${GraphicType}`);
@@ -221,15 +203,9 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
     renderableData.map((data, index) => {
       canvasCoordinates = data.map(p => viewport.worldToCanvas(p));
       const handleGroupUID = '0';
-      drawing.drawHandles(
-        svgDrawingHelper,
-        annotationUID,
-        handleGroupUID,
-        canvasCoordinates,
-        {
-          color: options.color,
-        }
-      );
+      drawing.drawHandles(svgDrawingHelper, annotationUID, handleGroupUID, canvasCoordinates, {
+        color: options.color,
+      });
     });
   }
 
@@ -248,10 +224,7 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
       canvasCoordinates.push(viewport.worldToCanvas(point));
 
       // We get the other point for the arrow by using the image size
-      const imagePixelModule = metaData.get(
-        'imagePixelModule',
-        referencedImageId
-      );
+      const imagePixelModule = metaData.get('imagePixelModule', referencedImageId);
 
       let xOffset = 10;
       let yOffset = 10;
@@ -309,9 +282,7 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
 
       const rotation = viewport.getRotation();
 
-      canvasCoordinates = ellipsePointsWorld.map(p =>
-        viewport.worldToCanvas(p)
-      );
+      canvasCoordinates = ellipsePointsWorld.map(p => viewport.worldToCanvas(p));
       let canvasCorners;
       if (rotation == 90 || rotation == 270) {
         canvasCorners = utilities.math.ellipse.getCanvasEllipseCorners([
@@ -366,23 +337,14 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
       adaptedCanvasCoordinates = canvasCoordinatesAdapter(canvasCoordinates);
     }
     const textLines = this._getTextBoxLinesFromLabels(label);
-    const canvasTextBoxCoords = utilities.drawing.getTextBoxCoordsCanvas(
-      adaptedCanvasCoordinates
-    );
+    const canvasTextBoxCoords = utilities.drawing.getTextBoxCoordsCanvas(adaptedCanvasCoordinates);
 
-    annotation.data.handles.textBox.worldPosition = viewport.canvasToWorld(
-      canvasTextBoxCoords
-    );
+    annotation.data.handles.textBox.worldPosition = viewport.canvasToWorld(canvasTextBoxCoords);
 
-    const textBoxPosition = viewport.worldToCanvas(
-      annotation.data.handles.textBox.worldPosition
-    );
+    const textBoxPosition = viewport.worldToCanvas(annotation.data.handles.textBox.worldPosition);
 
     const textBoxUID = '1';
-    const textBoxOptions = this.getLinkedTextBoxStyle(
-      styleSpecifier,
-      annotation
-    );
+    const textBoxOptions = this.getLinkedTextBoxStyle(styleSpecifier, annotation);
 
     const boundingBox = drawing.drawLinkedTextBox(
       svgDrawingHelper,

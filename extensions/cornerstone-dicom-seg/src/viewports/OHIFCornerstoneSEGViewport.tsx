@@ -2,14 +2,9 @@ import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import OHIF, { utils } from '@ohif/core';
-import {
-  LoadingIndicatorTotalPercent,
-  useViewportGrid,
-  ViewportActionBar,
-} from '@ohif/ui';
+import { LoadingIndicatorTotalPercent, useViewportGrid, ViewportActionBar } from '@ohif/ui';
 import createSEGToolGroupAndAddTools from '../utils/initSEGToolGroup';
 import promptHydrateSEG from '../utils/promptHydrateSEG';
-import hydrateSEGDisplaySet from '../utils/_hydrateSEG';
 import _getStatusComponent from './_getStatusComponent';
 
 const { formatDate } = utils;
@@ -20,7 +15,6 @@ function OHIFCornerstoneSEGViewport(props) {
     children,
     displaySets,
     viewportOptions,
-    viewportIndex,
     viewportLabel,
     servicesManager,
     extensionManager,
@@ -28,6 +22,7 @@ function OHIFCornerstoneSEGViewport(props) {
   } = props;
 
   const { t } = useTranslation('SEGViewport');
+  const viewportId = viewportOptions.viewportId;
 
   const {
     displaySetService,
@@ -37,7 +32,7 @@ function OHIFCornerstoneSEGViewport(props) {
     customizationService,
   } = servicesManager.services;
 
-  const toolGroupId = `${SEG_TOOLGROUP_BASE_NAME}-${viewportIndex}`;
+  const toolGroupId = `${SEG_TOOLGROUP_BASE_NAME}-${viewportId}`;
 
   // SEG viewport will always have a single display set
   if (displaySets.length > 1) {
@@ -67,7 +62,7 @@ function OHIFCornerstoneSEGViewport(props) {
   // refs
   const referencedDisplaySetRef = useRef(null);
 
-  const { viewports, activeViewportIndex } = viewportGrid;
+  const { viewports, activeViewportId } = viewportGrid;
 
   const referencedDisplaySet = segDisplaySet.getReferenceDisplaySet();
   const referencedDisplaySetMetadata = _getReferencedDisplaySetMetadata(
@@ -94,9 +89,9 @@ function OHIFCornerstoneSEGViewport(props) {
   };
 
   const storePresentationState = useCallback(() => {
-    viewportGrid?.viewports.forEach(({ viewportIndex }) => {
+    viewportGrid?.viewports.forEach(({ viewportId }) => {
       commandsManager.runCommand('storePresentation', {
-        viewportIndex,
+        viewportId,
       });
     });
   }, [viewportGrid]);
@@ -106,9 +101,7 @@ function OHIFCornerstoneSEGViewport(props) {
       '@ohif/extension-cornerstone.viewportModule.cornerstone'
     );
 
-    const {
-      displaySet: referencedDisplaySet,
-    } = referencedDisplaySetRef.current;
+    const { displaySet: referencedDisplaySet } = referencedDisplaySetRef.current;
 
     // Todo: jump to the center of the first segment
     return (
@@ -126,7 +119,7 @@ function OHIFCornerstoneSEGViewport(props) {
         // initialImageIndex={initialImageIndex}
       ></Component>
     );
-  }, [viewportIndex, segDisplaySet, toolGroupId]);
+  }, [viewportId, segDisplaySet, toolGroupId]);
 
   const onSegmentChange = useCallback(
     direction => {
@@ -148,11 +141,7 @@ function OHIFCornerstoneSEGViewport(props) {
         newSelectedSegmentIndex = numberOfSegments - 1;
       }
 
-      segmentationService.jumpToSegmentCenter(
-        segmentationId,
-        newSelectedSegmentIndex,
-        toolGroupId
-      );
+      segmentationService.jumpToSegmentCenter(segmentationId, newSelectedSegmentIndex, toolGroupId);
       setSelectedSegment(newSelectedSegmentIndex);
     },
     [selectedSegment]
@@ -165,32 +154,29 @@ function OHIFCornerstoneSEGViewport(props) {
 
     promptHydrateSEG({
       servicesManager,
-      viewportIndex,
+      viewportId,
       segDisplaySet,
       preHydrateCallbacks: [storePresentationState],
+      hydrateSEGDisplaySet,
     }).then(isHydrated => {
       if (isHydrated) {
         setIsHydrated(true);
       }
     });
-  }, [servicesManager, viewportIndex, segDisplaySet, segIsLoading]);
+  }, [servicesManager, viewportId, segDisplaySet, segIsLoading]);
 
   useEffect(() => {
     const { unsubscribe } = segmentationService.subscribe(
       segmentationService.EVENTS.SEGMENTATION_LOADING_COMPLETE,
       evt => {
-        if (
-          evt.segDisplaySet.displaySetInstanceUID ===
-          segDisplaySet.displaySetInstanceUID
-        ) {
+        if (evt.segDisplaySet.displaySetInstanceUID === segDisplaySet.displaySetInstanceUID) {
           setSegIsLoading(false);
         }
 
         if (evt.overlappingSegments) {
           uiNotificationService.show({
             title: 'Overlapping Segments',
-            message:
-              'Overlapping segments detected which is not currently supported',
+            message: 'Overlapping segments detected which is not currently supported',
             type: 'warning',
           });
         }
@@ -225,12 +211,10 @@ function OHIFCornerstoneSEGViewport(props) {
     const onDisplaySetsRemovedSubscription = displaySetService.subscribe(
       displaySetService.EVENTS.DISPLAY_SETS_REMOVED,
       ({ displaySetInstanceUIDs }) => {
-        const activeViewport = viewports[activeViewportIndex];
-        if (
-          displaySetInstanceUIDs.includes(activeViewport.displaySetInstanceUID)
-        ) {
+        const activeViewport = viewports.get(activeViewportId);
+        if (displaySetInstanceUIDs.includes(activeViewport.displaySetInstanceUID)) {
           viewportGridService.setDisplaySetsForViewport({
-            viewportIndex: activeViewportIndex,
+            viewportId: activeViewportId,
             displaySetInstanceUIDs: [],
           });
         }
@@ -251,17 +235,11 @@ function OHIFCornerstoneSEGViewport(props) {
 
     // This creates a custom tool group which has the lifetime of this view
     // only, and does NOT interfere with currently displayed segmentations.
-    toolGroup = createSEGToolGroupAndAddTools(
-      toolGroupService,
-      customizationService,
-      toolGroupId
-    );
+    toolGroup = createSEGToolGroupAndAddTools(toolGroupService, customizationService, toolGroupId);
 
     return () => {
       // remove the segmentation representations if seg displayset changed
-      segmentationService.removeSegmentationRepresentationFromToolGroup(
-        toolGroupId
-      );
+      segmentationService.removeSegmentationRepresentationFromToolGroup(toolGroupId);
 
       // Only destroy the viewport specific implementation
       toolGroupService.destroyToolGroup(toolGroupId);
@@ -273,9 +251,7 @@ function OHIFCornerstoneSEGViewport(props) {
 
     return () => {
       // remove the segmentation representations if seg displayset changed
-      segmentationService.removeSegmentationRepresentationFromToolGroup(
-        toolGroupId
-      );
+      segmentationService.removeSegmentationRepresentationFromToolGroup(toolGroupId);
       referencedDisplaySetRef.current = null;
     };
   }, [segDisplaySet]);
@@ -296,7 +272,7 @@ function OHIFCornerstoneSEGViewport(props) {
       return (
         child &&
         React.cloneElement(child, {
-          viewportIndex,
+          viewportId,
           key: index,
         })
       );
@@ -315,6 +291,13 @@ function OHIFCornerstoneSEGViewport(props) {
     SpacingBetweenSlices,
   } = referencedDisplaySetRef.current.metadata;
 
+  const hydrateSEGDisplaySet = ({ segDisplaySet, viewportId }) => {
+    commandsManager.runCommand('loadSegmentationDisplaySetsForViewport', {
+      displaySets: [segDisplaySet],
+      viewportId,
+    });
+  };
+
   const onStatusClick = async () => {
     // Before hydrating a SEG and make it added to all viewports in the grid
     // that share the same frameOfReferenceUID, we need to store the viewport grid
@@ -325,8 +308,7 @@ function OHIFCornerstoneSEGViewport(props) {
     storePresentationState();
     const isHydrated = await hydrateSEGDisplaySet({
       segDisplaySet,
-      viewportIndex,
-      servicesManager,
+      viewportId,
     });
 
     setIsHydrated(isHydrated);
@@ -351,29 +333,23 @@ function OHIFCornerstoneSEGViewport(props) {
           studyDate: formatDate(StudyDate),
           seriesDescription: `SEG Viewport ${SeriesDescription}`,
           patientInformation: {
-            patientName: PatientName
-              ? OHIF.utils.formatPN(PatientName.Alphabetic)
-              : '',
+            patientName: PatientName ? OHIF.utils.formatPN(PatientName.Alphabetic) : '',
             patientSex: PatientSex || '',
             patientAge: PatientAge || '',
             MRN: PatientID || '',
-            thickness: SliceThickness
-              ? utils.roundNumber(SliceThickness, 2)
-              : '',
+            thickness: SliceThickness ? utils.roundNumber(SliceThickness, 2) : '',
             thicknessUnits: SliceThickness !== undefined ? 'mm' : '',
             spacing:
-              SpacingBetweenSlices !== undefined
-                ? utils.roundNumber(SpacingBetweenSlices, 2)
-                : '',
+              SpacingBetweenSlices !== undefined ? utils.roundNumber(SpacingBetweenSlices, 2) : '',
             scanner: ManufacturerModelName || '',
           },
         }}
       />
 
-      <div className="relative flex flex-row w-full h-full overflow-hidden">
+      <div className="relative flex h-full w-full flex-row overflow-hidden">
         {segIsLoading && (
           <LoadingIndicatorTotalPercent
-            className="w-full h-full"
+            className="h-full w-full"
             totalNumbers={processingProgress.totalSegments}
             percentComplete={processingProgress.percentComplete}
             loadingText="Loading SEG..."
@@ -388,7 +364,7 @@ function OHIFCornerstoneSEGViewport(props) {
 
 OHIFCornerstoneSEGViewport.propTypes = {
   displaySets: PropTypes.arrayOf(PropTypes.object),
-  viewportIndex: PropTypes.number.isRequired,
+  viewportId: PropTypes.string.isRequired,
   dataSource: PropTypes.object,
   children: PropTypes.node,
   customProps: PropTypes.object,
@@ -399,12 +375,18 @@ OHIFCornerstoneSEGViewport.defaultProps = {
 };
 
 function _getReferencedDisplaySetMetadata(referencedDisplaySet, segDisplaySet) {
-  const {
-    SharedFunctionalGroupsSequence: [SharedFunctionalGroup],
-  } = segDisplaySet.instance;
-  const {
-    PixelMeasuresSequence: [PixelMeasures],
-  } = SharedFunctionalGroup;
+  const { SharedFunctionalGroupsSequence } = segDisplaySet.instance;
+
+  const SharedFunctionalGroup = Array.isArray(SharedFunctionalGroupsSequence)
+    ? SharedFunctionalGroupsSequence[0]
+    : SharedFunctionalGroupsSequence;
+
+  const { PixelMeasuresSequence } = SharedFunctionalGroup;
+
+  const PixelMeasures = Array.isArray(PixelMeasuresSequence)
+    ? PixelMeasuresSequence[0]
+    : PixelMeasuresSequence;
+
   const { SpacingBetweenSlices, SliceThickness } = PixelMeasures;
 
   const image0 = referencedDisplaySet.images[0];

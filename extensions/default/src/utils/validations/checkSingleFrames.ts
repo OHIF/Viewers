@@ -28,9 +28,7 @@ export default function checkSingleFrames(
     }
 
     if (!areAllImagePositionsEqual(instances)) {
-      messages.addMessage(
-        DisplaySetMessage.CODES.INCONSISTENT_POSITION_INFORMATION
-      );
+      messages.addMessage(DisplaySetMessage.CODES.INCONSISTENT_POSITION_INFORMATION);
     }
     areAllImageSpacingEqual(instances, messages);
   }

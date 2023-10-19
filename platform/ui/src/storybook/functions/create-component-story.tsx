@@ -15,11 +15,7 @@ export function createComponentTemplate(ComponentClass) {
 //   { options: [], mapping: {} }
 // );
 
-export function createStoryMetaSettings({
-  component,
-  enumPropNamesArray,
-  iconPropNamesArray,
-}) {
+export function createStoryMetaSettings({ component, enumPropNamesArray, iconPropNamesArray }) {
   const argTypes = {};
 
   // set enum allowed values inside argsTypes object

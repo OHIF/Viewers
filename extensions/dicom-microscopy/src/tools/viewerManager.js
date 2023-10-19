@@ -46,16 +46,10 @@ const EVENTS = {
  * expose only the features/behaviors that are relevant to the application
  */
 class ViewerManager extends PubSubService {
-  constructor(
-    viewer,
-    viewportIndex,
-    container,
-    studyInstanceUID,
-    seriesInstanceUID
-  ) {
+  constructor(viewer, viewportId, container, studyInstanceUID, seriesInstanceUID) {
     super(EVENTS);
     this.viewer = viewer;
-    this.viewportIndex = viewportIndex;
+    this.viewportId = viewportId;
     this.container = container;
     this.studyInstanceUID = studyInstanceUID;
     this.seriesInstanceUID = seriesInstanceUID;
@@ -115,22 +109,13 @@ class ViewerManager extends PubSubService {
   }
 
   /**
-   * Cleares all the relevant event handlers for the third-party API
+   * Clears all the relevant event handlers for the third-party API
    */
   unregisterEvents() {
     this.container.removeEventListener(ApiEvents.ROI_ADDED, this.onRoiAdded);
-    this.container.removeEventListener(
-      ApiEvents.ROI_MODIFIED,
-      this.onRoiModified
-    );
-    this.container.removeEventListener(
-      ApiEvents.ROI_REMOVED,
-      this.onRoiRemoved
-    );
-    this.container.removeEventListener(
-      ApiEvents.ROI_SELECTED,
-      this.onRoiSelected
-    );
+    this.container.removeEventListener(ApiEvents.ROI_MODIFIED, this.onRoiModified);
+    this.container.removeEventListener(ApiEvents.ROI_REMOVED, this.onRoiRemoved);
+    this.container.removeEventListener(ApiEvents.ROI_SELECTED, this.onRoiSelected);
   }
 
   /**
@@ -220,7 +205,7 @@ class ViewerManager extends PubSubService {
    * @param {String} label The label of the annotation.
    */
   addRoiGraphicWithLabel(roiGraphic, label) {
-    // NOTE: Dicom Microscopy Viewer will override styles for "Text" evalutations
+    // NOTE: Dicom Microscopy Viewer will override styles for "Text" evaluations
     // to hide all other geometries, we are not going to use its label.
     // if (label) {
     //   if (!roiGraphic.properties) roiGraphic.properties = {};
@@ -327,26 +312,16 @@ class ViewerManager extends PubSubService {
    */
   activateInteractions(interactions) {
     const interactionsMap = {
-      draw: activate =>
-        activate ? 'activateDrawInteraction' : 'deactivateDrawInteraction',
-      modify: activate =>
-        activate ? 'activateModifyInteraction' : 'deactivateModifyInteraction',
+      draw: activate => (activate ? 'activateDrawInteraction' : 'deactivateDrawInteraction'),
+      modify: activate => (activate ? 'activateModifyInteraction' : 'deactivateModifyInteraction'),
       translate: activate =>
-        activate
-          ? 'activateTranslateInteraction'
-          : 'deactivateTranslateInteraction',
-      snap: activate =>
-        activate ? 'activateSnapInteraction' : 'deactivateSnapInteraction',
+        activate ? 'activateTranslateInteraction' : 'deactivateTranslateInteraction',
+      snap: activate => (activate ? 'activateSnapInteraction' : 'deactivateSnapInteraction'),
       dragPan: activate =>
-        activate
-          ? 'activateDragPanInteraction'
-          : 'deactivateDragPanInteraction',
+        activate ? 'activateDragPanInteraction' : 'deactivateDragPanInteraction',
       dragZoom: activate =>
-        activate
-          ? 'activateDragZoomInteraction'
-          : 'deactivateDragZoomInteraction',
-      select: activate =>
-        activate ? 'activateSelectInteraction' : 'deactivateSelectInteraction',
+        activate ? 'activateDragZoomInteraction' : 'deactivateDragZoomInteraction',
+      select: activate => (activate ? 'activateSelectInteraction' : 'deactivateSelectInteraction'),
     };
 
     const availableInteractionsName = Object.keys(interactionsMap);
@@ -355,9 +330,7 @@ class ViewerManager extends PubSubService {
         interaction => interaction[0] === availableInteractionName
       );
       if (!interaction) {
-        const deactivateInteractionMethod = interactionsMap[
-          availableInteractionName
-        ](false);
+        const deactivateInteractionMethod = interactionsMap[availableInteractionName](false);
         this.viewer[deactivateInteractionMethod]();
       } else {
         const [name, config] = interaction;

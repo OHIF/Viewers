@@ -59,8 +59,10 @@ If you happen to have multiple data sources configured, you can filter the
 WorkList by adding the `dataSources` query parameter.
 
 ```js
-/?dataSourcename=orthanc
+/?dataSources=orthanc
 ```
+
+Note: you should pass the `sourceName` of the data source in the configuration file (not the friendly name nor the name)
 
 :::tip
 
@@ -109,7 +111,7 @@ You can open more than one study in the Viewer by adding the `StudyInstanceUIDs`
 
 :::tip
 
-You can ues this feature to open a current and prior study in the Viewer.
+You can use this feature to open a current and prior study in the Viewer.
 Read more in the [Hanging Protocol Module](../platform/extensions/modules/hpModule.md#matching-on-prior-study-with-uid) section.  You can also use commas to separate
 values.
 

@@ -15,10 +15,7 @@ DICOMwebClient._buildMultipartAcceptHeaderFieldValue = () => {
  * @param param0
  * @returns
  */
-export default function getDicomWebClient({
-  extensionManager,
-  servicesManager,
-}) {
+export default function getDicomWebClient({ extensionManager, servicesManager }) {
   const dataSourceConfig = window.config.dataSources.find(
     ds => ds.sourceName === extensionManager.activeDataSource
   );
@@ -55,29 +52,19 @@ export default function getDicomWebClient({
     //
     client.retrieveInstanceFrames = async options => {
       if (!('studyInstanceUID' in options)) {
-        throw new Error(
-          'Study Instance UID is required for retrieval of instance frames'
-        );
+        throw new Error('Study Instance UID is required for retrieval of instance frames');
       }
       if (!('seriesInstanceUID' in options)) {
-        throw new Error(
-          'Series Instance UID is required for retrieval of instance frames'
-        );
+        throw new Error('Series Instance UID is required for retrieval of instance frames');
       }
       if (!('sopInstanceUID' in options)) {
-        throw new Error(
-          'SOP Instance UID is required for retrieval of instance frames'
-        );
+        throw new Error('SOP Instance UID is required for retrieval of instance frames');
       }
       if (!('frameNumbers' in options)) {
-        throw new Error(
-          'frame numbers are required for retrieval of instance frames'
-        );
+        throw new Error('frame numbers are required for retrieval of instance frames');
       }
       console.log(
-        `retrieve frames ${options.frameNumbers.toString()} of instance ${
-          options.sopInstanceUID
-        }`
+        `retrieve frames ${options.frameNumbers.toString()} of instance ${options.sopInstanceUID}`
       );
 
       const instance = DicomMetadataStore.getInstance(
@@ -91,9 +78,7 @@ export default function getDicomWebClient({
         : options.frameNumbers.split(',');
 
       return frameNumbers.map(fr =>
-        Array.isArray(instance.PixelData)
-          ? instance.PixelData[+fr - 1]
-          : instance.PixelData
+        Array.isArray(instance.PixelData) ? instance.PixelData[+fr - 1] : instance.PixelData
       );
     };
   }

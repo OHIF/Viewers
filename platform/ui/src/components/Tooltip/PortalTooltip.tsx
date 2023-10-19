@@ -14,8 +14,7 @@ const portalNodes = {};
  */
 export default class PortalTooltip extends React.Component {
   static propTypes = {
-    parent: PropTypes.oneOfType([PropTypes.string, PropTypes.object])
-      .isRequired,
+    parent: PropTypes.oneOfType([PropTypes.string, PropTypes.object]).isRequired,
     active: PropTypes.bool,
     group: PropTypes.string,
     tooltipTimeout: PropTypes.number,
@@ -41,10 +40,12 @@ export default class PortalTooltip extends React.Component {
       this.createPortal();
     }
     let { parent, ...other } = props;
-    let parentEl =
-      typeof parent === 'string' ? document.querySelector(parent) : parent;
+    let parentEl = typeof parent === 'string' ? document.querySelector(parent) : parent;
     ReactDOM.render(
-      <Card parentEl={parentEl} {...other} />,
+      <Card
+        parentEl={parentEl}
+        {...other}
+      />,
       portalNodes[this.props.group].node
     );
   }
@@ -68,10 +69,7 @@ export default class PortalTooltip extends React.Component {
     let props = { ...nextProps };
     let newProps = { ...nextProps };
 
-    if (
-      portalNodes[this.props.group] &&
-      portalNodes[this.props.group].timeout
-    ) {
+    if (portalNodes[this.props.group] && portalNodes[this.props.group].timeout) {
       clearTimeout(portalNodes[this.props.group].timeout);
     }
 

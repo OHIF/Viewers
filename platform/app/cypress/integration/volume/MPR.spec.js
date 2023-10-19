@@ -1,8 +1,6 @@
 describe('OHIF MPR', () => {
   beforeEach(() => {
-    cy.checkStudyRouteInViewer(
-      '1.3.6.1.4.1.25403.345050719074.3824.20170125113417.1'
-    );
+    cy.checkStudyRouteInViewer('1.3.6.1.4.1.25403.345050719074.3824.20170125113417.1');
     cy.expectMinimumThumbnails(3);
     cy.initCornerstoneToolsAliases();
     cy.initCommonElementsAliases();
@@ -66,19 +64,17 @@ describe('OHIF MPR', () => {
       .then(cornerstone => {
         const viewports = cornerstone.getRenderingEngines()[0].getViewports();
 
-        const imageData1 = viewports[0].getImageData();
-        const imageData2 = viewports[1].getImageData();
-        const imageData3 = viewports[2].getImageData();
+        // The stack viewport still exists after the changes to viewportId and inde
+        const imageData1 = viewports[1].getImageData();
+        const imageData2 = viewports[2].getImageData();
+        const imageData3 = viewports[3].getImageData();
 
         // for some reason map doesn't work here
         cy.wrap(imageData1).should('not.be', undefined);
         cy.wrap(imageData2).should('not.be', undefined);
         cy.wrap(imageData3).should('not.be', undefined);
 
-        cy.wrap(imageData1.dimensions).should(
-          'deep.equal',
-          imageData2.dimensions
-        );
+        cy.wrap(imageData1.dimensions).should('deep.equal', imageData2.dimensions);
 
         cy.wrap(imageData1.origin).should('deep.equal', imageData2.origin);
       });
@@ -88,10 +84,7 @@ describe('OHIF MPR', () => {
     cy.get('.cornerstone-canvas').should('have.length', 1);
 
     // should not have any div under it
-    cy.get('[data-cy="thumbnail-viewport-labels"]')
-      .eq(2)
-      .find('div')
-      .should('have.length', 0);
+    cy.get('[data-cy="thumbnail-viewport-labels"]').eq(2).find('div').should('have.length', 0);
   });
 
   it('should correctly render Crosshairs for MPR', () => {
