@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import classnames from 'classnames';
 
 export const ROI_STAT = 'roi_stat';
-const RANGE = 'range';
+export const RANGE = 'range';
 
 const options = [
   { value: ROI_STAT, label: 'Max', placeHolder: 'Max' },

@@ -7,14 +7,14 @@ import { SegmentationTable, LegacyButton, Button, LegacyButtonGroup } from '@ohi
 import { useTranslation } from 'react-i18next';
 import BrushConfigurationWithServices from './BrushConfigurationWithServices';
 import segmentationEditHandler from './segmentationEditHandler';
-import RectangleROIThresholdConfiguration, { ROI_STAT } from './RectangleROIThresholdConfiguration';
+import RectangleROIThresholdConfiguration, { RANGE } from './RectangleROIThresholdConfiguration';
 
 const LOWER_CT_THRESHOLD_DEFAULT = -1024;
 const UPPER_CT_THRESHOLD_DEFAULT = 1024;
 const LOWER_PT_THRESHOLD_DEFAULT = 2.5;
 const UPPER_PT_THRESHOLD_DEFAULT = 100;
 const WEIGHT_DEFAULT = 0.41; // a default weight for suv max often used in the literature
-const DEFAULT_STRATEGY = ROI_STAT;
+const DEFAULT_STRATEGY = RANGE;
 
 const runAsync = fn => {
   return new Promise(resolve => {
@@ -312,28 +312,45 @@ export default function ROISegmentationPanel({
               />
             ) : null}
           </div>
-          <div className="mt-4 flex justify-center space-x-2">
-            <LegacyButtonGroup
-              color="black"
-              size="inherit"
-            >
-              <LegacyButton
-                className="px-2 py-2 text-base"
-                disabled={!segmentations.length}
-                onClick={() => {
-                  commandsManager.runCommand('exportTMTVReportCSV', {
-                    segmentations,
-                    config,
-                    options: {
-                      filename: 'segmentations.csv',
-                    },
-                  });
-                }}
+          {segmentations.length && (
+            <div className="mt-4 flex justify-center space-x-2">
+              <LegacyButtonGroup
+                color="black"
+                size="inherit"
               >
-                {t('Export CSV')}
-              </LegacyButton>
-            </LegacyButtonGroup>
-          </div>
+                <LegacyButton
+                  className="px-2 py-2 text-base"
+                  disabled={!segmentations.length}
+                  onClick={() => {
+                    commandsManager.runCommand('exportTMTVReportCSV', {
+                      segmentations,
+                      config,
+                      options: {
+                        filename: 'segmentations.csv',
+                      },
+                    });
+                  }}
+                >
+                  {t('Export Statistics')}
+                </LegacyButton>
+                <LegacyButton
+                  className="px-2 py-2 text-base"
+                  disabled={!segmentations.length}
+                  onClick={() => {
+                    commandsManager.runCommand('exportTimeReportCSV', {
+                      segmentations,
+                      config,
+                      options: {
+                        filename: 'TimeData.csv',
+                      },
+                    });
+                  }}
+                >
+                  {t('Export Time Data')}
+                </LegacyButton>
+              </LegacyButtonGroup>
+            </div>
+          )}
         </div>
       </div>
     </>
