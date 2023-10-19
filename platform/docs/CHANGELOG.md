@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-beta.2](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.1...v3.8.0-beta.2) (2023-10-19)
+
+
+### Bug Fixes
+
+* **cine:** Use the frame rate specified in DICOM and optionally auto play cine ([#3735](https://github.com/OHIF/Viewers/issues/3735)) ([d9258ec](https://github.com/OHIF/Viewers/commit/d9258eca70587cf4dc18be4e56c79b16bae73d6d))
+
+
+
+
+
 # [3.8.0-beta.1](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.0...v3.8.0-beta.1) (2023-10-19)
 
 **Note:** Version bump only for package ohif-docs
