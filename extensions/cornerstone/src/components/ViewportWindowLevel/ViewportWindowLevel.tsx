@@ -99,7 +99,9 @@ const ViewportWindowLevel = ({
     let scalarData = volume.scalarData;
 
     if (volume.numTimePoints > 1) {
-      scalarData = volume.getScalarData(Math.round(volume.numTimePoints / 2));
+      const middleTimePoint = Math.round(volume.numTimePoints / 2);
+      volume.timePointIndex = middleTimePoint;
+      scalarData = volume.getScalarData(middleTimePoint);
     }
 
     const range = imageData.computeHistogram(imageData.getBounds());
