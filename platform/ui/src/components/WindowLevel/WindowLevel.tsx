@@ -1,9 +1,9 @@
 import React, { useEffect, useCallback, useState, useMemo, ReactElement } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import WindowLevelSlider from './WindowLevelSlider';
 import WindowLevelHistogram from './WindowLevelHistogram';
 import InputRange from '../InputRange';
+import InputDoubleRange from '../InputDoubleRange';
 import {
   VOI,
   Colormap,
@@ -69,17 +69,24 @@ const WindowLevel = ({
   );
 
   const handleVOIRangeChange = useCallback(
-    voiRange => {
-      const windowWidth = voiRange.max - voiRange.min;
-      const windowCenter = voiRange.min + windowWidth / 2;
+    newRange => {
+      if (newRange[0] === voiRange.min && newRange[1] === voiRange.max) {
+        return;
+      }
 
-      setVOIRange(voiRange);
+      const windowWidth = newRange[1] - newRange[0];
+      const windowCenter = newRange[0] + windowWidth / 2;
+
+      setVOIRange({
+        min: newRange[0],
+        max: newRange[1],
+      });
 
       if (onVOIChange) {
         onVOIChange({ windowWidth, windowCenter });
       }
     },
-    [onVOIChange]
+    [onVOIChange, voiRange]
   );
 
   const handleOpacityChange = useCallback(
@@ -128,11 +135,12 @@ const WindowLevel = ({
                 />
               </div>
               <div>
-                <WindowLevelSlider
+                <InputDoubleRange
+                  values={[voiRange.min, voiRange.max]}
+                  onChange={handleVOIRangeChange}
+                  minValue={range.min}
+                  maxValue={range.max}
                   step={step}
-                  range={range}
-                  voiRange={voiRange}
-                  onVOIRangeChange={handleVOIRangeChange}
                 />
               </div>
             </div>
