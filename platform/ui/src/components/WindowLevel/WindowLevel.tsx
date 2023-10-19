@@ -101,7 +101,6 @@ const WindowLevel = ({
   useEffect(() => setVOIRange(convertVOItoVOIRange(voiProp)), [voiProp]);
 
   useEffect(() => setOpacity(opacityProp), [opacityProp]);
-
   return (
     <div
       className={classnames(
