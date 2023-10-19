@@ -35,6 +35,8 @@ export default function PanelGenerateImage({ servicesManager, commandsManager })
   const [computedDisplaySet, setComputedDisplaySet] = useState(null);
   const [dynamicVolume, setDynamicVolume] = useState(null);
   const [frameRate, setFrameRate] = useState(20);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [displayingComputedVolume, setDisplayingComputedVolume] = useState(false);
   const uuidComputedVolume = useRef(csUtils.uuidv4());
   const uuidDynamicVolume = useRef(null);
   const computedVolumeId = `cornerstoneStreamingImageVolume:${uuidComputedVolume.current}`;
@@ -123,6 +125,8 @@ export default function PanelGenerateImage({ servicesManager, commandsManager })
     // Set computed scalar data to volume
     const scalarData = computedVolume.getScalarData();
     scalarData.set(dataInTime);
+    setDisplayingComputedVolume(true);
+
     // If computed display set does not exist, create an object to be used as
     // the displaySet. If it does exist, update the image data and vtkTexture
     if (!computedDisplaySet) {
@@ -164,9 +168,11 @@ export default function PanelGenerateImage({ servicesManager, commandsManager })
       uuidDynamicVolume.current
     );
     viewportGridService.setDisplaySetsForViewports(updatedViewports);
+    setDisplayingComputedVolume(false);
   }
 
   const handlePlay = () => {
+    setIsPlaying(true);
     const viewportInfo = cornerstoneViewportService.getViewportInfo(activeViewportId);
 
     if (!viewportInfo) {
@@ -182,6 +188,7 @@ export default function PanelGenerateImage({ servicesManager, commandsManager })
   };
 
   const handleStop = () => {
+    setIsPlaying(false);
     const viewportInfo = cornerstoneViewportService.getViewportInfo(activeViewportId);
     const { element } = viewportInfo;
     const cine = cines[activeViewportId];
@@ -221,16 +228,13 @@ export default function PanelGenerateImage({ servicesManager, commandsManager })
           handleGenerateOptionsChange={handleGenerateOptionsChange}
           onGenerateImage={onGenerateImage}
           returnTo4D={returnTo4D}
+          displayingComputedVolume={displayingComputedVolume}
         />
         <div className="flex justify-between">
           <Button
             onClick={() => {
               dynamicVolume.timePointIndex = rangeValues[0] - 1;
             }}
-            variant="contained"
-            color="primary"
-            border="primary"
-            fullWidth={true}
             className="mr-1 grow basis-0"
           >
             First Frame
@@ -239,10 +243,6 @@ export default function PanelGenerateImage({ servicesManager, commandsManager })
             onClick={() => {
               dynamicVolume.timePointIndex = rangeValues[1] - 1;
             }}
-            variant="contained"
-            color="primary"
-            border="primary"
-            fullWidth={true}
             className="ml-1 grow basis-0"
           >
             Last Frame
@@ -251,23 +251,17 @@ export default function PanelGenerateImage({ servicesManager, commandsManager })
         <div className="flex justify-between">
           <Button
             onClick={handlePlay}
-            variant="contained"
-            color="primary"
-            border="primary"
             startIcon={<Icon name="icon-play" />}
-            fullWidth={true}
             className="mr-1 grow basis-0"
+            disabled={isPlaying}
           >
             Play
           </Button>
           <Button
             onClick={handleStop}
-            variant="contained"
-            color="primary"
-            border="primary"
             startIcon={<Icon name="icon-pause" />}
-            fullWidth={true}
             className="ml-1 grow basis-0"
+            disabled={!isPlaying}
           >
             Pause
           </Button>

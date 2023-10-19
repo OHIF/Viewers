@@ -1,5 +1,4 @@
 import React from 'react';
-import Typography from '@ohif/ui';
 import { InputDoubleRange } from '@ohif/ui';
 import { Select } from '@ohif/ui';
 import { Button } from '@ohif/ui';
@@ -13,6 +12,7 @@ const GenerateVolume = ({
   handleGenerateOptionsChange,
   onGenerateImage,
   returnTo4D,
+  displayingComputedVolume,
 }) => {
   return (
     <>
@@ -41,14 +41,14 @@ const GenerateVolume = ({
         }}
       />
       <Button
-        color="primary"
         onClick={onGenerateImage}
+        disabled={displayingComputedVolume}
       >
         Generate Image
       </Button>
       <Button
-        color="primary"
         onClick={returnTo4D}
+        disabled={!displayingComputedVolume}
       >
         Return To 4D
       </Button>
