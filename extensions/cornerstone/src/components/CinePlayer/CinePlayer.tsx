@@ -58,14 +58,14 @@ function WrappedCinePlayer({ enabledVPElement, viewportId, servicesManager }) {
     const { displaySetInstanceUIDs } = viewports.get(viewportId);
 
     let frameRate = 24;
-    let isPlaying = false;
+    let isPlaying = cines[viewportId].isPlaying;
     displaySetInstanceUIDs.forEach(displaySetInstanceUID => {
       const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
       if (displaySet.FrameRate) {
         // displaySet.FrameRate corresponds to DICOM tag (0018,1063) which is defined as the the frame time in milliseconds
         // So a bit of math to get the actual frame rate.
         frameRate = Math.round(1000 / displaySet.FrameRate);
-        isPlaying = !!appConfig.autoPlayCine;
+        isPlaying ||= !!appConfig.autoPlayCine;
       }
     });
 
@@ -74,7 +74,7 @@ function WrappedCinePlayer({ enabledVPElement, viewportId, servicesManager }) {
     }
     cineService.setCine({ id: viewportId, isPlaying, frameRate });
     setNewStackFrameRate(frameRate);
-  }, [cineService, displaySetService, viewportId, viewportGridService]);
+  }, [cineService, displaySetService, viewportId, viewportGridService, cines]);
 
   useEffect(() => {
     eventTarget.addEventListener(Enums.Events.STACK_VIEWPORT_NEW_STACK, newStackCineHandler);
