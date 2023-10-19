@@ -61,83 +61,58 @@ function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager) {
       {
         toolName: brushInstanceNames.CircularEraser,
         parentClassName: toolNames.Brush,
+        configuration: {
+          activeStrategy: brushStrategies.CircularBrush,
+        },
       },
       {
         toolName: brushInstanceNames.SphereBrush,
         parentClassName: toolNames.Brush,
+        configuration: {
+          activeStrategy: brushStrategies.SphereBrush,
+        },
       },
       {
         toolName: brushInstanceNames.SphereEraser,
         parentClassName: toolNames.Brush,
+        configuration: {
+          activeStrategy: brushStrategies.SphereEraser,
+        },
       },
       {
         toolName: brushInstanceNames.ThresholdBrush,
         parentClassName: toolNames.Brush,
+        configuration: {
+          activeStrategy: brushStrategies.ThresholdBrush,
+        },
       },
     ],
     enabled: [{ toolName: toolNames.SegmentationDisplay }],
-    disabled: [{ toolName: toolNames.Crosshairs }],
+    disabled: [
+      {
+        toolName: toolNames.Crosshairs,
+        configuration: {
+          viewportIndicators: false,
+          autoPan: {
+            enabled: false,
+            panSize: 10,
+          },
+        },
+      },
+    ],
   };
 
-  const toolsConfig = {
-    [toolNames.Crosshairs]: {
-      viewportIndicators: false,
-      autoPan: {
-        enabled: false,
-        panSize: 10,
-      },
-    },
-    [toolNames.ArrowAnnotate]: {
-      getTextCallback: (callback, eventDetails) => {
-        commandsManager.runCommand('arrowTextCallback', {
-          callback,
-          eventDetails,
-        });
-      },
+  toolGroupService.createToolGroupAndAddTools(toolGroupIds.PT, {
+    ...tools,
+    passive: [...tools.passive, { toolName: 'RectangleROIStartEndThreshold' }],
+  });
 
-      changeTextCallback: (data, eventDetails, callback) =>
-        commandsManager.runCommand('arrowTextCallback', {
-          callback,
-          data,
-          eventDetails,
-        }),
-    },
-    [brushInstanceNames.CircularBrush]: {
-      activeStrategy: brushStrategies.CircularBrush,
-    },
-    [brushInstanceNames.CircularEraser]: {
-      activeStrategy: brushStrategies.CircularEraser,
-    },
-    [brushInstanceNames.SphereBrush]: {
-      activeStrategy: brushStrategies.SphereBrush,
-    },
-    [brushInstanceNames.SphereEraser]: {
-      activeStrategy: brushStrategies.SphereEraser,
-    },
-    [brushInstanceNames.ThresholdBrush]: {
-      activeStrategy: brushStrategies.ThresholdBrush,
-    },
-  };
+  toolGroupService.createToolGroupAndAddTools(toolGroupIds.Fusion, {
+    ...tools,
+    passive: [...tools.passive, { toolName: 'RectangleROIStartEndThreshold' }],
+  });
 
-  toolGroupService.createToolGroupAndAddTools(
-    toolGroupIds.PT,
-    {
-      ...tools,
-      passive: [...tools.passive, { toolName: 'RectangleROIStartEndThreshold' }],
-    },
-    toolsConfig
-  );
-
-  toolGroupService.createToolGroupAndAddTools(
-    toolGroupIds.Fusion,
-    {
-      ...tools,
-      passive: [...tools.passive, { toolName: 'RectangleROIStartEndThreshold' }],
-    },
-    toolsConfig
-  );
-
-  toolGroupService.createToolGroupAndAddTools(toolGroupIds.default, tools, toolsConfig);
+  toolGroupService.createToolGroupAndAddTools(toolGroupIds.default, tools);
 }
 
 function initToolGroups({ toolNames, Enums, toolGroupService, commandsManager }) {

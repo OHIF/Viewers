@@ -95,7 +95,13 @@ const ViewportWindowLevel = ({
       return undefined;
     }
 
-    const { scalarData, imageData } = volumeImageData;
+    const { imageData } = volumeImageData;
+    let scalarData = volume.scalarData;
+
+    if (volume.numTimePoints > 1) {
+      scalarData = volume.getScalarData(Math.round(volume.numTimePoints / 2));
+    }
+
     const range = imageData.computeHistogram(imageData.getBounds());
     const { minimum: min, maximum: max } = range;
     const calcHistOptions = {
@@ -261,7 +267,7 @@ const ViewportWindowLevel = ({
           // TODO: find a proper way to fix the histogram
           const options = {
             min: modality === 'PT' ? 0.1 : -999,
-            max: modality === 'PT' ? 5 : 2000,
+            max: modality === 'PT' ? 5 : 10000,
           };
 
           const histogram =
@@ -437,7 +443,7 @@ const ViewportWindowLevel = ({
       {windowLevels.map((windowLevel, i) => (
         <WindowLevel
           key={windowLevel.volumeId}
-          title={`Winddow Level (${windowLevel.modality})`}
+          title={`Window Level (${windowLevel.modality})`}
           histogram={windowLevel.histogram}
           voi={windowLevel.voi}
           step={windowLevel.step}

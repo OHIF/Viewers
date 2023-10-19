@@ -280,8 +280,18 @@ export default class ToolGroupService {
     }
 
     const toolGroup = this.getToolGroup(toolGroupId);
+    const toolGroupViewportIds = toolGroup?.getViewportIds?.();
 
-    if (!toolGroup) {
+    // if toolGroup has been destroyed, or its viewports have been removed
+    if (!toolGroupViewportIds || !toolGroupViewportIds.length) {
+      return;
+    }
+
+    const filteredViewports = Array.from(viewports.values()).filter(viewport => {
+      return toolGroupViewportIds.includes(viewport.viewportId);
+    });
+
+    if (!filteredViewports.length) {
       return;
     }
 
