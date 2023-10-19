@@ -2,6 +2,7 @@ const DEFAULT_COLORMAP = '2hot';
 const toolGroupIds = {
   pt: 'dynamic4D-pt',
   fusion: 'dynamic4D-fusion',
+  ct: 'dynamic4D-ct',
 };
 
 function getPTOptions({
@@ -177,6 +178,12 @@ function getFusionViewports() {
           },
           {
             type: 'voi',
+            id: 'ctWLSync',
+            source: true,
+            target: true,
+          },
+          {
+            type: 'voi',
             id: 'ptFusionWLSync',
             source: true,
             target: false,
@@ -213,6 +220,12 @@ function getFusionViewports() {
           {
             type: 'voi',
             id: 'ptWLSync',
+            source: true,
+            target: true,
+          },
+          {
+            type: 'voi',
+            id: 'ctWLSync',
             source: true,
             target: true,
           },
@@ -259,6 +272,12 @@ function getFusionViewports() {
           },
           {
             type: 'voi',
+            id: 'ctWLSync',
+            source: true,
+            target: true,
+          },
+          {
+            type: 'voi',
             id: 'ptFusionWLSync',
             source: true,
             target: false,
@@ -296,6 +315,101 @@ function getSeriesChartViewport() {
       },
     ],
   };
+}
+
+function getCTViewports() {
+  return [
+    {
+      viewportOptions: {
+        viewportId: 'ctAxial',
+        viewportType: 'volume',
+        orientation: 'axial',
+        toolGroupId: toolGroupIds.ct,
+        initialImageOptions: {
+          preset: 'middle', // 'first', 'last', 'middle'
+        },
+        syncGroups: [
+          {
+            type: 'cameraPosition',
+            id: 'axialSync',
+            source: true,
+            target: true,
+          },
+          {
+            type: 'voi',
+            id: 'ctWLSync',
+            source: true,
+            target: true,
+          },
+        ],
+      },
+      displaySets: [
+        {
+          id: 'ctDisplaySet',
+        },
+      ],
+    },
+    {
+      viewportOptions: {
+        viewportId: 'ctSagittal',
+        viewportType: 'volume',
+        orientation: 'sagittal',
+        toolGroupId: toolGroupIds.ct,
+        initialImageOptions: {
+          index: 600,
+        },
+        syncGroups: [
+          {
+            type: 'cameraPosition',
+            id: 'sagittalSync',
+            source: true,
+            target: true,
+          },
+          {
+            type: 'voi',
+            id: 'ctWLSync',
+            source: true,
+            target: true,
+          },
+        ],
+      },
+      displaySets: [
+        {
+          id: 'ctDisplaySet',
+        },
+      ],
+    },
+    {
+      viewportOptions: {
+        viewportId: 'ctCoronal',
+        viewportType: 'volume',
+        orientation: 'coronal',
+        toolGroupId: toolGroupIds.ct,
+        initialImageOptions: {
+          index: 600,
+        },
+        syncGroups: [
+          {
+            type: 'cameraPosition',
+            id: 'coronalSync',
+            source: true,
+            target: true,
+          },
+          {
+            type: 'voi',
+            id: 'ctWLSync',
+            source: true,
+            target: true,
+          },
+        ],
+      },
+      displaySets: [
+        {
+          id: 'ctDisplaySet',
+        },
+      ],
+    },
+  ];
 }
 
 const defaultProtocol = {
@@ -449,25 +563,11 @@ const defaultProtocol = {
       viewportStructure: {
         layoutType: 'grid',
         properties: {
-          rows: 2,
+          rows: 3,
           columns: 3,
         },
       },
-      viewports: [...getFusionViewports(), ...getPTViewports()],
-      createdDate: '2023-01-01T00:00:00.000Z',
-    },
-
-    {
-      id: 'review',
-      name: 'Review',
-      viewportStructure: {
-        layoutType: 'grid',
-        properties: {
-          rows: 1,
-          columns: 3,
-        },
-      },
-      viewports: [...getFusionViewports()],
+      viewports: [...getFusionViewports(), ...getCTViewports(), ...getPTViewports()],
       createdDate: '2023-01-01T00:00:00.000Z',
     },
 
@@ -486,8 +586,8 @@ const defaultProtocol = {
     },
 
     {
-      id: 'kinectAnalysis',
-      name: 'Kinect Analysis',
+      id: 'kineticAnalysis',
+      name: 'Kinetic Analysis',
       viewportStructure: {
         layoutType: 'grid',
         properties: {
@@ -521,7 +621,7 @@ const defaultProtocol = {
           ],
         },
       },
-      viewports: [...getPTViewports(), getSeriesChartViewport()],
+      viewports: [...getFusionViewports(), getSeriesChartViewport()],
       createdDate: '2023-01-01T00:00:00.000Z',
     },
   ],

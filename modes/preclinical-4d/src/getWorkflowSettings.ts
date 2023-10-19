@@ -67,16 +67,6 @@ function getWorkflowSettings(appContext) {
         },
       },
       {
-        id: 'review',
-        name: 'Review',
-        layout: defaultLayout,
-        toolbar: defaultToolbar,
-        hangingProtocol: {
-          protocolId: 'default4D',
-          stageId: 'review',
-        },
-      },
-      {
         id: 'roiQuantification',
         name: 'ROI Quantification',
         layout: {
@@ -93,12 +83,12 @@ function getWorkflowSettings(appContext) {
       },
       {
         id: 'kineticAnalysis',
-        name: 'Kinect Analysis',
+        name: 'Kinetic Analysis',
         layout: defaultLayout,
         toolbar: defaultToolbar,
         hangingProtocol: {
           protocolId: 'default4D',
-          stageId: 'kinectAnalysis',
+          stageId: 'kineticAnalysis',
         },
         onEnter: [
           {

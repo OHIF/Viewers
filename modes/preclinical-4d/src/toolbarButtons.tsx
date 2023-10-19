@@ -57,7 +57,12 @@ function _createCommands(
   toolGroupIds?: string[],
   commandOptions?: any
 ) {
-  toolGroupIds = toolGroupIds ?? [ToolGroupIds.default, ToolGroupIds.PT, ToolGroupIds.Fusion];
+  toolGroupIds = toolGroupIds ?? [
+    ToolGroupIds.default,
+    ToolGroupIds.PT,
+    ToolGroupIds.Fusion,
+    ToolGroupIds.CT,
+  ];
 
   return toolGroupIds.map(toolGroupId => ({
     /* It's a command that is being run when the button is clicked. */

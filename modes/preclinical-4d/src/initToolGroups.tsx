@@ -2,6 +2,7 @@ const toolGroupIds = {
   default: 'dynamic4D-default',
   PT: 'dynamic4D-pt',
   Fusion: 'dynamic4D-fusion',
+  CT: 'dynamic4D-ct',
 };
 
 const brushInstanceNames = {
@@ -103,6 +104,11 @@ function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager) {
   };
 
   toolGroupService.createToolGroupAndAddTools(toolGroupIds.PT, {
+    ...tools,
+    passive: [...tools.passive, { toolName: 'RectangleROIStartEndThreshold' }],
+  });
+
+  toolGroupService.createToolGroupAndAddTools(toolGroupIds.CT, {
     ...tools,
     passive: [...tools.passive, { toolName: 'RectangleROIStartEndThreshold' }],
   });
