@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import debounce from 'lodash.debounce';
 
@@ -47,6 +47,10 @@ const CinePlayer: React.FC<CinePlayerProps> = ({
     setFrameRate(frameRate);
     debouncedSetFrameRate(frameRate);
   };
+
+  useEffect(() => {
+    setFrameRate(defaultFrameRate);
+  }, [defaultFrameRate]);
 
   return (
     <div
