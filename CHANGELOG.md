@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-beta.1](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.0...v3.8.0-beta.1) (2023-10-19)
+
+
+### Bug Fixes
+
+* **calibration:** No calibration popup caused by perhaps an unused code optimization for production builds ([#3736](https://github.com/OHIF/Viewers/issues/3736)) ([93d798d](https://github.com/OHIF/Viewers/commit/93d798db99c0dee53ef73c376f8a74ac3049cf3f))
+
+
+
+
+
 # [3.8.0-beta.0](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.110...v3.8.0-beta.0) (2023-10-12)
 
 **Note:** Version bump only for package ohif-monorepo-root
