@@ -101,6 +101,7 @@ jobs:
       - run:
           name: Copy in IDC favicons
           command: |
+            ls -lasR ~/ViewersV3
             cp ~/ViewersV3/idc-assets/favicon-nci.ico ~/ViewersV3/platform/v3/public/assets/favicon.ico
             cp ~/ViewersV3/idc-assets/favicon-nci-16x16.png ~/ViewersV3/platform/v3/public/assets/favicon-16x16.png
             cp ~/ViewersV3/idc-assets/favicon-nci-32x32.png ~/ViewersV3/platform/v3/public/assets/favicon-32x32.png
