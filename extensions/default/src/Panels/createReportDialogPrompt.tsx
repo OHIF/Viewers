@@ -1,5 +1,5 @@
-/* eslint-disable react/display-name */
 import React from 'react';
+
 import { ButtonEnums, Dialog, Input, Select } from '@ohif/ui';
 
 export const CREATE_REPORT_DIALOG_RESPONSE = {
@@ -7,7 +7,7 @@ export const CREATE_REPORT_DIALOG_RESPONSE = {
   CREATE_REPORT: 1,
 };
 
-export default function createReportDialogPrompt(uiDialogService, { extensionManager }) {
+export default function CreateReportDialogPrompt(uiDialogService, { extensionManager }) {
   return new Promise(function (resolve, reject) {
     let dialogId = undefined;
 
@@ -97,33 +97,38 @@ export default function createReportDialogPrompt(uiDialogService, { extensionMan
           };
           return (
             <>
-              {dataSourcesOpts.length > 1 && (
-                <Select
-                  closeMenuOnSelect={true}
-                  className="border-primary-main mr-2 bg-black"
-                  options={dataSourcesOpts}
-                  placeholder={
-                    dataSourcesOpts.find(option => option.value === value.dataSourceName)
-                      .placeHolder
-                  }
-                  value={value.dataSourceName}
-                  onChange={evt => {
-                    setValue(v => ({ ...v, dataSourceName: evt.value }));
-                  }}
-                  isClearable={false}
-                />
+              {dataSourcesOpts.length > 1 && window.config?.allowMultiSelectExport && (
+                <div>
+                  <label className="text-[14px] leading-[1.2] text-white">Data Source</label>
+                  <Select
+                    closeMenuOnSelect={true}
+                    className="border-primary-main  mt-2 bg-black"
+                    options={dataSourcesOpts}
+                    placeholder={
+                      dataSourcesOpts.find(option => option.value === value.dataSourceName)
+                        .placeHolder
+                    }
+                    value={value.dataSourceName}
+                    onChange={evt => {
+                      setValue(v => ({ ...v, dataSourceName: evt.value }));
+                    }}
+                    isClearable={false}
+                  />
+                </div>
               )}
-              <Input
-                autoFocus
-                label="Enter the report name"
-                labelClassName="text-white text-[14px] leading-[1.2]"
-                className="border-primary-main bg-black"
-                type="text"
-                value={value.label}
-                onChange={onChangeHandler}
-                onKeyPress={onKeyPressHandler}
-                required
-              />
+              <div className="mt-3">
+                <Input
+                  autoFocus
+                  label="Enter the report name"
+                  labelClassName="text-white text-[14px] leading-[1.2]"
+                  className="border-primary-main bg-black"
+                  type="text"
+                  value={value.label}
+                  onChange={onChangeHandler}
+                  onKeyPress={onKeyPressHandler}
+                  required
+                />
+              </div>
             </>
           );
         },

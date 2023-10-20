@@ -3,6 +3,52 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-beta.2](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.1...v3.8.0-beta.2) (2023-10-19)
+
+
+### Bug Fixes
+
+* **cine:** Use the frame rate specified in DICOM and optionally auto play cine ([#3735](https://github.com/OHIF/Viewers/issues/3735)) ([d9258ec](https://github.com/OHIF/Viewers/commit/d9258eca70587cf4dc18be4e56c79b16bae73d6d))
+
+
+
+
+
+# [3.8.0-beta.1](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.0...v3.8.0-beta.1) (2023-10-19)
+
+
+### Bug Fixes
+
+* **calibration:** No calibration popup caused by perhaps an unused code optimization for production builds ([#3736](https://github.com/OHIF/Viewers/issues/3736)) ([93d798d](https://github.com/OHIF/Viewers/commit/93d798db99c0dee53ef73c376f8a74ac3049cf3f))
+
+
+
+
+
+# [3.8.0-beta.0](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.110...v3.8.0-beta.0) (2023-10-12)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.7.0-beta.110](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.109...v3.7.0-beta.110) (2023-10-11)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.7.0-beta.109](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.108...v3.7.0-beta.109) (2023-10-11)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
 # [3.7.0-beta.108](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.107...v3.7.0-beta.108) (2023-10-10)
 
 **Note:** Version bump only for package @ohif/extension-cornerstone
