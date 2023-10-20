@@ -322,16 +322,11 @@ export default class ToolbarService extends PubSubService {
    * identifiers to schema/values that can be used to render the buttons.
    *
    * @param key - the tool group id
-   * @param props - to apply to the secitons
+   * @param props - to apply to the sections
    * @param defaultKey - what key to return if the given section isn't defined
    */
-  getButtonSection(
-    key: string,
-    props?: Record<string, unknown>,
-    defaultKey = 'primary'
-  ) {
-    const buttonSectionIds =
-      this.buttonSections[key] || this.buttonSections[defaultKey];
+  getButtonSection(key: string, props?: Record<string, unknown>, defaultKey = 'primary') {
+    const buttonSectionIds = this.buttonSections[key] || this.buttonSections[defaultKey];
     const buttonsInSection = [];
 
     if (buttonSectionIds && buttonSectionIds.length !== 0) {
