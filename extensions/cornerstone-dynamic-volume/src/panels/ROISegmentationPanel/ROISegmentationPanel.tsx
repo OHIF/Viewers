@@ -249,7 +249,7 @@ export default function ROISegmentationPanel({
               className="grow"
               onClick={() => {
                 setLabelmapLoading(true);
-                runCommand('createNewLabelmapFromPT', {
+                runCommand('createNewLabelMapForDynamicVolume', {
                   label: `Segmentation ${nextSegmentationSequenceId}`,
                 }).then(() => {
                   setNextSegmentationSequenceId(prev => prev + 1);

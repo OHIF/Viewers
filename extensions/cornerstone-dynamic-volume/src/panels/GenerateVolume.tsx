@@ -41,7 +41,6 @@ const GenerateVolume = ({
         <div className="flex space-x-2">
           <Button
             onClick={onGenerateImage}
-            disabled={displayingComputedVolume}
             className="w-1/2"
           >
             Generate

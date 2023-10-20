@@ -111,15 +111,42 @@ function _getTimePointsData(volume) {
   return { timePoints, timePointsUnit };
 }
 
-function _getSegmentationData(segmentation, volumesTimePointsCache) {
-  const { representationData } = segmentation;
-  const { referencedVolumeId } = representationData[LABELMAP];
-  const referencedVolume = cs.cache.getVolume(referencedVolumeId);
+function _getSegmentationData(segmentation, volumesTimePointsCache, displaySetService) {
+  const displaySets = displaySetService.getActiveDisplaySets();
+
+  const dynamic4DDisplaySet = displaySets.find(displaySet => {
+    const anInstance = displaySet.instances?.[0];
+
+    if (anInstance) {
+      return (
+        anInstance.FrameReferenceTime !== undefined || anInstance.NumberOfTimeSlices !== undefined
+      );
+    }
+
+    return false;
+  });
+
+  // const referencedDynamicVolume = cs.cache.getVolume(dynamic4DDisplaySet.displaySetInstanceUID);
+  let volumeCacheKey: string | undefined;
+  const volumeId = dynamic4DDisplaySet.displaySetInstanceUID;
+
+  for (const [key] of cs.cache._volumeCache) {
+    if (key.includes(volumeId)) {
+      volumeCacheKey = key;
+      break;
+    }
+  }
+
+  let referencedDynamicVolume;
+  if (volumeCacheKey) {
+    referencedDynamicVolume = cs.cache.getVolume(volumeCacheKey);
+  }
+
   const { StudyInstanceUID, StudyDescription } = DicomMetadataStore.getInstanceByImageId(
-    referencedVolume.imageIds[0]
+    referencedDynamicVolume.imageIds[0]
   );
 
-  const segPixelDataInTime = csToolsUtils.dynamicVolume.getDataInTime(referencedVolume, {
+  const segPixelDataInTime = csToolsUtils.dynamicVolume.getDataInTime(referencedDynamicVolume, {
     maskVolumeId: segmentation.id,
   }) as number[][];
 
@@ -129,11 +156,11 @@ function _getSegmentationData(segmentation, volumesTimePointsCache) {
     return [];
   }
 
-  let timePointsData = volumesTimePointsCache.get(referencedVolume);
+  let timePointsData = volumesTimePointsCache.get(referencedDynamicVolume);
 
   if (!timePointsData) {
-    timePointsData = _getTimePointsData(referencedVolume);
-    volumesTimePointsCache.set(referencedVolume, timePointsData);
+    timePointsData = _getTimePointsData(referencedDynamicVolume);
+    volumesTimePointsCache.set(referencedDynamicVolume, timePointsData);
   }
 
   const { timePoints, timePointsUnit } = timePointsData;
@@ -171,14 +198,14 @@ function _getSegmentationData(segmentation, volumesTimePointsCache) {
   };
 }
 
-function _getInstanceFromSegmentations(segmentations) {
+function _getInstanceFromSegmentations(segmentations, displaySetService) {
   if (!segmentations.length) {
     return;
   }
 
   const volumesTimePointsCache = new WeakMap();
   const segmentationsData = segmentations.map(segmentation =>
-    _getSegmentationData(segmentation, volumesTimePointsCache)
+    _getSegmentationData(segmentation, volumesTimePointsCache, displaySetService)
   );
 
   const { date: seriesDate, time: seriesTime } = _getDateTimeStr();
@@ -219,9 +246,10 @@ function _getInstanceFromSegmentations(segmentations) {
 
 function updateSegmentationsChartDisplaySet({ appContext }): void {
   const { servicesManager } = appContext;
-  const { segmentationService } = servicesManager.services;
+  const { segmentationService, displaySetService } = servicesManager.services;
   const segmentations = segmentationService.getSegmentations();
-  const { seriesMetadata, instance } = _getInstanceFromSegmentations(segmentations) ?? {};
+  const { seriesMetadata, instance } =
+    _getInstanceFromSegmentations(segmentations, displaySetService) ?? {};
 
   if (seriesMetadata && instance) {
     // An event is triggered after adding the instance and the displaySet is created

@@ -48,45 +48,27 @@ function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager) {
       { toolName: toolNames.RectangleROI },
       { toolName: toolNames.RectangleROIThreshold },
       { toolName: toolNames.RectangleScissors },
-      { toolName: toolNames.CircleScissors },
-      { toolName: toolNames.SphereScissors },
       { toolName: toolNames.PaintFill },
       { toolName: toolNames.StackScroll },
       { toolName: toolNames.Angle },
       { toolName: toolNames.CobbAngle },
       { toolName: toolNames.Magnify },
-      {
-        toolName: brushInstanceNames.CircularBrush,
-        parentClassName: toolNames.Brush,
-      },
-      {
-        toolName: brushInstanceNames.CircularEraser,
-        parentClassName: toolNames.Brush,
-        configuration: {
-          activeStrategy: brushStrategies.CircularBrush,
-        },
-      },
-      {
-        toolName: brushInstanceNames.SphereBrush,
-        parentClassName: toolNames.Brush,
-        configuration: {
-          activeStrategy: brushStrategies.SphereBrush,
-        },
-      },
-      {
-        toolName: brushInstanceNames.SphereEraser,
-        parentClassName: toolNames.Brush,
-        configuration: {
-          activeStrategy: brushStrategies.SphereEraser,
-        },
-      },
-      {
-        toolName: brushInstanceNames.ThresholdBrush,
-        parentClassName: toolNames.Brush,
-        configuration: {
-          activeStrategy: brushStrategies.ThresholdBrush,
-        },
-      },
+      ...Object.keys(brushInstanceNames)
+        .map(brushName => ({
+          toolName: brushName,
+          parentTool: 'Brush',
+          configuration: {
+            activeStrategy: brushStrategies[brushName],
+          },
+        }))
+        .concat([
+          { toolName: toolNames.CircleScissors },
+          { toolName: toolNames.RectangleScissors },
+          { toolName: toolNames.SphereScissors },
+          { toolName: toolNames.StackScroll },
+          { toolName: toolNames.Magnify },
+          { toolName: toolNames.SegmentationDisplay },
+        ]),
     ],
     enabled: [{ toolName: toolNames.SegmentationDisplay }],
     disabled: [

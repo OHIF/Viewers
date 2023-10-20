@@ -28,8 +28,7 @@ const volumeLoaderScheme = 'cornerstoneStreamingDynamicImageVolume'; // Loader i
 const SOPClassHandlerId = '@ohif/extension-default.sopClassHandlerModule.stack';
 
 export default function PanelGenerateImage({ servicesManager, commandsManager }) {
-  const { viewportGridService, cornerstoneViewportService, hangingProtocolService } =
-    servicesManager.services;
+  const { cornerstoneViewportService } = servicesManager.services;
   const [options, setOptions] = useState(DEFAULT_OPTIONS);
   const [timePointsRange, setTimePointsRange] = useState([]);
   const [timePointsToUseForGenerate, setTimePointsToUseForGenerate] = useState([]);
@@ -37,7 +36,7 @@ export default function PanelGenerateImage({ servicesManager, commandsManager })
   const [dynamicVolume, setDynamicVolume] = useState(null);
   const [frameRate, setFrameRate] = useState(20);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [timePointRendered, setTimePointRendered] = useState(null); // eslint-disable-line no-unused-vars
+  const [timePointRendered, setTimePointRendered] = useState(null);
   const [displayingComputedVolume, setDisplayingComputedVolume] = useState(false);
   const uuidComputedVolume = useRef(csUtils.uuidv4());
   const uuidDynamicVolume = useRef(null);
@@ -112,7 +111,7 @@ export default function PanelGenerateImage({ servicesManager, commandsManager })
   }, [cornerstoneViewportService]);
 
   function renderGeneratedImage(displaySet) {
-    commandsManager.runCommand('setDerviedDisplaySetsInGridViewports', {
+    commandsManager.runCommand('swapDynamicWithComputedDisplaySet', {
       displaySet,
     });
   }
@@ -126,9 +125,13 @@ export default function PanelGenerateImage({ servicesManager, commandsManager })
       return;
     }
 
-    await createComputedVolume(dynamicVolume.volumeId, computedVolumeId);
+    let computedVolume = cache.getVolume(computedVolumeId);
 
-    const computedVolume = cache.getVolume(computedVolumeId);
+    if (!computedVolume) {
+      await createComputedVolume(dynamicVolume.volumeId, computedVolumeId);
+      computedVolume = cache.getVolume(computedVolumeId);
+    }
+
     const dataInTime = cstUtils.dynamicVolume.generateImageFromTimeData(
       dynamicVolume,
       options.Operation,
@@ -145,19 +148,21 @@ export default function PanelGenerateImage({ servicesManager, commandsManager })
     // If computed display set does not exist, create an object to be used as
     // the displaySet. If it does exist, update the image data and vtkTexture
     if (!computedDisplaySet) {
-      const obj = {
-        [uuidComputedVolume.current]: {
-          volumeLoaderSchema: computedVolume.volumeId.split(':')[0],
-          displaySetInstanceUID: uuidComputedVolume.current,
-          SOPClassHandlerId: SOPClassHandlerId,
-          Modality: dynamicVolume.metadata.Modality,
-          isMultiFrame: false,
-          numImageFrames: 1,
-          uid: uuidComputedVolume.current,
-        },
+      const displaySet = {
+        volumeLoaderSchema: computedVolume.volumeId.split(':')[0],
+        displaySetInstanceUID: uuidComputedVolume.current,
+        SOPClassHandlerId: SOPClassHandlerId,
+        Modality: dynamicVolume.metadata.Modality,
+        isMultiFrame: false,
+        numImageFrames: 1,
+        uid: uuidComputedVolume.current,
+        referenceDisplaySetUID: dynamicVolume.volumeId.split(':')[1],
+        madeInClient: true,
+        FrameOfReferenceUID: dynamicVolume.metadata.FrameOfReferenceUID,
+        isDerived: true,
       };
-      setComputedDisplaySet(obj);
-      renderGeneratedImage(obj);
+      setComputedDisplaySet(displaySet);
+      renderGeneratedImage(displaySet);
     } else {
       commandsManager.runCommand('updateVolumeData', {
         volume: computedVolume,
@@ -165,25 +170,17 @@ export default function PanelGenerateImage({ servicesManager, commandsManager })
       // Check if viewport is currently displaying the computed volume, if so,
       // call render on the viewports to update the image, if not, call
       // renderGeneratedImage
-      if (!cache.getVolume(dynamicVolumeId)) {
-        for (const viewportId of viewports.keys()) {
-          const viewportForRendering =
-            cornerstoneViewportService.getCornerstoneViewport(viewportId);
-          viewportForRendering.render();
-        }
-      } else {
-        renderGeneratedImage(computedDisplaySet);
-      }
+      // if (!cache.getVolume(dynamicVolumeId)) {
+      //   for (const viewportId of viewports.keys()) {
+      //     const viewportForRendering =
+      //       cornerstoneViewportService.getCornerstoneViewport(viewportId);
+      //     viewportForRendering.render();
+      //   }
+      // } else {
+      cornerstoneViewportService.getRenderingEngine().render();
+      renderGeneratedImage(computedDisplaySet);
+      // }
     }
-  }
-
-  function returnTo4D() {
-    const updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
-      activeViewportId,
-      uuidDynamicVolume.current
-    );
-    viewportGridService.setDisplaySetsForViewports(updatedViewports);
-    setDisplayingComputedVolume(false);
   }
 
   const handlePlay = () => {
@@ -242,14 +239,14 @@ export default function PanelGenerateImage({ servicesManager, commandsManager })
               <Button
                 onClick={handlePlay}
                 className="mr-1 grow basis-0"
-                disabled={isPlaying}
+                disabled={!displayingComputedVolume && isPlaying}
               >
                 Play
               </Button>
               <Button
                 onClick={handleStop}
                 className="ml-1 grow basis-0"
-                disabled={!isPlaying}
+                disabled={!displayingComputedVolume && !isPlaying}
               >
                 Pause
               </Button>
@@ -296,7 +293,7 @@ export default function PanelGenerateImage({ servicesManager, commandsManager })
           options={options}
           handleGenerateOptionsChange={handleGenerateOptionsChange}
           onGenerateImage={onGenerateImage}
-          returnTo4D={returnTo4D}
+          returnTo4D={() => commandsManager.runCommand('swapComputedWithDynamicDisplaySet', {})}
           displayingComputedVolume={displayingComputedVolume}
         />
       </div>

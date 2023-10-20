@@ -207,8 +207,7 @@ function getFusionViewports() {
         orientation: 'sagittal',
         toolGroupId: toolGroupIds.fusion,
         initialImageOptions: {
-          // preset: 'middle', // 'first', 'last', 'middle'
-          index: 600,
+          preset: 'middle', // 'first', 'last', 'middle'
         },
         syncGroups: [
           {
@@ -254,8 +253,7 @@ function getFusionViewports() {
         orientation: 'coronal',
         toolGroupId: toolGroupIds.fusion,
         initialImageOptions: {
-          // preset: 'middle', // 'first', 'last', 'middle'
-          index: 600,
+          preset: 'middle', // 'first', 'last', 'middle'
         },
         syncGroups: [
           {
@@ -356,7 +354,7 @@ function getCTViewports() {
         orientation: 'sagittal',
         toolGroupId: toolGroupIds.ct,
         initialImageOptions: {
-          index: 600,
+          preset: 'middle',
         },
         syncGroups: [
           {
@@ -386,7 +384,7 @@ function getCTViewports() {
         orientation: 'coronal',
         toolGroupId: toolGroupIds.ct,
         initialImageOptions: {
-          index: 600,
+          preset: 'middle',
         },
         syncGroups: [
           {
