@@ -102,9 +102,9 @@ jobs:
           name: Copy in IDC favicons
           command: |
             ls -lasR ~/ViewersV3
-            cp ~/ViewersV3/idc-assets/favicon-nci.ico ~/ViewersV3/platform/v3/public/assets/favicon.ico
-            cp ~/ViewersV3/idc-assets/favicon-nci-16x16.png ~/ViewersV3/platform/v3/public/assets/favicon-16x16.png
-            cp ~/ViewersV3/idc-assets/favicon-nci-32x32.png ~/ViewersV3/platform/v3/public/assets/favicon-32x32.png
+            cp ~/ViewersV3/idc-assets/favicon-nci.ico ~/ViewersV3/platform/app/public/assets/favicon.ico
+            cp ~/ViewersV3/idc-assets/favicon-nci-16x16.png ~/ViewersV3/platform/app/public/assets/favicon-16x16.png
+            cp ~/ViewersV3/idc-assets/favicon-nci-32x32.png ~/ViewersV3/platform/app/public/assets/favicon-32x32.png
       - run:
           name: Build Viewer
           command: |
@@ -138,8 +138,8 @@ jobs:
       - run:
           name: Customize Config
           command: |
-            /bin/bash ./idc-deploy-shell/prepare_config.sh > platform/v3/dist/app-config.js
-            cp ~/ViewersV3/idc-assets/IDC-Logo-WHITE.svg platform/v3/dist/IDC-Logo-WHITE.svg
+            /bin/bash ./idc-deploy-shell/prepare_config.sh > platform/app/dist/app-config.js
+            cp ~/ViewersV3/idc-assets/IDC-Logo-WHITE.svg platform/app/dist/IDC-Logo-WHITE.svg
       - run:
           name: Copy to cloud
           command: |
