@@ -1,12 +1,75 @@
 window.config = {
-  // default: '/'
   routerBasename: '/',
+  whiteLabeling: {
+    createLogoComponentFn: function(React) {
+      return React.createElement(
+        'a',
+        {
+          target: '_self',
+          rel: 'noopener noreferrer',
+          className: 'text-purple-600 line-through',
+          href: '_X___IDC__LOGO__LINK___Y_',
+        },
+        React.createElement('img', {
+          src: '/assets/idc.svg',
+          className: 'w-14 h-14',
+        })
+      );
+    },
+  },
   extensions: [],
-  disableMeasurementPanel: false,
-  splitQueryParameterCalls: true,
-  disableServersCache: true,
+  modes: [],
+  customizationService: {},
   showStudyList: false,
-  filterQueryParam: true,
+  // some windows systems have issues with more than 3 web workers
+  maxNumberOfWebWorkers: 3,
+  // below flag is for performance reasons, but it might not work for all servers
+  showWarningMessageForCrossOrigin: true,
+  showCPUFallbackMessage: true,
+  showLoadingIndicator: true,
+  strictZSpacingForVolumeViewport: true,
+  maxNumRequests: {
+    interaction: 100,
+    thumbnail: 75,
+    // Prefetch number is dependent on the http protocol. For http 2 or
+    // above, the number of requests can be go a lot higher.
+    prefetch: 25,
+  },
+  // filterQueryParam: false,
+  defaultDataSourceName: 'idc',
+  /* Dynamic config allows user to pass "configUrl" query string this allows to load config without recompiling application. The regex will ensure valid configuration source */
+  // dangerouslyUseDynamicConfig: {
+  //   enabled: true,
+  //   // regex will ensure valid configuration source and default is /.*/ which matches any character. To use this, setup your own regex to choose a specific source of configuration only.
+  //   // Example 1, to allow numbers and letters in an absolute or sub-path only.
+  //   // regex: /(0-9A-Za-z.]+)(\/[0-9A-Za-z.]+)*/
+  //   // Example 2, to restricts to either hosptial.com or othersite.com.
+  //   // regex: /(https:\/\/hospital.com(\/[0-9A-Za-z.]+)*)|(https:\/\/othersite.com(\/[0-9A-Za-z.]+)*)/
+  //   regex: /.*/,
+  // },
+  dataSources: [
+    {
+      friendlyName: 'IDC Data Source',
+      namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
+      sourceName: 'idc',
+      configuration: {
+        name: 'idc',
+        wadoUriRoot: '_X___IDC__Z__ROOT___Y_',
+        qidoRoot: '_X___IDC__Z__ROOT___Y_',
+        wadoRoot: '_X___IDC__Z__ROOT___Y_',
+        qidoSupportsIncludeField: false,
+        supportsReject: false,
+        imageRendering: 'wadors',
+        thumbnailRendering: 'wadors',
+        enableStudyLazyLoad: true,
+        supportsFuzzyMatching: false,
+        supportsWildcard: false,
+        staticWado: true,
+        singlepart: 'bulkdata,video',
+        omitQuotationForMultipartRequest: true,
+      },
+    },
+  ],
   httpErrorHandler: error => {
     // This is 429 when rejected from the public idc sandbox too often.
     console.warn(error.status);
@@ -16,25 +79,7 @@ window.config = {
       window.location = '_X___IDC__Z__QUOTA___Y_';
     }
   },
-  servers: {
-    dicomWeb: [
-      {
-        name: 'IDC',
-        wadoUriRoot: '_X___IDC__Z__ROOT___Y_',
-        qidoRoot: '_X___IDC__Z__ROOT___Y_',
-        wadoRoot: '_X___IDC__Z__ROOT___Y_',
-        qidoSupportsIncludeField: true,
-        imageRendering: 'wadors',
-        thumbnailRendering: 'wadors',
-        enableStudyLazyLoad: true,
-      },
-    ],
-  },
-
-  // Extensions should be able to suggest default values for these?
-  // Or we can require that these be explicitly set
   hotkeys: [
-    // ~ Global
     {
       commandName: 'incrementActiveViewport',
       label: 'Next Viewport',
@@ -45,18 +90,16 @@ window.config = {
       label: 'Previous Viewport',
       keys: ['left'],
     },
-    // Supported Keys: https://craig.is/killing/mice
-    // ~ Cornerstone Extension
     { commandName: 'rotateViewportCW', label: 'Rotate Right', keys: ['r'] },
     { commandName: 'rotateViewportCCW', label: 'Rotate Left', keys: ['l'] },
     { commandName: 'invertViewport', label: 'Invert', keys: ['i'] },
     {
-      commandName: 'flipViewportVertical',
+      commandName: 'flipViewportHorizontal',
       label: 'Flip Horizontally',
       keys: ['h'],
     },
     {
-      commandName: 'flipViewportHorizontal',
+      commandName: 'flipViewportVertical',
       label: 'Flip Vertically',
       keys: ['v'],
     },
@@ -64,23 +107,24 @@ window.config = {
     { commandName: 'scaleDownViewport', label: 'Zoom Out', keys: ['-'] },
     { commandName: 'fitViewportToWindow', label: 'Zoom to Fit', keys: ['='] },
     { commandName: 'resetViewport', label: 'Reset', keys: ['space'] },
-    // clearAnnotations
     { commandName: 'nextImage', label: 'Next Image', keys: ['down'] },
     { commandName: 'previousImage', label: 'Previous Image', keys: ['up'] },
-    // firstImage
-    // lastImage
+    // {
+    //   commandName: 'previousViewportDisplaySet',
+    //   label: 'Previous Series',
+    //   keys: ['pagedown'],
+    // },
+    // {
+    //   commandName: 'nextViewportDisplaySet',
+    //   label: 'Next Series',
+    //   keys: ['pageup'],
+    // },
     {
-      commandName: 'previousViewportDisplaySet',
-      label: 'Previous Series',
-      keys: ['pagedown'],
+      commandName: 'setToolActive',
+      commandOptions: { toolName: 'Zoom' },
+      label: 'Zoom',
+      keys: ['z'],
     },
-    {
-      commandName: 'nextViewportDisplaySet',
-      label: 'Next Series',
-      keys: ['pageup'],
-    },
-    // ~ Cornerstone Tools
-    { commandName: 'setZoomTool', label: 'Zoom', keys: ['z'] },
     // ~ Window level presets
     {
       commandName: 'windowLevelPreset1',
@@ -128,26 +172,5 @@ window.config = {
       keys: ['9'],
     },
   ],
-  cornerstoneExtensionConfig: {},
-
-  whiteLabeling: {
-    /* Optional: Should return a React component to be rendered in the "Logo" section of the application's Top Navigation bar */
-    createLogoComponentFn: function(React) {
-      return React.createElement('a', {
-        target: '_self',
-        rel: 'noopener noreferrer',
-        className: 'header-brand',
-        href: '_X___IDC__LOGO__LINK___Y_',
-        style: {
-          display: 'block',
-          textIndent: '-9999px',
-          background: 'url(/IDC-Logo-WHITE.svg)',
-          backgroundSize: 'contain',
-          backgroundRepeat: 'no-repeat',
-          width: '200px',
-          height: '45px',
-        },
-      });
-    },
-  },
 };
+
