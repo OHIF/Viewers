@@ -32,6 +32,13 @@ const _generateReport = (measurementData, additionalFindingTypes, options = {}) 
 
   const { dataset } = report;
 
+  // The patient name must not be an Object and must be formatted as per DICOM's person name 
+  // value representation. https://dicom.nema.org/medical/dicom/current/output/chtml/part05/sect_6.2.html#sect_6.2.1.1
+  // Otherwise certain data sources (e.g. dcm4chee) will complain that the report's study 
+  // information does NOT match what the data source already has stored for that study.
+  // See https://github.com/OHIF/Viewers/issues/3648
+  dataset.PatientName = dataset.PatientName?.Alphabetic ?? dataset.PatientName;
+
   // Set the default character set as UTF-8
   // https://dicom.innolitics.com/ciods/nm-image/sop-common/00080005
   if (typeof dataset.SpecificCharacterSet === 'undefined') {
