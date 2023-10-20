@@ -300,9 +300,9 @@ export function ViewportGridProvider({ children, service }) {
     return viewportGridState;
   }, [viewportGridState]);
 
-  const getActiveViewportOption = (key: string, def?: string) => {
+  const getActiveViewportOption = (viewportOption: string) => {
     const { viewports, activeViewportId } = viewportGridState;
-    return viewports.get(activeViewportId)?.viewportOptions?.[key] ?? def;
+    return viewports.get(activeViewportId)?.viewportOptions?.[viewportOption];
   };
 
   const setActiveViewportId = useCallback(

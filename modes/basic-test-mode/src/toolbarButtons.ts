@@ -422,14 +422,15 @@ const toolbarButtons: Button[] = [
       type: 'tool',
       icon: 'tool-crosshair',
       label: 'Crosshairs',
-      defaultTool: 'WindowLevel',
-      commands: {
-        commandName: 'setToolActive',
-        commandOptions: {
-          toolGroupId: 'mpr',
-          toolName: 'Crosshairs',
+      commands: [
+        {
+          commandName: 'setToolActive',
+          commandOptions: {
+            toolGroupId: 'mpr',
+            toolName: 'Crosshairs',
+          },
         },
-      },
+      ],
     },
   },
   // More...
@@ -443,9 +444,11 @@ const toolbarButtons: Button[] = [
         'Reset',
         'tool-reset',
         'Reset View',
-        {
-          commandName: 'resetViewport',
-        },
+        [
+          {
+            commandName: 'resetViewport',
+          },
+        ],
         'Reset'
       ),
       secondary: {
@@ -459,9 +462,11 @@ const toolbarButtons: Button[] = [
           'Reset',
           'tool-reset',
           'Reset View',
-          {
-            commandName: 'resetViewport',
-          },
+          [
+            {
+              commandName: 'resetViewport',
+            },
+          ],
           'Reset'
         ),
         _createActionButton(
@@ -650,9 +655,11 @@ const toolbarButtons: Button[] = [
         'Reset',
         'tool-reset',
         'Reset View',
-        {
-          commandName: 'resetViewport',
-        },
+        [
+          {
+            commandName: 'resetViewport',
+          },
+        ],
         'Reset'
       ),
       secondary: {
@@ -666,9 +673,11 @@ const toolbarButtons: Button[] = [
           'Reset',
           'tool-reset',
           'Reset View',
-          {
-            commandName: 'resetViewport',
-          },
+          [
+            {
+              commandName: 'resetViewport',
+            },
+          ],
           'Reset'
         ),
         _createToolButton(

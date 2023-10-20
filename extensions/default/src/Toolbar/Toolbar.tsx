@@ -13,7 +13,7 @@ export default function Toolbar({
 
   useEffect(() => {
     const updateToolbar = () => {
-      const toolGroupId = viewportGridService.getActiveViewportOption('toolGroupId', 'default');
+      const toolGroupId = viewportGridService.getActiveViewportOption('toolGroupId') ?? 'default';
       setToolbarButtons(toolbarService.getButtonSection(toolGroupId));
     };
 

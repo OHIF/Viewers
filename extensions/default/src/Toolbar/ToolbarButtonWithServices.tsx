@@ -7,7 +7,6 @@ function ToolbarButtonWithServices({
   type,
   commands,
   onInteraction,
-  defaultTool,
   servicesManager,
   ...props
 }) {
@@ -43,7 +42,6 @@ function ToolbarButtonWithServices({
       id={id}
       type={type}
       isActive={isActive}
-      defaultTool={defaultTool}
       onInteraction={onInteraction}
       {...props}
     />
@@ -60,7 +58,6 @@ ToolbarButtonWithServices.propTypes = {
     })
   ),
   onInteraction: PropTypes.func.isRequired,
-  defaultTool: PropTypes.string,
   servicesManager: PropTypes.shape({
     services: PropTypes.shape({
       toolbarService: PropTypes.shape({

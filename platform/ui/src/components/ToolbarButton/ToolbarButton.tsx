@@ -12,7 +12,6 @@ const ToolbarButton = ({
   icon,
   label,
   commands,
-  defaultTool,
   onInteraction,
   dropdownContent,
   //
@@ -57,7 +56,6 @@ const ToolbarButton = ({
             onInteraction({
               itemId: id,
               interactionType: type,
-              defaultTool,
               commands,
             });
           }}
@@ -83,8 +81,6 @@ ToolbarButton.propTypes = {
   /* Influences background/hover styling */
   type: PropTypes.oneOf(['action', 'toggle', 'tool']),
   id: PropTypes.string.isRequired,
-  defaultTool: PropTypes.string,
-  commands: PropTypes.object.isRequired,
   isActive: PropTypes.bool,
   className: PropTypes.string,
   commands: PropTypes.arrayOf(

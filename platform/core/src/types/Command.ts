@@ -10,5 +10,3 @@ export type RunCommand = Command | Command[];
 export interface Commands {
   commands: RunCommand;
 }
-
-export type SingleOrArrayCommand = Command | Command[];
