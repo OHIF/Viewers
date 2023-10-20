@@ -153,3 +153,14 @@ directly from
 Your public folder should look like this:
 
 ![](../../assets/img/dicom-json-public.png)
+
+
+:::note
+When hosting the DICOM JSON files, it is important to be aware that certain providers
+do not automatically handle the 404 error and fallback to index.html. For example, Netlify
+handles this, but Azure does not. Consequently, when you attempt to access a link with a
+specific URL, a 404 error will be displayed.
+
+This issue also occurs locally, where the http-server does not handle it. However,
+if you utilize the `serve` package (npx serve ./dist -l 8080 -s), it effectively addresses this problem.
+:::

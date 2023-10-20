@@ -1,13 +1,12 @@
 describe('OHIF Multi Study', () => {
   const beforeSetup = () => {
-    cy.checkStudyRouteInViewer(
+    cy.initViewer(
       '1.3.6.1.4.1.25403.345050719074.3824.20170125113417.1,1.2.840.113619.2.5.1762583153.215519.978957063.78',
-      '&hangingProtocolId=@ohif/hpCompare'
+      {
+        params: '&hangingProtocolId=@ohif/hpCompare',
+        minimumThumbnails: 3,
+      }
     );
-    cy.expectMinimumThumbnails(4);
-    cy.initCornerstoneToolsAliases();
-    cy.initCommonElementsAliases();
-    cy.waitDicomImage();
   };
 
   it('Should display 2 comparison up', () => {
