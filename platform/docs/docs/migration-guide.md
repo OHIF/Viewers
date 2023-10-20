@@ -1,6 +1,6 @@
 ---
 sidebar_position: 10
-sidebar_label: Migration Guide (NEW)
+sidebar_label: Migration Guide
 ---
 
 # Migration Guide

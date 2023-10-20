@@ -36,6 +36,8 @@ describe('OHIF Download Snapshot File', () => {
     // Check buttons
     cy.get('[data-cy="cancel-btn"]').scrollIntoView().should('be.visible');
     cy.get('[data-cy="download-btn"]').scrollIntoView().should('be.visible');
+
+    cy.get('[data-cy="cancel-btn"]').click();
   });
 
   /*it('cancel changes on download modal', function() {

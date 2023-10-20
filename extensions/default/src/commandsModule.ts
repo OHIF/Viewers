@@ -134,7 +134,7 @@ const commandsModule = ({
           (!protocolId || protocolId === protocol.id) &&
           (stageIndex === undefined || stageIndex === toggleStageIndex) &&
           (!stageId || stageId === stage.id);
-        toolbarService.setActive(button.id, isActive);
+        toolbarService.setToggled(button.id, isActive);
       };
       Object.values(toolbarService.getButtons()).forEach(enableListener);
     },
@@ -170,6 +170,7 @@ const commandsModule = ({
       stageIndex,
       reset = false,
     }: HangingProtocolParams): boolean => {
+      const primaryToolBeforeHPChange = toolbarService.getActivePrimaryTool();
       try {
         // Stores in the state the display set selector id to displaySetUID mapping
         // Pass in viewportId for the active viewport.  This item will get set as
@@ -241,7 +242,29 @@ const commandsModule = ({
         stateSyncService.store(stateSyncReduce);
         // This is a default action applied
         const { protocol } = hangingProtocolService.getActiveProtocol();
-        actions.toggleHpTools(protocol);
+        actions.toggleHpTools();
+
+        // try to use the same tool in the new hanging protocol stage
+        const primaryButton = toolbarService.getButton(primaryToolBeforeHPChange);
+        if (primaryButton) {
+          // is there any type of interaction on this button, if not it might be in the
+          // items. This is a bit of a hack, but it works for now.
+
+          let interactionType = primaryButton.props?.interactionType;
+
+          if (!interactionType && primaryButton.props?.items) {
+            const firstItem = primaryButton.props.items[0];
+            interactionType = firstItem.props?.interactionType || firstItem.props?.type;
+          }
+
+          if (interactionType) {
+            toolbarService.recordInteraction({
+              interactionType,
+              ...primaryButton.props,
+            });
+          }
+        }
+
         // Send the notification about updating the state
         if (protocolId !== hpInfo.protocolId) {
           // The old protocol callbacks are used for turning off things
@@ -253,7 +276,8 @@ const commandsModule = ({
         commandsManager.run(protocol.callbacks?.onProtocolEnter);
         return true;
       } catch (e) {
-        actions.toggleHpTools(hangingProtocolService.getActiveProtocol());
+        console.error(e);
+        actions.toggleHpTools();
         uiNotificationService.show({
           title: 'Apply Hanging Protocol',
           message: 'The hanging protocol could not be applied.',
@@ -371,6 +395,11 @@ const commandsModule = ({
         // originally toggled to one up was the former active viewport.
         const viewportIdToUpdate = toggleOneUpViewportGridStore.activeViewportId;
 
+        // We are restoring the previous layout but taking into the account that
+        // the current one up viewport might have a new displaySet dragged and dropped on it.
+        // updatedViewportsViaHP below contains the viewports applicable to the HP that existed
+        // prior to the toggle to one-up - including the updated viewports if a display
+        // set swap were to have occurred.
         const updatedViewportsViaHP =
           displaySetInstanceUIDs.length > 1
             ? []
@@ -383,39 +412,25 @@ const commandsModule = ({
                 )
                 .flat();
 
-        // This findOrCreateViewport returns either one of the updatedViewports
+        // findOrCreateViewport returns either one of the updatedViewportsViaHP
         // returned from the HP service OR if there is not one from the HP service then
-        // simply returns what was in the previous state.
-        const findOrCreateViewport = (position: number) => {
-          // get the viewportId in the current state (since we are in the one-up layout)
-          const currentOneUpViewport = Array.from(viewports.values())[0];
-
-          // we should restore the previous layout but take into the account the fact that
-          // the current one up viewport might have a new displaySet dragged and dropped on it
-          // so we should prioritize the current one in the old grid store layout viewports
-
-          const newViewports = Array.from(toggleOneUpViewportGridStore.viewports.values()).map(
-            viewport => {
-              if (viewport.viewportId === currentOneUpViewport.viewportId) {
-                return {
-                  ...currentOneUpViewport,
-                };
-              }
-
-              return viewport;
-            }
+        // simply returns what was in the previous state for a given position in the layout.
+        const findOrCreateViewport = (position: number, positionId: string) => {
+          // Find the viewport for the given position prior to the toggle to one-up.
+          const preOneUpViewport = Array.from(toggleOneUpViewportGridStore.viewports.values()).find(
+            viewport => viewport.positionId === positionId
           );
 
-          // However, we also need to take into account that the current one up viewport
-          // might have been part of a bigger hanging protocol layout, so going back
-          // from one up we should apply those viewports as well.
-          return updatedViewportsViaHP.length > 1 && updatedViewportsViaHP[position]
-            ? {
-                viewportOptions,
-                displaySetOptions,
-                ...updatedViewportsViaHP[position],
-              }
-            : newViewports[position];
+          // Use the viewport id from before the toggle to one-up to find any updates to the viewport.
+          const viewport = updatedViewportsViaHP.find(
+            viewport => viewport.viewportId === preOneUpViewport.viewportId
+          );
+
+          return viewport
+            ? // Use the applicable viewport from the HP updated viewports
+              { viewportOptions, displaySetOptions, ...viewport }
+            : // Use the previous viewport for the given position
+              preOneUpViewport;
         };
 
         const layoutOptions = viewportGridService.getLayoutOptionsFromState(

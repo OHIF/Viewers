@@ -76,8 +76,8 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
   const { uiDialogService, displaySetService } = servicesManager.services;
 
   useEffect(() => {
-    const viewport = props.viewports[props.activeViewportId];
-    if (viewport.displaySetInstanceUIDs[0]) {
+    const viewport = props.viewports.get(props.activeViewportId);
+    if (viewport?.displaySetInstanceUIDs[0]) {
       const displaySet = displaySetService.getDisplaySetByUID(viewport.displaySetInstanceUIDs[0]);
       if (displaySet) {
         setStudyInstanceUID(displaySet.StudyInstanceUID);
@@ -213,7 +213,7 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
         }
         onSaveComplete({
           title: 'SR Saved',
-          meassage: 'Measurements downloaded successfully',
+          message: 'Measurements downloaded successfully',
           type: 'success',
         });
       } else {

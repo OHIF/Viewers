@@ -144,6 +144,93 @@ jobs:
           command: |
             /bin/bash ./idc-deploy-shell/cloudCopy.sh
 
+  # This is copied from the Cypress orb since the default for cypress/run is node 16 and
+  # we migrated to 18
+  CYPRESS_CUSTOM_RUN:
+    description: |
+      A single, complete job to run Cypress end-to-end tests in your application.
+    executor: cypress-custom
+    parallelism: << parameters.parallelism >>
+    parameters:
+      cypress-cache-key:
+        default: cypress-cache-{{ arch }}-{{ checksum "package.json" }}
+        description: Cache key used to cache the Cypress binary.
+        type: string
+      cypress-cache-path:
+        default: ~/.cache/Cypress
+        description: |
+          By default, this will cache the '~/.cache/Cypress' directory so that the Cypress binary is cached. You can override this by providing your own cache path.
+        type: string
+      cypress-command:
+        default: npx cypress run
+        description: Command used to run your Cypress tests
+        type: string
+      include-branch-in-node-cache-key:
+        default: false
+        description: |
+          If true, this cache will only apply to runs within the same branch. (Adds -{{ .Branch }}- to the node cache key)
+        type: boolean
+      install-browsers:
+        default: false
+        description: |
+          Cypress runs by default in the Electron browser. Use this flag to install additional browsers to run your tests in.
+          This is only needed if you are passing the `--browser` flag in your `cypress-command`.
+          This parameter leverages the `circleci/browser-tools` orb and includes Chrome and FireFox.
+          If you need additional browser support you can set this to false and use an executor with a docker image
+          that includes the browsers of your choosing. See https://hub.docker.com/r/cypress/browsers/tags
+        type: boolean
+      install-command:
+        default: ''
+        description: Overrides the default NPM command (npm ci)
+        type: string
+      node-cache-version:
+        default: v1
+        description:
+          Change the default node cache version if you need to clear the cache for any reason.
+        type: string
+      package-manager:
+        default: npm
+        description: Select the default node package manager to use. NPM v5+ Required.
+        enum:
+          - npm
+          - yarn
+          - yarn-berry
+        type: enum
+      parallelism:
+        default: 1
+        description: |
+          Number of Circle machines to use for load balancing, min 1
+          (requires `parallel` and `record` flags in your `cypress-command`)
+        type: integer
+      post-install:
+        default: ''
+        description: |
+          Additional commands to run after running install but before verifying Cypress and saving cache.
+        type: string
+      start-command:
+        default: ''
+        description: Command used to start your local dev server for Cypress to tests against
+        type: string
+      working-directory:
+        default: ''
+        description: Directory containing package.json
+        type: string
+    steps:
+      - cypress/install:
+          cypress-cache-key: << parameters.cypress-cache-key >>
+          cypress-cache-path: << parameters.cypress-cache-path >>
+          include-branch-in-node-cache-key: << parameters.include-branch-in-node-cache-key >>
+          install-browsers: << parameters.install-browsers >>
+          install-command: << parameters.install-command >>
+          node-cache-version: << parameters.node-cache-version >>
+          package-manager: << parameters.package-manager >>
+          post-install: << parameters.post-install >>
+          working-directory: << parameters.working-directory >>
+      - cypress/run-tests:
+          cypress-command: << parameters.cypress-command >>
+          start-command: << parameters.start-command >>
+          working-directory: << parameters.working-directory >>
+
 workflows:
   version: 2
   build_and_deploy:

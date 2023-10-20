@@ -23,10 +23,11 @@ describe('OHIF Measurement Panel', function () {
   it('checks if measurement item can be Relabeled under Measurements panel', function () {
     // Add length measurement
     cy.addLengthMeasurement();
+
     cy.get('[data-cy="viewport-notification"]').as('viewportNotification').should('exist');
     cy.get('[data-cy="viewport-notification"]').as('viewportNotification').should('be.visible');
 
-    cy.get('[data-cy="prompt-begin-tracking-yes-btn"]').as('promptBeginTrackingYesBtn').click();
+    cy.get('[data-cy="prompt-begin-tracking-yes-btn"]').as('yesBtn').click();
 
     cy.get('[data-cy="measurement-item"]').as('measurementItem').click();
 
@@ -42,9 +43,8 @@ describe('OHIF Measurement Panel', function () {
 
   it('checks if image would jump when clicked on a measurement item', function () {
     // Add length measurement
-    cy.addLengthMeasurement();
-    cy.get('[data-cy="prompt-begin-tracking-yes-btn"]').as('promptBeginTrackingYesBtn');
-    cy.get('@promptBeginTrackingYesBtn').click();
+    cy.addLengthMeasurement().wait(250);
+    cy.get('[data-cy="prompt-begin-tracking-yes-btn"]').as('yesBtn').click();
 
     cy.scrollToIndex(13);
 
