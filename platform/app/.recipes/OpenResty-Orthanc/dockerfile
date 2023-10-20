@@ -23,26 +23,30 @@
 
 
 # Stage 1: Build the application
-FROM node:20.1.0-slim as builder
-RUN apt-get update && apt-get install -y python3 build-essential
+FROM node:18.16.1-slim as builder
+RUN apt-get update  && apt-get install -y python3 build-essential && apt-get clean && rm -rf /var/lib/apt/lists/*
 RUN mkdir /usr/src/app
 WORKDIR /usr/src/app
 
-# Copy Files
-COPY .docker /usr/src/app/.docker
-COPY .webpack /usr/src/app/.webpack
-COPY extensions /usr/src/app/extensions
-COPY modes /usr/src/app/modes
-COPY platform /usr/src/app/platform
-COPY .browserslistrc /usr/src/app/.browserslistrc
-COPY aliases.config.js /usr/src/app/aliases.config.js
-COPY babel.config.js /usr/src/app/babel.config.js
-COPY lerna.json /usr/src/app/lerna.json
-COPY package.json /usr/src/app/package.json
-COPY postcss.config.js /usr/src/app/postcss.config.js
-COPY yarn.lock /usr/src/app/yarn.lock
-COPY version.txt /usr/src/app/version.txt
-copy commit.txt /usr/src/app/commit.txt
+# # Copy Files
+COPY ./ /usr/src/app/
+
+# COPY .docker /usr/src/app/.docker
+# COPY .webpack /usr/src/app/.webpack
+# COPY extensions /usr/src/app/extensions
+# COPY modes /usr/src/app/modes
+# COPY platform /usr/src/app/platform
+# COPY .browserslistrc /usr/src/app/.browserslistrc
+# COPY aliases.config.js /usr/src/app/aliases.config.js
+# COPY babel.config.js /usr/src/app/babel.config.js
+# COPY lerna.json /usr/src/app/lerna.json
+# COPY package.json /usr/src/app/package.json
+# COPY postcss.config.js /usr/src/app/postcss.config.js
+# COPY yarn.lock /usr/src/app/yarn.lock
+# COPY version.txt /usr/src/app/version.txt
+# Copy commit.txt /usr/src/app/commit.txt
+# COPY preinstall.js /usr/src/app/preinstall.js
+
 # ADD . /usr/src/app/
 RUN yarn config set workspaces-experimental true
 RUN yarn install

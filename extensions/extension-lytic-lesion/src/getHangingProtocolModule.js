@@ -23,19 +23,6 @@ const colormapAnd3d = {
   // Default viewport is used to define the viewport when
   // additional viewports are added using the layout tool
   displaySetSelectors: {
-    backgroundDisplaySet: {
-      seriesMatchingRules: [
-        {
-          attribute: 'isReconstructable',
-          constraint: {
-            equals: {
-              value: true,
-            },
-          },
-          required: true,
-        },
-      ],
-    },
     activeDisplaySet: {
       seriesMatchingRules: [
         {
@@ -118,13 +105,7 @@ const colormapAnd3d = {
           },
           displaySets: [
             {
-              id: 'backgroundDisplaySet',
-              options: {
-                voi: {
-                  windowWidth: '1180',
-                  windowCenter: '233',
-                },
-              },
+              id: 'activeDisplaySet',
             },
           ],
         },
@@ -154,12 +135,6 @@ const colormapAnd3d = {
           displaySets: [
             {
               id: 'activeDisplaySet',
-              options: {
-                voi: {
-                  windowWidth: '1180',
-                  windowCenter: '233',
-                },
-              },
             },
           ],
         },
@@ -195,49 +170,12 @@ const colormapAnd3d = {
             },
           ],
         },
-        // {
-        //   viewportOptions: {
-        //     toolGroupId: 'volume3d',
-        //     viewportType: 'volume3d',
-        //     orientation: 'sagittal',
-        //     // background: [1, 1, 1],
-        //     customViewportProps: {
-        //       hideOverlays: true,
-        //       voiInverted: true,
-        //     },
-        //   },
-        //   displaySets: [
-        //     {
-        //       id: 'activeDisplaySet',
-        //       options: {
-        //         displayPreset: 'CT-Bone',
-        //       },
-        //     },
-        //   ],
-        // },
         {
           viewportOptions: {
             viewportId: 'mipSagittal',
             viewportType: 'volume',
             orientation: 'sagittal',
             toolGroupId: 'volume3d',
-            // syncGroups: [
-            //   {
-            //     type: 'voi',
-            //     id: 'mpr',
-            //     source: true,
-            //     target: true,
-            //   },
-            //   {
-            //     type: 'voi',
-            //     id: 'mpr',
-            //     source: true,
-            //     target: false,
-            //     options: {
-            //       syncInvertState: false,
-            //     },
-            //   },
-            // ],
 
             // Custom props can be used to set custom properties which extensions
             // can react on.

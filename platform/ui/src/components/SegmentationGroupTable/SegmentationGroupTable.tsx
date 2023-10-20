@@ -6,21 +6,10 @@ import SegmentationDropDownRow from './SegmentationDropDownRow';
 import NoSegmentationRow from './NoSegmentationRow';
 import AddSegmentRow from './AddSegmentRow';
 import SegmentationGroupSegment from './SegmentationGroupSegment';
-import { commandsManager } from 'platform/app/src/App';
+import { commandsManager, servicesManager } from '../../../../app/src/App';
 import { Input, Label, Select, Button, ButtonGroup } from '@ohif/ui';
 import { useTranslation } from 'react-i18next';
 import { useCallback } from 'react';
-import { servicesManager } from 'platform/app/src/App';
-import { getActiveViewportEnabledElement } from 'extensions/cornerstone/src';
-import {
-  CONSTANTS as cstConstants,
-  Enums as csToolsEnums,
-  segmentation as cstSegmentation,
-  Types as cstTypes,
-  utilities as cstUtils,
-} from '@cornerstonejs/tools';
-import { getEnabledElement } from 'platform/core/src/state';
-import OHIFCornerstoneSEGViewport from 'extensions/cornerstone-dicom-seg/src/viewports/OHIFCornerstoneSEGViewport';
 
 const SegmentationGroupTable = ({
   segmentations,
