@@ -36,7 +36,7 @@ sudo chown -R circleci /home/circleci/.gsutil
 sudo chgrp -R circleci /home/circleci/.gsutil
 
 if [ "${CONFIG_ONLY}" != "True" ]; then
-  gsutil web set -m /v3/index.html -e /v3/index.html gs://${WBUCKET}
+  gsutil web set -m v3/index.html -e v3/index.html gs://${WBUCKET}
   gsutil -h "Cache-Control:no-cache, max-age=0" rsync -d -r . gs://${WBUCKET}/v3
 else
   gsutil cp app-config.js gs://${WBUCKET}/v3
