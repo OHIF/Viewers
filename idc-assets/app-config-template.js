@@ -11,7 +11,7 @@ window.config = {
           href: '_X___IDC__LOGO__LINK___Y_',
         },
         React.createElement('img', {
-          src: '/assets/idc.svg',
+          src: 'IDC-Logo-WHITE.svg',
           className: 'w-14 h-14',
         })
       );
