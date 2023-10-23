@@ -1,5 +1,5 @@
 window.config = {
-  routerBasename: '/',
+  routerBasename: '/v3',
   whiteLabeling: {
     createLogoComponentFn: function(React) {
       return React.createElement(
