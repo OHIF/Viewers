@@ -264,6 +264,8 @@ Cypress.Commands.add(
     cy.get('@lengthButton').should('have.attr', 'data-tool', 'Length');
 
     cy.get('@lengthButton').then(button => {
+      // Only click the length tool if it is not active, in case the length tool is set up to
+      // toggle to inactive.
       if (!button.is('.active')) {
         cy.wrap(button).click();
       }
