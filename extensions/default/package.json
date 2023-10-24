@@ -32,7 +32,7 @@
   "peerDependencies": {
     "@ohif/core": "3.8.0-beta.4",
     "@ohif/i18n": "3.8.0-beta.4",
-    "dcmjs": "^0.29.5",
+    "dcmjs": "^0.29.11",
     "dicomweb-client": "^0.10.2",
     "prop-types": "^15.6.2",
     "react": "^17.0.2",
