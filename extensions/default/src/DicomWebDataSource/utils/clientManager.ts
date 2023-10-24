@@ -1,16 +1,13 @@
 import { api } from 'dicomweb-client';
-import StaticWadoClient from './StaticWadoClient';
-import dcm4cheeReject from '../dcm4cheeReject';
 import { errorHandler, utils } from '@ohif/core';
+import StaticWadoClient from './StaticWadoClient';
+import getClientRejectFunction from './getClientRejectFunction';
 
-/**
- * This object plays the central role in OHIF's multiple server handling ability.
- * It stores all servers configurations and handles all request headers generations
- */
-interface ConfigToAdd {
+interface DICOMWebConfig {
   url: string;
   qidoRoot: string;
   wadoRoot: string;
+  wadoUriRoot: string;
   staticWado: boolean;
   singlepart: boolean;
   name: string;
@@ -29,14 +26,21 @@ interface ConfigToAdd {
   qidoDicomWebClient: api.DICOMwebClient | StaticWadoClient;
   wadoDicomWebClient: api.DICOMwebClient | StaticWadoClient;
 }
-export default class ClientManager {
-  clients;
+/**
+ * This object plays the central role in OHIF's multiple server handling ability.
+ * It stores all servers configurations and handles all request headers generations
+ */
+export default class DicomWebClientManager {
+  private clients;
   userAuthenticationService;
 
-  constructor({ params, query, dicomWebConfig, userAuthenticationService }) {
+  constructor({ params, query, dicomWebConfigs, userAuthenticationService }) {
     this.clients = [];
     this.userAuthenticationService = userAuthenticationService;
-    const configArray = Array.isArray(dicomWebConfig) ? dicomWebConfig : [dicomWebConfig];
+    if (!dicomWebConfigs) {
+      return;
+    }
+    const configArray = Array.isArray(dicomWebConfigs) ? dicomWebConfigs : [dicomWebConfigs];
     configArray.forEach(config => this.addConfiguration(params, query, config));
   }
 
@@ -46,7 +50,7 @@ export default class ClientManager {
    */
   public setQidoHeaders(): void {
     this.clients.forEach(
-      client => (client.qidoDicomWebClient.headers = this.getAuthorizationHeader())
+      client => (client.qidoDicomWebClient.headers = this.getAuthorizationHeaders())
     );
   }
 
@@ -66,7 +70,7 @@ export default class ClientManager {
    */
   public setAuthorizationHeadersForWADO(): void {
     this.clients.forEach(
-      client => (client.wadoDicomWebClient.headers = this.getAuthorizationHeader())
+      client => (client.wadoDicomWebClient.headers = this.getAuthorizationHeaders())
     );
   }
 
@@ -86,7 +90,7 @@ export default class ClientManager {
   public getClientRejectObject(name) {
     const client = this.getClient(name);
     if (client?.supportsReject) {
-      return dcm4cheeReject(client.wadoRoot);
+      return getClientRejectFunction(client);
     }
   }
 
@@ -123,7 +127,7 @@ export default class ClientManager {
    * Gets the client list already setting the necessary wado headers
    * @returns {Array} client list
    */
-  public getClientsForWadoRequests() {
+  public getWadoClients() {
     this.setWadoHeaders();
     return this.getClients();
   }
@@ -132,7 +136,7 @@ export default class ClientManager {
    * Gets the client list already setting the necessary qido headers
    * @returns {Array} client list
    */
-  public getClientsForQidoRequests() {
+  public getQidoClients() {
     this.setQidoHeaders();
     return this.getClients();
   }
@@ -149,28 +153,30 @@ export default class ClientManager {
    * @param configToAdd
    * @returns {void}
    */
-  private addClient(configToAdd: ConfigToAdd): void {
+  private addClient(dicomWebConfig: DICOMWebConfig): void {
     // if no qidoRoot or wadoRoot, don't add the client. Could be the case for
     // configurations that relies on onConfiguration function but lacks necessary
     // additional information
-    if (!configToAdd?.qidoRoot || !configToAdd?.wadoRoot) {
+    if (!dicomWebConfig?.qidoRoot || !dicomWebConfig?.wadoRoot) {
       return;
     }
-    const config = Object.assign({}, configToAdd);
+    const config = Object.assign({}, dicomWebConfig);
+    const headers = this.getAuthorizationHeaders();
+    const errorInterceptor = errorHandler.getHTTPErrorHandler();
     config.qidoConfig = {
       url: config.qidoRoot,
       staticWado: config.staticWado,
       singlepart: config.singlepart,
-      headers: this.userAuthenticationService.getAuthorizationHeader(),
-      errorInterceptor: errorHandler.getHTTPErrorHandler(),
+      headers,
+      errorInterceptor,
     };
 
     config.wadoConfig = {
       url: config.wadoRoot,
       staticWado: config.staticWado,
       singlepart: config.singlepart,
-      headers: this.userAuthenticationService.getAuthorizationHeader(),
-      errorInterceptor: errorHandler.getHTTPErrorHandler(),
+      headers,
+      errorInterceptor,
     };
 
     config.qidoDicomWebClient = config.staticWado
@@ -188,8 +194,8 @@ export default class ClientManager {
 
   /**
    * Process a dicomweb server configuration and add it to the clients list.
-   * This function could change the configuration by calling the onConfiguration,
-   * if defined
+   * If onConfiguration function is specified, it calls it first to change the
+   * configuration, if defined
    * @param {object} params key / pair mapping of the URL parameters
    * @param {object} query URLSearchParams object generated for the URL
    * @param {object} config client configuration
@@ -209,11 +215,13 @@ export default class ClientManager {
    * Get authorization headers for wado and qido calls
    * @returns {object} xhrRequestHeaders
    */
-  private getAuthorizationHeader(): object {
+  private getAuthorizationHeaders(): object {
     const xhrRequestHeaders = {};
-    const authHeaders = this.userAuthenticationService.getAuthorizationHeader();
-    if (authHeaders?.Authorization) {
-      xhrRequestHeaders.Authorization = authHeaders.Authorization;
+    if (this.userAuthenticationService?.getAuthorizationHeaders) {
+      const authHeaders = this.userAuthenticationService.getAuthorizationHeaders();
+      if (authHeaders?.Authorization) {
+        xhrRequestHeaders.Authorization = authHeaders.Authorization;
+      }
     }
     return xhrRequestHeaders;
   }
@@ -224,7 +232,7 @@ export default class ClientManager {
    * @returns {object} wado Headers
    */
   private getWadoHeader(config): object {
-    const authorizationHeader = this.getAuthorizationHeader();
+    const authorizationHeader = this.getAuthorizationHeaders();
     //Generate accept header depending on config params
     const formattedAcceptHeader = utils.generateAcceptHeader(
       config.acceptHeader,

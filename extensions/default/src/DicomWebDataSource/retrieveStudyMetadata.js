@@ -37,7 +37,7 @@ export function retrieveStudyMetadata(
 
   // Already waiting on result? Return cached promise. The StudyMetaDataPromises
   // key is a combination of the client name and StudyInstanceUID, because OHIF
-  // can retrieve dicom series belonging to a study from different servers.
+  // has the capability to retrieve series from the same study from different DICOM web servers.
   const studyRetrieveId = `${dicomWebClient.name}/${StudyInstanceUID}`;
   if (StudyMetaDataPromises.has(studyRetrieveId)) {
     return StudyMetaDataPromises.get(studyRetrieveId);
