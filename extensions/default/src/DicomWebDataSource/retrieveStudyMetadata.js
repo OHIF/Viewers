@@ -15,7 +15,7 @@ const StudyMetaDataPromises = new Map();
  * @param {string} [filters.seriesInstanceUID] Series instance uid to filter results against
  * @param {array} [filters.SeriesInstanceUIDs] Series instance uids to filter results against
  * @param {function} [sortCriteria] Sort criteria function
- * @param {function} [sortFunction] Sort functiion
+ * @param {function} [sortFunction] Sort function
  *
  * @returns {Promise} that will be resolved with the metadata or rejected with the error
  */
