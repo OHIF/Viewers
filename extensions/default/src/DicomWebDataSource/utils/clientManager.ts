@@ -100,6 +100,7 @@ export default class DicomWebClientManager {
    * @returns {object} qido client
    */
   public getQidoClient(name?: string): object {
+    this.setQidoHeaders();
     const client = this.getClient(name);
     return client?.qidoDicomWebClient;
   }
@@ -110,6 +111,7 @@ export default class DicomWebClientManager {
    * @returns {object} wado client
    */
   public getWadoClient(name?: string): object {
+    this.setAuthorizationHeadersForWADO();
     const client = this.getClient(name);
     return client?.wadoDicomWebClient;
   }

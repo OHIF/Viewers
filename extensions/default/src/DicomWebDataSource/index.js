@@ -165,7 +165,6 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
         );
       },
       bulkDataURI: async ({ StudyInstanceUID, BulkDataURI, clientName }) => {
-        dicomWebClientManager.setQidoHeaders();
         const options = {
           multipart: false,
           BulkDataURI,
@@ -214,7 +213,6 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
 
     store: {
       dicom: async (dataset, request) => {
-        dicomWebClientManager.setAuthorizationHeadersForWADO();
         const clientName = dataset?.clientName;
         let options;
         if (dataset instanceof ArrayBuffer) {
