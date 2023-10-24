@@ -8436,7 +8436,20 @@ dcmjs@^0.27:
     loglevelnext "^3.0.1"
     ndarray "^1.0.19"
 
-dcmjs@^0.29.5, dcmjs@^0.29.8:
+dcmjs@^0.29.11:
+  version "0.29.11"
+  resolved "https://registry.yarnpkg.com/dcmjs/-/dcmjs-0.29.11.tgz#82e19d7c5212218c3225f8022ce97b0102ed3cc8"
+  integrity sha512-B5fO5D+USzfnuUG7ephnaKMluqBOP4qcckV2LgROXvn0hmWc53Gs2YzlokjcYcDeBAXNfssOOhDekUc+AduwkQ==
+  dependencies:
+    "@babel/runtime-corejs3" "^7.22.5"
+    adm-zip "^0.5.10"
+    gl-matrix "^3.1.0"
+    lodash.clonedeep "^4.5.0"
+    loglevelnext "^3.0.1"
+    ndarray "^1.0.19"
+    pako "^2.0.4"
+
+dcmjs@^0.29.8:
   version "0.29.8"
   resolved "https://registry.yarnpkg.com/dcmjs/-/dcmjs-0.29.8.tgz#3daa5224f8e75b2e5b069590bef26a272741fa44"
   integrity sha512-Y0/KZAmT1siVo7eH3KK4ZflEbNi61soUpD0N7lsXMVVJQ6IZkHlaSzb9DtqnEpMs7RJDfvZGr1uXpv1vBBIypQ==
