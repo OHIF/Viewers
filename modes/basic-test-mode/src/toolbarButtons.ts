@@ -5,11 +5,8 @@ import {
   // ListMenu,
   WindowLevelMenuItem,
 } from '@ohif/ui';
-import { defaults } from '@ohif/core';
+import { ToolbarService, defaults } from '@ohif/core';
 import type { Button } from '@ohif/core/types';
-import { createToolButton } from './createButton';
-import moreTools from './moreTools';
-import moreToolsMpr from './moreToolsMpr';
 
 const { windowLevelPresets } = defaults;
 
@@ -46,7 +43,7 @@ const toolbarButtons: Button[] = [
       groupId: 'MeasurementTools',
       isRadio: true, // ?
       // Switch?
-      primary: createToolButton(
+      primary: ToolbarService._createToolButton(
         'Length',
         'tool-length',
         'Length',
@@ -77,7 +74,7 @@ const toolbarButtons: Button[] = [
         tooltip: 'More Measure Tools',
       },
       items: [
-        createToolButton(
+        ToolbarService._createToolButton(
           'Length',
           'tool-length',
           'Length',
@@ -101,7 +98,7 @@ const toolbarButtons: Button[] = [
           ],
           'Length Tool'
         ),
-        createToolButton(
+        ToolbarService._createToolButton(
           'Bidirectional',
           'tool-bidirectional',
           'Bidirectional',
@@ -124,7 +121,7 @@ const toolbarButtons: Button[] = [
           ],
           'Bidirectional Tool'
         ),
-        createToolButton(
+        ToolbarService._createToolButton(
           'ArrowAnnotate',
           'tool-annotate',
           'Annotation',
@@ -147,7 +144,7 @@ const toolbarButtons: Button[] = [
           ],
           'Arrow Annotate'
         ),
-        createToolButton(
+        ToolbarService._createToolButton(
           'EllipticalROI',
           'tool-elipse',
           'Ellipse',
@@ -170,7 +167,7 @@ const toolbarButtons: Button[] = [
           ],
           'Ellipse Tool'
         ),
-        createToolButton(
+        ToolbarService._createToolButton(
           'CircleROI',
           'tool-circle',
           'Circle',
@@ -221,7 +218,7 @@ const toolbarButtons: Button[] = [
     type: 'ohif.splitButton',
     props: {
       groupId: 'WindowLevel',
-      primary: createToolButton(
+      primary: ToolbarService._createToolButton(
         'WindowLevel',
         'tool-window-level',
         'Window Level',
@@ -417,10 +414,6 @@ const toolbarButtons: Button[] = [
       ],
     },
   },
-  // More...
-
-  { ...moreTools },
-  { ...moreToolsMpr },
 ];
 
 export default toolbarButtons;

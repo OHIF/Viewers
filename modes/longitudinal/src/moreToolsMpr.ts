@@ -1,4 +1,20 @@
+import type { RunCommand } from '@ohif/core/types';
+import { EVENTS } from '@cornerstonejs/core';
 import { ToolbarService } from '@ohif/core';
+
+const ReferenceLinesCommands: RunCommand = [
+  {
+    commandName: 'setSourceViewportForReferenceLinesTool',
+    context: 'CORNERSTONE',
+  },
+  {
+    commandName: 'setToolActive',
+    commandOptions: {
+      toolName: 'ReferenceLines',
+    },
+    context: 'CORNERSTONE',
+  },
+];
 
 const moreToolsMpr = [
   {
@@ -14,6 +30,8 @@ const moreToolsMpr = [
         [
           {
             commandName: 'resetViewport',
+            commandOptions: {},
+            context: 'CORNERSTONE',
           },
         ],
         'Reset'
@@ -32,9 +50,59 @@ const moreToolsMpr = [
           [
             {
               commandName: 'resetViewport',
+              commandOptions: {},
+              context: 'CORNERSTONE',
             },
           ],
           'Reset'
+        ),
+        ToolbarService._createToggleButton(
+          'StackImageSync',
+          'link',
+          'Stack Image Sync',
+          [
+            {
+              commandName: 'toggleStackImageSync',
+            },
+          ],
+          'Enable position synchronization on stack viewports',
+          {
+            listeners: {
+              [EVENTS.STACK_VIEWPORT_NEW_STACK]: {
+                commandName: 'toggleStackImageSync',
+                commandOptions: { toggledState: true },
+              },
+            },
+          }
+        ),
+        ToolbarService._createToggleButton(
+          'ReferenceLines',
+          'tool-referenceLines', // change this with the new icon
+          'Reference Lines',
+          ReferenceLinesCommands,
+          'Show Reference Lines',
+          {
+            listeners: {
+              [EVENTS.STACK_VIEWPORT_NEW_STACK]: ReferenceLinesCommands,
+              [EVENTS.ACTIVE_VIEWPORT_ID_CHANGED]: ReferenceLinesCommands,
+            },
+          }
+        ),
+        ToolbarService._createToggleButton(
+          'ImageOverlayViewer',
+          'toggle-dicom-overlay',
+          'Image Overlay',
+          [
+            {
+              commandName: 'setToolActive',
+              commandOptions: {
+                toolName: 'ImageOverlayViewer',
+              },
+              context: 'CORNERSTONE',
+            },
+          ],
+          'Image Overlay',
+          { isActive: true }
         ),
         ToolbarService._createToolButton(
           'StackScroll',
@@ -106,6 +174,38 @@ const moreToolsMpr = [
           ],
           'Angle'
         ),
+
+        // Next two tools can be added once icons are added
+        // ToolbarService._createToolButton(
+        //   'Cobb Angle',
+        //   'tool-cobb-angle',
+        //   'Cobb Angle',
+        //   [
+        //     {
+        //       commandName: 'setToolActive',
+        //       commandOptions: {
+        //         toolName: 'CobbAngle',
+        //       },
+        //       context: 'CORNERSTONE',
+        //     },
+        //   ],
+        //   'Cobb Angle'
+        // ),
+        // ToolbarService._createToolButton(
+        //   'Planar Freehand ROI',
+        //   'tool-freehand',
+        //   'PlanarFreehandROI',
+        //   [
+        //     {
+        //       commandName: 'setToolActive',
+        //       commandOptions: {
+        //         toolName: 'PlanarFreehandROI',
+        //       },
+        //       context: 'CORNERSTONE',
+        //     },
+        //   ],
+        //   'Planar Freehand ROI'
+        // ),
         ToolbarService._createToolButton(
           'Rectangle',
           'tool-rectangle',

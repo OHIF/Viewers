@@ -63,6 +63,10 @@ export default class ToolbarService extends PubSubService {
     };
   }
 
+  public static _createActionButton = ToolbarService._createButton.bind(null, 'action');
+  public static _createToggleButton = ToolbarService._createButton.bind(null, 'toggle');
+  public static _createToolButton = ToolbarService._createButton.bind(null, 'tool');
+
   buttons: Record<string, Button> = {};
   state: {
     primaryToolId: string;
@@ -106,6 +110,11 @@ export default class ToolbarService extends PubSubService {
     this.reset();
   }
 
+  /**
+   * Sets the default tool that will be activated whenever the primary tool is
+   * deactivated without activating another/different tool.
+   * @param interaction the interaction command that will set the default tool active
+   */
   public setDefaultTool(interaction) {
     this.defaultTool = interaction;
   }
@@ -318,22 +327,27 @@ export default class ToolbarService extends PubSubService {
 
   /**
    *
-   * Finds a button section by it's name, then maps the list of string name
+   * Finds a button section by it's name/tool group id, then maps the list of string name
    * identifiers to schema/values that can be used to render the buttons.
    *
-   * @param key - the tool group id
-   * @param props - to apply to the sections
-   * @param defaultKey - what key to return if the given section isn't defined
+   * @param toolGroupId - the tool group id
+   * @param props - optional properties to apply to every button of the section
+   * @param defaultToolGroupId - the fallback section to return if the given toolGroupId section is not available
    */
-  getButtonSection(key: string, props?: Record<string, unknown>, defaultKey = 'primary') {
-    const buttonSectionIds = this.buttonSections[key] || this.buttonSections[defaultKey];
+  getButtonSection(
+    toolGroupId: string,
+    props?: Record<string, unknown>,
+    defaultToolGroupId = 'primary'
+  ) {
+    const buttonSectionIds =
+      this.buttonSections[toolGroupId] || this.buttonSections[defaultToolGroupId];
     const buttonsInSection = [];
 
     if (buttonSectionIds && buttonSectionIds.length !== 0) {
       buttonSectionIds.forEach(btnId => {
         const btn = this.buttons[btnId];
         const metadata = {};
-        const mappedBtn = this._mapButtonToDisplay(btn, key, metadata, props);
+        const mappedBtn = this._mapButtonToDisplay(btn, toolGroupId, metadata, props);
 
         buttonsInSection.push(mappedBtn);
       });

@@ -30,6 +30,8 @@ const moreTools = [
         [
           {
             commandName: 'resetViewport',
+            commandOptions: {},
+            context: 'CORNERSTONE',
           },
         ],
         'Reset'
@@ -48,6 +50,8 @@ const moreTools = [
           [
             {
               commandName: 'resetViewport',
+              commandOptions: {},
+              context: 'CORNERSTONE',
             },
           ],
           'Reset'
@@ -76,7 +80,7 @@ const moreTools = [
               context: 'CORNERSTONE',
             },
           ],
-          'Flip Horizontally'
+          'Flip Horizontal'
         ),
         ToolbarService._createToggleButton(
           'StackImageSync',
@@ -109,6 +113,22 @@ const moreTools = [
               [EVENTS.ACTIVE_VIEWPORT_ID_CHANGED]: ReferenceLinesCommands,
             },
           }
+        ),
+        ToolbarService._createToggleButton(
+          'ImageOverlayViewer',
+          'toggle-dicom-overlay',
+          'Image Overlay',
+          [
+            {
+              commandName: 'setToolActive',
+              commandOptions: {
+                toolName: 'ImageOverlayViewer',
+              },
+              context: 'CORNERSTONE',
+            },
+          ],
+          'Image Overlay',
+          { isActive: true }
         ),
         ToolbarService._createToolButton(
           'StackScroll',
@@ -180,6 +200,38 @@ const moreTools = [
           ],
           'Angle'
         ),
+
+        // Next two tools can be added once icons are added
+        // ToolbarService._createToolButton(
+        //   'Cobb Angle',
+        //   'tool-cobb-angle',
+        //   'Cobb Angle',
+        //   [
+        //     {
+        //       commandName: 'setToolActive',
+        //       commandOptions: {
+        //         toolName: 'CobbAngle',
+        //       },
+        //       context: 'CORNERSTONE',
+        //     },
+        //   ],
+        //   'Cobb Angle'
+        // ),
+        // ToolbarService._createToolButton(
+        //   'Planar Freehand ROI',
+        //   'tool-freehand',
+        //   'PlanarFreehandROI',
+        //   [
+        //     {
+        //       commandName: 'setToolActive',
+        //       commandOptions: {
+        //         toolName: 'PlanarFreehandROI',
+        //       },
+        //       context: 'CORNERSTONE',
+        //     },
+        //   ],
+        //   'Planar Freehand ROI'
+        // ),
         ToolbarService._createToolButton(
           'Magnify',
           'tool-magnify',
@@ -209,6 +261,21 @@ const moreTools = [
             },
           ],
           'Rectangle'
+        ),
+        ToolbarService._createToolButton(
+          'CalibrationLine',
+          'tool-calibration',
+          'Calibration',
+          [
+            {
+              commandName: 'setToolActive',
+              commandOptions: {
+                toolName: 'CalibrationLine',
+              },
+              context: 'CORNERSTONE',
+            },
+          ],
+          'Calibration Line'
         ),
         ToolbarService._createActionButton(
           'TagBrowser',
