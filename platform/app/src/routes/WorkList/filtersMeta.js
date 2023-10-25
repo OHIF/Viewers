@@ -24,7 +24,7 @@ const filtersMeta = [
   },
   {
     name: 'description',
-    displayName: i18n.t('StudyList:StudyDescription'),
+    displayName: i18n.t('StudyList:Description'),
     inputType: 'Text',
     isSortable: true,
     gridCol: 4,
