@@ -456,13 +456,8 @@ function commandsModule({
 
       const { viewport } = enabledElement;
 
-      if (viewport instanceof StackViewport) {
-        viewport.resetProperties();
-        viewport.resetCamera();
-      } else {
-        viewport.resetProperties();
-        viewport.resetCamera();
-      }
+      viewport.resetProperties?.();
+      viewport.resetCamera();
 
       viewport.render();
     },
