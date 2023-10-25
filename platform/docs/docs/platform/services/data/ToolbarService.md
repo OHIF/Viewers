@@ -46,6 +46,8 @@ button is clicked by the user.
 
 - `getActiveTools`: returns the active tool + all the toggled-on tools
 
+- `setDefaultTool`: sets the default tool that will be activated whenever the primary tool is deactivated without activating another/different tool
+
 ## State
 
 ToolBarService has an internal state that gets updated per tool interaction and
