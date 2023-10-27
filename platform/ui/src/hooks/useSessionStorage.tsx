@@ -1,33 +1,36 @@
 import { useState, useEffect, useCallback } from 'react';
 
 /**
- * A set of session storage keys that should be cleared out of session storage
+ * A map of session storage items that should be cleared out of session storage
  * when the page unloads.
  */
-const sessionKeysToClearOnUnload: Set<string> = new Set<string>();
+const sessionItemsToClearOnUnload: Map<string, string> = new Map<string, string>();
 
-const clearOnUnloadCallback = () => {
-  Array.from(sessionKeysToClearOnUnload.keys()).forEach(key => {
-    window.sessionStorage.removeItem(key);
-  });
-
-  // This is here for unit testing since there is no actual unload between tests
-  // and the set of keys need to be cleared between tests like it would in
-  // a browser between different sessions.
-  sessionKeysToClearOnUnload.clear();
+/**
+ * This callback simulates clearing the various session items when a page unloads.
+ * When the page is hidden the session storage items are removed but maintained
+ * in the map above in case the page becomes visible again. So those pages that
+ * are hidden because they are being unloaded have their session storage disposed
+ * of for ever. For those pages that are hidden, but later return to visible,
+ * this callback restores the session storage from the map above.
+ */
+const visibilityChangeCallback = () => {
+  if (document.visibilityState === 'hidden') {
+    Array.from(sessionItemsToClearOnUnload.keys()).forEach(key => {
+      window.sessionStorage.removeItem(key);
+    });
+  } else {
+    Array.from(sessionItemsToClearOnUnload.keys()).forEach(key => {
+      window.sessionStorage.setItem(key, sessionItemsToClearOnUnload.get(key));
+    });
+  }
 };
 
 /**
  * Technically there is no memory leak here because the listener needs to
  * persist until the page unloads and once the page unloads it will be gone.
- *
- * ToDo: unload is not reliably fired on various browsers - particularly mobile.
- * So on some systems the various session storage items will NOT be cleared
- * when the page is refreshed or URL altered in some way. Alternatively,
- * a 'visiblitychange' event could be used whereby on 'hidden' the session item
- * is cleared but maintained in memory in case a 'visible' event is later fired.
  */
-window.addEventListener('unload', clearOnUnloadCallback);
+document.addEventListener('visibilitychange', visibilityChangeCallback);
 
 type useSessionStorageProps = {
   key: string;
@@ -42,22 +45,27 @@ const useSessionStorage = ({
 }: useSessionStorageProps) => {
   const valueFromStorage = window.sessionStorage.getItem(key);
   const storageValue = valueFromStorage ? JSON.parse(valueFromStorage) : defaultValue;
-  const [storeItem, setStoreItem] = useState({ ...storageValue });
+  const [sessionItem, setSessionItem] = useState({ ...storageValue });
 
-  const saveToSessionStorage = useCallback(value => {
-    setStoreItem({ ...value });
-    window.sessionStorage.setItem(key, JSON.stringify(value));
+  const updateSessionItem = useCallback(value => {
+    setSessionItem({ ...value });
+
+    const valueAsStr = JSON.stringify(value);
+
+    if (!clearOnUnload || document.visibilityState === 'visible') {
+      window.sessionStorage.setItem(key, valueAsStr);
+    }
+
+    if (clearOnUnload) {
+      sessionItemsToClearOnUnload.set(key, valueAsStr);
+    }
   }, []);
 
   useEffect(() => {
-    saveToSessionStorage(storeItem);
+    updateSessionItem(sessionItem);
   }, []);
 
-  if (clearOnUnload) {
-    sessionKeysToClearOnUnload.add(key);
-  }
-
-  return [storeItem, saveToSessionStorage];
+  return [sessionItem, updateSessionItem];
 };
 
 export default useSessionStorage;

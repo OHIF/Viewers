@@ -99,31 +99,4 @@ describe('Hook Session Storage', () => {
     expect(dataSessionStorage).toEqual(dataToCompareStr);
     expect(hookStateToCompare).toStrictEqual(dataToCompare);
   });
-
-  it('session storage item should be cleared on unload when clearOnUnload is true', () => {
-    const data = { test: 10 };
-
-    renderHook(() =>
-      useSessionStorage({ key: SESSION_STORAGE_KEY, defaultValue: data, clearOnUnload: true })
-    );
-
-    window.dispatchEvent(new Event('unload'));
-
-    const dataSessionStorage = window.sessionStorage.getItem(SESSION_STORAGE_KEY);
-
-    expect(dataSessionStorage).toBeNull();
-  });
-
-  it('session storage item should not be cleared on unload when clearOnUnload is defaulted false', () => {
-    const data = { test: 11 };
-
-    renderHook(() => useSessionStorage({ key: SESSION_STORAGE_KEY, defaultValue: data }));
-
-    window.dispatchEvent(new Event('unload'));
-
-    const dataToCompareStr = JSON.stringify(data);
-    const dataSessionStorage = window.sessionStorage.getItem(SESSION_STORAGE_KEY);
-
-    expect(dataSessionStorage).toEqual(dataToCompareStr);
-  });
 });

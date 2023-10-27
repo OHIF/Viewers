@@ -61,7 +61,7 @@ function WorkList({
   const navigate = useNavigate();
   const STUDIES_LIMIT = 101;
   const queryFilterValues = _getQueryFilterValues(searchParams);
-  const [sessionQueryFilterValues, saveSessionQueryFilterValues] = useSessionStorage({
+  const [sessionQueryFilterValues, updateSessionQueryFilterValues] = useSessionStorage({
     key: 'queryFilterValues',
     defaultValue: queryFilterValues,
     // ToDo: useSessionStorage currently uses an unload listener to clear the filters from session storage
@@ -128,7 +128,7 @@ function WorkList({
       val.pageNumber = 1;
     }
     _setFilterValues(val);
-    saveSessionQueryFilterValues(val);
+    updateSessionQueryFilterValues(val);
     setExpandedRows([]);
   };
 
