@@ -3,7 +3,7 @@
 describe('OHIF Study List', function () {
   context('Desktop resolution', function () {
     beforeEach(function () {
-      window.sessionStorage.clear();
+      cy.window().then(win => win.sessionStorage.clear());
       cy.openStudyList();
 
       cy.viewport(1750, 720);
@@ -13,6 +13,10 @@ describe('OHIF Study List', function () {
       cy.get('@MRN').clear();
       cy.get('@AccessionNumber').clear();
       cy.get('@StudyDescription').clear();
+    });
+
+    afterEach(function () {
+      cy.window().then(win => win.sessionStorage.clear());
     });
 
     it('Displays several studies initially', function () {
