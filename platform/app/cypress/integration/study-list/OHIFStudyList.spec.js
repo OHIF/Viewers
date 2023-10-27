@@ -3,6 +3,7 @@
 describe('OHIF Study List', function () {
   context('Desktop resolution', function () {
     beforeEach(function () {
+      window.sessionStorage.clear();
       cy.openStudyList();
 
       cy.viewport(1750, 720);
