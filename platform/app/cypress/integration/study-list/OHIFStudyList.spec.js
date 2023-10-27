@@ -89,7 +89,7 @@ describe('OHIF Study List', function () {
     });
 
     it('maintains Accession filter upon return from viewer', function () {
-      cy.get('@AccessionNumber').type('321');
+      cy.get('@AccessionNumber').type('0000155811');
       //Wait result list to be displayed
       cy.waitStudyList();
       cy.get('[data-cy="studyRow-1.3.6.1.4.1.25403.345050719074.3824.20170125113417.1"]').click();
@@ -99,7 +99,7 @@ describe('OHIF Study List', function () {
       cy.get('[data-cy="return-to-work-list"]').click();
       cy.get('@searchResult2').should($list => {
         expect($list.length).to.be.eq(1);
-        expect($list).to.contain('321');
+        expect($list).to.contain('0000155811');
       });
     });
 
