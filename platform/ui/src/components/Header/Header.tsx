@@ -43,6 +43,7 @@ function Header({
               isReturnEnabled && 'cursor-pointer'
             )}
             onClick={onClickReturn}
+            data-cy="return-to-work-list"
           >
             {isReturnEnabled && (
               <Icon
