@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-beta.7](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.6...v3.8.0-beta.7) (2023-10-30)
+
+
+### Bug Fixes
+
+* **measurement service:** Implemented correct check of schema keys in _isValidMeasurment. ([#3750](https://github.com/OHIF/Viewers/issues/3750)) ([db39585](https://github.com/OHIF/Viewers/commit/db395852b6fc6cd5c265a9282e5eee5bd6f951b7))
+
+
+### Features
+
+* **filters:** save worklist query filters to session storage so that they persist between navigation to the viewer and back ([#3749](https://github.com/OHIF/Viewers/issues/3749)) ([2a15ef0](https://github.com/OHIF/Viewers/commit/2a15ef0e44b7b4d8bbf5cb9363db6e523201c681))
+
+
+
+
+
 # [3.8.0-beta.6](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.5...v3.8.0-beta.6) (2023-10-25)
 
 

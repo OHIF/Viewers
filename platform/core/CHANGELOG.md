@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-beta.7](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.6...v3.8.0-beta.7) (2023-10-30)
+
+
+### Bug Fixes
+
+* **measurement service:** Implemented correct check of schema keys in _isValidMeasurment. ([#3750](https://github.com/OHIF/Viewers/issues/3750)) ([db39585](https://github.com/OHIF/Viewers/commit/db395852b6fc6cd5c265a9282e5eee5bd6f951b7))
+
+
+
+
+
 # [3.8.0-beta.6](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.5...v3.8.0-beta.6) (2023-10-25)
 
 
