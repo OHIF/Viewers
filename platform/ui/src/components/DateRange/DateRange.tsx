@@ -176,7 +176,7 @@ DateRange.propTypes = {
   /** YYYYMMDD (19921022) */
   startDate: PropTypes.string,
   /** YYYYMMDD (19921022) */
-  endDate: PropTypes.object,
+  endDate: PropTypes.string,
   /** Callback that received { startDate: string(YYYYMMDD), endDate: string(YYYYMMDD)} */
   onChange: PropTypes.func.isRequired,
 };

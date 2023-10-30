@@ -3,6 +3,85 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-beta.7](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.6...v3.8.0-beta.7) (2023-10-30)
+
+
+### Bug Fixes
+
+* **measurement service:** Implemented correct check of schema keys in _isValidMeasurment. ([#3750](https://github.com/OHIF/Viewers/issues/3750)) ([db39585](https://github.com/OHIF/Viewers/commit/db395852b6fc6cd5c265a9282e5eee5bd6f951b7))
+
+
+### Features
+
+* **filters:** save worklist query filters to session storage so that they persist between navigation to the viewer and back ([#3749](https://github.com/OHIF/Viewers/issues/3749)) ([2a15ef0](https://github.com/OHIF/Viewers/commit/2a15ef0e44b7b4d8bbf5cb9363db6e523201c681))
+
+
+
+
+
+# [3.8.0-beta.6](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.5...v3.8.0-beta.6) (2023-10-25)
+
+
+### Bug Fixes
+
+* **toolbar:** allow customizable toolbar for active viewport and allow active tool to be deactivated via a click ([#3608](https://github.com/OHIF/Viewers/issues/3608)) ([dd6d976](https://github.com/OHIF/Viewers/commit/dd6d9768bbca1d3cc472e8c1e6d85822500b96ef))
+
+
+
+
+
+# [3.8.0-beta.5](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.4...v3.8.0-beta.5) (2023-10-24)
+
+
+### Bug Fixes
+
+* **sr:** dcm4chee requires the patient name for an SR to match what is in the original study ([#3739](https://github.com/OHIF/Viewers/issues/3739)) ([d98439f](https://github.com/OHIF/Viewers/commit/d98439fe7f3825076dbc87b664a1d1480ff414d3))
+
+
+
+
+
+# [3.8.0-beta.4](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.3...v3.8.0-beta.4) (2023-10-23)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.8.0-beta.3](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.2...v3.8.0-beta.3) (2023-10-23)
+
+
+### Bug Fixes
+
+* **recipes:** package.json script orthanc:up docker-compose path ([#3741](https://github.com/OHIF/Viewers/issues/3741)) ([49514ae](https://github.com/OHIF/Viewers/commit/49514aedfe0498b5bd505193106a9745a6a5b5e6))
+
+
+
+
+
+# [3.8.0-beta.2](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.1...v3.8.0-beta.2) (2023-10-19)
+
+
+### Bug Fixes
+
+* **cine:** Use the frame rate specified in DICOM and optionally auto play cine ([#3735](https://github.com/OHIF/Viewers/issues/3735)) ([d9258ec](https://github.com/OHIF/Viewers/commit/d9258eca70587cf4dc18be4e56c79b16bae73d6d))
+
+
+
+
+
+# [3.8.0-beta.1](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.0...v3.8.0-beta.1) (2023-10-19)
+
+
+### Bug Fixes
+
+* **calibration:** No calibration popup caused by perhaps an unused code optimization for production builds ([#3736](https://github.com/OHIF/Viewers/issues/3736)) ([93d798d](https://github.com/OHIF/Viewers/commit/93d798db99c0dee53ef73c376f8a74ac3049cf3f))
+
+
+
+
+
 # [3.8.0-beta.0](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.110...v3.8.0-beta.0) (2023-10-12)
 
 **Note:** Version bump only for package ohif-monorepo-root

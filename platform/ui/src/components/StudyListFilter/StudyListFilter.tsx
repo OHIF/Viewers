@@ -52,7 +52,7 @@ const StudyListFilter = ({
                   </div>
                 )}
               </div>
-              <div className="flex flex-row">
+              <div className="flex h-[34px] flex-row items-center">
                 {/* TODO revisit the completely rounded style of button used for clearing the study list filter - for now use LegacyButton*/}
                 {isFiltering && (
                   <LegacyButton
