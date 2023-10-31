@@ -69,16 +69,16 @@ const StudyListFilter = ({
                 )}
                 <Typography
                   variant="h6"
-                  className="text-primary-light"
+                  className="mr-2"
+                  data-cy={'num-studies'}
                 >
-                  {`${t('Studies')}:`}&nbsp;
+                  {numOfStudies > 100 ? '>100' : numOfStudies}
                 </Typography>
                 <Typography
                   variant="h6"
                   className="text-primary-light"
-                  data-cy={'num-studies'}
                 >
-                  {numOfStudies > 100 ? '>100' : numOfStudies}
+                  {t('Studies')}
                 </Typography>
               </div>
             </div>
