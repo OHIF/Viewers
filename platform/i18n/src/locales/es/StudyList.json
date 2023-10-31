@@ -11,9 +11,8 @@
   "Previous": "< Anterior",
   "Page": "Página",
   "Next": "Siguiente >",
-  "ResultsPerPage": "Resultados por página",
-  "Studies": "Estudios",
+  "Results per page": "Resultados por página",
+  "Number of studies": "Estudios",
   "StudyDate": "Fecha del estudio",
-  "StudyDescription": "Descripción",
   "StudyList": "Lista de Estudios"
 }
