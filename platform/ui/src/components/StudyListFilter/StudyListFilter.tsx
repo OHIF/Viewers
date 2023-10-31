@@ -69,9 +69,16 @@ const StudyListFilter = ({
                 )}
                 <Typography
                   variant="h6"
-                  className="text-primary-light self-end pb-1"
+                  className="mr-2"
+                  data-cy={'num-studies'}
                 >
-                  {`${t('Number of studies')}: ${numOfStudies > 100 ? '>100' : numOfStudies}`}
+                  {numOfStudies > 100 ? '>100' : numOfStudies}
+                </Typography>
+                <Typography
+                  variant="h6"
+                  className="text-primary-light"
+                >
+                  {t('Number of studies')}
                 </Typography>
               </div>
             </div>
