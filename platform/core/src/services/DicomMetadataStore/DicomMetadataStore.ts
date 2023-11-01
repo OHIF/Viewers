@@ -187,7 +187,7 @@ const BaseImplementation = {
     });
   },
   addSeriesMetadata(seriesSummaryMetadata, madeInClient = false) {
-    if (!seriesSummaryMetadata || !seriesSummaryMetadata.length) {
+    if (!seriesSummaryMetadata || !seriesSummaryMetadata.length || !seriesSummaryMetadata[0]) {
       return;
     }
 
