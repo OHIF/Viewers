@@ -6,6 +6,7 @@ import DataSourceConfiguration from './DataSourceConfiguration.json';
 import DatePicker from './DatePicker.json';
 import ErrorBoundary from './ErrorBoundary.json';
 import Header from './Header.json';
+import HotkeysValidators from './HotkeysValidators.json';
 import MeasurementTable from './MeasurementTable.json';
 import SidePanel from './SidePanel.json';
 import StudyBrowser from './StudyBrowser.json';
@@ -24,6 +25,7 @@ export default {
     DatePicker,
     ErrorBoundary,
     Header,
+    HotkeysValidators,
     MeasurementTable,
     SidePanel,
     StudyBrowser,
