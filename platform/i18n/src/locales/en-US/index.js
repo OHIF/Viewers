@@ -8,6 +8,7 @@ import ErrorBoundary from './ErrorBoundary.json';
 import Header from './Header.json';
 import HotkeysValidators from './HotkeysValidators.json';
 import MeasurementTable from './MeasurementTable.json';
+import SegmentationTable from './SegmentationTable.json';
 import SidePanel from './SidePanel.json';
 import StudyBrowser from './StudyBrowser.json';
 import StudyList from './StudyList.json';
@@ -27,6 +28,7 @@ export default {
     Header,
     HotkeysValidators,
     MeasurementTable,
+    SegmentationTable,
     SidePanel,
     StudyBrowser,
     StudyList,

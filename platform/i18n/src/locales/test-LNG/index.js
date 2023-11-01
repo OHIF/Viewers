@@ -7,6 +7,7 @@ import ErrorBoundary from './ErrorBoundary.json';
 import Header from './Header.json';
 import HotkeysValidators from './HotkeysValidators.json';
 import MeasurementTable from './MeasurementTable.json';
+import SegmentationTable from './SegmentationTable.json';
 import StudyList from './StudyList.json';
 import UserPreferencesModal from './UserPreferencesModal.json';
 import ViewportDownloadForm from './ViewportDownloadForm.json';
@@ -28,6 +29,7 @@ export default {
     Header,
     HotkeysValidators,
     MeasurementTable,
+    SegmentationTable,
     StudyList,
     UserPreferencesModal,
     ViewportDownloadForm,
