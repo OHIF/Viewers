@@ -5,6 +5,7 @@ import Common from './Common.json';
 import DatePicker from './DatePicker.json';
 import ErrorBoundary from './ErrorBoundary.json';
 import Header from './Header.json';
+import HotkeysValidators from './HotkeysValidators.json';
 import MeasurementTable from './MeasurementTable.json';
 import StudyList from './StudyList.json';
 import UserPreferencesModal from './UserPreferencesModal.json';
@@ -25,6 +26,7 @@ export default {
     DatePicker,
     ErrorBoundary,
     Header,
+    HotkeysValidators,
     MeasurementTable,
     StudyList,
     UserPreferencesModal,
