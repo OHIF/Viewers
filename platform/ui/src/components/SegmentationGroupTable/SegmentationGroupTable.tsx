@@ -6,6 +6,7 @@ import SegmentationDropDownRow from './SegmentationDropDownRow';
 import NoSegmentationRow from './NoSegmentationRow';
 import AddSegmentRow from './AddSegmentRow';
 import SegmentationGroupSegment from './SegmentationGroupSegment';
+import { useTranslation } from 'react-i18next';
 
 const SegmentationGroupTable = ({
   segmentations,
@@ -70,11 +71,12 @@ const SegmentationGroupTable = ({
   const activeSegmentation = segmentations?.find(
     segmentation => segmentation.id === activeSegmentationId
   );
+  const { t } = useTranslation('SegmentationTable');
 
   return (
     <div className="flex min-h-0 flex-col bg-black text-[13px] font-[300]">
       <PanelSection
-        title="Segmentation"
+        title={t('Segmentation')}
         actionIcons={
           activeSegmentation && [
             {
