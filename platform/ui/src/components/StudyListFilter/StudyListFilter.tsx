@@ -78,7 +78,7 @@ const StudyListFilter = ({
                   variant="h6"
                   className="text-primary-light"
                 >
-                  {t('Studies')}
+                  {t('Number of studies')}
                 </Typography>
               </div>
             </div>
