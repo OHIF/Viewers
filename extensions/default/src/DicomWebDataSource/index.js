@@ -423,6 +423,9 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
 
       function setSuccessFlag() {
         const study = DicomMetadataStore.getStudy(StudyInstanceUID, madeInClient);
+        if (!study) {
+          return;
+        }
         study.isLoaded = true;
       }
 
