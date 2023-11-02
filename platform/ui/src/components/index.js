@@ -79,10 +79,25 @@ import PanelSection from './PanelSection';
 import AdvancedToolbox from './AdvancedToolbox';
 import InputDoubleRange from './InputDoubleRange';
 import LegacyButtonGroup from './LegacyButtonGroup';
+import SwitchButton, { SwitchLabelLocation } from './SwitchButton';
+import {
+  AllInOneMenu,
+  AllInOneMenuDividerItem,
+  AllInOneMenuHeaderItem,
+  AllInOneMenuItem,
+  AllInOneMenuItemPanel,
+  AllInOneMenuSubMenu,
+} from './AllInOneMenu';
 
 export {
   AboutModal,
   AdvancedToolbox,
+  AllInOneMenu,
+  AllInOneMenuDividerItem,
+  AllInOneMenuHeaderItem,
+  AllInOneMenuItem,
+  AllInOneMenuItemPanel,
+  AllInOneMenuSubMenu,
   HotkeyField,
   Header,
   UserPreferences,
@@ -142,6 +157,8 @@ export {
   StudyListTableRow,
   StudySummary,
   Svg,
+  SwitchButton,
+  SwitchLabelLocation,
   Table,
   TableBody,
   TableCell,

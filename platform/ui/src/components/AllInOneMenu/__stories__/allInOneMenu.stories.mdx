@@ -1,0 +1,137 @@
+import AllInOneMenu from '../AllInOneMenu';
+import AllInOneMenuItemPanel from '../AllInOneMenuItemPanel';
+import AllInOneMenuSubMenu from '../AllInOneMenuSubMenu';
+import AllInOneMenuItem from '../AllInOneMenuItem';
+import AllInOneMenuDividerItem from '../AllInOneMenuDividerItem';
+import AllInOneMenuHeaderItem from '../AllInOneMenuHeaderItem';
+import InputRange from '../../InputRange/index.js';
+import SwitchButton from '../../SwitchButton/index.js';
+
+import { ArgsTable, Story, Canvas, Meta } from '@storybook/addon-docs';
+import { createComponentTemplate } from '../../../storybook/functions/create-component-story';
+
+export const argTypes = {
+  component: AllInOneMenu,
+  title: 'Components/AllInOneMenu',
+};
+
+<Meta
+  title="Components/AllInOneMenu"
+  component={AllInOneMenu}
+/>
+
+export const AllInOneMenuTemplate = args => (
+  <div className="w-80">
+    <AllInOneMenu {...args}>
+      <AllInOneMenuItemPanel label="Panel 1">
+        <AllInOneMenuItem
+          label="Item 1"
+          key="0"
+          onItemClick={() => console.info('Item 1 clicked.')}
+        ></AllInOneMenuItem>
+        <AllInOneMenuItem
+          label="Item 2"
+          alternateLabel="Alt item 2"
+          key="1"
+        ></AllInOneMenuItem>
+        <div
+          className="all-in-one-menu-item my-1 flex w-full justify-center"
+          style={{ height: '50px' }}
+        >
+          <span>Arbitrary item component:</span>
+          <InputRange
+            minValue={1}
+            maxValue={10}
+            value={5}
+            onChange={() => {}}
+          ></InputRange>
+        </div>
+        <AllInOneMenuDividerItem key="2"></AllInOneMenuDividerItem>
+        <AllInOneMenuSubMenu
+          key="3"
+          menuLabel="Level 2"
+          itemLabel="Item 3 opens a sub menu"
+          onItemClick={() => console.info('Sub menu item clicked.')}
+          isHeaderDividerVisible={true}
+          headerComponent={
+            <div className="all-in-one-menu-item flex w-full justify-center">
+              <SwitchButton label="Switch item in header" />
+            </div>
+          }
+        >
+          <AllInOneMenuItemPanel
+            index={0}
+            label="Panel A"
+          >
+            <AllInOneMenuItem label="Panel A item"></AllInOneMenuItem>
+          </AllInOneMenuItemPanel>
+          <AllInOneMenuItemPanel
+            index={1}
+            label="Panel B"
+          >
+            <AllInOneMenuItem label="Panel B item"></AllInOneMenuItem>
+            <AllInOneMenuSubMenu
+              itemLabel="Opens a sub, sub menu"
+              headerComponent={
+                <AllInOneMenuHeaderItem>Header for scrolling list of items</AllInOneMenuHeaderItem>
+              }
+            >
+              <AllInOneMenuItemPanel label="Sub sub Panel">
+                <AllInOneMenuItem label="Sub sub menu item 1"></AllInOneMenuItem>
+                <AllInOneMenuItem label="Sub sub menu item 2"></AllInOneMenuItem>
+                <AllInOneMenuItem label="Sub sub menu item 3"></AllInOneMenuItem>
+                <AllInOneMenuItem label="Sub sub menu item 4"></AllInOneMenuItem>
+                <AllInOneMenuItem label="Sub sub menu item 5"></AllInOneMenuItem>
+                <AllInOneMenuItem label="Sub sub menu item 6"></AllInOneMenuItem>
+              </AllInOneMenuItemPanel>
+            </AllInOneMenuSubMenu>
+          </AllInOneMenuItemPanel>
+        </AllInOneMenuSubMenu>
+      </AllInOneMenuItemPanel>
+    </AllInOneMenu>
+  </div>
+);
+
+<Heading
+  title="AllInOneMenu"
+  componentRelativePath="AllInOneMenu/AllInOneMenu.tsx"
+/>
+
+- [Overview](#overview)
+- [Props](#props)
+- [Contribute](#contribute)
+
+## Overview
+
+AllInOneMenu is a component that renders a menu with various menu items, sub-menus and
+sub-components. The particular feature of the AllInOneMenu is its ability to render a sub-menu by
+replacing the parent menu on screen. It also provides the ability to return to the parent menu with
+a back menu item from the sub-menu. Furthermore, each menu level can be split into item panes - that
+is several panes of menu items that are switched in and out of view like a tabbed pane.
+
+<Canvas>
+  <Story
+    name="Overview"
+    args={{
+      className: 'max-h-[210px]',
+      isVisible: true,
+      preventHideMenu: true,
+      menuLabel: 'Level 1',
+      onMenuVisibilityChange: (isVisible) => console.info(`The menu visibility: ${isVisible}`)
+    }}
+>
+
+    {AllInOneMenuTemplate.bind({})}
+
+  </Story>
+</Canvas>
+
+## Props
+
+<ArgsTable of={AllInOneMenu} />
+
+## Usage
+
+## Contribute
+
+<Footer componentRelativePath="AllInOneMenu/__stories__/AllInOneMenu.stories.mdx" />

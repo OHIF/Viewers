@@ -17,6 +17,8 @@ import chevronMenu from './../../assets/icons/chevron-menu.svg';
 import chevronNext from './../../assets/icons/chevron-next.svg';
 import chevronPrev from './../../assets/icons/chevron-prev.svg';
 import chevronRight from './../../assets/icons/chevron-right.svg';
+import contentNext from './../../assets/icons/content-next.svg';
+import contentPrev from './../../assets/icons/content-prev.svg';
 import eyeVisible from './../../assets/icons/eye-visible.svg';
 import eyeHidden from './../../assets/icons/eye-hidden.svg';
 import exclamation from './../../assets/icons/exclamation.svg';
@@ -162,6 +164,8 @@ const ICONS = {
   'chevron-next': chevronNext,
   'chevron-prev': chevronPrev,
   'chevron-right': chevronRight,
+  'content-next': contentNext,
+  'content-prev': contentPrev,
   'eye-visible': eyeVisible,
   'eye-hidden': eyeHidden,
   'external-link': externalLink,
