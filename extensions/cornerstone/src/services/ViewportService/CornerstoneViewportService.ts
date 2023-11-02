@@ -10,6 +10,7 @@ import {
   VolumeViewport3D,
   cache,
   Enums as csEnums,
+  BaseVolumeViewport,
 } from '@cornerstonejs/core';
 
 import { utilities as csToolsUtils, Enums as csToolsEnums } from '@cornerstonejs/tools';
@@ -141,6 +142,11 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
   public setPresentations(viewport, presentations?: Presentations): void {
     const properties = presentations?.lutPresentation?.properties;
     if (properties) {
+      if (viewport instanceof BaseVolumeViewport) {
+        // deleting the rotation until we move the rotation outside of the properties to avoid
+        // unwanted side effect with the rotation of volume viewports
+        delete properties.rotation;
+      }
       viewport.setProperties(properties);
     }
     const camera = presentations?.positionPresentation?.camera;
