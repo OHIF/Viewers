@@ -241,9 +241,8 @@ workflows:
             branches:
               only:
                 - master
-                - idc-viewerv3-prod
-                - idc-viewerv3-test
-                - idc-viewerv3-public
+                - idc-v3-viewer-prod
+                - idc-v3-viewer-test
       - deploy_job:
           requires:
             - build_job
@@ -251,9 +250,8 @@ workflows:
             branches:
               only:
                 - master
-                - idc-viewerv3-prod
-                - idc-viewerv3-test
-                - idc-viewerv3-public
+                - idc-v3-viewer-prod
+                - idc-v3-viewer-test
 
 
 
