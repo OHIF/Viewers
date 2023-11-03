@@ -8458,10 +8458,10 @@ dcmjs@^0.27:
     loglevelnext "^3.0.1"
     ndarray "^1.0.19"
 
-dcmjs@^0.29.11:
-  version "0.29.11"
-  resolved "https://registry.yarnpkg.com/dcmjs/-/dcmjs-0.29.11.tgz#82e19d7c5212218c3225f8022ce97b0102ed3cc8"
-  integrity sha512-B5fO5D+USzfnuUG7ephnaKMluqBOP4qcckV2LgROXvn0hmWc53Gs2YzlokjcYcDeBAXNfssOOhDekUc+AduwkQ==
+dcmjs@^0.29.12:
+  version "0.29.12"
+  resolved "https://registry.yarnpkg.com/dcmjs/-/dcmjs-0.29.12.tgz#94f484f6ee4901e44d17113f005a917500544cd3"
+  integrity sha512-LQBxinj4CZQU2J61hf0/QXHe/OA+EM0ie+JbZ4eMaQAYfMOaDDkYG25zP3bNNDBFlY5ytgwsfWLvmvanQ9ixYg==
   dependencies:
     "@babel/runtime-corejs3" "^7.22.5"
     adm-zip "^0.5.10"
