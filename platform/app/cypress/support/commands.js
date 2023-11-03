@@ -181,7 +181,7 @@ Cypress.Commands.add('expectMinimumThumbnails', (seriesToWait = 1) => {
 //Command to wait DICOM image to load into the viewport
 Cypress.Commands.add('waitDicomImage', (mode = '/basic-test', timeout = 50000) => {
   cy.window()
-    .its('cornerstone')
+    .its('cornerstone', { timeout: 30000 })
     .should($cornerstone => {
       const enabled = $cornerstone.getEnabledElements();
       if (enabled?.length) {

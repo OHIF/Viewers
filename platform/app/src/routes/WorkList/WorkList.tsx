@@ -254,11 +254,11 @@ function WorkList({
     const studyDate =
       date &&
       moment(date, ['YYYYMMDD', 'YYYY.MM.DD'], true).isValid() &&
-      moment(date, ['YYYYMMDD', 'YYYY.MM.DD']).format('MMM-DD-YYYY');
+      moment(date, ['YYYYMMDD', 'YYYY.MM.DD']).format(t('Common:localDateFormat','MMM-DD-YYYY'));
     const studyTime =
       time &&
       moment(time, ['HH', 'HHmm', 'HHmmss', 'HHmmss.SSS']).isValid() &&
-      moment(time, ['HH', 'HHmm', 'HHmmss', 'HHmmss.SSS']).format('hh:mm A');
+      moment(time, ['HH', 'HHmm', 'HHmmss', 'HHmmss.SSS']).format(t('Common:localTimeFormat', 'hh:mm A'));
 
     return {
       dataCY: `studyRow-${studyInstanceUid}`,
@@ -327,10 +327,10 @@ function WorkList({
       expandedContent: (
         <StudyListExpandedRow
           seriesTableColumns={{
-            description: 'Description',
-            seriesNumber: 'Series',
-            modality: 'Modality',
-            instances: 'Instances',
+            description: t('StudyList:Description'),
+            seriesNumber: t('StudyList:Series'),
+            modality: t('StudyList:Modality'),
+            instances: t('StudyList:Instances'),
           }}
           seriesTableDataSource={
             seriesInStudiesMap.has(studyInstanceUid)
@@ -416,7 +416,7 @@ function WorkList({
       onClick: () =>
         show({
           content: AboutModal,
-          title: 'About OHIF Viewer',
+          title: t('AboutModal:About OHIF Viewer'),
           contentProps: { versionNumber, commitHash },
         }),
     },
@@ -425,7 +425,7 @@ function WorkList({
       icon: 'settings',
       onClick: () =>
         show({
-          title: t('UserPreferencesModal:User Preferences'),
+          title: t('UserPreferencesModal:User preferences'),
           content: UserPreferences,
           contentProps: {
             hotkeyDefaults: hotkeysManager.getValidHotkeyDefinitions(hotkeyDefaults),

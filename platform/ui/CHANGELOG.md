@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-beta.9](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.8...v3.8.0-beta.9) (2023-11-02)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+# [3.8.0-beta.8](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.7...v3.8.0-beta.8) (2023-10-31)
+
+
+### Features
+
+* **i18n:** enhanced i18n support ([#3730](https://github.com/OHIF/Viewers/issues/3730)) ([330e11c](https://github.com/OHIF/Viewers/commit/330e11c7ff0151e1096e19b8ffdae7d64cae280e))
+
+
+
+
+
+# [3.8.0-beta.7](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.6...v3.8.0-beta.7) (2023-10-30)
+
+
+### Features
+
+* **filters:** save worklist query filters to session storage so that they persist between navigation to the viewer and back ([#3749](https://github.com/OHIF/Viewers/issues/3749)) ([2a15ef0](https://github.com/OHIF/Viewers/commit/2a15ef0e44b7b4d8bbf5cb9363db6e523201c681))
+
+
+
+
+
 # [3.8.0-beta.6](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.5...v3.8.0-beta.6) (2023-10-25)
 
 
