@@ -13,6 +13,7 @@ import SidePanel from './SidePanel.json';
 import StudyBrowser from './StudyBrowser.json';
 import StudyItem from './StudyItem.json';
 import StudyList from './StudyList.json';
+import TooltipClipboard from './TooltipClipboard.json';
 import UserPreferencesModal from './UserPreferencesModal.json';
 import ViewportDownloadForm from './ViewportDownloadForm.json';
 import Messages from './Messages.json';
@@ -34,6 +35,7 @@ export default {
     StudyBrowser,
     StudyItem,
     StudyList,
+    TooltipClipboard,
     UserPreferencesModal,
     ViewportDownloadForm,
     Messages,
