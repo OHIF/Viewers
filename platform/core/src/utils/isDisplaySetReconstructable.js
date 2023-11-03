@@ -18,11 +18,8 @@ export default function isDisplaySetReconstructable(instances) {
 
   const isMultiframe = firstInstance.NumberOfFrames > 1;
 
-  // This seems to not be a reasonable check. We should just use the geometry
-  // const Modality = firstInstance.Modality;
-  // if (!constructableModalities.includes(Modality)) {
-  //   return { value: false };
-  // }
+  // We used to check is reconstructable modalities here, but the logic is removed
+  // in favor of the calculation by metadata (orientation and positions)
 
   // Can't reconstruct if we only have one image.
   if (!isMultiframe && instances.length === 1) {
