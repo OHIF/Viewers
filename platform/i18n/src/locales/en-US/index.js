@@ -11,6 +11,7 @@ import MeasurementTable from './MeasurementTable.json';
 import SegmentationTable from './SegmentationTable.json';
 import SidePanel from './SidePanel.json';
 import StudyBrowser from './StudyBrowser.json';
+import StudyItem from './StudyItem.json';
 import StudyList from './StudyList.json';
 import UserPreferencesModal from './UserPreferencesModal.json';
 import ViewportDownloadForm from './ViewportDownloadForm.json';
@@ -31,6 +32,7 @@ export default {
     SegmentationTable,
     SidePanel,
     StudyBrowser,
+    StudyItem,
     StudyList,
     UserPreferencesModal,
     ViewportDownloadForm,
