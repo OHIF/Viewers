@@ -1,5 +1,5 @@
 version: 2.1
-## Force for config
+### Force for config
 commands:
   deployment_setup:
     steps:
@@ -8,7 +8,7 @@ commands:
           command: |
             TIER=DEV
             if [[ ${CIRCLE_BRANCH} =~ idc-v3-viewer-(prod|test).* ]]; then
-              TIER=$(awk -F- '{print toupper($3)}' \<<< ${CIRCLE_BRANCH})
+              TIER=$(awk -F- '{print toupper($4)}' \<<< ${CIRCLE_BRANCH})
             fi
             echo "export TIER=${TIER}" >> $BASH_ENV
             echo "Tier was identified as ${TIER} for branch ${CIRCLE_BRANCH}"
