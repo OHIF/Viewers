@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
 import PropTypes from 'prop-types';
-import { Label, Select, InputRange } from '@ohif/ui';
+import { Label, Select, InputRange, InputNumber } from '@ohif/ui';
 
 function BrushConfiguration({
   brushThresholdOptions,
@@ -42,12 +42,18 @@ function BrushConfiguration({
         </>
       )}
       <div>
-        <Label className="text-white">Brush Size</Label>
+        <div className="flex space-x-4">
+          <Label className="text-white">Brush Size</Label>
+          <InputNumber
+            value={brushSize}
+            onChange={brushSize => onBrushSizeChange(brushSize)}
+          />
+        </div>
         <InputRange
-          minValue={5}
+          minValue={0.1}
           maxValue={50}
           value={brushSize}
-          step={1}
+          step={0.25}
           unit=""
           showLabel={true}
           onChange={brushSize => onBrushSizeChange(brushSize)}

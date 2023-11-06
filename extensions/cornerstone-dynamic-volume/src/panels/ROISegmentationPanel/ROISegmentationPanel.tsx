@@ -318,7 +318,7 @@ export default function ROISegmentationPanel({
                 color="black"
                 size="inherit"
               >
-                <LegacyButton
+                {/* <LegacyButton
                   className="px-2 py-2 text-base"
                   disabled={!segmentations.length}
                   onClick={() => {
@@ -331,8 +331,8 @@ export default function ROISegmentationPanel({
                     });
                   }}
                 >
-                  {t('Export Statistics')}
-                </LegacyButton>
+                  {t('Export Statistics')} */}
+                {/* </LegacyButton> */}
                 <LegacyButton
                   className="px-2 py-2 text-base"
                   disabled={!segmentations.length}
@@ -346,7 +346,23 @@ export default function ROISegmentationPanel({
                     });
                   }}
                 >
-                  {t('Export Time Data')}
+                  {t('Export Pixel Time Data')}
+                </LegacyButton>
+                <LegacyButton
+                  className="px-2 py-2 text-base"
+                  disabled={!segmentations.length}
+                  onClick={() => {
+                    commandsManager.runCommand('exportTimeReportCSV', {
+                      segmentations,
+                      config,
+                      summaryStats: true,
+                      options: {
+                        filename: 'TimeData.csv',
+                      },
+                    });
+                  }}
+                >
+                  {t('Export ROI Summary Data')}
                 </LegacyButton>
               </LegacyButtonGroup>
             </div>

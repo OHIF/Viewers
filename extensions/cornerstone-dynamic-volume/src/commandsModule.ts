@@ -36,7 +36,7 @@ const commandsModule = ({ commandsManager, servicesManager }) => {
       });
       return computedDisplaySets;
     },
-    exportTimeReportCSV: ({ segmentations, config, options }) => {
+    exportTimeReportCSV: ({ segmentations, config, options, summaryStats }) => {
       const dynamic4DDisplaySet = actions.getDynamic4DDisplaySet();
 
       const volumeId = dynamic4DDisplaySet?.displaySetInstanceUID;
@@ -70,31 +70,116 @@ const commandsModule = ({ commandsManager, servicesManager }) => {
       csv.push(`StudyDescription,${instance.StudyDescription},`);
       csv.push(`SeriesInstanceUID,${instance.SeriesInstanceUID},`);
 
-      // Iterate through each segmentation to get the 2D array data and include it in the CSV
-      for (let i = 0; i < segmentations.length; i++) {
-        const segmentation = segmentations[i];
-        const timeData = utilities.dynamicVolume.getDataInTime(dynamicVolume, {
+      // empty line
+      csv.push('');
+      csv.push('');
+
+      // Helper function to calculate standard deviation
+      function calculateStandardDeviation(data) {
+        const n = data.length;
+        const mean = data.reduce((acc, value) => acc + value, 0) / n;
+        const squaredDifferences = data.map(value => (value - mean) ** 2);
+        const variance = squaredDifferences.reduce((acc, value) => acc + value, 0) / n;
+        const stdDeviation = Math.sqrt(variance);
+        return stdDeviation;
+      }
+
+      // Iterate through each segmentation to get the timeData and ijkCoords
+      segmentations.forEach((segmentation, segmentationIndex) => {
+        const [timeData, ijkCoords] = utilities.dynamicVolume.getDataInTime(dynamicVolume, {
           maskVolumeId: segmentation.id,
         }) as number[][];
 
-        // Add column headers for this segmentation
-        const numColumns = timeData.length; // Assuming timeData is 2D array [numColumns][numRows]
-        for (let j = 1; j <= numColumns; j++) {
-          csv[0] += `,Seg_${i + 1}_Element_${j}`;
-        }
+        if (summaryStats) {
+          // Adding column headers for pixel identifier and segmentation label ids
+          let headers = 'Operation,Segmentation Label ID';
+          const maxLength = dynamicVolume.numTimePoints;
+          for (let t = 0; t < maxLength; t++) {
+            headers += `,Time Point ${t}`;
+          }
+          csv.push(headers);
+          // // perform summary statistics on the timeData including for each time point, mean, median, min, max, and standard deviation for
+          // // all the voxels in the ROI
+          const mean = [];
+          const min = [];
+          const minIJK = [];
+          const max = [];
+          const maxIJK = [];
+          const std = [];
 
-        // Populate CSV rows with the 2D array data
-        const numRows = timeData[0].length;
-        for (let row = 0; row < numRows; row++) {
-          if (csv[row + 5] === undefined) {
-            csv[row + 5] = ',';
+          const numVoxels = timeData.length;
+          // Helper function to calculate standard deviation
+          for (let timeIndex = 0; timeIndex < maxLength; timeIndex++) {
+            // for each voxel in the ROI, get the value at the current time point
+            const voxelValues = [];
+            for (let voxelIndex = 0; voxelIndex < numVoxels; voxelIndex++) {
+              voxelValues.push(timeData[voxelIndex][timeIndex]);
+            }
+
+            mean.push(voxelValues.reduce((acc, value) => acc + value, 0) / numVoxels);
+            const minimum = Math.min(...voxelValues);
+            min.push(minimum);
+            minIJK.push(ijkCoords[voxelValues.indexOf(minimum)]);
+            const maximum = Math.max(...voxelValues);
+            max.push(maximum);
+            maxIJK.push(ijkCoords[voxelValues.indexOf(maximum)]);
+            std.push(calculateStandardDeviation(voxelValues));
           }
 
-          for (let col = 0; col < numColumns; col++) {
-            csv[row + 5] += `,${timeData[col][row]}`;
+          let row = `Mean,${segmentation.label}`;
+          // Generate separate rows for each statistic
+          for (let t = 0; t < maxLength; t++) {
+            row += `,${mean[t]}`;
+          }
+
+          csv.push(row);
+
+          row = `Standard Deviation,${segmentation.label}`;
+          for (let t = 0; t < maxLength; t++) {
+            row += `,${std[t]}`;
+          }
+
+          csv.push(row);
+
+          row = `Min,${segmentation.label}`;
+          for (let t = 0; t < maxLength; t++) {
+            row += `,${min[t]}`;
+          }
+
+          csv.push(row);
+
+          row = `Max,${segmentation.label}`;
+          for (let t = 0; t < maxLength; t++) {
+            row += `,${max[t]}`;
+          }
+
+          csv.push(row);
+        } else {
+          // Adding column headers for pixel identifier and segmentation label ids
+          let headers = 'Pixel Identifier (IJK),Segmentation Label ID';
+          const maxLength = dynamicVolume.numTimePoints;
+          for (let t = 0; t < maxLength; t++) {
+            headers += `,Time Point ${t}`;
+          }
+          csv.push(headers);
+          // Assuming timeData and ijkCoords are of the same length
+          for (let i = 0; i < timeData.length; i++) {
+            // Generate the pixel identifier
+            const pixelIdentifier = `${ijkCoords[i][0]}_${ijkCoords[i][1]}_${ijkCoords[i][2]}`;
+
+            // Start a new row for the current pixel
+            let row = `${pixelIdentifier},${segmentation.label}`;
+
+            // Add time data points for this pixel
+            for (let t = 0; t < timeData[i].length; t++) {
+              row += `,${timeData[i][t]}`;
+            }
+
+            // Append the row to the CSV array
+            csv.push(row);
           }
         }
-      }
+      });
 
       // Convert to CSV string
       const csvContent = csv.join('\n');
