@@ -14,6 +14,7 @@ import dcmjs from 'dcmjs';
 import { retrieveStudyMetadata, deleteStudyMetadataPromise } from './retrieveStudyMetadata.js';
 import getDirectURL from '../utils/getDirectURL';
 import { fixBulkDataURI } from './utils/fixBulkDataURI';
+import mergeResults from './utils/mergeResults';
 
 const { DicomMetaDictionary, DicomDict } = dcmjs.data;
 
@@ -24,8 +25,6 @@ const ImplementationVersionName = 'OHIF-VIEWER-2.0.0';
 const EXPLICIT_VR_LITTLE_ENDIAN = '1.2.840.10008.1.2.1';
 const STUDY_INSTANCE_UID = '0020000D';
 const SERIES_INSTANCE_UID = '0020000E';
-const NUMBER_STUDY_SERIES = '00201206';
-const NUMBER_STUDY_INSTANCES = '00201208';
 
 const metadataProvider = classes.MetadataProvider;
 
@@ -70,26 +69,9 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
             }
             return clientResults;
           });
-          await Promise.allSettled(clientResultsPromises);
+          const settledResults = await Promise.allSettled(clientResultsPromises);
 
-          let mergedResults = [];
-          const studyInstanceUIDs = {};
-          // here remove duplicate studies
-          await clientResultsPromises.forEach(async clientResultPromise => {
-            let results;
-            try {
-              results = await clientResultPromise;
-            } catch {
-              results = [];
-            }
-            results.forEach(clientResult => {
-              const studyInstanceUID = clientResult[STUDY_INSTANCE_UID].Value[0];
-              if (!(studyInstanceUID in studyInstanceUIDs)) {
-                studyInstanceUIDs[studyInstanceUID] = clientResult;
-                mergedResults.push(clientResult);
-              }
-            });
-          });
+          const mergedResults = mergeResults(settledResults, STUDY_INSTANCE_UID);
           return processResults(mergedResults);
         },
         processResults: processResults.bind(),
@@ -107,26 +89,8 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
             }
             return clientResults;
           });
-          await Promise.allSettled(clientResultsPromises);
-          let results = [];
-          const seriesInstanceUIDs = [];
-
-          // remove duplicate series in results
-          await clientResultsPromises.forEach(async clientResultPromise => {
-            let clientResults;
-            try {
-              clientResults = await clientResultPromise;
-            } catch {
-              clientResults = [];
-            }
-            clientResults.forEach(clientResult => {
-              const seriesInstanceUID = clientResult[SERIES_INSTANCE_UID].Value[0];
-              if (!seriesInstanceUIDs.includes(seriesInstanceUID)) {
-                seriesInstanceUIDs.push(seriesInstanceUID);
-                results.push(clientResult);
-              }
-            });
-          });
+          const settledResults = await Promise.allSettled(clientResultsPromises);
+          const results = mergeResults(settledResults, SERIES_INSTANCE_UID);
           return processSeriesResults(results);
         },
       },
@@ -374,12 +338,12 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
         // create a mapping between SeriesInstanceUID <--> clientName, for two reasons:
         // 1 - remove duplicates in series metadata
         // 2 - associate each instance in a series with the name of the client it was retrieved
-        for (let j = 0; j < clientSeriesSummaryMetadata.length; j++) {
-          if (!seriesClientsMapping[clientSeriesSummaryMetadata[j].SeriesInstanceUID]) {
-            seriesClientsMapping[clientSeriesSummaryMetadata[j].SeriesInstanceUID] =
-              clients[i].name;
+        for (const [j, seriesSummary] of clientSeriesSummaryMetadata.entries()) {
+          const seriesUID = seriesSummary.SeriesInstanceUID;
 
-            seriesSummaryMetadata.push(clientSeriesSummaryMetadata[j]);
+          if (!seriesClientsMapping[seriesUID]) {
+            seriesClientsMapping[seriesUID] = clients[i].name;
+            seriesSummaryMetadata.push(seriesSummary);
             seriesPromises.push(clientSeriesPromises[j]);
           }
         }
