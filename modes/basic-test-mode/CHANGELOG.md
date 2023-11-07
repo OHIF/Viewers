@@ -3,6 +3,57 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-beta.10](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.9...v3.8.0-beta.10) (2023-11-03)
+
+**Note:** Version bump only for package @ohif/mode-test
+
+
+
+
+
+# [3.8.0-beta.9](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.8...v3.8.0-beta.9) (2023-11-02)
+
+**Note:** Version bump only for package @ohif/mode-test
+
+
+
+
+
+# [3.8.0-beta.8](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.7...v3.8.0-beta.8) (2023-10-31)
+
+**Note:** Version bump only for package @ohif/mode-test
+
+
+
+
+
+# [3.8.0-beta.7](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.6...v3.8.0-beta.7) (2023-10-30)
+
+**Note:** Version bump only for package @ohif/mode-test
+
+
+
+
+
+# [3.8.0-beta.6](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.5...v3.8.0-beta.6) (2023-10-25)
+
+
+### Bug Fixes
+
+* **toolbar:** allow customizable toolbar for active viewport and allow active tool to be deactivated via a click ([#3608](https://github.com/OHIF/Viewers/issues/3608)) ([dd6d976](https://github.com/OHIF/Viewers/commit/dd6d9768bbca1d3cc472e8c1e6d85822500b96ef))
+
+
+
+
+
+# [3.8.0-beta.5](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.4...v3.8.0-beta.5) (2023-10-24)
+
+**Note:** Version bump only for package @ohif/mode-test
+
+
+
+
+
 # [3.8.0-beta.4](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.3...v3.8.0-beta.4) (2023-10-23)
 
 **Note:** Version bump only for package @ohif/mode-test

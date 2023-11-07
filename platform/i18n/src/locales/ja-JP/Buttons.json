@@ -31,7 +31,7 @@
   "ROI Window": "ROIウィンドウ",
   "Rectangle": "長方形",
   "Reset": "$t(Common:Reset)",
-  "Reset to Defaults": "デフォルトへ$t(Common:Reset)",
+  "Reset to defaults": "デフォルトへ$t(Common:Reset)",
   "Rotate Right": "右に回転",
   "Sagittal": "サジタル",
   "Save": "保存",
