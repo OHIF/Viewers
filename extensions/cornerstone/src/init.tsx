@@ -308,8 +308,8 @@ export default async function init({
   viewportGridService.subscribe(
     viewportGridService.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED,
     activeViewportEventListener
-      );
-    }
+  );
+}
 
 function CPUModal() {
   return (
