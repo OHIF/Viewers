@@ -59,8 +59,8 @@ export default async function init({
 
   await cs3DInit({
     rendering: {
-      preferSizeOverAccuracy: Boolean(appConfig.use16BitDataType),
-      useNorm16Texture: Boolean(appConfig.use16BitDataType),
+      preferSizeOverAccuracy: Boolean(appConfig.preferSizeOverAccuracy),
+      useNorm16Texture: Boolean(appConfig.useNorm16Texture),
     },
   });
 

@@ -67,7 +67,7 @@ const StudyItem = ({
 
 StudyItem.propTypes = {
   date: PropTypes.string.isRequired,
-  description: PropTypes.string.isRequired,
+  description: PropTypes.string,
   modalities: PropTypes.string.isRequired,
   numInstances: PropTypes.number.isRequired,
   trackedSeries: PropTypes.number,
