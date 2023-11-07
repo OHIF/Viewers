@@ -584,16 +584,16 @@ function commandsModule({
     attachProtocolViewportDataListener: ({ protocol, stageIndex }) => {
       const EVENT = cornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED;
       const command = protocol.callbacks.onViewportDataInitialized;
-      const numPanes = protocol.stages?.[stageIndex]?.viewports.length;
+      const numPanes = protocol.stages?.[stageIndex]?.viewports.length ?? 1;
       let numPanesWithData = 0;
-      cornerstoneViewportService.subscribe(EVENT, evt => {
+      const { unsubscribe } = cornerstoneViewportService.subscribe(EVENT, evt => {
         numPanesWithData++;
 
         if (numPanesWithData === numPanes) {
           commandsManager.run(...command);
 
           // Unsubscribe from the event
-          cornerstoneViewportService.unsubscribe(EVENT);
+          unsubscribe(EVENT);
         }
       });
     },

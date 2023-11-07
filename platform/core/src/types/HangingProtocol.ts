@@ -250,7 +250,7 @@ export type ProtocolNotifications = {
   onLayoutChange?: Command[];
   // This set of commands is executed after the initial viewport grid data is set
   // and all viewport data includes a designated display set. This command
-  // will run on every stages initial layout.
+  // will run on every stage's initial layout.
   onViewportDataInitialized?: Command[];
 };
 

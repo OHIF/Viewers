@@ -850,7 +850,7 @@ export default class HangingProtocolService extends PubSubService {
       throw new Error(error);
     }
 
-    this._commandsManager.run(this.protocol.callbacks?.onProtocolEnter);
+    this._commandsManager.run(this.protocol?.callbacks?.onProtocolEnter);
   }
 
   protected matchActivation(
@@ -1128,7 +1128,7 @@ export default class HangingProtocolService extends PubSubService {
 
     const { columns: numCols, rows: numRows, layoutOptions = [] } = layoutProps;
 
-    if (this.protocol.callbacks?.onViewportDataInitialized) {
+    if (this.protocol?.callbacks?.onViewportDataInitialized) {
       this._commandsManager.runCommand('attachProtocolViewportDataListener', {
         protocol: this.protocol,
         stageIndex: this.stageIndex,
