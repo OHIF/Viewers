@@ -163,34 +163,28 @@ export default class DicomWebClientManager {
       return;
     }
     const config = Object.assign({}, dicomWebConfig);
-    const headers = this.getAuthorizationHeaders();
-    const errorInterceptor = errorHandler.getHTTPErrorHandler();
-    config.qidoConfig = {
-      url: config.qidoRoot,
-      staticWado: config.staticWado,
-      singlepart: config.singlepart,
-      headers,
-      errorInterceptor,
+
+    const { qidoRoot, wadoRoot, staticWado, singlepart, name, ...otherConfigs } = config;
+
+    const commonConfig = {
+      staticWado,
+      singlepart,
+      headers: this.userAuthenticationService.getAuthorizationHeader(),
+      errorInterceptor: errorHandler.getHTTPErrorHandler(),
+      ...otherConfigs,
     };
 
-    config.wadoConfig = {
-      url: config.wadoRoot,
-      staticWado: config.staticWado,
-      singlepart: config.singlepart,
-      headers,
-      errorInterceptor,
-    };
+    config.qidoConfig = { url: qidoRoot, ...commonConfig };
+    config.wadoConfig = { url: wadoRoot, ...commonConfig };
 
-    config.qidoDicomWebClient = config.staticWado
-      ? new StaticWadoClient(config.qidoConfig)
-      : new api.DICOMwebClient(config.qidoConfig);
+    const createClient = clientConfig =>
+      staticWado ? new StaticWadoClient(clientConfig) : new api.DICOMwebClient(clientConfig);
 
-    config.wadoDicomWebClient = config.staticWado
-      ? new StaticWadoClient(config.wadoConfig)
-      : new api.DICOMwebClient(config.wadoConfig);
+    config.qidoDicomWebClient = createClient(config.qidoConfig);
+    config.wadoDicomWebClient = createClient(config.wadoConfig);
 
-    config.qidoDicomWebClient.name = config.name;
-    config.wadoDicomWebClient.name = config.name;
+    config.qidoDicomWebClient.name = name;
+    config.wadoDicomWebClient.name = name;
     this.clients.push(config);
   }
 

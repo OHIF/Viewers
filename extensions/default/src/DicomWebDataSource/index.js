@@ -232,28 +232,25 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
           sortCriteria,
           sortFunction
         );
-        const newSeries = [];
+        const newSeries = new Map();
         // attach the client Name in each metadata
-        const clientNaturalizedInstancesMetadata = data.map(item => {
+        data.forEach(item => {
           const naturalizedData = naturalizeDataset(item);
           if (
             !seriesConcatenated.includes(naturalizedData.SeriesInstanceUID) &&
-            !newSeries.includes(naturalizedData.SeriesInstanceUID)
+            !newSeries.get(naturalizedData.SeriesInstanceUID)
           ) {
-            newSeries.push(naturalizedData.SeriesInstanceUID);
+            naturalizedData.clientName = clients[i].name;
+            newSeries.set(naturalizedData.SeriesInstanceUID, naturalizeDataset);
           }
-          naturalizedData.clientName = clients[i].name;
-          return naturalizedData;
         });
 
         // adding only instances belonging to new series
-        clientNaturalizedInstancesMetadata.forEach(item => {
-          if (newSeries.includes(item.SeriesInstanceUID)) {
-            naturalizedInstancesMetadata.push(item);
-          }
+        newSeries.forEach((value, key) => {
+          naturalizedInstancesMetadata.push(value);
+          // adding new series to list of concatenated series
+          seriesConcatenated.push(key);
         });
-        // adding new series
-        newSeries.forEach(seriesUID => seriesConcatenated.push(seriesUID));
       }
 
       const seriesSummaryMetadata = {};
