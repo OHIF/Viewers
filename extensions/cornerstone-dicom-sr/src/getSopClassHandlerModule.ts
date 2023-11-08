@@ -200,7 +200,11 @@ function _checkIfCanAddMeasurementsToDisplaySet(srDisplaySet, newDisplaySet, dat
     return;
   }
 
-  const { sopClassUids, images } = newDisplaySet;
+  if (newDisplaySet.unsupported) {
+    return;
+  }
+
+  const { sopClassUids } = newDisplaySet;
 
   // Check if any have the newDisplaySet is the correct SOPClass.
   unloadedMeasurements = unloadedMeasurements.filter(measurement =>
