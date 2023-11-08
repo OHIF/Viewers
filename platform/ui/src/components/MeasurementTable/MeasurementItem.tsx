@@ -4,12 +4,27 @@ import classnames from 'classnames';
 
 import Icon from '../Icon';
 
-const MeasurementItem = ({ uid, index, label, displayText, isActive, onClick, onEdit, item }) => {
+const MeasurementItem = ({
+  uid,
+  index,
+  label,
+  displayText,
+  isActive,
+  onClick,
+  onEdit,
+  item,
+  onDelete,
+}) => {
   const [isHovering, setIsHovering] = useState(false);
 
   const onEditHandler = event => {
     event.stopPropagation();
     onEdit({ uid, isActive, event });
+  };
+
+  const onDeleteHandler = event => {
+    event.stopPropagation();
+    onDelete({ uid, isActive, event });
   };
 
   const onClickHandler = event => onClick({ uid, isActive, event });
@@ -63,6 +78,20 @@ const MeasurementItem = ({ uid, index, label, displayText, isActive, onClick, on
           }}
           onClick={onEditHandler}
         />
+        <Icon
+          className={classnames(
+            'absolute w-4 cursor-pointer text-white transition duration-300',
+            { 'invisible mr-2 opacity-0': !isActive && !isHovering },
+            { 'opacity-1 visible': !isActive && isHovering }
+          )}
+          name="old-trash"
+          style={{
+            top: 4,
+            right: 28,
+            transform: isActive || isHovering ? '' : 'translateX(100%)',
+          }}
+          onClick={onDeleteHandler}
+        />
       </div>
     </div>
   );
@@ -76,6 +105,7 @@ MeasurementItem.propTypes = {
   isActive: PropTypes.bool,
   onClick: PropTypes.func,
   onEdit: PropTypes.func,
+  onDelete: PropTypes.func,
 };
 
 MeasurementItem.defaultProps = {
