@@ -3,6 +3,8 @@ import {
   StackViewport,
   VolumeViewport,
   utilities as csUtils,
+  Types as CoreTypes,
+  BaseVolumeViewport,
 } from '@cornerstonejs/core';
 import {
   ToolGroupManager,
@@ -11,6 +13,7 @@ import {
   ReferenceLinesTool,
 } from '@cornerstonejs/tools';
 import { Types as OhifTypes } from '@ohif/core';
+import { vec3, mat4 } from 'gl-matrix';
 
 import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownloadForm';
 import callInputDialog from './utils/callInputDialog';
@@ -391,8 +394,16 @@ function commandsModule({
 
       const { viewport } = enabledElement;
 
-      if (viewport instanceof StackViewport) {
-        const { rotation: currentRotation } = viewport.getProperties();
+      if (viewport instanceof BaseVolumeViewport) {
+        const camera = viewport.getCamera();
+        const rotAngle = (rotation * Math.PI) / 180;
+        const rotMat = mat4.identity(new Float32Array(16));
+        mat4.rotate(rotMat, rotMat, rotAngle, camera.viewPlaneNormal);
+        const rotatedViewUp = vec3.transformMat4(vec3.create(), camera.viewUp, rotMat);
+        viewport.setCamera({ viewUp: rotatedViewUp as CoreTypes.Point3 });
+        viewport.render();
+      } else if (viewport.getRotation !== undefined) {
+        const currentRotation = viewport.getRotation();
         const newRotation = (currentRotation + rotation) % 360;
         viewport.setProperties({ rotation: newRotation });
         viewport.render();
