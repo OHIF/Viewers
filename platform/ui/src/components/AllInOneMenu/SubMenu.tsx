@@ -1,18 +1,18 @@
 import React, { useCallback, useContext } from 'react';
-import { AllInOneMenuContext, AllInOneMenuProps } from './AllInOneMenu';
+import { MenuContext, MenuProps } from './Menu';
 import Icon from '../Icon';
 
-export interface AllInOneMenuSubMenuProps extends AllInOneMenuProps {
+export interface SubMenuProps extends MenuProps {
   itemLabel: string;
-  onItemClick?: () => void;
+  onClick?: () => void;
 }
 
-const AllInOneMenuSubMenu = (props: AllInOneMenuSubMenuProps) => {
-  const { showSubMenu } = useContext(AllInOneMenuContext);
+const SubMenu = (props: SubMenuProps) => {
+  const { showSubMenu } = useContext(MenuContext);
 
   const onClickHandler = useCallback(() => {
     showSubMenu(props);
-    props.onItemClick?.();
+    props.onClick?.();
   }, [showSubMenu, props]);
 
   return (
@@ -26,4 +26,4 @@ const AllInOneMenuSubMenu = (props: AllInOneMenuSubMenuProps) => {
   );
 };
 
-export default AllInOneMenuSubMenu;
+export default SubMenu;

@@ -1,14 +1,14 @@
 import React, { useContext, useEffect } from 'react';
-import { AllInOneMenuContext } from './AllInOneMenu';
+import { MenuContext } from './Menu';
 
-type AllInOneMenuItemPanelProps = {
-  label: string;
+type ItemPanelProps = {
+  label?: string;
   index?: number;
   children: unknown;
 };
 
-const AllInOneMenuItemPanel = ({ label, index = 0, children }: AllInOneMenuItemPanelProps) => {
-  const { addItemPanel, activePanelIndex } = useContext(AllInOneMenuContext);
+const ItemPanel = ({ label, index = 0, children }: ItemPanelProps) => {
+  const { addItemPanel, activePanelIndex } = useContext(MenuContext);
 
   useEffect(() => {
     addItemPanel(index, label);
@@ -26,4 +26,4 @@ const AllInOneMenuItemPanel = ({ label, index = 0, children }: AllInOneMenuItemP
   );
 };
 
-export default AllInOneMenuItemPanel;
+export default ItemPanel;

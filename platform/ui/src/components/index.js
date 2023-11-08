@@ -80,24 +80,12 @@ import AdvancedToolbox from './AdvancedToolbox';
 import InputDoubleRange from './InputDoubleRange';
 import LegacyButtonGroup from './LegacyButtonGroup';
 import SwitchButton, { SwitchLabelLocation } from './SwitchButton';
-import {
-  AllInOneMenu,
-  AllInOneMenuDividerItem,
-  AllInOneMenuHeaderItem,
-  AllInOneMenuItem,
-  AllInOneMenuItemPanel,
-  AllInOneMenuSubMenu,
-} from './AllInOneMenu';
+import * as AllInOneMenu from './AllInOneMenu';
 
 export {
   AboutModal,
   AdvancedToolbox,
   AllInOneMenu,
-  AllInOneMenuDividerItem,
-  AllInOneMenuHeaderItem,
-  AllInOneMenuItem,
-  AllInOneMenuItemPanel,
-  AllInOneMenuSubMenu,
   HotkeyField,
   Header,
   UserPreferences,

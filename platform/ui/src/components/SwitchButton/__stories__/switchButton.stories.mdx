@@ -38,7 +38,7 @@ A SwitchButton is a checkbox type input/button that can either be on or off (lik
     args={{
       label: 'Switch Button Label',
       labelLocation: SwitchLabelLocation.left,
-      onSwitchChange: (isSwitchOn) => console.info(`${isSwitchOn ? 'The switch is on.' : 'The switch is off.'}`)
+      onChange: (checked) => console.info(`${checked ? 'The switch is on.' : 'The switch is off.'}`)
     }}
 >
 

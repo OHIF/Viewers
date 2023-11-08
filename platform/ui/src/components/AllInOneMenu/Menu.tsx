@@ -2,43 +2,42 @@ import React, { createContext, ReactNode, useCallback, useEffect, useState } fro
 import { useTranslation } from 'react-i18next';
 
 import './allInOneMenu.css';
-import AllInOneMenuDividerItem from './AllInOneMenuDividerItem';
-import AllInOneMenuItemPanelSelector from './AllInOneMenuItemPanelSelector';
+import DividerItem from './DividerItem';
+import PanelSelector from './PanelSelector';
 import classNames from 'classnames';
 import Icon from '../Icon';
 
-export interface AllInOneMenuProps {
+export interface MenuProps {
   className?: string;
   isVisible?: boolean;
   preventHideMenu?: boolean;
-  menuLabel?: string;
+  backLabel: string;
   headerComponent?: ReactNode;
-  isHeaderDividerVisible?: boolean;
+  showHeaderDivider?: boolean;
   activePanelIndex?: number;
   onMenuVisibilityChange?: (isVisible: boolean) => void;
   children: unknown;
 }
 
-type AllInOneMenuContextProps = {
-  showSubMenu: (subMenuProps: AllInOneMenuProps) => void;
+type MenuContextProps = {
+  showSubMenu: (subMenuProps: MenuProps) => void;
   hideMenu: () => void;
   addItemPanel: (index: number, label: string) => void;
   activePanelIndex: number;
 };
 
-type AllInOneMenuPathState = {
-  props: AllInOneMenuProps;
+type MenuPathState = {
+  props: MenuProps;
   activePanelIndex: number;
 };
 
-export const AllInOneMenuContext = createContext<AllInOneMenuContextProps>(null);
+export const MenuContext = createContext<MenuContextProps>(null);
 
-const AllInOneMenu = (props: AllInOneMenuProps) => {
+const Menu = (props: MenuProps) => {
   const { isVisible, onMenuVisibilityChange, activePanelIndex, preventHideMenu, className } = props;
 
-  const { t } = useTranslation('Common');
   const [isMenuVisible, setIsMenuVisible] = useState(false);
-  const [menuPath, setMenuPath] = useState<Array<AllInOneMenuPathState>>([
+  const [menuPath, setMenuPath] = useState<Array<MenuPathState>>([
     { props, activePanelIndex: activePanelIndex || 0 },
   ]);
   const [itemPanelLabels, setItemPanelLabels] = useState<Array<string>>([]);
@@ -48,7 +47,7 @@ const AllInOneMenu = (props: AllInOneMenuProps) => {
     onMenuVisibilityChange?.(isVisible);
   }, [isVisible, onMenuVisibilityChange]);
 
-  const showSubMenu = useCallback((subMenuProps: AllInOneMenuProps) => {
+  const showSubMenu = useCallback((subMenuProps: MenuProps) => {
     setMenuPath(path => {
       return [
         ...path,
@@ -88,19 +87,17 @@ const AllInOneMenu = (props: AllInOneMenuProps) => {
     setItemPanelLabels([]);
   }, []);
 
-  const BackItem = () => {
+  const BackItem = ({ backLabel }) => {
     return (
       <>
         <div
-          className="all-in-one-menu-item all-in-one-menu-item-effects flex items-center"
+          className="all-in-one-menu-item all-in-one-menu-item-effects"
           onClick={onBackClick}
         >
           <Icon name="content-prev"></Icon>
-          <div className="pl-2">
-            {t('Back to', { location: menuPath[menuPath.length - 2].props.menuLabel })}
-          </div>
+          <div className="pl-2">{backLabel}</div>
         </div>
-        <AllInOneMenuDividerItem></AllInOneMenuDividerItem>
+        <DividerItem></DividerItem>
       </>
     );
   };
@@ -110,7 +107,7 @@ const AllInOneMenu = (props: AllInOneMenuProps) => {
 
   return (
     <>
-      <AllInOneMenuContext.Provider
+      <MenuContext.Provider
         value={{
           showSubMenu,
           hideMenu,
@@ -121,26 +118,28 @@ const AllInOneMenu = (props: AllInOneMenuProps) => {
         {isMenuVisible && (
           <div
             className={classNames(
-              'bg-secondary-dark flex select-none flex-col rounded p-1 text-white opacity-90',
+              'bg-secondary-dark flex select-none flex-col rounded px-1 py-1.5 text-white opacity-90',
               className
             )}
           >
-            {menuPath.length > 1 && <BackItem />}
+            {menuPath.length > 1 && (
+              <BackItem backLabel={menuPath[menuPath.length - 2].props.backLabel} />
+            )}
             {itemPanelLabels.length > 1 && (
-              <AllInOneMenuItemPanelSelector
+              <PanelSelector
                 panelLabels={itemPanelLabels}
                 activeIndex={currentMenuActivePanelIndex}
                 onActiveIndexChange={onActivePanelIndexChange}
-              ></AllInOneMenuItemPanelSelector>
+              ></PanelSelector>
             )}
             {currentMenuProps.headerComponent}
-            {currentMenuProps.isHeaderDividerVisible && <AllInOneMenuDividerItem />}
+            {currentMenuProps.showHeaderDivider && <DividerItem />}
             {currentMenuProps.children}
           </div>
         )}
-      </AllInOneMenuContext.Provider>
+      </MenuContext.Provider>
     </>
   );
 };
 
-export default AllInOneMenu;
+export default Menu;
