@@ -216,12 +216,27 @@ function conditionalMetaData(instance) {
     ...(instance.RadiopharmaceuticalInformationSequence && {
       RadiopharmaceuticalInformationSequence: instance.RadiopharmaceuticalInformationSequence,
     }),
+    ...(instance.ROIContourSequence && {
+      ROIContourSequence: instance.ROIContourSequence,
+    }),
+    ...(instance.StructureSetROISequence && {
+      StructureSetROISequence: instance.StructureSetROISequence,
+    }),
+    ...(instance.ReferencedFrameOfReferenceSequence && {
+      ReferencedFrameOfReferenceSequence: instance.ReferencedFrameOfReferenceSequence,
+    }),
     ...(instance.CorrectedImage && { CorrectedImage: instance.CorrectedImage }),
     ...(instance.Units && { Units: instance.Units }),
     ...(instance.DecayCorrection && { DecayCorrection: instance.DecayCorrection }),
     ...(instance.AcquisitionDate && { AcquisitionDate: instance.AcquisitionDate }),
     ...(instance.AcquisitionTime && { AcquisitionTime: instance.AcquisitionTime }),
     ...(instance.PatientWeight && { PatientWeight: instance.PatientWeight }),
+    ...(instance.NumberOfFrames && { NumberOfFrames: instance.NumberOfFrames }),
+    ...(instance.FrameTime && { FrameTime: instance.FrameTime }),
+    ...(instance.EncapsulatedDocument && { EncapsulatedDocument: instance.EncapsulatedDocument }),
+    ...(instance.SequenceOfUltrasoundRegions && {
+      SequenceOfUltrasoundRegions: instance.SequenceOfUltrasoundRegions,
+    }),
   };
 }
 
