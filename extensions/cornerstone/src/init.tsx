@@ -306,6 +306,8 @@ export default async function init({
 
     element.removeEventListener(EVENTS.CAMERA_RESET, resetCrosshairs);
 
+    eventTarget.removeEventListener(EVENTS.IMAGE_LOAD_FAILED, imageLoadFailedHandler);
+    eventTarget.removeEventListener(EVENTS.IMAGE_LOAD_ERROR, imageLoadFailedHandler);
     // TODO - consider removing the callback when all elements are gone
     // eventTarget.removeEventListener(
     //   EVENTS.STACK_VIEWPORT_NEW_STACK,
