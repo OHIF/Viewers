@@ -162,6 +162,7 @@
     "flat": "5.0.1",
     "minimist": "1.2.8",
     "**/node-gyp": "8.4.1",
-    "**/@babel/runtime": "7.5.5"
+    "**/@babel/runtime": "7.5.5",
+    "fast-xml-parser": "4.2.4"
   }
 }
