@@ -241,15 +241,17 @@ export type ProtocolStage = {
 export type ProtocolNotifications = {
   // This set of commands is executed after the protocol is exited and the new one applied
   onProtocolExit?: Command[];
-
   // This set of commands is executed after the protocol is entered and applied
   onProtocolEnter?: Command[];
-
   // This set of commands is executed before the layout change is started.
   // If it returns false, the layout change will be aborted.
   // The numRows and numCols is included in the command params, so it is possible
   // to apply a specific hanging protocol
   onLayoutChange?: Command[];
+  // This set of commands is executed after the initial viewport grid data is set
+  // and all viewport data includes a designated display set. This command
+  // will run on every stage's initial layout.
+  onViewportDataInitialized?: Command[];
 };
 
 /**

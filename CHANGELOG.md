@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-beta.12](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.11...v3.8.0-beta.12) (2023-11-08)
+
+
+### Features
+
+* add VolumeViewport rotation ([#3776](https://github.com/OHIF/Viewers/issues/3776)) ([442f99d](https://github.com/OHIF/Viewers/commit/442f99d5eb2ceece7def20e14da59af1dd7d8442))
+
+
+
+
+
+# [3.8.0-beta.11](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.10...v3.8.0-beta.11) (2023-11-08)
+
+
+### Features
+
+* **hp callback:** Add viewport ready callback ([#3772](https://github.com/OHIF/Viewers/issues/3772)) ([bf252bc](https://github.com/OHIF/Viewers/commit/bf252bcec2aae3a00479fdcb732110b344bcf2c0))
+
+
+
+
+
 # [3.8.0-beta.10](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.9...v3.8.0-beta.10) (2023-11-03)
 
 **Note:** Version bump only for package ohif-monorepo-root
