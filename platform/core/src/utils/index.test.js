@@ -40,6 +40,7 @@ describe('Top level exports', () => {
       'progressTrackingUtils',
       'subscribeToNextViewportGridChange',
       'uuidv4',
+      'addAccessors',
     ].sort();
 
     const exports = Object.keys(utils.default).sort();
