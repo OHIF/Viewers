@@ -14,7 +14,12 @@ import dcmjs from 'dcmjs';
 import { retrieveStudyMetadata, deleteStudyMetadataPromise } from './retrieveStudyMetadata.js';
 import getDirectURL from '../utils/getDirectURL';
 import { fixBulkDataURI } from './utils/fixBulkDataURI';
-import { multipleSearch, multipleSeriesSearch } from './utils/mergeUtils';
+import {
+  mergedSearch,
+  mergedSeriesSearch,
+  retrieveMergedSeriesMetadata,
+  retrieveMergedStudyMetadata,
+} from './utils/mergeUtils';
 
 const { DicomMetaDictionary, DicomDict } = dcmjs.data;
 
@@ -59,7 +64,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
             return processResults(results);
           }
 
-          const results = multipleSearch({ clients, origParams, mapParams, qidoSearch });
+          const results = mergedSearch({ clients, origParams, mapParams, qidoSearch });
           return processResults(results);
         },
         processResults: processResults.bind(),
@@ -73,7 +78,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
             return processSeriesResults(results);
           }
 
-          const results = multipleSeriesSearch({ clients, seriesInStudy, studyInstanceUid });
+          const results = mergedSeriesSearch({ clients, seriesInStudy, studyInstanceUid });
           return processSeriesResults(results);
         },
       },
@@ -203,36 +208,25 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
       const enableStudyLazyLoad = false;
       const clients = dicomWebClientManager.getWadoClients();
 
-      const naturalizedInstancesMetadata = [];
-      const seriesConcatenated = [];
-      // search and retrieve in all servers
-      for (let i = 0; i < clients.length; i++) {
+      let naturalizedInstancesMetadata = [];
+      if (clients.length === 1) {
         const data = await retrieveStudyMetadata(
-          clients[i].wadoDicomWebClient,
+          clients[0].wadoDicomWebClient,
           StudyInstanceUID,
           enableStudyLazyLoad,
           filters,
           sortCriteria,
           sortFunction
         );
-        const newSeries = new Map();
-        // attach the client Name in each metadata
-        data.forEach(item => {
-          const naturalizedData = naturalizeDataset(item);
-          if (
-            !seriesConcatenated.includes(naturalizedData.SeriesInstanceUID) &&
-            !newSeries.get(naturalizedData.SeriesInstanceUID)
-          ) {
-            naturalizedData.clientName = clients[i].name;
-            newSeries.set(naturalizedData.SeriesInstanceUID, naturalizeDataset);
-          }
-        });
-
-        // adding only instances belonging to new series
-        newSeries.forEach((value, key) => {
-          naturalizedInstancesMetadata.push(value);
-          // adding new series to list of concatenated series
-          seriesConcatenated.push(key);
+        naturalizedInstancesMetadata = data.map(naturalizeDataset);
+      } else {
+        naturalizedInstancesMetadata = await retrieveMergedSeriesMetadata({
+          clients,
+          StudyInstanceUID,
+          enableStudyLazyLoad,
+          filters,
+          sortCriteria,
+          sortFunction,
         });
       }
 
@@ -293,40 +287,37 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
     ) => {
       const enableStudyLazyLoad = true;
       const clients = dicomWebClientManager.getWadoClients();
-      // Get Series
+
       let seriesSummaryMetadata = [];
       let seriesPromises = [];
-      const seriesClientsMapping = {};
-      for (let i = 0; i < clients.length; i++) {
-        let clientSeriesSummaryMetadata, clientSeriesPromises;
-        try {
-          const { preLoadData, promises } = await retrieveStudyMetadata(
-            clients[i].wadoDicomWebClient,
-            StudyInstanceUID,
-            enableStudyLazyLoad,
-            filters,
-            sortCriteria,
-            sortFunction
-          );
-          clientSeriesSummaryMetadata = preLoadData;
-          clientSeriesPromises = promises;
-        } catch {
-          clientSeriesSummaryMetadata = [];
-          clientSeriesPromises = [];
-        }
-
-        // create a mapping between SeriesInstanceUID <--> clientName, for two reasons:
-        // 1 - remove duplicates in series metadata
-        // 2 - associate each instance in a series with the name of the client it was retrieved
-        for (const [j, seriesSummary] of clientSeriesSummaryMetadata.entries()) {
-          const seriesUID = seriesSummary.SeriesInstanceUID;
-
-          if (!seriesClientsMapping[seriesUID]) {
-            seriesClientsMapping[seriesUID] = clients[i].name;
-            seriesSummaryMetadata.push(seriesSummary);
-            seriesPromises.push(clientSeriesPromises[j]);
-          }
-        }
+      let seriesClientsMapping = {};
+      if (clients.length === 1) {
+        const { preLoadData, promises } = await retrieveStudyMetadata(
+          clients[0].wadoDicomWebClient,
+          StudyInstanceUID,
+          enableStudyLazyLoad,
+          filters,
+          sortCriteria,
+          sortFunction
+        );
+        seriesSummaryMetadata = preLoadData;
+        seriesPromises = promises;
+      } else {
+        const {
+          preLoadData,
+          promises,
+          seriesClientsMapping: _seriesClientsMapping,
+        } = await retrieveMergedStudyMetadata({
+          clients,
+          StudyInstanceUID,
+          enableStudyLazyLoad,
+          filters,
+          sortCriteria,
+          sortFunction,
+        });
+        seriesSummaryMetadata = preLoadData;
+        seriesPromises = promises;
+        seriesClientsMapping = _seriesClientsMapping;
       }
 
       /**
@@ -442,7 +433,10 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
 
       const seriesDeliveredPromises = seriesPromises.map(promise =>
         promise.then(instances => {
-          const clientName = seriesClientsMapping[instances[0][SERIES_INSTANCE_UID].Value[0]];
+          const clientName =
+            clients.length === 1
+              ? clients[0].name
+              : seriesClientsMapping[instances[0][SERIES_INSTANCE_UID].Value[0]];
           storeInstances(instances, clientName);
         })
       );
