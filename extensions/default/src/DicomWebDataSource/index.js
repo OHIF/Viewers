@@ -14,7 +14,7 @@ import dcmjs from 'dcmjs';
 import { retrieveStudyMetadata, deleteStudyMetadataPromise } from './retrieveStudyMetadata.js';
 import getDirectURL from '../utils/getDirectURL';
 import { fixBulkDataURI } from './utils/fixBulkDataURI';
-import mergeResults from './utils/mergeResults';
+import { multipleSearch, multipleSeriesSearch } from './utils/mergeUtils';
 
 const { DicomMetaDictionary, DicomDict } = dcmjs.data;
 
@@ -23,7 +23,6 @@ const { naturalizeDataset, denaturalizeDataset } = DicomMetaDictionary;
 const ImplementationClassUID = '2.25.270695996825855179949881587723571202391.2.0.0';
 const ImplementationVersionName = 'OHIF-VIEWER-2.0.0';
 const EXPLICIT_VR_LITTLE_ENDIAN = '1.2.840.10008.1.2.1';
-const STUDY_INSTANCE_UID = '0020000D';
 const SERIES_INSTANCE_UID = '0020000E';
 
 const metadataProvider = classes.MetadataProvider;
@@ -49,48 +48,32 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
         mapParams: mapParams.bind(),
         search: async function (origParams) {
           const clients = dicomWebClientManager.getQidoClients();
-          // concatenate series metadata from all servers
-          const clientResultsPromises = clients.map(client => {
-            const { studyInstanceUid, seriesInstanceUid, ...mappedParams } =
-              mapParams(origParams, {
-                supportsFuzzyMatching: client.supportsFuzzyMatching,
-                supportsWildcard: client.supportsWildcard,
-              }) || {};
-            let clientResults;
-            try {
-              clientResults = qidoSearch(
-                client.qidoDicomWebClient,
-                undefined,
-                undefined,
-                mappedParams
-              );
-            } catch {
-              clientResults = [];
-            }
-            return clientResults;
-          });
-          const settledResults = await Promise.allSettled(clientResultsPromises);
 
-          const mergedResults = mergeResults(settledResults, STUDY_INSTANCE_UID);
-          return processResults(mergedResults);
+          if (clients.length === 1) {
+            const results = await qidoSearch(
+              clients[0].qidoDicomWebClient,
+              undefined,
+              undefined,
+              mapParams
+            );
+            return processResults(results);
+          }
+
+          const results = multipleSearch({ clients, origParams, mapParams, qidoSearch });
+          return processResults(results);
         },
         processResults: processResults.bind(),
       },
       series: {
         search: async function (studyInstanceUid) {
           const clients = dicomWebClientManager.getQidoClients();
-          // concatenate series metadata from all servers
-          const clientResultsPromises = clients.map(client => {
-            let clientResults;
-            try {
-              clientResults = seriesInStudy(client.qidoDicomWebClient, studyInstanceUid);
-            } catch {
-              clientResults = [];
-            }
-            return clientResults;
-          });
-          const settledResults = await Promise.allSettled(clientResultsPromises);
-          const results = mergeResults(settledResults, SERIES_INSTANCE_UID);
+
+          if (clients.length === 1) {
+            const results = await seriesInStudy(clients[0].qidoDicomWebClient, studyInstanceUid);
+            return processSeriesResults(results);
+          }
+
+          const results = multipleSeriesSearch({ clients, seriesInStudy, studyInstanceUid });
           return processSeriesResults(results);
         },
       },
