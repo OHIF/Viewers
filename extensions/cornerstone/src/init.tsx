@@ -288,14 +288,14 @@ export default async function init({
     const { element } = evt.detail;
     cornerstoneTools.utilities.stackContextPrefetch.enable(element);
   });
-
+  eventTarget.addEventListener(EVENTS.IMAGE_LOAD_FAILED, imageLoadFailedHandler);
+  eventTarget.addEventListener(EVENTS.IMAGE_LOAD_ERROR, imageLoadFailedHandler);
+  
   function elementEnabledHandler(evt) {
     const { element } = evt.detail;
 
     element.addEventListener(EVENTS.CAMERA_RESET, resetCrosshairs);
 
-    eventTarget.addEventListener(EVENTS.IMAGE_LOAD_FAILED, imageLoadFailedHandler);
-    eventTarget.addEventListener(EVENTS.IMAGE_LOAD_ERROR, imageLoadFailedHandler);
     eventTarget.addEventListener(EVENTS.STACK_VIEWPORT_NEW_STACK, toolbarEventListener);
 
     initViewTiming({ element, eventTarget });
@@ -306,8 +306,6 @@ export default async function init({
 
     element.removeEventListener(EVENTS.CAMERA_RESET, resetCrosshairs);
 
-    eventTarget.removeEventListener(EVENTS.IMAGE_LOAD_FAILED, imageLoadFailedHandler);
-    eventTarget.removeEventListener(EVENTS.IMAGE_LOAD_ERROR, imageLoadFailedHandler);
     // TODO - consider removing the callback when all elements are gone
     // eventTarget.removeEventListener(
     //   EVENTS.STACK_VIEWPORT_NEW_STACK,
