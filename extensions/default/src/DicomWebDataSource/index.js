@@ -1,5 +1,5 @@
 import { DicomMetadataStore, IWebApiDataSource, utils, classes } from '@ohif/core';
-import DicomWebClientManager from './utils/clientManager';
+import DicomWebClientManager from './utils/DicomWebClientManager';
 
 import {
   mapParams,
@@ -33,6 +33,7 @@ const SERIES_INSTANCE_UID = '0020000E';
 const metadataProvider = classes.MetadataProvider;
 
 /**
+ * Creates DicomWeb api.
  *
  * @param {Object} dicomWebConfig - dicomweb client configuration
  * @param {Object} userAuthenticationService - service object responsible for user authentication
@@ -44,7 +45,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
       dicomWebClientManager = new DicomWebClientManager({
         params,
         query,
-        dicomWebConfigs: dicomWebConfig,
+        configs: dicomWebConfig,
         userAuthenticationService,
       });
     },
@@ -136,7 +137,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
           sortCriteria,
           sortFunction,
           madeInClient = false,
-        } = {}) => {
+        }) => {
           if (!StudyInstanceUID) {
             throw new Error('Unable to query for SeriesMetadata without StudyInstanceUID');
           }
@@ -161,7 +162,6 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
         },
       },
     },
-
     store: {
       dicom: async (dataset, request) => {
         const clientName = dataset?.clientName;
@@ -386,7 +386,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
         const client = dicomWebClientManager.getClient(clientName);
         const wadoRoot = client.wadoRoot;
         const wadoUri = client.wadoUri;
-        naturalizedInstances.forEach((instance, index) => {
+        naturalizedInstances.forEach(instance => {
           // attach client specific information in each instance
           instance.wadoRoot = wadoRoot;
           instance.wadoUri = wadoUri;
@@ -415,7 +415,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
       }
 
       function setSuccessFlag() {
-        const study = DicomMetadataStore.getStudy(StudyInstanceUID, madeInClient);
+        const study = DicomMetadataStore.getStudy(StudyInstanceUID);
         if (!study) {
           return;
         }
@@ -470,7 +470,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
 
       return imageIds;
     },
-    getImageIdsForInstance({ instance, frame }) {
+    getImageIdsForInstance({ instance, frame = undefined }) {
       const imageIds = getImageId({
         instance,
         frame,

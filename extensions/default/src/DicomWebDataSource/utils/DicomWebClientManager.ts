@@ -40,16 +40,16 @@ export default class DicomWebClientManager {
    * Creates a new instance of DicomWebClientManager.
    * @param params - Key/value pairs of URL parameters.
    * @param query - URLSearchParams object generated for the URL.
-   * @param dicomWebConfigs - DICOMweb server configurations.
+   * @param configs - DICOMweb server configurations.
    * @param userAuthenticationService - User authentication service.
    */
-  constructor({ params, query, dicomWebConfigs, userAuthenticationService }) {
+  constructor({ params, query, configs, userAuthenticationService }) {
     this.clients = [];
     this.userAuthenticationService = userAuthenticationService;
-    if (!dicomWebConfigs) {
+    if (!configs) {
       return;
     }
-    const configArray = Array.isArray(dicomWebConfigs) ? dicomWebConfigs : [dicomWebConfigs];
+    const configArray = Array.isArray(configs) ? configs : [configs];
     configArray.forEach(config => this.addConfiguration(params, query, config));
   }
 
