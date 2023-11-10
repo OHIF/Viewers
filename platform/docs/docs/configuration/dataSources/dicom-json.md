@@ -28,12 +28,28 @@ dataset. Let's have a look at the JSON file:
 JSON file stores the metadata for the study level, series level and instance
 level. A JSON launch file should follow the same structure as the one below.
 
+:::tip
+You can use our script to generate the JSON file from a hosted endpoint. See
+`.scripts/dicom-json-generator.js`
+
+You could run it like this:
+
+```bash
+node .scripts/dicom-json-generator.js '/path/to/study/folder' 'url/to/dicom/server/folder' 'json/output/file.json'
+```
+
+Some modalities require additional metadata to be added to the JSON file. You can read more about the minimum amount of metadata required for the viewer to work [here](../../faq.md#what-are-the-list-of-required-metadata-for-the-ohif-viewer-to-work). We will handle this in the script. For example, the script will add the CodeSequences for SR in order to display the measurements in the viewer.
+:::
+
+
 Note that at the instance level metadata we are storing both the `metadata` and
 also the `url` for the dicom file on the dicom server. In this case we are
 referring to
 `dicomweb:https://ohif-dicom-json-example.s3.amazonaws.com/LIDC-IDRI-0001/01-01-2000-30178/3000566.000000-03192/1-001.dcm`
 which is stored in another directory in our s3. (You can actually try
 downloading the dicom file by opening the url in your browser).
+
+The URL to the script in the given example is `https://ohif-dicom-json-example.s3.amazonaws.com/LIDC-IDRI-0001/01-01-2000-30178`. This URL serves as the parent directory that contains all the series within their respective folders.
 
 ```json
 {
