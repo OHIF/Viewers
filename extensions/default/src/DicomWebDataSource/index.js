@@ -64,7 +64,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
             return processResults(results);
           }
 
-          const results = mergedSearch({ clients, origParams, mapParams, qidoSearch });
+          const results = await mergedSearch({ clients, origParams, mapParams, qidoSearch });
           return processResults(results);
         },
         processResults: processResults.bind(),
@@ -78,14 +78,13 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
             return processSeriesResults(results);
           }
 
-          const results = mergedSeriesSearch({ clients, seriesInStudy, studyInstanceUid });
+          const results = await mergedSeriesSearch({ clients, seriesInStudy, studyInstanceUid });
           return processSeriesResults(results);
         },
       },
       instances: {
         search: (studyInstanceUid, queryParameters) => {
           const clients = dicomWebClientManager.getQidoClients();
-          // concatenate instance metadata from all servers
           for (let i = 0; i < clients.length; i++) {
             qidoSearch.call(
               undefined,

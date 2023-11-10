@@ -1,26 +1,26 @@
 import dcmjs from 'dcmjs';
-const { DicomMetaDictionary } = dcmjs.data;
-const { naturalizeDataset } = DicomMetaDictionary;
 
 import { retrieveStudyMetadata } from '../retrieveStudyMetadata';
 import mergeResults from './mergeResults';
+
+const { DicomMetaDictionary } = dcmjs.data;
+const { naturalizeDataset } = DicomMetaDictionary;
 
 const STUDY_INSTANCE_UID = '0020000D';
 const SERIES_INSTANCE_UID = '0020000E';
 
 /**
- * Concatenates series metadata from all servers.
- *
- * @param {Object} properties
- * @param {Array} properties.clients Client instances
- * @param {Object} properties.origParams Params
- * @param {Function} properties.mapParams Util function
- * @param {Function} properties.qidoSearch Util function
- * @returns {Promise<Array>} merged results
+ * Merges search results from multiple DICOMWeb clients.
+ * @param {Object} options - The options object.
+ * @param {Array} options.clients - The array of DICOMWeb clients to search.
+ * @param {Object} options.origParams - The original search parameters.
+ * @param {Function} options.mapParams - The function to map search parameters to each client.
+ * @param {Function} options.qidoSearch - The function to perform the QIDO search.
+ * @returns {Promise<Array>} - A promise that resolves to the merged search results.
  */
 export const mergedSearch = async ({ clients, origParams, mapParams, qidoSearch }) => {
   const clientResultsPromises = clients.map(client => {
-    const { studyInstanceUid, seriesInstanceUid, ...mappedParams } =
+    const mappedParams =
       mapParams(origParams, {
         supportsFuzzyMatching: client.supportsFuzzyMatching,
         supportsWildcard: client.supportsWildcard,
@@ -38,13 +38,12 @@ export const mergedSearch = async ({ clients, origParams, mapParams, qidoSearch 
 };
 
 /**
- * Concatenate series metadata from all servers.
- *
- * @param {Object} properties
- * @param {Array} properties.clients Client instances
- * @param {Function} properties.seriesInStudy Util function
- * @param {String} properties.studyInstanceUid Series instance uid
- * @returns {Promise<Array>} merged results
+ * Merges series search results from multiple DICOMweb clients.
+ * @param {Object} options - The options object.
+ * @param {Array} options.clients - The array of DICOMweb clients.
+ * @param {Function} options.seriesInStudy - The function that returns the series in a study for a given client and study instance UID.
+ * @param {string} options.studyInstanceUid - The study instance UID.
+ * @returns {Promise<Array>} - The merged series search results.
  */
 export const mergedSeriesSearch = async ({ clients, seriesInStudy, studyInstanceUid }) => {
   const clientResultsPromises = clients.map(client => {
@@ -61,7 +60,17 @@ export const mergedSeriesSearch = async ({ clients, seriesInStudy, studyInstance
 };
 
 /**
- * Search and retrieve in all servers.
+ * Retrieves merged series metadata from multiple DICOMWeb clients.
+ * @async
+ * @function retrieveMergedSeriesMetadata
+ * @param {Object} options - The options object.
+ * @param {Array} options.clients - The array of DICOMWeb clients.
+ * @param {string} options.StudyInstanceUID - The Study Instance UID.
+ * @param {boolean} options.enableStudyLazyLoad - Whether to enable lazy loading for studies.
+ * @param {Object} options.filters - The filters to apply to the metadata.
+ * @param {string} options.sortCriteria - The criteria to sort the metadata.
+ * @param {Function} options.sortFunction - The function to use for sorting.
+ * @returns {Promise<Array>} The naturalized instances metadata.
  */
 export const retrieveMergedSeriesMetadata = async ({
   clients,
@@ -107,6 +116,18 @@ export const retrieveMergedSeriesMetadata = async ({
   return naturalizedInstancesMetadata;
 };
 
+/**
+ * Retrieves merged study metadata from multiple DICOMweb clients.
+ * @async
+ * @param {Object} options - The options object.
+ * @param {Array} options.clients - The array of DICOMweb clients.
+ * @param {string} options.StudyInstanceUID - The Study Instance UID.
+ * @param {boolean} options.enableStudyLazyLoad - Whether to enable lazy loading of the study.
+ * @param {Object} options.filters - The filters to apply to the study.
+ * @param {string} options.sortCriteria - The criteria to sort the study by.
+ * @param {Function} options.sortFunction - The function to use for sorting.
+ * @returns {Promise<Object>} The merged study metadata, including preloaded data, promises, and a mapping between series instance UIDs and client names.
+ */
 export const retrieveMergedStudyMetadata = async ({
   clients,
   StudyInstanceUID,
@@ -159,9 +180,11 @@ export const retrieveMergedStudyMetadata = async ({
   };
 };
 
-export default {
+const mergeUtils = {
   mergedSearch,
   mergedSeriesSearch,
   retrieveMergedSeriesMetadata,
   retrieveMergedStudyMetadata,
 };
+
+export default mergeUtils;

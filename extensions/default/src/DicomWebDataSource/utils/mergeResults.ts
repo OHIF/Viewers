@@ -1,3 +1,9 @@
+/**
+ * Merges an array of results by a given key ID.
+ * @param results - The array of results to be merged.
+ * @param keyId - The key ID to be used for merging.
+ * @returns The merged array of results.
+ */
 export default function mergeResults(results, keyId) {
   const mergedResults = [];
   const keys = {};
