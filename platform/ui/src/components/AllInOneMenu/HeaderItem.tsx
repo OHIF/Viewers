@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 
 type HeaderItemProps = {
-  children: unknown;
+  children: ReactNode;
 };
 
 const HeaderItem = ({ children }: HeaderItemProps) => {

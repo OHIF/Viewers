@@ -1,10 +1,10 @@
-import React, { useContext, useEffect } from 'react';
+import React, { ReactNode, useContext, useEffect } from 'react';
 import { MenuContext } from './Menu';
 
 type ItemPanelProps = {
   label?: string;
   index?: number;
-  children: unknown;
+  children: ReactNode;
 };
 
 const ItemPanel = ({ label, index = 0, children }: ItemPanelProps) => {

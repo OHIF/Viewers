@@ -1,11 +1,10 @@
 import React, { createContext, ReactNode, useCallback, useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 
 import './allInOneMenu.css';
 import DividerItem from './DividerItem';
 import PanelSelector from './PanelSelector';
 import classNames from 'classnames';
-import Icon from '../Icon';
+import BackItem from './BackItem';
 
 export interface MenuProps {
   className?: string;
@@ -15,14 +14,16 @@ export interface MenuProps {
   headerComponent?: ReactNode;
   showHeaderDivider?: boolean;
   activePanelIndex?: number;
-  onMenuVisibilityChange?: (isVisible: boolean) => void;
-  children: unknown;
+  onVisibilityChange?: (isVisible: boolean) => void;
+  opensLeftToRight?: boolean;
+  children: ReactNode;
 }
 
 type MenuContextProps = {
   showSubMenu: (subMenuProps: MenuProps) => void;
   hideMenu: () => void;
   addItemPanel: (index: number, label: string) => void;
+  opensLeftToRight: boolean;
   activePanelIndex: number;
 };
 
@@ -31,12 +32,29 @@ type MenuPathState = {
   activePanelIndex: number;
 };
 
+const defaultMenuContext: MenuContextProps = {
+  showSubMenu: () => {},
+  hideMenu: () => {},
+  addItemPanel: () => {},
+};
 export const MenuContext = createContext<MenuContextProps>(null);
 
 const Menu = (props: MenuProps) => {
-  const { isVisible, onMenuVisibilityChange, activePanelIndex, preventHideMenu, className } = props;
+  const {
+    isVisible,
+    onVisibilityChange,
+    activePanelIndex,
+    preventHideMenu,
+    className,
+    opensLeftToRight = true,
+  } = props;
 
-  const [isMenuVisible, setIsMenuVisible] = useState(false);
+  const [isMenuVisible, setIsMenuVisible] = useState(isVisible);
+
+  // The menuPath is an array consisting of this top Menu and every SubMenu
+  // that has been traversed/opened by the user with the last item in the array
+  // being the current (sub)menu that is currently visible. This allows for the previously
+  // viewed menus to be returned to via the Back button at the top of the menu.
   const [menuPath, setMenuPath] = useState<Array<MenuPathState>>([
     { props, activePanelIndex: activePanelIndex || 0 },
   ]);
@@ -44,8 +62,8 @@ const Menu = (props: MenuProps) => {
 
   useEffect(() => {
     setIsMenuVisible(isVisible);
-    onMenuVisibilityChange?.(isVisible);
-  }, [isVisible, onMenuVisibilityChange]);
+    onVisibilityChange?.(isVisible);
+  }, [isVisible, onVisibilityChange]);
 
   const showSubMenu = useCallback((subMenuProps: MenuProps) => {
     setMenuPath(path => {
@@ -65,20 +83,21 @@ const Menu = (props: MenuProps) => {
     setMenuPath(path => [path[0]]);
     setItemPanelLabels([]);
     setIsMenuVisible(false);
-    onMenuVisibilityChange(false);
-  }, [preventHideMenu, onMenuVisibilityChange]);
+    onVisibilityChange(false);
+  }, [preventHideMenu, onVisibilityChange]);
 
   const addItemPanel = useCallback((index, label) => {
     setItemPanelLabels(labels => {
-      labels.splice(index, 0, label);
-      return [...labels];
+      return [...labels.slice(0, index), label, ...labels.slice(index + 1, labels.length)];
     });
   }, []);
 
   const onActivePanelIndexChange = useCallback(index => {
     setMenuPath(path => {
-      path[path.length - 1].activePanelIndex = index;
-      return [...path];
+      return [
+        ...path.slice(0, path.length - 1),
+        { ...path[path.length - 1], activePanelIndex: index },
+      ];
     });
   }, []);
 
@@ -86,21 +105,6 @@ const Menu = (props: MenuProps) => {
     setMenuPath(path => [...path.slice(0, path.length - 1)]);
     setItemPanelLabels([]);
   }, []);
-
-  const BackItem = ({ backLabel }) => {
-    return (
-      <>
-        <div
-          className="all-in-one-menu-item all-in-one-menu-item-effects"
-          onClick={onBackClick}
-        >
-          <Icon name="content-prev"></Icon>
-          <div className="pl-2">{backLabel}</div>
-        </div>
-        <DividerItem></DividerItem>
-      </>
-    );
-  };
 
   const { props: currentMenuProps, activePanelIndex: currentMenuActivePanelIndex } =
     menuPath[menuPath.length - 1];
@@ -113,6 +117,7 @@ const Menu = (props: MenuProps) => {
           hideMenu,
           addItemPanel,
           activePanelIndex: currentMenuActivePanelIndex,
+          opensLeftToRight,
         }}
       >
         {isMenuVisible && (
@@ -123,7 +128,10 @@ const Menu = (props: MenuProps) => {
             )}
           >
             {menuPath.length > 1 && (
-              <BackItem backLabel={menuPath[menuPath.length - 2].props.backLabel} />
+              <BackItem
+                backLabel={menuPath[menuPath.length - 2].props.backLabel}
+                onBackClick={onBackClick}
+              />
             )}
             {itemPanelLabels.length > 1 && (
               <PanelSelector

@@ -21,16 +21,9 @@ const Item = ({ label, secondaryLabel, icon, onClick }: ItemProps) => {
       className="all-in-one-menu-item all-in-one-menu-item-effects"
       onClick={onClickHandler}
     >
-      {icon && (
-        <>
-          {icon}
-          <div className="w-2"></div>
-        </>
-      )}
+      {icon && <div className="pr-2">{icon}</div>}
       <span>{label}</span>
-      {secondaryLabel != null && (
-        <span className="text-aqua-pale ml-[1ch]">{`${secondaryLabel}`}</span>
-      )}
+      {secondaryLabel != null && <span className="text-aqua-pale ml-[1ch]">{secondaryLabel}</span>}
     </div>
   );
 };

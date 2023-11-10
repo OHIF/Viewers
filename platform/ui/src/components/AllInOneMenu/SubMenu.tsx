@@ -8,7 +8,7 @@ export interface SubMenuProps extends MenuProps {
 }
 
 const SubMenu = (props: SubMenuProps) => {
-  const { showSubMenu } = useContext(MenuContext);
+  const { showSubMenu, opensLeftToRight } = useContext(MenuContext);
 
   const onClickHandler = useCallback(() => {
     showSubMenu(props);
@@ -17,13 +17,16 @@ const SubMenu = (props: SubMenuProps) => {
 
   return (
     <div
-      className="all-in-one-menu-item all-in-one-menu-item-effects flex items-center justify-between"
+      className="all-in-one-menu-item all-in-one-menu-item-effects flex items-center"
       onClick={onClickHandler}
     >
-      <div>{`${props.itemLabel}`}</div>
-      <Icon name="content-next"></Icon>
+      {!opensLeftToRight && <Icon name="content-prev"></Icon>}
+      <div className={getLabelClassName(opensLeftToRight)}>{props.itemLabel}</div>
+      {opensLeftToRight && <Icon name="content-next"></Icon>}
     </div>
   );
 };
+
+const getLabelClassName = (opensLeftToRight: boolean) => (opensLeftToRight ? 'mr-auto' : 'pl-2');
 
 export default SubMenu;
