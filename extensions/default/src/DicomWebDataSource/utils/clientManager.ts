@@ -1,5 +1,6 @@
 import { api } from 'dicomweb-client';
 import { errorHandler, utils } from '@ohif/core';
+
 import StaticWadoClient from './StaticWadoClient';
 import getClientRejectFunction from './getClientRejectFunction';
 
@@ -11,6 +12,7 @@ interface DICOMWebConfig {
   staticWado: boolean;
   singlepart: boolean;
   name: string;
+  supportsReject: boolean;
   qidoConfig: {
     url: string;
     staticWado: boolean;
@@ -26,14 +28,21 @@ interface DICOMWebConfig {
   qidoDicomWebClient: api.DICOMwebClient | StaticWadoClient;
   wadoDicomWebClient: api.DICOMwebClient | StaticWadoClient;
 }
+
 /**
- * This object plays the central role in OHIF's multiple server handling ability.
- * It stores all servers configurations and handles all request headers generations
+ * Manages DICOMweb clients and their configurations.
  */
 export default class DicomWebClientManager {
   private clients;
   userAuthenticationService;
 
+  /**
+   * Creates a new instance of DicomWebClientManager.
+   * @param params - Key/value pairs of URL parameters.
+   * @param query - URLSearchParams object generated for the URL.
+   * @param dicomWebConfigs - DICOMweb server configurations.
+   * @param userAuthenticationService - User authentication service.
+   */
   constructor({ params, query, dicomWebConfigs, userAuthenticationService }) {
     this.clients = [];
     this.userAuthenticationService = userAuthenticationService;
@@ -45,7 +54,7 @@ export default class DicomWebClientManager {
   }
 
   /**
-   * Sets authorization headers for all clients before queries
+   * Sets authorization headers for all clients before queries.
    * @returns {void}
    */
   public setQidoHeaders(): void {
@@ -55,7 +64,7 @@ export default class DicomWebClientManager {
   }
 
   /**
-   * Sets wado headers for all clients before queries
+   * Sets wado headers for all clients before queries.
    * @returns {void}
    */
   public setWadoHeaders(): void {
@@ -65,7 +74,7 @@ export default class DicomWebClientManager {
   }
 
   /**
-   * Sets authorization headers for wado clients before queries
+   * Sets authorization headers for wado clients before queries.
    * @returns {void}
    */
   public setAuthorizationHeadersForWADO(): void {
@@ -75,17 +84,18 @@ export default class DicomWebClientManager {
   }
 
   /**
-   * Returns a boolean indicating if a client have reject abilities
-   * @returns {boolean} client reject support
+   * Returns a boolean indicating if a client has reject abilities.
+   * @param name - The name of the client.
+   * @returns {boolean} - Client reject support.
    */
   public clientCanReject(name) {
     return this.getClient(name)?.supportsReject;
   }
 
   /**
-   * Returns the reject function of a client
-   * @param name
-   * @returns {object} client reject object
+   * Returns the reject function of a client.
+   * @param name - The name of the client.
+   * @returns {object} - Client reject object.
    */
   public getClientRejectObject(name) {
     const client = this.getClient(name);
@@ -95,9 +105,9 @@ export default class DicomWebClientManager {
   }
 
   /**
-   * Returns the qido client
-   * @param name
-   * @returns {object} qido client
+   * Returns the qido client.
+   * @param name - The name of the client.
+   * @returns {object} - QIDO client.
    */
   public getQidoClient(name?: string): object {
     this.setQidoHeaders();
@@ -106,9 +116,9 @@ export default class DicomWebClientManager {
   }
 
   /**
-   * Returns the wado client
-   * @param name
-   * @returns {object} wado client
+   * Returns the wado client.
+   * @param name - The name of the client.
+   * @returns {object} - WADO client.
    */
   public getWadoClient(name?: string): object {
     this.setAuthorizationHeadersForWADO();
@@ -117,17 +127,17 @@ export default class DicomWebClientManager {
   }
 
   /**
-   * Returns the client configuration
-   * @param name
-   * @returns {object} client configuration
+   * Returns the client configuration.
+   * @param name - The name of the client.
+   * @returns {object} - Client configuration.
    */
   public getConfig(name?: string): object {
     return name ? this.clients.find(client => client.name === name) : this.clients[0];
   }
 
   /**
-   * Gets the client list already setting the necessary wado headers
-   * @returns {Array} client list
+   * Gets the client list already setting the necessary wado headers.
+   * @returns {Array} - Client list.
    */
   public getWadoClients() {
     this.setWadoHeaders();
@@ -135,8 +145,8 @@ export default class DicomWebClientManager {
   }
 
   /**
-   * Gets the client list already setting the necessary qido headers
-   * @returns {Array} client list
+   * Gets the client list already setting the necessary qido headers.
+   * @returns {Array} - Client list.
    */
   public getQidoClients() {
     this.setQidoHeaders();
@@ -144,21 +154,24 @@ export default class DicomWebClientManager {
   }
 
   /**
-   * Returns the client list
-   * @returns {Array} client list
+   * Returns the client list.
+   * @returns {Array} - Client list.
    */
   public getClients() {
     return this.clients;
   }
+
   /**
-   * Adds a client to client list given a dicomweb server configuration
-   * @param configToAdd
+   * Adds a client to client list given a DICOMweb server configuration.
+   * @param dicomWebConfig - DICOMweb server configuration.
    * @returns {void}
    */
   private addClient(dicomWebConfig: DICOMWebConfig): void {
-    // if no qidoRoot or wadoRoot, don't add the client. Could be the case for
-    // configurations that relies on onConfiguration function but lacks necessary
-    // additional information
+    /**
+     * if no qidoRoot or wadoRoot, don't add the client. Could be the case for
+     * configurations that relies on onConfiguration function but lacks necessary
+     * additional information.
+     */
     if (!dicomWebConfig?.qidoRoot || !dicomWebConfig?.wadoRoot) {
       return;
     }
@@ -189,12 +202,12 @@ export default class DicomWebClientManager {
   }
 
   /**
-   * Process a dicomweb server configuration and add it to the clients list.
+   * Process a DICOMweb server configuration and add it to the clients list.
    * If onConfiguration function is specified, it calls it first to change the
-   * configuration, if defined
-   * @param {object} params key / pair mapping of the URL parameters
-   * @param {object} query URLSearchParams object generated for the URL
-   * @param {object} config client configuration
+   * configuration, if defined.
+   * @param params - Key/value pairs of URL parameters.
+   * @param query - URLSearchParams object generated for the URL.
+   * @param config - Client configuration.
    * @returns {void}
    */
   private addConfiguration(params, query, config): void {
@@ -208,8 +221,8 @@ export default class DicomWebClientManager {
   }
 
   /**
-   * Get authorization headers for wado and qido calls
-   * @returns {object} xhrRequestHeaders
+   * Get authorization headers for wado and qido calls.
+   * @returns {object} - XHR request headers.
    */
   private getAuthorizationHeaders(): object {
     const xhrRequestHeaders = {};
@@ -223,9 +236,9 @@ export default class DicomWebClientManager {
   }
 
   /**
-   * Generates the header for wado messages for a specific client
-   * @param config
-   * @returns {object} wado Headers
+   * Generates the header for wado messages for a specific client.
+   * @param config - Client configuration.
+   * @returns {object} - WADO headers.
    */
   private getWadoHeader(config): object {
     const authorizationHeader = this.getAuthorizationHeaders();
@@ -243,11 +256,11 @@ export default class DicomWebClientManager {
   }
 
   /**
-   * Returns the client configuration
-   * @param name
-   * @returns {object} client configuration
+   * Returns the client configuration.
+   * @param name - The name of the client.
+   * @returns {DICOMWebConfig} - Client configuration.
    */
-  private getClient(name?: string): object {
+  private getClient(name?: string): DICOMWebConfig {
     return name ? this.clients.find(client => client.name === name) : this.clients[0];
   }
 }
