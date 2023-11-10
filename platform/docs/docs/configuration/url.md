@@ -63,7 +63,7 @@ WorkList by adding the `dataSources` query parameter.
 ```
 
 Note1: You should pass the `sourceName` of the data source in the configuration file (not the friendly name nor the name)
-Note2: Make sure that the configuration file you are using actually include that data source. You cannot use a data source from other configuration file.
+Note2: Make sure that the configuration file you are using actually includes that data source. You cannot use a data source from another configuration file.
 
 
 :::tip

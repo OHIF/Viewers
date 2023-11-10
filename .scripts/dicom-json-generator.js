@@ -1,7 +1,7 @@
 /*
  * This script uses nodejs to generate a JSON file from a DICOM study folder.
  * You need to have dcmjs installed in your project.
- * The JSON file will can be used to load the study into the OHIF Viewer. You can get more detail
+ * The JSON file can be used to load the study into the OHIF Viewer. You can get more detail
  * in the DICOM JSON Data source on docs.ohif.org
  *
  * Usage: node dicomStudyToJSONLaunch.js <studyFolder> <urlPrefix> <outputJSONPath>
@@ -78,7 +78,9 @@ async function recursiveReadDir(dir) {
 }
 
 function createImageId(fileLocation, urlPrefix, studyDirectory) {
-  return `dicomweb:${urlPrefix}${fileLocation.replace(studyDirectory, '')}`;
+  const relativePath = path.relative(studyDirectory, fileLocation);
+  const normalizedPath = path.normalize(relativePath).replace(/\\/g, '/');
+  return `dicomweb:${urlPrefix}${normalizedPath}`;
 }
 
 function processInstance(instance) {
@@ -188,7 +190,6 @@ function commonMetaData(instance) {
 }
 
 function conditionalMetaData(instance) {
-  debugger;
   return {
     ...(instance.ConceptNameCodeSequence && {
       ConceptNameCodeSequence: instance.ConceptNameCodeSequence,
@@ -253,7 +254,7 @@ function createInstanceMetaDataMultiFrame(instance) {
   const commonData = commonMetaData(instance);
   const conditionalData = conditionalMetaData(instance);
 
-  for (let i = 1; i < instance.NumberOfFrames; i++) {
+  for (let i = 1; i <= instance.NumberOfFrames; i++) {
     const metadata = { ...commonData, ...conditionalData };
     const result = { metadata, url: instance.fileLocation + `?frame=${i}` };
     instances.push(result);

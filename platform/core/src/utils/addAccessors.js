@@ -15,9 +15,7 @@ const handler = {
   },
 
   set: (obj, prop, value) => {
-    if (typeof prop === 'number') {
-      obj[prop] = value;
-    } else if (prop in obj) {
+    if (typeof prop === 'number' || prop in obj) {
       obj[prop] = value;
     } else {
       obj[0][prop] = value;
