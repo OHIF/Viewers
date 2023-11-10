@@ -32,11 +32,6 @@ type MenuPathState = {
   activePanelIndex: number;
 };
 
-const defaultMenuContext: MenuContextProps = {
-  showSubMenu: () => {},
-  hideMenu: () => {},
-  addItemPanel: () => {},
-};
 export const MenuContext = createContext<MenuContextProps>(null);
 
 const Menu = (props: MenuProps) => {
