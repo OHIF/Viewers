@@ -3,6 +3,39 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-beta.14](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.13...v3.8.0-beta.14) (2023-11-10)
+
+
+### Bug Fixes
+
+* **path:** upgrade docusaurus for security ([#3780](https://github.com/OHIF/Viewers/issues/3780)) ([8bbcd0e](https://github.com/OHIF/Viewers/commit/8bbcd0e692e25917c1b6dd94a39fac834c812fca))
+
+
+
+
+
+# [3.8.0-beta.13](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.12...v3.8.0-beta.13) (2023-11-09)
+
+
+### Bug Fixes
+
+* **arrow:** ArrowAnnotate text key cause validation error ([#3771](https://github.com/OHIF/Viewers/issues/3771)) ([8af1046](https://github.com/OHIF/Viewers/commit/8af10468035f1f59e0a21e579d50ad63c8cbf7ad))
+
+
+
+
+
+# [3.8.0-beta.12](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.11...v3.8.0-beta.12) (2023-11-08)
+
+
+### Features
+
+* add VolumeViewport rotation ([#3776](https://github.com/OHIF/Viewers/issues/3776)) ([442f99d](https://github.com/OHIF/Viewers/commit/442f99d5eb2ceece7def20e14da59af1dd7d8442))
+
+
+
+
+
 # [3.8.0-beta.11](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.10...v3.8.0-beta.11) (2023-11-08)
 
 
