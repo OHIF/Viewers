@@ -48,6 +48,7 @@ describe('OHIF Measurement Panel', function () {
 
     cy.scrollToIndex(13);
 
+    // Reset to default tool so that the new add length works
     cy.addLengthMeasurement([100, 100], [200, 200]); //Adding measurement in the viewport
 
     cy.get('@viewportInfoTopRight').should('contains.text', '(14/');
