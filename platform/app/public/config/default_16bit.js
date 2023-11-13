@@ -15,7 +15,7 @@ window.config = {
   showWarningMessageForCrossOrigin: false,
   showCPUFallbackMessage: true,
   showLoadingIndicator: true,
-  use16BitDataType: true,
+  useNorm16Texture: true,
   useSharedArrayBuffer: 'AUTO',
   maxNumRequests: {
     interaction: 100,
