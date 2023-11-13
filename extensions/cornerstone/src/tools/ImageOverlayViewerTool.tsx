@@ -73,6 +73,12 @@ class ImageOverlayViewerTool extends AnnotationDisplayTool {
       return;
     }
 
+    // Fix the x, y positions
+    overlays.forEach(overlay => {
+      overlay.x ||= 0;
+      overlay.y ||= 0;
+    });
+
     this._cachedOverlayMetadata.set(imageId, overlays);
 
     this._getCachedStat(imageId, overlays, this.configuration.fillColor).then(cachedStat => {
