@@ -37,6 +37,7 @@ export {
 export {
   AboutModal,
   AdvancedToolbox,
+  AllInOneMenu,
   HotkeyField,
   Header,
   UserPreferences,
@@ -95,6 +96,8 @@ export {
   StudyListTableRow,
   StudySummary,
   Svg,
+  SwitchButton,
+  SwitchLabelLocation,
   Table,
   TableBody,
   TableCell,

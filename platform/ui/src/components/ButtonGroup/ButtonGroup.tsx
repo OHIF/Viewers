@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { ButtonEnums } from '../../components';
@@ -11,6 +11,10 @@ const ButtonGroup = ({
   defaultActiveIndex = 0,
 }) => {
   const [activeIndex, setActiveIndex] = useState(defaultActiveIndex);
+
+  useEffect(() => {
+    setActiveIndex(defaultActiveIndex);
+  }, [defaultActiveIndex]);
 
   const handleButtonClick = (e, index) => {
     setActiveIndex(index);
