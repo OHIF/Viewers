@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-cornerstone-dicom-sr",
-  "version": "3.8.0-beta.16",
+  "version": "3.8.0-beta.17",
   "description": "OHIF extension for an SR Cornerstone Viewport",
   "author": "OHIF",
   "license": "MIT",
@@ -32,10 +32,10 @@
     "test:unit:ci": "jest --ci --runInBand --collectCoverage --passWithNoTests"
   },
   "peerDependencies": {
-    "@ohif/core": "3.8.0-beta.16",
-    "@ohif/extension-cornerstone": "3.8.0-beta.16",
-    "@ohif/extension-measurement-tracking": "3.8.0-beta.16",
-    "@ohif/ui": "3.8.0-beta.16",
+    "@ohif/core": "3.8.0-beta.17",
+    "@ohif/extension-cornerstone": "3.8.0-beta.17",
+    "@ohif/extension-measurement-tracking": "3.8.0-beta.17",
+    "@ohif/ui": "3.8.0-beta.17",
     "dcmjs": "^0.29.12",
     "dicom-parser": "^1.8.9",
     "hammerjs": "^2.0.8",
