@@ -59,7 +59,7 @@ export default class DicomWebClientManager {
    */
   public setQidoHeaders(): void {
     this.clients.forEach(
-      client => (client.qidoDicomWebClient.headers = this.getAuthorizationHeaders())
+      client => (client.qidoDicomWebClient.headers = this.getAuthorizationHeader())
     );
   }
 
@@ -79,7 +79,7 @@ export default class DicomWebClientManager {
    */
   public setAuthorizationHeadersForWADO(): void {
     this.clients.forEach(
-      client => (client.wadoDicomWebClient.headers = this.getAuthorizationHeaders())
+      client => (client.wadoDicomWebClient.headers = this.getAuthorizationHeader())
     );
   }
 
@@ -224,10 +224,10 @@ export default class DicomWebClientManager {
    * Get authorization headers for wado and qido calls.
    * @returns {object} - XHR request headers.
    */
-  private getAuthorizationHeaders(): object {
+  private getAuthorizationHeader(): object {
     const xhrRequestHeaders = {};
-    if (this.userAuthenticationService?.getAuthorizationHeaders) {
-      const authHeaders = this.userAuthenticationService.getAuthorizationHeaders();
+    if (this.userAuthenticationService?.getAuthorizationHeader) {
+      const authHeaders = this.userAuthenticationService.getAuthorizationHeader();
       if (authHeaders?.Authorization) {
         xhrRequestHeaders.Authorization = authHeaders.Authorization;
       }
@@ -241,7 +241,7 @@ export default class DicomWebClientManager {
    * @returns {object} - WADO headers.
    */
   private getWadoHeader(config): object {
-    const authorizationHeader = this.getAuthorizationHeaders();
+    const authorizationHeader = this.getAuthorizationHeader();
     //Generate accept header depending on config params
     const formattedAcceptHeader = utils.generateAcceptHeader(
       config.acceptHeader,
