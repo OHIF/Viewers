@@ -48,10 +48,10 @@ const ROUTES_DEF = {
         return appConfig.showStudyList;
       },
     },
-    local: {
-      path: '/local',
-      component: ViewerLocalFileData,
-    },
+    // local: {
+    //   path: '/local',
+    //   component: ViewerLocalFileData,
+    // },
     IHEInvokeImageDisplay: {
       path: '/IHEInvokeImageDisplay',
       component: IHEInvokeImageDisplay
