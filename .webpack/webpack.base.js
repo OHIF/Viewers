@@ -39,6 +39,7 @@ const defineValues = {
   'process.env.NODE_DEBUG': JSON.stringify(process.env.NODE_DEBUG),
   'process.env.DEBUG': JSON.stringify(process.env.DEBUG),
   'process.env.PUBLIC_URL': JSON.stringify(process.env.PUBLIC_URL || '/'),
+  'process.env.ORTHANC_URL': JSON.stringify(process.env.ORTHANC_URL || 'ORTHANC_URL_DEFAULT'),
   'process.env.BUILD_NUM': JSON.stringify(BUILD_NUM),
   'process.env.VERSION_NUMBER': JSON.stringify(VERSION_NUMBER),
   'process.env.COMMIT_HASH': JSON.stringify(COMMIT_HASH),

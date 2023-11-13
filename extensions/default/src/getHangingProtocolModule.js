@@ -98,6 +98,62 @@ const defaultProtocol = {
   ],
 };
 
+const grid4Protocol = {
+  id: 'grid4Protocol',
+  name: 'Default',
+  availableTo: {},
+  editableBy: {},
+  protocolMatchingRules: [
+    {
+      attribute: 'ModalitiesInStudy',
+      constraint: {
+        contains: ['CT'],
+      },
+    },
+  ],
+  displaySetSelectors: {
+    ctDisplaySet: {
+      seriesMatchingRules: [
+        {
+          weight: 1,
+          attribute: 'Modality',
+          constraint: {
+            equals: {
+              value: 'CT',
+            },
+          },
+          required: true,
+        },
+      ],
+    },
+    ptDisplaySet: {
+      seriesMatchingRules: [
+        {
+          attribute: 'Modality',
+          constraint: {
+            equals: 'PT',
+          },
+          required: true,
+        },
+      ],
+    },
+  },
+  stages: [
+    {
+      id: 'hYbmMy3b7pz7GLiaT',
+      name: 'default',
+      viewportStructure: {
+        layoutType: 'grid',
+        properties: {
+          rows: 2,
+          columns: 2,
+        },
+      },
+    },
+  ],
+  numberOfPriorsReferenced: -1,
+};
+
 function getHangingProtocolModule() {
   return [
     {
@@ -113,6 +169,11 @@ function getHangingProtocolModule() {
     {
       name: hpMNCompare.id,
       protocol: hpMNCompare,
+    },
+    // Custom Rofim grid portocol
+    {
+      name: grid4Protocol.id,
+      protocol: grid4Protocol,
     },
   ];
 }
