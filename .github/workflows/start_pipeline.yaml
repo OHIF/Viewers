@@ -23,7 +23,7 @@ on:
 jobs:
   deploy:
     name: Start AWS pipeline
-    runs-on: [rofim-tiny]
+    runs-on: ubuntu-latest #public repository
     permissions:
       id-token: write
       contents: read
