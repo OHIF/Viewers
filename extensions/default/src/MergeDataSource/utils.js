@@ -1,3 +1,10 @@
+/**
+ * Executes a function given an object and a path to the function.
+ * @param {Object} obj - The object containing the function to be executed.
+ * @param {string} path - The path to the function, separated by dots.
+ * @param {Array} args - An array of arguments to be passed to the function.
+ * @returns {*} - The result of the executed function.
+ */
 export function executeFunction(obj, path, args) {
   const keys = path.split('.');
   let current = obj;
@@ -16,6 +23,13 @@ export function executeFunction(obj, path, args) {
   return current.apply(obj, args);
 }
 
+/**
+ * Gets the value of a key in an object at a specified level.
+ * @param {Object} obj - The object to search for the key.
+ * @param {string} key - The key to search for.
+ * @param {number} level - The level at which to search for the key.
+ * @returns {*} - The value of the key if found, otherwise undefined.
+ */
 export function getKeyByLevel(obj, key, level) {
   if (level === 0) {
     return obj[key];
@@ -33,6 +47,9 @@ export function getKeyByLevel(obj, key, level) {
   return undefined;
 }
 
+/**
+ * A collection of utility functions.
+ */
 const utils = {
   executeFunction,
   getKeyByLevel,
