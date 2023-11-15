@@ -41,14 +41,14 @@ function retrieveMetadataFiltered(
     });
 
     Promise.all(promises).then(results => {
-      const result = { preLoadData: [], promises: [] };
+      const aggregatedResult = { preLoadData: [], promises: [] };
 
       results.forEach(({ preLoadData, promises }) => {
-        result.preLoadData = result.preLoadData.concat(preLoadData);
-        result.promises = result.promises.concat(promises);
+        aggregatedResult.preLoadData = aggregatedResult.preLoadData.concat(preLoadData);
+        aggregatedResult.promises = aggregatedResult.promises.concat(promises);
       });
 
-      resolve(result);
+      resolve(aggregatedResult);
     }, reject);
   });
 }
