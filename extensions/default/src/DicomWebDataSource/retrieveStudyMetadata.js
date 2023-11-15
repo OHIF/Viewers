@@ -9,7 +9,7 @@ const StudyMetaDataPromises = new Map();
  *
  * @param {Object} server Object with server configuration parameters
  * @param {string} StudyInstanceUID The UID of the Study to be retrieved
- * @param {boolean} enabledStudyLazyLoad Whether the study metadata should be loaded asynchronously.
+ * @param {boolean} enableStudyLazyLoad Whether the study metadata should be loaded asynchronously.
  * @param {function} storeInstancesCallback A callback used to store the retrieved instance metadata.
  * @param {Object} [filters] - Object containing filters to be applied on retrieve metadata process
  * @param {string} [filter.seriesInstanceUID] - series instance uid to filter results against
@@ -21,7 +21,8 @@ export function retrieveStudyMetadata(
   enableStudyLazyLoad,
   filters,
   sortCriteria,
-  sortFunction
+  sortFunction,
+  dicomWebConfig = {}
 ) {
   // @TODO: Whenever a study metadata request has failed, its related promise will be rejected once and for all
   // and further requests for that metadata will always fail. On failure, we probably need to remove the
@@ -34,9 +35,11 @@ export function retrieveStudyMetadata(
     throw new Error(`${moduleName}: Required 'StudyInstanceUID' parameter not provided.`);
   }
 
+  const promiseId = (dicomWebConfig.name || '') + StudyInstanceUID;
+
   // Already waiting on result? Return cached promise
-  if (StudyMetaDataPromises.has(StudyInstanceUID)) {
-    return StudyMetaDataPromises.get(StudyInstanceUID);
+  if (StudyMetaDataPromises.has(promiseId)) {
+    return StudyMetaDataPromises.get(promiseId);
   }
 
   // Create a promise to handle the data retrieval
@@ -54,7 +57,7 @@ export function retrieveStudyMetadata(
   });
 
   // Store the promise in cache
-  StudyMetaDataPromises.set(StudyInstanceUID, promise);
+  StudyMetaDataPromises.set(promiseId, promise);
 
   return promise;
 }
