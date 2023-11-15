@@ -9,7 +9,7 @@ version: 0.2
 phases:
     install:
         runtime-versions:
-            nodejs: 16
+            nodejs: 18
         commands:
             # Get latest revision
             - git checkout $(aws ssm get-parameter --name /${PROJECT}/${ENVIRONMENT}/cicd/${APP}/revision | jq -r .Parameter.Value)
