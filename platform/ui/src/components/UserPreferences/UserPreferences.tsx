@@ -112,7 +112,7 @@ const UserPreferences = ({
           onClick={onResetHandler}
           disabled={disabled}
         >
-          {t('Reset to Defaults')}
+          {t('Reset to defaults')}
         </Button>
         <div className="flex flex-row">
           <Button

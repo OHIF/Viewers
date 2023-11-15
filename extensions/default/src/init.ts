@@ -51,10 +51,16 @@ export default function init({ servicesManager, configuration = {} }): void {
 const handlePETImageMetadata = ({ SeriesInstanceUID, StudyInstanceUID }) => {
   const { instances } = DicomMetadataStore.getSeries(StudyInstanceUID, SeriesInstanceUID);
 
-  const modality = instances[0].Modality;
-  if (modality !== 'PT') {
+  if (!instances?.length) {
     return;
   }
+
+  const modality = instances[0].Modality;
+
+  if (!modality || modality !== 'PT') {
+    return;
+  }
+
   const imageIds = instances.map(instance => instance.imageId);
   const instanceMetadataArray = [];
   imageIds.forEach(imageId => {
