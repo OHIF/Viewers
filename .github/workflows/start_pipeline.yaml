@@ -1,0 +1,115 @@
+name: Start AWS pipeline
+
+env:
+  PROJECT: "rofim"
+
+on:
+  workflow_dispatch:
+    inputs:
+      app:
+        description: 'App'
+        type: choice
+        required: true
+        options:
+          - viewer-ohif
+      environment:
+        description: 'Environment'
+        type: choice
+        required: true
+        options:
+          - staging
+          - preprod
+          - prod
+jobs:
+  deploy:
+    name: Start AWS pipeline
+    runs-on: [rofim-tiny]
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Deployment details
+        run: echo "Pipeline run by ${GITHUB_EVENT_NAME} on ${GITHUB_REF_TYPE} ${{github.ref_name}} with following inputs App $APP, Environment $ENVIRONMENT"
+        env:
+          ENVIRONMENT: ${{ inputs.environment }}
+          APP: ${{ inputs.app }}
+
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Get branch/tag name
+        id: branch_tag_name
+        run:
+          echo "branch_or_tag=${GITHUB_REF#refs/*/}" >> $GITHUB_OUTPUT
+
+      - name: Map variables
+        uses: kanga333/variable-mapper@master
+        with:
+          key: '${{ env.ENVIRONMENT }}'
+          #preprod must be first because env preprod match prod
+          map: |
+            {
+              "preprod": {
+                "AWS_ROLE_ARN": "arn:aws:iam::547620973306:role/GithubActions"
+              },
+              "prod": {
+                "AWS_ROLE_ARN": "arn:aws:iam::241426737767:role/GithubActions"
+              },
+              ".*": {
+                "AWS_ROLE_ARN": "arn:aws:iam::124653856901:role/GithubActions"
+              }
+            }
+          export_to: env,log,output
+          mode: first_match
+        env:
+          ENVIRONMENT: ${{ inputs.environment }}
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: ${{ env.AWS_ROLE_ARN }}
+          aws-region: eu-west-1
+
+      - name: Put branch/tag in paramter store
+        run: |
+          aws ssm put-parameter --name "/${PROJECT}/${ENVIRONMENT}/cicd/${APP}/revision" --type "String" --value "${{ steps.branch_tag_name.outputs.branch_or_tag }}" --overwrite
+        env:
+          ENVIRONMENT: ${{ inputs.environment }}
+          APP: ${{ inputs.app }}
+
+      - name: Start AWS pipeline
+        id: start-pipeline
+        run: |
+          pipelineExecutionId=$(aws codepipeline start-pipeline-execution --name rofim-$ENVIRONMENT-$APP |jq .pipelineExecutionId)
+          echo "::set-output name=pipelineExecutionId::$pipelineExecutionId"
+        env:
+          ENVIRONMENT: ${{ inputs.environment }}
+          APP: ${{ inputs.app }}
+
+      - name: Check AWS pipeline
+        run: |
+          echo ${{ steps.start-pipeline.outputs.pipelineExecutionId }}
+          i=0
+          max=80
+          while true; do
+            i=$((i+1))
+            sleep 15
+            if [[ $i -eq $max ]]; then
+              echo "Waiting for too long, ... Exiting"
+              exit 1
+            fi
+            status=$(aws codepipeline get-pipeline-execution --pipeline-name rofim-$ENVIRONMENT-$APP --pipeline-execution-id ${{ steps.start-pipeline.outputs.pipelineExecutionId }} |jq .pipelineExecution.status -r)
+            echo "[$i/$max] Current status is $status"
+            if [[ "$status" == "Succeeded" ]]; then
+              break
+            fi
+            if [[ "$status" == "InProgress" ]]; then
+              echo "It should take between 8 and 15 min. Retrying in 15s"
+            else
+              echo "Something went wrong, status is $status. Exiting"
+              exit 2
+            fi
+          done
+        env:
+          ENVIRONMENT: ${{ inputs.environment }}
+          APP: ${{ inputs.app }}
