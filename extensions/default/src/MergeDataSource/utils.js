@@ -35,9 +35,8 @@ export function getKeyByLevel(obj, key, level) {
     return obj[key];
   }
   const keys = Object.keys(obj);
-  for (let i = 0; i < keys.length; i++) {
-    const currentKey = keys[i];
-    if (typeof obj[currentKey] === 'object') {
+  for (const currentKey of keys) {
+    if (obj[currentKey] !== null && typeof obj[currentKey] === 'object') {
       const result = getKeyByLevel(obj[currentKey], key, level - 1);
       if (result !== undefined) {
         return result;
