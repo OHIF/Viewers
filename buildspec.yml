@@ -22,6 +22,8 @@ phases:
         commands:
             # Builds Angular application. You can also build using custom environment here like mock or staging
             - echo Build started on `date`
+            - sed -i "s/ORTHANC_DOMAIN_NAME/$ORTHANC_DOMAIN_NAME/" platform/app/.env.rofim.example
+            - cp -f platform/app/.env.rofim.example platform/app/.env
             - yarn build
             - echo Build completed on `date`
     post_build:
