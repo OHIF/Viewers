@@ -55,7 +55,7 @@ function createMergeDataSourceApi(mergeConfig, UserAuthenticationService, extens
             });
             data = data.concat(dedupedData);
           } else {
-            data = data.concat(data);
+            data = data.concat(incomingData);
           }
           globalData.push(tagFunc(data, sourceName));
         };

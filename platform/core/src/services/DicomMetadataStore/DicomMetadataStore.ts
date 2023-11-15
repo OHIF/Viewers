@@ -188,6 +188,11 @@ const BaseImplementation = {
   },
   updateSeriesMetadata(seriesMetadata) {
     const { StudyInstanceUID, SeriesInstanceUID } = seriesMetadata;
+    const series = _getSeries(StudyInstanceUID, SeriesInstanceUID);
+    if (!series) {
+      return;
+    }
+
     const study = _getStudy(StudyInstanceUID);
     if (study) {
       study.setSeriesMetadata(SeriesInstanceUID, seriesMetadata);
