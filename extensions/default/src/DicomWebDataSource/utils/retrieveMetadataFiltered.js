@@ -20,7 +20,8 @@ function retrieveMetadataFiltered(
   enableStudyLazyLoad,
   filters,
   sortCriteria,
-  sortFunction
+  sortFunction,
+  clientConfig
 ) {
   const { SeriesInstanceUIDs } = filters;
 
@@ -36,7 +37,8 @@ function retrieveMetadataFiltered(
         enableStudyLazyLoad,
         seriesSpecificFilters,
         sortCriteria,
-        sortFunction
+        sortFunction,
+        clientConfig
       );
     });
 

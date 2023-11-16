@@ -53,7 +53,8 @@ export function retrieveStudyMetadata(
       enableStudyLazyLoad,
       filters,
       sortCriteria,
-      sortFunction
+      sortFunction,
+      clientConfig
     );
   } else {
     // Create a promise to handle the data retrieval
