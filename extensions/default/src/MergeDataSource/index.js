@@ -1,35 +1,36 @@
 import { DicomMetadataStore, IWebApiDataSource } from '@ohif/core';
+import { get } from 'lodash';
 import { executeFunction, getKeyByLevel } from './utils';
 
 /**
- * Returns deduplicated data by comparing the incomingData with the globalData based on the mergeKey and level.
+ * Returns deduplicated data by comparing the incomingData with the mergedData based on the mergeKey and level.
  * @param {Object} options - The options object.
- * @param {Array} options.globalData - The global data array.
+ * @param {Array} options.mergedData - The global data array.
  * @param {Array} options.incomingData - The incoming data array.
  * @param {string} options.mergeKey - The merge key.
  * @param {number} options.level - The level.
  * @returns {Array} The deduplicated data array.
  */
-const getDedupedData = ({ globalData, incomingData, mergeKey, level }) => {
-  const keys = globalData.map(r => getKeyByLevel(r, mergeKey, level));
+const getDedupedData = ({ mergedData, incomingData, mergeKey, level }) => {
+  const keys = mergedData.map(r => getKeyByLevel(r, mergeKey, level));
   return incomingData.filter(r => !keys.includes(getKeyByLevel(r, mergeKey, level)));
 };
 
 /**
- * Processes deduplicated data and pushes it to globalData array.
+ * Processes deduplicated data and pushes it to mergedData array.
  * @param {Object} options - The options object.
  * @param {string} options.sourceName - The name of the data source.
- * @param {Array} options.globalData - The global data array.
+ * @param {Array} options.mergedData - The global data array.
  * @param {Array} options.incomingData - The incoming data array.
  * @param {string} options.mergeKey - The key to merge the data on.
  * @param {number} options.level - The level to merge the data on.
  * @param {Function} options.tagFunc - The function to tag the data with.
  */
-const processDedupedData = ({ sourceName, globalData, incomingData, mergeKey, level, tagFunc }) => {
+const processDedupedData = ({ sourceName, mergedData, incomingData, mergeKey, level, tagFunc }) => {
   let data = [];
   if (mergeKey && level !== -1) {
     const dedupedData = getDedupedData({
-      globalData: globalData.flat(),
+      mergedData: mergedData.flat(),
       incomingData,
       mergeKey,
       level,
@@ -38,12 +39,12 @@ const processDedupedData = ({ sourceName, globalData, incomingData, mergeKey, le
   } else {
     data = data.concat(incomingData);
   }
-  globalData.push(tagFunc(data, sourceName));
+  mergedData.push(tagFunc(data, sourceName));
 };
 
 function createMergeDataSourceApi(mergeConfig, UserAuthenticationService, extensionManager) {
   const { seriesMerge } = mergeConfig;
-  const { dataSourceNames } = seriesMerge;
+  const { dataSourceNames, defaultDataSourceName } = seriesMerge;
 
   /**
    * Calls a specified function on all data sources and merges the results.
@@ -79,31 +80,32 @@ function createMergeDataSourceApi(mergeConfig, UserAuthenticationService, extens
 
     const dataSourceDefs = Object.values(extensionManager.dataSourceDefs);
     const promises = [];
-    let globalData = [];
+    const mergedData = [];
 
     for (const dataSourceDef of dataSourceDefs) {
       const { configuration, sourceName } = dataSourceDef;
       if (configuration && dataSourceNames.includes(sourceName)) {
         const [dataSource] = extensionManager.getDataSources(sourceName);
-        const promise = executeFunction(dataSource, path, args);
-        promises.push(promise);
-
-        promise.then(data =>
-          processDedupedData({
-            sourceName,
-            globalData,
-            incomingData: data,
-            mergeKey,
-            level,
-            tagFunc,
-          })
+        const func = get(dataSource, path);
+        const promise = func.apply(dataSource, args);
+        promises.push(
+          promise.then(data =>
+            processDedupedData({
+              sourceName,
+              mergedData,
+              incomingData: data,
+              mergeKey,
+              level,
+              tagFunc,
+            })
+          )
         );
       }
     }
 
     await Promise.allSettled(promises);
 
-    return globalData.flat();
+    return mergedData.flat();
   };
 
   /**
@@ -116,43 +118,46 @@ function createMergeDataSourceApi(mergeConfig, UserAuthenticationService, extens
    */
   const callForAllDataSources = (path, args) => {
     const dataSourceDefs = Object.values(extensionManager.dataSourceDefs);
-    const globalData = [];
+    const mergedData = [];
     for (const dataSourceDef of dataSourceDefs) {
       const { configuration, sourceName } = dataSourceDef;
       if (configuration && dataSourceNames.includes(sourceName)) {
         const [dataSource] = extensionManager.getDataSources(sourceName);
-        const data = executeFunction(dataSource, path, args);
-        globalData.push(data);
+        const func = get(dataSource, path);
+        const data = func.apply(dataSource, args);
+        mergedData.push(data);
       }
     }
-    return globalData.flat();
+    return mergedData.flat();
   };
 
   /**
    * Calls the default data source with the given path and arguments.
    * @param {string} path - The path to the function to be executed.
    * @param {Array} args - The arguments to be passed to the function.
+   * @param {string} defaultDataSourceName - The name of the default data source.
    * @returns {*} - The result of executing the function.
    */
-  const callForDefaultDataSource = (path, args) => {
-    const defaultDataSourceName = dataSourceNames[0];
+  const callForDefaultDataSource = (path, args, defaultDataSourceName) => {
     const [dataSource] = extensionManager.getDataSources(defaultDataSourceName);
-    return executeFunction(dataSource, path, args);
+    const func = get(dataSource, path);
+    return func.apply(dataSource, args);
   };
 
   /**
-   * Calls a method on the data source associated with the given display set's RetrieveAETitle or the default data source if none is found.
+   * Calls a method on the data source associated with the given RetrieveAETitle or the default data source name.
+   *
    * @param {string} path - The path of the method to call.
    * @param {Array} args - The arguments to pass to the method.
-   * @returns {*} - The result of calling the method.
+   * @param {string} defaultDataSourceName - The name of the default data source.
+   * @returns {*} - The result of calling the method on the data source.
    */
-  const callByRetrieveAETitle = (path, args) => {
+  const callByRetrieveAETitle = (path, args, defaultDataSourceName) => {
     const [displaySet] = args;
     const seriesMetadata = DicomMetadataStore.getSeries(
       displaySet.StudyInstanceUID,
       displaySet.SeriesInstanceUID
     );
-    const defaultDataSourceName = dataSourceNames[0];
     const [dataSource] = extensionManager.getDataSources(
       seriesMetadata.RetrieveAETitle || defaultDataSourceName
     );
@@ -180,12 +185,14 @@ function createMergeDataSourceApi(mergeConfig, UserAuthenticationService, extens
       },
     },
     store: {
-      dicom: (...args) => callForDefaultDataSource('store.dicom', args),
+      dicom: (...args) => callForDefaultDataSource('store.dicom', args, defaultDataSourceName),
     },
     deleteStudyMetadataPromise: (...args) =>
       callForAllDataSources('deleteStudyMetadataPromise', args),
-    getImageIdsForDisplaySet: (...args) => callByRetrieveAETitle('getImageIdsForDisplaySet', args),
-    getImageIdsForInstance: (...args) => callByRetrieveAETitle('getImageIdsForDisplaySet', args),
+    getImageIdsForDisplaySet: (...args) =>
+      callByRetrieveAETitle('getImageIdsForDisplaySet', args, defaultDataSourceName),
+    getImageIdsForInstance: (...args) =>
+      callByRetrieveAETitle('getImageIdsForDisplaySet', args, defaultDataSourceName),
     getStudyInstanceUIDs: (...args) => callForAllDataSources('getStudyInstanceUIDs', args),
   };
 

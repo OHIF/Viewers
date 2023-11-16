@@ -179,6 +179,9 @@ the first series retrieved will be used, and any other duplicated series will be
 The merge data source is particularly useful when dealing with derived data that is generated and stored in different servers.
 For example, it can be used to retrieve annotation series from one data source and input data (images) from another data source.
 
+A default data source can be defined as shown below. This allows defining which of the servers should be the
+fallback server in case something goes wrong.
+
 Configuration Example:
 ```js
 window.config = {
@@ -192,6 +195,7 @@ window.config = {
         friendlyName: 'Merge dicomweb-1 and dicomweb-2 data at the series level',
         seriesMerge: {
           dataSourceNames: ['dicomweb-1', 'dicomweb-2'],
+          defaultDataSourceName: 'dicomweb-1'
         },
       },
     },
