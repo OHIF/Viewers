@@ -174,7 +174,7 @@ extensionManager.updateDataSourceConfiguration( "dicomweb",
 The built-in merge data source is a useful tool for combining results from multiple data sources.
 Currently, this data source only supports merging at the series level. This means that series from data source 'A'
 and series from data source 'B' will be retrieved under the same study. If the same series exists in both data sources,
-the first series retrieved will be used, and any other duplicated series will be ignored.
+the first series arrived is the one that gets stored, and any other conflicting series will be ignored.
 
 The merge data source is particularly useful when dealing with derived data that is generated and stored in different servers.
 For example, it can be used to retrieve annotation series from one data source and input data (images) from another data source.
