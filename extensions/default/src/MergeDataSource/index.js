@@ -1,19 +1,17 @@
 import { DicomMetadataStore, IWebApiDataSource } from '@ohif/core';
 import { get } from 'lodash';
-import { executeFunction, getKeyByLevel } from './utils';
 
 /**
- * Returns deduplicated data by comparing the incomingData with the mergedData based on the mergeKey and level.
+ * Returns deduplicated data by comparing the incomingData with the mergedData based on the mergeKey.
  * @param {Object} options - The options object.
  * @param {Array} options.mergedData - The global data array.
  * @param {Array} options.incomingData - The incoming data array.
  * @param {string} options.mergeKey - The merge key.
- * @param {number} options.level - The level.
  * @returns {Array} The deduplicated data array.
  */
-const getDedupedData = ({ mergedData, incomingData, mergeKey, level }) => {
-  const keys = mergedData.map(r => getKeyByLevel(r, mergeKey, level));
-  return incomingData.filter(r => !keys.includes(getKeyByLevel(r, mergeKey, level)));
+const getDedupedData = ({ mergedData, incomingData, mergeKey }) => {
+  const keys = mergedData.map(r => get(r, mergeKey));
+  return incomingData.filter(r => !keys.includes(get(r, mergeKey)));
 };
 
 /**
@@ -23,17 +21,15 @@ const getDedupedData = ({ mergedData, incomingData, mergeKey, level }) => {
  * @param {Array} options.mergedData - The global data array.
  * @param {Array} options.incomingData - The incoming data array.
  * @param {string} options.mergeKey - The key to merge the data on.
- * @param {number} options.level - The level to merge the data on.
  * @param {Function} options.tagFunc - The function to tag the data with.
  */
-const processDedupedData = ({ sourceName, mergedData, incomingData, mergeKey, level, tagFunc }) => {
+const processDedupedData = ({ sourceName, mergedData, incomingData, mergeKey, tagFunc }) => {
   let data = [];
-  if (mergeKey && level !== -1) {
+  if (mergeKey) {
     const dedupedData = getDedupedData({
       mergedData: mergedData.flat(),
       incomingData,
       mergeKey,
-      level,
     });
     data = data.concat(dedupedData);
   } else {
@@ -59,13 +55,11 @@ function createMergeDataSourceApi(mergeConfig, UserAuthenticationService, extens
     const mergeMap = {
       'query.studies.search': {
         mergeKey: 'studyInstanceUid',
-        level: 0,
         /** TODO */
         tagFunc: x => x,
       },
       'retrieve.series.metadata': {
         mergeKey: 'seriesInstanceUid',
-        level: 0,
         tagFunc: (series, sourceName) => {
           series.forEach(series => {
             series.RetrieveAETitle = sourceName;
@@ -76,7 +70,7 @@ function createMergeDataSourceApi(mergeConfig, UserAuthenticationService, extens
       },
     };
 
-    const { mergeKey, level, tagFunc } = mergeMap[path] || { tagFunc: x => x, level: -1 };
+    const { mergeKey, tagFunc } = mergeMap[path] || { tagFunc: x => x };
 
     const dataSourceDefs = Object.values(extensionManager.dataSourceDefs);
     const promises = [];
@@ -95,7 +89,6 @@ function createMergeDataSourceApi(mergeConfig, UserAuthenticationService, extens
               mergedData,
               incomingData: data,
               mergeKey,
-              level,
               tagFunc,
             })
           )
