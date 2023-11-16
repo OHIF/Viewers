@@ -240,7 +240,7 @@ function OHIFCornerstoneSRViewport(props) {
     const onDisplaySetsRemovedSubscription = displaySetService.subscribe(
       displaySetService.EVENTS.DISPLAY_SETS_REMOVED,
       ({ displaySetInstanceUIDs }) => {
-        const activeViewport = viewports[activeViewportId];
+        const activeViewport = viewports.get(activeViewportId);
         if (displaySetInstanceUIDs.includes(activeViewport.displaySetInstanceUID)) {
           viewportGridService.setDisplaySetsForViewport({
             viewportId: activeViewportId,
@@ -360,7 +360,7 @@ function OHIFCornerstoneSRViewport(props) {
             patientSex: PatientSex || '',
             patientAge: PatientAge || '',
             MRN: PatientID || '',
-            thickness: SliceThickness ? `${SliceThickness.toFixed(2)}mm` : '',
+            thickness: SliceThickness ? `${parseFloat(SliceThickness).toFixed(2)}mm` : '',
             spacing:
               SpacingBetweenSlices !== undefined ? `${SpacingBetweenSlices.toFixed(2)}mm` : '',
             scanner: ManufacturerModelName || '',

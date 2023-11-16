@@ -43,6 +43,7 @@ function Header({
               isReturnEnabled && 'cursor-pointer'
             )}
             onClick={onClickReturn}
+            data-cy="return-to-work-list"
           >
             {isReturnEnabled && (
               <Icon
@@ -62,6 +63,7 @@ function Header({
             id="options"
             showDropdownIcon={false}
             list={menuOptions}
+            alignment="right"
           >
             <IconButton
               id={'options-settings-icon'}

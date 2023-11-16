@@ -210,7 +210,7 @@ class CornerstoneCacheService {
   }
 
   private _shouldRenderSegmentation(displaySets) {
-    const { segmentationService } = this.servicesManager.services;
+    const { segmentationService, displaySetService } = this.servicesManager.services;
 
     const viewportDisplaySetInstanceUIDs = displaySets.map(
       ({ displaySetInstanceUID }) => displaySetInstanceUID
@@ -222,10 +222,13 @@ class CornerstoneCacheService {
 
     for (const segmentation of segmentations) {
       const segDisplaySetInstanceUID = segmentation.displaySetInstanceUID;
+      const segDisplaySet = displaySetService.getDisplaySetByUID(segDisplaySetInstanceUID);
+
+      const instance = segDisplaySet.instances?.[0] || segDisplaySet.instance;
 
       const shouldDisplaySeg = segmentationService.shouldRenderSegmentation(
         viewportDisplaySetInstanceUIDs,
-        segDisplaySetInstanceUID
+        instance.FrameOfReferenceUID
       );
 
       if (shouldDisplaySeg) {

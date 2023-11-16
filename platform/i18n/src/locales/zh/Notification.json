@@ -1,0 +1,18 @@
+{
+  "Do you want to add this measurement to the existing report?": "添加测量值到当前报告中？",
+  "Create new report": "创建新报告",
+  "Add to existing report": "添加",
+  "Discard": "放弃",
+  "You have existing tracked measurements. What would you like to do with your existing tracked measurements?": "已经存在跟踪的测量，如何处理这些测量数据？",
+  "No, do not ask again for this series": "否，不再询问",
+  "No": "否",
+  "Track measurements for this series?": "对序列的测量值进行跟踪?",
+  "Yes": "是",
+  "Cancel": "取消",
+  "Measurements cannot span across multiple studies. Do you want to save your tracked measurements?": "测量不能跨多个检查，是否要保存跟踪的测量值？",
+  "No, discard previously tracked series & measurements": "否，放弃之前跟踪的序列和测量值。",
+  "Do you want to continue tracking measurements for this study?": "继续对该检查进行测量跟踪吗？",
+  "Create Report": "新建报告",
+  "Measurements saved successfully": "测量值保存成功",
+  "Failed to store measurements": "测量值保存失败"
+}

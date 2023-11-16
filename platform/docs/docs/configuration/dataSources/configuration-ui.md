@@ -18,6 +18,11 @@ Google Cloud Healthcare data source.
 
 ![Data source configuration UI](../../assets/img/data-source-configuration-ui.png)
 
+:::tip
+A datasource root URI can be [fully or partially specified](../../deployment/google-cloud-healthcare.md#configuring-google-cloud-healthcare-as-a-datasource-in-ohif)
+in the OHIF configuration file.
+:::
+
 ## `BaseDataSourceConfigurationAPIItem` interface
 
 Each (path) item of a data source is represented by an instance of this interface.

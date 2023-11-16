@@ -25,6 +25,23 @@ let _store = {
   // }
 };
 
+function wrapSequences(obj) {
+  return Object.keys(obj).reduce(
+    (acc, key) => {
+      if (typeof obj[key] === 'object' && obj[key] !== null) {
+        // Recursively wrap sequences for nested objects
+        acc[key] = wrapSequences(obj[key]);
+      } else {
+        acc[key] = obj[key];
+      }
+      if (key.endsWith('Sequence')) {
+        acc[key] = OHIF.utils.addAccessors(acc[key]);
+      }
+      return acc;
+    },
+    Array.isArray(obj) ? [] : {}
+  );
+}
 const getMetaDataByURL = url => {
   return _store.urls.find(metaData => metaData.url === url);
 };
@@ -119,18 +136,18 @@ function createDicomJSONApi(dicomJsonConfig) {
           });
         },
         processResults: () => {
-          console.debug(' DICOMJson QUERY processResults');
+          console.warn(' DICOMJson QUERY processResults not implemented');
         },
       },
       series: {
         // mapParams: mapParams.bind(),
         search: () => {
-          console.debug(' DICOMJson QUERY SERIES SEARCH');
+          console.warn(' DICOMJson QUERY SERIES SEARCH not implemented');
         },
       },
       instances: {
         search: () => {
-          console.debug(' DICOMJson QUERY instances SEARCH');
+          console.warn(' DICOMJson QUERY instances SEARCH not implemented');
         },
       },
     },
@@ -152,7 +169,7 @@ function createDicomJSONApi(dicomJsonConfig) {
         return getDirectURL(wadoRoot, params);
       },
       series: {
-        metadata: ({ StudyInstanceUID, madeInClient = false, customSort } = {}) => {
+        metadata: async ({ StudyInstanceUID, madeInClient = false, customSort } = {}) => {
           if (!StudyInstanceUID) {
             throw new Error('Unable to query for SeriesMetadata without StudyInstanceUID');
           }
@@ -190,8 +207,14 @@ function createDicomJSONApi(dicomJsonConfig) {
           const numberOfSeries = series.length;
           series.forEach((series, index) => {
             const instances = series.instances.map(instance => {
+              // for instance.metadata if the key ends with sequence then
+              // we need to add a proxy to the first item in the sequence
+              // so that we can access the value of the sequence
+              // by using sequenceName.value
+              const modifiedMetadata = wrapSequences(instance.metadata);
+
               const obj = {
-                ...instance.metadata,
+                ...modifiedMetadata,
                 url: instance.url,
                 imageId: instance.url,
                 ...series,
@@ -211,7 +234,7 @@ function createDicomJSONApi(dicomJsonConfig) {
     },
     store: {
       dicom: () => {
-        console.debug(' DICOMJson store dicom');
+        console.warn(' DICOMJson store dicom not implemented');
       },
     },
     getImageIdsForDisplaySet(displaySet) {

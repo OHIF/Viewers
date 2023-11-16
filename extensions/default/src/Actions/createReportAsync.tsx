@@ -4,49 +4,31 @@ import { DicomMetadataStore } from '@ohif/core';
 /**
  *
  * @param {*} servicesManager
- * @param {*} dataSource
- * @param {*} measurements
- * @param {*} options
- * @returns {string[]} displaySetInstanceUIDs
  */
-async function createReportAsync(
-  servicesManager,
-  commandsManager,
-  dataSource,
-  measurements,
-  options
-) {
+async function createReportAsync({ servicesManager, getReport, reportType = 'measurement' }) {
   const { displaySetService, uiNotificationService, uiDialogService } = servicesManager.services;
   const loadingDialogId = uiDialogService.create({
     showOverlay: true,
     isDraggable: false,
     centralize: true,
-    // TODO: Create a loading indicator component + zeplin design?
     content: Loading,
   });
 
   try {
-    const naturalizedReport = await commandsManager.runCommand(
-      'storeMeasurements',
-      {
-        measurementData: measurements,
-        dataSource,
-        additionalFindingTypes: ['ArrowAnnotate'],
-        options,
-      },
-      'CORNERSTONE_STRUCTURED_REPORT'
-    );
+    const naturalizedReport = await getReport();
 
     // The "Mode" route listens for DicomMetadataStore changes
     // When a new instance is added, it listens and
     // automatically calls makeDisplaySets
     DicomMetadataStore.addInstances([naturalizedReport], true);
 
-    const displaySetInstanceUID = displaySetService.getMostRecentDisplaySet();
+    const displaySet = displaySetService.getMostRecentDisplaySet();
+
+    const displaySetInstanceUID = displaySet.displaySetInstanceUID;
 
     uiNotificationService.show({
       title: 'Create Report',
-      message: 'Measurements saved successfully',
+      message: `${reportType} saved successfully`,
       type: 'success',
     });
 
@@ -54,7 +36,7 @@ async function createReportAsync(
   } catch (error) {
     uiNotificationService.show({
       title: 'Create Report',
-      message: error.message || 'Failed to store measurements',
+      message: error.message || `Failed to store ${reportType}`,
       type: 'error',
     });
   } finally {

@@ -36,7 +36,7 @@ export default class DisplaySetService extends PubSubService {
   };
 
   public activeDisplaySets = [];
-  public unsuportedSOPClassHandler;
+  public unsupportedSOPClassHandler;
   extensionManager: ExtensionManager;
 
   protected activeDisplaySetsMap = new Map<string, DisplaySet>();
@@ -47,7 +47,7 @@ export default class DisplaySetService extends PubSubService {
 
   constructor() {
     super(EVENTS);
-    this.unsuportedSOPClassHandler =
+    this.unsupportedSOPClassHandler =
       '@ohif/extension-default.sopClassHandlerModule.not-supported-display-sets-handler';
   }
 
@@ -81,7 +81,7 @@ export default class DisplaySetService extends PubSubService {
    * @param sopClassHandlerUID
    */
   public setUnsuportedSOPClassHandler(sopClassHandler) {
-    this.unsuportedSOPClassHandler = sopClassHandler;
+    this.unsupportedSOPClassHandler = sopClassHandler;
   }
 
   /**
@@ -178,8 +178,15 @@ export default class DisplaySetService extends PubSubService {
    * @param {string} displaySetInstanceUID
    * @returns {object} displaySet
    */
-  public getDisplaySetByUID = (displaySetInstanceUid: string): DisplaySet =>
-    displaySetCache.get(displaySetInstanceUid);
+  public getDisplaySetByUID = (displaySetInstanceUid: string): DisplaySet => {
+    if (typeof displaySetInstanceUid !== 'string') {
+      throw new Error(
+        `getDisplaySetByUID: displaySetInstanceUid must be a string, you passed ${displaySetInstanceUid}`
+      );
+    }
+
+    return displaySetCache.get(displaySetInstanceUid);
+  };
 
   /**
    *
@@ -377,7 +384,7 @@ export default class DisplaySetService extends PubSubService {
     // applying the default sopClassUID handler
     if (allDisplaySets.length === 0) {
       // applying hp-defined viewport settings to the displaysets
-      const handler = this.extensionManager.getModuleEntry(this.unsuportedSOPClassHandler);
+      const handler = this.extensionManager.getModuleEntry(this.unsupportedSOPClassHandler);
       const displaySets = handler.getDisplaySetsFromSeries(instances);
       if (displaySets?.length) {
         displaySets.forEach(ds => {

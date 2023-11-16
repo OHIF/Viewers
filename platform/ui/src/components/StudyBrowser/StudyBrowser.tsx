@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 
 import StudyItem from '../StudyItem';
-import ButtonGroup from '../ButtonGroup';
+import LegacyButtonGroup from '../LegacyButtonGroup';
 import LegacyButton from '../LegacyButton';
 import ThumbnailList from '../ThumbnailList';
 import { StringNumber } from '../../types';
@@ -74,8 +74,8 @@ const StudyBrowser = ({
         className="w-100 border-secondary-light bg-primary-dark flex h-16 flex-row items-center justify-center border-b p-4"
         data-cy={'studyBrowser-panel'}
       >
-        {/* TODO Revisit design of ButtonGroup later - for now use LegacyButton for its children.*/}
-        <ButtonGroup
+        {/* TODO Revisit design of LegacyButtonGroup later - for now use LegacyButton for its children.*/}
+        <LegacyButtonGroup
           variant="outlined"
           color="secondary"
           splitBorder={false}
@@ -108,7 +108,7 @@ const StudyBrowser = ({
               </LegacyButton>
             );
           })}
-        </ButtonGroup>
+        </LegacyButtonGroup>
       </div>
       <div className="ohif-scrollbar invisible-scrollbar flex flex-1 flex-col overflow-auto">
         {getTabContent()}

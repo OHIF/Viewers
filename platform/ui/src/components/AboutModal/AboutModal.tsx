@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import detect from 'browser-detect';
+import { useTranslation } from 'react-i18next';
 
 import Typography from '../Typography';
 import Icon from '../Icon';
@@ -59,6 +60,7 @@ const Row = ({ title, value, link }) => {
 const AboutModal = ({ buildNumber, versionNumber, commitHash }) => {
   const { os, version, name } = detect();
   const browser = `${name[0].toUpperCase()}${name.substr(1)} ${version}`;
+  const { t } = useTranslation('AboutModal');
 
   const renderRowTitle = title => (
     <div className="mb-3 border-b-2 border-black pb-3">
@@ -73,20 +75,20 @@ const AboutModal = ({ buildNumber, versionNumber, commitHash }) => {
   );
   return (
     <div>
-      {renderRowTitle('Important Links')}
+      {renderRowTitle(t('Important links'))}
       <div className="mb-8 flex">
         <Link
           href="https://community.ohif.org/"
           showIcon={true}
         >
-          Visit the forum
+            {t('Visit the forum')}
         </Link>
         <span className="ml-4">
           <Link
             href="https://github.com/OHIF/Viewers/issues/new/choose"
             showIcon={true}
           >
-            Report an issue
+            {t('Report an issue')}
           </Link>
         </span>
         <span className="ml-4">
@@ -94,50 +96,50 @@ const AboutModal = ({ buildNumber, versionNumber, commitHash }) => {
             href="https://ohif.org/"
             showIcon={true}
           >
-            More details
+          {t('More details')}
           </Link>
         </span>
       </div>
 
-      {renderRowTitle('Version Information')}
+      {renderRowTitle(t('Version information'))}
       <div className="flex flex-col">
         <Row
-          title="Repository URL"
+          title={t('Repository URL')}
           value="https://github.com/OHIF/Viewers/"
           link="https://github.com/OHIF/Viewers/"
         />
         <Row
-          title="Data Citation"
+          title={t('Data citation')}
           value="https://github.com/OHIF/Viewers/blob/master/DATACITATION.md"
           link="https://github.com/OHIF/Viewers/blob/master/DATACITATION.md"
         />
         {/* <Row
-          title="Last Master Commits"
+          title={t('Last master commits')}
           value="https://github.com/OHIF/Viewers/"
           link="https://github.com/OHIF/Viewers/"
         /> */}
         <Row
-          title="Version number"
+          title={t('Version number')}
           value={versionNumber}
         />
         {buildNumber && (
           <Row
-            title="Build number"
+            title={t('Build number')}
             value={buildNumber}
           />
         )}
         {commitHash && (
           <Row
-            title="Commit Hash"
+            title={t('Commit hash')}
             value={commitHash}
           />
         )}
         <Row
-          title="Browser"
+          title={t('Browser')}
           value={browser}
         />
         <Row
-          title="OS"
+          title={t('OS')}
           value={os}
         />
       </div>

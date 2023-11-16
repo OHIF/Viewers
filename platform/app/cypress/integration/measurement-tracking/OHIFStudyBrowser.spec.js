@@ -1,11 +1,10 @@
-describe('OHIF Study Viewer Page', function () {
+describe('OHIF Study Browser', function () {
   beforeEach(function () {
     cy.checkStudyRouteInViewer('1.2.840.113619.2.5.1762583153.215519.978957063.78');
 
     cy.expectMinimumThumbnails(3);
     cy.initCommonElementsAliases();
     cy.initCornerstoneToolsAliases();
-    cy.resetViewport().wait(50);
   });
 
   it('checks if series thumbnails are being displayed', function () {
@@ -19,12 +18,17 @@ describe('OHIF Study Viewer Page', function () {
 
     const dataTransfer = new DataTransfer();
 
-    cy.get('[data-cy="study-browser-thumbnail"]:nth-child(2)')
+    cy.get('[data-cy="study-browser-thumbnail"]:nth-child(2)').as('seriesThumbnail');
+
+    cy.get('@seriesThumbnail')
       .first()
       .trigger('mousedown', { which: 1, button: 0 })
       .trigger('dragstart', { dataTransfer })
       .trigger('drag', {});
-    cy.get('.cornerstone-canvas')
+
+    cy.get('.cornerstone-canvas').as('viewport');
+
+    cy.get('@viewport')
       .trigger('mousemove', 'center')
       .trigger('dragover', { dataTransfer, force: true })
       .trigger('drop', { dataTransfer, force: true });

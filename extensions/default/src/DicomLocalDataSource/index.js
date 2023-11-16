@@ -85,7 +85,7 @@ function createDicomLocalApi(dicomLocalConfig) {
           });
         },
         processResults: () => {
-          console.debug(' DICOMLocal QUERY processResults');
+          console.warn(' DICOMLocal QUERY processResults not implemented');
         },
       },
       series: {
@@ -107,7 +107,7 @@ function createDicomLocalApi(dicomLocalConfig) {
       },
       instances: {
         search: () => {
-          console.debug(' DICOMLocal QUERY instances SEARCH');
+          console.warn(' DICOMLocal QUERY instances SEARCH not implemented');
         },
       },
     },

@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-default",
-  "version": "3.7.0-beta.73",
+  "version": "3.8.0-beta.18",
   "description": "Common/default features and functionality for basic image viewing",
   "author": "OHIF Core Team",
   "license": "MIT",
@@ -30,9 +30,9 @@
     "start": "yarn run dev"
   },
   "peerDependencies": {
-    "@ohif/core": "3.7.0-beta.73",
-    "@ohif/i18n": "3.7.0-beta.73",
-    "dcmjs": "^0.29.5",
+    "@ohif/core": "3.8.0-beta.18",
+    "@ohif/i18n": "3.8.0-beta.18",
+    "dcmjs": "^0.29.12",
     "dicomweb-client": "^0.10.2",
     "prop-types": "^15.6.2",
     "react": "^17.0.2",

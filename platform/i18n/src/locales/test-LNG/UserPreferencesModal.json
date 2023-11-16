@@ -1,11 +1,11 @@
 {
   "Cancel": "$t(Buttons:Cancel)",
   "No hotkeys found": "No hotkeys are configured for this application. Hotkeys can be configured in the application's app-config.js file.",
-  "Reset to Defaults": "$t(Buttons:Reset to Defaults)",
+  "Reset to defaults": "$t(Buttons:Reset to defaults)",
   "ResetDefaultMessage": "Preferences successfully reset to default. <br /> You must <strong>Save</strong> to perform this action.",
   "Save": "$t(Buttons:Save)",
   "SaveMessage": "Test Preferences saved",
-  "User Preferences": "Test User Preferences",
+  "User preferences": "Test User Preferences",
   "Function": "Test function",
   "Shortcut": "Test shortcut",
   "Language": "Test language",

@@ -18,10 +18,14 @@ const Notification = ({ id, type, message, actions, onSubmit, onOutsideClick }) 
       }
     };
 
+    // Both a mouse down and up listeners are desired so as to avoid missing events
+    // from elements that have pointer-events:none (e.g. the active viewport).
     document.addEventListener('mousedown', handleClick);
+    document.addEventListener('mouseup', handleClick);
 
     return () => {
       document.removeEventListener('mousedown', handleClick);
+      document.removeEventListener('mouseup', handleClick);
     };
   }, [onOutsideClick]);
 

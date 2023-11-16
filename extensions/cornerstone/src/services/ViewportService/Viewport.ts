@@ -21,6 +21,7 @@ export type ViewportOptions = {
   presentationIds?: UITypes.PresentationIds;
   orientation?: Enums.OrientationAxis;
   background?: Types.Point3;
+  displayArea?: Types.DisplayArea;
   syncGroups?: SyncGroup[];
   initialImageOptions?: InitialImageOptions;
   customViewportProps?: Record<string, unknown>;
@@ -39,6 +40,7 @@ export type PublicViewportOptions = {
   viewportId?: string;
   orientation?: Enums.OrientationAxis;
   background?: Types.Point3;
+  displayArea?: Types.DisplayArea;
   syncGroups?: SyncGroup[];
   initialImageOptions?: InitialImageOptions;
   customViewportProps?: Record<string, unknown>;
@@ -263,6 +265,10 @@ class ViewportInfo {
 
   public getOrientation(): Enums.OrientationAxis {
     return this.viewportOptions.orientation;
+  }
+
+  public getDisplayArea(): Types.DisplayArea {
+    return this.viewportOptions.displayArea;
   }
 
   public getInitialImageOptions(): InitialImageOptions {

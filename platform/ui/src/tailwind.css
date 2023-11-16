@@ -5,6 +5,12 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  html {
+    font-family: 'Inter', sans-serif;
+  }
+}
+
 body {
   background-color: #000;
 }
@@ -19,51 +25,4 @@ body {
   height: 2.1rem;
 }
 
-.customSelect__menu {
-  background-color: transparent !important;
-  border-radius: 6px;
-}
 
-.css-4ljt47-MenuList {
-  overflow-x: hidden !important;
-  margin-right: 4px;
-  margin-top: 4px;
-  padding-top: 0px !important;
-}
-.css-4ljt47-MenuList::-webkit-scrollbar {
-  width: 6px;
-  border-radius: 10px;
-}
-
-.css-4ljt47-MenuList::-webkit-scrollbar-thumb {
-  background-color: #0944b3;
-  border-radius: 10px;
-}
-
-.customSelect__option:focus {
-  background-color: #0944b391 !important;
-}
-.customSelect__option label {
-  color: #d6d6d6;
-  font-size: 14px;
-  display: flex;
-  align-items: center;
-}
-
-.css-1n7v3ny-option {
-  background-color: #0944b391 !important;
-}
-
-.css-1n7v3ny-option:focus {
-  background-color: #0944b391 !important;
-}
-
-.customSelect__option:hover {
-  background-color: #0944b391;
-}
-
-.css-26l3qy-menu {
-  border: 2px solid #0944b3;
-  border-radius: 6px;
-  background-color: #151515 !important;
-}
