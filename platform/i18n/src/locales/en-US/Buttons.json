@@ -39,7 +39,7 @@
   "Rectangle": "Rectangle",
   "Reference Lines": "Reference Lines",
   "Reset": "$t(Common:Reset)",
-  "Reset to Defaults": "$t(Common:Reset) to Defaults",
+  "Reset to defaults": "$t(Common:Reset) to Defaults",
   "Rotate Right": "Rotate Right",
   "Sagittal": "Sagittal",
   "Save": "Save",

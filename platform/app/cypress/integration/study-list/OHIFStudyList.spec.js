@@ -3,6 +3,7 @@
 describe('OHIF Study List', function () {
   context('Desktop resolution', function () {
     beforeEach(function () {
+      cy.window().then(win => win.sessionStorage.clear());
       cy.openStudyList();
 
       cy.viewport(1750, 720);
@@ -12,6 +13,10 @@ describe('OHIF Study List', function () {
       cy.get('@MRN').clear();
       cy.get('@AccessionNumber').clear();
       cy.get('@StudyDescription').clear();
+    });
+
+    afterEach(function () {
+      cy.window().then(win => win.sessionStorage.clear());
     });
 
     it('Displays several studies initially', function () {
@@ -33,10 +38,40 @@ describe('OHIF Study List', function () {
       });
     });
 
+    it('maintains Patient Name filter upon return from viewer', function () {
+      cy.get('@PatientName').type('Juno');
+      //Wait result list to be displayed
+      cy.waitStudyList();
+      cy.get('[data-cy="studyRow-1.3.6.1.4.1.25403.345050719074.3824.20170125113417.1"]').click();
+      cy.get(
+        '[data-cy="mode-basic-test-1.3.6.1.4.1.25403.345050719074.3824.20170125113417.1"]'
+      ).click();
+      cy.get('[data-cy="return-to-work-list"]').click();
+      cy.get('@searchResult2').should($list => {
+        expect($list.length).to.be.eq(1);
+        expect($list).to.contain('Juno');
+      });
+    });
+
     it('searches MRN with exact string', function () {
       cy.get('@MRN').type('0000003');
       //Wait result list to be displayed
       cy.waitStudyList();
+      cy.get('@searchResult2').should($list => {
+        expect($list.length).to.be.eq(1);
+        expect($list).to.contain('0000003');
+      });
+    });
+
+    it('maintains MRN filter upon return from viewer', function () {
+      cy.get('@MRN').type('0000003');
+      //Wait result list to be displayed
+      cy.waitStudyList();
+      cy.get('[data-cy="studyRow-1.3.6.1.4.1.25403.345050719074.3824.20170125113417.1"]').click();
+      cy.get(
+        '[data-cy="mode-basic-test-1.3.6.1.4.1.25403.345050719074.3824.20170125113417.1"]'
+      ).click();
+      cy.get('[data-cy="return-to-work-list"]').click();
       cy.get('@searchResult2').should($list => {
         expect($list.length).to.be.eq(1);
         expect($list).to.contain('0000003');
@@ -53,10 +88,40 @@ describe('OHIF Study List', function () {
       });
     });
 
+    it('maintains Accession filter upon return from viewer', function () {
+      cy.get('@AccessionNumber').type('0000155811');
+      //Wait result list to be displayed
+      cy.waitStudyList();
+      cy.get('[data-cy="studyRow-1.3.6.1.4.1.25403.345050719074.3824.20170125113417.1"]').click();
+      cy.get(
+        '[data-cy="mode-basic-test-1.3.6.1.4.1.25403.345050719074.3824.20170125113417.1"]'
+      ).click();
+      cy.get('[data-cy="return-to-work-list"]').click();
+      cy.get('@searchResult2').should($list => {
+        expect($list.length).to.be.eq(1);
+        expect($list).to.contain('0000155811');
+      });
+    });
+
     it('searches Description with exact string', function () {
       cy.get('@StudyDescription').type('PETCT');
       //Wait result list to be displayed
       cy.waitStudyList();
+      cy.get('@searchResult2').should($list => {
+        expect($list.length).to.be.eq(1);
+        expect($list).to.contain('PETCT');
+      });
+    });
+
+    it('maintains Description filter upon return from viewer', function () {
+      cy.get('@StudyDescription').type('PETCT');
+      //Wait result list to be displayed
+      cy.waitStudyList();
+      cy.get('[data-cy="studyRow-1.3.6.1.4.1.25403.345050719074.3824.20170125113417.1"]').click();
+      cy.get(
+        '[data-cy="mode-basic-test-1.3.6.1.4.1.25403.345050719074.3824.20170125113417.1"]'
+      ).click();
+      cy.get('[data-cy="return-to-work-list"]').click();
       cy.get('@searchResult2').should($list => {
         expect($list.length).to.be.eq(1);
         expect($list).to.contain('PETCT');

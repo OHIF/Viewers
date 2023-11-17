@@ -90,7 +90,7 @@ function _broadcastEvent(eventName, callbackProps) {
 /** Export a PubSubService class to be used instead of the individual items */
 export class PubSubService {
   EVENTS: any;
-  subscribe: (eventName: string, callback: Function) => { unsubscribe: () => any; };
+  subscribe: (eventName: string, callback: Function) => { unsubscribe: () => any };
   _broadcastEvent: (eventName: string, callbackProps: any) => void;
   _unsubscribe: (eventName: string, listenerId: string) => void;
   _isValidEvent: (eventName: string) => boolean;

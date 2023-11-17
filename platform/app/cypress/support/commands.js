@@ -125,6 +125,8 @@ Cypress.Commands.add('openStudyList', () => {
 });
 
 Cypress.Commands.add('waitStudyList', () => {
+  // wait 1 second for the studies to get updated
+  cy.wait(1000);
   cy.get('@searchResult').should($list => {
     expect($list).to.not.have.class('no-hover');
   });
@@ -132,7 +134,7 @@ Cypress.Commands.add('waitStudyList', () => {
 
 Cypress.Commands.add('waitViewportImageLoading', () => {
   // Wait for finish loading
-  cy.get('[data-cy="viewprt-grid"]', { timeout: 30000 }).should($grid => {
+  cy.get('[data-cy="viewport-grid"]', { timeout: 30000 }).should($grid => {
     expect($grid).not.to.contain.text('Load');
   });
 });
@@ -181,7 +183,7 @@ Cypress.Commands.add('expectMinimumThumbnails', (seriesToWait = 1) => {
 //Command to wait DICOM image to load into the viewport
 Cypress.Commands.add('waitDicomImage', (mode = '/basic-test', timeout = 50000) => {
   cy.window()
-    .its('cornerstone')
+    .its('cornerstone', { timeout: 30000 })
     .should($cornerstone => {
       const enabled = $cornerstone.getEnabledElements();
       if (enabled?.length) {
@@ -262,7 +264,14 @@ Cypress.Commands.add(
     cy.get('@measurementToolsBtnPrimary').as('lengthButton');
 
     cy.get('@lengthButton').should('have.attr', 'data-tool', 'Length');
-    cy.get('@lengthButton').click();
+
+    cy.get('@lengthButton').then(button => {
+      // Only click the length tool if it is not active, in case the length tool is set up to
+      // toggle to inactive.
+      if (!button.is('.active')) {
+        cy.wrap(button).click();
+      }
+    });
 
     cy.get('@lengthButton').should('have.class', 'active');
 

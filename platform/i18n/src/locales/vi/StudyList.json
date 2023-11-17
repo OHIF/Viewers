@@ -5,6 +5,6 @@
   "Modality": "Thiết bị",
   "PatientName": "Tên Bệnh nhân",
   "StudyDate": "Ngày chụp",
-  "StudyDescription": "Diễn giải",
+  "Description": "Diễn giải",
   "StudyList": "Danh sách"
 }
