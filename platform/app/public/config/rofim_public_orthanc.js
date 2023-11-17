@@ -6,7 +6,7 @@ window.config = {
         dicomUploadComponent:
             '@ohif/extension-cornerstone.customizationModule.cornerstoneDicomUploadComponent',
     },
-    showStudyList: true,
+    showStudyList: false,
     showLoadingIndicator: true,
     showWarningMessageForCrossOrigin: true,
     showCPUFallbackMessage: true,
