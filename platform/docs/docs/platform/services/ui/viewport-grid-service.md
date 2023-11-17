@@ -33,6 +33,7 @@ is expected to support, [check out it's interface in `@ohif/core`][interface]
 | `getNumViewportPanes()`                                               | Gets the number of visible viewport panes           |
 | `getLayoutOptionsFromState(gridState)`                                | Utility method that produces a `ViewportLayoutOptions` based on the passed in state|
 | `getActiveViewportId()`                                | Returns the viewport Id of the active viewport in the grid|
+| `getActiveViewportOptionByKey(key)`                             | Gets the specified viewport option field (key) for the active viewport |
 
 ## Implementations
 

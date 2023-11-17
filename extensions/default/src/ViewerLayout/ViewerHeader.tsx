@@ -53,7 +53,7 @@ function ViewerHeader({ hotkeysManager, extensionManager, servicesManager }) {
       onClick: () =>
         show({
           content: AboutModal,
-          title: 'About OHIF Viewer',
+          title: t('AboutModal:About OHIF Viewer'),
           contentProps: { versionNumber, commitHash },
         }),
     },
@@ -62,7 +62,7 @@ function ViewerHeader({ hotkeysManager, extensionManager, servicesManager }) {
       icon: 'settings',
       onClick: () =>
         show({
-          title: t('UserPreferencesModal:User Preferences'),
+          title: t('UserPreferencesModal:User preferences'),
           content: UserPreferences,
           contentProps: {
             hotkeyDefaults: hotkeysManager.getValidHotkeyDefinitions(hotkeyDefaults),
