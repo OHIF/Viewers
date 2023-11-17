@@ -1,5 +1,4 @@
-import { VolumeViewport, metaData } from '@cornerstonejs/core';
-import { utilities } from '@cornerstonejs/core';
+import { VolumeViewport, metaData, utilities } from '@cornerstonejs/core';
 import { IStackViewport, IVolumeViewport, Point3 } from '@cornerstonejs/core/dist/esm/types';
 import { AnnotationDisplayTool, drawing } from '@cornerstonejs/tools';
 import { guid } from '@ohif/core/src/utils';
@@ -15,6 +14,9 @@ interface CachedStat {
   }[];
 }
 
+const _cachedOverlayMetadata: Map<string, any[]> = new Map();
+let _cachedStats: { [key: string]: CachedStat } = {};
+
 /**
  * Image Overlay Viewer tool is not a traditional tool that requires user interactin.
  * But it is used to display Pixel Overlays. And it will provide toggling capability.
@@ -27,8 +29,26 @@ interface CachedStat {
  */
 class ImageOverlayViewerTool extends AnnotationDisplayTool {
   static toolName = 'ImageOverlayViewer';
-  private _cachedOverlayMetadata: Map<string, any[]> = new Map();
-  private _cachedStats: { [key: string]: CachedStat } = {};
+  /** Adds the metadata for overlayPlaneModule */
+  public static add(imageId, metadata) {
+    if (_cachedOverlayMetadata.get(imageId) === metadata) {
+      // This is a no-op here as the tool re-caches the data
+      return;
+    }
+    _cachedOverlayMetadata.set(imageId, metadata);
+    delete _cachedStats[imageId];
+  }
+
+  /** Standard getter for metadata */
+  public static get(type: string, query: string | string[]) {
+    if (Array.isArray(query)) {
+      return;
+    }
+    if (type !== 'overlayPlaneModule') {
+      return;
+    }
+    return _cachedOverlayMetadata.get(query);
+  }
 
   constructor(
     toolProps = {},
@@ -43,8 +63,8 @@ class ImageOverlayViewerTool extends AnnotationDisplayTool {
   }
 
   onSetToolDisabled = (): void => {
-    this._cachedStats = {};
-    this._cachedOverlayMetadata = new Map();
+    _cachedStats = {};
+    _cachedOverlayMetadata.clear();
   };
 
   protected getReferencedImageId(viewport: IStackViewport | IVolumeViewport): string {
@@ -64,9 +84,8 @@ class ImageOverlayViewerTool extends AnnotationDisplayTool {
       return;
     }
 
-    const overlays =
-      this._cachedOverlayMetadata.get(imageId) ??
-      metaData.get('overlayPlaneModule', imageId)?.overlays;
+    const overlayMetadata = metaData.get('overlayPlaneModule', imageId);
+    const overlays = overlayMetadata?.overlays;
 
     // no overlays
     if (!overlays?.length) {
@@ -79,7 +98,8 @@ class ImageOverlayViewerTool extends AnnotationDisplayTool {
       overlay.y ||= 0;
     });
 
-    this._cachedOverlayMetadata.set(imageId, overlays);
+    // Will clear cached stat data when the overlay data changes
+    ImageOverlayViewerTool.add(imageId, overlayMetadata);
 
     this._getCachedStat(imageId, overlays, this.configuration.fillColor).then(cachedStat => {
       cachedStat.overlays.forEach(overlay => {
@@ -155,8 +175,8 @@ class ImageOverlayViewerTool extends AnnotationDisplayTool {
     overlayMetadata: any[],
     color: number[]
   ): Promise<CachedStat> {
-    if (this._cachedStats[imageId] && this._isSameColor(this._cachedStats[imageId].color, color)) {
-      return this._cachedStats[imageId];
+    if (_cachedStats[imageId] && this._isSameColor(_cachedStats[imageId].color, color)) {
+      return _cachedStats[imageId];
     }
 
     const overlays = await Promise.all(
@@ -178,7 +198,7 @@ class ImageOverlayViewerTool extends AnnotationDisplayTool {
 
           const dataUrl = this._renderOverlayToDataUrl(
             { width: overlay.columns, height: overlay.rows },
-            color,
+            overlay.color || color,
             pixelData
           );
 
@@ -191,12 +211,12 @@ class ImageOverlayViewerTool extends AnnotationDisplayTool {
         })
     );
 
-    this._cachedStats[imageId] = {
+    _cachedStats[imageId] = {
       color: color,
       overlays: overlays.filter(overlay => overlay),
     };
 
-    return this._cachedStats[imageId];
+    return _cachedStats[imageId];
   }
 
   /**
@@ -261,5 +281,8 @@ class ImageOverlayViewerTool extends AnnotationDisplayTool {
     return canvas.toDataURL();
   }
 }
+
+// Needs to be higher priority than default provider
+metaData.addProvider(ImageOverlayViewerTool.get, 10_000);
 
 export default ImageOverlayViewerTool;
