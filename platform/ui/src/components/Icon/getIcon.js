@@ -137,6 +137,7 @@ import iconMoreMenu from './../../assets/icons/icon-more-menu.svg';
 import iconToolBrush from './../../assets/icons/icon-tool-brush.svg';
 import iconToolEraser from './../../assets/icons/icon-tool-eraser.svg';
 import iconToolScissor from './../../assets/icons/icon-tool-scissor.svg';
+import iconToolShape from './../../assets/icons/icon-tool-shape.svg';
 import iconToolThreshold from './../../assets/icons/icon-tool-threshold.svg';
 
 /** Old OHIF */
@@ -282,6 +283,7 @@ const ICONS = {
   'icon-tool-brush': iconToolBrush,
   'icon-tool-eraser': iconToolEraser,
   'icon-tool-scissor': iconToolScissor,
+  'icon-tool-shape': iconToolShape,
   'icon-tool-threshold': iconToolThreshold,
 
   /** Old OHIF */

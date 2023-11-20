@@ -5,32 +5,15 @@ import {
   // ListMenu,
   WindowLevelMenuItem,
 } from '@ohif/ui';
-import { defaults } from '@ohif/core';
+import { defaults, ToolbarService } from '@ohif/core';
+import type { Button, RunCommand } from '@ohif/core/types';
+import { EVENTS } from '@cornerstonejs/core';
 
 const { windowLevelPresets } = defaults;
-/**
- *
- * @param {*} type - 'tool' | 'action' | 'toggle'
- * @param {*} id
- * @param {*} icon
- * @param {*} label
- */
-function _createButton(type, id, icon, label, commands, tooltip, uiType, isActive) {
-  return {
-    id,
-    icon,
-    label,
-    type,
-    commands,
-    tooltip,
-    uiType,
-    isActive,
-  };
-}
 
-const _createActionButton = _createButton.bind(null, 'action');
-const _createToggleButton = _createButton.bind(null, 'toggle');
-const _createToolButton = _createButton.bind(null, 'tool');
+const _createActionButton = ToolbarService._createButton.bind(null, 'action');
+const _createToggleButton = ToolbarService._createButton.bind(null, 'toggle');
+const _createToolButton = ToolbarService._createButton.bind(null, 'tool');
 
 /**
  *
@@ -76,7 +59,21 @@ function _createSetToolActiveCommands(toolName) {
   return temp;
 }
 
-const toolbarButtons = [
+const ReferenceLinesCommands: RunCommand = [
+  {
+    commandName: 'setSourceViewportForReferenceLinesTool',
+    context: 'CORNERSTONE',
+  },
+  {
+    commandName: 'setToolActive',
+    commandOptions: {
+      toolName: 'ReferenceLines',
+    },
+    context: 'CORNERSTONE',
+  },
+];
+
+const toolbarButtons: Button[] = [
   // Measurement
   {
     id: 'MeasurementTools',
@@ -422,34 +419,37 @@ const toolbarButtons = [
           ],
           'Flip Horizontal'
         ),
-        _createToggleButton('StackImageSync', 'link', 'Stack Image Sync', [
+        _createToggleButton(
+          'StackImageSync',
+          'link',
+          'Stack Image Sync',
+          [
+            {
+              commandName: 'toggleStackImageSync',
+            },
+          ],
+          'Enable position synchronization on stack viewports',
           {
-            commandName: 'toggleStackImageSync',
-            commandOptions: {},
-            context: 'CORNERSTONE',
-          },
-        ]),
+            listeners: {
+              [EVENTS.STACK_VIEWPORT_NEW_STACK]: {
+                commandName: 'toggleStackImageSync',
+                commandOptions: { toggledState: true },
+              },
+            },
+          }
+        ),
         _createToggleButton(
           'ReferenceLines',
           'tool-referenceLines', // change this with the new icon
           'Reference Lines',
-          // two commands for the reference lines tool:
-          // - the first to set the source viewport for the tool when it is enabled
-          // - the second to toggle the tool
-          [
-            {
-              commandName: 'setSourceViewportForReferenceLinesTool',
-              commandOptions: {},
-              context: 'CORNERSTONE',
+          ReferenceLinesCommands,
+          'Show Reference Lines',
+          {
+            listeners: {
+              [EVENTS.STACK_VIEWPORT_NEW_STACK]: ReferenceLinesCommands,
+              [EVENTS.ACTIVE_VIEWPORT_ID_CHANGED]: ReferenceLinesCommands,
             },
-            {
-              commandName: 'setToolActive',
-              commandOptions: {
-                toolName: 'ReferenceLines',
-              },
-              context: 'CORNERSTONE',
-            },
-          ]
+          }
         ),
         _createToggleButton(
           'ImageOverlayViewer',
@@ -465,8 +465,7 @@ const toolbarButtons = [
             },
           ],
           'Image Overlay',
-          null,
-          true
+          { isActive: true }
         ),
         _createToolButton(
           'StackScroll',

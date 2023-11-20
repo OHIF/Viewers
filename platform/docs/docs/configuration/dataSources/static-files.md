@@ -18,13 +18,15 @@ It can be compiled with Java and Gradle, and then run against a set of dicom, in
 the example located in /dicom/study1 outputting to /dicomweb, and then a server
 run against that data, like this:
 
-```
+```bash
 git clone https://github.com/OHIF/static-wado
 cd static-wado
 ./gradlew installDist
 StaticWado/build/install/StaticWado/bin/StaticWado -d /dicomweb /dicom/study1
 cd /dicomweb
 npx http-server -p 5000 --cors -g
+
+# you can use npx serve ./dist -l 8080 -s as an alternative to http-server
 ```
 
 There is then a dev environment in the platform/app directory which can be

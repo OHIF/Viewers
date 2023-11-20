@@ -69,6 +69,18 @@ Cypress.Commands.add(
   }
 );
 
+Cypress.Commands.add('initViewer', (StudyInstanceUID, other = {}) => {
+  const { mode = '/basic-test', minimumThumbnails = 1, params = '' } = other;
+  cy.openStudyInViewer(StudyInstanceUID, params, mode);
+  cy.waitDicomImage();
+  // Very short wait to ensure pending updates are handled
+  cy.wait(25);
+
+  cy.expectMinimumThumbnails(minimumThumbnails);
+  cy.initCommonElementsAliases();
+  cy.initCornerstoneToolsAliases();
+});
+
 Cypress.Commands.add(
   'openStudyInViewer',
   (StudyInstanceUID, otherParams = '', mode = '/basic-test') => {
@@ -134,32 +146,6 @@ Cypress.Commands.add('waitViewportImageLoading', () => {
 Cypress.Commands.add('drag', { prevSubject: 'element' }, (...args) =>
   DragSimulator.simulate(...args)
 );
-
-/**
- * Command to perform two clicks into two different positions. Each position must be [x, y].
- * The positions are considering the element as reference, therefore, top-left of the element will be (0, 0).
- *
- * @param {*} viewport - Selector for viewport we would like to interact with
- * @param {number[]} firstClick - Click position [x, y]
- * @param {number[]} secondClick - Click position [x, y]
- */
-Cypress.Commands.add('addLine', (viewport, firstClick, secondClick) => {
-  const performClick = (alias, x, y) => {
-    cy.get(alias).as(`axu-${alias}`).click(x, y, { force: true, multiple: true }).wait(1000);
-  };
-
-  cy.get(viewport).as('viewportAlias');
-  const [x1, y1] = firstClick;
-  const [x2, y2] = secondClick;
-
-  // First click
-  performClick('@viewportAlias', x1, y1);
-
-  // Second click
-  performClick('@viewportAlias', x2, y2);
-
-  cy.wait(1000);
-});
 
 /**
  * Command to perform three clicks into three different positions. Each position must be [x, y].
@@ -280,7 +266,16 @@ Cypress.Commands.add(
 
     cy.get('@lengthButton').should('have.class', 'active');
 
-    cy.addLine('.cornerstone-canvas', firstClick, secondClick);
+    cy.get('@viewport').then($viewport => {
+      const [x1, y1] = firstClick;
+      const [x2, y2] = secondClick;
+
+      cy.wrap($viewport)
+        .click(x1, y1, { force: true })
+        .wait(1000)
+        .click(x2, y2, { force: true })
+        .wait(1000);
+    });
   }
 );
 
@@ -364,14 +359,9 @@ Cypress.Commands.add('percyCanvasSnapshot', (name, options = {}) => {
 });
 
 Cypress.Commands.add('setLayout', (columns = 1, rows = 1) => {
-  cy.get('[data-cy="layout"]').click();
+  cy.get('[data-cy="Layout"]').click();
 
-  cy.get('.layoutChooser')
-    .find('tr')
-    .eq(rows - 1)
-    .find('td')
-    .eq(columns - 1)
-    .click();
+  cy.get(`[data-cy="Layout-${columns - 1}-${rows - 1}"]`).click();
 
   cy.wait(10);
   cy.waitDicomImage();

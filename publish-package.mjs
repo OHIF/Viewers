@@ -16,15 +16,15 @@ async function run() {
   const rootDir = process.cwd();
 
   for (const packagePathPattern of packages) {
-    const matchingDirectories = glob.sync(packagePathPattern);
+    const matchingDirectories = glob.sync(packagePathPattern, { cwd: rootDir });
 
     for (const packageDirectory of matchingDirectories) {
-      // change back to the root directory
-      process.chdir(rootDir);
-
-      const packageJsonPath = path.join(packageDirectory, 'package.json');
-
       try {
+        // change back to the root directory
+        process.chdir(rootDir);
+
+        const packageJsonPath = path.join(packageDirectory, 'package.json');
+
         const packageJsonContent = JSON.parse(await fs.readFile(packageJsonPath, 'utf8'));
 
         if (packageJsonContent.private) {
@@ -32,11 +32,13 @@ async function run() {
           continue;
         }
 
+        // move to package directory
         process.chdir(packageDirectory);
 
         let retries = 0;
         while (retries < MAX_RETRIES) {
           try {
+            console.log(`Tying to publishing package at ${packageDirectory}`);
             const publishArgs = ['publish'];
 
             if (branchName === 'master') {
@@ -56,6 +58,8 @@ async function run() {
         }
       } catch (error) {
         console.error(`An error occurred while processing ${packageDirectory}: ${error}`);
+      } finally {
+        process.chdir(rootDir); // Ensure we always move back to the root directory
       }
     }
   }

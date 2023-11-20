@@ -3,6 +3,149 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.7.0-beta.102](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.101...v3.7.0-beta.102) (2023-10-06)
+
+**Note:** Version bump only for package @ohif/mode-test
+
+
+
+
+
+# [3.7.0-beta.101](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.100...v3.7.0-beta.101) (2023-10-06)
+
+**Note:** Version bump only for package @ohif/mode-test
+
+
+
+
+
+# [3.7.0-beta.100](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.99...v3.7.0-beta.100) (2023-10-06)
+
+**Note:** Version bump only for package @ohif/mode-test
+
+
+
+
+
+# [3.7.0-beta.99](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.98...v3.7.0-beta.99) (2023-10-04)
+
+**Note:** Version bump only for package @ohif/mode-test
+
+
+
+
+
+# [3.7.0-beta.98](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.97...v3.7.0-beta.98) (2023-10-04)
+
+
+### Features
+
+* **locale:** add German translations - community PR ([#3697](https://github.com/OHIF/Viewers/issues/3697)) ([ebe8f71](https://github.com/OHIF/Viewers/commit/ebe8f71da22c1d24b58f889c5d803951e19817b6))
+
+
+
+
+
+# [3.7.0-beta.97](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.96...v3.7.0-beta.97) (2023-10-04)
+
+**Note:** Version bump only for package @ohif/mode-test
+
+
+
+
+
+# [3.7.0-beta.96](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.95...v3.7.0-beta.96) (2023-10-04)
+
+**Note:** Version bump only for package @ohif/mode-test
+
+
+
+
+
+# [3.7.0-beta.95](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.94...v3.7.0-beta.95) (2023-10-04)
+
+**Note:** Version bump only for package @ohif/mode-test
+
+
+
+
+
+# [3.7.0-beta.94](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.93...v3.7.0-beta.94) (2023-10-03)
+
+**Note:** Version bump only for package @ohif/mode-test
+
+
+
+
+
+# [3.7.0-beta.93](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.92...v3.7.0-beta.93) (2023-10-03)
+
+**Note:** Version bump only for package @ohif/mode-test
+
+
+
+
+
+# [3.7.0-beta.92](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.91...v3.7.0-beta.92) (2023-10-03)
+
+**Note:** Version bump only for package @ohif/mode-test
+
+
+
+
+
+# [3.7.0-beta.91](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.90...v3.7.0-beta.91) (2023-10-03)
+
+**Note:** Version bump only for package @ohif/mode-test
+
+
+
+
+
+# [3.7.0-beta.90](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.89...v3.7.0-beta.90) (2023-10-03)
+
+**Note:** Version bump only for package @ohif/mode-test
+
+
+
+
+
+# [3.7.0-beta.89](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.88...v3.7.0-beta.89) (2023-10-03)
+
+
+### Bug Fixes
+
+* **dicom overlay:** Handle special cases of ArrayBuffer for various DICOM overlay attributes. ([#3684](https://github.com/OHIF/Viewers/issues/3684)) ([e36a604](https://github.com/OHIF/Viewers/commit/e36a6043315e900eeb6ce183772c7f852f478e96))
+* **StackSync:** Miscellaneous fixes for stack image sync ([#3663](https://github.com/OHIF/Viewers/issues/3663)) ([8a335bd](https://github.com/OHIF/Viewers/commit/8a335bd03d14ba87d65d7468d93f74040aa828d9))
+
+
+
+
+
+# [3.7.0-beta.88](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.87...v3.7.0-beta.88) (2023-10-03)
+
+**Note:** Version bump only for package @ohif/mode-test
+
+
+
+
+
+# [3.7.0-beta.87](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.86...v3.7.0-beta.87) (2023-09-29)
+
+**Note:** Version bump only for package @ohif/mode-test
+
+
+
+
+
+# [3.7.0-beta.86](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.85...v3.7.0-beta.86) (2023-09-29)
+
+**Note:** Version bump only for package @ohif/mode-test
+
+
+
+
+
 # [3.7.0-beta.85](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.84...v3.7.0-beta.85) (2023-09-26)
 
 **Note:** Version bump only for package @ohif/mode-test

@@ -409,20 +409,42 @@ describe('OHIF Cornerstone Toolbar', () => {
     cy.get('@moreBtn').click();
     cy.get('.tooltip-toolbar-overlay').should('not.exist');
   });
-
-  it('check if Flip V tool will flip the image vertically in the viewport', () => {
-    //Click on More button
-    cy.get('@moreBtn').click();
-    //Verify if overlay is displayed
-    cy.get('.tooltip-toolbar-overlay').should('be.visible');
-
-    //Click on Flip V button
-    cy.get('[data-cy="flip v"]').click();
+*/
+  it('check if Flip tool will flip the image in the viewport', () => {
     cy.get('@viewportInfoMidLeft').should('contains.text', 'R');
-    cy.get('@viewportInfoMidTop').should('contains.text', 'F');
+    cy.get('@viewportInfoMidTop').should('contains.text', 'A');
 
-    //Click on More button to close it
-    cy.get('@moreBtn').click();
-    cy.get('.tooltip-toolbar-overlay').should('not.exist');
-  });*/
+    //Click on More button
+    cy.get('@moreBtnSecondary').click();
+
+    //Click on Flip button
+    cy.get('[data-cy="flip-horizontal"]').click();
+    cy.waitDicomImage();
+    cy.get('@viewportInfoMidLeft').should('contains.text', 'L');
+    cy.get('@viewportInfoMidTop').should('contains.text', 'A');
+  });
+
+  it('checks if stack sync is preserved on new display set and uses FOR', () => {
+    // Active stack image sync and reference lines
+    cy.get('[data-cy="MoreTools-split-button-secondary"]').click();
+    cy.get('[data-cy="StackImageSync"]').click();
+    // Add reference lines as that sometimes throws an exception
+    cy.get('[data-cy="MoreTools-split-button-secondary"]').click();
+    cy.get('[data-cy="ReferenceLines"]').click();
+
+    cy.get('[data-cy="study-browser-thumbnail"]:nth-child(2)').dblclick();
+    cy.get('body').type('{downarrow}{downarrow}');
+
+    // Change the layout and double load the first
+    cy.setLayout(2, 1);
+    cy.get('body').type('{rightarrow}');
+    cy.get('[data-cy="study-browser-thumbnail"]:nth-child(2)').dblclick();
+    cy.waitDicomImage();
+
+    // Now navigate down once and check that the left hand pane navigated
+    cy.get('body').type('{downarrow}');
+    cy.get('body').type('{leftarrow}');
+    cy.setLayout(1, 1);
+    cy.get('@viewportInfoTopRight').should('contains.text', 'I:2 (2/20)');
+  });
 });

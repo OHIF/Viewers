@@ -44,8 +44,10 @@ Download the index.html and the build (against the /ohif/ path) from [here](http
 
 Then run the
 
-```
+```bash
 npx http-server unzipped-folder
+
+# you can use npx serve ./dist -l 8080 -s as an alternative to http-server
 ```
 
 You should be able to see

@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router';
 import PropTypes from 'prop-types';
 // TODO: DicomMetadataStore should be injected?
-import { DicomMetadataStore, ServicesManager, utils } from '@ohif/core';
+import { DicomMetadataStore, ServicesManager, utils, Types, log } from '@ohif/core';
 import { DragAndDropProvider, ImageViewerProvider } from '@ohif/ui';
 import { useSearchParams } from '@hooks';
 import { useAppConfig } from '@state';
@@ -14,6 +14,7 @@ import loadModules from '../../pluginImports';
 import isSeriesFilterUsed from '../../utils/isSeriesFilterUsed';
 
 const { getSplitParam } = utils;
+const { TimingEnum } = Types;
 
 /**
  * Initialize the route.
@@ -60,6 +61,8 @@ function defaultRouteInit(
 
   unsubscriptions.push(instanceAddedUnsubscribe);
 
+  log.time(TimingEnum.STUDY_TO_DISPLAY_SETS);
+  log.time(TimingEnum.STUDY_TO_FIRST_IMAGE);
   const allRetrieves = studyInstanceUIDs.map(StudyInstanceUID =>
     dataSource.retrieve.series.metadata({
       StudyInstanceUID,
@@ -81,6 +84,9 @@ function defaultRouteInit(
   // until we run the hanging protocol matching service.
 
   Promise.allSettled(allRetrieves).then(() => {
+    log.timeEnd(TimingEnum.STUDY_TO_DISPLAY_SETS);
+    log.time(TimingEnum.DISPLAY_SETS_TO_FIRST_IMAGE);
+    log.time(TimingEnum.DISPLAY_SETS_TO_ALL_IMAGES);
     const displaySets = displaySetService.getActiveDisplaySets();
 
     if (!displaySets || !displaySets.length) {
@@ -443,7 +449,7 @@ export default function ModeRoute({
     <ImageViewerProvider
       // initialState={{ StudyInstanceUIDs: StudyInstanceUIDs }}
       StudyInstanceUIDs={studyInstanceUIDs}
-    // reducer={reducer}
+      // reducer={reducer}
     >
       <CombinedContextProvider>
         <DragAndDropProvider>
