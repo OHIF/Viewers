@@ -5,9 +5,9 @@ import { useTranslation } from 'react-i18next';
 
 import MeasurementItem from './MeasurementItem';
 
-const MeasurementTable = ({ data, title, onClick, onEdit, servicesManager }) => {
+const MeasurementTable = ({ data, title, onClick, onEdit, servicesManager, commandsManager }) => {
   servicesManager = servicesManager as ServicesManager;
-  const { customizationService } = servicesManager.services;
+  const { customizationService, measurementService } = servicesManager.services;
   const { t } = useTranslation('MeasurementTable');
   const amount = data.length;
 
@@ -36,6 +36,8 @@ const MeasurementTable = ({ data, title, onClick, onEdit, servicesManager }) => 
               item={measurementItem}
               onClick={onClick}
               onEdit={onEdit}
+              measurementService={measurementService}
+              commandsManager={commandsManager}
             />
           ))}
         {data.length === 0 && (

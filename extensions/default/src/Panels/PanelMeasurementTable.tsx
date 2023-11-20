@@ -211,6 +211,7 @@ export default function PanelMeasurementTable({
         <MeasurementTable
           title="Measurements"
           servicesManager={servicesManager}
+          commandsManager={commandsManager}
           data={displayMeasurements}
           onClick={jumpToImage}
           onEdit={onMeasurementItemEditHandler}
