@@ -3,6 +3,44 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-beta.19](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.18...v3.8.0-beta.19) (2023-11-18)
+
+
+### Features
+
+* **docs:** Added various training videos to support the OHIF CLI tools ([#3794](https://github.com/OHIF/Viewers/issues/3794)) ([d83beb7](https://github.com/OHIF/Viewers/commit/d83beb7c62c1d5be19c54e08d23883f112147fe1))
+
+
+
+
+
+# [3.8.0-beta.18](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.17...v3.8.0-beta.18) (2023-11-15)
+
+
+### Features
+
+* **url:** Add SeriesInstanceUIDs wado query param ([#3746](https://github.com/OHIF/Viewers/issues/3746)) ([b694228](https://github.com/OHIF/Viewers/commit/b694228dd535e4b97cb86a1dc085b6e8716bdaf3))
+
+
+
+
+
+# [3.8.0-beta.17](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.16...v3.8.0-beta.17) (2023-11-13)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
+# [3.8.0-beta.16](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.15...v3.8.0-beta.16) (2023-11-13)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
 # [3.8.0-beta.15](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.14...v3.8.0-beta.15) (2023-11-10)
 
 
