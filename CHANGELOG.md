@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-beta.21](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.20...v3.8.0-beta.21) (2023-11-21)
+
+
+### Bug Fixes
+
+* **DICOM Overlay:** The overlay data wasn't being refreshed on change ([#3793](https://github.com/OHIF/Viewers/issues/3793)) ([00e7519](https://github.com/OHIF/Viewers/commit/00e751933ac6d611a34773fa69594243f1b99082))
+
+
+
+
+
 # [3.8.0-beta.20](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.19...v3.8.0-beta.20) (2023-11-21)
 
 
