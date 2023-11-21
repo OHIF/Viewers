@@ -8,6 +8,7 @@ export type MergeMap = {
 };
 
 export type CallForAllDataSourcesAsyncOptions = {
+  mergeMap: object;
   path: string;
   args: unknown[];
   dataSourceNames: string[];
@@ -25,7 +26,6 @@ export type CallForDefaultDataSourceOptions = {
   path: string;
   args: unknown[];
   defaultDataSourceName: string;
-  dataSourceNames: string[];
   extensionManager: ExtensionManager;
 };
 
@@ -33,7 +33,6 @@ export type CallByRetrieveAETitleOptions = {
   path: string;
   args: unknown[];
   defaultDataSourceName: string;
-  dataSourceNames: string[];
   extensionManager: ExtensionManager;
 };
 

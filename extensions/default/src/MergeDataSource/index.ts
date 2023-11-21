@@ -9,7 +9,7 @@ import {
   MergeMap,
 } from './types';
 
-const mergeMap: MergeMap = {
+export const mergeMap: MergeMap = {
   'query.studies.search': {
     mergeKey: 'studyInstanceUid',
     tagFunc: x => x,
@@ -28,7 +28,6 @@ const mergeMap: MergeMap = {
 
 /**
  * Calls all data sources asynchronously and merges the results.
- *
  * @param {CallForAllDataSourcesAsyncOptions} options - The options for calling all data sources.
  * @param {string} options.path - The path to the function to be called on each data source.
  * @param {unknown[]} options.args - The arguments to be passed to the function.
@@ -37,6 +36,7 @@ const mergeMap: MergeMap = {
  * @returns {Promise<unknown[]>} - A promise that resolves to the merged data from all data sources.
  */
 export const callForAllDataSourcesAsync = async ({
+  mergeMap,
   path,
   args,
   extensionManager,
@@ -50,7 +50,7 @@ export const callForAllDataSourcesAsync = async ({
 
   for (const dataSourceDef of dataSourceDefs) {
     const { configuration, sourceName } = dataSourceDef;
-    if (configuration && dataSourceNames.includes(sourceName)) {
+    if (!!configuration && dataSourceNames.includes(sourceName)) {
       const [dataSource] = extensionManager.getDataSources(sourceName);
       const func = get(dataSource, path);
       const promise = func.apply(dataSource, args);
@@ -82,7 +82,7 @@ export const callForAllDataSources = ({
   const mergedData = [];
   for (const dataSourceDef of dataSourceDefs) {
     const { configuration, sourceName } = dataSourceDef;
-    if (configuration && dataSourceNames.includes(sourceName)) {
+    if (!!configuration && dataSourceNames.includes(sourceName)) {
       const [dataSource] = extensionManager.getDataSources(sourceName);
       const func = get(dataSource, path);
       const data = func.apply(dataSource, args);
@@ -152,6 +152,7 @@ function createMergeDataSourceApi(
       studies: {
         search: (...args: unknown[]) =>
           callForAllDataSourcesAsync({
+            mergeMap,
             path: 'query.studies.search',
             args,
             extensionManager,
@@ -161,6 +162,7 @@ function createMergeDataSourceApi(
       series: {
         search: (...args: unknown[]) =>
           callForAllDataSourcesAsync({
+            mergeMap,
             path: 'query.series.search',
             args,
             extensionManager,
@@ -170,6 +172,7 @@ function createMergeDataSourceApi(
       instances: {
         search: (...args: unknown[]) =>
           callForAllDataSourcesAsync({
+            mergeMap,
             path: 'query.instances.search',
             args,
             extensionManager,
@@ -180,6 +183,7 @@ function createMergeDataSourceApi(
     retrieve: {
       bulkDataURI: (...args: unknown[]) =>
         callForAllDataSourcesAsync({
+          mergeMap,
           path: 'retrieve.bulkDataURI',
           args,
           extensionManager,
@@ -191,11 +195,11 @@ function createMergeDataSourceApi(
           args,
           defaultDataSourceName,
           extensionManager,
-          dataSourceNames,
         }),
       series: {
         metadata: (...args: unknown[]) =>
           callForAllDataSourcesAsync({
+            mergeMap,
             path: 'retrieve.series.metadata',
             args,
             extensionManager,
@@ -210,7 +214,6 @@ function createMergeDataSourceApi(
           args,
           defaultDataSourceName,
           extensionManager,
-          dataSourceNames,
         }),
     },
     deleteStudyMetadataPromise: (...args: unknown[]) =>
@@ -226,7 +229,6 @@ function createMergeDataSourceApi(
         args,
         defaultDataSourceName,
         extensionManager,
-        dataSourceNames,
       }),
     getImageIdsForInstance: (...args: unknown[]) =>
       callByRetrieveAETitle({
@@ -234,7 +236,6 @@ function createMergeDataSourceApi(
         args,
         defaultDataSourceName,
         extensionManager,
-        dataSourceNames,
       }),
     getStudyInstanceUIDs: (...args: unknown[]) =>
       callForAllDataSources({
