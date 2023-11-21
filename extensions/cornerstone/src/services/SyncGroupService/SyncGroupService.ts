@@ -74,6 +74,10 @@ export default class SyncGroupService {
     this.synchronizerCreators[type.toLowerCase()] = creator;
   }
 
+  public getSynchronizer(id: string): Synchronizer | void {
+    return SynchronizerManager.getSynchronizer(id);
+  }
+
   protected _getOrCreateSynchronizer(
     type: string,
     id: string,
