@@ -12,6 +12,7 @@ window.config = {
     showWarningMessageForCrossOrigin: true,
     showCPUFallbackMessage: true,
     strictZSpacingForVolumeViewport: true,
+    useSharedArrayBuffer: 'AUTO',
     // filterQueryParam: false,
     autoPlayCine: true,
     whiteLabeling: {
