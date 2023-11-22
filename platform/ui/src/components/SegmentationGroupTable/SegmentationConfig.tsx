@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
-import classNames from 'classnames';
-
 import Icon from '../Icon';
 import InputRange from '../InputRange';
 import CheckBox from '../CheckBox';
 import InputNumber from '../InputNumber';
+import classNames from 'classnames';
+
+const getRoundedValue = value => {
+  return Math.round(value * 100) / 100;
+};
 
 const ActiveSegmentationConfig = ({
   config,
@@ -15,7 +18,7 @@ const ActiveSegmentationConfig = ({
   setFillAlpha,
 }) => {
   return (
-    <div className="flex justify-between px-2 pt-[13px] text-[12px]">
+    <div className="flex justify-between px-3 pt-[13px] text-[12px]">
       <div className="flex flex-col items-start">
         <div className="mb-[12px] text-white">Active</div>
         <CheckBox
@@ -39,7 +42,7 @@ const ActiveSegmentationConfig = ({
         <InputRange
           minValue={0}
           maxValue={100}
-          value={config.outlineOpacity * 100}
+          value={getRoundedValue(config.outlineOpacity * 100)}
           onChange={setOutlineOpacityActive}
           step={1}
           containerClassName="mt-[4px] mb-[9px]"
@@ -48,9 +51,9 @@ const ActiveSegmentationConfig = ({
           unit="%"
         />
         <InputRange
-          minValue={0}
+          minValue={4}
           maxValue={100}
-          value={config.fillAlpha * 100}
+          value={getRoundedValue(config.fillAlpha * 100)}
           onChange={setFillAlpha}
           step={1}
           containerClassName="mt-[4px] mb-[9px]"
@@ -80,11 +83,11 @@ const InactiveSegmentationConfig = ({
   setFillAlphaInactive,
 }) => {
   return (
-    <div className="px-2">
+    <div className="px-3">
       <CheckBox
         label="Display Inactive Segmentations"
         checked={config.renderInactiveSegmentations}
-        labelClassName="text-[12px] pt-1"
+        labelClassName="text-[12px]"
         className="mb-[9px]"
         onChange={setRenderInactiveSegmentations}
       />
@@ -94,7 +97,7 @@ const InactiveSegmentationConfig = ({
         <InputRange
           minValue={0}
           maxValue={100}
-          value={config.fillAlphaInactive * 100}
+          value={getRoundedValue(config.fillAlphaInactive * 100)}
           onChange={setFillAlphaInactive}
           step={1}
           containerClassName="mt-[4px]"
@@ -120,51 +123,37 @@ const SegmentationConfig = ({
   const { initialConfig } = segmentationConfig;
   const [isMinimized, setIsMinimized] = useState(true);
   return (
-    <div className="bg-primary-dark">
-      <div
-        className="flex cursor-pointer items-center"
-        onClick={evt => {
-          evt.stopPropagation();
-          setIsMinimized(!isMinimized);
-        }}
-      >
-        <Icon
-          name="panel-group-open-close"
-          className={classNames('h-5 w-5 cursor-pointer text-white transition duration-300', {
-            'rotate-90 transform': !isMinimized,
-          })}
+    <div className="bg-primary-dark select-none">
+      <div>
+        <ActiveSegmentationConfig
+          config={initialConfig}
+          setFillAlpha={setFillAlpha}
+          setOutlineWidthActive={setOutlineWidthActive}
+          setOutlineOpacityActive={setOutlineOpacityActive}
+          setRenderFill={setRenderFill}
+          setRenderOutline={setRenderOutline}
         />
-        <span className="text-[12px] font-[300] text-[#d8d8d8]">{'Segmentation Appearance'}</span>
-      </div>
-      {/* active segmentation */}
-      {!isMinimized && (
-        <div>
-          <ActiveSegmentationConfig
-            config={initialConfig}
-            setFillAlpha={setFillAlpha}
-            setOutlineWidthActive={setOutlineWidthActive}
-            setOutlineOpacityActive={setOutlineOpacityActive}
-            setRenderFill={setRenderFill}
-            setRenderOutline={setRenderOutline}
+        <div className="mx-1 mb-[8px] h-[1px] bg-[#212456]"></div>
+        <div
+          onClick={() => setIsMinimized(!isMinimized)}
+          className="flex cursor-pointer items-center pl-2 pb-[9px]"
+        >
+          <Icon
+            name="panel-group-open-close"
+            className={classNames('h-5 w-5 cursor-pointer text-white transition duration-300', {
+              'rotate-90 transform': !isMinimized,
+            })}
           />
-          {/* A small line  */}
-          <div className="mx-1 mb-[8px] h-[1px] bg-[#212456]"></div>
-          {/* inactive segmentation */}
-          <div
-            onClick={() => setIsMinimized(!isMinimized)}
-            className="flex cursor-pointer items-center pl-2 pb-[9px]"
-          >
-            <span className="text-[12px] font-[300] text-[#d8d8d8]">
-              {'Inactive Segmentations'}
-            </span>
-          </div>
+          <span className="text-[12px] font-[300] text-[#d8d8d8]">{'Inactive Segmentations'}</span>
+        </div>
+        {!isMinimized && (
           <InactiveSegmentationConfig
             config={initialConfig}
             setRenderInactiveSegmentations={setRenderInactiveSegmentations}
             setFillAlphaInactive={setFillAlphaInactive}
           />
-        </div>
-      )}
+        )}
+      </div>
       <div className="h-[6px] bg-black "></div>
     </div>
   );

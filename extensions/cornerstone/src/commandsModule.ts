@@ -3,6 +3,8 @@ import {
   StackViewport,
   VolumeViewport,
   utilities as csUtils,
+  Types as CoreTypes,
+  BaseVolumeViewport,
 } from '@cornerstonejs/core';
 import {
   ToolGroupManager,
@@ -11,6 +13,7 @@ import {
   ReferenceLinesTool,
 } from '@cornerstonejs/tools';
 import { Types as OhifTypes } from '@ohif/core';
+import { vec3, mat4 } from 'gl-matrix';
 
 import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownloadForm';
 import callInputDialog from './utils/callInputDialog';
@@ -18,7 +21,6 @@ import toggleStackImageSync from './utils/stackSync/toggleStackImageSync';
 import { getFirstAnnotationSelected } from './utils/measurementServiceMappings/utils/selection';
 import getActiveViewportEnabledElement from './utils/getActiveViewportEnabledElement';
 import { CornerstoneServices } from './types';
-import ImageOverlayViewerTool from './tools/ImageOverlayViewerTool';
 
 function commandsModule({
   servicesManager,
@@ -29,7 +31,6 @@ function commandsModule({
     toolGroupService,
     cineService,
     toolbarService,
-    stateSyncService,
     uiDialogService,
     cornerstoneViewportService,
     uiNotificationService,
@@ -156,7 +157,7 @@ function commandsModule({
      * @param props - containing the updates to apply
      * @param props.measurementKey - chooses the measurement key to apply the
      *        code to.  This will typically be finding or site to apply a
-     *        finind code or a findingSites code.
+     *        finding code or a findingSites code.
      * @param props.code - A coding scheme value from DICOM, including:
      *       * CodeValue - the language independent code, for example '1234'
      *       * CodingSchemeDesignator - the issue of the code value
@@ -226,6 +227,25 @@ function commandsModule({
     arrowTextCallback: ({ callback, data }) => {
       callInputDialog(uiDialogService, data, callback);
     },
+    cleanUpCrosshairs: () => {
+      // if the crosshairs tool is active, deactivate it and set window level active
+      // since we are going back to main non-mpr HP
+      const activeViewportToolGroup = toolGroupService.getToolGroup(null);
+
+      if (activeViewportToolGroup._toolInstances?.Crosshairs?.mode === Enums.ToolModes.Active) {
+        actions.toolbarServiceRecordInteraction({
+          interactionType: 'tool',
+          commands: [
+            {
+              commandOptions: {
+                toolName: 'WindowLevel',
+              },
+              context: 'CORNERSTONE',
+            },
+          ],
+        });
+      }
+    },
     toggleCine: () => {
       const { viewports } = viewportGridService.getState();
       const { isCineEnabled } = cineService.getState();
@@ -266,7 +286,11 @@ function commandsModule({
     toolbarServiceRecordInteraction: props => {
       toolbarService.recordInteraction(props);
     },
-
+    // Enable or disable a toggleable command, without calling the activation
+    // Used to setup already active tools from hanging protocols
+    setToolbarToggled: props => {
+      toolbarService.setToggled(props.toolId, props.isActive ?? true);
+    },
     setToolActive: ({ toolName, toolGroupId = null, toggledState }) => {
       if (toolName === 'Crosshairs') {
         const activeViewportToolGroup = toolGroupService.getToolGroup(null);
@@ -291,18 +315,8 @@ function commandsModule({
       }
 
       const toolGroup = toolGroupService.getToolGroup(toolGroupId);
-      const toolGroupViewportIds = toolGroup?.getViewportIds?.();
 
-      // if toolGroup has been destroyed, or its viewports have been removed
-      if (!toolGroupViewportIds || !toolGroupViewportIds.length) {
-        return;
-      }
-
-      const filteredViewports = Array.from(viewports.values()).filter(viewport => {
-        return toolGroupViewportIds.includes(viewport.viewportId);
-      });
-
-      if (!filteredViewports.length) {
+      if (!toolGroup) {
         return;
       }
 
@@ -380,8 +394,16 @@ function commandsModule({
 
       const { viewport } = enabledElement;
 
-      if (viewport instanceof StackViewport) {
-        const { rotation: currentRotation } = viewport.getProperties();
+      if (viewport instanceof BaseVolumeViewport) {
+        const camera = viewport.getCamera();
+        const rotAngle = (rotation * Math.PI) / 180;
+        const rotMat = mat4.identity(new Float32Array(16));
+        mat4.rotate(rotMat, rotMat, rotAngle, camera.viewPlaneNormal);
+        const rotatedViewUp = vec3.transformMat4(vec3.create(), camera.viewUp, rotMat);
+        viewport.setCamera({ viewUp: rotatedViewUp as CoreTypes.Point3 });
+        viewport.render();
+      } else if (viewport.getRotation !== undefined) {
+        const currentRotation = viewport.getRotation();
         const newRotation = (currentRotation + rotation) % 360;
         viewport.setProperties({ rotation: newRotation });
         viewport.render();
@@ -445,13 +467,8 @@ function commandsModule({
 
       const { viewport } = enabledElement;
 
-      if (viewport instanceof StackViewport) {
-        viewport.resetProperties();
-        viewport.resetCamera();
-      } else {
-        // Todo: add reset properties for volume viewport
-        viewport.resetCamera();
-      }
+      viewport.resetProperties?.();
+      viewport.resetCamera();
 
       viewport.render();
     },
@@ -551,16 +568,16 @@ function commandsModule({
 
     toggleStackImageSync: ({ toggledState }) => {
       toggleStackImageSync({
-        getEnabledElement,
         servicesManager,
         toggledState,
       });
     },
-    setSourceViewportForReferenceLinesTool: ({ toggledState }) => {
-      const { activeViewportId } = viewportGridService.getState();
-      const viewportInfo = cornerstoneViewportService.getViewportInfo(activeViewportId);
+    setSourceViewportForReferenceLinesTool: ({ toggledState, viewportId }) => {
+      if (!viewportId) {
+        const { activeViewportId } = viewportGridService.getState();
+        viewportId = activeViewportId;
+      }
 
-      const viewportId = viewportInfo.getViewportId();
       const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
 
       toolGroup.setToolConfiguration(
@@ -573,6 +590,23 @@ function commandsModule({
     },
     storePresentation: ({ viewportId }) => {
       cornerstoneViewportService.storePresentation({ viewportId });
+    },
+
+    attachProtocolViewportDataListener: ({ protocol, stageIndex }) => {
+      const EVENT = cornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED;
+      const command = protocol.callbacks.onViewportDataInitialized;
+      const numPanes = protocol.stages?.[stageIndex]?.viewports.length ?? 1;
+      let numPanesWithData = 0;
+      const { unsubscribe } = cornerstoneViewportService.subscribe(EVENT, evt => {
+        numPanesWithData++;
+
+        if (numPanesWithData === numPanes) {
+          commandsManager.run(...command);
+
+          // Unsubscribe from the event
+          unsubscribe(EVENT);
+        }
+      });
     },
   };
 
@@ -600,7 +634,6 @@ function commandsModule({
       storeContexts: [],
       options: {},
     },
-
     deleteMeasurement: {
       commandFn: actions.deleteMeasurement,
     },
@@ -701,8 +734,15 @@ function commandsModule({
     },
     storePresentation: {
       commandFn: actions.storePresentation,
-      storeContexts: [],
-      options: {},
+    },
+    setToolbarToggled: {
+      commandFn: actions.setToolbarToggled,
+    },
+    cleanUpCrosshairs: {
+      commandFn: actions.cleanUpCrosshairs,
+    },
+    attachProtocolViewportDataListener: {
+      commandFn: actions.attachProtocolViewportDataListener,
     },
   };
 

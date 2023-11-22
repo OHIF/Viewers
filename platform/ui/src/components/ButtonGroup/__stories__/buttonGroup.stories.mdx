@@ -1,5 +1,5 @@
-import ButtonGroup from '../ButtonGroup';
-import Button from '../../Button';
+import { Button, ButtonGroup, ButtonEnums } from '../../../components';
+
 import { ArgsTable, Story, Canvas, Meta } from '@storybook/addon-docs';
 import {
   createComponentTemplate,
@@ -16,13 +16,9 @@ export const argTypes = {
   component={ButtonGroup}
 />
 
-export const buttonGroupTemplate = args => (
-  <ButtonGroup {...args}>
-    <Button>One</Button>
-    <Button>Two</Button>
-    <Button>Three</Button>
-  </ButtonGroup>
-);
+export const buttonGroupTemplate = args => {
+  return <ButtonGroup {...args} />;
+};
 
 <Heading
   title="ButtonGroup"
@@ -39,7 +35,32 @@ export const buttonGroupTemplate = args => (
 ButtonGroup is a container for a group of buttons.
 
 <Canvas>
-  <Story name="Overview">{buttonGroupTemplate.bind({})}</Story>
+  <Story
+    name="Overview"
+    args={{
+      type: ButtonEnums.type.primary,
+      size: ButtonEnums.size.medium,
+      orientation: ButtonEnums.orientation.horizontal,
+      buttons: [
+        {
+          children: 'Button 1',
+          onClick: () => console.log('Button 1 clicked'),
+        },
+        {
+          children: 'Button 2',
+          onClick: () => console.log('Button 2 clicked'),
+        },
+        {
+          children: 'Button 3',
+          onClick: () => console.log('Button 3 clicked'),
+        },
+      ],
+      activeIndex: 0,
+      onActiveIndexChange: index => console.log(index),
+    }}
+  >
+    {buttonGroupTemplate.bind({})}
+  </Story>
 </Canvas>
 
 ## Props
@@ -47,56 +68,6 @@ ButtonGroup is a container for a group of buttons.
 <ArgsTable of={ButtonGroup} />
 
 ## Usage
-
-### Variants
-
-There are three different variants of ButtonGroup:
-
-<Canvas>
-  <Story name="Variants">
-    <div className="flex flex-col space-y-2">
-      <ButtonGroup variant="text">
-        <Button>Text</Button>
-        <Button>Text</Button>
-        <Button>Text</Button>
-      </ButtonGroup>
-      <ButtonGroup variant="outlined">
-        <Button>Outlined</Button>
-        <Button>Outlined</Button>
-        <Button>Outlined</Button>
-      </ButtonGroup>
-      <ButtonGroup variant="contained">
-        <Button>Contained</Button>
-        <Button>Contained</Button>
-        <Button>Contained</Button>
-      </ButtonGroup>
-    </div>
-  </Story>
-</Canvas>
-
-### Orientation
-
-You can change the orientation of the buttons in the group by setting the `orientation` prop.
-
-<Canvas>
-  <Story name="Orientation Horizontal">
-    <ButtonGroup orientation="horizontal">
-      <Button>Horizontal-1</Button>
-      <Button>Horizontal-2</Button>
-    </ButtonGroup>
-  </Story>
-</Canvas>
-
-Or vertical
-
-<Canvas>
-  <Story name="Orientation Vertical">
-    <ButtonGroup orientation="vertical">
-      <Button>Vertical-1</Button>
-      <Button>Vertical-2</Button>
-    </ButtonGroup>
-  </Story>
-</Canvas>
 
 ## Contribute
 

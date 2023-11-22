@@ -1,7 +1,5 @@
-import SegmentationGroupTable from '../SegmentationGroupTable';
-
 import { ArgsTable, Story, Canvas, Meta } from '@storybook/addon-docs';
-import { createComponentTemplate } from '../../../storybook/functions/create-component-story';
+import { SegmentationGroupTable } from '../../../components';
 
 export const argTypes = {
   component: SegmentationGroupTable,
@@ -40,13 +38,14 @@ SegmentationGroupTable is a component that renders the SegmentationGroupTables.
       showAddSegmentation: true,
       isMinimized: { '4be5-b9b2-ed33-fa86970568e7': false },
       showAddSegment: true,
+      showDeleteSegment: true,
       segmentations: [
         {
           id: '4be5-b9b2-ed33-fa86970568e7',
           volumeId: 'a3b0f15f-4be5-b9b2-ed33-fa86970568e7',
-          activeSegmentIndex: 1,
+          activeSegmentIndex: 2,
           cachedStats: {},
-          label: 'Segmentation',
+          label: 'Segmentation 1',
           segmentsLocked: {},
           type: 'LABELMAP',
           displayText: [],
@@ -55,7 +54,7 @@ SegmentationGroupTable is a component that renders the SegmentationGroupTables.
           segments: [
             null,
             {
-              label: 'Segment 1',
+              label: 'This is a very long segment label',
               segmentIndex: 1,
               color: [128, 174, 128],
               opacity: 255,
@@ -88,7 +87,7 @@ SegmentationGroupTable is a component that renders the SegmentationGroupTables.
           volumeId: 'a3b0f15f-4be5-b9b2-ed33-fa86970568e7',
           activeSegmentIndex: 1,
           cachedStats: {},
-          label: 'Segmentation2',
+          label: '2 Segmentation',
           segmentsLocked: {},
           type: 'LABELMAP',
           displayText: [],

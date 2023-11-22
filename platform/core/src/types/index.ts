@@ -1,23 +1,26 @@
-import * as Extensions from '../extensions/ExtensionManager';
-import * as HangingProtocol from './HangingProtocol';
-import Services from './Services';
-import Hotkey from '../classes/Hotkey';
-import { DataSourceDefinition } from './DataSource';
-import {
+import type * as Extensions from '../extensions/ExtensionManager';
+import type * as HangingProtocol from './HangingProtocol';
+import type Services from './Services';
+import type Hotkey from '../classes/Hotkey';
+import type { DataSourceDefinition } from './DataSource';
+import type {
   BaseDataSourceConfigurationAPI,
   BaseDataSourceConfigurationAPIItem,
 } from './DataSourceConfigurationAPI';
 
-export * from '../services/CustomizationService/types';
+export type * from '../services/CustomizationService/types';
 // Separate out some generic types
-export * from './AppConfig';
-export * from './Consumer';
-export * from './Command';
-export * from './DisplaySet';
-export * from './StudyMetadata';
-export * from './PanelModule';
-export * from './IPubSub';
-export * from './Color';
+export type * from './AppConfig';
+export type * from './Consumer';
+export type * from './Command';
+export type * from './DisplaySet';
+export type * from './StudyMetadata';
+export type * from './PanelModule';
+export type * from './IPubSub';
+export type * from './Color';
+
+// Enum exports
+export * from './TimingEnum';
 
 /**
  * Export the types used within the various services and managers, but

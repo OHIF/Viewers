@@ -32,7 +32,11 @@ const Length = {
       throw new Error('Tool not supported');
     }
 
-    const { SOPInstanceUID, SeriesInstanceUID, StudyInstanceUID } = getSOPInstanceAttributes(
+    const {
+      SOPInstanceUID,
+      SeriesInstanceUID,
+      StudyInstanceUID,
+    } = getSOPInstanceAttributes(
       referencedImageId,
       cornerstoneViewportService,
       viewportId
@@ -94,8 +98,11 @@ function getMappedAnnotations(annotation, displaySetService) {
       throw new Error('Non-acquisition plane measurement mapping not supported');
     }
 
-    const { SOPInstanceUID, SeriesInstanceUID, frameNumber } =
-      getSOPInstanceAttributes(referencedImageId);
+    const {
+      SOPInstanceUID,
+      SeriesInstanceUID,
+      frameNumber,
+    } = getSOPInstanceAttributes(referencedImageId);
 
     const displaySet = displaySetService.getDisplaySetForSOPInstanceUID(
       SOPInstanceUID,
@@ -104,8 +111,7 @@ function getMappedAnnotations(annotation, displaySetService) {
     );
 
     const { SeriesNumber } = displaySet;
-    const { length } = targetStats;
-    const unit = 'mm';
+    const { length, unit = 'mm' } = targetStats;
 
     annotations.push({
       SeriesInstanceUID,
@@ -134,9 +140,11 @@ function _getReport(mappedAnnotations, points, FrameOfReferenceUID) {
   values.push('Cornerstone:Length');
 
   mappedAnnotations.forEach(annotation => {
-    const { length } = annotation;
-    columns.push(`Length (mm)`);
+    const { length, unit } = annotation;
+    columns.push(`Length`);
     values.push(length);
+    columns.push('Unit');
+    values.push(unit);
   });
 
   if (FrameOfReferenceUID) {
@@ -166,7 +174,13 @@ function getDisplayText(mappedAnnotations, displaySet) {
   const displayText = [];
 
   // Area is the same for all series
-  const { length, SeriesNumber, SOPInstanceUID, frameNumber } = mappedAnnotations[0];
+  const {
+    length,
+    SeriesNumber,
+    SOPInstanceUID,
+    frameNumber,
+    unit,
+  } = mappedAnnotations[0];
 
   const instance = displaySet.images.find(image => image.SOPInstanceUID === SOPInstanceUID);
 
@@ -182,7 +196,9 @@ function getDisplayText(mappedAnnotations, displaySet) {
     return displayText;
   }
   const roundedLength = utils.roundNumber(length, 2);
-  displayText.push(`${roundedLength} mm (S: ${SeriesNumber}${instanceText}${frameText})`);
+  displayText.push(
+    `${roundedLength} ${unit} (S: ${SeriesNumber}${instanceText}${frameText})`
+  );
 
   return displayText;
 }

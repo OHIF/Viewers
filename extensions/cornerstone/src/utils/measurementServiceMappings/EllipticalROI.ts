@@ -1,4 +1,5 @@
 import SUPPORTED_TOOLS from './constants/supportedTools';
+import { getDisplayUnit } from './utils';
 import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
 import { utils } from '@ohif/core';
 
@@ -98,7 +99,7 @@ function getMappedAnnotations(annotation, displaySetService) {
     );
 
     const { SeriesNumber } = displaySet;
-    const { mean, stdDev, max, area, Modality, modalityUnit } = targetStats;
+    const { mean, stdDev, max, area, Modality, areaUnit, modalityUnit } = targetStats;
 
     annotations.push({
       SeriesInstanceUID,
@@ -107,6 +108,7 @@ function getMappedAnnotations(annotation, displaySetService) {
       frameNumber,
       Modality,
       unit: modalityUnit,
+      areaUnit,
       mean,
       stdDev,
       max,
@@ -131,14 +133,14 @@ function _getReport(mappedAnnotations, points, FrameOfReferenceUID) {
   values.push('Cornerstone:EllipticalROI');
 
   mappedAnnotations.forEach(annotation => {
-    const { mean, stdDev, max, area, unit } = annotation;
+    const { mean, stdDev, max, area, unit, areaUnit } = annotation;
 
     if (!mean || !unit || !max || !area) {
       return;
     }
 
-    columns.push(`max (${unit})`, `mean (${unit})`, `std (${unit})`, `area (mm2)`);
-    values.push(max, mean, stdDev, area);
+    columns.push(`max (${unit})`, `mean (${unit})`, `std (${unit})`, 'Area', 'Unit');
+    values.push(max, mean, stdDev, area, areaUnit);
   });
 
   if (FrameOfReferenceUID) {
@@ -168,7 +170,7 @@ function getDisplayText(mappedAnnotations, displaySet) {
   const displayText = [];
 
   // Area is the same for all series
-  const { area, SOPInstanceUID, frameNumber } = mappedAnnotations[0];
+  const { area, SOPInstanceUID, frameNumber, areaUnit } = mappedAnnotations[0];
 
   const instance = displaySet.images.find(image => image.SOPInstanceUID === SOPInstanceUID);
 
@@ -180,9 +182,8 @@ function getDisplayText(mappedAnnotations, displaySet) {
   const instanceText = InstanceNumber ? ` I: ${InstanceNumber}` : '';
   const frameText = displaySet.isMultiFrame ? ` F: ${frameNumber}` : '';
 
-  // Area sometimes becomes undefined if `preventHandleOutsideImage` is off.
-  const roundedArea = utils.roundNumber(area || 0, 2);
-  displayText.push(`${roundedArea} mm<sup>2</sup>`);
+  const roundedArea = utils.roundNumber(area, 2);
+  displayText.push(`${roundedArea} ${getDisplayUnit(areaUnit)}`);
 
   // Todo: we need a better UI for displaying all these information
   mappedAnnotations.forEach(mappedAnnotation => {
@@ -191,7 +192,7 @@ function getDisplayText(mappedAnnotations, displaySet) {
     let maxStr = '';
     if (max) {
       const roundedMax = utils.roundNumber(max, 2);
-      maxStr = `Max: ${roundedMax} <small>${unit}</small> `;
+      maxStr = `Max: ${roundedMax} <small>${getDisplayUnit(unit)}</small> `;
     }
 
     const str = `${maxStr}(S:${SeriesNumber}${instanceText}${frameText})`;

@@ -1,12 +1,14 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useCallback, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { ExtensionManager, MODULE_TYPES } from '@ohif/core';
+import { ExtensionManager, MODULE_TYPES, Types, log } from '@ohif/core';
 //
 import { extensionManager } from '../App.tsx';
 import { useParams, useLocation } from 'react-router';
 import { useNavigate } from 'react-router-dom';
 import useSearchParams from '../hooks/useSearchParams.ts';
+
+const { TimingEnum } = Types;
 
 /**
  * Determines if two React Router location objects are the same.
@@ -149,7 +151,7 @@ function DataSourceWrapper(props) {
     // 204: no content
     async function getData() {
       setIsLoading(true);
-
+      log.time(TimingEnum.SEARCH_TO_LIST);
       const studies = await dataSource.query.studies.search(queryFilterValues);
 
       setData({
@@ -159,6 +161,8 @@ function DataSourceWrapper(props) {
         pageNumber: queryFilterValues.pageNumber,
         location,
       });
+      log.timeEnd(TimingEnum.SCRIPT_TO_VIEW);
+      log.timeEnd(TimingEnum.SEARCH_TO_LIST);
 
       setIsLoading(false);
     }
@@ -184,7 +188,8 @@ function DataSourceWrapper(props) {
         !isSamePage || (!isLoading && (newOffset !== previousOffset || isLocationUpdated));
 
       if (isDataInvalid) {
-        getData().catch(() => {
+        getData().catch(e => {
+          console.error(e);
           // If there is a data source configuration API, then the Worklist will popup the dialog to attempt to configure it
           // and attempt to resolve this issue.
           if (dataSource.getConfig().configurationAPI) {

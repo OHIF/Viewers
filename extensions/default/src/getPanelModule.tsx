@@ -20,7 +20,7 @@ function getPanelModule({ commandsManager, extensionManager, servicesManager }) 
   return [
     {
       name: 'seriesList',
-      iconName: 'group-layers',
+      iconName: 'tab-studies',
       iconLabel: 'Studies',
       label: 'Studies',
       component: WrappedPanelStudyBrowser.bind(null, {

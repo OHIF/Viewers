@@ -403,6 +403,7 @@ viewportStructure: {
       ],
     },
 },
+
 ```
 
 
@@ -448,6 +449,7 @@ As you can see in the hanging protocol we defined three viewports (but only show
    - `toolGroupId`: tool group that will be used for the viewport (optional)
    - `initialImageOptions`: initial image options (optional - can be specific imageIndex number or preset (first, middle, last))
    - `syncGroups`: sync groups for the viewport (optional)
+   -The `displayArea` parameter refers to the designated area within the viewport where a specific portion of the image can be displayed. This parameter is optional and allows you to choose the location of the image within the viewport. For example, in mammography images, you can display the left breast on the left side of the viewport and the right breast on the right side, with the chest wall positioned in the middle. To understand how to define the display area, you can refer to the live example provided by CornerstoneJS [here](https://www.cornerstonejs.org/live-examples/programaticpanzoom).
 
 
 2. `displaySets`: defines the display sets that are displayed on a viewport. It is an array of objects, each object being one display set.
@@ -558,3 +560,64 @@ Additional series level criteria, such as modality rules must be included at the
     },
   ],
 ```
+
+
+## Callbacks
+
+
+Hanging protocols in `OHIF-v3` provide the flexibility to define various callbacks that allow you to customize the behavior of your viewer when specific events occur during protocol execution. These callbacks are defined in the `ProtocolNotifications` type and can be added to your hanging protocol configuration.
+
+Each callback is an array of commands or actions that are executed when the event occurs.
+
+```js
+[
+  {
+    commandName: 'showDownloadViewportModal',
+    commandOptions: {}
+  }
+]
+```
+
+
+Here, we'll explain the available callbacks and their purposes:
+
+### `onProtocolExit`
+
+The `onProtocolExit` callback is executed after the protocol is exited and the new one is applied. This callback is useful for performing actions or executing commands when switching between hanging protocols.
+
+### `onProtocolEnter`
+
+The `onProtocolEnter` callback is executed after the protocol is entered and applied. You can use this callback to define actions or commands that should run when entering a specific hanging protocol.
+
+### `onLayoutChange`
+
+The `onLayoutChange` callback is executed before the layout change is started. You can use it to apply a specific hanging protocol based on the current layout or other criteria.
+
+### `onViewportDataInitialized`
+
+The `onViewportDataInitialized` callback is executed after the initial viewport grid data is set and all viewport data includes a designated display set. This callback runs during the initial layout setup for each stage. You can use it to perform actions or apply settings to the viewports at the start.
+
+Here is an example of how you can add these callbacks to your hanging protocol configuration:
+
+```javascript
+const protocol = {
+  id: 'myProtocol',
+  name: 'My Protocol',
+  // rest of the protocol configuration
+  callbacks: {
+    onProtocolExit: [
+      // Array of commands or actions to execute on protocol exit
+    ],
+    onProtocolEnter: [
+      // Array of commands or actions to execute on protocol enter
+    ],
+    onLayoutChange: [
+      // Array of commands or actions to execute on layout change
+    ],
+    onViewportDataInitialized: [
+      // Array of commands or actions to execute on viewport data initialization
+    ],
+  },
+  // protocolMatchingRules
+  // the rest
+};

@@ -1,12 +1,12 @@
 {
   "name": "@ohif/mode-test",
-  "version": "3.7.0-beta.73",
+  "version": "3.8.0-beta.22",
   "description": "Basic mode for testing",
   "author": "OHIF",
   "license": "MIT",
   "repository": "OHIF/Viewers",
   "main": "dist/ohif-mode-test.umd.js",
-  "module": "src/index.js",
+  "module": "src/index.ts",
   "engines": {
     "node": ">=14",
     "npm": ">=6",
@@ -32,14 +32,14 @@
     "test:unit:ci": "jest --ci --runInBand --collectCoverage --passWithNoTests"
   },
   "peerDependencies": {
-    "@ohif/core": "3.7.0-beta.73",
-    "@ohif/extension-cornerstone": "3.7.0-beta.73",
-    "@ohif/extension-cornerstone-dicom-sr": "3.7.0-beta.73",
-    "@ohif/extension-default": "3.7.0-beta.73",
-    "@ohif/extension-dicom-pdf": "3.7.0-beta.73",
-    "@ohif/extension-dicom-video": "3.7.0-beta.73",
-    "@ohif/extension-measurement-tracking": "3.7.0-beta.73",
-    "@ohif/extension-test": "3.7.0-beta.73"
+    "@ohif/core": "3.8.0-beta.22",
+    "@ohif/extension-cornerstone": "3.8.0-beta.22",
+    "@ohif/extension-cornerstone-dicom-sr": "3.8.0-beta.22",
+    "@ohif/extension-default": "3.8.0-beta.22",
+    "@ohif/extension-dicom-pdf": "3.8.0-beta.22",
+    "@ohif/extension-dicom-video": "3.8.0-beta.22",
+    "@ohif/extension-measurement-tracking": "3.8.0-beta.22",
+    "@ohif/extension-test": "3.8.0-beta.22"
   },
   "dependencies": {
     "@babel/runtime": "^7.20.13"

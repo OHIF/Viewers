@@ -78,9 +78,12 @@ export default function getPixelSpacingInformation(instance) {
         pixelSpacing => pixelSpacing / EstimatedRadiographicMagnificationFactor
       );
     } else {
-      log.info(
-        'EstimatedRadiographicMagnificationFactor was not present. Unable to correct ImagerPixelSpacing.'
-      );
+      if (!instance._loggedSpacingMessage) {
+        log.info(
+          'EstimatedRadiographicMagnificationFactor was not present. Unable to correct ImagerPixelSpacing.'
+        );
+        instance._loggedSpacingMessage = true;
+      }
     }
 
     return {

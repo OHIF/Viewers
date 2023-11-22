@@ -36,6 +36,7 @@ export {
 /** COMPONENTS */
 export {
   AboutModal,
+  AdvancedToolbox,
   HotkeyField,
   Header,
   UserPreferences,
@@ -57,6 +58,7 @@ export {
   IconButton,
   Input,
   InputRange,
+  InputDoubleRange,
   InputNumber,
   InputDateRange,
   InputFilterText,
@@ -67,7 +69,9 @@ export {
   Label,
   LayoutSelector,
   LegacyButton,
+  LegacyButtonGroup,
   LegacyCinePlayer,
+  LegacySidePanel,
   LegacyViewportActionBar,
   LoadingIndicatorProgress,
   LoadingIndicatorTotalPercent,
@@ -75,6 +79,7 @@ export {
   Modal,
   NavBar,
   Notification,
+  PanelSection,
   ProgressLoadingBar,
   Select,
   SegmentationTable,
@@ -113,6 +118,8 @@ export {
   ImageScrollbar,
   ViewportOverlay,
 } from './components';
+
+export { useSessionStorage } from './hooks';
 
 /** These are mostly used in the docs */
 export { getIcon, ICONS, addIcon } from './components/Icon/getIcon';

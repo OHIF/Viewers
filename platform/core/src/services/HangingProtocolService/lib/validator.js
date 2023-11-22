@@ -77,7 +77,7 @@ validate.validators.doesNotEqual = function (value, options, key) {
       }
     }
   } else if (testValue === dicomArrayValue[0]) {
-    console.debug(dicomArrayValue, testValue);
+    console.log(dicomArrayValue, testValue);
     return `${key} must not equal to ${testValue}`;
   }
 };

@@ -13,22 +13,24 @@ version: 2.1
 ##
 orbs:
   codecov: codecov/codecov@1.0.5
-  cypress: cypress-io/cypress@1.26.0
+  cypress: cypress-io/cypress@3.1.4
+
 executors:
-  # Custom executor to override Cypress config
-  deploy-to-prod-executor:
+  cypress-custom:
+    description: |
+      Single Docker container used to run Cypress Tests
     docker:
-      - image: cimg/node:16.14
-        environment:
-          CYPRESS_BASE_URL: https://ohif-staging.netlify.com/
-  chrome-and-pacs:
-    docker:
-      # Primary container image where all steps run.
-      - image: 'cypress/browsers:node16.14.2-slim-chrome103-ff102'
+      - image: cimg/node:<< parameters.node-version >>-browsers
+    parameters:
+      node-version:
+        default: '18.16.1'
+        description: |
+          The version of Node to run your tests with.
+        type: string
 
 defaults: &defaults
   docker:
-    - image: cimg/node:16.14-browsers
+    - image: cimg/node:18.18
       environment:
         TERM: xterm # Enable colors in term
         QUICK_BUILD: true
@@ -43,6 +45,7 @@ jobs:
     steps:
       # Update yarn
       - run: yarn -v
+      - run: node --version
       # Checkout code and ALL Git Tags
       - checkout
       - restore_cache:
@@ -89,43 +92,6 @@ jobs:
       - codecov/upload:
           file: '/home/circleci/repo/platform/core/coverage/reports'
           flags: 'core'
-
-  ###
-  # Workflow: PR_OPTIONAL_DOCKER_PUBLISH
-  ###
-  DOCKER_PR_PUBLISH:
-    <<: *defaults
-    steps:
-      # Enable yarn workspaces
-      - run: yarn config set workspaces-experimental true
-
-      # Checkout code and ALL Git Tags
-      - checkout
-      - restore_cache:
-          name: Restore Yarn and Cypress Package Cache
-          keys:
-            # when lock file changes, use increasingly general patterns to restore cache
-            - yarn-packages-{{ checksum "yarn.lock" }}
-            - yarn-packages-
-
-      - run:
-          name: Install Dependencies
-          command: yarn install --frozen-lockfile
-
-      - setup_remote_docker:
-          docker_layer_caching: false
-
-      - run:
-          name: Build and push Docker image
-          command: |
-            # Remove npm config
-            rm -f ./.npmrc
-            # Set our version number using vars
-            echo $CIRCLE_BUILD_NUM
-            # Build our image, auth, and push
-            docker build --tag ohif/app:PR_BUILD-$CIRCLE_BUILD_NUM .
-            echo $DOCKER_PWD | docker login -u $DOCKER_LOGIN --password-stdin
-            docker push ohif/app:PR_BUILD-$CIRCLE_BUILD_NUM
 
   ###
   # Workflow: DEPLOY
@@ -177,62 +143,52 @@ jobs:
             - commit.txt
             - version.json
 
-  # DEPLOY_TO_DEV:
-  #   docker:
-  #     - image: circleci/node:16.14.0
-  #       environment:
-  #         TERM: xterm
-  #         NETLIFY_SITE_ID: 32708787-c9b0-4634-b50f-7ca41952da77
-  #   working_directory: ~/repo
-  #   steps:
-  #     - attach_workspace:
-  #         at: ~/repo
-  #     - run: cd .netlify && npm install
-  #     - run: cp .netlify/deploy-workflow/_redirects platform/app/dist/_redirects
-  #     - run: cd .netlify && npm run deploy
-
-  # DEPLOY_TO_STAGING:
-  #   docker:
-  #     - image: circleci/node:16.14.0
-  #       environment:
-  #         TERM: xterm
-  #         NETLIFY_SITE_ID: c7502ae3-b150-493c-8422-05701e44a969
-  #   working_directory: ~/repo
-  #   steps:
-  #     - attach_workspace:
-  #         at: ~/repo
-  #     - run: cd .netlify && npm install
-  #     - run: cp .netlify/deploy-workflow/_redirects platform/app/dist/_redirects
-  #     - run: cd .netlify && npm run deploy
-
-  # DEPLOY_TO_PRODUCTION:
-  #   docker:
-  #     - image: circleci/node:16.14.0
-  #       environment:
-  #         TERM: xterm
-  #         NETLIFY_SITE_ID: 79c4a5da-5c95-4dc9-84f7-45fd9dfe21b0
-  #   working_directory: ~/repo
-  #   steps:
-  #     - attach_workspace:
-  #         at: ~/repo
-  #     - run: cd .netlify && npm install
-  #     - run: cp .netlify/deploy-workflow/_redirects platform/app/dist/_redirects
-  #     - run: cd .netlify && npm run deploy
-
-  #   DEPLOY_TO_RELEASE_DEV:
-  #     docker:
-  #       - image: circleci/node:16.14.0
-  #         environment:
-  #           TERM: xterm
-  #           NETLIFY_SITE_ID: 3270878-22
-  #     working_directory: ~/repo
-  #     steps:
-  #       - attach_workspace:
-  #           at: ~/repo
-  #       - run: cd .netlify && npm install
-  #       - run:
-  #           cp .netlify/deploy-workflow/_redirects platform/app/dist/_redirects
-  #       - run: cd .netlify && npm run deploy
+  # just to make sure later on we can publish them
+  BUILD_PACKAGES_QUICK:
+    <<: *defaults
+    steps:
+      - run: yarn -v
+      # Checkout code and ALL Git Tags
+      - checkout
+      - attach_workspace:
+          at: ~/repo
+      # Use increasingly general patterns to restore cache
+      - restore_cache:
+          name: Restore Yarn and Cypress Package Cache
+          keys:
+            - yarn-packages-{{ checksum "yarn.lock" }}
+            - yarn-packages-
+      - run:
+          name: Install Dependencies
+          command: yarn install --frozen-lockfile
+      - save_cache:
+          name: Save Yarn Package Cache
+          paths:
+            - ~/.cache/yarn
+          key: yarn-packages-{{ checksum "yarn.lock" }}
+      - run:
+          name: Avoid hosts unknown for github
+          command: |
+            rm -rf ~/.ssh
+            mkdir ~/.ssh/
+            echo -e "Host github.com\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
+            git config --global user.email "danny.ri.brown+ohif-bot@gmail.com"
+            git config --global user.name "ohif-bot"
+      - run:
+          name: Authenticate with NPM registry
+          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/repo/.npmrc
+      - run:
+          name: Increase the event emitter limit
+          command: |
+            node ./increaseEventEmitterLimit.mjs
+      - run:
+          name: build half of the packages (to avoid out of memory in circleci)
+          command: |
+            yarn run build:package-all
+      - run:
+          name: build the other half of the packages
+          command: |
+            yarn run build:package-all-1
 
   ###
   # Workflow: RELEASE
@@ -282,6 +238,14 @@ jobs:
           name: build the other half of the packages
           command: |
             yarn run build:package-all-1
+      - run:
+          name: increase min time out
+          command: |
+            npm config set fetch-retry-mintimeout 20000
+      - run:
+          name: increase max time out
+          command: |
+            npm config set fetch-retry-maxtimeout 120000
       - run:
           name: publish package versions
           command: |
@@ -362,71 +326,152 @@ jobs:
               docker push ohif/app:$IMAGE_VERSION_FULL
             fi
 
-workflows:
-  version: 2
+  # This is copied from the Cypress orb since the default for cypress/run is node 16 and
+  # we migrated to 18
+  CYPRESS_CUSTOM_RUN:
+    description: |
+      A single, complete job to run Cypress end-to-end tests in your application.
+    executor: cypress-custom
+    parallelism: << parameters.parallelism >>
+    parameters:
+      cypress-cache-key:
+        default: cypress-cache-{{ arch }}-{{ checksum "package.json" }}
+        description: Cache key used to cache the Cypress binary.
+        type: string
+      cypress-cache-path:
+        default: ~/.cache/Cypress
+        description: |
+          By default, this will cache the '~/.cache/Cypress' directory so that the Cypress binary is cached. You can override this by providing your own cache path.
+        type: string
+      cypress-command:
+        default: npx cypress run
+        description: Command used to run your Cypress tests
+        type: string
+      include-branch-in-node-cache-key:
+        default: false
+        description: |
+          If true, this cache will only apply to runs within the same branch. (Adds -{{ .Branch }}- to the node cache key)
+        type: boolean
+      install-browsers:
+        default: false
+        description: |
+          Cypress runs by default in the Electron browser. Use this flag to install additional browsers to run your tests in.
+          This is only needed if you are passing the `--browser` flag in your `cypress-command`.
+          This parameter leverages the `circleci/browser-tools` orb and includes Chrome and FireFox.
+          If you need additional browser support you can set this to false and use an executor with a docker image
+          that includes the browsers of your choosing. See https://hub.docker.com/r/cypress/browsers/tags
+        type: boolean
+      install-command:
+        default: ''
+        description: Overrides the default NPM command (npm ci)
+        type: string
+      node-cache-version:
+        default: v1
+        description:
+          Change the default node cache version if you need to clear the cache for any reason.
+        type: string
+      package-manager:
+        default: npm
+        description: Select the default node package manager to use. NPM v5+ Required.
+        enum:
+          - npm
+          - yarn
+          - yarn-berry
+        type: enum
+      parallelism:
+        default: 1
+        description: |
+          Number of Circle machines to use for load balancing, min 1
+          (requires `parallel` and `record` flags in your `cypress-command`)
+        type: integer
+      post-install:
+        default: ''
+        description: |
+          Additional commands to run after running install but before verifying Cypress and saving cache.
+        type: string
+      start-command:
+        default: ''
+        description: Command used to start your local dev server for Cypress to tests against
+        type: string
+      working-directory:
+        default: ''
+        description: Directory containing package.json
+        type: string
+    steps:
+      - cypress/install:
+          cypress-cache-key: << parameters.cypress-cache-key >>
+          cypress-cache-path: << parameters.cypress-cache-path >>
+          include-branch-in-node-cache-key: << parameters.include-branch-in-node-cache-key >>
+          install-browsers: << parameters.install-browsers >>
+          install-command: << parameters.install-command >>
+          node-cache-version: << parameters.node-cache-version >>
+          package-manager: << parameters.package-manager >>
+          post-install: << parameters.post-install >>
+          working-directory: << parameters.working-directory >>
+      - cypress/run-tests:
+          cypress-command: << parameters.cypress-command >>
+          start-command: << parameters.start-command >>
+          working-directory: << parameters.working-directory >>
 
+workflows:
   PR_CHECKS:
     jobs:
-      - UNIT_TESTS
-
-      # E2E: PWA
-      - cypress/run:
-          name: 'E2E: PWA'
-          executor: chrome-and-pacs
-          browser: chrome
-          pre-steps:
-            - run: |
-                # Clear yarn cache; use yarn from image (update image to update yarn)
-                rm -rf ~/.yarn
-                yarn -v
-          yarn: true
-          record: true
-          store_artifacts: true
-          working_directory: platform/app
-          build: yarn test:data
-          start: yarn run test:e2e:serve
-          spec: 'cypress/integration/**/*'
-          wait-on: 'http://localhost:3000'
-          cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
-          no-workspace: true # Don't persist workspace
-          post-steps:
-            - store_artifacts:
-                path: platform/app/cypress/screenshots
-            - store_artifacts:
-                path: platform/app/cypress/videos
-            - store_test_results:
-                path: platform/app/cypress/results
+      - BUILD_PACKAGES_QUICK:
+          filters:
+            branches:
+              ignore: master
+      - UNIT_TESTS:
           requires:
-            - UNIT_TESTS
-
-  PR_OPTIONAL_VISUAL_TESTS:
-    jobs:
-      - AWAIT_APPROVAL:
-          type: approval
-      # Update hub.docker.org
-      - cypress/run:
-          name: 'Generate Percy Snapshots'
-          executor: cypress/browsers-chrome76
-          browser: chrome
-          pre-steps:
-            - run: 'rm -rf ~/.yarn && yarn -v && yarn global add wait-on'
-          yarn: true
-          store_artifacts: false
-          working_directory: platform/app
-          build:
-            yarn test:data && npx cross-env QUICK_BUILD=true APP_CONFIG=config/dicomweb-server.js
-            yarn run build
-          # start server --> verify running --> percy + chrome + cypress
-          command: yarn run test:e2e:dist
-          cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
-          no-workspace: true # Don't persist workspace
-          post-steps:
-            - store_artifacts:
-                path: platform/app/cypress/screenshots
-            - store_artifacts:
-                path: platform/app/cypress/videos
+            - BUILD_PACKAGES_QUICK
+      - CYPRESS_CUSTOM_RUN:
+          name: 'Cypress Tests'
+          context: cypress
+          matrix:
+            parameters:
+              start-command:
+                - yarn run test:data && yarn run test:e2e:serve
+              install-browsers:
+                - true
+              cypress-command:
+                - 'npx wait-on@latest http://localhost:3000 && cd platform/app &&  npx cypress run
+                  --record --browser chrome --parallel'
+              package-manager:
+                - 'yarn'
+              cypress-cache-key:
+                - 'yarn-packages-{{ checksum "yarn.lock" }}'
+              cypress-cache-path:
+                - '~/.cache/Cypress'
           requires:
-            - AWAIT_APPROVAL
+            - BUILD_PACKAGES_QUICK
+
+  # PR_OPTIONAL_VISUAL_TESTS:
+  #   jobs:
+  #     - AWAIT_APPROVAL:
+  #         type: approval
+  #     # Update hub.docker.org
+  #     - cypress/run:
+  #         name: 'Generate Percy Snapshots'
+  #         executor: cypress/browsers-chrome76
+  #         browser: chrome
+  #         pre-steps:
+  #           - run: 'rm -rf ~/.yarn && yarn -v && yarn global add wait-on'
+  #         yarn: true
+  #         store_artifacts: false
+  #         working_directory: platform/app
+  #         build:
+  #           yarn test:data && npx cross-env QUICK_BUILD=true APP_CONFIG=config/dicomweb-server.js
+  #           yarn run build
+  #         # start server --> verify running --> percy + chrome + cypress
+  #         command: yarn run test:e2e:dist
+  #         cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
+  #         no-workspace: true # Don't persist workspace
+  #         post-steps:
+  #           - store_artifacts:
+  #               path: platform/app/cypress/screenshots
+  #           - store_artifacts:
+  #               path: platform/app/cypress/videos
+  #         requires:
+  #           - AWAIT_APPROVAL
 
   # Our master branch deploys to viewer-dev.ohif.org, the viewer.ohif.org is
   # deployed from the release branch which is more stable and less frequently updated.

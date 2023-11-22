@@ -223,7 +223,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
           await wadoDicomWebClient.storeInstances(options);
         } else {
           const meta = {
-            FileMetaInformationVersion: dataset._meta.FileMetaInformationVersion.Value,
+            FileMetaInformationVersion: dataset._meta?.FileMetaInformationVersion?.Value,
             MediaStorageSOPClassUID: dataset.SOPClassUID,
             MediaStorageSOPInstanceUID: dataset.SOPInstanceUID,
             TransferSyntaxUID: EXPLICIT_VR_LITTLE_ENDIAN,
@@ -297,6 +297,8 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
         });
 
         instance.imageId = imageId;
+        instance.wadoRoot = dicomWebConfig.wadoRoot;
+        instance.wadoUri = dicomWebConfig.wadoUri;
 
         metadataProvider.addImageIdToUIDs(imageId, {
           StudyInstanceUID,
@@ -425,6 +427,9 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
 
       function setSuccessFlag() {
         const study = DicomMetadataStore.getStudy(StudyInstanceUID, madeInClient);
+        if (!study) {
+          return;
+        }
         study.isLoaded = true;
       }
 

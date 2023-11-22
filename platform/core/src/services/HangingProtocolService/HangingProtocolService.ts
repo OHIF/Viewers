@@ -178,6 +178,7 @@ export default class HangingProtocolService extends PubSubService {
    */
   public getActiveProtocol(): {
     protocol: HangingProtocol.Protocol;
+    _originalProtocol: HangingProtocol.Protocol;
     stage: HangingProtocol.ProtocolStage;
     stageIndex: number;
     activeStudy?: StudyMetadata;
@@ -187,6 +188,7 @@ export default class HangingProtocolService extends PubSubService {
   } {
     return {
       protocol: this.protocol,
+      _originalProtocol: this._originalProtocol,
       stage: this.protocol?.stages?.[this.stageIndex],
       stageIndex: this.stageIndex,
       activeStudy: this.activeStudy,
@@ -535,22 +537,32 @@ export default class HangingProtocolService extends PubSubService {
           stage.viewports.push({
             viewportOptions: {
               ...defaultViewportOptions,
-              viewportId: uuidv4(),
+              // Use 'default' for the first viewport, and UUIDs for the rest.
+              viewportId: i === 0 ? 'default' : uuidv4(),
             },
             displaySets: [],
           });
         }
       } else {
         // Clone each viewport to ensure independent objects
-        stage.viewports = stage.viewports.map(viewport => ({
-          ...viewport,
-          viewportOptions: {
-            ...(viewport.viewportOptions || defaultViewportOptions),
-            viewportId: viewport.viewportOptions?.viewportId || uuidv4(),
-          },
-          displaySets: viewport.displaySets || [],
-        }));
+        stage.viewports = stage.viewports.map((viewport, index) => {
+          const existingViewportId = viewport.viewportOptions?.viewportId;
 
+          return {
+            ...viewport,
+            viewportOptions: {
+              ...(viewport.viewportOptions || defaultViewportOptions),
+              // use provided viewportId when available, otherwise use default for first viewport
+              // and uuid for the rest
+              viewportId: existingViewportId
+                ? existingViewportId
+                : index === 0
+                ? 'default'
+                : uuidv4(),
+            },
+            displaySets: viewport.displaySets || [],
+          };
+        });
         stage.viewports.forEach(viewport => {
           viewport.displaySets.forEach(displaySet => {
             displaySet.options = displaySet.options || {};
@@ -851,6 +863,8 @@ export default class HangingProtocolService extends PubSubService {
 
       throw new Error(error);
     }
+
+    this._commandsManager.run(this.protocol?.callbacks?.onProtocolEnter);
   }
 
   protected matchActivation(
@@ -958,6 +972,12 @@ export default class HangingProtocolService extends PubSubService {
       if (!this.protocol || this.protocol.id !== protocol.id) {
         this.stageIndex = options?.stageIndex || 0;
         this._originalProtocol = this._copyProtocol(protocol);
+
+        // before reassigning the protocol, we need to check if there is a callback
+        // on the old protocol that needs to be called
+        // Send the notification about updating the state
+        this._commandsManager.run(this.protocol?.callbacks?.onProtocolExit);
+
         this.protocol = protocol;
 
         const { imageLoadStrategy } = protocol;
@@ -1122,6 +1142,13 @@ export default class HangingProtocolService extends PubSubService {
 
     const { columns: numCols, rows: numRows, layoutOptions = [] } = layoutProps;
 
+    if (this.protocol?.callbacks?.onViewportDataInitialized) {
+      this._commandsManager.runCommand('attachProtocolViewportDataListener', {
+        protocol: this.protocol,
+        stageIndex: this.stageIndex,
+      });
+    }
+
     this._broadcastEvent(this.EVENTS.NEW_LAYOUT, {
       layoutType,
       numRows,
@@ -1145,9 +1172,6 @@ export default class HangingProtocolService extends PubSubService {
   } {
     let matchedViewports = 0;
     stageModel.viewports.forEach(viewport => {
-      // Todo: we should probably assign a random viewportId if not defined
-      // below, but it feels odd since viewportGrid should handle this kind
-      // of thing
       const viewportId = viewport.viewportOptions.viewportId;
       const matchDetails = this._matchViewport(
         viewport,
