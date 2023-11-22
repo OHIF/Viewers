@@ -226,6 +226,7 @@ const BaseImplementation = {
 
     this._broadcastEvent(EVENTS.SERIES_ADDED, {
       StudyInstanceUID,
+      seriesSummaryMetadata,
       madeInClient,
     });
   },
