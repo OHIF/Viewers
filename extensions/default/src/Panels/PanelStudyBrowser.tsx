@@ -17,6 +17,8 @@ function PanelStudyBrowser({
   requestDisplaySetCreationForStudy,
   dataSource,
 }) {
+  const isMounted = useRef(true);
+  
   const { hangingProtocolService, displaySetService, uiNotificationService } =
     servicesManager.services;
   const navigate = useNavigate();
@@ -33,7 +35,6 @@ function PanelStudyBrowser({
   const [studyDisplayList, setStudyDisplayList] = useState([]);
   const [displaySets, setDisplaySets] = useState([]);
   const [thumbnailImageSrcMap, setThumbnailImageSrcMap] = useState({});
-  const isMounted = useRef(true);
 
   const onDoubleClickThumbnailHandler = displaySetInstanceUID => {
     let updatedViewports = [];
@@ -103,16 +104,13 @@ function PanelStudyBrowser({
     }
 
     StudyInstanceUIDs.forEach(sid => fetchStudiesForPatient(sid));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [StudyInstanceUIDs, getStudiesForPatientByMRN]);
+  }, [StudyInstanceUIDs, dataSource, getStudiesForPatientByMRN, navigate]);
 
   // // ~~ Initial Thumbnails
   useEffect(() => {
     const currentDisplaySets = displaySetService.activeDisplaySets;
     currentDisplaySets.forEach(async dSet => {
-      const displaySet = displaySetService.getDisplaySetByUID(
-        dSet.displaySetInstanceUID
-      );
+      const displaySet = displaySetService.getDisplaySetByUID(dSet.displaySetInstanceUID);
       const imageIds = dataSource.getImageIdsForDisplaySet(displaySet);
       const imageId = imageIds[Math.floor(imageIds.length / 2)];
 
@@ -134,11 +132,11 @@ function PanelStudyBrowser({
         });
       }
     });
+
     return () => {
       isMounted.current = false;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [StudyInstanceUIDs, dataSource, displaySetService, getImageSrc]);
 
   // ~~ displaySets
   useEffect(() => {
@@ -148,8 +146,7 @@ function PanelStudyBrowser({
     sortStudyInstances(mappedDisplaySets);
 
     setDisplaySets(mappedDisplaySets);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [thumbnailImageSrcMap]);
+  }, [StudyInstanceUIDs, thumbnailImageSrcMap, displaySetService]);
 
   // ~~ subscriptions --> displaySets
   useEffect(() => {
@@ -157,20 +154,15 @@ function PanelStudyBrowser({
     const SubscriptionDisplaySetsAdded = displaySetService.subscribe(
       displaySetService.EVENTS.DISPLAY_SETS_ADDED,
       data => {
-        const { displaySetsAdded } = data;
+        const { displaySetsAdded, options } = data;
         displaySetsAdded.forEach(async dSet => {
-          const displaySet = displaySetService.getDisplaySetByUID(
-            dSet.displaySetInstanceUID
-          );
+          const displaySet = displaySetService.getDisplaySetByUID(dSet.displaySetInstanceUID);
           if (!displaySet?.unsupported) {
             const imageIds = dataSource.getImageIdsForDisplaySet(displaySet);
             const imageId = imageIds[Math.floor(imageIds.length / 2)];
 
             // TODO: Is it okay that imageIds are not returned here for SR displaysets?
-            if (
-              imageId &&
-              !(dSet.displaySetInstanceUID in thumbnailImageSrcMap)
-            ) {
+            if (imageId && !(dSet.displaySetInstanceUID in thumbnailImageSrcMap)) {
               // When the image arrives, render it and store the result in the thumbnailImgSrcMap
 
               getImageSrc(imageId, dSet.initialViewport).then(imgSrc => {
@@ -188,6 +180,12 @@ function PanelStudyBrowser({
       }
     );
 
+    return () => {
+      SubscriptionDisplaySetsAdded.unsubscribe();
+    };
+  }, [getImageSrc, dataSource, displaySetService]);
+
+  useEffect(() => {
     // TODO: Will this always hold _all_ the displaySets we care about?
     // DISPLAY_SETS_CHANGED returns `DisplaySerService.activeDisplaySets`
     const SubscriptionDisplaySetsChanged = displaySetService.subscribe(
@@ -211,12 +209,10 @@ function PanelStudyBrowser({
     );
 
     return () => {
-      SubscriptionDisplaySetsAdded.unsubscribe();
       SubscriptionDisplaySetsChanged.unsubscribe();
       SubscriptionDisplaySetMetaDataInvalidated.unsubscribe();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [StudyInstanceUIDs, thumbnailImageSrcMap, displaySetService]);
 
   const tabs = _createStudyBrowserTabs(StudyInstanceUIDs, studyDisplayList, displaySets);
 
