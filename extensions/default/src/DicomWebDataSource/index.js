@@ -443,7 +443,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
       }
 
       function setSuccessFlag() {
-        const study = DicomMetadataStore.getStudy(StudyInstanceUID, madeInClient);
+        const study = DicomMetadataStore.getStudy(StudyInstanceUID);
         if (!study) {
           return;
         }
