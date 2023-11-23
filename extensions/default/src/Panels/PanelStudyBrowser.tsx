@@ -17,8 +17,6 @@ function PanelStudyBrowser({
   requestDisplaySetCreationForStudy,
   dataSource,
 }) {
-  const isMounted = useRef(false);
-
   const { hangingProtocolService, displaySetService, uiNotificationService } =
     servicesManager.services;
   const navigate = useNavigate();
@@ -110,37 +108,23 @@ function PanelStudyBrowser({
   useEffect(() => {
     const currentDisplaySets = displaySetService.activeDisplaySets;
     currentDisplaySets.forEach(async dSet => {
+      const newImageSrcEntry = {};
       const displaySet = displaySetService.getDisplaySetByUID(dSet.displaySetInstanceUID);
       const imageIds = dataSource.getImageIdsForDisplaySet(displaySet);
       const imageId = imageIds[Math.floor(imageIds.length / 2)];
 
       // TODO: Is it okay that imageIds are not returned here for SR displaySets?
-      if (
-        imageId &&
-        !displaySet?.unsupported &&
-        !(dSet.displaySetInstanceUID in thumbnailImageSrcMap)
-      ) {
-        // When the image arrives, render it and store the result in the thumbnailImgSrcMap
-        getImageSrc(imageId).then(imgSrc => {
-          const newImageSrcEntry = {};
-          newImageSrcEntry[dSet.displaySetInstanceUID] = imgSrc;
-          if (isMounted.current) {
-            setThumbnailImageSrcMap(prevState => {
-              return { ...prevState, ...newImageSrcEntry };
-            });
-          }
-        });
+      if (!imageId || displaySet?.unsupported) {
+        return;
       }
-    });
-  }, [StudyInstanceUIDs, dataSource, displaySetService, thumbnailImageSrcMap, getImageSrc]);
+      // When the image arrives, render it and store the result in the thumbnailImgSrcMap
+      newImageSrcEntry[dSet.displaySetInstanceUID] = await getImageSrc(imageId);
 
-  useEffect(() => {
-    // Preventing state update for unmounted component
-    isMounted.current = true;
-    return () => {
-      isMounted.current = false;
-    };
-  }, []);
+      setThumbnailImageSrcMap(prevState => {
+        return { ...prevState, ...newImageSrcEntry };
+      });
+    });
+  }, [StudyInstanceUIDs, dataSource, displaySetService, getImageSrc]);
 
   // ~~ displaySets
   useEffect(() => {
@@ -158,28 +142,30 @@ function PanelStudyBrowser({
     const SubscriptionDisplaySetsAdded = displaySetService.subscribe(
       displaySetService.EVENTS.DISPLAY_SETS_ADDED,
       data => {
-        const { displaySetsAdded } = data;
+        const { displaySetsAdded, options } = data;
         displaySetsAdded.forEach(async dSet => {
+          const newImageSrcEntry = {};
           const displaySet = displaySetService.getDisplaySetByUID(dSet.displaySetInstanceUID);
-          if (!displaySet?.unsupported) {
-            const imageIds = dataSource.getImageIdsForDisplaySet(displaySet);
-            const imageId = imageIds[Math.floor(imageIds.length / 2)];
-
-            // TODO: Is it okay that imageIds are not returned here for SR displaysets?
-            if (imageId && !(dSet.displaySetInstanceUID in thumbnailImageSrcMap)) {
-              // When the image arrives, render it and store the result in the thumbnailImgSrcMap
-
-              getImageSrc(imageId, dSet.initialViewport).then(imgSrc => {
-                const newImageSrcEntry = {};
-                newImageSrcEntry[dSet.displaySetInstanceUID] = imgSrc;
-                if (isMounted.current) {
-                  setThumbnailImageSrcMap(prevState => {
-                    return { ...prevState, ...newImageSrcEntry };
-                  });
-                }
-              });
-            }
+          if (displaySet?.unsupported) {
+            return;
           }
+
+          const imageIds = dataSource.getImageIdsForDisplaySet(displaySet);
+          const imageId = imageIds[Math.floor(imageIds.length / 2)];
+
+          // TODO: Is it okay that imageIds are not returned here for SR displaysets?
+          if (!imageId) {
+            return;
+          }
+          // When the image arrives, render it and store the result in the thumbnailImgSrcMap
+          newImageSrcEntry[dSet.displaySetInstanceUID] = await getImageSrc(
+            imageId,
+            dSet.initialViewport
+          );
+
+          setThumbnailImageSrcMap(prevState => {
+            return { ...prevState, ...newImageSrcEntry };
+          });
         });
       }
     );
@@ -187,7 +173,7 @@ function PanelStudyBrowser({
     return () => {
       SubscriptionDisplaySetsAdded.unsubscribe();
     };
-  }, [getImageSrc, dataSource, thumbnailImageSrcMap, displaySetService]);
+  }, [getImageSrc, dataSource, displaySetService]);
 
   useEffect(() => {
     // TODO: Will this always hold _all_ the displaySets we care about?

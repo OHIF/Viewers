@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
@@ -19,8 +19,6 @@ function PanelStudyBrowserTracking({
   requestDisplaySetCreationForStudy,
   dataSource,
 }) {
-  const isMounted = useRef(false);
-
   const { displaySetService, uiDialogService, hangingProtocolService, uiNotificationService } =
     servicesManager.services;
   const navigate = useNavigate();
@@ -68,14 +66,6 @@ function PanelStudyBrowserTracking({
     viewports.get(activeViewportId)?.displaySetInstanceUIDs;
 
   const { trackedSeries } = trackedMeasurements.context;
-
-  useEffect(() => {
-    // Preventing state update for unmounted component
-    isMounted.current = true;
-    return () => {
-      isMounted.current = false;
-    };
-  }, []);
 
   // ~~ studyDisplayList
   useEffect(() => {
@@ -136,27 +126,23 @@ function PanelStudyBrowserTracking({
     }
 
     currentDisplaySets.forEach(async dSet => {
+      const newImageSrcEntry = {};
       const displaySet = displaySetService.getDisplaySetByUID(dSet.displaySetInstanceUID);
       const imageIds = dataSource.getImageIdsForDisplaySet(displaySet);
       const imageId = imageIds[Math.floor(imageIds.length / 2)];
 
-      // TODO: Is it okay that imageIds are not returned here for SR displaysets?
-      if (
-        imageId &&
-        !displaySet?.unsupported &&
-        !(dSet.displaySetInstanceUID in thumbnailImageSrcMap)
-      ) {
-        // When the image arrives, render it and store the result in the thumbnailImgSrcMap
-        getImageSrc(imageId).then(imgSrc => {
-          const newImageSrcEntry = {};
-          newImageSrcEntry[dSet.displaySetInstanceUID] = imgSrc;
-          setThumbnailImageSrcMap(prevState => {
-            return { ...prevState, ...newImageSrcEntry };
-          });
-        });
+      // TODO: Is it okay that imageIds are not returned here for SR displaySets?
+      if (!imageId || displaySet?.unsupported) {
+        return;
       }
+      // When the image arrives, render it and store the result in the thumbnailImgSrcMap
+      newImageSrcEntry[dSet.displaySetInstanceUID] = await getImageSrc(imageId);
+
+      setThumbnailImageSrcMap(prevState => {
+        return { ...prevState, ...newImageSrcEntry };
+      });
     });
-  }, [displaySetService, dataSource, thumbnailImageSrcMap, getImageSrc]);
+  }, [displaySetService, dataSource, getImageSrc]);
 
   // ~~ displaySets
   useEffect(() => {
@@ -198,27 +184,29 @@ function PanelStudyBrowserTracking({
         displaySetsAdded.forEach(async dSet => {
           const displaySetInstanceUID = dSet.displaySetInstanceUID;
 
+          const newImageSrcEntry = {};
           const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
-          if (!displaySet?.unsupported) {
-            if (options.madeInClient) {
-              setJumpToDisplaySet(displaySetInstanceUID);
-            }
-
-            const imageIds = dataSource.getImageIdsForDisplaySet(displaySet);
-            const imageId = imageIds[Math.floor(imageIds.length / 2)];
-
-            // TODO: Is it okay that imageIds are not returned here for SR displaysets?
-            if (imageId && !(displaySetInstanceUID in thumbnailImageSrcMap)) {
-              // When the image arrives, render it and store the result in the thumbnailImgSrcMap
-              getImageSrc(imageId).then(imgSrc => {
-                const newImageSrcEntry = {};
-                newImageSrcEntry[displaySetInstanceUID] = imgSrc;
-                setThumbnailImageSrcMap(prevState => {
-                  return { ...prevState, ...newImageSrcEntry };
-                });
-              });
-            }
+          if (displaySet?.unsupported) {
+            return;
           }
+
+          if (options.madeInClient) {
+            setJumpToDisplaySet(displaySetInstanceUID);
+          }
+
+          const imageIds = dataSource.getImageIdsForDisplaySet(displaySet);
+          const imageId = imageIds[Math.floor(imageIds.length / 2)];
+
+          // TODO: Is it okay that imageIds are not returned here for SR displaysets?
+          if (!imageId) {
+            return;
+          }
+
+          // When the image arrives, render it and store the result in the thumbnailImgSrcMap
+          newImageSrcEntry[displaySetInstanceUID] = await getImageSrc(imageId);
+          setThumbnailImageSrcMap(prevState => {
+            return { ...prevState, ...newImageSrcEntry };
+          });
         });
       }
     );
@@ -274,16 +262,7 @@ function PanelStudyBrowserTracking({
       SubscriptionDisplaySetsChanged.unsubscribe();
       SubscriptionDisplaySetMetaDataInvalidated.unsubscribe();
     };
-  }, [
-    thumbnailImageSrcMap,
-    trackedSeries,
-    uiDialogService,
-    uiNotificationService,
-    viewports,
-    dataSource,
-    displaySetService,
-    viewportGridService,
-  ]);
+  }, [thumbnailImageSrcMap, trackedSeries, viewports, dataSource, displaySetService]);
 
   const tabs = _createStudyBrowserTabs(
     StudyInstanceUIDs,
