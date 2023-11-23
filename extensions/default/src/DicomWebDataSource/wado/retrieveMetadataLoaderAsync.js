@@ -94,11 +94,7 @@ export default class RetrieveMetadataLoaderAsync extends RetrieveMetadataLoader 
    */
   *getPreLoaders() {
     const preLoaders = [];
-    const {
-      studyInstanceUID,
-      filters: { seriesInstanceUID } = {},
-      client,
-    } = this;
+    const { studyInstanceUID, filters: { seriesInstanceUID } = {}, client } = this;
 
     // asking to include Series Date, Series Time, Series Description
     // and Series Number in the series metadata returned to better sort series

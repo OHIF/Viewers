@@ -11,18 +11,16 @@ export default class RetrieveMetadataLoader {
    * @param {Object} client The dicomweb-client.
    * @param {Array} studyInstanceUID Study instance ui to be retrieved
    * @param {Object} [filters] - Object containing filters to be applied on retrieve metadata process
-   * @param {string} [filter.seriesInstanceUID] - series instance uid to filter results against
+   * @param {string} [filters.seriesInstanceUID] - series instance uid to filter results against
    * @param {Object} [sortCriteria] - Custom sort criteria used for series
    * @param {Function} [sortFunction] - Custom sort function for series
-   * @param {Object} [clientOptions ] - parameters related to the dicomweb client
    */
   constructor(
     client,
     studyInstanceUID,
     filters = {},
     sortCriteria = undefined,
-    sortFunction = undefined,
-    clientOptions = undefined
+    sortFunction = undefined
   ) {
     this.client = client;
     this.studyInstanceUID = studyInstanceUID;
@@ -35,7 +33,6 @@ export default class RetrieveMetadataLoader {
     const preLoadData = await this.preLoad();
     const loadData = await this.load(preLoadData);
     const postLoadData = await this.posLoad(loadData);
-
     return postLoadData;
   }
 
@@ -46,13 +43,9 @@ export default class RetrieveMetadataLoader {
   async runLoaders(loaders) {
     let result;
     for (const loader of loaders) {
-      try {
-        result = await loader();
-        if (result && result.length) {
-          break; // closes iterator in case data is retrieved successfully
-        }
-      } catch (e) {
-        throw e;
+      result = await loader();
+      if (result && result.length) {
+        break; // closes iterator in case data is retrieved successfully
       }
     }
 
@@ -64,8 +57,8 @@ export default class RetrieveMetadataLoader {
   }
 
   // Methods to be overwrite
-  async configLoad() { }
-  async preLoad() { }
-  async load(preLoadData) { }
-  async posLoad(loadData) { }
+  async configLoad() {}
+  async preLoad() {}
+  async load(preLoadData) {}
+  async posLoad(loadData) {}
 }

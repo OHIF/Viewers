@@ -17,8 +17,8 @@ function PanelStudyBrowser({
   requestDisplaySetCreationForStudy,
   dataSource,
 }) {
-  const isMounted = useRef(true);
-  
+  const isMounted = useRef(false);
+
   const { hangingProtocolService, displaySetService, uiNotificationService } =
     servicesManager.services;
   const navigate = useNavigate();
@@ -132,11 +132,15 @@ function PanelStudyBrowser({
         });
       }
     });
+  }, [StudyInstanceUIDs, dataSource, displaySetService, thumbnailImageSrcMap, getImageSrc]);
 
+  useEffect(() => {
+    // Preventing state update for unmounted component
+    isMounted.current = true;
     return () => {
       isMounted.current = false;
     };
-  }, [StudyInstanceUIDs, dataSource, displaySetService, getImageSrc]);
+  }, []);
 
   // ~~ displaySets
   useEffect(() => {
@@ -154,7 +158,7 @@ function PanelStudyBrowser({
     const SubscriptionDisplaySetsAdded = displaySetService.subscribe(
       displaySetService.EVENTS.DISPLAY_SETS_ADDED,
       data => {
-        const { displaySetsAdded, options } = data;
+        const { displaySetsAdded } = data;
         displaySetsAdded.forEach(async dSet => {
           const displaySet = displaySetService.getDisplaySetByUID(dSet.displaySetInstanceUID);
           if (!displaySet?.unsupported) {
@@ -183,7 +187,7 @@ function PanelStudyBrowser({
     return () => {
       SubscriptionDisplaySetsAdded.unsubscribe();
     };
-  }, [getImageSrc, dataSource, displaySetService]);
+  }, [getImageSrc, dataSource, thumbnailImageSrcMap, displaySetService]);
 
   useEffect(() => {
     // TODO: Will this always hold _all_ the displaySets we care about?

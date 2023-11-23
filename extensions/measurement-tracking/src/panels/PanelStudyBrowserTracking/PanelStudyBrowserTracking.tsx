@@ -69,6 +69,14 @@ function PanelStudyBrowserTracking({
 
   const { trackedSeries } = trackedMeasurements.context;
 
+  useEffect(() => {
+    // Preventing state update for unmounted component
+    isMounted.current = true;
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
+
   // ~~ studyDisplayList
   useEffect(() => {
     // Fetch all studies for the patient in each primary study
@@ -148,11 +156,7 @@ function PanelStudyBrowserTracking({
         });
       }
     });
-
-    return () => {
-      isMounted.current = false;
-    };
-  }, [displaySetService, dataSource, getImageSrc]);
+  }, [displaySetService, dataSource, thumbnailImageSrcMap, getImageSrc]);
 
   // ~~ displaySets
   useEffect(() => {
@@ -270,7 +274,16 @@ function PanelStudyBrowserTracking({
       SubscriptionDisplaySetsChanged.unsubscribe();
       SubscriptionDisplaySetMetaDataInvalidated.unsubscribe();
     };
-  }, [thumbnailImageSrcMap, trackedSeries, viewports, dataSource, displaySetService]);
+  }, [
+    thumbnailImageSrcMap,
+    trackedSeries,
+    uiDialogService,
+    uiNotificationService,
+    viewports,
+    dataSource,
+    displaySetService,
+    viewportGridService,
+  ]);
 
   const tabs = _createStudyBrowserTabs(
     StudyInstanceUIDs,
