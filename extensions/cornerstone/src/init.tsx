@@ -1,4 +1,4 @@
-import OHIF, { Types } from '@ohif/core';
+import OHIF, { Types, errorHandler } from '@ohif/core';
 import React from 'react';
 
 import * as cornerstone from '@cornerstonejs/core';
@@ -213,6 +213,10 @@ export default async function init({
     commandsManager,
   });
 
+  let priorityCounter = -100;
+  let enabledElementCounter = 0;
+  let STUDY_STACKS = [];
+
   /**
    * When a viewport gets a new display set, this call will go through all the
    * active tools in the toolbar, and call any commands registered in the
@@ -254,6 +258,15 @@ export default async function init({
     });
   };
 
+  /**
+   * Runs error handler for failed requests.
+   * @param event
+   */
+  const imageLoadFailedHandler = ({ detail }) => {
+    const handler = errorHandler.getHTTPErrorHandler();
+    handler(detail.error);
+  };
+
   const resetCrosshairs = evt => {
     const { element } = evt.detail;
     const { viewportId, renderingEngineId } = cornerstone.getEnabledElement(element);
@@ -278,15 +291,13 @@ export default async function init({
     }
   };
 
-  const priorityCounter = -100;
-  let enabledElementCounter = 0;
-  let STUDY_STACKS = [];
-
   eventTarget.addEventListener(EVENTS.STACK_VIEWPORT_NEW_STACK, evt => {
     const { element, imageIds } = evt.detail;
     const { viewportId } = cornerstone.getEnabledElement(element);
-    // stackPrefetch.enable({ uid: viewportId, imageIds }, priorityCounter--);
+    stackPrefetch.enable({ uid: viewportId, imageIds }, priorityCounter--);
   });
+  eventTarget.addEventListener(EVENTS.IMAGE_LOAD_FAILED, imageLoadFailedHandler);
+  eventTarget.addEventListener(EVENTS.IMAGE_LOAD_ERROR, imageLoadFailedHandler);
 
   function elementEnabledHandler(evt) {
     enabledElementCounter++;
