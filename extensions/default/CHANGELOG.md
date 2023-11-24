@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-beta.23](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.22...v3.8.0-beta.23) (2023-11-24)
+
+
+### Features
+
+* Merge Data Source ([#3788](https://github.com/OHIF/Viewers/issues/3788)) ([c4ff2c2](https://github.com/OHIF/Viewers/commit/c4ff2c2f09546ce8b72eab9c5e7beed611e3cab0))
+
+
+
+
+
 # [3.8.0-beta.22](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.21...v3.8.0-beta.22) (2023-11-21)
 
 **Note:** Version bump only for package @ohif/extension-default
