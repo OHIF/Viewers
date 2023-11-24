@@ -40,7 +40,7 @@
     "@babel/runtime": "^7.20.13"
   },
   "devDependencies": {
-    "webpack": "^5.50.0",
+    "webpack": "^5.89.0",
     "webpack-merge": "^5.7.3"
   }
 }

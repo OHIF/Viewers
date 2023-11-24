@@ -1,5 +1,6 @@
-import hpMNGrid from './hpMNGrid';
-import hpMNCompare from './hpCompare';
+import hpMNGrid from './hangingprotocols/hpMNGrid';
+import hpMNCompare from './hangingprotocols/hpCompare';
+import hpMammo from './hangingprotocols/hpMammo';
 
 const defaultProtocol = {
   id: 'default',
@@ -113,6 +114,10 @@ function getHangingProtocolModule() {
     {
       name: hpMNCompare.id,
       protocol: hpMNCompare,
+    },
+    {
+      name: hpMammo.id,
+      protocol: hpMammo,
     },
   ];
 }
