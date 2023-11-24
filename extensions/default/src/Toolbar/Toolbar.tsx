@@ -37,7 +37,7 @@ export default function Toolbar({
 
   return (
     <>
-      {toolbarButtons.map(toolDef => {
+      {toolbarButtons.filter(toolDef => toolDef.id !== 'MPR').map(toolDef => {
         const { id, Component, componentProps } = toolDef;
         return (
           // The margin for separating the tools on the toolbar should go here and NOT in each individual component (button) item.
