@@ -156,7 +156,7 @@ module.exports = (env, argv) => {
         {
           directory: '../../testdata',
           staticOptions: {
-            extensions: ['gz', 'br'],
+            extensions: ['gz', 'br', 'mht'],
             index: ['index.json.gz', 'index.mht.gz'],
             redirect: true,
             setHeaders,
