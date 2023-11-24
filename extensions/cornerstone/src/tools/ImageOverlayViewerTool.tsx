@@ -1,8 +1,8 @@
-import { VolumeViewport, metaData } from '@cornerstonejs/core';
-import { utilities } from '@cornerstonejs/core';
+import { VolumeViewport, metaData, utilities } from '@cornerstonejs/core';
 import { IStackViewport, IVolumeViewport, Point3 } from '@cornerstonejs/core/dist/esm/types';
 import { AnnotationDisplayTool, drawing } from '@cornerstonejs/tools';
 import { guid } from '@ohif/core/src/utils';
+import OverlayPlaneModuleProvider from './OverlayPlaneModuleProvider';
 
 interface CachedStat {
   color: number[]; // [r, g, b, a]
@@ -27,8 +27,12 @@ interface CachedStat {
  */
 class ImageOverlayViewerTool extends AnnotationDisplayTool {
   static toolName = 'ImageOverlayViewer';
-  private _cachedOverlayMetadata: Map<string, any[]> = new Map();
-  private _cachedStats: { [key: string]: CachedStat } = {};
+
+  /**
+   * The overlay plane module provider add method is exposed here to be used
+   * when updating the overlay for this tool to use for displaying data.
+   */
+  public static addOverlayPlaneModule = OverlayPlaneModuleProvider.add;
 
   constructor(
     toolProps = {},
@@ -42,10 +46,7 @@ class ImageOverlayViewerTool extends AnnotationDisplayTool {
     super(toolProps, defaultToolProps);
   }
 
-  onSetToolDisabled = (): void => {
-    this._cachedStats = {};
-    this._cachedOverlayMetadata = new Map();
-  };
+  onSetToolDisabled = (): void => { };
 
   protected getReferencedImageId(viewport: IStackViewport | IVolumeViewport): string {
     if (viewport instanceof VolumeViewport) {
@@ -64,18 +65,24 @@ class ImageOverlayViewerTool extends AnnotationDisplayTool {
       return;
     }
 
-    const overlays =
-      this._cachedOverlayMetadata.get(imageId) ??
-      metaData.get('overlayPlaneModule', imageId)?.overlays;
+    const overlayMetadata = metaData.get('overlayPlaneModule', imageId);
+    const overlays = overlayMetadata?.overlays;
 
     // no overlays
     if (!overlays?.length) {
       return;
     }
 
-    this._cachedOverlayMetadata.set(imageId, overlays);
+    // Fix the x, y positions
+    overlays.forEach(overlay => {
+      overlay.x ||= 0;
+      overlay.y ||= 0;
+    });
 
-    this._getCachedStat(imageId, overlays, this.configuration.fillColor).then(cachedStat => {
+    // Will clear cached stat data when the overlay data changes
+    ImageOverlayViewerTool.addOverlayPlaneModule(imageId, overlayMetadata);
+
+    this._getCachedStat(imageId, overlayMetadata, this.configuration.fillColor).then(cachedStat => {
       cachedStat.overlays.forEach(overlay => {
         this._renderOverlay(enabledElement, svgDrawingHelper, overlay);
       });
@@ -146,15 +153,18 @@ class ImageOverlayViewerTool extends AnnotationDisplayTool {
 
   private async _getCachedStat(
     imageId: string,
-    overlayMetadata: any[],
+    overlayMetadata,
     color: number[]
   ): Promise<CachedStat> {
-    if (this._cachedStats[imageId] && this._isSameColor(this._cachedStats[imageId].color, color)) {
-      return this._cachedStats[imageId];
+    const missingOverlay = overlayMetadata.overlays.filter(
+      overlay => overlay.pixelData && !overlay.dataUrl
+    );
+    if (missingOverlay.length === 0) {
+      return overlayMetadata;
     }
 
     const overlays = await Promise.all(
-      overlayMetadata
+      overlayMetadata.overlays
         .filter(overlay => overlay.pixelData)
         .map(async (overlay, idx) => {
           let pixelData = null;
@@ -172,7 +182,7 @@ class ImageOverlayViewerTool extends AnnotationDisplayTool {
 
           const dataUrl = this._renderOverlayToDataUrl(
             { width: overlay.columns, height: overlay.rows },
-            color,
+            overlay.color || color,
             pixelData
           );
 
@@ -184,13 +194,9 @@ class ImageOverlayViewerTool extends AnnotationDisplayTool {
           };
         })
     );
+    overlayMetadata.overlays = overlays;
 
-    this._cachedStats[imageId] = {
-      color: color,
-      overlays: overlays.filter(overlay => overlay),
-    };
-
-    return this._cachedStats[imageId];
+    return overlayMetadata;
   }
 
   /**

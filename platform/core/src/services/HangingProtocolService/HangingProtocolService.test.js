@@ -141,7 +141,9 @@ function checkHpsBestMatch(hps) {
 
 describe('HangingProtocolService', () => {
   const mockedFunction = jest.fn();
-  const commandsManager = {};
+  const commandsManager = {
+    run: mockedFunction,
+  };
   const servicesManager = {
     services: {
       TestService: {
