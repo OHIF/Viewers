@@ -19,8 +19,12 @@ const ViewportOverlay = ({ topLeft, topRight, bottomRight, bottomLeft, color }) 
   const overlay = 'absolute pointer-events-none viewport-overlay';
   return (
     <div
-      className={classnames(color ? color : 'text-aqua-pale', 'text-[13px]', 'leading-5')}
-      style={{ textShadow: '0.8px 0.8px 0.5px rgba(0, 0, 0, 0.75)' }}
+      className={classnames(
+        color ? color : 'text-aqua-pale',
+        'text-[13px]',
+        'leading-5',
+        'overlay-text'
+      )}
     >
       <div
         data-cy={'viewport-overlay-top-left'}
@@ -31,14 +35,14 @@ const ViewportOverlay = ({ topLeft, topRight, bottomRight, bottomLeft, color }) 
       <div
         data-cy={'viewport-overlay-top-right'}
         className={classnames(overlay, classes.topRight)}
-        style={{ transform: 'translateX(-4px)' }} // shift right side overlays by 4px for better alignment with ViewportActionCorners' icons
+        style={{ transform: 'translateX(-8px)' }} // shift right side overlays by 4px for better alignment with ViewportActionCorners' icons
       >
         {topRight}
       </div>
       <div
         data-cy={'viewport-overlay-bottom-right'}
         className={classnames(overlay, classes.bottomRight)}
-        style={{ transform: 'translateX(-4px)' }} // shift right side overlays by 4px for better alignment with ViewportActionCorners' icons
+        style={{ transform: 'translateX(-8px)' }} // shift right side overlays by 4px for better alignment with ViewportActionCorners' icons
       >
         {bottomRight}
       </div>

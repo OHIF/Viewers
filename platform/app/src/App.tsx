@@ -86,9 +86,12 @@ function App({ config, defaultExtensions, defaultModes }) {
   ];
 
   // Loop through and register each of the service providers registered with the ServiceProvidersManager.
-  Object.entries(serviceProvidersManager.providers).forEach(([serviceName, provider]) => {
-    providers.push([provider, { service: servicesManager.services[serviceName] }]);
-  });
+  const providersFromManager = Object.entries(serviceProvidersManager.providers);
+  if (providersFromManager.length > 0) {
+    providersFromManager.forEach(([serviceName, provider]) => {
+      providers.push([provider, { service: servicesManager.services[serviceName] }]);
+    });
+  }
 
   const CombinedProviders = ({ children }) => Compose({ components: providers, children });
 

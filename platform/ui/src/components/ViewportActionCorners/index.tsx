@@ -1,3 +1,2 @@
-import ViewportActionCorners, { ViewportActionCornersLocations } from './ViewportActionCorners';
-export { ViewportActionCornersLocations };
+import ViewportActionCorners from './ViewportActionCorners';
 export default ViewportActionCorners;

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 
-import { Tooltip, Icon, ViewportActionArrows } from '@ohif/ui';
+import { Tooltip, Icon, ViewportActionArrows, Types } from '@ohif/ui';
 
 import { annotation } from '@cornerstonejs/tools';
 import { useTrackedMeasurements } from './../getContextModule';
@@ -180,17 +180,22 @@ function TrackedCornerstoneViewport(props) {
     const statusComponent = _getStatusComponent(isTracked);
     const arrowsComponent = _getArrowsComponent(isTracked, switchMeasurement);
 
-    viewportActionCornersService.setActionComponent({
-      viewportId,
-      componentId: 'viewportStatusComponent',
-      component: statusComponent,
-    });
-
-    viewportActionCornersService.setActionComponent({
-      viewportId,
-      componentId: 'viewportActionArrowsComponent',
-      component: arrowsComponent,
-    });
+    viewportActionCornersService.setActionComponents([
+      {
+        viewportId,
+        id: 'viewportStatusComponent',
+        component: statusComponent,
+        indexPriority: -100,
+        location: Types.ViewportActionCornersLocations.topLeft,
+      },
+      {
+        viewportId,
+        id: 'viewportActionArrowsComponent',
+        component: arrowsComponent,
+        indexPriority: 0,
+        location: Types.ViewportActionCornersLocations.topRight,
+      },
+    ]);
   }, [isTracked, switchMeasurement, viewportActionCornersService, viewportId]);
 
   const getCornerstoneViewport = () => {
@@ -268,18 +273,11 @@ function _getNextMeasurementUID(
     // Not tracking a measurement, or previous measurement now deleted, revert to 0.
     measurementIndex = 0;
   } else {
-    if (direction === 'left') {
-      measurementIndex--;
-
-      if (measurementIndex < 0) {
-        measurementIndex = measurementCount - 1;
-      }
-    } else if (direction === 'right') {
-      measurementIndex++;
-
-      if (measurementIndex === measurementCount) {
-        measurementIndex = 0;
-      }
+    measurementIndex += direction;
+    if (measurementIndex < 0) {
+      measurementIndex = measurementCount - 1;
+    } else if (measurementIndex === measurementCount) {
+      measurementIndex = 0;
     }
   }
 
@@ -306,7 +304,7 @@ function _getStatusComponent(isTracked) {
   }
 
   return (
-    <div className="relative px-[4px]">
+    <div className="relative">
       <Tooltip
         position="bottom-left"
         content={

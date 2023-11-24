@@ -5,7 +5,7 @@ import { utils, ServicesManager, ExtensionManager } from '@ohif/core';
 
 import { setTrackingUniqueIdentifiersForElement } from '../tools/modules/dicomSRModule';
 
-import { Icon, Tooltip, useViewportGrid, ViewportActionArrows } from '@ohif/ui';
+import { Icon, Tooltip, useViewportGrid, ViewportActionArrows, Types } from '@ohif/ui';
 import hydrateStructuredReport from '../utils/hydrateStructuredReport';
 import { useAppConfig } from '@state';
 
@@ -210,18 +210,11 @@ function OHIFCornerstoneSRViewport(props) {
     direction => {
       let newMeasurementSelected = measurementSelected;
 
-      if (direction === 'right') {
-        newMeasurementSelected++;
-
-        if (newMeasurementSelected >= measurementCount) {
-          newMeasurementSelected = 0;
-        }
-      } else {
-        newMeasurementSelected--;
-
-        if (newMeasurementSelected < 0) {
-          newMeasurementSelected = measurementCount - 1;
-        }
+      newMeasurementSelected += direction;
+      if (newMeasurementSelected >= measurementCount) {
+        newMeasurementSelected = 0;
+      } else if (newMeasurementSelected < 0) {
+        newMeasurementSelected = measurementCount - 1;
       }
 
       setTrackingIdentifiers(newMeasurementSelected);
@@ -296,29 +289,35 @@ function OHIFCornerstoneSRViewport(props) {
   }, [dataSource, srDisplaySet]);
 
   useEffect(() => {
-    viewportActionCornersService.setActionComponent({
-      viewportId,
-      componentId: 'viewportStatusComponent',
-      component: _getStatusComponent({
-        srDisplaySet,
+    viewportActionCornersService.setActionComponents([
+      {
         viewportId,
-        isRehydratable: srDisplaySet.isRehydratable,
-        isLocked,
-        sendTrackedMeasurementsEvent,
-        t,
-      }),
-    });
-
-    viewportActionCornersService.setActionComponent({
-      viewportId,
-      componentId: 'viewportActionArrowsComponent',
-      component: (
-        <ViewportActionArrows
-          key="actionArrows"
-          onArrowsClick={onMeasurementChange}
-        ></ViewportActionArrows>
-      ),
-    });
+        id: 'viewportStatusComponent',
+        component: _getStatusComponent({
+          srDisplaySet,
+          viewportId,
+          isRehydratable: srDisplaySet.isRehydratable,
+          isLocked,
+          sendTrackedMeasurementsEvent,
+          t,
+        }),
+        indexPriority: -100,
+        location: Types.ViewportActionCornersLocations.topLeft,
+      },
+      {
+        viewportId,
+        id: 'viewportActionArrowsComponent',
+        index: 0,
+        component: (
+          <ViewportActionArrows
+            key="actionArrows"
+            onArrowsClick={onMeasurementChange}
+          ></ViewportActionArrows>
+        ),
+        indexPriority: 0,
+        location: Types.ViewportActionCornersLocations.topRight,
+      },
+    ]);
   }, [
     isLocked,
     onMeasurementChange,

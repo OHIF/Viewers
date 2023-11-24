@@ -1,7 +1,14 @@
 import { PubSubService } from '@ohif/core';
+import { Types } from '@ohif/ui';
+import { ReactNode } from 'react';
 
-export const VIEWPORT_ACTION_ARROWS_COMPONENT_ID = 'viewportActionArrowsComponent';
-export const VIEWPORT_STATUS_COMPONENT_ID = 'viewportStatusComponent';
+export type ActionComponentInfo = {
+  viewportId: string;
+  id: string;
+  component: ReactNode;
+  location: Types.ViewportActionCornersLocations;
+  indexPriority: number;
+};
 
 class ViewportActionCornersService extends PubSubService {
   public static readonly EVENTS = {};
@@ -24,6 +31,7 @@ class ViewportActionCornersService extends PubSubService {
   public setServiceImplementation({
     getState: getStateImplementation,
     setActionComponent: setActionComponentImplementation,
+    setActionComponents: setActionComponentsImplementation,
   }): void {
     if (getStateImplementation) {
       this.serviceImplementation._getState = getStateImplementation;
@@ -31,14 +39,21 @@ class ViewportActionCornersService extends PubSubService {
     if (setActionComponentImplementation) {
       this.serviceImplementation._setActionComponent = setActionComponentImplementation;
     }
+    if (setActionComponentsImplementation) {
+      this.serviceImplementation._setActionComponents = setActionComponentsImplementation;
+    }
   }
 
   public getState() {
     return this.serviceImplementation._getState();
   }
 
-  public setActionComponent(props) {
-    this.serviceImplementation._setActionComponent(props);
+  public setActionComponent(component: ActionComponentInfo) {
+    this.serviceImplementation._setActionComponent(component);
+  }
+
+  public setActionComponents(components: Array<ActionComponentInfo>) {
+    this.serviceImplementation._setActionComponents(components);
   }
 }
 

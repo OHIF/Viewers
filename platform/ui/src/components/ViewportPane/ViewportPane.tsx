@@ -80,7 +80,7 @@ function ViewportPane({
           'h-full w-full overflow-hidden rounded-md',
           {
             'border border-transparent': isActive,
-            'border-secondary-light border': !isActive,
+            'border-secondary-light group-hover:border-primary-light/70 border': !isActive,
           },
           className
         )}

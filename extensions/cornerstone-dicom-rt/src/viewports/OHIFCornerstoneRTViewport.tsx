@@ -1,10 +1,9 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
-import { utils } from '@ohif/core';
 import {
   useViewportGrid,
   LoadingIndicatorTotalPercent,
-  ViewportActionCornersLocations,
+  Types,
   ViewportActionArrows,
 } from '@ohif/ui';
 
@@ -130,7 +129,6 @@ function OHIFCornerstoneRTViewport(props) {
 
   const onSegmentChange = useCallback(
     direction => {
-      direction = direction === 'left' ? -1 : 1;
       const segmentationId = rtDisplaySet.displaySetInstanceUID;
       const segmentation = segmentationService.getSegmentation(segmentationId);
 
@@ -301,25 +299,30 @@ function OHIFCornerstoneRTViewport(props) {
   }, [hydrateRTDisplaySet, rtDisplaySet, storePresentationState, viewportId]);
 
   useEffect(() => {
-    viewportActionCornersService.setActionComponent({
-      viewportId,
-      componentId: 'viewportStatusComponent',
-      component: _getStatusComponent({
-        isHydrated,
-        onStatusClick,
-      }),
-    });
-
-    viewportActionCornersService.setActionComponent({
-      viewportId,
-      componentId: 'viewportActionArrowsComponent',
-      component: (
-        <ViewportActionArrows
-          key="actionArrows"
-          onArrowsClick={onSegmentChange}
-        ></ViewportActionArrows>
-      ),
-    });
+    viewportActionCornersService.setActionComponents([
+      {
+        viewportId,
+        id: 'viewportStatusComponent',
+        component: _getStatusComponent({
+          isHydrated,
+          onStatusClick,
+        }),
+        indexPriority: -100,
+        location: Types.ViewportActionCornersLocations.topLeft,
+      },
+      {
+        viewportId,
+        id: 'viewportActionArrowsComponent',
+        component: (
+          <ViewportActionArrows
+            key="actionArrows"
+            onArrowsClick={onSegmentChange}
+          ></ViewportActionArrows>
+        ),
+        indexPriority: 0,
+        location: Types.ViewportActionCornersLocations.topRight,
+      },
+    ]);
   }, [isHydrated, onSegmentChange, onStatusClick, viewportActionCornersService, viewportId]);
 
   return (

@@ -1,8 +1,12 @@
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { utils } from '@ohif/core';
-import { LoadingIndicatorTotalPercent, useViewportGrid, ViewportActionArrows } from '@ohif/ui';
+import {
+  LoadingIndicatorTotalPercent,
+  useViewportGrid,
+  ViewportActionArrows,
+  Types,
+} from '@ohif/ui';
 import createSEGToolGroupAndAddTools from '../utils/initSEGToolGroup';
 import promptHydrateSEG from '../utils/promptHydrateSEG';
 import _getStatusComponent from './_getStatusComponent';
@@ -122,7 +126,6 @@ function OHIFCornerstoneSEGViewport(props) {
 
   const onSegmentChange = useCallback(
     direction => {
-      direction = direction === 'left' ? -1 : 1;
       const segmentationId = segDisplaySet.displaySetInstanceUID;
       const segmentation = segmentationService.getSegmentation(segmentationId);
 
@@ -282,25 +285,30 @@ function OHIFCornerstoneSEGViewport(props) {
   }, [hydrateSEGDisplaySet, segDisplaySet, storePresentationState, viewportId]);
 
   useEffect(() => {
-    viewportActionCornersService.setActionComponent({
-      viewportId,
-      componentId: 'viewportStatusComponent',
-      component: _getStatusComponent({
-        isHydrated,
-        onStatusClick,
-      }),
-    });
-
-    viewportActionCornersService.setActionComponent({
-      viewportId,
-      componentId: 'viewportActionArrowsComponent',
-      component: (
-        <ViewportActionArrows
-          key="actionArrows"
-          onArrowsClick={onSegmentChange}
-        ></ViewportActionArrows>
-      ),
-    });
+    viewportActionCornersService.setActionComponents([
+      {
+        viewportId,
+        id: 'viewportStatusComponent',
+        component: _getStatusComponent({
+          isHydrated,
+          onStatusClick,
+        }),
+        indexPriority: -100,
+        location: Types.ViewportActionCornersLocations.topLeft,
+      },
+      {
+        viewportId,
+        id: 'viewportActionArrowsComponent',
+        component: (
+          <ViewportActionArrows
+            key="actionArrows"
+            onArrowsClick={onSegmentChange}
+          ></ViewportActionArrows>
+        ),
+        indexPriority: 0,
+        location: Types.ViewportActionCornersLocations.topRight,
+      },
+    ]);
   }, [isHydrated, onSegmentChange, onStatusClick, viewportActionCornersService, viewportId]);
 
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

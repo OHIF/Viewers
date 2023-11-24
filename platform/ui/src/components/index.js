@@ -73,7 +73,7 @@ import CheckBox from './CheckBox';
 import LoadingIndicatorProgress from './LoadingIndicatorProgress';
 import LoadingIndicatorTotalPercent from './LoadingIndicatorTotalPercent';
 import ViewportActionBar from './ViewportActionBar';
-import ViewportActionCorners, { ViewportActionCornersLocations } from './ViewportActionCorners';
+import ViewportActionCorners from './ViewportActionCorners';
 import ProgressLoadingBar from './ProgressLoadingBar';
 import LegacySidePanel from './LegacySidePanel';
 import PanelSection from './PanelSection';
@@ -167,7 +167,6 @@ export {
   ViewportActionArrows,
   ViewportActionBar,
   ViewportActionCorners,
-  ViewportActionCornersLocations,
   ViewportDownloadForm,
   ViewportGrid,
   ViewportPane,

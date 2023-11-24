@@ -15,7 +15,7 @@ function OHIFViewportActionCorners({ viewportId }: OHIFViewportActionCornersProp
 
   return (
     <ViewportActionCorners
-      cornerComponents={viewportActionCornersState[viewportId].cornerComponents}
+      cornerComponents={viewportActionCornersState[viewportId]}
     ></ViewportActionCorners>
   );
 }

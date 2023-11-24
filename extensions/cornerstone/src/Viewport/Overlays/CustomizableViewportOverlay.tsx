@@ -369,7 +369,7 @@ function _getViewportInstance(viewportData, imageIndex) {
     imageId = viewportData.data.imageIds[imageIndex];
   } else if (viewportData.viewportType === Enums.ViewportType.ORTHOGRAPHIC) {
     const volumes = viewportData.data;
-    if (volumes && volumes.length == 1) {
+    if (volumes && volumes.length >= 1) {
       const volume = volumes[0];
       imageId = volume.imageIds[imageIndex];
     }

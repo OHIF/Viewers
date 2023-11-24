@@ -388,7 +388,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
         )}
       </div>
       {/* The OHIFViewportActionCorners follows the viewport in the DOM so that it is naturally at a higher z-index.*/}
-      <OHIFViewportActionCorners viewportId={viewportId}></OHIFViewportActionCorners>
+      <OHIFViewportActionCorners viewportId={viewportId} />
     </React.Fragment>
   );
 }, areEqual);

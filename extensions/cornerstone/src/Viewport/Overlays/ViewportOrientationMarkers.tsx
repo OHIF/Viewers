@@ -112,12 +112,12 @@ function ViewportOrientationMarkers({
     return orientationMarkers.map((m, index) => (
       <div
         className={classNames(
+          'overlay-text',
           `${m}-mid orientation-marker`,
           'text-aqua-pale',
           'text-[13px]',
           'leading-5'
         )}
-        style={{ textShadow: '0.8px 0.8px 0.5px rgba(0, 0, 0, 0.75)' }}
         key={`${m}-mid orientation-marker`}
       >
         <div className="orientation-marker-value">{markers[m]}</div>
