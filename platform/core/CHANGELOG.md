@@ -3,6 +3,52 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-beta.22](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.21...v3.8.0-beta.22) (2023-11-21)
+
+
+### Features
+
+* **events:** broadcast series summary metadata ([#3798](https://github.com/OHIF/Viewers/issues/3798)) ([404b0a5](https://github.com/OHIF/Viewers/commit/404b0a5d535182d1ae44e33f7232db500a7b2c16))
+
+
+
+
+
+# [3.8.0-beta.21](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.20...v3.8.0-beta.21) (2023-11-21)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.8.0-beta.20](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.19...v3.8.0-beta.20) (2023-11-21)
+
+
+### Bug Fixes
+
+* **metadata:** to handle cornerstone3D update for htj2k ([#3783](https://github.com/OHIF/Viewers/issues/3783)) ([8c8924a](https://github.com/OHIF/Viewers/commit/8c8924af373d906773f5db20defe38628cacd4a0))
+
+
+
+
+
+# [3.8.0-beta.19](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.18...v3.8.0-beta.19) (2023-11-18)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.8.0-beta.18](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.17...v3.8.0-beta.18) (2023-11-15)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
 # [3.8.0-beta.17](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.16...v3.8.0-beta.17) (2023-11-13)
 
 **Note:** Version bump only for package @ohif/core
