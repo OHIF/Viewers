@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-beta.26](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.25...v3.8.0-beta.26) (2023-11-28)
+
+
+### Bug Fixes
+
+* **SM:** drag and drop is now fixed for SM ([#3813](https://github.com/OHIF/Viewers/issues/3813)) ([f1a6764](https://github.com/OHIF/Viewers/commit/f1a67647aed635437b188cea7cf5d5a8fb974bbe))
+
+
+
+
+
 # [3.8.0-beta.25](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.24...v3.8.0-beta.25) (2023-11-27)
 
 **Note:** Version bump only for package @ohif/mode-segmentation
