@@ -1,5 +1,5 @@
 import { id } from './id';
-import React, { Suspense } from 'react';
+import React, { Suspense, useMemo } from 'react';
 import getPanelModule from './getPanelModule';
 import getCommandsModule from './getCommandsModule';
 
@@ -58,8 +58,17 @@ export default {
       const [viewportGrid, viewportGridService] = useViewportGrid();
       const { activeViewportId } = viewportGrid;
 
+      // a unique identifier based on the contents of displaySets.
+      // since we changed our rendering pipeline and if there is no
+      // element size change nor viewportId change we won't re-render
+      // we need a way to force re-rendering when displaySets change.
+      const displaySetsKey = useMemo(() => {
+        return props.displaySets.map(ds => ds.displaySetInstanceUID).join('-');
+      }, [props.displaySets]);
+
       return (
         <MicroscopyViewport
+          key={displaySetsKey}
           servicesManager={servicesManager}
           extensionManager={extensionManager}
           commandsManager={commandsManager}
