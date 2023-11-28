@@ -12,9 +12,8 @@ import getStudies from './studiesList';
 import { history } from '../../utils/history';
 import loadModules from '../../pluginImports';
 import isSeriesFilterUsed from '../../utils/isSeriesFilterUsed';
-import { sortingCriteria } from '@ohif/core/src/utils/sortStudy';
 
-const { getSplitParam } = utils;
+const { getSplitParam, sortingCriteria } = utils;
 const { TimingEnum } = Types;
 
 /**

@@ -295,7 +295,7 @@ export type Protocol = {
   syncDataForViewports?: boolean;
   /* Set of minimal conditions necessary to run the hanging protocol
    */
-  runHPCondition?: {
+  hpInitiationCriteria?: {
     /* If configured, sets the minimum number of series needed to run the hanging
      * protocol and start displaying images. Used when OHIF needs to handle studies
      * with several series and it is required that the first image should be loaded

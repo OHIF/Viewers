@@ -6,7 +6,7 @@ import RetrieveMetadataLoader from './retrieveMetadataLoader';
 // in the series metadata query result
 const includeField = ['00080021', '00080031', '0008103E', '00200011'].join(',');
 
-export class PromiseLateStart {
+export class DeferredPromise {
   metadata = undefined;
   processFunction = undefined;
   internalPromise = undefined;
@@ -69,7 +69,7 @@ function makeSeriesAsyncLoader(client, studyInstanceUID, seriesInstanceUIDList) 
     },
     next() {
       const { seriesInstanceUID, metadata } = seriesInstanceUIDList.shift();
-      const promise = new PromiseLateStart();
+      const promise = new DeferredPromise();
       promise.setMetadata(metadata);
       promise.setProcessFunction(() => {
         return client.retrieveSeriesMetadata({
@@ -131,8 +131,8 @@ export default class RetrieveMetadataLoaderAsync extends RetrieveMetadataLoader 
   async load(preLoadData) {
     const { client, studyInstanceUID } = this;
 
-    const seriesInstanceUIDs = preLoadData.map(s => {
-      return { seriesInstanceUID: s.SeriesInstanceUID, metadata: s };
+    const seriesInstanceUIDs = preLoadData.map(seriesMetadata => {
+      return { seriesInstanceUID: seriesMetadata.SeriesInstanceUID, metadata: seriesMetadata };
     });
 
     const seriesAsyncLoader = makeSeriesAsyncLoader(client, studyInstanceUID, seriesInstanceUIDs);
