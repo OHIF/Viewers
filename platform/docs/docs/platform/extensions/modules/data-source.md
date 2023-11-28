@@ -81,15 +81,12 @@ You can take a look at `dicomweb` data source implementation to get an idea
 `extensions/default/src/DicomWebDataSource/index.js` but here here are some
 important api endpoints that you need to implement:
 
-
 - `initialize`: This method is called when the data source is first created in the mode.tsx, it is used to initialize the data source and set the configuration. For instance, `dicomwebDatasource` uses this method to grab the StudyInstanceUID from the URL and set it as the active study, as opposed to `dicomJSONDatasource` which uses url in the browser to fetch the data and store it in a cache
 - `query.studies.search`: This is used in the study panel on the left to fetch the prior studies for the same MRN which is then used to display on the `All` tab. it is also used in the Worklist to show all the studies from the server.
 - `query.series.search`: This is used to fetch the series information for a given study that is expanded in the Worklist.
 - `retrieve.bulkDataURI`: used to render RTSTUCTURESET in the viewport.
 - `retrieve.series.metadata`: It is a crucial end point that is used to fetch series level metadata which for hanging displaySets and displaySet creation.
 - `store.dicom`: If you don't need store functionality, you can skip this method. This is used to store the data in the backend.
-
-
 
 ## Static WADO Client
 
@@ -171,4 +168,45 @@ extensionManager.updateDataSourceConfiguration( "dicomweb",
     omitQuotationForMultipartRequest: true,
   },
 );
+```
+
+## Merge Data Source
+The built-in merge data source is a useful tool for combining results from multiple data sources.
+Currently, this data source only supports merging at the series level. This means that series from data source 'A'
+and series from data source 'B' will be retrieved under the same study. If the same series exists in both data sources,
+the first series arrived is the one that gets stored, and any other conflicting series will be ignored.
+
+The merge data source is particularly useful when dealing with derived data that is generated and stored in different servers.
+For example, it can be used to retrieve annotation series from one data source and input data (images) from another data source.
+
+A default data source can be defined as shown below. This allows defining which of the servers should be the
+fallback server in case something goes wrong.
+
+Configuration Example:
+```js
+window.config = {
+  ...
+  dataSources: [
+    {
+      sourceName: 'merge',
+      namespace: '@ohif/extension-default.dataSourcesModule.merge',
+      configuration: {
+        name: 'merge',
+        friendlyName: 'Merge dicomweb-1 and dicomweb-2 data at the series level',
+        seriesMerge: {
+          dataSourceNames: ['dicomweb-1', 'dicomweb-2'],
+          defaultDataSourceName: 'dicomweb-1'
+        },
+      },
+    },
+    {
+      sourceName: 'dicomweb-1',
+      ...
+    },
+    {
+      sourceName: 'dicomweb-2',
+      ...
+    },
+  ],
+};
 ```
