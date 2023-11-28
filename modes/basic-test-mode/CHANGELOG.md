@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-beta.25](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.24...v3.8.0-beta.25) (2023-11-27)
+
+**Note:** Version bump only for package @ohif/mode-test
+
+
+
+
+
 # [3.8.0-beta.24](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.23...v3.8.0-beta.24) (2023-11-24)
 
 **Note:** Version bump only for package @ohif/mode-test
