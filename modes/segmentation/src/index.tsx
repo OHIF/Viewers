@@ -124,8 +124,11 @@ function modeFactory({ modeConfiguration }) {
      * segmentations and we should exclude them
      */
     isValidMode: ({ modalities }) => {
-      if (modalities.length === 1) {
-        return !['SM', 'US', 'MG', 'OT', 'DOC', 'CR'].includes(modalities[0]);
+      // Don't show the mode if the selected studies have only one modality
+      // that is not supported by the mode
+      const modalitiesArray = modalities.split('\\');
+      if (modalitiesArray.length === 1) {
+        return !['SM', 'US', 'MG', 'OT', 'DOC', 'CR'].includes(modalitiesArray[0]);
       }
 
       return true;
