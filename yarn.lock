@@ -1550,10 +1550,10 @@
   resolved "https://registry.yarnpkg.com/@colors/colors/-/colors-1.5.0.tgz#bb504579c1cae923e6576a4f5da43d25f97bdbd9"
   integrity sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ==
 
-"@cornerstonejs/adapters@^1.27.3":
-  version "1.27.3"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/adapters/-/adapters-1.27.3.tgz#537ce2f53532fe69fdd0630a3990409f75c92035"
-  integrity sha512-b71ne2Bb10qFud2GZ5td7HgpEOuWwR0tkD9P040mpvfOSHOiLfCuMihwH8dGML5Zuyl6X0nR1UcOyzVjQra3QQ==
+"@cornerstonejs/adapters@^1.32.2":
+  version "1.32.2"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/adapters/-/adapters-1.32.2.tgz#f67ce50b6eab3a033c3847beeea3a54e4041eb30"
+  integrity sha512-ToxwxPp3A2bpR9TAlHasK4h7lQYiGENHIkwJ+Z0zdzrYwPGdFNaEHUk6XsA3vGhl6wWF3DhF7IU18nX20XL7kw==
   dependencies:
     "@babel/runtime-corejs2" "^7.17.8"
     buffer "^6.0.3"
@@ -1602,43 +1602,51 @@
   resolved "https://registry.yarnpkg.com/@cornerstonejs/codec-openjph/-/codec-openjph-2.4.2.tgz#e96721d56f6ec96f7f95c16321d88cc8467d8d81"
   integrity sha512-lgdvBvvNezleY+4pIe2ceUsJzlZe/0PipdeubQ3vZZOz3xxtHHMR1XFCl4fgd8gosR8COHuD7h6q+MwgrwBsng==
 
-"@cornerstonejs/core@^1.27.3":
-  version "1.27.3"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/core/-/core-1.27.3.tgz#37084038c30bed71ad260f969dec5ebd9fdc2e16"
-  integrity sha512-F84+XnhM6PeymE7m58Zr0PUuwIEgW+9lxy2mZcOkOQdjgq86cRLM4bW8kIli+WlFMB1NA2B26TbA4T0cbwHw5A==
+"@cornerstonejs/codec-openjph@^2.4.5":
+  version "2.4.5"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/codec-openjph/-/codec-openjph-2.4.5.tgz#8690b61a86fa53ef38a70eee9d665a79229517c0"
+  integrity sha512-MZCUy8VG0VG5Nl1l58+g+kH3LujAzLYTfJqkwpWI2gjSrGXnP6lgwyy4GmPRZWVoS40/B1LDNALK905cNWm+sg==
+
+"@cornerstonejs/core@^1.32.2":
+  version "1.32.2"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/core/-/core-1.32.2.tgz#02010a5a00c592dfbb7d49880fadd0e0b104af9f"
+  integrity sha512-z1dtIFjrcZ92aJqev5JV0mbRxOqPJnfRlyLn3TzcsPAzpwo8OPa4+iLR3nrXcXkORwPA1MZaA94JxiRAxvbfLA==
   dependencies:
     "@kitware/vtk.js" "27.3.1"
+    comlink "^4.4.1"
     detect-gpu "^5.0.22"
     gl-matrix "^3.4.3"
     lodash.clonedeep "4.5.0"
 
-"@cornerstonejs/dicom-image-loader@^1.27.3":
-  version "1.27.3"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/dicom-image-loader/-/dicom-image-loader-1.27.3.tgz#5fdfda4294a1a4feb77e06972a354ecb7dad61a9"
-  integrity sha512-C8/D/AkoZzurY/O8DiTKzchcUB0LXZ1+A5mWVpE1NFrlXjKMwAi+O4vbyRIJX/h/96QgtP6NVo4ilLJk/EN0qQ==
+"@cornerstonejs/dicom-image-loader@^1.32.2":
+  version "1.32.2"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/dicom-image-loader/-/dicom-image-loader-1.32.2.tgz#0eceac4977562d90899f5454c477a677221eded9"
+  integrity sha512-sToKM5Ei+zllZl8UL1/3kWRyGZon99ds1lZs2Z4BN/0fr7/TIZCvajslY++JsYE0izUMhgAqaXFZZUNaLWFoqw==
   dependencies:
     "@cornerstonejs/codec-charls" "^1.2.3"
     "@cornerstonejs/codec-libjpeg-turbo-8bit" "^1.2.2"
     "@cornerstonejs/codec-openjpeg" "^1.2.2"
-    "@cornerstonejs/codec-openjph" "^2.4.2"
-    "@cornerstonejs/core" "^1.27.3"
+    "@cornerstonejs/codec-openjph" "^2.4.5"
+    "@cornerstonejs/core" "^1.32.2"
     dicom-parser "^1.8.9"
     pako "^2.0.4"
     uuid "^9.0.0"
 
-"@cornerstonejs/streaming-image-volume-loader@^1.27.3":
-  version "1.27.3"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/streaming-image-volume-loader/-/streaming-image-volume-loader-1.27.3.tgz#c19cc4fc5e0aefe6a421b6c1994ed46c8c516132"
-  integrity sha512-1EVYHfbIkx9MAMT6hNsKcuzsnlCUmKvSxHZJMSNQCERlBwCxoUKymGAE9dcBsa0CBKwsBri0dnQmMKEEL2R7sQ==
+"@cornerstonejs/streaming-image-volume-loader@^1.32.2":
+  version "1.32.2"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/streaming-image-volume-loader/-/streaming-image-volume-loader-1.32.2.tgz#9d29412f6af470fa4ce46d0b43735eed2aebc374"
+  integrity sha512-VisVikQrWAfVqg4rozDLv/3T1DHOsiqSfQUVUYIqmL8WP7hC88E9R/aJyrL2uj4J/zAIvxlbWJYN1RdkyaxFyQ==
   dependencies:
-    "@cornerstonejs/core" "^1.27.3"
+    "@cornerstonejs/core" "^1.32.2"
+    comlink "^4.4.1"
 
-"@cornerstonejs/tools@^1.27.3":
-  version "1.27.3"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/tools/-/tools-1.27.3.tgz#66b3ab96ceafc525f0d460f7063e304eb4decbfa"
-  integrity sha512-coN7+nLyn+RZ5gz6Mq7ylLBNGKt50ifnn7J9ggeGtHf7acWkH8GngWLyVBYM+bh3WCUpai3RhvWK6pAbx+oRHw==
+"@cornerstonejs/tools@^1.32.2":
+  version "1.32.2"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/tools/-/tools-1.32.2.tgz#45961a1e6788ee7f660af3f1a013c0410b6ff2f6"
+  integrity sha512-kGL7m0Vk8OovqArTF8lyj/UpO6VBg+xqNnxnkyKXvi1sbLh7/4woRJS4W8sihOt6XBkMxHTMyHEiHEPHASuKbw==
   dependencies:
-    "@cornerstonejs/core" "^1.27.3"
+    "@cornerstonejs/core" "^1.32.2"
+    comlink "^4.4.1"
     lodash.clonedeep "4.5.0"
     lodash.get "^4.4.2"
 
@@ -7694,6 +7702,11 @@ combined-stream@^1.0.6, combined-stream@^1.0.8, combined-stream@~1.0.6:
   integrity sha512-FQN4MRfuJeHf7cBbBMJFXhKSDq+2kAArBlmRBvcvFE5BB1HZKXtSFASDhdlz9zOYwxh8lDdnvmMOe/+5cdoEdg==
   dependencies:
     delayed-stream "~1.0.0"
+
+comlink@^4.4.1:
+  version "4.4.1"
+  resolved "https://registry.yarnpkg.com/comlink/-/comlink-4.4.1.tgz#e568b8e86410b809e8600eb2cf40c189371ef981"
+  integrity sha512-+1dlx0aY5Jo1vHy/tSsIGpSkN4tS9rZSW8FIhG0JH/crs9wwweswIo/POr451r7bZww3hFbPAKnTpimzL/mm4Q==
 
 comma-separated-tokens@^1.0.0:
   version "1.0.8"
@@ -14214,10 +14227,10 @@ media-typer@0.3.0:
   resolved "https://registry.yarnpkg.com/media-typer/-/media-typer-0.3.0.tgz#8710d7af0aa626f8fffa1ce00168545263255748"
   integrity sha512-dq+qelQ9akHpcOl/gUVRTxVIOkAJ1wR3QAvb4RsVjS8oVoFjDGTc679wJYmUmknUF5HwMLOgb5O+a3KxfWapPQ==
 
-medium-zoom@^1.0.4:
-  version "1.0.8"
-  resolved "https://registry.yarnpkg.com/medium-zoom/-/medium-zoom-1.0.8.tgz#2bd1fbcf2961fa7b0e318fe284462aa9b8608ed2"
-  integrity sha512-CjFVuFq/IfrdqesAXfg+hzlDKu6A2n80ZIq0Kl9kWjoHh9j1N9Uvk5X0/MmN0hOfm5F9YBswlClhcwnmtwz7gA==
+medium-zoom@^1.0.8:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/medium-zoom/-/medium-zoom-1.1.0.tgz#6efb6bbda861a02064ee71a2617a8dc4381ecc71"
+  integrity sha512-ewyDsp7k4InCUp3jRmwHBRFGyjBimKps/AJLjRSox+2q/2H4p/PNpQf+pwONWlJiOudkBXtbdmVbFjqyybfTmQ==
 
 memfs@^3.1.2, memfs@^3.4.1, memfs@^3.4.12, memfs@^3.4.3:
   version "3.6.0"

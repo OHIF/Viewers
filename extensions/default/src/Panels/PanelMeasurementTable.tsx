@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
+import { useTranslation } from 'react-i18next';
 import { utils, ServicesManager } from '@ohif/core';
 import { MeasurementTable, Dialog, Input, useViewportGrid, ButtonEnums } from '@ohif/ui';
 import ActionButtons from './ActionButtons';
@@ -18,6 +19,8 @@ export default function PanelMeasurementTable({
   commandsManager,
   extensionManager,
 }): React.FunctionComponent {
+  const { t } = useTranslation('MeasurementTable');
+
   const [viewportGrid, viewportGridService] = useViewportGrid();
   const { activeViewportId, viewports } = viewportGrid;
   const { measurementService, uiDialogService, uiNotificationService, displaySetService } = (
@@ -209,7 +212,7 @@ export default function PanelMeasurementTable({
         data-cy={'measurements-panel'}
       >
         <MeasurementTable
-          title="Measurements"
+          title={t("Measurements")}
           servicesManager={servicesManager}
           data={displayMeasurements}
           onClick={jumpToImage}

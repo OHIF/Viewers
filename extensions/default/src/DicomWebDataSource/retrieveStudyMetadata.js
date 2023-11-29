@@ -25,7 +25,8 @@ export function retrieveStudyMetadata(
   enableStudyLazyLoad,
   filters,
   sortCriteria,
-  sortFunction
+  sortFunction,
+  dicomWebConfig = {}
 ) {
   // @TODO: Whenever a study metadata request has failed, its related promise will be rejected once and for all
   // and further requests for that metadata will always fail. On failure, we probably need to remove the
@@ -38,9 +39,11 @@ export function retrieveStudyMetadata(
     throw new Error(`${moduleName}: Required 'StudyInstanceUID' parameter not provided.`);
   }
 
+  const promiseId = `${dicomWebConfig.name}:${StudyInstanceUID}`;
+
   // Already waiting on result? Return cached promise
-  if (StudyMetaDataPromises.has(StudyInstanceUID)) {
-    return StudyMetaDataPromises.get(StudyInstanceUID);
+  if (StudyMetaDataPromises.has(promiseId)) {
+    return StudyMetaDataPromises.get(promiseId);
   }
 
   let promise;
@@ -71,7 +74,7 @@ export function retrieveStudyMetadata(
   }
 
   // Store the promise in cache
-  StudyMetaDataPromises.set(StudyInstanceUID, promise);
+  StudyMetaDataPromises.set(promiseId, promise);
 
   return promise;
 }

@@ -1,14 +1,14 @@
-import ContextMenuItemsBuilder from './ContextMenuItemsBuilder';
+import * as ContextMenuItemsBuilder from './ContextMenuItemsBuilder';
 
 const menus = [
   {
     id: 'one',
-    selector: ({ value }) => value === 'one',
+    selector: ({ value } = {}) => value === 'one',
     items: [],
   },
   {
     id: 'two',
-    selector: ({ value }) => value === 'two',
+    selector: ({ value } = {}) => value === 'two',
     items: [],
   },
   {
@@ -17,13 +17,13 @@ const menus = [
   },
 ];
 
-const menuBuilder = new ContextMenuItemsBuilder();
-
 describe('ContextMenuItemsBuilder', () => {
   test('findMenuDefault', () => {
-    expect(menuBuilder.findMenuDefault(menus, {})).toBe(menus[2]);
-    expect(menuBuilder.findMenuDefault(menus, { value: 'two' })).toBe(menus[1]);
-    expect(menuBuilder.findMenuDefault([], {})).toBeUndefined();
-    expect(menuBuilder.findMenuDefault(undefined, undefined)).toBeNull();
+    expect(ContextMenuItemsBuilder.findMenuDefault(menus, {})).toBe(menus[2]);
+    expect(
+      ContextMenuItemsBuilder.findMenuDefault(menus, { selectorProps: { value: 'two' } })
+    ).toBe(menus[1]);
+    expect(ContextMenuItemsBuilder.findMenuDefault([], {})).toBeUndefined();
+    expect(ContextMenuItemsBuilder.findMenuDefault(undefined, undefined)).toBeNull();
   });
 });
