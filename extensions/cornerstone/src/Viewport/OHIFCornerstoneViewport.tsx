@@ -348,8 +348,6 @@ const OHIFCornerstoneViewport = React.memo(props => {
     <React.Fragment>
       <div className="viewport-wrapper">
         <ReactResizeDetector
-          refreshMode="debounce"
-          refreshRate={50} // Wait 50 ms after last move to render
           onResize={onResize}
           targetRef={elementRef.current}
         />
