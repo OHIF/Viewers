@@ -351,7 +351,7 @@ function ViewerViewportGrid(props) {
       >
         <ReactResizeDetector
           refreshMode="debounce"
-          refreshRate={10}
+          refreshRate={7} // ms seems to be fine for 10 viewports
           onResize={() => {
             viewportGridService.setViewportGridSizeChanged();
           }}
