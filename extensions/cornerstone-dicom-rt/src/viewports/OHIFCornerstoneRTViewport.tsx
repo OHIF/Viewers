@@ -1,11 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
-import {
-  useViewportGrid,
-  LoadingIndicatorTotalPercent,
-  Types,
-  ViewportActionArrows,
-} from '@ohif/ui';
+import { useViewportGrid, LoadingIndicatorTotalPercent, ViewportActionArrows } from '@ohif/ui';
 
 import promptHydrateRT from '../utils/promptHydrateRT';
 import _getStatusComponent from './_getStatusComponent';
@@ -308,7 +303,7 @@ function OHIFCornerstoneRTViewport(props) {
           onStatusClick,
         }),
         indexPriority: -100,
-        location: Types.ViewportActionCornersLocations.topLeft,
+        location: viewportActionCornersService.LOCATIONS.topLeft,
       },
       {
         viewportId,
@@ -320,7 +315,7 @@ function OHIFCornerstoneRTViewport(props) {
           ></ViewportActionArrows>
         ),
         indexPriority: 0,
-        location: Types.ViewportActionCornersLocations.topRight,
+        location: viewportActionCornersService.LOCATIONS.topRight,
       },
     ]);
   }, [isHydrated, onSegmentChange, onStatusClick, viewportActionCornersService, viewportId]);

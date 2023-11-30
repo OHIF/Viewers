@@ -1,17 +1,18 @@
 import { PubSubService } from '@ohif/core';
-import { Types } from '@ohif/ui';
+import { ViewportActionCornersLocations } from '@ohif/ui';
 import { ReactNode } from 'react';
 
 export type ActionComponentInfo = {
   viewportId: string;
   id: string;
   component: ReactNode;
-  location: Types.ViewportActionCornersLocations;
+  location: ViewportActionCornersLocations;
   indexPriority: number;
 };
 
 class ViewportActionCornersService extends PubSubService {
   public static readonly EVENTS = {};
+  public static readonly LOCATIONS = ViewportActionCornersLocations;
 
   public static REGISTRATION = {
     name: 'viewportActionCornersService',
@@ -22,6 +23,8 @@ class ViewportActionCornersService extends PubSubService {
   };
 
   serviceImplementation = {};
+
+  public LOCATIONS = ViewportActionCornersService.LOCATIONS;
 
   constructor() {
     super(ViewportActionCornersService.EVENTS);

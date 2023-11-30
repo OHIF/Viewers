@@ -1,11 +1,11 @@
 import PropTypes from 'prop-types';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { utils, ServicesManager, ExtensionManager } from '@ohif/core';
+import { ServicesManager, ExtensionManager } from '@ohif/core';
 
 import { setTrackingUniqueIdentifiersForElement } from '../tools/modules/dicomSRModule';
 
-import { Icon, Tooltip, useViewportGrid, ViewportActionArrows, Types } from '@ohif/ui';
+import { Icon, Tooltip, useViewportGrid, ViewportActionArrows } from '@ohif/ui';
 import hydrateStructuredReport from '../utils/hydrateStructuredReport';
 import { useAppConfig } from '@state';
 
@@ -302,7 +302,7 @@ function OHIFCornerstoneSRViewport(props) {
           t,
         }),
         indexPriority: -100,
-        location: Types.ViewportActionCornersLocations.topLeft,
+        location: viewportActionCornersService.LOCATIONS.topLeft,
       },
       {
         viewportId,
@@ -315,7 +315,7 @@ function OHIFCornerstoneSRViewport(props) {
           ></ViewportActionArrows>
         ),
         indexPriority: 0,
-        location: Types.ViewportActionCornersLocations.topRight,
+        location: viewportActionCornersService.LOCATIONS.topRight,
       },
     ]);
   }, [

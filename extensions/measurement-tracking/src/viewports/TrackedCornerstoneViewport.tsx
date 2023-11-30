@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 
-import { Tooltip, Icon, ViewportActionArrows, Types } from '@ohif/ui';
+import { Tooltip, Icon, ViewportActionArrows } from '@ohif/ui';
 
 import { annotation } from '@cornerstonejs/tools';
 import { useTrackedMeasurements } from './../getContextModule';
@@ -186,14 +186,14 @@ function TrackedCornerstoneViewport(props) {
         id: 'viewportStatusComponent',
         component: statusComponent,
         indexPriority: -100,
-        location: Types.ViewportActionCornersLocations.topLeft,
+        location: viewportActionCornersService.LOCATIONS.topLeft,
       },
       {
         viewportId,
         id: 'viewportActionArrowsComponent',
         component: arrowsComponent,
         indexPriority: 0,
-        location: Types.ViewportActionCornersLocations.topRight,
+        location: viewportActionCornersService.LOCATIONS.topRight,
       },
     ]);
   }, [isTracked, switchMeasurement, viewportActionCornersService, viewportId]);

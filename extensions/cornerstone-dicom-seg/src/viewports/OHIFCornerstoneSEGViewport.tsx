@@ -1,12 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  LoadingIndicatorTotalPercent,
-  useViewportGrid,
-  ViewportActionArrows,
-  Types,
-} from '@ohif/ui';
+import { LoadingIndicatorTotalPercent, useViewportGrid, ViewportActionArrows } from '@ohif/ui';
 import createSEGToolGroupAndAddTools from '../utils/initSEGToolGroup';
 import promptHydrateSEG from '../utils/promptHydrateSEG';
 import _getStatusComponent from './_getStatusComponent';
@@ -294,7 +289,7 @@ function OHIFCornerstoneSEGViewport(props) {
           onStatusClick,
         }),
         indexPriority: -100,
-        location: Types.ViewportActionCornersLocations.topLeft,
+        location: viewportActionCornersService.LOCATIONS.topLeft,
       },
       {
         viewportId,
@@ -306,7 +301,7 @@ function OHIFCornerstoneSEGViewport(props) {
           ></ViewportActionArrows>
         ),
         indexPriority: 0,
-        location: Types.ViewportActionCornersLocations.topRight,
+        location: viewportActionCornersService.LOCATIONS.topRight,
       },
     ]);
   }, [isHydrated, onSegmentChange, onStatusClick, viewportActionCornersService, viewportId]);

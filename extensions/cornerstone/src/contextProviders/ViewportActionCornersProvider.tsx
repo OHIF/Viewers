@@ -8,7 +8,7 @@ import React, {
 } from 'react';
 import PropTypes from 'prop-types';
 
-import { Types } from '@ohif/ui';
+import { Types, ViewportActionCornersLocations } from '@ohif/ui';
 import ViewportActionCornersService, {
   ActionComponentInfo,
 } from '../services/ViewportActionCornersService/ViewportActionCornersService';
@@ -17,19 +17,17 @@ interface StateComponentInfo extends Types.ViewportActionCornersComponentInfo {
   indexPriority: number;
 }
 
-type State = Record<
-  string,
-  Record<Types.ViewportActionCornersLocations, Array<StateComponentInfo>>
->;
+type State = Record<string, Record<ViewportActionCornersLocations, Array<StateComponentInfo>>>;
 
 const DEFAULT_STATE: State = {
   // default here is the viewportId of the default viewport
   default: {
-    [Types.ViewportActionCornersLocations.topLeft]: [],
-    [Types.ViewportActionCornersLocations.topRight]: [],
-    [Types.ViewportActionCornersLocations.bottomLeft]: [],
-    [Types.ViewportActionCornersLocations.bottomRight]: [],
+    [ViewportActionCornersLocations.topLeft]: [],
+    [ViewportActionCornersLocations.topRight]: [],
+    [ViewportActionCornersLocations.bottomLeft]: [],
+    [ViewportActionCornersLocations.bottomRight]: [],
   },
+  // [anotherViewportId]: { ..... }
 };
 
 export const ViewportActionCornersContext = createContext(DEFAULT_STATE);

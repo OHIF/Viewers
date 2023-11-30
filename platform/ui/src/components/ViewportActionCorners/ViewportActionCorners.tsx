@@ -1,9 +1,20 @@
 import classNames from 'classnames';
 import React from 'react';
-import {
-  ViewportActionCornersLocations,
-  ViewportActionCornersProps,
-} from '../../types/ViewportActionCornersTypes';
+import { ViewportActionCornersComponentInfo } from '../../types/ViewportActionCornersTypes';
+
+export enum ViewportActionCornersLocations {
+  topLeft,
+  topRight,
+  bottomLeft,
+  bottomRight,
+}
+
+export type ViewportActionCornersProps = {
+  cornerComponents: Record<
+    ViewportActionCornersLocations,
+    Array<ViewportActionCornersComponentInfo>
+  >;
+};
 
 const commonClasses = 'pointer-events-auto flex items-center gap-1';
 const classes = {
