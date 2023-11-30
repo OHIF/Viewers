@@ -85,6 +85,9 @@ import notificationsInfo from './../../assets/icons/notifications-info.svg';
 import notificationsWarning from './../../assets/icons/notifications-warning.svg';
 import notificationsError from './../../assets/icons/notifications-error.svg';
 import notificationsSuccess from './../../assets/icons/notifications-success.svg';
+import nextArrow from './../../assets/icons/next-arrow.svg';
+import prevArrow from './../../assets/icons/prev-arrow.svg';
+import viewportStatusTracked from './../../assets/icons/viewport-status-tracked.svg';
 
 /** Tools */
 import toggleDicomOverlay from './../../assets/icons/toggle-dicom-overlay.svg';
@@ -289,6 +292,9 @@ const ICONS = {
   'icon-tool-scissor': iconToolScissor,
   'icon-tool-shape': iconToolShape,
   'icon-tool-threshold': iconToolThreshold,
+  'next-arrow': nextArrow,
+  'prev-arrow': prevArrow,
+  'viewport-status-tracked': viewportStatusTracked,
 
   /** Old OHIF */
   'old-trash': oldTrash,

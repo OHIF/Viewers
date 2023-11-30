@@ -73,6 +73,7 @@ import CheckBox from './CheckBox';
 import LoadingIndicatorProgress from './LoadingIndicatorProgress';
 import LoadingIndicatorTotalPercent from './LoadingIndicatorTotalPercent';
 import ViewportActionBar from './ViewportActionBar';
+import ViewportActionCorners, { ViewportActionCornersLocations } from './ViewportActionCorners';
 import ProgressLoadingBar from './ProgressLoadingBar';
 import LegacySidePanel from './LegacySidePanel';
 import PanelSection from './PanelSection';
@@ -81,6 +82,7 @@ import InputDoubleRange from './InputDoubleRange';
 import LegacyButtonGroup from './LegacyButtonGroup';
 import SwitchButton, { SwitchLabelLocation } from './SwitchButton';
 import * as AllInOneMenu from './AllInOneMenu';
+import ViewportActionArrows from './ViewportActionArrows';
 
 export {
   AboutModal,
@@ -162,7 +164,10 @@ export {
   TooltipClipboard,
   Typography,
   Viewport,
+  ViewportActionArrows,
   ViewportActionBar,
+  ViewportActionCorners,
+  ViewportActionCornersLocations,
   ViewportDownloadForm,
   ViewportGrid,
   ViewportPane,

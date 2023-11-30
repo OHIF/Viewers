@@ -32,30 +32,7 @@ describe('OHIF MPR', () => {
     cy.wait(250);
     cy.get('[data-cy="MPR"]').click();
 
-    cy.get('[data-cy="thumbnail-viewport-labels"]').should('have.length', 3);
-
     cy.get('.cornerstone-canvas').should('have.length', 3);
-
-    cy.get('[data-cy="thumbnail-viewport-labels"]')
-      .eq(2)
-      .find('div')
-      .should('have.length', 3)
-      .each(($div, index) => {
-        const text = $div.text();
-        switch (index) {
-          case 0:
-            expect(text).to.equal('A');
-            break;
-          case 1:
-            expect(text).to.equal('B');
-            break;
-          case 2:
-            expect(text).to.equal('C');
-            break;
-          default:
-            throw new Error(`Unexpected div found with text: ${text}`);
-        }
-      });
 
     // check cornerstone to see if each has images
     // we can later do visual testing to match the images with a baseline
@@ -82,9 +59,6 @@ describe('OHIF MPR', () => {
     cy.get('[data-cy="MPR"]').click();
 
     cy.get('.cornerstone-canvas').should('have.length', 1);
-
-    // should not have any div under it
-    cy.get('[data-cy="thumbnail-viewport-labels"]').eq(2).find('div').should('have.length', 0);
   });
 
   it('should correctly render Crosshairs for MPR', () => {

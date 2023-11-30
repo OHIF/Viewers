@@ -50,9 +50,9 @@ function VOIOverlayItem({ voi, customization }: OverlayItemProps) {
       style={{ color: (customization && customization.color) || undefined }}
     >
       <span className="mr-1 shrink-0">W:</span>
-      <span className="ml-1 mr-2 shrink-0 font-light">{windowWidth.toFixed(0)}</span>
+      <span className="ml-1 mr-2 shrink-0">{windowWidth.toFixed(0)}</span>
       <span className="mr-1 shrink-0">L:</span>
-      <span className="ml-1 shrink-0 font-light">{windowCenter.toFixed(0)}</span>
+      <span className="ml-1 shrink-0">{windowCenter.toFixed(0)}</span>
     </div>
   );
 }
@@ -67,7 +67,7 @@ function ZoomOverlayItem({ scale, customization }: OverlayItemProps) {
       style={{ color: (customization && customization.color) || undefined }}
     >
       <span className="mr-1 shrink-0">Zoom:</span>
-      <span className="font-light">{scale.toFixed(2)}x</span>
+      <span>{scale.toFixed(2)}x</span>
     </div>
   );
 }
@@ -88,7 +88,7 @@ function InstanceNumberOverlayItem({
       style={{ color: (customization && customization.color) || undefined }}
     >
       <span className="mr-1 shrink-0">I:</span>
-      <span className="font-light">
+      <span>
         {instanceNumber !== undefined && instanceNumber !== null
           ? `${instanceNumber} (${imageIndex + 1}/${numberOfSlices})`
           : `${imageIndex + 1}/${numberOfSlices}`}
@@ -285,8 +285,20 @@ function CustomizableViewportOverlay({
   const getTopLeftContent = useCallback(() => {
     const items = topLeftCustomization?.items || [
       {
-        id: 'WindowLevel',
-        customizationType: 'ohif.overlayItem.windowLevel',
+        id: 'StudyDate',
+        customizationType: 'ohif.overlayItem',
+        label: '',
+        title: 'Study date',
+        condition: ({ instance }) => instance && instance.StudyDate,
+        contentF: ({ instance, formatters: { formatDate } }) => formatDate(instance.StudyDate),
+      },
+      {
+        id: 'SeriesDescription',
+        customizationType: 'ohif.overlayItem',
+        label: '',
+        title: 'Series description',
+        attribute: 'SeriesDescription',
+        condition: ({ instance }) => instance && instance.SeriesDescription,
       },
     ];
     return (
@@ -299,12 +311,7 @@ function CustomizableViewportOverlay({
   }, [topLeftCustomization, _renderOverlayItem]);
 
   const getTopRightContent = useCallback(() => {
-    const items = topRightCustomization?.items || [
-      {
-        id: 'InstanceNmber',
-        customizationType: 'ohif.overlayItem.instanceNumber',
-      },
-    ];
+    const items = topRightCustomization?.items || [];
     return (
       <>
         {items.map((item, i) => (
@@ -315,7 +322,12 @@ function CustomizableViewportOverlay({
   }, [topRightCustomization, _renderOverlayItem]);
 
   const getBottomLeftContent = useCallback(() => {
-    const items = bottomLeftCustomization?.items || [];
+    const items = bottomLeftCustomization?.items || [
+      {
+        id: 'WindowLevel',
+        customizationType: 'ohif.overlayItem.windowLevel',
+      },
+    ];
     return (
       <>
         {items.map((item, i) => (
@@ -326,7 +338,12 @@ function CustomizableViewportOverlay({
   }, [bottomLeftCustomization, _renderOverlayItem]);
 
   const getBottomRightContent = useCallback(() => {
-    const items = bottomRightCustomization?.items || [];
+    const items = bottomRightCustomization?.items || [
+      {
+        id: 'InstanceNmber',
+        customizationType: 'ohif.overlayItem.instanceNumber',
+      },
+    ];
     return (
       <>
         {items.map((item, i) => (
@@ -352,7 +369,7 @@ function _getViewportInstance(viewportData, imageIndex) {
     imageId = viewportData.data.imageIds[imageIndex];
   } else if (viewportData.viewportType === Enums.ViewportType.ORTHOGRAPHIC) {
     const volumes = viewportData.data;
-    if (volumes && volumes.length == 1) {
+    if (volumes && volumes.length >= 1) {
       const volume = volumes[0];
       imageId = volume.imageIds[imageIndex];
     }

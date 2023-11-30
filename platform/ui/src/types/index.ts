@@ -6,6 +6,7 @@ import type { PresentationIds } from '../contextProviders/getPresentationIds';
 
 export * from './Predicate';
 export * from './ContextMenuItem';
+export * from './ViewportActionCornersTypes';
 
 /**
  * StringNumber often comes back from DICOMweb for integer valued items.

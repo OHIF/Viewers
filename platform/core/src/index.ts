@@ -1,5 +1,5 @@
 import { ExtensionManager, MODULE_TYPES } from './extensions';
-import { ServicesManager } from './services';
+import { ServiceProvidersManager, ServicesManager } from './services';
 import classes, { CommandsManager, HotkeysManager } from './classes';
 
 import DICOMWeb from './DICOMWeb';
@@ -49,6 +49,7 @@ const OHIF = {
   ExtensionManager,
   HotkeysManager,
   ServicesManager,
+  ServiceProvidersManager,
   //
   defaults,
   utils,
@@ -89,6 +90,7 @@ export {
   ExtensionManager,
   HotkeysManager,
   ServicesManager,
+  ServiceProvidersManager,
   //
   defaults,
   utils,

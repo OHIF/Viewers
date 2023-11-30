@@ -30,6 +30,8 @@ import * as csWADOImageLoader from './initWADOImageLoader.js';
 import { measurementMappingUtils } from './utils/measurementServiceMappings';
 import type { PublicViewportOptions } from './services/ViewportService/Viewport';
 import ImageOverlayViewerTool from './tools/ImageOverlayViewerTool';
+import ViewportActionCornersService from './services/ViewportActionCornersService/ViewportActionCornersService';
+import { ViewportActionCornersProvider } from './contextProviders/ViewportActionCornersProvider';
 
 const Component = React.lazy(() => {
   return import(/* webpackPrefetch: true */ './Viewport/OHIFCornerstoneViewport');
@@ -69,13 +71,18 @@ const cornerstoneExtension: Types.Extensions.Extension = {
    * @param configuration.csToolsConfig - Passed directly to `initCornerstoneTools`
    */
   preRegistration: function (props: Types.Extensions.ExtensionParams): Promise<void> {
-    const { servicesManager } = props;
+    const { servicesManager, serviceProvidersManager } = props;
     servicesManager.registerService(CornerstoneViewportService.REGISTRATION);
     servicesManager.registerService(ToolGroupService.REGISTRATION);
     servicesManager.registerService(SyncGroupService.REGISTRATION);
     servicesManager.registerService(SegmentationService.REGISTRATION);
     servicesManager.registerService(CornerstoneCacheService.REGISTRATION);
+    servicesManager.registerService(ViewportActionCornersService.REGISTRATION);
 
+    serviceProvidersManager.registerProvider(
+      ViewportActionCornersService.REGISTRATION.name,
+      ViewportActionCornersProvider
+    );
     return init.call(this, props);
   },
 
