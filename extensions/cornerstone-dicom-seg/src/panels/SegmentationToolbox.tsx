@@ -386,7 +386,7 @@ function SegmentationToolbox({ servicesManager, extensionManager }) {
                     <InputDoubleRange
                       values={state.ThresholdBrush.thresholdRange}
                       onChange={handleRangeChange}
-                      minValue={-1000}
+                      minValue={-1000} // Todo: these should be configurable
                       maxValue={1000}
                       step={1}
                       showLabel={true}
