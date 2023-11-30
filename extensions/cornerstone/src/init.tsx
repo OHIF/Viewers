@@ -199,6 +199,16 @@ export default async function init({
     }
   );
 
+  // resize the cornerstone viewport service when the grid size changes
+  // IMPORTANT: this should happen outside of the OHIFCornerstoneViewport
+  // since it will trigger a rerender of each viewport and each resizing
+  // the offscreen canvas which would result in a performance hit, this should
+  // done only once per grid resize here. Doing it once here, allows us to reduce
+  // the refreshRage(in ms) to 10 from 50. I tried with even 1 or 5 ms it worked fine
+  viewportGridService.subscribe(viewportGridService.EVENTS.GRID_SIZE_CHANGED, () => {
+    cornerstoneViewportService.resize();
+  });
+
   initContextMenu({
     cornerstoneViewportService,
     customizationService,
@@ -253,10 +263,10 @@ export default async function init({
 
   /**
    * Runs error handler for failed requests.
-   * @param event 
+   * @param event
    */
   const imageLoadFailedHandler = ({ detail }) => {
-    const handler = errorHandler.getHTTPErrorHandler()
+    const handler = errorHandler.getHTTPErrorHandler();
     handler(detail.error);
   };
 
@@ -290,7 +300,7 @@ export default async function init({
   });
   eventTarget.addEventListener(EVENTS.IMAGE_LOAD_FAILED, imageLoadFailedHandler);
   eventTarget.addEventListener(EVENTS.IMAGE_LOAD_ERROR, imageLoadFailedHandler);
-  
+
   function elementEnabledHandler(evt) {
     const { element } = evt.detail;
 

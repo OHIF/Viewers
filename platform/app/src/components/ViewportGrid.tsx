@@ -1,4 +1,5 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback, useRef } from 'react';
+import ReactResizeDetector from 'react-resize-detector';
 import PropTypes from 'prop-types';
 import { ServicesManager, Types, MeasurementService } from '@ohif/core';
 import { ViewportGrid, ViewportPane, useViewportGrid } from '@ohif/ui';
@@ -11,6 +12,7 @@ function ViewerViewportGrid(props) {
 
   const { layout, activeViewportId, viewports } = viewportGrid;
   const { numCols, numRows } = layout;
+  const elementRef = useRef(null);
 
   // TODO -> Need some way of selecting which displaySets hit the viewports.
   const { displaySetService, measurementService, hangingProtocolService, uiNotificationService } = (
@@ -339,13 +341,26 @@ function ViewerViewportGrid(props) {
   }
 
   return (
-    <ViewportGrid
-      numRows={numRows}
-      numCols={numCols}
+    <div
+      ref={elementRef}
+      className="h-full w-full"
     >
-      {/* {ViewportPanes} */}
-      {getViewportPanes()}
-    </ViewportGrid>
+      <ViewportGrid
+        numRows={numRows}
+        numCols={numCols}
+      >
+        <ReactResizeDetector
+          refreshMode="debounce"
+          refreshRate={10}
+          onResize={() => {
+            viewportGridService.setViewportGridSizeChanged();
+          }}
+          targetRef={elementRef.current}
+        />
+        {/* {ViewportPanes} */}
+        {getViewportPanes()}
+      </ViewportGrid>
+    </div>
   );
 }
 
