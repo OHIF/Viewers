@@ -36,7 +36,7 @@ export interface IViewportService {
    * the element for resizing events
    * @param {*} elementRef
    */
-  resize(element: HTMLDivElement): void;
+  resize(isGridResize: boolean): void;
   /**
    * Removes the viewport from cornerstone, and destroys the rendering engine
    */

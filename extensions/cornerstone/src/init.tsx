@@ -206,7 +206,7 @@ export default async function init({
   // done only once per grid resize here. Doing it once here, allows us to reduce
   // the refreshRage(in ms) to 10 from 50. I tried with even 1 or 5 ms it worked fine
   viewportGridService.subscribe(viewportGridService.EVENTS.GRID_SIZE_CHANGED, () => {
-    cornerstoneViewportService.resize();
+    cornerstoneViewportService.resize(true);
   });
 
   initContextMenu({

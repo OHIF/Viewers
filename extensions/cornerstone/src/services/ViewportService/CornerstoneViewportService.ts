@@ -51,6 +51,11 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
   resizeRefreshMode: 'debounce';
   servicesManager = null;
 
+  resizeQueue = [];
+  viewportResizeTimer = null;
+  gridResizeDelay = 50;
+  gridResizeTimeOut = null;
+
   constructor(servicesManager: ServicesManager) {
     super(EVENTS);
     this.renderingEngine = null;
@@ -94,14 +99,60 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
   }
 
   /**
-   * It triggers the resize on the rendering engine.
+   * It triggers the resize on the rendering engine, and renders the viewports
+   *
+   * @param isGridResize - if the resize is triggered by a grid resize
+   * this is used to avoid double resize of the viewports since if the
+   * grid is resized, all viewports will be resized so there is no need
+   * to resize them individually which will get triggered by their
+   * individual resize observers
    */
-  public resize() {
-    const immediate = true;
-    const keepCamera = true;
+  public resize(isGridResize = false) {
+    // if there is a grid resize happening, it means the viewport grid
+    // has been manipulated (e.g., panels closed, added, etc.) and we need
+    // to resize all viewports, so we will add a timeout here to make sure
+    // we don't double resize the viewports when viewports in the grid are
+    // resized individually
+    if (isGridResize) {
+      this.performResize();
+      this.resetGridResizeTimeout();
+      this.resizeQueue = [];
+      clearTimeout(this.viewportResizeTimer);
+    } else {
+      this.enqueueViewportResizeRequest();
+    }
+  }
 
-    this.renderingEngine.resize(immediate, keepCamera);
+  private enqueueViewportResizeRequest() {
+    this.resizeQueue.push(false); // false indicates viewport resize
+
+    clearTimeout(this.viewportResizeTimer);
+    this.viewportResizeTimer = setTimeout(() => {
+      this.processViewportResizeQueue();
+    }, this.gridResizeDelay);
+  }
+
+  private processViewportResizeQueue() {
+    const isGridResizeInQueue = this.resizeQueue.some(isGridResize => isGridResize);
+    if (this.resizeQueue.length > 0 && !isGridResizeInQueue && !this.gridResizeTimeOut) {
+      this.performResize();
+    }
+
+    // Clear the queue after processing viewport resizes
+    this.resizeQueue = [];
+  }
+
+  private performResize() {
+    const isImmediate = false;
+    this.renderingEngine.resize(isImmediate);
     this.renderingEngine.render();
+  }
+
+  private resetGridResizeTimeout() {
+    clearTimeout(this.gridResizeTimeOut);
+    this.gridResizeTimeOut = setTimeout(() => {
+      this.gridResizeTimeOut = null;
+    }, this.gridResizeDelay);
   }
 
   /**
