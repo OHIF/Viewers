@@ -17,6 +17,7 @@ import StudyItem from './StudyItem.json';
 import StudyList from './StudyList.json';
 import ToolTip from './ToolTip.json';
 import TooltipClipboard from './TooltipClipboard.json';
+import ThumbnailTracked from './ThumbnailTracked.json';
 import UserPreferencesModal from './UserPreferencesModal.json';
 import ViewportDownloadForm from './ViewportDownloadForm.json';
 
@@ -39,9 +40,10 @@ export default {
     StudyBrowser,
     StudyItem,
     StudyList,
-    UserPreferencesModal,
-    ViewportDownloadForm,
     ToolTip,
     TooltipClipboard,
+    ThumbnailTracked,
+    UserPreferencesModal,
+    ViewportDownloadForm,
   },
 };
