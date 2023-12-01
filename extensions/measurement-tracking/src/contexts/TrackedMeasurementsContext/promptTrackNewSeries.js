@@ -11,7 +11,7 @@ const RESPONSE = {
 
 function promptTrackNewSeries({ servicesManager, extensionManager }, ctx, evt) {
   const { UIViewportDialogService } = servicesManager.services;
-  const { viewportId, StudyInstanceUID, SeriesInstanceUID } = evt;
+  const { viewportId, StudyInstanceUID, SeriesInstanceUID } = evt.data || evt;
 
   return new Promise(async function (resolve, reject) {
     let promptResult = await _askShouldAddMeasurements(UIViewportDialogService, viewportId);

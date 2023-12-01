@@ -11,6 +11,8 @@ import promptSaveReport from './promptSaveReport';
 import promptHydrateStructuredReport from './promptHydrateStructuredReport';
 import hydrateStructuredReport from './hydrateStructuredReport';
 import { useAppConfig } from '@state';
+import promptLabelAnnotation from './promptLabelAnnotation';
+
 
 const TrackedMeasurementsContext = React.createContext();
 TrackedMeasurementsContext.displayName = 'TrackedMeasurementsContext';
@@ -141,6 +143,9 @@ function TrackedMeasurementsContextProvider(
       servicesManager,
       extensionManager,
       appConfig,
+    }),
+    promptLabelAnnotation: promptLabelAnnotation.bind(null, {
+      servicesManager,
     }),
   });
 

@@ -34,7 +34,10 @@ const machineConfiguration = {
     idle: {
       entry: 'clearContext',
       on: {
-        TRACK_SERIES: 'promptBeginTracking',
+        TRACK_SERIES: {
+          target: 'promptLabelAnnotation',
+          actions: ['setPreviousState']
+        },
         // Unused? We may only do PROMPT_HYDRATE_SR now?
         SET_TRACKED_SERIES: [
           {
@@ -81,13 +84,9 @@ const machineConfiguration = {
       on: {
         TRACK_SERIES: [
           {
-            target: 'promptTrackNewStudy',
-            cond: 'isNewStudy',
-          },
-          {
-            target: 'promptTrackNewSeries',
-            cond: 'isNewSeries',
-          },
+            target: 'promptLabelAnnotation',
+            actions: ['setPreviousState'],
+          }
         ],
         UNTRACK_SERIES: [
           {
@@ -252,6 +251,31 @@ const machineConfiguration = {
         },
       },
     },
+    promptLabelAnnotation: {
+      invoke: {
+        src: 'promptLabelAnnotation',
+        onDone: [{
+          target: "promptBeginTracking",
+          cond: 'wasIdle'
+        },
+        {
+          target: 'promptTrackNewStudy',
+          cond: 'wasTrackingAndIsNewStudy',
+        },
+        {
+          target: 'promptTrackNewSeries',
+          cond: 'wasTrackingAndIsNewSeries',
+        },
+        {
+          target: 'tracking',
+          cond: 'wasTracking'
+        },
+        {
+          target: 'off'
+        }
+        ]
+      }
+    },
   },
   strict: true,
 };
@@ -337,6 +361,11 @@ const defaultOptions = {
       prevTrackedSeries: ctx.trackedSeries.slice().filter(ser => ser !== evt.SeriesInstanceUID),
       trackedSeries: ctx.trackedSeries.slice().filter(ser => ser !== evt.SeriesInstanceUID),
     })),
+    setPreviousState: assign((ctx, evt, meta) => {
+      return {
+        prevState: meta.state.value
+      }
+    }),
   },
   guards: {
     // We set dirty any time we performan an action that:
@@ -362,6 +391,24 @@ const defaultOptions = {
         evt.SeriesInstanceUID === undefined || ctx.trackedSeries.includes(evt.SeriesInstanceUID)
       );
     },
+
+    wasIdle: (ctx, evt, condMeta) => {
+      return ctx.prevState === 'idle';
+    },
+    wasTracking: (ctx, evt, condMeta) => {
+      return ctx.prevState === 'tracking';
+    },
+    wasTrackingAndIsNewStudy: (ctx, evt, condMeta) => {
+      return ctx.prevState === 'tracking' &&
+        !ctx.ignoredSeries.includes(evt.data.SeriesInstanceUID) &&
+        ctx.trackedStudy !== evt.data.StudyInstanceUID;
+    },
+    wasTrackingAndIsNewSeries: (ctx, evt, condMeta) => {
+      return ctx.prevState === 'tracking' &&
+        !ctx.ignoredSeries.includes(evt.data.SeriesInstanceUID) &&
+        !ctx.trackedSeries.includes(evt.data.SeriesInstanceUID);
+    },
+
     shouldKillMachine: (ctx, evt) => evt.data && evt.data.userResponse === RESPONSE.NO_NEVER,
     shouldAddSeries: (ctx, evt) => evt.data && evt.data.userResponse === RESPONSE.ADD_SERIES,
     shouldSetStudyAndSeries: (ctx, evt) =>

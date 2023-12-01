@@ -1,9 +1,10 @@
-function initDefaultToolGroup(extensionManager, toolGroupService, commandsManager, toolGroupId) {
+function initDefaultToolGroup(extensionManager, toolGroupService, commandsManager, toolGroupId, measurementService) {
   const utilityModule = extensionManager.getModuleEntry(
     '@ohif/extension-cornerstone.utilityModule.tools'
   );
 
   const { toolNames, Enums } = utilityModule.exports;
+  const toolConfig = measurementService.getToolconfig(toolNames, commandsManager);
 
   const tools = {
     active: [
@@ -25,20 +26,7 @@ function initDefaultToolGroup(extensionManager, toolGroupService, commandsManage
       { toolName: toolNames.Length },
       {
         toolName: toolNames.ArrowAnnotate,
-        configuration: {
-          getTextCallback: (callback, eventDetails) =>
-            commandsManager.runCommand('arrowTextCallback', {
-              callback,
-              eventDetails,
-            }),
-
-          changeTextCallback: (data, eventDetails, callback) =>
-            commandsManager.runCommand('arrowTextCallback', {
-              callback,
-              data,
-              eventDetails,
-            }),
-        },
+        configuration: toolConfig[toolNames.ArrowAnnotate],
       },
       { toolName: toolNames.Bidirectional },
       { toolName: toolNames.DragProbe },
@@ -62,7 +50,7 @@ function initDefaultToolGroup(extensionManager, toolGroupService, commandsManage
   toolGroupService.createToolGroupAndAddTools(toolGroupId, tools);
 }
 
-function initSRToolGroup(extensionManager, toolGroupService, commandsManager) {
+function initSRToolGroup(extensionManager, toolGroupService, commandsManager, measurementService) {
   const SRUtilityModule = extensionManager.getModuleEntry(
     '@ohif/extension-cornerstone-dicom-sr.utilityModule.tools'
   );
@@ -128,12 +116,13 @@ function initSRToolGroup(extensionManager, toolGroupService, commandsManager) {
   toolGroupService.createToolGroupAndAddTools(toolGroupId, tools);
 }
 
-function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
+function initMPRToolGroup(extensionManager, toolGroupService, commandsManager, measurementService) {
   const utilityModule = extensionManager.getModuleEntry(
     '@ohif/extension-cornerstone.utilityModule.tools'
   );
 
   const { toolNames, Enums } = utilityModule.exports;
+  const toolConfig = measurementService.getToolconfig(toolNames, commandsManager);
 
   const tools = {
     active: [
@@ -155,20 +144,7 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
       { toolName: toolNames.Length },
       {
         toolName: toolNames.ArrowAnnotate,
-        configuration: {
-          getTextCallback: (callback, eventDetails) =>
-            commandsManager.runCommand('arrowTextCallback', {
-              callback,
-              eventDetails,
-            }),
-
-          changeTextCallback: (data, eventDetails, callback) =>
-            commandsManager.runCommand('arrowTextCallback', {
-              callback,
-              data,
-              eventDetails,
-            }),
-        },
+        configuration: toolConfig[toolNames.ArrowAnnotate],
       },
       { toolName: toolNames.Bidirectional },
       { toolName: toolNames.DragProbe },
@@ -201,7 +177,7 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
 
   toolGroupService.createToolGroupAndAddTools('mpr', tools);
 }
-function initVolume3DToolGroup(extensionManager, toolGroupService) {
+function initVolume3DToolGroup(extensionManager, toolGroupService, measurementService) {
   const utilityModule = extensionManager.getModuleEntry(
     '@ohif/extension-cornerstone.utilityModule.tools'
   );
@@ -228,11 +204,11 @@ function initVolume3DToolGroup(extensionManager, toolGroupService) {
   toolGroupService.createToolGroupAndAddTools('volume3d', tools);
 }
 
-function initToolGroups(extensionManager, toolGroupService, commandsManager) {
-  initDefaultToolGroup(extensionManager, toolGroupService, commandsManager, 'default');
-  initSRToolGroup(extensionManager, toolGroupService, commandsManager);
-  initMPRToolGroup(extensionManager, toolGroupService, commandsManager);
-  initVolume3DToolGroup(extensionManager, toolGroupService);
+function initToolGroups(extensionManager, toolGroupService, commandsManager, measurementService) {
+  initDefaultToolGroup(extensionManager, toolGroupService, commandsManager, 'default', measurementService);
+  initSRToolGroup(extensionManager, toolGroupService, commandsManager, measurementService);
+  initMPRToolGroup(extensionManager, toolGroupService, commandsManager, measurementService);
+  initVolume3DToolGroup(extensionManager, toolGroupService, measurementService);
 }
 
 export default initToolGroups;

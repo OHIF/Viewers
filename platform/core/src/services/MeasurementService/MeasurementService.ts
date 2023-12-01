@@ -1,6 +1,8 @@
+import { ServicesManager } from '@ohif/core';
 import log from '../../log';
 import guid from '../../utils/guid';
 import { PubSubService } from '../_shared/pubSubServiceInterface';
+import { LabellingFlow } from '@ohif/ui';
 
 /**
  * Measurement source schema
@@ -102,8 +104,8 @@ class MeasurementService extends PubSubService {
   public static REGISTRATION = {
     name: 'measurementService',
     altName: 'MeasurementService',
-    create: ({ configuration = {} }) => {
-      return new MeasurementService();
+    create: ({ configuration = {}, servicesManager }) => {
+      return new MeasurementService(servicesManager);
     },
   };
 
@@ -114,17 +116,32 @@ class MeasurementService extends PubSubService {
   private measurements = new Map();
   private unmappedMeasurements = new Set();
 
-  constructor() {
+  public readonly _servicesManager: ServicesManager;
+  private modeLabelConfing;
+
+  constructor(servicesManager) {
     super(EVENTS);
     this.sources = {};
     this.mappings = {};
+    this._servicesManager = servicesManager;
   }
+
+
 
   /**
    * Adds the given schema to the measurement service schema list.
    * This method should be used to add custom tool schema to the measurement service.
    * @param {Array} schema schema for validation
    */
+
+  setModeLabelConfing(config) {
+    this.modeLabelConfing = config;
+  }
+
+  getModeLabelConfing() {
+    return this.modeLabelConfing;
+  }
+
   public addMeasurementSchemaKeys(schema): void {
     if (!Array.isArray(schema)) {
       schema = [schema];
@@ -256,6 +273,78 @@ class MeasurementService extends PubSubService {
 
     return mappings[uid];
   }
+
+  getToolconfig(toolNames, commandsManager) {
+    const toolConfig = {
+      [toolNames.ArrowAnnotate]: {
+        getTextCallback: (callback, eventDetails) => {
+          if (this.getModeLabelConfing()) {
+            callback(' ')
+          } else {
+            commandsManager.runCommand('arrowTextCallback', {
+              callback,
+              eventDetails,
+            });
+          }
+        },
+        changeTextCallback: (data, eventDetails, callback) => {
+          if (this.getModeLabelConfing() === undefined) {
+            commandsManager.runCommand('arrowTextCallback', {
+              callback,
+              data,
+              eventDetails,
+            });
+          }
+        },
+      },
+    }
+    return toolConfig;
+  }
+
+
+  showLabelAnnotationPopup(uid) {
+    const {
+      uiDialogService
+    } = this._servicesManager.services;
+    const measurement = this.measurements.get(uid);
+    return new Promise<void>((resolve, reject) => {
+
+      const labellingDoneCallback = value => {
+        measurement.label = value;
+        this.update(
+          uid,
+          {
+            ...measurement,
+          },
+          true
+        );
+        uiDialogService.dismiss({ id: 'select-annotation' });
+        resolve();
+      };
+
+      uiDialogService.create({
+        id: 'select-annotation',
+        isDraggable: false,
+        showOverlay: true,
+        content: LabellingFlow,
+        defaultPosition: {
+          x: window.innerWidth / 2,
+          y: window.innerHeight / 2,
+        },
+        contentProps: {
+          labellingDoneCallback: labellingDoneCallback,
+          measurementData: measurement,
+          componentStyle: {},
+          labelData: this.getModeLabelConfing()
+        },
+      });
+    });
+  }
+
+
+  labelAnnotation = uid => {
+    return this.showLabelAnnotationPopup(uid);
+  };
 
   /**
    * Add a new measurement matching criteria along with mapping functions.

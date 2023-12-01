@@ -82,10 +82,22 @@ function modeFactory({ modeConfiguration }) {
         customizationService,
       } = servicesManager.services;
 
+      const modeLabelConfig = {
+        labelOnMeasure: false,
+        exclusive: false,
+        items: [
+          { value: "Biparietal Diameter", label: "Biparietal Diameter" },
+          { value: "Head Circumference", label: "Head Circumference" },
+          { value: "Abdominal Circumference", label: "Abdominal Circumference" },
+          { value: "New Label", label: "New Label" }
+        ]
+      }
+
       measurementService.clearMeasurements();
+      // measurementService.setModeLabelConfing(modeLabelConfig);
 
       // Init Default and SR ToolGroups
-      initToolGroups(extensionManager, toolGroupService, commandsManager);
+      initToolGroups(extensionManager, toolGroupService, commandsManager, measurementService);
 
       let unsubscribe;
       toolbarService.setDefaultTool({
