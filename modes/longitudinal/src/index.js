@@ -83,7 +83,7 @@ function modeFactory({ modeConfiguration }) {
       } = servicesManager.services;
 
       const modeLabelConfig = {
-        labelOnMeasure: false,
+        labelOnMeasure: true,
         exclusive: false,
         items: [
           { value: "Biparietal Diameter", label: "Biparietal Diameter" },
@@ -94,7 +94,7 @@ function modeFactory({ modeConfiguration }) {
       }
 
       measurementService.clearMeasurements();
-      // measurementService.setModeLabelConfing(modeLabelConfig);
+      measurementService.setModeLabelConfing(modeLabelConfig);
 
       // Init Default and SR ToolGroups
       initToolGroups(extensionManager, toolGroupService, commandsManager, measurementService);
