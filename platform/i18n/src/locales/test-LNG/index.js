@@ -18,6 +18,7 @@ import StudyList from './StudyList.json';
 import ToolTip from './ToolTip.json';
 import TooltipClipboard from './TooltipClipboard.json';
 import ThumbnailTracked from './ThumbnailTracked.json';
+import TrackedCornerstoneViewport from './TrackedCornerstoneViewport.json';
 import UserPreferencesModal from './UserPreferencesModal.json';
 import ViewportDownloadForm from './ViewportDownloadForm.json';
 
@@ -43,6 +44,7 @@ export default {
     ToolTip,
     TooltipClipboard,
     ThumbnailTracked,
+    TrackedCornerstoneViewport,
     UserPreferencesModal,
     ViewportDownloadForm,
   },
