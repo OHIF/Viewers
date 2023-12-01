@@ -43,7 +43,7 @@ function modeFactory({ modeConfiguration }) {
      * Lifecycle hooks
      */
     onModeEnter: ({ servicesManager, extensionManager, commandsManager }) => {
-      const { toolbarService, toolGroupService, hangingProtocolService, displaySetService } =
+      const { toolbarService, toolGroupService, hangingProtocolService, displaySetService, measurementService } =
         servicesManager.services;
 
       const utilityModule = extensionManager.getModuleEntry(
@@ -53,7 +53,7 @@ function modeFactory({ modeConfiguration }) {
       const { toolNames, Enums } = utilityModule.exports;
 
       // Init Default and SR ToolGroups
-      initToolGroups(toolNames, Enums, toolGroupService, commandsManager);
+      initToolGroups(toolNames, Enums, toolGroupService, commandsManager, measurementService);
 
       const setWindowLevelActive = () => {
         toolbarService.recordInteraction({

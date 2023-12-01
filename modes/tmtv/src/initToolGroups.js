@@ -7,7 +7,9 @@ export const toolGroupIds = {
   // MPR: 'mpr',
 };
 
-function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager) {
+function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager, measurementService) {
+  const toolConfig = measurementService.getToolconfig(toolNames, commandsManager);
+
   const tools = {
     active: [
       {
@@ -28,21 +30,7 @@ function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager) {
       { toolName: toolNames.Length },
       {
         toolName: toolNames.ArrowAnnotate,
-        configuration: {
-          getTextCallback: (callback, eventDetails) => {
-            commandsManager.runCommand('arrowTextCallback', {
-              callback,
-              eventDetails,
-            });
-          },
-
-          changeTextCallback: (data, eventDetails, callback) =>
-            commandsManager.runCommand('arrowTextCallback', {
-              callback,
-              data,
-              eventDetails,
-            }),
-        },
+        configuration: toolConfig[toolNames.ArrowAnnotate],
       },
       { toolName: toolNames.Bidirectional },
       { toolName: toolNames.DragProbe },
@@ -101,8 +89,8 @@ function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager) {
   toolGroupService.createToolGroupAndAddTools(toolGroupIds.MIP, mipTools);
 }
 
-function initToolGroups(toolNames, Enums, toolGroupService, commandsManager) {
-  _initToolGroups(toolNames, Enums, toolGroupService, commandsManager);
+function initToolGroups(toolNames, Enums, toolGroupService, commandsManager, measurementService) {
+  _initToolGroups(toolNames, Enums, toolGroupService, commandsManager, measurementService);
 }
 
 export default initToolGroups;
