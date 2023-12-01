@@ -14,6 +14,7 @@ import StudyBrowser from './StudyBrowser.json';
 import StudyItem from './StudyItem.json';
 import StudyList from './StudyList.json';
 import TooltipClipboard from './TooltipClipboard.json';
+import ThumbnailTracked from './ThumbnailTracked.json';
 import UserPreferencesModal from './UserPreferencesModal.json';
 import ViewportDownloadForm from './ViewportDownloadForm.json';
 import Messages from './Messages.json';
@@ -36,6 +37,7 @@ export default {
     StudyItem,
     StudyList,
     TooltipClipboard,
+    ThumbnailTracked,
     UserPreferencesModal,
     ViewportDownloadForm,
     Messages,
