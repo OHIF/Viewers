@@ -35,6 +35,7 @@ class ViewportActionCornersService extends PubSubService {
     getState: getStateImplementation,
     setActionComponent: setActionComponentImplementation,
     setActionComponents: setActionComponentsImplementation,
+    clearActionComponents: clearActionComponentsImplementation,
   }): void {
     if (getStateImplementation) {
       this.serviceImplementation._getState = getStateImplementation;
@@ -44,6 +45,9 @@ class ViewportActionCornersService extends PubSubService {
     }
     if (setActionComponentsImplementation) {
       this.serviceImplementation._setActionComponents = setActionComponentsImplementation;
+    }
+    if (clearActionComponentsImplementation) {
+      this.serviceImplementation._clearActionComponents = clearActionComponentsImplementation;
     }
   }
 
@@ -57,6 +61,10 @@ class ViewportActionCornersService extends PubSubService {
 
   public setActionComponents(components: Array<ActionComponentInfo>) {
     this.serviceImplementation._setActionComponents(components);
+  }
+
+  public clearActionComponents(viewportId: string) {
+    this.serviceImplementation._clearActionComponents(viewportId);
   }
 }
 

@@ -253,17 +253,11 @@ function commandsModule({
       toolbarService.setButton('Cine', { props: { isActive: !isCineEnabled } });
       viewports.forEach((_, index) => cineService.setCine({ id: index, isPlaying: false }));
     },
-    setWindowLevel({ window, level, toolGroupId }) {
+
+    setViewportWindowLevel({ viewportId, window, level }) {
       // convert to numbers
       const windowWidthNum = Number(window);
       const windowCenterNum = Number(level);
-
-      const { viewportId } = _getActiveViewportEnabledElement();
-      const viewportToolGroupId = toolGroupService.getToolGroupForViewport(viewportId);
-
-      if (toolGroupId && toolGroupId !== viewportToolGroupId) {
-        return;
-      }
 
       // get actor from the viewport
       const renderingEngine = cornerstoneViewportService.getRenderingEngine();
@@ -278,6 +272,18 @@ function commandsModule({
         },
       });
       viewport.render();
+    },
+
+    setWindowLevel(props) {
+      const { toolGroupId } = props;
+      const { viewportId } = _getActiveViewportEnabledElement();
+      const viewportToolGroupId = toolGroupService.getToolGroupForViewport(viewportId);
+
+      if (toolGroupId && toolGroupId !== viewportToolGroupId) {
+        return;
+      }
+
+      actions.setViewportWindowLevel({ ...props, viewportId });
     },
 
     // Just call the toolbar service record interaction - allows
@@ -644,6 +650,9 @@ function commandsModule({
       commandFn: actions.updateMeasurement,
     },
 
+    setViewportWindowLevel: {
+      commandFn: actions.setViewportWindowLevel,
+    },
     setWindowLevel: {
       commandFn: actions.setWindowLevel,
     },

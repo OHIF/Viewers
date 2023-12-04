@@ -6,24 +6,33 @@ import PanelSelector from './PanelSelector';
 import classNames from 'classnames';
 import BackItem from './BackItem';
 
+export enum VerticalDirection {
+  TopToBottom,
+  BottomToTop,
+}
+export enum HorizontalDirection {
+  LeftToRight,
+  RightToLeft,
+}
+
 export interface MenuProps {
-  className?: string;
+  menuStyle?: unknown;
+  menuClassName?: string;
   isVisible?: boolean;
   preventHideMenu?: boolean;
-  backLabel: string;
+  backLabel?: string;
   headerComponent?: ReactNode;
   showHeaderDivider?: boolean;
   activePanelIndex?: number;
   onVisibilityChange?: (isVisible: boolean) => void;
-  opensLeftToRight?: boolean;
+  horizontalDirection?: HorizontalDirection;
   children: ReactNode;
 }
-
 type MenuContextProps = {
   showSubMenu: (subMenuProps: MenuProps) => void;
   hideMenu: () => void;
   addItemPanel: (index: number, label: string) => void;
-  opensLeftToRight: boolean;
+  horizontalDirection: HorizontalDirection;
   activePanelIndex: number;
 };
 
@@ -40,8 +49,9 @@ const Menu = (props: MenuProps) => {
     onVisibilityChange,
     activePanelIndex,
     preventHideMenu,
-    className,
-    opensLeftToRight = true,
+    menuClassName,
+    menuStyle,
+    horizontalDirection = HorizontalDirection.LeftToRight,
   } = props;
 
   const [isMenuVisible, setIsMenuVisible] = useState(isVisible);
@@ -55,10 +65,24 @@ const Menu = (props: MenuProps) => {
   ]);
   const [itemPanelLabels, setItemPanelLabels] = useState<Array<string>>([]);
 
+  const hideMenu = useCallback(() => {
+    if (preventHideMenu) {
+      return;
+    }
+    setMenuPath(path => [path[0]]);
+    setItemPanelLabels([]);
+    setIsMenuVisible(false);
+    onVisibilityChange?.(false);
+  }, [preventHideMenu, onVisibilityChange]);
+
   useEffect(() => {
-    setIsMenuVisible(isVisible);
-    onVisibilityChange?.(isVisible);
-  }, [isVisible, onVisibilityChange]);
+    if (isVisible) {
+      setIsMenuVisible(isVisible);
+      onVisibilityChange?.(isVisible);
+    } else {
+      hideMenu();
+    }
+  }, [hideMenu, isVisible, onVisibilityChange]);
 
   const showSubMenu = useCallback((subMenuProps: MenuProps) => {
     setMenuPath(path => {
@@ -69,17 +93,6 @@ const Menu = (props: MenuProps) => {
     });
     setItemPanelLabels([]);
   }, []);
-
-  const hideMenu = useCallback(() => {
-    if (preventHideMenu) {
-      return;
-    }
-
-    setMenuPath(path => [path[0]]);
-    setItemPanelLabels([]);
-    setIsMenuVisible(false);
-    onVisibilityChange(false);
-  }, [preventHideMenu, onVisibilityChange]);
 
   const addItemPanel = useCallback((index, label) => {
     setItemPanelLabels(labels => {
@@ -112,15 +125,16 @@ const Menu = (props: MenuProps) => {
           hideMenu,
           addItemPanel,
           activePanelIndex: currentMenuActivePanelIndex,
-          opensLeftToRight,
+          horizontalDirection,
         }}
       >
         {isMenuVisible && (
           <div
             className={classNames(
               'bg-secondary-dark flex select-none flex-col rounded px-1 py-1.5 text-white opacity-90',
-              className
+              menuClassName
             )}
+            style={menuStyle}
           >
             {menuPath.length > 1 && (
               <BackItem

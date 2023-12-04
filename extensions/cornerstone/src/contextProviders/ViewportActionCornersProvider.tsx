@@ -34,10 +34,9 @@ export const ViewportActionCornersContext = createContext(DEFAULT_STATE);
 
 export function ViewportActionCornersProvider({ children, service }) {
   const viewportActionCornersReducer = (state, action) => {
-    const { viewportId, id, component, location, indexPriority = 0 } = action.payload;
-
     switch (action.type) {
       case 'SET_ACTION_COMPONENT': {
+        const { viewportId, id, component, location, indexPriority = 0 } = action.payload;
         // Get the components at the specified location of the specified viewport.
         let locationComponents = state?.[viewportId]?.[location]
           ? [...state[viewportId][location]]
@@ -54,19 +53,22 @@ export function ViewportActionCornersProvider({ children, service }) {
           ];
         }
 
-        // Insert the component from the payload.
-        const insertionIndex = locationComponents.findIndex(
-          component => indexPriority <= component.indexPriority
-        );
-        locationComponents = [
-          ...locationComponents.slice(0, insertionIndex),
-          {
-            id,
-            component,
-            indexPriority,
-          },
-          ...locationComponents.slice(insertionIndex + 1),
-        ];
+        // Insert the component from the payload but
+        // do not insert an undefined or null component.
+        if (component) {
+          const insertionIndex = locationComponents.findIndex(
+            component => indexPriority <= component.indexPriority
+          );
+          locationComponents = [
+            ...locationComponents.slice(0, insertionIndex),
+            {
+              id,
+              component,
+              indexPriority,
+            },
+            ...locationComponents.slice(insertionIndex + 1),
+          ];
+        }
 
         return {
           ...state,
@@ -77,6 +79,12 @@ export function ViewportActionCornersProvider({ children, service }) {
             },
           },
         };
+      }
+      case 'CLEAR_ACTION_COMPONENTS': {
+        const viewportId = action.payload;
+        const nextState = { ...state };
+        delete nextState[viewportId];
+        return nextState;
       }
       default:
         return { ...state };
@@ -93,27 +101,32 @@ export function ViewportActionCornersProvider({ children, service }) {
   }, [viewportActionCornersState]);
 
   const setActionComponent = useCallback(
-    (component: ActionComponentInfo) => {
-      dispatch({ type: 'SET_ACTION_COMPONENT', payload: component });
+    (actionComponentInfo: ActionComponentInfo) => {
+      dispatch({ type: 'SET_ACTION_COMPONENT', payload: actionComponentInfo });
     },
     [dispatch]
   );
 
   const setActionComponents = useCallback(
-    (components: Array<ActionComponentInfo>) => {
-      components.forEach(component =>
-        dispatch({ type: 'SET_ACTION_COMPONENT', payload: component })
+    (actionComponentInfos: Array<ActionComponentInfo>) => {
+      actionComponentInfos.forEach(actionComponentInfo =>
+        dispatch({ type: 'SET_ACTION_COMPONENT', payload: actionComponentInfo })
       );
     },
     [dispatch]
   );
 
+  const clearActionComponents = useCallback(
+    (viewportId: string) => dispatch({ type: 'CLEAR_ACTION_COMPONENTS', payload: viewportId }),
+    [dispatch]
+  );
   useEffect(() => {
     if (service) {
       service.setServiceImplementation({
         getState,
         setActionComponent,
         setActionComponents,
+        clearActionComponents,
       });
     }
   }, [getState, service, setActionComponent, setActionComponents]);
@@ -123,6 +136,7 @@ export function ViewportActionCornersProvider({ children, service }) {
     getState,
     setActionComponent: props => service.setActionComponent(props),
     setActionComponents: props => service.setActionComponents(props),
+    clearActionComponents: props => service.clearActionComponents(props),
   };
 
   const contextValue = useMemo(

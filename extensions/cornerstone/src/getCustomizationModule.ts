@@ -1,6 +1,7 @@
 import { Enums } from '@cornerstonejs/tools';
 import { toolNames } from './initCornerstoneTools';
 import DicomUpload from './components/DicomUpload/DicomUpload';
+import defaultWindowLevelPresets from './components/WindowLevelActionMenu/defaultWindowLevelPresets';
 
 const tools = {
   active: [
@@ -36,6 +37,10 @@ function getCustomizationModule() {
         {
           id: 'cornerstone.overlayViewportTools',
           tools,
+        },
+        {
+          id: 'cornerstone.windowLevelPresets',
+          presets: defaultWindowLevelPresets,
         },
       ],
     },

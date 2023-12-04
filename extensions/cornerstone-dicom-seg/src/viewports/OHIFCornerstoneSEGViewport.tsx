@@ -298,13 +298,23 @@ function OHIFCornerstoneSEGViewport(props) {
           <ViewportActionArrows
             key="actionArrows"
             onArrowsClick={onSegmentChange}
+            className={
+              viewportId === activeViewportId ? 'visible' : 'invisible group-hover:visible'
+            }
           ></ViewportActionArrows>
         ),
         indexPriority: 0,
         location: viewportActionCornersService.LOCATIONS.topRight,
       },
     ]);
-  }, [isHydrated, onSegmentChange, onStatusClick, viewportActionCornersService, viewportId]);
+  }, [
+    activeViewportId,
+    isHydrated,
+    onSegmentChange,
+    onStatusClick,
+    viewportActionCornersService,
+    viewportId,
+  ]);
 
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   let childrenWithProps = null;

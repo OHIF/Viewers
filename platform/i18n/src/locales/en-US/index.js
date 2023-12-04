@@ -12,6 +12,7 @@ import StudyList from './StudyList.json';
 import UserPreferencesModal from './UserPreferencesModal.json';
 import ViewportDownloadForm from './ViewportDownloadForm.json';
 import Messages from './Messages.json';
+import WindowLevelActionMenu from './WindowLevelActionMenu.json';
 
 export default {
   'en-US': {
@@ -29,5 +30,6 @@ export default {
     UserPreferencesModal,
     ViewportDownloadForm,
     Messages,
+    WindowLevelActionMenu,
   },
 };
