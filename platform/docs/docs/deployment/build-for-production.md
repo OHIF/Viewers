@@ -104,10 +104,7 @@ yarn global add http-server
 # Change the directory to the platform/app
 
 # Serve the files in our current directory
-# Accessible at: `http://localhost:8080`
-npx http-server ./dist
-
-# you can use npx serve ./dist -l 8080 -s as an alternative to http-server
+npx serve ./dist -c ../public/serve.json
 ```
 
 :::caution
@@ -117,25 +114,6 @@ In the video below notice that there is `platform/viewer` which has been renamed
 <div style={{padding:"56.25% 0 0 0", position:"relative"}}>
     <iframe src="https://player.vimeo.com/video/551957266?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479"  frameBorder="0" allow="autoplay; fullscreen; picture-in-picture" allowFullScreen style= {{ position:"absolute",top:0,left:0,width:"100%",height:"100%"}} title="measurement-report"></iframe>
 </div>
-
-### Build for non-root path
-
-If you would like to access the viewer from a non-root path (e.g., `/my-awesome-viewer` instead of `/`),
-You can achieve so by using the `PUBLIC_URL` environment variable AND the `routerBasename` configuration option.
-
-1. use a config (e.g. config/myConfig.js) file that is using the `routerBasename` of your choice `/my-awesome-viewer` (note there is only one / - it is not /my-awesome-viewer/).
-2. build the viewer with `PUBLIC_URL=/my-awesome-viewer/ APP_CONFIG=config/myConfig.js yarn build` (note there are two / - it is not /my-awesome-viewer).
-
-
-:::tip
-The PUBLIC_URL tells the application where to find the static assets and the routerBasename will tell the application how to handle the routes
-:::
-
-:::tip
-Testing, you can use `npx http-server` to serve the files in the generated `dist` folder and access the viewer from `http://localhost:8080/my-awesome-viewer`. To achieve
-so, you should first rename the `dist` folder to `my-awesome-viewer` and then change the working directory
-to the `platform/app` folder and run `npx http-server ./`. Then on the browser, you can access the viewer from `http://localhost:8080/my-awesome-viewer`
-:::
 
 
 ### Automating Builds and Deployments
