@@ -44,7 +44,7 @@ function ThumbnailTracked ({
             position="right"
             content={
               <div className="max-w-40 text-left">
-                {t('Viewport')} {viewportIdentificatorLabel}
+                {`${t('Viewport')}: ${viewportIdentificatorLabel}`}
               </div>
             }
           >
@@ -87,12 +87,11 @@ function ThumbnailTracked ({
                 </div>
                 <div className="flex flex-1 flex-col">
                   <span>
-                    <span className="text-white">{isTracked ? ` ${t('Tracked')}` : ` ${t('Untracked')}`}</span>
+                    <span className="text-white">{isTracked ? t('Series is tracked') : t('Series is untracked')}</span>
                   </span>
                   {!!viewportIdentificator.length && (
                     <span>
-                      {`${t('Viewport')} `}
-                      <span className="ml-1 text-white">{viewportIdentificatorLabel}</span>
+                      {`${t('Viewport')}: ${viewportIdentificatorLabel}`}
                     </span>
                   )}
                 </div>
