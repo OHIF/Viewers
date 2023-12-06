@@ -32,7 +32,7 @@ function _askTrackMeasurements(uiViewportDialogService, viewportId) {
       {
         id: 'prompt-begin-tracking-cancel',
         type: ButtonEnums.type.secondary,
-        text: i18n.t('MeasurementTable:No'),
+        text: i18n.t('Common:No'),
         value: RESPONSE.CANCEL,
       },
       {
@@ -44,7 +44,7 @@ function _askTrackMeasurements(uiViewportDialogService, viewportId) {
       {
         id: 'prompt-begin-tracking-yes',
         type: ButtonEnums.type.primary,
-        text: i18n.t('MeasurementTable:Yes'),
+        text: i18n.t('Common:Yes'),
         value: RESPONSE.SET_STUDY_AND_SERIES,
       },
     ];

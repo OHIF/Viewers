@@ -7,6 +7,7 @@
   "mm": "mm",
   "More": "More",
   "Next": "Next",
+  "No": "No",
   "NoStudyDate": "No Study Date",
   "Play": "Play",
   "Previous": "Previous",
@@ -15,5 +16,6 @@
   "Series": "Series",
   "Show": "Show",
   "Stop": "Stop",
-  "StudyDate": "Study Date"
+  "StudyDate": "Study Date",
+  "Yes": "Yes"
 }
