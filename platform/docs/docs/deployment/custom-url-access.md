@@ -1,6 +1,6 @@
 ---
 sidebar_position: 4
-title: Custom URL Access
+title: Custom URL Access/Build
 ---
 
 
@@ -35,11 +35,40 @@ PUBLIC_URL=/my-awesome-viewer/ APP_CONFIG=config/default.js yarn build
 ```
 
 We can use the `npx serve` to serve the build folder. There are two things you need to consider however,
-1. You need to add the fallback option to the serve command, so that it will serve the index.html for all the routes (that is how Single Page Applications works)
-2. Pass the `--cors` option to the serve command, so that it will add the `Access-Control-Allow-Origin: *` header to the responses. This is needed for the DICOMWeb requests to work.
+1. You need to change the public/serve.json file to reflect the new routerBasename in the destination (see the example below)
+
+
+```json
+// final serve.json
+{
+  "rewrites": [{ "source": "*", "destination": "my-awesome-viewer/index.html" }],
+  "headers": [
+    {
+      "source": "**/*",
+      "headers": [
+        { "key": "Cross-Origin-Embedder-Policy", "value": "require-corp" },
+        { "key": "Cross-Origin-Opener-Policy", "value": "same-origin" }
+      ]
+    }
+  ]
+}
+```
 
 ```bash
 cd platform/app;
 
-npx serve . -l 8080 -s --cors
+# rename the dist folder to my-awesome-viewer
+mv dist my-awesome-viewer
+
+# serve the folder with custom json, note that we are using ../public/serve.json and NOT public/serve.json
+npx serve  -c ./public/serve.json
 ```
+
+
+:::note
+When you want to authenticate against a sub path, there are a few things you should keep in mind:
+
+1. Set the `routerBasename` to the sub path and also update the `PUBLIC_URL` to match the sub path.
+2. Don't forget to modify the `serve.json` file as mentioned earlier.
+3. Ensure that the sub path is included in the list of allowed callback URLs. For example, in the Google Cloud dashboard, you can set it in the `Authorized redirect URIs` field under the `Credentials` section of the `APIs & Services` menu.
+:::
