@@ -148,7 +148,7 @@ function OpenIdConnectRoutes({ oidc, routerBasename, userAuthenticationService }
   const { pathname, search } = location;
 
   const redirect_uri = new URL(userManager.settings._redirect_uri).pathname.replace(
-    routerBasename,
+    routerBasename !== '/' ? routerBasename : '',
     ''
   );
   const silent_refresh_uri = new URL(userManager.settings._silent_redirect_uri).pathname; //.replace(routerBasename,'')
