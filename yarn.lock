@@ -1550,10 +1550,10 @@
   resolved "https://registry.yarnpkg.com/@colors/colors/-/colors-1.5.0.tgz#bb504579c1cae923e6576a4f5da43d25f97bdbd9"
   integrity sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ==
 
-"@cornerstonejs/adapters@^1.32.2":
-  version "1.32.2"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/adapters/-/adapters-1.32.2.tgz#f67ce50b6eab3a033c3847beeea3a54e4041eb30"
-  integrity sha512-ToxwxPp3A2bpR9TAlHasK4h7lQYiGENHIkwJ+Z0zdzrYwPGdFNaEHUk6XsA3vGhl6wWF3DhF7IU18nX20XL7kw==
+"@cornerstonejs/adapters@^1.36.1":
+  version "1.36.1"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/adapters/-/adapters-1.36.1.tgz#ce6e1c7213adb629926d360f3fff327b22729846"
+  integrity sha512-dfiByBlH0Y97rSoqtGehik+e/Ydm+DNmVIfOpsBfbI6XuMoqBWXtcjI04Lwp5i0i4U64bKfQ8IfHA8UQ8jbrDQ==
   dependencies:
     "@babel/runtime-corejs2" "^7.17.8"
     buffer "^6.0.3"
@@ -1597,20 +1597,15 @@
   resolved "https://registry.yarnpkg.com/@cornerstonejs/codec-openjpeg/-/codec-openjpeg-1.2.2.tgz#f0b524235b5551426b46db197a37b06f8ac805d7"
   integrity sha512-b1O7lZacKXelgeV9n8XWZ7pTw3i4Bq4qQ26G5ahBjWoOw4QNcCrb5hPxWBxNB/I8AoNbJxAe+lyLtyQGfdrTbw==
 
-"@cornerstonejs/codec-openjph@^2.4.2":
-  version "2.4.2"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/codec-openjph/-/codec-openjph-2.4.2.tgz#e96721d56f6ec96f7f95c16321d88cc8467d8d81"
-  integrity sha512-lgdvBvvNezleY+4pIe2ceUsJzlZe/0PipdeubQ3vZZOz3xxtHHMR1XFCl4fgd8gosR8COHuD7h6q+MwgrwBsng==
-
 "@cornerstonejs/codec-openjph@^2.4.5":
   version "2.4.5"
   resolved "https://registry.yarnpkg.com/@cornerstonejs/codec-openjph/-/codec-openjph-2.4.5.tgz#8690b61a86fa53ef38a70eee9d665a79229517c0"
   integrity sha512-MZCUy8VG0VG5Nl1l58+g+kH3LujAzLYTfJqkwpWI2gjSrGXnP6lgwyy4GmPRZWVoS40/B1LDNALK905cNWm+sg==
 
-"@cornerstonejs/core@^1.32.2":
-  version "1.32.2"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/core/-/core-1.32.2.tgz#02010a5a00c592dfbb7d49880fadd0e0b104af9f"
-  integrity sha512-z1dtIFjrcZ92aJqev5JV0mbRxOqPJnfRlyLn3TzcsPAzpwo8OPa4+iLR3nrXcXkORwPA1MZaA94JxiRAxvbfLA==
+"@cornerstonejs/core@^1.36.1":
+  version "1.36.1"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/core/-/core-1.36.1.tgz#2fba0945cd5eff303ad7569a16cf7904779f5470"
+  integrity sha512-4vbXWz/4tlsYqnyI0unyY3yLv3gyn4+ARdPkaNFM03/jx1/8i/yp4r8VlXMds57/2XSzpav3ue9eFwCFuI4rVg==
   dependencies:
     "@kitware/vtk.js" "27.3.1"
     comlink "^4.4.1"
@@ -1618,34 +1613,34 @@
     gl-matrix "^3.4.3"
     lodash.clonedeep "4.5.0"
 
-"@cornerstonejs/dicom-image-loader@^1.32.2":
-  version "1.32.2"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/dicom-image-loader/-/dicom-image-loader-1.32.2.tgz#0eceac4977562d90899f5454c477a677221eded9"
-  integrity sha512-sToKM5Ei+zllZl8UL1/3kWRyGZon99ds1lZs2Z4BN/0fr7/TIZCvajslY++JsYE0izUMhgAqaXFZZUNaLWFoqw==
+"@cornerstonejs/dicom-image-loader@^1.36.1":
+  version "1.36.1"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/dicom-image-loader/-/dicom-image-loader-1.36.1.tgz#5059a4a45b99052457a222b12cd9207f3b298e13"
+  integrity sha512-lqkZLECZZKTe+88afX9z1KkejyHfcnpQmTWy5WFUsXW7e0dumrVbEKAxG/UAHYj0iY4RyY/Eo/k+LEZXYjB+YA==
   dependencies:
     "@cornerstonejs/codec-charls" "^1.2.3"
     "@cornerstonejs/codec-libjpeg-turbo-8bit" "^1.2.2"
     "@cornerstonejs/codec-openjpeg" "^1.2.2"
     "@cornerstonejs/codec-openjph" "^2.4.5"
-    "@cornerstonejs/core" "^1.32.2"
+    "@cornerstonejs/core" "^1.36.1"
     dicom-parser "^1.8.9"
     pako "^2.0.4"
     uuid "^9.0.0"
 
-"@cornerstonejs/streaming-image-volume-loader@^1.32.2":
-  version "1.32.2"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/streaming-image-volume-loader/-/streaming-image-volume-loader-1.32.2.tgz#9d29412f6af470fa4ce46d0b43735eed2aebc374"
-  integrity sha512-VisVikQrWAfVqg4rozDLv/3T1DHOsiqSfQUVUYIqmL8WP7hC88E9R/aJyrL2uj4J/zAIvxlbWJYN1RdkyaxFyQ==
+"@cornerstonejs/streaming-image-volume-loader@^1.36.1":
+  version "1.36.1"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/streaming-image-volume-loader/-/streaming-image-volume-loader-1.36.1.tgz#3cf270b624a40e20a3163cdef338b507da83a29f"
+  integrity sha512-T9q36aPSUobTD0tJsgwayDKsgxlxVzav0cVOMkHxO10kOGC82DniZBm2WSg5mbn2caFo0YezPUaXfXuGqsqvMg==
   dependencies:
-    "@cornerstonejs/core" "^1.32.2"
+    "@cornerstonejs/core" "^1.36.1"
     comlink "^4.4.1"
 
-"@cornerstonejs/tools@^1.32.2":
-  version "1.32.2"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/tools/-/tools-1.32.2.tgz#45961a1e6788ee7f660af3f1a013c0410b6ff2f6"
-  integrity sha512-kGL7m0Vk8OovqArTF8lyj/UpO6VBg+xqNnxnkyKXvi1sbLh7/4woRJS4W8sihOt6XBkMxHTMyHEiHEPHASuKbw==
+"@cornerstonejs/tools@^1.36.1":
+  version "1.36.1"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/tools/-/tools-1.36.1.tgz#bb8e48d2363747b844a268205cb39f1bc39c7ce1"
+  integrity sha512-4Qu9hT+fx0tzPHte01wRsctYRSw8VznAu/xMOCVeniF9kIAxKzXLBvcxhKQS+gFr6HRD5nRxtflKKrKlna8nMw==
   dependencies:
-    "@cornerstonejs/core" "^1.32.2"
+    "@cornerstonejs/core" "^1.36.1"
     comlink "^4.4.1"
     lodash.clonedeep "4.5.0"
     lodash.get "^4.4.2"
@@ -14227,7 +14222,7 @@ media-typer@0.3.0:
   resolved "https://registry.yarnpkg.com/media-typer/-/media-typer-0.3.0.tgz#8710d7af0aa626f8fffa1ce00168545263255748"
   integrity sha512-dq+qelQ9akHpcOl/gUVRTxVIOkAJ1wR3QAvb4RsVjS8oVoFjDGTc679wJYmUmknUF5HwMLOgb5O+a3KxfWapPQ==
 
-medium-zoom@^1.0.8:
+medium-zoom@^1.0.4:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/medium-zoom/-/medium-zoom-1.1.0.tgz#6efb6bbda861a02064ee71a2617a8dc4381ecc71"
   integrity sha512-ewyDsp7k4InCUp3jRmwHBRFGyjBimKps/AJLjRSox+2q/2H4p/PNpQf+pwONWlJiOudkBXtbdmVbFjqyybfTmQ==
@@ -15454,15 +15449,15 @@ obuf@^1.0.0, obuf@^1.1.2:
   resolved "https://registry.yarnpkg.com/obuf/-/obuf-1.1.2.tgz#09bea3343d41859ebd446292d11c9d4db619084e"
   integrity sha512-PX1wu0AmAdPqOL1mWhqmlOd8kOIZQwGZw6rh7uby9fTc5lhaOWFLX3I6R1hrF9k3zUY40e6igsLGkDXK92LJNg==
 
-"ohif-gcp-mode@https://github.com/ImagingDataCommons/ohif-gcp-mode#main-1.0.1":
+"ohif-gcp-mode@https://github.com/ImagingDataCommons/ohif-gcp-mode#main-1.0.2":
   version "0.0.1"
-  resolved "https://github.com/ImagingDataCommons/ohif-gcp-mode#90ea73615e76d3437075453eb6c50391086c3a66"
+  resolved "https://github.com/ImagingDataCommons/ohif-gcp-mode#d242e63cd3f63db8af60c503aa601335efea2ed5"
   dependencies:
     "@babel/runtime" "^7.20.13"
 
-"ohif-idc-mode@https://github.com/ImagingDataCommons/ohif-idc-mode#main-1.0.1":
+"ohif-idc-mode@https://github.com/ImagingDataCommons/ohif-idc-mode#main-1.0.2":
   version "0.0.1"
-  resolved "https://github.com/ImagingDataCommons/ohif-idc-mode#f86e0375335384933531640cc33a13e9df63e798"
+  resolved "https://github.com/ImagingDataCommons/ohif-idc-mode#42be45606980cd3ec3b6375eaa48c967d7a794bc"
   dependencies:
     "@babel/runtime" "^7.20.13"
 
