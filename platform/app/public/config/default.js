@@ -1,7 +1,7 @@
 window.config = {
   routerBasename: '/',
   whiteLabeling: {
-    createLogoComponentFn: function(React) {
+    createLogoComponentFn: function (React) {
       return React.createElement(
         'a',
         {
@@ -50,8 +50,7 @@ window.config = {
   oidc: [
     {
       authority: 'https://accounts.google.com',
-      client_id:
-        '370953977065-o32uf5cn5f4bovtogdu862mlnhbcv9hk.apps.googleusercontent.com',
+      client_id: '370953977065-o32uf5cn5f4bovtogdu862mlnhbcv9hk.apps.googleusercontent.com',
       redirect_uri: '/callback',
       response_type: 'id_token token',
       scope:
@@ -88,6 +87,51 @@ window.config = {
             wadoUri: pathUrl,
             wadoUriRoot: pathUrl,
           };
+        },
+      },
+    },
+    {
+      sourceName: 'gcp-dicomweb-2',
+      namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
+      configuration: {
+        name: 'gcp-dicomweb-2',
+        qidoSupportsIncludeField: false,
+        imageRendering: 'wadors',
+        thumbnailRendering: 'wadors',
+        enableStudyLazyLoad: true,
+        supportsFuzzyMatching: false,
+        supportsWildcard: false,
+        singlepart: 'bulkdata,video,pdf',
+        useBulkDataURI: false,
+        onConfiguration: (dicomWebConfig, options) => {
+          const extractParams = url => ({
+            project: url.split('projects/')[1].split('/')[0],
+            location: url.split('locations/')[1].split('/')[0],
+            dataset: url.split('datasets/')[1].split('/')[0],
+            dicomStore: url.split('dicomStores/')[1].split('/')[0],
+          });
+          const { query } = options;
+          const secondServer = query.get('secondGoogleServer');
+          if (secondServer) {
+            const { project, location, dataset, dicomStore } = extractParams(secondServer);
+            const pathUrl = `https://healthcare.googleapis.com/v1/projects/${project}/locations/${location}/datasets/${dataset}/dicomStores/${dicomStore}/dicomWeb`;
+            return {
+              ...dicomWebConfig,
+              wadoRoot: pathUrl,
+              qidoRoot: pathUrl,
+              wadoUri: pathUrl,
+              wadoUriRoot: pathUrl,
+              qidoSupportsIncludeField: false,
+              imageRendering: 'wadors',
+              thumbnailRendering: 'wadors',
+              enableStudyLazyLoad: true,
+              supportsFuzzyMatching: false,
+              supportsWildcard: false,
+              singlepart: 'bulkdata,video,pdf',
+              useBulkDataURI: false,
+              bulkDataURI: undefined,
+            };
+          }
         },
       },
     },
