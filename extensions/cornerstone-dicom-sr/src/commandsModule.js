@@ -95,7 +95,7 @@ const commandsModule = ({}) => {
           throw new Error('Invalid report, no content');
         }
 
-        await dataSource.store.dicom(naturalizedReport);
+        await dataSource.store.dicom(naturalizedReport, undefined, measurementData);
 
         if (StudyInstanceUID) {
           dataSource.deleteStudyMetadataPromise(StudyInstanceUID);

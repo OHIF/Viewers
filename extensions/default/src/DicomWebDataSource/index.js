@@ -40,7 +40,8 @@ const metadataProvider = classes.MetadataProvider;
  * @param {bool} lazyLoadStudy - "enableStudyLazyLoad"; Request series meta async instead of blocking
  * @param {string|bool} singlepart - indicates of the retrieves can fetch singlepart.  Options are bulkdata, video, image or boolean true
  */
-function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
+function createDicomWebApi(dicomWebConfig, servicesManager) {
+  const { userAuthenticationService, customizationService } = servicesManager.services;
   let dicomWebConfigCopy,
     qidoConfig,
     wadoConfig,
@@ -211,7 +212,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
     },
 
     store: {
-      dicom: async (dataset, request) => {
+      dicom: async (dataset, request, measurementData) => {
         wadoDicomWebClient.headers = getAuthrorizationHeader();
         if (dataset instanceof ArrayBuffer) {
           const options = {
@@ -230,9 +231,15 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
           };
 
           const denaturalized = denaturalizeDataset(meta);
-          const dicomDict = new DicomDict(denaturalized);
+          let dicomDict = new DicomDict(denaturalized);
 
           dicomDict.dict = denaturalizeDataset(dataset);
+
+          const onBeforeSaveSR = customizationService.getModeCustomization('onBeforeSaveSR')?.value;
+
+          if (typeof onBeforeSaveSR === 'function') {
+            dicomDict = onBeforeSaveSR({ dicomDict, measurementData, dataset });
+          }
 
           const part10Buffer = dicomDict.write();
 
