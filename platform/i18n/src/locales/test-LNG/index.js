@@ -7,6 +7,7 @@ import ErrorBoundary from './ErrorBoundary.json';
 import Header from './Header.json';
 import HotkeysValidators from './HotkeysValidators.json';
 import MeasurementTable from './MeasurementTable.json';
+import Messages from './Messages.json';
 import Modals from './Modals.json';
 import Modes from './Modes.json';
 import PatientInfo from './PatientInfo.json';
@@ -33,6 +34,7 @@ export default {
     Header,
     HotkeysValidators,
     MeasurementTable,
+    Messages,
     Modals,
     Modes,
     PatientInfo,
