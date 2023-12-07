@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import cornerstoneTools from 'cornerstone-tools';
 import cornerstone from 'cornerstone-core';
@@ -36,6 +36,7 @@ const { studyMetadataManager } = utils;
  * @param {Function} props.onConfigurationChange - Configuration change handler
  * @param {Function} props.activeContexts - List of active application contexts
  * @param {Function} props.contexts - List of available application contexts
+ * @param {Function} props.servicesManager - Services manager
  * @returns component
  */
 const SegmentationPanel = ({
@@ -50,6 +51,7 @@ const SegmentationPanel = ({
   onSelectedSegmentationChange,
   activeContexts = [],
   contexts = {},
+  servicesManager,
 }) => {
   const isVTK = () => activeContexts.includes(contexts.VTK);
   const isCornerstone = () => activeContexts.includes(contexts.CORNERSTONE);
@@ -59,6 +61,9 @@ const SegmentationPanel = ({
    * store with context to make these kind of things less blurry.
    */
   const { configuration } = cornerstoneTools.getModule('segmentation');
+  if (configuration.segsTolerance === undefined) {
+    configuration.segsTolerance = 1e-2;
+  }
   const DEFAULT_BRUSH_RADIUS = configuration.radius || 10;
 
   /*
@@ -85,6 +90,25 @@ const SegmentationPanel = ({
     const { StudyInstanceUID, displaySetInstanceUID } = getActiveViewport();
     const studyMetadata = studyMetadataManager.get(StudyInstanceUID);
     return studyMetadata.getFirstImageId(displaySetInstanceUID);
+  };
+
+  const getAllSegDisplaySets = () => {
+    const { StudyInstanceUID } = getActiveViewport();
+    const studyMetadata = studyMetadataManager.get(StudyInstanceUID);
+    return studyMetadata.getDerivedDatasets({
+      Modality: 'SEG',
+    });
+  };
+
+  const updateSegDisplaySetsTolerance = tolerance => {
+    const segDisplaySets = getAllSegDisplaySets();
+    segDisplaySets.forEach(segDisplaySet => {
+      // update tol value
+      segDisplaySet.tolerance = tolerance;
+      // reset load flags for allowing retry for seg parsing.
+      segDisplaySet.isLoaded = false;
+      segDisplaySet.loadError = false;
+    });
   };
 
   const getActiveLabelMaps3D = () => {
@@ -224,31 +248,13 @@ const SegmentationPanel = ({
         )
       );
     };
-  }, [
-    activeIndex,
-    updateSegmentationComboBox,
-    viewports,
-  ]);
+  }, [activeIndex, viewports]);
 
   const updateSegmentationComboBox = e => {
     const index = e.detail.activatedLabelmapIndex;
     if (index !== -1) {
       setState(state => ({ ...state, selectedSegmentation: index }));
-    } else {
-      cleanSegmentationComboBox();
     }
-  };
-
-  const cleanSegmentationComboBox = () => {
-    setState(state => ({
-      ...state,
-      segmentsHidden: [],
-      segmentNumbers: [],
-      labelMapList: [],
-      segmentList: [],
-      isDisabled: true,
-      selectedSegmentation: -1,
-    }));
   };
 
   const refreshSegmentations = () => {
@@ -616,31 +622,25 @@ const SegmentationPanel = ({
     configuration.outlineWidth = newConfiguration.outlineWidth;
     configuration.fillAlphaInactive = newConfiguration.fillAlphaInactive;
     configuration.outlineAlphaInactive = newConfiguration.outlineAlphaInactive;
+    configuration.segsTolerance = newConfiguration.segsTolerance;
     onConfigurationChange(newConfiguration);
+    updateSegDisplaySetsTolerance(configuration.segsTolerance);
     refreshViewports();
   };
 
   const onVisibilityChangeHandler = isVisible => {
     let segmentsHidden = [];
+    const labelmap3D = getActiveLabelMaps3D();
+
     state.segmentNumbers.forEach(segmentNumber => {
       if (isVTK()) {
         onSegmentVisibilityChange(segmentNumber, isVisible);
       }
 
-      /** Get all labelmaps with this segmentNumber (overlapping segments) */
-      const { labelmaps3D } = getBrushStackState();
-      const possibleLabelMaps3D = labelmaps3D.filter(({ labelmaps2D }) => {
-        return labelmaps2D.some(({ segmentsOnLabelmap }) =>
-          segmentsOnLabelmap.includes(segmentNumber)
-        );
-      });
-
-      possibleLabelMaps3D.forEach(labelmap3D => {
-        labelmap3D.segmentsHidden[segmentNumber] = !isVisible;
-        segmentsHidden = [
-          ...new Set([...segmentsHidden, ...labelmap3D.segmentsHidden]),
-        ];
-      });
+      labelmap3D.segmentsHidden[segmentNumber] = !isVisible;
+      segmentsHidden = [
+        ...new Set([...segmentsHidden, ...labelmap3D.segmentsHidden]),
+      ];
     });
 
     setState(state => ({ ...state, segmentsHidden }));
@@ -665,6 +665,7 @@ const SegmentationPanel = ({
         configuration={configuration}
         onBack={() => setState(state => ({ ...state, showSettings: false }))}
         onChange={updateConfiguration}
+        servicesManager={servicesManager}
       />
     );
   } else {
@@ -709,7 +710,7 @@ const SegmentationPanel = ({
           count={state.segmentList.length}
           isVisible={
             state.segmentsHidden.filter(isHidden => isHidden === true).length <
-            state.segmentNumbers.length
+              state.segmentNumbers.length && state.segmentNumbers.length > 0
           }
           onVisibilityChange={onVisibilityChangeHandler}
         >

@@ -1,5 +1,5 @@
 import { measurements, utils } from '@ohif/core';
-
+import { servicesManager } from './../../App.js';
 const { MeasurementApi } = measurements;
 const { studyMetadataManager } = utils;
 
@@ -19,6 +19,25 @@ export default function jumpToRowItem(
   timepointManagerState,
   options = { invertViewportTimepointsOrder: false, childToolKey: null }
 ) {
+  const viewports = viewportsState.layout.viewports;
+  const activeViewportIndex = viewportsState.activeViewportIndex;
+  const activeViewport = viewports[activeViewportIndex];
+  if (activeViewport.vtk) {
+    const error = new Error('Measurements are not supported by the MPR mode.');
+    const { UINotificationService, LoggerService } = servicesManager.services;
+    LoggerService.error({ error, message: error.message });
+    UINotificationService.show({
+      title: 'Measurements panel',
+      message: error.message,
+      type: 'warning',
+      autoClose: true,
+    });
+    return {
+      viewportSpecificData: [],
+      layout: [], // TODO: if we need to change layout, we should return this here
+    };
+  }
+
   const numViewports = viewportsState.layout.viewports.length;
   const numTimepoints = timepointManagerState.timepoints.length;
   const { measurements, timepoints } = timepointManagerState;

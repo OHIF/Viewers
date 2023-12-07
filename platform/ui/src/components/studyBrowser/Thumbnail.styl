@@ -25,7 +25,8 @@
     box-shadow: inset 0 0 0 1px var(--ui-border-color-dark);
     border: 2px solid transparent;
     border-radius: 12px;
-    height: 135px;
+    min-height: 135px;
+    max-height: 250px;
     margin: 0 auto;
     padding: 5px;
     position: relative;
@@ -36,6 +37,11 @@
     h1
       text-align: center
       color: var(--text-primary-color);
+      max-width: 200px;
+      max-height: 250px;
+      overflow-wrap: break-word;
+      word-wrap: break-word;
+      hyphens: auto;
 
   .series-details
     display: flex;

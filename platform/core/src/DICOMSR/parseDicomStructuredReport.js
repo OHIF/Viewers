@@ -1,5 +1,6 @@
 import dcmjs from 'dcmjs';
 import classes from '../classes';
+import parseSCOORD3D from './SCOORD3D/parseSCOORD3D';
 
 import findInstanceMetadataBySopInstanceUID from './utils/findInstanceMetadataBySopInstanceUid';
 
@@ -12,15 +13,39 @@ const { LogManager } = classes;
  *
  * @param {ArrayBuffer} part10SRArrayBuffer
  * @param {Array} displaySets
+ * @param {object} external
  * @returns
  */
-const parseDicomStructuredReport = (part10SRArrayBuffer, displaySets) => {
+const parseDicomStructuredReport = (
+  part10SRArrayBuffer,
+  displaySets,
+  external
+) => {
   // Get the dicom data as an Object
-
   const dicomData = dcmjs.data.DicomMessage.readFile(part10SRArrayBuffer);
   const dataset = dcmjs.data.DicomMetaDictionary.naturalizeDataset(
     dicomData.dict
   );
+
+  const {
+    LoggerService,
+    UINotificationService,
+  } = external.servicesManager.services;
+  if (external && external.servicesManager) {
+    try {
+      parseSCOORD3D({ servicesManager: external.servicesManager, displaySets });
+    } catch (error) {
+      const seriesDescription = dataset.SeriesDescription || '';
+      LoggerService.error({ error, message: error.message });
+      UINotificationService.show({
+        title: `Failed to parse ${seriesDescription} SR display set`,
+        message: error.message,
+        type: 'error',
+        autoClose: false,
+      });
+      return;
+    }
+  }
 
   const { MeasurementReport } = dcmjs.adapters.Cornerstone;
 
@@ -29,11 +54,12 @@ const parseDicomStructuredReport = (part10SRArrayBuffer, displaySets) => {
     storedMeasurementByToolType = MeasurementReport.generateToolState(dataset);
   } catch (error) {
     const seriesDescription = dataset.SeriesDescription || '';
-    LogManager.publish(LogManager.EVENTS.OnLog, {
+    LoggerService.error({ error, message: error.message });
+    UINotificationService.show({
       title: `Failed to parse ${seriesDescription} measurement report`,
-      type: 'warning',
-      message: error.message || '',
-      notify: true,
+      message: error.message,
+      type: 'error',
+      autoClose: false,
     });
     return;
   }

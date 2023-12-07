@@ -122,6 +122,7 @@ function convertMeasurementsToTableData(toolCollections, timepoints) {
 
   Object.keys(toolCollections).forEach(toolId => {
     const toolMeasurements = toolCollections[toolId];
+
     const tool = tools.find(tool => tool.id === toolId);
     const { displayFunction } = tool.options.measurementTable;
 
@@ -131,11 +132,13 @@ function convertMeasurementsToTableData(toolCollections, timepoints) {
     Object.keys(groupedMeasurements).forEach(groupedMeasurementsIndex => {
       const measurementNumberList =
         groupedMeasurements[groupedMeasurementsIndex];
+
       const measurementData = measurementNumberList[0];
       const {
         measurementNumber,
         lesionNamingNumber,
         toolType,
+        isReadOnly,
       } = measurementData;
       const measurementId = measurementData._id;
 
@@ -149,11 +152,14 @@ function convertMeasurementsToTableData(toolCollections, timepoints) {
       const tableMeasurement = {
         itemNumber: lesionNamingNumber,
         label: getMeasurementText(measurementData),
+        labels: measurementData.labels,
+        isSRText: measurementData.isSRText,
         measurementId,
         measurementNumber,
         lesionNamingNumber,
         toolType,
         hasWarnings,
+        isReadOnly,
         warningTitle,
         warningList,
         isSplitLesion: false, //TODO

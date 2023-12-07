@@ -4,7 +4,7 @@ import { Range } from '@ohif/ui';
 
 import './SegmentationSettings.css';
 
-const SegmentationSettings = ({ configuration, onBack, onChange, disabledFields = [] }) => {
+const SegmentationSettings = ({ configuration, onBack, onChange, servicesManager, disabledFields = [] }) => {
   const [state, setState] = useState({
     renderFill: configuration.renderFill,
     renderOutline: configuration.renderOutline,
@@ -13,7 +13,8 @@ const SegmentationSettings = ({ configuration, onBack, onChange, disabledFields 
     outlineAlpha: configuration.outlineAlpha,
     outlineWidth: configuration.outlineWidth,
     fillAlphaInactive: configuration.fillAlphaInactive,
-    outlineAlphaInactive: configuration.outlineAlphaInactive
+    outlineAlphaInactive: configuration.outlineAlphaInactive,
+    segsTolerance: configuration.segsTolerance,
   });
 
   useEffect(() => {
@@ -27,6 +28,32 @@ const SegmentationSettings = ({ configuration, onBack, onChange, disabledFields 
   const save = (field, value) => {
     setState(state => ({ ...state, [field]: value }));
   };
+
+  const once = fn => (...args) => {
+    if (!fn) return;
+    fn(...args);
+    fn = null;
+  };
+
+  const segTolValue = document.getElementById('segToleranceValue');
+  if (segTolValue) {
+    segTolValue.onchange = once(function() {
+      const { UINotificationService, LoggerService } = servicesManager.services;
+
+      const error = new Error(
+        'Segmentation loader tolerance changed.\
+        This operation can potentially generate errors in the Segmentation parsing.'
+      );
+
+      LoggerService.error({ error, message: error.message });
+      UINotificationService.show({
+        title: 'Segmentation panel',
+        message: error.message,
+        type: 'warning',
+        autoClose: true,
+      });
+  });
+}
 
   const toFloat = value => parseFloat(value / 100).toFixed(2);
 
@@ -133,6 +160,31 @@ const SegmentationSettings = ({ configuration, onBack, onChange, disabledFields 
           )}
         </div>
       )}
+      <div className="settings-group" style={{ marginBottom: 15 }}>
+        <label style={{ margin: '0 15px' }}>
+          Tolerance:
+          <input
+            id="segToleranceValue"
+            style={{ margin: '0 15px' }}
+            label="Tolerance"
+            onKeyPress={event => {
+                const validate = string => {
+                  let rgx = /[^-.e0-9]+/g;
+                  return string.match(rgx);
+                };
+
+                if (validate(event.key)) {
+                  event.preventDefault();
+                }
+              }
+            }
+            onChange={event => {
+              save('segsTolerance', event.target.value);
+            }}
+            value={state.segsTolerance}
+          />
+        </label>
+      </div>
     </div>
   );
 };
@@ -169,11 +221,12 @@ SegmentationSettings.propTypes = {
     renderFill: PropTypes.bool.isRequired,
     renderOutline: PropTypes.bool.isRequired,
     shouldRenderInactiveLabelmaps: PropTypes.bool.isRequired,
-    fillAlpha: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired, /* TODO: why fillAlpha is string? */
-    outlineAlpha: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired, /* TODO: why fillAlpha is string? */
+    fillAlpha: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+    outlineAlpha: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
     outlineWidth: PropTypes.number.isRequired,
-    fillAlphaInactive: PropTypes.number.isRequired,
-    outlineAlphaInactive: PropTypes.number.isRequired,
+    fillAlphaInactive: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+    outlineAlphaInactive: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+    segsTolerance: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
   }).isRequired,
   onBack: PropTypes.func.isRequired,
   onChange: PropTypes.func.isRequired,

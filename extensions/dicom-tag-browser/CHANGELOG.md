@@ -3,6 +3,78 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.26](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-tag-browser@0.2.25...@ohif/extension-dicom-tag-browser@0.2.26) (2023-03-19)
+
+**Note:** Version bump only for package @ohif/extension-dicom-tag-browser
+
+
+
+
+
+## [0.2.25](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-tag-browser@0.2.24...@ohif/extension-dicom-tag-browser@0.2.25) (2022-12-21)
+
+**Note:** Version bump only for package @ohif/extension-dicom-tag-browser
+
+
+
+
+
+## [0.2.24](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-tag-browser@0.2.23...@ohif/extension-dicom-tag-browser@0.2.24) (2022-09-01)
+
+**Note:** Version bump only for package @ohif/extension-dicom-tag-browser
+
+
+
+
+
+## [0.2.23](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-tag-browser@0.2.22...@ohif/extension-dicom-tag-browser@0.2.23) (2022-04-06)
+
+**Note:** Version bump only for package @ohif/extension-dicom-tag-browser
+
+
+
+
+
+## [0.2.22](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-tag-browser@0.2.21...@ohif/extension-dicom-tag-browser@0.2.22) (2022-04-05)
+
+**Note:** Version bump only for package @ohif/extension-dicom-tag-browser
+
+
+
+
+
+## [0.2.21](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-tag-browser@0.2.20...@ohif/extension-dicom-tag-browser@0.2.21) (2022-03-25)
+
+**Note:** Version bump only for package @ohif/extension-dicom-tag-browser
+
+
+
+
+
+## [0.2.20](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-tag-browser@0.2.19...@ohif/extension-dicom-tag-browser@0.2.20) (2022-03-14)
+
+**Note:** Version bump only for package @ohif/extension-dicom-tag-browser
+
+
+
+
+
+## [0.2.19](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-tag-browser@0.2.18...@ohif/extension-dicom-tag-browser@0.2.19) (2022-02-03)
+
+**Note:** Version bump only for package @ohif/extension-dicom-tag-browser
+
+
+
+
+
+## [0.2.18](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-tag-browser@0.2.17...@ohif/extension-dicom-tag-browser@0.2.18) (2022-02-02)
+
+**Note:** Version bump only for package @ohif/extension-dicom-tag-browser
+
+
+
+
+
 ## [0.2.17](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-tag-browser@0.2.16...@ohif/extension-dicom-tag-browser@0.2.17) (2022-01-20)
 
 **Note:** Version bump only for package @ohif/extension-dicom-tag-browser

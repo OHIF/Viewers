@@ -145,22 +145,42 @@ class ViewerMain extends Component {
       const { Modality } = displaySet;
       if (Modality === 'SEG' && servicesManager) {
         const onDisplaySetLoadFailureHandler = error => {
-          LoggerService.error({ error, message: error.message });
+          const message =
+            error.message.includes('orthogonal') ||
+            error.message.includes('oblique')
+              ? 'The segmentation has been detected as non coplanar,\
+              If you really think it is coplanar,\
+              please adjust the tolerance in the segmentation panel settings (at your own peril!)'
+              : error.message;
+          LoggerService.error({ error, message });
           UINotificationService.show({
             title: 'DICOM Segmentation Loader',
-            message: error.message,
+            message,
             type: 'error',
-            autoClose: true,
+            autoClose: false,
           });
         };
 
-        const { referencedDisplaySet } = displaySet.getSourceDisplaySet(
+        const {
+          referencedDisplaySet,
+          activatedLabelmapPromise,
+        } = displaySet.getSourceDisplaySet(
           this.props.studies,
           true,
           onDisplaySetLoadFailureHandler
         );
         displaySet = referencedDisplaySet;
-      } else {
+
+        activatedLabelmapPromise.then(activatedLabelmapIndex => {
+          const selectionFired = new CustomEvent(
+            'extensiondicomsegmentationsegselected',
+            {
+              detail: { activatedLabelmapIndex: activatedLabelmapIndex },
+            }
+          );
+          document.dispatchEvent(selectionFired);
+        });
+      } else if (Modality !== 'SR') {
         displaySet = displaySet.getSourceDisplaySet(this.props.studies);
       }
 
@@ -177,7 +197,7 @@ class ViewerMain extends Component {
       }
     }
 
-    if (displaySet.isModalitySupported === false) {
+    if (displaySet.isSOPClassUIDSupported === false) {
       const error = new Error('Modality not supported');
       const message = 'Modality not supported';
       LoggerService.error({ error, message });

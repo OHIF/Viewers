@@ -62,6 +62,7 @@ export default function getSopClassHandlerModule({ servicesManager }) {
         SeriesNumber,
         SeriesDescription,
         metadata,
+        tolerance: 1e-2,
       };
 
       segDisplaySet.getSourceDisplaySet = function(
@@ -93,7 +94,7 @@ export default function getSopClassHandlerModule({ servicesManager }) {
           referencedDisplaySet.SeriesInstanceUID
         );
 
-        const results = await _parseSeg(segArrayBuffer, imageIds);
+        const results = await _parseSeg(segArrayBuffer, imageIds, segDisplaySet.tolerance);
         if (results === undefined) {
           return;
         }
@@ -149,11 +150,20 @@ export default function getSopClassHandlerModule({ servicesManager }) {
   };
 }
 
-function _parseSeg(arrayBuffer, imageIds) {
+function _parseSeg(
+  arrayBuffer,
+  imageIds,
+  tolerance = 1e-2,
+  skipOverlapping = false,
+  cornerstoneToolsVersion = 4
+) {
   return dcmjs.adapters.Cornerstone.Segmentation.generateToolState(
     imageIds,
     arrayBuffer,
-    cornerstone.metaData
+    cornerstone.metaData,
+    skipOverlapping,
+    tolerance,
+    cornerstoneToolsVersion
   );
 }
 

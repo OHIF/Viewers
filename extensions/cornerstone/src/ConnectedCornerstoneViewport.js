@@ -3,6 +3,7 @@ import OHIF from '@ohif/core';
 import { connect } from 'react-redux';
 import throttle from 'lodash.throttle';
 import { setEnabledElement } from './state';
+import initSRTools from './tools/initSRTools';
 
 const { setViewportActive, setViewportSpecificData } = OHIF.redux.actions;
 const {
@@ -92,6 +93,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
           plugin: 'cornerstone',
         })
       );
+      initSRTools(enabledElement);
     },
 
     onMeasurementsChanged: (event, action) => {

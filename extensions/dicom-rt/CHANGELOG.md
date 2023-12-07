@@ -3,6 +3,70 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.14](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-rt@0.7.13...@ohif/extension-dicom-rt@0.7.14) (2022-12-21)
+
+**Note:** Version bump only for package @ohif/extension-dicom-rt
+
+
+
+
+
+## [0.7.13](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-rt@0.7.12...@ohif/extension-dicom-rt@0.7.13) (2022-09-01)
+
+**Note:** Version bump only for package @ohif/extension-dicom-rt
+
+
+
+
+
+## [0.7.12](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-rt@0.7.11...@ohif/extension-dicom-rt@0.7.12) (2022-08-31)
+
+**Note:** Version bump only for package @ohif/extension-dicom-rt
+
+
+
+
+
+## [0.7.11](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-rt@0.7.10...@ohif/extension-dicom-rt@0.7.11) (2022-04-05)
+
+**Note:** Version bump only for package @ohif/extension-dicom-rt
+
+
+
+
+
+## [0.7.10](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-rt@0.7.9...@ohif/extension-dicom-rt@0.7.10) (2022-03-25)
+
+**Note:** Version bump only for package @ohif/extension-dicom-rt
+
+
+
+
+
+## [0.7.9](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-rt@0.7.8...@ohif/extension-dicom-rt@0.7.9) (2022-03-14)
+
+**Note:** Version bump only for package @ohif/extension-dicom-rt
+
+
+
+
+
+## [0.7.8](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-rt@0.7.7...@ohif/extension-dicom-rt@0.7.8) (2022-02-03)
+
+**Note:** Version bump only for package @ohif/extension-dicom-rt
+
+
+
+
+
+## [0.7.7](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-rt@0.7.6...@ohif/extension-dicom-rt@0.7.7) (2022-02-02)
+
+**Note:** Version bump only for package @ohif/extension-dicom-rt
+
+
+
+
+
 ## [0.7.6](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-rt@0.7.5...@ohif/extension-dicom-rt@0.7.6) (2022-01-20)
 
 **Note:** Version bump only for package @ohif/extension-dicom-rt

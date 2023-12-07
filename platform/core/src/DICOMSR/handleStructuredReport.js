@@ -17,9 +17,15 @@ const TRANSFER_SYNTAX_UID = '1.2.840.10008.1.2.1';
  * @param {Array} series - List of all series metaData loaded
  * @param {Array} studies - List of all studies metaData loaded
  * @param {string} serverUrl - Server URL to be used on request
+ * @param {object} external
  * @returns {Object} MeasurementData
  */
-const retrieveMeasurementFromSR = async (series, studies, serverUrl) => {
+const retrieveMeasurementFromSR = async (
+  series,
+  studies,
+  serverUrl,
+  external
+) => {
   const config = {
     url: serverUrl,
     headers: DICOMWeb.getAuthorizationHeader(),
@@ -40,7 +46,8 @@ const retrieveMeasurementFromSR = async (series, studies, serverUrl) => {
   const displaySets = getAllDisplaySets(studies);
   const measurementsData = parseDicomStructuredReport(
     part10SRArrayBuffer,
-    displaySets
+    displaySets,
+    external
   );
 
   return measurementsData;

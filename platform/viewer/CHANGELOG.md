@@ -3,6 +3,330 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.12.51](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.50...@ohif/viewer@4.12.51) (2023-03-19)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.12.50](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.49...@ohif/viewer@4.12.50) (2023-01-17)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.12.49](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.48...@ohif/viewer@4.12.49) (2023-01-10)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.12.48](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.47...@ohif/viewer@4.12.48) (2022-12-21)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.12.47](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.46...@ohif/viewer@4.12.47) (2022-12-21)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.12.46](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.45...@ohif/viewer@4.12.46) (2022-12-12)
+
+
+### Bug Fixes
+
+* [#2964](https://github.com/OHIF/Viewers/issues/2964) Reword message for segmentation error loading due to orientation tolerance ([#3017](https://github.com/OHIF/Viewers/issues/3017)) ([597ac11](https://github.com/OHIF/Viewers/commit/597ac11c4daee1b1e14148804551e20611cfef08))
+
+
+
+
+
+## [4.12.45](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.44...@ohif/viewer@4.12.45) (2022-11-12)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.12.44](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.43...@ohif/viewer@4.12.44) (2022-11-02)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.12.43](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.42...@ohif/viewer@4.12.43) (2022-10-28)
+
+
+### Bug Fixes
+
+* [#2964](https://github.com/OHIF/Viewers/issues/2964) Update message for segmentation error loading due to orientation tolerance ([#2982](https://github.com/OHIF/Viewers/issues/2982)) ([545161d](https://github.com/OHIF/Viewers/commit/545161d5e8d92bb6652f17dc24a36dac8aa7b3a4))
+
+
+
+
+
+## [4.12.42](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.41...@ohif/viewer@4.12.42) (2022-10-25)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.12.41](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.40...@ohif/viewer@4.12.41) (2022-09-26)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.12.40](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.39...@ohif/viewer@4.12.40) (2022-09-20)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.12.39](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.38...@ohif/viewer@4.12.39) (2022-09-19)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.12.38](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.37...@ohif/viewer@4.12.38) (2022-09-12)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.12.37](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.36...@ohif/viewer@4.12.37) (2022-09-12)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.12.36](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.35...@ohif/viewer@4.12.36) (2022-09-08)
+
+
+### Bug Fixes
+
+* hotkey page up/down did not work ([#2910](https://github.com/OHIF/Viewers/issues/2910)) ([d74ad37](https://github.com/OHIF/Viewers/commit/d74ad370e091c8af2d93ec35f688c4ef902bab2b))
+
+
+
+
+
+## [4.12.35](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.34...@ohif/viewer@4.12.35) (2022-09-02)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.12.34](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.33...@ohif/viewer@4.12.34) (2022-09-01)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.12.33](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.32...@ohif/viewer@4.12.33) (2022-08-31)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.12.32](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.31...@ohif/viewer@4.12.32) (2022-08-25)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.12.31](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.30...@ohif/viewer@4.12.31) (2022-08-24)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.12.30](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.29...@ohif/viewer@4.12.30) (2022-06-30)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.12.29](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.28...@ohif/viewer@4.12.29) (2022-06-29)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.12.28](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.27...@ohif/viewer@4.12.28) (2022-06-28)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.12.27](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.26...@ohif/viewer@4.12.27) (2022-06-14)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.12.26](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.25...@ohif/viewer@4.12.26) (2022-04-22)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.12.25](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.24...@ohif/viewer@4.12.25) (2022-04-06)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.12.24](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.23...@ohif/viewer@4.12.24) (2022-04-05)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.12.23](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.22...@ohif/viewer@4.12.23) (2022-03-25)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.12.22](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.21...@ohif/viewer@4.12.22) (2022-03-14)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.12.21](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.20...@ohif/viewer@4.12.21) (2022-03-14)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.12.20](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.19...@ohif/viewer@4.12.20) (2022-03-14)
+
+
+### Bug Fixes
+
+* remove docz + node version fix on docker ([#2743](https://github.com/OHIF/Viewers/issues/2743)) ([7164d1a](https://github.com/OHIF/Viewers/commit/7164d1a654571af99c22d2684e56cbdde05b2222))
+
+
+
+
+
+## [4.12.19](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.18...@ohif/viewer@4.12.19) (2022-03-10)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.12.18](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.17...@ohif/viewer@4.12.18) (2022-02-15)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.12.17](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.16...@ohif/viewer@4.12.17) (2022-02-03)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.12.16](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.15...@ohif/viewer@4.12.16) (2022-02-03)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.12.15](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.14...@ohif/viewer@4.12.15) (2022-02-02)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.12.14](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.13...@ohif/viewer@4.12.14) (2022-01-31)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.12.13](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.12...@ohif/viewer@4.12.13) (2022-01-29)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
 ## [4.12.12](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.12.11...@ohif/viewer@4.12.12) (2022-01-20)
 
 **Note:** Version bump only for package @ohif/viewer

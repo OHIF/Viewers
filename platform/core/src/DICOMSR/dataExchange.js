@@ -19,9 +19,10 @@ import findMostRecentStructuredReport from './utils/findMostRecentStructuredRepo
  * Function to be registered into MeasurementAPI to retrieve measurements from DICOM Structured Reports
  *
  * @param {serverType} server
+ * @param {object} external
  * @returns {Promise} Should resolve with OHIF measurementData object
  */
-const retrieveMeasurements = server => {
+const retrieveMeasurements = (server, external = {}) => {
   log.info('[DICOMSR] retrieveMeasurements');
 
   if (!server || server.type !== 'dicomWeb') {
@@ -36,7 +37,7 @@ const retrieveMeasurements = server => {
 
   if (!latestSeries) return Promise.resolve({});
 
-  return retrieveMeasurementFromSR(latestSeries, studies, serverUrl);
+  return retrieveMeasurementFromSR(latestSeries, studies, serverUrl, external);
 };
 
 /**

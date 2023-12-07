@@ -1,6 +1,6 @@
 {
   "name": "@ohif/ui",
-  "version": "1.10.5",
+  "version": "1.10.11",
   "description": "A set of React components for Medical Imaging Viewers",
   "author": "OHIF Contributors",
   "license": "MIT",
@@ -20,9 +20,8 @@
     "README.md"
   ],
   "scripts": {
-    "dev": "docz dev",
+    "dev": "echo \"No dev script yet\" && exit 0",
     "dev:ui": "yarn run dev",
-    "docs": "docz build",
     "build": "cross-env NODE_ENV=production webpack --config .webpack/webpack.prod.js",
     "build:package": "yarn run build",
     "prepublishOnly": "yarn run build",
@@ -46,7 +45,7 @@
     "i18next-browser-languagedetector": "^3.0.1",
     "lodash.debounce": "^4.0.8",
     "lodash.isequal": "4.5.0",
-    "moment": "2.24.0",
+    "moment": "2.29.4",
     "prop-types": "15.6.2",
     "prop-types-extra": "^1.1.1",
     "react-dates": "21.2.1",
@@ -64,10 +63,6 @@
   "devDependencies": {
     "@mdx-js/tag": "^0.20.3",
     "autoprefixer": "^9.6.0",
-    "docz": "1.2.0",
-    "docz-core": "1.2.0",
-    "docz-plugin-css": "0.11.0",
-    "docz-theme-default": "1.2.0",
     "lodash.clonedeep": "^4.5.0",
     "react-powerplug": "1.0.0"
   }

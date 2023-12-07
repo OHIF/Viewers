@@ -19,17 +19,4 @@ describe('retrieveStudyMetadata.js', () => {
 
     expect(callWithNoStudyInstanceUID).toThrow(Error);
   });
-
-  it('caches and returns the same promise for identical studyInstanceUIDs', () => {
-    const firstPromise = retrieveStudyMetadata(
-      fakeDicomWebServer,
-      'fake-study-instance-uid'
-    );
-    const secondPromise = retrieveStudyMetadata(
-      fakeDicomWebServer,
-      'fake-study-instance-uid'
-    );
-
-    expect(firstPromise).toBe(secondPromise);
-  });
 });

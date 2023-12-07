@@ -1,6 +1,6 @@
 {
   "name": "@ohif/core",
-  "version": "2.16.7",
+  "version": "2.16.35",
   "description": "Generic business logic for web-based medical imaging applications",
   "author": "OHIF Core Team",
   "license": "MIT",
@@ -33,18 +33,19 @@
   "peerDependencies": {
     "cornerstone-core": "^2.6.1",
     "cornerstone-tools": "^6.0.6",
-    "cornerstone-wado-image-loader": "^4.1.0",
+    "cornerstone-wado-image-loader": "^4.2.1",
     "dicom-parser": "^1.8.11"
   },
   "dependencies": {
     "@babel/runtime": "^7.5.5",
     "ajv": "^6.10.0",
-    "dcmjs": "0.19.2",
+    "dcmjs": "0.29.3",
     "dicomweb-client": "^0.8.3",
-    "immer": "6.0.2",
+    "immer": "9.0.12",
     "isomorphic-base64": "^1.0.2",
     "lodash.clonedeep": "^4.5.0",
     "lodash.merge": "^4.6.1",
+    "mathjs": "^10.1.0",
     "mousetrap": "^1.6.3",
     "retry": "^0.12.0",
     "validate.js": "^0.12.0"
