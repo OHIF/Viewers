@@ -10,5 +10,5 @@ import i18n from 'i18next';
  */
 export default (date, format = i18n.t('Common:localDateFormat','DD-MMM-YYYY')) => {
   // moment(undefined) returns the current date, so return the empty string instead
-  return date ? moment(date).format(format) : '';
+  return date ? moment(date).format(i18n.t('Common:localDateFormat','MMM-DD-YYYY')) : '';
 };
