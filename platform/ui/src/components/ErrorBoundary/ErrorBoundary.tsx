@@ -86,7 +86,7 @@ const ErrorBoundary = ({
       closeButton
       shouldCloseOnEsc
       isOpen={isOpen}
-      title={i18n.t('ErrorBoundary:Error')}
+      title={i18n.t('ErrorBoundary:Something went wrong')}
       onClose={() => {
         setIsOpen(false);
         if (fallbackRoute && typeof window !== 'undefined') {
