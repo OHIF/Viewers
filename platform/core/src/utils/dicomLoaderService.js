@@ -54,8 +54,21 @@ const someInvalidStrings = strings => {
   return invalid;
 };
 
-const getImageInstance = dataset => {
-  return dataset && dataset.images && dataset.images[0];
+const getImageInstance = (displaySet, studies) => {
+  const study = studies.find(
+    s => s.StudyInstanceUID === displaySet.StudyInstanceUID
+  );
+  const series = study.series.find(
+    s => s.SeriesInstanceUID === displaySet.SeriesInstanceUID
+  );
+  const instance = series.instances.find(
+    i => i.metadata.SOPInstanceUID === displaySet.SOPInstanceUID
+  );
+  if (instance) {
+    return instance;
+  }
+
+  return displaySet && displaySet.images && displaySet.images[0];
 };
 
 const getImageInstanceId = imageInstance => {
@@ -109,15 +122,15 @@ const getImageLoaderType = imageId => {
 };
 
 class DicomLoaderService {
-  getLocalData(dataset, studies) {
-    if (dataset && dataset.localFile) {
+  getLocalData(displaySet, studies) {
+    if (displaySet && displaySet.localFile) {
       // Use referenced imageInstance
-      const imageInstance = getImageInstance(dataset);
+      const imageInstance = getImageInstance(displaySet);
       let imageId = getImageInstanceId(imageInstance);
 
       // or Try to get it from studies
       if (someInvalidStrings(imageId)) {
-        imageId = findImageIdOnStudies(studies, dataset.displaySetInstanceUID);
+        imageId = findImageIdOnStudies(studies, displaySet.displaySetInstanceUID);
       }
 
       if (!someInvalidStrings(imageId)) {
@@ -126,11 +139,11 @@ class DicomLoaderService {
     }
   }
 
-  getDataByImageType(dataset) {
-    const imageInstance = getImageInstance(dataset);
+  getDataByImageType(displaySet, studies) {
+    const imageInstance = getImageInstance(displaySet, studies);
 
     if (imageInstance) {
-      const imageId = getImageInstanceId(imageInstance);
+      let imageId = getImageInstanceId(imageInstance);
       let getDicomDataMethod = fetchIt;
       const loaderType = getImageLoaderType(imageId);
 
@@ -176,7 +189,7 @@ class DicomLoaderService {
     }
   }
 
-  getDataByDatasetType(dataset) {
+  getDataByDisplaySetType(displaySet) {
     const {
       StudyInstanceUID,
       SeriesInstanceUID,
@@ -184,7 +197,7 @@ class DicomLoaderService {
       authorizationHeaders,
       wadoRoot,
       wadoUri,
-    } = dataset;
+    } = displaySet;
     // Retrieve wadors or just try to fetch wadouri
     if (!someInvalidStrings(wadoRoot)) {
       return wadorsRetriever(
@@ -199,14 +212,14 @@ class DicomLoaderService {
     }
   }
 
-  *getLoaderIterator(dataset, studies) {
-    yield this.getLocalData(dataset, studies);
-    yield this.getDataByImageType(dataset);
-    yield this.getDataByDatasetType(dataset);
+  *getLoaderIterator(displaySet, studies) {
+    yield this.getLocalData(displaySet, studies);
+    yield this.getDataByImageType(displaySet, studies);
+    yield this.getDataByDisplaySetType(displaySet);
   }
 
-  findDicomDataPromise(dataset, studies) {
-    const loaderIterator = this.getLoaderIterator(dataset, studies);
+  findDicomDataPromise(displaySet, studies) {
+    const loaderIterator = this.getLoaderIterator(displaySet, studies);
     // it returns first valid retriever method.
     for (const loader of loaderIterator) {
       if (loader) {
