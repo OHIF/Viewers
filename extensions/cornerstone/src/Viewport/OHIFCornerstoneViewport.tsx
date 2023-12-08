@@ -23,6 +23,7 @@ import CinePlayer from '../components/CinePlayer';
 import { Types } from '@ohif/core';
 import OHIFViewportActionCorners from '../components/OHIFViewportActionCorners';
 import { getWindowLevelActionMenu } from '../components/WindowLevelActionMenu/getWindowLevelActionMenu';
+import { useAppConfig } from '@state';
 
 const STACK = 'stack';
 
@@ -117,6 +118,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
   const [scrollbarHeight, setScrollbarHeight] = useState('100px');
   const [enabledVPElement, setEnabledVPElement] = useState(null);
   const elementRef = useRef();
+  const [appConfig] = useAppConfig();
 
   const {
     measurementService,
@@ -156,7 +158,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
 
       syncGroupService.removeViewportFromSyncGroup(viewportId, renderingEngineId, syncGroups);
 
-      viewportActionCornersService.clearActionComponents(viewportId);
+      viewportActionCornersService.clear(viewportId);
     },
     [viewportId]
   );
@@ -352,9 +354,16 @@ const OHIFCornerstoneViewport = React.memo(props => {
 
   // Set up the window level action menu in the viewport action corners.
   useEffect(() => {
+    // Doing an === check here because the default config value when not set is true
+    if (appConfig.addWindowLevelActionMenu === false) {
+      return;
+    }
+
+    // TODO: In the future we should consider using the customization service
+    // to determine if and in which corner various action components should go.
     const wlActionMenu = getWindowLevelActionMenu({
       viewportId,
-      viewportElem: elementRef.current,
+      element: elementRef.current,
       displaySets,
       servicesManager,
       commandsManager,
@@ -362,7 +371,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
       horizontalDirection: AllInOneMenu.HorizontalDirection.LeftToRight,
     });
 
-    viewportActionCornersService.setActionComponent({
+    viewportActionCornersService.setComponent({
       viewportId,
       id: 'windowLevelActionMenu',
       component: wlActionMenu,

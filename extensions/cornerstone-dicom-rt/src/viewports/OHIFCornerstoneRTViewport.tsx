@@ -294,7 +294,7 @@ function OHIFCornerstoneRTViewport(props) {
   }, [hydrateRTDisplaySet, rtDisplaySet, storePresentationState, viewportId]);
 
   useEffect(() => {
-    viewportActionCornersService.setActionComponents([
+    viewportActionCornersService.setComponents([
       {
         viewportId,
         id: 'viewportStatusComponent',

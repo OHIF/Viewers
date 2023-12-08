@@ -289,7 +289,7 @@ function OHIFCornerstoneSRViewport(props) {
   }, [dataSource, srDisplaySet]);
 
   useEffect(() => {
-    viewportActionCornersService.setActionComponents([
+    viewportActionCornersService.setComponents([
       {
         viewportId,
         id: 'viewportStatusComponent',

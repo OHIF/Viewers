@@ -3,7 +3,7 @@ import { WindowLevelActionMenu } from './WindowLevelActionMenu';
 
 export function getWindowLevelActionMenu({
   viewportId,
-  viewportElem,
+  element,
   displaySets,
   servicesManager,
   commandsManager,
@@ -13,16 +13,6 @@ export function getWindowLevelActionMenu({
   const { customizationService } = servicesManager.services;
 
   const { presets } = customizationService.get('cornerstone.windowLevelPresets');
-
-  function onSetWindowLevel(props) {
-    commandsManager.run({
-      commandName: 'setViewportWindowLevel',
-      commandOptions: {
-        ...props,
-      },
-      context: 'CORNERSTONE',
-    });
-  }
 
   const displaySetPresets = displaySets
     .filter(displaySet => presets[displaySet.Modality])
@@ -35,11 +25,11 @@ export function getWindowLevelActionMenu({
   return hasMenu ? (
     <WindowLevelActionMenu
       viewportId={viewportId}
-      viewportElem={viewportElem}
+      element={element}
       presets={displaySetPresets[0]}
-      onSetWindowLevel={onSetWindowLevel}
       verticalDirection={verticalDirection}
       horizontalDirection={horizontalDirection}
+      commandsManager={commandsManager}
     />
   ) : null;
 }

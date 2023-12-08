@@ -187,7 +187,7 @@ function TrackedCornerstoneViewport(props) {
       viewportId === activeViewportId
     );
 
-    viewportActionCornersService.setActionComponents([
+    viewportActionCornersService.setComponents([
       {
         viewportId,
         id: 'viewportStatusComponent',

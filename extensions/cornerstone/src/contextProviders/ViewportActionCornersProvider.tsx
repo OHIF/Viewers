@@ -100,14 +100,14 @@ export function ViewportActionCornersProvider({ children, service }) {
     return viewportActionCornersState;
   }, [viewportActionCornersState]);
 
-  const setActionComponent = useCallback(
+  const setComponent = useCallback(
     (actionComponentInfo: ActionComponentInfo) => {
       dispatch({ type: 'SET_ACTION_COMPONENT', payload: actionComponentInfo });
     },
     [dispatch]
   );
 
-  const setActionComponents = useCallback(
+  const setComponents = useCallback(
     (actionComponentInfos: Array<ActionComponentInfo>) => {
       actionComponentInfos.forEach(actionComponentInfo =>
         dispatch({ type: 'SET_ACTION_COMPONENT', payload: actionComponentInfo })
@@ -116,7 +116,7 @@ export function ViewportActionCornersProvider({ children, service }) {
     [dispatch]
   );
 
-  const clearActionComponents = useCallback(
+  const clear = useCallback(
     (viewportId: string) => dispatch({ type: 'CLEAR_ACTION_COMPONENTS', payload: viewportId }),
     [dispatch]
   );
@@ -124,19 +124,19 @@ export function ViewportActionCornersProvider({ children, service }) {
     if (service) {
       service.setServiceImplementation({
         getState,
-        setActionComponent,
-        setActionComponents,
-        clearActionComponents,
+        setComponent,
+        setComponents,
+        clear,
       });
     }
-  }, [getState, service, setActionComponent, setActionComponents]);
+  }, [getState, service, setComponent, setComponents]);
 
   // run many of the calls through the service itself since we want to publish events
   const api = {
     getState,
-    setActionComponent: props => service.setActionComponent(props),
-    setActionComponents: props => service.setActionComponents(props),
-    clearActionComponents: props => service.clearActionComponents(props),
+    setComponent: props => service.setComponent(props),
+    setComponents: props => service.setComponents(props),
+    clear: props => service.clear(props),
   };
 
   const contextValue = useMemo(

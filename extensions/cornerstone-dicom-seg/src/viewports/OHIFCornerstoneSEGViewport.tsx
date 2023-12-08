@@ -280,7 +280,7 @@ function OHIFCornerstoneSEGViewport(props) {
   }, [hydrateSEGDisplaySet, segDisplaySet, storePresentationState, viewportId]);
 
   useEffect(() => {
-    viewportActionCornersService.setActionComponents([
+    viewportActionCornersService.setComponents([
       {
         viewportId,
         id: 'viewportStatusComponent',

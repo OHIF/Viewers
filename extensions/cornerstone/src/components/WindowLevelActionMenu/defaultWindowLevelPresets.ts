@@ -1,3 +1,5 @@
+// The following are the default window level presets and can be further
+// configured via the customization service.
 const defaultWindowLevelPresets = {
   CT: [
     { description: 'Soft tissue', window: '400', level: '40' },
