@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from 'react';
+import React, {useEffect, useCallback, useMemo} from 'react';
 import PropTypes from 'prop-types';
 import { ServicesManager, Types, MeasurementService } from '@ohif/core';
 import { ViewportGrid, ViewportPane, useViewportGrid } from '@ohif/ui';
@@ -16,6 +16,17 @@ function ViewerViewportGrid(props) {
   const { displaySetService, measurementService, hangingProtocolService, uiNotificationService } = (
     servicesManager as ServicesManager
   ).services;
+
+  /**
+   * Determine whether users need to use the tools directly, or whether they need to click once to activate the viewport before using tools.
+   * If 'activateViewportBeforeInteraction' is available in the 'window.config' object, use its value;
+   * otherwise, default to true.
+   * If true, users need to click once to activate the viewport before using the tools.
+   * if false, tools can be used directly.
+   */
+  const activateViewportBeforeInteraction = useMemo(() => {
+    return window.config?.activateViewportBeforeInteraction ?? true;
+  }, []);
 
   /**
    * This callback runs after the viewports structure has changed in any way.
@@ -311,7 +322,7 @@ function ViewerViewportGrid(props) {
           <div
             data-cy="viewport-pane"
             className={classNames('flex h-full w-full flex-col', {
-              'pointer-events-none': !isActive,
+              'pointer-events-none': !isActive && activateViewportBeforeInteraction,
             })}
           >
             <ViewportComponent
