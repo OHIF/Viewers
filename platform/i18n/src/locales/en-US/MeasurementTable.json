@@ -5,5 +5,6 @@
   "MAX": "MAX",
   "NonTargets": "NonTargets",
   "Relabel": "Relabel",
-  "Targets": "Targets"
+  "Targets": "Targets",
+  "Measurements": "Measurements"
 }

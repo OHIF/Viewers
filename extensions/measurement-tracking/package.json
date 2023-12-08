@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-measurement-tracking",
-  "version": "3.8.0-beta.23",
+  "version": "3.8.0-beta.27",
   "description": "Tracking features and functionality for basic image viewing",
   "author": "OHIF Core Team",
   "license": "MIT",
@@ -30,23 +30,23 @@
     "start": "yarn run dev"
   },
   "peerDependencies": {
-    "@cornerstonejs/core": "^1.32.1",
-    "@cornerstonejs/tools": "^1.32.1",
-    "@ohif/core": "3.8.0-beta.23",
-    "@ohif/extension-cornerstone-dicom-sr": "3.8.0-beta.23",
-    "@ohif/ui": "3.8.0-beta.23",
+    "@cornerstonejs/core": "^1.36.1",
+    "@cornerstonejs/tools": "^1.36.1",
+    "@ohif/core": "3.8.0-beta.27",
+    "@ohif/extension-cornerstone-dicom-sr": "3.8.0-beta.27",
+    "@ohif/ui": "3.8.0-beta.27",
     "classnames": "^2.3.2",
     "dcmjs": "^0.29.12",
     "lodash.debounce": "^4.17.21",
     "prop-types": "^15.6.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "webpack": "^5.89.0",
+    "webpack": "^5.50.0",
     "webpack-merge": "^5.7.3"
   },
   "dependencies": {
     "@babel/runtime": "^7.20.13",
-    "@ohif/ui": "3.8.0-beta.23",
+    "@ohif/ui": "3.8.0-beta.27",
     "@xstate/react": "^3.2.2",
     "xstate": "^4.10.0"
   }
