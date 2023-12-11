@@ -144,6 +144,7 @@ import iconToolEraser from './../../assets/icons/icon-tool-eraser.svg';
 import iconToolScissor from './../../assets/icons/icon-tool-scissor.svg';
 import iconToolShape from './../../assets/icons/icon-tool-shape.svg';
 import iconToolThreshold from './../../assets/icons/icon-tool-threshold.svg';
+import viewportWindowLevel from './../../assets/icons/viewport-window-level.svg';
 
 /** Old OHIF */
 import oldTrash from './../../assets/icons/old-trash.svg';
@@ -295,6 +296,7 @@ const ICONS = {
   'next-arrow': nextArrow,
   'prev-arrow': prevArrow,
   'viewport-status-tracked': viewportStatusTracked,
+  'viewport-window-level': viewportWindowLevel,
 
   /** Old OHIF */
   'old-trash': oldTrash,

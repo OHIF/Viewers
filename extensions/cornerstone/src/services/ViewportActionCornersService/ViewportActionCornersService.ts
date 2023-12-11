@@ -33,17 +33,21 @@ class ViewportActionCornersService extends PubSubService {
 
   public setServiceImplementation({
     getState: getStateImplementation,
-    setActionComponent: setActionComponentImplementation,
-    setActionComponents: setActionComponentsImplementation,
+    setComponent: setComponentImplementation,
+    setComponents: setComponentsImplementation,
+    clear: clearImplementation,
   }): void {
     if (getStateImplementation) {
       this.serviceImplementation._getState = getStateImplementation;
     }
-    if (setActionComponentImplementation) {
-      this.serviceImplementation._setActionComponent = setActionComponentImplementation;
+    if (setComponentImplementation) {
+      this.serviceImplementation._setComponent = setComponentImplementation;
     }
-    if (setActionComponentsImplementation) {
-      this.serviceImplementation._setActionComponents = setActionComponentsImplementation;
+    if (setComponentsImplementation) {
+      this.serviceImplementation._setComponents = setComponentsImplementation;
+    }
+    if (clearImplementation) {
+      this.serviceImplementation._clear = clearImplementation;
     }
   }
 
@@ -51,12 +55,16 @@ class ViewportActionCornersService extends PubSubService {
     return this.serviceImplementation._getState();
   }
 
-  public setActionComponent(component: ActionComponentInfo) {
-    this.serviceImplementation._setActionComponent(component);
+  public setComponent(component: ActionComponentInfo) {
+    this.serviceImplementation._setComponent(component);
   }
 
-  public setActionComponents(components: Array<ActionComponentInfo>) {
-    this.serviceImplementation._setActionComponents(components);
+  public setComponents(components: Array<ActionComponentInfo>) {
+    this.serviceImplementation._setComponents(components);
+  }
+
+  public clear(viewportId: string) {
+    this.serviceImplementation._clear(viewportId);
   }
 }
 

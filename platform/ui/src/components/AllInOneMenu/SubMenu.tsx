@@ -1,5 +1,5 @@
 import React, { useCallback, useContext } from 'react';
-import { MenuContext, MenuProps } from './Menu';
+import { HorizontalDirection, MenuContext, MenuProps } from './Menu';
 import Icon from '../Icon';
 
 export interface SubMenuProps extends MenuProps {
@@ -8,7 +8,7 @@ export interface SubMenuProps extends MenuProps {
 }
 
 const SubMenu = (props: SubMenuProps) => {
-  const { showSubMenu, opensLeftToRight } = useContext(MenuContext);
+  const { showSubMenu, horizontalDirection } = useContext(MenuContext);
 
   const onClickHandler = useCallback(() => {
     showSubMenu(props);
@@ -20,13 +20,14 @@ const SubMenu = (props: SubMenuProps) => {
       className="all-in-one-menu-item all-in-one-menu-item-effects flex items-center"
       onClick={onClickHandler}
     >
-      {!opensLeftToRight && <Icon name="content-prev"></Icon>}
-      <div className={getLabelClassName(opensLeftToRight)}>{props.itemLabel}</div>
-      {opensLeftToRight && <Icon name="content-next"></Icon>}
+      {horizontalDirection === HorizontalDirection.RightToLeft && <Icon name="content-prev"></Icon>}
+      <div className={getLabelClassName(horizontalDirection)}>{props.itemLabel}</div>
+      {horizontalDirection === HorizontalDirection.LeftToRight && <Icon name="content-next"></Icon>}
     </div>
   );
 };
 
-const getLabelClassName = (opensLeftToRight: boolean) => (opensLeftToRight ? 'mr-auto' : 'pl-2');
+const getLabelClassName = (horizontalDirection: HorizontalDirection) =>
+  horizontalDirection === HorizontalDirection.LeftToRight ? 'mr-auto' : 'pl-2';
 
 export default SubMenu;

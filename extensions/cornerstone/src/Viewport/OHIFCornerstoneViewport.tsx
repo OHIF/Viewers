@@ -10,7 +10,7 @@ import {
   utilities as csUtils,
 } from '@cornerstonejs/core';
 import { MeasurementService } from '@ohif/core';
-import { Notification, useViewportDialog } from '@ohif/ui';
+import { Notification, useViewportDialog, Types as UITypes, AllInOneMenu } from '@ohif/ui';
 import { IStackViewport, IVolumeViewport } from '@cornerstonejs/core/dist/esm/types';
 
 import { setEnabledElement } from '../state';
@@ -22,6 +22,8 @@ import CornerstoneServices from '../types/CornerstoneServices';
 import CinePlayer from '../components/CinePlayer';
 import { Types } from '@ohif/core';
 import OHIFViewportActionCorners from '../components/OHIFViewportActionCorners';
+import { getWindowLevelActionMenu } from '../components/WindowLevelActionMenu/getWindowLevelActionMenu';
+import { useAppConfig } from '@state';
 
 const STACK = 'stack';
 
@@ -116,6 +118,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
   const [scrollbarHeight, setScrollbarHeight] = useState('100px');
   const [enabledVPElement, setEnabledVPElement] = useState(null);
   const elementRef = useRef();
+  const [appConfig] = useAppConfig();
 
   const {
     measurementService,
@@ -127,6 +130,8 @@ const OHIFCornerstoneViewport = React.memo(props => {
     cornerstoneCacheService,
     viewportGridService,
     stateSyncService,
+    viewportActionCornersService,
+    customizationService,
   } = servicesManager.services as CornerstoneServices;
 
   const [viewportDialogState] = useViewportDialog();
@@ -152,6 +157,8 @@ const OHIFCornerstoneViewport = React.memo(props => {
       toolGroupService.removeViewportFromToolGroup(viewportId, renderingEngineId);
 
       syncGroupService.removeViewportFromSyncGroup(viewportId, renderingEngineId, syncGroups);
+
+      viewportActionCornersService.clear(viewportId);
     },
     [viewportId]
   );
@@ -344,6 +351,34 @@ const OHIFCornerstoneViewport = React.memo(props => {
       unsubscribeFromJumpToMeasurementEvents();
     };
   }, [displaySets, elementRef, viewportId]);
+
+  // Set up the window level action menu in the viewport action corners.
+  useEffect(() => {
+    // Doing an === check here because the default config value when not set is true
+    if (appConfig.addWindowLevelActionMenu === false) {
+      return;
+    }
+
+    // TODO: In the future we should consider using the customization service
+    // to determine if and in which corner various action components should go.
+    const wlActionMenu = getWindowLevelActionMenu({
+      viewportId,
+      element: elementRef.current,
+      displaySets,
+      servicesManager,
+      commandsManager,
+      verticalDirection: AllInOneMenu.VerticalDirection.BottomToTop,
+      horizontalDirection: AllInOneMenu.HorizontalDirection.LeftToRight,
+    });
+
+    viewportActionCornersService.setComponent({
+      viewportId,
+      id: 'windowLevelActionMenu',
+      component: wlActionMenu,
+      location: viewportActionCornersService.LOCATIONS.bottomLeft,
+      indexPriority: -100,
+    });
+  }, [displaySets, viewportId, viewportActionCornersService, servicesManager, commandsManager]);
 
   return (
     <React.Fragment>

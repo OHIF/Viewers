@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 
-import { Tooltip, Icon, ViewportActionArrows } from '@ohif/ui';
+import { Tooltip, Icon, ViewportActionArrows, useViewportGrid } from '@ohif/ui';
 
 import { annotation } from '@cornerstonejs/tools';
 import { useTrackedMeasurements } from './../getContextModule';
@@ -19,6 +19,9 @@ function TrackedCornerstoneViewport(props) {
 
   // Todo: handling more than one displaySet on the same viewport
   const displaySet = displaySets[0];
+
+  const [viewportGrid] = useViewportGrid();
+  const { activeViewportId } = viewportGrid;
 
   const [trackedMeasurements, sendTrackedMeasurementsEvent] = useTrackedMeasurements();
 
@@ -178,9 +181,13 @@ function TrackedCornerstoneViewport(props) {
 
   useEffect(() => {
     const statusComponent = _getStatusComponent(isTracked);
-    const arrowsComponent = _getArrowsComponent(isTracked, switchMeasurement);
+    const arrowsComponent = _getArrowsComponent(
+      isTracked,
+      switchMeasurement,
+      viewportId === activeViewportId
+    );
 
-    viewportActionCornersService.setActionComponents([
+    viewportActionCornersService.setComponents([
       {
         viewportId,
         id: 'viewportStatusComponent',
@@ -196,7 +203,7 @@ function TrackedCornerstoneViewport(props) {
         location: viewportActionCornersService.LOCATIONS.topRight,
       },
     ]);
-  }, [isTracked, switchMeasurement, viewportActionCornersService, viewportId]);
+  }, [activeViewportId, isTracked, switchMeasurement, viewportActionCornersService, viewportId]);
 
   const getCornerstoneViewport = () => {
     const { component: Component } = extensionManager.getModuleEntry(
@@ -286,7 +293,7 @@ function _getNextMeasurementUID(
   return newTrackedMeasurementId;
 }
 
-const _getArrowsComponent = (isTracked, switchMeasurement) => {
+const _getArrowsComponent = (isTracked, switchMeasurement, isActiveViewport) => {
   if (!isTracked) {
     return null;
   }
@@ -294,6 +301,7 @@ const _getArrowsComponent = (isTracked, switchMeasurement) => {
   return (
     <ViewportActionArrows
       onArrowsClick={direction => switchMeasurement(direction)}
+      className={isActiveViewport ? 'visible' : 'invisible group-hover:visible'}
     ></ViewportActionArrows>
   );
 };

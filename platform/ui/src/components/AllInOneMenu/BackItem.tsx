@@ -2,15 +2,15 @@ import React, { useContext } from 'react';
 
 import { Icon } from '@ohif/ui';
 import DividerItem from './DividerItem';
-import { MenuContext } from './Menu';
+import { HorizontalDirection, MenuContext } from './Menu';
 
 type BackItemProps = {
-  backLabel: string;
+  backLabel?: string;
   onBackClick: () => void;
 };
 
 const BackItem = ({ backLabel, onBackClick }: BackItemProps) => {
-  const { opensLeftToRight } = useContext(MenuContext);
+  const { horizontalDirection } = useContext(MenuContext);
 
   return (
     <>
@@ -18,14 +18,19 @@ const BackItem = ({ backLabel, onBackClick }: BackItemProps) => {
         className="all-in-one-menu-item all-in-one-menu-item-effects"
         onClick={onBackClick}
       >
-        {opensLeftToRight && <Icon name="content-prev"></Icon>}
-        <div className={getLabelClassName(opensLeftToRight)}>{backLabel}</div>
-        {!opensLeftToRight && <Icon name="content-next"></Icon>}
+        {horizontalDirection === HorizontalDirection.LeftToRight && (
+          <Icon name="content-prev"></Icon>
+        )}
+        <div className={getLabelClassName(horizontalDirection)}>{backLabel || 'Back'}</div>
+        {horizontalDirection === HorizontalDirection.RightToLeft && (
+          <Icon name="content-next"></Icon>
+        )}
       </div>
       <DividerItem></DividerItem>
     </>
   );
 };
 
-const getLabelClassName = (opensLeftToRight: boolean) => (opensLeftToRight ? 'pl-2' : 'mr-auto');
+const getLabelClassName = (horizontalDirection: HorizontalDirection) =>
+  horizontalDirection === HorizontalDirection.LeftToRight ? 'pl-2' : 'mr-auto';
 export default BackItem;
