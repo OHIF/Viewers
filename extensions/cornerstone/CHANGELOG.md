@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-beta.28](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.27...v3.8.0-beta.28) (2023-12-08)
+
+
+### Features
+
+* **HP:** Added new 3D hanging protocols to be used in the new layout selector ([#3844](https://github.com/OHIF/Viewers/issues/3844)) ([59576d6](https://github.com/OHIF/Viewers/commit/59576d695d4d26601d35c43f73d602f0b12d72bf))
+
+
+
+
+
+# [3.8.0-beta.27](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.26...v3.8.0-beta.27) (2023-12-06)
+
+
+### Bug Fixes
+
+* **auth:** fix the issue with oauth at a non root path ([#3840](https://github.com/OHIF/Viewers/issues/3840)) ([6651008](https://github.com/OHIF/Viewers/commit/6651008fbb35dabd5991c7f61128e6ef324012df))
+
+
+
+
+
 # [3.8.0-beta.26](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.25...v3.8.0-beta.26) (2023-11-28)
 
 **Note:** Version bump only for package @ohif/extension-cornerstone
