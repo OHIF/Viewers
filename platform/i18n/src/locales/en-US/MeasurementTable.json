@@ -3,8 +3,10 @@
   "Delete": "Delete",
   "Description": "Description",
   "MAX": "MAX",
+  "Measurements": "Measurements",
+  "No, do not ask again": "No, do not ask again",
   "NonTargets": "NonTargets",
   "Relabel": "Relabel",
   "Targets": "Targets",
-  "Measurements": "Measurements"
+  "Track measurements for this series?": "Track measurements for this series?"
 }
