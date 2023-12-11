@@ -4,6 +4,7 @@ import { ServicesManager, Types, MeasurementService } from '@ohif/core';
 import { ViewportGrid, ViewportPane, useViewportGrid } from '@ohif/ui';
 import EmptyViewport from './EmptyViewport';
 import classNames from 'classnames';
+import { useAppConfig } from '@state';
 
 function ViewerViewportGrid(props) {
   const { servicesManager, viewportComponents, dataSource } = props;
@@ -25,7 +26,8 @@ function ViewerViewportGrid(props) {
    * if false, tools can be used directly.
    */
   const activateViewportBeforeInteraction = useMemo(() => {
-    return window.config?.activateViewportBeforeInteraction ?? true;
+    const [appConfig] = useAppConfig();
+    return appConfig?.activateViewportBeforeInteraction ?? true;
   }, []);
 
   /**
