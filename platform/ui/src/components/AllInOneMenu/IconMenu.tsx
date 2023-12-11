@@ -13,20 +13,23 @@ export interface IconMenuProps extends MenuProps {
 }
 
 /**
- * An IconMenu allows for div wrapped icon to be clicked to show and hide
- * an AllInOneMenu.Menu. Based on the direction(s) specified the menu is
+ * An IconMenu allows for a div wrapped icon to be clicked to show and hide
+ * an AllInOneMenu.Menu. Based on the direction(s) specified, the menu is
  * positioned relative to the icon.
  *
  * HorizontalDirection.LeftToRight - the left edges of the icon and menu are aligned
  * HorizontalDirection.RightRoLeft - the right edges of the icon and menu are aligned
  * VerticalDirection.TopToBottom - the top edge of the menu appears directly below the bottom edge of the icon
  * VerticalDirection.BottomToTop - the bottom edge of the menu appears directly above the top edge of the icon
+ *
+ * For example, if an IconMenu were situated in the bottom-left corner of a container,
+ * it would be best to use BottomToTop and LeftToRight directions for it.
  */
 export default function IconMenu({
   icon,
   iconClassName,
-  horizontalDirection = AllInOneMenu.HorizontalDirection.LeftToRight,
-  verticalDirection = AllInOneMenu.VerticalDirection.TopToBottom,
+  horizontalDirection,
+  verticalDirection,
   children,
   backLabel,
   menuClassName,

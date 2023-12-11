@@ -6,10 +6,36 @@ import PanelSelector from './PanelSelector';
 import classNames from 'classnames';
 import BackItem from './BackItem';
 
+/**
+ * The vertical direction that the menu will be opened/used with.
+ *
+ * A TopToBottom menu would be used for cases where the menu is opened "near"
+ * the top edge of its container. Likewise a BottomToTop menu would be used
+ * for cases where the menu is opened "near" the bottom edge of its container.
+ *
+ * See IconMenu for more information.
+ */
 export enum VerticalDirection {
   TopToBottom,
   BottomToTop,
 }
+
+/**
+ * The horizontal direction that the menu is opened/used with.
+ * This direction dictates the general direction sub-menus and
+ * back-to-menus are opened with. For example, a RightToLeft menu
+ * will have sub-menu items indicated with a left pointing chevron
+ * and aligned with the left edge of the menu. Similarly back-to items of a
+ * RightToLeft menu are indicated with a right pointing chevron and
+ * aligned with the right edge of the menu.
+ *
+ * It is also worth noting that a LeftToRight menu would be used for
+ * cases where a menu is opened "near" the left edge of its container.
+ * Likewise, a RightToLeft menu would be used for cases where a menu is opened
+ * "near" the right edge of its container.
+ *
+ * See IconMenu for more information.
+ */
 export enum HorizontalDirection {
   LeftToRight,
   RightToLeft,

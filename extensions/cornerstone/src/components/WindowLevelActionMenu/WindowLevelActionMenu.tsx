@@ -2,7 +2,7 @@ import React, { ReactElement, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import classNames from 'classnames';
 import { AllInOneMenu, useViewportGrid } from '@ohif/ui';
-import { CommandsManager, ServicesManager } from '@ohif/core';
+import { CommandsManager } from '@ohif/core';
 
 export type WindowLevelPreset = {
   description: string;
@@ -14,11 +14,9 @@ export type WindowLevelActionMenuProps = {
   viewportId: string;
   element: HTMLElement;
   presets: Record<string, Array<WindowLevelPreset>>;
-  onSetWindowLevel: (props) => void;
   verticalDirection: AllInOneMenu.VerticalDirection;
   horizontalDirection: AllInOneMenu.HorizontalDirection;
   commandsManager: CommandsManager;
-  servicesManager: ServicesManager;
 };
 
 export function WindowLevelActionMenu({
