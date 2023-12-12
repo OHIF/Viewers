@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
+import { useTranslation } from 'react-i18next';
 
 import Icon from '../Icon';
 
@@ -17,6 +18,7 @@ const StudyItem = ({
   isActive,
   onClick,
 }) => {
+  const { t } = useTranslation('StudyItem');
   return (
     <div
       className={classnames(
@@ -59,7 +61,7 @@ const StudyItem = ({
               name="tracked"
               className="text-primary-light mr-2 w-4"
             />
-            {trackedSeries} Tracked Series
+            {t('Tracked series', {trackedSeries: trackedSeries})}
           </div>
         </div>
       )}

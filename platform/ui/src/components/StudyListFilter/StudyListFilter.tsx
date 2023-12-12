@@ -48,7 +48,7 @@ const StudyListFilter = ({
                     onClick={onUploadClick}
                   >
                     <Icon name="icon-upload"></Icon>
-                    <span>Upload</span>
+                    <span>{t('Upload')}</span>
                   </div>
                 )}
               </div>
@@ -69,16 +69,16 @@ const StudyListFilter = ({
                 )}
                 <Typography
                   variant="h6"
+                  className="text-primary-light"
+                >
+                  {`${t('Number of studies')}: `}
+                </Typography>
+                <Typography
+                  variant="h6"
                   className="mr-2"
                   data-cy={'num-studies'}
                 >
                   {numOfStudies > 100 ? '>100' : numOfStudies}
-                </Typography>
-                <Typography
-                  variant="h6"
-                  className="text-primary-light"
-                >
-                  {t('Number of studies')}
                 </Typography>
               </div>
             </div>
@@ -99,7 +99,7 @@ const StudyListFilter = ({
         {numOfStudies > 100 && (
           <div className="container m-auto">
             <div className="bg-primary-main rounded-b py-1 text-center text-base">
-              <p className="text-white">{t('NumOfStudiesHiggerThan100Message')}</p>
+              <p className="text-white">{t('Filter list to 100 studies or less to enable sorting')}</p>
             </div>
           </div>
         )}

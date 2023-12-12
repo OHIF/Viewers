@@ -1,4 +1,5 @@
 import { hotkeys } from '@ohif/core';
+import i18n from 'i18next';
 
 import { id } from './id';
 import toolbarButtons from './toolbarButtons';
@@ -41,7 +42,7 @@ function modeFactory({ modeConfiguration }) {
     // We should not be.
     id,
     routeName: 'microscopy',
-    displayName: 'Microscopy',
+    displayName: i18n.t('Modes:Microscopy'),
 
     /**
      * Lifecycle hooks

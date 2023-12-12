@@ -2,6 +2,7 @@ import { hotkeys } from '@ohif/core';
 import { id } from './id';
 import toolbarButtons from './toolbarButtons';
 import initToolGroups from './initToolGroups';
+import i18n from 'i18next';
 
 const ohif = {
   layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
@@ -44,7 +45,7 @@ function modeFactory({ modeConfiguration }) {
      * Mode name, which is displayed in the viewer's UI in the workList, for the
      * user to select the mode.
      */
-    displayName: 'Segmentation',
+    displayName: i18n.t('Modes:Segmentation'),
     /**
      * Runs when the Mode Route is mounted to the DOM. Usually used to initialize
      * Services and other resources.
@@ -124,8 +125,11 @@ function modeFactory({ modeConfiguration }) {
      * segmentations and we should exclude them
      */
     isValidMode: ({ modalities }) => {
-      if (modalities.length === 1) {
-        return !['SM', 'US', 'MG', 'OT', 'DOC', 'CR'].includes(modalities[0]);
+      // Don't show the mode if the selected studies have only one modality
+      // that is not supported by the mode
+      const modalitiesArray = modalities.split('\\');
+      if (modalitiesArray.length === 1) {
+        return !['SM', 'US', 'MG', 'OT', 'DOC', 'CR'].includes(modalitiesArray[0]);
       }
 
       return true;
