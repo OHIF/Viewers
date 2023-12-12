@@ -190,5 +190,5 @@ handles this, but Azure does not. Consequently, when you attempt to access a lin
 specific URL, a 404 error will be displayed.
 
 This issue also occurs locally, where the http-server does not handle it. However,
-if you utilize the `serve` package (npx serve ./dist -l 8080 -s), it effectively addresses this problem.
+if you utilize the `serve` package (npx serve ./dist -c ../public/serve.json), it effectively addresses this problem.
 :::

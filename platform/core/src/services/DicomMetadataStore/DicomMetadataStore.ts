@@ -186,6 +186,18 @@ const BaseImplementation = {
       madeInClient,
     });
   },
+  updateSeriesMetadata(seriesMetadata) {
+    const { StudyInstanceUID, SeriesInstanceUID } = seriesMetadata;
+    const series = _getSeries(StudyInstanceUID, SeriesInstanceUID);
+    if (!series) {
+      return;
+    }
+
+    const study = _getStudy(StudyInstanceUID);
+    if (study) {
+      study.setSeriesMetadata(SeriesInstanceUID, seriesMetadata);
+    }
+  },
   addSeriesMetadata(seriesSummaryMetadata, madeInClient = false) {
     if (!seriesSummaryMetadata || !seriesSummaryMetadata.length || !seriesSummaryMetadata[0]) {
       return;

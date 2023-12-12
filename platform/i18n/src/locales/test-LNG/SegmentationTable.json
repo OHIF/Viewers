@@ -1,0 +1,18 @@
+{
+  "Active": "Test Active",
+  "Add new segmentation": "Test Add new segmentation",
+  "Add segment": "Test Add segment",
+  "Add segmentation": "Test Add segmentation",
+  "Delete": "Test Delete",
+  "Display inactive segmentations": "Test Display inactive segmentations",
+  "Export DICOM SEG": "Test Export DICOM SEG",
+  "Download DICOM SEG": "Test Download DICOM SEG",
+  "Download DICOM RTSTRUCT": "Test Download DICOM RTSTRUCT",
+  "Fill": "Test Fill",
+  "Inactive segmentations": "Test Inactive segmentations",
+  "Opacity": "Test Opacity",
+  "Outline": "Test Outline",
+  "Rename": "Test Rename",
+  "Segmentation": "Test Segmentation",
+  "Size": "Test Size"
+}
