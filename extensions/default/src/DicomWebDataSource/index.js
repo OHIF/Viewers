@@ -141,7 +141,13 @@ function createDicomWebApi(dicomWebConfig, servicesManager) {
       instances: {
         search: (studyInstanceUid, queryParameters) => {
           qidoDicomWebClient.headers = getAuthrorizationHeader();
-          return qidoSearch.call(undefined, qidoDicomWebClient, studyInstanceUid, null, queryParameters);
+          return qidoSearch.call(
+            undefined,
+            qidoDicomWebClient,
+            studyInstanceUid,
+            null,
+            queryParameters
+          );
         },
       },
     },
@@ -235,10 +241,11 @@ function createDicomWebApi(dicomWebConfig, servicesManager) {
 
           dicomDict.dict = denaturalizeDataset(dataset);
 
-          const onBeforeSaveSR = customizationService.getModeCustomization('onBeforeSaveSR')?.value;
+          const onBeforeDicomStore =
+            customizationService.getModeCustomization('onBeforeDicomStore')?.value;
 
-          if (typeof onBeforeSaveSR === 'function') {
-            dicomDict = onBeforeSaveSR({ dicomDict, measurementData, dataset });
+          if (typeof onBeforeDicomStore === 'function') {
+            dicomDict = onBeforeDicomStore({ dicomDict, measurementData, dataset });
           }
 
           const part10Buffer = dicomDict.write();

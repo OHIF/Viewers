@@ -101,11 +101,10 @@ export default function hydrateStructuredReport(
     metaData
   );
 
-  const onGenerateToolState =
-    customizationService.getModeCustomization('onGenerateToolState')?.value;
+  const onBeforeHydration = customizationService.getModeCustomization('onBeforeHydration')?.value;
 
-  if (typeof onGenerateToolState === 'function') {
-    storedMeasurementByAnnotationType = onGenerateToolState({
+  if (typeof onBeforeHydration === 'function') {
+    storedMeasurementByAnnotationType = onBeforeHydration({
       storedMeasurementByAnnotationType,
       displaySet,
     });

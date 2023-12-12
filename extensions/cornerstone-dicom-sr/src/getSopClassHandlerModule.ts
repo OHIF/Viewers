@@ -211,7 +211,7 @@ function _checkIfCanAddMeasurementsToDisplaySet(
     return;
   }
 
-  if ((!newDisplaySet) instanceof ImageSet) {
+  if (!newDisplaySet instanceof ImageSet) {
     // This also filters out _this_ displaySet, as it is not an ImageSet.
     return;
   }
@@ -262,11 +262,12 @@ function _checkIfCanAddMeasurementsToDisplaySet(
       for (let j = unloadedMeasurements.length - 1; j >= 0; j--) {
         let measurement = unloadedMeasurements[j];
 
-        const onBeforeAddMeasurement =
-          customizationService.getModeCustomization('onBeforeAddMeasurement')?.value;
+        const onBeforeAddSRMeasurement = customizationService.getModeCustomization(
+          'onBeforeAddSRMeasurement'
+        )?.value;
 
-        if (typeof onBeforeAddMeasurement === 'function') {
-          measurement = onBeforeAddMeasurement({
+        if (typeof onBeforeAddSRMeasurement === 'function') {
+          measurement = onBeforeAddSRMeasurement({
             measurement,
             StudyInstanceUID: srDisplaySet.StudyInstanceUID,
             SeriesInstanceUID: srDisplaySet.SeriesInstanceUID,
