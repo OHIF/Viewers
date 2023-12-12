@@ -6,8 +6,6 @@ import SCOORD_TYPES from '../constants/scoordTypes';
 
 const EPSILON = 1e-4;
 
-const supportedLegacyCornerstoneTags = ['cornerstoneTools@^4.0.0'];
-
 export default function addMeasurement(measurement, imageId, displaySetInstanceUID) {
   // TODO -> Render rotated ellipse .
   const toolName = toolNames.DICOMSRDisplay;
@@ -27,7 +25,7 @@ export default function addMeasurement(measurement, imageId, displaySetInstanceU
     }
 
     measurementData.renderableData[GraphicType].push(
-      _getRenderableData(GraphicType, GraphicData, imageId, measurement.TrackingIdentifier)
+      _getRenderableData(GraphicType, GraphicData, imageId)
     );
   });
 
@@ -63,6 +61,7 @@ export default function addMeasurement(measurement, imageId, displaySetInstanceU
   };
 
   annotationManager.addAnnotation(SRAnnotation);
+  console.debug('Adding annotation:', SRAnnotation);
 
   measurement.loaded = true;
   measurement.imageId = imageId;
@@ -77,9 +76,7 @@ export default function addMeasurement(measurement, imageId, displaySetInstanceU
   delete measurement.coords;
 }
 
-function _getRenderableData(GraphicType, GraphicData, imageId, TrackingIdentifier) {
-  const [cornerstoneTag, toolName] = TrackingIdentifier.split(':');
-
+function _getRenderableData(GraphicType, GraphicData, imageId) {
   let renderableData: csTypes.Point3[];
 
   switch (GraphicType) {

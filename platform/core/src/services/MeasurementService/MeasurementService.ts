@@ -465,6 +465,7 @@ class MeasurementService extends PubSubService {
     const sourceInfo = this._getSourceToString(source);
 
     if (!this._sourceHasMappings(source)) {
+      this.unmappedMeasurements.add(sourceAnnotationDetail.uid);
       throw new Error(`No measurement mappings found for '${sourceInfo}' source. Exiting early.`);
     }
 
@@ -476,6 +477,7 @@ class MeasurementService extends PubSubService {
       );
       if (!sourceMapping) {
         console.log('No source mapping', source);
+        this.unmappedMeasurements.add(sourceAnnotationDetail.uid);
         return;
       }
       const { toMeasurementSchema } = sourceMapping;
