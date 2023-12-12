@@ -173,9 +173,10 @@ const connectToolsToMeasurementService = servicesManager => {
         // in the future
         annotationAddedEventDetail.uid = annotationUID;
         annotationToMeasurement(toolName, annotationAddedEventDetail);
+        console.debug('Adding annotation to measurement service', annotationAddedEventDetail);
       }
     } catch (error) {
-      console.warn('Failed to update measurement:', error);
+      console.error('Failed to update measurement:', error);
     }
   }
 
@@ -199,7 +200,7 @@ const connectToolsToMeasurementService = servicesManager => {
       // Passing true to indicate this is an update and NOT a annotation (start) completion.
       annotationToMeasurement(toolName, annotationModifiedEventDetail, true);
     } catch (error) {
-      console.warn('Failed to update measurement:', error);
+      console.error('Failed to update measurement:', error);
     }
   }
   function selectMeasurement(csToolsEvent) {
@@ -221,7 +222,7 @@ const connectToolsToMeasurementService = servicesManager => {
         );
       }
     } catch (error) {
-      console.warn('Failed to select and unselect measurements:', error);
+      console.error('Failed to select and unselect measurements:', error);
     }
   }
 
@@ -246,10 +247,10 @@ const connectToolsToMeasurementService = servicesManager => {
           remove(annotationUID, annotationRemovedEventDetail);
         }
       } catch (error) {
-        console.warn('Failed to update measurement:', error);
+        console.error('Failed to update measurement:', error);
       }
     } catch (error) {
-      console.warn('Failed to remove measurement:', error);
+      console.error('Failed to remove measurement:', error);
     }
   }
 

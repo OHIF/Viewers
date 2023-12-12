@@ -24,7 +24,7 @@ const DISPLAY_STUDY_SUMMARY_INITIAL_VALUE = {
   description: '', // 'CHEST/ABD/PELVIS W CONTRAST',
 };
 
-function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
+function PanelMeasurementTableTracking({ servicesManager }) {
   const [viewportGrid] = useViewportGrid();
   const [measurementChangeTimestamp, setMeasurementsUpdated] = useState(Date.now().toString());
   const debouncedMeasurementChangeTimestamp = useDebounce(measurementChangeTimestamp, 200);
@@ -39,49 +39,49 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
 
   useEffect(() => {
     const measurements = measurementService.getMeasurements();
-    const filteredMeasurements = measurements.filter(
-      m => trackedStudy === m.referenceStudyUID && trackedSeries.includes(m.referenceSeriesUID)
-    );
-
-    const mappedMeasurements = filteredMeasurements.map(m =>
+    const mappedMeasurements = measurements.map(m =>
       _mapMeasurementToDisplay(m, measurementService.VALUE_TYPES, displaySetService)
     );
     setDisplayMeasurements(mappedMeasurements);
-    // eslint-ignore-next-line
-  }, [measurementService, trackedStudy, trackedSeries, debouncedMeasurementChangeTimestamp]);
+  }, [
+    measurementService,
+    trackedStudy,
+    trackedSeries,
+    displaySetService,
+    debouncedMeasurementChangeTimestamp,
+  ]);
 
-  const updateDisplayStudySummary = async () => {
-    if (trackedMeasurements.matches('tracking')) {
-      const StudyInstanceUID = trackedStudy;
-      const studyMeta = DicomMetadataStore.getStudy(StudyInstanceUID);
-      const instanceMeta = studyMeta.series[0].instances[0];
-      const { StudyDate, StudyDescription } = instanceMeta;
-
-      const modalities = new Set();
-      studyMeta.series.forEach(series => {
-        if (trackedSeries.includes(series.SeriesInstanceUID)) {
-          modalities.add(series.instances[0].Modality);
-        }
-      });
-      const modality = Array.from(modalities).join('/');
-
-      if (displayStudySummary.key !== StudyInstanceUID) {
-        setDisplayStudySummary({
-          key: StudyInstanceUID,
-          date: StudyDate, // TODO: Format: '07-Sep-2010'
-          modality,
-          description: StudyDescription,
-        });
-      }
-    } else if (trackedStudy === '' || trackedStudy === undefined) {
-      setDisplayStudySummary(DISPLAY_STUDY_SUMMARY_INITIAL_VALUE);
-    }
-  };
-
-  // ~~ DisplayStudySummary
   useEffect(() => {
+    const updateDisplayStudySummary = async () => {
+      if (trackedMeasurements.matches('tracking')) {
+        const StudyInstanceUID = trackedStudy;
+        const studyMeta = DicomMetadataStore.getStudy(StudyInstanceUID);
+        const instanceMeta = studyMeta.series[0].instances[0];
+        const { StudyDate, StudyDescription } = instanceMeta;
+
+        const modalities = new Set();
+        studyMeta.series.forEach(series => {
+          if (trackedSeries.includes(series.SeriesInstanceUID)) {
+            modalities.add(series.instances[0].Modality);
+          }
+        });
+        const modality = Array.from(modalities).join('/');
+
+        if (displayStudySummary.key !== StudyInstanceUID) {
+          setDisplayStudySummary({
+            key: StudyInstanceUID,
+            date: StudyDate, // TODO: Format: '07-Sep-2010'
+            modality,
+            description: StudyDescription,
+          });
+        }
+      } else if (trackedStudy === '' || trackedStudy === undefined) {
+        setDisplayStudySummary(DISPLAY_STUDY_SUMMARY_INITIAL_VALUE);
+      }
+    };
+
     updateDisplayStudySummary();
-  }, [displayStudySummary.key, trackedMeasurements, trackedStudy, updateDisplayStudySummary]);
+  }, [displayStudySummary.key, trackedMeasurements, trackedSeries, trackedStudy]);
 
   // TODO: Better way to consolidated, debounce, check on change?
   // Are we exposing the right API for measurementService?
@@ -121,13 +121,11 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     const trackedMeasurements = measurements.filter(
       m => trackedStudy === m.referenceStudyUID && trackedSeries.includes(m.referenceSeriesUID)
     );
-
-    downloadCSVReport(trackedMeasurements, measurementService);
+    downloadCSVReport(trackedMeasurements);
   }
 
   const jumpToImage = ({ uid, isActive }) => {
     measurementService.jumpToMeasurement(viewportGrid.activeViewportId, uid);
-
     onMeasurementItemClickHandler({ uid, isActive });
   };
 
@@ -199,7 +197,6 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     if (!isActive) {
       const measurements = [...displayMeasurements];
       const measurement = measurements.find(m => m.uid === uid);
-
       measurements.forEach(m => (m.isActive = m.uid !== uid ? false : true));
       measurement.isActive = true;
       setDisplayMeasurements(measurements);
@@ -207,7 +204,13 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
   };
 
   const displayMeasurementsWithoutFindings = displayMeasurements.filter(
-    dm => dm.measurementType !== measurementService.VALUE_TYPES.POINT
+    dm =>
+      trackedStudy === dm.referenceStudyUID &&
+      trackedSeries.includes(dm.referenceSeriesUID) &&
+      dm.measurementType !== measurementService.VALUE_TYPES.POINT
+  );
+  const untrackedMeasurements = displayMeasurements.filter(
+    dm => trackedStudy !== dm.referenceStudyUID || !trackedSeries.includes(dm.referenceSeriesUID)
   );
   const additionalFindings = displayMeasurements.filter(
     dm => dm.measurementType === measurementService.VALUE_TYPES.POINT
@@ -234,6 +237,14 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
           onClick={jumpToImage}
           onEdit={onMeasurementItemEditHandler}
         />
+        {untrackedMeasurements.length !== 0 && (
+          <MeasurementTable
+            title="Untracked Findings"
+            data={untrackedMeasurements}
+            servicesManager={servicesManager}
+            onClick={jumpToImage}
+          />
+        )}
         {additionalFindings.length !== 0 && (
           <MeasurementTable
             title="Additional Findings"
@@ -319,6 +330,7 @@ function _mapMeasurementToDisplay(measurement, types, displaySetService) {
   }
 
   return {
+    ...measurement,
     uid,
     label,
     baseLabel,

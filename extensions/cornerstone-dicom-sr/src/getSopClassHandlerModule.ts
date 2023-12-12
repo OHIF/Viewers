@@ -3,6 +3,7 @@ import { utils, classes, DisplaySetService, Types } from '@ohif/core';
 import addMeasurement from './utils/addMeasurement';
 import isRehydratable from './utils/isRehydratable';
 import { adaptersSR } from '@cornerstonejs/adapters';
+import getSCOORD3DReferencedImages from './utils/getSCOORD3DReferencedImages';
 
 type InstanceMetadata = Types.InstanceMetadata;
 
@@ -165,6 +166,9 @@ function _load(displaySet, servicesManager, extensionManager) {
 
   const { ContentSequence } = displaySet.instance;
 
+  const referencedImages1 = getSCOORD3DReferencedImages(ContentSequence, displaySet);
+  const referencedImages2 = _getReferencedImagesList(ContentSequence);
+
   displaySet.referencedImages = _getReferencedImagesList(ContentSequence);
   displaySet.measurements = _getMeasurements(ContentSequence);
 
@@ -223,7 +227,7 @@ function _checkIfCanAddMeasurementsToDisplaySet(srDisplaySet, newDisplaySet, dat
     return;
   }
 
-  if (!newDisplaySet instanceof ImageSet) {
+  if (!(newDisplaySet instanceof ImageSet)) {
     // This also filters out _this_ displaySet, as it is not an ImageSet.
     return;
   }
@@ -232,13 +236,50 @@ function _checkIfCanAddMeasurementsToDisplaySet(srDisplaySet, newDisplaySet, dat
     return;
   }
 
-  const { sopClassUids } = newDisplaySet;
+  const { sopClassUids, images } = newDisplaySet;
 
   // Check if any have the newDisplaySet is the correct SOPClass.
   unloadedMeasurements = unloadedMeasurements.filter(measurement =>
-    measurement.coords.some(coord =>
-      sopClassUids.includes(coord.ReferencedSOPSequence.ReferencedSOPClassUID)
-    )
+    measurement.coords.some(coord => {
+      /** Get image by approximation */
+      if (coord.ReferencedSOPSequence === undefined) {
+        for (let i = 0; i < images.length; ++i) {
+          const imageMetadata = images[i];
+          if (imageMetadata.FrameOfReferenceUID !== coord.ReferencedFrameOfReferenceSequence) {
+            continue;
+          }
+
+          const sliceNormal = [0, 0, 0];
+          const orientation = imageMetadata.ImageOrientationPatient;
+          sliceNormal[0] = orientation[1] * orientation[5] - orientation[2] * orientation[4];
+          sliceNormal[1] = orientation[2] * orientation[3] - orientation[0] * orientation[5];
+          sliceNormal[2] = orientation[0] * orientation[4] - orientation[1] * orientation[3];
+
+          let distanceAlongNormal = 0;
+          for (let j = 0; j < 3; ++j) {
+            distanceAlongNormal += sliceNormal[j] * imageMetadata.ImagePositionPatient[j];
+          }
+
+          // assuming 1 mm tolerance
+          if (Math.abs(distanceAlongNormal - coord.GraphicData[2]) > 1) {
+            continue;
+          }
+
+          coord.ReferencedSOPSequence = {
+            ReferencedSOPClassUID: imageMetadata.SOPClassUID,
+            ReferencedSOPInstanceUID: imageMetadata.SOPInstanceUID,
+          };
+
+          break;
+        }
+
+        if (coord.ReferencedSOPSequence === undefined) {
+          return false;
+        }
+      }
+
+      return sopClassUids.includes(coord.ReferencedSOPSequence.ReferencedSOPClassUID);
+    })
   );
 
   if (unloadedMeasurements.length === 0) {
@@ -465,7 +506,9 @@ function _processTID1410Measurement(mergedContentSequence) {
   // Need to deal with TID 1410 style measurements, which will have a SCOORD or SCOORD3D at the top level,
   // And non-geometric representations where each NUM has "INFERRED FROM" SCOORD/SCOORD3D
 
-  const graphicItem = mergedContentSequence.find(group => group.ValueType === 'SCOORD');
+  const graphicItem = mergedContentSequence.find(
+    group => group.ValueType === 'SCOORD' || group.ValueType === 'SCOORD3D'
+  );
 
   const UIDREFContentItem = mergedContentSequence.find(group => group.ValueType === 'UIDREF');
 
@@ -595,42 +638,60 @@ function _processNonGeometricallyDefinedMeasurement(mergedContentSequence) {
 }
 
 /**
- * Retrieves coordinates from an item of type SCOORD or SCOORD3D.
- *
- * @param item - The item containing the coordinates.
- * @returns The coordinates extracted from the item.
- */
-function _getCoordsFromSCOORDOrSCOORD3D(item) {
-  const { ValueType, RelationshipType, GraphicType, GraphicData } = item;
+//  * Retrieves coordinates from an item of type SCOORD or SCOORD3D.
+//  *
+//  * @param item - The item containing the coordinates.
+//  * @returns The coordinates extracted from the item.
+//  */
+// function _getCoordsFromSCOORDOrSCOORD3D(item) {
+//   const { ValueType, RelationshipType, GraphicType, GraphicData } = item;
 
-  if (
-    !(
-      RelationshipType == RELATIONSHIP_TYPE.INFERRED_FROM ||
-      RelationshipType == RELATIONSHIP_TYPE.CONTAINS
-    )
-  ) {
-    console.warn(
-      `Relationshiptype === ${RelationshipType}. Cannot deal with NON TID-1400 SCOORD group with RelationshipType !== "INFERRED FROM" or "CONTAINS"`
-    );
+//   if (
+//     !(
+//       RelationshipType === RELATIONSHIP_TYPE.INFERRED_FROM ||
+//       RelationshipType === RELATIONSHIP_TYPE.CONTAINS
+//     )
+//   ) {
+//     console.warn(
+//       `Relationshiptype === ${RelationshipType}. Cannot deal with NON TID-1400 SCOORD group with RelationshipType !== "INFERRED FROM" or "CONTAINS"`
+//     );
 
-    return;
-  }
+//     return;
+//   }
 
+//   const coords = { ValueType, GraphicType, GraphicData };
+
+//   // ContentSequence has length of 1 as RelationshipType === 'INFERRED FROM'
+//   if (ValueType === 'SCOORD') {
+//     const { ReferencedSOPSequence } = item.ContentSequence;
+
+//     coords.ReferencedSOPSequence = ReferencedSOPSequence;
+//   } else if (ValueType === 'SCOORD3D') {
+//     const { ReferencedFrameOfReferenceSequence } = item.ContentSequence;
+
+//     coords.ReferencedFrameOfReferenceSequence = ReferencedFrameOfReferenceSequence;
+//   }
+
+//   return coords;
+// }
+const _getCoordsFromSCOORDOrSCOORD3D = graphicItem => {
+  const { ValueType, GraphicType, GraphicData } = graphicItem;
   const coords = { ValueType, GraphicType, GraphicData };
 
-  // ContentSequence has length of 1 as RelationshipType === 'INFERRED FROM'
   if (ValueType === 'SCOORD') {
-    const { ReferencedSOPSequence } = item.ContentSequence;
-
+    const { ReferencedSOPSequence } = graphicItem.ContentSequence;
     coords.ReferencedSOPSequence = ReferencedSOPSequence;
   } else if (ValueType === 'SCOORD3D') {
-    const { ReferencedFrameOfReferenceSequence } = item.ContentSequence;
-
-    coords.ReferencedFrameOfReferenceSequence = ReferencedFrameOfReferenceSequence;
+    if (graphicItem.ReferencedFrameOfReferenceUID) {
+      coords.ReferencedFrameOfReferenceSequence = graphicItem.ReferencedFrameOfReferenceUID;
+    } else if (graphicItem.ContentSequence) {
+      const { ReferencedFrameOfReferenceSequence } = graphicItem.ContentSequence;
+      coords.ReferencedFrameOfReferenceSequence = ReferencedFrameOfReferenceSequence;
+    }
   }
 
   return coords;
-}
+};
 
 /**
  * Retrieves the label and value from the provided ConceptNameCodeSequence and MeasuredValueSequence.
@@ -668,6 +729,9 @@ function _getReferencedImagesList(ImagingMeasurementReportContentSequence) {
   const ImageLibraryGroup = _getSequenceAsArray(ImageLibrary.ContentSequence).find(
     item => item.ConceptNameCodeSequence.CodeValue === CodeNameCodeSequenceValues.ImageLibraryGroup
   );
+  if (!ImageLibraryGroup) {
+    return [];
+  }
 
   const referencedImages = [];
 
