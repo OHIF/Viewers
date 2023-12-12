@@ -1,7 +1,9 @@
 import React from 'react';
 import Icon from '../Icon';
+import { useTranslation } from 'react-i18next';
 
 function AddSegmentRow({ onClick }) {
+  const { t } = useTranslation('SegmentationTable');
   return (
     <div
       className="flex hover:cursor-pointer"
@@ -13,7 +15,7 @@ function AddSegmentRow({ onClick }) {
           <div className="grid h-[28px] w-[28px] place-items-center">
             <Icon name="icon-add" />
           </div>
-          <span className="text-[13px]">Add Segment</span>
+          <span className="text-[13px]">{t('Add segment')}</span>
         </div>
       </div>
     </div>
