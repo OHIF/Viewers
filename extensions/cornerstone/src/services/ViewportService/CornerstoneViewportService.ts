@@ -362,14 +362,11 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       if (camera) {
         viewport.setCamera(camera);
       }
-      const pan = viewport.getPan();
       if (flip) {
         viewport.setCamera({ flipHorizontal: true });
       }
       if (rotation) {
         viewport.setProperties({ rotation });
-        console.log('Final pan', viewport.getPan());
-        viewport.setPan(pan);
       }
     });
   }

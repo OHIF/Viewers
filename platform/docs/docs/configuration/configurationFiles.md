@@ -259,6 +259,7 @@ alternative data source (or even specify different default hotkeys).
 | `APP_CONFIG`         | Which [configuration file][config-file] to copy to output as `app-config.js`                       | `config/default.js` |
 | `PROXY_TARGET`       | When developing, proxy requests that match this pattern to `PROXY_DOMAIN`                          | `undefined`         |
 | `PROXY_DOMAIN`       | When developing, proxy requests from `PROXY_TARGET` to `PROXY_DOMAIN`                              | `undefined`         |
+| `OHIF_PORT`      | The port to run the webpack server on for PWA builds. | `3000`        |
 
 You can also create a new config file and specify its path relative to the build
 output's root by setting the `APP_CONFIG` environment variable. You can set the
