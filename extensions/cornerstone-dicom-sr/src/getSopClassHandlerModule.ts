@@ -10,16 +10,18 @@ const { CodeScheme: Cornerstone3DCodeScheme } = adaptersSR.Cornerstone3D;
 
 const { ImageSet, MetadataProvider: metadataProvider } = classes;
 
-// TODO ->
-// Add SR thumbnail
-// Make viewport
-// Get stacks from referenced displayInstanceUID and load into wrapped CornerStone viewport.
+/**
+ * TODO
+ * - [ ] Add SR thumbnail
+ * - [ ] Make viewport
+ * - [ ] Get stacks from referenced displayInstanceUID and load into wrapped CornerStone viewport
+ */
 
 const sopClassUids = [
-  '1.2.840.10008.5.1.4.1.1.88.11', //BASIC_TEXT_SR:
-  '1.2.840.10008.5.1.4.1.1.88.22', //ENHANCED_SR:
-  '1.2.840.10008.5.1.4.1.1.88.33', //COMPREHENSIVE_SR:
-  '1.2.840.10008.5.1.4.1.1.88.34', //COMPREHENSIVE_3D_SR:
+  '1.2.840.10008.5.1.4.1.1.88.11' /** BASIC_TEXT_SR */,
+  '1.2.840.10008.5.1.4.1.1.88.22' /** ENHANCED_SR */,
+  '1.2.840.10008.5.1.4.1.1.88.33' /** COMPREHENSIVE_SR */,
+  '1.2.840.10008.5.1.4.1.1.88.34' /** COMPREHENSIVE_3D_SR */,
 ];
 
 const CORNERSTONE_3D_TOOLS_SOURCE_NAME = 'Cornerstone3DTools';
@@ -44,7 +46,7 @@ const CodeNameCodeSequenceValues = {
   TrackingIdentifier: '112039',
   Finding: '121071',
   FindingSite: 'G-C0E3', // SRT
-  CornerstoneFreeText: Cornerstone3DCodeScheme.codeValues.CORNERSTONEFREETEXT, //
+  CornerstoneFreeText: Cornerstone3DCodeScheme.codeValues.CORNERSTONEFREETEXT,
 };
 
 const CodingSchemeDesignators = {
@@ -116,7 +118,7 @@ function _getDisplaySetsFromSeries(instances, servicesManager, extensionManager)
     servicesManager.services.uiNotificationService.show({
       title: 'DICOM SR',
       message:
-        'OHIF only supports TID1500 Imaging Measurement Report Structured Reports. The SR you’re trying to view is not supported.',
+        'OHIF only supports TID1500 Imaging Measurement Report Structured Reports. The SR you are trying to view is not supported.',
       type: 'warning',
       duration: 6000,
     });
@@ -150,6 +152,12 @@ function _getDisplaySetsFromSeries(instances, servicesManager, extensionManager)
   return [displaySet];
 }
 
+/**
+ * Loads the display set with the given services and extension manager.
+ * @param {Object} displaySet - The display set to load.
+ * @param {Object} servicesManager - The services manager containing displaySetService and measurementService.
+ * @param {Object} extensionManager - The extension manager containing data sources.
+ */
 function _load(displaySet, servicesManager, extensionManager) {
   const { displaySetService, measurementService } = servicesManager.services;
   const dataSources = extensionManager.getDataSources();
@@ -185,6 +193,13 @@ function _load(displaySet, servicesManager, extensionManager) {
   });
 }
 
+/**
+ * Checks if measurements can be added to a display set.
+ *
+ * @param srDisplaySet - The source display set containing measurements.
+ * @param newDisplaySet - The new display set to check if measurements can be added.
+ * @param dataSource - The data source used to retrieve image IDs.
+ */
 function _checkIfCanAddMeasurementsToDisplaySet(srDisplaySet, newDisplaySet, dataSource) {
   let unloadedMeasurements = srDisplaySet.measurements.filter(
     measurement => measurement.loaded === false
@@ -255,6 +270,13 @@ function _checkIfCanAddMeasurementsToDisplaySet(srDisplaySet, newDisplaySet, dat
   }
 }
 
+/**
+ * Checks if a measurement references a specific SOP Instance UID.
+ * @param measurement - The measurement object.
+ * @param SOPInstanceUID - The SOP Instance UID to check against.
+ * @param frameNumber - The frame number to check against (optional).
+ * @returns True if the measurement references the specified SOP Instance UID, false otherwise.
+ */
 function _measurementReferencesSOPInstanceUID(measurement, SOPInstanceUID, frameNumber) {
   const { coords } = measurement;
 
@@ -279,6 +301,14 @@ function _measurementReferencesSOPInstanceUID(measurement, SOPInstanceUID, frame
   }
 }
 
+/**
+ * Retrieves the SOP class handler module.
+ *
+ * @param {Object} options - The options for retrieving the SOP class handler module.
+ * @param {Object} options.servicesManager - The services manager.
+ * @param {Object} options.extensionManager - The extension manager.
+ * @returns {Array} An array containing the SOP class handler module.
+ */
 function getSopClassHandlerModule({ servicesManager, extensionManager }) {
   const getDisplaySetsFromSeries = instances => {
     return _getDisplaySetsFromSeries(instances, servicesManager, extensionManager);
@@ -293,6 +323,12 @@ function getSopClassHandlerModule({ servicesManager, extensionManager }) {
   ];
 }
 
+/**
+ * Retrieves the measurements from the ImagingMeasurementReportContentSequence.
+ *
+ * @param {Array} ImagingMeasurementReportContentSequence - The ImagingMeasurementReportContentSequence array.
+ * @returns {Array} - The array of measurements.
+ */
 function _getMeasurements(ImagingMeasurementReportContentSequence) {
   const ImagingMeasurements = ImagingMeasurementReportContentSequence.find(
     item =>
@@ -324,6 +360,12 @@ function _getMeasurements(ImagingMeasurementReportContentSequence) {
   return measurements;
 }
 
+/**
+ * Retrieves merged content sequences by tracking unique identifiers.
+ *
+ * @param {Array} MeasurementGroups - The measurement groups.
+ * @returns {Object} - The merged content sequences by tracking unique identifiers.
+ */
 function _getMergedContentSequencesByTrackingUniqueIdentifiers(MeasurementGroups) {
   const mergedContentSequencesByTrackingUniqueIdentifiers = {};
 
@@ -364,6 +406,15 @@ function _getMergedContentSequencesByTrackingUniqueIdentifiers(MeasurementGroups
   return mergedContentSequencesByTrackingUniqueIdentifiers;
 }
 
+/**
+ * Processes the measurement based on the merged content sequence.
+ * If the merged content sequence contains SCOORD or SCOORD3D value types,
+ * it calls the _processTID1410Measurement function.
+ * Otherwise, it calls the _processNonGeometricallyDefinedMeasurement function.
+ *
+ * @param {Array<Object>} mergedContentSequence - The merged content sequence to process.
+ * @returns {any} - The processed measurement result.
+ */
 function _processMeasurement(mergedContentSequence) {
   if (
     mergedContentSequence.some(
@@ -376,6 +427,14 @@ function _processMeasurement(mergedContentSequence) {
   return _processNonGeometricallyDefinedMeasurement(mergedContentSequence);
 }
 
+/**
+ * Processes TID 1410 style measurements from the mergedContentSequence.
+ * TID 1410 style measurements have a SCOORD or SCOORD3D at the top level,
+ * and non-geometric representations where each NUM has "INFERRED FROM" SCOORD/SCOORD3D.
+ *
+ * @param mergedContentSequence - The merged content sequence containing the measurements.
+ * @returns The measurement object containing the loaded status, labels, coordinates, tracking unique identifier, and tracking identifier.
+ */
 function _processTID1410Measurement(mergedContentSequence) {
   // Need to deal with TID 1410 style measurements, which will have a SCOORD or SCOORD3D at the top level,
   // And non-geometric representations where each NUM has "INFERRED FROM" SCOORD/SCOORD3D
@@ -418,6 +477,12 @@ function _processTID1410Measurement(mergedContentSequence) {
   return measurement;
 }
 
+/**
+ * Processes the non-geometrically defined measurement from the merged content sequence.
+ *
+ * @param mergedContentSequence The merged content sequence containing the measurement data.
+ * @returns The processed measurement object.
+ */
 function _processNonGeometricallyDefinedMeasurement(mergedContentSequence) {
   const NUMContentItems = mergedContentSequence.filter(group => group.ValueType === 'NUM');
 
@@ -503,6 +568,12 @@ function _processNonGeometricallyDefinedMeasurement(mergedContentSequence) {
   return measurement;
 }
 
+/**
+ * Retrieves coordinates from an item of type SCOORD or SCOORD3D.
+ *
+ * @param item - The item containing the coordinates.
+ * @returns The coordinates extracted from the item.
+ */
 function _getCoordsFromSCOORDOrSCOORD3D(item) {
   const { ValueType, RelationshipType, GraphicType, GraphicData } = item;
 
@@ -535,6 +606,15 @@ function _getCoordsFromSCOORDOrSCOORD3D(item) {
   return coords;
 }
 
+/**
+ * Retrieves the label and value from the provided ConceptNameCodeSequence and MeasuredValueSequence.
+ * @param {Object} ConceptNameCodeSequence - The ConceptNameCodeSequence object.
+ * @param {Object} MeasuredValueSequence - The MeasuredValueSequence object.
+ * @returns {Object} - An object containing the label and value.
+ *                    The label represents the CodeMeaning from the ConceptNameCodeSequence.
+ *                    The value represents the formatted NumericValue and CodeValue from the MeasuredValueSequence.
+ *                    Example: { label: 'Long Axis', value: '31.00 mm' }
+ */
 function _getLabelFromMeasuredValueSequence(ConceptNameCodeSequence, MeasuredValueSequence) {
   const { CodeMeaning } = ConceptNameCodeSequence;
   const { NumericValue, MeasurementUnitsCodeSequence } = MeasuredValueSequence;
@@ -548,6 +628,12 @@ function _getLabelFromMeasuredValueSequence(ConceptNameCodeSequence, MeasuredVal
   }; // E.g. Long Axis: 31.0 mm
 }
 
+/**
+ * Retrieves a list of referenced images from the Imaging Measurement Report Content Sequence.
+ *
+ * @param {Array} ImagingMeasurementReportContentSequence - The Imaging Measurement Report Content Sequence.
+ * @returns {Array} - The list of referenced images.
+ */
 function _getReferencedImagesList(ImagingMeasurementReportContentSequence) {
   const ImageLibrary = ImagingMeasurementReportContentSequence.find(
     item => item.ConceptNameCodeSequence.CodeValue === CodeNameCodeSequenceValues.ImageLibrary
@@ -579,6 +665,15 @@ function _getReferencedImagesList(ImagingMeasurementReportContentSequence) {
   return referencedImages;
 }
 
+/**
+ * Converts a DICOM sequence to an array.
+ * If the sequence is null or undefined, an empty array is returned.
+ * If the sequence is already an array, it is returned as is.
+ * Otherwise, the sequence is wrapped in an array and returned.
+ *
+ * @param {any} sequence - The DICOM sequence to convert.
+ * @returns {any[]} - The converted array.
+ */
 function _getSequenceAsArray(sequence) {
   if (!sequence) {
     return [];
