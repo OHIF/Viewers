@@ -1,3 +1,5 @@
+import i18n from 'i18next';
+
 const RESPONSE = {
   NO_NEVER: -1,
   CANCEL: 0,
@@ -32,17 +34,17 @@ function promptTrackNewStudy({ servicesManager, extensionManager }, ctx, evt) {
 
 function _askTrackMeasurements(UIViewportDialogService, viewportId) {
   return new Promise(function (resolve, reject) {
-    const message = 'Track measurements for this series?';
+    const message = i18n.t('MeasurementTable:Track measurements for this series?');
     const actions = [
-      { type: 'cancel', text: 'No', value: RESPONSE.CANCEL },
+      { type: 'cancel', text: i18n.t('MeasurementTable:No'), value: RESPONSE.CANCEL },
       {
         type: 'secondary',
-        text: 'No, do not ask again for this series',
+        text: i18n.t('MeasurementTable:No, do not ask again'),
         value: RESPONSE.NO_NOT_FOR_SERIES,
       },
       {
         type: 'primary',
-        text: 'Yes',
+        text: i18n.t('MeasurementTable:Yes'),
         value: RESPONSE.SET_STUDY_AND_SERIES,
       },
     ];

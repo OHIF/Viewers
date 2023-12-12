@@ -4,6 +4,7 @@ import { id } from './id';
 import initToolGroups from './initToolGroups';
 import moreTools from './moreTools';
 import moreToolsMpr from './moreToolsMpr';
+import i18n from 'i18next';
 
 // Allow this mode by excluding non-imaging modalities such as SR, SEG
 // Also, SM is not a simple imaging modalities, so exclude it.
@@ -63,7 +64,7 @@ function modeFactory() {
     // We should not be.
     id,
     routeName: 'basic-test',
-    displayName: 'Basic Test Mode',
+    displayName: i18n.t('Modes:Basic Test Mode'),
     /**
      * Lifecycle hooks
      */
