@@ -6,8 +6,9 @@ import Icon from '../Icon';
 import Thumbnail from '../Thumbnail';
 import Tooltip from '../Tooltip';
 import { StringNumber } from '../../types';
+import { useTranslation } from 'react-i18next';
 
-const ThumbnailTracked = ({
+function ThumbnailTracked ({
   displaySetInstanceUID,
   className,
   imageSrc,
@@ -24,7 +25,8 @@ const ThumbnailTracked = ({
   viewportIdentificator,
   isTracked,
   isActive,
-}) => {
+}) {
+  const { t } = useTranslation('ThumbnailTracked');
   const trackedIcon = isTracked ? 'circled-checkmark' : 'dotted-circle';
   const viewportIdentificatorLabel = viewportIdentificator.join(', ');
   const renderViewportLabels = () => {
@@ -42,7 +44,7 @@ const ThumbnailTracked = ({
             position="right"
             content={
               <div className="max-w-40 text-left">
-                Series is displayed <br /> in viewport {viewportIdentificatorLabel}
+                {`${t('Viewport')}: ${viewportIdentificatorLabel}`}
               </div>
             }
           >
@@ -85,13 +87,11 @@ const ThumbnailTracked = ({
                 </div>
                 <div className="flex flex-1 flex-col">
                   <span>
-                    Series is
-                    <span className="text-white">{isTracked ? ' tracked' : ' untracked'}</span>
+                    <span className="text-white">{isTracked ? t('Series is tracked') : t('Series is untracked')}</span>
                   </span>
                   {!!viewportIdentificator.length && (
                     <span>
-                      in viewport
-                      <span className="ml-1 text-white">{viewportIdentificatorLabel}</span>
+                      {`${t('Viewport')}: ${viewportIdentificatorLabel}`}
                     </span>
                   )}
                 </div>
