@@ -1,6 +1,6 @@
 import hpMNGrid from './hangingprotocols/hpMNGrid';
 import hpMNCompare from './hangingprotocols/hpCompare';
-import hpMammo from './hangingprotocols/hpMammo';
+import hpMammography from './hangingprotocols/hpMammo';
 
 const defaultProtocol = {
   id: 'default',
@@ -116,8 +116,8 @@ function getHangingProtocolModule() {
       protocol: hpMNCompare,
     },
     {
-      name: hpMammo.id,
-      protocol: hpMammo,
+      name: hpMammography.id,
+      protocol: hpMammography,
     },
   ];
 }

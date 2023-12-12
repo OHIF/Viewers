@@ -27,7 +27,7 @@ const leftDisplayArea = {
   },
 };
 
-const hpMammo = {
+const hpMammography = {
   id: '@ohif/hpMammo',
   hasUpdatedPriorsInformation: false,
   name: 'Mammography Breast Screening',
@@ -80,7 +80,7 @@ const hpMammo = {
           viewportOptions: {
             toolGroupId: 'default',
             displayArea: leftDisplayArea,
-            flip: true,
+            flipHorizontal: true,
             rotation: 180,
           },
           displaySets: [
@@ -92,7 +92,7 @@ const hpMammo = {
         {
           viewportOptions: {
             toolGroupId: 'default',
-            flip: true,
+            flipHorizontal: true,
             displayArea: rightDisplayArea,
           },
           displaySets: [
@@ -106,7 +106,7 @@ const hpMammo = {
             toolGroupId: 'default',
             displayArea: leftDisplayArea,
             rotation: 180,
-            flip: true,
+            flipHorizontal: true,
           },
           displaySets: [
             {
@@ -118,7 +118,7 @@ const hpMammo = {
           viewportOptions: {
             toolGroupId: 'default',
             displayArea: rightDisplayArea,
-            flip: true,
+            flipHorizontal: true,
           },
           displaySets: [
             {
@@ -145,7 +145,7 @@ const hpMammo = {
           viewportOptions: {
             toolGroupId: 'default',
             displayArea: leftDisplayArea,
-            flip: true,
+            flipHorizontal: true,
             rotation: 180,
           },
           displaySets: [
@@ -157,7 +157,7 @@ const hpMammo = {
         {
           viewportOptions: {
             toolGroupId: 'default',
-            flip: true,
+            flipHorizontal: true,
             displayArea: rightDisplayArea,
           },
           displaySets: [
@@ -170,7 +170,7 @@ const hpMammo = {
           viewportOptions: {
             toolGroupId: 'default',
             displayArea: leftDisplayArea,
-            flip: true,
+            flipHorizontal: true,
           },
           displaySets: [
             {
@@ -196,4 +196,4 @@ const hpMammo = {
   numberOfPriorsReferenced: 0,
 };
 
-export default hpMammo;
+export default hpMammography;

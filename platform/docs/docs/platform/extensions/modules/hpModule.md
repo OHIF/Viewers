@@ -284,16 +284,26 @@ A list of criteria for the protocol along with the provided points for ranking.
 ### `from` attribute
 The from attribute allows getting the attribute to test from some other object
 such as the prior study, the list of studies overall or another module provided
-value.  Some of the possible attributes are:
+value.  The source values for the information is either calculated, or provided
+in the `setProtocol` method as part of the options value.
 
-* `prior`: To get the value from the prior study.
-* `activeStudy`: To match the active study
-* `studies`: To match the list of studies to display
-* `displaySets`: The display sets for the current study
-* `allDisplaySets`: Alll available display sets
+The values provided in the `run` command are:
+
+* `activeStudy`: To match the active study ()
+* `studies`: To match the list of studies to display (directly from the run parameter)
+* `allDisplaySets`: All available display sets (provided as 'displaySets' as a run parameter)
+
+The calculated values are:
+* `displaySets`: The display sets matching the chosen study
+* `prior`: To get the second study in the studies list, eg `studies[1]`
 * `instance`: An instance from the current display set being tested
+
+The `setProtocol` additional provides the capability to specify the options
+directly, and you can use either:
+
 * `options`: Gets the options object itself, eg if you want a simple top level
   value.
+* Any key value not otherwise matched above in the options object.
 
 ### displaySetSelectors
 Defines the display sets that the protocol will use for arrangement.

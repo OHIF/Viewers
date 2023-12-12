@@ -338,7 +338,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       initialImageIndexToUse = this._getInitialImageIndexForViewport(viewportInfo, imageIds) || 0;
     }
 
-    const { rotation, flip } = viewportInfo.getViewportOptions() as any;
+    const { rotation, flipHorizontal } = viewportInfo.getViewportOptions() as any;
 
     const properties = { ...presentations.lutPresentation?.properties };
     if (!presentations.lutPresentation?.properties) {
