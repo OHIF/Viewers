@@ -101,7 +101,7 @@ function OHIFCornerstoneSRViewport(props) {
         measurementSelected
       );
     },
-    [element, measurementSelected, srDisplaySet]
+    [element, srDisplaySet]
   );
 
   /**

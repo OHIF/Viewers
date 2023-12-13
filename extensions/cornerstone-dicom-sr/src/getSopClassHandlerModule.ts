@@ -1,13 +1,18 @@
-import { SOPClassHandlerName, SOPClassHandlerId } from './id';
 import { utils, classes, DisplaySetService, Types } from '@ohif/core';
+import cloneDeep from 'lodash.clonedeep';
+
 import addMeasurement from './utils/addMeasurement';
 import isRehydratable from './utils/isRehydratable';
-import { adaptersSR } from '@cornerstonejs/adapters';
-import getSCOORD3DReferencedImages from './utils/getSCOORD3DReferencedImages';
+import { SOPClassHandlerName, SOPClassHandlerId } from './id';
+import {
+  CodeNameCodeSequenceValues,
+  CodingSchemeDesignators,
+  RELATIONSHIP_TYPE,
+  CORNERSTONE_FREETEXT_CODE_VALUE,
+} from './enums';
+import getClosestInstanceInfoRelativeToPoint from './utils/getClosestInstanceInfoRelativeToPoint';
 
 type InstanceMetadata = Types.InstanceMetadata;
-
-const { CodeScheme: Cornerstone3DCodeScheme } = adaptersSR.Cornerstone3D;
 
 const { ImageSet, MetadataProvider: metadataProvider } = classes;
 
@@ -36,31 +41,6 @@ const validateSameStudyUID = (uid: string, instances): void => {
     }
   });
 };
-
-const CodeNameCodeSequenceValues = {
-  ImagingMeasurementReport: '126000',
-  ImageLibrary: '111028',
-  ImagingMeasurements: '126010',
-  MeasurementGroup: '125007',
-  ImageLibraryGroup: '126200',
-  TrackingUniqueIdentifier: '112040',
-  TrackingIdentifier: '112039',
-  Finding: '121071',
-  FindingSite: 'G-C0E3', // SRT
-  CornerstoneFreeText: Cornerstone3DCodeScheme.codeValues.CORNERSTONEFREETEXT,
-};
-
-const CodingSchemeDesignators = {
-  SRT: 'SRT',
-  CornerstoneCodeSchemes: [Cornerstone3DCodeScheme.CodingSchemeDesignator, 'CST4'],
-};
-
-const RELATIONSHIP_TYPE = {
-  INFERRED_FROM: 'INFERRED FROM',
-  CONTAINS: 'CONTAINS',
-};
-
-const CORNERSTONE_FREETEXT_CODE_VALUE = 'CORNERSTONEFREETEXT';
 
 /**
  * Adds instances to the DICOM SR series, rather than creating a new
@@ -161,14 +141,9 @@ function _getDisplaySetsFromSeries(instances, servicesManager, extensionManager)
  */
 function _load(displaySet, servicesManager, extensionManager) {
   const { displaySetService, measurementService } = servicesManager.services;
-  const dataSources = extensionManager.getDataSources();
-  const dataSource = dataSources[0];
+  const dataSource = extensionManager.getActiveDataSource()[0];
 
   const { ContentSequence } = displaySet.instance;
-
-  const referencedImages1 = getSCOORD3DReferencedImages(ContentSequence, displaySet);
-  const referencedImages2 = _getReferencedImagesList(ContentSequence);
-
   displaySet.referencedImages = _getReferencedImagesList(ContentSequence);
   displaySet.measurements = _getMeasurements(ContentSequence);
 
@@ -205,17 +180,17 @@ function _load(displaySet, servicesManager, extensionManager) {
  * @param dataSource - The data source used to retrieve image IDs.
  */
 function _checkIfCanAddMeasurementsToDisplaySet(srDisplaySet, newDisplaySet, dataSource) {
-  let unloadedMeasurements = srDisplaySet.measurements.filter(
+  /** Investigate why without deepClone the measurements are not rendering */
+  let unloadedMeasurements = cloneDeep(srDisplaySet.measurements).filter(
     measurement => measurement.loaded === false
   );
 
+  /** All measurements were loaded */
   if (unloadedMeasurements.length === 0) {
-    // All already loaded!
     return;
   }
 
   if (!(newDisplaySet instanceof ImageSet)) {
-    // This also filters out _this_ displaySet, as it is not an ImageSet.
     return;
   }
 
@@ -228,7 +203,6 @@ function _checkIfCanAddMeasurementsToDisplaySet(srDisplaySet, newDisplaySet, dat
   // Check if any have the newDisplaySet is the correct SOPClass.
   unloadedMeasurements = unloadedMeasurements.filter(measurement =>
     measurement.coords.some(coord => {
-      /** Get image by approximation */
       if (coord.ReferencedSOPSequence === undefined) {
         for (let i = 0; i < images.length; ++i) {
           const imageMetadata = images[i];
@@ -248,7 +222,7 @@ function _checkIfCanAddMeasurementsToDisplaySet(srDisplaySet, newDisplaySet, dat
           }
 
           // assuming 1 mm tolerance
-          if (Math.abs(distanceAlongNormal - coord.GraphicData[2]) > 1) {
+          if (Math.abs(distanceAlongNormal - coord.GraphicData[2]) > 20) {
             continue;
           }
 
@@ -275,35 +249,23 @@ function _checkIfCanAddMeasurementsToDisplaySet(srDisplaySet, newDisplaySet, dat
   }
 
   const SOPInstanceUIDs = [];
-
   unloadedMeasurements.forEach(measurement => {
-    const { coords } = measurement;
-
-    coords.forEach(coord => {
-      const SOPInstanceUID = coord.ReferencedSOPSequence.ReferencedSOPInstanceUID;
-
+    measurement.coords.forEach(({ ReferencedSOPSequence }) => {
+      const SOPInstanceUID = ReferencedSOPSequence.ReferencedSOPInstanceUID;
       if (!SOPInstanceUIDs.includes(SOPInstanceUID)) {
         SOPInstanceUIDs.push(SOPInstanceUID);
       }
     });
   });
 
-  const imageIdsForDisplaySet = dataSource.getImageIdsForDisplaySet(newDisplaySet);
-
-  for (const imageId of imageIdsForDisplaySet) {
-    if (!unloadedMeasurements.length) {
-      // All measurements loaded.
-      return;
-    }
-
+  const imageIds = dataSource.getImageIdsForDisplaySet(newDisplaySet);
+  for (const imageId of imageIds) {
     const { SOPInstanceUID, frameNumber } = metadataProvider.getUIDsFromImageID(imageId);
-
     if (SOPInstanceUIDs.includes(SOPInstanceUID)) {
       for (let j = unloadedMeasurements.length - 1; j >= 0; j--) {
         const measurement = unloadedMeasurements[j];
         if (_measurementReferencesSOPInstanceUID(measurement, SOPInstanceUID, frameNumber)) {
           addMeasurement(measurement, imageId, newDisplaySet.displaySetInstanceUID);
-
           unloadedMeasurements.splice(j, 1);
         }
       }
@@ -321,11 +283,14 @@ function _checkIfCanAddMeasurementsToDisplaySet(srDisplaySet, newDisplaySet, dat
 function _measurementReferencesSOPInstanceUID(measurement, SOPInstanceUID, frameNumber) {
   const { coords } = measurement;
 
-  // NOTE: The ReferencedFrameNumber can be multiple values according to the DICOM
-  //  Standard. But for now, we will support only one ReferenceFrameNumber.
+  /**
+   * NOTE: The ReferencedFrameNumber can be multiple values according to the DICOM
+   * Standard. But for now, we will support only one ReferenceFrameNumber.
+   */
+  const firstCoord = measurement.coords[0];
   const ReferencedFrameNumber =
-    (measurement.coords[0].ReferencedSOPSequence &&
-      measurement.coords[0].ReferencedSOPSequence[0]?.ReferencedFrameNumber) ||
+    (firstCoord.ReferencedSOPSequence &&
+      firstCoord.ReferencedSOPSequence[0]?.ReferencedFrameNumber) ||
     1;
 
   if (frameNumber && Number(frameNumber) !== Number(ReferencedFrameNumber)) {
@@ -335,11 +300,12 @@ function _measurementReferencesSOPInstanceUID(measurement, SOPInstanceUID, frame
   for (let j = 0; j < coords.length; j++) {
     const coord = coords[j];
     const { ReferencedSOPInstanceUID } = coord.ReferencedSOPSequence;
-
     if (ReferencedSOPInstanceUID === SOPInstanceUID) {
       return true;
     }
   }
+
+  return false;
 }
 
 /**
