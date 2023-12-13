@@ -58,6 +58,7 @@ const MEASUREMENT_SCHEMA_KEYS = [
   'longestDiameter',
   'cachedStats',
   'selected',
+  'textBox',
 ];
 
 const EVENTS = {

@@ -53,7 +53,7 @@ const Length = {
       displaySet = displaySetService.getDisplaySetsForSeries(SeriesInstanceUID);
     }
 
-    const { points } = data.handles;
+    const { points, textBox } = data.handles;
 
     const mappedAnnotations = getMappedAnnotations(annotation, displaySetService);
 
@@ -65,6 +65,7 @@ const Length = {
       SOPInstanceUID,
       FrameOfReferenceUID,
       points,
+      textBox,
       metadata,
       referenceSeriesUID: SeriesInstanceUID,
       referenceStudyUID: StudyInstanceUID,

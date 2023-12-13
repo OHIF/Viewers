@@ -427,7 +427,7 @@ export default class HangingProtocolService extends PubSubService {
    *
    * @returns A boolean indicating whether a custom image load has been performed or not.
    */
-  public getCustomImageLoadPerformed(): boolean {
+  private getCustomImageLoadPerformed(): boolean {
     return this.customImageLoadPerformed;
   }
 
@@ -971,6 +971,8 @@ export default class HangingProtocolService extends PubSubService {
     try {
       if (!this.protocol || this.protocol.id !== protocol.id) {
         this.stageIndex = options?.stageIndex || 0;
+        //Reset load performed to false to re-fire loading strategy at new study opening
+        this.customImageLoadPerformed = false;
         this._originalProtocol = this._copyProtocol(protocol);
 
         // before reassigning the protocol, we need to check if there is a callback
