@@ -483,7 +483,7 @@ function _jumpToMeasurement(
   cornerstoneViewportService
 ) {
   const targetElement = targetElementRef.current;
-  const { displaySetInstanceUID, SOPInstanceUID, frameNumber, metadata } = measurement;
+  const { displaySetInstanceUID, SOPInstanceUID, frameNumber } = measurement;
 
   if (!SOPInstanceUID) {
     console.warn('cannot jump in a non-acquisition plane measurements yet');
@@ -528,7 +528,7 @@ function _jumpToMeasurement(
             }
 
             // assuming 1 mm tolerance
-            if (Math.abs(distanceAlongNormal - coord.GraphicData[2]) > 20) {
+            if (Math.abs(distanceAlongNormal - coord.GraphicData[2]) > 1) {
               continue;
             } else {
               coord.ReferencedSOPSequence = {
@@ -546,7 +546,7 @@ function _jumpToMeasurement(
       const coord = findCOORDByFOR(imageIds, measurement);
       if (coord) {
         imageIdIndex = coord.ReferencedSOPSequence.imageIdIndex;
-        console.debug('Trying..', imageIdIndex, coord);
+        console.debug('Jumping to...', imageIdIndex, coord);
       }
 
       if (imageIdIndex < 0) {

@@ -12,11 +12,13 @@ export const CodeNameCodeSequenceValues = {
   TrackingIdentifier: '112039',
   Finding: '121071',
   FindingSite: 'G-C0E3', // SRT
+  FindingSiteSCT: '363698007', // SCT
   CornerstoneFreeText: Cornerstone3DCodeScheme.codeValues.CORNERSTONEFREETEXT,
 };
 
 export const CodingSchemeDesignators = {
   SRT: 'SRT',
+  SCT: 'SCT',
   CornerstoneCodeSchemes: [Cornerstone3DCodeScheme.CodingSchemeDesignator, 'CST4'],
 };
 
