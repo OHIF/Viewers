@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-beta.34](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.33...v3.8.0-beta.34) (2023-12-13)
+
+
+### Bug Fixes
+
+* **icon-style:** Ensure consistent icon dimensions ([#3727](https://github.com/OHIF/Viewers/issues/3727)) ([6ca13c0](https://github.com/OHIF/Viewers/commit/6ca13c0a4cb5a95bbb52b0db902b5dbf72f8aa6e))
+
+
+### Features
+
+* **overlay:** add inline binary overlays ([#3852](https://github.com/OHIF/Viewers/issues/3852)) ([0177b62](https://github.com/OHIF/Viewers/commit/0177b625ba86760168bc4db58c8a109aa9ee83cb))
+
+
+
+
+
 # [3.8.0-beta.33](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.32...v3.8.0-beta.33) (2023-12-13)
 
 **Note:** Version bump only for package ohif-monorepo-root
