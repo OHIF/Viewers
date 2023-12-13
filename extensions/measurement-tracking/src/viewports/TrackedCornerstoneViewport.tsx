@@ -222,10 +222,10 @@ function TrackedCornerstoneViewport(props) {
             patientAge: PatientAge || '',
             MRN: PatientID || '',
             thickness: SliceThickness ? `${parseFloat(SliceThickness).toFixed(2)}` : '',
-            thicknessUnits: 'mm',
+            thicknessUnits: t('mm'),
             spacing:
               SpacingBetweenSlices !== undefined
-                ? `${parseFloat(SpacingBetweenSlices).toFixed(2)}mm`
+                ? `${parseFloat(SpacingBetweenSlices).toFixed(2)}${t('mm')}`
                 : '',
             scanner: ManufacturerModelName || '',
           },
@@ -312,6 +312,7 @@ function _getNextMeasurementUID(
 }
 
 function _getStatusComponent(isTracked) {
+  const { t } = useTranslation('TrackedCornerstoneViewport');
   const trackedIcon = isTracked ? 'status-tracked' : 'status-untracked';
 
   return (
@@ -330,15 +331,11 @@ function _getStatusComponent(isTracked) {
               <span className="text-common-light text-base">
                 {isTracked ? (
                   <>
-                    Series is
-                    <span className="font-bold text-white"> tracked</span> and can be viewed <br />{' '}
-                    in the measurement panel
+                    {t('Series is tracked and can be viewed in the measurement panel')}
                   </>
                 ) : (
                   <>
-                    Measurements for
-                    <span className="font-bold text-white"> untracked </span>
-                    series <br /> will not be shown in the <br /> measurements panel
+                    {t('Measurements for untracked series will not be shown in the measurements panel')}
                   </>
                 )}
               </span>
