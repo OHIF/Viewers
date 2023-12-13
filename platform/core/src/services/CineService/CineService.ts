@@ -7,6 +7,7 @@ const publicAPI = {
   setIsCineEnabled: _setIsCineEnabled,
   playClip: _playClip,
   stopClip: _stopClip,
+  onModeExit: _onModeExit,
   setServiceImplementation,
 };
 
@@ -36,6 +37,10 @@ function _playClip(element, playClipOptions) {
 
 function _stopClip(element) {
   return serviceImplementation._stopClip(element);
+}
+
+function _onModeExit() {
+  _setIsCineEnabled(false);
 }
 
 function setServiceImplementation({

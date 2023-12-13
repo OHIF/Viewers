@@ -4,6 +4,7 @@ import { id } from './id.js';
 import initToolGroups, { toolGroupIds } from './initToolGroups.js';
 import setCrosshairsConfiguration from './utils/setCrosshairsConfiguration.js';
 import setFusionActiveVolume from './utils/setFusionActiveVolume.js';
+import i18n from 'i18next';
 
 const { MetadataProvider } = classes;
 
@@ -38,7 +39,7 @@ function modeFactory({ modeConfiguration }) {
     // We should not be.
     id,
     routeName: 'tmtv',
-    displayName: 'Total Metabolic Tumor Volume',
+    displayName: i18n.t('Modes:Total Metabolic Tumor Volume'),
     /**
      * Lifecycle hooks
      */

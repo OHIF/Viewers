@@ -29,6 +29,7 @@ import { id } from './id';
 import * as csWADOImageLoader from './initWADOImageLoader.js';
 import { measurementMappingUtils } from './utils/measurementServiceMappings';
 import type { PublicViewportOptions } from './services/ViewportService/Viewport';
+import ImageOverlayViewerTool from './tools/ImageOverlayViewerTool';
 
 const Component = React.lazy(() => {
   return import(/* webpackPrefetch: true */ './Viewport/OHIFCornerstoneViewport');
@@ -140,5 +141,6 @@ export {
   CornerstoneExtensionTypes as Types,
   toolNames,
   getActiveViewportEnabledElement,
+  ImageOverlayViewerTool,
 };
 export default cornerstoneExtension;

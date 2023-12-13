@@ -3,6 +3,232 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-beta.30](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.29...v3.8.0-beta.30) (2023-12-13)
+
+
+### Features
+
+* **customizationService:** Enable saving and loading of private tags in SRs ([#3842](https://github.com/OHIF/Viewers/issues/3842)) ([e1f55e6](https://github.com/OHIF/Viewers/commit/e1f55e65f2d2a34136ad5d0b1ada77d337a0ea23))
+
+
+
+
+
+# [3.8.0-beta.29](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.28...v3.8.0-beta.29) (2023-12-13)
+
+
+### Bug Fixes
+
+* address and improve system vulnerabilities ([#3851](https://github.com/OHIF/Viewers/issues/3851)) ([805c532](https://github.com/OHIF/Viewers/commit/805c53270f243ec61f142a3ffa0af500021cd5ec))
+
+
+### Features
+
+* **config:** Add activateViewportBeforeInteraction parameter for viewport interaction customization ([#3847](https://github.com/OHIF/Viewers/issues/3847)) ([f707b4e](https://github.com/OHIF/Viewers/commit/f707b4ebc996f379cd30337badc06b07e6e35ac5))
+* **i18n:** enhanced i18n support ([#3761](https://github.com/OHIF/Viewers/issues/3761)) ([d14a8f0](https://github.com/OHIF/Viewers/commit/d14a8f0199db95cd9e85866a011b64d6bf830d57))
+
+
+
+
+
+# [3.8.0-beta.28](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.27...v3.8.0-beta.28) (2023-12-08)
+
+
+### Features
+
+* **HP:** Added new 3D hanging protocols to be used in the new layout selector ([#3844](https://github.com/OHIF/Viewers/issues/3844)) ([59576d6](https://github.com/OHIF/Viewers/commit/59576d695d4d26601d35c43f73d602f0b12d72bf))
+
+
+
+
+
+# [3.8.0-beta.27](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.26...v3.8.0-beta.27) (2023-12-06)
+
+
+### Bug Fixes
+
+* **auth:** fix the issue with oauth at a non root path ([#3840](https://github.com/OHIF/Viewers/issues/3840)) ([6651008](https://github.com/OHIF/Viewers/commit/6651008fbb35dabd5991c7f61128e6ef324012df))
+
+
+
+
+
+# [3.8.0-beta.26](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.25...v3.8.0-beta.26) (2023-11-28)
+
+
+### Bug Fixes
+
+* **SM:** drag and drop is now fixed for SM ([#3813](https://github.com/OHIF/Viewers/issues/3813)) ([f1a6764](https://github.com/OHIF/Viewers/commit/f1a67647aed635437b188cea7cf5d5a8fb974bbe))
+
+
+
+
+
+# [3.8.0-beta.25](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.24...v3.8.0-beta.25) (2023-11-27)
+
+
+### Bug Fixes
+
+* **cine:** Set cine disabled on mode exit. ([#3812](https://github.com/OHIF/Viewers/issues/3812)) ([924affa](https://github.com/OHIF/Viewers/commit/924affa7b5d420c2f91522a075cecbb3c78e8f52))
+
+
+
+
+
+# [3.8.0-beta.24](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.23...v3.8.0-beta.24) (2023-11-24)
+
+
+### Bug Fixes
+
+* Update the CS3D packages to add the most recent HTJ2K TSUIDS ([#3806](https://github.com/OHIF/Viewers/issues/3806)) ([9d1884d](https://github.com/OHIF/Viewers/commit/9d1884d7d8b6b2a1cdc26965a96995838aa72682))
+
+
+
+
+
+# [3.8.0-beta.23](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.22...v3.8.0-beta.23) (2023-11-24)
+
+
+### Features
+
+* Merge Data Source ([#3788](https://github.com/OHIF/Viewers/issues/3788)) ([c4ff2c2](https://github.com/OHIF/Viewers/commit/c4ff2c2f09546ce8b72eab9c5e7beed611e3cab0))
+
+
+
+
+
+# [3.8.0-beta.22](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.21...v3.8.0-beta.22) (2023-11-21)
+
+
+### Features
+
+* **events:** broadcast series summary metadata ([#3798](https://github.com/OHIF/Viewers/issues/3798)) ([404b0a5](https://github.com/OHIF/Viewers/commit/404b0a5d535182d1ae44e33f7232db500a7b2c16))
+
+
+
+
+
+# [3.8.0-beta.21](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.20...v3.8.0-beta.21) (2023-11-21)
+
+
+### Bug Fixes
+
+* **DICOM Overlay:** The overlay data wasn't being refreshed on change ([#3793](https://github.com/OHIF/Viewers/issues/3793)) ([00e7519](https://github.com/OHIF/Viewers/commit/00e751933ac6d611a34773fa69594243f1b99082))
+
+
+
+
+
+# [3.8.0-beta.20](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.19...v3.8.0-beta.20) (2023-11-21)
+
+
+### Bug Fixes
+
+* **metadata:** to handle cornerstone3D update for htj2k ([#3783](https://github.com/OHIF/Viewers/issues/3783)) ([8c8924a](https://github.com/OHIF/Viewers/commit/8c8924af373d906773f5db20defe38628cacd4a0))
+
+
+
+
+
+# [3.8.0-beta.19](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.18...v3.8.0-beta.19) (2023-11-18)
+
+
+### Features
+
+* **docs:** Added various training videos to support the OHIF CLI tools ([#3794](https://github.com/OHIF/Viewers/issues/3794)) ([d83beb7](https://github.com/OHIF/Viewers/commit/d83beb7c62c1d5be19c54e08d23883f112147fe1))
+
+
+
+
+
+# [3.8.0-beta.18](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.17...v3.8.0-beta.18) (2023-11-15)
+
+
+### Features
+
+* **url:** Add SeriesInstanceUIDs wado query param ([#3746](https://github.com/OHIF/Viewers/issues/3746)) ([b694228](https://github.com/OHIF/Viewers/commit/b694228dd535e4b97cb86a1dc085b6e8716bdaf3))
+
+
+
+
+
+# [3.8.0-beta.17](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.16...v3.8.0-beta.17) (2023-11-13)
+
+
+### Bug Fixes
+
+* 🐛 Run error handler for failed image requests ([#3773](https://github.com/OHIF/Viewers/issues/3773)) ([3234014](https://github.com/OHIF/Viewers/commit/323401418e7ccab74655ba02f990bbe0ed4e523b))
+
+
+
+
+
+# [3.8.0-beta.16](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.15...v3.8.0-beta.16) (2023-11-13)
+
+
+### Bug Fixes
+
+* **overlay:** Overlays aren't shown on undefined origin ([#3781](https://github.com/OHIF/Viewers/issues/3781)) ([fd1251f](https://github.com/OHIF/Viewers/commit/fd1251f751d8147b8a78c7f4d81c67ba69769afa))
+
+
+
+
+
+# [3.8.0-beta.15](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.14...v3.8.0-beta.15) (2023-11-10)
+
+
+### Features
+
+* **dicomJSON:** Add Loading Other Display Sets and JSON Metadata Generation script ([#3777](https://github.com/OHIF/Viewers/issues/3777)) ([43b1c17](https://github.com/OHIF/Viewers/commit/43b1c17209502e4876ad59bae09ed9442eda8024))
+
+
+
+
+
+# [3.8.0-beta.14](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.13...v3.8.0-beta.14) (2023-11-10)
+
+
+### Bug Fixes
+
+* **path:** upgrade docusaurus for security ([#3780](https://github.com/OHIF/Viewers/issues/3780)) ([8bbcd0e](https://github.com/OHIF/Viewers/commit/8bbcd0e692e25917c1b6dd94a39fac834c812fca))
+
+
+
+
+
+# [3.8.0-beta.13](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.12...v3.8.0-beta.13) (2023-11-09)
+
+
+### Bug Fixes
+
+* **arrow:** ArrowAnnotate text key cause validation error ([#3771](https://github.com/OHIF/Viewers/issues/3771)) ([8af1046](https://github.com/OHIF/Viewers/commit/8af10468035f1f59e0a21e579d50ad63c8cbf7ad))
+
+
+
+
+
+# [3.8.0-beta.12](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.11...v3.8.0-beta.12) (2023-11-08)
+
+
+### Features
+
+* add VolumeViewport rotation ([#3776](https://github.com/OHIF/Viewers/issues/3776)) ([442f99d](https://github.com/OHIF/Viewers/commit/442f99d5eb2ceece7def20e14da59af1dd7d8442))
+
+
+
+
+
+# [3.8.0-beta.11](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.10...v3.8.0-beta.11) (2023-11-08)
+
+
+### Features
+
+* **hp callback:** Add viewport ready callback ([#3772](https://github.com/OHIF/Viewers/issues/3772)) ([bf252bc](https://github.com/OHIF/Viewers/commit/bf252bcec2aae3a00479fdcb732110b344bcf2c0))
+
+
+
+
+
 # [3.8.0-beta.10](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.9...v3.8.0-beta.10) (2023-11-03)
 
 **Note:** Version bump only for package ohif-monorepo-root
