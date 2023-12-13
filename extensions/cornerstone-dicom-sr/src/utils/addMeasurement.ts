@@ -16,14 +16,14 @@ export default function addMeasurement(measurement, imageId, displaySetInstanceU
   };
 
   measurement.coords.forEach(coord => {
-    const { GraphicType, GraphicData } = coord;
+    const { GraphicType, GraphicData, ValueType } = coord;
 
     if (measurementData.renderableData[GraphicType] === undefined) {
       measurementData.renderableData[GraphicType] = [];
     }
 
     measurementData.renderableData[GraphicType].push(
-      getRenderableData(GraphicType, GraphicData, imageId)
+      getRenderableData(GraphicType, GraphicData, ValueType, imageId)
     );
   });
 
