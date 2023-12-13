@@ -43,13 +43,13 @@ const _getValueTypeFromToolType = toolType => {
  */
 export default function init({
   servicesManager,
+  extensionManager,
   configuration = {},
 }: Types.Extensions.ExtensionParams): void {
   const { measurementService, displaySetService, cornerstoneViewportService } =
     servicesManager.services;
 
   addTool(DICOMSRDisplayTool);
-  console.debug('Adding SR tool...');
   addToolInstance(toolNames.SRLength, LengthTool, {});
   addToolInstance(toolNames.SRBidirectional, BidirectionalTool);
   addToolInstance(toolNames.SREllipticalROI, EllipticalROITool);

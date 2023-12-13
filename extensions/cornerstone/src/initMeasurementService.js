@@ -173,7 +173,6 @@ const connectToolsToMeasurementService = servicesManager => {
         // in the future
         annotationAddedEventDetail.uid = annotationUID;
         annotationToMeasurement(toolName, annotationAddedEventDetail);
-        console.debug('Adding annotation to measurement service', annotationAddedEventDetail);
       }
     } catch (error) {
       console.error('Failed to update measurement:', error);

@@ -46,6 +46,8 @@ export default function addMeasurement(measurement, imageId, displaySetInstanceU
       FrameOfReferenceUID: imagePlaneModule.frameOfReferenceUID,
       toolName: toolName,
       referencedImageId: imageId,
+      /** Use to properly jump to different viewports based on frame of reference */
+      coords: measurement.coords,
     },
     data: {
       label: measurement.labels,

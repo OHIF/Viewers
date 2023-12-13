@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import * as cs3DTools from '@cornerstonejs/tools';
 import {
   Enums,
+  metaData,
   eventTarget,
   getEnabledElement,
   StackViewport,
@@ -415,9 +416,9 @@ function _subscribeToJumpToMeasurementEvents(
             { referencedImageId: measurement.referencedImageId }
           );
       }
-      if (cacheJumpToMeasurementEvent.cornerstoneViewport !== viewportId) {
-        return;
-      }
+      // if (cacheJumpToMeasurementEvent.cornerstoneViewport !== viewportId) {
+      //   return;
+      // }
       _jumpToMeasurement(
         measurement,
         elementRef,
@@ -482,7 +483,7 @@ function _jumpToMeasurement(
   cornerstoneViewportService
 ) {
   const targetElement = targetElementRef.current;
-  const { displaySetInstanceUID, SOPInstanceUID, frameNumber } = measurement;
+  const { displaySetInstanceUID, SOPInstanceUID, frameNumber, metadata } = measurement;
 
   if (!SOPInstanceUID) {
     console.warn('cannot jump in a non-acquisition plane measurements yet');
@@ -507,12 +508,57 @@ function _jumpToMeasurement(
     let viewportCameraDirectionMatch = true;
 
     if (viewport instanceof StackViewport) {
+      const findCOORDByFOR = (imageIds, measurement) => {
+        return measurement.metadata.coords.find(coord => {
+          for (let i = 0; i < imageIds.length; ++i) {
+            const imageMetadata = metaData.get('instance', imageIds[i]);
+            if (imageMetadata.FrameOfReferenceUID !== coord.ReferencedFrameOfReferenceSequence) {
+              continue;
+            }
+
+            const sliceNormal = [0, 0, 0];
+            const orientation = imageMetadata.ImageOrientationPatient;
+            sliceNormal[0] = orientation[1] * orientation[5] - orientation[2] * orientation[4];
+            sliceNormal[1] = orientation[2] * orientation[3] - orientation[0] * orientation[5];
+            sliceNormal[2] = orientation[0] * orientation[4] - orientation[1] * orientation[3];
+
+            let distanceAlongNormal = 0;
+            for (let j = 0; j < 3; ++j) {
+              distanceAlongNormal += sliceNormal[j] * imageMetadata.ImagePositionPatient[j];
+            }
+
+            // assuming 1 mm tolerance
+            if (Math.abs(distanceAlongNormal - coord.GraphicData[2]) > 20) {
+              continue;
+            } else {
+              coord.ReferencedSOPSequence = {
+                imageIdIndex: i,
+                ReferencedSOPClassUID: imageMetadata.SOPClassUID,
+                ReferencedSOPInstanceUID: imageMetadata.SOPInstanceUID,
+              };
+              return true;
+            }
+          }
+        });
+      };
+
       const imageIds = viewport.getImageIds();
-      imageIdIndex = imageIds.findIndex(imageId => {
-        const { SOPInstanceUID: aSOPInstanceUID, frameNumber: aFrameNumber } =
-          getSOPInstanceAttributes(imageId);
-        return aSOPInstanceUID === SOPInstanceUID && (!frameNumber || frameNumber === aFrameNumber);
-      });
+      const coord = findCOORDByFOR(imageIds, measurement);
+      if (coord) {
+        imageIdIndex = coord.ReferencedSOPSequence.imageIdIndex;
+        console.debug('Trying..', imageIdIndex, coord);
+      }
+
+      if (imageIdIndex < 0) {
+        const imageIds = viewport.getImageIds();
+        imageIdIndex = imageIds.findIndex(imageId => {
+          const { SOPInstanceUID: aSOPInstanceUID, frameNumber: aFrameNumber } =
+            getSOPInstanceAttributes(imageId);
+          return (
+            aSOPInstanceUID === SOPInstanceUID && (!frameNumber || frameNumber === aFrameNumber)
+          );
+        });
+      }
     } else {
       // for volume viewport we can't rely on the imageIdIndex since it can be
       // a reconstructed view that doesn't match the original slice numbers etc.
