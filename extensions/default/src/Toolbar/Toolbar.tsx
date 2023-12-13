@@ -1,19 +1,34 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import classnames from 'classnames';
+import { useViewportGrid } from '@ohif/ui';
 
-export default function Toolbar({ servicesManager }) {
+export default function Toolbar({
+  servicesManager,
+}: Types.Extensions.ExtensionParams): React.ReactElement {
   const { toolbarService } = servicesManager.services;
+
+  const [viewportGrid, viewportGridService] = useViewportGrid();
+
   const [toolbarButtons, setToolbarButtons] = useState([]);
 
   useEffect(() => {
-    const { unsubscribe } = toolbarService.subscribe(toolbarService.EVENTS.TOOL_BAR_MODIFIED, () =>
-      setToolbarButtons(toolbarService.getButtonSection('primary'))
+    const updateToolbar = () => {
+      const toolGroupId =
+        viewportGridService.getActiveViewportOptionByKey('toolGroupId') ?? 'default';
+      setToolbarButtons(toolbarService.getButtonSection(toolGroupId));
+    };
+
+    const { unsubscribe } = toolbarService.subscribe(
+      toolbarService.EVENTS.TOOL_BAR_MODIFIED,
+      updateToolbar
     );
+
+    updateToolbar();
 
     return () => {
       unsubscribe();
     };
-  }, [toolbarService]);
+  }, [toolbarService, viewportGrid]);
 
   const onInteraction = useCallback(
     args => toolbarService.recordInteraction(args),

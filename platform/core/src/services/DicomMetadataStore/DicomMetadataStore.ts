@@ -186,7 +186,23 @@ const BaseImplementation = {
       madeInClient,
     });
   },
+  updateSeriesMetadata(seriesMetadata) {
+    const { StudyInstanceUID, SeriesInstanceUID } = seriesMetadata;
+    const series = _getSeries(StudyInstanceUID, SeriesInstanceUID);
+    if (!series) {
+      return;
+    }
+
+    const study = _getStudy(StudyInstanceUID);
+    if (study) {
+      study.setSeriesMetadata(SeriesInstanceUID, seriesMetadata);
+    }
+  },
   addSeriesMetadata(seriesSummaryMetadata, madeInClient = false) {
+    if (!seriesSummaryMetadata || !seriesSummaryMetadata.length || !seriesSummaryMetadata[0]) {
+      return;
+    }
+
     const { StudyInstanceUID } = seriesSummaryMetadata[0];
     let study = _getStudy(StudyInstanceUID);
     if (!study) {
@@ -210,6 +226,7 @@ const BaseImplementation = {
 
     this._broadcastEvent(EVENTS.SERIES_ADDED, {
       StudyInstanceUID,
+      seriesSummaryMetadata,
       madeInClient,
     });
   },

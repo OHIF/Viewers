@@ -43,7 +43,7 @@ const StudyListPagination = ({ onChangePage, currentPage, perPage, onChangePerPa
               hideSelectedOptions={true}
               onChange={onSelectedRange}
             />
-            <Typography className="text-base opacity-60">{t('ResultsPerPage')}</Typography>
+            <Typography className="text-base opacity-60">{t('Results per page')}</Typography>
           </div>
           <div className="">
             <div className="flex items-center">

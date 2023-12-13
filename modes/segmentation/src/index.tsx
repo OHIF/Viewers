@@ -120,9 +120,19 @@ function modeFactory({ modeConfiguration }) {
     },
     /**
      * A boolean return value that indicates whether the mode is valid for the
-     * modalities of the selected studies. For instance a PET/CT mode should be
+     * modalities of the selected studies. Currently we don't have stack viewport
+     * segmentations and we should exclude them
      */
-    isValidMode: ({ modalities }) => true,
+    isValidMode: ({ modalities }) => {
+      // Don't show the mode if the selected studies have only one modality
+      // that is not supported by the mode
+      const modalitiesArray = modalities.split('\\');
+      if (modalitiesArray.length === 1) {
+        return !['SM', 'US', 'MG', 'OT', 'DOC', 'CR'].includes(modalitiesArray[0]);
+      }
+
+      return true;
+    },
     /**
      * Mode Routes are used to define the mode's behavior. A list of Mode Route
      * that includes the mode's path and the layout to be used. The layout will

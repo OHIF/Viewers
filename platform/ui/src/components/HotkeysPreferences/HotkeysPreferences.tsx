@@ -30,7 +30,7 @@ const HotkeysPreferences = ({
   const splitedHotkeys = splitHotkeyDefinitionsAndCreateTuples(visibleHotkeys);
 
   if (!Object.keys(hotkeyDefinitions).length) {
-    return 'No hotkey definitions';
+    return t('No hotkeys found');
   }
 
   const onHotkeyChangeHandler = (id, definition) => {

@@ -5,6 +5,6 @@
   "Modality": "Modalite",
   "PatientName": "Hasta Adı",
   "StudyDate": "Çalışma Zamanı",
-  "StudyDescription": "Açıklama",
+  "Description": "Açıklama",
   "StudyList": "Çalışma Listesi"
 }

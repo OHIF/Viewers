@@ -40,7 +40,9 @@ const _generateReport = (measurementData, additionalFindingTypes, options = {}) 
   return dataset;
 };
 
-const commandsModule = ({}) => {
+const commandsModule = props => {
+  const { servicesManager } = props;
+  const { customizationService } = servicesManager.services;
   const actions = {
     /**
      *
@@ -95,7 +97,15 @@ const commandsModule = ({}) => {
           throw new Error('Invalid report, no content');
         }
 
-        await dataSource.store.dicom(naturalizedReport);
+        const onBeforeDicomStore =
+          customizationService.getModeCustomization('onBeforeDicomStore')?.value;
+
+        let dicomDict;
+        if (typeof onBeforeDicomStore === 'function') {
+          dicomDict = onBeforeDicomStore({ measurementData, naturalizedReport });
+        }
+
+        await dataSource.store.dicom(naturalizedReport, null, dicomDict);
 
         if (StudyInstanceUID) {
           dataSource.deleteStudyMetadataPromise(StudyInstanceUID);

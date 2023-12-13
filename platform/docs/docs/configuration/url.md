@@ -62,7 +62,9 @@ WorkList by adding the `dataSources` query parameter.
 /?dataSources=orthanc
 ```
 
-Note: you should pass the `sourceName` of the data source in the configuration file (not the friendly name nor the name)
+Note1: You should pass the `sourceName` of the data source in the configuration file (not the friendly name nor the name)
+Note2: Make sure that the configuration file you are using actually includes that data source. You cannot use a data source from another configuration file.
+
 
 :::tip
 
@@ -118,7 +120,7 @@ values.
 :::
 
 
-### SeriesInstanceUID and initialSeriesInstanceUID
+### SeriesInstanceUID, SeriesInstanceUIDs and initialSeriesInstanceUID
 
 Sometimes you need to only retrieve a specific series in a study, you can do
 that by providing series level QIDO query parameters in the URL such as
@@ -130,6 +132,17 @@ http://localhost:3000/viewer?StudyInstanceUIDs=1.3.6.1.4.1.25403.345050719074.38
 ```
 
 This will only open the viewer with one series (one displaySet) loaded, and no
+queries made for any other series.
+
+Sometimes you need to only retrieve a subset of series in a study, you can do
+that by providing study level wado query parameters in the URL such as
+SeriesInstanceUIDs. For example:
+
+```js
+http://localhost:3000/viewer?StudyInstanceUIDs=1.3.6.1.4.1.25403.345050719074.3824.20170125113417.1&SeriesInstanceUIDs=1.3.6.1.4.1.25403.345050719074.3824.20170125113545.4,1.3.6.1.4.1.25403.345050719074.3824.20170125113545.5
+```
+
+This will only open the viewer with two series (two displaySets) loaded, and no
 queries made for any other series.
 
 Alternatively, sometimes you want to just open the study on a specified series

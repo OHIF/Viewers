@@ -65,7 +65,7 @@ ToolbarButtonWithServices.propTypes = {
         state: PropTypes.shape({
           primaryToolId: PropTypes.string,
           toggles: PropTypes.objectOf(PropTypes.bool),
-          groups: PropTypes.objectOf(PropTypes.object),
+          groups: PropTypes.objectOf(PropTypes.any),
         }).isRequired,
       }).isRequired,
     }).isRequired,
