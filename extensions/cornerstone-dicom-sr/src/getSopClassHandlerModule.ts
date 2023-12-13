@@ -171,7 +171,12 @@ function _load(displaySet, servicesManager, extensionManager) {
 
   // Check currently added displaySets and add measurements if the sources exist.
   displaySetService.activeDisplaySets.forEach(activeDisplaySet => {
-    _checkIfCanAddMeasurementsToDisplaySet(displaySet, activeDisplaySet, dataSource);
+    _checkIfCanAddMeasurementsToDisplaySet(
+      displaySet,
+      activeDisplaySet,
+      dataSource,
+      servicesManager
+    );
   });
 
   // Subscribe to new displaySets as the source may come in after.
@@ -180,12 +185,23 @@ function _load(displaySet, servicesManager, extensionManager) {
     // If there are still some measurements that have not yet been loaded into cornerstone,
     // See if we can load them onto any of the new displaySets.
     displaySetsAdded.forEach(newDisplaySet => {
-      _checkIfCanAddMeasurementsToDisplaySet(displaySet, newDisplaySet, dataSource);
+      _checkIfCanAddMeasurementsToDisplaySet(
+        displaySet,
+        newDisplaySet,
+        dataSource,
+        servicesManager
+      );
     });
   });
 }
 
-function _checkIfCanAddMeasurementsToDisplaySet(srDisplaySet, newDisplaySet, dataSource) {
+function _checkIfCanAddMeasurementsToDisplaySet(
+  srDisplaySet,
+  newDisplaySet,
+  dataSource,
+  servicesManager
+) {
+  const { customizationService } = servicesManager.services;
   let unloadedMeasurements = srDisplaySet.measurements.filter(
     measurement => measurement.loaded === false
   );
@@ -244,7 +260,20 @@ function _checkIfCanAddMeasurementsToDisplaySet(srDisplaySet, newDisplaySet, dat
 
     if (SOPInstanceUIDs.includes(SOPInstanceUID)) {
       for (let j = unloadedMeasurements.length - 1; j >= 0; j--) {
-        const measurement = unloadedMeasurements[j];
+        let measurement = unloadedMeasurements[j];
+
+        const onBeforeSRAddMeasurement = customizationService.getModeCustomization(
+          'onBeforeSRAddMeasurement'
+        )?.value;
+
+        if (typeof onBeforeSRAddMeasurement === 'function') {
+          measurement = onBeforeSRAddMeasurement({
+            measurement,
+            StudyInstanceUID: srDisplaySet.StudyInstanceUID,
+            SeriesInstanceUID: srDisplaySet.SeriesInstanceUID,
+          });
+        }
+
         if (_measurementReferencesSOPInstanceUID(measurement, SOPInstanceUID, frameNumber)) {
           addMeasurement(measurement, imageId, newDisplaySet.displaySetInstanceUID);
 

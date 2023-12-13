@@ -9,7 +9,7 @@ import { createDicomWebApi } from '../DicomWebDataSource/index';
  * dicomWeb configuration array
  *
  */
-function createDicomWebProxyApi(dicomWebProxyConfig, UserAuthenticationService) {
+function createDicomWebProxyApi(dicomWebProxyConfig, servicesManager) {
   const { name } = dicomWebProxyConfig;
   let dicomWebDelegate = undefined;
 
@@ -28,7 +28,7 @@ function createDicomWebProxyApi(dicomWebProxyConfig, UserAuthenticationService) 
 
         dicomWebDelegate = createDicomWebApi(
           data.servers.dicomWeb[0].configuration,
-          UserAuthenticationService
+          servicesManager
         );
         dicomWebDelegate.initialize({ params, query });
       }
