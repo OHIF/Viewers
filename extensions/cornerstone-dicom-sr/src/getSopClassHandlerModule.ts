@@ -262,12 +262,12 @@ function _checkIfCanAddMeasurementsToDisplaySet(
       for (let j = unloadedMeasurements.length - 1; j >= 0; j--) {
         let measurement = unloadedMeasurements[j];
 
-        const onBeforeAddSRMeasurement = customizationService.getModeCustomization(
-          'onBeforeAddSRMeasurement'
+        const onBeforeSRAddMeasurement = customizationService.getModeCustomization(
+          'onBeforeSRAddMeasurement'
         )?.value;
 
-        if (typeof onBeforeAddSRMeasurement === 'function') {
-          measurement = onBeforeAddSRMeasurement({
+        if (typeof onBeforeSRAddMeasurement === 'function') {
+          measurement = onBeforeSRAddMeasurement({
             measurement,
             StudyInstanceUID: srDisplaySet.StudyInstanceUID,
             SeriesInstanceUID: srDisplaySet.SeriesInstanceUID,

@@ -218,7 +218,7 @@ function createDicomWebApi(dicomWebConfig, servicesManager) {
     },
 
     store: {
-      dicom: async (dataset, request, measurementData) => {
+      dicom: async (dataset, request, dicomDict) => {
         wadoDicomWebClient.headers = getAuthrorizationHeader();
         if (dataset instanceof ArrayBuffer) {
           const options = {
@@ -237,18 +237,14 @@ function createDicomWebApi(dicomWebConfig, servicesManager) {
           };
 
           const denaturalized = denaturalizeDataset(meta);
-          let dicomDict = new DicomDict(denaturalized);
 
-          dicomDict.dict = denaturalizeDataset(dataset);
+          const defaultDicomDict = new DicomDict(denaturalized);
 
-          const onBeforeDicomStore =
-            customizationService.getModeCustomization('onBeforeDicomStore')?.value;
+          defaultDicomDict.dict = denaturalizeDataset(dataset);
 
-          if (typeof onBeforeDicomStore === 'function') {
-            dicomDict = onBeforeDicomStore({ dicomDict, measurementData, dataset });
-          }
+          const effectiveDicomDict = dicomDict ?? defaultDicomDict;
 
-          const part10Buffer = dicomDict.write();
+          const part10Buffer = effectiveDicomDict.write();
 
           const options = {
             datasets: [part10Buffer],

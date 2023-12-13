@@ -101,10 +101,11 @@ export default function hydrateStructuredReport(
     metaData
   );
 
-  const onBeforeHydration = customizationService.getModeCustomization('onBeforeHydration')?.value;
+  const onBeforeSRHydration =
+    customizationService.getModeCustomization('onBeforeSRHydration')?.value;
 
-  if (typeof onBeforeHydration === 'function') {
-    storedMeasurementByAnnotationType = onBeforeHydration({
+  if (typeof onBeforeSRHydration === 'function') {
+    storedMeasurementByAnnotationType = onBeforeSRHydration({
       storedMeasurementByAnnotationType,
       displaySet,
     });
