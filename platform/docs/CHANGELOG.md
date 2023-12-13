@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-beta.29](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.28...v3.8.0-beta.29) (2023-12-13)
+
+
+### Features
+
+* **config:** Add activateViewportBeforeInteraction parameter for viewport interaction customization ([#3847](https://github.com/OHIF/Viewers/issues/3847)) ([f707b4e](https://github.com/OHIF/Viewers/commit/f707b4ebc996f379cd30337badc06b07e6e35ac5))
+
+
+
+
+
 # [3.8.0-beta.28](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.27...v3.8.0-beta.28) (2023-12-08)
 
 **Note:** Version bump only for package ohif-docs
