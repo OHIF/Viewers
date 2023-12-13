@@ -10,7 +10,6 @@ import {
   RELATIONSHIP_TYPE,
   CORNERSTONE_FREETEXT_CODE_VALUE,
 } from './enums';
-import getClosestInstanceInfoRelativeToPoint from './utils/getClosestInstanceInfoRelativeToPoint';
 
 type InstanceMetadata = Types.InstanceMetadata;
 
@@ -156,16 +155,18 @@ function _load(displaySet, servicesManager, extensionManager) {
   displaySet.isRehydratable = isRehydratable(displaySet, mappings);
   displaySet.isLoaded = true;
 
-  // Check currently added displaySets and add measurements if the sources exist.
+  /** Check currently added displaySets and add measurements if the sources exist */
   displaySetService.activeDisplaySets.forEach(activeDisplaySet => {
     _checkIfCanAddMeasurementsToDisplaySet(displaySet, activeDisplaySet, dataSource);
   });
 
-  // Subscribe to new displaySets as the source may come in after.
+  /** Subscribe to new displaySets as the source may come in after */
   displaySetService.subscribe(displaySetService.EVENTS.DISPLAY_SETS_ADDED, data => {
     const { displaySetsAdded } = data;
-    // If there are still some measurements that have not yet been loaded into cornerstone,
-    // See if we can load them onto any of the new displaySets.
+    /**
+     * If there are still some measurements that have not yet been loaded into cornerstone,
+     * See if we can load them onto any of the new displaySets.
+     */
     displaySetsAdded.forEach(newDisplaySet => {
       _checkIfCanAddMeasurementsToDisplaySet(displaySet, newDisplaySet, dataSource);
     });
@@ -200,7 +201,7 @@ function _checkIfCanAddMeasurementsToDisplaySet(srDisplaySet, newDisplaySet, dat
 
   const { sopClassUids, images } = newDisplaySet;
 
-  // Check if any have the newDisplaySet is the correct SOPClass.
+  /** Check if any have the newDisplaySet is the correct SOPClass */
   unloadedMeasurements = unloadedMeasurements.filter(measurement =>
     measurement.coords.some(coord => {
       if (coord.ReferencedSOPSequence === undefined) {
@@ -222,7 +223,7 @@ function _checkIfCanAddMeasurementsToDisplaySet(srDisplaySet, newDisplaySet, dat
           }
 
           // assuming 1 mm tolerance
-          if (Math.abs(distanceAlongNormal - coord.GraphicData[2]) > 20) {
+          if (Math.abs(distanceAlongNormal - coord.GraphicData[2]) > 1) {
             continue;
           }
 
@@ -244,7 +245,7 @@ function _checkIfCanAddMeasurementsToDisplaySet(srDisplaySet, newDisplaySet, dat
   );
 
   if (unloadedMeasurements.length === 0) {
-    // New displaySet isn't the correct SOPClass, so can't contain the referenced images.
+    /** New displaySet isn't the correct SOPClassso can't contain the referenced images */
     return;
   }
 
@@ -320,7 +321,6 @@ function getSopClassHandlerModule({ servicesManager, extensionManager }) {
   const getDisplaySetsFromSeries = instances => {
     return _getDisplaySetsFromSeries(instances, servicesManager, extensionManager);
   };
-
   return [
     {
       name: SOPClassHandlerName,
@@ -357,7 +357,6 @@ function _getMeasurements(ImagingMeasurementReportContentSequence) {
         mergedContentSequencesByTrackingUniqueIdentifiers[trackingUniqueIdentifier];
 
       const measurement = _processMeasurement(mergedContentSequence);
-
       if (measurement) {
         measurements.push(measurement);
       }
@@ -384,7 +383,6 @@ function _getMergedContentSequencesByTrackingUniqueIdentifiers(MeasurementGroups
         item.ConceptNameCodeSequence.CodeValue ===
         CodeNameCodeSequenceValues.TrackingUniqueIdentifier
     );
-
     if (!TrackingUniqueIdentifierItem) {
       console.warn('No Tracking Unique Identifier, skipping ambiguous measurement.');
     }
@@ -475,13 +473,24 @@ function _processTID1410Measurement(mergedContentSequence) {
 
   NUMContentItems.forEach(item => {
     const { ConceptNameCodeSequence, MeasuredValueSequence } = item;
-
     if (MeasuredValueSequence) {
       measurement.labels.push(
         _getLabelFromMeasuredValueSequence(ConceptNameCodeSequence, MeasuredValueSequence)
       );
     }
   });
+
+  const findingSites = mergedContentSequence.filter(
+    item =>
+      item.ConceptNameCodeSequence.CodingSchemeDesignator === CodingSchemeDesignators.SCT &&
+      item.ConceptNameCodeSequence.CodeValue === CodeNameCodeSequenceValues.FindingSiteSCT
+  );
+  if (findingSites.length) {
+    measurement.labels.push({
+      label: CodeNameCodeSequenceValues.FindingSiteSCT,
+      value: findingSites[0].ConceptCodeSequence.CodeMeaning,
+    });
+  }
 
   return measurement;
 }
@@ -494,7 +503,6 @@ function _processTID1410Measurement(mergedContentSequence) {
  */
 function _processNonGeometricallyDefinedMeasurement(mergedContentSequence) {
   const NUMContentItems = mergedContentSequence.filter(group => group.ValueType === 'NUM');
-
   const UIDREFContentItem = mergedContentSequence.find(group => group.ValueType === 'UIDREF');
 
   const TrackingIdentifierContentItem = mergedContentSequence.find(
@@ -554,15 +562,12 @@ function _processNonGeometricallyDefinedMeasurement(mergedContentSequence) {
     const { ConceptNameCodeSequence, ContentSequence, MeasuredValueSequence } = item;
 
     const { ValueType } = ContentSequence;
-
     if (!ValueType === 'SCOORD') {
       console.warn(`Graphic ${ValueType} not currently supported, skipping annotation.`);
-
       return;
     }
 
     const coords = _getCoordsFromSCOORDOrSCOORD3D(ContentSequence);
-
     if (coords) {
       measurement.coords.push(coords);
     }
@@ -646,9 +651,7 @@ function _getLabelFromMeasuredValueSequence(ConceptNameCodeSequence, MeasuredVal
   const { CodeMeaning } = ConceptNameCodeSequence;
   const { NumericValue, MeasurementUnitsCodeSequence } = MeasuredValueSequence;
   const { CodeValue } = MeasurementUnitsCodeSequence;
-
   const formatedNumericValue = NumericValue ? Number(NumericValue).toFixed(2) : '';
-
   return {
     label: CodeMeaning,
     value: `${formatedNumericValue} ${CodeValue}`,

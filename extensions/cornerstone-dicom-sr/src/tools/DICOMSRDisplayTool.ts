@@ -6,8 +6,10 @@ import {
   utilities,
   Types as cs3DToolsTypes,
 } from '@cornerstonejs/tools';
+
 import { getTrackingUniqueIdentifiersForElement } from './modules/dicomSRModule';
 import SCOORD_TYPES from '../constants/scoordTypes';
+import { CodeNameCodeSequenceValues } from '../enums';
 
 export default class DICOMSRDisplayTool extends AnnotationTool {
   static toolName = 'DICOMSRDisplay';
@@ -44,29 +46,31 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
     const { viewport } = enabledElement;
     const { element } = viewport;
 
-    let annotations = annotation.state.getAnnotations(this.getToolName(), element);
-
     // Todo: We don't need this anymore, filtering happens in triggerAnnotationRender
+    let annotations = annotation.state.getAnnotations(this.getToolName(), element);
     if (!annotations?.length) {
       return;
     }
 
     annotations = this.filterInteractableAnnotationsForElement(element, annotations);
-
     if (!annotations?.length) {
       return;
     }
 
+    let filteredAnnotations = annotations;
+    let activeTrackingUniqueIdentifier;
     const trackingUniqueIdentifiersForElement = getTrackingUniqueIdentifiersForElement(element);
-
-    const { activeIndex, trackingUniqueIdentifiers } = trackingUniqueIdentifiersForElement;
-
-    const activeTrackingUniqueIdentifier = trackingUniqueIdentifiers[activeIndex];
-
-    // Filter toolData to only render the data for the active SR.
-    const filteredAnnotations = annotations.filter(annotation =>
-      trackingUniqueIdentifiers.includes(annotation.data?.cachedStats?.TrackingUniqueIdentifier)
-    );
+    if (
+      trackingUniqueIdentifiersForElement &&
+      trackingUniqueIdentifiersForElement.trackingUniqueIdentifiers.length
+    ) {
+      const { activeIndex, trackingUniqueIdentifiers } = trackingUniqueIdentifiersForElement;
+      activeTrackingUniqueIdentifier = trackingUniqueIdentifiers[activeIndex];
+      // Filter toolData to only render the data for the active SR.
+      filteredAnnotations = annotations.filter(annotation =>
+        trackingUniqueIdentifiers.includes(annotation.data?.cachedStats?.TrackingUniqueIdentifier)
+      );
+    }
 
     if (!viewport._actors?.size) {
       return;
@@ -90,6 +94,7 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
       const lineWidth = this.getStyle('lineWidth', styleSpecifier, annotation);
       const lineDash = this.getStyle('lineDash', styleSpecifier, annotation);
       const color =
+        activeTrackingUniqueIdentifier &&
         cachedStats.TrackingUniqueIdentifier === activeTrackingUniqueIdentifier
           ? 'rgb(0, 255, 0)'
           : this.getStyle('color', styleSpecifier, annotation);
@@ -377,6 +382,7 @@ const SHORT_HAND_MAP = {
   AREA: 'Area: ',
   Length: '',
   CORNERSTONEFREETEXT: '',
+  [CodeNameCodeSequenceValues.FindingSiteSCT]: '',
 };
 
 function _labelToShorthand(label) {
