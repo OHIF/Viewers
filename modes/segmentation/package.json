@@ -36,7 +36,8 @@
     "@ohif/core": "3.8.0-beta.28"
   },
   "dependencies": {
-    "@babel/runtime": "^7.20.13"
+    "@babel/runtime": "^7.20.13",
+    "i18next": "^17.0.3"
   },
   "devDependencies": {
     "@babel/core": "^7.23.2",
