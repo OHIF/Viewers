@@ -139,7 +139,7 @@ export const callByRetrieveAETitle = ({
 
 function createMergeDataSourceApi(
   mergeConfig: MergeConfig,
-  UserAuthenticationService: unknown,
+  servicesManager: unknown,
   extensionManager
 ) {
   const { seriesMerge } = mergeConfig;

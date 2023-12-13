@@ -40,7 +40,8 @@ const metadataProvider = classes.MetadataProvider;
  * @param {bool} lazyLoadStudy - "enableStudyLazyLoad"; Request series meta async instead of blocking
  * @param {string|bool} singlepart - indicates of the retrieves can fetch singlepart.  Options are bulkdata, video, image or boolean true
  */
-function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
+function createDicomWebApi(dicomWebConfig, servicesManager) {
+  const { userAuthenticationService, customizationService } = servicesManager.services;
   let dicomWebConfigCopy,
     qidoConfig,
     wadoConfig,
@@ -140,7 +141,13 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
       instances: {
         search: (studyInstanceUid, queryParameters) => {
           qidoDicomWebClient.headers = getAuthrorizationHeader();
-          return qidoSearch.call(undefined, qidoDicomWebClient, studyInstanceUid, null, queryParameters);
+          return qidoSearch.call(
+            undefined,
+            qidoDicomWebClient,
+            studyInstanceUid,
+            null,
+            queryParameters
+          );
         },
       },
     },
@@ -211,7 +218,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
     },
 
     store: {
-      dicom: async (dataset, request) => {
+      dicom: async (dataset, request, dicomDict) => {
         wadoDicomWebClient.headers = getAuthrorizationHeader();
         if (dataset instanceof ArrayBuffer) {
           const options = {
@@ -220,21 +227,26 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
           };
           await wadoDicomWebClient.storeInstances(options);
         } else {
-          const meta = {
-            FileMetaInformationVersion: dataset._meta?.FileMetaInformationVersion?.Value,
-            MediaStorageSOPClassUID: dataset.SOPClassUID,
-            MediaStorageSOPInstanceUID: dataset.SOPInstanceUID,
-            TransferSyntaxUID: EXPLICIT_VR_LITTLE_ENDIAN,
-            ImplementationClassUID,
-            ImplementationVersionName,
-          };
+          let effectiveDicomDict = dicomDict;
 
-          const denaturalized = denaturalizeDataset(meta);
-          const dicomDict = new DicomDict(denaturalized);
+          if (!dicomDict) {
+            const meta = {
+              FileMetaInformationVersion: dataset._meta?.FileMetaInformationVersion?.Value,
+              MediaStorageSOPClassUID: dataset.SOPClassUID,
+              MediaStorageSOPInstanceUID: dataset.SOPInstanceUID,
+              TransferSyntaxUID: EXPLICIT_VR_LITTLE_ENDIAN,
+              ImplementationClassUID,
+              ImplementationVersionName,
+            };
 
-          dicomDict.dict = denaturalizeDataset(dataset);
+            const denaturalized = denaturalizeDataset(meta);
+            const defaultDicomDict = new DicomDict(denaturalized);
+            defaultDicomDict.dict = denaturalizeDataset(dataset);
 
-          const part10Buffer = dicomDict.write();
+            effectiveDicomDict = defaultDicomDict;
+          }
+
+          const part10Buffer = effectiveDicomDict.write();
 
           const options = {
             datasets: [part10Buffer],
