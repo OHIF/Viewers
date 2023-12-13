@@ -142,7 +142,7 @@ async function _loadSegments({ extensionManager, servicesManager, segDisplaySet,
     '@ohif/extension-cornerstone.utilityModule.common'
   );
 
-  const { segmentationService } = servicesManager.services;
+  const { segmentationService, uiNotificationService } = servicesManager.services;
 
   const { dicomLoaderService } = utilityModule.exports;
   const arrayBuffer = await dicomLoaderService.findDicomDataPromise(segDisplaySet, null, headers);
@@ -175,11 +175,30 @@ async function _loadSegments({ extensionManager, servicesManager, segDisplaySet,
     { skipOverlapping, tolerance, eventTarget, triggerEvent }
   );
 
+  let usedRecommendedDisplayCIELabValue = true;
   results.segMetadata.data.forEach((data, i) => {
     if (i > 0) {
-      data.rgba = data.RecommendedDisplayCIELabValue ? dicomlabToRGB(data.RecommendedDisplayCIELabValue) : CONSTANTS.COLOR_LUT[i % CONSTANTS.COLOR_LUT.length];
+      data.rgba = data.RecommendedDisplayCIELabValue;
+
+      if (data.rgba) {
+        data.rgba = dicomlabToRGB(data.rgba);
+      } else {
+        usedRecommendedDisplayCIELabValue = false;
+        data.rgba = CONSTANTS.COLOR_LUT[i % CONSTANTS.COLOR_LUT.length];
+      }
     }
   });
+
+  if (!usedRecommendedDisplayCIELabValue) {
+    // Display a notification about the non-utilization of RecommendedDisplayCIELabValue
+    uiNotificationService.show({
+      title: 'DICOM SEG import',
+      message:
+        'RecommendedDisplayCIELabValue not found for one or more segments. The default color was used instead.',
+      type: 'warning',
+      duration: 5000,
+    });
+  }
 
   Object.assign(segDisplaySet, results);
 }
