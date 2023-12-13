@@ -609,42 +609,10 @@ function _processNonGeometricallyDefinedMeasurement(mergedContentSequence) {
 }
 
 /**
-//  * Retrieves coordinates from an item of type SCOORD or SCOORD3D.
-//  *
-//  * @param item - The item containing the coordinates.
-//  * @returns The coordinates extracted from the item.
-//  */
-// function _getCoordsFromSCOORDOrSCOORD3D(item) {
-//   const { ValueType, RelationshipType, GraphicType, GraphicData } = item;
-
-//   if (
-//     !(
-//       RelationshipType === RELATIONSHIP_TYPE.INFERRED_FROM ||
-//       RelationshipType === RELATIONSHIP_TYPE.CONTAINS
-//     )
-//   ) {
-//     console.warn(
-//       `Relationshiptype === ${RelationshipType}. Cannot deal with NON TID-1400 SCOORD group with RelationshipType !== "INFERRED FROM" or "CONTAINS"`
-//     );
-
-//     return;
-//   }
-
-//   const coords = { ValueType, GraphicType, GraphicData };
-
-//   // ContentSequence has length of 1 as RelationshipType === 'INFERRED FROM'
-//   if (ValueType === 'SCOORD') {
-//     const { ReferencedSOPSequence } = item.ContentSequence;
-
-//     coords.ReferencedSOPSequence = ReferencedSOPSequence;
-//   } else if (ValueType === 'SCOORD3D') {
-//     const { ReferencedFrameOfReferenceSequence } = item.ContentSequence;
-
-//     coords.ReferencedFrameOfReferenceSequence = ReferencedFrameOfReferenceSequence;
-//   }
-
-//   return coords;
-// }
+ * Extracts coordinates from a graphic item of type SCOORD or SCOORD3D.
+ * @param {object} graphicItem - The graphic item containing the coordinates.
+ * @returns {object} - The extracted coordinates.
+ */
 const _getCoordsFromSCOORDOrSCOORD3D = graphicItem => {
   const { ValueType, GraphicType, GraphicData } = graphicItem;
   const coords = { ValueType, GraphicType, GraphicData };
