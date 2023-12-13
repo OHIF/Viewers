@@ -528,7 +528,7 @@ function _jumpToMeasurement(
             }
 
             // assuming 1 mm tolerance
-            if (Math.abs(distanceAlongNormal - coord.GraphicData[2]) > 1) {
+            if (Math.abs(distanceAlongNormal - coord.GraphicData[2]) > 5) {
               continue;
             } else {
               coord.ReferencedSOPSequence = {
