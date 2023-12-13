@@ -18,7 +18,7 @@
   "author": "OHIF Contributors",
   "license": "MIT",
   "dependencies": {
-    "@babel/core": "^7.21.4",
+    "@babel/core": "^7.23.2",
     "axios": "^0.26.1",
     "chalk": "^5.0.0",
     "execa": "^6.0.0",
