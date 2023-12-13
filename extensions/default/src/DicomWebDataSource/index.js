@@ -227,22 +227,24 @@ function createDicomWebApi(dicomWebConfig, servicesManager) {
           };
           await wadoDicomWebClient.storeInstances(options);
         } else {
-          const meta = {
-            FileMetaInformationVersion: dataset._meta?.FileMetaInformationVersion?.Value,
-            MediaStorageSOPClassUID: dataset.SOPClassUID,
-            MediaStorageSOPInstanceUID: dataset.SOPInstanceUID,
-            TransferSyntaxUID: EXPLICIT_VR_LITTLE_ENDIAN,
-            ImplementationClassUID,
-            ImplementationVersionName,
-          };
+          let effectiveDicomDict = dicomDict;
 
-          const denaturalized = denaturalizeDataset(meta);
+          if (!dicomDict) {
+            const meta = {
+              FileMetaInformationVersion: dataset._meta?.FileMetaInformationVersion?.Value,
+              MediaStorageSOPClassUID: dataset.SOPClassUID,
+              MediaStorageSOPInstanceUID: dataset.SOPInstanceUID,
+              TransferSyntaxUID: EXPLICIT_VR_LITTLE_ENDIAN,
+              ImplementationClassUID,
+              ImplementationVersionName,
+            };
 
-          const defaultDicomDict = new DicomDict(denaturalized);
+            const denaturalized = denaturalizeDataset(meta);
+            const defaultDicomDict = new DicomDict(denaturalized);
+            defaultDicomDict.dict = denaturalizeDataset(dataset);
 
-          defaultDicomDict.dict = denaturalizeDataset(dataset);
-
-          const effectiveDicomDict = dicomDict ?? defaultDicomDict;
+            effectiveDicomDict = defaultDicomDict;
+          }
 
           const part10Buffer = effectiveDicomDict.write();
 
