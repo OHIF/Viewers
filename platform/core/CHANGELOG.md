@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-beta.30](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.29...v3.8.0-beta.30) (2023-12-13)
+
+
+### Features
+
+* **customizationService:** Enable saving and loading of private tags in SRs ([#3842](https://github.com/OHIF/Viewers/issues/3842)) ([e1f55e6](https://github.com/OHIF/Viewers/commit/e1f55e65f2d2a34136ad5d0b1ada77d337a0ea23))
+
+
+
+
+
 # [3.8.0-beta.29](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.28...v3.8.0-beta.29) (2023-12-13)
 
 
