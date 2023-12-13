@@ -66,14 +66,6 @@ export function onCompletedCalibrationLine(servicesManager, csToolsEvent) {
       calculateLength3(annotationData.handles.points[0], annotationData.handles.points[1]) * 100
     ) / 100;
 
-  // calculate the currently applied pixel spacing on the viewport
-  const calibratedPixelSpacing = metaData.get('calibratedPixelSpacing', imageId);
-  const imagePlaneModule = metaData.get('imagePlaneModule', imageId);
-  const currentRowPixelSpacing =
-    calibratedPixelSpacing?.[0] || imagePlaneModule?.rowPixelSpacing || 1;
-  const currentColumnPixelSpacing =
-    calibratedPixelSpacing?.[1] || imagePlaneModule?.columnPixelSpacing || 1;
-
   const adjustCalibration = newLength => {
     const spacingScale = newLength / length;
 

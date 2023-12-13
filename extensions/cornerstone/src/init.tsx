@@ -1,4 +1,4 @@
-import OHIF, { Types } from '@ohif/core';
+import OHIF, { Types, errorHandler } from '@ohif/core';
 import React from 'react';
 
 import * as cornerstone from '@cornerstonejs/core';
@@ -59,8 +59,8 @@ export default async function init({
 
   await cs3DInit({
     rendering: {
-      preferSizeOverAccuracy: Boolean(appConfig.use16BitDataType),
-      useNorm16Texture: Boolean(appConfig.use16BitDataType),
+      preferSizeOverAccuracy: Boolean(appConfig.preferSizeOverAccuracy),
+      useNorm16Texture: Boolean(appConfig.useNorm16Texture),
     },
   });
 
@@ -251,6 +251,15 @@ export default async function init({
     });
   };
 
+  /**
+   * Runs error handler for failed requests.
+   * @param event 
+   */
+  const imageLoadFailedHandler = ({ detail }) => {
+    const handler = errorHandler.getHTTPErrorHandler()
+    handler(detail.error);
+  };
+
   const resetCrosshairs = evt => {
     const { element } = evt.detail;
     const { viewportId, renderingEngineId } = cornerstone.getEnabledElement(element);
@@ -279,9 +288,12 @@ export default async function init({
     const { element } = evt.detail;
     cornerstoneTools.utilities.stackContextPrefetch.enable(element);
   });
-
+  eventTarget.addEventListener(EVENTS.IMAGE_LOAD_FAILED, imageLoadFailedHandler);
+  eventTarget.addEventListener(EVENTS.IMAGE_LOAD_ERROR, imageLoadFailedHandler);
+  
   function elementEnabledHandler(evt) {
     const { element } = evt.detail;
+
     element.addEventListener(EVENTS.CAMERA_RESET, resetCrosshairs);
 
     eventTarget.addEventListener(EVENTS.STACK_VIEWPORT_NEW_STACK, toolbarEventListener);
@@ -308,8 +320,8 @@ export default async function init({
   viewportGridService.subscribe(
     viewportGridService.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED,
     activeViewportEventListener
-      );
-    }
+  );
+}
 
 function CPUModal() {
   return (

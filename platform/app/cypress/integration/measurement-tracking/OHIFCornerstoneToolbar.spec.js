@@ -442,7 +442,18 @@ describe('OHIF Cornerstone Toolbar', () => {
     cy.waitDicomImage();
 
     // Now navigate down once and check that the left hand pane navigated
-    cy.get('body').type('{downarrow}');
+    cy.get('body').focus().type('{downarrow}');
+
+    // The following lines assist in troubleshooting when/if this test were to fail.
+    cy.get('[data-cy="viewport-pane"]')
+      .eq(0)
+      .find('[data-cy="viewport-overlay-top-right"]')
+      .should('contains.text', 'I:2 (2/20)');
+    cy.get('[data-cy="viewport-pane"]')
+      .eq(1)
+      .find('[data-cy="viewport-overlay-top-right"]')
+      .should('contains.text', 'I:2 (2/20)');
+
     cy.get('body').type('{leftarrow}');
     cy.setLayout(1, 1);
     cy.get('@viewportInfoTopRight').should('contains.text', 'I:2 (2/20)');

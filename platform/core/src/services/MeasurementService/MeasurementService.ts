@@ -58,6 +58,7 @@ const MEASUREMENT_SCHEMA_KEYS = [
   'longestDiameter',
   'cachedStats',
   'selected',
+  'textBox',
 ];
 
 const EVENTS = {
@@ -691,14 +692,14 @@ class MeasurementService extends PubSubService {
    * @return {boolean} Measurement validation
    */
   _isValidMeasurement(measurementData) {
-    Object.keys(measurementData).forEach(key => {
+    return Object.keys(measurementData).every(key => {
       if (!MEASUREMENT_SCHEMA_KEYS.includes(key)) {
         log.warn(`Invalid measurement key: ${key}`);
         return false;
       }
-    });
 
-    return true;
+      return true;
+    });
   }
 
   /**
