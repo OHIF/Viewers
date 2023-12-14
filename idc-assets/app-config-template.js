@@ -51,9 +51,9 @@ window.config = {
     {
       friendlyName: 'IDC Data Source',
       namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
-      sourceName: 'idc',
+      sourceName: 'idc-dicomweb',
       configuration: {
-        name: 'idc',
+        name: 'idc-dicomweb',
         wadoUriRoot: '_X___IDC__Z__ROOT___Y_',
         qidoRoot: '_X___IDC__Z__ROOT___Y_',
         wadoRoot: '_X___IDC__Z__ROOT___Y_',
