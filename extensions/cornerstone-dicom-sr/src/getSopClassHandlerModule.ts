@@ -217,6 +217,7 @@ function _checkIfCanAddMeasurementsToDisplaySet(srDisplaySet, newDisplaySet, dat
   /** Check if any have the newDisplaySet is the correct SOPClass */
   unloadedMeasurements = unloadedMeasurements.filter(measurement =>
     measurement.coords.some(coord => {
+      /** Find reference sop instance uid by frame of reference if not present */
       if (coord.ReferencedSOPSequence === undefined) {
         for (let i = 0; i < images.length; ++i) {
           const imageMetadata = images[i];
@@ -235,7 +236,7 @@ function _checkIfCanAddMeasurementsToDisplaySet(srDisplaySet, newDisplaySet, dat
             distanceAlongNormal += sliceNormal[j] * imageMetadata.ImagePositionPatient[j];
           }
 
-          // assuming 1 mm tolerance
+          // assuming 5 mm tolerance
           if (Math.abs(distanceAlongNormal - coord.GraphicData[2]) > 5) {
             continue;
           }

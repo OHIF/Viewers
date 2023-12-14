@@ -30,8 +30,6 @@ export default function addMeasurement(measurement, imageId, displaySetInstanceU
   // Use the metadata provider to grab its imagePlaneModule metadata
   const imagePlaneModule = metaData.get('imagePlaneModule', imageId);
 
-  const annotationManager = annotation.state.getAnnotationManager();
-
   // Create Cornerstone3D Annotation from measurement
   const frameNumber =
     (measurement.coords[0].ReferencedSOPSequence &&
@@ -44,7 +42,10 @@ export default function addMeasurement(measurement, imageId, displaySetInstanceU
       FrameOfReferenceUID: imagePlaneModule.frameOfReferenceUID,
       toolName: toolName,
       referencedImageId: imageId,
-      /** Use to properly jump to different viewports based on frame of reference */
+      /**
+       * Used to jump to measurement using currently
+       * selected viewport if it shares frame of reference
+       */
       coords: measurement.coords,
     },
     data: {
@@ -60,6 +61,7 @@ export default function addMeasurement(measurement, imageId, displaySetInstanceU
     },
   };
 
+  const annotationManager = annotation.state.getAnnotationManager();
   annotationManager.addAnnotation(SRAnnotation);
   console.debug('Adding annotation:', SRAnnotation);
 
