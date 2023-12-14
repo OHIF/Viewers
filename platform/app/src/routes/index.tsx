@@ -62,19 +62,18 @@ const bakedInRoutes = [
     path: '/notfoundstudy',
     children: NotFoundStudy,
   },
-  // Disabled baked in routes for IDC fork!
-  // {
-  //   path: '/debug',
-  //   children: Debug,
-  // },
-  // {
-  //   path: '/local',
-  //   children: Local.bind(null, { modePath: '' }), // navigate to the worklist
-  // },
-  // {
-  //   path: '/localbasic',
-  //   children: Local.bind(null, { modePath: 'viewer/dicomlocal' }),
-  // },
+  {
+    path: '/debug',
+    children: Debug,
+  },
+  {
+    path: '/local',
+    children: Local.bind(null, { modePath: '' }), // navigate to the worklist
+  },
+  {
+    path: '/localbasic',
+    children: Local.bind(null, { modePath: 'viewer/dicomlocal' }),
+  },
 ];
 
 // NOT FOUND (404)

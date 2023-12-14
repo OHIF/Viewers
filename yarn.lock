@@ -15449,18 +15449,6 @@ obuf@^1.0.0, obuf@^1.1.2:
   resolved "https://registry.yarnpkg.com/obuf/-/obuf-1.1.2.tgz#09bea3343d41859ebd446292d11c9d4db619084e"
   integrity sha512-PX1wu0AmAdPqOL1mWhqmlOd8kOIZQwGZw6rh7uby9fTc5lhaOWFLX3I6R1hrF9k3zUY40e6igsLGkDXK92LJNg==
 
-"ohif-gcp-mode@https://github.com/ImagingDataCommons/ohif-gcp-mode#main-1.0.2":
-  version "0.0.1"
-  resolved "https://github.com/ImagingDataCommons/ohif-gcp-mode#d242e63cd3f63db8af60c503aa601335efea2ed5"
-  dependencies:
-    "@babel/runtime" "^7.20.13"
-
-"ohif-idc-mode@https://github.com/ImagingDataCommons/ohif-idc-mode#main-1.0.2":
-  version "0.0.1"
-  resolved "https://github.com/ImagingDataCommons/ohif-idc-mode#42be45606980cd3ec3b6375eaa48c967d7a794bc"
-  dependencies:
-    "@babel/runtime" "^7.20.13"
-
 oidc-client@1.11.5:
   version "1.11.5"
   resolved "https://registry.yarnpkg.com/oidc-client/-/oidc-client-1.11.5.tgz#020aa193d68a3e1f87a24fcbf50073b738de92bb"

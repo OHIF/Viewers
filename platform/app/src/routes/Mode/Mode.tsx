@@ -127,18 +127,6 @@ export default function ModeRoute({
   // The URL's query search parameters where the keys are all lower case.
   const lowerCaseSearchParams = useSearchParams({ lowerCaseKeys: true });
 
-  if (mode?.onModeInit) {
-    mode?.onModeInit({
-      servicesManager,
-      extensionManager,
-      commandsManager,
-      appConfig,
-      location,
-      params,
-      query
-    });
-  }
-
   const [studyInstanceUIDs, setStudyInstanceUIDs] = useState();
 
   const [refresh, setRefresh] = useState(false);
@@ -485,4 +473,5 @@ ModeRoute.propTypes = {
   extensionManager: PropTypes.object,
   servicesManager: PropTypes.object,
   hotkeysManager: PropTypes.object,
+  commandsManager: PropTypes.object,
 };

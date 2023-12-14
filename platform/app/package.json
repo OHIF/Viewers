@@ -46,8 +46,6 @@
     "README.md"
   ],
   "dependencies": {
-    "ohif-idc-mode": "https://github.com/ImagingDataCommons/ohif-idc-mode#main-1.0.2",
-    "ohif-gcp-mode": "https://github.com/ImagingDataCommons/ohif-gcp-mode#main-1.0.2",
     "@babel/runtime": "^7.20.13",
     "@cornerstonejs/codec-charls": "^1.2.3",
     "@cornerstonejs/codec-libjpeg-turbo-8bit": "^1.2.2",
