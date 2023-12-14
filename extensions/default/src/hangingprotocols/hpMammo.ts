@@ -11,19 +11,19 @@ import {
 
 const rightDisplayArea = {
   storeAsInitialCamera: true,
-  imageArea: [0.7, 0.7],
+  imageArea: [0.8, 0.8],
   imageCanvasPoint: {
     imagePoint: [0, 0.5],
-    canvasPoint: [-0.08, 0.5],
+    canvasPoint: [0, 0.5],
   },
 };
 
 const leftDisplayArea = {
   storeAsInitialCamera: true,
-  imageArea: [0.7, 0.7],
+  imageArea: [0.8, 0.8],
   imageCanvasPoint: {
     imagePoint: [1, 0.5],
-    canvasPoint: [1.08, 0.5],
+    canvasPoint: [1, 0.5],
   },
 };
 
@@ -80,8 +80,8 @@ const hpMammography = {
           viewportOptions: {
             toolGroupId: 'default',
             displayArea: leftDisplayArea,
-            flipHorizontal: true,
-            rotation: 180,
+            // flipHorizontal: true,
+            // rotation: 180,
           },
           displaySets: [
             {
@@ -92,7 +92,7 @@ const hpMammography = {
         {
           viewportOptions: {
             toolGroupId: 'default',
-            flipHorizontal: true,
+            // flipHorizontal: true,
             displayArea: rightDisplayArea,
           },
           displaySets: [
@@ -146,7 +146,7 @@ const hpMammography = {
             toolGroupId: 'default',
             displayArea: leftDisplayArea,
             flipHorizontal: true,
-            rotation: 180,
+            // rotation: 180,
           },
           displaySets: [
             {

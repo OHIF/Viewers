@@ -100,6 +100,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     const immediate = true;
     const keepCamera = true;
 
+    console.log('Resizing');
     this.renderingEngine.resize(immediate, keepCamera);
     this.renderingEngine.render();
   }
@@ -251,6 +252,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     const orientation = viewportInfo.getOrientation();
     const displayArea = viewportInfo.getDisplayArea();
 
+    console.log('Applying display area', displayArea);
     const viewportInput: Types.PublicViewportInput = {
       viewportId,
       element,
@@ -338,7 +340,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       initialImageIndexToUse = this._getInitialImageIndexForViewport(viewportInfo, imageIds) || 0;
     }
 
-    const { rotation, flipHorizontal } = viewportInfo.getViewportOptions() as any;
+    const { rotation, flipHorizontal, displayArea } = viewportInfo.getViewportOptions() as any;
 
     const properties = { ...presentations.lutPresentation?.properties };
     if (!presentations.lutPresentation?.properties) {
@@ -362,11 +364,14 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       if (camera) {
         viewport.setCamera(camera);
       }
-      if (flip) {
-        viewport.setCamera({ flipHorizontal: true });
+      if (displayArea) {
+        viewport.setOptions({ displayArea }, true);
       }
       if (rotation) {
         viewport.setProperties({ rotation });
+      }
+      if (flipHorizontal) {
+        viewport.setCamera({ flipHorizontal: true });
       }
     });
   }

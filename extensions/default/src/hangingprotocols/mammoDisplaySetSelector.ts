@@ -33,14 +33,14 @@ const LCCSeriesMatchingRules = [
     },
   },
   {
-    weight: 10,
+    weight: 5,
     attribute: 'PatientOrientation',
     constraint: {
       contains: 'L',
     },
   },
   {
-    weight: 10,
+    weight: 20,
     attribute: 'SeriesDescription',
     constraint: {
       contains: 'L CC',
@@ -57,14 +57,14 @@ const RCCSeriesMatchingRules = [
     },
   },
   {
-    weight: 10,
+    weight: 5,
     attribute: 'PatientOrientation',
     constraint: {
       contains: 'R',
     },
   },
   {
-    weight: 10,
+    weight: 20,
     attribute: 'SeriesDescription',
     constraint: {
       contains: 'CC',
@@ -88,14 +88,14 @@ const LMLOSeriesMatchingRules = [
     },
   },
   {
-    weight: 10,
+    weight: 5,
     attribute: 'PatientOrientation',
     constraint: {
       contains: 'L',
     },
   },
   {
-    weight: 10,
+    weight: 20,
     attribute: 'SeriesDescription',
     constraint: {
       contains: 'L MLO',
@@ -112,14 +112,14 @@ const RMLOSeriesMatchingRules = [
     },
   },
   {
-    weight: 10,
+    weight: 5,
     attribute: 'PatientOrientation',
     constraint: {
       contains: 'R',
     },
   },
   {
-    weight: 10,
+    weight: 20,
     attribute: 'SeriesDescription',
     constraint: {
       contains: 'R MLO',
