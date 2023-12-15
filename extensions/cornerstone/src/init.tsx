@@ -213,7 +213,7 @@ export default async function init({
     commandsManager,
   });
 
-  let priorityCounter = -100;
+  let priorityCounter = 1000000;
   let enabledElementCounter = 0;
   let STUDY_STACKS = [];
 
@@ -338,7 +338,7 @@ export default async function init({
 
       setTimeout(() => {
         console.log('All elements are enabled. Start prefetching images.');
-        STUDY_STACKS.forEach(stack => stackPrefetch.enable(stack, 0));
+        STUDY_STACKS.forEach(stack => stackPrefetch.enable(stack, priorityCounter));
       }, 2000);
 
       eventTarget.removeEventListener(EVENTS.ELEMENT_ENABLED, elementEnabledHandler);
