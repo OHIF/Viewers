@@ -80,6 +80,7 @@ function modeFactory() {
     hangingProtocol: [],
     sopClassHandlers: [],
     hotkeys: [],
+    labelConfig: {}
   };
 }
 
@@ -183,6 +184,14 @@ export default mode;
         </a>
       </td>
       <td align="left">hotkeys</td>
+    </tr>
+    <tr>
+      <td align="left">
+        <a href="">
+          labelConfig
+        </a>
+      </td>
+      <td align="left">Can be used to configure measurements</td>
     </tr>
 
   </tbody>
