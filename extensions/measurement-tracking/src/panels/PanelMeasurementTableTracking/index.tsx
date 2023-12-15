@@ -24,7 +24,7 @@ const DISPLAY_STUDY_SUMMARY_INITIAL_VALUE = {
   description: '', // 'CHEST/ABD/PELVIS W CONTRAST',
 };
 
-function PanelMeasurementTableTracking({ servicesManager }) {
+function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
   const [viewportGrid] = useViewportGrid();
   const [measurementChangeTimestamp, setMeasurementsUpdated] = useState(Date.now().toString());
   const debouncedMeasurementChangeTimestamp = useDebounce(measurementChangeTimestamp, 200);
@@ -39,49 +39,46 @@ function PanelMeasurementTableTracking({ servicesManager }) {
 
   useEffect(() => {
     const measurements = measurementService.getMeasurements();
+
     const mappedMeasurements = measurements.map(m =>
       _mapMeasurementToDisplay(m, measurementService.VALUE_TYPES, displaySetService)
     );
     setDisplayMeasurements(mappedMeasurements);
-  }, [
-    measurementService,
-    trackedStudy,
-    trackedSeries,
-    displaySetService,
-    debouncedMeasurementChangeTimestamp,
-  ]);
+    // eslint-ignore-next-line
+  }, [measurementService, trackedStudy, trackedSeries, debouncedMeasurementChangeTimestamp]);
 
-  useEffect(() => {
-    const updateDisplayStudySummary = async () => {
-      if (trackedMeasurements.matches('tracking')) {
-        const StudyInstanceUID = trackedStudy;
-        const studyMeta = DicomMetadataStore.getStudy(StudyInstanceUID);
-        const instanceMeta = studyMeta.series[0].instances[0];
-        const { StudyDate, StudyDescription } = instanceMeta;
+  const updateDisplayStudySummary = async () => {
+    if (trackedMeasurements.matches('tracking')) {
+      const StudyInstanceUID = trackedStudy;
+      const studyMeta = DicomMetadataStore.getStudy(StudyInstanceUID);
+      const instanceMeta = studyMeta.series[0].instances[0];
+      const { StudyDate, StudyDescription } = instanceMeta;
 
-        const modalities = new Set();
-        studyMeta.series.forEach(series => {
-          if (trackedSeries.includes(series.SeriesInstanceUID)) {
-            modalities.add(series.instances[0].Modality);
-          }
-        });
-        const modality = Array.from(modalities).join('/');
-
-        if (displayStudySummary.key !== StudyInstanceUID) {
-          setDisplayStudySummary({
-            key: StudyInstanceUID,
-            date: StudyDate, // TODO: Format: '07-Sep-2010'
-            modality,
-            description: StudyDescription,
-          });
+      const modalities = new Set();
+      studyMeta.series.forEach(series => {
+        if (trackedSeries.includes(series.SeriesInstanceUID)) {
+          modalities.add(series.instances[0].Modality);
         }
-      } else if (trackedStudy === '' || trackedStudy === undefined) {
-        setDisplayStudySummary(DISPLAY_STUDY_SUMMARY_INITIAL_VALUE);
-      }
-    };
+      });
+      const modality = Array.from(modalities).join('/');
 
+      if (displayStudySummary.key !== StudyInstanceUID) {
+        setDisplayStudySummary({
+          key: StudyInstanceUID,
+          date: StudyDate, // TODO: Format: '07-Sep-2010'
+          modality,
+          description: StudyDescription,
+        });
+      }
+    } else if (trackedStudy === '' || trackedStudy === undefined) {
+      setDisplayStudySummary(DISPLAY_STUDY_SUMMARY_INITIAL_VALUE);
+    }
+  };
+
+  // ~~ DisplayStudySummary
+  useEffect(() => {
     updateDisplayStudySummary();
-  }, [displayStudySummary.key, trackedMeasurements, trackedSeries, trackedStudy]);
+  }, [displayStudySummary.key, trackedMeasurements, trackedStudy, updateDisplayStudySummary]);
 
   // TODO: Better way to consolidated, debounce, check on change?
   // Are we exposing the right API for measurementService?
@@ -121,11 +118,13 @@ function PanelMeasurementTableTracking({ servicesManager }) {
     const trackedMeasurements = measurements.filter(
       m => trackedStudy === m.referenceStudyUID && trackedSeries.includes(m.referenceSeriesUID)
     );
-    downloadCSVReport(trackedMeasurements);
+
+    downloadCSVReport(trackedMeasurements, measurementService);
   }
 
   const jumpToImage = ({ uid, isActive }) => {
     measurementService.jumpToMeasurement(viewportGrid.activeViewportId, uid);
+
     onMeasurementItemClickHandler({ uid, isActive });
   };
 
@@ -197,6 +196,7 @@ function PanelMeasurementTableTracking({ servicesManager }) {
     if (!isActive) {
       const measurements = [...displayMeasurements];
       const measurement = measurements.find(m => m.uid === uid);
+
       measurements.forEach(m => (m.isActive = m.uid !== uid ? false : true));
       measurement.isActive = true;
       setDisplayMeasurements(measurements);
@@ -210,7 +210,13 @@ function PanelMeasurementTableTracking({ servicesManager }) {
       dm.measurementType !== measurementService.VALUE_TYPES.POINT
   );
   const additionalFindings = displayMeasurements.filter(
-    dm => dm.measurementType === measurementService.VALUE_TYPES.POINT
+    dm =>
+      trackedStudy === dm.referenceStudyUID &&
+      trackedSeries.includes(dm.referenceSeriesUID) &&
+      dm.measurementType === measurementService.VALUE_TYPES.POINT
+  );
+  const untracked = displayMeasurements.filter(
+    dm => trackedStudy !== dm.referenceStudyUID && !trackedSeries.includes(dm.referenceSeriesUID)
   );
 
   return (
@@ -238,6 +244,15 @@ function PanelMeasurementTableTracking({ servicesManager }) {
           <MeasurementTable
             title="Additional Findings"
             data={additionalFindings}
+            servicesManager={servicesManager}
+            onClick={jumpToImage}
+            onEdit={onMeasurementItemEditHandler}
+          />
+        )}
+        {untracked.length !== 0 && (
+          <MeasurementTable
+            title="Untracked"
+            data={untracked}
             servicesManager={servicesManager}
             onClick={jumpToImage}
             onEdit={onMeasurementItemEditHandler}
@@ -319,7 +334,6 @@ function _mapMeasurementToDisplay(measurement, types, displaySetService) {
   }
 
   return {
-    ...measurement,
     uid,
     label,
     baseLabel,
@@ -329,6 +343,8 @@ function _mapMeasurementToDisplay(measurement, types, displaySetService) {
     isActive: selected,
     finding,
     findingSites,
+    referenceStudyUID,
+    referenceSeriesUID,
   };
 }
 

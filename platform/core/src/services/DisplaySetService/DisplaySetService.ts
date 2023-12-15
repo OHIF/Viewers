@@ -100,7 +100,6 @@ export default class DisplaySetService extends PubSubService {
       displaySetsAdded: displaySets,
       options: { madeInClient: displaySets[0].madeInClient },
     });
-
     return displaySets;
   }
 
@@ -114,10 +113,6 @@ export default class DisplaySetService extends PubSubService {
 
   public getActiveDisplaySets(): DisplaySet[] {
     return this.activeDisplaySets;
-  }
-
-  public getDisplaySets() {
-    return [...displaySetCache.values()];
   }
 
   public getDisplaySetsForSeries = (seriesInstanceUID: string): DisplaySet[] => {
