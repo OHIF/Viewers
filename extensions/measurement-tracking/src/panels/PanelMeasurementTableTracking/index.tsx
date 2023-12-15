@@ -132,67 +132,24 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
   };
 
   const onMeasurementItemEditHandler = ({ uid, isActive }) => {
-    const measurement = measurementService.getMeasurement(uid);
     jumpToImage({ uid, isActive });
-
-    const onSubmitHandler = ({ action, value }) => {
-      switch (action.id) {
-        case 'save': {
-          measurementService.update(
-            uid,
-            {
-              ...measurement,
-              ...value,
-            },
-            true
-          );
-        }
+    const modeLabelConfig = measurementService.getLabelConfig();
+    const measurement = measurementService.getMeasurement(uid);
+    const utilityModule = extensionManager.getModuleEntry(
+      '@ohif/extension-cornerstone.utilityModule.common'
+    );
+    const { showLabelAnnotationPopup } = utilityModule.exports;
+    showLabelAnnotationPopup(measurement, uiDialogService, modeLabelConfig).then(
+      (val: Map<any, any>) => {
+        measurementService.update(
+          uid,
+          {
+            ...val,
+          },
+          true
+        );
       }
-      uiDialogService.dismiss({ id: 'enter-annotation' });
-    };
-
-    uiDialogService.create({
-      id: 'enter-annotation',
-      centralize: true,
-      isDraggable: false,
-      showOverlay: true,
-      content: Dialog,
-      contentProps: {
-        title: 'Annotation',
-        noCloseButton: true,
-        value: { label: measurement.label || '' },
-        body: ({ value, setValue }) => {
-          const onChangeHandler = event => {
-            event.persist();
-            setValue(value => ({ ...value, label: event.target.value }));
-          };
-
-          const onKeyPressHandler = event => {
-            if (event.key === 'Enter') {
-              onSubmitHandler({ value, action: { id: 'save' } });
-            }
-          };
-          return (
-            <Input
-              label="Enter your annotation"
-              labelClassName="text-white grow text-[14px] leading-[1.2]"
-              autoFocus
-              id="annotation"
-              className="border-primary-main bg-black"
-              type="text"
-              value={value.label}
-              onChange={onChangeHandler}
-              onKeyPress={onKeyPressHandler}
-            />
-          );
-        },
-        actions: [
-          { id: 'cancel', text: 'Cancel', type: ButtonEnums.type.secondary },
-          { id: 'save', text: 'Save', type: ButtonEnums.type.primary },
-        ],
-        onSubmit: onSubmitHandler,
-      },
-    });
+    );
   };
 
   const onMeasurementItemClickHandler = ({ uid, isActive }) => {

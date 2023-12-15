@@ -16,7 +16,7 @@ import { Types as OhifTypes } from '@ohif/core';
 import { vec3, mat4 } from 'gl-matrix';
 
 import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownloadForm';
-import callInputDialog from './utils/callInputDialog';
+import { callInputDialogForCustomLabel, showLabelAnnotationPopup } from './utils/callInputDialog';
 import toggleStackImageSync from './utils/stackSync/toggleStackImageSync';
 import { getFirstAnnotationSelected } from './utils/measurementServiceMappings/utils/selection';
 import getActiveViewportEnabledElement from './utils/getActiveViewportEnabledElement';
@@ -132,23 +132,18 @@ function commandsModule({
      * on the measurement with a response if not cancelled.
      */
     setMeasurementLabel: ({ uid }) => {
+      const labelConfig = measurementService.getLabelConfig();
       const measurement = measurementService.getMeasurement(uid);
-
-      callInputDialog(
-        uiDialogService,
-        measurement,
-        (label, actionId) => {
-          if (actionId === 'cancel') {
-            return;
-          }
-
-          const updatedMeasurement = Object.assign({}, measurement, {
-            label,
-          });
-
-          measurementService.update(updatedMeasurement.uid, updatedMeasurement, true);
-        },
-        false
+      showLabelAnnotationPopup(measurement, uiDialogService, labelConfig).then(
+        (val: Map<any, any>) => {
+          measurementService.update(
+            uid,
+            {
+              ...val,
+            },
+            true
+          );
+        }
       );
     },
 
@@ -224,8 +219,9 @@ function commandsModule({
 
       viewportGridService.setActiveViewportId(viewportId);
     },
-    arrowTextCallback: ({ callback, data }) => {
-      callInputDialog(uiDialogService, data, callback);
+    arrowTextCallback: ({ callback, data, uid }) => {
+      const labelConfig = measurementService.getLabelConfig();
+      callInputDialogForCustomLabel(uiDialogService, callback, {}, labelConfig);
     },
     cleanUpCrosshairs: () => {
       // if the crosshairs tool is active, deactivate it and set window level active
