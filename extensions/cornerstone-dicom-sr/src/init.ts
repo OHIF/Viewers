@@ -16,28 +16,6 @@ import { MeasurementService, Types } from '@ohif/core';
 import toolNames from './tools/toolNames';
 import DICOMSRDisplayMapping from './DICOMSRDisplayMapping';
 
-const _getValueTypeFromToolType = toolType => {
-  const { POLYLINE, ELLIPSE, CIRCLE, RECTANGLE, BIDIRECTIONAL, POINT, ANGLE } =
-    MeasurementService.VALUE_TYPES;
-
-  // TODO -> I get why this was attempted, but its not nearly flexible enough.
-  // A single measurement may have an ellipse + a bidirectional measurement, for instances.
-  // You can't define a bidirectional tool as a single type..
-  const TOOL_TYPE_TO_VALUE_TYPE = {
-    Length: POLYLINE,
-    EllipticalROI: ELLIPSE,
-    CircleROI: CIRCLE,
-    RectangleROI: RECTANGLE,
-    PlanarFreehandROI: POLYLINE,
-    Bidirectional: BIDIRECTIONAL,
-    ArrowAnnotate: POINT,
-    CobbAngle: ANGLE,
-    Angle: ANGLE,
-  };
-
-  return TOOL_TYPE_TO_VALUE_TYPE[toolType];
-};
-
 /**
  * @param {object} configuration
  */
@@ -71,7 +49,7 @@ export default function init({
   );
   measurementService.addMapping(
     source,
-    'DICOMSRDisplay',
+    toolNames.DICOMSRDisplay,
     [
       {
         valueType: MeasurementService.VALUE_TYPES.POINT,
@@ -83,8 +61,7 @@ export default function init({
       DICOMSRDisplayMapping.toMeasurement(
         csToolsAnnotation,
         displaySetService,
-        cornerstoneViewportService,
-        _getValueTypeFromToolType
+        cornerstoneViewportService
       )
   );
 

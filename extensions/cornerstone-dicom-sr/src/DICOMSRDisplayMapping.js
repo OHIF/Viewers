@@ -1,14 +1,15 @@
 import { MeasurementService } from '@ohif/core';
 import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
 
+const getValueTypeByGraphicType = graphicType => {
+  const { POINT } = MeasurementService.VALUE_TYPES;
+  const GRAPHIC_TYPE_TO_VALUE_TYPE = { POINT: POINT };
+  return GRAPHIC_TYPE_TO_VALUE_TYPE[graphicType];
+};
+
 const DICOMSRDisplayMapping = {
   toAnnotation: () => {},
-  toMeasurement: (
-    csToolsEventDetail,
-    displaySetService,
-    cornerstoneViewportService,
-    getValueTypeFromToolType
-  ) => {
+  toMeasurement: (csToolsEventDetail, displaySetService) => {
     const { annotation } = csToolsEventDetail;
     const { metadata, data, annotationUID } = annotation;
 
@@ -17,7 +18,7 @@ const DICOMSRDisplayMapping = {
       return null;
     }
 
-    const { toolName, referencedImageId, FrameOfReferenceUID } = metadata;
+    const { graphicType, referencedImageId, FrameOfReferenceUID } = metadata;
 
     const { SOPInstanceUID, SeriesInstanceUID, StudyInstanceUID } =
       getSOPInstanceAttributes(referencedImageId);
@@ -52,7 +53,7 @@ const DICOMSRDisplayMapping = {
       displaySetInstanceUID: displaySet.displaySetInstanceUID,
       displayText: displayText,
       data: data.cachedStats,
-      type: getValueTypeFromToolType(toolName),
+      type: getValueTypeByGraphicType(graphicType),
       getReport: () => {
         throw new Error('Not implemented');
       },

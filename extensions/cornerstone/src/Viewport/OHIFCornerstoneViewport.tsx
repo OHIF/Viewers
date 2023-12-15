@@ -543,7 +543,7 @@ function _jumpToMeasurement(
       if (imageIdIndex < 0) {
         const imageIds = viewport.getImageIds();
         const imageIdIndexFound = findImageIdIndexFromMeasurementByFOR(imageIds, measurement);
-        if (imageIdIndexFound) {
+        if (imageIdIndexFound > -1) {
           imageIdIndex = imageIdIndexFound;
         }
       }

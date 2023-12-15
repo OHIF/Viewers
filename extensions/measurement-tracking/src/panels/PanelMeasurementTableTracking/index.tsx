@@ -209,9 +209,6 @@ function PanelMeasurementTableTracking({ servicesManager }) {
       trackedSeries.includes(dm.referenceSeriesUID) &&
       dm.measurementType !== measurementService.VALUE_TYPES.POINT
   );
-  const untrackedMeasurements = displayMeasurements.filter(
-    dm => trackedStudy !== dm.referenceStudyUID || !trackedSeries.includes(dm.referenceSeriesUID)
-  );
   const additionalFindings = displayMeasurements.filter(
     dm => dm.measurementType === measurementService.VALUE_TYPES.POINT
   );
@@ -237,14 +234,6 @@ function PanelMeasurementTableTracking({ servicesManager }) {
           onClick={jumpToImage}
           onEdit={onMeasurementItemEditHandler}
         />
-        {untrackedMeasurements.length !== 0 && (
-          <MeasurementTable
-            title="Untracked Findings"
-            data={untrackedMeasurements}
-            servicesManager={servicesManager}
-            onClick={jumpToImage}
-          />
-        )}
         {additionalFindings.length !== 0 && (
           <MeasurementTable
             title="Additional Findings"

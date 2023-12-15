@@ -41,6 +41,8 @@ export default function addMeasurement(measurement, imageId, displaySetInstanceU
     metadata: {
       FrameOfReferenceUID: imagePlaneModule.frameOfReferenceUID,
       toolName: toolName,
+      valueType: measurement.coords[0].ValueType,
+      graphicType: measurement.coords[0].GraphicType,
       referencedImageId: imageId,
       /**
        * Used to jump to measurement using currently
@@ -65,15 +67,20 @@ export default function addMeasurement(measurement, imageId, displaySetInstanceU
   annotationManager.addAnnotation(SRAnnotation);
   console.debug('Adding annotation:', SRAnnotation);
 
-  measurement.loaded = true;
   measurement.imageId = imageId;
   measurement.displaySetInstanceUID = displaySetInstanceUID;
 
-  // Remove the unneeded coord now its processed, but keep the SOPInstanceUID.
   // NOTE: We assume that each SCOORD in the MeasurementGroup maps onto one frame,
   // It'd be super weird if it didn't anyway as a SCOORD.
   measurement.ReferencedSOPInstanceUID =
     measurement.coords[0].ReferencedSOPSequence.ReferencedSOPInstanceUID;
   measurement.frameNumber = frameNumber;
-  delete measurement.coords;
+
+  /** This way we create measurements per display set (by FOR) and not only for the one that has referenced image */
+  measurement.loaded = false;
+  if (measurement.loadedByFOR === true) {
+    measurement.coords.forEach(coord => {
+      delete coord.ReferencedSOPSequence;
+    });
+  }
 }

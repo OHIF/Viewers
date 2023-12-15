@@ -1,5 +1,4 @@
 import { utils, classes, DisplaySetService, Types } from '@ohif/core';
-import cloneDeep from 'lodash.clonedeep';
 
 import addMeasurement from './utils/addMeasurement';
 import isRehydratable from './utils/isRehydratable';
@@ -191,11 +190,16 @@ function _load(displaySet, servicesManager, extensionManager) {
  * @param dataSource - The data source used to retrieve image IDs.
  * @param servicesManager - The services manager.
  */
-function _checkIfCanAddMeasurementsToDisplaySet(srDisplaySet, newDisplaySet, dataSource, servicesManager) {
+function _checkIfCanAddMeasurementsToDisplaySet(
+  srDisplaySet,
+  newDisplaySet,
+  dataSource,
+  servicesManager
+) {
   const { customizationService } = servicesManager.services;
 
   /** TODO: Investigate why without deepClone the measurements are not rendering */
-  let unloadedMeasurements = cloneDeep(srDisplaySet.measurements).filter(
+  let unloadedMeasurements = srDisplaySet.measurements.filter(
     measurement => measurement.loaded === false
   );
 
@@ -241,6 +245,7 @@ function _checkIfCanAddMeasurementsToDisplaySet(srDisplaySet, newDisplaySet, dat
             continue;
           }
 
+          measurement.loadedByFOR = true;
           coord.ReferencedSOPSequence = {
             ReferencedSOPClassUID: imageMetadata.SOPClassUID,
             ReferencedSOPInstanceUID: imageMetadata.SOPInstanceUID,

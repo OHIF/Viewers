@@ -10,9 +10,10 @@ import {
 import { getTrackingUniqueIdentifiersForElement } from './modules/dicomSRModule';
 import SCOORD_TYPES from '../constants/scoordTypes';
 import { CodeNameCodeSequenceValues } from '../enums';
+import toolNames from './toolNames';
 
 export default class DICOMSRDisplayTool extends AnnotationTool {
-  static toolName = 'DICOMSRDisplay';
+  static toolName = toolNames.DICOMSRDisplay;
 
   constructor(
     toolProps = {},
