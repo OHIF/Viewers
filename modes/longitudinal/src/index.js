@@ -74,7 +74,7 @@ function modeFactory({ modeConfiguration }) {
     /**
      * Lifecycle hooks
      */
-    onModeEnter: ({ servicesManager, extensionManager, commandsManager }) => {
+    onModeEnter: function ({ servicesManager, extensionManager, commandsManager }) {
       const {
         measurementService,
         toolbarService,
@@ -90,7 +90,7 @@ function modeFactory({ modeConfiguration }) {
         extensionManager,
         toolGroupService,
         commandsManager,
-        measurementService.getLabelConfig()
+        this.labelConfig
       );
 
       let unsubscribe;
