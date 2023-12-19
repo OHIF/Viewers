@@ -37,6 +37,7 @@ window.config = {
   },
   // filterQueryParam: false,
   defaultDataSourceName: 'idc-dicomweb',
+  defaultGCPDataSourceName: 'idc-gcp-dicomweb',
   /* Dynamic config allows user to pass "configUrl" query string this allows to load config without recompiling application. The regex will ensure valid configuration source */
   // dangerouslyUseDynamicConfig: {
   //   enabled: true,
@@ -63,11 +64,11 @@ window.config = {
   ],
   dataSources: [
     {
-      friendlyName: 'GCP DICOMWeb Server',
+      friendlyName: 'Primary GCP DICOMWeb Server',
       namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
-      sourceName: 'gcp-dicomweb',
+      sourceName: 'idc-gcp-dicomweb',
       configuration: {
-        name: 'gcp-dicomweb',
+        name: 'idc-gcp-dicomweb',
         qidoSupportsIncludeField: false,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
@@ -91,10 +92,11 @@ window.config = {
       },
     },
     {
-      sourceName: 'gcp-dicomweb-2',
+      friendlyName: 'Secondary GCP DICOMWeb Server',
       namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
+      sourceName: 'gcp',
       configuration: {
-        name: 'gcp-dicomweb-2',
+        name: 'gcp',
         qidoSupportsIncludeField: false,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
@@ -111,9 +113,9 @@ window.config = {
             dicomStore: url.split('dicomStores/')[1].split('/')[0],
           });
           const { query } = options;
-          const secondServer = query.get('secondGoogleServer');
-          if (secondServer) {
-            const { project, location, dataset, dicomStore } = extractParams(secondServer);
+          const gcp = query.get('gcp');
+          if (gcp) {
+            const { project, location, dataset, dicomStore } = extractParams(gcp);
             const pathUrl = `https://healthcare.googleapis.com/v1/projects/${project}/locations/${location}/datasets/${dataset}/dicomStores/${dicomStore}/dicomWeb`;
             return {
               ...dicomWebConfig,
