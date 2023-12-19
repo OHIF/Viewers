@@ -3,6 +3,76 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-beta.36](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.35...v3.8.0-beta.36) (2023-12-15)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.8.0-beta.35](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.34...v3.8.0-beta.35) (2023-12-14)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.8.0-beta.34](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.33...v3.8.0-beta.34) (2023-12-13)
+
+
+### Features
+
+* **overlay:** add inline binary overlays ([#3852](https://github.com/OHIF/Viewers/issues/3852)) ([0177b62](https://github.com/OHIF/Viewers/commit/0177b625ba86760168bc4db58c8a109aa9ee83cb))
+
+
+
+
+
+# [3.8.0-beta.33](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.32...v3.8.0-beta.33) (2023-12-13)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.8.0-beta.32](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.31...v3.8.0-beta.32) (2023-12-13)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.8.0-beta.31](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.30...v3.8.0-beta.31) (2023-12-13)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.8.0-beta.30](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.29...v3.8.0-beta.30) (2023-12-13)
+
+
+### Features
+
+* **customizationService:** Enable saving and loading of private tags in SRs ([#3842](https://github.com/OHIF/Viewers/issues/3842)) ([e1f55e6](https://github.com/OHIF/Viewers/commit/e1f55e65f2d2a34136ad5d0b1ada77d337a0ea23))
+
+
+
+
+
+# [3.8.0-beta.29](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.28...v3.8.0-beta.29) (2023-12-13)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
 # [3.8.0-beta.28](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.27...v3.8.0-beta.28) (2023-12-08)
 
 
