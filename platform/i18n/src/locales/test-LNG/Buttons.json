@@ -32,7 +32,7 @@
   "ROI Window": "Test ROI Window",
   "Rectangle": "Test Rectangle",
   "Reset": "Test $t(Common:Reset)",
-  "Reset to Defaults": "Test $t(Common:Reset) to Defaults",
+  "Reset to defaults": "Test $t(Common:Reset) to Defaults",
   "Rotate Right": "Test Rotate Right",
   "Sagittal": "Test Sagittal",
   "Save": "Test Save",

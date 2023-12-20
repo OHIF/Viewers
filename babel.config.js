@@ -26,6 +26,7 @@ module.exports = {
     '@babel/plugin-transform-typescript',
     ['@babel/plugin-proposal-private-property-in-object', { loose: true }],
     ['@babel/plugin-proposal-private-methods', { loose: true }],
+    '@babel/plugin-transform-class-static-block',
   ],
   env: {
     test: {
@@ -45,6 +46,7 @@ module.exports = {
         '@babel/plugin-proposal-object-rest-spread',
         '@babel/plugin-syntax-dynamic-import',
         '@babel/plugin-transform-regenerator',
+        '@babel/transform-destructuring',
         '@babel/plugin-transform-runtime',
         '@babel/plugin-transform-typescript',
       ],

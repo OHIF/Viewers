@@ -461,10 +461,10 @@ export default class ExtensionManager extends PubSubService {
 
     this.dataSourceDefs[dataSourceDef.sourceName] = dataSourceDef;
 
-    const { userAuthenticationService } = this._servicesManager.services;
     const dataSourceInstance = module.createDataSource(
       dataSourceDef.configuration,
-      userAuthenticationService
+      this._servicesManager,
+      this
     );
 
     this.dataSourceMap[dataSourceDef.sourceName] = [dataSourceInstance];

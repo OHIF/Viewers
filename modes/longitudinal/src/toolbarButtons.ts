@@ -6,14 +6,9 @@ import {
   WindowLevelMenuItem,
 } from '@ohif/ui';
 import { defaults, ToolbarService } from '@ohif/core';
-import type { Button, RunCommand } from '@ohif/core/types';
-import { EVENTS } from '@cornerstonejs/core';
+import type { Button } from '@ohif/core/types';
 
 const { windowLevelPresets } = defaults;
-
-const _createActionButton = ToolbarService._createButton.bind(null, 'action');
-const _createToggleButton = ToolbarService._createButton.bind(null, 'toggle');
-const _createToolButton = ToolbarService._createButton.bind(null, 'tool');
 
 /**
  *
@@ -59,20 +54,6 @@ function _createSetToolActiveCommands(toolName) {
   return temp;
 }
 
-const ReferenceLinesCommands: RunCommand = [
-  {
-    commandName: 'setSourceViewportForReferenceLinesTool',
-    context: 'CORNERSTONE',
-  },
-  {
-    commandName: 'setToolActive',
-    commandOptions: {
-      toolName: 'ReferenceLines',
-    },
-    context: 'CORNERSTONE',
-  },
-];
-
 const toolbarButtons: Button[] = [
   // Measurement
   {
@@ -82,7 +63,7 @@ const toolbarButtons: Button[] = [
       groupId: 'MeasurementTools',
       isRadio: true, // ?
       // Switch?
-      primary: _createToolButton(
+      primary: ToolbarService._createToolButton(
         'Length',
         'tool-length',
         'Length',
@@ -113,7 +94,7 @@ const toolbarButtons: Button[] = [
         tooltip: 'More Measure Tools',
       },
       items: [
-        _createToolButton(
+        ToolbarService._createToolButton(
           'Length',
           'tool-length',
           'Length',
@@ -137,7 +118,7 @@ const toolbarButtons: Button[] = [
           ],
           'Length Tool'
         ),
-        _createToolButton(
+        ToolbarService._createToolButton(
           'Bidirectional',
           'tool-bidirectional',
           'Bidirectional',
@@ -160,7 +141,7 @@ const toolbarButtons: Button[] = [
           ],
           'Bidirectional Tool'
         ),
-        _createToolButton(
+        ToolbarService._createToolButton(
           'ArrowAnnotate',
           'tool-annotate',
           'Annotation',
@@ -183,7 +164,7 @@ const toolbarButtons: Button[] = [
           ],
           'Arrow Annotate'
         ),
-        _createToolButton(
+        ToolbarService._createToolButton(
           'EllipticalROI',
           'tool-elipse',
           'Ellipse',
@@ -206,7 +187,7 @@ const toolbarButtons: Button[] = [
           ],
           'Ellipse Tool'
         ),
-        _createToolButton(
+        ToolbarService._createToolButton(
           'CircleROI',
           'tool-circle',
           'Circle',
@@ -249,7 +230,7 @@ const toolbarButtons: Button[] = [
     type: 'ohif.splitButton',
     props: {
       groupId: 'WindowLevel',
-      primary: _createToolButton(
+      primary: ToolbarService._createToolButton(
         'WindowLevel',
         'tool-window-level',
         'Window Level',
@@ -354,282 +335,6 @@ const toolbarButtons: Button[] = [
     },
   },
   // More...
-  {
-    id: 'MoreTools',
-    type: 'ohif.splitButton',
-    props: {
-      isRadio: true, // ?
-      groupId: 'MoreTools',
-      primary: _createActionButton(
-        'Reset',
-        'tool-reset',
-        'Reset View',
-        [
-          {
-            commandName: 'resetViewport',
-            commandOptions: {},
-            context: 'CORNERSTONE',
-          },
-        ],
-        'Reset'
-      ),
-      secondary: {
-        icon: 'chevron-down',
-        label: '',
-        isActive: true,
-        tooltip: 'More Tools',
-      },
-      items: [
-        _createActionButton(
-          'Reset',
-          'tool-reset',
-          'Reset View',
-          [
-            {
-              commandName: 'resetViewport',
-              commandOptions: {},
-              context: 'CORNERSTONE',
-            },
-          ],
-          'Reset'
-        ),
-        _createActionButton(
-          'rotate-right',
-          'tool-rotate-right',
-          'Rotate Right',
-          [
-            {
-              commandName: 'rotateViewportCW',
-              commandOptions: {},
-              context: 'CORNERSTONE',
-            },
-          ],
-          'Rotate +90'
-        ),
-        _createActionButton(
-          'flip-horizontal',
-          'tool-flip-horizontal',
-          'Flip Horizontally',
-          [
-            {
-              commandName: 'flipViewportHorizontal',
-              commandOptions: {},
-              context: 'CORNERSTONE',
-            },
-          ],
-          'Flip Horizontal'
-        ),
-        _createToggleButton(
-          'StackImageSync',
-          'link',
-          'Stack Image Sync',
-          [
-            {
-              commandName: 'toggleStackImageSync',
-            },
-          ],
-          'Enable position synchronization on stack viewports',
-          {
-            listeners: {
-              [EVENTS.STACK_VIEWPORT_NEW_STACK]: {
-                commandName: 'toggleStackImageSync',
-                commandOptions: { toggledState: true },
-              },
-            },
-          }
-        ),
-        _createToggleButton(
-          'ReferenceLines',
-          'tool-referenceLines', // change this with the new icon
-          'Reference Lines',
-          ReferenceLinesCommands,
-          'Show Reference Lines',
-          {
-            listeners: {
-              [EVENTS.STACK_VIEWPORT_NEW_STACK]: ReferenceLinesCommands,
-              [EVENTS.ACTIVE_VIEWPORT_ID_CHANGED]: ReferenceLinesCommands,
-            },
-          }
-        ),
-        _createToggleButton(
-          'ImageOverlayViewer',
-          'toggle-dicom-overlay',
-          'Image Overlay',
-          [
-            {
-              commandName: 'setToolActive',
-              commandOptions: {
-                toolName: 'ImageOverlayViewer',
-              },
-              context: 'CORNERSTONE',
-            },
-          ],
-          'Image Overlay',
-          { isActive: true }
-        ),
-        _createToolButton(
-          'StackScroll',
-          'tool-stack-scroll',
-          'Stack Scroll',
-          [
-            {
-              commandName: 'setToolActive',
-              commandOptions: {
-                toolName: 'StackScroll',
-              },
-              context: 'CORNERSTONE',
-            },
-          ],
-          'Stack Scroll'
-        ),
-        _createActionButton(
-          'invert',
-          'tool-invert',
-          'Invert',
-          [
-            {
-              commandName: 'invertViewport',
-              commandOptions: {},
-              context: 'CORNERSTONE',
-            },
-          ],
-          'Invert Colors'
-        ),
-        _createToolButton(
-          'Probe',
-          'tool-probe',
-          'Probe',
-          [
-            {
-              commandName: 'setToolActive',
-              commandOptions: {
-                toolName: 'DragProbe',
-              },
-              context: 'CORNERSTONE',
-            },
-          ],
-          'Probe'
-        ),
-        _createToggleButton(
-          'cine',
-          'tool-cine',
-          'Cine',
-          [
-            {
-              commandName: 'toggleCine',
-              context: 'CORNERSTONE',
-            },
-          ],
-          'Cine'
-        ),
-        _createToolButton(
-          'Angle',
-          'tool-angle',
-          'Angle',
-          [
-            {
-              commandName: 'setToolActive',
-              commandOptions: {
-                toolName: 'Angle',
-              },
-              context: 'CORNERSTONE',
-            },
-          ],
-          'Angle'
-        ),
-
-        // Next two tools can be added once icons are added
-        // _createToolButton(
-        //   'Cobb Angle',
-        //   'tool-cobb-angle',
-        //   'Cobb Angle',
-        //   [
-        //     {
-        //       commandName: 'setToolActive',
-        //       commandOptions: {
-        //         toolName: 'CobbAngle',
-        //       },
-        //       context: 'CORNERSTONE',
-        //     },
-        //   ],
-        //   'Cobb Angle'
-        // ),
-        // _createToolButton(
-        //   'Planar Freehand ROI',
-        //   'tool-freehand',
-        //   'PlanarFreehandROI',
-        //   [
-        //     {
-        //       commandName: 'setToolActive',
-        //       commandOptions: {
-        //         toolName: 'PlanarFreehandROI',
-        //       },
-        //       context: 'CORNERSTONE',
-        //     },
-        //   ],
-        //   'Planar Freehand ROI'
-        // ),
-        _createToolButton(
-          'Magnify',
-          'tool-magnify',
-          'Magnify',
-          [
-            {
-              commandName: 'setToolActive',
-              commandOptions: {
-                toolName: 'Magnify',
-              },
-              context: 'CORNERSTONE',
-            },
-          ],
-          'Magnify'
-        ),
-        _createToolButton(
-          'Rectangle',
-          'tool-rectangle',
-          'Rectangle',
-          [
-            {
-              commandName: 'setToolActive',
-              commandOptions: {
-                toolName: 'RectangleROI',
-              },
-              context: 'CORNERSTONE',
-            },
-          ],
-          'Rectangle'
-        ),
-        _createToolButton(
-          'CalibrationLine',
-          'tool-calibration',
-          'Calibration',
-          [
-            {
-              commandName: 'setToolActive',
-              commandOptions: {
-                toolName: 'CalibrationLine',
-              },
-              context: 'CORNERSTONE',
-            },
-          ],
-          'Calibration Line'
-        ),
-        _createActionButton(
-          'TagBrowser',
-          'list-bullets',
-          'Dicom Tag Browser',
-          [
-            {
-              commandName: 'openDICOMTagViewer',
-              commandOptions: {},
-              context: 'DEFAULT',
-            },
-          ],
-          'Dicom Tag Browser'
-        ),
-      ],
-    },
-  },
 ];
 
 export default toolbarButtons;

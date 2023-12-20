@@ -241,7 +241,6 @@ const commandsModule = ({
         ];
         stateSyncService.store(stateSyncReduce);
         // This is a default action applied
-        const { protocol } = hangingProtocolService.getActiveProtocol();
         actions.toggleHpTools();
 
         // try to use the same tool in the new hanging protocol stage
@@ -264,16 +263,6 @@ const commandsModule = ({
             });
           }
         }
-
-        // Send the notification about updating the state
-        if (protocolId !== hpInfo.protocolId) {
-          // The old protocol callbacks are used for turning off things
-          // like crosshairs when moving to the new HP
-          commandsManager.run(oldProtocol.callbacks?.onProtocolExit);
-          // The new protocol callback is used for things like
-          // activating modes etc.
-        }
-        commandsManager.run(protocol.callbacks?.onProtocolEnter);
         return true;
       } catch (e) {
         console.error(e);
