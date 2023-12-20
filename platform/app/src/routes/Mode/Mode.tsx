@@ -117,17 +117,6 @@ function defaultRouteInit(
       remainingPromises.forEach(p => p.forEach(p => p.start()));
     }
 
-    function runHP() {
-      const { unsubscribe } = hangingProtocolService.subscribe(
-        hangingProtocolService.EVENTS.PROTOCOL_CHANGED,
-        () => {
-          startRemainingPromises(remainingPromises);
-          unsubscribe();
-        }
-      );
-      applyHangingProtocol();
-    }
-
     promises.forEach(promise => {
       const retrieveSeriesMetadataPromise = promise.value;
       if (Array.isArray(retrieveSeriesMetadataPromise)) {
@@ -141,11 +130,9 @@ function defaultRouteInit(
       }
     });
 
-    if (allPromises.length) {
-      Promise.allSettled(allPromises).then(() => runHP());
-    } else {
-      runHP();
-    }
+    Promise.allSettled(allPromises).then(applyHangingProtocol);
+    startRemainingPromises(remainingPromises);
+    applyHangingProtocol();
   });
 
   return unsubscriptions;

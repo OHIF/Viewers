@@ -293,7 +293,8 @@ export type Protocol = {
    */
   numberOfPriorsReferenced?: number;
   syncDataForViewports?: boolean;
-  /* Set of minimal conditions necessary to run the hanging protocol
+  /**
+   * Set of minimal conditions necessary to run the hanging protocol.
    */
   hpInitiationCriteria?: {
     /* If configured, sets the minimum number of series needed to run the hanging
