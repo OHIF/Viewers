@@ -17,6 +17,7 @@ export default function getCustomizationModule({ servicesManager, extensionManag
   return [
     {
       name: 'helloPage',
+      merge: 'Append',
       value: {
         id: 'customRoutes',
         routes: [
@@ -31,6 +32,7 @@ export default function getCustomizationModule({ servicesManager, extensionManag
     // Example customization to list a set of datasources
     {
       name: 'datasources',
+      merge: 'Append',
       value: {
         id: 'customRoutes',
         routes: [
@@ -93,8 +95,8 @@ export default function getCustomizationModule({ servicesManager, extensionManag
               instance && this.attribute
                 ? instance[this.attribute]
                 : this.contentF && typeof this.contentF === 'function'
-                ? this.contentF(props)
-                : null;
+                  ? this.contentF(props)
+                  : null;
             if (!value) {
               return null;
             }

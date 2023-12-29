@@ -1,6 +1,6 @@
-import merge from 'lodash.merge';
+import mergeWith from 'lodash.mergewith';
 import { PubSubService } from '../_shared/pubSubServiceInterface';
-import { Customization, NestedStrings, Obj } from './types';
+import { Customization, NestedStrings } from './types';
 import { CommandsManager } from '../../classes';
 
 const EVENTS = {
@@ -27,6 +27,21 @@ const flattenNestedStrings = (
   }
   return ret;
 };
+
+export enum MergeEnum {
+  /**
+   * Append values in the nested arrays
+   */
+  Append = 'Append',
+  /**
+   * Merge values, replacing arrays
+   */
+  Merge = 'Merge',
+  /**
+   * Replace the given value - this is the default
+   */
+  Replace = 'Replace',
+}
 
 /**
  * The CustomizationService allows for retrieving of custom components
@@ -93,7 +108,7 @@ export default class CustomizationService extends PubSubService {
     });
   }
 
-  findExtensionValue(value: string): Obj | void {
+  findExtensionValue(value: string) {
     const entry = this.extensionManager.getModuleEntry(value);
     return entry;
   }
@@ -107,10 +122,15 @@ export default class CustomizationService extends PubSubService {
     return this.modeCustomizations;
   }
 
-  public setModeCustomization(customizationId: string, customization: Customization): void {
-    this.modeCustomizations[customizationId] = merge(
-      this.modeCustomizations[customizationId] || {},
-      customization
+  public setModeCustomization(
+    customizationId: string,
+    customization: Customization,
+    merge = MergeEnum.Merge
+  ): void {
+    this.modeCustomizations[customizationId] = this.mergeValue(
+      this.modeCustomizations[customizationId],
+      customization,
+      merge
     );
     this._broadcastEvent(this.EVENTS.CUSTOMIZATION_MODIFIED, {
       buttons: this.modeCustomizations,
@@ -209,8 +229,16 @@ export default class CustomizationService extends PubSubService {
     return this.transform(this.globalCustomizations[id] ?? defaultValue);
   }
 
-  setGlobalCustomization(id: string, value: Customization): void {
-    this.globalCustomizations[id] = value;
+  private mergeValue(oldValue, newValue, mergeType = MergeEnum.Replace) {
+    if (mergeType === MergeEnum.Replace) {
+      return newValue;
+    }
+
+    return mergeWith(oldValue || {}, newValue, mergeCustomizer.bind(null, mergeType));
+  }
+
+  public setGlobalCustomization(id: string, value: Customization, merge = MergeEnum.Replace): void {
+    this.globalCustomizations[id] = this.mergeValue(this.globalCustomizations[id], value, merge);
     this._broadcastGlobalCustomizationModified();
   }
 
@@ -235,7 +263,7 @@ export default class CustomizationService extends PubSubService {
    * A single reference is either an string to be loaded from a module,
    * or a customization itself.
    */
-  addReference(value?: Obj | string, isGlobal = true, id?: string): void {
+  addReference(value?, isGlobal = true, id?: string, merge?: MergeEnum): void {
     if (!value) {
       return;
     }
@@ -243,12 +271,16 @@ export default class CustomizationService extends PubSubService {
       const extensionValue = this.findExtensionValue(value);
       // The child of a reference is only a set of references when an array,
       // so call the addReference direct.  It could be a secondary reference perhaps
-      this.addReference(extensionValue.value, isGlobal, extensionValue.name);
+      this.addReference(extensionValue.value, isGlobal, extensionValue.name, extensionValue.merge);
     } else if (Array.isArray(value)) {
       this.addReferences(value, isGlobal);
     } else {
       const useId = value.id || id;
-      this[isGlobal ? 'setGlobalCustomization' : 'setModeCustomization'](useId as string, value);
+      this[isGlobal ? 'setGlobalCustomization' : 'setModeCustomization'](
+        useId as string,
+        value,
+        merge
+      );
     }
   }
 
@@ -257,7 +289,7 @@ export default class CustomizationService extends PubSubService {
    * or as an object whose key is the reference id, and the value is the string
    * or customization.
    */
-  addReferences(references?: Obj | Obj[], isGlobal = true): void {
+  addReferences(references?, isGlobal = true): void {
     if (!references) {
       return;
     }
@@ -271,5 +303,14 @@ export default class CustomizationService extends PubSubService {
         this.addReference(value, isGlobal, key);
       }
     }
+  }
+}
+
+/**
+ * Custom merging function, to handle merging arrays
+ */
+function mergeCustomizer(merge: MergeEnum, obj, src) {
+  if (merge === MergeEnum.Append && Array.isArray(obj)) {
+    return obj.concat(src);
   }
 }
