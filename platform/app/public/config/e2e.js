@@ -14,6 +14,7 @@ window.config = {
   customizationService: [
     '@ohif/extension-default.customizationModule.datasources',
     '@ohif/extension-default.customizationModule.helloPage',
+    '@ohif/extension-default.customizationModule.multimonitor',
   ],
 
   defaultDataSourceName: 'e2e',

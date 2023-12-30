@@ -6,6 +6,8 @@ import App from './App';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { history } from './utils/history';
+import WorkList from './routes/WorkList';
+import DataSourceWrapper from './routes/DataSourceWrapper';
 
 /**
  * EXTENSIONS AND MODES
@@ -41,4 +43,4 @@ loadDynamicConfig(window.config).then(config_json => {
   ReactDOM.render(app, document.getElementById('root'));
 });
 
-export { history };
+export { history, WorkList, DataSourceWrapper };

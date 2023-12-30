@@ -52,7 +52,8 @@ NotFoundStudy.propTypes = {
   message: PropTypes.string,
 };
 
-// TODO: Include "routes" debug route if dev build
+// TODO: Configure all of these in extensions modules instead.
+// Then, include "routes" debug route if dev build
 const bakedInRoutes = [
   {
     path: '/notfoundserver',
