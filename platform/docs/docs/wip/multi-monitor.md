@@ -21,7 +21,7 @@ also support multi-monitor
 4. Add a communication layer for:
   * Activation of tools/modes
   * Tool changes - eg Rotate should work across the board
-  * Annotation creation/updates - annotation on one view should affect hte others
+  * Annotation creation/updates - annotation on one view should affect the others
   * Navigation to current annotation - should find the item in any window
   * Changes to segmentations
   * Loading of SR, SEG, other data
