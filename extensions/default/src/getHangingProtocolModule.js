@@ -1,5 +1,8 @@
 import hpMNGrid from './hpMNGrid';
 import hpMNCompare from './hpCompare';
+// The multi-monitor hanging protocols are applied outside the specific mode,
+// so they need to be available generally.
+import { hpMultiMonitor1, hpMultiMonitor2 } from './hpMultiMonitor';
 
 const defaultProtocol = {
   id: 'default',
@@ -113,6 +116,15 @@ function getHangingProtocolModule() {
     {
       name: hpMNCompare.id,
       protocol: hpMNCompare,
+    },
+    // Create MultiMonitor hanging protocols available by default
+    {
+      name: hpMultiMonitor1.id,
+      protocol: hpMultiMonitor1,
+    },
+    {
+      name: hpMultiMonitor2.id,
+      protocol: hpMultiMonitor2,
     },
   ];
 }

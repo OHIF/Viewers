@@ -1,7 +1,7 @@
 window.config = {
   routerBasename: '/',
-  extensions: [],
-  modes: ['@ohif/mode-test'],
+  extensions: ['@ohif/extension-multimonitor'],
+  modes: ['@ohif/mode-test', '@ohif/mode-multimonitor'],
   showStudyList: true,
   // below flag is for performance reasons, but it might not work for all servers
   maxNumberOfWebWorkers: 3,
@@ -14,7 +14,6 @@ window.config = {
   customizationService: [
     '@ohif/extension-default.customizationModule.datasources',
     '@ohif/extension-default.customizationModule.helloPage',
-    '@ohif/extension-default.customizationModule.multimonitor',
   ],
 
   defaultDataSourceName: 'e2e',

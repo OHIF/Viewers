@@ -78,8 +78,8 @@ function Local({ modePath }: LocalProps) {
 
     if (microscopyExtensionLoaded) {
       // TODO: for microscopy, we are forcing microscopy mode, which is not ideal.
-      //     we should make the local drag and drop navigate to the worklist and
-      //     there user can select microscopy mode
+      //     we should just use a viewport from the microscopy services so that
+      // microscopy and other viewports can just be mixed/shown together.
       const smStudies = studies.filter(id => {
         const study = DicomMetadataStore.getStudy(id);
         return (

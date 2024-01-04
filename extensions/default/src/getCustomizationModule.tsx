@@ -2,7 +2,6 @@ import { CustomizationService } from '@ohif/core';
 import React from 'react';
 import DataSourceSelector from './Panels/DataSourceSelector';
 import DataSourceConfigurationComponent from './Components/DataSourceConfigurationComponent';
-import MultiMonitor from './MultiMonitor';
 import { GoogleCloudDataSourceConfigurationAPI } from './DataSourceConfigurationAPI/GoogleCloudDataSourceConfigurationAPI';
 
 /**
@@ -40,21 +39,6 @@ export default function getCustomizationModule({ servicesManager, extensionManag
           {
             path: '/datasources',
             children: DataSourceSelector,
-          },
-        ],
-      },
-    },
-
-    {
-      name: 'multimonitor',
-      merge: 'Append',
-      value: {
-        id: 'customRoutes',
-        routes: [
-          {
-            path: '/multimonitor',
-            children: MultiMonitor,
-            props: { servicesManager, extensionManager },
           },
         ],
       },

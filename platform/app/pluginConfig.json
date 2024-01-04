@@ -51,6 +51,11 @@
       "packageName": "@ohif/extension-cornerstone-dicom-rt",
       "default": false,
       "version": "3.0.0"
+    },
+    {
+      "packageName": "@ohif/extension-multimonitor",
+      "default": false,
+      "version": "3.0.0"
     }
   ],
   "modes": [
@@ -73,6 +78,11 @@
     },
     {
       "packageName": "@ohif/mode-basic-dev-mode",
+      "default": false,
+      "version": "3.0.0"
+    },
+    {
+      "packageName": "@ohif/mode-multimonitor",
       "default": false,
       "version": "3.0.0"
     }
