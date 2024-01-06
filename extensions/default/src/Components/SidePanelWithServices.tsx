@@ -23,6 +23,7 @@ const SidePanelWithServices = ({
   // Thus going to the Study List page and back to the viewer resets this flag for a SidePanel.
   const [hasBeenOpened, setHasBeenOpened] = useState(false);
   const [activeTabIndex, setActiveTabIndex] = useState(activeTabIndexProp);
+  const [tempTabIndex, setTempTabIndex] = useState<number | null>(null);
 
   useEffect(() => {
     if (panelService) {
@@ -33,6 +34,8 @@ const SidePanelWithServices = ({
             const tabIndex = tabs.findIndex(tab => tab.id === activatePanelEvent.panelId);
             if (tabIndex !== -1) {
               setActiveTabIndex(tabIndex);
+            } else {
+              setActiveTabIndex(null);
             }
           }
         }
@@ -44,6 +47,13 @@ const SidePanelWithServices = ({
     }
   }, [tabs, hasBeenOpened, panelService]);
 
+  useEffect(() => {
+    if (hasBeenOpened && tempTabIndex !== null) {
+      setActiveTabIndex(tempTabIndex);
+      setTempTabIndex(null); // Reset tempTabIndex
+    }
+  }, [tempTabIndex, hasBeenOpened]);
+
   return (
     <SidePanel
       side={side}
@@ -52,6 +62,7 @@ const SidePanelWithServices = ({
       tabs={tabs}
       onOpen={() => {
         setHasBeenOpened(true);
+        setTempTabIndex(0);
       }}
     ></SidePanel>
   );
