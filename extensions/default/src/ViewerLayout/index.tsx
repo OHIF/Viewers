@@ -140,7 +140,7 @@ function ViewerLayout({
               </ErrorBoundary>
             </div>
           </div>
-          {rightPanelComponents.length ? (
+          {/* {rightPanelComponents.length ? (
             <ErrorBoundary context="Right Panel">
               <SidePanelWithServices
                 side="right"
@@ -149,7 +149,7 @@ function ViewerLayout({
                 servicesManager={servicesManager}
               />
             </ErrorBoundary>
-          ) : null}
+          ) : null} */}
         </React.Fragment>
       </div>
     </div>
