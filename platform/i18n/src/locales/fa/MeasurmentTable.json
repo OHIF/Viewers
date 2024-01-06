@@ -1,0 +1,14 @@
+{
+  "Measurements": "تست اندازه‌گیری‌ها",
+  "No tracked measurements": "تست هیچ اندازه‌گیری پیگیری شده‌ای وجود ندارد",
+  "Create Report": "تست ایجاد گزارش",
+  "Export": "تست خروجی گرفتن",
+  "Delete": "حذف",
+  "Description": "توضیحات",
+  "MAX": "حداکثر",
+  "No, do not ask again": "تست خیر، دوباره نپرس",
+  "NonTargets": "غیر هدف",
+  "Relabel": "تغییر نام",
+  "Targets": "هدف",
+  "Track measurements for this series?": "تست پیگیری اندازه‌گیری‌ها برای این سری؟"
+}

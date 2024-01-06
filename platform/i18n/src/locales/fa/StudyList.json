@@ -1,0 +1,23 @@
+{
+  "Previous": "تست < قبلی",
+  "AccessionNumber": "تست شماره دسترسی #",
+  "Accession": "تست دسترسی",
+  "Description": "تست توضیحات",
+  "Empty": "تست خالی",
+  "Filter list to 100 studies or less to enable sorting": "تست فیلتر کردن لیست به 100 مطالعه یا کمتر برای فعال کردن مرتب‌سازی",
+  "Instances": "تست نمونه‌ها",
+  "MRN": "تست شماره پرونده بیمار",
+  "Modality": "تست حالت",
+  "Next": "تست بعدی >",
+  "No studies available": "تست هیچ مطالعه‌ای موجود نیست",
+  "Number of studies": "تست تعداد مطالعات",
+  "PatientName": "تست نام بیمار",
+  "Patient Name": "تست نام بیمار",
+  "Results per page": "تست نتایج در هر صفحه",
+  "StudyDate": "تست تاریخ مطالعه",
+  "Study date": "تست تاریخ مطالعه",
+  "Series": "تست سری",
+  "Study List": "تست لیست مطالعات",
+  "Study list": "تست لیست مطالعات",
+  "Upload": "تست بارگذاری"
+}

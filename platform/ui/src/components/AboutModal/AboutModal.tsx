@@ -78,46 +78,23 @@ const AboutModal = ({ buildNumber, versionNumber, commitHash }) => {
       {renderRowTitle(t('Important links'))}
       <div className="mb-8 flex">
         <Link
-          href="https://community.ohif.org/"
+          href="https://raoufmedical.ir/"
           showIcon={true}
         >
-            {t('Visit the forum')}
+          {t('Raouf Medical Company')}
         </Link>
         <span className="ml-4">
           <Link
-            href="https://github.com/OHIF/Viewers/issues/new/choose"
+            href="https://raoufmedical.ir/product/persiangulf-pacs/"
             showIcon={true}
           >
-            {t('Report an issue')}
-          </Link>
-        </span>
-        <span className="ml-4">
-          <Link
-            href="https://ohif.org/"
-            showIcon={true}
-          >
-          {t('More details')}
+            {t('Raouf Persian Gulf PACS')}
           </Link>
         </span>
       </div>
 
       {renderRowTitle(t('Version information'))}
       <div className="flex flex-col">
-        <Row
-          title={t('Repository URL')}
-          value="https://github.com/OHIF/Viewers/"
-          link="https://github.com/OHIF/Viewers/"
-        />
-        <Row
-          title={t('Data citation')}
-          value="https://github.com/OHIF/Viewers/blob/master/DATACITATION.md"
-          link="https://github.com/OHIF/Viewers/blob/master/DATACITATION.md"
-        />
-        {/* <Row
-          title={t('Last master commits')}
-          value="https://github.com/OHIF/Viewers/"
-          link="https://github.com/OHIF/Viewers/"
-        /> */}
         <Row
           title={t('Version number')}
           value={versionNumber}

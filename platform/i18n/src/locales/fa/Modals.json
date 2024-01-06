@@ -1,0 +1,13 @@
+{
+  "Download High Quality Image": "تست دانلود تصویر با کیفیت بالا",
+  "Cancel": "تست لغو",
+  "Download": "تست دانلود",
+  "File Name": "تست نام فایل",
+  "Active viewport has no displayed image": "تست نمایی فعال تصویری ندارد",
+  "Image preview": "تست پیش‌نمایش تصویر",
+  "Show Annotations": "تست نمایش حاشیه‌نگاری‌ها",
+  "File Type": "تست نوع فایل",
+  "Image height (px)": "تست ارتفاع تصویر (پیکسل)",
+  "Image width (px)": "تست عرض تصویر (پیکسل)",
+  "Please specify the dimensions, filename, and desired type for the output image.": "تست لطفاً ابعاد، نام فایل و نوع مطلوب برای تصویر خروجی را مشخص کنید."
+}

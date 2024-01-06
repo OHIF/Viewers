@@ -1,0 +1,18 @@
+{
+  "Active": "تست فعال",
+  "Add new segmentation": "تست افزودن تقسیم‌بندی جدید",
+  "Add segment": "تست افزودن قطعه",
+  "Add segmentation": "تست افزودن تقسیم‌بندی",
+  "Delete": "تست حذف",
+  "Display inactive segmentations": "تست نمایش تقسیم‌بندی‌های غیرفعال",
+  "Export DICOM SEG": "تست خروجی گرفتن از DICOM SEG",
+  "Download DICOM SEG": "تست دانلود DICOM SEG",
+  "Download DICOM RTSTRUCT": "تست دانلود DICOM RTSTRUCT",
+  "Fill": "تست پر کردن",
+  "Inactive segmentations": "تست تقسیم‌بندی‌های غیرفعال",
+  "Opacity": "تست شفافیت",
+  "Outline": "تست خط کش",
+  "Rename": "تست تغییر نام",
+  "Segmentation": "تست تقسیم‌بندی",
+  "Size": "تست اندازه"
+}

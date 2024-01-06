@@ -1,0 +1,18 @@
+{
+  "Do you want to add this measurement to the existing report?": "آیا می خواهید این اندازه‌گیری را به گزارش موجود اضافه کنید؟",
+  "Create new report": "ایجاد گزارش جدید",
+  "Add to existing report": "افزودن به گزارش موجود",
+  "Discard": "لغو",
+  "You have existing tracked measurements. What would you like to do with your existing tracked measurements?": "شما اندازه‌گیری‌های پیگیری شده موجود دارید. می‌خواهید با اندازه‌گیری‌های پیگیری شده موجود چه کار کنید؟",
+  "No, do not ask again for this series": "نه، برای این سری دیگر سوال نکنید",
+  "No": "نه",
+  "Track measurements for this series?": "آیا می‌خواهید اندازه‌گیری‌ها را برای این سری پیگیری کنید؟",
+  "Yes": "بله",
+  "Cancel": "لغو",
+  "Measurements cannot span across multiple studies. Do you want to save your tracked measurements?": "اندازه‌گیری‌ها نمی‌توانند از چندین مطالعه عبور کنند. آیا می‌خواهید اندازه‌گیری‌های پیگیری شده خود را ذخیره کنید؟",
+  "No, discard previously tracked series & measurements": "نه، سری و اندازه‌گیری‌های پیگیری شده قبلی را لغو کنید",
+  "Do you want to continue tracking measurements for this study?": "آیا می‌خواهید اندازه‌گیری‌ها را برای این مطالعه ادامه دهید؟",
+  "Create Report": "ایجاد گزارش",
+  "Measurements saved successfully": "اندازه‌گیری‌ها با موفقیت ذخیره شدند",
+  "Failed to store measurements": "ذخیره کردن اندازه‌گیری‌ها با شکست مواجه شد"
+}

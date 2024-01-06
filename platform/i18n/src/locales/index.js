@@ -10,8 +10,10 @@ import pt_BR from './pt-BR/';
 import vi from './vi/';
 import zh from './zh/';
 import test_lng from './test-LNG/';
+import fa from './fa';
 
 export default {
+  ...fa,
   ...ar,
   ...tr_TR,
   ...de,

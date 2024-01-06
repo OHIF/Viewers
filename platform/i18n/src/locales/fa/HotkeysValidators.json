@@ -1,0 +1,6 @@
+{
+  "Field can't be empty": "تست فیلد نمی‌تواند خالی باشد",
+  "Hotkey is already in use": "تست \"{{action}}\" در حال حاضر از میانبر \"{{pressedKeys}}\" استفاده می‌شود.",
+  "It's not possible to define only modifier keys (ctrl, alt and shift) as a shortcut": "تست امکان تعریف فقط کلیدهای اصلاح‌گر (ctrl، alt و shift) به عنوان یک میانبر وجود ندارد.",
+  "Shortcut combination is not allowed": "تست ترکیب میانبر {{pressedKeys}} مجاز نمی‌باشد"
+}
