@@ -124,18 +124,16 @@ function modeFactory({ modeConfiguration }) {
       toolbarService.createButtonSection(DEFAULT_TOOL_GROUP_ID, [
         'MoreTools',
         'WindowLevel',
-        'Pan',
         'Zoom',
         'Magnify',
-        'Capture',
+        'StackScroll',
       ]);
       toolbarService.createButtonSection(MPR_TOOL_GROUP_ID, [
         'MoreTools',
         'WindowLevel',
-        'Pan',
         'Zoom',
         'Magnify',
-        'Capture',
+        'StackScroll',
       ]);
 
       customizationService.addModeCustomizations([

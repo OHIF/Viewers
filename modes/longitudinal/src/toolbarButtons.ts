@@ -237,6 +237,18 @@ const toolbarButtons: Button[] = [
     },
   },
 
+  //StackScroll
+  {
+    id: 'StackScroll',
+    type: 'ohif.radioGroup',
+    props: {
+      type: 'tool',
+      icon: 'tool-stack-scroll',
+      label: 'Stack Scroll',
+      commands: _createSetToolActiveCommands('Stack Scroll'),
+    },
+  },
+
   // Window Level + Presets...
   {
     id: 'WindowLevel',
