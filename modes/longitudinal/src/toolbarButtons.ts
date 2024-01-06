@@ -224,6 +224,19 @@ const toolbarButtons: Button[] = [
       commands: _createSetToolActiveCommands('Zoom'),
     },
   },
+
+  //Magnifier
+  {
+    id: 'Magnify',
+    type: 'ohif.radioGroup',
+    props: {
+      type: 'tool',
+      icon: 'tool-magnify',
+      label: 'Magnify',
+      commands: _createSetToolActiveCommands('Magnify'),
+    },
+  },
+
   // Window Level + Presets...
   {
     id: 'WindowLevel',

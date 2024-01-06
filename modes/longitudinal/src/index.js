@@ -122,25 +122,20 @@ function modeFactory({ modeConfiguration }) {
       toolbarService.init(extensionManager);
       toolbarService.addButtons([...toolbarButtons, ...moreTools, ...moreToolsMpr]);
       toolbarService.createButtonSection(DEFAULT_TOOL_GROUP_ID, [
-        'MeasurementTools',
-        'Zoom',
+        'MoreTools',
         'WindowLevel',
         'Pan',
+        'Zoom',
+        'Magnify',
         'Capture',
-        'Layout',
-        'MPR',
-        'MoreTools',
       ]);
       toolbarService.createButtonSection(MPR_TOOL_GROUP_ID, [
-        'MeasurementTools',
-        'Zoom',
+        'MoreTools',
         'WindowLevel',
         'Pan',
+        'Zoom',
+        'Magnify',
         'Capture',
-        'Layout',
-        'MPR',
-        'Crosshairs',
-        'MoreToolsMpr',
       ]);
 
       customizationService.addModeCustomizations([

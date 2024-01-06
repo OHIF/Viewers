@@ -18,6 +18,19 @@ function initDefaultToolGroup(extensionManager, toolGroupService, commandsManage
       {
         toolName: toolNames.Zoom,
         bindings: [{ mouseButton: Enums.MouseBindings.Secondary }],
+        configuration: {
+          // whether zoom to the center of the image OR zoom to the mouse position
+          zoomToCenter: true,
+          minZoomScale: 0.1,
+          maxZoomScale: 30,
+          pinchToZoom: false,
+          pan: true,
+          invert: false,
+        },
+      },
+      {
+        toolName: toolNames.Magnify,
+        bindings: [{ mouseButton: Enums.MouseBindings.Primary }],
       },
       { toolName: toolNames.StackScrollMouseWheel, bindings: [] },
     ],
@@ -49,7 +62,7 @@ function initDefaultToolGroup(extensionManager, toolGroupService, commandsManage
       { toolName: toolNames.Angle },
       { toolName: toolNames.CobbAngle },
       { toolName: toolNames.PlanarFreehandROI },
-      { toolName: toolNames.Magnify },
+      // { toolName: toolNames.Magnify },
       { toolName: toolNames.SegmentationDisplay },
       { toolName: toolNames.CalibrationLine },
     ],
@@ -102,6 +115,19 @@ function initSRToolGroup(extensionManager, toolGroupService, commandsManager) {
             mouseButton: Enums.MouseBindings.Secondary,
           },
         ],
+        configuration: {
+          // whether zoom to the center of the image OR zoom to the mouse position
+          zoomToCenter: true,
+          minZoomScale: 0.1,
+          maxZoomScale: 30,
+          pinchToZoom: false,
+          pan: true,
+          invert: false,
+        },
+      },
+      {
+        toolName: toolNames.Magnify,
+        bindings: [{ mouseButton: Enums.MouseBindings.Primary }],
       },
       {
         toolName: toolNames.StackScrollMouseWheel,
@@ -148,6 +174,19 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
       {
         toolName: toolNames.Zoom,
         bindings: [{ mouseButton: Enums.MouseBindings.Secondary }],
+        configuration: {
+          // whether zoom to the center of the image OR zoom to the mouse position
+          zoomToCenter: true,
+          minZoomScale: 0.1,
+          maxZoomScale: 30,
+          pinchToZoom: false,
+          pan: true,
+          invert: false,
+        },
+      },
+      {
+        toolName: toolNames.Magnify,
+        bindings: [{ mouseButton: Enums.MouseBindings.Primary }],
       },
       { toolName: toolNames.StackScrollMouseWheel, bindings: [] },
     ],
@@ -217,6 +256,19 @@ function initVolume3DToolGroup(extensionManager, toolGroupService) {
       {
         toolName: toolNames.Zoom,
         bindings: [{ mouseButton: Enums.MouseBindings.Secondary }],
+        configuration: {
+          // whether zoom to the center of the image OR zoom to the mouse position
+          zoomToCenter: true,
+          minZoomScale: 0.1,
+          maxZoomScale: 30,
+          pinchToZoom: false,
+          pan: true,
+          invert: false,
+        },
+      },
+      {
+        toolName: toolNames.Magnify,
+        bindings: [{ mouseButton: Enums.MouseBindings.Primary }],
       },
       {
         toolName: toolNames.Pan,
