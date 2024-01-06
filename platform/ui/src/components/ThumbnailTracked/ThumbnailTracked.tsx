@@ -8,7 +8,7 @@ import Tooltip from '../Tooltip';
 import { StringNumber } from '../../types';
 import { useTranslation } from 'react-i18next';
 
-function ThumbnailTracked ({
+function ThumbnailTracked({
   displaySetInstanceUID,
   className,
   imageSrc,
@@ -87,21 +87,21 @@ function ThumbnailTracked ({
                 </div>
                 <div className="flex flex-1 flex-col">
                   <span>
-                    <span className="text-white">{isTracked ? t('Series is tracked') : t('Series is untracked')}</span>
+                    <span className="text-white">
+                      {isTracked ? t('Series is tracked') : t('Series is untracked')}
+                    </span>
                   </span>
                   {!!viewportIdentificator.length && (
-                    <span>
-                      {`${t('Viewport')}: ${viewportIdentificatorLabel}`}
-                    </span>
+                    <span>{`${t('Viewport')}: ${viewportIdentificatorLabel}`}</span>
                   )}
                 </div>
               </div>
             }
           >
-            <Icon
+            {/* <Icon
               name={trackedIcon}
               className="text-primary-light mb-2 w-4"
-            />
+            /> */}
           </Tooltip>
 
           <div
@@ -136,7 +136,7 @@ function ThumbnailTracked ({
       />
     </div>
   );
-};
+}
 
 ThumbnailTracked.propTypes = {
   /**
