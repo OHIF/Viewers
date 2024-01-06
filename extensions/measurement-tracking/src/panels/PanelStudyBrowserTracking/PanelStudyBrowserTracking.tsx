@@ -19,8 +19,13 @@ function PanelStudyBrowserTracking({
   requestDisplaySetCreationForStudy,
   dataSource,
 }) {
-  const { displaySetService, uiDialogService, hangingProtocolService, uiNotificationService } =
-    servicesManager.services;
+  const {
+    displaySetService,
+    uiDialogService,
+    hangingProtocolService,
+    uiNotificationService,
+    panelService,
+  } = servicesManager.services;
   const navigate = useNavigate();
 
   const { t } = useTranslation('Common');
@@ -48,6 +53,10 @@ function PanelStudyBrowserTracking({
         viewportId,
         displaySetInstanceUID
       );
+      panelService._broadcastEvent(panelService.EVENTS.ACTIVATE_PANEL, {
+        forceActive: true,
+        panelId: null,
+      });
     } catch (error) {
       console.warn(error);
       uiNotificationService.show({
@@ -341,7 +350,7 @@ function PanelStudyBrowserTracking({
           SeriesInstanceUID: displaySet.SeriesInstanceUID,
         });
       }}
-      onClickThumbnail={() => {}}
+      onClickThumbnail={() => { }}
       onDoubleClickThumbnail={onDoubleClickThumbnailHandler}
       activeDisplaySetInstanceUIDs={activeViewportDisplaySetInstanceUIDs}
     />
