@@ -141,6 +141,11 @@ const createBaseStyle = (expandedWidth: number) => {
   return {
     maxWidth: `${expandedWidth}px`,
     width: `${expandedWidth}px`,
+    // To align the top of the side panel with the top of the viewport grid, use position relative and offset the
+    // top by the same top offset as the viewport grid. Also adjust the height so that there is no overflow.
+    position: 'relative',
+    top: '0.2%',
+    height: '99.8%',
   };
 };
 const SidePanel = ({
