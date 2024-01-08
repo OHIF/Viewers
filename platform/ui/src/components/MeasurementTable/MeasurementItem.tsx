@@ -4,7 +4,17 @@ import classnames from 'classnames';
 
 import Icon from '../Icon';
 
-const MeasurementItem = ({ uid, index, label, displayText, isActive, onClick, onEdit, item }) => {
+const MeasurementItem = ({
+  uid,
+  index,
+  label,
+  displayText,
+  isActive,
+  isLocked,
+  onClick,
+  onEdit,
+  item,
+}) => {
   const [isHovering, setIsHovering] = useState(false);
 
   const onEditHandler = event => {
@@ -49,20 +59,22 @@ const MeasurementItem = ({ uid, index, label, displayText, isActive, onClick, on
             dangerouslySetInnerHTML={{ __html: line }}
           ></span>
         ))}
-        <Icon
-          className={classnames(
-            'absolute w-4 cursor-pointer text-white transition duration-300',
-            { 'invisible mr-2 opacity-0': !isActive && !isHovering },
-            { 'opacity-1 visible': !isActive && isHovering }
-          )}
-          name="pencil"
-          style={{
-            top: 4,
-            right: 4,
-            transform: isActive || isHovering ? '' : 'translateX(100%)',
-          }}
-          onClick={onEditHandler}
-        />
+        {!isLocked && (
+          <Icon
+            className={classnames(
+              'absolute w-4 cursor-pointer text-white transition duration-300',
+              { 'invisible mr-2 opacity-0': !isActive && !isHovering },
+              { 'opacity-1 visible': !isActive && isHovering }
+            )}
+            name="pencil"
+            style={{
+              top: 4,
+              right: 4,
+              transform: isActive || isHovering ? '' : 'translateX(100%)',
+            }}
+            onClick={onEditHandler}
+          />
+        )}
       </div>
     </div>
   );
