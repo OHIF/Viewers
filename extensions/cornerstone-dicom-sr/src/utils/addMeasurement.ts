@@ -63,8 +63,7 @@ export default function addMeasurement(measurement, imageId, displaySetInstanceU
     },
   };
 
-  const annotationManager = annotation.state.getAnnotationManager();
-  annotationManager.addAnnotation(SRAnnotation);
+  annotation.state.addAnnotation(SRAnnotation);
   console.debug('Adding annotation:', SRAnnotation);
 
   measurement.imageId = imageId;
