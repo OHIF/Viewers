@@ -125,7 +125,7 @@ export default function ModeRoute({
   // The URL's query search parameters where the keys casing is maintained
   const query = useSearchParams();
 
-  mode?.onModeInit({
+  mode?.onModeInit?.({
     servicesManager,
     extensionManager,
     commandsManager,
