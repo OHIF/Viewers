@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-beta.37](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.36...v3.8.0-beta.37) (2024-01-08)
+
+
+### Bug Fixes
+
+* colormap for stack viewports via HangingProtocol ([#3866](https://github.com/OHIF/Viewers/issues/3866)) ([e8858f3](https://github.com/OHIF/Viewers/commit/e8858f3eb55552f695af4a55980f9ae2e9af7291))
+
+
+
+
+
 # [3.8.0-beta.36](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.35...v3.8.0-beta.36) (2023-12-15)
 
 **Note:** Version bump only for package @ohif/extension-cornerstone
