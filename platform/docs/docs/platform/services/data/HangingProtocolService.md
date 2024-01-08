@@ -350,13 +350,18 @@ The below example modifies the included hanging protocol (extensions/tmtv/src/ge
 
 ```javascript
 ptDisplaySet: {
-  ...
-  seriesMatchingRules: [
-  {
-    attribute: 'sameAs',
-    sameAttribute: 'FrameOfReferenceUID',
-    sameDisplaySetId: 'ctDisplaySet',
-    required: true,
-  },
-  ...
+       ...
+       seriesMatchingRules: [
+        {
+          attribute: 'sameAs',
+          sameAttribute: 'FrameOfReferenceUID',
+          sameDisplaySetId: 'ctDisplaySet',
+          constraint: {
+            equals: {
+              value: true,
+            },
+          },
+          required: true,
+        },
+        ...
 ```

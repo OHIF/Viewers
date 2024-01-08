@@ -339,7 +339,9 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
     const textLines = this._getTextBoxLinesFromLabels(label);
     const canvasTextBoxCoords = utilities.drawing.getTextBoxCoordsCanvas(adaptedCanvasCoordinates);
 
-    annotation.data.handles.textBox.worldPosition = viewport.canvasToWorld(canvasTextBoxCoords);
+    if (!annotation.data?.handles?.textBox?.worldPosition) {
+      annotation.data.handles.textBox.worldPosition = viewport.canvasToWorld(canvasTextBoxCoords);
+    }
 
     const textBoxPosition = viewport.worldToCanvas(annotation.data.handles.textBox.worldPosition);
 

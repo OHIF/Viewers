@@ -124,6 +124,15 @@ export default function ModeRoute({
   const params = useParams();
   // The URL's query search parameters where the keys casing is maintained
   const query = useSearchParams();
+
+  mode?.onModeInit?.({
+    servicesManager,
+    extensionManager,
+    commandsManager,
+    appConfig,
+    query,
+  });
+
   // The URL's query search parameters where the keys are all lower case.
   const lowerCaseSearchParams = useSearchParams({ lowerCaseKeys: true });
 
@@ -341,6 +350,7 @@ export default function ModeRoute({
         servicesManager,
         extensionManager,
         commandsManager,
+        appConfig,
       });
 
       /**

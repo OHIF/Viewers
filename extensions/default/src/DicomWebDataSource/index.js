@@ -40,7 +40,8 @@ const metadataProvider = classes.MetadataProvider;
  * @param {bool} lazyLoadStudy - "enableStudyLazyLoad"; Request series meta async instead of blocking
  * @param {string|bool} singlepart - indicates of the retrieves can fetch singlepart.  Options are bulkdata, video, image or boolean true
  */
-function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
+function createDicomWebApi(dicomWebConfig, servicesManager) {
+  const { userAuthenticationService, customizationService } = servicesManager.services;
   let dicomWebConfigCopy,
     qidoConfig,
     wadoConfig,
@@ -140,7 +141,13 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
       instances: {
         search: (studyInstanceUid, queryParameters) => {
           qidoDicomWebClient.headers = getAuthrorizationHeader();
-          return qidoSearch.call(undefined, qidoDicomWebClient, studyInstanceUid, null, queryParameters);
+          return qidoSearch.call(
+            undefined,
+            qidoDicomWebClient,
+            studyInstanceUid,
+            null,
+            queryParameters
+          );
         },
       },
     },
@@ -211,7 +218,7 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
     },
 
     store: {
-      dicom: async (dataset, request) => {
+      dicom: async (dataset, request, dicomDict) => {
         wadoDicomWebClient.headers = getAuthrorizationHeader();
         if (dataset instanceof ArrayBuffer) {
           const options = {
@@ -220,21 +227,26 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
           };
           await wadoDicomWebClient.storeInstances(options);
         } else {
-          const meta = {
-            FileMetaInformationVersion: dataset._meta?.FileMetaInformationVersion?.Value,
-            MediaStorageSOPClassUID: dataset.SOPClassUID,
-            MediaStorageSOPInstanceUID: dataset.SOPInstanceUID,
-            TransferSyntaxUID: EXPLICIT_VR_LITTLE_ENDIAN,
-            ImplementationClassUID,
-            ImplementationVersionName,
-          };
+          let effectiveDicomDict = dicomDict;
 
-          const denaturalized = denaturalizeDataset(meta);
-          const dicomDict = new DicomDict(denaturalized);
+          if (!dicomDict) {
+            const meta = {
+              FileMetaInformationVersion: dataset._meta?.FileMetaInformationVersion?.Value,
+              MediaStorageSOPClassUID: dataset.SOPClassUID,
+              MediaStorageSOPInstanceUID: dataset.SOPInstanceUID,
+              TransferSyntaxUID: EXPLICIT_VR_LITTLE_ENDIAN,
+              ImplementationClassUID,
+              ImplementationVersionName,
+            };
 
-          dicomDict.dict = denaturalizeDataset(dataset);
+            const denaturalized = denaturalizeDataset(meta);
+            const defaultDicomDict = new DicomDict(denaturalized);
+            defaultDicomDict.dict = denaturalizeDataset(dataset);
 
-          const part10Buffer = dicomDict.write();
+            effectiveDicomDict = defaultDicomDict;
+          }
+
+          const part10Buffer = effectiveDicomDict.write();
 
           const options = {
             datasets: [part10Buffer],
@@ -361,11 +373,12 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
           // in which case it isn't necessary to re-read this.
           if (value && value.BulkDataURI && !value.Value) {
             // Provide a method to fetch bulkdata
-            value.retrieveBulkData = () => {
+            value.retrieveBulkData = (options = {}) => {
               // handle the scenarios where bulkDataURI is relative path
               fixBulkDataURI(value, naturalized, dicomWebConfig);
 
-              const options = {
+              const { mediaType } = options;
+              const useOptions = {
                 // The bulkdata fetches work with either multipart or
                 // singlepart, so set multipart to false to let the server
                 // decide which type to respond with.
@@ -376,9 +389,13 @@ function createDicomWebApi(dicomWebConfig, userAuthenticationService) {
                 // isn't well specified in the standard, but is needed in
                 // any implementation that stores static copies of the metadata
                 StudyInstanceUID: naturalized.StudyInstanceUID,
+                mediaTypes: mediaType
+                  ? [{ mediaType }, { mediaType: 'application/octet-stream' }]
+                  : undefined,
+                ...options,
               };
               // Todo: this needs to be from wado dicom web client
-              return qidoDicomWebClient.retrieveBulkData(options).then(val => {
+              return qidoDicomWebClient.retrieveBulkData(useOptions).then(val => {
                 // There are DICOM PDF cases where the first ArrayBuffer in the array is
                 // the bulk data and DICOM video cases where the second ArrayBuffer is
                 // the bulk data. Here we play it safe and do a find.

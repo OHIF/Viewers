@@ -3,6 +3,143 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-beta.42](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.41...v3.8.0-beta.42) (2024-01-08)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.8.0-beta.41](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.40...v3.8.0-beta.41) (2024-01-08)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.8.0-beta.40](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.39...v3.8.0-beta.40) (2024-01-08)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.8.0-beta.39](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.38...v3.8.0-beta.39) (2024-01-08)
+
+
+### Features
+
+* improve disableEditing flag ([#3875](https://github.com/OHIF/Viewers/issues/3875)) ([2049c09](https://github.com/OHIF/Viewers/commit/2049c0936c86f819604c243d3dc7b3fe971b5b2c))
+
+
+
+
+
+# [3.8.0-beta.38](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.37...v3.8.0-beta.38) (2024-01-08)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.8.0-beta.37](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.36...v3.8.0-beta.37) (2024-01-08)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.8.0-beta.36](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.35...v3.8.0-beta.36) (2023-12-15)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.8.0-beta.35](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.34...v3.8.0-beta.35) (2023-12-14)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.8.0-beta.34](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.33...v3.8.0-beta.34) (2023-12-13)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.8.0-beta.33](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.32...v3.8.0-beta.33) (2023-12-13)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.8.0-beta.32](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.31...v3.8.0-beta.32) (2023-12-13)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.8.0-beta.31](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.30...v3.8.0-beta.31) (2023-12-13)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.8.0-beta.30](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.29...v3.8.0-beta.30) (2023-12-13)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.8.0-beta.29](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.28...v3.8.0-beta.29) (2023-12-13)
+
+
+### Features
+
+* **i18n:** enhanced i18n support ([#3761](https://github.com/OHIF/Viewers/issues/3761)) ([d14a8f0](https://github.com/OHIF/Viewers/commit/d14a8f0199db95cd9e85866a011b64d6bf830d57))
+
+
+
+
+
+# [3.8.0-beta.28](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.27...v3.8.0-beta.28) (2023-12-08)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.8.0-beta.27](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.26...v3.8.0-beta.27) (2023-12-06)
+
+
+### Bug Fixes
+
+* **auth:** fix the issue with oauth at a non root path ([#3840](https://github.com/OHIF/Viewers/issues/3840)) ([6651008](https://github.com/OHIF/Viewers/commit/6651008fbb35dabd5991c7f61128e6ef324012df))
+
+
+
+
+
 # [3.8.0-beta.26](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.25...v3.8.0-beta.26) (2023-11-28)
 
 **Note:** Version bump only for package @ohif/extension-measurement-tracking

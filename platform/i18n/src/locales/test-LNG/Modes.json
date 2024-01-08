@@ -1,3 +1,8 @@
 {
-  "Basic Viewer": "Test Basic Viewer"
+  "Basic Dev Viewer": "Test Basic Dev Viewer",
+  "Basic Test Mode": "Test Basic Test Mode",
+  "Basic Viewer": "Test Basic Viewer",
+  "Microscopy": "Test Microscopy",
+  "Segmentation": "Test Segmentation",
+  "Total Metabolic Tumor Volume": "Test Total Metabolic Tumor Volume"
 }
