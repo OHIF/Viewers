@@ -8,6 +8,7 @@ export type SidePanelWithServicesProps = {
   className: string;
   activeTabIndex: number;
   tabs: any;
+  expandedWidth?: number;
 };
 
 const SidePanelWithServices = ({
@@ -16,7 +17,8 @@ const SidePanelWithServices = ({
   className,
   activeTabIndex: activeTabIndexProp,
   tabs,
-}) => {
+  expandedWidth,
+}: SidePanelWithServicesProps) => {
   const panelService: PanelService = servicesManager?.services?.panelService;
 
   // Tracks whether this SidePanel has been opened at least once since this SidePanel was inserted into the DOM.
@@ -53,6 +55,7 @@ const SidePanelWithServices = ({
       onOpen={() => {
         setHasBeenOpened(true);
       }}
+      expandedWidth={expandedWidth}
     ></SidePanel>
   );
 };
