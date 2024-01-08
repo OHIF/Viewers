@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-beta.38](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.37...v3.8.0-beta.38) (2024-01-08)
+
+
+### Bug Fixes
+
+* convert radian to degree value for mip rotation ([#3881](https://github.com/OHIF/Viewers/issues/3881)) ([bf846c9](https://github.com/OHIF/Viewers/commit/bf846c94c378f04b9f44dcd71be3f056dbcfe0b5))
+
+
+
+
+
 # [3.8.0-beta.37](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.36...v3.8.0-beta.37) (2024-01-08)
 
 **Note:** Version bump only for package @ohif/mode-tmtv
