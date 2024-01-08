@@ -8281,10 +8281,10 @@ cypress-file-upload@^3.5.3:
   resolved "https://registry.yarnpkg.com/cypress-file-upload/-/cypress-file-upload-3.5.3.tgz#cd706485de3fb2cbd4a8c2dd90fe96d537bb4311"
   integrity sha512-S/czzqAj1BYz6Xxnfpx2aSc6hXsj76fd8/iuycJ2RxoxCcQMliw8eQV0ugzVlkzr1GD5dKGviNFGYqv3nRJ+Tg==
 
-cypress@^13.2.0:
-  version "13.6.1"
-  resolved "https://registry.yarnpkg.com/cypress/-/cypress-13.6.1.tgz#c5f714f08551666ed3ac1fa95718eabb23a416df"
-  integrity sha512-k1Wl5PQcA/4UoTffYKKaxA0FJKwg8yenYNYRzLt11CUR0Kln+h7Udne6mdU1cUIdXBDTVZWtmiUjzqGs7/pEpw==
+cypress@13.6.2:
+  version "13.6.2"
+  resolved "https://registry.yarnpkg.com/cypress/-/cypress-13.6.2.tgz#c70df09db0a45063298b3cecba2fa21109768e08"
+  integrity sha512-TW3bGdPU4BrfvMQYv1z3oMqj71YI4AlgJgnrycicmPZAXtvywVFZW9DAToshO65D97rCWfG/kqMFsYB6Kp91gQ==
   dependencies:
     "@cypress/request" "^3.0.0"
     "@cypress/xvfb" "^1.2.4"
@@ -16168,7 +16168,7 @@ plugin-image-zoom@ataft/plugin-image-zoom:
   version "1.1.0"
   resolved "https://codeload.github.com/ataft/plugin-image-zoom/tar.gz/8e1b866c79ed6d42cefc4c52f851f1dfd1d0c7de"
   dependencies:
-    medium-zoom "^1.0.8"
+    medium-zoom "^1.0.4"
 
 polished@^4.2.2:
   version "4.2.2"
