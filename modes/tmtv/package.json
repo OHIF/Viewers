@@ -1,6 +1,6 @@
 {
   "name": "@ohif/mode-tmtv",
-  "version": "3.8.0-beta.36",
+  "version": "3.8.0-beta.37",
   "description": "Total Metabolic Tumor Volume Workflow",
   "author": "OHIF",
   "license": "MIT",
@@ -32,13 +32,13 @@
     "test:unit:ci": "jest --ci --runInBand --collectCoverage --passWithNoTests"
   },
   "peerDependencies": {
-    "@ohif/core": "3.8.0-beta.36",
-    "@ohif/extension-cornerstone": "3.8.0-beta.36",
-    "@ohif/extension-cornerstone-dicom-sr": "3.8.0-beta.36",
-    "@ohif/extension-default": "3.8.0-beta.36",
-    "@ohif/extension-dicom-pdf": "3.8.0-beta.36",
-    "@ohif/extension-dicom-video": "3.8.0-beta.36",
-    "@ohif/extension-measurement-tracking": "3.8.0-beta.36"
+    "@ohif/core": "3.8.0-beta.37",
+    "@ohif/extension-cornerstone": "3.8.0-beta.37",
+    "@ohif/extension-cornerstone-dicom-sr": "3.8.0-beta.37",
+    "@ohif/extension-default": "3.8.0-beta.37",
+    "@ohif/extension-dicom-pdf": "3.8.0-beta.37",
+    "@ohif/extension-dicom-video": "3.8.0-beta.37",
+    "@ohif/extension-measurement-tracking": "3.8.0-beta.37"
   },
   "dependencies": {
     "@babel/runtime": "^7.20.13",
