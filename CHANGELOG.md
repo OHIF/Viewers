@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-beta.40](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.39...v3.8.0-beta.40) (2024-01-08)
+
+
+### Features
+
+* **ui:** sidePanel expandedWidth ([#3728](https://github.com/OHIF/Viewers/issues/3728)) ([61bf22c](https://github.com/OHIF/Viewers/commit/61bf22c6f80e764bdf5c3b56bb0124a95aa0f793))
+
+
+
+
+
 # [3.8.0-beta.39](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.38...v3.8.0-beta.39) (2024-01-08)
 
 
