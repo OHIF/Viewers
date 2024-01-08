@@ -188,7 +188,7 @@ function SegmentationToolbox({ servicesManager, extensionManager }) {
       const toolGroup = toolGroupService.getToolGroup(toolGroupId);
       const toolConfig = toolGroup.getToolConfiguration(toolName);
       const defaultThresholdRange =
-        toolConfig.strategySpecificConfiguration.THRESHOLD_INSIDE_CIRCLE.threshold;
+        toolConfig.strategySpecificConfiguration?.THRESHOLD_INSIDE_CIRCLE?.threshold;
       dispatch({
         type: ACTIONS.SET_TOOL_CONFIG,
         payload: {
