@@ -8281,10 +8281,10 @@ cypress-file-upload@^3.5.3:
   resolved "https://registry.yarnpkg.com/cypress-file-upload/-/cypress-file-upload-3.5.3.tgz#cd706485de3fb2cbd4a8c2dd90fe96d537bb4311"
   integrity sha512-S/czzqAj1BYz6Xxnfpx2aSc6hXsj76fd8/iuycJ2RxoxCcQMliw8eQV0ugzVlkzr1GD5dKGviNFGYqv3nRJ+Tg==
 
-cypress@^13.2.0:
-  version "13.6.1"
-  resolved "https://registry.yarnpkg.com/cypress/-/cypress-13.6.1.tgz#c5f714f08551666ed3ac1fa95718eabb23a416df"
-  integrity sha512-k1Wl5PQcA/4UoTffYKKaxA0FJKwg8yenYNYRzLt11CUR0Kln+h7Udne6mdU1cUIdXBDTVZWtmiUjzqGs7/pEpw==
+cypress@13.6.2:
+  version "13.6.2"
+  resolved "https://registry.yarnpkg.com/cypress/-/cypress-13.6.2.tgz#c70df09db0a45063298b3cecba2fa21109768e08"
+  integrity sha512-TW3bGdPU4BrfvMQYv1z3oMqj71YI4AlgJgnrycicmPZAXtvywVFZW9DAToshO65D97rCWfG/kqMFsYB6Kp91gQ==
   dependencies:
     "@cypress/request" "^3.0.0"
     "@cypress/xvfb" "^1.2.4"
@@ -8832,10 +8832,10 @@ dicomicc@^0.1:
   resolved "https://registry.yarnpkg.com/dicomicc/-/dicomicc-0.1.0.tgz#c73acc60a8e2d73a20f462c8c7d0e1e0d977c486"
   integrity sha512-kZejPGjLQ9NsgovSyVsiAuCpq6LofNR9Erc8Tt/vQAYGYCoQnTyWDlg5D0TJJQATKul7cSr9k/q0TF8G9qdDkQ==
 
-dicomweb-client@^0.10.2:
-  version "0.10.3"
-  resolved "https://registry.yarnpkg.com/dicomweb-client/-/dicomweb-client-0.10.3.tgz#b4fe550037166dff5d8afd88db3800eb579c91f4"
-  integrity sha512-/fHNEAYiz8j+9TNOrNJ0k+hYqirbOT85B7vM7I4VkY8DeDQb4BDUeL3RX6huDVtn6ZQlR91dI+2tejLc5c99wA==
+dicomweb-client@^0.10.4:
+  version "0.10.4"
+  resolved "https://registry.yarnpkg.com/dicomweb-client/-/dicomweb-client-0.10.4.tgz#f32f8659e51fbaf3f924c81fe8b7ad80297f2bc5"
+  integrity sha512-TEt26c0JI37IGmSqoj1k1/Y/ZIyq33/ysVaUwE0/Haosn2IBM55NEIPkT+AnhFss2nFAMVtKKWKWLox4luthVw==
 
 dicomweb-client@^0.8:
   version "0.8.4"
@@ -14217,7 +14217,7 @@ media-typer@0.3.0:
   resolved "https://registry.yarnpkg.com/media-typer/-/media-typer-0.3.0.tgz#8710d7af0aa626f8fffa1ce00168545263255748"
   integrity sha512-dq+qelQ9akHpcOl/gUVRTxVIOkAJ1wR3QAvb4RsVjS8oVoFjDGTc679wJYmUmknUF5HwMLOgb5O+a3KxfWapPQ==
 
-medium-zoom@^1.0.4:
+medium-zoom@^1.0.8:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/medium-zoom/-/medium-zoom-1.1.0.tgz#6efb6bbda861a02064ee71a2617a8dc4381ecc71"
   integrity sha512-ewyDsp7k4InCUp3jRmwHBRFGyjBimKps/AJLjRSox+2q/2H4p/PNpQf+pwONWlJiOudkBXtbdmVbFjqyybfTmQ==
