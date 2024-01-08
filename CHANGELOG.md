@@ -3,6 +3,29 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-beta.38](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.37...v3.8.0-beta.38) (2024-01-08)
+
+
+### Bug Fixes
+
+* convert radian to degree value for mip rotation ([#3881](https://github.com/OHIF/Viewers/issues/3881)) ([bf846c9](https://github.com/OHIF/Viewers/commit/bf846c94c378f04b9f44dcd71be3f056dbcfe0b5))
+* PDF display request in v3 ([#3878](https://github.com/OHIF/Viewers/issues/3878)) ([9865030](https://github.com/OHIF/Viewers/commit/98650302c7575f0aea386e32cfc4112c378035e6))
+
+
+
+
+
+# [3.8.0-beta.37](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.36...v3.8.0-beta.37) (2024-01-08)
+
+
+### Bug Fixes
+
+* colormap for stack viewports via HangingProtocol ([#3866](https://github.com/OHIF/Viewers/issues/3866)) ([e8858f3](https://github.com/OHIF/Viewers/commit/e8858f3eb55552f695af4a55980f9ae2e9af7291))
+
+
+
+
+
 # [3.8.0-beta.36](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.35...v3.8.0-beta.36) (2023-12-15)
 
 **Note:** Version bump only for package ohif-monorepo-root

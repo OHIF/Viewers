@@ -71,7 +71,7 @@ export type DisplaySetOptions = {
   voiInverted: boolean;
   blendMode?: Enums.BlendModes;
   slabThickness?: number;
-  colormap?: string;
+  colormap?: { name: string, opacity?: number };
   displayPreset?: string;
 };
 
