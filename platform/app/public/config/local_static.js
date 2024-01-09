@@ -21,7 +21,6 @@ window.config = {
         name: 'DCM4CHEE',
         qidoRoot: '/dicomweb',
         wadoRoot: '/dicomweb',
-        acceptHeader: ['multipart/related; type=application/octet-stream; transfer-syntax=*'],
         qidoSupportsIncludeField: false,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
