@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-beta.43](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.42...v3.8.0-beta.43) (2024-01-09)
+
+
+### Bug Fixes
+
+* **segmentation:** upgrade cs3d to fix various segmentation bugs ([#3885](https://github.com/OHIF/Viewers/issues/3885)) ([b1efe40](https://github.com/OHIF/Viewers/commit/b1efe40aa146e4052cc47b3f774cabbb47a8d1a6))
+
+
+
+
+
 # [3.8.0-beta.42](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.41...v3.8.0-beta.42) (2024-01-08)
 
 **Note:** Version bump only for package @ohif/core
