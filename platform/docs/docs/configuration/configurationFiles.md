@@ -258,6 +258,8 @@ reasons:
   to uncompressed ones. Smaller files transmit faster over the network, leading to quicker load
   times for the end-user. By accepting any syntax, the client can take advantage of compression when available.
 
+However, if you would like to get compressed data in a specific transfer syntax, you can modify the `acceptHeader` configuration or
+`requestTransferSyntaxUID` configuration.
 
 ## Environment Variables
 
