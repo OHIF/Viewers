@@ -3,6 +3,49 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-beta.42](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.41...v3.8.0-beta.42) (2024-01-08)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
+# [3.8.0-beta.41](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.40...v3.8.0-beta.41) (2024-01-08)
+
+
+### Features
+
+* Add on mode init hook ([#3882](https://github.com/OHIF/Viewers/issues/3882)) ([f58725c](https://github.com/OHIF/Viewers/commit/f58725ce40685f7297181ef98d81bc28420c8291))
+
+
+
+
+
+# [3.8.0-beta.40](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.39...v3.8.0-beta.40) (2024-01-08)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
+# [3.8.0-beta.39](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.38...v3.8.0-beta.39) (2024-01-08)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
+# [3.8.0-beta.38](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.37...v3.8.0-beta.38) (2024-01-08)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
 # [3.8.0-beta.37](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.36...v3.8.0-beta.37) (2024-01-08)
 
 **Note:** Version bump only for package ohif-docs
