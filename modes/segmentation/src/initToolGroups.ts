@@ -42,7 +42,7 @@ function createTools(utilityModule) {
         configuration: {
           activeStrategy: 'THRESHOLD_INSIDE_CIRCLE',
           strategySpecificConfiguration: {
-            THRESHOLD_INSIDE_CIRCLE: {
+            THRESHOLD: {
               threshold: [-500, 500],
             },
           },
@@ -54,7 +54,7 @@ function createTools(utilityModule) {
         configuration: {
           activeStrategy: 'THRESHOLD_INSIDE_SPHERE',
           strategySpecificConfiguration: {
-            THRESHOLD_INSIDE_SPHERE: {
+            THRESHOLD: {
               threshold: [-500, 500],
             },
           },
