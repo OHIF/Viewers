@@ -172,14 +172,6 @@ function OHIFCornerstoneSEGViewport(props) {
         if (evt.segDisplaySet.displaySetInstanceUID === segDisplaySet.displaySetInstanceUID) {
           setSegIsLoading(false);
         }
-
-        if (evt.overlappingSegments) {
-          uiNotificationService.show({
-            title: 'Overlapping Segments',
-            message: 'Overlapping segments detected which is not currently supported',
-            type: 'warning',
-          });
-        }
       }
     );
 
