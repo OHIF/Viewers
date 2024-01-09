@@ -90,7 +90,7 @@ function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager, mo
       {
         toolName: toolNames.VolumeRotateMouseWheel,
         configuration: {
-          rotateIncrementDegrees: 0.1,
+          rotateIncrementDegrees: 5,
         },
       },
       {
