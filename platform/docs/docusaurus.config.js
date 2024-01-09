@@ -60,10 +60,10 @@ module.exports = {
       ? // Deploy preview: keep it fast!
         ['en']
       : isI18nStaging
-      ? // Staging locales: https://docusaurus-i18n-staging.netlify.app/
-        ['en']
-      : // Production locales
-        ['en'],
+        ? // Staging locales: https://docusaurus-i18n-staging.netlify.app/
+          ['en']
+        : // Production locales
+          ['en'],
   },
   onBrokenLinks: 'warn',
   onBrokenMarkdownLinks: 'warn',
@@ -88,7 +88,7 @@ module.exports = {
       },
     }),
     path.resolve(__dirname, './pluginOHIFWebpackConfig.js'),
-    'plugin-image-zoom', // 3rd party plugin for image click to pop
+    'docusaurus-plugin-image-zoom', // 3rd party plugin for image click to pop
     [
       '@docusaurus/plugin-client-redirects',
       {
@@ -281,6 +281,16 @@ module.exports = {
         apiKey: 'c220dd24fe4f86248eea3b1238a1fb60',
         indexName: 'ohif',
       },
+      // zoom: {
+      //   selector: '.markdown > img',
+      //   background: {
+      //     light: 'rgb(255, 255, 255)',
+      //     dark: 'rgb(50, 50, 50)',
+      //   },
+      //   config: {
+      //     // options you can specify via https://github.com/francoischalifour/medium-zoom#usage
+      //   },
+      // },
       navbar: {
         hideOnScroll: false,
         logo: {
