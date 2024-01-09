@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-beta.45](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.44...v3.8.0-beta.45) (2024-01-09)
+
+
+### Features
+
+* **hp:** enable OHIF to run with partial metadata for large studies at the cost of less effective hanging protocol ([#3804](https://github.com/OHIF/Viewers/issues/3804)) ([0049f4c](https://github.com/OHIF/Viewers/commit/0049f4c0303f0b6ea995972326fc8784259f5a47))
+
+
+
+
+
+# [3.8.0-beta.44](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.43...v3.8.0-beta.44) (2024-01-09)
+
+
+### Features
+
+* **transferSyntax:** prefer server transcoded transfer syntax for all images ([#3883](https://github.com/OHIF/Viewers/issues/3883)) ([1456a49](https://github.com/OHIF/Viewers/commit/1456a493d66c90c787b022256c9f2846afb115fc))
+
+
+
+
+
 # [3.8.0-beta.43](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.42...v3.8.0-beta.43) (2024-01-09)
 
 
