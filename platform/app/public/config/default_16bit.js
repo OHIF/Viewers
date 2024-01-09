@@ -40,7 +40,6 @@ window.config = {
         wadoUriRoot: 'https://domvja9iplmyu.cloudfront.net/dicomweb',
         qidoRoot: 'https://domvja9iplmyu.cloudfront.net/dicomweb',
         wadoRoot: 'https://domvja9iplmyu.cloudfront.net/dicomweb',
-        acceptHeader: ['multipart/related; type=application/octet-stream; transfer-syntax=*'],
         qidoSupportsIncludeField: false,
         supportsReject: false,
         imageRendering: 'wadors',

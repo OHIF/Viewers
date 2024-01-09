@@ -20,7 +20,6 @@ window.config = {
         wadoUriRoot: 'http://localhost:5985',
         qidoRoot: 'http://localhost:5985',
         wadoRoot: 'http://localhost:5985',
-        acceptHeader: ['multipart/related; type=application/octet-stream; transfer-syntax=*'],
         qidoSupportsIncludeField: true,
         supportsReject: true,
         imageRendering: 'wadouri',
