@@ -1,6 +1,6 @@
 const generateAcceptHeader = (
   configAcceptHeader = [],
-  requestTransferSyntaxUID = null,
+  requestTransferSyntaxUID = '*', //default to accept all transfer syntax
   omitQuotationForMultipartRequest = false
 ): string[] => {
   //if acceptedHeader is passed by config use it as it.
