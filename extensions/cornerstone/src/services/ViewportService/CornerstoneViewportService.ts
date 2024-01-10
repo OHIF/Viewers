@@ -391,7 +391,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
 
     const properties = { ...presentations.lutPresentation?.properties };
     if (!presentations.lutPresentation?.properties) {
-      const { voi, voiInverted } = displaySetOptions[0];
+      const { voi, voiInverted, colormap } = displaySetOptions[0];
       if (voi && (voi.windowWidth || voi.windowCenter)) {
         const { lower, upper } = csUtils.windowLevel.toLowHighRange(
           voi.windowWidth,
@@ -402,6 +402,10 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
 
       if (voiInverted !== undefined) {
         properties.invert = voiInverted;
+      }
+
+      if (colormap !== undefined) {
+        properties.colormap = colormap;
       }
     }
 
@@ -787,8 +791,8 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       const { dimensions } = imageVolume;
       const slabThickness = Math.sqrt(
         dimensions[0] * dimensions[0] +
-          dimensions[1] * dimensions[1] +
-          dimensions[2] * dimensions[2]
+        dimensions[1] * dimensions[1] +
+        dimensions[2] * dimensions[2]
       );
 
       return slabThickness;

@@ -185,6 +185,7 @@ if auth headers are used, a preflight request is required.
   load the volume progressively as the data arrives (each webworker has the shared buffer and can write to it). However, there might be certain environments that do not support sharedArrayBuffer. In that case, you can set this flag to false and the viewer will use the regular arrayBuffer which might be slower for large volume loading.
 - `supportsWildcard`: (default to false), if set to true, the datasource will support wildcard matching for patient name and patient id.
 - `allowMultiSelectExport`: (default to false), if set to true, the user will be able to select the datasource to export the report to.
+- `activateViewportBeforeInteraction`: (default to true), if set to false, tools can be used directly without the need to click and activate the viewport.
 - `autoPlayCine`: (default to false), if set to true, data sets with the DICOM frame time tag (i.e. (0018,1063)) will auto play when displayed
 - `dangerouslyUseDynamicConfig`: Dynamic config allows user to pass `configUrl` query string. This allows to load config without recompiling application. If the `configUrl` query string is passed, the worklist and modes will load from the referenced json rather than the default .env config. If there is no `configUrl` path provided, the default behaviour is used and there should not be any deviation from current user experience.<br/>
 Points to consider while using `dangerouslyUseDynamicConfig`:<br/>
@@ -238,12 +239,27 @@ Example usage:<br/>
 This configuration would allow the user to build a dicomweb configuration from a GCP healthcare api path e.g. http://localhost:3000/projects/your-gcp-project/locations/us-central1/datasets/your-dataset/dicomStores/your-dicom-store/study/1.3.6.1.4.1.1234.5.2.1.1234.1234.123123123123123123123123123123
 
 
-<!-- **Embedded Use Note:**
+### More on Accept Header Configuration
+In the previous section we showed that you can modify the `acceptHeader`
+configuration to request specific dicom transfer syntax. By default
+we use `acceptHeader: ['multipart/related; type=application/octet-stream; transfer-syntax=*']` for the following
+reasons:
 
-Alternatively, when using the `umd` bundle for embedded use cases, these same
-values are what you'll pass to `installViewer` method:
+- **Ensures Optimal Transfer Syntax**: By allowing the server to select the transfer syntax,
+  the client is more likely to receive the image in a syntax that's well-suited for fast transmission
+  and rendering. This might be the original syntax the image was stored in or another syntax that the server deems efficient.
 
-`OHIFStandaloneViewer.installViewer(window.config)` -->
+- **Avoids Transcoding**: Transcoding (converting from one transfer syntax to another) can be a resource-intensive process.
+ Since the OHIF Viewer supports all transfer syntaxes, it is fine to accept any transfer syntax (transfer-syntax=*).
+ This allows the server to send the images in their stored syntax, avoiding the need for costly on-the-fly conversions.
+ This approach not only saves server resources but also reduces response times by leveraging the viewer's capability to handle various syntaxes directly.
+
+- **Faster Data Transfer**: Compressed transfer syntaxes generally result in smaller file sizes compared
+  to uncompressed ones. Smaller files transmit faster over the network, leading to quicker load
+  times for the end-user. By accepting any syntax, the client can take advantage of compression when available.
+
+However, if you would like to get compressed data in a specific transfer syntax, you can modify the `acceptHeader` configuration or
+`requestTransferSyntaxUID` configuration.
 
 ## Environment Variables
 

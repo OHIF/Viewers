@@ -5,10 +5,12 @@ import { ServicesManager, Types, MeasurementService } from '@ohif/core';
 import { ViewportGrid, ViewportPane, useViewportGrid } from '@ohif/ui';
 import EmptyViewport from './EmptyViewport';
 import classNames from 'classnames';
+import { useAppConfig } from '@state';
 
 function ViewerViewportGrid(props) {
   const { servicesManager, viewportComponents, dataSource } = props;
   const [viewportGrid, viewportGridService] = useViewportGrid();
+  const [appConfig] = useAppConfig();
 
   const { layout, activeViewportId, viewports } = viewportGrid;
   const { numCols, numRows } = layout;
@@ -313,7 +315,8 @@ function ViewerViewportGrid(props) {
           <div
             data-cy="viewport-pane"
             className={classNames('flex h-full w-full flex-col', {
-              'pointer-events-none': !isActive,
+              'pointer-events-none':
+                !isActive && (appConfig?.activateViewportBeforeInteraction ?? true),
             })}
           >
             <ViewportComponent
