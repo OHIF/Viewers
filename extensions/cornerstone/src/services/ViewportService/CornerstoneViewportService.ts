@@ -44,6 +44,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
   viewportsById: Map<string, ViewportInfo> = new Map();
   viewportGridResizeObserver: ResizeObserver | null;
   viewportsDisplaySets: Map<string, string[]> = new Map();
+  beforeResizeZoomLevels: Map<string, number> = new Map();
 
   // Some configs
   enableResizeDetector: true;
@@ -144,8 +145,32 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
 
   private performResize() {
     const isImmediate = false;
-    this.renderingEngine.resize(isImmediate);
-    this.renderingEngine.render();
+
+    const viewports = this.getRenderingEngine().getViewports();
+
+    // Store the zoom scale before resizing.
+    viewports.forEach(viewport => {
+      const zoomLevel = viewport.getZoom();
+      this.beforeResizeZoomLevels.set(viewport.id, zoomLevel);
+    });
+
+    // Resize the rendering engine and render.
+    const renderingEngine = this.renderingEngine;
+    renderingEngine.resize(isImmediate);
+    renderingEngine.render();
+
+    // Reset the camera for viewports that should reset their camera on resize,
+    // which means only those viewports that have a zoom level of 1.
+    this.beforeResizeZoomLevels.forEach((zoomLevel, viewportId) => {
+      if (zoomLevel === 1) {
+        const viewport = renderingEngine.getViewport(viewportId);
+        viewport?.resetCamera();
+      }
+    });
+
+    // Resize and render the rendering engine again.
+    this.renderingEngine?.resize(isImmediate);
+    this.renderingEngine?.render();
   }
 
   private resetGridResizeTimeout() {
@@ -791,8 +816,8 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       const { dimensions } = imageVolume;
       const slabThickness = Math.sqrt(
         dimensions[0] * dimensions[0] +
-        dimensions[1] * dimensions[1] +
-        dimensions[2] * dimensions[2]
+          dimensions[1] * dimensions[1] +
+          dimensions[2] * dimensions[2]
       );
 
       return slabThickness;

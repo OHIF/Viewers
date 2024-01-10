@@ -101,7 +101,6 @@ const OHIFCornerstoneViewport = React.memo(props => {
     viewportOptions,
     displaySetOptions,
     servicesManager,
-    commandsManager,
     onElementEnabled,
     onElementDisabled,
     isJumpToMeasurementDisabled,
@@ -203,6 +202,8 @@ const OHIFCornerstoneViewport = React.memo(props => {
       if (onElementDisabled) {
         onElementDisabled(viewportInfo);
       }
+
+      cornerstoneViewportService.disableElement(viewportId);
 
       eventTarget.removeEventListener(Enums.Events.ELEMENT_ENABLED, elementEnabledHandler);
     };
