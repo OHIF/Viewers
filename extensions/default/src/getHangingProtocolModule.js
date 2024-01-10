@@ -23,7 +23,7 @@ const defaultProtocol = {
   // additional viewports are added using the layout tool
   defaultViewport: {
     viewportOptions: {
-      viewportType: 'stack',
+      viewportType: 'volume',
       toolGroupId: 'default',
       allowUnmatchedView: true,
     },
@@ -73,7 +73,7 @@ const defaultProtocol = {
       viewports: [
         {
           viewportOptions: {
-            viewportType: 'stack',
+            viewportType: 'volume',
             viewportId: 'default',
             toolGroupId: 'default',
             // This will specify the initial image options index if it matches in the URL

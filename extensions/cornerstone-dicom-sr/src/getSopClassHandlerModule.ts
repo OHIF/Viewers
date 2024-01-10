@@ -6,7 +6,6 @@ import { SOPClassHandlerName, SOPClassHandlerId } from './id';
 import {
   CodeNameCodeSequenceValues,
   CodingSchemeDesignators,
-  RELATIONSHIP_TYPE,
   CORNERSTONE_FREETEXT_CODE_VALUE,
 } from './enums';
 
@@ -138,6 +137,7 @@ function _getDisplaySetsFromSeries(instances, servicesManager, extensionManager)
  * @param {Object} extensionManager - The extension manager containing data sources.
  */
 function _load(displaySet, servicesManager, extensionManager) {
+  debugger;
   const { displaySetService, measurementService } = servicesManager.services;
   const dataSource = extensionManager.getActiveDataSource()[0];
 
@@ -240,12 +240,11 @@ function _checkIfCanAddMeasurementsToDisplaySet(
             distanceAlongNormal += sliceNormal[j] * imageMetadata.ImagePositionPatient[j];
           }
 
-          // assuming 5 mm tolerance
-          if (Math.abs(distanceAlongNormal - coord.GraphicData[2]) > 5) {
+          // assuming 1 mm tolerance
+          if (Math.abs(distanceAlongNormal - coord.GraphicData[2]) > 1) {
             continue;
           }
 
-          measurement.loadedByFOR = true;
           coord.ReferencedSOPSequence = {
             ReferencedSOPClassUID: imageMetadata.SOPClassUID,
             ReferencedSOPInstanceUID: imageMetadata.SOPInstanceUID,
@@ -500,7 +499,7 @@ function _processTID1410Measurement(mergedContentSequence) {
     labels: [],
     coords: [_getCoordsFromSCOORDOrSCOORD3D(graphicItem)],
     TrackingUniqueIdentifier: UIDREFContentItem.UID,
-    TrackingIdentifier: TrackingIdentifierContentItem.TextValue,
+    TrackingIdentifier: 'test',
   };
 
   NUMContentItems.forEach(item => {

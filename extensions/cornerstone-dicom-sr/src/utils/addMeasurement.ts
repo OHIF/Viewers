@@ -44,22 +44,18 @@ export default function addMeasurement(measurement, imageId, displaySetInstanceU
       valueType: measurement.coords[0].ValueType,
       graphicType: measurement.coords[0].GraphicType,
       referencedImageId: imageId,
-      /**
-       * Used to jump to measurement using currently
-       * selected viewport if it shares frame of reference
-       */
-      coords: measurement.coords,
     },
     data: {
       label: measurement.labels,
       handles: {
         textBox: measurement.textBox ?? {},
+        points: measurementData.renderableData,
       },
       cachedStats: {
         TrackingUniqueIdentifier: measurementData.TrackingUniqueIdentifier,
         renderableData: measurementData.renderableData,
       },
-      frameNumber: frameNumber,
+      frameNumber,
     },
   };
 
@@ -74,12 +70,4 @@ export default function addMeasurement(measurement, imageId, displaySetInstanceU
   measurement.ReferencedSOPInstanceUID =
     measurement.coords[0].ReferencedSOPSequence.ReferencedSOPInstanceUID;
   measurement.frameNumber = frameNumber;
-
-  /** This way we create measurements per display set (by FOR) and not only for the one that has referenced image */
-  measurement.loaded = false;
-  if (measurement.loadedByFOR === true) {
-    measurement.coords.forEach(coord => {
-      delete coord.ReferencedSOPSequence;
-    });
-  }
 }

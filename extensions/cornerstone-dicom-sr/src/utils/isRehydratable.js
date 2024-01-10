@@ -13,6 +13,7 @@ const CORNERSTONE_3D_TAG = cornerstoneAdapters.CORNERSTONE_3D_TAG;
  * @returns {boolean} True if the SR can be rehydrated into the `measurementService`.
  */
 export default function isRehydratable(displaySet, mappings) {
+  return true;
   if (!mappings || !mappings.length) {
     return false;
   }
