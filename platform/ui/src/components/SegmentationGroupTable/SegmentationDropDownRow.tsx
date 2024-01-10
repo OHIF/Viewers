@@ -1,6 +1,7 @@
 import React from 'react';
 import { Select, Icon, Dropdown } from '../../components';
 import PropTypes from 'prop-types';
+import { useTranslation } from 'react-i18next';
 
 function SegmentationDropDownRow({
   segmentations = [],
@@ -23,6 +24,7 @@ function SegmentationDropDownRow({
     value: s.id,
     label: s.label,
   }));
+  const { t } = useTranslation('SegmentationTable');
 
   if (!activeSegmentation) {
     return null;
@@ -46,7 +48,7 @@ function SegmentationDropDownRow({
             ...(!disableEditing
               ? [
                   {
-                    title: 'Add New Segmentation',
+                    title: t('Add new segmentation'),
                     onClick: () => {
                       onSegmentationAdd();
                     },
@@ -56,7 +58,7 @@ function SegmentationDropDownRow({
             ...(!disableEditing
               ? [
                   {
-                    title: 'Rename',
+                    title: t('Rename'),
                     onClick: () => {
                       onSegmentationEdit(activeSegmentation.id);
                     },
@@ -64,7 +66,7 @@ function SegmentationDropDownRow({
                 ]
               : []),
             {
-              title: 'Delete',
+              title: t('Delete'),
               onClick: () => {
                 onSegmentationDelete(activeSegmentation.id);
               },
@@ -72,7 +74,7 @@ function SegmentationDropDownRow({
             ...(!disableEditing
               ? [
                   {
-                    title: 'Export DICOM SEG',
+                    title: t('Export DICOM SEG'),
                     onClick: () => {
                       storeSegmentation(activeSegmentation.id);
                     },
@@ -81,13 +83,13 @@ function SegmentationDropDownRow({
               : []),
             ...[
               {
-                title: 'Download DICOM SEG',
+                title: t('Download DICOM SEG'),
                 onClick: () => {
                   onSegmentationDownload(activeSegmentation.id);
                 },
               },
               {
-                title: 'Download DICOM RTSTRUCT',
+                title: t('Download DICOM RTSTRUCT'),
                 onClick: () => {
                   onSegmentationDownloadRTSS(activeSegmentation.id);
                 },

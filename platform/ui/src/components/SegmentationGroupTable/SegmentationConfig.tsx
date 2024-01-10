@@ -4,6 +4,7 @@ import InputRange from '../InputRange';
 import CheckBox from '../CheckBox';
 import InputNumber from '../InputNumber';
 import classNames from 'classnames';
+import { useTranslation } from 'react-i18next';
 
 const getRoundedValue = value => {
   return Math.round(value * 100) / 100;
@@ -17,19 +18,20 @@ const ActiveSegmentationConfig = ({
   setRenderFill,
   setFillAlpha,
 }) => {
+  const { t } = useTranslation('SegmentationTable');
   return (
     <div className="flex justify-between px-3 pt-[13px] text-[12px]">
       <div className="flex flex-col items-start">
-        <div className="mb-[12px] text-white">Active</div>
+        <div className="mb-[12px] text-white">{t('Active')}</div>
         <CheckBox
-          label="Outline"
+          label={t('Outline')}
           checked={config.renderOutline}
           labelClassName="text-[12px] pl-1 pt-1"
           className="mb-[9px]"
           onChange={setRenderOutline}
         />
         <CheckBox
-          label="Fill"
+          label={t('Fill')}
           checked={config.renderFill}
           labelClassName="text-[12px] pl-1 pt-1"
           className="mb-[9px]"
@@ -38,7 +40,7 @@ const ActiveSegmentationConfig = ({
       </div>
 
       <div className="col-span-2 flex flex-col items-center">
-        <div className="mb-[12px] text-[10px] text-[#b3b3b3]">Opacity</div>
+        <div className="mb-[12px] text-[10px] text-[#b3b3b3]">{t('Opacity')}</div>
         <InputRange
           minValue={0}
           maxValue={100}
@@ -64,7 +66,7 @@ const ActiveSegmentationConfig = ({
       </div>
 
       <div className="flex flex-col items-center">
-        <div className="mb-[12px] text-[10px] text-[#b3b3b3]">Size</div>
+        <div className="mb-[12px] text-[10px] text-[#b3b3b3]">{t('Size')}</div>
         <InputNumber
           value={config.outlineWidthActive}
           onChange={setOutlineWidthActive}
@@ -82,10 +84,11 @@ const InactiveSegmentationConfig = ({
   setRenderInactiveSegmentations,
   setFillAlphaInactive,
 }) => {
+  const { t } = useTranslation('SegmentationTable');
   return (
     <div className="px-3">
       <CheckBox
-        label="Display Inactive Segmentations"
+        label={t('Display inactive segmentations')}
         checked={config.renderInactiveSegmentations}
         labelClassName="text-[12px]"
         className="mb-[9px]"
@@ -93,7 +96,7 @@ const InactiveSegmentationConfig = ({
       />
 
       <div className="flex items-center space-x-2 pl-4">
-        <span className="text-[10px] text-[#b3b3b3]">Opacity</span>
+        <span className="text-[10px] text-[#b3b3b3]">{t('Opacity')}</span>
         <InputRange
           minValue={0}
           maxValue={100}
@@ -120,6 +123,7 @@ const SegmentationConfig = ({
   setRenderInactiveSegmentations,
   setRenderOutline,
 }) => {
+  const { t } = useTranslation('SegmentationTable');
   const { initialConfig } = segmentationConfig;
   const [isMinimized, setIsMinimized] = useState(true);
   return (
@@ -144,7 +148,7 @@ const SegmentationConfig = ({
               'rotate-90 transform': !isMinimized,
             })}
           />
-          <span className="text-[12px] font-[300] text-[#d8d8d8]">{'Inactive Segmentations'}</span>
+          <span className="text-[12px] font-[300] text-[#d8d8d8]">{t('Inactive segmentations')}</span>
         </div>
         {!isMinimized && (
           <InactiveSegmentationConfig

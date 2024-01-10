@@ -165,20 +165,6 @@ const toolbarButtons = [
           ],
           'Ellipse Tool'
         ),
-        _createToolButton(
-          'CircleROI',
-          'tool-circle',
-          'Circle',
-          [
-            ..._createCommands('setToolActive', 'CircleROI', [
-              toolGroupIds.CT,
-              toolGroupIds.PT,
-              toolGroupIds.Fusion,
-              // toolGroupIds.MPR,
-            ]),
-          ],
-          'Circle Tool'
-        ),
       ],
     },
   },

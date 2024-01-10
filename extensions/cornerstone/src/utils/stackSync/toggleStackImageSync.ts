@@ -12,7 +12,8 @@ export default function toggleStackImageSync({
   const { syncGroupService, viewportGridService, displaySetService, cornerstoneViewportService } =
     servicesManager.services;
 
-  const viewports = providedViewports || getReconstructableStackViewports(viewportGridService, displaySetService);
+  const viewports =
+    providedViewports || getReconstructableStackViewports(viewportGridService, displaySetService);
 
   // create synchronization group and add the viewports to it.
   viewports.forEach(gridViewport => {
@@ -46,7 +47,7 @@ function disableSync(syncName, servicesManager) {
       syncName
     );
   });
-};
+}
 
 /**
  * Gets the consistent spacing stack viewport types, which are the ones which
@@ -77,4 +78,4 @@ function getReconstructableStackViewports(viewportGridService, displaySetService
     }
   });
   return viewports;
-};
+}

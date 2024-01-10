@@ -3,6 +3,429 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-beta.36](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.35...v3.8.0-beta.36) (2023-12-15)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.8.0-beta.35](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.34...v3.8.0-beta.35) (2023-12-14)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.8.0-beta.34](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.33...v3.8.0-beta.34) (2023-12-13)
+
+
+### Features
+
+* **overlay:** add inline binary overlays ([#3852](https://github.com/OHIF/Viewers/issues/3852)) ([0177b62](https://github.com/OHIF/Viewers/commit/0177b625ba86760168bc4db58c8a109aa9ee83cb))
+
+
+
+
+
+# [3.8.0-beta.33](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.32...v3.8.0-beta.33) (2023-12-13)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.8.0-beta.32](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.31...v3.8.0-beta.32) (2023-12-13)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.8.0-beta.31](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.30...v3.8.0-beta.31) (2023-12-13)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.8.0-beta.30](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.29...v3.8.0-beta.30) (2023-12-13)
+
+
+### Features
+
+* **customizationService:** Enable saving and loading of private tags in SRs ([#3842](https://github.com/OHIF/Viewers/issues/3842)) ([e1f55e6](https://github.com/OHIF/Viewers/commit/e1f55e65f2d2a34136ad5d0b1ada77d337a0ea23))
+
+
+
+
+
+# [3.8.0-beta.29](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.28...v3.8.0-beta.29) (2023-12-13)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.8.0-beta.28](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.27...v3.8.0-beta.28) (2023-12-08)
+
+
+### Features
+
+* **HP:** Added new 3D hanging protocols to be used in the new layout selector ([#3844](https://github.com/OHIF/Viewers/issues/3844)) ([59576d6](https://github.com/OHIF/Viewers/commit/59576d695d4d26601d35c43f73d602f0b12d72bf))
+
+
+
+
+
+# [3.8.0-beta.27](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.26...v3.8.0-beta.27) (2023-12-06)
+
+
+### Bug Fixes
+
+* **auth:** fix the issue with oauth at a non root path ([#3840](https://github.com/OHIF/Viewers/issues/3840)) ([6651008](https://github.com/OHIF/Viewers/commit/6651008fbb35dabd5991c7f61128e6ef324012df))
+
+
+
+
+
+# [3.8.0-beta.26](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.25...v3.8.0-beta.26) (2023-11-28)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.8.0-beta.25](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.24...v3.8.0-beta.25) (2023-11-27)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.8.0-beta.24](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.23...v3.8.0-beta.24) (2023-11-24)
+
+
+### Bug Fixes
+
+* Update the CS3D packages to add the most recent HTJ2K TSUIDS ([#3806](https://github.com/OHIF/Viewers/issues/3806)) ([9d1884d](https://github.com/OHIF/Viewers/commit/9d1884d7d8b6b2a1cdc26965a96995838aa72682))
+
+
+
+
+
+# [3.8.0-beta.23](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.22...v3.8.0-beta.23) (2023-11-24)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.8.0-beta.22](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.21...v3.8.0-beta.22) (2023-11-21)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.8.0-beta.21](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.20...v3.8.0-beta.21) (2023-11-21)
+
+
+### Bug Fixes
+
+* **DICOM Overlay:** The overlay data wasn't being refreshed on change ([#3793](https://github.com/OHIF/Viewers/issues/3793)) ([00e7519](https://github.com/OHIF/Viewers/commit/00e751933ac6d611a34773fa69594243f1b99082))
+
+
+
+
+
+# [3.8.0-beta.20](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.19...v3.8.0-beta.20) (2023-11-21)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.8.0-beta.19](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.18...v3.8.0-beta.19) (2023-11-18)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.8.0-beta.18](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.17...v3.8.0-beta.18) (2023-11-15)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.8.0-beta.17](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.16...v3.8.0-beta.17) (2023-11-13)
+
+
+### Bug Fixes
+
+* 🐛 Run error handler for failed image requests ([#3773](https://github.com/OHIF/Viewers/issues/3773)) ([3234014](https://github.com/OHIF/Viewers/commit/323401418e7ccab74655ba02f990bbe0ed4e523b))
+
+
+
+
+
+# [3.8.0-beta.16](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.15...v3.8.0-beta.16) (2023-11-13)
+
+
+### Bug Fixes
+
+* **overlay:** Overlays aren't shown on undefined origin ([#3781](https://github.com/OHIF/Viewers/issues/3781)) ([fd1251f](https://github.com/OHIF/Viewers/commit/fd1251f751d8147b8a78c7f4d81c67ba69769afa))
+
+
+
+
+
+# [3.8.0-beta.15](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.14...v3.8.0-beta.15) (2023-11-10)
+
+
+### Features
+
+* **dicomJSON:** Add Loading Other Display Sets and JSON Metadata Generation script ([#3777](https://github.com/OHIF/Viewers/issues/3777)) ([43b1c17](https://github.com/OHIF/Viewers/commit/43b1c17209502e4876ad59bae09ed9442eda8024))
+
+
+
+
+
+# [3.8.0-beta.14](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.13...v3.8.0-beta.14) (2023-11-10)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.8.0-beta.13](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.12...v3.8.0-beta.13) (2023-11-09)
+
+
+### Bug Fixes
+
+* **arrow:** ArrowAnnotate text key cause validation error ([#3771](https://github.com/OHIF/Viewers/issues/3771)) ([8af1046](https://github.com/OHIF/Viewers/commit/8af10468035f1f59e0a21e579d50ad63c8cbf7ad))
+
+
+
+
+
+# [3.8.0-beta.12](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.11...v3.8.0-beta.12) (2023-11-08)
+
+
+### Features
+
+* add VolumeViewport rotation ([#3776](https://github.com/OHIF/Viewers/issues/3776)) ([442f99d](https://github.com/OHIF/Viewers/commit/442f99d5eb2ceece7def20e14da59af1dd7d8442))
+
+
+
+
+
+# [3.8.0-beta.11](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.10...v3.8.0-beta.11) (2023-11-08)
+
+
+### Features
+
+* **hp callback:** Add viewport ready callback ([#3772](https://github.com/OHIF/Viewers/issues/3772)) ([bf252bc](https://github.com/OHIF/Viewers/commit/bf252bcec2aae3a00479fdcb732110b344bcf2c0))
+
+
+
+
+
+# [3.8.0-beta.10](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.9...v3.8.0-beta.10) (2023-11-03)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.8.0-beta.9](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.8...v3.8.0-beta.9) (2023-11-02)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.8.0-beta.8](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.7...v3.8.0-beta.8) (2023-10-31)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.8.0-beta.7](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.6...v3.8.0-beta.7) (2023-10-30)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.8.0-beta.6](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.5...v3.8.0-beta.6) (2023-10-25)
+
+
+### Bug Fixes
+
+* **toolbar:** allow customizable toolbar for active viewport and allow active tool to be deactivated via a click ([#3608](https://github.com/OHIF/Viewers/issues/3608)) ([dd6d976](https://github.com/OHIF/Viewers/commit/dd6d9768bbca1d3cc472e8c1e6d85822500b96ef))
+
+
+
+
+
+# [3.8.0-beta.5](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.4...v3.8.0-beta.5) (2023-10-24)
+
+
+### Bug Fixes
+
+* **sr:** dcm4chee requires the patient name for an SR to match what is in the original study ([#3739](https://github.com/OHIF/Viewers/issues/3739)) ([d98439f](https://github.com/OHIF/Viewers/commit/d98439fe7f3825076dbc87b664a1d1480ff414d3))
+
+
+
+
+
+# [3.8.0-beta.4](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.3...v3.8.0-beta.4) (2023-10-23)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.8.0-beta.3](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.2...v3.8.0-beta.3) (2023-10-23)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.8.0-beta.2](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.1...v3.8.0-beta.2) (2023-10-19)
+
+
+### Bug Fixes
+
+* **cine:** Use the frame rate specified in DICOM and optionally auto play cine ([#3735](https://github.com/OHIF/Viewers/issues/3735)) ([d9258ec](https://github.com/OHIF/Viewers/commit/d9258eca70587cf4dc18be4e56c79b16bae73d6d))
+
+
+
+
+
+# [3.8.0-beta.1](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.0...v3.8.0-beta.1) (2023-10-19)
+
+
+### Bug Fixes
+
+* **calibration:** No calibration popup caused by perhaps an unused code optimization for production builds ([#3736](https://github.com/OHIF/Viewers/issues/3736)) ([93d798d](https://github.com/OHIF/Viewers/commit/93d798db99c0dee53ef73c376f8a74ac3049cf3f))
+
+
+
+
+
+# [3.8.0-beta.0](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.110...v3.8.0-beta.0) (2023-10-12)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.7.0-beta.110](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.109...v3.7.0-beta.110) (2023-10-11)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.7.0-beta.109](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.108...v3.7.0-beta.109) (2023-10-11)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.7.0-beta.108](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.107...v3.7.0-beta.108) (2023-10-10)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.7.0-beta.107](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.106...v3.7.0-beta.107) (2023-10-10)
+
+
+### Bug Fixes
+
+* **modules:** add stylus loader as an option to be uncommented ([#3710](https://github.com/OHIF/Viewers/issues/3710)) ([7c57f67](https://github.com/OHIF/Viewers/commit/7c57f67844b790fc6e47ac3f9708bf9d576389c8))
+
+
+
+
+
+# [3.7.0-beta.106](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.105...v3.7.0-beta.106) (2023-10-10)
+
+
+### Bug Fixes
+
+* **segmentation:**  Various fixes for segmentation mode and other ([#3709](https://github.com/OHIF/Viewers/issues/3709)) ([a9a6ad5](https://github.com/OHIF/Viewers/commit/a9a6ad50eae67b43b8b34efc07182d788cacdcfe))
+
+
+
+
+
+# [3.7.0-beta.105](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.104...v3.7.0-beta.105) (2023-10-10)
+
+
+### Bug Fixes
+
+* **voi:** should publish voi change event on reset ([#3707](https://github.com/OHIF/Viewers/issues/3707)) ([52f34c6](https://github.com/OHIF/Viewers/commit/52f34c64d014f433ec1661a39b47e7fb27f15332))
+
+
+
+
+
+# [3.7.0-beta.104](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.103...v3.7.0-beta.104) (2023-10-09)
+
+
+### Bug Fixes
+
+* **modality unit:** fix the modality unit per target via upgrade of cs3d ([#3706](https://github.com/OHIF/Viewers/issues/3706)) ([0a42d57](https://github.com/OHIF/Viewers/commit/0a42d573bbca7f2551a831a46d3aa6b56674a580))
+
+
+
+
+
+# [3.7.0-beta.103](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.102...v3.7.0-beta.103) (2023-10-09)
+
+
+### Bug Fixes
+
+* **segmentation:** do not use SAB if not specified ([#3705](https://github.com/OHIF/Viewers/issues/3705)) ([4911e47](https://github.com/OHIF/Viewers/commit/4911e4796cef5e22cb7cc0ca73dc5c956bc75339))
+
+
+
+
+
 # [3.7.0-beta.102](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.101...v3.7.0-beta.102) (2023-10-06)
 
 

@@ -18,12 +18,17 @@ describe('OHIF Study Browser', function () {
 
     const dataTransfer = new DataTransfer();
 
-    cy.get('[data-cy="study-browser-thumbnail"]:nth-child(2)')
+    cy.get('[data-cy="study-browser-thumbnail"]:nth-child(2)').as('seriesThumbnail');
+
+    cy.get('@seriesThumbnail')
       .first()
       .trigger('mousedown', { which: 1, button: 0 })
       .trigger('dragstart', { dataTransfer })
       .trigger('drag', {});
-    cy.get('.cornerstone-canvas')
+
+    cy.get('.cornerstone-canvas').as('viewport');
+
+    cy.get('@viewport')
       .trigger('mousemove', 'center')
       .trigger('dragover', { dataTransfer, force: true })
       .trigger('drop', { dataTransfer, force: true });

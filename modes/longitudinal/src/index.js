@@ -2,10 +2,16 @@ import { hotkeys } from '@ohif/core';
 import toolbarButtons from './toolbarButtons';
 import { id } from './id';
 import initToolGroups from './initToolGroups';
+import moreTools from './moreTools';
+import moreToolsMpr from './moreToolsMpr';
+import i18n from 'i18next';
 
 // Allow this mode by excluding non-imaging modalities such as SR, SEG
 // Also, SM is not a simple imaging modalities, so exclude it.
 const NON_IMAGE_MODALITIES = ['SM', 'ECG', 'SR', 'SEG', 'RTSTRUCT'];
+
+const DEFAULT_TOOL_GROUP_ID = 'default';
+const MPR_TOOL_GROUP_ID = 'mpr';
 
 const ohif = {
   layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
@@ -40,7 +46,7 @@ const dicomSeg = {
   panel: '@ohif/extension-cornerstone-dicom-seg.panelModule.panelSegmentation',
 };
 
-const dicomRt = {
+const dicomRT = {
   viewport: '@ohif/extension-cornerstone-dicom-rt.viewportModule.dicom-rt',
   sopClassHandler: '@ohif/extension-cornerstone-dicom-rt.sopClassHandlerModule.dicom-rt',
 };
@@ -64,7 +70,7 @@ function modeFactory({ modeConfiguration }) {
     // We should not be.
     id,
     routeName: 'viewer',
-    displayName: 'Basic Viewer',
+    displayName: i18n.t('Modes:Basic Viewer'),
     /**
      * Lifecycle hooks
      */
@@ -83,21 +89,23 @@ function modeFactory({ modeConfiguration }) {
       initToolGroups(extensionManager, toolGroupService, commandsManager);
 
       let unsubscribe;
+      toolbarService.setDefaultTool({
+        groupId: 'WindowLevel',
+        itemId: 'WindowLevel',
+        interactionType: 'tool',
+        commands: [
+          {
+            commandName: 'setToolActive',
+            commandOptions: {
+              toolName: 'WindowLevel',
+            },
+            context: 'CORNERSTONE',
+          },
+        ],
+      });
 
       const activateTool = () => {
-        toolbarService.recordInteraction({
-          groupId: 'WindowLevel',
-          interactionType: 'tool',
-          commands: [
-            {
-              commandName: 'setToolActive',
-              commandOptions: {
-                toolName: 'WindowLevel',
-              },
-              context: 'CORNERSTONE',
-            },
-          ],
-        });
+        toolbarService.recordInteraction(toolbarService.getDefaultTool());
 
         // We don't need to reset the active tool whenever a viewport is getting
         // added to the toolGroup.
@@ -112,8 +120,18 @@ function modeFactory({ modeConfiguration }) {
       ));
 
       toolbarService.init(extensionManager);
-      toolbarService.addButtons(toolbarButtons);
-      toolbarService.createButtonSection('primary', [
+      toolbarService.addButtons([...toolbarButtons, ...moreTools, ...moreToolsMpr]);
+      toolbarService.createButtonSection(DEFAULT_TOOL_GROUP_ID, [
+        'MeasurementTools',
+        'Zoom',
+        'WindowLevel',
+        'Pan',
+        'Capture',
+        'Layout',
+        'MPR',
+        'MoreTools',
+      ]);
+      toolbarService.createButtonSection(MPR_TOOL_GROUP_ID, [
         'MeasurementTools',
         'Zoom',
         'WindowLevel',
@@ -122,7 +140,7 @@ function modeFactory({ modeConfiguration }) {
         'Layout',
         'MPR',
         'Crosshairs',
-        'MoreTools',
+        'MoreToolsMpr',
       ]);
 
       customizationService.addModeCustomizations([
@@ -218,8 +236,8 @@ function modeFactory({ modeConfiguration }) {
                   displaySetsToDisplay: [dicomSeg.sopClassHandler],
                 },
                 {
-                  namespace: dicomRt.viewport,
-                  displaySetsToDisplay: [dicomRt.sopClassHandler],
+                  namespace: dicomRT.viewport,
+                  displaySetsToDisplay: [dicomRT.sopClassHandler],
                 },
               ],
             },
@@ -240,7 +258,7 @@ function modeFactory({ modeConfiguration }) {
       ohif.sopClassHandler,
       dicompdf.sopClassHandler,
       dicomsr.sopClassHandler,
-      dicomRt.sopClassHandler,
+      dicomRT.sopClassHandler,
     ],
     hotkeys: [...hotkeys.defaults.hotkeyBindings],
     ...modeConfiguration,

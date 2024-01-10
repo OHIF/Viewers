@@ -88,19 +88,7 @@ describe('OHIF MPR', () => {
   });
 
   it('should correctly render Crosshairs for MPR', () => {
-    cy.wait(250);
-
-    cy.get('[data-cy="Crosshairs"]').click();
-    cy.window()
-      .its('cornerstoneTools')
-      .then(cornerstoneTools => {
-        const state = cornerstoneTools.annotation.state.getAnnotationManager();
-
-        const fORMap = state.annotations;
-        // it should not have crosshairs yet
-        expect(Object.keys(fORMap)).to.have.length(0);
-      });
-
+    cy.get('[data-cy="Crosshairs"]').should('not.exist');
     cy.get(':nth-child(3) > [data-cy="study-browser-thumbnail"]').dblclick();
     cy.get('[data-cy="MPR"]').click();
     cy.get('[data-cy="Crosshairs"]').click();
@@ -130,5 +118,20 @@ describe('OHIF MPR', () => {
           crosshairs[1].data.handles.toolCenter
         );
       });
+  });
+
+  it('should activate window level when the active Crosshairs tool for MPR is clicked', () => {
+    cy.get(':nth-child(3) > [data-cy="study-browser-thumbnail"]').dblclick();
+    cy.get('[data-cy="MPR"]').click();
+    cy.get('[data-cy="Crosshairs"]').click();
+
+    // wait for the crosshairs tool to be active
+    cy.get('[data-cy="Crosshairs"].active');
+
+    // Click the crosshairs button to deactivate it.
+    cy.get('[data-cy="Crosshairs"]').click();
+
+    // wait for the window level button to be active
+    cy.get('[data-cy="WindowLevel-split-button-primary"].active');
   });
 });

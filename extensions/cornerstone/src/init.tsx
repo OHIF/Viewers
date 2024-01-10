@@ -61,8 +61,8 @@ export default async function init({
 
   await cs3DInit({
     rendering: {
-      preferSizeOverAccuracy: Boolean(appConfig.use16BitDataType),
-      useNorm16Texture: Boolean(appConfig.use16BitDataType),
+      preferSizeOverAccuracy: Boolean(appConfig.preferSizeOverAccuracy),
+      useNorm16Texture: Boolean(appConfig.useNorm16Texture),
     },
   });
 
@@ -344,6 +344,7 @@ export default async function init({
       eventTarget.removeEventListener(EVENTS.ELEMENT_ENABLED, elementEnabledHandler);
     }
     const { element } = evt.detail;
+
     element.addEventListener(EVENTS.CAMERA_RESET, resetCrosshairs);
 
     eventTarget.addEventListener(EVENTS.STACK_VIEWPORT_NEW_STACK, toolbarEventListener);
