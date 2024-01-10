@@ -300,7 +300,6 @@ const defaultOptions = {
       ignoredSeries: [],
     })),
     setTrackedStudyAndMultipleSeries: assign((ctx, evt) => {
-      debugger;
       const studyInstanceUID = evt.StudyInstanceUID || evt.data.StudyInstanceUID;
       const seriesInstanceUIDs = evt.SeriesInstanceUIDs || evt.data.SeriesInstanceUIDs;
 

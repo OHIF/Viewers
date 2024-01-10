@@ -41,8 +41,11 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
 
   useEffect(() => {
     const measurements = measurementService.getMeasurements();
+    const filteredMeasurements = measurements.filter(
+      m => trackedStudy === m.referenceStudyUID && trackedSeries.includes(m.referenceSeriesUID)
+    );
 
-    const mappedMeasurements = measurements.map(m =>
+    const mappedMeasurements = filteredMeasurements.map(m =>
       _mapMeasurementToDisplay(m, measurementService.VALUE_TYPES, displaySetService)
     );
     setDisplayMeasurements(mappedMeasurements);
@@ -206,19 +209,10 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
   };
 
   const displayMeasurementsWithoutFindings = displayMeasurements.filter(
-    dm =>
-      trackedStudy === dm.referenceStudyUID &&
-      trackedSeries.includes(dm.referenceSeriesUID) &&
-      dm.measurementType !== measurementService.VALUE_TYPES.POINT
+    dm => dm.measurementType !== measurementService.VALUE_TYPES.POINT
   );
   const additionalFindings = displayMeasurements.filter(
-    dm =>
-      trackedStudy === dm.referenceStudyUID &&
-      trackedSeries.includes(dm.referenceSeriesUID) &&
-      dm.measurementType === measurementService.VALUE_TYPES.POINT
-  );
-  const untracked = displayMeasurements.filter(
-    dm => trackedStudy !== dm.referenceStudyUID && !trackedSeries.includes(dm.referenceSeriesUID)
+    dm => dm.measurementType === measurementService.VALUE_TYPES.POINT
   );
 
   return (
@@ -246,15 +240,6 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
           <MeasurementTable
             title="Additional Findings"
             data={additionalFindings}
-            servicesManager={servicesManager}
-            onClick={jumpToImage}
-            onEdit={onMeasurementItemEditHandler}
-          />
-        )}
-        {untracked.length !== 0 && (
-          <MeasurementTable
-            title="Untracked"
-            data={untracked}
             servicesManager={servicesManager}
             onClick={jumpToImage}
             onEdit={onMeasurementItemEditHandler}
@@ -347,8 +332,6 @@ function _mapMeasurementToDisplay(measurement, types, displaySetService) {
     isActive: selected,
     finding,
     findingSites,
-    referenceStudyUID,
-    referenceSeriesUID,
   };
 }
 

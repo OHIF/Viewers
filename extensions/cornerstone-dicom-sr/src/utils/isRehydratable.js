@@ -13,7 +13,6 @@ const CORNERSTONE_3D_TAG = cornerstoneAdapters.CORNERSTONE_3D_TAG;
  * @returns {boolean} True if the SR can be rehydrated into the `measurementService`.
  */
 export default function isRehydratable(displaySet, mappings) {
-  return true;
   if (!mappings || !mappings.length) {
     return false;
   }
@@ -37,7 +36,10 @@ export default function isRehydratable(displaySet, mappings) {
   });
 
   for (let i = 0; i < measurements.length; i++) {
-    const { TrackingIdentifier } = measurements[i] || {};
+    const { TrackingIdentifier, coords } = measurements[i] || {};
+    const { ValueType } = coords[0];
+    const specialValueTypes = ['SCOORD3D'];
+
     const hydratable = adapters.some(adapter => {
       let [cornerstoneTag, toolName] = TrackingIdentifier.split(':');
       if (supportedLegacyCornerstoneTags.includes(cornerstoneTag)) {
@@ -49,7 +51,7 @@ export default function isRehydratable(displaySet, mappings) {
       return adapter.isValidCornerstoneTrackingIdentifier(mappedTrackingIdentifier);
     });
 
-    if (hydratable) {
+    if (specialValueTypes.includes(ValueType) || hydratable) {
       return true;
     }
     console.log('Measurement is not rehydratable', TrackingIdentifier, measurements[i]);

@@ -137,7 +137,6 @@ function _getDisplaySetsFromSeries(instances, servicesManager, extensionManager)
  * @param {Object} extensionManager - The extension manager containing data sources.
  */
 function _load(displaySet, servicesManager, extensionManager) {
-  debugger;
   const { displaySetService, measurementService } = servicesManager.services;
   const dataSource = extensionManager.getActiveDataSource()[0];
 
@@ -499,7 +498,7 @@ function _processTID1410Measurement(mergedContentSequence) {
     labels: [],
     coords: [_getCoordsFromSCOORDOrSCOORD3D(graphicItem)],
     TrackingUniqueIdentifier: UIDREFContentItem.UID,
-    TrackingIdentifier: 'test',
+    TrackingIdentifier: TrackingIdentifierContentItem.TextValue,
   };
 
   NUMContentItems.forEach(item => {
