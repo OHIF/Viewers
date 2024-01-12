@@ -10,7 +10,7 @@ if (!anyDicomwebClient._orig_buildMultipartAcceptHeaderFieldValue) {
   anyDicomwebClient._orig_buildMultipartAcceptHeaderFieldValue =
     anyDicomwebClient._buildMultipartAcceptHeaderFieldValue;
   anyDicomwebClient._buildMultipartAcceptHeaderFieldValue = function (mediaTypes, acceptableTypes) {
-    if (mediaTypes.length === 1 && mediaTypes[0].mediaType === 'image/*') {
+    if (mediaTypes.length === 1 && mediaTypes[0].mediaType.endsWith('/*')) {
       return '*/*';
     } else {
       return anyDicomwebClient._orig_buildMultipartAcceptHeaderFieldValue(
@@ -66,8 +66,14 @@ export default class StaticWadoClient extends api.DICOMwebClient {
    */
   public retrieveBulkData(options): Promise<any[]> {
     const shouldFixMultipart = this.config.fixBulkdataMultipart !== false;
+    const useOptions = {
+      ...options,
+    };
+    if (this.staticWado) {
+      useOptions.mediaTypes = [{ mediaType: 'application/*' }];
+    }
     return super
-      .retrieveBulkData(options)
+      .retrieveBulkData(useOptions)
       .then(result => (shouldFixMultipart ? fixMultipart(result) : result));
   }
 
