@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-beta.46](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.45...v3.8.0-beta.46) (2024-01-12)
+
+
+### Bug Fixes
+
+* Update CS3D to fix second render ([#3892](https://github.com/OHIF/Viewers/issues/3892)) ([d00a86b](https://github.com/OHIF/Viewers/commit/d00a86b022742ea089d246d06cfd691f43b64412))
+
+
+
+
+
 # [3.8.0-beta.45](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.44...v3.8.0-beta.45) (2024-01-09)
 
 **Note:** Version bump only for package @ohif/extension-cornerstone-dicom-sr
