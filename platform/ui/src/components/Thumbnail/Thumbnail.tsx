@@ -30,16 +30,14 @@ const Thumbnail = ({
   const [collectedProps, drag, dragPreview] = useDrag({
     type: 'displayset',
     item: { ...dragData },
-    canDrag: function (monitor) {
-      return Object.keys(dragData).length !== 0;
-    },
+    canDrag: function (monitor) { },
   });
 
   return (
     <div
       className={classnames(
         className,
-        'group mb-8 flex flex-1 cursor-pointer select-none flex-col px-3 outline-none'
+        'group mb-8 flex flex-1 cursor-pointer select-none flex-col outline-none'
       )}
       id={`thumbnail-${displaySetInstanceUID}`}
       data-cy={`study-browser-thumbnail`}
