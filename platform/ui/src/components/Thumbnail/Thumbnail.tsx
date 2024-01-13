@@ -56,9 +56,6 @@ const Thumbnail = ({
               ? 'border-primary-light border-2'
               : 'border-secondary-light border hover:border-blue-300'
           )}
-          style={{
-            margin: isActive ? '0' : '1px',
-          }}
         >
           {imageSrc ? (
             <img
@@ -72,14 +69,14 @@ const Thumbnail = ({
           )}
         </div>
         <div className="flex flex-1 flex-row items-center pt-2 text-base text-blue-300">
-          <div className="mr-4">
+          <div>
             <span className="text-primary-main font-bold">{'S: '}</span>
             {seriesNumber}
           </div>
-          <div className="flex flex-1 flex-row items-center">
+          <div className="ml-6 flex flex-1 flex-row items-center">
             <Icon
               name={countIcon || 'group-layers'}
-              className="mr-2 w-3"
+              className="w-3"
             />
             {` ${numInstances}`}
           </div>
@@ -88,7 +85,7 @@ const Thumbnail = ({
             id={`display-set-tooltip-${displaySetInstanceUID}`}
           />
         </div>
-        <div className="break-all text-base text-white">{description}</div>
+        <div className="break-all text-sm text-white">{description}</div>
       </div>
     </div>
   );

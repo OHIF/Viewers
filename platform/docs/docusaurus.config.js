@@ -60,10 +60,10 @@ module.exports = {
       ? // Deploy preview: keep it fast!
         ['en']
       : isI18nStaging
-      ? // Staging locales: https://docusaurus-i18n-staging.netlify.app/
-        ['en']
-      : // Production locales
-        ['en'],
+        ? // Staging locales: https://docusaurus-i18n-staging.netlify.app/
+          ['en']
+        : // Production locales
+          ['en'],
   },
   onBrokenLinks: 'warn',
   onBrokenMarkdownLinks: 'warn',

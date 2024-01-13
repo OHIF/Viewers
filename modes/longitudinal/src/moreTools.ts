@@ -130,6 +130,36 @@ const moreTools = [
           'Image Overlay',
           { isActive: true }
         ),
+        ToolbarService._createToolButton(
+          'StackScroll',
+          'tool-stack-scroll',
+          'Stack Scroll',
+          [
+            {
+              commandName: 'setToolActive',
+              commandOptions: {
+                toolName: 'StackScroll',
+              },
+              context: 'CORNERSTONE',
+            },
+          ],
+          'Stack Scroll'
+        ),
+        ToolbarService._createToolButton(
+          'Capture',
+          'tool-capture',
+          'Capture',
+          [
+            {
+              commandName: 'showDownloadViewportModal',
+              commandOptions: {
+                toolName: 'StackScroll',
+              },
+              context: 'CORNERSTONE',
+            },
+          ],
+          'Capture'
+        ),
         ToolbarService._createActionButton(
           'invert',
           'tool-invert',

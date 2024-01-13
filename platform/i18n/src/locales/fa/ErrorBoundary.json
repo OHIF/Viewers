@@ -1,8 +1,8 @@
 {
-  "Context": "تست سیاق",
-  "Error Message": "تست پیام خطا",
-  "Something went wrong": "تست مشکلی پیش آمد",
+  "Context": " سیاق",
+  "Error Message": " پیام خطا",
+  "Something went wrong": " مشکلی پیش آمد",
   "in": "در",
-  "Sorry, something went wrong there. Try again.": "تست متاسفانه، در آنجا مشکلی پیش آمده است. دوباره امتحان کنید.",
-  "Stack Trace": "تست ردیابی پشته"
+  "Sorry, something went wrong there. Try again.": " متاسفانه، در آنجا مشکلی پیش آمده است. دوباره امتحان کنید.",
+  "Stack Trace": " ردیابی پشته"
 }

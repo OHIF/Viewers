@@ -4,11 +4,11 @@
   "Reset to defaults": "$t(دکمه‌ها:بازنشانی به حالت پیش‌فرض)",
   "ResetDefaultMessage": "ترجیحات با موفقیت به حالت پیش‌فرض بازنشانی شدند. <br /> برای اعمال این عمل، شما باید <strong>ذخیره</strong> کنید.",
   "Save": "$t(دکمه‌ها:ذخیره)",
-  "SaveMessage": "ترجیحات تست ذخیره شدند",
-  "User preferences": "ترجیحات کاربر تستی",
-  "Function": "تست عملکرد",
-  "Shortcut": "تست میانبر",
-  "Language": "تست زبان",
-  "Hotkeys": "تست میانبرها",
-  "General": "تست عمومی"
+  "SaveMessage": "ترجیحات  ذخیره شدند",
+  "User preferences": "ترجیحات کاربر ی",
+  "Function": " عملکرد",
+  "Shortcut": " میانبر",
+  "Language": " زبان",
+  "Hotkeys": " میانبرها",
+  "General": " عمومی"
 }

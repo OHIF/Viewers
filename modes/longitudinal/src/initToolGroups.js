@@ -32,7 +32,10 @@ function initDefaultToolGroup(extensionManager, toolGroupService, commandsManage
         toolName: toolNames.Magnify,
         bindings: [{ mouseButton: Enums.MouseBindings.Primary }],
       },
-      { toolName: toolNames.StackScrollMouseWheel, bindings: [] },
+      {
+        toolName: toolNames.StackScroll,
+        bindings: [{ mouseButton: Enums.MouseBindings.Primary }],
+      },
     ],
     passive: [
       { toolName: toolNames.Length },
@@ -130,8 +133,8 @@ function initSRToolGroup(extensionManager, toolGroupService, commandsManager) {
         bindings: [{ mouseButton: Enums.MouseBindings.Primary }],
       },
       {
-        toolName: toolNames.StackScrollMouseWheel,
-        bindings: [],
+        toolName: toolNames.StackScroll,
+        bindings: [{ mouseButton: Enums.MouseBindings.Primary }],
       },
     ],
     passive: [
@@ -188,7 +191,10 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
         toolName: toolNames.Magnify,
         bindings: [{ mouseButton: Enums.MouseBindings.Primary }],
       },
-      { toolName: toolNames.StackScrollMouseWheel, bindings: [] },
+      {
+        toolName: toolNames.StackScroll,
+        bindings: [{ mouseButton: Enums.MouseBindings.Primary }],
+      },
     ],
     passive: [
       { toolName: toolNames.Length },
@@ -268,6 +274,10 @@ function initVolume3DToolGroup(extensionManager, toolGroupService) {
       },
       {
         toolName: toolNames.Magnify,
+        bindings: [{ mouseButton: Enums.MouseBindings.Primary }],
+      },
+      {
+        toolName: toolNames.StackScroll,
         bindings: [{ mouseButton: Enums.MouseBindings.Primary }],
       },
       {

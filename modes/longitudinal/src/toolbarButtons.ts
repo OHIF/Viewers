@@ -236,8 +236,7 @@ const toolbarButtons: Button[] = [
       commands: _createSetToolActiveCommands('Magnify'),
     },
   },
-
-  //StackScroll
+  // Pan...
   {
     id: 'StackScroll',
     type: 'ohif.radioGroup',
@@ -245,7 +244,7 @@ const toolbarButtons: Button[] = [
       type: 'tool',
       icon: 'tool-stack-scroll',
       label: 'Stack Scroll',
-      commands: _createSetToolActiveCommands('Stack Scroll'),
+      commands: _createSetToolActiveCommands('StackScroll'),
     },
   },
 
@@ -314,6 +313,7 @@ const toolbarButtons: Button[] = [
       ],
     },
   },
+
   {
     id: 'Layout',
     type: 'ohif.layoutSelector',

@@ -64,9 +64,9 @@
   border: none;
   border-radius: 57px;
   cursor: -webkit-grab;
-  height: 12px;
+  height: 15px;
   margin-top: -4px;
-  width: 39px;
+  width: 70px;
 }
 .scroll .scroll-holder .imageSlider::-webkit-slider-thumb:active {
   background-color: #20a5d6;

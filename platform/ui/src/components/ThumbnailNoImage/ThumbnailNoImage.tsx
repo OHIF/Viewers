@@ -48,46 +48,48 @@ const ThumbnailNoImage = ({
     >
       <div ref={drag}>
         <div className="flex flex-1 flex-col">
-          <div className="mb-2 flex flex-1 flex-row items-center">
-            <Icon
-              name="list-bullets"
-              className={classnames(
-                'w-12',
-                isHydratedForDerivedDisplaySet ? 'text-primary-light' : 'text-secondary-light'
-              )}
-            />
-            <Tooltip
-              position="bottom"
-              content={<Typography>{modalityTooltip}</Typography>}
-            >
-              <div
+          <div className="mb-2 flex flex-col items-center">
+            <section className="flex flex-row">
+              <Icon
+                name="list-bullets"
                 className={classnames(
-                  'rounded-sm px-3  text-lg',
-                  isHydratedForDerivedDisplaySet
-                    ? 'bg-primary-light text-black'
-                    : 'bg-primary-main text-white'
+                  'w-12',
+                  isHydratedForDerivedDisplaySet ? 'text-primary-light' : 'text-secondary-light'
                 )}
+              />
+              <Tooltip
+                position="bottom"
+                content={<Typography>{modalityTooltip}</Typography>}
               >
-                {modality}
-              </div>
-            </Tooltip>
-            <span className="ml-4 text-base text-blue-300">{seriesDate}</span>
-            <DisplaySetMessageListTooltip
+                <div
+                  className={classnames(
+                    'rounded-sm px-2  text-sm',
+                    isHydratedForDerivedDisplaySet
+                      ? 'bg-primary-light text-black'
+                      : 'bg-primary-main text-white'
+                  )}
+                >
+                  {modality}
+                </div>
+              </Tooltip>
+            </section>
+            <span className="mt-2 text-base text-blue-300">{seriesDate}</span>
+            {/* <DisplaySetMessageListTooltip
               messages={messages}
               id={`display-set-tooltip-${displaySetInstanceUID}`}
-            />
+            /> */}
           </div>
-          <div className="flex flex-row">
+          {/* <div className="flex flex-row">
             {canReject && (
               <Icon
                 name="old-trash"
                 style={{ minWidth: '12px' }}
-                className="ml-4 w-3 text-red-500"
+                className="w-3 text-red-500"
                 onClick={onReject}
               />
             )}
-            <div className="ml-4 break-all text-base text-white">{description}</div>
-          </div>
+            <div className="break-all text-base text-white">{description}</div>
+          </div> */}
         </div>
       </div>
     </div>
