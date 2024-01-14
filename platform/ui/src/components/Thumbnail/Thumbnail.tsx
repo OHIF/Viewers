@@ -37,7 +37,7 @@ const Thumbnail = ({
     <div
       className={classnames(
         className,
-        'group mb-8 flex flex-1 cursor-pointer select-none flex-col outline-none'
+        'group mx-2 mb-1 flex flex-1 cursor-pointer select-none flex-col outline-none'
       )}
       id={`thumbnail-${displaySetInstanceUID}`}
       data-cy={`study-browser-thumbnail`}
@@ -56,22 +56,24 @@ const Thumbnail = ({
           )}
         >
           {imageSrc ? (
-            <img
-              src={imageSrc}
-              alt={imageAltText}
-              className="min-h-32 object-none"
-              crossOrigin="anonymous"
-            />
+            <section>
+              <img
+                src={imageSrc}
+                alt={imageAltText}
+                className="min-h-32 object-none"
+                crossOrigin="anonymous"
+              />
+            </section>
           ) : (
             <div>{imageAltText}</div>
           )}
         </div>
-        <div className="flex flex-1 flex-row items-center pt-2 text-base text-blue-300">
+        <div className="mt-2 flex flex-row justify-between text-base text-blue-300">
           <div>
             <span className="text-primary-main font-bold">{'S: '}</span>
             {seriesNumber}
           </div>
-          <div className="ml-6 flex flex-1 flex-row items-center">
+          <div className="mr-2 flex flex-row">
             <Icon
               name={countIcon || 'group-layers'}
               className="w-3"

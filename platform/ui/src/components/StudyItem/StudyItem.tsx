@@ -5,6 +5,8 @@ import { useTranslation } from 'react-i18next';
 
 import Icon from '../Icon';
 
+import moment from 'jalali-moment';
+
 const baseClasses = 'first:border-0 border-t border-secondary-light';
 
 const StudyItem = ({
@@ -17,10 +19,15 @@ const StudyItem = ({
   onClick,
 }) => {
   const { t } = useTranslation('StudyItem');
+
+  const persianDate = moment(date, 'YYYY-MM-DD').format('jYYYY/jMM/jDD');
+
   return (
     <div
       className={classnames(
-        isActive ? 'bg-secondary-dark' : 'hover:bg-secondary-main bg-black',
+        isActive
+          ? 'bg-primary-main rounded-lg'
+          : 'hover:bg-secondary-main bg-primary-dark rounded-lg',
         baseClasses
       )}
       onClick={onClick}
@@ -28,19 +35,12 @@ const StudyItem = ({
       role="button"
       tabIndex="0"
     >
-      <div className="flex flex-1 flex-col pb-2">
+      <div className="mx-1 flex flex-1 flex-col pb-2">
         <div className="flex flex-row items-center justify-between pt-2 pb-2">
-          <div className="mr-7 whitespace-nowrap text-sm text-white">{date}</div>
-          <div className="flex flex-row items-center text-sm text-blue-300">
-            <Icon
-              name="group-layers"
-              className="w-4 text-blue-300"
-            />
-            {numInstances}
-          </div>
+          <div className="mr-7 whitespace-nowrap text-sm text-white">{persianDate}</div>
+          <div className="pr-2 text-sm text-blue-300">{modalities}</div>
         </div>
         <div className="flex flex-col py-1">
-          <div className="mb-2 pr-5 text-sm text-blue-300">{modalities}</div>
           <div className="truncate-2-lines break-words text-sm text-blue-300">{description}</div>
         </div>
       </div>

@@ -53,7 +53,7 @@ function ViewerHeader({ hotkeysManager, extensionManager, servicesManager }) {
       onClick: () =>
         show({
           content: AboutModal,
-          title: t('AboutModal:About OHIF Viewer'),
+          title: t('AboutModal:About Persian Gulf Viewer'),
           contentProps: { versionNumber, commitHash },
         }),
     },

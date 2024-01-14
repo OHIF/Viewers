@@ -37,7 +37,7 @@ const Modal = ({
             className="flex grow !leading-[1.2]"
             data-cy="modal-header"
           >
-            Raouf Persian Gulf PACS
+            {title}
           </Typography>
           {closeButton && (
             <Icon
