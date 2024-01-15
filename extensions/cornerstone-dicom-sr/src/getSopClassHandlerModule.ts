@@ -498,7 +498,7 @@ function _processTID1410Measurement(mergedContentSequence) {
     labels: [],
     coords: [_getCoordsFromSCOORDOrSCOORD3D(graphicItem)],
     TrackingUniqueIdentifier: UIDREFContentItem.UID,
-    TrackingIdentifier: TrackingIdentifierContentItem.TextValue,
+    TrackingIdentifier: `cornerstoneTools@^4.0.0:DICOMSRDisplay`, //TrackingIdentifierContentItem.TextValue,
   };
 
   NUMContentItems.forEach(item => {

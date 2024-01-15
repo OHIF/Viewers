@@ -87,7 +87,7 @@ export default function hydrateStructuredReport(
     }
   });
 
-  const datasetToUse = _mapLegacyDataSet(instance);
+  const datasetToUse = _mapLegacyDataSet(instance, displaySet.measurements);
 
   // Use dcmjs to generate toolState.
   let storedMeasurementByAnnotationType = MeasurementReport.generateToolState(
@@ -134,12 +134,15 @@ export default function hydrateStructuredReport(
       // files, and looking up the imageId from sopInstanceUIDToImageId results
       // in the wrong value.
       const frameNumber = (toolData.annotation.data && toolData.annotation.data.frameNumber) || 1;
-      const imageId =
-        imageIdsForToolState[toolData.sopInstanceUid][frameNumber] ||
-        sopInstanceUIDToImageId[toolData.sopInstanceUid];
 
-      if (!imageIds.includes(imageId)) {
-        imageIds.push(imageId);
+      if (toolData.sopInstanceUid) {
+        const imageId =
+          imageIdsForToolState[toolData.sopInstanceUid][frameNumber] ||
+          sopInstanceUIDToImageId[toolData.sopInstanceUid];
+
+        if (!imageIds.includes(imageId)) {
+          imageIds.push(imageId);
+        }
       }
     });
   });
@@ -171,19 +174,18 @@ export default function hydrateStructuredReport(
       // files, and looking up the imageId from sopInstanceUIDToImageId results
       // in the wrong value.
       const frameNumber = (toolData.annotation.data && toolData.annotation.data.frameNumber) || 1;
-      const imageId =
-        imageIdsForToolState[toolData.sopInstanceUid][frameNumber] ||
-        sopInstanceUIDToImageId[toolData.sopInstanceUid];
 
       toolData.uid = guid();
 
-      const instance = metaData.get('instance', imageId);
-      const {
-        FrameOfReferenceUID,
-        // SOPInstanceUID,
-        // SeriesInstanceUID,
-        // StudyInstanceUID,
-      } = instance;
+      let FrameOfReferenceUID = toolData.annotation.metadata.FrameOfReferenceUID;
+      let imageId;
+      if (toolData.sopInstanceUid) {
+        imageId =
+          imageIdsForToolState[toolData.sopInstanceUid][frameNumber] ||
+          sopInstanceUIDToImageId[toolData.sopInstanceUid];
+        const instance = metaData.get('instance', imageId);
+        FrameOfReferenceUID = instance.FrameOfReferenceUID;
+      }
 
       const annotation = {
         annotationUID: toolData.annotation.annotationUID,
@@ -227,13 +229,21 @@ export default function hydrateStructuredReport(
 
   displaySet.isHydrated = true;
 
+  const studyUID = targetStudyInstanceUID || displaySet.StudyInstanceUID;
+  const seriesUIDs = SeriesInstanceUIDs.length
+    ? SeriesInstanceUIDs
+    : [displaySet.SeriesInstanceUID];
+  console.debug('studyUID', studyUID);
+  console.debug('seriesUIDs', seriesUIDs);
+  console.debug('displaySet', displaySet);
+
   return {
-    StudyInstanceUID: targetStudyInstanceUID,
-    SeriesInstanceUIDs,
+    StudyInstanceUID: studyUID,
+    SeriesInstanceUIDs: seriesUIDs,
   };
 }
 
-function _mapLegacyDataSet(dataset) {
+function _mapLegacyDataSet(dataset, measurements = []) {
   const REPORT = 'Imaging Measurements';
   const GROUP = 'Measurement Group';
   const TRACKING_IDENTIFIER = 'Tracking Identifier';
@@ -267,7 +277,8 @@ function _mapLegacyDataSet(dataset) {
       contentItem => contentItem.ConceptNameCodeSequence.CodeMeaning === TRACKING_IDENTIFIER
     );
 
-    const TrackingIdentifier = TrackingIdentifierGroup.TextValue;
+    const TrackingIdentifier =
+      measurements[0]?.TrackingIdentifier || TrackingIdentifierGroup.TextValue;
 
     let [cornerstoneTag, toolName] = TrackingIdentifier.split(':');
     if (supportedLegacyCornerstoneTags.includes(cornerstoneTag)) {

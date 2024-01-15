@@ -12,6 +12,7 @@ import {
   CircleROITool,
   BidirectionalTool,
   ArrowAnnotateTool,
+  DICOMSRDisplayTool,
   DragProbeTool,
   ProbeTool,
   AngleTool,
@@ -66,6 +67,7 @@ export default function initCornerstoneTools(configuration = {}) {
   addTool(RectangleScissorsTool);
   addTool(SphereScissorsTool);
   addTool(ImageOverlayViewerTool);
+  addTool(DICOMSRDisplayTool);
 
   // Modify annotation tools to use dashed lines on SR
   const annotationStyle = {

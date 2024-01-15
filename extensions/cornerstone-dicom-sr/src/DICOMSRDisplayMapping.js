@@ -19,12 +19,10 @@ const DICOMSRDisplayMapping = {
     }
 
     const { graphicType, referencedImageId, FrameOfReferenceUID } = metadata;
-
     const { SOPInstanceUID, SeriesInstanceUID, StudyInstanceUID } =
       getSOPInstanceAttributes(referencedImageId);
 
     let displaySet;
-
     if (SOPInstanceUID) {
       displaySet = displaySetService.getDisplaySetForSOPInstanceUID(
         SOPInstanceUID,
@@ -34,8 +32,6 @@ const DICOMSRDisplayMapping = {
       displaySet = displaySetService.getDisplaySetsForSeries(SeriesInstanceUID);
     }
 
-    const { points } = data.handles;
-
     const mappedAnnotations = getMappedAnnotations(annotation, displaySetService);
     const displayText = getDisplayText(mappedAnnotations, displaySet);
 
@@ -43,7 +39,7 @@ const DICOMSRDisplayMapping = {
       uid: annotationUID,
       SOPInstanceUID,
       FrameOfReferenceUID,
-      points,
+      points: data.handles.points,
       label: data.label[0].value,
       metadata,
       referenceSeriesUID: SeriesInstanceUID,

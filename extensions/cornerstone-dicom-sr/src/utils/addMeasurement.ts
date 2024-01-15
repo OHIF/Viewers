@@ -49,7 +49,7 @@ export default function addMeasurement(measurement, imageId, displaySetInstanceU
       label: measurement.labels,
       handles: {
         textBox: measurement.textBox ?? {},
-        points: measurementData.renderableData,
+        points: measurementData.renderableData[measurement.coords[0].GraphicType],
       },
       cachedStats: {
         TrackingUniqueIdentifier: measurementData.TrackingUniqueIdentifier,

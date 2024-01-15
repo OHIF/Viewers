@@ -36,9 +36,7 @@ export default function isRehydratable(displaySet, mappings) {
   });
 
   for (let i = 0; i < measurements.length; i++) {
-    const { TrackingIdentifier, coords } = measurements[i] || {};
-    const { ValueType } = coords[0];
-    const specialValueTypes = ['SCOORD3D'];
+    const { TrackingIdentifier } = measurements[i] || {};
 
     const hydratable = adapters.some(adapter => {
       let [cornerstoneTag, toolName] = TrackingIdentifier.split(':');
@@ -51,7 +49,7 @@ export default function isRehydratable(displaySet, mappings) {
       return adapter.isValidCornerstoneTrackingIdentifier(mappedTrackingIdentifier);
     });
 
-    if (specialValueTypes.includes(ValueType) || hydratable) {
+    if (hydratable) {
       return true;
     }
     console.log('Measurement is not rehydratable', TrackingIdentifier, measurements[i]);

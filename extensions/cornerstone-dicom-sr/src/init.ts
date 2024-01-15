@@ -1,5 +1,4 @@
 import {
-  addTool,
   AngleTool,
   annotation,
   ArrowAnnotateTool,
@@ -10,7 +9,7 @@ import {
   LengthTool,
   PlanarFreehandROITool,
 } from '@cornerstonejs/tools';
-import DICOMSRDisplayTool from './tools/DICOMSRDisplayTool';
+
 import addToolInstance from './utils/addToolInstance';
 import { MeasurementService, Types } from '@ohif/core';
 import toolNames from './tools/toolNames';
@@ -24,10 +23,8 @@ export default function init({
   extensionManager,
   configuration = {},
 }: Types.Extensions.ExtensionParams): void {
-  const { measurementService, displaySetService, cornerstoneViewportService } =
-    servicesManager.services;
+  const { measurementService, displaySetService } = servicesManager.services;
 
-  addTool(DICOMSRDisplayTool);
   addToolInstance(toolNames.SRLength, LengthTool, {});
   addToolInstance(toolNames.SRBidirectional, BidirectionalTool);
   addToolInstance(toolNames.SREllipticalROI, EllipticalROITool);
@@ -57,12 +54,7 @@ export default function init({
       },
     ],
     DICOMSRDisplayMapping.toAnnotation,
-    csToolsAnnotation =>
-      DICOMSRDisplayMapping.toMeasurement(
-        csToolsAnnotation,
-        displaySetService,
-        cornerstoneViewportService
-      )
+    csToolsAnnotation => DICOMSRDisplayMapping.toMeasurement(csToolsAnnotation, displaySetService)
   );
 
   // Modify annotation tools to use dashed lines on SR
