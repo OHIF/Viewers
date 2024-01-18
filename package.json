@@ -157,6 +157,20 @@
       "git add"
     ]
   },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "Chrome >= 80",
+      "ie 11",
+      "not op_mini all"
+    ],
+    "development": [
+      "Chrome >= 60",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
   "resolutions": {
     "**/@babel/runtime": "^7.20.13",
     "commander": "8.3.0",
