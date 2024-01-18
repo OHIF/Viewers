@@ -14,7 +14,7 @@ import { utils } from '@ohif/core';
  *    or is already retrieved, or a promise to a URL for such use if a BulkDataURI
  */
 const getDirectURL = (config, params) => {
-  const { wadoRoot, singlepart } = config;
+  const { wadoRoot, singlepart } = config || {};;
   const {
     instance,
     tag = 'PixelData',
