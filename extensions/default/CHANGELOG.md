@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-beta.48](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.47...v3.8.0-beta.48) (2024-01-17)
+
+
+### Bug Fixes
+
+* 🐛 Check merge key for merge data source ([#3901](https://github.com/OHIF/Viewers/issues/3901)) ([911d672](https://github.com/OHIF/Viewers/commit/911d67283536b2fe7930948f2819ea0ad66e2a32))
+
+
+
+
+
 # [3.8.0-beta.47](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.46...v3.8.0-beta.47) (2024-01-12)
 
 **Note:** Version bump only for package @ohif/extension-default
