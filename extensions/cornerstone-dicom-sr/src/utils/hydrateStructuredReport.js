@@ -90,7 +90,7 @@ export default function hydrateStructuredReport(
   const datasetToUse = _mapLegacyDataSet(instance);
 
   // Use dcmjs to generate toolState.
-  const storedMeasurementByAnnotationType = MeasurementReport.generateToolState(
+  let storedMeasurementByAnnotationType = MeasurementReport.generateToolState(
     datasetToUse,
     // NOTE: we need to pass in the imageIds to dcmjs since the we use them
     // for the imageToWorld transformation. The following assumes that the order
@@ -100,6 +100,16 @@ export default function hydrateStructuredReport(
     utilities.imageToWorldCoords,
     metaData
   );
+
+  const onBeforeSRHydration =
+    customizationService.getModeCustomization('onBeforeSRHydration')?.value;
+
+  if (typeof onBeforeSRHydration === 'function') {
+    storedMeasurementByAnnotationType = onBeforeSRHydration({
+      storedMeasurementByAnnotationType,
+      displaySet,
+    });
+  }
 
   // Filter what is found by DICOM SR to measurements we support.
   const mappingDefinitions = mappings.map(m => m.annotationType);

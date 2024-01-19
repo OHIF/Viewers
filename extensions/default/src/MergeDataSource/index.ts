@@ -60,7 +60,14 @@ export const callForAllDataSourcesAsync = async ({
 
   await Promise.allSettled(promises);
 
-  return uniqBy(mergedData.flat(), obj => obj[mergeKey]);
+  let results = [];
+  if (mergeKey) {
+    results = uniqBy(mergedData.flat(), obj => get(obj, mergeKey));
+  } else {
+    results = mergedData.flat();
+  }
+
+  return results;
 };
 
 /**
@@ -139,7 +146,7 @@ export const callByRetrieveAETitle = ({
 
 function createMergeDataSourceApi(
   mergeConfig: MergeConfig,
-  UserAuthenticationService: unknown,
+  servicesManager: unknown,
   extensionManager
 ) {
   const { seriesMerge } = mergeConfig;

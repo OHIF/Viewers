@@ -9,8 +9,17 @@ sidebar_label: Lifecycle Hooks
 
 Currently, there are two hooks that are called for modes:
 
+- onModeInit
 - onModeEnter
 - onModeExit
+
+## onModeInit
+
+This hook gets run before the defined route has been entered by the mode. This
+hook can be used for initialization before the first render.
+
+This is called before `onModeEnter` calls. This allows modes to add or activate their own
+data sources and configuration before entering the mode (pre registrations).
 
 ## onModeEnter
 
