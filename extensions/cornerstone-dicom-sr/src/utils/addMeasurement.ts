@@ -52,7 +52,7 @@ export default function addMeasurement(measurement, imageId, displaySetInstanceU
     data: {
       label: measurement.labels,
       handles: {
-        textBox: {},
+        textBox: measurement.textBox ?? {},
       },
       cachedStats: {
         TrackingUniqueIdentifier: measurementData.TrackingUniqueIdentifier,
