@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-beta.49](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.48...v3.8.0-beta.49) (2024-01-19)
+
+
+### Bug Fixes
+
+* is same orientaiton ([#3905](https://github.com/OHIF/Viewers/issues/3905)) ([31b837f](https://github.com/OHIF/Viewers/commit/31b837fa90f631d4984482c6e952373fbb8bdbfc))
+
+
+
+
+
 # [3.8.0-beta.48](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.47...v3.8.0-beta.48) (2024-01-17)
 
 
