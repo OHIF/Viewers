@@ -86,7 +86,12 @@ function modeFactory({ modeConfiguration }) {
       measurementService.clearMeasurements();
 
       // Init Default and SR ToolGroups
-      initToolGroups(extensionManager, toolGroupService, commandsManager);
+      initToolGroups(
+        extensionManager,
+        toolGroupService,
+        commandsManager,
+        measurementService.getLabelConfig()
+      );
 
       let unsubscribe;
       toolbarService.setDefaultTool({

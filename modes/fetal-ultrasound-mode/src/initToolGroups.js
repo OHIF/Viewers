@@ -1,9 +1,5 @@
 function initDefaultToolGroup(
-  extensionManager,
-  toolGroupService,
-  commandsManager,
-  toolGroupId,
-  modeLabelConfig
+  extensionManager, toolGroupService, commandsManager, toolGroupId, labelConfig
 ) {
   const utilityModule = extensionManager.getModuleEntry(
     '@ohif/extension-cornerstone.utilityModule.tools'
@@ -33,7 +29,7 @@ function initDefaultToolGroup(
         toolName: toolNames.ArrowAnnotate,
         configuration: {
           getTextCallback: (callback, eventDetails) => {
-            if (modeLabelConfig) {
+            if (labelConfig) {
               callback(' ');
             } else {
               commandsManager.runCommand('arrowTextCallback', {
@@ -43,7 +39,7 @@ function initDefaultToolGroup(
             }
           },
           changeTextCallback: (data, eventDetails, callback) => {
-            if (modeLabelConfig === undefined) {
+            if (labelConfig === undefined) {
               commandsManager.runCommand('arrowTextCallback', {
                 callback,
                 data,
@@ -62,7 +58,6 @@ function initDefaultToolGroup(
       { toolName: toolNames.Angle },
       { toolName: toolNames.CobbAngle },
       { toolName: toolNames.PlanarFreehandROI },
-      { toolName: toolNames.Magnify },
       { toolName: toolNames.SegmentationDisplay },
       { toolName: toolNames.CalibrationLine },
     ],
@@ -75,7 +70,7 @@ function initDefaultToolGroup(
   toolGroupService.createToolGroupAndAddTools(toolGroupId, tools);
 }
 
-function initSRToolGroup(extensionManager, toolGroupService, commandsManager) {
+function initSRToolGroup(extensionManager, toolGroupService) {
   const SRUtilityModule = extensionManager.getModuleEntry(
     '@ohif/extension-cornerstone-dicom-sr.utilityModule.tools'
   );
@@ -141,7 +136,9 @@ function initSRToolGroup(extensionManager, toolGroupService, commandsManager) {
   toolGroupService.createToolGroupAndAddTools(toolGroupId, tools);
 }
 
-function initMPRToolGroup(extensionManager, toolGroupService, commandsManager, modeLabelConfig) {
+function initMPRToolGroup(
+  extensionManager, toolGroupService, commandsManager, labelConfig
+) {
   const utilityModule = extensionManager.getModuleEntry(
     '@ohif/extension-cornerstone.utilityModule.tools'
   );
@@ -170,7 +167,7 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager, m
         toolName: toolNames.ArrowAnnotate,
         configuration: {
           getTextCallback: (callback, eventDetails) => {
-            if (modeLabelConfig) {
+            if (labelConfig) {
               callback('');
             } else {
               commandsManager.runCommand('arrowTextCallback', {
@@ -180,7 +177,7 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager, m
             }
           },
           changeTextCallback: (data, eventDetails, callback) => {
-            if (modeLabelConfig === undefined) {
+            if (labelConfig === undefined) {
               commandsManager.runCommand('arrowTextCallback', {
                 callback,
                 data,
@@ -201,6 +198,7 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager, m
       { toolName: toolNames.PlanarFreehandROI },
       { toolName: toolNames.SegmentationDisplay },
     ],
+    // disabled
     disabled: [
       {
         toolName: toolNames.Crosshairs,
@@ -214,13 +212,12 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager, m
       },
       { toolName: toolNames.ReferenceLines },
     ],
-
     // enabled
-    // disabled
   };
 
   toolGroupService.createToolGroupAndAddTools('mpr', tools);
 }
+
 function initVolume3DToolGroup(extensionManager, toolGroupService) {
   const utilityModule = extensionManager.getModuleEntry(
     '@ohif/extension-cornerstone.utilityModule.tools'
@@ -248,16 +245,10 @@ function initVolume3DToolGroup(extensionManager, toolGroupService) {
   toolGroupService.createToolGroupAndAddTools('volume3d', tools);
 }
 
-function initToolGroups(extensionManager, toolGroupService, commandsManager, modeLabelConfig) {
-  initDefaultToolGroup(
-    extensionManager,
-    toolGroupService,
-    commandsManager,
-    'default',
-    modeLabelConfig
-  );
-  initSRToolGroup(extensionManager, toolGroupService, commandsManager);
-  initMPRToolGroup(extensionManager, toolGroupService, commandsManager, modeLabelConfig);
+function initToolGroups(extensionManager, toolGroupService, commandsManager, labelConfig) {
+  initDefaultToolGroup(extensionManager, toolGroupService, commandsManager, 'default', labelConfig);
+  initSRToolGroup(extensionManager, toolGroupService);
+  initMPRToolGroup(extensionManager, toolGroupService, commandsManager, labelConfig);
   initVolume3DToolGroup(extensionManager, toolGroupService);
 }
 

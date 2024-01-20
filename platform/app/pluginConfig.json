@@ -75,6 +75,10 @@
       "packageName": "@ohif/mode-basic-dev-mode",
       "default": false,
       "version": "3.0.0"
+    },
+    {
+      "packageName": "@ohif/fetal-ultrasound-mode",
+      "version": "3.0.0"
     }
   ],
   "public": [

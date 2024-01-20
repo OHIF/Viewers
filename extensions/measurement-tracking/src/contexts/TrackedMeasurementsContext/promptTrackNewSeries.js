@@ -11,7 +11,9 @@ const RESPONSE = {
 
 function promptTrackNewSeries({ servicesManager, extensionManager }, ctx, evt) {
   const { UIViewportDialogService } = servicesManager.services;
-  const { viewportId, StudyInstanceUID, SeriesInstanceUID } = evt;
+  // When the state change happens after a promise, the state machine sends the retult in evt.data;
+  // In case of direct transition to the state, the state machine sends the data in evt;
+  const { viewportId, StudyInstanceUID, SeriesInstanceUID } = evt.data || evt;
 
   return new Promise(async function (resolve, reject) {
     let promptResult = await _askShouldAddMeasurements(UIViewportDialogService, viewportId);

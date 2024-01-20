@@ -184,7 +184,7 @@ export default function ModeRoute({
     locationRef.current = location;
   }
 
-  const { displaySetService, hangingProtocolService, userAuthenticationService } = (
+  const { displaySetService, hangingProtocolService, userAuthenticationService, measurementService } = (
     servicesManager as ServicesManager
   ).services;
 
@@ -384,6 +384,9 @@ export default function ModeRoute({
         appConfig,
       });
 
+      if (mode.labelConfig) {
+        measurementService.setLabelConfig(mode.labelConfig);
+      }
       /**
        * The next line should get all the query parameters provided by the URL
        * - except the StudyInstanceUIDs - and create an object called filters
