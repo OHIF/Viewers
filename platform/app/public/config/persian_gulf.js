@@ -21,7 +21,7 @@ window.config = {
   },
   // filterQueryParam: false,
   defaultDataSourceName: 'dicomjson',
-  / Dynamic config allows user to pass "configUrl" query string this allows to load config without recompiling application. The regex will ensure valid configuration source /
+  // Dynamic config allows user to pass "configUrl" query string this allows to load config without recompiling application. The regex will ensure valid configuration source /
   // dangerouslyUseDynamicConfig: {
   //   enabled: true,
   //   // regex will ensure valid configuration source and default is /.*/ which matches any character. To use this, setup your own regex to choose a specific source of configuration only.
@@ -64,7 +64,7 @@ window.config = {
     console.warn('test, navigate to https://ohif.org/');
   },
   whiteLabeling: {
-    / Optional: Should return a React component to be rendered in the "Logo" section of the application's Top Navigation bar /
+    // Optional: Should return a React component to be rendered in the "Logo" section of the application's Top Navigation bar /
     createLogoComponentFn: function (React) {
       return React.createElement(
         'a',

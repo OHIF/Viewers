@@ -39,11 +39,51 @@ module.exports = {
         pale: '#7bb2ce',
       },
 
+      //Bule
+      // primary: {
+      //   light: '#5acce6',
+      //   main: '#0944b3',
+      //   dark: '#090c29',
+      //   active: '#348cfd',
+      // },
+
+      //Green
+      // primary: {
+      //   light: '#a3d2ca',
+      //   main: '#3b7a57',
+      //   dark: '#205d3e',
+      //   active: '#5cbf9b',
+      // },
+
+      //Nice Blue
+      // primary: {
+      //   light: '#a9d8ed',
+      //   main: '#5d9cec',
+      //   dark: '#355877', // Slightly adjusted from the original dark color
+      //   active: '#81b9e1',
+      // },
+
+      //Brown
+      // primary: {
+      //   light: '#bfa68a',
+      //   main: '#8c5d4a', // Brown main color
+      //   dark: '#5c3a2c',
+      //   active: '#755d4a',
+      // },
+
+      //Gray
+      // primary: {
+      //   light: '#cfcfcf',
+      //   main: '#888888', // Gray main color
+      //   dark: '#555555',
+      //   active: '#a0a0a0',
+      // },
+
       primary: {
-        light: '#5acce6',
-        main: '#0944b3',
-        dark: '#090c29',
-        active: '#348cfd',
+        light: '#4d6082',
+        main: '#1f2a47', // Deep navy blue main color
+        dark: '#0f1527',
+        active: '#374966',
       },
 
       inputfield: {
@@ -53,11 +93,51 @@ module.exports = {
         placeholder: '#39383f',
       },
 
+      //Blue
+      // secondary: {
+      //   light: '#3a3f99',
+      //   main: '#2b166b',
+      //   dark: '#041c4a',
+      //   active: '#1f1f27',
+      // },
+
+      // Green
+      // secondary: {
+      //   light: '#6a8e6d',
+      //   main: '#405d4a',
+      //   dark: '#1e3529',
+      //   active: '#273a31',
+      // },
+
+      //Nice Blue
+      // secondary: {
+      //   light: '#738dbf',
+      //   main: '#4a6fa5',
+      //   dark: '#2e486e',
+      //   active: '#577eaf',
+      // },
+
+      //Brown
+      // secondary: {
+      //   light: '#a68a6d',
+      //   main: '#7a5945',
+      //   dark: '#4a2c23',
+      //   active: '#5d3a2a',
+      // },
+
+      //Gray
+      // secondary: {
+      //   light: '#999999',
+      //   main: '#666666',
+      //   dark: '#333333',
+      //   active: '#777777',
+      // },
+
       secondary: {
-        light: '#3a3f99',
-        main: '#2b166b',
-        dark: '#041c4a',
-        active: '#1f1f27',
+        light: '#6c7f9e',
+        main: '#3c4f73',
+        dark: '#1d2c4a',
+        active: '#536387',
       },
 
       common: {
