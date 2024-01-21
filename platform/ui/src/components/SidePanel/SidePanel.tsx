@@ -36,7 +36,7 @@ const styleMap = {
 };
 
 const baseClasses =
-  'transition-all duration-300 ease-in-out bg-primary-dark border-black justify-start box-content flex flex-col';
+  'transition-all duration-300 ease-in-out bg-black border-black justify-start box-content flex flex-col';
 
 const classesMap = {
   open: {
@@ -298,7 +298,7 @@ const SidePanel = ({ side, className, activeTabIndex: activeTabIndexProp, tabs, 
     return (
       <div
         className={classnames(
-          'flex grow cursor-pointer justify-center self-center text-[13px] font-bold text-white'
+          'text-primary-active flex grow cursor-pointer justify-center self-center text-[13px] font-bold'
         )}
         style={{
           ...(side === 'left'
@@ -315,7 +315,7 @@ const SidePanel = ({ side, className, activeTabIndex: activeTabIndexProp, tabs, 
 
   const getOpenStateComponent = () => {
     return (
-      <div className="bg-primary-main mb-2 flex rounded-lg pt-1.5 pb-[2px]">
+      <div className="bg-primary-dark flex rounded-t pt-1.5 pb-[2px]">
         {getCloseIcon()}
         {tabs.length === 1 ? getOneTabComponent() : getTabGridComponent()}
       </div>

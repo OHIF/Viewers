@@ -56,25 +56,25 @@ const moreToolsMpr = [
           ],
           'Reset'
         ),
-        ToolbarService._createToggleButton(
-          'StackImageSync',
-          'link',
-          'Stack Image Sync',
-          [
-            {
-              commandName: 'toggleStackImageSync',
-            },
-          ],
-          'Enable position synchronization on stack viewports',
-          {
-            listeners: {
-              [EVENTS.STACK_VIEWPORT_NEW_STACK]: {
-                commandName: 'toggleStackImageSync',
-                commandOptions: { toggledState: true },
-              },
-            },
-          }
-        ),
+        // ToolbarService._createToggleButton(
+        //   'StackImageSync',
+        //   'link',
+        //   'Stack Image Sync',
+        //   [
+        //     {
+        //       commandName: 'toggleStackImageSync',
+        //     },
+        //   ],
+        //   'Enable position synchronization on stack viewports',
+        //   {
+        //     listeners: {
+        //       [EVENTS.STACK_VIEWPORT_NEW_STACK]: {
+        //         commandName: 'toggleStackImageSync',
+        //         commandOptions: { toggledState: true },
+        //       },
+        //     },
+        //   }
+        // ),
         ToolbarService._createToggleButton(
           'ReferenceLines',
           'tool-referenceLines', // change this with the new icon
@@ -104,21 +104,21 @@ const moreToolsMpr = [
           'Image Overlay',
           { isActive: true }
         ),
-        ToolbarService._createToolButton(
-          'StackScroll',
-          'tool-stack-scroll',
-          'Stack Scroll',
-          [
-            {
-              commandName: 'setToolActive',
-              commandOptions: {
-                toolName: 'StackScroll',
-              },
-              context: 'CORNERSTONE',
-            },
-          ],
-          'Stack Scroll'
-        ),
+        // ToolbarService._createToolButton(
+        //   'StackScroll',
+        //   'tool-stack-scroll',
+        //   'Stack Scroll',
+        //   [
+        //     {
+        //       commandName: 'setToolActive',
+        //       commandOptions: {
+        //         toolName: 'StackScroll',
+        //       },
+        //       context: 'CORNERSTONE',
+        //     },
+        //   ],
+        //   'Stack Scroll'
+        // ),
         ToolbarService._createActionButton(
           'invert',
           'tool-invert',

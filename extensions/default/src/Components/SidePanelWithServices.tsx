@@ -25,11 +25,6 @@ const SidePanelWithServices = ({
   const [activeTabIndex, setActiveTabIndex] = useState(activeTabIndexProp);
   const [tempTabIndex, setTempTabIndex] = useState<number | null>(null);
 
-  const handleOpen = useCallback(() => {
-    setHasBeenOpened(true);
-    setActiveTabIndex(0);
-  }, [activeTabIndex]);
-
   useEffect(() => {
     if (panelService) {
       const activatePanelSubscription = panelService.subscribe(
@@ -52,6 +47,12 @@ const SidePanelWithServices = ({
     }
   }, [tabs, hasBeenOpened, panelService]);
 
+  useEffect(() => {
+    if (hasBeenOpened && tempTabIndex !== null) {
+      setActiveTabIndex(tempTabIndex);
+      setTempTabIndex(null); // Reset tempTabIndex
+    }
+  }, [tempTabIndex, hasBeenOpened]);
 
   return (
     <SidePanel
@@ -59,7 +60,10 @@ const SidePanelWithServices = ({
       className={className}
       activeTabIndex={activeTabIndex}
       tabs={tabs}
-      onOpen={handleOpen}
+      onOpen={() => {
+        setHasBeenOpened(true);
+        setTempTabIndex(0);
+      }}
     ></SidePanel>
   );
 };

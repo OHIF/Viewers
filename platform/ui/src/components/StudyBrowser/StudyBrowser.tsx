@@ -70,7 +70,47 @@ const StudyBrowser = ({
 
   return (
     <React.Fragment>
-      <div className="ohif-scrollbar invisible-scrollbar flex flex-1 flex-col">
+      <div
+        className="w-100 border-secondary-light bg-primary-dark flex h-16 flex-row items-center justify-center border-b p-4"
+        data-cy={'studyBrowser-panel'}
+      >
+        {/* TODO Revisit design of LegacyButtonGroup later - for now use LegacyButton for its children.*/}
+        <LegacyButtonGroup
+          variant="outlined"
+          color="secondary"
+          splitBorder={false}
+        >
+          {tabs.map(tab => {
+            const { name, label, studies } = tab;
+            const isActive = activeTabName === name;
+            const isDisabled = !studies.length;
+            // Apply the contrasting color for brighter button color visibility
+            const classStudyBrowser = customizationService?.getModeCustomization(
+              'class:StudyBrowser'
+            ) || {
+              true: 'default',
+              false: 'default',
+            };
+            const color = classStudyBrowser[`${isActive}`];
+            return (
+              <LegacyButton
+                key={name}
+                className={'min-w-18 p-2 text-base text-white'}
+                size="initial"
+                color={color}
+                bgColor={isActive ? 'bg-primary-main' : 'bg-black'}
+                onClick={() => {
+                  onClickTab(name);
+                }}
+                disabled={isDisabled}
+              >
+                {t(label)}
+              </LegacyButton>
+            );
+          })}
+        </LegacyButtonGroup>
+      </div>
+      <div className="ohif-scrollbar invisible-scrollbar flex flex-1 flex-col overflow-auto">
         {getTabContent()}
       </div>
     </React.Fragment>
