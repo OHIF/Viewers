@@ -1,12 +1,12 @@
-const STACK_SYNC_NAME = 'stackImageSync';
+const IMAGE_SLICE_SYNC_NAME = 'IMAGE_SLICE_SYNC';
 
-export default function toggleStackImageSync({
+export default function toggleImageSliceSync({
   toggledState,
   servicesManager,
   viewports: providedViewports,
 }) {
   if (!toggledState) {
-    return disableSync(STACK_SYNC_NAME, servicesManager);
+    return disableSync(IMAGE_SLICE_SYNC_NAME, servicesManager);
   }
 
   const { syncGroupService, viewportGridService, displaySetService, cornerstoneViewportService } =
@@ -24,7 +24,7 @@ export default function toggleStackImageSync({
     }
     syncGroupService.addViewportToSyncGroup(viewportId, viewport.getRenderingEngine().id, {
       type: 'stackimage',
-      id: STACK_SYNC_NAME,
+      id: IMAGE_SLICE_SYNC_NAME,
       source: true,
       target: true,
     });
