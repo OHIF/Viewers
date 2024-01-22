@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-beta.51](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.50...v3.8.0-beta.51) (2024-01-22)
+
+
+### Bug Fixes
+
+* catch errors in getPTImageIdInstanceMetadata ([#3897](https://github.com/OHIF/Viewers/issues/3897)) ([a47aeb8](https://github.com/OHIF/Viewers/commit/a47aeb8bd729dcb8d2cfc13b27a31b0dd88f11ad))
+
+
+
+
+
+# [3.8.0-beta.50](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.49...v3.8.0-beta.50) (2024-01-22)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
 # [3.8.0-beta.49](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.48...v3.8.0-beta.49) (2024-01-19)
 
 **Note:** Version bump only for package @ohif/extension-default
