@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-beta.51](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.50...v3.8.0-beta.51) (2024-01-22)
+
+**Note:** Version bump only for package @ohif/mode-test
+
+
+
+
+
+# [3.8.0-beta.50](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.49...v3.8.0-beta.50) (2024-01-22)
+
+
+### Bug Fixes
+
+* **viewport-sync:** remember synced viewports bw stack and volume and RENAME StackImageSync to ImageSliceSync ([#3849](https://github.com/OHIF/Viewers/issues/3849)) ([e4a116b](https://github.com/OHIF/Viewers/commit/e4a116b074fcb85c8cbcc9db44fdec565f3386db))
+
+
+
+
+
+# [3.8.0-beta.49](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.48...v3.8.0-beta.49) (2024-01-19)
+
+**Note:** Version bump only for package @ohif/mode-test
+
+
+
+
+
 # [3.8.0-beta.48](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.47...v3.8.0-beta.48) (2024-01-17)
 
 **Note:** Version bump only for package @ohif/mode-test
