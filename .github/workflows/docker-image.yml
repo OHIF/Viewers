@@ -29,4 +29,6 @@ jobs:
       run: |
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+        docker build -t $ECR_REGISTRY/midas-ohif-openresty:$IMAGE_TAG -f ./platform/app/.recipes/OpenResty-Orthanc-Keycloak/dockerfile .
+        docker push $ECR_REGISTRY/midas-ohif-openresty:$IMAGE_TAG
         
