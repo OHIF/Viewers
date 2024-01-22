@@ -148,6 +148,7 @@ export default class ToolGroupService {
       });
     } else {
       let toolGroup = ToolGroupManager.getToolGroup(toolGroupId);
+
       if (!toolGroup) {
         toolGroup = this.createToolGroup(toolGroupId);
       }
@@ -162,12 +163,13 @@ export default class ToolGroupService {
   }
 
   public createToolGroup(toolGroupId: string): Types.IToolGroup {
-    if (this.getToolGroup(toolGroupId)) {
-      throw new Error(`ToolGroup ${toolGroupId} already exists`);
+    let toolGroup = ToolGroupManager.getToolGroup(toolGroupId);
+    if (toolGroup) {
+      return toolGroup;
     }
 
     // if the toolGroup doesn't exist, create it
-    const toolGroup = ToolGroupManager.createToolGroup(toolGroupId);
+    toolGroup = ToolGroupManager.createToolGroup(toolGroupId);
     this.toolGroupIds.add(toolGroupId);
 
     this._broadcastEvent(EVENTS.TOOLGROUP_CREATED, {

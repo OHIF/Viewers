@@ -304,43 +304,40 @@ export default async function init({
     if (enabledElementCounter === cornerstone.getEnabledElements().length) {
       const dataSource = extensionManager.getActiveDataSource()[0];
       const { viewports } = viewportGridService.getState();
-
       const viewportDisplaySetIds = [];
       viewports.forEach(viewport => {
         viewport.displaySetInstanceUIDs.forEach(displaySetInstanceUID => {
           viewportDisplaySetIds.push(displaySetInstanceUID);
         });
       });
-
       const viewportInfos = Array.from(viewports.values());
-
-      const displaySet = displaySetService.getDisplaySetByUID(
-        viewportInfos[0].displaySetInstanceUIDs[0]
-      );
-      const { StudyInstanceUID } = displaySet;
-
-      displaySetService
-        .getActiveDisplaySets()
-        .filter(
-          ds =>
-            ds.StudyInstanceUID === StudyInstanceUID &&
-            !viewportDisplaySetIds.includes(ds.displaySetInstanceUID)
-        )
-        .sort((a, b) => a.SeriesNumber - b.SeriesNumber)
-        .filter(ds => !STUDY_STACKS.some(stack => stack.uid === ds.displaySetInstanceUID))
-        .forEach((displaySet, index) => {
-          const imageIds = dataSource.getImageIdsForDisplaySet(displaySet);
-          STUDY_STACKS.push({
-            uid: displaySet.displaySetInstanceUID,
-            imageIds,
-          });
-        });
-
+      const displaySetInstanceUID = viewportInfos[0].displaySetInstanceUIDs[0];
+      if (displaySetInstanceUID) {
+        const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
+        if (displaySet) {
+          const { StudyInstanceUID } = displaySet;
+          displaySetService
+            .getActiveDisplaySets()
+            .filter(
+              ds =>
+                ds.StudyInstanceUID === StudyInstanceUID &&
+                !viewportDisplaySetIds.includes(ds.displaySetInstanceUID)
+            )
+            .sort((a, b) => a.SeriesNumber - b.SeriesNumber)
+            .filter(ds => !STUDY_STACKS.some(stack => stack.uid === ds.displaySetInstanceUID))
+            .forEach((displaySet, index) => {
+              const imageIds = dataSource.getImageIdsForDisplaySet(displaySet);
+              STUDY_STACKS.push({
+                uid: displaySet.displaySetInstanceUID,
+                imageIds,
+              });
+            });
+        }
+      }
       setTimeout(() => {
         console.log('All elements are enabled. Start prefetching images.');
         STUDY_STACKS.forEach(stack => stackPrefetch.enable(stack, priorityCounter));
       }, 2000);
-
       eventTarget.removeEventListener(EVENTS.ELEMENT_ENABLED, elementEnabledHandler);
     }
     const { element } = evt.detail;
