@@ -37,7 +37,7 @@ const initialState = {
   },
   ThresholdBrush: {
     brushSize: 15,
-    thresholdRange: [-500, 500],
+    thresholdRange: null,
   },
   activeTool: null,
 };
@@ -88,6 +88,8 @@ function SegmentationToolbox({ servicesManager, extensionManager }) {
 
   const setToolActive = useCallback(
     toolName => {
+      initializeThresholdValue(toolName);
+
       toolbarService.recordInteraction({
         interactionType: 'tool',
         commands: [
@@ -178,6 +180,24 @@ function SegmentationToolbox({ servicesManager, extensionManager }) {
     [toolGroupService]
   );
 
+  function initializeThresholdValue(toolName: any) {
+    if (state.ThresholdBrush.thresholdRange === null) {
+      // set the default threshold range from the tool configuration
+      const toolGroupIds = toolGroupService.getToolGroupIds();
+      const toolGroupId = toolGroupIds[0];
+      const toolGroup = toolGroupService.getToolGroup(toolGroupId);
+      const toolConfig = toolGroup.getToolConfiguration(toolName);
+      const defaultThresholdRange = toolConfig?.strategySpecificConfiguration?.THRESHOLD?.threshold;
+      dispatch({
+        type: ACTIONS.SET_TOOL_CONFIG,
+        payload: {
+          tool: 'ThresholdBrush',
+          config: { thresholdRange: defaultThresholdRange },
+        },
+      });
+    }
+  }
+
   const onBrushSizeChange = useCallback(
     (valueAsStringOrNumber, toolCategory) => {
       const value = Number(valueAsStringOrNumber);
@@ -200,8 +220,8 @@ function SegmentationToolbox({ servicesManager, extensionManager }) {
   const handleRangeChange = useCallback(
     newRange => {
       if (
-        newRange[0] === state.ThresholdBrush.thresholdRange[0] &&
-        newRange[1] === state.ThresholdBrush.thresholdRange[1]
+        newRange[0] === state.ThresholdBrush.thresholdRange?.[0] &&
+        newRange[1] === state.ThresholdBrush.thresholdRange?.[1]
       ) {
         return;
       }
@@ -213,7 +233,7 @@ function SegmentationToolbox({ servicesManager, extensionManager }) {
           const toolGroup = toolGroupService.getToolGroup(toolGroupId);
           toolGroup.setToolConfiguration(toolName, {
             strategySpecificConfiguration: {
-              THRESHOLD_INSIDE_CIRCLE: {
+              THRESHOLD: {
                 threshold: newRange,
               },
             },
@@ -365,7 +385,7 @@ function SegmentationToolbox({ servicesManager, extensionManager }) {
                     <InputDoubleRange
                       values={state.ThresholdBrush.thresholdRange}
                       onChange={handleRangeChange}
-                      minValue={-1000}
+                      minValue={-1000} // Todo: these should be configurable
                       maxValue={1000}
                       step={1}
                       showLabel={true}

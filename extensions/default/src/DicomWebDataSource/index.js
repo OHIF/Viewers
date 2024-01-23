@@ -28,17 +28,35 @@ const EXPLICIT_VR_LITTLE_ENDIAN = '1.2.840.10008.1.2.1';
 const metadataProvider = classes.MetadataProvider;
 
 /**
+ * Creates a DICOM Web API based on the provided configuration.
  *
- * @param {string} name - Data source name
- * @param {string} wadoUriRoot - Legacy? (potentially unused/replaced)
- * @param {string} qidoRoot - Base URL to use for QIDO requests
- * @param {string} wadoRoot - Base URL to use for WADO requests
- * @param {boolean} qidoSupportsIncludeField - Whether QIDO supports the "Include" option to request additional fields in response
- * @param {string} imageRengering - wadors | ? (unsure of where/how this is used)
- * @param {string} thumbnailRendering - wadors | ? (unsure of where/how this is used)
- * @param {bool} supportsReject - Whether the server supports reject calls (i.e. DCM4CHEE)
- * @param {bool} lazyLoadStudy - "enableStudyLazyLoad"; Request series meta async instead of blocking
- * @param {string|bool} singlepart - indicates of the retrieves can fetch singlepart.  Options are bulkdata, video, image or boolean true
+ * @param {object} dicomWebConfig - Configuration for the DICOM Web API
+ * @param {string} dicomWebConfig.name - Data source name
+ * @param {string} dicomWebConfig.wadoUriRoot - Legacy? (potentially unused/replaced)
+ * @param {string} dicomWebConfig.qidoRoot - Base URL to use for QIDO requests
+ * @param {string} dicomWebConfig.wadoRoot - Base URL to use for WADO requests
+ * @param {string} dicomWebConfig.wadoUri - Base URL to use for WADO URI requests
+ * @param {boolean} dicomWebConfig.qidoSupportsIncludeField - Whether QIDO supports the "Include" option to request additional fields in response
+ * @param {string} dicomWebConfig.imageRendering - wadors | ? (unsure of where/how this is used)
+ * @param {string} dicomWebConfig.thumbnailRendering - wadors | ? (unsure of where/how this is used)
+ * @param {boolean} dicomWebConfig.supportsReject - Whether the server supports reject calls (i.e. DCM4CHEE)
+ * @param {boolean} dicomWebConfig.lazyLoadStudy - "enableStudyLazyLoad"; Request series meta async instead of blocking
+ * @param {string|boolean} dicomWebConfig.singlepart - indicates if the retrieves can fetch singlepart. Options are bulkdata, video, image, or boolean true
+ * @param {string} dicomWebConfig.requestTransferSyntaxUID - Transfer syntax to request from the server
+ * @param {object} dicomWebConfig.acceptHeader - Accept header to use for requests
+ * @param {boolean} dicomWebConfig.omitQuotationForMultipartRequest - Whether to omit quotation marks for multipart requests
+ * @param {boolean} dicomWebConfig.supportsFuzzyMatching - Whether the server supports fuzzy matching
+ * @param {boolean} dicomWebConfig.supportsWildcard - Whether the server supports wildcard matching
+ * @param {boolean} dicomWebConfig.supportsNativeDICOMModel - Whether the server supports the native DICOM model
+ * @param {boolean} dicomWebConfig.enableStudyLazyLoad - Whether to enable study lazy loading
+ * @param {boolean} dicomWebConfig.enableRequestTag - Whether to enable request tag
+ * @param {boolean} dicomWebConfig.enableStudyLazyLoad - Whether to enable study lazy loading
+ * @param {boolean} dicomWebConfig.bulkDataURI - Whether to enable bulkDataURI
+ * @param {function} dicomWebConfig.onConfiguration - Function that is called after the configuration is initialized
+ * @param {boolean} dicomWebConfig.staticWado - Whether to use the static WADO client
+ * @param {object} userAuthenticationService - User authentication service
+ * @param {object} userAuthenticationService.getAuthorizationHeader - Function that returns the authorization header
+ * @returns {object} - DICOM Web API object
  */
 function createDicomWebApi(dicomWebConfig, servicesManager) {
   const { userAuthenticationService, customizationService } = servicesManager.services;
@@ -191,6 +209,7 @@ function createDicomWebApi(dicomWebConfig, servicesManager) {
           sortCriteria,
           sortFunction,
           madeInClient = false,
+          returnPromises = false,
         } = {}) => {
           if (!StudyInstanceUID) {
             throw new Error('Unable to query for SeriesMetadata without StudyInstanceUID');
@@ -202,7 +221,8 @@ function createDicomWebApi(dicomWebConfig, servicesManager) {
               filters,
               sortCriteria,
               sortFunction,
-              madeInClient
+              madeInClient,
+              returnPromises
             );
           }
 
@@ -336,7 +356,8 @@ function createDicomWebApi(dicomWebConfig, servicesManager) {
       filters,
       sortCriteria,
       sortFunction,
-      madeInClient = false
+      madeInClient = false,
+      returnPromises = false
     ) => {
       const enableStudyLazyLoad = true;
       wadoDicomWebClient.headers = generateWadoHeader();
@@ -416,7 +437,7 @@ function createDicomWebApi(dicomWebConfig, servicesManager) {
         const naturalizedInstances = instances.map(addRetrieveBulkData);
 
         // Adding instanceMetadata to OHIF MetadataProvider
-        naturalizedInstances.forEach((instance, index) => {
+        naturalizedInstances.forEach(instance => {
           instance.wadoRoot = dicomWebConfig.wadoRoot;
           instance.wadoUri = dicomWebConfig.wadoUri;
 
@@ -443,7 +464,7 @@ function createDicomWebApi(dicomWebConfig, servicesManager) {
       }
 
       function setSuccessFlag() {
-        const study = DicomMetadataStore.getStudy(StudyInstanceUID, madeInClient);
+        const study = DicomMetadataStore.getStudy(StudyInstanceUID);
         if (!study) {
           return;
         }
@@ -458,13 +479,22 @@ function createDicomWebApi(dicomWebConfig, servicesManager) {
 
       DicomMetadataStore.addSeriesMetadata(seriesSummaryMetadata, madeInClient);
 
-      const seriesDeliveredPromises = seriesPromises.map(promise =>
-        promise.then(instances => {
+      const seriesDeliveredPromises = seriesPromises.map(promise => {
+        if (!returnPromises) {
+          promise?.start();
+        }
+        return promise.then(instances => {
           storeInstances(instances);
-        })
-      );
-      await Promise.all(seriesDeliveredPromises);
-      setSuccessFlag();
+        });
+      });
+
+      if (returnPromises) {
+        Promise.all(seriesDeliveredPromises).then(() => setSuccessFlag());
+        return seriesPromises;
+      } else {
+        await Promise.all(seriesDeliveredPromises);
+        setSuccessFlag();
+      }
 
       return seriesSummaryMetadata;
     },
@@ -496,7 +526,7 @@ function createDicomWebApi(dicomWebConfig, servicesManager) {
 
       return imageIds;
     },
-    getImageIdsForInstance({ instance, frame }) {
+    getImageIdsForInstance({ instance, frame = undefined }) {
       const imageIds = getImageId({
         instance,
         frame,

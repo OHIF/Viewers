@@ -17,7 +17,8 @@ import { vec3, mat4 } from 'gl-matrix';
 
 import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownloadForm';
 import { callInputDialogForCustomLabel, showLabelAnnotationPopup } from './utils/callInputDialog';
-import toggleStackImageSync from './utils/stackSync/toggleStackImageSync';
+import callInputDialog from './utils/callInputDialog';
+import toggleImageSliceSync from './utils/imageSliceSync/toggleImageSliceSync';
 import { getFirstAnnotationSelected } from './utils/measurementServiceMappings/utils/selection';
 import getActiveViewportEnabledElement from './utils/getActiveViewportEnabledElement';
 import { CornerstoneServices } from './types';
@@ -562,8 +563,8 @@ function commandsModule({
       viewportGridService.setActiveViewportId(viewportIds[nextViewportIndex] as string);
     },
 
-    toggleStackImageSync: ({ toggledState }) => {
-      toggleStackImageSync({
+    toggleImageSliceSync: ({ toggledState }) => {
+      toggleImageSliceSync({
         servicesManager,
         toggledState,
       });
@@ -722,8 +723,8 @@ function commandsModule({
     setViewportColormap: {
       commandFn: actions.setViewportColormap,
     },
-    toggleStackImageSync: {
-      commandFn: actions.toggleStackImageSync,
+    toggleImageSliceSync: {
+      commandFn: actions.toggleImageSliceSync,
     },
     setSourceViewportForReferenceLinesTool: {
       commandFn: actions.setSourceViewportForReferenceLinesTool,

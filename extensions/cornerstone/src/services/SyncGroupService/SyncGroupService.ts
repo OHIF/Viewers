@@ -45,7 +45,7 @@ export default class SyncGroupService {
     [POSITION]: synchronizers.createCameraPositionSynchronizer,
     [VOI]: synchronizers.createVOISynchronizer,
     [ZOOMPAN]: synchronizers.createZoomPanSynchronizer,
-    [STACKIMAGE]: synchronizers.createStackImageSynchronizer,
+    [STACKIMAGE]: synchronizers.createImageSliceSynchronizer,
   };
 
   constructor(serviceManager: ServicesManager) {
@@ -72,6 +72,10 @@ export default class SyncGroupService {
    */
   public addSynchronizerType(type: string, creator: SyncCreator): void {
     this.synchronizerCreators[type.toLowerCase()] = creator;
+  }
+
+  public getSynchronizer(id: string): Synchronizer | void {
+    return SynchronizerManager.getSynchronizer(id);
   }
 
   protected _getOrCreateSynchronizer(
@@ -119,6 +123,17 @@ export default class SyncGroupService {
 
   public destroy(): void {
     SynchronizerManager.destroy();
+  }
+
+  public getSynchronizersForViewport(
+    viewportId: string,
+    renderingEngineId: string
+  ): Synchronizer[] {
+    return SynchronizerManager.getAllSynchronizers().filter(
+      s =>
+        s.hasSourceViewport(renderingEngineId, viewportId) ||
+        s.hasTargetViewport(renderingEngineId, viewportId)
+    );
   }
 
   public removeViewportFromSyncGroup(
