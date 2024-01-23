@@ -3,6 +3,90 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-beta.52](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.51...v3.8.0-beta.52) (2024-01-22)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.8.0-beta.51](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.50...v3.8.0-beta.51) (2024-01-22)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.8.0-beta.50](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.49...v3.8.0-beta.50) (2024-01-22)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.8.0-beta.49](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.48...v3.8.0-beta.49) (2024-01-19)
+
+
+### Bug Fixes
+
+* is same orientaiton ([#3905](https://github.com/OHIF/Viewers/issues/3905)) ([31b837f](https://github.com/OHIF/Viewers/commit/31b837fa90f631d4984482c6e952373fbb8bdbfc))
+
+
+
+
+
+# [3.8.0-beta.48](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.47...v3.8.0-beta.48) (2024-01-17)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.8.0-beta.47](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.46...v3.8.0-beta.47) (2024-01-12)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.8.0-beta.46](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.45...v3.8.0-beta.46) (2024-01-12)
+
+
+### Bug Fixes
+
+* Update CS3D to fix second render ([#3892](https://github.com/OHIF/Viewers/issues/3892)) ([d00a86b](https://github.com/OHIF/Viewers/commit/d00a86b022742ea089d246d06cfd691f43b64412))
+
+
+
+
+
+# [3.8.0-beta.45](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.44...v3.8.0-beta.45) (2024-01-09)
+
+
+### Features
+
+* **hp:** enable OHIF to run with partial metadata for large studies at the cost of less effective hanging protocol ([#3804](https://github.com/OHIF/Viewers/issues/3804)) ([0049f4c](https://github.com/OHIF/Viewers/commit/0049f4c0303f0b6ea995972326fc8784259f5a47))
+
+
+
+
+
+# [3.8.0-beta.44](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.43...v3.8.0-beta.44) (2024-01-09)
+
+
+### Features
+
+* **transferSyntax:** prefer server transcoded transfer syntax for all images ([#3883](https://github.com/OHIF/Viewers/issues/3883)) ([1456a49](https://github.com/OHIF/Viewers/commit/1456a493d66c90c787b022256c9f2846afb115fc))
+
+
+
+
+
 # [3.8.0-beta.43](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.42...v3.8.0-beta.43) (2024-01-09)
 
 
