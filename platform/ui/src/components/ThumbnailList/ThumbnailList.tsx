@@ -16,7 +16,7 @@ const ThumbnailList = ({
   return (
     <div
       id="ohif-thumbnail-list"
-      className="ohif-scrollbar study-min-height overflow-y-hidden bg-black py-3"
+      className="ohif-scrollbar flex flex-row overflow-x-hidden overflow-y-hidden bg-black py-3"
     >
       {thumbnails.map(
         ({
@@ -80,26 +80,26 @@ const ThumbnailList = ({
                   onClickUntrack={() => onClickUntrack(displaySetInstanceUID)}
                 />
               );
-            case 'thumbnailNoImage':
-              return (
-                <ThumbnailNoImage
-                  isActive={isActive}
-                  key={displaySetInstanceUID}
-                  displaySetInstanceUID={displaySetInstanceUID}
-                  dragData={dragData}
-                  modality={modality}
-                  modalityTooltip={_getModalityTooltip(modality)}
-                  messages={messages}
-                  seriesDate={seriesDate}
-                  description={description}
-                  canReject={canReject}
-                  onReject={onReject}
-                  onClick={() => onThumbnailDoubleClick(displaySetInstanceUID)}
-                  onDoubleClick={() => onThumbnailDoubleClick(displaySetInstanceUID)}
-                  viewportIdentificator={viewportIdentificator}
-                  isHydratedForDerivedDisplaySet={isHydratedForDerivedDisplaySet}
-                />
-              );
+            // case 'thumbnailNoImage':
+            //   return (
+            //     <ThumbnailNoImage
+            //       isActive={isActive}
+            //       key={displaySetInstanceUID}
+            //       displaySetInstanceUID={displaySetInstanceUID}
+            //       dragData={dragData}
+            //       modality={modality}
+            //       modalityTooltip={_getModalityTooltip(modality)}
+            //       messages={messages}
+            //       seriesDate={seriesDate}
+            //       description={description}
+            //       canReject={canReject}
+            //       onReject={onReject}
+            //       onClick={() => onThumbnailDoubleClick(displaySetInstanceUID)}
+            //       onDoubleClick={() => onThumbnailDoubleClick(displaySetInstanceUID)}
+            //       viewportIdentificator={viewportIdentificator}
+            //       isHydratedForDerivedDisplaySet={isHydratedForDerivedDisplaySet}
+            //     />
+            //   );
             default:
               return <></>;
           }

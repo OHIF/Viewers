@@ -41,27 +41,33 @@ const StudyBrowser = ({
         const isExpanded = expandedStudyInstanceUIDs.includes(studyInstanceUid);
         return (
           <React.Fragment key={studyInstanceUid}>
-            <StudyItem
-              date={date}
-              description={description}
-              numInstances={numInstances}
-              modalities={modalities}
-              trackedSeries={getTrackedSeries(displaySets)}
-              isActive={isExpanded}
-              onClick={() => {
-                onClickStudy(studyInstanceUid);
-              }}
-              data-cy="thumbnail-list"
-            />
-            {isExpanded && displaySets && (
-              <ThumbnailList
-                thumbnails={displaySets}
-                activeDisplaySetInstanceUIDs={activeDisplaySetInstanceUIDs}
-                onThumbnailClick={onClickThumbnail}
-                onThumbnailDoubleClick={onDoubleClickThumbnail}
-                onClickUntrack={onClickUntrack}
-              />
-            )}
+            <section className="flex h-[100%] w-[100%] flex-row overflow-x-auto overflow-y-hidden">
+              <div className="h-[100%] w-[7%]">
+                <StudyItem
+                  date={date}
+                  description={description}
+                  numInstances={numInstances}
+                  modalities={modalities}
+                  trackedSeries={getTrackedSeries(displaySets)}
+                  isActive={isExpanded}
+                  onClick={() => {
+                    onClickStudy(studyInstanceUid);
+                  }}
+                  data-cy="thumbnail-list"
+                />
+              </div>
+              <div className="h-[100%] w-[93%]">
+                {isExpanded && displaySets && (
+                  <ThumbnailList
+                    thumbnails={displaySets}
+                    activeDisplaySetInstanceUIDs={activeDisplaySetInstanceUIDs}
+                    onThumbnailClick={onClickThumbnail}
+                    onThumbnailDoubleClick={onDoubleClickThumbnail}
+                    onClickUntrack={onClickUntrack}
+                  />
+                )}
+              </div>
+            </section>
           </React.Fragment>
         );
       }
@@ -95,7 +101,7 @@ const StudyBrowser = ({
           })}
         </LegacyButtonGroup>
       </div>
-      <div className="ohif-scrollbar invisible-scrollbar flex flex-1 flex-col overflow-auto">
+      <div className="ohif-scrollbar invisible-scrollbar flex flex-1 flex-col overflow-x-auto overflow-y-hidden">
         {getTabContent()}
       </div>
     </React.Fragment>

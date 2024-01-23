@@ -35,10 +35,7 @@ const Thumbnail = ({
 
   return (
     <div
-      className={classnames(
-        className,
-        'group mx-2 mb-1 flex flex-1 cursor-pointer select-none flex-col outline-none'
-      )}
+      className=" mx-2 mb-1 flex select-none flex-col"
       id={`thumbnail-${displaySetInstanceUID}`}
       data-cy={`study-browser-thumbnail`}
       onClick={onClick}
@@ -46,10 +43,13 @@ const Thumbnail = ({
       role="button"
       tabIndex="0"
     >
-      <div ref={drag}>
+      <div
+        ref={drag}
+        className="w-[40%]"
+      >
         <div
           className={classnames(
-            'min-h-32 flex flex-1 items-center justify-center overflow-hidden rounded-md bg-black text-base text-white',
+            'mx-4 flex h-[150px] w-[150px] flex-1 items-center justify-center overflow-hidden rounded-md bg-black text-base text-white',
             isActive
               ? 'border-primary-light border-2'
               : 'border-secondary-light border hover:border-blue-300'
@@ -85,7 +85,7 @@ const Thumbnail = ({
             id={`display-set-tooltip-${displaySetInstanceUID}`}
           />
         </div>
-        <div className="break-all text-sm text-white">{description}</div>
+        {/* <div className="break-all text-sm text-white">{description}</div> */}
       </div>
     </div>
   );

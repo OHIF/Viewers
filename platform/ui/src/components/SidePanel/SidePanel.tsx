@@ -6,7 +6,7 @@ import Icon from '../Icon';
 import Tooltip from '../Tooltip';
 
 const borderSize = 4;
-const expandedWidth = 160;
+const expandedWidth = 'full';
 const collapsedWidth = 25;
 const closeIconWidth = 30;
 const gridHorizontalPadding = 10;
@@ -168,7 +168,7 @@ const SidePanel = ({ side, className, activeTabIndex: activeTabIndexProp, tabs, 
       <>
         <div
           className={classnames(
-            'bg-secondary-dark flex h-[28px] w-full cursor-pointer items-center rounded-md',
+            'bg-secondary-dark flex h-[30px] w-full cursor-pointer items-center rounded-md',
             side === 'left' ? 'justify-end pr-2' : 'justify-start pl-2'
           )}
           onClick={() => {
@@ -220,7 +220,7 @@ const SidePanel = ({ side, className, activeTabIndex: activeTabIndexProp, tabs, 
     return (
       <div
         className={classnames(
-          'flex h-[28px] cursor-pointer items-center justify-center',
+          'flex h-[30px] cursor-pointer items-center justify-center',
           side === 'left' ? 'order-last' : 'order-first'
         )}
         style={{ width: `${closeIconWidth}px` }}

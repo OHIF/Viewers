@@ -22,7 +22,6 @@ function ViewerLayout({
   rightPanelDefaultClosed = false,
 }): React.FunctionComponent {
   const [appConfig] = useAppConfig();
-
   const { hangingProtocolService } = servicesManager.services;
   const [showLoadingIndicator, setShowLoadingIndicator] = useState(appConfig.showLoadingIndicator);
 
@@ -112,22 +111,11 @@ function ViewerLayout({
         servicesManager={servicesManager}
       />
       <div
-        className="relative flex w-full flex-row flex-nowrap items-stretch overflow-hidden bg-black"
+        className="relative flex h-[100%] w-full flex-col flex-nowrap items-stretch overflow-hidden bg-black"
         style={{ height: 'calc(100vh - 52px' }}
       >
-        <React.Fragment>
-          {showLoadingIndicator && <LoadingIndicatorProgress className="h-full w-full bg-black" />}
-          {/* LEFT SIDEPANELS */}
-          {leftPanelComponents.length ? (
-            <ErrorBoundary context="Left Panel">
-              <SidePanelWithServices
-                side="left"
-                activeTabIndex={leftPanelDefaultClosed ? null : 0}
-                tabs={leftPanelComponents}
-                servicesManager={servicesManager}
-              />
-            </ErrorBoundary>
-          ) : null}
+        {showLoadingIndicator && <LoadingIndicatorProgress className="h-full w-full bg-black" />}
+        <section className="h-[70%] w-[100%]">
           {/* TOOLBAR + GRID */}
           <div className="flex h-full flex-1 flex-col">
             <div className="relative flex h-full flex-1 items-center justify-center overflow-hidden bg-black">
@@ -140,17 +128,20 @@ function ViewerLayout({
               </ErrorBoundary>
             </div>
           </div>
-          {/* {rightPanelComponents.length ? (
-            <ErrorBoundary context="Right Panel">
+        </section>
+        <section className="h-[30%] w-[100%]">
+          {/* LEFT SIDEPANELS */}
+          {leftPanelComponents.length ? (
+            <ErrorBoundary context="Left Panel">
               <SidePanelWithServices
-                side="right"
-                activeTabIndex={rightPanelDefaultClosed ? null : 0}
-                tabs={rightPanelComponents}
+                side="left"
+                activeTabIndex={0}
+                tabs={leftPanelComponents}
                 servicesManager={servicesManager}
               />
             </ErrorBoundary>
-          ) : null} */}
-        </React.Fragment>
+          ) : null}
+        </section>
       </div>
     </div>
   );

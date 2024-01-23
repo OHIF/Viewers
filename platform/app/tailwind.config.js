@@ -48,12 +48,12 @@ module.exports = {
       // },
 
       //Green
-      // primary: {
-      //   light: '#a3d2ca',
-      //   main: '#3b7a57',
-      //   dark: '#205d3e',
-      //   active: '#5cbf9b',
-      // },
+      primary: {
+        light: '#a3d2ca',
+        main: '#3b7a57',
+        dark: '#205d3e',
+        active: '#5cbf9b',
+      },
 
       //Nice Blue
       // primary: {
@@ -79,12 +79,13 @@ module.exports = {
       //   active: '#a0a0a0',
       // },
 
-      primary: {
-        light: '#4d6082',
-        main: '#1f2a47', // Deep navy blue main color
-        dark: '#0f1527',
-        active: '#374966',
-      },
+      //Navy Blue
+      // primary: {
+      //   light: '#4d6082',
+      //   main: '#1f2a47', // Deep navy blue main color
+      //   dark: '#0f1527',
+      //   active: '#374966',
+      // },
 
       inputfield: {
         main: '#3a3f99',
@@ -102,12 +103,12 @@ module.exports = {
       // },
 
       // Green
-      // secondary: {
-      //   light: '#6a8e6d',
-      //   main: '#405d4a',
-      //   dark: '#1e3529',
-      //   active: '#273a31',
-      // },
+      secondary: {
+        light: '#6a8e6d',
+        main: '#405d4a',
+        dark: '#1e3529',
+        active: '#273a31',
+      },
 
       //Nice Blue
       // secondary: {
@@ -133,12 +134,13 @@ module.exports = {
       //   active: '#777777',
       // },
 
-      secondary: {
-        light: '#6c7f9e',
-        main: '#3c4f73',
-        dark: '#1d2c4a',
-        active: '#536387',
-      },
+      //Navy Blue
+      // secondary: {
+      //   light: '#6c7f9e',
+      //   main: '#3c4f73',
+      //   dark: '#1d2c4a',
+      //   active: '#536387',
+      // },
 
       common: {
         bright: '#e1e1e1',

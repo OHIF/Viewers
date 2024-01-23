@@ -159,6 +159,7 @@ function modeFactory({ modeConfiguration }) {
             props: {
               // TODO: Should be optional, or required to pass empty array for slots?
               leftPanels: [ohif.thumbnailList],
+              bottomPanels: [ohif.thumbnailList],
               rightPanels: [ohif.measurements],
               viewports: [
                 {

@@ -7,7 +7,7 @@ import Icon from '../Icon';
 
 import moment from 'jalali-moment';
 
-const baseClasses = 'first:border-0 border-t border-secondary-light';
+const baseClasses = 'first:border-0 border-t border-secondary-light h-[100%]';
 
 const StudyItem = ({
   date,
@@ -33,15 +33,20 @@ const StudyItem = ({
       role="button"
       tabIndex="0"
     >
-      <div className="mx-1 flex flex-1 flex-col pb-2">
-        <div className="flex flex-row items-center justify-between pt-2 pb-2">
-          <div className="mr-7 whitespace-nowrap text-sm text-white">{persianDate}</div>
+      <main className="ml-1 flex flex-col">
+        <section className="my-8 whitespace-nowrap text-sm text-white">{persianDate}</section>
+        <section className="my-5 text-sm text-white">{modalities}</section>
+        <section className="my-8 break-words text-sm text-white">{description}</section>
+      </main>
+      {/* <div className="mx-1 flex flex-1 flex-col pb-2">
+        <div className="mb-5 flex flex-col items-center justify-between pt-2">
+          <div className="mr-7 mb-5 whitespace-nowrap text-sm text-white">{persianDate}</div>
           <div className="pr-2 text-sm text-white">{modalities}</div>
         </div>
-        <div className="flex flex-col py-1">
+        <div className="flex flex-col">
           <div className="break-words text-sm text-white">{description}</div>
         </div>
-      </div>
+      </div> */}
       {!!trackedSeries && (
         <div className="flex-2 flex">
           <div
