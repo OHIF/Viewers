@@ -1,8 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
-import { SidePanel, ErrorBoundary, LoadingIndicatorProgress } from '@ohif/ui';
-import { ServicesManager, HangingProtocolService, CommandsManager } from '@ohif/core';
+import { ErrorBoundary, LoadingIndicatorProgress } from '@ohif/ui';
+import {
+  ServicesManager,
+  HangingProtocolService,
+  CommandsManager,
+  HotkeysManager,
+} from '@ohif/core';
 import { useAppConfig } from '@state';
 import ViewerHeader from './ViewerHeader';
 import SidePanelWithServices from '../Components/SidePanelWithServices';
@@ -163,6 +168,7 @@ ViewerLayout.propTypes = {
   }).isRequired,
   commandsManager: PropTypes.instanceOf(CommandsManager),
   servicesManager: PropTypes.instanceOf(ServicesManager),
+  hotkeysManager: PropTypes.instanceOf(HotkeysManager),
   // From modes
   leftPanels: PropTypes.array,
   rightPanels: PropTypes.array,

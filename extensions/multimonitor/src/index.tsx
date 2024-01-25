@@ -1,5 +1,6 @@
 import { id } from './id';
 import getCommandsModule from './getCommandsModule';
+import getLayoutTemplateModule from './getLayoutTemplateModule';
 
 const multimonitor = {
   id,
@@ -12,6 +13,7 @@ const multimonitor = {
    * options, and defaultContext is the default context for the command to run against.
    */
   getCommandsModule,
+  getLayoutTemplateModule,
 };
 
 export default multimonitor;

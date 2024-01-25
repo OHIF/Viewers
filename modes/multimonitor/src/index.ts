@@ -19,6 +19,10 @@ const ohif = {
   thumbnailList: '@ohif/extension-default.panelModule.seriesList',
 };
 
+const multimonitor = {
+  layout: '@ohif/extension-multimonitor.layoutTemplateModule.multimonitorLayout',
+};
+
 const tracked = {
   measurements: '@ohif/extension-measurement-tracking.panelModule.trackedMeasurements',
   thumbnailList: '@ohif/extension-measurement-tracking.panelModule.seriesList',
@@ -173,27 +177,12 @@ function modeFactory() {
         },*/
         layoutTemplate: () => {
           return {
-            id: ohif.layout,
+            id: multimonitor.layout,
             props: {
-              leftPanels: [tracked.thumbnailList],
-              rightPanels: [dicomSeg.panel, tracked.measurements],
-              // rightPanelDefaultClosed: true, // optional prop to start with collapse panels
               viewports: [
                 {
                   namespace: tracked.viewport,
                   displaySetsToDisplay: [ohif.sopClassHandler],
-                },
-                {
-                  namespace: dicomsr.viewport,
-                  displaySetsToDisplay: [dicomsr.sopClassHandler],
-                },
-                {
-                  namespace: dicomvideo.viewport,
-                  displaySetsToDisplay: [dicomvideo.sopClassHandler],
-                },
-                {
-                  namespace: dicompdf.viewport,
-                  displaySetsToDisplay: [dicompdf.sopClassHandler],
                 },
                 {
                   namespace: dicomSeg.viewport,
