@@ -4,27 +4,16 @@ import { utils } from '@ohif/core';
 const { formatPN } = utils;
 
 export default function MultiMonitorLayout(props) {
-  const [studyData, setStudyData] = useState(null);
-
-  const { servicesManager, commandsManager } = props;
-  const { displaySetService } = servicesManager.services;
-
-  useEffect(() => {
-    // DISPLAY_SETS_ADDED returns an array of DisplaySets that were added
-    const unsubscribe = displaySetService.subscribe(
-      displaySetService.EVENTS.DISPLAY_SETS_ADDED,
-      data => {
-        const { instance: studyInstance } = data.displaySetsAdded[0];
-        const { StudyInstanceUID } = studyInstance;
-        console.log("Displaying study UID", StudyInstanceUID);
-        setStudyData(studyInstance);
-
-      });
-    return unsubscribe;
-  });
+  const { studyData } = props;
+  if (!studyData) return null;
 
   return (<div style={{ background: 'white', color: 'green', width: '100%' }}>
 
-    <p><b>Patient</b> {formatPN(studyData?.PatientName)}</p>
+    <p><b>Study</b> {studyData.AccessionNumber}  Modality: {studyData.ModalitiesInStudy?.join(', ')} </p>
+    <p>{studyData?.StudyDescription}</p>
+    <h2>Both Monitor Launch</h2>
+    <button>Basic Layout</button>
+    <button>TMTV</button>
+    <h2>Compare Mode Left</h2>
   </div>);
 }
