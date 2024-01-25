@@ -261,9 +261,9 @@ const toolbarButtons = [
           ],
           'Flip Horizontal'
         ),
-        _createToggleButton('StackImageSync', 'link', 'Stack Image Sync', [
+        _createToggleButton('ImageSliceSync', 'link', 'Stack Image Sync', [
           {
-            commandName: 'toggleStackImageSync',
+            commandName: 'toggleImageSliceSync',
             commandOptions: {},
             context: 'CORNERSTONE',
           },
