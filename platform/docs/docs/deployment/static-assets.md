@@ -155,6 +155,22 @@ accurate documentation, we will link to each provider's own recommended steps:
 
 ### Azure
 
-- [Host a Static Website](https://docs.microsoft.com/en-us/azure/storage/blobs/storage-blob-static-website)
+ - Deploying viewer to Azure blob storage as a static website:
+    Refer to [Host a static website](https://docs.microsoft.com/en-us/azure/storage/blobs/storage-blob-static-website)
+    High level steps :
+        1.	Go to Azure portal and create a storage account.
+        2.   Under Overview->Capabilities, select Static website.
+        3.	Enable Static website. Set the index document as ‘index.html’.
+        4.	Copy the primary endpoint. This will serve as the root URL for the viewer.
+        5.	Save. A new container named ‘$web’ will be created.
+        6.	Copy OHIF viewer’s build output from ‘platform\app\dist’ folder to the ‘$web’ container.
+        7.	Open browser and navigate to the viewer root URL copied in the step above. It should display OHIF viewer with data from default data source.
+
+       ![image](https://github.com/OHIF/Viewers/assets/132684122/236a574b-0f05-4d90-a721-df8720d05949)
+    Special consideration while accessing DicomJson data source :
+      • Due to the way routing is handled in react, it may error out in production when trying to display data through dicomJson data source. E.g. https://[Static Website endpoint]/viewer/dicomjson?url= https://ohif-dicom-json-example.s3.amazonaws.com/LIDC-IDRI-0001.json
+      •	Resolution to this is to set error page to ‘index.html’ at the website level. This will ensure that all errors are redirected to root and requests are further served from root path.
+       ![image](https://github.com/OHIF/Viewers/assets/132684122/87696c90-c344-489a-af15-b992434555f9)
+
 - [Add SSL Support](https://docs.microsoft.com/en-us/azure/storage/blobs/storage-https-custom-domain-cdn)
 - [Configure a Custom Domain](https://docs.microsoft.com/en-us/azure/storage/blobs/storage-custom-domain-name)

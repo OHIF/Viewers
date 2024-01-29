@@ -122,6 +122,8 @@ export {
   ViewportOverlay,
 } from './components';
 
+export { useSessionStorage } from './hooks';
+
 /** These are mostly used in the docs */
 export { getIcon, ICONS, addIcon } from './components/Icon/getIcon';
 export { BackgroundColor } from './pages/Colors/BackgroundColor';

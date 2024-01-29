@@ -63,12 +63,17 @@ export default class ToolbarService extends PubSubService {
     };
   }
 
+  public static _createActionButton = ToolbarService._createButton.bind(null, 'action');
+  public static _createToggleButton = ToolbarService._createButton.bind(null, 'toggle');
+  public static _createToolButton = ToolbarService._createButton.bind(null, 'tool');
+
   buttons: Record<string, Button> = {};
   state: {
     primaryToolId: string;
     toggles: Record<string, boolean>;
     groups: Record<string, unknown>;
-  } = { primaryToolId: 'WindowLevel', toggles: {}, groups: {} };
+  } = { primaryToolId: '', toggles: {}, groups: {} };
+
   buttonSections: Record<string, unknown> = {
     /**
      * primary: ['Zoom', 'Wwwc'],
@@ -77,6 +82,8 @@ export default class ToolbarService extends PubSubService {
   };
   _commandsManager: CommandsManager;
   extensionManager: ExtensionManager;
+
+  defaultTool: Record<string, unknown>;
 
   constructor(commandsManager: CommandsManager) {
     super(EVENTS);
@@ -104,6 +111,19 @@ export default class ToolbarService extends PubSubService {
   }
 
   /**
+   * Sets the default tool that will be activated whenever the primary tool is
+   * deactivated without activating another/different tool.
+   * @param interaction the interaction command that will set the default tool active
+   */
+  public setDefaultTool(interaction) {
+    this.defaultTool = interaction;
+  }
+
+  public getDefaultTool() {
+    return this.defaultTool;
+  }
+
+  /**
    *
    * @param {*} interaction - can be undefined to run nothing
    * @param {*} options is an optional set of extra commandOptions
@@ -125,25 +145,20 @@ export default class ToolbarService extends PubSubService {
 
     switch (interactionType) {
       case 'action': {
-        commands.forEach(({ commandName, commandOptions, context }) => {
-          if (commandName) {
-            commandsManager.runCommand(
-              commandName,
-              {
-                ...commandOptions,
-                ...options,
-              },
-              context
-            );
-          }
-        });
+        commandsManager.run(commands, options);
         break;
       }
       case 'tool': {
         try {
-          commands.forEach(({ commandName = 'setToolActive', commandOptions, context }) => {
-            commandsManager.runCommand(commandName, commandOptions, context);
-          });
+          const alternateInteraction =
+            this.state.primaryToolId === itemId &&
+            this.defaultTool?.itemId !== itemId &&
+            this.getDefaultTool();
+          if (alternateInteraction) {
+            // Allow toggling the mode off
+            return this.recordInteraction(alternateInteraction, options);
+          }
+          commandsManager.run(commands, options);
 
           // only set the primary tool if no error was thrown.
           // if the itemId is not undefined use it; otherwise, set the first tool in
@@ -312,21 +327,27 @@ export default class ToolbarService extends PubSubService {
 
   /**
    *
-   * Finds a button section by it's name, then maps the list of string name
+   * Finds a button section by it's name/tool group id, then maps the list of string name
    * identifiers to schema/values that can be used to render the buttons.
    *
-   * @param {string} key
-   * @param {*} props
+   * @param toolGroupId - the tool group id
+   * @param props - optional properties to apply to every button of the section
+   * @param defaultToolGroupId - the fallback section to return if the given toolGroupId section is not available
    */
-  getButtonSection(key, props) {
-    const buttonSectionIds = this.buttonSections[key];
+  getButtonSection(
+    toolGroupId: string,
+    props?: Record<string, unknown>,
+    defaultToolGroupId = 'primary'
+  ) {
+    const buttonSectionIds =
+      this.buttonSections[toolGroupId] || this.buttonSections[defaultToolGroupId];
     const buttonsInSection = [];
 
     if (buttonSectionIds && buttonSectionIds.length !== 0) {
       buttonSectionIds.forEach(btnId => {
         const btn = this.buttons[btnId];
         const metadata = {};
-        const mappedBtn = this._mapButtonToDisplay(btn, key, metadata, props);
+        const mappedBtn = this._mapButtonToDisplay(btn, toolGroupId, metadata, props);
 
         buttonsInSection.push(mappedBtn);
       });

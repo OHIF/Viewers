@@ -3,6 +3,8 @@ import {
   StackViewport,
   VolumeViewport,
   utilities as csUtils,
+  Types as CoreTypes,
+  BaseVolumeViewport,
 } from '@cornerstonejs/core';
 import {
   ToolGroupManager,
@@ -11,10 +13,11 @@ import {
   ReferenceLinesTool,
 } from '@cornerstonejs/tools';
 import { HangingProtocolService, Types as OhifTypes } from '@ohif/core';
+import { vec3, mat4 } from 'gl-matrix';
 
 import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownloadForm';
 import callInputDialog from './utils/callInputDialog';
-import toggleStackImageSync from './utils/stackSync/toggleStackImageSync';
+import toggleImageSliceSync from './utils/imageSliceSync/toggleImageSliceSync';
 import { getFirstAnnotationSelected } from './utils/measurementServiceMappings/utils/selection';
 import getActiveViewportEnabledElement from './utils/getActiveViewportEnabledElement';
 import { CornerstoneServices } from './types';
@@ -328,8 +331,16 @@ function commandsModule({
 
       const { viewport } = enabledElement;
 
-      if (viewport instanceof StackViewport) {
-        const { rotation: currentRotation } = viewport.getProperties();
+      if (viewport instanceof BaseVolumeViewport) {
+        const camera = viewport.getCamera();
+        const rotAngle = (rotation * Math.PI) / 180;
+        const rotMat = mat4.identity(new Float32Array(16));
+        mat4.rotate(rotMat, rotMat, rotAngle, camera.viewPlaneNormal);
+        const rotatedViewUp = vec3.transformMat4(vec3.create(), camera.viewUp, rotMat);
+        viewport.setCamera({ viewUp: rotatedViewUp as CoreTypes.Point3 });
+        viewport.render();
+      } else if (viewport.getRotation !== undefined) {
+        const currentRotation = viewport.getRotation();
         const newRotation = (currentRotation + rotation) % 360;
         viewport.setProperties({ rotation: newRotation });
         viewport.render();
@@ -393,13 +404,8 @@ function commandsModule({
 
       const { viewport } = enabledElement;
 
-      if (viewport instanceof StackViewport) {
-        viewport.resetProperties();
-        viewport.resetCamera();
-      } else {
-        viewport.resetProperties();
-        viewport.resetCamera();
-      }
+      viewport.resetProperties?.();
+      viewport.resetCamera();
 
       viewport.render();
     },
@@ -497,8 +503,8 @@ function commandsModule({
       viewportGridService.setActiveViewportId(viewportIds[nextViewportIndex] as string);
     },
 
-    toggleStackImageSync: ({ toggledState }) => {
-      toggleStackImageSync({
+    toggleImageSliceSync: ({ toggledState }) => {
+      toggleImageSliceSync({
         servicesManager,
         toggledState,
       });
@@ -532,6 +538,23 @@ function commandsModule({
       });
       imageData.modified();
     },
+
+    attachProtocolViewportDataListener: ({ protocol, stageIndex }) => {
+      const EVENT = cornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED;
+      const command = protocol.callbacks.onViewportDataInitialized;
+      const numPanes = protocol.stages?.[stageIndex]?.viewports.length ?? 1;
+      let numPanesWithData = 0;
+      const { unsubscribe } = cornerstoneViewportService.subscribe(EVENT, evt => {
+        numPanesWithData++;
+
+        if (numPanesWithData === numPanes) {
+          commandsManager.run(...command);
+
+          // Unsubscribe from the event
+          unsubscribe(EVENT);
+        }
+      });
+    },
   };
 
   const definitions = {
@@ -558,7 +581,6 @@ function commandsModule({
       storeContexts: [],
       options: {},
     },
-
     deleteMeasurement: {
       commandFn: actions.deleteMeasurement,
     },
@@ -651,8 +673,8 @@ function commandsModule({
     setViewportColormap: {
       commandFn: actions.setViewportColormap,
     },
-    toggleStackImageSync: {
-      commandFn: actions.toggleStackImageSync,
+    toggleImageSliceSync: {
+      commandFn: actions.toggleImageSliceSync,
     },
     setSourceViewportForReferenceLinesTool: {
       commandFn: actions.setSourceViewportForReferenceLinesTool,
@@ -668,6 +690,9 @@ function commandsModule({
     },
     updateVolumeData: {
       commandFn: actions.updateVolumeData,
+    },
+    attachProtocolViewportDataListener: {
+      commandFn: actions.attachProtocolViewportDataListener,
     },
   };
 

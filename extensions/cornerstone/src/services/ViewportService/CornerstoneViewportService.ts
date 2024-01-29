@@ -179,7 +179,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
   }
 
   public storePresentation({ viewportId }) {
-    const stateSyncService = this.servicesManager.services.stateSyncService;
+    const { stateSyncService, syncGroupService } = this.servicesManager.services;
     let presentation;
     try {
       presentation = this.getPresentation(viewportId);
@@ -190,7 +190,14 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     if (!presentation || !presentation.presentationIds) {
       return;
     }
-    const { lutPresentationStore, positionPresentationStore } = stateSyncService.getState();
+
+    const synchronizers = syncGroupService.getSynchronizersForViewport(
+      viewportId,
+      this.renderingEngine.id
+    );
+
+    const { lutPresentationStore, positionPresentationStore, synchronizersStore } =
+      stateSyncService.getState();
     const { presentationIds } = presentation;
     const { lutPresentationId, positionPresentationId } = presentationIds || {};
     const storeState = {};
@@ -206,6 +213,22 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
         [positionPresentationId]: presentation,
       };
     }
+
+    if (synchronizers?.length) {
+      storeState.synchronizersStore = {
+        ...synchronizersStore,
+        [viewportId]: synchronizers.map(synchronizer => {
+          const sourceViewports = synchronizer.getSourceViewports();
+          const targetViewports = synchronizer.getTargetViewports();
+          return {
+            id: synchronizer.id,
+            sourceViewports: [...sourceViewports],
+            targetViewports: [...targetViewports],
+          };
+        }),
+      };
+    }
+
     stateSyncService.store(storeState);
   }
 
@@ -284,15 +307,21 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     this.viewportsById.set(viewportId, viewportInfo);
 
     const viewport = renderingEngine.getViewport(viewportId);
-    this._setDisplaySets(viewport, viewportData, viewportInfo, presentations);
+    const displaySetPromise = this._setDisplaySets(
+      viewport,
+      viewportData,
+      viewportInfo,
+      presentations
+    );
 
     // The broadcast event here ensures that listeners have a valid, up to date
     // viewport to access.  Doing it too early can result in exceptions or
     // invalid data.
-    this._broadcastEvent(this.EVENTS.VIEWPORT_DATA_CHANGED, {
-      viewportData,
-      viewportId,
-      viewportInfo,
+    displaySetPromise.then(() => {
+      this._broadcastEvent(this.EVENTS.VIEWPORT_DATA_CHANGED, {
+        viewportData,
+        viewportId,
+      });
     });
   }
 
@@ -314,12 +343,12 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     return this.viewportsById.get(viewportId);
   }
 
-  _setStackViewport(
+  private async _setStackViewport(
     viewport: Types.IStackViewport,
     viewportData: StackViewportData,
     viewportInfo: ViewportInfo,
     presentations: Presentations
-  ): void {
+  ): Promise<void> {
     const displaySetOptions = viewportInfo.getDisplaySetOptions();
 
     const { imageIds, initialImageIndex, displaySetInstanceUID } = viewportData.data;
@@ -335,7 +364,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
 
     const properties = { ...presentations.lutPresentation?.properties };
     if (!presentations.lutPresentation?.properties) {
-      const { voi, voiInverted } = displaySetOptions[0];
+      const { voi, voiInverted, colormap } = displaySetOptions[0];
       if (voi && (voi.windowWidth || voi.windowCenter)) {
         const { lower, upper } = csUtils.windowLevel.toLowHighRange(
           voi.windowWidth,
@@ -347,9 +376,13 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       if (voiInverted !== undefined) {
         properties.invert = voiInverted;
       }
+
+      if (colormap !== undefined) {
+        properties.colormap = colormap;
+      }
     }
 
-    viewport.setStack(imageIds, initialImageIndexToUse).then(() => {
+    return viewport.setStack(imageIds, initialImageIndexToUse).then(() => {
       viewport.setProperties({ ...properties });
       const camera = presentations.positionPresentation?.camera;
       if (camera) {
@@ -660,21 +693,27 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     const viewport = this.getCornerstoneViewport(viewportId);
     const viewportCamera = viewport.getCamera();
 
+    let displaySetPromise;
+
     if (viewport instanceof VolumeViewport || viewport instanceof VolumeViewport3D) {
-      this._setVolumeViewport(viewport, viewportData, viewportInfo).then(() => {
+      displaySetPromise = this._setVolumeViewport(viewport, viewportData, viewportInfo).then(() => {
         if (keepCamera) {
           viewport.setCamera(viewportCamera);
           viewport.render();
         }
       });
-
-      return;
     }
 
     if (viewport instanceof StackViewport) {
-      this._setStackViewport(viewport, viewportData, viewportInfo);
-      return;
+      displaySetPromise = this._setStackViewport(viewport, viewportData, viewportInfo);
     }
+
+    displaySetPromise.then(() => {
+      this._broadcastEvent(this.EVENTS.VIEWPORT_DATA_CHANGED, {
+        viewportData,
+        viewportId,
+      });
+    });
   }
 
   _setDisplaySets(
@@ -682,16 +721,16 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     viewportData: StackViewportData | VolumeViewportData,
     viewportInfo: ViewportInfo,
     presentations: Presentations = {}
-  ): void {
+  ): Promise<void> {
     if (viewport instanceof StackViewport) {
-      this._setStackViewport(
+      return this._setStackViewport(
         viewport,
         viewportData as StackViewportData,
         viewportInfo,
         presentations
       );
     } else if (viewport instanceof VolumeViewport || viewport instanceof VolumeViewport3D) {
-      this._setVolumeViewport(
+      return this._setVolumeViewport(
         viewport,
         viewportData as VolumeViewportData,
         viewportInfo,

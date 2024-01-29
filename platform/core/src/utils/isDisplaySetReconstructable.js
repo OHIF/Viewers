@@ -14,15 +14,12 @@ export default function isDisplaySetReconstructable(instances) {
   if (!instances.length) {
     return { value: false };
   }
-
   const firstInstance = instances[0];
 
-  const Modality = firstInstance.Modality;
   const isMultiframe = firstInstance.NumberOfFrames > 1;
 
-  if (!constructableModalities.includes(Modality)) {
-    return { value: false };
-  }
+  // We used to check is reconstructable modalities here, but the logic is removed
+  // in favor of the calculation by metadata (orientation and positions)
 
   // Can't reconstruct if we only have one image.
   if (!isMultiframe && instances.length === 1) {
@@ -187,7 +184,7 @@ function processSingleframe(instances) {
 }
 
 function _isSameOrientation(iop1, iop2) {
-  if (iop1 === undefined || !iop2 === undefined) {
+  if (iop1 === undefined || iop2 === undefined) {
     return;
   }
 

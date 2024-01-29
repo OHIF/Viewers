@@ -1,4 +1,4 @@
-import OHIF, { Types } from '@ohif/core';
+import OHIF, { Types, errorHandler } from '@ohif/core';
 import React from 'react';
 
 import * as cornerstone from '@cornerstonejs/core';
@@ -10,6 +10,7 @@ import {
   metaData,
   volumeLoader,
   imageLoadPoolManager,
+  getEnabledElement,
   Settings,
   utilities as csUtilities,
   Enums as csEnums,
@@ -62,8 +63,8 @@ export default async function init({
 
   await cs3DInit({
     rendering: {
-      preferSizeOverAccuracy: Boolean(appConfig.use16BitDataType),
-      useNorm16Texture: Boolean(appConfig.use16BitDataType),
+      preferSizeOverAccuracy: Boolean(appConfig.preferSizeOverAccuracy),
+      useNorm16Texture: Boolean(appConfig.useNorm16Texture),
     },
   });
 
@@ -99,6 +100,7 @@ export default async function init({
     toolbarService,
     viewportGridService,
     stateSyncService,
+    syncGroupService,
   } = servicesManager.services as CornerstoneServices;
 
   window.services = servicesManager.services;
@@ -125,6 +127,9 @@ export default async function init({
   // Stores a map from `lutPresentationId` to a Presentation object so that
   // an OHIFCornerstoneViewport can be redisplayed with the same LUT
   stateSyncService.register('lutPresentationStore', { clearOnModeExit: true });
+
+  // Stores synchronizers state to be restored
+  stateSyncService.register('synchronizersStore', { clearOnModeExit: true });
 
   // Stores a map from `positionPresentationId` to a Presentation object so that
   // an OHIFCornerstoneViewport can be redisplayed with the same position
@@ -258,6 +263,15 @@ export default async function init({
     });
   };
 
+  /**
+   * Runs error handler for failed requests.
+   * @param event
+   */
+  const imageLoadFailedHandler = ({ detail }) => {
+    const handler = errorHandler.getHTTPErrorHandler();
+    handler(detail.error);
+  };
+
   const resetCrosshairs = evt => {
     const { element } = evt.detail;
     const { viewportId, renderingEngineId } = cornerstone.getEnabledElement(element);
@@ -286,9 +300,12 @@ export default async function init({
     const { element } = evt.detail;
     cornerstoneTools.utilities.stackContextPrefetch.enable(element);
   });
+  eventTarget.addEventListener(EVENTS.IMAGE_LOAD_FAILED, imageLoadFailedHandler);
+  eventTarget.addEventListener(EVENTS.IMAGE_LOAD_ERROR, imageLoadFailedHandler);
 
   function elementEnabledHandler(evt) {
     const { element } = evt.detail;
+
     element.addEventListener(EVENTS.CAMERA_RESET, resetCrosshairs);
 
     eventTarget.addEventListener(EVENTS.STACK_VIEWPORT_NEW_STACK, toolbarEventListener);

@@ -27,6 +27,7 @@ import debounce from './debounce';
 import roundNumber from './roundNumber';
 import downloadCSVReport from './downloadCSVReport';
 import isEqualWithin from './isEqualWithin';
+import addAccessors from './addAccessors';
 import {
   sortStudy,
   sortStudySeries,
@@ -65,6 +66,7 @@ const utils = {
   Queue,
   isDicomUid,
   isEqualWithin,
+  addAccessors,
   resolveObjectPath,
   hierarchicalListUtils,
   progressTrackingUtils,

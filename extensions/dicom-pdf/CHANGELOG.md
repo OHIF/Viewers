@@ -3,6 +3,425 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-beta.52](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.51...v3.8.0-beta.52) (2024-01-22)
+
+**Note:** Version bump only for package @ohif/extension-dicom-pdf
+
+
+
+
+
+# [3.8.0-beta.51](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.50...v3.8.0-beta.51) (2024-01-22)
+
+**Note:** Version bump only for package @ohif/extension-dicom-pdf
+
+
+
+
+
+# [3.8.0-beta.50](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.49...v3.8.0-beta.50) (2024-01-22)
+
+**Note:** Version bump only for package @ohif/extension-dicom-pdf
+
+
+
+
+
+# [3.8.0-beta.49](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.48...v3.8.0-beta.49) (2024-01-19)
+
+**Note:** Version bump only for package @ohif/extension-dicom-pdf
+
+
+
+
+
+# [3.8.0-beta.48](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.47...v3.8.0-beta.48) (2024-01-17)
+
+**Note:** Version bump only for package @ohif/extension-dicom-pdf
+
+
+
+
+
+# [3.8.0-beta.47](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.46...v3.8.0-beta.47) (2024-01-12)
+
+**Note:** Version bump only for package @ohif/extension-dicom-pdf
+
+
+
+
+
+# [3.8.0-beta.46](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.45...v3.8.0-beta.46) (2024-01-12)
+
+**Note:** Version bump only for package @ohif/extension-dicom-pdf
+
+
+
+
+
+# [3.8.0-beta.45](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.44...v3.8.0-beta.45) (2024-01-09)
+
+**Note:** Version bump only for package @ohif/extension-dicom-pdf
+
+
+
+
+
+# [3.8.0-beta.44](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.43...v3.8.0-beta.44) (2024-01-09)
+
+**Note:** Version bump only for package @ohif/extension-dicom-pdf
+
+
+
+
+
+# [3.8.0-beta.43](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.42...v3.8.0-beta.43) (2024-01-09)
+
+**Note:** Version bump only for package @ohif/extension-dicom-pdf
+
+
+
+
+
+# [3.8.0-beta.42](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.41...v3.8.0-beta.42) (2024-01-08)
+
+**Note:** Version bump only for package @ohif/extension-dicom-pdf
+
+
+
+
+
+# [3.8.0-beta.41](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.40...v3.8.0-beta.41) (2024-01-08)
+
+**Note:** Version bump only for package @ohif/extension-dicom-pdf
+
+
+
+
+
+# [3.8.0-beta.40](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.39...v3.8.0-beta.40) (2024-01-08)
+
+**Note:** Version bump only for package @ohif/extension-dicom-pdf
+
+
+
+
+
+# [3.8.0-beta.39](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.38...v3.8.0-beta.39) (2024-01-08)
+
+**Note:** Version bump only for package @ohif/extension-dicom-pdf
+
+
+
+
+
+# [3.8.0-beta.38](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.37...v3.8.0-beta.38) (2024-01-08)
+
+**Note:** Version bump only for package @ohif/extension-dicom-pdf
+
+
+
+
+
+# [3.8.0-beta.37](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.36...v3.8.0-beta.37) (2024-01-08)
+
+**Note:** Version bump only for package @ohif/extension-dicom-pdf
+
+
+
+
+
+# [3.8.0-beta.36](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.35...v3.8.0-beta.36) (2023-12-15)
+
+**Note:** Version bump only for package @ohif/extension-dicom-pdf
+
+
+
+
+
+# [3.8.0-beta.35](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.34...v3.8.0-beta.35) (2023-12-14)
+
+**Note:** Version bump only for package @ohif/extension-dicom-pdf
+
+
+
+
+
+# [3.8.0-beta.34](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.33...v3.8.0-beta.34) (2023-12-13)
+
+**Note:** Version bump only for package @ohif/extension-dicom-pdf
+
+
+
+
+
+# [3.8.0-beta.33](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.32...v3.8.0-beta.33) (2023-12-13)
+
+**Note:** Version bump only for package @ohif/extension-dicom-pdf
+
+
+
+
+
+# [3.8.0-beta.32](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.31...v3.8.0-beta.32) (2023-12-13)
+
+**Note:** Version bump only for package @ohif/extension-dicom-pdf
+
+
+
+
+
+# [3.8.0-beta.31](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.30...v3.8.0-beta.31) (2023-12-13)
+
+**Note:** Version bump only for package @ohif/extension-dicom-pdf
+
+
+
+
+
+# [3.8.0-beta.30](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.29...v3.8.0-beta.30) (2023-12-13)
+
+**Note:** Version bump only for package @ohif/extension-dicom-pdf
+
+
+
+
+
+# [3.8.0-beta.29](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.28...v3.8.0-beta.29) (2023-12-13)
+
+**Note:** Version bump only for package @ohif/extension-dicom-pdf
+
+
+
+
+
+# [3.8.0-beta.28](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.27...v3.8.0-beta.28) (2023-12-08)
+
+**Note:** Version bump only for package @ohif/extension-dicom-pdf
+
+
+
+
+
+# [3.8.0-beta.27](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.26...v3.8.0-beta.27) (2023-12-06)
+
+**Note:** Version bump only for package @ohif/extension-dicom-pdf
+
+
+
+
+
+# [3.8.0-beta.26](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.25...v3.8.0-beta.26) (2023-11-28)
+
+**Note:** Version bump only for package @ohif/extension-dicom-pdf
+
+
+
+
+
+# [3.8.0-beta.25](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.24...v3.8.0-beta.25) (2023-11-27)
+
+**Note:** Version bump only for package @ohif/extension-dicom-pdf
+
+
+
+
+
+# [3.8.0-beta.24](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.23...v3.8.0-beta.24) (2023-11-24)
+
+**Note:** Version bump only for package @ohif/extension-dicom-pdf
+
+
+
+
+
+# [3.8.0-beta.23](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.22...v3.8.0-beta.23) (2023-11-24)
+
+**Note:** Version bump only for package @ohif/extension-dicom-pdf
+
+
+
+
+
+# [3.8.0-beta.22](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.21...v3.8.0-beta.22) (2023-11-21)
+
+**Note:** Version bump only for package @ohif/extension-dicom-pdf
+
+
+
+
+
+# [3.8.0-beta.21](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.20...v3.8.0-beta.21) (2023-11-21)
+
+**Note:** Version bump only for package @ohif/extension-dicom-pdf
+
+
+
+
+
+# [3.8.0-beta.20](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.19...v3.8.0-beta.20) (2023-11-21)
+
+**Note:** Version bump only for package @ohif/extension-dicom-pdf
+
+
+
+
+
+# [3.8.0-beta.19](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.18...v3.8.0-beta.19) (2023-11-18)
+
+**Note:** Version bump only for package @ohif/extension-dicom-pdf
+
+
+
+
+
+# [3.8.0-beta.18](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.17...v3.8.0-beta.18) (2023-11-15)
+
+**Note:** Version bump only for package @ohif/extension-dicom-pdf
+
+
+
+
+
+# [3.8.0-beta.17](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.16...v3.8.0-beta.17) (2023-11-13)
+
+**Note:** Version bump only for package @ohif/extension-dicom-pdf
+
+
+
+
+
+# [3.8.0-beta.16](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.15...v3.8.0-beta.16) (2023-11-13)
+
+**Note:** Version bump only for package @ohif/extension-dicom-pdf
+
+
+
+
+
+# [3.8.0-beta.15](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.14...v3.8.0-beta.15) (2023-11-10)
+
+**Note:** Version bump only for package @ohif/extension-dicom-pdf
+
+
+
+
+
+# [3.8.0-beta.14](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.13...v3.8.0-beta.14) (2023-11-10)
+
+**Note:** Version bump only for package @ohif/extension-dicom-pdf
+
+
+
+
+
+# [3.8.0-beta.13](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.12...v3.8.0-beta.13) (2023-11-09)
+
+**Note:** Version bump only for package @ohif/extension-dicom-pdf
+
+
+
+
+
+# [3.8.0-beta.12](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.11...v3.8.0-beta.12) (2023-11-08)
+
+**Note:** Version bump only for package @ohif/extension-dicom-pdf
+
+
+
+
+
+# [3.8.0-beta.11](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.10...v3.8.0-beta.11) (2023-11-08)
+
+**Note:** Version bump only for package @ohif/extension-dicom-pdf
+
+
+
+
+
+# [3.8.0-beta.10](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.9...v3.8.0-beta.10) (2023-11-03)
+
+**Note:** Version bump only for package @ohif/extension-dicom-pdf
+
+
+
+
+
+# [3.8.0-beta.9](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.8...v3.8.0-beta.9) (2023-11-02)
+
+**Note:** Version bump only for package @ohif/extension-dicom-pdf
+
+
+
+
+
+# [3.8.0-beta.8](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.7...v3.8.0-beta.8) (2023-10-31)
+
+**Note:** Version bump only for package @ohif/extension-dicom-pdf
+
+
+
+
+
+# [3.8.0-beta.7](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.6...v3.8.0-beta.7) (2023-10-30)
+
+**Note:** Version bump only for package @ohif/extension-dicom-pdf
+
+
+
+
+
+# [3.8.0-beta.6](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.5...v3.8.0-beta.6) (2023-10-25)
+
+**Note:** Version bump only for package @ohif/extension-dicom-pdf
+
+
+
+
+
+# [3.8.0-beta.5](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.4...v3.8.0-beta.5) (2023-10-24)
+
+
+### Bug Fixes
+
+* **sr:** dcm4chee requires the patient name for an SR to match what is in the original study ([#3739](https://github.com/OHIF/Viewers/issues/3739)) ([d98439f](https://github.com/OHIF/Viewers/commit/d98439fe7f3825076dbc87b664a1d1480ff414d3))
+
+
+
+
+
+# [3.8.0-beta.4](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.3...v3.8.0-beta.4) (2023-10-23)
+
+**Note:** Version bump only for package @ohif/extension-dicom-pdf
+
+
+
+
+
+# [3.8.0-beta.3](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.2...v3.8.0-beta.3) (2023-10-23)
+
+**Note:** Version bump only for package @ohif/extension-dicom-pdf
+
+
+
+
+
+# [3.8.0-beta.2](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.1...v3.8.0-beta.2) (2023-10-19)
+
+**Note:** Version bump only for package @ohif/extension-dicom-pdf
+
+
+
+
+
+# [3.8.0-beta.1](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.0...v3.8.0-beta.1) (2023-10-19)
+
+**Note:** Version bump only for package @ohif/extension-dicom-pdf
+
+
+
+
+
 # [3.8.0-beta.0](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.110...v3.8.0-beta.0) (2023-10-12)
 
 **Note:** Version bump only for package @ohif/extension-dicom-pdf

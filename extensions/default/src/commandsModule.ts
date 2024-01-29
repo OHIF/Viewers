@@ -121,7 +121,10 @@ const commandsModule = ({
         if (!button.id) {
           return;
         }
-        const { commands, items } = button.props || button;
+        const { commands, items, primary } = button.props || button;
+        if (primary) {
+          enableListener(primary);
+        }
         if (items) {
           items.forEach(enableListener);
         }
@@ -245,7 +248,6 @@ const commandsModule = ({
         ];
         stateSyncService.store(stateSyncReduce);
         // This is a default action applied
-        const { protocol } = hangingProtocolService.getActiveProtocol();
         actions.toggleHpTools();
 
         // try to use the same tool in the new hanging protocol stage

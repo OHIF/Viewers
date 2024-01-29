@@ -74,6 +74,9 @@ class MetadataProvider {
   }
 
   get(query, imageId, options = { fallback: false }) {
+    if (Array.isArray(imageId)) {
+      return;
+    }
     const instance = this._getInstance(imageId);
 
     if (query === INSTANCE) {

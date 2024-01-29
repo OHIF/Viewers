@@ -26,7 +26,7 @@ StaticWado/build/install/StaticWado/bin/StaticWado -d /dicomweb /dicom/study1
 cd /dicomweb
 npx http-server -p 5000 --cors -g
 
-# you can use npx serve ./dist -l 8080 -s as an alternative to http-server
+# you can use npx serve ./dist -l 8080 -c ../public/serve.json as an alternative to http-server
 ```
 
 There is then a dev environment in the platform/app directory which can be

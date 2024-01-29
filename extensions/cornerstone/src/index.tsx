@@ -30,6 +30,7 @@ import { id } from './id';
 import * as csWADOImageLoader from './initWADOImageLoader.js';
 import { measurementMappingUtils } from './utils/measurementServiceMappings';
 import type { PublicViewportOptions } from './services/ViewportService/Viewport';
+import ImageOverlayViewerTool from './tools/ImageOverlayViewerTool';
 
 const { helpers: volumeLoaderHelpers } = csStreamingImageVolumeLoader;
 const { getDynamicVolumeInfo } = volumeLoaderHelpers ?? {};
@@ -150,5 +151,6 @@ export {
   CornerstoneExtensionTypes as Types,
   toolNames,
   getActiveViewportEnabledElement,
+  ImageOverlayViewerTool,
 };
 export default cornerstoneExtension;

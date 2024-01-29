@@ -214,6 +214,32 @@ export default class HangingProtocolService extends PubSubService {
     };
   }
 
+  /**
+   * Filters the series required for running a hanging protocol.
+   *
+   * This can be extended in the future with more complex selection rules e.g.
+   * N series of a given type, and M of a different type, such as all CT series,
+   * and all SR, and then everything else.
+   *
+   * @param protocolId - The ID of the hanging protocol.
+   * @param seriesPromises - An array of promises representing the series.
+   * @returns An object containing the required series and the remaining series.
+   */
+  public filterSeriesRequiredForRun(protocolId, seriesPromises) {
+    if (Array.isArray(protocolId)) {
+      protocolId = protocolId[0];
+    }
+    const minSeriesLoadedToRunHP =
+      this.getProtocolById(protocolId)?.hpInitiationCriteria?.minSeriesLoaded ||
+      seriesPromises.length;
+    const requiredSeries = seriesPromises.slice(0, minSeriesLoadedToRunHP);
+    const remaining = seriesPromises.slice(minSeriesLoadedToRunHP);
+    return {
+      requiredSeries,
+      remaining,
+    };
+  }
+
   /** Gets the protocol with id 'default' */
   public getDefaultProtocol(): HangingProtocol.Protocol {
     return this.getProtocolById('default');
@@ -413,7 +439,7 @@ export default class HangingProtocolService extends PubSubService {
    *
    * @returns A boolean indicating whether a custom image load has been performed or not.
    */
-  public getCustomImageLoadPerformed(): boolean {
+  private getCustomImageLoadPerformed(): boolean {
     return this.customImageLoadPerformed;
   }
 
@@ -543,8 +569,8 @@ export default class HangingProtocolService extends PubSubService {
               viewportId: existingViewportId
                 ? existingViewportId
                 : index === 0
-                ? 'default'
-                : uuidv4(),
+                  ? 'default'
+                  : uuidv4(),
             },
             displaySets: viewport.displaySets || [],
           };
@@ -849,6 +875,8 @@ export default class HangingProtocolService extends PubSubService {
 
       throw new Error(error);
     }
+
+    this._commandsManager.run(this.protocol?.callbacks?.onProtocolEnter);
   }
 
   protected matchActivation(
@@ -955,7 +983,15 @@ export default class HangingProtocolService extends PubSubService {
     try {
       if (!this.protocol || this.protocol.id !== protocol.id) {
         this.stageIndex = options?.stageIndex || 0;
+        //Reset load performed to false to re-fire loading strategy at new study opening
+        this.customImageLoadPerformed = false;
         this._originalProtocol = this._copyProtocol(protocol);
+
+        // before reassigning the protocol, we need to check if there is a callback
+        // on the old protocol that needs to be called
+        // Send the notification about updating the state
+        this._commandsManager.run(this.protocol?.callbacks?.onProtocolExit);
+
         this.protocol = protocol;
 
         const { imageLoadStrategy } = protocol;
@@ -1120,6 +1156,13 @@ export default class HangingProtocolService extends PubSubService {
 
     const { columns: numCols, rows: numRows, layoutOptions = [] } = layoutProps;
 
+    if (this.protocol?.callbacks?.onViewportDataInitialized) {
+      this._commandsManager.runCommand('attachProtocolViewportDataListener', {
+        protocol: this.protocol,
+        stageIndex: this.stageIndex,
+      });
+    }
+
     this._broadcastEvent(this.EVENTS.NEW_LAYOUT, {
       layoutType,
       numRows,
@@ -1143,9 +1186,6 @@ export default class HangingProtocolService extends PubSubService {
   } {
     let matchedViewports = 0;
     stageModel.viewports.forEach(viewport => {
-      // Todo: we should probably assign a random viewportId if not defined
-      // below, but it feels odd since viewportGrid should handle this kind
-      // of thing
       const viewportId = viewport.viewportOptions.viewportId;
       const matchDetails = this._matchViewport(
         viewport,

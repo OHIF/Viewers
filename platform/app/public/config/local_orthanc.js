@@ -33,6 +33,7 @@ window.config = {
         supportsFuzzyMatching: true,
         supportsWildcard: true,
         dicomUploadEnabled: true,
+        omitQuotationForMultipartRequest: true,
         bulkDataURI: {
           enabled: true,
         },

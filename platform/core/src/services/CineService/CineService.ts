@@ -8,6 +8,7 @@ const publicAPI = {
   playClip: _playClip,
   stopClip: _stopClip,
   getSyncedViewports: _getSyncedViewports,
+  onModeExit: _onModeExit,
   setServiceImplementation,
 };
 
@@ -42,6 +43,10 @@ function _stopClip(element) {
 
 function _getSyncedViewports(srcViewportId) {
   return serviceImplementation._getSyncedViewports(srcViewportId);
+}
+
+function _onModeExit() {
+  _setIsCineEnabled(false);
 }
 
 function setServiceImplementation({

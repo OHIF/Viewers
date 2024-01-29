@@ -1,6 +1,7 @@
 import toolbarButtons from './toolbarButtons.js';
 import { hotkeys } from '@ohif/core';
 import { id } from './id';
+import i18n from 'i18next';
 
 const configs = {
   Length: {},
@@ -45,7 +46,7 @@ function modeFactory({ modeConfiguration }) {
   return {
     id,
     routeName: 'dev',
-    displayName: 'Basic Dev Viewer',
+    displayName: i18n.t('Modes:Basic Dev Viewer'),
     /**
      * Lifecycle hooks
      */

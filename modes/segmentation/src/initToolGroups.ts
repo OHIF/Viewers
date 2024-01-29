@@ -1,21 +1,3 @@
-const brushInstanceNames = {
-  CircularBrush: 'CircularBrush',
-  CircularEraser: 'CircularEraser',
-  SphereBrush: 'SphereBrush',
-  SphereEraser: 'SphereEraser',
-  ThresholdCircularBrush: 'ThresholdCircularBrush',
-  ThresholdSphereBrush: 'ThresholdSphereBrush',
-};
-
-const brushStrategies = {
-  CircularBrush: 'FILL_INSIDE_CIRCLE',
-  CircularEraser: 'ERASE_INSIDE_CIRCLE',
-  SphereBrush: 'FILL_INSIDE_SPHERE',
-  SphereEraser: 'ERASE_INSIDE_SPHERE',
-  ThresholdCircularBrush: 'THRESHOLD_INSIDE_CIRCLE',
-  ThresholdSphereBrush: 'THRESHOLD_INSIDE_SPHERE',
-};
-
 function createTools(utilityModule) {
   const { toolNames, Enums } = utilityModule.exports;
   return {
@@ -25,22 +7,66 @@ function createTools(utilityModule) {
       { toolName: toolNames.Zoom, bindings: [{ mouseButton: Enums.MouseBindings.Secondary }] },
       { toolName: toolNames.StackScrollMouseWheel, bindings: [] },
     ],
-    passive: Object.keys(brushInstanceNames)
-      .map(brushName => ({
-        toolName: brushName,
+    passive: [
+      {
+        toolName: 'CircularBrush',
         parentTool: 'Brush',
         configuration: {
-          activeStrategy: brushStrategies[brushName],
+          activeStrategy: 'FILL_INSIDE_CIRCLE',
         },
-      }))
-      .concat([
-        { toolName: toolNames.CircleScissors },
-        { toolName: toolNames.RectangleScissors },
-        { toolName: toolNames.SphereScissors },
-        { toolName: toolNames.StackScroll },
-        { toolName: toolNames.Magnify },
-        { toolName: toolNames.SegmentationDisplay },
-      ]),
+      },
+      {
+        toolName: 'CircularEraser',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'ERASE_INSIDE_CIRCLE',
+        },
+      },
+      {
+        toolName: 'SphereBrush',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'FILL_INSIDE_SPHERE',
+        },
+      },
+      {
+        toolName: 'SphereEraser',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'ERASE_INSIDE_SPHERE',
+        },
+      },
+      {
+        toolName: 'ThresholdCircularBrush',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'THRESHOLD_INSIDE_CIRCLE',
+          strategySpecificConfiguration: {
+            THRESHOLD: {
+              threshold: [-500, 500],
+            },
+          },
+        },
+      },
+      {
+        toolName: 'ThresholdSphereBrush',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'THRESHOLD_INSIDE_SPHERE',
+          strategySpecificConfiguration: {
+            THRESHOLD: {
+              threshold: [-500, 500],
+            },
+          },
+        },
+      },
+      { toolName: toolNames.CircleScissors },
+      { toolName: toolNames.RectangleScissors },
+      { toolName: toolNames.SphereScissors },
+      { toolName: toolNames.StackScroll },
+      { toolName: toolNames.Magnify },
+      { toolName: toolNames.SegmentationDisplay },
+    ],
     disabled: [{ toolName: toolNames.ReferenceLines }],
   };
 }

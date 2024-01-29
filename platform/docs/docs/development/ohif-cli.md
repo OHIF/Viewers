@@ -306,3 +306,7 @@ The ohif-cli will add the path to the external dependencies to the webpack confi
 so that you can install them in your project and use them in your custom
 extensions and modes. To achieve this ohif-cli will update the webpack.pwa.js
 file in the platform/app directory.
+
+## Video tutorials
+See the [Video Tutorials](./video-tutorials.md) for videos of some the above
+commands in action.

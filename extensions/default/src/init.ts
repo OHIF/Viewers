@@ -51,36 +51,41 @@ export default function init({ servicesManager, configuration = {} }): void {
 const handlePETImageMetadata = ({ SeriesInstanceUID, StudyInstanceUID }) => {
   const { instances } = DicomMetadataStore.getSeries(StudyInstanceUID, SeriesInstanceUID);
 
-  const modality = instances[0].Modality;
-  if (modality !== 'PT') {
+  if (!instances?.length) {
     return;
   }
+
+  const modality = instances[0].Modality;
+
+  if (!modality || modality !== 'PT') {
+    return;
+  }
+
   const imageIds = instances.map(instance => instance.imageId);
   const instanceMetadataArray = [];
-  imageIds.forEach(imageId => {
-    const instanceMetadata = getPTImageIdInstanceMetadata(imageId);
-    if (instanceMetadata) {
-      instanceMetadataArray.push(instanceMetadata);
-    }
-  });
-
-  if (!instanceMetadataArray.length) {
-    return;
-  }
 
   // try except block to prevent errors when the metadata is not correct
-  let suvScalingFactors;
   try {
-    suvScalingFactors = calculateSUVScalingFactors(instanceMetadataArray);
+    imageIds.forEach(imageId => {
+      const instanceMetadata = getPTImageIdInstanceMetadata(imageId);
+      if (instanceMetadata) {
+        instanceMetadataArray.push(instanceMetadata);
+      }
+    });
+
+    if (!instanceMetadataArray.length) {
+      return;
+    }
+
+    const suvScalingFactors = calculateSUVScalingFactors(instanceMetadataArray);
+    instanceMetadataArray.forEach((instanceMetadata, index) => {
+      metadataProvider.addCustomMetadata(
+        imageIds[index],
+        'scalingModule',
+        suvScalingFactors[index]
+      );
+    });
   } catch (error) {
     console.log(error);
   }
-
-  if (!suvScalingFactors) {
-    return;
-  }
-
-  instanceMetadataArray.forEach((instanceMetadata, index) => {
-    metadataProvider.addCustomMetadata(imageIds[index], 'scalingModule', suvScalingFactors[index]);
-  });
 };

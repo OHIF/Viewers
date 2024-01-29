@@ -360,7 +360,7 @@ function OHIFCornerstoneSRViewport(props) {
             patientSex: PatientSex || '',
             patientAge: PatientAge || '',
             MRN: PatientID || '',
-            thickness: SliceThickness ? `${SliceThickness.toFixed(2)}mm` : '',
+            thickness: SliceThickness ? `${parseFloat(SliceThickness).toFixed(2)}mm` : '',
             spacing:
               SpacingBetweenSlices !== undefined ? `${SpacingBetweenSlices.toFixed(2)}mm` : '',
             scanner: ManufacturerModelName || '',
