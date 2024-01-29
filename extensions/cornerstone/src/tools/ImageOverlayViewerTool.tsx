@@ -1,7 +1,7 @@
 import { VolumeViewport, metaData, utilities } from '@cornerstonejs/core';
 import { IStackViewport, IVolumeViewport, Point3 } from '@cornerstonejs/core/dist/esm/types';
 import { AnnotationDisplayTool, drawing } from '@cornerstonejs/tools';
-import { guid } from '@ohif/core/src/utils';
+import { guid, b64toBlob } from '@ohif/core/src/utils';
 import OverlayPlaneModuleProvider from './OverlayPlaneModuleProvider';
 
 interface CachedStat {
@@ -46,7 +46,7 @@ class ImageOverlayViewerTool extends AnnotationDisplayTool {
     super(toolProps, defaultToolProps);
   }
 
-  onSetToolDisabled = (): void => { };
+  onSetToolDisabled = (): void => {};
 
   protected getReferencedImageId(viewport: IStackViewport | IVolumeViewport): string {
     if (viewport instanceof VolumeViewport) {
@@ -174,6 +174,10 @@ class ImageOverlayViewerTool extends AnnotationDisplayTool {
             pixelData = overlay.pixelData[0];
           } else if (overlay.pixelData.retrieveBulkData) {
             pixelData = await overlay.pixelData.retrieveBulkData();
+          } else if (overlay.pixelData.InlineBinary) {
+            const blob = b64toBlob(overlay.pixelData.InlineBinary);
+            const arrayBuffer = await blob.arrayBuffer();
+            pixelData = arrayBuffer;
           }
 
           if (!pixelData) {

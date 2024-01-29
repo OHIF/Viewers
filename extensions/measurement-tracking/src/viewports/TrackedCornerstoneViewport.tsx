@@ -326,16 +326,12 @@ function _getStatusComponent(isTracked) {
             <div className="ml-4 flex">
               <span className="text-common-light text-base">
                 {isTracked ? (
-                  <>
-                    Series is
-                    <span className="font-bold text-white"> tracked</span> and can be viewed <br />{' '}
-                    in the measurement panel
-                  </>
+                  <>{t('Series is tracked and can be viewed in the measurement panel')}</>
                 ) : (
                   <>
-                    Measurements for
-                    <span className="font-bold text-white"> untracked </span>
-                    series <br /> will not be shown in the <br /> measurements panel
+                    {t(
+                      'Measurements for untracked series will not be shown in the measurements panel'
+                    )}
                   </>
                 )}
               </span>

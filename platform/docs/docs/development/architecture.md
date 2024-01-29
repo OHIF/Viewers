@@ -40,7 +40,7 @@ you'll see the following:
 │   ├── core                 # Business Logic
 │   ├── i18n                 # Internationalization Support
 │   ├── ui                   # React component library
-│   └── viewer               # Connects platform and extension projects
+│   └── app               # Connects platform and extension projects
 │
 ├── ...                      # misc. shared configuration
 ├── lerna.json               # MonoRepo (Lerna) settings

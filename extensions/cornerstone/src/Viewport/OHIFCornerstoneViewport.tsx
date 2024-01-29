@@ -183,6 +183,13 @@ const OHIFCornerstoneViewport = React.memo(props => {
 
       syncGroupService.addViewportToSyncGroup(viewportId, renderingEngineId, syncGroups);
 
+      const synchronizersStore = stateSyncService.getState().synchronizersStore;
+
+      if (synchronizersStore?.[viewportId]?.length) {
+        // If the viewport used to have a synchronizer, re apply it again
+        _rehydrateSynchronizers(synchronizersStore, viewportId, syncGroupService);
+      }
+
       if (onElementEnabled) {
         onElementEnabled(evt);
       }
@@ -205,12 +212,17 @@ const OHIFCornerstoneViewport = React.memo(props => {
         return;
       }
 
-      cleanUpServices(viewportInfo);
       cornerstoneViewportService.storePresentation({ viewportId });
+
+      // This should be done after the store presentation since synchronizers
+      // will get cleaned up and they need the viewportInfo to be present
+      cleanUpServices(viewportInfo);
 
       if (onElementDisabled) {
         onElementDisabled(viewportInfo);
       }
+
+      cornerstoneViewportService.disableElement(viewportId);
 
       eventTarget.removeEventListener(Enums.Events.ELEMENT_ENABLED, elementEnabledHandler);
     };
@@ -584,6 +596,58 @@ function _jumpToMeasurement(
     cacheJumpToMeasurementEvent?.consume?.();
     cacheJumpToMeasurementEvent = null;
   }
+}
+
+function _rehydrateSynchronizers(
+  synchronizersStore: { [key: string]: unknown },
+  viewportId: string,
+  syncGroupService: any
+) {
+  synchronizersStore[viewportId].forEach(synchronizerObj => {
+    if (!synchronizerObj.id) {
+      return;
+    }
+
+    const { id, sourceViewports, targetViewports } = synchronizerObj;
+
+    const synchronizer = syncGroupService.getSynchronizer(id);
+
+    if (!synchronizer) {
+      return;
+    }
+
+    const sourceViewportInfo = sourceViewports.find(
+      sourceViewport => sourceViewport.viewportId === viewportId
+    );
+
+    const targetViewportInfo = targetViewports.find(
+      targetViewport => targetViewport.viewportId === viewportId
+    );
+
+    const isSourceViewportInSynchronizer = synchronizer
+      .getSourceViewports()
+      .find(sourceViewport => sourceViewport.viewportId === viewportId);
+
+    const isTargetViewportInSynchronizer = synchronizer
+      .getTargetViewports()
+      .find(targetViewport => targetViewport.viewportId === viewportId);
+
+    // if the viewport was previously a source viewport, add it again
+    if (sourceViewportInfo && !isSourceViewportInSynchronizer) {
+      synchronizer.addSource({
+        viewportId: sourceViewportInfo.viewportId,
+        renderingEngineId: sourceViewportInfo.renderingEngineId,
+      });
+    }
+
+    // if the viewport was previously a target viewport, add it again
+    if (targetViewportInfo && !isTargetViewportInSynchronizer) {
+      synchronizer.addTarget({
+        viewportId: targetViewportInfo.viewportId,
+        renderingEngineId: targetViewportInfo.renderingEngineId,
+      });
+    }
+  });
 }
 
 // Component displayName
