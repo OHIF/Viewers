@@ -133,6 +133,19 @@ export class SelectTree extends Component<PropType> {
     });
   }
 
+  onKeyPressHandler = event => {
+    if (event.key === 'Enter') {
+      this.onSubmitHandler(event);
+    }
+  };
+
+  onSubmitHandler = evt => {
+    this.props.onSelected(evt, {
+      label: this.state.searchTerm,
+      value: this.state.searchTerm,
+    });
+  }
+
   headerItem = () => {
     const inputLeftPadding = this.props.items.length > 0 ? 'pl-8' : 'pl-4';
     let title = this.props.selectTreeFirstTitle;
@@ -161,12 +174,14 @@ export class SelectTree extends Component<PropType> {
               </div>
             )}
             <input
+              data-cy="input-annotation"
               type="text"
               className={`border-primary-main border-primary-main appearance-none rounded border bg-black bg-black py-2 pr-3 text-sm leading-tight shadow transition duration-300 hover:border-gray-500 focus:border-gray-500 focus:outline-none focus:outline-none ${inputLeftPadding}`}
               placeholder={this.props.items.length > 0 ? 'Search labels' : 'Enter label'}
               autoFocus={this.props.autoFocus}
               onChange={this.searchLocations}
               value={this.state.searchTerm ? this.state.searchTerm : ''}
+              onKeyPress={this.onKeyPressHandler}
             />
           </div>
         )}
@@ -177,12 +192,7 @@ export class SelectTree extends Component<PropType> {
               key={0}
               name="save"
               type={ButtonEnums.type.primary}
-              onClick={evt => {
-                this.props.onSelected(evt, {
-                  label: this.state.searchTerm,
-                  value: this.state.searchTerm,
-                });
-              }}
+              onClick={this.onSubmitHandler}
             >
               Save
             </Button>
