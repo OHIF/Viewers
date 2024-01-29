@@ -63,14 +63,14 @@
   },
   "devDependencies": {
     "@babel/core": "^7.23.2",
-    "@storybook/addon-actions": "7.5.0",
-    "@storybook/addon-docs": "7.5.0",
-    "@storybook/addon-essentials": "7.5.0",
-    "@storybook/addon-links": "7.5.0",
-    "@storybook/cli": "7.5.0",
-    "@storybook/react": "7.5.0",
-    "@storybook/react-webpack5": "7.5.0",
-    "@storybook/source-loader": "7.5.0",
+    "@storybook/addon-actions": "^7.6.10",
+    "@storybook/addon-docs": "^7.6.10",
+    "@storybook/addon-essentials": "^7.6.10",
+    "@storybook/addon-links": "^7.6.10",
+    "@storybook/cli": "^7.6.10",
+    "@storybook/react": "^7.6.10",
+    "@storybook/react-webpack5": "^7.6.10",
+    "@storybook/source-loader": "^7.6.10",
     "autoprefixer": "^10.4.14",
     "babel-loader": "^9.1.2",
     "dotenv-webpack": "^8.0.1",
@@ -78,7 +78,7 @@
     "postcss-loader": "^7.2.4",
     "prop-types": "^15.8.1",
     "remark-gfm": "^3.0.1",
-    "storybook": "7.5.0",
+    "storybook": "^7.6.10",
     "tailwindcss": "3.2.4"
   }
 }

@@ -51,6 +51,11 @@ const dicomRT = {
   sopClassHandler: '@ohif/extension-cornerstone-dicom-rt.sopClassHandlerModule.dicom-rt',
 };
 
+const dynamicVolume = {
+  sopClassHandler:
+    '@ohif/extension-cornerstone-dynamic-volume.sopClassHandlerModule.dynamic-volume',
+};
+
 const extensionDependencies = {
   // Can derive the versions at least process.env.from npm_package_version
   '@ohif/extension-default': '^3.0.0',
@@ -256,6 +261,7 @@ function modeFactory({ modeConfiguration }) {
       dicomvideo.sopClassHandler,
       dicomSeg.sopClassHandler,
       ohif.sopClassHandler,
+      dynamicVolume.sopClassHandler,
       dicompdf.sopClassHandler,
       dicomsr.sopClassHandler,
       dicomRT.sopClassHandler,

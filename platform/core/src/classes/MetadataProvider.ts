@@ -400,6 +400,16 @@ class MetadataProvider {
         };
         break;
 
+      /**
+       * Below are the tags and not the modules since they are not really
+       * consistent with the modules above
+       */
+      case 'temporalPositionIdentifier':
+        metadata = {
+          temporalPositionIdentifier: instance.TemporalPositionIdentifier,
+        };
+        break;
+
       default:
         return;
     }

@@ -92,6 +92,7 @@ const makeDisplaySet = instances => {
     isReconstructable,
     messages,
     averageSpacingBetweenFrames: averageSpacingBetweenFrames || null,
+    isDynamicVolume,
   });
 
   // Sort the images in this series if needed

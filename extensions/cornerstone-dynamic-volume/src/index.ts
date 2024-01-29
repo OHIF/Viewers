@@ -40,36 +40,7 @@ const dynamicVolumeExtension = {
    * that is provided by the Cornerstone extension in OHIF.
    */
   getViewportModule,
-  /**
-   * ToolbarModule should provide a list of tool buttons that will be available in OHIF
-   * for Modes to consume and use in the toolbar. Each tool button is defined by
-   * {name, defaultComponent, clickHandler }. Examples include radioGroupIcons and
-   * splitButton toolButton that the default extension is providing.
-   */
-  getToolbarModule: ({ servicesManager, commandsManager, extensionManager }) => {},
-  /**
-   * LayoutTemplateMOdule should provide a list of layout templates that will be
-   * available in OHIF for Modes to consume and use to layout the viewer.
-   * Each layout template is defined by a { name, id, component}. Examples include
-   * the default layout template provided by the default extension which renders
-   * a Header, left and right sidebars, and a viewport section in the middle
-   * of the viewer.
-   */
-  getLayoutTemplateModule: ({ servicesManager, commandsManager, extensionManager }) => {},
-  /**
-   * SopClassHandlerModule should provide a list of sop class handlers that will be
-   * available in OHIF for Modes to consume and use to create displaySets from Series.
-   * Each sop class handler is defined by a { name, sopClassUids, getDisplaySetsFromSeries}.
-   * Examples include the default sop class handler provided by the default extension
-   */
   getSopClassHandlerModule,
-  /**
-   * HangingProtocolModule should provide a list of hanging protocols that will be
-   * available in OHIF for Modes to use to decide on the structure of the viewports
-   * and also the series that hung in the viewports. Each hanging protocol is defined by
-   * { name, protocols}. Examples include the default hanging protocol provided by
-   * the default extension that shows 2x2 viewports.
-   */
   getHangingProtocolModule,
   /**
    * CommandsModule should provide a list of commands that will be available in OHIF
@@ -85,19 +56,6 @@ const dynamicVolumeExtension = {
       extensionManager,
     });
   },
-  /**
-   * ContextModule should provide a list of context that will be available in OHIF
-   * and will be provided to the Modes. A context is a state that is shared OHIF.
-   * Context is defined by an object of { name, context, provider }. Examples include
-   * the measurementTracking context provided by the measurementTracking extension.
-   */
-  getContextModule: ({ servicesManager, commandsManager, extensionManager }) => {},
-  /**
-   * DataSourceModule should provide a list of data sources to be used in OHIF.
-   * DataSources can be used to map the external data formats to the OHIF's
-   * native format. DataSources are defined by an object of { name, type, createDataSource }.
-   */
-  getDataSourcesModule: ({ servicesManager, commandsManager, extensionManager }) => {},
 };
 
 export { dynamicVolumeExtension as default };
