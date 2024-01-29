@@ -54,6 +54,7 @@ const dicomRT = {
 const dynamicVolume = {
   sopClassHandler:
     '@ohif/extension-cornerstone-dynamic-volume.sopClassHandlerModule.dynamic-volume',
+  panel: '@ohif/extension-cornerstone-dynamic-volume.panelModule.dynamic-volume',
 };
 
 const extensionDependencies = {
@@ -66,6 +67,7 @@ const extensionDependencies = {
   '@ohif/extension-cornerstone-dicom-rt': '^3.0.0',
   '@ohif/extension-dicom-pdf': '^3.0.1',
   '@ohif/extension-dicom-video': '^3.0.1',
+  '@ohif/extension-cornerstone-dynamic-volume': '^3.0.0',
 };
 
 function modeFactory({ modeConfiguration }) {
@@ -85,6 +87,7 @@ function modeFactory({ modeConfiguration }) {
         toolbarService,
         toolGroupService,
         panelService,
+        segmentationService,
         customizationService,
       } = servicesManager.services;
 
@@ -157,25 +160,14 @@ function modeFactory({ modeConfiguration }) {
 
       // // ActivatePanel event trigger for when a segmentation or measurement is added.
       // // Do not force activation so as to respect the state the user may have left the UI in.
-      // _activatePanelTriggersSubscriptions = [
-      //   ...panelService.addActivatePanelTriggers(dicomSeg.panel, [
-      //     {
-      //       sourcePubSubService: segmentationService,
-      //       sourceEvents: [
-      //         segmentationService.EVENTS.SEGMENTATION_PIXEL_DATA_CREATED,
-      //       ],
-      //     },
-      //   ]),
-      //   ...panelService.addActivatePanelTriggers(tracked.measurements, [
-      //     {
-      //       sourcePubSubService: measurementService,
-      //       sourceEvents: [
-      //         measurementService.EVENTS.MEASUREMENT_ADDED,
-      //         measurementService.EVENTS.RAW_MEASUREMENT_ADDED,
-      //       ],
-      //     },
-      //   ]),
-      // ];
+      _activatePanelTriggersSubscriptions = [
+        ...panelService.addActivatePanelTriggers(tracked.measurements, [
+          {
+            service: measurementService,
+            triggers: [measurementService.EVENTS.MEASUREMENT_ADDED],
+          },
+        ]),
+      ];
     },
     onModeExit: ({ servicesManager }) => {
       const {
@@ -212,12 +204,35 @@ function modeFactory({ modeConfiguration }) {
         /*init: ({ servicesManager, extensionManager }) => {
           //defaultViewerRouteInit
         },*/
-        layoutTemplate: () => {
+        layoutTemplate: ({ servicesManager }) => {
+          const { cornerstoneViewportService } = servicesManager.services;
           return {
             id: ohif.layout,
             props: {
               leftPanels: [tracked.thumbnailList],
-              rightPanels: [dicomSeg.panel, tracked.measurements],
+              rightPanels: [
+                dicomSeg.panel,
+                tracked.measurements,
+                // don't enable the dynamic volume panel by default
+                // but listen to the event to enable it when needed
+                {
+                  id: dynamicVolume.panel,
+                  enabled: false,
+                  handlers: [
+                    {
+                      service: cornerstoneViewportService,
+                      triggers: [
+                        {
+                          event: cornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED,
+                          callback: () => {
+                            return true;
+                          },
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
               rightPanelDefaultClosed: true,
               viewports: [
                 {
