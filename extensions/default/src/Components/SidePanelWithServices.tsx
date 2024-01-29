@@ -16,8 +16,8 @@ const SidePanelWithServices = ({
   side,
   activeTabIndex: activeTabIndexProp,
   tabs: tabsProp,
-  ...props
   expandedWidth,
+  ...props
 }: SidePanelWithServicesProps) => {
   const panelService: PanelService = servicesManager?.services?.panelService;
 

@@ -20,6 +20,7 @@ export default function CineProvider({ children, service }) {
       case 'SET_CINE': {
         const { id, frameRate, isPlaying = undefined } = action.payload;
         const cines = state.cines;
+
         const syncedCineIds = service.getSyncedViewports(id).map(({ viewportId }) => viewportId);
         const cineIdsToUpdate = [id, ...syncedCineIds].filter(curId => {
           const currentCine = cines[curId] ?? {};
@@ -43,7 +44,7 @@ export default function CineProvider({ children, service }) {
           cine.isPlaying = isPlaying ?? cine.isPlaying;
         });
 
-        return { ...state, cines: { ...cines } };
+        return { ...state, ...cines };
       }
       case 'SET_IS_CINE_ENABLED': {
         return { ...state, ...{ isCineEnabled: action.payload } };
