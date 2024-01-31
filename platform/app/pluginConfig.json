@@ -23,6 +23,11 @@
       "version": "3.0.0"
     },
     {
+      "packageName": "@ohif/extension-cornerstone-dynamic-volume",
+      "default": false,
+      "version": "3.0.0"
+    },
+    {
       "packageName": "@ohif/extension-dicom-microscopy",
       "default": false,
       "version": "3.0.0"
@@ -65,6 +70,9 @@
     },
     {
       "packageName": "@ohif/mode-microscopy"
+    },
+    {
+      "packageName": "@ohif/mode-preclinical-4d"
     },
     {
       "packageName": "@ohif/mode-test",

@@ -1,6 +1,8 @@
 import { Enums } from '@cornerstonejs/tools';
 import { toolNames } from './initCornerstoneTools';
 import DicomUpload from './components/DicomUpload/DicomUpload';
+import ViewportWindowLevel from './components/ViewportWindowLevel';
+import ActiveViewportWindowLevel from './components/ActiveViewportWindowLevel';
 
 const tools = {
   active: [
@@ -38,6 +40,20 @@ function getCustomizationModule() {
           tools,
         },
       ],
+    },
+    {
+      name: 'cornerstoneViewportWindowLevelComponent',
+      value: {
+        id: 'viewportWindowLevelComponent',
+        component: ViewportWindowLevel,
+      },
+    },
+    {
+      name: 'cornerstoneActiveViewportWindowLevelComponent',
+      value: {
+        id: 'activeViewportWindowLevelComponent',
+        component: ActiveViewportWindowLevel,
+      },
     },
   ];
 }

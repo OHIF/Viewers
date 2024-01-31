@@ -31,3 +31,11 @@ input[type='range']::-moz-range-track {
   left: 0;
   right: 0;
 }
+
+input[type='range']::-webkit-slider-thumb {
+  pointer-events: all;
+}
+
+input[type='range']::-moz-range-thumb {
+  pointer-events: all;
+}

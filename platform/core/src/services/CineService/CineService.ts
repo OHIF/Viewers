@@ -1,5 +1,5 @@
 const name = 'CineService';
-
+let _servicesManager;
 const publicAPI = {
   name,
   getState: _getState,
@@ -7,6 +7,7 @@ const publicAPI = {
   setIsCineEnabled: _setIsCineEnabled,
   playClip: _playClip,
   stopClip: _stopClip,
+  getSyncedViewports: _getSyncedViewports,
   onModeExit: _onModeExit,
   setServiceImplementation,
 };
@@ -17,6 +18,7 @@ const serviceImplementation = {
   _playClip: () => console.warn('playClip() NOT IMPLEMENTED'),
   _stopClip: () => console.warn('stopClip() NOT IMPLEMENTED'),
   _setIsCineEnabled: () => console.warn('setIsCineEnabled() NOT IMPLEMENTED'),
+  _getSyncedViewports: () => console.warn('getSyncedViewports() NOT IMPLEMENTED'),
 };
 
 function _getState() {
@@ -39,20 +41,30 @@ function _stopClip(element) {
   return serviceImplementation._stopClip(element);
 }
 
+function _getSyncedViewports(srcViewportId) {
+  return serviceImplementation._getSyncedViewports(srcViewportId);
+}
+
 function _onModeExit() {
   _setIsCineEnabled(false);
 }
 
 function setServiceImplementation({
+  getSyncedViewports: getSyncedViewportsImplementation,
   getState: getStateImplementation,
   setCine: setCineImplementation,
   setIsCineEnabled: setIsCineEnabledImplementation,
   playClip: playClipImplementation,
   stopClip: stopClipImplementation,
 }) {
+  if (getSyncedViewportsImplementation) {
+    serviceImplementation._getSyncedViewports = getSyncedViewportsImplementation;
+  }
+
   if (getStateImplementation) {
     serviceImplementation._getState = getStateImplementation;
   }
+
   if (setCineImplementation) {
     serviceImplementation._setCine = setCineImplementation;
   }
@@ -73,7 +85,8 @@ const CineService = {
   REGISTRATION: {
     altName: name,
     name: 'cineService',
-    create: ({ configuration = {} }) => {
+    create: ({ configuration = {}, servicesManager }) => {
+      _servicesManager = servicesManager;
       return publicAPI;
     },
   },

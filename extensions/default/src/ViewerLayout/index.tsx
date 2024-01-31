@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 
-import { SidePanel, ErrorBoundary, LoadingIndicatorProgress } from '@ohif/ui';
+import { ErrorBoundary, LoadingIndicatorProgress } from '@ohif/ui';
 import { ServicesManager, HangingProtocolService, CommandsManager } from '@ohif/core';
 import { useAppConfig } from '@state';
 import ViewerHeader from './ViewerHeader';
@@ -16,15 +16,21 @@ function ViewerLayout({
   // From Modes
   viewports,
   ViewportGridComp,
-  leftPanels = [],
-  rightPanels = [],
   leftPanelDefaultClosed = false,
   rightPanelDefaultClosed = false,
 }): React.FunctionComponent {
   const [appConfig] = useAppConfig();
 
-  const { hangingProtocolService } = servicesManager.services;
+  const { panelService, hangingProtocolService } = servicesManager.services;
   const [showLoadingIndicator, setShowLoadingIndicator] = useState(appConfig.showLoadingIndicator);
+
+  const hasPanels = useCallback(
+    (side): boolean => !!panelService.getPanels(side).length,
+    [panelService]
+  );
+
+  const [hasRightPanels, setHasRightPanels] = useState(hasPanels('right'));
+  const [hasLeftPanels, setHasLeftPanels] = useState(hasPanels('left'));
 
   /**
    * Set body classes (tailwindcss) that don't allow vertical
@@ -61,19 +67,6 @@ function ViewerLayout({
     return { entry, content };
   };
 
-  const getPanelData = id => {
-    const { content, entry } = getComponent(id);
-
-    return {
-      id: entry.id,
-      iconName: entry.iconName,
-      iconLabel: entry.iconLabel,
-      label: entry.label,
-      name: entry.name,
-      content,
-    };
-  };
-
   useEffect(() => {
     const { unsubscribe } = hangingProtocolService.subscribe(
       HangingProtocolService.EVENTS.PROTOCOL_CHANGED,
@@ -100,8 +93,17 @@ function ViewerLayout({
     };
   };
 
-  const leftPanelComponents = leftPanels.map(getPanelData);
-  const rightPanelComponents = rightPanels.map(getPanelData);
+  useEffect(() => {
+    const { unsubscribe } = panelService.subscribe(panelService.EVENTS.PANELS_CHANGED, () => {
+      setHasLeftPanels(hasPanels('left'));
+      setHasRightPanels(hasPanels('right'));
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, [panelService, hasPanels]);
+
   const viewportComponents = viewports.map(getViewportComponentData);
 
   return (
@@ -118,12 +120,11 @@ function ViewerLayout({
         <React.Fragment>
           {showLoadingIndicator && <LoadingIndicatorProgress className="h-full w-full bg-black" />}
           {/* LEFT SIDEPANELS */}
-          {leftPanelComponents.length ? (
+          {hasLeftPanels ? (
             <ErrorBoundary context="Left Panel">
               <SidePanelWithServices
                 side="left"
                 activeTabIndex={leftPanelDefaultClosed ? null : 0}
-                tabs={leftPanelComponents}
                 servicesManager={servicesManager}
               />
             </ErrorBoundary>
@@ -140,12 +141,11 @@ function ViewerLayout({
               </ErrorBoundary>
             </div>
           </div>
-          {rightPanelComponents.length ? (
+          {hasRightPanels ? (
             <ErrorBoundary context="Right Panel">
               <SidePanelWithServices
                 side="right"
                 activeTabIndex={rightPanelDefaultClosed ? null : 0}
-                tabs={rightPanelComponents}
                 servicesManager={servicesManager}
               />
             </ErrorBoundary>

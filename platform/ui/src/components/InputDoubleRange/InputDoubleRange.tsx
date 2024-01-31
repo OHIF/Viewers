@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import classNames from 'classnames';
 import { InputNumber } from '../../components'; // Import InputNumber component
 import './InputDoubleRange.css';
@@ -81,7 +81,7 @@ const InputDoubleRange: React.FC<InputDoubleRangeProps> = ({
           updateRangeValues(newValue, index);
         }}
         step={step}
-        labelClassName="text-white"
+        labelClassName={classNames(labelClassName ?? 'text-white')}
         showAdjustmentArrows={showAdjustmentArrows}
       />
     ) : (

@@ -12,7 +12,7 @@ import {
   utilities as cstUtils,
   ReferenceLinesTool,
 } from '@cornerstonejs/tools';
-import { Types as OhifTypes } from '@ohif/core';
+import { HangingProtocolService, Types as OhifTypes } from '@ohif/core';
 import { vec3, mat4 } from 'gl-matrix';
 
 import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownloadForm';
@@ -35,6 +35,8 @@ function commandsModule({
     cornerstoneViewportService,
     uiNotificationService,
     measurementService,
+    displaySetService,
+    hangingProtocolService,
   } = servicesManager.services as CornerstoneServices;
 
   const { measurementServiceSource } = this;
@@ -292,72 +294,7 @@ function commandsModule({
       toolbarService.setToggled(props.toolId, props.isActive ?? true);
     },
     setToolActive: ({ toolName, toolGroupId = null, toggledState }) => {
-      if (toolName === 'Crosshairs') {
-        const activeViewportToolGroup = toolGroupService.getToolGroup(null);
-
-        if (!activeViewportToolGroup._toolInstances.Crosshairs) {
-          uiNotificationService.show({
-            title: 'Crosshairs',
-            message:
-              'You need to be in a MPR view to use Crosshairs. Click on MPR button in the toolbar to activate it.',
-            type: 'info',
-            duration: 3000,
-          });
-
-          throw new Error('Crosshairs tool is not available in this viewport');
-        }
-      }
-
-      const { viewports } = viewportGridService.getState();
-
-      if (!viewports.size) {
-        return;
-      }
-
-      const toolGroup = toolGroupService.getToolGroup(toolGroupId);
-
-      if (!toolGroup) {
-        return;
-      }
-
-      if (!toolGroup.getToolInstance(toolName)) {
-        uiNotificationService.show({
-          title: `${toolName} tool`,
-          message: `The ${toolName} tool is not available in this viewport.`,
-          type: 'info',
-          duration: 3000,
-        });
-
-        throw new Error(`ToolGroup ${toolGroup.id} does not have this tool.`);
-      }
-
-      const activeToolName = toolGroup.getActivePrimaryMouseButtonTool();
-
-      if (activeToolName) {
-        // Todo: this is a hack to prevent the crosshairs to stick around
-        // after another tool is selected. We should find a better way to do this
-        if (activeToolName === 'Crosshairs') {
-          toolGroup.setToolDisabled(activeToolName);
-        } else {
-          toolGroup.setToolPassive(activeToolName);
-        }
-      }
-
-      // If there is a toggle state, then simply set the enabled/disabled state without
-      // setting the tool active.
-      if (toggledState != null) {
-        toggledState ? toolGroup.setToolEnabled(toolName) : toolGroup.setToolDisabled(toolName);
-        return;
-      }
-
-      // Set the new toolName to be active
-      toolGroup.setToolActive(toolName, {
-        bindings: [
-          {
-            mouseButton: Enums.MouseBindings.Primary,
-          },
-        ],
-      });
+      toolGroupService.setPrimaryToolActive(toolName, toolGroupId, toggledState);
     },
     showDownloadViewportModal: () => {
       const { activeViewportId } = viewportGridService.getState();
@@ -591,6 +528,16 @@ function commandsModule({
     storePresentation: ({ viewportId }) => {
       cornerstoneViewportService.storePresentation({ viewportId });
     },
+    updateVolumeData: ({ volume }) => {
+      // update vtkOpenGLTexture and imageData of computed volume
+      const { imageData, vtkOpenGLTexture } = volume;
+      const numSlices = imageData.getDimensions()[2];
+      const slicesToUpdate = [...Array(numSlices).keys()];
+      slicesToUpdate.forEach(i => {
+        vtkOpenGLTexture.setUpdatedFrame(i);
+      });
+      imageData.modified();
+    },
 
     attachProtocolViewportDataListener: ({ protocol, stageIndex }) => {
       const EVENT = cornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED;
@@ -740,6 +687,9 @@ function commandsModule({
     },
     cleanUpCrosshairs: {
       commandFn: actions.cleanUpCrosshairs,
+    },
+    updateVolumeData: {
+      commandFn: actions.updateVolumeData,
     },
     attachProtocolViewportDataListener: {
       commandFn: actions.attachProtocolViewportDataListener,

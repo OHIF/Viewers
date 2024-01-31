@@ -23,6 +23,7 @@ import JumpPresets from '../../utils/JumpPresets';
 
 const EVENTS = {
   VIEWPORT_DATA_CHANGED: 'event::cornerstoneViewportService:viewportDataChanged',
+  VIEWPORT_VOLUMES_CHANGED: 'event::cornerstoneViewportService:viewportVolumesChanged',
 };
 
 /**
@@ -591,6 +592,10 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     }
 
     viewport.render();
+
+    this._broadcastEvent(this.EVENTS.VIEWPORT_VOLUMES_CHANGED, {
+      viewportInfo,
+    });
   }
 
   private _addSegmentationRepresentationToToolGroupIfNecessary(
@@ -763,8 +768,8 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       const { dimensions } = imageVolume;
       const slabThickness = Math.sqrt(
         dimensions[0] * dimensions[0] +
-        dimensions[1] * dimensions[1] +
-        dimensions[2] * dimensions[2]
+          dimensions[1] * dimensions[1] +
+          dimensions[2] * dimensions[2]
       );
 
       return slabThickness;

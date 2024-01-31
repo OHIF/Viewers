@@ -11,7 +11,10 @@ import createAndDownloadTMTVReport from './utils/createAndDownloadTMTVReport';
 import dicomRTAnnotationExport from './utils/dicomRTAnnotationExport/RTStructureSet';
 
 const metadataProvider = classes.MetadataProvider;
-const RECTANGLE_ROI_THRESHOLD_MANUAL = 'RectangleROIStartEndThreshold';
+const RECTANGLE_ROI_THRESHOLD_MANUAL_TOOLIDS = [
+  'RectangleROIStartEndThreshold',
+  'RectangleROIThreshold',
+];
 const LABELMAP = csTools.Enums.SegmentationRepresentations.Labelmap;
 
 const commandsModule = ({ servicesManager, commandsManager, extensionManager }) => {
@@ -50,6 +53,15 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }) 
     });
 
     return toolGroupIds;
+  }
+
+  function _getAnnotationsSelectedByToolNames(toolNames) {
+    return toolNames.reduce((allAnnotationUIDs, toolName) => {
+      const annotationUIDs =
+        csTools.annotation.selection.getAnnotationsSelectedByToolName(toolName);
+
+      return allAnnotationUIDs.concat(annotationUIDs);
+    }, []);
   }
 
   const actions = {
@@ -108,7 +120,7 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }) 
 
       return metadata;
     },
-    createNewLabelmapFromPT: async () => {
+    createNewLabelmapFromPT: async ({ label }) => {
       // Create a segmentation of the same resolution as the source data
       // using volumeLoader.createAndCacheDerivedVolume.
       const { viewportMatchDetails } = hangingProtocolService.getMatchDetails();
@@ -122,7 +134,8 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }) 
       }
 
       const segmentationId = await segmentationService.createSegmentationForDisplaySet(
-        ptDisplaySet.displaySetInstanceUID
+        ptDisplaySet.displaySetInstanceUID,
+        { label }
       );
 
       // Add Segmentation to all toolGroupIds in the viewer
@@ -175,8 +188,8 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }) 
         throw new Error('No Reference labelmap found');
       }
 
-      const annotationUIDs = csTools.annotation.selection.getAnnotationsSelectedByToolName(
-        RECTANGLE_ROI_THRESHOLD_MANUAL
+      const annotationUIDs = _getAnnotationsSelectedByToolNames(
+        RECTANGLE_ROI_THRESHOLD_MANUAL_TOOLIDS
       );
 
       if (annotationUIDs.length === 0) {
@@ -209,8 +222,8 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }) 
 
       const referencedVolume = cs.cache.getVolume(referencedVolumeId);
 
-      const annotationUIDs = csTools.annotation.selection.getAnnotationsSelectedByToolName(
-        RECTANGLE_ROI_THRESHOLD_MANUAL
+      const annotationUIDs = _getAnnotationsSelectedByToolNames(
+        RECTANGLE_ROI_THRESHOLD_MANUAL_TOOLIDS
       );
 
       const annotations = annotationUIDs.map(annotationUID =>
@@ -227,8 +240,7 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }) 
     },
     getLesionStats: ({ labelmap, segmentIndex = 1 }) => {
       const { scalarData, spacing } = labelmap;
-
-      const { scalarData: referencedScalarData } = cs.cache.getVolume(labelmap.referencedVolumeId);
+      const referencedScalarData = cs.cache.getVolume(labelmap.referencedVolumeId).getScalarData();
 
       let segmentationMax = -Infinity;
       let segmentationMin = Infinity;
@@ -278,19 +290,25 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }) 
 
       return calculateTMTV(labelmaps);
     },
-    exportTMTVReportCSV: ({ segmentations, tmtv, config }) => {
+    exportTMTVReportCSV: ({ segmentations, tmtv, config, options }) => {
       const segReport = commandsManager.runCommand('getSegmentationCSVReport', {
         segmentations,
       });
 
       const tlg = actions.getTotalLesionGlycolysis({ segmentations });
       const additionalReportRows = [
-        { key: 'Total Metabolic Tumor Volume', value: { tmtv } },
         { key: 'Total Lesion Glycolysis', value: { tlg: tlg.toFixed(4) } },
         { key: 'Threshold Configuration', value: { ...config } },
       ];
 
-      createAndDownloadTMTVReport(segReport, additionalReportRows);
+      if (tmtv !== undefined) {
+        additionalReportRows.unshift({
+          key: 'Total Metabolic Tumor Volume',
+          value: { tmtv },
+        });
+      }
+
+      createAndDownloadTMTVReport(segReport, additionalReportRows, options);
     },
     getTotalLesionGlycolysis: ({ segmentations }) => {
       const labelmapVolumes = segmentations.map(s => segmentationService.getLabelmapVolume(s.id));
@@ -314,9 +332,9 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }) 
       }
 
       const ptVolume = cs.cache.getVolume(referencedVolumeId);
-      const mergedLabelData = mergedLabelmap.scalarData;
+      const mergedLabelData = mergedLabelmap.getScalarData();
 
-      if (mergedLabelData.length !== ptVolume.scalarData.length) {
+      if (mergedLabelData.length !== ptVolume.getScalarData().length) {
         console.error(
           'commandsModule::getTotalLesionGlycolysis:Labelmap and ptVolume are not the same size'
         );
@@ -327,7 +345,7 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }) 
       for (let i = 0; i < mergedLabelData.length; i++) {
         // if not background
         if (mergedLabelData[i] !== 0) {
-          suv += ptVolume.scalarData[i];
+          suv += ptVolume.getScalarData()[i];
           totalLesionVoxelCount += 1;
         }
       }
@@ -342,8 +360,8 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }) 
       const { viewport } = _getActiveViewportsEnabledElement();
       const { focalPoint, viewPlaneNormal } = viewport.getCamera();
 
-      const selectedAnnotationUIDs = csTools.annotation.selection.getAnnotationsSelectedByToolName(
-        RECTANGLE_ROI_THRESHOLD_MANUAL
+      const selectedAnnotationUIDs = _getAnnotationsSelectedByToolNames(
+        RECTANGLE_ROI_THRESHOLD_MANUAL_TOOLIDS
       );
 
       const annotationUID = selectedAnnotationUIDs[0];
@@ -380,8 +398,8 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }) 
     setEndSliceForROIThresholdTool: () => {
       const { viewport } = _getActiveViewportsEnabledElement();
 
-      const selectedAnnotationUIDs = csTools.annotation.selection.getAnnotationsSelectedByToolName(
-        RECTANGLE_ROI_THRESHOLD_MANUAL
+      const selectedAnnotationUIDs = _getAnnotationsSelectedByToolNames(
+        RECTANGLE_ROI_THRESHOLD_MANUAL_TOOLIDS
       );
 
       const annotationUID = selectedAnnotationUIDs[0];
@@ -406,7 +424,11 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }) 
 
       Object.keys(stateManager.annotations).forEach(frameOfReferenceUID => {
         const forAnnotations = stateManager.annotations[frameOfReferenceUID];
-        const ROIAnnotations = forAnnotations[RECTANGLE_ROI_THRESHOLD_MANUAL];
+        const ROIAnnotations = RECTANGLE_ROI_THRESHOLD_MANUAL_TOOLIDS.reduce(
+          (annotations, toolName) => [...annotations, ...(forAnnotations[toolName] ?? [])],
+          []
+        );
+
         annotations.push(...ROIAnnotations);
       });
 
@@ -474,7 +496,7 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }) 
 
         report[id] = {
           ...segReport,
-          PatientID: instance.PatientID,
+          PatientID: instance.PatientID ?? '000000',
           PatientName: instance.PatientName.Alphabetic,
           StudyInstanceUID: instance.StudyInstanceUID,
           SeriesInstanceUID: instance.SeriesInstanceUID,

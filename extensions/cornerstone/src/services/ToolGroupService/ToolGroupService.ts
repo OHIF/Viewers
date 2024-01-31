@@ -1,4 +1,5 @@
 import { ToolGroupManager, Enums, Types } from '@cornerstonejs/tools';
+import { eventTarget } from '@cornerstonejs/core';
 
 import { Types as OhifTypes, pubSubServiceInterface } from '@ohif/core';
 import getActiveViewportEnabledElement from '../../utils/getActiveViewportEnabledElement';
@@ -6,6 +7,8 @@ import getActiveViewportEnabledElement from '../../utils/getActiveViewportEnable
 const EVENTS = {
   VIEWPORT_ADDED: 'event::cornerstone::toolgroupservice:viewportadded',
   TOOLGROUP_CREATED: 'event::cornerstone::toolgroupservice:toolgroupcreated',
+  TOOL_ACTIVATED: 'event::cornerstone::toolgroupservice:toolactivated',
+  PRIMARY_TOOL_ACTIVATED: 'event::cornerstone::toolgroupservice:primarytoolactivated',
 };
 
 type Tool = {
@@ -38,16 +41,24 @@ export default class ToolGroupService {
   EVENTS: { [key: string]: string };
 
   constructor(serviceManager) {
-    const { cornerstoneViewportService, viewportGridService } = serviceManager.services;
+    const { cornerstoneViewportService, viewportGridService, uiNotificationService } =
+      serviceManager.services;
     this.cornerstoneViewportService = cornerstoneViewportService;
     this.viewportGridService = viewportGridService;
+    this.uiNotificationService = uiNotificationService;
     this.listeners = {};
     this.EVENTS = EVENTS;
     Object.assign(this, pubSubServiceInterface);
+
+    this._init();
   }
 
   onModeExit() {
     this.destroy();
+  }
+
+  private _init() {
+    eventTarget.addEventListener(Enums.Events.TOOL_ACTIVATED, this._onToolActivated);
   }
 
   /**
@@ -105,12 +116,14 @@ export default class ToolGroupService {
     return toolGroup.getActivePrimaryMouseButtonTool();
   }
 
-  public destroy() {
+  public destroy(): void {
     ToolGroupManager.destroy();
     this.toolGroupIds = new Set();
+
+    eventTarget.removeEventListener(Enums.Events.TOOL_ACTIVATED, this._onToolActivated);
   }
 
-  public destroyToolGroup(toolGroupId: string) {
+  public destroyToolGroup(toolGroupId: string): void {
     ToolGroupManager.destroyToolGroup(toolGroupId);
     this.toolGroupIds.delete(toolGroupId);
   }
@@ -235,6 +248,93 @@ export default class ToolGroupService {
     toolInstance.configuration = config;
   }
 
+  public getActivePrimaryMouseButtonTool(toolGroupId?: string): string {
+    return this.getToolGroup(toolGroupId)?.getActivePrimaryMouseButtonTool();
+  }
+
+  public setPrimaryToolActive(
+    toolName: string,
+    toolGroupId?: string,
+    toggledState?: boolean
+  ): void {
+    if (toolName === 'Crosshairs') {
+      const activeViewportToolGroup = this.getToolGroup(null);
+
+      if (!activeViewportToolGroup._toolInstances.Crosshairs) {
+        this.uiNotificationService.show({
+          title: 'Crosshairs',
+          message:
+            'You need to be in a MPR view to use Crosshairs. Click on MPR button in the toolbar to activate it.',
+          type: 'info',
+          duration: 3000,
+        });
+
+        throw new Error('Crosshairs tool is not available in this viewport');
+      }
+    }
+
+    const { viewports } = this.viewportGridService.getState();
+
+    if (!viewports.size) {
+      return;
+    }
+
+    const toolGroup = this.getToolGroup(toolGroupId);
+    const toolGroupViewportIds = toolGroup?.getViewportIds?.();
+
+    // if toolGroup has been destroyed, or its viewports have been removed
+    if (!toolGroupViewportIds || !toolGroupViewportIds.length) {
+      return;
+    }
+
+    const filteredViewports = Array.from(viewports.values()).filter(viewport => {
+      return toolGroupViewportIds.includes(viewport.viewportId);
+    });
+
+    if (!filteredViewports.length) {
+      return;
+    }
+
+    if (!toolGroup.getToolInstance(toolName)) {
+      this.uiNotificationService.show({
+        title: `${toolName} tool`,
+        message: `The ${toolName} tool is not available in this viewport.`,
+        type: 'info',
+        duration: 3000,
+      });
+
+      throw new Error(`ToolGroup ${toolGroup.id} does not have this tool.`);
+    }
+
+    const activeToolName = toolGroup.getActivePrimaryMouseButtonTool();
+
+    if (activeToolName) {
+      // Todo: this is a hack to prevent the crosshairs to stick around
+      // after another tool is selected. We should find a better way to do this
+      if (activeToolName === 'Crosshairs') {
+        toolGroup.setToolDisabled(activeToolName);
+      } else {
+        toolGroup.setToolPassive(activeToolName);
+      }
+    }
+
+    // If there is a toggle state, then simply set the enabled/disabled state without
+    // setting the tool active.
+    if (toggledState != null) {
+      toggledState ? toolGroup.setToolEnabled(toolName) : toolGroup.setToolDisabled(toolName);
+      return;
+    }
+
+    // Set the new toolName to be active
+    toolGroup.setToolActive(toolName, {
+      bindings: [
+        {
+          mouseButton: Enums.MouseBindings.Primary,
+        },
+      ],
+    });
+  }
+
   private _setToolsMode(toolGroup, tools) {
     const { active, passive, enabled, disabled } = tools;
 
@@ -292,4 +392,23 @@ export default class ToolGroupService {
       addTools(tools.disabled);
     }
   }
+
+  private _onToolActivated = (evt: Types.EventTypes.ToolActivatedEventType) => {
+    const { toolGroupId, toolName, toolBindingsOptions } = evt.detail;
+    const isPrimaryTool = toolBindingsOptions.bindings?.some(
+      binding => binding.mouseButton === Enums.MouseBindings.Primary
+    );
+
+    const callbackProps = {
+      toolGroupId,
+      toolName,
+      toolBindingsOptions,
+    };
+
+    this._broadcastEvent(EVENTS.TOOL_ACTIVATED, callbackProps);
+
+    if (isPrimaryTool) {
+      this._broadcastEvent(EVENTS.PRIMARY_TOOL_ACTIVATED, callbackProps);
+    }
+  };
 }

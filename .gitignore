@@ -24,6 +24,7 @@ yarn-error.log
 .DS_Store
 .env
 *.code-workspace
+.directory
 
 # Common Example Data Directories
 sampledata/

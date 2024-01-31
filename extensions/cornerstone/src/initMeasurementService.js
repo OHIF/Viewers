@@ -51,6 +51,20 @@ const initMeasurementService = (
 
   measurementService.addMapping(
     csTools3DVer1MeasurementSource,
+    'Crosshairs',
+    Length.matchingCriteria,
+    () => {
+      console.warn('Crosshairs mapping not implemented.');
+      return {};
+    },
+    () => {
+      console.warn('Crosshairs mapping not implemented.');
+      return {};
+    }
+  );
+
+  measurementService.addMapping(
+    csTools3DVer1MeasurementSource,
     'Bidirectional',
     Bidirectional.matchingCriteria,
     Bidirectional.toAnnotation,

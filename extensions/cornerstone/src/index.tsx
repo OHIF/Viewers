@@ -6,6 +6,7 @@ import {
   imageLoadPoolManager,
   imageRetrievalPoolManager,
 } from '@cornerstonejs/core';
+import * as csStreamingImageVolumeLoader from '@cornerstonejs/streaming-image-volume-loader';
 import { Enums as cs3DToolsEnums } from '@cornerstonejs/tools';
 import { ServicesManager, Types } from '@ohif/core';
 
@@ -30,6 +31,9 @@ import * as csWADOImageLoader from './initWADOImageLoader.js';
 import { measurementMappingUtils } from './utils/measurementServiceMappings';
 import type { PublicViewportOptions } from './services/ViewportService/Viewport';
 import ImageOverlayViewerTool from './tools/ImageOverlayViewerTool';
+
+const { helpers: volumeLoaderHelpers } = csStreamingImageVolumeLoader;
+const { getDynamicVolumeInfo } = volumeLoaderHelpers ?? {};
 
 const Component = React.lazy(() => {
   return import(/* webpackPrefetch: true */ './Viewport/OHIFCornerstoneViewport');
@@ -129,6 +133,12 @@ const cornerstoneExtension: Types.Extensions.Extension = {
         exports: {
           toolNames,
           Enums: cs3DToolsEnums,
+        },
+      },
+      {
+        name: 'volumeLoader',
+        exports: {
+          getDynamicVolumeInfo,
         },
       },
     ];

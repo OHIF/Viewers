@@ -1,0 +1,40 @@
+.LineChart svg {
+  color: #ddd;
+  border: solid 1px #383f42;
+}
+
+.LineChart svg .background {
+  stroke: none;
+  fill: #151c20;
+}
+
+.LineChart svg .axis.label {
+  fill: #ddd;
+  font-size: 12px;
+}
+
+.LineChart svg .axis .tick line {
+  stroke: #ddd;
+}
+
+.LineChart svg .axis .tick text {
+  fill: #ddd;
+}
+
+.LineChart svg .axis.grid .domain {
+  stroke: none;
+}
+
+.LineChart svg .axis.grid .tick line {
+  stroke: #383f42;
+}
+
+.LineChart svg .line {
+  stroke-width: 1px;
+  fill: none;
+}
+
+.LineChart svg .legend .legend-background {
+  fill: none;
+  stroke: #383f42;
+}

@@ -1288,7 +1288,7 @@ class SegmentationService extends PubSubService {
     }
 
     const { colorLUTIndex } = segmentation;
-    this._removeSegmentationFromCornerstone(segmentationId);
+    const { updatedToolGroupIds } = this._removeSegmentationFromCornerstone(segmentationId);
 
     // Delete associated colormap
     // Todo: bring this back
@@ -1308,7 +1308,9 @@ class SegmentationService extends PubSubService {
       if (remainingHydratedSegmentations.length) {
         const { id } = remainingHydratedSegmentations[0];
 
-        this._setActiveSegmentationForToolGroup(id, this._getApplicableToolGroupId(), false);
+        updatedToolGroupIds.forEach(toolGroupId => {
+          this._setActiveSegmentationForToolGroup(id, toolGroupId, false);
+        });
       }
     }
 
@@ -1968,6 +1970,7 @@ class SegmentationService extends PubSubService {
     const removeFromCache = true;
     const segmentationState = cstSegmentation.state;
     const sourceSegState = segmentationState.getSegmentation(segmentationId);
+    const updatedToolGroupIds: Set<string> = new Set();
 
     if (!sourceSegState) {
       return;
@@ -1983,6 +1986,7 @@ class SegmentationService extends PubSubService {
       segmentationRepresentations.forEach(representation => {
         if (representation.segmentationId === segmentationId) {
           UIDsToRemove.push(representation.segmentationRepresentationUID);
+          updatedToolGroupIds.add(toolGroupId);
         }
       });
 
@@ -2000,6 +2004,8 @@ class SegmentationService extends PubSubService {
     if (removeFromCache && cache.getVolumeLoadObject(segmentationId)) {
       cache.removeVolumeLoadObject(segmentationId);
     }
+
+    return { updatedToolGroupIds: Array.from(updatedToolGroupIds) };
   }
 
   private _updateCornerstoneSegmentations({ segmentationId, notYetUpdatedAtSource }) {

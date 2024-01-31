@@ -133,7 +133,7 @@ function modeFactory({ modeConfiguration }) {
       ]);
     },
     onModeExit: ({ servicesManager }) => {
-      const { toolGroupService, measurementService, toolbarService } = servicesManager.services;
+      const { toolGroupService } = servicesManager.services;
 
       toolGroupService.destroy();
     },

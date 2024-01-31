@@ -181,6 +181,10 @@ const commandsModule = ({
         const state = viewportGridService.getState();
         const hpInfo = hangingProtocolService.getState();
         const { protocol: oldProtocol } = hangingProtocolService.getActiveProtocol();
+
+        if (!oldProtocol) {
+          return;
+        }
         const stateSyncReduce = reuseCachedLayouts(state, hangingProtocolService, stateSyncService);
         const { hangingProtocolStageIndexMap, viewportGridStore, displaySetSelectorMap } =
           stateSyncReduce;
@@ -266,6 +270,16 @@ const commandsModule = ({
             });
           }
         }
+
+        // Send the notification about updating the state
+        if (protocolId !== hpInfo.protocolId) {
+          // The old protocol callbacks are used for turning off things
+          // like crosshairs when moving to the new HP
+          commandsManager.run(oldProtocol?.callbacks?.onProtocolExit);
+          // The new protocol callback is used for things like
+          // activating modes etc.
+        }
+        commandsManager.run(protocol.callbacks?.onProtocolEnter);
         return true;
       } catch (e) {
         console.error(e);

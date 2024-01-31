@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { CinePlayer, useCine, useViewportGrid } from '@ohif/ui';
+import { CinePlayer, useCine } from '@ohif/ui';
 import { Enums, eventTarget } from '@cornerstonejs/core';
 import { useAppConfig } from '@state';
 

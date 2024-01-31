@@ -3,6 +3,7 @@ import React from 'react';
 
 import arrowDown from './../../assets/icons/arrow-down.svg';
 import arrowLeft from './../../assets/icons/arrow-left.svg';
+import arrowRight from './../../assets/icons/arrow-right.svg';
 import arrowLeftSmall from './../../assets/icons/arrow-left-small.svg';
 import arrowRightSmall from './../../assets/icons/arrow-right-small.svg';
 import calendar from './../../assets/icons/calendar.svg';
@@ -114,6 +115,11 @@ import toolCalibration from './../../assets/icons/tool-calibration.svg';
 import toolFreehand from './../../assets/icons/tool-freehand.svg';
 import toolFreehandPolygon from './../../assets/icons/tool-freehand-polygon.svg';
 import toolPolygon from './../../assets/icons/tool-polygon.svg';
+import toolBrush from './../../assets/icons/tool-brush.svg';
+import toolEraser from './../../assets/icons/tool-eraser.svg';
+import toolScissorRect from './../../assets/icons/tool-scissor-rect.svg';
+import toolScissorCircle from './../../assets/icons/tool-scissor-circle.svg';
+import toolPaintFill from './../../assets/icons/tool-paint-fill.svg';
 import editPatient from './../../assets/icons/edit-patient.svg';
 import panelGroupMore from './../../assets/icons/panel-group-more.svg';
 import panelGroupOpenClose from './../../assets/icons/panel-group-open-close.svg';
@@ -148,6 +154,7 @@ import oldStop from './../../assets/icons/old-stop.svg';
 const ICONS = {
   'arrow-down': arrowDown,
   'arrow-left': arrowLeft,
+  'arrow-right': arrowRight,
   'arrow-left-small': arrowLeftSmall,
   'arrow-right-small': arrowRightSmall,
   calendar: calendar,
@@ -232,7 +239,6 @@ const ICONS = {
   'tool-annotate': toolAnnotate,
   'tool-bidirectional': toolBidirectional,
   'tool-elipse': toolElipse,
-  'tool-circle': toolCircle,
   'tool-length': toolLength,
   'tool-stack-scroll': toolStackScroll,
   'tool-magnify': toolMagnify,
@@ -252,6 +258,11 @@ const ICONS = {
   'tool-freehand-line': toolFreehand,
   'tool-freehand-polygon': toolFreehandPolygon,
   'tool-polygon': toolPolygon,
+  'tool-brush': toolBrush,
+  'tool-eraser': toolEraser,
+  'tool-scissor-rect': toolScissorRect,
+  'tool-scissor-circle': toolScissorCircle,
+  'tool-paint-fill': toolPaintFill,
   'edit-patient': editPatient,
   'icon-mpr': iconMPR,
   'icon-next-inactive': iconNextInactive,
