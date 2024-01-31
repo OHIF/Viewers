@@ -95,6 +95,18 @@ export default function PanelGenerateImage({ servicesManager, commandsManager })
     };
   }, [cornerstoneViewportService]);
 
+  // useEffect(() => {
+  //   const viewportInfo = cornerstoneViewportService.getViewportInfo(activeViewportId);
+  //   debugger;
+
+  //   if (volumeData.volume.isDynamicVolume()) {
+  //     setDynamicVolume(volumeData.volume);
+  //     uuidDynamicVolume.current = volumeData.displaySetInstanceUID;
+  //     setTimePointsRange([1, volumeData.volume.numTimePoints]);
+  //     setTimePointsToUseForGenerate([0, 1]);
+  //   }
+  // }, []);
+
   useEffect(() => {
     // ~~ Subscription
     const evt = Enums.Events.DYNAMIC_VOLUME_TIME_POINT_INDEX_CHANGED;
@@ -128,7 +140,7 @@ export default function PanelGenerateImage({ servicesManager, commandsManager })
     let computedVolume = cache.getVolume(computedVolumeId);
 
     if (!computedVolume) {
-      await createComputedVolume(dynamicVolume.volumeId, computedVolumeId);
+      await createComputedVolume(dynamicVolumeId, computedVolumeId);
       computedVolume = cache.getVolume(computedVolumeId);
     }
 

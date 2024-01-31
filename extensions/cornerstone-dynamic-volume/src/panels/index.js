@@ -3,6 +3,7 @@ import WorkflowPanel from './WorkflowPanel';
 import WindowLevelPanel from './WindowLevelPanel';
 import PanelGenerateImage from './PanelGenerateImage';
 import ROISegmentationPanel from './ROISegmentationPanel';
+import DynamicDataPanelWithWorkflow from './DynamicDataPanelWithWorkflow';
 
 export {
   DynamicDataPanel,
@@ -10,4 +11,5 @@ export {
   WindowLevelPanel,
   PanelGenerateImage,
   ROISegmentationPanel,
+  DynamicDataPanelWithWorkflow,
 };

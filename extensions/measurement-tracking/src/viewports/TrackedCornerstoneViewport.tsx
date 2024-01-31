@@ -17,7 +17,7 @@ function TrackedCornerstoneViewport(props) {
 
   const { t } = useTranslation('Common');
 
-  const { measurementService, cornerstoneViewportService, viewportGridService } =
+  const { measurementService, cornerstoneViewportService, viewportGridService, displaySetService } =
     servicesManager.services;
 
   // Todo: handling more than one displaySet on the same viewport
@@ -33,16 +33,40 @@ function TrackedCornerstoneViewport(props) {
 
   const { SeriesDate, SeriesDescription, SeriesInstanceUID, SeriesNumber } = displaySet;
 
-  const {
-    PatientID,
+  let PatientID,
     PatientName,
     PatientSex,
     PatientAge,
     SliceThickness,
     SpacingBetweenSlices,
     StudyDate,
-    ManufacturerModelName,
-  } = displaySet.images[0];
+    ManufacturerModelName;
+  if (displaySet.images) {
+    ({
+      PatientID,
+      PatientName,
+      PatientSex,
+      PatientAge,
+      SliceThickness,
+      SpacingBetweenSlices,
+      StudyDate,
+      ManufacturerModelName,
+    } = displaySet.images[0]);
+  } else if (displaySet.referenceDisplaySetUID) {
+    const referencedDisplaySet = displaySetService.getDisplaySetByUID(
+      displaySet.referenceDisplaySetUID
+    );
+    ({
+      PatientID,
+      PatientName,
+      PatientSex,
+      PatientAge,
+      SliceThickness,
+      SpacingBetweenSlices,
+      StudyDate,
+      ManufacturerModelName,
+    } = referencedDisplaySet.images[0]);
+  }
 
   const updateIsTracked = useCallback(() => {
     const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
@@ -330,12 +354,12 @@ function _getStatusComponent(isTracked) {
             <div className="ml-4 flex">
               <span className="text-common-light text-base">
                 {isTracked ? (
-                  <>
-                    {t('Series is tracked and can be viewed in the measurement panel')}
-                  </>
+                  <>{t('Series is tracked and can be viewed in the measurement panel')}</>
                 ) : (
                   <>
-                    {t('Measurements for untracked series will not be shown in the measurements panel')}
+                    {t(
+                      'Measurements for untracked series will not be shown in the measurements panel'
+                    )}
                   </>
                 )}
               </span>

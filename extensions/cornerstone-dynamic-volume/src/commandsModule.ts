@@ -19,7 +19,8 @@ const commandsModule = ({ commandsManager, servicesManager }) => {
         if (anInstance) {
           return (
             anInstance.FrameReferenceTime !== undefined ||
-            anInstance.NumberOfTimeSlices !== undefined
+            anInstance.NumberOfTimeSlices !== undefined ||
+            anInstance.TemporalPositionIdentifier !== undefined
           );
         }
 

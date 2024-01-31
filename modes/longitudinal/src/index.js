@@ -204,36 +204,13 @@ function modeFactory({ modeConfiguration }) {
         /*init: ({ servicesManager, extensionManager }) => {
           //defaultViewerRouteInit
         },*/
-        layoutTemplate: ({ servicesManager }) => {
-          const { cornerstoneViewportService } = servicesManager.services;
+        layoutTemplate: () => {
           return {
             id: ohif.layout,
             props: {
               leftPanels: [tracked.thumbnailList],
-              rightPanels: [
-                dicomSeg.panel,
-                tracked.measurements,
-                // don't enable the dynamic volume panel by default
-                // but listen to the event to enable it when needed
-                {
-                  id: dynamicVolume.panel,
-                  enabled: false,
-                  handlers: [
-                    {
-                      service: cornerstoneViewportService,
-                      triggers: [
-                        {
-                          event: cornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED,
-                          callback: () => {
-                            return true;
-                          },
-                        },
-                      ],
-                    },
-                  ],
-                },
-              ],
-              rightPanelDefaultClosed: true,
+              rightPanels: [dynamicVolume.panel, dicomSeg.panel, tracked.measurements],
+              rightPanelDefaultClosed: false,
               viewports: [
                 {
                   namespace: tracked.viewport,
