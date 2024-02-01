@@ -169,6 +169,8 @@ const SidePanel = ({
   const openStatus = panelOpen ? 'open' : 'closed';
   const style = Object.assign({}, styleMap[openStatus][side], baseStyle);
 
+  const ActiveComponent = tabs[activeTabIndex]?.content;
+
   const updatePanelOpen = useCallback(
     (panelOpen: boolean) => {
       setPanelOpen(panelOpen);
@@ -368,14 +370,7 @@ const SidePanel = ({
       {panelOpen ? (
         <>
           {getOpenStateComponent()}
-          {tabs.map((tab, tabIndex) => (
-            <div
-              key={tab.id}
-              className={tabIndex === activeTabIndex ? '' : 'hidden'}
-            >
-              <tab.content />
-            </div>
-          ))}
+          <ActiveComponent />
         </>
       ) : (
         <React.Fragment>{getCloseStateComponent()}</React.Fragment>
