@@ -121,7 +121,10 @@ const commandsModule = ({
         if (!button.id) {
           return;
         }
-        const { commands, items } = button.props || button;
+        const { commands, items, primary } = button.props || button;
+        if (primary) {
+          enableListener(primary);
+        }
         if (items) {
           items.forEach(enableListener);
         }
