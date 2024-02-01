@@ -65,9 +65,9 @@ describe('OHIF MPR', () => {
         const viewports = cornerstone.getRenderingEngines()[0].getViewports();
 
         // The stack viewport still exists after the changes to viewportId and inde
-        const imageData1 = viewports[1].getImageData();
-        const imageData2 = viewports[2].getImageData();
-        const imageData3 = viewports[3].getImageData();
+        const imageData1 = viewports[0].getImageData();
+        const imageData2 = viewports[1].getImageData();
+        const imageData3 = viewports[2].getImageData();
 
         // for some reason map doesn't work here
         cy.wrap(imageData1).should('not.be', undefined);

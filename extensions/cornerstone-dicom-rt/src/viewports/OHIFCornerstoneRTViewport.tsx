@@ -168,7 +168,7 @@ function OHIFCornerstoneRTViewport(props) {
   }, [servicesManager, viewportId, rtDisplaySet, rtIsLoading]);
 
   useEffect(() => {
-    // I'm not sure what is this, since in RT we support Overlapping segmnets
+    // I'm not sure what is this, since in RT we support Overlapping segments
     // via contours
     const { unsubscribe } = segmentationService.subscribe(
       segmentationService.EVENTS.SEGMENTATION_LOADING_COMPLETE,
