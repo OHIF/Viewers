@@ -24,7 +24,8 @@ export default function MultiMonitorLayout(props) {
     return unsubscribe;
   });
 
-  return (<div>
+  return (<div className="flex h-screen flex-col bg-black ">
+
     <MultiMonitorHeader {...props} studyData={studyData} />
     <PrimaryStudyLayout {...props} studyData={studyData} />
     <PriorsList {...props} studyData={studyData} />
