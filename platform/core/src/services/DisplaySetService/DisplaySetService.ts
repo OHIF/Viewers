@@ -2,6 +2,7 @@ import { ExtensionManager } from '../../extensions';
 import { DisplaySet, InstanceMetadata } from '../../types';
 import { PubSubService } from '../_shared/pubSubServiceInterface';
 import EVENTS from './EVENTS';
+import {getSplitParam} from "../../utils";
 
 const displaySetCache = new Map<string, DisplaySet>();
 
@@ -266,7 +267,10 @@ export default class DisplaySetService extends PubSubService {
   public makeDisplaySetForInstances(instancesSrc: InstanceMetadata[], settings): DisplaySet[] {
     // creating a sopClassUID list and for each sopClass associate its respective
     // instance list
-    const instancesForSetSOPClasses = instancesSrc.reduce((sopClassList, instance) => {
+    const params = new URLSearchParams(window.location.search);
+    const sopInstanceUID = getSplitParam('sopinstanceuid', params);
+    const usedDisplaySets = sopInstanceUID ? instancesSrc.filter(ds => sopInstanceUID.includes(ds.SOPInstanceUID)) : instancesSrc;
+    const instancesForSetSOPClasses = usedDisplaySets.reduce((sopClassList, instance) => {
       if (!(instance.SOPClassUID in sopClassList)) {
         sopClassList[instance.SOPClassUID] = [];
       }
