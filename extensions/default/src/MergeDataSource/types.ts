@@ -13,6 +13,7 @@ export type CallForAllDataSourcesAsyncOptions = {
   args: unknown[];
   dataSourceNames: string[];
   extensionManager: ExtensionManager;
+  defaultDataSourceName: string;
 };
 
 export type CallForAllDataSourcesOptions = {
@@ -20,6 +21,7 @@ export type CallForAllDataSourcesOptions = {
   args: unknown[];
   dataSourceNames: string[];
   extensionManager: ExtensionManager;
+  defaultDataSourceName: string;
 };
 
 export type CallForDefaultDataSourceOptions = {
