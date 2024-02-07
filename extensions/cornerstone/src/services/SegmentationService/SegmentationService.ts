@@ -1,5 +1,3 @@
-import cloneDeep from 'lodash.clonedeep';
-
 import { Types as OhifTypes, ServicesManager, PubSubService } from '@ohif/core';
 import {
   cache,
@@ -11,7 +9,6 @@ import {
   volumeLoader,
 } from '@cornerstonejs/core';
 import {
-  CONSTANTS as cstConstants,
   Enums as csToolsEnums,
   segmentation as cstSegmentation,
   Types as cstTypes,
@@ -23,7 +20,6 @@ import { easeInOutBell, reverseEaseInOutBell } from '../../utils/transitions';
 import { Segment, Segmentation, SegmentationConfig } from './SegmentationServiceTypes';
 import { mapROIContoursToRTStructData } from './RTSTRUCT/mapROIContoursToRTStructData';
 
-const { COLOR_LUT } = cstConstants;
 const LABELMAP = csToolsEnums.SegmentationRepresentations.Labelmap;
 const CONTOUR = csToolsEnums.SegmentationRepresentations.Contour;
 
@@ -465,15 +461,6 @@ class SegmentationService extends PubSubService {
       },
     ]);
 
-    // if first segmentation, we can use the default colorLUT, otherwise
-    // we need to generate a new one and use a new colorLUT
-    const colorLUTIndex = 0;
-    if (Object.keys(this.segmentations).length !== 0) {
-      const newColorLUT = this.generateNewColorLUT();
-      const colorLUTIndex = this.getNextColorLUTIndex();
-      cstSegmentation.config.color.addColorLUT(newColorLUT, colorLUTIndex);
-    }
-
     this.segmentations[segmentationId] = {
       ...segmentation,
       label: segmentation.label || '',
@@ -482,7 +469,6 @@ class SegmentationService extends PubSubService {
       segmentCount: segmentation.segmentCount ?? 0,
       isActive: false,
       isVisible: true,
-      colorLUTIndex,
     };
 
     cachedSegmentation = this.segmentations[segmentationId];
@@ -1037,8 +1023,6 @@ class SegmentationService extends PubSubService {
       segmentation.hydrated = true;
     }
 
-    const { colorLUTIndex } = segmentation;
-
     // Based on the segmentationId, set the colorLUTIndex.
     const segmentationRepresentationUIDs = await cstSegmentation.addSegmentationRepresentations(
       toolGroupId,
@@ -1055,12 +1039,6 @@ class SegmentationService extends PubSubService {
       segmentationId,
       toolGroupId,
       segmentationRepresentationUIDs[0]
-    );
-
-    cstSegmentation.config.color.setColorLUT(
-      toolGroupId,
-      segmentationRepresentationUIDs[0],
-      colorLUTIndex
     );
 
     // add the segmentation segments properly
@@ -1530,7 +1508,6 @@ class SegmentationService extends PubSubService {
       segments: [],
       isVisible: true,
       isActive: false,
-      colorLUTIndex: 0,
     };
   }
 
@@ -2123,23 +2100,6 @@ class SegmentationService extends PubSubService {
 
     return viewportInfo.getToolGroupId();
   };
-
-  private getNextColorLUTIndex = (): number => {
-    let i = 0;
-    while (true) {
-      if (cstSegmentation.state.getColorLUT(i) === undefined) {
-        return i;
-      }
-
-      i++;
-    }
-  };
-
-  private generateNewColorLUT() {
-    const newColorLUT = cloneDeep(COLOR_LUT);
-
-    return newColorLUT;
-  }
 
   /**
    * Converts object of objects to array.

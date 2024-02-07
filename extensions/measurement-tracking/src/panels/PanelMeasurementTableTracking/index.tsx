@@ -10,6 +10,7 @@ import {
 } from '@ohif/ui';
 import { DicomMetadataStore, utils } from '@ohif/core';
 import { useDebounce } from '@hooks';
+import { useAppConfig } from '@state';
 import ActionButtons from './ActionButtons';
 import { useTrackedMeasurements } from '../../getContextModule';
 import debounce from 'lodash.debounce';
@@ -36,6 +37,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
   );
   const [displayMeasurements, setDisplayMeasurements] = useState([]);
   const measurementsPanelRef = useRef(null);
+  const [appConfig] = useAppConfig();
 
   useEffect(() => {
     const measurements = measurementService.getMeasurements();
@@ -244,20 +246,22 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
           />
         )}
       </div>
-      <div className="flex justify-center p-4">
-        <ActionButtons
-          onExportClick={exportReport}
-          onCreateReportClick={() => {
-            sendTrackedMeasurementsEvent('SAVE_REPORT', {
-              viewportId: viewportGrid.activeViewportId,
-              isBackupSave: true,
-            });
-          }}
-          disabled={
-            additionalFindings.length === 0 && displayMeasurementsWithoutFindings.length === 0
-          }
-        />
-      </div>
+      {!appConfig?.disableEditing && (
+        <div className="flex justify-center p-4">
+          <ActionButtons
+            onExportClick={exportReport}
+            onCreateReportClick={() => {
+              sendTrackedMeasurementsEvent('SAVE_REPORT', {
+                viewportId: viewportGrid.activeViewportId,
+                isBackupSave: true,
+              });
+            }}
+            disabled={
+              additionalFindings.length === 0 && displayMeasurementsWithoutFindings.length === 0
+            }
+          />
+        </div>
+      )}
     </>
   );
 }
