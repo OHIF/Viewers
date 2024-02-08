@@ -178,7 +178,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
   }
 
   public storePresentation({ viewportId }) {
-    const stateSyncService = this.servicesManager.services.stateSyncService;
+    const { stateSyncService, syncGroupService } = this.servicesManager.services;
     let presentation;
     try {
       presentation = this.getPresentation(viewportId);
@@ -189,7 +189,14 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     if (!presentation || !presentation.presentationIds) {
       return;
     }
-    const { lutPresentationStore, positionPresentationStore } = stateSyncService.getState();
+
+    const synchronizers = syncGroupService.getSynchronizersForViewport(
+      viewportId,
+      this.renderingEngine.id
+    );
+
+    const { lutPresentationStore, positionPresentationStore, synchronizersStore } =
+      stateSyncService.getState();
     const { presentationIds } = presentation;
     const { lutPresentationId, positionPresentationId } = presentationIds || {};
     const storeState = {};
@@ -205,6 +212,22 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
         [positionPresentationId]: presentation,
       };
     }
+
+    if (synchronizers?.length) {
+      storeState.synchronizersStore = {
+        ...synchronizersStore,
+        [viewportId]: synchronizers.map(synchronizer => {
+          const sourceViewports = synchronizer.getSourceViewports();
+          const targetViewports = synchronizer.getTargetViewports();
+          return {
+            id: synchronizer.id,
+            sourceViewports: [...sourceViewports],
+            targetViewports: [...targetViewports],
+          };
+        }),
+      };
+    }
+
     stateSyncService.store(storeState);
   }
 
@@ -340,7 +363,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
 
     const properties = { ...presentations.lutPresentation?.properties };
     if (!presentations.lutPresentation?.properties) {
-      const { voi, voiInverted } = displaySetOptions[0];
+      const { voi, voiInverted, colormap } = displaySetOptions[0];
       if (voi && (voi.windowWidth || voi.windowCenter)) {
         const { lower, upper } = csUtils.windowLevel.toLowHighRange(
           voi.windowWidth,
@@ -351,6 +374,10 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
 
       if (voiInverted !== undefined) {
         properties.invert = voiInverted;
+      }
+
+      if (colormap !== undefined) {
+        properties.colormap = colormap;
       }
     }
 
@@ -736,8 +763,8 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       const { dimensions } = imageVolume;
       const slabThickness = Math.sqrt(
         dimensions[0] * dimensions[0] +
-          dimensions[1] * dimensions[1] +
-          dimensions[2] * dimensions[2]
+        dimensions[1] * dimensions[1] +
+        dimensions[2] * dimensions[2]
       );
 
       return slabThickness;
