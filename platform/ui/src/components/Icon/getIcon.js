@@ -145,6 +145,19 @@ import oldTrash from './../../assets/icons/old-trash.svg';
 import oldPlay from './../../assets/icons/old-play.svg';
 import oldStop from './../../assets/icons/old-stop.svg';
 
+/** LAYOUT */
+
+import layoutAdvanced3DFourUp from './../../assets/icons/layout-advanced-3d-four-up.svg';
+import layoutAdvanced3DMain from './../../assets/icons/layout-advanced-3d-main.svg';
+import layoutAdvanced3DOnly from './../../assets/icons/layout-advanced-3d-only.svg';
+import layoutAdvanced3DPrimary from './../../assets/icons/layout-advanced-3d-primary.svg';
+import layoutAdvancedAxialPrimary from './../../assets/icons/layout-advanced-axial-primary.svg';
+import layoutAdvancedMPR from './../../assets/icons/layout-advanced-mpr.svg';
+import layoutCommon1x1 from './../../assets/icons/layout-common-1x1.svg';
+import layoutCommon1x2 from './../../assets/icons/layout-common-1x2.svg';
+import layoutCommon2x2 from './../../assets/icons/layout-common-2x2.svg';
+import layoutCommon2x3 from './../../assets/icons/layout-common-2x3.svg';
+
 const ICONS = {
   'arrow-down': arrowDown,
   'arrow-left': arrowLeft,
@@ -290,6 +303,18 @@ const ICONS = {
   'old-trash': oldTrash,
   'old-play': oldPlay,
   'old-stop': oldStop,
+
+  /** LAYOUT */
+  'layout-advanced-3d-four-up': layoutAdvanced3DFourUp,
+  'layout-advanced-3d-main': layoutAdvanced3DMain,
+  'layout-advanced-3d-only': layoutAdvanced3DOnly,
+  'layout-advanced-3d-primary': layoutAdvanced3DPrimary,
+  'layout-advanced-axial-primary': layoutAdvancedAxialPrimary,
+  'layout-advanced-mpr': layoutAdvancedMPR,
+  'layout-common-1x1': layoutCommon1x1,
+  'layout-common-1x2': layoutCommon1x2,
+  'layout-common-2x2': layoutCommon2x2,
+  'layout-common-2x3': layoutCommon2x3,
 };
 
 function addIcon(iconName, iconSVG) {

@@ -21,7 +21,6 @@ function LayoutSelector({ onSelection, rows, columns }) {
         gridTemplateRows: gridSize.repeat(rows),
         backgroundColor: '#090c29', // primary-dark
       }}
-      className="p-2"
     >
       {Array.apply(null, Array(rows * columns))
         .map(function (_, i) {
@@ -31,8 +30,8 @@ function LayoutSelector({ onSelection, rows, columns }) {
           <div
             key={index}
             style={{
-              border: '1px solid white',
-              backgroundColor: isHovered(index) ? '#5acce6' : '#0b1a42',
+              border: '1px solid #090c29',
+              backgroundColor: isHovered(index) ? '#348cfd' : '#04225b',
             }}
             data-cy={`Layout-${index % columns}-${Math.floor(index / columns)}`}
             className="cursor-pointer"
@@ -55,7 +54,7 @@ function LayoutSelector({ onSelection, rows, columns }) {
 
 LayoutSelector.defaultProps = {
   onSelection: () => {},
-  columns: 3,
+  columns: 4,
   rows: 3,
 };
 

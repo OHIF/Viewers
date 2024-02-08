@@ -155,7 +155,7 @@ const toolbarButtons = [
     type: 'ohif.layoutSelector',
     props: {
       rows: 3,
-      columns: 3,
+      columns: 4,
     },
   },
   {
