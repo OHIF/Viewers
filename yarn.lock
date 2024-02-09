@@ -10293,10 +10293,9 @@ lodash.once@^4.1.1:
   resolved "https://registry.yarnpkg.com/lodash.once/-/lodash.once-4.1.1.tgz#0dd3971213c7c56df880977d504c88fb471a97ac"
   integrity sha1-DdOXEhPHxW34gJd9UEyI+0cal6w=
 
-lodash.pick@^4.2.1:
-  version "4.4.0"
-  resolved "https://registry.yarnpkg.com/lodash.pick/-/lodash.pick-4.4.0.tgz#52f05610fff9ded422611441ed1fc123a03001b3"
-  integrity sha1-UvBWEP/53tQiYRRB7R/BI6AwAbM=
+lodash.pick@^4.2.1, "lodash.pick@https://github.com/lodash/lodash/archive/refs/tags/4.17.21.tar.gz":
+  version "4.17.21"
+  resolved "https://github.com/lodash/lodash/archive/refs/tags/4.17.21.tar.gz#af60acc8255a4eb9a7c698a4de55b6ec6993edc2"
 
 lodash.reduce@^4.4.0:
   version "4.6.0"
