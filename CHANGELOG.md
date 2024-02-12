@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-beta.53](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.52...v3.8.0-beta.53) (2024-02-05)
+
+
+### Bug Fixes
+
+* 🐛 Sort merge results based on default data source (input) ([#3903](https://github.com/OHIF/Viewers/issues/3903)) ([5bba98e](https://github.com/OHIF/Viewers/commit/5bba98ed848bdf46b5ba4fc4708527cced3308b5))
+
+
+
+
+
 # [3.8.0-beta.52](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.51...v3.8.0-beta.52) (2024-01-22)
 
 **Note:** Version bump only for package ohif-monorepo-root
