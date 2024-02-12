@@ -77,7 +77,7 @@ function HeaderPatientInfo({ servicesManager }) {
             <div>{patientInfo.PatientID}</div>
             <div>{patientInfo.PatientSex} </div>
             <div> {patientInfo.PatientDOB}</div>
-            <div> {`(${patientInfo.PatientAge})`}</div>
+            <div> {`${patientInfo.PatientAge}`}</div>
           </div>
         )}
       </div>
