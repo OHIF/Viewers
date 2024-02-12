@@ -8,6 +8,7 @@ import Svg from '../Svg';
 import Icon from '../Icon';
 import IconButton from '../IconButton';
 import Dropdown from '../Dropdown';
+import HeaderPatientInfo from '../HeaderPatientInfo';
 
 function Header({
   children,
@@ -16,6 +17,8 @@ function Header({
   onClickReturnButton,
   isSticky,
   WhiteLabeling,
+  showPatientInfo = false,
+  servicesManager,
   ...props
 }): ReactNode {
   const { t } = useTranslation('Header');
@@ -58,7 +61,8 @@ function Header({
         </div>
         <div className="flex items-center">{children}</div>
         <div className="flex items-center">
-          <span className="text-common-light mr-3 text-lg">{t('INVESTIGATIONAL USE ONLY')}</span>
+          {showPatientInfo && <HeaderPatientInfo servicesManager={servicesManager} />}
+          <div className="bg-primary-dark border-primary-dark mx-1.5 h-[25px] max-w-xs border"></div>
           <Dropdown
             id="options"
             showDropdownIcon={false}
@@ -70,18 +74,9 @@ function Header({
               variant="text"
               color="inherit"
               size="initial"
-              className="text-primary-active"
+              className="text-primary-active hover:bg-primary-dark"
             >
-              <Icon name="settings" />
-            </IconButton>
-            <IconButton
-              id={'options-chevron-down-icon'}
-              variant="text"
-              color="inherit"
-              size="initial"
-              className="text-primary-active"
-            >
-              <Icon name="chevron-down" />
+              <Icon name="icon-settings" />
             </IconButton>
           </Dropdown>
         </div>
@@ -103,6 +98,8 @@ Header.propTypes = {
   isSticky: PropTypes.bool,
   onClickReturnButton: PropTypes.func,
   WhiteLabeling: PropTypes.object,
+  showPatientInfo: PropTypes.bool,
+  servicesManager: PropTypes.object,
 };
 
 Header.defaultProps = {
