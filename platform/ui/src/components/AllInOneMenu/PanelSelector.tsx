@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react';
-import ButtonGroup from '../ButtonGroup';
+import { ButtonGroup } from '../../components';
 
 type PanelSelectorProps = {
   panelLabels: Array<ReactNode>;

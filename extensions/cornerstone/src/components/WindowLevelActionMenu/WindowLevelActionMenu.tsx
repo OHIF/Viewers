@@ -1,8 +1,14 @@
 import React, { ReactElement, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import classNames from 'classnames';
-import { AllInOneMenu, useViewportGrid } from '@ohif/ui';
+import { AllInOneMenu, SwitchButton, useViewportGrid } from '@ohif/ui';
 import { CommandsManager } from '@ohif/core';
+import { utilities } from '@cornerstonejs/tools';
+import { utilities as csUtils } from '@cornerstonejs/core';
+
+const { ViewportColorbar } = utilities.voi.colorbar;
+const { ColorbarRangeTextPosition } = utilities.voi.colorbar.Enums;
+const { colormap: colormapUtils } = csUtils;
 
 export type WindowLevelPreset = {
   description: string;
@@ -67,6 +73,53 @@ export function WindowLevelActionMenu({
       onVisibilityChange={() => setVpHeight(element.clientHeight)}
     >
       <AllInOneMenu.ItemPanel>
+        <div className="all-in-one-menu-item flex w-full justify-center">
+          <SwitchButton
+            label="Display Color bar"
+            onChange={() => {
+              const colorbarContainer = document.createElement('div');
+              colorbarContainer.id = 'ctColorbarContainer';
+
+              Object.assign(colorbarContainer.style, {
+                position: 'absolute',
+                boxSizing: 'border-box',
+                border: 'solid 1px #555',
+                cursor: 'initial',
+                width: '2.5%',
+                height: '50%',
+                // align to the right
+                right: '5%',
+                // center vertically
+                top: '50%',
+                transform: 'translateY(-50%)',
+              });
+
+              const cornersonteViewportElement = element.querySelector(
+                '[class^="viewport-element"]'
+              );
+
+              cornersonteViewportElement.appendChild(colorbarContainer);
+
+              // Create and add the color bar to the DOM
+              new ViewportColorbar({
+                id: 'ctColorbar',
+                element,
+                container: colorbarContainer,
+                ticks: {
+                  position: ColorbarRangeTextPosition.Left,
+                  style: {
+                    font: '12px Arial',
+                    color: '#fff',
+                    maxNumTicks: 8,
+                    tickSize: 5,
+                    tickWidth: 1,
+                    labelMargin: 3,
+                  },
+                },
+              });
+            }}
+          />
+        </div>
         {presets && (
           <AllInOneMenu.SubMenu
             key="windowLevelPresets"
