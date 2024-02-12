@@ -400,10 +400,17 @@ export default class HangingProtocolService extends PubSubService {
     this.displaySets = displaySets;
     this.setActiveStudyUID((activeStudy || studies[0])?.StudyInstanceUID);
 
-    this.protocolEngine = new ProtocolEngine(
-      this.getProtocols(),
-      this.customAttributeRetrievalCallbacks
-    );
+    const { customizationService } = this._servicesManager.services;
+    const customAttributeRetrievalCallbacks = customizationService.get(
+      'HPCustomAttributeRetrievalCallbacks'
+    ) || { content: {} };
+
+    const mergedCallbacks = {
+      ...this.customAttributeRetrievalCallbacks,
+      ...customAttributeRetrievalCallbacks.content,
+    };
+
+    this.protocolEngine = new ProtocolEngine(this.getProtocols(), mergedCallbacks);
 
     if (protocolId && typeof protocolId === 'string') {
       const protocol = this.getProtocolById(protocolId);
