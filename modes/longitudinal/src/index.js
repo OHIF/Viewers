@@ -12,6 +12,7 @@ const NON_IMAGE_MODALITIES = ['SM', 'ECG', 'SR', 'SEG', 'RTSTRUCT'];
 
 const DEFAULT_TOOL_GROUP_ID = 'default';
 const MPR_TOOL_GROUP_ID = 'mpr';
+const VOLUME3D_TOOL_GROUP_ID = 'volume3d';
 
 const ohif = {
   layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
@@ -142,6 +143,7 @@ function modeFactory({ modeConfiguration }) {
         'Crosshairs',
         'MoreToolsMpr',
       ]);
+      toolbarService.createButtonSection(VOLUME3D_TOOL_GROUP_ID, ['Layout']);
 
       customizationService.addModeCustomizations([
         {

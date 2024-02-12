@@ -3,8 +3,7 @@ import PropTypes from 'prop-types';
 import { LayoutSelector as OHIFLayoutSelector, ToolbarButton, LayoutPreset } from '@ohif/ui';
 import { ServicesManager } from '@ohif/core';
 
-// TODO: Check customizationService to override the presets
-const commonPresets = [
+const defaultCommonPresets = [
   {
     icon: 'layout-common-1x1',
     commandOptions: {
@@ -35,7 +34,7 @@ const commonPresets = [
   },
 ];
 
-const advancedPresets = [
+const defaultAdvancedPresets = [
   { icon: 'layout-advanced-mpr', title: 'MPR', commandOptions: { protocolId: 'mpr' } },
   {
     icon: 'layout-advanced-axial-primary',
@@ -95,12 +94,25 @@ function ToolbarLayoutSelectorWithServices({ servicesManager, ...props }) {
       {...props}
       onSelection={onSelection}
       onSelectionPreset={onSelectionPreset}
+      servicesManager={servicesManager}
     />
   );
 }
 
-function LayoutSelector({ rows, columns, className, onSelection, onSelectionPreset, ...rest }) {
+function LayoutSelector({
+  rows,
+  columns,
+  className,
+  onSelection,
+  onSelectionPreset,
+  servicesManager,
+  ...rest
+}) {
   const [isOpen, setIsOpen] = useState(false);
+
+  const { customizationService } = servicesManager.services;
+  const commonPresets = customizationService.get('commonPresets') || defaultCommonPresets;
+  const advancedPresets = customizationService.get('advancedPresets') || defaultAdvancedPresets;
 
   const closeOnOutsideClick = () => {
     if (isOpen) {

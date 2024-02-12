@@ -3,6 +3,9 @@ import { id } from './id';
 import toolbarButtons from './toolbarButtons';
 import initToolGroups from './initToolGroups';
 
+const DEFAULT_TOOL_GROUP_ID = 'default';
+const VOLUME3D_TOOL_GROUP_ID = 'volume3d';
+
 const ohif = {
   layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
   sopClassHandler: '@ohif/extension-default.sopClassHandlerModule.stack',
@@ -88,7 +91,7 @@ function modeFactory({ modeConfiguration }) {
 
       toolbarService.init(extensionManager);
       toolbarService.addButtons(toolbarButtons);
-      toolbarService.createButtonSection('primary', [
+      toolbarService.createButtonSection(DEFAULT_TOOL_GROUP_ID, [
         'Zoom',
         'WindowLevel',
         'Pan',
@@ -97,6 +100,9 @@ function modeFactory({ modeConfiguration }) {
         'MPR',
         'Crosshairs',
         'MoreTools',
+      ]);
+      toolbarService.createButtonSection(VOLUME3D_TOOL_GROUP_ID, [
+        'Layout',
       ]);
     },
     onModeExit: ({ servicesManager }) => {
