@@ -35,7 +35,7 @@ function usePatientInfo(servicesManager) {
         return;
       }
 
-      if (instance && instance.PatientID !== activeViewportPatientID) {
+      if (instance.PatientID !== activeViewportPatientID) {
         isMixedPatients = true;
       }
     });
