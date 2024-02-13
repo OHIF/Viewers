@@ -9,6 +9,7 @@ export function getWindowLevelActionMenu({
   commandsManager,
   verticalDirection,
   horizontalDirection,
+  colormaps,
 }): ReactNode {
   const { customizationService } = servicesManager.services;
 
@@ -26,6 +27,7 @@ export function getWindowLevelActionMenu({
     <WindowLevelActionMenu
       viewportId={viewportId}
       element={element}
+      colormaps={colormaps}
       presets={displaySetPresets[0]}
       verticalDirection={verticalDirection}
       horizontalDirection={horizontalDirection}

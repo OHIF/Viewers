@@ -24,7 +24,7 @@ import { Types } from '@ohif/core';
 import OHIFViewportActionCorners from '../components/OHIFViewportActionCorners';
 import { getWindowLevelActionMenu } from '../components/WindowLevelActionMenu/getWindowLevelActionMenu';
 import { useAppConfig } from '@state';
-
+import { colormaps } from '../utils/colormaps';
 const STACK = 'stack';
 
 /**
@@ -381,6 +381,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
       commandsManager,
       verticalDirection: AllInOneMenu.VerticalDirection.BottomToTop,
       horizontalDirection: AllInOneMenu.HorizontalDirection.LeftToRight,
+      colormaps,
     });
 
     viewportActionCornersService.setComponent({

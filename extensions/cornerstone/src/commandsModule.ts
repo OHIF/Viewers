@@ -549,15 +549,7 @@ function commandsModule({
     setViewportColormap: ({ viewportId, displaySetInstanceUID, colormap, immediate = false }) => {
       const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
-      const actorEntries = viewport.getActors();
-
-      const actorEntry = actorEntries.find(actorEntry => {
-        return actorEntry.uid.includes(displaySetInstanceUID);
-      });
-
-      const { actor: volumeActor, uid: volumeId } = actorEntry;
-
-      viewport.setProperties({ colormap, volumeActor }, volumeId);
+      viewport.setProperties({ colormap });
 
       if (immediate) {
         viewport.render();

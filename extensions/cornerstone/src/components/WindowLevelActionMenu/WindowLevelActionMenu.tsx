@@ -4,18 +4,21 @@ import classNames from 'classnames';
 import { AllInOneMenu, SwitchButton, useViewportGrid } from '@ohif/ui';
 import { CommandsManager } from '@ohif/core';
 import { utilities } from '@cornerstonejs/tools';
-import vtkColormaps from '@kitware/vtk.js/Rendering/Core/ColorTransferFunction/ColorMaps';
 
 const { ViewportColorbar } = utilities.voi.colorbar;
 const { ColorbarRangeTextPosition } = utilities.voi.colorbar.Enums;
-const colormaps = vtkColormaps.rgbPresetNames.map(presetName =>
-  vtkColormaps.getPresetByName(presetName)
-);
-console.log('colormaps', colormaps);
+
 export type WindowLevelPreset = {
   description: string;
   window: string;
   level: string;
+};
+
+export type ColorMapPreset = {
+  ColorSpace;
+  description: string;
+  RGBPoints;
+  Name;
 };
 
 export type WindowLevelActionMenuProps = {
@@ -25,6 +28,7 @@ export type WindowLevelActionMenuProps = {
   verticalDirection: AllInOneMenu.VerticalDirection;
   horizontalDirection: AllInOneMenu.HorizontalDirection;
   commandsManager: CommandsManager;
+  colormaps: Array<ColorMapPreset>;
 };
 
 export function WindowLevelActionMenu({
@@ -34,6 +38,7 @@ export function WindowLevelActionMenu({
   verticalDirection,
   horizontalDirection,
   commandsManager,
+  colormaps,
 }: WindowLevelActionMenuProps): ReactElement {
   const { t } = useTranslation('WindowLevelActionMenu');
 
@@ -54,6 +59,21 @@ export function WindowLevelActionMenu({
         commandName: 'setViewportWindowLevel',
         commandOptions: {
           ...props,
+        },
+        context: 'CORNERSTONE',
+      });
+    },
+    [commandsManager]
+  );
+
+  const onSetColorLUT = useCallback(
+    props => {
+      const immediate = true;
+      commandsManager.run({
+        commandName: 'setViewportColormap',
+        commandOptions: {
+          ...props,
+          immediate,
         },
         context: 'CORNERSTONE',
       });
@@ -141,6 +161,22 @@ export function WindowLevelActionMenu({
                   label={preset.description}
                   secondaryLabel={`${preset.window} / ${preset.level}`}
                   onClick={() => onSetWindowLevel({ ...preset, viewportId })}
+                ></AllInOneMenu.Item>
+              ))}
+            </AllInOneMenu.ItemPanel>
+          </AllInOneMenu.SubMenu>
+        )}
+        {colormaps && (
+          <AllInOneMenu.SubMenu
+            key="colorLUTPresets"
+            itemLabel="Color LUT"
+          >
+            <AllInOneMenu.ItemPanel>
+              {colormaps.map((colormap, index) => (
+                <AllInOneMenu.Item
+                  key={index}
+                  label={colormap.description}
+                  onClick={() => onSetColorLUT({ viewportId, colormap })}
                 ></AllInOneMenu.Item>
               ))}
             </AllInOneMenu.ItemPanel>
