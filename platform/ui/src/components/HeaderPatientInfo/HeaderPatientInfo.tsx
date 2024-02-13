@@ -14,11 +14,33 @@ function usePatientInfo(servicesManager) {
     PatientAge: '',
     PatientDOB: '',
   });
+  const [isMixedPatients, setIsMixedPatients] = useState(false);
 
   const { displaySetService, viewportGridService, cornerstoneViewportService } =
     servicesManager.services;
 
   const { activeViewportId, viewports } = viewportGridService.getState();
+
+  const checkMixedPatients = activeViewportPatientID => {
+    const { viewports } = viewportGridService.getState();
+    let isMixedPatients = false;
+    viewports.forEach(viewport => {
+      const displaySetInstanceUID = viewport.displaySetInstanceUIDs[0];
+      if (!displaySetInstanceUID) {
+        return;
+      }
+      const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
+      const instance = displaySet?.instances?.[0] || displaySet?.instance;
+      if (!instance) {
+        return;
+      }
+
+      if (instance && instance.PatientID !== activeViewportPatientID) {
+        isMixedPatients = true;
+      }
+    });
+    setIsMixedPatients(isMixedPatients);
+  };
 
   const updatePatientInfo = (viewportId = null) => {
     const state = viewportGridService.getState();
@@ -43,6 +65,8 @@ function usePatientInfo(servicesManager) {
       PatientAge: instance.PatientAge || '',
       PatientDOB: formatDate(instance.PatientBirthDate) || '',
     });
+
+    checkMixedPatients(instance.PatientID || '');
   };
 
   useEffect(() => {
@@ -65,14 +89,14 @@ function usePatientInfo(servicesManager) {
     updatePatientInfo();
   }, [activeViewportId, viewports]);
 
-  return patientInfo;
+  return { patientInfo, isMixedPatients };
 }
 
 function HeaderPatientInfo({ servicesManager }) {
   const [appConfig] = useAppConfig();
   const initialExpandedState = appConfig.showPatientInfo === 'visible';
   const [expanded, setExpanded] = useState(initialExpandedState);
-  const patientInfo = usePatientInfo(servicesManager);
+  const { patientInfo, isMixedPatients } = usePatientInfo(servicesManager);
 
   return (
     <div
@@ -86,15 +110,28 @@ function HeaderPatientInfo({ servicesManager }) {
       <div className="flex flex-col justify-center">
         {expanded ? (
           <>
-            <div className="self-start text-[13px] font-bold text-white">
-              {patientInfo.PatientName}
-            </div>
-            <div className="text-aqua-pale flex gap-2 text-[11px]">
-              <div>{patientInfo.PatientID}</div>
-              <div>{patientInfo.PatientSex}</div>
-              <div>{patientInfo.PatientDOB}</div>
-              <div>{patientInfo.PatientAge}</div>
-            </div>
+            {isMixedPatients ? (
+              <div className="align-center flex gap-2">
+                <Icon
+                  name="status-alert-warning"
+                  width="10px"
+                  height="20px"
+                ></Icon>
+                <div className="self-start text-[13px] font-bold text-white">Multiple Patients</div>
+              </div>
+            ) : (
+              <>
+                <div className="self-start text-[13px] font-bold text-white">
+                  {patientInfo.PatientName}
+                </div>
+                <div className="text-aqua-pale flex gap-2 text-[11px]">
+                  <div>{patientInfo.PatientID}</div>
+                  <div>{patientInfo.PatientSex}</div>
+                  <div>{patientInfo.PatientDOB}</div>
+                  <div>{patientInfo.PatientAge}</div>
+                </div>
+              </>
+            )}
           </>
         ) : (
           <div className="text-primary-active self-center text-[13px]">Patient</div>
