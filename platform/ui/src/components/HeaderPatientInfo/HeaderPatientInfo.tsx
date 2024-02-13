@@ -1,16 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Icon } from '@ohif/ui';
-
-import OHIF, { utils } from '@ohif/core';
+import { utils } from '@ohif/core';
 import { useAppConfig } from '@state';
 
-const { formatDate } = utils;
+const { formatDate, formatPN } = utils;
 
-function HeaderPatientInfo({ servicesManager }) {
-  const [appConfig] = useAppConfig();
-  const initialExpandedState = appConfig.showPatientInfo === 'visible';
-  const [expanded, setExpanded] = useState(initialExpandedState);
+function usePatientInfo(servicesManager) {
   const [patientInfo, setPatientInfo] = useState({
     PatientName: '',
     PatientID: '',
@@ -19,90 +15,101 @@ function HeaderPatientInfo({ servicesManager }) {
     PatientDOB: '',
   });
 
-  const { viewportGridService, displaySetService, cornerstoneViewportService } =
+  const { displaySetService, viewportGridService, cornerstoneViewportService } =
     servicesManager.services;
 
-  const updatePatientInfo = () => {
-    const { activeViewportId, viewports } = viewportGridService.getState();
-    const activeViewport = viewports.get(activeViewportId);
+  const { activeViewportId, viewports } = viewportGridService.getState();
+
+  const updatePatientInfo = (viewportId = null) => {
+    const state = viewportGridService.getState();
+    const activeViewportId = viewportId || state.activeViewportId;
+    const activeViewport = state.viewports.get(activeViewportId);
     const displaySetInstanceUID = activeViewport?.displaySetInstanceUIDs[0];
+
     if (!displaySetInstanceUID) {
       return;
     }
     const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
-    const instance0 = displaySet?.instances?.[0] || displaySet?.instance;
-    if (!instance0) {
+    const instance = displaySet?.instances?.[0] || displaySet?.instance;
+
+    if (!instance) {
       return;
     }
 
-    const newPatientInfo = {
-      PatientID: instance0?.PatientID || '',
-      PatientName: instance0?.PatientName
-        ? OHIF.utils.formatPN(instance0.PatientName.Alphabetic)
-        : '',
-      PatientSex: instance0?.PatientSex || '',
-      PatientAge: instance0?.PatientAge || '',
-      PatientDOB: formatDate(instance0?.PatientBirthDate) || '',
-    };
-    setPatientInfo(newPatientInfo);
+    setPatientInfo({
+      PatientID: instance.PatientID || '',
+      PatientName: instance.PatientName ? formatPN(instance.PatientName.Alphabetic) : '',
+      PatientSex: instance.PatientSex || '',
+      PatientAge: instance.PatientAge || '',
+      PatientDOB: formatDate(instance.PatientBirthDate) || '',
+    });
   };
 
   useEffect(() => {
-    const { unsubscribe } = cornerstoneViewportService.subscribe(
-      cornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED,
-      updatePatientInfo
-    );
+    const subscriptions = [
+      viewportGridService.subscribe(
+        viewportGridService.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED,
+        event => updatePatientInfo(event.viewportId) // Update the toolbar when the active viewport changes
+      ).unsubscribe,
+      cornerstoneViewportService.subscribe(
+        cornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED,
+        () => updatePatientInfo() // Update the toolbar when the viewport data changes
+      ).unsubscribe,
+    ];
 
-    updatePatientInfo();
-
-    return () => {
-      unsubscribe();
-    };
+    return () => subscriptions.forEach(unsubscribe => unsubscribe());
   }, []);
+
+  // Initial update
+  useEffect(() => {
+    updatePatientInfo();
+  }, [activeViewportId, viewports]);
+
+  return patientInfo;
+}
+
+function HeaderPatientInfo({ servicesManager }) {
+  const [appConfig] = useAppConfig();
+  const initialExpandedState = appConfig.showPatientInfo === 'visible';
+  const [expanded, setExpanded] = useState(initialExpandedState);
+  const patientInfo = usePatientInfo(servicesManager);
 
   return (
     <div
       className="align-items-center hover:bg-primary-dark flex cursor-pointer justify-center gap-1 rounded-lg"
-      onClick={() => {
-        updatePatientInfo();
-        setExpanded(!expanded);
-      }}
+      onClick={() => setExpanded(!expanded)}
     >
-      <div className="flex items-center justify-center">
-        <Icon
-          name="icon-patient"
-          className="text-primary-active"
-        />
-      </div>
+      <Icon
+        name="icon-patient"
+        className="text-primary-active"
+      />
       <div className="flex flex-col justify-center">
         {expanded ? (
-          <div className=" self-start text-[13px] font-bold text-white	">
-            {patientInfo.PatientName}
-          </div>
+          <>
+            <div className="self-start text-[13px] font-bold text-white">
+              {patientInfo.PatientName}
+            </div>
+            <div className="text-aqua-pale flex gap-2 text-[11px]">
+              <div>{patientInfo.PatientID}</div>
+              <div>{patientInfo.PatientSex}</div>
+              <div>{patientInfo.PatientDOB}</div>
+              <div>{patientInfo.PatientAge}</div>
+            </div>
+          </>
         ) : (
           <div className="text-primary-active self-center text-[13px]">Patient</div>
         )}
-        {expanded && (
-          <div className="text-aqua-pale flex gap-2 text-[11px]">
-            <div>{patientInfo.PatientID}</div>
-            <div>{patientInfo.PatientSex} </div>
-            <div> {patientInfo.PatientDOB}</div>
-            <div> {`${patientInfo.PatientAge}`}</div>
-          </div>
-        )}
       </div>
-      <div className="flex items-center justify-center">
-        <Icon
-          name="icon-chevron-patient"
-          className={`text-primary-active ${expanded ? 'rotate-180' : ''}`}
-        />
-      </div>
+      <Icon
+        name="icon-chevron-patient"
+        className={`text-primary-active ${expanded ? 'rotate-180' : ''}`}
+      />
     </div>
   );
 }
 
-export default HeaderPatientInfo;
-
 HeaderPatientInfo.propTypes = {
-  servicesManager: PropTypes.object,
+  servicesManager: PropTypes.object.isRequired,
 };
+
+export default HeaderPatientInfo;
