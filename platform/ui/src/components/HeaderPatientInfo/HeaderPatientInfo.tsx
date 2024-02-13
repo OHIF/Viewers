@@ -30,7 +30,10 @@ function HeaderPatientInfo({ servicesManager }) {
       return;
     }
     const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
-    const instance0 = displaySet.instances[0];
+    const instance0 = displaySet?.instances?.[0] || displaySet?.instance;
+    if (!instance0) {
+      return;
+    }
 
     const newPatientInfo = {
       PatientID: instance0?.PatientID || '',
