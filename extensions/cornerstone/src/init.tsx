@@ -151,7 +151,6 @@ export default async function init({
   });
 
   const metadataProvider = OHIF.classes.MetadataProvider;
-  metadataProvider.setLoadDicomMetadata(appConfig.automaticallyLoadDicomMetadata)
 
   volumeLoader.registerVolumeLoader(
     'cornerstoneStreamingImageVolume',

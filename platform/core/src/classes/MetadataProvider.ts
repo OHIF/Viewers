@@ -7,9 +7,6 @@ import fetchPaletteColorLookupTableData from '../utils/metadataProvider/fetchPal
 import toNumber from '../utils/toNumber';
 import combineFrameInstance from '../utils/combineFrameInstance';
 
-import dicomImageLoader from '@cornerstonejs/dicom-image-loader';
-import dcmjs from 'dcmjs';
-
 
 class MetadataProvider {
   constructor() {
@@ -37,21 +34,8 @@ class MetadataProvider {
       value: new Map(),
     });
 
-    Object.defineProperty(this, 'automaticallyLoadDicomMetadata', {
-      configurable: false,
-      enumerable: false,
-      writable: true,
-      value: false,
-    });
-  }
+    this.updateMedataCallback = null;
 
-  setLoadDicomMetadata(option) {
-    if (option === undefined)
-      return
-
-    console.log("mdr" + option)
-
-    this.automaticallyLoadDicomMetadata = option
   }
 
   addImageIdToUIDs(imageId, uids) {
@@ -133,6 +117,10 @@ class MetadataProvider {
       return instance[naturalizedTagOrWADOImageLoaderTag];
     }
 
+    if (this.updateMedataCallback !== null) {
+      this.updateMedataCallback(instance);
+    }
+
     // Maybe its a legacy dicomImageLoader tag then:
     return this._getCornerstoneDICOMImageLoaderTag(naturalizedTagOrWADOImageLoaderTag, instance);
   }
@@ -145,55 +133,16 @@ class MetadataProvider {
     WADO_IMAGE_LOADER[wadoImageLoaderTag] = handler;
   }
 
+
+  public setUpdataMetadataCallback(callback) {
+    this.updateMedataCallback = callback;
+  }
+
+
   _getCornerstoneDICOMImageLoaderTag(wadoImageLoaderTag, instance) {
     let metadata = WADO_IMAGE_LOADER[wadoImageLoaderTag]?.(instance);
     if (metadata) {
       return metadata;
-    }
-
-    // NOTE : we only check if the flag is set and set to false to prevent other
-    // non compatible data source to work even if automaticallyLoadDicomMetadata
-    // is set.
-    // To make your data source compatible with this you'll have to explicitly
-    // set the instance.imageMetadataLoaded to false
-    if (this.automaticallyLoadDicomMetadata && (instance.imageMetadataLoaded === false)) {
-
-      const dataSetCacheManager = dicomImageLoader.wadouri.dataSetCacheManager
-      const parsedImageId = dicomImageLoader.wadouri.parseImageId(instance.imageId);
-      let url = parsedImageId.url;
-
-      if (parsedImageId.frame) {
-        url = `${url}&frame=${parsedImageId.frame}`;
-      }
-
-      const rawDataSet = dataSetCacheManager.get(url);
-
-      if (!rawDataSet) {
-        return;
-      }
-
-      const dicomData = dcmjs.data.DicomMessage.readFile(rawDataSet.byteArray.buffer);
-      const dataset = dcmjs.data.DicomMetaDictionary.naturalizeDataset(dicomData.dict);
-
-      instance = {
-        ...instance,
-        ...dataset,
-        imageMetadataLoaded: true
-      }
-
-      const uids = this.getUIDsFromImageID(instance.imageId);
-
-      if (!uids) {
-        return;
-      }
-
-      const {
-        StudyInstanceUID,
-        SeriesInstanceUID,
-        SOPInstanceUID
-      } = uids;
-
-      DicomMetadataStore.updateInstance(StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID, instance)
     }
 
     switch (wadoImageLoaderTag) {

@@ -4,6 +4,9 @@ import OHIF from '@ohif/core';
 import getImageId from '../DicomWebDataSource/utils/getImageId';
 import getDirectURL from '../utils/getDirectURL';
 
+import dicomImageLoader from '@cornerstonejs/dicom-image-loader';
+import dcmjs from 'dcmjs';
+
 const metadataProvider = OHIF.classes.MetadataProvider;
 
 const mappings = {
@@ -58,6 +61,49 @@ const findStudies = (key, value) => {
   return studies;
 };
 
+function updateMetadata(instance) {
+
+  if (instance.imageMetadataLoaded === false) {
+
+    const dataSetCacheManager = dicomImageLoader.wadouri.dataSetCacheManager
+    const parsedImageId = dicomImageLoader.wadouri.parseImageId(instance.imageId);
+    let url = parsedImageId.url;
+
+    if (parsedImageId.frame) {
+      url = `${url}&frame=${parsedImageId.frame}`;
+    }
+
+    const rawDataSet = dataSetCacheManager.get(url);
+
+    if (!rawDataSet) {
+      return;
+    }
+
+    const dicomData = dcmjs.data.DicomMessage.readFile(rawDataSet.byteArray.buffer);
+    const dataset = dcmjs.data.DicomMetaDictionary.naturalizeDataset(dicomData.dict);
+
+    instance = {
+      ...instance,
+      ...dataset,
+      imageMetadataLoaded: true
+    }
+
+    const uids = this.getUIDsFromImageID(instance.imageId);
+
+    if (!uids) {
+      return;
+    }
+
+    const {
+      StudyInstanceUID,
+      SeriesInstanceUID,
+      SOPInstanceUID
+    } = uids;
+
+    DicomMetadataStore.updateMetadataForInstance(StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID, instance)
+  }
+}
+
 function createDicomJSONApi(dicomJsonConfig) {
   const { wadoRoot } = dicomJsonConfig;
 
@@ -84,6 +130,10 @@ function createDicomJSONApi(dicomJsonConfig) {
       let SeriesInstanceUID;
       data.studies.forEach(study => {
         StudyInstanceUID = study.StudyInstanceUID;
+
+        if (study.fullmetadataset == "no") {
+          metadataProvider.setUpdataMetadataCallback(updateMetadata);
+        }
 
         study.series.forEach(series => {
           SeriesInstanceUID = series.SeriesInstanceUID;
@@ -112,7 +162,7 @@ function createDicomJSONApi(dicomJsonConfig) {
     },
     query: {
       studies: {
-        mapParams: () => {},
+        mapParams: () => { },
         search: async param => {
           const [key, value] = Object.entries(param)[0];
           const mappedParam = mappings[key];
@@ -219,8 +269,7 @@ function createDicomJSONApi(dicomJsonConfig) {
                 imageId: instance.url,
                 ...series,
                 ...study,
-                // We need to force this flag to false in case the client wants to load the metadata from the image
-                // directly with automaticallyLoadDicomMetadata
+                // We need to force this flag to false in case the client wants to load the metadata from the image directly
                 imageMetadataLoaded: false
               };
               delete obj.instances;

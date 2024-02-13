@@ -19,9 +19,6 @@ window.config = {
     // above, the number of requests can be go a lot higher.
     prefetch: 25,
   },
-  // Allow Metadataprovider to parse dicom images as it retrieves it
-  // Only works with dicom json datasource for now
-  automaticallyLoadDicomMetadata: true,
   // filterQueryParam: false,
   defaultDataSourceName: 'dicomweb',
   /* Dynamic config allows user to pass "configUrl" query string this allows to load config without recompiling application. The regex will ensure valid configuration source */

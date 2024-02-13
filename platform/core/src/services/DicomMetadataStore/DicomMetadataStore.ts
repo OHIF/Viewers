@@ -89,7 +89,7 @@ function _getInstanceByImageId(imageId) {
   }
 }
 
-function _updateInstance(StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID, metadata) {
+function _updateMetadataForInstance(StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID, metadata) {
   const study = _getStudy(StudyInstanceUID);
 
   if (!study) {
@@ -278,7 +278,7 @@ const BaseImplementation = {
   getInstance: _getInstance,
   getInstanceByImageId: _getInstanceByImageId,
   updateMetadataForSeries: _updateMetadataForSeries,
-  updateInstance: _updateInstance,
+  updateMetadataForInstance: _updateMetadataForInstance,
 };
 const DicomMetadataStore = Object.assign(
   // get study
