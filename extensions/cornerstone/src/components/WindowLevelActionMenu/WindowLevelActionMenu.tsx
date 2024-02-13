@@ -4,12 +4,14 @@ import classNames from 'classnames';
 import { AllInOneMenu, SwitchButton, useViewportGrid } from '@ohif/ui';
 import { CommandsManager } from '@ohif/core';
 import { utilities } from '@cornerstonejs/tools';
-import { utilities as csUtils } from '@cornerstonejs/core';
+import vtkColormaps from '@kitware/vtk.js/Rendering/Core/ColorTransferFunction/ColorMaps';
 
 const { ViewportColorbar } = utilities.voi.colorbar;
 const { ColorbarRangeTextPosition } = utilities.voi.colorbar.Enums;
-const { colormap: colormapUtils } = csUtils;
-
+const colormaps = vtkColormaps.rgbPresetNames.map(presetName =>
+  vtkColormaps.getPresetByName(presetName)
+);
+console.log('colormaps', colormaps);
 export type WindowLevelPreset = {
   description: string;
   window: string;
@@ -104,6 +106,8 @@ export function WindowLevelActionMenu({
               new ViewportColorbar({
                 id: 'ctColorbar',
                 element,
+                colormaps,
+                activeColormapName: 'Grayscale',
                 container: colorbarContainer,
                 ticks: {
                   position: ColorbarRangeTextPosition.Left,
