@@ -17,7 +17,7 @@ function Header({
   onClickReturnButton,
   isSticky,
   WhiteLabeling,
-  showPatientInfo = false,
+  showPatientInfo = 'visibleCollapsed',
   servicesManager,
   ...props
 }): ReactNode {
@@ -61,7 +61,10 @@ function Header({
         </div>
         <div className="flex items-center">{children}</div>
         <div className="flex items-center">
-          {showPatientInfo && <HeaderPatientInfo servicesManager={servicesManager} />}
+          {(showPatientInfo === 'visible' || showPatientInfo === 'visibleCollapsed') && (
+            <HeaderPatientInfo servicesManager={servicesManager} />
+          )}
+
           <div className="bg-primary-dark border-primary-dark mx-1.5 h-[25px] max-w-xs border"></div>
           <Dropdown
             id="options"
@@ -98,7 +101,7 @@ Header.propTypes = {
   isSticky: PropTypes.bool,
   onClickReturnButton: PropTypes.func,
   WhiteLabeling: PropTypes.object,
-  showPatientInfo: PropTypes.bool,
+  showPatientInfo: PropTypes.string,
   servicesManager: PropTypes.object,
 };
 

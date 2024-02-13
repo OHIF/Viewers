@@ -3,11 +3,14 @@ import PropTypes from 'prop-types';
 import { Icon } from '@ohif/ui';
 
 import OHIF, { utils } from '@ohif/core';
+import { useAppConfig } from '@state';
 
 const { formatDate } = utils;
 
 function HeaderPatientInfo({ servicesManager }) {
-  const [expanded, setExpanded] = useState(false);
+  const [appConfig] = useAppConfig();
+  const initialExpandedState = appConfig.showPatientInfo === 'visible';
+  const [expanded, setExpanded] = useState(initialExpandedState);
   const [patientInfo, setPatientInfo] = useState({
     PatientName: '',
     PatientID: '',
@@ -27,13 +30,16 @@ function HeaderPatientInfo({ servicesManager }) {
       return;
     }
     const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
-    const image0 = displaySet.images[0];
+    const instance0 = displaySet.instances[0];
+
     const newPatientInfo = {
-      PatientID: image0?.PatientID || '',
-      PatientName: image0?.PatientName ? OHIF.utils.formatPN(image0.PatientName.Alphabetic) : '',
-      PatientSex: image0?.PatientSex || '',
-      PatientAge: image0?.PatientAge || '',
-      PatientDOB: formatDate(image0?.PatientBirthDate) || '',
+      PatientID: instance0?.PatientID || '',
+      PatientName: instance0?.PatientName
+        ? OHIF.utils.formatPN(instance0.PatientName.Alphabetic)
+        : '',
+      PatientSex: instance0?.PatientSex || '',
+      PatientAge: instance0?.PatientAge || '',
+      PatientDOB: formatDate(instance0?.PatientBirthDate) || '',
     };
     setPatientInfo(newPatientInfo);
   };
@@ -55,6 +61,7 @@ function HeaderPatientInfo({ servicesManager }) {
     <div
       className="align-items-center hover:bg-primary-dark flex cursor-pointer justify-center gap-1 rounded-lg"
       onClick={() => {
+        updatePatientInfo();
         setExpanded(!expanded);
       }}
     >
