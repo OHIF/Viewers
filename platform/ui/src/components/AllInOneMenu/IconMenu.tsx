@@ -37,8 +37,12 @@ export default function IconMenu({
   onVisibilityChange,
 }: IconMenuProps) {
   const [isMenuVisible, setIsMenuVisible] = useState(false);
+  const [renderKey, setRenderKey] = useState(0);
 
-  const toggleMenuVisibility = useCallback(() => setIsMenuVisible(isVisible => !isVisible), []);
+  const toggleMenuVisibility = useCallback(() => {
+    setIsMenuVisible(isVisible => !isVisible);
+    setRenderKey(renderKey => renderKey + 1);
+  }, []);
 
   return (
     <OutsideClickHandler
@@ -53,6 +57,7 @@ export default function IconMenu({
           {getIcon(icon)}
         </div>
         <AllInOneMenu.Menu
+          key={renderKey}
           isVisible={isMenuVisible}
           backLabel={backLabel}
           menuClassName={classNames(

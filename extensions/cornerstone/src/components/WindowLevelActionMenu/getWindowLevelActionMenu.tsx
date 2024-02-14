@@ -11,7 +11,7 @@ export function getWindowLevelActionMenu({
   horizontalDirection,
   colormaps,
 }): ReactNode {
-  const { customizationService } = servicesManager.services;
+  const { customizationService, colorbarService } = servicesManager.services;
 
   const { presets } = customizationService.get('cornerstone.windowLevelPresets');
 
@@ -32,6 +32,7 @@ export function getWindowLevelActionMenu({
       verticalDirection={verticalDirection}
       horizontalDirection={horizontalDirection}
       commandsManager={commandsManager}
+      colorbarService={colorbarService}
     />
   ) : null;
 }

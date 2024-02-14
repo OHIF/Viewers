@@ -3,10 +3,6 @@ import { useTranslation } from 'react-i18next';
 import classNames from 'classnames';
 import { AllInOneMenu, SwitchButton, useViewportGrid } from '@ohif/ui';
 import { CommandsManager } from '@ohif/core';
-import { utilities } from '@cornerstonejs/tools';
-
-const { ViewportColorbar } = utilities.voi.colorbar;
-const { ColorbarRangeTextPosition } = utilities.voi.colorbar.Enums;
 
 export type WindowLevelPreset = {
   description: string;
@@ -29,6 +25,7 @@ export type WindowLevelActionMenuProps = {
   horizontalDirection: AllInOneMenu.HorizontalDirection;
   commandsManager: CommandsManager;
   colormaps: Array<ColorMapPreset>;
+  colorbarService: any;
 };
 
 export function WindowLevelActionMenu({
@@ -39,6 +36,7 @@ export function WindowLevelActionMenu({
   horizontalDirection,
   commandsManager,
   colormaps,
+  colorbarService,
 }: WindowLevelActionMenuProps): ReactElement {
   const { t } = useTranslation('WindowLevelActionMenu');
 
@@ -46,6 +44,8 @@ export function WindowLevelActionMenu({
   const { activeViewportId } = viewportGrid;
 
   const [vpHeight, setVpHeight] = useState(element?.clientHeight);
+
+  const [colorbarState, setColorbarState] = useState(colorbarService.isColorbarToggled(viewportId));
 
   useEffect(() => {
     if (element) {
@@ -81,6 +81,55 @@ export function WindowLevelActionMenu({
     [commandsManager]
   );
 
+  const onSetColorbar = useCallback(
+    props => {
+      commandsManager.run({
+        commandName: 'toggleViewportColorbar',
+        commandOptions: {
+          ...props,
+        },
+        context: 'CORNERSTONE',
+      });
+    },
+    [commandsManager]
+  );
+
+  useEffect(() => {
+    const updateColorbarState = () => {
+      setColorbarState(colorbarService.isColorbarToggled(viewportId));
+    };
+
+    const { unsubscribe } = colorbarService.subscribe(
+      colorbarService.EVENTS.COLORBAR_STATE_CHANGED,
+      updateColorbarState
+    );
+
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+
+  useEffect(() => {
+    const colorbarState = colorbarService.getColorbarState(viewportId);
+    if (colorbarState && colorbarState.needsRefresh) {
+      window.setTimeout(() => {
+        colorbarService.removeColorbar(viewportId);
+        onSetColorbar({
+          viewportId,
+          options: {
+            colormaps,
+          },
+        });
+      }, 0);
+    }
+    return () => {
+      const colorbarState = colorbarService.getColorbarState(viewportId);
+      if (colorbarState) {
+        colorbarService.markForRefresh(viewportId, true);
+      }
+    };
+  }, []);
+
   return (
     <AllInOneMenu.IconMenu
       icon="viewport-window-level"
@@ -92,53 +141,20 @@ export function WindowLevelActionMenu({
         'text-primary-light hover:bg-secondary-light/60 flex shrink-0 cursor-pointer rounded active:text-white'
       )}
       menuStyle={{ maxHeight: vpHeight - 32, minWidth: 218 }}
-      onVisibilityChange={() => setVpHeight(element.clientHeight)}
+      onVisibilityChange={() => {
+        setVpHeight(element.clientHeight);
+      }}
     >
       <AllInOneMenu.ItemPanel>
         <div className="all-in-one-menu-item flex w-full justify-center">
           <SwitchButton
             label="Display Color bar"
+            checked={colorbarState}
             onChange={() => {
-              const colorbarContainer = document.createElement('div');
-              colorbarContainer.id = 'ctColorbarContainer';
-
-              Object.assign(colorbarContainer.style, {
-                position: 'absolute',
-                boxSizing: 'border-box',
-                border: 'solid 1px #555',
-                cursor: 'initial',
-                width: '2.5%',
-                height: '50%',
-                // align to the right
-                right: '5%',
-                // center vertically
-                top: '50%',
-                transform: 'translateY(-50%)',
-              });
-
-              const cornersonteViewportElement = element.querySelector(
-                '[class^="viewport-element"]'
-              );
-
-              cornersonteViewportElement.appendChild(colorbarContainer);
-
-              // Create and add the color bar to the DOM
-              new ViewportColorbar({
-                id: 'ctColorbar',
-                element,
-                colormaps,
-                activeColormapName: 'Grayscale',
-                container: colorbarContainer,
-                ticks: {
-                  position: ColorbarRangeTextPosition.Left,
-                  style: {
-                    font: '12px Arial',
-                    color: '#fff',
-                    maxNumTicks: 8,
-                    tickSize: 5,
-                    tickWidth: 1,
-                    labelMargin: 3,
-                  },
+              onSetColorbar({
+                viewportId,
+                options: {
+                  colormaps,
                 },
               });
             }}
@@ -171,7 +187,7 @@ export function WindowLevelActionMenu({
           <AllInOneMenu.SubMenu
             key="colorLUTPresets"
             itemLabel="Color LUT"
-            itemIcon="tool-fusion-color"
+            itemIcon="icon-color-lut"
           >
             <AllInOneMenu.ItemPanel>
               {colormaps.map((colormap, index) => (

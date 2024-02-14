@@ -22,6 +22,8 @@ import { getFirstAnnotationSelected } from './utils/measurementServiceMappings/u
 import getActiveViewportEnabledElement from './utils/getActiveViewportEnabledElement';
 import { CornerstoneServices } from './types';
 
+const { ViewportColorbar } = cstUtils.voi.colorbar;
+
 function commandsModule({
   servicesManager,
   commandsManager,
@@ -35,6 +37,7 @@ function commandsModule({
     cornerstoneViewportService,
     uiNotificationService,
     measurementService,
+    colorbarService,
   } = servicesManager.services as CornerstoneServices;
 
   const { measurementServiceSource } = this;
@@ -272,6 +275,20 @@ function commandsModule({
         },
       });
       viewport.render();
+    },
+
+    toggleViewportColorbar: ({ viewportId, options = {} }) => {
+      const { element } = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+      const isColorbarToggled = colorbarService.isColorbarToggled(viewportId);
+      if (!isColorbarToggled) {
+        colorbarService.addColorbar(viewportId, element, options, ViewportColorbar);
+      } else {
+        colorbarService.removeColorbar(viewportId);
+      }
+    },
+
+    updateViewportColorbar: ({ viewportId, options = {} }) => {
+      colorbarService.updateColorbar(viewportId, options);
     },
 
     setWindowLevel(props) {
@@ -631,6 +648,9 @@ function commandsModule({
       commandFn: actions.getNearbyAnnotation,
       storeContexts: [],
       options: {},
+    },
+    toggleViewportColorbar: {
+      commandFn: actions.toggleViewportColorbar,
     },
     deleteMeasurement: {
       commandFn: actions.deleteMeasurement,

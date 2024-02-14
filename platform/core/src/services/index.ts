@@ -18,6 +18,7 @@ import CustomizationService from './CustomizationService';
 import Services from '../types/Services';
 import StateSyncService from './StateSyncService';
 import PanelService from './PanelService';
+import ColorbarService from './ColorbarService';
 
 export {
   Services,
@@ -40,4 +41,5 @@ export {
   PubSubService,
   UserAuthenticationService,
   PanelService,
+  ColorbarService,
 };
