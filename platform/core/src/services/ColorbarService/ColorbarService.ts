@@ -137,4 +137,10 @@ export default class ColorbarService extends PubSubService {
       colorbarInfo.needsRefresh = refresh;
     }
   }
+
+  onModeExit() {
+    for (const viewportId in this.colorbars) {
+      this.removeColorbar(viewportId);
+    }
+  }
 }
