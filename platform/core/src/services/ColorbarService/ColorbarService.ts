@@ -21,17 +21,48 @@ export default class ColorbarService extends PubSubService {
     const colorbarContainer = document.createElement('div');
     colorbarContainer.id = `ctColorbarContainer-${viewportId}`;
 
-    Object.assign(colorbarContainer.style, {
+    const defaultStyles = {
       position: 'absolute',
       boxSizing: 'border-box',
       border: 'solid 1px #555',
       cursor: 'initial',
-      width: '2.5%',
+      width: options.width || '2.5%',
       height: '50%',
       right: '5%',
       top: '50%',
       transform: 'translateY(-50%)',
-    });
+    };
+
+    const positionStyles = {
+      left: {
+        left: '5%',
+        right: 'unset',
+      },
+      right: {
+        right: '5%',
+        left: 'unset',
+      },
+      top: {
+        top: '5%',
+        bottom: 'unset',
+        height: options.width || '2.5%',
+        width: '50%',
+        transform: 'translateX(-50%)',
+      },
+      bottom: {
+        bottom: '5%',
+        top: 'unset',
+        height: options.width || '2.5%',
+        width: '50%',
+        transform: 'translateX(-50%)',
+      },
+    };
+
+    Object.assign(colorbarContainer.style, defaultStyles);
+
+    if (options.position in positionStyles) {
+      Object.assign(colorbarContainer.style, positionStyles[options.position]);
+    }
 
     element.appendChild(colorbarContainer);
 
@@ -41,7 +72,7 @@ export default class ColorbarService extends PubSubService {
       colormaps: options.colormaps || {},
       activeColormapName: options.activeColormapName || 'Grayscale',
       container: colorbarContainer,
-      ticks: options.ticks || {
+      ticks: {
         position: 'left',
         style: {
           font: '12px Arial',
@@ -51,6 +82,7 @@ export default class ColorbarService extends PubSubService {
           tickWidth: 1,
           labelMargin: 3,
         },
+        ...options.ticks,
       },
     });
 
@@ -79,7 +111,7 @@ export default class ColorbarService extends PubSubService {
   updateActiveColormapForColorbar(viewportId, activeColormapName) {
     const colorbarInfo = this.colorbars[viewportId];
     if (colorbarInfo) {
-      colorbarInfo.colorbar.activeColormapName(activeColormapName);
+      colorbarInfo.colorbar.activeColormapName = activeColormapName;
     }
     this._broadcastEvent(EVENTS.COLORBAR_STATE_CHANGED, {
       viewportId,

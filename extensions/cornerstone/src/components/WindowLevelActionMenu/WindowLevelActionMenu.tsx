@@ -26,6 +26,9 @@ export type WindowLevelActionMenuProps = {
   commandsManager: CommandsManager;
   colormaps: Array<ColorMapPreset>;
   colorbarService: any;
+  colorbarWidth: string;
+  colorbarContainerPosition: string;
+  coloarbarTickPosition: string;
 };
 
 export function WindowLevelActionMenu({
@@ -37,6 +40,9 @@ export function WindowLevelActionMenu({
   commandsManager,
   colormaps,
   colorbarService,
+  colorbarWidth,
+  colorbarContainerPosition,
+  coloarbarTickPosition,
 }: WindowLevelActionMenuProps): ReactElement {
   const { t } = useTranslation('WindowLevelActionMenu');
 
@@ -155,6 +161,11 @@ export function WindowLevelActionMenu({
                 viewportId,
                 options: {
                   colormaps,
+                  ticks: {
+                    position: coloarbarTickPosition,
+                  },
+                  width: colorbarWidth,
+                  position: colorbarContainerPosition,
                 },
               });
             }}
