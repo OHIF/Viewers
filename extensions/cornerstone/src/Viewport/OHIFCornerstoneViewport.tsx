@@ -356,6 +356,25 @@ const OHIFCornerstoneViewport = React.memo(props => {
     };
   }, [displaySets, elementRef, viewportId]);
 
+  useEffect(() => {
+    const SubscriptionDisplaySetsChanged = displaySetService.subscribe(
+      displaySetService.EVENTS.DISPLAY_SETS_CHANGED,
+      async (changedDisplaySets) => {
+        var displaySets = [];
+        displaySets.push(changedDisplaySets);
+        const newViewportData = await cornerstoneCacheService.createViewportData(
+          displaySets,
+          viewportOptions,
+          dataSource,
+          initialImageIndex
+        );
+
+        const keepCamera = true;
+        cornerstoneViewportService.updateViewport(viewportId, newViewportData, keepCamera);
+      }
+    );
+  }, [displaySets]);
+
   return (
     <React.Fragment>
       <div className="viewport-wrapper">
