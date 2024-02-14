@@ -49,6 +49,7 @@ function getCustomizationModule() {
           coloarbarTickPosition: 'left',
           colormaps,
           colorbarContainerPosition: 'right',
+          coloarbarInitialColormap: 'Grayscale',
         },
       ],
     },
