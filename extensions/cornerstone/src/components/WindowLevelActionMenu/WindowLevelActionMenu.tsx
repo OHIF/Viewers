@@ -148,6 +148,7 @@ export function WindowLevelActionMenu({
           <AllInOneMenu.SubMenu
             key="windowLevelPresets"
             itemLabel={t('Modality Window Presets', { modality: Object.keys(presets)[0] })}
+            itemIcon="viewport-window-level"
             headerComponent={
               <AllInOneMenu.HeaderItem>
                 {t('Modality Presets', { modality: Object.keys(presets)[0] })}
@@ -170,6 +171,7 @@ export function WindowLevelActionMenu({
           <AllInOneMenu.SubMenu
             key="colorLUTPresets"
             itemLabel="Color LUT"
+            itemIcon="tool-fusion-color"
           >
             <AllInOneMenu.ItemPanel>
               {colormaps.map((colormap, index) => (
