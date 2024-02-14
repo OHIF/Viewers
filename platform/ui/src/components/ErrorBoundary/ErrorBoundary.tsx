@@ -24,8 +24,12 @@ const DefaultFallback = ({ error, context, resetErrorBoundary, fallbackRoute }) 
       <p className="text-primary-light text-base">{subtitle}</p>
       {!isProduction && (
         <div className="bg-secondary-dark mt-5 space-y-2 rounded-md p-5 font-mono">
-          <p className="text-primary-light">{t('Context')}: {context}</p>
-          <p className="text-primary-light">{t('Error Message')}: {error.message}</p>
+          <p className="text-primary-light">
+            {t('Context')}: {context}
+          </p>
+          <p className="text-primary-light">
+            {t('Error Message')}: {error.message}
+          </p>
 
           <IconButton
             variant="contained"
@@ -44,7 +48,9 @@ const DefaultFallback = ({ error, context, resetErrorBoundary, fallbackRoute }) 
             </React.Fragment>
           </IconButton>
 
-          {showDetails && <p className="text-primary-light px-4">Stack: {error.stack}</p>}
+          {showDetails && (
+            <pre className="text-primary-light whitespace-pre-wrap px-4">Stack: {error.stack}</pre>
+          )}
         </div>
       )}
     </div>
