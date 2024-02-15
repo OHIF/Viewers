@@ -46,10 +46,10 @@ function getCustomizationModule() {
         {
           id: 'cornerstone.colorbar',
           width: '2.5%',
-          coloarbarTickPosition: 'left',
+          colorbarTickPosition: 'left',
           colormaps,
           colorbarContainerPosition: 'right',
-          coloarbarInitialColormap: 'Grayscale',
+          colorbarInitialColormap: 'Grayscale',
         },
       ],
     },

@@ -28,8 +28,8 @@ export type WindowLevelActionMenuProps = {
   colorbarService: any;
   colorbarWidth: string;
   colorbarContainerPosition: string;
-  coloarbarTickPosition: string;
-  coloarbarInitialColormap: string;
+  colorbarTickPosition: string;
+  colorbarInitialColormap: string;
   cornerstoneViewportService: any;
 };
 
@@ -44,8 +44,8 @@ export function WindowLevelActionMenu({
   colorbarService,
   colorbarWidth,
   colorbarContainerPosition,
-  coloarbarTickPosition,
-  coloarbarInitialColormap,
+  colorbarTickPosition,
+  colorbarInitialColormap,
   cornerstoneViewportService,
 }: WindowLevelActionMenuProps): ReactElement {
   const { t } = useTranslation('WindowLevelActionMenu');
@@ -143,11 +143,11 @@ export function WindowLevelActionMenu({
           options: {
             colormaps,
             ticks: {
-              position: coloarbarTickPosition,
+              position: colorbarTickPosition,
             },
             width: colorbarWidth,
             position: colorbarContainerPosition,
-            activeColormapName: coloarbarInitialColormap,
+            activeColormapName: colorbarInitialColormap,
           },
         });
       }, 0);
@@ -186,11 +186,11 @@ export function WindowLevelActionMenu({
                 options: {
                   colormaps,
                   ticks: {
-                    position: coloarbarTickPosition,
+                    position: colorbarTickPosition,
                   },
                   width: colorbarWidth,
                   position: colorbarContainerPosition,
-                  activeColormapName: coloarbarInitialColormap,
+                  activeColormapName: colorbarInitialColormap,
                 },
               });
             }}
