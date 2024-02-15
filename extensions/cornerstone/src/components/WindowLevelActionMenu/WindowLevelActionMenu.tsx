@@ -180,6 +180,23 @@ export function WindowLevelActionMenu({
             }}
           />
         </div>
+        {colormaps && (
+          <AllInOneMenu.SubMenu
+            key="colorLUTPresets"
+            itemLabel="Color LUT"
+            itemIcon="icon-color-lut"
+          >
+            <AllInOneMenu.ItemPanel>
+              {colormaps.map((colormap, index) => (
+                <AllInOneMenu.Item
+                  key={index}
+                  label={colormap.description}
+                  onClick={() => onSetColorLUT({ viewportId, colormap })}
+                ></AllInOneMenu.Item>
+              ))}
+            </AllInOneMenu.ItemPanel>
+          </AllInOneMenu.SubMenu>
+        )}
         {presets && (
           <AllInOneMenu.SubMenu
             key="windowLevelPresets"
@@ -198,23 +215,6 @@ export function WindowLevelActionMenu({
                   label={preset.description}
                   secondaryLabel={`${preset.window} / ${preset.level}`}
                   onClick={() => onSetWindowLevel({ ...preset, viewportId })}
-                ></AllInOneMenu.Item>
-              ))}
-            </AllInOneMenu.ItemPanel>
-          </AllInOneMenu.SubMenu>
-        )}
-        {colormaps && (
-          <AllInOneMenu.SubMenu
-            key="colorLUTPresets"
-            itemLabel="Color LUT"
-            itemIcon="icon-color-lut"
-          >
-            <AllInOneMenu.ItemPanel>
-              {colormaps.map((colormap, index) => (
-                <AllInOneMenu.Item
-                  key={index}
-                  label={colormap.description}
-                  onClick={() => onSetColorLUT({ viewportId, colormap })}
                 ></AllInOneMenu.Item>
               ))}
             </AllInOneMenu.ItemPanel>
