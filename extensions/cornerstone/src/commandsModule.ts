@@ -281,11 +281,7 @@ function commandsModule({
       const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
       const element = viewport?.element;
       const properties = viewport?.getProperties();
-      // if there's an existing colormap on the viewport, use it
-      // the order of priority is:
-      // 1- active colormap on viewport
-      // 2- colormap from the options (customizationService)
-      // 3- default colormap (Grayscale)
+
       if (properties.colormap) {
         options.activeColormapName = properties.colormap.name;
       }

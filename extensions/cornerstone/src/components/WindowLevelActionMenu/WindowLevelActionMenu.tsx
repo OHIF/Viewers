@@ -98,6 +98,14 @@ export function WindowLevelActionMenu({
 
   const onSetColorbar = useCallback(
     props => {
+      const currentColorMap = getCurrentViewportColormap(viewportId);
+      // incase an initialColormap for the colorbar is set, but they have the default on the viewport
+      if (props.options.activeColormapName !== currentColorMap.Name) {
+        onSetColorLUT({
+          viewportId,
+          colormap: colormaps.find(c => c.Name === props.options.activeColormapName),
+        });
+      }
       commandsManager.run({
         commandName: 'toggleViewportColorbar',
         commandOptions: {
