@@ -6,9 +6,11 @@ type ItemProps = {
   secondaryLabel?: string;
   icon?: ReactNode;
   onClick?: () => void;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
 };
 
-const Item = ({ label, secondaryLabel, icon, onClick }: ItemProps) => {
+const Item = ({ label, secondaryLabel, icon, onClick, onMouseEnter, onMouseLeave }: ItemProps) => {
   const { hideMenu } = useContext(MenuContext);
 
   const onClickHandler = useCallback(() => {
@@ -20,6 +22,8 @@ const Item = ({ label, secondaryLabel, icon, onClick }: ItemProps) => {
     <div
       className="all-in-one-menu-item all-in-one-menu-item-effects"
       onClick={onClickHandler}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
     >
       {icon && <div className="pr-2">{icon}</div>}
       <span>{label}</span>

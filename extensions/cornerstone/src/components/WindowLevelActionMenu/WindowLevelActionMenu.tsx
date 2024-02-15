@@ -1,4 +1,4 @@
-import React, { ReactElement, useCallback, useEffect, useState } from 'react';
+import React, { ReactElement, useCallback, useEffect, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import classNames from 'classnames';
 import { AllInOneMenu, SwitchButton, useViewportGrid } from '@ohif/ui';
@@ -30,6 +30,7 @@ export type WindowLevelActionMenuProps = {
   colorbarContainerPosition: string;
   coloarbarTickPosition: string;
   coloarbarInitialColormap: string;
+  cornerstoneViewportService: any;
 };
 
 export function WindowLevelActionMenu({
@@ -45,6 +46,7 @@ export function WindowLevelActionMenu({
   colorbarContainerPosition,
   coloarbarTickPosition,
   coloarbarInitialColormap,
+  cornerstoneViewportService,
 }: WindowLevelActionMenuProps): ReactElement {
   const { t } = useTranslation('WindowLevelActionMenu');
 
@@ -52,8 +54,13 @@ export function WindowLevelActionMenu({
   const { activeViewportId } = viewportGrid;
 
   const [vpHeight, setVpHeight] = useState(element?.clientHeight);
-
   const [colorbarState, setColorbarState] = useState(colorbarService.isColorbarToggled(viewportId));
+  const [showPreview, setShowPreview] = useState(false);
+  const [prePreviewColormap, setPrePreviewColormap] = useState(null);
+  const showPreviewRef = useRef(showPreview);
+  showPreviewRef.current = showPreview;
+  const prePreviewColormapRef = useRef(prePreviewColormap);
+  prePreviewColormapRef.current = prePreviewColormap;
 
   useEffect(() => {
     if (element) {
@@ -101,6 +108,15 @@ export function WindowLevelActionMenu({
     },
     [commandsManager]
   );
+
+  const getCurrentViewportColormap = viewportId => {
+    const { properties } = cornerstoneViewportService.getPresentation(viewportId);
+    const colormap = properties?.colormap;
+    if (!colormap) {
+      return colormaps.find(c => c.Name === 'Grayscale') || colormaps[0];
+    }
+    return colormap;
+  };
 
   useEffect(() => {
     const updateColorbarState = () => {
@@ -186,12 +202,36 @@ export function WindowLevelActionMenu({
             itemLabel="Color LUT"
             itemIcon="icon-color-lut"
           >
+            <div className="all-in-one-menu-item flex w-full justify-center">
+              <SwitchButton
+                label="Preview in viewport"
+                checked={showPreview}
+                onChange={checked => {
+                  setShowPreview(checked);
+                }}
+              />
+            </div>
+            <AllInOneMenu.DividerItem />
             <AllInOneMenu.ItemPanel>
               {colormaps.map((colormap, index) => (
                 <AllInOneMenu.Item
                   key={index}
                   label={colormap.description}
-                  onClick={() => onSetColorLUT({ viewportId, colormap })}
+                  onClick={() => {
+                    onSetColorLUT({ viewportId, colormap });
+                    setPrePreviewColormap(getCurrentViewportColormap(viewportId));
+                  }}
+                  onMouseEnter={() => {
+                    if (showPreviewRef.current) {
+                      setPrePreviewColormap(getCurrentViewportColormap(viewportId));
+                      onSetColorLUT({ viewportId, colormap });
+                    }
+                  }}
+                  onMouseLeave={() => {
+                    if (showPreviewRef.current && prePreviewColormapRef.current) {
+                      onSetColorLUT({ viewportId, colormap: prePreviewColormapRef.current });
+                    }
+                  }}
                 ></AllInOneMenu.Item>
               ))}
             </AllInOneMenu.ItemPanel>

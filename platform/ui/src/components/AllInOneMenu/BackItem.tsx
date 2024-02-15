@@ -21,7 +21,9 @@ const BackItem = ({ backLabel, onBackClick }: BackItemProps) => {
         {horizontalDirection === HorizontalDirection.LeftToRight && (
           <Icon name="content-prev"></Icon>
         )}
-        <div className={getLabelClassName(horizontalDirection)}>{backLabel || 'Back'}</div>
+        <div className={getLabelClassName(horizontalDirection)}>
+          {backLabel || 'Back to Display Options'}
+        </div>
         {horizontalDirection === HorizontalDirection.RightToLeft && (
           <Icon name="content-next"></Icon>
         )}
