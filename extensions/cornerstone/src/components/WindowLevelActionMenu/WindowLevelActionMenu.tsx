@@ -1,8 +1,8 @@
 import React, { ReactElement, useCallback, useEffect, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import classNames from 'classnames';
-import { AllInOneMenu, SwitchButton, useViewportGrid } from '@ohif/ui';
-import { CommandsManager } from '@ohif/core';
+import { AllInOneMenu, ButtonGroup, SwitchButton, useViewportGrid } from '@ohif/ui';
+import { CommandsManager, ServicesManager } from '@ohif/core';
 
 export type WindowLevelPreset = {
   description: string;
@@ -24,14 +24,30 @@ export type WindowLevelActionMenuProps = {
   verticalDirection: AllInOneMenu.VerticalDirection;
   horizontalDirection: AllInOneMenu.HorizontalDirection;
   commandsManager: CommandsManager;
+  serviceManager: ServicesManager;
   colormaps: Array<ColorMapPreset>;
-  colorbarService: any;
   colorbarWidth: string;
   colorbarContainerPosition: string;
   colorbarTickPosition: string;
   colorbarInitialColormap: string;
-  cornerstoneViewportService: any;
 };
+
+const buttons = [
+  {
+    children: 'PET',
+    key: 0,
+    style: {
+      minWidth: '50%',
+    },
+  },
+  {
+    children: 'CT',
+    key: 1,
+    style: {
+      minWidth: '50%',
+    },
+  },
+];
 
 export function WindowLevelActionMenu({
   viewportId,
@@ -40,23 +56,25 @@ export function WindowLevelActionMenu({
   verticalDirection,
   horizontalDirection,
   commandsManager,
+  serviceManager,
   colormaps,
-  colorbarService,
   colorbarWidth,
   colorbarContainerPosition,
   colorbarTickPosition,
   colorbarInitialColormap,
-  cornerstoneViewportService,
 }: WindowLevelActionMenuProps): ReactElement {
+  const { colorbarService, cornerstoneViewportService } = serviceManager.services;
+
   const { t } = useTranslation('WindowLevelActionMenu');
 
   const [viewportGrid] = useViewportGrid();
   const { activeViewportId } = viewportGrid;
 
   const [vpHeight, setVpHeight] = useState(element?.clientHeight);
-  const [colorbarState, setColorbarState] = useState(colorbarService.isColorbarToggled(viewportId));
+  const [showColorbar, setShowColorbar] = useState(colorbarService.isColorbarToggled(viewportId));
   const [showPreview, setShowPreview] = useState(false);
   const [prePreviewColormap, setPrePreviewColormap] = useState(null);
+
   const showPreviewRef = useRef(showPreview);
   showPreviewRef.current = showPreview;
   const prePreviewColormapRef = useRef(prePreviewColormap);
@@ -129,7 +147,7 @@ export function WindowLevelActionMenu({
 
   useEffect(() => {
     const updateColorbarState = () => {
-      setColorbarState(colorbarService.isColorbarToggled(viewportId));
+      setShowColorbar(colorbarService.isColorbarToggled(viewportId));
     };
 
     const { unsubscribe } = colorbarService.subscribe(
@@ -188,7 +206,7 @@ export function WindowLevelActionMenu({
         <div className="all-in-one-menu-item flex w-full justify-center">
           <SwitchButton
             label="Display Color bar"
-            checked={colorbarState}
+            checked={showColorbar}
             onChange={() => {
               onSetColorbar({
                 viewportId,
@@ -211,6 +229,14 @@ export function WindowLevelActionMenu({
             itemLabel="Color LUT"
             itemIcon="icon-color-lut"
           >
+            <div className="all-in-one-menu-item flex w-full justify-center">
+              <ButtonGroup
+                buttons={buttons}
+                onActiveIndexChange={index => {}}
+                defaultActiveIndex={0}
+                className="w-[70%]"
+              />
+            </div>
             <div className="all-in-one-menu-item flex w-full justify-center">
               <SwitchButton
                 label="Preview in viewport"
