@@ -21,6 +21,8 @@
     "yarn": ">=1.18.0"
   },
   "scripts": {
+    "clean": "shx rm -rf dist",
+    "clean:deep": "yarn run clean && shx rm -rf node_modules",
     "dev": "cross-env NODE_ENV=development webpack --config .webpack/webpack.dev.js --watch --output-pathinfo",
     "dev:dicom-pdf": "yarn run dev",
     "build": "cross-env NODE_ENV=production webpack --config .webpack/webpack.prod.js",

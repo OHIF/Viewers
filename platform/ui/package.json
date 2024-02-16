@@ -19,11 +19,12 @@
     "README.md"
   ],
   "scripts": {
+    "clean": "rm -rf node_modules/.cache/storybook && shx rm -rf dist",
+    "clean:deep": "yarn run clean && shx rm -rf node_modules",
     "start": "yarn run build --watch",
     "build": "cross-env NODE_ENV=production webpack --config .webpack/webpack.prod.js",
     "build:package": "yarn run build",
     "storybook": "storybook dev -p 6006",
-    "clean": "rm -rf node_modules/.cache/storybook",
     "dev": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },
