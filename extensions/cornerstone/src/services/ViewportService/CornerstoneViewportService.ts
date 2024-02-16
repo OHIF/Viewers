@@ -254,7 +254,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
   }
 
   public storePresentation({ viewportId }) {
-    const stateSyncService = this.servicesManager.services.stateSyncService;
+    const { stateSyncService, syncGroupService } = this.servicesManager.services;
     let presentation;
     try {
       presentation = this.getPresentation(viewportId);
@@ -265,7 +265,14 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     if (!presentation || !presentation.presentationIds) {
       return;
     }
-    const { lutPresentationStore, positionPresentationStore } = stateSyncService.getState();
+
+    const synchronizers = syncGroupService.getSynchronizersForViewport(
+      viewportId,
+      this.renderingEngine.id
+    );
+
+    const { lutPresentationStore, positionPresentationStore, synchronizersStore } =
+      stateSyncService.getState();
     const { presentationIds } = presentation;
     const { lutPresentationId, positionPresentationId } = presentationIds || {};
     const storeState = {};
@@ -281,6 +288,22 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
         [positionPresentationId]: presentation,
       };
     }
+
+    if (synchronizers?.length) {
+      storeState.synchronizersStore = {
+        ...synchronizersStore,
+        [viewportId]: synchronizers.map(synchronizer => {
+          const sourceViewports = synchronizer.getSourceViewports();
+          const targetViewports = synchronizer.getTargetViewports();
+          return {
+            id: synchronizer.id,
+            sourceViewports: [...sourceViewports],
+            targetViewports: [...targetViewports],
+          };
+        }),
+      };
+    }
+
     stateSyncService.store(storeState);
   }
 
