@@ -99,8 +99,9 @@ export function WindowLevelActionMenu({
   const onSetColorbar = useCallback(
     props => {
       const currentColorMap = getCurrentViewportColormap(viewportId);
-      // incase an initialColormap for the colorbar is set, but they have the default on the viewport
-      if (props.options.activeColormapName !== currentColorMap.Name) {
+      // incase an initialColormap for the colorbar is set, but they have no colormap on the viewport
+      // if they have a colormap on the viewport, that takes priority
+      if (props.options.activeColormapName && !currentColorMap) {
         onSetColorLUT({
           viewportId,
           colormap: colormaps.find(c => c.Name === props.options.activeColormapName),
