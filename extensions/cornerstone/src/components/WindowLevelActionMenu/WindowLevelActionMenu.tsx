@@ -165,8 +165,7 @@ export function WindowLevelActionMenu({
   }, [viewportId]);
 
   useEffect(() => {
-    const colorbarState = colorbarService.getViewportColorbar(viewportId);
-    if (!colorbarState) {
+    if (!showColorbar) {
       return;
     }
     colorbarService.removeColorbar(viewportId);
