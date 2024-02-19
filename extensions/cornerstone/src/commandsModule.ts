@@ -279,15 +279,14 @@ function commandsModule({
 
     toggleViewportColorbar: ({ viewportId, options = {} }) => {
       const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
-      const element = viewport?.element;
       const properties = viewport?.getProperties();
 
       if (properties.colormap) {
         options.activeColormapName = properties.colormap.name;
       }
-      const isColorbarToggled = colorbarService.isColorbarToggled(viewportId);
-      if (!isColorbarToggled) {
-        colorbarService.addColorbar(viewportId, element, options, ViewportColorbar);
+      const hasColorbar = colorbarService.hasColorbar(viewportId);
+      if (!hasColorbar) {
+        colorbarService.addColorbar(viewportId, ViewportColorbar, options);
       } else {
         colorbarService.removeColorbar(viewportId);
       }
@@ -573,25 +572,24 @@ function commandsModule({
       const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
       const actorEntries = viewport.getActors();
 
-      if (viewport instanceof StackViewport) {
-        const actorEntry = actorEntries.find(actorEntry => {
-          return actorEntry.uid.includes(viewportId);
-        });
+      const setViewportProperties = (viewport, uid) => {
+        const actorEntry = actorEntries.find(entry => entry.uid.includes(uid));
         const { actor: volumeActor, uid: volumeId } = actorEntry;
         viewport.setProperties({ colormap, volumeActor }, volumeId);
+      };
+
+
+
+      if (viewport instanceof StackViewport) {
+        setViewportProperties(viewport, viewportId);
       }
 
       if (viewport instanceof VolumeViewport) {
         if (!displaySetInstanceUID) {
           const { viewports } = viewportGridService.getState();
-          // this is not good enough, we need to find the correct displaySetInstanceUID
           displaySetInstanceUID = viewports.get(viewportId)?.displaySetInstanceUIDs[0];
         }
-        const actorEntry = actorEntries.find(actorEntry => {
-          return actorEntry.uid.includes(displaySetInstanceUID);
-        });
-        const { actor: volumeActor, uid: volumeId } = actorEntry;
-        viewport.setProperties({ colormap, volumeActor }, volumeId);
+        setViewportProperties(viewport, displaySetInstanceUID);
       }
 
       if (immediate) {

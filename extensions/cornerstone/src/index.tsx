@@ -18,6 +18,7 @@ import SyncGroupService from './services/SyncGroupService';
 import SegmentationService from './services/SegmentationService';
 import CornerstoneCacheService from './services/CornerstoneCacheService';
 import CornerstoneViewportService from './services/ViewportService/CornerstoneViewportService';
+import ColorbarService from './services/ColorbarService';
 import * as CornerstoneExtensionTypes from './types';
 
 import { toolNames } from './initCornerstoneTools';
@@ -78,6 +79,7 @@ const cornerstoneExtension: Types.Extensions.Extension = {
     servicesManager.registerService(SegmentationService.REGISTRATION);
     servicesManager.registerService(CornerstoneCacheService.REGISTRATION);
     servicesManager.registerService(ViewportActionCornersService.REGISTRATION);
+    servicesManager.registerService(ColorbarService.REGISTRATION);
 
     serviceProvidersManager.registerProvider(
       ViewportActionCornersService.REGISTRATION.name,

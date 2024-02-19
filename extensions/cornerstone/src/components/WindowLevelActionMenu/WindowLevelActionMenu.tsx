@@ -25,11 +25,13 @@ export type WindowLevelActionMenuProps = {
   horizontalDirection: AllInOneMenu.HorizontalDirection;
   commandsManager: CommandsManager;
   serviceManager: ServicesManager;
-  colormaps: Array<ColorMapPreset>;
-  colorbarWidth: string;
-  colorbarContainerPosition: string;
-  colorbarTickPosition: string;
-  colorbarInitialColormap: string;
+  colormapProperties: {
+    width: string;
+    colorbarTickPosition: string;
+    colorbarContainerPosition: string;
+    colormaps: Array<ColorMapPreset>;
+    colorbarInitialColormap: string;
+  };
 };
 
 const buttons = [
@@ -57,21 +59,23 @@ export function WindowLevelActionMenu({
   horizontalDirection,
   commandsManager,
   serviceManager,
-  colormaps,
-  colorbarWidth,
-  colorbarContainerPosition,
-  colorbarTickPosition,
-  colorbarInitialColormap,
+  colormapProperties,
 }: WindowLevelActionMenuProps): ReactElement {
   const { colorbarService, cornerstoneViewportService } = serviceManager.services;
-
+  const {
+    width: colorbarWidth,
+    colorbarTickPosition,
+    colorbarContainerPosition,
+    colormaps,
+    colorbarInitialColormap,
+  } = colormapProperties;
   const { t } = useTranslation('WindowLevelActionMenu');
 
   const [viewportGrid] = useViewportGrid();
   const { activeViewportId } = viewportGrid;
 
   const [vpHeight, setVpHeight] = useState(element?.clientHeight);
-  const [showColorbar, setShowColorbar] = useState(colorbarService.isColorbarToggled(viewportId));
+  const [showColorbar, setShowColorbar] = useState(colorbarService.hasColorbar(viewportId));
   const [showPreview, setShowPreview] = useState(false);
   const [prePreviewColormap, setPrePreviewColormap] = useState(null);
 
@@ -81,10 +85,11 @@ export function WindowLevelActionMenu({
   prePreviewColormapRef.current = prePreviewColormap;
 
   useEffect(() => {
-    if (element) {
-      setVpHeight(element.clientHeight);
+    const newVpHeight = element?.clientHeight;
+    if (vpHeight !== newVpHeight) {
+      setVpHeight(newVpHeight);
     }
-  }, [element]);
+  }, [element, vpHeight]);
 
   const onSetWindowLevel = useCallback(
     props => {
@@ -101,12 +106,11 @@ export function WindowLevelActionMenu({
 
   const onSetColorLUT = useCallback(
     props => {
-      const immediate = true;
       commandsManager.run({
         commandName: 'setViewportColormap',
         commandOptions: {
           ...props,
-          immediate,
+          immediate: true,
         },
         context: 'CORNERSTONE',
       });
@@ -116,10 +120,10 @@ export function WindowLevelActionMenu({
 
   const onSetColorbar = useCallback(
     props => {
-      const currentColorMap = getCurrentViewportColormap(viewportId);
+      const colormap = getViewportColormap(viewportId);
       // incase an initialColormap for the colorbar is set, but they have no colormap on the viewport
       // if they have a colormap on the viewport, that takes priority
-      if (props.options.activeColormapName && !currentColorMap) {
+      if (props.options.activeColormapName && !colormap) {
         onSetColorLUT({
           viewportId,
           colormap: colormaps.find(c => c.Name === props.options.activeColormapName),
@@ -136,9 +140,9 @@ export function WindowLevelActionMenu({
     [commandsManager]
   );
 
-  const getCurrentViewportColormap = viewportId => {
-    const { properties } = cornerstoneViewportService.getPresentation(viewportId);
-    const colormap = properties?.colormap;
+  const getViewportColormap = viewportId => {
+    const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+    const { colormap } = viewport.getProperties();
     if (!colormap) {
       return colormaps.find(c => c.Name === 'Grayscale') || colormaps[0];
     }
@@ -147,45 +151,38 @@ export function WindowLevelActionMenu({
 
   useEffect(() => {
     const updateColorbarState = () => {
-      setShowColorbar(colorbarService.isColorbarToggled(viewportId));
+      setShowColorbar(colorbarService.hasColorbar(viewportId));
     };
 
     const { unsubscribe } = colorbarService.subscribe(
-      colorbarService.EVENTS.COLORBAR_STATE_CHANGED,
+      colorbarService.EVENTS.STATE_CHANGED,
       updateColorbarState
     );
 
     return () => {
       unsubscribe();
     };
-  }, []);
+  }, [viewportId]);
 
   useEffect(() => {
-    const colorbarState = colorbarService.getColorbarState(viewportId);
-    if (colorbarState && colorbarState.needsRefresh) {
-      window.setTimeout(() => {
-        colorbarService.removeColorbar(viewportId);
-        onSetColorbar({
-          viewportId,
-          options: {
-            colormaps,
-            ticks: {
-              position: colorbarTickPosition,
-            },
-            width: colorbarWidth,
-            position: colorbarContainerPosition,
-            activeColormapName: colorbarInitialColormap,
-          },
-        });
-      }, 0);
+    const colorbarState = colorbarService.getViewportColorbar(viewportId);
+    if (!colorbarState) {
+      return;
     }
-    return () => {
-      const colorbarState = colorbarService.getColorbarState(viewportId);
-      if (colorbarState) {
-        colorbarService.markForRefresh(viewportId, true);
-      }
-    };
-  }, []);
+    colorbarService.removeColorbar(viewportId);
+    onSetColorbar({
+      viewportId,
+      options: {
+        colormaps,
+        ticks: {
+          position: colorbarTickPosition,
+        },
+        width: colorbarWidth,
+        position: colorbarContainerPosition,
+        activeColormapName: colorbarInitialColormap,
+      },
+    });
+  }, [viewportId]);
 
   return (
     <AllInOneMenu.IconMenu
@@ -254,11 +251,11 @@ export function WindowLevelActionMenu({
                   label={colormap.description}
                   onClick={() => {
                     onSetColorLUT({ viewportId, colormap });
-                    setPrePreviewColormap(getCurrentViewportColormap(viewportId));
+                    setPrePreviewColormap(getViewportColormap(viewportId));
                   }}
                   onMouseEnter={() => {
                     if (showPreviewRef.current) {
-                      setPrePreviewColormap(getCurrentViewportColormap(viewportId));
+                      setPrePreviewColormap(getViewportColormap(viewportId));
                       onSetColorLUT({ viewportId, colormap });
                     }
                   }}

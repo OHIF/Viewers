@@ -4,6 +4,8 @@ import DicomUpload from './components/DicomUpload/DicomUpload';
 import defaultWindowLevelPresets from './components/WindowLevelActionMenu/defaultWindowLevelPresets';
 import { colormaps } from './utils/colormaps';
 
+const DefaultColormap = 'Grayscale';
+
 const tools = {
   active: [
     {
@@ -49,7 +51,7 @@ function getCustomizationModule() {
           colorbarTickPosition: 'left',
           colormaps,
           colorbarContainerPosition: 'right',
-          colorbarInitialColormap: 'Grayscale',
+          colorbarInitialColormap: DefaultColormap,
         },
       ],
     },
