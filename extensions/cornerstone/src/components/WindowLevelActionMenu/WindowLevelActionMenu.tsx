@@ -67,6 +67,7 @@ export function WindowLevelActionMenu({
   const [prePreviewColormap, setPrePreviewColormap] = useState(null);
   const [activeDisplaySet, setActiveDisplaySet] = useState(displaySets[0]);
   const [buttons, setButtons] = useState([]);
+  const [menuKey, setMenuKey] = useState(0);
 
   const showPreviewRef = useRef(showPreview);
   showPreviewRef.current = showPreview;
@@ -215,6 +216,10 @@ export function WindowLevelActionMenu({
     setActiveDisplaySet(displaySets[0]);
   }, [displaySets]);
 
+  useEffect(() => {
+    setMenuKey(menuKey + 1);
+  }, [activeDisplaySet, showPreview, showColorbar]);
+
   return (
     <AllInOneMenu.IconMenu
       icon="viewport-window-level"
@@ -229,6 +234,7 @@ export function WindowLevelActionMenu({
       onVisibilityChange={() => {
         setVpHeight(element.clientHeight);
       }}
+      menuKey={menuKey}
     >
       <AllInOneMenu.ItemPanel>
         <div className="all-in-one-menu-item flex w-full justify-center">
@@ -263,6 +269,7 @@ export function WindowLevelActionMenu({
                   buttons={buttons}
                   onActiveIndexChange={index => {
                     setActiveDisplaySet(displaySets[index]);
+                    setPrePreviewColormap(null);
                   }}
                   defaultActiveIndex={
                     displaySets.findIndex(

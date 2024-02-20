@@ -1,15 +1,15 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import OutsideClickHandler from 'react-outside-click-handler';
 import { MenuProps } from './Menu';
 import getIcon from '../Icon/getIcon';
 import classNames from 'classnames';
 import { AllInOneMenu } from '..';
-
 export interface IconMenuProps extends MenuProps {
   icon: string;
   iconClassName?: string;
   horizontalDirection?: AllInOneMenu.HorizontalDirection;
   verticalDirection?: AllInOneMenu.VerticalDirection;
+  menuKey?: number | string;
 }
 
 /**
@@ -35,14 +35,11 @@ export default function IconMenu({
   menuClassName,
   menuStyle,
   onVisibilityChange,
+  menuKey,
 }: IconMenuProps) {
   const [isMenuVisible, setIsMenuVisible] = useState(false);
-  const [renderKey, setRenderKey] = useState(0);
 
-  const toggleMenuVisibility = useCallback(() => {
-    setIsMenuVisible(isVisible => !isVisible);
-    setRenderKey(renderKey => renderKey + 1);
-  }, []);
+  const toggleMenuVisibility = useCallback(() => setIsMenuVisible(isVisible => !isVisible), []);
 
   return (
     <OutsideClickHandler
@@ -57,7 +54,7 @@ export default function IconMenu({
           {getIcon(icon)}
         </div>
         <AllInOneMenu.Menu
-          key={renderKey}
+          key={menuKey}
           isVisible={isMenuVisible}
           backLabel={backLabel}
           menuClassName={classNames(
