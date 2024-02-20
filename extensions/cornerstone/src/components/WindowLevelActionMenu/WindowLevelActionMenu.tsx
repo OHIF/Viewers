@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import classNames from 'classnames';
 import { AllInOneMenu, ButtonGroup, SwitchButton, useViewportGrid } from '@ohif/ui';
 import { CommandsManager, ServicesManager } from '@ohif/core';
+import { StackViewport, VolumeViewport } from '@cornerstonejs/core';
 
 export type WindowLevelPreset = {
   description: string;
@@ -32,24 +33,8 @@ export type WindowLevelActionMenuProps = {
     colormaps: Array<ColorMapPreset>;
     colorbarInitialColormap: string;
   };
+  displaySets: Array<any>;
 };
-
-const buttons = [
-  {
-    children: 'PET',
-    key: 0,
-    style: {
-      minWidth: '50%',
-    },
-  },
-  {
-    children: 'CT',
-    key: 1,
-    style: {
-      minWidth: '50%',
-    },
-  },
-];
 
 export function WindowLevelActionMenu({
   viewportId,
@@ -60,8 +45,10 @@ export function WindowLevelActionMenu({
   commandsManager,
   serviceManager,
   colormapProperties,
+  displaySets,
 }: WindowLevelActionMenuProps): ReactElement {
   const { colorbarService, cornerstoneViewportService } = serviceManager.services;
+
   const {
     width: colorbarWidth,
     colorbarTickPosition,
@@ -78,18 +65,15 @@ export function WindowLevelActionMenu({
   const [showColorbar, setShowColorbar] = useState(colorbarService.hasColorbar(viewportId));
   const [showPreview, setShowPreview] = useState(false);
   const [prePreviewColormap, setPrePreviewColormap] = useState(null);
+  const [activeDisplaySet, setActiveDisplaySet] = useState(displaySets[0]);
+  const [buttons, setButtons] = useState([]);
 
   const showPreviewRef = useRef(showPreview);
   showPreviewRef.current = showPreview;
   const prePreviewColormapRef = useRef(prePreviewColormap);
   prePreviewColormapRef.current = prePreviewColormap;
-
-  useEffect(() => {
-    const newVpHeight = element?.clientHeight;
-    if (vpHeight !== newVpHeight) {
-      setVpHeight(newVpHeight);
-    }
-  }, [element, vpHeight]);
+  const activeDisplaySetRef = useRef(activeDisplaySet);
+  activeDisplaySetRef.current = activeDisplaySet;
 
   const onSetWindowLevel = useCallback(
     props => {
@@ -120,19 +104,23 @@ export function WindowLevelActionMenu({
 
   const onSetColorbar = useCallback(
     props => {
-      const colormap = getViewportColormap(viewportId);
-      // incase an initialColormap for the colorbar is set, but they have no colormap on the viewport
-      // if they have a colormap on the viewport, that takes priority
-      if (props.options.activeColormapName && !colormap) {
-        onSetColorLUT({
-          viewportId,
-          colormap: colormaps.find(c => c.Name === props.options.activeColormapName),
+      const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+      const displaySetInstanceUIDs = [];
+      if (viewport instanceof StackViewport) {
+        displaySetInstanceUIDs.push(viewportId);
+      }
+      if (viewport instanceof VolumeViewport) {
+        displaySets.forEach(ds => {
+          if (ds.Modality !== 'RTSTRUCT' && ds.Modality !== 'SEG') {
+            displaySetInstanceUIDs.push(ds.displaySetInstanceUID);
+          }
         });
       }
       commandsManager.run({
         commandName: 'toggleViewportColorbar',
         commandOptions: {
           ...props,
+          displaySetInstanceUIDs,
         },
         context: 'CORNERSTONE',
       });
@@ -140,14 +128,45 @@ export function WindowLevelActionMenu({
     [commandsManager]
   );
 
-  const getViewportColormap = viewportId => {
+  const getViewportColormap = (viewportId, displaySet) => {
+    const { displaySetInstanceUID } = displaySet;
     const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
-    const { colormap } = viewport.getProperties();
+    if (viewport instanceof StackViewport) {
+      const { colormap } = viewport.getProperties();
+      if (!colormap) {
+        return colormaps.find(c => c.Name === 'Grayscale') || colormaps[0];
+      }
+      return colormap;
+    }
+    const actorEntries = viewport.getActors();
+    const actorEntry = actorEntries.find(entry => entry.uid.includes(displaySetInstanceUID));
+    const { colormap } = viewport.getProperties(actorEntry.uid);
     if (!colormap) {
       return colormaps.find(c => c.Name === 'Grayscale') || colormaps[0];
     }
     return colormap;
   };
+
+  const generateButtons = useCallback(() => {
+    const filteredDisplaySets = displaySets.filter(
+      ds => ds.Modality !== 'SEG' && ds.Modality !== 'RTSTRUCT'
+    );
+    const buttons = filteredDisplaySets.map((displaySet, index) => {
+      return {
+        children: displaySet.Modality,
+        key: index,
+        style: {
+          minWidth: `calc(100% / ${displaySets.length})`,
+        },
+      };
+    });
+
+    return buttons;
+  }, [displaySets]);
+
+  useEffect(() => {
+    setButtons(generateButtons());
+  }, [displaySets, generateButtons, viewportId]);
 
   useEffect(() => {
     const updateColorbarState = () => {
@@ -168,20 +187,33 @@ export function WindowLevelActionMenu({
     if (!showColorbar) {
       return;
     }
-    colorbarService.removeColorbar(viewportId);
-    onSetColorbar({
-      viewportId,
-      options: {
-        colormaps,
-        ticks: {
-          position: colorbarTickPosition,
+    window.setTimeout(() => {
+      colorbarService.removeColorbar(viewportId);
+      onSetColorbar({
+        viewportId,
+        options: {
+          colormaps,
+          ticks: {
+            position: colorbarTickPosition,
+          },
+          width: colorbarWidth,
+          position: colorbarContainerPosition,
+          activeColormapName: colorbarInitialColormap,
         },
-        width: colorbarWidth,
-        position: colorbarContainerPosition,
-        activeColormapName: colorbarInitialColormap,
-      },
-    });
+      });
+    }, 0);
   }, [viewportId]);
+
+  useEffect(() => {
+    const newVpHeight = element?.clientHeight;
+    if (vpHeight !== newVpHeight) {
+      setVpHeight(newVpHeight);
+    }
+  }, [element, vpHeight]);
+
+  useEffect(() => {
+    setActiveDisplaySet(displaySets[0]);
+  }, [displaySets]);
 
   return (
     <AllInOneMenu.IconMenu
@@ -225,14 +257,24 @@ export function WindowLevelActionMenu({
             itemLabel="Color LUT"
             itemIcon="icon-color-lut"
           >
-            <div className="all-in-one-menu-item flex w-full justify-center">
-              <ButtonGroup
-                buttons={buttons}
-                onActiveIndexChange={index => {}}
-                defaultActiveIndex={0}
-                className="w-[70%]"
-              />
-            </div>
+            {buttons.length > 1 && (
+              <div className="all-in-one-menu-item flex w-full justify-center">
+                <ButtonGroup
+                  buttons={buttons}
+                  onActiveIndexChange={index => {
+                    setActiveDisplaySet(displaySets[index]);
+                  }}
+                  defaultActiveIndex={
+                    displaySets.findIndex(
+                      ds =>
+                        ds.displaySetInstanceUID ===
+                        activeDisplaySetRef.current.displaySetInstanceUID
+                    ) || 0
+                  }
+                  className="w-[70%] text-[10px]"
+                />
+              </div>
+            )}
             <div className="all-in-one-menu-item flex w-full justify-center">
               <SwitchButton
                 label="Preview in viewport"
@@ -249,18 +291,32 @@ export function WindowLevelActionMenu({
                   key={index}
                   label={colormap.description}
                   onClick={() => {
-                    onSetColorLUT({ viewportId, colormap });
-                    setPrePreviewColormap(getViewportColormap(viewportId));
+                    onSetColorLUT({
+                      viewportId,
+                      colormap,
+                      displaySetInstanceUID: activeDisplaySetRef.current.displaySetInstanceUID,
+                    });
+                    setPrePreviewColormap(null);
                   }}
                   onMouseEnter={() => {
                     if (showPreviewRef.current) {
-                      setPrePreviewColormap(getViewportColormap(viewportId));
-                      onSetColorLUT({ viewportId, colormap });
+                      setPrePreviewColormap(
+                        getViewportColormap(viewportId, activeDisplaySetRef.current)
+                      );
+                      onSetColorLUT({
+                        viewportId,
+                        colormap,
+                        displaySetInstanceUID: activeDisplaySetRef.current.displaySetInstanceUID,
+                      });
                     }
                   }}
                   onMouseLeave={() => {
                     if (showPreviewRef.current && prePreviewColormapRef.current) {
-                      onSetColorLUT({ viewportId, colormap: prePreviewColormapRef.current });
+                      onSetColorLUT({
+                        viewportId,
+                        colormap: prePreviewColormapRef.current,
+                        displaySetInstanceUID: activeDisplaySetRef.current.displaySetInstanceUID,
+                      });
                     }
                   }}
                 ></AllInOneMenu.Item>

@@ -277,23 +277,13 @@ function commandsModule({
       viewport.render();
     },
 
-    toggleViewportColorbar: ({ viewportId, options = {} }) => {
-      const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
-      const properties = viewport?.getProperties();
-
-      if (properties.colormap) {
-        options.activeColormapName = properties.colormap.name;
-      }
+    toggleViewportColorbar: ({ viewportId, displaySetInstanceUIDs, options = {} }) => {
       const hasColorbar = colorbarService.hasColorbar(viewportId);
-      if (!hasColorbar) {
-        colorbarService.addColorbar(viewportId, ViewportColorbar, options);
-      } else {
+      if (hasColorbar) {
         colorbarService.removeColorbar(viewportId);
+        return;
       }
-    },
-
-    updateViewportColorbar: ({ viewportId, options = {} }) => {
-      colorbarService.updateColorbar(viewportId, options);
+      colorbarService.addColorbar(viewportId, ViewportColorbar, displaySetInstanceUIDs, options);
     },
 
     setWindowLevel(props) {
@@ -577,8 +567,6 @@ function commandsModule({
         const { actor: volumeActor, uid: volumeId } = actorEntry;
         viewport.setProperties({ colormap, volumeActor }, volumeId);
       };
-
-
 
       if (viewport instanceof StackViewport) {
         setViewportProperties(viewport, viewportId);

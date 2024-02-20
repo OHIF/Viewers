@@ -1,6 +1,6 @@
 import { PubSubService } from '@ohif/core';
 import { RENDERING_ENGINE_ID } from '../ViewportService/constants';
-import { getRenderingEngine } from '@cornerstonejs/core';
+import { StackViewport, VolumeViewport, getRenderingEngine } from '@cornerstonejs/core';
 
 type ColorMapPreset = {
   ColorSpace;
@@ -33,36 +33,13 @@ export default class ColorbarService extends PubSubService {
     boxSizing: 'border-box',
     border: 'solid 1px #555',
     cursor: 'initial',
-    width: '2.5%',
-    height: '50%',
-    right: '5%',
-    top: '50%',
-    transform: 'translateY(-50%)',
   };
 
   static positionStyles = {
-    left: {
-      left: '5%',
-      right: 'unset',
-    },
-    right: {
-      right: '5%',
-      left: 'unset',
-    },
-    top: {
-      top: '5%',
-      bottom: 'unset',
-      height: '2.5%',
-      width: '50%',
-      transform: 'translateX(-50%)',
-    },
-    bottom: {
-      bottom: '5%',
-      top: 'unset',
-      height: '2.5%',
-      width: '50%',
-      transform: 'translateX(-50%)',
-    },
+    left: { left: '5%' },
+    right: { right: '5%' },
+    top: { top: '5%' },
+    bottom: { bottom: '5%' },
   };
 
   static defaultTickStyles = {
@@ -89,37 +66,67 @@ export default class ColorbarService extends PubSubService {
     super(ColorbarService.EVENTS);
   }
 
-  public addColorbar(viewportId, ViewportColorbar, options = {} as ColorbarOptions) {
+  public addColorbar(
+    viewportId,
+    ViewportColorbar,
+    displaySetInstanceUIDs,
+    options = {} as ColorbarOptions
+  ) {
     const renderingEngine = getRenderingEngine(RENDERING_ENGINE_ID);
-    const { element } = renderingEngine.getViewport(viewportId);
+    const viewport = renderingEngine.getViewport(viewportId);
+    const { element } = viewport;
+    const actorEntries = viewport.getActors();
+    const { position, width: thickness, activeColormapName, colormaps } = options;
 
-    const colorbarContainer = document.createElement('div');
-    colorbarContainer.id = `ctColorbarContainer-${viewportId}`;
+    const numContainers = displaySetInstanceUIDs.length;
 
-    Object.assign(colorbarContainer.style, {
-      ...ColorbarService.defaultStyles,
-      width: options.width || ColorbarService.defaultStyles.width,
-    });
-
-    if (options.position in ColorbarService.positionStyles) {
-      Object.assign(colorbarContainer.style, ColorbarService.positionStyles[options.position]);
-    }
-
-    element.appendChild(colorbarContainer);
-
-    const colorbar = new ViewportColorbar({
-      id: `ctColorbar-${viewportId}`,
+    const containers = this.createContainers(
+      numContainers,
       element,
-      colormaps: options.colormaps || {},
-      activeColormapName: options.activeColormapName || 'Grayscale',
-      container: colorbarContainer,
-      ticks: {
-        ...ColorbarService.defaultTickStyles,
-        ...options.ticks,
-      },
-    });
+      position,
+      thickness,
+      viewportId
+    );
 
-    this.colorbars[viewportId] = { colorbar, container: colorbarContainer, needsRefresh: false };
+    displaySetInstanceUIDs.forEach((displaySetInstanceUID, index) => {
+      const actorEntry = actorEntries.find(entry => entry.uid.includes(displaySetInstanceUID));
+      if (!actorEntry) {
+        return;
+      }
+      const { uid: volumeId } = actorEntry;
+      const properties = viewport?.getProperties(volumeId);
+      const colormap = properties?.colormap;
+      // if there's an initial colormap set, and no colormap on the viewport, set it
+      if (activeColormapName && !colormap) {
+        this.setViewportColormap(
+          viewportId,
+          displaySetInstanceUID,
+          colormaps[activeColormapName],
+          true
+        );
+      }
+
+      const colorbarContainer = containers[index];
+
+      const colorbar = new ViewportColorbar({
+        id: `ctColorbar-${viewportId}-${index}`,
+        element,
+        colormaps: options.colormaps || {},
+        // if there's an existing colormap set, we use it, otherwise we use the activeColormapName, otherwise, grayscale
+        activeColormapName: colormap?.name || options?.activeColormapName || 'Grayscale',
+        container: colorbarContainer,
+        ticks: {
+          ...ColorbarService.defaultTickStyles,
+          ...options.ticks,
+        },
+        volumeId: viewport instanceof VolumeViewport ? volumeId : undefined,
+      });
+      if (this.colorbars[viewportId]) {
+        this.colorbars[viewportId].push({ colorbar, container: colorbarContainer });
+      } else {
+        this.colorbars[viewportId] = [{ colorbar, container: colorbarContainer }];
+      }
+    });
 
     this._broadcastEvent(ColorbarService.EVENTS.STATE_CHANGED, {
       viewportId,
@@ -127,27 +134,80 @@ export default class ColorbarService extends PubSubService {
     });
   }
 
+  private setViewportColormap(viewportId, displaySetInstanceUID, colormap, immediate = false) {
+    const renderingEngine = getRenderingEngine(RENDERING_ENGINE_ID);
+    const viewport = renderingEngine.getViewport(viewportId);
+    const actorEntries = viewport.getActors();
+
+    const setViewportProperties = (viewport, uid) => {
+      const actorEntry = actorEntries.find(entry => entry.uid.includes(uid));
+      const { actor: volumeActor, uid: volumeId } = actorEntry;
+      viewport.setProperties({ colormap, volumeActor }, volumeId);
+    };
+
+    if (viewport instanceof StackViewport) {
+      setViewportProperties(viewport, viewportId);
+    }
+
+    if (viewport instanceof VolumeViewport) {
+      setViewportProperties(viewport, displaySetInstanceUID);
+    }
+
+    if (immediate) {
+      viewport.render();
+    }
+  }
+
+  private createContainers(numContainers, element, position, thickness, viewportId) {
+    const containers = [];
+    const dimension = 50 / numContainers;
+
+    for (let i = 0; i < numContainers; i++) {
+      const colorbarContainer = document.createElement('div');
+      colorbarContainer.id = `ctColorbarContainer-${viewportId}-${i + 1}`;
+
+      Object.assign(colorbarContainer.style, ColorbarService.defaultStyles);
+
+      if (['top', 'bottom'].includes(position)) {
+        Object.assign(colorbarContainer.style, {
+          width: `${dimension}%`,
+          height: thickness || '2.5%',
+          left: `${(i + 1) * dimension}%`,
+          transform: 'translateX(-50%)',
+          ...ColorbarService.positionStyles[position],
+        });
+      } else if (['left', 'right'].includes(position)) {
+        Object.assign(colorbarContainer.style, {
+          height: `${dimension}%`,
+          width: thickness || '2.5%',
+          top: `${(i + 1) * dimension}%`,
+          transform: 'translateY(-50%)',
+          ...ColorbarService.positionStyles[position],
+        });
+      }
+
+      element.appendChild(colorbarContainer);
+      containers.push(colorbarContainer);
+    }
+
+    return containers;
+  }
+
   public removeColorbar(viewportId) {
     const colorbarInfo = this.colorbars[viewportId];
     if (!colorbarInfo) {
       return;
     }
-    colorbarInfo.container.parentNode.removeChild(colorbarInfo.container);
+
+    colorbarInfo.forEach(({ colorbar, container }) => {
+      container.parentNode.removeChild(container);
+    });
+
     delete this.colorbars[viewportId];
+
     this._broadcastEvent(ColorbarService.EVENTS.STATE_CHANGED, {
       viewportId,
       state: ChangeTypes.Removed,
-    });
-  }
-
-  public updateColormap(viewportId, activeColormapName) {
-    const colorbarInfo = this.colorbars[viewportId];
-    if (colorbarInfo) {
-      colorbarInfo.colorbar.activeColormapName = activeColormapName;
-    }
-    this._broadcastEvent(ColorbarService.EVENTS.STATE_CHANGED, {
-      viewportId,
-      state: ChangeTypes.Modified,
     });
   }
 
