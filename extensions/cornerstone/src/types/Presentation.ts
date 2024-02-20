@@ -1,23 +1,38 @@
-/** Store presentation data for either stack viewports or volume viewports */
-import { Types } from '@cornerstonejs/core';
-import { Types as CoreTypes } from '@ohif/core';
+import type { Types } from '@cornerstonejs/core';
 
 /**
- * Has information on the presentation of the viewport.
+ * Represents a position presentation in a viewport.
  */
-export interface Presentation extends Types.StackViewportProperties {
-  presentationIds: CoreTypes.PresentationIds;
+export type PositionPresentation = {
+  id: string;
   viewportType: string;
   initialImageIndex: number;
-  camera: Types.ICamera;
-  properties: Types.StackViewportProperties | Types.VolumeViewportProperties;
+  viewUp: Types.Point3;
+  viewPlaneNormal: Types.Point3;
   zoom?: number;
-  pan?: [number, number];
+  pan?: Types.Point2;
+};
+
+/**
+ * Represents a LUT presentation in a stack viewport.
+ */
+export interface LutPresentation extends Types.StackViewportProperties {
+  id: string;
+  viewportType: string;
 }
 
+/**
+ * Presentation can be a PositionPresentation or a LutPresentation.
+ */
+type Presentation = PositionPresentation | LutPresentation;
+
+/**
+ * Viewport presentations object that can contain a positionPresentation
+ * and or a lutPresentation.
+ */
 export type Presentations = {
-  positionPresentation?: Presentation;
-  lutPresentation?: Presentation;
+  positionPresentation?: PositionPresentation;
+  lutPresentation?: LutPresentation;
 };
 
 export default Presentation;

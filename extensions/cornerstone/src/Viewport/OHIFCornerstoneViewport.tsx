@@ -21,6 +21,7 @@ import getSOPInstanceAttributes from '../utils/measurementServiceMappings/utils/
 import CornerstoneServices from '../types/CornerstoneServices';
 import CinePlayer from '../components/CinePlayer';
 import { Types } from '@ohif/core';
+import { LutPresentation, PositionPresentation } from '../types/Presentation';
 
 const STACK = 'stack';
 
@@ -276,7 +277,10 @@ const OHIFCornerstoneViewport = React.memo(props => {
       // The presentation state will have been stored previously by closing
       // a viewport.  Otherwise, this viewport will be unchanged and the
       // presentation information will be directly carried over.
-      const { lutPresentationStore, positionPresentationStore } = stateSyncService.getState();
+      const state = stateSyncService.getState();
+      const lutPresentationStore = state.lutPresentationStore as LutPresentation;
+      const positionPresentationStore = state.positionPresentationStore as PositionPresentation;
+
       const { presentationIds } = viewportOptions;
       const presentations = {
         positionPresentation: positionPresentationStore[presentationIds?.positionPresentationId],

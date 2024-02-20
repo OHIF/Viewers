@@ -1,6 +1,7 @@
 import { Types } from '@cornerstonejs/core';
-import { StackData, VolumeData } from '../../types/CornerstoneCacheService';
-import { DisplaySetOptions, PublicViewportOptions, ViewportOptions } from './Viewport';
+import { StackViewportData, VolumeViewportData } from '../../types/CornerstoneCacheService';
+import { DisplaySetOptions, PublicViewportOptions } from './Viewport';
+import { Presentations } from '../../types/Presentation';
 
 /**
  * Handles cornerstone viewport logic including enabling, disabling, and
@@ -55,8 +56,10 @@ export interface IViewportService {
    * @returns
    */
   setViewportData(
-    viewportData: StackData | VolumeData,
+    viewportId: string,
+    viewportData: StackViewportData | VolumeViewportData,
     publicViewportOptions: PublicViewportOptions,
-    publicDisplaySetOptions: DisplaySetOptions[]
+    publicDisplaySetOptions: DisplaySetOptions[],
+    presentations?: Presentations
   ): void;
 }
