@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-beta.54](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.53...v3.8.0-beta.54) (2024-02-14)
+
+
+### Features
+
+* **errorboundary:** format stack trace properly ([#3931](https://github.com/OHIF/Viewers/issues/3931)) ([0eac386](https://github.com/OHIF/Viewers/commit/0eac386a31a5d6965536360aa65a44769c1a5740))
+
+
+
+
+
 # [3.8.0-beta.53](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.52...v3.8.0-beta.53) (2024-02-05)
 
 **Note:** Version bump only for package @ohif/ui
