@@ -57,19 +57,19 @@ const moreToolsMpr = [
           'Reset'
         ),
         ToolbarService._createToggleButton(
-          'StackImageSync',
+          'ImageSliceSync',
           'link',
-          'Stack Image Sync',
+          'Image Slice Sync',
           [
             {
-              commandName: 'toggleStackImageSync',
+              commandName: 'toggleImageSliceSync',
             },
           ],
           'Enable position synchronization on stack viewports',
           {
             listeners: {
               [EVENTS.STACK_VIEWPORT_NEW_STACK]: {
-                commandName: 'toggleStackImageSync',
+                commandName: 'toggleImageSliceSync',
                 commandOptions: { toggledState: true },
               },
             },
