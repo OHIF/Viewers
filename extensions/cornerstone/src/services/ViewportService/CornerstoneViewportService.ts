@@ -1008,8 +1008,8 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     });
 
     // Resize and render the rendering engine again.
-    this.renderingEngine?.resize(isImmediate);
-    this.renderingEngine?.render();
+    renderingEngine.resize(isImmediate);
+    renderingEngine.render();
   }
 
   private resetGridResizeTimeout() {
