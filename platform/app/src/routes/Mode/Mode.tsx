@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router';
 import PropTypes from 'prop-types';
 // TODO: DicomMetadataStore should be injected?
-import { DicomMetadataStore, ServicesManager, utils, Types, log } from '@ohif/core';
+import { DicomMetadataStore, ServicesManager, utils, log, Enums } from '@ohif/core';
 import { DragAndDropProvider, ImageViewerProvider } from '@ohif/ui';
 import { useSearchParams } from '@hooks';
 import { useAppConfig } from '@state';
@@ -14,7 +14,7 @@ import loadModules from '../../pluginImports';
 import isSeriesFilterUsed from '../../utils/isSeriesFilterUsed';
 
 const { getSplitParam, sortingCriteria } = utils;
-const { TimingEnum } = Types;
+const { TimingEnum } = Enums;
 
 /**
  * Initialize the route.

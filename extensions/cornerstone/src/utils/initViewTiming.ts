@@ -1,7 +1,7 @@
-import { log, Types } from '@ohif/core';
+import { log, Enums } from '@ohif/core';
 import { EVENTS } from '@cornerstonejs/core';
 
-const { TimingEnum } = Types;
+const { TimingEnum } = Enums;
 
 const IMAGE_TIMING_KEYS = [
   TimingEnum.DISPLAY_SETS_TO_ALL_IMAGES,
