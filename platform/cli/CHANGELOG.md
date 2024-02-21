@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-beta.55](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.54...v3.8.0-beta.55) (2024-02-21)
+
+
+### Features
+
+* **resize:** Optimize resizing process and maintain zoom level ([#3889](https://github.com/OHIF/Viewers/issues/3889)) ([b3a0faf](https://github.com/OHIF/Viewers/commit/b3a0faf5f5f0a1993b2b017eb4cc1216164ea2c6))
+
+
+
+
+
 # [3.8.0-beta.54](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.53...v3.8.0-beta.54) (2024-02-14)
 
 **Note:** Version bump only for package @ohif/cli
