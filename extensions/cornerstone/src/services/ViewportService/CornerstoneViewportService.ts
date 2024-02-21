@@ -10,6 +10,7 @@ import {
   VolumeViewport3D,
   cache,
   Enums as csEnums,
+  BaseVolumeViewport,
 } from '@cornerstonejs/core';
 
 import { utilities as csToolsUtils, Enums as csToolsEnums } from '@cornerstonejs/tools';
@@ -166,7 +167,10 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
    * @param presentations - The presentations to apply to the viewport.
    */
   public setPresentations(viewportId: string, presentations?: Presentations): void {
-    const viewport = this.getCornerstoneViewport(viewportId);
+    const viewport = this.getCornerstoneViewport(viewportId) as
+      | Types.IStackViewport
+      | Types.IVolumeViewport;
+
     if (!viewport) {
       return;
     }
@@ -177,17 +181,29 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
 
     const { lutPresentation, positionPresentation } = presentations;
     if (lutPresentation) {
-      viewport.setProperties(lutPresentation);
-    }
-    if (positionPresentation) {
-      viewport.setCamera(positionPresentation);
+      const { presentation } = lutPresentation;
 
-      if (positionPresentation.zoom !== undefined) {
-        viewport.setZoom(positionPresentation.zoom);
+      if (viewport instanceof BaseVolumeViewport) {
+        Object.entries(presentation).forEach(
+          ([volumeId, properties]: [string, Types.ViewportProperties]) => {
+            viewport.setProperties(properties, volumeId);
+          }
+        );
+      } else {
+        viewport.setProperties(presentation);
+      }
+    }
+
+    if (positionPresentation) {
+      const { viewPlaneNormal, viewUp, zoom, pan } = positionPresentation.presentation;
+      viewport.setCamera({ viewPlaneNormal, viewUp });
+
+      if (zoom !== undefined) {
+        viewport.setZoom(zoom);
       }
 
-      if (positionPresentation.pan !== undefined) {
-        viewport.setPan(positionPresentation.pan);
+      if (pan !== undefined) {
+        viewport.setPan(pan);
       }
     }
   }
@@ -225,11 +241,13 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     return {
       id: positionPresentationId,
       viewportType: viewportInfo.getViewportType(),
-      initialImageIndex,
-      viewPlaneNormal,
-      viewUp,
-      zoom,
-      pan,
+      presentation: {
+        initialImageIndex,
+        viewUp,
+        viewPlaneNormal,
+        zoom,
+        pan,
+      },
     };
   }
 
@@ -252,21 +270,38 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
 
     const { lutPresentationId } = presentationIds;
 
-    const csViewport = this.getCornerstoneViewport(viewportId);
+    const csViewport = this.getCornerstoneViewport(viewportId) as
+      | Types.IStackViewport
+      | Types.IVolumeViewport;
+
     if (!csViewport) {
       return;
     }
 
-    const properties = csViewport.getProperties();
-    if (properties.isComputedVOI) {
-      delete properties.voiRange;
-      delete properties.VOILUTFunction;
+    const cleanProperties = properties => {
+      if (properties.isComputedVOI) {
+        delete properties.voiRange;
+        delete properties.VOILUTFunction;
+      }
+      return properties;
+    };
+
+    const presentation =
+      csViewport instanceof BaseVolumeViewport
+        ? new Map()
+        : cleanProperties(csViewport.getProperties());
+
+    if (presentation instanceof Map) {
+      csViewport.getActors().forEach(({ uid: volumeId }) => {
+        const properties = cleanProperties(csViewport.getProperties(volumeId));
+        presentation.set(volumeId, properties);
+      });
     }
 
     return {
       id: lutPresentationId,
       viewportType: viewportInfo.getViewportType(),
-      ...properties,
+      presentation,
     };
   }
 

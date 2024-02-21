@@ -1,24 +1,31 @@
 import type { Types } from '@cornerstonejs/core';
 
 /**
- * Represents a position presentation in a viewport.
+ * Represents a position presentation in a viewport. This is basically
+ * viewport specific camera position and zoom, and not the display set
  */
 export type PositionPresentation = {
   id: string;
   viewportType: string;
-  initialImageIndex: number;
-  viewUp: Types.Point3;
-  viewPlaneNormal: Types.Point3;
-  zoom?: number;
-  pan?: Types.Point2;
+  presentation: {
+    initialImageIndex: number;
+    viewUp: Types.Point3;
+    viewPlaneNormal: Types.Point3;
+    zoom?: number;
+    pan?: Types.Point2;
+  };
 };
 
 /**
- * Represents a LUT presentation in a stack viewport.
+ * Represents a LUT presentation in a viewport, and is really related
+ * to displaySets and not the viewport itself. So that is why it can
+ * be an object with volumeId keys, or a single object with the properties
+ * itself
  */
-export interface LutPresentation extends Types.StackViewportProperties {
+export interface LutPresentation {
   id: string;
   viewportType: string;
+  presentation: Record<string, Types.ViewportProperties> | Types.ViewportProperties;
 }
 
 /**
