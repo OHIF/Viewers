@@ -65,9 +65,24 @@ export default class ExtensionManager extends PubSubService {
     ACTIVE_DATA_SOURCE_CHANGED: 'event::activedatasourcechanged',
   };
 
+  public static readonly MODULE_TYPES = MODULE_TYPES;
+
   private _commandsManager: CommandsManager;
   private _servicesManager: ServicesManager;
   private _hotkeysManager: HotkeysManager;
+  private modulesMap: Record<string, unknown>;
+  private modules: Record<string, any[]>;
+  private registeredExtensionIds: string[];
+  private moduleTypeNames: string[];
+  private _appConfig: any;
+  private _extensionLifeCycleHooks: {
+    onModeEnter: Record<string, any>;
+    onModeExit: Record<string, any>;
+  };
+  private dataSourceMap: Record<string, any>;
+  private dataSourceDefs: Record<string, any>;
+  private defaultDataSourceName: string;
+  private activeDataSource: string;
 
   constructor({
     commandsManager,
@@ -265,55 +280,73 @@ export default class ExtensionManager extends PubSubService {
         configuration
       );
 
-      if (extensionModule) {
-        switch (moduleType) {
-          case MODULE_TYPES.COMMANDS:
-            this._initCommandsModule(extensionModule);
-            break;
-          case MODULE_TYPES.DATA_SOURCE:
-            this._initDataSourcesModule(extensionModule, extensionId, dataSources);
-            break;
-          case MODULE_TYPES.HANGING_PROTOCOL:
-            this._initHangingProtocolsModule(extensionModule, extensionId);
-          case MODULE_TYPES.TOOLBAR:
-          case MODULE_TYPES.VIEWPORT:
-          case MODULE_TYPES.PANEL:
-          case MODULE_TYPES.SOP_CLASS_HANDLER:
-          case MODULE_TYPES.CONTEXT:
-          case MODULE_TYPES.LAYOUT_TEMPLATE:
-          case MODULE_TYPES.CUSTOMIZATION:
-          case MODULE_TYPES.STATE_SYNC:
-          case MODULE_TYPES.UTILITY:
-            // Default for most extension points,
-            // Just adds each entry ready for consumption by mode.
-            extensionModule.forEach(element => {
-              if (!element.name) {
-                throw new Error(
-                  `Extension ID ${extensionId} module ${moduleType} element has no name`
-                );
-              }
-              const id = `${extensionId}.${moduleType}.${element.name}`;
-              element.id = id;
-              this.modulesMap[id] = element;
-            });
-            break;
-          default:
-            throw new Error(`Module type invalid: ${moduleType}`);
-        }
-
-        this.modules[moduleType].push({
-          extensionId,
-          module: extensionModule,
-        });
+      if (!extensionModule) {
+        return;
       }
+
+      switch (moduleType) {
+        case MODULE_TYPES.COMMANDS:
+          this._initCommandsModule(extensionModule);
+          break;
+        case MODULE_TYPES.DATA_SOURCE:
+          this._initDataSourcesModule(extensionModule, extensionId, dataSources);
+          break;
+        case MODULE_TYPES.HANGING_PROTOCOL:
+          this._initHangingProtocolsModule(extensionModule, extensionId);
+        case MODULE_TYPES.TOOLBAR:
+        case MODULE_TYPES.VIEWPORT:
+        case MODULE_TYPES.PANEL:
+        case MODULE_TYPES.SOP_CLASS_HANDLER:
+        case MODULE_TYPES.CONTEXT:
+        case MODULE_TYPES.LAYOUT_TEMPLATE:
+        case MODULE_TYPES.CUSTOMIZATION:
+        case MODULE_TYPES.STATE_SYNC:
+        case MODULE_TYPES.UTILITY:
+          // Default for most extension points,
+          // Just adds each entry ready for consumption by mode.
+          extensionModule.forEach(element => {
+            if (!element.name) {
+              throw new Error(
+                `Extension ID ${extensionId} module ${moduleType} element has no name`
+              );
+            }
+            const id = `${extensionId}.${moduleType}.${element.name}`;
+            element.id = id;
+            this.modulesMap[id] = element;
+          });
+          break;
+        default:
+          throw new Error(`Module type invalid: ${moduleType}`);
+      }
+
+      this.modules[moduleType].push({
+        extensionId,
+        module: extensionModule,
+      });
     });
 
     // Track extension registration
     this.registeredExtensionIds.push(extensionId);
   };
 
+  /**
+   * Retrieves the module entry associated with the given string entry
+   * @param stringEntry - The string entry to retrieve the module entry for which is
+   * in the format of `${extensionId}.${moduleType}.${moduleName}`
+   * @returns The module entry associated with the given string entry.
+   */
   getModuleEntry = stringEntry => {
     return this.modulesMap[stringEntry];
+  };
+
+  /**
+   * Retrieves all modules of a given type for all registered extensions.
+   *
+   * @param moduleType - The type of modules to retrieve.
+   * @returns An array of modules of the specified type.
+   */
+  getModulesByType = (moduleType: string) => {
+    return this.modules[moduleType];
   };
 
   getDataSources = dataSourceName => {
