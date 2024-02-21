@@ -22,8 +22,6 @@ import { getFirstAnnotationSelected } from './utils/measurementServiceMappings/u
 import getActiveViewportEnabledElement from './utils/getActiveViewportEnabledElement';
 import { CornerstoneServices } from './types';
 
-const { ViewportColorbar } = cstUtils.voi.colorbar;
-
 function commandsModule({
   servicesManager,
   commandsManager,
@@ -283,7 +281,7 @@ function commandsModule({
         colorbarService.removeColorbar(viewportId);
         return;
       }
-      colorbarService.addColorbar(viewportId, ViewportColorbar, displaySetInstanceUIDs, options);
+      colorbarService.addColorbar(viewportId, displaySetInstanceUIDs, options);
     },
 
     setWindowLevel(props) {

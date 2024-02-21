@@ -1,6 +1,9 @@
 import { PubSubService } from '@ohif/core';
 import { RENDERING_ENGINE_ID } from '../ViewportService/constants';
 import { StackViewport, VolumeViewport, getRenderingEngine } from '@cornerstonejs/core';
+import { utilities } from '@cornerstonejs/tools';
+
+const { ViewportColorbar } = utilities.voi.colorbar;
 
 type ColorMapPreset = {
   ColorSpace;
@@ -66,12 +69,15 @@ export default class ColorbarService extends PubSubService {
     super(ColorbarService.EVENTS);
   }
 
-  public addColorbar(
-    viewportId,
-    ViewportColorbar,
-    displaySetInstanceUIDs,
-    options = {} as ColorbarOptions
-  ) {
+  /**
+   * Adds a colorbar to a specific viewport identified by `viewportId`, using the provided `displaySetInstanceUIDs` and `options`.
+   * This method sets up the colorbar, associates it with the viewport, and applies initial configurations based on the provided options.
+   *
+   * @param viewportId The identifier for the viewport where the colorbar will be added.
+   * @param displaySetInstanceUIDs An array of display set instance UIDs to associate with the colorbar.
+   * @param options Configuration options for the colorbar, including position, colormaps, active colormap name, ticks, and width.
+   */
+  public addColorbar(viewportId, displaySetInstanceUIDs, options = {} as ColorbarOptions) {
     const renderingEngine = getRenderingEngine(RENDERING_ENGINE_ID);
     const viewport = renderingEngine.getViewport(viewportId);
     const { element } = viewport;
@@ -130,10 +136,82 @@ export default class ColorbarService extends PubSubService {
 
     this._broadcastEvent(ColorbarService.EVENTS.STATE_CHANGED, {
       viewportId,
-      state: ChangeTypes.Added,
+      changeType: ChangeTypes.Added,
     });
   }
 
+  /**
+   * Removes the colorbar associated with a given viewport ID. This involves cleaning up any created DOM elements and internal references.
+   *
+   * @param viewportId The identifier for the viewport from which the colorbar will be removed.
+   */
+  public removeColorbar(viewportId) {
+    const colorbarInfo = this.colorbars[viewportId];
+    if (!colorbarInfo) {
+      return;
+    }
+
+    colorbarInfo.forEach(({ colorbar, container }) => {
+      container.parentNode.removeChild(container);
+    });
+
+    delete this.colorbars[viewportId];
+
+    this._broadcastEvent(ColorbarService.EVENTS.STATE_CHANGED, {
+      viewportId,
+      changeType: ChangeTypes.Removed,
+    });
+  }
+
+  /**
+   * Checks whether a colorbar is associated with a given viewport ID.
+   *
+   * @param viewportId The identifier for the viewport to check.
+   * @returns `true` if a colorbar exists for the specified viewport, otherwise `false`.
+   */
+  public hasColorbar(viewportId) {
+    return this.colorbars[viewportId] ? true : false;
+  }
+
+  /**
+   * Retrieves the current state of colorbars, including all active colorbars and their configurations.
+   *
+   * @returns An object representing the current state of all colorbars managed by this service.
+   */
+  public getState() {
+    return this.colorbars;
+  }
+
+  /**
+   * Retrieves colorbar information for a specific viewport ID.
+   *
+   * @param viewportId The identifier for the viewport to retrieve colorbar information for.
+   * @returns The colorbar information associated with the specified viewport, if available.
+   */
+  public getViewportColorbar(viewportId) {
+    return this.colorbars[viewportId];
+  }
+
+  /**
+   * Handles the cleanup and removal of all colorbars from the viewports. This is typically called
+   * when exiting the mode or context in which the colorbars are used, ensuring that no DOM
+   * elements or references are left behind.
+   */
+  public onModeExit() {
+    const viewportIds = Object.keys(this.colorbars);
+    viewportIds.forEach(viewportId => {
+      this.removeColorbar(viewportId);
+    });
+  }
+
+  /**
+   * Sets the colormap for a viewport. This function is used internally to update the colormap the viewport
+   *
+   * @param viewportId The identifier of the viewport to update.
+   * @param displaySetInstanceUID The display set instance UID associated with the viewport.
+   * @param colormap The colormap object to set on the viewport.
+   * @param immediate A boolean indicating whether the viewport should be re-rendered immediately after setting the colormap.
+   */
   private setViewportColormap(viewportId, displaySetInstanceUID, colormap, immediate = false) {
     const renderingEngine = getRenderingEngine(RENDERING_ENGINE_ID);
     const viewport = renderingEngine.getViewport(viewportId);
@@ -158,11 +236,22 @@ export default class ColorbarService extends PubSubService {
     }
   }
 
+  /**
+   * Creates the container elements for colorbars based on the specified parameters. This function dynamically
+   * generates and styles DOM elements to host the colorbars, positioning them according to the specified options.
+   *
+   * @param numContainers The number of containers to create, typically corresponding to the number of colorbars.
+   * @param element The DOM element within which the colorbar containers will be placed.
+   * @param position The position of the colorbar containers (e.g., 'top', 'bottom', 'left', 'right').
+   * @param thickness The thickness of the colorbar containers, affecting their width or height depending on their position.
+   * @param viewportId The identifier of the viewport for which the containers are being created.
+   * @returns An array of the created container DOM elements.
+   */
   private createContainers(numContainers, element, position, thickness, viewportId) {
     const containers = [];
     const dimension = 50 / numContainers;
 
-    for (let i = 0; i < numContainers; i++) {
+    Array.from({ length: numContainers }).forEach((_, i) => {
       const colorbarContainer = document.createElement('div');
       colorbarContainer.id = `ctColorbarContainer-${viewportId}-${i + 1}`;
 
@@ -188,45 +277,8 @@ export default class ColorbarService extends PubSubService {
 
       element.appendChild(colorbarContainer);
       containers.push(colorbarContainer);
-    }
+    });
 
     return containers;
-  }
-
-  public removeColorbar(viewportId) {
-    const colorbarInfo = this.colorbars[viewportId];
-    if (!colorbarInfo) {
-      return;
-    }
-
-    colorbarInfo.forEach(({ colorbar, container }) => {
-      container.parentNode.removeChild(container);
-    });
-
-    delete this.colorbars[viewportId];
-
-    this._broadcastEvent(ColorbarService.EVENTS.STATE_CHANGED, {
-      viewportId,
-      state: ChangeTypes.Removed,
-    });
-  }
-
-  public hasColorbar(viewportId) {
-    return this.colorbars[viewportId] ? true : false;
-  }
-
-  public getState() {
-    return this.colorbars;
-  }
-
-  public getViewportColorbar(viewportId) {
-    return this.colorbars[viewportId];
-  }
-
-  public onModeExit() {
-    const viewportIds = Object.keys(this.colorbars);
-    viewportIds.forEach(viewportId => {
-      this.removeColorbar(viewportId);
-    });
   }
 }
