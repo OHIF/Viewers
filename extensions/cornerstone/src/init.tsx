@@ -313,7 +313,7 @@ export default async function init({
 
     eventTarget.addEventListener(EVENTS.STACK_VIEWPORT_NEW_STACK, toolbarEventListener);
 
-    initViewTiming({ element, eventTarget });
+    initViewTiming({ element });
   }
 
   function elementDisabledHandler(evt) {
