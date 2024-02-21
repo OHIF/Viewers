@@ -427,7 +427,7 @@ describe('OHIF Cornerstone Toolbar', () => {
   it('checks if stack sync is preserved on new display set and uses FOR', () => {
     // Active stack image sync and reference lines
     cy.get('[data-cy="MoreTools-split-button-secondary"]').click();
-    cy.get('[data-cy="StackImageSync"]').click();
+    cy.get('[data-cy="ImageSliceSync"]').click();
     // Add reference lines as that sometimes throws an exception
     cy.get('[data-cy="MoreTools-split-button-secondary"]').click();
     cy.get('[data-cy="ReferenceLines"]').click();

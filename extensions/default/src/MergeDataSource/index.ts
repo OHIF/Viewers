@@ -33,6 +33,7 @@ export const mergeMap: MergeMap = {
  * @param {unknown[]} options.args - The arguments to be passed to the function.
  * @param {ExtensionManager} options.extensionManager - The extension manager.
  * @param {string[]} options.dataSourceNames - The names of the data sources to be called.
+ * @param {string} options.defaultDataSourceName - The name of the default data source.
  * @returns {Promise<unknown[]>} - A promise that resolves to the merged data from all data sources.
  */
 export const callForAllDataSourcesAsync = async ({
@@ -41,12 +42,18 @@ export const callForAllDataSourcesAsync = async ({
   args,
   extensionManager,
   dataSourceNames,
+  defaultDataSourceName,
 }: CallForAllDataSourcesAsyncOptions) => {
   const { mergeKey, tagFunc } = mergeMap[path] || { tagFunc: x => x };
 
-  const dataSourceDefs = Object.values(extensionManager.dataSourceDefs);
+  /** Sort by default data source */
+  const defs = Object.values(extensionManager.dataSourceDefs);
+  const defaultDataSourceDef = defs.find(def => def.sourceName === defaultDataSourceName);
+  const dataSourceDefs = defs.filter(def => def.sourceName !== defaultDataSourceName);
+  dataSourceDefs.unshift(defaultDataSourceDef);
+
   const promises = [];
-  const mergedData = [];
+  const sourceNames = [];
 
   for (const dataSourceDef of dataSourceDefs) {
     const { configuration, sourceName } = dataSourceDef;
@@ -54,13 +61,22 @@ export const callForAllDataSourcesAsync = async ({
       const [dataSource] = extensionManager.getDataSources(sourceName);
       const func = get(dataSource, path);
       const promise = func.apply(dataSource, args);
-      promises.push(promise.then(data => mergedData.push(tagFunc(data, sourceName))));
+      promises.push(promise);
+      sourceNames.push(sourceName);
     }
   }
 
-  await Promise.allSettled(promises);
+  const data = await Promise.allSettled(promises);
+  const mergedData = data.map((data, i) => tagFunc(data.value, sourceNames[i]));
 
-  return uniqBy(mergedData.flat(), obj => obj[mergeKey]);
+  let results = [];
+  if (mergeKey) {
+    results = uniqBy(mergedData.flat(), obj => get(obj, mergeKey));
+  } else {
+    results = mergedData.flat();
+  }
+
+  return results;
 };
 
 /**
@@ -70,6 +86,7 @@ export const callForAllDataSourcesAsync = async ({
  * @param options.args - The arguments to be passed to the function.
  * @param options.extensionManager - The extension manager instance.
  * @param options.dataSourceNames - The names of the data sources to be called.
+ * @param options.defaultDataSourceName - The name of the default data source.
  * @returns The merged data from all the matching data sources.
  */
 export const callForAllDataSources = ({
@@ -77,8 +94,14 @@ export const callForAllDataSources = ({
   args,
   extensionManager,
   dataSourceNames,
+  defaultDataSourceName,
 }: CallForAllDataSourcesOptions) => {
-  const dataSourceDefs = Object.values(extensionManager.dataSourceDefs);
+  /** Sort by default data source */
+  const defs = Object.values(extensionManager.dataSourceDefs);
+  const defaultDataSourceDef = defs.find(def => def.sourceName === defaultDataSourceName);
+  const dataSourceDefs = defs.filter(def => def.sourceName !== defaultDataSourceName);
+  dataSourceDefs.unshift(defaultDataSourceDef);
+
   const mergedData = [];
   for (const dataSourceDef of dataSourceDefs) {
     const { configuration, sourceName } = dataSourceDef;
@@ -89,6 +112,7 @@ export const callForAllDataSources = ({
       mergedData.push(data);
     }
   }
+
   return mergedData.flat();
 };
 
@@ -147,7 +171,13 @@ function createMergeDataSourceApi(
 
   const implementation = {
     initialize: (...args: unknown[]) =>
-      callForAllDataSources({ path: 'initialize', args, extensionManager, dataSourceNames }),
+      callForAllDataSources({
+        path: 'initialize',
+        args,
+        extensionManager,
+        dataSourceNames,
+        defaultDataSourceName,
+      }),
     query: {
       studies: {
         search: (...args: unknown[]) =>
@@ -157,6 +187,7 @@ function createMergeDataSourceApi(
             args,
             extensionManager,
             dataSourceNames,
+            defaultDataSourceName,
           }),
       },
       series: {
@@ -167,6 +198,7 @@ function createMergeDataSourceApi(
             args,
             extensionManager,
             dataSourceNames,
+            defaultDataSourceName,
           }),
       },
       instances: {
@@ -177,6 +209,7 @@ function createMergeDataSourceApi(
             args,
             extensionManager,
             dataSourceNames,
+            defaultDataSourceName,
           }),
       },
     },
@@ -188,6 +221,7 @@ function createMergeDataSourceApi(
           args,
           extensionManager,
           dataSourceNames,
+          defaultDataSourceName,
         }),
       directURL: (...args: unknown[]) =>
         callForDefaultDataSource({
@@ -204,6 +238,7 @@ function createMergeDataSourceApi(
             args,
             extensionManager,
             dataSourceNames,
+            defaultDataSourceName,
           }),
       },
     },
@@ -222,6 +257,7 @@ function createMergeDataSourceApi(
         args,
         extensionManager,
         dataSourceNames,
+        defaultDataSourceName,
       }),
     getImageIdsForDisplaySet: (...args: unknown[]) =>
       callByRetrieveAETitle({
@@ -243,6 +279,7 @@ function createMergeDataSourceApi(
         args,
         extensionManager,
         dataSourceNames,
+        defaultDataSourceName,
       }),
   };
 
