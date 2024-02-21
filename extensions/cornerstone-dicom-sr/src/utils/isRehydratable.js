@@ -1,7 +1,6 @@
 import { adaptersSR } from '@cornerstonejs/adapters';
 
-const cornerstoneAdapters =
-  adaptersSR.Cornerstone3D.MeasurementReport.CORNERSTONE_TOOL_CLASSES_BY_UTILITY_TYPE;
+const cornerstoneAdapters = adaptersSR.Cornerstone3D;
 
 const supportedLegacyCornerstoneTags = ['cornerstoneTools@^4.0.0'];
 const CORNERSTONE_3D_TAG = cornerstoneAdapters.CORNERSTONE_3D_TAG;

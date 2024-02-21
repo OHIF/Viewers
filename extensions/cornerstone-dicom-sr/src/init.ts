@@ -12,13 +12,21 @@ import {
 } from '@cornerstonejs/tools';
 import DICOMSRDisplayTool from './tools/DICOMSRDisplayTool';
 import addToolInstance from './utils/addToolInstance';
-import { Types } from '@ohif/core';
+import { MeasurementService, Types } from '@ohif/core';
 import toolNames from './tools/toolNames';
+import DICOMSRDisplayMapping from './DICOMSRDisplayMapping';
 
 /**
  * @param {object} configuration
  */
-export default function init({ configuration = {} }: Types.Extensions.ExtensionParams): void {
+export default function init({
+  servicesManager,
+  extensionManager,
+  configuration = {},
+}: Types.Extensions.ExtensionParams): void {
+  const { measurementService, displaySetService, cornerstoneViewportService } =
+    servicesManager.services;
+
   addTool(DICOMSRDisplayTool);
   addToolInstance(toolNames.SRLength, LengthTool, {});
   addToolInstance(toolNames.SRBidirectional, BidirectionalTool);
@@ -31,6 +39,31 @@ export default function init({ configuration = {} }: Types.Extensions.ExtensionP
   // TODO - fix the rehydration of Freehand, as it throws an exception
   // on a missing polyline. The fix is probably in CS3D
   addToolInstance(toolNames.SRPlanarFreehandROI, PlanarFreehandROITool);
+
+  /** TODO: Get name/version from cs extension */
+  const CORNERSTONE_3D_TOOLS_SOURCE_NAME = 'Cornerstone3DTools';
+  const CORNERSTONE_3D_TOOLS_SOURCE_VERSION = '0.1';
+  const source = measurementService.getSource(
+    CORNERSTONE_3D_TOOLS_SOURCE_NAME,
+    CORNERSTONE_3D_TOOLS_SOURCE_VERSION
+  );
+  measurementService.addMapping(
+    source,
+    toolNames.DICOMSRDisplay,
+    [
+      {
+        valueType: MeasurementService.VALUE_TYPES.POINT,
+        points: 1,
+      },
+    ],
+    DICOMSRDisplayMapping.toAnnotation,
+    csToolsAnnotation =>
+      DICOMSRDisplayMapping.toMeasurement(
+        csToolsAnnotation,
+        displaySetService,
+        cornerstoneViewportService
+      )
+  );
 
   // Modify annotation tools to use dashed lines on SR
   const dashedLine = {
