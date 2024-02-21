@@ -26,7 +26,7 @@ const dynamicVolume = {
   sopClassHandler:
     '@ohif/extension-cornerstone-dynamic-volume.sopClassHandlerModule.dynamic-volume',
   viewport: '@ohif/extension-cornerstone-dynamic-volume.viewportModule.chartViewport',
-  leftPanel: '@ohif/extension-cornerstone-dynamic-volume.panelModule.dynamic-volume',
+  leftPanel: '@ohif/extension-cornerstone-dynamic-volume.panelModule.dynamic-volume-with-workflow',
   rightPanel: '@ohif/extension-cornerstone-dynamic-volume.panelModule.ROISegmentation',
 };
 

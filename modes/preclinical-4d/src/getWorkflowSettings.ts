@@ -3,7 +3,7 @@ import toolbarButtons from './toolbarButtons';
 const dynamicVolume = {
   sopClassHandler:
     '@ohif/extension-cornerstone-dynamic-volume.sopClassHandlerModule.dynamic-volume',
-  leftPanel: '@ohif/extension-cornerstone-dynamic-volume.panelModule.dynamic-volume',
+  leftPanel: '@ohif/extension-cornerstone-dynamic-volume.panelModule.dynamic-volume-with-workflow',
   rightPanel: '@ohif/extension-cornerstone-dynamic-volume.panelModule.ROISegmentation',
 };
 

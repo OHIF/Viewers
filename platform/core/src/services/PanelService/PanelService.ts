@@ -17,14 +17,6 @@ type PanelData = {
   content: unknown;
 };
 
-type PanelInfo =
-  | string
-  | {
-      id: string;
-      enabled: boolean;
-      handlers: ActivatePanelTriggers[];
-    };
-
 export enum PanelPosition {
   Left = 'left',
   Right = 'right',
@@ -33,7 +25,6 @@ export enum PanelPosition {
 
 export default class PanelService extends PubSubService {
   private _extensionManager: ExtensionManager;
-  private conditionalPanels: Map<string, boolean> = new Map();
 
   public static REGISTRATION = {
     name: 'panelService',
@@ -73,10 +64,8 @@ export default class PanelService extends PubSubService {
     return { entry, content };
   }
 
-  private _getPanelData(panelId: PanelInfo): PanelData {
-    // Use JavaScript ternary operator for concise, readable conditional assignment
-    const idToUse = typeof panelId === 'string' ? panelId : panelId.id;
-    const { content, entry } = this._getPanelComponent(idToUse);
+  private _getPanelData(panelId): PanelData {
+    const { content, entry } = this._getPanelComponent(panelId);
 
     return {
       id: entry.id,
@@ -88,7 +77,7 @@ export default class PanelService extends PubSubService {
     };
   }
 
-  public addPanel(position: PanelPosition, panelId: PanelInfo): void {
+  public addPanel(position: PanelPosition, panelId: string): void {
     let panels = this._panelsGroups.get(position);
 
     if (!panels) {
@@ -99,32 +88,10 @@ export default class PanelService extends PubSubService {
     const panelComponent = this._getPanelData(panelId);
 
     panels.push(panelComponent);
-
-    let shouldDisplay = typeof panelId === 'object' ? panelId.enabled : true;
-
-    // Set the panel's display status in the conditionalPanels map
-    if (typeof panelId === 'object') {
-      this.conditionalPanels.set(panelComponent.id, shouldDisplay);
-      const { service, triggers } = panelId.handlers?.[0] ?? {};
-
-      triggers?.forEach(({ event, callback }) => {
-        service.subscribe(event, () => {
-          if (!callback || callback({ panelId: panelComponent.id })) {
-            shouldDisplay = true;
-            this.conditionalPanels.set(panelComponent.id, true);
-            this._broadcastEvent(EVENTS.PANELS_CHANGED, { position });
-          }
-        });
-      });
-    }
-
-    // If the panel should be displayed, broadcast a PANELS_CHANGED event
-    if (shouldDisplay) {
-      this._broadcastEvent(EVENTS.PANELS_CHANGED, { position });
-    }
+    this._broadcastEvent(EVENTS.PANELS_CHANGED, { position });
   }
 
-  public addPanels(position: PanelPosition, panelsIds: PanelInfo[]): void {
+  public addPanels(position: PanelPosition, panelsIds: string[]): void {
     if (!Array.isArray(panelsIds)) {
       throw new Error('Invalid "panelsIds" array');
     }
@@ -143,14 +110,8 @@ export default class PanelService extends PubSubService {
   public getPanels(position: PanelPosition): PanelData[] {
     const panels = this._panelsGroups.get(position) ?? [];
 
-    // Filter out panels that are not enabled
-    const filteredPanels = panels.filter(panel => {
-      const enabled = this.conditionalPanels.get(panel.id);
-      return enabled === undefined ? true : enabled;
-    });
-
     // Return a new array to preserve the internal state
-    return [...filteredPanels];
+    return [...panels];
   }
 
   public reset(): void {
@@ -197,24 +158,14 @@ export default class PanelService extends PubSubService {
     activatePanelTriggers: ActivatePanelTriggers[],
     forceActive = false
   ): Subscription[] {
-    return activatePanelTriggers.map(({ service, triggers }) => {
-      // if triggers are a list of events
-      if (Array.isArray(triggers)) {
-        return triggers.map(eventName =>
-          service.subscribe(eventName, () => this.activatePanel(panelId, forceActive))
-        );
-      }
-
-      // otherwise it is of form {event, callback} which we need to check
-      // before activating the panel
-      return triggers.map(({ event, callback, enabled }) => {
-        this.conditionalPanels.set(panelId, enabled);
-        service.subscribe(event, () => {
-          if (!callback || callback({ panelId })) {
-            this.activatePanel(panelId, forceActive);
-          }
-        });
-      });
-    });
+    return activatePanelTriggers
+      .map(trigger =>
+        trigger.sourceEvents.map(eventName =>
+          trigger.sourcePubSubService.subscribe(eventName, () =>
+            this.activatePanel(panelId, forceActive)
+          )
+        )
+      )
+      .flat();
   }
 }
