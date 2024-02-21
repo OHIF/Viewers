@@ -1637,9 +1637,8 @@ const colormaps = [
     RGBPoints: [0, 0, 0, 0, 1, 1, 1, 1],
     description: 'Grayscale',
     opacity: [
-      { value: 0, opacity: 0 },
-      { value: 0.1, opacity: 0.9 },
-      { value: 1, opacity: 0.95 },
+      { value: 0, opacity: 1 },
+      { value: 1024, opacity: 1 },
     ],
   },
 ];
