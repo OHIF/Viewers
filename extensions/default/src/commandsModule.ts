@@ -639,47 +639,38 @@ const commandsModule = ({
     },
     clearMeasurements: {
       commandFn: actions.clearMeasurements,
-      storeContexts: [],
       options: {},
     },
     displayNotification: {
       commandFn: actions.displayNotification,
-      storeContexts: [],
       options: {},
     },
     setHangingProtocol: {
       commandFn: actions.setHangingProtocol,
-      storeContexts: [],
       options: {},
     },
     toggleHangingProtocol: {
       commandFn: actions.toggleHangingProtocol,
-      storeContexts: [],
       options: {},
     },
     navigateHistory: {
       commandFn: actions.navigateHistory,
-      storeContexts: [],
       options: {},
     },
     nextStage: {
       commandFn: actions.deltaStage,
-      storeContexts: [],
       options: { direction: 1 },
     },
     previousStage: {
       commandFn: actions.deltaStage,
-      storeContexts: [],
       options: { direction: -1 },
     },
     setViewportGridLayout: {
       commandFn: actions.setViewportGridLayout,
-      storeContexts: [],
       options: {},
     },
     toggleOneUp: {
       commandFn: actions.toggleOneUp,
-      storeContexts: [],
       options: {},
     },
     openDICOMTagViewer: {
@@ -687,7 +678,6 @@ const commandsModule = ({
     },
     updateViewportDisplaySet: {
       commandFn: actions.updateViewportDisplaySet,
-      storeContexts: [],
       options: {},
     },
   };

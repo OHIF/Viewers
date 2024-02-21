@@ -615,7 +615,6 @@ function commandsModule({
     // context menu
     showCornerstoneContextMenu: {
       commandFn: actions.showCornerstoneContextMenu,
-      storeContexts: [],
       options: {
         menuCustomizationId: 'measurementsContextMenu',
         commands: [
@@ -631,7 +630,6 @@ function commandsModule({
     },
     getNearbyAnnotation: {
       commandFn: actions.getNearbyAnnotation,
-      storeContexts: [],
       options: {},
     },
     deleteMeasurement: {

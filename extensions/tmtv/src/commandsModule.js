@@ -530,82 +530,66 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }) 
   const definitions = {
     setEndSliceForROIThresholdTool: {
       commandFn: actions.setEndSliceForROIThresholdTool,
-      storeContexts: [],
       options: {},
     },
     setStartSliceForROIThresholdTool: {
       commandFn: actions.setStartSliceForROIThresholdTool,
-      storeContexts: [],
       options: {},
     },
     getMatchingPTDisplaySet: {
       commandFn: actions.getMatchingPTDisplaySet,
-      storeContexts: [],
       options: {},
     },
     getPTMetadata: {
       commandFn: actions.getPTMetadata,
-      storeContexts: [],
       options: {},
     },
     createNewLabelmapFromPT: {
       commandFn: actions.createNewLabelmapFromPT,
-      storeContexts: [],
       options: {},
     },
     setSegmentationActiveForToolGroups: {
       commandFn: actions.setSegmentationActiveForToolGroups,
-      storeContexts: [],
       options: {},
     },
     thresholdSegmentationByRectangleROITool: {
       commandFn: actions.thresholdSegmentationByRectangleROITool,
-      storeContexts: [],
       options: {},
     },
     getTotalLesionGlycolysis: {
       commandFn: actions.getTotalLesionGlycolysis,
-      storeContexts: [],
       options: {},
     },
     calculateSuvPeak: {
       commandFn: actions.calculateSuvPeak,
-      storeContexts: [],
       options: {},
     },
     getLesionStats: {
       commandFn: actions.getLesionStats,
-      storeContexts: [],
       options: {},
     },
     calculateTMTV: {
       commandFn: actions.calculateTMTV,
-      storeContexts: [],
       options: {},
     },
     exportTMTVReportCSV: {
       commandFn: actions.exportTMTVReportCSV,
-      storeContexts: [],
       options: {},
     },
     createTMTVRTReport: {
       commandFn: actions.createTMTVRTReport,
-      storeContexts: [],
       options: {},
     },
     getSegmentationCSVReport: {
       commandFn: actions.getSegmentationCSVReport,
-      storeContexts: [],
       options: {},
     },
     exportRTReportForAnnotations: {
       commandFn: actions.exportRTReportForAnnotations,
-      storeContexts: [],
       options: {},
     },
     setFusionPTColormap: {
       commandFn: actions.setFusionPTColormap,
-      storeContexts: [],
       options: {},
     },
   };

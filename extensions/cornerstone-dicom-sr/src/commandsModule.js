@@ -128,12 +128,10 @@ const commandsModule = props => {
   const definitions = {
     downloadReport: {
       commandFn: actions.downloadReport,
-      storeContexts: [],
       options: {},
     },
     storeMeasurements: {
       commandFn: actions.storeMeasurements,
-      storeContexts: [],
       options: {},
     },
   };
