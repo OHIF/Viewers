@@ -1,6 +1,7 @@
 import { Types } from '@cornerstonejs/core';
-import { StackData, VolumeData } from '../../types/CornerstoneCacheService';
-import { DisplaySetOptions, PublicViewportOptions, ViewportOptions } from './Viewport';
+import { StackViewportData, VolumeViewportData } from '../../types/CornerstoneCacheService';
+import { DisplaySetOptions, PublicViewportOptions } from './Viewport';
+import { Presentations } from '../../types/Presentation';
 
 /**
  * Handles cornerstone viewport logic including enabling, disabling, and
@@ -36,7 +37,7 @@ export interface IViewportService {
    * the element for resizing events
    * @param {*} elementRef
    */
-  resize(element: HTMLDivElement): void;
+  resize(isGridResize: boolean): void;
   /**
    * Removes the viewport from cornerstone, and destroys the rendering engine
    */
@@ -55,8 +56,10 @@ export interface IViewportService {
    * @returns
    */
   setViewportData(
-    viewportData: StackData | VolumeData,
+    viewportId: string,
+    viewportData: StackViewportData | VolumeViewportData,
     publicViewportOptions: PublicViewportOptions,
-    publicDisplaySetOptions: DisplaySetOptions[]
+    publicDisplaySetOptions: DisplaySetOptions[],
+    presentations?: Presentations
   ): void;
 }
