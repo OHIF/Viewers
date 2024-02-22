@@ -8,8 +8,6 @@ import { useParams, useLocation } from 'react-router';
 import { useNavigate } from 'react-router-dom';
 import useSearchParams from '../hooks/useSearchParams.ts';
 
-const { TimingEnum } = Enums;
-
 /**
  * Determines if two React Router location objects are the same.
  */
@@ -151,7 +149,7 @@ function DataSourceWrapper(props) {
     // 204: no content
     async function getData() {
       setIsLoading(true);
-      log.time(TimingEnum.SEARCH_TO_LIST);
+      log.time(Enums.TimingEnum.SEARCH_TO_LIST);
       const studies = await dataSource.query.studies.search(queryFilterValues);
 
       setData({
@@ -161,8 +159,8 @@ function DataSourceWrapper(props) {
         pageNumber: queryFilterValues.pageNumber,
         location,
       });
-      log.timeEnd(TimingEnum.SCRIPT_TO_VIEW);
-      log.timeEnd(TimingEnum.SEARCH_TO_LIST);
+      log.timeEnd(Enums.TimingEnum.SCRIPT_TO_VIEW);
+      log.timeEnd(Enums.TimingEnum.SEARCH_TO_LIST);
 
       setIsLoading(false);
     }
