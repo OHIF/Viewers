@@ -1,9 +1,3 @@
-/** UTILS */
-//import utils from './utils';
-//export { utils };
-
-/** CONTEXT/HOOKS */
-// Export types - need to do as two lines due to a bug in babel
 import * as Types from './types';
 
 export {
@@ -32,6 +26,7 @@ export {
   UserAuthenticationProvider,
   useUserAuthentication,
   AppContextProvider,
+  useAppContext,
 } from './contextProviders';
 
 /** COMPONENTS */

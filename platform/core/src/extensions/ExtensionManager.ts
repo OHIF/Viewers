@@ -6,6 +6,12 @@ import { HotkeysManager, CommandsManager } from '../classes';
 import { DataSourceDefinition } from '../types';
 
 /**
+ * The default app context for the panels if they
+ * have not specified a context for themselves.
+ */
+const DefaultAppContexts = ['VIEWER'];
+
+/**
  * This is the arguments given to create the extension.
  */
 export interface ExtensionConstructor {
@@ -288,32 +294,28 @@ export default class ExtensionManager extends PubSubService {
         case MODULE_TYPES.COMMANDS:
           this._initCommandsModule(extensionModule);
           break;
+
         case MODULE_TYPES.DATA_SOURCE:
           this._initDataSourcesModule(extensionModule, extensionId, dataSources);
           break;
+
         case MODULE_TYPES.HANGING_PROTOCOL:
           this._initHangingProtocolsModule(extensionModule, extensionId);
+          break;
+
+        case MODULE_TYPES.PANEL:
+          this._initPanelModule(extensionModule, extensionId);
+          break;
+
         case MODULE_TYPES.TOOLBAR:
         case MODULE_TYPES.VIEWPORT:
-        case MODULE_TYPES.PANEL:
         case MODULE_TYPES.SOP_CLASS_HANDLER:
         case MODULE_TYPES.CONTEXT:
         case MODULE_TYPES.LAYOUT_TEMPLATE:
         case MODULE_TYPES.CUSTOMIZATION:
         case MODULE_TYPES.STATE_SYNC:
         case MODULE_TYPES.UTILITY:
-          // Default for most extension points,
-          // Just adds each entry ready for consumption by mode.
-          extensionModule.forEach(element => {
-            if (!element.name) {
-              throw new Error(
-                `Extension ID ${extensionId} module ${moduleType} element has no name`
-              );
-            }
-            const id = `${extensionId}.${moduleType}.${element.name}`;
-            element.id = id;
-            this.modulesMap[id] = element;
-          });
+          this.processExtensionModule(extensionModule, extensionId, moduleType);
           break;
         default:
           throw new Error(`Module type invalid: ${moduleType}`);
@@ -434,6 +436,35 @@ export default class ExtensionManager extends PubSubService {
       }
     });
   };
+
+  _initPanelModule = (extensionModule, extensionId) => {
+    // assign the default context to the panels that have not
+    // specified a context
+    extensionModule.forEach(panel => {
+      if (!panel.contexts) {
+        panel.contexts = DefaultAppContexts;
+      }
+    });
+
+    this.processExtensionModule(extensionModule, extensionId, MODULE_TYPES.PANEL);
+  };
+
+  /**
+   * Processes an extension module.
+   * @param extensionModule - The extension module to process.
+   * @param extensionId - The ID of the extension.
+   * @param moduleType - The type of the module.
+   */
+  private processExtensionModule(extensionModule, extensionId: string, moduleType: string) {
+    extensionModule.forEach(element => {
+      if (!element.name) {
+        throw new Error(`Extension ID ${extensionId} module ${moduleType} element has no name`);
+      }
+      const id = `${extensionId}.${moduleType}.${element.name}`;
+      element.id = id;
+      this.modulesMap[id] = element;
+    });
+  }
 
   /**
    * Adds the given data source and optionally sets it as the active data source.
