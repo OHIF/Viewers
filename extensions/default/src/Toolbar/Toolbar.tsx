@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
+import classnames from 'classnames';
 import type { Types } from '@ohif/core';
 import { Tooltip } from '@ohif/ui';
 
@@ -97,8 +98,6 @@ export default function Toolbar({
     <>
       {toolbarButtons.map(toolDef => {
         const { id, Component, componentProps, disabled } = toolDef;
-        // The margin for separating the tools on the toolbar should go here and NOT in each individual component (button) item.
-        // This allows for the individual items to be included in other UI components where perhaps alternative margins are desired.
         const tool = (
           <Component
             key={id}
@@ -109,25 +108,29 @@ export default function Toolbar({
           />
         );
 
-        return (
+        return disabled ? (
+          <Tooltip
+            key={id}
+            position="bottom"
+            content={
+              <>
+                {componentProps.label}
+                {disabled && (
+                  <div className="text-xs text-white">
+                    Tool not available for current Active viewport
+                  </div>
+                )}
+              </>
+            }
+          >
+            <div className={classnames('ohif-disabled mr-1')}>{tool}</div>
+          </Tooltip>
+        ) : (
           <div
             key={id}
-            className={`mr-1 ${disabled ? 'pointer-events-none cursor-not-allowed select-none opacity-30' : ''}`}
+            className="mr-1"
           >
-            {disabled ? (
-              <Tooltip
-                position="bottom"
-                content={
-                  <span className="text-white">
-                    Tool is not available in the current active viewport
-                  </span>
-                }
-              >
-                {tool}
-              </Tooltip>
-            ) : (
-              tool
-            )}
+            {tool}
           </div>
         );
       })}

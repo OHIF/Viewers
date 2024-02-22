@@ -65,6 +65,7 @@ function ViewerLayout({
       name: entry.name,
       content,
       contexts: entry.contexts,
+      disabled: !activeContexts.some(context => entry.contexts.includes(context)),
     };
   };
 
@@ -94,15 +95,8 @@ function ViewerLayout({
     };
   };
 
-  const isPanelInActiveContexts = panel => {
-    if (!panel.contexts) {
-      return true;
-    }
-    return panel.contexts.some(context => activeContexts.includes(context));
-  };
-
-  const leftPanelComponents = leftPanels.map(getPanelData).filter(isPanelInActiveContexts);
-  const rightPanelComponents = rightPanels.map(getPanelData).filter(isPanelInActiveContexts);
+  const leftPanelComponents = leftPanels.map(getPanelData);
+  const rightPanelComponents = rightPanels.map(getPanelData);
   const viewportComponents = viewports.map(getViewportComponentData);
 
   return (
