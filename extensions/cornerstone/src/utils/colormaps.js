@@ -8,11 +8,6 @@ const colormaps = [
       1, 0, 1, 1, 0, 0,
     ],
     description: 'HSV',
-    opacity: [
-      { value: 0, opacity: 0 },
-      { value: 0.1, opacity: 0.9 },
-      { value: 1, opacity: 0.95 },
-    ],
   },
   {
     ColorSpace: 'RGB',
@@ -209,11 +204,6 @@ const colormaps = [
       0.9960784314, 0.9607843137,
     ],
     description: 'Hot Iron',
-    opacity: [
-      { value: 0, opacity: 0 },
-      { value: 0.1, opacity: 0.9 },
-      { value: 1, opacity: 0.95 },
-    ],
   },
   {
     ColorSpace: 'RGB',
@@ -349,11 +339,6 @@ const colormaps = [
       0.996078431372549, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
     ],
     description: 'Red Hot',
-    opacity: [
-      { value: 0, opacity: 0 },
-      { value: 0.1, opacity: 0.9 },
-      { value: 1, opacity: 0.95 },
-    ],
   },
   {
     ColorSpace: 'RGB',
@@ -548,11 +533,6 @@ const colormaps = [
       0.9960784314, 0.0156862745, 0.0039215686, 1.0, 0.9960784314, 0.0156862745, 0.0039215686,
     ],
     description: 'S PET',
-    opacity: [
-      { value: 0, opacity: 0 },
-      { value: 0.1, opacity: 0.9 },
-      { value: 1, opacity: 0.95 },
-    ],
   },
   {
     ColorSpace: 'RGB',
@@ -733,11 +713,6 @@ const colormaps = [
       0.9960784314, 0.9882352941, 0.6980392157, 1.0, 0.9960784314, 0.9960784314, 0.7450980392,
     ],
     description: 'Perfusion',
-    opacity: [
-      { value: 0, opacity: 0 },
-      { value: 0.1, opacity: 0.9 },
-      { value: 1, opacity: 0.95 },
-    ],
   },
   {
     ColorSpace: 'RGB',
@@ -877,11 +852,6 @@ const colormaps = [
       0.996078431372549, 1.0, 0.031372549, 0.0, 1.0, 1.0, 0.0, 0.0,
     ],
     description: 'Rainbow',
-    opacity: [
-      { value: 0, opacity: 0 },
-      { value: 0.1, opacity: 0.9 },
-      { value: 1, opacity: 0.95 },
-    ],
   },
   {
     ColorSpace: 'RGB',
@@ -1029,11 +999,6 @@ const colormaps = [
       0.996078431372549, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0,
     ],
     description: 'SUV',
-    opacity: [
-      { value: 0, opacity: 0 },
-      { value: 0.1, opacity: 0.9 },
-      { value: 1, opacity: 0.95 },
-    ],
   },
   {
     ColorSpace: 'RGB',
@@ -1226,11 +1191,6 @@ const colormaps = [
       0.9803921569, 1.0, 0.9960784314, 0.9882352941, 0.9803921569,
     ],
     description: 'GE 256',
-    opacity: [
-      { value: 0, opacity: 0 },
-      { value: 0.1, opacity: 0.9 },
-      { value: 1, opacity: 0.95 },
-    ],
   },
   {
     ColorSpace: 'RGB',
@@ -1424,11 +1384,6 @@ const colormaps = [
       0.9921568627, 0.9921568627, 1.0, 0.9921568627, 0.9921568627, 0.9921568627,
     ],
     description: 'GE',
-    opacity: [
-      { value: 0, opacity: 0 },
-      { value: 0.1, opacity: 0.9 },
-      { value: 1, opacity: 0.95 },
-    ],
   },
   {
     ColorSpace: 'RGB',
@@ -1623,11 +1578,6 @@ const colormaps = [
       0.9607843137, 1.0, 0.9960784314, 0.9960784314, 0.9607843137,
     ],
     description: 'Siemens',
-    opacity: [
-      { value: 0, opacity: 0 },
-      { value: 0.1, opacity: 0.9 },
-      { value: 1, opacity: 0.95 },
-    ],
   },
   {
     ColorSpace: 'RGB',
@@ -1636,10 +1586,6 @@ const colormaps = [
     NanColor: [1, 0, 0],
     RGBPoints: [0, 0, 0, 0, 1, 1, 1, 1],
     description: 'Grayscale',
-    opacity: [
-      { value: 0, opacity: 1 },
-      { value: 1024, opacity: 1 },
-    ],
   },
 ];
 

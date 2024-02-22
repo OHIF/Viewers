@@ -36,6 +36,7 @@ function commandsModule({
     uiNotificationService,
     measurementService,
     colorbarService,
+    hangingProtocolService,
   } = servicesManager.services as CornerstoneServices;
 
   const { measurementServiceSource } = this;
@@ -559,6 +560,26 @@ function commandsModule({
     setViewportColormap: ({ viewportId, displaySetInstanceUID, colormap, immediate = false }) => {
       const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
       const actorEntries = viewport.getActors();
+      let opacity;
+      // Retrieve active protocol's viewport match details
+      const { viewportMatchDetails } = hangingProtocolService.getActiveProtocol();
+      // Get display set options for the specified viewport ID
+      const displaySetsInfo = viewportMatchDetails.get(viewportId)?.displaySetsInfo;
+
+      if (displaySetsInfo) {
+        // Find the display set that matches the given UID
+        const matchingDisplaySet = displaySetsInfo.find(
+          displaySet => displaySet.displaySetInstanceUID === displaySetInstanceUID
+        );
+        // If a matching display set is found, update the opacity with its value
+        opacity = matchingDisplaySet?.displaySetOptions?.options?.colormap?.opacity;
+      }
+
+      if (colormap.name === 'Grayscale') {
+        colormap = { ...colormap, opacity: 1 };
+      } else {
+        colormap = { ...colormap, opacity: opacity || 0.5 };
+      }
 
       const setViewportProperties = (viewport, uid) => {
         const actorEntry = actorEntries.find(entry => entry.uid.includes(uid));

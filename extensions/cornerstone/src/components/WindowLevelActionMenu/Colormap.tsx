@@ -89,7 +89,7 @@ export function Colormap({
   }, [displaySets, generateButtons, viewportId]);
 
   useEffect(() => {
-    setActiveDisplaySet(displaySets[0]);
+    setActiveDisplaySet(displaySets[displaySets.length - 1]);
   }, [displaySets]);
 
   return (
@@ -105,7 +105,7 @@ export function Colormap({
             defaultActiveIndex={
               displaySets.findIndex(
                 ds => ds.displaySetInstanceUID === activeDisplaySetRef.current.displaySetInstanceUID
-              ) || 0
+              ) || 1
             }
             className="w-[70%] text-[10px]"
           />
