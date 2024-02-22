@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-beta.56](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.55...v3.8.0-beta.56) (2024-02-22)
+
+
+### Bug Fixes
+
+* **demo:** Deploy issue ([#3951](https://github.com/OHIF/Viewers/issues/3951)) ([21e8a2b](https://github.com/OHIF/Viewers/commit/21e8a2bd0b7cc72f90a31e472d285d761be15d30))
+
+
+
+
+
 # [3.8.0-beta.55](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.54...v3.8.0-beta.55) (2024-02-21)
 
 
