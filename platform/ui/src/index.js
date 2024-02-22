@@ -31,6 +31,7 @@ export {
   UserAuthenticationContext,
   UserAuthenticationProvider,
   useUserAuthentication,
+  AppContextProvider,
 } from './contextProviders';
 
 /** COMPONENTS */

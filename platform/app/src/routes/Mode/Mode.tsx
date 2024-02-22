@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useContext, createContext } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router';
 import PropTypes from 'prop-types';
 import { ServicesManager, utils } from '@ohif/core';
@@ -327,7 +327,7 @@ export default function ModeRoute({
     return ViewportGrid({ ...props, dataSource });
   };
 
-  const CombinedContextProvider = createCombinedContextProvider(
+  const CombinedExtensionsContextProvider = createCombinedContextProvider(
     extensionManager,
     servicesManager,
     commandsManager
@@ -335,14 +335,14 @@ export default function ModeRoute({
 
   return (
     <ImageViewerProvider StudyInstanceUIDs={studyInstanceUIDs}>
-      <CombinedContextProvider>
+      <CombinedExtensionsContextProvider>
         <DragAndDropProvider>
           {getLayoutComponent({
             ...layoutTemplateData.current.props,
             ViewportGridComp: ViewportGridWithDataSource,
           })}
         </DragAndDropProvider>
-      </CombinedContextProvider>
+      </CombinedExtensionsContextProvider>
     </ImageViewerProvider>
   );
 }

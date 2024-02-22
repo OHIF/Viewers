@@ -31,6 +31,7 @@ import {
   CustomizationService,
   StateSyncService,
   PanelService,
+  AppContextService,
 } from './services';
 
 import { DisplaySetMessage, DisplaySetMessageList } from './services/DisplaySetService';
@@ -80,6 +81,7 @@ const OHIF = {
   pubSubServiceInterface,
   PubSubService,
   PanelService,
+  AppContextService,
 };
 
 export {
@@ -122,6 +124,7 @@ export {
   PubSubService,
   Types,
   PanelService,
+  AppContextService,
 };
 
 export { OHIF };
