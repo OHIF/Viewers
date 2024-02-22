@@ -3,15 +3,11 @@ import toolbarButtons from './toolbarButtons';
 import { id } from './id';
 import initToolGroups from './initToolGroups';
 import moreTools from './moreTools';
-import moreToolsMpr from './moreToolsMpr';
 import i18n from 'i18next';
 
 // Allow this mode by excluding non-imaging modalities such as SR, SEG
 // Also, SM is not a simple imaging modalities, so exclude it.
 const NON_IMAGE_MODALITIES = ['SM', 'ECG', 'SR', 'SEG', 'RTSTRUCT'];
-
-const DEFAULT_TOOL_GROUP_ID = 'default';
-const MPR_TOOL_GROUP_ID = 'mpr';
 
 const ohif = {
   layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
@@ -75,13 +71,8 @@ function modeFactory({ modeConfiguration }) {
      * Lifecycle hooks
      */
     onModeEnter: ({ servicesManager, extensionManager, commandsManager }) => {
-      const {
-        measurementService,
-        toolbarService,
-        toolGroupService,
-        panelService,
-        customizationService,
-      } = servicesManager.services;
+      const { measurementService, toolbarService, toolGroupService, customizationService } =
+        servicesManager.services;
 
       measurementService.clearMeasurements();
 
@@ -120,18 +111,8 @@ function modeFactory({ modeConfiguration }) {
       ));
 
       toolbarService.init(extensionManager);
-      toolbarService.addButtons([...toolbarButtons, ...moreTools, ...moreToolsMpr]);
-      toolbarService.createButtonSection(DEFAULT_TOOL_GROUP_ID, [
-        'MeasurementTools',
-        'Zoom',
-        'WindowLevel',
-        'Pan',
-        'Capture',
-        'Layout',
-        'MPR',
-        'MoreTools',
-      ]);
-      toolbarService.createButtonSection(MPR_TOOL_GROUP_ID, [
+      toolbarService.addButtons([...toolbarButtons, ...moreTools]);
+      toolbarService.createButtonSection('primary', [
         'MeasurementTools',
         'Zoom',
         'WindowLevel',
@@ -140,7 +121,7 @@ function modeFactory({ modeConfiguration }) {
         'Layout',
         'MPR',
         'Crosshairs',
-        'MoreToolsMpr',
+        'MoreTools',
       ]);
 
       customizationService.addModeCustomizations([
@@ -176,7 +157,6 @@ function modeFactory({ modeConfiguration }) {
       const {
         toolGroupService,
         syncGroupService,
-        toolbarService,
         segmentationService,
         cornerstoneViewportService,
       } = servicesManager.services;

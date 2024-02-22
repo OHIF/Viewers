@@ -50,5 +50,3 @@ class AppContextService extends PubSubService {
 }
 
 export default AppContextService;
-
-export type { PresentationIds };
