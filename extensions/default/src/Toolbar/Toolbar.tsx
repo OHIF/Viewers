@@ -1,49 +1,124 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import classnames from 'classnames';
-import { useViewportGrid } from '@ohif/ui';
 import type { Types } from '@ohif/core';
+import { Tooltip } from '@ohif/ui';
 
 export default function Toolbar({
   servicesManager,
 }: Types.Extensions.ExtensionParams): React.ReactElement {
-  const { toolbarService } = servicesManager.services;
-
-  const [viewportGrid] = useViewportGrid();
+  const { toolbarService, viewportGridService, toolGroupService } = servicesManager.services;
 
   const [toolbarButtons, setToolbarButtons] = useState([]);
 
-  useEffect(() => {
-    const { unsubscribe } = toolbarService.subscribe(toolbarService.EVENTS.TOOL_BAR_MODIFIED, () =>
-      setToolbarButtons(toolbarService.getButtonSection('primary'))
-    );
+  /**
+   * Updates the toolbar buttons based on the active viewport.
+   *
+   * @param viewportId - The ID of the active viewport.
+   * @returns The updated toolbar buttons.
+   */
+  const updateToolbarButtons = useCallback(
+    (viewportId: string) => {
+      const toolbarButtons = toolbarService.getButtonSection('primary');
+      const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
 
-    return () => {
-      unsubscribe();
-    };
-  }, [toolbarService]);
+      if (!toolGroup) {
+        return toolbarButtons;
+      }
 
+      return toolbarButtons.map(button => {
+        const { componentProps } = button;
+        if (componentProps.type !== 'tool') {
+          return { ...button, disabled: false };
+        }
+
+        const toolName = componentProps.commands[0].commandOptions.toolName;
+        const belongsToToolGroup = Object.keys(toolGroup.toolOptions).includes(toolName);
+
+        return { ...button, disabled: !belongsToToolGroup };
+      });
+    },
+    [toolbarService, toolGroupService]
+  );
+
+  /**
+   * Callback function for handling toolbar interactions.
+   * @param args - The arguments passed to the callback function.
+   */
   const onInteraction = useCallback(
-    args => toolbarService.recordInteraction(args),
+    (args: object) => toolbarService.recordInteraction(args),
     [toolbarService]
   );
+
+  /**
+   * Subscription callback for toolbar modification event.
+   */
+  useEffect(() => {
+    const handleToolbarModified = () => {
+      const { activeViewportId } = viewportGridService.getState();
+      setToolbarButtons(updateToolbarButtons(activeViewportId));
+    };
+
+    const subscription = toolbarService.subscribe(
+      toolbarService.EVENTS.TOOL_BAR_MODIFIED,
+      handleToolbarModified
+    );
+
+    return () => subscription.unsubscribe();
+  }, [toolbarService, viewportGridService, toolGroupService, updateToolbarButtons]);
+
+  /**
+   * Subscription callback for active viewport ID change event.
+   *
+   * @param {object} evtDetail - The event details.
+   */
+  useEffect(() => {
+    const handleActiveViewportIdChanged = (evtDetail: object) => {
+      setToolbarButtons(updateToolbarButtons(evtDetail.viewportId));
+    };
+
+    const subscription = viewportGridService.subscribe(
+      viewportGridService.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED,
+      handleActiveViewportIdChanged
+    );
+
+    return () => subscription.unsubscribe();
+  }, [viewportGridService, toolbarButtons, updateToolbarButtons]);
 
   return (
     <>
       {toolbarButtons.map(toolDef => {
-        const { id, Component, componentProps } = toolDef;
+        const { id, Component, componentProps, disabled } = toolDef;
+        // The margin for separating the tools on the toolbar should go here and NOT in each individual component (button) item.
+        // This allows for the individual items to be included in other UI components where perhaps alternative margins are desired.
+        const tool = (
+          <Component
+            key={id}
+            id={id}
+            {...componentProps}
+            onInteraction={onInteraction}
+            servicesManager={servicesManager}
+          />
+        );
+
         return (
-          // The margin for separating the tools on the toolbar should go here and NOT in each individual component (button) item.
-          // This allows for the individual items to be included in other UI components where perhaps alternative margins are desired.
           <div
             key={id}
-            className={classnames('mr-1')}
+            className={`mr-1 ${disabled ? 'pointer-events-none cursor-not-allowed select-none opacity-30' : ''}`}
           >
-            <Component
-              id={id}
-              {...componentProps}
-              onInteraction={onInteraction}
-              servicesManager={servicesManager}
-            />
+            {disabled ? (
+              <Tooltip
+                position="bottom"
+                content={
+                  <span className="text-white">
+                    Tool is not available in the current active viewport
+                  </span>
+                }
+              >
+                {tool}
+              </Tooltip>
+            ) : (
+              tool
+            )}
           </div>
         );
       })}
