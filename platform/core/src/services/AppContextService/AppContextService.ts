@@ -7,7 +7,6 @@ class AppContextService extends PubSubService {
 
   public static REGISTRATION = {
     name: 'appContextService',
-    altName: 'AppContextService',
     create: ({ configuration = {} }) => {
       return new AppContextService();
     },
@@ -46,6 +45,30 @@ class AppContextService extends PubSubService {
     if (removeImplementation) {
       this.serviceImplementation._remove = removeImplementation;
     }
+  }
+
+  public getState() {
+    this.serviceImplementation._getState();
+  }
+
+  public reset() {
+    this.serviceImplementation._reset();
+  }
+
+  public setActiveContexts(activeContexts) {
+    this.serviceImplementation._set(activeContexts);
+  }
+
+  public addActiveContexts(activeContexts) {
+    this.serviceImplementation._add(activeContexts);
+  }
+
+  public removeActiveContexts(activeContexts) {
+    this.serviceImplementation._remove(activeContexts);
+  }
+
+  public onModeExit() {
+    this.reset();
   }
 }
 

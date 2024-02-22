@@ -16,6 +16,7 @@ import {
   ViewportGridProvider,
   CineProvider,
   UserAuthenticationProvider,
+  AppContextProvider,
 } from '@ohif/ui';
 // Viewer Project
 // TODO: Should this influence study list?
@@ -62,6 +63,7 @@ function App({ config, defaultExtensions, defaultModes }) {
     cineService,
     userAuthenticationService,
     customizationService,
+    appContextService,
   } = servicesManager.services;
 
   const providers = [
@@ -75,6 +77,7 @@ function App({ config, defaultExtensions, defaultModes }) {
     [SnackbarProvider, { service: uiNotificationService }],
     [DialogProvider, { service: uiDialogService }],
     [ModalProvider, { service: uiModalService, modal: Modal }],
+    [AppContextProvider, { service: appContextService }],
   ];
   const CombinedProviders = ({ children }) => Compose({ components: providers, children });
 

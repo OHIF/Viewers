@@ -26,7 +26,7 @@ function ViewerLayout({
   const { hangingProtocolService } = servicesManager.services;
   const [showLoadingIndicator, setShowLoadingIndicator] = useState(appConfig.showLoadingIndicator);
 
-  const { activeContexts } = useAppContext();
+  const [{ activeContexts }] = useAppContext();
 
   /**
    * Set body classes (tailwindcss) that don't allow vertical
@@ -65,7 +65,7 @@ function ViewerLayout({
       name: entry.name,
       content,
       contexts: entry.contexts,
-      disabled: !activeContexts.some(context => entry.contexts.includes(context)),
+      disabled: !activeContexts?.some(context => entry.contexts.includes(context)),
     };
   };
 
