@@ -40,6 +40,7 @@ function imageRenderedListener(evt) {
   if (evt.detail.viewportStatus === 'preRender') {
     return;
   }
+  const { TimingEnum } = Enums;
   log.timeEnd(TimingEnum.DISPLAY_SETS_TO_FIRST_IMAGE);
   log.timeEnd(TimingEnum.STUDY_TO_FIRST_IMAGE);
   log.timeEnd(TimingEnum.SCRIPT_TO_VIEW);

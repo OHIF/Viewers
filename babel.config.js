@@ -29,7 +29,28 @@ module.exports = {
     '@babel/plugin-transform-class-static-block',
   ],
   env: {
-
+    test: {
+      presets: [
+        [
+          // TODO: https://babeljs.io/blog/2019/03/19/7.4.0#migration-from-core-js-2
+          '@babel/preset-env',
+          {
+            modules: 'commonjs',
+            debug: false,
+          },
+        ],
+        '@babel/preset-react',
+        '@babel/preset-typescript',
+      ],
+      plugins: [
+        '@babel/plugin-proposal-object-rest-spread',
+        '@babel/plugin-syntax-dynamic-import',
+        '@babel/plugin-transform-regenerator',
+        '@babel/transform-destructuring',
+        '@babel/plugin-transform-runtime',
+        '@babel/plugin-transform-typescript',
+      ],
+    },
     production: {
       presets: [
         // WebPack handles ES6 --> Target Syntax

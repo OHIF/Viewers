@@ -14,7 +14,6 @@ import loadModules from '../../pluginImports';
 import isSeriesFilterUsed from '../../utils/isSeriesFilterUsed';
 
 const { getSplitParam, sortingCriteria } = utils;
-const { TimingEnum } = Enums;
 
 /**
  * Initialize the route.
@@ -84,8 +83,8 @@ function defaultRouteInit(
 
   unsubscriptions.push(instanceAddedUnsubscribe);
 
-  log.time(TimingEnum.STUDY_TO_DISPLAY_SETS);
-  log.time(TimingEnum.STUDY_TO_FIRST_IMAGE);
+  log.time(Enums.TimingEnum.STUDY_TO_DISPLAY_SETS);
+  log.time(Enums.TimingEnum.STUDY_TO_FIRST_IMAGE);
 
   const allRetrieves = studyInstanceUIDs.map(StudyInstanceUID =>
     dataSource.retrieve.series.metadata({
@@ -106,9 +105,9 @@ function defaultRouteInit(
   });
 
   Promise.allSettled(allRetrieves).then(promises => {
-    log.timeEnd(TimingEnum.STUDY_TO_DISPLAY_SETS);
-    log.time(TimingEnum.DISPLAY_SETS_TO_FIRST_IMAGE);
-    log.time(TimingEnum.DISPLAY_SETS_TO_ALL_IMAGES);
+    log.timeEnd(Enums.TimingEnum.STUDY_TO_DISPLAY_SETS);
+    log.time(Enums.TimingEnum.DISPLAY_SETS_TO_FIRST_IMAGE);
+    log.time(Enums.TimingEnum.DISPLAY_SETS_TO_ALL_IMAGES);
 
     const allPromises = [];
     const remainingPromises = [];
