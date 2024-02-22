@@ -360,7 +360,6 @@ function ViewerViewportGrid(props) {
           }}
           targetRef={elementRef.current}
         />
-        {/* {ViewportPanes} */}
         {getViewportPanes()}
       </ViewportGrid>
     </div>

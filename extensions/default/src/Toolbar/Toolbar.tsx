@@ -1,12 +1,12 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import classnames from 'classnames';
 import type { Types } from '@ohif/core';
 import { Tooltip } from '@ohif/ui';
 
 export default function Toolbar({
   servicesManager,
 }: Types.Extensions.ExtensionParams): React.ReactElement {
-  const { toolbarService, viewportGridService, toolGroupService } = servicesManager.services;
+  const { toolbarService, viewportGridService, cornerstoneViewportService, toolGroupService } =
+    servicesManager.services;
 
   const [toolbarButtons, setToolbarButtons] = useState([]);
 
@@ -58,12 +58,21 @@ export default function Toolbar({
       setToolbarButtons(updateToolbarButtons(activeViewportId));
     };
 
-    const subscription = toolbarService.subscribe(
+    const subscription1 = toolbarService.subscribe(
       toolbarService.EVENTS.TOOL_BAR_MODIFIED,
       handleToolbarModified
     );
 
-    return () => subscription.unsubscribe();
+    // to make sure the initial render/state is correct
+    const subscription2 = cornerstoneViewportService.subscribe(
+      cornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED,
+      handleToolbarModified
+    );
+
+    return () => {
+      subscription1.unsubscribe();
+      subscription2.unsubscribe();
+    };
   }, [toolbarService, viewportGridService, toolGroupService, updateToolbarButtons]);
 
   /**
