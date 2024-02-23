@@ -21,7 +21,6 @@ const moreToolsMpr = [
       secondary: {
         icon: 'chevron-down',
         label: '',
-        isActive: true,
         tooltip: 'More Tools',
       },
       items: [

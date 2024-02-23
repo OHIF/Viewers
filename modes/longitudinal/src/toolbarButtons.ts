@@ -90,7 +90,6 @@ const toolbarButtons: Button[] = [
       secondary: {
         icon: 'chevron-down',
         label: '',
-        isActive: true,
         tooltip: 'More Measure Tools',
       },
       items: [
@@ -248,7 +247,6 @@ const toolbarButtons: Button[] = [
       secondary: {
         icon: 'chevron-down',
         label: 'W/L Manual',
-        isActive: true,
         tooltip: 'W/L Presets',
       },
       isAction: true, // ?

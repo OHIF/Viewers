@@ -109,7 +109,6 @@ const toolbarButtons = [
       secondary: {
         icon: 'chevron-down',
         label: 'W/L Manual',
-        isActive: true,
         tooltip: 'W/L Presets',
       },
       isAction: true, // ?
@@ -218,7 +217,6 @@ const toolbarButtons = [
       secondary: {
         icon: 'chevron-down',
         label: '',
-        isActive: true,
         tooltip: 'More Tools',
       },
       items: [

@@ -33,14 +33,13 @@ const ButtonGroup = ({
       )}
     >
       {buttons.map((buttonProps, index) => {
-        const isActive = index === activeIndex;
         return (
           <button
             {...buttonProps}
             key={index}
             className={classnames(
               'rounded-[4px] px-2 py-1',
-              isActive ? 'bg-customblue-40 text-white' : 'text-primary-active bg-black'
+              index === activeIndex ? 'bg-customblue-40 text-white' : 'text-primary-active bg-black'
             )}
             onClick={e => handleButtonClick(e, index)}
           />

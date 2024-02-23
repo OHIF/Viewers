@@ -48,7 +48,6 @@ const toolbarButtons = [
       secondary: {
         icon: 'chevron-down',
         label: '',
-        isActive: true,
         tooltip: 'More Measure Tools',
       },
       items: [
