@@ -22,9 +22,7 @@ export function evaluateButtonCondition({ button, viewportId, toolGroup, service
   const isNested = props.primary && props.items.length > 0;
 
   if (isNested) {
-    const s = evaluateNestedButtons({ button, viewportId, toolGroup, services });
-    debugger;
-    return s;
+    return evaluateNestedButtons({ button, viewportId, toolGroup, services });
   }
 
   return evaluateSingleButton({ button, props, viewportId, toolGroup, services });

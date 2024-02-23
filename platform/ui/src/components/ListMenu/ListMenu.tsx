@@ -3,7 +3,7 @@ import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
 const flex = 'flex flex-row justify-between items-center';
-const theme = 'bg-indigo-dark';
+const theme = 'bg-indigo-dark text-white';
 
 const ListMenu = ({ items = [], renderer, onClick }) => {
   const [selectedIndex, setSelectedIndex] = useState(null);
@@ -12,9 +12,7 @@ const ListMenu = ({ items = [], renderer, onClick }) => {
     const onClickHandler = () => {
       setSelectedIndex(index);
       onClick({ item, selectedIndex: index });
-      if (item.onClick) {
-        item.onClick({ ...item, index, isSelected });
-      }
+      item.onClick?.({ ...item, index, isSelected });
     };
 
     return (

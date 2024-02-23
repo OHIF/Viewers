@@ -1,11 +1,9 @@
 import { SplitButton, Icon, ToolbarButton } from '@ohif/ui';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
 function ToolbarSplitButtonWithServices({
-  isRadio,
-  isAction,
   groupId,
   primary,
   secondary,
@@ -16,95 +14,31 @@ function ToolbarSplitButtonWithServices({
 }) {
   const { toolbarService } = servicesManager?.services;
 
-  const handleItemClick = (item, index) => {
-    const { id, type, commands } = item;
-    onInteraction({
-      groupId,
-      itemId: id,
-      interactionType: type,
-      commands,
-    });
-
-    setState(state => ({
-      ...state,
-      primary: !isAction && isRadio ? { ...item, index } : state.primary,
-      isExpanded: false,
-      items: getSplitButtonItems(items).filter(item =>
-        isRadio && !isAction ? item.index !== index : true
-      ),
-    }));
-  };
-
   /* Bubbles up individual item clicks */
-  const getSplitButtonItems = items =>
-    items.map((item, index) => ({
-      ...item,
-      index,
-      onClick: () => handleItemClick(item, index),
-    }));
+  const getSplitButtonItems = useCallback(
+    items =>
+      items.map((item, index) => ({
+        ...item,
+        index,
+        onClick: () => {
+          const { id, type, commands } = item;
+          onInteraction({
+            groupId,
+            itemId: id,
+            interactionType: type,
+            commands,
+          });
+        },
+      })),
+    []
+  );
 
-  const [buttonsState, setButtonState] = useState({
-    primaryToolId: '',
-    toggles: {},
-    groups: {},
-  });
-
-  const [state, setState] = useState({
-    primary,
-    items: getSplitButtonItems(items).filter(item =>
-      isRadio && !isAction ? item.id !== primary.id : true
-    ),
-  });
-
-  const { primaryToolId, toggles } = buttonsState;
-
-  const isPrimaryToggle = state.primary.type === 'toggle';
-
-  const isPrimaryActive =
-    (state.primary.type === 'tool' && primaryToolId === state.primary.id) ||
-    (isPrimaryToggle && toggles[state.primary.id] === true);
-
-  const PrimaryButtonComponent =
-    toolbarService?.getButtonComponentForUIType(state.primary.uiType) ?? ToolbarButton;
-
-  useEffect(() => {
-    const { unsubscribe } = toolbarService.subscribe(
-      toolbarService.EVENTS.TOOL_BAR_STATE_MODIFIED,
-      state => {
-        setButtonState({ ...state });
-      }
-    );
-
-    return () => {
-      unsubscribe();
-    };
-  }, [toolbarService]);
-
-  const updatedItems = state.items.map(item => {
-    const isActive = item.type === 'tool' && primaryToolId === item.id;
-
-    // We could have added the
-    // item.type === 'toggle' && toggles[item.id] === true
-    // too but that makes the button active when the toggle is active under it
-    // which feels weird
-    return {
-      ...item,
-      isActive,
-    };
-  });
-
-  const DefaultListItemRenderer = ({ type, icon, label, t, id }) => {
-    const isActive = type === 'toggle' && toggles[id] === true;
-
+  const DefaultListItemRenderer = ({ icon, label, t, id }) => {
     return (
       <div
         className={classNames(
           'hover:bg-primary-dark flex h-8 w-full flex-row items-center p-3',
-          'whitespace-pre text-base',
-          isActive && 'bg-primary-dark',
-          isActive
-            ? 'text-[#348CFD]'
-            : 'text-common-bright hover:bg-primary-dark hover:text-primary-light'
+          'whitespace-pre text-base'
         )}
       >
         {icon && (
@@ -120,19 +54,19 @@ function ToolbarSplitButtonWithServices({
     );
   };
 
+  const PrimaryButtonComponent =
+    toolbarService?.getButtonComponentForUIType(primary.uiType) ?? ToolbarButton;
+
   const listItemRenderer = renderer || DefaultListItemRenderer;
 
   return (
     <SplitButton
-      isRadio={isRadio}
-      isAction={isAction}
-      primary={state.primary}
+      isActive={false}
+      primary={primary}
       secondary={secondary}
-      items={updatedItems}
+      items={items}
       groupId={groupId}
       renderer={listItemRenderer}
-      isActive={isPrimaryActive || updatedItems.some(item => item.isActive)}
-      isToggle={isPrimaryToggle}
       onInteraction={onInteraction}
       Component={props => (
         <PrimaryButtonComponent
