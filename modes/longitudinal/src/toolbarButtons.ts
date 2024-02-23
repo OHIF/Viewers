@@ -313,6 +313,9 @@ const toolbarButtons: Button[] = [
           context: 'DEFAULT',
         },
       ],
+      condition: ({ displaySets }) => {
+        return displaySets.some(ds => ds.isReconstructable);
+      },
     },
   },
   {

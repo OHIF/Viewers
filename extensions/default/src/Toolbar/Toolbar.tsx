@@ -1,7 +1,8 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import classnames from 'classnames';
-import type { Types } from '@ohif/core';
+import { type Types } from '@ohif/core';
 import { Tooltip } from '@ohif/ui';
+import { evaluateButtonCondition } from './evaluateToolbarButtonState';
 
 export default function Toolbar({
   servicesManager,
@@ -15,129 +16,36 @@ export default function Toolbar({
   } = servicesManager.services;
 
   const [toolbarButtons, setToolbarButtons] = useState([]);
-  const { ButtonTypes } = toolbarService.constructor;
-
-  const handleWithCondition = ({ props, viewportId, toolGroup }) => {
-    const { condition } = props;
-
-    if (!condition) {
-      return true;
-    }
-
-    const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
-
-    if (!displaySetUIDs) {
-      return true;
-    }
-
-    const displaySets = displaySetUIDs.map(displaySetUID =>
-      displaySetService.getDisplaySetByUID(displaySetUID)
-    );
-
-    if (displaySets && condition({ displaySets, toolGroup })) {
-      return true;
-    } else {
-      return false;
-    }
-  };
-
-  const handleInsideToolGroup = ({ props, toolGroup, button = null }) => {
-    const { commands } = props;
-    const toolName = commands[0].commandOptions.toolName;
-    const belongsToToolGroup = Object.keys(toolGroup.toolOptions).includes(toolName);
-
-    if (belongsToToolGroup && button) {
-      return button;
-    } else if (!belongsToToolGroup && button) {
-      return { ...button, disabled: true };
-    } else if (belongsToToolGroup && !button) {
-      return props;
-    } else {
-      return { ...props, disabled: true };
-    }
-  };
-
-  const handleSingle = ({ button = null, props, viewportId, toolGroup }) => {
-    if ([ButtonTypes.ACTION, ButtonTypes.TOGGLE].includes(props.type)) {
-      const cond = handleWithCondition({ props, viewportId, toolGroup });
-      if (cond && button) {
-        return button;
-      } else if (!cond && button) {
-        return { ...button, disabled: true };
-      } else if (cond && !button) {
-        return props;
-      } else {
-        return { ...props, disabled: true };
-      }
-    }
-
-    // if we reach here it's a tool, so it has a command
-    return handleInsideToolGroup({ props, toolGroup, button });
-  };
-
-  const handleNestedButtons = ({ button, viewportId, toolGroup }) => {
-    const {
-      componentProps: { items, primary, secondary },
-    } = button;
-
-    const newPrimary = handleSingle({ props: primary, viewportId, toolGroup });
-    const newSecondary = handleSingle({ props: secondary, viewportId, toolGroup });
-
-    const updatedItems = items.map(item => {
-      return handleSingle({ props: item, viewportId, toolGroup });
-    });
-
-    return {
-      ...button,
-      componentProps: {
-        ...button.componentProps,
-        primary: newPrimary,
-        secondary: newSecondary,
-        items: updatedItems,
-      },
-    };
-  };
-
-  const handle = ({ button, viewportId, toolGroup }) => {
-    const { componentProps: props } = button;
-    debugger;
-    if (!props.type) {
-      return button;
-    }
-
-    if (props.primary && props.items.length > 0) {
-      return handleNestedButtons({ button, viewportId, toolGroup });
-    }
-
-    return handleSingle({ button, props, viewportId, toolGroup });
-  };
 
   /**
-   * Updates the toolbar buttons based on the active viewport.
+   * Refreshes the toolbar buttons for the active viewport where
+   * we should check if the tool is available for the current active viewport.
    *
-   * @param viewportId - The ID of the active viewport.
-   * @returns The updated toolbar buttons.
+   * For each button we check:
+   * - Button Tools: we check if the tool name is part of the active viewport toolGroup
+   * - Button Actions and Toggles: We check if there is a 'condition' function and if it returns true
+   * - Nested Buttons: We run the same checks for each nested button
    */
-  const updateToolbarButtons = useCallback(
-    (viewportId: string) => {
-      const toolbarButtons = toolbarService.getButtonSection('primary');
+  const refreshToolbarButtons = useCallback(
+    viewportId => {
+      const buttons = toolbarService.getButtonSection('primary');
       const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
 
       if (!toolGroup) {
-        return toolbarButtons;
+        return buttons;
       }
 
-      const up = toolbarButtons.map(button => {
+      return buttons.map(button => {
         const { componentProps } = button;
-
-        if (!componentProps.type && !componentProps.items) {
-          return { ...button, disabled: false };
-        }
-
-        return handle({ button, viewportId, toolGroup });
+        return !componentProps.type && !componentProps.items
+          ? button
+          : evaluateButtonCondition({
+              button,
+              viewportId,
+              toolGroup,
+              services: { viewportGridService, displaySetService },
+            });
       });
-
-      return up;
     },
     [toolbarService, toolGroupService, displaySetService]
   );
@@ -157,7 +65,7 @@ export default function Toolbar({
   useEffect(() => {
     const handleToolbarModified = () => {
       const { activeViewportId } = viewportGridService.getState();
-      setToolbarButtons(updateToolbarButtons(activeViewportId));
+      setToolbarButtons(refreshToolbarButtons(activeViewportId));
     };
 
     const subscription1 = toolbarService.subscribe(
@@ -175,7 +83,7 @@ export default function Toolbar({
       subscription1.unsubscribe();
       subscription2.unsubscribe();
     };
-  }, [toolbarService, viewportGridService, toolGroupService, updateToolbarButtons]);
+  }, [toolbarService, viewportGridService, toolGroupService, refreshToolbarButtons]);
 
   /**
    * Subscription callback for active viewport ID change event.
@@ -184,7 +92,7 @@ export default function Toolbar({
    */
   useEffect(() => {
     const handleActiveViewportIdChanged = (evtDetail: object) => {
-      setToolbarButtons(updateToolbarButtons(evtDetail.viewportId));
+      setToolbarButtons(refreshToolbarButtons(evtDetail.viewportId));
     };
 
     const subscription = viewportGridService.subscribe(
@@ -193,13 +101,12 @@ export default function Toolbar({
     );
 
     return () => subscription.unsubscribe();
-  }, [viewportGridService, toolbarButtons, updateToolbarButtons]);
+  }, [viewportGridService, toolbarButtons, refreshToolbarButtons]);
 
   return (
     <>
       {toolbarButtons.map(toolDef => {
         const { id, Component, componentProps, disabled } = toolDef;
-        console.debug('🚀 ~ id:', id);
         const tool = (
           <Component
             key={id}

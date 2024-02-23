@@ -80,7 +80,10 @@ const moreTools = [
               context: 'CORNERSTONE',
             },
           ],
-          'Flip Horizontal'
+          'Flip Horizontal',
+          {
+            condition: ({ toolGroup }) => toolGroup.id !== 'mpr',
+          }
         ),
         ToolbarService._createToggleButton(
           'ImageSliceSync',
