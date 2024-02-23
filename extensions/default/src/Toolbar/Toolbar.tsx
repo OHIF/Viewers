@@ -17,16 +17,17 @@ export default function Toolbar({
   const [toolbarButtons, setToolbarButtons] = useState([]);
   const { ButtonTypes } = toolbarService.constructor;
 
-  const handleWithCondition = ({ componentProps, button, viewportId, toolGroup }) => {
-    const { condition } = componentProps;
+  const handleWithCondition = ({ props, viewportId, toolGroup }) => {
+    const { condition } = props;
+
     if (!condition) {
-      return { ...button, disabled: false };
+      return true;
     }
 
     const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
 
     if (!displaySetUIDs) {
-      return { ...button, disabled: true };
+      return true;
     }
 
     const displaySets = displaySetUIDs.map(displaySetUID =>
@@ -34,10 +35,81 @@ export default function Toolbar({
     );
 
     if (displaySets && condition({ displaySets, toolGroup })) {
-      return { ...button, disabled: false };
+      return true;
     } else {
-      return { ...button, disabled: true };
+      return false;
     }
+  };
+
+  const handleInsideToolGroup = ({ props, toolGroup, button = null }) => {
+    const { commands } = props;
+    const toolName = commands[0].commandOptions.toolName;
+    const belongsToToolGroup = Object.keys(toolGroup.toolOptions).includes(toolName);
+
+    if (belongsToToolGroup && button) {
+      return button;
+    } else if (!belongsToToolGroup && button) {
+      return { ...button, disabled: true };
+    } else if (belongsToToolGroup && !button) {
+      return props;
+    } else {
+      return { ...props, disabled: true };
+    }
+  };
+
+  const handleSingle = ({ button = null, props, viewportId, toolGroup }) => {
+    if ([ButtonTypes.ACTION, ButtonTypes.TOGGLE].includes(props.type)) {
+      const cond = handleWithCondition({ props, viewportId, toolGroup });
+      if (cond && button) {
+        return button;
+      } else if (!cond && button) {
+        return { ...button, disabled: true };
+      } else if (cond && !button) {
+        return props;
+      } else {
+        return { ...props, disabled: true };
+      }
+    }
+
+    // if we reach here it's a tool, so it has a command
+    return handleInsideToolGroup({ props, toolGroup, button });
+  };
+
+  const handleNestedButtons = ({ button, viewportId, toolGroup }) => {
+    const {
+      componentProps: { items, primary, secondary },
+    } = button;
+
+    const newPrimary = handleSingle({ props: primary, viewportId, toolGroup });
+    const newSecondary = handleSingle({ props: secondary, viewportId, toolGroup });
+
+    const updatedItems = items.map(item => {
+      return handleSingle({ props: item, viewportId, toolGroup });
+    });
+
+    return {
+      ...button,
+      componentProps: {
+        ...button.componentProps,
+        primary: newPrimary,
+        secondary: newSecondary,
+        items: updatedItems,
+      },
+    };
+  };
+
+  const handle = ({ button, viewportId, toolGroup }) => {
+    const { componentProps: props } = button;
+    debugger;
+    if (!props.type) {
+      return button;
+    }
+
+    if (props.primary && props.items.length > 0) {
+      return handleNestedButtons({ button, viewportId, toolGroup });
+    }
+
+    return handleSingle({ button, props, viewportId, toolGroup });
   };
 
   /**
@@ -55,28 +127,17 @@ export default function Toolbar({
         return toolbarButtons;
       }
 
-      return toolbarButtons.map(button => {
+      const up = toolbarButtons.map(button => {
         const { componentProps } = button;
 
-        if (componentProps.primary && componentProps.items.length > 0) {
-          // Todo: handle nested items
+        if (!componentProps.type && !componentProps.items) {
           return { ...button, disabled: false };
         }
 
-        if (!componentProps.type) {
-          return { ...button, disabled: false };
-        }
-
-        if ([ButtonTypes.ACTION, ButtonTypes.TOGGLE].includes(componentProps.type)) {
-          return handleWithCondition({ componentProps, button, viewportId, toolGroup });
-        }
-
-        // if we reach here it's a tool, so it has a command
-        const toolName = componentProps.commands[0].commandOptions.toolName;
-        const belongsToToolGroup = Object.keys(toolGroup.toolOptions).includes(toolName);
-
-        return { ...button, disabled: !belongsToToolGroup };
+        return handle({ button, viewportId, toolGroup });
       });
+
+      return up;
     },
     [toolbarService, toolGroupService, displaySetService]
   );
@@ -138,6 +199,7 @@ export default function Toolbar({
     <>
       {toolbarButtons.map(toolDef => {
         const { id, Component, componentProps, disabled } = toolDef;
+        console.debug('🚀 ~ id:', id);
         const tool = (
           <Component
             key={id}
