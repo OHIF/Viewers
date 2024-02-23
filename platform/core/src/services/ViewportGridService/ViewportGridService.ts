@@ -111,6 +111,17 @@ class ViewportGridService extends PubSubService {
   }
 
   /**
+   * Retrieves the display set instance UIDs for a given viewport.
+   * @param viewportId The ID of the viewport.
+   * @returns An array of display set instance UIDs.
+   */
+  public getDisplaySetsUIDsForViewport(viewportId: string) {
+    const state = this.getState();
+    const viewport = state.viewports.get(viewportId);
+    return viewport?.displaySetInstanceUIDs;
+  }
+
+  /**
    *
    * @param numCols, numRows - the number of columns and rows to apply
    * @param findOrCreateViewport is a function which takes the

@@ -6,10 +6,39 @@ import { Tooltip } from '@ohif/ui';
 export default function Toolbar({
   servicesManager,
 }: Types.Extensions.ExtensionParams): React.ReactElement {
-  const { toolbarService, viewportGridService, cornerstoneViewportService, toolGroupService } =
-    servicesManager.services;
+  const {
+    toolbarService,
+    viewportGridService,
+    cornerstoneViewportService,
+    toolGroupService,
+    displaySetService,
+  } = servicesManager.services;
 
   const [toolbarButtons, setToolbarButtons] = useState([]);
+  const { ButtonTypes } = toolbarService.constructor;
+
+  const handleWithCondition = ({ componentProps, button, viewportId, toolGroup }) => {
+    const { condition } = componentProps;
+    if (!condition) {
+      return { ...button, disabled: false };
+    }
+
+    const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
+
+    if (!displaySetUIDs) {
+      return { ...button, disabled: true };
+    }
+
+    const displaySets = displaySetUIDs.map(displaySetUID =>
+      displaySetService.getDisplaySetByUID(displaySetUID)
+    );
+
+    if (displaySets && condition({ displaySets, toolGroup })) {
+      return { ...button, disabled: false };
+    } else {
+      return { ...button, disabled: true };
+    }
+  };
 
   /**
    * Updates the toolbar buttons based on the active viewport.
@@ -28,17 +57,28 @@ export default function Toolbar({
 
       return toolbarButtons.map(button => {
         const { componentProps } = button;
-        if (componentProps.type !== 'tool') {
+
+        if (componentProps.primary && componentProps.items.length > 0) {
+          // Todo: handle nested items
           return { ...button, disabled: false };
         }
 
+        if (!componentProps.type) {
+          return { ...button, disabled: false };
+        }
+
+        if ([ButtonTypes.ACTION, ButtonTypes.TOGGLE].includes(componentProps.type)) {
+          return handleWithCondition({ componentProps, button, viewportId, toolGroup });
+        }
+
+        // if we reach here it's a tool, so it has a command
         const toolName = componentProps.commands[0].commandOptions.toolName;
         const belongsToToolGroup = Object.keys(toolGroup.toolOptions).includes(toolName);
 
         return { ...button, disabled: !belongsToToolGroup };
       });
     },
-    [toolbarService, toolGroupService]
+    [toolbarService, toolGroupService, displaySetService]
   );
 
   /**

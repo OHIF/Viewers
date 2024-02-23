@@ -2,7 +2,7 @@ import merge from 'lodash.merge';
 import { CommandsManager } from '../../classes';
 import { ExtensionManager } from '../../extensions';
 import { PubSubService } from '../_shared/pubSubServiceInterface';
-import type { RunCommand, Commands } from '../../types/Command';
+import type { RunCommand, Commands, Command } from '../../types/Command';
 
 const EVENTS = {
   TOOL_BAR_MODIFIED: 'event::toolBarService:toolBarModified',
@@ -43,6 +43,12 @@ export default class ToolbarService extends PubSubService {
     },
   };
 
+  public static ButtonTypes = {
+    ACTION: 'action',
+    TOGGLE: 'toggle',
+    TOOL: 'tool',
+  };
+
   public static _createButton(
     type: string,
     id: string,
@@ -63,9 +69,18 @@ export default class ToolbarService extends PubSubService {
     };
   }
 
-  public static _createActionButton = ToolbarService._createButton.bind(null, 'action');
-  public static _createToggleButton = ToolbarService._createButton.bind(null, 'toggle');
-  public static _createToolButton = ToolbarService._createButton.bind(null, 'tool');
+  public static _createActionButton = ToolbarService._createButton.bind(
+    null,
+    ToolbarService.ButtonTypes.ACTION
+  );
+  public static _createToggleButton = ToolbarService._createButton.bind(
+    null,
+    ToolbarService.ButtonTypes.TOGGLE
+  );
+  public static _createToolButton = ToolbarService._createButton.bind(
+    null,
+    ToolbarService.ButtonTypes.TOOL
+  );
 
   buttons: Record<string, Button> = {};
   state: {
@@ -144,11 +159,11 @@ export default class ToolbarService extends PubSubService {
     }
 
     switch (interactionType) {
-      case 'action': {
+      case ToolbarService.ButtonTypes.ACTION: {
         commandsManager.run(commands, options);
         break;
       }
-      case 'tool': {
+      case ToolbarService.ButtonTypes.TOOL: {
         try {
           const alternateInteraction =
             this.state.primaryToolId === itemId &&
@@ -170,7 +185,7 @@ export default class ToolbarService extends PubSubService {
 
         break;
       }
-      case 'toggle': {
+      case ToolbarService.ButtonTypes.TOGGLE: {
         const { commands } = interaction;
         let commandExecuted;
 
@@ -378,7 +393,7 @@ export default class ToolbarService extends PubSubService {
     }
 
     buttons.forEach(buttonItem => {
-      if (buttonItem.type === 'toggle') {
+      if (buttonItem.type === ToolbarService.ButtonTypes.TOGGLE) {
         this.setToggled(buttonItem.id, buttonItem.isActive);
       }
       this._setTogglesForButtonItems(buttonItem.props?.items);
