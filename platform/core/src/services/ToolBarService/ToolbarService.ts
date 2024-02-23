@@ -205,7 +205,7 @@ export default class ToolbarService extends PubSubService {
         let commandExecuted;
 
         // only toggle if a command was executed
-        this._setToggleForButton(interaction);
+        this._setToggleForButton(itemId);
 
         if (!commands) {
           break;
@@ -283,11 +283,12 @@ export default class ToolbarService extends PubSubService {
   }
 
   /** Sets the toggle state of a button to the isToggled state */
-  public setToggled(id: string, isToggled: boolean): void {
+  public setToggled(id: string): void {
+    const isToggled = this.state.toggles[id];
     if (isToggled) {
-      this.state.toggles[id] = true;
-    } else {
       delete this.state.toggles[id];
+    } else {
+      this.state.toggles[id] = true;
     }
   }
 
@@ -399,28 +400,35 @@ export default class ToolbarService extends PubSubService {
         this.state.buttons[button.id] = button;
       }
     });
-    this._setTogglesForButtonItems(buttons);
+    this.initToggledButtons(buttons);
 
     this._broadcastEvent(this.EVENTS.TOOL_BAR_MODIFIED, {});
   }
 
-  _setTogglesForButtonItems(buttons) {
+  initToggledButtons(buttons) {
     if (!buttons) {
       return;
     }
 
     buttons.forEach(buttonItem => {
       if (buttonItem.type === ButtonInteractionType.TOGGLE) {
-        this._setToggleForButton(buttonItem);
+        // if the button does not have a toggle state, set it to false
+        if (this.state.toggles[buttonItem.id] === undefined) {
+          this.state.toggles[buttonItem.id] = buttonItem.isActive || false;
+        }
       }
 
-      this._setTogglesForButtonItems(buttonItem.props?.items);
+      this.initToggledButtons(buttonItem.props?.items);
     });
   }
 
-  _setToggleForButton(button) {
-    this.setToggled(button.id, button.isActive);
-    button.isActive = this.state.toggles[button.id];
+  _setToggleForButton(itemId) {
+    this.setToggled(itemId);
+    // update the button state
+    const buttonProps = this.getNestedButtonProps(itemId);
+    if (buttonProps) {
+      buttonProps.isActive = this.state.toggles[itemId];
+    }
   }
 
   /**

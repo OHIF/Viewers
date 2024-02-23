@@ -286,10 +286,39 @@ function commandsModule({
     toolbarServiceRecordInteraction: props => {
       toolbarService.recordInteraction(props);
     },
-    // Enable or disable a toggleable command, without calling the activation
-    // Used to setup already active tools from hanging protocols
-    setToolbarToggled: props => {
-      toolbarService.setToggled(props.toolId, props.isActive ?? true);
+    setToolEnabled: ({ toolName, toggle }) => {
+      const { viewports } = viewportGridService.getState();
+
+      if (!viewports.size) {
+        return;
+      }
+
+      const toolGroup = toolGroupService.getToolGroup(null);
+
+      if (!toolGroup) {
+        return;
+      }
+
+      if (!toolGroup._toolInstances[toolName]) {
+        uiNotificationService.show({
+          title: `${toolName} tool`,
+          message: `The ${toolName} tool is not available in this viewport.`,
+          type: 'info',
+          duration: 3000,
+        });
+
+        throw new Error(`ToolGroup ${toolGroup.id} does not have this tool.`);
+      }
+
+      const toolIsEnabled = toolGroup.getToolOptions(toolName).mode === Enums.ToolModes.Enabled;
+
+      // Toggle the tool's state only if the toggle is true
+      if (toggle) {
+        toolIsEnabled ? toolGroup.setToolDisabled(toolName) : toolGroup.setToolEnabled(toolName);
+      }
+
+      const renderingEngine = cornerstoneViewportService.getRenderingEngine();
+      renderingEngine.render();
     },
     setToolActive: ({ toolName, toolGroupId = null, toggledState }) => {
       if (toolName === 'Crosshairs') {
@@ -565,7 +594,6 @@ function commandsModule({
         (currentIndex + direction + viewportIds.length) % viewportIds.length;
       viewportGridService.setActiveViewportId(viewportIds[nextViewportIndex] as string);
     },
-
     toggleImageSliceSync: ({ toggledState }) => {
       toggleImageSliceSync({
         servicesManager,
@@ -651,6 +679,9 @@ function commandsModule({
     setToolActive: {
       commandFn: actions.setToolActive,
     },
+    setToolEnabled: {
+      commandFn: actions.setToolEnabled,
+    },
     rotateViewportCW: {
       commandFn: actions.rotateViewport,
       options: { rotation: 90 },
@@ -732,9 +763,6 @@ function commandsModule({
     },
     storePresentation: {
       commandFn: actions.storePresentation,
-    },
-    setToolbarToggled: {
-      commandFn: actions.setToolbarToggled,
     },
     cleanUpCrosshairs: {
       commandFn: actions.cleanUpCrosshairs,

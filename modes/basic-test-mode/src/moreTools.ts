@@ -7,13 +7,6 @@ const ReferenceLinesCommands: RunCommand = [
     commandName: 'setSourceViewportForReferenceLinesTool',
     context: 'CORNERSTONE',
   },
-  {
-    commandName: 'setToolActive',
-    commandOptions: {
-      toolName: 'ReferenceLines',
-    },
-    context: 'CORNERSTONE',
-  },
 ];
 
 const moreTools = [
@@ -100,7 +93,15 @@ const moreTools = [
           'ReferenceLines',
           'tool-referenceLines', // change this with the new icon
           'Reference Lines',
-          ReferenceLinesCommands,
+          [
+            {
+              commandName: 'setToolActive',
+              commandOptions: {
+                toolName: 'ReferenceLines',
+              },
+              context: 'CORNERSTONE',
+            },
+          ],
           'Show Reference Lines',
           {
             listeners: {

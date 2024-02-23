@@ -4,8 +4,6 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
 function ToolbarSplitButtonWithServices({
-  isRadio,
-  isAction,
   groupId,
   primary,
   secondary,
@@ -22,7 +20,7 @@ function ToolbarSplitButtonWithServices({
     primary,
     secondary,
     items: [],
-    isPrimaryActive: false,
+    isPrimaryActive: primary.isActive,
   });
 
   const isThereAnActiveToolInNestedMenu = () => {
@@ -67,7 +65,12 @@ function ToolbarSplitButtonWithServices({
   );
 
   useEffect(() => {
-    setState({ primary, secondary, items: getSplitButtonItems(items) });
+    setState({
+      primary,
+      secondary,
+      items: getSplitButtonItems(items),
+      isPrimaryActive: primary.isActive,
+    });
   }, [primary, secondary, items, getSplitButtonItems]);
 
   if (!state?.primary) {

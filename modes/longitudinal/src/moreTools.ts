@@ -2,16 +2,9 @@ import type { RunCommand } from '@ohif/core/types';
 import { EVENTS } from '@cornerstonejs/core';
 import { ToolbarService } from '@ohif/core';
 
-const ReferenceLinesCommands: RunCommand = [
+const ReferenceLinesListeners: RunCommand = [
   {
     commandName: 'setSourceViewportForReferenceLinesTool',
-    context: 'CORNERSTONE',
-  },
-  {
-    commandName: 'setToolActive',
-    commandOptions: {
-      toolName: 'ReferenceLines',
-    },
     context: 'CORNERSTONE',
   },
 ];
@@ -107,12 +100,21 @@ const moreTools = [
           'ReferenceLines',
           'tool-referenceLines', // change this with the new icon
           'Reference Lines',
-          ReferenceLinesCommands,
+          [
+            {
+              commandName: 'setToolEnabled',
+              commandOptions: {
+                toolName: 'ReferenceLines',
+                toggle: true,
+              },
+              context: 'CORNERSTONE',
+            },
+          ],
           'Show Reference Lines',
           {
             listeners: {
-              [EVENTS.STACK_VIEWPORT_NEW_STACK]: ReferenceLinesCommands,
-              [EVENTS.ACTIVE_VIEWPORT_ID_CHANGED]: ReferenceLinesCommands,
+              [EVENTS.STACK_VIEWPORT_NEW_STACK]: ReferenceLinesListeners,
+              [EVENTS.ACTIVE_VIEWPORT_ID_CHANGED]: ReferenceLinesListeners,
             },
           }
         ),
@@ -122,7 +124,7 @@ const moreTools = [
           'Image Overlay',
           [
             {
-              commandName: 'setToolActive',
+              commandName: 'setToolEnabled',
               commandOptions: {
                 toolName: 'ImageOverlayViewer',
               },
