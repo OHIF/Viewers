@@ -9,28 +9,36 @@ const EVENTS = {
   TOOL_BAR_STATE_MODIFIED: 'event::toolBarService:toolBarStateModified',
 };
 
-export type ButtonListeners = Record<string, RunCommand>;
+enum ButtonInteractionType {
+  ACTION = 'action',
+  TOGGLE = 'toggle',
+  TOOL = 'tool',
+}
 
 export interface ButtonProps {
-  primary?: Button;
-  secondary?: Button;
-  items?: Button[];
-}
-
-export interface Button extends Commands {
   id: string;
-  icon?: string;
-  label?: string;
-  type?: string;
+  icon: string;
+  label: string;
   tooltip?: string;
+  commands?: Command | Commands;
+  type?: ButtonInteractionType;
   isActive?: boolean;
-  listeners?: ButtonListeners;
-  props?: ButtonProps;
+  listeners?: Record<string, RunCommand>;
 }
 
-export interface ExtraButtonOptions {
-  listeners?: ButtonListeners;
-  isActive?: boolean;
+export interface NestedButtonProps {
+  groupId: string;
+  items: ButtonProps[];
+  primary: ButtonProps;
+  secondary: ButtonProps;
+}
+
+export interface Button {
+  id: string;
+  props: ButtonProps | NestedButtonProps;
+  // button ui type (e.g. 'ohif.splitButton', 'ohif.radioGroup')
+  // extensions can provide custom components for these types
+  type: string;
 }
 
 export default class ToolbarService extends PubSubService {
@@ -43,21 +51,17 @@ export default class ToolbarService extends PubSubService {
     },
   };
 
-  public static ButtonTypes = {
-    ACTION: 'action',
-    TOGGLE: 'toggle',
-    TOOL: 'tool',
-  };
+  public static ButtonInteractionType = ButtonInteractionType;
 
   public static _createButton(
-    type: string,
+    type: ButtonInteractionType,
     id: string,
     icon: string,
     label: string,
     commands: Command | Commands,
     tooltip?: string,
-    extraOptions?: ExtraButtonOptions
-  ): Button {
+    extraOptions?: Record<string, unknown>
+  ): ButtonProps {
     return {
       id,
       icon,
@@ -71,23 +75,23 @@ export default class ToolbarService extends PubSubService {
 
   public static _createActionButton = ToolbarService._createButton.bind(
     null,
-    ToolbarService.ButtonTypes.ACTION
+    ButtonInteractionType.ACTION
   );
   public static _createToggleButton = ToolbarService._createButton.bind(
     null,
-    ToolbarService.ButtonTypes.TOGGLE
+    ButtonInteractionType.TOGGLE
   );
   public static _createToolButton = ToolbarService._createButton.bind(
     null,
-    ToolbarService.ButtonTypes.TOOL
+    ButtonInteractionType.TOOL
   );
 
-  buttons: Record<string, Button> = {};
   state: {
     primaryToolId: string;
     toggles: Record<string, boolean>;
     groups: Record<string, unknown>;
-  } = { primaryToolId: '', toggles: {}, groups: {} };
+    buttons: Record<string, Button>;
+  } = { primaryToolId: '', toggles: {}, groups: {}, buttons: {} };
 
   buttonSections: Record<string, unknown> = {
     /**
@@ -115,10 +119,10 @@ export default class ToolbarService extends PubSubService {
       primaryToolId: 'WindowLevel',
       toggles: {},
       groups: {},
+      buttons: {},
     };
     this.unsubscriptions = [];
     this.buttonSections = {};
-    this.buttons = {};
   }
 
   public onModeEnter(): void {
@@ -150,48 +154,58 @@ export default class ToolbarService extends PubSubService {
       return;
     }
     const commandsManager = this._commandsManager;
-    const { groupId, itemId, commands, type } = interaction;
-    let { interactionType } = interaction;
+    const { groupId, commands, type, id } = interaction;
 
-    // if not interaction type, assume the type can be used
-    if (!interactionType) {
-      interactionType = type;
+    const itemId = interaction.itemId || id;
+
+    const buttonProps = this.getNestedButtonProps(itemId as string);
+
+    if (!buttonProps) {
+      throw new Error(`Button not found for id: ${itemId}`);
     }
 
+    // if not interaction type, assume the type can be used
+    const { interactionType = type } = interaction;
+
+    const prevPrimaryToolId = this.state.primaryToolId;
+
     switch (interactionType) {
-      case ToolbarService.ButtonTypes.ACTION: {
+      case ButtonInteractionType.ACTION: {
         commandsManager.run(commands, options);
         break;
       }
-      case ToolbarService.ButtonTypes.TOOL: {
+      case ButtonInteractionType.TOOL: {
         try {
-          const alternateInteraction =
-            this.state.primaryToolId === itemId &&
-            this.defaultTool?.itemId !== itemId &&
-            this.getDefaultTool();
-          if (alternateInteraction) {
-            // Allow toggling the mode off
-            return this.recordInteraction(alternateInteraction, options);
-          }
           commandsManager.run(commands, options);
+
+          const toolName = commands[0].commandOptions?.toolName;
 
           // only set the primary tool if no error was thrown.
           // if the itemId is not undefined use it; otherwise, set the first tool in
           // the commands as the primary tool
-          this.state.primaryToolId = itemId || commands[0].commandOptions?.toolName;
+          this.state.primaryToolId = itemId || toolName;
+
+          // update isActive state for the button
+
+          // find the other active button of type tools and set it to false
+          const currentActiveButton = this.getNestedButtonProps(prevPrimaryToolId);
+          if (currentActiveButton) {
+            currentActiveButton.isActive = false;
+          }
+
+          buttonProps.isActive = true;
         } catch (error) {
           console.warn(error);
         }
 
         break;
       }
-      case ToolbarService.ButtonTypes.TOGGLE: {
+      case ButtonInteractionType.TOGGLE: {
         const { commands } = interaction;
         let commandExecuted;
 
         // only toggle if a command was executed
-        this.state.toggles[itemId] =
-          this.state.toggles[itemId] === undefined ? true : !this.state.toggles[itemId];
+        this._setToggleForButton(interaction);
 
         if (!commands) {
           break;
@@ -251,7 +265,7 @@ export default class ToolbarService extends PubSubService {
   }
 
   getButtons() {
-    return this.buttons;
+    return this.state.buttons;
   }
 
   getActiveTools() {
@@ -278,27 +292,30 @@ export default class ToolbarService extends PubSubService {
   }
 
   setButton(id, button) {
-    if (this.buttons[id]) {
-      this.buttons[id] = merge(this.buttons[id], button);
-      this._broadcastEvent(this.EVENTS.TOOL_BAR_MODIFIED, {
-        buttons: this.buttons,
-        button: this.buttons[id],
-        buttonSections: this.buttonSections,
-      });
+    if (!this.state.buttons[id]) {
+      return;
     }
+
+    this.state.buttons[id] = merge(this.state.buttons[id], button);
+
+    this._broadcastEvent(this.EVENTS.TOOL_BAR_MODIFIED, {
+      buttons: this.state.buttons,
+      button: this.state.buttons[id],
+      buttonSections: this.buttonSections,
+    });
   }
 
   public getButton(id: string): Button {
-    return this.buttons[id];
+    return this.state.buttons[id];
   }
 
   /** Gets a nested button, found in the items/props for the children */
-  public getNestedButton(id: string): Button {
-    if (this.buttons[id]) {
-      return this.buttons[id];
+  public getNestedButtonProps(id: string): ButtonProps {
+    if (this.state.buttons[id]) {
+      return this.state.buttons[id].props as ButtonProps;
     }
-    for (const buttonId of Object.keys(this.buttons)) {
-      const { primary, items } = this.buttons[buttonId].props || {};
+    for (const buttonId of Object.keys(this.state.buttons)) {
+      const { primary, items } = (this.state.buttons[buttonId].props as NestedButtonProps) || {};
       if (primary?.id === id) {
         return primary;
       }
@@ -310,9 +327,9 @@ export default class ToolbarService extends PubSubService {
   }
 
   setButtons(buttons) {
-    this.buttons = buttons;
+    this.state.buttons = buttons;
     this._broadcastEvent(this.EVENTS.TOOL_BAR_MODIFIED, {
-      buttons: this.buttons,
+      buttons: this.state.buttons,
       buttonSections: this.buttonSections,
     });
   }
@@ -360,7 +377,7 @@ export default class ToolbarService extends PubSubService {
 
     if (buttonSectionIds && buttonSectionIds.length !== 0) {
       buttonSectionIds.forEach(btnId => {
-        const btn = this.buttons[btnId];
+        const btn = this.state.buttons[btnId];
         const metadata = {};
         const mappedBtn = this._mapButtonToDisplay(btn, toolGroupId, metadata, props);
 
@@ -378,8 +395,8 @@ export default class ToolbarService extends PubSubService {
    */
   addButtons(buttons) {
     buttons.forEach(button => {
-      if (!this.buttons[button.id]) {
-        this.buttons[button.id] = button;
+      if (!this.state.buttons[button.id]) {
+        this.state.buttons[button.id] = button;
       }
     });
     this._setTogglesForButtonItems(buttons);
@@ -393,11 +410,17 @@ export default class ToolbarService extends PubSubService {
     }
 
     buttons.forEach(buttonItem => {
-      if (buttonItem.type === ToolbarService.ButtonTypes.TOGGLE) {
-        this.setToggled(buttonItem.id, buttonItem.isActive);
+      if (buttonItem.type === ButtonInteractionType.TOGGLE) {
+        this._setToggleForButton(buttonItem);
       }
+
       this._setTogglesForButtonItems(buttonItem.props?.items);
     });
+  }
+
+  _setToggleForButton(button) {
+    this.setToggled(button.id, button.isActive);
+    button.isActive = this.state.toggles[button.id];
   }
 
   /**

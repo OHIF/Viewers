@@ -235,8 +235,8 @@ export default async function init({
     const activeTools = toolbarService.getActiveTools();
 
     activeTools.forEach(tool => {
-      const toolData = toolbarService.getNestedButton(tool);
-      const commands = toolData?.listeners?.[evt.type];
+      const { listeners } = toolbarService.getNestedButtonProps(tool);
+      const commands = listeners?.[evt.type];
       commandsManager.run(commands, { element, evt });
     });
   };
@@ -248,19 +248,19 @@ export default async function init({
 
     const activeTools = toolbarService.getActiveTools();
 
-    activeTools.forEach(tool => {
-      if (!toolGroup?._toolInstances?.[tool]) {
+    activeTools.forEach(toolId => {
+      if (!toolGroup?._toolInstances?.[toolId]) {
         return;
       }
 
       // check if tool is active on the new viewport
-      const toolEnabled = toolGroup._toolInstances[tool].mode === Enums.ToolModes.Enabled;
+      const toolEnabled = toolGroup._toolInstances[toolId].mode === Enums.ToolModes.Enabled;
 
       if (!toolEnabled) {
         return;
       }
 
-      const button = toolbarService.getNestedButton(tool);
+      const button = toolbarService.getNestedButtonProps(toolId);
       const commands = button?.listeners?.[evt.type];
       commandsManager.run(commands, { viewportId, evt });
     });

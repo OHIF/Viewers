@@ -15,6 +15,7 @@ export default function Toolbar({
     displaySetService,
   } = servicesManager.services;
 
+  const { EVENTS } = toolbarService;
   const [toolbarButtons, setToolbarButtons] = useState([]);
 
   /**
@@ -68,10 +69,9 @@ export default function Toolbar({
       setToolbarButtons(refreshToolbarButtons(activeViewportId));
     };
 
-    const subscription1 = toolbarService.subscribe(
-      toolbarService.EVENTS.TOOL_BAR_MODIFIED,
-      handleToolbarModified
-    );
+    const subs = [EVENTS.TOOL_BAR_MODIFIED, EVENTS.TOOL_BAR_STATE_MODIFIED].map(event => {
+      return toolbarService.subscribe(event, handleToolbarModified);
+    });
 
     // to make sure the initial render/state is correct
     const subscription2 = cornerstoneViewportService.subscribe(
@@ -80,7 +80,7 @@ export default function Toolbar({
     );
 
     return () => {
-      subscription1.unsubscribe();
+      subs.forEach(sub => sub.unsubscribe());
       subscription2.unsubscribe();
     };
   }, [toolbarService, viewportGridService, toolGroupService, refreshToolbarButtons]);

@@ -15,8 +15,8 @@ function ToolbarSplitButtonWithServices({
   servicesManager,
 }) {
   const { toolbarService } = servicesManager?.services;
-  const { ButtonTypes } = toolbarService.constructor;
-  const { ACTION, TOGGLE, TOOL } = ButtonTypes;
+  const { ButtonInteractionType } = toolbarService.constructor;
+  const { ACTION, TOGGLE, TOOL } = ButtonInteractionType;
 
   const [state, setState] = useState({
     primary,
@@ -69,19 +69,6 @@ function ToolbarSplitButtonWithServices({
   useEffect(() => {
     setState({ primary, secondary, items: getSplitButtonItems(items) });
   }, [primary, secondary, items, getSplitButtonItems]);
-
-  useEffect(() => {
-    const { unsubscribe } = toolbarService.subscribe(
-      toolbarService.EVENTS.TOOL_BAR_STATE_MODIFIED,
-      state => {
-        setButtonState({ ...state });
-      }
-    );
-
-    return () => {
-      unsubscribe();
-    };
-  }, [toolbarService]);
 
   if (!state?.primary) {
     return null;

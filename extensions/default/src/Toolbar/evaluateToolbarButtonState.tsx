@@ -61,7 +61,8 @@ function evaluateSingleButton({ button = null, props, viewportId, toolGroup, ser
     return button ?? props;
   }
 
-  if ([ToolbarService.ButtonTypes.ACTION, ToolbarService.ButtonTypes.TOGGLE].includes(props.type)) {
+  const { ACTION, TOGGLE } = ToolbarService.ButtonInteractionType;
+  if ([ACTION, TOGGLE].includes(props.type)) {
     const isConditionMet = evaluateCondition({ props, viewportId, toolGroup, services });
     return isConditionMet ? button ?? props : { ...(button ?? props), disabled: true };
   }
