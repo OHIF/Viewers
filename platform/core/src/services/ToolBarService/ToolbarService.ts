@@ -312,9 +312,6 @@ export default class ToolbarService extends PubSubService {
 
   /** Gets a nested button, found in the items/props for the children */
   public getNestedButtonProps(id: string): ButtonProps {
-    if (this.state.buttons[id]) {
-      return this.state.buttons[id].props as ButtonProps;
-    }
     for (const buttonId of Object.keys(this.state.buttons)) {
       const { primary, items } = (this.state.buttons[buttonId].props as NestedButtonProps) || {};
       if (primary?.id === id) {
@@ -324,6 +321,13 @@ export default class ToolbarService extends PubSubService {
       if (found) {
         return found;
       }
+    }
+
+    // This should be checked after we checked the nested buttons, since
+    // we are checking based on the ids, the nested objects are higher priority
+    // and more specific
+    if (this.state.buttons[id]) {
+      return this.state.buttons[id].props as ButtonProps;
     }
   }
 

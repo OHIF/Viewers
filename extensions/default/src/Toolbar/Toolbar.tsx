@@ -111,9 +111,9 @@ export default function Toolbar({
           <Component
             key={id}
             id={id}
-            {...componentProps}
             onInteraction={onInteraction}
             servicesManager={servicesManager}
+            {...componentProps}
           />
         );
 
