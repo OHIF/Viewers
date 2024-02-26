@@ -17,8 +17,6 @@ function _createButton(type, id, icon, label, commands, tooltip) {
   };
 }
 
-const _createActionButton = _createButton.bind(null, 'action');
-const _createToggleButton = _createButton.bind(null, 'toggle');
 const _createToolButton = _createButton.bind(null, 'tool');
 
 const toolbarButtons = [

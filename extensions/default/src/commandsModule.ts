@@ -18,6 +18,7 @@ export type HangingProtocolParams = {
   stageIndex?: number;
   activeStudyUID?: string;
   stageId?: string;
+  reset?: false;
 };
 
 export type UpdateViewportDisplaySetParams = {
@@ -106,17 +107,13 @@ const commandsModule = ({
     clearMeasurements: () => {
       measurementService.clear();
     },
-
     /**
      * Toggles off all tools which contain a commandName of setHangingProtocol
      * or toggleHangingProtocol, and which match/don't match the protocol id/stage
      */
     toggleHpTools: () => {
-      const {
-        protocol,
-        stageIndex: toggleStageIndex,
-        stage,
-      } = hangingProtocolService.getActiveProtocol();
+      // Alireza: I'm not really sure what this function does and I'm pretty
+      // sure we don't need it anymore?
       const enableListener = button => {
         if (!button.id) {
           return;
@@ -132,12 +129,6 @@ const commandsModule = ({
         if (!hpCommand) {
           return;
         }
-        const { protocolId, stageIndex, stageId } = hpCommand.commandOptions;
-        const isActive =
-          (!protocolId || protocolId === protocol.id) &&
-          (stageIndex === undefined || stageIndex === toggleStageIndex) &&
-          (!stageId || stageId === stage.id);
-        toolbarService.setToggled(button.id, isActive);
       };
       Object.values(toolbarService.getButtons()).forEach(enableListener);
     },
@@ -180,7 +171,6 @@ const commandsModule = ({
         // the activeViewportId
         const state = viewportGridService.getState();
         const hpInfo = hangingProtocolService.getState();
-        const { protocol: oldProtocol } = hangingProtocolService.getActiveProtocol();
         const stateSyncReduce = reuseCachedLayouts(state, hangingProtocolService, stateSyncService);
         const { hangingProtocolStageIndexMap, viewportGridStore, displaySetSelectorMap } =
           stateSyncReduce;

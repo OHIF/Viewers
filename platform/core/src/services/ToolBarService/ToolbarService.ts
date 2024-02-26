@@ -188,9 +188,8 @@ export default class ToolbarService extends PubSubService {
       case ButtonInteractionType.TOGGLE: {
         const { commands } = interaction;
         let commandExecuted;
-
         // only toggle if a command was executed
-        this.setToggled(itemId);
+        this._setToggled(itemId);
 
         if (!commands) {
           break;
@@ -224,13 +223,11 @@ export default class ToolbarService extends PubSubService {
         throw new Error(`Invalid interaction type: ${interactionType}`);
     }
 
-    this._consolidateWhoIsPrimaryWhoIsActiveEtc({
+    this.updateToolbarStateAfterInteraction({
       itemId,
       interactionType,
       prevPrimaryToolId,
     });
-
-    this._broadcastEvent(this.EVENTS.TOOL_BAR_STATE_MODIFIED, { ...this.state });
   }
 
   /**
@@ -239,20 +236,27 @@ export default class ToolbarService extends PubSubService {
    * Basically if the interaction was done on a button that was just a regular
    * button (not nested), the we can set the isActive state of the button to true
    */
-  _consolidateWhoIsPrimaryWhoIsActiveEtc({ itemId, interactionType, prevPrimaryToolId }) {
+  updateToolbarStateAfterInteraction({ itemId, interactionType, prevPrimaryToolId = null }) {
     // check the id of the button that was interacted with, and see if it is part
     // of a group of buttons
     const groupId = this.findGroupIdByItemId(itemId);
 
     if (interactionType === ButtonInteractionType.TOOL) {
       // we should find the previous primary tool and set it to be inactive
-      this.updateButtonActiveState(prevPrimaryToolId, false);
+      this._updateButtonActiveState(prevPrimaryToolId, false);
     }
 
     if (!groupId) {
-      // regular button, we can certainly say it is active now and the UI can
-      // decide to show it as such
-      this.updateButtonActiveState(itemId, true);
+      if (interactionType === ButtonInteractionType.TOGGLE) {
+        // if it is a toggle, we need to check the toggled state to decide if
+        // the button should be active or not
+        const isToggled = this.state.toggles[itemId];
+        this._updateButtonActiveState(itemId, isToggled);
+      } else if (interactionType === ButtonInteractionType.TOOL) {
+        // regular button, we can certainly say it is active now and the UI can
+        // decide to show it as such
+        this._updateButtonActiveState(itemId, true);
+      }
     } else {
       // if it is a nested button, we have to check if the item was the primary
       // item or the nested items that were interacted with, it they were
@@ -263,19 +267,19 @@ export default class ToolbarService extends PubSubService {
       const item = items.find(({ id }) => id === itemId);
 
       if (isPrimary && interactionType === ButtonInteractionType.TOOL) {
-        this.updateButtonActiveState(itemId, true);
+        this._updateButtonActiveState(itemId, true);
       } else if (isPrimary && interactionType === ButtonInteractionType.TOGGLE) {
         // we need to check the toggled state to decide if the primary item
         // should be active or not
         const isToggled = this.state.toggles[itemId];
-        this.updateButtonActiveState(itemId, isToggled);
+        this._updateButtonActiveState(itemId, isToggled);
       } else {
         // if it was not primary item that was clicked, we need to
         // move the item to be the primary item, however, we need to actually
         // decide based on the interaction type.
         if (interactionType === ButtonInteractionType.TOOL) {
           (this.state.buttons[groupId].props as NestedButtonProps).primary = item;
-          this.updateButtonActiveState(itemId, true);
+          this._updateButtonActiveState(itemId, true);
         } else {
           // if it was a toggle or action, we need to check if there was an already
           // active TOOL inside the group, if there was, we CANT change the
@@ -294,14 +298,16 @@ export default class ToolbarService extends PubSubService {
           // for toggle state, Actions don't have active state
           if (interactionType === ButtonInteractionType.TOGGLE) {
             const isToggled = this.state.toggles[itemId];
-            this.updateButtonActiveState(itemId, isToggled);
+            this._updateButtonActiveState(itemId, isToggled);
           }
         }
       }
     }
+
+    this._broadcastEvent(this.EVENTS.TOOL_BAR_STATE_MODIFIED, { ...this.state });
   }
 
-  updateButtonActiveState(itemId, isActive) {
+  private _updateButtonActiveState(itemId, isActive) {
     const buttonProps = this.getButtonProps(itemId);
     if (buttonProps) {
       buttonProps.isActive = isActive;
@@ -342,13 +348,19 @@ export default class ToolbarService extends PubSubService {
   }
 
   /** Sets the toggle state of a button to the isToggled state */
-  public setToggled(id: string): void {
-    const isToggled = this.state.toggles[id];
-    if (isToggled) {
-      delete this.state.toggles[id];
-    } else {
-      this.state.toggles[id] = true;
-    }
+  private _setToggled(itemId: string): void {
+    this.state.toggles[itemId] = !this.state.toggles[itemId];
+  }
+
+  public setToggled(itemId: string): void {
+    debugger;
+    this._setToggled(itemId);
+    this.updateToolbarStateAfterInteraction({
+      itemId,
+      interactionType: ButtonInteractionType.TOGGLE,
+    });
+
+    this._broadcastEvent(this.EVENTS.TOOL_BAR_STATE_MODIFIED, { ...this.state });
   }
 
   setButton(id, button) {
@@ -463,25 +475,26 @@ export default class ToolbarService extends PubSubService {
         this.state.buttons[button.id] = button;
       }
     });
-    this.initToggledButtons(buttons);
+    this._initToggledButtons(buttons);
 
     this._broadcastEvent(this.EVENTS.TOOL_BAR_MODIFIED, {});
   }
 
-  initToggledButtons(buttons) {
+  _initToggledButtons(buttons) {
     if (!buttons) {
       return;
     }
 
-    buttons.forEach(buttonItem => {
-      if (buttonItem.type === ButtonInteractionType.TOGGLE) {
-        // if the button does not have a toggle state, set it to false
-        if (this.state.toggles[buttonItem.id] === undefined) {
-          this.state.toggles[buttonItem.id] = buttonItem.isActive || false;
-        }
+    buttons.forEach(({ id, isActive, props, type }) => {
+      const isToggleButton =
+        type === ButtonInteractionType.TOGGLE || props?.type === ButtonInteractionType.TOGGLE;
+
+      // if the button does not have a toggle state, set it to false
+      if (isToggleButton && this.state.toggles[id] === undefined) {
+        this.state.toggles[id] = isActive || false;
       }
 
-      this.initToggledButtons(buttonItem.props?.items);
+      props?.items && this._initToggledButtons(props.items);
     });
   }
 
