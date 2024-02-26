@@ -557,10 +557,17 @@ function commandsModule({
 
       cstUtils.scroll(viewport, options);
     },
-    setViewportColormap: ({ viewportId, displaySetInstanceUID, colormap, immediate = false }) => {
+    setViewportColormap: ({
+      viewportId,
+      displaySetInstanceUID,
+      colormap,
+      opacity = 1,
+      immediate = false,
+    }) => {
       const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+
       const actorEntries = viewport.getActors();
-      let opacity;
+      let hpOpacity;
       // Retrieve active protocol's viewport match details
       const { viewportMatchDetails } = hangingProtocolService.getActiveProtocol();
       // Get display set options for the specified viewport ID
@@ -572,14 +579,11 @@ function commandsModule({
           displaySet => displaySet.displaySetInstanceUID === displaySetInstanceUID
         );
         // If a matching display set is found, update the opacity with its value
-        opacity = matchingDisplaySet?.displaySetOptions?.options?.colormap?.opacity;
+        hpOpacity = matchingDisplaySet?.displaySetOptions?.options?.colormap?.opacity;
       }
 
-      if (colormap.name === 'Grayscale') {
-        colormap = { ...colormap, opacity: 1 };
-      } else {
-        colormap = { ...colormap, opacity: opacity || 0.5 };
-      }
+      // HP takes priority over the default opacity
+      colormap = { ...colormap, opacity: hpOpacity || opacity };
 
       const setViewportProperties = (viewport, uid) => {
         const actorEntry = actorEntries.find(entry => entry.uid.includes(uid));

@@ -1,16 +1,7 @@
-import React, { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
+import React, { ReactElement, useCallback, useEffect, useRef, useState, useMemo } from 'react';
 import { AllInOneMenu, ButtonGroup, SwitchButton } from '@ohif/ui';
 import { StackViewport } from '@cornerstonejs/core';
-import { CommandsManager, ServicesManager } from '@ohif/core';
-import { ColorMapPreset } from './WindowLevelActionMenu';
-
-export type ColormapProps = {
-  viewportId: string;
-  commandsManager: CommandsManager;
-  serviceManager: ServicesManager;
-  colormaps: Array<ColorMapPreset>;
-  displaySets: Array<any>;
-};
+import { ColormapProps } from '../../types/Colormap';
 
 export function Colormap({
   colormaps,
@@ -25,7 +16,6 @@ export function Colormap({
 
   const [showPreview, setShowPreview] = useState(false);
   const [prePreviewColormap, setPrePreviewColormap] = useState(null);
-  const [buttons, setButtons] = useState([]);
 
   const showPreviewRef = useRef(showPreview);
   showPreviewRef.current = showPreview;
@@ -36,10 +26,13 @@ export function Colormap({
 
   const onSetColorLUT = useCallback(
     props => {
+      // TODO: Better way to check if it's a fusion
+      const opacity = displaySets.length > 1 ? 0.5 : 1;
       commandsManager.run({
         commandName: 'setViewportColormap',
         commandOptions: {
           ...props,
+          opacity,
           immediate: true,
         },
         context: 'CORNERSTONE',
@@ -67,26 +60,15 @@ export function Colormap({
     return colormap;
   };
 
-  const generateButtons = useCallback(() => {
-    const filteredDisplaySets = displaySets.filter(
-      ds => ds.Modality !== 'SEG' && ds.Modality !== 'RTSTRUCT'
-    );
-    const buttons = filteredDisplaySets.map((displaySet, index) => {
-      return {
-        children: displaySet.Modality,
-        key: index,
-        style: {
-          minWidth: `calc(100% / ${displaySets.length})`,
-        },
-      };
-    });
-
-    return buttons;
+  const buttons = useMemo(() => {
+    return displaySets.map((displaySet, index) => ({
+      children: displaySet.Modality,
+      key: index,
+      style: {
+        minWidth: `calc(100% / ${displaySets.length})`,
+      },
+    }));
   }, [displaySets]);
-
-  useEffect(() => {
-    setButtons(generateButtons());
-  }, [displaySets, generateButtons, viewportId]);
 
   useEffect(() => {
     setActiveDisplaySet(displaySets[displaySets.length - 1]);

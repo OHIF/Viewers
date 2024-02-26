@@ -1,22 +1,7 @@
 import React, { ReactElement, useCallback, useEffect, useState } from 'react';
 import { SwitchButton } from '@ohif/ui';
 import { StackViewport, VolumeViewport } from '@cornerstonejs/core';
-import { CommandsManager, ServicesManager } from '@ohif/core';
-import { ColorMapPreset } from './WindowLevelActionMenu';
-
-export type ColorbarProps = {
-  viewportId: string;
-  commandsManager: CommandsManager;
-  serviceManager: ServicesManager;
-  displaySets: Array<any>;
-  colorbarProperties: {
-    width: string;
-    colorbarTickPosition: string;
-    colorbarContainerPosition: string;
-    colormaps: Array<ColorMapPreset>;
-    colorbarInitialColormap: string;
-  };
-};
+import { ColorbarProps } from '../../types/Colorbar';
 
 export function setViewportColorbar(
   viewportId,
@@ -35,9 +20,7 @@ export function setViewportColorbar(
 
   if (viewport instanceof VolumeViewport) {
     displaySets.forEach(ds => {
-      if (ds.Modality !== 'RTSTRUCT' && ds.Modality !== 'SEG') {
-        displaySetInstanceUIDs.push(ds.displaySetInstanceUID);
-      }
+      displaySetInstanceUIDs.push(ds.displaySetInstanceUID);
     });
   }
 

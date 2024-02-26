@@ -6,19 +6,8 @@ import { CommandsManager, ServicesManager } from '@ohif/core';
 import { Colormap } from './Colormap';
 import { Colorbar } from './Colorbar';
 import { setViewportColorbar } from './Colorbar';
-
-export type WindowLevelPreset = {
-  description: string;
-  window: string;
-  level: string;
-};
-
-export type ColorMapPreset = {
-  ColorSpace;
-  description: string;
-  RGBPoints;
-  Name;
-};
+import { WindowLevelPreset } from '../../types/WindowLevel';
+import { ColorbarProperties } from '../../types/Colorbar';
 
 export type WindowLevelActionMenuProps = {
   viewportId: string;
@@ -28,13 +17,7 @@ export type WindowLevelActionMenuProps = {
   horizontalDirection: AllInOneMenu.HorizontalDirection;
   commandsManager: CommandsManager;
   serviceManager: ServicesManager;
-  colorbarProperties: {
-    width: string;
-    colorbarTickPosition: string;
-    colorbarContainerPosition: string;
-    colormaps: Array<ColorMapPreset>;
-    colorbarInitialColormap: string;
-  };
+  colorbarProperties: ColorbarProperties;
   displaySets: Array<any>;
 };
 
@@ -125,7 +108,9 @@ export function WindowLevelActionMenu({
       <AllInOneMenu.ItemPanel>
         <Colorbar
           viewportId={viewportId}
-          displaySets={displaySets}
+          displaySets={displaySets.filter(
+            ds => ds.Modality !== 'SEG' && ds.Modality !== 'RTSTRUCT'
+          )}
           commandsManager={commandsManager}
           serviceManager={serviceManager}
           colorbarProperties={colorbarProperties}
@@ -139,7 +124,9 @@ export function WindowLevelActionMenu({
             <Colormap
               colormaps={colormaps}
               viewportId={viewportId}
-              displaySets={displaySets}
+              displaySets={displaySets.filter(
+                ds => ds.Modality !== 'SEG' && ds.Modality !== 'RTSTRUCT'
+              )}
               commandsManager={commandsManager}
               serviceManager={serviceManager}
             />

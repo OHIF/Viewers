@@ -2,29 +2,8 @@ import { PubSubService } from '@ohif/core';
 import { RENDERING_ENGINE_ID } from '../ViewportService/constants';
 import { StackViewport, VolumeViewport, getRenderingEngine } from '@cornerstonejs/core';
 import { utilities } from '@cornerstonejs/tools';
-
+import { ColorbarOptions, ChangeTypes } from '../../types/Colorbar';
 const { ViewportColorbar } = utilities.voi.colorbar;
-
-type ColorMapPreset = {
-  ColorSpace;
-  description: string;
-  RGBPoints;
-  Name;
-};
-
-type ColorbarOptions = {
-  position: string;
-  colormaps: Array<ColorMapPreset>;
-  activeColormapName: string;
-  ticks: object;
-  width: string;
-};
-
-enum ChangeTypes {
-  Removed = 'removed',
-  Added = 'added',
-  Modified = 'modified',
-}
 
 export default class ColorbarService extends PubSubService {
   static EVENTS = {
