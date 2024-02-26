@@ -1,7 +1,6 @@
 // TODO: torn, can either bake this here; or have to create a whole new button type
 // Only ways that you can pass in a custom React component for render :l
 import {
-  // ExpandableToolbarButton,
   // ListMenu,
   WindowLevelMenuItem,
 } from '@ohif/ui';

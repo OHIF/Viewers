@@ -1,5 +1,4 @@
 import {
-  // ExpandableToolbarButton,
   // ListMenu,
   WindowLevelMenuItem,
 } from '@ohif/ui';
