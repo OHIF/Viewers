@@ -145,10 +145,14 @@ export default class ToolbarService extends PubSubService {
    *    called with {...commandOptions,...options}
    */
   public recordInteraction(interaction, options?: Record<string, unknown>) {
-    if (!interaction) {
-      return;
-    }
     const commandsManager = this._commandsManager;
+
+    // if interaction is a string, we can assume it is the itemId
+    // and get the props to get the other properties
+    if (typeof interaction === 'string') {
+      interaction = this.getButtonProps(interaction);
+    }
+
     const { commands, type, id } = interaction;
 
     const itemId = interaction.itemId || id;
@@ -353,7 +357,6 @@ export default class ToolbarService extends PubSubService {
   }
 
   public setToggled(itemId: string): void {
-    debugger;
     this._setToggled(itemId);
     this.updateToolbarStateAfterInteraction({
       itemId,

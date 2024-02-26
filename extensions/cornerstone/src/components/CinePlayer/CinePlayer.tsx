@@ -19,18 +19,7 @@ function WrappedCinePlayer({ enabledVPElement, viewportId, servicesManager }) {
     customizationService.get('cinePlayer') ?? {};
 
   const handleCineClose = () => {
-    toolbarService.recordInteraction({
-      groupId: 'MoreTools',
-      interactionType: 'toggle',
-      commands: [
-        {
-          commandName: 'toggleCine',
-          commandOptions: {},
-          toolName: 'cine',
-          context: 'CORNERSTONE',
-        },
-      ],
-    });
+    toolbarService.recordInteraction('cine');
   };
 
   const cineHandler = () => {

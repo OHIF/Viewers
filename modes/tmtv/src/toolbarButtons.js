@@ -305,7 +305,7 @@ const toolbarButtons = [
     type: 'ohif.splitButton',
     props: {
       groupId: 'fusionPTColormap',
-      primary: _createToolButton(
+      primary: _createActionButton(
         'fusionPTColormap',
         'tool-fusion-color',
         'Fusion PT Colormap',

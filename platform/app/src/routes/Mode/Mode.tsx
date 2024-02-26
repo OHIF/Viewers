@@ -314,15 +314,6 @@ export default function ModeRoute({
     return null;
   }
 
-  const getLayoutComponent = props => {
-    const layoutTemplateModuleEntry = extensionManager.getModuleEntry(
-      layoutTemplateData.current.id
-    );
-    const LayoutComponent = layoutTemplateModuleEntry.component;
-
-    return <LayoutComponent {...props} />;
-  };
-
   const ViewportGridWithDataSource = props => {
     return ViewportGrid({ ...props, dataSource });
   };
@@ -333,16 +324,29 @@ export default function ModeRoute({
     commandsManager
   );
 
+  const getLayoutComponent = props => {
+    const layoutTemplateModuleEntry = extensionManager.getModuleEntry(
+      layoutTemplateData.current.id
+    );
+    const LayoutComponent = layoutTemplateModuleEntry.component;
+
+    return <LayoutComponent {...props} />;
+  };
+
+  const LayoutComponent = getLayoutComponent({
+    ...layoutTemplateData.current.props,
+    ViewportGridComp: ViewportGridWithDataSource,
+  });
+
   return (
     <ImageViewerProvider StudyInstanceUIDs={studyInstanceUIDs}>
-      <CombinedExtensionsContextProvider>
-        <DragAndDropProvider>
-          {getLayoutComponent({
-            ...layoutTemplateData.current.props,
-            ViewportGridComp: ViewportGridWithDataSource,
-          })}
-        </DragAndDropProvider>
-      </CombinedExtensionsContextProvider>
+      {CombinedExtensionsContextProvider ? (
+        <CombinedExtensionsContextProvider>
+          <DragAndDropProvider>{LayoutComponent}</DragAndDropProvider>
+        </CombinedExtensionsContextProvider>
+      ) : (
+        <DragAndDropProvider>{LayoutComponent}</DragAndDropProvider>
+      )}
     </ImageViewerProvider>
   );
 }

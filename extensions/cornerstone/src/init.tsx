@@ -266,6 +266,12 @@ export default async function init({
     });
   };
 
+  function resetCrosshairs(evt) {
+    const { element } = evt.detail;
+    const { viewportId } = getEnabledElement(element);
+    commandsManager.runCommand('resetCrosshairs', { viewportId });
+  }
+
   /**
    * Runs error handler for failed requests.
    * @param event
@@ -273,30 +279,6 @@ export default async function init({
   const imageLoadFailedHandler = ({ detail }) => {
     const handler = errorHandler.getHTTPErrorHandler();
     handler(detail.error);
-  };
-
-  const resetCrosshairs = evt => {
-    const { element } = evt.detail;
-    const { viewportId, renderingEngineId } = cornerstone.getEnabledElement(element);
-
-    const toolGroup = cornerstoneTools.ToolGroupManager.getToolGroupForViewport(
-      viewportId,
-      renderingEngineId
-    );
-
-    if (!toolGroup || !toolGroup._toolInstances?.['Crosshairs']) {
-      return;
-    }
-
-    const mode = toolGroup._toolInstances['Crosshairs'].mode;
-
-    if (mode === Enums.ToolModes.Active) {
-      toolGroup.setToolActive('Crosshairs');
-    } else if (mode === Enums.ToolModes.Passive) {
-      toolGroup.setToolPassive('Crosshairs');
-    } else if (mode === Enums.ToolModes.Enabled) {
-      toolGroup.setToolEnabled('Crosshairs');
-    }
   };
 
   eventTarget.addEventListener(EVENTS.STACK_VIEWPORT_NEW_STACK, evt => {
@@ -313,7 +295,7 @@ export default async function init({
 
     eventTarget.addEventListener(EVENTS.STACK_VIEWPORT_NEW_STACK, toolbarEventListener);
 
-    initViewTiming({ element, eventTarget });
+    initViewTiming({ element });
   }
 
   function elementDisabledHandler(evt) {

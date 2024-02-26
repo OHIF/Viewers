@@ -233,24 +233,15 @@ function commandsModule({
       const activeViewportToolGroup = toolGroupService.getToolGroup(null);
 
       if (activeViewportToolGroup._toolInstances?.Crosshairs?.mode === Enums.ToolModes.Active) {
-        actions.toolbarServiceRecordInteraction({
-          interactionType: 'tool',
-          commands: [
-            {
-              commandOptions: {
-                toolName: 'WindowLevel',
-              },
-              context: 'CORNERSTONE',
-            },
-          ],
-        });
+        // Todo: we should use state sync service to remember the pre-MPR
+        // tools and
+        toolbarService.recordInteraction('WindowLevel');
       }
     },
     toggleCine: () => {
       const { viewports } = viewportGridService.getState();
       const { isCineEnabled } = cineService.getState();
       cineService.setIsCineEnabled(!isCineEnabled);
-      toolbarService.setButton('Cine', { props: { isActive: !isCineEnabled } });
       viewports.forEach((_, index) => cineService.setCine({ id: index, isPlaying: false }));
     },
     setWindowLevel({ window, level, toolGroupId }) {
@@ -278,13 +269,6 @@ function commandsModule({
         },
       });
       viewport.render();
-    },
-
-    // Just call the toolbar service record interaction - allows
-    // executing a toolbar command as a full toolbar command with side affects
-    // coming from the ToolbarService itself.
-    toolbarServiceRecordInteraction: props => {
-      toolbarService.recordInteraction(props);
     },
     setToolEnabled: ({ toolName, toggle }) => {
       const { viewports } = viewportGridService.getState();
@@ -321,22 +305,6 @@ function commandsModule({
       renderingEngine.render();
     },
     setToolActive: ({ toolName, toolGroupId = null, toggledState }) => {
-      if (toolName === 'Crosshairs') {
-        const activeViewportToolGroup = toolGroupService.getToolGroup(null);
-
-        if (!activeViewportToolGroup._toolInstances.Crosshairs) {
-          uiNotificationService.show({
-            title: 'Crosshairs',
-            message:
-              'You need to be in a MPR view to use Crosshairs. Click on MPR button in the toolbar to activate it.',
-            type: 'info',
-            duration: 3000,
-          });
-
-          throw new Error('Crosshairs tool is not available in this viewport');
-        }
-      }
-
       const { viewports } = viewportGridService.getState();
 
       if (!viewports.size) {
@@ -619,7 +587,6 @@ function commandsModule({
     storePresentation: ({ viewportId }) => {
       cornerstoneViewportService.storePresentation({ viewportId });
     },
-
     attachProtocolViewportDataListener: ({ protocol, stageIndex }) => {
       const EVENT = cornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED;
       const command = protocol.callbacks.onViewportDataInitialized;
@@ -634,6 +601,26 @@ function commandsModule({
           // Unsubscribe from the event
           unsubscribe(EVENT);
         }
+      });
+    },
+    resetCrosshairs: ({ viewportId }) => {
+      const crosshairInstances = [];
+
+      const getCrosshairInstances = toolGroupId => {
+        const toolGroup = toolGroupService.getToolGroup(toolGroupId);
+        crosshairInstances.push(toolGroup.getToolInstance('Crosshairs'));
+      };
+
+      if (!viewportId) {
+        const toolGroupIds = toolGroupService.getToolGroupIds();
+        toolGroupIds.forEach(getCrosshairInstances);
+      } else {
+        const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
+        getCrosshairInstances(toolGroup.id);
+      }
+
+      crosshairInstances.forEach(ins => {
+        ins.resetCrosshairs();
       });
     },
   };
@@ -769,6 +756,9 @@ function commandsModule({
     },
     attachProtocolViewportDataListener: {
       commandFn: actions.attachProtocolViewportDataListener,
+    },
+    resetCrosshairs: {
+      commandFn: actions.resetCrosshairs,
     },
   };
 
