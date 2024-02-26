@@ -46,8 +46,8 @@ export default class ToolbarService extends PubSubService {
     name: 'toolbarService',
     // Note the old name is ToolBarService, with an upper B
     altName: 'ToolBarService',
-    create: ({ commandsManager }) => {
-      return new ToolbarService(commandsManager);
+    create: ({ commandsManager, extensionManager }) => {
+      return new ToolbarService(commandsManager, extensionManager);
     },
   };
 
@@ -99,17 +99,14 @@ export default class ToolbarService extends PubSubService {
      */
   };
   _commandsManager: CommandsManager;
-  extensionManager: ExtensionManager;
+  _extensionManager: ExtensionManager;
 
   defaultTool: Record<string, unknown>;
 
-  constructor(commandsManager: CommandsManager) {
+  constructor(commandsManager: CommandsManager, extensionManager: ExtensionManager) {
     super(EVENTS);
     this._commandsManager = commandsManager;
-  }
-
-  public init(extensionManager: ExtensionManager): void {
-    this.extensionManager = extensionManager;
+    this._extensionManager = extensionManager;
   }
 
   public reset(): void {
@@ -152,7 +149,7 @@ export default class ToolbarService extends PubSubService {
       return;
     }
     const commandsManager = this._commandsManager;
-    const { commands, type, id, groupId } = interaction;
+    const { commands, type, id } = interaction;
 
     const itemId = interaction.itemId || id;
 
@@ -403,7 +400,7 @@ export default class ToolbarService extends PubSubService {
 
   _buttonTypes() {
     const buttonTypes = {};
-    const registeredToolbarModules = this.extensionManager.modules['toolbarModule'];
+    const registeredToolbarModules = this._extensionManager.modules['toolbarModule'];
 
     if (Array.isArray(registeredToolbarModules) && registeredToolbarModules.length) {
       registeredToolbarModules.forEach(toolbarModule =>

@@ -54,15 +54,13 @@ function initDefaultToolGroup(extensionManager, toolGroupService, commandsManage
       { toolName: toolNames.CalibrationLine },
     ],
     // enabled
-    enabled: [{ toolName: toolNames.ImageOverlayViewer }],
-    // disabled
-    disabled: [{ toolName: toolNames.ReferenceLines }],
+    enabled: [{ toolName: toolNames.ImageOverlayViewer }, { toolName: toolNames.ReferenceLines }],
   };
 
   toolGroupService.createToolGroupAndAddTools(toolGroupId, tools);
 }
 
-function initSRToolGroup(extensionManager, toolGroupService, commandsManager) {
+function initSRToolGroup(extensionManager, toolGroupService) {
   const SRUtilityModule = extensionManager.getModuleEntry(
     '@ohif/extension-cornerstone-dicom-sr.utilityModule.tools'
   );
@@ -230,7 +228,7 @@ function initVolume3DToolGroup(extensionManager, toolGroupService) {
 
 function initToolGroups(extensionManager, toolGroupService, commandsManager) {
   initDefaultToolGroup(extensionManager, toolGroupService, commandsManager, 'default');
-  initSRToolGroup(extensionManager, toolGroupService, commandsManager);
+  initSRToolGroup(extensionManager, toolGroupService);
   initMPRToolGroup(extensionManager, toolGroupService, commandsManager);
   initVolume3DToolGroup(extensionManager, toolGroupService);
 }

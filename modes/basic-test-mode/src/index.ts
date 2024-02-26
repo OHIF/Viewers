@@ -113,7 +113,6 @@ function modeFactory() {
         activateTool
       ));
 
-      toolbarService.init(extensionManager);
       toolbarService.addButtons([...toolbarButtons, ...moreTools, ...moreToolsMpr]);
       toolbarService.createButtonSection(DEFAULT_TOOL_GROUP_ID, [
         'MeasurementTools',

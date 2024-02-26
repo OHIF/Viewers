@@ -116,6 +116,7 @@ const moreTools = [
               [EVENTS.STACK_VIEWPORT_NEW_STACK]: ReferenceLinesListeners,
               [EVENTS.ACTIVE_VIEWPORT_ID_CHANGED]: ReferenceLinesListeners,
             },
+            isActive: true,
           }
         ),
         ToolbarService._createToggleButton(
