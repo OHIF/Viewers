@@ -113,6 +113,7 @@ export {
   WindowLevelMenuItem,
   ImageScrollbar,
   ViewportOverlay,
+  SplitButtonToolbar,
 } from './components';
 
 export { useSessionStorage } from './hooks';

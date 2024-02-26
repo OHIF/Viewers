@@ -89,9 +89,8 @@ export default class ToolbarService extends PubSubService {
   state: {
     primaryToolId: string;
     toggles: Record<string, boolean>;
-    groups: Record<string, unknown>;
     buttons: Record<string, Button>;
-  } = { primaryToolId: '', toggles: {}, groups: {}, buttons: {} };
+  } = { primaryToolId: '', toggles: {}, buttons: {} };
 
   buttonSections: Record<string, unknown> = {
     /**
@@ -118,7 +117,6 @@ export default class ToolbarService extends PubSubService {
     this.state = {
       primaryToolId: 'WindowLevel',
       toggles: {},
-      groups: {},
       buttons: {},
     };
     this.unsubscriptions = [];
@@ -154,11 +152,11 @@ export default class ToolbarService extends PubSubService {
       return;
     }
     const commandsManager = this._commandsManager;
-    const { groupId, commands, type, id } = interaction;
+    const { commands, type, id, groupId } = interaction;
 
     const itemId = interaction.itemId || id;
 
-    const buttonProps = this.getNestedButtonProps(itemId as string);
+    const buttonProps = this.getButtonProps(itemId as string);
 
     if (!buttonProps) {
       throw new Error(`Button not found for id: ${itemId}`);
@@ -184,16 +182,6 @@ export default class ToolbarService extends PubSubService {
           // if the itemId is not undefined use it; otherwise, set the first tool in
           // the commands as the primary tool
           this.state.primaryToolId = itemId || toolName;
-
-          // update isActive state for the button
-
-          // find the other active button of type tools and set it to false
-          const currentActiveButton = this.getNestedButtonProps(prevPrimaryToolId);
-          if (currentActiveButton) {
-            currentActiveButton.isActive = false;
-          }
-
-          buttonProps.isActive = true;
         } catch (error) {
           console.warn(error);
         }
@@ -205,7 +193,7 @@ export default class ToolbarService extends PubSubService {
         let commandExecuted;
 
         // only toggle if a command was executed
-        this._setToggleForButton(itemId);
+        this.setToggled(itemId);
 
         if (!commands) {
           break;
@@ -239,29 +227,103 @@ export default class ToolbarService extends PubSubService {
         throw new Error(`Invalid interaction type: ${interactionType}`);
     }
 
-    // Todo: comment out for now
-    // Run command if there's one associated
-    //
-    // NOTE: Should probably just do this for tools as well?
-    // But would be nice if we could enforce at least the command name?
-    // let unsubscribe;
-    // if (commandName) {
-    //   unsubscribe = commandsManager.runCommand(commandName, commandOptions);
-    // }
-
-    // // Storing the unsubscribe for later resetting
-    // if (unsubscribe && typeof unsubscribe === 'function') {
-    //   if (this.unsubscriptions.indexOf(unsubscribe) === -1) {
-    //     this.unsubscriptions.push(unsubscribe);
-    //   }
-    // }
-
-    // Track last touched id for each group
-    if (groupId) {
-      this.state.groups[groupId] = itemId;
-    }
+    this._consolidateWhoIsPrimaryWhoIsActiveEtc({
+      itemId,
+      interactionType,
+      prevPrimaryToolId,
+    });
 
     this._broadcastEvent(this.EVENTS.TOOL_BAR_STATE_MODIFIED, { ...this.state });
+  }
+
+  /**
+   * Consolidates the state of the toolbar after an interaction
+   *
+   * Basically if the interaction was done on a button that was just a regular
+   * button (not nested), the we can set the isActive state of the button to true
+   */
+  _consolidateWhoIsPrimaryWhoIsActiveEtc({ itemId, interactionType, prevPrimaryToolId }) {
+    // check the id of the button that was interacted with, and see if it is part
+    // of a group of buttons
+    const groupId = this.findGroupIdByItemId(itemId);
+
+    if (interactionType === ButtonInteractionType.TOOL) {
+      // we should find the previous primary tool and set it to be inactive
+      this.updateButtonActiveState(prevPrimaryToolId, false);
+    }
+
+    if (!groupId) {
+      // regular button, we can certainly say it is active now and the UI can
+      // decide to show it as such
+      this.updateButtonActiveState(itemId, true);
+    } else {
+      // if it is a nested button, we have to check if the item was the primary
+      // item or the nested items that were interacted with, it they were
+      // nested item, we have to move that item to be the primary item now
+      // and set the primary item to be active
+      const { primary, items } = this.state.buttons[groupId].props as NestedButtonProps;
+      const isPrimary = primary.id === itemId;
+      const item = items.find(({ id }) => id === itemId);
+
+      if (isPrimary && interactionType === ButtonInteractionType.TOOL) {
+        this.updateButtonActiveState(itemId, true);
+      } else if (isPrimary && interactionType === ButtonInteractionType.TOGGLE) {
+        // we need to check the toggled state to decide if the primary item
+        // should be active or not
+        const isToggled = this.state.toggles[itemId];
+        this.updateButtonActiveState(itemId, isToggled);
+      } else {
+        // if it was not primary item that was clicked, we need to
+        // move the item to be the primary item, however, we need to actually
+        // decide based on the interaction type.
+        if (interactionType === ButtonInteractionType.TOOL) {
+          (this.state.buttons[groupId].props as NestedButtonProps).primary = item;
+          this.updateButtonActiveState(itemId, true);
+        } else {
+          // if it was a toggle or action, we need to check if there was an already
+          // active TOOL inside the group, if there was, we CANT change the
+          // primary item, we can only change the active state of the button
+          // that was toggled
+          const activeTool = items.find(({ id }) => {
+            const props = this.getButtonProps(id);
+            return props?.type === ButtonInteractionType.TOOL && props.isActive;
+          });
+
+          if (!activeTool) {
+            (this.state.buttons[groupId].props as NestedButtonProps).primary = item;
+          }
+
+          // if it is not action, make it active too, since we need to show it
+          // for toggle state, Actions don't have active state
+          if (interactionType === ButtonInteractionType.TOGGLE) {
+            const isToggled = this.state.toggles[itemId];
+            this.updateButtonActiveState(itemId, isToggled);
+          }
+        }
+      }
+    }
+  }
+
+  updateButtonActiveState(itemId, isActive) {
+    const buttonProps = this.getButtonProps(itemId);
+    if (buttonProps) {
+      buttonProps.isActive = isActive;
+    }
+  }
+
+  findGroupIdByItemId(itemId) {
+    const { buttons } = this.state;
+    const buttonKeys = Object.keys(buttons);
+
+    for (const buttonId of buttonKeys) {
+      const { groupId, items } = buttons[buttonId].props as NestedButtonProps;
+      if (groupId && items) {
+        const found = items.some(({ id }) => id === itemId);
+        if (found) {
+          return groupId;
+        }
+      }
+    }
   }
 
   getButtons() {
@@ -311,7 +373,7 @@ export default class ToolbarService extends PubSubService {
   }
 
   /** Gets a nested button, found in the items/props for the children */
-  public getNestedButtonProps(id: string): ButtonProps {
+  public getButtonProps(id: string): ButtonProps {
     for (const buttonId of Object.keys(this.state.buttons)) {
       const { primary, items } = (this.state.buttons[buttonId].props as NestedButtonProps) || {};
       if (primary?.id === id) {
@@ -424,15 +486,6 @@ export default class ToolbarService extends PubSubService {
 
       this.initToggledButtons(buttonItem.props?.items);
     });
-  }
-
-  _setToggleForButton(itemId) {
-    this.setToggled(itemId);
-    // update the button state
-    const buttonProps = this.getNestedButtonProps(itemId);
-    if (buttonProps) {
-      buttonProps.isActive = this.state.toggles[itemId];
-    }
   }
 
   /**
