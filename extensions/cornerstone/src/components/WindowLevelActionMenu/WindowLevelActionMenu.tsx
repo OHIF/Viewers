@@ -40,6 +40,7 @@ export function WindowLevelActionMenu({
     width: colorbarWidth,
   } = colorbarProperties;
   const { colorbarService } = serviceManager.services;
+  const nonImageModalities = ['SR', 'SEG', 'SM', 'RTSTRUCT', 'RTPLAN', 'RTDOSE'];
 
   const { t } = useTranslation('WindowLevelActionMenu');
 
@@ -108,9 +109,7 @@ export function WindowLevelActionMenu({
       <AllInOneMenu.ItemPanel>
         <Colorbar
           viewportId={viewportId}
-          displaySets={displaySets.filter(
-            ds => ds.Modality !== 'SEG' && ds.Modality !== 'RTSTRUCT'
-          )}
+          displaySets={displaySets.filter(ds => !nonImageModalities.includes(ds.Modality))}
           commandsManager={commandsManager}
           serviceManager={serviceManager}
           colorbarProperties={colorbarProperties}
@@ -124,9 +123,7 @@ export function WindowLevelActionMenu({
             <Colormap
               colormaps={colormaps}
               viewportId={viewportId}
-              displaySets={displaySets.filter(
-                ds => ds.Modality !== 'SEG' && ds.Modality !== 'RTSTRUCT'
-              )}
+              displaySets={displaySets.filter(ds => !nonImageModalities.includes(ds.Modality))}
               commandsManager={commandsManager}
               serviceManager={serviceManager}
             />
