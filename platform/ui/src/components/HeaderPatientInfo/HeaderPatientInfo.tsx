@@ -6,88 +6,66 @@ import { useAppConfig } from '@state';
 
 const { formatDate, formatPN } = utils;
 
+const formatWithEllipsis = (str, maxLength) => {
+  if (str.length > maxLength) {
+    return str.substring(0, maxLength) + '...';
+  }
+  return str;
+};
+
 function usePatientInfo(servicesManager) {
+  const { displaySetService } = servicesManager.services;
+
   const [patientInfo, setPatientInfo] = useState({
     PatientName: '',
     PatientID: '',
     PatientSex: '',
-    PatientAge: '',
     PatientDOB: '',
   });
   const [isMixedPatients, setIsMixedPatients] = useState(false);
+  const displaySets = displaySetService.getActiveDisplaySets();
 
-  const { displaySetService, viewportGridService, cornerstoneViewportService } =
-    servicesManager.services;
-
-  const { activeViewportId, viewports } = viewportGridService.getState();
-
-  const checkMixedPatients = activeViewportPatientID => {
-    const { viewports } = viewportGridService.getState();
+  const checkMixedPatients = PatientID => {
+    const displaySets = displaySetService.getActiveDisplaySets();
     let isMixedPatients = false;
-    viewports.forEach(viewport => {
-      const displaySetInstanceUID = viewport.displaySetInstanceUIDs[0];
-      if (!displaySetInstanceUID) {
-        return;
-      }
-      const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
+    displaySets.forEach(displaySet => {
       const instance = displaySet?.instances?.[0] || displaySet?.instance;
       if (!instance) {
         return;
       }
-
-      if (instance.PatientID !== activeViewportPatientID) {
+      if (instance.PatientID !== PatientID) {
         isMixedPatients = true;
       }
     });
     setIsMixedPatients(isMixedPatients);
   };
 
-  const updatePatientInfo = (viewportId = null) => {
-    const state = viewportGridService.getState();
-    const activeViewportId = viewportId || state.activeViewportId;
-    const activeViewport = state.viewports.get(activeViewportId);
-    const displaySetInstanceUID = activeViewport?.displaySetInstanceUIDs[0];
-
-    if (!displaySetInstanceUID) {
-      return;
-    }
-    const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
+  const updatePatientInfo = () => {
+    const displaySet = displaySets[0];
     const instance = displaySet?.instances?.[0] || displaySet?.instance;
-
     if (!instance) {
       return;
     }
-
     setPatientInfo({
       PatientID: instance.PatientID || '',
       PatientName: instance.PatientName ? formatPN(instance.PatientName.Alphabetic) : '',
       PatientSex: instance.PatientSex || '',
-      PatientAge: instance.PatientAge || '',
       PatientDOB: formatDate(instance.PatientBirthDate) || '',
     });
-
     checkMixedPatients(instance.PatientID || '');
   };
 
   useEffect(() => {
-    const subscriptions = [
-      viewportGridService.subscribe(
-        viewportGridService.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED,
-        event => updatePatientInfo(event.viewportId) // Update the toolbar when the active viewport changes
-      ).unsubscribe,
-      cornerstoneViewportService.subscribe(
-        cornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED,
-        () => updatePatientInfo() // Update the toolbar when the viewport data changes
-      ).unsubscribe,
-    ];
-
-    return () => subscriptions.forEach(unsubscribe => unsubscribe());
+    const subscription = displaySetService.subscribe(
+      displaySetService.EVENTS.DISPLAY_SETS_ADDED,
+      () => updatePatientInfo()
+    );
+    return () => subscription.unsubscribe();
   }, []);
 
-  // Initial update
   useEffect(() => {
     updatePatientInfo();
-  }, [activeViewportId, viewports]);
+  }, [displaySets]);
 
   return { patientInfo, isMixedPatients };
 }
@@ -98,43 +76,47 @@ function HeaderPatientInfo({ servicesManager }) {
   const [expanded, setExpanded] = useState(initialExpandedState);
   const { patientInfo, isMixedPatients } = usePatientInfo(servicesManager);
 
+  useEffect(() => {
+    if (isMixedPatients && expanded) {
+      setExpanded(false);
+    }
+  }, [isMixedPatients, expanded]);
+
+  const handleOnClick = () => {
+    if (!isMixedPatients) {
+      setExpanded(!expanded);
+    }
+  };
+
+  const formattedPatientName = formatWithEllipsis(patientInfo.PatientName, 27);
+  const formattedPatientID = formatWithEllipsis(patientInfo.PatientID, 15);
+
   return (
     <div
       className="align-items-center hover:bg-primary-dark flex cursor-pointer justify-center gap-1 rounded-lg"
-      onClick={() => setExpanded(!expanded)}
+      onClick={handleOnClick}
     >
       <Icon
-        name="icon-patient"
+        name={isMixedPatients ? 'icon-multiple-patients' : 'icon-patient'}
         className="text-primary-active"
       />
       <div className="flex flex-col justify-center">
         {expanded ? (
           <>
-            {isMixedPatients ? (
-              <div className="align-center flex gap-2">
-                <Icon
-                  name="status-alert-warning"
-                  width="10px"
-                  height="20px"
-                ></Icon>
-                <div className="self-start text-[13px] font-bold text-white">Multiple Patients</div>
-              </div>
-            ) : (
-              <>
-                <div className="self-start text-[13px] font-bold text-white">
-                  {patientInfo.PatientName}
-                </div>
-                <div className="text-aqua-pale flex gap-2 text-[11px]">
-                  <div>{patientInfo.PatientID}</div>
-                  <div>{patientInfo.PatientSex}</div>
-                  <div>{patientInfo.PatientDOB}</div>
-                  <div>{patientInfo.PatientAge}</div>
-                </div>
-              </>
-            )}
+            <div className="self-start text-[13px] font-bold text-white">
+              {formattedPatientName}
+            </div>
+            <div className="text-aqua-pale flex gap-2 text-[11px]">
+              <div>{formattedPatientID}</div>
+              <div>{patientInfo.PatientSex}</div>
+              <div>{patientInfo.PatientDOB}</div>
+            </div>
           </>
         ) : (
-          <div className="text-primary-active self-center text-[13px]">Patient</div>
+          <div className="text-primary-active self-center text-[13px]">
+            {' '}
+            {isMixedPatients ? 'Multiple Patients' : 'Patient'}
+          </div>
         )}
       </div>
       <Icon

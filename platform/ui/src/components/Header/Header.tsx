@@ -9,6 +9,7 @@ import Icon from '../Icon';
 import IconButton from '../IconButton';
 import Dropdown from '../Dropdown';
 import HeaderPatientInfo from '../HeaderPatientInfo';
+import { PatientInfoVisibility } from '../../types/PatientInfoVisibility';
 
 function Header({
   children,
@@ -17,7 +18,7 @@ function Header({
   onClickReturnButton,
   isSticky,
   WhiteLabeling,
-  showPatientInfo = 'visibleCollapsed',
+  showPatientInfo = PatientInfoVisibility.VISIBLE_COLLAPSED,
   servicesManager,
   ...props
 }): ReactNode {
@@ -61,7 +62,8 @@ function Header({
         </div>
         <div className="flex items-center">{children}</div>
         <div className="flex items-center">
-          {(showPatientInfo === 'visible' || showPatientInfo === 'visibleCollapsed') && (
+          {(showPatientInfo === PatientInfoVisibility.VISIBLE ||
+            showPatientInfo === PatientInfoVisibility.VISIBLE_COLLAPSED) && (
             <HeaderPatientInfo servicesManager={servicesManager} />
           )}
 
