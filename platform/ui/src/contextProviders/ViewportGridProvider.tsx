@@ -406,6 +406,7 @@ export function ViewportGridProvider({ children, service }) {
     set: gridLayoutState => service.setState(gridLayoutState), // run it through the service itself since we want to publish events
     getNumViewportPanes,
     getActiveViewportOptionByKey,
+    setViewportGridSizeChanged: props => service.setViewportGridSizeChanged(props),
   };
 
   return (

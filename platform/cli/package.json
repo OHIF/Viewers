@@ -1,6 +1,6 @@
 {
   "name": "@ohif/cli",
-  "version": "3.8.0-beta.52",
+  "version": "3.8.0-beta.56",
   "description": "A CLI to bootstrap new OHIF extension or mode",
   "type": "module",
   "main": "src/index.js",
@@ -9,6 +9,8 @@
     "ohif-cli": "src/index.js"
   },
   "scripts": {
+    "clean": "shx rm -rf dist",
+    "clean:deep": "yarn run clean && shx rm -rf node_modules",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
