@@ -34,26 +34,23 @@ const defaultCommonPresets = [
   },
 ];
 
-const defaultAdvancedPresets = [
-  { icon: 'layout-advanced-mpr', title: 'MPR', commandOptions: { protocolId: 'mpr' } },
-  {
-    icon: 'layout-advanced-axial-primary',
-    title: 'Axial Primary',
-    commandOptions: { protocolId: 'primaryAxial' },
-  },
-  {
-    icon: 'layout-advanced-3d-four-up',
-    title: '3D four up',
-    commandOptions: { protocolId: 'fourUp' },
-  },
-  { icon: 'layout-advanced-3d-main', title: '3D main', commandOptions: { protocolId: 'main3D' } },
-  { icon: 'layout-advanced-3d-only', title: '3D only', commandOptions: { protocolId: 'only3D' } },
-  {
-    icon: 'layout-advanced-3d-primary',
-    title: '3D primary',
-    commandOptions: { protocolId: 'primary3D' },
-  },
-];
+const generateAdvancedPresets = hangingProtocolService => {
+  const hangingProtocols = Array.from(hangingProtocolService.protocols.values());
+  return hangingProtocols
+    .map(hp => {
+      if (!hp.isPreset) {
+        return null;
+      }
+      return {
+        icon: hp.icon,
+        title: hp.name,
+        commandOptions: {
+          protocolId: hp.id,
+        },
+      };
+    })
+    .filter(preset => preset !== null);
+};
 
 function ToolbarLayoutSelectorWithServices({ servicesManager, ...props }) {
   const { toolbarService } = servicesManager.services;
@@ -110,9 +107,10 @@ function LayoutSelector({
 }) {
   const [isOpen, setIsOpen] = useState(false);
 
-  const { customizationService } = servicesManager.services;
+  const { customizationService, hangingProtocolService } = servicesManager.services;
   const commonPresets = customizationService.get('commonPresets') || defaultCommonPresets;
-  const advancedPresets = customizationService.get('advancedPresets') || defaultAdvancedPresets;
+  const advancedPresets =
+    customizationService.get('advancedPresets') || generateAdvancedPresets(hangingProtocolService);
 
   const closeOnOutsideClick = () => {
     if (isOpen) {

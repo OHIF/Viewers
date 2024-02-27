@@ -34,6 +34,20 @@ function _createWwwcPreset(preset, title, subtitle) {
   };
 }
 
+const toolGroupIds = ['default', 'mpr', 'volume3d'];
+
+function _createSetToolActiveCommands(toolName) {
+  const temp = toolGroupIds.map(toolGroupId => ({
+    commandName: 'setToolActive',
+    commandOptions: {
+      toolGroupId,
+      toolName,
+    },
+    context: 'CORNERSTONE',
+  }));
+  return temp;
+}
+
 const toolbarButtons: Button[] = [
   // Measurement
   {
@@ -201,15 +215,7 @@ const toolbarButtons: Button[] = [
       type: 'tool',
       icon: 'tool-zoom',
       label: 'Zoom',
-      commands: [
-        {
-          commandName: 'setToolActive',
-          commandOptions: {
-            toolName: 'Zoom',
-          },
-          context: 'CORNERSTONE',
-        },
-      ],
+      commands: _createSetToolActiveCommands('Zoom'),
     },
   },
   // Window Level + Presets...
@@ -258,11 +264,22 @@ const toolbarButtons: Button[] = [
       type: 'tool',
       icon: 'tool-move',
       label: 'Pan',
+      commands: _createSetToolActiveCommands('Pan'),
+    },
+  },
+  // TrackBallRotate...
+  {
+    id: 'TrackBallRotate',
+    type: 'ohif.radioGroup',
+    props: {
+      type: 'tool',
+      icon: 'tool-3d-rotate',
+      label: '3D Rotate',
       commands: [
         {
           commandName: 'setToolActive',
           commandOptions: {
-            toolName: 'Pan',
+            toolName: 'TrackBallRotate',
           },
           context: 'CORNERSTONE',
         },

@@ -102,6 +102,9 @@ function modeFactory({ modeConfiguration }) {
         'MoreTools',
       ]);
       toolbarService.createButtonSection(VOLUME3D_TOOL_GROUP_ID, [
+        'Zoom',
+        'Pan',
+        'TrackBallRotate',
         'Layout',
       ]);
     },

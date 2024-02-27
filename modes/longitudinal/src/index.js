@@ -143,7 +143,12 @@ function modeFactory({ modeConfiguration }) {
         'Crosshairs',
         'MoreToolsMpr',
       ]);
-      toolbarService.createButtonSection(VOLUME3D_TOOL_GROUP_ID, ['Layout']);
+      toolbarService.createButtonSection(VOLUME3D_TOOL_GROUP_ID, [
+        'Zoom',
+        'Pan',
+        'TrackBallRotate',
+        'Layout',
+      ]);
 
       customizationService.addModeCustomizations([
         {

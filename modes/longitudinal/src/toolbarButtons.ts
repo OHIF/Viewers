@@ -34,7 +34,7 @@ function _createWwwcPreset(preset, title, subtitle) {
   };
 }
 
-const toolGroupIds = ['default', 'mpr', 'SRToolGroup'];
+const toolGroupIds = ['default', 'mpr', 'SRToolGroup', 'volume3d'];
 
 /**
  * Creates an array of 'setToolActive' commands for the given toolName - one for
@@ -271,6 +271,26 @@ const toolbarButtons: Button[] = [
       icon: 'tool-move',
       label: 'Pan',
       commands: _createSetToolActiveCommands('Pan'),
+    },
+  },
+  // TrackballRotate...
+  {
+    id: 'TrackBallRotate',
+    type: 'ohif.radioGroup',
+    props: {
+      type: 'tool',
+      icon: 'tool-3d-rotate',
+      label: '3D Rotate',
+      commands: [
+        {
+          commandName: 'setToolActive',
+          commandOptions: {
+            toolName: 'TrackballRotate',
+            toolGroupId: 'volume3d',
+          },
+          context: 'CORNERSTONE',
+        },
+      ],
     },
   },
   {

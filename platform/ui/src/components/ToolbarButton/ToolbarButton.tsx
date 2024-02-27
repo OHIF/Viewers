@@ -25,15 +25,11 @@ const ToolbarButton = ({
       ? 'text-black'
       : 'text-common-bright hover:!bg-primary-dark hover:text-primary-light',
     toggle: isActive
-      ? '!text-[#348CFD]'
+      ? '!text-black'
       : 'text-common-bright hover:!bg-primary-dark hover:text-primary-light',
     action: isActive
       ? 'text-black'
       : 'text-common-bright hover:!bg-primary-dark hover:text-primary-light',
-  };
-
-  const bgClasses = {
-    toggle: isActive && 'bg-transparent',
   };
 
   const activeClass = isActive ? 'active' : '';
@@ -49,7 +45,6 @@ const ToolbarButton = ({
       >
         <IconButton
           variant={isActive ? 'contained' : 'text'}
-          bgColor={bgClasses[type]}
           size="toolbar"
           className={classnames(activeClass, classes[type], className)}
           onClick={() => {

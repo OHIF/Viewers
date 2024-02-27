@@ -157,6 +157,7 @@ import layoutCommon1x1 from './../../assets/icons/layout-common-1x1.svg';
 import layoutCommon1x2 from './../../assets/icons/layout-common-1x2.svg';
 import layoutCommon2x2 from './../../assets/icons/layout-common-2x2.svg';
 import layoutCommon2x3 from './../../assets/icons/layout-common-2x3.svg';
+import iconToolRotate from './../../assets/icons/tool-3d-rotate.svg';
 
 const ICONS = {
   'arrow-down': arrowDown,
@@ -265,6 +266,7 @@ const ICONS = {
   'tool-freehand-line': toolFreehand,
   'tool-freehand-polygon': toolFreehandPolygon,
   'tool-polygon': toolPolygon,
+  'tool-3d-rotate': iconToolRotate,
   'edit-patient': editPatient,
   'icon-mpr': iconMPR,
   'icon-next-inactive': iconNextInactive,
