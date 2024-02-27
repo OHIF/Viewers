@@ -27,7 +27,9 @@ export function Colormap({
   const onSetColorLUT = useCallback(
     props => {
       // TODO: Better way to check if it's a fusion
-      const opacity = displaySets.length > 1 && props.colormap.name !== 'Grayscale' ? 0.5 : 1;
+      const oneOpacityColormaps = ['Grayscale', 'X Ray'];
+      const opacity =
+        displaySets.length > 1 && !oneOpacityColormaps.includes(props.colormap.name) ? 0.5 : 1;
       commandsManager.run({
         commandName: 'setViewportColormap',
         commandOptions: {

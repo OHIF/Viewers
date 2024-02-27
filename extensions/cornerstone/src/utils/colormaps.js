@@ -1581,6 +1581,14 @@ const colormaps = [
   },
   {
     ColorSpace: 'RGB',
+    Name: 'X Ray',
+    name: 'X Ray',
+    NanColor: [1, 0, 0],
+    RGBPoints: [0, 1, 1, 1, 1, 0, 0, 0],
+    description: 'X Ray',
+  },
+  {
+    ColorSpace: 'RGB',
     Name: 'Grayscale',
     name: 'Grayscale',
     NanColor: [1, 0, 0],

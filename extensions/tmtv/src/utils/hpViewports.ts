@@ -109,15 +109,6 @@ const ptAXIAL = {
         source: true,
         target: true,
       },
-      {
-        type: 'voi',
-        id: 'ptFusionWLSync',
-        source: true,
-        target: false,
-        options: {
-          syncInvertState: false,
-        },
-      },
     ],
   },
   displaySets: [
@@ -153,15 +144,6 @@ const ptSAGITTAL = {
         source: true,
         target: true,
       },
-      {
-        type: 'voi',
-        id: 'ptFusionWLSync',
-        source: true,
-        target: false,
-        options: {
-          syncInvertState: false,
-        },
-      },
     ],
   },
   displaySets: [
@@ -196,15 +178,6 @@ const ptCORONAL = {
         id: 'ptWLSync',
         source: true,
         target: true,
-      },
-      {
-        type: 'voi',
-        id: 'ptFusionWLSync',
-        source: true,
-        target: false,
-        options: {
-          syncInvertState: false,
-        },
       },
     ],
   },
@@ -423,15 +396,6 @@ const mipSAGITTAL = {
         id: 'ptWLSync',
         source: true,
         target: true,
-      },
-      {
-        type: 'voi',
-        id: 'ptFusionWLSync',
-        source: true,
-        target: false,
-        options: {
-          syncInvertState: false,
-        },
       },
     ],
 
