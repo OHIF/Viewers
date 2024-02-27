@@ -189,7 +189,7 @@ const CornerstoneViewportDownloadForm = ({
     // add the viewport to the toolGroup
     toolGroup.addViewport(downloadViewportId, renderingEngineId);
 
-    Object.keys(toolGroup._toolInstances).forEach(toolName => {
+    Object.keys(toolGroup.getToolInstances()).forEach(toolName => {
       // make all tools Enabled so that they can not be interacted with
       // in the download viewport
       if (toggle && toolName !== 'Crosshairs') {

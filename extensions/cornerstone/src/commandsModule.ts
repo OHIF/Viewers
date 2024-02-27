@@ -232,7 +232,7 @@ function commandsModule({
       // since we are going back to main non-mpr HP
       const activeViewportToolGroup = toolGroupService.getToolGroup(null);
 
-      if (activeViewportToolGroup._toolInstances?.Crosshairs?.mode === Enums.ToolModes.Active) {
+      if (activeViewportToolGroup.getToolInstance('Crosshairs')?.mode === Enums.ToolModes.Active) {
         // Todo: we should use state sync service to remember the pre-MPR
         // tools and
         toolbarService.recordInteraction('WindowLevel');
@@ -283,7 +283,7 @@ function commandsModule({
         return;
       }
 
-      if (!toolGroup._toolInstances[toolName]) {
+      if (!toolGroup.hasTool(toolName)) {
         uiNotificationService.show({
           title: `${toolName} tool`,
           message: `The ${toolName} tool is not available in this viewport.`,
@@ -583,6 +583,9 @@ function commandsModule({
         },
         true // overwrite
       );
+
+      const renderingEngine = cornerstoneViewportService.getRenderingEngine();
+      renderingEngine.render();
     },
     storePresentation: ({ viewportId }) => {
       cornerstoneViewportService.storePresentation({ viewportId });

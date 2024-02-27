@@ -249,12 +249,12 @@ export default async function init({
     const activeTools = toolbarService.getActiveTools();
 
     activeTools.forEach(toolId => {
-      if (!toolGroup?._toolInstances?.[toolId]) {
+      if (!toolGroup?.hasTool(toolId)) {
         return;
       }
 
       // check if tool is active on the new viewport
-      const toolEnabled = toolGroup._toolInstances[toolId].mode === Enums.ToolModes.Enabled;
+      const toolEnabled = toolGroup.getToolInstance(toolId).mode === Enums.ToolModes.Enabled;
 
       if (!toolEnabled) {
         return;
