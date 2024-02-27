@@ -151,6 +151,13 @@ import oldTrash from './../../assets/icons/old-trash.svg';
 import oldPlay from './../../assets/icons/old-play.svg';
 import oldStop from './../../assets/icons/old-stop.svg';
 
+/** New Patient Info Toolbar */
+import iconChevronPatient from './../../assets/icons/icon-chevron-patient.svg';
+import iconPatient from './../../assets/icons/icon-patient.svg';
+import iconSettings from './../../assets/icons/icon-settings.svg';
+import iconToolbarBack from './../../assets/icons/icon-toolbar-back.svg';
+import iconMultiplePatients from './../../assets/icons/icon-multiple-patients.svg';
+
 const ICONS = {
   'arrow-down': arrowDown,
   'arrow-left': arrowLeft,
@@ -302,6 +309,13 @@ const ICONS = {
   'old-trash': oldTrash,
   'old-play': oldPlay,
   'old-stop': oldStop,
+
+  /** New Patient Info Toolbar */
+  'icon-chevron-patient': iconChevronPatient,
+  'icon-patient': iconPatient,
+  'icon-settings': iconSettings,
+  'icon-toolbar-back': iconToolbarBack,
+  'icon-multiple-patients': iconMultiplePatients,
 };
 
 function addIcon(iconName, iconSVG) {
