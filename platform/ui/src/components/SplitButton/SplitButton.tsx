@@ -56,7 +56,9 @@ const classes = {
   SecondaryIcon: ({ isExpanded }) =>
     classNames(
       baseClasses.SecondaryIcon,
-      isExpanded ? 'text-primary-dark' : 'text-[#348cfd] group-hover/secondary:text-primary-light'
+      isExpanded
+        ? 'text-primary-dark'
+        : 'text-primary-active group-hover/secondary:text-primary-light'
     ),
   Separator: ({ primary, isExpanded, isHovering }) =>
     classNames(

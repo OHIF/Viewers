@@ -81,7 +81,7 @@ const IconButton = ({
   type,
   fullWidth,
   onClick,
-  className = 'text-common-bright',
+  className,
   id,
   ...rest
 }) => {

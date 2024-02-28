@@ -33,12 +33,7 @@ const classes = {
         ? isExpanded
           ? 'border-primary-dark !bg-primary-dark hover:border-primary-dark !text-primary-light'
           : 'border-primary-light bg-primary-light border-2 rounded-md !p-2'
-        : `focus:!text-black focus:!rounded-md focus:!border-primary-light focus:!bg-primary-light ${
-            isExpanded
-              ? 'border-primary-dark bg-primary-dark !text-primary-light'
-              : 'border-secondary-dark bg-secondary-dark group-hover/button:border-primary-dark group-hover/button:text-primary-light hover:!bg-primary-dark hover:border-primary-dark focus:!text-black'
-          }
-        `
+        : `focus:!text-black focus:!rounded-md focus:!border-primary-light focus:!bg-primary-light ${isExpanded ? 'border-primary-dark bg-primary-dark !text-primary-light' : 'border-secondary-dark bg-secondary-dark group-hover/button:border-primary-dark group-hover/button:text-primary-light hover:!bg-primary-dark hover:border-primary-dark focus:!text-black'}`
     ),
   Secondary: ({ isExpanded, primary }) =>
     classNames(
@@ -52,7 +47,9 @@ const classes = {
   SecondaryIcon: ({ isExpanded }) =>
     classNames(
       baseClasses.SecondaryIcon,
-      isExpanded ? 'text-primary-dark' : 'text-[#348cfd] group-hover/secondary:text-primary-light'
+      isExpanded
+        ? 'text-primary-dark'
+        : 'text-primary-active group-hover/secondary:text-primary-light'
     ),
   Separator: ({ primary, isExpanded, isHovering }) =>
     classNames(
@@ -103,6 +100,13 @@ const SplitButtonToolbar = ({
   const collapse = () => setState({ ...state, isExpanded: false });
 
   const listItemRenderer = renderer || DefaultListItemRenderer;
+  const primaryClassNames = classNames(
+    classes.Primary({
+      isExpanded: state.isExpanded,
+      isActive: primary.isActive,
+    }),
+    primary.className
+  );
 
   return (
     <OutsideClickHandler
@@ -126,13 +130,7 @@ const SplitButtonToolbar = ({
                 {...primary}
                 onInteraction={onInteraction}
                 rounded="none"
-                className={classNames(
-                  classes.Primary({
-                    isExpanded: state.isExpanded,
-                    isActive: primary.isActive,
-                  }),
-                  primary.className
-                )}
+                className={primaryClassNames}
                 data-tool={primary.id}
                 data-cy={`${groupId}-split-button-primary`}
               />

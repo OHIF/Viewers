@@ -179,19 +179,16 @@ export default class ToolbarService extends PubSubService {
 
     const itemId = interaction.itemId || id;
 
-    const buttonProps = this.getButtonProps(itemId as string);
-
-    if (!buttonProps) {
-      throw new Error(`Button not found for id: ${itemId}`);
-    }
-
     if (commands) {
       commands.forEach(({ commandName, commandOptions = { ...options }, context }) => {
         this._commandsManager.runCommand(commandName, commandOptions, context);
       });
     }
 
-    this.refreshToolbarState(options?.refreshProps);
+    this.refreshToolbarState({
+      ...options?.refreshProps,
+      itemId,
+    });
   }
 
   /**

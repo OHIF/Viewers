@@ -64,7 +64,7 @@ const toolbarButtons: Button[] = [
         label: 'Length',
         tooltip: 'Length Tool',
         commands: _createSetToolActiveCommands('Length'),
-        evaluate: 'evaluate.CornerstoneTool',
+        evaluate: 'evaluate.cornerstoneTool',
       }),
       secondary: {
         icon: 'chevron-down',
@@ -94,7 +94,7 @@ const toolbarButtons: Button[] = [
               context: 'CORNERSTONE',
             },
           ],
-          evaluate: 'evaluate.CornerstoneTool',
+          evaluate: 'evaluate.cornerstoneTool',
         }),
         ToolbarService.createButton({
           id: 'Bidirectional',
@@ -118,7 +118,7 @@ const toolbarButtons: Button[] = [
               context: 'CORNERSTONE',
             },
           ],
-          evaluate: 'evaluate.CornerstoneTool',
+          evaluate: 'evaluate.cornerstoneTool',
         }),
         ToolbarService.createButton({
           id: 'ArrowAnnotate',
@@ -142,7 +142,7 @@ const toolbarButtons: Button[] = [
               context: 'CORNERSTONE',
             },
           ],
-          evaluate: 'evaluate.CornerstoneTool',
+          evaluate: 'evaluate.cornerstoneTool',
         }),
         ToolbarService.createButton({
           id: 'EllipticalROI',
@@ -166,7 +166,7 @@ const toolbarButtons: Button[] = [
               context: 'CORNERSTONE',
             },
           ],
-          evaluate: 'evaluate.CornerstoneTool',
+          evaluate: 'evaluate.cornerstoneTool',
         }),
         ToolbarService.createButton({
           id: 'CircleROI',
@@ -190,7 +190,7 @@ const toolbarButtons: Button[] = [
               context: 'CORNERSTONE',
             },
           ],
-          evaluate: 'evaluate.CornerstoneTool',
+          evaluate: 'evaluate.cornerstoneTool',
         }),
       ],
     },
@@ -203,7 +203,7 @@ const toolbarButtons: Button[] = [
       icon: 'tool-zoom',
       label: 'Zoom',
       commands: _createSetToolActiveCommands('Zoom'),
-      evaluate: 'evaluate.CornerstoneTool',
+      evaluate: 'evaluate.cornerstoneTool',
     },
   },
   // Window Level + Presets...
@@ -218,7 +218,7 @@ const toolbarButtons: Button[] = [
         label: 'Window Level',
         tooltip: 'Window Level',
         commands: _createSetToolActiveCommands('WindowLevel'),
-        evaluate: 'evaluate.CornerstoneTool',
+        evaluate: 'evaluate.cornerstoneTool',
       }),
       secondary: {
         icon: 'chevron-down',
@@ -244,7 +244,7 @@ const toolbarButtons: Button[] = [
       icon: 'tool-move',
       label: 'Pan',
       commands: _createSetToolActiveCommands('Pan'),
-      evaluate: 'evaluate.CornerstoneTool',
+      evaluate: 'evaluate.cornerstoneTool',
     },
   },
   {
@@ -297,7 +297,7 @@ const toolbarButtons: Button[] = [
       icon: 'tool-crosshair',
       label: 'Crosshairs',
       commands: _createSetToolActiveCommands('Crosshairs', ['mpr']),
-      evaluate: 'evaluate.CornerstoneTool',
+      evaluate: 'evaluate.cornerstoneTool',
     },
   },
 ];

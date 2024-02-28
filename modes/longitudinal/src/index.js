@@ -79,7 +79,7 @@ function modeFactory({ modeConfiguration }) {
       // Init Default and SR ToolGroups
       initToolGroups(extensionManager, toolGroupService, commandsManager);
 
-      toolbarService.addButtons([...toolbarButtons]);
+      toolbarService.addButtons([...toolbarButtons, ...moreTools]);
       toolbarService.createButtonSection('primary', [
         'MeasurementTools',
         'Zoom',
@@ -89,6 +89,7 @@ function modeFactory({ modeConfiguration }) {
         'Layout',
         'MPR',
         'Crosshairs',
+        'MoreTools',
       ]);
 
       customizationService.addModeCustomizations([

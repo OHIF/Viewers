@@ -17,21 +17,6 @@ const ToolbarButton = ({
   ...rest
   //
 }) => {
-  // const classes = {
-  //   toggle: isActive
-  //     ? '!text-[#348CFD]'
-  //     : 'text-common-bright hover:!bg-primary-dark hover:text-primary-light',
-  //   action: isActive
-  //     ? 'text-black'
-  //     : 'text-common-bright hover:!bg-primary-dark hover:text-primary-light',
-  // };
-
-  // const bgClasses = {
-  //   toggle: isActive && 'bg-transparent',
-  // };
-
-  // const activeClass = isActive ? 'active' : '';
-  // const shouldShowDropdown = !!isActive && !!dropdownContent;
   const shouldShowDropdown = !!dropdownContent;
   const iconEl = icon ? <Icon name={icon} /> : <div>{label || 'Missing icon and label'}</div>;
 

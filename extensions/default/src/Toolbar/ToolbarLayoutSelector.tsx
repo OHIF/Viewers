@@ -9,7 +9,6 @@ function ToolbarLayoutSelectorWithServices({ servicesManager, ...props }) {
   const onSelection = useCallback(
     props => {
       toolbarService.recordInteraction({
-        interactionType: 'action',
         commands: [
           {
             commandName: 'setViewportGridLayout',

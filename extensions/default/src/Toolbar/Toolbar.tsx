@@ -112,7 +112,7 @@ export default function Toolbar({
               </>
             }
           >
-            <div className={classnames('ohif-disabled mr-1')}>{tool}</div>
+            <div className={classnames('mr-1')}>{tool}</div>
           </Tooltip>
         ) : (
           <div
