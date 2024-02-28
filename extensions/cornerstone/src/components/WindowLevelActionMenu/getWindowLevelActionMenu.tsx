@@ -13,6 +13,7 @@ export function getWindowLevelActionMenu({
   const { customizationService } = servicesManager.services;
 
   const { presets } = customizationService.get('cornerstone.windowLevelPresets');
+  const colorbarProperties = customizationService.get('cornerstone.colorbar');
 
   const displaySetPresets = displaySets
     .filter(displaySet => presets[displaySet.Modality])
@@ -30,6 +31,9 @@ export function getWindowLevelActionMenu({
       verticalDirection={verticalDirection}
       horizontalDirection={horizontalDirection}
       commandsManager={commandsManager}
+      serviceManager={servicesManager}
+      colorbarProperties={colorbarProperties}
+      displaySets={displaySets}
     />
   ) : null;
 }

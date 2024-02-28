@@ -35,6 +35,8 @@ function commandsModule({
     cornerstoneViewportService,
     uiNotificationService,
     measurementService,
+    colorbarService,
+    hangingProtocolService,
   } = servicesManager.services as CornerstoneServices;
 
   const { measurementServiceSource } = this;
@@ -272,6 +274,15 @@ function commandsModule({
         },
       });
       viewport.render();
+    },
+
+    toggleViewportColorbar: ({ viewportId, displaySetInstanceUIDs, options = {} }) => {
+      const hasColorbar = colorbarService.hasColorbar(viewportId);
+      if (hasColorbar) {
+        colorbarService.removeColorbar(viewportId);
+        return;
+      }
+      colorbarService.addColorbar(viewportId, displaySetInstanceUIDs, options);
     },
 
     setWindowLevel(props) {
@@ -546,18 +557,51 @@ function commandsModule({
 
       cstUtils.scroll(viewport, options);
     },
-    setViewportColormap: ({ viewportId, displaySetInstanceUID, colormap, immediate = false }) => {
+    setViewportColormap: ({
+      viewportId,
+      displaySetInstanceUID,
+      colormap,
+      opacity = 1,
+      immediate = false,
+    }) => {
       const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
       const actorEntries = viewport.getActors();
+      let hpOpacity;
+      // Retrieve active protocol's viewport match details
+      const { viewportMatchDetails } = hangingProtocolService.getActiveProtocol();
+      // Get display set options for the specified viewport ID
+      const displaySetsInfo = viewportMatchDetails.get(viewportId)?.displaySetsInfo;
 
-      const actorEntry = actorEntries.find(actorEntry => {
-        return actorEntry.uid.includes(displaySetInstanceUID);
-      });
+      if (displaySetsInfo) {
+        // Find the display set that matches the given UID
+        const matchingDisplaySet = displaySetsInfo.find(
+          displaySet => displaySet.displaySetInstanceUID === displaySetInstanceUID
+        );
+        // If a matching display set is found, update the opacity with its value
+        hpOpacity = matchingDisplaySet?.displaySetOptions?.options?.colormap?.opacity;
+      }
 
-      const { actor: volumeActor, uid: volumeId } = actorEntry;
+      // HP takes priority over the default opacity
+      colormap = { ...colormap, opacity: hpOpacity || opacity };
 
-      viewport.setProperties({ colormap, volumeActor }, volumeId);
+      const setViewportProperties = (viewport, uid) => {
+        const actorEntry = actorEntries.find(entry => entry.uid.includes(uid));
+        const { actor: volumeActor, uid: volumeId } = actorEntry;
+        viewport.setProperties({ colormap, volumeActor }, volumeId);
+      };
+
+      if (viewport instanceof StackViewport) {
+        setViewportProperties(viewport, viewportId);
+      }
+
+      if (viewport instanceof VolumeViewport) {
+        if (!displaySetInstanceUID) {
+          const { viewports } = viewportGridService.getState();
+          displaySetInstanceUID = viewports.get(viewportId)?.displaySetInstanceUIDs[0];
+        }
+        setViewportProperties(viewport, displaySetInstanceUID);
+      }
 
       if (immediate) {
         viewport.render();
@@ -639,6 +683,9 @@ function commandsModule({
       commandFn: actions.getNearbyAnnotation,
       storeContexts: [],
       options: {},
+    },
+    toggleViewportColorbar: {
+      commandFn: actions.toggleViewportColorbar,
     },
     deleteMeasurement: {
       commandFn: actions.deleteMeasurement,

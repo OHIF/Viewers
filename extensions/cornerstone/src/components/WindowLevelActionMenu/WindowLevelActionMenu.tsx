@@ -1,20 +1,14 @@
 import React, { ReactElement, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import classNames from 'classnames';
-import { AllInOneMenu, SwitchButton, useViewportGrid } from '@ohif/ui';
-import { CommandsManager } from '@ohif/core';
-import { utilities } from '@cornerstonejs/tools';
-import { utilities as csUtils } from '@cornerstonejs/core';
-
-const { ViewportColorbar } = utilities.voi.colorbar;
-const { ColorbarRangeTextPosition } = utilities.voi.colorbar.Enums;
-const { colormap: colormapUtils } = csUtils;
-
-export type WindowLevelPreset = {
-  description: string;
-  window: string;
-  level: string;
-};
+import { AllInOneMenu, useViewportGrid } from '@ohif/ui';
+import { CommandsManager, ServicesManager } from '@ohif/core';
+import { Colormap } from './Colormap';
+import { Colorbar } from './Colorbar';
+import { setViewportColorbar } from './Colorbar';
+import { WindowLevelPreset } from '../../types/WindowLevel';
+import { ColorbarProperties } from '../../types/Colorbar';
+import { WindowLevel } from './WindowLevel';
 
 export type WindowLevelActionMenuProps = {
   viewportId: string;
@@ -23,6 +17,9 @@ export type WindowLevelActionMenuProps = {
   verticalDirection: AllInOneMenu.VerticalDirection;
   horizontalDirection: AllInOneMenu.HorizontalDirection;
   commandsManager: CommandsManager;
+  serviceManager: ServicesManager;
+  colorbarProperties: ColorbarProperties;
+  displaySets: Array<any>;
 };
 
 export function WindowLevelActionMenu({
@@ -32,32 +29,60 @@ export function WindowLevelActionMenu({
   verticalDirection,
   horizontalDirection,
   commandsManager,
+  serviceManager,
+  colorbarProperties,
+  displaySets,
 }: WindowLevelActionMenuProps): ReactElement {
+  const {
+    colormaps,
+    colorbarContainerPosition,
+    colorbarInitialColormap,
+    colorbarTickPosition,
+    width: colorbarWidth,
+  } = colorbarProperties;
+  const { colorbarService } = serviceManager.services;
+  const nonImageModalities = ['SR', 'SEG', 'SM', 'RTSTRUCT', 'RTPLAN', 'RTDOSE'];
+
   const { t } = useTranslation('WindowLevelActionMenu');
 
   const [viewportGrid] = useViewportGrid();
   const { activeViewportId } = viewportGrid;
 
   const [vpHeight, setVpHeight] = useState(element?.clientHeight);
+  const [menuKey, setMenuKey] = useState(0);
+
+  const onSetColorbar = useCallback(() => {
+    setViewportColorbar(viewportId, displaySets, commandsManager, serviceManager, {
+      colormaps,
+      ticks: {
+        position: colorbarTickPosition,
+      },
+      width: colorbarWidth,
+      position: colorbarContainerPosition,
+      activeColormapName: colorbarInitialColormap,
+    });
+  }, [commandsManager]);
 
   useEffect(() => {
-    if (element) {
-      setVpHeight(element.clientHeight);
+    const newVpHeight = element?.clientHeight;
+    if (vpHeight !== newVpHeight) {
+      setVpHeight(newVpHeight);
     }
-  }, [element]);
+  }, [element, vpHeight]);
 
-  const onSetWindowLevel = useCallback(
-    props => {
-      commandsManager.run({
-        commandName: 'setViewportWindowLevel',
-        commandOptions: {
-          ...props,
-        },
-        context: 'CORNERSTONE',
-      });
-    },
-    [commandsManager]
-  );
+  useEffect(() => {
+    if (!colorbarService.hasColorbar(viewportId)) {
+      return;
+    }
+    window.setTimeout(() => {
+      colorbarService.removeColorbar(viewportId);
+      onSetColorbar();
+    }, 0);
+  }, [viewportId]);
+
+  useEffect(() => {
+    setMenuKey(menuKey + 1);
+  }, [displaySets, viewportId, presets]);
 
   return (
     <AllInOneMenu.IconMenu
@@ -70,76 +95,46 @@ export function WindowLevelActionMenu({
         'text-primary-light hover:bg-secondary-light/60 flex shrink-0 cursor-pointer rounded active:text-white'
       )}
       menuStyle={{ maxHeight: vpHeight - 32, minWidth: 218 }}
-      onVisibilityChange={() => setVpHeight(element.clientHeight)}
+      onVisibilityChange={() => {
+        setVpHeight(element.clientHeight);
+      }}
+      menuKey={menuKey}
     >
       <AllInOneMenu.ItemPanel>
-        <div className="all-in-one-menu-item flex w-full justify-center">
-          <SwitchButton
-            label="Display Color bar"
-            onChange={() => {
-              const colorbarContainer = document.createElement('div');
-              colorbarContainer.id = 'ctColorbarContainer';
+        <Colorbar
+          viewportId={viewportId}
+          displaySets={displaySets.filter(ds => !nonImageModalities.includes(ds.Modality))}
+          commandsManager={commandsManager}
+          serviceManager={serviceManager}
+          colorbarProperties={colorbarProperties}
+        />
+        {colormaps && (
+          <AllInOneMenu.SubMenu
+            key="colorLUTPresets"
+            itemLabel="Color LUT"
+            itemIcon="icon-color-lut"
+          >
+            <Colormap
+              colormaps={colormaps}
+              viewportId={viewportId}
+              displaySets={displaySets.filter(ds => !nonImageModalities.includes(ds.Modality))}
+              commandsManager={commandsManager}
+              serviceManager={serviceManager}
+            />
+          </AllInOneMenu.SubMenu>
+        )}
 
-              Object.assign(colorbarContainer.style, {
-                position: 'absolute',
-                boxSizing: 'border-box',
-                border: 'solid 1px #555',
-                cursor: 'initial',
-                width: '2.5%',
-                height: '50%',
-                // align to the right
-                right: '5%',
-                // center vertically
-                top: '50%',
-                transform: 'translateY(-50%)',
-              });
-
-              const cornersonteViewportElement = element.querySelector(
-                '[class^="viewport-element"]'
-              );
-
-              cornersonteViewportElement.appendChild(colorbarContainer);
-
-              // Create and add the color bar to the DOM
-              new ViewportColorbar({
-                id: 'ctColorbar',
-                element,
-                container: colorbarContainer,
-                ticks: {
-                  position: ColorbarRangeTextPosition.Left,
-                  style: {
-                    font: '12px Arial',
-                    color: '#fff',
-                    maxNumTicks: 8,
-                    tickSize: 5,
-                    tickWidth: 1,
-                    labelMargin: 3,
-                  },
-                },
-              });
-            }}
-          />
-        </div>
         {presets && (
           <AllInOneMenu.SubMenu
             key="windowLevelPresets"
             itemLabel={t('Modality Window Presets', { modality: Object.keys(presets)[0] })}
-            headerComponent={
-              <AllInOneMenu.HeaderItem>
-                {t('Modality Presets', { modality: Object.keys(presets)[0] })}
-              </AllInOneMenu.HeaderItem>
-            }
+            itemIcon="viewport-window-level"
           >
-            <AllInOneMenu.ItemPanel>
-              {Object.values(presets)[0].map((preset, index) => (
-                <AllInOneMenu.Item
-                  key={index}
-                  label={preset.description}
-                  secondaryLabel={`${preset.window} / ${preset.level}`}
-                  onClick={() => onSetWindowLevel({ ...preset, viewportId })}
-                ></AllInOneMenu.Item>
-              ))}
-            </AllInOneMenu.ItemPanel>
+            <WindowLevel
+              viewportId={viewportId}
+              commandsManager={commandsManager}
+              presets={presets}
+            />
           </AllInOneMenu.SubMenu>
         )}
       </AllInOneMenu.ItemPanel>

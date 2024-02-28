@@ -24,7 +24,6 @@ import { Types } from '@ohif/core';
 import OHIFViewportActionCorners from '../components/OHIFViewportActionCorners';
 import { getWindowLevelActionMenu } from '../components/WindowLevelActionMenu/getWindowLevelActionMenu';
 import { useAppConfig } from '@state';
-
 const STACK = 'stack';
 
 /**

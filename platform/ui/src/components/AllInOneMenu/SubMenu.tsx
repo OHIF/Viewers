@@ -5,6 +5,7 @@ import Icon from '../Icon';
 export interface SubMenuProps extends MenuProps {
   itemLabel: string;
   onClick?: () => void;
+  itemIcon?: string;
 }
 
 const SubMenu = (props: SubMenuProps) => {
@@ -21,6 +22,14 @@ const SubMenu = (props: SubMenuProps) => {
       onClick={onClickHandler}
     >
       {horizontalDirection === HorizontalDirection.RightToLeft && <Icon name="content-prev"></Icon>}
+      {props.itemIcon && (
+        <Icon
+          name={props.itemIcon}
+          width="20px"
+          height="20px"
+          className="mr-2"
+        ></Icon>
+      )}
       <div className={getLabelClassName(horizontalDirection)}>{props.itemLabel}</div>
       {horizontalDirection === HorizontalDirection.LeftToRight && <Icon name="content-next"></Icon>}
     </div>

@@ -2,6 +2,9 @@ import { Enums } from '@cornerstonejs/tools';
 import { toolNames } from './initCornerstoneTools';
 import DicomUpload from './components/DicomUpload/DicomUpload';
 import defaultWindowLevelPresets from './components/WindowLevelActionMenu/defaultWindowLevelPresets';
+import { colormaps } from './utils/colormaps';
+
+const DefaultColormap = 'Grayscale';
 
 const tools = {
   active: [
@@ -41,6 +44,14 @@ function getCustomizationModule() {
         {
           id: 'cornerstone.windowLevelPresets',
           presets: defaultWindowLevelPresets,
+        },
+        {
+          id: 'cornerstone.colorbar',
+          width: '2.5%',
+          colorbarTickPosition: 'left',
+          colormaps,
+          colorbarContainerPosition: 'right',
+          colorbarInitialColormap: DefaultColormap,
         },
       ],
     },
