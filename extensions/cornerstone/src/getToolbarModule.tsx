@@ -166,7 +166,7 @@ export default function getToolbarModule({ commandsManager, servicesManager }) {
         return {
           disabled: false,
           className: isMpr
-            ? 'text-black bg-primary-light'
+            ? 'text-primary-active'
             : 'text-common-bright hover:!bg-primary-dark hover:text-primary-light',
         };
       },
