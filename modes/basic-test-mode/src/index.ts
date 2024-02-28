@@ -3,7 +3,6 @@ import toolbarButtons from './toolbarButtons';
 import { id } from './id';
 import initToolGroups from './initToolGroups';
 import moreTools from './moreTools';
-import moreToolsMpr from './moreToolsMpr';
 import i18n from 'i18next';
 
 // Allow this mode by excluding non-imaging modalities such as SR, SEG
@@ -82,38 +81,7 @@ function modeFactory() {
         '@ohif/extension-test.customizationModule.custom-context-menu',
       ]);
 
-      let unsubscribe;
-      toolbarService.setDefaultTool({
-        groupId: 'WindowLevel',
-        itemId: 'WindowLevel',
-        interactionType: 'tool',
-        commands: [
-          {
-            commandName: 'setToolActive',
-            commandOptions: {
-              toolName: 'WindowLevel',
-            },
-            context: 'CORNERSTONE',
-          },
-        ],
-      });
-
-      const activateTool = () => {
-        toolbarService.recordInteraction(toolbarService.getDefaultTool());
-
-        // We don't need to reset the active tool whenever a viewport is getting
-        // added to the toolGroup.
-        unsubscribe();
-      };
-
-      // Since we only have one viewport for the basic cs3d mode and it has
-      // only one hanging protocol, we can just use the first viewport
-      ({ unsubscribe } = toolGroupService.subscribe(
-        toolGroupService.EVENTS.VIEWPORT_ADDED,
-        activateTool
-      ));
-
-      toolbarService.addButtons([...toolbarButtons, ...moreTools, ...moreToolsMpr]);
+      toolbarService.addButtons([...toolbarButtons, ...moreTools]);
       toolbarService.createButtonSection(DEFAULT_TOOL_GROUP_ID, [
         'MeasurementTools',
         'Zoom',
@@ -123,17 +91,6 @@ function modeFactory() {
         'Layout',
         'MPR',
         'MoreTools',
-      ]);
-      toolbarService.createButtonSection(MPR_TOOL_GROUP_ID, [
-        'MeasurementTools',
-        'Zoom',
-        'WindowLevel',
-        'Pan',
-        'Capture',
-        'Layout',
-        'MPR',
-        'Crosshairs',
-        'MoreToolsMpr',
       ]);
     },
     onModeExit: ({ servicesManager }) => {
