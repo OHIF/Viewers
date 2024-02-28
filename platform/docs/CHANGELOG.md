@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-beta.57](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.56...v3.8.0-beta.57) (2024-02-28)
+
+
+### Bug Fixes
+
+* **docs:** Minor typos in hpModule.md ([#3962](https://github.com/OHIF/Viewers/issues/3962)) ([4cdfdae](https://github.com/OHIF/Viewers/commit/4cdfdae8149166cf9dc91a55c0d7f2a224e55d8f))
+
+
+
+
+
 # [3.8.0-beta.56](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.55...v3.8.0-beta.56) (2024-02-22)
 
 **Note:** Version bump only for package ohif-docs
