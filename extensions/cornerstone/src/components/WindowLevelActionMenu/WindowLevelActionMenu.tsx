@@ -8,6 +8,7 @@ import { Colorbar } from './Colorbar';
 import { setViewportColorbar } from './Colorbar';
 import { WindowLevelPreset } from '../../types/WindowLevel';
 import { ColorbarProperties } from '../../types/Colorbar';
+import { WindowLevel } from './WindowLevel';
 
 export type WindowLevelActionMenuProps = {
   viewportId: string;
@@ -48,19 +49,7 @@ export function WindowLevelActionMenu({
   const { activeViewportId } = viewportGrid;
 
   const [vpHeight, setVpHeight] = useState(element?.clientHeight);
-
-  const onSetWindowLevel = useCallback(
-    props => {
-      commandsManager.run({
-        commandName: 'setViewportWindowLevel',
-        commandOptions: {
-          ...props,
-        },
-        context: 'CORNERSTONE',
-      });
-    },
-    [commandsManager]
-  );
+  const [menuKey, setMenuKey] = useState(0);
 
   const onSetColorbar = useCallback(() => {
     setViewportColorbar(viewportId, displaySets, commandsManager, serviceManager, {
@@ -91,6 +80,10 @@ export function WindowLevelActionMenu({
     }, 0);
   }, [viewportId]);
 
+  useEffect(() => {
+    setMenuKey(menuKey + 1);
+  }, [displaySets, viewportId, presets]);
+
   return (
     <AllInOneMenu.IconMenu
       icon="viewport-window-level"
@@ -105,6 +98,7 @@ export function WindowLevelActionMenu({
       onVisibilityChange={() => {
         setVpHeight(element.clientHeight);
       }}
+      menuKey={menuKey}
     >
       <AllInOneMenu.ItemPanel>
         <Colorbar
@@ -135,22 +129,12 @@ export function WindowLevelActionMenu({
             key="windowLevelPresets"
             itemLabel={t('Modality Window Presets', { modality: Object.keys(presets)[0] })}
             itemIcon="viewport-window-level"
-            headerComponent={
-              <AllInOneMenu.HeaderItem>
-                {t('Modality Presets', { modality: Object.keys(presets)[0] })}
-              </AllInOneMenu.HeaderItem>
-            }
           >
-            <AllInOneMenu.ItemPanel>
-              {Object.values(presets)[0].map((preset, index) => (
-                <AllInOneMenu.Item
-                  key={index}
-                  label={preset.description}
-                  secondaryLabel={`${preset.window} / ${preset.level}`}
-                  onClick={() => onSetWindowLevel({ ...preset, viewportId })}
-                ></AllInOneMenu.Item>
-              ))}
-            </AllInOneMenu.ItemPanel>
+            <WindowLevel
+              viewportId={viewportId}
+              commandsManager={commandsManager}
+              presets={presets}
+            />
           </AllInOneMenu.SubMenu>
         )}
       </AllInOneMenu.ItemPanel>
