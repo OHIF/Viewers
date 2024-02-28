@@ -51,30 +51,6 @@ const variantClasses = {
   },
 };
 
-const backgroundClasses = {
-  text: {
-    default: '',
-    primary: '',
-    secondary: '',
-    white: '',
-    black: '',
-  },
-  outlined: {
-    default: 'bg-transparent',
-    primary: 'bg-transparent',
-    secondary: 'bg-transparent',
-    white: 'bg-transparent',
-    black: 'bg-black',
-  },
-  contained: {
-    default: 'bg-primary-light',
-    primary: 'bg-primary-main',
-    secondary: 'bg-secondary-light',
-    white: 'bg-white',
-    black: 'bg-black',
-  },
-};
-
 const sizeClasses = {
   small: 'py-2 px-2 text-base',
   medium: 'py-3 px-3 text-lg',
@@ -106,9 +82,7 @@ const IconButton = ({
   fullWidth,
   onClick,
   className,
-  name,
   id,
-  bgColor,
   ...rest
 }) => {
   const buttonElement = useRef(null);
@@ -117,8 +91,6 @@ const IconButton = ({
     buttonElement.current.blur();
     onClick(e);
   };
-
-  const bgColorToUse = bgColor ? bgColor : backgroundClasses[variant][color];
 
   return (
     <button
@@ -129,7 +101,6 @@ const IconButton = ({
         sizeClasses[size],
         fullWidthClasses[fullWidth],
         disabledClasses[disabled],
-        bgColorToUse,
         className
       )}
       style={{
