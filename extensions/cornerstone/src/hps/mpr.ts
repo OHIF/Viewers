@@ -90,6 +90,9 @@ export const mpr: Types.HangingProtocol.Protocol = {
                 id: 'mpr',
                 source: true,
                 target: true,
+                options: {
+                  syncColormap: true,
+                },
               },
             ],
           },
@@ -114,6 +117,9 @@ export const mpr: Types.HangingProtocol.Protocol = {
                 id: 'mpr',
                 source: true,
                 target: true,
+                options: {
+                  syncColormap: true,
+                },
               },
             ],
           },
@@ -138,6 +144,9 @@ export const mpr: Types.HangingProtocol.Protocol = {
                 id: 'mpr',
                 source: true,
                 target: true,
+                options: {
+                  syncColormap: true,
+                },
               },
             ],
           },
