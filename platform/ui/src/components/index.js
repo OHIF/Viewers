@@ -83,6 +83,7 @@ import LegacyButtonGroup from './LegacyButtonGroup';
 import SwitchButton, { SwitchLabelLocation } from './SwitchButton';
 import * as AllInOneMenu from './AllInOneMenu';
 import ViewportActionArrows from './ViewportActionArrows';
+import HeaderPatientInfo from './HeaderPatientInfo';
 
 export {
   AboutModal,
@@ -173,4 +174,5 @@ export {
   ViewportPane,
   ViewportOverlay,
   WindowLevelMenuItem,
+  HeaderPatientInfo,
 };

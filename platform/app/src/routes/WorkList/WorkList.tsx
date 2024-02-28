@@ -29,7 +29,11 @@ import {
   useSessionStorage,
 } from '@ohif/ui';
 
+import { Types } from '@ohif/ui';
+
 import i18n from '@ohif/i18n';
+
+const PatientInfoVisibility = Types.PatientInfoVisibility;
 
 const { sortBySeriesDate } = utils;
 
@@ -254,11 +258,13 @@ function WorkList({
     const studyDate =
       date &&
       moment(date, ['YYYYMMDD', 'YYYY.MM.DD'], true).isValid() &&
-      moment(date, ['YYYYMMDD', 'YYYY.MM.DD']).format(t('Common:localDateFormat','MMM-DD-YYYY'));
+      moment(date, ['YYYYMMDD', 'YYYY.MM.DD']).format(t('Common:localDateFormat', 'MMM-DD-YYYY'));
     const studyTime =
       time &&
       moment(time, ['HH', 'HHmm', 'HHmmss', 'HHmmss.SSS']).isValid() &&
-      moment(time, ['HH', 'HHmm', 'HHmmss', 'HHmmss.SSS']).format(t('Common:localTimeFormat', 'hh:mm A'));
+      moment(time, ['HH', 'HHmm', 'HHmmss', 'HHmmss.SSS']).format(
+        t('Common:localTimeFormat', 'hh:mm A')
+      );
 
     return {
       dataCY: `studyRow-${studyInstanceUid}`,
@@ -495,6 +501,7 @@ function WorkList({
         menuOptions={menuOptions}
         isReturnEnabled={false}
         WhiteLabeling={appConfig.whiteLabeling}
+        showPatientInfo={PatientInfoVisibility.DISABLED}
       />
       <div className="ohif-scrollbar flex grow flex-col overflow-y-auto">
         <StudyListFilter

@@ -123,6 +123,7 @@ export {
   WindowLevelMenuItem,
   ImageScrollbar,
   ViewportOverlay,
+  HeaderPatientInfo,
 } from './components';
 
 export { useSessionStorage } from './hooks';
