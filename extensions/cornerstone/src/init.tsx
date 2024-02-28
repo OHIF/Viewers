@@ -208,6 +208,16 @@ export default async function init({
     }
   );
 
+  // resize the cornerstone viewport service when the grid size changes
+  // IMPORTANT: this should happen outside of the OHIFCornerstoneViewport
+  // since it will trigger a rerender of each viewport and each resizing
+  // the offscreen canvas which would result in a performance hit, this should
+  // done only once per grid resize here. Doing it once here, allows us to reduce
+  // the refreshRage(in ms) to 10 from 50. I tried with even 1 or 5 ms it worked fine
+  viewportGridService.subscribe(viewportGridService.EVENTS.GRID_SIZE_CHANGED, () => {
+    cornerstoneViewportService.resize(true);
+  });
+
   initContextMenu({
     cornerstoneViewportService,
     customizationService,

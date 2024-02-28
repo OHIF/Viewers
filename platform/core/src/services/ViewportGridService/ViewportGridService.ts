@@ -6,6 +6,7 @@ class ViewportGridService extends PubSubService {
     ACTIVE_VIEWPORT_ID_CHANGED: 'event::activeviewportidchanged',
     LAYOUT_CHANGED: 'event::layoutChanged',
     GRID_STATE_CHANGED: 'event::gridStateChanged',
+    GRID_SIZE_CHANGED: 'event::gridSizeChanged',
   };
 
   public static REGISTRATION = {
@@ -64,7 +65,6 @@ class ViewportGridService extends PubSubService {
 
   public setActiveViewportId(id: string) {
     this.serviceImplementation._setActiveViewport(id);
-    const state = this.getState();
     this._broadcastEvent(this.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED, {
       viewportId: id,
     });
@@ -77,6 +77,13 @@ class ViewportGridService extends PubSubService {
   public getActiveViewportId() {
     const state = this.getState();
     return state.activeViewportId;
+  }
+
+  public setViewportGridSizeChanged() {
+    const state = this.getState();
+    this._broadcastEvent(this.EVENTS.GRID_SIZE_CHANGED, {
+      state,
+    });
   }
 
   public setDisplaySetsForViewport(props) {

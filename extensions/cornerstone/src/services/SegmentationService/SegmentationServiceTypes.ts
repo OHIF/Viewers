@@ -67,4 +67,4 @@ type SegmentationRepresentationData = {
   LABELMAP?: LabelmapSegmentationData;
 };
 
-export { SegmentationConfig, Segment, Segmentation };
+export type { SegmentationConfig, Segment, Segmentation };

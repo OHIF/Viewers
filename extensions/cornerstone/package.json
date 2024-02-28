@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-cornerstone",
-  "version": "3.8.0-beta.53",
+  "version": "3.8.0-beta.57",
   "description": "OHIF extension for Cornerstone",
   "author": "OHIF",
   "license": "MIT",
@@ -25,6 +25,8 @@
     "access": "public"
   },
   "scripts": {
+    "clean": "shx rm -rf dist",
+    "clean:deep": "yarn run clean && shx rm -rf node_modules",
     "dev": "cross-env NODE_ENV=development webpack --config .webpack/webpack.dev.js --watch --output-pathinfo",
     "dev:cornerstone": "yarn run dev",
     "build": "cross-env NODE_ENV=production webpack --progress --config .webpack/webpack.prod.js",
@@ -37,8 +39,8 @@
     "@cornerstonejs/codec-openjpeg": "^1.2.2",
     "@cornerstonejs/codec-openjph": "^2.4.2",
     "@cornerstonejs/dicom-image-loader": "^1.65.1",
-    "@ohif/core": "3.8.0-beta.53",
-    "@ohif/ui": "3.8.0-beta.53",
+    "@ohif/core": "3.8.0-beta.57",
+    "@ohif/ui": "3.8.0-beta.57",
     "dcmjs": "^0.29.12",
     "dicom-parser": "^1.8.21",
     "hammerjs": "^2.0.8",

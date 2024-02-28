@@ -93,6 +93,7 @@ const CornerstoneViewportDownloadForm = ({
       renderingEngine.resize();
 
       // Trigger the render on the viewport to update the on screen
+      downloadViewport.resetCamera();
       downloadViewport.render();
 
       downloadViewportElement.addEventListener(
@@ -223,7 +224,6 @@ const CornerstoneViewportDownloadForm = ({
       minimumSize={MINIMUM_SIZE}
       maximumSize={MAX_TEXTURE_SIZE}
       defaultSize={DEFAULT_SIZE}
-      canvasClass={'cornerstone-canvas'}
       activeViewportElement={activeViewportElement}
       enableViewport={enableViewport}
       disableViewport={disableViewport}

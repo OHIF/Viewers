@@ -114,7 +114,6 @@ function OHIFCornerstoneSEGViewport(props) {
         }}
         onElementEnabled={onElementEnabled}
         onElementDisabled={onElementDisabled}
-        // initialImageIndex={initialImageIndex}
       ></Component>
     );
   }, [viewportId, segDisplaySet, toolGroupId]);
