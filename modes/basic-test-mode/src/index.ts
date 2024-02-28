@@ -9,9 +9,6 @@ import i18n from 'i18next';
 // Also, SM is not a simple imaging modalities, so exclude it.
 const NON_IMAGE_MODALITIES = ['SM', 'ECG', 'SR', 'SEG'];
 
-const DEFAULT_TOOL_GROUP_ID = 'default';
-const MPR_TOOL_GROUP_ID = 'mpr';
-
 const ohif = {
   layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
   sopClassHandler: '@ohif/extension-default.sopClassHandlerModule.stack',
@@ -82,7 +79,7 @@ function modeFactory() {
       ]);
 
       toolbarService.addButtons([...toolbarButtons, ...moreTools]);
-      toolbarService.createButtonSection(DEFAULT_TOOL_GROUP_ID, [
+      toolbarService.createButtonSection('primary', [
         'MeasurementTools',
         'Zoom',
         'WindowLevel',

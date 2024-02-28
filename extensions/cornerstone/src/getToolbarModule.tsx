@@ -144,7 +144,7 @@ export default function getToolbarModule({ commandsManager, servicesManager }) {
 
         const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
 
-        if (!displaySetUIDs.length) {
+        if (!displaySetUIDs?.length) {
           return;
         }
 

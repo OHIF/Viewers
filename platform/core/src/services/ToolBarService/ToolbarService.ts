@@ -209,6 +209,8 @@ export default class ToolbarService extends PubSubService {
       const isNested = (button.props as NestedButtonProps)?.groupId;
 
       if (!isNested) {
+        this.handleEvaluate(button.props);
+
         const buttonProps = button.props as ButtonProps;
         const evaluated = buttonProps?.evaluate?.({
           ...refreshProps,
@@ -221,6 +223,8 @@ export default class ToolbarService extends PubSubService {
       } else {
         let buttonProps = button.props as NestedButtonProps;
         // if it is nested we should perform evaluate on each item in the group
+        this.handleEvaluateNested(buttonProps);
+
         const { evaluate: groupEvaluate } = buttonProps;
 
         const groupEvaluated = groupEvaluate?.({ ...refreshProps, button });
@@ -386,19 +390,7 @@ export default class ToolbarService extends PubSubService {
       return;
     }
 
-    if (!groupId) {
-      this.handleEvaluate(btn.props);
-    } else {
-      // nested
-      const { primary, items } = btn.props;
-
-      // handle group evaluate function
-      this.handleEvaluate(btn.props);
-
-      // primary and items evaluate functions
-      this.handleEvaluate(primary);
-      items.forEach(item => this.handleEvaluate(item));
-    }
+    !groupId ? this.handleEvaluate(btn.props) : this.handleEvaluateNested(btn.props);
 
     return {
       id,
@@ -407,10 +399,25 @@ export default class ToolbarService extends PubSubService {
     };
   }
 
+  handleEvaluateNested = props => {
+    const { primary, items } = props;
+    // handle group evaluate function
+    this.handleEvaluate(props);
+
+    // primary and items evaluate functions
+    this.handleEvaluate(primary);
+    items.forEach(item => this.handleEvaluate(item));
+  };
+
   handleEvaluate = props => {
     const { evaluate } = props;
+
+    if (typeof evaluate === 'function') {
+      return;
+    }
+
     // handle evaluate functions that are registered
-    if (evaluate && typeof evaluate === 'string') {
+    if (typeof evaluate === 'string') {
       const evaluateFunction = this._evaluateFunction[evaluate];
 
       if (!evaluateFunction) {

@@ -137,6 +137,7 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.splitButton',
     props: {
       groupId: 'MoreToolsGroupId',
+      evaluate: 'evaluate.group',
       primary: ToolbarService.createButton({
         id: 'Reset',
         icon: 'tool-reset',

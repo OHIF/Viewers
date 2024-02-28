@@ -77,8 +77,6 @@ function modeFactory({ modeConfiguration }) {
             toolGroupService,
             displaySetService
           );
-
-          toolbarService.recordInteraction('WindowLevel');
         }
       );
 

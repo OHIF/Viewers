@@ -269,7 +269,7 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.splitButton',
     props: {
       groupId: 'LayoutToolsGroupId',
-      evaluate: 'evaluate.layout',
+      evaluate: 'evaluate.action',
       primary: ToolbarService.createButton({
         id: 'GridLayout',
         icon: 'tool-layout',
@@ -282,7 +282,7 @@ const toolbarButtons: Button[] = [
             context: 'CORNERSTONE',
           },
         ],
-        evaluate: 'evaluate.layout',
+        evaluate: 'evaluate.action',
       }),
       secondary: {
         icon: 'chevron-down',
@@ -301,7 +301,7 @@ const toolbarButtons: Button[] = [
               context: 'CORNERSTONE',
             },
           ],
-          evaluate: 'evaluate.layout',
+          evaluate: 'evaluate.action',
         }),
         ToolbarService.createButton({
           id: '3x1',
@@ -315,7 +315,7 @@ const toolbarButtons: Button[] = [
               context: 'CORNERSTONE',
             },
           ],
-          evaluate: 'evaluate.layout',
+          evaluate: 'evaluate.action',
         }),
         ToolbarService.createButton({
           id: '2x1',
@@ -329,7 +329,7 @@ const toolbarButtons: Button[] = [
               context: 'CORNERSTONE',
             },
           ],
-          evaluate: 'evaluate.layout',
+          evaluate: 'evaluate.action',
         }),
         ToolbarService.createButton({
           id: '1x1',
@@ -343,7 +343,7 @@ const toolbarButtons: Button[] = [
               context: 'CORNERSTONE',
             },
           ],
-          evaluate: 'evaluate.layout',
+          evaluate: 'evaluate.action',
         }),
         // Additional layout options can be added here following the same structure
       ],

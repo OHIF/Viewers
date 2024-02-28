@@ -89,37 +89,7 @@ function modeFactory({ modeConfiguration }) {
         // disabled
       };
 
-      const toolGroupId = 'default';
-      toolGroupService.createToolGroupAndAddTools(toolGroupId, tools);
-
-      let unsubscribe;
-
-      const activateTool = () => {
-        toolbarService.recordInteraction({
-          groupId: 'WindowLevel',
-          interactionType: 'tool',
-          commands: [
-            {
-              commandName: 'setToolActive',
-              commandOptions: {
-                toolName: 'WindowLevel',
-              },
-              context: 'CORNERSTONE',
-            },
-          ],
-        });
-
-        // We don't need to reset the active tool whenever a viewport is getting
-        // added to the toolGroup.
-        unsubscribe();
-      };
-
-      // Since we only have one viewport for the basic cs3d mode and it has
-      // only one hanging protocol, we can just use the first viewport
-      ({ unsubscribe } = toolGroupService.subscribe(
-        toolGroupService.EVENTS.VIEWPORT_ADDED,
-        activateTool
-      ));
+      toolGroupService.createToolGroupAndAddTools('default', tools);
 
       toolbarService.addButtons(toolbarButtons);
       toolbarService.createButtonSection('primary', [
@@ -132,7 +102,7 @@ function modeFactory({ modeConfiguration }) {
       ]);
     },
     onModeExit: ({ servicesManager }) => {
-      const { toolGroupService, measurementService, toolbarService } = servicesManager.services;
+      const { toolGroupService } = servicesManager.services;
 
       toolGroupService.destroy();
     },
