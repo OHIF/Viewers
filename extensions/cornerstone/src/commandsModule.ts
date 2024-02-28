@@ -283,17 +283,6 @@ function commandsModule({
         return;
       }
 
-      if (!toolGroup.hasTool(toolName)) {
-        uiNotificationService.show({
-          title: `${toolName} tool`,
-          message: `The ${toolName} tool is not available in this viewport.`,
-          type: 'info',
-          duration: 3000,
-        });
-
-        throw new Error(`ToolGroup ${toolGroup.id} does not have this tool.`);
-      }
-
       const toolIsEnabled = toolGroup.getToolOptions(toolName).mode === Enums.ToolModes.Enabled;
 
       // Toggle the tool's state only if the toggle is true
@@ -315,17 +304,6 @@ function commandsModule({
 
       if (!toolGroup) {
         return;
-      }
-
-      if (!toolGroup.getToolInstance(toolName)) {
-        uiNotificationService.show({
-          title: `${toolName} tool`,
-          message: `The ${toolName} tool is not available in this viewport.`,
-          type: 'info',
-          duration: 3000,
-        });
-
-        throw new Error(`ToolGroup ${toolGroup.id} does not have this tool.`);
       }
 
       const activeToolName = toolGroup.getActivePrimaryMouseButtonTool();

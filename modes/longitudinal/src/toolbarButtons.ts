@@ -20,7 +20,6 @@ function _createWwwcPreset(preset, title, subtitle) {
     id: preset.toString(),
     title,
     subtitle,
-    type: 'action',
     commands: [
       {
         commandName: 'setWindowLevel',
@@ -33,15 +32,13 @@ function _createWwwcPreset(preset, title, subtitle) {
   };
 }
 
-const toolGroupIds = ['default', 'mpr', 'SRToolGroup'];
-
 /**
  * Creates an array of 'setToolActive' commands for the given toolName - one for
  * each toolGroupId specified in toolGroupIds.
  * @param {string} toolName
  * @returns {Array} an array of 'setToolActive' commands
  */
-function _createSetToolActiveCommands(toolName) {
+function _createSetToolActiveCommands(toolName, toolGroupIds = ['default', 'mpr', 'SRToolGroup']) {
   const temp = toolGroupIds.map(toolGroupId => ({
     commandName: 'setToolActive',
     commandOptions: {
@@ -54,49 +51,29 @@ function _createSetToolActiveCommands(toolName) {
 }
 
 const toolbarButtons: Button[] = [
-  // Measurement
   {
     id: 'MeasurementTools',
-    type: 'ohif.splitButton',
+    uiType: 'ohif.splitButton',
     props: {
-      groupId: 'MeasurementTools',
-      isRadio: true, // ?
-      // Switch?
-      primary: ToolbarService._createToolButton(
-        'Length',
-        'tool-length',
-        'Length',
-        [
-          {
-            commandName: 'setToolActive',
-            commandOptions: {
-              toolName: 'Length',
-            },
-            context: 'CORNERSTONE',
-          },
-          {
-            commandName: 'setToolActive',
-            commandOptions: {
-              toolName: 'SRLength',
-              toolGroupId: 'SRToolGroup',
-            },
-            // we can use the setToolActive command for this from Cornerstone commandsModule
-            context: 'CORNERSTONE',
-          },
-        ],
-        'Length'
-      ),
+      groupId: 'MeasurementToolsGroupId',
+      primary: ToolbarService.createButton({
+        id: 'Length',
+        icon: 'tool-length',
+        label: 'Length',
+        tooltip: 'Length Tool',
+        commands: _createSetToolActiveCommands('Length'),
+      }),
       secondary: {
         icon: 'chevron-down',
-        label: '',
         tooltip: 'More Measure Tools',
       },
       items: [
-        ToolbarService._createToolButton(
-          'Length',
-          'tool-length',
-          'Length',
-          [
+        ToolbarService.createButton({
+          id: 'Length',
+          icon: 'tool-length',
+          label: 'Length',
+          tooltip: 'Length Tool',
+          commands: [
             {
               commandName: 'setToolActive',
               commandOptions: {
@@ -114,13 +91,14 @@ const toolbarButtons: Button[] = [
               context: 'CORNERSTONE',
             },
           ],
-          'Length Tool'
-        ),
-        ToolbarService._createToolButton(
-          'Bidirectional',
-          'tool-bidirectional',
-          'Bidirectional',
-          [
+          evaluate: 'evaluate.CornerstoneTool',
+        }),
+        ToolbarService.createButton({
+          id: 'Bidirectional',
+          icon: 'tool-bidirectional',
+          label: 'Bidirectional',
+          tooltip: 'Bidirectional Tool',
+          commands: [
             {
               commandName: 'setToolActive',
               commandOptions: {
@@ -137,13 +115,14 @@ const toolbarButtons: Button[] = [
               context: 'CORNERSTONE',
             },
           ],
-          'Bidirectional Tool'
-        ),
-        ToolbarService._createToolButton(
-          'ArrowAnnotate',
-          'tool-annotate',
-          'Annotation',
-          [
+          evaluate: 'evaluate.CornerstoneTool',
+        }),
+        ToolbarService.createButton({
+          id: 'ArrowAnnotate',
+          icon: 'tool-annotate',
+          label: 'Annotation',
+          tooltip: 'Arrow Annotate',
+          commands: [
             {
               commandName: 'setToolActive',
               commandOptions: {
@@ -160,13 +139,13 @@ const toolbarButtons: Button[] = [
               context: 'CORNERSTONE',
             },
           ],
-          'Arrow Annotate'
-        ),
-        ToolbarService._createToolButton(
-          'EllipticalROI',
-          'tool-elipse',
-          'Ellipse',
-          [
+        }),
+        ToolbarService.createButton({
+          id: 'EllipticalROI',
+          icon: 'tool-ellipse',
+          label: 'Ellipse',
+          tooltip: 'Ellipse ROI',
+          commands: [
             {
               commandName: 'setToolActive',
               commandOptions: {
@@ -183,13 +162,14 @@ const toolbarButtons: Button[] = [
               context: 'CORNERSTONE',
             },
           ],
-          'Ellipse Tool'
-        ),
-        ToolbarService._createToolButton(
-          'CircleROI',
-          'tool-circle',
-          'Circle',
-          [
+          evaluate: 'evaluate.CornerstoneTool',
+        }),
+        ToolbarService.createButton({
+          id: 'CircleROI',
+          icon: 'tool-circle',
+          label: 'Circle',
+          tooltip: 'Circle Tool',
+          commands: [
             {
               commandName: 'setToolActive',
               commandOptions: {
@@ -206,49 +186,40 @@ const toolbarButtons: Button[] = [
               context: 'CORNERSTONE',
             },
           ],
-          'Circle Tool'
-        ),
+          evaluate: 'evaluate.CornerstoneTool',
+        }),
       ],
     },
   },
-  // Zoom..
   {
     id: 'Zoom',
-    type: 'ohif.radioGroup',
+    uiType: 'ohif.radioGroup',
     props: {
       type: 'tool',
       icon: 'tool-zoom',
       label: 'Zoom',
       commands: _createSetToolActiveCommands('Zoom'),
+      evaluate: 'evaluate.CornerstoneTool',
     },
   },
   // Window Level + Presets...
   {
     id: 'WindowLevel',
-    type: 'ohif.splitButton',
+    uiType: 'ohif.splitButton',
     props: {
       groupId: 'WindowLevel',
-      primary: ToolbarService._createToolButton(
-        'WindowLevel',
-        'tool-window-level',
-        'Window Level',
-        [
-          {
-            commandName: 'setToolActive',
-            commandOptions: {
-              toolName: 'WindowLevel',
-            },
-            context: 'CORNERSTONE',
-          },
-        ],
-        'Window Level'
-      ),
+      primary: ToolbarService.createButton({
+        id: 'WindowLevel',
+        icon: 'tool-window-level',
+        label: 'Window Level',
+        tooltip: 'Window Level',
+        commands: _createSetToolActiveCommands('WindowLevel'),
+      }),
       secondary: {
         icon: 'chevron-down',
         label: 'W/L Manual',
         tooltip: 'W/L Presets',
       },
-      isAction: true, // ?
       renderer: WindowLevelMenuItem,
       items: [
         _createWwwcPreset(1, 'Soft tissue', '400 / 40'),
@@ -262,25 +233,24 @@ const toolbarButtons: Button[] = [
   // Pan...
   {
     id: 'Pan',
-    type: 'ohif.radioGroup',
+    uiType: 'ohif.radioGroup',
     props: {
       type: 'tool',
       icon: 'tool-move',
       label: 'Pan',
       commands: _createSetToolActiveCommands('Pan'),
+      evaluate: 'evaluate.CornerstoneTool',
     },
   },
   {
     id: 'Capture',
-    type: 'ohif.action',
+    uiType: 'ohif.action',
     props: {
       icon: 'tool-capture',
       label: 'Capture',
-      type: 'action',
       commands: [
         {
           commandName: 'showDownloadViewportModal',
-          commandOptions: {},
           context: 'CORNERSTONE',
         },
       ],
@@ -288,7 +258,7 @@ const toolbarButtons: Button[] = [
   },
   {
     id: 'Layout',
-    type: 'ohif.layoutSelector',
+    uiType: 'ohif.layoutSelector',
     props: {
       rows: 3,
       columns: 3,
@@ -296,9 +266,8 @@ const toolbarButtons: Button[] = [
   },
   {
     id: 'MPR',
-    type: 'ohif.action',
+    uiType: 'ohif.action',
     props: {
-      type: 'toggle',
       icon: 'icon-mpr',
       label: 'MPR',
       commands: [
@@ -310,31 +279,20 @@ const toolbarButtons: Button[] = [
           context: 'DEFAULT',
         },
       ],
-      condition: ({ displaySets }) => {
-        return displaySets.some(ds => ds.isReconstructable);
-      },
+      evaluate: 'evaluate.CornerstoneToggle',
     },
   },
   {
     id: 'Crosshairs',
-    type: 'ohif.radioGroup',
+    uiType: 'ohif.radioGroup',
     props: {
       type: 'tool',
       icon: 'tool-crosshair',
       label: 'Crosshairs',
-      commands: [
-        {
-          commandName: 'setToolActive',
-          commandOptions: {
-            toolName: 'Crosshairs',
-            toolGroupId: 'mpr',
-          },
-          context: 'CORNERSTONE',
-        },
-      ],
+      commands: _createSetToolActiveCommands('Crosshairs', ['mpr']),
+      evaluate: 'evaluate.CornerstoneTool',
     },
   },
-  // More...
 ];
 
 export default toolbarButtons;

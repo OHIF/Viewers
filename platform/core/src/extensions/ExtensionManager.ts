@@ -51,6 +51,7 @@ export interface Extension {
   getUtilityModule?: (p: ExtensionParams) => unknown;
   getCustomizationModule?: (p: ExtensionParams) => unknown;
   getSopClassHandlerModule?: (p: ExtensionParams) => unknown;
+  getToolbarModule?: (p: ExtensionParams) => unknown;
   onModeEnter?: () => void;
   onModeExit?: () => void;
 }
@@ -308,6 +309,9 @@ export default class ExtensionManager extends PubSubService {
           break;
 
         case MODULE_TYPES.TOOLBAR:
+          this._initToolbarModule(extensionModule, extensionId);
+          break;
+
         case MODULE_TYPES.VIEWPORT:
         case MODULE_TYPES.SOP_CLASS_HANDLER:
         case MODULE_TYPES.CONTEXT:
@@ -447,6 +451,17 @@ export default class ExtensionManager extends PubSubService {
     });
 
     this.processExtensionModule(extensionModule, extensionId, MODULE_TYPES.PANEL);
+  };
+
+  _initToolbarModule = (extensionModule, extensionId) => {
+    // check if the toolbar module has a handler function for evaluation of
+    // the toolbar button state
+    const { toolbarService } = this._servicesManager.services;
+    extensionModule.forEach(toolbarButton => {
+      if (toolbarButton.evaluate) {
+        toolbarService.registerEvaluateFunction(toolbarButton.name, toolbarButton.evaluate);
+      }
+    });
   };
 
   /**

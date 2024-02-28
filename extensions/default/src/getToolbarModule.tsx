@@ -1,39 +1,33 @@
 import ToolbarDivider from './Toolbar/ToolbarDivider';
 import ToolbarLayoutSelectorWithServices from './Toolbar/ToolbarLayoutSelector';
 import ToolbarSplitButtonWithServices from './Toolbar/ToolbarSplitButtonWithServices';
-import ToolbarButtonWithServices from './Toolbar/ToolbarButtonWithServices';
+import { ToolbarButton } from '@ohif/ui';
 
 export default function getToolbarModule({ commandsManager, servicesManager }) {
   return [
     {
-      name: 'ohif.divider',
-      defaultComponent: ToolbarDivider,
-      clickHandler: () => {},
-    },
-    {
       name: 'ohif.action',
-      defaultComponent: ToolbarButtonWithServices,
-      clickHandler: () => {},
+      defaultComponent: ToolbarButton,
     },
     {
       name: 'ohif.radioGroup',
-      defaultComponent: ToolbarButtonWithServices,
-      clickHandler: () => {},
+      defaultComponent: ToolbarButton,
+    },
+    {
+      name: 'ohif.toggle',
+      defaultComponent: ToolbarButton,
+    },
+    {
+      name: 'ohif.divider',
+      defaultComponent: ToolbarDivider,
     },
     {
       name: 'ohif.splitButton',
       defaultComponent: ToolbarSplitButtonWithServices,
-      clickHandler: () => {},
     },
     {
       name: 'ohif.layoutSelector',
       defaultComponent: ToolbarLayoutSelectorWithServices,
-      clickHandler: (evt, clickedBtn, btnSectionName) => {},
-    },
-    {
-      name: 'ohif.toggle',
-      defaultComponent: ToolbarButtonWithServices,
-      clickHandler: () => {},
     },
   ];
 }
