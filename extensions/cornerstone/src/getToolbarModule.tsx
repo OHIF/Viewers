@@ -14,7 +14,7 @@ export default function getToolbarModule({ commandsManager, servicesManager }) {
         if (!toolGroup || !toolGroup.hasTool(toolName)) {
           return {
             disabled: true,
-            classNames: 'ohif-disabled',
+            className: 'ohif-disabled',
           };
         }
 
@@ -25,6 +25,40 @@ export default function getToolbarModule({ commandsManager, servicesManager }) {
           className: isPrimaryActive
             ? 'text-black bg-primary-light'
             : 'text-common-bright hover:!bg-primary-dark hover:text-primary-light',
+          // Todo: isActive right now is used for nested buttons where the primary
+          // button needs to be fully rounded (vs partial rounded) when active
+          // otherwise it does not have any other use
+          isActive: isPrimaryActive,
+        };
+      },
+    },
+    {
+      name: 'evaluate.group',
+      evaluate: ({ viewportId, button }) => {
+        const { primary, items } = button.props;
+
+        const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
+        const activeToolName = toolGroup.getActivePrimaryMouseButtonTool();
+
+        // check if the active toolName is part of the items then we need
+        // to move it to the primary button
+        const activeToolIndex = items.findIndex(item => {
+          const toolName = getToolNameForButton(item);
+          return toolName === activeToolName;
+        });
+
+        if (activeToolIndex === -1) {
+          return {
+            primary,
+            items,
+          };
+        }
+
+        const activeToolProps = items[activeToolIndex];
+
+        return {
+          primary: activeToolProps,
+          items,
         };
       },
     },
@@ -51,7 +85,7 @@ export default function getToolbarModule({ commandsManager, servicesManager }) {
         if (!areReconstructable) {
           return {
             disabled: true,
-            classNames: 'ohif-disabled',
+            className: 'ohif-disabled',
           };
         }
 
@@ -60,7 +94,7 @@ export default function getToolbarModule({ commandsManager, servicesManager }) {
         return {
           disabled: false,
           className: isMpr
-            ? '!text-[#348CFD]'
+            ? 'text-black bg-primary-light'
             : 'text-common-bright hover:!bg-primary-dark hover:text-primary-light',
         };
       },
@@ -70,7 +104,9 @@ export default function getToolbarModule({ commandsManager, servicesManager }) {
 
 function getToolNameForButton(button) {
   const { props } = button;
-  const { commands } = props;
+
+  const commands = props?.commands || button.commands;
+
   if (commands && commands.length) {
     const command = commands[0];
     const { commandOptions } = command;

@@ -40,8 +40,6 @@ function ToolbarSplitButtonWithServices({
       primary={primary}
       secondary={secondary}
       items={getSplitButtonItems(items)}
-      isActive={primary.isActive}
-      interactionType={primary.type}
       groupId={groupId}
       renderer={listItemRenderer}
       onInteraction={onInteraction}
@@ -57,11 +55,9 @@ function ToolbarSplitButtonWithServices({
 
 ToolbarSplitButtonWithServices.propTypes = {
   isRadio: PropTypes.bool,
-  isAction: PropTypes.bool,
   groupId: PropTypes.string,
   primary: PropTypes.shape({
     id: PropTypes.string.isRequired,
-    type: PropTypes.oneOf(['tool', 'action', 'toggle']).isRequired,
     uiType: PropTypes.string,
   }),
   secondary: PropTypes.shape({
@@ -69,15 +65,17 @@ ToolbarSplitButtonWithServices.propTypes = {
     icon: PropTypes.string.isRequired,
     label: PropTypes.string,
     tooltip: PropTypes.string.isRequired,
-    isActive: PropTypes.bool,
+    disabled: PropTypes.bool,
+    className: PropTypes.string,
   }),
   items: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.string.isRequired,
-      type: PropTypes.oneOf(['tool', 'action', 'toggle']).isRequired,
       icon: PropTypes.string,
       label: PropTypes.string,
       tooltip: PropTypes.string,
+      disabled: PropTypes.bool,
+      className: PropTypes.string,
     })
   ),
   renderer: PropTypes.func,

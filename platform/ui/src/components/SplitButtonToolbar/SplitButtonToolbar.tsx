@@ -8,17 +8,9 @@ import Icon from '../Icon';
 import Tooltip from '../Tooltip';
 import ListMenu from '../ListMenu';
 
-enum InteractionType {
-  ACTION = 'action',
-  TOOL = 'tool',
-  TOGGLE = 'toggle',
-}
-
 const baseClasses = {
   Button: 'flex items-center rounded-md border-transparent cursor-pointer group/button',
   Primary:
-    // By default border on left, top and bottom for hover effect and only rounded on left side.
-    // Extra padding on right to compensate for no right border.
     'h-full border-l-2 border-t-2 border-b-2 rounded-tl-md rounded-bl-md group/primary !pl-2 !py-2',
   Secondary:
     'h-full flex items-center justify-center rounded-tr-md rounded-br-md w-4 border-2 border-transparent group/secondary',
@@ -28,23 +20,26 @@ const baseClasses = {
 };
 
 const classes = {
-  Button: ({ isExpanded, primary }) =>
+  Button: ({ isExpanded }) =>
     classNames(
       baseClasses.Button,
-      !isExpanded && !primary.isActive && 'hover:!bg-primary-dark hover:border-primary-dark'
+      !isExpanded && 'hover:!bg-primary-dark hover:border-primary-dark'
     ),
   Interface: 'h-full flex flex-row items-center',
-  Primary: ({ isActive, isExpanded, isToggle, isTool }) =>
-    classNames(baseClasses.Primary, {
-      'border-primary-dark !bg-primary-dark hover:border-primary-dark !text-primary-light':
-        isActive && isExpanded,
-      'border-primary-light bg-primary-light border-2 rounded-md !p-2':
-        isActive && !isToggle && !isExpanded,
-      'border-secondary-dark && border-2 rounded-md !p-2': isActive && isToggle && !isExpanded,
-      'border-primary-dark bg-primary-dark !text-primary-light': !isActive && isExpanded,
-      'border-secondary-dark bg-secondary-dark group-hover/button:border-primary-dark group-hover/button:text-primary-light hover:!bg-primary-dark hover:border-primary-dark focus:!text-black':
-        !isActive && !isExpanded,
-    }),
+  Primary: ({ isExpanded, isActive }) =>
+    classNames(
+      baseClasses.Primary,
+      isActive
+        ? isExpanded
+          ? 'border-primary-dark !bg-primary-dark hover:border-primary-dark !text-primary-light'
+          : 'border-primary-light bg-primary-light border-2 rounded-md !p-2'
+        : `focus:!text-black focus:!rounded-md focus:!border-primary-light focus:!bg-primary-light ${
+            isExpanded
+              ? 'border-primary-dark bg-primary-dark !text-primary-light'
+              : 'border-secondary-dark bg-secondary-dark group-hover/button:border-primary-dark group-hover/button:text-primary-light hover:!bg-primary-dark hover:border-primary-dark focus:!text-black'
+          }
+        `
+    ),
   Secondary: ({ isExpanded, primary }) =>
     classNames(
       baseClasses.Secondary,
@@ -67,6 +62,30 @@ const classes = {
   Content: ({ isExpanded }) => classNames(baseClasses.Content, isExpanded ? 'block' : 'hidden'),
 };
 
+const DefaultListItemRenderer = props => {
+  const { t, icon, label, className, isActive } = props;
+  return (
+    <div
+      className={classNames(
+        'flex h-8 w-full flex-row items-center p-3',
+        'whitespace-pre text-base',
+        className,
+        `${isActive ? 'hover:opacity-80' : 'hover:bg-primary-dark '}`
+      )}
+    >
+      {icon && (
+        <span className="mr-4">
+          <Icon
+            name={icon}
+            className="h-5 w-5"
+          />
+        </span>
+      )}
+      <span className="mr-5">{t?.(label)}</span>
+    </div>
+  );
+};
+
 const SplitButtonToolbar = ({
   groupId,
   primary,
@@ -75,7 +94,6 @@ const SplitButtonToolbar = ({
   renderer,
   onInteraction,
   Component,
-  isActive,
 }) => {
   const { t } = useTranslation('Buttons');
   const [state, setState] = useState({ isHovering: false, isExpanded: false });
@@ -83,37 +101,6 @@ const SplitButtonToolbar = ({
   const toggleExpanded = () => setState({ ...state, isExpanded: !state.isExpanded });
   const setHover = hovering => setState({ ...state, isHovering: hovering });
   const collapse = () => setState({ ...state, isExpanded: false });
-
-  const isToggle = primary.type === InteractionType.TOGGLE;
-  const isAction = primary.type === InteractionType.ACTION;
-  const isTool = primary.type === InteractionType.TOOL;
-
-  const DefaultListItemRenderer = ({ type, icon, label, t, isActive }) => {
-    const itemIsToggleAndActive = type === InteractionType.TOGGLE && isActive;
-
-    return (
-      <div
-        className={classNames(
-          'hover:bg-primary-dark flex h-8 w-full flex-row items-center p-3',
-          'whitespace-pre text-base',
-          {
-            'bg-primary-dark hover:bg-primary-dark hover:text-primary-light text-[#348CFD] text-[#348CFD]':
-              itemIsToggleAndActive,
-          }
-        )}
-      >
-        {icon && (
-          <span className="mr-4">
-            <Icon
-              name={icon}
-              className="h-5 w-5"
-            />
-          </span>
-        )}
-        <span className="mr-5">{t(label)}</span>
-      </div>
-    );
-  };
 
   const listItemRenderer = renderer || DefaultListItemRenderer;
 
@@ -127,7 +114,7 @@ const SplitButtonToolbar = ({
         className="relative"
       >
         <div
-          className={classes.Button({ ...state, primary: { isActive } })}
+          className={classes.Button({ ...state })}
           style={{ height: '40px' }}
           onMouseEnter={() => setHover(true)}
           onMouseLeave={() => setHover(false)}
@@ -137,23 +124,22 @@ const SplitButtonToolbar = ({
               <Component
                 key={primary.id}
                 {...primary}
-                isActive={isActive}
                 onInteraction={onInteraction}
                 rounded="none"
-                className={classes.Primary({
-                  isActive,
-                  isExpanded: state.isExpanded,
-                  isToggle,
-                  isAction,
-                  isTool,
-                })}
+                className={classNames(
+                  classes.Primary({
+                    isExpanded: state.isExpanded,
+                    isActive: primary.isActive,
+                  }),
+                  primary.className
+                )}
                 data-tool={primary.id}
                 data-cy={`${groupId}-split-button-primary`}
               />
             </div>
-            <div className={classes.Separator({ ...state, primary: { isActive } })}></div>
+            <div className={classes.Separator({ ...state, primary })}></div>
             <div
-              className={classes.Secondary({ ...state, primary: { isActive } })}
+              className={classes.Secondary({ ...state, primary })}
               onClick={toggleExpanded}
               data-cy={`${groupId}-split-button-secondary`}
             >

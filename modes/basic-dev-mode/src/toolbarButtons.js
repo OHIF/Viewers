@@ -115,7 +115,7 @@ const toolbarButtons = [
         ),
         _createToolButton(
           'EllipticalROI',
-          'tool-elipse',
+          'tool-ellipse',
           'Ellipse',
           [
             {

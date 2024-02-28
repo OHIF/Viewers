@@ -43,7 +43,6 @@ const ToolbarButton = ({
         tight={shouldShowDropdown}
       >
         <IconButton
-          variant={'contained'}
           size="toolbar"
           className={className}
           onClick={() => {

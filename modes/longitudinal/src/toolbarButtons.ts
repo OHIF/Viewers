@@ -56,12 +56,15 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.splitButton',
     props: {
       groupId: 'MeasurementToolsGroupId',
+      // group evaluate to determine which item should move to the top
+      evaluate: 'evaluate.group',
       primary: ToolbarService.createButton({
         id: 'Length',
         icon: 'tool-length',
         label: 'Length',
         tooltip: 'Length Tool',
         commands: _createSetToolActiveCommands('Length'),
+        evaluate: 'evaluate.CornerstoneTool',
       }),
       secondary: {
         icon: 'chevron-down',
@@ -139,6 +142,7 @@ const toolbarButtons: Button[] = [
               context: 'CORNERSTONE',
             },
           ],
+          evaluate: 'evaluate.CornerstoneTool',
         }),
         ToolbarService.createButton({
           id: 'EllipticalROI',
@@ -214,6 +218,7 @@ const toolbarButtons: Button[] = [
         label: 'Window Level',
         tooltip: 'Window Level',
         commands: _createSetToolActiveCommands('WindowLevel'),
+        evaluate: 'evaluate.CornerstoneTool',
       }),
       secondary: {
         icon: 'chevron-down',

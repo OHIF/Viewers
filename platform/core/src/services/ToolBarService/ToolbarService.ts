@@ -28,8 +28,16 @@ export interface ButtonProps {
 
 export interface NestedButtonProps {
   groupId: string;
+  // group evaluate which is different
+  // from the evaluate function for the primary and items
+  evaluate?: EvaluatePublic;
   items: ButtonProps[];
-  primary: ButtonProps;
+  primary: ButtonProps & {
+    // Todo: this is really ugly but really we don't have any other option
+    // the ui design requires this since the button should be rounded if
+    // active otherwise it should not be rounded
+    isActive?: boolean;
+  };
   secondary: ButtonProps;
 }
 
@@ -205,18 +213,50 @@ export default class ToolbarService extends PubSubService {
 
       if (!isNested) {
         const buttonProps = button.props as ButtonProps;
-        const { disabled, className } = buttonProps?.evaluate?.({
+        const evaluated = buttonProps?.evaluate?.({
           ...refreshProps,
           button,
-        }) || {
-          disabled: false,
-          className: '',
+        });
+        buttonProps.disabled = evaluated?.disabled || false;
+        buttonProps.className = evaluated?.className || '';
+
+        acc[button.id] = button;
+      } else {
+        let buttonProps = button.props as NestedButtonProps;
+        // if it is nested we should perform evaluate on each item in the group
+        const { evaluate: groupEvaluate } = buttonProps;
+
+        const groupEvaluated = groupEvaluate?.({ ...refreshProps, button });
+        // handle group evaluate function which might switch the primary
+        // item in the group
+        buttonProps = {
+          ...buttonProps,
+          primary: groupEvaluated?.primary || buttonProps.primary,
         };
-        buttonProps.disabled = disabled;
-        buttonProps.className = className;
+
+        const { primary, items } = buttonProps;
+
+        const primaryEvaluated = primary.evaluate?.({ ...refreshProps, button: primary });
+        primary.disabled = primaryEvaluated?.disabled || false;
+        primary.className = primaryEvaluated?.className || '';
+        primary.isActive = primaryEvaluated?.isActive || false;
+
+        items.forEach(item => {
+          const evaluated = item.evaluate?.({ ...refreshProps, button: item });
+          item.disabled = evaluated?.disabled || false;
+          item.className = evaluated?.className || '';
+        });
+
+        acc[button.id] = {
+          ...button,
+          props: {
+            ...button.props,
+            primary,
+            items,
+          },
+        };
       }
 
-      acc[button.id] = button;
       return acc;
     }, {});
 
@@ -433,7 +473,7 @@ export default class ToolbarService extends PubSubService {
     }
 
     const { id, uiType, component } = btn;
-    const { evaluate } = btn.props;
+    const { groupId } = btn.props;
 
     const buttonType = this._getButtonUITypes()[uiType];
 
@@ -441,6 +481,29 @@ export default class ToolbarService extends PubSubService {
       return;
     }
 
+    if (!groupId) {
+      this.handleEvaluate(btn.props);
+    } else {
+      // nested
+      const { primary, items } = btn.props;
+
+      // handle group evaluate function
+      this.handleEvaluate(btn.props);
+
+      // primary and items evaluate functions
+      this.handleEvaluate(primary);
+      items.forEach(item => this.handleEvaluate(item));
+    }
+
+    return {
+      id,
+      Component: component || buttonType.defaultComponent,
+      componentProps: Object.assign({}, btn.props, props),
+    };
+  }
+
+  handleEvaluate = props => {
+    const { evaluate } = props;
     // handle evaluate functions that are registered
     if (evaluate && typeof evaluate === 'string') {
       const evaluateFunction = this._evaluateFunction[evaluate];
@@ -452,16 +515,10 @@ export default class ToolbarService extends PubSubService {
       }
 
       if (evaluateFunction) {
-        btn.props.evaluate = evaluateFunction;
+        props.evaluate = evaluateFunction;
       }
     }
-
-    return {
-      id,
-      Component: component || buttonType.defaultComponent,
-      componentProps: Object.assign({}, btn.props, props),
-    };
-  }
+  };
 
   getButtonComponentForUIType(uiType: string) {
     return uiType ? this._getButtonUITypes()[uiType]?.defaultComponent ?? null : null;
