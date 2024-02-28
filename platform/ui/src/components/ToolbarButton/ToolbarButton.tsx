@@ -49,7 +49,6 @@ const ToolbarButton = ({
           onClick={() => {
             onInteraction({
               itemId: id,
-              interactionType: type,
               commands,
             });
           }}

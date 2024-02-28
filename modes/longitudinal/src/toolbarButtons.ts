@@ -254,6 +254,7 @@ const toolbarButtons: Button[] = [
           context: 'CORNERSTONE',
         },
       ],
+      evaluate: 'evaluate.action',
     },
   },
   {
@@ -262,6 +263,7 @@ const toolbarButtons: Button[] = [
     props: {
       rows: 3,
       columns: 3,
+      evaluate: 'evaluate.action',
     },
   },
   {
@@ -279,7 +281,7 @@ const toolbarButtons: Button[] = [
           context: 'DEFAULT',
         },
       ],
-      evaluate: 'evaluate.CornerstoneToggle',
+      evaluate: 'evaluate.mpr',
     },
   },
   {

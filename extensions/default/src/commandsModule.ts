@@ -164,7 +164,7 @@ const commandsModule = ({
       stageIndex,
       reset = false,
     }: HangingProtocolParams): boolean => {
-      const primaryToolBeforeHPChange = toolbarService.getActivePrimaryTool();
+      // const primaryToolBeforeHPChange = toolbarService.getActivePrimaryTool();
       try {
         // Stores in the state the display set selector id to displaySetUID mapping
         // Pass in viewportId for the active viewport.  This item will get set as
@@ -236,26 +236,26 @@ const commandsModule = ({
         // This is a default action applied
         actions.toggleHpTools();
 
-        // try to use the same tool in the new hanging protocol stage
-        const primaryButton = toolbarService.getButton(primaryToolBeforeHPChange);
-        if (primaryButton) {
-          // is there any type of interaction on this button, if not it might be in the
-          // items. This is a bit of a hack, but it works for now.
+        // // try to use the same tool in the new hanging protocol stage
+        // const primaryButton = toolbarService.getButton(primaryToolBeforeHPChange);
+        // if (primaryButton) {
+        //   // is there any type of interaction on this button, if not it might be in the
+        //   // items. This is a bit of a hack, but it works for now.
 
-          let interactionType = primaryButton.props?.interactionType;
+        //   let interactionType = primaryButton.props?.interactionType;
 
-          if (!interactionType && primaryButton.props?.items) {
-            const firstItem = primaryButton.props.items[0];
-            interactionType = firstItem.props?.interactionType || firstItem.props?.type;
-          }
+        //   if (!interactionType && primaryButton.props?.items) {
+        //     const firstItem = primaryButton.props.items[0];
+        //     interactionType = firstItem.props?.interactionType || firstItem.props?.type;
+        //   }
 
-          if (interactionType) {
-            toolbarService.recordInteraction({
-              interactionType,
-              ...primaryButton.props,
-            });
-          }
-        }
+        //   if (interactionType) {
+        //     toolbarService.recordInteraction({
+        //       interactionType,
+        //       ...primaryButton.props,
+        //     });
+        //   }
+        // }
         return true;
       } catch (e) {
         console.error(e);

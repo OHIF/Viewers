@@ -11,7 +11,7 @@ const EVENTS = {
 export type EvaluatePublic = string | EvaluateFunction;
 
 export type EvaluateFunction = (props: Record<string, unknown>) => {
-  isActive: boolean;
+  disabled: boolean;
   className: string;
 };
 
@@ -21,7 +21,7 @@ export interface ButtonProps {
   label: string;
   tooltip?: string;
   commands?: RunCommand;
-  isActive?: boolean;
+  disabled?: boolean;
   className?: string;
   evaluate?: EvaluatePublic;
 }
@@ -205,14 +205,14 @@ export default class ToolbarService extends PubSubService {
 
       if (!isNested) {
         const buttonProps = button.props as ButtonProps;
-        const { isActive, className } = buttonProps?.evaluate?.({
+        const { disabled, className } = buttonProps?.evaluate?.({
           ...refreshProps,
           button,
         }) || {
-          isActive: true,
+          disabled: false,
           className: '',
         };
-        buttonProps.isActive = isActive;
+        buttonProps.disabled = disabled;
         buttonProps.className = className;
       }
 

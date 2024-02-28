@@ -86,7 +86,9 @@ export default function Toolbar({
   return (
     <>
       {toolbarButtons.map(toolDef => {
-        const { id, Component, componentProps, disabled = false } = toolDef;
+        const { id, Component, componentProps } = toolDef;
+        const { disabled } = componentProps;
+
         const tool = (
           <Component
             key={id}
