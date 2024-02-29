@@ -9,6 +9,7 @@ import { setViewportColorbar } from './Colorbar';
 import { WindowLevelPreset } from '../../types/WindowLevel';
 import { ColorbarProperties } from '../../types/Colorbar';
 import { WindowLevel } from './WindowLevel';
+import { VolumeRendering } from './VolumeRendering';
 
 export type WindowLevelActionMenuProps = {
   viewportId: string;
@@ -137,6 +138,10 @@ export function WindowLevelActionMenu({
             />
           </AllInOneMenu.SubMenu>
         )}
+        <VolumeRendering
+          serviceManager={serviceManager}
+          viewportId={viewportId}
+        />
       </AllInOneMenu.ItemPanel>
     </AllInOneMenu.IconMenu>
   );

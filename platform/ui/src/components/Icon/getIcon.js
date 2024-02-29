@@ -151,7 +151,6 @@ import oldTrash from './../../assets/icons/old-trash.svg';
 import oldPlay from './../../assets/icons/old-play.svg';
 import oldStop from './../../assets/icons/old-stop.svg';
 
-
 /** ColorLut */
 import iconColorLUT from './../../assets/icons/icon-color-lut.svg';
 
@@ -162,6 +161,34 @@ import iconSettings from './../../assets/icons/icon-settings.svg';
 import iconToolbarBack from './../../assets/icons/icon-toolbar-back.svg';
 import iconMultiplePatients from './../../assets/icons/icon-multiple-patients.svg';
 
+/** Volume Rendering */
+import CTAAA from './../../assets/icons/CT-AAA.png';
+import CTAAA2 from './../../assets/icons/CT-AAA2.png';
+import CTAir from './../../assets/icons/CT-Air.png';
+import CTBone from './../../assets/icons/CT-Bone.png';
+import CTBones from './../../assets/icons/CT-Bones.png';
+import CTCardiac from './../../assets/icons/CT-Cardiac.png';
+import CTCardiac2 from './../../assets/icons/CT-Cardiac2.png';
+import CTCardiac3 from './../../assets/icons/CT-Cardiac3.png';
+import CTChestContrastEnhanced from './../../assets/icons/CT-Chest-Contrast-Enhanced.png';
+import CTChestVessels from './../../assets/icons/CT-Chest-Vessels.png';
+import CTCoronaryArteries from './../../assets/icons/CT-Coronary-Arteries.png';
+import CTCoronaryArteries2 from './../../assets/icons/CT-Coronary-Arteries-2.png';
+import CTCoronaryArteries3 from './../../assets/icons/CT-Coronary-Arteries-3.png';
+import CTCroppedVolumeBone from './../../assets/icons/CT-Cropped-Volume-Bone.png';
+import CTFat from './../../assets/icons/CT-Fat.png';
+import CTLiverVasculature from './../../assets/icons/CT-Liver-Vasculature.png';
+import CTLung from './../../assets/icons/CT-Lung.png';
+import CTMIP from './../../assets/icons/CT-MIP.png';
+import CTMuscle from './../../assets/icons/CT-Muscle.png';
+import CTPulmonaryArteries from './../../assets/icons/CT-Pulmonary-Arteries.png';
+import CTSoftTissue from './../../assets/icons/CT-Soft-Tissue.png';
+import DTIFABrain from './../../assets/icons/DTI-FA-Brain.png';
+import MRAngio from './../../assets/icons/MR-Angio.png';
+import MRDefault from './../../assets/icons/MR-Default.png';
+import MRMIP from './../../assets/icons/MR-MIP.png';
+import MRT2Brain from './../../assets/icons/MR-T2-Brain.png';
+import VolumeRendering from './../../assets/icons/VolumeRendering.png';
 
 const ICONS = {
   'arrow-down': arrowDown,
@@ -309,12 +336,10 @@ const ICONS = {
   'prev-arrow': prevArrow,
   'viewport-status-tracked': viewportStatusTracked,
   'viewport-window-level': viewportWindowLevel,
-
   /** Old OHIF */
   'old-trash': oldTrash,
   'old-play': oldPlay,
   'old-stop': oldStop,
-
   /** ColorLut */
   'icon-color-lut': iconColorLUT,
   /** New Patient Info Toolbar */
@@ -323,7 +348,34 @@ const ICONS = {
   'icon-settings': iconSettings,
   'icon-toolbar-back': iconToolbarBack,
   'icon-multiple-patients': iconMultiplePatients,
-
+  /** Volume Rendering */
+  'CT-AAA': CTAAA,
+  'CT-AAA2': CTAAA2,
+  'CT-Air': CTAir,
+  'CT-Bone': CTBone,
+  'CT-Bones': CTBones,
+  'CT-Cardiac': CTCardiac,
+  'CT-Cardiac2': CTCardiac2,
+  'CT-Cardiac3': CTCardiac3,
+  'CT-Chest-Contrast-Enhanced': CTChestContrastEnhanced,
+  'CT-Chest-Vessels': CTChestVessels,
+  'CT-Coronary-Arteries': CTCoronaryArteries,
+  'CT-Coronary-Arteries-2': CTCoronaryArteries2,
+  'CT-Coronary-Arteries-3': CTCoronaryArteries3,
+  'CT-Cropped-Volume-Bone': CTCroppedVolumeBone,
+  'CT-Fat': CTFat,
+  'CT-Liver-Vasculature': CTLiverVasculature,
+  'CT-Lung': CTLung,
+  'CT-MIP': CTMIP,
+  'CT-Muscle': CTMuscle,
+  'CT-Pulmonary-Arteries': CTPulmonaryArteries,
+  'CT-Soft-Tissue': CTSoftTissue,
+  'DTI-FA-Brain': DTIFABrain,
+  'MR-Angio': MRAngio,
+  'MR-Default': MRDefault,
+  'MR-MIP': MRMIP,
+  'MR-T2-Brain': MRT2Brain,
+  VolumeRendering: VolumeRendering,
 };
 
 function addIcon(iconName, iconSVG) {
@@ -340,11 +392,17 @@ function addIcon(iconName, iconSVG) {
  * return `null`
  */
 export default function getIcon(key, props) {
-  if (!key || !ICONS[key]) {
+  const icon = ICONS[key];
+
+  if (!key || !icon) {
     return React.createElement('div', null, 'Missing Icon');
   }
 
-  return React.createElement(ICONS[key], props);
+  if (typeof icon === 'string' && icon.endsWith('.png')) {
+    return React.createElement('img', { src: icon, ...props });
+  } else {
+    return React.createElement(icon, props);
+  }
 }
 
 export { getIcon, ICONS, addIcon };

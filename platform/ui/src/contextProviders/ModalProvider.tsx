@@ -31,6 +31,9 @@ const ModalProvider = ({ children, modal: Modal, service }) => {
     closeButton: true,
     title: null,
     customClassName: '',
+    movable: false,
+    customContainerDimensions: null,
+    customContentDimensions: null,
   };
   const { t } = useTranslation('Modals');
 
@@ -73,6 +76,9 @@ const ModalProvider = ({ children, modal: Modal, service }) => {
     shouldCloseOnEsc,
     closeButton,
     shouldCloseOnOverlayClick,
+    movable,
+    customContainerDimensions,
+    customContentDimensions,
   } = options;
 
   return (
@@ -86,6 +92,9 @@ const ModalProvider = ({ children, modal: Modal, service }) => {
           closeButton={closeButton}
           onClose={hide}
           shouldCloseOnOverlayClick={shouldCloseOnOverlayClick}
+          movable={movable}
+          customContainerDimensions={customContainerDimensions}
+          customContentDimensions={customContentDimensions}
         >
           <ModalContent
             {...contentProps}
