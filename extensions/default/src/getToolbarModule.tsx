@@ -38,23 +38,30 @@ export default function getToolbarModule({ commandsManager, servicesManager }) {
         const cineGetSet = toolbarService.getStateManagementFunctions(id);
         const isToggled = cineGetSet.get();
 
-        if (!interaction) {
-          // means we are just queuing the state
+        const getClassName = isToggled => {
           return {
             className: isToggled
               ? 'text-primary-active'
               : 'text-common-bright hover:!bg-primary-dark hover:text-primary-light',
           };
+        };
+        if (!interaction) {
+          // means we are just queuing the state
+          return getClassName(isToggled);
+        }
+
+        const { itemId } = interaction;
+
+        if (id !== itemId) {
+          // means we are just queuing and interaction was on another
+          // button
+          return getClassName(isToggled);
         }
 
         // means we are actually toggling the state with interaction
         const newState = !isToggled;
         cineGetSet.set(newState);
-        return {
-          className: newState
-            ? 'text-primary-active'
-            : 'text-common-bright hover:!bg-primary-dark hover:text-primary-light',
-        };
+        return getClassName(newState);
       },
     },
   ];

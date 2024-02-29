@@ -234,6 +234,23 @@ export default class ToolbarService extends PubSubService {
     // and secondary it will be evaluated twice)
     const evaluationResults = new Map();
 
+    const evaluateButtonProps = (button, props, refreshProps) => {
+      if (evaluationResults.has(button.id)) {
+        const { disabled, className, isActive } = evaluationResults.get(button.id);
+        return { ...props, disabled, className, isActive };
+      } else {
+        const evaluated = props.evaluate?.({ ...refreshProps, button });
+        const updatedProps = {
+          ...props,
+          disabled: evaluated?.disabled || false,
+          className: evaluated?.className || '',
+          isActive: evaluated?.isActive, // isActive will be undefined for buttons without this prop
+        };
+        evaluationResults.set(button.id, updatedProps);
+        return updatedProps;
+      }
+    };
+
     const refreshedButtons = Object.values(buttons).reduce((acc, button: Button) => {
       const isNested = (button.props as NestedButtonProps)?.groupId;
 
@@ -241,27 +258,11 @@ export default class ToolbarService extends PubSubService {
         this.handleEvaluate(button.props);
         const buttonProps = button.props as ButtonProps;
 
-        if (evaluationResults.has(button.id)) {
-          const { disabled, className } = evaluationResults.get(button.id);
-          buttonProps.disabled = disabled;
-          buttonProps.className = className;
-          acc[button.id] = button;
-          return acc;
-        } else {
-          const evaluated = buttonProps?.evaluate?.({
-            ...refreshProps,
-            button,
-          });
-          buttonProps.disabled = evaluated?.disabled || false;
-          buttonProps.className = evaluated?.className || '';
-
-          evaluationResults.set(button.id, {
-            disabled: buttonProps.disabled,
-            className: buttonProps.className,
-          });
-
-          acc[button.id] = button;
-        }
+        const updatedProps = evaluateButtonProps(button, buttonProps, refreshProps);
+        acc[button.id] = {
+          ...button,
+          props: updatedProps,
+        };
       } else {
         let buttonProps = button.props as NestedButtonProps;
         // if it is nested we should perform evaluate on each item in the group
@@ -279,49 +280,19 @@ export default class ToolbarService extends PubSubService {
 
         const { primary, items } = buttonProps;
 
-        if (evaluationResults.has(primary.id)) {
-          const { disabled, className, isActive } = evaluationResults.get(primary.id);
-          primary.disabled = disabled;
-          primary.className = className;
-          primary.isActive = isActive;
-        } else {
-          const primaryEvaluated = primary.evaluate?.({ ...refreshProps, button: primary });
-          primary.disabled = primaryEvaluated?.disabled || false;
-          primary.className = primaryEvaluated?.className || '';
-          primary.isActive = primaryEvaluated?.isActive || false;
+        // primary and items evaluate functions
+        const updatedPrimary = evaluateButtonProps(primary, primary, refreshProps);
+        const updatedItems = items.map(item => evaluateButtonProps(item, item, refreshProps));
 
-          evaluationResults.set(primary.id, {
-            disabled: primary.disabled,
-            className: primary.className,
-            isActive: primary.isActive,
-          });
-        }
-
-        items.forEach(item => {
-          if (evaluationResults.has(item.id)) {
-            const { disabled, className } = evaluationResults.get(item.id);
-            item.disabled = disabled;
-            item.className = className;
-            return;
-          } else {
-            const evaluated = item.evaluate?.({ ...refreshProps, button: item });
-            item.disabled = evaluated?.disabled || false;
-            item.className = evaluated?.className || '';
-
-            evaluationResults.set(item.id, {
-              disabled: item.disabled,
-              className: item.className,
-            });
-          }
-        });
+        buttonProps = {
+          ...buttonProps,
+          primary: updatedPrimary,
+          items: updatedItems,
+        };
 
         acc[button.id] = {
           ...button,
-          props: {
-            ...button.props,
-            primary,
-            items,
-          },
+          props: buttonProps,
         };
       }
 
