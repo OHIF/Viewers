@@ -57,6 +57,7 @@
     "http-cache-semantics": "4.1.1",
     "underscore": "1.12.1",
     "json-schema": "0.4.0",
-    "minimist": "1.2.8"
+    "minimist": "1.2.8",
+    "lodash.pick": "https://github.com/lodash/lodash/archive/refs/tags/4.17.21.tar.gz"
   }
 }
