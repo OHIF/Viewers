@@ -188,6 +188,12 @@ export default function PanelSegmentation({
     });
   };
 
+  const onCSVDownload = segmentationId => {
+    commandsManager.runCommand('downloadCSV', {
+      segmentationId,
+    });
+  };
+
   const storeSegmentation = async segmentationId => {
     const datasources = extensionManager.getActiveDataSource();
 
@@ -233,6 +239,7 @@ export default function PanelSegmentation({
           onSegmentationClick={onSegmentationClick}
           onSegmentationDelete={onSegmentationDelete}
           onSegmentationDownload={onSegmentationDownload}
+          onCSVDownload={onCSVDownload}
           onSegmentationDownloadRTSS={onSegmentationDownloadRTSS}
           storeSegmentation={storeSegmentation}
           onSegmentationEdit={onSegmentationEdit}

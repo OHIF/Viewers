@@ -11,6 +11,7 @@ function SegmentationDropDownRow({
   onToggleSegmentationVisibility,
   onSegmentationEdit,
   onSegmentationDownload,
+  onCSVDownload,
   onSegmentationDownloadRTSS,
   storeSegmentation,
   onSegmentationDelete,
@@ -94,6 +95,12 @@ function SegmentationDropDownRow({
                   onSegmentationDownloadRTSS(activeSegmentation.id);
                 },
               },
+              {
+                title: t('Export Segment CSV'),
+                onClick: () => {
+                  onCSVDownload(activeSegmentation.id);
+                },
+              },
             ],
           ]}
         >
@@ -159,6 +166,7 @@ SegmentationDropDownRow.propTypes = {
   onToggleSegmentationVisibility: PropTypes.func,
   onSegmentationEdit: PropTypes.func,
   onSegmentationDownload: PropTypes.func,
+  onCSVDownload: PropTypes.func,
   onSegmentationDownloadRTSS: PropTypes.func,
   storeSegmentation: PropTypes.func,
   onSegmentationDelete: PropTypes.func,

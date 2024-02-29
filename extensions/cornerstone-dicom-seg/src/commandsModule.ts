@@ -35,6 +35,48 @@ const {
 
 const { downloadDICOMData } = helpers;
 
+// make fake CSV data
+// Mock function to generate fake CSV data
+function generateFakeCSVData() {
+  // Generate dummy data
+  const headers = ['Name', 'Age', 'Email'];
+  const data = [
+    ['John Doe', 30, 'john@example.com'],
+    ['Jane Smith', 25, 'jane@example.com'],
+    ['Alice Johnson', 35, 'alice@example.com'],
+  ];
+
+  // Format data into CSV string
+  const csv = [headers.join(','), ...data.map(row => row.join(','))].join('\n');
+
+  return csv;
+}
+
+// Function to download CSV data
+function downloadCSVData(data, filename) {
+  // Generate fake CSV data
+  const fakeCSVData = generateFakeCSVData();
+
+  // Create a Blob object from the CSV data
+  const blob = new Blob([fakeCSVData], { type: 'application/csv' });
+
+  // Create a link element
+  const link = document.createElement('a');
+  link.href = window.URL.createObjectURL(blob);
+
+  // Set the filename for the downloaded file
+  link.download = `${filename}.csv`;
+
+  // Append the link to the body
+  document.body.appendChild(link);
+
+  // Programmatically click the link to trigger the download
+  link.click();
+
+  // Remove the link from the body
+  document.body.removeChild(link);
+}
+
 const commandsModule = ({
   servicesManager,
   extensionManager,
@@ -307,6 +349,15 @@ const commandsModule = ({
 
       downloadDICOMData(generatedSegmentation.dataset, `${segmentationInOHIF.label}`);
     },
+    downloadCSV: ({ segmentationId }) => {
+      const segmentationInOHIF = segmentationService.getSegmentation(segmentationId);
+      const generatedSegmentation = actions.generateSegmentation({
+        segmentationId,
+      });
+      downloadCSVData(generatedSegmentation.dataset, `${segmentationInOHIF.label}`);
+      console.log(generatedSegmentation.dataset, segmentationId);
+    },
+
     /**
      * Stores a segmentation based on the provided segmentationId into a specified data source.
      * The SeriesDescription is derived from user input or defaults to the segmentation label,
@@ -423,6 +474,9 @@ const commandsModule = ({
     },
     downloadRTSS: {
       commandFn: actions.downloadRTSS,
+    },
+    downloadCSV: {
+      commandFn: actions.downloadCSV,
     },
   };
 

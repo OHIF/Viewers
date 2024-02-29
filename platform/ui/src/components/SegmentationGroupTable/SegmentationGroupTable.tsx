@@ -23,6 +23,7 @@ const SegmentationGroupTable = ({
   onSegmentationClick,
   onSegmentationDelete,
   onSegmentationDownload,
+  onCSVDownload,
   onSegmentationDownloadRTSS,
   storeSegmentation,
   // segment handlers
@@ -115,6 +116,7 @@ const SegmentationGroupTable = ({
                 onSegmentationDelete={onSegmentationDelete}
                 onSegmentationEdit={onSegmentationEdit}
                 onSegmentationDownload={onSegmentationDownload}
+                onCSVDownload={onCSVDownload}
                 onSegmentationDownloadRTSS={onSegmentationDownloadRTSS}
                 storeSegmentation={storeSegmentation}
                 onSegmentationAdd={onSegmentationAdd}
@@ -192,6 +194,7 @@ SegmentationGroupTable.propTypes = {
   onSegmentationClick: PropTypes.func.isRequired,
   onSegmentationDelete: PropTypes.func.isRequired,
   onSegmentationDownload: PropTypes.func.isRequired,
+  onCSVDownload: PropTypes.func.isRequired,
   onSegmentationDownloadRTSS: PropTypes.func.isRequired,
   storeSegmentation: PropTypes.func.isRequired,
   onSegmentClick: PropTypes.func.isRequired,
@@ -222,6 +225,7 @@ SegmentationGroupTable.defaultProps = {
   onSegmentationClick: () => {},
   onSegmentationDelete: () => {},
   onSegmentationDownload: () => {},
+  onCSVDownload: () => {},
   onSemgnetationDownloadRTSS: () => {},
   storeSegmentation: () => {},
   onSegmentClick: () => {},
