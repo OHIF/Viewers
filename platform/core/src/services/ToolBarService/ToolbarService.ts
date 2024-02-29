@@ -8,6 +8,8 @@ const EVENTS = {
   TOOL_BAR_STATE_MODIFIED: 'event::toolBarService:toolBarStateModified',
 };
 
+const SYSTEM_TOGGLE = 'evaluate.systemToggle';
+
 export type EvaluatePublic = string | EvaluateFunction;
 
 export type EvaluateFunction = (props: Record<string, unknown>) => {
@@ -58,6 +60,8 @@ export default class ToolbarService extends PubSubService {
     },
   };
 
+  public static SYSTEM_TOGGLE = SYSTEM_TOGGLE;
+
   public static createButton(options: {
     id: string;
     icon: string;
@@ -90,6 +94,10 @@ export default class ToolbarService extends PubSubService {
   _commandsManager: CommandsManager;
   _extensionManager: ExtensionManager;
   _evaluateFunction: Record<string, EvaluateFunction> = {};
+  _stateManagementFunctions: Record<
+    string,
+    { get: () => boolean; set: (state: boolean) => void; isToggled?: boolean }
+  > = {};
 
   defaultTool: Record<string, unknown>;
 
@@ -120,6 +128,20 @@ export default class ToolbarService extends PubSubService {
    */
   public registerEvaluateFunction(name: string, handler: EvaluateFunction) {
     this._evaluateFunction[name] = handler;
+  }
+
+  /**
+   * Registers a state management function with the specified ID.
+   * @param id - The ID of the state management function.
+   * @param get - A function that retrieves the current state.
+   * @param set - A function that sets the state.
+   */
+  public registerStateManagement(
+    id: string,
+    get: () => boolean,
+    set: (state: boolean) => void
+  ): void {
+    this._stateManagementFunctions[id] = { get, set };
   }
 
   /**
@@ -188,6 +210,7 @@ export default class ToolbarService extends PubSubService {
     this.refreshToolbarState({
       ...options?.refreshProps,
       itemId,
+      interaction,
     });
   }
 
@@ -205,21 +228,40 @@ export default class ToolbarService extends PubSubService {
    */
   public refreshToolbarState(refreshProps) {
     const buttons = this.state.buttons;
+
+    // Tracks evaluated buttons to avoid re-evaluating them (this will
+    // cause issue for toggles where if the button is in primary
+    // and secondary it will be evaluated twice)
+    const evaluationResults = new Map();
+
     const refreshedButtons = Object.values(buttons).reduce((acc, button: Button) => {
       const isNested = (button.props as NestedButtonProps)?.groupId;
 
       if (!isNested) {
         this.handleEvaluate(button.props);
-
         const buttonProps = button.props as ButtonProps;
-        const evaluated = buttonProps?.evaluate?.({
-          ...refreshProps,
-          button,
-        });
-        buttonProps.disabled = evaluated?.disabled || false;
-        buttonProps.className = evaluated?.className || '';
 
-        acc[button.id] = button;
+        if (evaluationResults.has(button.id)) {
+          const { disabled, className } = evaluationResults.get(button.id);
+          buttonProps.disabled = disabled;
+          buttonProps.className = className;
+          acc[button.id] = button;
+          return acc;
+        } else {
+          const evaluated = buttonProps?.evaluate?.({
+            ...refreshProps,
+            button,
+          });
+          buttonProps.disabled = evaluated?.disabled || false;
+          buttonProps.className = evaluated?.className || '';
+
+          evaluationResults.set(button.id, {
+            disabled: buttonProps.disabled,
+            className: buttonProps.className,
+          });
+
+          acc[button.id] = button;
+        }
       } else {
         let buttonProps = button.props as NestedButtonProps;
         // if it is nested we should perform evaluate on each item in the group
@@ -237,15 +279,40 @@ export default class ToolbarService extends PubSubService {
 
         const { primary, items } = buttonProps;
 
-        const primaryEvaluated = primary.evaluate?.({ ...refreshProps, button: primary });
-        primary.disabled = primaryEvaluated?.disabled || false;
-        primary.className = primaryEvaluated?.className || '';
-        primary.isActive = primaryEvaluated?.isActive || false;
+        if (evaluationResults.has(primary.id)) {
+          const { disabled, className, isActive } = evaluationResults.get(primary.id);
+          primary.disabled = disabled;
+          primary.className = className;
+          primary.isActive = isActive;
+        } else {
+          const primaryEvaluated = primary.evaluate?.({ ...refreshProps, button: primary });
+          primary.disabled = primaryEvaluated?.disabled || false;
+          primary.className = primaryEvaluated?.className || '';
+          primary.isActive = primaryEvaluated?.isActive || false;
+
+          evaluationResults.set(primary.id, {
+            disabled: primary.disabled,
+            className: primary.className,
+            isActive: primary.isActive,
+          });
+        }
 
         items.forEach(item => {
-          const evaluated = item.evaluate?.({ ...refreshProps, button: item });
-          item.disabled = evaluated?.disabled || false;
-          item.className = evaluated?.className || '';
+          if (evaluationResults.has(item.id)) {
+            const { disabled, className } = evaluationResults.get(item.id);
+            item.disabled = disabled;
+            item.className = className;
+            return;
+          } else {
+            const evaluated = item.evaluate?.({ ...refreshProps, button: item });
+            item.disabled = evaluated?.disabled || false;
+            item.className = evaluated?.className || '';
+
+            evaluationResults.set(item.id, {
+              disabled: item.disabled,
+              className: item.className,
+            });
+          }
         });
 
         acc[button.id] = {
@@ -263,6 +330,10 @@ export default class ToolbarService extends PubSubService {
 
     this.setButtons(refreshedButtons);
     return this.state;
+  }
+
+  public getStateManagementFunctions(id) {
+    return this._stateManagementFunctions[id];
   }
 
   /**
@@ -416,21 +487,44 @@ export default class ToolbarService extends PubSubService {
       return;
     }
 
-    // handle evaluate functions that are registered
     if (typeof evaluate === 'string') {
-      const evaluateFunction = this._evaluateFunction[evaluate];
+      this._initializeSystemToggles(props);
 
-      if (!evaluateFunction) {
-        throw new Error(
-          `Evaluate function not found for name: ${evaluate}, you can  register an evaluate function with the getToolbarModule in your extensions`
-        );
-      }
+      const evaluateFunction = this._evaluateFunction[evaluate];
 
       if (evaluateFunction) {
         props.evaluate = evaluateFunction;
+        return;
       }
+
+      throw new Error(
+        `Evaluate function not found for name: ${evaluate}, you can  register an evaluate function with the getToolbarModule in your extensions`
+      );
     }
   };
+
+  _initializeSystemToggles(props) {
+    const { id, isToggled = false, evaluate } = props;
+
+    if (evaluate !== SYSTEM_TOGGLE) {
+      return;
+    }
+    // if it is a system toggle we should keep the state
+    // for those buttons in the toolbar service and we should
+    // provide a way to get and set the state for the button
+    const { get, set } = this._stateManagementFunctions[id] || {};
+
+    if (!get || !set) {
+      // initialize the state
+      this._stateManagementFunctions[id] = {
+        isToggled,
+        get: () => this._stateManagementFunctions[id].isToggled,
+        set: state => {
+          this._stateManagementFunctions[id].isToggled = state;
+        },
+      };
+    }
+  }
 
   getButtonComponentForUIType(uiType: string) {
     return uiType ? this._getButtonUITypes()[uiType]?.defaultComponent ?? null : null;

@@ -90,7 +90,6 @@ const moreTools = [
               commandOptions: { toggledState: true },
             },
           },
-          evaluate: 'evaluate.toggle',
         }),
         ToolbarService.createButton({
           id: 'ReferenceLines',
@@ -111,7 +110,6 @@ const moreTools = [
             [EVENTS.STACK_VIEWPORT_NEW_STACK]: ReferenceLinesListeners,
             [EVENTS.ACTIVE_VIEWPORT_ID_CHANGED]: ReferenceLinesListeners,
           },
-          evaluate: 'evaluate.toggle',
         }),
         ToolbarService.createButton({
           id: 'ImageOverlay',
@@ -185,7 +183,7 @@ const moreTools = [
               context: 'CORNERSTONE',
             },
           ],
-          evaluate: 'evaluate.toggle',
+          evaluate: 'evaluate.systemToggle',
         }),
         ToolbarService.createButton({
           id: 'Angle',
