@@ -199,7 +199,6 @@ const toolbarButtons: Button[] = [
     id: 'Zoom',
     uiType: 'ohif.radioGroup',
     props: {
-      type: 'tool',
       icon: 'tool-zoom',
       label: 'Zoom',
       commands: _createSetToolActiveCommands('Zoom'),
