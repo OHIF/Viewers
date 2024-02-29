@@ -1,19 +1,28 @@
 const IMAGE_SLICE_SYNC_NAME = 'IMAGE_SLICE_SYNC';
 
-export default function toggleImageSliceSync({
-  toggledState,
-  servicesManager,
-  viewports: providedViewports,
-}) {
-  if (!toggledState) {
-    return disableSync(IMAGE_SLICE_SYNC_NAME, servicesManager);
-  }
-
+export default function toggleImageSliceSync({ servicesManager, viewports: providedViewports }) {
   const { syncGroupService, viewportGridService, displaySetService, cornerstoneViewportService } =
     servicesManager.services;
 
   const viewports =
     providedViewports || getReconstructableStackViewports(viewportGridService, displaySetService);
+
+  // Todo: right now we don't have a proper way to define specific
+  // viewports to add to synchronizers, and right now it is global or not
+  // after we do that, we should do fine grained control of the synchronizers
+  const someViewportHasSync = viewports.some(viewport => {
+    const syncStates = syncGroupService.getSynchronizersForViewport(
+      viewport.viewportOptions.viewportId
+    );
+
+    const imageSync = syncStates.find(syncState => syncState.id === IMAGE_SLICE_SYNC_NAME);
+
+    return !!imageSync;
+  });
+
+  if (someViewportHasSync) {
+    return disableSync(IMAGE_SLICE_SYNC_NAME, servicesManager);
+  }
 
   // create synchronization group and add the viewports to it.
   viewports.forEach(gridViewport => {
@@ -23,7 +32,7 @@ export default function toggleImageSliceSync({
       return;
     }
     syncGroupService.addViewportToSyncGroup(viewportId, viewport.getRenderingEngine().id, {
-      type: 'stackimage',
+      type: 'imageSlice',
       id: IMAGE_SLICE_SYNC_NAME,
       source: true,
       target: true,

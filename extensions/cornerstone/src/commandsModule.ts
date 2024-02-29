@@ -30,7 +30,6 @@ function commandsModule({
     viewportGridService,
     toolGroupService,
     cineService,
-    toolbarService,
     uiDialogService,
     cornerstoneViewportService,
     uiNotificationService,
@@ -529,13 +528,15 @@ function commandsModule({
         (currentIndex + direction + viewportIds.length) % viewportIds.length;
       viewportGridService.setActiveViewportId(viewportIds[nextViewportIndex] as string);
     },
-    toggleImageSliceSync: ({ toggledState }) => {
-      toggleImageSliceSync({
-        servicesManager,
-        toggledState,
-      });
+    toggleSynchronizer: ({ type, viewports }) => {
+      if (type === 'imageSlice') {
+        toggleImageSliceSync({
+          servicesManager,
+          viewports,
+        });
+      }
     },
-    setSourceViewportForReferenceLinesTool: ({ toggledState, viewportId }) => {
+    setSourceViewportForReferenceLinesTool: ({ viewportId }) => {
       if (!viewportId) {
         const { activeViewportId } = viewportGridService.getState();
         viewportId = activeViewportId;
@@ -726,6 +727,9 @@ function commandsModule({
     },
     resetCrosshairs: {
       commandFn: actions.resetCrosshairs,
+    },
+    toggleSynchronizer: {
+      commandFn: actions.toggleSynchronizer,
     },
   };
 

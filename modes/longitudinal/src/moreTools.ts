@@ -81,7 +81,10 @@ const moreTools = [
           tooltip: 'Enable position synchronization on stack viewports',
           commands: [
             {
-              commandName: 'toggleImageSliceSync',
+              commandName: 'toggleSynchronizer',
+              commandOptions: {
+                type: 'imageSlice',
+              },
             },
           ],
           listeners: {
@@ -90,6 +93,7 @@ const moreTools = [
               commandOptions: { toggledState: true },
             },
           },
+          evaluate: 'evaluate.cornerstone.synchronizer',
         }),
         ToolbarService.createButton({
           id: 'ReferenceLines',
@@ -110,6 +114,7 @@ const moreTools = [
             [EVENTS.STACK_VIEWPORT_NEW_STACK]: ReferenceLinesListeners,
             [EVENTS.ACTIVE_VIEWPORT_ID_CHANGED]: ReferenceLinesListeners,
           },
+          evaluate: 'evaluate.cornerstoneTool.toggle',
         }),
         ToolbarService.createButton({
           id: 'ImageOverlay',
@@ -125,7 +130,7 @@ const moreTools = [
               context: 'CORNERSTONE',
             },
           ],
-          evaluate: 'evaluate.toggle',
+          evaluate: 'evaluate.cornerstoneTool.toggle',
         }),
         ToolbarService.createButton({
           id: 'StackScroll',
@@ -154,7 +159,7 @@ const moreTools = [
               context: 'CORNERSTONE',
             },
           ],
-          evaluate: 'evaluate.action',
+          evaluate: 'evaluate.viewportProperties.toggle',
         }),
         ToolbarService.createButton({
           id: 'Probe',

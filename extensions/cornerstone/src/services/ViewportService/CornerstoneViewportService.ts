@@ -347,10 +347,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
 
     const { stateSyncService, syncGroupService } = this.servicesManager.services;
 
-    const synchronizers = syncGroupService.getSynchronizersForViewport(
-      viewportId,
-      this.renderingEngine.id
-    );
+    const synchronizers = syncGroupService.getSynchronizersForViewport(viewportId);
 
     const { positionPresentationStore, synchronizersStore, lutPresentationStore } =
       stateSyncService.getState();

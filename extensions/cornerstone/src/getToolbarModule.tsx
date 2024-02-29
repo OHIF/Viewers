@@ -1,6 +1,15 @@
+import { Enums } from '@cornerstonejs/tools';
+
+const getToggledClassName = (isToggled: boolean) => {
+  return isToggled
+    ? 'text-primary-active'
+    : 'text-common-bright hover:!bg-primary-dark hover:text-primary-light';
+};
+
 export default function getToolbarModule({ commandsManager, servicesManager }) {
   const {
     toolGroupService,
+    syncGroupService,
     cornerstoneViewportService,
     hangingProtocolService,
     displaySetService,
@@ -99,13 +108,61 @@ export default function getToolbarModule({ commandsManager, servicesManager }) {
       },
     },
     {
-      name: 'evaluate.toggle',
+      name: 'evaluate.cornerstoneTool.toggle',
       evaluate: ({ viewportId, button }) => {
-        const isToggled = true;
+        const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
+
+        if (!toolGroup) {
+          return;
+        }
+        const toolName = getToolNameForButton(button);
+
+        if (!toolGroup || !toolGroup.hasTool(toolName)) {
+          return {
+            disabled: true,
+            className: '!text-common-bright ohif-disabled',
+          };
+        }
+
+        const isOff = [Enums.ToolModes.Disabled, Enums.ToolModes.Passive].includes(
+          toolGroup.getToolOptions(toolName).mode
+        );
+
         return {
-          className: isToggled
-            ? 'text-primary-active'
-            : 'text-common-bright hover:!bg-primary-dark hover:text-primary-light',
+          className: getToggledClassName(!isOff),
+        };
+      },
+    },
+    {
+      name: 'evaluate.cornerstone.synchronizer',
+      evaluate: ({ viewportId, button }) => {
+        let synchronizers = syncGroupService.getSynchronizersForViewport(viewportId);
+
+        if (!synchronizers?.length) {
+          return {
+            className: getToggledClassName(false),
+          };
+        }
+
+        const synchronizerType = button?.commands?.[0]?.commandOptions?.type;
+
+        synchronizers = syncGroupService.getSynchronizersOfType(synchronizerType);
+
+        if (!synchronizers?.length) {
+          return {
+            className: getToggledClassName(false),
+          };
+        }
+
+        // Todo: we need a better way to find the synchronizers based on their
+        // type, but for now we just check the first one and see if it is
+        // enabled
+        const synchronizer = synchronizers[0];
+
+        const isEnabled = synchronizer?._enabled;
+
+        return {
+          className: getToggledClassName(isEnabled),
         };
       },
     },
@@ -131,9 +188,7 @@ export default function getToolbarModule({ commandsManager, servicesManager }) {
         const isToggled = prop;
 
         return {
-          className: isToggled
-            ? 'text-primary-active'
-            : 'text-common-bright hover:!bg-primary-dark hover:text-primary-light',
+          className: getToggledClassName(isToggled),
         };
       },
     },
@@ -165,9 +220,7 @@ export default function getToolbarModule({ commandsManager, servicesManager }) {
 
         return {
           disabled: false,
-          className: isMpr
-            ? 'text-primary-active'
-            : 'text-common-bright hover:!bg-primary-dark hover:text-primary-light',
+          className: getToggledClassName(isMpr),
         };
       },
     },
