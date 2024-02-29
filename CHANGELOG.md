@@ -3,6 +3,61 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-beta.57](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.56...v3.8.0-beta.57) (2024-02-28)
+
+
+### Bug Fixes
+
+* **docs:** Minor typos in hpModule.md ([#3962](https://github.com/OHIF/Viewers/issues/3962)) ([4cdfdae](https://github.com/OHIF/Viewers/commit/4cdfdae8149166cf9dc91a55c0d7f2a224e55d8f))
+
+
+
+
+
+# [3.8.0-beta.56](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.55...v3.8.0-beta.56) (2024-02-22)
+
+
+### Bug Fixes
+
+* **demo:** Deploy issue ([#3951](https://github.com/OHIF/Viewers/issues/3951)) ([21e8a2b](https://github.com/OHIF/Viewers/commit/21e8a2bd0b7cc72f90a31e472d285d761be15d30))
+
+
+
+
+
+# [3.8.0-beta.55](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.54...v3.8.0-beta.55) (2024-02-21)
+
+
+### Features
+
+* **resize:** Optimize resizing process and maintain zoom level ([#3889](https://github.com/OHIF/Viewers/issues/3889)) ([b3a0faf](https://github.com/OHIF/Viewers/commit/b3a0faf5f5f0a1993b2b017eb4cc1216164ea2c6))
+
+
+
+
+
+# [3.8.0-beta.54](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.53...v3.8.0-beta.54) (2024-02-14)
+
+
+### Features
+
+* **errorboundary:** format stack trace properly ([#3931](https://github.com/OHIF/Viewers/issues/3931)) ([0eac386](https://github.com/OHIF/Viewers/commit/0eac386a31a5d6965536360aa65a44769c1a5740))
+
+
+
+
+
+# [3.8.0-beta.53](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.52...v3.8.0-beta.53) (2024-02-05)
+
+
+### Bug Fixes
+
+* 🐛 Sort merge results based on default data source (input) ([#3903](https://github.com/OHIF/Viewers/issues/3903)) ([5bba98e](https://github.com/OHIF/Viewers/commit/5bba98ed848bdf46b5ba4fc4708527cced3308b5))
+
+
+
+
+
 # [3.8.0-beta.52](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.51...v3.8.0-beta.52) (2024-01-22)
 
 **Note:** Version bump only for package ohif-monorepo-root
