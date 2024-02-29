@@ -119,7 +119,7 @@ export default function getToolbarModule({ commandsManager, servicesManager }) {
         const properties = viewport.getProperties();
         const camera = viewport.getCamera();
 
-        const prop = properties[propId] || camera[propId];
+        const prop = camera?.[propId] || properties?.[propId];
 
         if (!prop) {
           return {

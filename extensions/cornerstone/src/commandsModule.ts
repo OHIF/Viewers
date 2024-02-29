@@ -227,17 +227,6 @@ function commandsModule({
     arrowTextCallback: ({ callback, data }) => {
       callInputDialog(uiDialogService, data, callback);
     },
-    cleanUpCrosshairs: () => {
-      // if the crosshairs tool is active, deactivate it and set window level active
-      // since we are going back to main non-mpr HP
-      const activeViewportToolGroup = toolGroupService.getToolGroup(null);
-
-      if (activeViewportToolGroup.getToolInstance('Crosshairs')?.mode === Enums.ToolModes.Active) {
-        // Todo: we should use state sync service to remember the pre-MPR
-        // tools and
-        toolbarService.recordInteraction('WindowLevel');
-      }
-    },
     toggleCine: () => {
       const { viewports } = viewportGridService.getState();
       const { isCineEnabled } = cineService.getState();
@@ -731,9 +720,6 @@ function commandsModule({
     },
     storePresentation: {
       commandFn: actions.storePresentation,
-    },
-    cleanUpCrosshairs: {
-      commandFn: actions.cleanUpCrosshairs,
     },
     attachProtocolViewportDataListener: {
       commandFn: actions.attachProtocolViewportDataListener,
