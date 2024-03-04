@@ -1,5 +1,5 @@
 import { Types, Enums } from '@cornerstonejs/core';
-import { Types as UITypes } from '@ohif/ui';
+import { Types as CoreTypes } from '@ohif/core';
 import { StackViewportData, VolumeViewportData } from '../../types/CornerstoneCacheService';
 import getCornerstoneBlendMode from '../../utils/getCornerstoneBlendMode';
 import getCornerstoneOrientation from '../../utils/getCornerstoneOrientation';
@@ -18,7 +18,7 @@ export type ViewportOptions = {
   toolGroupId: string;
   viewportId: string;
   // Presentation ID to store/load presentation state from
-  presentationIds?: UITypes.PresentationIds;
+  presentationIds?: CoreTypes.PresentationIds;
   orientation?: Enums.OrientationAxis;
   background?: Types.Point3;
   displayArea?: Types.DisplayArea;
@@ -36,7 +36,7 @@ export type PublicViewportOptions = {
   id?: string;
   viewportType?: string;
   toolGroupId?: string;
-  presentationIds?: UITypes.PresentationIds;
+  presentationIds?: CoreTypes.PresentationIds;
   viewportId?: string;
   orientation?: Enums.OrientationAxis;
   background?: Types.Point3;
@@ -71,7 +71,7 @@ export type DisplaySetOptions = {
   voiInverted: boolean;
   blendMode?: Enums.BlendModes;
   slabThickness?: number;
-  colormap?: string;
+  colormap?: { name: string; opacity?: number };
   displayPreset?: string;
 };
 
@@ -236,6 +236,11 @@ class ViewportInfo {
 
   public getViewportOptions(): ViewportOptions {
     return this.viewportOptions;
+  }
+
+  public getPresentationIds(): CoreTypes.PresentationIds {
+    const { presentationIds } = this.viewportOptions;
+    return presentationIds;
   }
 
   public setDisplaySetOptions(displaySetOptions: Array<DisplaySetOptions>): void {

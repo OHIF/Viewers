@@ -21,6 +21,7 @@ import getSOPInstanceAttributes from '../utils/measurementServiceMappings/utils/
 import CornerstoneServices from '../types/CornerstoneServices';
 import CinePlayer from '../components/CinePlayer';
 import { Types } from '@ohif/core';
+import { LutPresentation, PositionPresentation } from '../types/Presentation';
 
 const STACK = 'stack';
 
@@ -101,7 +102,6 @@ const OHIFCornerstoneViewport = React.memo(props => {
     viewportOptions,
     displaySetOptions,
     servicesManager,
-    commandsManager,
     onElementEnabled,
     onElementDisabled,
     isJumpToMeasurementDisabled,
@@ -175,6 +175,13 @@ const OHIFCornerstoneViewport = React.memo(props => {
 
       syncGroupService.addViewportToSyncGroup(viewportId, renderingEngineId, syncGroups);
 
+      const synchronizersStore = stateSyncService.getState().synchronizersStore;
+
+      if (synchronizersStore?.[viewportId]?.length) {
+        // If the viewport used to have a synchronizer, re apply it again
+        _rehydrateSynchronizers(synchronizersStore, viewportId, syncGroupService);
+      }
+
       if (onElementEnabled) {
         onElementEnabled(evt);
       }
@@ -197,12 +204,17 @@ const OHIFCornerstoneViewport = React.memo(props => {
         return;
       }
 
-      cleanUpServices(viewportInfo);
       cornerstoneViewportService.storePresentation({ viewportId });
+
+      // This should be done after the store presentation since synchronizers
+      // will get cleaned up and they need the viewportInfo to be present
+      cleanUpServices(viewportInfo);
 
       if (onElementDisabled) {
         onElementDisabled(viewportInfo);
       }
+
+      cornerstoneViewportService.disableElement(viewportId);
 
       eventTarget.removeEventListener(Enums.Events.ELEMENT_ENABLED, elementEnabledHandler);
     };
@@ -265,7 +277,10 @@ const OHIFCornerstoneViewport = React.memo(props => {
       // The presentation state will have been stored previously by closing
       // a viewport.  Otherwise, this viewport will be unchanged and the
       // presentation information will be directly carried over.
-      const { lutPresentationStore, positionPresentationStore } = stateSyncService.getState();
+      const state = stateSyncService.getState();
+      const lutPresentationStore = state.lutPresentationStore as LutPresentation;
+      const positionPresentationStore = state.positionPresentationStore as PositionPresentation;
+
       const { presentationIds } = viewportOptions;
       const presentations = {
         positionPresentation: positionPresentationStore[presentationIds?.positionPresentationId],
@@ -348,8 +363,6 @@ const OHIFCornerstoneViewport = React.memo(props => {
     <React.Fragment>
       <div className="viewport-wrapper">
         <ReactResizeDetector
-          refreshMode="debounce"
-          refreshRate={50} // Wait 50 ms after last move to render
           onResize={onResize}
           targetRef={elementRef.current}
         />
@@ -545,6 +558,58 @@ function _jumpToMeasurement(
     cacheJumpToMeasurementEvent?.consume?.();
     cacheJumpToMeasurementEvent = null;
   }
+}
+
+function _rehydrateSynchronizers(
+  synchronizersStore: { [key: string]: unknown },
+  viewportId: string,
+  syncGroupService: any
+) {
+  synchronizersStore[viewportId].forEach(synchronizerObj => {
+    if (!synchronizerObj.id) {
+      return;
+    }
+
+    const { id, sourceViewports, targetViewports } = synchronizerObj;
+
+    const synchronizer = syncGroupService.getSynchronizer(id);
+
+    if (!synchronizer) {
+      return;
+    }
+
+    const sourceViewportInfo = sourceViewports.find(
+      sourceViewport => sourceViewport.viewportId === viewportId
+    );
+
+    const targetViewportInfo = targetViewports.find(
+      targetViewport => targetViewport.viewportId === viewportId
+    );
+
+    const isSourceViewportInSynchronizer = synchronizer
+      .getSourceViewports()
+      .find(sourceViewport => sourceViewport.viewportId === viewportId);
+
+    const isTargetViewportInSynchronizer = synchronizer
+      .getTargetViewports()
+      .find(targetViewport => targetViewport.viewportId === viewportId);
+
+    // if the viewport was previously a source viewport, add it again
+    if (sourceViewportInfo && !isSourceViewportInSynchronizer) {
+      synchronizer.addSource({
+        viewportId: sourceViewportInfo.viewportId,
+        renderingEngineId: sourceViewportInfo.renderingEngineId,
+      });
+    }
+
+    // if the viewport was previously a target viewport, add it again
+    if (targetViewportInfo && !isTargetViewportInSynchronizer) {
+      synchronizer.addTarget({
+        viewportId: targetViewportInfo.viewportId,
+        renderingEngineId: targetViewportInfo.renderingEngineId,
+      });
+    }
+  });
 }
 
 // Component displayName

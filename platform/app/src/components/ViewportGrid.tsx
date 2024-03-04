@@ -1,4 +1,5 @@
-import React, {useEffect, useCallback, useMemo} from 'react';
+import React, { useEffect, useCallback, useRef } from 'react';
+import ReactResizeDetector from 'react-resize-detector';
 import PropTypes from 'prop-types';
 import { ServicesManager, Types, MeasurementService } from '@ohif/core';
 import { ViewportGrid, ViewportPane, useViewportGrid } from '@ohif/ui';
@@ -9,26 +10,16 @@ import { useAppConfig } from '@state';
 function ViewerViewportGrid(props) {
   const { servicesManager, viewportComponents, dataSource } = props;
   const [viewportGrid, viewportGridService] = useViewportGrid();
+  const [appConfig] = useAppConfig();
 
   const { layout, activeViewportId, viewports } = viewportGrid;
   const { numCols, numRows } = layout;
+  const elementRef = useRef(null);
 
   // TODO -> Need some way of selecting which displaySets hit the viewports.
   const { displaySetService, measurementService, hangingProtocolService, uiNotificationService } = (
     servicesManager as ServicesManager
   ).services;
-
-  /**
-   * Determine whether users need to use the tools directly, or whether they need to click once to activate the viewport before using tools.
-   * If 'activateViewportBeforeInteraction' is available in the 'window.config' object, use its value;
-   * otherwise, default to true.
-   * If true, users need to click once to activate the viewport before using the tools.
-   * if false, tools can be used directly.
-   */
-  const activateViewportBeforeInteraction = useMemo(() => {
-    const [appConfig] = useAppConfig();
-    return appConfig?.activateViewportBeforeInteraction ?? true;
-  }, []);
 
   /**
    * This callback runs after the viewports structure has changed in any way.
@@ -325,7 +316,8 @@ function ViewerViewportGrid(props) {
           <div
             data-cy="viewport-pane"
             className={classNames('flex h-full w-full flex-col', {
-              'pointer-events-none': !isActive && activateViewportBeforeInteraction,
+              'pointer-events-none':
+                !isActive && (appConfig?.activateViewportBeforeInteraction ?? true),
             })}
           >
             <ViewportComponent
@@ -353,13 +345,26 @@ function ViewerViewportGrid(props) {
   }
 
   return (
-    <ViewportGrid
-      numRows={numRows}
-      numCols={numCols}
+    <div
+      ref={elementRef}
+      className="h-full w-full"
     >
-      {/* {ViewportPanes} */}
-      {getViewportPanes()}
-    </ViewportGrid>
+      <ViewportGrid
+        numRows={numRows}
+        numCols={numCols}
+      >
+        <ReactResizeDetector
+          refreshMode="debounce"
+          refreshRate={7} // ms seems to be fine for 10 viewports
+          onResize={() => {
+            viewportGridService.setViewportGridSizeChanged();
+          }}
+          targetRef={elementRef.current}
+        />
+        {/* {ViewportPanes} */}
+        {getViewportPanes()}
+      </ViewportGrid>
+    </div>
   );
 }
 
