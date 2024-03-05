@@ -57,7 +57,7 @@ const toolbarButtons: Button[] = [
     props: {
       groupId: 'MeasurementToolsGroupId',
       // group evaluate to determine which item should move to the top
-      evaluate: 'evaluate.group',
+      evaluate: 'evaluate.group.promoteToPrimaryIfCornerstoneToolNotActiveInTheList',
       primary: ToolbarService.createButton({
         id: 'Length',
         icon: 'tool-length',

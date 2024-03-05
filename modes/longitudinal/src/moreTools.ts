@@ -15,7 +15,7 @@ const moreTools = [
     uiType: 'ohif.splitButton',
     props: {
       groupId: 'MoreTools',
-      evaluate: 'evaluate.group',
+      evaluate: 'evaluate.group.promoteToPrimaryIfCornerstoneToolNotActiveInTheList',
       primary: ToolbarService.createButton({
         id: 'Reset',
         icon: 'tool-reset',

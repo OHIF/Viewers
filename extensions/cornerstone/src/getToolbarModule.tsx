@@ -52,7 +52,7 @@ export default function getToolbarModule({ commandsManager, servicesManager }) {
       },
     },
     {
-      name: 'evaluate.group',
+      name: 'evaluate.group.promoteToPrimaryIfCornerstoneToolNotActiveInTheList',
       evaluate: ({ viewportId, button, itemId }) => {
         const { items } = button.props;
 

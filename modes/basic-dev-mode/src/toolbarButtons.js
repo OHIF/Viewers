@@ -40,7 +40,7 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.splitButton',
     props: {
       groupId: 'MeasurementToolsGroupId',
-      evaluate: 'evaluate.group',
+      evaluate: 'evaluate.group.promoteToPrimaryIfCornerstoneToolNotActiveInTheList',
       primary: ToolbarService.createButton({
         id: 'Length',
         icon: 'tool-length',
@@ -155,7 +155,7 @@ const toolbarButtons: Button[] = [
   uiType: 'ohif.splitButton',
   props: {
     groupId: 'MoreToolsGroupId',
-    evaluate: 'evaluate.group',
+    evaluate: 'evaluate.group.promoteToPrimaryIfCornerstoneToolNotActiveInTheList',
     primary: ToolbarService.createButton({
       id: 'Reset',
       icon: 'tool-reset',
