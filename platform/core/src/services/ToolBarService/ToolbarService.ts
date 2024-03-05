@@ -145,23 +145,6 @@ export default class ToolbarService extends PubSubService {
   }
 
   /**
-   * Sets the default tool that will be activated whenever the primary tool is
-   * deactivated without activating another/different tool.
-   * @param interaction the interaction command that will set the default tool active
-   */
-  public setDefaultTool(interaction) {
-    this.defaultTool = interaction;
-  }
-
-  public getDefaultTool() {
-    return this.defaultTool;
-  }
-
-  getActiveTools() {
-    return ['WindowLevel'];
-  }
-
-  /**
    * Adds buttons to the toolbar.
    * @param buttons - The buttons to be added.
    */

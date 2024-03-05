@@ -10,10 +10,24 @@ const classes = {
   bottomLeft: 'bottom-viewport left-viewport',
 };
 
-const ViewportOverlay = ({ topLeft, topRight, bottomRight, bottomLeft, color }) => {
+type ViewportOverlayProps = {
+  topLeft: React.ReactNode;
+  topRight: React.ReactNode;
+  bottomRight: React.ReactNode;
+  bottomLeft: React.ReactNode;
+  color?: string;
+};
+
+const ViewportOverlay = ({
+  topLeft,
+  topRight,
+  bottomRight,
+  bottomLeft,
+  color = 'text-primary-light',
+}: ViewportOverlayProps) => {
   const overlay = 'absolute pointer-events-none viewport-overlay';
   return (
-    <div className={classnames(color ? color : 'text-primary-light')}>
+    <div className={color}>
       <div
         data-cy={'viewport-overlay-top-left'}
         className={classnames(overlay, classes.topLeft)}
