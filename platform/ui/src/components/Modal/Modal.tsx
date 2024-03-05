@@ -86,7 +86,7 @@ const Modal = ({
       shouldCloseOnOverlayClick={shouldCloseOnOverlayClick}
     >
       {movable ? (
-        <Draggable>
+        <Draggable defaultClassName="bg-primary-dark">
           <div>{modalContent}</div>
         </Draggable>
       ) : (

@@ -152,12 +152,18 @@ export function WindowLevelActionMenu({
         )}
 
         {viewportPresets && is3DVolume && (
-          <VolumeRendering
-            serviceManager={serviceManager}
-            viewportId={viewportId}
-            commandsManager={commandsManager}
-            viewportPresets={viewportPresets}
-          />
+          <AllInOneMenu.SubMenu
+            key="viewportPresets"
+            itemLabel="Volume Rendering"
+            itemIcon="VolumeRendering"
+          >
+            <VolumeRendering
+              serviceManager={serviceManager}
+              viewportId={viewportId}
+              commandsManager={commandsManager}
+              viewportPresets={viewportPresets}
+            />
+          </AllInOneMenu.SubMenu>
         )}
       </AllInOneMenu.ItemPanel>
     </AllInOneMenu.IconMenu>
