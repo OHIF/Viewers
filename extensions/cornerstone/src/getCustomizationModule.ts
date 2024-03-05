@@ -3,8 +3,10 @@ import { toolNames } from './initCornerstoneTools';
 import DicomUpload from './components/DicomUpload/DicomUpload';
 import defaultWindowLevelPresets from './components/WindowLevelActionMenu/defaultWindowLevelPresets';
 import { colormaps } from './utils/colormaps';
+import { CONSTANTS } from '@cornerstonejs/core';
 
 const DefaultColormap = 'Grayscale';
+const { VIEWPORT_PRESETS } = CONSTANTS;
 
 const tools = {
   active: [
@@ -52,6 +54,10 @@ function getCustomizationModule() {
           colormaps,
           colorbarContainerPosition: 'right',
           colorbarInitialColormap: DefaultColormap,
+        },
+        {
+          id: 'cornerstone.viewportPresets',
+          viewportPresets: VIEWPORT_PRESETS,
         },
       ],
     },

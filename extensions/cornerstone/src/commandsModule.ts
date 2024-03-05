@@ -658,6 +658,18 @@ function commandsModule({
         }
       });
     },
+
+    setViewportPreset: ({ viewportId, preset }) => {
+      const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+      if (!viewport) {
+        return;
+      }
+      console.log(viewport, preset);
+      viewport.setProperties({
+        preset,
+      });
+      viewport.render();
+    },
   };
 
   const definitions = {
@@ -799,6 +811,9 @@ function commandsModule({
     },
     attachProtocolViewportDataListener: {
       commandFn: actions.attachProtocolViewportDataListener,
+    },
+    setViewportPreset: {
+      commandFn: actions.setViewportPreset,
     },
   };
 
