@@ -99,8 +99,6 @@ export default class ToolbarService extends PubSubService {
     { get: () => boolean; set: (state: boolean) => void; isToggled?: boolean }
   > = {};
 
-  defaultTool: Record<string, unknown>;
-
   constructor(commandsManager: CommandsManager, extensionManager: ExtensionManager) {
     super(EVENTS);
     this._commandsManager = commandsManager;

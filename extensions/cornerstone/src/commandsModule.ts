@@ -631,9 +631,6 @@ function commandsModule({
     setWindowLevel: {
       commandFn: actions.setWindowLevel,
     },
-    toolbarServiceRecordInteraction: {
-      commandFn: actions.toolbarServiceRecordInteraction,
-    },
     setToolActive: {
       commandFn: actions.setToolActive,
     },
