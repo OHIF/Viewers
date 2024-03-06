@@ -664,10 +664,28 @@ function commandsModule({
       if (!viewport) {
         return;
       }
-      console.log(viewport, preset);
       viewport.setProperties({
         preset,
       });
+      viewport.render();
+    },
+
+    setVolumeQuality: ({ viewportId, volumeQuality }) => {
+      const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+      const { actor } = viewport.getActors()[0];
+      const mapper = actor.getMapper();
+      const image = mapper.getInputData();
+      const dims = image.getDimensions();
+      const spacing = image.getSpacing();
+      const spatialDiagonal = vec3.length(
+        vec3.fromValues(dims[0] * spacing[0], dims[1] * spacing[1], dims[2] * spacing[2])
+      );
+
+      let sampleDistance = spacing.reduce((a, b) => a + b) / 3.0;
+      sampleDistance /= volumeQuality > 1 ? 0.5 * volumeQuality ** 2 : 1.0;
+      const samplesPerRay = spatialDiagonal / sampleDistance + 1;
+      mapper.setMaximumSamplesPerRay(samplesPerRay);
+      mapper.setSampleDistance(sampleDistance);
       viewport.render();
     },
   };
@@ -814,6 +832,9 @@ function commandsModule({
     },
     setViewportPreset: {
       commandFn: actions.setViewportPreset,
+    },
+    setVolumeQuality: {
+      commandFn: actions.setVolumeQuality,
     },
   };
 

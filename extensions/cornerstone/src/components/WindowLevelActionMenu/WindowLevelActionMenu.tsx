@@ -24,6 +24,7 @@ export type WindowLevelActionMenuProps = {
   colorbarProperties: ColorbarProperties;
   displaySets: Array<any>;
   viewportPresets: Array<ViewportPreset>;
+  viewportQualityPresets: Array<any>;
 };
 
 export function WindowLevelActionMenu({
@@ -37,6 +38,7 @@ export function WindowLevelActionMenu({
   colorbarProperties,
   displaySets,
   viewportPresets,
+  viewportQualityPresets,
 }: WindowLevelActionMenuProps): ReactElement {
   const {
     colormaps,
@@ -114,14 +116,17 @@ export function WindowLevelActionMenu({
       menuKey={menuKey}
     >
       <AllInOneMenu.ItemPanel>
-        <Colorbar
-          viewportId={viewportId}
-          displaySets={displaySets.filter(ds => !nonImageModalities.includes(ds.Modality))}
-          commandsManager={commandsManager}
-          serviceManager={serviceManager}
-          colorbarProperties={colorbarProperties}
-        />
-        {colormaps && (
+        {!is3DVolume && (
+          <Colorbar
+            viewportId={viewportId}
+            displaySets={displaySets.filter(ds => !nonImageModalities.includes(ds.Modality))}
+            commandsManager={commandsManager}
+            serviceManager={serviceManager}
+            colorbarProperties={colorbarProperties}
+          />
+        )}
+
+        {colormaps && !is3DVolume && (
           <AllInOneMenu.SubMenu
             key="colorLUTPresets"
             itemLabel="Color LUT"
@@ -137,7 +142,7 @@ export function WindowLevelActionMenu({
           </AllInOneMenu.SubMenu>
         )}
 
-        {presets && (
+        {presets && !is3DVolume && (
           <AllInOneMenu.SubMenu
             key="windowLevelPresets"
             itemLabel={t('Modality Window Presets', { modality: Object.keys(presets)[0] })}
@@ -162,6 +167,7 @@ export function WindowLevelActionMenu({
               viewportId={viewportId}
               commandsManager={commandsManager}
               viewportPresets={viewportPresets}
+              viewportQualityPresets={viewportQualityPresets}
             />
           </AllInOneMenu.SubMenu>
         )}

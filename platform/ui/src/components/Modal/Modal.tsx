@@ -22,8 +22,8 @@ const Modal = ({
   children,
   shouldCloseOnOverlayClick,
   movable = false,
-  customContainerDimensions = null,
-  customContentDimensions = null,
+  containerDimensions = null,
+  contentDimensions = null,
 }) => {
   const { hide } = useModal();
 
@@ -57,8 +57,8 @@ const Modal = ({
       {renderHeader()}
       <section
         className={
-          customContentDimensions
-            ? `ohif-scrollbar bg-primary-dark overflow-y-auto ${customContentDimensions}`
+          contentDimensions
+            ? `ohif-scrollbar bg-primary-dark overflow-y-auto ${contentDimensions}`
             : 'ohif-scrollbar modal-content bg-primary-dark overflow-y-auto rounded-bl rounded-br px-[20px] pt-2 pb-[20px]'
         }
       >
@@ -70,8 +70,8 @@ const Modal = ({
   return (
     <ReactModal
       className={
-        customContainerDimensions
-          ? `relative text-white outline-none ${customContainerDimensions}`
+        containerDimensions
+          ? `relative text-white outline-none ${containerDimensions}`
           : 'relative max-h-full w-11/12 text-white outline-none lg:w-10/12 xl:w-9/12'
       }
       overlayClassName={
@@ -100,8 +100,8 @@ Modal.defaultProps = {
   shouldCloseOnEsc: true,
   shouldCloseOnOverlayClick: true,
   movable: false,
-  customContainerDimensions: null,
-  customContentDimensions: null,
+  containerDimensions: null,
+  contentDimensions: null,
 };
 
 Modal.propTypes = {
@@ -113,8 +113,8 @@ Modal.propTypes = {
   children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]).isRequired,
   shouldCloseOnOverlayClick: PropTypes.bool,
   movable: PropTypes.bool,
-  customContainerDimensions: PropTypes.string,
-  customContentDimensions: PropTypes.string,
+  containerDimensions: PropTypes.string,
+  contentDimensions: PropTypes.string,
 };
 
 export default Modal;

@@ -18,6 +18,7 @@ export type VolumeRenderingProps = {
   serviceManager: ServicesManager;
   commandsManager: CommandsManager;
   viewportPresets: ViewportPreset[];
+  viewportQualityPresets: any[];
 };
 
 export type VolumePresetsProps = {
@@ -29,6 +30,6 @@ export type VolumePresetsProps = {
 
 export type CinematicRenderingProps = {
   viewportId: string;
-  serviceManager: ServicesManager;
-  onClose: () => void;
+  commandsManager: CommandsManager;
+  viewportQualityPresets: any[];
 };

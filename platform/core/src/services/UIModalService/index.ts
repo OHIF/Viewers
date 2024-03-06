@@ -43,8 +43,8 @@ class UIModalService {
     title = null,
     customClassName = null,
     movable = false,
-    customContainerDimensions = null,
-    customContentDimensions = null,
+    containerDimensions = null,
+    contentDimensions = null,
   }) {
     return serviceImplementation._show({
       content,
@@ -55,8 +55,8 @@ class UIModalService {
       title,
       customClassName,
       movable,
-      customContainerDimensions,
-      customContentDimensions,
+      containerDimensions,
+      contentDimensions,
     });
   }
 

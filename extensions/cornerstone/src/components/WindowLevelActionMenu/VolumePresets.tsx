@@ -14,24 +14,16 @@ export function VolumePresets({
   const [searchValue, setSearchValue] = useState('');
   const [selectedPreset, setSelectedPreset] = useState<ViewportPreset | null>(null);
 
-  const handleSearchChange = useCallback((value: string) => {
-    setSearchValue(value);
-  }, []);
-
-  const formatLabel = (label: string, maxChars: number) => {
-    return label.length > maxChars ? `${label.slice(0, maxChars)}...` : label;
-  };
-
-  useEffect(() => {
-    if (searchValue) {
-      const filtered = presets.filter(preset =>
-        preset.name.toLowerCase().includes(searchValue.toLowerCase())
-      );
+  const handleSearchChange = useCallback(
+    (value: string) => {
+      setSearchValue(value);
+      const filtered = value
+        ? presets.filter(preset => preset.name.toLowerCase().includes(value.toLowerCase()))
+        : presets;
       setFilteredPresets(filtered);
-    } else {
-      setFilteredPresets(presets);
-    }
-  }, [searchValue, presets]);
+    },
+    [presets]
+  );
 
   const handleApply = useCallback(
     props => {
@@ -41,6 +33,10 @@ export function VolumePresets({
     },
     [commandsManager]
   );
+
+  const formatLabel = (label: string, maxChars: number) => {
+    return label.length > maxChars ? `${label.slice(0, maxChars)}...` : label;
+  };
 
   return (
     <div className="flex min-h-full w-full flex-col justify-between">

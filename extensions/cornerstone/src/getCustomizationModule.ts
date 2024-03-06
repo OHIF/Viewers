@@ -7,6 +7,12 @@ import { CONSTANTS } from '@cornerstonejs/core';
 
 const DefaultColormap = 'Grayscale';
 const { VIEWPORT_PRESETS } = CONSTANTS;
+const defaultViewportQualityPresets = [
+  { label: 'Good', value: 1 },
+  { label: 'Better', value: 2 },
+  { label: 'Ultra', value: 3 },
+  { label: 'Extreme', value: 4 },
+];
 
 const tools = {
   active: [
@@ -56,8 +62,9 @@ function getCustomizationModule() {
           colorbarInitialColormap: DefaultColormap,
         },
         {
-          id: 'cornerstone.viewportPresets',
+          id: 'cornerstone.3dVolumeRendering',
           viewportPresets: VIEWPORT_PRESETS,
+          viewportQualityPresets: defaultViewportQualityPresets,
         },
       ],
     },

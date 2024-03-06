@@ -9,6 +9,7 @@ export function VolumeRendering({
   serviceManager,
   commandsManager,
   viewportPresets,
+  viewportQualityPresets,
 }: VolumeRenderingProps): ReactElement {
   const { uiModalService } = serviceManager.services;
 
@@ -23,23 +24,8 @@ export function VolumeRendering({
         viewportId,
         commandsManager,
       },
-      customContainerDimensions: 'h-[543px] w-[460px]',
-      customContentDimensions: 'h-[493px] w-[460px]  pl-[12px]',
-    });
-  };
-
-  const onClickCinematic = () => {
-    uiModalService.show({
-      content: CinematicRendering,
-      title: 'Cinematic Rendering',
-      movable: true,
-      contentProps: {
-        onClose: uiModalService.hide,
-        viewportId,
-        serviceManager,
-      },
-      customContainerDimensions: 'h-[180px] w-[460px]',
-      customContentDimensions: 'h-[130px] w-[460px]  pl-[12px]',
+      containerDimensions: 'h-[543px] w-[460px]',
+      contentDimensions: 'h-[493px] w-[460px]  pl-[12px]',
     });
   };
 
@@ -49,10 +35,13 @@ export function VolumeRendering({
         label="Rendering Presets"
         onClick={onClickPresets}
       />
-      <AllInOneMenu.Item
-        label="Cinematic Rendering"
-        onClick={onClickCinematic}
-      />
+      <AllInOneMenu.SubMenu itemLabel="Cinematic Rendering">
+        <CinematicRendering
+          viewportId={viewportId}
+          commandsManager={commandsManager}
+          viewportQualityPresets={viewportQualityPresets}
+        />
+      </AllInOneMenu.SubMenu>
     </>
   );
 }
