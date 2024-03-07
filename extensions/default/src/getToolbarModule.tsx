@@ -1,21 +1,14 @@
 import ToolbarDivider from './Toolbar/ToolbarDivider';
 import ToolbarLayoutSelectorWithServices from './Toolbar/ToolbarLayoutSelector';
 import ToolbarSplitButtonWithServices from './Toolbar/ToolbarSplitButtonWithServices';
+import ToolWithStackedOptions from './Toolbar/ToolWithStackedOptions';
 import { ToolbarButton } from '@ohif/ui';
 
 export default function getToolbarModule({ commandsManager, servicesManager }) {
   const { toolbarService } = servicesManager.services;
   return [
     {
-      name: 'ohif.action',
-      defaultComponent: ToolbarButton,
-    },
-    {
       name: 'ohif.radioGroup',
-      defaultComponent: ToolbarButton,
-    },
-    {
-      name: 'ohif.toggle',
       defaultComponent: ToolbarButton,
     },
     {
@@ -29,6 +22,10 @@ export default function getToolbarModule({ commandsManager, servicesManager }) {
     {
       name: 'ohif.layoutSelector',
       defaultComponent: ToolbarLayoutSelectorWithServices,
+    },
+    {
+      name: 'ohif.advancedTool.WithStackedOptions',
+      defaultComponent: ToolWithStackedOptions,
     },
     {
       name: 'evaluate.group.promoteToPrimary',

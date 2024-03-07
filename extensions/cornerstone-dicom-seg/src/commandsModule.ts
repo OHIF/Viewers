@@ -8,6 +8,7 @@ import {
 } from '@cornerstonejs/tools';
 import { adaptersRT, helpers, adaptersSEG } from '@cornerstonejs/adapters';
 import { classes, DicomMetadataStore } from '@ohif/core';
+import { utilities } from '@cornerstonejs/tools';
 
 import vtkImageMarchingSquares from '@kitware/vtk.js/Filters/General/ImageMarchingSquares';
 import vtkDataArray from '@kitware/vtk.js/Common/Core/DataArray';
@@ -18,6 +19,7 @@ import {
   getUpdatedViewportsForSegmentation,
   getTargetViewport,
 } from './utils/hydrationUtils';
+const { segmentation: segmentationUtils } = utilities;
 
 const { datasetToBlob } = dcmjs.data;
 
@@ -45,6 +47,7 @@ const commandsModule = ({
     uiDialogService,
     displaySetService,
     viewportGridService,
+    toolGroupService,
   } = (servicesManager as ServicesManager).services;
 
   const actions = {
@@ -397,6 +400,16 @@ const commandsModule = ({
         console.warn(e);
       }
     },
+
+    changeBrushMode: ({ mode, segmentationId }) => {},
+
+    setBrushSize: ({ value }) => {
+      const brushSize = Number(value);
+
+      toolGroupService.getToolGroupIds()?.forEach(toolGroupId => {
+        segmentationUtils.setBrushSizeForToolGroup(toolGroupId, brushSize);
+      });
+    },
   };
 
   const definitions = {
@@ -424,11 +437,15 @@ const commandsModule = ({
     downloadRTSS: {
       commandFn: actions.downloadRTSS,
     },
+    setBrushSize: {
+      commandFn: actions.setBrushSize,
+    },
   };
 
   return {
     actions,
     definitions,
+    defaultContext: 'SEGMENTATION',
   };
 };
 

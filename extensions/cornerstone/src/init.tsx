@@ -93,12 +93,21 @@ export default async function init({
     cineService,
     cornerstoneViewportService,
     hangingProtocolService,
-    toolGroupService,
     toolbarService,
     viewportGridService,
     stateSyncService,
-    syncGroupService,
+    segmentationService,
   } = servicesManager.services as CornerstoneServices;
+
+  toolbarService.registerEventForToolbarUpdate(cornerstoneViewportService, [
+    cornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED,
+  ]);
+
+  toolbarService.registerEventForToolbarUpdate(segmentationService, [
+    segmentationService.EVENTS.SEGMENTATION_ADDED,
+    segmentationService.EVENTS.SEGMENTATION_REMOVED,
+    segmentationService.EVENTS.SEGMENTATION_UPDATED,
+  ]);
 
   window.services = servicesManager.services;
   window.extensionManager = extensionManager;
@@ -229,47 +238,41 @@ export default async function init({
    * active tools in the toolbar, and call any commands registered in the
    * toolbar service with a callback to re-enable on displaying the viewport.
    */
-  const toolbarEventListener = evt => {
-    const { element } = evt.detail;
-    const activeTools = toolbarService.getActiveTools();
+  // const toolbarEventListener = evt => {
+  //   const { element } = evt.detail;
+  //   const activeTools = toolbarService.getActiveTools();
 
-    activeTools.forEach(tool => {
-      const { listeners } = toolbarService.getButtonProps(tool);
-      const commands = listeners?.[evt.type];
-      commandsManager.run(commands, { element, evt });
-    });
-  };
+  //   activeTools.forEach(tool => {
+  //     const { listeners } = toolbarService.getButtonProps(tool);
+  //     const commands = listeners?.[evt.type];
+  //     commandsManager.run(commands, { element, evt });
+  //   });
+  // };
 
   /** Listens for active viewport events and fires the toolbar listeners */
-  const activeViewportEventListener = evt => {
-    const { viewportId } = evt;
-    const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
+  // const activeViewportEventListener = evt => {
+  //   const { viewportId } = evt;
+  //   const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
 
-    const activeTools = toolbarService.getActiveTools();
+  //   const activeTools = toolbarService.getActiveTools();
 
-    activeTools.forEach(toolId => {
-      if (!toolGroup?.hasTool(toolId)) {
-        return;
-      }
+  //   activeTools.forEach(toolId => {
+  //     if (!toolGroup?.hasTool(toolId)) {
+  //       return;
+  //     }
 
-      // check if tool is active on the new viewport
-      const toolEnabled = toolGroup.getToolInstance(toolId).mode === Enums.ToolModes.Enabled;
+  //     // check if tool is active on the new viewport
+  //     const toolEnabled = toolGroup.getToolInstance(toolId).mode === Enums.ToolModes.Enabled;
 
-      if (!toolEnabled) {
-        return;
-      }
+  //     if (!toolEnabled) {
+  //       return;
+  //     }
 
-      const button = toolbarService.getButtonProps(toolId);
-      const commands = button?.listeners?.[evt.type];
-      commandsManager.run(commands, { viewportId, evt });
-    });
-  };
-
-  function resetCrosshairs(evt) {
-    const { element } = evt.detail;
-    const { viewportId } = getEnabledElement(element);
-    commandsManager.runCommand('resetCrosshairs', { viewportId });
-  }
+  //     const button = toolbarService.getButtonProps(toolId);
+  //     const commands = button?.listeners?.[evt.type];
+  //     commandsManager.run(commands, { viewportId, evt });
+  //   });
+  // };
 
   /**
    * Runs error handler for failed requests.
@@ -290,9 +293,13 @@ export default async function init({
   function elementEnabledHandler(evt) {
     const { element } = evt.detail;
 
-    element.addEventListener(EVENTS.CAMERA_RESET, resetCrosshairs);
+    element.addEventListener(EVENTS.CAMERA_RESET, evt => {
+      const { element } = evt.detail;
+      const { viewportId } = getEnabledElement(element);
+      commandsManager.runCommand('resetCrosshairs', { viewportId });
+    });
 
-    eventTarget.addEventListener(EVENTS.STACK_VIEWPORT_NEW_STACK, toolbarEventListener);
+    // eventTarget.addEventListener(EVENTS.STACK_VIEWPORT_NEW_STACK, toolbarEventListener);
 
     initViewTiming({ element });
   }
@@ -300,7 +307,7 @@ export default async function init({
   function elementDisabledHandler(evt) {
     const { element } = evt.detail;
 
-    element.removeEventListener(EVENTS.CAMERA_RESET, resetCrosshairs);
+    // element.removeEventListener(EVENTS.CAMERA_RESET, resetCrosshairs);
 
     // TODO - consider removing the callback when all elements are gone
     // eventTarget.removeEventListener(
@@ -313,10 +320,10 @@ export default async function init({
 
   eventTarget.addEventListener(EVENTS.ELEMENT_DISABLED, elementDisabledHandler.bind(null));
 
-  viewportGridService.subscribe(
-    viewportGridService.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED,
-    activeViewportEventListener
-  );
+  // viewportGridService.subscribe(
+  //   viewportGridService.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED,
+  //   activeViewportEventListener
+  // );
 }
 
 function CPUModal() {
