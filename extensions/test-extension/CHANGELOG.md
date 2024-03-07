@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-beta.58](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.57...v3.8.0-beta.58) (2024-03-05)
+
+**Note:** Version bump only for package @ohif/extension-test
+
+
+
+
+
+# [3.8.0-beta.57](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.56...v3.8.0-beta.57) (2024-02-28)
+
+**Note:** Version bump only for package @ohif/extension-test
+
+
+
+
+
+# [3.8.0-beta.56](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.55...v3.8.0-beta.56) (2024-02-22)
+
+**Note:** Version bump only for package @ohif/extension-test
+
+
+
+
+
 # [3.8.0-beta.55](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.54...v3.8.0-beta.55) (2024-02-21)
 
 
