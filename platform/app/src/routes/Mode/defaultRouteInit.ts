@@ -2,10 +2,9 @@ import getStudies from './studiesList';
 import { DicomMetadataStore, log } from '@ohif/core';
 import isSeriesFilterUsed from '../../utils/isSeriesFilterUsed';
 
-import { utils, Types } from '@ohif/core';
+import { utils, Enums } from '@ohif/core';
 
 const { sortingCriteria } = utils;
-const { TimingEnum } = Types;
 
 /**
  * Initialize the route.
@@ -75,8 +74,8 @@ export function defaultRouteInit(
 
   unsubscriptions.push(instanceAddedUnsubscribe);
 
-  log.time(TimingEnum.STUDY_TO_DISPLAY_SETS);
-  log.time(TimingEnum.STUDY_TO_FIRST_IMAGE);
+  log.time(Enums.TimingEnum.STUDY_TO_DISPLAY_SETS);
+  log.time(Enums.TimingEnum.STUDY_TO_FIRST_IMAGE);
 
   const allRetrieves = studyInstanceUIDs.map(StudyInstanceUID =>
     dataSource.retrieve.series.metadata({
@@ -97,9 +96,9 @@ export function defaultRouteInit(
   });
 
   Promise.allSettled(allRetrieves).then(promises => {
-    log.timeEnd(TimingEnum.STUDY_TO_DISPLAY_SETS);
-    log.time(TimingEnum.DISPLAY_SETS_TO_FIRST_IMAGE);
-    log.time(TimingEnum.DISPLAY_SETS_TO_ALL_IMAGES);
+    log.timeEnd(Enums.TimingEnum.STUDY_TO_DISPLAY_SETS);
+    log.time(Enums.TimingEnum.DISPLAY_SETS_TO_FIRST_IMAGE);
+    log.time(Enums.TimingEnum.DISPLAY_SETS_TO_ALL_IMAGES);
 
     const allPromises = [];
     const remainingPromises = [];

@@ -24,6 +24,10 @@ export default function init({ servicesManager, configuration = {} }): void {
   // Used to recover manual changes to the layout of a stage.
   stateSyncService.register('viewportGridStore', { clearOnModeExit: true });
 
+  // uiStateStore is a sync state which stores the relevant
+  // UI state for the viewer
+  stateSyncService.register('uiStateStore', { clearOnModeExit: true });
+
   // displaySetSelectorMap stores a map from
   // `<activeStudyUID>:<displaySetSelectorId>:<matchOffset>` to
   // a displaySetInstanceUID, used to display named display sets in

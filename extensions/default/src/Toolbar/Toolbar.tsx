@@ -1,83 +1,13 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import classnames from 'classnames';
-import { type Types } from '@ohif/core';
+import React from 'react';
 import { Tooltip } from '@ohif/ui';
+import classnames from 'classnames';
+import { useToolbar } from '@ohif/core';
 
-export default function Toolbar({
-  servicesManager,
-}: Types.Extensions.ExtensionParams): React.ReactElement {
-  const { toolbarService, viewportGridService, cornerstoneViewportService } =
-    servicesManager.services;
-
-  const { EVENTS } = toolbarService;
-  const [toolbarButtons, setToolbarButtons] = useState([]);
-
-  /**
-   * Callback function for handling toolbar interactions.
-   * @param args - The arguments passed to the callback function.
-   */
-  const onInteraction = useCallback(
-    (args: object) => {
-      const viewportId = viewportGridService.getActiveViewportId();
-      const refreshProps = {
-        viewportId,
-      };
-
-      toolbarService.recordInteraction(args, {
-        refreshProps,
-      });
-    },
-    [toolbarService, viewportGridService]
-  );
-
-  /**
-   * Subscription callback for toolbar modification event.
-   */
-  useEffect(() => {
-    const handleToolbarModified = () => {
-      setToolbarButtons(toolbarService.getButtonSection('primary'));
-    };
-
-    const subs = [EVENTS.TOOL_BAR_MODIFIED, EVENTS.TOOL_BAR_STATE_MODIFIED].map(event => {
-      return toolbarService.subscribe(event, handleToolbarModified);
-    });
-
-    return () => {
-      subs.forEach(sub => sub.unsubscribe());
-    };
-  }, [toolbarService]);
-
-  /**
-   * Subscription callback for active viewportId change event.
-   *
-   * @param {object} evtDetail - The event details.
-   */
-  useEffect(() => {
-    const subscription = viewportGridService.subscribe(
-      viewportGridService.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED,
-      ({ viewportId }) => {
-        toolbarService.refreshToolbarState({ viewportId });
-      }
-    );
-
-    return () => subscription.unsubscribe();
-  }, [viewportGridService, toolbarService]);
-
-  /**
-   * Subscription callback for when viewport data changes
-   * @param {object} evtDetail - The event details.
-   */
-  useEffect(() => {
-    // Todo: this is not the right place for this
-    const subscription = cornerstoneViewportService.subscribe(
-      cornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED,
-      ({ viewportId }) => {
-        toolbarService.refreshToolbarState({ viewportId });
-      }
-    );
-
-    return () => subscription.unsubscribe();
-  }, [cornerstoneViewportService, toolbarService, viewportGridService]);
+export function Toolbar({ servicesManager }) {
+  const { toolbarButtons, onInteraction } = useToolbar({
+    servicesManager,
+    buttonSection: 'primary',
+  });
 
   if (!toolbarButtons.length) {
     return null;

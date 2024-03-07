@@ -2,6 +2,7 @@ import { CommandsManager } from '../../classes';
 import { ExtensionManager } from '../../extensions';
 import { PubSubService } from '../_shared/pubSubServiceInterface';
 import type { RunCommand } from '../../types/Command';
+import ServicesManager from '../ServicesManager';
 
 const EVENTS = {
   TOOL_BAR_MODIFIED: 'event::toolBarService:toolBarModified',
@@ -55,8 +56,8 @@ export default class ToolbarService extends PubSubService {
   public static REGISTRATION = {
     name: 'toolbarService',
     altName: 'ToolBarService',
-    create: ({ commandsManager, extensionManager }) => {
-      return new ToolbarService(commandsManager, extensionManager);
+    create: ({ commandsManager, extensionManager, servicesManager }) => {
+      return new ToolbarService(commandsManager, extensionManager, servicesManager);
     },
   };
 
@@ -93,16 +94,23 @@ export default class ToolbarService extends PubSubService {
 
   _commandsManager: CommandsManager;
   _extensionManager: ExtensionManager;
+  _servicesManager: ServicesManager;
   _evaluateFunction: Record<string, EvaluateFunction> = {};
   _stateManagementFunctions: Record<
     string,
     { get: () => boolean; set: (state: boolean) => void; isToggled?: boolean }
   > = {};
+  _serviceSubscriptions = [];
 
-  constructor(commandsManager: CommandsManager, extensionManager: ExtensionManager) {
+  constructor(
+    commandsManager: CommandsManager,
+    extensionManager: ExtensionManager,
+    servicesManager: ServicesManager
+  ) {
     super(EVENTS);
     this._commandsManager = commandsManager;
     this._extensionManager = extensionManager;
+    this._servicesManager = servicesManager;
   }
 
   public reset(): void {
@@ -140,6 +148,25 @@ export default class ToolbarService extends PubSubService {
     set: (state: boolean) => void
   ): void {
     this._stateManagementFunctions[id] = { get, set };
+  }
+
+  /**
+   * Registers a service and its event to listen for updates and refreshes the toolbar state when the event is triggered.
+   * @param service - The service to register.
+   * @param event - The event to listen for.
+   */
+  public registerEventForToolbarUpdate(service, events) {
+    const { viewportGridService } = this._servicesManager.services;
+
+    const unsubscriptions = events.map(event =>
+      service.subscribe(event, () => {
+        // Todo: not sure how else to get the viewportId
+        const viewportId = viewportGridService.getActiveViewportId();
+        this.refreshToolbarState({ viewportId });
+      })
+    );
+
+    unsubscriptions.forEach(unsub => this._serviceSubscriptions.push(unsub));
   }
 
   /**

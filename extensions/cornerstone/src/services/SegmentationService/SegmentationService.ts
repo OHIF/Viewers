@@ -1368,8 +1368,6 @@ class SegmentationService extends PubSubService {
 
   public setConfiguration = (configuration: SegmentationConfig): void => {
     const {
-      brushSize,
-      brushThresholdGate,
       fillAlpha,
       fillAlphaInactive,
       outlineWidthActive,
@@ -1461,7 +1459,6 @@ class SegmentationService extends PubSubService {
     segmentInfo.label = label;
 
     if (suppressEvents === false) {
-      // this._setSegmentationModified(segmentationId);
       this._broadcastEvent(this.EVENTS.SEGMENTATION_UPDATED, {
         segmentation,
       });

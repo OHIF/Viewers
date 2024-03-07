@@ -281,7 +281,7 @@ function commandsModule({
       const renderingEngine = cornerstoneViewportService.getRenderingEngine();
       renderingEngine.render();
     },
-    setToolActive: ({ toolName, toolGroupId = null, toggledState }) => {
+    setToolActive: ({ toolName, toolGroupId = null }) => {
       const { viewports } = viewportGridService.getState();
 
       if (!viewports.size) {
@@ -304,13 +304,6 @@ function commandsModule({
         } else {
           toolGroup.setToolPassive(activeToolName);
         }
-      }
-
-      // If there is a toggle state, then simply set the enabled/disabled state without
-      // setting the tool active.
-      if (toggledState != null) {
-        toggledState ? toolGroup.setToolEnabled(toolName) : toolGroup.setToolDisabled(toolName);
-        return;
       }
 
       // Set the new toolName to be active

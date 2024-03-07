@@ -80,6 +80,7 @@ import AdvancedToolbox from './AdvancedToolbox';
 import InputDoubleRange from './InputDoubleRange';
 import LegacyButtonGroup from './LegacyButtonGroup';
 import SplitButtonToolbar from './SplitButtonToolbar';
+import { ToolSettings } from './AdvancedToolbox';
 
 export {
   AboutModal,
@@ -165,4 +166,5 @@ export {
   ViewportOverlay,
   WindowLevelMenuItem,
   SplitButtonToolbar,
+  ToolSettings,
 };

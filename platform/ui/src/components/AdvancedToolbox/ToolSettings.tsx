@@ -42,7 +42,11 @@ function ToolSettings({ options }) {
                   maxValue={option.max}
                   step={option.step}
                   value={option.value}
-                  onChange={e => option.onChange(e)}
+                  onChange={e =>
+                    Array.isArray(option.onChange)
+                      ? option.onChange.forEach(fn => fn(e))
+                      : option.onChange(e)
+                  }
                   allowNumberEdit={true}
                   showAdjustmentArrows={false}
                   inputClassName="ml-1 w-4/5 cursor-pointer"

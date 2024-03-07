@@ -1,0 +1,58 @@
+export function getToolbarModule({ commandsManager, servicesManager }) {
+  const { segmentationService, toolGroupService } = servicesManager.services;
+  return [
+    {
+      name: 'evaluate.cornerstone.segmentation',
+      evaluate: ({ viewportId, button }) => {
+        const segmentations = segmentationService.getSegmentations();
+        if (!segmentations?.length) {
+          return {
+            disabled: true,
+            className: '!text-common-bright !bg-black opacity-50',
+          };
+        }
+
+        const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
+
+        if (!toolGroup) {
+          return;
+        }
+
+        const toolName = getToolNameForButton(button);
+
+        if (!toolGroup || !toolGroup.hasTool(toolName)) {
+          return {
+            disabled: true,
+            className: '!text-common-bright ohif-disabled',
+          };
+        }
+
+        const isPrimaryActive = toolGroup.getActivePrimaryMouseButtonTool() === toolName;
+        return {
+          disabled: false,
+          className: isPrimaryActive
+            ? '!text-black !bg-primary-light hover:bg-primary-light hover-text-black hover:cursor-pointer'
+            : '!text-common-bright !bg-black hover:bg-primary-light hover:cursor-pointer hover:text-black',
+          // Todo: isActive right now is used for nested buttons where the primary
+          // button needs to be fully rounded (vs partial rounded) when active
+          // otherwise it does not have any other use
+          isActive: isPrimaryActive,
+        };
+      },
+    },
+  ];
+}
+
+function getToolNameForButton(button) {
+  const { props } = button;
+
+  const commands = props?.commands || button.commands;
+
+  if (commands && commands.length) {
+    const command = commands[0];
+    const { commandOptions } = command;
+    const { toolName } = commandOptions || { toolName: props?.id ?? button.id };
+    return toolName;
+  }
+  return null;
+}

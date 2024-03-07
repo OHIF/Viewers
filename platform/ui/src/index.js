@@ -114,6 +114,7 @@ export {
   ImageScrollbar,
   ViewportOverlay,
   SplitButtonToolbar,
+  ToolSettings,
 } from './components';
 
 export { useSessionStorage } from './hooks';

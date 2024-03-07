@@ -113,7 +113,7 @@ const toolbarButtons: Button[] = [
   },
    {
     id: 'MPR',
-    uiType: 'ohif.action',
+    uiType: 'ohif.radioGroup',
     props: {
       icon: 'icon-mpr',
       label: 'MPR',

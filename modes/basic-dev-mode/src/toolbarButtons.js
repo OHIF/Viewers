@@ -130,7 +130,7 @@ const toolbarButtons: Button[] = [
   },
   {
     id: 'Capture',
-    uiType: 'ohif.action',
+    uiType: 'ohif.radioGroup',
     props: {
       icon: 'tool-capture',
       label: 'Capture',

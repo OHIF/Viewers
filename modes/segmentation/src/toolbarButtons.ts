@@ -82,7 +82,7 @@ const toolbarButtons: Button[] = [
   },
   {
     id: 'Capture',
-    uiType: 'ohif.action',
+    uiType: 'ohif.radioGroup',
     props: {
       icon: 'tool-capture',
       label: 'Capture',
@@ -106,7 +106,7 @@ const toolbarButtons: Button[] = [
   },
   {
     id: 'MPR',
-    uiType: 'ohif.action',
+    uiType: 'ohif.radioGroup',
     props: {
       icon: 'icon-mpr',
       label: 'MPR',

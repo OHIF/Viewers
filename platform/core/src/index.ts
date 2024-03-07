@@ -12,6 +12,7 @@ import utils from './utils';
 import defaults from './defaults';
 import * as Types from './types';
 import * as Enums from './enums';
+import { useToolbar } from './hooks/useToolbar';
 
 import {
   CineService,
@@ -83,6 +84,7 @@ const OHIF = {
   PubSubService,
   PanelService,
   AppContextService,
+  useToolbar,
 };
 
 export {
@@ -127,6 +129,7 @@ export {
   Types,
   PanelService,
   AppContextService,
+  useToolbar,
 };
 
 export { OHIF };

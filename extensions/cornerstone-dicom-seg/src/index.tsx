@@ -5,6 +5,7 @@ import getSopClassHandlerModule from './getSopClassHandlerModule';
 import getHangingProtocolModule from './getHangingProtocolModule';
 import getPanelModule from './getPanelModule';
 import getCommandsModule from './commandsModule';
+import { getToolbarModule } from './getToolbarModule';
 import preRegistration from './init';
 
 const Component = React.lazy(() => {
@@ -29,7 +30,6 @@ const extension = {
    */
   id,
   preRegistration,
-
   /**
    * PanelModule should provide a list of panels that will be available in OHIF
    * for Modes to consume and render. Each panel is defined by a {name,
@@ -38,7 +38,7 @@ const extension = {
    */
   getPanelModule,
   getCommandsModule,
-
+  getToolbarModule,
   getViewportModule({ servicesManager, extensionManager }) {
     const ExtendedOHIFCornerstoneSEGViewport = props => {
       return (
