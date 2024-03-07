@@ -13,23 +13,41 @@ export type ViewportPreset = {
   interpolation: string;
 };
 
-export type VolumeRenderingProps = {
+export type VolumeRenderingPresetsProps = {
   viewportId: string;
   serviceManager: ServicesManager;
   commandsManager: CommandsManager;
-  viewportPresets: ViewportPreset[];
-  viewportQualityPresets: any[];
+  volumeRenderingPresets: ViewportPreset[];
 };
 
-export type VolumePresetsProps = {
+export type VolumeRenderingPresetsContentProps = {
   presets: ViewportPreset[];
   onClose: () => void;
   viewportId: string;
   commandsManager: CommandsManager;
 };
 
-export type CinematicRenderingProps = {
+export type VolumeRenderingOptionsProps = {
   viewportId: string;
   commandsManager: CommandsManager;
-  viewportQualityPresets: any[];
+  serviceManager: ServicesManager;
+  volumeQualityRange: VolumeQualityRange;
+};
+
+export type VolumeQualityRange = {
+  min: number;
+  max: number;
+  step: number;
+};
+
+export type VolumeQualityProps = {
+  viewportId: string;
+  commandsManager: CommandsManager;
+  volumeQualityRange: VolumeQualityRange;
+};
+
+export type VolumeMappingRangeProps = {
+  viewportId: string;
+  commandsManager: CommandsManager;
+  serviceManager: ServicesManager;
 };

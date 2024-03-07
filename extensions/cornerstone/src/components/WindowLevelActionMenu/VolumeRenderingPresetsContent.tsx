@@ -1,15 +1,15 @@
 import { Icon } from '@ohif/ui';
 import { ButtonEnums } from '@ohif/ui';
-import React, { ReactElement, useState, useEffect, useCallback } from 'react';
+import React, { ReactElement, useState, useCallback } from 'react';
 import { Button, InputFilterText } from '@ohif/ui';
-import { ViewportPreset, VolumePresetsProps } from '../../types/ViewportPresets';
+import { ViewportPreset, VolumeRenderingPresetsContentProps } from '../../types/ViewportPresets';
 
-export function VolumePresets({
+export function VolumeRenderingPresetsContent({
   presets,
   viewportId,
   commandsManager,
   onClose,
-}: VolumePresetsProps): ReactElement {
+}: VolumeRenderingPresetsContentProps): ReactElement {
   const [filteredPresets, setFilteredPresets] = useState(presets);
   const [searchValue, setSearchValue] = useState('');
   const [selectedPreset, setSelectedPreset] = useState<ViewportPreset | null>(null);

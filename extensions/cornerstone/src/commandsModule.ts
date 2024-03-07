@@ -688,6 +688,24 @@ function commandsModule({
       mapper.setSampleDistance(sampleDistance);
       viewport.render();
     },
+
+    setVolumeMappingRange: ({
+      viewportId,
+      shift,
+      width,
+      imageDataRange,
+      fullMappingRangeWidth,
+    }) => {
+      const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+      const { actor } = viewport.getActors()[0];
+      const cfun = actor.getProperty().getRGBTransferFunction(0);
+      const min = imageDataRange[0] + Math.floor((fullMappingRangeWidth - width) / 2) + shift;
+      const max = imageDataRange[1] - Math.ceil((fullMappingRangeWidth - width) / 2) + shift;
+
+      cfun.setMappingRange(...[min, max]);
+      cfun.modified();
+      viewport.render();
+    },
   };
 
   const definitions = {
@@ -835,6 +853,9 @@ function commandsModule({
     },
     setVolumeQuality: {
       commandFn: actions.setVolumeQuality,
+    },
+    setVolumeMappingRange: {
+      commandFn: actions.setVolumeMappingRange,
     },
   };
 

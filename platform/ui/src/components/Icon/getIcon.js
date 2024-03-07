@@ -189,6 +189,7 @@ import MRDefault from './../../assets/icons/MR-Default.png';
 import MRMIP from './../../assets/icons/MR-MIP.png';
 import MRT2Brain from './../../assets/icons/MR-T2-Brain.png';
 import VolumeRendering from './../../assets/icons/VolumeRendering.png';
+import actionNewDialog from './../../assets/icons/action-new-dialog.svg';
 
 const ICONS = {
   'arrow-down': arrowDown,
@@ -376,6 +377,7 @@ const ICONS = {
   'MR-MIP': MRMIP,
   'MR-T2-Brain': MRT2Brain,
   VolumeRendering: VolumeRendering,
+  'action-new-dialog': actionNewDialog,
 };
 
 function addIcon(iconName, iconSVG) {

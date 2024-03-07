@@ -1,9 +1,10 @@
 .scroll {
-  height: 100%;
+  height: calc(100% - 60px);
   padding: 5px;
   position: absolute;
   right: 0;
-  top: 0;
+  top: 30px;
+  bottom: 30px;
 }
 .scroll .scroll-holder {
   height: calc(100% - 20px);
