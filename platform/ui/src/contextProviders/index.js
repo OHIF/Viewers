@@ -14,8 +14,6 @@ export { default as ViewportDialogProvider, useViewportDialog } from './Viewport
 
 export { ViewportGridContext, ViewportGridProvider, useViewportGrid } from './ViewportGridProvider';
 
-export { AppContextProvider, useAppContext } from './AppContextProvider';
-
 export {
   UserAuthenticationContext,
   UserAuthenticationProvider,

@@ -15,7 +15,6 @@ import UserAuthenticationService from './UserAuthenticationService';
 import CustomizationService from './CustomizationService';
 import StateSyncService from './StateSyncService';
 import PanelService from './PanelService';
-import AppContextService from './AppContextService';
 
 import type Services from '../types/Services';
 
@@ -39,5 +38,4 @@ export {
   PubSubService,
   UserAuthenticationService,
   PanelService,
-  AppContextService,
 };

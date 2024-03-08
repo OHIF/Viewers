@@ -18,7 +18,6 @@ import {
   errorHandler,
   CustomizationService,
   PanelService,
-  AppContextService,
   // utils,
 } from '@ohif/core';
 
@@ -67,7 +66,6 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
     UserAuthenticationService.REGISTRATION,
     PanelService.REGISTRATION,
     StateSyncService.REGISTRATION,
-    AppContextService.REGISTRATION,
   ]);
 
   errorHandler.getHTTPErrorHandler = () => {

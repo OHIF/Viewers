@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
-import { ErrorBoundary, LoadingIndicatorProgress, useAppContext } from '@ohif/ui';
+import { ErrorBoundary, LoadingIndicatorProgress } from '@ohif/ui';
 import { ServicesManager, HangingProtocolService, CommandsManager } from '@ohif/core';
 import { useAppConfig } from '@state';
 import ViewerHeader from './ViewerHeader';
@@ -25,8 +25,6 @@ function ViewerLayout({
 
   const { hangingProtocolService } = servicesManager.services;
   const [showLoadingIndicator, setShowLoadingIndicator] = useState(appConfig.showLoadingIndicator);
-
-  const [{ activeContexts }] = useAppContext();
 
   /**
    * Set body classes (tailwindcss) that don't allow vertical
@@ -65,7 +63,6 @@ function ViewerLayout({
       name: entry.name,
       content,
       contexts: entry.contexts,
-      disabled: !activeContexts?.some(context => entry.contexts.includes(context)),
     };
   };
 

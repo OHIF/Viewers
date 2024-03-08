@@ -6,12 +6,6 @@ import { HotkeysManager, CommandsManager } from '../classes';
 import { DataSourceDefinition } from '../types';
 
 /**
- * The default app context for the panels if they
- * have not specified a context for themselves.
- */
-const DefaultAppContexts = ['VIEWER'];
-
-/**
  * This is the arguments given to create the extension.
  */
 export interface ExtensionConstructor {
@@ -442,14 +436,6 @@ export default class ExtensionManager extends PubSubService {
   };
 
   _initPanelModule = (extensionModule, extensionId) => {
-    // assign the default context to the panels that have not
-    // specified a context
-    extensionModule.forEach(panel => {
-      if (!panel.contexts) {
-        panel.contexts = DefaultAppContexts;
-      }
-    });
-
     this.processExtensionModule(extensionModule, extensionId, MODULE_TYPES.PANEL);
   };
 

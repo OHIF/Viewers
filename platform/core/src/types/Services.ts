@@ -8,7 +8,6 @@ import {
   StateSyncService,
   UINotificationService,
   UIModalService,
-  AppContextService,
 } from '../services';
 
 /**
@@ -34,5 +33,4 @@ export default interface Services {
   cornerstoneCacheService?: unknown;
   segmentationService?: unknown;
   panelService?: unknown;
-  appContextService?: AppContextService;
 }
