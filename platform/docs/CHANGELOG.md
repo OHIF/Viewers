@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-beta.59](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.58...v3.8.0-beta.59) (2024-03-08)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
 # [3.8.0-beta.58](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.57...v3.8.0-beta.58) (2024-03-05)
 
 **Note:** Version bump only for package ohif-docs

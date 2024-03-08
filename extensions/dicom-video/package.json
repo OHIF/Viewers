@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-dicom-video",
-  "version": "3.8.0-beta.58",
+  "version": "3.8.0-beta.59",
   "description": "OHIF extension for video display",
   "author": "OHIF",
   "license": "MIT",
