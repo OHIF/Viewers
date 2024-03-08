@@ -5,6 +5,22 @@ import { toolGroupIds } from './initToolGroups';
 
 const { windowLevelPresets } = defaults;
 
+function _createColormap(label, colormap) {
+  return {
+    id: label,
+    label,
+    type: 'action',
+    commands: [
+      {
+        commandName: 'setFusionPTColormap',
+        commandOptions: {
+          toolGroupId: toolGroupIds.Fusion,
+          colormap,
+        },
+      },
+    ],
+  };
+}
 function _createWwwcPreset(preset, title, subtitle) {
   return {
     id: preset.toString(),
@@ -231,27 +247,18 @@ const toolbarButtons: Button[] = [
         icon: 'chevron-down',
         tooltip: 'PET Image Colormap',
       },
-      items: [
-        // Here you would add colormap items using ToolbarService.createButton
-        // Similar to how other items have been created but focusing on colormap functionality
-      ].concat(
-        ['HSV', 'Hot Iron', 'S PET', 'Red Hot', 'Perfusion', 'Rainbow', 'SUV', 'GE 256', 'GE', 'Siemens'].map(colormap =>
-          ToolbarService.createButton({
-            id: colormap.replace(/\s+/g, ''),
-            icon: 'palette', // Assuming a generic icon for colormap; adjust as needed
-            label: colormap,
-            tooltip: colormap,
-            commands: [
-              {
-                commandName: 'setFusionPTColormap',
-                commandOptions: { toolGroupId: toolGroupIds.Fusion, colormap },
-                context: 'CORNERSTONE',
-              },
-            ],
-            evaluate: 'evaluate.action',
-          })
-        )
-      ),
+       items: [
+        _createColormap('HSV', 'hsv'),
+        _createColormap('Hot Iron', 'hot_iron'),
+        _createColormap('S PET', 's_pet'),
+        _createColormap('Red Hot', 'red_hot'),
+        _createColormap('Perfusion', 'perfusion'),
+        _createColormap('Rainbow', 'rainbow_2'),
+        _createColormap('SUV', 'suv'),
+        _createColormap('GE 256', 'ge_256'),
+        _createColormap('GE', 'ge'),
+        _createColormap('Siemens', 'siemens'),
+      ]
     },
   },
 ];

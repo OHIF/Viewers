@@ -61,9 +61,9 @@ export default class ToolbarService extends PubSubService {
 
   public static createButton(options: {
     id: string;
-    icon: string;
     label: string;
     commands: RunCommand;
+    icon?: string;
     tooltip?: string;
     evaluate?: EvaluatePublic;
   }): ButtonProps {
