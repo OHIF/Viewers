@@ -37,14 +37,8 @@ export function Toolbar({ servicesManager }) {
           <Tooltip
             key={id}
             position="bottom"
-            content={
-              <>
-                {componentProps.label}
-                <div className="text-xs text-white">
-                  Tool not available for current Active viewport
-                </div>
-              </>
-            }
+            content={componentProps.label}
+            secondaryContent={'Not available on the current viewport'}
           >
             <div className={classnames('mr-1')}>{tool}</div>
           </Tooltip>

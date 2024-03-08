@@ -32,9 +32,8 @@ function ToolboxUI(props) {
                 {componentProps.disabled ? (
                   <Tooltip
                     position="bottom"
-                    content={
-                      componentProps.label + ' - Tool not available for current Active viewport'
-                    }
+                    content={componentProps.label}
+                    secondaryContent={'Not available on the current viewport'}
                   >
                     <Component
                       {...componentProps}
