@@ -1,7 +1,7 @@
+import React from 'react';
 import ToolbarDivider from './Toolbar/ToolbarDivider';
 import ToolbarLayoutSelectorWithServices from './Toolbar/ToolbarLayoutSelector';
 import ToolbarSplitButtonWithServices from './Toolbar/ToolbarSplitButtonWithServices';
-import ToolWithStackedOptions from './Toolbar/ToolWithStackedOptions';
 import { ToolbarButton } from '@ohif/ui';
 
 const getClassName = isToggled => {
@@ -20,6 +20,12 @@ export default function getToolbarModule({ commandsManager, servicesManager }) {
       defaultComponent: ToolbarButton,
     },
     {
+      name: 'myCustomUI',
+      defaultComponent: () => {
+        return <div className="text-white">My custom UI</div>;
+      },
+    },
+    {
       name: 'ohif.divider',
       defaultComponent: ToolbarDivider,
     },
@@ -30,10 +36,6 @@ export default function getToolbarModule({ commandsManager, servicesManager }) {
     {
       name: 'ohif.layoutSelector',
       defaultComponent: ToolbarLayoutSelectorWithServices,
-    },
-    {
-      name: 'ohif.advancedTool.WithStackedOptions',
-      defaultComponent: ToolWithStackedOptions,
     },
     {
       name: 'evaluate.group.promoteToPrimary',

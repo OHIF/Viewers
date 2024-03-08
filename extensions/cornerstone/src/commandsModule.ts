@@ -21,6 +21,7 @@ import toggleImageSliceSync from './utils/imageSliceSync/toggleImageSliceSync';
 import { getFirstAnnotationSelected } from './utils/measurementServiceMappings/utils/selection';
 import getActiveViewportEnabledElement from './utils/getActiveViewportEnabledElement';
 import { CornerstoneServices } from './types';
+import toggleVOISliceSync from './utils/toggleVOISliceSync';
 
 function commandsModule({
   servicesManager,
@@ -524,6 +525,11 @@ function commandsModule({
     toggleSynchronizer: ({ type, viewports }) => {
       if (type === 'imageSlice') {
         toggleImageSliceSync({
+          servicesManager,
+          viewports,
+        });
+      } else if (type === 'voi') {
+        toggleVOISliceSync({
           servicesManager,
           viewports,
         });
