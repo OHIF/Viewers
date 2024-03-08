@@ -188,7 +188,7 @@ const moreTools = [
               context: 'CORNERSTONE',
             },
           ],
-          evaluate: 'evaluate.systemToggle',
+          evaluate: 'evaluate.cine',
         }),
         ToolbarService.createButton({
           id: 'Angle',

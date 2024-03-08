@@ -3,20 +3,12 @@ import PropTypes from 'prop-types';
 import { LayoutSelector as OHIFLayoutSelector, ToolbarButton } from '@ohif/ui';
 import { ServicesManager } from '@ohif/core';
 
-function ToolbarLayoutSelectorWithServices({ servicesManager, ...props }) {
+function ToolbarLayoutSelectorWithServices({ servicesManager, commands, ...props }) {
   const { toolbarService } = servicesManager.services;
 
-  const onSelection = useCallback(
-    props => {
-      toolbarService.recordInteraction({
-        commands: [
-          {
-            commandName: 'setViewportGridLayout',
-            commandOptions: { ...props },
-            context: 'DEFAULT',
-          },
-        ],
-      });
+  const onInteraction = useCallback(
+    args => {
+      toolbarService.recordInteraction({ commands }, { ...args });
     },
     [toolbarService]
   );
@@ -24,12 +16,12 @@ function ToolbarLayoutSelectorWithServices({ servicesManager, ...props }) {
   return (
     <LayoutSelector
       {...props}
-      onSelection={onSelection}
+      onInteraction={onInteraction}
     />
   );
 }
 
-function LayoutSelector({ rows, columns, className, onSelection, ...rest }) {
+function LayoutSelector({ rows, columns, className, onInteraction, ...rest }) {
   const [isOpen, setIsOpen] = useState(false);
 
   const closeOnOutsideClick = () => {
@@ -61,7 +53,7 @@ function LayoutSelector({ rows, columns, className, onSelection, ...rest }) {
           <DropdownContent
             rows={rows}
             columns={columns}
-            onSelection={onSelection}
+            onSelection={onInteraction}
           />
         )
       }

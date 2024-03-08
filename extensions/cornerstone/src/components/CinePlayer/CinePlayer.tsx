@@ -1,26 +1,17 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { CinePlayer, useCine, useViewportGrid } from '@ohif/ui';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { CinePlayer, useCine } from '@ohif/ui';
 import { Enums, eventTarget } from '@cornerstonejs/core';
 import { useAppConfig } from '@state';
 
 function WrappedCinePlayer({ enabledVPElement, viewportId, servicesManager }) {
-  const {
-    toolbarService,
-    customizationService,
-    displaySetService,
-    viewportGridService,
-    cineService,
-  } = servicesManager.services;
-  const [{ isCineEnabled, cines }] = useCine();
+  const { customizationService, displaySetService, viewportGridService } = servicesManager.services;
+  const [{ isCineEnabled, cines }, api] = useCine();
   const [newStackFrameRate, setNewStackFrameRate] = useState(24);
   const [appConfig] = useAppConfig();
+  const isMountedRef = useRef(null);
 
   const { component: CinePlayerComponent = CinePlayer } =
     customizationService.get('cinePlayer') ?? {};
-
-  const handleCineClose = () => {
-    toolbarService.recordInteraction('cine');
-  };
 
   const cineHandler = () => {
     if (!cines || !cines[viewportId] || !enabledVPElement) {
@@ -34,11 +25,11 @@ function WrappedCinePlayer({ enabledVPElement, viewportId, servicesManager }) {
     const validFrameRate = Math.max(frameRate, 1);
 
     if (isPlaying) {
-      cineService.playClip(enabledVPElement, {
+      api.playClip(enabledVPElement, {
         framesPerSecond: validFrameRate,
       });
     } else {
-      cineService.stopClip(enabledVPElement);
+      api.stopClip(enabledVPElement);
     }
   };
 
@@ -59,34 +50,36 @@ function WrappedCinePlayer({ enabledVPElement, viewportId, servicesManager }) {
     });
 
     if (isPlaying) {
-      cineService.setIsCineEnabled(isPlaying);
+      api.setIsCineEnabled(isPlaying);
     }
-    cineService.setCine({ id: viewportId, isPlaying, frameRate });
+    api.setCine({ id: viewportId, isPlaying, frameRate });
     setNewStackFrameRate(frameRate);
-  }, [cineService, displaySetService, viewportId, viewportGridService, cines]);
+  }, [displaySetService, viewportId, viewportGridService, cines]);
 
   useEffect(() => {
+    isMountedRef.current = true;
+
     eventTarget.addEventListener(Enums.Events.STACK_VIEWPORT_NEW_STACK, newStackCineHandler);
 
     return () => {
-      cineService.setCine({ id: viewportId, isPlaying: false });
+      isMountedRef.current = false;
+      api.stopClip(enabledVPElement);
+      api.setCine({ id: viewportId, isPlaying: false });
       eventTarget.removeEventListener(Enums.Events.STACK_VIEWPORT_NEW_STACK, newStackCineHandler);
     };
   }, [enabledVPElement, newStackCineHandler]);
 
   useEffect(() => {
-    if (!cines || !cines[viewportId] || !enabledVPElement) {
+    if (!cines || !cines[viewportId] || !enabledVPElement || !isMountedRef.current) {
       return;
     }
 
     cineHandler();
 
     return () => {
-      if (enabledVPElement && cines?.[viewportId]?.isPlaying) {
-        cineService.stopClip(enabledVPElement);
-      }
+      api.stopClip(enabledVPElement);
     };
-  }, [cines, viewportId, cineService, enabledVPElement, cineHandler]);
+  }, [cines, viewportId, enabledVPElement, cineHandler]);
 
   const cine = cines[viewportId];
   const isPlaying = (cine && cine.isPlaying) || false;
@@ -97,15 +90,22 @@ function WrappedCinePlayer({ enabledVPElement, viewportId, servicesManager }) {
         className="absolute left-1/2 bottom-3 -translate-x-1/2"
         frameRate={newStackFrameRate}
         isPlaying={isPlaying}
-        onClose={handleCineClose}
-        onPlayPauseChange={isPlaying =>
-          cineService.setCine({
+        onClose={() => {
+          // also stop the clip
+          api.setCine({
+            id: viewportId,
+            isPlaying: false,
+          });
+          api.setIsCineEnabled(false);
+        }}
+        onPlayPauseChange={isPlaying => {
+          api.setCine({
             id: viewportId,
             isPlaying,
-          })
-        }
+          });
+        }}
         onFrameRateChange={frameRate =>
-          cineService.setCine({
+          api.setCine({
             id: viewportId,
             frameRate,
           })

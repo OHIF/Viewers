@@ -11,7 +11,11 @@ const metadataProvider = classes.MetadataProvider;
  * @param {Object} configuration
  */
 export default function init({ servicesManager, configuration = {} }): void {
-  const { stateSyncService } = servicesManager.services;
+  const { stateSyncService, toolbarService, cineService } = servicesManager.services;
+
+  toolbarService.registerEventForToolbarUpdate(cineService, [
+    cineService.EVENTS.CINE_STATE_CHANGED,
+  ]);
   // Add
   DicomMetadataStore.subscribe(DicomMetadataStore.EVENTS.INSTANCES_ADDED, handlePETImageMetadata);
 

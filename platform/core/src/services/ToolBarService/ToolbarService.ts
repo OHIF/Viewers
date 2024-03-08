@@ -9,8 +9,6 @@ const EVENTS = {
   TOOL_BAR_STATE_MODIFIED: 'event::toolBarService:toolBarStateModified',
 };
 
-const SYSTEM_TOGGLE = 'evaluate.systemToggle';
-
 export type EvaluatePublic = string | EvaluateFunction;
 
 export type EvaluateFunction = (props: Record<string, unknown>) => {
@@ -61,8 +59,6 @@ export default class ToolbarService extends PubSubService {
     },
   };
 
-  public static SYSTEM_TOGGLE = SYSTEM_TOGGLE;
-
   public static createButton(options: {
     id: string;
     icon: string;
@@ -96,10 +92,6 @@ export default class ToolbarService extends PubSubService {
   _extensionManager: ExtensionManager;
   _servicesManager: ServicesManager;
   _evaluateFunction: Record<string, EvaluateFunction> = {};
-  _stateManagementFunctions: Record<
-    string,
-    { get: () => boolean; set: (state: boolean) => void; isToggled?: boolean }
-  > = {};
   _serviceSubscriptions = [];
 
   constructor(
@@ -134,20 +126,6 @@ export default class ToolbarService extends PubSubService {
    */
   public registerEvaluateFunction(name: string, handler: EvaluateFunction) {
     this._evaluateFunction[name] = handler;
-  }
-
-  /**
-   * Registers a state management function with the specified ID.
-   * @param id - The ID of the state management function.
-   * @param get - A function that retrieves the current state.
-   * @param set - A function that sets the state.
-   */
-  public registerStateManagement(
-    id: string,
-    get: () => boolean,
-    set: (state: boolean) => void
-  ): void {
-    this._stateManagementFunctions[id] = { get, set };
   }
 
   /**
@@ -311,10 +289,6 @@ export default class ToolbarService extends PubSubService {
     return this.state;
   }
 
-  public getStateManagementFunctions(id) {
-    return this._stateManagementFunctions[id];
-  }
-
   /**
    * Sets the buttons for the toolbar, don't use this method to record an
    * interaction, since it doesn't update the state of the buttons, use
@@ -467,8 +441,6 @@ export default class ToolbarService extends PubSubService {
     }
 
     if (typeof evaluate === 'string') {
-      this._initializeSystemToggles(props);
-
       const evaluateFunction = this._evaluateFunction[evaluate];
 
       if (evaluateFunction) {
@@ -481,29 +453,6 @@ export default class ToolbarService extends PubSubService {
       );
     }
   };
-
-  _initializeSystemToggles(props) {
-    const { id, isToggled = false, evaluate } = props;
-
-    if (evaluate !== SYSTEM_TOGGLE) {
-      return;
-    }
-    // if it is a system toggle we should keep the state
-    // for those buttons in the toolbar service and we should
-    // provide a way to get and set the state for the button
-    const { get, set } = this._stateManagementFunctions[id] || {};
-
-    if (!get || !set) {
-      // initialize the state
-      this._stateManagementFunctions[id] = {
-        isToggled,
-        get: () => this._stateManagementFunctions[id].isToggled,
-        set: state => {
-          this._stateManagementFunctions[id].isToggled = state;
-        },
-      };
-    }
-  }
 
   getButtonComponentForUIType(uiType: string) {
     return uiType ? this._getButtonUITypes()[uiType]?.defaultComponent ?? null : null;

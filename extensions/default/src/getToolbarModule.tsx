@@ -4,8 +4,16 @@ import ToolbarSplitButtonWithServices from './Toolbar/ToolbarSplitButtonWithServ
 import ToolWithStackedOptions from './Toolbar/ToolWithStackedOptions';
 import { ToolbarButton } from '@ohif/ui';
 
+const getClassName = isToggled => {
+  return {
+    className: isToggled
+      ? '!text-primary-active'
+      : '!text-common-bright hover:!bg-primary-dark hover:text-primary-light',
+  };
+};
+
 export default function getToolbarModule({ commandsManager, servicesManager }) {
-  const { toolbarService } = servicesManager.services;
+  const { cineService } = servicesManager.services;
   return [
     {
       name: 'ohif.radioGroup',
@@ -49,37 +57,10 @@ export default function getToolbarModule({ commandsManager, servicesManager }) {
       },
     },
     {
-      name: 'evaluate.systemToggle',
-      evaluate: ({ button, interaction }) => {
-        const { id } = button;
-
-        const cineGetSet = toolbarService.getStateManagementFunctions(id);
-        const isToggled = cineGetSet.get();
-
-        const getClassName = isToggled => {
-          return {
-            className: isToggled
-              ? 'text-primary-active'
-              : 'text-common-bright hover:!bg-primary-dark hover:text-primary-light',
-          };
-        };
-        if (!interaction) {
-          // means we are just queuing the state
-          return getClassName(isToggled);
-        }
-
-        const { itemId } = interaction;
-
-        if (id !== itemId) {
-          // means we are just queuing and interaction was on another
-          // button
-          return getClassName(isToggled);
-        }
-
-        // means we are actually toggling the state with interaction
-        const newState = !isToggled;
-        cineGetSet.set(newState);
-        return getClassName(newState);
+      name: 'evaluate.cine',
+      evaluate: () => {
+        const isToggled = cineService.getState().isCineEnabled;
+        return getClassName(isToggled);
       },
     },
   ];

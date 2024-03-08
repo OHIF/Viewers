@@ -143,11 +143,18 @@ const toolbarButtons: Button[] = [
       evaluate: 'evaluate.action',
     },
   },
-  {
+   {
     id: 'Layout',
     uiType: 'ohif.layoutSelector',
     props: {
+      rows: 3,
+      columns: 3,
       evaluate: 'evaluate.action',
+      commands: [
+        {
+          commandName: 'setViewportGridLayout',
+        },
+      ],
     },
   },
   {

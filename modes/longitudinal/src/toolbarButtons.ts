@@ -268,6 +268,11 @@ const toolbarButtons: Button[] = [
       rows: 3,
       columns: 3,
       evaluate: 'evaluate.action',
+      commands: [
+        {
+          commandName: 'setViewportGridLayout',
+        },
+      ],
     },
   },
   {
