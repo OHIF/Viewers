@@ -532,7 +532,7 @@ function commandsModule({
     setSourceViewportForReferenceLinesTool: ({ viewportId }) => {
       if (!viewportId) {
         const { activeViewportId } = viewportGridService.getState();
-        viewportId = activeViewportId;
+        viewportId = activeViewportId ?? 'default';
       }
 
       const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);

@@ -25,6 +25,7 @@ export interface ButtonProps {
   disabled?: boolean;
   className?: string;
   evaluate?: EvaluatePublic;
+  listeners?: Record<string, RunCommand>;
 }
 
 export interface NestedButtonProps {
@@ -66,8 +67,9 @@ export default class ToolbarService extends PubSubService {
     icon?: string;
     tooltip?: string;
     evaluate?: EvaluatePublic;
+    listeners?: Record<string, RunCommand>;
   }): ButtonProps {
-    const { id, icon, label, commands, tooltip, evaluate } = options;
+    const { id, icon, label, commands, tooltip, evaluate, listeners } = options;
     return {
       id,
       icon,
@@ -75,6 +77,7 @@ export default class ToolbarService extends PubSubService {
       commands,
       tooltip: tooltip || label,
       evaluate,
+      listeners,
     };
   }
 

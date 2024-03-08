@@ -1,6 +1,6 @@
 import type { RunCommand } from '@ohif/core/types';
 import { EVENTS } from '@cornerstonejs/core';
-import { ToolbarService } from '@ohif/core';
+import { ToolbarService, ViewportGridService } from '@ohif/core';
 
 const ReferenceLinesListeners: RunCommand = [
   {
@@ -111,8 +111,8 @@ const moreTools = [
             },
           ],
           listeners: {
-            [EVENTS.STACK_VIEWPORT_NEW_STACK]: ReferenceLinesListeners,
-            [EVENTS.ACTIVE_VIEWPORT_ID_CHANGED]: ReferenceLinesListeners,
+            [ViewportGridService.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED]: ReferenceLinesListeners,
+            [ViewportGridService.EVENTS.VIEWPORTS_READY]: ReferenceLinesListeners,
           },
           evaluate: 'evaluate.cornerstoneTool.toggle',
         }),

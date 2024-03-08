@@ -40,27 +40,20 @@ export function useToolbar({ servicesManager, buttonSection = 'primary' }) {
 
   // Effect to handle active viewportId change event
   useEffect(() => {
-    const subscription = viewportGridService.subscribe(
+    const events = [
       viewportGridService.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED,
-      ({ viewportId }) => {
-        toolbarService.refreshToolbarState({ viewportId });
-      }
-    );
+      viewportGridService.EVENTS.VIEWPORTS_READY,
+    ];
 
-    return () => subscription.unsubscribe();
+    const subscriptions = events.map(event => {
+      return viewportGridService.subscribe(event, ({ viewportId }) => {
+        viewportId = viewportId || viewportGridService.getActiveViewportId();
+        toolbarService.refreshToolbarState({ viewportId });
+      });
+    });
+
+    return () => subscriptions.forEach(sub => sub.unsubscribe());
   }, [viewportGridService, toolbarService]);
-
-  // Effect to handle viewport data change event
-  useEffect(() => {
-    const subscription = cornerstoneViewportService.subscribe(
-      cornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED,
-      ({ viewportId }) => {
-        toolbarService.refreshToolbarState({ viewportId });
-      }
-    );
-
-    return () => subscription.unsubscribe();
-  }, [cornerstoneViewportService, toolbarService, viewportGridService]);
 
   return { toolbarButtons, onInteraction };
 }
