@@ -18,7 +18,12 @@ function ToolSettings({ options }) {
     option.values?.map(({ label, value: optionValue }, index) => {
       buttons.push({
         children: label,
-        onClick: () => option.onChange(optionValue),
+        onClick: () => {
+          Array.isArray(option.onChange)
+            ? option.onChange.forEach(fn => fn(optionValue))
+            : option.onChange(optionValue);
+        },
+
         key: `button-${option.id}-${index}`, // A unique key
       });
     });
@@ -66,7 +71,9 @@ function ToolSettings({ options }) {
               <div className="max-w-1/2">
                 <ButtonGroup
                   buttons={getButtons(option)}
-                  defaultActiveIndex={option.defaultActiveIndex}
+                  defaultActiveIndex={
+                    option.values.findIndex(({ value }) => value === option.value) || 0
+                  }
                   size={ButtonEnums.size.small}
                 />
               </div>

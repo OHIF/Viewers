@@ -2,7 +2,7 @@ export function toolboxReducer(state, action) {
   let newState = { ...state };
 
   const { payload } = action;
-  const { stateSyncService, toolboxId } = payload || {};
+  const { stateSyncService, buttonSectionId } = payload || {};
 
   switch (action.type) {
     case 'SET_ACTIVE_TOOL':
@@ -24,20 +24,22 @@ export function toolboxReducer(state, action) {
       break;
     case 'INITIALIZE_TOOL_OPTIONS':
       // eslint-disable-next-line no-case-declarations
-      const newToolOptions = payload.toolOptions.reduce((acc, tool) => {
-        if (state.toolOptions[tool.id]) {
+      const newToolOptions = Object.keys(payload?.toolOptions || {}).reduce((acc, toolId) => {
+        const tool = payload.toolOptions[toolId];
+        if (state.toolOptions[toolId]) {
           // Preserve existing options, potentially merging with new ones if necessary
-          acc[tool.id] = state.toolOptions[tool.id].map(existingOption => {
-            const initialOption = tool.options.find(option => option.id === existingOption.id);
+          acc[toolId] = state.toolOptions[toolId].map(existingOption => {
+            const initialOption = tool.find(option => option.id === existingOption.id);
             return initialOption
               ? { ...initialOption, value: existingOption.value }
               : existingOption;
           });
         } else {
-          acc[tool.id] = tool.options;
+          acc[toolId] = tool;
         }
         return acc;
       }, {});
+
       newState = {
         ...state,
         toolOptions: newToolOptions,
@@ -49,11 +51,11 @@ export function toolboxReducer(state, action) {
 
   // store the state in the stateSyncService
   if (payload?.stateSyncService) {
-    const prevState = stateSyncService.getState()?.['uiStateStore']?.[toolboxId];
+    const prevState = stateSyncService.getState()?.['uiStateStore']?.[buttonSectionId];
     stateSyncService.store({
       uiStateStore: {
         ...stateSyncService.getState()?.['uiStateStore'],
-        [toolboxId]: {
+        [buttonSectionId]: {
           ...prevState,
           ...newState,
         },

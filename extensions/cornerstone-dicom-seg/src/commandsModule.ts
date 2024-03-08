@@ -400,9 +400,6 @@ const commandsModule = ({
         console.warn(e);
       }
     },
-
-    changeBrushMode: ({ mode, segmentationId }) => {},
-
     setBrushSize: ({ value }) => {
       const brushSize = Number(value);
 
