@@ -1,9 +1,7 @@
 .loading {
   background-color: #091731;
-  height: 8px;
   border-radius: 4px;
   overflow: hidden;
-  position: relative;
   width: 100%;
 }
 
