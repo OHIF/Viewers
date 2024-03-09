@@ -1,6 +1,8 @@
 import { synchronizers, SynchronizerManager, Synchronizer } from '@cornerstonejs/tools';
+import { utilities } from '@cornerstonejs/core';
 
 import { pubSubServiceInterface, Types, ServicesManager } from '@ohif/core';
+
 
 const EVENTS = {
   TOOL_GROUP_CREATED: 'event::cornerstone::syncgroupservice:toolgroupcreated',
@@ -152,6 +154,8 @@ export default class SyncGroupService {
         return;
       }
 
+      this.unRegisterSpatialRegistration(synchronizer);
+
       synchronizer.remove({
         viewportId,
         renderingEngineId,
@@ -164,6 +168,27 @@ export default class SyncGroupService {
       if (!sourceViewports.length && !targetViewports.length) {
         SynchronizerManager.destroySynchronizer(synchronizer.id);
       }
+    });
+  }
+  /**
+   * Clean up the spatial registration metadata created by synchronizer
+   * This is needed to be able to re-sync images slices if needed
+   * @param synchronizer
+   */
+  unRegisterSpatialRegistration(synchronizer: Synchronizer) {
+    const sourceViewports = synchronizer.getSourceViewports().map(vp => vp.viewportId);
+    const targetViewports = synchronizer.getTargetViewports().map(vp => vp.viewportId);
+
+    // Create an array of pair of viewports to remove from spatialRegistrationMetadataProvider
+    // All sourceViewports combined with all targetViewports
+    const toUnregister = sourceViewports
+      .map((sourceViewportId: string) => {
+        return targetViewports.map(targetViewportId => [targetViewportId, sourceViewportId]);
+      })
+      .reduce((acc, c) => acc.concat(c), []);
+
+    toUnregister.forEach(viewportIdPair => {
+      utilities.spatialRegistrationMetadataProvider.add(viewportIdPair, undefined);
     });
   }
 }
