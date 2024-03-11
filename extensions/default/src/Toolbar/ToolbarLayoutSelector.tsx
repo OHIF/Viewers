@@ -4,11 +4,19 @@ import { LayoutSelector as OHIFLayoutSelector, ToolbarButton } from '@ohif/ui';
 import { ServicesManager } from '@ohif/core';
 
 function ToolbarLayoutSelectorWithServices({ servicesManager, commands, ...props }) {
-  const { toolbarService } = servicesManager.services;
+  const { toolbarService, viewportGridService } = servicesManager.services;
 
   const onInteraction = useCallback(
     args => {
-      toolbarService.recordInteraction({ commands }, { ...args });
+      const viewportId = viewportGridService.getActiveViewportId();
+      const refreshProps = {
+        viewportId,
+      };
+
+      if (props.onLayoutChange) {
+        props.onLayoutChange(args);
+      }
+      toolbarService.recordInteraction({ commands }, { ...args, refreshProps });
     },
     [toolbarService]
   );

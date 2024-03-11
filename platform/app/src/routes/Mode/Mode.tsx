@@ -172,7 +172,7 @@ export default function ModeRoute({
     return () => {
       hotkeysManager.destroy();
     };
-  }, [ExtensionDependenciesLoaded]);
+  }, [ExtensionDependenciesLoaded, hotkeys, studyInstanceUIDs]);
 
   useEffect(() => {
     if (!layoutTemplateData.current || !ExtensionDependenciesLoaded || !studyInstanceUIDs?.length) {

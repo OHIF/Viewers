@@ -1,5 +1,4 @@
 import objectHash from 'object-hash';
-import log from '../log.js';
 import { hotkeys } from '../utils';
 import isequal from 'lodash.isequal';
 import Hotkey from './Hotkey';
@@ -276,10 +275,3 @@ export class HotkeysManager {
 }
 
 export default HotkeysManager;
-
-// Commands Contexts:
-
-// --> Name and Priority
-// GLOBAL: 0
-// VIEWER::CORNERSTONE: 1
-// VIEWER::VTK: 1

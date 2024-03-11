@@ -138,14 +138,18 @@ export default class ToolbarService extends PubSubService {
    */
   public registerEventForToolbarUpdate(service, events) {
     const { viewportGridService } = this._servicesManager.services;
+    const callback = () => {
+      const viewportId = viewportGridService.getActiveViewportId();
+      this.refreshToolbarState({ viewportId });
+    };
 
-    const unsubscriptions = events.map(event =>
-      service.subscribe(event, () => {
-        // Todo: not sure how else to get the viewportId
-        const viewportId = viewportGridService.getActiveViewportId();
-        this.refreshToolbarState({ viewportId });
-      })
-    );
+    const unsubscriptions = events.map(event => {
+      if (service.subscribe) {
+        return service.subscribe(event, callback);
+      } else if (service.addEventListener) {
+        return service.addEventListener(event, callback);
+      }
+    });
 
     unsubscriptions.forEach(unsub => this._serviceSubscriptions.push(unsub));
   }

@@ -108,6 +108,10 @@ export default async function init({
     segmentationService.EVENTS.SEGMENTATION_UPDATED,
   ]);
 
+  toolbarService.registerEventForToolbarUpdate(eventTarget, [
+    cornerstoneTools.Enums.Events.TOOL_ACTIVATED,
+  ]);
+
   window.services = servicesManager.services;
   window.extensionManager = extensionManager;
   window.commandsManager = commandsManager;
