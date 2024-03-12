@@ -670,6 +670,12 @@ function commandsModule({
       viewport.render();
     },
 
+    /**
+     * Sets the volume quality for a given viewport.
+     * @param {string} viewportId - The ID of the viewport to set the volume quality.
+     * @param {number} volumeQuality - The desired quality level of the volume rendering.
+     */
+
     setVolumeQuality: ({ viewportId, volumeQuality }) => {
       const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
       const { actor } = viewport.getActors()[0];
@@ -689,6 +695,14 @@ function commandsModule({
       viewport.render();
     },
 
+    /**
+     * Sets the volume mapping range for a given viewport.
+     * @param {string} viewportId - The ID of the viewport to set the mapping range.
+     * @param {number} shift - The shift value for the mapping range.
+     * @param {number} width - The width of the mapping range.
+     * @param {Array<number>} imageDataRange - The data range of the image.
+     * @param {number} fullMappingRangeWidth - The full width of the mapping range.
+     */
     setVolumeMappingRange: ({
       viewportId,
       shift,
@@ -707,12 +721,23 @@ function commandsModule({
       viewport.render();
     },
 
+    /**
+     * Sets the shading option for volume rendering in a given viewport.
+     * @param {string} viewportId - The ID of the viewport to set the shade.
+     * @param {boolean} shade - The shade setting for the volume rendering (on/off)
+     */
     setVolumeShade: ({ viewportId, shade }) => {
       const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
       const { actor } = viewport.getActors()[0];
       actor.getProperty().setShade(shade);
       viewport.render();
     },
+
+    /**
+     * Sets the ambient lighting level for volume rendering in a given viewport.
+     * @param {string} viewportId - The ID of the viewport to set the ambient lighting.
+     * @param {number} ambient - The ambient lighting level for the volume rendering.
+     */
 
     setVolumeAmbient: ({ viewportId, ambient }) => {
       const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
@@ -721,13 +746,22 @@ function commandsModule({
       viewport.render();
     },
 
+    /**
+     * Sets the diffuse lighting level for volume rendering in a given viewport.
+     * @param {string} viewportId - The ID of the viewport to set the diffuse lighting.
+     * @param {number} diffuse - The diffuse lighting level for the volume rendering.
+     */
     setVolumeDiffuse: ({ viewportId, diffuse }) => {
       const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
       const { actor } = viewport.getActors()[0];
       actor.getProperty().setDiffuse(diffuse);
       viewport.render();
     },
-
+    /**
+     * Sets the specular lighting level for volume rendering in a given viewport.
+     * @param {string} viewportId - The ID of the viewport to set the specular lighting.
+     * @param {number} specular - The specular lighting level for the volume rendering.
+     */
     setVolumeSpecular: ({ viewportId, specular }) => {
       const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
       const { actor } = viewport.getActors()[0];
