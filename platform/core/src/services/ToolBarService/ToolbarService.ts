@@ -190,15 +190,29 @@ export default class ToolbarService extends PubSubService {
       interaction = this.getButtonProps(interaction);
     }
 
-    const { commands, id } = interaction;
+    const itemId = interaction.itemId ?? interaction.id;
+    interaction.itemId = itemId;
 
-    const itemId = interaction.itemId || id;
+    const commands = Array.isArray(interaction.commands)
+      ? interaction.commands
+      : [interaction.commands];
 
-    if (commands) {
-      commands.forEach(({ commandName, commandOptions = { ...options }, context }) => {
-        this._commandsManager.runCommand(commandName, commandOptions, context);
+    if (!commands?.length) {
+      this.refreshToolbarState({
+        ...options?.refreshProps,
+        itemId,
+        interaction,
       });
     }
+
+    // attach interaction to each command if it is an object {commandName, commandOptions}
+    commands.forEach(command => {
+      if (typeof command === 'object') {
+        command.commandOptions = { ...command.commandOptions, ...interaction };
+      }
+
+      this._commandsManager.run(command, command.commandOptions);
+    });
 
     this.refreshToolbarState({
       ...options?.refreshProps,

@@ -167,21 +167,31 @@ export class CommandsManager {
    * Run one or more commands with specified extra options.
    * Returns the result of the last command run.
    *
-   * @param toRun - A specification of one or more commands
+   * @param toRun - A specification of one or more commands,
+   *  typically an object of { commandName, commandOptions, context }
+   * or an array of such objects. It can also be a single commandName as string
+   * if no options are needed.
    * @param options - to include in the commands run beyond
    *   the commandOptions specified in the base.
    */
   public run(
-    toRun: Command | Commands | Command[] | undefined,
+    toRun: Command | Commands | Command[] | string | undefined,
     options?: Record<string, unknown>
   ): unknown {
     if (!toRun) {
       return;
     }
+
+    // Handling the case where `toRun` is just a string (command name)
+    if (typeof toRun === 'string') {
+      return this.runCommand(toRun, options);
+    }
+
     const commands =
       (Array.isArray(toRun) && toRun) ||
       ((toRun as Command).commandName && [toRun]) ||
       (Array.isArray((toRun as Commands).commands) && (toRun as Commands).commands);
+
     if (!commands) {
       console.log("Command isn't runnable", toRun);
       return;

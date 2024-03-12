@@ -231,12 +231,17 @@ function getToolNameForButton(button) {
   const { props } = button;
 
   const commands = props?.commands || button.commands;
-
-  if (commands && commands.length) {
-    const command = commands[0];
-    const { commandOptions } = command;
-    const { toolName } = commandOptions || { toolName: props?.id ?? button.id };
-    return toolName;
+  const commandsArray = Array.isArray(commands) ? commands : [commands];
+  const firstCommand = commandsArray[0];
+  if (typeof firstCommand === 'string') {
+    // likely not a cornerstone tool
+    return null;
   }
-  return null;
+
+  if ('commandOptions' in firstCommand) {
+    return firstCommand.commandOptions.toolName ?? props?.id ?? button.id;
+  }
+
+  // use id as a fallback for toolName
+  return props?.id ?? button.id;
 }

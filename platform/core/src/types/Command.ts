@@ -4,7 +4,7 @@ export interface Command {
   context?: string;
 }
 
-export type RunCommand = Command | Command[];
+export type RunCommand = Command | Command[] | string;
 
 /** A set of commands, typically contained in a tool item or other configuration */
 export interface Commands {

@@ -32,23 +32,12 @@ function _createWwwcPreset(preset, title, subtitle) {
   };
 }
 
-/**
- * Creates an array of 'setToolActive' commands for the given toolName - one for
- * each toolGroupId specified in toolGroupIds.
- * @param {string} toolName
- * @returns {Array} an array of 'setToolActive' commands
- */
-function _createSetToolActiveCommands(toolName, toolGroupIds = ['default', 'mpr', 'SRToolGroup']) {
-  const temp = toolGroupIds.map(toolGroupId => ({
-    commandName: 'setToolActive',
-    commandOptions: {
-      toolGroupId,
-      toolName,
-    },
-    context: 'CORNERSTONE',
-  }));
-  return temp;
-}
+export const setToolActiveToolbar = {
+  commandName: 'setToolActiveToolbar',
+  commandOptions: {
+    toolGroupIds: ['default', 'mpr', 'SRToolGroup'],
+  },
+};
 
 const toolbarButtons: Button[] = [
   {
@@ -63,7 +52,7 @@ const toolbarButtons: Button[] = [
         icon: 'tool-length',
         label: 'Length',
         tooltip: 'Length Tool',
-        commands: _createSetToolActiveCommands('Length'),
+        commands: setToolActiveToolbar,
         evaluate: 'evaluate.cornerstoneTool',
       }),
       secondary: {
@@ -76,24 +65,7 @@ const toolbarButtons: Button[] = [
           icon: 'tool-length',
           label: 'Length',
           tooltip: 'Length Tool',
-          commands: [
-            {
-              commandName: 'setToolActive',
-              commandOptions: {
-                toolName: 'Length',
-              },
-              context: 'CORNERSTONE',
-            },
-            {
-              commandName: 'setToolActive',
-              commandOptions: {
-                toolName: 'SRLength',
-                toolGroupId: 'SRToolGroup',
-              },
-              // we can use the setToolActive command for this from Cornerstone commandsModule
-              context: 'CORNERSTONE',
-            },
-          ],
+          commands: setToolActiveToolbar,
           evaluate: 'evaluate.cornerstoneTool',
         }),
         ToolbarService.createButton({
@@ -101,23 +73,7 @@ const toolbarButtons: Button[] = [
           icon: 'tool-bidirectional',
           label: 'Bidirectional',
           tooltip: 'Bidirectional Tool',
-          commands: [
-            {
-              commandName: 'setToolActive',
-              commandOptions: {
-                toolName: 'Bidirectional',
-              },
-              context: 'CORNERSTONE',
-            },
-            {
-              commandName: 'setToolActive',
-              commandOptions: {
-                toolName: 'SRBidirectional',
-                toolGroupId: 'SRToolGroup',
-              },
-              context: 'CORNERSTONE',
-            },
-          ],
+          commands: setToolActiveToolbar,
           evaluate: 'evaluate.cornerstoneTool',
         }),
         ToolbarService.createButton({
@@ -125,23 +81,7 @@ const toolbarButtons: Button[] = [
           icon: 'tool-annotate',
           label: 'Annotation',
           tooltip: 'Arrow Annotate',
-          commands: [
-            {
-              commandName: 'setToolActive',
-              commandOptions: {
-                toolName: 'ArrowAnnotate',
-              },
-              context: 'CORNERSTONE',
-            },
-            {
-              commandName: 'setToolActive',
-              commandOptions: {
-                toolName: 'SRArrowAnnotate',
-                toolGroupId: 'SRToolGroup',
-              },
-              context: 'CORNERSTONE',
-            },
-          ],
+          commands: setToolActiveToolbar,
           evaluate: 'evaluate.cornerstoneTool',
         }),
         ToolbarService.createButton({
@@ -149,23 +89,7 @@ const toolbarButtons: Button[] = [
           icon: 'tool-ellipse',
           label: 'Ellipse',
           tooltip: 'Ellipse ROI',
-          commands: [
-            {
-              commandName: 'setToolActive',
-              commandOptions: {
-                toolName: 'EllipticalROI',
-              },
-              context: 'CORNERSTONE',
-            },
-            {
-              commandName: 'setToolActive',
-              commandOptions: {
-                toolName: 'SREllipticalROI',
-                toolGroupId: 'SRToolGroup',
-              },
-              context: 'CORNERSTONE',
-            },
-          ],
+          commands: setToolActiveToolbar,
           evaluate: 'evaluate.cornerstoneTool',
         }),
         ToolbarService.createButton({
@@ -173,23 +97,7 @@ const toolbarButtons: Button[] = [
           icon: 'tool-circle',
           label: 'Circle',
           tooltip: 'Circle Tool',
-          commands: [
-            {
-              commandName: 'setToolActive',
-              commandOptions: {
-                toolName: 'CircleROI',
-              },
-              context: 'CORNERSTONE',
-            },
-            {
-              commandName: 'setToolActive',
-              commandOptions: {
-                toolName: 'SRCircleROI',
-                toolGroupId: 'SRToolGroup',
-              },
-              context: 'CORNERSTONE',
-            },
-          ],
+          commands: setToolActiveToolbar,
           evaluate: 'evaluate.cornerstoneTool',
         }),
       ],
@@ -201,7 +109,7 @@ const toolbarButtons: Button[] = [
     props: {
       icon: 'tool-zoom',
       label: 'Zoom',
-      commands: _createSetToolActiveCommands('Zoom'),
+      commands: setToolActiveToolbar,
       evaluate: 'evaluate.cornerstoneTool',
     },
   },
@@ -216,7 +124,7 @@ const toolbarButtons: Button[] = [
         icon: 'tool-window-level',
         label: 'Window Level',
         tooltip: 'Window Level',
-        commands: _createSetToolActiveCommands('WindowLevel'),
+        commands: setToolActiveToolbar,
         evaluate: 'evaluate.cornerstoneTool',
       }),
       secondary: {
@@ -242,7 +150,7 @@ const toolbarButtons: Button[] = [
       type: 'tool',
       icon: 'tool-move',
       label: 'Pan',
-      commands: _createSetToolActiveCommands('Pan'),
+      commands: setToolActiveToolbar,
       evaluate: 'evaluate.cornerstoneTool',
     },
   },
@@ -255,7 +163,6 @@ const toolbarButtons: Button[] = [
       commands: [
         {
           commandName: 'showDownloadViewportModal',
-          context: 'CORNERSTONE',
         },
       ],
       evaluate: 'evaluate.action',
@@ -287,7 +194,6 @@ const toolbarButtons: Button[] = [
           commandOptions: {
             protocolId: 'mpr',
           },
-          context: 'DEFAULT',
         },
       ],
       evaluate: 'evaluate.mpr',
@@ -300,7 +206,12 @@ const toolbarButtons: Button[] = [
       type: 'tool',
       icon: 'tool-crosshair',
       label: 'Crosshairs',
-      commands: _createSetToolActiveCommands('Crosshairs', ['mpr']),
+      commands: {
+        commandName: 'setToolActiveToolbar',
+        commandOptions: {
+          toolGroupIds: ['mpr'],
+        },
+      },
       evaluate: 'evaluate.cornerstoneTool',
     },
   },

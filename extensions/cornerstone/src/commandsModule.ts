@@ -282,6 +282,11 @@ function commandsModule({
       const renderingEngine = cornerstoneViewportService.getRenderingEngine();
       renderingEngine.render();
     },
+    setToolActiveToolbar: ({ itemId, toolGroupIds = [] }) => {
+      toolGroupIds.forEach(toolGroupId => {
+        actions.setToolActive({ toolName: itemId, toolGroupId });
+      });
+    },
     setToolActive: ({ toolName, toolGroupId = null }) => {
       const { viewports } = viewportGridService.getState();
 
@@ -296,7 +301,6 @@ function commandsModule({
       }
 
       const activeToolName = toolGroup.getActivePrimaryMouseButtonTool();
-
       if (activeToolName) {
         // Todo: this is a hack to prevent the crosshairs to stick around
         // after another tool is selected. We should find a better way to do this
@@ -626,12 +630,14 @@ function commandsModule({
     updateMeasurement: {
       commandFn: actions.updateMeasurement,
     },
-
     setWindowLevel: {
       commandFn: actions.setWindowLevel,
     },
     setToolActive: {
       commandFn: actions.setToolActive,
+    },
+    setToolActiveToolbar: {
+      commandFn: actions.setToolActiveToolbar,
     },
     setToolEnabled: {
       commandFn: actions.setToolEnabled,
