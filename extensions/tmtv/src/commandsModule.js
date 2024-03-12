@@ -530,67 +530,51 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }) 
   const definitions = {
     setEndSliceForROIThresholdTool: {
       commandFn: actions.setEndSliceForROIThresholdTool,
-      options: {},
     },
     setStartSliceForROIThresholdTool: {
       commandFn: actions.setStartSliceForROIThresholdTool,
-      options: {},
     },
     getMatchingPTDisplaySet: {
       commandFn: actions.getMatchingPTDisplaySet,
-      options: {},
     },
     getPTMetadata: {
       commandFn: actions.getPTMetadata,
-      options: {},
     },
     createNewLabelmapFromPT: {
       commandFn: actions.createNewLabelmapFromPT,
-      options: {},
     },
     setSegmentationActiveForToolGroups: {
       commandFn: actions.setSegmentationActiveForToolGroups,
-      options: {},
     },
     thresholdSegmentationByRectangleROITool: {
       commandFn: actions.thresholdSegmentationByRectangleROITool,
-      options: {},
     },
     getTotalLesionGlycolysis: {
       commandFn: actions.getTotalLesionGlycolysis,
-      options: {},
     },
     calculateSuvPeak: {
       commandFn: actions.calculateSuvPeak,
-      options: {},
     },
     getLesionStats: {
       commandFn: actions.getLesionStats,
-      options: {},
     },
     calculateTMTV: {
       commandFn: actions.calculateTMTV,
-      options: {},
     },
     exportTMTVReportCSV: {
       commandFn: actions.exportTMTVReportCSV,
-      options: {},
     },
     createTMTVRTReport: {
       commandFn: actions.createTMTVRTReport,
-      options: {},
     },
     getSegmentationCSVReport: {
       commandFn: actions.getSegmentationCSVReport,
-      options: {},
     },
     exportRTReportForAnnotations: {
       commandFn: actions.exportRTReportForAnnotations,
-      options: {},
     },
     setFusionPTColormap: {
       commandFn: actions.setFusionPTColormap,
-      options: {},
     },
   };
 

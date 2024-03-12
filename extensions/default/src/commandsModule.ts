@@ -579,23 +579,18 @@ const commandsModule = ({
     },
     clearMeasurements: {
       commandFn: actions.clearMeasurements,
-      options: {},
     },
     displayNotification: {
       commandFn: actions.displayNotification,
-      options: {},
     },
     setHangingProtocol: {
       commandFn: actions.setHangingProtocol,
-      options: {},
     },
     toggleHangingProtocol: {
       commandFn: actions.toggleHangingProtocol,
-      options: {},
     },
     navigateHistory: {
       commandFn: actions.navigateHistory,
-      options: {},
     },
     nextStage: {
       commandFn: actions.deltaStage,
@@ -607,18 +602,15 @@ const commandsModule = ({
     },
     setViewportGridLayout: {
       commandFn: actions.setViewportGridLayout,
-      options: {},
     },
     toggleOneUp: {
       commandFn: actions.toggleOneUp,
-      options: {},
     },
     openDICOMTagViewer: {
       commandFn: actions.openDICOMTagViewer,
     },
     updateViewportDisplaySet: {
       commandFn: actions.updateViewportDisplaySet,
-      options: {},
     },
   };
 

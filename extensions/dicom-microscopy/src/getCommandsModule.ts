@@ -135,23 +135,18 @@ export default function getCommandsModule({
   const definitions = {
     deleteMeasurement: {
       commandFn: actions.deleteMeasurement,
-      options: {},
     },
     setLabel: {
       commandFn: actions.setLabel,
-      options: {},
     },
     setToolActive: {
       commandFn: actions.setToolActive,
-      options: {},
     },
     toggleOverlays: {
       commandFn: actions.toggleOverlays,
-      options: {},
     },
     toggleAnnotations: {
       commandFn: actions.toggleAnnotations,
-      options: {},
     },
   };
 

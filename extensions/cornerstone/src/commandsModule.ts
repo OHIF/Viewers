@@ -619,7 +619,6 @@ function commandsModule({
     },
     getNearbyAnnotation: {
       commandFn: actions.getNearbyAnnotation,
-      options: {},
     },
     deleteMeasurement: {
       commandFn: actions.deleteMeasurement,
