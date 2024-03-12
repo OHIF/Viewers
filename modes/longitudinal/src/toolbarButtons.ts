@@ -8,6 +8,7 @@ import { defaults, ToolbarService } from '@ohif/core';
 import type { Button } from '@ohif/core/types';
 
 const { windowLevelPresets } = defaults;
+const { createButton } = ToolbarService;
 
 /**
  *
@@ -47,7 +48,7 @@ const toolbarButtons: Button[] = [
       groupId: 'MeasurementToolsGroupId',
       // group evaluate to determine which item should move to the top
       evaluate: 'evaluate.group.promoteToPrimaryIfCornerstoneToolNotActiveInTheList',
-      primary: ToolbarService.createButton({
+      primary: createButton({
         id: 'Length',
         icon: 'tool-length',
         label: 'Length',
@@ -60,7 +61,7 @@ const toolbarButtons: Button[] = [
         tooltip: 'More Measure Tools',
       },
       items: [
-        ToolbarService.createButton({
+        createButton({
           id: 'Length',
           icon: 'tool-length',
           label: 'Length',
@@ -68,7 +69,7 @@ const toolbarButtons: Button[] = [
           commands: setToolActiveToolbar,
           evaluate: 'evaluate.cornerstoneTool',
         }),
-        ToolbarService.createButton({
+        createButton({
           id: 'Bidirectional',
           icon: 'tool-bidirectional',
           label: 'Bidirectional',
@@ -76,7 +77,7 @@ const toolbarButtons: Button[] = [
           commands: setToolActiveToolbar,
           evaluate: 'evaluate.cornerstoneTool',
         }),
-        ToolbarService.createButton({
+        createButton({
           id: 'ArrowAnnotate',
           icon: 'tool-annotate',
           label: 'Annotation',
@@ -84,7 +85,7 @@ const toolbarButtons: Button[] = [
           commands: setToolActiveToolbar,
           evaluate: 'evaluate.cornerstoneTool',
         }),
-        ToolbarService.createButton({
+        createButton({
           id: 'EllipticalROI',
           icon: 'tool-ellipse',
           label: 'Ellipse',
@@ -92,7 +93,7 @@ const toolbarButtons: Button[] = [
           commands: setToolActiveToolbar,
           evaluate: 'evaluate.cornerstoneTool',
         }),
-        ToolbarService.createButton({
+        createButton({
           id: 'CircleROI',
           icon: 'tool-circle',
           label: 'Circle',
@@ -119,7 +120,7 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.splitButton',
     props: {
       groupId: 'WindowLevel',
-      primary: ToolbarService.createButton({
+      primary: createButton({
         id: 'WindowLevel',
         icon: 'tool-window-level',
         label: 'Window Level',

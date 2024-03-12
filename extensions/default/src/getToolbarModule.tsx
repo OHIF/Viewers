@@ -1,4 +1,3 @@
-import React from 'react';
 import ToolbarDivider from './Toolbar/ToolbarDivider';
 import ToolbarLayoutSelectorWithServices from './Toolbar/ToolbarLayoutSelector';
 import ToolbarSplitButtonWithServices from './Toolbar/ToolbarSplitButtonWithServices';
@@ -18,12 +17,6 @@ export default function getToolbarModule({ commandsManager, servicesManager }) {
     {
       name: 'ohif.radioGroup',
       defaultComponent: ToolbarButton,
-    },
-    {
-      name: 'myCustomUI',
-      defaultComponent: () => {
-        return <div className="text-white">My custom UI</div>;
-      },
     },
     {
       name: 'ohif.divider',

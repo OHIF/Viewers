@@ -2,6 +2,7 @@ import type { RunCommand } from '@ohif/core/types';
 import { EVENTS } from '@cornerstonejs/core';
 import { ToolbarService, ViewportGridService } from '@ohif/core';
 import { setToolActiveToolbar } from './toolbarButtons';
+const { createButton } = ToolbarService;
 
 const ReferenceLinesListeners: RunCommand = [
   {
@@ -17,7 +18,7 @@ const moreTools = [
     props: {
       groupId: 'MoreTools',
       evaluate: 'evaluate.group.promoteToPrimaryIfCornerstoneToolNotActiveInTheList',
-      primary: ToolbarService.createButton({
+      primary: createButton({
         id: 'Reset',
         icon: 'tool-reset',
         tooltip: 'Reset View',
@@ -31,7 +32,7 @@ const moreTools = [
         tooltip: 'More Tools',
       },
       items: [
-        ToolbarService.createButton({
+        createButton({
           id: 'Reset',
           icon: 'tool-reset',
           label: 'Reset View',
@@ -39,7 +40,7 @@ const moreTools = [
           commands: 'resetViewport',
           evaluate: 'evaluate.action',
         }),
-        ToolbarService.createButton({
+        createButton({
           id: 'rotate-right',
           icon: 'tool-rotate-right',
           label: 'Rotate Right',
@@ -47,7 +48,7 @@ const moreTools = [
           commands: 'rotateViewportCW',
           evaluate: 'evaluate.action',
         }),
-        ToolbarService.createButton({
+        createButton({
           id: 'flipHorizontal',
           icon: 'tool-flip-horizontal',
           label: 'Flip Horizontal',
@@ -55,7 +56,7 @@ const moreTools = [
           commands: 'flipViewportHorizontal',
           evaluate: 'evaluate.viewportProperties.toggle',
         }),
-        ToolbarService.createButton({
+        createButton({
           id: 'ImageSliceSync',
           icon: 'link',
           label: 'Image Slice Sync',
@@ -74,7 +75,7 @@ const moreTools = [
           },
           evaluate: 'evaluate.cornerstone.synchronizer',
         }),
-        ToolbarService.createButton({
+        createButton({
           id: 'ReferenceLines',
           icon: 'tool-referenceLines',
           label: 'Reference Lines',
@@ -91,7 +92,7 @@ const moreTools = [
           },
           evaluate: 'evaluate.cornerstoneTool.toggle',
         }),
-        ToolbarService.createButton({
+        createButton({
           id: 'ImageOverlay',
           icon: 'toggle-dicom-overlay',
           label: 'Image Overlay',
@@ -104,7 +105,7 @@ const moreTools = [
           },
           evaluate: 'evaluate.cornerstoneTool.toggle',
         }),
-        ToolbarService.createButton({
+        createButton({
           id: 'StackScroll',
           icon: 'tool-stack-scroll',
           label: 'Stack Scroll',
@@ -112,7 +113,7 @@ const moreTools = [
           commands: setToolActiveToolbar,
           evaluate: 'evaluate.cornerstoneTool',
         }),
-        ToolbarService.createButton({
+        createButton({
           id: 'invert',
           icon: 'tool-invert',
           label: 'Invert',
@@ -120,7 +121,7 @@ const moreTools = [
           commands: 'invertViewport',
           evaluate: 'evaluate.viewportProperties.toggle',
         }),
-        ToolbarService.createButton({
+        createButton({
           id: 'Probe',
           icon: 'tool-probe',
           label: 'Probe',
@@ -128,7 +129,7 @@ const moreTools = [
           commands: setToolActiveToolbar,
           evaluate: 'evaluate.cornerstoneTool',
         }),
-        ToolbarService.createButton({
+        createButton({
           id: 'Cine',
           icon: 'tool-cine',
           label: 'Cine',
@@ -136,7 +137,7 @@ const moreTools = [
           commands: 'toggleCine',
           evaluate: 'evaluate.cine',
         }),
-        ToolbarService.createButton({
+        createButton({
           id: 'Angle',
           icon: 'tool-angle',
           label: 'Angle',
@@ -144,7 +145,7 @@ const moreTools = [
           commands: setToolActiveToolbar,
           evaluate: 'evaluate.cornerstoneTool',
         }),
-        ToolbarService.createButton({
+        createButton({
           id: 'Magnify',
           icon: 'tool-magnify',
           label: 'Magnify',
@@ -152,7 +153,7 @@ const moreTools = [
           commands: setToolActiveToolbar,
           evaluate: 'evaluate.cornerstoneTool',
         }),
-        ToolbarService.createButton({
+        createButton({
           id: 'RectangleROI',
           icon: 'tool-rectangle',
           label: 'Rectangle',
@@ -160,7 +161,7 @@ const moreTools = [
           commands: setToolActiveToolbar,
           evaluate: 'evaluate.cornerstoneTool',
         }),
-        ToolbarService.createButton({
+        createButton({
           id: 'CalibrationLine',
           icon: 'tool-calibration',
           label: 'Calibration',
@@ -168,7 +169,7 @@ const moreTools = [
           commands: setToolActiveToolbar,
           evaluate: 'evaluate.cornerstoneTool',
         }),
-        ToolbarService.createButton({
+        createButton({
           id: 'TagBrowser',
           icon: 'list-bullets',
           label: 'Dicom Tag Browser',

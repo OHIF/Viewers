@@ -1,8 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 
 export function useToolbar({ servicesManager, buttonSection = 'primary' }) {
-  const { toolbarService, viewportGridService, cornerstoneViewportService } =
-    servicesManager.services;
+  const { toolbarService, viewportGridService } = servicesManager.services;
   const { EVENTS } = toolbarService;
 
   const [toolbarButtons, setToolbarButtons] = useState(

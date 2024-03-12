@@ -234,24 +234,29 @@ function CustomizableViewportOverlay({
 
   return (
     <ViewportOverlay
-      topLeft={getContent(
-        topLeftCustomization,
-        [
-          {
-            id: 'WindowLevel',
-            customizationType: 'ohif.overlayItem.windowLevel',
-          },
-          {
-            id: 'ZoomLevel',
-            customizationType: 'ohif.overlayItem.zoomLevel',
-            condition: () => {
-              const activeToolName = toolGroupService.getActiveToolForViewport(viewportId);
-              return activeToolName === 'Zoom';
+      topLeft={
+        /**
+         * Inline default overlay items for a more standard expansion
+         */
+        getContent(
+          topLeftCustomization,
+          [
+            {
+              id: 'WindowLevel',
+              customizationType: 'ohif.overlayItem.windowLevel',
             },
-          },
-        ],
-        'topLeftOverlayItem'
-      )}
+            {
+              id: 'ZoomLevel',
+              customizationType: 'ohif.overlayItem.zoomLevel',
+              condition: () => {
+                const activeToolName = toolGroupService.getActiveToolForViewport(viewportId);
+                return activeToolName === 'Zoom';
+              },
+            },
+          ],
+          'topLeftOverlayItem'
+        )
+      }
       topRight={getContent(
         topRightCustomization,
         [

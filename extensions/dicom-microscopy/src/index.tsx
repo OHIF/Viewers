@@ -2,6 +2,7 @@ import { id } from './id';
 import React, { Suspense, useMemo } from 'react';
 import getPanelModule from './getPanelModule';
 import getCommandsModule from './getCommandsModule';
+import { Types } from '@ohif/core';
 
 import { useViewportGrid } from '@ohif/ui';
 import getDicomMicroscopySopClassHandler from './DicomMicroscopySopClassHandler';
@@ -23,14 +24,14 @@ const MicroscopyViewport = props => {
 /**
  * You can remove any of the following modules if you don't need them.
  */
-const extension = {
+const extension: Types.Extensions.Extension = {
   /**
    * Only required property. Should be a unique value across all extensions.
    * You ID can be anything you want, but it should be unique.
    */
   id,
 
-  async preRegistration({ servicesManager, commandsManager, configuration = {}, appConfig }) {
+  async preRegistration({ servicesManager }) {
     servicesManager.registerService(MicroscopyService.REGISTRATION(servicesManager));
   },
 

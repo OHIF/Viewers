@@ -237,47 +237,6 @@ export default async function init({
   });
 
   /**
-   * When a viewport gets a new display set, this call will go through all the
-   * active tools in the toolbar, and call any commands registered in the
-   * toolbar service with a callback to re-enable on displaying the viewport.
-   */
-  // const toolbarEventListener = evt => {
-  //   const { element } = evt.detail;
-  //   const activeTools = toolbarService.getActiveTools();
-
-  //   activeTools.forEach(tool => {
-  //     const { listeners } = toolbarService.getButtonProps(tool);
-  //     const commands = listeners?.[evt.type];
-  //     commandsManager.run(commands, { element, evt });
-  //   });
-  // };
-
-  /** Listens for active viewport events and fires the toolbar listeners */
-  // const activeViewportEventListener = evt => {
-  //   const { viewportId } = evt;
-  //   const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
-
-  //   const activeTools = toolbarService.getActiveTools();
-
-  //   activeTools.forEach(toolId => {
-  //     if (!toolGroup?.hasTool(toolId)) {
-  //       return;
-  //     }
-
-  //     // check if tool is active on the new viewport
-  //     const toolEnabled = toolGroup.getToolInstance(toolId).mode === Enums.ToolModes.Enabled;
-
-  //     if (!toolEnabled) {
-  //       return;
-  //     }
-
-  //     const button = toolbarService.getButtonProps(toolId);
-  //     const commands = button?.listeners?.[evt.type];
-  //     commandsManager.run(commands, { viewportId, evt });
-  //   });
-  // };
-
-  /**
    * Runs error handler for failed requests.
    * @param event
    */

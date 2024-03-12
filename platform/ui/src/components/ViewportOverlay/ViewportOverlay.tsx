@@ -10,7 +10,7 @@ const classes = {
   bottomLeft: 'bottom-viewport left-viewport',
 };
 
-type ViewportOverlayProps = {
+export type ViewportOverlayProps = {
   topLeft: React.ReactNode;
   topRight: React.ReactNode;
   bottomRight: React.ReactNode;

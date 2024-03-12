@@ -2,6 +2,8 @@ import React from 'react';
 import { PanelSection, ToolSettings, Tooltip } from '@ohif/ui';
 import classnames from 'classnames';
 
+const ItemsPerRow = 4;
+
 function ToolboxUI(props) {
   const { toolbarButtons, handleToolSelect, activeTool, toolOptions, numRows, servicesManager } =
     props;
@@ -15,7 +17,7 @@ function ToolboxUI(props) {
             }
 
             const { id, Component, componentProps } = toolDef;
-            const isLastRow = Math.floor(index / 4) + 1 === numRows;
+            const isLastRow = Math.floor(index / ItemsPerRow) + 1 === numRows;
 
             const toolClasses = `ml-1 ${isLastRow ? '' : 'mb-2'}`;
             const onClick = () => handleToolSelect(id);

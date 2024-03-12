@@ -51,7 +51,6 @@ const classes = {
         : primary.isActive
           ? 'bg-secondary-dark'
           : 'hover:bg-primary-dark bg-secondary-dark group-hover/button:border-primary-dark'
-      // Add a comma here
     ),
   SecondaryIcon: ({ isExpanded }) =>
     classNames(

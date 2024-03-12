@@ -56,12 +56,7 @@ ToolbarButton.propTypes = {
   /* Influences background/hover styling */
   id: PropTypes.string.isRequired,
   className: PropTypes.string,
-  commands: PropTypes.arrayOf(
-    PropTypes.shape({
-      commandName: PropTypes.string.isRequired,
-      commandOptions: PropTypes.object,
-    })
-  ),
+  commands: PropTypes.oneOfType([PropTypes.array, PropTypes.object, PropTypes.string]),
   onInteraction: PropTypes.func.isRequired,
   icon: PropTypes.string.isRequired,
   label: PropTypes.string.isRequired,

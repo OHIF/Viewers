@@ -3,53 +3,12 @@ import { ExtensionManager } from '../../extensions';
 import { PubSubService } from '../_shared/pubSubServiceInterface';
 import type { RunCommand } from '../../types/Command';
 import ServicesManager from '../ServicesManager';
+import { Button, ButtonProps, EvaluateFunction, EvaluatePublic, NestedButtonProps } from './types';
 
 const EVENTS = {
   TOOL_BAR_MODIFIED: 'event::toolBarService:toolBarModified',
   TOOL_BAR_STATE_MODIFIED: 'event::toolBarService:toolBarStateModified',
 };
-
-export type EvaluatePublic = string | EvaluateFunction;
-
-export type EvaluateFunction = (props: Record<string, unknown>) => {
-  disabled: boolean;
-  className: string;
-};
-
-export interface ButtonProps {
-  id: string;
-  icon: string;
-  label: string;
-  tooltip?: string;
-  commands?: RunCommand;
-  disabled?: boolean;
-  className?: string;
-  evaluate?: EvaluatePublic;
-  listeners?: Record<string, RunCommand>;
-}
-
-export interface NestedButtonProps {
-  groupId: string;
-  // group evaluate which is different
-  // from the evaluate function for the primary and items
-  evaluate?: EvaluatePublic;
-  items: ButtonProps[];
-  primary: ButtonProps & {
-    // Todo: this is really ugly but really we don't have any other option
-    // the ui design requires this since the button should be rounded if
-    // active otherwise it should not be rounded
-    isActive?: boolean;
-  };
-  secondary: ButtonProps;
-}
-
-export interface Button {
-  id: string;
-  props: ButtonProps | NestedButtonProps;
-  // button ui type (e.g. 'ohif.splitButton', 'ohif.radioGroup')
-  // extensions can provide custom components for these types
-  uiType: string;
-}
 
 export default class ToolbarService extends PubSubService {
   public static REGISTRATION = {

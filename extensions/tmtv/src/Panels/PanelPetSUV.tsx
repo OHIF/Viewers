@@ -119,7 +119,8 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
     // update the displaySets
     displaySetService.setDisplaySetMetadataInvalidated(ptDisplaySet.displaySetInstanceUID);
 
-    // seems like for some reason crosshairs should get reset
+    // Crosshair position depends on the metadata values such as the positioning interaction
+    // between series, so when the metadata is updated, the crosshairs need to be reset.
     setTimeout(() => {
       commandsManager.runCommand('resetCrosshairs');
     }, 0);
