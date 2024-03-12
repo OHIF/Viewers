@@ -706,6 +706,34 @@ function commandsModule({
       cfun.modified();
       viewport.render();
     },
+
+    setVolumeShade: ({ viewportId, shade }) => {
+      const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+      const { actor } = viewport.getActors()[0];
+      actor.getProperty().setShade(shade);
+      viewport.render();
+    },
+
+    setVolumeAmbient: ({ viewportId, ambient }) => {
+      const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+      const { actor } = viewport.getActors()[0];
+      actor.getProperty().setAmbient(ambient);
+      viewport.render();
+    },
+
+    setVolumeDiffuse: ({ viewportId, diffuse }) => {
+      const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+      const { actor } = viewport.getActors()[0];
+      actor.getProperty().setDiffuse(diffuse);
+      viewport.render();
+    },
+
+    setVolumeSpecular: ({ viewportId, specular }) => {
+      const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+      const { actor } = viewport.getActors()[0];
+      actor.getProperty().setSpecular(specular);
+      viewport.render();
+    },
   };
 
   const definitions = {
@@ -856,6 +884,18 @@ function commandsModule({
     },
     setVolumeMappingRange: {
       commandFn: actions.setVolumeMappingRange,
+    },
+    setVolumeShade: {
+      commandFn: actions.setVolumeShade,
+    },
+    setVolumeAmbient: {
+      commandFn: actions.setVolumeAmbient,
+    },
+    setVolumeDiffuse: {
+      commandFn: actions.setVolumeDiffuse,
+    },
+    setVolumeSpecular: {
+      commandFn: actions.setVolumeSpecular,
     },
   };
 

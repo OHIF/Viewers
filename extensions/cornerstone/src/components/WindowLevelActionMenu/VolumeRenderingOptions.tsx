@@ -14,25 +14,31 @@ export function VolumeRenderingOptions({
   return (
     <AllInOneMenu.ItemPanel>
       <div className="all-in-one-menu-item flex w-full justify-center">
-        <VolumeShade />
-      </div>
-      <div className="all-in-one-menu-item flex !h-20 w-full flex-col !items-start justify-center">
-        <VolumeQuality
-          viewportId={viewportId}
-          commandsManager={commandsManager}
-          volumeQualityRange={volumeQualityRange}
-        />
-      </div>
-      <div className="all-in-one-menu-item  flex !h-28 w-full flex-col !items-start justify-center">
-        <VolumeMappingRange
-          viewportId={viewportId}
+        <VolumeShade
           commandsManager={commandsManager}
           serviceManager={serviceManager}
+          viewportId={viewportId}
         />
       </div>
-      <div className="all-in-one-menu-item flex !h-32 w-full flex-col !items-start justify-center">
-        <VolumeLighting />
-      </div>
+
+      <VolumeQuality
+        viewportId={viewportId}
+        commandsManager={commandsManager}
+        serviceManager={serviceManager}
+        volumeQualityRange={volumeQualityRange}
+      />
+
+      <VolumeMappingRange
+        viewportId={viewportId}
+        commandsManager={commandsManager}
+        serviceManager={serviceManager}
+      />
+
+      <VolumeLighting
+        viewportId={viewportId}
+        commandsManager={commandsManager}
+        serviceManager={serviceManager}
+      />
     </AllInOneMenu.ItemPanel>
   );
 }

@@ -43,10 +43,23 @@ export type VolumeQualityRange = {
 export type VolumeQualityProps = {
   viewportId: string;
   commandsManager: CommandsManager;
+  serviceManager: ServicesManager;
   volumeQualityRange: VolumeQualityRange;
 };
 
 export type VolumeMappingRangeProps = {
+  viewportId: string;
+  commandsManager: CommandsManager;
+  serviceManager: ServicesManager;
+};
+
+export type VolumeShadeProps = {
+  viewportId: string;
+  commandsManager: CommandsManager;
+  serviceManager: ServicesManager;
+};
+
+export type VolumeLightingProps = {
   viewportId: string;
   commandsManager: CommandsManager;
   serviceManager: ServicesManager;

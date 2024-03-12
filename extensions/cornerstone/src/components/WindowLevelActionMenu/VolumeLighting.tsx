@@ -1,54 +1,118 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useState, useEffect, useCallback } from 'react';
+import { VolumeLightingProps } from '../../types/ViewportPresets';
 
-export function VolumeLighting(): ReactElement {
+export function VolumeLighting({
+  serviceManager,
+  commandsManager,
+  viewportId,
+}: VolumeLightingProps): ReactElement {
+  const { cornerstoneViewportService } = serviceManager.services;
+  const [ambient, setAmbient] = useState(null);
+  const [diffuse, setDiffuse] = useState(null);
+  const [specular, setSpecular] = useState(null);
+
+  const onAmbientChange = useCallback(() => {
+    commandsManager.runCommand('setVolumeAmbient', { viewportId, ambient });
+  }, [ambient, commandsManager, viewportId]);
+
+  const onDiffuseChange = useCallback(() => {
+    commandsManager.runCommand('setVolumeDiffuse', { viewportId, diffuse });
+  }, [diffuse, commandsManager, viewportId]);
+
+  const onSpecularChange = useCallback(() => {
+    commandsManager.runCommand('setVolumeSpecular', { viewportId, specular });
+  }, [specular, commandsManager, viewportId]);
+
+  const calculateBackground = value => {
+    const percentage = ((value - 0) / (1 - 0)) * 100;
+    return `linear-gradient(to right, #5acce6 0%, #5acce6 ${percentage}%, #3a3f99 ${percentage}%, #3a3f99 100%)`;
+  };
+
+  useEffect(() => {
+    const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+    const { actor } = viewport.getActors()[0];
+    const ambient = actor.getProperty().getAmbient();
+    const diffuse = actor.getProperty().getDiffuse();
+    const specular = actor.getProperty().getSpecular();
+    setAmbient(ambient);
+    setDiffuse(diffuse);
+    setSpecular(specular);
+  }, [viewportId, cornerstoneViewportService]);
   return (
     <>
-      <div className="pb-1 text-[14px]">Lighting</div>
-      <label
-        className="text-aqua-pale block  text-sm font-medium"
-        htmlFor="ambient"
-      >
-        Ambient
-      </label>
-      <input
-        className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-700 dark:bg-gray-700"
-        defaultValue={2}
-        id="ambient"
-        max={0}
-        min={0}
-        type="range"
-        step={0}
-      />
-      <label
-        className="text-aqua-pale block  text-sm font-medium"
-        htmlFor="diffuse"
-      >
-        Diffuse
-      </label>
-      <input
-        className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-700 dark:bg-gray-700"
-        defaultValue={2}
-        id="diffuse"
-        max={0}
-        min={0}
-        type="range"
-        step={0}
-      />
-      <label
-        className="text-aqua-pale block  text-sm font-medium"
-        htmlFor="specular"
-      >
-        Specular
-      </label>
-      <input
-        className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-700 dark:bg-gray-700"
-        defaultValue={2}
-        id="specular"
-        max={0}
-        min={0}
-        type="range"
-        step={0}
-      />
+      <div className="all-in-one-menu-item flex  w-full flex-row !items-center justify-between gap-[10px]">
+        <label
+          className="block  text-white"
+          htmlFor="ambient"
+        >
+          Ambient
+        </label>
+        {ambient !== null && (
+          <input
+            className="bg-inputfield-main h-2 w-[120px] cursor-pointer appearance-none rounded-lg"
+            value={ambient}
+            onChange={e => {
+              setAmbient(e.target.value);
+              onAmbientChange();
+            }}
+            id="ambient"
+            max={1}
+            min={0}
+            type="range"
+            step={0.1}
+            style={{ background: calculateBackground(ambient) }}
+          />
+        )}
+      </div>
+      <div className="all-in-one-menu-item flex  w-full flex-row !items-center justify-between gap-[10px]">
+        <label
+          className="block  text-white"
+          htmlFor="diffuse"
+        >
+          Diffuse
+        </label>
+        {diffuse !== null && (
+          <input
+            className="bg-inputfield-main h-2 w-[120px] cursor-pointer appearance-none rounded-lg"
+            value={diffuse}
+            onChange={e => {
+              setDiffuse(e.target.value);
+              onDiffuseChange();
+            }}
+            id="diffuse"
+            max={1}
+            min={0}
+            type="range"
+            step={0.1}
+            style={{ background: calculateBackground(diffuse) }}
+          />
+        )}
+      </div>
+
+      <div className="all-in-one-menu-item flex  w-full flex-row !items-center justify-between gap-[10px]">
+        <label
+          className="block  text-white"
+          htmlFor="specular"
+        >
+          Specular
+        </label>
+        {specular !== null && (
+          <input
+            className="bg-inputfield-main h-2 w-[120px] cursor-pointer appearance-none rounded-lg"
+            value={specular}
+            onChange={e => {
+              setSpecular(e.target.value);
+              onSpecularChange();
+            }}
+            id="specular"
+            max={1}
+            min={0}
+            type="range"
+            step={0.1}
+            style={{ background: calculateBackground(specular) }}
+          />
+        )}
+      </div>
     </>
   );
 }
