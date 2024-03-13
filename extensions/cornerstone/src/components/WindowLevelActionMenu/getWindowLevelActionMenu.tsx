@@ -14,7 +14,7 @@ export function getWindowLevelActionMenu({
 
   const { presets } = customizationService.get('cornerstone.windowLevelPresets');
   const colorbarProperties = customizationService.get('cornerstone.colorbar');
-  const { volumeRenderingPresets, volumeQualityRange } = customizationService.get(
+  const { volumeRenderingPresets, volumeRenderingQualityRange } = customizationService.get(
     'cornerstone.3dVolumeRendering'
   );
 
@@ -38,7 +38,7 @@ export function getWindowLevelActionMenu({
       colorbarProperties={colorbarProperties}
       displaySets={displaySets}
       volumeRenderingPresets={volumeRenderingPresets}
-      volumeQualityRange={volumeQualityRange}
+      volumeRenderingQualityRange={volumeRenderingQualityRange}
     />
   ) : null;
 }

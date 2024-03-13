@@ -13,7 +13,7 @@ export function VolumeShade({
 
   const onShadeChange = useCallback(
     (checked: boolean) => {
-      commandsManager.runCommand('setVolumeShade', { viewportId, shade: checked });
+      commandsManager.runCommand('setVolumeLighting', { viewportId, options: { shade: checked } });
     },
     [commandsManager, viewportId]
   );

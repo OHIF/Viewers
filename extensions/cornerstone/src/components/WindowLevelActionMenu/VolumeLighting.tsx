@@ -12,15 +12,15 @@ export function VolumeLighting({
   const [specular, setSpecular] = useState(null);
 
   const onAmbientChange = useCallback(() => {
-    commandsManager.runCommand('setVolumeAmbient', { viewportId, ambient });
+    commandsManager.runCommand('setVolumeLighting', { viewportId, options: { ambient } });
   }, [ambient, commandsManager, viewportId]);
 
   const onDiffuseChange = useCallback(() => {
-    commandsManager.runCommand('setVolumeDiffuse', { viewportId, diffuse });
+    commandsManager.runCommand('setVolumeLighting', { viewportId, options: { diffuse } });
   }, [diffuse, commandsManager, viewportId]);
 
   const onSpecularChange = useCallback(() => {
-    commandsManager.runCommand('setVolumeSpecular', { viewportId, specular });
+    commandsManager.runCommand('setVolumeLighting', { viewportId, options: { specular } });
   }, [specular, commandsManager, viewportId]);
 
   const calculateBackground = value => {

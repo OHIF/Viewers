@@ -1,14 +1,14 @@
 import React, { ReactElement } from 'react';
 import { AllInOneMenu } from '@ohif/ui';
 import { VolumeRenderingOptionsProps } from '../../types/ViewportPresets';
-import { VolumeQuality } from './VolumeQuality';
+import { VolumeRenderingQuality } from './VolumeRenderingQuality';
 import { VolumeMappingRange } from './VolumeMappingRange';
 import { VolumeLighting } from './VolumeLighting';
 import { VolumeShade } from './VolumeShade';
 export function VolumeRenderingOptions({
   viewportId,
   commandsManager,
-  volumeQualityRange,
+  volumeRenderingQualityRange,
   serviceManager,
 }: VolumeRenderingOptionsProps): ReactElement {
   return (
@@ -21,11 +21,11 @@ export function VolumeRenderingOptions({
         />
       </div>
 
-      <VolumeQuality
+      <VolumeRenderingQuality
         viewportId={viewportId}
         commandsManager={commandsManager}
         serviceManager={serviceManager}
-        volumeQualityRange={volumeQualityRange}
+        volumeRenderingQualityRange={volumeRenderingQualityRange}
       />
 
       <VolumeMappingRange

@@ -1,19 +1,19 @@
 import React, { ReactElement, useCallback, useState, useEffect } from 'react';
-import { VolumeQualityProps } from '../../types/ViewportPresets';
+import { VolumeRenderingQualityProps } from '../../types/ViewportPresets';
 
-export function VolumeQuality({
-  volumeQualityRange,
+export function VolumeRenderingQuality({
+  volumeRenderingQualityRange,
   commandsManager,
   serviceManager,
   viewportId,
-}: VolumeQualityProps): ReactElement {
+}: VolumeRenderingQualityProps): ReactElement {
   const { cornerstoneViewportService } = serviceManager.services;
-  const { min, max, step } = volumeQualityRange;
+  const { min, max, step } = volumeRenderingQualityRange;
   const [quality, setQuality] = useState(null);
 
   const onChange = useCallback(
     (value: number) => {
-      commandsManager.runCommand('setVolumeQuality', {
+      commandsManager.runCommand('setVolumeRenderingQulaity', {
         viewportId,
         volumeQuality: value,
       });

@@ -676,7 +676,7 @@ function commandsModule({
      * @param {number} volumeQuality - The desired quality level of the volume rendering.
      */
 
-    setVolumeQuality: ({ viewportId, volumeQuality }) => {
+    setVolumeRenderingQulaity: ({ viewportId, volumeQuality }) => {
       const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
       const { actor } = viewport.getActors()[0];
       const mapper = actor.getMapper();
@@ -722,50 +722,36 @@ function commandsModule({
     },
 
     /**
-     * Sets the shading option for volume rendering in a given viewport.
-     * @param {string} viewportId - The ID of the viewport to set the shade.
-     * @param {boolean} shade - The shade setting for the volume rendering (on/off)
-     */
-    setVolumeShade: ({ viewportId, shade }) => {
-      const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
-      const { actor } = viewport.getActors()[0];
-      actor.getProperty().setShade(shade);
-      viewport.render();
-    },
+     * Sets the volume lighting settings for a given viewport.
+     * @param {string} viewportId - The ID of the viewport to set the lighting settings.
+     * @param {Object} options - The lighting settings to be set.
+     * @param {boolean} options.shade - The shade setting for the lighting.
+     * @param {number} options.ambient - The ambient setting for the lighting.
+     * @param {number} options.diffuse - The diffuse setting for the lighting.
+     * @param {number} options.specular - The specular setting for the lighting.
+     **/
 
-    /**
-     * Sets the ambient lighting level for volume rendering in a given viewport.
-     * @param {string} viewportId - The ID of the viewport to set the ambient lighting.
-     * @param {number} ambient - The ambient lighting level for the volume rendering.
-     */
+    setVolumeLighting: ({ viewportId, options }) => {
+      const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+      const { actor } = viewport.getActors()[0];
+      const property = actor.getProperty();
 
-    setVolumeAmbient: ({ viewportId, ambient }) => {
-      const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
-      const { actor } = viewport.getActors()[0];
-      actor.getProperty().setAmbient(ambient);
-      viewport.render();
-    },
+      if (options.shade !== undefined) {
+        property.setShade(options.shade);
+      }
 
-    /**
-     * Sets the diffuse lighting level for volume rendering in a given viewport.
-     * @param {string} viewportId - The ID of the viewport to set the diffuse lighting.
-     * @param {number} diffuse - The diffuse lighting level for the volume rendering.
-     */
-    setVolumeDiffuse: ({ viewportId, diffuse }) => {
-      const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
-      const { actor } = viewport.getActors()[0];
-      actor.getProperty().setDiffuse(diffuse);
-      viewport.render();
-    },
-    /**
-     * Sets the specular lighting level for volume rendering in a given viewport.
-     * @param {string} viewportId - The ID of the viewport to set the specular lighting.
-     * @param {number} specular - The specular lighting level for the volume rendering.
-     */
-    setVolumeSpecular: ({ viewportId, specular }) => {
-      const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
-      const { actor } = viewport.getActors()[0];
-      actor.getProperty().setSpecular(specular);
+      if (options.ambient !== undefined) {
+        property.setAmbient(options.ambient);
+      }
+
+      if (options.diffuse !== undefined) {
+        property.setDiffuse(options.diffuse);
+      }
+
+      if (options.specular !== undefined) {
+        property.setSpecular(options.specular);
+      }
+
       viewport.render();
     },
   };
@@ -913,23 +899,14 @@ function commandsModule({
     setViewportPreset: {
       commandFn: actions.setViewportPreset,
     },
-    setVolumeQuality: {
-      commandFn: actions.setVolumeQuality,
+    setVolumeRenderingQulaity: {
+      commandFn: actions.setVolumeRenderingQulaity,
     },
     setVolumeMappingRange: {
       commandFn: actions.setVolumeMappingRange,
     },
-    setVolumeShade: {
-      commandFn: actions.setVolumeShade,
-    },
-    setVolumeAmbient: {
-      commandFn: actions.setVolumeAmbient,
-    },
-    setVolumeDiffuse: {
-      commandFn: actions.setVolumeDiffuse,
-    },
-    setVolumeSpecular: {
-      commandFn: actions.setVolumeSpecular,
+    setVolumeLighting: {
+      commandFn: actions.setVolumeLighting,
     },
   };
 

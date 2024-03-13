@@ -31,20 +31,20 @@ export type VolumeRenderingOptionsProps = {
   viewportId: string;
   commandsManager: CommandsManager;
   serviceManager: ServicesManager;
-  volumeQualityRange: VolumeQualityRange;
+  volumeRenderingQualityRange: VolumeRenderingQualityRange;
 };
 
-export type VolumeQualityRange = {
+export type VolumeRenderingQualityRange = {
   min: number;
   max: number;
   step: number;
 };
 
-export type VolumeQualityProps = {
+export type VolumeRenderingQualityProps = {
   viewportId: string;
   commandsManager: CommandsManager;
   serviceManager: ServicesManager;
-  volumeQualityRange: VolumeQualityRange;
+  volumeRenderingQualityRange: VolumeRenderingQualityRange;
 };
 
 export type VolumeMappingRangeProps = {

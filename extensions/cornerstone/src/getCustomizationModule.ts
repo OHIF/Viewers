@@ -7,11 +7,6 @@ import { CONSTANTS } from '@cornerstonejs/core';
 
 const DefaultColormap = 'Grayscale';
 const { VIEWPORT_PRESETS } = CONSTANTS;
-const defaultVolumeQualityRange = {
-  min: 1,
-  max: 4,
-  step: 1,
-};
 
 const tools = {
   active: [
@@ -63,7 +58,11 @@ function getCustomizationModule() {
         {
           id: 'cornerstone.3dVolumeRendering',
           volumeRenderingPresets: VIEWPORT_PRESETS,
-          volumeQualityRange: defaultVolumeQualityRange,
+          volumeRenderingQualityRange: {
+            min: 1,
+            max: 4,
+            step: 1,
+          },
         },
       ],
     },
