@@ -30,16 +30,16 @@ function getPanelModule({ commandsManager, extensionManager, servicesManager }) 
   return [
     {
       name: 'petSUV',
-      iconName: 'tab-patient-info',
-      iconLabel: 'PET SUV',
-      label: 'PET SUV',
+      iconName: 'tab-linear',
+      iconLabel: 'Patient Info',
+      label: 'Patient Info',
       component: wrappedPanelPetSuv,
     },
     {
       name: 'ROIThresholdSeg',
-      iconName: 'tab-roi-threshold',
-      iconLabel: 'ROI Threshold',
-      label: 'ROI Threshold',
+      iconName: 'tab-segmentation',
+      iconLabel: 'Segmentation',
+      label: 'Segmentation',
       component: wrappedROIThresholdSeg,
     },
   ];
