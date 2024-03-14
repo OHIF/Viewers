@@ -27,6 +27,8 @@ import {
   UserPreferences,
   LoadingIndicatorProgress,
   useSessionStorage,
+  Button,
+  ButtonEnums,
 } from '@ohif/ui';
 
 import i18n from '@ohif/i18n';
@@ -254,11 +256,13 @@ function WorkList({
     const studyDate =
       date &&
       moment(date, ['YYYYMMDD', 'YYYY.MM.DD'], true).isValid() &&
-      moment(date, ['YYYYMMDD', 'YYYY.MM.DD']).format(t('Common:localDateFormat','MMM-DD-YYYY'));
+      moment(date, ['YYYYMMDD', 'YYYY.MM.DD']).format(t('Common:localDateFormat', 'MMM-DD-YYYY'));
     const studyTime =
       time &&
       moment(time, ['HH', 'HHmm', 'HHmmss', 'HHmmss.SSS']).isValid() &&
-      moment(time, ['HH', 'HHmm', 'HHmmss', 'HHmmss.SSS']).format(t('Common:localTimeFormat', 'hh:mm A'));
+      moment(time, ['HH', 'HHmm', 'HHmmss', 'HHmmss.SSS']).format(
+        t('Common:localTimeFormat', 'hh:mm A')
+      );
 
     return {
       dataCY: `studyRow-${studyInstanceUid}`,
@@ -382,16 +386,30 @@ function WorkList({
                     // to={`${mode.routeName}/dicomweb?StudyInstanceUIDs=${studyInstanceUid}`}
                   >
                     {/* TODO revisit the completely rounded style of buttons used for launching a mode from the worklist later - for now use LegacyButton*/}
-                    <LegacyButton
-                      rounded="full"
-                      variant={isValidMode ? 'contained' : 'disabled'}
+                    <Button
+                      type={ButtonEnums.type.primary}
+                      size={ButtonEnums.size.medium}
                       disabled={!isValidMode}
-                      endIcon={<Icon name="launch-arrow" />} // launch-arrow | launch-info
+                      tooltip={
+                        !isValidMode ? (
+                          <div className="font-inter flex w-[206px] whitespace-normal text-left text-xs font-normal text-white	">
+                            This study does not contain modalities supported by {mode.displayName}{' '}
+                            mode
+                          </div>
+                        ) : null
+                      }
+                      startIcon={
+                        <Icon
+                          className="!h-[20px] !w-[20px] text-black"
+                          name={isValidMode ? 'launch-arrow' : 'launch-info'}
+                        />
+                      } // launch-arrow | launch-info
                       onClick={() => {}}
                       data-cy={`mode-${mode.routeName}-${studyInstanceUid}`}
+                      className={isValidMode ? 'text-[13px]' : 'bg-[#222d44] text-[13px]'}
                     >
                       {mode.displayName}
-                    </LegacyButton>
+                    </Button>
                   </Link>
                 )
               );
