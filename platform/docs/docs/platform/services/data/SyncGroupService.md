@@ -70,6 +70,30 @@ In this example, the `ptAXIAL` viewport is part of three synchronization groups:
 3. `voi` group with the ID `'ptFusionWLSync'`: This group synchronizes the window level settings, but the `ptAXIAL` viewport is only a source, not a target.
 
 
+:::tip
+You can control the state of the synchronizer via a toolbar button after you define the synchronization group in the hanging protocol.
+
+```js
+{
+  id: 'SyncToggle',
+  uiType: 'ohif.radioGroup',
+  props: {
+    icon: 'tool-info',
+    label: 'toggle',
+    commands: {
+      commandName: 'toggleSynchronizer',
+      commandOptions: {
+        syncId: 'axialSync'
+      }
+    }
+  },
+},
+```
+
+as you can see by using the `toggleSynchronizer` command you can toggle the state of the synchronizer for the specified syncId.
+
+:::
+
 ### Manually through a button
 You can create a button on the toolbar that you provice the synchronization group type,
 and it applys it to all viewports.

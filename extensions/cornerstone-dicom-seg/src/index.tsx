@@ -39,7 +39,7 @@ const extension = {
   getPanelModule,
   getCommandsModule,
   getToolbarModule,
-  getViewportModule({ servicesManager, extensionManager }) {
+  getViewportModule({ servicesManager, extensionManager, commandsManager }) {
     const ExtendedOHIFCornerstoneSEGViewport = props => {
       return (
         <OHIFCornerstoneSEGViewport

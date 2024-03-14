@@ -187,3 +187,91 @@ function modeFactory({ modeConfiguration }) {
   };
 }
 ```
+
+
+:::note
+By default OHIF's default layout (`extensions/default/src/ViewerLayout/index.tsx`) which is used in all modes use a Toolbar component that creates a
+`primary` section for tools. That is why we are creating a `primary` section in the example above.
+
+Layouts are also customizable, and you can create your own layout in your extensions and provide it to your modes view `getLayoutTemplateModule` module.
+
+By default we use `@ohif/extension-default.layoutTemplateModule.viewerLayout` to use the default layout which provides a
+
+- Header (with logo on left, toolbar in the middle and user menu on the right)
+- Left panel
+- Main viewport grid area
+- Right panel
+:::
+
+
+## Alternative Toolbar sections
+
+In your UI component, such as panels, you have the option to include a toolbar section template.
+This allows you to easily add buttons to it later on. To ensure that the buttons are added properly
+to the toolbar, respond to interactions correctly, and evaluate states accurately, simply utilize the `useToolbar` hook.
+This hook grants you access to the `onInteraction` function and the `toolbarButtons` array, which you can customize within your UI as needed.
+
+```js
+
+function myCustomPanel({servicesManager}){
+  const { onInteraction, toolbarButtons } = useToolbar({
+    servicesManager,
+    buttonSection: 'myCustomSectionName'
+  });
+
+  // map the buttons to the UI
+  return (
+    <div>
+      {toolbarButtons.map((button, index) => {
+        return (
+          <button
+            key={index}
+            onClick={() => onInteraction(button)}
+          >
+            {button.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+```
+
+We have provided a common component for toolbar buttons called `ToolboxContainer`.
+The ToolboxContainer component serves as a versatile and configurable container for toolbar tools within your application. It is designed to work in conjunction with the useToolbar hook to manage tool states, handle user interactions, and render a customizable toolbar UI based on the application's needs.
+
+
+The ToolboxContainer can be easily integrated into your application UI, requiring only the necessary services (servicesManager, commandsManager) and configuration parameters (buttonSectionId, title). Here's a simple usage scenario:
+
+
+
+```js
+function MyApplication({ servicesManager, commandsManager }) {
+  // Configuration for the toolbox container
+  const config = {
+    servicesManager,
+    commandsManager,
+    buttonSectionId: 'customButtonSection',
+    title: 'My Toolbox',
+  };
+
+  return <ToolboxContainer {...config} />;
+}
+```
+
+Then in your modes you can edit the tools in that button section.
+
+```js
+
+onModeEnter: ({ servicesManager, extensionManager }) => {
+  const { toolBarService } = servicesManager.services;
+
+  toolbarService.addButtons([...toolbarButtons, ...moreTools]);
+  toolbarService.createButtonSection('customButtonSection', [
+    'MeasurementTools',
+    'Zoom',
+    'info',
+  ]);
+},
+```
