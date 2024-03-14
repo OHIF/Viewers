@@ -167,7 +167,7 @@ export default class ToolbarService extends PubSubService {
     // attach interaction to each command if it is an object {commandName, commandOptions}
     commands.forEach(command => {
       if (typeof command === 'object') {
-        command.commandOptions = { ...command.commandOptions, ...interaction };
+        command.commandOptions = { ...command.commandOptions, ...options, ...interaction };
       }
 
       this._commandsManager.run(command, command.commandOptions);

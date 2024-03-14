@@ -88,6 +88,7 @@ function modeFactory({ modeConfiguration }) {
         'WindowLevel',
         'Crosshairs',
         'Pan',
+        'SyncToggle',
         'RectangleROIStartEndThreshold',
         'fusionPTColormap',
       ]);

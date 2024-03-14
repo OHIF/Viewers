@@ -23,6 +23,11 @@ import getActiveViewportEnabledElement from './utils/getActiveViewportEnabledEle
 import { CornerstoneServices } from './types';
 import toggleVOISliceSync from './utils/toggleVOISliceSync';
 
+const toggleSyncFunctions = {
+  imageSlice: toggleImageSliceSync,
+  voi: toggleVOISliceSync,
+};
+
 function commandsModule({
   servicesManager,
   commandsManager,
@@ -35,6 +40,7 @@ function commandsModule({
     cornerstoneViewportService,
     uiNotificationService,
     measurementService,
+    syncGroupService,
   } = servicesManager.services as CornerstoneServices;
 
   const { measurementServiceSource } = this;
@@ -301,14 +307,12 @@ function commandsModule({
       }
 
       const activeToolName = toolGroup.getActivePrimaryMouseButtonTool();
+
       if (activeToolName) {
-        // Todo: this is a hack to prevent the crosshairs to stick around
-        // after another tool is selected. We should find a better way to do this
-        if (activeToolName === 'Crosshairs') {
-          toolGroup.setToolDisabled(activeToolName);
-        } else {
-          toolGroup.setToolPassive(activeToolName);
-        }
+        const activeToolOptions = toolGroup.getToolConfiguration(activeToolName);
+        activeToolOptions?.disableOnPassive
+          ? toolGroup.setToolDisabled(activeToolName)
+          : toolGroup.setToolPassive(activeToolName);
       }
 
       // Set the new toolName to be active
@@ -526,16 +530,34 @@ function commandsModule({
         (currentIndex + direction + viewportIds.length) % viewportIds.length;
       viewportGridService.setActiveViewportId(viewportIds[nextViewportIndex] as string);
     },
-    toggleSynchronizer: ({ type, viewports }) => {
-      if (type === 'imageSlice') {
-        toggleImageSliceSync({
+    /**
+     * If the syncId is given and a synchronizer with that ID already exists, it will
+     * toggle it on/off for the provided viewports. If not, it will attempt to create
+     * a new synchronizer using the given syncId and type for the specified viewports.
+     * If no viewports are provided, you may notice some default behavior.
+     * - 'voi' type, we will aim to synchronize all viewports with the same modality
+     * -'imageSlice' type, we will aim to synchronize all viewports with the same orientation.
+     *
+     * @param options
+     * @param options.viewports - The viewports to synchronize
+     * @param options.syncId - The synchronization group ID
+     * @param options.type - The type of synchronization to perform
+     */
+    toggleSynchronizer: ({ type, viewports, syncId }) => {
+      const synchronizer = syncGroupService.getSynchronizer(syncId);
+
+      if (synchronizer) {
+        synchronizer.isDisabled() ? synchronizer.setEnabled(true) : synchronizer.setEnabled(false);
+        return;
+      }
+
+      const fn = toggleSyncFunctions[type];
+
+      if (fn) {
+        fn({
           servicesManager,
           viewports,
-        });
-      } else if (type === 'voi') {
-        toggleVOISliceSync({
-          servicesManager,
-          viewports,
+          syncId,
         });
       }
     },
@@ -547,7 +569,7 @@ function commandsModule({
 
       const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
 
-      toolGroup.setToolConfiguration(
+      toolGroup?.setToolConfiguration(
         ReferenceLinesTool.toolName,
         {
           sourceViewportId: viewportId,

@@ -2,7 +2,11 @@ const VOI_SYNC_NAME = 'VOI_SYNC';
 
 const getSyncId = modality => `${VOI_SYNC_NAME}_${modality}`;
 
-export default function toggleVOISliceSync({ servicesManager, viewports: providedViewports }) {
+export default function toggleVOISliceSync({
+  servicesManager,
+  viewports: providedViewports,
+  syncId,
+}) {
   const { syncGroupService, viewportGridService, displaySetService, cornerstoneViewportService } =
     servicesManager.services;
 
@@ -15,20 +19,20 @@ export default function toggleVOISliceSync({ servicesManager, viewports: provide
 
   // we can apply voi sync within each modality group
   for (const [modality, modalityViewports] of Object.entries(viewports)) {
-    const syncId = getSyncId(modality);
+    const syncIdToUse = syncId || getSyncId(modality);
 
     const someViewportHasSync = modalityViewports.some(viewport => {
       const syncStates = syncGroupService.getSynchronizersForViewport(
         viewport.viewportOptions.viewportId
       );
 
-      const imageSync = syncStates.find(syncState => syncState.id === syncId);
+      const imageSync = syncStates.find(syncState => syncState.id === syncIdToUse);
 
       return !!imageSync;
     });
 
     if (someViewportHasSync) {
-      return disableSync(modalityViewports, syncId, servicesManager);
+      return disableSync(modalityViewports, syncIdToUse, servicesManager);
     }
 
     // create synchronization group and add the modalityViewports to it.
@@ -40,7 +44,7 @@ export default function toggleVOISliceSync({ servicesManager, viewports: provide
       }
       syncGroupService.addViewportToSyncGroup(viewportId, viewport.getRenderingEngine().id, {
         type: 'voi',
-        id: syncId,
+        id: syncIdToUse,
         source: true,
         target: true,
       });

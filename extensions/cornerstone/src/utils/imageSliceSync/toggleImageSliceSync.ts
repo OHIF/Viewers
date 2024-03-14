@@ -1,8 +1,14 @@
 const IMAGE_SLICE_SYNC_NAME = 'IMAGE_SLICE_SYNC';
 
-export default function toggleImageSliceSync({ servicesManager, viewports: providedViewports }) {
+export default function toggleImageSliceSync({
+  servicesManager,
+  viewports: providedViewports,
+  syncId,
+}) {
   const { syncGroupService, viewportGridService, displaySetService, cornerstoneViewportService } =
     servicesManager.services;
+
+  syncId ||= IMAGE_SLICE_SYNC_NAME;
 
   const viewports =
     providedViewports || getReconstructableStackViewports(viewportGridService, displaySetService);
@@ -15,13 +21,13 @@ export default function toggleImageSliceSync({ servicesManager, viewports: provi
       viewport.viewportOptions.viewportId
     );
 
-    const imageSync = syncStates.find(syncState => syncState.id === IMAGE_SLICE_SYNC_NAME);
+    const imageSync = syncStates.find(syncState => syncState.id === syncId);
 
     return !!imageSync;
   });
 
   if (someViewportHasSync) {
-    return disableSync(IMAGE_SLICE_SYNC_NAME, servicesManager);
+    return disableSync(syncId, servicesManager);
   }
 
   // create synchronization group and add the viewports to it.
@@ -33,7 +39,7 @@ export default function toggleImageSliceSync({ servicesManager, viewports: provi
     }
     syncGroupService.addViewportToSyncGroup(viewportId, viewport.getRenderingEngine().id, {
       type: 'imageSlice',
-      id: IMAGE_SLICE_SYNC_NAME,
+      id: syncId,
       source: true,
       target: true,
     });

@@ -171,6 +171,10 @@ export default function getToolbarModule({ commandsManager, servicesManager }) {
       evaluate: ({ viewportId, button }) => {
         const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
+        if (!viewport || viewport.isDisabled) {
+          return;
+        }
+
         const propId = button.id;
 
         const properties = viewport.getProperties();
