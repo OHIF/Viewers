@@ -147,7 +147,10 @@ function OpenIdConnectRoutes({ oidc, routerBasename, userAuthenticationService }
   const location = useLocation();
   const { pathname, search } = location;
 
-  const redirect_uri = new URL(userManager.settings._redirect_uri).pathname; //.replace(routerBasename,'')
+  const redirect_uri = new URL(userManager.settings._redirect_uri).pathname.replace(
+    routerBasename !== '/' ? routerBasename : '',
+    ''
+  );
   const silent_refresh_uri = new URL(userManager.settings._silent_redirect_uri).pathname; //.replace(routerBasename,'')
   const post_logout_redirect_uri = new URL(userManager.settings._post_logout_redirect_uri).pathname; //.replace(routerBasename,'');
 
@@ -158,7 +161,7 @@ function OpenIdConnectRoutes({ oidc, routerBasename, userAuthenticationService }
   }
 
   return (
-    <Routes basename={routerBasename}>
+    <Routes>
       <Route
         path={silent_refresh_uri}
         onEnter={window.location.reload}

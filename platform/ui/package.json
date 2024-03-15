@@ -1,6 +1,6 @@
 {
   "name": "@ohif/ui",
-  "version": "3.8.0-beta.11",
+  "version": "3.8.0-beta.59",
   "description": "A set of React components for Medical Imaging Viewers",
   "author": "OHIF Contributors",
   "license": "MIT",
@@ -19,11 +19,12 @@
     "README.md"
   ],
   "scripts": {
+    "clean": "rm -rf node_modules/.cache/storybook && shx rm -rf dist",
+    "clean:deep": "yarn run clean && shx rm -rf node_modules",
     "start": "yarn run build --watch",
     "build": "cross-env NODE_ENV=production webpack --config .webpack/webpack.prod.js",
     "build:package": "yarn run build",
     "storybook": "storybook dev -p 6006",
-    "clean": "rm -rf node_modules/.cache/storybook",
     "dev": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },
@@ -55,7 +56,7 @@
     "webpack": "^5.81.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.21.4",
+    "@babel/core": "^7.23.2",
     "@storybook/addon-actions": "^7.2.2",
     "@storybook/addon-docs": "^7.2.2",
     "@storybook/addon-essentials": "^7.2.2",

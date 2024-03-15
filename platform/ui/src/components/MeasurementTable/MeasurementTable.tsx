@@ -2,6 +2,7 @@ import React from 'react';
 import { ServicesManager } from '@ohif/core';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
+import { annotation as CsAnnotation } from '@cornerstonejs/tools';
 
 import MeasurementItem from './MeasurementItem';
 

@@ -1,7 +1,7 @@
 import { createReportAsync } from '@ohif/extension-default';
 import React, { useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import { SegmentationGroupTable, LegacyButtonGroup, LegacyButton } from '@ohif/ui';
+import { SegmentationGroupTable } from '@ohif/ui';
 
 import callInputDialog from './callInputDialog';
 import callColorPickerDialog from './colorPickerDialog';

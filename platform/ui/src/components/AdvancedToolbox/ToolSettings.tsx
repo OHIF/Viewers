@@ -45,7 +45,7 @@ function ToolSettings({ options }) {
                   onChange={e => option.onChange(e)}
                   allowNumberEdit={true}
                   showAdjustmentArrows={false}
-                  inputClassName="ml-1 w-4/5"
+                  inputClassName="ml-1 w-4/5 cursor-pointer"
                 />
               </div>
             </div>

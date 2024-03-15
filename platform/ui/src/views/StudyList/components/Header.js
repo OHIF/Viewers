@@ -4,7 +4,7 @@ import { withTranslation } from 'react-i18next';
 
 import { IconButton, Icon, NavBar } from '../../../components';
 
-import OHIFLogo from './OHIFLogo.js';
+import OHIFLogo from './OHIFLogo';
 
 function Header({ appLogo = OHIFLogo(), children, t }) {
   const showSettingsDropdown = () => {

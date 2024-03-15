@@ -1,6 +1,6 @@
 {
   "name": "@ohif/mode-longitudinal",
-  "version": "3.8.0-beta.11",
+  "version": "3.8.0-beta.59",
   "description": "Longitudinal Workflow",
   "author": "OHIF",
   "license": "MIT",
@@ -23,6 +23,8 @@
     "ohif-mode"
   ],
   "scripts": {
+    "clean": "shx rm -rf dist",
+    "clean:deep": "yarn run clean && shx rm -rf node_modules",
     "dev": "cross-env NODE_ENV=development webpack --config .webpack/webpack.dev.js --watch --output-pathinfo",
     "dev:cornerstone": "yarn run dev",
     "build": "cross-env NODE_ENV=production webpack --config .webpack/webpack.prod.js",
@@ -32,18 +34,19 @@
     "test:unit:ci": "jest --ci --runInBand --collectCoverage --passWithNoTests"
   },
   "peerDependencies": {
-    "@ohif/core": "3.8.0-beta.11",
-    "@ohif/extension-cornerstone": "3.8.0-beta.11",
-    "@ohif/extension-cornerstone-dicom-rt": "3.8.0-beta.11",
-    "@ohif/extension-cornerstone-dicom-seg": "3.8.0-beta.11",
-    "@ohif/extension-cornerstone-dicom-sr": "3.8.0-beta.11",
-    "@ohif/extension-default": "3.8.0-beta.11",
-    "@ohif/extension-dicom-pdf": "3.8.0-beta.11",
-    "@ohif/extension-dicom-video": "3.8.0-beta.11",
-    "@ohif/extension-measurement-tracking": "3.8.0-beta.11"
+    "@ohif/core": "3.8.0-beta.59",
+    "@ohif/extension-cornerstone": "3.8.0-beta.59",
+    "@ohif/extension-cornerstone-dicom-rt": "3.8.0-beta.59",
+    "@ohif/extension-cornerstone-dicom-seg": "3.8.0-beta.59",
+    "@ohif/extension-cornerstone-dicom-sr": "3.8.0-beta.59",
+    "@ohif/extension-default": "3.8.0-beta.59",
+    "@ohif/extension-dicom-pdf": "3.8.0-beta.59",
+    "@ohif/extension-dicom-video": "3.8.0-beta.59",
+    "@ohif/extension-measurement-tracking": "3.8.0-beta.59"
   },
   "dependencies": {
-    "@babel/runtime": "^7.20.13"
+    "@babel/runtime": "^7.20.13",
+    "i18next": "^17.0.3"
   },
   "devDependencies": {
     "webpack": "^5.50.0",

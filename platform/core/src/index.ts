@@ -11,6 +11,7 @@ import user from './user.js';
 import utils from './utils';
 import defaults from './defaults';
 import * as Types from './types';
+import * as Enums from './enums';
 
 import {
   CineService,
@@ -120,6 +121,7 @@ export {
   DicomMetadataStore,
   pubSubServiceInterface,
   PubSubService,
+  Enums,
   Types,
   PanelService,
 };

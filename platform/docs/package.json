@@ -1,6 +1,6 @@
 {
   "name": "ohif-docs",
-  "version": "3.8.0-beta.11",
+  "version": "3.8.0-beta.59",
   "private": true,
   "workspaces": {
     "nohoist": [
@@ -15,6 +15,8 @@
   },
   "scripts": {
     "docusaurus": "docusaurus",
+    "clean": "shx rm -rf dist",
+    "clean:deep": "yarn run clean && shx rm -rf node_modules",
     "start": "docusaurus start --port 8001",
     "dev": "docusaurus start --port 8001",
     "docs": "docusaurus start --port 8001",
@@ -27,20 +29,21 @@
     "write-heading-ids": "docusaurus write-heading-ids"
   },
   "dependencies": {
-    "@docusaurus/core": "2.3.0",
-    "@docusaurus/plugin-client-redirects": "2.3.0",
-    "@docusaurus/plugin-google-gtag": "2.3.0",
-    "@docusaurus/plugin-ideal-image": "2.3.0",
-    "@docusaurus/plugin-pwa": "2.3.0",
-    "@docusaurus/preset-classic": "2.3.0",
-    "@docusaurus/remark-plugin-npm2yarn": "2.3.0",
-    "@docusaurus/theme-live-codeblock": "2.3.0",
+    "@docusaurus/core": "2.4.3",
+    "@docusaurus/plugin-client-redirects": "2.4.3",
+    "@docusaurus/plugin-google-gtag": "2.4.3",
+    "@docusaurus/plugin-ideal-image": "2.4.3",
+    "@docusaurus/plugin-pwa": "2.4.3",
+    "@docusaurus/preset-classic": "2.4.3",
+    "@docusaurus/remark-plugin-npm2yarn": "2.4.3",
+    "@docusaurus/theme-classic": "2.4.3",
+    "@docusaurus/theme-live-codeblock": "2.4.3",
     "@mdx-js/react": "^1.6.21",
     "@svgr/webpack": "^5.5.0",
     "classnames": "^2.3.2",
     "clsx": "^1.1.1",
+    "docusaurus-plugin-image-zoom": "^1.0.1",
     "file-loader": "^6.2.0",
-    "plugin-image-zoom": "ataft/plugin-image-zoom",
     "url-loader": "^4.1.1"
   },
   "peerDependencies": {

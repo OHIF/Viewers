@@ -1,9 +1,10 @@
 import { hotkeys } from '@ohif/core';
-import toolbarButtons from './toolbarButtons';
+import i18n from 'i18next';
 import { id } from './id';
 import initToolGroups from './initToolGroups';
 import moreTools from './moreTools';
 import moreToolsMpr from './moreToolsMpr';
+import toolbarButtons from './toolbarButtons';
 
 // Allow this mode by excluding non-imaging modalities such as SR, SEG
 // Also, SM is not a simple imaging modalities, so exclude it.
@@ -69,7 +70,7 @@ function modeFactory({ modeConfiguration }) {
     // We should not be.
     id,
     routeName: 'viewer',
-    displayName: 'Basic Viewer',
+    displayName: i18n.t('Modes:Basic Viewer'),
     /**
      * Lifecycle hooks
      */
@@ -271,4 +272,4 @@ const mode = {
 };
 
 export default mode;
-export { initToolGroups, toolbarButtons };
+export { initToolGroups, moreTools, toolbarButtons };

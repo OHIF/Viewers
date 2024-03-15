@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router';
 import PropTypes from 'prop-types';
 // TODO: DicomMetadataStore should be injected?
-import { DicomMetadataStore, ServicesManager, utils, Types, log } from '@ohif/core';
+import { DicomMetadataStore, ServicesManager, utils, log, Enums } from '@ohif/core';
 import { DragAndDropProvider, ImageViewerProvider } from '@ohif/ui';
 import { useSearchParams } from '@hooks';
 import { useAppConfig } from '@state';
@@ -13,8 +13,7 @@ import { history } from '../../utils/history';
 import loadModules from '../../pluginImports';
 import isSeriesFilterUsed from '../../utils/isSeriesFilterUsed';
 
-const { getSplitParam } = utils;
-const { TimingEnum } = Types;
+const { getSplitParam, sortingCriteria } = utils;
 
 /**
  * Initialize the route.
@@ -26,11 +25,33 @@ const { TimingEnum } = Types;
  * @returns array of subscriptions to cancel
  */
 function defaultRouteInit(
-  { servicesManager, studyInstanceUIDs, dataSource, filters },
+  { servicesManager, studyInstanceUIDs, dataSource, filters, appConfig },
   hangingProtocolId
 ) {
-  const { displaySetService, hangingProtocolService, uiNotificationService } =
+  const { displaySetService, hangingProtocolService, uiNotificationService, customizationService } =
     servicesManager.services;
+  /**
+   * Function to apply the hanging protocol when the minimum number of display sets were
+   * received or all display sets retrieval were completed
+   * @returns
+   */
+  function applyHangingProtocol() {
+    const displaySets = displaySetService.getActiveDisplaySets();
+
+    if (!displaySets || !displaySets.length) {
+      return;
+    }
+
+    // Gets the studies list to use
+    const studies = getStudies(studyInstanceUIDs, displaySets);
+
+    // study being displayed, and is thus the "active" study.
+    const activeStudy = studies[0];
+
+    // run the hanging protocol matching on the displaySets with the predefined
+    // hanging protocol in the mode configuration
+    hangingProtocolService.run({ studies, activeStudy, displaySets }, hangingProtocolId);
+  }
 
   const unsubscriptions = [];
   const issuedWarningSeries = [];
@@ -55,18 +76,24 @@ function defaultRouteInit(
           duration: 7000,
         });
       }
+
       displaySetService.makeDisplaySets(seriesMetadata.instances, madeInClient);
     }
   );
 
   unsubscriptions.push(instanceAddedUnsubscribe);
 
-  log.time(TimingEnum.STUDY_TO_DISPLAY_SETS);
-  log.time(TimingEnum.STUDY_TO_FIRST_IMAGE);
+  log.time(Enums.TimingEnum.STUDY_TO_DISPLAY_SETS);
+  log.time(Enums.TimingEnum.STUDY_TO_FIRST_IMAGE);
+
   const allRetrieves = studyInstanceUIDs.map(StudyInstanceUID =>
     dataSource.retrieve.series.metadata({
       StudyInstanceUID,
       filters,
+      returnPromises: true,
+      sortCriteria:
+        customizationService.get('sortingCriteria') ||
+        sortingCriteria.seriesSortCriteria.seriesInfoSortingCriteria,
     })
   );
 
@@ -77,31 +104,34 @@ function defaultRouteInit(
     });
   });
 
-  // The hanging protocol matching service is fairly expensive to run multiple
-  // times, and doesn't allow partial matches to be made (it will simply fail
-  // to display anything if a required match fails), so we wait here until all metadata
-  // is retrieved (which will synchronously trigger the display set creation)
-  // until we run the hanging protocol matching service.
+  Promise.allSettled(allRetrieves).then(promises => {
+    log.timeEnd(Enums.TimingEnum.STUDY_TO_DISPLAY_SETS);
+    log.time(Enums.TimingEnum.DISPLAY_SETS_TO_FIRST_IMAGE);
+    log.time(Enums.TimingEnum.DISPLAY_SETS_TO_ALL_IMAGES);
 
-  Promise.allSettled(allRetrieves).then(() => {
-    log.timeEnd(TimingEnum.STUDY_TO_DISPLAY_SETS);
-    log.time(TimingEnum.DISPLAY_SETS_TO_FIRST_IMAGE);
-    log.time(TimingEnum.DISPLAY_SETS_TO_ALL_IMAGES);
-    const displaySets = displaySetService.getActiveDisplaySets();
+    const allPromises = [];
+    const remainingPromises = [];
 
-    if (!displaySets || !displaySets.length) {
-      return;
+    function startRemainingPromises(remainingPromises) {
+      remainingPromises.forEach(p => p.forEach(p => p.start()));
     }
 
-    // Gets the studies list to use
-    const studies = getStudies(studyInstanceUIDs, displaySets);
+    promises.forEach(promise => {
+      const retrieveSeriesMetadataPromise = promise.value;
+      if (Array.isArray(retrieveSeriesMetadataPromise)) {
+        const { requiredSeries, remaining } = hangingProtocolService.filterSeriesRequiredForRun(
+          hangingProtocolId,
+          retrieveSeriesMetadataPromise
+        );
+        const requiredSeriesPromises = requiredSeries.map(promise => promise.start());
+        allPromises.push(Promise.allSettled(requiredSeriesPromises));
+        remainingPromises.push(remaining);
+      }
+    });
 
-    // study being displayed, and is thus the "active" study.
-    const activeStudy = studies[0];
-
-    // run the hanging protocol matching on the displaySets with the predefined
-    // hanging protocol in the mode configuration
-    hangingProtocolService.run({ studies, activeStudy, displaySets }, hangingProtocolId);
+    Promise.allSettled(allPromises).then(applyHangingProtocol);
+    startRemainingPromises(remainingPromises);
+    applyHangingProtocol();
   });
 
   return unsubscriptions;
@@ -124,6 +154,15 @@ export default function ModeRoute({
   const params = useParams();
   // The URL's query search parameters where the keys casing is maintained
   const query = useSearchParams();
+
+  mode?.onModeInit?.({
+    servicesManager,
+    extensionManager,
+    commandsManager,
+    appConfig,
+    query,
+  });
+
   // The URL's query search parameters where the keys are all lower case.
   const lowerCaseSearchParams = useSearchParams({ lowerCaseKeys: true });
 
@@ -341,6 +380,7 @@ export default function ModeRoute({
         servicesManager,
         extensionManager,
         commandsManager,
+        appConfig,
       });
 
       /**
@@ -391,6 +431,7 @@ export default function ModeRoute({
           studyInstanceUIDs,
           dataSource,
           filters,
+          appConfig,
         },
         hangingProtocolIdToUse
       );
@@ -472,4 +513,5 @@ ModeRoute.propTypes = {
   extensionManager: PropTypes.object,
   servicesManager: PropTypes.object,
   hotkeysManager: PropTypes.object,
+  commandsManager: PropTypes.object,
 };
