@@ -79,7 +79,7 @@ function modeFactory() {
     extensions: extensionDependencies,
     hangingProtocol: [],
     sopClassHandlers: [],
-    hotkeys: [],
+    hotkeys: []
   };
 }
 

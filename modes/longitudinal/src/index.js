@@ -74,7 +74,7 @@ function modeFactory({ modeConfiguration }) {
     /**
      * Lifecycle hooks
      */
-    onModeEnter: ({ servicesManager, extensionManager, commandsManager }) => {
+    onModeEnter: function ({ servicesManager, extensionManager, commandsManager }) {
       const {
         measurementService,
         toolbarService,
@@ -86,7 +86,12 @@ function modeFactory({ modeConfiguration }) {
       measurementService.clearMeasurements();
 
       // Init Default and SR ToolGroups
-      initToolGroups(extensionManager, toolGroupService, commandsManager);
+      initToolGroups(
+        extensionManager,
+        toolGroupService,
+        commandsManager,
+        this.labelConfig
+      );
 
       let unsubscribe;
       toolbarService.setDefaultTool({
