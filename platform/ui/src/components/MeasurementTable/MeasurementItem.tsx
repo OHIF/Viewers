@@ -12,10 +12,10 @@ const MeasurementItem = ({
   isActive,
   onClick,
   onEdit,
-  item,
   onDelete,
 }) => {
   const [isHovering, setIsHovering] = useState(false);
+  const [isIndexHovering, setIsIndexHovering] = useState(false);
 
   const onEditHandler = event => {
     event.stopPropagation();
@@ -52,10 +52,26 @@ const MeasurementItem = ({
           'bg-primary-light active text-black': isActive,
           'bg-primary-dark text-primary-light group-hover:bg-secondary-main': !isActive,
         })}
+        onMouseEnter={() => setIsIndexHovering(true)}
+        onMouseLeave={() => setIsIndexHovering(false)}
       >
-        {index}
+        {isIndexHovering ? (
+          <Icon
+            name="close"
+            className={classnames(
+              'mx-auto mt-1 w-[10px] text-center transition duration-500 hover:opacity-80',
+              {
+                'bg-primary-light text-black': isActive,
+                'bg-primary-dark text-primary-light group-hover:bg-secondary-main': !isActive,
+              }
+            )}
+            onClick={onDeleteHandler}
+          />
+        ) : (
+          <span>{index}</span>
+        )}
       </div>
-      <div className="relative flex flex-1 flex-col px-2 py-1">
+      <div className="relative flex flex-1 flex-col py-1 pl-2 pr-1">
         <span className="text-primary-light mb-1 text-base">{label}</span>
         {displayText.map((line, i) => (
           <span
@@ -66,31 +82,17 @@ const MeasurementItem = ({
         ))}
         <Icon
           className={classnames(
-            'absolute w-4 cursor-pointer text-white transition duration-300',
+            'absolute w-3 cursor-pointer text-white transition duration-300 hover:opacity-80',
             { 'invisible mr-2 opacity-0': !isActive && !isHovering },
             { 'opacity-1 visible': !isActive && isHovering }
           )}
           name="pencil"
           style={{
-            top: 4,
-            right: 4,
+            top: 7,
+            right: 14,
             transform: isActive || isHovering ? '' : 'translateX(100%)',
           }}
-          onClick={onEditHandler}
-        />
-        <Icon
-          className={classnames(
-            'absolute w-4 cursor-pointer text-white transition duration-300',
-            { 'invisible mr-2 opacity-0': !isActive && !isHovering },
-            { 'opacity-1 visible': !isActive && isHovering }
-          )}
-          name="old-trash"
-          style={{
-            top: 4,
-            right: 28,
-            transform: isActive || isHovering ? '' : 'translateX(100%)',
-          }}
-          onClick={onDeleteHandler}
+          onClick={e => onEditHandler(e)}
         />
       </div>
     </div>
