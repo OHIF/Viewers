@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-beta.60](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.59...v3.8.0-beta.60) (2024-03-15)
+
+
+### Features
+
+* **delete measurement:** icon for measurement table ([#3775](https://github.com/OHIF/Viewers/issues/3775)) ([f7fe91c](https://github.com/OHIF/Viewers/commit/f7fe91c5f6c4f05f3f3f5f640d3a119bd40a5870))
+
+
+
+
+
 # [3.8.0-beta.59](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.58...v3.8.0-beta.59) (2024-03-08)
 
 **Note:** Version bump only for package @ohif/app
