@@ -29,7 +29,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
   const [viewportGrid] = useViewportGrid();
   const [measurementChangeTimestamp, setMeasurementsUpdated] = useState(Date.now().toString());
   const debouncedMeasurementChangeTimestamp = useDebounce(measurementChangeTimestamp, 200);
-  const { measurementService, uiDialogService, displaySetService } = servicesManager.services;
+  const { measurementService, uiDialogService, displaySetService, customizationService } = servicesManager.services;
   const [trackedMeasurements, sendTrackedMeasurementsEvent] = useTrackedMeasurements();
   const { trackedStudy, trackedSeries } = trackedMeasurements.context;
   const [displayStudySummary, setDisplayStudySummary] = useState(
@@ -135,13 +135,13 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
 
   const onMeasurementItemEditHandler = ({ uid, isActive }) => {
     jumpToImage({ uid, isActive });
-    const modeLabelConfig = measurementService.getLabelConfig();
+    const labelConfig = customizationService.get('measurementLabels');
     const measurement = measurementService.getMeasurement(uid);
     const utilityModule = extensionManager.getModuleEntry(
       '@ohif/extension-cornerstone.utilityModule.common'
     );
     const { showLabelAnnotationPopup } = utilityModule.exports;
-    showLabelAnnotationPopup(measurement, uiDialogService, modeLabelConfig).then(
+    showLabelAnnotationPopup(measurement, uiDialogService, labelConfig).then(
       (val: Map<any, any>) => {
         measurementService.update(
           uid,

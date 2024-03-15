@@ -383,9 +383,6 @@ export default function ModeRoute({
         appConfig,
       });
 
-      if (mode.labelConfig) {
-        measurementService.setLabelConfig(mode.labelConfig);
-      }
       /**
        * The next line should get all the query parameters provided by the URL
        * - except the StudyInstanceUIDs - and create an object called filters
@@ -493,7 +490,7 @@ export default function ModeRoute({
     <ImageViewerProvider
       // initialState={{ StudyInstanceUIDs: StudyInstanceUIDs }}
       StudyInstanceUIDs={studyInstanceUIDs}
-      // reducer={reducer}
+    // reducer={reducer}
     >
       <CombinedContextProvider>
         <DragAndDropProvider>

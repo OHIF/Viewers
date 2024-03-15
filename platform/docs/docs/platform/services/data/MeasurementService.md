@@ -71,12 +71,6 @@ There are seven events that get publish in `MeasurementService`:
 - `jumpToMeasurement(viewportId, id)`: calls the listeners who have
   subscribed to `JUMP_TO_MEASUREMENT`.
 
-- `setLabelConfig(config)`: provide a list of autocompleted labels and its
-  configurations from mode.
-
-- `getLabelConfig(config)`: provide a list of autocompleted labels and its
-configurations from mode.
-
 ## Source / Mappers
 
 To create a custom measurement source and relevant mappers for each tool, you

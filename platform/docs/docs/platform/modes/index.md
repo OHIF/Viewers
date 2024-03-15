@@ -79,8 +79,7 @@ function modeFactory() {
     extensions: extensionDependencies,
     hangingProtocol: [],
     sopClassHandlers: [],
-    hotkeys: [],
-    labelConfig: {}
+    hotkeys: []
   };
 }
 
@@ -184,14 +183,6 @@ export default mode;
         </a>
       </td>
       <td align="left">hotkeys</td>
-    </tr>
-    <tr>
-      <td align="left">
-        <a href="">
-          labelConfig
-        </a>
-      </td>
-      <td align="left">Can be used to configure measurements</td>
     </tr>
 
   </tbody>

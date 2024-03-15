@@ -89,7 +89,7 @@ function callInputDialog(
   }
 }
 
-export function callInputDialogForCustomLabel(
+export function callLabelAutocompleteDialog(
   uiDialogService,
   callback,
   dialogConfig,

@@ -16,7 +16,7 @@ import { Types as OhifTypes } from '@ohif/core';
 import { vec3, mat4 } from 'gl-matrix';
 
 import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownloadForm';
-import { callInputDialogForCustomLabel, showLabelAnnotationPopup } from './utils/callInputDialog';
+import { callLabelAutocompleteDialog, showLabelAnnotationPopup } from './utils/callInputDialog';
 import callInputDialog from './utils/callInputDialog';
 import toggleImageSliceSync from './utils/imageSliceSync/toggleImageSliceSync';
 import { getFirstAnnotationSelected } from './utils/measurementServiceMappings/utils/selection';
@@ -36,6 +36,7 @@ function commandsModule({
     cornerstoneViewportService,
     uiNotificationService,
     measurementService,
+    customizationService,
   } = servicesManager.services as CornerstoneServices;
 
   const { measurementServiceSource } = this;
@@ -133,7 +134,7 @@ function commandsModule({
      * on the measurement with a response if not cancelled.
      */
     setMeasurementLabel: ({ uid }) => {
-      const labelConfig = measurementService.getLabelConfig();
+      const labelConfig = customizationService.get('measurementLabels');
       const measurement = measurementService.getMeasurement(uid);
       showLabelAnnotationPopup(measurement, uiDialogService, labelConfig).then(
         (val: Map<any, any>) => {
@@ -221,8 +222,8 @@ function commandsModule({
       viewportGridService.setActiveViewportId(viewportId);
     },
     arrowTextCallback: ({ callback, data, uid }) => {
-      const labelConfig = measurementService.getLabelConfig();
-      callInputDialogForCustomLabel(uiDialogService, callback, {}, labelConfig);
+      const labelConfig = customizationService.get('measurementLabels');
+      callLabelAutocompleteDialog(uiDialogService, callback, {}, labelConfig);
     },
     cleanUpCrosshairs: () => {
       // if the crosshairs tool is active, deactivate it and set window level active

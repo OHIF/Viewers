@@ -87,12 +87,6 @@ const VALUE_TYPES = {
   ROI_THRESHOLD_MANUAL: 'value_type::roiThresholdManual',
 };
 
-type LabelConfig = {
-  labelOnMeasure: boolean,
-  exclusive: boolean,
-  items: Array<{ label: string, value: string }>
-}
-
 /**
  * MeasurementService class that supports source management and measurement management.
  * Sources can be any library that can provide "annotations" (e.g. cornerstone-tools, cornerstone, etc.)
@@ -121,20 +115,10 @@ class MeasurementService extends PubSubService {
   private measurements = new Map();
   private unmappedMeasurements = new Set();
 
-  private labelConfig: LabelConfig;
-
   constructor() {
     super(EVENTS);
     this.sources = {};
     this.mappings = {};
-  }
-
-  setLabelConfig(config: LabelConfig) {
-    this.labelConfig = config;
-  }
-
-  getLabelConfig() {
-    return this.labelConfig;
   }
 
   /**
@@ -598,7 +582,6 @@ class MeasurementService extends PubSubService {
    */
   onModeExit() {
     this.clearMeasurements();
-    this.setLabelConfig(null);
   }
 
   /**

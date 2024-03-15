@@ -32,7 +32,7 @@ function TrackedMeasurementsContextProvider(
 
   const [viewportGrid, viewportGridService] = useViewportGrid();
   const { activeViewportId, viewports } = viewportGrid;
-  const { measurementService, displaySetService } = servicesManager.services;
+  const { measurementService, displaySetService, customizationService } = servicesManager.services;
 
   const machineOptions = Object.assign({}, defaultOptions);
   machineOptions.actions = Object.assign({}, machineOptions.actions, {
@@ -151,11 +151,11 @@ function TrackedMeasurementsContextProvider(
   });
   machineOptions.guards = Object.assign({}, machineOptions.guards, {
     isLabelOnMeasure: (ctx, evt, condMeta) => {
-      const labelConfig = measurementService.getLabelConfig();
+      const labelConfig = customizationService.get('measurementLabels');
       return labelConfig?.labelOnMeasure;
     },
     isLabelOnMeasureAndShouldKillMachine: (ctx, evt, condMeta) => {
-      const labelConfig = measurementService.getLabelConfig();
+      const labelConfig = customizationService.get('measurementLabels');
       return evt.data && evt.data.userResponse === RESPONSE.NO_NEVER && labelConfig?.labelOnMeasure;
     }
   });
