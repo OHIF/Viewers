@@ -1452,7 +1452,7 @@
     core-js-pure "^3.30.2"
     regenerator-runtime "^0.14.0"
 
-"@babel/runtime@7.17.9", "@babel/runtime@7.22.11", "@babel/runtime@^7.0.0", "@babel/runtime@^7.1.2", "@babel/runtime@^7.10.3", "@babel/runtime@^7.11.2", "@babel/runtime@^7.12.0", "@babel/runtime@^7.12.13", "@babel/runtime@^7.12.5", "@babel/runtime@^7.13.10", "@babel/runtime@^7.14.6", "@babel/runtime@^7.15.4", "@babel/runtime@^7.16.3", "@babel/runtime@^7.17.8", "@babel/runtime@^7.18.3", "@babel/runtime@^7.18.6", "@babel/runtime@^7.2.0", "@babel/runtime@^7.20.13", "@babel/runtime@^7.20.6", "@babel/runtime@^7.23.2", "@babel/runtime@^7.3.1", "@babel/runtime@^7.4.4", "@babel/runtime@^7.4.5", "@babel/runtime@^7.5.5", "@babel/runtime@^7.6.0", "@babel/runtime@^7.7.4", "@babel/runtime@^7.7.6", "@babel/runtime@^7.8.3", "@babel/runtime@^7.8.4", "@babel/runtime@^7.8.7", "@babel/runtime@^7.9.2":
+"@babel/runtime@7.22.11", "@babel/runtime@^7.0.0", "@babel/runtime@^7.1.2", "@babel/runtime@^7.10.3", "@babel/runtime@^7.11.2", "@babel/runtime@^7.12.0", "@babel/runtime@^7.12.13", "@babel/runtime@^7.12.5", "@babel/runtime@^7.13.10", "@babel/runtime@^7.14.6", "@babel/runtime@^7.15.4", "@babel/runtime@^7.16.3", "@babel/runtime@^7.17.8", "@babel/runtime@^7.18.3", "@babel/runtime@^7.18.6", "@babel/runtime@^7.2.0", "@babel/runtime@^7.20.13", "@babel/runtime@^7.20.6", "@babel/runtime@^7.23.2", "@babel/runtime@^7.3.1", "@babel/runtime@^7.4.4", "@babel/runtime@^7.4.5", "@babel/runtime@^7.5.5", "@babel/runtime@^7.6.0", "@babel/runtime@^7.7.4", "@babel/runtime@^7.7.6", "@babel/runtime@^7.8.3", "@babel/runtime@^7.8.4", "@babel/runtime@^7.8.7", "@babel/runtime@^7.9.2":
   version "7.23.6"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.23.6.tgz#c05e610dc228855dc92ef1b53d07389ed8ab521d"
   integrity sha512-zHd0eUrf5GZoOWVCXp6koAKQTfZV07eit6bGPmJgnZdnSAvvZee6zniW2XMF7Cmc4ISOOnPy3QaSiIJGJkVEDQ==
@@ -1561,21 +1561,21 @@
   resolved "https://registry.yarnpkg.com/@cornerstonejs/codec-openjph/-/codec-openjph-2.4.5.tgz#8690b61a86fa53ef38a70eee9d665a79229517c0"
   integrity sha512-MZCUy8VG0VG5Nl1l58+g+kH3LujAzLYTfJqkwpWI2gjSrGXnP6lgwyy4GmPRZWVoS40/B1LDNALK905cNWm+sg==
 
-"@cornerstonejs/core@^1.19.1":
-  version "1.41.0"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/core/-/core-1.41.0.tgz#cbc32582b92247fdef7d896428ce310746523b75"
-  integrity sha512-bAHLDGixOgenDPQee+LaB7N7TSDix9RLAwVDFpXWVglFadYxWBtupWg3b6+lMGZGUL2PLfBI9z7nnGQOCV4pgw==
+"@cornerstonejs/core@^1.65.0":
+  version "1.65.0"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/core/-/core-1.65.0.tgz#d5980d82f184e75215741c832df64e6231c45842"
+  integrity sha512-yWccJB0HkZx7/WVSLr96dwveZiprnvFNjn+QcYNnLof27C4myuj+nOLMDyTSi/6s/+50RTK3q/+vvB0EpX0Upg==
   dependencies:
-    "@kitware/vtk.js" "27.3.1"
+    "@kitware/vtk.js" "29.7.0"
     comlink "^4.4.1"
     detect-gpu "^5.0.22"
     gl-matrix "^3.4.3"
     lodash.clonedeep "4.5.0"
 
-"@cornerstonejs/core@^1.65.0":
-  version "1.65.0"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/core/-/core-1.65.0.tgz#d5980d82f184e75215741c832df64e6231c45842"
-  integrity sha512-yWccJB0HkZx7/WVSLr96dwveZiprnvFNjn+QcYNnLof27C4myuj+nOLMDyTSi/6s/+50RTK3q/+vvB0EpX0Upg==
+"@cornerstonejs/core@^1.66.6":
+  version "1.66.6"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/core/-/core-1.66.6.tgz#2f7a8299245076155bff827c94b618cc83e647ff"
+  integrity sha512-8++yVas+7GQfookALFEINByCF5m+PyVzajMaEXJ8NnM9tUs0M6MSeak8avY1KMtrpuVPmzZtonq66X+m5zAA9Q==
   dependencies:
     "@kitware/vtk.js" "29.7.0"
     comlink "^4.4.1"
@@ -1622,12 +1622,12 @@
     pako "^2.0.4"
     uuid "^9.0.0"
 
-"@cornerstonejs/nifti-volume-loader@1.19.1":
-  version "1.19.1"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/nifti-volume-loader/-/nifti-volume-loader-1.19.1.tgz#225b428f0d1828e7c9d3c9db4b582fb98805218c"
-  integrity sha512-gZhfR3+mbfoIfanXBrBPXpxNaWwBL1DkrI72Oh5/56Bcu4AcRrNOavgJNrHaSv0n4TYLwtQQxUspG0hGlGZP0Q==
+"@cornerstonejs/nifti-volume-loader@^1.65.0":
+  version "1.66.6"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/nifti-volume-loader/-/nifti-volume-loader-1.66.6.tgz#10319db3fe845660959753c9cf1e7ced776875d9"
+  integrity sha512-uBvWOKCCfNpYWHZECOOxThlVWOiXEQ1r4ZI3zDt4Uv84ozmi2VtUF5IxRubj4mxsRJgRnHuKUvNpxN5TGraDNg==
   dependencies:
-    "@cornerstonejs/core" "^1.19.1"
+    "@cornerstonejs/core" "^1.66.6"
     nifti-reader-js "^0.6.6"
 
 "@cornerstonejs/streaming-image-volume-loader@^1.65.0":
@@ -3233,27 +3233,6 @@
   version "3.4.0"
   resolved "https://registry.yarnpkg.com/@juggle/resize-observer/-/resize-observer-3.4.0.tgz#08d6c5e20cf7e4cc02fd181c4b0c225cd31dbb60"
   integrity sha512-dfLbk+PwWvFzSxwk3n5ySL0hfBog779o8h68wK/7/APo/7cgyWp5jcXockbxdk5kFRkbeXWm4Fbi9FrdN381sA==
-
-"@kitware/vtk.js@27.3.1":
-  version "27.3.1"
-  resolved "https://registry.yarnpkg.com/@kitware/vtk.js/-/vtk.js-27.3.1.tgz#65004b041642663da94e6a488ebb813576e7de7d"
-  integrity sha512-GvAXdOKtDDbkaSdO+UhKnDST4CW1C3fHgaDvA0wn1ZWTLm/6SFAMzarTjpzsVGYCPoEYIhCAAlBQ7K7aDcu3Vg==
-  dependencies:
-    "@babel/runtime" "7.17.9"
-    commander "9.2.0"
-    d3-scale "4.0.2"
-    fast-deep-equal "^3.1.3"
-    fflate "0.7.3"
-    gl-matrix "3.4.3"
-    globalthis "1.0.3"
-    seedrandom "3.0.5"
-    shader-loader "1.3.1"
-    shelljs "0.8.5"
-    spark-md5 "3.0.2"
-    stream-browserify "3.0.0"
-    webworker-promise "0.5.0"
-    worker-loader "3.0.8"
-    xmlbuilder2 "3.0.2"
 
 "@kitware/vtk.js@29.7.0":
   version "29.7.0"
