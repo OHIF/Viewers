@@ -58,6 +58,7 @@ const MEASUREMENT_SCHEMA_KEYS = [
   'longestDiameter',
   'cachedStats',
   'selected',
+  'textBox',
 ];
 
 const EVENTS = {
@@ -146,9 +147,7 @@ class MeasurementService extends PubSubService {
 
     // check if valuetype is valid , and if values are strings
     if (!valueType || typeof valueType !== 'object') {
-      console.warn(
-        `MeasurementService: addValueType: invalid valueType: ${valueType}`
-      );
+      console.warn(`MeasurementService: addValueType: invalid valueType: ${valueType}`);
       return;
     }
 
@@ -178,10 +177,7 @@ class MeasurementService extends PubSubService {
     return this.measurements.get(measurementUID);
   }
 
-  public setMeasurementSelected(
-    measurementUID: string,
-    selected: boolean
-  ): void {
+  public setMeasurementSelected(measurementUID: string, selected: boolean): void {
     const measurement = this.getMeasurement(measurementUID);
     if (!measurement) {
       return;
@@ -230,17 +226,8 @@ class MeasurementService extends PubSubService {
       version,
     };
 
-    source.annotationToMeasurement = (
-      annotationType,
-      annotation,
-      isUpdate = false
-    ) => {
-      return this.annotationToMeasurement(
-        source,
-        annotationType,
-        annotation,
-        isUpdate
-      );
+    source.annotationToMeasurement = (annotationType, annotation, isUpdate = false) => {
+      return this.annotationToMeasurement(source, annotationType, annotation, isUpdate);
     };
 
     source.remove = (measurementUID, eventDetails) => {
@@ -281,13 +268,7 @@ class MeasurementService extends PubSubService {
    * @param {Function} toMeasurementSchema Mapping function to measurement schema
    * @return void
    */
-  addMapping(
-    source,
-    annotationType,
-    matchingCriteria,
-    toAnnotationSchema,
-    toMeasurementSchema
-  ) {
+  addMapping(source, annotationType, matchingCriteria, toAnnotationSchema, toMeasurementSchema) {
     if (!this._isValidSource(source)) {
       throw new Error('Invalid source.');
     }
@@ -321,11 +302,7 @@ class MeasurementService extends PubSubService {
       this.mappings[source.uid] = [mapping];
     }
 
-    log.info(
-      `New measurement mapping added to source '${this._getSourceToString(
-        source
-      )}'.`
-    );
+    log.info(`New measurement mapping added to source '${this._getSourceToString(source)}'.`);
   }
 
   /**
@@ -348,20 +325,13 @@ class MeasurementService extends PubSubService {
     }
 
     const measurement = this.getMeasurement(measurementUID);
-    const mapping = this._getMappingByMeasurementSource(
-      measurement,
-      annotationType
-    );
+    const mapping = this._getMappingByMeasurementSource(measurement, annotationType);
 
     if (mapping) {
       return mapping.toAnnotationSchema(measurement, annotationType);
     }
 
-    const matchingMapping = this._getMatchingMapping(
-      source,
-      annotationType,
-      measurement
-    );
+    const matchingMapping = this._getMatchingMapping(source, annotationType, measurement);
 
     if (matchingMapping) {
       log.info('Matching mapping found:', matchingMapping);
@@ -380,10 +350,7 @@ class MeasurementService extends PubSubService {
       modifiedTimestamp: Math.floor(Date.now() / 1000),
     };
 
-    log.info(
-      `Updating internal measurement representation...`,
-      updatedMeasurement
-    );
+    log.info(`Updating internal measurement representation...`, updatedMeasurement);
 
     this.measurements.set(measurementUID, updatedMeasurement);
 
@@ -405,13 +372,7 @@ class MeasurementService extends PubSubService {
    * @param {object} data The data you wish to add to the source.
    * @param {function} toMeasurementSchema A function to get the `data` into the same shape as the source annotationType.
    */
-  addRawMeasurement(
-    source,
-    annotationType,
-    data,
-    toMeasurementSchema,
-    dataSource = {}
-  ) {
+  addRawMeasurement(source, annotationType, data, toMeasurementSchema, dataSource = {}) {
     if (!this._isValidSource(source)) {
       log.warn('Invalid source. Exiting early.');
       return;
@@ -425,9 +386,7 @@ class MeasurementService extends PubSubService {
     }
 
     if (!this._sourceHasMappings(source)) {
-      log.warn(
-        `No measurement mappings found for '${sourceInfo}' source. Exiting early.`
-      );
+      log.warn(`No measurement mappings found for '${sourceInfo}' source. Exiting early.`);
       return;
     }
 
@@ -484,7 +443,7 @@ class MeasurementService extends PubSubService {
       });
     }
 
-    return newMeasurement.id;
+    return newMeasurement.uid;
   }
 
   /**
@@ -496,12 +455,7 @@ class MeasurementService extends PubSubService {
    * @param {boolean} isUpdate is this an update or an add/completed instead?
    * @return {string} A measurement uid
    */
-  annotationToMeasurement(
-    source,
-    annotationType,
-    sourceAnnotationDetail,
-    isUpdate = false
-  ) {
+  annotationToMeasurement(source, annotationType, sourceAnnotationDetail, isUpdate = false) {
     if (!this._isValidSource(source)) {
       throw new Error('Invalid source.');
     }
@@ -512,9 +466,7 @@ class MeasurementService extends PubSubService {
     const sourceInfo = this._getSourceToString(source);
 
     if (!this._sourceHasMappings(source)) {
-      throw new Error(
-        `No measurement mappings found for '${sourceInfo}' source. Exiting early.`
-      );
+      throw new Error(`No measurement mappings found for '${sourceInfo}' source. Exiting early.`);
     }
 
     let measurement = {};
@@ -566,7 +518,7 @@ class MeasurementService extends PubSubService {
     };
 
     if (oldMeasurement) {
-      // TODO: Ultimately, each annotation should have a selected flag right from the soure.
+      // TODO: Ultimately, each annotation should have a selected flag right from the source.
       // For now, it is just added in OHIF here and in setMeasurementSelected.
       this.measurements.set(internalUID, newMeasurement);
       if (isUpdate) {
@@ -599,8 +551,7 @@ class MeasurementService extends PubSubService {
   remove(measurementUID, source, eventDetails) {
     if (
       !measurementUID ||
-      (!this.measurements.has(measurementUID) &&
-        !this.unmappedMeasurements.has(measurementUID))
+      (!this.measurements.has(measurementUID) && !this.unmappedMeasurements.has(measurementUID))
     ) {
       log.warn(`No uid provided, or unable to find measurement by uid.`);
       return;
@@ -649,10 +600,7 @@ class MeasurementService extends PubSubService {
    * merely causes it to fire the event with the isConsumed set to true.
    */
 
-  public jumpToMeasurement(
-    viewportIndex: number,
-    measurementUID: string
-  ): void {
+  public jumpToMeasurement(viewportId: string, measurementUID: string): void {
     const measurement = this.measurements.get(measurementUID);
 
     if (!measurement) {
@@ -660,7 +608,7 @@ class MeasurementService extends PubSubService {
       return;
     }
     const consumableEvent = this.createConsumableEvent({
-      viewportIndex,
+      viewportId,
       measurement,
     });
 
@@ -682,9 +630,7 @@ class MeasurementService extends PubSubService {
 
   _getMappingByMeasurementSource(measurement, annotationType) {
     if (this._isValidSource(measurement.source)) {
-      return this.mappings[measurement.source.uid].find(
-        m => m.annotationType === annotationType
-      );
+      return this.mappings[measurement.source.uid].find(m => m.annotationType === annotationType);
     }
   }
 
@@ -705,10 +651,7 @@ class MeasurementService extends PubSubService {
 
     /* Criteria Matching */
     return sourceMappingsByDefinition.find(({ matchingCriteria }) => {
-      return (
-        measurement.points &&
-        measurement.points.length === matchingCriteria.points
-      );
+      return measurement.points && measurement.points.length === matchingCriteria.points;
     });
   }
 
@@ -739,10 +682,7 @@ class MeasurementService extends PubSubService {
    * @return {boolean} Validation if source has mappings
    */
   _sourceHasMappings(source) {
-    return (
-      Array.isArray(this.mappings[source.uid]) &&
-      this.mappings[source.uid].length
-    );
+    return Array.isArray(this.mappings[source.uid]) && this.mappings[source.uid].length;
   }
 
   /**
@@ -752,14 +692,14 @@ class MeasurementService extends PubSubService {
    * @return {boolean} Measurement validation
    */
   _isValidMeasurement(measurementData) {
-    Object.keys(measurementData).forEach(key => {
+    return Object.keys(measurementData).every(key => {
       if (!MEASUREMENT_SCHEMA_KEYS.includes(key)) {
         log.warn(`Invalid measurement key: ${key}`);
         return false;
       }
-    });
 
-    return true;
+      return true;
+    });
   }
 
   /**

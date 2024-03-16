@@ -1,6 +1,5 @@
 {
-  "version": "3.7.0-beta.46",
+  "version": "3.8.0-beta.60",
   "packages": ["extensions/*", "platform/*", "modes/*"],
-  "npmClient": "yarn",
-  "useWorkspaces": true
+  "npmClient": "yarn"
 }

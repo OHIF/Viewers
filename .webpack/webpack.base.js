@@ -7,8 +7,7 @@ const fs = require('fs');
 const webpack = require('webpack');
 
 // ~~ PLUGINS
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
-  .BundleAnalyzerPlugin;
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const TerserJSPlugin = require('terser-webpack-plugin');
 
 // ~~ PackageJSON
@@ -19,6 +18,7 @@ const loadShadersRule = require('./rules/loadShaders.js');
 const loadWebWorkersRule = require('./rules/loadWebWorkers.js');
 const transpileJavaScriptRule = require('./rules/transpileJavaScript.js');
 const cssToJavaScript = require('./rules/cssToJavaScript.js');
+const stylusToJavaScript = require('./rules/stylusToJavaScript.js');
 
 // ~~ ENV VARS
 const NODE_ENV = process.env.NODE_ENV;
@@ -26,14 +26,33 @@ const QUICK_BUILD = process.env.QUICK_BUILD;
 const BUILD_NUM = process.env.CIRCLE_BUILD_NUM || '0';
 
 // read from ../version.txt
-const VERSION_NUMBER =
-  fs.readFileSync(path.join(__dirname, '../version.txt'), 'utf8') || '';
+const VERSION_NUMBER = fs.readFileSync(path.join(__dirname, '../version.txt'), 'utf8') || '';
 
-const COMMIT_HASH =
-  fs.readFileSync(path.join(__dirname, '../commit.txt'), 'utf8') || '';
+const COMMIT_HASH = fs.readFileSync(path.join(__dirname, '../commit.txt'), 'utf8') || '';
 
 //
 dotenv.config();
+
+const defineValues = {
+  /* Application */
+  'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+  'process.env.NODE_DEBUG': JSON.stringify(process.env.NODE_DEBUG),
+  'process.env.DEBUG': JSON.stringify(process.env.DEBUG),
+  'process.env.PUBLIC_URL': JSON.stringify(process.env.PUBLIC_URL || '/'),
+  'process.env.BUILD_NUM': JSON.stringify(BUILD_NUM),
+  'process.env.VERSION_NUMBER': JSON.stringify(VERSION_NUMBER),
+  'process.env.COMMIT_HASH': JSON.stringify(COMMIT_HASH),
+  /* i18n */
+  'process.env.USE_LOCIZE': JSON.stringify(process.env.USE_LOCIZE || ''),
+  'process.env.LOCIZE_PROJECTID': JSON.stringify(process.env.LOCIZE_PROJECTID || ''),
+  'process.env.LOCIZE_API_KEY': JSON.stringify(process.env.LOCIZE_API_KEY || ''),
+  'process.env.REACT_APP_I18N_DEBUG': JSON.stringify(process.env.REACT_APP_I18N_DEBUG || ''),
+};
+
+// Only redefine updated values.  This avoids warning messages in the logs
+if (!process.env.APP_CONFIG) {
+  defineValues['process.env.APP_CONFIG'] = '';
+}
 
 module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
   if (!process.env.NODE_ENV) {
@@ -94,6 +113,9 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
           },
         },
         cssToJavaScript,
+        // Note: Only uncomment the following if you are using the old style of stylus in v2
+        // Also you need to uncomment this platform/app/.webpack/rules/extractStyleChunks.js
+        // stylusToJavaScript,
         {
           test: /\.wasm/,
           type: 'asset/resource',
@@ -105,10 +127,7 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
       alias: {
         // Viewer project
         '@': path.resolve(__dirname, '../platform/app/src'),
-        '@components': path.resolve(
-          __dirname,
-          '../platform/app/src/components'
-        ),
+        '@components': path.resolve(__dirname, '../platform/app/src/components'),
         '@hooks': path.resolve(__dirname, '../platform/app/src/hooks'),
         '@routes': path.resolve(__dirname, '../platform/app/src/routes'),
         '@state': path.resolve(__dirname, '../platform/app/src/state'),
@@ -131,29 +150,17 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
       extensions: ['.js', '.jsx', '.json', '.ts', '.tsx', '*'],
       // symlinked resources are resolved to their real path, not their symlinked location
       symlinks: true,
-      fallback: { fs: false, path: false, zlib: false },
+      fallback: {
+        fs: false,
+        path: false,
+        zlib: false,
+        buffer: require.resolve('buffer'),
+      },
     },
     plugins: [
-      new webpack.DefinePlugin({
-        /* Application */
-        'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
-        'process.env.DEBUG': JSON.stringify(process.env.DEBUG),
-        'process.env.APP_CONFIG': JSON.stringify(process.env.APP_CONFIG || ''),
-        'process.env.PUBLIC_URL': JSON.stringify(process.env.PUBLIC_URL || '/'),
-        'process.env.BUILD_NUM': JSON.stringify(BUILD_NUM),
-        'process.env.VERSION_NUMBER': JSON.stringify(VERSION_NUMBER),
-        'process.env.COMMIT_HASH': JSON.stringify(COMMIT_HASH),
-        /* i18n */
-        'process.env.USE_LOCIZE': JSON.stringify(process.env.USE_LOCIZE || ''),
-        'process.env.LOCIZE_PROJECTID': JSON.stringify(
-          process.env.LOCIZE_PROJECTID || ''
-        ),
-        'process.env.LOCIZE_API_KEY': JSON.stringify(
-          process.env.LOCIZE_API_KEY || ''
-        ),
-        'process.env.REACT_APP_I18N_DEBUG': JSON.stringify(
-          process.env.REACT_APP_I18N_DEBUG || ''
-        ),
+      new webpack.DefinePlugin(defineValues),
+      new webpack.ProvidePlugin({
+        Buffer: ['buffer', 'Buffer'],
       }),
       // Uncomment to generate bundle analyzer
       // new BundleAnalyzerPlugin(),

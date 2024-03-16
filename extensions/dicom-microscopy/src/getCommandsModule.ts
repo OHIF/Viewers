@@ -11,11 +11,7 @@ export default function getCommandsModule({
   commandsManager: CommandsManager;
   extensionManager: ExtensionManager;
 }) {
-  const {
-    viewportGridService,
-    uiDialogService,
-    microscopyService,
-  } = servicesManager.services;
+  const { viewportGridService, uiDialogService, microscopyService } = servicesManager.services;
 
   const actions = {
     // Measurement tool commands:
@@ -63,15 +59,9 @@ export default function getCommandsModule({
         },
       ];
       if (
-        [
-          'line',
-          'box',
-          'circle',
-          'point',
-          'polygon',
-          'freehandpolygon',
-          'freehandline',
-        ].indexOf(toolName) >= 0
+        ['line', 'box', 'circle', 'point', 'polygon', 'freehandpolygon', 'freehandline'].indexOf(
+          toolName
+        ) >= 0
       ) {
         // TODO: read from configuration
         const options = {
@@ -122,24 +112,9 @@ export default function getCommandsModule({
         ]);
       }
     },
-
-    incrementActiveViewport: () => {
-      const { activeViewportIndex, viewports } = viewportGridService.getState();
-      const nextViewportIndex = (activeViewportIndex + 1) % viewports.length;
-      viewportGridService.setActiveViewportIndex(nextViewportIndex);
-    },
-    decrementActiveViewport: () => {
-      const { activeViewportIndex, viewports } = viewportGridService.getState();
-      const nextViewportIndex =
-        (activeViewportIndex - 1 + viewports.length) % viewports.length;
-      viewportGridService.setActiveViewportIndex(nextViewportIndex);
-    },
-
     toggleOverlays: () => {
       // overlay
-      const overlays = document.getElementsByClassName(
-        'microscopy-viewport-overlay'
-      );
+      const overlays = document.getElementsByClassName('microscopy-viewport-overlay');
       let onoff = false; // true if this will toggle on
       for (let i = 0; i < overlays.length; i++) {
         if (i === 0) {
@@ -149,8 +124,8 @@ export default function getCommandsModule({
       }
 
       // overview
-      const { activeViewportIndex, viewports } = viewportGridService.getState();
-      microscopyService.toggleOverviewMap(activeViewportIndex);
+      const { activeViewportId, viewports } = viewportGridService.getState();
+      microscopyService.toggleOverviewMap(activeViewportId);
     },
     toggleAnnotations: () => {
       microscopyService.toggleROIsVisibility();
@@ -172,14 +147,6 @@ export default function getCommandsModule({
       commandFn: actions.setToolActive,
       storeContexts: [] as any[],
       options: {},
-    },
-    incrementActiveViewport: {
-      commandFn: actions.incrementActiveViewport,
-      storeContexts: [] as any[],
-    },
-    decrementActiveViewport: {
-      commandFn: actions.decrementActiveViewport,
-      storeContexts: [] as any[],
     },
     toggleOverlays: {
       commandFn: actions.toggleOverlays,

@@ -16,7 +16,7 @@ less product offerings.
 While not required, it can simplify things to host your Web Viewer alongside
 your image archive. Services with more robust product offerings, like
 `Google Cloud`, `Microsoft's Azure`, and `Amazon Web Services (AWS)`, are able
-to accomodate this setup.
+to accommodate this setup.
 
 _Drag-n-drop_
 

@@ -56,7 +56,7 @@ export default {
    */
   id: 'example-extension',
 
-  // Lifecyle
+  // Lifecycle
   preRegistration() { /* */ },
   // Modules
   getCommandsModule() { /* */ },

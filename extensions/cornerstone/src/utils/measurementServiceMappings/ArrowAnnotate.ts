@@ -31,11 +31,7 @@ const Length = {
       throw new Error('Tool not supported');
     }
 
-    const {
-      SOPInstanceUID,
-      SeriesInstanceUID,
-      StudyInstanceUID,
-    } = getSOPInstanceAttributes(
+    const { SOPInstanceUID, SeriesInstanceUID, StudyInstanceUID } = getSOPInstanceAttributes(
       referencedImageId,
       cornerstoneViewportService,
       viewportId
@@ -52,12 +48,9 @@ const Length = {
       displaySet = displaySetService.getDisplaySetsForSeries(SeriesInstanceUID);
     }
 
-    const { points } = data.handles;
+    const { points, textBox } = data.handles;
 
-    const mappedAnnotations = getMappedAnnotations(
-      annotation,
-      displaySetService
-    );
+    const mappedAnnotations = getMappedAnnotations(annotation, displaySetService);
 
     const displayText = getDisplayText(mappedAnnotations, displaySet);
 
@@ -66,6 +59,7 @@ const Length = {
       SOPInstanceUID,
       FrameOfReferenceUID,
       points,
+      textBox,
       metadata,
       referenceSeriesUID: SeriesInstanceUID,
       referenceStudyUID: StudyInstanceUID,
@@ -73,7 +67,6 @@ const Length = {
       toolName: metadata.toolName,
       displaySetInstanceUID: displaySet.displaySetInstanceUID,
       label: data.text,
-      text: data.text,
       displayText: displayText,
       data: data.cachedStats,
       type: getValueTypeFromToolType(toolName),
@@ -91,11 +84,8 @@ function getMappedAnnotations(annotation, displaySetService) {
 
   const annotations = [];
 
-  const {
-    SOPInstanceUID,
-    SeriesInstanceUID,
-    frameNumber,
-  } = getSOPInstanceAttributes(referencedImageId);
+  const { SOPInstanceUID, SeriesInstanceUID, frameNumber } =
+    getSOPInstanceAttributes(referencedImageId);
 
   const displaySet = displaySetService.getDisplaySetForSOPInstanceUID(
     SOPInstanceUID,
@@ -126,9 +116,7 @@ function getDisplayText(mappedAnnotations, displaySet) {
   // Area is the same for all series
   const { SeriesNumber, SOPInstanceUID, frameNumber } = mappedAnnotations[0];
 
-  const instance = displaySet.images.find(
-    image => image.SOPInstanceUID === SOPInstanceUID
-  );
+  const instance = displaySet.images.find(image => image.SOPInstanceUID === SOPInstanceUID);
 
   let InstanceNumber;
   if (instance) {

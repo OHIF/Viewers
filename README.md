@@ -17,6 +17,10 @@ provided by the <a href="https://ohif.org/">Open Health Imaging Foundation (OHIF
 <div align="center">
   📰 <a href="https://ohif.org/news/"><strong>Join OHIF Newsletter</strong></a> 📰
 </div>
+<div align="center">
+  📰 <a href="https://ohif.org/news/"><strong>Join OHIF Newsletter</strong></a> 📰
+</div>
+
 
 
 <hr />
@@ -249,7 +253,7 @@ or, for v1, please cite:
 > [10.1158/0008-5472.CAN-17-0334](https://www.doi.org/10.1158/0008-5472.CAN-17-0334)
 
 **Note:** If you use or find this repository helpful, please take the time to
-star this repository on Github. This is an easy way for us to assess adoption
+star this repository on GitHub. This is an easy way for us to assess adoption
 and it can help us obtain future funding for the project.
 
 This work is supported primarily by the National Institutes of Health, National
@@ -257,7 +261,11 @@ Cancer Institute, Informatics Technology for Cancer Research (ITCR) program,
 under a
 [grant to Dr. Gordon Harris at Massachusetts General Hospital (U24 CA199460)](https://projectreporter.nih.gov/project_info_description.cfm?aid=8971104).
 
-This project is tested with BrowserStack. Thank you for supporting open source
+[NCI Imaging Data Commons (IDC) project](https://imaging.datacommons.cancer.gov/) supported the development of new features and bug fixes marked with ["IDC:priority"](https://github.com/OHIF/Viewers/issues?q=is%3Aissue+is%3Aopen+label%3AIDC%3Apriority),
+["IDC:candidate"](https://github.com/OHIF/Viewers/issues?q=is%3Aissue+is%3Aopen+label%3AIDC%3Acandidate) or ["IDC:collaboration"](https://github.com/OHIF/Viewers/issues?q=is%3Aissue+is%3Aopen+label%3AIDC%3Acollaboration). NCI Imaging Data Commons is supported by contract number 19X037Q from
+Leidos Biomedical Research under Task Order HHSN26100071 from NCI. [IDC Viewer](https://learn.canceridc.dev/portal/visualization) is a customized version of the OHIF Viewer.
+
+This project is tested with BrowserStack. Thank you for supporting open-source!
 
 ## License
 

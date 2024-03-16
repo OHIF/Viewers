@@ -25,6 +25,7 @@ describe('Top level exports', () => {
       //
       'CineService',
       'CustomizationService',
+      'Enums',
       'StateSyncService',
       'UIDialogService',
       'UIModalService',
@@ -39,6 +40,8 @@ describe('Top level exports', () => {
       'UserAuthenticationService',
       'IWebApiDataSource',
       'DicomMetadataStore',
+      'DisplaySetMessage',
+      'DisplaySetMessageList',
       'pubSubServiceInterface',
       'PubSubService',
       'PanelService',

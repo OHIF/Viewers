@@ -11,7 +11,7 @@ const SRC_DIR = path.join(__dirname, '../src');
 const DIST_DIR = path.join(__dirname, '../dist');
 
 const ENTRY = {
-  app: `${SRC_DIR}/index.js`,
+  app: `${SRC_DIR}/index.ts`,
 };
 
 module.exports = (env, argv) => {
@@ -40,13 +40,7 @@ module.exports = (env, argv) => {
       libraryExport: 'default',
       filename: pkg.main,
     },
-    externals: [
-      /\b(vtk.js)/,
-      /\b(dcmjs)/,
-      /\b(gl-matrix)/,
-      /^@ohif/,
-      /^@cornerstonejs/,
-    ],
+    externals: [/\b(vtk.js)/, /\b(dcmjs)/, /\b(gl-matrix)/, /^@ohif/, /^@cornerstonejs/],
     plugins: [
       new webpack.optimize.LimitChunkCountPlugin({
         maxChunks: 1,

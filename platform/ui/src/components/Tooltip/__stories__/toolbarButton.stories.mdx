@@ -9,11 +9,14 @@ export const argTypes = {
   title: 'Components/Tooltip',
 };
 
-<Meta title="Components/Tooltip" component={Tooltip} />
+<Meta
+  title="Components/Tooltip"
+  component={Tooltip}
+/>
 
-export const TooltipTemplate = (args) => (
+export const TooltipTemplate = args => (
   <div className="h-16 w-full">
-    <div class="w-8 h-8 mx-auto">
+    <div class="mx-auto h-8 w-8">
       <Tooltip {...args}>
         <Icon name="clipboard" />
       </Tooltip>
@@ -21,7 +24,10 @@ export const TooltipTemplate = (args) => (
   </div>
 );
 
-<Heading title="Tooltip" componentRelativePath="Tooltip/Tooltip.js" />
+<Heading
+  title="Tooltip"
+  componentRelativePath="Tooltip/Tooltip.js"
+/>
 
 - [Overview](#overview)
 - [Props](#props)
@@ -55,17 +61,23 @@ You can set the position of the tooltip by using the `position` prop.
 
 <Canvas>
   <Story name="Position">
-    <div className="h-16 w-full m-8">
-      <div class="w-8 h-8 mx-auto">
-        <Tooltip position="right" content="right">
+    <div className="m-8 h-16 w-full">
+      <div class="mx-auto h-8 w-8">
+        <Tooltip
+          position="right"
+          content="right"
+        >
           <Icon name="clipboard" />
           <span>Right</span>
         </Tooltip>
       </div>
     </div>
-    <div className="h-16 w-full m-8">
-      <div class="w-8 h-8 mx-auto">
-        <Tooltip position="left" content="left">
+    <div className="m-8 h-16 w-full">
+      <div class="mx-auto h-8 w-8">
+        <Tooltip
+          position="left"
+          content="left"
+        >
           <Icon name="clipboard" />
           <span>Left</span>
         </Tooltip>

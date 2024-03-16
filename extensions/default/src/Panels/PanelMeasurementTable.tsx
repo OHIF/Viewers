@@ -1,13 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
+import { useTranslation } from 'react-i18next';
 import { utils, ServicesManager } from '@ohif/core';
-import {
-  MeasurementTable,
-  Dialog,
-  Input,
-  useViewportGrid,
-  ButtonEnums,
-} from '@ohif/ui';
+import { MeasurementTable, Dialog, Input, useViewportGrid, ButtonEnums } from '@ohif/ui';
 import ActionButtons from './ActionButtons';
 import debounce from 'lodash.debounce';
 
@@ -24,21 +19,17 @@ export default function PanelMeasurementTable({
   commandsManager,
   extensionManager,
 }): React.FunctionComponent {
+  const { t } = useTranslation('MeasurementTable');
+
   const [viewportGrid, viewportGridService] = useViewportGrid();
-  const { activeViewportIndex, viewports } = viewportGrid;
-  const {
-    measurementService,
-    uiDialogService,
-    uiNotificationService,
-    displaySetService,
-  } = (servicesManager as ServicesManager).services;
+  const { activeViewportId, viewports } = viewportGrid;
+  const { measurementService, uiDialogService, uiNotificationService, displaySetService } = (
+    servicesManager as ServicesManager
+  ).services;
   const [displayMeasurements, setDisplayMeasurements] = useState([]);
 
   useEffect(() => {
-    const debouncedSetDisplayMeasurements = debounce(
-      setDisplayMeasurements,
-      100
-    );
+    const debouncedSetDisplayMeasurements = debounce(setDisplayMeasurements, 100);
     // ~~ Initial
     setDisplayMeasurements(_getMappedMeasurements(measurementService));
 
@@ -53,9 +44,7 @@ export default function PanelMeasurementTable({
     [added, addedRaw, updated, removed, cleared].forEach(evt => {
       subscriptions.push(
         measurementService.subscribe(evt, () => {
-          debouncedSetDisplayMeasurements(
-            _getMappedMeasurements(measurementService)
-          );
+          debouncedSetDisplayMeasurements(_getMappedMeasurements(measurementService));
         }).unsubscribe
       );
     });
@@ -80,7 +69,7 @@ export default function PanelMeasurementTable({
 
   async function createReport(): Promise<any> {
     // filter measurements that are added to the active study
-    const activeViewport = viewports[activeViewportIndex];
+    const activeViewport = viewports.get(activeViewportId);
     const measurements = measurementService.getMeasurements();
     const displaySet = displaySetService.getDisplaySetByUID(
       activeViewport.displaySetInstanceUIDs[0]
@@ -104,9 +93,7 @@ export default function PanelMeasurementTable({
     });
 
     if (promptResult.action === CREATE_REPORT_DIALOG_RESPONSE.CREATE_REPORT) {
-      const dataSources = extensionManager.getDataSources(
-        promptResult.dataSourceName
-      );
+      const dataSources = extensionManager.getDataSources(promptResult.dataSourceName);
       const dataSource = dataSources[0];
 
       const SeriesDescription =
@@ -115,25 +102,29 @@ export default function PanelMeasurementTable({
           ? 'Research Derived Series' // default
           : promptResult.value; // provided value
 
-      // Re-use an existing series having the same series description to avoid
+      // Reuse an existing series having the same series description to avoid
       // creating too many series instances.
-      const options = findSRWithSameSeriesDescription(
-        SeriesDescription,
-        displaySetService
-      );
+      const options = findSRWithSameSeriesDescription(SeriesDescription, displaySetService);
 
-      return createReportAsync(
-        servicesManager,
-        commandsManager,
-        dataSource,
-        trackedMeasurements,
-        options
-      );
+      const getReport = async () => {
+        return commandsManager.runCommand(
+          'storeMeasurements',
+          {
+            measurementData: trackedMeasurements,
+            dataSource,
+            additionalFindingTypes: ['ArrowAnnotate'],
+            options,
+          },
+          'CORNERSTONE_STRUCTURED_REPORT'
+        );
+      };
+
+      return createReportAsync({ servicesManager, getReport });
     }
   }
 
   const jumpToImage = ({ uid, isActive }) => {
-    measurementService.jumpToMeasurement(viewportGrid.activeViewportIndex, uid);
+    measurementService.jumpToMeasurement(viewportGrid.activeViewportId, uid);
 
     onMeasurementItemClickHandler({ uid, isActive });
   };
@@ -186,7 +177,7 @@ export default function PanelMeasurementTable({
               labelClassName="text-white text-[14px] leading-[1.2]"
               autoFocus
               id="annotation"
-              className="bg-black border-primary-main"
+              className="border-primary-main bg-black"
               type="text"
               value={value.label}
               onChange={onChangeHandler}
@@ -217,11 +208,11 @@ export default function PanelMeasurementTable({
   return (
     <>
       <div
-        className="overflow-x-hidden overflow-y-auto ohif-scrollbar"
+        className="ohif-scrollbar overflow-y-auto overflow-x-hidden"
         data-cy={'measurements-panel'}
       >
         <MeasurementTable
-          title="Measurements"
+          title={t("Measurements")}
           servicesManager={servicesManager}
           data={displayMeasurements}
           onClick={jumpToImage}
@@ -255,7 +246,7 @@ function _getMappedMeasurements(measurementService) {
 
 /**
  * Map the measurements to the display text.
- * Adds finding and site inforamtion to the displayText and/or label,
+ * Adds finding and site information to the displayText and/or label,
  * and provides as 'displayText' and 'label', while providing the original
  * values as baseDisplayText and baseLabel
  */

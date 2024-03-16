@@ -14,7 +14,6 @@ const ENTRY = {
   app: `${SRC_DIR}/index.js`,
 };
 
-
 module.exports = (env, argv) => {
   const commonConfig = webpackCommon(env, argv, { SRC_DIR, DIST_DIR, ENTRY });
 
@@ -41,13 +40,7 @@ module.exports = (env, argv) => {
       libraryExport: 'default',
       filename: pkg.main,
     },
-    externals: [
-      /\b(vtk.js)/,
-      /\b(dcmjs)/,
-      /\b(gl-matrix)/,
-      /^@ohif/,
-      /^@cornerstonejs/,
-    ],
+    externals: [/\b(vtk.js)/, /\b(dcmjs)/, /\b(gl-matrix)/, /^@ohif/, /^@cornerstonejs/],
     plugins: [
       new webpack.optimize.LimitChunkCountPlugin({
         maxChunks: 1,

@@ -1,6 +1,7 @@
 import toolbarButtons from './toolbarButtons.js';
 import { hotkeys } from '@ohif/core';
 import { id } from './id';
+import i18n from 'i18next';
 
 const configs = {
   Length: {},
@@ -19,14 +20,12 @@ const cs3d = {
 };
 
 const dicomsr = {
-  sopClassHandler:
-    '@ohif/extension-cornerstone-dicom-sr.sopClassHandlerModule.dicom-sr',
+  sopClassHandler: '@ohif/extension-cornerstone-dicom-sr.sopClassHandlerModule.dicom-sr',
   viewport: '@ohif/extension-cornerstone-dicom-sr.viewportModule.dicom-sr',
 };
 
 const dicomvideo = {
-  sopClassHandler:
-    '@ohif/extension-dicom-video.sopClassHandlerModule.dicom-video',
+  sopClassHandler: '@ohif/extension-dicom-video.sopClassHandlerModule.dicom-video',
   viewport: '@ohif/extension-dicom-video.viewportModule.dicom-video',
 };
 
@@ -47,7 +46,7 @@ function modeFactory({ modeConfiguration }) {
   return {
     id,
     routeName: 'dev',
-    displayName: 'Basic Dev Viewer',
+    displayName: i18n.t('Modes:Basic Dev Viewer'),
     /**
      * Lifecycle hooks
      */
@@ -86,18 +85,18 @@ function modeFactory({ modeConfiguration }) {
           { toolName: toolNames.CalibrationLine },
         ],
         // enabled
+        enabled: [{ toolName: toolNames.ImageOverlayViewer }],
         // disabled
       };
 
       const toolGroupId = 'default';
-      toolGroupService.createToolGroupAndAddTools(toolGroupId, tools, configs);
+      toolGroupService.createToolGroupAndAddTools(toolGroupId, tools);
 
       let unsubscribe;
 
       const activateTool = () => {
         toolbarService.recordInteraction({
           groupId: 'WindowLevel',
-          itemId: 'WindowLevel',
           interactionType: 'tool',
           commands: [
             {
@@ -134,11 +133,7 @@ function modeFactory({ modeConfiguration }) {
       ]);
     },
     onModeExit: ({ servicesManager }) => {
-      const {
-        toolGroupService,
-        measurementService,
-        toolbarService,
-      } = servicesManager.services;
+      const { toolGroupService, measurementService, toolbarService } = servicesManager.services;
 
       toolGroupService.destroy();
     },

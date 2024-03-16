@@ -5,9 +5,7 @@ import { SegmentationTable, Button, Icon } from '@ohif/ui';
 import { useTranslation } from 'react-i18next';
 import segmentationEditHandler from './segmentationEditHandler';
 import ExportReports from './ExportReports';
-import ROIThresholdConfiguration, {
-  ROI_STAT,
-} from './ROIThresholdConfiguration';
+import ROIThresholdConfiguration, { ROI_STAT } from './ROIThresholdConfiguration';
 
 const LOWER_CT_THRESHOLD_DEFAULT = -1024;
 const UPPER_CT_THRESHOLD_DEFAULT = 1024;
@@ -44,19 +42,14 @@ function reducer(state, action) {
   }
 }
 
-export default function PanelRoiThresholdSegmentation({
-  servicesManager,
-  commandsManager,
-}) {
+export default function PanelRoiThresholdSegmentation({ servicesManager, commandsManager }) {
   const { segmentationService } = servicesManager.services;
 
   const { t } = useTranslation('PanelSUV');
   const [showConfig, setShowConfig] = useState(false);
   const [labelmapLoading, setLabelmapLoading] = useState(false);
   const [selectedSegmentationId, setSelectedSegmentationId] = useState(null);
-  const [segmentations, setSegmentations] = useState(() =>
-    segmentationService.getSegmentations()
-  );
+  const [segmentations, setSegmentations] = useState(() => segmentationService.getSegmentations());
 
   const [config, dispatch] = useReducer(reducer, {
     strategy: DEFAULT_STRATEGY,
@@ -95,9 +88,7 @@ export default function PanelRoiThresholdSegmentation({
     const lesionGlyoclysisStats = lesionStats.volume * lesionStats.meanValue;
 
     // update segDetails with the suv peak for the active segmentation
-    const segmentation = segmentationService.getSegmentation(
-      selectedSegmentationId
-    );
+    const segmentation = segmentationService.getSegmentation(selectedSegmentationId);
 
     const cachedStats = {
       lesionStats,
@@ -178,8 +169,8 @@ export default function PanelRoiThresholdSegmentation({
   return (
     <>
       <div className="flex flex-col">
-        <div className="overflow-x-hidden overflow-y-auto invisible-scrollbar">
-          <div className="flex mx-4 my-4 mb-4 space-x-4">
+        <div className="invisible-scrollbar overflow-y-auto overflow-x-hidden">
+          <div className="mx-4 my-4 mb-4 flex space-x-4">
             <Button
               onClick={() => {
                 setLabelmapLoading(true);
@@ -196,14 +187,12 @@ export default function PanelRoiThresholdSegmentation({
             <Button onClick={handleROIThresholding}>Run</Button>
           </div>
           <div
-            className="flex items-center justify-around h-8 mb-2 border-t outline-none cursor-pointer select-none bg-secondary-dark first:border-0 border-secondary-light"
+            className="bg-secondary-dark border-secondary-light mb-2 flex h-8 cursor-pointer select-none items-center justify-around border-t outline-none first:border-0"
             onClick={() => {
               setShowConfig(!showConfig);
             }}
           >
-            <div className="px-4 text-base text-white">
-              {t('ROI Threshold Configuration')}
-            </div>
+            <div className="px-4 text-base text-white">{t('ROI Threshold Configuration')}</div>
           </div>
           {showConfig && (
             <ROIThresholdConfiguration
@@ -246,8 +235,8 @@ export default function PanelRoiThresholdSegmentation({
             ) : null}
           </div>
           {tmtvValue !== null ? (
-            <div className="flex items-baseline justify-between px-2 py-1 mt-4 bg-secondary-dark">
-              <span className="text-base font-bold tracking-widest text-white uppercase">
+            <div className="bg-secondary-dark mt-4 flex items-baseline justify-between px-2 py-1">
+              <span className="text-base font-bold uppercase tracking-widest text-white">
                 {'TMTV:'}
               </span>
               <div className="text-white">{`${tmtvValue} mL`}</div>
@@ -262,13 +251,10 @@ export default function PanelRoiThresholdSegmentation({
         </div>
       </div>
       <div
-        className="opacity-50 hover:opacity-80 flex items-center justify-center text-blue-400 mt-auto cursor-pointer mb-4"
+        className="mt-auto mb-4 flex cursor-pointer items-center justify-center text-blue-400 opacity-50 hover:opacity-80"
         onClick={() => {
           // navigate to a url in a new tab
-          window.open(
-            'https://github.com/OHIF/Viewers/blob/master/modes/tmtv/README.md',
-            '_blank'
-          );
+          window.open('https://github.com/OHIF/Viewers/blob/master/modes/tmtv/README.md', '_blank');
         }}
       >
         <Icon

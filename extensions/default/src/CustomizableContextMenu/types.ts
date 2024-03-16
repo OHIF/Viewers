@@ -5,7 +5,7 @@ import { Types } from '@ohif/core';
  * menu item for display.
  * An instance of SelectorProps is provided to the selector functions, which
  * return true to include the item or false to exclude it.
- * The point of this is to allow more specific conext menus which hide
+ * The point of this is to allow more specific context menus which hide
  * non-relevant menu options, optimizing the speed of selection of menus
  */
 export interface SelectorProps {
@@ -69,7 +69,7 @@ export interface MenuItem {
   // or more importantly, if the delegating subMenu will be included.
   selector?: (props: SelectorProps) => boolean;
 
-  /** Adapts the item by filling in additional properties as requried */
+  /** Adapts the item by filling in additional properties as required */
   adaptItem?: (item: MenuItem, props: ContextMenuProps) => UIMenuItem;
 
   /** List of commands to run when this item's action is taken. */

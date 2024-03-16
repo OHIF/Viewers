@@ -31,11 +31,7 @@ const PlanarFreehandROI = {
       throw new Error('Tool not supported');
     }
 
-    const {
-      SOPInstanceUID,
-      SeriesInstanceUID,
-      StudyInstanceUID,
-    } = getSOPInstanceAttributes(
+    const { SOPInstanceUID, SeriesInstanceUID, StudyInstanceUID } = getSOPInstanceAttributes(
       referencedImageId,
       CornerstoneViewportService,
       viewportId
@@ -52,22 +48,19 @@ const PlanarFreehandROI = {
       displaySet = DisplaySetService.getDisplaySetsForSeries(SeriesInstanceUID);
     }
 
-    const { points } = data.handles;
+    const { points, textBox } = data.handles;
 
-    const mappedAnnotations = getMappedAnnotations(
-      annotation,
-      DisplaySetService
-    );
+    const mappedAnnotations = getMappedAnnotations(annotation, DisplaySetService);
 
     const displayText = getDisplayText(mappedAnnotations);
-    const getReport = () =>
-      _getReport(mappedAnnotations, points, FrameOfReferenceUID);
+    const getReport = () => _getReport(mappedAnnotations, points, FrameOfReferenceUID);
 
     return {
       uid: annotationUID,
       SOPInstanceUID,
       FrameOfReferenceUID,
       points,
+      textBox,
       metadata,
       referenceSeriesUID: SeriesInstanceUID,
       referenceStudyUID: StudyInstanceUID,
@@ -96,10 +89,8 @@ function getMappedAnnotations(annotationData, DisplaySetService) {
 
   const annotations = [];
 
-  const {
-    SOPInstanceUID: _SOPInstanceUID,
-    SeriesInstanceUID: _SeriesInstanceUID,
-  } = getSOPInstanceAttributes(referencedImageId) || {};
+  const { SOPInstanceUID: _SOPInstanceUID, SeriesInstanceUID: _SeriesInstanceUID } =
+    getSOPInstanceAttributes(referencedImageId) || {};
 
   if (!_SOPInstanceUID || !_SeriesInstanceUID) {
     return annotations;

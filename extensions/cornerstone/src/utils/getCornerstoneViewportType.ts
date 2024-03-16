@@ -5,9 +5,7 @@ const VOLUME = 'volume';
 const ORTHOGRAPHIC = 'orthographic';
 const VOLUME_3D = 'volume3d';
 
-export default function getCornerstoneViewportType(
-  viewportType: string
-): Enums.ViewportType {
+export default function getCornerstoneViewportType(viewportType: string): Enums.ViewportType {
   const lowerViewportType = viewportType.toLowerCase();
   if (lowerViewportType === STACK) {
     return Enums.ViewportType.STACK;
@@ -21,7 +19,5 @@ export default function getCornerstoneViewportType(
     return Enums.ViewportType.VOLUME_3D;
   }
 
-  throw new Error(
-    `Invalid viewport type: ${viewportType}. Valid types are: stack, volume`
-  );
+  throw new Error(`Invalid viewport type: ${viewportType}. Valid types are: stack, volume`);
 }

@@ -1,19 +1,13 @@
 import { hydrateStructuredReport as baseHydrateStructuredReport } from '@ohif/extension-cornerstone-dicom-sr';
 
-function hydrateStructuredReport(
-  { servicesManager, extensionManager },
-  ctx,
-  evt
-) {
+function hydrateStructuredReport({ servicesManager, extensionManager, appConfig }, ctx, evt) {
   const { displaySetService } = servicesManager.services;
-  const { viewportIndex, displaySetInstanceUID } = evt;
-  const srDisplaySet = displaySetService.getDisplaySetByUID(
-    displaySetInstanceUID
-  );
+  const { viewportId, displaySetInstanceUID } = evt;
+  const srDisplaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
 
   return new Promise((resolve, reject) => {
     const hydrationResult = baseHydrateStructuredReport(
-      { servicesManager, extensionManager },
+      { servicesManager, extensionManager, appConfig },
       displaySetInstanceUID
     );
 
@@ -23,7 +17,7 @@ function hydrateStructuredReport(
     resolve({
       displaySetInstanceUID: evt.displaySetInstanceUID,
       srSeriesInstanceUID: srDisplaySet.SeriesInstanceUID,
-      viewportIndex,
+      viewportId,
       StudyInstanceUID,
       SeriesInstanceUIDs,
     });

@@ -1,5 +1,5 @@
 import { id } from './id';
-import React, { Suspense } from 'react';
+import React, { Suspense, useMemo } from 'react';
 import getPanelModule from './getPanelModule';
 import getCommandsModule from './getCommandsModule';
 
@@ -30,15 +30,8 @@ export default {
    */
   id,
 
-  async preRegistration({
-    servicesManager,
-    commandsManager,
-    configuration = {},
-    appConfig,
-  }) {
-    servicesManager.registerService(
-      MicroscopyService.REGISTRATION(servicesManager)
-    );
+  async preRegistration({ servicesManager, commandsManager, configuration = {}, appConfig }) {
+    servicesManager.registerService(MicroscopyService.REGISTRATION(servicesManager));
   },
 
   /**
@@ -52,7 +45,7 @@ export default {
      *
      * @param props {*}
      * @param props.displaySets
-     * @param props.viewportIndex
+     * @param props.viewportId
      * @param props.viewportLabel
      * @param props.dataSource
      * @param props.viewportOptions
@@ -63,16 +56,25 @@ export default {
       const { viewportOptions } = props;
 
       const [viewportGrid, viewportGridService] = useViewportGrid();
-      const { viewports, activeViewportIndex } = viewportGrid;
+      const { activeViewportId } = viewportGrid;
+
+      // a unique identifier based on the contents of displaySets.
+      // since we changed our rendering pipeline and if there is no
+      // element size change nor viewportId change we won't re-render
+      // we need a way to force re-rendering when displaySets change.
+      const displaySetsKey = useMemo(() => {
+        return props.displaySets.map(ds => ds.displaySetInstanceUID).join('-');
+      }, [props.displaySets]);
 
       return (
         <MicroscopyViewport
+          key={displaySetsKey}
           servicesManager={servicesManager}
           extensionManager={extensionManager}
           commandsManager={commandsManager}
-          activeViewportIndex={activeViewportIndex}
-          setViewportActive={(viewportIndex: number) => {
-            viewportGridService.setActiveViewportIndex(viewportIndex);
+          activeViewportId={activeViewportId}
+          setViewportActive={(viewportId: string) => {
+            viewportGridService.setActiveViewportId(viewportId);
           }}
           viewportData={viewportOptions}
           {...props}
@@ -94,11 +96,7 @@ export default {
    * Each sop class handler is defined by a { name, sopClassUids, getDisplaySetsFromSeries}.
    * Examples include the default sop class handler provided by the default extension
    */
-  getSopClassHandlerModule({
-    servicesManager,
-    commandsManager,
-    extensionManager,
-  }) {
+  getSopClassHandlerModule({ servicesManager, commandsManager, extensionManager }) {
     return [
       getDicomMicroscopySopClassHandler({
         servicesManager,

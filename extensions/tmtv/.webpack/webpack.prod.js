@@ -1,5 +1,5 @@
 const webpack = require('webpack');
-const {merge} = require('webpack-merge');
+const { merge } = require('webpack-merge');
 const path = require('path');
 const webpackCommon = require('./../../../.webpack/webpack.base.js');
 const pkg = require('./../package.json');
@@ -11,7 +11,6 @@ const DIST_DIR = path.join(__dirname, '../dist');
 const ENTRY = {
   app: `${SRC_DIR}/index.tsx`,
 };
-
 
 module.exports = (env, argv) => {
   const commonConfig = webpackCommon(env, argv, { SRC_DIR, DIST_DIR, ENTRY });
@@ -38,13 +37,7 @@ module.exports = (env, argv) => {
       libraryTarget: 'umd',
       filename: pkg.main,
     },
-    externals: [
-      /\b(vtk.js)/,
-      /\b(dcmjs)/,
-      /\b(gl-matrix)/,
-      /^@ohif/,
-      /^@cornerstonejs/,
-    ],
+    externals: [/\b(vtk.js)/, /\b(dcmjs)/, /\b(gl-matrix)/, /^@ohif/, /^@cornerstonejs/],
     plugins: [
       new webpack.optimize.LimitChunkCountPlugin({
         maxChunks: 1,

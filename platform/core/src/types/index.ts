@@ -1,19 +1,24 @@
-import * as Extensions from '../extensions/ExtensionManager';
-import * as HangingProtocol from './HangingProtocol';
-import Services from './Services';
-import Hotkey from '../classes/Hotkey';
-import { DisplaySet } from '../services/DisplaySetService/DisplaySetService';
-import { DataSourceDefinition } from './DataSource';
+import type * as Extensions from '../extensions/ExtensionManager';
+import type * as HangingProtocol from './HangingProtocol';
+import type Services from './Services';
+import type Hotkey from '../classes/Hotkey';
+import type { DataSourceDefinition } from './DataSource';
+import type {
+  BaseDataSourceConfigurationAPI,
+  BaseDataSourceConfigurationAPIItem,
+} from './DataSourceConfigurationAPI';
+import type { PresentationIds } from '../services/ViewportGridService';
 
-export * from '../services/CustomizationService/types';
+export type * from '../services/CustomizationService/types';
 // Separate out some generic types
-export * from './AppConfig';
-export * from './Consumer';
-export * from './Command';
-export * from './StudyMetadata';
-export * from './PanelModule';
-export * from './IPubSub';
-export * from './Color';
+export type * from './AppConfig';
+export type * from './Consumer';
+export type * from './Command';
+export type * from './DisplaySet';
+export type * from './StudyMetadata';
+export type * from './PanelModule';
+export type * from './IPubSub';
+export type * from './Color';
 
 /**
  * Export the types used within the various services and managers, but
@@ -24,6 +29,8 @@ export {
   HangingProtocol,
   Services,
   Hotkey,
-  DisplaySet,
   DataSourceDefinition,
+  BaseDataSourceConfigurationAPI,
+  BaseDataSourceConfigurationAPIItem,
+  PresentationIds,
 };

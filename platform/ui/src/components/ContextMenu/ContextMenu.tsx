@@ -10,7 +10,7 @@ const ContextMenu = ({ items, ...props }) => {
   return (
     <div
       data-cy="context-menu"
-      className="relative bg-secondary-dark rounded z-50 block w-48"
+      className="bg-secondary-dark relative z-50 block w-48 rounded"
       onContextMenu={e => e.preventDefault()}
     >
       {items.map((item, index) => (
@@ -19,10 +19,15 @@ const ContextMenu = ({ items, ...props }) => {
           data-cy="context-menu-item"
           onClick={() => item.action(item, props)}
           style={{ justifyContent: 'space-between' }}
-          className="flex px-4 py-3 cursor-pointer items-center transition duration-300 hover:bg-primary-dark border-b border-primary-dark last:border-b-0"
+          className="hover:bg-primary-dark border-primary-dark flex cursor-pointer items-center border-b px-4 py-3 transition duration-300 last:border-b-0"
         >
           <Typography>{item.label}</Typography>
-          {item.iconRight && <Icon name={item.iconRight} className="inline" />}
+          {item.iconRight && (
+            <Icon
+              name={item.iconRight}
+              className="inline"
+            />
+          )}
         </div>
       ))}
     </div>

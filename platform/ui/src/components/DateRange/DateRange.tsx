@@ -1,33 +1,13 @@
 import React, { useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
+import { useTranslation } from 'react-i18next';
 
 /** REACT DATES */
 import { DateRangePicker, isInclusivelyBeforeDay } from 'react-dates';
 import 'react-dates/initialize';
 import 'react-dates/lib/css/_datepicker.css';
 import './DateRange.css';
-
-const today = moment();
-const lastWeek = moment().subtract(7, 'day');
-const lastMonth = moment().subtract(1, 'month');
-const studyDatePresets = [
-  {
-    text: 'Today',
-    start: today,
-    end: today,
-  },
-  {
-    text: 'Last 7 days',
-    start: lastWeek,
-    end: today,
-  },
-  {
-    text: 'Last 30 days',
-    start: lastMonth,
-    end: today,
-  },
-];
 
 const renderYearsOptions = () => {
   const currentYear = moment().year();
@@ -36,7 +16,10 @@ const renderYearsOptions = () => {
   for (let i = 0; i < 20; i++) {
     const year = currentYear - i;
     options.push(
-      <option key={year} value={year}>
+      <option
+        key={year}
+        value={year}
+      >
         {year}
       </option>
     );
@@ -49,6 +32,27 @@ const DateRange = props => {
   const { id, onChange, startDate, endDate } = props;
   const [focusedInput, setFocusedInput] = useState(null);
   const renderYearsOptionsCallback = useCallback(renderYearsOptions, []);
+  const { t } = useTranslation('DatePicker');
+  const today = moment();
+  const lastWeek = moment().subtract(7, 'day');
+  const lastMonth = moment().subtract(1, 'month');
+  const studyDatePresets = [
+    {
+      text: t('Today'),
+      start: today,
+      end: today,
+    },
+    {
+      text: t('Last 7 days'),
+      start: lastWeek,
+      end: today,
+    },
+    {
+      text: t('Last 30 days'),
+      start: lastMonth,
+      end: today,
+    },
+  ];
 
   const renderDatePresets = () => {
     return (
@@ -58,7 +62,7 @@ const DateRange = props => {
             <button
               key={text}
               type="button"
-              className={`m-0 py-2 px-3 bg-primary-main border-0 rounded text-white text-base transition duration-300 hover:opacity-80`}
+              className={`bg-primary-main m-0 rounded border-0 py-2 px-3 text-base text-white transition duration-300 hover:opacity-80`}
               onClick={() =>
                 onChange({
                   startDate: start ? start.format('YYYYMMDD') : undefined,
@@ -101,7 +105,10 @@ const DateRange = props => {
             onBlur={handleOnBlur}
           >
             {moment.months().map((label, value) => (
-              <option key={value} value={value}>
+              <option
+                key={value}
+                value={value}
+              >
                 {label}
               </option>
             ))}
@@ -143,11 +150,11 @@ const DateRange = props => {
       /** OPTIONAL */
       renderCalendarInfo={renderDatePresets}
       renderMonthElement={renderMonthElement}
-      startDatePlaceholderText={'Start Date'}
-      endDatePlaceholderText={'End Date'}
+      startDatePlaceholderText={t('Start Date')}
+      endDatePlaceholderText={t('End Date')}
       phrases={{
-        closeDatePicker: 'Close',
-        clearDates: 'Clear dates',
+        closeDatePicker: t('Close'),
+        clearDates: t('Clear dates'),
       }}
       isOutsideRange={day => !isInclusivelyBeforeDay(day, moment())}
       hideKeyboardShortcutsPanel={true}
@@ -169,7 +176,7 @@ DateRange.propTypes = {
   /** YYYYMMDD (19921022) */
   startDate: PropTypes.string,
   /** YYYYMMDD (19921022) */
-  endDate: PropTypes.object,
+  endDate: PropTypes.string,
   /** Callback that received { startDate: string(YYYYMMDD), endDate: string(YYYYMMDD)} */
   onChange: PropTypes.func.isRequired,
 };

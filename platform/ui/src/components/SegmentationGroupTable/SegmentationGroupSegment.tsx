@@ -11,7 +11,8 @@ const SegmentItem = ({
   isActive,
   isVisible,
   color,
-  showSegmentDelete,
+  showDelete,
+  disableEditing,
   isLocked = false,
   onClick,
   onEdit,
@@ -20,202 +21,171 @@ const SegmentItem = ({
   onToggleVisibility,
   onToggleLocked,
 }) => {
-  const [isHovering, setIsHovering] = useState(false);
-  const [isSegmentIndexHovering, setIsSegmentIndexHovering] = useState(false);
-
-  const onMouseEnter = () => setIsHovering(true);
-  const onMouseLeave = () => setIsHovering(false);
+  const [isNumberBoxHovering, setIsNumberBoxHovering] = useState(false);
 
   const cssColor = `rgb(${color[0]},${color[1]},${color[2]})`;
 
   return (
     <div
-      className={classnames(
-        'group relative flex cursor-pointer bg-primary-dark transition duration-300 text-[12px] overflow-hidden border',
-        {
-          'border-primary-light rounded-[3px]': isActive,
-        },
-        {
-          'border-transparent': !isActive,
-        }
-      )}
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
+      className={classnames('text-aqua-pale group/row flex min-h-[28px] bg-black')}
       onClick={e => {
         e.stopPropagation();
         onClick(segmentationId, segmentIndex);
       }}
-      role="button"
       tabIndex={0}
       data-cy={'segment-item'}
     >
       <div
-        className={classnames(
-          'w-[27px] flex items-center justify-center border-r border-r-black text-[12px]',
-          {
-            'bg-primary-light text-black border-l border-l-primary-light rounded-l-sm': isActive,
-            'bg-[#1d3c58]  border-l border-l-[#1d3c58] rounded-l-sm':
-              !isActive && isHovering,
-            'bg-primary-dark text-aqua-pale':
-              !isActive && !isHovering && isVisible,
-            'bg-[#140e2e] opacity-60 text-[#537594]': !isActive && !isVisible,
-          }
-        )}
-        onMouseEnter={() => setIsSegmentIndexHovering(true)}
-        onMouseLeave={() => setIsSegmentIndexHovering(false)}
+        className={classnames('bg-primary-dark group/number grid w-[32px] place-items-center', {
+          'bg-primary-light border-primary-light rounded-l-[4px] border text-black': isActive,
+          'border-primary-dark border': !isActive,
+        })}
+        onMouseEnter={() => setIsNumberBoxHovering(true)}
+        onMouseLeave={() => setIsNumberBoxHovering(false)}
       >
-        {isSegmentIndexHovering && showSegmentDelete ? (
+        {isNumberBoxHovering && showDelete ? (
           <Icon
             name="close"
-            className={classnames('pr-0.5')}
+            className={classnames('h-[8px] w-[8px]', {
+              'hover:cursor-pointer hover:opacity-60': !disableEditing,
+            })}
             onClick={e => {
+              if (disableEditing) {
+                return;
+              }
               e.stopPropagation();
               onDelete(segmentationId, segmentIndex);
             }}
           />
         ) : (
-          <div className={classnames('flex items-center pr-2 ')}>
-            {segmentIndex}
-          </div>
+          <div>{segmentIndex}</div>
         )}
       </div>
       <div
-        className={classnames(
-          'flex items-center justify-between w-full pl-2 py-1 text-white border-r border-r-black relative ',
-          {
-            'bg-primary-dark text-primary-light': isActive,
-            'bg-primary-dark text-aqua-pale': !isActive && isVisible,
-            'bg-[#140e2e] opacity-60 text-[#3d5871]': !isVisible,
-          }
-        )}
+        className={classnames('relative flex w-full', {
+          'border-primary-light bg-primary-dark rounded-r-[4px] border border-l-0': isActive,
+          'border border-l-0 border-transparent': !isActive,
+        })}
       >
-        <div className={classnames('flex items-baseline gap-2')}>
-          <div
-            className={classnames('shrink-0 w-[8px] h-[8px] rounded-full')}
-            style={{ backgroundColor: cssColor }}
-            onClick={e => {
-              e.stopPropagation();
-              onColor(segmentationId, segmentIndex);
-            }}
-          />
-          <div className="">{label}</div>
-        </div>
-        {/* with faded background */}
-        <div className="absolute right-0 bg-black/15 rounded-lg pr-[7px]">
-          {!isVisible && !isHovering && (
-            <div>
-              <Icon
-                name="row-hidden"
-                className={classnames('w-5 h-5 text-[#3d5871] ')}
-                onClick={e => {
-                  e.stopPropagation();
-                  onToggleVisibility(segmentationId, segmentIndex);
-                }}
-              />
-            </div>
-          )}
-          {isHovering && (
-            <div className={classnames('flex items-center')}>
-              <Icon
-                name="row-edit"
-                className={classnames('w-5 h-5', {
-                  'text-white': isLocked,
-                  'text-primary-light': !isLocked,
-                })}
-                onClick={e => {
-                  e.stopPropagation();
-                  onEdit(segmentationId, segmentIndex);
-                }}
-              />
-              {isVisible ? (
-                <Icon
-                  name="row-hide"
-                  className={classnames('w-5 h-5', {
-                    'text-white': isLocked,
-                    'text-primary-light': !isLocked,
-                  })}
-                  onClick={e => {
-                    e.stopPropagation();
-                    onToggleVisibility(segmentationId, segmentIndex);
-                  }}
-                />
-              ) : (
-                <Icon
-                  name="row-unhide"
-                  className={classnames('w-5 h-5', {
-                    'text-white': isLocked,
-                    'text-primary-light': !isLocked,
-                  })}
-                  onClick={e => {
-                    e.stopPropagation();
-                    onToggleVisibility(segmentationId, segmentIndex);
-                  }}
-                />
-              )}
-            </div>
-          )}
-        </div>
-      </div>
-      {/* <div className="relative flex flex-col w-full border-t border-t-black">
-        <div className="fl`ex items-center mb-1 ml-2">
-          <div className="flex items-center flex-1 text-base text-primary-light">
+        <div className="group-hover/row:bg-primary-dark flex h-full w-full flex-grow items-center">
+          <div className="pl-2 pr-1.5">
             <div
-              className={classnames(
-                'w-3 h-3 mt-1 mr-2 rounded-full cursor-pointer transition duration-300 hover:opacity-80'
-              )}
+              className={classnames('h-[8px] w-[8px] grow-0 rounded-full', {
+                'hover:cursor-pointer hover:opacity-60': !disableEditing,
+              })}
+              style={{ backgroundColor: cssColor }}
               onClick={e => {
+                if (disableEditing) {
+                  return;
+                }
                 e.stopPropagation();
                 onColor(segmentationId, segmentIndex);
               }}
-              style={{ backgroundColor: cssColor }}
-            ></div>
-            {label}
+            />
           </div>
-          <div className="flex items-center w-1/3">
-            <div className="px-1">
+          <div className="flex items-center py-1 hover:cursor-pointer">{label}</div>
+        </div>
+        <div
+          className={classnames(
+            'absolute right-3 top-0 flex flex-row-reverse rounded-lg pt-[3px]',
+            {}
+          )}
+        >
+          <div className="group-hover/row:hidden">
+            {!isVisible && (
               <Icon
-                className={classnames(
-                  'text-white w-4 cursor-pointer transition duration-300 hover:opacity-80'
-                )}
-                name={isVisible ? 'eye-visible' : 'eye-hidden'}
+                name="row-hidden"
+                className="h-5 w-5 text-[#3d5871]"
                 onClick={e => {
-                  // stopPropagation needed to avoid disable the current active item
                   e.stopPropagation();
                   onToggleVisibility(segmentationId, segmentIndex);
                 }}
               />
-            </div>
-            {onToggleLocked !== undefined ? (
-              <div className="px-1">
+            )}
+          </div>
+
+          {/* Icon for 'row-lock' that shows when NOT hovering and 'isLocked' is true */}
+          <div className="group-hover/row:hidden">
+            {isLocked && (
+              <div className="flex">
                 <Icon
-                  className={classnames(
-                    'text-white w-4 cursor-pointer transition duration-300 hover:opacity-80'
-                  )}
-                  name={isLocked ? 'lock' : 'dotted-circle'}
+                  name="row-lock"
+                  className="h-5 w-5 text-[#3d5871]"
                   onClick={e => {
-                    // stopPropagation needed to avoid disable the current active item
                     e.stopPropagation();
                     onToggleLocked(segmentationId, segmentIndex);
                   }}
                 />
-              </div>
-            ) : null}
-            <div className="px-1">
-              <Icon
-                className={classnames(
-                  'text-white w-4 cursor-pointer transition duration-300 hover:opacity-80'
+
+                {/* This icon is visible when 'isVisible' is true */}
+                {isVisible && (
+                  <Icon
+                    name="row-hidden"
+                    className="h-5 w-5 opacity-0"
+                  />
                 )}
-                name={'pencil'}
-                onClick={e => {
-                  // stopPropagation needed to avoid disable the current active item
-                  e.stopPropagation();
-                  onEdit(segmentationId, segmentIndex);
-                }}
-              />
-            </div>
+              </div>
+            )}
+          </div>
+
+          {/* Icons that show only when hovering */}
+          <div className="hidden group-hover/row:flex">
+            <HoveringIcons
+              disableEditing={disableEditing}
+              onEdit={onEdit}
+              isLocked={isLocked}
+              isVisible={isVisible}
+              onToggleLocked={onToggleLocked}
+              onToggleVisibility={onToggleVisibility}
+              segmentationId={segmentationId}
+              segmentIndex={segmentIndex}
+            />
           </div>
         </div>
-      </div> */}
+      </div>
+    </div>
+  );
+};
+
+const HoveringIcons = ({
+  disableEditing,
+  onEdit,
+  isLocked,
+  isVisible,
+  onToggleLocked,
+  onToggleVisibility,
+  segmentationId,
+  segmentIndex,
+}) => {
+  const iconClass = 'w-5 h-5 hover:cursor-pointer hover:opacity-60';
+
+  const handleIconClick = (e, action) => {
+    e.stopPropagation();
+    action(segmentationId, segmentIndex);
+  };
+
+  const createIcon = (name, action, color = null) => (
+    <Icon
+      name={name}
+      className={classnames(iconClass, color ?? 'text-white')}
+      onClick={e => handleIconClick(e, action)}
+    />
+  );
+
+  return (
+    <div className="flex items-center">
+      {!disableEditing && createIcon('row-edit', onEdit)}
+      {!disableEditing &&
+        createIcon(
+          isLocked ? 'row-lock' : 'row-unlock',
+          onToggleLocked,
+          isLocked ? 'text-[#3d5871]' : null
+        )}
+      {createIcon(
+        isVisible ? 'row-shown' : 'row-hidden',
+        onToggleVisibility,
+        !isVisible ? 'text-[#3d5871]' : null
+      )}
     </div>
   );
 };
@@ -224,6 +194,7 @@ SegmentItem.propTypes = {
   segmentIndex: PropTypes.number.isRequired,
   segmentationId: PropTypes.string.isRequired,
   label: PropTypes.string,
+  disableEditing: PropTypes.bool,
   // color as array
   color: PropTypes.array,
   isActive: PropTypes.bool.isRequired,

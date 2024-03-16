@@ -1,10 +1,6 @@
 import { utils } from '@ohif/core';
-import {
-  metaData,
-  cache,
-  triggerEvent,
-  eventTarget,
-} from '@cornerstonejs/core';
+import { metaData, cache, triggerEvent, eventTarget } from '@cornerstonejs/core';
+import { CONSTANTS } from '@cornerstonejs/tools';
 import { adaptersSEG, Enums } from '@cornerstonejs/adapters';
 
 import { SOPClassHandlerId } from './id';
@@ -14,11 +10,7 @@ const sopClassUids = ['1.2.840.10008.5.1.4.1.1.66.4'];
 
 let loadPromises = {};
 
-function _getDisplaySetsFromSeries(
-  instances,
-  servicesManager,
-  extensionManager
-) {
+function _getDisplaySetsFromSeries(instances, servicesManager, extensionManager) {
   const instance = instances[0];
 
   const {
@@ -66,13 +58,13 @@ function _getDisplaySetsFromSeries(
   const referencedSeriesSequence = instance.ReferencedSeriesSequence;
 
   if (!referencedSeriesSequence) {
-    throw new Error('ReferencedSeriesSequence is missing for the SEG');
+    console.error('ReferencedSeriesSequence is missing for the SEG');
+    return;
   }
 
-  const referencedSeries = referencedSeriesSequence[0];
+  const referencedSeries = referencedSeriesSequence[0] || referencedSeriesSequence;
 
-  displaySet.referencedImages =
-    instance.ReferencedSeriesSequence.ReferencedInstanceSequence;
+  displaySet.referencedImages = instance.ReferencedSeriesSequence.ReferencedInstanceSequence;
   displaySet.referencedSeriesInstanceUID = referencedSeries.SeriesInstanceUID;
 
   displaySet.getReferenceDisplaySet = () => {
@@ -87,8 +79,7 @@ function _getDisplaySetsFromSeries(
 
     const referencedDisplaySet = referencedDisplaySets[0];
 
-    displaySet.referencedDisplaySetInstanceUID =
-      referencedDisplaySet.displaySetInstanceUID;
+    displaySet.referencedDisplaySetInstanceUID = referencedDisplaySet.displaySetInstanceUID;
 
     // Todo: this needs to be able to work with other reference volumes (other than streaming) such as nifti, etc.
     displaySet.referencedVolumeURI = referencedDisplaySet.displaySetInstanceUID;
@@ -121,10 +112,7 @@ function _load(segDisplaySet, servicesManager, extensionManager, headers) {
   // We don't want to fire multiple loads, so we'll wait for the first to finish
   // and also return the same promise to any other callers.
   loadPromises[SOPInstanceUID] = new Promise(async (resolve, reject) => {
-    if (
-      !segDisplaySet.segments ||
-      Object.keys(segDisplaySet.segments).length === 0
-    ) {
+    if (!segDisplaySet.segments || Object.keys(segDisplaySet.segments).length === 0) {
       await _loadSegments({
         extensionManager,
         servicesManager,
@@ -149,28 +137,17 @@ function _load(segDisplaySet, servicesManager, extensionManager, headers) {
   return loadPromises[SOPInstanceUID];
 }
 
-async function _loadSegments({
-  extensionManager,
-  servicesManager,
-  segDisplaySet,
-  headers,
-}) {
+async function _loadSegments({ extensionManager, servicesManager, segDisplaySet, headers }) {
   const utilityModule = extensionManager.getModuleEntry(
     '@ohif/extension-cornerstone.utilityModule.common'
   );
 
-  const { segmentationService } = servicesManager.services;
+  const { segmentationService, uiNotificationService } = servicesManager.services;
 
   const { dicomLoaderService } = utilityModule.exports;
-  const arrayBuffer = await dicomLoaderService.findDicomDataPromise(
-    segDisplaySet,
-    null,
-    headers
-  );
+  const arrayBuffer = await dicomLoaderService.findDicomDataPromise(segDisplaySet, null, headers);
 
-  const cachedReferencedVolume = cache.getVolume(
-    segDisplaySet.referencedVolumeId
-  );
+  const cachedReferencedVolume = cache.getVolume(segDisplaySet.referencedVolumeId);
 
   if (!cachedReferencedVolume) {
     throw new Error(
@@ -186,12 +163,9 @@ async function _loadSegments({
 
   eventTarget.addEventListener(Enums.Events.SEGMENTATION_LOAD_PROGRESS, evt => {
     const { percentComplete } = evt.detail;
-    segmentationService._broadcastEvent(
-      segmentationService.EVENTS.SEGMENT_LOADING_COMPLETE,
-      {
-        percentComplete,
-      }
-    );
+    segmentationService._broadcastEvent(segmentationService.EVENTS.SEGMENT_LOADING_COMPLETE, {
+      percentComplete,
+    });
   });
 
   const results = await adaptersSEG.Cornerstone3D.Segmentation.generateToolState(
@@ -201,29 +175,51 @@ async function _loadSegments({
     { skipOverlapping, tolerance, eventTarget, triggerEvent }
   );
 
+  let usedRecommendedDisplayCIELabValue = true;
   results.segMetadata.data.forEach((data, i) => {
     if (i > 0) {
-      data.rgba = dicomlabToRGB(data.RecommendedDisplayCIELabValue);
+      data.rgba = data.RecommendedDisplayCIELabValue;
+
+      if (data.rgba) {
+        data.rgba = dicomlabToRGB(data.rgba);
+      } else {
+        usedRecommendedDisplayCIELabValue = false;
+        data.rgba = CONSTANTS.COLOR_LUT[i % CONSTANTS.COLOR_LUT.length];
+      }
     }
   });
+
+  if (results.overlappingSegments) {
+    uiNotificationService.show({
+      title: 'Overlapping Segments',
+      message:
+        'Unsupported overlapping segments detected, segmentation rendering results may be incorrect.',
+      type: 'warning',
+    });
+  }
+
+  if (!usedRecommendedDisplayCIELabValue) {
+    // Display a notification about the non-utilization of RecommendedDisplayCIELabValue
+    uiNotificationService.show({
+      title: 'DICOM SEG import',
+      message:
+        'RecommendedDisplayCIELabValue not found for one or more segments. The default color was used instead.',
+      type: 'warning',
+      duration: 5000,
+    });
+  }
 
   Object.assign(segDisplaySet, results);
 }
 
 function _segmentationExists(segDisplaySet, segmentationService) {
   // This should be abstracted with the CornerstoneCacheService
-  return segmentationService.getSegmentation(
-    segDisplaySet.displaySetInstanceUID
-  );
+  return segmentationService.getSegmentation(segDisplaySet.displaySetInstanceUID);
 }
 
 function getSopClassHandlerModule({ servicesManager, extensionManager }) {
   const getDisplaySetsFromSeries = instances => {
-    return _getDisplaySetsFromSeries(
-      instances,
-      servicesManager,
-      extensionManager
-    );
+    return _getDisplaySetsFromSeries(instances, servicesManager, extensionManager);
   };
 
   return [

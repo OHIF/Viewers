@@ -26,6 +26,7 @@ import {
   AboutModal,
   UserPreferences,
   LoadingIndicatorProgress,
+  useSessionStorage,
 } from '@ohif/ui';
 
 import i18n from '@ohif/i18n';
@@ -60,9 +61,17 @@ function WorkList({
   const navigate = useNavigate();
   const STUDIES_LIMIT = 101;
   const queryFilterValues = _getQueryFilterValues(searchParams);
+  const [sessionQueryFilterValues, updateSessionQueryFilterValues] = useSessionStorage({
+    key: 'queryFilterValues',
+    defaultValue: queryFilterValues,
+    // ToDo: useSessionStorage currently uses an unload listener to clear the filters from session storage
+    // so on systems that do not support unload events a user will NOT be able to alter any existing filter
+    // in the URL, load the page and have it apply.
+    clearOnUnload: true,
+  });
   const [filterValues, _setFilterValues] = useState({
     ...defaultFilterValues,
-    ...queryFilterValues,
+    ...sessionQueryFilterValues,
   });
 
   const debouncedFilterValues = useDebounce(filterValues, 200);
@@ -77,9 +86,7 @@ function WorkList({
   const shouldUseDefaultSort = sortBy === '' || !sortBy;
   const sortModifier = sortDirection === 'descending' ? 1 : -1;
   const defaultSortValues =
-    shouldUseDefaultSort && canSort
-      ? { sortBy: 'studyDate', sortDirection: 'ascending' }
-      : {};
+    shouldUseDefaultSort && canSort ? { sortBy: 'studyDate', sortDirection: 'ascending' } : {};
   const sortedStudies = studies;
 
   if (canSort) {
@@ -121,6 +128,7 @@ function WorkList({
       val.pageNumber = 1;
     }
     _setFilterValues(val);
+    updateSessionQueryFilterValues(val);
     setExpandedRows([]);
   };
 
@@ -129,8 +137,7 @@ function WorkList({
     const rollingPageNumberMod = Math.floor(101 / filterValues.resultsPerPage);
     const rollingPageNumber = oldPageNumber % rollingPageNumberMod;
     const isNextPage = newPageNumber > oldPageNumber;
-    const hasNextPage =
-      Math.max(rollingPageNumber, 1) * resultsPerPage < numOfStudies;
+    const hasNextPage = Math.max(rollingPageNumber, 1) * resultsPerPage < numOfStudies;
 
     if (isNextPage && !hasNextPage) {
       return;
@@ -168,10 +175,7 @@ function WorkList({
 
       // TODO: nesting/recursion?
       if (key === 'studyDate') {
-        if (
-          currValue.startDate &&
-          defaultValue.startDate !== currValue.startDate
-        ) {
+        if (currValue.startDate && defaultValue.startDate !== currValue.startDate) {
           queryString.startDate = currValue.startDate;
         }
         if (currValue.endDate && defaultValue.endDate !== currValue.endDate) {
@@ -250,13 +254,14 @@ function WorkList({
     const studyDate =
       date &&
       moment(date, ['YYYYMMDD', 'YYYY.MM.DD'], true).isValid() &&
-      moment(date, ['YYYYMMDD', 'YYYY.MM.DD']).format('MMM-DD-YYYY');
+      moment(date, ['YYYYMMDD', 'YYYY.MM.DD']).format(t('Common:localDateFormat','MMM-DD-YYYY'));
     const studyTime =
       time &&
       moment(time, ['HH', 'HHmm', 'HHmmss', 'HHmmss.SSS']).isValid() &&
-      moment(time, ['HH', 'HHmm', 'HHmmss', 'HHmmss.SSS']).format('hh:mm A');
+      moment(time, ['HH', 'HHmm', 'HHmmss', 'HHmmss.SSS']).format(t('Common:localTimeFormat', 'hh:mm A'));
 
     return {
+      dataCY: `studyRow-${studyInstanceUid}`,
       row: [
         {
           key: 'patientName',
@@ -305,7 +310,7 @@ function WorkList({
             <>
               <Icon
                 name="group-layers"
-                className={classnames('inline-flex mr-2 w-4', {
+                className={classnames('mr-2 inline-flex w-4', {
                   'text-primary-active': isExpanded,
                   'text-secondary-light': !isExpanded,
                 })}
@@ -322,10 +327,10 @@ function WorkList({
       expandedContent: (
         <StudyListExpandedRow
           seriesTableColumns={{
-            description: 'Description',
-            seriesNumber: 'Series',
-            modality: 'Modality',
-            instances: 'Instances',
+            description: t('StudyList:Description'),
+            seriesNumber: t('StudyList:Series'),
+            modality: t('StudyList:Modality'),
+            instances: t('StudyList:Instances'),
           }}
           seriesTableDataSource={
             seriesInStudiesMap.has(studyInstanceUid)
@@ -342,8 +347,6 @@ function WorkList({
         >
           <div className="flex flex-row gap-2">
             {appConfig.loadedModes.map((mode, i) => {
-              const isFirst = i === 0;
-
               const modalitiesToCheck = modalities.replaceAll('/', '\\');
 
               const isValidMode = mode.isValidMode({
@@ -366,9 +369,9 @@ function WorkList({
                   <Link
                     className={isValidMode ? '' : 'cursor-not-allowed'}
                     key={i}
-                    to={`${dataPath ? '../../' : ''}${
-                      mode.routeName
-                    }${dataPath || ''}?${query.toString()}`}
+                    to={`${dataPath ? '../../' : ''}${mode.routeName}${
+                      dataPath || ''
+                    }?${query.toString()}`}
                     onClick={event => {
                       // In case any event bubbles up for an invalid mode, prevent the navigation.
                       // For example, the event bubbles up when the icon embedded in the disabled button is clicked.
@@ -385,8 +388,9 @@ function WorkList({
                       disabled={!isValidMode}
                       endIcon={<Icon name="launch-arrow" />} // launch-arrow | launch-info
                       onClick={() => {}}
+                      data-cy={`mode-${mode.routeName}-${studyInstanceUid}`}
                     >
-                      {t(`Modes:${mode.displayName}`)}
+                      {mode.displayName}
                     </LegacyButton>
                   </Link>
                 )
@@ -396,9 +400,7 @@ function WorkList({
         </StudyListExpandedRow>
       ),
       onClickRow: () =>
-        setExpandedRows(s =>
-          isExpanded ? s.filter(n => rowKey !== n) : [...s, rowKey]
-        ),
+        setExpandedRows(s => (isExpanded ? s.filter(n => rowKey !== n) : [...s, rowKey])),
       isExpanded,
     };
   });
@@ -414,7 +416,7 @@ function WorkList({
       onClick: () =>
         show({
           content: AboutModal,
-          title: 'About OHIF Viewer',
+          title: t('AboutModal:About OHIF Viewer'),
           contentProps: { versionNumber, commitHash },
         }),
     },
@@ -423,19 +425,19 @@ function WorkList({
       icon: 'settings',
       onClick: () =>
         show({
-          title: t('UserPreferencesModal:User Preferences'),
+          title: t('UserPreferencesModal:User preferences'),
           content: UserPreferences,
           contentProps: {
-            hotkeyDefaults: hotkeysManager.getValidHotkeyDefinitions(
-              hotkeyDefaults
-            ),
+            hotkeyDefaults: hotkeysManager.getValidHotkeyDefinitions(hotkeyDefaults),
             hotkeyDefinitions,
             onCancel: hide,
             currentLanguage: currentLanguage(),
             availableLanguages,
             defaultLanguage,
             onSubmit: state => {
-              i18n.changeLanguage(state.language.value);
+              if (state.language.value !== currentLanguage().value) {
+                i18n.changeLanguage(state.language.value);
+              }
               hotkeysManager.setHotkeys(state.hotkeyDefinitions);
               hide();
             },
@@ -451,9 +453,7 @@ function WorkList({
       icon: 'power-off',
       title: t('Header:Logout'),
       onClick: () => {
-        navigate(
-          `/logout?redirect_uri=${encodeURIComponent(window.location.href)}`
-        );
+        navigate(`/logout?redirect_uri=${encodeURIComponent(window.location.href)}`);
       },
     });
   }
@@ -485,15 +485,18 @@ function WorkList({
         }
       : undefined;
 
+  const { component: dataSourceConfigurationComponent } =
+    customizationService.get('ohif.dataSourceConfigurationComponent') ?? {};
+
   return (
-    <div className="bg-black h-screen flex flex-col ">
+    <div className="flex h-screen flex-col bg-black ">
       <Header
         isSticky
         menuOptions={menuOptions}
         isReturnEnabled={false}
         WhiteLabeling={appConfig.whiteLabeling}
       />
-      <div className="overflow-y-auto ohif-scrollbar flex flex-col grow">
+      <div className="ohif-scrollbar flex grow flex-col overflow-y-auto">
         <StudyListFilter
           numOfStudies={pageNumber * resultsPerPage > 100 ? 101 : numOfStudies}
           filtersMeta={filtersMeta}
@@ -502,9 +505,12 @@ function WorkList({
           clearFilters={() => setFilterValues(defaultFilterValues)}
           isFiltering={isFiltering(filterValues, defaultFilterValues)}
           onUploadClick={uploadProps ? () => show(uploadProps) : undefined}
+          getDataSourceConfigurationComponent={
+            dataSourceConfigurationComponent ? () => dataSourceConfigurationComponent() : undefined
+          }
         />
         {hasStudies ? (
-          <div className="grow flex flex-col">
+          <div className="flex grow flex-col">
             <StudyListTable
               tableDataSource={tableDataSource.slice(offset, offsetAndTake)}
               numOfStudies={numOfStudies}
@@ -523,7 +529,7 @@ function WorkList({
         ) : (
           <div className="flex flex-col items-center justify-center pt-48">
             {appConfig.showLoadingIndicator && isLoadingData ? (
-              <LoadingIndicatorProgress className={'w-full h-full bg-black'} />
+              <LoadingIndicatorProgress className={'h-full w-full bg-black'} />
             ) : (
               <EmptyStudies />
             )}
@@ -581,9 +587,7 @@ function _getQueryFilterValues(params) {
       endDate: params.get('enddate') || null,
     },
     description: params.get('description'),
-    modalities: params.get('modalities')
-      ? params.get('modalities').split(',')
-      : [],
+    modalities: params.get('modalities') ? params.get('modalities').split(',') : [],
     accession: params.get('accession'),
     sortBy: params.get('sortby'),
     sortDirection: params.get('sortdirection'),
@@ -607,9 +611,7 @@ function _sortStringDates(s1, s2, sortModifier) {
   const s2Date = moment(s2.date, ['YYYYMMDD', 'YYYY.MM.DD'], true);
 
   if (s1Date.isValid() && s2Date.isValid()) {
-    return (
-      (s1Date.toISOString() > s2Date.toISOString() ? 1 : -1) * sortModifier
-    );
+    return (s1Date.toISOString() > s2Date.toISOString() ? 1 : -1) * sortModifier;
   } else if (s1Date.isValid()) {
     return sortModifier;
   } else if (s2Date.isValid()) {

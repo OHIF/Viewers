@@ -74,7 +74,7 @@ _Upload your first Study:_
 #### Orthanc: Learn More
 
 You can see the `docker-compose.yml` file this command runs at
-[`<project-root>/.docker/Nginx-Orthanc/`][orthanc-docker-compose], and more on
+[`<project-root>/platform/app/.recipes/Nginx-Orthanc`][orthanc-docker-compose], and more on
 Orthanc for Docker in [Orthanc's documentation][orthanc-docker].
 
 #### Connecting to Orthanc
@@ -160,6 +160,13 @@ The following properties can be added to the `configuration` property of each da
 ##### `dicomUploadEnabled`
 A boolean indicating if the DICOM upload to the data source is permitted/accepted or not. A value of true provides a link on the OHIF work list page that allows for DICOM files from the local file system to be uploaded to the data source
 
+:::tip
+The [OHIF plugin for Orthanc](https://book.orthanc-server.com/plugins/ohif.html) by default utilizes the DICOM JSON data
+source and it has been discovered that only those studies uploaded to Orthanc AFTER the plugin has been installed are
+available as DICOM JSON. As such, if the OHIF plugin for Orthanc is desired for studies uploaded prior to installing the plugin,
+then consider switching to using [DICOMweb instead](https://book.orthanc-server.com/plugins/ohif.html#using-dicomweb).
+:::
+
 ![toolbarModule-layout](../../assets/img/uploader.gif)
 
 #### `singlepart`
@@ -230,3 +237,5 @@ below:
   https://github.com/OHIF/Viewers/tree/master/platform/app/public/html-templates
 [config-files]:
   https://github.com/OHIF/Viewers/tree/master/platform/app/public/config
+[storescu]: http://support.dcmtk.org/docs/storescu.html
+[webpack-proxy]: https://webpack.js.org/configuration/dev-server/#devserverproxy

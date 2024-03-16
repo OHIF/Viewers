@@ -77,7 +77,7 @@ _Create Your First User_
   - Email Verified: `ON`
   - Click `Save`
 - Click the `Credentials` Tab
-  - New Pasword: `test`
+  - New Password: `test`
   - Password Confirmation: `test`
   - Temporary: `OFF`
   - Click: `Reset Password`

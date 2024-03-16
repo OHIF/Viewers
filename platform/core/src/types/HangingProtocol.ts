@@ -61,7 +61,7 @@ export type SetProtocolOptions = {
 
 export type HangingProtocolMatchDetails = {
   displaySetMatchDetails: Map<string, DisplaySetMatchDetails>;
-  viewportMatchDetails: Map<number, ViewportMatchDetails>;
+  viewportMatchDetails: Map<string, ViewportMatchDetails>;
 };
 
 export type ConstraintValue =
@@ -241,15 +241,17 @@ export type ProtocolStage = {
 export type ProtocolNotifications = {
   // This set of commands is executed after the protocol is exited and the new one applied
   onProtocolExit?: Command[];
-
   // This set of commands is executed after the protocol is entered and applied
   onProtocolEnter?: Command[];
-
   // This set of commands is executed before the layout change is started.
   // If it returns false, the layout change will be aborted.
   // The numRows and numCols is included in the command params, so it is possible
   // to apply a specific hanging protocol
   onLayoutChange?: Command[];
+  // This set of commands is executed after the initial viewport grid data is set
+  // and all viewport data includes a designated display set. This command
+  // will run on every stage's initial layout.
+  onViewportDataInitialized?: Command[];
 };
 
 /**
@@ -257,12 +259,14 @@ export type ProtocolNotifications = {
  * It is a set of rules about when the protocol can be applied at all,
  * as well as a set of stages that represent indivividual views.
  * Additionally, the display set selectors are used to choose from the existing
- * display sets.  The hanging protcol definition here does NOT allow
+ * display sets.  The hanging protocol definition here does NOT allow
  * redefining the display sets to use, but only selects the views to show.
  */
 export type Protocol = {
   // Mandatory
   id: string;
+  /** A description of this protocol.  Used as a tool tip for the user. */
+  description?: string;
   /** Maps ids to display set selectors to choose display sets */
   displaySetSelectors: Record<string, DisplaySetSelector>;
   /** A default viewport to use for any stage to select new viewport layouts. */
@@ -270,7 +274,6 @@ export type Protocol = {
   stages: ProtocolStage[];
   // Optional
   locked?: boolean;
-  hasUpdatedPriorsInformation?: boolean;
   name?: string;
   createdDate?: string;
   modifiedDate?: string;
@@ -284,10 +287,23 @@ export type Protocol = {
   /* The number of priors required for this hanging protocol.
    * -1 means that NO priors are referenced, and thus this HP matches
    * only the active study, whereas 0 means that an unknown number of
-   * priors is matched.
+   * priors is matched.  Positive values mean at least that many priors are
+   * required.
+   * Replaces hasUpdatedPriors
    */
   numberOfPriorsReferenced?: number;
   syncDataForViewports?: boolean;
+  /**
+   * Set of minimal conditions necessary to run the hanging protocol.
+   */
+  hpInitiationCriteria?: {
+    /* If configured, sets the minimum number of series needed to run the hanging
+     * protocol and start displaying images. Used when OHIF needs to handle studies
+     * with several series and it is required that the first image should be loaded
+     * faster.
+     */
+    minSeriesLoaded: number;
+  };
 };
 
 /** Used to dynamically generate protocols.
@@ -295,10 +311,7 @@ export type Protocol = {
  * to the GUI when this is used, and it can be expensive to apply.
  * Alternatives include using the custom attributes where possible.
  */
-export type ProtocolGenerator = ({
-  servicesManager: any,
-  commandsManager: any,
-}) => {
+export type ProtocolGenerator = ({ servicesManager: any, commandsManager: any }) => {
   protocol: Protocol;
 };
 

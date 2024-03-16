@@ -191,7 +191,7 @@ export default mode;
 ### Consuming Extensions
 
 As mentioned in the [Extensions](../extensions/index.md) section, in `OHIF-v3`
-developers write their extensions to create re-usable functionalities that later
+developers write their extensions to create reusable functionalities that later
 can be used by `modes`. Now, it is time to describe how the registered
 extensions will get utilized for a workflow mode via its `id`.
 

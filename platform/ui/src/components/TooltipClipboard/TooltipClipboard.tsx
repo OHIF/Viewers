@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
@@ -9,6 +10,8 @@ const DELAY_TO_HIDE = 10; // it needs at least a little delay to prevent tooltip
 const DELAY_TO_HIDE_AFTER_COPYING = 1000;
 
 const TooltipClipboard = ({ children, text }) => {
+  const { t } = useTranslation('TooltipClipboard');
+
   const [isActive, setIsActive] = useState(false);
   const [message, setMessage] = useState(null);
   const [isCopying, setIsCopying] = useState(false);
@@ -21,10 +24,10 @@ const TooltipClipboard = ({ children, text }) => {
     setIsCopying(true);
     try {
       await navigator.clipboard.writeText(text);
-      setMessage('Copied!');
+      setMessage(t('Copied'));
     } catch (err) {
       console.error('Failed to copy: ', err);
-      setMessage('Failed to copy!');
+      setMessage(t('Failed to copy'));
     } finally {
       refreshElementPosition();
 
@@ -135,14 +138,17 @@ const TooltipClipboard = ({ children, text }) => {
       >
         <div
           className={classnames(
-            'flex items-center relative bg-primary-dark border border-secondary-main text-white text-base rounded px-2 py-2'
+            'bg-primary-dark border-secondary-main relative flex items-center rounded border px-2 py-2 text-base text-white'
           )}
         >
           {message || (
             <>
               {children}
-              <div className="ml-2 pl-2 border-l border-secondary-light">
-                <Icon name="clipboard" className="w-4 text-white" />
+              <div className="border-secondary-light ml-2 border-l pl-2">
+                <Icon
+                  name="clipboard"
+                  className="w-4 text-white"
+                />
               </div>
             </>
           )}

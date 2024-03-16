@@ -1,0 +1,16 @@
+{
+  "Display Set Messages": "Test Display Set Messages",
+  "1": "Test No valid instances found in series.",
+  "2": "Test Display set has missing position information.",
+  "3": "Test Display set is not a reconstructable 3D volume.",
+  "4": "Test Multi frame display sets do not have pixel measurement information.",
+  "5": "Test Multi frame display sets do not have orientation information.",
+  "6": "Test Multi frame display sets do not have position information.",
+  "7": "Test Display set has missing frames.",
+  "8": "Test Display set has irregular spacing.",
+  "9": "Test Display set has inconsistent dimensions between frames.",
+  "10": "Test Display set has frames with inconsistent number of components.",
+  "11": "Test Display set has frames with inconsistent orientations.",
+  "12": "Test Display set has inconsistent position information.",
+  "13": "Test Unsupported display set."
+}

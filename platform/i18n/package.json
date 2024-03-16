@@ -1,6 +1,6 @@
 {
   "name": "@ohif/i18n",
-  "version": "3.7.0-beta.46",
+  "version": "3.8.0-beta.60",
   "description": "Internationalization library for The OHIF Viewer",
   "author": "OHIF",
   "license": "MIT",
@@ -20,6 +20,8 @@
     "access": "public"
   },
   "scripts": {
+    "clean": "shx rm -rf dist",
+    "clean:deep": "yarn run clean && shx rm -rf node_modules",
     "dev": "cross-env NODE_ENV=development webpack --config .webpack/webpack.dev.js --watch --output-pathinfo",
     "dev:i18n": "yarn run dev",
     "build": "cross-env NODE_ENV=production webpack --config .webpack/webpack.prod.js",

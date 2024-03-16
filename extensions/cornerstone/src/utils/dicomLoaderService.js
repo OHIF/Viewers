@@ -8,9 +8,7 @@ const getImageId = imageObj => {
     return;
   }
 
-  return typeof imageObj.getImageId === 'function'
-    ? imageObj.getImageId()
-    : imageObj.url;
+  return typeof imageObj.getImageId === 'function' ? imageObj.getImageId() : imageObj.url;
 };
 
 const findImageIdOnStudies = (studies, displaySetInstanceUID) => {
@@ -99,7 +97,7 @@ class DicomLoaderService {
 
     if (
       (!imageInstance && !nonImageInstance) ||
-      !nonImageInstance.imageId.startsWith('dicomfile')
+      !nonImageInstance.imageId?.startsWith('dicomfile')
     ) {
       return;
     }
@@ -163,9 +161,7 @@ class DicomLoaderService {
           getDicomDataMethod = fetchIt.bind(this, imageId);
           break;
         default:
-          throw new Error(
-            `Unsupported image type: ${loaderType} for imageId: ${imageId}`
-          );
+          throw new Error(`Unsupported image type: ${loaderType} for imageId: ${imageId}`);
       }
 
       return getDicomDataMethod();
@@ -180,6 +176,7 @@ class DicomLoaderService {
       authorizationHeaders,
       wadoRoot,
       wadoUri,
+      instance,
     } = dataset;
     // Retrieve wadors or just try to fetch wadouri
     if (!someInvalidStrings(wadoRoot)) {
@@ -192,6 +189,13 @@ class DicomLoaderService {
       );
     } else if (!someInvalidStrings(wadoUri)) {
       return fetchIt(wadoUri, { headers: authorizationHeaders });
+    } else if (!someInvalidStrings(instance?.url)) {
+      // make sure the url is absolute, remove the scope
+      // from it if it is not absolute. For instance it might be dicomweb:http://....
+      // and we need to remove the dicomweb: part
+      const url = instance.url;
+      const absoluteUrl = url.startsWith('http') ? url : url.substring(url.indexOf(':') + 1);
+      return fetchIt(absoluteUrl, { headers: authorizationHeaders });
     }
   }
 

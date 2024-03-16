@@ -6,7 +6,7 @@
  *    `sameDisplaySetId` as the display set id to look for
  * From `options`, it looks for
  */
-export default function(displaySet, options) {
+export default function (displaySet, options) {
   const { sameAttribute, sameDisplaySetId } = this;
   if (!sameAttribute) {
     console.log('sameAttribute not defined in', this);
@@ -23,16 +23,9 @@ export default function(displaySet, options) {
     return false;
   }
   const { displaySetInstanceUID } = match;
-  const altDisplaySet = displaySets.find(
-    it => it.displaySetInstanceUID == displaySetInstanceUID
-  );
+  const altDisplaySet = displaySets.find(it => it.displaySetInstanceUID == displaySetInstanceUID);
   if (!altDisplaySet) {
-    console.log(
-      'No display set found with',
-      displaySetInstanceUID,
-      'in',
-      displaySets
-    );
+    console.log('No display set found with', displaySetInstanceUID, 'in', displaySets);
     return false;
   }
   const testValue = altDisplaySet[sameAttribute];

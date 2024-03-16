@@ -21,8 +21,12 @@ function OHIFCornerstonePdfViewport({ displaySets }) {
   }, [pdfUrl]);
 
   return (
-    <div className="bg-primary-black w-full h-full text-white">
-      <object data={url} type="application/pdf" className="w-full h-full">
+    <div className="bg-primary-black h-full w-full text-white">
+      <object
+        data={url}
+        type="application/pdf"
+        className="h-full w-full"
+      >
         <div>No online PDF viewer installed</div>
       </object>
     </div>

@@ -11,6 +11,7 @@ import user from './user.js';
 import utils from './utils';
 import defaults from './defaults';
 import * as Types from './types';
+import * as Enums from './enums';
 
 import {
   CineService,
@@ -32,6 +33,8 @@ import {
   StateSyncService,
   PanelService,
 } from './services';
+
+import { DisplaySetMessage, DisplaySetMessageList } from './services/DisplaySetService';
 
 import IWebApiDataSource from './DataSources/IWebApiDataSource';
 
@@ -107,6 +110,8 @@ export {
   UINotificationService,
   UIViewportDialogService,
   DisplaySetService,
+  DisplaySetMessage,
+  DisplaySetMessageList,
   MeasurementService,
   ToolbarService,
   ViewportGridService,
@@ -116,6 +121,7 @@ export {
   DicomMetadataStore,
   pubSubServiceInterface,
   PubSubService,
+  Enums,
   Types,
   PanelService,
 };

@@ -1,8 +1,4 @@
-import {
-  synchronizers,
-  SynchronizerManager,
-  Synchronizer,
-} from '@cornerstonejs/tools';
+import { synchronizers, SynchronizerManager, Synchronizer } from '@cornerstonejs/tools';
 
 import { pubSubServiceInterface, Types, ServicesManager } from '@ohif/core';
 
@@ -14,10 +10,7 @@ const EVENTS = {
  * @params options - are an optional set of options associated with the first
  * sync group declared.
  */
-export type SyncCreator = (
-  id: string,
-  options?: Record<string, unknown>
-) => Synchronizer;
+export type SyncCreator = (id: string, options?: Record<string, unknown>) => Synchronizer;
 
 export type SyncGroup = {
   type: string;
@@ -40,9 +33,7 @@ export default class SyncGroupService {
   static REGISTRATION = {
     name: 'syncGroupService',
     altName: 'SyncGroupService',
-    create: ({
-      servicesManager,
-    }: Types.Extensions.ExtensionParams): SyncGroupService => {
+    create: ({ servicesManager }: Types.Extensions.ExtensionParams): SyncGroupService => {
       return new SyncGroupService(servicesManager);
     },
   };
@@ -54,7 +45,7 @@ export default class SyncGroupService {
     [POSITION]: synchronizers.createCameraPositionSynchronizer,
     [VOI]: synchronizers.createVOISynchronizer,
     [ZOOMPAN]: synchronizers.createZoomPanSynchronizer,
-    [STACKIMAGE]: synchronizers.createStackImageSynchronizer,
+    [STACKIMAGE]: synchronizers.createImageSliceSynchronizer,
   };
 
   constructor(serviceManager: ServicesManager) {
@@ -65,11 +56,7 @@ export default class SyncGroupService {
     Object.assign(this, pubSubServiceInterface);
   }
 
-  private _createSynchronizer(
-    type: string,
-    id: string,
-    options
-  ): Synchronizer | undefined {
+  private _createSynchronizer(type: string, id: string, options): Synchronizer | undefined {
     const syncCreator = this.synchronizerCreators[type.toLowerCase()];
     if (syncCreator) {
       return syncCreator(id, options);
@@ -85,6 +72,10 @@ export default class SyncGroupService {
    */
   public addSynchronizerType(type: string, creator: SyncCreator): void {
     this.synchronizerCreators[type.toLowerCase()] = creator;
+  }
+
+  public getSynchronizer(id: string): Synchronizer | void {
+    return SynchronizerManager.getSynchronizer(id);
   }
 
   protected _getOrCreateSynchronizer(
@@ -109,19 +100,11 @@ export default class SyncGroupService {
       return;
     }
 
-    const syncGroupsArray = Array.isArray(syncGroups)
-      ? syncGroups
-      : [syncGroups];
+    const syncGroupsArray = Array.isArray(syncGroups) ? syncGroups : [syncGroups];
 
     syncGroupsArray.forEach(syncGroup => {
       const syncGroupObj = asSyncGroup(syncGroup);
-      const {
-        type,
-        target = true,
-        source = true,
-        options = {},
-        id = type,
-      } = syncGroupObj;
+      const { type, target = true, source = true, options = {}, id = type } = syncGroupObj;
 
       const synchronizer = this._getOrCreateSynchronizer(type, id, options);
       synchronizer.setOptions(viewportId, options);
@@ -140,6 +123,17 @@ export default class SyncGroupService {
 
   public destroy(): void {
     SynchronizerManager.destroy();
+  }
+
+  public getSynchronizersForViewport(
+    viewportId: string,
+    renderingEngineId: string
+  ): Synchronizer[] {
+    return SynchronizerManager.getAllSynchronizers().filter(
+      s =>
+        s.hasSourceViewport(renderingEngineId, viewportId) ||
+        s.hasTargetViewport(renderingEngineId, viewportId)
+    );
   }
 
   public removeViewportFromSyncGroup(

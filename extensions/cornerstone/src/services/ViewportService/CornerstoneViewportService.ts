@@ -9,41 +9,28 @@ import {
   VolumeViewport,
   VolumeViewport3D,
   cache,
-  utilities,
-  CONSTANTS,
   Enums as csEnums,
+  BaseVolumeViewport,
 } from '@cornerstonejs/core';
 
-import {
-  utilities as csToolsUtils,
-  Enums as csToolsEnums,
-} from '@cornerstonejs/tools';
+import { utilities as csToolsUtils, Enums as csToolsEnums } from '@cornerstonejs/tools';
 import { IViewportService } from './IViewportService';
 import { RENDERING_ENGINE_ID } from './constants';
-import ViewportInfo, {
-  ViewportOptions,
-  DisplaySetOptions,
-  PublicViewportOptions,
-} from './Viewport';
-import {
-  StackViewportData,
-  VolumeViewportData,
-} from '../../types/CornerstoneCacheService';
-import { Presentation, Presentations } from '../../types/Presentation';
+import ViewportInfo, { DisplaySetOptions, PublicViewportOptions } from './Viewport';
+import { StackViewportData, VolumeViewportData } from '../../types/CornerstoneCacheService';
+import { LutPresentation, PositionPresentation, Presentations } from '../../types/Presentation';
 
 import JumpPresets from '../../utils/JumpPresets';
 
 const EVENTS = {
-  VIEWPORT_DATA_CHANGED:
-    'event::cornerstoneViewportService:viewportDataChanged',
+  VIEWPORT_DATA_CHANGED: 'event::cornerstoneViewportService:viewportDataChanged',
 };
 
 /**
  * Handles cornerstone viewport logic including enabling, disabling, and
  * updating the viewport.
  */
-class CornerstoneViewportService extends PubSubService
-  implements IViewportService {
+class CornerstoneViewportService extends PubSubService implements IViewportService {
   static REGISTRATION = {
     name: 'cornerstoneViewportService',
     altName: 'CornerstoneViewportService',
@@ -55,16 +42,21 @@ class CornerstoneViewportService extends PubSubService
   };
 
   renderingEngine: Types.IRenderingEngine | null;
-  viewportsInfo: Map<number, ViewportInfo> = new Map();
   viewportsById: Map<string, ViewportInfo> = new Map();
   viewportGridResizeObserver: ResizeObserver | null;
   viewportsDisplaySets: Map<string, string[]> = new Map();
+  beforeResizePositionPresentations: Map<string, PositionPresentation> = new Map();
 
   // Some configs
   enableResizeDetector: true;
   resizeRefreshRateMs: 200;
   resizeRefreshMode: 'debounce';
   servicesManager = null;
+
+  resizeQueue = [];
+  viewportResizeTimer = null;
+  gridResizeDelay = 50;
+  gridResizeTimeOut = null;
 
   constructor(servicesManager: ServicesManager) {
     super(EVENTS);
@@ -75,45 +67,17 @@ class CornerstoneViewportService extends PubSubService
 
   /**
    * Adds the HTML element to the viewportService
-   * @param {*} viewportIndex
+   * @param {*} viewportId
    * @param {*} elementRef
    */
-  public enableViewport(
-    viewportIndex: number,
-    viewportOptions: PublicViewportOptions,
-    elementRef: HTMLDivElement
-  ): void {
-    // Use the provided viewportId
-    // Not providing a viewportId is frowned upon because it does weird things
-    // on moving them around, but it does mostly work.
-    if (!viewportOptions.viewportId) {
-      console.warn('Should provide viewport id externally', viewportOptions);
-      viewportOptions.viewportId =
-        this.getViewportId(viewportIndex) || `viewport-${viewportIndex}`;
-    }
-    const { viewportId } = viewportOptions;
-    const viewportInfo = new ViewportInfo(viewportIndex, viewportId);
-    if (!viewportInfo.viewportId) {
-      throw new Error('Should have viewport ID afterwards');
-    }
-
+  public enableViewport(viewportId: string, elementRef: HTMLDivElement): void {
+    const viewportInfo = new ViewportInfo(viewportId);
     viewportInfo.setElement(elementRef);
-    this.viewportsInfo.set(viewportIndex, viewportInfo);
     this.viewportsById.set(viewportId, viewportInfo);
   }
 
   public getViewportIds(): string[] {
-    const viewportIds = [];
-
-    this.viewportsInfo.forEach(viewportInfo => {
-      viewportIds.push(viewportInfo.getViewportId());
-    });
-
-    return viewportIds;
-  }
-
-  public getViewportId(viewportIndex: number): string {
-    return this.viewportsInfo[viewportIndex]?.viewportId;
+    return Array.from(this.viewportsById.keys());
   }
 
   /**
@@ -137,14 +101,28 @@ class CornerstoneViewportService extends PubSubService
   }
 
   /**
-   * It triggers the resize on the rendering engine.
+   * It triggers the resize on the rendering engine, and renders the viewports
+   *
+   * @param isGridResize - if the resize is triggered by a grid resize
+   * this is used to avoid double resize of the viewports since if the
+   * grid is resized, all viewports will be resized so there is no need
+   * to resize them individually which will get triggered by their
+   * individual resize observers
    */
-  public resize() {
-    const immediate = true;
-    const keepCamera = true;
-
-    this.renderingEngine.resize(immediate, keepCamera);
-    this.renderingEngine.render();
+  public resize(isGridResize = false) {
+    // if there is a grid resize happening, it means the viewport grid
+    // has been manipulated (e.g., panels closed, added, etc.) and we need
+    // to resize all viewports, so we will add a timeout here to make sure
+    // we don't double resize the viewports when viewports in the grid are
+    // resized individually
+    if (isGridResize) {
+      this.performResize();
+      this.resetGridResizeTimeout();
+      this.resizeQueue = [];
+      clearTimeout(this.viewportResizeTimer);
+    } else {
+      this.enqueueViewportResizeRequest();
+    }
   }
 
   /**
@@ -171,117 +149,293 @@ class CornerstoneViewportService extends PubSubService
    * created for every new viewport, this will be called whenever the set of
    * viewports is changed, but NOT when the viewport position changes only.
    *
-   * @param viewportIndex
+   * @param viewportId - The viewportId to disable
    */
-  public disableElement(viewportIndex: number): void {
-    const viewportInfo = this.viewportsInfo.get(viewportIndex);
-    if (!viewportInfo) {
-      return;
-    }
+  public disableElement(viewportId: string): void {
+    this.renderingEngine?.disableElement(viewportId);
 
-    const viewportId = viewportInfo.getViewportId();
-
-    this.renderingEngine && this.renderingEngine.disableElement(viewportId);
-
-    this.viewportsInfo.get(viewportIndex).destroy();
-    this.viewportsInfo.delete(viewportIndex);
+    // clean up
     this.viewportsById.delete(viewportId);
+    this.viewportsDisplaySets.delete(viewportId);
   }
 
-  public setPresentations(viewport, presentations?: Presentations): void {
-    const properties = presentations?.lutPresentation?.properties;
-    if (properties) {
-      viewport.setProperties(properties);
+  /**
+   * Sets the presentations for a given viewport. Presentations is an object
+   * that can define the lut or position for a viewport.
+   *
+   * @param viewportId - The ID of the viewport.
+   * @param presentations - The presentations to apply to the viewport.
+   */
+  public setPresentations(viewportId: string, presentations?: Presentations): void {
+    const viewport = this.getCornerstoneViewport(viewportId) as
+      | Types.IStackViewport
+      | Types.IVolumeViewport;
+
+    if (!viewport) {
+      return;
     }
-    const camera = presentations?.positionPresentation?.camera;
-    if (camera) {
-      viewport.setCamera(camera);
+
+    if (!presentations) {
+      return;
+    }
+
+    const { lutPresentation, positionPresentation } = presentations;
+    if (lutPresentation) {
+      const { presentation } = lutPresentation;
+
+      if (viewport instanceof BaseVolumeViewport) {
+        Object.entries(presentation).forEach(
+          ([volumeId, properties]: [string, Types.ViewportProperties]) => {
+            viewport.setProperties(properties, volumeId);
+          }
+        );
+      } else {
+        viewport.setProperties(presentation);
+      }
+    }
+
+    if (positionPresentation) {
+      const { viewPlaneNormal, viewUp, zoom, pan } = positionPresentation.presentation;
+      viewport.setCamera({ viewPlaneNormal, viewUp });
+
+      if (zoom !== undefined) {
+        viewport.setZoom(zoom);
+      }
+
+      if (pan !== undefined) {
+        viewport.setPan(pan);
+      }
     }
   }
 
-  public getPresentation(viewportIndex: number): Presentation {
-    const viewportInfo = this.viewportsInfo.get(viewportIndex);
+  /**
+   * Retrieves the position presentation information for a given viewport.
+   * @param viewportId The ID of the viewport.
+   * @returns The position presentation object containing various properties
+   * such as ID, viewport type, initial image index, view plane normal, view up, zoom, and pan.
+   */
+  public getPositionPresentation(viewportId: string): PositionPresentation {
+    const viewportInfo = this.viewportsById.get(viewportId);
     if (!viewportInfo) {
       return;
     }
-    const { viewportType, presentationIds } = viewportInfo.getViewportOptions();
 
-    const csViewport = this.getCornerstoneViewportByIndex(viewportIndex);
+    const presentationIds = viewportInfo.getPresentationIds();
+
+    if (!presentationIds) {
+      return;
+    }
+
+    const { positionPresentationId } = presentationIds;
+
+    const csViewport = this.getCornerstoneViewport(viewportId);
     if (!csViewport) {
       return;
     }
 
-    const properties = csViewport.getProperties();
-    if (properties.isComputedVOI) {
-      delete properties.voiRange;
-      delete properties.VOILUTFunction;
-    }
+    const { viewPlaneNormal, viewUp } = csViewport.getCamera();
     const initialImageIndex = csViewport.getCurrentImageIdIndex();
-    const camera = csViewport.getCamera();
+    const zoom = csViewport.getZoom();
+    const pan = csViewport.getPan();
+
     return {
-      presentationIds,
-      viewportType:
-        !viewportType || viewportType === 'stack' ? 'stack' : 'volume',
-      properties,
-      initialImageIndex,
-      camera,
+      id: positionPresentationId,
+      viewportType: viewportInfo.getViewportType(),
+      presentation: {
+        initialImageIndex,
+        viewUp,
+        viewPlaneNormal,
+        zoom,
+        pan,
+      },
     };
   }
 
   /**
-   * Uses the renderingEngine to enable the element for the given viewport index
-   * and sets the displaySet data to the viewport
-   * @param {*} viewportIndex
-   * @param {*} displaySet
-   * @param {*} dataSource
-   * @returns
+   * Retrieves the LUT (Lookup Table) presentation for a given viewport.
+   * @param viewportId The ID of the viewport.
+   * @returns The LUT presentation object, or undefined if the viewport does not exist.
+   */
+  public getLutPresentation(viewportId: string): LutPresentation {
+    const viewportInfo = this.viewportsById.get(viewportId);
+    if (!viewportInfo) {
+      return;
+    }
+
+    const presentationIds = viewportInfo.getPresentationIds();
+
+    if (!presentationIds) {
+      return;
+    }
+
+    const { lutPresentationId } = presentationIds;
+
+    const csViewport = this.getCornerstoneViewport(viewportId) as
+      | Types.IStackViewport
+      | Types.IVolumeViewport;
+
+    if (!csViewport) {
+      return;
+    }
+
+    const cleanProperties = properties => {
+      if (properties.isComputedVOI) {
+        delete properties.voiRange;
+        delete properties.VOILUTFunction;
+      }
+      return properties;
+    };
+
+    const presentation =
+      csViewport instanceof BaseVolumeViewport
+        ? new Map()
+        : cleanProperties(csViewport.getProperties());
+
+    if (presentation instanceof Map) {
+      csViewport.getActors().forEach(({ uid: volumeId }) => {
+        const properties = cleanProperties(csViewport.getProperties(volumeId));
+        presentation.set(volumeId, properties);
+      });
+    }
+
+    return {
+      id: lutPresentationId,
+      viewportType: viewportInfo.getViewportType(),
+      presentation,
+    };
+  }
+
+  /**
+   * Retrieves the presentations for a given viewport.
+   * @param viewportId - The ID of the viewport.
+   * @returns The presentations for the viewport.
+   */
+  public getPresentations(viewportId: string): Presentations {
+    const viewportInfo = this.viewportsById.get(viewportId);
+    if (!viewportInfo) {
+      return;
+    }
+
+    const positionPresentation = this.getPositionPresentation(viewportId);
+    const lutPresentation = this.getLutPresentation(viewportId);
+
+    return {
+      positionPresentation,
+      lutPresentation,
+    };
+  }
+
+  /**
+   * Stores the presentation state for a given viewport inside the
+   * stateSyncService. This is used to persist the presentation state
+   * across different scenarios e.g., when the viewport is changing the
+   * display set, or when the viewport is moving to a different layout.
+   *
+   * @param viewportId The ID of the viewport.
+   */
+  public storePresentation({ viewportId }) {
+    let presentations = null as Presentations;
+    try {
+      presentations = this.getPresentations(viewportId);
+      if (!presentations?.positionPresentation && !presentations?.lutPresentation) {
+        return;
+      }
+    } catch (error) {
+      console.warn(error);
+      return;
+    }
+
+    const { stateSyncService, syncGroupService } = this.servicesManager.services;
+
+    const synchronizers = syncGroupService.getSynchronizersForViewport(
+      viewportId,
+      this.renderingEngine.id
+    );
+
+    const { positionPresentationStore, synchronizersStore, lutPresentationStore } =
+      stateSyncService.getState();
+
+    const { lutPresentation, positionPresentation } = presentations;
+    const { id: positionPresentationId } = positionPresentation;
+    const { id: lutPresentationId } = lutPresentation;
+
+    const updateStore = (store, id, value) => ({ ...store, [id]: value });
+
+    const newState = {} as { [key: string]: any };
+
+    if (lutPresentationId) {
+      newState.lutPresentationStore = updateStore(
+        lutPresentationStore,
+        lutPresentationId,
+        lutPresentation
+      );
+    }
+
+    if (positionPresentationId) {
+      newState.positionPresentationStore = updateStore(
+        positionPresentationStore,
+        positionPresentationId,
+        positionPresentation
+      );
+    }
+
+    if (synchronizers?.length) {
+      newState.synchronizersStore = updateStore(
+        synchronizersStore,
+        viewportId,
+        synchronizers.map(synchronizer => ({
+          id: synchronizer.id,
+          sourceViewports: [...synchronizer.getSourceViewports()],
+          targetViewports: [...synchronizer.getTargetViewports()],
+        }))
+      );
+    }
+
+    stateSyncService.store(newState);
+  }
+
+  /**
+   * Sets the viewport data for a viewport.
+   * @param viewportId - The ID of the viewport to set the data for.
+   * @param viewportData - The viewport data to set.
+   * @param publicViewportOptions - The public viewport options.
+   * @param publicDisplaySetOptions - The public display set options.
+   * @param presentations - The presentations to set.
    */
   public setViewportData(
-    viewportIndex: number,
+    viewportId: string,
     viewportData: StackViewportData | VolumeViewportData,
     publicViewportOptions: PublicViewportOptions,
     publicDisplaySetOptions: DisplaySetOptions[],
     presentations?: Presentations
   ): void {
     const renderingEngine = this.getRenderingEngine();
-    const viewportId =
-      publicViewportOptions.viewportId || this.getViewportId(viewportIndex);
-    if (!viewportId) {
-      throw new Error('Must define viewportId externally');
-    }
 
+    // This is the old viewportInfo, which may have old options but we might be
+    // using its viewport (same viewportId as the new viewportInfo)
     const viewportInfo = this.viewportsById.get(viewportId);
 
+    // We should store the presentation for the current viewport since we can't only
+    // rely to store it WHEN the viewport is disabled since we might keep around the
+    // same viewport/element and just change the viewportData for it (drag and drop etc.)
+    // the disableElement storePresentation handle would not be called in this case
+    // and we would lose the presentation.
+    this.storePresentation({ viewportId: viewportInfo.getViewportId() });
+
     if (!viewportInfo) {
-      throw new Error('Viewport info not defined');
+      throw new Error('element is not enabled for the given viewportId');
     }
 
-    // If the viewport has moved index, then record the new index
-    if (viewportInfo.viewportIndex !== viewportIndex) {
-      this.viewportsInfo.delete(viewportInfo.viewportIndex);
-      this.viewportsInfo.set(viewportIndex, viewportInfo);
-      viewportInfo.viewportIndex = viewportIndex;
-    }
-
-    viewportInfo.setRenderingEngineId(renderingEngine.id);
-
-    const {
-      viewportOptions,
-      displaySetOptions,
-    } = this._getViewportAndDisplaySetOptions(
-      publicViewportOptions,
-      publicDisplaySetOptions,
-      viewportInfo
-    );
-
-    viewportInfo.setViewportOptions(viewportOptions);
-    viewportInfo.setDisplaySetOptions(displaySetOptions);
-    viewportInfo.setViewportData(viewportData);
+    // override the viewportOptions and displaySetOptions with the public ones
+    // since those are the newly set ones, we set them here so that it handles defaults
+    const displaySetOptions = viewportInfo.setPublicDisplaySetOptions(publicDisplaySetOptions);
+    const viewportOptions = viewportInfo.setPublicViewportOptions(publicViewportOptions);
 
     const element = viewportInfo.getElement();
     const type = viewportInfo.getViewportType();
     const background = viewportInfo.getBackground();
     const orientation = viewportInfo.getOrientation();
+    const displayArea = viewportInfo.getDisplayArea();
 
     const viewportInput: Types.PublicViewportInput = {
       viewportId,
@@ -290,8 +444,16 @@ class CornerstoneViewportService extends PubSubService
       defaultOptions: {
         background,
         orientation,
+        displayArea,
       },
     };
+
+    // Rendering Engine Id set should happen before enabling the element
+    // since there are callbacks that depend on the renderingEngine id
+    // Todo: however, this is a limitation which means that we can't change
+    // the rendering engine id for a given viewport which might be a super edge
+    // case
+    viewportInfo.setRenderingEngineId(renderingEngine.id);
 
     // Todo: this is not optimal at all, we are re-enabling the already enabled
     // element which is not what we want. But enabledElement as part of the
@@ -299,29 +461,42 @@ class CornerstoneViewportService extends PubSubService
     // ENABLED_ELEMENT again and again, which will run onEnableElement callbacks
     renderingEngine.enableElement(viewportInput);
 
+    viewportInfo.setViewportOptions(viewportOptions);
+    viewportInfo.setDisplaySetOptions(displaySetOptions);
+    viewportInfo.setViewportData(viewportData);
+    viewportInfo.setViewportId(viewportId);
+
+    this.viewportsById.set(viewportId, viewportInfo);
+
     const viewport = renderingEngine.getViewport(viewportId);
-    this._setDisplaySets(viewport, viewportData, viewportInfo, presentations);
+    const displaySetPromise = this._setDisplaySets(
+      viewport,
+      viewportData,
+      viewportInfo,
+      presentations
+    );
 
     // The broadcast event here ensures that listeners have a valid, up to date
     // viewport to access.  Doing it too early can result in exceptions or
     // invalid data.
-    this._broadcastEvent(this.EVENTS.VIEWPORT_DATA_CHANGED, {
-      viewportData,
-      viewportIndex,
-      viewportId,
+    displaySetPromise.then(() => {
+      this._broadcastEvent(this.EVENTS.VIEWPORT_DATA_CHANGED, {
+        viewportData,
+        viewportId,
+      });
     });
   }
 
-  public getCornerstoneViewport(
-    viewportId: string
-  ): Types.IStackViewport | Types.IVolumeViewport | null {
+  /**
+   * Retrieves the Cornerstone viewport with the specified ID.
+   *
+   * @param viewportId - The ID of the viewport.
+   * @returns The Cornerstone viewport object if found, otherwise null.
+   */
+  public getCornerstoneViewport(viewportId: string): Types.IViewport | null {
     const viewportInfo = this.getViewportInfo(viewportId);
 
-    if (
-      !viewportInfo ||
-      !this.renderingEngine ||
-      this.renderingEngine.hasBeenDestroyed
-    ) {
+    if (!viewportInfo || !this.renderingEngine || this.renderingEngine.hasBeenDestroyed) {
       return null;
     }
 
@@ -330,76 +505,68 @@ class CornerstoneViewportService extends PubSubService
     return viewport;
   }
 
-  public getCornerstoneViewportByIndex(
-    viewportIndex: number
-  ): Types.IStackViewport | Types.IVolumeViewport | null {
-    const viewportInfo = this.getViewportInfoByIndex(viewportIndex);
-
-    if (
-      !viewportInfo ||
-      !this.renderingEngine ||
-      this.renderingEngine.hasBeenDestroyed
-    ) {
-      return null;
-    }
-
-    const viewport = this.renderingEngine.getViewport(
-      viewportInfo.getViewportId()
-    );
-
-    return viewport;
+  /**
+   * Retrieves the viewport information for a given viewport ID. The viewport information
+   * is the OHIF construct that holds different options and data for a given viewport and
+   * is different from the cornerstone viewport.
+   *
+   * @param viewportId The ID of the viewport.
+   * @returns The viewport information.
+   */
+  public getViewportInfo(viewportId: string): ViewportInfo {
+    return this.viewportsById.get(viewportId);
   }
 
   /**
-   * Returns the viewportIndex for the provided viewportId
-   * @param {string} viewportId - the viewportId
-   * @returns {number} - the viewportIndex
+   * Looks through the viewports to see if the specified measurement can be
+   * displayed in one of the viewports.
+   *
+   * @param measurement
+   *          The measurement that is desired to view.
+   * @param activeViewportId - the index that was active at the time the jump
+   *          was initiated.
+   * @return the viewportId that the measurement should be displayed in.
    */
-  public getViewportInfoByIndex(viewportIndex: number): ViewportInfo {
-    return this.viewportsInfo.get(viewportIndex);
-  }
-
-  public getViewportInfo(viewportId: string): ViewportInfo {
-    // @ts-ignore
-    for (const [index, viewport] of this.viewportsInfo.entries()) {
-      if (viewport.getViewportId() === viewportId) {
-        return viewport;
-      }
+  public getViewportIdToJump(
+    activeViewportId: string,
+    displaySetInstanceUID: string,
+    cameraProps: unknown
+  ): string {
+    const viewportInfo = this.getViewportInfo(activeViewportId);
+    const { referencedImageId } = cameraProps;
+    if (viewportInfo?.contains(displaySetInstanceUID, referencedImageId)) {
+      return activeViewportId;
     }
-    return null;
+
+    return (
+      [...this.viewportsById.values()].find(viewportInfo =>
+        viewportInfo.contains(displaySetInstanceUID, referencedImageId)
+      )?.viewportId ?? null
+    );
   }
 
-  _setStackViewport(
+  private async _setStackViewport(
     viewport: Types.IStackViewport,
     viewportData: StackViewportData,
     viewportInfo: ViewportInfo,
-    presentations: Presentations
-  ): void {
+    presentations: Presentations = {}
+  ): Promise<void> {
     const displaySetOptions = viewportInfo.getDisplaySetOptions();
 
-    const {
-      imageIds,
-      initialImageIndex,
-      displaySetInstanceUID,
-    } = viewportData.data;
+    const { imageIds, initialImageIndex, displaySetInstanceUID } = viewportData.data;
 
     this.viewportsDisplaySets.set(viewport.id, [displaySetInstanceUID]);
 
     let initialImageIndexToUse =
-      presentations?.positionPresentation?.initialImageIndex ??
-      initialImageIndex;
+      presentations?.positionPresentation?.initialImageIndex ?? initialImageIndex;
 
-    if (
-      initialImageIndexToUse === undefined ||
-      initialImageIndexToUse === null
-    ) {
-      initialImageIndexToUse =
-        this._getInitialImageIndexForViewport(viewportInfo, imageIds) || 0;
+    if (initialImageIndexToUse === undefined || initialImageIndexToUse === null) {
+      initialImageIndexToUse = this._getInitialImageIndexForViewport(viewportInfo, imageIds) || 0;
     }
 
     const properties = { ...presentations.lutPresentation?.properties };
     if (!presentations.lutPresentation?.properties) {
-      const { voi, voiInverted } = displaySetOptions[0];
+      const { voi, voiInverted, colormap } = displaySetOptions[0];
       if (voi && (voi.windowWidth || voi.windowCenter)) {
         const { lower, upper } = csUtils.windowLevel.toLowHighRange(
           voi.windowWidth,
@@ -411,14 +578,15 @@ class CornerstoneViewportService extends PubSubService
       if (voiInverted !== undefined) {
         properties.invert = voiInverted;
       }
+
+      if (colormap !== undefined) {
+        properties.colormap = colormap;
+      }
     }
 
-    viewport.setStack(imageIds, initialImageIndexToUse).then(() => {
-      viewport.setProperties(properties);
-      const camera = presentations.positionPresentation?.camera;
-      if (camera) {
-        viewport.setCamera(camera);
-      }
+    return viewport.setStack(imageIds, initialImageIndexToUse).then(() => {
+      viewport.setProperties({ ...properties });
+      this.setPresentations(viewport.id, presentations);
     });
   }
 
@@ -439,12 +607,8 @@ class CornerstoneViewportService extends PubSubService
     if (viewportType === csEnums.ViewportType.STACK) {
       numberOfSlices = imageIds.length;
     } else if (viewportType === csEnums.ViewportType.ORTHOGRAPHIC) {
-      const viewport = this.getCornerstoneViewport(
-        viewportInfo.getViewportId()
-      );
-      const imageSliceData = csUtils.getImageSliceDataForVolumeViewport(
-        viewport
-      );
+      const viewport = this.getCornerstoneViewport(viewportInfo.getViewportId());
+      const imageSliceData = csUtils.getImageSliceDataForVolumeViewport(viewport);
 
       if (!imageSliceData) {
         return;
@@ -458,11 +622,7 @@ class CornerstoneViewportService extends PubSubService
     return this._getInitialImageIndex(numberOfSlices, index, preset);
   }
 
-  _getInitialImageIndex(
-    numberOfSlices: number,
-    imageIndex?: number,
-    preset?: JumpPresets
-  ): number {
+  _getInitialImageIndex(numberOfSlices: number, imageIndex?: number, preset?: JumpPresets): number {
     const lastSliceIndex = numberOfSlices - 1;
 
     if (imageIndex !== undefined) {
@@ -484,9 +644,7 @@ class CornerstoneViewportService extends PubSubService
       // it will jump to a different slice than the middle one which
       // was the initial slice, and we have some tools such as Crosshairs
       // which rely on a relative camera modifications and those will break.
-      return lastSliceIndex % 2 === 0
-        ? lastSliceIndex / 2
-        : (lastSliceIndex + 1) / 2;
+      return lastSliceIndex % 2 === 0 ? lastSliceIndex / 2 : (lastSliceIndex + 1) / 2;
     }
 
     return 0;
@@ -496,7 +654,7 @@ class CornerstoneViewportService extends PubSubService
     viewport: Types.IVolumeViewport,
     viewportData: VolumeViewportData,
     viewportInfo: ViewportInfo,
-    presentations: Presentations
+    presentations: Presentations = {}
   ): Promise<void> {
     // TODO: We need to overhaul the way data sources work so requests can be made
     // async. I think we should follow the image loader pattern which is async and
@@ -541,10 +699,7 @@ class CornerstoneViewportService extends PubSubService
 
     this.viewportsDisplaySets.set(viewport.id, displaySetInstanceUIDs);
 
-    if (
-      hangingProtocolService.hasCustomImageLoadStrategy() &&
-      !hangingProtocolService.customImageLoadPerformed
-    ) {
+    if (hangingProtocolService.getShouldPerformCustomImageLoad()) {
       // delegate the volume loading to the hanging protocol service if it has a custom image load strategy
       return hangingProtocolService.runImageLoadStrategy({
         viewportId: viewport.id,
@@ -559,22 +714,11 @@ class CornerstoneViewportService extends PubSubService
     });
 
     // This returns the async continuation only
-    return this.setVolumesForViewport(
-      viewport,
-      volumeInputArray,
-      presentations
-    );
+    return this.setVolumesForViewport(viewport, volumeInputArray, presentations);
   }
 
-  public async setVolumesForViewport(
-    viewport,
-    volumeInputArray,
-    presentations
-  ) {
-    const {
-      displaySetService,
-      toolGroupService,
-    } = this.servicesManager.services;
+  public async setVolumesForViewport(viewport, volumeInputArray, presentations) {
+    const { displaySetService, toolGroupService } = this.servicesManager.services;
 
     const viewportInfo = this.getViewportInfo(viewport.id);
     const displaySetOptions = viewportInfo.getDisplaySetOptions();
@@ -614,7 +758,7 @@ class CornerstoneViewportService extends PubSubService
       viewport.setProperties(properties, volumeId);
     });
 
-    this.setPresentations(viewport, presentations);
+    this.setPresentations(viewport.id, presentations);
 
     // load any secondary displaySets
     const displaySetInstanceUIDs = this.viewportsDisplaySets.get(viewport.id);
@@ -632,10 +776,7 @@ class CornerstoneViewportService extends PubSubService
       // associated with the primary displaySet
 
       // get segmentations only returns the hydrated segmentations
-      this._addSegmentationRepresentationToToolGroupIfNecessary(
-        displaySetInstanceUIDs,
-        viewport
-      );
+      this._addSegmentationRepresentationToToolGroupIfNecessary(displaySetInstanceUIDs, viewport);
     }
 
     const toolGroup = toolGroupService.getToolGroupForViewport(viewport.id);
@@ -656,10 +797,7 @@ class CornerstoneViewportService extends PubSubService
     displaySetInstanceUIDs: string[],
     viewport: any
   ) {
-    const {
-      segmentationService,
-      toolGroupService,
-    } = this.servicesManager.services;
+    const { segmentationService, toolGroupService } = this.servicesManager.services;
 
     const toolGroup = toolGroupService.getToolGroupForViewport(viewport.id);
 
@@ -668,9 +806,7 @@ class CornerstoneViewportService extends PubSubService
 
     for (const segmentation of segmentations) {
       const toolGroupSegmentationRepresentations =
-        segmentationService.getSegmentationRepresentationsForToolGroup(
-          toolGroup.id
-        ) || [];
+        segmentationService.getSegmentationRepresentationsForToolGroup(toolGroup.id) || [];
 
       // if there is already a segmentation representation for this segmentation
       // for this toolGroup, don't bother at all
@@ -682,19 +818,28 @@ class CornerstoneViewportService extends PubSubService
         continue;
       }
 
-      // otherwise, check if the hydrated segmentations are in the same FOR
+      // otherwise, check if the hydrated segmentations are in the same FrameOfReferenceUID
       // as the primary displaySet, if so add the representation (since it was not there)
-      const { id: segDisplaySetInstanceUID, type } = segmentation;
-      const segFrameOfReferenceUID = this._getFrameOfReferenceUID(
-        segDisplaySetInstanceUID
-      );
+      const { id: segDisplaySetInstanceUID } = segmentation;
+      let segFrameOfReferenceUID = this._getFrameOfReferenceUID(segDisplaySetInstanceUID);
+
+      if (!segFrameOfReferenceUID) {
+        // if the segmentation displaySet does not have a FrameOfReferenceUID, we might check the
+        // segmentation itself maybe it has a FrameOfReferenceUID
+        const { FrameOfReferenceUID } = segmentation;
+        if (FrameOfReferenceUID) {
+          segFrameOfReferenceUID = FrameOfReferenceUID;
+        }
+      }
+
+      if (!segFrameOfReferenceUID) {
+        return;
+      }
 
       let shouldDisplaySeg = false;
 
       for (const displaySetInstanceUID of displaySetInstanceUIDs) {
-        const primaryFrameOfReferenceUID = this._getFrameOfReferenceUID(
-          displaySetInstanceUID
-        );
+        const primaryFrameOfReferenceUID = this._getFrameOfReferenceUID(displaySetInstanceUID);
 
         if (segFrameOfReferenceUID === primaryFrameOfReferenceUID) {
           shouldDisplaySeg = true;
@@ -715,14 +860,8 @@ class CornerstoneViewportService extends PubSubService
     }
   }
 
-  private addOverlayRepresentationForDisplaySet(
-    displaySet: any,
-    viewport: any
-  ) {
-    const {
-      segmentationService,
-      toolGroupService,
-    } = this.servicesManager.services;
+  private addOverlayRepresentationForDisplaySet(displaySet: any, viewport: any) {
+    const { segmentationService, toolGroupService } = this.servicesManager.services;
 
     const { referencedVolumeId } = displaySet;
     const segmentationId = displaySet.displaySetInstanceUID;
@@ -744,63 +883,59 @@ class CornerstoneViewportService extends PubSubService
 
   // Todo: keepCamera is an interim solution until we have a better solution for
   // keeping the camera position when the viewport data is changed
-  public updateViewport(
-    viewportIndex: number,
-    viewportData,
-    keepCamera = false
-  ) {
-    const viewportInfo = this.getViewportInfoByIndex(viewportIndex);
-
-    const viewportId = viewportInfo.getViewportId();
+  public updateViewport(viewportId: string, viewportData, keepCamera = false) {
+    const viewportInfo = this.getViewportInfo(viewportId);
     const viewport = this.getCornerstoneViewport(viewportId);
     const viewportCamera = viewport.getCamera();
 
-    if (
-      viewport instanceof VolumeViewport ||
-      viewport instanceof VolumeViewport3D
-    ) {
-      this._setVolumeViewport(viewport, viewportData, viewportInfo).then(() => {
+    let displaySetPromise;
+
+    if (viewport instanceof VolumeViewport || viewport instanceof VolumeViewport3D) {
+      displaySetPromise = this._setVolumeViewport(viewport, viewportData, viewportInfo).then(() => {
         if (keepCamera) {
           viewport.setCamera(viewportCamera);
           viewport.render();
         }
       });
-
-      return;
     }
 
     if (viewport instanceof StackViewport) {
-      this._setStackViewport(viewport, viewportData, viewportInfo);
-      return;
+      displaySetPromise = this._setStackViewport(viewport, viewportData, viewportInfo);
     }
+
+    displaySetPromise.then(() => {
+      this._broadcastEvent(this.EVENTS.VIEWPORT_DATA_CHANGED, {
+        viewportData,
+        viewportId,
+      });
+    });
   }
 
   _setDisplaySets(
-    viewport: StackViewport | VolumeViewport,
+    viewport: Types.IViewport,
     viewportData: StackViewportData | VolumeViewportData,
     viewportInfo: ViewportInfo,
     presentations: Presentations = {}
-  ): void {
+  ): Promise<void> {
     if (viewport instanceof StackViewport) {
-      this._setStackViewport(
+      return this._setStackViewport(
         viewport,
         viewportData as StackViewportData,
         viewportInfo,
         presentations
       );
-    } else if (
-      viewport instanceof VolumeViewport ||
-      viewport instanceof VolumeViewport3D
-    ) {
-      this._setVolumeViewport(
-        viewport,
+    }
+
+    if ([VolumeViewport, VolumeViewport3D].some(type => viewport instanceof type)) {
+      return this._setVolumeViewport(
+        viewport as Types.IVolumeViewport,
         viewportData as VolumeViewportData,
         viewportInfo,
         presentations
       );
-    } else {
-      throw new Error('Unknown viewport type');
     }
+
+    throw new Error('Unknown viewport type');
   }
 
   /**
@@ -814,10 +949,7 @@ class CornerstoneViewportService extends PubSubService
 
   _getSlabThickness(displaySetOptions, volumeId) {
     const { blendMode } = displaySetOptions;
-    if (
-      blendMode === undefined ||
-      displaySetOptions.slabThickness === undefined
-    ) {
+    if (blendMode === undefined || displaySetOptions.slabThickness === undefined) {
       return;
     }
 
@@ -841,41 +973,9 @@ class CornerstoneViewportService extends PubSubService
     }
   }
 
-  _getViewportAndDisplaySetOptions(
-    publicViewportOptions: PublicViewportOptions,
-    publicDisplaySetOptions: DisplaySetOptions[],
-    viewportInfo: ViewportInfo
-  ): {
-    viewportOptions: ViewportOptions;
-    displaySetOptions: DisplaySetOptions[];
-  } {
-    const viewportIndex = viewportInfo.getViewportIndex();
-
-    // Creating a temporary viewportInfo to handle defaults
-    const newViewportInfo = new ViewportInfo(
-      viewportIndex,
-      viewportInfo.getViewportId()
-    );
-
-    // To handle setting the default values if missing for the viewportOptions and
-    // displaySetOptions
-    newViewportInfo.setPublicViewportOptions(publicViewportOptions);
-    newViewportInfo.setPublicDisplaySetOptions(publicDisplaySetOptions);
-
-    const newViewportOptions = newViewportInfo.getViewportOptions();
-    const newDisplaySetOptions = newViewportInfo.getDisplaySetOptions();
-
-    return {
-      viewportOptions: newViewportOptions,
-      displaySetOptions: newDisplaySetOptions,
-    };
-  }
-
   _getFrameOfReferenceUID(displaySetInstanceUID) {
     const { displaySetService } = this.servicesManager.services;
-    const displaySet = displaySetService.getDisplaySetByUID(
-      displaySetInstanceUID
-    );
+    const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
 
     if (!displaySet) {
       return;
@@ -901,32 +1001,57 @@ class CornerstoneViewportService extends PubSubService
     }
   }
 
-  /**
-   * Looks through the viewports to see if the specified measurement can be
-   * displayed in one of the viewports.
-   *
-   * @param measurement
-   *          The measurement that is desired to view.
-   * @param activeViewportIndex - the index that was active at the time the jump
-   *          was initiated.
-   * @return the viewportIndex to display the given measurement
-   */
-  public getViewportIndexToJump(
-    activeViewportIndex: number,
-    displaySetInstanceUID: string,
-    cameraProps: unknown
-  ): number {
-    const viewportInfo = this.viewportsInfo.get(activeViewportIndex);
-    const { referencedImageId } = cameraProps;
-    if (viewportInfo?.contains(displaySetInstanceUID, referencedImageId)) {
-      return activeViewportIndex;
+  private enqueueViewportResizeRequest() {
+    this.resizeQueue.push(false); // false indicates viewport resize
+
+    clearTimeout(this.viewportResizeTimer);
+    this.viewportResizeTimer = setTimeout(() => {
+      this.processViewportResizeQueue();
+    }, this.gridResizeDelay);
+  }
+
+  private processViewportResizeQueue() {
+    const isGridResizeInQueue = this.resizeQueue.some(isGridResize => isGridResize);
+    if (this.resizeQueue.length > 0 && !isGridResizeInQueue && !this.gridResizeTimeOut) {
+      this.performResize();
     }
 
-    return (
-      [...this.viewportsById.values()].find(viewportInfo =>
-        viewportInfo.contains(displaySetInstanceUID, referencedImageId)
-      )?.viewportIndex ?? -1
-    );
+    // Clear the queue after processing viewport resizes
+    this.resizeQueue = [];
+  }
+
+  private performResize() {
+    const isImmediate = false;
+
+    const viewports = this.getRenderingEngine().getViewports();
+
+    // Store the current position presentations for each viewport.
+    viewports.forEach(({ id }) => {
+      const presentation = this.getPositionPresentation(id);
+      this.beforeResizePositionPresentations.set(id, presentation);
+    });
+
+    // Resize the rendering engine and render.
+    const renderingEngine = this.renderingEngine;
+    renderingEngine.resize(isImmediate);
+    renderingEngine.render();
+
+    // Reset the camera for viewports that should reset their camera on resize,
+    // which means only those viewports that have a zoom level of 1.
+    this.beforeResizePositionPresentations.forEach((positionPresentation, viewportId) => {
+      this.setPresentations(viewportId, { positionPresentation });
+    });
+
+    // Resize and render the rendering engine again.
+    renderingEngine.resize(isImmediate);
+    renderingEngine.render();
+  }
+
+  private resetGridResizeTimeout() {
+    clearTimeout(this.gridResizeTimeOut);
+    this.gridResizeTimeOut = setTimeout(() => {
+      this.gridResizeTimeOut = null;
+    }, this.gridResizeDelay);
   }
 }
 

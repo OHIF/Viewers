@@ -1,24 +1,18 @@
 import { Types } from '@ohif/core';
-import {
-  PanelMeasurementTableTracking,
-  PanelStudyBrowserTracking,
-} from './panels';
+import { PanelMeasurementTableTracking, PanelStudyBrowserTracking } from './panels';
+import i18n from 'i18next';
 
 // TODO:
 // - No loading UI exists yet
 // - cancel promises when component is destroyed
 // - show errors in UI for thumbnails if promise fails
-function getPanelModule({
-  commandsManager,
-  extensionManager,
-  servicesManager,
-}): Types.Panel[] {
+function getPanelModule({ commandsManager, extensionManager, servicesManager }): Types.Panel[] {
   return [
     {
       name: 'seriesList',
-      iconName: 'group-layers',
+      iconName: 'tab-studies',
       iconLabel: 'Studies',
-      label: 'Studies',
+      label: i18n.t('SidePanel:Studies'),
       component: PanelStudyBrowserTracking.bind(null, {
         commandsManager,
         extensionManager,
@@ -30,7 +24,7 @@ function getPanelModule({
       name: 'trackedMeasurements',
       iconName: 'tab-linear',
       iconLabel: 'Measure',
-      label: 'Measurements',
+      label: i18n.t('SidePanel:Measurements'),
       component: PanelMeasurementTableTracking.bind(null, {
         commandsManager,
         extensionManager,
