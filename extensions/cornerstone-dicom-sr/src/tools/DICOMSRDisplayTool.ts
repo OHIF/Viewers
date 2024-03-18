@@ -29,7 +29,7 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
 
     for (let i = 0; i < labelLength; i++) {
       const labelEntry = labels[i];
-      lines.push(`${_labelToShorthand(labelEntry.label)}${labelEntry.value}`);
+      lines.push(`${_labelToShorthand(labelEntry.label)}: ${labelEntry.value}`);
     }
 
     return lines;
