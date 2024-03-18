@@ -1,15 +1,13 @@
 import { vec3 } from 'gl-matrix';
 import { Types, annotation } from '@cornerstonejs/tools';
 import { metaData, utilities, Types as csTypes } from '@cornerstonejs/core';
+
 import toolNames from '../tools/toolNames';
 import SCOORD_TYPES from '../constants/scoordTypes';
 
 const EPSILON = 1e-4;
 
-const supportedLegacyCornerstoneTags = ['cornerstoneTools@^4.0.0'];
-
-export default function addMeasurement(measurement, imageId, displaySetInstanceUID) {
-  // TODO -> Render rotated ellipse .
+export default function addDICOMSRDisplayAnnotation(measurement, imageId) {
   const toolName = toolNames.DICOMSRDisplay;
 
   const measurementData = {
@@ -27,21 +25,22 @@ export default function addMeasurement(measurement, imageId, displaySetInstanceU
     }
 
     measurementData.renderableData[GraphicType].push(
-      _getRenderableData(GraphicType, GraphicData, imageId, measurement.TrackingIdentifier)
+      _getRenderableData(GraphicType, GraphicData, imageId)
     );
   });
 
-  // Use the metadata provider to grab its imagePlaneModule metadata
   const imagePlaneModule = metaData.get('imagePlaneModule', imageId);
 
-  const annotationManager = annotation.state.getAnnotationManager();
-
-  // Create Cornerstone3D Annotation from measurement
   const frameNumber =
     (measurement.coords[0].ReferencedSOPSequence &&
       measurement.coords[0].ReferencedSOPSequence[0]?.ReferencedFrameNumber) ||
     1;
 
+  /**
+   * This annotation (DICOMSRDisplay) is only used by the SR viewport.
+   * This is used before the annotation is hydrated. If hydrated the measurement will be added
+   * to the measurement service and will be available for the other viewports.
+   */
   const SRAnnotation: Types.Annotation = {
     annotationUID: measurement.TrackingUniqueIdentifier,
     metadata: {
@@ -61,25 +60,11 @@ export default function addMeasurement(measurement, imageId, displaySetInstanceU
       frameNumber: frameNumber,
     },
   };
-
+  const annotationManager = annotation.state.getAnnotationManager();
   annotationManager.addAnnotation(SRAnnotation);
-
-  measurement.loaded = true;
-  measurement.imageId = imageId;
-  measurement.displaySetInstanceUID = displaySetInstanceUID;
-
-  // Remove the unneeded coord now its processed, but keep the SOPInstanceUID.
-  // NOTE: We assume that each SCOORD in the MeasurementGroup maps onto one frame,
-  // It'd be super weird if it didn't anyway as a SCOORD.
-  measurement.ReferencedSOPInstanceUID =
-    measurement.coords[0].ReferencedSOPSequence.ReferencedSOPInstanceUID;
-  measurement.frameNumber = frameNumber;
-  delete measurement.coords;
 }
 
-function _getRenderableData(GraphicType, GraphicData, imageId, TrackingIdentifier) {
-  const [cornerstoneTag, toolName] = TrackingIdentifier.split(':');
-
+function _getRenderableData(GraphicType, GraphicData, imageId) {
   let renderableData: csTypes.Point3[];
 
   switch (GraphicType) {

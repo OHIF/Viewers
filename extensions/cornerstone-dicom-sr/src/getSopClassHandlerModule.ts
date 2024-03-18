@@ -1,6 +1,6 @@
 import { SOPClassHandlerName, SOPClassHandlerId } from './id';
 import { utils, classes, DisplaySetService, Types } from '@ohif/core';
-import addMeasurement from './utils/addMeasurement';
+import addDICOMSRDisplayAnnotation from './utils/addDICOMSRDisplayAnnotation';
 import isRehydratable from './utils/isRehydratable';
 import { adaptersSR } from '@cornerstonejs/adapters';
 
@@ -150,12 +150,34 @@ function _getDisplaySetsFromSeries(instances, servicesManager, extensionManager)
   return [displaySet];
 }
 
-function _load(displaySet, servicesManager, extensionManager) {
+async function _load(displaySet, servicesManager, extensionManager) {
   const { displaySetService, measurementService } = servicesManager.services;
   const dataSources = extensionManager.getDataSources();
   const dataSource = dataSources[0];
 
   const { ContentSequence } = displaySet.instance;
+
+  async function retrieveBulkData(obj, parentObj = null, key = null) {
+    for (const prop in obj) {
+      if (typeof obj[prop] === 'object' && obj[prop] !== null) {
+        await retrieveBulkData(obj[prop], obj, prop);
+      } else if (Array.isArray(obj[prop])) {
+        await Promise.all(obj[prop].map(item => retrieveBulkData(item, obj, prop)));
+      } else if (prop === 'BulkDataURI') {
+        const value = await dataSource.retrieve.bulkDataURI({
+          BulkDataURI: obj[prop],
+          StudyInstanceUID: displaySet.instance.StudyInstanceUID,
+          SeriesInstanceUID: displaySet.instance.SeriesInstanceUID,
+          SOPInstanceUID: displaySet.instance.SOPInstanceUID,
+        });
+        if (parentObj && key) {
+          parentObj[key] = new Float32Array(value);
+        }
+      }
+    }
+  }
+
+  await retrieveBulkData(ContentSequence);
 
   displaySet.referencedImages = _getReferencedImagesList(ContentSequence);
   displaySet.measurements = _getMeasurements(ContentSequence);
@@ -211,7 +233,7 @@ function _checkIfCanAddMeasurementsToDisplaySet(
     return;
   }
 
-  if (!newDisplaySet instanceof ImageSet) {
+  if ((!newDisplaySet) instanceof ImageSet) {
     // This also filters out _this_ displaySet, as it is not an ImageSet.
     return;
   }
@@ -275,7 +297,17 @@ function _checkIfCanAddMeasurementsToDisplaySet(
         }
 
         if (_measurementReferencesSOPInstanceUID(measurement, SOPInstanceUID, frameNumber)) {
-          addMeasurement(measurement, imageId, newDisplaySet.displaySetInstanceUID);
+          /** Add DICOMSRDisplay annotation for the SR viewport (only) */
+          addDICOMSRDisplayAnnotation(measurement, imageId);
+
+          /** Update measurement properties */
+          measurement.loaded = true;
+          measurement.imageId = imageId;
+          measurement.displaySetInstanceUID = newDisplaySet.displaySetInstanceUID;
+          measurement.ReferencedSOPInstanceUID =
+            measurement.coords[0].ReferencedSOPSequence.ReferencedSOPInstanceUID;
+          measurement.frameNumber = frameNumber;
+          delete measurement.coords;
 
           unloadedMeasurements.splice(j, 1);
         }
