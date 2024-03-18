@@ -217,21 +217,21 @@ const moreTools = [
         //   ],
         //   'Cobb Angle'
         // ),
-        // ToolbarService._createToolButton(
-        //   'Planar Freehand ROI',
-        //   'tool-freehand',
-        //   'PlanarFreehandROI',
-        //   [
-        //     {
-        //       commandName: 'setToolActive',
-        //       commandOptions: {
-        //         toolName: 'PlanarFreehandROI',
-        //       },
-        //       context: 'CORNERSTONE',
-        //     },
-        //   ],
-        //   'Planar Freehand ROI'
-        // ),
+        ToolbarService._createToolButton(
+          'Planar Freehand ROI',
+          'tool-freehand-polygon',
+          'PlanarFreehandROI',
+          [
+            {
+              commandName: 'setToolActive',
+              commandOptions: {
+                toolName: 'PlanarFreehandROI',
+              },
+              context: 'CORNERSTONE',
+            },
+          ],
+          'Planar Freehand ROI'
+        ),
         ToolbarService._createToolButton(
           'Magnify',
           'tool-magnify',

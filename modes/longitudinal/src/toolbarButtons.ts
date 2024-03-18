@@ -210,6 +210,52 @@ const toolbarButtons: Button[] = [
           ],
           'Circle Tool'
         ),
+        ToolbarService._createToolButton(
+          'PlanarFreehandROI',
+          'tool-freehand-polygon',
+          'Planar Freehand',
+          [
+            {
+              commandName: 'setToolActive',
+              commandOptions: {
+                toolName: 'PlanarFreehandROI',
+              },
+              context: 'CORNERSTONE',
+            },
+            {
+              commandName: 'setToolActive',
+              commandOptions: {
+                toolName: 'SRPlanarFreehandROI',
+                toolGroupId: 'SRToolGroup',
+              },
+              context: 'CORNERSTONE',
+            },
+          ],
+          'Planar Freehand Tool'
+        ),
+        ToolbarService._createToolButton(
+          'RectangleROI',
+          'tool-rectangle',
+          'Rectangle',
+          [
+            {
+              commandName: 'setToolActive',
+              commandOptions: {
+                toolName: 'RectangleROI',
+              },
+              context: 'CORNERSTONE',
+            },
+            {
+              commandName: 'setToolActive',
+              commandOptions: {
+                toolName: 'SRRectangleROI',
+                toolGroupId: 'SRToolGroup',
+              },
+              context: 'CORNERSTONE',
+            },
+          ],
+          'Rectangle Tool'
+        ),
       ],
     },
   },

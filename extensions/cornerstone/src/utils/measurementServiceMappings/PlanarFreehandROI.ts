@@ -1,5 +1,7 @@
 import SUPPORTED_TOOLS from './constants/supportedTools';
 import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
+import { getDisplayUnit } from './utils';
+import { utils } from '@ohif/core';
 
 const PlanarFreehandROI = {
   toAnnotation: measurement => {},
@@ -16,7 +18,7 @@ const PlanarFreehandROI = {
     CornerstoneViewportService,
     getValueTypeFromToolType
   ) => {
-    const { annotation, viewportId } = csToolsEventDetail;
+    const { annotation } = csToolsEventDetail;
     const { metadata, data, annotationUID } = annotation;
 
     if (!metadata || !data) {
@@ -28,14 +30,11 @@ const PlanarFreehandROI = {
     const validToolType = SUPPORTED_TOOLS.includes(toolName);
 
     if (!validToolType) {
-      throw new Error('Tool not supported');
+      throw new Error(`Tool ${toolName} not supported`);
     }
 
-    const { SOPInstanceUID, SeriesInstanceUID, StudyInstanceUID } = getSOPInstanceAttributes(
-      referencedImageId,
-      CornerstoneViewportService,
-      viewportId
-    );
+    const { SOPInstanceUID, SeriesInstanceUID, StudyInstanceUID } =
+      getSOPInstanceAttributes(referencedImageId);
 
     let displaySet;
 
@@ -48,11 +47,12 @@ const PlanarFreehandROI = {
       displaySet = DisplaySetService.getDisplaySetsForSeries(SeriesInstanceUID);
     }
 
-    const { points, textBox } = data.handles;
+    const { textBox } = data.handles;
+    const { polyline: points } = data.contour;
 
     const mappedAnnotations = getMappedAnnotations(annotation, DisplaySetService);
 
-    const displayText = getDisplayText(mappedAnnotations);
+    const displayText = getDisplayText(mappedAnnotations, displaySet);
     const getReport = () => _getReport(mappedAnnotations, points, FrameOfReferenceUID);
 
     return {
@@ -68,7 +68,7 @@ const PlanarFreehandROI = {
       displaySetInstanceUID: displaySet.displaySetInstanceUID,
       label: data.label,
       displayText: displayText,
-      data: { ...data, ...data.cachedStats },
+      data: data.cachedStats,
       type: getValueTypeFromToolType(toolName),
       getReport,
     };
@@ -126,14 +126,81 @@ function _getReport(mappedAnnotations, points, FrameOfReferenceUID) {
   const columns = [];
   const values = [];
 
+  // Add Type
+  columns.push('AnnotationType');
+  values.push('Cornerstone:PlanarFreehandROI');
+
+  mappedAnnotations.forEach(annotation => {
+    const { mean, stdDev, max, area, unit, areaUnit } = annotation;
+
+    if (!mean || !unit || !max || !area) {
+      return;
+    }
+
+    columns.push(`Maximum`, `Mean`, `Std Dev`, 'Pixel Unit', `Area`, 'Unit');
+    values.push(max, mean, stdDev, unit, area, areaUnit);
+  });
+
+  if (FrameOfReferenceUID) {
+    columns.push('FrameOfReferenceUID');
+    values.push(FrameOfReferenceUID);
+  }
+
+  if (points) {
+    columns.push('points');
+    // points has the form of [[x1, y1, z1], [x2, y2, z2], ...]
+    // convert it to string of [[x1 y1 z1];[x2 y2 z2];...]
+    // so that it can be used in the csv report
+    values.push(points.map(p => p.join(' ')).join(';'));
+  }
+
   return {
     columns,
     values,
   };
 }
 
-function getDisplayText(mappedAnnotations) {
-  return '';
+function getDisplayText(mappedAnnotations, displaySet) {
+  if (!mappedAnnotations || !mappedAnnotations.length) {
+    return '';
+  }
+
+  const displayText = [];
+
+  // Area is the same for all series
+  const { area, SOPInstanceUID, frameNumber, areaUnit } = mappedAnnotations[0];
+
+  const instance = displaySet.images.find(image => image.SOPInstanceUID === SOPInstanceUID);
+
+  let InstanceNumber;
+  if (instance) {
+    InstanceNumber = instance.InstanceNumber;
+  }
+
+  const instanceText = InstanceNumber ? ` I: ${InstanceNumber}` : '';
+  const frameText = displaySet.isMultiFrame ? ` F: ${frameNumber}` : '';
+
+  // Area sometimes becomes undefined if `preventHandleOutsideImage` is off.
+  const roundedArea = utils.roundNumber(area || 0, 2);
+  displayText.push(`${roundedArea} ${getDisplayUnit(areaUnit)}`);
+
+  // Todo: we need a better UI for displaying all these information
+  mappedAnnotations.forEach(mappedAnnotation => {
+    const { unit, max, SeriesNumber } = mappedAnnotation;
+
+    let maxStr = '';
+    if (max) {
+      const roundedMax = utils.roundNumber(max, 2);
+      maxStr = `Max: ${roundedMax} <small>${getDisplayUnit(unit)}</small> `;
+    }
+
+    const str = `${maxStr}(S:${SeriesNumber}${instanceText}${frameText})`;
+    if (!displayText.includes(str)) {
+      displayText.push(str);
+    }
+  });
+
+  return displayText;
 }
 
 export default PlanarFreehandROI;
