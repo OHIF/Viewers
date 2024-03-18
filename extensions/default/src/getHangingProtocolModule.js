@@ -1,6 +1,7 @@
 import hpMNGrid from './hangingprotocols/hpMNGrid';
 import hpMNCompare from './hangingprotocols/hpCompare';
 import hpMammography from './hangingprotocols/hpMammo';
+import hpScale from './hangingprotocols/hpScale';
 
 const defaultProtocol = {
   id: 'default',
@@ -119,6 +120,10 @@ function getHangingProtocolModule() {
     {
       name: hpMammography.id,
       protocol: hpMammography,
+    },
+    {
+      name: hpScale.id,
+      protocol: hpScale,
     },
   ];
 }
