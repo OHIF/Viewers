@@ -168,60 +168,69 @@ function TrackedMeasurementsContextProvider(
 
   // ~~ Listen for changes to ViewportGrid for potential SRs hung in panes when idle
   useEffect(() => {
-    if (viewports.size > 0) {
-      const activeViewport = viewports.get(activeViewportId);
+    const triggerPromptHydrateFlow = async () => {
+      if (viewports.size > 0) {
+        const activeViewport = viewports.get(activeViewportId);
 
-      if (!activeViewport || !activeViewport?.displaySetInstanceUIDs?.length) {
-        return;
+        if (!activeViewport || !activeViewport?.displaySetInstanceUIDs?.length) {
+          return;
+        }
+
+        // Todo: Getting the first displaySetInstanceUID is wrong, but we don't have
+        // tracking fusion viewports yet. This should change when we do.
+        const { displaySetService } = servicesManager.services;
+        const displaySet = displaySetService.getDisplaySetByUID(
+          activeViewport.displaySetInstanceUIDs[0]
+        );
+
+        if (!displaySet) {
+          return;
+        }
+
+        // If this is an SR produced by our SR SOPClassHandler,
+        // and it hasn't been loaded yet, do that now so we
+        // can check if it can be rehydrated or not.
+        //
+        // Note: This happens:
+        // - If the viewport is not currently an OHIFCornerstoneSRViewport
+        // - If the displaySet has never been hung
+        //
+        // Otherwise, the displaySet will be loaded by the useEffect handler
+        // listening to displaySet changes inside OHIFCornerstoneSRViewport.
+        // The issue here is that this handler in TrackedMeasurementsContext
+        // ends up occurring before the Viewport is created, so the displaySet
+        // is not loaded yet, and isRehydratable is undefined unless we call load().
+        if (
+          displaySet.SOPClassHandlerId === SR_SOPCLASSHANDLERID &&
+          !displaySet.isLoaded &&
+          displaySet.load
+        ) {
+          await displaySet.load();
+        }
+
+        // Magic string
+        // load function added by our sopClassHandler module
+        if (
+          displaySet.SOPClassHandlerId === SR_SOPCLASSHANDLERID &&
+          displaySet.isRehydratable === true
+        ) {
+          console.log('sending event...', trackedMeasurements);
+          sendTrackedMeasurementsEvent('PROMPT_HYDRATE_SR', {
+            displaySetInstanceUID: displaySet.displaySetInstanceUID,
+            SeriesInstanceUID: displaySet.SeriesInstanceUID,
+            viewportId: activeViewportId,
+          });
+        }
       }
-
-      // Todo: Getting the first displaySetInstanceUID is wrong, but we don't have
-      // tracking fusion viewports yet. This should change when we do.
-      const { displaySetService } = servicesManager.services;
-      const displaySet = displaySetService.getDisplaySetByUID(
-        activeViewport.displaySetInstanceUIDs[0]
-      );
-
-      if (!displaySet) {
-        return;
-      }
-
-      // If this is an SR produced by our SR SOPClassHandler,
-      // and it hasn't been loaded yet, do that now so we
-      // can check if it can be rehydrated or not.
-      //
-      // Note: This happens:
-      // - If the viewport is not currently an OHIFCornerstoneSRViewport
-      // - If the displaySet has never been hung
-      //
-      // Otherwise, the displaySet will be loaded by the useEffect handler
-      // listening to displaySet changes inside OHIFCornerstoneSRViewport.
-      // The issue here is that this handler in TrackedMeasurementsContext
-      // ends up occurring before the Viewport is created, so the displaySet
-      // is not loaded yet, and isRehydratable is undefined unless we call load().
-      if (
-        displaySet.SOPClassHandlerId === SR_SOPCLASSHANDLERID &&
-        !displaySet.isLoaded &&
-        displaySet.load
-      ) {
-        displaySet.load();
-      }
-
-      // Magic string
-      // load function added by our sopClassHandler module
-      if (
-        displaySet.SOPClassHandlerId === SR_SOPCLASSHANDLERID &&
-        displaySet.isRehydratable === true
-      ) {
-        console.log('sending event...', trackedMeasurements);
-        sendTrackedMeasurementsEvent('PROMPT_HYDRATE_SR', {
-          displaySetInstanceUID: displaySet.displaySetInstanceUID,
-          SeriesInstanceUID: displaySet.SeriesInstanceUID,
-          viewportId: activeViewportId,
-        });
-      }
-    }
-  }, [activeViewportId, sendTrackedMeasurementsEvent, servicesManager.services, viewports]);
+    };
+    triggerPromptHydrateFlow();
+  }, [
+    trackedMeasurements,
+    activeViewportId,
+    sendTrackedMeasurementsEvent,
+    servicesManager.services,
+    viewports,
+  ]);
 
   return (
     <TrackedMeasurementsContext.Provider
