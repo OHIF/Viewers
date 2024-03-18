@@ -48,7 +48,6 @@ provided by the <a href="https://ohif.org/">Open Health Imaging Foundation (OHIF
 | <img src="platform/docs/docs/assets/img/demo-volumeRendering.png" alt="Volume Rendering" width="350"/> | Volume Rendering  | [Demo](https://viewer.ohif.org/viewer?StudyInstanceUIDs=1.3.6.1.4.1.25403.345050719074.3824.20170125095438.5&hangingprotocolId=mprAnd3DVolumeViewport) |
 
 
-
 ## About
 
 The OHIF Medical Imaging Viewer is for viewing medical images. It can retrieve
