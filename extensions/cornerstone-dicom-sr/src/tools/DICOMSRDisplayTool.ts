@@ -22,9 +22,9 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
   }
 
   _getTextBoxLinesFromLabels(labels) {
-    // TODO -> max 3 for now (label + shortAxis + longAxis), need a generic solution for this!
+    // TODO -> max 5 for now (label + shortAxis + longAxis), need a generic solution for this!
 
-    const labelLength = Math.min(labels.length, 3);
+    const labelLength = Math.min(labels.length, 5);
     const lines = [];
 
     for (let i = 0; i < labelLength; i++) {
