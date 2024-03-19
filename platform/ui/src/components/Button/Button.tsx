@@ -67,7 +67,8 @@ const Button = ({
   name,
   className,
   onClick,
-  tooltip = null,
+  startIconTooltip = null,
+  endIconTooltip = null,
 }) => {
   const startIcon = startIconProp && (
     <>
@@ -110,9 +111,9 @@ const Button = ({
       onClick={handleOnClick}
       data-cy={`${name}-btn`}
     >
-      {tooltip ? <Tooltip content={tooltip}>{startIcon}</Tooltip> : startIcon}
+      {startIconTooltip ? <Tooltip content={startIconTooltip}>{startIcon}</Tooltip> : startIcon}
       {children}
-      {endIcon}
+      {endIconTooltip ? <Tooltip content={endIconTooltip}>{endIcon}</Tooltip> : endIcon}
     </button>
   );
 };
@@ -143,8 +144,10 @@ Button.propTypes = {
   endIcon: PropTypes.node,
   /** Additional TailwindCSS classnames */
   className: PropTypes.string,
-  /** Tooltip for the button */
-  tooltip: PropTypes.node,
+  /** Tooltip for the start icon */
+  startIconTooltip: PropTypes.node,
+  /** Tooltip for the end icon */
+  endIconTooltip: PropTypes.node,
 };
 
 export default Button;

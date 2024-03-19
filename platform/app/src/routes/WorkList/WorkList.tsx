@@ -350,10 +350,24 @@ function WorkList({
           }
         >
           <div className="flex flex-row gap-2">
-            {appConfig.loadedModes.map((mode, i) => {
+            {(appConfig.groupEnabledModesFirst
+              ? appConfig.loadedModes.sort((a, b) => {
+                  const isValidA = a.isValidMode({
+                    modalities: modalities.replaceAll('/', '\\'),
+                    study,
+                  }).valid;
+                  const isValidB = b.isValidMode({
+                    modalities: modalities.replaceAll('/', '\\'),
+                    study,
+                  }).valid;
+
+                  return isValidB - isValidA;
+                })
+              : appConfig.loadedModes
+            ).map((mode, i) => {
               const modalitiesToCheck = modalities.replaceAll('/', '\\');
 
-              const isValidMode = mode.isValidMode({
+              const { valid: isValidMode, description: invalidModeDescription } = mode.isValidMode({
                 modalities: modalitiesToCheck,
                 study,
               });
@@ -390,11 +404,10 @@ function WorkList({
                       type={ButtonEnums.type.primary}
                       size={ButtonEnums.size.medium}
                       disabled={!isValidMode}
-                      tooltip={
+                      startIconTooltip={
                         !isValidMode ? (
                           <div className="font-inter flex w-[206px] whitespace-normal text-left text-xs font-normal text-white	">
-                            This study does not contain modalities supported by {mode.displayName}{' '}
-                            mode
+                            {invalidModeDescription}
                           </div>
                         ) : null
                       }

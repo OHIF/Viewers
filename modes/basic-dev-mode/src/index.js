@@ -152,7 +152,10 @@ function modeFactory({ modeConfiguration }) {
       const modalities_list = modalities.split('\\');
 
       // Slide Microscopy modality not supported by basic mode yet
-      return !modalities_list.includes('SM');
+      return {
+        valid: !modalities_list.includes('SM'),
+        description: 'The mode does not support the following modalities: SM',
+      };
     },
     routes: [
       {
