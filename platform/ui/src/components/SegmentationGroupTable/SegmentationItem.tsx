@@ -143,7 +143,7 @@ function SegmentationItem({
                 return null;
               }
 
-              const { segmentIndex, color, label, isVisible, isLocked } = segment;
+              const { segmentIndex, color, label, isVisible, isLocked, displayText } = segment;
               return (
                 <div key={segmentIndex}>
                   <SegmentationGroupSegment
@@ -165,6 +165,7 @@ function SegmentationItem({
                     onColor={onSegmentColorClick}
                     onToggleVisibility={onToggleSegmentVisibility}
                     onToggleLocked={onToggleSegmentLock}
+                    displayText={displayText}
                   />
                 </div>
               );
