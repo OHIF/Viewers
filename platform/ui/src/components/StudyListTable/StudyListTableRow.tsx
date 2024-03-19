@@ -23,7 +23,7 @@ const StudyListTableRow = props => {
             className={classnames(
               'w-full transition duration-300',
               {
-                'border-primary-light hover:border-secondary-light mb-2 overflow-hidden rounded border':
+                'border-primary-light hover:border-secondary-light mb-2 overflow-visible rounded border':
                   isExpanded,
               },
               {

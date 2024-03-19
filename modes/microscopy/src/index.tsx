@@ -56,8 +56,10 @@ function modeFactory({ modeConfiguration }) {
     },
 
     onModeExit: ({ servicesManager }) => {
-      const { toolbarService } = servicesManager.services;
+      const { toolbarService, uiDialogService, uiModalService } = servicesManager.services;
 
+      uiDialogService.dismissAll();
+      uiModalService.hide();
       toolbarService.reset();
     },
 
@@ -69,8 +71,10 @@ function modeFactory({ modeConfiguration }) {
     isValidMode: ({ modalities }) => {
       const modalities_list = modalities.split('\\');
 
-      // Slide Microscopy and ECG modality not supported by basic mode yet
-      return modalities_list.includes('SM');
+      return {
+        valid: modalities_list.includes('SM'),
+        description: 'Microscopy mode only supports the SM modality',
+      };
     },
 
     routes: [
