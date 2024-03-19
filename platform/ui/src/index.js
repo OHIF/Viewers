@@ -84,6 +84,7 @@ export {
   Select,
   SegmentationTable,
   SegmentationGroupTable,
+  SegmentationGroupTableExpanded,
   SidePanel,
   SplitButton,
   StudyBrowser,

@@ -3,6 +3,7 @@ import React from 'react';
 import { useAppConfig } from '@state';
 import PanelSegmentation from './panels/PanelSegmentation';
 import SegmentationToolbox from './panels/SegmentationToolbox';
+import { SegmentationPanelMode } from './types/segmentation';
 
 const getPanelModule = ({ commandsManager, servicesManager, extensionManager, configuration }) => {
   const { customizationService } = servicesManager.services;
@@ -11,6 +12,9 @@ const getPanelModule = ({ commandsManager, servicesManager, extensionManager, co
     const [appConfig] = useAppConfig();
 
     const disableEditingForMode = customizationService.get('segmentation.disableEditing');
+    const segmentationPanelMode =
+      customizationService.get('segmentation.segmentationPanelMode')?.value ||
+      SegmentationPanelMode.Expanded;
 
     return (
       <PanelSegmentation
@@ -20,6 +24,7 @@ const getPanelModule = ({ commandsManager, servicesManager, extensionManager, co
         configuration={{
           ...configuration,
           disableEditing: appConfig.disableEditing || disableEditingForMode?.value,
+          segmentationPanelMode: segmentationPanelMode,
         }}
       />
     );
@@ -27,6 +32,10 @@ const getPanelModule = ({ commandsManager, servicesManager, extensionManager, co
 
   const wrappedPanelSegmentationWithTools = configuration => {
     const [appConfig] = useAppConfig();
+    const segmentationPanelMode =
+      customizationService.get('segmentation.segmentationPanelMode')?.value ||
+      SegmentationPanelMode.Expanded;
+
     return (
       <>
         <SegmentationToolbox
@@ -43,6 +52,7 @@ const getPanelModule = ({ commandsManager, servicesManager, extensionManager, co
           extensionManager={extensionManager}
           configuration={{
             ...configuration,
+            segmentationPanelMode: segmentationPanelMode,
           }}
         />
       </>

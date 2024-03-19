@@ -29,7 +29,7 @@ import NavBar from './NavBar';
 import Notification from './Notification';
 import Select from './Select';
 import SegmentationTable from './SegmentationTable';
-import SegmentationGroupTable from './SegmentationGroupTable';
+import { SegmentationGroupTable, SegmentationGroupTableExpanded } from './SegmentationGroupTable';
 import SidePanel from './SidePanel';
 import SplitButton from './SplitButton';
 import StudyBrowser from './StudyBrowser';
@@ -131,6 +131,7 @@ export {
   Select,
   SegmentationTable,
   SegmentationGroupTable,
+  SegmentationGroupTableExpanded,
   SidePanel,
   SplitButton,
   StudyBrowser,

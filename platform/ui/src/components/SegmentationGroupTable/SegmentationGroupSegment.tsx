@@ -27,7 +27,7 @@ const SegmentItem = ({
 
   return (
     <div
-      className={classnames('text-aqua-pale group/row flex min-h-[28px] bg-black')}
+      className={classnames('text-aqua-pale group/row bg-primary-dark flex min-h-[28px]')}
       onClick={e => {
         e.stopPropagation();
         onClick(segmentationId, segmentIndex);
@@ -36,7 +36,7 @@ const SegmentItem = ({
       data-cy={'segment-item'}
     >
       <div
-        className={classnames('bg-primary-dark group/number grid w-[32px] place-items-center', {
+        className={classnames('bg-primary-dark group/number grid w-[40px] place-items-center', {
           'bg-primary-light border-primary-light rounded-l-[4px] border text-black': isActive,
           'border-primary-dark border': !isActive,
         })}
@@ -62,12 +62,19 @@ const SegmentItem = ({
         )}
       </div>
       <div
+        className=" h-[30px] bg-black"
+        style={{ width: '3px' }}
+      ></div>
+      <div
         className={classnames('relative flex w-full', {
           'border-primary-light bg-primary-dark rounded-r-[4px] border border-l-0': isActive,
           'border border-l-0 border-transparent': !isActive,
         })}
+        style={{
+          width: 'calc(100% - 40px)',
+        }}
       >
-        <div className="group-hover/row:bg-primary-dark flex h-full w-full flex-grow items-center">
+        <div className="group-hover/row:bg-primary-dark flex h-full flex-grow items-center">
           <div className="pl-2 pr-1.5">
             <div
               className={classnames('h-[8px] w-[8px] grow-0 rounded-full', {
