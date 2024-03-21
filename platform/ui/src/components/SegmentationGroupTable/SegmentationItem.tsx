@@ -119,9 +119,7 @@ function SegmentationItem({
             >
               <Icon
                 name="info-action"
-                style={{
-                  color: '#348CFD',
-                }}
+                className="text-primary-active"
               />
             </Tooltip>
             <Icon name={areChildrenVisible ? 'chevron-down-new' : 'chevron-left-new'} />

@@ -133,9 +133,7 @@ function SegmentationDropDownRow({
         >
           <Icon
             name="info-action"
-            style={{
-              color: '#348CFD',
-            }}
+            className="text-primary-active"
           />
         </Tooltip>
         <div
