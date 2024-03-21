@@ -226,8 +226,7 @@ export default function PanelSegmentation({
     });
   };
 
-  const SegmentationGroupTableComponent =
-    components[configuration?.segmentationPanelMode || SegmentationPanelMode.Dropdown];
+  const SegmentationGroupTableComponent = components[configuration?.segmentationPanelMode];
 
   return (
     <>

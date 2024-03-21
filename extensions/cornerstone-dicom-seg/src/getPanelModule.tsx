@@ -14,7 +14,7 @@ const getPanelModule = ({ commandsManager, servicesManager, extensionManager, co
     const disableEditingForMode = customizationService.get('segmentation.disableEditing');
     const segmentationPanelMode =
       customizationService.get('segmentation.segmentationPanelMode')?.value ||
-      SegmentationPanelMode.Expanded;
+      SegmentationPanelMode.Dropdown;
 
     return (
       <PanelSegmentation
@@ -34,7 +34,7 @@ const getPanelModule = ({ commandsManager, servicesManager, extensionManager, co
     const [appConfig] = useAppConfig();
     const segmentationPanelMode =
       customizationService.get('segmentation.segmentationPanelMode')?.value ||
-      SegmentationPanelMode.Expanded;
+      SegmentationPanelMode.Dropdown;
 
     return (
       <>
