@@ -80,6 +80,7 @@ import AdvancedToolbox from './AdvancedToolbox';
 import InputDoubleRange from './InputDoubleRange';
 import LegacyButtonGroup from './LegacyButtonGroup';
 import InvestigationalUseDialog from './InvestigationalUseDialog';
+import MeasurementItem from './MeasurementTable/MeasurementItem';
 
 export {
   AboutModal,
@@ -165,4 +166,5 @@ export {
   ViewportOverlay,
   WindowLevelMenuItem,
   InvestigationalUseDialog,
+  MeasurementItem,
 };

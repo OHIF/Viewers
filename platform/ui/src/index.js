@@ -118,6 +118,7 @@ export {
   ImageScrollbar,
   ViewportOverlay,
   InvestigationalUseDialog,
+  MeasurementItem,
 } from './components';
 
 export { useSessionStorage } from './hooks';

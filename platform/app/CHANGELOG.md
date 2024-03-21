@@ -3,6 +3,39 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-beta.62](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.61...v3.8.0-beta.62) (2024-03-19)
+
+
+### Features
+
+* **worklist:** New worklist buttons and tooltips ([#3989](https://github.com/OHIF/Viewers/issues/3989)) ([9bcd1ae](https://github.com/OHIF/Viewers/commit/9bcd1ae6f51d61786cc1e99624f396b56a47cd69))
+
+
+
+
+
+# [3.8.0-beta.61](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.60...v3.8.0-beta.61) (2024-03-18)
+
+
+### Bug Fixes
+
+* **SR display:** and the token based navigation ([#3995](https://github.com/OHIF/Viewers/issues/3995)) ([feed230](https://github.com/OHIF/Viewers/commit/feed2304c124dc2facc7a7371ed9851548c223c5))
+
+
+
+
+
+# [3.8.0-beta.60](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.59...v3.8.0-beta.60) (2024-03-15)
+
+
+### Features
+
+* **delete measurement:** icon for measurement table ([#3775](https://github.com/OHIF/Viewers/issues/3775)) ([f7fe91c](https://github.com/OHIF/Viewers/commit/f7fe91c5f6c4f05f3f3f5f640d3a119bd40a5870))
+
+
+
+
+
 # [3.8.0-beta.59](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.58...v3.8.0-beta.59) (2024-03-08)
 
 **Note:** Version bump only for package @ohif/app
