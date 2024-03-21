@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import Icon from '../Icon';
 import Tooltip from '../Tooltip';
 import ListMenu from '../ListMenu';
+import ToolbarButton from '../ToolbarButton';
 
 const baseClasses = {
   Button: 'flex items-center rounded-md border-transparent cursor-pointer group/button',
@@ -107,7 +108,6 @@ const SplitButtonToolbar = ({
     }),
     primary.className
   );
-
   return (
     <OutsideClickHandler
       onOutsideClick={collapse}
