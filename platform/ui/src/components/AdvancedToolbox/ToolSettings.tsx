@@ -1,5 +1,5 @@
 import React from 'react';
-import { ButtonGroup, InputRange, ButtonEnums } from '../../components';
+import { ButtonGroup, InputRange } from '../../components';
 
 const SETTING_TYPES = {
   RANGE: 'range',
@@ -12,23 +12,19 @@ function ToolSettings({ options }) {
     return null;
   }
 
-  const getButtons = option => {
-    const buttons = [];
-
-    option.values?.map(({ label, value: optionValue }, index) => {
-      buttons.push({
-        children: label,
-        onClick: () => {
+  const renderButtons = option => {
+    return option.values?.map(({ label, value: optionValue }, index) => (
+      <button
+        onClick={() => {
           Array.isArray(option.onChange)
             ? option.onChange.forEach(fn => fn(optionValue))
             : option.onChange(optionValue);
-        },
-
-        key: `button-${option.id}-${index}`, // A unique key
-      });
-    });
-
-    return buttons;
+        }}
+        key={`button-${option.id}-${index}`}
+      >
+        {label}
+      </button>
+    ));
   };
 
   return (
@@ -49,8 +45,8 @@ function ToolSettings({ options }) {
                   value={option.value}
                   onChange={e =>
                     Array.isArray(option.onChange)
-                      ? option.onChange.forEach(fn => fn(e))
-                      : option.onChange(e)
+                      ? option.onChange.forEach(fn => fn(e.target.value))
+                      : option.onChange(e.target.value)
                   }
                   allowNumberEdit={true}
                   showAdjustmentArrows={false}
@@ -70,12 +66,10 @@ function ToolSettings({ options }) {
               <span>{option.name}</span>
               <div className="max-w-1/2">
                 <ButtonGroup
-                  buttons={getButtons(option)}
-                  defaultActiveIndex={
-                    option.values.findIndex(({ value }) => value === option.value) || 0
-                  }
-                  size={ButtonEnums.size.small}
-                />
+                  activeIndex={option.values.findIndex(({ value }) => value === option.value) || 0}
+                >
+                  {renderButtons(option)}
+                </ButtonGroup>
               </div>
             </div>
           );
@@ -87,6 +81,7 @@ function ToolSettings({ options }) {
             </div>
           );
         }
+        return null;
       })}
     </div>
   );
