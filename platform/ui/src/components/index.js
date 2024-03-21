@@ -79,6 +79,7 @@ import PanelSection from './PanelSection';
 import AdvancedToolbox from './AdvancedToolbox';
 import InputDoubleRange from './InputDoubleRange';
 import LegacyButtonGroup from './LegacyButtonGroup';
+import MeasurementItem from './MeasurementTable/MeasurementItem';
 
 export {
   AboutModal,
@@ -164,4 +165,5 @@ export {
   ViewportPane,
   ViewportOverlay,
   WindowLevelMenuItem,
+  MeasurementItem,
 };
