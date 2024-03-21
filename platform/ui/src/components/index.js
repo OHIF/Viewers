@@ -79,6 +79,7 @@ import PanelSection from './PanelSection';
 import AdvancedToolbox from './AdvancedToolbox';
 import InputDoubleRange from './InputDoubleRange';
 import LegacyButtonGroup from './LegacyButtonGroup';
+import InvestigationalUseDialog from './InvestigationalUseDialog';
 
 export {
   AboutModal,
@@ -163,4 +164,5 @@ export {
   ViewportPane,
   ViewportOverlay,
   WindowLevelMenuItem,
+  InvestigationalUseDialog,
 };
