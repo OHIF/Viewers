@@ -27,7 +27,7 @@ const InvestigationalUseDialog = ({ options }) => {
       case showDialogOption.ShowOnceAndConfigure:
         if (dialogLocalState) {
           const { expiryDate } = JSON.parse(dialogLocalState);
-          const isExpired = new Date() < new Date(expiryDate);
+          const isExpired = new Date() > new Date(expiryDate);
           setIsHidden(isExpired);
         } else {
           setIsHidden(false);
