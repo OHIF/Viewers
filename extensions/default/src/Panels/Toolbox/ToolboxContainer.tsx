@@ -13,7 +13,15 @@ function ToolboxContainer({ servicesManager, buttonSectionId, commandsManager, t
   const prevButtonIdsRef = useRef();
 
   useEffect(() => {
-    const currentButtonIdsStr = JSON.stringify(toolbarButtons.map(button => button.id));
+    const currentButtonIdsStr = JSON.stringify(
+      toolbarButtons.map(button => {
+        const { id, componentProps } = button;
+        if (componentProps.items?.length) {
+          return componentProps.items.map(item => `${item.id}-${item.disabled}`);
+        }
+        return `${id}-${componentProps.disabled}`;
+      })
+    );
 
     if (prevButtonIdsRef.current === currentButtonIdsStr) {
       return;

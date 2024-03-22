@@ -2,7 +2,6 @@ import { ToolbarButton, ButtonGroup } from '@ohif/ui';
 import React, { useCallback } from 'react';
 
 function ToolbarButtonGroupWithServices({ groupId, items, onInteraction }) {
-  /* Bubbles up individual item clicks */
   const getSplitButtonItems = useCallback(
     items =>
       items.map((item, index) => (
@@ -10,6 +9,7 @@ function ToolbarButtonGroupWithServices({ groupId, items, onInteraction }) {
           key={item.id}
           icon={item.icon}
           label={item.label}
+          disabled={item.disabled}
           onClick={() => {
             onInteraction({
               groupId,

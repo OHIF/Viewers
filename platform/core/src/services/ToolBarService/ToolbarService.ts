@@ -247,9 +247,11 @@ export default class ToolbarService extends PubSubService {
         const { primary, items } = buttonProps;
 
         // primary and items evaluate functions
-        const updatedPrimary = evaluateButtonProps(primary, primary, refreshProps);
+        let updatedPrimary;
+        if (primary) {
+          updatedPrimary = evaluateButtonProps(primary, primary, refreshProps);
+        }
         const updatedItems = items.map(item => evaluateButtonProps(item, item, refreshProps));
-
         buttonProps = {
           ...buttonProps,
           primary: updatedPrimary,
@@ -409,7 +411,9 @@ export default class ToolbarService extends PubSubService {
     this.handleEvaluate(props);
 
     // primary and items evaluate functions
-    this.handleEvaluate(primary);
+    if (primary) {
+      this.handleEvaluate(primary);
+    }
     items.forEach(item => this.handleEvaluate(item));
   };
 

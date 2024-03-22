@@ -9,6 +9,7 @@ const ButtonGroup = ({
   orientation = ButtonEnums.orientation.horizontal,
   activeIndex: defaultActiveIndex = 0,
   onActiveIndexChange,
+  disabled = false,
 }) => {
   const [activeIndex, setActiveIndex] = useState(defaultActiveIndex);
 
@@ -44,7 +45,8 @@ const ButtonGroup = ({
               index === activeIndex
                 ? 'bg-customblue-40 text-white'
                 : 'text-primary-active bg-black',
-              child.props.className // Respect original class names of the child
+              child.props.className,
+              disabled ? 'ohif-disabled' : ''
             ),
             onClick: e => {
               child.props.onClick && child.props.onClick(e);
@@ -64,6 +66,7 @@ ButtonGroup.propTypes = {
   activeIndex: PropTypes.number,
   onActiveIndexChange: PropTypes.func,
   className: PropTypes.string,
+  disabled: PropTypes.bool,
 };
 
 export default ButtonGroup;

@@ -14,7 +14,7 @@ const roundedClasses = {
 };
 
 const disabledClasses = {
-  true: 'cursor-not-allowed',
+  true: 'ohif-disabled',
   false: '',
 };
 

@@ -62,6 +62,8 @@ const toolbarButtons: Button[] = [
     id: 'BrushTools',
     uiType: 'ohif.buttonGroup',
     props: {
+      groupId: 'BrushTools',
+      evaluate: 'evaluate.cornerstone.segmentation',
       items: [
         {
           id: 'Brush',
