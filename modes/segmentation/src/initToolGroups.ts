@@ -41,11 +41,6 @@ function createTools(utilityModule) {
         parentTool: 'Brush',
         configuration: {
           activeStrategy: 'THRESHOLD_INSIDE_CIRCLE',
-          strategySpecificConfiguration: {
-            THRESHOLD: {
-              threshold: [-500, 500],
-            },
-          },
         },
       },
       {
@@ -53,11 +48,6 @@ function createTools(utilityModule) {
         parentTool: 'Brush',
         configuration: {
           activeStrategy: 'THRESHOLD_INSIDE_SPHERE',
-          strategySpecificConfiguration: {
-            THRESHOLD: {
-              threshold: [-500, 500],
-            },
-          },
         },
       },
       { toolName: toolNames.CircleScissors },

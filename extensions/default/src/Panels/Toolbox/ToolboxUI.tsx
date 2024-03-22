@@ -5,8 +5,8 @@ import classnames from 'classnames';
 const ItemsPerRow = 4;
 
 function ToolboxUI(props) {
-  const { toolbarButtons, handleToolSelect, activeTool, toolOptions, numRows, servicesManager } =
-    props;
+  const { toolbarButtons, handleToolSelect, activeToolOptions, numRows, servicesManager } = props;
+
   return (
     <PanelSection title={'Segmentation Tools'}>
       <div className="flex flex-col bg-black">
@@ -20,7 +20,14 @@ function ToolboxUI(props) {
             const isLastRow = Math.floor(index / ItemsPerRow) + 1 === numRows;
 
             const toolClasses = `ml-1 ${isLastRow ? '' : 'mb-2'}`;
-            const onClick = () => handleToolSelect(id);
+
+            const onInteraction = ({ itemId, id, commands }) => {
+              handleToolSelect(itemId || id);
+              props.onInteraction({
+                itemId,
+                commands,
+              });
+            };
 
             return (
               <div
@@ -29,7 +36,6 @@ function ToolboxUI(props) {
                   [toolClasses]: true,
                   'flex flex-col items-center justify-center': true,
                 })}
-                onClick={onClick}
               >
                 {componentProps.disabled ? (
                   <Tooltip
@@ -42,6 +48,7 @@ function ToolboxUI(props) {
                       {...props}
                       id={id}
                       servicesManager={servicesManager}
+                      onInteraction={onInteraction}
                     />
                   </Tooltip>
                 ) : (
@@ -50,6 +57,7 @@ function ToolboxUI(props) {
                     {...props}
                     id={id}
                     servicesManager={servicesManager}
+                    onInteraction={onInteraction}
                   />
                 )}
               </div>
@@ -58,9 +66,7 @@ function ToolboxUI(props) {
         </div>
       </div>
       <div className="bg-primary-dark h-auto px-2">
-        {activeTool && toolOptions[activeTool] && (
-          <ToolSettings options={toolOptions[activeTool]} />
-        )}
+        {activeToolOptions && <ToolSettings options={activeToolOptions} />}
       </div>
     </PanelSection>
   );

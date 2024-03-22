@@ -70,7 +70,7 @@ function modeFactory({ modeConfiguration }) {
         'Zoom',
         'MoreTools',
       ]);
-      toolbarService.createButtonSection('segmentationToolbox', ['Brush', 'Eraser', 'Shapes']);
+      toolbarService.createButtonSection('segmentationToolbox', ['BrushTools', 'Shapes']);
     },
     onModeExit: ({ servicesManager }) => {
       const {

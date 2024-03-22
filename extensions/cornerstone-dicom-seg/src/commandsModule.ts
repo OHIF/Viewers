@@ -400,11 +400,34 @@ const commandsModule = ({
         console.warn(e);
       }
     },
-    setBrushSize: ({ value }) => {
+    setBrushSize: ({ value, toolNames }) => {
       const brushSize = Number(value);
 
       toolGroupService.getToolGroupIds()?.forEach(toolGroupId => {
-        segmentationUtils.setBrushSizeForToolGroup(toolGroupId, brushSize);
+        if (toolNames?.length === 0) {
+          segmentationUtils.setBrushSizeForToolGroup(toolGroupId, brushSize);
+        } else {
+          toolNames?.forEach(toolName => {
+            segmentationUtils.setBrushSizeForToolGroup(toolGroupId, brushSize, toolName);
+          });
+        }
+      });
+    },
+    setThresholdRange: ({
+      values,
+      toolNames = ['ThresholdCircularBrush', 'ThresholdSphereBrush'],
+    }) => {
+      toolGroupService.getToolGroupIds()?.forEach(toolGroupId => {
+        const toolGroup = toolGroupService.getToolGroup(toolGroupId);
+        toolNames?.forEach(toolName => {
+          toolGroup.setToolConfiguration(toolName, {
+            strategySpecificConfiguration: {
+              THRESHOLD: {
+                threshold: values,
+              },
+            },
+          });
+        });
       });
     },
   };
@@ -436,6 +459,9 @@ const commandsModule = ({
     },
     setBrushSize: {
       commandFn: actions.setBrushSize,
+    },
+    setThresholdRange: {
+      commandFn: actions.setThresholdRange,
     },
   };
 

@@ -1,6 +1,7 @@
 import ToolbarDivider from './Toolbar/ToolbarDivider';
 import ToolbarLayoutSelectorWithServices from './Toolbar/ToolbarLayoutSelector';
 import ToolbarSplitButtonWithServices from './Toolbar/ToolbarSplitButtonWithServices';
+import ToolbarButtonGroupWithServices from './Toolbar/ToolbarButtonGroupWithServices';
 import { ToolbarButton } from '@ohif/ui';
 
 const getClassName = isToggled => {
@@ -29,6 +30,10 @@ export default function getToolbarModule({ commandsManager, servicesManager }) {
     {
       name: 'ohif.layoutSelector',
       defaultComponent: ToolbarLayoutSelectorWithServices,
+    },
+    {
+      name: 'ohif.buttonGroup',
+      defaultComponent: ToolbarButtonGroupWithServices,
     },
     {
       name: 'evaluate.group.promoteToPrimary',

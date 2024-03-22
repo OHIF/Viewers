@@ -1,4 +1,3 @@
-import { defaults, ToolbarService } from '@ohif/core';
 import type { Button } from '@ohif/core/types';
 
 function _createSetToolActiveCommands(toolName) {
@@ -17,73 +16,164 @@ const executeSetToolActive = (commandsManager, toolName) => {
   commandsManager.runCommand('setToolActive', { toolName }, 'CORNERSTONE');
 };
 
+const executeSetBrushProperty = (commandsManager, property, toolNames, value) => {
+  commandsManager.runCommand(
+    property,
+    {
+      value,
+      toolNames,
+    },
+    'SEGMENTATION'
+  );
+};
+
 const executeSetBrushSize = (commandsManager, value) => {
-  commandsManager.runCommand('setBrushSize', { value }, 'SEGMENTATION');
+  executeSetBrushProperty(commandsManager, 'setBrushSize', ['CircularBrush', 'SphereBrush'], value);
+};
+
+const executeSetEraserSize = (commandsManager, value) => {
+  executeSetBrushProperty(
+    commandsManager,
+    'setBrushSize',
+    ['CircularEraser', 'SphereEraser'],
+    value
+  );
+};
+
+const executeSetThresholdSize = (commandsManager, value) => {
+  executeSetBrushProperty(
+    commandsManager,
+    'setBrushSize',
+    ['ThresholdCircularBrush', 'ThresholdSphereBrush'],
+    value
+  );
+};
+
+const executeSetThresholdRange = (commandsManager, values) => {
+  commandsManager.runCommand(
+    'setThresholdRange',
+    { values, toolNames: ['ThresholdCircularBrush', 'ThresholdSphereBrush'] },
+    'SEGMENTATION'
+  );
 };
 
 const toolbarButtons: Button[] = [
   {
-    id: 'Brush',
-    uiType: 'ohif.radioGroup',
+    id: 'BrushTools',
+    uiType: 'ohif.buttonGroup',
     props: {
-      icon: 'icon-tool-brush',
-      label: 'Brush',
-      evaluate: 'evaluate.cornerstone.segmentation',
-      commands: _createSetToolActiveCommands('CircularBrush'),
-      options: [
+      items: [
         {
-          name: 'Radius (mm)',
-          id: 'brush-radius',
-          type: 'range',
-          min: 0.5,
-          max: 99.5,
-          step: 0.5,
-          value: 15,
-          onChange: executeSetBrushSize,
-        },
-        {
-          name: 'Mode',
-          type: 'radio',
-          id: 'brush-mode',
-          value: 'CircularBrush',
-          values: [
-            { value: 'CircularBrush', label: 'Circle' },
-            { value: 'SphereBrush', label: 'Sphere' },
+          id: 'Brush',
+          icon: 'icon-tool-brush',
+          label: 'Brush',
+          evaluate: 'evaluate.cornerstone.segmentation',
+          commands: _createSetToolActiveCommands('CircularBrush'),
+          options: [
+            {
+              name: 'Radius (mm)',
+              id: 'brush-radius',
+              type: 'range',
+              min: 0.5,
+              max: 99.5,
+              step: 0.5,
+              value: 15,
+              onChange: executeSetBrushSize,
+            },
+            {
+              name: 'Shape',
+              type: 'radio',
+              id: 'brush-mode',
+              value: 'CircularBrush',
+              values: [
+                { value: 'CircularBrush', label: 'Circle' },
+                { value: 'SphereBrush', label: 'Sphere' },
+              ],
+              onChange: executeSetToolActive,
+            },
           ],
-          onChange: executeSetToolActive,
-        },
-      ],
-    },
-  },
-  {
-    id: 'Eraser',
-    uiType: 'ohif.radioGroup',
-    props: {
-      icon: 'icon-tool-eraser',
-      label: 'Eraser',
-      evaluate: 'evaluate.cornerstone.segmentation',
-      commands: _createSetToolActiveCommands('CircularEraser'),
-      options: [
-        {
-          name: 'Radius (mm)',
-          id: 'brush-radius',
-          type: 'range',
-          min: 0.5,
-          max: 99.5,
-          step: 0.5,
-          value: 15,
-          onChange: executeSetBrushSize,
         },
         {
-          name: 'Mode',
-          type: 'radio',
-          id: 'brush-mode',
-          value: 'CircularEraser',
-          values: [
-            { value: 'CircularEraser', label: 'Circle' },
-            { value: 'SphereEraser', label: 'Sphere' },
+          id: 'Eraser',
+          icon: 'icon-tool-eraser',
+          label: 'Eraser',
+          evaluate: 'evaluate.cornerstone.segmentation',
+          commands: _createSetToolActiveCommands('CircularEraser'),
+          options: [
+            {
+              name: 'Radius (mm)',
+              id: 'eraser-radius',
+              type: 'range',
+              min: 0.5,
+              max: 99.5,
+              step: 0.5,
+              value: 15,
+              onChange: executeSetEraserSize,
+            },
+            {
+              name: 'Shape',
+              type: 'radio',
+              id: 'eraser-mode',
+              value: 'CircularEraser',
+              values: [
+                { value: 'CircularEraser', label: 'Circle' },
+                { value: 'SphereEraser', label: 'Sphere' },
+              ],
+              onChange: executeSetToolActive,
+            },
           ],
-          onChange: executeSetToolActive,
+        },
+        {
+          id: 'Threshold',
+          icon: 'icon-tool-threshold',
+          label: 'Eraser',
+          evaluate: 'evaluate.cornerstone.segmentation',
+          commands: _createSetToolActiveCommands('ThresholdCircularBrush'),
+          options: [
+            {
+              name: 'Radius (mm)',
+              id: 'threshold-radius',
+              type: 'range',
+              min: 0.5,
+              max: 99.5,
+              step: 0.5,
+              value: 15,
+              onChange: executeSetThresholdSize,
+            },
+            {
+              name: 'Shape',
+              type: 'radio',
+              id: 'eraser-mode',
+              value: 'ThresholdCircularBrush',
+              values: [
+                { value: 'ThresholdCircularBrush', label: 'Circle' },
+                { value: 'ThresholdSphereBrush', label: 'Sphere' },
+              ],
+              onChange: executeSetToolActive,
+            },
+            {
+              name: 'Threshold',
+              type: 'radio',
+              id: 'dynamic-mode',
+              value: 'ThresholdRange',
+              values: [
+                { value: 'ThresholdDynamic', label: 'Dynamic' },
+                { value: 'ThresholdRange', label: 'Range' },
+              ],
+            },
+            {
+              name: 'ThresholdRange',
+              type: 'double-range',
+              id: 'threshold-range',
+              min: -1000,
+              max: 1000,
+              step: 1,
+              values: [-10000, 255],
+              condition: ({ options }) =>
+                options.find(option => option.id === 'dynamic-mode').value === 'ThresholdRange',
+              onChange: executeSetThresholdRange,
+            },
+          ],
         },
       ],
     },
@@ -98,7 +188,7 @@ const toolbarButtons: Button[] = [
       commands: _createSetToolActiveCommands('CircleScissor'),
       options: [
         {
-          name: 'Mode',
+          name: 'Shape',
           type: 'radio',
           value: 'CircleScissor',
           id: 'shape-mode',

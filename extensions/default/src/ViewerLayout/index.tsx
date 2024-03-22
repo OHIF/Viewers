@@ -6,6 +6,7 @@ import { ServicesManager, HangingProtocolService, CommandsManager } from '@ohif/
 import { useAppConfig } from '@state';
 import ViewerHeader from './ViewerHeader';
 import SidePanelWithServices from '../Components/SidePanelWithServices';
+import { ToolboxProvider } from '../Panels/Toolbox/ToolboxContext';
 
 function ViewerLayout({
   // From Extension Module Params
@@ -98,52 +99,56 @@ function ViewerLayout({
 
   return (
     <div>
-      <ViewerHeader
-        hotkeysManager={hotkeysManager}
-        extensionManager={extensionManager}
-        servicesManager={servicesManager}
-      />
-      <div
-        className="relative flex w-full flex-row flex-nowrap items-stretch overflow-hidden bg-black"
-        style={{ height: 'calc(100vh - 52px' }}
-      >
-        <React.Fragment>
-          {showLoadingIndicator && <LoadingIndicatorProgress className="h-full w-full bg-black" />}
-          {/* LEFT SIDEPANELS */}
-          {leftPanelComponents.length ? (
-            <ErrorBoundary context="Left Panel">
-              <SidePanelWithServices
-                side="left"
-                activeTabIndex={leftPanelDefaultClosed ? null : 0}
-                tabs={leftPanelComponents}
-                servicesManager={servicesManager}
-              />
-            </ErrorBoundary>
-          ) : null}
-          {/* TOOLBAR + GRID */}
-          <div className="flex h-full flex-1 flex-col">
-            <div className="relative flex h-full flex-1 items-center justify-center overflow-hidden bg-black">
-              <ErrorBoundary context="Grid">
-                <ViewportGridComp
+      <ToolboxProvider>
+        <ViewerHeader
+          hotkeysManager={hotkeysManager}
+          extensionManager={extensionManager}
+          servicesManager={servicesManager}
+        />
+        <div
+          className="relative flex w-full flex-row flex-nowrap items-stretch overflow-hidden bg-black"
+          style={{ height: 'calc(100vh - 52px' }}
+        >
+          <React.Fragment>
+            {showLoadingIndicator && (
+              <LoadingIndicatorProgress className="h-full w-full bg-black" />
+            )}
+            {/* LEFT SIDEPANELS */}
+            {leftPanelComponents.length ? (
+              <ErrorBoundary context="Left Panel">
+                <SidePanelWithServices
+                  side="left"
+                  activeTabIndex={leftPanelDefaultClosed ? null : 0}
+                  tabs={leftPanelComponents}
                   servicesManager={servicesManager}
-                  viewportComponents={viewportComponents}
-                  commandsManager={commandsManager}
                 />
               </ErrorBoundary>
+            ) : null}
+            {/* TOOLBAR + GRID */}
+            <div className="flex h-full flex-1 flex-col">
+              <div className="relative flex h-full flex-1 items-center justify-center overflow-hidden bg-black">
+                <ErrorBoundary context="Grid">
+                  <ViewportGridComp
+                    servicesManager={servicesManager}
+                    viewportComponents={viewportComponents}
+                    commandsManager={commandsManager}
+                  />
+                </ErrorBoundary>
+              </div>
             </div>
-          </div>
-          {rightPanelComponents.length ? (
-            <ErrorBoundary context="Right Panel">
-              <SidePanelWithServices
-                side="right"
-                activeTabIndex={rightPanelDefaultClosed ? null : 0}
-                tabs={rightPanelComponents}
-                servicesManager={servicesManager}
-              />
-            </ErrorBoundary>
-          ) : null}
-        </React.Fragment>
-      </div>
+            {rightPanelComponents.length ? (
+              <ErrorBoundary context="Right Panel">
+                <SidePanelWithServices
+                  side="right"
+                  activeTabIndex={rightPanelDefaultClosed ? null : 0}
+                  tabs={rightPanelComponents}
+                  servicesManager={servicesManager}
+                />
+              </ErrorBoundary>
+            ) : null}
+          </React.Fragment>
+        </div>
+      </ToolboxProvider>
     </div>
   );
 }
