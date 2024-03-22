@@ -170,7 +170,7 @@ const toolbarButtons: Button[] = [
               min: -1000,
               max: 1000,
               step: 1,
-              values: [-10000, 255],
+              values: [100, 600],
               condition: ({ options }) =>
                 options.find(option => option.id === 'dynamic-mode').value === 'ThresholdRange',
               onChange: executeSetThresholdRange,

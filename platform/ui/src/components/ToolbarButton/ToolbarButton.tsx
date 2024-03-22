@@ -14,11 +14,21 @@ const ToolbarButton = ({
   dropdownContent,
   //
   className,
+  size,
+  toolTipClassName,
   ...rest
   //
 }) => {
   const shouldShowDropdown = !!dropdownContent;
   const iconEl = icon ? <Icon name={icon} /> : <div>{label || 'Missing icon and label'}</div>;
+
+  const sizeToUse = size ?? 'toolbar';
+  const toolTipClassNameToUse =
+    toolTipClassName !== undefined
+      ? toolTipClassName
+      : sizeToUse === 'toolbar'
+        ? 'w-[40px] h-[40px]'
+        : 'w-[32px] h-[32px]';
 
   return (
     <div key={id}>
@@ -26,9 +36,10 @@ const ToolbarButton = ({
         isSticky={shouldShowDropdown}
         content={shouldShowDropdown ? dropdownContent : label}
         tight={shouldShowDropdown}
+        className={toolTipClassNameToUse}
       >
         <IconButton
-          size="toolbar"
+          size={sizeToUse}
           className={className}
           onClick={() => {
             onInteraction({
@@ -62,6 +73,8 @@ ToolbarButton.propTypes = {
   label: PropTypes.string.isRequired,
   /** Tooltip content can be replaced for a customized content by passing a node to this value. */
   dropdownContent: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+  size: PropTypes.string,
+  toolTipClassName: PropTypes.string,
 };
 
 export default ToolbarButton;

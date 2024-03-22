@@ -1,7 +1,7 @@
 import { ToolbarButton, ButtonGroup } from '@ohif/ui';
 import React, { useCallback } from 'react';
 
-function ToolbarButtonGroupWithServices({ groupId, items, onInteraction }) {
+function ToolbarButtonGroupWithServices({ groupId, items, onInteraction, size }) {
   const getSplitButtonItems = useCallback(
     items =>
       items.map((item, index) => (
@@ -10,6 +10,9 @@ function ToolbarButtonGroupWithServices({ groupId, items, onInteraction }) {
           icon={item.icon}
           label={item.label}
           disabled={item.disabled}
+          className={item.className}
+          id={item.id}
+          size={size}
           onClick={() => {
             onInteraction({
               groupId,
@@ -17,6 +20,10 @@ function ToolbarButtonGroupWithServices({ groupId, items, onInteraction }) {
               commands: item.commands,
             });
           }}
+          // Note: this is necessary since tooltip will add
+          // default styles to the tooltip container which
+          // we don't want for groups
+          toolTipClassName=""
         />
       )),
     [onInteraction, groupId]

@@ -49,6 +49,7 @@ function ToolboxUI(props) {
                       id={id}
                       servicesManager={servicesManager}
                       onInteraction={onInteraction}
+                      size="toolbox"
                     />
                   </Tooltip>
                 ) : (
@@ -58,6 +59,7 @@ function ToolboxUI(props) {
                     id={id}
                     servicesManager={servicesManager}
                     onInteraction={onInteraction}
+                    size="toolbox"
                   />
                 )}
               </div>

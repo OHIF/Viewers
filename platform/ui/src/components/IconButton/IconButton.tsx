@@ -63,7 +63,7 @@ const iconSizeClasses = {
   small: 'w-4 h-4',
   medium: 'w-5 h-5',
   large: 'w-6 h-6',
-  toolbar: 'w-[22px] h-[22px]',
+  toolbar: 'w-[24px] h-[24px]',
 };
 
 const fullWidthClasses = {
@@ -92,6 +92,8 @@ const IconButton = ({
     onClick(e);
   };
 
+  const padding = size === 'toolbar' ? '8px' : size === 'toolbox' ? '4px' : null;
+
   return (
     <button
       className={classnames(
@@ -104,7 +106,7 @@ const IconButton = ({
         className
       )}
       style={{
-        padding: size === 'toolbar' ? '10px' : null,
+        padding,
       }}
       ref={buttonElement}
       onClick={handleOnClick}
@@ -132,7 +134,7 @@ IconButton.defaultProps = {
 
 IconButton.propTypes = {
   children: PropTypes.node.isRequired,
-  size: PropTypes.oneOf(['small', 'medium', 'large', 'initial', 'toolbar']),
+  size: PropTypes.oneOf(['small', 'medium', 'large', 'initial', 'toolbar', 'toolbox']),
   rounded: PropTypes.oneOf(['none', 'small', 'medium', 'large', 'full']),
   variant: PropTypes.oneOf(['text', 'outlined', 'contained']),
   color: PropTypes.oneOf(['default', 'primary', 'secondary', 'white', 'black', 'inherit']),
