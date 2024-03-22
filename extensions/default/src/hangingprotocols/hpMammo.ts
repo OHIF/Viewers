@@ -92,7 +92,7 @@ const hpMammography = {
         {
           viewportOptions: {
             toolGroupId: 'default',
-            // flipHorizontal: true,
+            flipHorizontal: true,
             displayArea: rightDisplayArea,
           },
           displaySets: [
@@ -146,7 +146,7 @@ const hpMammography = {
             toolGroupId: 'default',
             displayArea: leftDisplayArea,
             flipHorizontal: true,
-            // rotation: 180,
+            rotation: 180,
           },
           displaySets: [
             {
