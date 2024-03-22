@@ -33,7 +33,7 @@ const PlanarFreehandROI = {
       throw new Error(`Tool ${toolName} not supported`);
     }
 
-    const { SOPInstanceUID, SeriesInstanceUID, StudyInstanceUID } =
+    const { SOPInstanceUID, SeriesInstanceUID, frameNumber, StudyInstanceUID } =
       getSOPInstanceAttributes(referencedImageId);
 
     let displaySet;
@@ -62,6 +62,7 @@ const PlanarFreehandROI = {
       points,
       textBox,
       metadata,
+      frameNumber,
       referenceSeriesUID: SeriesInstanceUID,
       referenceStudyUID: StudyInstanceUID,
       toolName: metadata.toolName,
