@@ -1,5 +1,5 @@
 import React from 'react';
-import { PanelSection, ToolSettings, Tooltip } from '@ohif/ui';
+import { PanelSection, ToolSettings, Tooltip } from '../../components';
 import classnames from 'classnames';
 
 const ItemsPerRow = 4;

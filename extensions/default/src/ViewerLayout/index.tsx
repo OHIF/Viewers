@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
-import { ErrorBoundary, LoadingIndicatorProgress } from '@ohif/ui';
+import { ErrorBoundary, LoadingIndicatorProgress, ToolboxProvider } from '@ohif/ui';
 import { ServicesManager, HangingProtocolService, CommandsManager } from '@ohif/core';
 import { useAppConfig } from '@state';
 import ViewerHeader from './ViewerHeader';
 import SidePanelWithServices from '../Components/SidePanelWithServices';
-import { ToolboxProvider } from '../Panels/Toolbox/ToolboxContext';
 
 function ViewerLayout({
   // From Extension Module Params

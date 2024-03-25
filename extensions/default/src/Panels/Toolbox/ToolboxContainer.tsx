@@ -1,7 +1,6 @@
 import React, { useEffect, useRef } from 'react';
-import { ToolboxUI } from './ToolboxUI';
-import { useToolbox } from './ToolboxContext';
 import { useToolbar } from '@ohif/core';
+import { useToolbox, ToolboxUI } from '@ohif/ui';
 
 function ToolboxContainer({ servicesManager, buttonSectionId, commandsManager, title }) {
   const { state: toolboxState, api } = useToolbox(buttonSectionId);
