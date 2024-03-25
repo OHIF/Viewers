@@ -47,7 +47,7 @@ export type VolumeRenderingQualityProps = {
   volumeRenderingQualityRange: VolumeRenderingQualityRange;
 };
 
-export type VolumeMappingRangeProps = {
+export type VolumeShiftProps = {
   viewportId: string;
   commandsManager: CommandsManager;
   serviceManager: ServicesManager;

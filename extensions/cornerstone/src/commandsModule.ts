@@ -696,28 +696,34 @@ function commandsModule({
     },
 
     /**
-     * Sets the volume mapping range for a given viewport.
+     * Shifts opacity points for a given viewport id.
      * @param {string} viewportId - The ID of the viewport to set the mapping range.
-     * @param {number} shift - The shift value for the mapping range.
-     * @param {number} width - The width of the mapping range.
-     * @param {Array<number>} imageDataRange - The data range of the image.
-     * @param {number} fullMappingRangeWidth - The full width of the mapping range.
+     * @param {number} shift - The shift value to shift the points by.
      */
-    setVolumeMappingRange: ({
-      viewportId,
-      shift,
-      width,
-      imageDataRange,
-      fullMappingRangeWidth,
-    }) => {
+    shiftVolumeOpacityPoints: ({ viewportId, shift }) => {
       const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
       const { actor } = viewport.getActors()[0];
-      const cfun = actor.getProperty().getRGBTransferFunction(0);
-      const min = imageDataRange[0] + Math.floor((fullMappingRangeWidth - width) / 2) + shift;
-      const max = imageDataRange[1] - Math.ceil((fullMappingRangeWidth - width) / 2) + shift;
+      const ofun = actor.getProperty().getScalarOpacity(0);
 
-      cfun.setMappingRange(...[min, max]);
-      cfun.modified();
+      const opacityPointValues = []; // Array to hold values
+      // Gather Existing Values
+      const size = ofun.getSize();
+      for (let pointIdx = 0; pointIdx < size; pointIdx++) {
+        const opacityPointValue = [0, 0, 0, 0];
+        ofun.getNodeValue(pointIdx, opacityPointValue);
+        // opacityPointValue now holds [xLocation, opacity, midpoint, sharpness]
+        opacityPointValues.push(opacityPointValue);
+      }
+      // Add offset
+      opacityPointValues.forEach(opacityPointValue => {
+        opacityPointValue[0] += shift; // Change the location value
+      });
+      // Set new values
+      ofun.removeAllPoints();
+      opacityPointValues.forEach(opacityPointValue => {
+        ofun.addPoint(...opacityPointValue);
+      });
+
       viewport.render();
     },
 

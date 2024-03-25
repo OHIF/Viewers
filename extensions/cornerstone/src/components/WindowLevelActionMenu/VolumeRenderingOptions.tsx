@@ -2,7 +2,7 @@ import React, { ReactElement } from 'react';
 import { AllInOneMenu } from '@ohif/ui';
 import { VolumeRenderingOptionsProps } from '../../types/ViewportPresets';
 import { VolumeRenderingQuality } from './VolumeRenderingQuality';
-import { VolumeMappingRange } from './VolumeMappingRange';
+import { VolumeShift } from './VolumeShift';
 import { VolumeLighting } from './VolumeLighting';
 import { VolumeShade } from './VolumeShade';
 export function VolumeRenderingOptions({
@@ -28,7 +28,7 @@ export function VolumeRenderingOptions({
         volumeRenderingQualityRange={volumeRenderingQualityRange}
       />
 
-      <VolumeMappingRange
+      <VolumeShift
         viewportId={viewportId}
         commandsManager={commandsManager}
         serviceManager={serviceManager}
