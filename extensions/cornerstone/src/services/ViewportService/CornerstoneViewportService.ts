@@ -187,7 +187,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
         Object.entries(presentation).forEach(
           ([volumeId, properties]: [string, Types.ViewportProperties]) => {
             viewport.setProperties(properties, volumeId);
-          }
+  }
         );
       } else {
         viewport.setProperties(presentation);
@@ -279,10 +279,10 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     }
 
     const cleanProperties = properties => {
-      if (properties.isComputedVOI) {
-        delete properties.voiRange;
-        delete properties.VOILUTFunction;
-      }
+    if (properties.isComputedVOI) {
+      delete properties.voiRange;
+      delete properties.VOILUTFunction;
+    }
       return properties;
     };
 
@@ -389,7 +389,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
           targetViewports: [...synchronizer.getTargetViewports()],
         }))
       );
-    }
+  }
 
     stateSyncService.store(newState);
   }
@@ -437,6 +437,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     const orientation = viewportInfo.getOrientation();
     const displayArea = viewportInfo.getDisplayArea();
 
+    console.log('Applying display area', displayArea);
     const viewportInput: Types.PublicViewportInput = {
       viewportId,
       element,
@@ -564,6 +565,8 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       initialImageIndexToUse = this._getInitialImageIndexForViewport(viewportInfo, imageIds) || 0;
     }
 
+    const { rotation, flipHorizontal, displayArea } = viewportInfo.getViewportOptions() as any;
+
     const properties = { ...presentations.lutPresentation?.properties };
     if (!presentations.lutPresentation?.properties) {
       const { voi, voiInverted, colormap } = displaySetOptions[0];
@@ -581,12 +584,21 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
 
       if (colormap !== undefined) {
         properties.colormap = colormap;
-      }
+    }
     }
 
     return viewport.setStack(imageIds, initialImageIndexToUse).then(() => {
       viewport.setProperties({ ...properties });
       this.setPresentations(viewport.id, presentations);
+      if (displayArea) {
+        viewport.setOptions({ displayArea }, true);
+      }
+      if (rotation) {
+        viewport.setProperties({ rotation });
+      }
+      if (flipHorizontal) {
+        viewport.setCamera({ flipHorizontal: true });
+      }
     });
   }
 
@@ -935,8 +947,8 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       );
     }
 
-    throw new Error('Unknown viewport type');
-  }
+      throw new Error('Unknown viewport type');
+    }
 
   /**
    * Removes the resize observer from the viewport element
@@ -1008,17 +1020,17 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     this.viewportResizeTimer = setTimeout(() => {
       this.processViewportResizeQueue();
     }, this.gridResizeDelay);
-  }
+    }
 
   private processViewportResizeQueue() {
     const isGridResizeInQueue = this.resizeQueue.some(isGridResize => isGridResize);
     if (this.resizeQueue.length > 0 && !isGridResizeInQueue && !this.gridResizeTimeOut) {
       this.performResize();
-    }
+  }
 
     // Clear the queue after processing viewport resizes
     this.resizeQueue = [];
-  }
+}
 
   private performResize() {
     const isImmediate = false;

@@ -120,9 +120,9 @@ const hpMNCompare: Types.HangingProtocol.Protocol = {
     {
       id: 'Two Studies',
       weight: 1000,
+      // is there a second study or in another work the attribute
+      // studyInstanceUIDsIndex that we get from prior should not be null
       attribute: 'StudyInstanceUID',
-      // The 'from' attribute says where to get the 'attribute' value from.  In this case
-      // prior means the second study in the study list.
       from: 'prior',
       required: true,
       constraint: {

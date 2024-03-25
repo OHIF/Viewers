@@ -1,0 +1,11 @@
+version: "0.2"
+ignorePaths: []
+dictionaryDefinitions: []
+dictionaries: []
+words:
+  - LMLO
+  - ohif
+  - RMLO
+  - viewports
+ignoreWords: []
+import: []

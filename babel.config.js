@@ -49,6 +49,7 @@ module.exports = {
         '@babel/transform-destructuring',
         '@babel/plugin-transform-runtime',
         '@babel/plugin-transform-typescript',
+        '@babel/plugin-transform-class-static-block',
       ],
     },
     production: {

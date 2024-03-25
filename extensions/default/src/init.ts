@@ -2,6 +2,7 @@ import { DicomMetadataStore, classes } from '@ohif/core';
 import { calculateSUVScalingFactors } from '@cornerstonejs/calculate-suv';
 
 import getPTImageIdInstanceMetadata from './getPTImageIdInstanceMetadata';
+import { registerCustomAttributes } from './hangingprotocols';
 
 const metadataProvider = classes.MetadataProvider;
 
@@ -46,6 +47,9 @@ export default function init({ servicesManager, configuration = {} }): void {
   // changes numRows and numCols, the viewports can be remembers and then replaced
   // afterwards.
   stateSyncService.register('viewportsByPosition', { clearOnModeExit: true });
+
+  // Adds extra custom attributes for use by hanging protocols
+  registerCustomAttributes({ servicesManager });
 }
 
 const handlePETImageMetadata = ({ SeriesInstanceUID, StudyInstanceUID }) => {

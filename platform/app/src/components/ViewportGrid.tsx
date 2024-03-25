@@ -75,6 +75,7 @@ function ViewerViewportGrid(props) {
         viewportOptions,
         displaySetUIDsToHang
       );
+      console.log('Starting with', viewportOptions, computedViewportOptions);
 
       const computedDisplaySetOptions = hangingProtocolService.getComputedOptions(
         displaySetUIDsToHangOptions,
