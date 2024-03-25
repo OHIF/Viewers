@@ -371,3 +371,23 @@ state will get synchronized with the toolbar service automatically.
 
 
 ![alt text](../../../assets/img/toolbox-modal.png)
+
+
+
+## Change Toolbar with hanging protocols
+
+If you want to change the toolbar based on the hanging protocol, you can do a pattern like this.
+
+```js
+
+ const { unsubscribe } = hangingProtocolService.subscribe(
+  hangingProtocolService.EVENTS.PROTOCOL_CHANGED,
+  () => {
+    toolbarService.createButtonSection('primary', [
+      'MeasurementTools',
+      'Zoom',
+      'WindowLevel',
+    ]);
+  }
+);
+```

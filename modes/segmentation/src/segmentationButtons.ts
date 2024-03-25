@@ -81,7 +81,7 @@ const toolbarButtons: Button[] = [
               min: 0.5,
               max: 99.5,
               step: 0.5,
-              value: 15,
+              value: 25,
               onChange: executeSetBrushSize,
             },
             {
@@ -116,7 +116,7 @@ const toolbarButtons: Button[] = [
               min: 0.5,
               max: 99.5,
               step: 0.5,
-              value: 15,
+              value: 25,
               onChange: executeSetEraserSize,
             },
             {
@@ -149,7 +149,7 @@ const toolbarButtons: Button[] = [
               min: 0.5,
               max: 99.5,
               step: 0.5,
-              value: 15,
+              value: 25,
               onChange: executeSetThresholdSize,
             },
             {

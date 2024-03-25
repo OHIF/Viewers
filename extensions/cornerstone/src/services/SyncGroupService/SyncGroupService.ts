@@ -155,9 +155,10 @@ export default class SyncGroupService {
   }
 
   public getSynchronizersForViewport(viewportId: string): Synchronizer[] {
-    const renderingEngine = getRenderingEngines().find(re => {
-      return re.getViewports().find(vp => vp.id === viewportId);
-    });
+    const renderingEngine =
+      getRenderingEngines().find(re => {
+        return re.getViewports().find(vp => vp.id === viewportId);
+      }) || getRenderingEngines()[0];
 
     const synchronizers = SynchronizerManager.getAllSynchronizers();
     return synchronizers.filter(
