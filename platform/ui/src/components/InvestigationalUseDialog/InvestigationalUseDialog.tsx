@@ -71,7 +71,7 @@ const InvestigationalUseDialog = ({ dialogConfiguration }) => {
               <span className="text-primary-light">for investigational use only</span>
             </div>
             <div className="text-[13px] text-white">
-              The viewer is to be used for lorem ipsum.{' '}
+              The viewer is to be used for research purposes only.{' '}
               <span
                 className="text-primary-active cursor-pointer"
                 onClick={() => window.open('https://ohif.org/', '_blank')}
