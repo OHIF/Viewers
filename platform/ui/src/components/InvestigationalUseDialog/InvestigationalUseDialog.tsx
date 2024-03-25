@@ -9,8 +9,8 @@ export enum showDialogOption {
   ShowOnceAndConfigure = 'configure',
 }
 
-const InvestigationalUseDialog = ({ options }) => {
-  const { option, days } = options;
+const InvestigationalUseDialog = ({ dialogConfiguration }) => {
+  const { option, days } = dialogConfiguration;
   const [isHidden, setIsHidden] = useState(true);
 
   useEffect(() => {
@@ -58,27 +58,33 @@ const InvestigationalUseDialog = ({ options }) => {
   }
 
   return (
-    <div className="fixed bottom-2 z-50 flex w-full justify-center">
-      <div className="bg-secondary-dark flex w-[90%] items-center justify-between rounded p-2">
+    <div className="fixed bottom-2 z-50 flex h-[86px] w-full justify-center">
+      <div className="bg-secondary-dark border-primary-dark flex w-[90%] items-center justify-between rounded-lg border-2 pl-[22px] pr-[22px] pt-[10px] pb-[10px] shadow-lg">
         <div className="flex items-center gap-4">
           <Icon
-            name="info-link"
-            className="h-10 w-10"
+            name="illustration-investigational-use"
+            className="h-18 w-18"
           />
           <div className="flex flex-col">
-            <div className="text-white">
+            <div className="text-[19px] text-white">
               OHIF Viewer is{' '}
               <span className="text-primary-light">for investigational use only</span>
             </div>
-            <div className="text-white">
+            <div className="text-[13px] text-white">
               The viewer is to be used for lorem ipsum.{' '}
-              <span className="text-primary-main">Learn more about OHIF Viewer</span>
+              <span
+                className="text-primary-active cursor-pointer"
+                onClick={() => window.open('https://ohif.org/', '_blank')}
+              >
+                Learn more about OHIF Viewer
+              </span>
             </div>
           </div>
         </div>
         <Button
           type={ButtonEnums.type.primary}
           onClick={handleConfirmAndHide}
+          className="bg-primary-main"
         >
           Confirm and Hide
         </Button>
@@ -88,14 +94,14 @@ const InvestigationalUseDialog = ({ options }) => {
 };
 
 InvestigationalUseDialog.propTypes = {
-  options: PropTypes.shape({
+  dialogConfiguration: PropTypes.shape({
     option: PropTypes.oneOf(Object.values(showDialogOption)).isRequired,
     days: PropTypes.number,
   }).isRequired,
 };
 
 InvestigationalUseDialog.defaultProps = {
-  options: {
+  dialogConfiguration: {
     option: showDialogOption.AlwaysShowDialog,
   },
 };
