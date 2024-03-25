@@ -84,6 +84,7 @@ const moreTools = [
             commandName: 'setToolEnabled',
             commandOptions: {
               toolName: 'ReferenceLines',
+              toggle: true, // Toggle the tool on/off upon click
             },
           },
           listeners: {
@@ -101,6 +102,7 @@ const moreTools = [
             commandName: 'setToolEnabled',
             commandOptions: {
               toolName: 'ImageOverlayViewer',
+              toggle: true, // Toggle the tool on/off upon click
             },
           },
           evaluate: 'evaluate.cornerstoneTool.toggle',
