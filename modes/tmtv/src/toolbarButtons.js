@@ -1,5 +1,4 @@
 import { defaults, ToolbarService } from '@ohif/core';
-import type { Button } from '@ohif/core/types';
 import { WindowLevelMenuItem } from '@ohif/ui';
 import { toolGroupIds } from './initToolGroups';
 
@@ -38,18 +37,14 @@ function _createWwwcPreset(preset, title, subtitle) {
   };
 }
 
-function _createCommands(commandName, toolName, toolGroupIds) {
-  return toolGroupIds.map(toolGroupId => ({
-    commandName,
-    commandOptions: {
-      toolName,
-      toolGroupId,
-    },
-    context: 'CORNERSTONE',
-  }));
-}
+const setToolActiveToolbar = {
+  commandName: 'setToolActiveToolbar',
+  commandOptions: {
+    toolGroupIds: [toolGroupIds.CT, toolGroupIds.PT, toolGroupIds.Fusion],
+  },
+};
 
-const toolbarButtons: Button[] = [
+const toolbarButtons = [
   {
     id: 'MeasurementTools',
     uiType: 'ohif.splitButton',
@@ -60,74 +55,52 @@ const toolbarButtons: Button[] = [
         icon: 'tool-length',
         label: 'Length',
         tooltip: 'Length Tool',
-        commands: _createCommands('setToolActive', 'Length', [
-          toolGroupIds.CT,
-          toolGroupIds.PT,
-          toolGroupIds.Fusion,
-        ]),
+        commands: setToolActiveToolbar,
         evaluate: 'evaluate.cornerstoneTool',
       }),
       secondary: {
         icon: 'chevron-down',
         tooltip: 'More Measure Tools',
       },
-       items: [
-      ToolbarService.createButton({
-        id: 'Bidirectional',
-        icon: 'tool-bidirectional',
-        label: 'Bidirectional',
-        tooltip: 'Bidirectional Tool',
-        commands: _createCommands('setToolActive', 'Bidirectional', [
-          toolGroupIds.CT,
-          toolGroupIds.PT,
-          toolGroupIds.Fusion,
-        ]),
-        evaluate: 'evaluate.cornerstoneTool',
-      }),
-      ToolbarService.createButton({
-        id: 'ArrowAnnotate',
-        icon: 'tool-annotate',
-        label: 'Arrow Annotate',
-        tooltip: 'Arrow Annotate Tool',
-        commands: _createCommands('setToolActive', 'ArrowAnnotate', [
-          toolGroupIds.CT,
-          toolGroupIds.PT,
-          toolGroupIds.Fusion,
-        ]),
-        evaluate: 'evaluate.cornerstoneTool',
-      }),
-      ToolbarService.createButton({
-        id: 'EllipticalROI',
-        icon: 'tool-ellipse',
-        label: 'Ellipse',
-        tooltip: 'Ellipse Tool',
-        commands: _createCommands('setToolActive', 'EllipticalROI', [
-          toolGroupIds.CT,
-          toolGroupIds.PT,
-          toolGroupIds.Fusion,
-        ]),
-        evaluate: 'evaluate.cornerstoneTool',
-      }),
-      // Additional measurement tools can be defined here following the same pattern.
-    ],
+      items: [
+        ToolbarService.createButton({
+          id: 'Bidirectional',
+          icon: 'tool-bidirectional',
+          label: 'Bidirectional',
+          tooltip: 'Bidirectional Tool',
+          commands: setToolActiveToolbar,
+          evaluate: 'evaluate.cornerstoneTool',
+        }),
+        ToolbarService.createButton({
+          id: 'ArrowAnnotate',
+          icon: 'tool-annotate',
+          label: 'Arrow Annotate',
+          tooltip: 'Arrow Annotate Tool',
+          commands: setToolActiveToolbar,
+          evaluate: 'evaluate.cornerstoneTool',
+        }),
+        ToolbarService.createButton({
+          id: 'EllipticalROI',
+          icon: 'tool-ellipse',
+          label: 'Ellipse',
+          tooltip: 'Ellipse Tool',
+          commands: setToolActiveToolbar,
+          evaluate: 'evaluate.cornerstoneTool',
+        }),
+      ],
     },
   },
-  // Additional buttons follow the pattern established above
   {
     id: 'Zoom',
     uiType: 'ohif.radioGroup',
     props: {
       icon: 'tool-zoom',
       label: 'Zoom',
-      commands: _createCommands('setToolActive', 'Zoom', [
-        toolGroupIds.CT,
-        toolGroupIds.PT,
-        toolGroupIds.Fusion,
-      ]),
+      commands: setToolActiveToolbar,
       evaluate: 'evaluate.cornerstoneTool',
     },
   },
-   {
+  {
     id: 'MPR',
     uiType: 'ohif.radioGroup',
     props: {
@@ -154,11 +127,7 @@ const toolbarButtons: Button[] = [
         icon: 'tool-window-level',
         label: 'Window Level',
         tooltip: 'Window Level',
-        commands: _createCommands('setToolActive', 'WindowLevel', [
-          toolGroupIds.CT,
-          toolGroupIds.PT,
-          toolGroupIds.Fusion,
-        ]),
+        commands: setToolActiveToolbar,
         evaluate: 'evaluate.cornerstoneTool',
       }),
       secondary: {
@@ -182,11 +151,7 @@ const toolbarButtons: Button[] = [
     props: {
       icon: 'tool-crosshair',
       label: 'Crosshairs',
-      commands: _createCommands('setToolActive', 'Crosshairs', [
-        toolGroupIds.CT,
-        toolGroupIds.PT,
-        toolGroupIds.Fusion,
-      ]),
+      commands: setToolActiveToolbar,
       evaluate: 'evaluate.cornerstoneTool',
     },
   },
@@ -197,11 +162,7 @@ const toolbarButtons: Button[] = [
     props: {
       icon: 'tool-move',
       label: 'Pan',
-      commands: _createCommands('setToolActive', 'Pan', [
-        toolGroupIds.CT,
-        toolGroupIds.PT,
-        toolGroupIds.Fusion,
-      ]),
+      commands: setToolActiveToolbar,
       evaluate: 'evaluate.cornerstoneTool',
     },
   },
@@ -212,20 +173,7 @@ const toolbarButtons: Button[] = [
     props: {
       icon: 'tool-create-threshold',
       label: 'Rectangle ROI Threshold',
-      commands: _createCommands('setToolActive', 'RectangleROIStartEndThreshold', [toolGroupIds.PT]).concat([
-        {
-          commandName: 'displayNotification',
-          commandOptions: {
-            title: 'RectangleROI Threshold Tip',
-            text: 'RectangleROI Threshold tool should be used on PT Axial Viewport',
-            type: 'info',
-          },
-        },
-        {
-          commandName: 'setViewportActive',
-          commandOptions: { viewportId: 'ptAXIAL' },
-        },
-      ]),
+      commands: setToolActiveToolbar,
       evaluate: 'evaluate.cornerstoneTool',
     },
   },
@@ -247,7 +195,7 @@ const toolbarButtons: Button[] = [
         icon: 'chevron-down',
         tooltip: 'PET Image Colormap',
       },
-       items: [
+      items: [
         _createColormap('HSV', 'hsv'),
         _createColormap('Hot Iron', 'hot_iron'),
         _createColormap('S PET', 's_pet'),
@@ -258,7 +206,7 @@ const toolbarButtons: Button[] = [
         _createColormap('GE 256', 'ge_256'),
         _createColormap('GE', 'ge'),
         _createColormap('Siemens', 'siemens'),
-      ]
+      ],
     },
   },
 ];

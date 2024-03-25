@@ -1,8 +1,10 @@
 import type { RunCommand } from '@ohif/core/types';
 import { EVENTS } from '@cornerstonejs/core';
-import { ToolbarService } from '@ohif/core';
+import { ToolbarService, ViewportGridService } from '@ohif/core';
+import { setToolActiveToolbar } from './toolbarButtons';
+const { createButton } = ToolbarService;
 
-const ReferenceLinesCommands: RunCommand = [
+const ReferenceLinesListeners: RunCommand = [
   {
     commandName: 'setSourceViewportForReferenceLinesTool',
     context: 'CORNERSTONE',
@@ -14,209 +16,165 @@ const moreTools = [
     id: 'MoreTools',
     uiType: 'ohif.splitButton',
     props: {
-      isRadio: true,
-      groupId: 'MoreToolsGroupId',
-      primary: ToolbarService.createButton({
+      groupId: 'MoreTools',
+      evaluate: 'evaluate.group.promoteToPrimaryIfCornerstoneToolNotActiveInTheList',
+      primary: createButton({
         id: 'Reset',
         icon: 'tool-reset',
-        label: 'Reset View',
-        commands: [
-          {
-            commandName: 'resetViewport',
-            context: 'CORNERSTONE',
-          },
-        ],
-        tooltip: 'Reset',
+        tooltip: 'Reset View',
+        label: 'Reset',
+        commands: 'resetViewport',
         evaluate: 'evaluate.action',
       }),
       secondary: {
         icon: 'chevron-down',
+        label: '',
         tooltip: 'More Tools',
       },
       items: [
-        ToolbarService.createButton({
-          id: 'RotateRight',
+        createButton({
+          id: 'Reset',
+          icon: 'tool-reset',
+          label: 'Reset View',
+          tooltip: 'Reset View',
+          commands: 'resetViewport',
+          evaluate: 'evaluate.action',
+        }),
+        createButton({
+          id: 'rotate-right',
           icon: 'tool-rotate-right',
           label: 'Rotate Right',
           tooltip: 'Rotate +90',
-          commands: [
-            {
-              commandName: 'rotateViewportCW',
-              context: 'CORNERSTONE',
-            },
-          ],
+          commands: 'rotateViewportCW',
           evaluate: 'evaluate.action',
         }),
-        ToolbarService.createButton({
-          id: 'FlipHorizontal',
+        createButton({
+          id: 'flipHorizontal',
           icon: 'tool-flip-horizontal',
-          label: 'Flip Horizontally',
+          label: 'Flip Horizontal',
           tooltip: 'Flip Horizontally',
-          commands: [
-            {
-              commandName: 'flipViewportHorizontal',
-              context: 'CORNERSTONE',
-            },
-          ],
-          evaluate: 'evaluate.action',
+          commands: 'flipViewportHorizontal',
+          evaluate: 'evaluate.viewportProperties.toggle',
         }),
-        ToolbarService.createButton({
+        createButton({
           id: 'ImageSliceSync',
           icon: 'link',
           label: 'Image Slice Sync',
           tooltip: 'Enable position synchronization on stack viewports',
-          commands: [
-            {
-              commandName: 'toggleImageSliceSync',
+          commands: {
+            commandName: 'toggleSynchronizer',
+            commandOptions: {
+              type: 'imageSlice',
             },
-          ],
-          evaluate: 'evaluate.toggle',
+          },
           listeners: {
             [EVENTS.STACK_VIEWPORT_NEW_STACK]: {
               commandName: 'toggleImageSliceSync',
               commandOptions: { toggledState: true },
             },
           },
+          evaluate: 'evaluate.cornerstone.synchronizer',
         }),
-        ToolbarService.createButton({
+        createButton({
           id: 'ReferenceLines',
-          icon: 'tool-referenceLines', // Assuming a new icon is provided
+          icon: 'tool-referenceLines',
           label: 'Reference Lines',
           tooltip: 'Show Reference Lines',
-          commands: [
-            {
-              commandName: 'setToolActive',
-              commandOptions: {
-                toolName: 'ReferenceLines',
-              },
-              context: 'CORNERSTONE',
+          commands: {
+            commandName: 'setToolEnabled',
+            commandOptions: {
+              toolName: 'ReferenceLines',
             },
-          ],
-          evaluate: 'evaluate.toggle',
-          listeners: {
-            [EVENTS.STACK_VIEWPORT_NEW_STACK]: ReferenceLinesCommands,
-            [EVENTS.ACTIVE_VIEWPORT_ID_CHANGED]: ReferenceLinesCommands,
           },
+          listeners: {
+            [ViewportGridService.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED]: ReferenceLinesListeners,
+            [ViewportGridService.EVENTS.VIEWPORTS_READY]: ReferenceLinesListeners,
+          },
+          evaluate: 'evaluate.cornerstoneTool.toggle',
         }),
-
-        ToolbarService.createButton({
+        createButton({
+          id: 'ImageOverlay',
+          icon: 'toggle-dicom-overlay',
+          label: 'Image Overlay',
+          tooltip: 'Toggle Image Overlay',
+          commands: {
+            commandName: 'setToolEnabled',
+            commandOptions: {
+              toolName: 'ImageOverlayViewer',
+            },
+          },
+          evaluate: 'evaluate.cornerstoneTool.toggle',
+        }),
+        createButton({
           id: 'StackScroll',
           icon: 'tool-stack-scroll',
           label: 'Stack Scroll',
           tooltip: 'Stack Scroll',
-          commands: [
-            {
-              commandName: 'setToolActive',
-              commandOptions: {
-                toolName: 'StackScroll',
-              },
-              context: 'CORNERSTONE',
-            },
-          ],
+          commands: setToolActiveToolbar,
           evaluate: 'evaluate.cornerstoneTool',
         }),
-        ToolbarService.createButton({
-          id: 'Invert',
+        createButton({
+          id: 'invert',
           icon: 'tool-invert',
           label: 'Invert',
           tooltip: 'Invert Colors',
-          commands: [
-            {
-              commandName: 'invertViewport',
-              context: 'CORNERSTONE',
-            },
-          ],
-          evaluate: 'evaluate.action',
+          commands: 'invertViewport',
+          evaluate: 'evaluate.viewportProperties.toggle',
         }),
-        ToolbarService.createButton({
+        createButton({
           id: 'Probe',
           icon: 'tool-probe',
           label: 'Probe',
           tooltip: 'Probe',
-          commands: [
-            {
-              commandName: 'setToolActive',
-              commandOptions: {
-                toolName: 'DragProbe',
-              },
-              context: 'CORNERSTONE',
-            },
-          ],
+          commands: setToolActiveToolbar,
           evaluate: 'evaluate.cornerstoneTool',
         }),
-        ToolbarService.createButton({
+        createButton({
           id: 'Cine',
           icon: 'tool-cine',
           label: 'Cine',
           tooltip: 'Cine',
-          commands: [
-            {
-              commandName: 'toggleCine',
-              context: 'CORNERSTONE',
-            },
-          ],
-          evaluate: 'evaluate.toggle',
+          commands: 'toggleCine',
+          evaluate: 'evaluate.cine',
         }),
-        ToolbarService.createButton({
+        createButton({
           id: 'Angle',
           icon: 'tool-angle',
           label: 'Angle',
           tooltip: 'Angle',
-          commands: [
-            {
-              commandName: 'setToolActive',
-              commandOptions: {
-                toolName: 'Angle',
-              },
-              context: 'CORNERSTONE',
-            },
-          ],
+          commands: setToolActiveToolbar,
           evaluate: 'evaluate.cornerstoneTool',
         }),
-        ToolbarService.createButton({
+        createButton({
           id: 'Magnify',
           icon: 'tool-magnify',
           label: 'Magnify',
           tooltip: 'Magnify',
-          commands: [
-            {
-              commandName: 'setToolActive',
-              commandOptions: {
-                toolName: 'Magnify',
-              },
-              context: 'CORNERSTONE',
-            },
-          ],
+          commands: setToolActiveToolbar,
           evaluate: 'evaluate.cornerstoneTool',
         }),
-        ToolbarService.createButton({
-          id: 'Rectangle',
+        createButton({
+          id: 'RectangleROI',
           icon: 'tool-rectangle',
           label: 'Rectangle',
           tooltip: 'Rectangle',
-          commands: [
-            {
-              commandName: 'setToolActive',
-              commandOptions: {
-                toolName: 'RectangleROI',
-              },
-              context: 'CORNERSTONE',
-            },
-          ],
+          commands: setToolActiveToolbar,
           evaluate: 'evaluate.cornerstoneTool',
         }),
-        ToolbarService.createButton({
+        createButton({
+          id: 'CalibrationLine',
+          icon: 'tool-calibration',
+          label: 'Calibration',
+          tooltip: 'Calibration Line',
+          commands: setToolActiveToolbar,
+          evaluate: 'evaluate.cornerstoneTool',
+        }),
+        createButton({
           id: 'TagBrowser',
           icon: 'list-bullets',
           label: 'Dicom Tag Browser',
           tooltip: 'Dicom Tag Browser',
-          commands: [
-            {
-              commandName: 'openDICOMTagViewer',
-              context: 'DEFAULT',
-            },
-          ],
-          evaluate: 'evaluate.action',
+          commands: 'openDICOMTagViewer',
         }),
       ],
     },
