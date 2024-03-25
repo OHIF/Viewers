@@ -81,7 +81,7 @@ import InputDoubleRange from './InputDoubleRange';
 import LegacyButtonGroup from './LegacyButtonGroup';
 import SplitButtonToolbar from './SplitButtonToolbar';
 import { ToolSettings } from './AdvancedToolbox';
-import { ToolboxUI } from './Toolbox';
+import { Toolbox } from './Toolbox';
 export {
   AboutModal,
   AdvancedToolbox,
@@ -167,5 +167,5 @@ export {
   WindowLevelMenuItem,
   SplitButtonToolbar,
   ToolSettings,
-  ToolboxUI,
+  Toolbox,
 };

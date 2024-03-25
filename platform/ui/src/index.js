@@ -115,7 +115,7 @@ export {
   ViewportOverlay,
   SplitButtonToolbar,
   ToolSettings,
-  ToolboxUI,
+  Toolbox,
 } from './components';
 
 export { useSessionStorage } from './hooks';

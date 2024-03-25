@@ -1,8 +1,16 @@
 import React, { useEffect, useRef } from 'react';
 import { useToolbar } from '@ohif/core';
-import { useToolbox, ToolboxUI } from '@ohif/ui';
+import { ToolboxUI } from './';
+import { useToolbox } from '../../contextProviders';
 
-function ToolboxContainer({ servicesManager, buttonSectionId, commandsManager, title }) {
+/**
+ * This component might seem out of place in the UI, but it plays a crucial role in
+ * enhancing the app with a toolbox. It needs the support of services and managers to
+ * effectively engage with the app and its tools. While it could be more fitting in the core
+ * importing it from there and integrating it into the JSX might seem unconventional,
+ * hence its current location here.
+ */
+function Toolbox({ servicesManager, buttonSectionId, commandsManager, title }) {
   const { state: toolboxState, api } = useToolbox(buttonSectionId);
   const { onInteraction, toolbarButtons } = useToolbar({
     servicesManager,
@@ -81,4 +89,4 @@ function ToolboxContainer({ servicesManager, buttonSectionId, commandsManager, t
   );
 }
 
-export default ToolboxContainer;
+export default Toolbox;

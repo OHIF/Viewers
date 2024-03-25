@@ -15,7 +15,6 @@ import { ContextMenuController, CustomizableContextMenuTypes } from './Customiza
 import * as dicomWebUtils from './DicomWebDataSource/utils';
 import { createReportDialogPrompt } from './Panels';
 import createReportAsync from './Actions/createReportAsync';
-import ToolboxContainer from './Panels/Toolbox/ToolboxContainer';
 
 const defaultExtension: Types.Extensions.Extension = {
   /**
@@ -53,5 +52,4 @@ export {
   dicomWebUtils,
   createReportDialogPrompt,
   createReportAsync,
-  ToolboxContainer,
 };

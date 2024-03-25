@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { useAppConfig } from '@state';
-import { ToolboxContainer } from '@ohif/extension-default';
+import { Toolbox } from '@ohif/ui';
 import PanelSegmentation from './panels/PanelSegmentation';
 
 const getPanelModule = ({
@@ -34,7 +34,7 @@ const getPanelModule = ({
   const wrappedPanelSegmentationWithTools = configuration => {
     return (
       <>
-        <ToolboxContainer
+        <Toolbox
           commandsManager={commandsManager}
           servicesManager={servicesManager}
           extensionManager={extensionManager}
