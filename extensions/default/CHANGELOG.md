@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-beta.63](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.62...v3.8.0-beta.63) (2024-03-25)
+
+
+### Features
+
+* **worklist:** new investigational use text ([#3999](https://github.com/OHIF/Viewers/issues/3999)) ([45b68e8](https://github.com/OHIF/Viewers/commit/45b68e841dcb9e28a2ea991c37ee7ac4a8c5b71e))
+
+
+
+
+
 # [3.8.0-beta.62](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.61...v3.8.0-beta.62) (2024-03-19)
 
 **Note:** Version bump only for package @ohif/extension-default
