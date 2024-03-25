@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
-import { ErrorBoundary, LoadingIndicatorProgress } from '@ohif/ui';
+import {
+  SidePanel,
+  ErrorBoundary,
+  LoadingIndicatorProgress,
+  InvestigationalUseDialog,
+} from '@ohif/ui';
 import { ServicesManager, HangingProtocolService, CommandsManager } from '@ohif/core';
 import { useAppConfig } from '@state';
 import ViewerHeader from './ViewerHeader';
@@ -144,6 +149,8 @@ function ViewerLayout({
           ) : null}
         </React.Fragment>
       </div>
+
+      <InvestigationalUseDialog dialogConfiguration={appConfig?.investigationalUseDialog} />
     </div>
   );
 }

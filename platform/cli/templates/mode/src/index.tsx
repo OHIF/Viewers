@@ -1,6 +1,6 @@
 import { hotkeys } from '@ohif/core';
+import { initToolGroups, moreTools, toolbarButtons } from '@ohif/mode-longitudinal';
 import { id } from './id';
-import { initToolGroups, toolbarButtons } from '@ohif/mode-longitudinal';
 
 const ohif = {
   layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
@@ -68,8 +68,12 @@ function modeFactory({ modeConfiguration }) {
         toolbarService,
         segmentationService,
         cornerstoneViewportService,
+        uiDialogService,
+        uiModalService,
       } = servicesManager.services;
 
+      uiDialogService.dismissAll();
+      uiModalService.hide();
       toolGroupService.destroy();
       syncGroupService.destroy();
       segmentationService.destroy();

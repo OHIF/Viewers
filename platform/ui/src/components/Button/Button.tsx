@@ -2,6 +2,7 @@ import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import * as ButtonEnums from './ButtonEnums';
+import Tooltip from '../Tooltip/Tooltip';
 
 const sizeClasses = {
   [ButtonEnums.size.small]: 'h-[26px] text-[13px]',
@@ -66,11 +67,13 @@ const Button = ({
   name,
   className,
   onClick,
+  startIconTooltip = null,
+  endIconTooltip = null,
 }) => {
   const startIcon = startIconProp && (
     <>
       {React.cloneElement(startIconProp, {
-        className: classnames('w-4 h-4 fill-current'),
+        className: classnames('w-4 h-4 fill-current', startIconProp?.props?.className),
       })}
     </>
   );
@@ -78,7 +81,7 @@ const Button = ({
   const endIcon = endIconProp && (
     <>
       {React.cloneElement(endIconProp, {
-        className: classnames('w-4 h-4 fill-current'),
+        className: classnames('w-4 h-4 fill-current', endIconProp?.props?.className),
       })}
     </>
   );
@@ -108,9 +111,9 @@ const Button = ({
       onClick={handleOnClick}
       data-cy={`${name}-btn`}
     >
-      {startIcon}
+      {startIconTooltip ? <Tooltip content={startIconTooltip}>{startIcon}</Tooltip> : startIcon}
       {children}
-      {endIcon}
+      {endIconTooltip ? <Tooltip content={endIconTooltip}>{endIcon}</Tooltip> : endIcon}
     </button>
   );
 };
@@ -141,6 +144,10 @@ Button.propTypes = {
   endIcon: PropTypes.node,
   /** Additional TailwindCSS classnames */
   className: PropTypes.string,
+  /** Tooltip for the start icon */
+  startIconTooltip: PropTypes.node,
+  /** Tooltip for the end icon */
+  endIconTooltip: PropTypes.node,
 };
 
 export default Button;

@@ -102,8 +102,15 @@ function modeFactory({ modeConfiguration }) {
       ]);
     },
     onModeExit: ({ servicesManager }) => {
-      const { toolGroupService } = servicesManager.services;
-
+      const {
+        toolGroupService,
+        measurementService,
+        toolbarService,
+        uiDialogService,
+        uiModalService,
+      } = servicesManager.services;
+      uiDialogService.dismissAll();
+      uiModalService.hide();
       toolGroupService.destroy();
     },
     validationTags: {
@@ -114,7 +121,10 @@ function modeFactory({ modeConfiguration }) {
       const modalities_list = modalities.split('\\');
 
       // Slide Microscopy modality not supported by basic mode yet
-      return !modalities_list.includes('SM');
+      return {
+        valid: !modalities_list.includes('SM'),
+        description: 'The mode does not support the following modalities: SM',
+      };
     },
     routes: [
       {

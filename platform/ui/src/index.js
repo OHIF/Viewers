@@ -116,6 +116,8 @@ export {
   SplitButtonToolbar,
   ToolSettings,
   Toolbox,
+  InvestigationalUseDialog,
+  MeasurementItem,
 } from './components';
 
 export { useSessionStorage } from './hooks';

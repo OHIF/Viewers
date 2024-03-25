@@ -82,6 +82,9 @@ import LegacyButtonGroup from './LegacyButtonGroup';
 import SplitButtonToolbar from './SplitButtonToolbar';
 import { ToolSettings } from './AdvancedToolbox';
 import { Toolbox } from './Toolbox';
+import InvestigationalUseDialog from './InvestigationalUseDialog';
+import MeasurementItem from './MeasurementTable/MeasurementItem';
+
 export {
   AboutModal,
   AdvancedToolbox,
@@ -168,4 +171,6 @@ export {
   SplitButtonToolbar,
   ToolSettings,
   Toolbox,
+  InvestigationalUseDialog,
+  MeasurementItem,
 };

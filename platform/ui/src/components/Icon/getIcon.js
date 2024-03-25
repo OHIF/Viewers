@@ -145,6 +145,10 @@ import oldTrash from './../../assets/icons/old-trash.svg';
 import oldPlay from './../../assets/icons/old-play.svg';
 import oldStop from './../../assets/icons/old-stop.svg';
 
+/** New investigational use */
+
+import investigationalUse from './../../assets/icons/illustration-investigational-use.svg';
+
 const ICONS = {
   'arrow-down': arrowDown,
   'arrow-left': arrowLeft,
@@ -290,6 +294,9 @@ const ICONS = {
   'old-trash': oldTrash,
   'old-play': oldPlay,
   'old-stop': oldStop,
+
+  /** New investigational use */
+  'illustration-investigational-use': investigationalUse,
 };
 
 function addIcon(iconName, iconSVG) {
