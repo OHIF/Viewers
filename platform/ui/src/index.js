@@ -117,6 +117,7 @@ export {
   WindowLevelMenuItem,
   ImageScrollbar,
   ViewportOverlay,
+  InvestigationalUseDialog,
   MeasurementItem,
 } from './components';
 

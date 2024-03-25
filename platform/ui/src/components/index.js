@@ -79,6 +79,7 @@ import PanelSection from './PanelSection';
 import AdvancedToolbox from './AdvancedToolbox';
 import InputDoubleRange from './InputDoubleRange';
 import LegacyButtonGroup from './LegacyButtonGroup';
+import InvestigationalUseDialog from './InvestigationalUseDialog';
 import MeasurementItem from './MeasurementTable/MeasurementItem';
 
 export {
@@ -164,5 +165,6 @@ export {
   ViewportPane,
   ViewportOverlay,
   WindowLevelMenuItem,
+  InvestigationalUseDialog,
   MeasurementItem,
 };
