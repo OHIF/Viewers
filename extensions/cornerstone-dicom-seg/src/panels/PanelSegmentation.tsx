@@ -1,11 +1,16 @@
 import { createReportAsync } from '@ohif/extension-default';
 import React, { useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import { SegmentationGroupTable } from '@ohif/ui';
-
+import { SegmentationGroupTable, SegmentationGroupTableExpanded } from '@ohif/ui';
+import { SegmentationPanelMode } from '../types/segmentation';
 import callInputDialog from './callInputDialog';
 import callColorPickerDialog from './colorPickerDialog';
 import { useTranslation } from 'react-i18next';
+
+const components = {
+  [SegmentationPanelMode.Expanded]: SegmentationGroupTableExpanded,
+  [SegmentationPanelMode.Dropdown]: SegmentationGroupTable,
+};
 
 export default function PanelSegmentation({
   servicesManager,
@@ -221,10 +226,12 @@ export default function PanelSegmentation({
     });
   };
 
+  const SegmentationGroupTableComponent = components[configuration?.segmentationPanelMode];
+
   return (
     <>
       <div className="ohif-scrollbar flex min-h-0 flex-auto select-none flex-col justify-between overflow-auto">
-        <SegmentationGroupTable
+        <SegmentationGroupTableComponent
           title={t('Segmentations')}
           segmentations={segmentations}
           disableEditing={configuration.disableEditing}

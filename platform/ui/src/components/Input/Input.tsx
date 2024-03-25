@@ -33,6 +33,7 @@ const Input = ({
   onKeyDown,
   readOnly,
   disabled,
+  labelChildren,
   ...otherProps
 }) => {
   return (
@@ -40,6 +41,7 @@ const Input = ({
       <Label
         className={labelClassName}
         text={label}
+        children={labelChildren}
       ></Label>
       <input
         data-cy={`input-${id}`}
@@ -83,6 +85,7 @@ Input.propTypes = {
   onKeyPress: PropTypes.func,
   onKeyDown: PropTypes.func,
   disabled: PropTypes.bool,
+  labelChildren: PropTypes.node,
 };
 
 export default Input;
