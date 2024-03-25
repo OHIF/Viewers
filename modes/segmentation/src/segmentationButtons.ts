@@ -63,13 +63,15 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.buttonGroup',
     props: {
       groupId: 'BrushTools',
-      evaluate: 'evaluate.cornerstone.segmentation',
       items: [
         {
           id: 'Brush',
           icon: 'icon-tool-brush',
           label: 'Brush',
-          evaluate: 'evaluate.cornerstone.segmentation',
+          evaluate: {
+            name: 'evaluate.cornerstone.segmentation',
+            options: { toolNames: ['CircularBrush', 'SphereBrush'] },
+          },
           commands: _createSetToolActiveCommands('CircularBrush'),
           options: [
             {
@@ -99,7 +101,12 @@ const toolbarButtons: Button[] = [
           id: 'Eraser',
           icon: 'icon-tool-eraser',
           label: 'Eraser',
-          evaluate: 'evaluate.cornerstone.segmentation',
+          evaluate: {
+            name: 'evaluate.cornerstone.segmentation',
+            options: {
+              toolNames: ['CircularEraser', 'SphereEraser'],
+            },
+          },
           commands: _createSetToolActiveCommands('CircularEraser'),
           options: [
             {
@@ -129,7 +136,10 @@ const toolbarButtons: Button[] = [
           id: 'Threshold',
           icon: 'icon-tool-threshold',
           label: 'Eraser',
-          evaluate: 'evaluate.cornerstone.segmentation',
+          evaluate: {
+            name: 'evaluate.cornerstone.segmentation',
+            options: { toolNames: ['ThresholdCircularBrush', 'ThresholdSphereBrush'] },
+          },
           commands: _createSetToolActiveCommands('ThresholdCircularBrush'),
           options: [
             {
@@ -185,7 +195,10 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.radioGroup',
     props: {
       label: 'Shapes',
-      evaluate: 'evaluate.cornerstone.segmentation',
+      evaluate: {
+        name: 'evaluate.cornerstone.segmentation',
+        options: { toolNames: ['CircleScissor', 'SphereScissor', 'RectangleScissor'] },
+      },
       icon: 'icon-tool-shape',
       commands: _createSetToolActiveCommands('CircleScissor'),
       options: [

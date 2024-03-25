@@ -3,7 +3,7 @@ export function getToolbarModule({ commandsManager, servicesManager }) {
   return [
     {
       name: 'evaluate.cornerstone.segmentation',
-      evaluate: ({ viewportId, button, buttonSectionId }) => {
+      evaluate: ({ viewportId, button, toolNames }) => {
         // Todo: we need to pass in the button section Id since we are kind of
         // forcing the button to have black background since initially
         // it is designed for the toolbox not the toolbar on top
@@ -31,7 +31,10 @@ export function getToolbarModule({ commandsManager, servicesManager }) {
           };
         }
 
-        const isPrimaryActive = toolGroup.getActivePrimaryMouseButtonTool() === toolName;
+        const isPrimaryActive = toolNames
+          ? toolNames.includes(toolGroup.getActivePrimaryMouseButtonTool())
+          : toolGroup.getActivePrimaryMouseButtonTool() === toolName;
+
         return {
           disabled: false,
           className: isPrimaryActive

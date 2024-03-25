@@ -436,6 +436,20 @@ export default class ToolbarService extends PubSubService {
         `Evaluate function not found for name: ${evaluate}, you can  register an evaluate function with the getToolbarModule in your extensions`
       );
     }
+
+    if (typeof evaluate === 'object') {
+      const { name, options } = evaluate;
+      const evaluateFunction = this._evaluateFunction[name];
+
+      if (evaluateFunction) {
+        props.evaluate = args => evaluateFunction({ ...args, ...options });
+        return;
+      }
+
+      throw new Error(
+        `Evaluate function not found for name: ${name}, you can  register an evaluate function with the getToolbarModule in your extensions`
+      );
+    }
   };
 
   getButtonComponentForUIType(uiType: string) {
