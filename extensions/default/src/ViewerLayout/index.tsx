@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
-import { ErrorBoundary, LoadingIndicatorProgress, ToolboxProvider } from '@ohif/ui';
+import { ErrorBoundary, LoadingIndicatorProgress } from '@ohif/ui';
 import { ServicesManager, HangingProtocolService, CommandsManager } from '@ohif/core';
 import { useAppConfig } from '@state';
 import ViewerHeader from './ViewerHeader';
@@ -98,56 +98,52 @@ function ViewerLayout({
 
   return (
     <div>
-      <ToolboxProvider>
-        <ViewerHeader
-          hotkeysManager={hotkeysManager}
-          extensionManager={extensionManager}
-          servicesManager={servicesManager}
-        />
-        <div
-          className="relative flex w-full flex-row flex-nowrap items-stretch overflow-hidden bg-black"
-          style={{ height: 'calc(100vh - 52px' }}
-        >
-          <React.Fragment>
-            {showLoadingIndicator && (
-              <LoadingIndicatorProgress className="h-full w-full bg-black" />
-            )}
-            {/* LEFT SIDEPANELS */}
-            {leftPanelComponents.length ? (
-              <ErrorBoundary context="Left Panel">
-                <SidePanelWithServices
-                  side="left"
-                  activeTabIndex={leftPanelDefaultClosed ? null : 0}
-                  tabs={leftPanelComponents}
+      <ViewerHeader
+        hotkeysManager={hotkeysManager}
+        extensionManager={extensionManager}
+        servicesManager={servicesManager}
+      />
+      <div
+        className="relative flex w-full flex-row flex-nowrap items-stretch overflow-hidden bg-black"
+        style={{ height: 'calc(100vh - 52px' }}
+      >
+        <React.Fragment>
+          {showLoadingIndicator && <LoadingIndicatorProgress className="h-full w-full bg-black" />}
+          {/* LEFT SIDEPANELS */}
+          {leftPanelComponents.length ? (
+            <ErrorBoundary context="Left Panel">
+              <SidePanelWithServices
+                side="left"
+                activeTabIndex={leftPanelDefaultClosed ? null : 0}
+                tabs={leftPanelComponents}
+                servicesManager={servicesManager}
+              />
+            </ErrorBoundary>
+          ) : null}
+          {/* TOOLBAR + GRID */}
+          <div className="flex h-full flex-1 flex-col">
+            <div className="relative flex h-full flex-1 items-center justify-center overflow-hidden bg-black">
+              <ErrorBoundary context="Grid">
+                <ViewportGridComp
                   servicesManager={servicesManager}
+                  viewportComponents={viewportComponents}
+                  commandsManager={commandsManager}
                 />
               </ErrorBoundary>
-            ) : null}
-            {/* TOOLBAR + GRID */}
-            <div className="flex h-full flex-1 flex-col">
-              <div className="relative flex h-full flex-1 items-center justify-center overflow-hidden bg-black">
-                <ErrorBoundary context="Grid">
-                  <ViewportGridComp
-                    servicesManager={servicesManager}
-                    viewportComponents={viewportComponents}
-                    commandsManager={commandsManager}
-                  />
-                </ErrorBoundary>
-              </div>
             </div>
-            {rightPanelComponents.length ? (
-              <ErrorBoundary context="Right Panel">
-                <SidePanelWithServices
-                  side="right"
-                  activeTabIndex={rightPanelDefaultClosed ? null : 0}
-                  tabs={rightPanelComponents}
-                  servicesManager={servicesManager}
-                />
-              </ErrorBoundary>
-            ) : null}
-          </React.Fragment>
-        </div>
-      </ToolboxProvider>
+          </div>
+          {rightPanelComponents.length ? (
+            <ErrorBoundary context="Right Panel">
+              <SidePanelWithServices
+                side="right"
+                activeTabIndex={rightPanelDefaultClosed ? null : 0}
+                tabs={rightPanelComponents}
+                servicesManager={servicesManager}
+              />
+            </ErrorBoundary>
+          ) : null}
+        </React.Fragment>
+      </div>
     </div>
   );
 }

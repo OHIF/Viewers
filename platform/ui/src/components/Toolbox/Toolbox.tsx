@@ -10,7 +10,7 @@ import { useToolbox } from '../../contextProviders';
  * importing it from there and integrating it into the JSX might seem unconventional,
  * hence its current location here.
  */
-function Toolbox({ servicesManager, buttonSectionId, commandsManager, title }) {
+function Toolbox({ servicesManager, buttonSectionId, commandsManager, title, ...props }) {
   const { state: toolboxState, api } = useToolbox(buttonSectionId);
   const { onInteraction, toolbarButtons } = useToolbar({
     servicesManager,
@@ -79,6 +79,7 @@ function Toolbox({ servicesManager, buttonSectionId, commandsManager, title }) {
 
   return (
     <ToolboxUI
+      {...props}
       title={title}
       toolbarButtons={toolbarButtons}
       activeToolOptions={toolboxState.toolOptions?.[toolboxState.activeTool]}
