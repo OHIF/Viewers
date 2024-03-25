@@ -72,7 +72,7 @@ describe('OHIF Cornerstone Toolbar', () => {
     // Assign an alias to the button element
     cy.get('@wwwcBtnPrimary').as('wwwcButton');
     cy.get('@wwwcButton').click();
-    cy.get('@wwwcButton').should('have.class', 'active');
+    cy.get('@wwwcButton').should('have.class', 'bg-primary-light');
 
     //drags the mouse inside the viewport to be able to interact with series
     cy.get('@viewport')
@@ -97,7 +97,7 @@ describe('OHIF Cornerstone Toolbar', () => {
     cy.get('@panButton').click();
 
     // Assert that the button has the 'active' class
-    cy.get('@panButton').should('have.class', 'active');
+    cy.get('@panButton').should('have.class', 'bg-primary-light');
 
     // Trigger the pan actions on the viewport
     cy.get('@viewport')
@@ -418,7 +418,7 @@ describe('OHIF Cornerstone Toolbar', () => {
     cy.get('@moreBtnSecondary').click();
 
     //Click on Flip button
-    cy.get('[data-cy="flip-horizontal"]').click();
+    cy.get('[data-cy="flipHorizontal"]').click();
     cy.waitDicomImage();
     cy.get('@viewportInfoMidLeft').should('contains.text', 'L');
     cy.get('@viewportInfoMidTop').should('contains.text', 'A');
