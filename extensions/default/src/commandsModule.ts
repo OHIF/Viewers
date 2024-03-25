@@ -264,6 +264,9 @@ const commandsModule = ({
               interactionType,
               ...primaryButton.props,
             });
+          } else {
+            // try changing to default tool
+            toolbarService.recordInteraction(toolbarService.getDefaultTool());
           }
         }
         return true;
