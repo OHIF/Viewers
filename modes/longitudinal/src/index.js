@@ -2,8 +2,8 @@ import { hotkeys } from '@ohif/core';
 import i18n from 'i18next';
 import { id } from './id';
 import initToolGroups from './initToolGroups';
+import toolbarButtons from './toolbarButtons';
 import moreTools from './moreTools';
-import i18n from 'i18next';
 
 // Allow this mode by excluding non-imaging modalities such as SR, SEG
 // Also, SM is not a simple imaging modalities, so exclude it.

@@ -123,6 +123,21 @@ The following evaluators are provided by us:
 - `evaluate.mpr`: special evaluator for MPR since it needs to check if the displaySet is reconstructable or not.
 
 
+Sometime you want to use the same `evaluator` for different purposes, in that case you can use an object
+with `name` and `options` properties. For example, in `'evaluate.cornerstone.segmentation'` we use
+this pattern, where multiple toolbar buttons are using the same evaluator but with different options (
+  in this case `toolNames`
+)
+
+```js
+{
+  name: 'evaluate.cornerstone.segmentation',
+  options: {
+    toolNames: ['CircleBrush' , 'SphereBrush']
+  },
+},
+```
+
 #### Group evaluators
 Split buttons (see in [ToolbarService](../../services/data/ToolbarService.md) on how to define one) may feature a group evaluator, we provide two of them and you can write your own.
 
@@ -238,11 +253,13 @@ function myCustomPanel({servicesManager}){
 
 ```
 
-We have provided a common component for toolbar buttons called `ToolboxContainer`.
-The ToolboxContainer component serves as a versatile and configurable container for toolbar tools within your application. It is designed to work in conjunction with the useToolbar hook to manage tool states, handle user interactions, and render a customizable toolbar UI based on the application's needs.
+We have provided a common component for toolbar buttons called `Toolbox`.
+The Toolbox component serves as a versatile and configurable container for toolbar tools within your application.
+It is designed to work in conjunction with the useToolbar hook to manage tool states, handle user interactions, and memorize options
+using context API.
 
 
-The ToolboxContainer can be easily integrated into your application UI, requiring only the necessary services (servicesManager, commandsManager) and configuration parameters (buttonSectionId, title). Here's a simple usage scenario:
+The `Toolbox` can be easily integrated into your application UI, requiring only the necessary services (servicesManager, commandsManager) and configuration parameters (buttonSectionId, title). Here's a simple usage scenario:
 
 
 
@@ -256,7 +273,7 @@ function MyApplication({ servicesManager, commandsManager }) {
     title: 'My Toolbox',
   };
 
-  return <ToolboxContainer {...config} />;
+  return <Toolbox {...config} />;
 }
 ```
 
@@ -275,3 +292,82 @@ onModeEnter: ({ servicesManager, extensionManager }) => {
   ]);
 },
 ```
+
+Another example might be you want to open a modal to show some tool options when a button is clicked.
+You can use this pattern
+
+
+```js
+// ToolbarButton in mode
+ {
+    id: 'Others',
+    uiType: 'ohif.radioGroup',
+    props: {
+      icon: 'info-action',
+      label: 'Others',
+      commands: 'showOthersModal',
+    },
+  },
+```
+
+and inside your mode factory
+
+```js
+// adding the 'Others' button to the primary section
+toolbarService.createButtonSection('primary', [
+  'Others', // --------> this one
+]);
+
+// adding the shapes button to the 'Other' section
+toolbarService.createButtonSection('other', ['Shapes']);
+```
+
+here as you see we are using a command `showOthersModal` which is defined in the commands module.
+
+```js
+// inside commandsModule of your extension
+ showOthersModal: () => {
+      const { uiModalService } = servicesManager.services;
+      uiModalService.show({
+        content: OthersModal,
+        title: 'Others',
+        customClassName: 'w-8',
+        movable: true,
+        contentProps: {
+          onClose: uiModalService.hide,
+          servicesManager,
+          commandsManager,
+        },
+        containerDimensions: 'h-[125px] w-[300px]',
+        contentDimensions: 'h-[125px] w-[300px]',
+      });
+    },
+```
+
+as you see it is opening a modal with `OthersModal` component (below) which contains the
+`Toolbox` component.
+
+```js
+// Others modal
+import { Toolbox } from '@ohif/ui';
+
+function OthersModal({ servicesManager, commandsManager }) {
+  return (
+    <div className="px-2">
+      <Toolbox
+        buttonSectionId={'other'}
+        commandsManager={commandsManager}
+        servicesManager={servicesManager}
+        title={'other'}
+        useCollapsedPanel={false}
+      ></Toolbox>
+    </div>
+  );
+}
+```
+
+The result would be a modal with a toolbox inside it when the `Others` button is clicked, and the
+state will get synchronized with the toolbar service automatically.
+
+
+![alt text](../../../assets/img/toolbox-modal.png)
