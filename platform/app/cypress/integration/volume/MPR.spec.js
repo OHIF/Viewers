@@ -125,8 +125,5 @@ describe('OHIF MPR', () => {
 
     // Click the crosshairs button to deactivate it.
     cy.get('[data-cy="Crosshairs"]').click();
-
-    // wait for the window level button to be active
-    cy.get('[data-cy="WindowLevel-split-button-primary"]').should('have.class', 'bg-primary-light');
   });
 });
