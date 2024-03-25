@@ -22,7 +22,7 @@ export function updateAuthServiceAndCleanUrl(
   });
 
   // Create a URL object with the current location
-  const urlObj = new URL(window.location.origin + location.pathname + location.search);
+  const urlObj = new URL(window.location.origin + window.location.pathname + location.search);
 
   // Remove the token from the URL object
   urlObj.searchParams.delete('token');
