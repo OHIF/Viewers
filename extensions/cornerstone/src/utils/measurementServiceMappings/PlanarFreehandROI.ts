@@ -3,14 +3,20 @@ import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
 import { getDisplayUnit } from './utils';
 import { utils } from '@ohif/core';
 
+/**
+ * Represents a mapping utility for Planar Freehand ROI measurements.
+ */
 const PlanarFreehandROI = {
   toAnnotation: measurement => {},
 
   /**
    * Maps cornerstone annotation event data to measurement service format.
    *
-   * @param {Object} cornerstone Cornerstone event data
-   * @return {Measurement} Measurement instance
+   * @param {Object} csToolsEventDetail Cornerstone event data
+   * @param {DisplaySetService} DisplaySetService Service for managing display sets
+   * @param {CornerstoneViewportService} CornerstoneViewportService Service for managing viewports
+   * @param {Function} getValueTypeFromToolType Function to get value type from tool type
+   * @returns {Measurement} Measurement instance
    */
   toMeasurement: (
     csToolsEventDetail,
@@ -28,7 +34,6 @@ const PlanarFreehandROI = {
 
     const { toolName, referencedImageId, FrameOfReferenceUID } = metadata;
     const validToolType = SUPPORTED_TOOLS.includes(toolName);
-
     if (!validToolType) {
       throw new Error(`Tool ${toolName} not supported`);
     }
@@ -37,7 +42,6 @@ const PlanarFreehandROI = {
       getSOPInstanceAttributes(referencedImageId);
 
     let displaySet;
-
     if (SOPInstanceUID) {
       displaySet = DisplaySetService.getDisplaySetForSOPInstanceUID(
         SOPInstanceUID,
@@ -47,20 +51,12 @@ const PlanarFreehandROI = {
       displaySet = DisplaySetService.getDisplaySetsForSeries(SeriesInstanceUID);
     }
 
-    const { textBox } = data.handles;
-    const { polyline: points } = data.contour;
-
-    const mappedAnnotations = getMappedAnnotations(annotation, DisplaySetService);
-
-    const displayText = getDisplayText(mappedAnnotations, displaySet);
-    const getReport = () => _getReport(mappedAnnotations, points, FrameOfReferenceUID);
-
     return {
       uid: annotationUID,
       SOPInstanceUID,
       FrameOfReferenceUID,
-      points,
-      textBox,
+      points: data.contour.polyline,
+      textBox: data.handles.textBox,
       metadata,
       frameNumber,
       referenceSeriesUID: SeriesInstanceUID,
@@ -68,111 +64,79 @@ const PlanarFreehandROI = {
       toolName: metadata.toolName,
       displaySetInstanceUID: displaySet.displaySetInstanceUID,
       label: data.label,
-      displayText: displayText,
+      displayText: getDisplayText(annotation, displaySet),
       data: data.cachedStats,
       type: getValueTypeFromToolType(toolName),
-      getReport,
+      getReport: () => getColumnValueReport(annotation),
     };
   },
 };
 
 /**
- * It maps an imaging library annotation to a list of simplified annotation properties.
- *
- * @param {Object} annotationData
- * @param {Object} DisplaySetService
- * @returns
- */
-function getMappedAnnotations(annotationData, DisplaySetService) {
-  const { metadata, data } = annotationData;
-  const { label } = data;
-  const { referencedImageId } = metadata;
-
-  const annotations = [];
-
-  const { SOPInstanceUID: _SOPInstanceUID, SeriesInstanceUID: _SeriesInstanceUID } =
-    getSOPInstanceAttributes(referencedImageId) || {};
-
-  if (!_SOPInstanceUID || !_SeriesInstanceUID) {
-    return annotations;
-  }
-
-  const displaySet = DisplaySetService.getDisplaySetForSOPInstanceUID(
-    _SOPInstanceUID,
-    _SeriesInstanceUID
-  );
-
-  const { SeriesNumber, SeriesInstanceUID } = displaySet;
-
-  annotations.push({
-    SeriesInstanceUID,
-    SeriesNumber,
-    label,
-    data,
-  });
-
-  return annotations;
-}
-
-/**
- * TBD
- * This function is used to convert the measurement data to a format that is suitable for the report generation (e.g. for the csv report).
+ * This function is used to convert the measurement data to a
+ * format that is suitable for report generation (e.g. for the csv report).
  * The report returns a list of columns and corresponding values.
- * @param {*} mappedAnnotations
- * @param {*} points
- * @param {*} FrameOfReferenceUID
- * @returns Object representing the report's content for this tool.
+ *
+ * @param {object} annotation
+ * @returns {object} Report's content from this tool
  */
-function _getReport(mappedAnnotations, points, FrameOfReferenceUID) {
+function getColumnValueReport(annotation) {
   const columns = [];
   const values = [];
 
-  // Add Type
+  /** Add type */
   columns.push('AnnotationType');
   values.push('Cornerstone:PlanarFreehandROI');
 
-  mappedAnnotations.forEach(annotation => {
-    const { mean, stdDev, max, area, unit, areaUnit } = annotation;
+  /** Add cachedStats */
+  const { metadata, data } = annotation;
+  const { mean, stdDev, max, area, unit, areaUnit, perimeter } =
+    data.cachedStats[`imageId:${metadata.referencedImageId}`];
+  columns.push(`Maximum`, `Mean`, `Std Dev`, 'Pixel Unit', `Area`, 'Unit', 'Perimeter');
+  values.push(max, mean, stdDev, unit, area, areaUnit, perimeter);
 
-    if (!mean || !unit || !max || !area) {
-      return;
-    }
-
-    columns.push(`Maximum`, `Mean`, `Std Dev`, 'Pixel Unit', `Area`, 'Unit');
-    values.push(max, mean, stdDev, unit, area, areaUnit);
-  });
-
-  if (FrameOfReferenceUID) {
+  /** Add FOR */
+  if (metadata.FrameOfReferenceUID) {
     columns.push('FrameOfReferenceUID');
-    values.push(FrameOfReferenceUID);
+    values.push(metadata.FrameOfReferenceUID);
   }
 
-  if (points) {
+  /** Add points */
+  if (data.contour.polyline) {
+    /**
+     * Points has the form of [[x1, y1, z1], [x2, y2, z2], ...]
+     * convert it to string of [[x1 y1 z1];[x2 y2 z2];...]
+     * so that it can be used in the CSV report
+     */
     columns.push('points');
-    // points has the form of [[x1, y1, z1], [x2, y2, z2], ...]
-    // convert it to string of [[x1 y1 z1];[x2 y2 z2];...]
-    // so that it can be used in the csv report
-    values.push(points.map(p => p.join(' ')).join(';'));
+    values.push(data.contour.polyline.map(p => p.join(' ')).join(';'));
   }
 
-  return {
-    columns,
-    values,
-  };
+  return { columns, values };
 }
 
-function getDisplayText(mappedAnnotations, displaySet) {
-  if (!mappedAnnotations || !mappedAnnotations.length) {
-    return '';
+/**
+ * Retrieves the display text for an annotation in a display set.
+ *
+ * @param {Object} annotation - The annotation object.
+ * @param {Object} displaySet - The display set object.
+ * @returns {string[]} - An array of display text.
+ */
+function getDisplayText(annotation, displaySet) {
+  const { metadata, data } = annotation;
+
+  if (!data.cachedStats || !data.cachedStats[`imageId:${metadata.referencedImageId}`]) {
+    return [];
   }
+
+  const { mean, stdDev, max, area, modalityUnit, areaUnit, perimeter } =
+    data.cachedStats[`imageId:${metadata.referencedImageId}`];
+
+  const { SOPInstanceUID, frameNumber } = getSOPInstanceAttributes(metadata.referencedImageId);
 
   const displayText = [];
 
-  // Area is the same for all series
-  const { area, SOPInstanceUID, frameNumber, areaUnit } = mappedAnnotations[0];
-
   const instance = displaySet.images.find(image => image.SOPInstanceUID === SOPInstanceUID);
-
   let InstanceNumber;
   if (instance) {
     InstanceNumber = instance.InstanceNumber;
@@ -181,25 +145,55 @@ function getDisplayText(mappedAnnotations, displaySet) {
   const instanceText = InstanceNumber ? ` I: ${InstanceNumber}` : '';
   const frameText = displaySet.isMultiFrame ? ` F: ${frameNumber}` : '';
 
-  // Area sometimes becomes undefined if `preventHandleOutsideImage` is off.
-  const roundedArea = utils.roundNumber(area || 0, 2);
-  displayText.push(`${roundedArea} ${getDisplayUnit(areaUnit)}`);
+  const { SeriesNumber } = displaySet;
+  if (SeriesNumber) {
+    displayText.push(`S: ${SeriesNumber}${instanceText}${frameText}`);
+  }
 
-  // Todo: we need a better UI for displaying all these information
-  mappedAnnotations.forEach(mappedAnnotation => {
-    const { unit, max, SeriesNumber } = mappedAnnotation;
+  if (area) {
+    /**
+     * Add Area
+     * Area sometimes becomes undefined if `preventHandleOutsideImage` is off
+     */
+    const roundedArea = utils.roundNumber(area || 0, 2);
+    displayText.push(`Area: ${roundedArea} ${getDisplayUnit(areaUnit)}`);
+  }
 
-    let maxStr = '';
-    if (max) {
-      const roundedMax = utils.roundNumber(max, 2);
-      maxStr = `Max: ${roundedMax} <small>${getDisplayUnit(unit)}</small> `;
+  if (mean) {
+    if (Array.isArray(mean)) {
+      const meanValues = mean.map(value => utils.roundNumber(value));
+      displayText.push(`Mean: ${meanValues.join(', ')} ${modalityUnit}`);
+    } else {
+      displayText.push(`Mean: ${utils.roundNumber(mean)} ${modalityUnit}`);
     }
+  }
 
-    const str = `${maxStr}(S:${SeriesNumber}${instanceText}${frameText})`;
-    if (!displayText.includes(str)) {
-      displayText.push(str);
+  if (max) {
+    if (Array.isArray(max)) {
+      const maxValues = max.map(value => utils.roundNumber(value, 2));
+      displayText.push(`Max: ${maxValues.join(', ')} ${modalityUnit}`);
+    } else {
+      displayText.push(`Max: ${utils.roundNumber(max, 2)} ${modalityUnit}`);
     }
-  });
+  }
+
+  if (stdDev) {
+    if (Array.isArray(stdDev)) {
+      const stdDevValues = stdDev.map(value => utils.roundNumber(value));
+      displayText.push(`Std Dev: ${stdDevValues.join(', ')} ${modalityUnit}`);
+    } else {
+      displayText.push(`Std Dev: ${utils.roundNumber(stdDev)} ${modalityUnit}`);
+    }
+  }
+
+  if (perimeter) {
+    if (Array.isArray(perimeter)) {
+      const perimeterValues = perimeter.map(value => utils.roundNumber(value));
+      displayText.push(`Perimeter: ${perimeterValues.join(', ')} ${modalityUnit}`);
+    } else {
+      displayText.push(`Perimeter: ${utils.roundNumber(perimeter)} ${modalityUnit}`);
+    }
+  }
 
   return displayText;
 }
