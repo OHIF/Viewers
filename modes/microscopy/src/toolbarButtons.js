@@ -5,7 +5,7 @@ const toolbarButtons = [
     id: 'MeasurementTools',
     uiType: 'ohif.splitButton',
     props: {
-      groupId: 'MeasurementToolsGroupId',
+      groupId: 'MeasurementTools',
       // group evaluate to determine which item should move to the top
       evaluate: 'evaluate.group.promoteToPrimary',
       primary: ToolbarService.createButton({

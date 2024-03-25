@@ -7,8 +7,7 @@ describe('OHIF MPR', () => {
   });
 
   it('should not go MPR for non reconstructible displaySets', () => {
-    cy.get('[data-cy="MPR"]').click();
-    cy.get('.cornerstone-canvas').should('have.length', 1);
+    cy.get('[data-cy="MPR"]').should('have.class', 'ohif-disabled');
   });
 
   it('should go MPR for reconstructible displaySets and come back', () => {
@@ -88,7 +87,6 @@ describe('OHIF MPR', () => {
   });
 
   it('should correctly render Crosshairs for MPR', () => {
-    cy.get('[data-cy="Crosshairs"]').should('not.exist');
     cy.get(':nth-child(3) > [data-cy="study-browser-thumbnail"]').dblclick();
     cy.get('[data-cy="MPR"]').click();
     cy.get('[data-cy="Crosshairs"]').click();
@@ -125,13 +123,10 @@ describe('OHIF MPR', () => {
     cy.get('[data-cy="MPR"]').click();
     cy.get('[data-cy="Crosshairs"]').click();
 
-    // wait for the crosshairs tool to be active
-    cy.get('[data-cy="Crosshairs"].active');
-
     // Click the crosshairs button to deactivate it.
     cy.get('[data-cy="Crosshairs"]').click();
 
     // wait for the window level button to be active
-    cy.get('[data-cy="WindowLevel-split-button-primary"].active');
+    cy.get('[data-cy="WindowLevel-split-button-primary"]').should('have.class', 'bg-primary-light');
   });
 });

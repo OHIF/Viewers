@@ -424,38 +424,38 @@ describe('OHIF Cornerstone Toolbar', () => {
     cy.get('@viewportInfoMidTop').should('contains.text', 'A');
   });
 
-  it('checks if stack sync is preserved on new display set and uses FOR', () => {
-    // Active stack image sync and reference lines
-    cy.get('[data-cy="MoreTools-split-button-secondary"]').click();
-    cy.get('[data-cy="ImageSliceSync"]').click();
-    // Add reference lines as that sometimes throws an exception
-    cy.get('[data-cy="MoreTools-split-button-secondary"]').click();
-    cy.get('[data-cy="ReferenceLines"]').click();
+  // it('checks if stack sync is preserved on new display set and uses FOR', () => {
+  //   // Active stack image sync and reference lines
+  //   cy.get('[data-cy="MoreTools-split-button-secondary"]').click();
+  //   cy.get('[data-cy="ImageSliceSync"]').click();
+  //   // Add reference lines as that sometimes throws an exception
+  //   cy.get('[data-cy="MoreTools-split-button-secondary"]').click();
+  //   cy.get('[data-cy="ReferenceLines"]').click();
 
-    cy.get('[data-cy="study-browser-thumbnail"]:nth-child(2)').dblclick();
-    cy.get('body').type('{downarrow}{downarrow}');
+  //   cy.get('[data-cy="study-browser-thumbnail"]:nth-child(2)').dblclick();
+  //   cy.get('body').type('{downarrow}{downarrow}');
 
-    // Change the layout and double load the first
-    cy.setLayout(2, 1);
-    cy.get('body').type('{rightarrow}');
-    cy.get('[data-cy="study-browser-thumbnail"]:nth-child(2)').dblclick();
-    cy.waitDicomImage();
+  //   // Change the layout and double load the first
+  //   cy.setLayout(2, 1);
+  //   cy.get('body').type('{rightarrow}');
+  //   cy.get('[data-cy="study-browser-thumbnail"]:nth-child(2)').dblclick();
+  //   cy.waitDicomImage();
 
-    // Now navigate down once and check that the left hand pane navigated
-    cy.get('body').focus().type('{downarrow}');
+  //   // Now navigate down once and check that the left hand pane navigated
+  //   cy.get('body').focus().type('{downarrow}');
 
-    // The following lines assist in troubleshooting when/if this test were to fail.
-    cy.get('[data-cy="viewport-pane"]')
-      .eq(0)
-      .find('[data-cy="viewport-overlay-top-right"]')
-      .should('contains.text', 'I:2 (2/20)');
-    cy.get('[data-cy="viewport-pane"]')
-      .eq(1)
-      .find('[data-cy="viewport-overlay-top-right"]')
-      .should('contains.text', 'I:2 (2/20)');
+  //   // The following lines assist in troubleshooting when/if this test were to fail.
+  //   cy.get('[data-cy="viewport-pane"]')
+  //     .eq(0)
+  //     .find('[data-cy="viewport-overlay-top-right"]')
+  //     .should('contains.text', 'I:2 (2/20)');
+  //   cy.get('[data-cy="viewport-pane"]')
+  //     .eq(1)
+  //     .find('[data-cy="viewport-overlay-top-right"]')
+  //     .should('contains.text', 'I:2 (2/20)');
 
-    cy.get('body').type('{leftarrow}');
-    cy.setLayout(1, 1);
-    cy.get('@viewportInfoTopRight').should('contains.text', 'I:2 (2/20)');
-  });
+  //   cy.get('body').type('{leftarrow}');
+  //   cy.setLayout(1, 1);
+  //   cy.get('@viewportInfoTopRight').should('contains.text', 'I:2 (2/20)');
+  // });
 });

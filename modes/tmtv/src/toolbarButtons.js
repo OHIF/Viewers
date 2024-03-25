@@ -49,7 +49,7 @@ const toolbarButtons = [
     id: 'MeasurementTools',
     uiType: 'ohif.splitButton',
     props: {
-      groupId: 'MeasurementToolsGroupId',
+      groupId: 'MeasurementTools',
       primary: ToolbarService.createButton({
         id: 'Length',
         icon: 'tool-length',
@@ -121,7 +121,7 @@ const toolbarButtons = [
     id: 'WindowLevel',
     uiType: 'ohif.splitButton',
     props: {
-      groupId: 'WindowLevelGroupId',
+      groupId: 'WindowLevel',
       primary: ToolbarService.createButton({
         id: 'WindowLevel',
         icon: 'tool-window-level',
@@ -182,7 +182,7 @@ const toolbarButtons = [
     id: 'fusionPTColormap',
     uiType: 'ohif.splitButton',
     props: {
-      groupId: 'fusionPTColormapGroupId',
+      groupId: 'fusionPTColormap',
       primary: ToolbarService.createButton({
         id: 'fusionPTColormap',
         icon: 'tool-fusion-color',

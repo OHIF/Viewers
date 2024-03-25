@@ -39,7 +39,7 @@ const toolbarButtons: Button[] = [
     id: 'MeasurementTools',
     uiType: 'ohif.splitButton',
     props: {
-      groupId: 'MeasurementToolsGroupId',
+      groupId: 'MeasurementTools',
       evaluate: 'evaluate.group.promoteToPrimaryIfCornerstoneToolNotActiveInTheList',
       primary: ToolbarService.createButton({
         id: 'Length',
@@ -95,7 +95,7 @@ const toolbarButtons: Button[] = [
     id: 'WindowLevel',
     uiType: 'ohif.splitButton',
     props: {
-      groupId: 'WindowLevelGroupId',
+      groupId: 'WindowLevel',
       primary: ToolbarService.createButton({
         id: 'WindowLevel',
         icon: 'tool-window-level',
@@ -161,7 +161,7 @@ const toolbarButtons: Button[] = [
   id: 'MoreTools',
   uiType: 'ohif.splitButton',
   props: {
-    groupId: 'MoreToolsGroupId',
+    groupId: 'MoreTools',
     evaluate: 'evaluate.group.promoteToPrimaryIfCornerstoneToolNotActiveInTheList',
     primary: ToolbarService.createButton({
       id: 'Reset',

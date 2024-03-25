@@ -87,6 +87,7 @@ function modeFactory() {
         'Capture',
         'Layout',
         'MPR',
+        'Crosshairs',
         'MoreTools',
       ]);
     },
