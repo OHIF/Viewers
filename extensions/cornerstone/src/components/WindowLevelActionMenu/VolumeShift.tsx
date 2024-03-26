@@ -1,4 +1,4 @@
-import React, { ReactElement, useCallback, useEffect, useState } from 'react';
+import React, { ReactElement, useCallback, useEffect, useState, useRef } from 'react';
 import { VolumeShiftProps } from '../../types/ViewportPresets';
 
 export function VolumeShift({
@@ -9,26 +9,45 @@ export function VolumeShift({
   const { cornerstoneViewportService } = serviceManager.services;
   const [minShift, setMinShift] = useState<number | null>(null);
   const [maxShift, setMaxShift] = useState<number | null>(null);
-  const [shift, setShift] = useState<number | null>(null);
+  const [shift, setShift] = useState<number | null>(
+    cornerstoneViewportService.getCornerstoneViewport(viewportId)?.shiftedBy || 0
+  );
   const [step, setStep] = useState<number | null>(null);
+  const [isBlocking, setIsBlocking] = useState(false);
+
+  const prevShiftRef = useRef<number>(shift);
+
+  const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+  const { actor } = viewport.getActors()[0];
+  const ofun = actor.getProperty().getScalarOpacity(0);
 
   useEffect(() => {
-    const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
-    const { actor } = viewport.getActors()[0];
-    setMinShift(-100);
-    setMaxShift(100);
-    setShift(1);
-    setStep(1);
-  }, [cornerstoneViewportService, viewportId]);
+    if (isBlocking) {
+      return;
+    }
+    const range = ofun.getRange();
+
+    const transferFunctionWidth = range[1] - range[0];
+
+    const minShift = -transferFunctionWidth;
+    const maxShift = transferFunctionWidth;
+
+    setMinShift(minShift);
+    setMaxShift(maxShift);
+    setStep(Math.pow(10, Math.floor(Math.log10(transferFunctionWidth / 500))));
+  }, [cornerstoneViewportService, viewportId, actor, ofun, isBlocking]);
 
   const onChangeRange = useCallback(
-    shift => {
+    newShift => {
+      const shiftDifference = newShift - prevShiftRef.current;
+      prevShiftRef.current = newShift;
+      viewport.shiftedBy = newShift;
       commandsManager.runCommand('shiftVolumeOpacityPoints', {
         viewportId,
-        shift,
+        shift: shiftDifference,
       });
     },
-    [commandsManager, viewportId]
+    [commandsManager, viewportId, viewport]
   );
 
   const calculateBackground = value => {
@@ -48,7 +67,6 @@ export function VolumeShift({
         {step !== null && (
           <input
             className="bg-inputfield-main h-2 w-[120px] cursor-pointer appearance-none rounded-lg"
-            // add value here
             value={shift}
             onChange={e => {
               const shiftValue = parseInt(e.target.value, 10);
@@ -56,15 +74,13 @@ export function VolumeShift({
               onChangeRange(shiftValue);
             }}
             id="shift"
-            // add value here
+            onMouseDown={() => setIsBlocking(true)}
+            onMouseUp={() => setIsBlocking(false)}
             max={maxShift}
-            // add value here
             min={minShift}
             type="range"
-            // add value here
             step={step}
             style={{
-              // add value here
               background: calculateBackground((shift - minShift) / (maxShift - minShift)),
             }}
           />

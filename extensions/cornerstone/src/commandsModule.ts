@@ -723,7 +723,6 @@ function commandsModule({
       opacityPointValues.forEach(opacityPointValue => {
         ofun.addPoint(...opacityPointValue);
       });
-
       viewport.render();
     },
 
@@ -908,8 +907,8 @@ function commandsModule({
     setVolumeRenderingQulaity: {
       commandFn: actions.setVolumeRenderingQulaity,
     },
-    setVolumeMappingRange: {
-      commandFn: actions.setVolumeMappingRange,
+    shiftVolumeOpacityPoints: {
+      commandFn: actions.shiftVolumeOpacityPoints,
     },
     setVolumeLighting: {
       commandFn: actions.setVolumeLighting,
