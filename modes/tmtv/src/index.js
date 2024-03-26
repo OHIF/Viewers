@@ -165,9 +165,13 @@ function modeFactory({ modeConfiguration }) {
         syncGroupService,
         segmentationService,
         cornerstoneViewportService,
+        uiDialogService,
+        uiModalService,
       } = servicesManager.services;
 
       unsubscriptions.forEach(unsubscribe => unsubscribe());
+      uiDialogService.dismissAll();
+      uiModalService.hide();
       toolGroupService.destroy();
       syncGroupService.destroy();
       segmentationService.destroy();
@@ -193,7 +197,10 @@ function modeFactory({ modeConfiguration }) {
         study.studyInstanceUid !== '1.3.6.1.4.1.12842.1.1.14.3.20220915.105557.468.2963630849';
 
       // there should be both CT and PT modalities and the modality should not be SM
-      return isValid;
+      return {
+        valid: isValid,
+        description: 'The mode requires both PT and CT series in the study',
+      };
     },
     routes: [
       {
