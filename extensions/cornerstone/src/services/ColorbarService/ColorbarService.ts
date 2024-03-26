@@ -228,7 +228,11 @@ export default class ColorbarService extends PubSubService {
    */
   private createContainers(numContainers, element, position, thickness, viewportId) {
     const containers = [];
-    const dimension = 50 / numContainers;
+    const dimensions = {
+      1: 50,
+      2: 67,
+    };
+    const dimension = dimensions[numContainers] || 50 / numContainers;
 
     Array.from({ length: numContainers }).forEach((_, i) => {
       const colorbarContainer = document.createElement('div');

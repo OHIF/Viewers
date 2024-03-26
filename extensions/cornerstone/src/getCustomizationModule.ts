@@ -49,7 +49,7 @@ function getCustomizationModule() {
         },
         {
           id: 'cornerstone.colorbar',
-          width: '2.5%',
+          width: '16px',
           colorbarTickPosition: 'left',
           colormaps,
           colorbarContainerPosition: 'right',

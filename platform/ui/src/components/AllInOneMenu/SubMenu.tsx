@@ -24,8 +24,8 @@ const SubMenu = (props: SubMenuProps) => {
       {props.itemIcon && (
         <Icon
           name={props.itemIcon}
-          width="20px"
-          height="20px"
+          width="25px"
+          height="25px"
           className="mr-2"
         ></Icon>
       )}

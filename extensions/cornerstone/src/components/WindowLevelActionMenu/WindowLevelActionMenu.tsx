@@ -51,6 +51,7 @@ export function WindowLevelActionMenu({
   } = colorbarProperties;
   const { colorbarService, cornerstoneViewportService } = serviceManager.services;
   const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+  const viewportType = cornerstoneViewportService.getCornerstoneViewport(viewportId)?.type;
 
   const nonImageModalities = ['SR', 'SEG', 'SM', 'RTSTRUCT', 'RTPLAN', 'RTDOSE'];
 
@@ -96,7 +97,7 @@ export function WindowLevelActionMenu({
     if (viewport instanceof VolumeViewport3D) {
       setIs3DVolume(true);
     }
-  }, [viewportId, displaySets, viewport]);
+  }, [viewportId, displaySets, viewport, viewportType]);
 
   useEffect(() => {
     setMenuKey(menuKey + 1);
@@ -108,7 +109,7 @@ export function WindowLevelActionMenu({
     volumeRenderingPresets,
     is3DVolume,
     colorbarProperties,
-    viewport,
+    viewportType,
   ]);
 
   return (

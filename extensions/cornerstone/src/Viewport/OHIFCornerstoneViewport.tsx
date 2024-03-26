@@ -139,7 +139,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
   const [viewportDialogState] = useViewportDialog();
   // useCallback for scroll bar height calculation
   const setImageScrollBarHeight = useCallback(() => {
-    const scrollbarHeight = `${elementRef.current.clientHeight - 80}px`;
+    const scrollbarHeight = `${elementRef.current.clientHeight - 40}px`;
     setScrollbarHeight(scrollbarHeight);
   }, [elementRef]);
 
