@@ -26,7 +26,7 @@ input[type='range']::-webkit-slider-runnable-track {
 }
 
 input[type='range']::-moz-range-track {
-  border: 5px solid var(--thumb-inner-color);
+  border: none !important;
 }
 
 .range-track {

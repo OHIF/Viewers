@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { CinePlayer, useCine } from '@ohif/ui';
-import { Enums, eventTarget } from '@cornerstonejs/core';
+import { Enums, eventTarget, cache } from '@cornerstonejs/core';
+import { Enums as StreamingEnums } from '@cornerstonejs/streaming-image-volume-loader';
 import { useAppConfig } from '@state';
 
 function WrappedCinePlayer({ enabledVPElement, viewportId, servicesManager }) {
@@ -15,9 +16,6 @@ function WrappedCinePlayer({ enabledVPElement, viewportId, servicesManager }) {
   const [newStackFrameRate, setNewStackFrameRate] = useState(24);
   const [isDynamic, setIsDynamic] = useState(false);
   const [appConfig] = useAppConfig();
-
-  const { component: CinePlayerComponent = CinePlayer } =
-    customizationService.get('cinePlayer') ?? {};
 
   const handleCineClose = () => {
     toolbarService.recordInteraction({
@@ -48,6 +46,9 @@ function WrappedCinePlayer({ enabledVPElement, viewportId, servicesManager }) {
   };
 
   const newDisplaySetHandler = useCallback(() => {
+    if (!isCineEnabled) {
+      return;
+    }
     const { viewports } = viewportGridService.getState();
     const { displaySetInstanceUIDs } = viewports.get(viewportId);
     let frameRate = 24;
@@ -69,7 +70,11 @@ function WrappedCinePlayer({ enabledVPElement, viewportId, servicesManager }) {
     }
     cineService.setCine({ id: viewportId, isPlaying, frameRate });
     setNewStackFrameRate(frameRate);
-  }, [cineService, displaySetService, viewportId, viewportGridService, cines]);
+  }, [cineService, displaySetService, viewportId, viewportGridService, cines, isCineEnabled]);
+
+  useEffect(() => {
+    newDisplaySetHandler();
+  }, [isCineEnabled, newDisplaySetHandler]);
 
   /**
    * Use effect for handling new display set
@@ -119,6 +124,65 @@ function WrappedCinePlayer({ enabledVPElement, viewportId, servicesManager }) {
   const isPlaying = (cine && cine.isPlaying) || false;
 
   return (
+    <RenderCinePlayer
+      viewportId={viewportId}
+      cineService={cineService}
+      newStackFrameRate={newStackFrameRate}
+      isPlaying={isPlaying}
+      handleCineClose={handleCineClose}
+      isDynamic={isDynamic}
+      customizationService={customizationService}
+    />
+  );
+}
+
+function RenderCinePlayer({
+  viewportId,
+  cineService,
+  newStackFrameRate,
+  isPlaying,
+  handleCineClose,
+  isDynamic,
+  customizationService,
+}) {
+  const { component: CinePlayerComponent = CinePlayer } =
+    customizationService.get('cinePlayer') ?? {};
+
+  const [dynamicInfo, setDynamicInfo] = useState(null);
+
+  /**
+   * Use effect for handling 4D time index changed
+   */
+  useEffect(() => {
+    if (!isDynamic) {
+      return;
+    }
+
+    const handleTimePointIndexChange = evt => {
+      const { volumeId, timePointIndex, numTimePoints, splittingTag } = evt.detail;
+      setDynamicInfo({ volumeId, timePointIndex, numTimePoints, label: splittingTag });
+    };
+
+    eventTarget.addEventListener(
+      StreamingEnums.Events.DYNAMIC_VOLUME_TIME_POINT_INDEX_CHANGED,
+      handleTimePointIndexChange
+    );
+
+    return () => {
+      eventTarget.removeEventListener(
+        StreamingEnums.Events.DYNAMIC_VOLUME_TIME_POINT_INDEX_CHANGED,
+        handleTimePointIndexChange
+      );
+    };
+  }, [isDynamic]);
+
+  const updateDynamicInfo = useCallback(props => {
+    const { volumeId, timePointIndex } = props;
+    const volume = cache.getVolume(volumeId);
+    volume.timePointIndex = timePointIndex;
+  }, []);
+
+  return (
     <CinePlayerComponent
       className="absolute left-1/2 bottom-3 -translate-x-1/2"
       frameRate={newStackFrameRate}
@@ -137,6 +201,8 @@ function WrappedCinePlayer({ enabledVPElement, viewportId, servicesManager }) {
         })
       }
       isDynamic={isDynamic}
+      dynamicInfo={dynamicInfo}
+      updateDynamicInfo={updateDynamicInfo}
     />
   );
 }

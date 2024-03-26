@@ -101,7 +101,6 @@ const InputRange: React.FC<InputRangeProps> = ({
         {showLabel && labelPosition === 'left' && (
           <div style={{ width: labelWidth }}>{LabelOrEditableNumber}</div>
         )}
-        <div className="range-track"></div>
         <input
           type="range"
           min={minValue}
