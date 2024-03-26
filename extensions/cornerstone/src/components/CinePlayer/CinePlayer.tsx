@@ -13,6 +13,7 @@ function WrappedCinePlayer({ enabledVPElement, viewportId, servicesManager }) {
   } = servicesManager.services;
   const [{ isCineEnabled, cines }] = useCine();
   const [newStackFrameRate, setNewStackFrameRate] = useState(24);
+  const [isDynamic, setIsDynamic] = useState(false);
   const [appConfig] = useAppConfig();
 
   const { component: CinePlayerComponent = CinePlayer } =
@@ -34,39 +35,33 @@ function WrappedCinePlayer({ enabledVPElement, viewportId, servicesManager }) {
   };
 
   const cineHandler = () => {
-    if (!cines || !cines[viewportId] || !enabledVPElement) {
+    if (!cines?.[viewportId] || !enabledVPElement) {
       return;
     }
 
-    const cine = cines[viewportId];
-    const isPlaying = cine.isPlaying || false;
-    const frameRate = cine.frameRate || 24;
-
+    const { isPlaying = false, frameRate = 24 } = cines[viewportId];
     const validFrameRate = Math.max(frameRate, 1);
 
-    if (isPlaying) {
-      cineService.playClip(enabledVPElement, {
-        framesPerSecond: validFrameRate,
-      });
-    } else {
-      cineService.stopClip(enabledVPElement);
-    }
+    return isPlaying
+      ? cineService.playClip(enabledVPElement, { framesPerSecond: validFrameRate })
+      : cineService.stopClip(enabledVPElement);
   };
 
-  const newStackCineHandler = useCallback(() => {
+  const newDisplaySetHandler = useCallback(() => {
     const { viewports } = viewportGridService.getState();
     const { displaySetInstanceUIDs } = viewports.get(viewportId);
-
     let frameRate = 24;
     let isPlaying = cines[viewportId].isPlaying;
     displaySetInstanceUIDs.forEach(displaySetInstanceUID => {
       const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
+
       if (displaySet.FrameRate) {
         // displaySet.FrameRate corresponds to DICOM tag (0018,1063) which is defined as the the frame time in milliseconds
         // So a bit of math to get the actual frame rate.
         frameRate = Math.round(1000 / displaySet.FrameRate);
         isPlaying ||= !!appConfig.autoPlayCine;
       }
+      setIsDynamic(displaySet.isDynamicVolume);
     });
 
     if (isPlaying) {
@@ -76,14 +71,31 @@ function WrappedCinePlayer({ enabledVPElement, viewportId, servicesManager }) {
     setNewStackFrameRate(frameRate);
   }, [cineService, displaySetService, viewportId, viewportGridService, cines]);
 
+  /**
+   * Use effect for handling new display set
+   */
   useEffect(() => {
-    eventTarget.addEventListener(Enums.Events.STACK_VIEWPORT_NEW_STACK, newStackCineHandler);
+    if (!enabledVPElement) {
+      return;
+    }
+
+    eventTarget.addEventListener(Enums.Events.STACK_VIEWPORT_NEW_STACK, newDisplaySetHandler);
+    // this doesn't makes sense that we are listening to this event on viewport element
+    enabledVPElement.addEventListener(
+      Enums.Events.VOLUME_VIEWPORT_NEW_VOLUME,
+      newDisplaySetHandler
+    );
 
     return () => {
       cineService.setCine({ id: viewportId, isPlaying: false });
-      eventTarget.removeEventListener(Enums.Events.STACK_VIEWPORT_NEW_STACK, newStackCineHandler);
+
+      eventTarget.removeEventListener(Enums.Events.STACK_VIEWPORT_NEW_STACK, newDisplaySetHandler);
+      enabledVPElement.removeEventListener(
+        Enums.Events.VOLUME_VIEWPORT_NEW_VOLUME,
+        newDisplaySetHandler
+      );
     };
-  }, [enabledVPElement, newStackCineHandler]);
+  }, [enabledVPElement, newDisplaySetHandler, viewportId, cineService]);
 
   useEffect(() => {
     if (!cines || !cines[viewportId] || !enabledVPElement) {
@@ -99,30 +111,33 @@ function WrappedCinePlayer({ enabledVPElement, viewportId, servicesManager }) {
     };
   }, [cines, viewportId, cineService, enabledVPElement, cineHandler]);
 
+  if (!isCineEnabled) {
+    return null;
+  }
+
   const cine = cines[viewportId];
   const isPlaying = (cine && cine.isPlaying) || false;
 
   return (
-    isCineEnabled && (
-      <CinePlayerComponent
-        className="absolute left-1/2 bottom-3 -translate-x-1/2"
-        frameRate={newStackFrameRate}
-        isPlaying={isPlaying}
-        onClose={handleCineClose}
-        onPlayPauseChange={isPlaying =>
-          cineService.setCine({
-            id: viewportId,
-            isPlaying,
-          })
-        }
-        onFrameRateChange={frameRate =>
-          cineService.setCine({
-            id: viewportId,
-            frameRate,
-          })
-        }
-      />
-    )
+    <CinePlayerComponent
+      className="absolute left-1/2 bottom-3 -translate-x-1/2"
+      frameRate={newStackFrameRate}
+      isPlaying={isPlaying}
+      onClose={handleCineClose}
+      onPlayPauseChange={isPlaying =>
+        cineService.setCine({
+          id: viewportId,
+          isPlaying,
+        })
+      }
+      onFrameRateChange={frameRate =>
+        cineService.setCine({
+          id: viewportId,
+          frameRate,
+        })
+      }
+      isDynamic={isDynamic}
+    />
   );
 }
 
