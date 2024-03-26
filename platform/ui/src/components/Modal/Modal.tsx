@@ -33,7 +33,7 @@ const Modal = ({
 
   const renderHeader = () =>
     title && (
-      <header className="bg-primary-dark flex items-center rounded-tl rounded-tr px-[20px] py-[13px]">
+      <header className="bg-primary-dark drag-handle flex items-center rounded-tl rounded-tr px-[20px] py-[13px]">
         <Typography
           variant="h6"
           color="primaryLight"
@@ -86,7 +86,10 @@ const Modal = ({
       shouldCloseOnOverlayClick={shouldCloseOnOverlayClick}
     >
       {movable ? (
-        <Draggable defaultClassName="bg-primary-dark">
+        <Draggable
+          handle=".drag-handle"
+          defaultClassName="bg-primary-dark"
+        >
           <div>{modalContent}</div>
         </Draggable>
       ) : (
