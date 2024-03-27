@@ -12,8 +12,8 @@ function _createSetToolActiveCommands(toolName) {
   ];
 }
 
-const executeSetToolActive = (commandsManager, toolName) => {
-  commandsManager.runCommand('setToolActive', { toolName }, 'CORNERSTONE');
+const executeSetToolActive = (commandsManager, toolName, toolOptions) => {
+  commandsManager.runCommand('setToolActive', { toolName, toolOptions }, 'CORNERSTONE');
 };
 
 const executeSetBrushProperty = (commandsManager, property, toolNames, value) => {
@@ -172,6 +172,9 @@ const toolbarButtons: Button[] = [
                 { value: 'ThresholdDynamic', label: 'Dynamic' },
                 { value: 'ThresholdRange', label: 'Range' },
               ],
+              onChange: commandsManager => {
+                commandsManager.runCommand('toggleThresholdRangeAndDynamic');
+              },
             },
             {
               name: 'ThresholdRange',

@@ -5,10 +5,10 @@ import { cache, metaData } from '@cornerstonejs/core';
 import {
   segmentation as cornerstoneToolsSegmentation,
   Enums as cornerstoneToolsEnums,
+  utilities,
 } from '@cornerstonejs/tools';
 import { adaptersRT, helpers, adaptersSEG } from '@cornerstonejs/adapters';
 import { classes, DicomMetadataStore } from '@ohif/core';
-import { utilities } from '@cornerstonejs/tools';
 
 import vtkImageMarchingSquares from '@kitware/vtk.js/Filters/General/ImageMarchingSquares';
 import vtkDataArray from '@kitware/vtk.js/Common/Core/DataArray';
@@ -430,6 +430,30 @@ const commandsModule = ({
         });
       });
     },
+    toggleThresholdRangeAndDynamic() {
+      const toolGroupIds = toolGroupService.getToolGroupIds();
+
+      if (!toolGroupIds) {
+        return;
+      }
+
+      toolGroupIds.forEach(toolGroupId => {
+        const toolGroup = toolGroupService.getToolGroup(toolGroupId);
+        const brushInstances = segmentationUtils.getBrushToolInstances(toolGroup.id);
+
+        brushInstances.forEach(({ configuration }) => {
+          const { activeStrategy, strategySpecificConfiguration } = configuration;
+
+          if (activeStrategy.startsWith('THRESHOLD')) {
+            const thresholdConfig = strategySpecificConfiguration.THRESHOLD;
+
+            if (thresholdConfig) {
+              thresholdConfig.isDynamic = !thresholdConfig.isDynamic;
+            }
+          }
+        });
+      });
+    },
   };
 
   const definitions = {
@@ -462,6 +486,9 @@ const commandsModule = ({
     },
     setThresholdRange: {
       commandFn: actions.setThresholdRange,
+    },
+    toggleThresholdRangeAndDynamic: {
+      commandFn: actions.toggleThresholdRangeAndDynamic,
     },
   };
 
