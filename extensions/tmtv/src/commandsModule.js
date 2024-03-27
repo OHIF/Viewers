@@ -53,28 +53,30 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }) 
   }
 
   const actions = {
-    getMatchingPTDisplaySet: ({ viewportMatchDetails }) => {
-      // Todo: this is assuming that the hanging protocol has successfully matched
-      // the correct PT. For future, we should have a way to filter out the PTs
-      // that are in the viewer layout (but then we have the problem of the attenuation
-      // corrected PT vs the non-attenuation correct PT)
-
+    getMatchingPTDisplaySet: () => {
+      // Filter out the PTs that are in the viewer layout
+      // Todo: we have the problem of the attenuation corrected PT vs the
+      // non-attenuation correct PT
       let ptDisplaySet = null;
-      for (const [viewportId, viewportDetails] of viewportMatchDetails) {
-        const { displaySetsInfo } = viewportDetails;
-        const displaySets = displaySetsInfo.map(({ displaySetInstanceUID }) =>
-          displaySetService.getDisplaySetByUID(displaySetInstanceUID)
-        );
 
-        if (!displaySets || displaySets.length === 0) {
-          continue;
+      try {
+        const viewports = viewportGridService.getState().viewports;
+        const displaySets = [];
+
+        // Iterate through current viewer layout and find primary display sets
+        for (const [_viewportId, viewportDetails] of viewports) {
+          const { displaySetInstanceUIDs } = viewportDetails;
+          const displaySetInstanceUID = displaySetInstanceUIDs[0]; // Take primary display set
+          const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
+          if (displaySet) {
+            displaySets.push(displaySet);
+          }
         }
 
+        // Find first PT display set in viewer layout
         ptDisplaySet = displaySets.find(displaySet => displaySet.Modality === 'PT');
-
-        if (ptDisplaySet) {
-          break;
-        }
+      } catch (e) {
+        console.log(e);
       }
 
       return ptDisplaySet;
@@ -490,10 +492,12 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }) 
     setFusionPTColormap: ({ toolGroupId, colormap }) => {
       const toolGroup = toolGroupService.getToolGroup(toolGroupId);
       const { viewportMatchDetails } = hangingProtocolService.getMatchDetails();
+      console.log(viewportMatchDetails);
 
       const ptDisplaySet = actions.getMatchingPTDisplaySet({
         viewportMatchDetails,
       });
+      console.log(ptDisplaySet);
 
       if (!ptDisplaySet) {
         return;
