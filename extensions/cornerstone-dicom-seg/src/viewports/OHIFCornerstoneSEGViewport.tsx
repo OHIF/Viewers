@@ -116,7 +116,6 @@ function OHIFCornerstoneSEGViewport(props) {
         }}
         onElementEnabled={onElementEnabled}
         onElementDisabled={onElementDisabled}
-        // initialImageIndex={initialImageIndex}
       ></Component>
     );
   }, [viewportId, segDisplaySet, toolGroupId]);
@@ -171,14 +170,6 @@ function OHIFCornerstoneSEGViewport(props) {
       evt => {
         if (evt.segDisplaySet.displaySetInstanceUID === segDisplaySet.displaySetInstanceUID) {
           setSegIsLoading(false);
-        }
-
-        if (evt.overlappingSegments) {
-          uiNotificationService.show({
-            title: 'Overlapping Segments',
-            message: 'Overlapping segments detected which is not currently supported',
-            type: 'warning',
-          });
         }
       }
     );

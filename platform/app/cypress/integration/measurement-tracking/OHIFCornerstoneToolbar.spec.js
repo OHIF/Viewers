@@ -85,7 +85,7 @@ describe('OHIF Cornerstone Toolbar', () => {
     // The exact text is slightly dependent on the viewport resolution, so leave a range
     cy.get('@viewportInfoTopLeft').should($txt => {
       const text = $txt.text();
-      expect(text).to.include('W:193').include('L:479');
+      expect(text).to.include('W:118').include('L:479');
     });
   });
 
@@ -427,7 +427,7 @@ describe('OHIF Cornerstone Toolbar', () => {
   it('checks if stack sync is preserved on new display set and uses FOR', () => {
     // Active stack image sync and reference lines
     cy.get('[data-cy="MoreTools-split-button-secondary"]').click();
-    cy.get('[data-cy="StackImageSync"]').click();
+    cy.get('[data-cy="ImageSliceSync"]').click();
     // Add reference lines as that sometimes throws an exception
     cy.get('[data-cy="MoreTools-split-button-secondary"]').click();
     cy.get('[data-cy="ReferenceLines"]').click();

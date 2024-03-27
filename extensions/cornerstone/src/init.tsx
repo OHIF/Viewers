@@ -10,6 +10,7 @@ import {
   metaData,
   volumeLoader,
   imageLoadPoolManager,
+  getEnabledElement,
   Settings,
   utilities as csUtilities,
   Enums as csEnums,
@@ -28,6 +29,7 @@ import interleaveTopToBottom from './utils/interleaveTopToBottom';
 import initContextMenu from './initContextMenu';
 import initDoubleClick from './initDoubleClick';
 import { CornerstoneServices } from './types';
+import initViewTiming from './utils/initViewTiming';
 
 import * as imageLoading from '@newlantern/extension-default/src/imageLoading';
 
@@ -210,6 +212,16 @@ export default async function init({
     }
   );
 
+  // resize the cornerstone viewport service when the grid size changes
+  // IMPORTANT: this should happen outside of the OHIFCornerstoneViewport
+  // since it will trigger a rerender of each viewport and each resizing
+  // the offscreen canvas which would result in a performance hit, this should
+  // done only once per grid resize here. Doing it once here, allows us to reduce
+  // the refreshRage(in ms) to 10 from 50. I tried with even 1 or 5 ms it worked fine
+  viewportGridService.subscribe(viewportGridService.EVENTS.GRID_SIZE_CHANGED, () => {
+    cornerstoneViewportService.resize(true);
+  });
+
   initContextMenu({
     cornerstoneViewportService,
     customizationService,
@@ -320,6 +332,32 @@ export default async function init({
   });
   eventTarget.addEventListener(EVENTS.IMAGE_LOAD_FAILED, imageLoadFailedHandler);
   eventTarget.addEventListener(EVENTS.IMAGE_LOAD_ERROR, imageLoadFailedHandler);
+
+  function elementEnabledHandler(evt) {
+    const { element } = evt.detail;
+
+    element.addEventListener(EVENTS.CAMERA_RESET, resetCrosshairs);
+
+    eventTarget.addEventListener(EVENTS.STACK_VIEWPORT_NEW_STACK, toolbarEventListener);
+
+    initViewTiming({ element, eventTarget });
+  }
+
+  function elementDisabledHandler(evt) {
+    const { element } = evt.detail;
+
+    element.removeEventListener(EVENTS.CAMERA_RESET, resetCrosshairs);
+
+    // TODO - consider removing the callback when all elements are gone
+    // eventTarget.removeEventListener(
+    //   EVENTS.STACK_VIEWPORT_NEW_STACK,
+    //   newStackCallback
+    // );
+  }
+
+  eventTarget.addEventListener(EVENTS.ELEMENT_ENABLED, elementEnabledHandler.bind(null));
+
+  eventTarget.addEventListener(EVENTS.ELEMENT_DISABLED, elementDisabledHandler.bind(null));
 
   viewportGridService.subscribe(
     viewportGridService.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED,

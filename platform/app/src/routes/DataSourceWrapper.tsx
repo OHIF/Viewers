@@ -1,7 +1,7 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useCallback, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { ExtensionManager, MODULE_TYPES, Types, log } from '@ohif/core';
+import { Enums, ExtensionManager, MODULE_TYPES, Types, log } from '@ohif/core';
 //
 import { extensionManager } from '../App.tsx';
 import { useParams, useLocation } from 'react-router';
@@ -151,7 +151,7 @@ function DataSourceWrapper(props) {
     // 204: no content
     async function getData() {
       setIsLoading(true);
-      log.time(TimingEnum.SEARCH_TO_LIST);
+      log.time(Enums.TimingEnum.SEARCH_TO_LIST);
       const studies = await dataSource.query.studies.search(queryFilterValues);
 
       setData({
@@ -161,8 +161,8 @@ function DataSourceWrapper(props) {
         pageNumber: queryFilterValues.pageNumber,
         location,
       });
-      log.timeEnd(TimingEnum.SCRIPT_TO_VIEW);
-      log.timeEnd(TimingEnum.SEARCH_TO_LIST);
+      log.timeEnd(Enums.TimingEnum.SCRIPT_TO_VIEW);
+      log.timeEnd(Enums.TimingEnum.SEARCH_TO_LIST);
 
       setIsLoading(false);
     }

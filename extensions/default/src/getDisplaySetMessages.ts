@@ -13,12 +13,12 @@ export default function getDisplaySetMessages(
   isReconstructable: boolean
 ): DisplaySetMessageList {
   const messages = new DisplaySetMessageList();
-  const firstInstance = instances[0];
-  if (!instances.length || firstInstance) {
+  if (!instances.length) {
     messages.addMessage(DisplaySetMessage.CODES.NO_VALID_INSTANCES);
     return;
   }
 
+  const firstInstance = instances[0];
   const { Modality, ImageType, NumberOfFrames } = firstInstance;
   // Due to current requirements, LOCALIZER series doesn't have any messages
   if (ImageType?.includes('LOCALIZER')) {

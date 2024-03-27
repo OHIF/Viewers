@@ -3,6 +3,281 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-beta.62](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.61...v3.8.0-beta.62) (2024-03-19)
+
+
+### Features
+
+* **worklist:** New worklist buttons and tooltips ([#3989](https://github.com/OHIF/Viewers/issues/3989)) ([9bcd1ae](https://github.com/OHIF/Viewers/commit/9bcd1ae6f51d61786cc1e99624f396b56a47cd69))
+
+
+
+
+
+# [3.8.0-beta.61](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.60...v3.8.0-beta.61) (2024-03-18)
+
+
+### Bug Fixes
+
+* **SR display:** and the token based navigation ([#3995](https://github.com/OHIF/Viewers/issues/3995)) ([feed230](https://github.com/OHIF/Viewers/commit/feed2304c124dc2facc7a7371ed9851548c223c5))
+
+
+
+
+
+# [3.8.0-beta.60](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.59...v3.8.0-beta.60) (2024-03-15)
+
+
+### Features
+
+* **delete measurement:** icon for measurement table ([#3775](https://github.com/OHIF/Viewers/issues/3775)) ([f7fe91c](https://github.com/OHIF/Viewers/commit/f7fe91c5f6c4f05f3f3f5f640d3a119bd40a5870))
+
+
+
+
+
+# [3.8.0-beta.59](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.58...v3.8.0-beta.59) (2024-03-08)
+
+
+### Bug Fixes
+
+* **cli:** mode creation template ([#3876](https://github.com/OHIF/Viewers/issues/3876)) ([#3981](https://github.com/OHIF/Viewers/issues/3981)) ([e485d68](https://github.com/OHIF/Viewers/commit/e485d68fd4619ce7187113cbe59e47f9523dbcc8))
+
+
+
+
+
+# [3.8.0-beta.58](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.57...v3.8.0-beta.58) (2024-03-05)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.8.0-beta.57](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.56...v3.8.0-beta.57) (2024-02-28)
+
+
+### Bug Fixes
+
+* **docs:** Minor typos in hpModule.md ([#3962](https://github.com/OHIF/Viewers/issues/3962)) ([4cdfdae](https://github.com/OHIF/Viewers/commit/4cdfdae8149166cf9dc91a55c0d7f2a224e55d8f))
+
+
+
+
+
+# [3.8.0-beta.56](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.55...v3.8.0-beta.56) (2024-02-22)
+
+
+### Bug Fixes
+
+* **demo:** Deploy issue ([#3951](https://github.com/OHIF/Viewers/issues/3951)) ([21e8a2b](https://github.com/OHIF/Viewers/commit/21e8a2bd0b7cc72f90a31e472d285d761be15d30))
+
+
+
+
+
+# [3.8.0-beta.55](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.54...v3.8.0-beta.55) (2024-02-21)
+
+
+### Features
+
+* **resize:** Optimize resizing process and maintain zoom level ([#3889](https://github.com/OHIF/Viewers/issues/3889)) ([b3a0faf](https://github.com/OHIF/Viewers/commit/b3a0faf5f5f0a1993b2b017eb4cc1216164ea2c6))
+
+
+
+
+
+# [3.8.0-beta.54](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.53...v3.8.0-beta.54) (2024-02-14)
+
+
+### Features
+
+* **errorboundary:** format stack trace properly ([#3931](https://github.com/OHIF/Viewers/issues/3931)) ([0eac386](https://github.com/OHIF/Viewers/commit/0eac386a31a5d6965536360aa65a44769c1a5740))
+
+
+
+
+
+# [3.8.0-beta.53](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.52...v3.8.0-beta.53) (2024-02-05)
+
+
+### Bug Fixes
+
+* 🐛 Sort merge results based on default data source (input) ([#3903](https://github.com/OHIF/Viewers/issues/3903)) ([5bba98e](https://github.com/OHIF/Viewers/commit/5bba98ed848bdf46b5ba4fc4708527cced3308b5))
+
+
+
+
+
+# [3.8.0-beta.52](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.51...v3.8.0-beta.52) (2024-01-22)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.8.0-beta.51](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.50...v3.8.0-beta.51) (2024-01-22)
+
+
+### Bug Fixes
+
+* catch errors in getPTImageIdInstanceMetadata ([#3897](https://github.com/OHIF/Viewers/issues/3897)) ([a47aeb8](https://github.com/OHIF/Viewers/commit/a47aeb8bd729dcb8d2cfc13b27a31b0dd88f11ad))
+
+
+
+
+
+# [3.8.0-beta.50](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.49...v3.8.0-beta.50) (2024-01-22)
+
+
+### Bug Fixes
+
+* **viewport-sync:** remember synced viewports bw stack and volume and RENAME StackImageSync to ImageSliceSync ([#3849](https://github.com/OHIF/Viewers/issues/3849)) ([e4a116b](https://github.com/OHIF/Viewers/commit/e4a116b074fcb85c8cbcc9db44fdec565f3386db))
+
+
+
+
+
+# [3.8.0-beta.49](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.48...v3.8.0-beta.49) (2024-01-19)
+
+
+### Bug Fixes
+
+* is same orientaiton ([#3905](https://github.com/OHIF/Viewers/issues/3905)) ([31b837f](https://github.com/OHIF/Viewers/commit/31b837fa90f631d4984482c6e952373fbb8bdbfc))
+
+
+
+
+
+# [3.8.0-beta.48](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.47...v3.8.0-beta.48) (2024-01-17)
+
+
+### Bug Fixes
+
+* 🐛 Check merge key for merge data source ([#3901](https://github.com/OHIF/Viewers/issues/3901)) ([911d672](https://github.com/OHIF/Viewers/commit/911d67283536b2fe7930948f2819ea0ad66e2a32))
+
+
+
+
+
+# [3.8.0-beta.47](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.46...v3.8.0-beta.47) (2024-01-12)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.8.0-beta.46](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.45...v3.8.0-beta.46) (2024-01-12)
+
+
+### Bug Fixes
+
+* Update CS3D to fix second render ([#3892](https://github.com/OHIF/Viewers/issues/3892)) ([d00a86b](https://github.com/OHIF/Viewers/commit/d00a86b022742ea089d246d06cfd691f43b64412))
+
+
+
+
+
+# [3.8.0-beta.45](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.44...v3.8.0-beta.45) (2024-01-09)
+
+
+### Features
+
+* **hp:** enable OHIF to run with partial metadata for large studies at the cost of less effective hanging protocol ([#3804](https://github.com/OHIF/Viewers/issues/3804)) ([0049f4c](https://github.com/OHIF/Viewers/commit/0049f4c0303f0b6ea995972326fc8784259f5a47))
+
+
+
+
+
+# [3.8.0-beta.44](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.43...v3.8.0-beta.44) (2024-01-09)
+
+
+### Features
+
+* **transferSyntax:** prefer server transcoded transfer syntax for all images ([#3883](https://github.com/OHIF/Viewers/issues/3883)) ([1456a49](https://github.com/OHIF/Viewers/commit/1456a493d66c90c787b022256c9f2846afb115fc))
+
+
+
+
+
+# [3.8.0-beta.43](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.42...v3.8.0-beta.43) (2024-01-09)
+
+
+### Bug Fixes
+
+* **segmentation:** upgrade cs3d to fix various segmentation bugs ([#3885](https://github.com/OHIF/Viewers/issues/3885)) ([b1efe40](https://github.com/OHIF/Viewers/commit/b1efe40aa146e4052cc47b3f774cabbb47a8d1a6))
+
+
+
+
+
+# [3.8.0-beta.42](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.41...v3.8.0-beta.42) (2024-01-08)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.8.0-beta.41](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.40...v3.8.0-beta.41) (2024-01-08)
+
+
+### Features
+
+* Add on mode init hook ([#3882](https://github.com/OHIF/Viewers/issues/3882)) ([f58725c](https://github.com/OHIF/Viewers/commit/f58725ce40685f7297181ef98d81bc28420c8291))
+
+
+
+
+
+# [3.8.0-beta.40](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.39...v3.8.0-beta.40) (2024-01-08)
+
+
+### Features
+
+* **ui:** sidePanel expandedWidth ([#3728](https://github.com/OHIF/Viewers/issues/3728)) ([61bf22c](https://github.com/OHIF/Viewers/commit/61bf22c6f80e764bdf5c3b56bb0124a95aa0f793))
+
+
+
+
+
+# [3.8.0-beta.39](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.38...v3.8.0-beta.39) (2024-01-08)
+
+
+### Features
+
+* improve disableEditing flag ([#3875](https://github.com/OHIF/Viewers/issues/3875)) ([2049c09](https://github.com/OHIF/Viewers/commit/2049c0936c86f819604c243d3dc7b3fe971b5b2c))
+
+
+
+
+
+# [3.8.0-beta.38](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.37...v3.8.0-beta.38) (2024-01-08)
+
+
+### Bug Fixes
+
+* convert radian to degree value for mip rotation ([#3881](https://github.com/OHIF/Viewers/issues/3881)) ([bf846c9](https://github.com/OHIF/Viewers/commit/bf846c94c378f04b9f44dcd71be3f056dbcfe0b5))
+* PDF display request in v3 ([#3878](https://github.com/OHIF/Viewers/issues/3878)) ([9865030](https://github.com/OHIF/Viewers/commit/98650302c7575f0aea386e32cfc4112c378035e6))
+
+
+
+
+
+# [3.8.0-beta.37](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.36...v3.8.0-beta.37) (2024-01-08)
+
+
+### Bug Fixes
+
+* colormap for stack viewports via HangingProtocol ([#3866](https://github.com/OHIF/Viewers/issues/3866)) ([e8858f3](https://github.com/OHIF/Viewers/commit/e8858f3eb55552f695af4a55980f9ae2e9af7291))
+
+
+
+
+
 # [3.8.0-beta.36](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.35...v3.8.0-beta.36) (2023-12-15)
 
 **Note:** Version bump only for package ohif-monorepo-root

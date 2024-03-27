@@ -106,8 +106,12 @@ function modeFactory({ modeConfiguration }) {
         toolbarService,
         segmentationService,
         cornerstoneViewportService,
+        uiDialogService,
+        uiModalService,
       } = servicesManager.services;
 
+      uiDialogService.dismissAll();
+      uiModalService.hide();
       toolGroupService.destroy();
       syncGroupService.destroy();
       segmentationService.destroy();
@@ -127,11 +131,14 @@ function modeFactory({ modeConfiguration }) {
       // Don't show the mode if the selected studies have only one modality
       // that is not supported by the mode
       const modalitiesArray = modalities.split('\\');
-      if (modalitiesArray.length === 1) {
-        return !['SM', 'US', 'MG', 'OT', 'DOC', 'CR'].includes(modalitiesArray[0]);
-      }
-
-      return true;
+      return {
+        valid:
+          modalitiesArray.length === 1
+            ? !['SM', 'US', 'MG', 'OT', 'DOC', 'CR'].includes(modalitiesArray[0])
+            : true,
+        description:
+          'The mode does not support studies that ONLY include the following modalities: SM, US, MG, OT, DOC, CR',
+      };
     },
     /**
      * Mode Routes are used to define the mode's behavior. A list of Mode Route
