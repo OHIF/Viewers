@@ -492,12 +492,10 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }) 
     setFusionPTColormap: ({ toolGroupId, colormap }) => {
       const toolGroup = toolGroupService.getToolGroup(toolGroupId);
       const { viewportMatchDetails } = hangingProtocolService.getMatchDetails();
-      console.log(viewportMatchDetails);
 
       const ptDisplaySet = actions.getMatchingPTDisplaySet({
         viewportMatchDetails,
       });
-      console.log(ptDisplaySet);
 
       if (!ptDisplaySet) {
         return;
