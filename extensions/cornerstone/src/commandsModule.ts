@@ -658,6 +658,107 @@ function commandsModule({
         }
       });
     },
+
+    setViewportPreset: ({ viewportId, preset }) => {
+      const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+      if (!viewport) {
+        return;
+      }
+      viewport.setProperties({
+        preset,
+      });
+      viewport.render();
+    },
+
+    /**
+     * Sets the volume quality for a given viewport.
+     * @param {string} viewportId - The ID of the viewport to set the volume quality.
+     * @param {number} volumeQuality - The desired quality level of the volume rendering.
+     */
+
+    setVolumeRenderingQulaity: ({ viewportId, volumeQuality }) => {
+      const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+      const { actor } = viewport.getActors()[0];
+      const mapper = actor.getMapper();
+      const image = mapper.getInputData();
+      const dims = image.getDimensions();
+      const spacing = image.getSpacing();
+      const spatialDiagonal = vec3.length(
+        vec3.fromValues(dims[0] * spacing[0], dims[1] * spacing[1], dims[2] * spacing[2])
+      );
+
+      let sampleDistance = spacing.reduce((a, b) => a + b) / 3.0;
+      sampleDistance /= volumeQuality > 1 ? 0.5 * volumeQuality ** 2 : 1.0;
+      const samplesPerRay = spatialDiagonal / sampleDistance + 1;
+      mapper.setMaximumSamplesPerRay(samplesPerRay);
+      mapper.setSampleDistance(sampleDistance);
+      viewport.render();
+    },
+
+    /**
+     * Shifts opacity points for a given viewport id.
+     * @param {string} viewportId - The ID of the viewport to set the mapping range.
+     * @param {number} shift - The shift value to shift the points by.
+     */
+    shiftVolumeOpacityPoints: ({ viewportId, shift }) => {
+      const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+      const { actor } = viewport.getActors()[0];
+      const ofun = actor.getProperty().getScalarOpacity(0);
+
+      const opacityPointValues = []; // Array to hold values
+      // Gather Existing Values
+      const size = ofun.getSize();
+      for (let pointIdx = 0; pointIdx < size; pointIdx++) {
+        const opacityPointValue = [0, 0, 0, 0];
+        ofun.getNodeValue(pointIdx, opacityPointValue);
+        // opacityPointValue now holds [xLocation, opacity, midpoint, sharpness]
+        opacityPointValues.push(opacityPointValue);
+      }
+      // Add offset
+      opacityPointValues.forEach(opacityPointValue => {
+        opacityPointValue[0] += shift; // Change the location value
+      });
+      // Set new values
+      ofun.removeAllPoints();
+      opacityPointValues.forEach(opacityPointValue => {
+        ofun.addPoint(...opacityPointValue);
+      });
+      viewport.render();
+    },
+
+    /**
+     * Sets the volume lighting settings for a given viewport.
+     * @param {string} viewportId - The ID of the viewport to set the lighting settings.
+     * @param {Object} options - The lighting settings to be set.
+     * @param {boolean} options.shade - The shade setting for the lighting.
+     * @param {number} options.ambient - The ambient setting for the lighting.
+     * @param {number} options.diffuse - The diffuse setting for the lighting.
+     * @param {number} options.specular - The specular setting for the lighting.
+     **/
+
+    setVolumeLighting: ({ viewportId, options }) => {
+      const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+      const { actor } = viewport.getActors()[0];
+      const property = actor.getProperty();
+
+      if (options.shade !== undefined) {
+        property.setShade(options.shade);
+      }
+
+      if (options.ambient !== undefined) {
+        property.setAmbient(options.ambient);
+      }
+
+      if (options.diffuse !== undefined) {
+        property.setDiffuse(options.diffuse);
+      }
+
+      if (options.specular !== undefined) {
+        property.setSpecular(options.specular);
+      }
+
+      viewport.render();
+    },
   };
 
   const definitions = {
@@ -799,6 +900,18 @@ function commandsModule({
     },
     attachProtocolViewportDataListener: {
       commandFn: actions.attachProtocolViewportDataListener,
+    },
+    setViewportPreset: {
+      commandFn: actions.setViewportPreset,
+    },
+    setVolumeRenderingQulaity: {
+      commandFn: actions.setVolumeRenderingQulaity,
+    },
+    shiftVolumeOpacityPoints: {
+      commandFn: actions.shiftVolumeOpacityPoints,
+    },
+    setVolumeLighting: {
+      commandFn: actions.setVolumeLighting,
     },
   };
 

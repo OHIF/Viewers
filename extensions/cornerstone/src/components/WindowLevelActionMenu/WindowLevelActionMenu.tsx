@@ -8,7 +8,12 @@ import { Colorbar } from './Colorbar';
 import { setViewportColorbar } from './Colorbar';
 import { WindowLevelPreset } from '../../types/WindowLevel';
 import { ColorbarProperties } from '../../types/Colorbar';
+import { VolumeRenderingQualityRange } from '../../types/ViewportPresets';
 import { WindowLevel } from './WindowLevel';
+import { VolumeRenderingPresets } from './VolumeRenderingPresets';
+import { VolumeRenderingOptions } from './VolumeRenderingOptions';
+import { ViewportPreset } from '../../types/ViewportPresets';
+import { VolumeViewport3D } from '@cornerstonejs/core';
 
 export type WindowLevelActionMenuProps = {
   viewportId: string;
@@ -20,6 +25,8 @@ export type WindowLevelActionMenuProps = {
   serviceManager: ServicesManager;
   colorbarProperties: ColorbarProperties;
   displaySets: Array<any>;
+  volumeRenderingPresets: Array<ViewportPreset>;
+  volumeRenderingQualityRange: VolumeRenderingQualityRange;
 };
 
 export function WindowLevelActionMenu({
@@ -32,6 +39,8 @@ export function WindowLevelActionMenu({
   serviceManager,
   colorbarProperties,
   displaySets,
+  volumeRenderingPresets,
+  volumeRenderingQualityRange,
 }: WindowLevelActionMenuProps): ReactElement {
   const {
     colormaps,
@@ -40,7 +49,10 @@ export function WindowLevelActionMenu({
     colorbarTickPosition,
     width: colorbarWidth,
   } = colorbarProperties;
-  const { colorbarService } = serviceManager.services;
+  const { colorbarService, cornerstoneViewportService } = serviceManager.services;
+  const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+  const viewportType = cornerstoneViewportService.getCornerstoneViewport(viewportId)?.type;
+
   const nonImageModalities = ['SR', 'SEG', 'SM', 'RTSTRUCT', 'RTPLAN', 'RTDOSE'];
 
   const { t } = useTranslation('WindowLevelActionMenu');
@@ -50,6 +62,7 @@ export function WindowLevelActionMenu({
 
   const [vpHeight, setVpHeight] = useState(element?.clientHeight);
   const [menuKey, setMenuKey] = useState(0);
+  const [is3DVolume, setIs3DVolume] = useState(false);
 
   const onSetColorbar = useCallback(() => {
     setViewportColorbar(viewportId, displaySets, commandsManager, serviceManager, {
@@ -81,8 +94,23 @@ export function WindowLevelActionMenu({
   }, [viewportId]);
 
   useEffect(() => {
+    if (viewport instanceof VolumeViewport3D) {
+      setIs3DVolume(true);
+    }
+  }, [viewportId, displaySets, viewport, viewportType]);
+
+  useEffect(() => {
     setMenuKey(menuKey + 1);
-  }, [displaySets, viewportId, presets]);
+  }, [
+    displaySets,
+    viewportId,
+    presets,
+    volumeRenderingQualityRange,
+    volumeRenderingPresets,
+    is3DVolume,
+    colorbarProperties,
+    viewportType,
+  ]);
 
   return (
     <AllInOneMenu.IconMenu
@@ -101,14 +129,17 @@ export function WindowLevelActionMenu({
       menuKey={menuKey}
     >
       <AllInOneMenu.ItemPanel>
-        <Colorbar
-          viewportId={viewportId}
-          displaySets={displaySets.filter(ds => !nonImageModalities.includes(ds.Modality))}
-          commandsManager={commandsManager}
-          serviceManager={serviceManager}
-          colorbarProperties={colorbarProperties}
-        />
-        {colormaps && (
+        {!is3DVolume && (
+          <Colorbar
+            viewportId={viewportId}
+            displaySets={displaySets.filter(ds => !nonImageModalities.includes(ds.Modality))}
+            commandsManager={commandsManager}
+            serviceManager={serviceManager}
+            colorbarProperties={colorbarProperties}
+          />
+        )}
+
+        {colormaps && !is3DVolume && (
           <AllInOneMenu.SubMenu
             key="colorLUTPresets"
             itemLabel="Color LUT"
@@ -124,7 +155,7 @@ export function WindowLevelActionMenu({
           </AllInOneMenu.SubMenu>
         )}
 
-        {presets && (
+        {presets && !is3DVolume && (
           <AllInOneMenu.SubMenu
             key="windowLevelPresets"
             itemLabel={t('Modality Window Presets', { modality: Object.keys(presets)[0] })}
@@ -134,6 +165,26 @@ export function WindowLevelActionMenu({
               viewportId={viewportId}
               commandsManager={commandsManager}
               presets={presets}
+            />
+          </AllInOneMenu.SubMenu>
+        )}
+
+        {volumeRenderingPresets && is3DVolume && (
+          <VolumeRenderingPresets
+            serviceManager={serviceManager}
+            viewportId={viewportId}
+            commandsManager={commandsManager}
+            volumeRenderingPresets={volumeRenderingPresets}
+          />
+        )}
+
+        {volumeRenderingQualityRange && is3DVolume && (
+          <AllInOneMenu.SubMenu itemLabel="Rendering Options">
+            <VolumeRenderingOptions
+              viewportId={viewportId}
+              commandsManager={commandsManager}
+              volumeRenderingQualityRange={volumeRenderingQualityRange}
+              serviceManager={serviceManager}
             />
           </AllInOneMenu.SubMenu>
         )}

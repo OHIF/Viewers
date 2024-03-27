@@ -28,7 +28,6 @@ import { useAppConfig } from '@state';
 
 import { LutPresentation, PositionPresentation } from '../types/Presentation';
 
-
 const STACK = 'stack';
 
 /**
@@ -140,7 +139,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
   const [viewportDialogState] = useViewportDialog();
   // useCallback for scroll bar height calculation
   const setImageScrollBarHeight = useCallback(() => {
-    const scrollbarHeight = `${elementRef.current.clientHeight - 20}px`;
+    const scrollbarHeight = `${elementRef.current.clientHeight - 40}px`;
     setScrollbarHeight(scrollbarHeight);
   }, [elementRef]);
 
@@ -385,15 +384,15 @@ const OHIFCornerstoneViewport = React.memo(props => {
       displaySets,
       servicesManager,
       commandsManager,
-      verticalDirection: AllInOneMenu.VerticalDirection.BottomToTop,
-      horizontalDirection: AllInOneMenu.HorizontalDirection.LeftToRight,
+      verticalDirection: AllInOneMenu.VerticalDirection.TopToBottom,
+      horizontalDirection: AllInOneMenu.HorizontalDirection.RightToLeft,
     });
 
     viewportActionCornersService.setComponent({
       viewportId,
       id: 'windowLevelActionMenu',
       component: wlActionMenu,
-      location: viewportActionCornersService.LOCATIONS.bottomLeft,
+      location: viewportActionCornersService.LOCATIONS.topRight,
       indexPriority: -100,
     });
   }, [displaySets, viewportId, viewportActionCornersService, servicesManager, commandsManager]);

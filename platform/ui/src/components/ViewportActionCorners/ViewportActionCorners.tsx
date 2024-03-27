@@ -20,19 +20,19 @@ const commonClasses = 'pointer-events-auto flex items-center gap-1';
 const classes = {
   [ViewportActionCornersLocations.topLeft]: classNames(
     commonClasses,
-    'absolute top-[4px] pl-[4px]'
+    'absolute top-[4px] left-[0px] pl-[4px]'
   ),
   [ViewportActionCornersLocations.topRight]: classNames(
     commonClasses,
-    'absolute top-[4px] right-viewport-scrollbar'
+    'absolute top-[4px] right-[4px] right-viewport-scrollbar'
   ),
   [ViewportActionCornersLocations.bottomLeft]: classNames(
     commonClasses,
-    'absolute bottom-[4px] pl-[4px]'
+    'absolute bottom-[4px] left-[0px] pl-[4px]'
   ),
   [ViewportActionCornersLocations.bottomRight]: classNames(
     commonClasses,
-    'absolute bottom-[4px] right-viewport-scrollbar'
+    'absolute bottom-[4px] right-[0px] right-viewport-scrollbar'
   ),
 };
 

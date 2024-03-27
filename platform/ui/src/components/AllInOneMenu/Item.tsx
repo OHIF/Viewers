@@ -8,9 +8,18 @@ type ItemProps = {
   onClick?: () => void;
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
+  rightIcon?: ReactNode;
 };
 
-const Item = ({ label, secondaryLabel, icon, onClick, onMouseEnter, onMouseLeave }: ItemProps) => {
+const Item = ({
+  label,
+  secondaryLabel,
+  icon,
+  rightIcon,
+  onClick,
+  onMouseEnter,
+  onMouseLeave,
+}: ItemProps) => {
   const { hideMenu } = useContext(MenuContext);
 
   const onClickHandler = useCallback(() => {
@@ -28,6 +37,7 @@ const Item = ({ label, secondaryLabel, icon, onClick, onMouseEnter, onMouseLeave
       {icon && <div className="pr-2">{icon}</div>}
       <span>{label}</span>
       {secondaryLabel != null && <span className="text-aqua-pale ml-[1ch]">{secondaryLabel}</span>}
+      {rightIcon && <div className="ml-auto">{rightIcon}</div>}
     </div>
   );
 };
