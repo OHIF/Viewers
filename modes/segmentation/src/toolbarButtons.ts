@@ -110,24 +110,6 @@ const toolbarButtons: Button[] = [
     },
   },
   {
-    id: 'MPR',
-    uiType: 'ohif.radioGroup',
-    props: {
-      icon: 'icon-mpr',
-      label: 'MPR',
-      commands: [
-        {
-          commandName: 'toggleHangingProtocol',
-          commandOptions: {
-            protocolId: 'mpr',
-          },
-          context: 'DEFAULT',
-        },
-      ],
-      evaluate: 'evaluate.mpr',
-    },
-  },
-  {
     id: 'Crosshairs',
     uiType: 'ohif.radioGroup',
     props: {

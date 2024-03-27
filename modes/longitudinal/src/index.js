@@ -84,9 +84,9 @@ function modeFactory({ modeConfiguration }) {
         'MeasurementTools',
         'Zoom',
         'Pan',
-        'TrackBallRotate',
+        'WindowLevel',
+        'TrackballRotate',
         'Layout',
-        'MPR',
         'Crosshairs',
         'MoreTools',
       ]);

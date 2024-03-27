@@ -63,7 +63,6 @@ function ToolbarLayoutSelectorWithServices({ servicesManager, ...props }) {
           {
             commandName: 'setViewportGridLayout',
             commandOptions: { ...props },
-            context: 'DEFAULT',
           },
         ],
       });
@@ -78,7 +77,6 @@ function ToolbarLayoutSelectorWithServices({ servicesManager, ...props }) {
           {
             commandName: 'setHangingProtocol',
             commandOptions: { ...props },
-            context: 'DEFAULT',
           },
         ],
       });

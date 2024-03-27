@@ -68,7 +68,6 @@ function modeFactory({ modeConfiguration }) {
         'Pan',
         'Capture',
         'Layout',
-        'MPR',
         'Crosshairs',
         'Zoom',
         'MoreTools',

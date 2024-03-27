@@ -89,7 +89,6 @@ function modeFactory() {
         'Pan',
         'TrackBallRotate',
         'Layout',
-        'MPR',
         'Crosshairs',
         'MoreTools',
       ]);

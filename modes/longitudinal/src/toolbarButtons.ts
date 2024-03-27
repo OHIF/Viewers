@@ -1,9 +1,6 @@
 // TODO: torn, can either bake this here; or have to create a whole new button type
 // Only ways that you can pass in a custom React component for render :l
-import {
-  // ListMenu,
-  WindowLevelMenuItem,
-} from '@ohif/ui';
+import { WindowLevelMenuItem } from '@ohif/ui';
 import { defaults, ToolbarService } from '@ohif/core';
 import type { Button } from '@ohif/core/types';
 
@@ -33,25 +30,12 @@ function _createWwwcPreset(preset, title, subtitle) {
   };
 }
 
-const toolGroupIds = ['default', 'mpr', 'SRToolGroup'];
-
-/**
- * Creates an array of 'setToolActive' commands for the given toolName - one for
- * each toolGroupId specified in toolGroupIds.
- * @param {string} toolName
- * @returns {Array} an array of 'setToolActive' commands
- */
-function _createSetToolActiveCommands(toolName) {
-  const temp = toolGroupIds.map(toolGroupId => ({
-    commandName: 'setToolActive',
-    commandOptions: {
-      toolGroupId,
-      toolName,
-    },
-    context: 'CORNERSTONE',
-  }));
-  return temp;
-}
+export const setToolActiveToolbar = {
+  commandName: 'setToolActiveToolbar',
+  commandOptions: {
+    toolGroupIds: ['default', 'mpr', 'SRToolGroup', 'volume3d'],
+  },
+};
 
 const toolbarButtons: Button[] = [
   {
@@ -168,24 +152,15 @@ const toolbarButtons: Button[] = [
       evaluate: 'evaluate.cornerstoneTool',
     },
   },
-  // TrackballRotate...
   {
-    id: 'TrackBallRotate',
-    type: 'ohif.radioGroup',
+    id: 'TrackballRotate',
+    uiType: 'ohif.radioGroup',
     props: {
       type: 'tool',
       icon: 'tool-3d-rotate',
       label: '3D Rotate',
-      commands: [
-        {
-          commandName: 'setToolActive',
-          commandOptions: {
-            toolName: 'TrackballRotate',
-            toolGroupId: 'volume3d',
-          },
-          context: 'CORNERSTONE',
-        },
-      ],
+      commands: setToolActiveToolbar,
+      evaluate: 'evaluate.cornerstoneTool',
     },
   },
   {
@@ -208,23 +183,12 @@ const toolbarButtons: Button[] = [
     props: {
       rows: 3,
       columns: 3,
-    },
-  },
-  {
-    id: 'MPR',
-    uiType: 'ohif.radioGroup',
-    props: {
-      icon: 'icon-mpr',
-      label: 'MPR',
+      evaluate: 'evaluate.action',
       commands: [
         {
-          commandName: 'toggleHangingProtocol',
-          commandOptions: {
-            protocolId: 'mpr',
-          },
+          commandName: 'setViewportGridLayout',
         },
       ],
-      evaluate: 'evaluate.mpr',
     },
   },
   {
