@@ -164,13 +164,11 @@ export default class ToolbarService extends PubSubService {
       });
     }
 
-    // attach interaction to each command if it is an object {commandName, commandOptions}
-    commands.forEach(command => {
-      if (typeof command === 'object') {
-        command.commandOptions = { ...command.commandOptions, ...options, ...interaction };
-      }
+    const commandOptions = { ...options, ...interaction };
 
-      this._commandsManager.run(command, command.commandOptions);
+    // Loop through commands and run them with the combined options
+    commands.forEach(command => {
+      this._commandsManager.run(command, commandOptions);
     });
 
     this.refreshToolbarState({

@@ -1,5 +1,5 @@
 import log from '../log.js';
-import { Command, Commands } from '../types/Command';
+import { Command, Commands, ComplexCommand } from '../types/Command';
 
 /**
  * The definition of a command
@@ -182,23 +182,29 @@ export class CommandsManager {
       return;
     }
 
-    // Handling the case where `toRun` is just a string (command name)
+    // Normalize `toRun` to an array of `ComplexCommand`
+    let commands: ComplexCommand[] = [];
     if (typeof toRun === 'string') {
-      return this.runCommand(toRun, options);
+      commands = [{ commandName: toRun }];
+    } else if ('commandName' in toRun) {
+      commands = [toRun as ComplexCommand];
+    } else if ('commands' in toRun) {
+      const commandsInput = (toRun as Commands).commands;
+      commands = Array.isArray(commandsInput)
+        ? commandsInput.map(cmd => (typeof cmd === 'string' ? { commandName: cmd } : cmd))
+        : [{ commandName: commandsInput }];
+    } else if (Array.isArray(toRun)) {
+      commands = toRun.map(cmd => (typeof cmd === 'string' ? { commandName: cmd } : cmd));
     }
 
-    const commands =
-      (Array.isArray(toRun) && toRun) ||
-      ((toRun as Command).commandName && [toRun]) ||
-      (Array.isArray((toRun as Commands).commands) && (toRun as Commands).commands);
-
-    if (!commands) {
+    if (commands.length === 0) {
       console.log("Command isn't runnable", toRun);
       return;
     }
 
-    let result;
-    (commands as Command[]).forEach(({ commandName, commandOptions, context }) => {
+    // Execute each command in the array
+    let result: unknown;
+    commands.forEach(({ commandName, commandOptions, context }) => {
       if (commandName) {
         result = this.runCommand(
           commandName,

@@ -414,7 +414,7 @@ const commandsModule = ({
       });
     },
     setThresholdRange: ({
-      values,
+      value,
       toolNames = ['ThresholdCircularBrush', 'ThresholdSphereBrush'],
     }) => {
       toolGroupService.getToolGroupIds()?.forEach(toolGroupId => {
@@ -423,7 +423,7 @@ const commandsModule = ({
           toolGroup.setToolConfiguration(toolName, {
             strategySpecificConfiguration: {
               THRESHOLD: {
-                threshold: values,
+                threshold: value,
               },
             },
           });

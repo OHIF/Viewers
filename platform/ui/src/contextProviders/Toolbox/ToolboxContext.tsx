@@ -80,6 +80,12 @@ export const ToolboxProvider = ({ children }) => {
   return <ToolboxContext.Provider value={value}>{children}</ToolboxContext.Provider>;
 };
 
+/**
+ * Custom hook for accessing toolbox state and actions for a specific toolbar section.
+ * You can use this hook to access the state and actions for a specific toolbar section (
+ * defined by the toolbarSectionId) in your custom toolbar components. This hook
+ * helps to manage the state and actions for the tools and their options in the toolbar.
+ */
 export const useToolbox = toolbarSectionId => {
   const context = useContext(ToolboxContext);
   if (context === undefined) {

@@ -49,10 +49,10 @@ const executeSetThresholdSize = (commandsManager, value) => {
   );
 };
 
-const executeSetThresholdRange = (commandsManager, values) => {
+const executeSetThresholdRange = (commandsManager, value) => {
   commandsManager.runCommand(
     'setThresholdRange',
-    { values, toolNames: ['ThresholdCircularBrush', 'ThresholdSphereBrush'] },
+    { value, toolNames: ['ThresholdCircularBrush', 'ThresholdSphereBrush'] },
     'SEGMENTATION'
   );
 };

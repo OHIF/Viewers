@@ -4,11 +4,14 @@ import { ToolboxUI } from './';
 import { useToolbox } from '../../contextProviders';
 
 /**
- * This component might seem out of place in the UI, but it plays a crucial role in
- * enhancing the app with a toolbox. It needs the support of services and managers to
- * effectively engage with the app and its tools. While it could be more fitting in the core
- * importing it from there and integrating it into the JSX might seem unconventional,
- * hence its current location here.
+ * A toolbox is a collection of buttons and commands that they invoke, used to provide
+ * custom control panels to users. This component is a generic UI component that
+ * interacts with services and commands in a generic fashion. While it might
+ * seem unconventional to import it from the UI and integrate it into the JSX,
+ * it belongs in the UI components as there isn't anything in this component that
+ * couldn't be used for a completely different type of app. It plays a crucial
+ * role in enhancing the app with a toolbox by providing a way to integrate
+ * and display various tools and their corresponding options
  */
 function Toolbox({ servicesManager, buttonSectionId, commandsManager, title, ...props }) {
   const { state: toolboxState, api } = useToolbox(buttonSectionId);

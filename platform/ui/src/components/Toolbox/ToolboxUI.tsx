@@ -4,6 +4,9 @@ import classnames from 'classnames';
 
 const ItemsPerRow = 4;
 
+/**
+ * Just refactoring from the toolbox component to make it more readable
+ */
 function ToolboxUI(props) {
   const {
     toolbarButtons,

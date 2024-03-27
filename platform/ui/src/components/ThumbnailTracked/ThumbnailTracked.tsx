@@ -8,6 +8,8 @@ import Tooltip from '../Tooltip';
 import { StringNumber } from '../../types';
 import { useTranslation } from 'react-i18next';
 
+// Todo: This class to me feels like it belongs in an extension, not in platform/ui
+// because it is dealing with mode specific components/information
 function ThumbnailTracked({
   displaySetInstanceUID,
   className,

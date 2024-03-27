@@ -1,4 +1,4 @@
-import { SplitButtonToolbar, ToolbarButton } from '@ohif/ui';
+import { SplitButton, ToolbarButton } from '@ohif/ui';
 import React, { useCallback } from 'react';
 import PropTypes from 'prop-types';
 
@@ -36,7 +36,7 @@ function ToolbarSplitButtonWithServices({
   const listItemRenderer = renderer;
 
   return (
-    <SplitButtonToolbar
+    <SplitButton
       primary={primary}
       secondary={secondary}
       items={getSplitButtonItems(items)}
