@@ -50,11 +50,7 @@ const renderRangeSetting = option => {
           maxValue={option.max}
           step={option.step}
           value={option.value}
-          onChange={value =>
-            Array.isArray(option.onChange)
-              ? option.onChange.forEach(fn => fn(value))
-              : option.onChange(value)
-          }
+          onChange={value => option.commands?.(value)}
           allowNumberEdit={true}
           showAdjustmentArrows={false}
           inputClassName="ml-1 w-4/5 cursor-pointer"
@@ -69,9 +65,7 @@ const renderRadioSetting = option => {
     return option.values?.map(({ label, value: optionValue }, index) => (
       <button
         onClick={() => {
-          Array.isArray(option.onChange)
-            ? option.onChange.forEach(fn => fn(optionValue))
-            : option.onChange(optionValue);
+          option.commands?.(optionValue);
         }}
         key={`button-${option.id}-${index}`}
       >
@@ -105,7 +99,7 @@ const renderDoubleRangeSetting = option => {
     >
       <InputDoubleRange
         values={option.values}
-        onChange={option.onChange}
+        onChange={option.commands}
         minValue={option.min}
         maxValue={option.max}
         step={option.step}

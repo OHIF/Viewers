@@ -288,9 +288,14 @@ function commandsModule({
       const renderingEngine = cornerstoneViewportService.getRenderingEngine();
       renderingEngine.render();
     },
-    setToolActiveToolbar: ({ itemId, toolGroupIds = [] }) => {
+    setToolActiveToolbar: ({ value, itemId, toolGroupIds = [] }) => {
+      // Sometimes it is passed as value (tools with options), sometimes as itemId (toolbar buttons)
+      const toolName = itemId || value;
+
+      toolGroupIds = toolGroupIds.length ? toolGroupIds : toolGroupService.getToolGroupIds();
+
       toolGroupIds.forEach(toolGroupId => {
-        actions.setToolActive({ toolName: itemId, toolGroupId });
+        actions.setToolActive({ toolName, toolGroupId });
       });
     },
     setToolActive: ({ toolName, toolGroupId = null }) => {

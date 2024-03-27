@@ -50,12 +50,25 @@ function Toolbox({ servicesManager, buttonSectionId, commandsManager, title, ...
               value:
                 toolboxState.toolOptions?.[parentId]?.find(prop => prop.id === option.id)?.value ??
                 option.value,
-              onChange: value => {
+              commands: value => {
                 api.handleToolOptionChange(parentId, option.id, value);
 
-                if (typeof option.onChange === 'function') {
-                  option.onChange(commandsManager, value);
-                }
+                const { isArray } = Array;
+                const cmds = isArray(option.commands) ? option.commands : [option.commands];
+
+                cmds.forEach(command => {
+                  const isString = typeof command === 'string';
+                  const isObject = typeof command === 'object';
+
+                  if (isString) {
+                    commandsManager.run(command, { value });
+                  } else if (isObject) {
+                    commandsManager.run({
+                      ...command,
+                      commandOptions: { ...command.commandOptions, ...option, value },
+                    });
+                  }
+                });
               },
             };
           });

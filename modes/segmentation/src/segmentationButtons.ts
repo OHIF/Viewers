@@ -7,55 +7,9 @@ function _createSetToolActiveCommands(toolName) {
       commandOptions: {
         toolName,
       },
-      context: 'CORNERSTONE',
     },
   ];
 }
-
-const executeSetToolActive = (commandsManager, toolName, toolOptions) => {
-  commandsManager.runCommand('setToolActive', { toolName, toolOptions }, 'CORNERSTONE');
-};
-
-const executeSetBrushProperty = (commandsManager, property, toolNames, value) => {
-  commandsManager.runCommand(
-    property,
-    {
-      value,
-      toolNames,
-    },
-    'SEGMENTATION'
-  );
-};
-
-const executeSetBrushSize = (commandsManager, value) => {
-  executeSetBrushProperty(commandsManager, 'setBrushSize', ['CircularBrush', 'SphereBrush'], value);
-};
-
-const executeSetEraserSize = (commandsManager, value) => {
-  executeSetBrushProperty(
-    commandsManager,
-    'setBrushSize',
-    ['CircularEraser', 'SphereEraser'],
-    value
-  );
-};
-
-const executeSetThresholdSize = (commandsManager, value) => {
-  executeSetBrushProperty(
-    commandsManager,
-    'setBrushSize',
-    ['ThresholdCircularBrush', 'ThresholdSphereBrush'],
-    value
-  );
-};
-
-const executeSetThresholdRange = (commandsManager, value) => {
-  commandsManager.runCommand(
-    'setThresholdRange',
-    { value, toolNames: ['ThresholdCircularBrush', 'ThresholdSphereBrush'] },
-    'SEGMENTATION'
-  );
-};
 
 const toolbarButtons: Button[] = [
   {
@@ -82,7 +36,10 @@ const toolbarButtons: Button[] = [
               max: 99.5,
               step: 0.5,
               value: 25,
-              onChange: executeSetBrushSize,
+              commands: {
+                commandName: 'setBrushSize',
+                commandOptions: { toolNames: ['CircularBrush', 'SphereBrush'] },
+              },
             },
             {
               name: 'Shape',
@@ -93,7 +50,7 @@ const toolbarButtons: Button[] = [
                 { value: 'CircularBrush', label: 'Circle' },
                 { value: 'SphereBrush', label: 'Sphere' },
               ],
-              onChange: executeSetToolActive,
+              commands: 'setToolActiveToolbar',
             },
           ],
         },
@@ -117,7 +74,10 @@ const toolbarButtons: Button[] = [
               max: 99.5,
               step: 0.5,
               value: 25,
-              onChange: executeSetEraserSize,
+              commands: {
+                commandName: 'setBrushSize',
+                commandOptions: { toolNames: ['CircularEraser', 'SphereEraser'] },
+              },
             },
             {
               name: 'Shape',
@@ -128,7 +88,7 @@ const toolbarButtons: Button[] = [
                 { value: 'CircularEraser', label: 'Circle' },
                 { value: 'SphereEraser', label: 'Sphere' },
               ],
-              onChange: executeSetToolActive,
+              commands: 'setToolActiveToolbar',
             },
           ],
         },
@@ -150,7 +110,12 @@ const toolbarButtons: Button[] = [
               max: 99.5,
               step: 0.5,
               value: 25,
-              onChange: executeSetThresholdSize,
+              commands: {
+                commandName: 'setBrushSize',
+                commandOptions: {
+                  toolNames: ['ThresholdCircularBrush', 'ThresholdSphereBrush'],
+                },
+              },
             },
             {
               name: 'Shape',
@@ -161,7 +126,7 @@ const toolbarButtons: Button[] = [
                 { value: 'ThresholdCircularBrush', label: 'Circle' },
                 { value: 'ThresholdSphereBrush', label: 'Sphere' },
               ],
-              onChange: executeSetToolActive,
+              commands: 'setToolActiveToolbar',
             },
             {
               name: 'Threshold',
@@ -172,8 +137,8 @@ const toolbarButtons: Button[] = [
                 { value: 'ThresholdDynamic', label: 'Dynamic' },
                 { value: 'ThresholdRange', label: 'Range' },
               ],
-              onChange: commandsManager => {
-                commandsManager.runCommand('toggleThresholdRangeAndDynamic');
+              commands: {
+                commandName: 'toggleThresholdRangeAndDynamic',
               },
             },
             {
@@ -186,7 +151,12 @@ const toolbarButtons: Button[] = [
               values: [100, 600],
               condition: ({ options }) =>
                 options.find(option => option.id === 'dynamic-mode').value === 'ThresholdRange',
-              onChange: executeSetThresholdRange,
+              commands: {
+                commandName: 'setThresholdRange',
+                commandOptions: {
+                  toolNames: ['ThresholdCircularBrush', 'ThresholdSphereBrush'],
+                },
+              },
             },
           ],
         },
@@ -215,7 +185,7 @@ const toolbarButtons: Button[] = [
             { value: 'SphereScissor', label: 'Sphere' },
             { value: 'RectangleScissor', label: 'Rectangle' },
           ],
-          onChange: executeSetToolActive,
+          commands: 'setToolActiveToolbar',
         },
       ],
     },

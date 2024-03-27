@@ -68,7 +68,7 @@ ToolbarButton.propTypes = {
   id: PropTypes.string.isRequired,
   className: PropTypes.string,
   commands: PropTypes.oneOfType([PropTypes.array, PropTypes.object, PropTypes.string]),
-  onInteraction: PropTypes.func.isRequired,
+  onInteraction: PropTypes.func,
   icon: PropTypes.string.isRequired,
   label: PropTypes.string.isRequired,
   /** Tooltip content can be replaced for a customized content by passing a node to this value. */
