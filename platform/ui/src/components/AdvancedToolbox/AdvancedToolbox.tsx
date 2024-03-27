@@ -3,6 +3,10 @@ import classnames from 'classnames';
 import { PanelSection, Icon, Tooltip } from '../../components';
 import ToolSettings from './ToolSettings';
 
+/**
+ * Use Toolbox component instead of this although it doesn't have "Advanced" in its name
+ * it is better to use it instead of this one
+ */
 const AdvancedToolbox = ({ title, items }) => {
   const [activeItemName, setActiveItemName] = useState(null);
 

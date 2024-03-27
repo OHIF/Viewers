@@ -214,7 +214,7 @@ The skeleton of a hanging protocol is as follows:
 unique identifier for the protocol, this id can be used inside mode configuration
 to specify which protocol should be used for a specific mode. A mode can
 request a protocol by its id (which makes OHIF to apply the protocol without
-matching), or provides and array of ids which will
+matching), or provides an array of ids which will
 make the ProtocolEngine to choose the best matching protocol (based on
 protocolMatching rules, which is next section).
 
@@ -362,7 +362,7 @@ As you see each selector is composed of an `id` as the key and a set of `seriesM
 based on the matching rules. The displaySet with the highest score will be used for the `id`.
 
 ### stages
-Each protocol can define one or more stages. Each stage defines a certain layout and viewport rules. Therefore, the `stages` property is array of objects, each object being one stage.
+Each protocol can define one or more stages. Each stage defines a certain layout and viewport rules. Therefore, the `stages` property is an array of objects, each object being one stage.
 
 ### viewportStructure
 Defines the layout of the viewer. You can define the number of `rows` and `columns`. There should be `rows * columns` number of

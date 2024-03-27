@@ -24,11 +24,6 @@ export const mpr: Types.HangingProtocol.Protocol = {
       },
     ],
     // Turns off crosshairs when switching out of MPR mode
-    onProtocolExit: [
-      {
-        commandName: 'cleanUpCrosshairs',
-      },
-    ],
   },
   displaySetSelectors: {
     activeDisplaySet: {

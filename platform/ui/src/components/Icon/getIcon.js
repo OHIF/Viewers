@@ -94,7 +94,7 @@ import toolMove from './../../assets/icons/tool-move.svg';
 import toolWindow from './../../assets/icons/tool-window-level.svg';
 import toolAnnotate from './../../assets/icons/tool-annotate.svg';
 import toolBidirectional from './../../assets/icons/tool-bidirectional.svg';
-import toolElipse from './../../assets/icons/tool-elipse.svg';
+import toolElipse from './../../assets/icons/tool-ellipse.svg';
 import toolCircle from './../../assets/icons/tool-circle.svg';
 import toolLength from './../../assets/icons/tool-length.svg';
 import toolStackScroll from './../../assets/icons/tool-stack-scroll.svg';
@@ -158,6 +158,10 @@ import layoutCommon1x2 from './../../assets/icons/layout-common-1x2.svg';
 import layoutCommon2x2 from './../../assets/icons/layout-common-2x2.svg';
 import layoutCommon2x3 from './../../assets/icons/layout-common-2x3.svg';
 import iconToolRotate from './../../assets/icons/tool-3d-rotate.svg';
+
+/** New investigational use */
+
+import investigationalUse from './../../assets/icons/illustration-investigational-use.svg';
 
 const ICONS = {
   'arrow-down': arrowDown,
@@ -245,7 +249,7 @@ const ICONS = {
   'tool-window-level': toolWindow,
   'tool-annotate': toolAnnotate,
   'tool-bidirectional': toolBidirectional,
-  'tool-elipse': toolElipse,
+  'tool-ellipse': toolElipse,
   'tool-circle': toolCircle,
   'tool-length': toolLength,
   'tool-stack-scroll': toolStackScroll,
@@ -317,6 +321,9 @@ const ICONS = {
   'layout-common-1x2': layoutCommon1x2,
   'layout-common-2x2': layoutCommon2x2,
   'layout-common-2x3': layoutCommon2x3,
+
+  /** New investigational use */
+  'illustration-investigational-use': investigationalUse,
 };
 
 function addIcon(iconName, iconSVG) {
