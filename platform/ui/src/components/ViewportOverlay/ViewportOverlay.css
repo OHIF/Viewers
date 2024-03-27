@@ -10,40 +10,13 @@
   text-shadow: 1px 1px #000;
   pointer-events: none;
 }
-.ViewportOverlay .top-left {
-  top: 20px;
-  left: 20px;
+.overlay-top {
+  top: 28px;
 }
-.ViewportOverlay .top-center {
-  top: 20px;
-  padding-top: 20px;
-  width: 100%;
-  text-align: center;
+.overlay-bottom {
+  bottom: 3px;
 }
-.ViewportOverlay .top-right {
-  top: 20px;
-  right: 20px;
-  text-align: right;
-}
-.ViewportOverlay .bottom-left {
-  bottom: 20px;
-  left: 20px;
-}
-.ViewportOverlay .bottom-right {
-  bottom: 20px;
-  right: 20px;
-  text-align: right;
-}
-.ViewportOverlay.controlsVisible .topright,
-.ViewportOverlay.controlsVisible .bottomright {
-  right: calc(20px + 19px);
-}
-.ViewportOverlay svg {
-  color: #9ccef9;
-  fill: #9ccef9;
-  stroke: #9ccef9;
-  background-color: transparent;
-  margin: 2px;
-  width: 18px;
-  height: 18px;
+
+.overlay-text {
+  text-shadow: 0.8px 0.8px 0.5px rgba(0, 0, 0, 0.75);
 }

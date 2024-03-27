@@ -15,7 +15,7 @@ describe('OHIF Multi Study', () => {
     cy.get('[data-cy="viewport-pane"]').as('viewportPane');
     cy.get('@viewportPane').its('length').should('be.eq', 4);
 
-    cy.get('[data-cy="studyDate"]').as('studyDate');
+    cy.get('[data-cy="viewport-overlay-top-left"] [title="Study date"]').as('studyDate');
 
     cy.get('@studyDate').should(studyDate => {
       expect(studyDate.length).to.be.eq(4);

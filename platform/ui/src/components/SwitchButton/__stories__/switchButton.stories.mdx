@@ -1,0 +1,58 @@
+import SwitchButton, { SwitchLabelLocation } from '../SwitchButton';
+
+import { ArgsTable, Story, Canvas, Meta } from '@storybook/addon-docs';
+import { createComponentTemplate } from '../../../storybook/functions/create-component-story';
+
+export const argTypes = {
+  component: SwitchButton,
+  title: 'Components/SwitchButton',
+};
+
+<Meta
+  title="Components/SwitchButton"
+  component={SwitchButton}
+/>
+
+export const SwitchButtonTemplate = args => (
+  <div className="w-[200px]">
+    <SwitchButton {...args} />
+  </div>
+);
+
+<Heading
+  title="SwitchButton"
+  componentRelativePath="SwitchButton/SwitchButton.tsx"
+/>
+
+- [Overview](#overview)
+- [Props](#props)
+- [Contribute](#contribute)
+
+## Overview
+
+A SwitchButton is a checkbox type input/button that can either be on or off (like a light switch).
+
+<Canvas>
+  <Story
+    name="Overview"
+    args={{
+      label: 'Switch Button Label',
+      labelLocation: SwitchLabelLocation.left,
+      onChange: (checked) => console.info(`${checked ? 'The switch is on.' : 'The switch is off.'}`)
+    }}
+>
+
+    {SwitchButtonTemplate.bind({})}
+
+  </Story>
+</Canvas>
+
+## Props
+
+<ArgsTable of={SwitchButton} />
+
+## Usage
+
+## Contribute
+
+<Footer componentRelativePath="SwitchButton/__stories__/SwitchButton.stories.mdx" />

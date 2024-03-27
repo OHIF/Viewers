@@ -36,6 +36,6 @@ describe('OHIF HP', () => {
     cy.initCommonElementsAliases();
 
     // The specified series/sop UID's are index 101, so ensure that image is displayed
-    cy.get('@viewportInfoTopRight').should('contains.text', 'I:6');
+    cy.get('@viewportInfoBottomRight').should('contains.text', 'I:6');
   });
 });

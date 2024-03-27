@@ -20,6 +20,9 @@ const ctAXIAL = {
         id: 'ctWLSync',
         source: true,
         target: true,
+        options: {
+          syncColormap: true,
+        },
       },
     ],
   },
@@ -48,6 +51,9 @@ const ctSAGITTAL = {
         id: 'ctWLSync',
         source: true,
         target: true,
+        options: {
+          syncColormap: true,
+        },
       },
     ],
   },
@@ -75,6 +81,9 @@ const ctCORONAL = {
         id: 'ctWLSync',
         source: true,
         target: true,
+        options: {
+          syncColormap: true,
+        },
       },
     ],
   },
@@ -108,6 +117,9 @@ const ptAXIAL = {
         id: 'ptWLSync',
         source: true,
         target: true,
+        options: {
+          syncColormap: true,
+        },
       },
       {
         type: 'voi',
@@ -152,6 +164,9 @@ const ptSAGITTAL = {
         id: 'ptWLSync',
         source: true,
         target: true,
+        options: {
+          syncColormap: true,
+        },
       },
       {
         type: 'voi',
@@ -196,6 +211,9 @@ const ptCORONAL = {
         id: 'ptWLSync',
         source: true,
         target: true,
+        options: {
+          syncColormap: true,
+        },
       },
       {
         type: 'voi',
@@ -249,6 +267,9 @@ const fusionAXIAL = {
         id: 'fusionWLSync',
         source: true,
         target: true,
+        options: {
+          syncColormap: true,
+        },
       },
       {
         type: 'voi',
@@ -312,6 +333,9 @@ const fusionSAGITTAL = {
         id: 'fusionWLSync',
         source: true,
         target: true,
+        options: {
+          syncColormap: true,
+        },
       },
       {
         type: 'voi',
@@ -375,6 +399,9 @@ const fusionCORONAL = {
         id: 'fusionWLSync',
         source: true,
         target: true,
+        options: {
+          syncColormap: true,
+        },
       },
       {
         type: 'voi',
@@ -423,6 +450,9 @@ const mipSAGITTAL = {
         id: 'ptWLSync',
         source: true,
         target: true,
+        options: {
+          syncColormap: true,
+        },
       },
       {
         type: 'voi',

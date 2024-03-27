@@ -73,18 +73,25 @@ import CheckBox from './CheckBox';
 import LoadingIndicatorProgress from './LoadingIndicatorProgress';
 import LoadingIndicatorTotalPercent from './LoadingIndicatorTotalPercent';
 import ViewportActionBar from './ViewportActionBar';
+import ViewportActionCorners, { ViewportActionCornersLocations } from './ViewportActionCorners';
 import ProgressLoadingBar from './ProgressLoadingBar';
 import LegacySidePanel from './LegacySidePanel';
 import PanelSection from './PanelSection';
 import AdvancedToolbox from './AdvancedToolbox';
 import InputDoubleRange from './InputDoubleRange';
 import LegacyButtonGroup from './LegacyButtonGroup';
+import SwitchButton, { SwitchLabelLocation } from './SwitchButton';
+import * as AllInOneMenu from './AllInOneMenu';
+import ViewportActionArrows from './ViewportActionArrows';
+import HeaderPatientInfo from './HeaderPatientInfo';
 import InvestigationalUseDialog from './InvestigationalUseDialog';
 import MeasurementItem from './MeasurementTable/MeasurementItem';
+
 
 export {
   AboutModal,
   AdvancedToolbox,
+  AllInOneMenu,
   HotkeyField,
   Header,
   UserPreferences,
@@ -144,6 +151,8 @@ export {
   StudyListTableRow,
   StudySummary,
   Svg,
+  SwitchButton,
+  SwitchLabelLocation,
   Table,
   TableBody,
   TableCell,
@@ -159,12 +168,16 @@ export {
   TooltipClipboard,
   Typography,
   Viewport,
+  ViewportActionArrows,
   ViewportActionBar,
+  ViewportActionCorners,
+  ViewportActionCornersLocations,
   ViewportDownloadForm,
   ViewportGrid,
   ViewportPane,
   ViewportOverlay,
   WindowLevelMenuItem,
+  HeaderPatientInfo,
   InvestigationalUseDialog,
   MeasurementItem,
 };

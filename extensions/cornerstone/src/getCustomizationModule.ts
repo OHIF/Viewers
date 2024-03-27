@@ -1,6 +1,12 @@
 import { Enums } from '@cornerstonejs/tools';
 import { toolNames } from './initCornerstoneTools';
 import DicomUpload from './components/DicomUpload/DicomUpload';
+import defaultWindowLevelPresets from './components/WindowLevelActionMenu/defaultWindowLevelPresets';
+import { colormaps } from './utils/colormaps';
+import { CONSTANTS } from '@cornerstonejs/core';
+
+const DefaultColormap = 'Grayscale';
+const { VIEWPORT_PRESETS } = CONSTANTS;
 
 const tools = {
   active: [
@@ -36,6 +42,27 @@ function getCustomizationModule() {
         {
           id: 'cornerstone.overlayViewportTools',
           tools,
+        },
+        {
+          id: 'cornerstone.windowLevelPresets',
+          presets: defaultWindowLevelPresets,
+        },
+        {
+          id: 'cornerstone.colorbar',
+          width: '16px',
+          colorbarTickPosition: 'left',
+          colormaps,
+          colorbarContainerPosition: 'right',
+          colorbarInitialColormap: DefaultColormap,
+        },
+        {
+          id: 'cornerstone.3dVolumeRendering',
+          volumeRenderingPresets: VIEWPORT_PRESETS,
+          volumeRenderingQualityRange: {
+            min: 1,
+            max: 4,
+            step: 1,
+          },
         },
       ],
     },

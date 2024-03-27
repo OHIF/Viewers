@@ -133,6 +133,7 @@ export type SyncGroup = {
   id: string;
   source?: boolean;
   target?: boolean;
+  options?: object;
 };
 
 /** Declares a custom option, that is a computed type value */

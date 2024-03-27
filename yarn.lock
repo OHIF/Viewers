@@ -1549,6 +1549,7 @@
     gl-matrix "^3.4.3"
     lodash.clonedeep "4.5.0"
 
+
 "@cornerstonejs/dicom-image-loader@^1.66.7":
   version "1.66.7"
   resolved "https://registry.yarnpkg.com/@cornerstonejs/dicom-image-loader/-/dicom-image-loader-1.66.7.tgz#a35095908554e8e7ad717aab7652be7376d5305d"
