@@ -267,16 +267,15 @@ function OHIFCornerstoneSRViewport(props) {
    * if it is hydrated we don't even use the SR viewport.
    */
   useEffect(() => {
-    const loadSR = async srDisplaySet => {
+    const loadSR = async () => {
       if (!srDisplaySet.isLoaded) {
         await srDisplaySet.load();
       }
       const numMeasurements = srDisplaySet.measurements.length;
       setMeasurementCount(numMeasurements);
-      updateViewport(measurementSelected);
     };
-    loadSR(srDisplaySet);
-  }, [srDisplaySet, updateViewport, measurementSelected]);
+    loadSR();
+  }, [srDisplaySet]);
 
   /**
    * Hook to update the tracking identifiers when the selected measurement changes or
@@ -297,6 +296,14 @@ function OHIFCornerstoneSRViewport(props) {
   useEffect(() => {
     setIsLocked(trackedMeasurements?.context?.trackedSeries?.length > 0);
   }, [trackedMeasurements]);
+
+  /**
+   * Data fetching for the SR displaySet, which updates the measurements and
+   * also gets the referenced image displaySet that SR is based on.
+   */
+  useEffect(() => {
+    updateViewport(measurementSelected);
+  }, [dataSource, srDisplaySet]);
 
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   let childrenWithProps = null;

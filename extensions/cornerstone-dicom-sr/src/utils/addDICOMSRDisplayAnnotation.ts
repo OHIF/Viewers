@@ -7,7 +7,7 @@ import SCOORD_TYPES from '../constants/scoordTypes';
 
 const EPSILON = 1e-4;
 
-export default function addDICOMSRDisplayAnnotation(measurement, imageId) {
+export default function addDICOMSRDisplayAnnotation(measurement, imageId, frameNumber) {
   const toolName = toolNames.DICOMSRDisplay;
 
   const measurementData = {
@@ -31,11 +31,6 @@ export default function addDICOMSRDisplayAnnotation(measurement, imageId) {
 
   const imagePlaneModule = metaData.get('imagePlaneModule', imageId);
 
-  const frameNumber =
-    (measurement.coords[0].ReferencedSOPSequence &&
-      measurement.coords[0].ReferencedSOPSequence[0]?.ReferencedFrameNumber) ||
-    1;
-
   /**
    * This annotation (DICOMSRDisplay) is only used by the SR viewport.
    * This is used before the annotation is hydrated. If hydrated the measurement will be added
@@ -43,9 +38,12 @@ export default function addDICOMSRDisplayAnnotation(measurement, imageId) {
    */
   const SRAnnotation: Types.Annotation = {
     annotationUID: measurement.TrackingUniqueIdentifier,
+    highlighted: false,
+    isLocked: false,
+    invalidated: false,
     metadata: {
-      FrameOfReferenceUID: imagePlaneModule.frameOfReferenceUID,
       toolName: toolName,
+      FrameOfReferenceUID: imagePlaneModule.frameOfReferenceUID,
       referencedImageId: imageId,
     },
     data: {
@@ -57,7 +55,7 @@ export default function addDICOMSRDisplayAnnotation(measurement, imageId) {
         TrackingUniqueIdentifier: measurementData.TrackingUniqueIdentifier,
         renderableData: measurementData.renderableData,
       },
-      frameNumber: frameNumber,
+      frameNumber,
     },
   };
   const annotationManager = annotation.state.getAnnotationManager();

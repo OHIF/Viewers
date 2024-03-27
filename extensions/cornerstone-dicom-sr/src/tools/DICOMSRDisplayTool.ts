@@ -77,6 +77,7 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
       toolName: this.getToolName(),
       viewportId: enabledElement.viewport.id,
     };
+    const { style: annotationStyle } = annotation.config;
 
     for (let i = 0; i < filteredAnnotations.length; i++) {
       const annotation = filteredAnnotations[i];
@@ -86,6 +87,10 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
       const { referencedImageId } = annotation.metadata;
 
       styleSpecifier.annotationUID = annotationUID;
+
+      const groupStyle = annotationStyle.getToolGroupToolStyles(this.toolGroupId)[
+        this.getToolName()
+      ];
 
       const lineWidth = this.getStyle('lineWidth', styleSpecifier, annotation);
       const lineDash = this.getStyle('lineDash', styleSpecifier, annotation);
@@ -98,6 +103,7 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
         color,
         lineDash,
         lineWidth,
+        ...groupStyle,
       };
 
       Object.keys(renderableData).forEach(GraphicType => {
@@ -160,6 +166,7 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
     const drawingOptions = {
       color: options.color,
       width: options.lineWidth,
+      lineDash: options.lineDash,
     };
     let allCanvasCoordinates = [];
     renderableData.map((data, index) => {
@@ -307,6 +314,7 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
         {
           color: options.color,
           width: options.lineWidth,
+          lineDash: options.lineDash,
         }
       );
     });

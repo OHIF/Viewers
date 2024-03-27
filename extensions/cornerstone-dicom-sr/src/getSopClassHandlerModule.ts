@@ -177,7 +177,9 @@ async function _load(displaySet, servicesManager, extensionManager) {
     }
   }
 
-  await retrieveBulkData(ContentSequence);
+  if (displaySet.isLoaded !== true) {
+    await retrieveBulkData(ContentSequence);
+  }
 
   displaySet.referencedImages = _getReferencedImagesList(ContentSequence);
   displaySet.measurements = _getMeasurements(ContentSequence);
@@ -297,8 +299,13 @@ function _checkIfCanAddMeasurementsToDisplaySet(
         }
 
         if (_measurementReferencesSOPInstanceUID(measurement, SOPInstanceUID, frameNumber)) {
+          const frame =
+            (measurement.coords[0].ReferencedSOPSequence &&
+              measurement.coords[0].ReferencedSOPSequence?.ReferencedFrameNumber) ||
+            1;
+
           /** Add DICOMSRDisplay annotation for the SR viewport (only) */
-          addDICOMSRDisplayAnnotation(measurement, imageId);
+          addDICOMSRDisplayAnnotation(measurement, imageId, frame);
 
           /** Update measurement properties */
           measurement.loaded = true;
@@ -306,7 +313,7 @@ function _checkIfCanAddMeasurementsToDisplaySet(
           measurement.displaySetInstanceUID = newDisplaySet.displaySetInstanceUID;
           measurement.ReferencedSOPInstanceUID =
             measurement.coords[0].ReferencedSOPSequence.ReferencedSOPInstanceUID;
-          measurement.frameNumber = frameNumber;
+          measurement.frameNumber = frame;
           delete measurement.coords;
 
           unloadedMeasurements.splice(j, 1);
@@ -323,7 +330,7 @@ function _measurementReferencesSOPInstanceUID(measurement, SOPInstanceUID, frame
   //  Standard. But for now, we will support only one ReferenceFrameNumber.
   const ReferencedFrameNumber =
     (measurement.coords[0].ReferencedSOPSequence &&
-      measurement.coords[0].ReferencedSOPSequence[0]?.ReferencedFrameNumber) ||
+      measurement.coords[0].ReferencedSOPSequence?.ReferencedFrameNumber) ||
     1;
 
   if (frameNumber && Number(frameNumber) !== Number(ReferencedFrameNumber)) {

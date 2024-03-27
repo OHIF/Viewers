@@ -1,5 +1,4 @@
 import {
-  addTool,
   AngleTool,
   annotation,
   ArrowAnnotateTool,
@@ -20,8 +19,8 @@ import toolNames from './tools/toolNames';
  * @param {object} configuration
  */
 export default function init({ configuration = {} }: Types.Extensions.ExtensionParams): void {
-  addTool(DICOMSRDisplayTool);
-  addToolInstance(toolNames.SRLength, LengthTool, {});
+  addToolInstance(toolNames.DICOMSRDisplay, DICOMSRDisplayTool);
+  addToolInstance(toolNames.SRLength, LengthTool);
   addToolInstance(toolNames.SRBidirectional, BidirectionalTool);
   addToolInstance(toolNames.SREllipticalROI, EllipticalROITool);
   addToolInstance(toolNames.SRCircleROI, CircleROITool);
@@ -38,6 +37,7 @@ export default function init({ configuration = {} }: Types.Extensions.ExtensionP
     lineDash: '4,4',
   };
   annotation.config.style.setToolGroupToolStyles('SRToolGroup', {
+    [toolNames.DICOMSRDisplay]: dashedLine,
     SRLength: dashedLine,
     SRBidirectional: dashedLine,
     SREllipticalROI: dashedLine,
