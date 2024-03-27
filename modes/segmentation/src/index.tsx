@@ -1,6 +1,7 @@
 import { hotkeys } from '@ohif/core';
 import { id } from './id';
 import toolbarButtons from './toolbarButtons';
+import segmentationButtons from './segmentationButtons';
 import initToolGroups from './initToolGroups';
 
 const ohif = {
@@ -57,47 +58,19 @@ function modeFactory({ modeConfiguration }) {
       // Init Default and SR ToolGroups
       initToolGroups(extensionManager, toolGroupService, commandsManager);
 
-      let unsubscribe;
-
-      const activateTool = () => {
-        toolbarService.recordInteraction({
-          groupId: 'WindowLevel',
-          interactionType: 'tool',
-          commands: [
-            {
-              commandName: 'setToolActive',
-              commandOptions: {
-                toolName: 'WindowLevel',
-              },
-              context: 'CORNERSTONE',
-            },
-          ],
-        });
-
-        // We don't need to reset the active tool whenever a viewport is getting
-        // added to the toolGroup.
-        unsubscribe();
-      };
-
-      // Since we only have one viewport for the basic cs3d mode and it has
-      // only one hanging protocol, we can just use the first viewport
-      ({ unsubscribe } = toolGroupService.subscribe(
-        toolGroupService.EVENTS.VIEWPORT_ADDED,
-        activateTool
-      ));
-
-      toolbarService.init(extensionManager);
       toolbarService.addButtons(toolbarButtons);
+      toolbarService.addButtons(segmentationButtons);
+
       toolbarService.createButtonSection('primary', [
-        'Zoom',
-        'WindowLevel',
         'Pan',
         'Capture',
         'Layout',
         'MPR',
         'Crosshairs',
+        'Zoom',
         'MoreTools',
       ]);
+      toolbarService.createButtonSection('segmentationToolbox', ['BrushTools', 'Shapes']);
     },
     onModeExit: ({ servicesManager }) => {
       const {

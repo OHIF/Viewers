@@ -79,6 +79,9 @@ import PanelSection from './PanelSection';
 import AdvancedToolbox from './AdvancedToolbox';
 import InputDoubleRange from './InputDoubleRange';
 import LegacyButtonGroup from './LegacyButtonGroup';
+import LegacySplitButton from './LegacySplitButton';
+import { ToolSettings } from './AdvancedToolbox';
+import { Toolbox } from './Toolbox';
 import InvestigationalUseDialog from './InvestigationalUseDialog';
 import MeasurementItem from './MeasurementTable/MeasurementItem';
 
@@ -165,6 +168,9 @@ export {
   ViewportPane,
   ViewportOverlay,
   WindowLevelMenuItem,
+  LegacySplitButton,
+  ToolSettings,
+  Toolbox,
   InvestigationalUseDialog,
   MeasurementItem,
 };
