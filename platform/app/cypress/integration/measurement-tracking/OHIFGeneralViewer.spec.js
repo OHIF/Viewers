@@ -18,7 +18,7 @@ describe('OHIF General Viewer', function () {
     cy.get('@zoomBtn')
       .click()
       .then($zoomBtn => {
-        cy.wrap($zoomBtn).should('have.class', 'active');
+        cy.wrap($zoomBtn).should('have.class', 'bg-primary-light');
       });
 
     const zoomLevelInitial = cy.get('@viewportInfoTopLeft').then($viewportInfo => {

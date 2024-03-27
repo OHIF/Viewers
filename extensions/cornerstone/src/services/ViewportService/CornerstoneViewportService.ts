@@ -234,7 +234,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     }
 
     const { viewPlaneNormal, viewUp } = csViewport.getCamera();
-    const initialImageIndex = csViewport.getCurrentImageIdIndex();
+    const initialImageIndex = csViewport.getCurrentImageIdIndex() || 0;
     const zoom = csViewport.getZoom();
     const pan = csViewport.getPan();
 
@@ -347,10 +347,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
 
     const { stateSyncService, syncGroupService } = this.servicesManager.services;
 
-    const synchronizers = syncGroupService.getSynchronizersForViewport(
-      viewportId,
-      this.renderingEngine.id
-    );
+    const synchronizers = syncGroupService.getSynchronizersForViewport(viewportId);
 
     const { positionPresentationStore, synchronizersStore, lutPresentationStore } =
       stateSyncService.getState();
