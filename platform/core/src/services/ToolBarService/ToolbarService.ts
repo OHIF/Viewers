@@ -167,9 +167,7 @@ export default class ToolbarService extends PubSubService {
     const commandOptions = { ...options, ...interaction };
 
     // Loop through commands and run them with the combined options
-    commands.forEach(command => {
-      this._commandsManager.run(command, commandOptions);
-    });
+    this._commandsManager.run(commands, commandOptions);
 
     this.refreshToolbarState({
       ...options?.refreshProps,
