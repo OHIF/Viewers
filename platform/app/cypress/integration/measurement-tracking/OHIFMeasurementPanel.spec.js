@@ -31,7 +31,7 @@ describe('OHIF Measurement Panel', function () {
 
     cy.get('[data-cy="measurement-item"]').as('measurementItem').click();
 
-    cy.get('[data-cy="measurement-item"]').find('svg').as('measurementItemSvg').click();
+    cy.get('[data-cy="measurement-item"]').find('svg').eq(0).as('measurementItemSvg').click();
 
     // enter Bone label
     cy.get('[data-cy="input-annotation"]').should('exist');

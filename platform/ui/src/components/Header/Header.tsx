@@ -66,7 +66,6 @@ function Header({
             showPatientInfo === PatientInfoVisibility.VISIBLE_COLLAPSED) && (
             <HeaderPatientInfo servicesManager={servicesManager} />
           )}
-
           <div className="bg-primary-dark border-primary-dark mx-1.5 h-[25px] max-w-xs border"></div>
           <Dropdown
             id="options"

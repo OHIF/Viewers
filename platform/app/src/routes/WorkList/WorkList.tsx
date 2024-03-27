@@ -27,6 +27,9 @@ import {
   UserPreferences,
   LoadingIndicatorProgress,
   useSessionStorage,
+  InvestigationalUseDialog,
+  Button,
+  ButtonEnums,
 } from '@ohif/ui';
 
 import { Types } from '@ohif/ui';
@@ -352,10 +355,24 @@ function WorkList({
           }
         >
           <div className="flex flex-row gap-2">
-            {appConfig.loadedModes.map((mode, i) => {
+            {(appConfig.groupEnabledModesFirst
+              ? appConfig.loadedModes.sort((a, b) => {
+                  const isValidA = a.isValidMode({
+                    modalities: modalities.replaceAll('/', '\\'),
+                    study,
+                  }).valid;
+                  const isValidB = b.isValidMode({
+                    modalities: modalities.replaceAll('/', '\\'),
+                    study,
+                  }).valid;
+
+                  return isValidB - isValidA;
+                })
+              : appConfig.loadedModes
+            ).map((mode, i) => {
               const modalitiesToCheck = modalities.replaceAll('/', '\\');
 
-              const isValidMode = mode.isValidMode({
+              const { valid: isValidMode, description: invalidModeDescription } = mode.isValidMode({
                 modalities: modalitiesToCheck,
                 study,
               });
@@ -388,16 +405,29 @@ function WorkList({
                     // to={`${mode.routeName}/dicomweb?StudyInstanceUIDs=${studyInstanceUid}`}
                   >
                     {/* TODO revisit the completely rounded style of buttons used for launching a mode from the worklist later - for now use LegacyButton*/}
-                    <LegacyButton
-                      rounded="full"
-                      variant={isValidMode ? 'contained' : 'disabled'}
+                    <Button
+                      type={ButtonEnums.type.primary}
+                      size={ButtonEnums.size.medium}
                       disabled={!isValidMode}
-                      endIcon={<Icon name="launch-arrow" />} // launch-arrow | launch-info
+                      startIconTooltip={
+                        !isValidMode ? (
+                          <div className="font-inter flex w-[206px] whitespace-normal text-left text-xs font-normal text-white	">
+                            {invalidModeDescription}
+                          </div>
+                        ) : null
+                      }
+                      startIcon={
+                        <Icon
+                          className="!h-[20px] !w-[20px] text-black"
+                          name={isValidMode ? 'launch-arrow' : 'launch-info'}
+                        />
+                      } // launch-arrow | launch-info
                       onClick={() => {}}
                       data-cy={`mode-${mode.routeName}-${studyInstanceUid}`}
+                      className={isValidMode ? 'text-[13px]' : 'bg-[#222d44] text-[13px]'}
                     >
                       {mode.displayName}
-                    </LegacyButton>
+                    </Button>
                   </Link>
                 )
               );
@@ -503,6 +533,7 @@ function WorkList({
         WhiteLabeling={appConfig.whiteLabeling}
         showPatientInfo={PatientInfoVisibility.DISABLED}
       />
+      <InvestigationalUseDialog dialogConfiguration={appConfig?.investigationalUseDialog} />
       <div className="ohif-scrollbar flex grow flex-col overflow-y-auto">
         <StudyListFilter
           numOfStudies={pageNumber * resultsPerPage > 100 ? 101 : numOfStudies}

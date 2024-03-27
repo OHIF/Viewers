@@ -84,6 +84,9 @@ import SwitchButton, { SwitchLabelLocation } from './SwitchButton';
 import * as AllInOneMenu from './AllInOneMenu';
 import ViewportActionArrows from './ViewportActionArrows';
 import HeaderPatientInfo from './HeaderPatientInfo';
+import InvestigationalUseDialog from './InvestigationalUseDialog';
+import MeasurementItem from './MeasurementTable/MeasurementItem';
+
 
 export {
   AboutModal,
@@ -175,4 +178,6 @@ export {
   ViewportOverlay,
   WindowLevelMenuItem,
   HeaderPatientInfo,
+  InvestigationalUseDialog,
+  MeasurementItem,
 };

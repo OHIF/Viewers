@@ -151,6 +151,7 @@ import oldTrash from './../../assets/icons/old-trash.svg';
 import oldPlay from './../../assets/icons/old-play.svg';
 import oldStop from './../../assets/icons/old-stop.svg';
 
+
 /** ColorLut */
 import iconColorLUT from './../../assets/icons/icon-color-lut.svg';
 
@@ -190,6 +191,10 @@ import MRMIP from './../../assets/icons/MR-MIP.png';
 import MRT2Brain from './../../assets/icons/MR-T2-Brain.png';
 import VolumeRendering from './../../assets/icons/VolumeRendering.png';
 import actionNewDialog from './../../assets/icons/action-new-dialog.svg';
+
+/** New investigational use */
+import investigationalUse from './../../assets/icons/illustration-investigational-use.svg';
+
 
 const ICONS = {
   'arrow-down': arrowDown,
@@ -378,6 +383,8 @@ const ICONS = {
   'MR-T2-Brain': MRT2Brain,
   VolumeRendering: VolumeRendering,
   'action-new-dialog': actionNewDialog,
+  /** New investigational use */
+  'illustration-investigational-use': investigationalUse,
 };
 
 function addIcon(iconName, iconSVG) {
