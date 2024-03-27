@@ -273,9 +273,10 @@ function OHIFCornerstoneSRViewport(props) {
       }
       const numMeasurements = srDisplaySet.measurements.length;
       setMeasurementCount(numMeasurements);
+      updateViewport(measurementSelected);
     };
     loadSR();
-  }, [srDisplaySet]);
+  }, [dataSource, srDisplaySet]);
 
   /**
    * Hook to update the tracking identifiers when the selected measurement changes or
@@ -296,14 +297,6 @@ function OHIFCornerstoneSRViewport(props) {
   useEffect(() => {
     setIsLocked(trackedMeasurements?.context?.trackedSeries?.length > 0);
   }, [trackedMeasurements]);
-
-  /**
-   * Data fetching for the SR displaySet, which updates the measurements and
-   * also gets the referenced image displaySet that SR is based on.
-   */
-  useEffect(() => {
-    updateViewport(measurementSelected);
-  }, [dataSource, srDisplaySet]);
 
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   let childrenWithProps = null;
