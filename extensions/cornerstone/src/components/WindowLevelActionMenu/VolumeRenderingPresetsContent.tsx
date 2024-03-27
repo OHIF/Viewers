@@ -56,7 +56,10 @@ export function VolumeRenderingPresetsContent({
               <div
                 key={index}
                 className="flex cursor-pointer flex-col items-start"
-                onClick={() => setSelectedPreset(preset)}
+                onClick={() => {
+                  setSelectedPreset(preset);
+                  handleApply({ preset: preset.name, viewportId });
+                }}
               >
                 <Icon
                   name={preset.name}
@@ -75,7 +78,7 @@ export function VolumeRenderingPresetsContent({
         </div>
       </div>
       <footer className="flex h-[60px] w-full items-center justify-end">
-        <div className="flex gap-2">
+        <div className="flex">
           <Button
             name="Cancel"
             size={ButtonEnums.size.medium}
@@ -84,16 +87,6 @@ export function VolumeRenderingPresetsContent({
           >
             {' '}
             Cancel{' '}
-          </Button>
-          <Button
-            name="Apply"
-            size={ButtonEnums.size.medium}
-            type={ButtonEnums.type.primary}
-            disabled={!selectedPreset}
-            onClick={() => handleApply({ preset: selectedPreset.name, viewportId })}
-          >
-            {' '}
-            Apply{' '}
           </Button>
         </div>
       </footer>
