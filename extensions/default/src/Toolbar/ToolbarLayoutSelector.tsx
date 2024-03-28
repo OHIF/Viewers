@@ -55,6 +55,12 @@ const generateAdvancedPresets = hangingProtocolService => {
 function ToolbarLayoutSelectorWithServices({ servicesManager, ...props }) {
   const { toolbarService } = servicesManager.services;
 
+  const [isDisabled, setIsDisabled] = useState(false);
+
+  const handleMouseEnter = () => {
+    setIsDisabled(false);
+  };
+
   const onSelection = useCallback(
     props => {
       toolbarService.recordInteraction({
@@ -66,6 +72,7 @@ function ToolbarLayoutSelectorWithServices({ servicesManager, ...props }) {
           },
         ],
       });
+      setIsDisabled(true);
     },
     [toolbarService]
   );
@@ -80,17 +87,21 @@ function ToolbarLayoutSelectorWithServices({ servicesManager, ...props }) {
           },
         ],
       });
+      setIsDisabled(true);
     },
     [toolbarService]
   );
 
   return (
-    <LayoutSelector
-      {...props}
-      onSelection={onSelection}
-      onSelectionPreset={onSelectionPreset}
-      servicesManager={servicesManager}
-    />
+    <div onMouseEnter={handleMouseEnter}>
+      <LayoutSelector
+        {...props}
+        onSelection={onSelection}
+        onSelectionPreset={onSelectionPreset}
+        servicesManager={servicesManager}
+        tooltipDisabled={isDisabled}
+      />
+    </div>
   );
 }
 
@@ -101,6 +112,7 @@ function LayoutSelector({
   onSelection,
   onSelectionPreset,
   servicesManager,
+  tooltipDisabled,
   ...rest
 }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -123,17 +135,20 @@ function LayoutSelector({
     };
   }, [isOpen]);
 
-  const onInteractionHandler = () => setIsOpen(!isOpen);
+  const onInteractionHandler = () => {
+    setIsOpen(!isOpen);
+  };
   const DropdownContent = isOpen ? OHIFLayoutSelector : null;
 
   return (
     <ToolbarButton
       id="Layout"
-      label="Grid Layout"
+      label="Layout"
       icon="tool-layout"
       onInteraction={onInteractionHandler}
       className={className}
       rounded={rest.rounded}
+      disableToolTip={tooltipDisabled}
       dropdownContent={
         DropdownContent !== null && (
           <div className="flex">
