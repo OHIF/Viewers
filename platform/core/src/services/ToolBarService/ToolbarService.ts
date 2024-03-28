@@ -420,6 +420,34 @@ export default class ToolbarService extends PubSubService {
       return;
     }
 
+    if (Array.isArray(evaluate)) {
+      const evaluators = evaluate.map(evaluatorName => {
+        const evaluateFunction = this._evaluateFunction[evaluatorName];
+
+        if (!evaluateFunction) {
+          throw new Error(
+            `Evaluate function not found for name: ${evaluatorName}, you can register an evaluate function with the getToolbarModule in your extensions`
+          );
+        }
+
+        return evaluateFunction;
+      });
+
+      props.evaluate = args => {
+        const results = evaluators.map(evaluator => evaluator(args));
+        const mergedResult = results.reduce((acc, result) => {
+          return {
+            ...acc,
+            ...result,
+          };
+        }, {});
+
+        return mergedResult;
+      };
+
+      return;
+    }
+
     if (typeof evaluate === 'string') {
       const evaluateFunction = this._evaluateFunction[evaluate];
 
@@ -429,7 +457,7 @@ export default class ToolbarService extends PubSubService {
       }
 
       throw new Error(
-        `Evaluate function not found for name: ${evaluate}, you can  register an evaluate function with the getToolbarModule in your extensions`
+        `Evaluate function not found for name: ${evaluate}, you can register an evaluate function with the getToolbarModule in your extensions`
       );
     }
 
@@ -443,7 +471,7 @@ export default class ToolbarService extends PubSubService {
       }
 
       throw new Error(
-        `Evaluate function not found for name: ${name}, you can  register an evaluate function with the getToolbarModule in your extensions`
+        `Evaluate function not found for name: ${name}, you can register an evaluate function with the getToolbarModule in your extensions`
       );
     }
   };

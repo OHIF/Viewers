@@ -16,6 +16,7 @@ const ToolbarButton = ({
   className,
   size,
   toolTipClassName,
+  disableToolTip = false,
   ...rest
   //
 }) => {
@@ -37,6 +38,7 @@ const ToolbarButton = ({
         content={shouldShowDropdown ? dropdownContent : label}
         tight={shouldShowDropdown}
         className={toolTipClassNameToUse}
+        isDisabled={disableToolTip}
       >
         <IconButton
           size={sizeToUse}
@@ -75,6 +77,7 @@ ToolbarButton.propTypes = {
   dropdownContent: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
   size: PropTypes.string,
   toolTipClassName: PropTypes.string,
+  disableToolTip: PropTypes.bool,
 };
 
 export default ToolbarButton;

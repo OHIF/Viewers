@@ -100,22 +100,6 @@ const toolbarButtons = [
       evaluate: 'evaluate.cornerstoneTool',
     },
   },
-  {
-    id: 'MPR',
-    uiType: 'ohif.radioGroup',
-    props: {
-      icon: 'icon-mpr',
-      label: 'MPR',
-      commands: [
-        {
-          commandName: 'toggleHangingProtocol',
-          commandOptions: { protocolId: 'mpr' },
-          context: 'DEFAULT',
-        },
-      ],
-      evaluate: 'evaluate.mpr',
-    },
-  },
   // Window Level + Presets
   {
     id: 'WindowLevel',

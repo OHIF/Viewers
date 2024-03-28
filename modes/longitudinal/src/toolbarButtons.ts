@@ -1,9 +1,6 @@
 // TODO: torn, can either bake this here; or have to create a whole new button type
 // Only ways that you can pass in a custom React component for render :l
-import {
-  // ListMenu,
-  WindowLevelMenuItem,
-} from '@ohif/ui';
+import { WindowLevelMenuItem } from '@ohif/ui';
 import { defaults, ToolbarService } from '@ohif/core';
 import type { Button } from '@ohif/core/types';
 
@@ -36,7 +33,7 @@ function _createWwwcPreset(preset, title, subtitle) {
 export const setToolActiveToolbar = {
   commandName: 'setToolActiveToolbar',
   commandOptions: {
-    toolGroupIds: ['default', 'mpr', 'SRToolGroup'],
+    toolGroupIds: ['default', 'mpr', 'SRToolGroup', 'volume3d'],
   },
 };
 
@@ -156,6 +153,17 @@ const toolbarButtons: Button[] = [
     },
   },
   {
+    id: 'TrackballRotate',
+    uiType: 'ohif.radioGroup',
+    props: {
+      type: 'tool',
+      icon: 'tool-3d-rotate',
+      label: '3D Rotate',
+      commands: setToolActiveToolbar,
+      evaluate: 'evaluate.cornerstoneTool',
+    },
+  },
+  {
     id: 'Capture',
     uiType: 'ohif.radioGroup',
     props: {
@@ -174,30 +182,13 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.layoutSelector',
     props: {
       rows: 3,
-      columns: 3,
+      columns: 4,
       evaluate: 'evaluate.action',
       commands: [
         {
           commandName: 'setViewportGridLayout',
         },
       ],
-    },
-  },
-  {
-    id: 'MPR',
-    uiType: 'ohif.radioGroup',
-    props: {
-      icon: 'icon-mpr',
-      label: 'MPR',
-      commands: [
-        {
-          commandName: 'toggleHangingProtocol',
-          commandOptions: {
-            protocolId: 'mpr',
-          },
-        },
-      ],
-      evaluate: 'evaluate.mpr',
     },
   },
   {

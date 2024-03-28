@@ -657,7 +657,6 @@ onModeEnter: ({ servicesManager, extensionManager, commandsManager }) => {
     'Pan',
     'Capture',
     'Layout',
-    'MPR',
     'Crosshairs',
     'MoreTools',
   ]);
