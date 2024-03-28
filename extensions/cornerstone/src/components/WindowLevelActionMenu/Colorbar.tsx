@@ -2,6 +2,7 @@ import React, { ReactElement, useCallback, useEffect, useState } from 'react';
 import { SwitchButton } from '@ohif/ui';
 import { StackViewport, VolumeViewport } from '@cornerstonejs/core';
 import { ColorbarProps } from '../../types/Colorbar';
+import { utilities } from '@cornerstonejs/core';
 
 export function setViewportColorbar(
   viewportId,
@@ -12,6 +13,25 @@ export function setViewportColorbar(
 ) {
   const { cornerstoneViewportService } = serviceManager.services;
   const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+
+  const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
+  const backgroundColor = viewportInfo.getViewportOptions().background;
+  const isLight = backgroundColor ? utilities.isEqual(backgroundColor, [1, 1, 1]) : false;
+
+  if (isLight) {
+    colorbarOptions.ticks = {
+      position: 'left',
+      style: {
+        font: '12px Arial',
+        color: '#000000',
+        maxNumTicks: 8,
+        tickSize: 5,
+        tickWidth: 1,
+        labelMargin: 3,
+      },
+    };
+  }
+
   const displaySetInstanceUIDs = [];
 
   if (viewport instanceof StackViewport) {

@@ -14,6 +14,7 @@ import { VolumeRenderingPresets } from './VolumeRenderingPresets';
 import { VolumeRenderingOptions } from './VolumeRenderingOptions';
 import { ViewportPreset } from '../../types/ViewportPresets';
 import { VolumeViewport3D } from '@cornerstonejs/core';
+import { utilities } from '@cornerstonejs/core';
 
 export type WindowLevelActionMenuProps = {
   viewportId: string;
@@ -52,6 +53,9 @@ export function WindowLevelActionMenu({
   const { colorbarService, cornerstoneViewportService } = serviceManager.services;
   const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
   const viewportType = cornerstoneViewportService.getCornerstoneViewport(viewportId)?.type;
+  const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
+  const backgroundColor = viewportInfo.getViewportOptions().background;
+  const isLight = backgroundColor ? utilities.isEqual(backgroundColor, [1, 1, 1]) : false;
 
   const nonImageModalities = ['SR', 'SEG', 'SM', 'RTSTRUCT', 'RTPLAN', 'RTDOSE'];
 
@@ -126,7 +130,10 @@ export function WindowLevelActionMenu({
       iconClassName={classNames(
         // Visible on hover and for the active viewport
         activeViewportId === viewportId ? 'visible' : 'invisible group-hover:visible',
-        'text-primary-light hover:bg-secondary-light/60 flex shrink-0 cursor-pointer rounded active:text-white'
+        'flex shrink-0 cursor-pointer rounded active:text-white',
+        isLight
+          ? 'text-aqua-pale hover:bg-secondary-dark'
+          : 'text-primary-light hover:bg-secondary-light/60'
       )}
       menuStyle={{ maxHeight: vpHeight - 32, minWidth: 218 }}
       onVisibilityChange={() => {
