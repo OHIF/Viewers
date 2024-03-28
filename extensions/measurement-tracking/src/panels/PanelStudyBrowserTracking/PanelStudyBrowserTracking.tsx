@@ -19,7 +19,7 @@ function PanelStudyBrowserTracking({
   requestDisplaySetCreationForStudy,
   dataSource,
 }) {
-  const { displaySetService, uiDialogService, hangingProtocolService, uiNotificationService } =
+  const { displaySetService, uiDialogService, hangingProtocolService, uiNotificationService, measurementService } =
     servicesManager.services;
   const navigate = useNavigate();
 
@@ -339,6 +339,12 @@ function PanelStudyBrowserTracking({
         // Potentially a helper from displaySetInstanceUID to this
         sendTrackedMeasurementsEvent('UNTRACK_SERIES', {
           SeriesInstanceUID: displaySet.SeriesInstanceUID,
+        });
+        const measurements = measurementService.getMeasurements();
+        measurements.forEach(m => {
+          if (m.referenceSeriesUID === displaySet.SeriesInstanceUID) {
+            measurementService.remove(m.uid);
+          }
         });
       }}
       onClickThumbnail={() => {}}
