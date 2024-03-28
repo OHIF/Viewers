@@ -81,6 +81,17 @@ const toolbarButtons: Button[] = [
     },
   },
   {
+    id: 'TrackballRotate',
+    uiType: 'ohif.radioGroup',
+    props: {
+      type: 'tool',
+      icon: 'tool-3d-rotate',
+      label: '3D Rotate',
+      commands: _createSetToolActiveCommands('TrackballRotate'),
+      evaluate: 'evaluate.cornerstoneTool',
+    },
+  },
+  {
     id: 'Capture',
     uiType: 'ohif.radioGroup',
     props: {

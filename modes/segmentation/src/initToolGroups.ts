@@ -81,6 +81,7 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
       toolName: utilityModule.exports.toolNames.Crosshairs,
       configuration: {
         viewportIndicators: false,
+        disableOnPassive: true,
         autoPan: {
           enabled: false,
           panSize: 10,
