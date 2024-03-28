@@ -4,6 +4,9 @@ import toolbarButtons from './toolbarButtons';
 import segmentationButtons from './segmentationButtons';
 import initToolGroups from './initToolGroups';
 
+const DEFAULT_TOOL_GROUP_ID = 'default';
+const VOLUME3D_TOOL_GROUP_ID = 'volume3d';
+
 const ohif = {
   layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
   sopClassHandler: '@ohif/extension-default.sopClassHandlerModule.stack',
@@ -62,12 +65,13 @@ function modeFactory({ modeConfiguration }) {
       toolbarService.addButtons(segmentationButtons);
 
       toolbarService.createButtonSection('primary', [
+        'WindowLevel',
         'Pan',
+        'Zoom',
+        'TrackballRotate',
         'Capture',
         'Layout',
-        'MPR',
         'Crosshairs',
-        'Zoom',
         'MoreTools',
       ]);
       toolbarService.createButtonSection('segmentationToolbox', ['BrushTools', 'Shapes']);
@@ -105,9 +109,13 @@ function modeFactory({ modeConfiguration }) {
       // that is not supported by the mode
       const modalitiesArray = modalities.split('\\');
       return {
-        valid: modalitiesArray.length === 1 ? !['SM', 'US', 'MG', 'OT', 'DOC', 'CR'].includes(modalitiesArray[0]) : true,
-        description: 'The mode does not support studies that ONLY include the following modalities: SM, US, MG, OT, DOC, CR',
-      }
+        valid:
+          modalitiesArray.length === 1
+            ? !['SM', 'US', 'MG', 'OT', 'DOC', 'CR'].includes(modalitiesArray[0])
+            : true,
+        description:
+          'The mode does not support studies that ONLY include the following modalities: SM, US, MG, OT, DOC, CR',
+      };
     },
     /**
      * Mode Routes are used to define the mode's behavior. A list of Mode Route

@@ -167,6 +167,19 @@ export default function getToolbarModule({ commandsManager, servicesManager }) {
       },
     },
     {
+      name: 'evaluate.not3D',
+      evaluate: ({ viewportId, button }) => {
+        const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+
+        if (viewport?.type === 'volume3d') {
+          return {
+            disabled: true,
+            className: '!text-common-bright ohif-disabled',
+          };
+        }
+      },
+    },
+    {
       name: 'evaluate.viewportProperties.toggle',
       evaluate: ({ viewportId, button }) => {
         const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);

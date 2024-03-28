@@ -83,11 +83,11 @@ function modeFactory({ modeConfiguration }) {
       toolbarService.createButtonSection('primary', [
         'MeasurementTools',
         'Zoom',
-        'WindowLevel',
         'Pan',
+        'TrackballRotate',
+        'WindowLevel',
         'Capture',
         'Layout',
-        'MPR',
         'Crosshairs',
         'MoreTools',
       ]);

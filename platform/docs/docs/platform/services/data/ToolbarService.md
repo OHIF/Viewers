@@ -243,7 +243,6 @@ toolbarService.createButtonSection('primary', [
   'Pan',
   'Capture',
   'Layout',
-  'MPR',
   'Crosshairs',
   'MoreTools',
 ]);

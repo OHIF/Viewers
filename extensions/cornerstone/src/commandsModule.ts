@@ -311,6 +311,10 @@ function commandsModule({
         return;
       }
 
+      if (!toolGroup.hasTool(toolName)) {
+        return;
+      }
+
       const activeToolName = toolGroup.getActivePrimaryMouseButtonTool();
 
       if (activeToolName) {
