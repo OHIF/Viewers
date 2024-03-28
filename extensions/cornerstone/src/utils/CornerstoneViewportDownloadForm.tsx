@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import html2canvas from 'html2canvas';
 import {
   Enums,
   getEnabledElement,
   getOrCreateCanvas,
   StackViewport,
-  VolumeViewport,
+  BaseVolumeViewport,
 } from '@cornerstonejs/core';
 import { ToolGroupManager } from '@cornerstonejs/tools';
 import PropTypes from 'prop-types';
@@ -154,7 +154,7 @@ const CornerstoneViewportDownloadForm = ({
               console.warn('Unable to set properties', e);
             }
           });
-        } else if (downloadViewport instanceof VolumeViewport) {
+        } else if (downloadViewport instanceof BaseVolumeViewport) {
           const actors = viewport.getActors();
           // downloadViewport.setActors(actors);
           actors.forEach(actor => {

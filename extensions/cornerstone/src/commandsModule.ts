@@ -745,9 +745,6 @@ function commandsModule({
     setViewportColormap: {
       commandFn: actions.setViewportColormap,
     },
-    toggleImageSliceSync: {
-      commandFn: actions.toggleImageSliceSync,
-    },
     setSourceViewportForReferenceLinesTool: {
       commandFn: actions.setSourceViewportForReferenceLinesTool,
     },

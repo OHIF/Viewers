@@ -9,7 +9,7 @@ import Tooltip from '../Tooltip';
 import ListMenu from '../ListMenu';
 
 const baseClasses = {
-  Button: 'flex items-center rounded-md border-transparent cursor-pointer group/button',
+  Button: 'flex items-center rounded-md border-transparent group/button',
   Primary:
     'h-full border-l-2 border-t-2 border-b-2 rounded-tl-md rounded-bl-md group/primary !pl-2 !py-2',
   Secondary:
