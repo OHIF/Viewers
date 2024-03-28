@@ -16,7 +16,7 @@ const classes = {
 };
 
 const ViewportOverlay = ({ topLeft, topRight, bottomRight, bottomLeft, color }) => {
-  const overlay = 'absolute pointer-events-none viewport-overlay';
+  const overlay = 'absolute pointer-events-none viewport-overlay select-none';
   return (
     <div
       className={classnames(

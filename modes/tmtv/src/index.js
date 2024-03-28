@@ -125,7 +125,6 @@ function modeFactory({ modeConfiguration }) {
         'Crosshairs',
         'Pan',
         'RectangleROIStartEndThreshold',
-        'fusionPTColormap',
       ]);
 
       // For the hanging protocol we need to decide on the window level

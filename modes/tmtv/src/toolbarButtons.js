@@ -1,9 +1,6 @@
 // TODO: torn, can either bake this here; or have to create a whole new button type
-// Only ways that you can pass in a custom React component for render :l
-import { WindowLevelMenuItem } from '@ohif/ui';
-import { defaults } from '@ohif/core';
+// Only ways that you can pass in a custom React component for render :
 import { toolGroupIds } from './initToolGroups';
-const { windowLevelPresets } = defaults;
 /**
  *
  * @param {*} type - 'tool' | 'action' | 'toggle'
@@ -22,50 +19,9 @@ function _createButton(type, id, icon, label, commands, tooltip) {
   };
 }
 
-function _createColormap(label, colormap) {
-  return {
-    id: label,
-    label,
-    type: 'action',
-    commands: [
-      {
-        commandName: 'setFusionPTColormap',
-        commandOptions: {
-          toolGroupId: toolGroupIds.Fusion,
-          colormap,
-        },
-      },
-    ],
-  };
-}
-
 const _createActionButton = _createButton.bind(null, 'action');
 const _createToggleButton = _createButton.bind(null, 'toggle');
 const _createToolButton = _createButton.bind(null, 'tool');
-
-/**
- *
- * @param {*} preset - preset number (from above import)
- * @param {*} title
- * @param {*} subtitle
- */
-function _createWwwcPreset(preset, title, subtitle) {
-  return {
-    id: preset.toString(),
-    title,
-    subtitle,
-    type: 'action',
-    commands: [
-      {
-        commandName: 'setWindowLevel',
-        commandOptions: {
-          ...windowLevelPresets[preset],
-        },
-        context: 'CORNERSTONE',
-      },
-    ],
-  };
-}
 
 function _createCommands(commandName, toolName, toolGroupIds) {
   return toolGroupIds.map(toolGroupId => ({
@@ -204,40 +160,20 @@ const toolbarButtons = [
       ],
     },
   },
-  // Window Level + Presets...
+  // Window Level
   {
     id: 'WindowLevel',
-    type: 'ohif.splitButton',
+    type: 'ohif.radioGroup',
     props: {
-      groupId: 'WindowLevel',
-      primary: _createToolButton(
-        'WindowLevel',
-        'tool-window-level',
-        'Window Level',
-        [
-          ..._createCommands('setToolActive', 'WindowLevel', [
-            toolGroupIds.CT,
-            toolGroupIds.PT,
-            toolGroupIds.Fusion,
-            // toolGroupIds.MPR,
-          ]),
-        ],
-        'Window Level'
-      ),
-      secondary: {
-        icon: 'chevron-down',
-        label: 'W/L Manual',
-        isActive: true,
-        tooltip: 'W/L Presets',
-      },
-      isAction: true, // ?
-      renderer: WindowLevelMenuItem,
-      items: [
-        _createWwwcPreset(1, 'Soft tissue', '400 / 40'),
-        _createWwwcPreset(2, 'Lung', '1500 / -600'),
-        _createWwwcPreset(3, 'Liver', '150 / 90'),
-        _createWwwcPreset(4, 'Bone', '2500 / 480'),
-        _createWwwcPreset(5, 'Brain', '80 / 40'),
+      type: 'tool',
+      icon: 'tool-window-level',
+      label: 'Window Level',
+      commands: [
+        ..._createCommands('setToolActive', 'WindowLevel', [
+          toolGroupIds.CT,
+          toolGroupIds.PT,
+          toolGroupIds.Fusion,
+        ]),
       ],
     },
   },
@@ -299,39 +235,6 @@ const toolbarButtons = [
             viewportId: 'ptAXIAL',
           },
         },
-      ],
-    },
-  },
-  {
-    id: 'fusionPTColormap',
-    type: 'ohif.splitButton',
-    props: {
-      groupId: 'fusionPTColormap',
-      primary: _createToolButton(
-        'fusionPTColormap',
-        'tool-fusion-color',
-        'Fusion PT Colormap',
-        [],
-        'Fusion PT Colormap'
-      ),
-      secondary: {
-        icon: 'chevron-down',
-        label: 'PT Colormap',
-        isActive: true,
-        tooltip: 'PET Image Colormap',
-      },
-      isAction: true, // ?
-      items: [
-        _createColormap('HSV', 'hsv'),
-        _createColormap('Hot Iron', 'hot_iron'),
-        _createColormap('S PET', 's_pet'),
-        _createColormap('Red Hot', 'red_hot'),
-        _createColormap('Perfusion', 'perfusion'),
-        _createColormap('Rainbow', 'rainbow_2'),
-        _createColormap('SUV', 'suv'),
-        _createColormap('GE 256', 'ge_256'),
-        _createColormap('GE', 'ge'),
-        _createColormap('Siemens', 'siemens'),
       ],
     },
   },

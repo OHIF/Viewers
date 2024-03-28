@@ -107,8 +107,13 @@ function CustomizableViewportOverlay({
   viewportId,
   servicesManager,
 }) {
-  const { toolbarService, cornerstoneViewportService, customizationService } =
-    servicesManager.services;
+  const {
+    toolbarService,
+    cornerstoneViewportService,
+    customizationService,
+    viewportGridService,
+    displaySetService,
+  } = servicesManager.services;
   const [voi, setVOI] = useState({ windowCenter: null, windowWidth: null });
   const [scale, setScale] = useState(1);
   const [activeTools, setActiveTools] = useState([]);
@@ -129,11 +134,11 @@ function CustomizableViewportOverlay({
 
   const instance = useMemo(() => {
     if (viewportData != null) {
-      return _getViewportInstance(viewportData, imageIndex);
+      return _getViewportInstance(viewportId, viewportGridService, displaySetService);
     } else {
       return null;
     }
-  }, [viewportData, imageIndex]);
+  }, [viewportData, viewportId, viewportGridService, displaySetService]);
 
   const instanceNumber = useMemo(() => {
     if (viewportData != null) {
@@ -363,18 +368,13 @@ function CustomizableViewportOverlay({
   );
 }
 
-function _getViewportInstance(viewportData, imageIndex) {
-  let imageId = null;
-  if (viewportData.viewportType === Enums.ViewportType.STACK) {
-    imageId = viewportData.data.imageIds[imageIndex];
-  } else if (viewportData.viewportType === Enums.ViewportType.ORTHOGRAPHIC) {
-    const volumes = viewportData.data;
-    if (volumes && volumes.length >= 1) {
-      const volume = volumes[0];
-      imageId = volume.imageIds[imageIndex];
-    }
-  }
-  return imageId ? metaData.get('instance', imageId) || {} : {};
+function _getViewportInstance(viewportId, viewportGridService, displaySetService) {
+  const { viewports } = viewportGridService.getState();
+  const viewport = viewports.get(viewportId);
+  const displaySetInstanceUID = viewport.displaySetInstanceUIDs[0];
+  const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
+  const instance = displaySet?.instances[0];
+  return instance;
 }
 
 function _getInstanceNumber(viewportData, viewportId, imageIndex, cornerstoneViewportService) {

@@ -1,38 +1,7 @@
 // TODO: torn, can either bake this here; or have to create a whole new button type
 // Only ways that you can pass in a custom React component for render :l
-import {
-  // ExpandableToolbarButton,
-  // ListMenu,
-  WindowLevelMenuItem,
-} from '@ohif/ui';
-import { defaults, ToolbarService } from '@ohif/core';
+import { ToolbarService } from '@ohif/core';
 import type { Button } from '@ohif/core/types';
-
-const { windowLevelPresets } = defaults;
-
-/**
- *
- * @param {*} preset - preset number (from above import)
- * @param {*} title
- * @param {*} subtitle
- */
-function _createWwwcPreset(preset, title, subtitle) {
-  return {
-    id: preset.toString(),
-    title,
-    subtitle,
-    type: 'action',
-    commands: [
-      {
-        commandName: 'setWindowLevel',
-        commandOptions: {
-          ...windowLevelPresets[preset],
-        },
-        context: 'CORNERSTONE',
-      },
-    ],
-  };
-}
 
 const toolGroupIds = ['default', 'mpr', 'SRToolGroup'];
 
@@ -224,41 +193,22 @@ const toolbarButtons: Button[] = [
       commands: _createSetToolActiveCommands('Zoom'),
     },
   },
-  // Window Level + Presets...
+  // Window Level
   {
     id: 'WindowLevel',
-    type: 'ohif.splitButton',
+    type: 'ohif.radioGroup',
     props: {
-      groupId: 'WindowLevel',
-      primary: ToolbarService._createToolButton(
-        'WindowLevel',
-        'tool-window-level',
-        'Window Level',
-        [
-          {
-            commandName: 'setToolActive',
-            commandOptions: {
-              toolName: 'WindowLevel',
-            },
-            context: 'CORNERSTONE',
+      type: 'tool',
+      icon: 'tool-window-level',
+      label: 'Window Level',
+      commands: [
+        {
+          commandName: 'setToolActive',
+          commandOptions: {
+            toolName: 'WindowLevel',
           },
-        ],
-        'Window Level'
-      ),
-      secondary: {
-        icon: 'chevron-down',
-        label: 'W/L Manual',
-        isActive: true,
-        tooltip: 'W/L Presets',
-      },
-      isAction: true, // ?
-      renderer: WindowLevelMenuItem,
-      items: [
-        _createWwwcPreset(1, 'Soft tissue', '400 / 40'),
-        _createWwwcPreset(2, 'Lung', '1500 / -600'),
-        _createWwwcPreset(3, 'Liver', '150 / 90'),
-        _createWwwcPreset(4, 'Bone', '2500 / 480'),
-        _createWwwcPreset(5, 'Brain', '80 / 40'),
+          context: 'CORNERSTONE',
+        },
       ],
     },
   },

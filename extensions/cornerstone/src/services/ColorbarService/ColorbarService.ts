@@ -230,7 +230,7 @@ export default class ColorbarService extends PubSubService {
     const containers = [];
     const dimensions = {
       1: 50,
-      2: 67,
+      2: 33,
     };
     const dimension = dimensions[numContainers] || 50 / numContainers;
 

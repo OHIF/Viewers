@@ -133,7 +133,7 @@ function ViewportOrientationMarkers({
     element,
   ]);
 
-  return <div className="ViewportOrientationMarkers noselect">{markers}</div>;
+  return <div className="ViewportOrientationMarkers select-none">{markers}</div>;
 }
 
 ViewportOrientationMarkers.propTypes = {
