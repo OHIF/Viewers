@@ -56,39 +56,6 @@ function modeFactory({ modeConfiguration }) {
       // Init Default and SR ToolGroups
       initToolGroups(toolNames, Enums, toolGroupService, commandsManager);
 
-      const setWindowLevelActive = () => {
-        toolbarService.recordInteraction({
-          groupId: 'WindowLevel',
-          interactionType: 'tool',
-          commands: [
-            {
-              commandName: 'setToolActive',
-              commandOptions: {
-                toolName: toolNames.WindowLevel,
-                toolGroupId: toolGroupIds.CT,
-              },
-              context: 'CORNERSTONE',
-            },
-            {
-              commandName: 'setToolActive',
-              commandOptions: {
-                toolName: toolNames.WindowLevel,
-                toolGroupId: toolGroupIds.PT,
-              },
-              context: 'CORNERSTONE',
-            },
-            {
-              commandName: 'setToolActive',
-              commandOptions: {
-                toolName: toolNames.WindowLevel,
-                toolGroupId: toolGroupIds.Fusion,
-              },
-              context: 'CORNERSTONE',
-            },
-          ],
-        });
-      };
-
       const { unsubscribe } = toolGroupService.subscribe(
         toolGroupService.EVENTS.VIEWPORT_ADDED,
         () => {
@@ -110,13 +77,10 @@ function modeFactory({ modeConfiguration }) {
             toolGroupService,
             displaySetService
           );
-
-          setWindowLevelActive();
         }
       );
 
       unsubscriptions.push(unsubscribe);
-      toolbarService.init(extensionManager);
       toolbarService.addButtons(toolbarButtons);
       toolbarService.createButtonSection('primary', [
         'MeasurementTools',
@@ -124,6 +88,7 @@ function modeFactory({ modeConfiguration }) {
         'WindowLevel',
         'Crosshairs',
         'Pan',
+        'SyncToggle',
         'RectangleROIStartEndThreshold',
         'fusionPTColormap',
       ]);

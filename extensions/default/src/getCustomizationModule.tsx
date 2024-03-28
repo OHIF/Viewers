@@ -94,8 +94,8 @@ export default function getCustomizationModule({ servicesManager, extensionManag
               instance && this.attribute
                 ? instance[this.attribute]
                 : this.contentF && typeof this.contentF === 'function'
-                ? this.contentF(props)
-                : null;
+                  ? this.contentF(props)
+                  : null;
             if (!value) {
               return null;
             }

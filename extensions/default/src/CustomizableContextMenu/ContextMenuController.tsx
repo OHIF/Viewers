@@ -60,7 +60,6 @@ export default class ContextMenuController {
       return;
     }
 
-    console.log('Getting items from', menus);
     const items = ContextMenuItemsBuilder.getMenuItems(
       selectorProps || contextMenuProps,
       event,

@@ -13,11 +13,11 @@ import HangingProtocolService from './HangingProtocolService';
 import pubSubServiceInterface, { PubSubService } from './_shared/pubSubServiceInterface';
 import UserAuthenticationService from './UserAuthenticationService';
 import CustomizationService from './CustomizationService';
-
-import Services from '../types/Services';
 import StateSyncService from './StateSyncService';
 import PanelService from './PanelService';
 import WorkflowStepsService from './WorkflowStepsService';
+
+import type Services from '../types/Services';
 
 export {
   Services,

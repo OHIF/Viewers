@@ -109,6 +109,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
     // of the imageData in the OHIFCornerstoneViewport. This prop is used
     // to set the initial state of the viewport's first image to render
     initialImageIndex,
+    onReady,
   } = props;
 
   const viewportId = viewportOptions.viewportId;
@@ -192,6 +193,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
 
       if (onElementEnabled) {
         onElementEnabled(evt);
+        onReady?.(evt);
       }
     },
     [viewportId, onElementEnabled, toolGroupService]

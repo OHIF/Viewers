@@ -5,32 +5,15 @@ import { Enums as StreamingEnums } from '@cornerstonejs/streaming-image-volume-l
 import { useAppConfig } from '@state';
 
 function WrappedCinePlayer({ enabledVPElement, viewportId, servicesManager }) {
-  const {
-    toolbarService,
-    customizationService,
-    displaySetService,
-    viewportGridService,
-    cineService,
-  } = servicesManager.services;
-  const [{ isCineEnabled, cines }] = useCine();
+  const { customizationService, displaySetService, viewportGridService } = servicesManager.services;
+  const [{ isCineEnabled, cines }, api] = useCine();
   const [newStackFrameRate, setNewStackFrameRate] = useState(24);
   const [isDynamic, setIsDynamic] = useState(false);
   const [appConfig] = useAppConfig();
+  const isMountedRef = useRef(null);
 
-  const handleCineClose = () => {
-    toolbarService.recordInteraction({
-      groupId: 'MoreTools',
-      interactionType: 'toggle',
-      commands: [
-        {
-          commandName: 'toggleCine',
-          commandOptions: {},
-          toolName: 'cine',
-          context: 'CORNERSTONE',
-        },
-      ],
-    });
-  };
+  const { component: CinePlayerComponent = CinePlayer } =
+    customizationService.get('cinePlayer') ?? {};
 
   const cineHandler = () => {
     if (!cines?.[viewportId] || !enabledVPElement) {
@@ -66,9 +49,9 @@ function WrappedCinePlayer({ enabledVPElement, viewportId, servicesManager }) {
     });
 
     if (isPlaying) {
-      cineService.setIsCineEnabled(isPlaying);
+      api.setIsCineEnabled(isPlaying);
     }
-    cineService.setCine({ id: viewportId, isPlaying, frameRate });
+    api.setCine({ id: viewportId, isPlaying, frameRate });
     setNewStackFrameRate(frameRate);
   }, [cineService, displaySetService, viewportId, viewportGridService, cines, isCineEnabled]);
 
@@ -103,16 +86,14 @@ function WrappedCinePlayer({ enabledVPElement, viewportId, servicesManager }) {
   }, [enabledVPElement, newDisplaySetHandler, viewportId, cineService]);
 
   useEffect(() => {
-    if (!cines || !cines[viewportId] || !enabledVPElement) {
+    if (!cines || !cines[viewportId] || !enabledVPElement || !isMountedRef.current) {
       return;
     }
 
     cineHandler();
 
     return () => {
-      if (enabledVPElement && cines?.[viewportId]?.isPlaying) {
-        cineService.stopClip(enabledVPElement);
-      }
+      api.stopClip(enabledVPElement);
     };
   }, [cines, viewportId, cineService, enabledVPElement, cineHandler]);
 

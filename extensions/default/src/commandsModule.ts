@@ -18,6 +18,7 @@ export type HangingProtocolParams = {
   stageIndex?: number;
   activeStudyUID?: string;
   stageId?: string;
+  reset?: false;
 };
 
 export type UpdateViewportDisplaySetParams = {
@@ -108,41 +109,6 @@ const commandsModule = ({
     },
 
     /**
-     * Toggles off all tools which contain a commandName of setHangingProtocol
-     * or toggleHangingProtocol, and which match/don't match the protocol id/stage
-     */
-    toggleHpTools: () => {
-      const {
-        protocol,
-        stageIndex: toggleStageIndex,
-        stage,
-      } = hangingProtocolService.getActiveProtocol();
-      const enableListener = button => {
-        if (!button.id) {
-          return;
-        }
-        const { commands, items, primary } = button.props || button;
-        if (primary) {
-          enableListener(primary);
-        }
-        if (items) {
-          items.forEach(enableListener);
-        }
-        const hpCommand = commands?.find?.(isHangingProtocolCommand);
-        if (!hpCommand) {
-          return;
-        }
-        const { protocolId, stageIndex, stageId } = hpCommand.commandOptions;
-        const isActive =
-          (!protocolId || protocolId === protocol.id) &&
-          (stageIndex === undefined || stageIndex === toggleStageIndex) &&
-          (!stageId || stageId === stage.id);
-        toolbarService.setToggled(button.id, isActive);
-      };
-      Object.values(toolbarService.getButtons()).forEach(enableListener);
-    },
-
-    /**
      *  Sets the specified protocol
      *    1. Records any existing state using the viewport grid service
      *    2. Finds the destination state - this can be one of:
@@ -173,18 +139,12 @@ const commandsModule = ({
       stageIndex,
       reset = false,
     }: HangingProtocolParams): boolean => {
-      const primaryToolBeforeHPChange = toolbarService.getActivePrimaryTool();
       try {
         // Stores in the state the display set selector id to displaySetUID mapping
         // Pass in viewportId for the active viewport.  This item will get set as
         // the activeViewportId
         const state = viewportGridService.getState();
         const hpInfo = hangingProtocolService.getState();
-        const { protocol: oldProtocol } = hangingProtocolService.getActiveProtocol();
-
-        if (!oldProtocol) {
-          return;
-        }
         const stateSyncReduce = reuseCachedLayouts(state, hangingProtocolService, stateSyncService);
         const { hangingProtocolStageIndexMap, viewportGridStore, displaySetSelectorMap } =
           stateSyncReduce;
@@ -247,43 +207,9 @@ const commandsModule = ({
           `${activeStudyUID || hpInfo.activeStudyUID}:activeDisplaySet:0`
         ];
         stateSyncService.store(stateSyncReduce);
-        // This is a default action applied
-        actions.toggleHpTools();
-
-        // try to use the same tool in the new hanging protocol stage
-        const primaryButton = toolbarService.getButton(primaryToolBeforeHPChange);
-        if (primaryButton) {
-          // is there any type of interaction on this button, if not it might be in the
-          // items. This is a bit of a hack, but it works for now.
-
-          let interactionType = primaryButton.props?.interactionType;
-
-          if (!interactionType && primaryButton.props?.items) {
-            const firstItem = primaryButton.props.items[0];
-            interactionType = firstItem.props?.interactionType || firstItem.props?.type;
-          }
-
-          if (interactionType) {
-            toolbarService.recordInteraction({
-              interactionType,
-              ...primaryButton.props,
-            });
-          }
-        }
-
-        // Send the notification about updating the state
-        if (protocolId !== hpInfo.protocolId) {
-          // The old protocol callbacks are used for turning off things
-          // like crosshairs when moving to the new HP
-          commandsManager.run(oldProtocol?.callbacks?.onProtocolExit);
-          // The new protocol callback is used for things like
-          // activating modes etc.
-        }
-        commandsManager.run(protocol.callbacks?.onProtocolEnter);
         return true;
       } catch (e) {
         console.error(e);
-        actions.toggleHpTools();
         uiNotificationService.show({
           title: 'Apply Hanging Protocol',
           message: 'The hanging protocol could not be applied.',
@@ -653,56 +579,38 @@ const commandsModule = ({
     },
     clearMeasurements: {
       commandFn: actions.clearMeasurements,
-      storeContexts: [],
-      options: {},
     },
     displayNotification: {
       commandFn: actions.displayNotification,
-      storeContexts: [],
-      options: {},
     },
     setHangingProtocol: {
       commandFn: actions.setHangingProtocol,
-      storeContexts: [],
-      options: {},
     },
     toggleHangingProtocol: {
       commandFn: actions.toggleHangingProtocol,
-      storeContexts: [],
-      options: {},
     },
     navigateHistory: {
       commandFn: actions.navigateHistory,
-      storeContexts: [],
-      options: {},
     },
     nextStage: {
       commandFn: actions.deltaStage,
-      storeContexts: [],
       options: { direction: 1 },
     },
     previousStage: {
       commandFn: actions.deltaStage,
-      storeContexts: [],
       options: { direction: -1 },
     },
     setViewportGridLayout: {
       commandFn: actions.setViewportGridLayout,
-      storeContexts: [],
-      options: {},
     },
     toggleOneUp: {
       commandFn: actions.toggleOneUp,
-      storeContexts: [],
-      options: {},
     },
     openDICOMTagViewer: {
       commandFn: actions.openDICOMTagViewer,
     },
     updateViewportDisplaySet: {
       commandFn: actions.updateViewportDisplaySet,
-      storeContexts: [],
-      options: {},
     },
   };
 

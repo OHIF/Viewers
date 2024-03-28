@@ -21,6 +21,12 @@ import toggleImageSliceSync from './utils/imageSliceSync/toggleImageSliceSync';
 import { getFirstAnnotationSelected } from './utils/measurementServiceMappings/utils/selection';
 import getActiveViewportEnabledElement from './utils/getActiveViewportEnabledElement';
 import { CornerstoneServices } from './types';
+import toggleVOISliceSync from './utils/toggleVOISliceSync';
+
+const toggleSyncFunctions = {
+  imageSlice: toggleImageSliceSync,
+  voi: toggleVOISliceSync,
+};
 
 function commandsModule({
   servicesManager,
@@ -30,13 +36,13 @@ function commandsModule({
     viewportGridService,
     toolGroupService,
     cineService,
-    toolbarService,
     uiDialogService,
     cornerstoneViewportService,
     uiNotificationService,
     measurementService,
     displaySetService,
     hangingProtocolService,
+    syncGroupService,
   } = servicesManager.services as CornerstoneServices;
 
   const { measurementServiceSource } = this;
@@ -229,30 +235,10 @@ function commandsModule({
     arrowTextCallback: ({ callback, data }) => {
       callInputDialog(uiDialogService, data, callback);
     },
-    cleanUpCrosshairs: () => {
-      // if the crosshairs tool is active, deactivate it and set window level active
-      // since we are going back to main non-mpr HP
-      const activeViewportToolGroup = toolGroupService.getToolGroup(null);
-
-      if (activeViewportToolGroup._toolInstances?.Crosshairs?.mode === Enums.ToolModes.Active) {
-        actions.toolbarServiceRecordInteraction({
-          interactionType: 'tool',
-          commands: [
-            {
-              commandOptions: {
-                toolName: 'WindowLevel',
-              },
-              context: 'CORNERSTONE',
-            },
-          ],
-        });
-      }
-    },
     toggleCine: () => {
       const { viewports } = viewportGridService.getState();
       const { isCineEnabled } = cineService.getState();
       cineService.setIsCineEnabled(!isCineEnabled);
-      toolbarService.setButton('Cine', { props: { isActive: !isCineEnabled } });
       viewports.forEach((_, index) => cineService.setCine({ id: index, isPlaying: false }));
     },
     setWindowLevel({ window, level, toolGroupId }) {
@@ -281,20 +267,73 @@ function commandsModule({
       });
       viewport.render();
     },
+    setToolEnabled: ({ toolName, toggle }) => {
+      const { viewports } = viewportGridService.getState();
 
-    // Just call the toolbar service record interaction - allows
-    // executing a toolbar command as a full toolbar command with side affects
-    // coming from the ToolbarService itself.
-    toolbarServiceRecordInteraction: props => {
-      toolbarService.recordInteraction(props);
+      if (!viewports.size) {
+        return;
+      }
+
+      const toolGroup = toolGroupService.getToolGroup(null);
+
+      if (!toolGroup) {
+        return;
+      }
+
+      const toolIsEnabled = toolGroup.getToolOptions(toolName).mode === Enums.ToolModes.Enabled;
+
+      // Toggle the tool's state only if the toggle is true
+      if (toggle) {
+        toolIsEnabled ? toolGroup.setToolDisabled(toolName) : toolGroup.setToolEnabled(toolName);
+      }
+
+      const renderingEngine = cornerstoneViewportService.getRenderingEngine();
+      renderingEngine.render();
     },
-    // Enable or disable a toggleable command, without calling the activation
-    // Used to setup already active tools from hanging protocols
-    setToolbarToggled: props => {
-      toolbarService.setToggled(props.toolId, props.isActive ?? true);
+    setToolActiveToolbar: ({ value, itemId, toolGroupIds = [] }) => {
+      // Sometimes it is passed as value (tools with options), sometimes as itemId (toolbar buttons)
+      const toolName = itemId || value;
+
+      toolGroupIds = toolGroupIds.length ? toolGroupIds : toolGroupService.getToolGroupIds();
+
+      toolGroupIds.forEach(toolGroupId => {
+        actions.setToolActive({ toolName, toolGroupId });
+      });
     },
-    setToolActive: ({ toolName, toolGroupId = null, toggledState }) => {
-      toolGroupService.setPrimaryToolActive(toolName, toolGroupId, toggledState);
+    setToolActive: ({ toolName, toolGroupId = null }) => {
+      const { viewports } = viewportGridService.getState();
+
+      if (!viewports.size) {
+        return;
+      }
+
+      const toolGroup = toolGroupService.getToolGroup(toolGroupId);
+
+      if (!toolGroup) {
+        return;
+      }
+
+      if (!toolGroup.hasTool(toolName)) {
+        return;
+      }
+
+      const activeToolName = toolGroup.getActivePrimaryMouseButtonTool();
+
+      if (activeToolName) {
+        const activeToolOptions = toolGroup.getToolConfiguration(activeToolName);
+        activeToolOptions?.disableOnPassive
+          ? toolGroup.setToolDisabled(activeToolName)
+          : toolGroup.setToolPassive(activeToolName);
+      }
+
+      // Set the new toolName to be active
+      toolGroup.setToolActive(toolName, {
+        bindings: [
+          {
+            mouseButton: Enums.MouseBindings.Primary,
+          },
+        ],
+      });
     },
     showDownloadViewportModal: () => {
       const { activeViewportId } = viewportGridService.getState();
@@ -502,28 +541,55 @@ function commandsModule({
         (currentIndex + direction + viewportIds.length) % viewportIds.length;
       viewportGridService.setActiveViewportId(viewportIds[nextViewportIndex] as string);
     },
+    /**
+     * If the syncId is given and a synchronizer with that ID already exists, it will
+     * toggle it on/off for the provided viewports. If not, it will attempt to create
+     * a new synchronizer using the given syncId and type for the specified viewports.
+     * If no viewports are provided, you may notice some default behavior.
+     * - 'voi' type, we will aim to synchronize all viewports with the same modality
+     * -'imageSlice' type, we will aim to synchronize all viewports with the same orientation.
+     *
+     * @param options
+     * @param options.viewports - The viewports to synchronize
+     * @param options.syncId - The synchronization group ID
+     * @param options.type - The type of synchronization to perform
+     */
+    toggleSynchronizer: ({ type, viewports, syncId }) => {
+      const synchronizer = syncGroupService.getSynchronizer(syncId);
 
-    toggleImageSliceSync: ({ toggledState }) => {
-      toggleImageSliceSync({
-        servicesManager,
-        toggledState,
-      });
+      if (synchronizer) {
+        synchronizer.isDisabled() ? synchronizer.setEnabled(true) : synchronizer.setEnabled(false);
+        return;
+      }
+
+      const fn = toggleSyncFunctions[type];
+
+      if (fn) {
+        fn({
+          servicesManager,
+          viewports,
+          syncId,
+        });
+      }
     },
-    setSourceViewportForReferenceLinesTool: ({ toggledState, viewportId }) => {
+    setSourceViewportForReferenceLinesTool: ({ viewportId }) => {
       if (!viewportId) {
         const { activeViewportId } = viewportGridService.getState();
-        viewportId = activeViewportId;
+        viewportId = activeViewportId ?? 'default';
       }
 
       const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
 
-      toolGroup.setToolConfiguration(
+      toolGroup?.setToolConfiguration(
         ReferenceLinesTool.toolName,
         {
           sourceViewportId: viewportId,
         },
         true // overwrite
       );
+
+      const renderingEngine = cornerstoneViewportService.getRenderingEngine();
+      renderingEngine.render();
     },
     storePresentation: ({ viewportId }) => {
       cornerstoneViewportService.storePresentation({ viewportId });
@@ -555,6 +621,26 @@ function commandsModule({
         }
       });
     },
+    resetCrosshairs: ({ viewportId }) => {
+      const crosshairInstances = [];
+
+      const getCrosshairInstances = toolGroupId => {
+        const toolGroup = toolGroupService.getToolGroup(toolGroupId);
+        crosshairInstances.push(toolGroup.getToolInstance('Crosshairs'));
+      };
+
+      if (!viewportId) {
+        const toolGroupIds = toolGroupService.getToolGroupIds();
+        toolGroupIds.forEach(getCrosshairInstances);
+      } else {
+        const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
+        getCrosshairInstances(toolGroup.id);
+      }
+
+      crosshairInstances.forEach(ins => {
+        ins.resetCrosshairs();
+      });
+    },
   };
 
   const definitions = {
@@ -562,7 +648,6 @@ function commandsModule({
     // context menu
     showCornerstoneContextMenu: {
       commandFn: actions.showCornerstoneContextMenu,
-      storeContexts: [],
       options: {
         menuCustomizationId: 'measurementsContextMenu',
         commands: [
@@ -578,8 +663,6 @@ function commandsModule({
     },
     getNearbyAnnotation: {
       commandFn: actions.getNearbyAnnotation,
-      storeContexts: [],
-      options: {},
     },
     deleteMeasurement: {
       commandFn: actions.deleteMeasurement,
@@ -590,15 +673,17 @@ function commandsModule({
     updateMeasurement: {
       commandFn: actions.updateMeasurement,
     },
-
     setWindowLevel: {
       commandFn: actions.setWindowLevel,
     },
-    toolbarServiceRecordInteraction: {
-      commandFn: actions.toolbarServiceRecordInteraction,
-    },
     setToolActive: {
       commandFn: actions.setToolActive,
+    },
+    setToolActiveToolbar: {
+      commandFn: actions.setToolActiveToolbar,
+    },
+    setToolEnabled: {
+      commandFn: actions.setToolEnabled,
     },
     rotateViewportCW: {
       commandFn: actions.rotateViewport,
@@ -673,26 +758,23 @@ function commandsModule({
     setViewportColormap: {
       commandFn: actions.setViewportColormap,
     },
-    toggleImageSliceSync: {
-      commandFn: actions.toggleImageSliceSync,
-    },
     setSourceViewportForReferenceLinesTool: {
       commandFn: actions.setSourceViewportForReferenceLinesTool,
     },
     storePresentation: {
       commandFn: actions.storePresentation,
     },
-    setToolbarToggled: {
-      commandFn: actions.setToolbarToggled,
+    attachProtocolViewportDataListener: {
+      commandFn: actions.attachProtocolViewportDataListener,
     },
-    cleanUpCrosshairs: {
-      commandFn: actions.cleanUpCrosshairs,
+    resetCrosshairs: {
+      commandFn: actions.resetCrosshairs,
+    },
+    toggleSynchronizer: {
+      commandFn: actions.toggleSynchronizer,
     },
     updateVolumeData: {
       commandFn: actions.updateVolumeData,
-    },
-    attachProtocolViewportDataListener: {
-      commandFn: actions.attachProtocolViewportDataListener,
     },
   };
 

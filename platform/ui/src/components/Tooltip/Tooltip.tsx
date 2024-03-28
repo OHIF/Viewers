@@ -33,6 +33,14 @@ const arrowPositionStyle = {
 
 const Tooltip = ({
   content,
+  secondaryContent = null,
+  isSticky,
+  position,
+  className,
+  tight,
+  children,
+  isDisabled,
+  content,
   isSticky,
   position,
   className,
@@ -97,12 +105,15 @@ const Tooltip = ({
           className={classnames(
             'tooltip-box bg-primary-dark border-secondary-light w-max-content relative inset-x-auto top-full rounded border text-base text-white',
             {
-              'py-1 px-4': !tight,
-            },
-            tooltipBoxClassName
+              'py-[6px] px-[8px]': !tight,
+              tooltipBoxClassName,
+            }
           )}
         >
-          {typeof content === 'string' ? t(content) : content}
+          <div>{typeof content === 'string' ? t(content) : content}</div>
+          <div className="text-aqua-pale">
+            {typeof secondaryContent === 'string' ? t(secondaryContent) : secondaryContent}
+          </div>
           <svg
             className="text-primary-dark stroke-secondary-light absolute h-4"
             style={arrowPositionStyle[position]}

@@ -109,23 +109,6 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
       throw new Error('No ptDisplaySet found');
     }
 
-    const toolGroupIds = toolGroupService.getToolGroupIds();
-
-    // Todo: we don't have a proper way to perform a toggle command and update the
-    // state for the toolbar, so here, we manually toggle the toolbar
-
-    // Todo: Crosshairs have bugs for the camera reset currently, so we need to
-    // force turn it off before we update the metadata
-    toolGroupIds.forEach(toolGroupId => {
-      commandsManager.runCommand('toggleCrosshairs', {
-        toolGroupId,
-        toggledState: false,
-      });
-    });
-
-    toolbarService.state.toggles['Crosshairs'] = false;
-    toolbarService._broadcastEvent(toolbarService.EVENTS.TOOL_BAR_STATE_MODIFIED);
-
     // metadata should be dcmjs naturalized
     DicomMetadataStore.updateMetadataForSeries(
       ptDisplaySet.StudyInstanceUID,
@@ -135,6 +118,12 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
 
     // update the displaySets
     displaySetService.setDisplaySetMetadataInvalidated(ptDisplaySet.displaySetInstanceUID);
+
+    // Crosshair position depends on the metadata values such as the positioning interaction
+    // between series, so when the metadata is updated, the crosshairs need to be reset.
+    setTimeout(() => {
+      commandsManager.runCommand('resetCrosshairs');
+    }, 0);
   }
   return (
     <div className="invisible-scrollbar overflow-y-auto overflow-x-hidden">

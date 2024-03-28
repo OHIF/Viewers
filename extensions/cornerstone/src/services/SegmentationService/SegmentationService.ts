@@ -962,7 +962,7 @@ class SegmentationService extends PubSubService {
 
     // Force use of a Uint8Array SharedArrayBuffer for the segmentation to save space and so
     // it is easily compressible in worker thread.
-    await volumeLoader.createAndCacheDerivedVolume(volumeId, {
+    await volumeLoader.createAndCacheDerivedSegmentationVolume(volumeId, {
       volumeId: segmentationId,
       targetBuffer: {
         type: 'Uint8Array',
@@ -1370,8 +1370,6 @@ class SegmentationService extends PubSubService {
 
   public setConfiguration = (configuration: SegmentationConfig): void => {
     const {
-      brushSize,
-      brushThresholdGate,
       fillAlpha,
       fillAlphaInactive,
       outlineWidthActive,
@@ -1463,7 +1461,6 @@ class SegmentationService extends PubSubService {
     segmentInfo.label = label;
 
     if (suppressEvents === false) {
-      // this._setSegmentationModified(segmentationId);
       this._broadcastEvent(this.EVENTS.SEGMENTATION_UPDATED, {
         segmentation,
       });

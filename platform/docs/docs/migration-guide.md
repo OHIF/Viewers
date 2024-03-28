@@ -649,7 +649,6 @@ onModeEnter: ({ servicesManager, extensionManager, commandsManager }) => {
   // Init tool groups (see cornerstone3D for more details)
   initToolGroups(extensionManager, toolGroupService, commandsManager);
 
-  toolbarService.init(extensionManager);
   toolbarService.addButtons(toolbarButtons);
   toolbarService.createButtonSection('primary', [
     'MeasurementTools',
@@ -658,7 +657,6 @@ onModeEnter: ({ servicesManager, extensionManager, commandsManager }) => {
     'Pan',
     'Capture',
     'Layout',
-    'MPR',
     'Crosshairs',
     'MoreTools',
   ]);

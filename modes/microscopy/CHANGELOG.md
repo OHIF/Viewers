@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-beta.65](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.64...v3.8.0-beta.65) (2024-03-28)
+
+**Note:** Version bump only for package @ohif/mode-microscopy
+
+
+
+
+
+# [3.8.0-beta.64](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.63...v3.8.0-beta.64) (2024-03-27)
+
+
+### Features
+
+* **toolbar:** new Toolbar to enable reactive state synchronization ([#3983](https://github.com/OHIF/Viewers/issues/3983)) ([566b25a](https://github.com/OHIF/Viewers/commit/566b25a54425399096864bd263193646556011a5))
+
+
+
+
+
 # [3.8.0-beta.63](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.62...v3.8.0-beta.63) (2024-03-25)
 
 **Note:** Version bump only for package @ohif/mode-microscopy

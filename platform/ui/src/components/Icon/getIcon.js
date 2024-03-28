@@ -95,7 +95,7 @@ import toolMove from './../../assets/icons/tool-move.svg';
 import toolWindow from './../../assets/icons/tool-window-level.svg';
 import toolAnnotate from './../../assets/icons/tool-annotate.svg';
 import toolBidirectional from './../../assets/icons/tool-bidirectional.svg';
-import toolElipse from './../../assets/icons/tool-elipse.svg';
+import toolElipse from './../../assets/icons/tool-ellipse.svg';
 import toolCircle from './../../assets/icons/tool-circle.svg';
 import toolLength from './../../assets/icons/tool-length.svg';
 import toolStackScroll from './../../assets/icons/tool-stack-scroll.svg';
@@ -150,6 +150,20 @@ import iconToolThreshold from './../../assets/icons/icon-tool-threshold.svg';
 import oldTrash from './../../assets/icons/old-trash.svg';
 import oldPlay from './../../assets/icons/old-play.svg';
 import oldStop from './../../assets/icons/old-stop.svg';
+
+/** LAYOUT */
+
+import layoutAdvanced3DFourUp from './../../assets/icons/layout-advanced-3d-four-up.svg';
+import layoutAdvanced3DMain from './../../assets/icons/layout-advanced-3d-main.svg';
+import layoutAdvanced3DOnly from './../../assets/icons/layout-advanced-3d-only.svg';
+import layoutAdvanced3DPrimary from './../../assets/icons/layout-advanced-3d-primary.svg';
+import layoutAdvancedAxialPrimary from './../../assets/icons/layout-advanced-axial-primary.svg';
+import layoutAdvancedMPR from './../../assets/icons/layout-advanced-mpr.svg';
+import layoutCommon1x1 from './../../assets/icons/layout-common-1x1.svg';
+import layoutCommon1x2 from './../../assets/icons/layout-common-1x2.svg';
+import layoutCommon2x2 from './../../assets/icons/layout-common-2x2.svg';
+import layoutCommon2x3 from './../../assets/icons/layout-common-2x3.svg';
+import iconToolRotate from './../../assets/icons/tool-3d-rotate.svg';
 
 /** New investigational use */
 
@@ -242,7 +256,8 @@ const ICONS = {
   'tool-window-level': toolWindow,
   'tool-annotate': toolAnnotate,
   'tool-bidirectional': toolBidirectional,
-  'tool-elipse': toolElipse,
+  'tool-ellipse': toolElipse,
+  'tool-circle': toolCircle,
   'tool-length': toolLength,
   'tool-stack-scroll': toolStackScroll,
   'tool-magnify': toolMagnify,
@@ -262,11 +277,7 @@ const ICONS = {
   'tool-freehand-line': toolFreehand,
   'tool-freehand-polygon': toolFreehandPolygon,
   'tool-polygon': toolPolygon,
-  'tool-brush': toolBrush,
-  'tool-eraser': toolEraser,
-  'tool-scissor-rect': toolScissorRect,
-  'tool-scissor-circle': toolScissorCircle,
-  'tool-paint-fill': toolPaintFill,
+  'tool-3d-rotate': iconToolRotate,
   'edit-patient': editPatient,
   'icon-mpr': iconMPR,
   'icon-next-inactive': iconNextInactive,
@@ -305,6 +316,18 @@ const ICONS = {
   'old-trash': oldTrash,
   'old-play': oldPlay,
   'old-stop': oldStop,
+
+  /** LAYOUT */
+  'layout-advanced-3d-four-up': layoutAdvanced3DFourUp,
+  'layout-advanced-3d-main': layoutAdvanced3DMain,
+  'layout-advanced-3d-only': layoutAdvanced3DOnly,
+  'layout-advanced-3d-primary': layoutAdvanced3DPrimary,
+  'layout-advanced-axial-primary': layoutAdvancedAxialPrimary,
+  'layout-advanced-mpr': layoutAdvancedMPR,
+  'layout-common-1x1': layoutCommon1x1,
+  'layout-common-1x2': layoutCommon1x2,
+  'layout-common-2x2': layoutCommon2x2,
+  'layout-common-2x3': layoutCommon2x3,
 
   /** New investigational use */
   'illustration-investigational-use': investigationalUse,
