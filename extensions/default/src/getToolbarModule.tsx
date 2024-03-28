@@ -29,7 +29,8 @@ export default function getToolbarModule({ commandsManager, servicesManager }) {
     },
     {
       name: 'ohif.layoutSelector',
-      defaultComponent: ToolbarLayoutSelectorWithServices,
+      defaultComponent: props =>
+        ToolbarLayoutSelectorWithServices({ ...props, commandsManager, servicesManager }),
     },
     {
       name: 'ohif.buttonGroup',

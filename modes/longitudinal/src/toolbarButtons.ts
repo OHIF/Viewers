@@ -169,11 +169,7 @@ const toolbarButtons: Button[] = [
     props: {
       icon: 'tool-capture',
       label: 'Capture',
-      commands: [
-        {
-          commandName: 'showDownloadViewportModal',
-        },
-      ],
+      commands: 'showDownloadViewportModal',
       evaluate: 'evaluate.action',
     },
   },
@@ -184,11 +180,6 @@ const toolbarButtons: Button[] = [
       rows: 3,
       columns: 4,
       evaluate: 'evaluate.action',
-      commands: [
-        {
-          commandName: 'setViewportGridLayout',
-        },
-      ],
     },
   },
   {
