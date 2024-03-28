@@ -179,15 +179,7 @@ const toolbarButtons: Button[] = [
       type: 'tool',
       icon: 'tool-3d-rotate',
       label: '3D Rotate',
-      commands: [
-        {
-          commandName: 'setToolActive',
-          commandOptions: {
-            toolName: 'TrackBallRotate',
-          },
-          context: 'CORNERSTONE',
-        },
-      ],
+      commands: setToolActiveToolbar,
     },
   },
   {
@@ -196,11 +188,7 @@ const toolbarButtons: Button[] = [
     props: {
       icon: 'tool-capture',
       label: 'Capture',
-      commands: [
-        {
-          commandName: 'showDownloadViewportModal',
-        },
-      ],
+      commands: 'showDownloadViewportModal',
       evaluate: 'evaluate.action',
     },
   },
