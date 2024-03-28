@@ -134,7 +134,7 @@ function LayoutSelector({
       disableToolTip={tooltipDisabled}
       dropdownContent={
         DropdownContent !== null && (
-          <div className="flex">
+          <div className="flex ">
             <div className="bg-secondary-dark flex flex-col gap-2.5 p-2">
               <div className="text-aqua-pale text-xs">Common</div>
 
@@ -142,7 +142,7 @@ function LayoutSelector({
                 {commonPresets.map((preset, index) => (
                   <LayoutPreset
                     key={index}
-                    classNames="hover:bg-primary-dark group p-1"
+                    classNames="hover:bg-primary-dark group p-1 cursor-pointer"
                     icon={preset.icon}
                     commandOptions={preset.commandOptions}
                     onSelection={onSelection}
@@ -158,7 +158,7 @@ function LayoutSelector({
                 {advancedPresets.map((preset, index) => (
                   <LayoutPreset
                     key={index + commonPresets.length}
-                    classNames="hover:bg-primary-dark group flex gap-2 p-1"
+                    classNames="hover:bg-primary-dark group flex gap-2 p-1 cursor-pointer"
                     icon={preset.icon}
                     title={preset.title}
                     commandOptions={preset.commandOptions}
