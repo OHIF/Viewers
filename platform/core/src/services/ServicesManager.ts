@@ -1,14 +1,22 @@
 import log from './../log.js';
 import Services from '../types/Services';
 import CommandsManager from '../classes/CommandsManager';
+import ExtensionManager from '../extensions/ExtensionManager';
 
 export default class ServicesManager {
   public services: Services = {};
+  public registeredServiceNames: string[] = [];
+  private _commandsManager: CommandsManager;
+  private _extensionManager: ExtensionManager;
 
   constructor(commandsManager: CommandsManager) {
     this._commandsManager = commandsManager;
     this.services = {};
     this.registeredServiceNames = [];
+  }
+
+  setExtensionManager(extensionManager) {
+    this._extensionManager = extensionManager;
   }
 
   /**
@@ -40,6 +48,7 @@ export default class ServicesManager {
         configuration,
         commandsManager: this._commandsManager,
         servicesManager: this,
+        extensionManager: this._extensionManager,
       });
       if (service.altName) {
         console.log('Registering old name', service.altName);

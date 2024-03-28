@@ -6,6 +6,8 @@ class ViewportGridService extends PubSubService {
     ACTIVE_VIEWPORT_ID_CHANGED: 'event::activeviewportidchanged',
     LAYOUT_CHANGED: 'event::layoutChanged',
     GRID_STATE_CHANGED: 'event::gridStateChanged',
+    GRID_SIZE_CHANGED: 'event::gridSizeChanged',
+    VIEWPORTS_READY: 'event::viewportsReady',
   };
 
   public static REGISTRATION = {
@@ -34,6 +36,7 @@ class ViewportGridService extends PubSubService {
     onModeExit: onModeExitImplementation,
     set: setImplementation,
     getNumViewportPanes: getNumViewportPanesImplementation,
+    setViewportIsReady: setViewportIsReadyImplementation,
   }): void {
     if (getStateImplementation) {
       this.serviceImplementation._getState = getStateImplementation;
@@ -60,11 +63,18 @@ class ViewportGridService extends PubSubService {
     if (getNumViewportPanesImplementation) {
       this.serviceImplementation._getNumViewportPanes = getNumViewportPanesImplementation;
     }
+
+    if (setViewportIsReadyImplementation) {
+      this.serviceImplementation._setViewportIsReady = setViewportIsReadyImplementation;
+    }
+  }
+
+  public publishViewportsReady() {
+    this._broadcastEvent(this.EVENTS.VIEWPORTS_READY, {});
   }
 
   public setActiveViewportId(id: string) {
     this.serviceImplementation._setActiveViewport(id);
-    const state = this.getState();
     this._broadcastEvent(this.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED, {
       viewportId: id,
     });
@@ -74,9 +84,20 @@ class ViewportGridService extends PubSubService {
     return this.serviceImplementation._getState();
   }
 
+  public setViewportIsReady(viewportId, callback) {
+    this.serviceImplementation._setViewportIsReady(viewportId, callback);
+  }
+
   public getActiveViewportId() {
     const state = this.getState();
     return state.activeViewportId;
+  }
+
+  public setViewportGridSizeChanged() {
+    const state = this.getState();
+    this._broadcastEvent(this.EVENTS.GRID_SIZE_CHANGED, {
+      state,
+    });
   }
 
   public setDisplaySetsForViewport(props) {
@@ -101,6 +122,17 @@ class ViewportGridService extends PubSubService {
       state,
       viewports,
     });
+  }
+
+  /**
+   * Retrieves the display set instance UIDs for a given viewport.
+   * @param viewportId The ID of the viewport.
+   * @returns An array of display set instance UIDs.
+   */
+  public getDisplaySetsUIDsForViewport(viewportId: string) {
+    const state = this.getState();
+    const viewport = state.viewports.get(viewportId);
+    return viewport?.displaySetInstanceUIDs;
   }
 
   /**

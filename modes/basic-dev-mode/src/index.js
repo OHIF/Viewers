@@ -89,39 +89,8 @@ function modeFactory({ modeConfiguration }) {
         // disabled
       };
 
-      const toolGroupId = 'default';
-      toolGroupService.createToolGroupAndAddTools(toolGroupId, tools);
+      toolGroupService.createToolGroupAndAddTools('default', tools);
 
-      let unsubscribe;
-
-      const activateTool = () => {
-        toolbarService.recordInteraction({
-          groupId: 'WindowLevel',
-          interactionType: 'tool',
-          commands: [
-            {
-              commandName: 'setToolActive',
-              commandOptions: {
-                toolName: 'WindowLevel',
-              },
-              context: 'CORNERSTONE',
-            },
-          ],
-        });
-
-        // We don't need to reset the active tool whenever a viewport is getting
-        // added to the toolGroup.
-        unsubscribe();
-      };
-
-      // Since we only have one viewport for the basic cs3d mode and it has
-      // only one hanging protocol, we can just use the first viewport
-      ({ unsubscribe } = toolGroupService.subscribe(
-        toolGroupService.EVENTS.VIEWPORT_ADDED,
-        activateTool
-      ));
-
-      toolbarService.init(extensionManager);
       toolbarService.addButtons(toolbarButtons);
       toolbarService.createButtonSection('primary', [
         'MeasurementTools',
@@ -133,8 +102,15 @@ function modeFactory({ modeConfiguration }) {
       ]);
     },
     onModeExit: ({ servicesManager }) => {
-      const { toolGroupService, measurementService, toolbarService } = servicesManager.services;
-
+      const {
+        toolGroupService,
+        measurementService,
+        toolbarService,
+        uiDialogService,
+        uiModalService,
+      } = servicesManager.services;
+      uiDialogService.dismissAll();
+      uiModalService.hide();
       toolGroupService.destroy();
     },
     validationTags: {
@@ -145,7 +121,10 @@ function modeFactory({ modeConfiguration }) {
       const modalities_list = modalities.split('\\');
 
       // Slide Microscopy modality not supported by basic mode yet
-      return !modalities_list.includes('SM');
+      return {
+        valid: !modalities_list.includes('SM'),
+        description: 'The mode does not support the following modalities: SM',
+      };
     },
     routes: [
       {

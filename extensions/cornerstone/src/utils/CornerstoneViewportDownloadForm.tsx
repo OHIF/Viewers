@@ -93,6 +93,7 @@ const CornerstoneViewportDownloadForm = ({
       renderingEngine.resize();
 
       // Trigger the render on the viewport to update the on screen
+      downloadViewport.resetCamera();
       downloadViewport.render();
 
       downloadViewportElement.addEventListener(
@@ -188,7 +189,7 @@ const CornerstoneViewportDownloadForm = ({
     // add the viewport to the toolGroup
     toolGroup.addViewport(downloadViewportId, renderingEngineId);
 
-    Object.keys(toolGroup._toolInstances).forEach(toolName => {
+    Object.keys(toolGroup.getToolInstances()).forEach(toolName => {
       // make all tools Enabled so that they can not be interacted with
       // in the download viewport
       if (toggle && toolName !== 'Crosshairs') {
@@ -223,7 +224,6 @@ const CornerstoneViewportDownloadForm = ({
       minimumSize={MINIMUM_SIZE}
       maximumSize={MAX_TEXTURE_SIZE}
       defaultSize={DEFAULT_SIZE}
-      canvasClass={'cornerstone-canvas'}
       activeViewportElement={activeViewportElement}
       enableViewport={enableViewport}
       disableViewport={disableViewport}

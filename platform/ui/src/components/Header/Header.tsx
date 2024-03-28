@@ -30,13 +30,11 @@ function Header({
 
   return (
     <NavBar
-      className="justify-between border-b-4 border-black"
       isSticky={isSticky}
+      {...props}
     >
-      <div className="flex flex-1 justify-between">
-        <div className="flex items-center">
-          {/* // TODO: Should preserve filter/sort
-              // Either injected service? Or context (like react router's `useLocation`?) */}
+      <div className="relative h-[48px] items-center ">
+        <div className="absolute left-0 top-1/2 -translate-y-1/2 ">
           <div
             className={classNames(
               'mr-3 inline-flex items-center',
@@ -56,9 +54,11 @@ function Header({
             </div>
           </div>
         </div>
-        <div className="flex items-center">{children}</div>
-        <div className="flex items-center">
-          <span className="text-common-light mr-3 text-lg">{t('INVESTIGATIONAL USE ONLY')}</span>
+        {/* <div className="absolute top-1/2 left-[211px]  h-8 w-20 -translate-y-1/2">{future left component}</div> */}
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform">
+          <div className="flex items-center justify-center space-x-2">{children}</div>
+        </div>
+        <div className="absolute right-0 top-1/2 -translate-y-1/2 ">
           <Dropdown
             id="options"
             showDropdownIcon={false}

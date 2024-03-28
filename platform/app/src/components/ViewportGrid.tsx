@@ -1,4 +1,5 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback, useRef, useState } from 'react';
+import ReactResizeDetector from 'react-resize-detector';
 import PropTypes from 'prop-types';
 import { ServicesManager, Types, MeasurementService } from '@ohif/core';
 import { ViewportGrid, ViewportPane, useViewportGrid } from '@ohif/ui';
@@ -13,11 +14,15 @@ function ViewerViewportGrid(props) {
 
   const { layout, activeViewportId, viewports } = viewportGrid;
   const { numCols, numRows } = layout;
+  const elementRef = useRef(null);
+  const layoutHash = useRef(null);
 
   // TODO -> Need some way of selecting which displaySets hit the viewports.
   const { displaySetService, measurementService, hangingProtocolService, uiNotificationService } = (
     servicesManager as ServicesManager
   ).services;
+
+  const generateLayoutHash = () => `${numCols}-${numRows}`;
 
   /**
    * This callback runs after the viewports structure has changed in any way.
@@ -132,6 +137,16 @@ function ViewerViewportGrid(props) {
       unsubscribe();
     };
   }, []);
+
+  // Check viewport readiness in useEffect
+  useEffect(() => {
+    const allReady = viewportGridService.getGridViewportsReady();
+    const sameLayoutHash = layoutHash.current === generateLayoutHash();
+    if (allReady && !sameLayoutHash) {
+      layoutHash.current = generateLayoutHash();
+      viewportGridService.publishViewportsReady();
+    }
+  }, [viewportGridService, generateLayoutHash]);
 
   useEffect(() => {
     const { unsubscribe } = measurementService.subscribe(
@@ -325,6 +340,9 @@ function ViewerViewportGrid(props) {
               viewportOptions={viewportOptions}
               displaySetOptions={displaySetOptions}
               needsRerendering={displaySetsNeedsRerendering}
+              onReady={() => {
+                viewportGridService.setViewportIsReady(viewportId, true);
+              }}
             />
           </div>
         </ViewportPane>
@@ -342,13 +360,25 @@ function ViewerViewportGrid(props) {
   }
 
   return (
-    <ViewportGrid
-      numRows={numRows}
-      numCols={numCols}
+    <div
+      ref={elementRef}
+      className="h-full w-full"
     >
-      {/* {ViewportPanes} */}
-      {getViewportPanes()}
-    </ViewportGrid>
+      <ViewportGrid
+        numRows={numRows}
+        numCols={numCols}
+      >
+        <ReactResizeDetector
+          refreshMode="debounce"
+          refreshRate={7} // ms seems to be fine for 10 viewports
+          onResize={() => {
+            viewportGridService.setViewportGridSizeChanged();
+          }}
+          targetRef={elementRef.current}
+        />
+        {getViewportPanes()}
+      </ViewportGrid>
+    </div>
   );
 }
 
