@@ -181,7 +181,7 @@ function getUpdatedViewportsForSegmentation({
     }
   });
 
-  return updatedViewports.filter(v => v.viewportOptions.viewportType !== 'volume3d');
+  return updatedViewports.filter(v => v.viewportOptions?.viewportType !== 'volume3d');
 }
 
 export {

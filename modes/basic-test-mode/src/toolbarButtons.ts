@@ -156,6 +156,23 @@ const toolbarButtons: Button[] = [
     },
   },
   {
+    id: 'MPR',
+    uiType: 'ohif.radioGroup',
+    props: {
+      icon: 'icon-mpr',
+      label: 'MPR',
+      commands: [
+        {
+          commandName: 'toggleHangingProtocol',
+          commandOptions: {
+            protocolId: 'mpr',
+          },
+        },
+      ],
+      evaluate: 'evaluate.mpr',
+    },
+  },
+  {
     id: 'TrackBallRotate',
     type: 'ohif.radioGroup',
     props: {
@@ -194,11 +211,7 @@ const toolbarButtons: Button[] = [
       rows: 3,
       columns: 4,
       evaluate: 'evaluate.action',
-      commands: [
-        {
-          commandName: 'setViewportGridLayout',
-        },
-      ],
+      commands: 'setViewportGridLayout',
     },
   },
   {
