@@ -94,6 +94,12 @@ export function WindowLevelActionMenu({
   }, [viewportId]);
 
   useEffect(() => {
+    if (colorbarService.hasColorbar(viewportId)) {
+      colorbarService.removeColorbar(viewportId);
+    }
+  }, [displaySets]);
+
+  useEffect(() => {
     if (viewport instanceof VolumeViewport3D) {
       setIs3DVolume(true);
     }
