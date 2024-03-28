@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-beta.66](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.65...v3.8.0-beta.66) (2024-03-28)
+
+
+### Bug Fixes
+
+* **new layout:** address black screen bugs ([#4008](https://github.com/OHIF/Viewers/issues/4008)) ([158a181](https://github.com/OHIF/Viewers/commit/158a1816703e0ad66cae08cb9bd1ffb93bbd8d43))
+
+
+
+
+
 # [3.8.0-beta.65](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.64...v3.8.0-beta.65) (2024-03-28)
 
 
