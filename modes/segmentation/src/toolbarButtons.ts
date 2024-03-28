@@ -1,5 +1,4 @@
 import type { Button } from '@ohif/core/types';
-import { EVENTS } from '@cornerstonejs/core';
 import { defaults, ToolbarService, ViewportGridService } from '@ohif/core';
 import { WindowLevelMenuItem } from '@ohif/ui';
 
@@ -174,25 +173,6 @@ const toolbarButtons: Button[] = [
           tooltip: 'Flip Horizontally',
           commands: 'flipViewportHorizontal',
           evaluate: ['evaluate.viewportProperties.toggle', 'evaluate.not3D'],
-        }),
-        createButton({
-          id: 'ImageSliceSync',
-          icon: 'link',
-          label: 'Image Slice Sync',
-          tooltip: 'Enable position synchronization on stack viewports',
-          commands: {
-            commandName: 'toggleSynchronizer',
-            commandOptions: {
-              type: 'imageSlice',
-            },
-          },
-          listeners: {
-            [EVENTS.STACK_VIEWPORT_NEW_STACK]: {
-              commandName: 'toggleImageSliceSync',
-              commandOptions: { toggledState: true },
-            },
-          },
-          evaluate: ['evaluate.cornerstone.synchronizer', 'evaluate.not3D'],
         }),
         createButton({
           id: 'ReferenceLines',
