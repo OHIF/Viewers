@@ -238,6 +238,11 @@ class ViewportInfo {
     return this.viewportOptions;
   }
 
+  public getPresentationIds(): CoreTypes.PresentationIds {
+    const { presentationIds } = this.viewportOptions;
+    return presentationIds;
+  }
+
   public setDisplaySetOptions(displaySetOptions: Array<DisplaySetOptions>): void {
     this.displaySetOptions = displaySetOptions;
   }

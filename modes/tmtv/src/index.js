@@ -56,39 +56,6 @@ function modeFactory({ modeConfiguration }) {
       // Init Default and SR ToolGroups
       initToolGroups(toolNames, Enums, toolGroupService, commandsManager);
 
-      const setWindowLevelActive = () => {
-        toolbarService.recordInteraction({
-          groupId: 'WindowLevel',
-          interactionType: 'tool',
-          commands: [
-            {
-              commandName: 'setToolActive',
-              commandOptions: {
-                toolName: toolNames.WindowLevel,
-                toolGroupId: toolGroupIds.CT,
-              },
-              context: 'CORNERSTONE',
-            },
-            {
-              commandName: 'setToolActive',
-              commandOptions: {
-                toolName: toolNames.WindowLevel,
-                toolGroupId: toolGroupIds.PT,
-              },
-              context: 'CORNERSTONE',
-            },
-            {
-              commandName: 'setToolActive',
-              commandOptions: {
-                toolName: toolNames.WindowLevel,
-                toolGroupId: toolGroupIds.Fusion,
-              },
-              context: 'CORNERSTONE',
-            },
-          ],
-        });
-      };
-
       const { unsubscribe } = toolGroupService.subscribe(
         toolGroupService.EVENTS.VIEWPORT_ADDED,
         () => {
@@ -110,13 +77,10 @@ function modeFactory({ modeConfiguration }) {
             toolGroupService,
             displaySetService
           );
-
-          setWindowLevelActive();
         }
       );
 
       unsubscriptions.push(unsubscribe);
-      toolbarService.init(extensionManager);
       toolbarService.addButtons(toolbarButtons);
       toolbarService.createButtonSection('primary', [
         'MeasurementTools',
@@ -124,6 +88,7 @@ function modeFactory({ modeConfiguration }) {
         'WindowLevel',
         'Crosshairs',
         'Pan',
+        'SyncToggle',
         'RectangleROIStartEndThreshold',
         'fusionPTColormap',
       ]);
@@ -165,9 +130,13 @@ function modeFactory({ modeConfiguration }) {
         syncGroupService,
         segmentationService,
         cornerstoneViewportService,
+        uiDialogService,
+        uiModalService,
       } = servicesManager.services;
 
       unsubscriptions.forEach(unsubscribe => unsubscribe());
+      uiDialogService.dismissAll();
+      uiModalService.hide();
       toolGroupService.destroy();
       syncGroupService.destroy();
       segmentationService.destroy();
@@ -193,7 +162,10 @@ function modeFactory({ modeConfiguration }) {
         study.studyInstanceUid !== '1.3.6.1.4.1.12842.1.1.14.3.20220915.105557.468.2963630849';
 
       // there should be both CT and PT modalities and the modality should not be SM
-      return isValid;
+      return {
+        valid: isValid,
+        description: 'The mode requires both PT and CT series in the study',
+      };
     },
     routes: [
       {

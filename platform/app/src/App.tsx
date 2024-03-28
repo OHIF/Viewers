@@ -16,6 +16,7 @@ import {
   ViewportGridProvider,
   CineProvider,
   UserAuthenticationProvider,
+  ToolboxProvider,
 } from '@ohif/ui';
 // Viewer Project
 // TODO: Should this influence study list?
@@ -69,6 +70,7 @@ function App({ config, defaultExtensions, defaultModes }) {
     [UserAuthenticationProvider, { service: userAuthenticationService }],
     [I18nextProvider, { i18n }],
     [ThemeWrapper],
+    [ToolboxProvider],
     [ViewportGridProvider, { service: viewportGridService }],
     [ViewportDialogProvider, { service: uiViewportDialogService }],
     [CineProvider, { service: cineService }],

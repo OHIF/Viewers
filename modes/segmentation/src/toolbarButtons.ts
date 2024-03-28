@@ -1,46 +1,14 @@
-import {
-  // ExpandableToolbarButton,
-  // ListMenu,
-  WindowLevelMenuItem,
-} from '@ohif/ui';
-import { defaults } from '@ohif/core';
+import { defaults, ToolbarService } from '@ohif/core';
+import type { Button } from '@ohif/core/types';
+import { WindowLevelMenuItem } from '@ohif/ui';
 
 const { windowLevelPresets } = defaults;
-/**
- *
- * @param {*} type - 'tool' | 'action' | 'toggle'
- * @param {*} id
- * @param {*} icon
- * @param {*} label
- */
-function _createButton(type, id, icon, label, commands, tooltip, uiType) {
-  return {
-    id,
-    icon,
-    label,
-    type,
-    commands,
-    tooltip,
-    uiType,
-  };
-}
 
-const _createActionButton = _createButton.bind(null, 'action');
-const _createToggleButton = _createButton.bind(null, 'toggle');
-const _createToolButton = _createButton.bind(null, 'tool');
-
-/**
- *
- * @param {*} preset - preset number (from above import)
- * @param {*} title
- * @param {*} subtitle
- */
 function _createWwwcPreset(preset, title, subtitle) {
   return {
     id: preset.toString(),
     title,
     subtitle,
-    type: 'action',
     commands: [
       {
         commandName: 'setWindowLevel',
@@ -53,16 +21,8 @@ function _createWwwcPreset(preset, title, subtitle) {
   };
 }
 
-const toolGroupIds = ['default', 'mpr', 'SRToolGroup'];
-
-/**
- * Creates an array of 'setToolActive' commands for the given toolName - one for
- * each toolGroupId specified in toolGroupIds.
- * @param {string} toolName
- * @returns {Array} an array of 'setToolActive' commands
- */
-function _createSetToolActiveCommands(toolName) {
-  const temp = toolGroupIds.map(toolGroupId => ({
+function _createSetToolActiveCommands(toolName, toolGroupIds = ['default', 'mpr', 'SRToolGroup']) {
+  return toolGroupIds.map(toolGroupId => ({
     commandName: 'setToolActive',
     commandOptions: {
       toolGroupId,
@@ -70,49 +30,36 @@ function _createSetToolActiveCommands(toolName) {
     },
     context: 'CORNERSTONE',
   }));
-  return temp;
 }
 
-const toolbarButtons = [
-  // Zoom..
+const toolbarButtons: Button[] = [
   {
     id: 'Zoom',
-    type: 'ohif.radioGroup',
+    uiType: 'ohif.radioGroup',
     props: {
-      type: 'tool',
       icon: 'tool-zoom',
       label: 'Zoom',
       commands: _createSetToolActiveCommands('Zoom'),
+      evaluate: 'evaluate.cornerstoneTool',
     },
   },
-  // Window Level + Presets...
   {
     id: 'WindowLevel',
-    type: 'ohif.splitButton',
+    uiType: 'ohif.splitButton',
     props: {
       groupId: 'WindowLevel',
-      primary: _createToolButton(
-        'WindowLevel',
-        'tool-window-level',
-        'Window Level',
-        [
-          {
-            commandName: 'setToolActive',
-            commandOptions: {
-              toolName: 'WindowLevel',
-            },
-            context: 'CORNERSTONE',
-          },
-        ],
-        'Window Level'
-      ),
+      primary: ToolbarService.createButton({
+        id: 'WindowLevel',
+        icon: 'tool-window-level',
+        label: 'Window Level',
+        tooltip: 'Window Level',
+        commands: _createSetToolActiveCommands('WindowLevel'),
+        evaluate: 'evaluate.cornerstoneTool',
+      }),
       secondary: {
         icon: 'chevron-down',
-        label: 'W/L Manual',
-        isActive: true,
         tooltip: 'W/L Presets',
       },
-      isAction: true, // ?
       renderer: WindowLevelMenuItem,
       items: [
         _createWwwcPreset(1, 'Soft tissue', '400 / 40'),
@@ -123,46 +70,49 @@ const toolbarButtons = [
       ],
     },
   },
-  // Pan...
   {
     id: 'Pan',
-    type: 'ohif.radioGroup',
+    uiType: 'ohif.radioGroup',
     props: {
-      type: 'tool',
       icon: 'tool-move',
       label: 'Pan',
       commands: _createSetToolActiveCommands('Pan'),
+      evaluate: 'evaluate.cornerstoneTool',
     },
   },
   {
     id: 'Capture',
-    type: 'ohif.action',
+    uiType: 'ohif.radioGroup',
     props: {
       icon: 'tool-capture',
       label: 'Capture',
-      type: 'action',
       commands: [
         {
           commandName: 'showDownloadViewportModal',
-          commandOptions: {},
           context: 'CORNERSTONE',
+        },
+      ],
+      evaluate: 'evaluate.action',
+    },
+  },
+  {
+    id: 'Layout',
+    uiType: 'ohif.layoutSelector',
+    props: {
+      rows: 3,
+      columns: 3,
+      evaluate: 'evaluate.action',
+      commands: [
+        {
+          commandName: 'setViewportGridLayout',
         },
       ],
     },
   },
   {
-    id: 'Layout',
-    type: 'ohif.layoutSelector',
-    props: {
-      rows: 3,
-      columns: 3,
-    },
-  },
-  {
     id: 'MPR',
-    type: 'ohif.action',
+    uiType: 'ohif.radioGroup',
     props: {
-      type: 'toggle',
       icon: 'icon-mpr',
       label: 'MPR',
       commands: [
@@ -174,180 +124,124 @@ const toolbarButtons = [
           context: 'DEFAULT',
         },
       ],
+      evaluate: 'evaluate.mpr',
     },
   },
   {
     id: 'Crosshairs',
-    type: 'ohif.radioGroup',
+    uiType: 'ohif.radioGroup',
     props: {
-      type: 'tool',
       icon: 'tool-crosshair',
       label: 'Crosshairs',
-      commands: [
-        {
-          commandName: 'setToolActive',
-          commandOptions: {
-            toolName: 'Crosshairs',
-            toolGroupId: 'mpr',
-          },
-          context: 'CORNERSTONE',
-        },
-      ],
+      commands: _createSetToolActiveCommands('Crosshairs', ['mpr']),
+      evaluate: 'evaluate.cornerstoneTool',
     },
   },
-  // More...
   {
     id: 'MoreTools',
-    type: 'ohif.splitButton',
+    uiType: 'ohif.splitButton',
     props: {
-      isRadio: true, // ?
       groupId: 'MoreTools',
-      primary: _createActionButton(
-        'Reset',
-        'tool-reset',
-        'Reset View',
-        [
+      evaluate: 'evaluate.group.promoteToPrimaryIfCornerstoneToolNotActiveInTheList',
+      primary: ToolbarService.createButton({
+        id: 'Reset',
+        icon: 'tool-reset',
+        label: 'Reset View',
+        tooltip: 'Reset',
+        commands: [
           {
             commandName: 'resetViewport',
-            commandOptions: {},
             context: 'CORNERSTONE',
           },
         ],
-        'Reset'
-      ),
+        evaluate: 'evaluate.action',
+      }),
       secondary: {
         icon: 'chevron-down',
-        label: '',
-        isActive: true,
         tooltip: 'More Tools',
       },
       items: [
-        _createActionButton(
-          'Reset',
-          'tool-reset',
-          'Reset View',
-          [
-            {
-              commandName: 'resetViewport',
-              commandOptions: {},
-              context: 'CORNERSTONE',
-            },
-          ],
-          'Reset'
-        ),
-        _createActionButton(
-          'rotate-right',
-          'tool-rotate-right',
-          'Rotate Right',
-          [
+        ToolbarService.createButton({
+          id: 'RotateRight',
+          icon: 'tool-rotate-right',
+          label: 'Rotate Right',
+          tooltip: 'Rotate +90',
+          commands: [
             {
               commandName: 'rotateViewportCW',
-              commandOptions: {},
               context: 'CORNERSTONE',
             },
           ],
-          'Rotate +90'
-        ),
-        _createActionButton(
-          'flip-horizontal',
-          'tool-flip-horizontal',
-          'Flip Horizontally',
-          [
+          evaluate: 'evaluate.action',
+        }),
+        ToolbarService.createButton({
+          id: 'FlipHorizontal',
+          icon: 'tool-flip-horizontal',
+          label: 'Flip Horizontally',
+          tooltip: 'Flip Horizontal',
+          commands: [
             {
               commandName: 'flipViewportHorizontal',
-              commandOptions: {},
               context: 'CORNERSTONE',
             },
           ],
-          'Flip Horizontal'
-        ),
-        _createToggleButton('ImageSliceSync', 'link', 'Stack Image Sync', [
-          {
-            commandName: 'toggleImageSliceSync',
-            commandOptions: {},
-            context: 'CORNERSTONE',
-          },
-        ]),
-        _createToggleButton(
-          'ReferenceLines',
-          'tool-referenceLines', // change this with the new icon
-          'Reference Lines',
-          [
-            {
-              commandName: 'toggleReferenceLines',
-              commandOptions: {},
-              context: 'CORNERSTONE',
-            },
-          ]
-        ),
-        _createToolButton(
-          'StackScroll',
-          'tool-stack-scroll',
-          'Stack Scroll',
-          [
-            {
-              commandName: 'setToolActive',
-              commandOptions: {
-                toolName: 'StackScroll',
-              },
-              context: 'CORNERSTONE',
-            },
-          ],
-          'Stack Scroll'
-        ),
-        _createActionButton(
-          'invert',
-          'tool-invert',
-          'Invert',
-          [
+          evaluate: 'evaluate.action',
+        }),
+        ToolbarService.createButton({
+          id: 'StackScroll',
+          icon: 'tool-stack-scroll',
+          label: 'Stack Scroll',
+          tooltip: 'Stack Scroll',
+          commands: _createSetToolActiveCommands('StackScroll'),
+          evaluate: 'evaluate.cornerstoneTool',
+        }),
+        ToolbarService.createButton({
+          id: 'Magnify',
+          icon: 'tool-magnify',
+          label: 'Magnify',
+          tooltip: 'Magnify',
+          commands: _createSetToolActiveCommands('Magnify'),
+          evaluate: 'evaluate.cornerstoneTool',
+        }),
+        ToolbarService.createButton({
+          id: 'Invert',
+          icon: 'tool-invert',
+          label: 'Invert',
+          tooltip: 'Invert Colors',
+          commands: [
             {
               commandName: 'invertViewport',
-              commandOptions: {},
               context: 'CORNERSTONE',
             },
           ],
-          'Invert Colors'
-        ),
-        _createToggleButton(
-          'cine',
-          'tool-cine',
-          'Cine',
-          [
+          evaluate: 'evaluate.action',
+        }),
+        ToolbarService.createButton({
+          id: 'Cine',
+          icon: 'tool-cine',
+          label: 'Cine',
+          tooltip: 'Cine',
+          commands: [
             {
               commandName: 'toggleCine',
               context: 'CORNERSTONE',
             },
           ],
-          'Cine'
-        ),
-        _createToolButton(
-          'Magnify',
-          'tool-magnify',
-          'Magnify',
-          [
-            {
-              commandName: 'setToolActive',
-              commandOptions: {
-                toolName: 'Magnify',
-              },
-              context: 'CORNERSTONE',
-            },
-          ],
-          'Magnify'
-        ),
-        _createActionButton(
-          'TagBrowser',
-          'list-bullets',
-          'Dicom Tag Browser',
-          [
+          evaluate: 'evaluate.action',
+        }),
+        ToolbarService.createButton({
+          id: 'DicomTagBrowser',
+          icon: 'list-bullets',
+          label: 'Dicom Tag Browser',
+          tooltip: 'Dicom Tag Browser',
+          commands: [
             {
               commandName: 'openDICOMTagViewer',
-              commandOptions: {},
               context: 'DEFAULT',
             },
           ],
-          'Dicom Tag Browser'
-        ),
+          evaluate: 'evaluate.action',
+        }),
       ],
     },
   },

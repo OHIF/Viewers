@@ -37,7 +37,7 @@ const SegmentItem = ({
     >
       <div
         className={classnames('bg-primary-dark group/number grid w-[32px] place-items-center', {
-          'bg-primary-light border-primary-light rounded-l-[4px] border text-black': isActive,
+          '!bg-primary-light border-primary-light rounded-l-[4px] border text-black': isActive,
           'border-primary-dark border': !isActive,
         })}
         onMouseEnter={() => setIsNumberBoxHovering(true)}
