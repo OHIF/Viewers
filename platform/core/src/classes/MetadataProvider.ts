@@ -7,6 +7,7 @@ import fetchPaletteColorLookupTableData from '../utils/metadataProvider/fetchPal
 import toNumber from '../utils/toNumber';
 import combineFrameInstance from '../utils/combineFrameInstance';
 
+
 class MetadataProvider {
   constructor() {
     // Define the main "metadataLookup" private property as an immutable property.
@@ -32,6 +33,9 @@ class MetadataProvider {
       writable: false,
       value: new Map(),
     });
+
+    this.updateMedataCallback = null;
+
   }
 
   addImageIdToUIDs(imageId, uids) {
@@ -113,6 +117,10 @@ class MetadataProvider {
       return instance[naturalizedTagOrWADOImageLoaderTag];
     }
 
+    if (this.updateMedataCallback !== null) {
+      this.updateMedataCallback(instance);
+    }
+
     // Maybe its a legacy dicomImageLoader tag then:
     return this._getCornerstoneDICOMImageLoaderTag(naturalizedTagOrWADOImageLoaderTag, instance);
   }
@@ -124,6 +132,12 @@ class MetadataProvider {
   public addHandler(wadoImageLoaderTag: string, handler) {
     WADO_IMAGE_LOADER[wadoImageLoaderTag] = handler;
   }
+
+
+  public setUpdataMetadataCallback(callback) {
+    this.updateMedataCallback = callback;
+  }
+
 
   _getCornerstoneDICOMImageLoaderTag(wadoImageLoaderTag, instance) {
     let metadata = WADO_IMAGE_LOADER[wadoImageLoaderTag]?.(instance);

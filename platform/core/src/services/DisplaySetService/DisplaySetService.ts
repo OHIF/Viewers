@@ -424,4 +424,10 @@ export default class DisplaySetService extends PubSubService {
 
     return result;
   }
+
+
+  public triggerDisplaySetChanged(displayset): void {
+
+    this._broadcastEvent(EVENTS.DISPLAY_SETS_CHANGED, displayset);
+  }
 }
