@@ -44,6 +44,13 @@ export const findOrCreateViewport = (
       },
     };
   }
+
+  // and lastly if there is no default viewport, then we see if we can grab the
+  // viewportsByPosition at the position index and use that
+  const candidate = Object.values(viewportsByPosition)[position];
+
+  // if it has something to display, then we can use it
+  return candidate.displaySetInstanceUIDs ? candidate : {};
   return {};
 };
 

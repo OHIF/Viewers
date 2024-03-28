@@ -52,45 +52,28 @@ const generateAdvancedPresets = hangingProtocolService => {
     .filter(preset => preset !== null);
 };
 
-function ToolbarLayoutSelectorWithServices({ servicesManager, ...props }) {
-  const { toolbarService } = servicesManager.services;
-
+function ToolbarLayoutSelectorWithServices({ commandsManager, servicesManager, ...props }) {
   const [isDisabled, setIsDisabled] = useState(false);
 
   const handleMouseEnter = () => {
     setIsDisabled(false);
   };
 
-  const onSelection = useCallback(
-    props => {
-      toolbarService.recordInteraction({
-        interactionType: 'action',
-        commands: [
-          {
-            commandName: 'setViewportGridLayout',
-            commandOptions: { ...props },
-          },
-        ],
-      });
-      setIsDisabled(true);
-    },
-    [toolbarService]
-  );
-  const onSelectionPreset = useCallback(
-    props => {
-      toolbarService.recordInteraction({
-        interactionType: 'action',
-        commands: [
-          {
-            commandName: 'setHangingProtocol',
-            commandOptions: { ...props },
-          },
-        ],
-      });
-      setIsDisabled(true);
-    },
-    [toolbarService]
-  );
+  const onSelection = useCallback(props => {
+    commandsManager.run({
+      commandName: 'setViewportGridLayout',
+      commandOptions: { ...props },
+    });
+    setIsDisabled(true);
+  }, []);
+
+  const onSelectionPreset = useCallback(props => {
+    commandsManager.run({
+      commandName: 'setHangingProtocol',
+      commandOptions: { ...props },
+    });
+    setIsDisabled(true);
+  }, []);
 
   return (
     <div onMouseEnter={handleMouseEnter}>

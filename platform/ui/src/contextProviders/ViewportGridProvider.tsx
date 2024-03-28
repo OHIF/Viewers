@@ -88,7 +88,11 @@ const determineActiveViewportId = (state: DefaultState, newViewports: Map) => {
   // and find the best match
   const currentOrientation = currentActiveViewport.viewportOptions.orientation;
 
-  const sortedViewports = Array.from(newViewports.values()).sort((a, b) => {
+  const filteredNewViewports = Array.from(newViewports.values()).filter(
+    viewport => viewport.displaySetInstanceUIDs?.length > 0
+  );
+
+  const sortedViewports = Array.from(filteredNewViewports.values()).sort((a, b) => {
     // Compare orientations
     const aOrientationMatch = a.viewportOptions.orientation === currentOrientation;
     const bOrientationMatch = b.viewportOptions.orientation === currentOrientation;
@@ -227,6 +231,7 @@ export function ViewportGridProvider({ children, service }) {
             // If the viewport doesn't have a viewportId, we create one
             if (!viewport.viewportOptions?.viewportId) {
               const randomUID = utils.uuidv4().substring(0, 8);
+              viewport.viewportOptions = viewport.viewportOptions || {};
               viewport.viewportOptions.viewportId = `viewport-${randomUID}`;
             }
 
