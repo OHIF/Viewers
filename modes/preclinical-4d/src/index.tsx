@@ -38,7 +38,7 @@ function modeFactory({ modeConfiguration }) {
   return {
     id,
     routeName: 'dynamic-volume',
-    displayName: '4D Volume',
+    displayName: '4D PT/CT',
     onModeEnter: function ({ servicesManager, extensionManager, commandsManager }) {
       const { measurementService, toolbarService, toolGroupService } = servicesManager.services;
 
@@ -77,8 +77,13 @@ function modeFactory({ modeConfiguration }) {
         series: [],
       };
     },
-    isValidMode: ({ modalities }) => {
+    isValidMode: ({ modalities, study }) => {
       const modalities_list = modalities.split('\\');
+
+      return {
+        valid: study.mrn === 'M1',
+        description: 'This mode is only available for 4D PET/CT studies.',
+      };
 
       return REQUIRED_MODALITIES.every(modality => modalities_list.includes(modality));
     },
