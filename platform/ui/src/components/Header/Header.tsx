@@ -38,7 +38,7 @@ function Header({
       {...props}
     >
       <div className="relative h-[48px] items-center ">
-        <div className="absolute left-0 top-1/2 -translate-y-1/2 ">
+        <div className="absolute left-0 top-1/2 flex -translate-y-1/2 items-center">
           <div
             className={classNames(
               'mr-3 inline-flex items-center',
@@ -62,28 +62,30 @@ function Header({
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform">
           <div className="flex items-center justify-center space-x-2">{children}</div>
         </div>
-        <div className="absolute right-0 top-1/2 -translate-y-1/2 ">
+        <div className="absolute right-0 top-1/2 flex -translate-y-1/2 select-none items-center">
           {(showPatientInfo === PatientInfoVisibility.VISIBLE ||
             showPatientInfo === PatientInfoVisibility.VISIBLE_COLLAPSED) && (
             <HeaderPatientInfo servicesManager={servicesManager} />
           )}
-          <div className="bg-primary-dark border-primary-dark mx-1.5 h-[25px] max-w-xs border"></div>
-          <Dropdown
-            id="options"
-            showDropdownIcon={false}
-            list={menuOptions}
-            alignment="right"
-          >
-            <IconButton
-              id={'options-settings-icon'}
-              variant="text"
-              color="inherit"
-              size="initial"
-              className="text-primary-active hover:bg-primary-dark"
+          <div className="border-primary-dark mx-1.5 h-[25px] border-r"></div>
+          <div className="flex-shrink-0">
+            <Dropdown
+              id="options"
+              showDropdownIcon={false}
+              list={menuOptions}
+              alignment="right"
             >
-              <Icon name="icon-settings" />
-            </IconButton>
-          </Dropdown>
+              <IconButton
+                id={'options-settings-icon'}
+                variant="text"
+                color="inherit"
+                size="initial"
+                className="text-primary-active hover:bg-primary-dark h-full w-full"
+              >
+                <Icon name="icon-settings" />
+              </IconButton>
+            </Dropdown>
+          </div>
         </div>
       </div>
     </NavBar>

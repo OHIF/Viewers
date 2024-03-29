@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useEffect, cloneElement, Children } from 'react';
+import React, { useState, useEffect, cloneElement, Children } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { ButtonEnums } from '../../components';
