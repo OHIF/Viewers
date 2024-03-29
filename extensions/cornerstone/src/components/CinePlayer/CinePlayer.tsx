@@ -26,6 +26,10 @@ function WrappedCinePlayer({ enabledVPElement, viewportId, servicesManager }) {
   };
 
   const newDisplaySetHandler = useCallback(() => {
+    if (!enabledVPElement || !isCineEnabled) {
+      return;
+    }
+
     const { viewports } = viewportGridService.getState();
     const { displaySetInstanceUIDs } = viewports.get(viewportId);
     let frameRate = 24;
@@ -47,7 +51,7 @@ function WrappedCinePlayer({ enabledVPElement, viewportId, servicesManager }) {
     }
     cineService.setCine({ id: viewportId, isPlaying, frameRate });
     setNewStackFrameRate(frameRate);
-  }, [displaySetService, viewportId, viewportGridService, cines]);
+  }, [displaySetService, viewportId, viewportGridService, cines, isCineEnabled]);
 
   useEffect(() => {
     newDisplaySetHandler();
