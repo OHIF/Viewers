@@ -2,8 +2,10 @@ import { Types } from '@ohif/core';
 
 export const mpr: Types.HangingProtocol.Protocol = {
   id: 'mpr',
-  name: 'Multi-Planar Reconstruction',
+  name: 'MPR',
   locked: true,
+  icon: 'layout-advanced-mpr',
+  isPreset: true,
   createdDate: '2021-02-23',
   modifiedDate: '2023-08-15',
   availableTo: {},
@@ -22,11 +24,6 @@ export const mpr: Types.HangingProtocol.Protocol = {
       },
     ],
     // Turns off crosshairs when switching out of MPR mode
-    onProtocolExit: [
-      {
-        commandName: 'cleanUpCrosshairs',
-      },
-    ],
   },
   displaySetSelectors: {
     activeDisplaySet: {

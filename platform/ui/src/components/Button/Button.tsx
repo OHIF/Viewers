@@ -67,9 +67,12 @@ const Button = ({
   name,
   className,
   onClick,
+  dataCY,
   startIconTooltip = null,
   endIconTooltip = null,
 }) => {
+  dataCY = dataCY || `${name}-btn`;
+
   const startIcon = startIconProp && (
     <>
       {React.cloneElement(startIconProp, {
@@ -109,7 +112,7 @@ const Button = ({
       disabled={disabled}
       ref={buttonElement}
       onClick={handleOnClick}
-      data-cy={`${name}-btn`}
+      data-cy={dataCY}
     >
       {startIconTooltip ? <Tooltip content={startIconTooltip}>{startIcon}</Tooltip> : startIcon}
       {children}
@@ -148,6 +151,8 @@ Button.propTypes = {
   startIconTooltip: PropTypes.node,
   /** Tooltip for the end icon */
   endIconTooltip: PropTypes.node,
+  /** Data attribute for testing */
+  dataCY: PropTypes.string,
 };
 
 export default Button;

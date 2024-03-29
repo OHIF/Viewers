@@ -1,241 +1,147 @@
-// TODO: torn, can either bake this here; or have to create a whole new button type
-// Only ways that you can pass in a custom React component for render :
+import { defaults, ToolbarService } from '@ohif/core';
+import { WindowLevelMenuItem } from '@ohif/ui';
 import { toolGroupIds } from './initToolGroups';
-/**
- *
- * @param {*} type - 'tool' | 'action' | 'toggle'
- * @param {*} id
- * @param {*} icon
- * @param {*} label
- */
-function _createButton(type, id, icon, label, commands, tooltip) {
+
+const { windowLevelPresets } = defaults;
+
+function _createColormap(label, colormap) {
   return {
-    id,
-    icon,
+    id: label,
     label,
-    type,
-    commands,
-    tooltip,
+    type: 'action',
+    commands: [
+      {
+        commandName: 'setFusionPTColormap',
+        commandOptions: {
+          toolGroupId: toolGroupIds.Fusion,
+          colormap,
+        },
+      },
+    ],
+  };
+}
+function _createWwwcPreset(preset, title, subtitle) {
+  return {
+    id: preset.toString(),
+    title,
+    subtitle,
+    commands: [
+      {
+        commandName: 'setWindowLevel',
+        commandOptions: {
+          ...windowLevelPresets[preset],
+        },
+        context: 'CORNERSTONE',
+      },
+    ],
   };
 }
 
-const _createActionButton = _createButton.bind(null, 'action');
-const _createToggleButton = _createButton.bind(null, 'toggle');
-const _createToolButton = _createButton.bind(null, 'tool');
-
-function _createCommands(commandName, toolName, toolGroupIds) {
-  return toolGroupIds.map(toolGroupId => ({
-    /* It's a command that is being run when the button is clicked. */
-    commandName,
-    commandOptions: {
-      toolName,
-      toolGroupId,
-    },
-    context: 'CORNERSTONE',
-  }));
-}
+const setToolActiveToolbar = {
+  commandName: 'setToolActiveToolbar',
+  commandOptions: {
+    toolGroupIds: [toolGroupIds.CT, toolGroupIds.PT, toolGroupIds.Fusion],
+  },
+};
 
 const toolbarButtons = [
-  // Measurement
   {
     id: 'MeasurementTools',
-    type: 'ohif.splitButton',
+    uiType: 'ohif.splitButton',
     props: {
       groupId: 'MeasurementTools',
-      isRadio: true, // ?
-      // Switch?
-      primary: _createToolButton(
-        'Length',
-        'tool-length',
-        'Length',
-        [
-          ..._createCommands('setToolActive', 'Length', [
-            toolGroupIds.CT,
-            toolGroupIds.PT,
-            toolGroupIds.Fusion,
-            // toolGroupIds.MPR,
-          ]),
-        ],
-        'Length'
-      ),
+      primary: ToolbarService.createButton({
+        id: 'Length',
+        icon: 'tool-length',
+        label: 'Length',
+        tooltip: 'Length Tool',
+        commands: setToolActiveToolbar,
+        evaluate: 'evaluate.cornerstoneTool',
+      }),
       secondary: {
         icon: 'chevron-down',
-        label: '',
-        isActive: true,
         tooltip: 'More Measure Tools',
       },
       items: [
-        _createToolButton(
-          'Length',
-          'tool-length',
-          'Length',
-          [
-            ..._createCommands('setToolActive', 'Length', [
-              toolGroupIds.CT,
-              toolGroupIds.PT,
-              toolGroupIds.Fusion,
-              // toolGroupIds.MPR,
-            ]),
-          ],
-          'Length Tool'
-        ),
-        _createToolButton(
-          'Bidirectional',
-          'tool-bidirectional',
-          'Bidirectional',
-          [
-            ..._createCommands('setToolActive', 'Bidirectional', [
-              toolGroupIds.CT,
-              toolGroupIds.PT,
-              toolGroupIds.Fusion,
-              // toolGroupIds.MPR,
-            ]),
-          ],
-          'Bidirectional Tool'
-        ),
-        _createToolButton(
-          'ArrowAnnotate',
-          'tool-annotate',
-          'Annotation',
-          [
-            ..._createCommands('setToolActive', 'ArrowAnnotate', [
-              toolGroupIds.CT,
-              toolGroupIds.PT,
-              toolGroupIds.Fusion,
-              // toolGroupIds.MPR,
-            ]),
-          ],
-          'Arrow Annotate'
-        ),
-        _createToolButton(
-          'EllipticalROI',
-          'tool-elipse',
-          'Ellipse',
-          [
-            ..._createCommands('setToolActive', 'EllipticalROI', [
-              toolGroupIds.CT,
-              toolGroupIds.PT,
-              toolGroupIds.Fusion,
-              // toolGroupIds.MPR,
-            ]),
-          ],
-          'Ellipse Tool'
-        ),
+        ToolbarService.createButton({
+          id: 'Bidirectional',
+          icon: 'tool-bidirectional',
+          label: 'Bidirectional',
+          tooltip: 'Bidirectional Tool',
+          commands: setToolActiveToolbar,
+          evaluate: 'evaluate.cornerstoneTool',
+        }),
+        ToolbarService.createButton({
+          id: 'ArrowAnnotate',
+          icon: 'tool-annotate',
+          label: 'Arrow Annotate',
+          tooltip: 'Arrow Annotate Tool',
+          commands: setToolActiveToolbar,
+          evaluate: 'evaluate.cornerstoneTool',
+        }),
+        ToolbarService.createButton({
+          id: 'EllipticalROI',
+          icon: 'tool-ellipse',
+          label: 'Ellipse',
+          tooltip: 'Ellipse Tool',
+          commands: setToolActiveToolbar,
+          evaluate: 'evaluate.cornerstoneTool',
+        }),
       ],
     },
   },
-  // Zoom..
   {
     id: 'Zoom',
-    type: 'ohif.radioGroup',
+    uiType: 'ohif.radioGroup',
     props: {
-      type: 'tool',
       icon: 'tool-zoom',
       label: 'Zoom',
-      commands: [
-        ..._createCommands('setToolActive', 'Zoom', [
-          toolGroupIds.CT,
-          toolGroupIds.PT,
-          toolGroupIds.Fusion,
-          // toolGroupIds.MPR,
-        ]),
-      ],
+      commands: setToolActiveToolbar,
+      evaluate: 'evaluate.cornerstoneTool',
     },
   },
-  {
-    id: 'MPR',
-    type: 'ohif.action',
-    props: {
-      type: 'toggle',
-      icon: 'icon-mpr',
-      label: 'MPR',
-      commands: [
-        {
-          commandName: 'toggleHangingProtocol',
-          commandOptions: {
-            protocolId: 'mpr',
-          },
-          context: 'DEFAULT',
-        },
-      ],
-    },
-  },
-  // Window Level
+  // Window Level + Presets
   {
     id: 'WindowLevel',
-    type: 'ohif.radioGroup',
+    uiType: 'ohif.radioGroup',
     props: {
-      type: 'tool',
       icon: 'tool-window-level',
       label: 'Window Level',
-      commands: [
-        ..._createCommands('setToolActive', 'WindowLevel', [
-          toolGroupIds.CT,
-          toolGroupIds.PT,
-          toolGroupIds.Fusion,
-        ]),
-      ],
+      commands: setToolActiveToolbar,
+      evaluate: 'evaluate.cornerstoneTool',
     },
   },
+  // Crosshairs Button
   {
     id: 'Crosshairs',
-    type: 'ohif.radioGroup',
+    uiType: 'ohif.radioGroup',
     props: {
-      type: 'tool',
       icon: 'tool-crosshair',
       label: 'Crosshairs',
-      commands: [
-        ..._createCommands('setToolActive', 'Crosshairs', [
-          toolGroupIds.CT,
-          toolGroupIds.PT,
-          toolGroupIds.Fusion,
-          // toolGroupIds.MPR,
-        ]),
-      ],
+      commands: setToolActiveToolbar,
+      evaluate: 'evaluate.cornerstoneTool',
     },
   },
-  // Pan...
+  // Pan Button
   {
     id: 'Pan',
-    type: 'ohif.radioGroup',
+    uiType: 'ohif.radioGroup',
     props: {
-      type: 'tool',
       icon: 'tool-move',
       label: 'Pan',
-      commands: [
-        ..._createCommands('setToolActive', 'Pan', [
-          toolGroupIds.CT,
-          toolGroupIds.PT,
-          toolGroupIds.Fusion,
-          // toolGroupIds.MPR,
-        ]),
-      ],
+      commands: setToolActiveToolbar,
+      evaluate: 'evaluate.cornerstoneTool',
     },
   },
+  // Rectangle ROI Start End Threshold Button
   {
     id: 'RectangleROIStartEndThreshold',
-    type: 'ohif.radioGroup',
+    uiType: 'ohif.radioGroup',
     props: {
-      type: 'tool',
       icon: 'tool-create-threshold',
       label: 'Rectangle ROI Threshold',
-      commands: [
-        ..._createCommands('setToolActive', 'RectangleROIStartEndThreshold', [toolGroupIds.PT]),
-        {
-          commandName: 'displayNotification',
-          commandOptions: {
-            title: 'RectangleROI Threshold Tip',
-            text: 'RectangleROI Threshold tool should be used on PT Axial Viewport',
-            type: 'info',
-          },
-        },
-        {
-          commandName: 'setViewportActive',
-          commandOptions: {
-            viewportId: 'ptAXIAL',
-          },
-        },
-      ],
+      commands: setToolActiveToolbar,
+      evaluate: 'evaluate.cornerstoneTool',
     },
   },
 ];

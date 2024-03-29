@@ -135,15 +135,15 @@ export default class CustomizationService extends PubSubService {
     return this.getModeCustomization(customizationId, defaultValue);
   }
 
-  /** Mode customizations are changes to the behaviour of the extensions
+  /** Mode customizations are changes to the behavior of the extensions
    * when running in a given mode.  Reset clears mode customizations.
    * Note that global customizations over-ride mode customizations.
-   * @param defautlValue to return if no customization specified.
+   * @param defaultValue to return if no customization specified.
    */
   public getModeCustomization(
     customizationId: string,
     defaultValue?: Customization
-  ): Customization | void {
+  ): Customization {
     const customization =
       this.globalCustomizations[customizationId] ??
       this.modeCustomizations[customizationId] ??

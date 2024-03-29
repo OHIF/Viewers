@@ -84,9 +84,13 @@ import SwitchButton, { SwitchLabelLocation } from './SwitchButton';
 import * as AllInOneMenu from './AllInOneMenu';
 import ViewportActionArrows from './ViewportActionArrows';
 import HeaderPatientInfo from './HeaderPatientInfo';
+import LegacySplitButton from './LegacySplitButton';
+import { ToolSettings } from './AdvancedToolbox';
+import { Toolbox } from './Toolbox';
 import InvestigationalUseDialog from './InvestigationalUseDialog';
 import MeasurementItem from './MeasurementTable/MeasurementItem';
 
+import LayoutPreset from './LayoutPreset';
 
 export {
   AboutModal,
@@ -178,6 +182,10 @@ export {
   ViewportOverlay,
   WindowLevelMenuItem,
   HeaderPatientInfo,
+  LayoutPreset,
+  LegacySplitButton,
+  ToolSettings,
+  Toolbox,
   InvestigationalUseDialog,
   MeasurementItem,
 };

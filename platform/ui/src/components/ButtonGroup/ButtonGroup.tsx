@@ -1,14 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useEffect, cloneElement, Children } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { ButtonEnums } from '../../components';
 
 const ButtonGroup = ({
-  buttons,
-  onActiveIndexChange,
+  children,
   className,
   orientation = ButtonEnums.orientation.horizontal,
-  defaultActiveIndex = 0,
+  activeIndex: defaultActiveIndex = 0,
+  onActiveIndexChange,
+  disabled = false,
 }) => {
   const [activeIndex, setActiveIndex] = useState(defaultActiveIndex);
 
@@ -16,10 +17,9 @@ const ButtonGroup = ({
     setActiveIndex(defaultActiveIndex);
   }, [defaultActiveIndex]);
 
-  const handleButtonClick = (e, index) => {
+  const handleButtonClick = index => {
     setActiveIndex(index);
     onActiveIndexChange && onActiveIndexChange(index);
-    buttons[index].onClick && buttons[index].onClick(e);
   };
 
   const orientationClasses = {
@@ -33,35 +33,40 @@ const ButtonGroup = ({
     <div
       className={classnames(
         wrapperClasses,
-        'border-secondary-light rounded-[5px] border bg-black text-[13px] '
+        'border-secondary-light rounded-[5px] border bg-black text-[13px]'
       )}
     >
-      {buttons.map((buttonProps, index) => {
-        const isActive = index === activeIndex;
-        return (
-          <button
-            {...buttonProps}
-            key={index}
-            className={classnames(
+      {Children.map(children, (child, index) => {
+        if (React.isValidElement(child)) {
+          return cloneElement(child, {
+            key: index,
+            className: classnames(
               'rounded-[4px] px-2 py-1',
-              isActive ? 'bg-customblue-40 text-white' : 'text-primary-active bg-black'
-            )}
-            onClick={e => handleButtonClick(e, index)}
-          />
-        );
+              index === activeIndex
+                ? 'bg-customblue-40 text-white'
+                : 'text-primary-active bg-black',
+              child.props.className,
+              disabled ? 'ohif-disabled' : ''
+            ),
+            onClick: e => {
+              child.props.onClick && child.props.onClick(e);
+              handleButtonClick(index);
+            },
+          });
+        }
+        return child;
       })}
     </div>
   );
 };
 
 ButtonGroup.propTypes = {
-  buttons: PropTypes.arrayOf(PropTypes.object).isRequired,
+  children: PropTypes.node.isRequired,
   orientation: PropTypes.oneOf(Object.values(ButtonEnums.orientation)),
-  type: PropTypes.oneOf(Object.values(ButtonEnums.type)),
-  size: PropTypes.oneOf(Object.values(ButtonEnums.size)),
-  defaultActiveIndex: PropTypes.number,
+  activeIndex: PropTypes.number,
   onActiveIndexChange: PropTypes.func,
   className: PropTypes.string,
+  disabled: PropTypes.bool,
 };
 
 export default ButtonGroup;

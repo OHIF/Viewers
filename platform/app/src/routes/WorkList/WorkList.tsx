@@ -423,7 +423,7 @@ function WorkList({
                         />
                       } // launch-arrow | launch-info
                       onClick={() => {}}
-                      data-cy={`mode-${mode.routeName}-${studyInstanceUid}`}
+                      dataCY={`mode-${mode.routeName}-${studyInstanceUid}`}
                       className={isValidMode ? 'text-[13px]' : 'bg-[#222d44] text-[13px]'}
                     >
                       {mode.displayName}

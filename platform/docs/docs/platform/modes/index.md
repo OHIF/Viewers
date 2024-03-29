@@ -362,6 +362,11 @@ function modeFactory() {
 // exports
 ```
 
+### Toolbar
+
+
+
+
 ## Registration
 
 Similar to extension registration, `viewer` will look inside the `pluginConfig.json` to
