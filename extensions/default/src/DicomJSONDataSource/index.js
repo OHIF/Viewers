@@ -4,6 +4,13 @@ import OHIF from '@ohif/core';
 import getImageId from '../DicomWebDataSource/utils/getImageId';
 import getDirectURL from '../utils/getDirectURL';
 
+import dicomImageLoader from '@cornerstonejs/dicom-image-loader';
+import dcmjs from 'dcmjs';
+import { ServicesManager, Types } from '@ohif/core';
+import isDisplaySetReconstructable from '@ohif/core/src/utils/isDisplaySetReconstructable';
+import getDisplaySetMessages from '../getDisplaySetMessages';
+
+
 const metadataProvider = OHIF.classes.MetadataProvider;
 
 const mappings = {
@@ -24,6 +31,9 @@ let _store = {
   // }
   // }
 };
+
+let _servicesManager;
+let _nbInstancesUpdated = 0;
 
 function wrapSequences(obj) {
   return Object.keys(obj).reduce(
@@ -58,8 +68,90 @@ const findStudies = (key, value) => {
   return studies;
 };
 
-function createDicomJSONApi(dicomJsonConfig) {
+const isMultiFrame = instance => {
+  return instance.NumberOfFrames > 1;
+};
+
+
+function updateMetadata(instance) {
+
+  if (instance.imageMetadataLoaded === false) {
+
+    const dataSetCacheManager = dicomImageLoader.wadouri.dataSetCacheManager
+    const parsedImageId = dicomImageLoader.wadouri.parseImageId(instance.imageId);
+    let url = parsedImageId.url;
+
+    if (parsedImageId.frame) {
+      url = `${url}&frame=${parsedImageId.frame}`;
+    }
+
+    const rawDataSet = dataSetCacheManager.get(url);
+
+    if (!rawDataSet) {
+      return;
+    }
+
+    const dicomData = dcmjs.data.DicomMessage.readFile(rawDataSet.byteArray.buffer);
+    const dataset = dcmjs.data.DicomMetaDictionary.naturalizeDataset(dicomData.dict);
+
+    instance = {
+      ...instance,
+      ...dataset,
+      imageMetadataLoaded: true
+    }
+
+    const uids = this.getUIDsFromImageID(instance.imageId);
+
+    if (!uids) {
+      return;
+    }
+
+    const {
+      StudyInstanceUID,
+      SeriesInstanceUID,
+      SOPInstanceUID
+    } = uids;
+
+    DicomMetadataStore.updateMetadataForInstance(StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID, instance)
+    _nbInstancesUpdated++;
+
+    const { displaySetService } = _servicesManager.services;
+
+    const displaySet = displaySetService.getDisplaySetForSOPInstanceUID(SOPInstanceUID);
+    if (displaySet?.unsupported) {
+      throw new Error('Unsupported displaySet');
+    }
+
+    // when last instance has been updated, we need to update displayset in order to check if it is reconstructable (among other things)
+    if (_nbInstancesUpdated === DicomMetadataStore.getSeries(StudyInstanceUID, SeriesInstanceUID).instances.length) {
+
+      const { value: isReconstructable, averageSpacingBetweenFrames } =
+        isDisplaySetReconstructable(DicomMetadataStore.getSeries(StudyInstanceUID, SeriesInstanceUID).instances);
+
+      // set appropriate attributes to image set...
+      const messages = getDisplaySetMessages(DicomMetadataStore.getSeries(StudyInstanceUID, SeriesInstanceUID).instances, isReconstructable);
+
+      displaySet.setAttributes({
+        SeriesDate: instance.SeriesDate,
+        SeriesTime: instance.SeriesTime,
+        FrameRate: instance.FrameTime,
+        SeriesDescription: instance.SeriesDescription || '',
+        Modality: instance.Modality,
+        isMultiFrame: isMultiFrame(instance),
+        countIcon: isReconstructable ? 'icon-mpr' : undefined,
+        isReconstructable,
+        messages,
+        averageSpacingBetweenFrames: averageSpacingBetweenFrames || null,
+      });
+
+      displaySetService.triggerDisplaySetChanged(displaySet);
+    }
+  }
+}
+
+function createDicomJSONApi(dicomJsonConfig, servicesManager) {
   const { wadoRoot } = dicomJsonConfig;
+  _servicesManager = servicesManager;
 
   const implementation = {
     initialize: async ({ query, url }) => {
@@ -84,6 +176,10 @@ function createDicomJSONApi(dicomJsonConfig) {
       let SeriesInstanceUID;
       data.studies.forEach(study => {
         StudyInstanceUID = study.StudyInstanceUID;
+
+        if (study.fullmetadataset == "no") {
+          metadataProvider.setUpdataMetadataCallback(updateMetadata);
+        }
 
         study.series.forEach(series => {
           SeriesInstanceUID = series.SeriesInstanceUID;
@@ -112,7 +208,7 @@ function createDicomJSONApi(dicomJsonConfig) {
     },
     query: {
       studies: {
-        mapParams: () => {},
+        mapParams: () => { },
         search: async param => {
           const [key, value] = Object.entries(param)[0];
           const mappedParam = mappings[key];
@@ -219,6 +315,8 @@ function createDicomJSONApi(dicomJsonConfig) {
                 imageId: instance.url,
                 ...series,
                 ...study,
+                // We need to force this flag to false in case the client wants to load the metadata from the image directly
+                imageMetadataLoaded: false
               };
               delete obj.instances;
               delete obj.series;
