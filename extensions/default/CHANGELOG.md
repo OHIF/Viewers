@@ -3,6 +3,120 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-beta.66](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.65...v3.8.0-beta.66) (2024-03-28)
+
+
+### Bug Fixes
+
+* **new layout:** address black screen bugs ([#4008](https://github.com/OHIF/Viewers/issues/4008)) ([158a181](https://github.com/OHIF/Viewers/commit/158a1816703e0ad66cae08cb9bd1ffb93bbd8d43))
+
+
+
+
+
+# [3.8.0-beta.65](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.64...v3.8.0-beta.65) (2024-03-28)
+
+
+### Features
+
+* **layout:** new layout selector with 3D volume rendering ([#3923](https://github.com/OHIF/Viewers/issues/3923)) ([617043f](https://github.com/OHIF/Viewers/commit/617043fe0da5de91fbea4ac33a27f1df16ae1ca6))
+
+
+
+
+
+# [3.8.0-beta.64](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.63...v3.8.0-beta.64) (2024-03-27)
+
+
+### Features
+
+* **toolbar:** new Toolbar to enable reactive state synchronization ([#3983](https://github.com/OHIF/Viewers/issues/3983)) ([566b25a](https://github.com/OHIF/Viewers/commit/566b25a54425399096864bd263193646556011a5))
+
+
+
+
+
+# [3.8.0-beta.63](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.62...v3.8.0-beta.63) (2024-03-25)
+
+
+### Features
+
+* **worklist:** new investigational use text ([#3999](https://github.com/OHIF/Viewers/issues/3999)) ([45b68e8](https://github.com/OHIF/Viewers/commit/45b68e841dcb9e28a2ea991c37ee7ac4a8c5b71e))
+
+
+
+
+
+# [3.8.0-beta.62](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.61...v3.8.0-beta.62) (2024-03-19)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.8.0-beta.61](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.60...v3.8.0-beta.61) (2024-03-18)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.8.0-beta.60](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.59...v3.8.0-beta.60) (2024-03-15)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.8.0-beta.59](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.58...v3.8.0-beta.59) (2024-03-08)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.8.0-beta.58](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.57...v3.8.0-beta.58) (2024-03-05)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.8.0-beta.57](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.56...v3.8.0-beta.57) (2024-02-28)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.8.0-beta.56](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.55...v3.8.0-beta.56) (2024-02-22)
+
+
+### Bug Fixes
+
+* **demo:** Deploy issue ([#3951](https://github.com/OHIF/Viewers/issues/3951)) ([21e8a2b](https://github.com/OHIF/Viewers/commit/21e8a2bd0b7cc72f90a31e472d285d761be15d30))
+
+
+
+
+
+# [3.8.0-beta.55](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.54...v3.8.0-beta.55) (2024-02-21)
+
+
+### Features
+
+* **resize:** Optimize resizing process and maintain zoom level ([#3889](https://github.com/OHIF/Viewers/issues/3889)) ([b3a0faf](https://github.com/OHIF/Viewers/commit/b3a0faf5f5f0a1993b2b017eb4cc1216164ea2c6))
+
+
+
+
+
 # [3.8.0-beta.54](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.53...v3.8.0-beta.54) (2024-02-14)
 
 **Note:** Version bump only for package @ohif/extension-default

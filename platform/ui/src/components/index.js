@@ -79,6 +79,12 @@ import PanelSection from './PanelSection';
 import AdvancedToolbox from './AdvancedToolbox';
 import InputDoubleRange from './InputDoubleRange';
 import LegacyButtonGroup from './LegacyButtonGroup';
+import LegacySplitButton from './LegacySplitButton';
+import { ToolSettings } from './AdvancedToolbox';
+import { Toolbox } from './Toolbox';
+import InvestigationalUseDialog from './InvestigationalUseDialog';
+import MeasurementItem from './MeasurementTable/MeasurementItem';
+import LayoutPreset from './LayoutPreset';
 
 export {
   AboutModal,
@@ -163,4 +169,10 @@ export {
   ViewportPane,
   ViewportOverlay,
   WindowLevelMenuItem,
+  LayoutPreset,
+  LegacySplitButton,
+  ToolSettings,
+  Toolbox,
+  InvestigationalUseDialog,
+  MeasurementItem,
 };

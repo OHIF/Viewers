@@ -50,7 +50,9 @@ export const callForAllDataSourcesAsync = async ({
   const defs = Object.values(extensionManager.dataSourceDefs);
   const defaultDataSourceDef = defs.find(def => def.sourceName === defaultDataSourceName);
   const dataSourceDefs = defs.filter(def => def.sourceName !== defaultDataSourceName);
-  dataSourceDefs.unshift(defaultDataSourceDef);
+  if (defaultDataSourceDef) {
+    dataSourceDefs.unshift(defaultDataSourceDef);
+  }
 
   const promises = [];
   const sourceNames = [];
@@ -100,7 +102,9 @@ export const callForAllDataSources = ({
   const defs = Object.values(extensionManager.dataSourceDefs);
   const defaultDataSourceDef = defs.find(def => def.sourceName === defaultDataSourceName);
   const dataSourceDefs = defs.filter(def => def.sourceName !== defaultDataSourceName);
-  dataSourceDefs.unshift(defaultDataSourceDef);
+  if (defaultDataSourceDef) {
+    dataSourceDefs.unshift(defaultDataSourceDef);
+  }
 
   const mergedData = [];
   for (const dataSourceDef of dataSourceDefs) {
@@ -140,7 +144,7 @@ export const callForDefaultDataSource = ({
  * Calls the data source specified by the RetrieveAETitle of the given display set.
  * @typedef {Object} CallByRetrieveAETitleOptions
  * @property {string} path - The path of the method to call on the data source.
- * @property {unknown[]} args - The arguments to pass to the method.
+ * @property {any[]} args - The arguments to pass to the method.
  * @property {string} defaultDataSourceName - The name of the default data source.
  * @property {ExtensionManager} extensionManager - The extension manager.
  */
