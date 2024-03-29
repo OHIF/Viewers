@@ -105,6 +105,12 @@ function ViewerHeader({ hotkeysManager, extensionManager, servicesManager }) {
       isReturnEnabled={!!appConfig.showStudyList}
       onClickReturnButton={onClickReturnButton}
       WhiteLabeling={appConfig.whiteLabeling}
+      Secondary={
+        <Toolbar
+          servicesManager={servicesManager}
+          buttonSection="secondary"
+        />
+      }
     >
       <ErrorBoundary context="Primary Toolbar">
         <div className="relative flex justify-center">

@@ -2,6 +2,7 @@ import { id } from './id';
 import { hotkeys } from '@ohif/core';
 import initWorkflowSteps from './initWorkflowSteps';
 import initToolGroups from './initToolGroups';
+import toolbarButtons from './toolbarButtons';
 
 const extensionDependencies = {
   '@ohif/extension-default': '3.7.0-beta.76',
@@ -37,7 +38,7 @@ function modeFactory({ modeConfiguration }) {
     routeName: 'dynamic-volume',
     displayName: '4D PT/CT',
     onModeEnter: function ({ servicesManager, extensionManager, commandsManager }) {
-      const { measurementService, toolGroupService } = servicesManager.services;
+      const { measurementService, toolbarService, toolGroupService } = servicesManager.services;
 
       const utilityModule = extensionManager.getModuleEntry(
         '@ohif/extension-cornerstone.utilityModule.tools'
@@ -47,11 +48,15 @@ function modeFactory({ modeConfiguration }) {
 
       measurementService.clearMeasurements();
       initToolGroups({ toolNames, Enums, toolGroupService, commandsManager });
+
+      toolbarService.addButtons(toolbarButtons);
+      toolbarService.createButtonSection('secondary', ['ProgressDropdown']);
+      // the primary button section is created in the workflow steps
+      // specific to the step
     },
     onSetupRouteComplete: ({ servicesManager }) => {
       // This needs to run after hanging protocol matching process because
       // it may change the protocol/stage based on workflow stage settings
-      debugger;
       initWorkflowSteps({ servicesManager });
     },
     onModeExit: ({ servicesManager }) => {

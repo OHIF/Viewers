@@ -63,13 +63,10 @@ type CommandCallback = {
 export type WorkflowStep = {
   id: string;
   name: string;
-  toolbar?: {
-    buttons: unknown[];
-    sections: {
-      key: string;
-      buttons: string[];
-    }[];
-  };
+  toolbarButtons?: {
+    buttonSection: string;
+    buttons: string[];
+  }[];
   hangingProtocol?: {
     protocolId: string;
     stageId?: string;
@@ -134,18 +131,12 @@ class WorkflowStepsService extends PubSubService {
 
   private _updateToolBar(workflowStep: WorkflowStep) {
     const { toolbarService } = this._servicesManager.services;
-    const { toolbar } = workflowStep;
-    const shouldUpdate = !!toolbar?.buttons && !!toolbar?.sections;
+    const { toolbarButtons } = workflowStep;
 
-    if (!shouldUpdate) {
-      return;
-    }
+    const toUse = Array.isArray(toolbarButtons) ? toolbarButtons : [toolbarButtons];
 
-    toolbarService.reset();
-    toolbarService.addButtons(toolbar.buttons);
-
-    toolbar.sections.forEach(section => {
-      toolbarService.createButtonSection(section.key, section.buttons);
+    toUse.forEach(({ buttonSection, buttons }) => {
+      toolbarService.createButtonSection(buttonSection, buttons);
     });
   }
 

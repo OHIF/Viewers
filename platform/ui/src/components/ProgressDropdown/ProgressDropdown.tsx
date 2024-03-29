@@ -11,6 +11,7 @@ const ProgressDropdown = ({
   options: optionsProps,
   value,
   children,
+  dropDownWidth = '170',
   onChange,
 }: {
   options: ProgressDropdownOption[];
@@ -99,6 +100,7 @@ const ProgressDropdown = ({
         <div className="mb-1.5 flex h-[26px]">
           <div
             className="bg-secondary-dark border-primary-main flex grow cursor-pointer rounded border"
+            style={{ width: `${dropDownWidth}px` }}
             onClick={toggleOpen}
           >
             <div className="flex grow">
@@ -129,12 +131,12 @@ const ProgressDropdown = ({
         </div>
         <div
           className={classnames(
-            'absolute top-7 left-0 right-8 z-10 mt-0.5 origin-top-right',
-            'bg-primary-dark transform transition duration-300',
+            'absolute top-7 left-0 right-8 z-10 mt-0.5 origin-top',
+            'bg-primary-dark overflow-hidden transition-[max-height] duration-300 ',
             'border-secondary-main rounded border shadow',
             {
-              'scale-0': !open,
-              'scale-100': open,
+              'max-h-0': !open,
+              'max-h-[500px]': open,
             }
           )}
         >
@@ -146,6 +148,7 @@ const ProgressDropdown = ({
             />
           ))}
         </div>
+
         <div>
           <ProgressDiscreteBar options={options} />
         </div>
@@ -159,6 +162,7 @@ ProgressDropdown.propTypes = {
   value: PropTypes.string,
   onChange: PropTypes.func,
   children: PropTypes.node,
+  dropDownWidth: PropTypes.string,
 };
 
 export default ProgressDropdown;

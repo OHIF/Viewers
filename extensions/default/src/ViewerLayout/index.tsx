@@ -1,12 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 
-import {
-  SidePanel,
-  ErrorBoundary,
-  LoadingIndicatorProgress,
-  InvestigationalUseDialog,
-} from '@ohif/ui';
+import { ErrorBoundary, LoadingIndicatorProgress, InvestigationalUseDialog } from '@ohif/ui';
 import { ServicesManager, HangingProtocolService, CommandsManager } from '@ohif/core';
 import { useAppConfig } from '@state';
 import ViewerHeader from './ViewerHeader';

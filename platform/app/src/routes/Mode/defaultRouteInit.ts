@@ -15,7 +15,7 @@ const { sortingCriteria } = utils;
  * @param props.filters filters from query params to read the data from
  * @returns array of subscriptions to cancel
  */
-export function defaultRouteInit(
+export async function defaultRouteInit(
   { servicesManager, studyInstanceUIDs, dataSource, filters, appConfig },
   hangingProtocolId
 ) {
@@ -95,7 +95,7 @@ export function defaultRouteInit(
     });
   });
 
-  Promise.allSettled(allRetrieves).then(promises => {
+  await Promise.allSettled(allRetrieves).then(async promises => {
     log.timeEnd(Enums.TimingEnum.STUDY_TO_DISPLAY_SETS);
     log.time(Enums.TimingEnum.DISPLAY_SETS_TO_FIRST_IMAGE);
     log.time(Enums.TimingEnum.DISPLAY_SETS_TO_ALL_IMAGES);
@@ -120,7 +120,7 @@ export function defaultRouteInit(
       }
     });
 
-    Promise.allSettled(allPromises).then(applyHangingProtocol);
+    await Promise.allSettled(allPromises).then(applyHangingProtocol);
     startRemainingPromises(remainingPromises);
     applyHangingProtocol();
   });

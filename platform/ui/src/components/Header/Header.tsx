@@ -16,6 +16,7 @@ function Header({
   onClickReturnButton,
   isSticky,
   WhiteLabeling,
+  Secondary,
   ...props
 }): ReactNode {
   const { t } = useTranslation('Header');
@@ -54,7 +55,9 @@ function Header({
             </div>
           </div>
         </div>
-        {/* <div className="absolute top-1/2 left-[211px]  h-8 w-20 -translate-y-1/2">{future left component}</div> */}
+        <div className="absolute top-1/2 left-[250px]  h-8 -translate-y-1/2 text-white">
+          {Secondary}
+        </div>
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform">
           <div className="flex items-center justify-center space-x-2">{children}</div>
         </div>

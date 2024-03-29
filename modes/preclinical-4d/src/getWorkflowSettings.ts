@@ -1,5 +1,3 @@
-import toolbarButtons from './toolbarButtons';
-
 const dynamicVolume = {
   sopClassHandler:
     '@ohif/extension-cornerstone-dynamic-volume.sopClassHandlerModule.dynamic-volume',
@@ -7,21 +5,16 @@ const dynamicVolume = {
   rightPanel: '@ohif/extension-cornerstone-dynamic-volume.panelModule.ROISegmentation',
 };
 
-const defaultToolbar = {
-  buttons: toolbarButtons,
-  sections: [
-    {
-      key: 'primary',
-      buttons: [
-        'MeasurementTools',
-        'Zoom',
-        'WindowLevel',
-        'Crosshairs',
-        'Pan',
-        'fusionPTColormap',
-        'Cine',
-      ],
-    },
+const defaultButtons = {
+  buttonSection: 'primary',
+  buttons: [
+    'MeasurementTools',
+    'Zoom',
+    'WindowLevel',
+    'Crosshairs',
+    'Pan',
+    'fusionPTColormap',
+    'Cine',
   ],
 };
 
@@ -33,13 +26,6 @@ const defaultPanels = {
 const defaultLayout = { panels: defaultPanels };
 
 function getWorkflowSettings({ servicesManager }) {
-  const roiQuantificationToolbar = JSON.parse(JSON.stringify(defaultToolbar));
-
-  // Add segmentation tools to ROI Quantification step
-  roiQuantificationToolbar.sections
-    .find(s => s.key === 'primary')
-    .buttons.push('SegmentationTools');
-
   return {
     steps: [
       {
@@ -50,7 +36,7 @@ function getWorkflowSettings({ servicesManager }) {
             left: [dynamicVolume.leftPanel],
           },
         },
-        toolbar: defaultToolbar,
+        toolbarButtons: defaultButtons,
         hangingProtocol: {
           protocolId: 'default4D',
           stageId: 'dataPreparation',
@@ -60,7 +46,7 @@ function getWorkflowSettings({ servicesManager }) {
         id: 'registration',
         name: 'Registration',
         layout: defaultLayout,
-        toolbar: defaultToolbar,
+        toolbarButtons: defaultButtons,
         hangingProtocol: {
           protocolId: 'default4D',
           stageId: 'registration',
@@ -75,7 +61,13 @@ function getWorkflowSettings({ servicesManager }) {
             right: [dynamicVolume.rightPanel],
           },
         },
-        toolbar: roiQuantificationToolbar,
+        toolbarButtons: [
+          defaultButtons,
+          {
+            buttonSection: 'primary',
+            buttons: ['SegmentationTools'],
+          },
+        ],
         hangingProtocol: {
           protocolId: 'default4D',
           stageId: 'roiQuantification',
@@ -85,7 +77,7 @@ function getWorkflowSettings({ servicesManager }) {
         id: 'kineticAnalysis',
         name: 'Kinetic Analysis',
         layout: defaultLayout,
-        toolbar: defaultToolbar,
+        toolbarButtons: defaultButtons,
         hangingProtocol: {
           protocolId: 'default4D',
           stageId: 'kineticAnalysis',
