@@ -16,6 +16,7 @@ interface Viewport {
   width: number;
   height: number;
   viewportLabel: any;
+  isReady: boolean;
 }
 
 interface Layout {
@@ -45,6 +46,7 @@ const DEFAULT_STATE: DefaultState = {
       default: {
         viewportId: 'default',
         displaySetInstanceUIDs: [],
+        isReady: false,
         viewportOptions: {
           viewportId: 'default',
         },
@@ -86,7 +88,11 @@ const determineActiveViewportId = (state: DefaultState, newViewports: Map) => {
   // and find the best match
   const currentOrientation = currentActiveViewport.viewportOptions.orientation;
 
-  const sortedViewports = Array.from(newViewports.values()).sort((a, b) => {
+  const filteredNewViewports = Array.from(newViewports.values()).filter(
+    viewport => viewport.displaySetInstanceUIDs?.length > 0
+  );
+
+  const sortedViewports = Array.from(filteredNewViewports.values()).sort((a, b) => {
     // Compare orientations
     const aOrientationMatch = a.viewportOptions.orientation === currentOrientation;
     const bOrientationMatch = b.viewportOptions.orientation === currentOrientation;
@@ -225,6 +231,7 @@ export function ViewportGridProvider({ children, service }) {
             // If the viewport doesn't have a viewportId, we create one
             if (!viewport.viewportOptions?.viewportId) {
               const randomUID = utils.uuidv4().substring(0, 8);
+              viewport.viewportOptions = viewport.viewportOptions || {};
               viewport.viewportOptions.viewportId = `viewport-${randomUID}`;
             }
 
@@ -252,6 +259,7 @@ export function ViewportGridProvider({ children, service }) {
             });
 
             viewport.viewportLabel = getViewportLabel(viewports, viewport.viewportId);
+            viewport.isReady = false;
 
             if (!viewport.viewportOptions.presentationIds) {
               viewport.viewportOptions.presentationIds = ViewportGridService.getPresentationIds(
@@ -289,6 +297,25 @@ export function ViewportGridProvider({ children, service }) {
         };
       }
 
+      case 'VIEWPORT_IS_READY': {
+        const { viewportId, isReady } = action.payload;
+        const viewports = new Map(state.viewports);
+        const viewport = viewports.get(viewportId);
+        if (!viewport) {
+          return;
+        }
+
+        viewports.set(viewportId, {
+          ...viewport,
+          isReady,
+        });
+
+        return {
+          ...state,
+          viewports,
+        };
+      }
+
       default:
         return action.payload;
     }
@@ -318,6 +345,25 @@ export function ViewportGridProvider({ children, service }) {
       }),
     [dispatch]
   );
+
+  const setViewportIsReady = useCallback(
+    (viewportId, isReady) => {
+      dispatch({
+        type: 'VIEWPORT_IS_READY',
+        payload: {
+          viewportId,
+          isReady,
+        },
+      });
+    },
+    [dispatch, viewportGridState]
+  );
+
+  const getGridViewportsReady = useCallback(() => {
+    const { viewports } = viewportGridState;
+    const readyViewports = Array.from(viewports.values()).filter(viewport => viewport.isReady);
+    return readyViewports.length === viewports.size;
+  }, [viewportGridState]);
 
   const setLayout = useCallback(
     ({
@@ -382,6 +428,8 @@ export function ViewportGridProvider({ children, service }) {
         onModeExit: reset,
         set,
         getNumViewportPanes,
+        setViewportIsReady,
+        getGridViewportsReady,
       });
     }
   }, [
@@ -393,6 +441,8 @@ export function ViewportGridProvider({ children, service }) {
     reset,
     set,
     getNumViewportPanes,
+    setViewportIsReady,
+    getGridViewportsReady,
   ]);
 
   // run many of the calls through the service itself since we want to publish events
@@ -405,7 +455,11 @@ export function ViewportGridProvider({ children, service }) {
     reset: () => service.reset(),
     set: gridLayoutState => service.setState(gridLayoutState), // run it through the service itself since we want to publish events
     getNumViewportPanes,
+    setViewportIsReady,
+    getGridViewportsReady,
     getActiveViewportOptionByKey,
+    setViewportGridSizeChanged: props => service.setViewportGridSizeChanged(props),
+    publishViewportsReady: () => service.publishViewportsReady(),
   };
 
   return (

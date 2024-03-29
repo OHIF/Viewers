@@ -2,24 +2,25 @@ import React, { useState } from 'react';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
+const flex = 'flex flex-row justify-between items-center';
+const theme = 'bg-indigo-dark text-white';
+
 const ListMenu = ({ items = [], renderer, onClick }) => {
   const [selectedIndex, setSelectedIndex] = useState(null);
 
   const ListItem = ({ item, index, isSelected }) => {
-    const flex = 'flex flex-row justify-between items-center';
-    const theme = 'bg-indigo-dark';
-
     const onClickHandler = () => {
       setSelectedIndex(index);
       onClick({ item, selectedIndex: index });
-      if (item.onClick) {
-        item.onClick({ ...item, index, isSelected });
-      }
+      item.onClick?.({ ...item, index, isSelected });
     };
 
     return (
       <div
-        className={classnames(flex, theme, 'cursor-pointer')}
+        className={classnames(flex, theme, {
+          'cursor-pointer': !item.disabled,
+          'ohif-disabled': item.disabled,
+        })}
         onClick={onClickHandler}
         data-cy={item.id}
       >

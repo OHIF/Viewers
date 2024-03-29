@@ -247,7 +247,6 @@ describe('ExtensionManager.ts', () => {
             definitions: {
               exampleDefinition: {
                 commandFn: () => {},
-                storeContexts: [],
                 options: {},
               },
             },

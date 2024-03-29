@@ -8,7 +8,9 @@ import Tooltip from '../Tooltip';
 import { StringNumber } from '../../types';
 import { useTranslation } from 'react-i18next';
 
-function ThumbnailTracked ({
+// Todo: This class to me feels like it belongs in an extension, not in platform/ui
+// because it is dealing with mode specific components/information
+function ThumbnailTracked({
   displaySetInstanceUID,
   className,
   imageSrc,
@@ -87,12 +89,12 @@ function ThumbnailTracked ({
                 </div>
                 <div className="flex flex-1 flex-col">
                   <span>
-                    <span className="text-white">{isTracked ? t('Series is tracked') : t('Series is untracked')}</span>
+                    <span className="text-white">
+                      {isTracked ? t('Series is tracked') : t('Series is untracked')}
+                    </span>
                   </span>
                   {!!viewportIdentificator.length && (
-                    <span>
-                      {`${t('Viewport')}: ${viewportIdentificatorLabel}`}
-                    </span>
+                    <span>{`${t('Viewport')}: ${viewportIdentificatorLabel}`}</span>
                   )}
                 </div>
               </div>
@@ -136,7 +138,7 @@ function ThumbnailTracked ({
       />
     </div>
   );
-};
+}
 
 ThumbnailTracked.propTypes = {
   /**
