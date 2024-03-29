@@ -7,32 +7,32 @@ const dynamicVolume = {
   rightPanel: '@ohif/extension-cornerstone-dynamic-volume.panelModule.ROISegmentation',
 };
 
-function getWorkflowSettings(appContext) {
-  const defaultPanels = {
-    left: [dynamicVolume.leftPanel],
-    right: [],
-  };
+const defaultToolbar = {
+  buttons: toolbarButtons,
+  sections: [
+    {
+      key: 'primary',
+      buttons: [
+        'MeasurementTools',
+        'Zoom',
+        'WindowLevel',
+        'Crosshairs',
+        'Pan',
+        'fusionPTColormap',
+        'Cine',
+      ],
+    },
+  ],
+};
 
-  const defaultLayout = { panels: defaultPanels };
+const defaultPanels = {
+  left: [dynamicVolume.leftPanel],
+  right: [],
+};
 
-  const defaultToolbar = {
-    buttons: toolbarButtons,
-    sections: [
-      {
-        key: 'primary',
-        buttons: [
-          'MeasurementTools',
-          'Zoom',
-          'WindowLevel',
-          'Crosshairs',
-          'Pan',
-          'fusionPTColormap',
-          'Cine',
-        ],
-      },
-    ],
-  };
+const defaultLayout = { panels: defaultPanels };
 
+function getWorkflowSettings({ servicesManager }) {
   const roiQuantificationToolbar = JSON.parse(JSON.stringify(defaultToolbar));
 
   // Add segmentation tools to ROI Quantification step
@@ -93,7 +93,7 @@ function getWorkflowSettings(appContext) {
         onEnter: [
           {
             commandName: 'updateSegmentationsChartDisplaySet',
-            options: { appContext },
+            options: { servicesManager },
           },
         ],
       },

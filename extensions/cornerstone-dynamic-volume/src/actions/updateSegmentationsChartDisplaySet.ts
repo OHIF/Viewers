@@ -4,7 +4,6 @@ import * as cs from '@cornerstonejs/core';
 import * as csTools from '@cornerstonejs/tools';
 
 const CHART_MODALITY = 'CHT';
-const LABELMAP = csTools.Enums.SegmentationRepresentations.Labelmap;
 const SEG_CHART_INSTANCE_UID = utils.guid();
 
 // Private SOPClassUid for chart data
@@ -244,8 +243,7 @@ function _getInstanceFromSegmentations(segmentations, displaySetService) {
   return { seriesMetadata, instance };
 }
 
-function updateSegmentationsChartDisplaySet({ appContext }): void {
-  const { servicesManager } = appContext;
+function updateSegmentationsChartDisplaySet({ servicesManager }): void {
   const { segmentationService, displaySetService } = servicesManager.services;
   const segmentations = segmentationService.getSegmentations();
   const { seriesMetadata, instance } =

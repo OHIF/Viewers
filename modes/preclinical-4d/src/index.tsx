@@ -2,9 +2,6 @@ import { id } from './id';
 import { hotkeys } from '@ohif/core';
 import initWorkflowSteps from './initWorkflowSteps';
 import initToolGroups from './initToolGroups';
-import toolbarButtons from './toolbarButtons';
-
-const REQUIRED_MODALITIES = ['PT', 'CT'];
 
 const extensionDependencies = {
   '@ohif/extension-default': '3.7.0-beta.76',
@@ -40,7 +37,7 @@ function modeFactory({ modeConfiguration }) {
     routeName: 'dynamic-volume',
     displayName: '4D PT/CT',
     onModeEnter: function ({ servicesManager, extensionManager, commandsManager }) {
-      const { measurementService, toolbarService, toolGroupService } = servicesManager.services;
+      const { measurementService, toolGroupService } = servicesManager.services;
 
       const utilityModule = extensionManager.getModuleEntry(
         '@ohif/extension-cornerstone.utilityModule.tools'
@@ -50,13 +47,12 @@ function modeFactory({ modeConfiguration }) {
 
       measurementService.clearMeasurements();
       initToolGroups({ toolNames, Enums, toolGroupService, commandsManager });
-
-      toolbarService.init(extensionManager);
     },
-    onSetupRouteComplete: appContext => {
+    onSetupRouteComplete: ({ servicesManager }) => {
       // This needs to run after hanging protocol matching process because
       // it may change the protocol/stage based on workflow stage settings
-      initWorkflowSteps(appContext);
+      debugger;
+      initWorkflowSteps({ servicesManager });
     },
     onModeExit: ({ servicesManager }) => {
       const {
@@ -78,14 +74,11 @@ function modeFactory({ modeConfiguration }) {
       };
     },
     isValidMode: ({ modalities, study }) => {
-      const modalities_list = modalities.split('\\');
-
+      // Todo: we need to find a better way to validate the mode
       return {
         valid: study.mrn === 'M1',
         description: 'This mode is only available for 4D PET/CT studies.',
       };
-
-      return REQUIRED_MODALITIES.every(modality => modalities_list.includes(modality));
     },
 
     /**

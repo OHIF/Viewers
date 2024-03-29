@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, useRef } from 'react';
 import { CinePlayer, useCine } from '@ohif/ui';
 import { Enums, eventTarget, cache } from '@cornerstonejs/core';
 import { Enums as StreamingEnums } from '@cornerstonejs/streaming-image-volume-loader';
@@ -6,14 +6,11 @@ import { useAppConfig } from '@state';
 
 function WrappedCinePlayer({ enabledVPElement, viewportId, servicesManager }) {
   const { customizationService, displaySetService, viewportGridService } = servicesManager.services;
-  const [{ isCineEnabled, cines }, api] = useCine();
+  const [{ isCineEnabled, cines }, cineService] = useCine();
   const [newStackFrameRate, setNewStackFrameRate] = useState(24);
   const [isDynamic, setIsDynamic] = useState(false);
   const [appConfig] = useAppConfig();
   const isMountedRef = useRef(null);
-
-  const { component: CinePlayerComponent = CinePlayer } =
-    customizationService.get('cinePlayer') ?? {};
 
   const cineHandler = () => {
     if (!cines?.[viewportId] || !enabledVPElement) {
@@ -49,9 +46,9 @@ function WrappedCinePlayer({ enabledVPElement, viewportId, servicesManager }) {
     });
 
     if (isPlaying) {
-      api.setIsCineEnabled(isPlaying);
+      cineService.setIsCineEnabled(isPlaying);
     }
-    api.setCine({ id: viewportId, isPlaying, frameRate });
+    cineService.setCine({ id: viewportId, isPlaying, frameRate });
     setNewStackFrameRate(frameRate);
   }, [cineService, displaySetService, viewportId, viewportGridService, cines, isCineEnabled]);
 
@@ -93,7 +90,7 @@ function WrappedCinePlayer({ enabledVPElement, viewportId, servicesManager }) {
     cineHandler();
 
     return () => {
-      api.stopClip(enabledVPElement);
+      cineService.stopClip(enabledVPElement);
     };
   }, [cines, viewportId, cineService, enabledVPElement, cineHandler]);
 

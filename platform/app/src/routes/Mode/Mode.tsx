@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useContext, createContext } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router';
 import PropTypes from 'prop-types';
 import { ServicesManager, utils } from '@ohif/core';

@@ -40,14 +40,7 @@ const Tooltip = ({
   tight,
   children,
   isDisabled,
-  content,
-  isSticky,
-  position,
-  className,
   tooltipBoxClassName,
-  tight,
-  children,
-  isDisabled,
   // time to show/hide the tooltip on mouse over and  mouse out events (default: 300ms)
   showHideDelay,
   onHide,
@@ -143,6 +136,7 @@ Tooltip.propTypes = {
   /** prevents tooltip from rendering despite hover/active/sticky */
   isDisabled: PropTypes.bool,
   content: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+  secondaryContent: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
   position: PropTypes.oneOf(['bottom', 'bottom-left', 'bottom-right', 'left', 'right', 'top']),
   isSticky: PropTypes.bool,
   tight: PropTypes.bool,
