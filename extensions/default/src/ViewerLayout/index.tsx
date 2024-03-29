@@ -16,8 +16,8 @@ function ViewerLayout({
   // From Modes
   viewports,
   ViewportGridComp,
-  leftPanelDefaultClosed = false,
-  rightPanelDefaultClosed = false,
+  leftPanelClosed = false,
+  rightPanelClosed = false,
 }): React.FunctionComponent {
   const [appConfig] = useAppConfig();
 
@@ -31,6 +31,8 @@ function ViewerLayout({
 
   const [hasRightPanels, setHasRightPanels] = useState(hasPanels('right'));
   const [hasLeftPanels, setHasLeftPanels] = useState(hasPanels('left'));
+  const [leftPanelClosedState, setLeftPanelClosed] = useState(leftPanelClosed);
+  const [rightPanelClosedState, setRightPanelClosed] = useState(rightPanelClosed);
 
   /**
    * Set body classes (tailwindcss) that don't allow vertical
@@ -85,10 +87,19 @@ function ViewerLayout({
   };
 
   useEffect(() => {
-    const { unsubscribe } = panelService.subscribe(panelService.EVENTS.PANELS_CHANGED, () => {
-      setHasLeftPanels(hasPanels('left'));
-      setHasRightPanels(hasPanels('right'));
-    });
+    const { unsubscribe } = panelService.subscribe(
+      panelService.EVENTS.PANELS_CHANGED,
+      ({ options }) => {
+        setHasLeftPanels(hasPanels('left'));
+        setHasRightPanels(hasPanels('right'));
+        if (options?.leftPanelClosed !== undefined) {
+          setLeftPanelClosed(options.leftPanelClosed);
+        }
+        if (options?.rightPanelClosed !== undefined) {
+          setRightPanelClosed(options.rightPanelClosed);
+        }
+      }
+    );
 
     return () => {
       unsubscribe();
@@ -115,7 +126,7 @@ function ViewerLayout({
             <ErrorBoundary context="Left Panel">
               <SidePanelWithServices
                 side="left"
-                activeTabIndex={leftPanelDefaultClosed ? null : 0}
+                activeTabIndex={leftPanelClosedState ? null : 0}
                 servicesManager={servicesManager}
               />
             </ErrorBoundary>
@@ -136,7 +147,7 @@ function ViewerLayout({
             <ErrorBoundary context="Right Panel">
               <SidePanelWithServices
                 side="right"
-                activeTabIndex={rightPanelDefaultClosed ? null : 0}
+                activeTabIndex={rightPanelClosedState ? null : 0}
                 servicesManager={servicesManager}
               />
             </ErrorBoundary>
@@ -159,8 +170,8 @@ ViewerLayout.propTypes = {
   // From modes
   leftPanels: PropTypes.array,
   rightPanels: PropTypes.array,
-  leftPanelDefaultClosed: PropTypes.bool.isRequired,
-  rightPanelDefaultClosed: PropTypes.bool.isRequired,
+  leftPanelClosed: PropTypes.bool.isRequired,
+  rightPanelClosed: PropTypes.bool.isRequired,
   /** Responsible for rendering our grid of viewports; provided by consuming application */
   children: PropTypes.oneOfType([PropTypes.node, PropTypes.func]).isRequired,
   viewports: PropTypes.array,

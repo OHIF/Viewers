@@ -77,7 +77,7 @@ export default class PanelService extends PubSubService {
     };
   }
 
-  public addPanel(position: PanelPosition, panelId: string): void {
+  public addPanel(position: PanelPosition, panelId: string, options): void {
     let panels = this._panelsGroups.get(position);
 
     if (!panels) {
@@ -88,22 +88,28 @@ export default class PanelService extends PubSubService {
     const panelComponent = this._getPanelData(panelId);
 
     panels.push(panelComponent);
-    this._broadcastEvent(EVENTS.PANELS_CHANGED, { position });
+    this._broadcastEvent(EVENTS.PANELS_CHANGED, { position, options });
   }
 
-  public addPanels(position: PanelPosition, panelsIds: string[]): void {
+  public addPanels(position: PanelPosition, panelsIds: string[], options): void {
     if (!Array.isArray(panelsIds)) {
       throw new Error('Invalid "panelsIds" array');
     }
 
-    panelsIds.forEach(panelId => this.addPanel(position, panelId));
+    panelsIds.forEach(panelId => this.addPanel(position, panelId, options));
   }
 
-  public setPanels(panels: { [key in PanelPosition]: string[] }): void {
+  public setPanels(
+    panels: { [key in PanelPosition]: string[] },
+    options: {
+      rightPanelClosed?: boolean;
+      leftPanelClosed?: boolean;
+    }
+  ): void {
     this.reset();
 
     Object.keys(panels).forEach((position: PanelPosition) => {
-      this.addPanels(position, panels[position]);
+      this.addPanels(position, panels[position], options);
     });
   }
 

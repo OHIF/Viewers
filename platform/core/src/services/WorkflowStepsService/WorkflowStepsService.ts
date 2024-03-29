@@ -148,7 +148,7 @@ class WorkflowStepsService extends PubSubService {
       return;
     }
 
-    panelService.setPanels(panels);
+    panelService.setPanels(panels, workflowStep?.layout?.options);
   }
 
   private _updateHangingProtocol(workflowStep: WorkflowStep) {

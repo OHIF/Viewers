@@ -3,6 +3,7 @@ import { hotkeys } from '@ohif/core';
 import initWorkflowSteps from './initWorkflowSteps';
 import initToolGroups from './initToolGroups';
 import toolbarButtons from './toolbarButtons';
+import segmentationButtons from './segmentationButtons';
 
 const extensionDependencies = {
   '@ohif/extension-default': '3.7.0-beta.76',
@@ -25,7 +26,6 @@ const dynamicVolume = {
     '@ohif/extension-cornerstone-dynamic-volume.sopClassHandlerModule.dynamic-volume',
   viewport: '@ohif/extension-cornerstone-dynamic-volume.viewportModule.chartViewport',
   leftPanel: '@ohif/extension-cornerstone-dynamic-volume.panelModule.dynamic-volume',
-  rightPanel: '@ohif/extension-cornerstone-dynamic-volume.panelModule.ROISegmentation',
 };
 
 const cornerstone = {
@@ -49,7 +49,7 @@ function modeFactory({ modeConfiguration }) {
       measurementService.clearMeasurements();
       initToolGroups({ toolNames, Enums, toolGroupService, commandsManager });
 
-      toolbarService.addButtons(toolbarButtons);
+      toolbarService.addButtons([...toolbarButtons, ...segmentationButtons]);
       toolbarService.createButtonSection('secondary', ['ProgressDropdown']);
       // the primary button section is created in the workflow steps
       // specific to the step
@@ -107,7 +107,7 @@ function modeFactory({ modeConfiguration }) {
             props: {
               leftPanels: [dynamicVolume.leftPanel],
               rightPanels: [],
-              rightPanelDefaultClosed: true,
+              rightPanelClosed: true,
               viewports: [
                 {
                   namespace: cornerstone.viewport,

@@ -145,7 +145,7 @@ if auth headers are used, a preflight request is required.
                   props: {
                     leftPanels: [tracked.thumbnailList],
                     rightPanels: [dicomSeg.panel, tracked.measurements],
-                    rightPanelDefaultClosed: true,
+                    rightPanelClosed: true,
                     viewports: [
                       {
                         namespace: tracked.viewport,

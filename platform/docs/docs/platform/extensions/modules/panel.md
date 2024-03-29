@@ -107,7 +107,7 @@ function modeFactory({ modeConfiguration }) {
               rightPanels: [
                 '@ohif/extension-measurement-tracking.panelModule.trackedMeasurements',
               ],
-              rightPanelDefaultClosed: true,
+              rightPanelClosed: true,
               viewports,
             },
           };

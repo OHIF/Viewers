@@ -35,6 +35,11 @@ const SidePanelWithServices = ({
     setActiveTabIndex(activeTabIndex);
   }, []);
 
+  /** update the active tab index from outside */
+  useEffect(() => {
+    setActiveTabIndex(activeTabIndexProp);
+  }, [activeTabIndexProp]);
+
   useEffect(() => {
     const { unsubscribe } = panelService.subscribe(
       panelService.EVENTS.PANELS_CHANGED,
