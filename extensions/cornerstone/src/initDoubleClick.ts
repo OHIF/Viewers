@@ -1,6 +1,7 @@
 import { eventTarget, EVENTS } from '@cornerstonejs/core';
 import { Enums } from '@cornerstonejs/tools';
-import { CommandsManager, CustomizationService, ToolbarService, Types } from '@ohif/core';
+import { CommandsManager, CustomizationService, ToolbarService } from '@ohif/core';
+import { MagicROITool } from '@newlantern/extension-cornerstone/src/tools';
 import { findNearbyToolData } from './utils/findNearbyToolData';
 
 const cs3DToolsEvents = Enums.Events;
@@ -50,7 +51,7 @@ function initDoubleClick({
     const nearbyToolData = findNearbyToolData(commandsManager, evt);
 
     // Do not allow double click on a tool or while magic ROI is active
-    if (nearbyToolData || activeTools.includes('MagicROI')) {
+    if (nearbyToolData || activeTools.includes(MagicROITool.toolName)) {
       return;
     }
 
