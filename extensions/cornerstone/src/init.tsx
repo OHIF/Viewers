@@ -230,6 +230,7 @@ export default async function init({
 
   initDoubleClick({
     customizationService,
+    toolbarService,
     commandsManager,
   });
 
