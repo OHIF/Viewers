@@ -51,8 +51,6 @@ export function WindowLevelActionMenu({
     width: colorbarWidth,
   } = colorbarProperties;
   const { colorbarService, cornerstoneViewportService } = serviceManager.services;
-  const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
-  const viewportType = cornerstoneViewportService.getCornerstoneViewport(viewportId)?.type;
   const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
   const backgroundColor = viewportInfo.getViewportOptions().background;
   const isLight = backgroundColor ? utilities.isEqual(backgroundColor, [1, 1, 1]) : false;
@@ -104,22 +102,22 @@ export function WindowLevelActionMenu({
   }, [displaySets]);
 
   useEffect(() => {
+    setMenuKey(menuKey + 1);
+    const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
     if (viewport instanceof VolumeViewport3D) {
       setIs3DVolume(true);
+    } else {
+      setIs3DVolume(false);
     }
-  }, [viewportId, displaySets, viewport, viewportType]);
-
-  useEffect(() => {
-    setMenuKey(menuKey + 1);
   }, [
     displaySets,
     viewportId,
     presets,
     volumeRenderingQualityRange,
     volumeRenderingPresets,
-    is3DVolume,
     colorbarProperties,
-    viewportType,
+    activeViewportId,
+    viewportGrid,
   ]);
 
   return (
