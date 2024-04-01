@@ -81,18 +81,26 @@ export function Colormap({
       {buttons.length > 1 && (
         <div className="all-in-one-menu-item flex w-full justify-center">
           <ButtonGroup
-            buttons={buttons}
             onActiveIndexChange={index => {
               setActiveDisplaySet(displaySets[index]);
               setPrePreviewColormap(null);
             }}
-            defaultActiveIndex={
+            activeIndex={
               displaySets.findIndex(
                 ds => ds.displaySetInstanceUID === activeDisplaySetRef.current.displaySetInstanceUID
               ) || 1
             }
             className="w-[70%] text-[10px]"
-          />
+          >
+            {buttons.map(({ children, key, style }) => (
+              <div
+                key={key}
+                style={style}
+              >
+                {children}
+              </div>
+            ))}
+          </ButtonGroup>
         </div>
       )}
       <div className="all-in-one-menu-item flex w-full justify-center">
