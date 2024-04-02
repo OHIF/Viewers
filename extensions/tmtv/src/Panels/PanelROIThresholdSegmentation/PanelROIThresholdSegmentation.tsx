@@ -1,11 +1,14 @@
 import React, { useEffect, useState, useCallback, useReducer } from 'react';
 import PropTypes from 'prop-types';
 import { SegmentationGroupTableExpanded, Button, Icon } from '@ohif/ui';
+import { createReportAsync } from '@ohif/extension-default';
 
 import { useTranslation } from 'react-i18next';
 import segmentationEditHandler from './segmentationEditHandler';
 import ExportReports from './ExportReports';
 import ROIThresholdConfiguration, { ROI_STAT } from './ROIThresholdConfiguration';
+import callInputDialog from './callInputDialog';
+import callColorPickerDialog from './colorPickerDialog';
 
 const LOWER_CT_THRESHOLD_DEFAULT = -1024;
 const UPPER_CT_THRESHOLD_DEFAULT = 1024;
@@ -42,8 +45,12 @@ function reducer(state, action) {
   }
 }
 
-export default function PanelRoiThresholdSegmentation({ servicesManager, commandsManager }) {
-  const { segmentationService } = servicesManager.services;
+export default function PanelRoiThresholdSegmentation({
+  servicesManager,
+  commandsManager,
+  extensionManager,
+}) {
+  const { segmentationService, viewportGridService, uiDialogService } = servicesManager.services;
 
   const { t } = useTranslation('PanelSUV');
   const [showConfig, setShowConfig] = useState(false);
@@ -180,6 +187,138 @@ export default function PanelRoiThresholdSegmentation({ servicesManager, command
     segmentationService.addSegment(segmentationId);
   };
 
+  const getToolGroupIds = segmentationId => {
+    const toolGroupIds = segmentationService.getToolGroupIdsWithSegmentation(segmentationId);
+
+    return toolGroupIds;
+  };
+
+  const onSegmentClick = (segmentationId, segmentIndex) => {
+    segmentationService.setActiveSegment(segmentationId, segmentIndex);
+
+    const toolGroupIds = getToolGroupIds(segmentationId);
+
+    toolGroupIds.forEach(toolGroupId => {
+      // const toolGroupId =
+      segmentationService.setActiveSegmentationForToolGroup(segmentationId, toolGroupId);
+      segmentationService.jumpToSegmentCenter(segmentationId, segmentIndex, toolGroupId);
+    });
+  };
+
+  const _setSegmentationConfiguration = useCallback(
+    (segmentationId, key, value) => {
+      segmentationService.setConfiguration({
+        segmentationId,
+        [key]: value,
+      });
+    },
+    [segmentationService]
+  );
+
+  const onToggleSegmentVisibility = (segmentationId, segmentIndex) => {
+    const segmentation = segmentationService.getSegmentation(segmentationId);
+    const segmentInfo = segmentation.segments[segmentIndex];
+    const isVisible = !segmentInfo.isVisible;
+    const toolGroupIds = getToolGroupIds(segmentationId);
+    toolGroupIds.forEach(toolGroupId => {
+      segmentationService.setSegmentVisibility(
+        segmentationId,
+        segmentIndex,
+        isVisible,
+        toolGroupId
+      );
+    });
+  };
+
+  const onSegmentDelete = (segmentationId, segmentIndex) => {
+    segmentationService.removeSegment(segmentationId, segmentIndex);
+  };
+
+  const onSegmentEdit = (segmentationId, segmentIndex) => {
+    const segmentation = segmentationService.getSegmentation(segmentationId);
+
+    const segment = segmentation.segments[segmentIndex];
+    const { label } = segment;
+
+    callInputDialog(uiDialogService, label, (label, actionId) => {
+      if (label === '') {
+        return;
+      }
+
+      segmentationService.setSegmentLabel(segmentationId, segmentIndex, label);
+    });
+  };
+
+  const onToggleSegmentLock = (segmentationId, segmentIndex) => {
+    segmentationService.toggleSegmentLocked(segmentationId, segmentIndex);
+  };
+
+  const onSegmentColorClick = (segmentationId, segmentIndex) => {
+    const segmentation = segmentationService.getSegmentation(segmentationId);
+
+    const segment = segmentation.segments[segmentIndex];
+    const { color, opacity } = segment;
+
+    const rgbaColor = {
+      r: color[0],
+      g: color[1],
+      b: color[2],
+      a: opacity / 255.0,
+    };
+
+    callColorPickerDialog(uiDialogService, rgbaColor, (newRgbaColor, actionId) => {
+      if (actionId === 'cancel') {
+        return;
+      }
+
+      segmentationService.setSegmentRGBAColor(segmentationId, segmentIndex, [
+        newRgbaColor.r,
+        newRgbaColor.g,
+        newRgbaColor.b,
+        newRgbaColor.a * 255.0,
+      ]);
+    });
+  };
+
+  const storeSegmentation = async segmentationId => {
+    const datasources = extensionManager.getActiveDataSource();
+
+    const displaySetInstanceUIDs = await createReportAsync({
+      servicesManager,
+      getReport: () =>
+        commandsManager.runCommand('storeSegmentation', {
+          segmentationId,
+          dataSource: datasources[0],
+        }),
+      reportType: 'Segmentation',
+    });
+
+    // Show the exported report in the active viewport as read only (similar to SR)
+    if (displaySetInstanceUIDs) {
+      // clear the segmentation that we exported, similar to the storeMeasurement
+      // where we remove the measurements and prompt again the user if they would like
+      // to re-read the measurements in a SR read only viewport
+      segmentationService.remove(segmentationId);
+
+      viewportGridService.setDisplaySetsForViewport({
+        viewportId: viewportGridService.getActiveViewportId(),
+        displaySetInstanceUIDs,
+      });
+    }
+  };
+
+  const onSegmentationDownloadRTSS = segmentationId => {
+    commandsManager.runCommand('downloadRTSS', {
+      segmentationId,
+    });
+  };
+
+  const onSegmentationDownload = segmentationId => {
+    commandsManager.runCommand('downloadSegmentation', {
+      segmentationId,
+    });
+  };
+
   return (
     <>
       <div className="flex flex-col">
@@ -205,12 +344,17 @@ export default function PanelRoiThresholdSegmentation({ servicesManager, command
           {/* show segmentation table */}
           <div className="flex min-h-0 flex-col bg-black text-[13px] font-[300]">
             <SegmentationGroupTableExpanded
+              disableEditing={false}
+              showAddSegmentation={true}
+              showAddSegment={true}
+              showDeleteSegment={true}
               segmentations={segmentations}
               onSegmentationAdd={onSegmentationAdd}
               onSegmentationClick={onSegmentationClick}
               onToggleSegmentationVisibility={id => {
                 segmentationService.toggleSegmentationVisibility(id);
               }}
+              onToggleSegmentVisibility={onToggleSegmentVisibility}
               onSegmentationDelete={id => {
                 segmentationService.remove(id);
               }}
@@ -222,6 +366,39 @@ export default function PanelRoiThresholdSegmentation({ servicesManager, command
               }}
               segmentationConfig={{ initialConfig: segmentationService.getConfiguration() }}
               onSegmentAdd={onSegmentAdd}
+              onSegmentClick={onSegmentClick}
+              onSegmentDelete={onSegmentDelete}
+              onSegmentEdit={onSegmentEdit}
+              onToggleSegmentLock={onToggleSegmentLock}
+              onSegmentColorClick={onSegmentColorClick}
+              storeSegmentation={storeSegmentation}
+              onSegmentationDownloadRTSS={onSegmentationDownloadRTSS}
+              onSegmentationDownload={onSegmentationDownload}
+              setRenderOutline={value =>
+                _setSegmentationConfiguration(selectedSegmentationId, 'renderOutline', value)
+              }
+              setOutlineOpacityActive={value =>
+                _setSegmentationConfiguration(selectedSegmentationId, 'outlineOpacity', value)
+              }
+              setRenderFill={value =>
+                _setSegmentationConfiguration(selectedSegmentationId, 'renderFill', value)
+              }
+              setRenderInactiveSegmentations={value =>
+                _setSegmentationConfiguration(
+                  selectedSegmentationId,
+                  'renderInactiveSegmentations',
+                  value
+                )
+              }
+              setOutlineWidthActive={value =>
+                _setSegmentationConfiguration(selectedSegmentationId, 'outlineWidthActive', value)
+              }
+              setFillAlpha={value =>
+                _setSegmentationConfiguration(selectedSegmentationId, 'fillAlpha', value)
+              }
+              setFillAlphaInactive={value =>
+                _setSegmentationConfiguration(selectedSegmentationId, 'fillAlphaInactive', value)
+              }
             />
           </div>
           {tmtvValue !== null ? (

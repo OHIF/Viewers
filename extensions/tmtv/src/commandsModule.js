@@ -112,6 +112,7 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }) 
       // Create a segmentation of the same resolution as the source data
       // using volumeLoader.createAndCacheDerivedVolume.
       const { viewportMatchDetails } = hangingProtocolService.getMatchDetails();
+
       const ptDisplaySet = actions.getMatchingPTDisplaySet({
         viewportMatchDetails,
       });
@@ -144,6 +145,12 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }) 
         segmentationService.setActiveSegmentationForToolGroup(segmentationId, toolGroupId);
       }
 
+      segmentationService.addSegment(segmentationId, {
+        segmentIndex: 1,
+        properties: {
+          label: 'Segment 1',
+        },
+      });
       return segmentationId;
     },
     setSegmentationActiveForToolGroups: ({ segmentationId }) => {

@@ -30,7 +30,7 @@ function getPanelModule({ commandsManager, extensionManager, servicesManager }) 
   return [
     {
       name: 'petSUV',
-      iconName: 'tab-linear',
+      iconName: 'tab-patient-info',
       iconLabel: 'Patient Info',
       label: 'Patient Info',
       component: wrappedPanelPetSuv,

@@ -63,7 +63,7 @@ const Tooltip = ({
   const isOpen = (isSticky || isActive) && !isDisabled;
 
   useEffect(() => {
-    if (isOpen && parentRef.current && tooltipRef.current) {
+    if (parentRef.current && tooltipRef.current) {
       const parentRect = parentRef.current.getBoundingClientRect();
       const tooltipRect = tooltipRef.current.getBoundingClientRect();
       const parentWidth = parentRect.width;
