@@ -1,7 +1,9 @@
 export const primary3D = {
   id: 'primary3D',
   locked: true,
-  name: 'primary3D',
+  name: '3D primary',
+  icon: 'layout-advanced-3d-primary',
+  isPreset: true,
   createdDate: '2023-03-15T10:29:44.894Z',
   modifiedDate: '2023-03-15T10:29:44.894Z',
   availableTo: {},

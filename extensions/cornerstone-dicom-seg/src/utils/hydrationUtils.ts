@@ -180,7 +180,8 @@ function getUpdatedViewportsForSegmentation({
       });
     }
   });
-  return updatedViewports;
+
+  return updatedViewports.filter(v => v.viewportOptions?.viewportType !== 'volume3d');
 }
 
 export {

@@ -1,9 +1,3 @@
-/** UTILS */
-//import utils from './utils';
-//export { utils };
-
-/** CONTEXT/HOOKS */
-// Export types - need to do as two lines due to a bug in babel
 import * as Types from './types';
 
 export {
@@ -31,6 +25,8 @@ export {
   UserAuthenticationContext,
   UserAuthenticationProvider,
   useUserAuthentication,
+  useToolbox,
+  ToolboxProvider,
 } from './contextProviders';
 
 /** COMPONENTS */
@@ -87,6 +83,7 @@ export {
   SegmentationGroupTableExpanded,
   SidePanel,
   SplitButton,
+  LegacySplitButton,
   StudyBrowser,
   StudyItem,
   StudyListExpandedRow,
@@ -118,7 +115,11 @@ export {
   WindowLevelMenuItem,
   ImageScrollbar,
   ViewportOverlay,
+  ToolSettings,
+  Toolbox,
+  InvestigationalUseDialog,
   MeasurementItem,
+  LayoutPreset,
 } from './components';
 
 export { useSessionStorage } from './hooks';

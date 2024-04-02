@@ -38,19 +38,42 @@ const SegmentItem = ({
       tabIndex={0}
       data-cy={'segment-item'}
     >
-      <div className="flex min-h-[28px]">
-        <div
-          className={classnames('bg-primary-dark group/number grid w-[40px] place-items-center', {
-            'bg-primary-light border-primary-light rounded-l-[4px] border text-black': isActive,
-            'border-primary-dark border': !isActive,
-          })}
-          onMouseEnter={() => setIsNumberBoxHovering(true)}
-          onMouseLeave={() => setIsNumberBoxHovering(false)}
-        >
-          {isNumberBoxHovering && showDelete ? (
-            <Icon
-              name="close"
-              className={classnames('h-[8px] w-[8px]', {
+      <div
+        className={classnames('bg-primary-dark group/number grid w-[32px] place-items-center', {
+          '!bg-primary-light border-primary-light rounded-l-[4px] border text-black': isActive,
+          'border-primary-dark border': !isActive,
+        })}
+        onMouseEnter={() => setIsNumberBoxHovering(true)}
+        onMouseLeave={() => setIsNumberBoxHovering(false)}
+      >
+        {isNumberBoxHovering && showDelete ? (
+          <Icon
+            name="close"
+            className={classnames('h-[8px] w-[8px]', {
+              'hover:cursor-pointer hover:opacity-60': !disableEditing,
+            })}
+            onClick={e => {
+              if (disableEditing) {
+                return;
+              }
+              e.stopPropagation();
+              onDelete(segmentationId, segmentIndex);
+            }}
+          />
+        ) : (
+          <div>{segmentIndex}</div>
+        )}
+      </div>
+      <div
+        className={classnames('relative flex w-full', {
+          'border-primary-light bg-primary-dark rounded-r-[4px] border border-l-0': isActive,
+          'border border-l-0 border-transparent': !isActive,
+        })}
+      >
+        <div className="group-hover/row:bg-primary-dark flex h-full w-full flex-grow items-center">
+          <div className="pl-2 pr-1.5">
+            <div
+              className={classnames('h-[8px] w-[8px] grow-0 rounded-full', {
                 'hover:cursor-pointer hover:opacity-60': !disableEditing,
               })}
               onClick={e => {

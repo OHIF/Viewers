@@ -1,7 +1,9 @@
 export const only3D = {
   id: 'only3D',
   locked: true,
-  name: 'only3D',
+  name: '3D only',
+  icon: 'layout-advanced-3d-only',
+  isPreset: true,
   createdDate: '2023-03-15T10:29:44.894Z',
   modifiedDate: '2023-03-15T10:29:44.894Z',
   availableTo: {},

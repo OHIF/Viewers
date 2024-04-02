@@ -49,6 +49,8 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
     appConfig,
   });
 
+  servicesManager.setExtensionManager(extensionManager);
+
   servicesManager.registerServices([
     UINotificationService.REGISTRATION,
     UIModalService.REGISTRATION,

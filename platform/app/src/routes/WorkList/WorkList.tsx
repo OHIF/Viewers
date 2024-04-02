@@ -27,6 +27,7 @@ import {
   UserPreferences,
   LoadingIndicatorProgress,
   useSessionStorage,
+  InvestigationalUseDialog,
   Button,
   ButtonEnums,
 } from '@ohif/ui';
@@ -418,7 +419,7 @@ function WorkList({
                         />
                       } // launch-arrow | launch-info
                       onClick={() => {}}
-                      data-cy={`mode-${mode.routeName}-${studyInstanceUid}`}
+                      dataCY={`mode-${mode.routeName}-${studyInstanceUid}`}
                       className={isValidMode ? 'text-[13px]' : 'bg-[#222d44] text-[13px]'}
                     >
                       {mode.displayName}
@@ -527,6 +528,7 @@ function WorkList({
         isReturnEnabled={false}
         WhiteLabeling={appConfig.whiteLabeling}
       />
+      <InvestigationalUseDialog dialogConfiguration={appConfig?.investigationalUseDialog} />
       <div className="ohif-scrollbar flex grow flex-col overflow-y-auto">
         <StudyListFilter
           numOfStudies={pageNumber * resultsPerPage > 100 ? 101 : numOfStudies}
