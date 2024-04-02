@@ -9,6 +9,7 @@ describe('Top level exports', () => {
       'ExtensionManager',
       'HotkeysManager',
       'ServicesManager',
+      'ServiceProvidersManager',
       //
       'defaults',
       'utils',

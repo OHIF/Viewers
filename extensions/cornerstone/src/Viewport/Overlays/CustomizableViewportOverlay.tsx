@@ -80,10 +80,13 @@ function CustomizableViewportOverlay({
     'cornerstoneOverlayBottomRight'
   );
 
-  const instance = useMemo(
-    () => (viewportData ? getViewportInstance(viewportData, imageIndex) : null),
-    [viewportData, imageIndex]
-  );
+  const instance = useMemo(() => {
+    if (viewportData != null) {
+      return _getViewportInstance(viewportData, imageIndex);
+    } else {
+      return null;
+    }
+  }, [viewportData, imageIndex]);
 
   const instanceNumber = useMemo(
     () =>
@@ -220,7 +223,7 @@ function CustomizableViewportOverlay({
           {items.map((item, index) => (
             <div key={`${keyPrefix}_${index}`}>
               {item?.condition
-                ? item.condition()
+                ? item.condition({ instance, formatters: { formatDate: formatDICOMDate } })
                   ? _renderOverlayItem(item)
                   : null
                 : _renderOverlayItem(item)}
@@ -242,56 +245,72 @@ function CustomizableViewportOverlay({
           topLeftCustomization,
           [
             {
-              id: 'WindowLevel',
-              customizationType: 'ohif.overlayItem.windowLevel',
+              id: 'StudyDate',
+              customizationType: 'ohif.overlayItem',
+              label: '',
+              title: 'Study date',
+              condition: ({ instance }) => instance && instance.StudyDate,
+              contentF: ({ instance, formatters: { formatDate } }) =>
+                formatDate(instance.StudyDate),
             },
             {
-              id: 'ZoomLevel',
-              customizationType: 'ohif.overlayItem.zoomLevel',
-              condition: () => {
-                const activeToolName = toolGroupService.getActiveToolForViewport(viewportId);
-                return activeToolName === 'Zoom';
-              },
+              id: 'SeriesDescription',
+              customizationType: 'ohif.overlayItem',
+              label: '',
+              title: 'Series description',
+              attribute: 'SeriesDescription',
+              condition: ({ instance }) => instance && instance.SeriesDescription,
             },
           ],
           'topLeftOverlayItem'
         )
       }
-      topRight={getContent(
-        topRightCustomization,
+      topRight={getContent(topRightCustomization, [], 'topRightOverlayItem')}
+      bottomLeft={getContent(
+        bottomLeftCustomization,
+        [
+          {
+            id: 'WindowLevel',
+            customizationType: 'ohif.overlayItem.windowLevel',
+          },
+          {
+            id: 'ZoomLevel',
+            customizationType: 'ohif.overlayItem.zoomLevel',
+            condition: () => {
+              const activeToolName = toolGroupService.getActiveToolForViewport(viewportId);
+              return activeToolName === 'Zoom';
+            },
+          },
+        ],
+        'bottomLeftOverlayItem'
+      )}
+      bottomRight={getContent(
+        bottomRightCustomization,
         [
           {
             id: 'InstanceNumber',
             customizationType: 'ohif.overlayItem.instanceNumber',
           },
         ],
-        'topRightOverlayItem'
+        'bottomRightOverlayItem'
       )}
-      bottomLeft={getContent(bottomLeftCustomization, [null], 'bottomLeftOverlayItem')}
-      bottomRight={getContent(bottomRightCustomization, [null], 'bottomRightOverlayItem')}
     />
   );
 }
 
-const getViewportInstance = (viewportData, imageIndex) => {
-  const { viewportType, data } = viewportData;
+function _getViewportInstance(viewportData, imageIndex) {
   let imageId = null;
-
-  switch (viewportType) {
-    case Enums.ViewportType.STACK:
-      imageId = data.imageIds[imageIndex];
-      break;
-    case Enums.ViewportType.ORTHOGRAPHIC:
-      if (data?.length === 1) {
-        imageId = data[0].imageIds[imageIndex];
-      }
-      break;
-    default:
-      break;
+  if (viewportData.viewportType === Enums.ViewportType.STACK) {
+    imageId = viewportData.data.imageIds[imageIndex];
+  } else if (viewportData.viewportType === Enums.ViewportType.ORTHOGRAPHIC) {
+    const volumes = viewportData.data;
+    if (volumes && volumes.length == 1) {
+      const volume = volumes[0];
+      imageId = volume.imageIds[imageIndex];
+    }
   }
-
   return imageId ? metaData.get('instance', imageId) || {} : {};
-};
+}
 
 const getInstanceNumber = (viewportData, viewportId, imageIndex, cornerstoneViewportService) => {
   let instanceNumber;
@@ -389,9 +408,9 @@ function VOIOverlayItem({ voi, customization }: OverlayItemProps) {
       style={{ color: (customization && customization.color) || undefined }}
     >
       <span className="mr-1 shrink-0">W:</span>
-      <span className="ml-1 mr-2 shrink-0 font-light">{windowWidth.toFixed(0)}</span>
+      <span className="ml-1 mr-2 shrink-0">{windowWidth.toFixed(0)}</span>
       <span className="mr-1 shrink-0">L:</span>
-      <span className="ml-1 shrink-0 font-light">{windowCenter.toFixed(0)}</span>
+      <span className="ml-1 shrink-0">{windowCenter.toFixed(0)}</span>
     </div>
   );
 }
@@ -406,7 +425,7 @@ function ZoomOverlayItem({ scale, customization }: OverlayItemProps) {
       style={{ color: (customization && customization.color) || undefined }}
     >
       <span className="mr-1 shrink-0">Zoom:</span>
-      <span className="font-light">{scale.toFixed(2)}x</span>
+      <span>{scale.toFixed(2)}x</span>
     </div>
   );
 }
@@ -427,7 +446,7 @@ function InstanceNumberOverlayItem({
       style={{ color: (customization && customization.color) || undefined }}
     >
       <span className="mr-1 shrink-0">I:</span>
-      <span className="font-light">
+      <span>
         {instanceNumber !== undefined && instanceNumber !== null
           ? `${instanceNumber} (${imageIndex + 1}/${numberOfSlices})`
           : `${imageIndex + 1}/${numberOfSlices}`}
