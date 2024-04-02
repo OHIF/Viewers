@@ -34,7 +34,7 @@ function Header({
       {...props}
     >
       <div className="relative h-[48px] items-center ">
-        <div className="absolute left-0 top-1/2 -translate-y-1/2 ">
+        {/* <div className="absolute left-0 top-1/2 -translate-y-1/2 ">
           <div
             className={classNames(
               'mr-3 inline-flex items-center',
@@ -53,12 +53,11 @@ function Header({
               {WhiteLabeling?.createLogoComponentFn?.(React, props) || <Svg name="logo-ohif" />}
             </div>
           </div>
-        </div>
-        {/* <div className="absolute top-1/2 left-[211px]  h-8 w-20 -translate-y-1/2">{future left component}</div> */}
+        </div> */}
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform">
           <div className="flex items-center justify-center space-x-2">{children}</div>
         </div>
-        <div className="absolute right-0 top-1/2 -translate-y-1/2 ">
+        {/* <div className="absolute right-0 top-1/2 -translate-y-1/2 ">
           <Dropdown
             id="options"
             showDropdownIcon={false}
@@ -84,7 +83,7 @@ function Header({
               <Icon name="chevron-down" />
             </IconButton>
           </Dropdown>
-        </div>
+        </div> */}
       </div>
     </NavBar>
   );
