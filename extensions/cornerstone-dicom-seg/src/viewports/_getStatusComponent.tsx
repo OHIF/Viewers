@@ -6,9 +6,6 @@ export default function _getStatusComponent({ isHydrated, onStatusClick }) {
   let ToolTipMessage = null;
   let StatusIcon = null;
 
-  const { t } = useTranslation('Common');
-  const loadStr = t('LOAD');
-
   switch (isHydrated) {
     case true:
       StatusIcon = () => <Icon name="status-alert" />;
@@ -26,23 +23,28 @@ export default function _getStatusComponent({ isHydrated, onStatusClick }) {
       ToolTipMessage = () => <div>Click LOAD to load segmentation.</div>;
   }
 
-  const StatusArea = () => (
-    <div className="flex h-6 cursor-default text-sm leading-6 text-white">
-      <div className="bg-customgray-100 flex min-w-[45px] items-center rounded-l-xl rounded-r p-1">
-        <StatusIcon />
-        <span className="ml-1">SEG</span>
-      </div>
-      {!isHydrated && (
-        <div
-          className="bg-primary-main hover:bg-primary-light ml-1 cursor-pointer rounded px-1.5 hover:text-black"
-          // Using onMouseUp here because onClick is not working when the viewport is not active and is styled with pointer-events:none
-          onMouseUp={onStatusClick}
-        >
-          {loadStr}
+  const StatusArea = () => {
+    const { t } = useTranslation('Common');
+    const loadStr = t('LOAD');
+
+    return (
+      <div className="flex h-6 cursor-default text-sm leading-6 text-white">
+        <div className="bg-customgray-100 flex min-w-[45px] items-center rounded-l-xl rounded-r p-1">
+          <StatusIcon />
+          <span className="ml-1">SEG</span>
         </div>
-      )}
-    </div>
-  );
+        {!isHydrated && (
+          <div
+            className="bg-primary-main hover:bg-primary-light ml-1 cursor-pointer rounded px-1.5 hover:text-black"
+            // Using onMouseUp here because onClick is not working when the viewport is not active and is styled with pointer-events:none
+            onMouseUp={onStatusClick}
+          >
+            {loadStr}
+          </div>
+        )}
+      </div>
+    );
+  };
 
   return (
     <>

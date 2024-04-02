@@ -59,6 +59,9 @@ export const mprAnd3DVolumeViewport = {
                 id: 'mpr',
                 source: true,
                 target: true,
+                options: {
+                  syncColormap: true,
+                },
               },
             ],
           },
@@ -100,6 +103,9 @@ export const mprAnd3DVolumeViewport = {
                 id: 'mpr',
                 source: true,
                 target: true,
+                options: {
+                  syncColormap: true,
+                },
               },
             ],
           },
@@ -123,6 +129,9 @@ export const mprAnd3DVolumeViewport = {
                 id: 'mpr',
                 source: true,
                 target: true,
+                options: {
+                  syncColormap: true,
+                },
               },
             ],
           },

@@ -90,7 +90,6 @@ function modeFactory({ modeConfiguration }) {
         'Pan',
         'SyncToggle',
         'RectangleROIStartEndThreshold',
-        'fusionPTColormap',
       ]);
 
       // For the hanging protocol we need to decide on the window level

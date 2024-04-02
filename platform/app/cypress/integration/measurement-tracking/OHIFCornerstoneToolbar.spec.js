@@ -83,7 +83,7 @@ describe('OHIF Cornerstone Toolbar', () => {
       .trigger('mouseup', { buttons: 1 });
 
     // The exact text is slightly dependent on the viewport resolution, so leave a range
-    cy.get('@viewportInfoTopLeft').should($txt => {
+    cy.get('@viewportInfoBottomLeft').should($txt => {
       const text = $txt.text();
       expect(text).to.include('W:118').include('L:479');
     });
@@ -143,7 +143,7 @@ describe('OHIF Cornerstone Toolbar', () => {
     cy.resetViewport();
 
     const expectedText = 'W:958L:479';
-    cy.get('@viewportInfoTopLeft').should('have.text', expectedText);
+    cy.get('@viewportInfoBottomLeft').should('have.text', expectedText);
   });
 
   /*it('checks if CINE tool will prompt a modal with working controls', () => {
