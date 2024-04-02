@@ -72,6 +72,9 @@ export const primaryAxial = {
                 id: 'mpr',
                 source: true,
                 target: true,
+                options: {
+                  syncColormap: true,
+                },
               },
             ],
           },
@@ -95,6 +98,9 @@ export const primaryAxial = {
                 id: 'mpr',
                 source: true,
                 target: true,
+                options: {
+                  syncColormap: true,
+                },
               },
             ],
           },
@@ -118,6 +124,9 @@ export const primaryAxial = {
                 id: 'mpr',
                 source: true,
                 target: true,
+                options: {
+                  syncColormap: true,
+                },
               },
             ],
           },
