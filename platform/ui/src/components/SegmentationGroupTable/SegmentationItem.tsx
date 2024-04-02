@@ -109,9 +109,9 @@ function SegmentationItem({
           <div className="font-inter text-aqua-pale text-[13px]">{segmentation.label}</div>
           <div className="flex h-[28px] items-center justify-center gap-2">
             <Tooltip
-              position="left"
+              position="bottom-right"
               content={
-                <div className="flex w-[140px] flex-col">
+                <div className="flex flex-col">
                   <div className="text-[13px] text-white">Series:</div>
                   <div className="text-aqua-pale text-[13px]">{segmentation.description}</div>
                 </div>

@@ -95,7 +95,7 @@ const Tooltip = ({
           newY = parentRect.top + parentHeight;
           break;
         case 'bottom-right':
-          newX = parentRect.left - parentWidth;
+          newX = parentRect.left - tooltipWidth + parentWidth;
           newY = parentRect.top + parentHeight;
           break;
         default:

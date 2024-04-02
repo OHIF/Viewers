@@ -123,9 +123,9 @@ function SegmentationDropDownRow({
       )}
       <div className="flex items-center">
         <Tooltip
-          position="left"
+          position="bottom-right"
           content={
-            <div className="flex w-[140px] flex-col">
+            <div className="flex flex-col">
               <div className="text-[13px] text-white">Series:</div>
               <div className="text-aqua-pale text-[13px]">{activeSegmentation.description}</div>
             </div>
