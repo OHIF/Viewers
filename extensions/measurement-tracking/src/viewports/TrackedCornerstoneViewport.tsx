@@ -6,6 +6,7 @@ import { Tooltip, Icon, ViewportActionArrows, useViewportGrid } from '@ohif/ui';
 import { annotation } from '@cornerstonejs/tools';
 import { useTrackedMeasurements } from './../getContextModule';
 import { BaseVolumeViewport, Enums } from '@cornerstonejs/core';
+import { useTranslation } from 'react-i18next';
 
 function TrackedCornerstoneViewport(props) {
   const { displaySets, viewportId, servicesManager, extensionManager } = props;
@@ -19,6 +20,7 @@ function TrackedCornerstoneViewport(props) {
 
   // Todo: handling more than one displaySet on the same viewport
   const displaySet = displaySets[0];
+  const { t } = useTranslation('Common');
 
   const [viewportGrid] = useViewportGrid();
   const { activeViewportId } = viewportGrid;
@@ -180,7 +182,7 @@ function TrackedCornerstoneViewport(props) {
   );
 
   useEffect(() => {
-    const statusComponent = _getStatusComponent(isTracked);
+    const statusComponent = _getStatusComponent(isTracked, t);
     const arrowsComponent = _getArrowsComponent(
       isTracked,
       switchMeasurement,
@@ -306,7 +308,7 @@ const _getArrowsComponent = (isTracked, switchMeasurement, isActiveViewport) => 
   );
 };
 
-function _getStatusComponent(isTracked) {
+function _getStatusComponent(isTracked, t) {
   if (!isTracked) {
     return null;
   }
