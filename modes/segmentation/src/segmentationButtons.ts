@@ -95,7 +95,7 @@ const toolbarButtons: Button[] = [
         {
           id: 'Threshold',
           icon: 'icon-tool-threshold',
-          label: 'Eraser',
+          label: 'Threshold Tool',
           evaluate: {
             name: 'evaluate.cornerstone.segmentation',
             options: { toolNames: ['ThresholdCircularBrush', 'ThresholdSphereBrush'] },

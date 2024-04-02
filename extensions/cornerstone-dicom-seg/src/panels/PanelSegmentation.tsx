@@ -242,7 +242,7 @@ export default function PanelSegmentation({
     });
   };
 
-  const SegmentationGroupTableComponent = components['expanded'];
+  const SegmentationGroupTableComponent = components[configuration?.segmentationPanelMode];
 
   return (
     <SegmentationGroupTableComponent
