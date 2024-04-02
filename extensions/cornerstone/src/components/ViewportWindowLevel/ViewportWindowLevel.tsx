@@ -5,73 +5,9 @@ import { ServicesManager } from '@ohif/core';
 import { WindowLevel } from '@ohif/ui';
 import vtkColorMaps from '@kitware/vtk.js/Rendering/Core/ColorTransferFunction/ColorMaps';
 import { Enums, eventTarget, cache as cs3DCache, utilities as csUtils } from '@cornerstonejs/core';
+import { getViewportVolumeHistogram } from './getViewportVolumeHistogram';
 
 const { Events } = Enums;
-
-const calcHistogram = (data, options) => {
-  if (options === undefined) {
-    options = {};
-  }
-  const histogram = {
-    numBins: options.numBins || 256,
-    range: { min: 0, max: 0 },
-    bins: new Int32Array(1),
-    maxBin: 0,
-    maxBinValue: 0,
-  };
-
-  let minToUse = options.min;
-  let maxToUse = options.max;
-
-  if (minToUse === undefined || maxToUse === undefined) {
-    let min = Infinity;
-    let max = -Infinity;
-    let index = data.length;
-
-    while (index--) {
-      const value = data[index];
-      if (value < min) {
-        min = value;
-      }
-      if (value > max) {
-        max = value;
-      }
-    }
-
-    minToUse = min;
-    maxToUse = max;
-  }
-
-  histogram.range = { min: minToUse, max: maxToUse };
-
-  const bins = new Int32Array(histogram.numBins);
-  const binScale = histogram.numBins / (maxToUse - minToUse);
-
-  for (let index = 0; index < data.length; index++) {
-    const value = data[index];
-    if (value < minToUse) {
-      continue;
-    }
-    if (value > maxToUse) {
-      continue;
-    }
-    const bin = Math.floor((value - minToUse) * binScale);
-    bins[bin] += 1;
-  }
-
-  histogram.bins = bins;
-  histogram.maxBin = 0;
-  histogram.maxBinValue = 0;
-
-  for (let bin = 0; bin < histogram.numBins; bin++) {
-    if (histogram.bins[bin] > histogram.maxBinValue) {
-      histogram.maxBin = bin;
-      histogram.maxBinValue = histogram.bins[bin];
-    }
-  }
-
-  return histogram;
-};
 
 const ViewportWindowLevel = ({
   servicesManager,
@@ -84,46 +20,8 @@ const ViewportWindowLevel = ({
   const [windowLevels, setWindowLevels] = useState([]);
   const [cachedHistograms, setCachedHistograms] = useState({});
 
-  const getViewportVolumeHistogram = useCallback((viewport, volume, options?) => {
-    if (!volume?.loadStatus.loaded) {
-      return undefined;
-    }
-
-    const volumeImageData = viewport.getImageData(volume.volumeId);
-
-    if (!volumeImageData) {
-      return undefined;
-    }
-
-    const { imageData } = volumeImageData;
-    let scalarData = volume.scalarData;
-
-    let prevTimePoint;
-    if (volume.numTimePoints > 1) {
-      prevTimePoint = volume.timePointIndex;
-      const middleTimePoint = Math.round(volume.numTimePoints / 2);
-      volume.timePointIndex = middleTimePoint;
-      scalarData = volume.getScalarData(middleTimePoint);
-    }
-
-    const range = imageData.computeHistogram(imageData.getBounds());
-
-    // after we calculate the range let's reset the timePointIndex
-    if (volume.numTimePoints > 1) {
-      volume.timePointIndex = prevTimePoint;
-    }
-    const { minimum: min, maximum: max } = range;
-    const calcHistOptions = {
-      numBins: 256,
-      min: Math.max(min, options?.min ?? min),
-      max: Math.min(max, options?.max ?? max),
-    };
-
-    return calcHistogram(scalarData, calcHistOptions);
-  }, []);
-
   /**
-   * Looks for all viewports that has exaclty all volumeIds passed as parameter.
+   * Looks for all viewports that has exactly all volumeIds passed as parameter.
    */
   const getViewportsWithVolumeIds = useCallback(
     (volumeIds: string[]) => {
@@ -242,7 +140,7 @@ const ViewportWindowLevel = ({
   }, []);
 
   const getWindowLevelsData = useCallback(
-    (viewportId: number) => {
+    async (viewportId: number) => {
       const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
       if (!viewport) {
@@ -261,8 +159,8 @@ const ViewportWindowLevel = ({
           }
         : undefined;
 
-      const windowLevels = volumeIds
-        .map((volumeId, volumeIndex) => {
+      const windowLevels = await Promise.all(
+        volumeIds.map(async (volumeId, volumeIndex) => {
           const volume = cs3DCache.getVolume(volumeId);
 
           if (!volume) {
@@ -280,11 +178,11 @@ const ViewportWindowLevel = ({
           };
 
           const histogram =
-            cachedHistograms[volumeId] ?? getViewportVolumeHistogram(viewport, volume, options);
+            cachedHistograms[volumeId] ??
+            (await getViewportVolumeHistogram(viewport, volume, options));
           const { voi: displaySetVOI, colormap: displaySetColormap } =
             viewportInfo.displaySetOptions[volumeIndex];
           let colormap;
-
           if (displaySetColormap) {
             colormap =
               csUtils.colormap.getColormap(displaySetColormap.name) ??
@@ -306,15 +204,19 @@ const ViewportWindowLevel = ({
             showOpacitySlider: volumeIndex === 1 && opacity !== undefined,
           };
         })
-        .filter(windowLevel => !!windowLevel?.histogram);
+      );
 
-      return windowLevels;
+      const data = windowLevels.filter(Boolean);
+      return data;
     },
-    [cachedHistograms, cornerstoneViewportService, getVolumeOpacity, getViewportVolumeHistogram]
+
+    [cachedHistograms, cornerstoneViewportService, getVolumeOpacity]
   );
 
   const updateViewportHistograms = useCallback(() => {
-    setWindowLevels(() => getWindowLevelsData(viewportId));
+    getWindowLevelsData(viewportId).then(windowLevels => {
+      setWindowLevels(windowLevels);
+    });
   }, [viewportId, getWindowLevelsData]);
 
   const handleCornerstoneVOIModified = useCallback(
@@ -394,15 +296,17 @@ const ViewportWindowLevel = ({
   // Listen to windowLevels changes and caches all the new ones
   useEffect(() => {
     const newVolumeHistograms = windowLevels
-      .filter(windowLevel => !cachedHistograms[windowLevel.volumeId])
+      .filter(windowLevel => !cachedHistograms[windowLevel.volumeId] && windowLevel.histogram)
       .reduce((volumeHistograms, windowLevel) => {
-        volumeHistograms[windowLevel.volumeId] = windowLevel.histogram;
-
+        // If the histogram exists, add it to the volumeHistograms object
+        if (windowLevel?.histogram) {
+          volumeHistograms[windowLevel.volumeId] = windowLevel.histogram;
+        }
         return volumeHistograms;
       }, {});
 
     if (Object.keys(newVolumeHistograms).length) {
-      setCachedHistograms({ ...cachedHistograms, ...newVolumeHistograms });
+      setCachedHistograms(prev => ({ ...prev, ...newVolumeHistograms }));
     }
   }, [windowLevels, cachedHistograms]);
 
@@ -449,22 +353,28 @@ const ViewportWindowLevel = ({
 
   return (
     <>
-      {windowLevels.map((windowLevel, i) => (
-        <WindowLevel
-          key={windowLevel.volumeId}
-          title={`Window Level (${windowLevel.modality})`}
-          histogram={windowLevel.histogram}
-          voi={windowLevel.voi}
-          step={windowLevel.step}
-          showOpacitySlider={windowLevel.showOpacitySlider}
-          colormap={windowLevel.colormap}
-          onVOIChange={voi => handleVOIChange(windowLevel.volumeId, voi)}
-          opacity={windowLevel.opacity}
-          onOpacityChange={opacity =>
-            handleOpacityChange(windowLevel.viewportId, i, windowLevel.volumeId, opacity)
-          }
-        />
-      ))}
+      {windowLevels.map((windowLevel, i) => {
+        if (!windowLevel.histogram) {
+          return null;
+        }
+
+        return (
+          <WindowLevel
+            key={windowLevel.volumeId}
+            title={`Window Level (${windowLevel.modality})`}
+            histogram={windowLevel.histogram}
+            voi={windowLevel.voi}
+            step={windowLevel.step}
+            showOpacitySlider={windowLevel.showOpacitySlider}
+            colormap={windowLevel.colormap}
+            onVOIChange={voi => handleVOIChange(windowLevel.volumeId, voi)}
+            opacity={windowLevel.opacity}
+            onOpacityChange={opacity =>
+              handleOpacityChange(windowLevel.viewportId, i, windowLevel.volumeId, opacity)
+            }
+          />
+        );
+      })}
     </>
   );
 };
