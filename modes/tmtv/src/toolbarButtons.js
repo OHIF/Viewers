@@ -111,6 +111,7 @@ const toolbarButtons = [
         name: 'evaluate.cornerstoneTool',
         disabledText: 'Select the PT Axial to enable this tool',
       },
+      options: 'tmtv.RectangleROIThresholdOptions',
     },
   },
 ];

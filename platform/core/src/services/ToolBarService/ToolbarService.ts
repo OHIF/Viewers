@@ -387,7 +387,9 @@ export default class ToolbarService extends PubSubService {
     const { id, uiType, component } = btn;
     const { groupId } = btn.props;
 
-    const buttonType = this._getButtonUITypes()[uiType];
+    const buttonTypes = this._getButtonUITypes();
+
+    const buttonType = buttonTypes[uiType];
 
     if (!buttonType) {
       return;
@@ -415,7 +417,16 @@ export default class ToolbarService extends PubSubService {
   };
 
   handleEvaluate = props => {
-    const { evaluate } = props;
+    const { evaluate, options } = props;
+
+    if (typeof options === 'string') {
+      // get the custom option component from the extension manager and set it as the optionComponent
+      const buttonTypes = this._getButtonUITypes();
+      const optionComponent = buttonTypes[options]?.defaultComponent;
+      props.options = {
+        optionComponent,
+      };
+    }
 
     if (typeof evaluate === 'function') {
       return;
