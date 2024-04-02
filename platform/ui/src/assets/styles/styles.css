@@ -1,7 +1,9 @@
 /* CUSTOM OHIF SCROLLBAR */
 .ohif-scrollbar {
-  scrollbar-color: #173239 transparent;
+  scrollbar-color: #041c4a transparent;
   scrollbar-gutter: stable;
+  scrollbar-width: thin;
+
 }
 
 .study-min-height {
@@ -13,7 +15,7 @@
 }
 
 .ohif-scrollbar::-webkit-scrollbar {
-  width: 8px;
+  scrollbar-width: thin;
 }
 
 .ohif-scrollbar::-webkit-scrollbar-track {
@@ -22,13 +24,13 @@
 
 .ohif-scrollbar::-webkit-scrollbar-thumb {
   @apply rounded;
-  @apply bg-primary-main;
-  background-color: #173239;
+  @apply bg-secondary-dark;
+  background-color: #041c4a;
 }
 
 .ohif-scrollbar::-webkit-scrollbar-thumb:window-inactive {
-  @apply bg-primary-main;
-  background-color: #173239;
+  @apply bg-secondary-dark;
+  background-color: #041c4a;
 }
 
 /* INVISIBLE SCROLLBAR */

@@ -1,35 +1,30 @@
 import PropTypes from 'prop-types';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import OHIF, { utils, ServicesManager, ExtensionManager } from '@ohif/core';
+import { ServicesManager, ExtensionManager } from '@ohif/core';
 
 import { setTrackingUniqueIdentifiersForElement } from '../tools/modules/dicomSRModule';
 
-import { Icon, Tooltip, useViewportGrid, ViewportActionBar } from '@ohif/ui';
+import { Icon, Tooltip, useViewportGrid, ViewportActionArrows } from '@ohif/ui';
 import hydrateStructuredReport from '../utils/hydrateStructuredReport';
 import { useAppConfig } from '@state';
-
-const { formatDate } = utils;
 
 const MEASUREMENT_TRACKING_EXTENSION_ID = '@ohif/extension-measurement-tracking';
 
 const SR_TOOLGROUP_BASE_NAME = 'SRToolGroup';
 
 function OHIFCornerstoneSRViewport(props) {
-  const {
-    children,
-    dataSource,
-    displaySets,
-    viewportLabel,
-    viewportOptions,
-    servicesManager,
-    extensionManager,
-  } = props;
+  const { children, dataSource, displaySets, viewportOptions, servicesManager, extensionManager } =
+    props;
 
   const [appConfig] = useAppConfig();
 
-  const { displaySetService, cornerstoneViewportService, measurementService } =
-    servicesManager.services;
+  const {
+    displaySetService,
+    cornerstoneViewportService,
+    measurementService,
+    viewportActionCornersService,
+  } = servicesManager.services;
 
   const viewportId = viewportOptions.viewportId;
 
@@ -47,6 +42,8 @@ function OHIFCornerstoneSRViewport(props) {
   const [referencedDisplaySetMetadata, setReferencedDisplaySetMetadata] = useState(null);
   const [element, setElement] = useState(null);
   const { viewports, activeViewportId } = viewportGrid;
+
+  const { t } = useTranslation('Common');
 
   // Optional hook into tracking extension, if present.
   let trackedMeasurements;
@@ -217,18 +214,11 @@ function OHIFCornerstoneSRViewport(props) {
     direction => {
       let newMeasurementSelected = measurementSelected;
 
-      if (direction === 'right') {
-        newMeasurementSelected++;
-
-        if (newMeasurementSelected >= measurementCount) {
-          newMeasurementSelected = 0;
-        }
-      } else {
-        newMeasurementSelected--;
-
-        if (newMeasurementSelected < 0) {
-          newMeasurementSelected = measurementCount - 1;
-        }
+      newMeasurementSelected += direction;
+      if (newMeasurementSelected >= measurementCount) {
+        newMeasurementSelected = 0;
+      } else if (newMeasurementSelected < 0) {
+        newMeasurementSelected = measurementCount - 1;
       }
 
       setTrackingIdentifiers(newMeasurementSelected);
@@ -298,6 +288,46 @@ function OHIFCornerstoneSRViewport(props) {
     setIsLocked(trackedMeasurements?.context?.trackedSeries?.length > 0);
   }, [trackedMeasurements]);
 
+  useEffect(() => {
+    viewportActionCornersService.setComponents([
+      {
+        viewportId,
+        id: 'viewportStatusComponent',
+        component: _getStatusComponent({
+          srDisplaySet,
+          viewportId,
+          isRehydratable: srDisplaySet.isRehydratable,
+          isLocked,
+          sendTrackedMeasurementsEvent,
+          t,
+        }),
+        indexPriority: -100,
+        location: viewportActionCornersService.LOCATIONS.topLeft,
+      },
+      {
+        viewportId,
+        id: 'viewportActionArrowsComponent',
+        index: 0,
+        component: (
+          <ViewportActionArrows
+            key="actionArrows"
+            onArrowsClick={onMeasurementChange}
+          ></ViewportActionArrows>
+        ),
+        indexPriority: 0,
+        location: viewportActionCornersService.LOCATIONS.topRight,
+      },
+    ]);
+  }, [
+    isLocked,
+    onMeasurementChange,
+    sendTrackedMeasurementsEvent,
+    srDisplaySet,
+    t,
+    viewportActionCornersService,
+    viewportId,
+  ]);
+
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   let childrenWithProps = null;
 
@@ -317,52 +347,8 @@ function OHIFCornerstoneSRViewport(props) {
     });
   }
 
-  const {
-    PatientID,
-    PatientName,
-    PatientSex,
-    PatientAge,
-    SliceThickness,
-    ManufacturerModelName,
-    StudyDate,
-    SeriesDescription,
-    SpacingBetweenSlices,
-  } = referencedDisplaySetMetadata;
-
   return (
     <>
-      <ViewportActionBar
-        onDoubleClick={evt => {
-          evt.stopPropagation();
-          evt.preventDefault();
-        }}
-        onArrowsClick={onMeasurementChange}
-        getStatusComponent={() =>
-          _getStatusComponent({
-            srDisplaySet,
-            viewportId,
-            isRehydratable: srDisplaySet.isRehydratable,
-            isLocked,
-            sendTrackedMeasurementsEvent,
-          })
-        }
-        studyData={{
-          label: viewportLabel,
-          studyDate: formatDate(StudyDate),
-          seriesDescription: SeriesDescription || '',
-          patientInformation: {
-            patientName: PatientName ? OHIF.utils.formatPN(PatientName.Alphabetic) : '',
-            patientSex: PatientSex || '',
-            patientAge: PatientAge || '',
-            MRN: PatientID || '',
-            thickness: SliceThickness ? `${parseFloat(SliceThickness).toFixed(2)}mm` : '',
-            spacing:
-              SpacingBetweenSlices !== undefined ? `${SpacingBetweenSlices.toFixed(2)}mm` : '',
-            scanner: ManufacturerModelName || '',
-          },
-        }}
-      />
-
       <div className="relative flex h-full w-full flex-row overflow-hidden">
         {getCornerstoneViewport()}
         {childrenWithProps}
@@ -379,7 +365,6 @@ OHIFCornerstoneSRViewport.propTypes = {
   viewportLabel: PropTypes.string,
   customProps: PropTypes.object,
   viewportOptions: PropTypes.object,
-  viewportLabel: PropTypes.string,
   servicesManager: PropTypes.instanceOf(ServicesManager).isRequired,
   extensionManager: PropTypes.instanceOf(ExtensionManager).isRequired,
 };
@@ -424,6 +409,7 @@ function _getStatusComponent({
   isRehydratable,
   isLocked,
   sendTrackedMeasurementsEvent,
+  t,
 }) {
   const handleMouseUp = () => {
     sendTrackedMeasurementsEvent('HYDRATE_SR', {
@@ -432,7 +418,6 @@ function _getStatusComponent({
     });
   };
 
-  const { t } = useTranslation('Common');
   const loadStr = t('LOAD');
 
   // 1 - Incompatible

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-beta.67](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.66...v3.8.0-beta.67) (2024-04-02)
+
+
+### Features
+
+* **ViewportActionMenu:** window level per viewport / new patient info / colorbars/ 3D presets and 3D volume rendering ([#3963](https://github.com/OHIF/Viewers/issues/3963)) ([b7f90e3](https://github.com/OHIF/Viewers/commit/b7f90e3951845396f99b69f0a74fc56b2ffeada1))
+
+
+
+
+
 # [3.8.0-beta.66](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.65...v3.8.0-beta.66) (2024-03-28)
 
 **Note:** Version bump only for package ohif-docs

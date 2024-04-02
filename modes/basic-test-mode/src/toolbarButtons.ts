@@ -114,7 +114,7 @@ const toolbarButtons: Button[] = [
       evaluate: 'evaluate.cornerstoneTool',
     },
   },
-  // Window Level + Presets...
+  // Window Level
   {
     id: 'WindowLevel',
     uiType: 'ohif.splitButton',

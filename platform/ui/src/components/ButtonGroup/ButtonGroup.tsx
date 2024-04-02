@@ -41,7 +41,7 @@ const ButtonGroup = ({
           return cloneElement(child, {
             key: index,
             className: classnames(
-              'rounded-[4px] px-2 py-1',
+              'rounded-[4px] px-2 py-1 text-center',
               index === activeIndex
                 ? 'bg-customblue-40 text-white'
                 : 'text-primary-active bg-black',
