@@ -38,7 +38,7 @@
     "@cornerstonejs/codec-openjpeg": "^1.2.2",
     "@cornerstonejs/codec-openjph": "^2.4.2",
     "@cornerstonejs/dicom-image-loader": "^1.67.0",
-    "@ohif/ui": "3.8.0-beta.66",
+    "@ohif/ui": "3.8.0-beta.67",
     "cornerstone-math": "0.1.9",
     "dicom-parser": "^1.8.21"
   },
