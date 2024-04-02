@@ -7,7 +7,7 @@ function AddSegmentRow({ onClick, onToggleSegmentationVisibility = null, segment
   return (
     <div className="flex justify-between bg-black pl-[34px] hover:cursor-pointer">
       <div
-        className="group ml-2.5 mt-1"
+        className="group pt-[5px] pb-[5px]"
         onClick={onClick}
       >
         <div className="text-primary-active group-hover:bg-secondary-dark flex items-center rounded-[4px] pr-2">

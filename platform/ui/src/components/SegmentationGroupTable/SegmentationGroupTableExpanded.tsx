@@ -92,13 +92,13 @@ const SegmentationGroupTableExpanded = ({
           />
         )}
         <div className="bg-primary-dark">
-          <div className="h-[32px] select-none rounded-[4px] bg-black">
+          <div className="select-none bg-black pt-[5px] pb-[5px]">
             {showAddSegmentation && !disableEditing && (
               <NoSegmentationRow onSegmentationAdd={onSegmentationAdd} />
             )}
           </div>
           {segmentations?.length > 0 && (
-            <div className="select-none">
+            <div className="ohif-scrollbar flex max-h-[500px] select-none flex-col gap-[5px] overflow-auto bg-black">
               {segmentations?.map(segmentation => {
                 return (
                   <div key={segmentation.id}>
@@ -160,7 +160,7 @@ SegmentationGroupTableExpanded.propTypes = {
   onSegmentationClick: PropTypes.func.isRequired,
   onSegmentationDelete: PropTypes.func.isRequired,
   onSegmentationDownload: PropTypes.func.isRequired,
-  onSegmentationDownloadRTSS: PropTypes.func.isRequired,
+  onSegmentationDownloadRTSS: PropTypes.func,
   storeSegmentation: PropTypes.func.isRequired,
   onSegmentClick: PropTypes.func.isRequired,
   onSegmentAdd: PropTypes.func.isRequired,

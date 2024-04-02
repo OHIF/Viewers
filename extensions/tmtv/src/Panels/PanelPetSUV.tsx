@@ -213,7 +213,7 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
                 onChange={() => {}}
               />
               <Button
-                className="!h-[26px] !w-[115px] self-end"
+                className="!h-[26px] !w-[115px] self-end !p-0"
                 onClick={updateMetadata}
               >
                 Reload Data

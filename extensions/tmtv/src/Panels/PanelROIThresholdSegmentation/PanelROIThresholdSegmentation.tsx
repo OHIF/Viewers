@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback, useReducer } from 'react';
 import PropTypes from 'prop-types';
-import { SegmentationTable, Button, Icon } from '@ohif/ui';
+import { SegmentationGroupTableExpanded, Button, Icon } from '@ohif/ui';
 
 import { useTranslation } from 'react-i18next';
 import segmentationEditHandler from './segmentationEditHandler';
@@ -47,7 +47,6 @@ export default function PanelRoiThresholdSegmentation({ servicesManager, command
 
   const { t } = useTranslation('PanelSUV');
   const [showConfig, setShowConfig] = useState(false);
-  const [labelmapLoading, setLabelmapLoading] = useState(false);
   const [selectedSegmentationId, setSelectedSegmentationId] = useState(null);
   const [segmentations, setSegmentations] = useState(() => segmentationService.getSegmentations());
 
@@ -166,24 +165,26 @@ export default function PanelRoiThresholdSegmentation({ servicesManager, command
     handleTMTVCalculation();
   }, [segmentations, selectedSegmentationId]);
 
+  const onSegmentationClick = (segmentationId: string) => {
+    segmentationService.setActiveSegmentationForToolGroup(segmentationId);
+    setSelectedSegmentationId(segmentationId);
+  };
+
+  const onSegmentationAdd = async () => {
+    runCommand('createNewLabelmapFromPT').then(segmentationId => {
+      setSelectedSegmentationId(segmentationId);
+    });
+  };
+
+  const onSegmentAdd = segmentationId => {
+    segmentationService.addSegment(segmentationId);
+  };
+
   return (
     <>
       <div className="flex flex-col">
         <div className="invisible-scrollbar overflow-y-auto overflow-x-hidden">
           <div className="mx-4 my-4 mb-4 flex space-x-4">
-            <Button
-              onClick={() => {
-                setLabelmapLoading(true);
-                setTimeout(() => {
-                  runCommand('createNewLabelmapFromPT').then(segmentationId => {
-                    setLabelmapLoading(false);
-                    setSelectedSegmentationId(segmentationId);
-                  });
-                });
-              }}
-            >
-              {labelmapLoading ? 'loading ...' : 'New Label'}
-            </Button>
             <Button onClick={handleROIThresholding}>Run</Button>
           </div>
           <div
@@ -202,37 +203,26 @@ export default function PanelRoiThresholdSegmentation({ servicesManager, command
             />
           )}
           {/* show segmentation table */}
-          <div className="mt-4">
-            {segmentations?.length ? (
-              <SegmentationTable
-                title={t('Segmentations')}
-                segmentations={segmentations}
-                activeSegmentationId={selectedSegmentationId}
-                onClick={id => {
-                  runCommand('setSegmentationActiveForToolGroups', {
-                    segmentationId: id,
-                  });
-                  setSelectedSegmentationId(id);
-                }}
-                onToggleVisibility={id => {
-                  segmentationService.toggleSegmentationVisibility(id);
-                }}
-                onToggleVisibilityAll={ids => {
-                  ids.map(id => {
-                    segmentationService.toggleSegmentationVisibility(id);
-                  });
-                }}
-                onDelete={id => {
-                  segmentationService.remove(id);
-                }}
-                onEdit={id => {
-                  segmentationEditHandler({
-                    id,
-                    servicesManager,
-                  });
-                }}
-              />
-            ) : null}
+          <div className="flex min-h-0 flex-col bg-black text-[13px] font-[300]">
+            <SegmentationGroupTableExpanded
+              segmentations={segmentations}
+              onSegmentationAdd={onSegmentationAdd}
+              onSegmentationClick={onSegmentationClick}
+              onToggleSegmentationVisibility={id => {
+                segmentationService.toggleSegmentationVisibility(id);
+              }}
+              onSegmentationDelete={id => {
+                segmentationService.remove(id);
+              }}
+              onSegmentationEdit={id => {
+                segmentationEditHandler({
+                  id,
+                  servicesManager,
+                });
+              }}
+              segmentationConfig={{ initialConfig: segmentationService.getConfiguration() }}
+              onSegmentAdd={onSegmentAdd}
+            />
           </div>
           {tmtvValue !== null ? (
             <div className="bg-secondary-dark mt-4 flex items-baseline justify-between px-2 py-1">
@@ -251,7 +241,7 @@ export default function PanelRoiThresholdSegmentation({ servicesManager, command
         </div>
       </div>
       <div
-        className="mt-auto mb-4 flex cursor-pointer items-center justify-center text-blue-400 opacity-50 hover:opacity-80"
+        className="absolute bottom-1 flex cursor-pointer items-center justify-center text-blue-400 opacity-50 hover:opacity-80"
         onClick={() => {
           // navigate to a url in a new tab
           window.open('https://github.com/OHIF/Viewers/blob/master/modes/tmtv/README.md', '_blank');

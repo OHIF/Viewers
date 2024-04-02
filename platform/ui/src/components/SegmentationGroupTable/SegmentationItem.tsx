@@ -36,12 +36,12 @@ function SegmentationItem({
 
   return (
     <>
-      <div className="bg-secondary-dark group relative flex items-center justify-start gap-1 border-t-[5px] border-black">
+      <div className="bg-secondary-dark group relative flex items-center justify-start gap-1">
         <div
           onClick={e => {
             e.stopPropagation();
           }}
-          className="flex px-1"
+          className="flex"
         >
           <Dropdown
             id="segmentation-dropdown"
@@ -93,7 +93,7 @@ function SegmentationItem({
               ],
             ]}
           >
-            <div className="hover:bg-secondary-dark mx-1 grid h-[28px] w-[28px]  cursor-pointer place-items-center rounded-[4px]">
+            <div className="hover:bg-secondary-dark grid h-[28px] w-[28px]  cursor-pointer place-items-center rounded-[4px]">
               <Icon name="icon-more-menu"></Icon>
             </div>
           </Dropdown>
@@ -122,7 +122,9 @@ function SegmentationItem({
                 className="text-primary-active"
               />
             </Tooltip>
-            <Icon name={areChildrenVisible ? 'chevron-down-new' : 'chevron-left-new'} />
+            <div className={areChildrenVisible ? '' : 'mr-[4px]'}>
+              <Icon name={areChildrenVisible ? 'chevron-down-new' : 'chevron-left-new'} />
+            </div>
           </div>
         </div>
       </div>

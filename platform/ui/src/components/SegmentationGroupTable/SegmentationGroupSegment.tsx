@@ -40,9 +40,9 @@ const SegmentItem = ({
     >
       <div className="flex min-h-[28px]">
         <div
-          className={classnames('bg-primary-dark group/number grid w-[40px] place-items-center', {
+          className={classnames('group/number grid w-[28px] place-items-center', {
             'bg-primary-light border-primary-light rounded-l-[4px] border text-black': isActive,
-            'border-primary-dark border': !isActive,
+            'bg-primary-dark border-primary-dark border': !isActive,
           })}
           onMouseEnter={() => setIsNumberBoxHovering(true)}
           onMouseLeave={() => setIsNumberBoxHovering(false)}

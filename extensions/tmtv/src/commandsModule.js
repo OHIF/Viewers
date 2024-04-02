@@ -121,8 +121,11 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }) 
         return;
       }
 
+      const currentSegmentations = segmentationService.getSegmentations();
+
       const segmentationId = await segmentationService.createSegmentationForDisplaySet(
-        ptDisplaySet.displaySetInstanceUID
+        ptDisplaySet.displaySetInstanceUID,
+        { label: `Segmentation ${currentSegmentations.length + 1}` }
       );
 
       // Add Segmentation to all toolGroupIds in the viewer
