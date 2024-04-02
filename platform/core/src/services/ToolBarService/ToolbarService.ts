@@ -204,6 +204,7 @@ export default class ToolbarService extends PubSubService {
         const evaluated = props.evaluate?.({ ...refreshProps, button });
         const updatedProps = {
           ...props,
+          ...evaluated,
           disabled: evaluated?.disabled || false,
           className: evaluated?.className || '',
           isActive: evaluated?.isActive, // isActive will be undefined for buttons without this prop
@@ -462,9 +463,8 @@ export default class ToolbarService extends PubSubService {
     }
 
     if (typeof evaluate === 'object') {
-      const { name, options } = evaluate;
+      const { name, ...options } = evaluate;
       const evaluateFunction = this._evaluateFunction[name];
-
       if (evaluateFunction) {
         props.evaluate = args => evaluateFunction({ ...args, ...options });
         return;

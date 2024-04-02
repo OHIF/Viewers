@@ -75,7 +75,10 @@ const toolbarButtons: Button[] = [
       icon: 'tool-3d-rotate',
       label: '3D Rotate',
       commands: setToolActiveToolbar,
-      evaluate: 'evaluate.cornerstoneTool',
+      evaluate: {
+        name: 'evaluate.cornerstoneTool',
+        disabledText: 'Select a 3D viewport to enable this tool',
+      },
     },
   },
   {
@@ -110,7 +113,10 @@ const toolbarButtons: Button[] = [
           toolGroupIds: ['mpr'],
         },
       },
-      evaluate: 'evaluate.cornerstoneTool',
+      evaluate: {
+        name: 'evaluate.cornerstoneTool',
+        disabledText: 'Select an MPR viewport to enable this tool',
+      },
     },
   },
   {

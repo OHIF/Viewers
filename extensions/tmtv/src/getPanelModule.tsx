@@ -1,5 +1,6 @@
 import React from 'react';
 import { PanelPetSUV, PanelROIThresholdSegmentation } from './Panels';
+import { Toolbox } from '@ohif/ui';
 
 // TODO:
 // - No loading UI exists yet
@@ -12,18 +13,26 @@ function getPanelModule({ commandsManager, extensionManager, servicesManager }) 
       <PanelPetSUV
         commandsManager={commandsManager}
         servicesManager={servicesManager}
-        extensionManager={extensionManager}
       />
     );
   };
 
   const wrappedROIThresholdSeg = () => {
     return (
-      <PanelROIThresholdSegmentation
-        commandsManager={commandsManager}
-        servicesManager={servicesManager}
-        extensionManager={extensionManager}
-      />
+      <>
+        <Toolbox
+          commandsManager={commandsManager}
+          servicesManager={servicesManager}
+          extensionManager={extensionManager}
+          buttonSectionId="tmtvToolbox"
+          title="Threshold Tools"
+        />
+        <PanelROIThresholdSegmentation
+          commandsManager={commandsManager}
+          servicesManager={servicesManager}
+          extensionManager={extensionManager}
+        />
+      </>
     );
   };
 

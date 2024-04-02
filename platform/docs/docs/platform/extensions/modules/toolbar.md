@@ -97,6 +97,7 @@ Let's look at one of the evaluators (for `evaluate.cornerstoneTool`)
       return {
         disabled: true,
         className: '!text-common-bright ohif-disabled',
+        disabledText: 'Tool not available',
       };
     }
 
