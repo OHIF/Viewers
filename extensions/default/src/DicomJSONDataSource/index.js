@@ -73,7 +73,7 @@ function createDicomJSONApi(dicomJsonConfig) {
   const { wadoRoot } = dicomJsonConfig;
   let prefixUrl = "";
   const implementation = {
-    initialize: async ({ query, url}) => {
+    initialize: async ({ query, url }) => {
       if (!url) {
         url = query.get('url');
         // Get url prefix from metadata json url, since url is pretty relative and can be changed, so base url should be dynamic
@@ -102,8 +102,8 @@ function createDicomJSONApi(dicomJsonConfig) {
           SeriesInstanceUID = series.SeriesInstanceUID;
 
           series.instances.forEach(instance => {
+            instance.url = insertPrefixUrl(instance.url, "dicomweb:", prefixUrl);
             let { url: imageId, metadata: naturalizedDicom } = instance;
-            imageId = insertPrefixUrl(imageId, "dicomweb:", prefixUrl);
             // Add prefix to image url
             // Add imageId specific mapping to this data as the URL isn't necessarliy WADO-URI.
             metadataProvider.addImageIdToUIDs(imageId, {
@@ -265,7 +265,7 @@ function createDicomJSONApi(dicomJsonConfig) {
 
         if (NumberOfFrames > 1) {
           for (let i = 0; i < NumberOfFrames; i++) {
-            const imageId = getImageId({
+            let imageId = getImageId({
               instance,
               frame: i,
               config: dicomJsonConfig,
@@ -274,7 +274,7 @@ function createDicomJSONApi(dicomJsonConfig) {
           }
         } else {
           let imageId = getImageId({ instance, config: dicomJsonConfig });
-          imageId = insertPrefixUrl(imageId, "dicomweb:", prefixUrl);
+          //imageId = insertPrefixUrl(imageId, "dicomweb:", prefixUrl);
           imageIds.push(imageId);
         }
       });

@@ -14,6 +14,7 @@ window.config = {
   strictZSpacingForVolumeViewport: true,
   groupEnabledModesFirst: true,
   useSharedArrayBuffer: 'FALSE',
+  investigationalUseDialog: 'never',
   maxNumRequests: {
     interaction: 100,
     thumbnail: 75,

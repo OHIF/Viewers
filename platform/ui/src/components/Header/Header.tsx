@@ -67,7 +67,7 @@ function Header({
             <HeaderPatientInfo servicesManager={servicesManager} />
           )}
           <div className="border-primary-dark mx-1.5 h-[25px] border-r"></div>
-          <div className="flex-shrink-0">
+          {/* <div className="flex-shrink-0">
             <Dropdown
               id="options"
               showDropdownIcon={false}
@@ -84,7 +84,7 @@ function Header({
                 <Icon name="icon-settings" />
               </IconButton>
             </Dropdown>
-          </div>
+          </div> */}
         </div>
       </div>
     </NavBar>
