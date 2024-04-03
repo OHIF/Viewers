@@ -182,13 +182,14 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     const { lutPresentation, positionPresentation } = presentations;
     if (lutPresentation) {
       const { presentation } = lutPresentation;
-
-      if (viewport instanceof BaseVolumeViewport) {
-        Object.entries(presentation).forEach(
-          ([volumeId, properties]: [string, Types.ViewportProperties]) => {
+      if (viewport instanceof VolumeViewport) {
+        if (presentation instanceof Map) {
+          presentation.forEach((properties, volumeId) => {
             viewport.setProperties(properties, volumeId);
-          }
-        );
+          });
+        } else {
+          viewport.setProperties(presentation);
+        }
       } else {
         viewport.setProperties(presentation);
       }
