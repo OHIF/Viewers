@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Icon, Dropdown } from '../../components';
+import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import AddSegmentRow from './AddSegmentRow';
@@ -137,7 +138,11 @@ function SegmentationItem({
               segmentation={segmentation}
             />
           )}
-          <div className="ohif-scrollbar flex min-h-0 flex-col overflow-y-hidden">
+          <div
+            className={classNames('ohif-scrollbar flex min-h-0 flex-col overflow-y-hidden', {
+              'mt-1': disableEditing || !showAddSegment,
+            })}
+          >
             {segmentation?.segments?.map(segment => {
               if (!segment) {
                 return null;

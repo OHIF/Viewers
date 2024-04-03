@@ -160,7 +160,7 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }) 
         segmentationService.setActiveSegmentationForToolGroup(segmentationId, toolGroupId);
       });
     },
-    thresholdSegmentationByRectangleROITool: ({ segmentationId, config }) => {
+    thresholdSegmentationByRectangleROITool: ({ segmentationId, config, segmentIndex }) => {
       const segmentation = csTools.segmentation.state.getSegmentation(segmentationId);
 
       const { representationData } = segmentation;
@@ -211,12 +211,11 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }) 
           { volume: referencedVolume, lower: ptLower, upper: ptUpper },
           { volume: ctReferencedVolume, lower: ctLower, upper: ctUpper },
         ],
-        { overwrite: true }
+        { overwrite: true, segmentIndex }
       );
     },
-    calculateSuvPeak: ({ labelmap }) => {
+    calculateSuvPeak: ({ labelmap, segmentIndex }) => {
       const { referencedVolumeId } = labelmap;
-
       const referencedVolume = cs.cache.getVolume(referencedVolumeId);
 
       const annotationUIDs = csTools.annotation.selection.getAnnotationsSelectedByToolName(
@@ -227,7 +226,7 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }) 
         csTools.annotation.state.getAnnotation(annotationUID)
       );
 
-      const suvPeak = calculateSuvPeak(labelmap, referencedVolume, annotations);
+      const suvPeak = calculateSuvPeak(labelmap, referencedVolume, annotations, segmentIndex);
       return {
         suvPeak: suvPeak.mean,
         suvMax: suvPeak.max,

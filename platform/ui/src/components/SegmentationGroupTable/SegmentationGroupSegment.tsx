@@ -154,10 +154,23 @@ const SegmentItem = ({
           </div>
         </div>
       </div>
-      {displayText && (
-        <div className="text-aqua-pale flex h-full items-center bg-black px-2 py-[5px] pl-[45px] text-[11px]">
-          {displayText}
+      {Array.isArray(displayText) ? (
+        <div className="flex flex-col py-[5px] pl-[43px]">
+          {displayText.map(text => (
+            <div
+              key={text}
+              className="text-aqua-pale flex h-full items-center bg-black text-[11px]"
+            >
+              {text}
+            </div>
+          ))}
         </div>
+      ) : (
+        displayText && (
+          <div className="text-aqua-pale flex h-full items-center bg-black px-2 py-[5px] pl-[45px] text-[11px]">
+            {displayText}
+          </div>
+        )
       )}
     </div>
   );
