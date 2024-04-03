@@ -73,17 +73,22 @@ const InputDoubleRange: React.FC<InputDoubleRangeProps> = ({
 
   const LabelOrEditableNumber = (val, index) => {
     return allowNumberEdit ? (
-      <InputNumber
-        minValue={minValue}
-        maxValue={maxValue}
-        value={val}
-        onChange={newValue => {
-          updateRangeValues(newValue, index);
-        }}
-        step={step}
-        labelClassName={classNames(labelClassName ?? 'text-white')}
-        showAdjustmentArrows={showAdjustmentArrows}
-      />
+      // the pl-[2px] class is used to align the thumb so that it doesn't
+      // go over the label when the value is full, not sure what is wrong
+      // with the implementation, we need to fix it properly
+      <div className={index === 1 && 'pl-[2px]'}>
+        <InputNumber
+          minValue={minValue}
+          maxValue={maxValue}
+          value={val}
+          onChange={newValue => {
+            updateRangeValues(newValue, index);
+          }}
+          step={step}
+          labelClassName={classNames(labelClassName ?? 'text-white')}
+          showAdjustmentArrows={showAdjustmentArrows}
+        />
+      </div>
     ) : (
       <span className={classNames(labelClassName ?? 'text-white')}>
         {val}

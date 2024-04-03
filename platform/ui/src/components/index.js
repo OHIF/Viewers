@@ -88,6 +88,7 @@ import { Toolbox } from './Toolbox';
 import InvestigationalUseDialog from './InvestigationalUseDialog';
 import MeasurementItem from './MeasurementTable/MeasurementItem';
 import LayoutPreset from './LayoutPreset';
+import DynamicVolumeControls from './DynamicVolumeControls';
 
 export {
   AboutModal,
@@ -181,4 +182,5 @@ export {
   Toolbox,
   InvestigationalUseDialog,
   MeasurementItem,
+  DynamicVolumeControls,
 };

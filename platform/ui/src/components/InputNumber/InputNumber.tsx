@@ -47,14 +47,14 @@ const InputNumber: React.FC<{
   size = 'sm',
   minValue = 0,
   maxValue = 100,
-  labelClassName,
+  labelClassName = 'text-aqua-pale text-[11px] mx-auto',
   label,
   showAdjustmentArrows = true,
   arrowsDirection = 'vertical',
   labelPosition = 'left',
-  inputClassName,
+  inputClassName = 'text-white bg-primary-dark text-[14px]',
   sizeClassName,
-  inputContainerClassName,
+  inputContainerClassName = 'bg-primary-dark border-secondary-light border rounded-[4px]',
 }) => {
   const [numberValue, setNumberValue] = useState(value);
   const [isFocused, setIsFocused] = useState(false);
