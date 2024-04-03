@@ -140,18 +140,6 @@ const toolbarButtons = [
     },
   },
   {
-    id: 'Cine',
-    uiType: 'ohif.radioGroup',
-    props: createButton({
-      id: 'Cine',
-      icon: 'tool-cine',
-      label: 'Cine',
-      tooltip: 'Cine',
-      commands: 'toggleCine',
-      evaluate: ['evaluate.cine', 'evaluate.not3D'],
-    }),
-  },
-  {
     id: 'ProgressDropdown',
     uiType: 'ohif.progressDropdown',
   },

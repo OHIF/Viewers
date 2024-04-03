@@ -114,6 +114,7 @@ function ViewerLayout({
         hotkeysManager={hotkeysManager}
         extensionManager={extensionManager}
         servicesManager={servicesManager}
+        appConfig={appConfig}
       />
       <div
         className="relative flex w-full flex-row flex-nowrap items-stretch overflow-hidden bg-black"

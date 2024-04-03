@@ -6,6 +6,7 @@ const workflowStepsToDropdownOptions = (steps = []) =>
   steps.map(step => ({
     label: step.name,
     value: step.id,
+    info: step.info,
     activated: false,
     completed: false,
   }));

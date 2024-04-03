@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { useTranslation } from 'react-i18next';
+import debounce from 'lodash.debounce';
+
 import ReactDOM from 'react-dom';
 
 import './tooltip.css';
@@ -55,6 +57,16 @@ const Tooltip = ({
   const [coords, setCoords] = useState({ x: 999999, y: 999999 });
   const parentRef = useRef(null);
   const tooltipRef = useRef(null);
+
+  const handleMouseOverDebounced = useMemo(
+    () => debounce(() => setIsActive(true), showHideDelay),
+    [showHideDelay]
+  );
+
+  const handleMouseOutDebounced = useMemo(
+    () => debounce(() => setIsActive(false), showHideDelay),
+    [showHideDelay]
+  );
 
   const handleMouseOver = () => {
     handleMouseOutDebounced.cancel();
@@ -131,7 +143,8 @@ const Tooltip = ({
           'tooltip-box bg-primary-dark border-secondary-light w-max-content relative inset-x-auto top-full rounded border text-base text-white',
           {
             'py-[6px] px-[8px]': !tight,
-          }
+          },
+          tooltipBoxClassName
         )}
       >
         <div>{typeof content === 'string' ? t(content) : content}</div>

@@ -7,7 +7,7 @@ const dynamicVolume = {
 
 const defaultButtons = {
   buttonSection: 'primary',
-  buttons: ['MeasurementTools', 'Zoom', 'WindowLevel', 'Crosshairs', 'Pan', 'Cine'],
+  buttons: ['MeasurementTools', 'Zoom', 'WindowLevel', 'Crosshairs', 'Pan'],
 };
 
 const defaultPanels = {

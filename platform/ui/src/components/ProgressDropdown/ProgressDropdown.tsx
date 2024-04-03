@@ -4,7 +4,7 @@ import classnames from 'classnames';
 import ProgressDiscreteBar from './ProgressDiscreteBar';
 import ProgressItemDetail from './ProgressItemDetail';
 import ProgressItem from './ProgressItem';
-import { Icon } from '../';
+import { Icon } from '../../components';
 import { ProgressDropdownOption, ProgressDropdownOptionPropType } from './types';
 
 const ProgressDropdown = ({
@@ -94,7 +94,7 @@ const ProgressDropdown = ({
   return (
     <div
       ref={element}
-      className="relative grow text-[0px] text-white"
+      className="relative grow select-none text-[0px] text-white"
     >
       <div>
         <div className="mb-1.5 flex h-[26px]">
@@ -135,7 +135,7 @@ const ProgressDropdown = ({
             'bg-primary-dark overflow-hidden transition-[max-height] duration-300 ',
             'border-secondary-main rounded border shadow',
             {
-              'max-h-0': !open,
+              hidden: !open,
               'max-h-[500px]': open,
             }
           )}

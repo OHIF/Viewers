@@ -1,8 +1,8 @@
 import React, { useState, useMemo, ReactElement } from 'react';
-import { Icon, Tooltip } from '../';
+import { Icon, Tooltip } from '../../components';
 import { ProgressDropdownOption, ProgressDropdownOptionPropType } from './types';
 
-const MAX_TOOLTIP_LENGTH = 250;
+const MAX_TOOLTIP_LENGTH = 150;
 const iconClassNames = 'grow-0 text-primary-light h-4 w-4 mt-1 mr-2 mb-0 ml-1';
 
 const ProgressItemDetail = ({ option }: { option: ProgressDropdownOption }): ReactElement => {
@@ -30,7 +30,7 @@ const ProgressItemDetail = ({ option }: { option: ProgressDropdownOption }): Rea
 
     return (
       <>
-        {info.substr(0, MAX_TOOLTIP_LENGTH)}
+        {info.slice(0, MAX_TOOLTIP_LENGTH)}
         <button
           className="text-primary-active font-bold"
           onClick={handleReadMoreClick}
@@ -44,10 +44,12 @@ const ProgressItemDetail = ({ option }: { option: ProgressDropdownOption }): Rea
   const iconContent = (
     <>
       {icon && (
-        <Icon
-          name={icon}
-          className={iconClassNames}
-        />
+        <div>
+          <Icon
+            name={icon}
+            className={iconClassNames}
+          />
+        </div>
       )}
       {!icon && <div className={iconClassNames} />}
     </>

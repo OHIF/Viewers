@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Icon } from '@ohif/ui';
 import { utils } from '@ohif/core';
-import { useAppConfig } from '@state';
 
 const { formatDate, formatPN } = utils;
 
@@ -70,8 +69,7 @@ function usePatientInfo(servicesManager) {
   return { patientInfo, isMixedPatients };
 }
 
-function HeaderPatientInfo({ servicesManager }) {
-  const [appConfig] = useAppConfig();
+function HeaderPatientInfo({ servicesManager, appConfig }) {
   const initialExpandedState = appConfig.showPatientInfo === 'visible';
   const [expanded, setExpanded] = useState(initialExpandedState);
   const { patientInfo, isMixedPatients } = usePatientInfo(servicesManager);
