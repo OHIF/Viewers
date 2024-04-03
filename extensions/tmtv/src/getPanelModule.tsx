@@ -24,7 +24,7 @@ function getPanelModule({ commandsManager, extensionManager, servicesManager }) 
           commandsManager={commandsManager}
           servicesManager={servicesManager}
           extensionManager={extensionManager}
-          buttonSectionId="tmtvToolbox"
+          buttonSectionId="ROIThresholdToolbox"
           title="Threshold Tools"
         />
         <PanelROIThresholdSegmentation

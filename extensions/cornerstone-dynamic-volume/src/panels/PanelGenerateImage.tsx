@@ -10,7 +10,8 @@ const volumeLoaderScheme = 'cornerstoneStreamingDynamicImageVolume'; // Loader i
 const SOPClassHandlerId = '@ohif/extension-default.sopClassHandlerModule.stack';
 
 export default function PanelGenerateImage({ servicesManager, commandsManager }) {
-  const { cornerstoneViewportService } = servicesManager.services;
+  const { cornerstoneViewportService, viewportGridService, displaySetService } =
+    servicesManager.services;
   const [timePointsRange, setTimePointsRange] = useState([]);
   const [timePointsRangeToUseForGenerate, setTimePointsRangeToUseForGenerate] = useState([]);
   const [computedDisplaySet, setComputedDisplaySet] = useState(null);
@@ -52,6 +53,36 @@ export default function PanelGenerateImage({ servicesManager, commandsManager })
       unsubscribe();
     };
   }, [cornerstoneViewportService]);
+
+  useEffect(() => {
+    const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(activeViewportId);
+
+    if (!displaySetUIDs || displaySetUIDs.length === 0) {
+      return;
+    }
+
+    const displaySets = displaySetUIDs.map(displaySetUID =>
+      displaySetService.getDisplaySetByUID(displaySetUID)
+    );
+
+    const dynamicVolumeDisplaySet = displaySets.find(displaySet => displaySet.isDynamicVolume);
+
+    if (!dynamicVolumeDisplaySet) {
+      return;
+    }
+
+    const dynamicVolume = cache
+      .getVolumes()
+      .find(volume => volume.volumeId.includes(dynamicVolumeDisplaySet.displaySetInstanceUID));
+
+    if (!dynamicVolume) {
+      return;
+    }
+
+    setDynamicVolume(dynamicVolume);
+    uuidDynamicVolume.current = dynamicVolumeDisplaySet.displaySetInstanceUID;
+    setTimePointsRange([1, dynamicVolume.numTimePoints]);
+  }, [activeViewportId, cornerstoneViewportService]);
 
   useEffect(() => {
     // ~~ Subscription
@@ -182,6 +213,10 @@ export default function PanelGenerateImage({ servicesManager, commandsManager })
     }
 
     setTimePointsRangeToUseForGenerate(newValues);
+  }
+
+  if (!dynamicVolume || timePointsRange.length === 0) {
+    return null;
   }
 
   return (

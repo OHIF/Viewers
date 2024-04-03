@@ -143,6 +143,20 @@ const toolbarButtons = [
     id: 'ProgressDropdown',
     uiType: 'ohif.progressDropdown',
   },
+  {
+    id: 'RectangleROIStartEndThreshold',
+    uiType: 'ohif.radioGroup',
+    props: {
+      icon: 'tool-create-threshold',
+      label: 'Rectangle ROI Threshold',
+      commands: setToolActiveToolbar,
+      evaluate: {
+        name: 'evaluate.cornerstoneTool',
+        disabledText: 'Select the PT Axial to enable this tool',
+      },
+      options: 'tmtv.RectangleROIThresholdOptions',
+    },
+  },
 ];
 
 export default toolbarButtons;
