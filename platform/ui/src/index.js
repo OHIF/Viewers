@@ -130,7 +130,6 @@ export {
   InvestigationalUseDialog,
   MeasurementItem,
   LayoutPreset,
-  DynamicVolumeControls,
 } from './components';
 
 export { useSessionStorage } from './hooks';

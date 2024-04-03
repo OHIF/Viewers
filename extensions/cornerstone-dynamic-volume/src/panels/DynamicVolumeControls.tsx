@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import Icon from '../Icon';
 import {
   InputDoubleRange,
   Button,
@@ -8,7 +7,11 @@ import {
   ButtonGroup,
   IconButton,
   InputNumber,
-} from '../../components';
+  Icon,
+} from '@ohif/ui';
+
+import { Enums } from '@cornerstonejs/core';
+import fr from '../../../../platform/i18n/src/locales/fr';
 
 const controlClassNames = {
   sizeClassName: 'w-[58px] h-[28px]',
@@ -28,12 +31,14 @@ const DynamicVolumeControls = ({
   currentFrameIndex,
   onFrameChange,
   framesLength,
+  onGenerate,
+  onDoubleRangeChange,
 }) => {
   return (
-    <div className="flex select-none flex-col">
+    <div className="flex select-none flex-col pb-5">
       <PanelSection
         title="Controls"
-        childrenClassName="space-y-2"
+        childrenClassName="space-y-2 pb-5"
       >
         <FrameControls
           onPlayPauseChange={onPlayPauseChange}
@@ -50,18 +55,34 @@ const DynamicVolumeControls = ({
         />
         <div className="h-[1px] bg-black"></div>
         <div className="px-5">
-          <ViewComponent framesLength={framesLength} />
+          <ViewComponent
+            framesLength={framesLength}
+            onGenerate={onGenerate}
+            onDoubleRangeChange={onDoubleRangeChange}
+          />
         </div>
       </PanelSection>
     </div>
   );
 };
 
-const ViewComponent = ({ framesLength }) => {
+const ViewComponent = ({ framesLength, onGenerate, onDoubleRangeChange }) => {
   const [computedView, setComputedView] = useState(false);
+  const [computeViewMode, setComputeViewMode] = useState(Enums.DynamicOperatorType.SUM);
 
-  const toggleComputedView = () => {
-    setComputedView(prevState => !prevState);
+  const [sliderRangeValues, setSliderRangeValues] = useState([framesLength / 4, framesLength / 2]);
+
+  useEffect(() => {
+    setSliderRangeValues([framesLength / 4, framesLength / 2]);
+  }, [framesLength]);
+
+  const handleSliderChange = newValues => {
+    if (sliderRangeValues[0] === newValues[0] && sliderRangeValues[1] === newValues[1]) {
+      return;
+    }
+
+    setSliderRangeValues(newValues);
+    onDoubleRangeChange(newValues);
   };
 
   const Header = ({ title }) => (
@@ -81,47 +102,47 @@ const ViewComponent = ({ framesLength }) => {
         <ButtonGroup className="mt-2 w-full">
           <button
             className="w-1/2"
-            onClick={toggleComputedView}
+            onClick={() => setComputedView(false)}
           >
             4D
           </button>
           <button
             className="w-1/2"
-            onClick={toggleComputedView}
+            onClick={() => setComputedView(true)}
           >
             Computed
           </button>
         </ButtonGroup>
       </div>
-      <div className="mt-6 flex flex-col">
+      <div className={`mt-6 flex flex-col ${computedView ? '' : 'ohif-disabled'}`}>
         <Header title="Operation" />
         <ButtonGroup
-          className="mt-2 w-full"
+          className={`mt-2 w-full `}
           separated={true}
         >
           <button
             className="w-1/2"
-            onClick={toggleComputedView}
+            onClick={() => setComputeViewMode(Enums.DynamicOperatorType.SUM)}
           >
-            Sum
+            {Enums.DynamicOperatorType.SUM.toString().toUpperCase()}
           </button>
           <button
             className="w-1/2"
-            onClick={toggleComputedView}
+            onClick={() => setComputeViewMode(Enums.DynamicOperatorType.AVERAGE)}
           >
-            Average
+            {Enums.DynamicOperatorType.AVERAGE.toString().toUpperCase()}
           </button>
           <button
             className="w-1/2"
-            onClick={toggleComputedView}
+            onClick={() => setComputeViewMode(Enums.DynamicOperatorType.SUBTRACT)}
           >
-            Subtract
+            {Enums.DynamicOperatorType.SUBTRACT.toString().toUpperCase()}
           </button>
         </ButtonGroup>
         <div className="w-ful mt-2">
           <InputDoubleRange
-            values={[10, 20]}
-            onChange={values => console.log(values)}
+            values={sliderRangeValues}
+            onChange={handleSliderChange}
             minValue={0}
             showLabel={true}
             allowNumberEdit={true}
@@ -129,8 +150,15 @@ const ViewComponent = ({ framesLength }) => {
             step={1}
           />
         </div>
+        <Button
+          className="mt-2 !h-[26px] !w-[115px] self-start !p-0"
+          onClick={() => {
+            onGenerate(computeViewMode);
+          }}
+        >
+          Generate
+        </Button>
       </div>
-      <div>Generate</div>
     </div>
   );
 };
