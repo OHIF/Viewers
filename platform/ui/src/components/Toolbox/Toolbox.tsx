@@ -43,8 +43,14 @@ function Toolbox({ servicesManager, buttonSectionId, commandsManager, title, ...
       (accumulator, toolbarButton) => {
         const { id: buttonId, componentProps } = toolbarButton;
 
-        const createEnhancedOptions = (options, parentId) =>
-          options.map(option => {
+        const createEnhancedOptions = (options, parentId) => {
+          const optionsToUse = Array.isArray(options) ? options : [options];
+
+          return optionsToUse.map(option => {
+            if (typeof option.optionComponent === 'function') {
+              return option;
+            }
+
             return {
               ...option,
               value:
@@ -72,13 +78,18 @@ function Toolbox({ servicesManager, buttonSectionId, commandsManager, title, ...
               },
             };
           });
+        };
 
-        if (componentProps.items?.length) {
-          componentProps.items.forEach(item => {
-            accumulator[item.id] = createEnhancedOptions(item.options, item.id);
+        const { items, options } = componentProps;
+
+        if (items?.length) {
+          items.forEach(({ options, id }) => {
+            accumulator[id] = createEnhancedOptions(options, id);
           });
-        } else if (componentProps.options?.length) {
-          accumulator[buttonId] = createEnhancedOptions(componentProps.options, buttonId);
+        } else if (options?.length) {
+          accumulator[buttonId] = createEnhancedOptions(options, buttonId);
+        } else if (options?.optionComponent) {
+          accumulator[buttonId] = options.optionComponent;
         }
 
         return accumulator;

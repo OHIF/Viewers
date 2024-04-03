@@ -13,6 +13,10 @@ function ToolSettings({ options }) {
     return null;
   }
 
+  if (typeof options === 'function') {
+    return options();
+  }
+
   return (
     <div className="space-y-2 py-2 text-white">
       {options?.map(option => {

@@ -81,6 +81,7 @@ export {
   Select,
   SegmentationTable,
   SegmentationGroupTable,
+  SegmentationGroupTableExpanded,
   SidePanel,
   SplitButton,
   LegacySplitButton,

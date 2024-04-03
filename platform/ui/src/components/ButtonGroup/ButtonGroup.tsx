@@ -27,15 +27,14 @@ const ButtonGroup = ({
     vertical: 'flex-col',
   };
 
-  const wrapperClasses = classnames('inline-flex', orientationClasses[orientation], className);
+  const wrapperClasses = classnames(
+    'items-stretch inline-flex',
+    orientationClasses[orientation],
+    className
+  );
 
   return (
-    <div
-      className={classnames(
-        wrapperClasses,
-        'border-secondary-light rounded-[5px] border bg-black text-[13px]'
-      )}
-    >
+    <div className={classnames(wrapperClasses, 'text-[13px]')}>
       {Children.map(children, (child, index) => {
         if (React.isValidElement(child)) {
           return cloneElement(child, {

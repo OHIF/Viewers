@@ -1,41 +1,7 @@
 import { defaults, ToolbarService } from '@ohif/core';
-import { WindowLevelMenuItem } from '@ohif/ui';
 import { toolGroupIds } from './initToolGroups';
 
 const { windowLevelPresets } = defaults;
-
-function _createColormap(label, colormap) {
-  return {
-    id: label,
-    label,
-    type: 'action',
-    commands: [
-      {
-        commandName: 'setFusionPTColormap',
-        commandOptions: {
-          toolGroupId: toolGroupIds.Fusion,
-          colormap,
-        },
-      },
-    ],
-  };
-}
-function _createWwwcPreset(preset, title, subtitle) {
-  return {
-    id: preset.toString(),
-    title,
-    subtitle,
-    commands: [
-      {
-        commandName: 'setWindowLevel',
-        commandOptions: {
-          ...windowLevelPresets[preset],
-        },
-        context: 'CORNERSTONE',
-      },
-    ],
-  };
-}
 
 const setToolActiveToolbar = {
   commandName: 'setToolActiveToolbar',
@@ -141,7 +107,11 @@ const toolbarButtons = [
       icon: 'tool-create-threshold',
       label: 'Rectangle ROI Threshold',
       commands: setToolActiveToolbar,
-      evaluate: 'evaluate.cornerstoneTool',
+      evaluate: {
+        name: 'evaluate.cornerstoneTool',
+        disabledText: 'Select the PT Axial to enable this tool',
+      },
+      options: 'tmtv.RectangleROIThresholdOptions',
     },
   },
 ];
