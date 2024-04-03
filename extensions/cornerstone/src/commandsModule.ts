@@ -40,8 +40,6 @@ function commandsModule({
     cornerstoneViewportService,
     uiNotificationService,
     measurementService,
-    displaySetService,
-    hangingProtocolService,
     colorbarService,
     hangingProtocolService,
     syncGroupService,

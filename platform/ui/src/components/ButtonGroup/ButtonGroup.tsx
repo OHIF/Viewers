@@ -28,35 +28,63 @@ const ButtonGroup = ({
     vertical: 'flex-col',
   };
 
-  const wrapperClasses = classnames('inline-flex', orientationClasses[orientation], className);
+  const wrapperClasses = classnames(
+    `${separated ? '' : 'inline-flex'}`,
+    orientationClasses[orientation],
+    className
+  );
 
   return (
     <div
-      className={classnames(
-        wrapperClasses,
-        'border-secondary-light rounded-[5px] border bg-black text-[13px]'
-      )}
-    >
-      {Children.map(children, (child, index) => {
-        if (React.isValidElement(child)) {
-          return cloneElement(child, {
-            key: index,
-            className: classnames(
-              'rounded-[4px] px-2 py-1',
-              index === activeIndex
-                ? 'bg-customblue-40 text-white'
-                : 'text-primary-active bg-black',
-              child.props.className,
-              disabled ? 'ohif-disabled' : ''
-            ),
-            onClick: e => {
-              child.props.onClick && child.props.onClick(e);
-              handleButtonClick(index);
-            },
-          });
-        }
-        return child;
+      className={classnames(wrapperClasses, ' text-[13px]', {
+        'border-secondary-light rounded-[5px] border bg-black': !separated,
       })}
+    >
+      {!separated &&
+        Children.map(children, (child, index) => {
+          if (React.isValidElement(child)) {
+            return cloneElement(child, {
+              key: index,
+              className: classnames(
+                'rounded-[4px] px-2 py-1',
+                index === activeIndex
+                  ? 'bg-customblue-40 text-white'
+                  : 'text-primary-active bg-black',
+                child.props.className,
+                disabled ? 'ohif-disabled' : ''
+              ),
+              onClick: e => {
+                child.props.onClick && child.props.onClick(e);
+                handleButtonClick(index);
+              },
+            });
+          }
+          return child;
+        })}
+      {separated && (
+        <div className="flex space-x-2">
+          {Children.map(children, (child, index) => {
+            if (React.isValidElement(child)) {
+              return cloneElement(child, {
+                key: index,
+                className: classnames(
+                  'rounded-[4px] px-2 py-1',
+                  index === activeIndex
+                    ? 'bg-customblue-40 text-white'
+                    : 'text-primary-active bg-black border-secondary-light rounded-[5px] border',
+                  child.props.className,
+                  disabled ? 'ohif-disabled' : ''
+                ),
+                onClick: e => {
+                  child.props.onClick && child.props.onClick(e);
+                  handleButtonClick(index);
+                },
+              });
+            }
+            return child;
+          })}
+        </div>
+      )}
     </div>
   );
 };

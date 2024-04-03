@@ -1,7 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import debounce from 'lodash.debounce';
 import { useTranslation } from 'react-i18next';
 import ReactDOM from 'react-dom';
 

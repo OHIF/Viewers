@@ -15,7 +15,7 @@ import {
   utilities as csUtilities,
   Enums as csEnums,
 } from '@cornerstonejs/core';
-import { Enums, utilities, ReferenceLinesTool } from '@cornerstonejs/tools';
+import { utilities } from '@cornerstonejs/tools';
 import {
   cornerstoneStreamingImageVolumeLoader,
   cornerstoneStreamingDynamicImageVolumeLoader,
@@ -33,10 +33,9 @@ import initContextMenu from './initContextMenu';
 import initDoubleClick from './initDoubleClick';
 import { CornerstoneServices } from './types';
 import initViewTiming from './utils/initViewTiming';
-import { utilities } from '@cornerstonejs/core';
 import { colormaps } from './utils/colormaps';
 
-const { registerColormap } = utilities.colormap;
+const { registerColormap } = csUtilities.colormap;
 
 // TODO: Cypress tests are currently grabbing this from the window?
 window.cornerstone = cornerstone;
