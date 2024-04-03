@@ -35,4 +35,5 @@ export default interface Services {
   cornerstoneCacheService?: unknown;
   segmentationService?: unknown;
   panelService?: unknown;
+  colorbarService?: unknown;
 }

@@ -21,8 +21,6 @@ export function Toolbar({ servicesManager, buttonSection = 'primary' }) {
         }
 
         const { id, Component, componentProps } = toolDef;
-        const { disabled } = componentProps;
-
         const tool = (
           <Component
             key={id}
@@ -33,16 +31,7 @@ export function Toolbar({ servicesManager, buttonSection = 'primary' }) {
           />
         );
 
-        return disabled ? (
-          <Tooltip
-            key={id}
-            position="bottom"
-            content={componentProps.label}
-            secondaryContent={'Not available on the current viewport'}
-          >
-            <div className={classnames('mr-1')}>{tool}</div>
-          </Tooltip>
-        ) : (
+        return (
           <div
             key={id}
             className="mr-1"

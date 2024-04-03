@@ -33,6 +33,10 @@ import initContextMenu from './initContextMenu';
 import initDoubleClick from './initDoubleClick';
 import { CornerstoneServices } from './types';
 import initViewTiming from './utils/initViewTiming';
+import { utilities } from '@cornerstonejs/core';
+import { colormaps } from './utils/colormaps';
+
+const { registerColormap } = utilities.colormap;
 
 // TODO: Cypress tests are currently grabbing this from the window?
 window.cornerstone = cornerstone;
@@ -290,10 +294,7 @@ export default async function init({
 
   eventTarget.addEventListener(EVENTS.ELEMENT_DISABLED, elementDisabledHandler.bind(null));
 
-  // viewportGridService.subscribe(
-  //   viewportGridService.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED,
-  //   activeViewportEventListener
-  // );
+  colormaps.forEach(registerColormap);
 }
 
 function CPUModal() {

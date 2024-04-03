@@ -16,6 +16,7 @@ const ToolbarButton = ({
   //
   className,
   disabled,
+  disabledText,
   size,
   toolTipClassName,
   disableToolTip = false,
@@ -38,7 +39,7 @@ const ToolbarButton = ({
       <Tooltip
         isSticky={shouldShowDropdown}
         content={shouldShowDropdown ? dropdownContent : label}
-        secondaryContent={disabled ? 'Not available on the current viewport' : null}
+        secondaryContent={disabledText}
         tight={shouldShowDropdown}
         className={toolTipClassNameToUse}
         isDisabled={disableToolTip}

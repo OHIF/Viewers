@@ -89,9 +89,8 @@ function modeFactory({ modeConfiguration }) {
         'Crosshairs',
         'Pan',
         'SyncToggle',
-        'RectangleROIStartEndThreshold',
-        'fusionPTColormap',
       ]);
+      toolbarService.createButtonSection('tmtvToolbox', ['RectangleROIStartEndThreshold']);
 
       // For the hanging protocol we need to decide on the window level
       // based on whether the SUV is corrected or not, hence we can't hard

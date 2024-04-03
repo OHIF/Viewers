@@ -208,6 +208,7 @@ export default class ToolbarService extends PubSubService {
         const evaluated = props.evaluate?.({ ...refreshProps, button });
         const updatedProps = {
           ...props,
+          ...evaluated,
           disabled: evaluated?.disabled || false,
           className: evaluated?.className || '',
           isActive: evaluated?.isActive, // isActive will be undefined for buttons without this prop
@@ -391,7 +392,9 @@ export default class ToolbarService extends PubSubService {
     const { id, uiType, component } = btn;
     const { groupId } = btn.props;
 
-    const buttonType = this._getButtonUITypes()[uiType];
+    const buttonTypes = this._getButtonUITypes();
+
+    const buttonType = buttonTypes[uiType];
 
     if (!buttonType) {
       return;
@@ -419,7 +422,16 @@ export default class ToolbarService extends PubSubService {
   };
 
   handleEvaluate = props => {
-    const { evaluate } = props;
+    const { evaluate, options } = props;
+
+    if (typeof options === 'string') {
+      // get the custom option component from the extension manager and set it as the optionComponent
+      const buttonTypes = this._getButtonUITypes();
+      const optionComponent = buttonTypes[options]?.defaultComponent;
+      props.options = {
+        optionComponent,
+      };
+    }
 
     if (typeof evaluate === 'function') {
       return;
@@ -467,9 +479,8 @@ export default class ToolbarService extends PubSubService {
     }
 
     if (typeof evaluate === 'object') {
-      const { name, options } = evaluate;
+      const { name, ...options } = evaluate;
       const evaluateFunction = this._evaluateFunction[name];
-
       if (evaluateFunction) {
         props.evaluate = args => evaluateFunction({ ...args, ...options });
         return;

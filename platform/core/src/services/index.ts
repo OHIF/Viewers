@@ -1,5 +1,6 @@
 import MeasurementService from './MeasurementService';
 import ServicesManager from './ServicesManager';
+import ServiceProvidersManager from './ServiceProvidersManager';
 import UIDialogService from './UIDialogService';
 import UIModalService from './UIModalService';
 import UINotificationService from './UINotificationService';
@@ -23,6 +24,7 @@ export {
   Services,
   MeasurementService,
   ServicesManager,
+  ServiceProvidersManager,
   CustomizationService,
   StateSyncService,
   UIDialogService,

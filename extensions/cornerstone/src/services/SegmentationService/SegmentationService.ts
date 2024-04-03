@@ -988,6 +988,7 @@ class SegmentationService extends PubSubService {
           referencedVolumeId: volumeId, // Todo: this is so ugly
         },
       },
+      description: `S${displaySet.SeriesNumber}: ${displaySet.SeriesDescription}`,
     };
 
     this.addOrUpdateSegmentation(segmentation);

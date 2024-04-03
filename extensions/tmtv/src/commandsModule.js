@@ -124,6 +124,7 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }) 
       // Create a segmentation of the same resolution as the source data
       // using volumeLoader.createAndCacheDerivedVolume.
       const { viewportMatchDetails } = hangingProtocolService.getMatchDetails();
+
       const ptDisplaySet = actions.getMatchingPTDisplaySet({
         viewportMatchDetails,
       });
@@ -133,9 +134,11 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }) 
         return;
       }
 
+      const currentSegmentations = segmentationService.getSegmentations();
+
       const segmentationId = await segmentationService.createSegmentationForDisplaySet(
         ptDisplaySet.displaySetInstanceUID,
-        { label }
+        { label: `Segmentation ${currentSegmentations.length + 1}` }
       );
 
       // Add Segmentation to all toolGroupIds in the viewer
@@ -154,6 +157,12 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }) 
         segmentationService.setActiveSegmentationForToolGroup(segmentationId, toolGroupId);
       }
 
+      segmentationService.addSegment(segmentationId, {
+        segmentIndex: 1,
+        properties: {
+          label: 'Segment 1',
+        },
+      });
       return segmentationId;
     },
     setSegmentationActiveForToolGroups: ({ segmentationId }) => {
@@ -163,7 +172,7 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }) 
         segmentationService.setActiveSegmentationForToolGroup(segmentationId, toolGroupId);
       });
     },
-    thresholdSegmentationByRectangleROITool: ({ segmentationId, config }) => {
+    thresholdSegmentationByRectangleROITool: ({ segmentationId, config, segmentIndex }) => {
       const segmentation = csTools.segmentation.state.getSegmentation(segmentationId);
 
       const { representationData } = segmentation;
@@ -214,12 +223,11 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }) 
           { volume: referencedVolume, lower: ptLower, upper: ptUpper },
           { volume: ctReferencedVolume, lower: ctLower, upper: ctUpper },
         ],
-        { overwrite: true }
+        { overwrite: true, segmentIndex }
       );
     },
-    calculateSuvPeak: ({ labelmap }) => {
+    calculateSuvPeak: ({ labelmap, segmentIndex }) => {
       const { referencedVolumeId } = labelmap;
-
       const referencedVolume = cs.cache.getVolume(referencedVolumeId);
 
       const annotationUIDs = _getAnnotationsSelectedByToolNames(
@@ -230,7 +238,7 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }) 
         csTools.annotation.state.getAnnotation(annotationUID)
       );
 
-      const suvPeak = calculateSuvPeak(labelmap, referencedVolume, annotations);
+      const suvPeak = calculateSuvPeak(labelmap, referencedVolume, annotations, segmentIndex);
       return {
         suvPeak: suvPeak.mean,
         suvMax: suvPeak.max,
@@ -530,13 +538,6 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }) 
           displaySetInstanceUID: ptDisplaySet.displaySetInstanceUID,
           colormap: {
             name: colormap,
-            // TODO: This opacity mapping matches that in hpViewports, but
-            // ideally making this editable in a side panel would be useful
-            opacity: [
-              { value: 0, opacity: 0 },
-              { value: 0.1, opacity: 0.9 },
-              { value: 1, opacity: 0.95 },
-            ],
           },
         });
 
