@@ -44,7 +44,6 @@ export default function PanelGenerateImage({ servicesManager, commandsManager })
           setDynamicVolume(volumeData.volume);
           uuidDynamicVolume.current = volumeData.displaySetInstanceUID;
           setTimePointsRange([1, volumeData.volume.numTimePoints]);
-          setTimePointsRangeToUseForGenerate([1, volumeData.volume.numTimePoints]);
         }
       });
     });
@@ -175,6 +174,13 @@ export default function PanelGenerateImage({ servicesManager, commandsManager })
   };
 
   function handleSliderChange(newValues) {
+    if (
+      newValues[0] === timePointsRangeToUseForGenerate[0] &&
+      newValues[1] === timePointsRangeToUseForGenerate[1]
+    ) {
+      return;
+    }
+
     setTimePointsRangeToUseForGenerate(newValues);
   }
 

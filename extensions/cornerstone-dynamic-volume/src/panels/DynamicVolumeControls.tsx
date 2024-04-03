@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import {
   InputDoubleRange,
   Button,
@@ -11,7 +10,6 @@ import {
 } from '@ohif/ui';
 
 import { Enums } from '@cornerstonejs/core';
-import fr from '../../../../platform/i18n/src/locales/fr';
 
 const controlClassNames = {
   sizeClassName: 'w-[58px] h-[28px]',
@@ -34,6 +32,8 @@ const DynamicVolumeControls = ({
   onGenerate,
   onDoubleRangeChange,
 }) => {
+  const [computedView, setComputedView] = useState(false);
+
   return (
     <div className="flex select-none flex-col pb-5">
       <PanelSection
@@ -43,6 +43,7 @@ const DynamicVolumeControls = ({
         <FrameControls
           onPlayPauseChange={onPlayPauseChange}
           isPlaying={isPlaying}
+          computedView={computedView}
           // fps
           fps={fps}
           onFpsChange={onFpsChange}
@@ -57,6 +58,8 @@ const DynamicVolumeControls = ({
         <div className="px-5">
           <ViewComponent
             framesLength={framesLength}
+            setComputedView={setComputedView}
+            computedView={computedView}
             onGenerate={onGenerate}
             onDoubleRangeChange={onDoubleRangeChange}
           />
@@ -66,8 +69,13 @@ const DynamicVolumeControls = ({
   );
 };
 
-const ViewComponent = ({ framesLength, onGenerate, onDoubleRangeChange }) => {
-  const [computedView, setComputedView] = useState(false);
+const ViewComponent = ({
+  framesLength,
+  onGenerate,
+  onDoubleRangeChange,
+  computedView,
+  setComputedView,
+}) => {
   const [computeViewMode, setComputeViewMode] = useState(Enums.DynamicOperatorType.SUM);
 
   const [sliderRangeValues, setSliderRangeValues] = useState([framesLength / 4, framesLength / 2]);
@@ -77,12 +85,12 @@ const ViewComponent = ({ framesLength, onGenerate, onDoubleRangeChange }) => {
   }, [framesLength]);
 
   const handleSliderChange = newValues => {
-    if (sliderRangeValues[0] === newValues[0] && sliderRangeValues[1] === newValues[1]) {
+    onDoubleRangeChange(newValues);
+
+    if (newValues[0] === sliderRangeValues[0] && newValues[1] === sliderRangeValues[1]) {
       return;
     }
-
     setSliderRangeValues(newValues);
-    onDoubleRangeChange(newValues);
   };
 
   const Header = ({ title }) => (
@@ -175,6 +183,7 @@ function FrameControls({
   framesLength,
   onFrameChange,
   currentFrameIndex,
+  computedView,
 }) {
   const getPlayPauseIconName = () => (isPlaying ? 'icon-pause' : 'icon-play');
 
@@ -183,6 +192,7 @@ function FrameControls({
       <IconButton
         className="bg-customblue-30 h-[26px] w-[58px] rounded-[4px]"
         onClick={() => onPlayPauseChange(!isPlaying)}
+        disabled={computedView}
       >
         <Icon
           name={getPlayPauseIconName()}
