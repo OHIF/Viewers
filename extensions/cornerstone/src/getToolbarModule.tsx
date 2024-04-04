@@ -183,6 +183,26 @@ export default function getToolbarModule({ commandsManager, servicesManager }) {
       },
     },
     {
+      name: 'evaluate.isUS',
+      evaluate: ({ viewportId, disabledText }) => {
+        const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
+
+        if (!displaySetUIDs?.length) {
+          return;
+        }
+
+        const displaySets = displaySetUIDs.map(displaySetService.getDisplaySetByUID);
+        const isUS = displaySets.some(displaySet => displaySet.Modality === 'US');
+        if (!isUS) {
+          return {
+            disabled: true,
+            className: '!text-common-bright ohif-disabled',
+            disabledText: disabledText ?? 'Not available on the current viewport',
+          };
+        }
+      },
+    },
+    {
       name: 'evaluate.viewportProperties.toggle',
       evaluate: ({ viewportId, button }) => {
         const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);

@@ -49,6 +49,11 @@ function initDefaultToolGroup(extensionManager, toolGroupService, commandsManage
       { toolName: toolNames.Angle },
       { toolName: toolNames.Magnify },
       { toolName: toolNames.SegmentationDisplay },
+      { toolName: toolNames.AdvancedMagnify },
+      { toolName: toolNames.UltrasoundDirectional },
+      { toolName: toolNames.PlanarFreehandROI },
+      { toolName: toolNames.SplineROI },
+      { toolName: toolNames.LivewireContour },
     ],
     // enabled
     enabled: [{ toolName: toolNames.ImageOverlayViewer }],
