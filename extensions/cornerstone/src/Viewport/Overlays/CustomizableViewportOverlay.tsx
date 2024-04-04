@@ -348,7 +348,8 @@ const getInstanceNumber = (viewportData, viewportId, imageIndex, cornerstoneView
       instanceNumber = _getInstanceNumberFromVolume(
         viewportData,
         viewportId,
-        cornerstoneViewportService
+        cornerstoneViewportService,
+        imageIndex
       );
       break;
   }
@@ -379,15 +380,20 @@ function _getInstanceNumberFromStack(viewportData, imageIndex) {
 // Since volume viewports can be in any view direction, they can render
 // a reconstructed image which don't have imageIds; therefore, no instance and instanceNumber
 // Here we check if viewport is in the acquisition direction and if so, we get the instanceNumber
-function _getInstanceNumberFromVolume(viewportData, viewportId, cornerstoneViewportService) {
-  const volumes = viewportData.volumes;
+function _getInstanceNumberFromVolume(
+  viewportData,
+  viewportId,
+  cornerstoneViewportService,
+  imageIndex
+) {
+  const volumes = viewportData.data;
 
-  // Todo: support fusion of acquisition plane which has instanceNumber
-  if (!volumes || volumes.length > 1) {
+  if (!volumes) {
     return;
   }
 
-  const volume = volumes[0];
+  // Todo: support fusion of acquisition plane which has instanceNumber
+  const { volume } = volumes[0];
   const { direction, imageIds } = volume;
 
   const cornerstoneViewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
@@ -470,11 +476,15 @@ function InstanceNumberOverlayItem({
       className="overlay-item flex flex-row"
       style={{ color: (customization && customization.color) || undefined }}
     >
-      <span className="mr-1 shrink-0">I:</span>
       <span>
-        {instanceNumber !== undefined && instanceNumber !== null
-          ? `${instanceNumber} (${imageIndex + 1}/${numberOfSlices})`
-          : `${imageIndex + 1}/${numberOfSlices}`}
+        {instanceNumber !== undefined && instanceNumber !== null ? (
+          <>
+            <span className="mr-1 shrink-0">I:</span>
+            <span>{`${instanceNumber} (${imageIndex + 1}/${numberOfSlices})`}</span>
+          </>
+        ) : (
+          `${imageIndex + 1}/${numberOfSlices}`
+        )}
       </span>
     </div>
   );
