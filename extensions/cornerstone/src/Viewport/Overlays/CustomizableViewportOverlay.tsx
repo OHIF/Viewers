@@ -80,9 +80,9 @@ function CustomizableViewportOverlay({
     'cornerstoneOverlayBottomRight'
   );
 
-  const instance = useMemo(() => {
+  const instances = useMemo(() => {
     if (viewportData != null) {
-      return _getViewportInstance(viewportData, imageIndex);
+      return _getViewportInstances(viewportData);
     } else {
       return null;
     }
@@ -177,7 +177,7 @@ function CustomizableViewportOverlay({
           formatTime: formatDICOMTime,
           formatNumberPrecision,
         },
-        instance,
+        instance: instances ? instances[item?.instanceIndex] : null,
         voi,
         scale,
         instanceNumber,
@@ -207,7 +207,7 @@ function CustomizableViewportOverlay({
       viewportId,
       servicesManager,
       customizationService,
-      instance,
+      instances,
       voi,
       scale,
       instanceNumber,
@@ -217,13 +217,15 @@ function CustomizableViewportOverlay({
   const getContent = useCallback(
     (customization, defaultItems, keyPrefix) => {
       const items = customization?.items ?? defaultItems;
-
       return (
         <>
           {items.map((item, index) => (
             <div key={`${keyPrefix}_${index}`}>
               {item?.condition
-                ? item.condition({ instance, formatters: { formatDate: formatDICOMDate } })
+                ? item.condition({
+                    instance: instances ? instances[item?.instanceIndex] : null,
+                    formatters: { formatDate: formatDICOMDate },
+                  })
                   ? _renderOverlayItem(item)
                   : null
                 : _renderOverlayItem(item)}
@@ -235,35 +237,50 @@ function CustomizableViewportOverlay({
     [_renderOverlayItem]
   );
 
+  const studyDateItem = {
+    id: 'StudyDate',
+    customizationType: 'ohif.overlayItem',
+    label: '',
+    title: 'Study date',
+    condition: ({ instance }) => instance && instance.StudyDate,
+    contentF: ({ instance, formatters: { formatDate } }) => formatDate(instance.StudyDate),
+  };
+
+  const seriesDescriptionItem = {
+    id: 'SeriesDescription',
+    customizationType: 'ohif.overlayItem',
+    label: '',
+    title: 'Series description',
+    attribute: 'SeriesDescription',
+    condition: ({ instance }) => {
+      return instance && instance.SeriesDescription;
+    },
+  };
+
+  const topLeftItems = instances
+    ? instances
+        .map((instance, index) => {
+          return [
+            {
+              ...studyDateItem,
+              instanceIndex: index,
+            },
+            {
+              ...seriesDescriptionItem,
+              instanceIndex: index,
+            },
+          ];
+        })
+        .flat()
+    : [];
+
   return (
     <ViewportOverlay
       topLeft={
         /**
          * Inline default overlay items for a more standard expansion
          */
-        getContent(
-          topLeftCustomization,
-          [
-            {
-              id: 'StudyDate',
-              customizationType: 'ohif.overlayItem',
-              label: '',
-              title: 'Study date',
-              condition: ({ instance }) => instance && instance.StudyDate,
-              contentF: ({ instance, formatters: { formatDate } }) =>
-                formatDate(instance.StudyDate),
-            },
-            {
-              id: 'SeriesDescription',
-              customizationType: 'ohif.overlayItem',
-              label: '',
-              title: 'Series description',
-              attribute: 'SeriesDescription',
-              condition: ({ instance }) => instance && instance.SeriesDescription,
-            },
-          ],
-          'topLeftOverlayItem'
-        )
+        getContent(topLeftCustomization, [...topLeftItems], 'topLeftOverlayItem')
       }
       topRight={getContent(topRightCustomization, [], 'topRightOverlayItem')}
       bottomLeft={getContent(
@@ -298,18 +315,26 @@ function CustomizableViewportOverlay({
   );
 }
 
-function _getViewportInstance(viewportData, imageIndex) {
-  let imageId = null;
+function _getViewportInstances(viewportData) {
+  const imageIds = [];
   if (viewportData.viewportType === Enums.ViewportType.STACK) {
-    imageId = viewportData.data.imageIds[imageIndex];
+    imageIds.push(viewportData.data.imageIds[0]);
   } else if (viewportData.viewportType === Enums.ViewportType.ORTHOGRAPHIC) {
     const volumes = viewportData.data;
-    if (volumes && volumes.length == 1) {
-      const volume = volumes[0];
-      imageId = volume.imageIds[imageIndex];
-    }
+    volumes.forEach(volume => {
+      if (!volume?.imageIds) {
+        return;
+      }
+      imageIds.push(volume.imageIds[0]);
+    });
   }
-  return imageId ? metaData.get('instance', imageId) || {} : {};
+  const instances = [];
+
+  imageIds.forEach(imageId => {
+    const instance = metaData.get('instance', imageId) || {};
+    instances.push(instance);
+  });
+  return instances;
 }
 
 const getInstanceNumber = (viewportData, viewportId, imageIndex, cornerstoneViewportService) => {
