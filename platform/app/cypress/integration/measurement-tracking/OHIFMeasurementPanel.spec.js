@@ -31,7 +31,7 @@ describe('OHIF Measurement Panel', function () {
 
     cy.get('[data-cy="measurement-item"]').as('measurementItem').click();
 
-    cy.get('[data-cy="measurement-item"]').find('svg').as('measurementItemSvg').click();
+    cy.get('[data-cy="measurement-item"]').find('svg').eq(0).as('measurementItemSvg').click();
 
     // enter Bone label
     cy.get('[data-cy="input-annotation"]').should('exist');
@@ -51,13 +51,13 @@ describe('OHIF Measurement Panel', function () {
     // Reset to default tool so that the new add length works
     cy.addLengthMeasurement([100, 100], [200, 200]); //Adding measurement in the viewport
 
-    cy.get('@viewportInfoTopRight').should('contains.text', '(14/');
+    cy.get('@viewportInfoBottomRight').should('contains.text', '(14/');
 
     // Click on first measurement item
     cy.get('[data-cy="measurement-item"]').eq(0).click();
 
-    cy.get('@viewportInfoTopRight').should('contains.text', '(1/');
-    cy.get('@viewportInfoTopRight').should('not.contains.text', '(14/');
+    cy.get('@viewportInfoBottomRight').should('contains.text', '(1/');
+    cy.get('@viewportInfoBottomRight').should('not.contains.text', '(14/');
   });
 
   /*

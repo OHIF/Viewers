@@ -66,6 +66,7 @@ function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager, mo
         toolName: toolNames.Crosshairs,
         configuration: {
           viewportIndicators: false,
+          disableOnPassive: true,
           autoPan: {
             enabled: false,
             panSize: 10,

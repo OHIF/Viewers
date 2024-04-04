@@ -3,6 +3,104 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-beta.69](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.68...v3.8.0-beta.69) (2024-04-03)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.8.0-beta.68](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.67...v3.8.0-beta.68) (2024-04-03)
+
+
+### Features
+
+* **segmentation:** Enhanced segmentation panel design for TMTV ([#3988](https://github.com/OHIF/Viewers/issues/3988)) ([9f3235f](https://github.com/OHIF/Viewers/commit/9f3235ff096636aafa88d8a42859e8dc85d9036d))
+
+
+
+
+
+# [3.8.0-beta.67](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.66...v3.8.0-beta.67) (2024-04-02)
+
+
+### Features
+
+* **ViewportActionMenu:** window level per viewport / new patient info / colorbars/ 3D presets and 3D volume rendering ([#3963](https://github.com/OHIF/Viewers/issues/3963)) ([b7f90e3](https://github.com/OHIF/Viewers/commit/b7f90e3951845396f99b69f0a74fc56b2ffeada1))
+
+
+
+
+
+# [3.8.0-beta.66](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.65...v3.8.0-beta.66) (2024-03-28)
+
+
+### Bug Fixes
+
+* **new layout:** address black screen bugs ([#4008](https://github.com/OHIF/Viewers/issues/4008)) ([158a181](https://github.com/OHIF/Viewers/commit/158a1816703e0ad66cae08cb9bd1ffb93bbd8d43))
+
+
+
+
+
+# [3.8.0-beta.65](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.64...v3.8.0-beta.65) (2024-03-28)
+
+
+### Features
+
+* **layout:** new layout selector with 3D volume rendering ([#3923](https://github.com/OHIF/Viewers/issues/3923)) ([617043f](https://github.com/OHIF/Viewers/commit/617043fe0da5de91fbea4ac33a27f1df16ae1ca6))
+
+
+
+
+
+# [3.8.0-beta.64](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.63...v3.8.0-beta.64) (2024-03-27)
+
+
+### Features
+
+* **toolbar:** new Toolbar to enable reactive state synchronization ([#3983](https://github.com/OHIF/Viewers/issues/3983)) ([566b25a](https://github.com/OHIF/Viewers/commit/566b25a54425399096864bd263193646556011a5))
+
+
+
+
+
+# [3.8.0-beta.63](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.62...v3.8.0-beta.63) (2024-03-25)
+
+
+### Features
+
+* **worklist:** new investigational use text ([#3999](https://github.com/OHIF/Viewers/issues/3999)) ([45b68e8](https://github.com/OHIF/Viewers/commit/45b68e841dcb9e28a2ea991c37ee7ac4a8c5b71e))
+
+
+
+
+
+# [3.8.0-beta.62](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.61...v3.8.0-beta.62) (2024-03-19)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.8.0-beta.61](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.60...v3.8.0-beta.61) (2024-03-18)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.8.0-beta.60](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.59...v3.8.0-beta.60) (2024-03-15)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
 # [3.8.0-beta.59](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.58...v3.8.0-beta.59) (2024-03-08)
 
 **Note:** Version bump only for package @ohif/extension-default

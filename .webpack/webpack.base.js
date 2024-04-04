@@ -120,6 +120,17 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
           test: /\.wasm/,
           type: 'asset/resource',
         },
+        {
+          test: /\.(png|jpe?g|gif|svg)$/i,
+          use: [
+            {
+              loader: 'file-loader',
+              options: {
+                name: 'assets/images/[name].[ext]',
+              },
+            },
+          ],
+        },
       ], //.concat(vtkRules),
     },
     resolve: {

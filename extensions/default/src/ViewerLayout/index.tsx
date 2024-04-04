@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
-import { SidePanel, ErrorBoundary, LoadingIndicatorProgress } from '@ohif/ui';
+import {
+  SidePanel,
+  ErrorBoundary,
+  LoadingIndicatorProgress,
+  InvestigationalUseDialog,
+} from '@ohif/ui';
 import { ServicesManager, HangingProtocolService, CommandsManager } from '@ohif/core';
 import { useAppConfig } from '@state';
 import ViewerHeader from './ViewerHeader';
@@ -43,22 +48,13 @@ function ViewerLayout({
   const getComponent = id => {
     const entry = extensionManager.getModuleEntry(id);
 
-    if (!entry) {
+    if (!entry || !entry.component) {
       throw new Error(
-        `${id} is not valid for an extension module. Please verify your configuration or ensure that the extension is properly registered. It's also possible that your mode is utilizing a module from an extension that hasn't been included in its dependencies (add the extension to the "extensionDependencies" array in your mode's index.js file)`
+        `${id} is not valid for an extension module or no component found from extension ${id}. Please verify your configuration or ensure that the extension is properly registered. It's also possible that your mode is utilizing a module from an extension that hasn't been included in its dependencies (add the extension to the "extensionDependencies" array in your mode's index.js file). Check the reference string to the extension in your Mode configuration`
       );
     }
 
-    let content;
-    if (entry && entry.component) {
-      content = entry.component;
-    } else {
-      throw new Error(
-        `No component found from extension ${id}. Check the reference string to the extension in your Mode configuration`
-      );
-    }
-
-    return { entry, content };
+    return { entry, content: entry.component };
   };
 
   const getPanelData = id => {
@@ -71,6 +67,7 @@ function ViewerLayout({
       label: entry.label,
       name: entry.name,
       content,
+      contexts: entry.contexts,
     };
   };
 
@@ -152,6 +149,8 @@ function ViewerLayout({
           ) : null}
         </React.Fragment>
       </div>
+
+      <InvestigationalUseDialog dialogConfiguration={appConfig?.investigationalUseDialog} />
     </div>
   );
 }

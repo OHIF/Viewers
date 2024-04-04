@@ -67,15 +67,13 @@ function initDefaultToolGroup(
       { toolName: toolNames.CalibrationLine },
     ],
     // enabled
-    enabled: [{ toolName: toolNames.ImageOverlayViewer }],
-    // disabled
-    disabled: [{ toolName: toolNames.ReferenceLines }],
+    enabled: [{ toolName: toolNames.ImageOverlayViewer }, { toolName: toolNames.ReferenceLines }],
   };
 
   toolGroupService.createToolGroupAndAddTools(toolGroupId, tools);
 }
 
-function initSRToolGroup(extensionManager, toolGroupService, commandsManager) {
+function initSRToolGroup(extensionManager, toolGroupService) {
   const SRUtilityModule = extensionManager.getModuleEntry(
     '@ohif/extension-cornerstone-dicom-sr.utilityModule.tools'
   );
@@ -206,6 +204,7 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager, m
         toolName: toolNames.Crosshairs,
         configuration: {
           viewportIndicators: false,
+          disableOnPassive: true,
           autoPan: {
             enabled: false,
             panSize: 10,

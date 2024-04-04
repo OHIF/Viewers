@@ -1,5 +1,6 @@
 import MeasurementService from './MeasurementService';
 import ServicesManager from './ServicesManager';
+import ServiceProvidersManager from './ServiceProvidersManager';
 import UIDialogService from './UIDialogService';
 import UIModalService from './UIModalService';
 import UINotificationService from './UINotificationService';
@@ -13,15 +14,16 @@ import HangingProtocolService from './HangingProtocolService';
 import pubSubServiceInterface, { PubSubService } from './_shared/pubSubServiceInterface';
 import UserAuthenticationService from './UserAuthenticationService';
 import CustomizationService from './CustomizationService';
-
-import Services from '../types/Services';
 import StateSyncService from './StateSyncService';
 import PanelService from './PanelService';
+
+import type Services from '../types/Services';
 
 export {
   Services,
   MeasurementService,
   ServicesManager,
+  ServiceProvidersManager,
   CustomizationService,
   StateSyncService,
   UIDialogService,

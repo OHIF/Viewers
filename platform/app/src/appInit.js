@@ -2,6 +2,7 @@ import {
   CommandsManager,
   ExtensionManager,
   ServicesManager,
+  ServiceProvidersManager,
   HotkeysManager,
   UINotificationService,
   UIModalService,
@@ -34,6 +35,7 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
 
   const commandsManager = new CommandsManager(commandsManagerConfig);
   const servicesManager = new ServicesManager(commandsManager);
+  const serviceProvidersManager = new ServiceProvidersManager();
   const hotkeysManager = new HotkeysManager(commandsManager, servicesManager);
 
   const appConfig = {
@@ -45,9 +47,12 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
   const extensionManager = new ExtensionManager({
     commandsManager,
     servicesManager,
+    serviceProvidersManager,
     hotkeysManager,
     appConfig,
   });
+
+  servicesManager.setExtensionManager(extensionManager);
 
   servicesManager.registerServices([
     UINotificationService.REGISTRATION,
@@ -128,6 +133,7 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
     commandsManager,
     extensionManager,
     servicesManager,
+    serviceProvidersManager,
     hotkeysManager,
   };
 }
