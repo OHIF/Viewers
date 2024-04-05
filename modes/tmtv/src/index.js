@@ -44,8 +44,12 @@ function modeFactory({ modeConfiguration }) {
      * Lifecycle hooks
      */
     onModeEnter: ({ servicesManager, extensionManager, commandsManager }) => {
-      const { toolbarService, toolGroupService, hangingProtocolService, displaySetService } =
-        servicesManager.services;
+      const {
+        toolbarService,
+        toolGroupService,
+        hangingProtocolService,
+        displaySetService,
+      } = servicesManager.services;
 
       const utilityModule = extensionManager.getModuleEntry(
         '@ohif/extension-cornerstone.utilityModule.tools'

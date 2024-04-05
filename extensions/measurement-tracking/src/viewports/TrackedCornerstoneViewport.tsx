@@ -140,7 +140,9 @@ function TrackedCornerstoneViewport(props) {
           // Only send the tracked measurements event for the active viewport to avoid
           // sending it more than once.
           if (viewportId === activeViewportId) {
-            const { referenceStudyUID: StudyInstanceUID, referenceSeriesUID: SeriesInstanceUID } =
+            const { referenceStudyUID: StudyInstanceUID,
+              referenceSeriesUID: SeriesInstanceUID,
+              uid: measurementId } =
               measurement;
 
             sendTrackedMeasurementsEvent('SET_DIRTY', { SeriesInstanceUID });
@@ -148,6 +150,7 @@ function TrackedCornerstoneViewport(props) {
               viewportId,
               StudyInstanceUID,
               SeriesInstanceUID,
+              measurementId
             });
           }
         }).unsubscribe
