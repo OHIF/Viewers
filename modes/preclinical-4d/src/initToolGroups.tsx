@@ -42,7 +42,6 @@ function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager) {
       { toolName: toolNames.Length },
       { toolName: toolNames.ArrowAnnotate },
       { toolName: toolNames.Bidirectional },
-      { toolName: toolNames.DragProbe },
       { toolName: toolNames.Probe },
       { toolName: toolNames.EllipticalROI },
       { toolName: toolNames.RectangleROI },
@@ -50,8 +49,6 @@ function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager) {
       { toolName: toolNames.RectangleScissors },
       { toolName: toolNames.PaintFill },
       { toolName: toolNames.StackScroll },
-      { toolName: toolNames.Angle },
-      { toolName: toolNames.CobbAngle },
       { toolName: toolNames.Magnify },
       ...Object.keys(brushInstanceNames)
         .map(brushName => ({

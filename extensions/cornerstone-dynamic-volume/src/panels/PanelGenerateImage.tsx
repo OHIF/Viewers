@@ -6,12 +6,13 @@ import { Enums } from '@cornerstonejs/streaming-image-volume-loader';
 import { utilities as cstUtils } from '@cornerstonejs/tools';
 import DynamicVolumeControls from './DynamicVolumeControls';
 
-const volumeLoaderScheme = 'cornerstoneStreamingDynamicImageVolume'; // Loader id which defines which volume loader to use
 const SOPClassHandlerId = '@ohif/extension-default.sopClassHandlerModule.stack';
 
 export default function PanelGenerateImage({ servicesManager, commandsManager }) {
   const { cornerstoneViewportService, viewportGridService, displaySetService } =
     servicesManager.services;
+
+  //
   const [timePointsRange, setTimePointsRange] = useState([]);
   const [timePointsRangeToUseForGenerate, setTimePointsRangeToUseForGenerate] = useState([]);
   const [computedDisplaySet, setComputedDisplaySet] = useState(null);
@@ -19,24 +20,16 @@ export default function PanelGenerateImage({ servicesManager, commandsManager })
   const [frameRate, setFrameRate] = useState(20);
   const [isPlaying, setIsPlaying] = useState(false);
   const [timePointRendered, setTimePointRendered] = useState(null);
+
+  //
   const uuidComputedVolume = useRef(csUtils.uuidv4());
   const uuidDynamicVolume = useRef(null);
   const computedVolumeId = `cornerstoneStreamingImageVolume:${uuidComputedVolume.current}`;
 
   const [_, cineService] = useCine();
-
-  const [viewportGrid] = useViewportGrid();
-  const { activeViewportId, viewports } = viewportGrid;
-  const activeViewport = activeViewportId ? viewports.get(activeViewportId) : undefined;
-
-  const getDynamicVolumeId = useCallback(() => {
-    const displaySetInstanceUID = activeViewport?.displaySetInstanceUIDs?.[0];
-
-    return displaySetInstanceUID ? `${volumeLoaderScheme}:${displaySetInstanceUID}` : undefined;
-  }, [activeViewport]);
+  const [{ activeViewportId }] = useViewportGrid();
 
   useEffect(() => {
-    // ~~ Subscription
     const evt = cornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED;
 
     const { unsubscribe } = cornerstoneViewportService.subscribe(evt, evtDetails => {
@@ -105,10 +98,14 @@ export default function PanelGenerateImage({ servicesManager, commandsManager })
     });
   }
 
+  function renderDynamicImage(displaySet) {
+    commandsManager.runCommand('swapComputedWithDynamicDisplaySet');
+  }
+
   // Get computed volume from cache, calculate the data across the time frames,
   // set the scalar data to the computedVolume, and create displaySet
   async function onGenerateImage(operationName) {
-    const dynamicVolumeId = getDynamicVolumeId();
+    const dynamicVolumeId = dynamicVolume.volumeId;
 
     if (!dynamicVolumeId) {
       return;
@@ -233,6 +230,7 @@ export default function PanelGenerateImage({ servicesManager, commandsManager })
         dynamicVolume.timePointIndex = timePointIndex;
       }}
       onGenerate={onGenerateImage}
+      onDynamicClick={renderDynamicImage}
       onDoubleRangeChange={handleSliderChange}
     />
   );

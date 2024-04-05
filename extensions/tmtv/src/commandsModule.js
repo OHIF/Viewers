@@ -11,7 +11,7 @@ import createAndDownloadTMTVReport from './utils/createAndDownloadTMTVReport';
 import dicomRTAnnotationExport from './utils/dicomRTAnnotationExport/RTStructureSet';
 
 const metadataProvider = classes.MetadataProvider;
-const RECTANGLE_ROI_THRESHOLD_MANUAL_TOOLIDS = [
+const RECTANGLE_ROI_THRESHOLD_MANUAL_TOOL_IDS = [
   'RectangleROIStartEndThreshold',
   'RectangleROIThreshold',
 ];
@@ -185,20 +185,8 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }) 
       const { volumeId: segVolumeId } = representationData[LABELMAP];
       const { referencedVolumeId } = cs.cache.getVolume(segVolumeId);
 
-      const labelmapVolume = cs.cache.getVolume(segmentationId);
-      const referencedVolume = cs.cache.getVolume(referencedVolumeId);
-      const ctReferencedVolume = cs.cache.getVolume(ctVolumeId);
-
-      if (!referencedVolume) {
-        throw new Error('No Reference volume found');
-      }
-
-      if (!labelmapVolume) {
-        throw new Error('No Reference labelmap found');
-      }
-
       const annotationUIDs = _getAnnotationsSelectedByToolNames(
-        RECTANGLE_ROI_THRESHOLD_MANUAL_TOOLIDS
+        RECTANGLE_ROI_THRESHOLD_MANUAL_TOOL_IDS
       );
 
       if (annotationUIDs.length === 0) {
@@ -208,6 +196,57 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }) 
           type: 'error',
         });
         return;
+      }
+
+      const labelmapVolume = cs.cache.getVolume(segmentationId);
+      let referencedVolume = cs.cache.getVolume(referencedVolumeId);
+      const ctReferencedVolume = cs.cache.getVolume(ctVolumeId);
+
+      // check if viewport is
+
+      if (!referencedVolume) {
+        throw new Error('No Reference volume found');
+      }
+
+      if (!labelmapVolume) {
+        throw new Error('No Reference labelmap found');
+      }
+
+      const annotation = csTools.annotation.state.getAnnotation(annotationUIDs[0]);
+
+      const {
+        metadata: {
+          enabledElement: { viewport },
+        },
+      } = annotation;
+
+      const showingReferenceVolume = viewport.hasVolumeId(referencedVolumeId);
+
+      if (!showingReferenceVolume) {
+        // if the reference volume is not being displayed, we can't
+        // rely on it for thresholding, we have couple of options here
+        // 1. We choose whatever volume is being displayed
+        // 2. We check if it is a fusion viewport, we pick the volume
+        // that matches the size and dimensions of the labelmap. This might
+        // happen if the 4D PT is converted to a computed volume and displayed
+        // and wants to threshold the labelmap
+        // 3. We throw an error
+        const displaySetInstanceUIDs = viewportGridService.getDisplaySetsUIDsForViewport(
+          viewport.id
+        );
+
+        displaySetInstanceUIDs.forEach(displaySetInstanceUID => {
+          const volume = cs.cache
+            .getVolumes()
+            .find(volume => volume.volumeId.includes(displaySetInstanceUID));
+
+          if (
+            cs.utilities.isEqual(volume.dimensions, labelmapVolume.dimensions) &&
+            cs.utilities.isEqual(volume.spacing, labelmapVolume.spacing)
+          ) {
+            referencedVolume = volume;
+          }
+        });
       }
 
       const { ptLower, ptUpper, ctLower, ctUpper } = getThresholdValues(
@@ -231,7 +270,7 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }) 
       const referencedVolume = cs.cache.getVolume(referencedVolumeId);
 
       const annotationUIDs = _getAnnotationsSelectedByToolNames(
-        RECTANGLE_ROI_THRESHOLD_MANUAL_TOOLIDS
+        RECTANGLE_ROI_THRESHOLD_MANUAL_TOOL_IDS
       );
 
       const annotations = annotationUIDs.map(annotationUID =>
@@ -369,7 +408,7 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }) 
       const { focalPoint, viewPlaneNormal } = viewport.getCamera();
 
       const selectedAnnotationUIDs = _getAnnotationsSelectedByToolNames(
-        RECTANGLE_ROI_THRESHOLD_MANUAL_TOOLIDS
+        RECTANGLE_ROI_THRESHOLD_MANUAL_TOOL_IDS
       );
 
       const annotationUID = selectedAnnotationUIDs[0];
@@ -407,7 +446,7 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }) 
       const { viewport } = _getActiveViewportsEnabledElement();
 
       const selectedAnnotationUIDs = _getAnnotationsSelectedByToolNames(
-        RECTANGLE_ROI_THRESHOLD_MANUAL_TOOLIDS
+        RECTANGLE_ROI_THRESHOLD_MANUAL_TOOL_IDS
       );
 
       const annotationUID = selectedAnnotationUIDs[0];
@@ -432,7 +471,7 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }) 
 
       Object.keys(stateManager.annotations).forEach(frameOfReferenceUID => {
         const forAnnotations = stateManager.annotations[frameOfReferenceUID];
-        const ROIAnnotations = RECTANGLE_ROI_THRESHOLD_MANUAL_TOOLIDS.reduce(
+        const ROIAnnotations = RECTANGLE_ROI_THRESHOLD_MANUAL_TOOL_IDS.reduce(
           (annotations, toolName) => [...annotations, ...(forAnnotations[toolName] ?? [])],
           []
         );

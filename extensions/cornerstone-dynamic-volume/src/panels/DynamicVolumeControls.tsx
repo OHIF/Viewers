@@ -31,6 +31,7 @@ const DynamicVolumeControls = ({
   framesLength,
   onGenerate,
   onDoubleRangeChange,
+  onDynamicClick,
 }) => {
   const [computedView, setComputedView] = useState(false);
 
@@ -62,6 +63,7 @@ const DynamicVolumeControls = ({
             computedView={computedView}
             onGenerate={onGenerate}
             onDoubleRangeChange={onDoubleRangeChange}
+            onDynamicClick={onDynamicClick}
           />
         </div>
       </PanelSection>
@@ -75,6 +77,7 @@ const ViewComponent = ({
   onDoubleRangeChange,
   computedView,
   setComputedView,
+  onDynamicClick,
 }) => {
   const [computeViewMode, setComputeViewMode] = useState(Enums.DynamicOperatorType.SUM);
 
@@ -110,7 +113,10 @@ const ViewComponent = ({
         <ButtonGroup className="mt-2 w-full">
           <button
             className="w-1/2"
-            onClick={() => setComputedView(false)}
+            onClick={() => {
+              setComputedView(false);
+              onDynamicClick();
+            }}
           >
             4D
           </button>
