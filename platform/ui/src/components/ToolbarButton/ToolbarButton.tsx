@@ -32,7 +32,7 @@ const ToolbarButton = ({
       ? toolTipClassName
       : sizeToUse === 'toolbar'
         ? 'w-[40px] h-[40px]'
-        : 'w-[32px] h-[32px]';
+        : 'w-[40px] h-[40px]';
 
   return (
     <div key={id}>
