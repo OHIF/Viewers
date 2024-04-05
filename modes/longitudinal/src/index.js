@@ -71,23 +71,27 @@ function modeFactory({ modeConfiguration }) {
      * Lifecycle hooks
      */
     onModeEnter: function ({ servicesManager, extensionManager, commandsManager }) {
-      const {
-        measurementService,
-        toolbarService,
-        toolGroupService,
-        panelService,
-        customizationService,
-      } = servicesManager.services;
+      const { measurementService, toolbarService, toolGroupService, customizationService } =
+        servicesManager.services;
 
       measurementService.clearMeasurements();
 
+      // customizationService.addModeCustomizations([
+      //   {
+      //     id: 'measurementLabels',
+      //     labelOnMeasure: true,
+      //     exclusive: true,
+      //     items: [
+      //       { value: 'Head', label: 'Head' },
+      //       { value: 'Shoulder', label: 'Shoulder' },
+      //       { value: 'Knee', label: 'Knee' },
+      //       { value: 'Toe', label: 'Toe' },
+      //     ],
+      //   },
+      // ]);
+
       // Init Default and SR ToolGroups
-      initToolGroups(
-        extensionManager,
-        toolGroupService,
-        commandsManager,
-        this.labelConfig
-      );
+      initToolGroups(extensionManager, toolGroupService, commandsManager, this.labelConfig);
 
       toolbarService.addButtons([...toolbarButtons, ...moreTools]);
       toolbarService.createButtonSection('primary', [

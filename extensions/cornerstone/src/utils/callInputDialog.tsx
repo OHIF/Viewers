@@ -89,12 +89,7 @@ function callInputDialog(
   }
 }
 
-export function callLabelAutocompleteDialog(
-  uiDialogService,
-  callback,
-  dialogConfig,
-  labelConfig
-) {
+export function callLabelAutocompleteDialog(uiDialogService, callback, dialogConfig, labelConfig) {
   const exclusive = labelConfig ? labelConfig.exclusive : false;
   const dropDownItems = labelConfig ? labelConfig.items : [];
 

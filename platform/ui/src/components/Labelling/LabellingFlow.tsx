@@ -32,7 +32,7 @@ class LabellingFlow extends Component<PropType> {
   constructor(props) {
     super(props);
     const { label } = props.measurementData;
-    let className = props.componentClassName;
+    const className = props.componentClassName;
 
     this.state = {
       location,
@@ -99,7 +99,6 @@ class LabellingFlow extends Component<PropType> {
       />
     );
   };
-
 }
 
 export default LabellingFlow;

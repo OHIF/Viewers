@@ -17,7 +17,6 @@ import { vec3, mat4 } from 'gl-matrix';
 
 import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownloadForm';
 import { callLabelAutocompleteDialog, showLabelAnnotationPopup } from './utils/callInputDialog';
-import callInputDialog from './utils/callInputDialog';
 import toggleImageSliceSync from './utils/imageSliceSync/toggleImageSliceSync';
 import { getFirstAnnotationSelected } from './utils/measurementServiceMappings/utils/selection';
 import getActiveViewportEnabledElement from './utils/getActiveViewportEnabledElement';

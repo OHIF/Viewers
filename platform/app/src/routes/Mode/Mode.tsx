@@ -60,7 +60,7 @@ export default function ModeRoute({
     locationRef.current = location;
   }
 
-  const { displaySetService, hangingProtocolService, userAuthenticationService, measurementService } = (
+  const { displaySetService, hangingProtocolService, userAuthenticationService } = (
     servicesManager as ServicesManager
   ).services;
 

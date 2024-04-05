@@ -7,15 +7,20 @@ interface PropsType {
   itemData: { label: string; value: string };
   id: string;
   onSelected: Function;
+  index: number;
+  selectTree: any;
 }
 
 export default class InputRadio extends Component<PropsType> {
   render() {
+    const { focusedIndex } = this.props.selectTree.state;
+    const isFocused = this.props.index === focusedIndex;
+
     return (
       <label
-        className={
-          'overflow-hidden border-b-gray-900 block h-10 w-full cursor-pointer border-b pl-3 leading-10 '
-        }
+        className={`block h-10 w-full cursor-pointer overflow-hidden border-b border-b-gray-900 pl-3 leading-10 ${
+          isFocused ? 'bg-black' : ''
+        }`}
         htmlFor={this.props.id}
       >
         <input

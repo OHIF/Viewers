@@ -22,6 +22,7 @@ interface StateProps {
   searchTerm: string | null;
   currentNode: any;
   value: string | null;
+  focusedIndex: number;
 }
 
 export class SelectTree extends Component<PropType> {
@@ -40,6 +41,7 @@ export class SelectTree extends Component<PropType> {
       searchTerm: this.props.items.length > 0 ? null : this.props.label,
       currentNode: null,
       value: null,
+      focuseIndex: 0,
     };
   }
 
@@ -119,7 +121,7 @@ export class SelectTree extends Component<PropType> {
     }
 
     return treeItems.map((item, index) => {
-      let itemKey = index;
+      const itemKey = index;
       return (
         <InputRadio
           key={itemKey}
@@ -128,14 +130,33 @@ export class SelectTree extends Component<PropType> {
           value={item.value}
           label={item.label}
           onSelected={this.onSelected}
+          index={index}
+          selectTree={this}
         />
       );
     });
   }
 
-  onKeyPressHandler = event => {
-    if (event.key === 'Enter') {
-      this.onSubmitHandler(event);
+  handleKeyDown = event => {
+    const { key } = event;
+    const { focusedIndex } = this.state;
+    const treeItems = this.getTreeItems();
+
+    if (key === 'ArrowUp') {
+      this.setState(prevState => ({
+        focusedIndex:
+          prevState.focusedIndex > 0 ? prevState.focusedIndex - 1 : treeItems.length - 1,
+      }));
+    } else if (key === 'ArrowDown') {
+      this.setState(prevState => ({
+        focusedIndex:
+          prevState.focusedIndex < treeItems.length - 1 ? prevState.focusedIndex + 1 : 0,
+      }));
+    } else if (key === 'Enter') {
+      const selectedItem = this.state.searchTerm
+        ? { label: this.state.searchTerm, value: this.state.searchTerm }
+        : treeItems[focusedIndex].props.itemData;
+      this.onSelected(event, selectedItem);
     }
   };
 
@@ -144,11 +165,11 @@ export class SelectTree extends Component<PropType> {
       label: this.state.searchTerm,
       value: this.state.searchTerm,
     });
-  }
+  };
 
   headerItem = () => {
     const inputLeftPadding = this.props.items.length > 0 ? 'pl-8' : 'pl-4';
-    let title = this.props.selectTreeFirstTitle;
+    const title = this.props.selectTreeFirstTitle;
 
     return (
       <div className="flex flex-col justify-between border-b-2 border-solid border-black p-4 ">
@@ -181,7 +202,7 @@ export class SelectTree extends Component<PropType> {
               autoFocus={this.props.autoFocus}
               onChange={this.searchLocations}
               value={this.state.searchTerm ? this.state.searchTerm : ''}
-              onKeyPress={this.onKeyPressHandler}
+              onKeyDown={this.handleKeyDown}
             />
           </div>
         )}

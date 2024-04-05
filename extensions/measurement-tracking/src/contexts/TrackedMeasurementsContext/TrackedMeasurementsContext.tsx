@@ -13,7 +13,6 @@ import hydrateStructuredReport from './hydrateStructuredReport';
 import { useAppConfig } from '@state';
 import promptLabelAnnotation from './promptLabelAnnotation';
 
-
 const TrackedMeasurementsContext = React.createContext();
 TrackedMeasurementsContext.displayName = 'TrackedMeasurementsContext';
 const useTrackedMeasurements = () => useContext(TrackedMeasurementsContext);
@@ -157,7 +156,7 @@ function TrackedMeasurementsContextProvider(
     isLabelOnMeasureAndShouldKillMachine: (ctx, evt, condMeta) => {
       const labelConfig = customizationService.get('measurementLabels');
       return evt.data && evt.data.userResponse === RESPONSE.NO_NEVER && labelConfig?.labelOnMeasure;
-    }
+    },
   });
 
   // TODO: IMPROVE

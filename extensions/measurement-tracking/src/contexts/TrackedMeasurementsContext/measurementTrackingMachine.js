@@ -33,15 +33,16 @@ const machineConfiguration = {
     },
     labellingOnly: {
       on: {
-        TRACK_SERIES: [{
-          target: 'promptLabelAnnotation',
-          actions: ['setPreviousState']
-        },
-        {
-          target: 'off',
-        }
-        ]
-      }
+        TRACK_SERIES: [
+          {
+            target: 'promptLabelAnnotation',
+            actions: ['setPreviousState'],
+          },
+          {
+            target: 'off',
+          },
+        ],
+      },
     },
     idle: {
       entry: 'clearContext',
@@ -50,11 +51,11 @@ const machineConfiguration = {
           {
             target: 'promptLabelAnnotation',
             cond: 'isLabelOnMeasure',
-            actions: ['setPreviousState']
+            actions: ['setPreviousState'],
           },
           {
             target: 'promptBeginTracking',
-            actions: ['setPreviousState']
+            actions: ['setPreviousState'],
           },
         ],
         // Unused? We may only do PROMPT_HYDRATE_SR now?
@@ -109,7 +110,7 @@ const machineConfiguration = {
           {
             target: 'promptLabelAnnotation',
             cond: 'isLabelOnMeasure',
-            actions: ['setPreviousState']
+            actions: ['setPreviousState'],
           },
           {
             target: 'promptTrackNewStudy',
@@ -288,12 +289,12 @@ const machineConfiguration = {
         src: 'promptLabelAnnotation',
         onDone: [
           {
-            target: "labellingOnly",
-            cond: 'wasLabellingOnly'
+            target: 'labellingOnly',
+            cond: 'wasLabellingOnly',
           },
           {
-            target: "promptBeginTracking",
-            cond: 'wasIdle'
+            target: 'promptBeginTracking',
+            cond: 'wasIdle',
           },
           {
             target: 'promptTrackNewStudy',
@@ -305,13 +306,13 @@ const machineConfiguration = {
           },
           {
             target: 'tracking',
-            cond: 'wasTracking'
+            cond: 'wasTracking',
           },
           {
-            target: 'off'
-          }
-        ]
-      }
+            target: 'off',
+          },
+        ],
+      },
     },
   },
   strict: true,
@@ -400,8 +401,8 @@ const defaultOptions = {
     })),
     setPreviousState: assign((ctx, evt, meta) => {
       return {
-        prevState: meta.state.value
-      }
+        prevState: meta.state.value,
+      };
     }),
   },
   guards: {
@@ -438,14 +439,18 @@ const defaultOptions = {
       return ctx.prevState === 'tracking';
     },
     wasTrackingAndIsNewStudy: (ctx, evt, condMeta) => {
-      return ctx.prevState === 'tracking' &&
+      return (
+        ctx.prevState === 'tracking' &&
         !ctx.ignoredSeries.includes(evt.data.SeriesInstanceUID) &&
-        ctx.trackedStudy !== evt.data.StudyInstanceUID;
+        ctx.trackedStudy !== evt.data.StudyInstanceUID
+      );
     },
     wasTrackingAndIsNewSeries: (ctx, evt, condMeta) => {
-      return ctx.prevState === 'tracking' &&
+      return (
+        ctx.prevState === 'tracking' &&
         !ctx.ignoredSeries.includes(evt.data.SeriesInstanceUID) &&
-        !ctx.trackedSeries.includes(evt.data.SeriesInstanceUID);
+        !ctx.trackedSeries.includes(evt.data.SeriesInstanceUID)
+      );
     },
 
     shouldKillMachine: (ctx, evt) => evt.data && evt.data.userResponse === RESPONSE.NO_NEVER,
