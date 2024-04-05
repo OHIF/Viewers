@@ -19,6 +19,7 @@ type InputDoubleRangeProps = {
   trackColor?: string;
   allowNumberEdit?: boolean;
   showAdjustmentArrows?: boolean;
+  allowOutOfRange?: boolean;
 };
 
 const InputDoubleRange: React.FC<InputDoubleRangeProps> = ({
@@ -36,8 +37,17 @@ const InputDoubleRange: React.FC<InputDoubleRangeProps> = ({
   labelPosition,
   trackColor,
   allowNumberEdit,
+  allowOutOfRange = false,
   showAdjustmentArrows,
 }) => {
+  if (values[0] < minValue && allowOutOfRange) {
+    minValue = values[0];
+  }
+
+  if (values[1] > maxValue && allowOutOfRange) {
+    maxValue = values[1];
+  }
+
   // Set initial thumb positions as percentages
   const initialPercentageStart = Math.round(((values[0] - minValue) / (maxValue - minValue)) * 100);
   const initialPercentageEnd = Math.round(((values[1] - minValue) / (maxValue - minValue)) * 100);
@@ -55,7 +65,15 @@ const InputDoubleRange: React.FC<InputDoubleRangeProps> = ({
       updatedRangeValue[index] = newValues;
     }
 
-    const calculatePercentage = value => ((value - minValue) / (maxValue - minValue)) * 100;
+    const calculatePercentage = value => {
+      if (value < minValue) {
+        return 0;
+      }
+      if (value > maxValue) {
+        return 100;
+      }
+      return ((value - minValue) / (maxValue - minValue)) * 100;
+    };
 
     const newPercentageStart = calculatePercentage(updatedRangeValue[0]);
     const newPercentageEnd = calculatePercentage(updatedRangeValue[1]);
@@ -143,30 +161,33 @@ const InputDoubleRange: React.FC<InputDoubleRangeProps> = ({
     const newValue =
       Math.round(((x / rect.width) * (maxValue - minValue) + minValue) / step) * step;
 
-    // Make sure newValue is within [minValue, maxValue]
-    const clampedValue = Math.min(Math.max(newValue, minValue), maxValue);
-
-    // Ensure that left and right thumbs don't switch positions
-    if (selectedThumbValue === 0 && clampedValue >= rangeValue[1]) {
-      return;
-    }
-    if (selectedThumbValue === 1 && clampedValue <= rangeValue[0]) {
-      return;
-    }
-
     // Update the correct values in the rangeValue array
     const updatedRangeValue = [...rangeValue];
-    updatedRangeValue[selectedThumbValue] = clampedValue;
+    updatedRangeValue[selectedThumbValue] = newValue;
     setRangeValue(updatedRangeValue);
 
     onChange(updatedRangeValue);
 
     // Update the thumb position
-    const percentage = Math.round(((clampedValue - minValue) / (maxValue - minValue)) * 100);
-    if (selectedThumbValue === 0) {
-      setPercentageStart(percentage);
+    const percentage = Math.round(((newValue - minValue) / (maxValue - minValue)) * 100);
+    if (percentage < 0) {
+      if (selectedThumbValue === 0) {
+        setPercentageStart(0);
+      } else {
+        setPercentageEnd(0);
+      }
+    } else if (percentage > 100) {
+      if (selectedThumbValue === 0) {
+        setPercentageStart(100);
+      } else {
+        setPercentageEnd(100);
+      }
     } else {
-      setPercentageEnd(percentage);
+      if (selectedThumbValue === 0) {
+        setPercentageStart(percentage);
+      } else {
+        setPercentageEnd(percentage);
+      }
     }
   };
 
