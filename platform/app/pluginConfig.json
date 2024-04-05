@@ -51,6 +51,10 @@
       "packageName": "@ohif/extension-cornerstone-dicom-rt",
       "default": false,
       "version": "3.0.0"
+    },
+    {
+      "packageName": "@radicalimaging/ecg-dicom",
+      "version": "3.16.0"
     }
   ],
   "modes": [
@@ -75,6 +79,14 @@
       "packageName": "@ohif/mode-basic-dev-mode",
       "default": false,
       "version": "3.0.0"
+    },
+    {
+      "packageName": "@radicalimaging/findings-mode",
+      "version": "3.16.0"
+    },
+    {
+      "packageName": "@radicalimaging/mode-ecg",
+      "version": "3.16.0"
     }
   ],
   "public": [
