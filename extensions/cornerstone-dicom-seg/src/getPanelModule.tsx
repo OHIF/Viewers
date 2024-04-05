@@ -17,10 +17,13 @@ const getPanelModule = ({
   const wrappedPanelSegmentation = configuration => {
     const [appConfig] = useAppConfig();
 
-    const disableEditingForMode = customizationService.get('segmentation.disableEditing');
-    const segmentationPanelMode =
-      customizationService.get('segmentation.segmentationPanelMode')?.value ||
-      SegmentationPanelMode.Dropdown;
+    const segPanelConfig = customizationService.get('segmentation.panel') || {};
+
+    const {
+      disableEditing,
+      segmentationPanelMode = SegmentationPanelMode.Dropdown,
+      addSegment = true,
+    } = segPanelConfig;
 
     return (
       <PanelSegmentation
@@ -29,18 +32,22 @@ const getPanelModule = ({
         extensionManager={extensionManager}
         configuration={{
           ...configuration,
-          disableEditing: appConfig.disableEditing || disableEditingForMode?.value,
+          disableEditing: appConfig.disableEditing || disableEditing,
           segmentationPanelMode: segmentationPanelMode,
+          addSegment,
         }}
       />
     );
   };
 
   const wrappedPanelSegmentationWithTools = configuration => {
-    const [appConfig] = useAppConfig();
-    const segmentationPanelMode =
-      customizationService.get('segmentation.segmentationPanelMode')?.value ||
-      SegmentationPanelMode.Dropdown;
+    const segPanelConfig = customizationService.get('segmentation.panel') || {};
+
+    const {
+      disableEditing,
+      segmentationPanelMode = SegmentationPanelMode.Dropdown,
+      addSegment = true,
+    } = segPanelConfig;
 
     return (
       <>
@@ -61,6 +68,8 @@ const getPanelModule = ({
           configuration={{
             ...configuration,
             segmentationPanelMode: segmentationPanelMode,
+            disableEditing,
+            addSegment,
           }}
         />
       </>

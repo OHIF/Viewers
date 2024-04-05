@@ -242,6 +242,19 @@ Example usage:<br/>
 This configuration would allow the user to build a dicomweb configuration from a GCP healthcare api path e.g. http://localhost:3000/projects/your-gcp-project/locations/us-central1/datasets/your-dataset/dicomStores/your-dicom-store/study/1.3.6.1.4.1.1234.5.2.1.1234.1234.123123123123123123123123123123
 
 
+:::note
+You can stack multiple panel components on top of each other by providing an array of panel components in the `rightPanels` or `leftPanels` properties.
+
+For instance we can use
+
+```
+rightPanels: [[dicomSeg.panel, tracked.measurements], [dicomSeg.panel, tracked.measurements]]
+```
+
+This will result in two panels, one with `dicomSeg.panel` and `tracked.measurements` and the other with `dicomSeg.panel` and `tracked.measurements` stacked on top of each other.
+
+:::
+
 ### More on Accept Header Configuration
 In the previous section we showed that you can modify the `acceptHeader`
 configuration to request specific dicom transfer syntax. By default

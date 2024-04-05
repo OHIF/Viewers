@@ -17,18 +17,20 @@ const ohif = {
 
 const cs3d = {
   viewport: '@ohif/extension-cornerstone.viewportModule.cornerstone',
+  segPanel: '@ohif/extension-cornerstone-dicom-seg.panelModule.panelSegmentation',
 };
 
 const tmtv = {
   hangingProtocol: '@ohif/extension-tmtv.hangingProtocolModule.ptCT',
   petSUV: '@ohif/extension-tmtv.panelModule.petSUV',
-  ROIThresholdPanel: '@ohif/extension-tmtv.panelModule.ROIThresholdSeg',
+  ROIThresholdBox: '@ohif/extension-tmtv.panelModule.ROIThresholdBox',
 };
 
 const extensionDependencies = {
   // Can derive the versions at least process.env.from npm_package_version
   '@ohif/extension-default': '^3.0.0',
   '@ohif/extension-cornerstone': '^3.0.0',
+  '@ohif/extension-cornerstone-dicom-seg': '^3.0.0',
   '@ohif/extension-tmtv': '^3.0.0',
 };
 
@@ -47,6 +49,7 @@ function modeFactory({ modeConfiguration }) {
       const {
         toolbarService,
         toolGroupService,
+        customizationService,
         hangingProtocolService,
         displaySetService,
       } = servicesManager.services;
@@ -95,6 +98,14 @@ function modeFactory({ modeConfiguration }) {
         'SyncToggle',
       ]);
       toolbarService.createButtonSection('ROIThresholdToolbox', ['RectangleROIStartEndThreshold']);
+
+      customizationService.addModeCustomizations([
+        {
+          id: 'segmentation.panel',
+          segmentationPanelMode: 'expanded',
+          addSegment: false,
+        },
+      ]);
 
       // For the hanging protocol we need to decide on the window level
       // based on whether the SUV is corrected or not, hence we can't hard
@@ -176,13 +187,13 @@ function modeFactory({ modeConfiguration }) {
         /*init: ({ servicesManager, extensionManager }) => {
           //defaultViewerRouteInit
         },*/
-        layoutTemplate: ({ location, servicesManager }) => {
+        layoutTemplate: () => {
           return {
             id: ohif.layout,
             props: {
               leftPanels: [ohif.thumbnailList],
               leftPanelClosed: true,
-              rightPanels: [tmtv.ROIThresholdPanel, tmtv.petSUV],
+              rightPanels: [[tmtv.ROIThresholdBox, cs3d.segPanel], tmtv.petSUV],
               viewports: [
                 {
                   namespace: cs3d.viewport,

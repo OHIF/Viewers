@@ -1,3 +1,4 @@
+import React from 'react';
 import { ActivatePanelTriggers } from '../../types';
 import { Subscription } from '../../types/IPubSub';
 import { PubSubService } from '../_shared/pubSubServiceInterface';
@@ -64,8 +65,25 @@ export default class PanelService extends PubSubService {
     return { entry, content };
   }
 
-  private _getPanelData(panelId): PanelData {
-    const { content, entry } = this._getPanelComponent(panelId);
+  public getPanelData(panelId): PanelData {
+    let content, entry;
+    if (Array.isArray(panelId)) {
+      const panelsData = panelId.map(id => this._getPanelComponent(id));
+
+      // use the first panel's entry for the combined panel
+      entry = panelsData[0].entry;
+
+      // stack the content of the panels in one react component
+      content = () => (
+        <>
+          {panelsData.map(({ content: PanelContent }) => (
+            <PanelContent key={entry.id} />
+          ))}
+        </>
+      );
+    } else {
+      ({ content, entry } = this._getPanelComponent(panelId));
+    }
 
     return {
       id: entry.id,
@@ -85,7 +103,7 @@ export default class PanelService extends PubSubService {
       this._panelsGroups.set(position, panels);
     }
 
-    const panelComponent = this._getPanelData(panelId);
+    const panelComponent = this.getPanelData(panelId);
 
     panels.push(panelComponent);
     this._broadcastEvent(EVENTS.PANELS_CHANGED, { position, options });

@@ -27,11 +27,6 @@ function getPanelModule({ commandsManager, extensionManager, servicesManager }) 
           buttonSectionId="ROIThresholdToolbox"
           title="Threshold Tools"
         />
-        <PanelROIThresholdSegmentation
-          commandsManager={commandsManager}
-          servicesManager={servicesManager}
-          extensionManager={extensionManager}
-        />
       </>
     );
   };
@@ -45,7 +40,7 @@ function getPanelModule({ commandsManager, extensionManager, servicesManager }) 
       component: wrappedPanelPetSuv,
     },
     {
-      name: 'ROIThresholdSeg',
+      name: 'ROIThresholdBox',
       iconName: 'tab-segmentation',
       iconLabel: 'Segmentation',
       label: 'Segmentation',

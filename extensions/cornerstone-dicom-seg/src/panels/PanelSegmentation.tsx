@@ -243,7 +243,7 @@ export default function PanelSegmentation({
   };
 
   const SegmentationGroupTableComponent = components[configuration?.segmentationPanelMode];
-
+  const allowAddSegment = configuration?.addSegment;
   return (
     <SegmentationGroupTableComponent
       title={t('Segmentations')}
@@ -251,6 +251,7 @@ export default function PanelSegmentation({
       disableEditing={configuration.disableEditing}
       activeSegmentationId={selectedSegmentationId || ''}
       onSegmentationAdd={onSegmentationAdd}
+      showAddSegment={allowAddSegment}
       onSegmentationClick={onSegmentationClick}
       onSegmentationDelete={onSegmentationDelete}
       onSegmentationDownload={onSegmentationDownload}

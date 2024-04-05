@@ -274,6 +274,19 @@ layoutTemplate: ({ location, servicesManager }) => {
 */
 ```
 
+:::note
+You can stack multiple panel components on top of each other by providing an array of panel components in the `rightPanels` or `leftPanels` properties.
+
+For instance we can use
+
+```
+rightPanels: [[dicomSeg.panel, tracked.measurements], [dicomSeg.panel, tracked.measurements]]
+```
+
+This will result in two panels, one with `dicomSeg.panel` and `tracked.measurements` and the other with `dicomSeg.panel` and `tracked.measurements` stacked on top of each other.
+
+:::
+
 ## FAQ
 
 > What is the difference between `onModeEnter` and `route.init`

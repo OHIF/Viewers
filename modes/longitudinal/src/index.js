@@ -113,8 +113,8 @@ function modeFactory({ modeConfiguration }) {
 
       customizationService.addModeCustomizations([
         {
-          id: 'segmentation.disableEditing',
-          value: true,
+          id: 'segmentation.panel',
+          disableEditing: true,
         },
       ]);
 
