@@ -36,7 +36,7 @@ const DynamicVolumeControls = ({
   const [computedView, setComputedView] = useState(false);
 
   return (
-    <div className="flex select-none flex-col pb-5">
+    <div className="flex select-none flex-col">
       <PanelSection
         title="Controls"
         childrenClassName="space-y-2 pb-5"

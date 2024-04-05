@@ -2,7 +2,7 @@ import React, { useEffect, useCallback, useState, ReactElement } from 'react';
 import PropTypes from 'prop-types';
 import debounce from 'lodash.debounce';
 import { ServicesManager } from '@ohif/core';
-import { WindowLevel } from '@ohif/ui';
+import { PanelSection, WindowLevel } from '@ohif/ui';
 import vtkColorMaps from '@kitware/vtk.js/Rendering/Core/ColorTransferFunction/ColorMaps';
 import { Enums, eventTarget, cache as cs3DCache, utilities as csUtils } from '@cornerstonejs/core';
 import { getViewportVolumeHistogram } from './getViewportVolumeHistogram';
@@ -352,7 +352,7 @@ const ViewportWindowLevel = ({
   }, [viewportId, cornerstoneViewportService, updateViewportHistograms]);
 
   return (
-    <>
+    <PanelSection title="Window Level">
       {windowLevels.map((windowLevel, i) => {
         if (!windowLevel.histogram) {
           return null;
@@ -361,7 +361,7 @@ const ViewportWindowLevel = ({
         return (
           <WindowLevel
             key={windowLevel.volumeId}
-            title={`Window Level (${windowLevel.modality})`}
+            title={`${windowLevel.modality}`}
             histogram={windowLevel.histogram}
             voi={windowLevel.voi}
             step={windowLevel.step}
@@ -375,7 +375,7 @@ const ViewportWindowLevel = ({
           />
         );
       })}
-    </>
+    </PanelSection>
   );
 };
 

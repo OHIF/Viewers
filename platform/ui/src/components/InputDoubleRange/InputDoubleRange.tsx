@@ -40,14 +40,6 @@ const InputDoubleRange: React.FC<InputDoubleRangeProps> = ({
   allowOutOfRange = false,
   showAdjustmentArrows,
 }) => {
-  if (values[0] < minValue && allowOutOfRange) {
-    minValue = values[0];
-  }
-
-  if (values[1] > maxValue && allowOutOfRange) {
-    maxValue = values[1];
-  }
-
   // Set initial thumb positions as percentages
   const initialPercentageStart = Math.round(((values[0] - minValue) / (maxValue - minValue)) * 100);
   const initialPercentageEnd = Math.round(((values[1] - minValue) / (maxValue - minValue)) * 100);
@@ -161,34 +153,52 @@ const InputDoubleRange: React.FC<InputDoubleRangeProps> = ({
     const newValue =
       Math.round(((x / rect.width) * (maxValue - minValue) + minValue) / step) * step;
 
-    // Update the correct values in the rangeValue array
-    const updatedRangeValue = [...rangeValue];
-    updatedRangeValue[selectedThumbValue] = newValue;
-    setRangeValue(updatedRangeValue);
+    if (!allowOutOfRange) {
+      const clampedValue = Math.min(Math.max(newValue, minValue), maxValue);
 
-    onChange(updatedRangeValue);
+      const updatedRangeValue = [...rangeValue];
+      updatedRangeValue[selectedThumbValue] = clampedValue;
+      setRangeValue(updatedRangeValue);
 
-    // Update the thumb position
-    const percentage = Math.round(((newValue - minValue) / (maxValue - minValue)) * 100);
-    if (percentage < 0) {
-      if (selectedThumbValue === 0) {
-        setPercentageStart(0);
-      } else {
-        setPercentageEnd(0);
-      }
-    } else if (percentage > 100) {
-      if (selectedThumbValue === 0) {
-        setPercentageStart(100);
-      } else {
-        setPercentageEnd(100);
-      }
-    } else {
+      onChange(updatedRangeValue);
+
+      const percentage = Math.round(((clampedValue - minValue) / (maxValue - minValue)) * 100);
       if (selectedThumbValue === 0) {
         setPercentageStart(percentage);
       } else {
         setPercentageEnd(percentage);
       }
+    } else {
+      const updatedRangeValue = [...rangeValue];
+      updatedRangeValue[selectedThumbValue] = newValue;
+      setRangeValue(updatedRangeValue);
+
+      onChange(updatedRangeValue);
+
+      // Update the thumb position
+      const percentage = Math.round(((newValue - minValue) / (maxValue - minValue)) * 100);
+      if (percentage < 0) {
+        if (selectedThumbValue === 0) {
+          setPercentageStart(0);
+        } else {
+          setPercentageEnd(0);
+        }
+      } else if (percentage > 100) {
+        if (selectedThumbValue === 0) {
+          setPercentageStart(100);
+        } else {
+          setPercentageEnd(100);
+        }
+      } else {
+        if (selectedThumbValue === 0) {
+          setPercentageStart(percentage);
+        } else {
+          setPercentageEnd(percentage);
+        }
+      }
     }
+
+    // Update the correct values in the rangeValue array
   };
 
   // Calculate the range values percentages for gradient background

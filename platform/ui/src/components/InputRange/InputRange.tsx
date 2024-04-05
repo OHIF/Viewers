@@ -93,7 +93,7 @@ const InputRange: React.FC<InputRangeProps> = ({
     />
   ) : (
     <span className={classNames(labelClassName ?? 'text-white')}>
-      {rangeValue} {unit}
+      {rangeValue.toFixed(maxDigits)} {unit}
     </span>
   );
 

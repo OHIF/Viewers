@@ -12,6 +12,7 @@ import {
   histogramPropType,
   colormapPropType,
 } from './types';
+import PanelSection from '../PanelSection';
 
 const convertVOItoVOIRange = voi => {
   return {
@@ -102,69 +103,65 @@ const WindowLevel = ({
 
   useEffect(() => setOpacity(opacityProp), [opacityProp]);
   return (
-    <div
-      className={classnames(
-        'maxValue-w-sm bg-secondary-dark p-0.5 text-[0px] text-white',
-        containerClassName
-      )}
-    >
-      {/* <div className="p-1 text-base text-center">Window Level</div> */}
+    <div className={classnames('maxValue-w-sm p-0.5 text-[0px] text-white', containerClassName)}>
       <div className="px-2 pt-0 pb-2">
-        <fieldset className="border-primary-main border border-solid">
-          <legend className="text-base text-white"> {title}</legend>
-          <div className="p-1">
-            <div className="flex h-4">
-              <div className="relative h-fit grow">
-                <span className="absolute left-0 bottom-px text-base leading-3">{range.min}</span>
-              </div>
-              <div className="relative h-fit grow text-right">
-                <span className="absolute right-0 bottom-px text-base leading-3">{range.max}</span>
-              </div>
-            </div>
-            <div className="px-4 pb-2.5">
-              <div className="h-11 bg-white">
-                <WindowLevelHistogram
-                  range={range}
-                  voiRange={voiRange}
-                  histogram={histogram}
-                  colormap={colormap}
-                  style={style}
-                  fillColor={fillColor}
-                  lineColor={lineColor}
-                />
-              </div>
-              <div>
-                <InputDoubleRange
-                  values={[voiRange.min, voiRange.max]}
-                  onChange={handleVOIRangeChange}
-                  minValue={range.min}
-                  maxValue={range.max}
-                  step={step}
-                />
-              </div>
-            </div>
-            {showOpacitySlider && (
-              <div className="py-4 px-4 text-base">
-                <InputRange
-                  inputClassName="grow"
-                  showLabel={false}
-                  maxValue={1}
-                  minValue={0}
-                  step={0.001}
-                  value={opacity}
-                  onChange={handleOpacityChange}
-                />
-              </div>
-            )}
+        <legend className="pb-1 text-base text-white"> {title}</legend>
+        <div className="flex h-4 text-xs">
+          <div className="relative h-fit grow">
+            <span className="absolute left-0 bottom-px leading-3">{range.min}</span>
           </div>
-        </fieldset>
+          <div className="relative h-fit grow text-right">
+            <span className="absolute right-0 bottom-px leading-3">{range.max}</span>
+          </div>
+        </div>
+        <div className="p-1">
+          <div className="pb-2.5">
+            <div className="h-11 bg-white">
+              <WindowLevelHistogram
+                range={range}
+                voiRange={voiRange}
+                histogram={histogram}
+                colormap={colormap}
+                style={style}
+                fillColor={fillColor}
+                lineColor={lineColor}
+              />
+            </div>
+            <div>
+              <InputDoubleRange
+                values={[voiRange.min, voiRange.max]}
+                onChange={handleVOIRangeChange}
+                minValue={range.min}
+                maxValue={range.max}
+                allowNumberEdit={true}
+                showLabel={true}
+                step={step}
+                allowOutOfRange={true}
+              />
+            </div>
+          </div>
+          {showOpacitySlider && (
+            <div className="flex items-center justify-between text-base">
+              <div className="text-xs text-white">Opacity</div>
+              <InputRange
+                inputClassName="grow"
+                maxValue={1}
+                minValue={0}
+                step={0.1}
+                value={opacity}
+                showLabel={true}
+                allowNumberEdit={true}
+                onChange={handleOpacityChange}
+              />
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
 };
 
 WindowLevel.defaultProps = {
-  title: 'Window Level',
   step: 1,
   opacity: 1,
   showOpacitySlider: false,
