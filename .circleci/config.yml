@@ -59,6 +59,14 @@ commands:
 #  codecov: codecov/codecov@1.0.5
 #  cypress: cypress-io/cypress@3.3.1
 
+  deployment_config:
+    steps:
+      - run:
+          name: 'Set tier-specific configuration file'
+          command: |
+            sudo -E /bin/bash ./idc-deploy-shell/pull_config.sh
+            xargs -a viewer3_deployment_config.txt -I{} echo "export {}" >> $BASH_ENV
+
   auth:
     steps:
       - run:
