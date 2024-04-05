@@ -104,8 +104,8 @@ const WindowLevel = ({
   useEffect(() => setOpacity(opacityProp), [opacityProp]);
   return (
     <div className={classnames('maxValue-w-sm p-0.5 text-[0px] text-white', containerClassName)}>
-      <div className="px-2 pt-0 pb-2">
-        <legend className="pb-1 text-base text-white"> {title}</legend>
+      <div className="px-2 pt-0 pb-[0.5]">
+        {/* <legend className="pb-1 text-base text-white"> {title}</legend> */}
         <div className="flex h-4 text-xs">
           <div className="relative h-fit grow">
             <span className="absolute left-0 bottom-px leading-3">{range.min}</span>

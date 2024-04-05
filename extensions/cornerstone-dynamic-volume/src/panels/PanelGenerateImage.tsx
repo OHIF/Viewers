@@ -20,6 +20,7 @@ export default function PanelGenerateImage({ servicesManager, commandsManager })
   const [frameRate, setFrameRate] = useState(20);
   const [isPlaying, setIsPlaying] = useState(false);
   const [timePointRendered, setTimePointRendered] = useState(null);
+  const [displayingComputed, setDisplayingComputed] = useState(false);
 
   //
   const uuidComputedVolume = useRef(csUtils.uuidv4());
@@ -96,6 +97,8 @@ export default function PanelGenerateImage({ servicesManager, commandsManager })
     commandsManager.runCommand('swapDynamicWithComputedDisplaySet', {
       displaySet,
     });
+
+    setDisplayingComputed(true);
   }
 
   function renderDynamicImage(displaySet) {
@@ -230,7 +233,7 @@ export default function PanelGenerateImage({ servicesManager, commandsManager })
         dynamicVolume.timePointIndex = timePointIndex;
       }}
       onGenerate={onGenerateImage}
-      onDynamicClick={renderDynamicImage}
+      onDynamicClick={displayingComputed ? () => renderDynamicImage(computedDisplaySet) : null}
       onDoubleRangeChange={handleSliderChange}
     />
   );
