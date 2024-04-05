@@ -1,5 +1,5 @@
 import React from 'react';
-import { PanelPetSUV, PanelROIThresholdSegmentation } from './Panels';
+import { PanelPetSUV, PanelROIThresholdExport } from './Panels';
 import { Toolbox } from '@ohif/ui';
 
 // TODO:
@@ -30,6 +30,16 @@ function getPanelModule({ commandsManager, extensionManager, servicesManager }) 
       </>
     );
   };
+  const wrappedROIThresholdExport = () => {
+    return (
+      <>
+        <PanelROIThresholdExport
+          commandsManager={commandsManager}
+          servicesManager={servicesManager}
+        />
+      </>
+    );
+  };
 
   return [
     {
@@ -40,11 +50,18 @@ function getPanelModule({ commandsManager, extensionManager, servicesManager }) 
       component: wrappedPanelPetSuv,
     },
     {
-      name: 'ROIThresholdBox',
+      name: 'tmtvBox',
       iconName: 'tab-segmentation',
       iconLabel: 'Segmentation',
-      label: 'Segmentation',
+      label: 'Segmentation Toolbox',
       component: wrappedROIThresholdSeg,
+    },
+    {
+      name: 'tmtvExport',
+      iconName: 'tab-segmentation',
+      iconLabel: 'Segmentation',
+      label: 'Segmentation Export',
+      component: wrappedROIThresholdExport,
     },
   ];
 }
