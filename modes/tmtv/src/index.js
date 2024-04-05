@@ -104,6 +104,9 @@ function modeFactory({ modeConfiguration }) {
           id: 'segmentation.panel',
           segmentationPanelMode: 'expanded',
           addSegment: false,
+          onSegmentationAdd: () => {
+            commandsManager.run('createNewLabelmapFromPT');
+          },
         },
       ]);
 

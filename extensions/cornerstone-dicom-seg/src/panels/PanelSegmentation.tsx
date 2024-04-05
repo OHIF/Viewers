@@ -242,15 +242,21 @@ export default function PanelSegmentation({
     });
   };
 
-  const SegmentationGroupTableComponent = components[configuration?.segmentationPanelMode];
+  const SegmentationGroupTableComponent =
+    components[configuration?.segmentationPanelMode] || SegmentationGroupTable;
   const allowAddSegment = configuration?.addSegment;
+  const onSegmentationAddWrapper =
+    configuration?.onSegmentationAdd && typeof configuration?.onSegmentationAdd === 'function'
+      ? configuration?.onSegmentationAdd
+      : onSegmentationAdd;
+
   return (
     <SegmentationGroupTableComponent
       title={t('Segmentations')}
       segmentations={segmentations}
       disableEditing={configuration.disableEditing}
       activeSegmentationId={selectedSegmentationId || ''}
-      onSegmentationAdd={onSegmentationAdd}
+      onSegmentationAdd={onSegmentationAddWrapper}
       showAddSegment={allowAddSegment}
       onSegmentationClick={onSegmentationClick}
       onSegmentationDelete={onSegmentationDelete}
