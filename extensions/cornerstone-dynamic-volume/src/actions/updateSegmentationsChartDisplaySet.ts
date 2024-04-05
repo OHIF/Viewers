@@ -145,16 +145,37 @@ function _getSegmentationData(segmentation, volumesTimePointsCache, displaySetSe
     referencedDynamicVolume.imageIds[0]
   );
 
-  const segPixelDataInTime = csToolsUtils.dynamicVolume.getDataInTime(referencedDynamicVolume, {
+  const [timeData, _] = csToolsUtils.dynamicVolume.getDataInTime(referencedDynamicVolume, {
     maskVolumeId: segmentation.id,
   }) as number[][];
 
-  const pixelCount = segPixelDataInTime.length;
+  const pixelCount = timeData.length;
 
   if (pixelCount === 0) {
     return [];
   }
 
+  // since we only use one segmentation representation per segmentationId
+  // it is fine to pick the first one
+  const segmentationRepresentations = csTools.segmentation.state.getSegmentationIdRepresentations(
+    segmentation.id
+  );
+
+  const segmentationRepresentationUID =
+    segmentationRepresentations[0].segmentationRepresentationUID;
+
+  const toolGroupId = csTools.segmentation.state.getToolGroupIdFromSegmentationRepresentationUID(
+    segmentationRepresentationUID
+  );
+
+  // Todo: this is useless we should be able to grab color with just segRepUID and segmentIndex
+  const color = csTools.segmentation.config.color.getColorForSegmentIndex(
+    toolGroupId,
+    segmentationRepresentationUID,
+    1 // segmentIndex
+  );
+
+  const hexColor = cs.utilities.color.rgbToHex(...color);
   let timePointsData = volumesTimePointsCache.get(referencedDynamicVolume);
 
   if (!timePointsData) {
@@ -164,7 +185,7 @@ function _getSegmentationData(segmentation, volumesTimePointsCache, displaySetSe
 
   const { timePoints, timePointsUnit } = timePointsData;
 
-  if (timePoints.length !== segPixelDataInTime[0].length) {
+  if (timePoints.length !== timeData[0].length) {
     throw new Error('Invalid number of time points returned');
   }
 
@@ -172,7 +193,7 @@ function _getSegmentationData(segmentation, volumesTimePointsCache, displaySetSe
   const chartSeriesData = new Array(timepointsCount);
 
   for (let i = 0; i < timepointsCount; i++) {
-    const average = segPixelDataInTime.reduce((acc, cur) => acc + cur[i] / pixelCount, 0);
+    const average = timeData.reduce((acc, cur) => acc + cur[i] / pixelCount, 0);
 
     chartSeriesData[i] = [timePoints[i], average];
   }
@@ -184,6 +205,7 @@ function _getSegmentationData(segmentation, volumesTimePointsCache, displaySetSe
       series: {
         label: segmentation.label,
         points: chartSeriesData,
+        color: hexColor,
       },
       axis: {
         x: {
@@ -208,6 +230,9 @@ function _getInstanceFromSegmentations(segmentations, displaySetService) {
   );
 
   const { date: seriesDate, time: seriesTime } = _getDateTimeStr();
+  const series = segmentationsData.reduce((allSeries, curSegData) => {
+    return [...allSeries, curSegData.chartData.series];
+  }, []);
 
   const instance = {
     SOPClassUID: ChartDataSOPClassUid,
@@ -221,10 +246,7 @@ function _getInstanceFromSegmentations(segmentations, displaySetService) {
     SeriesNumber: 100,
     SeriesDescription: 'Segmentation chart series data',
     chartData: {
-      series: segmentationsData.reduce(
-        (allSeries, curSegData) => [...allSeries, curSegData.chartData.series],
-        []
-      ),
+      series,
       axis: { ...segmentationsData[0].chartData.axis },
     },
   };

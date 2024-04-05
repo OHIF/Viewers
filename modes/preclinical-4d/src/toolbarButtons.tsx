@@ -1,8 +1,6 @@
-import { WindowLevelMenuItem } from '@ohif/ui';
 import { defaults, ToolbarService } from '@ohif/core';
 import { toolGroupIds } from './initToolGroups';
 
-const { windowLevelPresets } = defaults;
 const { createButton } = ToolbarService;
 
 const setToolActiveToolbar = {
