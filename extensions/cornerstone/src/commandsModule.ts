@@ -16,7 +16,7 @@ import { Types as OhifTypes } from '@ohif/core';
 import { vec3, mat4 } from 'gl-matrix';
 
 import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownloadForm';
-import callInputDialog from './utils/callInputDialog';
+import { callLabelAutocompleteDialog, showLabelAnnotationPopup } from './utils/callInputDialog';
 import toggleImageSliceSync from './utils/imageSliceSync/toggleImageSliceSync';
 import { getFirstAnnotationSelected } from './utils/measurementServiceMappings/utils/selection';
 import getActiveViewportEnabledElement from './utils/getActiveViewportEnabledElement';
@@ -40,6 +40,7 @@ function commandsModule({
     cornerstoneViewportService,
     uiNotificationService,
     measurementService,
+    customizationService,
     colorbarService,
     hangingProtocolService,
     syncGroupService,
@@ -140,23 +141,18 @@ function commandsModule({
      * on the measurement with a response if not cancelled.
      */
     setMeasurementLabel: ({ uid }) => {
+      const labelConfig = customizationService.get('measurementLabels');
       const measurement = measurementService.getMeasurement(uid);
-
-      callInputDialog(
-        uiDialogService,
-        measurement,
-        (label, actionId) => {
-          if (actionId === 'cancel') {
-            return;
-          }
-
-          const updatedMeasurement = Object.assign({}, measurement, {
-            label,
-          });
-
-          measurementService.update(updatedMeasurement.uid, updatedMeasurement, true);
-        },
-        false
+      showLabelAnnotationPopup(measurement, uiDialogService, labelConfig).then(
+        (val: Map<any, any>) => {
+          measurementService.update(
+            uid,
+            {
+              ...val,
+            },
+            true
+          );
+        }
       );
     },
 
@@ -232,8 +228,9 @@ function commandsModule({
 
       viewportGridService.setActiveViewportId(viewportId);
     },
-    arrowTextCallback: ({ callback, data }) => {
-      callInputDialog(uiDialogService, data, callback);
+    arrowTextCallback: ({ callback, data, uid }) => {
+      const labelConfig = customizationService.get('measurementLabels');
+      callLabelAutocompleteDialog(uiDialogService, callback, {}, labelConfig);
     },
     toggleCine: () => {
       const { viewports } = viewportGridService.getState();
