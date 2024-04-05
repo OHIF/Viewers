@@ -2,7 +2,12 @@ const dynamicVolume = {
   sopClassHandler:
     '@ohif/extension-cornerstone-dynamic-volume.sopClassHandlerModule.dynamic-volume',
   leftPanel: '@ohif/extension-cornerstone-dynamic-volume.panelModule.dynamic-volume',
-  rightPanel: '@ohif/extension-cornerstone-dynamic-volume.panelModule.ROISegmentation',
+  toolBox: '@ohif/extension-cornerstone-dynamic-volume.panelModule.dynamic-toolbox',
+  export: '@ohif/extension-cornerstone-dynamic-volume.panelModule.dynamic-export',
+};
+
+const cs3d = {
+  segmentation: '@ohif/extension-cornerstone-dicom-seg.panelModule.panelSegmentation',
 };
 
 const defaultButtons = {
@@ -50,14 +55,18 @@ function getWorkflowSettings({ servicesManager }) {
         layout: {
           panels: {
             left: [dynamicVolume.leftPanel],
-            right: [dynamicVolume.rightPanel],
+            right: [[dynamicVolume.toolBox, cs3d.segmentation, dynamicVolume.export]],
+          },
+          options: {
+            leftPanelClosed: false,
+            rightPanelClosed: false,
           },
         },
         toolbarButtons: [
           defaultButtons,
           {
-            buttonSection: 'primary',
-            buttons: ['SegmentationTools'],
+            buttonSection: 'dynamic-toolbox',
+            buttons: ['BrushTools', 'RectangleROIStartEndThreshold'],
           },
         ],
         hangingProtocol: {
