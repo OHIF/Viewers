@@ -68,6 +68,22 @@ const toolbarButtons: Button[] = [
           evaluate: 'evaluate.cornerstoneTool',
         }),
         createButton({
+          id: 'PlanarFreehandROI',
+          icon: 'tool-freehand-polygon',
+          label: 'Freehand',
+          tooltip: 'Freehand ROI',
+          commands: setToolActiveToolbar,
+          evaluate: 'evaluate.cornerstoneTool',
+        }),
+        createButton({
+          id: 'RectangleROI',
+          icon: 'tool-rectangle',
+          label: 'Rectangle',
+          tooltip: 'Rectangle ROI',
+          commands: setToolActiveToolbar,
+          evaluate: 'evaluate.cornerstoneTool',
+        }),
+        createButton({
           id: 'CircleROI',
           icon: 'tool-circle',
           label: 'Circle',

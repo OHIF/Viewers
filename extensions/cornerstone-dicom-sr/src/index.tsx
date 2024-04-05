@@ -1,6 +1,6 @@
 import React from 'react';
 import getSopClassHandlerModule from './getSopClassHandlerModule';
-import getHangingProtocolModule, { srProtocol } from './getHangingProtocolModule';
+import { srProtocol } from './getHangingProtocolModule';
 import onModeEnter from './onModeEnter';
 import getCommandsModule from './commandsModule';
 import preRegistration from './init';
