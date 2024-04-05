@@ -25,4 +25,10 @@ body {
   height: 2.1rem;
 }
 
-
+/* disabled class - used for icons and divs based on context */
+.ohif-disabled {
+  pointer-events: none;
+  cursor: not-allowed;
+  user-select: none;
+  opacity: 0.5;
+}

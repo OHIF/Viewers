@@ -79,7 +79,7 @@ function modeFactory() {
     extensions: extensionDependencies,
     hangingProtocol: [],
     sopClassHandlers: [],
-    hotkeys: [],
+    hotkeys: []
   };
 }
 
@@ -361,6 +361,11 @@ function modeFactory() {
 
 // exports
 ```
+
+### Toolbar
+
+
+
 
 ## Registration
 

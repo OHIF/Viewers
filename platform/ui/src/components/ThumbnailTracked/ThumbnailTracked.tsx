@@ -8,7 +8,9 @@ import Tooltip from '../Tooltip';
 import { StringNumber } from '../../types';
 import { useTranslation } from 'react-i18next';
 
-function ThumbnailTracked ({
+// Todo: This class to me feels like it belongs in an extension, not in platform/ui
+// because it is dealing with mode specific components/information
+function ThumbnailTracked({
   displaySetInstanceUID,
   className,
   imageSrc,
@@ -22,43 +24,11 @@ function ThumbnailTracked ({
   onClick,
   onDoubleClick,
   onClickUntrack,
-  viewportIdentificator,
   isTracked,
   isActive,
 }) {
   const { t } = useTranslation('ThumbnailTracked');
   const trackedIcon = isTracked ? 'circled-checkmark' : 'dotted-circle';
-  const viewportIdentificatorLabel = viewportIdentificator.join(', ');
-  const renderViewportLabels = () => {
-    const MAX_LABELS_PER_COL = 3;
-    const shouldShowStack = viewportIdentificator.length > MAX_LABELS_PER_COL;
-    if (shouldShowStack) {
-      return (
-        <div>
-          <div>
-            {viewportIdentificator.slice(0, MAX_LABELS_PER_COL).map(label => (
-              <div key={label}>{label}</div>
-            ))}
-          </div>
-          <Tooltip
-            position="right"
-            content={
-              <div className="max-w-40 text-left">
-                {`${t('Viewport')}: ${viewportIdentificatorLabel}`}
-              </div>
-            }
-          >
-            <Icon
-              name="tool-more-menu"
-              className="py-2 text-white"
-            />
-          </Tooltip>
-        </div>
-      );
-    }
-
-    return viewportIdentificator.map(label => <div key={label}>{label}</div>);
-  };
 
   return (
     <div
@@ -87,13 +57,10 @@ function ThumbnailTracked ({
                 </div>
                 <div className="flex flex-1 flex-col">
                   <span>
-                    <span className="text-white">{isTracked ? t('Series is tracked') : t('Series is untracked')}</span>
-                  </span>
-                  {!!viewportIdentificator.length && (
-                    <span>
-                      {`${t('Viewport')}: ${viewportIdentificatorLabel}`}
+                    <span className="text-white">
+                      {isTracked ? t('Series is tracked') : t('Series is untracked')}
                     </span>
-                  )}
+                  </span>
                 </div>
               </div>
             }
@@ -103,13 +70,6 @@ function ThumbnailTracked ({
               className="text-primary-light mb-2 w-4"
             />
           </Tooltip>
-
-          <div
-            className="text-center text-xl leading-tight text-white"
-            data-cy={'thumbnail-viewport-labels'}
-          >
-            {renderViewportLabels()}
-          </div>
         </div>
         {isTracked && (
           <div onClick={onClickUntrack}>
@@ -136,7 +96,7 @@ function ThumbnailTracked ({
       />
     </div>
   );
-};
+}
 
 ThumbnailTracked.propTypes = {
   /**
@@ -160,7 +120,6 @@ ThumbnailTracked.propTypes = {
   onClick: PropTypes.func.isRequired,
   onDoubleClick: PropTypes.func.isRequired,
   onClickUntrack: PropTypes.func.isRequired,
-  viewportIdentificator: PropTypes.array,
   isTracked: PropTypes.bool,
   messages: PropTypes.object,
   isActive: PropTypes.bool.isRequired,

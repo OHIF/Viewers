@@ -189,19 +189,6 @@ export default class ToolGroupService {
     this.addToolsToToolGroup(toolGroupId, tools);
     return toolGroup;
   }
-
-  /**
-  private changeConfigurationIfNecessary(toolGroup, volumeUID) {
-    // handle specific assignment for volumeUID (e.g., fusion)
-    const toolInstances = toolGroup._toolInstances;
-    // Object.values(toolInstances).forEach(toolInstance => {
-    //   if (toolInstance.configuration) {
-    //     toolInstance.configuration.volumeUID = volumeUID;
-    //   }
-    // });
-  }
-  */
-
   /**
    * Get the tool's configuration based on the tool name and tool group id
    * @param toolGroupId - The id of the tool group that the tool instance belongs to.

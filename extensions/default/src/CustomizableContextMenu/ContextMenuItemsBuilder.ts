@@ -70,8 +70,6 @@ export function findMenu(menus: Menu[], props?: Types.IProps, menuIdFilter?: str
     current = findIt.next();
   }
 
-  console.log('Menu chosen', menu?.id || 'NONE');
-
   return menu;
 }
 

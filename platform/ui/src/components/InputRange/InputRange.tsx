@@ -12,6 +12,12 @@ import getMaxDigits from '../../utils/getMaxDigits';
  *
  *
  */
+
+type Label = {
+  text: string;
+  position: number;
+};
+
 type InputRangeProps = {
   value: number;
   onChange: (value: number) => void;
@@ -28,6 +34,7 @@ type InputRangeProps = {
   trackColor?: string;
   allowNumberEdit?: boolean;
   showAdjustmentArrows?: boolean;
+  labels?: Label[];
 };
 
 const InputRange: React.FC<InputRangeProps> = ({
@@ -46,6 +53,7 @@ const InputRange: React.FC<InputRangeProps> = ({
   trackColor,
   allowNumberEdit = false,
   showAdjustmentArrows = true,
+  labels = [],
 }) => {
   const [rangeValue, setRangeValue] = useState(value);
 
@@ -113,6 +121,22 @@ const InputRange: React.FC<InputRangeProps> = ({
         />
         {showLabel && labelPosition === 'right' && (
           <div style={{ width: labelWidth }}>{LabelOrEditableNumber}</div>
+        )}
+        {labels.length > 0 && (
+          <>
+            {labels.map((label, index) => {
+              const position = label.position;
+              return (
+                <div
+                  key={index}
+                  className="absolute !m-0"
+                  style={{ left: `calc(${position}%)`, bottom: '-20px' }}
+                >
+                  <span className="text-aqua-pale text-xs">{label.text}</span>
+                </div>
+              );
+            })}
+          </>
         )}
       </div>
     </div>
