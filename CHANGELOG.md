@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-beta.69](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.68...v3.8.0-beta.69) (2024-04-03)
+
+
+### Bug Fixes
+
+* **presentation-state:** Iterate over map properly to restore the presentation state ([#4013](https://github.com/OHIF/Viewers/issues/4013)) ([fa38e6a](https://github.com/OHIF/Viewers/commit/fa38e6a07a259d8cb33277922884e722414ac548))
+
+
+
+
+
 # [3.8.0-beta.68](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.67...v3.8.0-beta.68) (2024-04-03)
 
 

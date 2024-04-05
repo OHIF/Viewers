@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-beta.69](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.68...v3.8.0-beta.69) (2024-04-03)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
 # [3.8.0-beta.68](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.67...v3.8.0-beta.68) (2024-04-03)
 
 
