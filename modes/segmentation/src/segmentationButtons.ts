@@ -25,6 +25,7 @@ const toolbarButtons: Button[] = [
           evaluate: {
             name: 'evaluate.cornerstone.segmentation',
             options: { toolNames: ['CircularBrush', 'SphereBrush'] },
+            disabledText: 'Create new segmentation to enable this tool.',
           },
           commands: _createSetToolActiveCommands('CircularBrush'),
           options: [
@@ -95,7 +96,7 @@ const toolbarButtons: Button[] = [
         {
           id: 'Threshold',
           icon: 'icon-tool-threshold',
-          label: 'Eraser',
+          label: 'Threshold Tool',
           evaluate: {
             name: 'evaluate.cornerstone.segmentation',
             options: { toolNames: ['ThresholdCircularBrush', 'ThresholdSphereBrush'] },

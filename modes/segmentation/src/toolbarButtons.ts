@@ -75,7 +75,10 @@ const toolbarButtons: Button[] = [
       icon: 'tool-3d-rotate',
       label: '3D Rotate',
       commands: setToolActiveToolbar,
-      evaluate: 'evaluate.cornerstoneTool',
+      evaluate: {
+        name: 'evaluate.cornerstoneTool',
+        disabledText: 'Select a 3D viewport to enable this tool',
+      },
     },
   },
   {
@@ -110,7 +113,10 @@ const toolbarButtons: Button[] = [
           toolGroupIds: ['mpr'],
         },
       },
-      evaluate: 'evaluate.cornerstoneTool',
+      evaluate: {
+        name: 'evaluate.cornerstoneTool',
+        disabledText: 'Select an MPR viewport to enable this tool',
+      },
     },
   },
   {
@@ -206,7 +212,7 @@ const toolbarButtons: Button[] = [
           evaluate: 'evaluate.viewportProperties.toggle',
         }),
         createButton({
-          id: 'Probe',
+          id: 'DragProbe',
           icon: 'tool-probe',
           label: 'Probe',
           tooltip: 'Probe',
@@ -255,10 +261,26 @@ const toolbarButtons: Button[] = [
         }),
         createButton({
           id: 'TagBrowser',
-          icon: 'list-bullets',
+          icon: 'dicom-tag-browser',
           label: 'Dicom Tag Browser',
           tooltip: 'Dicom Tag Browser',
           commands: 'openDICOMTagViewer',
+        }),
+        createButton({
+          id: 'AdvancedMagnify',
+          icon: 'icon-tool-loupe',
+          label: 'Loupe',
+          tooltip: 'Loupe',
+          commands: setToolActiveToolbar,
+          evaluate: 'evaluate.cornerstoneTool',
+        }),
+        createButton({
+          id: 'UltrasoundDirectionalTool',
+          icon: 'icon-tool-ultrasound-bidirectional',
+          label: 'Ultrasound Directional',
+          tooltip: 'Ultrasound Directional',
+          commands: setToolActiveToolbar,
+          evaluate: ['evaluate.cornerstoneTool', 'evaluate.isUS'],
         }),
       ],
     },

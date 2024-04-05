@@ -21,7 +21,7 @@ export default function getToolbarModule({ commandsManager, servicesManager }) {
     // enabled or not
     {
       name: 'evaluate.cornerstoneTool',
-      evaluate: ({ viewportId, button }) => {
+      evaluate: ({ viewportId, button, disabledText }) => {
         const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
 
         if (!toolGroup) {
@@ -34,6 +34,7 @@ export default function getToolbarModule({ commandsManager, servicesManager }) {
           return {
             disabled: true,
             className: '!text-common-bright ohif-disabled',
+            disabledText: disabledText ?? 'Not available on the current viewport',
           };
         }
 
@@ -109,7 +110,7 @@ export default function getToolbarModule({ commandsManager, servicesManager }) {
     },
     {
       name: 'evaluate.cornerstoneTool.toggle',
-      evaluate: ({ viewportId, button }) => {
+      evaluate: ({ viewportId, button, disabledText }) => {
         const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
 
         if (!toolGroup) {
@@ -121,6 +122,7 @@ export default function getToolbarModule({ commandsManager, servicesManager }) {
           return {
             disabled: true,
             className: '!text-common-bright ohif-disabled',
+            disabledText: disabledText ?? 'Not available on the current viewport',
           };
         }
 
@@ -168,13 +170,34 @@ export default function getToolbarModule({ commandsManager, servicesManager }) {
     },
     {
       name: 'evaluate.not3D',
-      evaluate: ({ viewportId, button }) => {
+      evaluate: ({ viewportId, disabledText }) => {
         const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
         if (viewport?.type === 'volume3d') {
           return {
             disabled: true,
             className: '!text-common-bright ohif-disabled',
+            disabledText: disabledText ?? 'Not available on the current viewport',
+          };
+        }
+      },
+    },
+    {
+      name: 'evaluate.isUS',
+      evaluate: ({ viewportId, disabledText }) => {
+        const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
+
+        if (!displaySetUIDs?.length) {
+          return;
+        }
+
+        const displaySets = displaySetUIDs.map(displaySetService.getDisplaySetByUID);
+        const isUS = displaySets.some(displaySet => displaySet.Modality === 'US');
+        if (!isUS) {
+          return {
+            disabled: true,
+            className: '!text-common-bright ohif-disabled',
+            disabledText: disabledText ?? 'Not available on the current viewport',
           };
         }
       },
@@ -211,7 +234,7 @@ export default function getToolbarModule({ commandsManager, servicesManager }) {
     },
     {
       name: 'evaluate.mpr',
-      evaluate: ({ viewportId, button }) => {
+      evaluate: ({ viewportId, disabledText = 'Selected viewport is not reconstructable' }) => {
         const { protocol } = hangingProtocolService.getActiveProtocol();
 
         const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
@@ -230,6 +253,7 @@ export default function getToolbarModule({ commandsManager, servicesManager }) {
           return {
             disabled: true,
             className: '!text-common-bright ohif-disabled',
+            disabledText: disabledText ?? 'Not available on the current viewport',
           };
         }
 

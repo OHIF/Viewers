@@ -7,7 +7,7 @@ export const toolGroupIds = {
   // MPR: 'mpr',
 };
 
-function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager) {
+function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager, modeLabelConfig) {
   const tools = {
     active: [
       {
@@ -30,18 +30,24 @@ function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager) {
         toolName: toolNames.ArrowAnnotate,
         configuration: {
           getTextCallback: (callback, eventDetails) => {
-            commandsManager.runCommand('arrowTextCallback', {
-              callback,
-              eventDetails,
-            });
+            if (modeLabelConfig) {
+              callback(' ');
+            } else {
+              commandsManager.runCommand('arrowTextCallback', {
+                callback,
+                eventDetails,
+              });
+            }
           },
-
-          changeTextCallback: (data, eventDetails, callback) =>
-            commandsManager.runCommand('arrowTextCallback', {
-              callback,
-              data,
-              eventDetails,
-            }),
+          changeTextCallback: (data, eventDetails, callback) => {
+            if (modeLabelConfig === undefined) {
+              commandsManager.runCommand('arrowTextCallback', {
+                callback,
+                data,
+                eventDetails,
+              });
+            }
+          },
         },
       },
       { toolName: toolNames.Bidirectional },
@@ -102,8 +108,8 @@ function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager) {
   toolGroupService.createToolGroupAndAddTools(toolGroupIds.MIP, mipTools);
 }
 
-function initToolGroups(toolNames, Enums, toolGroupService, commandsManager) {
-  _initToolGroups(toolNames, Enums, toolGroupService, commandsManager);
+function initToolGroups(toolNames, Enums, toolGroupService, commandsManager, modeLabelConfig) {
+  _initToolGroups(toolNames, Enums, toolGroupService, commandsManager, modeLabelConfig);
 }
 
 export default initToolGroups;
