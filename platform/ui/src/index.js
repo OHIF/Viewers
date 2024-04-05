@@ -124,6 +124,7 @@ export {
   WindowLevelMenuItem,
   ImageScrollbar,
   ViewportOverlay,
+  LabellingFlow,
   HeaderPatientInfo,
   ToolSettings,
   Toolbox,

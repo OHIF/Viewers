@@ -31,14 +31,7 @@ export function Toolbar({ servicesManager, buttonSection = 'primary' }) {
           />
         );
 
-        return (
-          <div
-            key={id}
-            className="mr-1"
-          >
-            {tool}
-          </div>
-        );
+        return <div key={id}>{tool}</div>;
       })}
     </>
   );
