@@ -54,7 +54,13 @@ function WrappedCinePlayer({ enabledVPElement, viewportId, servicesManager }) {
   }, [displaySetService, viewportId, viewportGridService, cines, isCineEnabled]);
 
   useEffect(() => {
+    isMountedRef.current = true;
+
     newDisplaySetHandler();
+
+    return () => {
+      isMountedRef.current = false;
+    };
   }, [isCineEnabled, newDisplaySetHandler]);
 
   /**
@@ -172,12 +178,12 @@ function RenderCinePlayer({
         });
         cineService.setIsCineEnabled(false);
       }}
-      onPlayPauseChange={isPlaying =>
+      onPlayPauseChange={isPlaying => {
         cineService.setCine({
           id: viewportId,
           isPlaying,
-        })
-      }
+        });
+      }}
       onFrameRateChange={frameRate =>
         cineService.setCine({
           id: viewportId,
