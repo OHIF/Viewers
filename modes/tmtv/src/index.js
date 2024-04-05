@@ -23,7 +23,8 @@ const cs3d = {
 const tmtv = {
   hangingProtocol: '@ohif/extension-tmtv.hangingProtocolModule.ptCT',
   petSUV: '@ohif/extension-tmtv.panelModule.petSUV',
-  ROIThresholdBox: '@ohif/extension-tmtv.panelModule.ROIThresholdBox',
+  toolbox: '@ohif/extension-tmtv.panelModule.tmtvBox',
+  export: '@ohif/extension-tmtv.panelModule.tmtvExport',
 };
 
 const extensionDependencies = {
@@ -196,7 +197,7 @@ function modeFactory({ modeConfiguration }) {
             props: {
               leftPanels: [ohif.thumbnailList],
               leftPanelClosed: true,
-              rightPanels: [[tmtv.ROIThresholdBox, cs3d.segPanel], tmtv.petSUV],
+              rightPanels: [[tmtv.toolbox, cs3d.segPanel, tmtv.export], tmtv.petSUV],
               viewports: [
                 {
                   namespace: cs3d.viewport,

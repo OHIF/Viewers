@@ -17,7 +17,7 @@ function getPanelModule({ commandsManager, extensionManager, servicesManager }) 
     );
   };
 
-  const wrappedROIThresholdSeg = () => {
+  const wrappedROIThresholdToolbox = () => {
     return (
       <>
         <Toolbox
@@ -30,6 +30,7 @@ function getPanelModule({ commandsManager, extensionManager, servicesManager }) 
       </>
     );
   };
+
   const wrappedROIThresholdExport = () => {
     return (
       <>
@@ -54,7 +55,7 @@ function getPanelModule({ commandsManager, extensionManager, servicesManager }) 
       iconName: 'tab-segmentation',
       iconLabel: 'Segmentation',
       label: 'Segmentation Toolbox',
-      component: wrappedROIThresholdSeg,
+      component: wrappedROIThresholdToolbox,
     },
     {
       name: 'tmtvExport',

@@ -38,7 +38,8 @@ function modeFactory({ modeConfiguration }) {
     routeName: 'dynamic-volume',
     displayName: '4D PT/CT',
     onModeEnter: function ({ servicesManager, extensionManager, commandsManager }) {
-      const { measurementService, toolbarService, toolGroupService } = servicesManager.services;
+      const { measurementService, toolbarService, toolGroupService, customizationService } =
+        servicesManager.services;
 
       const utilityModule = extensionManager.getModuleEntry(
         '@ohif/extension-cornerstone.utilityModule.tools'
@@ -51,8 +52,19 @@ function modeFactory({ modeConfiguration }) {
 
       toolbarService.addButtons([...toolbarButtons, ...segmentationButtons]);
       toolbarService.createButtonSection('secondary', ['ProgressDropdown']);
+
       // the primary button section is created in the workflow steps
       // specific to the step
+      customizationService.addModeCustomizations([
+        {
+          id: 'segmentation.panel',
+          segmentationPanelMode: 'expanded',
+          addSegment: false,
+          onSegmentationAdd: () => {
+            commandsManager.run('createNewLabelmapFromPT');
+          },
+        },
+      ]);
     },
     onSetupRouteComplete: ({ servicesManager }) => {
       // This needs to run after hanging protocol matching process because
