@@ -8,7 +8,7 @@ function WrappedCinePlayer({ enabledVPElement, viewportId, servicesManager }) {
   const { customizationService, displaySetService, viewportGridService } = servicesManager.services;
   const [{ isCineEnabled, cines }, cineService] = useCine();
   const [newStackFrameRate, setNewStackFrameRate] = useState(24);
-  const [isDynamic, setIsDynamic] = useState(false);
+  const [dynamicInfo, setDynamicInfo] = useState(null);
   const [appConfig] = useAppConfig();
   const isMountedRef = useRef(null);
 
@@ -43,7 +43,22 @@ function WrappedCinePlayer({ enabledVPElement, viewportId, servicesManager }) {
         frameRate = Math.round(1000 / displaySet.FrameRate);
         isPlaying ||= !!appConfig.autoPlayCine;
       }
-      setIsDynamic(displaySet.isDynamicVolume);
+
+      // check if the displaySet is dynamic and set the dynamic info
+      if (displaySet.isDynamicVolume) {
+        const { dynamicVolumeInfo } = displaySet;
+        const numTimePoints = dynamicVolumeInfo.timePoints.length;
+        const label = dynamicVolumeInfo.splittingTag;
+        const timePointIndex = dynamicVolumeInfo.timePointIndex || 0;
+        setDynamicInfo({
+          volumeId: displaySet.displaySetInstanceUID,
+          timePointIndex,
+          numTimePoints,
+          label,
+        });
+      } else {
+        setDynamicInfo(null);
+      }
     });
 
     if (isPlaying) {
@@ -114,7 +129,7 @@ function WrappedCinePlayer({ enabledVPElement, viewportId, servicesManager }) {
       cineService={cineService}
       newStackFrameRate={newStackFrameRate}
       isPlaying={isPlaying}
-      isDynamic={isDynamic}
+      dynamicInfo={dynamicInfo}
       customizationService={customizationService}
     />
   );
@@ -125,19 +140,23 @@ function RenderCinePlayer({
   cineService,
   newStackFrameRate,
   isPlaying,
-  isDynamic,
+  dynamicInfo: dynamicInfoProp,
   customizationService,
 }) {
   const { component: CinePlayerComponent = CinePlayer } =
     customizationService.get('cinePlayer') ?? {};
 
-  const [dynamicInfo, setDynamicInfo] = useState(null);
+  const [dynamicInfo, setDynamicInfo] = useState(dynamicInfoProp);
+
+  useEffect(() => {
+    setDynamicInfo(dynamicInfoProp);
+  }, [dynamicInfoProp]);
 
   /**
    * Use effect for handling 4D time index changed
    */
   useEffect(() => {
-    if (!isDynamic) {
+    if (!dynamicInfo) {
       return;
     }
 
@@ -157,7 +176,19 @@ function RenderCinePlayer({
         handleTimePointIndexChange
       );
     };
-  }, [isDynamic]);
+  }, [dynamicInfo]);
+
+  useEffect(() => {
+    if (!dynamicInfo) {
+      return;
+    }
+
+    const { volumeId, timePointIndex, numTimePoints, splittingTag } = dynamicInfo || {};
+    const volume = cache.getVolume(volumeId);
+    volume.timePointIndex = timePointIndex;
+
+    setDynamicInfo({ volumeId, timePointIndex, numTimePoints, label: splittingTag });
+  }, []);
 
   const updateDynamicInfo = useCallback(props => {
     const { volumeId, timePointIndex } = props;
@@ -190,7 +221,6 @@ function RenderCinePlayer({
           frameRate,
         })
       }
-      isDynamic={isDynamic}
       dynamicInfo={dynamicInfo}
       updateDynamicInfo={updateDynamicInfo}
     />

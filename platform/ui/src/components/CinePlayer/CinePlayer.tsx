@@ -18,7 +18,6 @@ export type CinePlayerProps = {
   onFrameRateChange: (value: number) => void;
   onPlayPauseChange: (value: boolean) => void;
   onClose: () => void;
-  isDynamic?: boolean;
   updateDynamicInfo?: () => void;
   dynamicInfo?: {
     volumeId: string;
@@ -38,13 +37,13 @@ const CinePlayer: React.FC<CinePlayerProps> = ({
   maxFrameRate,
   stepFrameRate,
   frameRate: defaultFrameRate,
-  isDynamic,
   dynamicInfo = {},
   onFrameRateChange,
   onPlayPauseChange,
   onClose,
   updateDynamicInfo,
 }) => {
+  const isDynamic = !!dynamicInfo?.volumeId;
   const [frameRate, setFrameRate] = useState(defaultFrameRate);
   const debouncedSetFrameRate = useCallback(debounce(onFrameRateChange, 100), [onFrameRateChange]);
 

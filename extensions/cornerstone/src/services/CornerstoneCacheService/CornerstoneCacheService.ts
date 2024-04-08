@@ -200,6 +200,7 @@ class CornerstoneCacheService {
         volume,
         volumeId,
         imageIds: volumeImageIds,
+        isDynamicVolume: displaySet.isDynamicVolume,
       });
     }
 

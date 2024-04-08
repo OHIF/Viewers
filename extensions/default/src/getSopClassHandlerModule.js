@@ -53,6 +53,7 @@ function getDisplaySetInfo(instances) {
   return {
     isDynamicVolume,
     ...displaySetInfo,
+    dynamicVolumeInfo,
   };
 }
 
@@ -64,6 +65,7 @@ const makeDisplaySet = instances => {
     isDynamicVolume,
     value: isReconstructable,
     averageSpacingBetweenFrames,
+    dynamicVolumeInfo,
   } = getDisplaySetInfo(instances);
 
   const volumeLoaderSchema = isDynamicVolume
@@ -93,6 +95,7 @@ const makeDisplaySet = instances => {
     messages,
     averageSpacingBetweenFrames: averageSpacingBetweenFrames || null,
     isDynamicVolume,
+    dynamicVolumeInfo,
   });
 
   // Sort the images in this series if needed

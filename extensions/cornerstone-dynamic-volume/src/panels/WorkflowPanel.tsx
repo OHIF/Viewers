@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 
 function WorkflowPanel({ servicesManager, extensionManager }) {
   const ProgressDropdownWithService = useMemo(() => {
