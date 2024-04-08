@@ -38,8 +38,15 @@ function modeFactory({ modeConfiguration }) {
     routeName: 'dynamic-volume',
     displayName: '4D PT/CT',
     onModeEnter: function ({ servicesManager, extensionManager, commandsManager }) {
-      const { measurementService, toolbarService, toolGroupService, customizationService } =
-        servicesManager.services;
+      const {
+        measurementService,
+        toolbarService,
+        cineService,
+        cornerstoneViewportService,
+        toolGroupService,
+        customizationService,
+        viewportGridService,
+      } = servicesManager.services;
 
       const utilityModule = extensionManager.getModuleEntry(
         '@ohif/extension-cornerstone.utilityModule.tools'
@@ -65,6 +72,19 @@ function modeFactory({ modeConfiguration }) {
           },
         },
       ]);
+
+      // Auto play the clip initially when the volumes are loaded
+      const { unsubscribe } = cornerstoneViewportService.subscribe(
+        cornerstoneViewportService.EVENTS.VIEWPORT_VOLUMES_CHANGED,
+        () => {
+          const viewportId = viewportGridService.getActiveViewportId();
+          const csViewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+          cineService.playClip(csViewport.element);
+          // cineService.setIsCineEnabled(true);
+
+          unsubscribe();
+        }
+      );
     },
     onSetupRouteComplete: ({ servicesManager }) => {
       // This needs to run after hanging protocol matching process because

@@ -73,7 +73,7 @@ const makeDisplaySet = instances => {
     : DEFAULT_VOLUME_LOADER_SCHEME;
 
   // set appropriate attributes to image set...
-  const messages = getDisplaySetMessages(instances, isReconstructable);
+  const messages = getDisplaySetMessages(instances, isReconstructable, isDynamicVolume);
 
   imageSet.setAttributes({
     volumeLoaderSchema,

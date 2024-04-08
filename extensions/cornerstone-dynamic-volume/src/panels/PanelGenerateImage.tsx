@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { useCine, useViewportGrid } from '@ohif/ui';
 import { cache, utilities as csUtils, volumeLoader, eventTarget } from '@cornerstonejs/core';
@@ -12,13 +12,16 @@ export default function PanelGenerateImage({ servicesManager, commandsManager })
   const { cornerstoneViewportService, viewportGridService, displaySetService } =
     servicesManager.services;
 
+  const [{ isCineEnabled }, cineService] = useCine();
+  const [{ activeViewportId }] = useViewportGrid();
+
   //
   const [timePointsRange, setTimePointsRange] = useState([]);
   const [timePointsRangeToUseForGenerate, setTimePointsRangeToUseForGenerate] = useState([]);
   const [computedDisplaySet, setComputedDisplaySet] = useState(null);
   const [dynamicVolume, setDynamicVolume] = useState(null);
   const [frameRate, setFrameRate] = useState(20);
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(isCineEnabled);
   const [timePointRendered, setTimePointRendered] = useState(null);
   const [displayingComputed, setDisplayingComputed] = useState(false);
 
@@ -26,9 +29,6 @@ export default function PanelGenerateImage({ servicesManager, commandsManager })
   const uuidComputedVolume = useRef(csUtils.uuidv4());
   const uuidDynamicVolume = useRef(null);
   const computedVolumeId = `cornerstoneStreamingImageVolume:${uuidComputedVolume.current}`;
-
-  const [_, cineService] = useCine();
-  const [{ activeViewportId }] = useViewportGrid();
 
   useEffect(() => {
     const evt = cornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED;
@@ -47,6 +47,19 @@ export default function PanelGenerateImage({ servicesManager, commandsManager })
       unsubscribe();
     };
   }, [cornerstoneViewportService]);
+
+  useEffect(() => {
+    const { unsubscribe } = servicesManager.services.cineService.subscribe(
+      servicesManager.services.cineService.EVENTS.CINE_STATE_CHANGED,
+      evt => {
+        setIsPlaying(evt.isPlaying);
+      }
+    );
+
+    return () => {
+      unsubscribe();
+    };
+  }, [cineService]);
 
   useEffect(() => {
     const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(activeViewportId);

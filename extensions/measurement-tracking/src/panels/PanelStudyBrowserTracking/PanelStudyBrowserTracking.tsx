@@ -19,8 +19,13 @@ function PanelStudyBrowserTracking({
   requestDisplaySetCreationForStudy,
   dataSource,
 }) {
-  const { displaySetService, uiDialogService, hangingProtocolService, uiNotificationService, measurementService } =
-    servicesManager.services;
+  const {
+    displaySetService,
+    uiDialogService,
+    hangingProtocolService,
+    uiNotificationService,
+    measurementService,
+  } = servicesManager.services;
   const navigate = useNavigate();
 
   const { t } = useTranslation('Common');
@@ -129,7 +134,8 @@ function PanelStudyBrowserTracking({
       const newImageSrcEntry = {};
       const displaySet = displaySetService.getDisplaySetByUID(dSet.displaySetInstanceUID);
       const imageIds = dataSource.getImageIdsForDisplaySet(displaySet);
-      const imageId = imageIds[Math.floor(imageIds.length / 2)];
+
+      const imageId = getImageIdForThumbnail(displaySet, imageIds);
 
       // TODO: Is it okay that imageIds are not returned here for SR displaySets?
       if (!imageId || displaySet?.unsupported) {
@@ -195,7 +201,7 @@ function PanelStudyBrowserTracking({
           }
 
           const imageIds = dataSource.getImageIdsForDisplaySet(displaySet);
-          const imageId = imageIds[Math.floor(imageIds.length / 2)];
+          const imageId = getImageIdForThumbnail(displaySet, imageIds);
 
           // TODO: Is it okay that imageIds are not returned here for SR displaysets?
           if (!imageId) {
@@ -365,6 +371,19 @@ PanelStudyBrowserTracking.propTypes = {
 };
 
 export default PanelStudyBrowserTracking;
+
+function getImageIdForThumbnail(displaySet: any, imageIds: any) {
+  let imageId;
+  if (displaySet.isDynamicVolume) {
+    const timePoints = displaySet.dynamicVolumeInfo.timePoints;
+    const middleIndex = Math.floor(timePoints.length / 2);
+    const middleTimePointImageIds = timePoints[middleIndex];
+    imageId = middleTimePointImageIds[Math.floor(middleTimePointImageIds.length / 2)];
+  } else {
+    imageId = imageIds[Math.floor(imageIds.length / 2)];
+  }
+  return imageId;
+}
 
 /**
  * Maps from the DataSource's format to a naturalized object
