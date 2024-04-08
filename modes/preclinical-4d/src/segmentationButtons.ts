@@ -129,28 +129,13 @@ const toolbarButtons: Button[] = [
               commands: 'setToolActiveToolbar',
             },
             {
-              name: 'Threshold',
-              type: 'radio',
-              id: 'dynamic-mode',
-              value: 'ThresholdRange',
-              values: [
-                { value: 'ThresholdDynamic', label: 'Dynamic' },
-                { value: 'ThresholdRange', label: 'Range' },
-              ],
-              commands: {
-                commandName: 'toggleThresholdRangeAndDynamic',
-              },
-            },
-            {
               name: 'ThresholdRange',
               type: 'double-range',
               id: 'threshold-range',
-              min: -1000,
-              max: 1000,
+              min: 0,
+              max: 10,
               step: 1,
-              values: [100, 600],
-              condition: ({ options }) =>
-                options.find(option => option.id === 'dynamic-mode').value === 'ThresholdRange',
+              values: [2, 5],
               commands: {
                 commandName: 'setThresholdRange',
                 commandOptions: {
