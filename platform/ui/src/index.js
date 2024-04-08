@@ -31,6 +31,7 @@ export {
 
 /** COMPONENTS */
 export {
+  ActionButtons,
   AboutModal,
   AdvancedToolbox,
   AllInOneMenu,

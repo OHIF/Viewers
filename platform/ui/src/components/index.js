@@ -94,8 +94,10 @@ import { Toolbox } from './Toolbox';
 import InvestigationalUseDialog from './InvestigationalUseDialog';
 import MeasurementItem from './MeasurementTable/MeasurementItem';
 import LayoutPreset from './LayoutPreset';
+import ActionButtons from './ActionButtons';
 
 export {
+  ActionButtons,
   AboutModal,
   AdvancedToolbox,
   AllInOneMenu,
