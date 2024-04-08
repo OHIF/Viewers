@@ -1,6 +1,7 @@
 import React from 'react';
 import { DynamicDataPanel } from './panels';
 import { Toolbox } from '@ohif/ui';
+import DynamicExport from './panels/DynamicExport';
 
 function getPanelModule({ commandsManager, extensionManager, servicesManager }) {
   const wrappedDynamicDataPanel = () => {
@@ -27,10 +28,22 @@ function getPanelModule({ commandsManager, extensionManager, servicesManager }) 
     );
   };
 
+  const wrappedDynamicExport = () => {
+    return (
+      <>
+        <DynamicExport
+          commandsManager={commandsManager}
+          servicesManager={servicesManager}
+          extensionManager={extensionManager}
+        />
+      </>
+    );
+  };
+
   return [
     {
       name: 'dynamic-volume',
-      iconName: 'group-layers', // create tab-dynamic-volume icon
+      iconName: 'group-layers',
       iconLabel: '4D Workflow',
       label: '4D Workflow',
       component: wrappedDynamicDataPanel,
@@ -44,12 +57,10 @@ function getPanelModule({ commandsManager, extensionManager, servicesManager }) 
     },
     {
       name: 'dynamic-export',
-      iconName: 'group-layers', // create tab-dynamic-volume icon
+      iconName: 'group-layers',
       iconLabel: '4D Workflow',
       label: '4D Workflow',
-      component: () => {
-        return <div className="text-white">export </div>;
-      },
+      component: wrappedDynamicExport,
     },
   ];
 }
