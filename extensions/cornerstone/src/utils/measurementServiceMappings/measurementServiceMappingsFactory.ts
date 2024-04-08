@@ -8,6 +8,7 @@ import CobbAngle from './CobbAngle';
 import Angle from './Angle';
 import PlanarFreehandROI from './PlanarFreehandROI';
 import RectangleROI from './RectangleROI';
+import SplineROI from './SplineROI';
 
 const measurementServiceMappingsFactory = (
   measurementService: MeasurementService,
@@ -39,6 +40,7 @@ const measurementServiceMappingsFactory = (
       ArrowAnnotate: POINT,
       CobbAngle: ANGLE,
       Angle: ANGLE,
+      SplineROI: POLYLINE,
     };
 
     return TOOL_TYPE_TO_VALUE_TYPE[toolType];
@@ -136,6 +138,22 @@ const measurementServiceMappingsFactory = (
       toAnnotation: PlanarFreehandROI.toAnnotation,
       toMeasurement: csToolsAnnotation =>
         PlanarFreehandROI.toMeasurement(
+          csToolsAnnotation,
+          displaySetService,
+          cornerstoneViewportService,
+          _getValueTypeFromToolType
+        ),
+      matchingCriteria: [
+        {
+          valueType: MeasurementService.VALUE_TYPES.POLYLINE,
+        },
+      ],
+    },
+
+    SplineROI: {
+      toAnnotation: SplineROI.toAnnotation,
+      toMeasurement: csToolsAnnotation =>
+        SplineROI.toMeasurement(
           csToolsAnnotation,
           displaySetService,
           cornerstoneViewportService,

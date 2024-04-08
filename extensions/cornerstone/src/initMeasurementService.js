@@ -30,6 +30,7 @@ const initMeasurementService = (
     CobbAngle,
     RectangleROI,
     PlanarFreehandROI,
+    SplineROI,
   } = measurementServiceMappingsFactory(
     measurementService,
     displaySetService,
@@ -111,6 +112,14 @@ const initMeasurementService = (
     PlanarFreehandROI.matchingCriteria,
     PlanarFreehandROI.toAnnotation,
     PlanarFreehandROI.toMeasurement
+  );
+
+  measurementService.addMapping(
+    csTools3DVer1MeasurementSource,
+    'SplineROI',
+    SplineROI.matchingCriteria,
+    SplineROI.toAnnotation,
+    SplineROI.toMeasurement
   );
 
   // On the UI side, the Calibration Line tool will work almost the same as the
