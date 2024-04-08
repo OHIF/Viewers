@@ -12,7 +12,7 @@ import {
   utilities as cstUtils,
   ReferenceLinesTool,
 } from '@cornerstonejs/tools';
-import { HangingProtocolService, Types as OhifTypes } from '@ohif/core';
+import { Types as OhifTypes } from '@ohif/core';
 import { vec3, mat4 } from 'gl-matrix';
 
 import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownloadForm';
