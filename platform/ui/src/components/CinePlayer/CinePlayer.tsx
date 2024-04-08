@@ -20,7 +20,6 @@ export type CinePlayerProps = {
   onClose: () => void;
   updateDynamicInfo?: () => void;
   dynamicInfo?: {
-    volumeId: string;
     timePointIndex: number;
     numTimePoints: number;
     label?: string;
@@ -43,7 +42,7 @@ const CinePlayer: React.FC<CinePlayerProps> = ({
   onClose,
   updateDynamicInfo,
 }) => {
-  const isDynamic = !!dynamicInfo?.volumeId;
+  const isDynamic = !!dynamicInfo?.numTimePoints;
   const [frameRate, setFrameRate] = useState(defaultFrameRate);
   const debouncedSetFrameRate = useCallback(debounce(onFrameRateChange, 100), [onFrameRateChange]);
 
@@ -194,9 +193,9 @@ CinePlayer.propTypes = {
   onClose: PropTypes.func,
   isDynamic: PropTypes.bool,
   dynamicInfo: PropTypes.shape({
-    volumeId: PropTypes.string,
     timePointIndex: PropTypes.number,
     numTimePoints: PropTypes.number,
+    label: PropTypes.string,
   }),
 };
 

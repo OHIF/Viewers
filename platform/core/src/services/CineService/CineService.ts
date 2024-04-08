@@ -58,8 +58,8 @@ class CineService extends PubSubService {
     this.setIsCineEnabled(false);
   }
 
-  public getSyncedViewports() {
-    return this.serviceImplementation._getSyncedViewports();
+  public getSyncedViewports(viewportId) {
+    return this.serviceImplementation._getSyncedViewports(viewportId);
   }
 
   public setServiceImplementation({
