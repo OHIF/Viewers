@@ -7,7 +7,7 @@ import { useAppConfig } from '@state';
 const { formatDate, formatPN } = utils;
 
 const formatWithEllipsis = (str, maxLength) => {
-  if (str.length > maxLength) {
+  if (str && str.length > maxLength) {
     return str.substring(0, maxLength) + '...';
   }
   return str;
