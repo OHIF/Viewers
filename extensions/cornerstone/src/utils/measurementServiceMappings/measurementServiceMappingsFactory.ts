@@ -42,6 +42,7 @@ const measurementServiceMappingsFactory = (
       CobbAngle: ANGLE,
       Angle: ANGLE,
       SplineROI: POLYLINE,
+      LivewireContour: POLYLINE,
     };
 
     return TOOL_TYPE_TO_VALUE_TYPE[toolType];
