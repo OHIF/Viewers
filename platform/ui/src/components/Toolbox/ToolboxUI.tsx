@@ -55,7 +55,7 @@ function ToolboxUI(props) {
                       content={componentProps.label}
                       secondaryContent={componentProps.disabledText}
                     >
-                      <div className="border-secondary-light rounded border bg-black">
+                      <div className="bg-black">
                         <Component
                           {...componentProps}
                           {...props}
@@ -67,7 +67,7 @@ function ToolboxUI(props) {
                       </div>
                     </Tooltip>
                   ) : (
-                    <div className="border-secondary-light rounded border bg-black">
+                    <div className="bg-black">
                       <Component
                         {...componentProps}
                         {...props}

@@ -10,7 +10,7 @@ const PanelSection = ({ title, children, actionIcons = [], childrenClassName }) 
   };
 
   return (
-    <div>
+    <>
       <div
         className="bg-secondary-dark mt-[2px] flex h-7 cursor-pointer select-none items-center justify-between rounded-[4px] pl-2.5 text-[13px]"
         onClick={handleHeaderClick}
@@ -41,7 +41,7 @@ const PanelSection = ({ title, children, actionIcons = [], childrenClassName }) 
           <div className={`bg-primary-dark rounded-b-[4px] ${childrenClassName}`}>{children}</div>
         </>
       )}
-    </div>
+    </>
   );
 };
 
