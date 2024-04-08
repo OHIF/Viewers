@@ -67,7 +67,6 @@ function _askTrackMeasurements(uiViewportDialogService, viewportId) {
         resolve(RESPONSE.CANCEL);
       },
       onKeyPress: event => {
-        console.log('event', event);
         if (event.key === 'Enter') {
           const action = actions.find(action => action.id === 'prompt-begin-tracking-yes');
           onSubmit(action.value);
