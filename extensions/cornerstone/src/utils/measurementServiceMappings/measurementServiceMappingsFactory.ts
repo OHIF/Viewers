@@ -9,6 +9,7 @@ import Angle from './Angle';
 import PlanarFreehandROI from './PlanarFreehandROI';
 import RectangleROI from './RectangleROI';
 import SplineROI from './SplineROI';
+import LivewireContour from './LivewireContour';
 
 const measurementServiceMappingsFactory = (
   measurementService: MeasurementService,
@@ -154,6 +155,22 @@ const measurementServiceMappingsFactory = (
       toAnnotation: SplineROI.toAnnotation,
       toMeasurement: csToolsAnnotation =>
         SplineROI.toMeasurement(
+          csToolsAnnotation,
+          displaySetService,
+          cornerstoneViewportService,
+          _getValueTypeFromToolType
+        ),
+      matchingCriteria: [
+        {
+          valueType: MeasurementService.VALUE_TYPES.POLYLINE,
+        },
+      ],
+    },
+
+    LivewireContour: {
+      toAnnotation: LivewireContour.toAnnotation,
+      toMeasurement: csToolsAnnotation =>
+        LivewireContour.toMeasurement(
           csToolsAnnotation,
           displaySetService,
           cornerstoneViewportService,

@@ -10,4 +10,5 @@ export default [
   'RectangleROI',
   'PlanarFreehandROI',
   'SplineROI',
+  'LivewireContour',
 ];

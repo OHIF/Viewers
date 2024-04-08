@@ -31,6 +31,7 @@ const initMeasurementService = (
     RectangleROI,
     PlanarFreehandROI,
     SplineROI,
+    LivewireContour,
   } = measurementServiceMappingsFactory(
     measurementService,
     displaySetService,
@@ -130,6 +131,14 @@ const initMeasurementService = (
     Length.matchingCriteria,
     Length.toAnnotation,
     Length.toMeasurement
+  );
+
+  measurementService.addMapping(
+    csTools3DVer1MeasurementSource,
+    'LivewireContour',
+    LivewireContour.matchingCriteria,
+    LivewireContour.toAnnotation,
+    LivewireContour.toMeasurement
   );
 
   return csTools3DVer1MeasurementSource;
