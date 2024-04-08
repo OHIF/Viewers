@@ -38,6 +38,7 @@ function getWorkflowSettings({ servicesManager }) {
           protocolId: 'default4D',
           stageId: 'dataPreparation',
         },
+        info: 'In the Data Preparation step, you can visualize the dynamic PT volume data in three orthogonal views: axial, sagittal, and coronal. Use the left panel controls to adjust the visualization settings, such as playback speed, or navigate between different frames. This step allows you to assess the quality of the PT data and prepare for further analysis or registration with other modalities.',
       },
       {
         id: 'registration',
@@ -48,6 +49,8 @@ function getWorkflowSettings({ servicesManager }) {
           protocolId: 'default4D',
           stageId: 'registration',
         },
+        // info: 'The Registration step provides a comprehensive view of the CT, PT, and fused CT-PT volume data in multiple orientations. The fusion viewports display the CT and PT volumes overlaid, allowing you to visually assess the alignment and registration between the two modalities. The individual CT and PT viewports are also available for side-by-side comparison. This step is crucial for ensuring proper registration before proceeding with further analysis or quantification.',
+        info: 'In the Data Preparation step, you can visualize the dynamic PT volume data in three orthogonal views: axial, sagittal, and coronal. Use the left panel controls to adjust the visualization settings, such as playback speed, or navigate between different frames. This step allows you to assess the quality of the PT data and prepare for further analysis or registration with other modalities.',
       },
       {
         id: 'roiQuantification',
@@ -66,13 +69,14 @@ function getWorkflowSettings({ servicesManager }) {
           defaultButtons,
           {
             buttonSection: 'dynamic-toolbox',
-            buttons: ['BrushTools', 'RectangleROIStartEndThreshold'],
+            buttons: ['RectangleROIStartEndThreshold'],
           },
         ],
         hangingProtocol: {
           protocolId: 'default4D',
           stageId: 'roiQuantification',
         },
+        info: 'The ROI quantification step allows you to define regions of interest (ROIs) with labelmap segmentations, on the fused CT-PT volume data using the labelmap tools. The left panel provides controls for adjusting the dynamic volume visualization, while the right panel offers tools for segmentation, editing, and exporting the ROI data. This step enables you to quantify the uptake or other measures within the defined ROIs for further analysis.',
       },
       {
         id: 'kineticAnalysis',
@@ -89,6 +93,7 @@ function getWorkflowSettings({ servicesManager }) {
             options: { servicesManager },
           },
         ],
+        info: 'The Kinetic Analysis step provides a comprehensive view for visualizing and analyzing the dynamic data derived from the ROI segmentations. The fusion viewports display the combined CT-PT volume data, while a dedicated viewport shows a series chart representing the data over time. This step allows you to explore the temporal dynamics of the uptake or other kinetic measures within the defined regions of interest, enabling further quantitative analysis and modeling.',
       },
     ],
   };
