@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { Icon } from '@ohif/ui';
-import ExportReports from './ExportReports';
-
+import { Icon, ActionButtons } from '@ohif/ui';
+import { useTranslation } from 'react-i18next';
 export default function PanelRoiThresholdSegmentation({ servicesManager, commandsManager }) {
   const { segmentationService } = servicesManager.services;
+  const { t } = useTranslation('PanelSUVExport');
 
   const [segmentations, setSegmentations] = useState(() => segmentationService.getSegmentations());
 
@@ -36,9 +36,30 @@ export default function PanelRoiThresholdSegmentation({ servicesManager, command
   const tmtvValue = segmentations?.[0]?.cachedStats?.tmtv?.value || null;
   const config = segmentations?.[0]?.cachedStats?.tmtv?.config || {};
 
+  const actions = [
+    {
+      label: 'Export CSV',
+      onClick: () => {
+        commandsManager.runCommand('exportTMTVReportCSV', {
+          segmentations,
+          tmtv: tmtvValue,
+          config,
+        });
+      },
+      disabled: tmtvValue === null,
+    },
+    {
+      label: 'Create RT Report',
+      onClick: () => {
+        commandsManager.runCommand('createTMTVRTReport');
+      },
+      disabled: tmtvValue === null,
+    },
+  ];
+
   return (
     <>
-      <div className="flex flex-col">
+      <div className="mt-1 flex flex-col">
         <div className="invisible-scrollbar overflow-y-auto overflow-x-hidden">
           {tmtvValue !== null ? (
             <div className="bg-secondary-dark mt-1 flex items-baseline justify-between px-2 py-1">
@@ -48,12 +69,12 @@ export default function PanelRoiThresholdSegmentation({ servicesManager, command
               <div className="text-white">{`${tmtvValue} mL`}</div>
             </div>
           ) : null}
-          <ExportReports
-            segmentations={segmentations}
-            tmtvValue={tmtvValue}
-            config={config}
-            commandsManager={commandsManager}
-          />
+          <div className="mt-1 flex justify-center">
+            <ActionButtons
+              actions={actions}
+              t={t}
+            />
+          </div>
         </div>
       </div>
       <div
