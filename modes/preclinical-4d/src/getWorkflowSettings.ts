@@ -49,8 +49,7 @@ function getWorkflowSettings({ servicesManager }) {
           protocolId: 'default4D',
           stageId: 'registration',
         },
-        // info: 'The Registration step provides a comprehensive view of the CT, PT, and fused CT-PT volume data in multiple orientations. The fusion viewports display the CT and PT volumes overlaid, allowing you to visually assess the alignment and registration between the two modalities. The individual CT and PT viewports are also available for side-by-side comparison. This step is crucial for ensuring proper registration before proceeding with further analysis or quantification.',
-        info: 'In the Data Preparation step, you can visualize the dynamic PT volume data in three orthogonal views: axial, sagittal, and coronal. Use the left panel controls to adjust the visualization settings, such as playback speed, or navigate between different frames. This step allows you to assess the quality of the PT data and prepare for further analysis or registration with other modalities.',
+        info: 'The Registration step provides a comprehensive view of the CT, PT, and fused CT-PT volume data in multiple orientations. The fusion viewports display the CT and PT volumes overlaid, allowing you to visually assess the alignment and registration between the two modalities. The individual CT and PT viewports are also available for side-by-side comparison. This step is crucial for ensuring proper registration before proceeding with further analysis or quantification.',
       },
       {
         id: 'roiQuantification',
@@ -69,7 +68,7 @@ function getWorkflowSettings({ servicesManager }) {
           defaultButtons,
           {
             buttonSection: 'dynamic-toolbox',
-            buttons: ['RectangleROIStartEndThreshold'],
+            buttons: ['BrushTools', 'RectangleROIStartEndThreshold'],
           },
         ],
         hangingProtocol: {
