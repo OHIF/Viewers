@@ -41,11 +41,7 @@ function createTools(utilityModule) {
         parentTool: 'Brush',
         configuration: {
           activeStrategy: 'THRESHOLD_INSIDE_CIRCLE',
-          strategySpecificConfiguration: {
-            THRESHOLD: {
-              threshold: [-500, 500],
-            },
-          },
+          dynamicRadius: 3,
         },
       },
       {
@@ -53,11 +49,7 @@ function createTools(utilityModule) {
         parentTool: 'Brush',
         configuration: {
           activeStrategy: 'THRESHOLD_INSIDE_SPHERE',
-          strategySpecificConfiguration: {
-            THRESHOLD: {
-              threshold: [-500, 500],
-            },
-          },
+          dynamicRadius: 3,
         },
       },
       { toolName: toolNames.CircleScissors },
@@ -66,6 +58,8 @@ function createTools(utilityModule) {
       { toolName: toolNames.StackScroll },
       { toolName: toolNames.Magnify },
       { toolName: toolNames.SegmentationDisplay },
+      { toolName: toolNames.AdvancedMagnify },
+      { toolName: toolNames.UltrasoundDirectional },
     ],
     disabled: [{ toolName: toolNames.ReferenceLines }],
   };
@@ -89,6 +83,7 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
       toolName: utilityModule.exports.toolNames.Crosshairs,
       configuration: {
         viewportIndicators: false,
+        disableOnPassive: true,
         autoPan: {
           enabled: false,
           panSize: 10,
@@ -100,9 +95,37 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
   toolGroupService.createToolGroupAndAddTools('mpr', tools);
 }
 
+function initVolume3DToolGroup(extensionManager, toolGroupService) {
+  const utilityModule = extensionManager.getModuleEntry(
+    '@ohif/extension-cornerstone.utilityModule.tools'
+  );
+
+  const { toolNames, Enums } = utilityModule.exports;
+
+  const tools = {
+    active: [
+      {
+        toolName: toolNames.TrackballRotateTool,
+        bindings: [{ mouseButton: Enums.MouseBindings.Primary }],
+      },
+      {
+        toolName: toolNames.Zoom,
+        bindings: [{ mouseButton: Enums.MouseBindings.Secondary }],
+      },
+      {
+        toolName: toolNames.Pan,
+        bindings: [{ mouseButton: Enums.MouseBindings.Auxiliary }],
+      },
+    ],
+  };
+
+  toolGroupService.createToolGroupAndAddTools('volume3d', tools);
+}
+
 function initToolGroups(extensionManager, toolGroupService, commandsManager) {
   initDefaultToolGroup(extensionManager, toolGroupService, commandsManager, 'default');
   initMPRToolGroup(extensionManager, toolGroupService, commandsManager);
+  initVolume3DToolGroup(extensionManager, toolGroupService);
 }
 
 export default initToolGroups;

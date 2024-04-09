@@ -1,7 +1,11 @@
 import { hotkeys } from '@ohif/core';
 import { id } from './id';
 import toolbarButtons from './toolbarButtons';
+import segmentationButtons from './segmentationButtons';
 import initToolGroups from './initToolGroups';
+
+const DEFAULT_TOOL_GROUP_ID = 'default';
+const VOLUME3D_TOOL_GROUP_ID = 'volume3d';
 
 const ohif = {
   layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
@@ -57,47 +61,20 @@ function modeFactory({ modeConfiguration }) {
       // Init Default and SR ToolGroups
       initToolGroups(extensionManager, toolGroupService, commandsManager);
 
-      let unsubscribe;
-
-      const activateTool = () => {
-        toolbarService.recordInteraction({
-          groupId: 'WindowLevel',
-          interactionType: 'tool',
-          commands: [
-            {
-              commandName: 'setToolActive',
-              commandOptions: {
-                toolName: 'WindowLevel',
-              },
-              context: 'CORNERSTONE',
-            },
-          ],
-        });
-
-        // We don't need to reset the active tool whenever a viewport is getting
-        // added to the toolGroup.
-        unsubscribe();
-      };
-
-      // Since we only have one viewport for the basic cs3d mode and it has
-      // only one hanging protocol, we can just use the first viewport
-      ({ unsubscribe } = toolGroupService.subscribe(
-        toolGroupService.EVENTS.VIEWPORT_ADDED,
-        activateTool
-      ));
-
-      toolbarService.init(extensionManager);
       toolbarService.addButtons(toolbarButtons);
+      toolbarService.addButtons(segmentationButtons);
+
       toolbarService.createButtonSection('primary', [
-        'Zoom',
         'WindowLevel',
         'Pan',
+        'Zoom',
+        'TrackballRotate',
         'Capture',
         'Layout',
-        'MPR',
         'Crosshairs',
         'MoreTools',
       ]);
+      toolbarService.createButtonSection('segmentationToolbox', ['BrushTools', 'Shapes']);
     },
     onModeExit: ({ servicesManager }) => {
       const {
@@ -132,9 +109,13 @@ function modeFactory({ modeConfiguration }) {
       // that is not supported by the mode
       const modalitiesArray = modalities.split('\\');
       return {
-        valid: modalitiesArray.length === 1 ? !['SM', 'US', 'MG', 'OT', 'DOC', 'CR'].includes(modalitiesArray[0]) : true,
-        description: 'The mode does not support studies that ONLY include the following modalities: SM, US, MG, OT, DOC, CR',
-      }
+        valid:
+          modalitiesArray.length === 1
+            ? !['SM', 'US', 'MG', 'OT', 'DOC', 'CR'].includes(modalitiesArray[0])
+            : true,
+        description:
+          'The mode does not support studies that ONLY include the following modalities: SM, US, MG, OT, DOC, CR',
+      };
     },
     /**
      * Mode Routes are used to define the mode's behavior. A list of Mode Route

@@ -145,6 +145,7 @@ export type SyncGroup = {
   id: string;
   source?: boolean;
   target?: boolean;
+  options?: object;
 };
 
 /** Declares a custom option, that is a computed type value */
@@ -317,6 +318,16 @@ export type Protocol = {
      */
     minSeriesLoaded: number;
   };
+
+  /*
+   * The icon to use for this protocol.  This is used to display the protocol
+   * in the advanced layout selector.
+   */
+
+  icon?: string;
+
+  /** Indicates if the protocol is a preset or not. Useful for setting presets for the layout selector */
+  isPreset?: true;
 };
 
 /** Used to dynamically generate protocols.

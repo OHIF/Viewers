@@ -182,13 +182,14 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     const { lutPresentation, positionPresentation } = presentations;
     if (lutPresentation) {
       const { presentation } = lutPresentation;
-
-      if (viewport instanceof BaseVolumeViewport) {
-        Object.entries(presentation).forEach(
-          ([volumeId, properties]: [string, Types.ViewportProperties]) => {
+      if (viewport instanceof VolumeViewport) {
+        if (presentation instanceof Map) {
+          presentation.forEach((properties, volumeId) => {
             viewport.setProperties(properties, volumeId);
-  }
-        );
+          });
+        } else {
+          viewport.setProperties(presentation);
+        }
       } else {
         viewport.setProperties(presentation);
       }
@@ -234,7 +235,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     }
 
     const { viewPlaneNormal, viewUp } = csViewport.getCamera();
-    const initialImageIndex = csViewport.getCurrentImageIdIndex();
+    const initialImageIndex = csViewport.getCurrentImageIdIndex() || 0;
     const zoom = csViewport.getZoom();
     const pan = csViewport.getPan();
 
@@ -347,10 +348,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
 
     const { stateSyncService, syncGroupService } = this.servicesManager.services;
 
-    const synchronizers = syncGroupService.getSynchronizersForViewport(
-      viewportId,
-      this.renderingEngine.id
-    );
+    const synchronizers = syncGroupService.getSynchronizersForViewport(viewportId);
 
     const { positionPresentationStore, synchronizersStore, lutPresentationStore } =
       stateSyncService.getState();
@@ -711,6 +709,9 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
 
     this.viewportsDisplaySets.set(viewport.id, displaySetInstanceUIDs);
 
+    const volumesNotLoaded = volumeToLoad.filter(volume => !volume.loadStatus.loaded);
+
+    if (volumesNotLoaded.length) {
     if (hangingProtocolService.getShouldPerformCustomImageLoad()) {
       // delegate the volume loading to the hanging protocol service if it has a custom image load strategy
       return hangingProtocolService.runImageLoadStrategy({
@@ -719,11 +720,12 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       });
     }
 
-    volumeToLoad.forEach(volume => {
-      if (!volume.loadStatus.loaded && !volume.loadStatus.loading) {
+      volumesNotLoaded.forEach(volume => {
+        if (!volume.loadStatus.loading) {
         volume.load();
       }
     });
+    }
 
     // This returns the async continuation only
     return this.setVolumesForViewport(viewport, volumeInputArray, presentations);

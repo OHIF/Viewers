@@ -19,7 +19,7 @@ function PanelStudyBrowserTracking({
   requestDisplaySetCreationForStudy,
   dataSource,
 }) {
-  const { displaySetService, uiDialogService, hangingProtocolService, uiNotificationService } =
+  const { displaySetService, uiDialogService, hangingProtocolService, uiNotificationService, measurementService } =
     servicesManager.services;
   const navigate = useNavigate();
 
@@ -340,6 +340,12 @@ function PanelStudyBrowserTracking({
         sendTrackedMeasurementsEvent('UNTRACK_SERIES', {
           SeriesInstanceUID: displaySet.SeriesInstanceUID,
         });
+        const measurements = measurementService.getMeasurements();
+        measurements.forEach(m => {
+          if (m.referenceSeriesUID === displaySet.SeriesInstanceUID) {
+            measurementService.remove(m.uid);
+          }
+        });
       }}
       onClickThumbnail={() => {}}
       onDoubleClickThumbnail={onDoubleClickThumbnailHandler}
@@ -401,15 +407,6 @@ function _mapDisplaySets(
       const imageSrc = thumbnailImageSrcMap[ds.displaySetInstanceUID];
       const componentType = _getComponentType(ds);
       const numPanes = viewportGridService.getNumViewportPanes();
-      const viewportIdentificator = [];
-
-      if (numPanes !== 1) {
-        viewports.forEach(viewportData => {
-          if (viewportData?.displaySetInstanceUIDs?.includes(ds.displaySetInstanceUID)) {
-            viewportIdentificator.push(viewportData.viewportLabel);
-          }
-        });
-      }
 
       const array =
         componentType === 'thumbnailTracked' ? thumbnailDisplaySets : thumbnailNoImageDisplaySets;
@@ -435,7 +432,6 @@ function _mapDisplaySets(
         },
         isTracked: trackedSeriesInstanceUIDs.includes(ds.SeriesInstanceUID),
         isHydratedForDerivedDisplaySet: ds.isHydrated,
-        viewportIdentificator,
       };
 
       if (componentType === 'thumbnailNoImage') {
