@@ -90,10 +90,9 @@ function getColumnValueReport(annotation) {
 
   /** Add cachedStats */
   const { metadata, data } = annotation;
-  const { mean, stdDev, max, area, unit, areaUnit, perimeter } =
-    data.cachedStats[`imageId:${metadata.referencedImageId}`];
-  columns.push(`Maximum`, `Mean`, `Std Dev`, 'Pixel Unit', `Area`, 'Unit', 'Perimeter');
-  values.push(max, mean, stdDev, unit, area, areaUnit, perimeter);
+  const { mean, max, area, unit } = data.cachedStats[`imageId:${metadata.referencedImageId}`];
+  columns.push(`Maximum`, `Mean`, `Area`, 'Unit');
+  values.push(max, mean, area, unit);
 
   /** Add FOR */
   if (metadata.FrameOfReferenceUID) {
@@ -129,7 +128,7 @@ function getDisplayText(annotation, displaySet) {
     return [];
   }
 
-  const { mean, stdDev, max, area, modalityUnit, areaUnit, perimeter } =
+  const { mean, max, area, modalityUnit, areaUnit } =
     data.cachedStats[`imageId:${metadata.referencedImageId}`];
 
   const { SOPInstanceUID, frameNumber } = getSOPInstanceAttributes(metadata.referencedImageId);
@@ -156,7 +155,7 @@ function getDisplayText(annotation, displaySet) {
      * Area sometimes becomes undefined if `preventHandleOutsideImage` is off
      */
     const roundedArea = utils.roundNumber(area || 0, 2);
-    displayText.push(`Area: ${roundedArea} ${getDisplayUnit(areaUnit)}`);
+    displayText.push(`${roundedArea} ${getDisplayUnit(areaUnit)}`);
   }
 
   if (mean) {
@@ -174,24 +173,6 @@ function getDisplayText(annotation, displaySet) {
       displayText.push(`Max: ${maxValues.join(', ')} ${modalityUnit}`);
     } else {
       displayText.push(`Max: ${utils.roundNumber(max, 2)} ${modalityUnit}`);
-    }
-  }
-
-  if (stdDev) {
-    if (Array.isArray(stdDev)) {
-      const stdDevValues = stdDev.map(value => utils.roundNumber(value));
-      displayText.push(`Std Dev: ${stdDevValues.join(', ')} ${modalityUnit}`);
-    } else {
-      displayText.push(`Std Dev: ${utils.roundNumber(stdDev)} ${modalityUnit}`);
-    }
-  }
-
-  if (perimeter) {
-    if (Array.isArray(perimeter)) {
-      const perimeterValues = perimeter.map(value => utils.roundNumber(value));
-      displayText.push(`Perimeter: ${perimeterValues.join(', ')} ${modalityUnit}`);
-    } else {
-      displayText.push(`Perimeter: ${utils.roundNumber(perimeter)} ${modalityUnit}`);
     }
   }
 

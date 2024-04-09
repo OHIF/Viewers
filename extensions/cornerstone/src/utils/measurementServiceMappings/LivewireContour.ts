@@ -151,7 +151,7 @@ function getDisplayText(annotation, displaySet) {
      * Area sometimes becomes undefined if `preventHandleOutsideImage` is off
      */
     const roundedArea = utils.roundNumber(area || 0, 2);
-    displayText.push(`Area: ${roundedArea} ${getDisplayUnit(areaUnit)}`);
+    displayText.push(`${roundedArea} ${getDisplayUnit(areaUnit)}`);
   }
 
   return displayText;

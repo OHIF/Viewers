@@ -90,9 +90,9 @@ function getColumnValueReport(annotation) {
 
   /** Add cachedStats */
   const { metadata, data } = annotation;
-  const { Modality, area, areaUnit } = data.cachedStats[`imageId:${metadata.referencedImageId}`];
-  columns.push(`Modality`, `Area`, `Unit`);
-  values.push(Modality, area, areaUnit);
+  const { area, areaUnit } = data.cachedStats[`imageId:${metadata.referencedImageId}`];
+  columns.push(`Area`, `Unit`);
+  values.push(area, areaUnit);
 
   /** Add FOR */
   if (metadata.FrameOfReferenceUID) {
@@ -128,7 +128,7 @@ function getDisplayText(annotation, displaySet) {
     return [];
   }
 
-  const { Modality, area, areaUnit } = data.cachedStats[`imageId:${metadata.referencedImageId}`];
+  const { area, areaUnit } = data.cachedStats[`imageId:${metadata.referencedImageId}`];
 
   const { SOPInstanceUID, frameNumber } = getSOPInstanceAttributes(metadata.referencedImageId);
 
@@ -154,11 +154,7 @@ function getDisplayText(annotation, displaySet) {
      * Area sometimes becomes undefined if `preventHandleOutsideImage` is off
      */
     const roundedArea = utils.roundNumber(area || 0, 2);
-    displayText.push(`Area: ${roundedArea} ${getDisplayUnit(areaUnit)}`);
-  }
-
-  if (Modality) {
-    displayText.push(`Modality: ${Modality}`);
+    displayText.push(`${roundedArea} ${getDisplayUnit(areaUnit)}`);
   }
 
   return displayText;
