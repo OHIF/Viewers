@@ -399,6 +399,31 @@ class MetadataProvider {
           decayCorrection: instance.DecayCorrection,
         };
         break;
+      case WADO_IMAGE_LOADER_TAGS.CALIBRATION_MODULE:
+        // map the DICOM tags to the cornerstone tags since cornerstone tags
+        // are camelCase and instance tags are all caps
+        metadata = {
+          sequenceOfUltrasoundRegions: instance.SequenceOfUltrasoundRegions?.map(region => {
+            return {
+              regionSpatialFormat: region.RegionSpatialFormat,
+              regionDataType: region.RegionDataType,
+              regionFlags: region.RegionFlags,
+              regionLocationMinX0: region.RegionLocationMinX0,
+              regionLocationMinY0: region.RegionLocationMinY0,
+              regionLocationMaxX1: region.RegionLocationMaxX1,
+              regionLocationMaxY1: region.RegionLocationMaxY1,
+              referencePixelX0: region.ReferencePixelX0,
+              referencePixelY0: region.ReferencePixelY0,
+              referencePixelPhysicalValueX: region.ReferencePixelPhysicalValueX,
+              referencePixelPhysicalValueY: region.ReferencePixelPhysicalValueY,
+              physicalUnitsXDirection: region.PhysicalUnitsXDirection,
+              physicalUnitsYDirection: region.PhysicalUnitsYDirection,
+              physicalDeltaX: region.PhysicalDeltaX,
+              physicalDeltaY: region.PhysicalDeltaY,
+            };
+          }),
+        };
+        break;
 
       /**
        * Below are the tags and not the modules since they are not really
@@ -566,6 +591,7 @@ const WADO_IMAGE_LOADER_TAGS = {
   GENERAL_IMAGE_MODULE: 'generalImageModule',
   GENERAL_STUDY_MODULE: 'generalStudyModule',
   CINE_MODULE: 'cineModule',
+  CALIBRATION_MODULE: 'calibrationModule',
 };
 
 const INSTANCE = 'instance';

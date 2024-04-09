@@ -126,16 +126,12 @@ function commandsModule({
         ? nearbyToolData
         : null;
     },
-
-    // Measurement tool commands:
-
     /** Delete the given measurement */
     deleteMeasurement: ({ uid }) => {
       if (uid) {
         measurementServiceSource.remove(uid);
       }
     },
-
     /**
      * Show the measurement labelling input dialog and update the label
      * on the measurement with a response if not cancelled.
@@ -301,6 +297,43 @@ function commandsModule({
 
       const renderingEngine = cornerstoneViewportService.getRenderingEngine();
       renderingEngine.render();
+    },
+    toggleEnabledDisabledToolbar({ value, itemId, toolGroupIds = [] }) {
+      const toolName = itemId || value;
+      toolGroupIds = toolGroupIds.length ? toolGroupIds : toolGroupService.getToolGroupIds();
+      toolGroupIds.forEach(toolGroupId => {
+        const toolGroup = toolGroupService.getToolGroup(toolGroupId);
+        if (!toolGroup || !toolGroup.hasTool(toolName)) {
+          return;
+        }
+
+        const toolIsEnabled = toolGroup.getToolOptions(toolName).mode === Enums.ToolModes.Enabled;
+
+        toolIsEnabled ? toolGroup.setToolDisabled(toolName) : toolGroup.setToolEnabled(toolName);
+      });
+    },
+    toggleActiveDisabledToolbar({ value, itemId, toolGroupIds = [] }) {
+      const toolName = itemId || value;
+      toolGroupIds = toolGroupIds.length ? toolGroupIds : toolGroupService.getToolGroupIds();
+      toolGroupIds.forEach(toolGroupId => {
+        const toolGroup = toolGroupService.getToolGroup(toolGroupId);
+        if (!toolGroup || !toolGroup.hasTool(toolName)) {
+          return;
+        }
+
+        const toolIsActive = toolGroup.getToolOptions(toolName).mode === Enums.ToolModes.Active;
+
+        toolIsActive
+          ? toolGroup.setToolDisabled(toolName)
+          : actions.setToolActive({ toolName, toolGroupId });
+
+        // we should set the previously active tool to active after we set the
+        // current tool disabled
+        if (toolIsActive) {
+          const prevToolName = toolGroup.getPrevActivePrimaryToolName();
+          actions.setToolActive({ toolName: prevToolName, toolGroupId });
+        }
+      });
     },
     setToolActiveToolbar: ({ value, itemId, toolGroupIds = [] }) => {
       // Sometimes it is passed as value (tools with options), sometimes as itemId (toolbar buttons)
@@ -941,6 +974,12 @@ function commandsModule({
     },
     updateVolumeData: {
       commandFn: actions.updateVolumeData,
+    },
+    toggleEnabledDisabledToolbar: {
+      commandFn: actions.toggleEnabledDisabledToolbar,
+    },
+    toggleActiveDisabledToolbar: {
+      commandFn: actions.toggleActiveDisabledToolbar,
     },
   };
 

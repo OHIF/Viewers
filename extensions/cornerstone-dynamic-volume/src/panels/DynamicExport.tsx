@@ -63,7 +63,7 @@ function DynamicExport({ commandsManager, servicesManager, extensionManager }) {
 
   return (
     <div>
-      <div className="mt-2 flex justify-center px-2">
+      <div className="mt-3 flex justify-center px-2">
         <ActionButtons
           actions={actions}
           t={t}
