@@ -1,8 +1,6 @@
 import { Enums } from '@cornerstonejs/tools';
 import { toolNames } from './initCornerstoneTools';
 import DicomUpload from './components/DicomUpload/DicomUpload';
-import ViewportWindowLevel from './components/ViewportWindowLevel';
-import ActiveViewportWindowLevel from './components/ActiveViewportWindowLevel';
 import defaultWindowLevelPresets from './components/WindowLevelActionMenu/defaultWindowLevelPresets';
 import { colormaps } from './utils/colormaps';
 import { CONSTANTS } from '@cornerstonejs/core';
@@ -67,20 +65,6 @@ function getCustomizationModule() {
           },
         },
       ],
-    },
-    {
-      name: 'cornerstoneViewportWindowLevelComponent',
-      value: {
-        id: 'viewportWindowLevelComponent',
-        component: ViewportWindowLevel,
-      },
-    },
-    {
-      name: 'cornerstoneActiveViewportWindowLevelComponent',
-      value: {
-        id: 'activeViewportWindowLevelComponent',
-        component: ActiveViewportWindowLevel,
-      },
     },
   ];
 }

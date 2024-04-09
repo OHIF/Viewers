@@ -29,6 +29,7 @@ const dynamicVolume = {
 
 const cornerstone = {
   viewport: '@ohif/extension-cornerstone.viewportModule.cornerstone',
+  activeViewportWindowLevel: '@ohif/extension-cornerstone.panelModule.activeViewportWindowLevel',
 };
 
 function modeFactory({ modeConfiguration }) {
@@ -136,7 +137,7 @@ function modeFactory({ modeConfiguration }) {
           return {
             id: ohif.layout,
             props: {
-              leftPanels: [dynamicVolume.leftPanel],
+              leftPanels: [[dynamicVolume.leftPanel, cornerstone.activeViewportWindowLevel]],
               rightPanels: [],
               rightPanelClosed: true,
               viewports: [

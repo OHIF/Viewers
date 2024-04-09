@@ -1,4 +1,4 @@
-import React, { ReactElement, useEffect } from 'react';
+import React, { ReactElement } from 'react';
 import PropTypes from 'prop-types';
 import { ServicesManager } from '@ohif/core';
 import { useViewportGrid } from '@ohif/ui';

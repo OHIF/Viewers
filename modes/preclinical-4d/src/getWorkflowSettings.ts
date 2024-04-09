@@ -6,8 +6,9 @@ const dynamicVolume = {
   export: '@ohif/extension-cornerstone-dynamic-volume.panelModule.dynamic-export',
 };
 
-const cs3d = {
+const cornerstone = {
   segmentation: '@ohif/extension-cornerstone-dicom-seg.panelModule.panelSegmentation',
+  activeViewportWindowLevel: '@ohif/extension-cornerstone.panelModule.activeViewportWindowLevel',
 };
 
 const defaultButtons = {
@@ -15,12 +16,14 @@ const defaultButtons = {
   buttons: ['MeasurementTools', 'Zoom', 'WindowLevel', 'Crosshairs', 'Pan'],
 };
 
-const defaultPanels = {
-  left: [dynamicVolume.leftPanel],
-  right: [],
-};
+const defaultLeftPanel = [[dynamicVolume.leftPanel, cornerstone.activeViewportWindowLevel]];
 
-const defaultLayout = { panels: defaultPanels };
+const defaultLayout = {
+  panels: {
+    left: defaultLeftPanel,
+    right: [],
+  },
+};
 
 function getWorkflowSettings({ servicesManager }) {
   return {
@@ -30,7 +33,7 @@ function getWorkflowSettings({ servicesManager }) {
         name: 'Data Preparation',
         layout: {
           panels: {
-            left: [dynamicVolume.leftPanel],
+            left: defaultLeftPanel,
           },
         },
         toolbarButtons: defaultButtons,
@@ -56,8 +59,8 @@ function getWorkflowSettings({ servicesManager }) {
         name: 'ROI Quantification',
         layout: {
           panels: {
-            left: [dynamicVolume.leftPanel],
-            right: [[dynamicVolume.toolBox, cs3d.segmentation, dynamicVolume.export]],
+            left: defaultLeftPanel,
+            right: [[dynamicVolume.toolBox, cornerstone.segmentation, dynamicVolume.export]],
           },
           options: {
             leftPanelClosed: false,

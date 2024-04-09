@@ -1,8 +1,7 @@
 import React from 'react';
-import WindowLevelPanel from './WindowLevelPanel';
 import PanelGenerateImage from './PanelGenerateImage';
 
-function DynamicDataPanel({ servicesManager, commandsManager, extensionManager }) {
+function DynamicDataPanel({ servicesManager, commandsManager }) {
   return (
     <div
       className="flex flex-auto flex-col text-white"
@@ -12,10 +11,6 @@ function DynamicDataPanel({ servicesManager, commandsManager, extensionManager }
         commandsManager={commandsManager}
         servicesManager={servicesManager}
       ></PanelGenerateImage>
-      <WindowLevelPanel
-        extensionManager={extensionManager}
-        servicesManager={servicesManager}
-      ></WindowLevelPanel>
     </div>
   );
 }

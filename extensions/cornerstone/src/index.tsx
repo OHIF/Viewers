@@ -35,6 +35,7 @@ import ImageOverlayViewerTool from './tools/ImageOverlayViewerTool';
 import { showLabelAnnotationPopup } from './utils/callInputDialog';
 import ViewportActionCornersService from './services/ViewportActionCornersService/ViewportActionCornersService';
 import { ViewportActionCornersProvider } from './contextProviders/ViewportActionCornersProvider';
+import ActiveViewportWindowLevel from './components/ActiveViewportWindowLevel';
 
 const { helpers: volumeLoaderHelpers } = csStreamingImageVolumeLoader;
 const { getDynamicVolumeInfo } = volumeLoaderHelpers ?? {};
@@ -94,6 +95,16 @@ const cornerstoneExtension: Types.Extensions.Extension = {
   },
 
   getToolbarModule,
+  getPanelModule({ servicesManager }) {
+    return [
+      {
+        name: 'activeViewportWindowLevel',
+        component: () => {
+          return <ActiveViewportWindowLevel servicesManager={servicesManager} />;
+        },
+      },
+    ];
+  },
   getHangingProtocolModule,
   getViewportModule({ servicesManager, commandsManager }) {
     const ExtendedOHIFCornerstoneViewport = props => {
@@ -131,7 +142,7 @@ const cornerstoneExtension: Types.Extensions.Extension = {
           },
           getEnabledElement,
           dicomLoaderService,
-          showLabelAnnotationPopup
+          showLabelAnnotationPopup,
         },
       },
       {
