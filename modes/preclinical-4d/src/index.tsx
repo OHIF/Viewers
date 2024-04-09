@@ -15,16 +15,15 @@ const extensionDependencies = {
 
 const ohif = {
   layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
-  sopClassHandler: '@ohif/extension-default.sopClassHandlerModule.stack',
+  defaultSopClassHandler: '@ohif/extension-default.sopClassHandlerModule.stack',
+  chartSopClassHandler: '@ohif/extension-default.sopClassHandlerModule.chart',
   hangingProtocol: '@ohif/extension-default.hangingProtocolModule.default',
   leftPanel: '@ohif/extension-default.panelModule.seriesList',
   rightPanel: '@ohif/extension-default.panelModule.measure',
+  chartViewport: '@ohif/extension-default.viewportModule.chartViewport',
 };
 
 const dynamicVolume = {
-  sopClassHandler:
-    '@ohif/extension-cornerstone-dynamic-volume.sopClassHandlerModule.dynamic-volume',
-  viewport: '@ohif/extension-cornerstone-dynamic-volume.viewportModule.chartViewport',
   leftPanel: '@ohif/extension-cornerstone-dynamic-volume.panelModule.dynamic-volume',
 };
 
@@ -143,11 +142,11 @@ function modeFactory({ modeConfiguration }) {
               viewports: [
                 {
                   namespace: cornerstone.viewport,
-                  displaySetsToDisplay: [ohif.sopClassHandler],
+                  displaySetsToDisplay: [ohif.defaultSopClassHandler],
                 },
                 {
-                  namespace: dynamicVolume.viewport,
-                  displaySetsToDisplay: [dynamicVolume.sopClassHandler],
+                  namespace: ohif.chartViewport,
+                  displaySetsToDisplay: [ohif.chartSopClassHandler],
                 },
               ],
             },
@@ -162,7 +161,7 @@ function modeFactory({ modeConfiguration }) {
     // the same sop class under different situations.  In that case, the more
     // general handler needs to come last.  For this case, the dicomvideo must
     // come first to remove video transfer syntax before ohif uses images
-    sopClassHandlers: [dynamicVolume.sopClassHandler, ohif.sopClassHandler],
+    sopClassHandlers: [ohif.chartSopClassHandler, ohif.defaultSopClassHandler],
     hotkeys: [...hotkeys.defaults.hotkeyBindings],
   };
 }

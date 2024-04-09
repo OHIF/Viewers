@@ -1,5 +1,5 @@
 import { ServicesManager, CommandsManager, ExtensionManager } from '@ohif/core';
-import LineChartViewport from './components/LineChartViewport';
+import LineChartViewport from './Components/LineChartViewport/index';
 
 const getViewportModule = ({
   servicesManager,

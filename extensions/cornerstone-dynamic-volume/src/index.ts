@@ -1,7 +1,5 @@
 import { id } from './id';
 import commandsModule from './commandsModule';
-import getSopClassHandlerModule from './getSopClassHandlerModule';
-import getViewportModule from './getViewportModule';
 import getPanelModule from './getPanelModule';
 import getHangingProtocolModule from './getHangingProtocolModule';
 import { cache } from '@cornerstonejs/core';
@@ -39,8 +37,6 @@ const dynamicVolumeExtension = {
    * {name, component} object. Example of a viewport module is the CornerstoneViewport
    * that is provided by the Cornerstone extension in OHIF.
    */
-  getViewportModule,
-  getSopClassHandlerModule,
   getHangingProtocolModule,
   /**
    * CommandsModule should provide a list of commands that will be available in OHIF

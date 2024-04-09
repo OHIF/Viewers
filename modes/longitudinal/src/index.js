@@ -231,7 +231,6 @@ function modeFactory({ modeConfiguration }) {
       dicomvideo.sopClassHandler,
       dicomSeg.sopClassHandler,
       ohif.sopClassHandler,
-      dynamicVolume.sopClassHandler,
       dicompdf.sopClassHandler,
       dicomsr.sopClassHandler,
       dicomRT.sopClassHandler,

@@ -5,6 +5,7 @@ import isDisplaySetReconstructable from '@ohif/core/src/utils/isDisplaySetRecons
 import { id } from './id';
 import getDisplaySetMessages from './getDisplaySetMessages';
 import getDisplaySetsFromUnsupportedSeries from './getDisplaySetsFromUnsupportedSeries';
+import { chartHandler } from './SOPClassHandlers/chartSOPClassHandler';
 
 const DEFAULT_VOLUME_LOADER_SCHEME = 'cornerstoneStreamingImageVolume';
 const DYNAMIC_VOLUME_LOADER_SCHEME = 'cornerstoneStreamingDynamicImageVolume';
@@ -272,6 +273,11 @@ function getSopClassHandlerModule(appContextParam) {
       name: 'not-supported-display-sets-handler',
       sopClassUids: [],
       getDisplaySetsFromSeries: getDisplaySetsFromUnsupportedSeries,
+    },
+    {
+      name: chartHandler.name,
+      sopClassUids: chartHandler.sopClassUids,
+      getDisplaySetsFromSeries: chartHandler.getDisplaySetsFromSeries,
     },
   ];
 }

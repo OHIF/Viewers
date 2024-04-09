@@ -1,8 +1,10 @@
 import { Types, DisplaySetService, utils } from '@ohif/core';
 
-import { SOPClassHandlerName, SOPClassHandlerId } from './id';
+import { id } from '../id';
 
 type InstanceMetadata = Types.InstanceMetadata;
+
+const SOPClassHandlerName = 'chart';
 
 const CHART_MODALITY = 'CHT';
 
@@ -33,7 +35,7 @@ const makeChartDataDisplaySet = (instance, sopClassUids) => {
     SOPInstanceUID,
     SeriesInstanceUID,
     StudyInstanceUID,
-    SOPClassHandlerId,
+    SOPClassHandlerId: `${id}.sopClassHandlerModule.${SOPClassHandlerName}`,
     SOPClassUID,
     isDerivedDisplaySet: true,
     isLoaded: true,
@@ -65,7 +67,8 @@ function getSopClassUids(instances) {
   return sopClassUids;
 }
 
-function _getDisplaySetsFromSeries(appContext, instances) {
+function _getDisplaySetsFromSeries(instances) {
+  debugger;
   // If the series has no instances, stop here
   if (!instances || !instances.length) {
     throw new Error('No instances were provided');
@@ -83,16 +86,12 @@ function _getDisplaySetsFromSeries(appContext, instances) {
   return displaySets;
 }
 
-function getSopClassHandlerModule(appContext) {
-  const getDisplaySetsFromSeries = instances => _getDisplaySetsFromSeries(appContext, instances);
+const chartHandler = {
+  name: SOPClassHandlerName,
+  sopClassUids,
+  getDisplaySetsFromSeries: instances => {
+    return _getDisplaySetsFromSeries(instances);
+  },
+};
 
-  return [
-    {
-      name: SOPClassHandlerName,
-      sopClassUids,
-      getDisplaySetsFromSeries,
-    },
-  ];
-}
-
-export { getSopClassHandlerModule as default };
+export { chartHandler };
