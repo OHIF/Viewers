@@ -22,7 +22,8 @@ const LivewireContour = {
     csToolsEventDetail,
     DisplaySetService,
     CornerstoneViewportService,
-    getValueTypeFromToolType
+    getValueTypeFromToolType,
+    customizationService
   ) => {
     const { annotation } = csToolsEventDetail;
     const { metadata, data, annotationUID } = annotation;
@@ -64,10 +65,10 @@ const LivewireContour = {
       toolName: metadata.toolName,
       displaySetInstanceUID: displaySet.displaySetInstanceUID,
       label: data.label,
-      displayText: getDisplayText(annotation, displaySet),
+      displayText: getDisplayText(annotation, displaySet, customizationService),
       data: data.cachedStats,
       type: getValueTypeFromToolType(toolName),
-      getReport: () => getColumnValueReport(annotation),
+      getReport: () => getColumnValueReport(annotation, customizationService),
     };
   },
 };
@@ -80,7 +81,7 @@ const LivewireContour = {
  * @param {object} annotation
  * @returns {object} Report's content from this tool
  */
-function getColumnValueReport(annotation) {
+function getColumnValueReport(annotation, customizationService) {
   const columns = [];
   const values = [];
 
@@ -118,7 +119,7 @@ function getColumnValueReport(annotation) {
  * @param {Object} displaySet - The display set object.
  * @returns {string[]} - An array of display text.
  */
-function getDisplayText(annotation, displaySet) {
+function getDisplayText(annotation, displaySet, customizationService) {
   const { metadata, data } = annotation;
 
   if (!data.cachedStats || !data.cachedStats[`imageId:${metadata.referencedImageId}`]) {

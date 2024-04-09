@@ -14,7 +14,8 @@ import LivewireContour from './LivewireContour';
 const measurementServiceMappingsFactory = (
   measurementService: MeasurementService,
   displaySetService,
-  cornerstoneViewportService
+  cornerstoneViewportService,
+  customizationService
 ) => {
   /**
    * Maps measurement service format object to cornerstone annotation object.
@@ -56,7 +57,8 @@ const measurementServiceMappingsFactory = (
           csToolsAnnotation,
           displaySetService,
           cornerstoneViewportService,
-          _getValueTypeFromToolType
+          _getValueTypeFromToolType,
+          customizationService
         ),
       matchingCriteria: [
         {
@@ -72,7 +74,8 @@ const measurementServiceMappingsFactory = (
           csToolsAnnotation,
           displaySetService,
           cornerstoneViewportService,
-          _getValueTypeFromToolType
+          _getValueTypeFromToolType,
+          customizationService
         ),
       matchingCriteria: [
         // TODO -> We should eventually do something like shortAxis + longAxis,
@@ -95,7 +98,8 @@ const measurementServiceMappingsFactory = (
           csToolsAnnotation,
           displaySetService,
           cornerstoneViewportService,
-          _getValueTypeFromToolType
+          _getValueTypeFromToolType,
+          customizationService
         ),
       matchingCriteria: [
         {
@@ -111,7 +115,8 @@ const measurementServiceMappingsFactory = (
           csToolsAnnotation,
           displaySetService,
           cornerstoneViewportService,
-          _getValueTypeFromToolType
+          _getValueTypeFromToolType,
+          customizationService
         ),
       matchingCriteria: [
         {
@@ -127,7 +132,8 @@ const measurementServiceMappingsFactory = (
           csToolsAnnotation,
           displaySetService,
           cornerstoneViewportService,
-          _getValueTypeFromToolType
+          _getValueTypeFromToolType,
+          customizationService
         ),
       matchingCriteria: [
         {
@@ -143,7 +149,8 @@ const measurementServiceMappingsFactory = (
           csToolsAnnotation,
           displaySetService,
           cornerstoneViewportService,
-          _getValueTypeFromToolType
+          _getValueTypeFromToolType,
+          customizationService
         ),
       matchingCriteria: [
         {
@@ -159,7 +166,8 @@ const measurementServiceMappingsFactory = (
           csToolsAnnotation,
           displaySetService,
           cornerstoneViewportService,
-          _getValueTypeFromToolType
+          _getValueTypeFromToolType,
+          customizationService
         ),
       matchingCriteria: [
         {
@@ -175,7 +183,8 @@ const measurementServiceMappingsFactory = (
           csToolsAnnotation,
           displaySetService,
           cornerstoneViewportService,
-          _getValueTypeFromToolType
+          _getValueTypeFromToolType,
+          customizationService
         ),
       matchingCriteria: [
         {
@@ -191,7 +200,8 @@ const measurementServiceMappingsFactory = (
           csToolsAnnotation,
           displaySetService,
           cornerstoneViewportService,
-          _getValueTypeFromToolType
+          _getValueTypeFromToolType,
+          customizationService
         ),
       matchingCriteria: [
         {
@@ -208,7 +218,8 @@ const measurementServiceMappingsFactory = (
           csToolsAnnotation,
           displaySetService,
           cornerstoneViewportService,
-          _getValueTypeFromToolType
+          _getValueTypeFromToolType,
+          customizationService
         ),
       matchingCriteria: [
         {
@@ -224,7 +235,8 @@ const measurementServiceMappingsFactory = (
           csToolsAnnotation,
           displaySetService,
           cornerstoneViewportService,
-          _getValueTypeFromToolType
+          _getValueTypeFromToolType,
+          customizationService
         ),
       matchingCriteria: [
         {

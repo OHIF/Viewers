@@ -22,7 +22,8 @@ const SplineROI = {
     csToolsEventDetail,
     DisplaySetService,
     CornerstoneViewportService,
-    getValueTypeFromToolType
+    getValueTypeFromToolType,
+    customizationService
   ) => {
     const { annotation } = csToolsEventDetail;
     const { metadata, data, annotationUID } = annotation;
@@ -64,10 +65,10 @@ const SplineROI = {
       toolName: metadata.toolName,
       displaySetInstanceUID: displaySet.displaySetInstanceUID,
       label: data.label,
-      displayText: getDisplayText(annotation, displaySet),
+      displayText: getDisplayText(annotation, displaySet, customizationService),
       data: data.cachedStats,
       type: getValueTypeFromToolType(toolName),
-      getReport: () => getColumnValueReport(annotation),
+      getReport: () => getColumnValueReport(annotation, customizationService),
     };
   },
 };
@@ -80,7 +81,9 @@ const SplineROI = {
  * @param {object} annotation
  * @returns {object} Report's content from this tool
  */
-function getColumnValueReport(annotation) {
+function getColumnValueReport(annotation, customizationService) {
+  const { SplineROI } = customizationService.get('cornerstone.measurements');
+  const { report } = SplineROI;
   const columns = [];
   const values = [];
 
@@ -90,9 +93,12 @@ function getColumnValueReport(annotation) {
 
   /** Add cachedStats */
   const { metadata, data } = annotation;
-  const { area, areaUnit } = data.cachedStats[`imageId:${metadata.referencedImageId}`];
-  columns.push(`Area`, `Unit`);
-  values.push(area, areaUnit);
+  const stats = data.cachedStats[`imageId:${metadata.referencedImageId}`];
+
+  report.forEach(({ name, value }) => {
+    columns.push(name);
+    stats[value] ? values.push(stats[value]) : values.push('not available');
+  });
 
   /** Add FOR */
   if (metadata.FrameOfReferenceUID) {
@@ -121,18 +127,17 @@ function getColumnValueReport(annotation) {
  * @param {Object} displaySet - The display set object.
  * @returns {string[]} - An array of display text.
  */
-function getDisplayText(annotation, displaySet) {
+function getDisplayText(annotation, displaySet, customizationService) {
+  const { SplineROI } = customizationService.get('cornerstone.measurements');
+  const { displayText } = SplineROI;
   const { metadata, data } = annotation;
 
   if (!data.cachedStats || !data.cachedStats[`imageId:${metadata.referencedImageId}`]) {
     return [];
   }
-
-  const { area, areaUnit } = data.cachedStats[`imageId:${metadata.referencedImageId}`];
-
   const { SOPInstanceUID, frameNumber } = getSOPInstanceAttributes(metadata.referencedImageId);
 
-  const displayText = [];
+  const displayTextArray = [];
 
   const instance = displaySet.images.find(image => image.SOPInstanceUID === SOPInstanceUID);
   let InstanceNumber;
@@ -145,19 +150,39 @@ function getDisplayText(annotation, displaySet) {
 
   const { SeriesNumber } = displaySet;
   if (SeriesNumber) {
-    displayText.push(`S: ${SeriesNumber}${instanceText}${frameText}`);
+    displayTextArray.push(`S: ${SeriesNumber}${instanceText}${frameText}`);
   }
 
-  if (area) {
-    /**
-     * Add Area
-     * Area sometimes becomes undefined if `preventHandleOutsideImage` is off
-     */
-    const roundedArea = utils.roundNumber(area || 0, 2);
-    displayText.push(`${roundedArea} ${getDisplayUnit(areaUnit)}`);
-  }
+  const stats = data.cachedStats[`imageId:${metadata.referencedImageId}`];
 
-  return displayText;
+  const roundValues = values => {
+    if (Array.isArray(values)) {
+      return values.map(value => {
+        if (isNaN(value)) {
+          return value;
+        }
+        return utils.roundNumber(value);
+      });
+    }
+    return isNaN(values) ? values : utils.roundNumber(values);
+  };
+
+  const findUnitForValue = (displayTextItems, value) =>
+    displayTextItems.find(({ type, for: filter }) => type === 'unit' && filter.includes(value))
+      ?.value;
+
+  const formatDisplayText = (displayName, result, unit) =>
+    `${displayName}: ${Array.isArray(result) ? roundValues(result).join(', ') : roundValues(result)} ${unit}`;
+
+  displayText.forEach(({ displayName, value, type }) => {
+    if (type === 'value') {
+      const result = stats[value];
+      const unit = stats[findUnitForValue(displayText, value)] || '';
+      displayTextArray.push(formatDisplayText(displayName, result, unit));
+    }
+  });
+
+  return displayTextArray;
 }
 
 export default SplineROI;
