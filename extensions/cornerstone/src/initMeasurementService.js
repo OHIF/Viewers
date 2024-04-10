@@ -17,7 +17,8 @@ const CORNERSTONE_3D_TOOLS_SOURCE_VERSION = '0.1';
 const initMeasurementService = (
   measurementService,
   displaySetService,
-  cornerstoneViewportService
+  cornerstoneViewportService,
+  customizationService
 ) => {
   /* Initialization */
   const {
@@ -30,10 +31,13 @@ const initMeasurementService = (
     CobbAngle,
     RectangleROI,
     PlanarFreehandROI,
+    SplineROI,
+    LivewireContour,
   } = measurementServiceMappingsFactory(
     measurementService,
     displaySetService,
-    cornerstoneViewportService
+    cornerstoneViewportService,
+    customizationService
   );
   const csTools3DVer1MeasurementSource = measurementService.createSource(
     CORNERSTONE_3D_TOOLS_SOURCE_NAME,
@@ -127,6 +131,14 @@ const initMeasurementService = (
     PlanarFreehandROI.toMeasurement
   );
 
+  measurementService.addMapping(
+    csTools3DVer1MeasurementSource,
+    'SplineROI',
+    SplineROI.matchingCriteria,
+    SplineROI.toAnnotation,
+    SplineROI.toMeasurement
+  );
+
   // On the UI side, the Calibration Line tool will work almost the same as the
   // Length tool
   measurementService.addMapping(
@@ -137,16 +149,29 @@ const initMeasurementService = (
     Length.toMeasurement
   );
 
+  measurementService.addMapping(
+    csTools3DVer1MeasurementSource,
+    'LivewireContour',
+    LivewireContour.matchingCriteria,
+    LivewireContour.toAnnotation,
+    LivewireContour.toMeasurement
+  );
+
   return csTools3DVer1MeasurementSource;
 };
 
 const connectToolsToMeasurementService = servicesManager => {
-  const { measurementService, displaySetService, cornerstoneViewportService } =
-    servicesManager.services;
+  const {
+    measurementService,
+    displaySetService,
+    cornerstoneViewportService,
+    customizationService,
+  } = servicesManager.services;
   const csTools3DVer1MeasurementSource = initMeasurementService(
     measurementService,
     displaySetService,
-    cornerstoneViewportService
+    cornerstoneViewportService,
+    customizationService
   );
   connectMeasurementServiceToTools(
     measurementService,

@@ -4,9 +4,9 @@ import { getDisplayUnit } from './utils';
 import { utils } from '@ohif/core';
 
 /**
- * Represents a mapping utility for Planar Freehand ROI measurements.
+ * Represents a mapping utility for Spline ROI measurements.
  */
-const PlanarFreehandROI = {
+const SplineROI = {
   toAnnotation: measurement => {},
 
   /**
@@ -29,7 +29,7 @@ const PlanarFreehandROI = {
     const { metadata, data, annotationUID } = annotation;
 
     if (!metadata || !data) {
-      console.warn('PlanarFreehandROI tool: Missing metadata or data');
+      console.warn('SplineROI tool: Missing metadata or data');
       return null;
     }
 
@@ -82,14 +82,14 @@ const PlanarFreehandROI = {
  * @returns {object} Report's content from this tool
  */
 function getColumnValueReport(annotation, customizationService) {
-  const { PlanarFreehandROI } = customizationService.get('cornerstone.measurements');
-  const { report } = PlanarFreehandROI;
+  const { SplineROI } = customizationService.get('cornerstone.measurements');
+  const { report } = SplineROI;
   const columns = [];
   const values = [];
 
   /** Add type */
   columns.push('AnnotationType');
-  values.push('Cornerstone:PlanarFreehandROI');
+  values.push('Cornerstone:SplineROI');
 
   /** Add cachedStats */
   const { metadata, data } = annotation;
@@ -108,6 +108,11 @@ function getColumnValueReport(annotation, customizationService) {
 
   /** Add points */
   if (data.contour.polyline) {
+    /**
+     * Points has the form of [[x1, y1, z1], [x2, y2, z2], ...]
+     * convert it to string of [[x1 y1 z1];[x2 y2 z2];...]
+     * so that it can be used in the CSV report
+     */
     columns.push('points');
     values.push(data.contour.polyline.map(p => p.join(' ')).join(';'));
   }
@@ -123,15 +128,13 @@ function getColumnValueReport(annotation, customizationService) {
  * @returns {string[]} - An array of display text.
  */
 function getDisplayText(annotation, displaySet, customizationService) {
-  const { PlanarFreehandROI } = customizationService.get('cornerstone.measurements');
-  const { displayText } = PlanarFreehandROI;
-
+  const { SplineROI } = customizationService.get('cornerstone.measurements');
+  const { displayText } = SplineROI;
   const { metadata, data } = annotation;
 
   if (!data.cachedStats || !data.cachedStats[`imageId:${metadata.referencedImageId}`]) {
     return [];
   }
-
   const { SOPInstanceUID, frameNumber } = getSOPInstanceAttributes(metadata.referencedImageId);
 
   const displayTextArray = [];
@@ -182,4 +185,4 @@ function getDisplayText(annotation, displaySet, customizationService) {
   return displayTextArray;
 }
 
-export default PlanarFreehandROI;
+export default SplineROI;

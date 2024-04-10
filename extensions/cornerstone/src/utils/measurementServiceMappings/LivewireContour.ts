@@ -4,9 +4,9 @@ import { getDisplayUnit } from './utils';
 import { utils } from '@ohif/core';
 
 /**
- * Represents a mapping utility for Planar Freehand ROI measurements.
+ * Represents a mapping utility for Livewire measurements.
  */
-const PlanarFreehandROI = {
+const LivewireContour = {
   toAnnotation: measurement => {},
 
   /**
@@ -29,7 +29,7 @@ const PlanarFreehandROI = {
     const { metadata, data, annotationUID } = annotation;
 
     if (!metadata || !data) {
-      console.warn('PlanarFreehandROI tool: Missing metadata or data');
+      console.warn('Livewire tool: Missing metadata or data');
       return null;
     }
 
@@ -82,23 +82,15 @@ const PlanarFreehandROI = {
  * @returns {object} Report's content from this tool
  */
 function getColumnValueReport(annotation, customizationService) {
-  const { PlanarFreehandROI } = customizationService.get('cornerstone.measurements');
-  const { report } = PlanarFreehandROI;
   const columns = [];
   const values = [];
 
   /** Add type */
   columns.push('AnnotationType');
-  values.push('Cornerstone:PlanarFreehandROI');
+  values.push('Cornerstone:Livewire');
 
   /** Add cachedStats */
   const { metadata, data } = annotation;
-  const stats = data.cachedStats[`imageId:${metadata.referencedImageId}`];
-
-  report.forEach(({ name, value }) => {
-    columns.push(name);
-    stats[value] ? values.push(stats[value]) : values.push('not available');
-  });
 
   /** Add FOR */
   if (metadata.FrameOfReferenceUID) {
@@ -108,6 +100,11 @@ function getColumnValueReport(annotation, customizationService) {
 
   /** Add points */
   if (data.contour.polyline) {
+    /**
+     * Points has the form of [[x1, y1, z1], [x2, y2, z2], ...]
+     * convert it to string of [[x1 y1 z1];[x2 y2 z2];...]
+     * so that it can be used in the CSV report
+     */
     columns.push('points');
     values.push(data.contour.polyline.map(p => p.join(' ')).join(';'));
   }
@@ -123,18 +120,17 @@ function getColumnValueReport(annotation, customizationService) {
  * @returns {string[]} - An array of display text.
  */
 function getDisplayText(annotation, displaySet, customizationService) {
-  const { PlanarFreehandROI } = customizationService.get('cornerstone.measurements');
-  const { displayText } = PlanarFreehandROI;
-
   const { metadata, data } = annotation;
 
   if (!data.cachedStats || !data.cachedStats[`imageId:${metadata.referencedImageId}`]) {
     return [];
   }
 
+  const { area, areaUnit } = data.cachedStats[`imageId:${metadata.referencedImageId}`];
+
   const { SOPInstanceUID, frameNumber } = getSOPInstanceAttributes(metadata.referencedImageId);
 
-  const displayTextArray = [];
+  const displayText = [];
 
   const instance = displaySet.images.find(image => image.SOPInstanceUID === SOPInstanceUID);
   let InstanceNumber;
@@ -147,39 +143,19 @@ function getDisplayText(annotation, displaySet, customizationService) {
 
   const { SeriesNumber } = displaySet;
   if (SeriesNumber) {
-    displayTextArray.push(`S: ${SeriesNumber}${instanceText}${frameText}`);
+    displayText.push(`S: ${SeriesNumber}${instanceText}${frameText}`);
   }
 
-  const stats = data.cachedStats[`imageId:${metadata.referencedImageId}`];
+  if (area) {
+    /**
+     * Add Area
+     * Area sometimes becomes undefined if `preventHandleOutsideImage` is off
+     */
+    const roundedArea = utils.roundNumber(area || 0, 2);
+    displayText.push(`${roundedArea} ${getDisplayUnit(areaUnit)}`);
+  }
 
-  const roundValues = values => {
-    if (Array.isArray(values)) {
-      return values.map(value => {
-        if (isNaN(value)) {
-          return value;
-        }
-        return utils.roundNumber(value);
-      });
-    }
-    return isNaN(values) ? values : utils.roundNumber(values);
-  };
-
-  const findUnitForValue = (displayTextItems, value) =>
-    displayTextItems.find(({ type, for: filter }) => type === 'unit' && filter.includes(value))
-      ?.value;
-
-  const formatDisplayText = (displayName, result, unit) =>
-    `${displayName}: ${Array.isArray(result) ? roundValues(result).join(', ') : roundValues(result)} ${unit}`;
-
-  displayText.forEach(({ displayName, value, type }) => {
-    if (type === 'value') {
-      const result = stats[value];
-      const unit = stats[findUnitForValue(displayText, value)] || '';
-      displayTextArray.push(formatDisplayText(displayName, result, unit));
-    }
-  });
-
-  return displayTextArray;
+  return displayText;
 }
 
-export default PlanarFreehandROI;
+export default LivewireContour;
