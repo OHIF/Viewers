@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-beta.78](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.77...v3.8.0-beta.78) (2024-04-10)
+
+
+### Bug Fixes
+
+* **general:** enhancements and bug fixes ([#4018](https://github.com/OHIF/Viewers/issues/4018)) ([2b83393](https://github.com/OHIF/Viewers/commit/2b83393f91cb16ea06821d79d14ff60f80c29c90))
+
+
+
+
+
 # [3.8.0-beta.77](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.76...v3.8.0-beta.77) (2024-04-10)
 
 **Note:** Version bump only for package @ohif/mode-segmentation
