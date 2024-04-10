@@ -88,7 +88,7 @@ function modeFactory({ modeConfiguration }) {
             props: {
               leftPanels: [ohif.leftPanel],
               leftPanelClosed: true, // we have problem with rendering thumbnails for microscopy images
-              rightPanelClosed: true, // we do not have the save microscopy measurements yet
+              rightPanelClosed: false, // we do not have the save microscopy measurements yet
               rightPanels: ['@ohif/extension-dicom-microscopy.panelModule.measure'],
               viewports: [
                 {
