@@ -16,6 +16,7 @@ import { ContextMenuController, CustomizableContextMenuTypes } from './Customiza
 import * as dicomWebUtils from './DicomWebDataSource/utils';
 import { createReportDialogPrompt } from './Panels';
 import createReportAsync from './Actions/createReportAsync';
+import StaticWadoClient from './DicomWebDataSource/utils/StaticWadoClient';
 
 const defaultExtension: Types.Extensions.Extension = {
   /**
@@ -54,4 +55,5 @@ export {
   dicomWebUtils,
   createReportDialogPrompt,
   createReportAsync,
+  StaticWadoClient,
 };
