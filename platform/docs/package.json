@@ -1,6 +1,6 @@
 {
   "name": "ohif-docs",
-  "version": "3.8.0-beta.73",
+  "version": "3.8.0-beta.74",
   "private": true,
   "workspaces": {
     "nohoist": [

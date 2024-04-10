@@ -1,6 +1,6 @@
 {
   "name": "@ohif/mode-preclinical-4d",
-  "version": "3.7.0-beta.76",
+  "version": "3.8.0-beta.74",
   "description": "4D Workflow",
   "author": "OHIF",
   "license": "MIT",
@@ -31,10 +31,10 @@
   },
   "peerDependencies": {
     "@ohif/core": "3.8.0-beta.74",
-    "@ohif/extension-default": "3.8.0-beta.74",
     "@ohif/extension-cornerstone": "3.8.0-beta.74",
-    "@ohif/extension-cornerstone-dynamic-volume": "3.8.0-beta.74",
     "@ohif/extension-cornerstone-dicom-seg": "3.8.0-beta.74",
+    "@ohif/extension-cornerstone-dynamic-volume": "3.8.0-beta.74",
+    "@ohif/extension-default": "3.8.0-beta.74",
     "@ohif/extension-tmtv": "3.8.0-beta.74"
   },
   "dependencies": {
