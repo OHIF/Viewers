@@ -1,19 +1,12 @@
 import React, { useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
-import {
-  StudySummary,
-  MeasurementTable,
-  Dialog,
-  Input,
-  useViewportGrid,
-  ButtonEnums,
-} from '@ohif/ui';
+import { StudySummary, MeasurementTable, useViewportGrid, ActionButtons } from '@ohif/ui';
 import { DicomMetadataStore, utils } from '@ohif/core';
 import { useDebounce } from '@hooks';
 import { useAppConfig } from '@state';
-import ActionButtons from './ActionButtons';
 import { useTrackedMeasurements } from '../../getContextModule';
 import debounce from 'lodash.debounce';
+import { useTranslation } from 'react-i18next';
 
 const { downloadCSVReport } = utils;
 const { formatDate } = utils;
@@ -27,9 +20,11 @@ const DISPLAY_STUDY_SUMMARY_INITIAL_VALUE = {
 
 function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
   const [viewportGrid] = useViewportGrid();
+  const { t } = useTranslation('MeasurementTable');
   const [measurementChangeTimestamp, setMeasurementsUpdated] = useState(Date.now().toString());
   const debouncedMeasurementChangeTimestamp = useDebounce(measurementChangeTimestamp, 200);
-  const { measurementService, uiDialogService, displaySetService, customizationService } = servicesManager.services;
+  const { measurementService, uiDialogService, displaySetService, customizationService } =
+    servicesManager.services;
   const [trackedMeasurements, sendTrackedMeasurementsEvent] = useTrackedMeasurements();
   const { trackedStudy, trackedSeries } = trackedMeasurements.context;
   const [displayStudySummary, setDisplayStudySummary] = useState(
@@ -172,6 +167,9 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     dm => dm.measurementType === measurementService.VALUE_TYPES.POINT
   );
 
+  const disabled =
+    additionalFindings.length === 0 && displayMeasurementsWithoutFindings.length === 0;
+
   return (
     <>
       <div
@@ -206,16 +204,23 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
       {!appConfig?.disableEditing && (
         <div className="flex justify-center p-4">
           <ActionButtons
-            onExportClick={exportReport}
-            onCreateReportClick={() => {
-              sendTrackedMeasurementsEvent('SAVE_REPORT', {
-                viewportId: viewportGrid.activeViewportId,
-                isBackupSave: true,
-              });
-            }}
-            disabled={
-              additionalFindings.length === 0 && displayMeasurementsWithoutFindings.length === 0
-            }
+            t={t}
+            actions={[
+              {
+                label: 'Export',
+                onClick: exportReport,
+              },
+              {
+                label: 'Create Report',
+                onClick: () => {
+                  sendTrackedMeasurementsEvent('SAVE_REPORT', {
+                    viewportId: viewportGrid.activeViewportId,
+                    isBackupSave: true,
+                  });
+                },
+              },
+            ]}
+            disabled={disabled}
           />
         </div>
       )}

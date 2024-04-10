@@ -53,7 +53,7 @@ const ActiveSegmentationConfig = ({
           unit="%"
         />
         <InputRange
-          minValue={4}
+          minValue={0}
           maxValue={100}
           value={getRoundedValue(config.fillAlpha * 100)}
           onChange={setFillAlpha}
@@ -148,7 +148,9 @@ const SegmentationConfig = ({
               'rotate-90 transform': !isMinimized,
             })}
           />
-          <span className="text-[12px] font-[300] text-[#d8d8d8]">{t('Inactive segmentations')}</span>
+          <span className="text-[12px] font-[300] text-[#d8d8d8]">
+            {t('Inactive segmentations')}
+          </span>
         </div>
         {!isMinimized && (
           <InactiveSegmentationConfig

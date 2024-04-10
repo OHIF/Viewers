@@ -1,0 +1,106 @@
+import { ProgressDropdown } from '../../../components';
+import { ArgsTable, Story, Canvas, Meta } from '@storybook/addon-docs';
+import { createComponentTemplate } from '../../../storybook/functions/create-component-story';
+
+export const argTypes = {
+  component: ProgressDropdown,
+  title: 'Components/ProgressDropdown',
+};
+
+<Meta
+  title="Components/ProgressDropdown"
+  component={ProgressDropdown}
+/>
+
+export const ProgressDropdownTemplate = args => (
+  <div className="mb-2.5 flex h-60 max-w-xs">
+    <ProgressDropdown {...args} />
+  </div>
+);
+
+export const loremIpsumText = new Array(7)
+  .join(` Lorem ipsum, dolor sit amet consectetur adipisicing elit`)
+  .substring(1);
+
+<Heading
+  title="ProgressDropdown"
+  componentRelativePath="ProgressDropdown/ProgressDropdown.tsx"
+/>
+
+- [Overview](#overview)
+- [Props](#props)
+- [Usage](#usage)
+- [Contribute](#contribute)
+
+## Overview
+
+Dropdown is a modal Dropdown component which enabled to show a modal Dropdown.
+
+<Canvas>
+  <Story
+    name="ProgressDropdownOverview"
+    args={{
+      options: [],
+      children: '[empty dropdown]',
+    }}
+  >
+    {ProgressDropdownTemplate.bind({})}
+  </Story>
+</Canvas>
+
+## Props
+
+<ArgsTable of={ProgressDropdown} />
+
+## Usage
+
+You can list the items in the dropdown. The status of each item changes from black to dark blue in
+the status bar beneath the dropdown when the item is selected.
+
+<Canvas>
+  <Story
+    name="ProgressDropdownList"
+    onChange={selectedItem => (selectedItem.completed = true)}
+    args={{
+      options: [
+        {
+          label: 'Item 1',
+          value: 'item1',
+          info: `Item 1 - ${loremIpsumText}`,
+          onClick: () => {
+            alert('Item 1 clicked');
+          },
+        },
+        {
+          label: 'Item 2',
+          value: 'item2',
+          info: `Item 2 - ${loremIpsumText}`,
+          onClick: () => {
+            alert('Item 2 clicked');
+          },
+        },
+        {
+          label: 'Item 3',
+          value: 'item3',
+          info: `Item 3 - ${loremIpsumText}`,
+          onClick: () => {
+            alert('Item 3 clicked');
+          },
+        },
+        {
+          label: 'Item 4',
+          info: `Item 4 - ${loremIpsumText}`,
+          onClick: () => {
+            alert('Item 4 clicked');
+          },
+        },
+      ],
+    }}
+  >
+    {ProgressDropdownTemplate.bind({})}
+  </Story>
+</Canvas>
+
+## Contribute
+
+<Footer componentRelativePath="ProgressDropdown/__stories__/progressDropdown.stories.mdx" />

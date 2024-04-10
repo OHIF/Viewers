@@ -9,6 +9,7 @@ import getCommandsModule from './commandsModule';
 import getHangingProtocolModule from './getHangingProtocolModule';
 import getStudiesForPatientByMRN from './Panels/getStudiesForPatientByMRN';
 import getCustomizationModule from './getCustomizationModule';
+import getViewportModule from './getViewportModule';
 import { id } from './id.js';
 import preRegistration from './init';
 import { ContextMenuController, CustomizableContextMenuTypes } from './CustomizableContextMenu';
@@ -23,6 +24,7 @@ const defaultExtension: Types.Extensions.Extension = {
   id,
   preRegistration,
   getDataSourcesModule,
+  getViewportModule,
   getLayoutTemplateModule,
   getPanelModule,
   getHangingProtocolModule,

@@ -6,7 +6,6 @@ import getHangingProtocolModule from './getHangingProtocolModule';
 import getPanelModule from './getPanelModule';
 import getCommandsModule from './commandsModule';
 import { getToolbarModule } from './getToolbarModule';
-import preRegistration from './init';
 
 const Component = React.lazy(() => {
   return import(/* webpackPrefetch: true */ './viewports/OHIFCornerstoneSEGViewport');
@@ -29,7 +28,6 @@ const extension = {
    * You ID can be anything you want, but it should be unique.
    */
   id,
-  preRegistration,
   /**
    * PanelModule should provide a list of panels that will be available in OHIF
    * for Modes to consume and render. Each panel is defined by a {name,
