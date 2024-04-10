@@ -114,14 +114,14 @@ function modeFactory({ modeConfiguration }) {
 
       // This is a hack and we need to find a better way to enable
       // some tools that require the viewport to be ready
-      const { unsubscribe: unsub } = viewportGridService.subscribe(
+      const { unsubscribe: unsub1 } = viewportGridService.subscribe(
         viewportGridService.EVENTS.VIEWPORTS_READY,
         () => {
           commandsManager.run('setToolEnabled', {
             toolName: 'OrientationMarker',
             toolGroupId: 'mipToolGroup',
           });
-          unsub();
+          unsub1();
         }
       );
 

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Icon, ActionButtons } from '@ohif/ui';
 import { useTranslation } from 'react-i18next';
 export default function PanelRoiThresholdSegmentation({ servicesManager, commandsManager }) {
-  const { segmentationService } = servicesManager.services;
+  const { segmentationService, uiNotificationService } = servicesManager.services;
   const { t } = useTranslation('PanelSUVExport');
 
   const [segmentations, setSegmentations] = useState(() => segmentationService.getSegmentations());
@@ -35,6 +35,24 @@ export default function PanelRoiThresholdSegmentation({ servicesManager, command
 
   const tmtvValue = segmentations?.[0]?.cachedStats?.tmtv?.value || null;
   const config = segmentations?.[0]?.cachedStats?.tmtv?.config || {};
+
+  segmentations.forEach(segmentation => {
+    const { cachedStats } = segmentation;
+    if (!cachedStats) {
+      return;
+    }
+
+    // segment 1
+    const suvPeak = cachedStats?.['1']?.suvPeak?.suvPeak;
+
+    if (Number.isNaN(suvPeak)) {
+      uiNotificationService.show({
+        title: 'Unable to calculate SUV Peak',
+        message: 'The resulting threshold is not big enough.',
+        type: 'warning',
+      });
+    }
+  });
 
   const actions = [
     {

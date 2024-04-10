@@ -106,6 +106,11 @@ function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager, mo
       { toolName: toolNames.SegmentationDisplay },
       {
         toolName: toolNames.OrientationMarker,
+        configuration: {
+          orientationWidget: {
+            viewportCorner: 'BOTTOM_LEFT',
+          },
+        },
       },
     ],
   };
