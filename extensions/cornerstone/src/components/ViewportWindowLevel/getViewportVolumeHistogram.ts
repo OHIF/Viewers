@@ -10,7 +10,7 @@ const options = {
 
 // Register the task
 const workerFn = () => {
-  return new Worker(new URL('./histogramWOrker.js', import.meta.url), {
+  return new Worker(new URL('./histogramWorker.js', import.meta.url), {
     name: 'histogram-worker', // name used by the browser to name the worker
   });
 };
