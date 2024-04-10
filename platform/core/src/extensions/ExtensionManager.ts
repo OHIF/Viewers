@@ -48,6 +48,7 @@ export interface Extension {
   getCustomizationModule?: (p: ExtensionParams) => unknown;
   getSopClassHandlerModule?: (p: ExtensionParams) => unknown;
   getToolbarModule?: (p: ExtensionParams) => unknown;
+  getPanelModule?: (p: ExtensionParams) => unknown;
   onModeEnter?: () => void;
   onModeExit?: () => void;
 }

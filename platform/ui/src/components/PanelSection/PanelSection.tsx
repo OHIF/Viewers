@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Icon } from '@ohif/ui';
 import PropTypes from 'prop-types';
 
-const PanelSection = ({ title, children, actionIcons = [] }) => {
+const PanelSection = ({ title, children, actionIcons = [], childrenClassName }) => {
   const [areChildrenVisible, setChildrenVisible] = useState(true);
 
   const handleHeaderClick = () => {
@@ -37,7 +37,8 @@ const PanelSection = ({ title, children, actionIcons = [] }) => {
       </div>
       {areChildrenVisible && (
         <>
-          <div className="bg-primary-dark rounded-b-[4px]">{children}</div>
+          <div className="h-[2px] bg-black"></div>
+          <div className={`bg-primary-dark rounded-b-[4px] ${childrenClassName}`}>{children}</div>
         </>
       )}
     </>
@@ -49,6 +50,7 @@ PanelSection.defaultProps = {};
 PanelSection.propTypes = {
   title: PropTypes.string,
   children: PropTypes.node,
+  childrenClassName: PropTypes.string,
   actionIcons: PropTypes.arrayOf(
     PropTypes.shape({
       name: PropTypes.string,

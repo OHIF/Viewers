@@ -322,7 +322,7 @@ function _getViewportInstances(viewportData) {
   } else if (viewportData.viewportType === Enums.ViewportType.ORTHOGRAPHIC) {
     const volumes = viewportData.data;
     volumes.forEach(volume => {
-      if (!volume?.imageIds) {
+      if (!volume?.imageIds || volume.imageIds.length === 0) {
         return;
       }
       imageIds.push(volume.imageIds[0]);

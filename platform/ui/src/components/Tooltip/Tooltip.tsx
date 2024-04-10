@@ -1,7 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { useTranslation } from 'react-i18next';
+import debounce from 'lodash.debounce';
+
 import ReactDOM from 'react-dom';
 
 import './tooltip.css';
@@ -40,27 +42,47 @@ const Tooltip = ({
   tight,
   children,
   isDisabled,
+  tooltipBoxClassName,
+  // time to show/hide the tooltip on mouse over and  mouse out events (default: 300ms)
+  showHideDelay,
+  onHide,
 }) => {
   const [isActive, setIsActive] = useState(false);
+  const isOpen = useMemo(
+    () => (isSticky || isActive) && !isDisabled,
+    [isSticky, isActive, isDisabled]
+  );
   const { t } = useTranslation('Buttons');
   const tooltipContainer = document.getElementById('react-portal');
   const [coords, setCoords] = useState({ x: 999999, y: 999999 });
   const parentRef = useRef(null);
   const tooltipRef = useRef(null);
 
+  const handleMouseOverDebounced = useMemo(
+    () => debounce(() => setIsActive(true), showHideDelay),
+    [showHideDelay]
+  );
+
+  const handleMouseOutDebounced = useMemo(
+    () => debounce(() => setIsActive(false), showHideDelay),
+    [showHideDelay]
+  );
+
   const handleMouseOver = () => {
-    if (!isActive) {
-      setIsActive(true);
-    }
+    handleMouseOutDebounced.cancel();
+    handleMouseOverDebounced();
   };
 
   const handleMouseOut = () => {
-    if (isActive) {
-      setIsActive(false);
-    }
+    handleMouseOverDebounced.cancel();
+    handleMouseOutDebounced();
   };
 
-  const isOpen = (isSticky || isActive) && !isDisabled;
+  useEffect(() => {
+    if (!isOpen && onHide) {
+      onHide();
+    }
+  }, [isOpen, onHide]);
 
   useEffect(() => {
     if (parentRef.current && tooltipRef.current) {
@@ -121,7 +143,8 @@ const Tooltip = ({
           'tooltip-box bg-primary-dark border-secondary-light w-max-content relative inset-x-auto top-full rounded border text-base text-white',
           {
             'py-[6px] px-[8px]': !tight,
-          }
+          },
+          tooltipBoxClassName
         )}
       >
         <div>{typeof content === 'string' ? t(content) : content}</div>
@@ -164,16 +187,21 @@ Tooltip.defaultProps = {
   isSticky: false,
   position: 'bottom',
   isDisabled: false,
+  showHideDelay: 300,
 };
 
 Tooltip.propTypes = {
   isDisabled: PropTypes.bool,
   content: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+  secondaryContent: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
   position: PropTypes.oneOf(['bottom', 'bottom-left', 'bottom-right', 'left', 'right', 'top']),
   isSticky: PropTypes.bool,
   tight: PropTypes.bool,
   children: PropTypes.node.isRequired,
   className: PropTypes.string,
+  tooltipBoxClassName: PropTypes.string,
+  showHideDelay: PropTypes.number,
+  onHide: PropTypes.func,
 };
 
 export default Tooltip;

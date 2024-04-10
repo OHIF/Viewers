@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useContext, createContext } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router';
 import PropTypes from 'prop-types';
 import { ServicesManager, utils } from '@ohif/core';
@@ -60,7 +60,7 @@ export default function ModeRoute({
     locationRef.current = location;
   }
 
-  const { displaySetService, hangingProtocolService, userAuthenticationService } = (
+  const { displaySetService, panelService, hangingProtocolService, userAuthenticationService } = (
     servicesManager as ServicesManager
   ).services;
 
@@ -141,7 +141,17 @@ export default function ModeRoute({
         servicesManager,
         studyInstanceUIDs,
       });
+
       if (isMounted.current) {
+        const { leftPanels = [], rightPanels = [], ...layoutProps } = layoutData.props;
+
+        panelService.reset();
+        panelService.addPanels(panelService.PanelPosition.Left, leftPanels);
+        panelService.addPanels(panelService.PanelPosition.Right, rightPanels);
+
+        // layoutProps contains all props but leftPanels and rightPanels
+        layoutData.props = layoutProps;
+
         layoutTemplateData.current = layoutData;
         setRefresh(!refresh);
       }
@@ -244,8 +254,10 @@ export default function ModeRoute({
           }
         }, {}) ?? {};
 
+      let unsubs;
+
       if (route.init) {
-        return await route.init(
+        unsubs = await route.init(
           {
             servicesManager,
             extensionManager,
@@ -273,6 +285,14 @@ export default function ModeRoute({
     let unsubscriptions;
     setupRouteInit().then(unsubs => {
       unsubscriptions = unsubs;
+
+      // Some code may need to run after hanging protocol initialization
+      // (eg: workflowStepsService initialization on 4D mode)
+      mode?.onSetupRouteComplete?.({
+        servicesManager,
+        extensionManager,
+        commandsManager,
+      });
     });
 
     return () => {

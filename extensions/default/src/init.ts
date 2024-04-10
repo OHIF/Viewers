@@ -81,7 +81,7 @@ export default function init({ servicesManager, configuration = {}, commandsMana
   toolbarService.subscribe(toolbarService.EVENTS.TOOL_BAR_MODIFIED, state => {
     const { buttons } = state;
     for (const [id, button] of Object.entries(buttons)) {
-      const { groupId, items, listeners } = button.props;
+      const { groupId, items, listeners } = button.props || {};
 
       // Handle group items' listeners
       if (groupId && items) {

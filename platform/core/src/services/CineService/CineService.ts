@@ -34,20 +34,32 @@ class CineService extends PubSubService {
     // reducer state does not get updated right away and if we publish the
     // event and we use the cineService.getState() it will return the old state
     setTimeout(() => {
-      this._broadcastEvent(this.EVENTS.CINE_STATE_CHANGED, isCineEnabled);
+      this._broadcastEvent(this.EVENTS.CINE_STATE_CHANGED, { isCineEnabled });
     }, 0);
   }
 
   public playClip(element, playClipOptions) {
-    return this.serviceImplementation._playClip(element, playClipOptions);
+    const res = this.serviceImplementation._playClip(element, playClipOptions);
+
+    this._broadcastEvent(this.EVENTS.CINE_STATE_CHANGED, { isPlaying: true });
+
+    return res;
   }
 
   public stopClip(element) {
-    return this.serviceImplementation._stopClip(element);
+    const res = this.serviceImplementation._stopClip(element);
+
+    this._broadcastEvent(this.EVENTS.CINE_STATE_CHANGED, { isPlaying: false });
+
+    return res;
   }
 
   public _onModeExit() {
     this.setIsCineEnabled(false);
+  }
+
+  public getSyncedViewports(viewportId) {
+    return this.serviceImplementation._getSyncedViewports(viewportId);
   }
 
   public setServiceImplementation({
@@ -56,7 +68,12 @@ class CineService extends PubSubService {
     setIsCineEnabled: setIsCineEnabledImplementation,
     playClip: playClipImplementation,
     stopClip: stopClipImplementation,
+    getSyncedViewports: getSyncedViewportsImplementation,
   }) {
+    if (getSyncedViewportsImplementation) {
+      this.serviceImplementation._getSyncedViewports = getSyncedViewportsImplementation;
+    }
+
     if (getStateImplementation) {
       this.serviceImplementation._getState = getStateImplementation;
     }
