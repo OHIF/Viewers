@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-beta.76](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.75...v3.8.0-beta.76) (2024-04-10)
+
+
+### Bug Fixes
+
+* **MetaDataProvider:** Fix tag in GeneralImageModule ([#4000](https://github.com/OHIF/Viewers/issues/4000)) ([e9c30a1](https://github.com/OHIF/Viewers/commit/e9c30a108e2dd14a8b137b81e5b832cc167bc3d1))
+
+
+
+
+
 # [3.8.0-beta.75](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.74...v3.8.0-beta.75) (2024-04-10)
 
 
