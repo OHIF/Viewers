@@ -47,8 +47,8 @@ export default function PanelRoiThresholdSegmentation({ servicesManager, command
 
     if (Number.isNaN(suvPeak)) {
       uiNotificationService.show({
-        title: 'Unable to calculate SUV Peak',
-        message: 'The resulting threshold is not big enough.',
+        title: 'SUV Peak',
+        message: 'Segmented volume does not allow SUV Peak calculation',
         type: 'warning',
       });
     }
