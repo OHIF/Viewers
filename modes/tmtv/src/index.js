@@ -53,6 +53,7 @@ function modeFactory({ modeConfiguration }) {
         customizationService,
         hangingProtocolService,
         displaySetService,
+        viewportGridService,
       } = servicesManager.services;
 
       const utilityModule = extensionManager.getModuleEntry(
@@ -110,6 +111,19 @@ function modeFactory({ modeConfiguration }) {
           },
         },
       ]);
+
+      // This is a hack and we need to find a better way to enable
+      // some tools that require the viewport to be ready
+      const { unsubscribe: unsub } = viewportGridService.subscribe(
+        viewportGridService.EVENTS.VIEWPORTS_READY,
+        () => {
+          commandsManager.run('setToolEnabled', {
+            toolName: 'OrientationMarker',
+            toolGroupId: 'mipToolGroup',
+          });
+          unsub();
+        }
+      );
 
       // For the hanging protocol we need to decide on the window level
       // based on whether the SUV is corrected or not, hence we can't hard

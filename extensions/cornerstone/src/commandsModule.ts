@@ -275,16 +275,16 @@ function commandsModule({
 
       actions.setViewportWindowLevel({ ...props, viewportId });
     },
-    setToolEnabled: ({ toolName, toggle }) => {
+    setToolEnabled: ({ toolName, toggle, toolGroupId }) => {
       const { viewports } = viewportGridService.getState();
 
       if (!viewports.size) {
         return;
       }
 
-      const toolGroup = toolGroupService.getToolGroup(null);
+      const toolGroup = toolGroupService.getToolGroup(toolGroupId ?? null);
 
-      if (!toolGroup) {
+      if (!toolGroup || !toolGroup.hasTool(toolName)) {
         return;
       }
 
@@ -293,6 +293,8 @@ function commandsModule({
       // Toggle the tool's state only if the toggle is true
       if (toggle) {
         toolIsEnabled ? toolGroup.setToolDisabled(toolName) : toolGroup.setToolEnabled(toolName);
+      } else {
+        toolGroup.setToolEnabled(toolName);
       }
 
       const renderingEngine = cornerstoneViewportService.getRenderingEngine();

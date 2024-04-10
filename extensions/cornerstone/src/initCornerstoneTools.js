@@ -35,6 +35,7 @@ import {
   PlanarFreehandROITool,
   SplineROITool,
   LivewireContourTool,
+  OrientationMarkerTool,
 } from '@cornerstonejs/tools';
 
 import CalibrationLineTool from './tools/CalibrationLineTool';
@@ -80,6 +81,7 @@ export default function initCornerstoneTools(configuration = {}) {
   addTool(PlanarFreehandROITool);
   addTool(SplineROITool);
   addTool(LivewireContourTool);
+  addTool(OrientationMarkerTool);
 
   // Modify annotation tools to use dashed lines on SR
   const annotationStyle = {
@@ -132,6 +134,7 @@ const toolNames = {
   SplineROI: SplineROITool.toolName,
   LivewireContour: LivewireContourTool.toolName,
   PlanarFreehandROI: PlanarFreehandROITool.toolName,
+  OrientationMarker: OrientationMarkerTool.toolName,
 };
 
 export { toolNames };

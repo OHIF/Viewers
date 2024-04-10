@@ -102,7 +102,12 @@ function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager, mo
         bindings: [{ mouseButton: Enums.MouseBindings.Primary }],
       },
     ],
-    enabled: [{ toolName: toolNames.SegmentationDisplay }],
+    enabled: [
+      { toolName: toolNames.SegmentationDisplay },
+      {
+        toolName: toolNames.OrientationMarker,
+      },
+    ],
   };
 
   toolGroupService.createToolGroupAndAddTools(toolGroupIds.MIP, mipTools);
