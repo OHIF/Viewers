@@ -10,7 +10,7 @@ import {
   utilities as csUtils,
 } from '@cornerstonejs/core';
 import { MeasurementService } from '@ohif/core';
-import { Notification, useViewportDialog } from '@ohif/ui';
+import { Notification, useViewportDialog, Types as UITypes, AllInOneMenu } from '@ohif/ui';
 import { IStackViewport, IVolumeViewport } from '@cornerstonejs/core/dist/esm/types';
 
 import { setEnabledElement } from '../state';
@@ -21,6 +21,11 @@ import getSOPInstanceAttributes from '../utils/measurementServiceMappings/utils/
 import CornerstoneServices from '../types/CornerstoneServices';
 import CinePlayer from '../components/CinePlayer';
 import { Types } from '@ohif/core';
+
+import OHIFViewportActionCorners from '../components/OHIFViewportActionCorners';
+import { getWindowLevelActionMenu } from '../components/WindowLevelActionMenu/getWindowLevelActionMenu';
+import { useAppConfig } from '@state';
+
 import { LutPresentation, PositionPresentation } from '../types/Presentation';
 
 const STACK = 'stack';
@@ -109,12 +114,22 @@ const OHIFCornerstoneViewport = React.memo(props => {
     // of the imageData in the OHIFCornerstoneViewport. This prop is used
     // to set the initial state of the viewport's first image to render
     initialImageIndex,
+    onReady,
   } = props;
 
   const viewportId = viewportOptions.viewportId;
+
+  // Since we only have support for dynamic data in volume viewports, we should
+  // handle this case here and set the viewportType to volume if any of the
+  // displaySets are dynamic volumes
+  viewportOptions.viewportType = displaySets.some(ds => ds.isDynamicVolume)
+    ? 'volume'
+    : viewportOptions.viewportType;
+
   const [scrollbarHeight, setScrollbarHeight] = useState('100px');
   const [enabledVPElement, setEnabledVPElement] = useState(null);
   const elementRef = useRef();
+  const [appConfig] = useAppConfig();
 
   const {
     measurementService,
@@ -126,12 +141,14 @@ const OHIFCornerstoneViewport = React.memo(props => {
     cornerstoneCacheService,
     viewportGridService,
     stateSyncService,
+    viewportActionCornersService,
+    customizationService,
   } = servicesManager.services as CornerstoneServices;
 
   const [viewportDialogState] = useViewportDialog();
   // useCallback for scroll bar height calculation
   const setImageScrollBarHeight = useCallback(() => {
-    const scrollbarHeight = `${elementRef.current.clientHeight - 20}px`;
+    const scrollbarHeight = `${elementRef.current.clientHeight - 40}px`;
     setScrollbarHeight(scrollbarHeight);
   }, [elementRef]);
 
@@ -151,6 +168,8 @@ const OHIFCornerstoneViewport = React.memo(props => {
       toolGroupService.removeViewportFromToolGroup(viewportId, renderingEngineId);
 
       syncGroupService.removeViewportFromSyncGroup(viewportId, renderingEngineId, syncGroups);
+
+      viewportActionCornersService.clear(viewportId);
     },
     [viewportId]
   );
@@ -184,6 +203,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
 
       if (onElementEnabled) {
         onElementEnabled(evt);
+        onReady?.(evt);
       }
     },
     [viewportId, onElementEnabled, toolGroupService]
@@ -359,6 +379,34 @@ const OHIFCornerstoneViewport = React.memo(props => {
     };
   }, [displaySets, elementRef, viewportId]);
 
+  // Set up the window level action menu in the viewport action corners.
+  useEffect(() => {
+    // Doing an === check here because the default config value when not set is true
+    if (appConfig.addWindowLevelActionMenu === false) {
+      return;
+    }
+
+    // TODO: In the future we should consider using the customization service
+    // to determine if and in which corner various action components should go.
+    const wlActionMenu = getWindowLevelActionMenu({
+      viewportId,
+      element: elementRef.current,
+      displaySets,
+      servicesManager,
+      commandsManager,
+      verticalDirection: AllInOneMenu.VerticalDirection.TopToBottom,
+      horizontalDirection: AllInOneMenu.HorizontalDirection.RightToLeft,
+    });
+
+    viewportActionCornersService.setComponent({
+      viewportId,
+      id: 'windowLevelActionMenu',
+      component: wlActionMenu,
+      location: viewportActionCornersService.LOCATIONS.topRight,
+      indexPriority: -100,
+    });
+  }, [displaySets, viewportId, viewportActionCornersService, servicesManager, commandsManager]);
+
   return (
     <React.Fragment>
       <div className="viewport-wrapper">
@@ -386,7 +434,8 @@ const OHIFCornerstoneViewport = React.memo(props => {
           servicesManager={servicesManager}
         />
       </div>
-      <div className="absolute w-full">
+      {/* top offset of 24px to account for ViewportActionCorners. */}
+      <div className="absolute top-[24px] w-full">
         {viewportDialogState.viewportId === viewportId && (
           <Notification
             id="viewport-notification"
@@ -398,6 +447,8 @@ const OHIFCornerstoneViewport = React.memo(props => {
           />
         )}
       </div>
+      {/* The OHIFViewportActionCorners follows the viewport in the DOM so that it is naturally at a higher z-index.*/}
+      <OHIFViewportActionCorners viewportId={viewportId} />
     </React.Fragment>
   );
 }, areEqual);

@@ -51,6 +51,20 @@ const initMeasurementService = (
 
   measurementService.addMapping(
     csTools3DVer1MeasurementSource,
+    'Crosshairs',
+    Length.matchingCriteria,
+    () => {
+      console.warn('Crosshairs mapping not implemented.');
+      return {};
+    },
+    () => {
+      console.warn('Crosshairs mapping not implemented.');
+      return {};
+    }
+  );
+
+  measurementService.addMapping(
+    csTools3DVer1MeasurementSource,
     'Bidirectional',
     Bidirectional.matchingCriteria,
     Bidirectional.toAnnotation,
@@ -357,6 +371,10 @@ const connectMeasurementServiceToTools = (
         imageId = dataSource.getImageIdsForInstance({ instance });
       }
 
+      /**
+       * This annotation is used by the cornerstone viewport.
+       * This is not the read-only annotation rendered by the SR viewport.
+       */
       const annotationManager = annotation.state.getAnnotationManager();
       annotationManager.addAnnotation({
         annotationUID: measurement.uid,
@@ -369,11 +387,16 @@ const connectMeasurementServiceToTools = (
           referencedImageId: imageId,
         },
         data: {
+          /**
+           * Don't remove this destructuring of data here.
+           * This is used to pass annotation specific data forward e.g. contour
+           */
+          ...(data.annotation.data || {}),
           text: data.annotation.data.text,
           handles: { ...data.annotation.data.handles },
           cachedStats: { ...data.annotation.data.cachedStats },
           label: data.annotation.data.label,
-          frameNumber: frameNumber,
+          frameNumber,
         },
       });
     }

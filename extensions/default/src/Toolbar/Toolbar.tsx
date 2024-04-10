@@ -1,59 +1,37 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React from 'react';
+import { Tooltip } from '@ohif/ui';
 import classnames from 'classnames';
-import { useViewportGrid } from '@ohif/ui';
+import { useToolbar } from '@ohif/core';
 
-export default function Toolbar({
-  servicesManager,
-}: Types.Extensions.ExtensionParams): React.ReactElement {
-  const { toolbarService } = servicesManager.services;
+export function Toolbar({ servicesManager, buttonSection = 'primary' }) {
+  const { toolbarButtons, onInteraction } = useToolbar({
+    servicesManager,
+    buttonSection,
+  });
 
-  const [viewportGrid, viewportGridService] = useViewportGrid();
-
-  const [toolbarButtons, setToolbarButtons] = useState([]);
-
-  useEffect(() => {
-    const updateToolbar = () => {
-      const toolGroupId =
-        viewportGridService.getActiveViewportOptionByKey('toolGroupId') ?? 'default';
-      setToolbarButtons(toolbarService.getButtonSection(toolGroupId));
-    };
-
-    const { unsubscribe } = toolbarService.subscribe(
-      toolbarService.EVENTS.TOOL_BAR_MODIFIED,
-      updateToolbar
-    );
-
-    updateToolbar();
-
-    return () => {
-      unsubscribe();
-    };
-  }, [toolbarService, viewportGrid]);
-
-  const onInteraction = useCallback(
-    args => toolbarService.recordInteraction(args),
-    [toolbarService]
-  );
+  if (!toolbarButtons.length) {
+    return null;
+  }
 
   return (
     <>
       {toolbarButtons.map(toolDef => {
+        if (!toolDef) {
+          return null;
+        }
+
         const { id, Component, componentProps } = toolDef;
-        return (
-          // The margin for separating the tools on the toolbar should go here and NOT in each individual component (button) item.
-          // This allows for the individual items to be included in other UI components where perhaps alternative margins are desired.
-          <div
+        const tool = (
+          <Component
             key={id}
-            className={classnames('mr-1')}
-          >
-            <Component
-              id={id}
-              {...componentProps}
-              onInteraction={onInteraction}
-              servicesManager={servicesManager}
-            />
-          </div>
+            id={id}
+            onInteraction={onInteraction}
+            servicesManager={servicesManager}
+            {...componentProps}
+          />
         );
+
+        return <div key={id}>{tool}</div>;
       })}
     </>
   );

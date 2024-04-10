@@ -20,9 +20,7 @@ const Header = () => {
             </a>
           </div>
         </div>
-        <div className="flex items-center">
-          {/* <Toolbar tools={tools} activeTool={activeTool} moreTools={tools} /> */}
-        </div>
+        <div className="flex items-center"></div>
         <div className="flex items-center">
           <span className="text-common-light mr-3 text-lg">FOR INVESTIGATIONAL USE ONLY</span>
           <IconButton
