@@ -1,16 +1,15 @@
 {
   "name": "@ohif/extension-cornerstone-dynamic-volume",
-  "version": "3.7.0-beta.76",
+  "version": "3.8.0-beta.72",
   "description": "OHIF extension for 4D volumes data",
   "author": "OHIF",
   "license": "MIT",
   "repository": "OHIF/Viewers",
   "main": "dist/ohif-extension-cornerstone-dynamic-volume.umd.js",
   "module": "src/index.ts",
-  "engines": {
-    "node": ">=14",
-    "npm": ">=6",
-    "yarn": ">=1.16.0"
+  "exports": {
+    ".": "./src/index.ts",
+    "./types": "./src/types/index.ts"
   },
   "files": [
     "dist",
@@ -23,6 +22,8 @@
     "dev": "cross-env NODE_ENV=development webpack --config .webpack/webpack.dev.js --watch --output-pathinfo",
     "build": "cross-env NODE_ENV=production webpack --config .webpack/webpack.prod.js",
     "build:package": "yarn run build",
+    "clean": "shx rm -rf dist",
+    "clean:deep": "yarn run clean && shx rm -rf node_modules",
     "start": "yarn run dev",
     "test:unit": "jest --watchAll",
     "test:unit:ci": "jest --ci --runInBand --collectCoverage --passWithNoTests"
@@ -41,6 +42,9 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.20.13",
+    "@cornerstonejs/tools": "^1.70.0",
+    "@cornerstonejs/core": "^1.70.0",
+    "@cornerstonejs/streaming-image-volume-loader": "^1.70.0",
     "classnames": "^2.3.2"
   }
 }
