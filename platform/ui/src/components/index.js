@@ -189,6 +189,7 @@ export {
   ViewportOverlay,
   WindowLevel,
   WindowLevelMenuItem,
+  MeasurementItem,
   InputDoubleRange,
   LabellingFlow,
   HeaderPatientInfo,
@@ -197,5 +198,4 @@ export {
   ToolSettings,
   Toolbox,
   InvestigationalUseDialog,
-  MeasurementItem,
 };

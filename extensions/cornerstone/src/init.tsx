@@ -15,7 +15,6 @@ import {
   utilities as csUtilities,
   Enums as csEnums,
 } from '@cornerstonejs/core';
-import { utilities } from '@cornerstonejs/tools';
 import {
   cornerstoneStreamingImageVolumeLoader,
   cornerstoneStreamingDynamicImageVolumeLoader,
