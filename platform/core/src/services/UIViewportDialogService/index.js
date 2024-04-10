@@ -26,7 +26,7 @@ const serviceImplementation = {
  *
  * @param {ViewportDialogProps} props { content, contentProps, viewportId }
  */
-function _show({ viewportId, id, type, message, actions, onSubmit, onOutsideClick }) {
+function _show({ viewportId, id, type, message, actions, onSubmit, onOutsideClick, onKeyPress }) {
   return serviceImplementation._show({
     viewportId,
     id,
@@ -35,6 +35,7 @@ function _show({ viewportId, id, type, message, actions, onSubmit, onOutsideClic
     actions,
     onSubmit,
     onOutsideClick,
+    onKeyPress,
   });
 }
 

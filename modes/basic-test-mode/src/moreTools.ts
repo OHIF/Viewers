@@ -119,7 +119,7 @@ const moreTools = [
           evaluate: 'evaluate.viewportProperties.toggle',
         }),
         createButton({
-          id: 'DragProbe',
+          id: 'Probe',
           icon: 'tool-probe',
           label: 'Probe',
           tooltip: 'Probe',
