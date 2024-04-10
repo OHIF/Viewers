@@ -83,7 +83,6 @@ import PanelSection from './PanelSection';
 import AdvancedToolbox from './AdvancedToolbox';
 import InputDoubleRange from './InputDoubleRange';
 import LegacyButtonGroup from './LegacyButtonGroup';
-import MeasurementItem from './MeasurementTable/MeasurementItem';
 import LabellingFlow from './Labelling';
 import SwitchButton, { SwitchLabelLocation } from './SwitchButton';
 import * as AllInOneMenu from './AllInOneMenu';
@@ -199,5 +198,4 @@ export {
   ToolSettings,
   Toolbox,
   InvestigationalUseDialog,
-  MeasurementItem,
 };

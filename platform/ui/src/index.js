@@ -131,7 +131,6 @@ export {
   ToolSettings,
   Toolbox,
   InvestigationalUseDialog,
-  MeasurementItem,
   LayoutPreset,
 } from './components';
 
