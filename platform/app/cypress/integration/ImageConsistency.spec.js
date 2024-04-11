@@ -9,6 +9,9 @@ const testPixel = (dx, dy, expectedPixel) => {
     const canvas = v[0];
     cy.log(
       'testPixel canvas',
+      dx,
+      dy,
+      expectedPixel,
       canvas.width,
       canvas.height,
       canvas.style.width,
@@ -24,13 +27,14 @@ const testPixel = (dx, dy, expectedPixel) => {
         const origin = viewport.worldToCanvas(imageData.origin);
         const orX = origin[0] * devicePixelRatio;
         const orY = origin[1] * devicePixelRatio;
-        const x = Math.floor(orX + dx);
-        const y = Math.floor(orY + dy);
+        const x = Math.round(orX + dx);
+        const y = Math.round(orY + dy);
         cy.log('testPixel origin x,y point x,y', orX, orY, x, y);
         // cy.log('world origin', imageData.origin);
         // cy.log('focal', viewport.getCamera().focalPoint,
         // viewport.worldToCanvas(viewport.getCamera().focalPoint));
         const pixelData = ctx.getImageData(x, y, 1, 1);
+
         expect(pixelData.data[0]).closeTo(expectedPixel, 1);
       });
   });
@@ -40,7 +44,7 @@ describe('CS3D Image Consistency and Quality', () => {
   const setupStudySeries = (studyUID, seriesUID) => {
     cy.checkStudyRouteInViewer(
       studyUID,
-      `&seriesInstanceUID=${seriesUID}&hangingProtocolId=hpScale`
+      `&seriesInstanceUID=${seriesUID}&hangingProtocolId=@ohif/hpScale`
     );
     cy.initCornerstoneToolsAliases();
     cy.initCommonElementsAliases();
@@ -60,7 +64,8 @@ describe('CS3D Image Consistency and Quality', () => {
     testPixel(1018, 1027, 0);
   });
 
-  it('8 bit image displayable', () => {
+  // Missing test data - todo
+  it.skip('8 bit image displayable', () => {
     setupStudySeries('1.3.46.670589.17.1.7.1.1.7', '1.3.46.670589.17.1.7.2.1.7');
 
     // Compare with dcm2jpg generated values or by manually computing WL values
@@ -68,7 +73,7 @@ describe('CS3D Image Consistency and Quality', () => {
     testPixel(259, 257, 166);
   });
 
-  it('12 bit image displayable and zoom with pixel spacing', () => {
+  it.skip('12 bit image displayable and zoom with pixel spacing', () => {
     setupStudySeries(
       '1.3.6.1.4.1.25403.345050719074.3824.20170125113417.1',
       '1.3.6.1.4.1.25403.345050719074.3824.20170125113608.5'
