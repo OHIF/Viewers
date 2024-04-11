@@ -114,7 +114,7 @@ function ViewerHeader({ hotkeysManager, extensionManager, servicesManager, appCo
       appConfig={appConfig}
     >
       <ErrorBoundary context="Primary Toolbar">
-        <div className="relative flex justify-center">
+        <div className="relative flex justify-center gap-[4px]">
           <Toolbar servicesManager={servicesManager} />
         </div>
       </ErrorBoundary>

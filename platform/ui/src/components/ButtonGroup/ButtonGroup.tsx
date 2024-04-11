@@ -40,27 +40,30 @@ const ButtonGroup = ({
         'border-secondary-light rounded-[5px] border bg-black': !separated,
       })}
     >
-      {!separated &&
-        Children.map(children, (child, index) => {
-          if (React.isValidElement(child)) {
-            return cloneElement(child, {
-              key: index,
-              className: classnames(
-                'rounded-[4px] px-2 py-1',
-                index === activeIndex
-                  ? 'bg-customblue-40 text-white'
-                  : 'text-primary-active bg-black',
-                child.props.className,
-                disabled ? 'ohif-disabled' : ''
-              ),
-              onClick: e => {
-                child.props.onClick && child.props.onClick(e);
-                handleButtonClick(index);
-              },
-            });
-          }
-          return child;
-        })}
+      {!separated && (
+        <div className="flex h-[32px]">
+          {Children.map(children, (child, index) => {
+            if (React.isValidElement(child)) {
+              return cloneElement(child, {
+                key: index,
+                className: classnames(
+                  'rounded-[4px] px-2 py-1',
+                  index === activeIndex
+                    ? 'bg-customblue-40 text-white'
+                    : 'text-primary-active bg-black',
+                  child.props.className,
+                  disabled ? 'ohif-disabled' : ''
+                ),
+                onClick: e => {
+                  child.props.onClick && child.props.onClick(e);
+                  handleButtonClick(index);
+                },
+              });
+            }
+            return child;
+          })}
+        </div>
+      )}
       {separated && (
         <div className="flex space-x-2">
           {Children.map(children, (child, index) => {
