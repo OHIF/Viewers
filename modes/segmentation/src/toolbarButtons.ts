@@ -13,21 +13,21 @@ const ReferenceLinesListeners: RunCommand = [
 export const setToolActiveToolbar = {
   commandName: 'setToolActiveToolbar',
   commandOptions: {
-    toolGroupIds: ['default', 'mpr', 'SRToolGroup'],
+    toolGroupIds: ['default', 'mpr', 'SRToolGroup', 'volume3d'],
   },
 };
 
 export const toggleEnabledDisabledToolbar = {
   commandName: 'toggleEnabledDisabledToolbar',
   commandOptions: {
-    toolGroupIds: ['default', 'mpr', 'SRToolGroup'],
+    toolGroupIds: ['default', 'mpr', 'SRToolGroup', 'volume3d'],
   },
 };
 
 export const toggleActiveDisabledToolbar = {
   commandName: 'toggleActiveDisabledToolbar',
   commandOptions: {
-    toolGroupIds: ['default', 'mpr', 'SRToolGroup'],
+    toolGroupIds: ['default', 'mpr', 'SRToolGroup', 'volume3d'],
   },
 };
 
