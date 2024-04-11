@@ -226,9 +226,6 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager, m
       },
       { toolName: toolNames.ReferenceLines },
     ],
-
-    // enabled
-    // disabled
   };
 
   toolGroupService.createToolGroupAndAddTools('mpr', tools);

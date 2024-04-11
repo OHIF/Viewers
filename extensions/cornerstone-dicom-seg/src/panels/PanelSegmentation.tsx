@@ -152,6 +152,7 @@ export default function PanelSegmentation({
     segmentationService.removeSegment(segmentationId, segmentIndex);
   };
 
+  // segment hide
   const onToggleSegmentVisibility = (segmentationId, segmentIndex) => {
     const segmentation = segmentationService.getSegmentation(segmentationId);
     const segmentInfo = segmentation.segments[segmentIndex];
