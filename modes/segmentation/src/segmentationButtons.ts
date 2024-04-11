@@ -136,8 +136,16 @@ const toolbarButtons: Button[] = [
                 { value: 'ThresholdDynamic', label: 'Dynamic' },
                 { value: 'ThresholdRange', label: 'Range' },
               ],
-              commands: {
-                commandName: 'toggleThresholdRangeAndDynamic',
+              commands: ({ value, commandsManager }) => {
+                if (value === 'ThresholdDynamic') {
+                  commandsManager.run('setToolActive', {
+                    toolName: 'ThresholdCircularBrushDynamic',
+                  });
+                } else {
+                  commandsManager.run('setToolActive', {
+                    toolName: 'ThresholdCircularBrush',
+                  });
+                }
               },
             },
             {

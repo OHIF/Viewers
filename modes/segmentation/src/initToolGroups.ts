@@ -41,7 +41,6 @@ function createTools(utilityModule) {
         parentTool: 'Brush',
         configuration: {
           activeStrategy: 'THRESHOLD_INSIDE_CIRCLE',
-          dynamicRadius: 3,
         },
       },
       {
@@ -49,7 +48,19 @@ function createTools(utilityModule) {
         parentTool: 'Brush',
         configuration: {
           activeStrategy: 'THRESHOLD_INSIDE_SPHERE',
-          dynamicRadius: 3,
+        },
+      },
+      {
+        toolName: 'ThresholdCircularBrushDynamic',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'THRESHOLD_INSIDE_CIRCLE',
+          strategySpecificConfiguration: {
+            THRESHOLD: {
+              isDynamic: true,
+              dynamicRadius: 3,
+            },
+          },
         },
       },
       { toolName: toolNames.CircleScissors },
