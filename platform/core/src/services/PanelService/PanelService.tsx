@@ -49,9 +49,19 @@ export default class PanelService extends PubSubService {
     const entry = this._extensionManager.getModuleEntry(panelId);
 
     if (!entry) {
-      throw new Error(
-        `${panelId} is not a valid entry for an extension module, please check your configuration or make sure the extension is registered.`
-      );
+      // Check for similar panel names
+      const similarPanels = this._getSimilarPanels(panelId);
+
+      if (similarPanels.length > 0) {
+        const suggestion = `Did you mean: ${similarPanels.join(', ')}?`;
+        throw new Error(
+          `${panelId} is not a valid entry for an extension module. ${suggestion} Please check your configuration or make sure the extension is registered.`
+        );
+      } else {
+        throw new Error(
+          `${panelId} is not a valid entry for an extension module, please check your configuration or make sure the extension is registered.`
+        );
+      }
     }
 
     if (!entry?.component) {
@@ -63,6 +73,27 @@ export default class PanelService extends PubSubService {
     const content = entry.component;
 
     return { entry, content };
+  }
+
+  private _getSimilarPanels(panelId: string, threshold = 0.8): string[] {
+    const registeredPanels = Object.keys(this._extensionManager.modulesMap).filter(name =>
+      name.includes('panelModule')
+    );
+
+    const similarPanels = registeredPanels.filter(registeredPanelId => {
+      const similarity = this._calculateSimilarity(panelId, registeredPanelId);
+      return similarity >= threshold;
+    });
+
+    return similarPanels;
+  }
+
+  private _calculateSimilarity(str1: string, str2: string): number {
+    const set1 = new Set(str1.toLowerCase().split(''));
+    const set2 = new Set(str2.toLowerCase().split(''));
+    const intersection = new Set([...set1].filter(x => set2.has(x)));
+    const union = new Set([...set1, ...set2]);
+    return intersection.size / union.size;
   }
 
   public getPanelData(panelId): PanelData {
