@@ -10,7 +10,7 @@ import {
   utilities as csUtils,
 } from '@cornerstonejs/core';
 import { MeasurementService } from '@ohif/core';
-import { Notification, useViewportDialog, Types as UITypes, AllInOneMenu } from '@ohif/ui';
+import { Notification, useViewportDialog, AllInOneMenu } from '@ohif/ui';
 import { IStackViewport, IVolumeViewport } from '@cornerstonejs/core/dist/esm/types';
 
 import { setEnabledElement } from '../state';
@@ -114,7 +114,6 @@ const OHIFCornerstoneViewport = React.memo(props => {
     // of the imageData in the OHIFCornerstoneViewport. This prop is used
     // to set the initial state of the viewport's first image to render
     initialImageIndex,
-    onReady,
   } = props;
 
   const viewportId = viewportOptions.viewportId;
@@ -142,7 +141,6 @@ const OHIFCornerstoneViewport = React.memo(props => {
     viewportGridService,
     stateSyncService,
     viewportActionCornersService,
-    customizationService,
   } = servicesManager.services as CornerstoneServices;
 
   const [viewportDialogState] = useViewportDialog();
@@ -203,7 +201,6 @@ const OHIFCornerstoneViewport = React.memo(props => {
 
       if (onElementEnabled) {
         onElementEnabled(evt);
-        onReady?.(evt);
       }
     },
     [viewportId, onElementEnabled, toolGroupService]
@@ -444,6 +441,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
             actions={viewportDialogState.actions}
             onSubmit={viewportDialogState.onSubmit}
             onOutsideClick={viewportDialogState.onOutsideClick}
+            onKeyPress={viewportDialogState.onKeyPress}
           />
         )}
       </div>

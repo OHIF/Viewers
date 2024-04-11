@@ -64,6 +64,136 @@ function getCustomizationModule() {
             step: 1,
           },
         },
+        {
+          id: 'cornerstone.measurements',
+          Angle: {
+            displayText: [],
+            report: [],
+          },
+          CobbAngle: {
+            displayText: [],
+            report: [],
+          },
+          ArrowAnnotate: {
+            displayText: [],
+            report: [],
+          },
+          RectangleROi: {
+            displayText: [],
+            report: [],
+          },
+          CircleROI: {
+            displayText: [],
+            report: [],
+          },
+          EllipticalROI: {
+            displayText: [],
+            report: [],
+          },
+          Bidirectional: {
+            displayText: [],
+            report: [],
+          },
+          Length: {
+            displayText: [],
+            report: [],
+          },
+          LivewireContour: {
+            displayText: [],
+            report: [],
+          },
+          SplineROI: {
+            displayText: [
+              {
+                displayName: 'Area',
+                value: 'area',
+                type: 'value',
+              },
+              {
+                value: 'areaUnit',
+                for: ['area'],
+                type: 'unit',
+              },
+              /**
+              {
+                displayName: 'Modality',
+                value: 'Modality',
+                type: 'value',
+              },
+              */
+            ],
+            report: [
+              {
+                displayName: 'Area',
+                value: 'area',
+                type: 'value',
+              },
+              {
+                displayName: 'Unit',
+                value: 'areaUnit',
+                type: 'value',
+              },
+            ],
+          },
+          PlanarFreehandROI: {
+            displayText: [
+              {
+                displayName: 'Mean',
+                value: 'mean',
+                type: 'value',
+              },
+              {
+                displayName: 'Max',
+                value: 'max',
+                type: 'value',
+              },
+              {
+                displayName: 'Area',
+                value: 'area',
+                type: 'value',
+              },
+              {
+                value: 'modalityUnit',
+                for: ['mean', 'max' /** 'stdDev **/],
+                type: 'unit',
+              },
+              {
+                value: 'areaUnit',
+                for: ['area'],
+                type: 'unit',
+              },
+              /**
+              {
+                displayName: 'Std Dev',
+                value: 'stdDev',
+                type: 'value',
+              },
+              */
+            ],
+            report: [
+              {
+                displayName: 'Mean',
+                value: 'mean',
+                type: 'value',
+              },
+              {
+                displayName: 'Max',
+                value: 'max',
+                type: 'value',
+              },
+              {
+                displayName: 'Area',
+                value: 'area',
+                type: 'value',
+              },
+              {
+                displayName: 'Unit',
+                value: 'unit',
+                type: 'value',
+              },
+            ],
+          },
+        },
       ],
     },
   ];

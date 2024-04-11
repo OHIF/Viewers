@@ -125,12 +125,12 @@ export {
   WindowLevelMenuItem,
   ImageScrollbar,
   ViewportOverlay,
+  MeasurementItem,
   LabellingFlow,
   HeaderPatientInfo,
   ToolSettings,
   Toolbox,
   InvestigationalUseDialog,
-  MeasurementItem,
   LayoutPreset,
 } from './components';
 

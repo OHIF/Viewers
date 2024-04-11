@@ -14,7 +14,8 @@ const Length = {
     csToolsEventDetail,
     displaySetService,
     cornerstoneViewportService,
-    getValueTypeFromToolType
+    getValueTypeFromToolType,
+    customizationService
   ) => {
     const { annotation, viewportId } = csToolsEventDetail;
     const { metadata, data, annotationUID } = annotation;
@@ -52,7 +53,7 @@ const Length = {
 
     const mappedAnnotations = getMappedAnnotations(annotation, displaySetService);
 
-    const displayText = getDisplayText(mappedAnnotations, displaySet);
+    const displayText = getDisplayText(mappedAnnotations, displaySet, customizationService);
 
     return {
       uid: annotationUID,
@@ -106,7 +107,7 @@ function getMappedAnnotations(annotation, displaySetService) {
   return annotations;
 }
 
-function getDisplayText(mappedAnnotations, displaySet) {
+function getDisplayText(mappedAnnotations, displaySet, customizationService) {
   if (!mappedAnnotations) {
     return '';
   }

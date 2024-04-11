@@ -6,7 +6,7 @@ import { utils } from '@ohif/core';
 const { formatDate, formatPN } = utils;
 
 const formatWithEllipsis = (str, maxLength) => {
-  if (str.length > maxLength) {
+  if (str?.length > maxLength) {
     return str.substring(0, maxLength) + '...';
   }
   return str;
