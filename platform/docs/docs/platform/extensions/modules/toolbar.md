@@ -125,7 +125,7 @@ The following evaluators are provided by us:
 
 
 Sometime you want to use the same `evaluator` for different purposes, in that case you can use an object
-with `name` and `options` properties. For example, in `'evaluate.cornerstone.segmentation'` we use
+with `name` and other properties. For example, in `'evaluate.cornerstone.segmentation'` we use
 this pattern, where multiple toolbar buttons are using the same evaluator but with different options (
   in this case `toolNames`
 )
@@ -133,9 +133,7 @@ this pattern, where multiple toolbar buttons are using the same evaluator but wi
 ```js
 {
   name: 'evaluate.cornerstone.segmentation',
-  options: {
-    toolNames: ['CircleBrush' , 'SphereBrush']
-  },
+  toolNames: ['CircleBrush' , 'SphereBrush']
 },
 ```
 
@@ -392,7 +390,7 @@ three different modes
     label: 'Shapes',
     evaluate: {
       name: 'evaluate.cornerstone.segmentation',
-      options: { toolNames: ['CircleScissor', 'SphereScissor', 'RectangleScissor'] },
+      toolNames: ['CircleScissor', 'SphereScissor', 'RectangleScissor'],
     },
     icon: 'icon-tool-shape',
     commands: _createSetToolActiveCommands('CircleScissor'),
@@ -425,7 +423,7 @@ We use this for brush radius change
   label: 'Brush',
   evaluate: {
     name: 'evaluate.cornerstone.segmentation',
-    options: { toolNames: ['CircularBrush', 'SphereBrush'] },
+    toolNames: ['CircularBrush', 'SphereBrush'],
     disabledText: 'Create new segmentation to enable this tool.',
   },
   commands: _createSetToolActiveCommands('CircularBrush'),
