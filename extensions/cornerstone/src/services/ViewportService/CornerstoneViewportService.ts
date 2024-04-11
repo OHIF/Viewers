@@ -436,7 +436,6 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     const orientation = viewportInfo.getOrientation();
     const displayArea = viewportInfo.getDisplayArea();
 
-    console.log('Applying display area', displayArea);
     const viewportInput: Types.PublicViewportInput = {
       viewportId,
       element,
