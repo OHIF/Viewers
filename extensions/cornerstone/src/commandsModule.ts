@@ -441,11 +441,9 @@ function commandsModule({
 
       const { viewport } = enabledElement;
 
-      if (viewport instanceof StackViewport) {
-        const { flipHorizontal } = viewport.getCamera();
-        viewport.setCamera({ flipHorizontal: !flipHorizontal });
-        viewport.render();
-      }
+      const { flipHorizontal } = viewport.getCamera();
+      viewport.setCamera({ flipHorizontal: !flipHorizontal });
+      viewport.render();
     },
     flipViewportVertical: () => {
       const enabledElement = _getActiveViewportEnabledElement();
@@ -456,11 +454,9 @@ function commandsModule({
 
       const { viewport } = enabledElement;
 
-      if (viewport instanceof StackViewport) {
-        const { flipVertical } = viewport.getCamera();
-        viewport.setCamera({ flipVertical: !flipVertical });
-        viewport.render();
-      }
+      const { flipVertical } = viewport.getCamera();
+      viewport.setCamera({ flipVertical: !flipVertical });
+      viewport.render();
     },
     invertViewport: ({ element }) => {
       let enabledElement;

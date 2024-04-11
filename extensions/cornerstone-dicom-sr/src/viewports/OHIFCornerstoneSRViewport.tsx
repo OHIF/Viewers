@@ -203,7 +203,10 @@ function OHIFCornerstoneSRViewport(props) {
           // The positionIds for the viewport aren't meaningful for the child display sets
           positionIds: null,
         }}
-        onElementEnabled={onElementEnabled}
+        onElementEnabled={evt => {
+          props.onElementEnabled?.(evt);
+          onElementEnabled(evt);
+        }}
         initialImageIndex={initialImageIndex}
         isJumpToMeasurementDisabled={true}
       ></Component>
