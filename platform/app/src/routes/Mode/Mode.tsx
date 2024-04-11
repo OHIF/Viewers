@@ -310,7 +310,7 @@ export default function ModeRoute({
       }
       // The unsubscriptions must occur before the extension onModeExit
       // in order to prevent exceptions during cleanup caused by spurious events
-      unsubscriptions.forEach(unsub => {
+      unsubscriptions?.forEach(unsub => {
         unsub();
       });
       // The extension manager must be called after the mode, this is
