@@ -3,6 +3,120 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-beta.79](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.78...v3.8.0-beta.79) (2024-04-10)
+
+
+### Features
+
+* **SM:** remove SM measurements from measurement panel ([#4022](https://github.com/OHIF/Viewers/issues/4022)) ([df49a65](https://github.com/OHIF/Viewers/commit/df49a653be61a93f6e9fb3663aabe9775c31fd13))
+
+
+
+
+
+# [3.8.0-beta.78](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.77...v3.8.0-beta.78) (2024-04-10)
+
+
+### Bug Fixes
+
+* **general:** enhancements and bug fixes ([#4018](https://github.com/OHIF/Viewers/issues/4018)) ([2b83393](https://github.com/OHIF/Viewers/commit/2b83393f91cb16ea06821d79d14ff60f80c29c90))
+
+
+
+
+
+# [3.8.0-beta.77](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.76...v3.8.0-beta.77) (2024-04-10)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.8.0-beta.76](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.75...v3.8.0-beta.76) (2024-04-10)
+
+
+### Bug Fixes
+
+* **MetaDataProvider:** Fix tag in GeneralImageModule ([#4000](https://github.com/OHIF/Viewers/issues/4000)) ([e9c30a1](https://github.com/OHIF/Viewers/commit/e9c30a108e2dd14a8b137b81e5b832cc167bc3d1))
+
+
+
+
+
+# [3.8.0-beta.75](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.74...v3.8.0-beta.75) (2024-04-10)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.8.0-beta.74](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.73...v3.8.0-beta.74) (2024-04-10)
+
+
+### Features
+
+* **4D:** Add 4D dynamic volume rendering and new pre-clinical 4d pt/ct mode ([#3664](https://github.com/OHIF/Viewers/issues/3664)) ([d57e8bc](https://github.com/OHIF/Viewers/commit/d57e8bc1571c6da4effaa492ee2d162c552365a2))
+
+
+
+
+
+# [3.8.0-beta.73](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.72...v3.8.0-beta.73) (2024-04-08)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.8.0-beta.72](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.71...v3.8.0-beta.72) (2024-04-05)
+
+
+### Bug Fixes
+
+* **cornerstone-dicom-sr:** Freehand SR hydration support ([#3996](https://github.com/OHIF/Viewers/issues/3996)) ([5645ac1](https://github.com/OHIF/Viewers/commit/5645ac1b271e1ed8c57f5d71100809362447267e))
+
+
+
+
+
+# [3.8.0-beta.71](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.70...v3.8.0-beta.71) (2024-04-05)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.8.0-beta.70](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.69...v3.8.0-beta.70) (2024-04-05)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.8.0-beta.69](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.68...v3.8.0-beta.69) (2024-04-03)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.8.0-beta.68](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.67...v3.8.0-beta.68) (2024-04-03)
+
+
+### Features
+
+* **segmentation:** Enhanced segmentation panel design for TMTV ([#3988](https://github.com/OHIF/Viewers/issues/3988)) ([9f3235f](https://github.com/OHIF/Viewers/commit/9f3235ff096636aafa88d8a42859e8dc85d9036d))
+
+
+
+
+
 # [3.8.0-beta.67](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.66...v3.8.0-beta.67) (2024-04-02)
 
 

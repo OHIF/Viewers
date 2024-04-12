@@ -241,6 +241,12 @@ class MetadataProvider {
           sopInstanceUID: instance.SOPInstanceUID,
         };
         break;
+      case WADO_IMAGE_LOADER_TAGS.PET_IMAGE_MODULE:
+        metadata = {
+          frameReferenceTime: instance.FrameReferenceTime,
+          actualFrameDuration: instance.ActualFrameDuration,
+        };
+        break;
       case WADO_IMAGE_LOADER_TAGS.PET_ISOTOPE_MODULE:
         const { RadiopharmaceuticalInformationSequence } = instance;
 
@@ -363,7 +369,7 @@ class MetadataProvider {
 
       case WADO_IMAGE_LOADER_TAGS.GENERAL_IMAGE_MODULE:
         metadata = {
-          sopInstanceUid: instance.SOPInstanceUID,
+          sopInstanceUID: instance.SOPInstanceUID,
           instanceNumber: toNumber(instance.InstanceNumber),
           lossyImageCompression: instance.LossyImageCompression,
           lossyImageCompressionRatio: instance.LossyImageCompressionRatio,
@@ -391,6 +397,41 @@ class MetadataProvider {
           correctedImage: instance.CorrectedImage,
           units: instance.Units,
           decayCorrection: instance.DecayCorrection,
+        };
+        break;
+      case WADO_IMAGE_LOADER_TAGS.CALIBRATION_MODULE:
+        // map the DICOM tags to the cornerstone tags since cornerstone tags
+        // are camelCase and instance tags are all caps
+        metadata = {
+          sequenceOfUltrasoundRegions: instance.SequenceOfUltrasoundRegions?.map(region => {
+            return {
+              regionSpatialFormat: region.RegionSpatialFormat,
+              regionDataType: region.RegionDataType,
+              regionFlags: region.RegionFlags,
+              regionLocationMinX0: region.RegionLocationMinX0,
+              regionLocationMinY0: region.RegionLocationMinY0,
+              regionLocationMaxX1: region.RegionLocationMaxX1,
+              regionLocationMaxY1: region.RegionLocationMaxY1,
+              referencePixelX0: region.ReferencePixelX0,
+              referencePixelY0: region.ReferencePixelY0,
+              referencePixelPhysicalValueX: region.ReferencePixelPhysicalValueX,
+              referencePixelPhysicalValueY: region.ReferencePixelPhysicalValueY,
+              physicalUnitsXDirection: region.PhysicalUnitsXDirection,
+              physicalUnitsYDirection: region.PhysicalUnitsYDirection,
+              physicalDeltaX: region.PhysicalDeltaX,
+              physicalDeltaY: region.PhysicalDeltaY,
+            };
+          }),
+        };
+        break;
+
+      /**
+       * Below are the tags and not the modules since they are not really
+       * consistent with the modules above
+       */
+      case 'temporalPositionIdentifier':
+        metadata = {
+          temporalPositionIdentifier: instance.TemporalPositionIdentifier,
         };
         break;
 
@@ -539,6 +580,7 @@ const WADO_IMAGE_LOADER_TAGS = {
   VOI_LUT_MODULE: 'voiLutModule',
   MODALITY_LUT_MODULE: 'modalityLutModule',
   SOP_COMMON_MODULE: 'sopCommonModule',
+  PET_IMAGE_MODULE: 'petImageModule',
   PET_ISOTOPE_MODULE: 'petIsotopeModule',
   PER_SERIES_MODULE: 'petSeriesModule',
   OVERLAY_PLANE_MODULE: 'overlayPlaneModule',
@@ -549,6 +591,7 @@ const WADO_IMAGE_LOADER_TAGS = {
   GENERAL_IMAGE_MODULE: 'generalImageModule',
   GENERAL_STUDY_MODULE: 'generalStudyModule',
   CINE_MODULE: 'cineModule',
+  CALIBRATION_MODULE: 'calibrationModule',
 };
 
 const INSTANCE = 'instance';

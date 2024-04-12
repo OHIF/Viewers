@@ -3,6 +3,117 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-beta.79](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.78...v3.8.0-beta.79) (2024-04-10)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.8.0-beta.78](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.77...v3.8.0-beta.78) (2024-04-10)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.8.0-beta.77](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.76...v3.8.0-beta.77) (2024-04-10)
+
+
+### Bug Fixes
+
+* **dicom-video:** Update get direct func for dicom json to use url if present and fix config argument ([#4017](https://github.com/OHIF/Viewers/issues/4017)) ([4f99244](https://github.com/OHIF/Viewers/commit/4f99244d864427d69be6f863cb7a6a78411adb12))
+
+
+
+
+
+# [3.8.0-beta.76](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.75...v3.8.0-beta.76) (2024-04-10)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.8.0-beta.75](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.74...v3.8.0-beta.75) (2024-04-10)
+
+
+### Bug Fixes
+
+* Microscopy bulkdata and image retrieve ([#3894](https://github.com/OHIF/Viewers/issues/3894)) ([7fac49b](https://github.com/OHIF/Viewers/commit/7fac49b4492b4bd5e9ece8e2e2b0fa2faa840d7f))
+
+
+
+
+
+# [3.8.0-beta.74](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.73...v3.8.0-beta.74) (2024-04-10)
+
+
+### Features
+
+* **4D:** Add 4D dynamic volume rendering and new pre-clinical 4d pt/ct mode ([#3664](https://github.com/OHIF/Viewers/issues/3664)) ([d57e8bc](https://github.com/OHIF/Viewers/commit/d57e8bc1571c6da4effaa492ee2d162c552365a2))
+
+
+
+
+
+# [3.8.0-beta.73](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.72...v3.8.0-beta.73) (2024-04-08)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.8.0-beta.72](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.71...v3.8.0-beta.72) (2024-04-05)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.8.0-beta.71](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.70...v3.8.0-beta.71) (2024-04-05)
+
+
+### Features
+
+* **advanced-roi-tools:** new tools and icon updates and overlay bug fixes ([#4014](https://github.com/OHIF/Viewers/issues/4014)) ([cea27d4](https://github.com/OHIF/Viewers/commit/cea27d438d1de2c1ec90cbaefdc2b31a1d9980a1))
+
+
+
+
+
+# [3.8.0-beta.70](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.69...v3.8.0-beta.70) (2024-04-05)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.8.0-beta.69](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.68...v3.8.0-beta.69) (2024-04-03)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.8.0-beta.68](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.67...v3.8.0-beta.68) (2024-04-03)
+
+
+### Features
+
+* **segmentation:** Enhanced segmentation panel design for TMTV ([#3988](https://github.com/OHIF/Viewers/issues/3988)) ([9f3235f](https://github.com/OHIF/Viewers/commit/9f3235ff096636aafa88d8a42859e8dc85d9036d))
+
+
+
+
+
 # [3.8.0-beta.67](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.66...v3.8.0-beta.67) (2024-04-02)
 
 

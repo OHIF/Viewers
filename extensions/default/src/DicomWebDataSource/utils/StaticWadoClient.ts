@@ -1,4 +1,25 @@
 import { api } from 'dicomweb-client';
+import fixMultipart from './fixMultipart';
+
+const { DICOMwebClient } = api;
+
+const anyDicomwebClient = DICOMwebClient as any;
+
+// Ugly over-ride, but the internals aren't otherwise accessible.
+if (!anyDicomwebClient._orig_buildMultipartAcceptHeaderFieldValue) {
+  anyDicomwebClient._orig_buildMultipartAcceptHeaderFieldValue =
+    anyDicomwebClient._buildMultipartAcceptHeaderFieldValue;
+  anyDicomwebClient._buildMultipartAcceptHeaderFieldValue = function (mediaTypes, acceptableTypes) {
+    if (mediaTypes.length === 1 && mediaTypes[0].mediaType.endsWith('/*')) {
+      return '*/*';
+    } else {
+      return anyDicomwebClient._orig_buildMultipartAcceptHeaderFieldValue(
+        mediaTypes,
+        acceptableTypes
+      );
+    }
+  };
+}
 
 /**
  * An implementation of the static wado client, that fetches data from
@@ -25,9 +46,50 @@ export default class StaticWadoClient extends api.DICOMwebClient {
     modality: '00080060',
   };
 
-  constructor(qidoConfig) {
-    super(qidoConfig);
-    this.staticWado = qidoConfig.staticWado;
+  protected config;
+  protected staticWado;
+
+  constructor(config) {
+    super(config);
+    this.staticWado = config.staticWado;
+    this.config = config;
+  }
+
+  /**
+   * Handle improperly specified multipart/related return type.
+   * Note if the response is SUPPOSED to be multipart encoded already, then this
+   * will double-decode it.
+   *
+   * @param options
+   * @returns De-multiparted response data.
+   *
+   */
+  public retrieveBulkData(options): Promise<any[]> {
+    const shouldFixMultipart = this.config.fixBulkdataMultipart !== false;
+    const useOptions = {
+      ...options,
+    };
+    if (this.staticWado) {
+      useOptions.mediaTypes = [{ mediaType: 'application/*' }];
+    }
+    return super
+      .retrieveBulkData(useOptions)
+      .then(result => (shouldFixMultipart ? fixMultipart(result) : result));
+  }
+
+  /**
+   * Retrieves instance frames using the image/* media type when configured
+   * to do so (static wado back end).
+   */
+  public retrieveInstanceFrames(options) {
+    if (this.staticWado) {
+      return super.retrieveInstanceFrames({
+        ...options,
+        mediaTypes: [{ mediaType: 'image/*' }],
+      });
+    } else {
+      return super.retrieveInstanceFrames(options);
+    }
   }
 
   /**

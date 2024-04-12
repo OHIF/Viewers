@@ -53,8 +53,21 @@ function ToolboxUI(props) {
                     <Tooltip
                       position="bottom"
                       content={componentProps.label}
-                      secondaryContent={'Not available on the current viewport'}
+                      secondaryContent={componentProps.disabledText}
                     >
+                      <div className="bg-black">
+                        <Component
+                          {...componentProps}
+                          {...props}
+                          id={id}
+                          servicesManager={servicesManager}
+                          onInteraction={onInteraction}
+                          size="toolbox"
+                        />
+                      </div>
+                    </Tooltip>
+                  ) : (
+                    <div className="bg-black">
                       <Component
                         {...componentProps}
                         {...props}
@@ -63,16 +76,7 @@ function ToolboxUI(props) {
                         onInteraction={onInteraction}
                         size="toolbox"
                       />
-                    </Tooltip>
-                  ) : (
-                    <Component
-                      {...componentProps}
-                      {...props}
-                      id={id}
-                      servicesManager={servicesManager}
-                      onInteraction={onInteraction}
-                      size="toolbox"
-                    />
+                    </div>
                   )}
                 </div>
               );

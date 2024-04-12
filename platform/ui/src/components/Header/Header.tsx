@@ -20,6 +20,8 @@ function Header({
   WhiteLabeling,
   showPatientInfo = PatientInfoVisibility.VISIBLE_COLLAPSED,
   servicesManager,
+  Secondary,
+  appConfig,
   ...props
 }): ReactNode {
   const { t } = useTranslation('Header');
@@ -38,7 +40,7 @@ function Header({
       {...props}
     >
       <div className="relative h-[48px] items-center ">
-        {/* <div className="absolute left-0 top-1/2 flex -translate-y-1/2 items-center">
+        <div className="absolute left-0 top-1/2 flex -translate-y-1/2 items-center">
           <div
             className={classNames(
               'mr-3 inline-flex items-center',
@@ -57,17 +59,21 @@ function Header({
               {WhiteLabeling?.createLogoComponentFn?.(React, props) || <Svg name="logo-ohif" />}
             </div>
           </div>
-        </div> */}
+        </div>
+        <div className="absolute top-1/2 left-[250px]  h-8 -translate-y-1/2">{Secondary}</div>
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform">
           <div className="flex items-center justify-center space-x-2">{children}</div>
         </div>
         <div className="absolute right-0 top-1/2 flex -translate-y-1/2 select-none items-center">
           {(showPatientInfo === PatientInfoVisibility.VISIBLE ||
             showPatientInfo === PatientInfoVisibility.VISIBLE_COLLAPSED) && (
-            <HeaderPatientInfo servicesManager={servicesManager} />
+            <HeaderPatientInfo
+              servicesManager={servicesManager}
+              appConfig={appConfig}
+            />
           )}
           <div className="border-primary-dark mx-1.5 h-[25px] border-r"></div>
-          {/* <div className="flex-shrink-0">
+          <div className="flex-shrink-0">
             <Dropdown
               id="options"
               showDropdownIcon={false}
@@ -84,7 +90,7 @@ function Header({
                 <Icon name="icon-settings" />
               </IconButton>
             </Dropdown>
-          </div> */}
+          </div>
         </div>
       </div>
     </NavBar>

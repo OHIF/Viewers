@@ -40,17 +40,19 @@ function calculateSuvPeak(
     return;
   }
 
-  if (labelmap.scalarData.length !== referenceVolume.scalarData.length) {
+  const labelmapData = labelmap.getScalarData();
+  const referenceVolumeData = referenceVolume.getScalarData();
+
+  if (labelmapData.length !== referenceVolumeData.length) {
     throw new Error('labelmap and referenceVolume must have the same number of pixels');
   }
 
-  const { scalarData: labelmapData, dimensions, imageData: labelmapImageData } = labelmap;
-
-  const { scalarData: referenceVolumeData, imageData: referenceVolumeImageData } = referenceVolume;
+  const { dimensions, imageData: labelmapImageData } = labelmap;
+  const { imageData: referenceVolumeImageData } = referenceVolume;
 
   let boundsIJK;
   // Todo: using the first annotation for now
-  if (annotations && annotations[0].data?.cachedStats) {
+  if (annotations?.length && annotations[0].data?.cachedStats) {
     const { projectionPoints } = annotations[0].data.cachedStats;
     const pointsToUse = [].concat(...projectionPoints); // cannot use flat() because of typescript compiler right now
 

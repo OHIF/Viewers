@@ -16,8 +16,6 @@ const getPanelModule = ({
   const wrappedPanelSegmentation = configuration => {
     const [appConfig] = useAppConfig();
 
-    const disableEditingForMode = customizationService.get('segmentation.disableEditing');
-
     return (
       <PanelSegmentation
         commandsManager={commandsManager}
@@ -25,13 +23,16 @@ const getPanelModule = ({
         extensionManager={extensionManager}
         configuration={{
           ...configuration,
-          disableEditing: appConfig.disableEditing || disableEditingForMode?.value,
+          disableEditing: appConfig.disableEditing,
+          ...customizationService.get('segmentation.panel'),
         }}
       />
     );
   };
 
   const wrappedPanelSegmentationWithTools = configuration => {
+    const [appConfig] = useAppConfig();
+
     return (
       <>
         <Toolbox
@@ -50,6 +51,8 @@ const getPanelModule = ({
           extensionManager={extensionManager}
           configuration={{
             ...configuration,
+            disableEditing: appConfig.disableEditing,
+            ...customizationService.get('segmentation.panel'),
           }}
         />
       </>

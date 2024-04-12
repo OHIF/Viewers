@@ -206,6 +206,9 @@ const commandsModule = ({
     loadSegmentationDisplaySetsForViewport: async ({ viewportId, displaySets }) => {
       // Todo: handle adding more than one segmentation
       const displaySet = displaySets[0];
+      const referencedDisplaySet = displaySetService.getDisplaySetByUID(
+        displaySet.referencedDisplaySetInstanceUID
+      );
 
       updateViewportsForSegmentationRendering({
         viewportId,
@@ -221,7 +224,8 @@ const commandsModule = ({
 
           const boundFn = segmentationService[serviceFunction].bind(segmentationService);
           const segmentationId = await boundFn(segDisplaySet, null, suppressEvents);
-
+          const segmentation = segmentationService.getSegmentation(segmentationId);
+          segmentation.description = `S${referencedDisplaySet.SeriesNumber}: ${referencedDisplaySet.SeriesDescription}`;
           return segmentationId;
         },
       });

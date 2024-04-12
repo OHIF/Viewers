@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { Input, Button } from '@ohif/ui';
+import { PanelSection, Input, Button } from '@ohif/ui';
 import { DicomMetadataStore, ServicesManager } from '@ohif/core';
 import { useTranslation } from 'react-i18next';
 
@@ -126,84 +126,102 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
     }, 0);
   }
   return (
-    <div className="invisible-scrollbar overflow-y-auto overflow-x-hidden">
-      {
-        <div className="flex flex-col">
-          <div className="bg-primary-dark flex flex-col space-y-4 p-4">
-            <Input
-              label={t('Patient Sex')}
-              labelClassName="text-white mb-2"
-              className="mt-1"
-              value={metadata.PatientSex || ''}
-              onChange={e => {
-                handleMetadataChange({
-                  PatientSex: e.target.value,
-                });
-              }}
-            />
-            <Input
-              label={t('Patient Weight (kg)')}
-              labelClassName="text-white mb-2"
-              className="mt-1"
-              value={metadata.PatientWeight || ''}
-              onChange={e => {
-                handleMetadataChange({
-                  PatientWeight: e.target.value,
-                });
-              }}
-            />
-            <Input
-              label={t('Total Dose (bq)')}
-              labelClassName="text-white mb-2"
-              className="mt-1"
-              value={metadata.RadiopharmaceuticalInformationSequence.RadionuclideTotalDose || ''}
-              onChange={e => {
-                handleMetadataChange({
-                  RadiopharmaceuticalInformationSequence: {
-                    RadionuclideTotalDose: e.target.value,
-                  },
-                });
-              }}
-            />
-            <Input
-              label={t('Half Life (s)')}
-              labelClassName="text-white mb-2"
-              className="mt-1"
-              value={metadata.RadiopharmaceuticalInformationSequence.RadionuclideHalfLife || ''}
-              onChange={e => {
-                handleMetadataChange({
-                  RadiopharmaceuticalInformationSequence: {
-                    RadionuclideHalfLife: e.target.value,
-                  },
-                });
-              }}
-            />
-            <Input
-              label={t('Injection Time (s)')}
-              labelClassName="text-white mb-2"
-              className="mt-1"
-              value={
-                metadata.RadiopharmaceuticalInformationSequence.RadiopharmaceuticalStartTime || ''
-              }
-              onChange={e => {
-                handleMetadataChange({
-                  RadiopharmaceuticalInformationSequence: {
-                    RadiopharmaceuticalStartTime: e.target.value,
-                  },
-                });
-              }}
-            />
-            <Input
-              label={t('Acquisition Time (s)')}
-              labelClassName="text-white mb-2"
-              className="mt-1 mb-2"
-              value={metadata.SeriesTime || ''}
-              onChange={() => {}}
-            />
-            <Button onClick={updateMetadata}>Reload Data</Button>
+    <div className="ohif-scrollbar flex min-h-0 flex-auto select-none flex-col justify-between overflow-auto">
+      <div className="flex min-h-0 flex-col bg-black text-[13px] font-[300]">
+        <PanelSection title={t('Patient Information')}>
+          <div className="flex flex-col">
+            <div className="bg-primary-dark flex flex-col gap-4 p-2">
+              <Input
+                containerClassName={'!flex-row !justify-between items-center'}
+                label={t('Patient Sex')}
+                labelClassName="text-[13px] font-inter text-white"
+                className="!m-0 !h-[26px] !w-[117px]"
+                value={metadata.PatientSex || ''}
+                onChange={e => {
+                  handleMetadataChange({
+                    PatientSex: e.target.value,
+                  });
+                }}
+              />
+              <Input
+                containerClassName={'!flex-row !justify-between items-center'}
+                label={t('Weight')}
+                labelChildren={<span className="text-aqua-pale"> kg</span>}
+                labelClassName="text-[13px] font-inter text-white"
+                className="!m-0 !h-[26px] !w-[117px]"
+                value={metadata.PatientWeight || ''}
+                onChange={e => {
+                  handleMetadataChange({
+                    PatientWeight: e.target.value,
+                  });
+                }}
+              />
+              <Input
+                containerClassName={'!flex-row !justify-between items-center'}
+                label={t('Total Dose')}
+                labelChildren={<span className="text-aqua-pale"> bq</span>}
+                labelClassName="text-[13px] font-inter text-white"
+                className="!m-0 !h-[26px] !w-[117px]"
+                value={metadata.RadiopharmaceuticalInformationSequence.RadionuclideTotalDose || ''}
+                onChange={e => {
+                  handleMetadataChange({
+                    RadiopharmaceuticalInformationSequence: {
+                      RadionuclideTotalDose: e.target.value,
+                    },
+                  });
+                }}
+              />
+              <Input
+                containerClassName={'!flex-row !justify-between items-center'}
+                label={t('Half Life')}
+                labelChildren={<span className="text-aqua-pale"> s</span>}
+                labelClassName="text-[13px] font-inter text-white"
+                className="!m-0 !h-[26px] !w-[117px]"
+                value={metadata.RadiopharmaceuticalInformationSequence.RadionuclideHalfLife || ''}
+                onChange={e => {
+                  handleMetadataChange({
+                    RadiopharmaceuticalInformationSequence: {
+                      RadionuclideHalfLife: e.target.value,
+                    },
+                  });
+                }}
+              />
+              <Input
+                containerClassName={'!flex-row !justify-between items-center'}
+                label={t('Injection Time')}
+                labelChildren={<span className="text-aqua-pale"> s</span>}
+                labelClassName="text-[13px] font-inter text-white"
+                className="!m-0 !h-[26px] !w-[117px]"
+                value={
+                  metadata.RadiopharmaceuticalInformationSequence.RadiopharmaceuticalStartTime || ''
+                }
+                onChange={e => {
+                  handleMetadataChange({
+                    RadiopharmaceuticalInformationSequence: {
+                      RadiopharmaceuticalStartTime: e.target.value,
+                    },
+                  });
+                }}
+              />
+              <Input
+                containerClassName={'!flex-row !justify-between items-center'}
+                label={t('Acquisition Time')}
+                labelChildren={<span className="text-aqua-pale"> s</span>}
+                labelClassName="text-[13px] font-inter text-white"
+                className="!m-0 !h-[26px] !w-[117px]"
+                value={metadata.SeriesTime || ''}
+                onChange={() => {}}
+              />
+              <Button
+                className="!h-[26px] !w-[115px] self-end !p-0"
+                onClick={updateMetadata}
+              >
+                Reload Data
+              </Button>
+            </div>
           </div>
-        </div>
-      }
+        </PanelSection>
+      </div>
     </div>
   );
 }

@@ -1,9 +1,11 @@
 /* CUSTOM OHIF SCROLLBAR */
 .ohif-scrollbar {
-  scrollbar-color: #041c4a transparent;
-  scrollbar-gutter: stable;
-  scrollbar-width: thin;
+  scrollbar-color: #173239 transparent;
+  overflow-y: auto;
+}
 
+.ohif-scrollbar-stable-gutter {
+  scrollbar-gutter: stable;
 }
 
 .study-min-height {

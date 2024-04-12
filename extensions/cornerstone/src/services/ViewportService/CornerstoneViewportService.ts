@@ -24,6 +24,7 @@ import JumpPresets from '../../utils/JumpPresets';
 
 const EVENTS = {
   VIEWPORT_DATA_CHANGED: 'event::cornerstoneViewportService:viewportDataChanged',
+  VIEWPORT_VOLUMES_CHANGED: 'event::cornerstoneViewportService:viewportVolumesChanged',
 };
 
 /**
@@ -182,13 +183,14 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     const { lutPresentation, positionPresentation } = presentations;
     if (lutPresentation) {
       const { presentation } = lutPresentation;
-
-      if (viewport instanceof BaseVolumeViewport) {
-        Object.entries(presentation).forEach(
-          ([volumeId, properties]: [string, Types.ViewportProperties]) => {
+      if (viewport instanceof VolumeViewport) {
+        if (presentation instanceof Map) {
+          presentation.forEach((properties, volumeId) => {
             viewport.setProperties(properties, volumeId);
-          }
-        );
+          });
+        } else {
+          viewport.setProperties(presentation);
+        }
       } else {
         viewport.setProperties(presentation);
       }
@@ -792,6 +794,10 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     }
 
     viewport.render();
+
+    this._broadcastEvent(this.EVENTS.VIEWPORT_VOLUMES_CHANGED, {
+      viewportInfo,
+    });
   }
 
   private _addSegmentationRepresentationToToolGroupIfNecessary(

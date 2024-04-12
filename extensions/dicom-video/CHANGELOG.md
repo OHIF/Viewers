@@ -3,6 +3,105 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-beta.79](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.78...v3.8.0-beta.79) (2024-04-10)
+
+**Note:** Version bump only for package @ohif/extension-dicom-video
+
+
+
+
+
+# [3.8.0-beta.78](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.77...v3.8.0-beta.78) (2024-04-10)
+
+**Note:** Version bump only for package @ohif/extension-dicom-video
+
+
+
+
+
+# [3.8.0-beta.77](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.76...v3.8.0-beta.77) (2024-04-10)
+
+
+### Bug Fixes
+
+* **dicom-video:** Update get direct func for dicom json to use url if present and fix config argument ([#4017](https://github.com/OHIF/Viewers/issues/4017)) ([4f99244](https://github.com/OHIF/Viewers/commit/4f99244d864427d69be6f863cb7a6a78411adb12))
+
+
+
+
+
+# [3.8.0-beta.76](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.75...v3.8.0-beta.76) (2024-04-10)
+
+**Note:** Version bump only for package @ohif/extension-dicom-video
+
+
+
+
+
+# [3.8.0-beta.75](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.74...v3.8.0-beta.75) (2024-04-10)
+
+**Note:** Version bump only for package @ohif/extension-dicom-video
+
+
+
+
+
+# [3.8.0-beta.74](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.73...v3.8.0-beta.74) (2024-04-10)
+
+**Note:** Version bump only for package @ohif/extension-dicom-video
+
+
+
+
+
+# [3.8.0-beta.73](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.72...v3.8.0-beta.73) (2024-04-08)
+
+**Note:** Version bump only for package @ohif/extension-dicom-video
+
+
+
+
+
+# [3.8.0-beta.72](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.71...v3.8.0-beta.72) (2024-04-05)
+
+**Note:** Version bump only for package @ohif/extension-dicom-video
+
+
+
+
+
+# [3.8.0-beta.71](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.70...v3.8.0-beta.71) (2024-04-05)
+
+**Note:** Version bump only for package @ohif/extension-dicom-video
+
+
+
+
+
+# [3.8.0-beta.70](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.69...v3.8.0-beta.70) (2024-04-05)
+
+**Note:** Version bump only for package @ohif/extension-dicom-video
+
+
+
+
+
+# [3.8.0-beta.69](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.68...v3.8.0-beta.69) (2024-04-03)
+
+**Note:** Version bump only for package @ohif/extension-dicom-video
+
+
+
+
+
+# [3.8.0-beta.68](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.67...v3.8.0-beta.68) (2024-04-03)
+
+**Note:** Version bump only for package @ohif/extension-dicom-video
+
+
+
+
+
 # [3.8.0-beta.67](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.66...v3.8.0-beta.67) (2024-04-02)
 
 **Note:** Version bump only for package @ohif/extension-dicom-video

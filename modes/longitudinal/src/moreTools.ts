@@ -11,6 +11,20 @@ const ReferenceLinesListeners: RunCommand = [
   },
 ];
 
+export const toggleEnabledDisabledToolbar = {
+  commandName: 'toggleEnabledDisabledToolbar',
+  commandOptions: {
+    toolGroupIds: ['default', 'mpr', 'SRToolGroup', 'volume3d'],
+  },
+};
+
+export const toggleActiveDisabledToolbar = {
+  commandName: 'toggleActiveDisabledToolbar',
+  commandOptions: {
+    toolGroupIds: ['default', 'mpr', 'SRToolGroup'],
+  },
+};
+
 const moreTools = [
   {
     id: 'MoreTools',
@@ -80,13 +94,7 @@ const moreTools = [
           icon: 'tool-referenceLines',
           label: 'Reference Lines',
           tooltip: 'Show Reference Lines',
-          commands: {
-            commandName: 'setToolEnabled',
-            commandOptions: {
-              toolName: 'ReferenceLines',
-              toggle: true, // Toggle the tool on/off upon click
-            },
-          },
+          commands: toggleEnabledDisabledToolbar,
           listeners: {
             [ViewportGridService.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED]: ReferenceLinesListeners,
             [ViewportGridService.EVENTS.VIEWPORTS_READY]: ReferenceLinesListeners,
@@ -94,17 +102,11 @@ const moreTools = [
           evaluate: 'evaluate.cornerstoneTool.toggle',
         }),
         createButton({
-          id: 'ImageOverlay',
+          id: 'ImageOverlayViewer',
           icon: 'toggle-dicom-overlay',
           label: 'Image Overlay',
           tooltip: 'Toggle Image Overlay',
-          commands: {
-            commandName: 'setToolEnabled',
-            commandOptions: {
-              toolName: 'ImageOverlayViewer',
-              toggle: true, // Toggle the tool on/off upon click
-            },
-          },
+          commands: toggleEnabledDisabledToolbar,
           evaluate: 'evaluate.cornerstoneTool.toggle',
         }),
         createButton({
@@ -156,14 +158,6 @@ const moreTools = [
           evaluate: 'evaluate.cornerstoneTool',
         }),
         createButton({
-          id: 'RectangleROI',
-          icon: 'tool-rectangle',
-          label: 'Rectangle',
-          tooltip: 'Rectangle',
-          commands: setToolActiveToolbar,
-          evaluate: 'evaluate.cornerstoneTool',
-        }),
-        createButton({
           id: 'CalibrationLine',
           icon: 'tool-calibration',
           label: 'Calibration',
@@ -173,10 +167,26 @@ const moreTools = [
         }),
         createButton({
           id: 'TagBrowser',
-          icon: 'list-bullets',
+          icon: 'dicom-tag-browser',
           label: 'Dicom Tag Browser',
           tooltip: 'Dicom Tag Browser',
           commands: 'openDICOMTagViewer',
+        }),
+        createButton({
+          id: 'AdvancedMagnify',
+          icon: 'icon-tool-loupe',
+          label: 'Loupe',
+          tooltip: 'Loupe',
+          commands: toggleActiveDisabledToolbar,
+          evaluate: 'evaluate.cornerstoneTool.toggle',
+        }),
+        createButton({
+          id: 'UltrasoundDirectionalTool',
+          icon: 'icon-tool-ultrasound-bidirectional',
+          label: 'Ultrasound Directional',
+          tooltip: 'Ultrasound Directional',
+          commands: setToolActiveToolbar,
+          evaluate: ['evaluate.cornerstoneTool', 'evaluate.isUS'],
         }),
       ],
     },

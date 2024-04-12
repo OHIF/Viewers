@@ -10,7 +10,6 @@ import getMaxDigits from '../../utils/getMaxDigits';
  * value is a number value
  * onChange is a function that will be called when the range input is changed
  *
- *
  */
 
 type Label = {
@@ -31,9 +30,13 @@ type InputRangeProps = {
   labelVariant?: string;
   showLabel?: boolean;
   labelPosition?: string;
-  trackColor?: string;
+  leftColor?: string;
+  rightColor?: string;
+  thumbColor?: string;
+  thumbColorOuter?: string;
   allowNumberEdit?: boolean;
   showAdjustmentArrows?: boolean;
+  trackHeight?: string;
   labels?: Label[];
 };
 
@@ -47,16 +50,18 @@ const InputRange: React.FC<InputRangeProps> = ({
   containerClassName,
   inputClassName,
   labelClassName,
-  labelVariant,
   showLabel = true,
   labelPosition = 'right',
-  trackColor,
+  leftColor = '#5acce6',
+  rightColor = '#3a3f99',
+  thumbColor = '#5acce6',
+  thumbColorOuter = '#090c29',
+  trackHeight = '3px',
   allowNumberEdit = false,
   showAdjustmentArrows = true,
   labels = [],
 }) => {
   const [rangeValue, setRangeValue] = useState(value);
-
   const maxDigits = getMaxDigits(maxValue, step);
   const labelWidth = `${maxDigits * 10}px`;
 
@@ -88,8 +93,7 @@ const InputRange: React.FC<InputRangeProps> = ({
     />
   ) : (
     <span className={classNames(labelClassName ?? 'text-white')}>
-      {rangeValue}
-      {unit}
+      {rangeValue.toFixed(maxDigits)} {unit}
     </span>
   );
 
@@ -101,19 +105,21 @@ const InputRange: React.FC<InputRangeProps> = ({
         e.preventDefault();
       }}
     >
-      <div className="relative flex w-full items-center space-x-2">
+      <div className={'relative flex w-full items-center ' + (showLabel ? 'space-x-2' : '')}>
         {showLabel && labelPosition === 'left' && (
           <div style={{ width: labelWidth }}>{LabelOrEditableNumber}</div>
         )}
-        <div className="range-track"></div>
         <input
           type="range"
           min={minValue}
           max={maxValue}
           value={rangeValue}
-          className={`h-[3px] appearance-none rounded-md ${inputClassName ?? ''}`}
+          className={`w-full appearance-none rounded-md ${inputClassName ?? ''}`}
           style={{
-            background: `linear-gradient(to right, #5acce6 0%, #5acce6 ${rangeValuePercentage}%, #3a3f99 ${rangeValuePercentage}%, #3a3f99 100%)`,
+            background: `linear-gradient(to right, ${leftColor} 0%, ${leftColor} ${rangeValuePercentage}%, ${rightColor} ${rangeValuePercentage}%, ${rightColor} 100%)`,
+            '--thumb-inner-color': thumbColor,
+            '--thumb-outer-color': thumbColorOuter,
+            height: trackHeight,
           }}
           onChange={handleChange}
           id="myRange"
