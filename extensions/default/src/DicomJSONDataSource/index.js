@@ -58,13 +58,26 @@ const findStudies = (key, value) => {
   return studies;
 };
 
+function extractBaseUrl(url, base){
+  const baseIndex = url.indexOf(base);
+  if(baseIndex!==-1){
+    return url.substring(0, baseIndex + base.length);
+  }
+  return url;
+}
+function insertPrefixUrl(originalString, base, prefix){
+  return originalString.replace(base, `${base}${prefix}`);
+}
+
 function createDicomJSONApi(dicomJsonConfig) {
   const { wadoRoot } = dicomJsonConfig;
-
+  let prefixUrl = "";
   const implementation = {
     initialize: async ({ query, url }) => {
       if (!url) {
         url = query.get('url');
+        // Get url prefix from metadata json url, since url is pretty relative and can be changed, so base url should be dynamic
+        prefixUrl = extractBaseUrl(url, "OhifViewer/")
       }
       let metaData = getMetaDataByURL(url);
 
@@ -89,8 +102,9 @@ function createDicomJSONApi(dicomJsonConfig) {
           SeriesInstanceUID = series.SeriesInstanceUID;
 
           series.instances.forEach(instance => {
-            const { url: imageId, metadata: naturalizedDicom } = instance;
-
+            instance.url = insertPrefixUrl(instance.url, "dicomweb:", prefixUrl);
+            let { url: imageId, metadata: naturalizedDicom } = instance;
+            // Add prefix to image url
             // Add imageId specific mapping to this data as the URL isn't necessarliy WADO-URI.
             metadataProvider.addImageIdToUIDs(imageId, {
               StudyInstanceUID,
@@ -245,12 +259,13 @@ function createDicomJSONApi(dicomJsonConfig) {
         return imageIds;
       }
 
+
       displaySet.images.forEach(instance => {
         const NumberOfFrames = instance.NumberOfFrames;
 
         if (NumberOfFrames > 1) {
           for (let i = 0; i < NumberOfFrames; i++) {
-            const imageId = getImageId({
+            let imageId = getImageId({
               instance,
               frame: i,
               config: dicomJsonConfig,
@@ -258,7 +273,8 @@ function createDicomJSONApi(dicomJsonConfig) {
             imageIds.push(imageId);
           }
         } else {
-          const imageId = getImageId({ instance, config: dicomJsonConfig });
+          let imageId = getImageId({ instance, config: dicomJsonConfig });
+          //imageId = insertPrefixUrl(imageId, "dicomweb:", prefixUrl);
           imageIds.push(imageId);
         }
       });
