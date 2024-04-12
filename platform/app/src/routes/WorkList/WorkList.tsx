@@ -328,7 +328,7 @@ function WorkList({
             </>
           ),
           title: (instances || 0).toString(),
-          gridCol: 4,
+          gridCol: 2,
         },
       ],
       // Todo: This is actually running for all rows, even if they are
