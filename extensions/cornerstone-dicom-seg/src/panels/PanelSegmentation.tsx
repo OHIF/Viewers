@@ -62,6 +62,10 @@ export default function PanelSegmentation({
         viewportId || viewportGridService.getActiveViewportId()
       );
 
+      if (!displaySetUIDs) {
+        return;
+      }
+
       const isReconstructable =
         displaySetUIDs?.some(displaySetUID => {
           const displaySet = displaySetService.getDisplaySetByUID(displaySetUID);
@@ -79,14 +83,20 @@ export default function PanelSegmentation({
     handleActiveViewportChange();
 
     const changed = viewportGridService.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED;
+    const ready = viewportGridService.EVENTS.VIEWPORTS_READY;
 
-    const { unsubscribe } = viewportGridService.subscribe(changed, ({ viewportId }) => {
-      handleActiveViewportChange(viewportId);
+    const subs = [];
+    [ready, changed].forEach(evt => {
+      const { unsubscribe } = viewportGridService.subscribe(evt, ({ viewportId }) => {
+        handleActiveViewportChange(viewportId);
+      });
+
+      subs.push(unsubscribe);
     });
 
     // Clean up
     return () => {
-      unsubscribe();
+      subs.forEach(unsub => unsub());
     };
   }, []);
 

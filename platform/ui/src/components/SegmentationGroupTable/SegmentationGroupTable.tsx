@@ -101,7 +101,7 @@ const SegmentationGroupTable = ({
         )}
         <div className="bg-primary-dark">
           {segmentations?.length === 0 ? (
-            <div className="select-none bg-black pt-[5px] pb-[5px]">
+            <div className="select-none bg-black py-[3px]">
               {showAddSegmentation && !disableEditing && (
                 <NoSegmentationRow
                   onSegmentationAdd={onSegmentationAdd}

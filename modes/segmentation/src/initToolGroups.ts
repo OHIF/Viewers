@@ -55,6 +55,9 @@ function createTools(utilityModule) {
         parentTool: 'Brush',
         configuration: {
           activeStrategy: 'THRESHOLD_INSIDE_CIRCLE',
+          preview: {
+            enabled: true,
+          },
           strategySpecificConfiguration: {
             THRESHOLD: {
               isDynamic: true,
