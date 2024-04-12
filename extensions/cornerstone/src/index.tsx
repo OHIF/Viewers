@@ -61,13 +61,16 @@ const cornerstoneExtension: Types.Extensions.Extension = {
    */
   id,
 
-  onModeExit: (): void => {
+  onModeExit: ({ servicesManager }): void => {
+    const { cineService } = servicesManager.services;
     // Empty out the image load and retrieval pools to prevent memory leaks
     // on the mode exits
     Object.values(cs3DEnums.RequestType).forEach(type => {
       imageLoadPoolManager.clearRequestStack(type);
       imageRetrievalPoolManager.clearRequestStack(type);
     });
+
+    cineService.setIsCineEnabled(false);
 
     enabledElementReset();
   },
