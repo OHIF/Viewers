@@ -11,4 +11,5 @@ export default [
   'PlanarFreehandROI',
   'SplineROI',
   'LivewireContour',
+  'Probe',
 ];
