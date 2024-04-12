@@ -1388,6 +1388,22 @@ export default class HangingProtocolService extends PubSubService {
     });
   }
 
+  public areRequiredSelectorsValid(
+    displaySetSelectors: HangingProtocol.DisplaySetSelector,
+    displaySet: any
+  ): boolean {
+    let pass = true;
+    for (const displaySetSelector of displaySetSelectors) {
+      try {
+        this._validateRequiredSelectors(displaySetSelector, displaySet);
+      } catch (error) {
+        pass = false;
+        break;
+      }
+    }
+    return pass;
+  }
+
   private _validateRequiredSelectors(
     displaySetSelector: HangingProtocol.DisplaySetSelector,
     displaySet: any
