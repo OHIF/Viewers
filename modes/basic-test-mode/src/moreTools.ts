@@ -11,13 +11,6 @@ const ReferenceLinesListeners: RunCommand = [
   },
 ];
 
-export const toggleEnabledDisabledToolbar = {
-  commandName: 'toggleEnabledDisabledToolbar',
-  commandOptions: {
-    toolGroupIds: ['default', 'mpr', 'SRToolGroup', 'volume3d'],
-  },
-};
-
 const moreTools = [
   {
     id: 'MoreTools',
@@ -87,7 +80,7 @@ const moreTools = [
           icon: 'tool-referenceLines',
           label: 'Reference Lines',
           tooltip: 'Show Reference Lines',
-          commands: toggleEnabledDisabledToolbar,
+          commands: 'toggleEnabledDisabledToolbar',
           listeners: {
             [ViewportGridService.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED]: ReferenceLinesListeners,
             [ViewportGridService.EVENTS.VIEWPORTS_READY]: ReferenceLinesListeners,
@@ -99,7 +92,7 @@ const moreTools = [
           icon: 'toggle-dicom-overlay',
           label: 'Image Overlay',
           tooltip: 'Toggle Image Overlay',
-          commands: toggleEnabledDisabledToolbar,
+          commands: 'toggleEnabledDisabledToolbar',
           evaluate: 'evaluate.cornerstoneTool.toggle',
         }),
         createButton({

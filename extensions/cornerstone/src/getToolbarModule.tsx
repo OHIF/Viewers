@@ -268,18 +268,15 @@ export default function getToolbarModule({ commandsManager, servicesManager }) {
   ];
 }
 
+// Todo: this is duplicate, we should move it to a shared location
 function getToolNameForButton(button) {
   const { props } = button;
 
   const commands = props?.commands || button.commands;
   const commandsArray = Array.isArray(commands) ? commands : [commands];
   const firstCommand = commandsArray[0];
-  if (typeof firstCommand === 'string') {
-    // likely not a cornerstone tool
-    return null;
-  }
 
-  if ('commandOptions' in firstCommand) {
+  if (firstCommand?.commandOptions) {
     return firstCommand.commandOptions.toolName ?? props?.id ?? button.id;
   }
 
