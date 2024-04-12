@@ -42,6 +42,7 @@ const SegmentationGroupTable = ({
   setRenderFill,
   setRenderInactiveSegmentations,
   setRenderOutline,
+  addSegmentationClassName,
 }) => {
   const [isConfigOpen, setIsConfigOpen] = useState(false);
   const [activeSegmentationId, setActiveSegmentationId] = useState(null);
@@ -102,7 +103,10 @@ const SegmentationGroupTable = ({
           {segmentations?.length === 0 ? (
             <div className="select-none bg-black pt-[5px] pb-[5px]">
               {showAddSegmentation && !disableEditing && (
-                <NoSegmentationRow onSegmentationAdd={onSegmentationAdd} />
+                <NoSegmentationRow
+                  onSegmentationAdd={onSegmentationAdd}
+                  addSegmentationClassName={addSegmentationClassName}
+                />
               )}
             </div>
           ) : (
@@ -118,6 +122,7 @@ const SegmentationGroupTable = ({
                 onSegmentationDownloadRTSS={onSegmentationDownloadRTSS}
                 storeSegmentation={storeSegmentation}
                 onSegmentationAdd={onSegmentationAdd}
+                addSegmentationClassName={addSegmentationClassName}
                 onToggleSegmentationVisibility={onToggleSegmentationVisibility}
               />
               {!disableEditing && showAddSegment && (
