@@ -79,7 +79,7 @@ function modeFactory({ modeConfiguration }) {
         () => {
           const viewportId = viewportGridService.getActiveViewportId();
           const csViewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
-          cineService.playClip(csViewport.element);
+          cineService.playClip(csViewport.element, { viewportId });
           // cineService.setIsCineEnabled(true);
 
           unsubscribe();
