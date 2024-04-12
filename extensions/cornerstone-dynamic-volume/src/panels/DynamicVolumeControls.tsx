@@ -88,7 +88,7 @@ const DynamicVolumeControls = ({
               className="w-1/2"
               onClick={() => {
                 setComputedView(false);
-                onDynamicClick();
+                onDynamicClick?.();
               }}
             >
               4D
