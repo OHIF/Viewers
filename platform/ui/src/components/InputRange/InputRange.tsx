@@ -63,7 +63,7 @@ const InputRange: React.FC<InputRangeProps> = ({
 }) => {
   const [rangeValue, setRangeValue] = useState(value);
   const maxDigits = getMaxDigits(maxValue, step);
-  const labelWidth = `${maxDigits * 10}px`;
+  const labelWidth = `${maxDigits * 15}px`;
 
   useEffect(() => setRangeValue(value), [value]);
 
