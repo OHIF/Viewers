@@ -3,6 +3,74 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-beta.79](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.78...v3.8.0-beta.79) (2024-04-10)
+
+
+### Features
+
+* **SM:** remove SM measurements from measurement panel ([#4022](https://github.com/OHIF/Viewers/issues/4022)) ([df49a65](https://github.com/OHIF/Viewers/commit/df49a653be61a93f6e9fb3663aabe9775c31fd13))
+
+
+
+
+
+# [3.8.0-beta.78](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.77...v3.8.0-beta.78) (2024-04-10)
+
+
+### Bug Fixes
+
+* **general:** enhancements and bug fixes ([#4018](https://github.com/OHIF/Viewers/issues/4018)) ([2b83393](https://github.com/OHIF/Viewers/commit/2b83393f91cb16ea06821d79d14ff60f80c29c90))
+
+
+
+
+
+# [3.8.0-beta.77](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.76...v3.8.0-beta.77) (2024-04-10)
+
+
+### Bug Fixes
+
+* **dicom-video:** Update get direct func for dicom json to use url if present and fix config argument ([#4017](https://github.com/OHIF/Viewers/issues/4017)) ([4f99244](https://github.com/OHIF/Viewers/commit/4f99244d864427d69be6f863cb7a6a78411adb12))
+
+
+
+
+
+# [3.8.0-beta.76](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.75...v3.8.0-beta.76) (2024-04-10)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+# [3.8.0-beta.75](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.74...v3.8.0-beta.75) (2024-04-10)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+# [3.8.0-beta.74](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.73...v3.8.0-beta.74) (2024-04-10)
+
+
+### Features
+
+* **4D:** Add 4D dynamic volume rendering and new pre-clinical 4d pt/ct mode ([#3664](https://github.com/OHIF/Viewers/issues/3664)) ([d57e8bc](https://github.com/OHIF/Viewers/commit/d57e8bc1571c6da4effaa492ee2d162c552365a2))
+
+
+
+
+
+# [3.8.0-beta.73](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.72...v3.8.0-beta.73) (2024-04-08)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
 # [3.8.0-beta.72](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.71...v3.8.0-beta.72) (2024-04-05)
 
 **Note:** Version bump only for package @ohif/ui
@@ -988,7 +1056,9 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 **Note:** Version bump only for package @ohif/ui
 
+# [3.7.0-beta.69](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.68...v3.7.0-beta.69) (2023-09-11)
 
+**Note:** Version bump only for package @ohif/ui
 
 
 
@@ -1029,6 +1099,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 **Note:** Version bump only for package @ohif/ui
 
 
+**Note:** Version bump only for package @ohif/ui
 
 
 
@@ -1036,45 +1107,15 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 **Note:** Version bump only for package @ohif/ui
 
+# [3.7.0-beta.63](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.62...v3.7.0-beta.63) (2023-09-01)
 
 
 
+* **grid:** remove viewportIndex and only rely on viewportId ([#3591](https://github.com/OHIF/Viewers/issues/3591)) ([4c6ff87](https://github.com/OHIF/Viewers/commit/4c6ff873e887cc30ffc09223f5cb99e5f94c9cdd))
 
 # [3.7.0-beta.66](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.65...v3.7.0-beta.66) (2023-09-06)
 
 **Note:** Version bump only for package @ohif/ui
-
-
-
-
-
-# [3.7.0-beta.65](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.64...v3.7.0-beta.65) (2023-09-06)
-
-
-### Features
-
-* **ImageOverlayViewerTool:** add ImageOverlayViewer tool that can render image overlay (pixel overlay) of the DICOM images ([#3163](https://github.com/OHIF/Viewers/issues/3163)) ([69115da](https://github.com/OHIF/Viewers/commit/69115da06d2d437b57e66608b435bb0bc919a90f))
-
-
-
-
-
-# [3.7.0-beta.64](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.63...v3.7.0-beta.64) (2023-09-05)
-
-**Note:** Version bump only for package @ohif/ui
-
-
-
-
-
-# [3.7.0-beta.63](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.62...v3.7.0-beta.63) (2023-09-01)
-
-
-### Features
-
-* **grid:** remove viewportIndex and only rely on viewportId ([#3591](https://github.com/OHIF/Viewers/issues/3591)) ([4c6ff87](https://github.com/OHIF/Viewers/commit/4c6ff873e887cc30ffc09223f5cb99e5f94c9cdd))
-
-
 
 
 
@@ -1083,9 +1124,56 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [3.7.0-beta.62](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.61...v3.7.0-beta.62) (2023-08-30)
+# [3.7.0-beta.65](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.64...v3.7.0-beta.65) (2023-09-06)
 
 **Note:** Version bump only for package @ohif/ui
+
+# [3.7.0-beta.61](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.60...v3.7.0-beta.61) (2023-08-29)
+
+* **ImageOverlayViewerTool:** add ImageOverlayViewer tool that can render image overlay (pixel overlay) of the DICOM images ([#3163](https://github.com/OHIF/Viewers/issues/3163)) ([69115da](https://github.com/OHIF/Viewers/commit/69115da06d2d437b57e66608b435bb0bc919a90f))
+
+# [3.7.0-beta.60](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.59...v3.7.0-beta.60) (2023-08-29)
+
+**Note:** Version bump only for package @ohif/ui
+
+# [3.7.0-beta.59](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.58...v3.7.0-beta.59) (2023-08-29)
+
+**Note:** Version bump only for package @ohif/ui
+
+# [3.7.0-beta.64](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.63...v3.7.0-beta.64) (2023-09-05)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+**Note:** Version bump only for package @ohif/ui
+
+## [1.4.4](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.4.3...@ohif/ui@1.4.4) (2020-05-04)
+
+# [3.7.0-beta.63](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.62...v3.7.0-beta.63) (2023-09-01)
+
+- 🐛 Proper error handling for derived display sets
+  ([#1708](https://github.com/OHIF/Viewers/issues/1708))
+  ([5b20d8f](https://github.com/OHIF/Viewers/commit/5b20d8f323e4b3ef9988f2f2ab672d697b6da409))
+
+### Features
+
+* **grid:** remove viewportIndex and only rely on viewportId ([#3591](https://github.com/OHIF/Viewers/issues/3591)) ([4c6ff87](https://github.com/OHIF/Viewers/commit/4c6ff873e887cc30ffc09223f5cb99e5f94c9cdd))
+
+
+
+## [1.4.2](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.4.1...@ohif/ui@1.4.2) (2020-04-06)
+
+**Note:** Version bump only for package @ohif/ui
+
+# Change Log
+
+All notable changes to this project will be documented in this file. See
+[Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
+# [3.7.0-beta.62](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.61...v3.7.0-beta.62) (2023-08-30)
+
+# [1.4.0](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.3.3...@ohif/ui@1.4.0) (2020-03-13)
 
 # [3.7.0-beta.61](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.60...v3.7.0-beta.61) (2023-08-29)
 
@@ -1131,7 +1219,9 @@ All notable changes to this project will be documented in this file. See
 
 ## [1.4.2](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.4.1...@ohif/ui@1.4.2) (2020-04-06)
 
-**Note:** Version bump only for package @ohif/ui
+- Combined Hotkeys for special characters
+  ([#1233](https://github.com/OHIF/Viewers/issues/1233))
+  ([2f30e7a](https://github.com/OHIF/Viewers/commit/2f30e7a821a238144c49c56f37d8e5565540b4bd))
 
 ## [1.4.1](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.4.0...@ohif/ui@1.4.1) (2020-03-17)
 

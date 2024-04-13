@@ -6,6 +6,7 @@ import {
   imageLoadPoolManager,
   imageRetrievalPoolManager,
 } from '@cornerstonejs/core';
+import * as csStreamingImageVolumeLoader from '@cornerstonejs/streaming-image-volume-loader';
 import { Enums as cs3DToolsEnums } from '@cornerstonejs/tools';
 import { ServicesManager, Types } from '@ohif/core';
 
@@ -34,6 +35,10 @@ import ImageOverlayViewerTool from './tools/ImageOverlayViewerTool';
 import { showLabelAnnotationPopup } from './utils/callInputDialog';
 import ViewportActionCornersService from './services/ViewportActionCornersService/ViewportActionCornersService';
 import { ViewportActionCornersProvider } from './contextProviders/ViewportActionCornersProvider';
+import ActiveViewportWindowLevel from './components/ActiveViewportWindowLevel';
+
+const { helpers: volumeLoaderHelpers } = csStreamingImageVolumeLoader;
+const { getDynamicVolumeInfo } = volumeLoaderHelpers ?? {};
 
 const Component = React.lazy(() => {
   return import(/* webpackPrefetch: true */ './Viewport/OHIFCornerstoneViewport');
@@ -90,6 +95,16 @@ const cornerstoneExtension: Types.Extensions.Extension = {
   },
 
   getToolbarModule,
+  getPanelModule({ servicesManager }) {
+    return [
+      {
+        name: 'activeViewportWindowLevel',
+        component: () => {
+          return <ActiveViewportWindowLevel servicesManager={servicesManager} />;
+        },
+      },
+    ];
+  },
   getHangingProtocolModule,
   getViewportModule({ servicesManager, commandsManager }) {
     const ExtendedOHIFCornerstoneViewport = props => {
@@ -127,7 +142,7 @@ const cornerstoneExtension: Types.Extensions.Extension = {
           },
           getEnabledElement,
           dicomLoaderService,
-          showLabelAnnotationPopup
+          showLabelAnnotationPopup,
         },
       },
       {
@@ -141,6 +156,12 @@ const cornerstoneExtension: Types.Extensions.Extension = {
         exports: {
           toolNames,
           Enums: cs3DToolsEnums,
+        },
+      },
+      {
+        name: 'volumeLoader',
+        exports: {
+          getDynamicVolumeInfo,
         },
       },
     ];

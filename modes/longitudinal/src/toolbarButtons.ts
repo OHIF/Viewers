@@ -1,10 +1,8 @@
 // TODO: torn, can either bake this here; or have to create a whole new button type
 // Only ways that you can pass in a custom React component for render :l
-import { WindowLevelMenuItem } from '@ohif/ui';
 import { defaults, ToolbarService } from '@ohif/core';
 import type { Button } from '@ohif/core/types';
 
-const { windowLevelPresets } = defaults;
 const { createButton } = ToolbarService;
 
 export const setToolActiveToolbar = {
@@ -64,14 +62,6 @@ const toolbarButtons: Button[] = [
           icon: 'tool-ellipse',
           label: 'Ellipse',
           tooltip: 'Ellipse ROI',
-          commands: setToolActiveToolbar,
-          evaluate: 'evaluate.cornerstoneTool',
-        }),
-        createButton({
-          id: 'PlanarFreehandROI',
-          icon: 'tool-freehand-polygon',
-          label: 'Freehand',
-          tooltip: 'Freehand ROI',
           commands: setToolActiveToolbar,
           evaluate: 'evaluate.cornerstoneTool',
         }),

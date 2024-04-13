@@ -66,6 +66,12 @@ function _askTrackMeasurements(uiViewportDialogService, viewportId) {
         uiViewportDialogService.hide();
         resolve(RESPONSE.CANCEL);
       },
+      onKeyPress: event => {
+        if (event.key === 'Enter') {
+          const action = actions.find(action => action.id === 'prompt-begin-tracking-yes');
+          onSubmit(action.value);
+        }
+      },
     });
   });
 }

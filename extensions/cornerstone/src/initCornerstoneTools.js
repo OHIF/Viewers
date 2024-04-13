@@ -8,6 +8,7 @@ import {
   MIPJumpToClickTool,
   LengthTool,
   RectangleROITool,
+  RectangleROIThresholdTool,
   EllipticalROITool,
   CircleROITool,
   BidirectionalTool,
@@ -19,19 +20,22 @@ import {
   MagnifyTool,
   CrosshairsTool,
   SegmentationDisplayTool,
+  RectangleScissorsTool,
+  SphereScissorsTool,
+  CircleScissorsTool,
+  BrushTool,
+  PaintFillTool,
   init,
   addTool,
   annotation,
   ReferenceLinesTool,
   TrackballRotateTool,
-  CircleScissorsTool,
-  RectangleScissorsTool,
-  SphereScissorsTool,
   AdvancedMagnifyTool,
   UltrasoundDirectionalTool,
   PlanarFreehandROITool,
   SplineROITool,
   LivewireContourTool,
+  OrientationMarkerTool,
 } from '@cornerstonejs/tools';
 
 import CalibrationLineTool from './tools/CalibrationLineTool';
@@ -52,6 +56,7 @@ export default function initCornerstoneTools(configuration = {}) {
   addTool(MIPJumpToClickTool);
   addTool(LengthTool);
   addTool(RectangleROITool);
+  addTool(RectangleROIThresholdTool);
   addTool(EllipticalROITool);
   addTool(CircleROITool);
   addTool(BidirectionalTool);
@@ -62,18 +67,21 @@ export default function initCornerstoneTools(configuration = {}) {
   addTool(MagnifyTool);
   addTool(CrosshairsTool);
   addTool(SegmentationDisplayTool);
+  addTool(RectangleScissorsTool);
+  addTool(SphereScissorsTool);
+  addTool(CircleScissorsTool);
+  addTool(BrushTool);
+  addTool(PaintFillTool);
   addTool(ReferenceLinesTool);
   addTool(CalibrationLineTool);
   addTool(TrackballRotateTool);
-  addTool(CircleScissorsTool);
-  addTool(RectangleScissorsTool);
-  addTool(SphereScissorsTool);
   addTool(ImageOverlayViewerTool);
   addTool(AdvancedMagnifyTool);
   addTool(UltrasoundDirectionalTool);
   addTool(PlanarFreehandROITool);
   addTool(SplineROITool);
   addTool(LivewireContourTool);
+  addTool(OrientationMarkerTool);
 
   // Modify annotation tools to use dashed lines on SR
   const annotationStyle = {
@@ -103,6 +111,7 @@ const toolNames = {
   DragProbe: DragProbeTool.toolName,
   Probe: ProbeTool.toolName,
   RectangleROI: RectangleROITool.toolName,
+  RectangleROIThreshold: RectangleROIThresholdTool.toolName,
   EllipticalROI: EllipticalROITool.toolName,
   CircleROI: CircleROITool.toolName,
   Bidirectional: BidirectionalTool.toolName,
@@ -111,6 +120,8 @@ const toolNames = {
   Magnify: MagnifyTool.toolName,
   Crosshairs: CrosshairsTool.toolName,
   SegmentationDisplay: SegmentationDisplayTool.toolName,
+  Brush: BrushTool.toolName,
+  PaintFill: PaintFillTool.toolName,
   ReferenceLines: ReferenceLinesTool.toolName,
   CalibrationLine: CalibrationLineTool.toolName,
   TrackballRotateTool: TrackballRotateTool.toolName,
@@ -123,6 +134,7 @@ const toolNames = {
   SplineROI: SplineROITool.toolName,
   LivewireContour: LivewireContourTool.toolName,
   PlanarFreehandROI: PlanarFreehandROITool.toolName,
+  OrientationMarker: OrientationMarkerTool.toolName,
 };
 
 export { toolNames };

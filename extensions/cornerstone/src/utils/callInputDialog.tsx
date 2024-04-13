@@ -109,13 +109,10 @@ export function callLabelAutocompleteDialog(uiDialogService, callback, dialogCon
 
   uiDialogService.create({
     id: 'select-annotation',
+    centralize: true,
     isDraggable: false,
     showOverlay: true,
     content: LabellingFlow,
-    defaultPosition: {
-      x: window.innerWidth / 2,
-      y: window.innerHeight / 2,
-    },
     contentProps: {
       labellingDoneCallback: labellingDoneCallback,
       measurementData: { label: '' },

@@ -200,6 +200,7 @@ class CornerstoneCacheService {
         volume,
         volumeId,
         imageIds: volumeImageIds,
+        isDynamicVolume: displaySet.isDynamicVolume,
       });
     }
 
@@ -228,7 +229,7 @@ class CornerstoneCacheService {
 
       const shouldDisplaySeg = segmentationService.shouldRenderSegmentation(
         viewportDisplaySetInstanceUIDs,
-        instance.FrameOfReferenceUID
+        instance?.FrameOfReferenceUID || segDisplaySet.FrameOfReferenceUID
       );
 
       if (shouldDisplaySeg) {

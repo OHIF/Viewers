@@ -26,15 +26,6 @@ export type UpdateViewportDisplaySetParams = {
   excludeNonImageModalities?: boolean;
 };
 
-/**
- * Determine if a command is a hanging protocol one.
- * For now, just use the two hanging protocol commands that are in this
- * commands module, but if others get added elsewhere this may need enhancing.
- */
-const isHangingProtocolCommand = command =>
-  command &&
-  (command.commandName === 'setHangingProtocol' || command.commandName === 'toggleHangingProtocol');
-
 const commandsModule = ({
   servicesManager,
   commandsManager,
@@ -47,7 +38,6 @@ const commandsModule = ({
     viewportGridService,
     displaySetService,
     stateSyncService,
-    toolbarService,
   } = (servicesManager as ServicesManager).services;
 
   // Define a context menu controller for use with any context menus

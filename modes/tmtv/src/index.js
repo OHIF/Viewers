@@ -17,18 +17,21 @@ const ohif = {
 
 const cs3d = {
   viewport: '@ohif/extension-cornerstone.viewportModule.cornerstone',
+  segPanel: '@ohif/extension-cornerstone-dicom-seg.panelModule.panelSegmentation',
 };
 
 const tmtv = {
   hangingProtocol: '@ohif/extension-tmtv.hangingProtocolModule.ptCT',
   petSUV: '@ohif/extension-tmtv.panelModule.petSUV',
-  ROIThresholdPanel: '@ohif/extension-tmtv.panelModule.ROIThresholdSeg',
+  toolbox: '@ohif/extension-tmtv.panelModule.tmtvBox',
+  export: '@ohif/extension-tmtv.panelModule.tmtvExport',
 };
 
 const extensionDependencies = {
   // Can derive the versions at least process.env.from npm_package_version
   '@ohif/extension-default': '^3.0.0',
   '@ohif/extension-cornerstone': '^3.0.0',
+  '@ohif/extension-cornerstone-dicom-seg': '^3.0.0',
   '@ohif/extension-tmtv': '^3.0.0',
 };
 
@@ -47,8 +50,10 @@ function modeFactory({ modeConfiguration }) {
       const {
         toolbarService,
         toolGroupService,
+        customizationService,
         hangingProtocolService,
         displaySetService,
+        viewportGridService,
       } = servicesManager.services;
 
       const utilityModule = extensionManager.getModuleEntry(
@@ -94,7 +99,31 @@ function modeFactory({ modeConfiguration }) {
         'Pan',
         'SyncToggle',
       ]);
-      toolbarService.createButtonSection('tmtvToolbox', ['RectangleROIStartEndThreshold']);
+      toolbarService.createButtonSection('ROIThresholdToolbox', ['RectangleROIStartEndThreshold']);
+
+      customizationService.addModeCustomizations([
+        {
+          id: 'segmentation.panel',
+          segmentationPanelMode: 'expanded',
+          addSegment: false,
+          onSegmentationAdd: () => {
+            commandsManager.run('createNewLabelmapFromPT');
+          },
+        },
+      ]);
+
+      // This is a hack and we need to find a better way to enable
+      // some tools that require the viewport to be ready
+      const { unsubscribe: unsub1 } = viewportGridService.subscribe(
+        viewportGridService.EVENTS.VIEWPORTS_READY,
+        () => {
+          commandsManager.run('setToolEnabled', {
+            toolName: 'OrientationMarker',
+            toolGroupId: 'mipToolGroup',
+          });
+          unsub1();
+        }
+      );
 
       // For the hanging protocol we need to decide on the window level
       // based on whether the SUV is corrected or not, hence we can't hard
@@ -176,13 +205,13 @@ function modeFactory({ modeConfiguration }) {
         /*init: ({ servicesManager, extensionManager }) => {
           //defaultViewerRouteInit
         },*/
-        layoutTemplate: ({ location, servicesManager }) => {
+        layoutTemplate: () => {
           return {
             id: ohif.layout,
             props: {
               leftPanels: [ohif.thumbnailList],
-              leftPanelDefaultClosed: true,
-              rightPanels: [tmtv.ROIThresholdPanel, tmtv.petSUV],
+              leftPanelClosed: true,
+              rightPanels: [[tmtv.toolbox, cs3d.segPanel, tmtv.export], tmtv.petSUV],
               viewports: [
                 {
                   namespace: cs3d.viewport,
