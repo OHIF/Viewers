@@ -223,6 +223,9 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager, m
           },
         },
       },
+      {
+        toolName: toolNames.AdvancedMagnify,
+      },
       { toolName: toolNames.ReferenceLines },
     ],
   };

@@ -72,10 +72,10 @@ function createTools(utilityModule) {
       { toolName: toolNames.StackScroll },
       { toolName: toolNames.Magnify },
       { toolName: toolNames.SegmentationDisplay },
-      { toolName: toolNames.AdvancedMagnify },
+
       { toolName: toolNames.UltrasoundDirectional },
     ],
-    disabled: [{ toolName: toolNames.ReferenceLines }],
+    disabled: [{ toolName: toolNames.ReferenceLines }, { toolName: toolNames.AdvancedMagnify }],
   };
 }
 

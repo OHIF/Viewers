@@ -171,8 +171,8 @@ const moreTools = [
           icon: 'icon-tool-loupe',
           label: 'Loupe',
           tooltip: 'Loupe',
-          commands: setToolActiveToolbar,
-          evaluate: 'evaluate.cornerstoneTool',
+          commands: 'toggleActiveDisabledToolbar',
+          evaluate: 'evaluate.cornerstoneTool.toggle.ifStrictlyDisabled',
         }),
         createButton({
           id: 'UltrasoundDirectionalTool',

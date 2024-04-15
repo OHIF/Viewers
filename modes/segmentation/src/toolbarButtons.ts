@@ -241,7 +241,7 @@ const toolbarButtons: Button[] = [
           label: 'Loupe',
           tooltip: 'Loupe',
           commands: 'toggleActiveDisabledToolbar',
-          evaluate: 'evaluate.cornerstoneTool',
+          evaluate: 'evaluate.cornerstoneTool.toggle.ifStrictlyDisabled',
         }),
         createButton({
           id: 'UltrasoundDirectionalTool',
