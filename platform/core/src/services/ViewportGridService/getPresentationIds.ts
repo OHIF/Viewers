@@ -116,6 +116,10 @@ const getPresentationIds = (viewport, viewports): PresentationIds => {
     positionPresentationArr.push(id);
   }
 
+  if (displaySetOptions.some(ds => ds.options?.blendMode || ds.options?.displayPreset)) {
+    positionPresentationArr.push(`custom`);
+  }
+
   for (const uid of displaySetInstanceUIDs) {
     positionPresentationArr.push(uid);
     lutPresentationArr.push(uid);

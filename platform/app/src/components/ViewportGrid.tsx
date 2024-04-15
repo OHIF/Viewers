@@ -350,6 +350,7 @@ function ViewerViewportGrid(props) {
               viewportOptions={viewportOptions}
               displaySetOptions={displaySetOptions}
               needsRerendering={displaySetsNeedsRerendering}
+              isHangingProtocolLayout={isHangingProtocolLayout}
               onElementEnabled={() => {
                 viewportGridService.setViewportIsReady(viewportId, true);
               }}
