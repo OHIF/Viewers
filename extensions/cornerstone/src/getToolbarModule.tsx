@@ -109,31 +109,26 @@ export default function getToolbarModule({ commandsManager, servicesManager }) {
       },
     },
     {
+      name: 'evaluate.cornerstoneTool.toggle.ifStrictlyDisabled',
+      evaluate: ({ viewportId, button, disabledText }) =>
+        _evaluateToggle({
+          viewportId,
+          button,
+          disabledText,
+          offModes: [Enums.ToolModes.Disabled],
+          toolGroupService,
+        }),
+    },
+    {
       name: 'evaluate.cornerstoneTool.toggle',
-      evaluate: ({ viewportId, button, disabledText }) => {
-        const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
-
-        if (!toolGroup) {
-          return;
-        }
-        const toolName = getToolNameForButton(button);
-
-        if (!toolGroup || !toolGroup.hasTool(toolName)) {
-          return {
-            disabled: true,
-            className: '!text-common-bright ohif-disabled',
-            disabledText: disabledText ?? 'Not available on the current viewport',
-          };
-        }
-
-        const isOff = [Enums.ToolModes.Disabled, Enums.ToolModes.Passive].includes(
-          toolGroup.getToolOptions(toolName).mode
-        );
-
-        return {
-          className: getToggledClassName(!isOff),
-        };
-      },
+      evaluate: ({ viewportId, button, disabledText }) =>
+        _evaluateToggle({
+          viewportId,
+          button,
+          disabledText,
+          offModes: [Enums.ToolModes.Disabled, Enums.ToolModes.Passive],
+          toolGroupService,
+        }),
     },
     {
       name: 'evaluate.cornerstone.synchronizer',
@@ -266,6 +261,29 @@ export default function getToolbarModule({ commandsManager, servicesManager }) {
       },
     },
   ];
+}
+
+function _evaluateToggle({ viewportId, button, disabledText, offModes, toolGroupService }) {
+  const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
+
+  if (!toolGroup) {
+    return;
+  }
+  const toolName = getToolNameForButton(button);
+
+  if (!toolGroup.hasTool(toolName)) {
+    return {
+      disabled: true,
+      className: '!text-common-bright ohif-disabled',
+      disabledText: disabledText ?? 'Not available on the current viewport',
+    };
+  }
+
+  const isOff = offModes.includes(toolGroup.getToolOptions(toolName).mode);
+
+  return {
+    className: getToggledClassName(!isOff),
+  };
 }
 
 // Todo: this is duplicate, we should move it to a shared location

@@ -327,7 +327,11 @@ function commandsModule({
         return;
       }
 
-      const toolIsActive = toolGroup.getToolOptions(toolName).mode === Enums.ToolModes.Active;
+      const toolIsActive = [
+        Enums.ToolModes.Active,
+        Enums.ToolModes.Enabled,
+        Enums.ToolModes.Passive,
+      ].includes(toolGroup.getToolOptions(toolName).mode);
 
       toolIsActive
         ? toolGroup.setToolDisabled(toolName)
@@ -337,7 +341,9 @@ function commandsModule({
       // current tool disabled
       if (toolIsActive) {
         const prevToolName = toolGroup.getPrevActivePrimaryToolName();
-        actions.setToolActive({ toolName: prevToolName, toolGroupId });
+        if (prevToolName !== toolName) {
+          actions.setToolActive({ toolName: prevToolName, toolGroupId });
+        }
       }
     },
     setToolActiveToolbar: ({ value, itemId, toolGroupIds = [] }) => {
