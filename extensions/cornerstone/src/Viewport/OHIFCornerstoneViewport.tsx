@@ -118,6 +118,10 @@ const OHIFCornerstoneViewport = React.memo(props => {
 
   const viewportId = viewportOptions.viewportId;
 
+  if (!viewportId) {
+    throw new Error('Viewport ID is required');
+  }
+
   // Since we only have support for dynamic data in volume viewports, we should
   // handle this case here and set the viewportType to volume if any of the
   // displaySets are dynamic volumes
