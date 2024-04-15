@@ -125,7 +125,8 @@ const CornerstoneViewportDownloadForm = ({
 
           downloadViewportElement.removeEventListener(Enums.Events.IMAGE_RENDERED, updateViewport);
 
-          // set the camera for the download viewport to be the same as the active viewport
+          // for some reason we need a reset camera here, and I don't know why
+          downloadViewport.resetCamera();
           const presentation = activeViewport.getViewPresentation();
           downloadViewport.setView(activeViewport.getViewReference(), presentation);
           downloadViewport.render();
