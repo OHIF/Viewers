@@ -41,7 +41,7 @@ const ButtonGroup = ({
       })}
     >
       {!separated && (
-        <div className="flex h-[32px]">
+        <div className="flex h-[32px] w-full">
           {Children.map(children, (child, index) => {
             if (React.isValidElement(child)) {
               return cloneElement(child, {
