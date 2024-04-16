@@ -41,7 +41,6 @@ function createTools(utilityModule) {
         parentTool: 'Brush',
         configuration: {
           activeStrategy: 'THRESHOLD_INSIDE_CIRCLE',
-          dynamicRadius: 3,
         },
       },
       {
@@ -49,7 +48,22 @@ function createTools(utilityModule) {
         parentTool: 'Brush',
         configuration: {
           activeStrategy: 'THRESHOLD_INSIDE_SPHERE',
-          dynamicRadius: 3,
+        },
+      },
+      {
+        toolName: 'ThresholdCircularBrushDynamic',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'THRESHOLD_INSIDE_CIRCLE',
+          preview: {
+            enabled: true,
+          },
+          strategySpecificConfiguration: {
+            THRESHOLD: {
+              isDynamic: true,
+              dynamicRadius: 3,
+            },
+          },
         },
       },
       { toolName: toolNames.CircleScissors },
@@ -58,10 +72,10 @@ function createTools(utilityModule) {
       { toolName: toolNames.StackScroll },
       { toolName: toolNames.Magnify },
       { toolName: toolNames.SegmentationDisplay },
-      { toolName: toolNames.AdvancedMagnify },
+
       { toolName: toolNames.UltrasoundDirectional },
     ],
-    disabled: [{ toolName: toolNames.ReferenceLines }],
+    disabled: [{ toolName: toolNames.ReferenceLines }, { toolName: toolNames.AdvancedMagnify }],
   };
 }
 

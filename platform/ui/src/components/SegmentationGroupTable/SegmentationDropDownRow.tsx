@@ -15,6 +15,7 @@ function SegmentationDropDownRow({
   storeSegmentation,
   onSegmentationDelete,
   onSegmentationAdd,
+  addSegmentationClassName,
 }) {
   const handleChange = option => {
     onActiveSegmentationChange(option.value); // Notify the parent
@@ -41,7 +42,7 @@ function SegmentationDropDownRow({
           id="segmentation-dropdown"
           showDropdownIcon={false}
           alignment="left"
-          itemsClassName="text-primary-active"
+          itemsClassName={`text-primary-active ${addSegmentationClassName}`}
           showBorders={false}
           maxCharactersPerLine={30}
           list={[

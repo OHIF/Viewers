@@ -51,6 +51,12 @@ function commandsModule({
   function _getActiveViewportEnabledElement() {
     return getActiveViewportEnabledElement(viewportGridService);
   }
+
+  function _getActiveViewportToolGroupId() {
+    const viewport = _getActiveViewportEnabledElement();
+    return toolGroupService.getToolGroupForViewport(viewport.id);
+  }
+
   const actions = {
     /**
      * Generates the selector props for the context menu, specific to
@@ -300,42 +306,45 @@ function commandsModule({
       const renderingEngine = cornerstoneViewportService.getRenderingEngine();
       renderingEngine.render();
     },
-    toggleEnabledDisabledToolbar({ value, itemId, toolGroupIds = [] }) {
+    toggleEnabledDisabledToolbar({ value, itemId, toolGroupId }) {
       const toolName = itemId || value;
-      toolGroupIds = toolGroupIds.length ? toolGroupIds : toolGroupService.getToolGroupIds();
-      toolGroupIds.forEach(toolGroupId => {
-        const toolGroup = toolGroupService.getToolGroup(toolGroupId);
-        if (!toolGroup || !toolGroup.hasTool(toolName)) {
-          return;
-        }
+      toolGroupId = toolGroupId ?? _getActiveViewportToolGroupId();
 
-        const toolIsEnabled = toolGroup.getToolOptions(toolName).mode === Enums.ToolModes.Enabled;
+      const toolGroup = toolGroupService.getToolGroup(toolGroupId);
+      if (!toolGroup || !toolGroup.hasTool(toolName)) {
+        return;
+      }
 
-        toolIsEnabled ? toolGroup.setToolDisabled(toolName) : toolGroup.setToolEnabled(toolName);
-      });
+      const toolIsEnabled = toolGroup.getToolOptions(toolName).mode === Enums.ToolModes.Enabled;
+
+      toolIsEnabled ? toolGroup.setToolDisabled(toolName) : toolGroup.setToolEnabled(toolName);
     },
-    toggleActiveDisabledToolbar({ value, itemId, toolGroupIds = [] }) {
+    toggleActiveDisabledToolbar({ value, itemId, toolGroupId }) {
       const toolName = itemId || value;
-      toolGroupIds = toolGroupIds.length ? toolGroupIds : toolGroupService.getToolGroupIds();
-      toolGroupIds.forEach(toolGroupId => {
-        const toolGroup = toolGroupService.getToolGroup(toolGroupId);
-        if (!toolGroup || !toolGroup.hasTool(toolName)) {
-          return;
-        }
+      toolGroupId = toolGroupId ?? _getActiveViewportToolGroupId();
+      const toolGroup = toolGroupService.getToolGroup(toolGroupId);
+      if (!toolGroup || !toolGroup.hasTool(toolName)) {
+        return;
+      }
 
-        const toolIsActive = toolGroup.getToolOptions(toolName).mode === Enums.ToolModes.Active;
+      const toolIsActive = [
+        Enums.ToolModes.Active,
+        Enums.ToolModes.Enabled,
+        Enums.ToolModes.Passive,
+      ].includes(toolGroup.getToolOptions(toolName).mode);
 
-        toolIsActive
-          ? toolGroup.setToolDisabled(toolName)
-          : actions.setToolActive({ toolName, toolGroupId });
+      toolIsActive
+        ? toolGroup.setToolDisabled(toolName)
+        : actions.setToolActive({ toolName, toolGroupId });
 
-        // we should set the previously active tool to active after we set the
-        // current tool disabled
-        if (toolIsActive) {
-          const prevToolName = toolGroup.getPrevActivePrimaryToolName();
+      // we should set the previously active tool to active after we set the
+      // current tool disabled
+      if (toolIsActive) {
+        const prevToolName = toolGroup.getPrevActivePrimaryToolName();
+        if (prevToolName !== toolName) {
           actions.setToolActive({ toolName: prevToolName, toolGroupId });
         }
-      });
+      }
     },
     setToolActiveToolbar: ({ value, itemId, toolGroupIds = [] }) => {
       // Sometimes it is passed as value (tools with options), sometimes as itemId (toolbar buttons)
@@ -441,11 +450,9 @@ function commandsModule({
 
       const { viewport } = enabledElement;
 
-      if (viewport instanceof StackViewport) {
-        const { flipHorizontal } = viewport.getCamera();
-        viewport.setCamera({ flipHorizontal: !flipHorizontal });
-        viewport.render();
-      }
+      const { flipHorizontal } = viewport.getCamera();
+      viewport.setCamera({ flipHorizontal: !flipHorizontal });
+      viewport.render();
     },
     flipViewportVertical: () => {
       const enabledElement = _getActiveViewportEnabledElement();
@@ -456,11 +463,9 @@ function commandsModule({
 
       const { viewport } = enabledElement;
 
-      if (viewport instanceof StackViewport) {
-        const { flipVertical } = viewport.getCamera();
-        viewport.setCamera({ flipVertical: !flipVertical });
-        viewport.render();
-      }
+      const { flipVertical } = viewport.getCamera();
+      viewport.setCamera({ flipVertical: !flipVertical });
+      viewport.render();
     },
     invertViewport: ({ element }) => {
       let enabledElement;
@@ -819,7 +824,7 @@ function commandsModule({
       }
 
       crosshairInstances.forEach(ins => {
-        ins.resetCrosshairs();
+        ins?.resetCrosshairs();
       });
     },
   };

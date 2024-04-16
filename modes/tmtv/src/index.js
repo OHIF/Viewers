@@ -184,6 +184,7 @@ function modeFactory({ modeConfiguration }) {
 
       const isValid =
         modalities_list.includes('CT') &&
+        study.mrn !== 'M1' &&
         modalities_list.includes('PT') &&
         !invalidModalities.some(modality => modalities_list.includes(modality)) &&
         // This is study is a 4D study with PT and CT and not a 3D study for the tmtv

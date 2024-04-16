@@ -10,7 +10,9 @@ sidebar_label: FAQ
   - [Who should I contact about Academic Collaborations?](#who-should-i-contact-about-academic-collaborations)
   - [Does OHIF offer support?](#does-ohif-offer-support)
   - [Does The OHIF Viewer have 510(k) Clearance from the U.S. F.D.A or CE Marking from the European Commission?](#does-the-ohif-viewer-have-510k-clearance-from-the-us-fda-or-ce-marking-from-the-european-commission)
+  - [Is there a DICOM Conformance Statement for the OHIF Viewer?](#is-there-a-dicom-conformance-statement-for-the-ohif-viewer)
   - [Is The OHIF Viewer HIPAA Compliant?](#is-the-ohif-viewer-hipaa-compliant)
+  - [Could you provide me with a particular study from the OHIF Viewer Demo?](#could-you-provide-me-with-a-particular-study-from-the-ohif-viewer-demo)
 - [Technical FAQ](#technical-faq)
   - [Why do I keep seeing a Cross Origin Isolation warning](#why-do-i-keep-seeing-a-cross-origin-isolation-warning)
   - [What if my setup does not support the Shared Array Buffers API?](#what-if-my-setup-does-not-support-the-shared-array-buffers-api)
@@ -65,13 +67,23 @@ for a product built using the platform.
 If you have gone this route (or are going there), please let us know because we
 would be interested to hear about your experience.
 
+## Is there a DICOM Conformance Statement for the OHIF Viewer?
+
+Yes, check it here [DICOM Conformance Statement](https://docs.google.com/document/d/1hbDlUApX4svX33gAUGxGfD7fXXZNaBsX0hSePbc-hNA/edit?usp=sharing)
+
 ## Is The OHIF Viewer [HIPAA][hipaa-def] Compliant?
 
 **NO.** The OHIF Viewer **DOES NOT** fulfill all of the criteria to become HIPAA
 Compliant. It is the users' responsibility to ensure compliance with applicable
 rules and regulations.
 
+## Could you provide me with a particular study from the OHIF Viewer Demo?
+
+You can check out the studies that we have put in this [Dropbox link](https://www.dropbox.com/scl/fo/66xidsx13pn0zf3b9cbfq/ADaCgn7aT29WMlnTdT_WRXM?rlkey=rratvx6g4kfxnswjdbupewjye&dl=0)
+
 # Technical FAQ
+
+
 
 ## Why do I keep seeing a Cross Origin Isolation warning
 If you encounter a warning while running OHIF indicating that your application is not cross-origin isolated, it implies that volume rendering, such as MPR, will not function properly since they depend on Shared Array Buffers. To resolve this issue, we recommend referring to our comprehensive guide on Cross Origin Isolation available at [our dedicated cors page](./deployment/cors.md).

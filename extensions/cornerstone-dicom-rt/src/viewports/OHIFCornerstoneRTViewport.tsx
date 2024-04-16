@@ -116,7 +116,10 @@ function OHIFCornerstoneRTViewport(props) {
           orientation: viewportOptions.orientation,
           viewportId: viewportOptions.viewportId,
         }}
-        onElementEnabled={onElementEnabled}
+        onElementEnabled={evt => {
+          props.onElementEnabled?.(evt);
+          onElementEnabled(evt);
+        }}
         onElementDisabled={onElementDisabled}
       ></Component>
     );

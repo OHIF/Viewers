@@ -1,6 +1,6 @@
 ---
-sidebar_position: 10
-sidebar_label: Migration Guide
+sidebar_position: 2
+sidebar_label: 2.x -> 3.5
 ---
 
 # Migration Guide
@@ -57,7 +57,7 @@ easier to maintain. The main differences are:
 
 - platform/viewer (@ohif/viewer) has been renamed to platform/app (@ohif/app) (explanation below)
 - Extensions are available to be used by modes on request, but are still injected as module components.
-- To use the modules provided by the extensions, you need to write a [Mode](./platform/modes/index.md). Modes
+- To use the modules provided by the extensions, you need to write a [Mode](../platform/modes/index.md). Modes
 are configuration objects that will be used by the viewer to load the modules. This lets users to be able to use common extensions with different configurations, and enhances the customizability of the viewer.
 - App configuration structure is different, mainly the `servers` is renamed to `dataSources`.
 - Apps can be customized significantly more than previously by providing configuration code int he customizationModule section.
@@ -70,14 +70,14 @@ are configuration objects that will be used by the viewer to load the modules. T
 - redux store has been removed and replaced with a simpler state management system via React Context API.
 
 New significant additions that might be useful for you that weren't available in OHIF v2:
-- [OHIF CLI](./development/ohif-cli.md)
+- [OHIF CLI](../development/ohif-cli.md)
 - [New Rendering Engine and Toolings](https://www.cornerstonejs.org/)
-- [Modes](./platform/modes/index.md)
+- [Modes](../platform/modes/index.md)
 - [Mode Gallery](https://ohif.org/modes)
-- [Layouts](./platform/extensions/modules/layout-template.md)
-- [Data Sources](./platform/extensions/modules/data-source.md)
-- [Hanging Protocols](./platform/services/data/HangingProtocolService.md)
-- [URL Params](./configuration/url.md)
+- [Layouts](../platform/extensions/modules/layout-template.md)
+- [Data Sources](../platform/extensions/modules/data-source.md)
+- [Hanging Protocols](../platform/services/data/HangingProtocolService.md)
+- [URL Params](../configuration/url.md)
 
 ## Platform/viewer (@ohif/viewer) -> platform/app (@ohif/app)
 
@@ -90,7 +90,7 @@ Since the platform/viewer (@ohif/viewer) is already at v4.12.51, we opted to ren
 ## Configuration
 
 :::tip
-There are various configurations available to customize the viewer. Each configuration is represented by a custom-tailored object that should be used with the viewer to work effectively with a specific server. Here are some examples of configuration files found in the platform/app/public/config directory. Some server-specific configurations that you should be aware are: `supportsWildcard`, `bulkDataURI`, `omitQuotationForMultipartRequest`, `staticWado` (Read more about them [here](./configuration/configurationFiles.md)).
+There are various configurations available to customize the viewer. Each configuration is represented by a custom-tailored object that should be used with the viewer to work effectively with a specific server. Here are some examples of configuration files found in the platform/app/public/config directory. Some server-specific configurations that you should be aware are: `supportsWildcard`, `bulkDataURI`, `omitQuotationForMultipartRequest`, `staticWado` (Read more about them [here](../configuration/configurationFiles.md)).
 
 - default.js: This is our default configuration designed for our main server, which uses a Static WADO datasource hosted on Amazon S3.
 - local_orthanc.js: Use this configuration when working with our local Orthanc server.
@@ -100,11 +100,11 @@ There are various configurations available to customize the viewer. Each configu
 :::
 
 OHIF v3 has a new configuration structure. The main difference is that the `servers` is renamed to `dataSources` and the configuration is now asynchronous. Datasources are more abstract and
-far more capable than servers. Read more about dataSources [here](./platform/extensions/modules/data-source.md).
+far more capable than servers. Read more about dataSources [here](../platform/extensions/modules/data-source.md).
 
 - `StudyPrefetcher` is not currently supported in OHIF v3.
 - The `servers` object has been replaced with a `dataSources` array containing objects representing different data sources.
-- The cornerstoneExtensionConfig property has been removed, you should use `customizationService` instead (you can read more [here](./platform/services/ui/customization-service.md))
+- The cornerstoneExtensionConfig property has been removed, you should use `customizationService` instead (you can read more [here](../platform/services/ui/customization-service.md))
 - The maxConcurrentMetadataRequests property has been removed in favor of `maxNumRequests`
 - The hotkeys array has been updated with different command names and options, and some keys have been removed.
 - New properties have been added, including `maxNumberOfWebWorkers`, `omitQuotationForMultipartRequest`, `showWarningMessageForCrossOrigin`, `showCPUFallbackMessage`, `showLoadingIndicator`, `strictZSpacingForVolumeViewport`.
@@ -118,7 +118,7 @@ you as the user can focus on creating modes having your own use case and configu
 
 Separating the configuration from the extensions also makes it so that you can
 have multiple modes in a single application each focusing on certain tasks. For example, you can have a mode for segmentation which uses specific panels and tools which you don't need
-for a mode that will be used for reading (read more about modes [here](./platform/modes/index.md))
+for a mode that will be used for reading (read more about modes [here](../platform/modes/index.md))
 
 :::info
 Previously, the viewer was designed around registered extensions. If you had a specific use case, you had to duplicate the viewer code and incorporate your customizations through extensions. However, with the introduction of a new layer of abstraction called Modes, you no longer need to fork the viewer.
@@ -184,7 +184,7 @@ for this mode. The `tmtv` mode is using the `cs3d` extension for rendering and t
 
 Below you can see a screen shot from the demo showcasing 3 modes for the opened study.
 
-![Alt text](assets/img/migration-modes.png)
+![Alt text](../assets/img/migration-modes.png)
 
 :::tip
 How do I decide certain thing should go inside a mode or extension, Here are some considerations to help you make the decision:
@@ -222,7 +222,7 @@ Can I register a custom route to OHIF v3?
 </summary>
 
 Yes, you can take advantage of the customizationService and register your own routes.
-see [custom routes](./platform/services/ui/customization-service.md#customroutes)
+see [custom routes](../platform/services/ui/customization-service.md#customroutes)
 
 
 </details>
@@ -364,7 +364,7 @@ How to remove an "core" extension/mode?
 </summary>
 
 You can use the OHIF cli tool to add/remove/link and unlink extensions and modes. You can find more information
-about the cli tool [here](./development/ohif-cli.md)
+about the cli tool [here](../development/ohif-cli.md)
 
 </details>
 
@@ -514,7 +514,7 @@ modules exported via `get{ModuleName}Module` (e.g., `getViewportModule`).
 :::info
 There are new
 types of modules that can be exported from extensions (such as `HangingProtocolModule`, `LayoutModule`, read more about
-modules in v3 [here](platform/extensions/index.md)).
+modules in v3 [here](../platform/extensions/index.md)).
 :::
 
 The main difference between v3 and v2 is that exported modules were represented as a single object, whereas in OHIF v3, they are
@@ -667,7 +667,7 @@ By using the updated toolbarModule in OHIF v3, you can define and add toolbar bu
 
 An example of split button icon in v3 is shown below
 
-![Alt text](assets/img/migration-split-button.png)
+![Alt text](../assets/img/migration-split-button.png)
 
 <details>
 <summary>
@@ -874,7 +874,7 @@ We have recently transitioned from bundling all the extensions and the viewer in
 - Smaller bundle size: By loading extensions on-demand, the initial bundle size is reduced, resulting in faster page load times for users.
 - Faster reload for development: During development, the incremental build process allows for faster reloads, improving developer productivity.
 
-This new approach does not impact the deployment process of the viewer. You can continue to follow our deployment guides, such as the [Build for Production](./deployment/build-for-production.md) guide, to deploy the viewer effectively.
+This new approach does not impact the deployment process of the viewer. You can continue to follow our deployment guides, such as the [Build for Production](../deployment/build-for-production.md) guide, to deploy the viewer effectively.
 
 
 ### Script tag usage of the OHIF viewer
