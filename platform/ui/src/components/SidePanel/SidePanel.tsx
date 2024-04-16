@@ -354,7 +354,7 @@ const SidePanel = ({
     return (
       <div
         className={classnames(
-          'text-primary-active flex grow cursor-pointer justify-center self-center text-[13px]'
+          'text-primary-active flex	 grow cursor-pointer select-none justify-center self-center text-[13px]'
         )}
         style={{
           ...(side === 'left'
@@ -371,7 +371,7 @@ const SidePanel = ({
 
   const getOpenStateComponent = () => {
     return (
-      <div className="bg-primary-dark flex rounded-t pt-1.5 pb-[2px]">
+      <div className="bg-primary-dark flex select-none rounded-t pt-1.5 pb-[2px]	">
         {getCloseIcon()}
         {tabs.length === 1 ? getOneTabComponent() : getTabGridComponent()}
       </div>
