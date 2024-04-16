@@ -19,7 +19,7 @@ import { utilities } from '@cornerstonejs/core';
 export type WindowLevelActionMenuProps = {
   viewportId: string;
   element: HTMLElement;
-  presets: Record<string, Array<WindowLevelPreset>>;
+  presets: Array<Record<string, Array<WindowLevelPreset>>>;
   verticalDirection: AllInOneMenu.VerticalDirection;
   horizontalDirection: AllInOneMenu.HorizontalDirection;
   commandsManager: CommandsManager;
@@ -164,10 +164,10 @@ export function WindowLevelActionMenu({
           </AllInOneMenu.SubMenu>
         )}
 
-        {presets && !is3DVolume && (
+        {presets && presets.length > 0 && !is3DVolume && (
           <AllInOneMenu.SubMenu
             key="windowLevelPresets"
-            itemLabel={t('Modality Window Presets', { modality: Object.keys(presets)[0] })}
+            itemLabel={t('Modality Window Presets')}
             itemIcon="viewport-window-level"
           >
             <WindowLevel

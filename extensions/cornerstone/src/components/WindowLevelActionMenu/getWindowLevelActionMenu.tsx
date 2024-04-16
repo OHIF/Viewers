@@ -24,13 +24,11 @@ export function getWindowLevelActionMenu({
       return { [displaySet.Modality]: presets[displaySet.Modality] };
     });
 
-  const hasMenu = displaySetPresets.length > 0;
-
-  return hasMenu ? (
+  return (
     <WindowLevelActionMenu
       viewportId={viewportId}
       element={element}
-      presets={displaySetPresets[0]}
+      presets={displaySetPresets}
       verticalDirection={verticalDirection}
       horizontalDirection={horizontalDirection}
       commandsManager={commandsManager}
@@ -40,5 +38,5 @@ export function getWindowLevelActionMenu({
       volumeRenderingPresets={volumeRenderingPresets}
       volumeRenderingQualityRange={volumeRenderingQualityRange}
     />
-  ) : null;
+  );
 }
