@@ -8,6 +8,7 @@ window.config = {
   showCPUFallbackMessage: true,
   showLoadingIndicator: true,
   strictZSpacingForVolumeViewport: true,
+  groupEnabledModesFirst: true,
   // filterQueryParam: false,
   defaultDataSourceName: 'dicomweb',
   dataSources: [

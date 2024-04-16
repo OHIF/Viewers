@@ -68,6 +68,11 @@ export function Colormap({
       key: index,
       style: {
         minWidth: `calc(100% / ${displaySets.length})`,
+        fontSize: '0.8rem',
+        textAlign: 'center',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
       },
     }));
   }, [displaySets]);
