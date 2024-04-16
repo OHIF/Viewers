@@ -41,7 +41,7 @@ const StudyItem = ({
           </div>
         </div>
         <div className="flex flex-row py-1">
-          <div className="pr-5 text-xl text-blue-300">{modalities}</div>
+          <div className="text-l pr-5 text-blue-300">{modalities}</div>
           <div className="truncate-2-lines break-words text-base text-blue-300">{description}</div>
         </div>
       </div>
@@ -59,7 +59,7 @@ const StudyItem = ({
               name="tracked"
               className="text-primary-light mr-2 w-4"
             />
-            {t('Tracked series', {trackedSeries: trackedSeries})}
+            {t('Tracked series', { trackedSeries: trackedSeries })}
           </div>
         </div>
       )}

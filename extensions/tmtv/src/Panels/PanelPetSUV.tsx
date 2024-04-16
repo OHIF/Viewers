@@ -127,7 +127,7 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
   }
   return (
     <div className="ohif-scrollbar flex min-h-0 flex-auto select-none flex-col justify-between overflow-auto">
-      <div className="flex min-h-0 flex-col bg-black text-[13px] font-[300]">
+      <div className="flex min-h-0 flex-1 flex-col bg-black text-[13px] font-[300]">
         <PanelSection title={t('Patient Information')}>
           <div className="flex flex-col">
             <div className="bg-primary-dark flex flex-col gap-4 p-2">

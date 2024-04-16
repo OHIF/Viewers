@@ -63,7 +63,7 @@ const DefaultListItemRenderer = props => {
   return (
     <div
       className={classNames(
-        'flex h-8 w-full flex-row items-center p-3',
+        'flex h-8 w-full select-none flex-row items-center p-3',
         'whitespace-pre text-base',
         className,
         `${isActive ? 'hover:opacity-80' : 'hover:bg-primary-dark '}`
