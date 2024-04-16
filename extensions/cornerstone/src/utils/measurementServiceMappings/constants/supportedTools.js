@@ -12,4 +12,5 @@ export default [
   'SplineROI',
   'LivewireContour',
   'Probe',
+  'UltrasoundDirectionalTool',
 ];
