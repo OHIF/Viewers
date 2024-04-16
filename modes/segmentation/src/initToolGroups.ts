@@ -59,6 +59,9 @@ function createTools(utilityModule) {
             enabled: true,
           },
           strategySpecificConfiguration: {
+            // to use the use the center segment index to determine
+            // if inside -> same segment, if outside -> eraser
+            useCenterSegmentIndex: true,
             THRESHOLD: {
               isDynamic: true,
               dynamicRadius: 3,

@@ -112,7 +112,11 @@ const toolbarButtons: Button[] = [
               commands: {
                 commandName: 'setBrushSize',
                 commandOptions: {
-                  toolNames: ['ThresholdCircularBrush', 'ThresholdSphereBrush'],
+                  toolNames: [
+                    'ThresholdCircularBrush',
+                    'ThresholdSphereBrush',
+                    'ThresholdCircularBrushDynamic',
+                  ],
                 },
               },
             },
