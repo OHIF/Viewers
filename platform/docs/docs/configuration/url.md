@@ -120,40 +120,41 @@ values.
 :::
 
 
-### SeriesInstanceUID, SeriesInstanceUIDs and initialSeriesInstanceUID
+### SeriesInstanceUIDs
 
 Sometimes you need to only retrieve a specific series in a study, you can do
 that by providing series level QIDO query parameters in the URL such as
-SeriesInstanceUID or SeriesNumber.  This does NOT work with instance or study
+SeriesInstanceUIDs.  This does NOT work with instance or study
 level parameters.  For example:
 
 ```js
-http://localhost:3000/viewer?StudyInstanceUIDs=1.3.6.1.4.1.25403.345050719074.3824.20170125113417.1&SeriesInstanceUID=1.3.6.1.4.1.25403.345050719074.3824.20170125113545.4
+http://localhost:3000/viewer?StudyInstanceUIDs=1.3.6.1.4.1.25403.345050719074.3824.20170125095438.5&SeriesInstanceUIDs=1.3.6.1.4.1.25403.345050719074.3824.20170125095449.8
 ```
 
 This will only open the viewer with one series (one displaySet) loaded, and no
 queries made for any other series.
 
 Sometimes you need to only retrieve a subset of series in a study, you can do
-that by providing study level wado query parameters in the URL such as
-SeriesInstanceUIDs. For example:
+that by providing more than one series, separated by commas.  For example:
 
 ```js
-http://localhost:3000/viewer?StudyInstanceUIDs=1.3.6.1.4.1.25403.345050719074.3824.20170125113417.1&SeriesInstanceUIDs=1.3.6.1.4.1.25403.345050719074.3824.20170125113545.4,1.3.6.1.4.1.25403.345050719074.3824.20170125113545.5
+http://localhost:3000/viewer?StudyInstanceUIDs=1.3.6.1.4.1.25403.345050719074.3824.20170125095438.5&SeriesInstanceUIDs=1.3.6.1.4.1.25403.345050719074.3824.20170125095449.8,1.3.6.1.4.1.25403.345050719074.3824.20170125095506.10
 ```
 
 This will only open the viewer with two series (two displaySets) loaded, and no
 queries made for any other series.
 
+### initialSeriesInstanceUID
+
 Alternatively, sometimes you want to just open the study on a specified series
 and/or display a particular sop instance, which you can accomplish using:
 `initialSeriesInstanceUID` and/or `initialSOPInstanceUID`
 to select the series to open on, but allowing other
-series to be present in the study browser panel.  This is the same behaviour
+series to be present in the study browser panel.  This is the same behavior
 as in OHIF 2.0, albeit on different URL parameters.  For example:
 
 ```js
-http://localhost:3000/viewer?StudyInstanceUIDs=1.3.6.1.4.1.25403.345050719074.3824.20170125113417.1&initialSeriesInstanceUID=1.3.6.1.4.1.25403.345050719074.3824.20170125113545.4
+http://localhost:3000/viewer?StudyInstanceUIDs=1.3.6.1.4.1.25403.345050719074.3824.20170125095438.5&initialSeriesInstanceUID=1.3.6.1.4.1.25403.345050719074.3824.20170125095449.8
 ```
 
 Note that you can combine these, if you want to load a specific set of series
@@ -169,6 +170,11 @@ You can select the initial hanging protocol to apply by using the
 hangingProtocolId parameter.  The selected parameter must be available in a
 hangingProtocolModule registration, but does not have to be active.
 
+For instance for loading a specific study in mpr mode from start you can use:
+
+```js
+http://localhost:3000/viewer?StudyInstanceUIDs=1.3.6.1.4.1.25403.345050719074.3824.20170125095438.5&hangingProtocolId=@ohif/mnGrid
+```
 
 ### token
 
