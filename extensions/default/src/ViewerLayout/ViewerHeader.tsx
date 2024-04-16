@@ -53,6 +53,7 @@ function ViewerHeader({ hotkeysManager, extensionManager, servicesManager, appCo
           content: AboutModal,
           title: t('AboutModal:About OHIF Viewer'),
           contentProps: { versionNumber, commitHash },
+          containerDimensions: 'max-w-4xl max-h-4xl',
         }),
     },
     {
@@ -114,7 +115,7 @@ function ViewerHeader({ hotkeysManager, extensionManager, servicesManager, appCo
       appConfig={appConfig}
     >
       <ErrorBoundary context="Primary Toolbar">
-        <div className="relative flex justify-center">
+        <div className="relative flex justify-center gap-[4px]">
           <Toolbar servicesManager={servicesManager} />
         </div>
       </ErrorBoundary>

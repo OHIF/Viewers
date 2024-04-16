@@ -328,7 +328,7 @@ function WorkList({
             </>
           ),
           title: (instances || 0).toString(),
-          gridCol: 4,
+          gridCol: 2,
         },
       ],
       // Todo: This is actually running for all rows, even if they are
@@ -454,6 +454,7 @@ function WorkList({
           content: AboutModal,
           title: t('AboutModal:About OHIF Viewer'),
           contentProps: { versionNumber, commitHash },
+          containerDimensions: 'max-w-4xl max-h-4xl',
         }),
     },
     {

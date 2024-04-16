@@ -33,6 +33,8 @@ const initMeasurementService = (
     PlanarFreehandROI,
     SplineROI,
     LivewireContour,
+    Probe,
+    UltrasoundDirectional,
   } = measurementServiceMappingsFactory(
     measurementService,
     displaySetService,
@@ -155,6 +157,22 @@ const initMeasurementService = (
     LivewireContour.matchingCriteria,
     LivewireContour.toAnnotation,
     LivewireContour.toMeasurement
+  );
+
+  measurementService.addMapping(
+    csTools3DVer1MeasurementSource,
+    'Probe',
+    Probe.matchingCriteria,
+    Probe.toAnnotation,
+    Probe.toMeasurement
+  );
+
+  measurementService.addMapping(
+    csTools3DVer1MeasurementSource,
+    'UltrasoundDirectionalTool',
+    UltrasoundDirectional.matchingCriteria,
+    UltrasoundDirectional.toAnnotation,
+    UltrasoundDirectional.toMeasurement
   );
 
   return csTools3DVer1MeasurementSource;

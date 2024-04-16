@@ -66,6 +66,11 @@ function _askHydrate(uiViewportDialogService, viewportId) {
         uiViewportDialogService.hide();
         resolve(RESPONSE.CANCEL);
       },
+      onKeyPress: event => {
+        if (event.key === 'Enter') {
+          onSubmit(RESPONSE.HYDRATE_SEG);
+        }
+      },
     });
   });
 }

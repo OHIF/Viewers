@@ -82,6 +82,8 @@ export function VolumeShift({
             step={step}
             style={{
               background: calculateBackground((shift - minShift) / (maxShift - minShift)),
+              '--thumb-inner-color': '#5acce6',
+              '--thumb-outer-color': '#090c29',
             }}
           />
         )}
