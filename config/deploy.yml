@@ -1,0 +1,71 @@
+# Name of your application. Used to uniquely configure containers.
+service: viewers
+
+# Name of the container image.
+image: willianvarela/viewers
+
+# Deploy to these servers.
+servers:
+  web:
+    hosts:
+      - 35.196.94.85
+    labels:
+      traefik.http.routers.viewers.entrypoints: websecure
+      traefik.http.routers.viewers.rule: Host(`dicomviewer.cfaz.net`)
+      traefik.http.routers.viewers.tls.certresolver: letsencrypt
+    options:
+      add-host: host.docker.internal:host-gateway
+
+# Credentials for your image host.
+registry:
+  server: ghcr.io
+  username: Deploy
+  password:
+    - GITHUB_TOKEN
+
+# Use a different ssh user than root
+ssh:
+  user: deploy
+
+# Configure builder setup.
+builder:
+  multiarch: false
+  cache:
+    type: gha
+  secrets:
+    - GITHUB_TOKEN
+
+# Configure custom arguments for Traefik
+traefik:
+  options:
+    publish:
+      - "443:443"
+    volume:
+      - "/letsencrypt/acme.json:/letsencrypt/acme.json" # To save the configuration file.
+  args:
+    accesslog: true
+    accesslog.format: json
+    log.level: DEBUG
+    entryPoints.web.address: ":80"
+    entryPoints.websecure.address: ":443"
+    entryPoints.web.http.redirections.entryPoint.to: websecure # We want to force https
+    entryPoints.web.http.redirections.entryPoint.scheme: https
+    entryPoints.web.http.redirections.entrypoint.permanent: true
+    certificatesResolvers.letsencrypt.acme.email: "suporte@cfaz.net"
+    certificatesResolvers.letsencrypt.acme.storage: "/letsencrypt/acme.json" # Must match the path in `volume`
+    certificatesResolvers.letsencrypt.acme.httpchallenge: true
+    certificatesResolvers.letsencrypt.acme.httpchallenge.entrypoint: web # Must match the role in `servers`
+
+# Configure a custom healthcheck (default is /up on port 3000)
+healthcheck:
+  cmd: /bin/true
+
+# Bridge fingerprinted assets, like JS and CSS, between versions to avoid
+# hitting 404 on in-flight requests. Combines all files from new and old
+# version inside the asset_path.
+# asset_path: /rails/public/assets
+
+# Configure rolling deploys by setting a wait time between batches of restarts.
+# boot:
+#   limit: 10 # Can also specify as a percentage of total hosts, such as "25%"
+#   wait: 2
