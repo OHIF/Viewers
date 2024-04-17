@@ -50,35 +50,16 @@ function ToolboxUI(props) {
                       true,
                   })}
                 >
-                  {componentProps.disabled ? (
-                    <Tooltip
-                      position="bottom"
-                      content={componentProps.label}
-                      secondaryContent={componentProps.disabledText}
-                    >
-                      <div className="flex rounded-md bg-black">
-                        <Component
-                          {...componentProps}
-                          {...props}
-                          id={id}
-                          servicesManager={servicesManager}
-                          onInteraction={onInteraction}
-                          size="toolbox"
-                        />
-                      </div>
-                    </Tooltip>
-                  ) : (
-                    <div className="flex rounded-md bg-black">
-                      <Component
-                        {...componentProps}
-                        {...props}
-                        id={id}
-                        servicesManager={servicesManager}
-                        onInteraction={onInteraction}
-                        size="toolbox"
-                      />
-                    </div>
-                  )}
+                  <div className="flex rounded-md bg-black">
+                    <Component
+                      {...componentProps}
+                      {...props}
+                      id={id}
+                      servicesManager={servicesManager}
+                      onInteraction={onInteraction}
+                      size="toolbox"
+                    />
+                  </div>
                 </div>
               );
             })}

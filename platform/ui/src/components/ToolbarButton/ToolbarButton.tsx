@@ -39,14 +39,14 @@ const ToolbarButton = ({
       <Tooltip
         isSticky={shouldShowDropdown}
         content={shouldShowDropdown ? dropdownContent : label}
-        secondaryContent={disabledText}
+        secondaryContent={disabled ? disabledText : null}
         tight={shouldShowDropdown}
         className={toolTipClassNameToUse}
         isDisabled={disableToolTip}
       >
         <IconButton
           size={sizeToUse}
-          className={classNames(className, disabled ? '!cursor-default' : '')}
+          className={classNames(className, disabled ? 'ohif-disabled' : '')}
           onClick={() => {
             onInteraction({
               itemId: id,
