@@ -120,17 +120,7 @@ const toolbarButtons: Button[] = [
                 },
               },
             },
-            {
-              name: 'Shape',
-              type: 'radio',
-              id: 'eraser-mode',
-              value: 'ThresholdCircularBrush',
-              values: [
-                { value: 'ThresholdCircularBrush', label: 'Circle' },
-                { value: 'ThresholdSphereBrush', label: 'Sphere' },
-              ],
-              commands: 'setToolActiveToolbar',
-            },
+
             {
               name: 'Threshold',
               type: 'radio',
@@ -151,6 +141,19 @@ const toolbarButtons: Button[] = [
                   });
                 }
               },
+            },
+            {
+              name: 'Shape',
+              type: 'radio',
+              id: 'eraser-mode',
+              value: 'ThresholdCircularBrush',
+              values: [
+                { value: 'ThresholdCircularBrush', label: 'Circle' },
+                { value: 'ThresholdSphereBrush', label: 'Sphere' },
+              ],
+              condition: ({ options }) =>
+                options.find(option => option.id === 'dynamic-mode').value === 'ThresholdRange',
+              commands: 'setToolActiveToolbar',
             },
             {
               name: 'ThresholdRange',
