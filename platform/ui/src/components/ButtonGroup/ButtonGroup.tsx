@@ -37,7 +37,7 @@ const ButtonGroup = ({
   return (
     <div
       className={classnames(wrapperClasses, ' text-[13px]', {
-        'border-secondary-light rounded-[5px] border bg-black': !separated,
+        ' rounded-md  bg-black': !separated,
       })}
     >
       {!separated && (
