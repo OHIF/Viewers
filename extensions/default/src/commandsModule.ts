@@ -448,7 +448,7 @@ const commandsModule = ({
           displaySetInstanceUID,
           onClose: UIModalService.hide,
         },
-        containerDimensions: 'max-w-4xl max-h-4xl',
+        containerDimensions: 'w-[70%] max-w-[900px]',
         title: 'DICOM Tag Browser',
       });
     },

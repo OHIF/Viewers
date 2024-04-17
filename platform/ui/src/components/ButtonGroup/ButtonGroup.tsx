@@ -37,7 +37,7 @@ const ButtonGroup = ({
   return (
     <div
       className={classnames(wrapperClasses, ' text-[13px]', {
-        'border-secondary-light rounded-[5px] border bg-black': !separated,
+        ' rounded-md  bg-black': !separated,
       })}
     >
       {!separated && (
@@ -52,7 +52,7 @@ const ButtonGroup = ({
                     ? 'bg-customblue-40 text-white'
                     : 'text-primary-active bg-black',
                   child.props.className,
-                  disabled ? 'ohif-disabled' : ''
+                  child.props.disabled ? 'ohif-disabled' : ''
                 ),
                 onClick: e => {
                   child.props.onClick && child.props.onClick(e);
@@ -76,7 +76,7 @@ const ButtonGroup = ({
                     ? 'bg-customblue-40 text-white'
                     : 'text-primary-active bg-black border-secondary-light rounded-[5px] border',
                   child.props.className,
-                  disabled ? 'ohif-disabled' : ''
+                  child.props.disabled ? 'ohif-disabled' : ''
                 ),
                 onClick: e => {
                   child.props.onClick && child.props.onClick(e);

@@ -19,7 +19,10 @@ const AdvancedToolbox = ({ title, items }) => {
   const activeItemOptions = items?.find(item => item.name === activeItemName)?.options;
 
   return (
-    <PanelSection title={title}>
+    <PanelSection
+      title={title}
+      childrenClassName="flex-shrink-0"
+    >
       <div className="flex flex-col bg-black">
         <div className="bg-primary-dark mt-0.5 flex flex-wrap py-2">
           {items?.map(item => {
