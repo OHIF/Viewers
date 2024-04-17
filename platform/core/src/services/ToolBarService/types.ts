@@ -1,6 +1,6 @@
 import type { RunCommand } from '../../types/Command';
 
-export type EvaluatePublic = string | EvaluateFunction;
+export type EvaluatePublic = string | EvaluateFunction | string[];
 
 export type EvaluateFunction = (props: Record<string, unknown>) => {
   disabled: boolean;

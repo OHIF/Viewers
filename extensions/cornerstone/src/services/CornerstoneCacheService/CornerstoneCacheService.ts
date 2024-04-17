@@ -45,7 +45,11 @@ class CornerstoneCacheService {
     // as a reference volume, if so, we should hang a volume viewport
     // instead of a stack viewport
     if (this._shouldRenderSegmentation(displaySets)) {
-      viewportType = 'volume';
+      // if the viewport type is volume 3D, we should let it be as it is
+      // Todo: in future here we should kick start the conversion of the
+      // segmentation to closed surface
+      viewportType =
+        viewportType === Enums.ViewportType.VOLUME_3D ? Enums.ViewportType.VOLUME_3D : 'volume';
 
       // update viewportOptions to reflect the new viewport type
       viewportOptions.viewportType = viewportType;
@@ -200,6 +204,7 @@ class CornerstoneCacheService {
         volume,
         volumeId,
         imageIds: volumeImageIds,
+        isDynamicVolume: displaySet.isDynamicVolume,
       });
     }
 
@@ -228,7 +233,7 @@ class CornerstoneCacheService {
 
       const shouldDisplaySeg = segmentationService.shouldRenderSegmentation(
         viewportDisplaySetInstanceUIDs,
-        instance.FrameOfReferenceUID
+        instance?.FrameOfReferenceUID || segDisplaySet.FrameOfReferenceUID
       );
 
       if (shouldDisplaySeg) {

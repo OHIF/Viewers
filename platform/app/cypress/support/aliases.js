@@ -12,7 +12,6 @@ export function initCornerstoneToolsAliases() {
   cy.get('[data-cy="MoreTools-split-button-secondary"]').as('moreBtnSecondary');
   cy.get('[data-cy="Layout"]').as('layoutBtn');
   cy.get('.cornerstone-viewport-element').as('viewport');
-  cy.get('[data-cy="MPR"]').as('mprBtn');
 }
 
 //Creating aliases for Common page elements

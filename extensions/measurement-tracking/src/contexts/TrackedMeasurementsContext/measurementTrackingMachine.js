@@ -31,10 +31,33 @@ const machineConfiguration = {
     off: {
       type: 'final',
     },
+    labellingOnly: {
+      on: {
+        TRACK_SERIES: [
+          {
+            target: 'promptLabelAnnotation',
+            actions: ['setPreviousState'],
+          },
+          {
+            target: 'off',
+          },
+        ],
+      },
+    },
     idle: {
       entry: 'clearContext',
       on: {
-        TRACK_SERIES: 'promptBeginTracking',
+        TRACK_SERIES: [
+          {
+            target: 'promptLabelAnnotation',
+            cond: 'isLabelOnMeasure',
+            actions: ['setPreviousState'],
+          },
+          {
+            target: 'promptBeginTracking',
+            actions: ['setPreviousState'],
+          },
+        ],
         // Unused? We may only do PROMPT_HYDRATE_SR now?
         SET_TRACKED_SERIES: [
           {
@@ -65,6 +88,10 @@ const machineConfiguration = {
             cond: 'shouldSetStudyAndSeries',
           },
           {
+            target: 'labellingOnly',
+            cond: 'isLabelOnMeasureAndShouldKillMachine',
+          },
+          {
             target: 'off',
             cond: 'shouldKillMachine',
           },
@@ -80,6 +107,11 @@ const machineConfiguration = {
     tracking: {
       on: {
         TRACK_SERIES: [
+          {
+            target: 'promptLabelAnnotation',
+            cond: 'isLabelOnMeasure',
+            actions: ['setPreviousState'],
+          },
           {
             target: 'promptTrackNewStudy',
             cond: 'isNewStudy',
@@ -252,6 +284,36 @@ const machineConfiguration = {
         },
       },
     },
+    promptLabelAnnotation: {
+      invoke: {
+        src: 'promptLabelAnnotation',
+        onDone: [
+          {
+            target: 'labellingOnly',
+            cond: 'wasLabellingOnly',
+          },
+          {
+            target: 'promptBeginTracking',
+            cond: 'wasIdle',
+          },
+          {
+            target: 'promptTrackNewStudy',
+            cond: 'wasTrackingAndIsNewStudy',
+          },
+          {
+            target: 'promptTrackNewSeries',
+            cond: 'wasTrackingAndIsNewSeries',
+          },
+          {
+            target: 'tracking',
+            cond: 'wasTracking',
+          },
+          {
+            target: 'off',
+          },
+        ],
+      },
+    },
   },
   strict: true,
 };
@@ -337,6 +399,11 @@ const defaultOptions = {
       prevTrackedSeries: ctx.trackedSeries.slice().filter(ser => ser !== evt.SeriesInstanceUID),
       trackedSeries: ctx.trackedSeries.slice().filter(ser => ser !== evt.SeriesInstanceUID),
     })),
+    setPreviousState: assign((ctx, evt, meta) => {
+      return {
+        prevState: meta.state.value,
+      };
+    }),
   },
   guards: {
     // We set dirty any time we performan an action that:
@@ -362,6 +429,30 @@ const defaultOptions = {
         evt.SeriesInstanceUID === undefined || ctx.trackedSeries.includes(evt.SeriesInstanceUID)
       );
     },
+    wasLabellingOnly: (ctx, evt, condMeta) => {
+      return ctx.prevState === 'labellingOnly';
+    },
+    wasIdle: (ctx, evt, condMeta) => {
+      return ctx.prevState === 'idle';
+    },
+    wasTracking: (ctx, evt, condMeta) => {
+      return ctx.prevState === 'tracking';
+    },
+    wasTrackingAndIsNewStudy: (ctx, evt, condMeta) => {
+      return (
+        ctx.prevState === 'tracking' &&
+        !ctx.ignoredSeries.includes(evt.data.SeriesInstanceUID) &&
+        ctx.trackedStudy !== evt.data.StudyInstanceUID
+      );
+    },
+    wasTrackingAndIsNewSeries: (ctx, evt, condMeta) => {
+      return (
+        ctx.prevState === 'tracking' &&
+        !ctx.ignoredSeries.includes(evt.data.SeriesInstanceUID) &&
+        !ctx.trackedSeries.includes(evt.data.SeriesInstanceUID)
+      );
+    },
+
     shouldKillMachine: (ctx, evt) => evt.data && evt.data.userResponse === RESPONSE.NO_NEVER,
     shouldAddSeries: (ctx, evt) => evt.data && evt.data.userResponse === RESPONSE.ADD_SERIES,
     shouldSetStudyAndSeries: (ctx, evt) =>
@@ -397,4 +488,4 @@ const defaultOptions = {
   },
 };
 
-export { defaultOptions, machineConfiguration };
+export { defaultOptions, machineConfiguration, RESPONSE };

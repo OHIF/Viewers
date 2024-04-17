@@ -11,6 +11,7 @@ export default class ServicesManager {
 
   constructor(commandsManager: CommandsManager) {
     this._commandsManager = commandsManager;
+    this._extensionManager = null;
     this.services = {};
     this.registeredServiceNames = [];
   }
@@ -46,6 +47,7 @@ export default class ServicesManager {
     if (service.create) {
       this.services[service.name] = service.create({
         configuration,
+        extensionManager: this._extensionManager,
         commandsManager: this._commandsManager,
         servicesManager: this,
         extensionManager: this._extensionManager,

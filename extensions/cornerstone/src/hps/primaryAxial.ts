@@ -1,7 +1,9 @@
 export const primaryAxial = {
   id: 'primaryAxial',
   locked: true,
-  name: 'primaryAxial',
+  name: 'Axial Primary',
+  icon: 'layout-advanced-axial-primary',
+  isPreset: true,
   createdDate: '2023-03-15T10:29:44.894Z',
   modifiedDate: '2023-03-15T10:29:44.894Z',
   availableTo: {},
@@ -70,6 +72,9 @@ export const primaryAxial = {
                 id: 'mpr',
                 source: true,
                 target: true,
+                options: {
+                  syncColormap: true,
+                },
               },
             ],
           },
@@ -93,6 +98,9 @@ export const primaryAxial = {
                 id: 'mpr',
                 source: true,
                 target: true,
+                options: {
+                  syncColormap: true,
+                },
               },
             ],
           },
@@ -116,6 +124,9 @@ export const primaryAxial = {
                 id: 'mpr',
                 source: true,
                 target: true,
+                options: {
+                  syncColormap: true,
+                },
               },
             ],
           },
