@@ -90,7 +90,16 @@ function ToolboxUI(props) {
     );
   };
 
-  return useCollapsedPanel ? <PanelSection title={title}>{render()}</PanelSection> : render();
+  return useCollapsedPanel ? (
+    <PanelSection
+      childrenClassName="flex-shrink-0"
+      title={title}
+    >
+      {render()}
+    </PanelSection>
+  ) : (
+    render()
+  );
 }
 
 export { ToolboxUI };
