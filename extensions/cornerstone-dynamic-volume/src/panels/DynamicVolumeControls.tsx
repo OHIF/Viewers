@@ -24,7 +24,7 @@ const Header = ({ title, tooltip }) => (
       content={<div className="text-white">{tooltip}</div>}
       position="bottom-left"
       tight={true}
-      tooltipBoxClassName="max-w-xs"
+      tooltipBoxClassName="max-w-xs p-2"
     >
       <Icon
         name="info-link"
@@ -120,7 +120,19 @@ const DynamicVolumeControls = ({
           />
         </div>
         <div className={`mt-6 flex flex-col ${computedView ? '' : 'ohif-disabled'}`}>
-          <Header title="Computed Operation" />
+          <Header
+            title="Computed Operation"
+            tooltip={
+              <div>
+                Operation Buttons (SUM, AVERAGE, SUBTRACT): Select the mathematical operation to be
+                applied to the data set.
+                <br></br> Range Slider: Choose the numeric range within which the operation will be
+                performed.
+                <br></br>Generate Button: Execute the chosen operation on the specified range of
+                data.{' '}
+              </div>
+            }
+          />
           <ButtonGroup
             className={`mt-2 w-full `}
             separated={true}
@@ -187,7 +199,16 @@ function FrameControls({
 
   return (
     <div className={computedView && 'ohif-disabled'}>
-      <Header title="4D Controls" />
+      <Header
+        title="4D Controls"
+        tooltip={
+          <div>
+            Play/Pause Button: Begin or pause the animation of the 4D visualization. <br></br> Frame
+            Selector: Navigate through individual frames of the 4D data. <br></br> FPS (Frames Per
+            Second) Selector: Adjust the playback speed of the animation.
+          </div>
+        }
+      />
       <div className="mt-3 flex justify-between">
         <IconButton
           className="bg-customblue-30 h-[26px] w-[58px] rounded-[4px]"

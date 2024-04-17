@@ -107,6 +107,12 @@ function Toolbox({ servicesManager, buttonSectionId, commandsManager, title, ...
     api.handleToolOptionChange(toolName, optionName, newValue);
   };
 
+  useEffect(() => {
+    return () => {
+      api.handleToolSelect(null);
+    };
+  }, []);
+
   return (
     <ToolboxUI
       {...props}
