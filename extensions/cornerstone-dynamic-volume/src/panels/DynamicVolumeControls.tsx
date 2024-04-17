@@ -211,12 +211,12 @@ function FrameControls({
       />
       <div className="mt-3 flex justify-between">
         <IconButton
-          className="bg-customblue-30 h-[26px] w-[58px] rounded-[4px]"
+          className="bg-bg-desert-200 h-[26px] w-[58px] rounded-[4px]"
           onClick={() => onPlayPauseChange(!isPlaying)}
         >
           <Icon
             name={getPlayPauseIconName()}
-            className=" active:text-primary-light hover:bg-customblue-300 h-[24px] w-[24px] cursor-pointer text-white"
+            className=" active:text-primary-light hover:bg-bg-desert-700 h-[24px] w-[24px] cursor-pointer text-white"
           />
         </IconButton>
         <InputNumber

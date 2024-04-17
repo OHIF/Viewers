@@ -82,7 +82,7 @@ const Thumbnail = ({
             <div>{imageAltText}</div>
           )}
         </div>
-        <div className="flex flex-1 flex-row items-center pt-2 text-base text-blue-300">
+        <div className="text-desert-200 flex flex-1 flex-row items-center pt-2 text-base">
           <div className="mr-4">
             <span className="text-primary-main font-bold">{'S: '}</span>
             {seriesNumber}

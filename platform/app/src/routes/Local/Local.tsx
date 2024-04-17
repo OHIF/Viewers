@@ -24,7 +24,7 @@ const getLoadButton = (onDrop, text, isDir) => {
             disabled={false}
             endIcon={<Icon name="launch-arrow" />} // launch-arrow | launch-info
             className={classnames('font-medium', 'ml-2')}
-            onClick={() => {}}
+            onClick={() => { }}
           >
             {text}
             {isDir ? (
@@ -137,14 +137,14 @@ function Local({ modePath }: LocalProps) {
                   </div>
                 ) : (
                   <div className="space-y-2">
-                    <p className="text-base text-blue-300">
+                    <p className="text-desert-200 text-base">
                       Note: You data is not uploaded to any server, it will stay in your local
                       browser application
                     </p>
                     <p className="text-xg text-primary-active pt-6 font-semibold">
                       Drag and Drop DICOM files here to load them in the Viewer
                     </p>
-                    <p className="text-lg text-blue-300">Or click to </p>
+                    <p className="text-desert-200 text-lg">Or click to </p>
                   </div>
                 )}
               </div>

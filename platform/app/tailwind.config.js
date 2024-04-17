@@ -36,14 +36,14 @@ module.exports = {
         dark: '#0b1a42',
       },
       aqua: {
-        pale: '#7bb2ce',
+        pale: '#ebd29d',
       },
 
       primary: {
-        light: '#5acce6',
-        main: '#0944b3',
-        dark: '#090c29',
-        active: '#348cfd',
+        light: '#EBA947',
+        main: '#E79824',
+        dark: '#4b5056',
+        active: '#fff',
       },
 
       inputfield: {
@@ -54,9 +54,9 @@ module.exports = {
       },
 
       secondary: {
-        light: '#3a3f99',
-        main: '#2b166b',
-        dark: '#041c4a',
+        light: '#BEBDBB',
+        main: '#808080',
+        dark: '#333333',
         active: '#1f1f27',
       },
 
@@ -199,6 +199,19 @@ module.exports = {
         700: '#b83280',
         800: '#97266d',
         900: '#702459',
+      },
+      desert: {
+        50: '#faf6ec',
+        100: '#f4e9cd',
+        200: '#ebd29d',
+        300: '#e0b264',
+        400: '#d5963a',
+        500: '#c6802c',
+        600: '#af6625',
+        700: '#884820',
+        800: '#723b21',
+        900: '#623321',
+        950: '#381910',
       },
     },
     backgroundColor: theme => theme('colors'),

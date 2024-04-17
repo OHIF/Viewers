@@ -66,7 +66,7 @@ const Notification = ({ id, type, message, actions, onSubmit, onOutsideClick, on
   return (
     <div
       ref={notificationRef}
-      className="border-customblue-10 bg-customblue-400 mx-2 mt-2 flex flex-col rounded-md border-2 p-2 outline-none"
+      className="border-desert-50 bg-desert-400 mx-2 mt-2 flex flex-col rounded-md border-2 p-2 outline-none"
       data-cy={id}
       onKeyDown={onKeyPress}
       tabIndex={0}
@@ -101,7 +101,7 @@ const Notification = ({ id, type, message, actions, onSubmit, onOutsideClick, on
 
 Notification.defaultProps = {
   type: 'info',
-  onOutsideClick: () => {},
+  onOutsideClick: () => { },
 };
 
 Notification.propTypes = {
