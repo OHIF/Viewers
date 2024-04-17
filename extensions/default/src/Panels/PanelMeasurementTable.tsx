@@ -227,7 +227,7 @@ export default function PanelMeasurementTable({
       </div>
       <div className="flex justify-center p-4">
         <ActionButtons
-          t={t('MeasurementTable')}
+          t={t}
           actions={[
             {
               label: 'Export',

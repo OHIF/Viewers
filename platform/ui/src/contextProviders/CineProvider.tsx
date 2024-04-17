@@ -92,7 +92,7 @@ export default function CineProvider({ children, service }) {
     setCine,
     setIsCineEnabled: isCineEnabled => service.setIsCineEnabled(isCineEnabled),
     playClip: (element, playClipOptions) => service.playClip(element, playClipOptions),
-    stopClip: element => service.stopClip(element),
+    stopClip: (element, stopClipOptions) => service.stopClip(element, stopClipOptions),
   };
 
   return <CineContext.Provider value={[state, api]}>{children}</CineContext.Provider>;

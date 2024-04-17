@@ -67,7 +67,7 @@ const SegmentationGroupTableExpanded = ({
   const { t } = useTranslation('SegmentationTable');
 
   return (
-    <div className="flex min-h-0 flex-col bg-black text-[13px] font-[300]">
+    <div className="flex min-h-0 flex-1 flex-col bg-black text-[13px] font-[300]">
       <PanelSection
         title={t('Segmentation')}
         actionIcons={
@@ -91,14 +91,14 @@ const SegmentationGroupTableExpanded = ({
             segmentationConfig={segmentationConfig}
           />
         )}
-        <div className="bg-primary-dark">
+        <div className="bg-primary-dark flex flex-1 flex-col overflow-hidden">
           <div className="select-none bg-black pt-[5px] pb-[5px]">
             {showAddSegmentation && !disableEditing && (
               <NoSegmentationRow onSegmentationAdd={onSegmentationAdd} />
             )}
           </div>
           {segmentations?.length > 0 && (
-            <div className="ohif-scrollbar flex max-h-[500px] select-none flex-col gap-[5px] overflow-auto bg-black">
+            <div className="ohif-scrollbar flex flex-1 select-none flex-col gap-[5px] overflow-auto bg-black">
               {segmentations?.map(segmentation => {
                 return (
                   <div key={segmentation.id}>

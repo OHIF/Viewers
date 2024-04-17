@@ -23,7 +23,7 @@ export function VolumeRenderingPresets({
         commandsManager,
       },
       containerDimensions: 'h-[543px] w-[460px]',
-      contentDimensions: 'h-[493px] w-[460px]  pl-[12px]',
+      contentDimensions: 'h-[493px] w-[460px]  pl-[12px] pr-[12px]',
     });
   };
 

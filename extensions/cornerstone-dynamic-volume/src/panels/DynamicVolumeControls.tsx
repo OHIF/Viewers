@@ -22,7 +22,7 @@ const Header = ({ title, tooltip }) => (
   <div className="flex items-center space-x-1">
     <Tooltip
       content={<div className="text-white">{tooltip}</div>}
-      position="bottom"
+      position="bottom-left"
       tight={true}
       tooltipBoxClassName="max-w-xs"
     >
@@ -88,7 +88,7 @@ const DynamicVolumeControls = ({
               className="w-1/2"
               onClick={() => {
                 setComputedView(false);
-                onDynamicClick();
+                onDynamicClick?.();
               }}
             >
               4D

@@ -47,8 +47,8 @@ export default function PanelRoiThresholdSegmentation({ servicesManager, command
 
     if (Number.isNaN(suvPeak)) {
       uiNotificationService.show({
-        title: 'Unable to calculate SUV Peak',
-        message: 'The resulting threshold is not big enough.',
+        title: 'SUV Peak',
+        message: 'Segmented volume does not allow SUV Peak calculation',
         type: 'warning',
       });
     }
@@ -77,7 +77,7 @@ export default function PanelRoiThresholdSegmentation({ servicesManager, command
 
   return (
     <>
-      <div className="mt-1 flex flex-col">
+      <div className="mt-2 mb-10 flex flex-col">
         <div className="invisible-scrollbar overflow-y-auto overflow-x-hidden">
           {tmtvValue !== null ? (
             <div className="bg-secondary-dark mt-1 flex items-baseline justify-between px-2 py-1">
@@ -87,7 +87,7 @@ export default function PanelRoiThresholdSegmentation({ servicesManager, command
               <div className="text-white">{`${tmtvValue} mL`}</div>
             </div>
           ) : null}
-          <div className="mt-1 flex justify-center">
+          <div className="mt-2 flex justify-center">
             <ActionButtons
               actions={actions}
               t={t}

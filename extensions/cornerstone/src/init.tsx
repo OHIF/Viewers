@@ -34,6 +34,8 @@ import { CornerstoneServices } from './types';
 import initViewTiming from './utils/initViewTiming';
 import { colormaps } from './utils/colormaps';
 
+import { debounce } from 'lodash';
+
 const { registerColormap } = csUtilities.colormap;
 
 // TODO: Cypress tests are currently grabbing this from the window?
@@ -160,7 +162,7 @@ export default async function init({
   const labelmapRepresentation = cornerstoneTools.Enums.SegmentationRepresentations.Labelmap;
 
   cornerstoneTools.segmentation.config.setGlobalRepresentationConfig(labelmapRepresentation, {
-    fillAlpha: 0.3,
+    fillAlpha: 0.5,
     fillAlphaInactive: 0.2,
     outlineOpacity: 1,
     outlineOpacityInactive: 0.65,
@@ -291,8 +293,21 @@ export default async function init({
   eventTarget.addEventListener(EVENTS.ELEMENT_ENABLED, elementEnabledHandler.bind(null));
 
   eventTarget.addEventListener(EVENTS.ELEMENT_DISABLED, elementDisabledHandler.bind(null));
-
   colormaps.forEach(registerColormap);
+
+  // Create a debounced function that shows the notification
+  const debouncedShowNotification = debounce(detail => {
+    uiNotificationService.show({
+      title: detail.type,
+      message: detail.message,
+      type: 'error',
+    });
+  }, 300);
+
+  // Event listener
+  eventTarget.addEventListener(EVENTS.ERROR_EVENT, ({ detail }) => {
+    debouncedShowNotification(detail);
+  });
 }
 
 function CPUModal() {

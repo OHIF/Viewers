@@ -271,7 +271,7 @@ const commandsModule = ({
     /**
      * Changes the viewport grid layout in terms of the MxN layout.
      */
-    setViewportGridLayout: ({ numRows, numCols }) => {
+    setViewportGridLayout: ({ numRows, numCols, isHangingProtocolLayout = false }) => {
       const { protocol } = hangingProtocolService.getActiveProtocol();
       const onLayoutChange = protocol.callbacks?.onLayoutChange;
       if (commandsManager.run(onLayoutChange, { numRows, numCols }) === false) {
@@ -293,6 +293,7 @@ const commandsModule = ({
           numRows,
           numCols,
           findOrCreateViewport,
+          isHangingProtocolLayout,
         });
         stateSyncService.store(stateReduce);
       };
@@ -366,6 +367,7 @@ const commandsModule = ({
           activeViewportId: viewportIdToUpdate,
           layoutOptions,
           findOrCreateViewport,
+          isHangingProtocolLayout: true,
         });
       } else {
         // We are not in one-up, so toggle to one up.
@@ -390,6 +392,7 @@ const commandsModule = ({
           numRows: 1,
           numCols: 1,
           findOrCreateViewport,
+          isHangingProtocolLayout: true,
         });
 
         // Subscribe to ANY (i.e. manual and hanging protocol) layout changes so that
@@ -445,6 +448,7 @@ const commandsModule = ({
           displaySetInstanceUID,
           onClose: UIModalService.hide,
         },
+        containerDimensions: 'max-w-4xl max-h-4xl',
         title: 'DICOM Tag Browser',
       });
     },

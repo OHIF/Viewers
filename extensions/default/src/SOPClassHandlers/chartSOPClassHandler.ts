@@ -68,7 +68,6 @@ function getSopClassUids(instances) {
 }
 
 function _getDisplaySetsFromSeries(instances) {
-  debugger;
   // If the series has no instances, stop here
   if (!instances || !instances.length) {
     throw new Error('No instances were provided');
