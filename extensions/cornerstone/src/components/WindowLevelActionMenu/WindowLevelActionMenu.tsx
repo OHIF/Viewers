@@ -52,6 +52,7 @@ export function WindowLevelActionMenu({
   } = colorbarProperties;
   const { colorbarService, cornerstoneViewportService } = serviceManager.services;
   const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
+  const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
   const backgroundColor = viewportInfo.getViewportOptions().background;
   const isLight = backgroundColor ? utilities.isEqual(backgroundColor, [1, 1, 1]) : false;
 
@@ -93,13 +94,7 @@ export function WindowLevelActionMenu({
       colorbarService.removeColorbar(viewportId);
       onSetColorbar();
     }, 0);
-  }, [viewportId]);
-
-  useEffect(() => {
-    if (colorbarService.hasColorbar(viewportId)) {
-      colorbarService.removeColorbar(viewportId);
-    }
-  }, [displaySets]);
+  }, [viewportId, displaySets, viewport]);
 
   useEffect(() => {
     setMenuKey(menuKey + 1);

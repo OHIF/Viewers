@@ -40,11 +40,9 @@ const StudyItem = ({
             {numInstances}
           </div>
         </div>
-        <div className="flex flex-row py-1">
-          <div className="text-l text-desert-200 pr-5">{modalities}</div>
-          <div className="truncate-2-lines text-desert-200 break-words text-base">
-            {description}
-          </div>
+        <div className="flex flex-row items-center py-1">
+          <div className="text-l flex items-center pr-5 text-desert-200">{modalities}</div>
+          <div className="flex items-center break-words text-base text-desert-200">{description}</div>
         </div>
       </div>
       {!!trackedSeries && (

@@ -25,7 +25,7 @@ export function VolumeRenderingOptions({
         commandsManager={commandsManager}
         serviceManager={serviceManager}
       />
-      <div className="all-in-one-menu-item flex !h-[20px] w-full justify-start">
+      <div className="all-in-one-menu-item mt-2 flex !h-[20px] w-full justify-start">
         <div className="text-aqua-pale text-[13px]">LIGHTING</div>
       </div>
       <div className="bg-primary-dark mt-1 mb-1 h-[2px] w-full"></div>
