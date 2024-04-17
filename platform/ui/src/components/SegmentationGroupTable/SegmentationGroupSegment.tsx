@@ -70,7 +70,7 @@ const SegmentItem = ({
             'border border-l-0 border-transparent': !isActive,
           })}
           style={{
-            width: 'calc(100% - 40px)',
+            width: 'calc(100% - 28px)',
           }}
         >
           <div className="bg-primary-dark flex h-full flex-grow items-center">
@@ -93,7 +93,7 @@ const SegmentItem = ({
           </div>
           <div
             className={classnames(
-              'absolute right-3 top-0 flex flex-row-reverse rounded-lg pt-[3px]',
+              'absolute right-[8px] top-0 flex flex-row-reverse rounded-lg pt-[3px]',
               {}
             )}
           >
