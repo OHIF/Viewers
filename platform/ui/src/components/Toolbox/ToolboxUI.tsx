@@ -63,6 +63,7 @@ function ToolboxUI(props) {
                           servicesManager={servicesManager}
                           onInteraction={onInteraction}
                           size="toolbox"
+                          className=" border-secondary-light rounded-[5px] border"
                         />
                       </div>
                     </Tooltip>
@@ -75,6 +76,7 @@ function ToolboxUI(props) {
                         servicesManager={servicesManager}
                         onInteraction={onInteraction}
                         size="toolbox"
+                        className=" border-secondary-light rounded-[5px] border"
                       />
                     </div>
                   )}
