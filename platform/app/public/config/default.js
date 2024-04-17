@@ -1,6 +1,21 @@
 window.config = {
   routerBasename: '/',
-  // whiteLabeling: {},
+  whiteLabeling: {
+    createLogoComponentFn: function (React) {
+      return React.createElement(
+        'a',
+        {
+          target: '_self',
+          rel: 'noopener noreferrer',
+          href: 'https://max.cfaz.net/',
+        },
+        React.createElement('img', {
+          src: '/logo-cfaz/logo_fundo_transparente.png',
+          className: 'h-8',
+        })
+      );
+    },
+  },
   extensions: [],
   modes: [],
   customizationService: {},

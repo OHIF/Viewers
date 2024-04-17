@@ -27,7 +27,7 @@ export type CinePlayerProps = {
 };
 
 const fpsButtonClassNames =
-  'cursor-pointer text-primary-active active:text-primary-light hover:bg-customblue-300 w-4 flex items-center justify-center';
+  'cursor-pointer text-primary-active active:text-primary-light hover:bg-desert-700 w-4 flex items-center justify-center';
 
 const CinePlayer: React.FC<CinePlayerProps> = ({
   className,
@@ -100,7 +100,7 @@ const CinePlayer: React.FC<CinePlayerProps> = ({
       >
         <Icon
           name={getPlayPauseIconName()}
-          className="active:text-primary-light hover:bg-customblue-300 cursor-pointer text-white hover:rounded"
+          className="active:text-primary-light hover:bg-desert-700 cursor-pointer text-white hover:rounded"
           onClick={() => onPlayPauseChange(!isPlaying)}
         />
         {isDynamic && dynamicInfo && (
@@ -155,7 +155,7 @@ const CinePlayer: React.FC<CinePlayerProps> = ({
         </div>
         <Icon
           name="icon-close"
-          className="text-primary-active active:text-primary-light hover:bg-customblue-300 cursor-pointer hover:rounded"
+          className="text-primary-active active:text-primary-light hover:bg-desert-700 cursor-pointer hover:rounded"
           onClick={onClose}
         />
       </div>
@@ -163,7 +163,7 @@ const CinePlayer: React.FC<CinePlayerProps> = ({
   );
 };
 
-const noop = () => {};
+const noop = () => { };
 
 CinePlayer.defaultProps = {
   isPlaying: false,

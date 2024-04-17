@@ -71,7 +71,7 @@ const ThumbnailNoImage = ({
                 {modality}
               </div>
             </Tooltip>
-            <span className="ml-4 text-base text-blue-300">{seriesDate}</span>
+            <span className="text-desert-200 ml-4 text-base">{seriesDate}</span>
             <DisplaySetMessageListTooltip
               messages={messages}
               id={`display-set-tooltip-${displaySetInstanceUID}`}

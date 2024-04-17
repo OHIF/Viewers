@@ -32,17 +32,19 @@ const StudyItem = ({
       <div className="flex flex-1 flex-col px-4 pb-2">
         <div className="flex flex-row items-center justify-between pt-2 pb-2">
           <div className="text-base text-white">{date}</div>
-          <div className="flex flex-row items-center text-base text-blue-300">
+          <div className="text-desert-200 flex flex-row items-center text-base">
             <Icon
               name="group-layers"
-              className="mx-2 w-4 text-blue-300"
+              className="text-desert-200 mx-2 w-4"
             />
             {numInstances}
           </div>
         </div>
         <div className="flex flex-row py-1">
-          <div className="text-l pr-5 text-blue-300">{modalities}</div>
-          <div className="truncate-2-lines break-words text-base text-blue-300">{description}</div>
+          <div className="text-l text-desert-200 pr-5">{modalities}</div>
+          <div className="truncate-2-lines text-desert-200 break-words text-base">
+            {description}
+          </div>
         </div>
       </div>
       {!!trackedSeries && (
