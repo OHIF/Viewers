@@ -46,7 +46,8 @@ function ToolboxUI(props) {
                   key={id}
                   className={classnames({
                     [toolClasses]: true,
-                    'flex flex-col items-center justify-center': true,
+                    'border-secondary-light flex flex-col items-center justify-center rounded-md border':
+                      true,
                   })}
                 >
                   {componentProps.disabled ? (
@@ -55,7 +56,7 @@ function ToolboxUI(props) {
                       content={componentProps.label}
                       secondaryContent={componentProps.disabledText}
                     >
-                      <div className="bg-black">
+                      <div className="flex rounded-md bg-black">
                         <Component
                           {...componentProps}
                           {...props}
@@ -63,12 +64,11 @@ function ToolboxUI(props) {
                           servicesManager={servicesManager}
                           onInteraction={onInteraction}
                           size="toolbox"
-                          className=" border-secondary-light rounded-[5px] border"
                         />
                       </div>
                     </Tooltip>
                   ) : (
-                    <div className="bg-black">
+                    <div className="flex rounded-md bg-black">
                       <Component
                         {...componentProps}
                         {...props}
@@ -76,7 +76,6 @@ function ToolboxUI(props) {
                         servicesManager={servicesManager}
                         onInteraction={onInteraction}
                         size="toolbox"
-                        className=" border-secondary-light rounded-[5px] border"
                       />
                     </div>
                   )}
