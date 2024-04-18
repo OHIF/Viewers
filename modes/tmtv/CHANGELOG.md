@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-beta.84](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.83...v3.8.0-beta.84) (2024-04-18)
+
+
+### Bug Fixes
+
+* **bugs:** and replace seriesInstanceUID and seriesInstanceUIDs URL with seriesInstanceUIDs ([#4049](https://github.com/OHIF/Viewers/issues/4049)) ([da7c1a5](https://github.com/OHIF/Viewers/commit/da7c1a5d8c54bfa1d3f97bbc500386bf76e7fd9d))
+
+
+
+
+
 # [3.8.0-beta.83](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.82...v3.8.0-beta.83) (2024-04-18)
 
 **Note:** Version bump only for package @ohif/mode-tmtv
