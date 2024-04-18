@@ -162,7 +162,7 @@ logic you desire. As the components are presentational, you may swap out
 the viewer. The UI library is here to make development easier and quicker, but
 it is not mandatory for extension components to use.
 
-[Check out our component library!](https://react.ohif.org/)
+[Check out our component library!](https://ui.ohif.org/)
 
 ## Overview of the architecture
 
