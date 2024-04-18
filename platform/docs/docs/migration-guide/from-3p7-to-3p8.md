@@ -135,3 +135,8 @@ Additional Resources
 ## leftPanelDefaultClosed and rightPanelDefaultClosed
 
 Now they are renamed to `leftPanelClosed` and `rightPanelClosed` respectively.
+
+
+## StudyInstanceUID in the URL param
+
+Previously there were two params that you could choose: seriesInstanceUID and seriesInstanceUIDs, they have been replaced with seriesInstanceUIDs so even if you would like to filter one series use ``seriesInstanceUIDs`
