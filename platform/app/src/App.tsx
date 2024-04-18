@@ -62,6 +62,13 @@ function App({ config, defaultExtensions, defaultModes }) {
   const appConfigState = init.appConfig;
   const { routerBasename, modes, dataSources, oidc, showStudyList } = appConfigState;
 
+  // get the maximum 3D texture size
+  const canvas = document.createElement('canvas');
+  const gl = canvas.getContext('webgl2');
+
+  const max3DTextureSize = gl.getParameter(gl.MAX_3D_TEXTURE_SIZE);
+  appConfigState.max3DTextureSize = max3DTextureSize;
+
   const {
     uiDialogService,
     uiModalService,

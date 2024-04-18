@@ -37,6 +37,8 @@ function getDisplaySetInfo(instances) {
   const { isDynamicVolume, timePoints } = dynamicVolumeInfo;
   let displaySetInfo;
 
+  const { appConfig } = appContext;
+
   if (isDynamicVolume) {
     const timePoint = timePoints[0];
     const instancesMap = new Map();
@@ -46,9 +48,9 @@ function getDisplaySetInfo(instances) {
 
     const firstTimePointInstances = timePoint.map(imageId => instancesMap.get(imageId));
 
-    displaySetInfo = isDisplaySetReconstructable(firstTimePointInstances);
+    displaySetInfo = isDisplaySetReconstructable(firstTimePointInstances, appConfig);
   } else {
-    displaySetInfo = isDisplaySetReconstructable(instances);
+    displaySetInfo = isDisplaySetReconstructable(instances, appConfig);
   }
 
   return {
