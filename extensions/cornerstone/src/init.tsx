@@ -99,25 +99,9 @@ export default async function init({
     uiNotificationService,
     cornerstoneViewportService,
     hangingProtocolService,
-    toolbarService,
     viewportGridService,
     stateSyncService,
-    segmentationService,
   } = servicesManager.services as CornerstoneServices;
-
-  toolbarService.registerEventForToolbarUpdate(cornerstoneViewportService, [
-    cornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED,
-  ]);
-
-  toolbarService.registerEventForToolbarUpdate(segmentationService, [
-    segmentationService.EVENTS.SEGMENTATION_ADDED,
-    segmentationService.EVENTS.SEGMENTATION_REMOVED,
-    segmentationService.EVENTS.SEGMENTATION_UPDATED,
-  ]);
-
-  toolbarService.registerEventForToolbarUpdate(eventTarget, [
-    cornerstoneTools.Enums.Events.TOOL_ACTIVATED,
-  ]);
 
   window.services = servicesManager.services;
   window.extensionManager = extensionManager;
