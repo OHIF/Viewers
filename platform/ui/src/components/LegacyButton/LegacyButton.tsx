@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
 const baseClasses =
-  'leading-none font-sans text-center justify-center items-center outline-none transition duration-300 ease-in-out focus:outline-none';
+  'leading-none font-sans text-center outline-none transition duration-300 ease-in-out focus:outline-none';
 
 const defaults = {
   color: 'default',

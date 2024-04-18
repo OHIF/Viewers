@@ -6,32 +6,32 @@ const baseButtonClass = 'border outline-none';
 const roundedClasses = {
   vertical: {
     none: '',
-    small: 'first:rounded-t last:rounded-b',
-    medium: 'first:rounded-t-md last:rounded-b-md',
-    large: 'first:rounded-t-lg last:rounded-b-lg',
-    full: 'first:rounded-t-full last:rounded-b-full',
+    small: 'rounded-full',
+    medium: 'rounded-full',
+    large: 'rounded-full',
+    full: 'rounded-full',
   },
   horizontal: {
     none: '',
-    small: 'first:rounded-l last:rounded-r',
-    medium: 'first:rounded-l-md last:rounded-r-md',
-    large: 'first:rounded-l-lg last:rounded-r-lg',
-    full: 'first:rounded-l-full last:rounded-r-full',
+    small: ' rounded-full ',
+    medium: ' rounded-full ',
+    large: ' rounded-full ',
+    full: ' rounded-full ',
   },
 };
 
 const borderClasses = {
   text: {
-    vertical: 'border-t-0 border-l-0 border-r-0 last:border-b-0',
-    horizontal: 'border-l-0 border-t-0 border-b-0 last:border-r-0',
+    vertical: 'border-t-0 border-l-0',
+    horizontal: ' border-t-0 border-b-0 ',
   },
   outlined: {
-    vertical: 'border border-b-0 last:border-b',
-    horizontal: 'border border-r-0 last:border-r',
+    vertical: 'border ',
+    horizontal: 'border ',
   },
   contained: {
-    vertical: 'border-t-0 border-l-0 border-r-0 last:border-b-0',
-    horizontal: 'border-l-0 border-t-0 border-b-0 last:border-r-0',
+    vertical: 'border-t-0 ',
+    horizontal: ' border-t-0 border-b-0 ',
   },
 };
 
@@ -108,9 +108,9 @@ const LegacyButtonGroup = ({
       {...other}
     >
       {React.Children.map(children, (child, index) => {
-        const isFirst = index === 0;
-        const isLast = index === React.Children.count(children) - 1;
-        const isNotFirstOrLast = !isFirst && !isLast;
+        // const isFirst = index === 0;
+        // const isLast = index === React.Children.count(children) - 1;
+        // const isNotFirstOrLast = !isFirst && !isLast;
 
         if (!React.isValidElement(child)) {
           return null;
@@ -119,9 +119,9 @@ const LegacyButtonGroup = ({
         return React.cloneElement(child, {
           className: classnames(
             buttonClasses,
-            child.props.className,
-            !splitBorder && isNotFirstOrLast && nonFirstLastClasses[orientation],
-            !splitBorder && isLast && 'last:border-l-0'
+            child.props.className
+            // !splitBorder && isNotFirstOrLast && nonFirstLastClasses[orientation],
+            // !splitBorder && isLast && 'last:border-l-0'
           ),
           disabled: child.props.disabled || disabled,
           color: child.props.color || color,
