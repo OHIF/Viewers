@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-beta.83](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.82...v3.8.0-beta.83) (2024-04-18)
+
+
+### Bug Fixes
+
+* **bugs:** enhancements and bug fixes - final ([#4048](https://github.com/OHIF/Viewers/issues/4048)) ([170bb96](https://github.com/OHIF/Viewers/commit/170bb96983082c39b22b7352e0c54aacf3e73b02))
+
+
+
+
+
 # [3.8.0-beta.82](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.81...v3.8.0-beta.82) (2024-04-17)
 
 **Note:** Version bump only for package @ohif/extension-cornerstone-dicom-sr
