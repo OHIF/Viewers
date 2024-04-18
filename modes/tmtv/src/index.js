@@ -1,7 +1,7 @@
 import { hotkeys, classes } from '@ohif/core';
 import toolbarButtons from './toolbarButtons.js';
 import { id } from './id.js';
-import initToolGroups, { toolGroupIds } from './initToolGroups.js';
+import initToolGroups from './initToolGroups.js';
 import setCrosshairsConfiguration from './utils/setCrosshairsConfiguration.js';
 import setFusionActiveVolume from './utils/setFusionActiveVolume.js';
 import i18n from 'i18next';
@@ -111,19 +111,6 @@ function modeFactory({ modeConfiguration }) {
           },
         },
       ]);
-
-      // This is a hack and we need to find a better way to enable
-      // some tools that require the viewport to be ready
-      const { unsubscribe: unsub1 } = viewportGridService.subscribe(
-        viewportGridService.EVENTS.VIEWPORTS_READY,
-        () => {
-          commandsManager.run('setToolEnabled', {
-            toolName: 'OrientationMarker',
-            toolGroupId: 'mipToolGroup',
-          });
-          unsub1();
-        }
-      );
 
       // For the hanging protocol we need to decide on the window level
       // based on whether the SUV is corrected or not, hence we can't hard

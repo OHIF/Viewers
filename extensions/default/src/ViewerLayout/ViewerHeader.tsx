@@ -63,6 +63,7 @@ function ViewerHeader({ hotkeysManager, extensionManager, servicesManager, appCo
         show({
           title: t('UserPreferencesModal:User preferences'),
           content: UserPreferences,
+          containerDimensions: 'w-[70%] max-w-[900px]',
           contentProps: {
             hotkeyDefaults: hotkeysManager.getValidHotkeyDefinitions(hotkeyDefaults),
             hotkeyDefinitions,
