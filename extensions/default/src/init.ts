@@ -49,7 +49,7 @@ export default function init({ servicesManager, configuration = {}, commandsMana
   // Stores a map from the to be applied hanging protocols `<activeStudyUID>:<protocolId>`
   // to the previously applied hanging protocolStageIndexMap key, in order to toggle
   // off the applied protocol and remember the old state.
-  stateSyncService.register('toggleHangingProtocol', { clearOnModeExit: true });
+  // stateSyncService.register('toggleHangingProtocol', { clearOnModeExit: true });
 
   // Stores the viewports by `rows-cols` position so that when the layout
   // changes numRows and numCols, the viewports can be remembers and then replaced
