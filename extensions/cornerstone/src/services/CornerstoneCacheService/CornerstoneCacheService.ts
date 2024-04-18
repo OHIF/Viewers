@@ -98,7 +98,21 @@ class CornerstoneCacheService {
     const volume = cs3DCache.getVolume(volumeId);
 
     if (volume) {
-      cs3DCache.removeVolumeLoadObject(volumeId);
+      if (volume.imageIds) {
+        // also for each imageId in the volume, remove the imageId from the cache
+        // since that will hold the old metadata as well
+
+        volume.imageIds.forEach(imageId => {
+          if (cs3DCache.getImageLoadObject(imageId)) {
+            cs3DCache.removeImageLoadObject(imageId);
+          }
+        });
+      }
+
+      // this shouldn't be via removeVolumeLoadObject, since that will
+      // remove the texture as well, but here we really just need a remove
+      // from registry so that we load it again
+      cs3DCache._volumeCache.delete(volumeId);
       this.volumeImageIds.delete(volumeId);
     }
 
