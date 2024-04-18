@@ -56,9 +56,6 @@ const Thumbnail = ({
               ? 'border-primary-light border-2'
               : 'border-secondary-light border hover:border-blue-300'
           )}
-          style={{
-            margin: isActive ? '0' : '1px',
-          }}
         >
           {imageSrc ? (
             <img

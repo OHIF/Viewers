@@ -286,6 +286,7 @@ const commandsModule = ({
         const findOrCreateViewport = layoutFindOrCreate.bind(
           null,
           hangingProtocolService,
+          isHangingProtocolLayout,
           stateReduce.viewportsByPosition
         );
 
@@ -303,7 +304,7 @@ const commandsModule = ({
 
     toggleOneUp() {
       const viewportGridState = viewportGridService.getState();
-      const { activeViewportId, viewports, layout } = viewportGridState;
+      const { activeViewportId, viewports, layout, isHangingProtocolLayout } = viewportGridState;
       const { displaySetInstanceUIDs, displaySetOptions, viewportOptions } =
         viewports.get(activeViewportId);
 
@@ -330,7 +331,8 @@ const commandsModule = ({
                 .map(displaySetInstanceUID =>
                   hangingProtocolService.getViewportsRequireUpdate(
                     viewportIdToUpdate,
-                    displaySetInstanceUID
+                    displaySetInstanceUID,
+                    isHangingProtocolLayout
                   )
                 )
                 .flat();
@@ -511,7 +513,8 @@ const commandsModule = ({
 
       currentDisplaySets.sort(dsSortFn);
 
-      const { activeViewportId, viewports } = viewportGridService.getState();
+      const { activeViewportId, viewports, isHangingProtocolLayout } =
+        viewportGridService.getState();
 
       const { displaySetInstanceUIDs } = viewports.get(activeViewportId);
 
@@ -545,7 +548,8 @@ const commandsModule = ({
       try {
         updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
           activeViewportId,
-          displaySetInstanceUID
+          displaySetInstanceUID,
+          isHangingProtocolLayout
         );
       } catch (error) {
         console.warn(error);

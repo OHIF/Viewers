@@ -103,20 +103,12 @@ function ViewerViewportGrid(props) {
 
   const _getUpdatedViewports = useCallback(
     (viewportId, displaySetInstanceUID) => {
-      if (!isHangingProtocolLayout) {
-        return [
-          {
-            viewportId,
-            displaySetInstanceUIDs: [displaySetInstanceUID],
-          },
-        ];
-      }
-
       let updatedViewports = [];
       try {
         updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
           viewportId,
-          displaySetInstanceUID
+          displaySetInstanceUID,
+          isHangingProtocolLayout
         );
       } catch (error) {
         console.warn(error);

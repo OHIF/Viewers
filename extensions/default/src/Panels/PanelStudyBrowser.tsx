@@ -25,7 +25,8 @@ function PanelStudyBrowser({
   // doesn't have to have such an intense shape. This works well enough for now.
   // Tabs --> Studies --> DisplaySets --> Thumbnails
   const { StudyInstanceUIDs } = useImageViewer();
-  const [{ activeViewportId, viewports }, viewportGridService] = useViewportGrid();
+  const [{ activeViewportId, viewports, isHangingProtocolLayout }, viewportGridService] =
+    useViewportGrid();
   const [activeTabName, setActiveTabName] = useState('primary');
   const [expandedStudyInstanceUIDs, setExpandedStudyInstanceUIDs] = useState([
     ...StudyInstanceUIDs,
@@ -40,7 +41,8 @@ function PanelStudyBrowser({
     try {
       updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
         viewportId,
-        displaySetInstanceUID
+        displaySetInstanceUID,
+        isHangingProtocolLayout
       );
     } catch (error) {
       console.warn(error);
