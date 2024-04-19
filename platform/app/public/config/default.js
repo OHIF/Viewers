@@ -28,6 +28,7 @@ window.config = {
   showLoadingIndicator: true,
   strictZSpacingForVolumeViewport: true,
   groupEnabledModesFirst: true,
+  investigationalUseDialog: { option: 'never' },
   maxNumRequests: {
     interaction: 100,
     thumbnail: 75,
@@ -54,13 +55,6 @@ window.config = {
       configuration: {
         friendlyName: 'dicom json',
         name: 'json',
-      },
-    },
-    {
-      namespace: '@ohif/extension-default.dataSourcesModule.dicomlocal',
-      sourceName: 'dicomlocal',
-      configuration: {
-        friendlyName: 'dicom local',
       },
     },
   ],
