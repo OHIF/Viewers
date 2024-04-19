@@ -116,10 +116,13 @@ const toolbarButtons = [
       icon: 'tool-create-threshold',
       label: 'Rectangle ROI Threshold',
       commands: setToolActiveToolbar,
-      evaluate: {
-        name: 'evaluate.cornerstoneTool',
-        disabledText: 'Select the PT Axial to enable this tool',
-      },
+      evaluate: [
+        {
+          name: 'evaluate.cornerstoneTool',
+          disabledText: 'Select the PT Axial to enable this tool',
+        },
+        'evaluate.cornerstone.segmentation',
+      ],
       options: 'tmtv.RectangleROIThresholdOptions',
     },
   },
@@ -270,10 +273,10 @@ const toolbarButtons = [
               name: 'ThresholdRange',
               type: 'double-range',
               id: 'threshold-range',
-              min: -1000,
-              max: 1000,
+              min: 0,
+              max: 50,
               step: 1,
-              values: [100, 600],
+              values: [2.5, 10],
               condition: ({ options }) =>
                 options.find(option => option.id === 'dynamic-mode').value === 'ThresholdRange',
               commands: {

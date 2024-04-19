@@ -1,18 +1,32 @@
-import { Types } from '@cornerstonejs/core';
 import { utilities } from '@cornerstonejs/tools';
 import { vec3 } from 'gl-matrix';
+import vtkImageData from '@kitware/vtk.js/Common/DataModel/ImageData';
+import vtkDataArray from '@kitware/vtk.js/Common/Core/DataArray';
+import { expose } from 'comlink';
 
-type AnnotationsForThresholding = {
-  data: {
-    handles: {
-      points: Types.Point3[];
-    };
-    cachedStats?: {
-      projectionPoints?: Types.Point3[][];
-    };
+const createVolume = ({ dimensions, origin, direction, spacing, scalarData, metadata }) => {
+  const imageData = vtkImageData.newInstance();
+  imageData.setDimensions(dimensions);
+  imageData.setOrigin(origin);
+  imageData.setDirection(direction);
+  imageData.setSpacing(spacing);
+
+  const scalarArray = vtkDataArray.newInstance({
+    name: 'Pixels',
+    numberOfComponents: 1,
+    values: scalarData,
+  });
+
+  imageData.getPointData().setScalars(scalarArray);
+
+  imageData.modified();
+
+  return {
+    imageData,
+    metadata,
+    getScalarData: () => scalarData,
   };
 };
-
 /**
  * This method calculates the SUV peak on a segmented ROI from a reference PET
  * volume. If a rectangle annotation is provided, the peak is calculated within that
@@ -25,17 +39,10 @@ type AnnotationsForThresholding = {
  * @param segmentIndex The index of the segment to use for masking
  * @returns
  */
-function calculateSuvPeak(
-  labelmap: Types.IImageVolume,
-  referenceVolume: Types.IImageVolume,
-  annotations?: AnnotationsForThresholding[],
-  segmentIndex = 1
-): {
-  max: number;
-  maxIJK: Types.Point3;
-  maxLPS: Types.Point3;
-  mean: number;
-} {
+function calculateSuvPeak({ labelmapProps, referenceVolumeProps, annotations, segmentIndex = 1 }) {
+  const labelmap = createVolume(labelmapProps);
+  const referenceVolume = createVolume(referenceVolumeProps);
+
   if (referenceVolume.metadata.Modality !== 'PT') {
     return;
   }
@@ -59,7 +66,7 @@ function calculateSuvPeak(
     const rectangleCornersIJK = pointsToUse.map(world => {
       const ijk = vec3.fromValues(0, 0, 0);
       referenceVolumeImageData.worldToIndex(world, ijk);
-      return ijk as Types.Point3;
+      return ijk;
     });
 
     boundsIJK = utilities.boundingBox.getBoundingBoxAroundShape(rectangleCornersIJK, dimensions);
@@ -88,7 +95,7 @@ function calculateSuvPeak(
 
   utilities.pointInShapeCallback(labelmapImageData, () => true, callback, boundsIJK);
 
-  const direction = labelmapImageData.getDirection().slice(0, 3) as Types.Point3;
+  const direction = labelmapImageData.getDirection().slice(0, 3);
 
   /**
    * 2. Find the bottom and top of the great circle for the second sphere (1cc sphere)
@@ -100,10 +107,10 @@ function calculateSuvPeak(
   const secondaryCircleWorld = vec3.create();
   const bottomWorld = vec3.create();
   const topWorld = vec3.create();
-  referenceVolumeImageData.indexToWorld(maxIJK as vec3, secondaryCircleWorld);
+  referenceVolumeImageData.indexToWorld(maxIJK, secondaryCircleWorld);
   vec3.scaleAndAdd(bottomWorld, secondaryCircleWorld, direction, -diameter / 2);
   vec3.scaleAndAdd(topWorld, secondaryCircleWorld, direction, diameter / 2);
-  const suvPeakCirclePoints = [bottomWorld, topWorld] as [Types.Point3, Types.Point3];
+  const suvPeakCirclePoints = [bottomWorld, topWorld];
 
   /**
    * 3. Find the Mean and Max of the 1cc sphere centered on the suv Max of the previous
@@ -132,4 +139,8 @@ function calculateSuvPeak(
   };
 }
 
-export default calculateSuvPeak;
+const obj = {
+  calculateSuvPeak,
+};
+
+expose(obj);

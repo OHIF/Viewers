@@ -439,6 +439,7 @@ export default class ToolbarService extends PubSubService {
 
     if (Array.isArray(evaluate)) {
       const evaluators = evaluate.map(evaluatorName => {
+        evaluatorName = typeof evaluatorName === 'string' ? evaluatorName : evaluatorName.name;
         const evaluateFunction = this._evaluateFunction[evaluatorName];
 
         if (!evaluateFunction) {

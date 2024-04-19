@@ -43,21 +43,21 @@ function getPanelModule({ commandsManager, extensionManager, servicesManager }) 
   return [
     {
       name: 'dynamic-volume',
-      iconName: 'group-layers',
+      iconName: 'tab-4d',
       iconLabel: '4D Workflow',
       label: '4D Workflow',
       component: wrappedDynamicDataPanel,
     },
     {
       name: 'dynamic-toolbox',
-      iconName: 'group-layers',
+      iconName: 'tab-4d',
       iconLabel: '4D Workflow',
       label: 'Dynamic Toolbox',
       component: wrappedDynamicToolbox,
     },
     {
       name: 'dynamic-export',
-      iconName: 'group-layers',
+      iconName: 'tab-4d',
       iconLabel: '4D Workflow',
       label: '4D Workflow',
       component: wrappedDynamicExport,
