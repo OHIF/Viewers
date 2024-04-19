@@ -216,6 +216,9 @@ import layoutCommon2x2 from './../../assets/icons/layout-common-2x2.svg';
 import layoutCommon2x3 from './../../assets/icons/layout-common-2x3.svg';
 import iconToolRotate from './../../assets/icons/tool-3d-rotate.svg';
 
+//
+import tab4D from './../../assets/icons/tab-4d.svg';
+
 /** New investigational use */
 import investigationalUse from './../../assets/icons/illustration-investigational-use.svg';
 
@@ -426,6 +429,7 @@ const ICONS = {
   'layout-common-1x2': layoutCommon1x2,
   'layout-common-2x2': layoutCommon2x2,
   'layout-common-2x3': layoutCommon2x3,
+  'tab-4d': tab4D,
 
   /** New investigational use */
   'illustration-investigational-use': investigationalUse,

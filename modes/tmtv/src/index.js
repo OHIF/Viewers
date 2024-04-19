@@ -99,7 +99,10 @@ function modeFactory({ modeConfiguration }) {
         'Pan',
         'SyncToggle',
       ]);
-      toolbarService.createButtonSection('ROIThresholdToolbox', ['RectangleROIStartEndThreshold']);
+      toolbarService.createButtonSection('ROIThresholdToolbox', [
+        'RectangleROIStartEndThreshold',
+        'BrushTools',
+      ]);
 
       customizationService.addModeCustomizations([
         {

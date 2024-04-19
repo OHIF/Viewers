@@ -279,19 +279,18 @@ export default async function init({
   eventTarget.addEventListener(EVENTS.ELEMENT_DISABLED, elementDisabledHandler.bind(null));
   colormaps.forEach(registerColormap);
 
-  // Create a debounced function that shows the notification
-  const debouncedShowNotification = debounce(detail => {
-    uiNotificationService.show({
-      title: detail.type,
-      message: detail.message,
-      type: 'error',
-    });
-  }, 300);
-
   // Event listener
-  eventTarget.addEventListener(EVENTS.ERROR_EVENT, ({ detail }) => {
-    debouncedShowNotification(detail);
-  });
+  eventTarget.addEventListenerDebounced(
+    EVENTS.ERROR_EVENT,
+    ({ detail }) => {
+      uiNotificationService.show({
+        title: detail.type,
+        message: detail.message,
+        type: 'error',
+      });
+    },
+    1000
+  );
 }
 
 function CPUModal() {
