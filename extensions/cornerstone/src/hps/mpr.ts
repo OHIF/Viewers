@@ -14,17 +14,7 @@ export const mpr: Types.HangingProtocol.Protocol = {
   numberOfPriorsReferenced: 0,
   protocolMatchingRules: [],
   imageLoadStrategy: 'nth',
-  callbacks: {
-    // Switches out of MPR mode when the layout change button is used
-    onLayoutChange: [
-      {
-        commandName: 'toggleHangingProtocol',
-        commandOptions: { protocolId: 'mpr' },
-        context: 'DEFAULT',
-      },
-    ],
-    // Turns off crosshairs when switching out of MPR mode
-  },
+  callbacks: {},
   displaySetSelectors: {
     activeDisplaySet: {
       seriesMatchingRules: [

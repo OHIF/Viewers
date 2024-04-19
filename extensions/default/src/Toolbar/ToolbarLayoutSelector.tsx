@@ -58,6 +58,10 @@ const generateAdvancedPresets = ({ servicesManager }) => {
   }
   const displaySetInsaneUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
 
+  if (!displaySetInsaneUIDs) {
+    return [];
+  }
+
   const displaySets = displaySetInsaneUIDs.map(uid => displaySetService.getDisplaySetByUID(uid));
 
   return hangingProtocols

@@ -138,7 +138,7 @@ function getUpdatedViewportsForSegmentation({
   const { hangingProtocolService, displaySetService, segmentationService, viewportGridService } =
     servicesManager.services;
 
-  const { viewports } = viewportGridService.getState();
+  const { viewports, isHangingProtocolLayout } = viewportGridService.getState();
 
   const viewport = getTargetViewport({ viewportId, viewportGridService });
   const targetViewportId = viewport.viewportOptions.viewportId;
@@ -153,7 +153,8 @@ function getUpdatedViewportsForSegmentation({
 
   const updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
     targetViewportId,
-    referenceDisplaySetInstanceUID
+    referenceDisplaySetInstanceUID,
+    isHangingProtocolLayout
   );
 
   viewports.forEach((viewport, viewportId) => {
