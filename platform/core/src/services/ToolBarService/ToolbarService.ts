@@ -438,14 +438,21 @@ export default class ToolbarService extends PubSubService {
     }
 
     if (Array.isArray(evaluate)) {
-      const evaluators = evaluate.map(evaluatorName => {
-        evaluatorName = typeof evaluatorName === 'string' ? evaluatorName : evaluatorName.name;
+      const evaluators = evaluate.map(evaluator => {
+        const isObject = typeof evaluator === 'object';
+
+        const evaluatorName = isObject ? evaluator.name : evaluator;
+
         const evaluateFunction = this._evaluateFunction[evaluatorName];
 
         if (!evaluateFunction) {
           throw new Error(
             `Evaluate function not found for name: ${evaluatorName}, you can register an evaluate function with the getToolbarModule in your extensions`
           );
+        }
+
+        if (isObject) {
+          return args => evaluateFunction({ ...args, ...evaluator });
         }
 
         return evaluateFunction;

@@ -118,11 +118,13 @@ const toolbarButtons = [
       label: 'Rectangle ROI Threshold',
       commands: setToolActiveToolbar,
       evaluate: [
+        'evaluate.cornerstone.segmentation',
+        // need to put the disabled text last, since each evaluator will
+        // merge the result text into the final result
         {
           name: 'evaluate.cornerstoneTool',
           disabledText: 'Select the PT Axial to enable this tool',
         },
-        'evaluate.cornerstone.segmentation',
       ],
       options: 'tmtv.RectangleROIThresholdOptions',
     },
@@ -145,7 +147,7 @@ const toolbarButtons = [
           commands: _createSetToolActiveCommands('CircularBrush'),
           options: [
             {
-              name: 'Size (mm)',
+              name: 'Radius (mm)',
               id: 'brush-radius',
               type: 'range',
               min: 0.5,
@@ -181,7 +183,7 @@ const toolbarButtons = [
           commands: _createSetToolActiveCommands('CircularEraser'),
           options: [
             {
-              name: 'Size (mm)',
+              name: 'Radius (mm)',
               id: 'eraser-radius',
               type: 'range',
               min: 0.5,
@@ -217,7 +219,7 @@ const toolbarButtons = [
           commands: _createSetToolActiveCommands('ThresholdCircularBrush'),
           options: [
             {
-              name: 'Size (mm)',
+              name: 'Radius (mm)',
               id: 'threshold-radius',
               type: 'range',
               min: 0.5,

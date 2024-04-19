@@ -65,7 +65,7 @@ const toolbarButtons: Button[] = [
           commands: _createSetToolActiveCommands('CircularEraser'),
           options: [
             {
-              name: 'Size (mm)',
+              name: 'Radius (mm)',
               id: 'eraser-radius',
               type: 'range',
               min: 0.5,
@@ -101,7 +101,7 @@ const toolbarButtons: Button[] = [
           commands: _createSetToolActiveCommands('ThresholdCircularBrush'),
           options: [
             {
-              name: 'Size (mm)',
+              name: 'Radius (mm)',
               id: 'threshold-radius',
               type: 'range',
               min: 0.5,
