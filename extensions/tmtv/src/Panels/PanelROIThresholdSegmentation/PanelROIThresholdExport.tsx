@@ -2,6 +2,10 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Icon, ActionButtons } from '@ohif/ui';
 import { useTranslation } from 'react-i18next';
+import { eventTarget } from '@cornerstonejs/core';
+import { Enums } from '@cornerstonejs/tools';
+import { handleROIThresholding } from '../../utils/handleROIThresholding';
+
 export default function PanelRoiThresholdSegmentation({ servicesManager, commandsManager }) {
   const { segmentationService, uiNotificationService } = servicesManager.services;
   const { t } = useTranslation('PanelSUVExport');
@@ -30,6 +34,29 @@ export default function PanelRoiThresholdSegmentation({ servicesManager, command
       subscriptions.forEach(unsub => {
         unsub();
       });
+    };
+  }, []);
+
+  useEffect(() => {
+    const callback = evt => {
+      const { detail } = evt;
+      const { segmentationId } = detail;
+
+      if (!segmentationId) {
+        return;
+      }
+
+      handleROIThresholding({
+        segmentationId,
+        commandsManager,
+        segmentationService,
+      });
+    };
+
+    eventTarget.addEventListenerDebounced(Enums.Events.SEGMENTATION_DATA_MODIFIED, callback, 300);
+
+    return () => {
+      eventTarget.removeEventListenerDebounced(Enums.Events.SEGMENTATION_DATA_MODIFIED, callback);
     };
   }, []);
 
@@ -67,7 +94,7 @@ export default function PanelRoiThresholdSegmentation({ servicesManager, command
       disabled: tmtvValue === null,
     },
     {
-      label: 'Create RT Report',
+      label: 'Export RT',
       onClick: () => {
         commandsManager.runCommand('createTMTVRTReport');
       },
