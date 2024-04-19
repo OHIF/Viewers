@@ -21,7 +21,7 @@ function WrappedCinePlayer({ enabledVPElement, viewportId, servicesManager }) {
     const validFrameRate = Math.max(frameRate, 1);
 
     return isPlaying
-      ? cineService.playClip(enabledVPElement, { framesPerSecond: validFrameRate })
+      ? cineService.playClip(enabledVPElement, { framesPerSecond: validFrameRate, viewportId })
       : cineService.stopClip(enabledVPElement);
   };
 

@@ -29,7 +29,7 @@ const SegmentItem = ({
   return (
     <div
       className={classnames('text-aqua-pale group/row bg-primary-dark flex min-h-[28px] flex-col', {
-        'bg-primary-light border-primary-light rounded-l-[4px] border text-black': isActive,
+        'bg-primary-light border-primary-light rounded-l-[6px] border text-black': isActive,
       })}
       onClick={e => {
         e.stopPropagation();
@@ -66,15 +66,11 @@ const SegmentItem = ({
           )}
         </div>
         <div
-          className=" h-[30px] bg-black"
-          style={{ width: '3px' }}
-        ></div>
-        <div
           className={classnames('text-aqua-pale relative flex w-full', {
             'border border-l-0 border-transparent': !isActive,
           })}
           style={{
-            width: 'calc(100% - 40px)',
+            width: 'calc(100% - 28px)',
           }}
         >
           <div className="bg-primary-dark flex h-full flex-grow items-center">
@@ -97,7 +93,7 @@ const SegmentItem = ({
           </div>
           <div
             className={classnames(
-              'absolute right-3 top-0 flex flex-row-reverse rounded-lg pt-[3px]',
+              'absolute right-[8px] top-0 flex flex-row-reverse rounded-lg pt-[3px]',
               {}
             )}
           >

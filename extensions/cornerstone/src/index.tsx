@@ -61,13 +61,34 @@ const cornerstoneExtension: Types.Extensions.Extension = {
    */
   id,
 
-  onModeExit: (): void => {
+  onModeEnter: ({ servicesManager }): void => {
+    const { cornerstoneViewportService, toolbarService, segmentationService } =
+      servicesManager.services;
+    toolbarService.registerEventForToolbarUpdate(cornerstoneViewportService, [
+      cornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED,
+    ]);
+
+    toolbarService.registerEventForToolbarUpdate(segmentationService, [
+      segmentationService.EVENTS.SEGMENTATION_ADDED,
+      segmentationService.EVENTS.SEGMENTATION_REMOVED,
+      segmentationService.EVENTS.SEGMENTATION_UPDATED,
+    ]);
+
+    toolbarService.registerEventForToolbarUpdate(cornerstone.eventTarget, [
+      cornerstoneTools.Enums.Events.TOOL_ACTIVATED,
+    ]);
+  },
+
+  onModeExit: ({ servicesManager }): void => {
+    const { cineService } = servicesManager.services;
     // Empty out the image load and retrieval pools to prevent memory leaks
     // on the mode exits
     Object.values(cs3DEnums.RequestType).forEach(type => {
       imageLoadPoolManager.clearRequestStack(type);
       imageRetrievalPoolManager.clearRequestStack(type);
     });
+
+    cineService.setIsCineEnabled(false);
 
     enabledElementReset();
   },

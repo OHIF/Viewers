@@ -10,6 +10,8 @@ import PlanarFreehandROI from './PlanarFreehandROI';
 import RectangleROI from './RectangleROI';
 import SplineROI from './SplineROI';
 import LivewireContour from './LivewireContour';
+import Probe from './Probe';
+import UltrasoundDirectional from './UltrasoundDirectional';
 
 const measurementServiceMappingsFactory = (
   measurementService: MeasurementService,
@@ -44,6 +46,8 @@ const measurementServiceMappingsFactory = (
       Angle: ANGLE,
       SplineROI: POLYLINE,
       LivewireContour: POLYLINE,
+      Probe: POINT,
+      UltrasoundDirectional: POLYLINE,
     };
 
     return TOOL_TYPE_TO_VALUE_TYPE[toolType];
@@ -211,6 +215,24 @@ const measurementServiceMappingsFactory = (
       ],
     },
 
+    Probe: {
+      toAnnotation: Probe.toAnnotation,
+      toMeasurement: csToolsAnnotation =>
+        Probe.toMeasurement(
+          csToolsAnnotation,
+          displaySetService,
+          cornerstoneViewportService,
+          _getValueTypeFromToolType,
+          customizationService
+        ),
+      matchingCriteria: [
+        {
+          valueType: MeasurementService.VALUE_TYPES.POINT,
+          points: 1,
+        },
+      ],
+    },
+
     CobbAngle: {
       toAnnotation: CobbAngle.toAnnotation,
       toMeasurement: csToolsAnnotation =>
@@ -241,6 +263,23 @@ const measurementServiceMappingsFactory = (
       matchingCriteria: [
         {
           valueType: MeasurementService.VALUE_TYPES.ANGLE,
+        },
+      ],
+    },
+    UltrasoundDirectional: {
+      toAnnotation: UltrasoundDirectional.toAnnotation,
+      toMeasurement: csToolsAnnotation =>
+        UltrasoundDirectional.toMeasurement(
+          csToolsAnnotation,
+          displaySetService,
+          cornerstoneViewportService,
+          _getValueTypeFromToolType,
+          customizationService
+        ),
+      matchingCriteria: [
+        {
+          valueType: MeasurementService.VALUE_TYPES.POLYLINE,
+          points: 2,
         },
       ],
     },

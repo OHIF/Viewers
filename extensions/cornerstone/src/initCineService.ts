@@ -59,8 +59,8 @@ function initCineService(servicesManager) {
     return utilities.cine.playClip(element, playClipOptions);
   };
 
-  const stopClip = element => {
-    return utilities.cine.stopClip(element);
+  const stopClip = (element, stopClipOptions) => {
+    return utilities.cine.stopClip(element, stopClipOptions);
   };
 
   cineService.setServiceImplementation({

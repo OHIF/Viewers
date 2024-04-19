@@ -242,7 +242,7 @@ export default function ModeRoute({
           const lowerVal = val.toLowerCase();
           if (lowerVal !== 'studyinstanceuids') {
             // Not sure why the case matters here - it doesn't in the URL
-            if (lowerVal === 'seriesinstanceuid') {
+            if (lowerVal === 'seriesinstanceuids') {
               const seriesUIDs = getSplitParam(lowerVal, query);
               return {
                 ...acc,

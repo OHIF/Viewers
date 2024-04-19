@@ -11,20 +11,6 @@ const ReferenceLinesListeners: RunCommand = [
   },
 ];
 
-export const toggleEnabledDisabledToolbar = {
-  commandName: 'toggleEnabledDisabledToolbar',
-  commandOptions: {
-    toolGroupIds: ['default', 'mpr', 'SRToolGroup', 'volume3d'],
-  },
-};
-
-export const toggleActiveDisabledToolbar = {
-  commandName: 'toggleActiveDisabledToolbar',
-  commandOptions: {
-    toolGroupIds: ['default', 'mpr', 'SRToolGroup'],
-  },
-};
-
 const moreTools = [
   {
     id: 'MoreTools',
@@ -94,7 +80,7 @@ const moreTools = [
           icon: 'tool-referenceLines',
           label: 'Reference Lines',
           tooltip: 'Show Reference Lines',
-          commands: toggleEnabledDisabledToolbar,
+          commands: 'toggleEnabledDisabledToolbar',
           listeners: {
             [ViewportGridService.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED]: ReferenceLinesListeners,
             [ViewportGridService.EVENTS.VIEWPORTS_READY]: ReferenceLinesListeners,
@@ -106,7 +92,7 @@ const moreTools = [
           icon: 'toggle-dicom-overlay',
           label: 'Image Overlay',
           tooltip: 'Toggle Image Overlay',
-          commands: toggleEnabledDisabledToolbar,
+          commands: 'toggleEnabledDisabledToolbar',
           evaluate: 'evaluate.cornerstoneTool.toggle',
         }),
         createButton({
@@ -152,8 +138,8 @@ const moreTools = [
         createButton({
           id: 'Magnify',
           icon: 'tool-magnify',
-          label: 'Magnify',
-          tooltip: 'Magnify',
+          label: 'Zoom-in',
+          tooltip: 'Zoom-in',
           commands: setToolActiveToolbar,
           evaluate: 'evaluate.cornerstoneTool',
         }),
@@ -175,10 +161,10 @@ const moreTools = [
         createButton({
           id: 'AdvancedMagnify',
           icon: 'icon-tool-loupe',
-          label: 'Loupe',
-          tooltip: 'Loupe',
-          commands: toggleActiveDisabledToolbar,
-          evaluate: 'evaluate.cornerstoneTool.toggle',
+          label: 'Magnify Probe',
+          tooltip: 'Magnify Probe',
+          commands: 'toggleActiveDisabledToolbar',
+          evaluate: 'evaluate.cornerstoneTool.toggle.ifStrictlyDisabled',
         }),
         createButton({
           id: 'UltrasoundDirectionalTool',

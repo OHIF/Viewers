@@ -60,7 +60,11 @@ export function VolumeRenderingQuality({
             type="range"
             step={step}
             onChange={e => onChange(parseInt(e.target.value, 10))}
-            style={{ background: calculateBackground((quality - min) / (max - min)) }}
+            style={{
+              background: calculateBackground((quality - min) / (max - min)),
+              '--thumb-inner-color': '#5acce6',
+              '--thumb-outer-color': '#090c29',
+            }}
           />
         )}
       </div>

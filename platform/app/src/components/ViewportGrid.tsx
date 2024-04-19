@@ -12,7 +12,7 @@ function ViewerViewportGrid(props) {
   const [viewportGrid, viewportGridService] = useViewportGrid();
   const [appConfig] = useAppConfig();
 
-  const { layout, activeViewportId, viewports } = viewportGrid;
+  const { layout, activeViewportId, viewports, isHangingProtocolLayout } = viewportGrid;
   const { numCols, numRows } = layout;
   const elementRef = useRef(null);
   const layoutHash = useRef(null);
@@ -98,6 +98,7 @@ function ViewerViewportGrid(props) {
       layoutType,
       layoutOptions,
       findOrCreateViewport,
+      isHangingProtocolLayout: true,
     });
   };
 
@@ -107,7 +108,8 @@ function ViewerViewportGrid(props) {
       try {
         updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
           viewportId,
-          displaySetInstanceUID
+          displaySetInstanceUID,
+          isHangingProtocolLayout
         );
       } catch (error) {
         console.warn(error);
@@ -122,7 +124,7 @@ function ViewerViewportGrid(props) {
 
       return updatedViewports;
     },
-    [hangingProtocolService, uiNotificationService]
+    [hangingProtocolService, uiNotificationService, isHangingProtocolLayout]
   );
 
   // Using Hanging protocol engine to match the displaySets
@@ -341,6 +343,7 @@ function ViewerViewportGrid(props) {
               viewportOptions={viewportOptions}
               displaySetOptions={displaySetOptions}
               needsRerendering={displaySetsNeedsRerendering}
+              isHangingProtocolLayout={isHangingProtocolLayout}
               onElementEnabled={() => {
                 viewportGridService.setViewportIsReady(viewportId, true);
               }}

@@ -65,19 +65,18 @@ function initDefaultToolGroup(
       { toolName: toolNames.Magnify },
       { toolName: toolNames.SegmentationDisplay },
       { toolName: toolNames.CalibrationLine },
-      {
-        toolName: toolNames.AdvancedMagnify,
-        configuration: {
-          disableOnPassive: true,
-        },
-      },
+
       { toolName: toolNames.UltrasoundDirectional },
       { toolName: toolNames.PlanarFreehandROI },
       { toolName: toolNames.SplineROI },
       { toolName: toolNames.LivewireContour },
     ],
-    // enabled
     enabled: [{ toolName: toolNames.ImageOverlayViewer }, { toolName: toolNames.ReferenceLines }],
+    disabled: [
+      {
+        toolName: toolNames.AdvancedMagnify,
+      },
+    ],
   };
 
   toolGroupService.createToolGroupAndAddTools(toolGroupId, tools);
@@ -224,11 +223,11 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager, m
           },
         },
       },
+      {
+        toolName: toolNames.AdvancedMagnify,
+      },
       { toolName: toolNames.ReferenceLines },
     ],
-
-    // enabled
-    // disabled
   };
 
   toolGroupService.createToolGroupAndAddTools('mpr', tools);

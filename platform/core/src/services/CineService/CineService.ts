@@ -14,6 +14,7 @@ class CineService extends PubSubService {
   };
 
   serviceImplementation = {};
+  startedClips = new Map();
 
   constructor() {
     super(CineService.EVENTS);
@@ -41,21 +42,26 @@ class CineService extends PubSubService {
   public playClip(element, playClipOptions) {
     const res = this.serviceImplementation._playClip(element, playClipOptions);
 
+    this.startedClips.set(element, playClipOptions);
+
     this._broadcastEvent(this.EVENTS.CINE_STATE_CHANGED, { isPlaying: true });
 
     return res;
   }
 
-  public stopClip(element) {
-    const res = this.serviceImplementation._stopClip(element);
+  public stopClip(element, stopClipOptions) {
+    const res = this.serviceImplementation._stopClip(element, stopClipOptions);
 
     this._broadcastEvent(this.EVENTS.CINE_STATE_CHANGED, { isPlaying: false });
 
     return res;
   }
 
-  public _onModeExit() {
+  public onModeExit() {
     this.setIsCineEnabled(false);
+    this.startedClips.forEach((value, key) => {
+      this.stopClip(key, value);
+    });
   }
 
   public getSyncedViewports(viewportId) {

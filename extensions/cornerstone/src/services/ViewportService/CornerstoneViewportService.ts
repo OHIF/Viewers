@@ -183,7 +183,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     const { lutPresentation, positionPresentation } = presentations;
     if (lutPresentation) {
       const { presentation } = lutPresentation;
-      if (viewport instanceof VolumeViewport) {
+      if (viewport instanceof BaseVolumeViewport) {
         if (presentation instanceof Map) {
           presentation.forEach((properties, volumeId) => {
             viewport.setProperties(properties, volumeId);
@@ -732,10 +732,14 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
   }
 
   public async setVolumesForViewport(viewport, volumeInputArray, presentations) {
-    const { displaySetService, toolGroupService } = this.servicesManager.services;
+    const { displaySetService, toolGroupService, viewportGridService } =
+      this.servicesManager.services;
 
     const viewportInfo = this.getViewportInfo(viewport.id);
     const displaySetOptions = viewportInfo.getDisplaySetOptions();
+    const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewport.id);
+    const displaySet = displaySetService.getDisplaySetByUID(displaySetUIDs[0]);
+    const displaySetModality = displaySet?.Modality;
 
     // Todo: use presentations states
     const volumesProperties = volumeInputArray.map((volumeInput, index) => {
@@ -761,7 +765,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       }
 
       if (displayPreset !== undefined) {
-        properties.preset = displayPreset;
+        properties.preset = displayPreset[displaySetModality] || displayPreset.default;
       }
 
       return { properties, volumeId };

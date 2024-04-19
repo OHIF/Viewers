@@ -65,7 +65,7 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
 
     // Filter toolData to only render the data for the active SR.
     const filteredAnnotations = annotations.filter(annotation =>
-      trackingUniqueIdentifiers.includes(annotation.data?.cachedStats?.TrackingUniqueIdentifier)
+      trackingUniqueIdentifiers.includes(annotation.data?.TrackingUniqueIdentifier)
     );
 
     if (!viewport._actors?.size) {
@@ -82,8 +82,7 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
     for (let i = 0; i < filteredAnnotations.length; i++) {
       const annotation = filteredAnnotations[i];
       const annotationUID = annotation.annotationUID;
-      const { renderableData } = annotation.data.cachedStats;
-      const { cachedStats } = annotation.data;
+      const { renderableData, TrackingUniqueIdentifier } = annotation.data;
       const { referencedImageId } = annotation.metadata;
 
       styleSpecifier.annotationUID = annotationUID;
@@ -95,7 +94,7 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
       const lineWidth = this.getStyle('lineWidth', styleSpecifier, annotation);
       const lineDash = this.getStyle('lineDash', styleSpecifier, annotation);
       const color =
-        cachedStats.TrackingUniqueIdentifier === activeTrackingUniqueIdentifier
+        TrackingUniqueIdentifier === activeTrackingUniqueIdentifier
           ? 'rgb(0, 255, 0)'
           : this.getStyle('color', styleSpecifier, annotation);
 

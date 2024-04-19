@@ -50,7 +50,7 @@ function initDefaultToolGroup(extensionManager, toolGroupService, commandsManage
       { toolName: toolNames.Angle },
       { toolName: toolNames.Magnify },
       { toolName: toolNames.SegmentationDisplay },
-      { toolName: toolNames.AdvancedMagnify },
+
       { toolName: toolNames.UltrasoundDirectional },
       { toolName: toolNames.PlanarFreehandROI },
       { toolName: toolNames.SplineROI },
@@ -59,7 +59,7 @@ function initDefaultToolGroup(extensionManager, toolGroupService, commandsManage
     // enabled
     enabled: [{ toolName: toolNames.ImageOverlayViewer }],
     // disabled
-    disabled: [{ toolName: toolNames.ReferenceLines }],
+    disabled: [{ toolName: toolNames.ReferenceLines }, { toolName: toolNames.AdvancedMagnify }],
   };
 
   toolGroupService.createToolGroupAndAddTools(toolGroupId, tools);

@@ -114,9 +114,20 @@ const OHIFCornerstoneViewport = React.memo(props => {
     // of the imageData in the OHIFCornerstoneViewport. This prop is used
     // to set the initial state of the viewport's first image to render
     initialImageIndex,
+    // if the viewport is part of a hanging protocol layout
+    // we should not really rely on the old synchronizers and
+    // you see below we only rehydrate the synchronizers if the viewport
+    // is not part of the hanging protocol layout. HPs should
+    // define their own synchronizers. Since the synchronizers are
+    // viewportId dependent and
+    isHangingProtocolLayout,
   } = props;
 
   const viewportId = viewportOptions.viewportId;
+
+  if (!viewportId) {
+    throw new Error('Viewport ID is required');
+  }
 
   // Since we only have support for dynamic data in volume viewports, we should
   // handle this case here and set the viewportType to volume if any of the
@@ -194,7 +205,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
 
       const synchronizersStore = stateSyncService.getState().synchronizersStore;
 
-      if (synchronizersStore?.[viewportId]?.length) {
+      if (synchronizersStore?.[viewportId]?.length && !isHangingProtocolLayout) {
         // If the viewport used to have a synchronizer, re apply it again
         _rehydrateSynchronizers(synchronizersStore, viewportId, syncGroupService);
       }

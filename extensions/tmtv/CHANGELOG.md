@@ -3,6 +3,71 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-beta.86](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.85...v3.8.0-beta.86) (2024-04-19)
+
+**Note:** Version bump only for package @ohif/extension-tmtv
+
+
+
+
+
+# [3.8.0-beta.85](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.84...v3.8.0-beta.85) (2024-04-18)
+
+**Note:** Version bump only for package @ohif/extension-tmtv
+
+
+
+
+
+# [3.8.0-beta.84](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.83...v3.8.0-beta.84) (2024-04-18)
+
+**Note:** Version bump only for package @ohif/extension-tmtv
+
+
+
+
+
+# [3.8.0-beta.83](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.82...v3.8.0-beta.83) (2024-04-18)
+
+**Note:** Version bump only for package @ohif/extension-tmtv
+
+
+
+
+
+# [3.8.0-beta.82](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.81...v3.8.0-beta.82) (2024-04-17)
+
+
+### Bug Fixes
+
+* **bugs:** enhancements and bug fixes - more ([#4043](https://github.com/OHIF/Viewers/issues/4043)) ([3754c22](https://github.com/OHIF/Viewers/commit/3754c224b4dab28182adb0a41e37d890942144d8))
+
+
+
+
+
+# [3.8.0-beta.81](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.80...v3.8.0-beta.81) (2024-04-16)
+
+
+### Bug Fixes
+
+* **viewport:** Reset viewport state and fix CINE looping, thumbnail resolution, and dynamic tool settings ([#4037](https://github.com/OHIF/Viewers/issues/4037)) ([f99a0bf](https://github.com/OHIF/Viewers/commit/f99a0bfb31434aa137bbb3ed1f9eef1dfcc09025))
+
+
+
+
+
+# [3.8.0-beta.80](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.79...v3.8.0-beta.80) (2024-04-16)
+
+
+### Bug Fixes
+
+* **bugs:** enhancements and bug fixes ([#4036](https://github.com/OHIF/Viewers/issues/4036)) ([e80fc6f](https://github.com/OHIF/Viewers/commit/e80fc6f47708e1d6b1a1e1de438196a4b74ec637))
+
+
+
+
+
 # [3.8.0-beta.79](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.78...v3.8.0-beta.79) (2024-04-10)
 
 

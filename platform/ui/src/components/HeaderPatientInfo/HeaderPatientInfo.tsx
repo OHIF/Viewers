@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Icon } from '@ohif/ui';
 import { utils } from '@ohif/core';
+import { PatientInfoVisibility } from '../../types';
 
 const { formatDate, formatPN } = utils;
 
@@ -70,7 +71,9 @@ function usePatientInfo(servicesManager) {
 }
 
 function HeaderPatientInfo({ servicesManager, appConfig }) {
-  const initialExpandedState = appConfig.showPatientInfo === 'visible';
+  const initialExpandedState =
+    appConfig.showPatientInfo === PatientInfoVisibility.VISIBLE ||
+    appConfig.showPatientInfo === PatientInfoVisibility.VISIBLE_READONLY;
   const [expanded, setExpanded] = useState(initialExpandedState);
   const { patientInfo, isMixedPatients } = usePatientInfo(servicesManager);
 
@@ -81,7 +84,7 @@ function HeaderPatientInfo({ servicesManager, appConfig }) {
   }, [isMixedPatients, expanded]);
 
   const handleOnClick = () => {
-    if (!isMixedPatients) {
+    if (!isMixedPatients && appConfig.showPatientInfo !== PatientInfoVisibility.VISIBLE_READONLY) {
       setExpanded(!expanded);
     }
   };
@@ -91,7 +94,7 @@ function HeaderPatientInfo({ servicesManager, appConfig }) {
 
   return (
     <div
-      className="align-items-center hover:bg-primary-dark flex cursor-pointer justify-center gap-1 rounded-lg"
+      className="hover:bg-primary-dark flex cursor-pointer items-center justify-center gap-1 rounded-lg"
       onClick={handleOnClick}
     >
       <Icon

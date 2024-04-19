@@ -18,11 +18,13 @@ export default function PanelSegmentation({
   extensionManager,
   configuration,
 }) {
-  const { segmentationService, viewportGridService, uiDialogService } = servicesManager.services;
+  const { segmentationService, viewportGridService, uiDialogService, displaySetService } =
+    servicesManager.services;
 
   const { t } = useTranslation('PanelSegmentation');
 
   const [selectedSegmentationId, setSelectedSegmentationId] = useState(null);
+  const [addSegmentationClassName, setAddSegmentationClassName] = useState('');
   const [segmentationConfiguration, setSegmentationConfiguration] = useState(
     segmentationService.getConfiguration()
   );
@@ -49,6 +51,52 @@ export default function PanelSegmentation({
       subscriptions.forEach(unsub => {
         unsub();
       });
+    };
+  }, []);
+
+  // temporary measure to not allow add segmentation when the selected viewport
+  // is stack viewport
+  useEffect(() => {
+    const handleActiveViewportChange = viewportId => {
+      const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(
+        viewportId || viewportGridService.getActiveViewportId()
+      );
+
+      if (!displaySetUIDs) {
+        return;
+      }
+
+      const isReconstructable =
+        displaySetUIDs?.some(displaySetUID => {
+          const displaySet = displaySetService.getDisplaySetByUID(displaySetUID);
+          return displaySet?.isReconstructable;
+        }) || false;
+
+      if (isReconstructable) {
+        setAddSegmentationClassName('');
+      } else {
+        setAddSegmentationClassName('ohif-disabled');
+      }
+    };
+
+    // Handle initial state
+    handleActiveViewportChange();
+
+    const changed = viewportGridService.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED;
+    const ready = viewportGridService.EVENTS.VIEWPORTS_READY;
+
+    const subs = [];
+    [ready, changed].forEach(evt => {
+      const { unsubscribe } = viewportGridService.subscribe(evt, ({ viewportId }) => {
+        handleActiveViewportChange(viewportId);
+      });
+
+      subs.push(unsubscribe);
+    });
+
+    // Clean up
+    return () => {
+      subs.forEach(unsub => unsub());
     };
   }, []);
 
@@ -152,6 +200,7 @@ export default function PanelSegmentation({
     segmentationService.removeSegment(segmentationId, segmentIndex);
   };
 
+  // segment hide
   const onToggleSegmentVisibility = (segmentationId, segmentIndex) => {
     const segmentation = segmentationService.getSegmentation(segmentationId);
     const segmentInfo = segmentation.segments[segmentIndex];
@@ -257,6 +306,7 @@ export default function PanelSegmentation({
       disableEditing={configuration.disableEditing}
       activeSegmentationId={selectedSegmentationId || ''}
       onSegmentationAdd={onSegmentationAddWrapper}
+      addSegmentationClassName={addSegmentationClassName}
       showAddSegment={allowAddSegment}
       onSegmentationClick={onSegmentationClick}
       onSegmentationDelete={onSegmentationDelete}

@@ -3,6 +3,68 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-beta.86](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.85...v3.8.0-beta.86) (2024-04-19)
+
+
+### Bug Fixes
+
+* **layouts:** and fix thumbnail in touch and update migration guide for 3.8 release ([#4052](https://github.com/OHIF/Viewers/issues/4052)) ([d250d04](https://github.com/OHIF/Viewers/commit/d250d04580883446fcb8d748b2a97c5c198922af))
+
+
+
+
+
+# [3.8.0-beta.85](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.84...v3.8.0-beta.85) (2024-04-18)
+
+**Note:** Version bump only for package @ohif/mode-test
+
+
+
+
+
+# [3.8.0-beta.84](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.83...v3.8.0-beta.84) (2024-04-18)
+
+**Note:** Version bump only for package @ohif/mode-test
+
+
+
+
+
+# [3.8.0-beta.83](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.82...v3.8.0-beta.83) (2024-04-18)
+
+**Note:** Version bump only for package @ohif/mode-test
+
+
+
+
+
+# [3.8.0-beta.82](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.81...v3.8.0-beta.82) (2024-04-17)
+
+**Note:** Version bump only for package @ohif/mode-test
+
+
+
+
+
+# [3.8.0-beta.81](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.80...v3.8.0-beta.81) (2024-04-16)
+
+
+### Bug Fixes
+
+* **viewport:** Reset viewport state and fix CINE looping, thumbnail resolution, and dynamic tool settings ([#4037](https://github.com/OHIF/Viewers/issues/4037)) ([f99a0bf](https://github.com/OHIF/Viewers/commit/f99a0bfb31434aa137bbb3ed1f9eef1dfcc09025))
+
+
+
+
+
+# [3.8.0-beta.80](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.79...v3.8.0-beta.80) (2024-04-16)
+
+**Note:** Version bump only for package @ohif/mode-test
+
+
+
+
+
 # [3.8.0-beta.79](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.78...v3.8.0-beta.79) (2024-04-10)
 
 **Note:** Version bump only for package @ohif/mode-test

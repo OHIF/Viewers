@@ -43,8 +43,8 @@ export default function getToolbarModule({ commandsManager, servicesManager }) {
         return {
           disabled: false,
           className: isPrimaryActive
-            ? '!text-black bg-primary-light'
-            : '!text-common-bright hover:!bg-primary-dark hover:!text-primary-light',
+            ? '!text-black bg-primary-light rounded'
+            : '!text-common-bright hover:!bg-primary-dark hover:!text-primary-light rounded',
           // Todo: isActive right now is used for nested buttons where the primary
           // button needs to be fully rounded (vs partial rounded) when active
           // otherwise it does not have any other use
@@ -109,31 +109,26 @@ export default function getToolbarModule({ commandsManager, servicesManager }) {
       },
     },
     {
+      name: 'evaluate.cornerstoneTool.toggle.ifStrictlyDisabled',
+      evaluate: ({ viewportId, button, disabledText }) =>
+        _evaluateToggle({
+          viewportId,
+          button,
+          disabledText,
+          offModes: [Enums.ToolModes.Disabled],
+          toolGroupService,
+        }),
+    },
+    {
       name: 'evaluate.cornerstoneTool.toggle',
-      evaluate: ({ viewportId, button, disabledText }) => {
-        const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
-
-        if (!toolGroup) {
-          return;
-        }
-        const toolName = getToolNameForButton(button);
-
-        if (!toolGroup || !toolGroup.hasTool(toolName)) {
-          return {
-            disabled: true,
-            className: '!text-common-bright ohif-disabled',
-            disabledText: disabledText ?? 'Not available on the current viewport',
-          };
-        }
-
-        const isOff = [Enums.ToolModes.Disabled, Enums.ToolModes.Passive].includes(
-          toolGroup.getToolOptions(toolName).mode
-        );
-
-        return {
-          className: getToggledClassName(!isOff),
-        };
-      },
+      evaluate: ({ viewportId, button, disabledText }) =>
+        _evaluateToggle({
+          viewportId,
+          button,
+          disabledText,
+          offModes: [Enums.ToolModes.Disabled, Enums.ToolModes.Passive],
+          toolGroupService,
+        }),
     },
     {
       name: 'evaluate.cornerstone.synchronizer',
@@ -146,7 +141,11 @@ export default function getToolbarModule({ commandsManager, servicesManager }) {
           };
         }
 
-        const synchronizerType = button?.commands?.[0]?.commandOptions?.type;
+        const isArray = Array.isArray(button.commands);
+
+        const synchronizerType = isArray
+          ? button.commands?.[0].commandOptions.type
+          : button.commands?.commandOptions.type;
 
         synchronizers = syncGroupService.getSynchronizersOfType(synchronizerType);
 
@@ -268,18 +267,38 @@ export default function getToolbarModule({ commandsManager, servicesManager }) {
   ];
 }
 
+function _evaluateToggle({ viewportId, button, disabledText, offModes, toolGroupService }) {
+  const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
+
+  if (!toolGroup) {
+    return;
+  }
+  const toolName = getToolNameForButton(button);
+
+  if (!toolGroup.hasTool(toolName)) {
+    return {
+      disabled: true,
+      className: '!text-common-bright ohif-disabled',
+      disabledText: disabledText ?? 'Not available on the current viewport',
+    };
+  }
+
+  const isOff = offModes.includes(toolGroup.getToolOptions(toolName).mode);
+
+  return {
+    className: getToggledClassName(!isOff),
+  };
+}
+
+// Todo: this is duplicate, we should move it to a shared location
 function getToolNameForButton(button) {
   const { props } = button;
 
   const commands = props?.commands || button.commands;
   const commandsArray = Array.isArray(commands) ? commands : [commands];
   const firstCommand = commandsArray[0];
-  if (typeof firstCommand === 'string') {
-    // likely not a cornerstone tool
-    return null;
-  }
 
-  if ('commandOptions' in firstCommand) {
+  if (firstCommand?.commandOptions) {
     return firstCommand.commandOptions.toolName ?? props?.id ?? button.id;
   }
 

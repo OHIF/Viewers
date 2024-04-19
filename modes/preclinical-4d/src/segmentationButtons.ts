@@ -24,7 +24,7 @@ const toolbarButtons: Button[] = [
           label: 'Brush',
           evaluate: {
             name: 'evaluate.cornerstone.segmentation',
-            options: { toolNames: ['CircularBrush', 'SphereBrush'] },
+            toolNames: ['CircularBrush', 'SphereBrush'],
           },
           commands: _createSetToolActiveCommands('CircularBrush'),
           options: [
@@ -60,9 +60,7 @@ const toolbarButtons: Button[] = [
           label: 'Eraser',
           evaluate: {
             name: 'evaluate.cornerstone.segmentation',
-            options: {
-              toolNames: ['CircularEraser', 'SphereEraser'],
-            },
+            toolNames: ['CircularEraser', 'SphereEraser'],
           },
           commands: _createSetToolActiveCommands('CircularEraser'),
           options: [
@@ -98,7 +96,7 @@ const toolbarButtons: Button[] = [
           label: 'Eraser',
           evaluate: {
             name: 'evaluate.cornerstone.segmentation',
-            options: { toolNames: ['ThresholdCircularBrush', 'ThresholdSphereBrush'] },
+            toolNames: ['ThresholdCircularBrush', 'ThresholdSphereBrush'],
           },
           commands: _createSetToolActiveCommands('ThresholdCircularBrush'),
           options: [
@@ -155,7 +153,7 @@ const toolbarButtons: Button[] = [
       label: 'Shapes',
       evaluate: {
         name: 'evaluate.cornerstone.segmentation',
-        options: { toolNames: ['CircleScissor', 'SphereScissor', 'RectangleScissor'] },
+        toolNames: ['CircleScissor', 'SphereScissor', 'RectangleScissor'],
       },
       icon: 'icon-tool-shape',
       commands: _createSetToolActiveCommands('CircleScissor'),

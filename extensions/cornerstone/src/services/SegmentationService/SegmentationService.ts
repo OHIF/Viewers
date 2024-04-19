@@ -1147,6 +1147,10 @@ class SegmentationService extends PubSubService {
 
     displaySet.isHydrated = isHydrated;
     displaySetService.setDisplaySetMetadataInvalidated(displaySetUID, false);
+
+    this._broadcastEvent(this.EVENTS.SEGMENTATION_UPDATED, {
+      segmentation: this.getSegmentation(displaySetUID),
+    });
   }
 
   private _highlightLabelmap(

@@ -24,7 +24,7 @@ const toolbarButtons: Button[] = [
           label: 'Brush',
           evaluate: {
             name: 'evaluate.cornerstone.segmentation',
-            options: { toolNames: ['CircularBrush', 'SphereBrush'] },
+            toolNames: ['CircularBrush', 'SphereBrush'],
             disabledText: 'Create new segmentation to enable this tool.',
           },
           commands: _createSetToolActiveCommands('CircularBrush'),
@@ -61,9 +61,7 @@ const toolbarButtons: Button[] = [
           label: 'Eraser',
           evaluate: {
             name: 'evaluate.cornerstone.segmentation',
-            options: {
-              toolNames: ['CircularEraser', 'SphereEraser'],
-            },
+            toolNames: ['CircularEraser', 'SphereEraser'],
           },
           commands: _createSetToolActiveCommands('CircularEraser'),
           options: [
@@ -99,7 +97,7 @@ const toolbarButtons: Button[] = [
           label: 'Threshold Tool',
           evaluate: {
             name: 'evaluate.cornerstone.segmentation',
-            options: { toolNames: ['ThresholdCircularBrush', 'ThresholdSphereBrush'] },
+            toolNames: ['ThresholdCircularBrush', 'ThresholdSphereBrush'],
           },
           commands: _createSetToolActiveCommands('ThresholdCircularBrush'),
           options: [
@@ -114,8 +112,34 @@ const toolbarButtons: Button[] = [
               commands: {
                 commandName: 'setBrushSize',
                 commandOptions: {
-                  toolNames: ['ThresholdCircularBrush', 'ThresholdSphereBrush'],
+                  toolNames: [
+                    'ThresholdCircularBrush',
+                    'ThresholdSphereBrush',
+                    'ThresholdCircularBrushDynamic',
+                  ],
                 },
+              },
+            },
+
+            {
+              name: 'Threshold',
+              type: 'radio',
+              id: 'dynamic-mode',
+              value: 'ThresholdRange',
+              values: [
+                { value: 'ThresholdDynamic', label: 'Dynamic' },
+                { value: 'ThresholdRange', label: 'Range' },
+              ],
+              commands: ({ value, commandsManager }) => {
+                if (value === 'ThresholdDynamic') {
+                  commandsManager.run('setToolActive', {
+                    toolName: 'ThresholdCircularBrushDynamic',
+                  });
+                } else {
+                  commandsManager.run('setToolActive', {
+                    toolName: 'ThresholdCircularBrush',
+                  });
+                }
               },
             },
             {
@@ -127,20 +151,9 @@ const toolbarButtons: Button[] = [
                 { value: 'ThresholdCircularBrush', label: 'Circle' },
                 { value: 'ThresholdSphereBrush', label: 'Sphere' },
               ],
+              condition: ({ options }) =>
+                options.find(option => option.id === 'dynamic-mode').value === 'ThresholdRange',
               commands: 'setToolActiveToolbar',
-            },
-            {
-              name: 'Threshold',
-              type: 'radio',
-              id: 'dynamic-mode',
-              value: 'ThresholdRange',
-              values: [
-                { value: 'ThresholdDynamic', label: 'Dynamic' },
-                { value: 'ThresholdRange', label: 'Range' },
-              ],
-              commands: {
-                commandName: 'toggleThresholdRangeAndDynamic',
-              },
             },
             {
               name: 'ThresholdRange',
@@ -171,7 +184,7 @@ const toolbarButtons: Button[] = [
       label: 'Shapes',
       evaluate: {
         name: 'evaluate.cornerstone.segmentation',
-        options: { toolNames: ['CircleScissor', 'SphereScissor', 'RectangleScissor'] },
+        toolNames: ['CircleScissor', 'SphereScissor', 'RectangleScissor'],
       },
       icon: 'icon-tool-shape',
       commands: _createSetToolActiveCommands('CircleScissor'),

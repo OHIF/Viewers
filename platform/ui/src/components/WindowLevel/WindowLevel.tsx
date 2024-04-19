@@ -141,7 +141,7 @@ const WindowLevel = ({
             </div>
           </div>
           {showOpacitySlider && (
-            <div className="flex items-center justify-between text-base">
+            <div className="flex items-center justify-between gap-2 text-base">
               <div className="text-xs text-white">Opacity</div>
               <InputRange
                 inputClassName="grow"

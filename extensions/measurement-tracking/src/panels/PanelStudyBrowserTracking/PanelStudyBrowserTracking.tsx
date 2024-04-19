@@ -34,7 +34,8 @@ function PanelStudyBrowserTracking({
   // doesn't have to have such an intense shape. This works well enough for now.
   // Tabs --> Studies --> DisplaySets --> Thumbnails
   const { StudyInstanceUIDs } = useImageViewer();
-  const [{ activeViewportId, viewports }, viewportGridService] = useViewportGrid();
+  const [{ activeViewportId, viewports, isHangingProtocolLayout }, viewportGridService] =
+    useViewportGrid();
   const [trackedMeasurements, sendTrackedMeasurementsEvent] = useTrackedMeasurements();
   const [activeTabName, setActiveTabName] = useState('primary');
   const [expandedStudyInstanceUIDs, setExpandedStudyInstanceUIDs] = useState([
@@ -51,7 +52,8 @@ function PanelStudyBrowserTracking({
     try {
       updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
         viewportId,
-        displaySetInstanceUID
+        displaySetInstanceUID,
+        isHangingProtocolLayout
       );
     } catch (error) {
       console.warn(error);
@@ -329,6 +331,65 @@ function PanelStudyBrowserTracking({
     }
   }, [expandedStudyInstanceUIDs, jumpToDisplaySet, tabs]);
 
+  const onClickUntrack = displaySetInstanceUID => {
+    const onConfirm = () => {
+      const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
+      sendTrackedMeasurementsEvent('UNTRACK_SERIES', {
+        SeriesInstanceUID: displaySet.SeriesInstanceUID,
+      });
+      const measurements = measurementService.getMeasurements();
+      measurements.forEach(m => {
+        if (m.referenceSeriesUID === displaySet.SeriesInstanceUID) {
+          measurementService.remove(m.uid);
+        }
+      });
+    };
+
+    uiDialogService.create({
+      id: 'untrack-series',
+      centralize: true,
+      isDraggable: false,
+      showOverlay: true,
+      content: Dialog,
+      contentProps: {
+        title: 'Untrack Series',
+        body: () => (
+          <div className="bg-primary-dark p-4 text-white">
+            <p>Are you sure you want to untrack this series?</p>
+            <p className="mt-2">
+              This action cannot be undone and will delete all your existing measurements.
+            </p>
+          </div>
+        ),
+        actions: [
+          {
+            id: 'cancel',
+            text: 'Cancel',
+            type: ButtonEnums.type.secondary,
+          },
+          {
+            id: 'yes',
+            text: 'Yes',
+            type: ButtonEnums.type.primary,
+            classes: ['untrack-yes-button'],
+          },
+        ],
+        onClose: () => uiDialogService.dismiss({ id: 'untrack-series' }),
+        onSubmit: async ({ action }) => {
+          switch (action.id) {
+            case 'yes':
+              onConfirm();
+              uiDialogService.dismiss({ id: 'untrack-series' });
+              break;
+            case 'cancel':
+              uiDialogService.dismiss({ id: 'untrack-series' });
+              break;
+          }
+        },
+      },
+    });
+  };
+
   return (
     <StudyBrowser
       tabs={tabs}
@@ -340,18 +401,7 @@ function PanelStudyBrowserTracking({
         setActiveTabName(clickedTabName);
       }}
       onClickUntrack={displaySetInstanceUID => {
-        const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
-        // TODO: shift this somewhere else where we're centralizing this logic?
-        // Potentially a helper from displaySetInstanceUID to this
-        sendTrackedMeasurementsEvent('UNTRACK_SERIES', {
-          SeriesInstanceUID: displaySet.SeriesInstanceUID,
-        });
-        const measurements = measurementService.getMeasurements();
-        measurements.forEach(m => {
-          if (m.referenceSeriesUID === displaySet.SeriesInstanceUID) {
-            measurementService.remove(m.uid);
-          }
-        });
+        onClickUntrack(displaySetInstanceUID);
       }}
       onClickThumbnail={() => {}}
       onDoubleClickThumbnail={onDoubleClickThumbnailHandler}

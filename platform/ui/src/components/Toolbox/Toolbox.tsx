@@ -65,6 +65,7 @@ function Toolbox({ servicesManager, buttonSectionId, commandsManager, title, ...
                 cmds.forEach(command => {
                   const isString = typeof command === 'string';
                   const isObject = typeof command === 'object';
+                  const isFunction = typeof command === 'function';
 
                   if (isString) {
                     commandsManager.run(command, { value });
@@ -73,6 +74,8 @@ function Toolbox({ servicesManager, buttonSectionId, commandsManager, title, ...
                       ...command,
                       commandOptions: { ...command.commandOptions, ...option, value },
                     });
+                  } else if (isFunction) {
+                    command({ value, commandsManager, servicesManager });
                   }
                 });
               },
@@ -103,6 +106,12 @@ function Toolbox({ servicesManager, buttonSectionId, commandsManager, title, ...
   const handleToolOptionChange = (toolName, optionName, newValue) => {
     api.handleToolOptionChange(toolName, optionName, newValue);
   };
+
+  useEffect(() => {
+    return () => {
+      api.handleToolSelect(null);
+    };
+  }, []);
 
   return (
     <ToolboxUI

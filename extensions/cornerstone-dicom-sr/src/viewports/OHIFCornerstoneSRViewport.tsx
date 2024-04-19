@@ -8,6 +8,7 @@ import { setTrackingUniqueIdentifiersForElement } from '../tools/modules/dicomSR
 import { Icon, Tooltip, useViewportGrid, ViewportActionArrows } from '@ohif/ui';
 import hydrateStructuredReport from '../utils/hydrateStructuredReport';
 import { useAppConfig } from '@state';
+import createReferencedImageDisplaySet from '../utils/createReferencedImageDisplaySet';
 
 const MEASUREMENT_TRACKING_EXTENSION_ID = '@ohif/extension-measurement-tracking';
 
@@ -203,7 +204,10 @@ function OHIFCornerstoneSRViewport(props) {
           // The positionIds for the viewport aren't meaningful for the child display sets
           positionIds: null,
         }}
-        onElementEnabled={onElementEnabled}
+        onElementEnabled={evt => {
+          props.onElementEnabled?.(evt);
+          onElementEnabled(evt);
+        }}
         initialImageIndex={initialImageIndex}
         isJumpToMeasurementDisabled={true}
       ></Component>
@@ -378,6 +382,10 @@ async function _getViewportReferencedDisplaySetData(
   measurementSelected,
   displaySetService
 ) {
+  const { measurements } = displaySet;
+  const measurement = measurements[measurementSelected];
+
+  const { displaySetInstanceUID } = measurement;
   if (!displaySet.keyImageDisplaySet) {
     // Create a new display set, and preserve a reference to it here,
     // so that it can be re-displayed and shown inside the SR viewport.
