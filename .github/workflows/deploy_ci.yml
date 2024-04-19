@@ -1,0 +1,63 @@
+name: Deploy CI
+on:
+  pull_request:
+    branches: [master]
+    types:
+      - closed
+
+jobs:
+  Deploy:
+    runs-on: ubuntu-latest
+    name: Setup, Build, Publish, and Deploy
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+
+    env:
+      DOCKER_BUILDKIT: 1
+      RAILS_ENV: production
+      GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: webfactory/ssh-agent@v0.7.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Install Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.1.2'
+          bundler-cache: true
+
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v2
+        with:
+          context: .
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Run Deploy
+        run: |
+          gem install kamal -v 1.0.0
+          kamal envify
+          kamal deploy
+
+      - name: Discord notification
+        uses: Ilshidur/action-discord@0.3.2
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          DISCORD_USERNAME: Deploy Cfaz Visualizador Dicom
+          DISCORD_AVATAR: https://yt3.googleusercontent.com/9TfKXVz92_hZby_4kscMRl7oGpem8j7DlvQXd0nZ251mddVy1yHcMBfiej2Lk4M9rpTJOAxrxeE=s176-c-k-c0x00ffffff-no-rj
+          DISCORD_EMBEDS: '[    {
+          "author": {  "icon_url": "https://avatars.githubusercontent.com/${{ github.event.pull_request.user.login }}", "name": "${{ github.event.pull_request.user.login }}", "url": "https://github.com/${{github.event.pull_request.user.login}}" },
+          "url": "https://github.com/${{github.repository}}/commit/${{github.sha}}",
+          "fields": [
+          { "name": "Funcionalidade", "value": "[`${{ github.event.pull_request.title }}`](${{ github.event.pull_request.html_url }})" },
+          { "name": "Revisor", "value": "${{github.actor}}", "inline": true }
+          ],
+          "color":65280,
+          "timestamp": "${{github.event.head_commit.timestamp}}",
+          "footer":{"text": "${{github.event.head_commit.timestamp}}"}
+          }    ]'
