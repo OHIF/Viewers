@@ -224,7 +224,6 @@ export function ViewportGridProvider({ children, service }) {
         // If empty viewportOptions, we use numRow and numCols to calculate number of viewports
         const hasOptions = layoutOptions?.length;
         const viewports = new Map<string, Viewport>();
-
         // Options is a temporary state store which can be used by the
         // findOrCreate to store state about already found viewports.  Typically,
         // it will be used to store the display set UID's which are already
@@ -237,7 +236,21 @@ export function ViewportGridProvider({ children, service }) {
           for (let col = 0; col < numCols; col++) {
             const position = col + row * numCols;
             const layoutOption = layoutOptions[position];
-            const positionId = layoutOption?.positionId || `${col}-${row}`;
+
+            let xPos, yPos, w, h;
+            if (layoutOptions && layoutOptions[position]) {
+              ({ x: xPos, y: yPos, width: w, height: h } = layoutOptions[position]);
+            } else {
+              w = 1 / numCols;
+              h = 1 / numRows;
+              xPos = col * w;
+              yPos = row * h;
+            }
+
+            const colIndex = Math.round(xPos * numCols);
+            const rowIndex = Math.round(yPos * numRows);
+
+            const positionId = layoutOption?.positionId || `${colIndex}-${rowIndex}`;
 
             if (hasOptions && position >= layoutOptions.length) {
               continue;
@@ -263,16 +276,6 @@ export function ViewportGridProvider({ children, service }) {
             // Create a new viewport object as it is getting updated here
             // and it is part of the read only state
             viewports.set(viewport.viewportId, viewport);
-
-            let xPos, yPos, w, h;
-            if (layoutOptions && layoutOptions[position]) {
-              ({ x: xPos, y: yPos, width: w, height: h } = layoutOptions[position]);
-            } else {
-              w = 1 / numCols;
-              h = 1 / numRows;
-              xPos = col * w;
-              yPos = row * h;
-            }
 
             Object.assign(viewport, {
               width: w,

@@ -10,7 +10,7 @@ const iopTolerance = 0.01;
  *
  * @param {Object[]} instances An array of `OHIFInstanceMetadata` objects.
  */
-export default function isDisplaySetReconstructable(instances) {
+export default function isDisplaySetReconstructable(instances, appConfig) {
   if (!instances.length) {
     return { value: false };
   }
@@ -18,6 +18,14 @@ export default function isDisplaySetReconstructable(instances) {
 
   const isMultiframe = firstInstance.NumberOfFrames > 1;
 
+  if (appConfig) {
+    const rows = toNumber(firstInstance.Rows);
+    const columns = toNumber(firstInstance.Columns);
+
+    if (rows > appConfig.max3DTextureSize || columns > appConfig.max3DTextureSize) {
+      return { value: false };
+    }
+  }
   // We used to check is reconstructable modalities here, but the logic is removed
   // in favor of the calculation by metadata (orientation and positions)
 
