@@ -179,23 +179,23 @@ const toolbarButtons: Button[] = [
       evaluate: 'evaluate.cornerstoneTool',
     },
   },
-  // {
-  //   id: 'MPR',
-  //   uiType: 'ohif.radioGroup',
-  //   props: {
-  //     icon: 'icon-mpr',
-  //     label: 'MPR',
-  //     commands: [
-  //       {
-  //         commandName: 'toggleHangingProtocol',
-  //         commandOptions: {
-  //           protocolId: 'mpr',
-  //         },
-  //       },
-  //     ],
-  //     evaluate: 'evaluate.mpr',
-  //   },
-  // },
+  {
+    id: 'MPR',
+    uiType: 'ohif.radioGroup',
+    props: {
+      icon: 'icon-mpr',
+      label: 'MPR',
+      commands: [
+        {
+          commandName: 'toggleHangingProtocol',
+          commandOptions: {
+            protocolId: 'mpr',
+          },
+        },
+      ],
+      evaluate: 'evaluate.mpr',
+    },
+  },
   {
     id: 'TrackBallRotate',
     type: 'ohif.radioGroup',
