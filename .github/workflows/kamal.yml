@@ -1,0 +1,71 @@
+name: Kamal Command
+
+on:
+  workflow_dispatch:
+    inputs:
+      command:
+        description: "Kamal command to run"
+        default: "kamal app details"
+        required: true
+      message_deploy:
+        description: 'Message deploy'
+        required: false
+
+jobs:
+  Command:
+    runs-on: ubuntu-latest
+
+    env:
+      DOCKER_BUILDKIT: 1
+      RAILS_ENV: production
+      REDIS_URL: 'redis://172.17.0.1:6379/0'
+      RAILS_MASTER_KEY: ${{ secrets.MASTER_KEY }}
+      GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - uses: webfactory/ssh-agent@v0.7.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.1.2
+
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v2
+        with:
+          context: .
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Install dependencies kamal
+        run: |
+          gem install kamal -v 1.0.0
+          kamal envify
+
+      - name: Run Kamal command
+        run: ${{ github.event.inputs.command }}
+
+      - name: Discord notification
+        if: ${{ github.event.inputs.command == 'kamal deploy' }}
+        uses: Ilshidur/action-discord@0.3.2
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          DISCORD_USERNAME: Deploy Cfaz Visualizador Dicom
+          DISCORD_AVATAR: https://yt3.googleusercontent.com/9TfKXVz92_hZby_4kscMRl7oGpem8j7DlvQXd0nZ251mddVy1yHcMBfiej2Lk4M9rpTJOAxrxeE=s176-c-k-c0x00ffffff-no-rj
+          DISCORD_EMBEDS: '[    {
+          "author": {  "icon_url": "https://avatars.githubusercontent.com/${{ github.actor }}", "name": "${{ github.actor }}", "url": "https://github.com/${{github.actor}}" },
+          "url": "https://github.com/${{github.repository}}/commit/${{github.sha}}",
+          "fields": [
+          { "name": "Funcionalidade", "value": "`${{github.event.inputs.message_deploy}}`" },
+          { "name": "Revisor", "value": "${{github.actor}}", "inline": true }
+          ],
+          "color":65280,
+          "timestamp": "${{github.event.head_commit.timestamp}}",
+          "footer":{"text": "${{github.event.head_commit.timestamp}}"}
+          }    ]'
