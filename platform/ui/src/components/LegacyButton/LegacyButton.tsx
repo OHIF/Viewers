@@ -210,7 +210,7 @@ LegacyButton.defaultProps = {
   color: defaults.color,
   disabled: false,
   children: '',
-  onClick: () => {},
+  onClick: () => { },
 };
 
 LegacyButton.propTypes = {
