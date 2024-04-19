@@ -41,7 +41,6 @@ jobs:
       - name: Run Deploy
         run: |
           gem install kamal -v 1.0.0
-          kamal envify
           kamal deploy
 
       - name: Discord notification
