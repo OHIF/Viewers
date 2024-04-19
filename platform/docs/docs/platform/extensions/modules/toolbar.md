@@ -429,7 +429,7 @@ We use this for brush radius change
   commands: _createSetToolActiveCommands('CircularBrush'),
   options: [
     {
-      name: 'Radius (mm)',
+      name: 'Size (mm)',
       id: 'brush-radius',
       type: 'range',
       min: 0.5,

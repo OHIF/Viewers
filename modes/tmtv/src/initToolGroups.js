@@ -4,7 +4,6 @@ export const toolGroupIds = {
   Fusion: 'fusionToolGroup',
   MIP: 'mipToolGroup',
   default: 'default',
-  // MPR: 'mpr',
 };
 
 function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager, modeLabelConfig) {

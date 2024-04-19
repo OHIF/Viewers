@@ -1,4 +1,4 @@
-import { defaults, ToolbarService } from '@ohif/core';
+import { ToolbarService } from '@ohif/core';
 import { toolGroupIds } from './initToolGroups';
 
 const setToolActiveToolbar = {
@@ -11,9 +11,10 @@ const setToolActiveToolbar = {
 function _createSetToolActiveCommands(toolName) {
   return [
     {
-      commandName: 'setToolActive',
+      commandName: 'setToolActiveToolbar',
       commandOptions: {
         toolName,
+        toolGroupIds: [toolGroupIds.CT, toolGroupIds.PT, toolGroupIds.Fusion],
       },
     },
   ];
@@ -144,7 +145,7 @@ const toolbarButtons = [
           commands: _createSetToolActiveCommands('CircularBrush'),
           options: [
             {
-              name: 'Radius (mm)',
+              name: 'Size (mm)',
               id: 'brush-radius',
               type: 'range',
               min: 0.5,
@@ -180,7 +181,7 @@ const toolbarButtons = [
           commands: _createSetToolActiveCommands('CircularEraser'),
           options: [
             {
-              name: 'Radius (mm)',
+              name: 'Size (mm)',
               id: 'eraser-radius',
               type: 'range',
               min: 0.5,
@@ -216,7 +217,7 @@ const toolbarButtons = [
           commands: _createSetToolActiveCommands('ThresholdCircularBrush'),
           options: [
             {
-              name: 'Radius (mm)',
+              name: 'Size (mm)',
               id: 'threshold-radius',
               type: 'range',
               min: 0.5,
@@ -275,8 +276,8 @@ const toolbarButtons = [
               id: 'threshold-range',
               min: 0,
               max: 50,
-              step: 1,
-              values: [2.5, 10],
+              step: 0.5,
+              values: [2.5, 50],
               condition: ({ options }) =>
                 options.find(option => option.id === 'dynamic-mode').value === 'ThresholdRange',
               commands: {
