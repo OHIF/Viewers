@@ -107,8 +107,8 @@ export default class PanelService extends PubSubService {
       // stack the content of the panels in one react component
       content = () => (
         <>
-          {panelsData.map(({ content: PanelContent }) => (
-            <PanelContent key={entry.id} />
+          {panelsData.map(({ content: PanelContent }, index) => (
+            <PanelContent key={index} />
           ))}
         </>
       );
