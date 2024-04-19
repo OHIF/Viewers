@@ -42,14 +42,14 @@ module.exports = {
       primary: {
         light: '#EBA947',
         main: '#E79824',
-        dark: '#4b5056',
+        dark: '#151515',
         active: '#fff',
       },
 
       inputfield: {
         main: '#3a3f99',
         disabled: '#2b166b',
-        focus: '#5acce6',
+        focus: '#e0b264',
         placeholder: '#39383f',
       },
 

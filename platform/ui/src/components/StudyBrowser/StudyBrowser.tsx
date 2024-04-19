@@ -97,7 +97,7 @@ const StudyBrowser = ({
                 key={name}
                 className={'min-w-18 p-2 text-base text-white'}
                 size="initial"
-                color={color}
+                color={'black'}
                 bgColor={isActive ? 'bg-primary-main' : 'bg-black'}
                 onClick={() => {
                   onClickTab(name);
@@ -168,7 +168,7 @@ StudyBrowser.propTypes = {
   ),
 };
 
-const noop = () => {};
+const noop = () => { };
 
 StudyBrowser.defaultProps = {
   onClickTab: noop,

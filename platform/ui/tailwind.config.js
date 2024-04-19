@@ -29,7 +29,7 @@ module.exports = {
       },
 
       primary: {
-        light: '#5acce6',
+        light: '#e0b264',
         main: '#0944b3',
         dark: '#090c29',
         active: '#348cfd',
@@ -38,7 +38,7 @@ module.exports = {
       inputfield: {
         main: '#3a3f99',
         disabled: '#2b166b',
-        focus: '#5acce6',
+        focus: '#e0b264',
         placeholder: '#39383f',
       },
 

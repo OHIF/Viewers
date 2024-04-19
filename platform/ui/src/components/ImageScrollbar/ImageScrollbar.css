@@ -5,12 +5,14 @@
   right: 0;
   top: 30px;
 }
+
 .scroll .scroll-holder {
   height: calc(100%);
   margin-bottom: 5px;
   position: relative;
   width: 12px;
 }
+
 .scroll .scroll-holder .imageSlider {
   height: 12px;
   left: 12px;
@@ -22,12 +24,15 @@
   -webkit-appearance: none;
   background-color: rgba(0, 0, 0, 0);
 }
+
 .scroll .scroll-holder .imageSlider:focus {
   outline: none;
 }
+
 .scroll .scroll-holder .imageSlider::-moz-focus-outer {
   border: none;
 }
+
 .scroll .scroll-holder .imageSlider::-webkit-slider-runnable-track {
   background-color: rgba(0, 0, 0, 0);
   border: none;
@@ -35,6 +40,7 @@
   height: 5px;
   z-index: 6;
 }
+
 .scroll .scroll-holder .imageSlider::-moz-range-track {
   background-color: rgba(0, 0, 0, 0);
   border: none;
@@ -42,6 +48,7 @@
   height: 2px;
   z-index: 6;
 }
+
 .scroll .scroll-holder .imageSlider::-ms-track {
   animate: 0.2s;
   background: transparent;
@@ -52,15 +59,18 @@
   height: 12px;
   width: 100%;
 }
+
 .scroll .scroll-holder .imageSlider::-ms-fill-lower {
   background: rgba(0, 0, 0, 0);
 }
+
 .scroll .scroll-holder .imageSlider::-ms-fill-upper {
   background: rgba(0, 0, 0, 0);
 }
+
 .scroll .scroll-holder .imageSlider::-webkit-slider-thumb {
   -webkit-appearance: none !important;
-  background-color: #163239;
+  background-color: #623321;
   border: none;
   border-radius: 57px;
   cursor: -webkit-grab;
@@ -68,12 +78,14 @@
   margin-top: -4px;
   width: 39px;
 }
+
 .scroll .scroll-holder .imageSlider::-webkit-slider-thumb:active {
-  background-color: #20a5d6;
+  background-color: #e0b264;
   cursor: -webkit-grabbing;
 }
+
 .scroll .scroll-holder .imageSlider::-moz-range-thumb {
-  background-color: #163239;
+  background-color: #623321;
   border: none;
   border-radius: 57px;
   cursor: -moz-grab;
@@ -81,25 +93,31 @@
   width: 39px;
   z-index: 7;
 }
+
 .scroll .scroll-holder .imageSlider::-moz-range-thumb:active {
-  background-color: #20a5d6;
+  background-color: #e0b264;
   cursor: -moz-grabbing;
 }
+
 .scroll .scroll-holder .imageSlider::-ms-thumb {
-  background-color: #163239;
+  background-color: #623321;
   border: none;
   border-radius: 57px;
   cursor: ns-resize;
   height: 12px;
   width: 39px;
 }
+
 .scroll .scroll-holder .imageSlider::-ms-thumb:active {
-  background-color: #20a5d6;
+  background-color: #e0b264;
 }
+
 .scroll .scroll-holder .imageSlider::-ms-tooltip {
   display: none;
 }
-@media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+
+@media screen and (-ms-high-contrast: active),
+(-ms-high-contrast: none) {
   .imageSlider {
     left: 50px;
   }
