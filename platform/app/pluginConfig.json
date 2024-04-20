@@ -55,7 +55,8 @@
   ],
   "modes": [
     {
-      "packageName": "@ohif/mode-longitudinal"
+      "packageName": "@ohif/mode-basic-dev-mode",
+      "version": "3.0.0"
     },
     {
       "packageName": "@ohif/mode-segmentation"
@@ -72,9 +73,8 @@
       "version": "3.0.0"
     },
     {
-      "packageName": "@ohif/mode-basic-dev-mode",
-      "default": false,
-      "version": "3.0.0"
+      "packageName": "@ohif/mode-longitudinal",
+      "default": false
     }
   ],
   "public": [

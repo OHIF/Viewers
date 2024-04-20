@@ -150,7 +150,7 @@ function PanelStudyBrowser({
             return;
           }
 
-          const imageIds = dataSource.getImageIdsForDisplaySet(displaySet);
+          const imageIds = dataSource.getImageIdsForDisplaySet(displaySet, true);
           const imageId = imageIds[Math.floor(imageIds.length / 2)];
 
           // TODO: Is it okay that imageIds are not returned here for SR displaysets?
@@ -229,7 +229,8 @@ function PanelStudyBrowser({
       tabs={tabs}
       servicesManager={servicesManager}
       activeTabName={activeTabName}
-      onDoubleClickThumbnail={onDoubleClickThumbnailHandler}
+      onClickThumbnail={onDoubleClickThumbnailHandler}
+      // onDoubleClickThumbnail={onDoubleClickThumbnailHandler}
       activeDisplaySetInstanceUIDs={activeDisplaySetInstanceUIDs}
       expandedStudyInstanceUIDs={expandedStudyInstanceUIDs}
       onClickStudy={_handleStudyClick}

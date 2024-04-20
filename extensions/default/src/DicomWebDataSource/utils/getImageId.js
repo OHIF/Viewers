@@ -29,6 +29,12 @@ export default function getImageId({ instance, frame, config, thumbnail = false 
     return;
   }
 
+  // Check for and return thumbnailUrl if it exists
+  if (thumbnail === true && instance.thumbnailUrl) {
+    return instance.thumbnailUrl;
+  }
+
+  // Existing logic to return instance.url if it exists
   if (instance.url) {
     return instance.url;
   }

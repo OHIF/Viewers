@@ -1,6 +1,6 @@
 import React from 'react';
 // Icons
-
+import toolDownload from './../../assets/icons/tool-download.svg';
 import arrowDown from './../../assets/icons/arrow-down.svg';
 import arrowLeft from './../../assets/icons/arrow-left.svg';
 import arrowLeftSmall from './../../assets/icons/arrow-left-small.svg';
@@ -150,6 +150,7 @@ import oldStop from './../../assets/icons/old-stop.svg';
 import investigationalUse from './../../assets/icons/illustration-investigational-use.svg';
 
 const ICONS = {
+  'tool-download': toolDownload,
   'arrow-down': arrowDown,
   'arrow-left': arrowLeft,
   'arrow-left-small': arrowLeftSmall,

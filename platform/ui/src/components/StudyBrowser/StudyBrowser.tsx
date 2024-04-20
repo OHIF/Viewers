@@ -2,6 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 
+import moment from 'moment';
+
 import StudyItem from '../StudyItem';
 import LegacyButtonGroup from '../LegacyButtonGroup';
 import LegacyButton from '../LegacyButton';
@@ -34,15 +36,21 @@ const StudyBrowser = ({
   const { t } = useTranslation('StudyBrowser');
   const { customizationService } = servicesManager?.services || {};
 
+  const formatToPersianDate = gregorianDate => {
+    const parsedDate = moment(gregorianDate, 'DD-MMM-YYYY');
+    return new Intl.DateTimeFormat('fa-IR').format(parsedDate);
+  };
+
   const getTabContent = () => {
     const tabData = tabs.find(tab => tab.name === activeTabName);
     return tabData.studies.map(
       ({ studyInstanceUid, date, description, numInstances, modalities, displaySets }) => {
         const isExpanded = expandedStudyInstanceUIDs.includes(studyInstanceUid);
+        const persianDate = formatToPersianDate(date);
         return (
           <React.Fragment key={studyInstanceUid}>
             <StudyItem
-              date={date}
+              date={persianDate}
               description={description}
               numInstances={numInstances}
               modalities={modalities}
@@ -73,6 +81,7 @@ const StudyBrowser = ({
       <div
         className="w-100 border-secondary-light bg-primary-dark flex h-16 flex-row items-center justify-center border-b p-4"
         data-cy={'studyBrowser-panel'}
+        style={{ display: 'none' }}
       >
         {/* TODO Revisit design of LegacyButtonGroup later - for now use LegacyButton for its children.*/}
         <LegacyButtonGroup

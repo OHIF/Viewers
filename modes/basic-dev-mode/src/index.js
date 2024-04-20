@@ -11,7 +11,7 @@ const configs = {
 const ohif = {
   layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
   sopClassHandler: '@ohif/extension-default.sopClassHandlerModule.stack',
-  measurements: '@ohif/extension-default.panelModule.measure',
+  // measurements: '@ohif/extension-default.panelModule.measure',
   thumbnailList: '@ohif/extension-default.panelModule.seriesList',
 };
 
@@ -45,13 +45,14 @@ const extensionDependencies = {
 function modeFactory({ modeConfiguration }) {
   return {
     id,
-    routeName: 'dev',
+    routeName: 'viewer',
     displayName: i18n.t('Modes:Basic Dev Viewer'),
     /**
      * Lifecycle hooks
      */
     onModeEnter: ({ servicesManager, extensionManager }) => {
-      const { toolbarService, toolGroupService } = servicesManager.services;
+      const { toolbarService, toolGroupService, panelService, cornerstoneViewportService } =
+        servicesManager.services;
       const utilityModule = extensionManager.getModuleEntry(
         '@ohif/extension-cornerstone.utilityModule.tools'
       );
@@ -82,7 +83,9 @@ function modeFactory({ modeConfiguration }) {
           { toolName: toolNames.CircleROI },
           { toolName: toolNames.RectangleROI },
           { toolName: toolNames.StackScroll },
+          { toolName: toolNames.Magnify },
           { toolName: toolNames.CalibrationLine },
+          { toolName: toolNames.Download },
         ],
         // enabled
         enabled: [{ toolName: toolNames.ImageOverlayViewer }],
@@ -92,17 +95,30 @@ function modeFactory({ modeConfiguration }) {
       const toolGroupId = 'default';
       toolGroupService.createToolGroupAndAddTools(toolGroupId, tools);
 
+      cornerstoneViewportService.subscribe(
+        cornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED,
+        props => {
+          const panelId = null;
+          const forceActive = false;
+
+          panelService._broadcastEvent(panelService.EVENTS.ACTIVATE_PANEL, {
+            panelId,
+            forceActive,
+          });
+        }
+      );
+
       let unsubscribe;
 
       const activateTool = () => {
         toolbarService.recordInteraction({
-          groupId: 'WindowLevel',
+          groupId: 'NavigationTools',
           interactionType: 'tool',
           commands: [
             {
               commandName: 'setToolActive',
               commandOptions: {
-                toolName: 'WindowLevel',
+                toolName: 'Magnify',
               },
               context: 'CORNERSTONE',
             },
@@ -125,10 +141,9 @@ function modeFactory({ modeConfiguration }) {
       toolbarService.addButtons(toolbarButtons);
       toolbarService.createButtonSection('primary', [
         'MeasurementTools',
-        'Zoom',
-        'WindowLevel',
-        'Pan',
-        'Layout',
+        'NavigationTools',
+        'ZoomTools',
+        'DownloadTools',
         'MoreTools',
       ]);
     },
@@ -169,7 +184,7 @@ function modeFactory({ modeConfiguration }) {
             props: {
               // TODO: Should be optional, or required to pass empty array for slots?
               leftPanels: [ohif.thumbnailList],
-              rightPanels: [ohif.measurements],
+              rightPanels: [],
               viewports: [
                 {
                   namespace: cs3d.viewport,

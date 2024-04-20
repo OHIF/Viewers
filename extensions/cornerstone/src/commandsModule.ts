@@ -21,6 +21,9 @@ import toggleImageSliceSync from './utils/imageSliceSync/toggleImageSliceSync';
 import { getFirstAnnotationSelected } from './utils/measurementServiceMappings/utils/selection';
 import getActiveViewportEnabledElement from './utils/getActiveViewportEnabledElement';
 import { CornerstoneServices } from './types';
+import html2canvas from 'html2canvas';
+
+const DEFAULT_FILENAME = 'image';
 
 function commandsModule({
   servicesManager,
@@ -386,6 +389,30 @@ function commandsModule({
         });
       }
     },
+    Download: () => {
+      const { activeViewportId } = viewportGridService.getState();
+
+      if (!cornerstoneViewportService.getCornerstoneViewport(activeViewportId)) {
+        // Cannot download a non-cornerstone viewport (image).
+        uiNotificationService.show({
+          title: 'Download Image',
+          message: 'Image cannot be downloaded',
+          type: 'error',
+        });
+        return;
+      }
+      const filename = DEFAULT_FILENAME;
+      const fileType = ['jpg'];
+      const file = `${filename}.${fileType}`;
+      const divForDownloadViewport = document.querySelector(`div[data-viewport-uid="default"]`);
+
+      html2canvas(divForDownloadViewport).then(canvas => {
+        const link = document.createElement('a');
+        link.download = file;
+        link.href = canvas.toDataURL(fileType, 1.0);
+        link.click();
+      });
+    },
     rotateViewport: ({ rotation }) => {
       const enabledElement = _getActiveViewportEnabledElement();
       if (!enabledElement) {
@@ -713,6 +740,9 @@ function commandsModule({
     },
     showDownloadViewportModal: {
       commandFn: actions.showDownloadViewportModal,
+    },
+    Download: {
+      commandFn: actions.Download,
     },
     toggleCine: {
       commandFn: actions.toggleCine,

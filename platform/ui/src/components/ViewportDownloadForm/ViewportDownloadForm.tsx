@@ -267,17 +267,37 @@ const ViewportDownloadForm = ({
       </Typography>
 
       <div className="mt-6 flex flex-col">
-        <div className="mb-4 w-full">
+        <div className="mb-4 flex ">
+          <Button
+            name="cancel"
+            type={ButtonEnums.type.secondary}
+            onClick={onClose}
+          >
+            {t('Cancel')}
+          </Button>
+          <Button
+            className="ml-2"
+            disabled={hasError}
+            onClick={downloadImage}
+            type={ButtonEnums.type.primary}
+            name={'download'}
+          >
+            {t('Download')}
+          </Button>
+        </div>
+        <div className="mb-4 flex ">
           <Input
             data-cy="file-name"
             value={filename}
             onChange={evt => setFilename(evt.target.value)}
             label={t('File Name')}
           />
+
           {renderErrorHandler('filename')}
         </div>
-        <div className="flex">
-          <div className="flex w-1/3">
+
+        <div>
+          <div className="flex ">
             <div className="flex grow flex-col">
               <div className="w-full">
                 <Input
@@ -321,7 +341,7 @@ const ViewportDownloadForm = ({
             </div>
           </div>
 
-          <div className="border-secondary-dark ml-6 w-1/4 border-l pl-6">
+          <div className="border-secondary-dark border-l ">
             <div>
               <InputLabelWrapper
                 sortDirection="none"
@@ -383,25 +403,6 @@ const ViewportDownloadForm = ({
             <Typography className="mt-4">{t('Active viewport has no displayed image')}</Typography>
           )}
         </div>
-      </div>
-
-      <div className="mt-4 flex justify-end">
-        <Button
-          name="cancel"
-          type={ButtonEnums.type.secondary}
-          onClick={onClose}
-        >
-          {t('Cancel')}
-        </Button>
-        <Button
-          className="ml-2"
-          disabled={hasError}
-          onClick={downloadImage}
-          type={ButtonEnums.type.primary}
-          name={'download'}
-        >
-          {t('Download')}
-        </Button>
       </div>
     </div>
   );

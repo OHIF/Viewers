@@ -25,16 +25,23 @@ const SidePanelWithServices = ({
   // Thus going to the Study List page and back to the viewer resets this flag for a SidePanel.
   const [hasBeenOpened, setHasBeenOpened] = useState(false);
   const [activeTabIndex, setActiveTabIndex] = useState(activeTabIndexProp);
+  const [forceUpdate, setForceUpdate] = useState(false);
 
   useEffect(() => {
     if (panelService) {
       const activatePanelSubscription = panelService.subscribe(
         panelService.EVENTS.ACTIVATE_PANEL,
         (activatePanelEvent: Types.ActivatePanelEvent) => {
-          if (!hasBeenOpened || activatePanelEvent.forceActive) {
-            const tabIndex = tabs.findIndex(tab => tab.id === activatePanelEvent.panelId);
-            if (tabIndex !== -1) {
+          const tabIndex = tabs.findIndex(tab => tab.id === activatePanelEvent.panelId);
+          if (tabIndex !== -1) {
+            if (!hasBeenOpened || activatePanelEvent.forceActive) {
               setActiveTabIndex(tabIndex);
+            }
+          } else {
+            if (hasBeenOpened || activatePanelEvent.forceActive) {
+              // setActiveTabIndex(0);
+              setActiveTabIndex(null);
+              setForceUpdate(f => !f);
             }
           }
         }
@@ -44,16 +51,20 @@ const SidePanelWithServices = ({
         activatePanelSubscription.unsubscribe();
       };
     }
-  }, [tabs, hasBeenOpened, panelService]);
+  }, [tabs, hasBeenOpened, panelService, forceUpdate]);
 
   return (
     <SidePanel
+      key={forceUpdate}
       side={side}
       className={className}
       activeTabIndex={activeTabIndex}
       tabs={tabs}
       onOpen={() => {
         setHasBeenOpened(true);
+      }}
+      onClose={() => {
+        setHasBeenOpened(false);
       }}
       expandedWidth={expandedWidth}
     ></SidePanel>

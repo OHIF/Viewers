@@ -29,24 +29,24 @@ module.exports = {
       },
 
       primary: {
-        light: '#5acce6',
-        main: '#0944b3',
-        dark: '#090c29',
-        active: '#348cfd',
+        light: '#5AE6B8',
+        main: '#09B49D',
+        dark: '#092B28',
+        active: '#35FEBE',
       },
 
       inputfield: {
         main: '#3a3f99',
         disabled: '#2b166b',
-        focus: '#5acce6',
+        focus: '#E6E65A',
         placeholder: '#39383f',
       },
 
       secondary: {
-        light: '#3a3f99',
-        main: '#2b166b',
+        light: '#3A9B95',
+        main: '#6D164E',
         dark: '#041c4a',
-        active: '#1f1f27',
+        active: '#1F2928',
       },
 
       common: {

@@ -25,6 +25,7 @@
     "clean": "npx lerna run clean --stream",
     "clean:deep": "npx lerna run clean:deep --stream",
     "cli": "node ./platform/cli/src/index.js",
+    "build:pg": "lerna run build:viewer:pg --stream",
     "build:ui:deploy-preview": "lerna run build:ui:deploy-preview --stream",
     "build:demo": "lerna run build:viewer:demo --stream",
     "build:package-all": "lerna run build:package --parallel --stream",
@@ -32,6 +33,7 @@
     "dev": "lerna run dev:viewer --stream",
     "dev:no:cache": "lerna run dev:no:cache --stream",
     "dev:project": ".scripts/dev.sh",
+    "dev:pg": "lerna run dev:pg --stream",
     "dev:orthanc": "lerna run dev:orthanc --stream",
     "dev:dcm4chee": "lerna run dev:dcm4chee --stream",
     "dev:static": "lerna run dev:static --stream",
@@ -60,7 +62,9 @@
   "dependencies": {
     "@babel/runtime": "^7.20.13",
     "@kitware/vtk.js": "29.7.0",
-    "core-js": "^3.2.1"
+    "core-js": "^3.2.1",
+    "moment": "^2.30.1",
+    "moment-jalaali": "^0.10.0"
   },
   "peerDependencies": {
     "react": "17.0.2",
@@ -155,6 +159,20 @@
     "src/**/*.{js,json,css}": [
       "prettier --write",
       "git add"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "Chrome >= 80",
+      "ie 11",
+      "not op_mini all"
+    ],
+    "development": [
+      "Chrome >= 60",
+      "last 1 firefox version",
+      "last 1 safari version"
     ]
   },
   "resolutions": {

@@ -78,12 +78,12 @@ const AboutModal = ({ buildNumber, versionNumber, commitHash }) => {
       {renderRowTitle(t('Important links'))}
       <div className="mb-8 flex">
         <Link
-          href="https://community.ohif.org/"
+          href="https://raoufmedical.ir//"
           showIcon={true}
         >
-            {t('Visit the forum')}
+          {t('Visit the forum')}
         </Link>
-        <span className="ml-4">
+        {/* <span className="ml-4">
           <Link
             href="https://github.com/OHIF/Viewers/issues/new/choose"
             showIcon={true}
@@ -96,14 +96,14 @@ const AboutModal = ({ buildNumber, versionNumber, commitHash }) => {
             href="https://ohif.org/"
             showIcon={true}
           >
-          {t('More details')}
+            {t('More details')}
           </Link>
-        </span>
+        </span> */}
       </div>
 
       {renderRowTitle(t('Version information'))}
       <div className="flex flex-col">
-        <Row
+        {/* <Row
           title={t('Repository URL')}
           value="https://github.com/OHIF/Viewers/"
           link="https://github.com/OHIF/Viewers/"
@@ -112,7 +112,7 @@ const AboutModal = ({ buildNumber, versionNumber, commitHash }) => {
           title={t('Data citation')}
           value="https://github.com/OHIF/Viewers/blob/master/DATACITATION.md"
           link="https://github.com/OHIF/Viewers/blob/master/DATACITATION.md"
-        />
+        /> */}
         {/* <Row
           title={t('Last master commits')}
           value="https://github.com/OHIF/Viewers/"

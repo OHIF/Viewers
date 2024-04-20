@@ -213,13 +213,19 @@ function createDicomJSONApi(dicomJsonConfig) {
               // by using sequenceName.value
               const modifiedMetadata = wrapSequences(instance.metadata);
 
-              const obj = {
+              let obj = {
                 ...modifiedMetadata,
                 url: instance.url,
                 imageId: instance.url,
                 ...series,
                 ...study,
               };
+
+              // If instance.thumbnailUrl exists, add it to obj
+              if (instance.thumbnailUrl) {
+                obj = { ...obj, thumbnailUrl: instance.thumbnailUrl };
+              }
+
               delete obj.instances;
               delete obj.series;
               return obj;
@@ -237,7 +243,7 @@ function createDicomJSONApi(dicomJsonConfig) {
         console.warn(' DICOMJson store dicom not implemented');
       },
     },
-    getImageIdsForDisplaySet(displaySet) {
+    getImageIdsForDisplaySet(displaySet, thumbnail = false) {
       const images = displaySet.images;
       const imageIds = [];
 
@@ -254,11 +260,12 @@ function createDicomJSONApi(dicomJsonConfig) {
               instance,
               frame: i,
               config: dicomJsonConfig,
+              thumbnail,
             });
             imageIds.push(imageId);
           }
         } else {
-          const imageId = getImageId({ instance, config: dicomJsonConfig });
+          const imageId = getImageId({ instance, config: dicomJsonConfig, thumbnail });
           imageIds.push(imageId);
         }
       });

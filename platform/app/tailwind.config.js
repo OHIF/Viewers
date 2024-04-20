@@ -40,24 +40,24 @@ module.exports = {
       },
 
       primary: {
-        light: '#5acce6',
-        main: '#0944b3',
-        dark: '#090c29',
-        active: '#348cfd',
+        light: '#5AE6B8',
+        main: '#09B37B',
+        dark: '#092A1F',
+        active: '#33BBFF',
       },
 
       inputfield: {
-        main: '#3a3f99',
-        disabled: '#2b166b',
-        focus: '#5acce6',
-        placeholder: '#39383f',
+        main: '#3A9B83',
+        disabled: '#16616D',
+        focus: '#E6E65A',
+        placeholder: '#384041',
       },
 
       secondary: {
-        light: '#3a3f99',
-        main: '#2b166b',
-        dark: '#041c4a',
-        active: '#1f1f27',
+        light: '#849C3A',
+        main: '#256F17',
+        dark: '#044A42',
+        active: '#2A261F',
       },
 
       common: {
@@ -159,7 +159,7 @@ module.exports = {
       blue: {
         100: '#ebf8ff',
         200: '#bee3f8',
-        300: '#90cdf4',
+        300: '#ffffff',
         400: '#63b3ed',
         500: '#4299e1',
         600: '#3182ce',

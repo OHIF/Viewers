@@ -369,7 +369,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
         <div
           className="cornerstone-viewport-element"
           style={{ height: '100%', width: '100%' }}
-          onContextMenu={e => e.preventDefault()}
+          // onContextMenu={e => e.preventDefault()}
           onMouseDown={e => e.preventDefault()}
           ref={elementRef}
         ></div>

@@ -11,7 +11,10 @@ import vi from './vi/';
 import zh from './zh/';
 import test_lng from './test-LNG/';
 
+import fa from './fa-IR/';
+
 export default {
+  ...fa,
   ...ar,
   ...tr_TR,
   ...de,

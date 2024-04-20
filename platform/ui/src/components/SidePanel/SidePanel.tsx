@@ -154,7 +154,8 @@ const SidePanel = ({
   activeTabIndex: activeTabIndexProp,
   tabs,
   onOpen,
-  expandedWidth = 248,
+  onClose,
+  expandedWidth = 160,
 }) => {
   const { t } = useTranslation('SidePanel');
 
@@ -174,6 +175,8 @@ const SidePanel = ({
     setPanelOpen(panelOpen);
     if (panelOpen) {
       onOpen?.();
+    } else {
+      onClose?.();
     }
   }, []);
 
@@ -257,7 +260,7 @@ const SidePanel = ({
         )}
         style={{ width: `${closeIconWidth}px` }}
         onClick={() => {
-          updatePanelOpen(prev => !prev);
+          updatePanelOpen(false);
         }}
         data-cy={`side-panel-header-${side}`}
       >
@@ -392,6 +395,7 @@ SidePanel.propTypes = {
     ),
   ]),
   onOpen: PropTypes.func,
+  onClose: PropTypes.func,
   expandedWidth: PropTypes.number,
 };
 

@@ -148,22 +148,128 @@ const toolbarButtons = [
       ],
     },
   },
-  // Zoom..
+  // Navigation
   {
-    id: 'Zoom',
-    type: 'ohif.radioGroup',
+    id: 'NavigationTools',
+    type: 'ohif.splitButton',
     props: {
-      type: 'tool',
-      icon: 'tool-zoom',
-      label: 'Zoom',
-      commands: [
-        {
-          commandName: 'setToolActive',
-          commandOptions: {
-            toolName: 'Zoom',
+      groupId: 'NavigationTools',
+      // Switch?
+      primary: _createToolButton(
+        'StackScroll',
+        'tool-stack-scroll',
+        'Stack Scroll',
+        [
+          {
+            commandName: 'setToolActive',
+            commandOptions: {
+              toolName: 'StackScroll',
+            },
+            context: 'CORNERSTONE',
           },
-          context: 'CORNERSTONE',
-        },
+        ],
+        'Stack Scroll'
+      ),
+      secondary: {
+        icon: 'chevron-down',
+        label: '',
+        isActive: true,
+        tooltip: 'More Navigation Tools',
+      },
+      items: [
+        _createToolButton(
+          'StackScroll',
+          'tool-stack-scroll',
+          'Stack Scroll',
+          [
+            {
+              commandName: 'setToolActive',
+              commandOptions: {
+                toolName: 'StackScroll',
+              },
+              context: 'CORNERSTONE',
+            },
+          ],
+          'Stack Scroll'
+        ),
+        _createToolButton(
+          'Pan',
+          'tool-move',
+          'Pan',
+          [
+            {
+              commandName: 'setToolActive',
+              commandOptions: {
+                toolName: 'Pan',
+              },
+              context: 'CORNERSTONE',
+            },
+          ],
+          'Pan Tool'
+        ),
+      ],
+    },
+  },
+  // Pan...
+  {
+    id: 'ZoomTools',
+    type: 'ohif.splitButton',
+    props: {
+      groupId: 'ZoomTools',
+      isRadio: true, // ?
+      // Switch?
+      primary: _createToolButton(
+        'Magnify',
+        'tool-magnify',
+        'Magnify',
+        [
+          {
+            commandName: 'setToolActive',
+            commandOptions: {
+              toolName: 'Magnify',
+            },
+            context: 'CORNERSTONE',
+          },
+        ],
+        'Magnify Tool'
+      ),
+      secondary: {
+        icon: 'chevron-down',
+        label: '',
+        isActive: true,
+        tooltip: 'More Zoom Tools',
+      },
+      items: [
+        _createToolButton(
+          'Zoom',
+          'tool-zoom',
+          'Zoom',
+          [
+            {
+              commandName: 'setToolActive',
+              commandOptions: {
+                toolName: 'Zoom',
+              },
+              context: 'CORNERSTONE',
+            },
+          ],
+          'Zoom Tool'
+        ),
+        _createToolButton(
+          'Magnify',
+          'tool-magnify',
+          'Magnify',
+          [
+            {
+              commandName: 'setToolActive',
+              commandOptions: {
+                toolName: 'Magnify',
+              },
+              context: 'CORNERSTONE',
+            },
+          ],
+          'Magnify Tool'
+        ),
       ],
     },
   },
@@ -205,41 +311,62 @@ const toolbarButtons = [
       ],
     },
   },
-  // Pan...
   {
-    id: 'Pan',
-    type: 'ohif.radioGroup',
+    id: 'DownloadTools',
+    type: 'ohif.splitButton',
     props: {
-      type: 'tool',
-      icon: 'tool-move',
-      label: 'Pan',
-      commands: [
-        {
-          commandName: 'setToolActive',
-          commandOptions: {
-            toolName: 'Pan',
+      groupId: 'DownloadTools',
+      isAction: true, // ?
+      primary: _createActionButton(
+        'DownloadFast',
+        'tool-download',
+        'Download',
+        [
+          {
+            commandName: 'Download',
+            commandOptions: {},
+            context: 'CORNERSTONE',
           },
-          context: 'CORNERSTONE',
-        },
+        ],
+        'Download'
+      ),
+      secondary: {
+        icon: 'chevron-down',
+        label: 'Capture',
+        isActive: true,
+        tooltip: 'More Downlaod Tools',
+      },
+      items: [
+        _createActionButton(
+          'DownloadFast',
+          'tool-download',
+          'Download',
+          [
+            {
+              commandName: 'Download',
+              commandOptions: {},
+              context: 'CORNERSTONE',
+            },
+          ],
+          'Download'
+        ),
+        _createActionButton(
+          'Capture',
+          'tool-capture',
+          'Capture',
+          [
+            {
+              commandName: 'showDownloadViewportModal',
+              commandOptions: {},
+              context: 'CORNERSTONE',
+            },
+          ],
+          'Capture'
+        ),
       ],
     },
   },
-  {
-    id: 'Capture',
-    type: 'ohif.action',
-    props: {
-      icon: 'tool-capture',
-      label: 'Capture',
-      type: 'action',
-      commands: [
-        {
-          commandName: 'showDownloadViewportModal',
-          commandOptions: {},
-          context: 'CORNERSTONE',
-        },
-      ],
-    },
-  },
+
   {
     id: 'Layout',
     type: 'ohif.layoutSelector',
@@ -251,18 +378,20 @@ const toolbarButtons = [
     props: {
       isRadio: true, // ?
       groupId: 'MoreTools',
-      primary: _createActionButton(
-        'Reset',
-        'tool-reset',
-        'Reset View',
+      primary: _createToolButton(
+        'WindowLevel',
+        'tool-window-level',
+        'Window Level',
         [
           {
-            commandName: 'resetViewport',
-            commandOptions: {},
+            commandName: 'setToolActive',
+            commandOptions: {
+              toolName: 'WindowLevel',
+            },
             context: 'CORNERSTONE',
           },
         ],
-        'Reset'
+        'Window Level'
       ),
       secondary: {
         icon: 'chevron-down',
@@ -271,6 +400,21 @@ const toolbarButtons = [
         tooltip: 'More Tools',
       },
       items: [
+        _createToolButton(
+          'WindowLevel',
+          'tool-window-level',
+          'Window Level',
+          [
+            {
+              commandName: 'setToolActive',
+              commandOptions: {
+                toolName: 'WindowLevel',
+              },
+              context: 'CORNERSTONE',
+            },
+          ],
+          'Window Level'
+        ),
         _createActionButton(
           'Reset',
           'tool-reset',
@@ -310,21 +454,7 @@ const toolbarButtons = [
           ],
           'Flip Horizontal'
         ),
-        _createToolButton(
-          'StackScroll',
-          'tool-stack-scroll',
-          'Stack Scroll',
-          [
-            {
-              commandName: 'setToolActive',
-              commandOptions: {
-                toolName: 'StackScroll',
-              },
-              context: 'CORNERSTONE',
-            },
-          ],
-          'Stack Scroll'
-        ),
+
         _createActionButton(
           'invert',
           'tool-invert',

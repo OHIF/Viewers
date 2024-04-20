@@ -41,14 +41,15 @@ export default function sortInstances(instances: Array<any>) {
     referenceImagePositionPatient[1],
     referenceImagePositionPatient[2]
   );
+  // Filter out instances without ImagePositionPatient
+  const validInstances = instances.filter(instance => instance.ImagePositionPatient);
 
-  const distanceInstancePairs = instances.map(instance => {
+  const distanceInstancePairs = validInstances.map(instance => {
     const imagePositionPatient = instance.ImagePositionPatient;
-
     const positionVector = vec3.create();
 
+    // Calculate the distance from the reference position
     vec3.sub(positionVector, referenceImagePositionPatient, imagePositionPatient);
-
     const distance = vec3.dot(positionVector, scanAxisNormal);
 
     return {
@@ -56,6 +57,30 @@ export default function sortInstances(instances: Array<any>) {
       instance,
     };
   });
+
+  // const distanceInstancePairs = instances.map(instance => {
+  //   // Check if ImagePositionPatient is present
+  //   if (instance.ImagePositionPatient) {
+  //     const imagePositionPatient = instance.ImagePositionPatient;
+  //     const positionVector = vec3.create();
+
+  //     // Calculate the distance from the reference position
+  //     vec3.sub(positionVector, referenceImagePositionPatient, imagePositionPatient);
+  //     const distance = vec3.dot(positionVector, scanAxisNormal);
+
+  //     return {
+  //       distance,
+  //       instance,
+  //     };
+  //   } else {
+  //     // Assign a high negative distance for instances without ImagePositionPatient
+  //     // This ensures they are sorted to the beginning
+  //     return {
+  //       distance: +Infinity,
+  //       instance,
+  //     };
+  //   }
+  // });
 
   distanceInstancePairs.sort((a, b) => b.distance - a.distance);
 

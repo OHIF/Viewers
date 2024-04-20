@@ -39,7 +39,7 @@ const Thumbnail = ({
     <div
       className={classnames(
         className,
-        'group mb-8 flex flex-1 cursor-pointer select-none flex-col px-3 outline-none'
+        'group mb-2 flex flex-1 cursor-pointer select-none flex-col px-1 outline-none'
       )}
       id={`thumbnail-${displaySetInstanceUID}`}
       data-cy={`study-browser-thumbnail`}
@@ -54,29 +54,33 @@ const Thumbnail = ({
             'min-h-32 flex flex-1 items-center justify-center overflow-hidden rounded-md bg-black text-base text-white',
             isActive
               ? 'border-primary-light border-2'
-              : 'border-secondary-light border hover:border-blue-300'
+              : 'border-secondary-light border hover:border-green-300'
           )}
           style={{
             margin: isActive ? '0' : '1px',
           }}
         >
           {imageSrc ? (
-            <img
-              src={imageSrc}
-              alt={imageAltText}
-              className="min-h-32 object-none"
-              crossOrigin="anonymous"
+            <div
+              style={{
+                minHeight: '8rem',
+                background: `url(${imageSrc})`,
+                width: '100%',
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                backgroundRepeat: 'no-repeat',
+              }}
             />
           ) : (
             <div>{imageAltText}</div>
           )}
         </div>
-        <div className="flex flex-1 flex-row items-center pt-2 text-base text-blue-300">
+        <div className="flex flex-1 flex-row items-center pt-1 text-base text-green-300">
           <div className="mr-4">
             <span className="text-primary-main font-bold">{'S: '}</span>
             {seriesNumber}
           </div>
-          <div className="flex flex-1 flex-row items-center">
+          <div className="flex flex-1 flex-row items-center justify-end">
             <Icon
               name={countIcon || 'group-layers'}
               className="mr-2 w-3"
@@ -88,7 +92,7 @@ const Thumbnail = ({
             id={`display-set-tooltip-${displaySetInstanceUID}`}
           />
         </div>
-        <div className="break-all text-base text-white">{description}</div>
+        <div className="truncate break-all text-center text-base text-white">{description}</div>
       </div>
     </div>
   );

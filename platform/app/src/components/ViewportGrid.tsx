@@ -159,7 +159,7 @@ function ViewerViewportGrid(props) {
           return;
         }
 
-        viewport.viewportOptions ||= {};
+        viewport.viewportOptions = viewport.viewportOptions || {};
         viewport.viewportOptions.orientation = 'acquisition';
 
         const displaySet = displaySetService.getDisplaySetByUID(referencedDisplaySetInstanceUID);
