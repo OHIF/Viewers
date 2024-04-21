@@ -1,7 +1,8 @@
 import { synchronizers, SynchronizerManager, Synchronizer } from '@cornerstonejs/tools';
-import { getRenderingEngines } from '@cornerstonejs/core';
+import { getRenderingEngines, utilities } from '@cornerstonejs/core';
 
 import { pubSubServiceInterface, Types, ServicesManager } from '@ohif/core';
+
 
 const EVENTS = {
   TOOL_GROUP_CREATED: 'event::cornerstone::syncgroupservice:toolgroupcreated',
@@ -184,6 +185,11 @@ export default class SyncGroupService {
         return;
       }
 
+      // Only image slice synchronizer register spatial registration
+      if (this.isImageSliceSyncronizer(synchronizer)) {
+        this.unRegisterSpatialRegistration(synchronizer);
+      }
+
       synchronizer.remove({
         viewportId,
         renderingEngineId,
@@ -197,5 +203,46 @@ export default class SyncGroupService {
         SynchronizerManager.destroySynchronizer(synchronizer.id);
       }
     });
+  }
+  /**
+   * Clean up the spatial registration metadata created by synchronizer
+   * This is needed to be able to re-sync images slices if needed
+   * @param synchronizer
+   */
+  unRegisterSpatialRegistration(synchronizer: Synchronizer) {
+    const sourceViewports = synchronizer.getSourceViewports().map(vp => vp.viewportId);
+    const targetViewports = synchronizer.getTargetViewports().map(vp => vp.viewportId);
+
+    // Create an array of pair of viewports to remove from spatialRegistrationMetadataProvider
+    // All sourceViewports combined with all targetViewports
+    const toUnregister = sourceViewports
+      .map((sourceViewportId: string) => {
+        return targetViewports.map(targetViewportId => [targetViewportId, sourceViewportId]);
+      })
+      .reduce((acc, c) => acc.concat(c), []);
+
+    toUnregister.forEach(viewportIdPair => {
+      utilities.spatialRegistrationMetadataProvider.add(viewportIdPair, undefined);
+    });
+  }
+  /**
+   * Check if the synchronizer type is IMAGE_SLICE
+   * Need to convert to lowercase here because the types are lowercase
+   * e.g: synchronizerCreators
+   * @param synchronizer
+   */
+  isImageSliceSyncronizer(synchronizer: Synchronizer) {
+    return this.getSynchronizerType(synchronizer).toLowerCase() === IMAGE_SLICE;
+  }
+  /**
+   * Returns the syncronizer type
+   * @param synchronizer
+   */
+  getSynchronizerType(synchronizer: Synchronizer): string {
+    const synchronizerTypes = Object.keys(this.synchronizersByType);
+    const syncType = synchronizerTypes.find(syncType =>
+      this.getSynchronizersOfType(syncType).includes(synchronizer)
+    );
+    return syncType;
   }
 }
