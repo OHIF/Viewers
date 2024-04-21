@@ -33,7 +33,7 @@ const Option = props => {
           id={props.data.value}
           className="ml-3 mt-1"
         >
-          <span>{props.value}</span>
+          <span>{props.label}</span>
         </label>
       </div>
     </components.Option>
