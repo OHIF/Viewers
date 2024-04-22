@@ -47,10 +47,10 @@ module.exports = {
       },
 
       inputfield: {
-        main: '#3a3f99',
-        disabled: '#2b166b',
-        focus: '#e0b264',
-        placeholder: '#39383f',
+        main: '#495057',
+        disabled: '#495057',
+        focus: '#d5963a',
+        placeholder: '#495057',
       },
 
       secondary: {
