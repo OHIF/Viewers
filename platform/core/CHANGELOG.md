@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-beta.88](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.87...v3.8.0-beta.88) (2024-04-22)
+
+
+### Bug Fixes
+
+* **hp:** Fails to display any layouts in the layout selector if first layout has multiple stages ([#4058](https://github.com/OHIF/Viewers/issues/4058)) ([f0ed3fd](https://github.com/OHIF/Viewers/commit/f0ed3fd7b99b0e4e00b261ceb9888ba94726719c))
+
+
+
+
+
 # [3.8.0-beta.87](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.86...v3.8.0-beta.87) (2024-04-19)
 
 
