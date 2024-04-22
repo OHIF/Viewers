@@ -1034,28 +1034,33 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
   private performResize() {
     const isImmediate = false;
 
-    const viewports = this.getRenderingEngine().getViewports();
+    try {
+      const viewports = this.getRenderingEngine().getViewports();
 
-    // Store the current position presentations for each viewport.
-    viewports.forEach(({ id }) => {
-      const presentation = this.getPositionPresentation(id);
-      this.beforeResizePositionPresentations.set(id, presentation);
-    });
+      // Store the current position presentations for each viewport.
+      viewports.forEach(({ id }) => {
+        const presentation = this.getPositionPresentation(id);
+        this.beforeResizePositionPresentations.set(id, presentation);
+      });
 
-    // Resize the rendering engine and render.
-    const renderingEngine = this.renderingEngine;
-    renderingEngine.resize(isImmediate);
-    renderingEngine.render();
+      // Resize the rendering engine and render.
+      const renderingEngine = this.renderingEngine;
+      renderingEngine.resize(isImmediate);
+      renderingEngine.render();
 
-    // Reset the camera for viewports that should reset their camera on resize,
-    // which means only those viewports that have a zoom level of 1.
-    this.beforeResizePositionPresentations.forEach((positionPresentation, viewportId) => {
-      this.setPresentations(viewportId, { positionPresentation });
-    });
+      // Reset the camera for viewports that should reset their camera on resize,
+      // which means only those viewports that have a zoom level of 1.
+      this.beforeResizePositionPresentations.forEach((positionPresentation, viewportId) => {
+        this.setPresentations(viewportId, { positionPresentation });
+      });
 
-    // Resize and render the rendering engine again.
-    renderingEngine.resize(isImmediate);
-    renderingEngine.render();
+      // Resize and render the rendering engine again.
+      renderingEngine.resize(isImmediate);
+      renderingEngine.render();
+    } catch (e) {
+      // This can happen if the resize is too close to navigation or shutdown
+      console.warn('Caught resize exception', e);
+    }
   }
 
   private resetGridResizeTimeout() {
