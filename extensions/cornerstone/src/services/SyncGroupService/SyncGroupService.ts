@@ -1,9 +1,7 @@
 import { synchronizers, SynchronizerManager, Synchronizer } from '@cornerstonejs/tools';
-import { utilities } from '@cornerstonejs/core';
-import { getRenderingEngines } from '@cornerstonejs/core';
+import { getRenderingEngines, utilities } from '@cornerstonejs/core';
 
 import { pubSubServiceInterface, Types, ServicesManager } from '@ohif/core';
-
 
 const EVENTS = {
   TOOL_GROUP_CREATED: 'event::cornerstone::syncgroupservice:toolgroupcreated',
@@ -186,7 +184,10 @@ export default class SyncGroupService {
         return;
       }
 
-      this.unRegisterSpatialRegistration(synchronizer);
+      // Only image slice synchronizer register spatial registration
+      if (this.isImageSliceSyncronizer(synchronizer)) {
+        this.unRegisterSpatialRegistration(synchronizer);
+      }
 
       synchronizer.remove({
         viewportId,
@@ -222,5 +223,25 @@ export default class SyncGroupService {
     toUnregister.forEach(viewportIdPair => {
       utilities.spatialRegistrationMetadataProvider.add(viewportIdPair, undefined);
     });
+  }
+  /**
+   * Check if the synchronizer type is IMAGE_SLICE
+   * Need to convert to lowercase here because the types are lowercase
+   * e.g: synchronizerCreators
+   * @param synchronizer
+   */
+  isImageSliceSyncronizer(synchronizer: Synchronizer) {
+    return this.getSynchronizerType(synchronizer).toLowerCase() === IMAGE_SLICE;
+  }
+  /**
+   * Returns the syncronizer type
+   * @param synchronizer
+   */
+  getSynchronizerType(synchronizer: Synchronizer): string {
+    const synchronizerTypes = Object.keys(this.synchronizersByType);
+    const syncType = synchronizerTypes.find(syncType =>
+      this.getSynchronizersOfType(syncType).includes(synchronizer)
+    );
+    return syncType;
   }
 }
