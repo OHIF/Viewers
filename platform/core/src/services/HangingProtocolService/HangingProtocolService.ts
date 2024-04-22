@@ -1107,6 +1107,7 @@ export default class HangingProtocolService extends PubSubService {
     if (this.protocol.id !== protocolId) {
       console.warn('setting protocol');
       this.protocol = this.getProtocolById(protocolId);
+      this.stageIndex = 0;
     }
     const protocol = this.protocol;
     const stage = protocol.stages[stageIdx];
