@@ -346,9 +346,9 @@ function commandsModule({
         }
       }
     },
-    setToolActiveToolbar: ({ value, itemId, toolGroupIds = [] }) => {
+    setToolActiveToolbar: ({ value, itemId, toolName, toolGroupIds = [] }) => {
       // Sometimes it is passed as value (tools with options), sometimes as itemId (toolbar buttons)
-      const toolName = itemId || value;
+      toolName = toolName || itemId || value;
 
       toolGroupIds = toolGroupIds.length ? toolGroupIds : toolGroupService.getToolGroupIds();
 

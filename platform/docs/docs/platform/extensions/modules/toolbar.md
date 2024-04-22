@@ -137,6 +137,36 @@ this pattern, where multiple toolbar buttons are using the same evaluator but wi
 },
 ```
 
+#### Composing evaluators
+
+You can choose to set up multiple evaluators for a single button. This comes in handy when you need to assess the button according to various conditions. For example, we aim to prevent the Cine player from showing up on the 3D viewport, so we have:
+
+```js
+evaluate: ['evaluate.cine', 'evaluate.not3D'],
+```
+
+You can even come up with advanced evaluators such as:
+
+```js
+evaluate: [
+  'evaluate.cornerstone.segmentation',
+  // need to put the disabled text last, since each evaluator will
+  // merge the result text into the final result
+  {
+    name: 'evaluate.cornerstoneTool',
+    disabledText: 'Select the PT Axial to enable this tool',
+  },
+],
+```
+
+that we use for our RectangleROIStartEndThreshold tool in tmtv mode.
+
+As you see this evaluator is composed of two evaluators, one is `evaluate.cornerstone.segmentation` which makes sure (in the implementation), that
+there is a segmentation created, and the second one is `evaluate.cornerstoneTool` which makes sure that the tool is available in the viewport.
+
+Since we are using multiple evaluators, the `disabledText` of each evaluator will be merged into the final result, so you need to
+put the `disabledText` in the last evaluator.
+
 #### Group evaluators
 Split buttons (see in [ToolbarService](../../services/data/ToolbarService.md) on how to define one) may feature a group evaluator, we provide two of them and you can write your own.
 

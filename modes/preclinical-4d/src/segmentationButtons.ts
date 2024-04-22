@@ -29,7 +29,7 @@ const toolbarButtons: Button[] = [
           commands: _createSetToolActiveCommands('CircularBrush'),
           options: [
             {
-              name: 'Radius (mm)',
+              name: 'Size (mm)',
               id: 'brush-radius',
               type: 'range',
               min: 0.5,
@@ -131,9 +131,9 @@ const toolbarButtons: Button[] = [
               type: 'double-range',
               id: 'threshold-range',
               min: 0,
-              max: 10,
-              step: 1,
-              values: [2, 5],
+              max: 100,
+              step: 0.5,
+              values: [2, 50],
               commands: {
                 commandName: 'setThresholdRange',
                 commandOptions: {

@@ -4,11 +4,12 @@ import * as cs from '@cornerstonejs/core';
 import * as csTools from '@cornerstonejs/tools';
 import { classes } from '@ohif/core';
 import getThresholdValues from './utils/getThresholdValue';
-import calculateSuvPeak from './utils/calculateSUVPeak';
 import calculateTMTV from './utils/calculateTMTV';
 import createAndDownloadTMTVReport from './utils/createAndDownloadTMTVReport';
 
 import dicomRTAnnotationExport from './utils/dicomRTAnnotationExport/RTStructureSet';
+
+import { getWebWorkerManager } from '@cornerstonejs/core';
 
 const metadataProvider = classes.MetadataProvider;
 const RECTANGLE_ROI_THRESHOLD_MANUAL_TOOL_IDS = [
@@ -16,6 +17,23 @@ const RECTANGLE_ROI_THRESHOLD_MANUAL_TOOL_IDS = [
   'RectangleROIThreshold',
 ];
 const LABELMAP = csTools.Enums.SegmentationRepresentations.Labelmap;
+
+const workerManager = getWebWorkerManager();
+
+const options = {
+  maxWorkerInstances: 1,
+  autoTerminateOnIdle: {
+    enabled: true,
+    idleTimeThreshold: 3000,
+  },
+};
+
+// Register the task
+const workerFn = () => {
+  return new Worker(new URL('./utils/calculateSUVPeakWorker.js', import.meta.url), {
+    name: 'suv-peak-worker', // name used by the browser to name the worker
+  });
+};
 
 const commandsModule = ({ servicesManager, commandsManager, extensionManager }) => {
   const {
@@ -265,7 +283,10 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }) 
         { overwrite: true, segmentIndex }
       );
     },
-    calculateSuvPeak: ({ labelmap, segmentIndex }) => {
+    calculateSuvPeak: async ({ labelmap, segmentIndex }) => {
+      // if we put it in the top, it will appear in other modes
+      workerManager.registerWorker('suv-peak-worker', workerFn, options);
+
       const { referencedVolumeId } = labelmap;
       const referencedVolume = cs.cache.getVolume(referencedVolumeId);
 
@@ -277,7 +298,31 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }) 
         csTools.annotation.state.getAnnotation(annotationUID)
       );
 
-      const suvPeak = calculateSuvPeak(labelmap, referencedVolume, annotations, segmentIndex);
+      const labelmapProps = {
+        dimensions: labelmap.dimensions,
+        origin: labelmap.origin,
+        direction: labelmap.direction,
+        spacing: labelmap.spacing,
+        scalarData: labelmap.scalarData,
+        metadata: labelmap.metadata,
+      };
+
+      const referenceVolumeProps = {
+        dimensions: referencedVolume.dimensions,
+        origin: referencedVolume.origin,
+        direction: referencedVolume.direction,
+        spacing: referencedVolume.spacing,
+        scalarData: referencedVolume.scalarData,
+        metadata: referencedVolume.metadata,
+      };
+
+      const suvPeak = await workerManager.executeTask('suv-peak-worker', 'calculateSuvPeak', {
+        labelmapProps,
+        referenceVolumeProps,
+        annotations,
+        segmentIndex,
+      });
+
       return {
         suvPeak: suvPeak.mean,
         suvMax: suvPeak.max,
