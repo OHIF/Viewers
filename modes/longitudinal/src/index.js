@@ -2,16 +2,12 @@ import { hotkeys } from '@ohif/core';
 import i18n from 'i18next';
 import { id } from './id';
 import initToolGroups from './initToolGroups';
-import moreTools from './moreTools';
-import moreToolsMpr from './moreToolsMpr';
 import toolbarButtons from './toolbarButtons';
+import moreTools from './moreTools';
 
 // Allow this mode by excluding non-imaging modalities such as SR, SEG
 // Also, SM is not a simple imaging modalities, so exclude it.
 const NON_IMAGE_MODALITIES = ['SM', 'ECG', 'SR', 'SEG', 'RTSTRUCT'];
-
-const DEFAULT_TOOL_GROUP_ID = 'default';
-const MPR_TOOL_GROUP_ID = 'mpr';
 
 const ohif = {
   layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
@@ -74,79 +70,46 @@ function modeFactory({ modeConfiguration }) {
     /**
      * Lifecycle hooks
      */
-    onModeEnter: ({ servicesManager, extensionManager, commandsManager }) => {
-      const {
-        measurementService,
-        toolbarService,
-        toolGroupService,
-        panelService,
-        customizationService,
-      } = servicesManager.services;
+    onModeEnter: function ({ servicesManager, extensionManager, commandsManager }) {
+      const { measurementService, toolbarService, toolGroupService, customizationService } =
+        servicesManager.services;
 
       measurementService.clearMeasurements();
 
+      // customizationService.addModeCustomizations([
+      //   {
+      //     id: 'measurementLabels',
+      //     labelOnMeasure: true,
+      //     exclusive: true,
+      //     items: [
+      //       { value: 'Head', label: 'Head' },
+      //       { value: 'Shoulder', label: 'Shoulder' },
+      //       { value: 'Knee', label: 'Knee' },
+      //       { value: 'Toe', label: 'Toe' },
+      //     ],
+      //   },
+      // ]);
+
       // Init Default and SR ToolGroups
-      initToolGroups(extensionManager, toolGroupService, commandsManager);
+      initToolGroups(extensionManager, toolGroupService, commandsManager, this.labelConfig);
 
-      let unsubscribe;
-      toolbarService.setDefaultTool({
-        groupId: 'WindowLevel',
-        itemId: 'WindowLevel',
-        interactionType: 'tool',
-        commands: [
-          {
-            commandName: 'setToolActive',
-            commandOptions: {
-              toolName: 'WindowLevel',
-            },
-            context: 'CORNERSTONE',
-          },
-        ],
-      });
-
-      const activateTool = () => {
-        toolbarService.recordInteraction(toolbarService.getDefaultTool());
-
-        // We don't need to reset the active tool whenever a viewport is getting
-        // added to the toolGroup.
-        unsubscribe();
-      };
-
-      // Since we only have one viewport for the basic cs3d mode and it has
-      // only one hanging protocol, we can just use the first viewport
-      ({ unsubscribe } = toolGroupService.subscribe(
-        toolGroupService.EVENTS.VIEWPORT_ADDED,
-        activateTool
-      ));
-
-      toolbarService.init(extensionManager);
-      toolbarService.addButtons([...toolbarButtons, ...moreTools, ...moreToolsMpr]);
-      toolbarService.createButtonSection(DEFAULT_TOOL_GROUP_ID, [
+      toolbarService.addButtons([...toolbarButtons, ...moreTools]);
+      toolbarService.createButtonSection('primary', [
         'MeasurementTools',
         'Zoom',
-        'WindowLevel',
         'Pan',
+        'TrackballRotate',
+        'WindowLevel',
         'Capture',
         'Layout',
-        'MPR',
-        'MoreTools',
-      ]);
-      toolbarService.createButtonSection(MPR_TOOL_GROUP_ID, [
-        'MeasurementTools',
-        'Zoom',
-        'WindowLevel',
-        'Pan',
-        'Capture',
-        'Layout',
-        'MPR',
         'Crosshairs',
-        'MoreToolsMpr',
+        'MoreTools',
       ]);
 
       customizationService.addModeCustomizations([
         {
-          id: 'segmentation.disableEditing',
-          value: true,
+          id: 'segmentation.panel',
+          disableEditing: true,
         },
       ]);
 
@@ -176,14 +139,17 @@ function modeFactory({ modeConfiguration }) {
       const {
         toolGroupService,
         syncGroupService,
-        toolbarService,
         segmentationService,
         cornerstoneViewportService,
+        uiDialogService,
+        uiModalService,
       } = servicesManager.services;
 
       _activatePanelTriggersSubscriptions.forEach(sub => sub.unsubscribe());
       _activatePanelTriggersSubscriptions = [];
 
+      uiDialogService.dismissAll();
+      uiModalService.hide();
       toolGroupService.destroy();
       syncGroupService.destroy();
       segmentationService.destroy();
@@ -198,8 +164,12 @@ function modeFactory({ modeConfiguration }) {
       const modalities_list = modalities.split('\\');
 
       // Exclude non-image modalities
-      return !!modalities_list.filter(modality => NON_IMAGE_MODALITIES.indexOf(modality) === -1)
-        .length;
+      return {
+        valid: !!modalities_list.filter(modality => NON_IMAGE_MODALITIES.indexOf(modality) === -1)
+          .length,
+        description:
+          'The mode does not support studies that ONLY include the following modalities: SM, ECG, SR, SEG, RTSTRUCT',
+      };
     },
     routes: [
       {
@@ -213,7 +183,7 @@ function modeFactory({ modeConfiguration }) {
             props: {
               leftPanels: [tracked.thumbnailList],
               rightPanels: [dicomSeg.panel, tracked.measurements],
-              rightPanelDefaultClosed: true,
+              rightPanelClosed: true,
               viewports: [
                 {
                   namespace: tracked.viewport,

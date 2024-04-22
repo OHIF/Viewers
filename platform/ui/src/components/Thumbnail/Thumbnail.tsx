@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { useDrag } from 'react-dnd';
@@ -35,6 +35,19 @@ const Thumbnail = ({
     },
   });
 
+  const [lastTap, setLastTap] = useState(0);
+
+  const handleTouchEnd = e => {
+    const currentTime = new Date().getTime();
+    const tapLength = currentTime - lastTap;
+    if (tapLength < 300 && tapLength > 0) {
+      onDoubleClick(e);
+    } else {
+      onClick(e);
+    }
+    setLastTap(currentTime);
+  };
+
   return (
     <div
       className={classnames(
@@ -45,26 +58,24 @@ const Thumbnail = ({
       data-cy={`study-browser-thumbnail`}
       onClick={onClick}
       onDoubleClick={onDoubleClick}
+      onTouchEnd={handleTouchEnd}
       role="button"
       tabIndex="0"
     >
       <div ref={drag}>
         <div
           className={classnames(
-            'min-h-32 flex flex-1 items-center justify-center overflow-hidden rounded-md bg-black text-base text-white',
+            'flex h-32 flex-1 items-center justify-center overflow-hidden rounded-md bg-black text-base text-white',
             isActive
               ? 'border-primary-light border-2'
               : 'border-secondary-light border hover:border-blue-300'
           )}
-          style={{
-            margin: isActive ? '0' : '1px',
-          }}
         >
           {imageSrc ? (
             <img
               src={imageSrc}
               alt={imageAltText}
-              className="min-h-32 object-none"
+              className="h-full w-full object-contain"
               crossOrigin="anonymous"
             />
           ) : (

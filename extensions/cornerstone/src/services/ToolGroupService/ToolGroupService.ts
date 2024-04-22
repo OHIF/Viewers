@@ -1,4 +1,5 @@
 import { ToolGroupManager, Enums, Types } from '@cornerstonejs/tools';
+import { eventTarget } from '@cornerstonejs/core';
 
 import { Types as OhifTypes, pubSubServiceInterface } from '@ohif/core';
 import getActiveViewportEnabledElement from '../../utils/getActiveViewportEnabledElement';
@@ -6,6 +7,8 @@ import getActiveViewportEnabledElement from '../../utils/getActiveViewportEnable
 const EVENTS = {
   VIEWPORT_ADDED: 'event::cornerstone::toolgroupservice:viewportadded',
   TOOLGROUP_CREATED: 'event::cornerstone::toolgroupservice:toolgroupcreated',
+  TOOL_ACTIVATED: 'event::cornerstone::toolgroupservice:toolactivated',
+  PRIMARY_TOOL_ACTIVATED: 'event::cornerstone::toolgroupservice:primarytoolactivated',
 };
 
 type Tool = {
@@ -38,16 +41,24 @@ export default class ToolGroupService {
   EVENTS: { [key: string]: string };
 
   constructor(serviceManager) {
-    const { cornerstoneViewportService, viewportGridService } = serviceManager.services;
+    const { cornerstoneViewportService, viewportGridService, uiNotificationService } =
+      serviceManager.services;
     this.cornerstoneViewportService = cornerstoneViewportService;
     this.viewportGridService = viewportGridService;
+    this.uiNotificationService = uiNotificationService;
     this.listeners = {};
     this.EVENTS = EVENTS;
     Object.assign(this, pubSubServiceInterface);
+
+    this._init();
   }
 
   onModeExit() {
     this.destroy();
+  }
+
+  private _init() {
+    eventTarget.addEventListener(Enums.Events.TOOL_ACTIVATED, this._onToolActivated);
   }
 
   /**
@@ -105,12 +116,14 @@ export default class ToolGroupService {
     return toolGroup.getActivePrimaryMouseButtonTool();
   }
 
-  public destroy() {
+  public destroy(): void {
     ToolGroupManager.destroy();
     this.toolGroupIds = new Set();
+
+    eventTarget.removeEventListener(Enums.Events.TOOL_ACTIVATED, this._onToolActivated);
   }
 
-  public destroyToolGroup(toolGroupId: string) {
+  public destroyToolGroup(toolGroupId: string): void {
     ToolGroupManager.destroyToolGroup(toolGroupId);
     this.toolGroupIds.delete(toolGroupId);
   }
@@ -189,19 +202,6 @@ export default class ToolGroupService {
     this.addToolsToToolGroup(toolGroupId, tools);
     return toolGroup;
   }
-
-  /**
-  private changeConfigurationIfNecessary(toolGroup, volumeUID) {
-    // handle specific assignment for volumeUID (e.g., fusion)
-    const toolInstances = toolGroup._toolInstances;
-    // Object.values(toolInstances).forEach(toolInstance => {
-    //   if (toolInstance.configuration) {
-    //     toolInstance.configuration.volumeUID = volumeUID;
-    //   }
-    // });
-  }
-  */
-
   /**
    * Get the tool's configuration based on the tool name and tool group id
    * @param toolGroupId - The id of the tool group that the tool instance belongs to.
@@ -233,6 +233,10 @@ export default class ToolGroupService {
     const toolGroup = ToolGroupManager.getToolGroup(toolGroupId);
     const toolInstance = toolGroup.getToolInstance(toolName);
     toolInstance.configuration = config;
+  }
+
+  public getActivePrimaryMouseButtonTool(toolGroupId?: string): string {
+    return this.getToolGroup(toolGroupId)?.getActivePrimaryMouseButtonTool();
   }
 
   private _setToolsMode(toolGroup, tools) {
@@ -292,4 +296,23 @@ export default class ToolGroupService {
       addTools(tools.disabled);
     }
   }
+
+  private _onToolActivated = (evt: Types.EventTypes.ToolActivatedEventType) => {
+    const { toolGroupId, toolName, toolBindingsOptions } = evt.detail;
+    const isPrimaryTool = toolBindingsOptions.bindings?.some(
+      binding => binding.mouseButton === Enums.MouseBindings.Primary
+    );
+
+    const callbackProps = {
+      toolGroupId,
+      toolName,
+      toolBindingsOptions,
+    };
+
+    this._broadcastEvent(EVENTS.TOOL_ACTIVATED, callbackProps);
+
+    if (isPrimaryTool) {
+      this._broadcastEvent(EVENTS.PRIMARY_TOOL_ACTIVATED, callbackProps);
+    }
+  };
 }

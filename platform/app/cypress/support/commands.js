@@ -273,7 +273,7 @@ Cypress.Commands.add(
       }
     });
 
-    cy.get('@lengthButton').should('have.class', 'active');
+    cy.get('@lengthButton').should('have.class', 'bg-primary-light');
 
     cy.get('@viewport').then($viewport => {
       const [x1, y1] = firstClick;

@@ -43,8 +43,6 @@ const RectangleROIStartEndThreshold = {
       displaySet = displaySetService.getDisplaySetsForSeries(SeriesInstanceUID);
     }
 
-    const { cachedStats } = data;
-
     return {
       uid: annotationUID,
       SOPInstanceUID,
@@ -56,10 +54,8 @@ const RectangleROIStartEndThreshold = {
       toolName: metadata.toolName,
       displaySetInstanceUID: displaySet.displaySetInstanceUID,
       label: metadata.label,
-      // displayText: displayText,
       data: data.cachedStats,
       type: 'RectangleROIStartEndThreshold',
-      // getReport,
     };
   },
 };

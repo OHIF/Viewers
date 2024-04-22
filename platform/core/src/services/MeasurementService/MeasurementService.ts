@@ -53,6 +53,7 @@ const MEASUREMENT_SCHEMA_KEYS = [
   'area', // TODO: Add concept names instead (descriptor)
   'mean',
   'stdDev',
+  'perimeter',
   'length',
   'shortestDiameter',
   'longestDiameter',
@@ -113,7 +114,7 @@ class MeasurementService extends PubSubService {
   public readonly VALUE_TYPES = VALUE_TYPES;
 
   private measurements = new Map();
-  private unmappedMeasurements = new Set();
+  private unmappedMeasurements = new Map();
 
   constructor() {
     super(EVENTS);
@@ -485,7 +486,15 @@ class MeasurementService extends PubSubService {
       measurement = toMeasurementSchema(sourceAnnotationDetail);
       measurement.source = source;
     } catch (error) {
-      this.unmappedMeasurements.add(sourceAnnotationDetail.uid);
+      // Todo: handle other
+      this.unmappedMeasurements.set(sourceAnnotationDetail.uid, {
+        ...sourceAnnotationDetail,
+        source: {
+          name: source.name,
+          version: source.version,
+          uid: source.uid,
+        },
+      });
 
       console.log('Failed to map', error);
       throw new Error(
@@ -567,10 +576,9 @@ class MeasurementService extends PubSubService {
   }
 
   clearMeasurements() {
-    this.unmappedMeasurements.clear();
-
     // Make a copy of the measurements
-    const measurements = [...this.measurements.values()];
+    const measurements = [...this.measurements.values(), ...this.unmappedMeasurements.values()];
+    this.unmappedMeasurements.clear();
     this.measurements.clear();
     this._broadcastEvent(this.EVENTS.MEASUREMENTS_CLEARED, { measurements });
   }

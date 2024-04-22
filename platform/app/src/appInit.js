@@ -2,6 +2,7 @@ import {
   CommandsManager,
   ExtensionManager,
   ServicesManager,
+  ServiceProvidersManager,
   HotkeysManager,
   UINotificationService,
   UIModalService,
@@ -18,6 +19,7 @@ import {
   errorHandler,
   CustomizationService,
   PanelService,
+  WorkflowStepsService,
   // utils,
 } from '@ohif/core';
 
@@ -34,6 +36,7 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
 
   const commandsManager = new CommandsManager(commandsManagerConfig);
   const servicesManager = new ServicesManager(commandsManager);
+  const serviceProvidersManager = new ServiceProvidersManager();
   const hotkeysManager = new HotkeysManager(commandsManager, servicesManager);
 
   const appConfig = {
@@ -45,9 +48,12 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
   const extensionManager = new ExtensionManager({
     commandsManager,
     servicesManager,
+    serviceProvidersManager,
     hotkeysManager,
     appConfig,
   });
+
+  servicesManager.setExtensionManager(extensionManager);
 
   servicesManager.registerServices([
     UINotificationService.REGISTRATION,
@@ -63,6 +69,7 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
     CineService.REGISTRATION,
     UserAuthenticationService.REGISTRATION,
     PanelService.REGISTRATION,
+    WorkflowStepsService.REGISTRATION,
     StateSyncService.REGISTRATION,
   ]);
 
@@ -128,6 +135,7 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
     commandsManager,
     extensionManager,
     servicesManager,
+    serviceProvidersManager,
     hotkeysManager,
   };
 }

@@ -7,6 +7,7 @@ class ViewportGridService extends PubSubService {
     LAYOUT_CHANGED: 'event::layoutChanged',
     GRID_STATE_CHANGED: 'event::gridStateChanged',
     GRID_SIZE_CHANGED: 'event::gridSizeChanged',
+    VIEWPORTS_READY: 'event::viewportsReady',
   };
 
   public static REGISTRATION = {
@@ -35,6 +36,7 @@ class ViewportGridService extends PubSubService {
     onModeExit: onModeExitImplementation,
     set: setImplementation,
     getNumViewportPanes: getNumViewportPanesImplementation,
+    setViewportIsReady: setViewportIsReadyImplementation,
   }): void {
     if (getStateImplementation) {
       this.serviceImplementation._getState = getStateImplementation;
@@ -61,6 +63,14 @@ class ViewportGridService extends PubSubService {
     if (getNumViewportPanesImplementation) {
       this.serviceImplementation._getNumViewportPanes = getNumViewportPanesImplementation;
     }
+
+    if (setViewportIsReadyImplementation) {
+      this.serviceImplementation._setViewportIsReady = setViewportIsReadyImplementation;
+    }
+  }
+
+  public publishViewportsReady() {
+    this._broadcastEvent(this.EVENTS.VIEWPORTS_READY, {});
   }
 
   public setActiveViewportId(id: string) {
@@ -72,6 +82,10 @@ class ViewportGridService extends PubSubService {
 
   public getState() {
     return this.serviceImplementation._getState();
+  }
+
+  public setViewportIsReady(viewportId, callback) {
+    this.serviceImplementation._setViewportIsReady(viewportId, callback);
   }
 
   public getActiveViewportId() {
@@ -111,6 +125,17 @@ class ViewportGridService extends PubSubService {
   }
 
   /**
+   * Retrieves the display set instance UIDs for a given viewport.
+   * @param viewportId The ID of the viewport.
+   * @returns An array of display set instance UIDs.
+   */
+  public getDisplaySetsUIDsForViewport(viewportId: string) {
+    const state = this.getState();
+    const viewport = state.viewports.get(viewportId);
+    return viewport?.displaySetInstanceUIDs;
+  }
+
+  /**
    *
    * @param numCols, numRows - the number of columns and rows to apply
    * @param findOrCreateViewport is a function which takes the
@@ -125,6 +150,7 @@ class ViewportGridService extends PubSubService {
     layoutType = 'grid',
     activeViewportId = undefined,
     findOrCreateViewport = undefined,
+    isHangingProtocolLayout = false,
   }) {
     this.serviceImplementation._setLayout({
       numCols,
@@ -133,6 +159,7 @@ class ViewportGridService extends PubSubService {
       layoutType,
       activeViewportId,
       findOrCreateViewport,
+      isHangingProtocolLayout,
     });
     this._broadcastEvent(this.EVENTS.LAYOUT_CHANGED, {
       numCols,

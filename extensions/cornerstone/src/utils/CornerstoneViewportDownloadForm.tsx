@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import html2canvas from 'html2canvas';
 import {
   Enums,
   getEnabledElement,
   getOrCreateCanvas,
   StackViewport,
-  VolumeViewport,
+  BaseVolumeViewport,
 } from '@cornerstonejs/core';
 import { ToolGroupManager } from '@cornerstonejs/tools';
 import PropTypes from 'prop-types';
@@ -27,7 +27,11 @@ const CornerstoneViewportDownloadForm = ({
   const activeViewportElement = enabledElement?.element;
   const activeViewportEnabledElement = getEnabledElement(activeViewportElement);
 
-  const { viewportId: activeViewportId, renderingEngineId } = activeViewportEnabledElement;
+  const {
+    viewportId: activeViewportId,
+    renderingEngineId,
+    viewport: activeViewport,
+  } = activeViewportEnabledElement;
 
   const toolGroup = ToolGroupManager.getToolGroupForViewport(activeViewportId, renderingEngineId);
 
@@ -93,7 +97,7 @@ const CornerstoneViewportDownloadForm = ({
       renderingEngine.resize();
 
       // Trigger the render on the viewport to update the on screen
-      downloadViewport.resetCamera();
+      // downloadViewport.resetCamera();
       downloadViewport.render();
 
       downloadViewportElement.addEventListener(
@@ -120,6 +124,12 @@ const CornerstoneViewportDownloadForm = ({
           resolve({ dataUrl, width: newWidth, height: newHeight });
 
           downloadViewportElement.removeEventListener(Enums.Events.IMAGE_RENDERED, updateViewport);
+
+          // for some reason we need a reset camera here, and I don't know why
+          downloadViewport.resetCamera();
+          const presentation = activeViewport.getViewPresentation();
+          downloadViewport.setView(activeViewport.getViewReference(), presentation);
+          downloadViewport.render();
         }
       );
     });
@@ -154,14 +164,13 @@ const CornerstoneViewportDownloadForm = ({
               console.warn('Unable to set properties', e);
             }
           });
-        } else if (downloadViewport instanceof VolumeViewport) {
+        } else if (downloadViewport instanceof BaseVolumeViewport) {
           const actors = viewport.getActors();
           // downloadViewport.setActors(actors);
           actors.forEach(actor => {
             downloadViewport.addActor(actor);
           });
 
-          downloadViewport.setCamera(viewport.getCamera());
           downloadViewport.render();
 
           const newWidth = Math.min(width || image.width, MAX_TEXTURE_SIZE);
@@ -189,7 +198,7 @@ const CornerstoneViewportDownloadForm = ({
     // add the viewport to the toolGroup
     toolGroup.addViewport(downloadViewportId, renderingEngineId);
 
-    Object.keys(toolGroup._toolInstances).forEach(toolName => {
+    Object.keys(toolGroup.getToolInstances()).forEach(toolName => {
       // make all tools Enabled so that they can not be interacted with
       // in the download viewport
       if (toggle && toolName !== 'Crosshairs') {

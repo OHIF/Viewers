@@ -1,5 +1,6 @@
 import { synchronizers, SynchronizerManager, Synchronizer } from '@cornerstonejs/tools';
 import { utilities } from '@cornerstonejs/core';
+import { getRenderingEngines } from '@cornerstonejs/core';
 
 import { pubSubServiceInterface, Types, ServicesManager } from '@ohif/core';
 
@@ -27,6 +28,7 @@ const POSITION = 'cameraposition';
 const VOI = 'voi';
 const ZOOMPAN = 'zoompan';
 const STACKIMAGE = 'stackimage';
+const IMAGE_SLICE = 'imageslice';
 
 const asSyncGroup = (syncGroup: string | SyncGroup): SyncGroup =>
   typeof syncGroup === 'string' ? { type: syncGroup } : syncGroup;
@@ -47,8 +49,13 @@ export default class SyncGroupService {
     [POSITION]: synchronizers.createCameraPositionSynchronizer,
     [VOI]: synchronizers.createVOISynchronizer,
     [ZOOMPAN]: synchronizers.createZoomPanSynchronizer,
+    // todo: remove stack image since it is legacy now and the image_slice
+    // handles both stack and volume viewports
     [STACKIMAGE]: synchronizers.createImageSliceSynchronizer,
+    [IMAGE_SLICE]: synchronizers.createImageSliceSynchronizer,
   };
+
+  synchronizersByType: { [key: string]: Synchronizer[] } = {};
 
   constructor(serviceManager: ServicesManager) {
     this.servicesManager = serviceManager;
@@ -59,12 +66,25 @@ export default class SyncGroupService {
   }
 
   private _createSynchronizer(type: string, id: string, options): Synchronizer | undefined {
+    // Initialize if not already done
+    this.synchronizersByType[type] = this.synchronizersByType[type] || [];
+
     const syncCreator = this.synchronizerCreators[type.toLowerCase()];
+
     if (syncCreator) {
-      return syncCreator(id, options);
+      const synchronizer = syncCreator(id, options);
+
+      if (synchronizer) {
+        this.synchronizersByType[type].push(synchronizer);
+        return synchronizer;
+      }
     } else {
-      console.warn('Unknown synchronizer type', type, id);
+      console.warn(`Unknown synchronizer type: ${type}, id: ${id}`);
     }
+  }
+
+  public getSyncCreatorForType(type: string): SyncCreator {
+    return this.synchronizerCreators[type.toLowerCase()];
   }
 
   /**
@@ -78,6 +98,15 @@ export default class SyncGroupService {
 
   public getSynchronizer(id: string): Synchronizer | void {
     return SynchronizerManager.getSynchronizer(id);
+  }
+
+  /**
+   * Retrieves an array of synchronizers of a specific type.
+   * @param type - The type of synchronizers to retrieve.
+   * @returns An array of synchronizers of the specified type.
+   */
+  public getSynchronizersOfType(type: string): Synchronizer[] {
+    return this.synchronizersByType[type];
   }
 
   protected _getOrCreateSynchronizer(
@@ -127,14 +156,17 @@ export default class SyncGroupService {
     SynchronizerManager.destroy();
   }
 
-  public getSynchronizersForViewport(
-    viewportId: string,
-    renderingEngineId: string
-  ): Synchronizer[] {
-    return SynchronizerManager.getAllSynchronizers().filter(
+  public getSynchronizersForViewport(viewportId: string): Synchronizer[] {
+    const renderingEngine =
+      getRenderingEngines().find(re => {
+        return re.getViewports().find(vp => vp.id === viewportId);
+      }) || getRenderingEngines()[0];
+
+    const synchronizers = SynchronizerManager.getAllSynchronizers();
+    return synchronizers.filter(
       s =>
-        s.hasSourceViewport(renderingEngineId, viewportId) ||
-        s.hasTargetViewport(renderingEngineId, viewportId)
+        s.hasSourceViewport(renderingEngine.id, viewportId) ||
+        s.hasTargetViewport(renderingEngine.id, viewportId)
     );
   }
 

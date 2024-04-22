@@ -233,7 +233,7 @@ differently.
     <tr>
       <td align="left">
         <a href="./modules/layout-template">
-          LayoutTemplate (NEW)
+          LayoutTemplate
         </a>
       </td>
       <td align="left">Control Layout of a route</td>
@@ -241,7 +241,7 @@ differently.
     <tr>
       <td align="left">
         <a href="./modules/data-source">
-          DataSource (NEW)
+          DataSource
         </a>
       </td>
       <td align="left">Control the mapping from DICOM metadata to OHIF-metadata</td>

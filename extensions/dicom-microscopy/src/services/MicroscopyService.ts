@@ -573,6 +573,10 @@ export default class MicroscopyService extends PubSubService {
     this.activeInteractions = interactions;
   }
 
+  getActiveInteractions() {
+    return this.activeInteractions;
+  }
+
   /**
    * Triggers the relabelling process for the given RoiAnnotation instance, by
    * publishing the RELABEL event to notify the subscribers

@@ -1,7 +1,7 @@
 import { hotkeys, classes } from '@ohif/core';
 import toolbarButtons from './toolbarButtons.js';
 import { id } from './id.js';
-import initToolGroups, { toolGroupIds } from './initToolGroups.js';
+import initToolGroups from './initToolGroups.js';
 import setCrosshairsConfiguration from './utils/setCrosshairsConfiguration.js';
 import setFusionActiveVolume from './utils/setFusionActiveVolume.js';
 import i18n from 'i18next';
@@ -17,18 +17,21 @@ const ohif = {
 
 const cs3d = {
   viewport: '@ohif/extension-cornerstone.viewportModule.cornerstone',
+  segPanel: '@ohif/extension-cornerstone-dicom-seg.panelModule.panelSegmentation',
 };
 
 const tmtv = {
   hangingProtocol: '@ohif/extension-tmtv.hangingProtocolModule.ptCT',
   petSUV: '@ohif/extension-tmtv.panelModule.petSUV',
-  ROIThresholdPanel: '@ohif/extension-tmtv.panelModule.ROIThresholdSeg',
+  toolbox: '@ohif/extension-tmtv.panelModule.tmtvBox',
+  export: '@ohif/extension-tmtv.panelModule.tmtvExport',
 };
 
 const extensionDependencies = {
   // Can derive the versions at least process.env.from npm_package_version
   '@ohif/extension-default': '^3.0.0',
   '@ohif/extension-cornerstone': '^3.0.0',
+  '@ohif/extension-cornerstone-dicom-seg': '^3.0.0',
   '@ohif/extension-tmtv': '^3.0.0',
 };
 
@@ -44,8 +47,14 @@ function modeFactory({ modeConfiguration }) {
      * Lifecycle hooks
      */
     onModeEnter: ({ servicesManager, extensionManager, commandsManager }) => {
-      const { toolbarService, toolGroupService, hangingProtocolService, displaySetService } =
-        servicesManager.services;
+      const {
+        toolbarService,
+        toolGroupService,
+        customizationService,
+        hangingProtocolService,
+        displaySetService,
+        viewportGridService,
+      } = servicesManager.services;
 
       const utilityModule = extensionManager.getModuleEntry(
         '@ohif/extension-cornerstone.utilityModule.tools'
@@ -55,39 +64,6 @@ function modeFactory({ modeConfiguration }) {
 
       // Init Default and SR ToolGroups
       initToolGroups(toolNames, Enums, toolGroupService, commandsManager);
-
-      const setWindowLevelActive = () => {
-        toolbarService.recordInteraction({
-          groupId: 'WindowLevel',
-          interactionType: 'tool',
-          commands: [
-            {
-              commandName: 'setToolActive',
-              commandOptions: {
-                toolName: toolNames.WindowLevel,
-                toolGroupId: toolGroupIds.CT,
-              },
-              context: 'CORNERSTONE',
-            },
-            {
-              commandName: 'setToolActive',
-              commandOptions: {
-                toolName: toolNames.WindowLevel,
-                toolGroupId: toolGroupIds.PT,
-              },
-              context: 'CORNERSTONE',
-            },
-            {
-              commandName: 'setToolActive',
-              commandOptions: {
-                toolName: toolNames.WindowLevel,
-                toolGroupId: toolGroupIds.Fusion,
-              },
-              context: 'CORNERSTONE',
-            },
-          ],
-        });
-      };
 
       const { unsubscribe } = toolGroupService.subscribe(
         toolGroupService.EVENTS.VIEWPORT_ADDED,
@@ -110,13 +86,10 @@ function modeFactory({ modeConfiguration }) {
             toolGroupService,
             displaySetService
           );
-
-          setWindowLevelActive();
         }
       );
 
       unsubscriptions.push(unsubscribe);
-      toolbarService.init(extensionManager);
       toolbarService.addButtons(toolbarButtons);
       toolbarService.createButtonSection('primary', [
         'MeasurementTools',
@@ -124,8 +97,22 @@ function modeFactory({ modeConfiguration }) {
         'WindowLevel',
         'Crosshairs',
         'Pan',
+        'SyncToggle',
+      ]);
+      toolbarService.createButtonSection('ROIThresholdToolbox', [
         'RectangleROIStartEndThreshold',
-        'fusionPTColormap',
+        'BrushTools',
+      ]);
+
+      customizationService.addModeCustomizations([
+        {
+          id: 'segmentation.panel',
+          segmentationPanelMode: 'expanded',
+          addSegment: false,
+          onSegmentationAdd: () => {
+            commandsManager.run('createNewLabelmapFromPT');
+          },
+        },
       ]);
 
       // For the hanging protocol we need to decide on the window level
@@ -165,9 +152,13 @@ function modeFactory({ modeConfiguration }) {
         syncGroupService,
         segmentationService,
         cornerstoneViewportService,
+        uiDialogService,
+        uiModalService,
       } = servicesManager.services;
 
       unsubscriptions.forEach(unsubscribe => unsubscribe());
+      uiDialogService.dismissAll();
+      uiModalService.hide();
       toolGroupService.destroy();
       syncGroupService.destroy();
       segmentationService.destroy();
@@ -183,6 +174,7 @@ function modeFactory({ modeConfiguration }) {
 
       const isValid =
         modalities_list.includes('CT') &&
+        study.mrn !== 'M1' &&
         modalities_list.includes('PT') &&
         !invalidModalities.some(modality => modalities_list.includes(modality)) &&
         // This is study is a 4D study with PT and CT and not a 3D study for the tmtv
@@ -193,7 +185,10 @@ function modeFactory({ modeConfiguration }) {
         study.studyInstanceUid !== '1.3.6.1.4.1.12842.1.1.14.3.20220915.105557.468.2963630849';
 
       // there should be both CT and PT modalities and the modality should not be SM
-      return isValid;
+      return {
+        valid: isValid,
+        description: 'The mode requires both PT and CT series in the study',
+      };
     },
     routes: [
       {
@@ -201,13 +196,13 @@ function modeFactory({ modeConfiguration }) {
         /*init: ({ servicesManager, extensionManager }) => {
           //defaultViewerRouteInit
         },*/
-        layoutTemplate: ({ location, servicesManager }) => {
+        layoutTemplate: () => {
           return {
             id: ohif.layout,
             props: {
               leftPanels: [ohif.thumbnailList],
-              leftPanelDefaultClosed: true,
-              rightPanels: [tmtv.ROIThresholdPanel, tmtv.petSUV],
+              leftPanelClosed: true,
+              rightPanels: [[tmtv.toolbox, cs3d.segPanel, tmtv.export], tmtv.petSUV],
               viewports: [
                 {
                   namespace: cs3d.viewport,

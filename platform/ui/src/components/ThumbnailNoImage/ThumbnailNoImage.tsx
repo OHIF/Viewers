@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import { useDrag } from 'react-dnd';
@@ -30,6 +30,19 @@ const ThumbnailNoImage = ({
     },
   });
 
+  const [lastTap, setLastTap] = useState(0);
+
+  const handleTouchEnd = e => {
+    const currentTime = new Date().getTime();
+    const tapLength = currentTime - lastTap;
+    if (tapLength < 300 && tapLength > 0) {
+      onDoubleClick(e);
+    } else {
+      onClick(e);
+    }
+    setLastTap(currentTime);
+  };
+
   return (
     <div
       className={classnames(
@@ -42,6 +55,7 @@ const ThumbnailNoImage = ({
       id={`thumbnail-${displaySetInstanceUID}`}
       onClick={onClick}
       onDoubleClick={onDoubleClick}
+      onTouchEnd={handleTouchEnd}
       role="button"
       tabIndex="0"
       data-cy={`study-browser-thumbnail-no-image`}
