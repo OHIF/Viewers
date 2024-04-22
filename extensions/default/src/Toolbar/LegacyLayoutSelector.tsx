@@ -82,7 +82,7 @@ LayoutSelector.propTypes = {
 LayoutSelector.defaultProps = {
   rows: 3,
   columns: 3,
-  onLayoutChange: () => {},
+  onLayoutChange: () => { },
 };
 
 export default LegacyLayoutSelectorWithServices;

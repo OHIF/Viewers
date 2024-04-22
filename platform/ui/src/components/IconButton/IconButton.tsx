@@ -123,7 +123,7 @@ const IconButton = ({
 };
 
 IconButton.defaultProps = {
-  onClick: () => {},
+  onClick: () => { },
   color: 'default',
   disabled: false,
   fullWidth: false,

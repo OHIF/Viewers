@@ -231,7 +231,7 @@ LayoutSelector.propTypes = {
 LayoutSelector.defaultProps = {
   columns: 4,
   rows: 3,
-  onLayoutChange: () => {},
+  onLayoutChange: () => { },
 };
 
 export default ToolbarLayoutSelectorWithServices;
