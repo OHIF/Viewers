@@ -91,7 +91,7 @@ Let's look at one of the evaluators (for `evaluate.cornerstoneTool`)
       return;
     }
 
-    const toolName = getToolNameForButton(button);
+    const toolName =  toolbarService.getToolNameForButton(button);
 
     if (!toolGroup || !toolGroup.hasTool(toolName)) {
       return {

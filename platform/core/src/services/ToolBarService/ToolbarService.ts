@@ -156,7 +156,7 @@ export default class ToolbarService extends PubSubService {
     const itemId = interaction.itemId ?? interaction.id;
     interaction.itemId = itemId;
 
-    const commands = Array.isArray(interaction.commands)
+    let commands = Array.isArray(interaction.commands)
       ? interaction.commands
       : [interaction.commands];
 
@@ -169,6 +169,27 @@ export default class ToolbarService extends PubSubService {
     }
 
     const commandOptions = { ...options, ...interaction };
+
+    commands = commands.map(command => {
+      if (typeof command === 'function') {
+        return () => {
+          command({
+            ...commandOptions,
+            commandsManager: this._commandsManager,
+            servicesManager: this._servicesManager,
+          });
+        };
+      }
+
+      return command;
+    });
+
+    // if still no commands, return
+    commands = commands.filter(Boolean);
+
+    if (!commands.length) {
+      return;
+    }
 
     // Loop through commands and run them with the combined options
     this._commandsManager.run(commands, commandOptions);
@@ -375,6 +396,26 @@ export default class ToolbarService extends PubSubService {
         return this._mapButtonToDisplay(btn, props);
       }) || []
     );
+  }
+
+  /**
+   * Retrieves the tool name for a given button.
+   * @param button - The button object.
+   * @returns The tool name associated with the button.
+   */
+  getToolNameForButton(button) {
+    const { props } = button;
+
+    const commands = props?.commands || button.commands;
+    const commandsArray = Array.isArray(commands) ? commands : [commands];
+    const firstCommand = commandsArray[0];
+
+    if (firstCommand?.commandOptions) {
+      return firstCommand.commandOptions.toolName ?? props?.id ?? button.id;
+    }
+
+    // use id as a fallback for toolName
+    return props?.id ?? button.id;
   }
 
   /**
