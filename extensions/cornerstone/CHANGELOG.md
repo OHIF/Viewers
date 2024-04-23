@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-beta.90](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.89...v3.8.0-beta.90) (2024-04-22)
+
+
+### Bug Fixes
+
+* **viewport-sync:** Enable re-sync image slices in a different position when needed ([#3984](https://github.com/OHIF/Viewers/issues/3984)) ([6ebd2cc](https://github.com/OHIF/Viewers/commit/6ebd2cc7cb70cd88fd01dc1e516077f27b201943))
+
+
+
+
+
 # [3.8.0-beta.89](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.88...v3.8.0-beta.89) (2024-04-22)
 
 
