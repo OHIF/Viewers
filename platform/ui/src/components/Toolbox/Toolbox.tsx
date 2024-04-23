@@ -21,6 +21,7 @@ function Toolbox({ servicesManager, buttonSectionId, commandsManager, title, ...
   });
 
   const prevButtonIdsRef = useRef();
+  const prevToolboxStateRef = useRef();
 
   useEffect(() => {
     const currentButtonIdsStr = JSON.stringify(
@@ -33,11 +34,22 @@ function Toolbox({ servicesManager, buttonSectionId, commandsManager, title, ...
       })
     );
 
-    if (prevButtonIdsRef.current === currentButtonIdsStr) {
+    const currentToolBoxStateStr = JSON.stringify(
+      Object.keys(toolboxState.toolOptions).map(tool => {
+        const options = toolboxState.toolOptions[tool];
+        return options.map(option => `${option.id}-${option.value}`);
+      })
+    );
+
+    if (
+      prevButtonIdsRef.current === currentButtonIdsStr &&
+      prevToolboxStateRef.current === currentToolBoxStateStr
+    ) {
       return;
     }
 
     prevButtonIdsRef.current = currentButtonIdsStr;
+    prevToolboxStateRef.current = currentToolBoxStateStr;
 
     const initializeOptionsWithEnhancements = toolbarButtons.reduce(
       (accumulator, toolbarButton) => {
@@ -51,11 +63,15 @@ function Toolbox({ servicesManager, buttonSectionId, commandsManager, title, ...
               return option;
             }
 
+            const value =
+              toolboxState.toolOptions?.[parentId]?.find(prop => prop.id === option.id)?.value ??
+              option.value;
+
+            const updatedOptions = toolboxState.toolOptions?.[parentId];
+
             return {
               ...option,
-              value:
-                toolboxState.toolOptions?.[parentId]?.find(prop => prop.id === option.id)?.value ??
-                option.value,
+              value,
               commands: value => {
                 api.handleToolOptionChange(parentId, option.id, value);
 
@@ -72,10 +88,15 @@ function Toolbox({ servicesManager, buttonSectionId, commandsManager, title, ...
                   } else if (isObject) {
                     commandsManager.run({
                       ...command,
-                      commandOptions: { ...command.commandOptions, ...option, value },
+                      commandOptions: {
+                        ...command.commandOptions,
+                        ...option,
+                        value,
+                        options: updatedOptions,
+                      },
                     });
                   } else if (isFunction) {
-                    command({ value, commandsManager, servicesManager });
+                    command({ value, commandsManager, servicesManager, options: updatedOptions });
                   }
                 });
               },
@@ -101,7 +122,7 @@ function Toolbox({ servicesManager, buttonSectionId, commandsManager, title, ...
     );
 
     api.initializeToolOptions(initializeOptionsWithEnhancements);
-  }, [toolbarButtons, api]);
+  }, [toolbarButtons, api, toolboxState]);
 
   const handleToolOptionChange = (toolName, optionName, newValue) => {
     api.handleToolOptionChange(toolName, optionName, newValue);
