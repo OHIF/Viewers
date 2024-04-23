@@ -8,18 +8,6 @@ const setToolActiveToolbar = {
   },
 };
 
-function _createSetToolActiveCommands(toolName) {
-  return [
-    {
-      commandName: 'setToolActiveToolbar',
-      commandOptions: {
-        toolName,
-        toolGroupIds: [toolGroupIds.CT, toolGroupIds.PT, toolGroupIds.Fusion],
-      },
-    },
-  ];
-}
-
 const toolbarButtons = [
   {
     id: 'MeasurementTools',
@@ -144,7 +132,6 @@ const toolbarButtons = [
             toolNames: ['CircularBrush', 'SphereBrush'],
             disabledText: 'Create new segmentation to enable this tool.',
           },
-          commands: _createSetToolActiveCommands('CircularBrush'),
           options: [
             {
               name: 'Radius (mm)',
@@ -180,7 +167,6 @@ const toolbarButtons = [
             name: 'evaluate.cornerstone.segmentation',
             toolNames: ['CircularEraser', 'SphereEraser'],
           },
-          commands: _createSetToolActiveCommands('CircularEraser'),
           options: [
             {
               name: 'Radius (mm)',
@@ -216,7 +202,6 @@ const toolbarButtons = [
             name: 'evaluate.cornerstone.segmentation',
             toolNames: ['ThresholdCircularBrush', 'ThresholdSphereBrush'],
           },
-          commands: _createSetToolActiveCommands('ThresholdCircularBrush'),
           options: [
             {
               name: 'Radius (mm)',

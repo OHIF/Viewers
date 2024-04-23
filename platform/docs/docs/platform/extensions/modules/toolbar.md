@@ -405,7 +405,12 @@ state will get synchronized with the toolbar service automatically.
 Your toolbox toolbar buttons can have options, this is really useful
 for advanced tools that require to change some parameters. For example, the brush tool that requires the brush size to change or the mode (2D or 3D).
 
-currently we support three types of options
+:::note
+Toolbox with options will run the options commands
+on the mount of the toolbox component. This is useful for setting the initial state of the toolbox.
+:::
+
+Currently we support three types of options.
 
 ### Radio option
 
@@ -423,7 +428,6 @@ three different modes
       toolNames: ['CircleScissor', 'SphereScissor', 'RectangleScissor'],
     },
     icon: 'icon-tool-shape',
-    commands: _createSetToolActiveCommands('CircleScissor'),
     options: [
       {
         name: 'Shape',
@@ -456,7 +460,6 @@ We use this for brush radius change
     toolNames: ['CircularBrush', 'SphereBrush'],
     disabledText: 'Create new segmentation to enable this tool.',
   },
-  commands: _createSetToolActiveCommands('CircularBrush'),
   options: [
     {
       name: 'Radius (mm)',
