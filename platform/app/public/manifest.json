@@ -1,7 +1,7 @@
 {
-  "name": "OHIF Viewer",
+  "name": "Cfaz Viewer",
   "short_name": "Viewer",
-  "description": "OHIF Viewer",
+  "description": "Cfaz Viewer",
   "dir": "auto",
   "lang": "en-US",
   "orientation": "any",
