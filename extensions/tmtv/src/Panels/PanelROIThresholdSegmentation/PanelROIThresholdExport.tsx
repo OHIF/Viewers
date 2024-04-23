@@ -76,7 +76,7 @@ export default function PanelRoiThresholdSegmentation({ servicesManager, command
       }
     };
 
-    eventTarget.addEventListenerDebounced(Enums.Events.SEGMENTATION_DATA_MODIFIED, callback, 300);
+    eventTarget.addEventListenerDebounced(Enums.Events.SEGMENTATION_DATA_MODIFIED, callback, 250);
 
     return () => {
       eventTarget.removeEventListenerDebounced(Enums.Events.SEGMENTATION_DATA_MODIFIED, callback);

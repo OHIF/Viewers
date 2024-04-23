@@ -25,7 +25,6 @@ function OHIFCornerstoneSEGViewport(props) {
     displaySetService,
     toolGroupService,
     segmentationService,
-    uiNotificationService,
     customizationService,
     viewportActionCornersService,
   } = servicesManager.services;
