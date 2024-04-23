@@ -120,7 +120,7 @@ function WrappedCinePlayer({ enabledVPElement, viewportId, servicesManager }) {
     cineHandler();
 
     return () => {
-      cineService.stopClip(enabledVPElement);
+      cineService.stopClip(enabledVPElement, { viewportId });
     };
   }, [cines, viewportId, cineService, enabledVPElement, cineHandler]);
 
