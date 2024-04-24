@@ -485,7 +485,10 @@ function _subscribeToJumpToMeasurementEvents(
           cornerstoneViewportService.getViewportIdToJump(
             jumpId,
             measurement.displaySetInstanceUID,
-            { referencedImageId: measurement.referencedImageId }
+            {
+              referencedImageId:
+                measurement.referencedImageId || measurement.metadata?.referencedImageId,
+            }
           );
       }
       if (cacheJumpToMeasurementEvent.cornerstoneViewport !== viewportId) {
