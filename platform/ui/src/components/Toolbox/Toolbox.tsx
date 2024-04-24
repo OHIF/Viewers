@@ -37,7 +37,9 @@ function Toolbox({ servicesManager, buttonSectionId, commandsManager, title, ...
     const currentToolBoxStateStr = JSON.stringify(
       Object.keys(toolboxState.toolOptions).map(tool => {
         const options = toolboxState.toolOptions[tool];
-        return options.map(option => `${option.id}-${option.value}`);
+        if (Array.isArray(options)) {
+          return options?.map(option => `${option.id}-${option.value}`);
+        }
       })
     );
 
