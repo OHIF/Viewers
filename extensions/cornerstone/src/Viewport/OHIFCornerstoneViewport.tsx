@@ -597,6 +597,9 @@ function _jumpToMeasurement(
         i => i.SOPInstanceUID === SOPInstanceUID
       );
 
+      // the index is reversed in the volume viewport
+      // imageIdIndex = referencedDisplaySet.images.length - 1 - imageIdIndex;
+
       const { viewPlaneNormal: viewportViewPlane } = viewport.getCamera();
 
       // should compare abs for both planes since the direction can be flipped
