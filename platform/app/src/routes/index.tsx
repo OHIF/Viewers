@@ -1,6 +1,6 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-import { ErrorBoundary } from '@ohif/ui';
+import { Button, ErrorBoundary, Input } from '@ohif/ui';
 
 // Route Components
 import DataSourceWrapper from './DataSourceWrapper';
@@ -52,6 +52,77 @@ NotFoundStudy.propTypes = {
   message: PropTypes.string,
 };
 
+const RootWindow = () => {
+  const [value, setValue] = React.useState('');
+  // add form to add short url and when press OK, forward to the short url
+  return (
+    <div className="absolute flex h-full w-full items-center justify-center text-white">
+      <div className="bg-secondary-dark mx-auto space-y-2 rounded-lg py-8 px-8 drop-shadow-md">
+        <div className="max-w-3xl">
+          <h1 className="mb-7 block text-2xl">Willkommen!</h1>
+          <span className="mb-2 block">
+            Diese Web Applikation dient ausschließlich der Demonstration von Floy Produkten. Legen
+            Sie gerne den Ordner einer CT Abdomen, CT Thorax oder CT Wirbelsäulen Studie in der
+            Mitte des Fensters ab. Alternativ können Sie über den Knopf in der linken oberen
+            Bildschirmecke eine Studie auswählen. Drücken Sie in der unteren Leiste auf den
+            Play-Button neben „KI ausführen“, sobald die Studie angezeigt wird. Je nach
+            Internetverbindung und Dateigröße dauert die Anzeige des Ergebnis einige Minuten.
+          </span>
+          <span className="mb-2 block">
+            Kontaktieren Sie zur Ergebnisbesprechung, bei Problemen oder für Fragen unseren
+            Geschäftsführer Benedikt Schneider gerne direkt unter benedikt.schneider@floy.com oder
+            +4915786031618.
+          </span>
+          <span className="mb-3 block">
+            Bitte geben Sie hier Ihren Short URL ein, um Zugang zur Demo zu erhalten:
+          </span>
+          <div className="flex">
+            <div className="mx-auto flex gap-[10px]">
+              <Input
+                className="max-w-xs rounded-lg text-xl"
+                type="text"
+                id="shortUrl"
+                placeholder="Short URL"
+                value={value}
+                onChange={event => {
+                  setValue(event.target.value);
+                }}
+              />
+              <Button
+                className="rounded-lg py-1.5 px-5 text-xl"
+                onClick={() => {
+                  if (!value) {
+                    return;
+                  }
+                  window.location.href = '/short/' + value;
+                }}
+              >
+                OK
+              </Button>
+            </div>
+            <div className="flex flex-col">
+              <Link
+                className="text-primary-light"
+                target="_blank"
+                to={'https://www.floy.com/datenschutz'}
+              >
+                Datenschutz
+              </Link>
+              <Link
+                className="text-primary-light"
+                target="_blank"
+                to={'https://www.floy.com/impressum'}
+              >
+                Impressum
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // TODO: Include "routes" debug route if dev build
 const bakedInRoutes = [
   {
@@ -62,7 +133,7 @@ const bakedInRoutes = [
     path: '/notfoundstudy',
     children: NotFoundStudy,
   },
-  {
+  /*  {
     path: '/debug',
     children: Debug,
   },
@@ -73,6 +144,10 @@ const bakedInRoutes = [
   {
     path: '/localbasic',
     children: Local.bind(null, { modePath: 'viewer/dicomlocal' }),
+  }, */
+  {
+    path: '/',
+    children: RootWindow,
   },
 ];
 

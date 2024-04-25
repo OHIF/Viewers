@@ -4,7 +4,7 @@ window.config = {
   extensions: [],
   modes: [],
   customizationService: {},
-  showStudyList: true,
+  showStudyList: false,
   // some windows systems have issues with more than 3 web workers
   maxNumberOfWebWorkers: 3,
   // below flag is for performance reasons, but it might not work for all servers
