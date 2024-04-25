@@ -7,6 +7,7 @@ import {
 import dicomImageLoader, { webWorkerManager } from '@cornerstonejs/dicom-image-loader';
 import dicomParser from 'dicom-parser';
 import { errorHandler, utils } from '@ohif/core';
+import pako from 'pako'
 
 const { registerVolumeLoader } = volumeLoader;
 
@@ -79,6 +80,17 @@ export default function initWADOImageLoader(
       }
 
       return xhrRequestHeaders;
+    },
+    beforeProcessing(xhr) {
+      let arrayBufferView = null;
+      if (xhr.responseURL.includes('.gz')) {
+        try {
+          arrayBufferView = new Uint8Array(pako.inflate(xhr.response));
+        } catch (e) {
+          console.log(e, ': Erro inflate')
+        }
+      }
+      return Promise.resolve(arrayBufferView?.buffer ?? xhr.response);
     },
     errorInterceptor: error => {
       errorHandler.getHTTPErrorHandler(error);
