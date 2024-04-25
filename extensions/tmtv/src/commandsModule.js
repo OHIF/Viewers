@@ -316,10 +316,28 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }) 
         metadata: referencedVolume.metadata,
       };
 
+      // metadata in annotations has enabledElement which is not serializable
+      // we need to remove it
+      // Todo: we should probably have a sanitization function for this
+      const annotationsToSend = annotations.map(annotation => {
+        return {
+          ...annotation,
+          metadata: {
+            ...annotation.metadata,
+            enabledElement: {
+              ...annotation.metadata.enabledElement,
+              viewport: null,
+              renderingEngine: null,
+              element: null,
+            },
+          },
+        };
+      });
+
       const suvPeak = await workerManager.executeTask('suv-peak-worker', 'calculateSuvPeak', {
         labelmapProps,
         referenceVolumeProps,
-        annotations,
+        annotations: annotationsToSend,
         segmentIndex,
       });
 

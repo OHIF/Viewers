@@ -3,6 +3,48 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-beta.91](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.90...v3.8.0-beta.91) (2024-04-25)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.8.0-beta.90](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.89...v3.8.0-beta.90) (2024-04-22)
+
+
+### Bug Fixes
+
+* **viewport-sync:** Enable re-sync image slices in a different position when needed ([#3984](https://github.com/OHIF/Viewers/issues/3984)) ([6ebd2cc](https://github.com/OHIF/Viewers/commit/6ebd2cc7cb70cd88fd01dc1e516077f27b201943))
+
+
+
+
+
+# [3.8.0-beta.89](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.88...v3.8.0-beta.89) (2024-04-22)
+
+
+### Bug Fixes
+
+* **vewport:** Add missing blendmodes from cornerstonejs ([#4055](https://github.com/OHIF/Viewers/issues/4055)) ([3ec7e51](https://github.com/OHIF/Viewers/commit/3ec7e512169a07506388902acb5b2c118093fa50))
+* **viewport-webworker-segmentation:** Resolve issues with viewport detection, webworker termination, and segmentation panel layout change ([#4059](https://github.com/OHIF/Viewers/issues/4059)) ([52a0c59](https://github.com/OHIF/Viewers/commit/52a0c59294a4161fcca0a6708855549034849951))
+
+
+
+
+
+# [3.8.0-beta.88](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.87...v3.8.0-beta.88) (2024-04-22)
+
+
+### Bug Fixes
+
+* **hp:** Fails to display any layouts in the layout selector if first layout has multiple stages ([#4058](https://github.com/OHIF/Viewers/issues/4058)) ([f0ed3fd](https://github.com/OHIF/Viewers/commit/f0ed3fd7b99b0e4e00b261ceb9888ba94726719c))
+
+
+
+
+
 # [3.8.0-beta.87](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.86...v3.8.0-beta.87) (2024-04-19)
 
 

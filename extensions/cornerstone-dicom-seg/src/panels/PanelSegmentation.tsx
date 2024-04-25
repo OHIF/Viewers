@@ -107,7 +107,9 @@ export default function PanelSegmentation({
   };
 
   const onSegmentationAdd = async () => {
-    commandsManager.runCommand('createEmptySegmentationForViewport');
+    commandsManager.runCommand('createEmptySegmentationForViewport', {
+      viewportId: viewportGridService.getActiveViewportId(),
+    });
   };
 
   const onSegmentationClick = (segmentationId: string) => {

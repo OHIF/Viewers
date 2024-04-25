@@ -182,8 +182,10 @@ export function ViewportGridProvider({ children, service }) {
 
           // if it is not part of the hanging protocol layout, we should remove the toolGroupId
           // and viewportType from the viewportOptions so that it doesn't
-          // inherit the hanging protocol layout options
-          if (!state.isHangingProtocolLayout) {
+          // inherit the hanging protocol layout options, only when
+          // the viewport options is not provided (e.g., when drag and drop)
+          // otherwise, programmatically set options should be preserved
+          if (!updatedViewport.viewportOptions && !state.isHangingProtocolLayout) {
             viewportOptions = {
               viewportId: viewportOptions.viewportId,
             };
