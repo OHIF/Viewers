@@ -104,14 +104,14 @@ const RootWindow = () => {
               <Link
                 className="text-primary-light"
                 target="_blank"
-                to={'https://www.floy.com/data-privacy'}
+                to={'https://www.floy.com/datenschutz'}
               >
                 Datenschutz
               </Link>
               <Link
                 className="text-primary-light"
                 target="_blank"
-                to={'https://www.floy.com/legal-notice'}
+                to={'https://www.floy.com/impressum'}
               >
                 Impressum
               </Link>
