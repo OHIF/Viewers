@@ -22,37 +22,40 @@ const DefaultFallback = ({ error, context, resetErrorBoundary, fallbackRoute }) 
     >
       <p className="text-primary-light text-xl">{title}</p>
       <p className="text-primary-light text-base">{subtitle}</p>
-      {!isProduction && (
-        <div className="bg-secondary-dark mt-5 space-y-2 rounded-md p-5 font-mono">
-          <p className="text-primary-light">
-            {t('Context')}: {context}
-          </p>
-          <p className="text-primary-light">
-            {t('Error Message')}: {error.message}
-          </p>
+      <div className="bg-secondary-dark mt-5 space-y-2 rounded-md p-5 font-mono">
+        <p className="text-primary-light">
+          {t('Context')}: {context}
+        </p>
+        <p className="text-primary-light">
+          {t('Error Message')}: {error.message}
+        </p>
+        {!isProduction && (
+          <>
+            <IconButton
+              variant="contained"
+              color="inherit"
+              size="initial"
+              className="text-primary-active"
+              onClick={() => setShowDetails(!showDetails)}
+            >
+              <React.Fragment>
+                <div>{t('Stack Trace')}</div>
+                <Icon
+                  width="15px"
+                  height="15px"
+                  name="chevron-down"
+                />
+              </React.Fragment>
+            </IconButton>
 
-          <IconButton
-            variant="contained"
-            color="inherit"
-            size="initial"
-            className="text-primary-active"
-            onClick={() => setShowDetails(!showDetails)}
-          >
-            <React.Fragment>
-              <div>{t('Stack Trace')}</div>
-              <Icon
-                width="15px"
-                height="15px"
-                name="chevron-down"
-              />
-            </React.Fragment>
-          </IconButton>
-
-          {showDetails && (
-            <pre className="text-primary-light whitespace-pre-wrap px-4">Stack: {error.stack}</pre>
-          )}
-        </div>
-      )}
+            {showDetails && (
+              <pre className="text-primary-light whitespace-pre-wrap px-4">
+                Stack: {error.stack}
+              </pre>
+            )}
+          </>
+        )}
+      </div>
     </div>
   );
 };

@@ -21067,7 +21067,7 @@ webpack-dev-server@4.7.3:
     webpack-dev-middleware "^5.3.0"
     ws "^8.1.0"
 
-webpack-dev-server@^4.9.3:
+webpack-dev-server@^4.15.1, webpack-dev-server@^4.9.3:
   version "4.15.1"
   resolved "https://registry.yarnpkg.com/webpack-dev-server/-/webpack-dev-server-4.15.1.tgz#8944b29c12760b3a45bdaa70799b17cb91b03df7"
   integrity sha512-5hbAst3h3C3L8w6W4P96L5vaV0PxSmJhxZvWKYIdgxOQm8pNZ5dEOmmSLBVpP85ReeyRt6AS1QJNyo/oFFPeVA==

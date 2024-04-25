@@ -175,6 +175,12 @@ export default function ModeRoute({
   const locationRef = useRef(null);
   const isMounted = useRef(false);
 
+  // error
+  const [error, setError] = useState(null);
+  if (error) {
+    throw error;
+  }
+
   // Expose the react router dom navigation.
   history.navigate = useNavigate();
 
@@ -278,7 +284,7 @@ export default function ModeRoute({
   }, []);
 
   useEffect(() => {
-    if (!ExtensionDependenciesLoaded) {
+    if (!ExtensionDependenciesLoaded || error) {
       return;
     }
 
@@ -295,10 +301,10 @@ export default function ModeRoute({
     return () => {
       layoutTemplateData.current = null;
     };
-  }, [location, ExtensionDependenciesLoaded]);
+  }, [location, ExtensionDependenciesLoaded, error]);
 
   useEffect(() => {
-    if (!ExtensionDependenciesLoaded) {
+    if (!ExtensionDependenciesLoaded || error) {
       return;
     }
 
@@ -319,10 +325,10 @@ export default function ModeRoute({
     return () => {
       layoutTemplateData.current = null;
     };
-  }, [studyInstanceUIDs, ExtensionDependenciesLoaded]);
+  }, [studyInstanceUIDs, ExtensionDependenciesLoaded, error]);
 
   useEffect(() => {
-    if (!hotkeys || !ExtensionDependenciesLoaded) {
+    if (!hotkeys || !ExtensionDependenciesLoaded || error) {
       return;
     }
 
@@ -339,10 +345,10 @@ export default function ModeRoute({
     return () => {
       hotkeysManager.destroy();
     };
-  }, [ExtensionDependenciesLoaded]);
+  }, [ExtensionDependenciesLoaded, error]);
 
   useEffect(() => {
-    if (!layoutTemplateData.current || !ExtensionDependenciesLoaded) {
+    if (!layoutTemplateData.current || !ExtensionDependenciesLoaded || error) {
       return;
     }
 
@@ -475,6 +481,7 @@ export default function ModeRoute({
     hotkeysManager,
     studyInstanceUIDs,
     refresh,
+    error,
   ]);
 
   const renderLayoutData = props => {
