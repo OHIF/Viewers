@@ -6,36 +6,26 @@ import {
   initCommonElementsAliases,
   initRouteAliases,
   initStudyListAliasesOnDesktop,
-  initStudyListAliasesOnTablet,
   initPreferencesModalAliases,
   initPreferencesModalFooterBtnAliases,
 } from './aliases.js';
 
-// ***********************************************
-// This example commands.js shows you how to
-// create various custom commands and overwrite
-// existing commands.
-//
-// For more comprehensive examples of custom
-// commands please read more here:
-// https://on.cypress.io/custom-commands
-// ***********************************************
-//
-//
-// -- This is a parent command --
-// Cypress.Commands.add("login", (email, password) => { ... })
-//
-//
-// -- This is a child command --
-// Cypress.Commands.add("drag", { prevSubject: 'element'}, (subject, options) => { ... })
-//
-//
-// -- This is a dual command --
-// Cypress.Commands.add("dismiss", { prevSubject: 'optional'}, (subject, options) => { ... })
-//
-//
-// -- This is will overwrite an existing command --
-// Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
+/**
+ * Command to select a layout preset.
+ * The layout preset is selected by clicking on the Layout button and then clicking on the desired preset.
+ * The preset name is the text that is displayed on the button.
+ * @param {string} presetName - The name of the layout preset that we would like to select
+ * @param {boolean} screenshot - If true, a screenshot will be taken when the layout tool is opened
+ */
+Cypress.Commands.add('selectLayoutPreset', (presetName, screenshot) => {
+  cy.get('[data-cy="Layout"]').click();
+  if (screenshot) {
+    cy.percySnapshot('Layout tool opened');
+  }
+  cy.get('div').contains(presetName).should('be.visible').click();
+  // fixed wait time for layout changes and rendering
+  cy.wait(2000);
+});
 
 /**
  * Command to search for a patient name and open his/her study.
