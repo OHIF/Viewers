@@ -20,6 +20,6 @@ describe('OHIF Percy Segmentation Tools', () => {
     );
     cy.get('[data-cy="study-browser-thumbnail"]').eq(2).dblclick();
     cy.get('span').contains('Add segmentation').click();
-    cy.percySnapshot('Segmentation tools are enabled');
+    cy.percySnapshot('Segmentation added and tools are enabled');
   });
 });
