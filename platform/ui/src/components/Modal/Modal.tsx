@@ -31,21 +31,21 @@ const Modal = ({
     return (
       title && (
         <header className="bg-primary-dark flex items-center rounded-tl rounded-tr px-[20px] py-[13px]">
-          <Typography
-            variant="h6"
-            color="primaryLight"
-            className="flex grow !leading-[1.2]"
-            data-cy="modal-header"
-          >
-            {title}
-          </Typography>
           {closeButton && (
             <Icon
               onClick={onClose}
               name="close"
-              className="text-primary-active cursor-pointer"
+              className="text-primary-light cursor-pointer"
             />
           )}
+          <Typography
+            variant="h6"
+            color="primaryLight"
+            className="flex grow justify-end !leading-[1.2]"
+            data-cy="modal-header"
+          >
+            {title}
+          </Typography>
         </header>
       )
     );

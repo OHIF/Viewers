@@ -261,28 +261,28 @@ const ViewportDownloadForm = ({
   }, [dimensions, filename, minimumSize]);
 
   return (
-    <div>
-      <Typography variant="h6">
+    <div style={{ direction: 'rtl' }}>
+      <Typography variant="subtitle">
         {t('Please specify the dimensions, filename, and desired type for the output image.')}
       </Typography>
 
       <div className="mt-6 flex flex-col">
         <div className="mb-4 flex ">
           <Button
-            name="cancel"
-            type={ButtonEnums.type.secondary}
-            onClick={onClose}
-          >
-            {t('Cancel')}
-          </Button>
-          <Button
-            className="ml-2"
+            className="mr-2"
             disabled={hasError}
             onClick={downloadImage}
             type={ButtonEnums.type.primary}
             name={'download'}
           >
             {t('Download')}
+          </Button>
+          <Button
+            name="cancel"
+            type={ButtonEnums.type.secondary}
+            onClick={onClose}
+          >
+            {t('Cancel')}
           </Button>
         </div>
         <div className="mb-4 flex ">
@@ -388,13 +388,13 @@ const ViewportDownloadForm = ({
           className="bg-secondary-dark border-secondary-primary w-max-content min-w-full rounded p-4"
           data-cy="image-preview"
         >
-          <Typography variant="h5">{t('Image preview')}</Typography>
+          <Typography variant="subtitle">{t('Image preview')}</Typography>
           {activeViewportElement && (
             <div
               className="mx-auto my-2"
               style={{
-                height: viewportElementDimensions.height,
-                width: viewportElementDimensions.width,
+                height: viewportElementDimensions.height / 2,
+                width: viewportElementDimensions.width / 2,
               }}
               ref={ref => setViewportElement(ref)}
             ></div>

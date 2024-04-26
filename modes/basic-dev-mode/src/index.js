@@ -51,8 +51,13 @@ function modeFactory({ modeConfiguration }) {
      * Lifecycle hooks
      */
     onModeEnter: ({ servicesManager, extensionManager }) => {
-      const { toolbarService, toolGroupService, panelService, cornerstoneViewportService } =
-        servicesManager.services;
+      const {
+        toolbarService,
+        toolGroupService,
+        panelService,
+        cornerstoneViewportService,
+        viewportGridService,
+      } = servicesManager.services;
       const utilityModule = extensionManager.getModuleEntry(
         '@ohif/extension-cornerstone.utilityModule.tools'
       );
@@ -95,18 +100,15 @@ function modeFactory({ modeConfiguration }) {
       const toolGroupId = 'default';
       toolGroupService.createToolGroupAndAddTools(toolGroupId, tools);
 
-      cornerstoneViewportService.subscribe(
-        cornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED,
-        props => {
-          const panelId = null;
-          const forceActive = false;
+      viewportGridService.subscribe(viewportGridService.EVENTS.GRID_STATE_CHANGED, props => {
+        const panelId = null;
+        const forceActive = false;
 
-          panelService._broadcastEvent(panelService.EVENTS.ACTIVATE_PANEL, {
-            panelId,
-            forceActive,
-          });
-        }
-      );
+        panelService._broadcastEvent(panelService.EVENTS.ACTIVATE_PANEL, {
+          panelId,
+          forceActive,
+        });
+      });
 
       let unsubscribe;
 
