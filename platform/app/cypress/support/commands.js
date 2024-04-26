@@ -390,7 +390,7 @@ function canvasToImage(selectorOrEl) {
 
   // Show Image
   image.src = canvasImageBase64;
-  image.style = 'max-width: 100%';
+  image.style = 'width: 100%';
   image.setAttribute('data-percy-image', true);
   // Hide Canvas
   canvas.setAttribute('data-percy-canvas', true);
