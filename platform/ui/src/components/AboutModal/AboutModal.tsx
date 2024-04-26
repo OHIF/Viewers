@@ -75,7 +75,7 @@ const AboutModal = ({ buildNumber, versionNumber, commitHash }) => {
   );
   return (
     <div>
-      {renderRowTitle(t('Important links'))}
+      {/* {renderRowTitle(t('Important links'))}
       <div className="mb-8 flex">
         <Link
           href="https://community.ohif.org/"
@@ -99,11 +99,11 @@ const AboutModal = ({ buildNumber, versionNumber, commitHash }) => {
           {t('More details')}
           </Link>
         </span>
-      </div>
+      </div> */}
 
       {renderRowTitle(t('Version information'))}
       <div className="flex flex-col">
-        <Row
+        {/* <Row
           title={t('Repository URL')}
           value="https://github.com/OHIF/Viewers/"
           link="https://github.com/OHIF/Viewers/"
@@ -112,7 +112,7 @@ const AboutModal = ({ buildNumber, versionNumber, commitHash }) => {
           title={t('Data citation')}
           value="https://github.com/OHIF/Viewers/blob/master/DATACITATION.md"
           link="https://github.com/OHIF/Viewers/blob/master/DATACITATION.md"
-        />
+        /> */}
         {/* <Row
           title={t('Last master commits')}
           value="https://github.com/OHIF/Viewers/"
@@ -128,12 +128,12 @@ const AboutModal = ({ buildNumber, versionNumber, commitHash }) => {
             value={buildNumber}
           />
         )}
-        {commitHash && (
+        {/* {commitHash && (
           <Row
             title={t('Commit hash')}
             value={commitHash}
           />
-        )}
+        )} */}
         <Row
           title={t('Browser')}
           value={browser}
