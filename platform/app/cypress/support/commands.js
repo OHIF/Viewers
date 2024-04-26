@@ -20,7 +20,7 @@ import {
 Cypress.Commands.add('selectLayoutPreset', (presetName, screenshot) => {
   cy.get('[data-cy="Layout"]').click();
   if (screenshot) {
-    cy.percySnapshot('Layout tool opened');
+    cy.percyCanvasSnapshot('Layout tool opened');
   }
   cy.get('div').contains(presetName).should('be.visible').click();
   // fixed wait time for layout changes and rendering
@@ -390,7 +390,7 @@ function canvasToImage(selectorOrEl) {
 
   // Show Image
   image.src = canvasImageBase64;
-  image.style = 'width: 100%';
+  image.style = 'max-width: 100%';
   image.setAttribute('data-percy-image', true);
   // Hide Canvas
   canvas.setAttribute('data-percy-canvas', true);
