@@ -14,9 +14,9 @@ describe('OHIF Percy Segmentation Tools', () => {
   it('should be able to use all segmentation tools and have them render correctly', () => {
     cy.get('[data-cy="study-browser-thumbnail"]').eq(1).dblclick();
     cy.percySnapshot('Segmentation tools are disabled');
-    cy.get('span').contains('Add segmentation').click();
+    cy.get('span').contains('Add segmentation').shouuld('have.css', 'pointer-events', 'none');
     cy.percySnapshot(
-      'Segmentation tools are still disabled because no segmentation is added on non-reconstructable series'
+      'Add segmentation button is disabled when the displayset is none reconstructable'
     );
     cy.get('[data-cy="study-browser-thumbnail"]').eq(2).dblclick();
     cy.get('span').contains('Add segmentation').click();
