@@ -38,6 +38,8 @@ class ImageScrollbar extends PureComponent {
             value={this.props.value}
             onChange={this.onChange}
             onKeyDown={this.onKeyDown}
+            onDragStart={e => e.preventDefault()}
+            draggable={true}
           />
         </div>
       </div>
