@@ -1395,9 +1395,14 @@ export default class HangingProtocolService extends PubSubService {
 
     // only match the required rules
     const requiredRules = seriesMatchingRules.filter(rule => rule.required);
-    if (requiredRules.length) {
-      const matched = this.protocolEngine.findMatch(displaySet, requiredRules);
 
+    if (requiredRules.length) {
+      // Don't error out if we want a blank viewport
+      if (requiredRules[0].attribute === 'BLANK_VIEWPORT') {
+        return;
+      }
+
+      const matched = this.protocolEngine.findMatch(displaySet, requiredRules);
       if (!matched || matched.score === 0) {
         throw new Error(
           `The displaySetInstanceUID ${displaySet.displaySetInstanceUID} does not satisfy the required seriesMatching criteria for the protocol`

@@ -276,9 +276,11 @@ export default async function init({
 
     // Prioritize loading of active element
     const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
-    const { imageIds } = viewportInfo.getViewportData().data as any;
 
-    imageLoading.prefetchEnable({ uid: viewportId, imageIds }, priorityCounter--);
+    if (viewportInfo) {
+      const { imageIds } = viewportInfo.getViewportData().data;
+      imageLoading.prefetchEnable({ uid: viewportId, imageIds }, priorityCounter--);
+    }
   };
 
   /**
