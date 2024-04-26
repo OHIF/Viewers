@@ -47,12 +47,12 @@ function usePatientInfo(servicesManager) {
       return;
     }
     setPatientInfo({
-      PatientID: instance.PatientID || '',
-      PatientName: instance.PatientName ? formatPN(instance.PatientName.Alphabetic) : '',
-      PatientSex: instance.PatientSex || '',
-      PatientDOB: formatDate(instance.PatientBirthDate) || '',
+      PatientID: instance.PatientID || null,
+      PatientName: instance.PatientName ? formatPN(instance.PatientName.Alphabetic) : null,
+      PatientSex: instance.PatientSex || null,
+      PatientDOB: formatDate(instance.PatientBirthDate) || null,
     });
-    checkMixedPatients(instance.PatientID || '');
+    checkMixedPatients(instance.PatientID || null);
   };
 
   useEffect(() => {
