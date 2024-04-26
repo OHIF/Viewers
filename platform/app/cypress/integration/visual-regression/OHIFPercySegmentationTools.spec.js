@@ -13,13 +13,13 @@ describe('OHIF Percy Segmentation Tools', () => {
 
   it('should be able to use all segmentation tools and have them render correctly', () => {
     cy.get('[data-cy="study-browser-thumbnail"]').eq(1).dblclick();
-    cy.percySnapshot('Segmentation tools are disabled');
-    cy.get('span').contains('Add segmentation').shouuld('have.css', 'pointer-events', 'none');
-    cy.percySnapshot(
+    cy.percyCanvasSnapshot('Segmentation tools are disabled');
+    cy.get('span').contains('Add segmentation').should('have.css', 'pointer-events', 'none');
+    cy.percyCanvasSnapshot(
       'Add segmentation button is disabled when the displayset is none reconstructable'
     );
     cy.get('[data-cy="study-browser-thumbnail"]').eq(2).dblclick();
     cy.get('span').contains('Add segmentation').click();
-    cy.percySnapshot('Segmentation added and tools are enabled');
+    cy.percyCanvasSnapshot('Segmentation added and tools are enabled');
   });
 });

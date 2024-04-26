@@ -10,16 +10,16 @@ describe('OHIF Percy Layout Advanced Presets', () => {
   it('should display each layout preset correctly', () => {
     cy.get('[data-cy="study-browser-thumbnail"]').eq(2).dblclick();
     cy.selectLayoutPreset('MPR', true);
-    cy.percySnapshot('MPR Preset');
+    cy.percyCanvasSnapshot('MPR Preset');
     cy.selectLayoutPreset('3D four up');
-    cy.percySnapshot('3D four up Preset');
+    cy.percyCanvasSnapshot('3D four up Preset');
     cy.selectLayoutPreset('3D main');
-    cy.percySnapshot('3D main Preset');
+    cy.percyCanvasSnapshot('3D main Preset');
     cy.selectLayoutPreset('Axial Primary');
-    cy.percySnapshot('Axial Primary Preset');
+    cy.percyCanvasSnapshot('Axial Primary Preset');
     cy.selectLayoutPreset('3D only');
-    cy.percySnapshot('3D only Preset');
+    cy.percyCanvasSnapshot('3D only Preset');
     cy.selectLayoutPreset('3D primary');
-    cy.percySnapshot('3D primary Preset');
+    cy.percyCanvasSnapshot('3D primary Preset');
   });
 });

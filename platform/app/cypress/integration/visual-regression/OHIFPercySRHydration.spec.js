@@ -10,9 +10,9 @@ describe('OHIF Percy SR Hydration', () => {
   it('should hydrate SR correctly', () => {
     cy.get('[data-cy="study-browser-thumbnail-no-image"]').first().dblclick();
     cy.wait(200);
-    cy.percySnapshot('SR Preview');
+    cy.percyCanvasSnapshot('SR Preview');
     cy.get('body').type('{enter}');
     cy.wait(200);
-    cy.percySnapshot('SR Hydrated');
+    cy.percyCanvasSnapshot('SR Hydrated');
   });
 });

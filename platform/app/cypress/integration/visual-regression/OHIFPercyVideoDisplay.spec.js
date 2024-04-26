@@ -8,6 +8,6 @@ describe('OHIF Percy Video Display', () => {
   });
 
   it('should display Videos correctly', () => {
-    cy.percySnapshot('Video');
+    cy.percyCanvasSnapshot('Video');
   });
 });

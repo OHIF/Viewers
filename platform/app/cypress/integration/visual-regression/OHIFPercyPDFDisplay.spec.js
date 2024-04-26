@@ -8,6 +8,6 @@ describe('OHIF Percy PDF Display', () => {
   });
 
   it('should display PDFs correctly', () => {
-    cy.percySnapshot('PDF');
+    cy.percyCanvasSnapshot('PDF');
   });
 });
