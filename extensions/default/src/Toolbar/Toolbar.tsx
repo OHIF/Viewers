@@ -10,7 +10,7 @@ export default function Toolbar({
   const [viewportGrid, viewportGridService] = useViewportGrid();
 
   const [toolbarButtons, setToolbarButtons] = useState([]);
-
+  console.log("NOTHING");
   useEffect(() => {
     const updateToolbar = () => {
       const toolGroupId =
