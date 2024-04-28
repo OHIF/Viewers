@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0-beta.92](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.91...v3.8.0-beta.92) (2024-04-28)
+
+
+### Bug Fixes
+
+* **bugs:** fix patient header for doc, track ball rotate resize observer and add segmentation button not being enabled on viewport data change ([#4068](https://github.com/OHIF/Viewers/issues/4068)) ([c09311d](https://github.com/OHIF/Viewers/commit/c09311d3b7df05fcd00a9f36a7233e9d7e5589d0))
+
+
+
+
+
 # [3.8.0-beta.91](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.90...v3.8.0-beta.91) (2024-04-25)
 
 **Note:** Version bump only for package ohif-monorepo-root
