@@ -20,6 +20,8 @@ type Segment = {
   isVisible: boolean;
   // whether the segment is locked
   isLocked: boolean;
+  // display texts
+  displayText?: string[];
 };
 
 type Segmentation = {
@@ -67,4 +69,4 @@ type SegmentationRepresentationData = {
   LABELMAP?: LabelmapSegmentationData;
 };
 
-export { SegmentationConfig, Segment, Segmentation };
+export type { SegmentationConfig, Segment, Segmentation };

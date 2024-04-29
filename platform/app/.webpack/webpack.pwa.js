@@ -154,7 +154,7 @@ module.exports = (env, argv) => {
         {
           directory: '../../testdata',
           staticOptions: {
-            extensions: ['gz', 'br'],
+            extensions: ['gz', 'br', 'mht'],
             index: ['index.json.gz', 'index.mht.gz'],
             redirect: true,
             setHeaders,
@@ -166,6 +166,7 @@ module.exports = (env, argv) => {
       //writeToDisk: true,
       historyApiFallback: {
         disableDotRule: true,
+        index: PUBLIC_URL + 'index.html',
       },
       headers: {
         'Cross-Origin-Embedder-Policy': 'require-corp',

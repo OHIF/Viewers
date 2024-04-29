@@ -1,5 +1,5 @@
 ---
-sidebar_position: 7
+sidebar_position: 8
 sidebar_label: iframe
 ---
 
@@ -47,7 +47,7 @@ Then run the
 ```bash
 npx http-server unzipped-folder
 
-# you can use npx serve ./dist -l 8080 -s as an alternative to http-server
+# you can use npx serve ./dist -c ../public/serve.json as an alternative to http-server
 ```
 
 You should be able to see

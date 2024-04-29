@@ -8,6 +8,7 @@ window.config = {
   showCPUFallbackMessage: true,
   showLoadingIndicator: true,
   strictZSpacingForVolumeViewport: true,
+  groupEnabledModesFirst: true,
   // filterQueryParam: false,
   defaultDataSourceName: 'dicomweb',
   dataSources: [
@@ -20,7 +21,6 @@ window.config = {
         wadoUriRoot: 'https://d33do7qe4w26qo.cloudfront.net/dicomweb',
         qidoRoot: 'https://d33do7qe4w26qo.cloudfront.net/dicomweb',
         wadoRoot: 'https://d33do7qe4w26qo.cloudfront.net/dicomweb',
-
         qidoSupportsIncludeField: false,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',

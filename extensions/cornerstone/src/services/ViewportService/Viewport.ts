@@ -1,5 +1,11 @@
-import { Types, Enums } from '@cornerstonejs/core';
-import { Types as UITypes } from '@ohif/ui';
+import {
+  Types,
+  Enums,
+  getEnabledElementByViewportId,
+  VolumeViewport,
+  utilities,
+} from '@cornerstonejs/core';
+import { Types as CoreTypes } from '@ohif/core';
 import { StackViewportData, VolumeViewportData } from '../../types/CornerstoneCacheService';
 import getCornerstoneBlendMode from '../../utils/getCornerstoneBlendMode';
 import getCornerstoneOrientation from '../../utils/getCornerstoneOrientation';
@@ -18,7 +24,7 @@ export type ViewportOptions = {
   toolGroupId: string;
   viewportId: string;
   // Presentation ID to store/load presentation state from
-  presentationIds?: UITypes.PresentationIds;
+  presentationIds?: CoreTypes.PresentationIds;
   orientation?: Enums.OrientationAxis;
   background?: Types.Point3;
   displayArea?: Types.DisplayArea;
@@ -36,7 +42,7 @@ export type PublicViewportOptions = {
   id?: string;
   viewportType?: string;
   toolGroupId?: string;
-  presentationIds?: UITypes.PresentationIds;
+  presentationIds?: CoreTypes.PresentationIds;
   viewportId?: string;
   orientation?: Enums.OrientationAxis;
   background?: Types.Point3;
@@ -71,7 +77,7 @@ export type DisplaySetOptions = {
   voiInverted: boolean;
   blendMode?: Enums.BlendModes;
   slabThickness?: number;
-  colormap?: string;
+  colormap?: { name: string; opacity?: number };
   displayPreset?: string;
 };
 
@@ -89,13 +95,30 @@ const DEFAULT_TOOLGROUP_ID = 'default';
 
 // Return true if the data contains the given display set UID OR the imageId
 // if it is a composite object.
-const dataContains = (data, displaySetUID: string, imageId?: string): boolean => {
-  if (data.displaySetInstanceUID === displaySetUID) {
-    return true;
-  }
+const dataContains = ({ data, displaySetUID, imageId, viewport }): boolean => {
   if (imageId && data.isCompositeStack && data.imageIds) {
     return !!data.imageIds.find(dataId => dataId === imageId);
   }
+
+  if (imageId && (data.volumeId || viewport instanceof VolumeViewport)) {
+    const isAcquisition = !!viewport.getCurrentImageId();
+
+    if (!isAcquisition) {
+      return false;
+    }
+
+    const imageURI = utilities.imageIdToURI(imageId);
+    const hasImageId = viewport.hasImageURI(imageURI);
+
+    if (hasImageId) {
+      return true;
+    }
+  }
+
+  if (data.displaySetInstanceUID === displaySetUID) {
+    return true;
+  }
+
   return false;
 };
 
@@ -122,10 +145,20 @@ class ViewportInfo {
       return false;
     }
 
+    const { viewport } = getEnabledElementByViewportId(this.viewportId) || {};
+
     if (this.viewportData.data.length) {
-      return !!this.viewportData.data.find(data => dataContains(data, displaySetUID, imageId));
+      return !!this.viewportData.data.find(data =>
+        dataContains({ data, displaySetUID, imageId, viewport })
+      );
     }
-    return dataContains(this.viewportData.data, displaySetUID, imageId);
+
+    return dataContains({
+      data: this.viewportData.data,
+      displaySetUID,
+      imageId,
+      viewport,
+    });
   }
 
   public destroy = (): void => {
@@ -236,6 +269,11 @@ class ViewportInfo {
 
   public getViewportOptions(): ViewportOptions {
     return this.viewportOptions;
+  }
+
+  public getPresentationIds(): CoreTypes.PresentationIds {
+    const { presentationIds } = this.viewportOptions;
+    return presentationIds;
   }
 
   public setDisplaySetOptions(displaySetOptions: Array<DisplaySetOptions>): void {

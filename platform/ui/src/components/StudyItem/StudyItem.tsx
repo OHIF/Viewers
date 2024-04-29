@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
+import { useTranslation } from 'react-i18next';
 
 import Icon from '../Icon';
 
@@ -16,6 +17,7 @@ const StudyItem = ({
   isActive,
   onClick,
 }) => {
+  const { t } = useTranslation('StudyItem');
   return (
     <div
       className={classnames(
@@ -38,9 +40,9 @@ const StudyItem = ({
             {numInstances}
           </div>
         </div>
-        <div className="flex flex-row py-1">
-          <div className="pr-5 text-xl text-blue-300">{modalities}</div>
-          <div className="truncate-2-lines break-words text-base text-blue-300">{description}</div>
+        <div className="flex flex-row items-center py-1">
+          <div className="text-l flex items-center pr-5 text-blue-300">{modalities}</div>
+          <div className="flex items-center break-words text-base text-blue-300">{description}</div>
         </div>
       </div>
       {!!trackedSeries && (
@@ -57,7 +59,7 @@ const StudyItem = ({
               name="tracked"
               className="text-primary-light mr-2 w-4"
             />
-            {trackedSeries} Tracked Series
+            {t('Tracked series', { trackedSeries: trackedSeries })}
           </div>
         </div>
       )}
@@ -67,7 +69,7 @@ const StudyItem = ({
 
 StudyItem.propTypes = {
   date: PropTypes.string.isRequired,
-  description: PropTypes.string.isRequired,
+  description: PropTypes.string,
   modalities: PropTypes.string.isRequired,
   numInstances: PropTypes.number.isRequired,
   trackedSeries: PropTypes.number,

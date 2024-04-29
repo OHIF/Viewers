@@ -1,7 +1,6 @@
 import React, { useState, useCallback } from 'react';
-import PropTypes, { string } from 'prop-types';
-import Icon from '../Icon';
-import Typography from '../Typography';
+import PropTypes from 'prop-types';
+import { Icon, Typography } from '../../';
 
 /**
  * REACT CheckBox component

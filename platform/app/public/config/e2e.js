@@ -10,6 +10,9 @@ window.config = {
   strictZSpacingForVolumeViewport: true,
   // filterQueryParam: false,
   defaultDataSourceName: 'e2e',
+  investigationalUseDialog: {
+    option: 'never',
+  },
   dataSources: [
     {
       namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
@@ -30,6 +33,10 @@ window.config = {
         supportsWildcard: true,
         singlepart: 'video,thumbnail,pdf',
         omitQuotationForMultipartRequest: true,
+        bulkDataURI: {
+          enabled: true,
+          relativeResolution: 'studies',
+        },
       },
     },
     {
@@ -49,7 +56,11 @@ window.config = {
         supportsFuzzyMatching: false,
         supportsWildcard: true,
         staticWado: true,
-        singlepart: 'bulkdata,video,pdf',
+        singlepart: 'video',
+        bulkDataURI: {
+          enabled: true,
+          relativeResolution: 'studies',
+        },
       },
     },
     {
@@ -70,6 +81,10 @@ window.config = {
         supportsWildcard: true,
         staticWado: true,
         singlepart: 'bulkdata,video,pdf',
+        bulkDataURI: {
+          enabled: true,
+          relativeResolution: 'studies',
+        },
       },
     },
     {
@@ -88,28 +103,36 @@ window.config = {
         supportsFuzzyMatching: false,
         supportsWildcard: true,
         staticWado: true,
-        singlepart: 'bulkdata,video,pdf',
+        singlepart: 'video,pdf',
+        bulkDataURI: {
+          enabled: true,
+          relativeResolution: 'studies',
+        },
       },
     },
-    // {
-    //   friendlyName: 'StaticWado default data',
-    //   namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
-    //   sourceName: 'dicomweb',
-    //   configuration: {
-    //     name: 'DCM4CHEE',
-    //     wadoUriRoot: '/dicomweb',
-    //     qidoRoot: '/dicomweb',
-    //     wadoRoot: '/dicomweb',
-    //     qidoSupportsIncludeField: false,
-    //     supportsReject: false,
-    //     imageRendering: 'wadors',
-    //     thumbnailRendering: 'wadors',
-    //     enableStudyLazyLoad: true,
-    //     supportsFuzzyMatching: false,
-    //     supportsWildcard: true,
-    //     staticWado: true,
-    //   },
-    // },
+    {
+      friendlyName: 'StaticWado default data',
+      namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
+      sourceName: 'dicomweb',
+      configuration: {
+        name: 'DCM4CHEE',
+        wadoUriRoot: '/dicomweb',
+        qidoRoot: '/dicomweb',
+        wadoRoot: '/dicomweb',
+        qidoSupportsIncludeField: false,
+        supportsReject: false,
+        imageRendering: 'wadors',
+        thumbnailRendering: 'wadors',
+        enableStudyLazyLoad: true,
+        supportsFuzzyMatching: false,
+        supportsWildcard: true,
+        staticWado: true,
+        bulkDataURI: {
+          enabled: true,
+          relativeResolution: 'studies',
+        },
+      },
+    },
     {
       namespace: '@ohif/extension-default.dataSourcesModule.dicomjson',
       sourceName: 'dicomjson',

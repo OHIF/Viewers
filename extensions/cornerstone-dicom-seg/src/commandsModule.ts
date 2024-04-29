@@ -5,6 +5,7 @@ import { cache, metaData } from '@cornerstonejs/core';
 import {
   segmentation as cornerstoneToolsSegmentation,
   Enums as cornerstoneToolsEnums,
+  utilities,
 } from '@cornerstonejs/tools';
 import { adaptersRT, helpers, adaptersSEG } from '@cornerstonejs/adapters';
 import { classes, DicomMetadataStore } from '@ohif/core';
@@ -18,6 +19,7 @@ import {
   getUpdatedViewportsForSegmentation,
   getTargetViewport,
 } from './utils/hydrationUtils';
+const { segmentation: segmentationUtils } = utilities;
 
 const { datasetToBlob } = dcmjs.data;
 
@@ -45,6 +47,7 @@ const commandsModule = ({
     uiDialogService,
     displaySetService,
     viewportGridService,
+    toolGroupService,
   } = (servicesManager as ServicesManager).services;
 
   const actions = {
@@ -203,6 +206,9 @@ const commandsModule = ({
     loadSegmentationDisplaySetsForViewport: async ({ viewportId, displaySets }) => {
       // Todo: handle adding more than one segmentation
       const displaySet = displaySets[0];
+      const referencedDisplaySet = displaySetService.getDisplaySetByUID(
+        displaySet.referencedDisplaySetInstanceUID
+      );
 
       updateViewportsForSegmentationRendering({
         viewportId,
@@ -218,7 +224,8 @@ const commandsModule = ({
 
           const boundFn = segmentationService[serviceFunction].bind(segmentationService);
           const segmentationId = await boundFn(segDisplaySet, null, suppressEvents);
-
+          const segmentation = segmentationService.getSegmentation(segmentationId);
+          segmentation.description = `S${referencedDisplaySet.SeriesNumber}: ${referencedDisplaySet.SeriesDescription}`;
           return segmentationId;
         },
       });
@@ -397,6 +404,36 @@ const commandsModule = ({
         console.warn(e);
       }
     },
+    setBrushSize: ({ value, toolNames }) => {
+      const brushSize = Number(value);
+
+      toolGroupService.getToolGroupIds()?.forEach(toolGroupId => {
+        if (toolNames?.length === 0) {
+          segmentationUtils.setBrushSizeForToolGroup(toolGroupId, brushSize);
+        } else {
+          toolNames?.forEach(toolName => {
+            segmentationUtils.setBrushSizeForToolGroup(toolGroupId, brushSize, toolName);
+          });
+        }
+      });
+    },
+    setThresholdRange: ({
+      value,
+      toolNames = ['ThresholdCircularBrush', 'ThresholdSphereBrush'],
+    }) => {
+      toolGroupService.getToolGroupIds()?.forEach(toolGroupId => {
+        const toolGroup = toolGroupService.getToolGroup(toolGroupId);
+        toolNames?.forEach(toolName => {
+          toolGroup.setToolConfiguration(toolName, {
+            strategySpecificConfiguration: {
+              THRESHOLD: {
+                threshold: value,
+              },
+            },
+          });
+        });
+      });
+    },
   };
 
   const definitions = {
@@ -424,11 +461,18 @@ const commandsModule = ({
     downloadRTSS: {
       commandFn: actions.downloadRTSS,
     },
+    setBrushSize: {
+      commandFn: actions.setBrushSize,
+    },
+    setThresholdRange: {
+      commandFn: actions.setThresholdRange,
+    },
   };
 
   return {
     actions,
     definitions,
+    defaultContext: 'SEGMENTATION',
   };
 };
 

@@ -2,6 +2,8 @@ import { hotkeys } from '@ohif/core';
 import toolbarButtons from './toolbarButtons';
 import { id } from './id';
 import initToolGroups from './initToolGroups';
+import moreTools from './moreTools';
+import i18n from 'i18next';
 
 // Allow this mode by excluding non-imaging modalities such as SR, SEG
 // Also, SM is not a simple imaging modalities, so exclude it.
@@ -58,7 +60,7 @@ function modeFactory() {
     // We should not be.
     id,
     routeName: 'basic-test',
-    displayName: 'Basic Test Mode',
+    displayName: i18n.t('Modes:Basic Test Mode'),
     /**
      * Lifecycle hooks
      */
@@ -76,37 +78,7 @@ function modeFactory() {
         '@ohif/extension-test.customizationModule.custom-context-menu',
       ]);
 
-      let unsubscribe;
-
-      const activateTool = () => {
-        toolbarService.recordInteraction({
-          groupId: 'WindowLevel',
-          interactionType: 'tool',
-          commands: [
-            {
-              commandName: 'setToolActive',
-              commandOptions: {
-                toolName: 'WindowLevel',
-              },
-              context: 'CORNERSTONE',
-            },
-          ],
-        });
-
-        // We don't need to reset the active tool whenever a viewport is getting
-        // added to the toolGroup.
-        unsubscribe();
-      };
-
-      // Since we only have one viewport for the basic cs3d mode and it has
-      // only one hanging protocol, we can just use the first viewport
-      ({ unsubscribe } = toolGroupService.subscribe(
-        toolGroupService.EVENTS.VIEWPORT_ADDED,
-        activateTool
-      ));
-
-      toolbarService.init(extensionManager);
-      toolbarService.addButtons(toolbarButtons);
+      toolbarService.addButtons([...toolbarButtons, ...moreTools]);
       toolbarService.createButtonSection('primary', [
         'MeasurementTools',
         'Zoom',
@@ -125,8 +97,12 @@ function modeFactory() {
         syncGroupService,
         segmentationService,
         cornerstoneViewportService,
+        uiDialogService,
+        uiModalService,
       } = servicesManager.services;
 
+      uiDialogService.dismissAll();
+      uiModalService.hide();
       toolGroupService.destroy();
       syncGroupService.destroy();
       segmentationService.destroy();
@@ -141,8 +117,12 @@ function modeFactory() {
       const modalities_list = modalities.split('\\');
 
       // Exclude non-image modalities
-      return !!modalities_list.filter(modality => NON_IMAGE_MODALITIES.indexOf(modality) === -1)
-        .length;
+      return {
+        valid: !!modalities_list.filter(modality => NON_IMAGE_MODALITIES.indexOf(modality) === -1)
+          .length,
+        description:
+          'The mode does not support studies that ONLY include the following modalities: SM, ECG, SR, SEG',
+      };
     },
     routes: [
       {
@@ -156,7 +136,7 @@ function modeFactory() {
             props: {
               leftPanels: [tracked.thumbnailList],
               rightPanels: [dicomSeg.panel, tracked.measurements],
-              // rightPanelDefaultClosed: true, // optional prop to start with collapse panels
+              // rightPanelClosed: true, // optional prop to start with collapse panels
               viewports: [
                 {
                   namespace: tracked.viewport,

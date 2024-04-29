@@ -14,7 +14,8 @@ const Length = {
     csToolsEventDetail,
     displaySetService,
     cornerstoneViewportService,
-    getValueTypeFromToolType
+    getValueTypeFromToolType,
+    customizationService
   ) => {
     const { annotation, viewportId } = csToolsEventDetail;
     const { metadata, data, annotationUID } = annotation;
@@ -48,17 +49,18 @@ const Length = {
       displaySet = displaySetService.getDisplaySetsForSeries(SeriesInstanceUID);
     }
 
-    const { points } = data.handles;
+    const { points, textBox } = data.handles;
 
     const mappedAnnotations = getMappedAnnotations(annotation, displaySetService);
 
-    const displayText = getDisplayText(mappedAnnotations, displaySet);
+    const displayText = getDisplayText(mappedAnnotations, displaySet, customizationService);
 
     return {
       uid: annotationUID,
       SOPInstanceUID,
       FrameOfReferenceUID,
       points,
+      textBox,
       metadata,
       referenceSeriesUID: SeriesInstanceUID,
       referenceStudyUID: StudyInstanceUID,
@@ -66,7 +68,6 @@ const Length = {
       toolName: metadata.toolName,
       displaySetInstanceUID: displaySet.displaySetInstanceUID,
       label: data.text,
-      text: data.text,
       displayText: displayText,
       data: data.cachedStats,
       type: getValueTypeFromToolType(toolName),
@@ -106,7 +107,7 @@ function getMappedAnnotations(annotation, displaySetService) {
   return annotations;
 }
 
-function getDisplayText(mappedAnnotations, displaySet) {
+function getDisplayText(mappedAnnotations, displaySet, customizationService) {
   if (!mappedAnnotations) {
     return '';
   }

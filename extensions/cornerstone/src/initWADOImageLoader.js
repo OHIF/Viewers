@@ -1,6 +1,9 @@
 import * as cornerstone from '@cornerstonejs/core';
 import { volumeLoader } from '@cornerstonejs/core';
-import { cornerstoneStreamingImageVolumeLoader } from '@cornerstonejs/streaming-image-volume-loader';
+import {
+  cornerstoneStreamingImageVolumeLoader,
+  cornerstoneStreamingDynamicImageVolumeLoader,
+} from '@cornerstonejs/streaming-image-volume-loader';
 import dicomImageLoader, { webWorkerManager } from '@cornerstonejs/dicom-image-loader';
 import dicomParser from 'dicom-parser';
 import { errorHandler, utils } from '@ohif/core';
@@ -41,6 +44,11 @@ export default function initWADOImageLoader(
 
   registerVolumeLoader('cornerstoneStreamingImageVolume', cornerstoneStreamingImageVolumeLoader);
 
+  registerVolumeLoader(
+    'cornerstoneStreamingDynamicImageVolume',
+    cornerstoneStreamingDynamicImageVolumeLoader
+  );
+
   dicomImageLoader.configure({
     decodeConfig: {
       // !! IMPORTANT !!
@@ -49,7 +57,8 @@ export default function initWADOImageLoader(
       // Until the default is set to true (which is the case for cornerstone3D),
       // we should set this flag to false.
       convertFloatPixelDataToInt: false,
-      use16BitDataType: Boolean(appConfig.use16BitDataType),
+      use16BitDataType:
+        Boolean(appConfig.useNorm16Texture) || Boolean(appConfig.preferSizeOverAccuracy),
     },
     beforeSend: function (xhr) {
       //TODO should be removed in the future and request emitted by DicomWebDataSource

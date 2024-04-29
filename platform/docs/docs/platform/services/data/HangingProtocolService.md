@@ -356,6 +356,11 @@ ptDisplaySet: {
           attribute: 'sameAs',
           sameAttribute: 'FrameOfReferenceUID',
           sameDisplaySetId: 'ctDisplaySet',
+          constraint: {
+            equals: {
+              value: true,
+            },
+          },
           required: true,
         },
         ...

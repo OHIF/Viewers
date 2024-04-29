@@ -1,6 +1,7 @@
 import React from 'react';
-import { Select, Icon, Dropdown } from '../../components';
+import { Select, Icon, Dropdown, Tooltip } from '../../components';
 import PropTypes from 'prop-types';
+import { useTranslation } from 'react-i18next';
 
 function SegmentationDropDownRow({
   segmentations = [],
@@ -14,6 +15,7 @@ function SegmentationDropDownRow({
   storeSegmentation,
   onSegmentationDelete,
   onSegmentationAdd,
+  addSegmentationClassName,
 }) {
   const handleChange = option => {
     onActiveSegmentationChange(option.value); // Notify the parent
@@ -23,13 +25,14 @@ function SegmentationDropDownRow({
     value: s.id,
     label: s.label,
   }));
+  const { t } = useTranslation('SegmentationTable');
 
   if (!activeSegmentation) {
     return null;
   }
 
   return (
-    <div className="group mx-0.5 mt-[8px] flex items-center">
+    <div className="group mx-0.5 mt-[8px] flex items-center pb-[10px]">
       <div
         onClick={e => {
           e.stopPropagation();
@@ -39,14 +42,14 @@ function SegmentationDropDownRow({
           id="segmentation-dropdown"
           showDropdownIcon={false}
           alignment="left"
-          itemsClassName="text-primary-active"
+          itemsClassName={`text-primary-active ${addSegmentationClassName}`}
           showBorders={false}
           maxCharactersPerLine={30}
           list={[
             ...(!disableEditing
               ? [
                   {
-                    title: 'Add New Segmentation',
+                    title: t('Add new segmentation'),
                     onClick: () => {
                       onSegmentationAdd();
                     },
@@ -56,7 +59,7 @@ function SegmentationDropDownRow({
             ...(!disableEditing
               ? [
                   {
-                    title: 'Rename',
+                    title: t('Rename'),
                     onClick: () => {
                       onSegmentationEdit(activeSegmentation.id);
                     },
@@ -64,7 +67,7 @@ function SegmentationDropDownRow({
                 ]
               : []),
             {
-              title: 'Delete',
+              title: t('Delete'),
               onClick: () => {
                 onSegmentationDelete(activeSegmentation.id);
               },
@@ -72,7 +75,7 @@ function SegmentationDropDownRow({
             ...(!disableEditing
               ? [
                   {
-                    title: 'Export DICOM SEG',
+                    title: t('Export DICOM SEG'),
                     onClick: () => {
                       storeSegmentation(activeSegmentation.id);
                     },
@@ -81,13 +84,13 @@ function SegmentationDropDownRow({
               : []),
             ...[
               {
-                title: 'Download DICOM SEG',
+                title: t('Download DICOM SEG'),
                 onClick: () => {
                   onSegmentationDownload(activeSegmentation.id);
                 },
               },
               {
-                title: 'Download DICOM RTSTRUCT',
+                title: t('Download DICOM RTSTRUCT'),
                 onClick: () => {
                   onSegmentationDownloadRTSS(activeSegmentation.id);
                 },
@@ -95,7 +98,7 @@ function SegmentationDropDownRow({
             ],
           ]}
         >
-          <div className="hover:bg-secondary-dark mx-1 grid h-[28px] w-[28px]  cursor-pointer place-items-center rounded-[4px]">
+          <div className="hover:bg-secondary-dark  grid h-[28px] w-[28px]  cursor-pointer place-items-center rounded-[4px]">
             <Icon name="icon-more-menu"></Icon>
           </div>
         </Dropdown>
@@ -120,8 +123,22 @@ function SegmentationDropDownRow({
         />
       )}
       <div className="flex items-center">
+        <Tooltip
+          position="bottom-right"
+          content={
+            <div className="flex flex-col">
+              <div className="text-[13px] text-white">Series:</div>
+              <div className="text-aqua-pale text-[13px]">{activeSegmentation.description}</div>
+            </div>
+          }
+        >
+          <Icon
+            name="info-action"
+            className="text-primary-active"
+          />
+        </Tooltip>
         <div
-          className="hover:bg-secondary-dark ml-3 mr-1 grid h-[28px]  w-[28px] cursor-pointer place-items-center rounded-[4px]"
+          className="hover:bg-secondary-dark  mr-1 grid h-[28px]  w-[28px] cursor-pointer place-items-center rounded-[4px]"
           onClick={() => onToggleSegmentationVisibility(activeSegmentation.id)}
         >
           {activeSegmentation.isVisible ? (

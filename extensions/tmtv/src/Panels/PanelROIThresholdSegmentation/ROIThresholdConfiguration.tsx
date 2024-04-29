@@ -14,7 +14,7 @@ function ROIThresholdConfiguration({ config, dispatch, runCommand }) {
   const { t } = useTranslation('ROIThresholdConfiguration');
 
   return (
-    <div className="bg-primary-dark flex flex-col space-y-4 px-4 py-2">
+    <div className="bg-primary-dark flex flex-col space-y-4">
       <div className="flex items-end space-x-2">
         <div className="flex w-1/2 flex-col">
           <Select
@@ -62,8 +62,8 @@ function ROIThresholdConfiguration({ config, dispatch, runCommand }) {
       {config.strategy === ROI_STAT && (
         <Input
           label={t('Percentage of Max SUV')}
-          labelClassName="text-white"
-          className="border-primary-main mt-2 bg-black"
+          labelClassName="text-[13px] font-inter text-white"
+          className="border-primary-main bg-black"
           type="text"
           containerClassName="mr-2"
           value={config.weight}
@@ -83,11 +83,11 @@ function ROIThresholdConfiguration({ config, dispatch, runCommand }) {
             <tbody>
               <tr className="mt-2">
                 <td
-                  className="pr-4 pt-2"
+                  className="pr-4"
                   colSpan="3"
                 >
                   <Label
-                    className="text-white"
+                    className="font-inter text-[13px] text-white"
                     text="Lower & Upper Ranges"
                   ></Label>
                 </td>

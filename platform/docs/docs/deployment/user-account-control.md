@@ -1,5 +1,5 @@
 ---
-sidebar_position: 10
+sidebar_position: 11
 ---
 # User Account Control
 
@@ -63,7 +63,7 @@ in command prompt or terminal_
 
 _Spin Things Up_
 
-- Navigate to `<project-root>/docker/OpenResty-Orthanc-Keycloak` in your shell
+- Navigate to `<project-root>platform\app\.recipes\OpenResty-Orthanc-Keycloak` in your shell
 - Run `docker-compose up`
 
 _Create Your First User_

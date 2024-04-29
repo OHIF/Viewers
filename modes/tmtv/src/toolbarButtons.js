@@ -1,337 +1,281 @@
-// TODO: torn, can either bake this here; or have to create a whole new button type
-// Only ways that you can pass in a custom React component for render :l
-import { WindowLevelMenuItem } from '@ohif/ui';
-import { defaults } from '@ohif/core';
+import { ToolbarService } from '@ohif/core';
 import { toolGroupIds } from './initToolGroups';
-const { windowLevelPresets } = defaults;
-/**
- *
- * @param {*} type - 'tool' | 'action' | 'toggle'
- * @param {*} id
- * @param {*} icon
- * @param {*} label
- */
-function _createButton(type, id, icon, label, commands, tooltip) {
-  return {
-    id,
-    icon,
-    label,
-    type,
-    commands,
-    tooltip,
-  };
-}
 
-function _createColormap(label, colormap) {
-  return {
-    id: label,
-    label,
-    type: 'action',
-    commands: [
-      {
-        commandName: 'setFusionPTColormap',
-        commandOptions: {
-          toolGroupId: toolGroupIds.Fusion,
-          colormap,
-        },
-      },
-    ],
-  };
-}
-
-const _createActionButton = _createButton.bind(null, 'action');
-const _createToggleButton = _createButton.bind(null, 'toggle');
-const _createToolButton = _createButton.bind(null, 'tool');
-
-/**
- *
- * @param {*} preset - preset number (from above import)
- * @param {*} title
- * @param {*} subtitle
- */
-function _createWwwcPreset(preset, title, subtitle) {
-  return {
-    id: preset.toString(),
-    title,
-    subtitle,
-    type: 'action',
-    commands: [
-      {
-        commandName: 'setWindowLevel',
-        commandOptions: {
-          ...windowLevelPresets[preset],
-        },
-        context: 'CORNERSTONE',
-      },
-    ],
-  };
-}
-
-function _createCommands(commandName, toolName, toolGroupIds) {
-  return toolGroupIds.map(toolGroupId => ({
-    /* It's a command that is being run when the button is clicked. */
-    commandName,
-    commandOptions: {
-      toolName,
-      toolGroupId,
-    },
-    context: 'CORNERSTONE',
-  }));
-}
+const setToolActiveToolbar = {
+  commandName: 'setToolActiveToolbar',
+  commandOptions: {
+    toolGroupIds: [toolGroupIds.CT, toolGroupIds.PT, toolGroupIds.Fusion],
+  },
+};
 
 const toolbarButtons = [
-  // Measurement
   {
     id: 'MeasurementTools',
-    type: 'ohif.splitButton',
+    uiType: 'ohif.splitButton',
     props: {
       groupId: 'MeasurementTools',
-      isRadio: true, // ?
-      // Switch?
-      primary: _createToolButton(
-        'Length',
-        'tool-length',
-        'Length',
-        [
-          ..._createCommands('setToolActive', 'Length', [
-            toolGroupIds.CT,
-            toolGroupIds.PT,
-            toolGroupIds.Fusion,
-            // toolGroupIds.MPR,
-          ]),
-        ],
-        'Length'
-      ),
+      primary: ToolbarService.createButton({
+        id: 'Length',
+        icon: 'tool-length',
+        label: 'Length',
+        tooltip: 'Length Tool',
+        commands: setToolActiveToolbar,
+        evaluate: 'evaluate.cornerstoneTool',
+      }),
       secondary: {
         icon: 'chevron-down',
-        label: '',
-        isActive: true,
         tooltip: 'More Measure Tools',
       },
       items: [
-        _createToolButton(
-          'Length',
-          'tool-length',
-          'Length',
-          [
-            ..._createCommands('setToolActive', 'Length', [
-              toolGroupIds.CT,
-              toolGroupIds.PT,
-              toolGroupIds.Fusion,
-              // toolGroupIds.MPR,
-            ]),
-          ],
-          'Length Tool'
-        ),
-        _createToolButton(
-          'Bidirectional',
-          'tool-bidirectional',
-          'Bidirectional',
-          [
-            ..._createCommands('setToolActive', 'Bidirectional', [
-              toolGroupIds.CT,
-              toolGroupIds.PT,
-              toolGroupIds.Fusion,
-              // toolGroupIds.MPR,
-            ]),
-          ],
-          'Bidirectional Tool'
-        ),
-        _createToolButton(
-          'ArrowAnnotate',
-          'tool-annotate',
-          'Annotation',
-          [
-            ..._createCommands('setToolActive', 'ArrowAnnotate', [
-              toolGroupIds.CT,
-              toolGroupIds.PT,
-              toolGroupIds.Fusion,
-              // toolGroupIds.MPR,
-            ]),
-          ],
-          'Arrow Annotate'
-        ),
-        _createToolButton(
-          'EllipticalROI',
-          'tool-elipse',
-          'Ellipse',
-          [
-            ..._createCommands('setToolActive', 'EllipticalROI', [
-              toolGroupIds.CT,
-              toolGroupIds.PT,
-              toolGroupIds.Fusion,
-              // toolGroupIds.MPR,
-            ]),
-          ],
-          'Ellipse Tool'
-        ),
+        ToolbarService.createButton({
+          id: 'Bidirectional',
+          icon: 'tool-bidirectional',
+          label: 'Bidirectional',
+          tooltip: 'Bidirectional Tool',
+          commands: setToolActiveToolbar,
+          evaluate: 'evaluate.cornerstoneTool',
+        }),
+        ToolbarService.createButton({
+          id: 'ArrowAnnotate',
+          icon: 'tool-annotate',
+          label: 'Arrow Annotate',
+          tooltip: 'Arrow Annotate Tool',
+          commands: setToolActiveToolbar,
+          evaluate: 'evaluate.cornerstoneTool',
+        }),
+        ToolbarService.createButton({
+          id: 'EllipticalROI',
+          icon: 'tool-ellipse',
+          label: 'Ellipse',
+          tooltip: 'Ellipse Tool',
+          commands: setToolActiveToolbar,
+          evaluate: 'evaluate.cornerstoneTool',
+        }),
       ],
     },
   },
-  // Zoom..
   {
     id: 'Zoom',
-    type: 'ohif.radioGroup',
+    uiType: 'ohif.radioGroup',
     props: {
-      type: 'tool',
       icon: 'tool-zoom',
       label: 'Zoom',
-      commands: [
-        ..._createCommands('setToolActive', 'Zoom', [
-          toolGroupIds.CT,
-          toolGroupIds.PT,
-          toolGroupIds.Fusion,
-          // toolGroupIds.MPR,
-        ]),
-      ],
+      commands: setToolActiveToolbar,
+      evaluate: 'evaluate.cornerstoneTool',
     },
   },
-  {
-    id: 'MPR',
-    type: 'ohif.action',
-    props: {
-      type: 'toggle',
-      icon: 'icon-mpr',
-      label: 'MPR',
-      commands: [
-        {
-          commandName: 'toggleHangingProtocol',
-          commandOptions: {
-            protocolId: 'mpr',
-          },
-          context: 'DEFAULT',
-        },
-      ],
-    },
-  },
-  // Window Level + Presets...
+  // Window Level + Presets
   {
     id: 'WindowLevel',
-    type: 'ohif.splitButton',
+    uiType: 'ohif.radioGroup',
     props: {
-      groupId: 'WindowLevel',
-      primary: _createToolButton(
-        'WindowLevel',
-        'tool-window-level',
-        'Window Level',
-        [
-          ..._createCommands('setToolActive', 'WindowLevel', [
-            toolGroupIds.CT,
-            toolGroupIds.PT,
-            toolGroupIds.Fusion,
-            // toolGroupIds.MPR,
-          ]),
-        ],
-        'Window Level'
-      ),
-      secondary: {
-        icon: 'chevron-down',
-        label: 'W/L Manual',
-        isActive: true,
-        tooltip: 'W/L Presets',
-      },
-      isAction: true, // ?
-      renderer: WindowLevelMenuItem,
-      items: [
-        _createWwwcPreset(1, 'Soft tissue', '400 / 40'),
-        _createWwwcPreset(2, 'Lung', '1500 / -600'),
-        _createWwwcPreset(3, 'Liver', '150 / 90'),
-        _createWwwcPreset(4, 'Bone', '2500 / 480'),
-        _createWwwcPreset(5, 'Brain', '80 / 40'),
-      ],
+      icon: 'tool-window-level',
+      label: 'Window Level',
+      commands: setToolActiveToolbar,
+      evaluate: 'evaluate.cornerstoneTool',
     },
   },
+  // Crosshairs Button
   {
     id: 'Crosshairs',
-    type: 'ohif.radioGroup',
+    uiType: 'ohif.radioGroup',
     props: {
-      type: 'tool',
       icon: 'tool-crosshair',
       label: 'Crosshairs',
-      commands: [
-        ..._createCommands('setToolActive', 'Crosshairs', [
-          toolGroupIds.CT,
-          toolGroupIds.PT,
-          toolGroupIds.Fusion,
-          // toolGroupIds.MPR,
-        ]),
-      ],
+      commands: setToolActiveToolbar,
+      evaluate: 'evaluate.cornerstoneTool',
     },
   },
-  // Pan...
+  // Pan Button
   {
     id: 'Pan',
-    type: 'ohif.radioGroup',
+    uiType: 'ohif.radioGroup',
     props: {
-      type: 'tool',
       icon: 'tool-move',
       label: 'Pan',
-      commands: [
-        ..._createCommands('setToolActive', 'Pan', [
-          toolGroupIds.CT,
-          toolGroupIds.PT,
-          toolGroupIds.Fusion,
-          // toolGroupIds.MPR,
-        ]),
-      ],
+      commands: setToolActiveToolbar,
+      evaluate: 'evaluate.cornerstoneTool',
     },
   },
+  // Rectangle ROI Start End Threshold Button
   {
     id: 'RectangleROIStartEndThreshold',
-    type: 'ohif.radioGroup',
+    uiType: 'ohif.radioGroup',
     props: {
-      type: 'tool',
       icon: 'tool-create-threshold',
       label: 'Rectangle ROI Threshold',
-      commands: [
-        ..._createCommands('setToolActive', 'RectangleROIStartEndThreshold', [toolGroupIds.PT]),
+      commands: setToolActiveToolbar,
+      evaluate: [
+        'evaluate.cornerstone.segmentation',
+        // need to put the disabled text last, since each evaluator will
+        // merge the result text into the final result
         {
-          commandName: 'displayNotification',
-          commandOptions: {
-            title: 'RectangleROI Threshold Tip',
-            text: 'RectangleROI Threshold tool should be used on PT Axial Viewport',
-            type: 'info',
-          },
-        },
-        {
-          commandName: 'setViewportActive',
-          commandOptions: {
-            viewportId: 'ptAXIAL',
-          },
+          name: 'evaluate.cornerstoneTool',
+          disabledText: 'Select the PT Axial to enable this tool',
         },
       ],
+      options: 'tmtv.RectangleROIThresholdOptions',
     },
   },
   {
-    id: 'fusionPTColormap',
-    type: 'ohif.splitButton',
+    id: 'BrushTools',
+    uiType: 'ohif.buttonGroup',
     props: {
-      groupId: 'fusionPTColormap',
-      primary: _createToolButton(
-        'fusionPTColormap',
-        'tool-fusion-color',
-        'Fusion PT Colormap',
-        [],
-        'Fusion PT Colormap'
-      ),
-      secondary: {
-        icon: 'chevron-down',
-        label: 'PT Colormap',
-        isActive: true,
-        tooltip: 'PET Image Colormap',
-      },
-      isAction: true, // ?
+      groupId: 'BrushTools',
       items: [
-        _createColormap('HSV', 'hsv'),
-        _createColormap('Hot Iron', 'hot_iron'),
-        _createColormap('S PET', 's_pet'),
-        _createColormap('Red Hot', 'red_hot'),
-        _createColormap('Perfusion', 'perfusion'),
-        _createColormap('Rainbow', 'rainbow_2'),
-        _createColormap('SUV', 'suv'),
-        _createColormap('GE 256', 'ge_256'),
-        _createColormap('GE', 'ge'),
-        _createColormap('Siemens', 'siemens'),
+        {
+          id: 'Brush',
+          icon: 'icon-tool-brush',
+          label: 'Brush',
+          evaluate: {
+            name: 'evaluate.cornerstone.segmentation',
+            toolNames: ['CircularBrush', 'SphereBrush'],
+            disabledText: 'Create new segmentation to enable this tool.',
+          },
+          options: [
+            {
+              name: 'Radius (mm)',
+              id: 'brush-radius',
+              type: 'range',
+              min: 0.5,
+              max: 99.5,
+              step: 0.5,
+              value: 25,
+              commands: {
+                commandName: 'setBrushSize',
+                commandOptions: { toolNames: ['CircularBrush', 'SphereBrush'] },
+              },
+            },
+            {
+              name: 'Shape',
+              type: 'radio',
+              id: 'brush-mode',
+              value: 'CircularBrush',
+              values: [
+                { value: 'CircularBrush', label: 'Circle' },
+                { value: 'SphereBrush', label: 'Sphere' },
+              ],
+              commands: 'setToolActiveToolbar',
+            },
+          ],
+        },
+        {
+          id: 'Eraser',
+          icon: 'icon-tool-eraser',
+          label: 'Eraser',
+          evaluate: {
+            name: 'evaluate.cornerstone.segmentation',
+            toolNames: ['CircularEraser', 'SphereEraser'],
+          },
+          options: [
+            {
+              name: 'Radius (mm)',
+              id: 'eraser-radius',
+              type: 'range',
+              min: 0.5,
+              max: 99.5,
+              step: 0.5,
+              value: 25,
+              commands: {
+                commandName: 'setBrushSize',
+                commandOptions: { toolNames: ['CircularEraser', 'SphereEraser'] },
+              },
+            },
+            {
+              name: 'Shape',
+              type: 'radio',
+              id: 'eraser-mode',
+              value: 'CircularEraser',
+              values: [
+                { value: 'CircularEraser', label: 'Circle' },
+                { value: 'SphereEraser', label: 'Sphere' },
+              ],
+              commands: 'setToolActiveToolbar',
+            },
+          ],
+        },
+        {
+          id: 'Threshold',
+          icon: 'icon-tool-threshold',
+          label: 'Threshold Tool',
+          evaluate: {
+            name: 'evaluate.cornerstone.segmentation',
+            toolNames: ['ThresholdCircularBrush', 'ThresholdSphereBrush'],
+          },
+          options: [
+            {
+              name: 'Radius (mm)',
+              id: 'threshold-radius',
+              type: 'range',
+              min: 0.5,
+              max: 99.5,
+              step: 0.5,
+              value: 25,
+              commands: {
+                commandName: 'setBrushSize',
+                commandOptions: {
+                  toolNames: [
+                    'ThresholdCircularBrush',
+                    'ThresholdSphereBrush',
+                    'ThresholdCircularBrushDynamic',
+                  ],
+                },
+              },
+            },
+
+            {
+              name: 'Threshold',
+              type: 'radio',
+              id: 'dynamic-mode',
+              value: 'ThresholdRange',
+              values: [
+                { value: 'ThresholdDynamic', label: 'Dynamic' },
+                { value: 'ThresholdRange', label: 'Range' },
+              ],
+              commands: ({ value, commandsManager }) => {
+                if (value === 'ThresholdDynamic') {
+                  commandsManager.run('setToolActive', {
+                    toolName: 'ThresholdCircularBrushDynamic',
+                  });
+                } else {
+                  commandsManager.run('setToolActive', {
+                    toolName: 'ThresholdCircularBrush',
+                  });
+                }
+              },
+            },
+            {
+              name: 'Shape',
+              type: 'radio',
+              id: 'eraser-mode',
+              value: 'ThresholdCircularBrush',
+              values: [
+                { value: 'ThresholdCircularBrush', label: 'Circle' },
+                { value: 'ThresholdSphereBrush', label: 'Sphere' },
+              ],
+              condition: ({ options }) =>
+                options.find(option => option.id === 'dynamic-mode').value === 'ThresholdRange',
+              commands: 'setToolActiveToolbar',
+            },
+            {
+              name: 'ThresholdRange',
+              type: 'double-range',
+              id: 'threshold-range',
+              min: 0,
+              max: 50,
+              step: 0.5,
+              values: [2.5, 50],
+              condition: ({ options }) =>
+                options.find(option => option.id === 'dynamic-mode').value === 'ThresholdRange',
+              commands: {
+                commandName: 'setThresholdRange',
+                commandOptions: {
+                  toolNames: ['ThresholdCircularBrush', 'ThresholdSphereBrush'],
+                },
+              },
+            },
+          ],
+        },
       ],
     },
   },

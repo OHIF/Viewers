@@ -1,6 +1,6 @@
 import { SOPClassHandlerName, SOPClassHandlerId } from './id';
 import { utils, classes, DisplaySetService, Types } from '@ohif/core';
-import addMeasurement from './utils/addMeasurement';
+import addDICOMSRDisplayAnnotation from './utils/addDICOMSRDisplayAnnotation';
 import isRehydratable from './utils/isRehydratable';
 import { adaptersSR } from '@cornerstonejs/adapters';
 
@@ -150,12 +150,36 @@ function _getDisplaySetsFromSeries(instances, servicesManager, extensionManager)
   return [displaySet];
 }
 
-function _load(displaySet, servicesManager, extensionManager) {
+async function _load(displaySet, servicesManager, extensionManager) {
   const { displaySetService, measurementService } = servicesManager.services;
   const dataSources = extensionManager.getDataSources();
   const dataSource = dataSources[0];
 
   const { ContentSequence } = displaySet.instance;
+
+  async function retrieveBulkData(obj, parentObj = null, key = null) {
+    for (const prop in obj) {
+      if (typeof obj[prop] === 'object' && obj[prop] !== null) {
+        await retrieveBulkData(obj[prop], obj, prop);
+      } else if (Array.isArray(obj[prop])) {
+        await Promise.all(obj[prop].map(item => retrieveBulkData(item, obj, prop)));
+      } else if (prop === 'BulkDataURI') {
+        const value = await dataSource.retrieve.bulkDataURI({
+          BulkDataURI: obj[prop],
+          StudyInstanceUID: displaySet.instance.StudyInstanceUID,
+          SeriesInstanceUID: displaySet.instance.SeriesInstanceUID,
+          SOPInstanceUID: displaySet.instance.SOPInstanceUID,
+        });
+        if (parentObj && key) {
+          parentObj[key] = new Float32Array(value);
+        }
+      }
+    }
+  }
+
+  if (displaySet.isLoaded !== true) {
+    await retrieveBulkData(ContentSequence);
+  }
 
   displaySet.referencedImages = _getReferencedImagesList(ContentSequence);
   displaySet.measurements = _getMeasurements(ContentSequence);
@@ -171,7 +195,12 @@ function _load(displaySet, servicesManager, extensionManager) {
 
   // Check currently added displaySets and add measurements if the sources exist.
   displaySetService.activeDisplaySets.forEach(activeDisplaySet => {
-    _checkIfCanAddMeasurementsToDisplaySet(displaySet, activeDisplaySet, dataSource);
+    _checkIfCanAddMeasurementsToDisplaySet(
+      displaySet,
+      activeDisplaySet,
+      dataSource,
+      servicesManager
+    );
   });
 
   // Subscribe to new displaySets as the source may come in after.
@@ -180,12 +209,23 @@ function _load(displaySet, servicesManager, extensionManager) {
     // If there are still some measurements that have not yet been loaded into cornerstone,
     // See if we can load them onto any of the new displaySets.
     displaySetsAdded.forEach(newDisplaySet => {
-      _checkIfCanAddMeasurementsToDisplaySet(displaySet, newDisplaySet, dataSource);
+      _checkIfCanAddMeasurementsToDisplaySet(
+        displaySet,
+        newDisplaySet,
+        dataSource,
+        servicesManager
+      );
     });
   });
 }
 
-function _checkIfCanAddMeasurementsToDisplaySet(srDisplaySet, newDisplaySet, dataSource) {
+function _checkIfCanAddMeasurementsToDisplaySet(
+  srDisplaySet,
+  newDisplaySet,
+  dataSource,
+  servicesManager
+) {
+  const { customizationService } = servicesManager.services;
   let unloadedMeasurements = srDisplaySet.measurements.filter(
     measurement => measurement.loaded === false
   );
@@ -195,12 +235,16 @@ function _checkIfCanAddMeasurementsToDisplaySet(srDisplaySet, newDisplaySet, dat
     return;
   }
 
-  if (!newDisplaySet instanceof ImageSet) {
+  if ((!newDisplaySet) instanceof ImageSet) {
     // This also filters out _this_ displaySet, as it is not an ImageSet.
     return;
   }
 
-  const { sopClassUids, images } = newDisplaySet;
+  if (newDisplaySet.unsupported) {
+    return;
+  }
+
+  const { sopClassUids } = newDisplaySet;
 
   // Check if any have the newDisplaySet is the correct SOPClass.
   unloadedMeasurements = unloadedMeasurements.filter(measurement =>
@@ -240,9 +284,37 @@ function _checkIfCanAddMeasurementsToDisplaySet(srDisplaySet, newDisplaySet, dat
 
     if (SOPInstanceUIDs.includes(SOPInstanceUID)) {
       for (let j = unloadedMeasurements.length - 1; j >= 0; j--) {
-        const measurement = unloadedMeasurements[j];
+        let measurement = unloadedMeasurements[j];
+
+        const onBeforeSRAddMeasurement = customizationService.getModeCustomization(
+          'onBeforeSRAddMeasurement'
+        )?.value;
+
+        if (typeof onBeforeSRAddMeasurement === 'function') {
+          measurement = onBeforeSRAddMeasurement({
+            measurement,
+            StudyInstanceUID: srDisplaySet.StudyInstanceUID,
+            SeriesInstanceUID: srDisplaySet.SeriesInstanceUID,
+          });
+        }
+
         if (_measurementReferencesSOPInstanceUID(measurement, SOPInstanceUID, frameNumber)) {
-          addMeasurement(measurement, imageId, newDisplaySet.displaySetInstanceUID);
+          const frame =
+            (measurement.coords[0].ReferencedSOPSequence &&
+              measurement.coords[0].ReferencedSOPSequence?.ReferencedFrameNumber) ||
+            1;
+
+          /** Add DICOMSRDisplay annotation for the SR viewport (only) */
+          addDICOMSRDisplayAnnotation(measurement, imageId, frame);
+
+          /** Update measurement properties */
+          measurement.loaded = true;
+          measurement.imageId = imageId;
+          measurement.displaySetInstanceUID = newDisplaySet.displaySetInstanceUID;
+          measurement.ReferencedSOPInstanceUID =
+            measurement.coords[0].ReferencedSOPSequence.ReferencedSOPInstanceUID;
+          measurement.frameNumber = frame;
+          delete measurement.coords;
 
           unloadedMeasurements.splice(j, 1);
         }
@@ -258,7 +330,7 @@ function _measurementReferencesSOPInstanceUID(measurement, SOPInstanceUID, frame
   //  Standard. But for now, we will support only one ReferenceFrameNumber.
   const ReferencedFrameNumber =
     (measurement.coords[0].ReferencedSOPSequence &&
-      measurement.coords[0].ReferencedSOPSequence[0]?.ReferencedFrameNumber) ||
+      measurement.coords[0].ReferencedSOPSequence?.ReferencedFrameNumber) ||
     1;
 
   if (frameNumber && Number(frameNumber) !== Number(ReferencedFrameNumber)) {

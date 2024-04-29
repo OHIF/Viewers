@@ -15,7 +15,6 @@ import { utils, hotkeys, ServicesManager } from '@ohif/core';
 import {
   Icon,
   StudyListExpandedRow,
-  LegacyButton,
   EmptyStudies,
   StudyListTable,
   StudyListPagination,
@@ -26,9 +25,17 @@ import {
   AboutModal,
   UserPreferences,
   LoadingIndicatorProgress,
+  useSessionStorage,
+  InvestigationalUseDialog,
+  Button,
+  ButtonEnums,
 } from '@ohif/ui';
 
+import { Types } from '@ohif/ui';
+
 import i18n from '@ohif/i18n';
+
+const PatientInfoVisibility = Types.PatientInfoVisibility;
 
 const { sortBySeriesDate } = utils;
 
@@ -60,9 +67,17 @@ function WorkList({
   const navigate = useNavigate();
   const STUDIES_LIMIT = 101;
   const queryFilterValues = _getQueryFilterValues(searchParams);
+  const [sessionQueryFilterValues, updateSessionQueryFilterValues] = useSessionStorage({
+    key: 'queryFilterValues',
+    defaultValue: queryFilterValues,
+    // ToDo: useSessionStorage currently uses an unload listener to clear the filters from session storage
+    // so on systems that do not support unload events a user will NOT be able to alter any existing filter
+    // in the URL, load the page and have it apply.
+    clearOnUnload: true,
+  });
   const [filterValues, _setFilterValues] = useState({
     ...defaultFilterValues,
-    ...queryFilterValues,
+    ...sessionQueryFilterValues,
   });
 
   const debouncedFilterValues = useDebounce(filterValues, 200);
@@ -119,6 +134,7 @@ function WorkList({
       val.pageNumber = 1;
     }
     _setFilterValues(val);
+    updateSessionQueryFilterValues(val);
     setExpandedRows([]);
   };
 
@@ -244,13 +260,16 @@ function WorkList({
     const studyDate =
       date &&
       moment(date, ['YYYYMMDD', 'YYYY.MM.DD'], true).isValid() &&
-      moment(date, ['YYYYMMDD', 'YYYY.MM.DD']).format('MMM-DD-YYYY');
+      moment(date, ['YYYYMMDD', 'YYYY.MM.DD']).format(t('Common:localDateFormat', 'MMM-DD-YYYY'));
     const studyTime =
       time &&
       moment(time, ['HH', 'HHmm', 'HHmmss', 'HHmmss.SSS']).isValid() &&
-      moment(time, ['HH', 'HHmm', 'HHmmss', 'HHmmss.SSS']).format('hh:mm A');
+      moment(time, ['HH', 'HHmm', 'HHmmss', 'HHmmss.SSS']).format(
+        t('Common:localTimeFormat', 'hh:mm A')
+      );
 
     return {
+      dataCY: `studyRow-${studyInstanceUid}`,
       row: [
         {
           key: 'patientName',
@@ -308,7 +327,7 @@ function WorkList({
             </>
           ),
           title: (instances || 0).toString(),
-          gridCol: 4,
+          gridCol: 2,
         },
       ],
       // Todo: This is actually running for all rows, even if they are
@@ -316,10 +335,10 @@ function WorkList({
       expandedContent: (
         <StudyListExpandedRow
           seriesTableColumns={{
-            description: 'Description',
-            seriesNumber: 'Series',
-            modality: 'Modality',
-            instances: 'Instances',
+            description: t('StudyList:Description'),
+            seriesNumber: t('StudyList:Series'),
+            modality: t('StudyList:Modality'),
+            instances: t('StudyList:Instances'),
           }}
           seriesTableDataSource={
             seriesInStudiesMap.has(studyInstanceUid)
@@ -335,10 +354,24 @@ function WorkList({
           }
         >
           <div className="flex flex-row gap-2">
-            {appConfig.loadedModes.map((mode, i) => {
+            {(appConfig.groupEnabledModesFirst
+              ? appConfig.loadedModes.sort((a, b) => {
+                  const isValidA = a.isValidMode({
+                    modalities: modalities.replaceAll('/', '\\'),
+                    study,
+                  }).valid;
+                  const isValidB = b.isValidMode({
+                    modalities: modalities.replaceAll('/', '\\'),
+                    study,
+                  }).valid;
+
+                  return isValidB - isValidA;
+                })
+              : appConfig.loadedModes
+            ).map((mode, i) => {
               const modalitiesToCheck = modalities.replaceAll('/', '\\');
 
-              const isValidMode = mode.isValidMode({
+              const { valid: isValidMode, description: invalidModeDescription } = mode.isValidMode({
                 modalities: modalitiesToCheck,
                 study,
               });
@@ -371,15 +404,29 @@ function WorkList({
                     // to={`${mode.routeName}/dicomweb?StudyInstanceUIDs=${studyInstanceUid}`}
                   >
                     {/* TODO revisit the completely rounded style of buttons used for launching a mode from the worklist later - for now use LegacyButton*/}
-                    <LegacyButton
-                      rounded="full"
-                      variant={isValidMode ? 'contained' : 'disabled'}
+                    <Button
+                      type={ButtonEnums.type.primary}
+                      size={ButtonEnums.size.medium}
                       disabled={!isValidMode}
-                      endIcon={<Icon name="launch-arrow" />} // launch-arrow | launch-info
+                      startIconTooltip={
+                        !isValidMode ? (
+                          <div className="font-inter flex w-[206px] whitespace-normal text-left text-xs font-normal text-white	">
+                            {invalidModeDescription}
+                          </div>
+                        ) : null
+                      }
+                      startIcon={
+                        <Icon
+                          className="!h-[20px] !w-[20px] text-black"
+                          name={isValidMode ? 'launch-arrow' : 'launch-info'}
+                        />
+                      } // launch-arrow | launch-info
                       onClick={() => {}}
+                      dataCY={`mode-${mode.routeName}-${studyInstanceUid}`}
+                      className={isValidMode ? 'text-[13px]' : 'bg-[#222d44] text-[13px]'}
                     >
-                      {t(`Modes:${mode.displayName}`)}
-                    </LegacyButton>
+                      {mode.displayName}
+                    </Button>
                   </Link>
                 )
               );
@@ -404,8 +451,9 @@ function WorkList({
       onClick: () =>
         show({
           content: AboutModal,
-          title: 'About OHIF Viewer',
+          title: t('AboutModal:About OHIF Viewer'),
           contentProps: { versionNumber, commitHash },
+          containerDimensions: 'max-w-4xl max-h-4xl',
         }),
     },
     {
@@ -413,7 +461,7 @@ function WorkList({
       icon: 'settings',
       onClick: () =>
         show({
-          title: t('UserPreferencesModal:User Preferences'),
+          title: t('UserPreferencesModal:User preferences'),
           content: UserPreferences,
           contentProps: {
             hotkeyDefaults: hotkeysManager.getValidHotkeyDefinitions(hotkeyDefaults),
@@ -477,14 +525,16 @@ function WorkList({
     customizationService.get('ohif.dataSourceConfigurationComponent') ?? {};
 
   return (
-    <div className="flex h-screen flex-col bg-black ">
+    <div className="flex h-screen flex-col bg-black">
       <Header
         isSticky
         menuOptions={menuOptions}
         isReturnEnabled={false}
         WhiteLabeling={appConfig.whiteLabeling}
+        showPatientInfo={PatientInfoVisibility.DISABLED}
       />
-      <div className="ohif-scrollbar flex grow flex-col overflow-y-auto">
+      <InvestigationalUseDialog dialogConfiguration={appConfig?.investigationalUseDialog} />
+      <div className="ohif-scrollbar ohif-scrollbar-stable-gutter flex grow flex-col overflow-y-auto sm:px-5">
         <StudyListFilter
           numOfStudies={pageNumber * resultsPerPage > 100 ? 101 : numOfStudies}
           filtersMeta={filtersMeta}

@@ -7,10 +7,13 @@ import Icon from '../Icon';
 
 const StudyListTableRow = props => {
   const { tableData } = props;
-  const { row, expandedContent, onClickRow, isExpanded } = tableData;
+  const { row, expandedContent, onClickRow, isExpanded, dataCY } = tableData;
   return (
     <>
-      <tr className="select-none">
+      <tr
+        className="select-none"
+        data-cy={dataCY}
+      >
         <td
           className={classnames('border-0 p-0', {
             'border-secondary-light bg-primary-dark border-b': isExpanded,
@@ -20,7 +23,7 @@ const StudyListTableRow = props => {
             className={classnames(
               'w-full transition duration-300',
               {
-                'border-primary-light hover:border-secondary-light mb-2 overflow-hidden rounded border':
+                'border-primary-light hover:border-secondary-light mb-2 overflow-visible rounded border':
                   isExpanded,
               },
               {
@@ -104,6 +107,7 @@ StudyListTableRow.propTypes = {
     expandedContent: PropTypes.node.isRequired,
     onClickRow: PropTypes.func.isRequired,
     isExpanded: PropTypes.bool.isRequired,
+    dataCY: PropTypes.string,
   }),
 };
 

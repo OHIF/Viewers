@@ -133,6 +133,7 @@ export type SyncGroup = {
   id: string;
   source?: boolean;
   target?: boolean;
+  options?: object;
 };
 
 /** Declares a custom option, that is a computed type value */
@@ -241,15 +242,17 @@ export type ProtocolStage = {
 export type ProtocolNotifications = {
   // This set of commands is executed after the protocol is exited and the new one applied
   onProtocolExit?: Command[];
-
   // This set of commands is executed after the protocol is entered and applied
   onProtocolEnter?: Command[];
-
   // This set of commands is executed before the layout change is started.
   // If it returns false, the layout change will be aborted.
   // The numRows and numCols is included in the command params, so it is possible
   // to apply a specific hanging protocol
   onLayoutChange?: Command[];
+  // This set of commands is executed after the initial viewport grid data is set
+  // and all viewport data includes a designated display set. This command
+  // will run on every stage's initial layout.
+  onViewportDataInitialized?: Command[];
 };
 
 /**
@@ -291,6 +294,27 @@ export type Protocol = {
    */
   numberOfPriorsReferenced?: number;
   syncDataForViewports?: boolean;
+  /**
+   * Set of minimal conditions necessary to run the hanging protocol.
+   */
+  hpInitiationCriteria?: {
+    /* If configured, sets the minimum number of series needed to run the hanging
+     * protocol and start displaying images. Used when OHIF needs to handle studies
+     * with several series and it is required that the first image should be loaded
+     * faster.
+     */
+    minSeriesLoaded: number;
+  };
+
+  /*
+   * The icon to use for this protocol.  This is used to display the protocol
+   * in the advanced layout selector.
+   */
+
+  icon?: string;
+
+  /** Indicates if the protocol is a preset or not. Useful for setting presets for the layout selector */
+  isPreset?: true;
 };
 
 /** Used to dynamically generate protocols.

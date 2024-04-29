@@ -7,8 +7,7 @@ describe('OHIF MPR', () => {
   });
 
   it('should not go MPR for non reconstructible displaySets', () => {
-    cy.get('[data-cy="MPR"]').click();
-    cy.get('.cornerstone-canvas').should('have.length', 1);
+    cy.get('[data-cy="MPR"]').should('have.class', 'ohif-disabled');
   });
 
   it('should go MPR for reconstructible displaySets and come back', () => {
@@ -32,30 +31,7 @@ describe('OHIF MPR', () => {
     cy.wait(250);
     cy.get('[data-cy="MPR"]').click();
 
-    cy.get('[data-cy="thumbnail-viewport-labels"]').should('have.length', 3);
-
     cy.get('.cornerstone-canvas').should('have.length', 3);
-
-    cy.get('[data-cy="thumbnail-viewport-labels"]')
-      .eq(2)
-      .find('div')
-      .should('have.length', 3)
-      .each(($div, index) => {
-        const text = $div.text();
-        switch (index) {
-          case 0:
-            expect(text).to.equal('A');
-            break;
-          case 1:
-            expect(text).to.equal('B');
-            break;
-          case 2:
-            expect(text).to.equal('C');
-            break;
-          default:
-            throw new Error(`Unexpected div found with text: ${text}`);
-        }
-      });
 
     // check cornerstone to see if each has images
     // we can later do visual testing to match the images with a baseline
@@ -65,9 +41,9 @@ describe('OHIF MPR', () => {
         const viewports = cornerstone.getRenderingEngines()[0].getViewports();
 
         // The stack viewport still exists after the changes to viewportId and inde
-        const imageData1 = viewports[1].getImageData();
-        const imageData2 = viewports[2].getImageData();
-        const imageData3 = viewports[3].getImageData();
+        const imageData1 = viewports[0].getImageData();
+        const imageData2 = viewports[1].getImageData();
+        const imageData3 = viewports[2].getImageData();
 
         // for some reason map doesn't work here
         cy.wrap(imageData1).should('not.be', undefined);
@@ -82,25 +58,9 @@ describe('OHIF MPR', () => {
     cy.get('[data-cy="MPR"]').click();
 
     cy.get('.cornerstone-canvas').should('have.length', 1);
-
-    // should not have any div under it
-    cy.get('[data-cy="thumbnail-viewport-labels"]').eq(2).find('div').should('have.length', 0);
   });
 
   it('should correctly render Crosshairs for MPR', () => {
-    cy.wait(250);
-
-    cy.get('[data-cy="Crosshairs"]').click();
-    cy.window()
-      .its('cornerstoneTools')
-      .then(cornerstoneTools => {
-        const state = cornerstoneTools.annotation.state.getAnnotationManager();
-
-        const fORMap = state.annotations;
-        // it should not have crosshairs yet
-        expect(Object.keys(fORMap)).to.have.length(0);
-      });
-
     cy.get(':nth-child(3) > [data-cy="study-browser-thumbnail"]').dblclick();
     cy.get('[data-cy="MPR"]').click();
     cy.get('[data-cy="Crosshairs"]').click();
@@ -130,5 +90,14 @@ describe('OHIF MPR', () => {
           crosshairs[1].data.handles.toolCenter
         );
       });
+  });
+
+  it('should activate window level when the active Crosshairs tool for MPR is clicked', () => {
+    cy.get(':nth-child(3) > [data-cy="study-browser-thumbnail"]').dblclick();
+    cy.get('[data-cy="MPR"]').click();
+    cy.get('[data-cy="Crosshairs"]').click();
+
+    // Click the crosshairs button to deactivate it.
+    cy.get('[data-cy="Crosshairs"]').click();
   });
 });

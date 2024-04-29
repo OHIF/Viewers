@@ -1,4 +1,5 @@
 import { ButtonEnums } from '@ohif/ui';
+import i18n from 'i18next';
 
 const RESPONSE = {
   NO_NEVER: -1,
@@ -10,7 +11,9 @@ const RESPONSE = {
 
 function promptBeginTracking({ servicesManager, extensionManager }, ctx, evt) {
   const { uiViewportDialogService } = servicesManager.services;
-  const { viewportId, StudyInstanceUID, SeriesInstanceUID } = evt;
+  // When the state change happens after a promise, the state machine sends the retult in evt.data;
+  // In case of direct transition to the state, the state machine sends the data in evt;
+  const { viewportId, StudyInstanceUID, SeriesInstanceUID } = evt.data || evt;
 
   return new Promise(async function (resolve, reject) {
     let promptResult = await _askTrackMeasurements(uiViewportDialogService, viewportId);
@@ -26,24 +29,24 @@ function promptBeginTracking({ servicesManager, extensionManager }, ctx, evt) {
 
 function _askTrackMeasurements(uiViewportDialogService, viewportId) {
   return new Promise(function (resolve, reject) {
-    const message = 'Track measurements for this series?';
+    const message = i18n.t('MeasurementTable:Track measurements for this series?');
     const actions = [
       {
         id: 'prompt-begin-tracking-cancel',
         type: ButtonEnums.type.secondary,
-        text: 'No',
+        text: i18n.t('Common:No'),
         value: RESPONSE.CANCEL,
       },
       {
         id: 'prompt-begin-tracking-no-do-not-ask-again',
         type: ButtonEnums.type.secondary,
-        text: 'No, do not ask again',
+        text: i18n.t('MeasurementTable:No, do not ask again'),
         value: RESPONSE.NO_NEVER,
       },
       {
         id: 'prompt-begin-tracking-yes',
         type: ButtonEnums.type.primary,
-        text: 'Yes',
+        text: i18n.t('Common:Yes'),
         value: RESPONSE.SET_STUDY_AND_SERIES,
       },
     ];
@@ -62,6 +65,12 @@ function _askTrackMeasurements(uiViewportDialogService, viewportId) {
       onOutsideClick: () => {
         uiViewportDialogService.hide();
         resolve(RESPONSE.CANCEL);
+      },
+      onKeyPress: event => {
+        if (event.key === 'Enter') {
+          const action = actions.find(action => action.id === 'prompt-begin-tracking-yes');
+          onSubmit(action.value);
+        }
       },
     });
   });

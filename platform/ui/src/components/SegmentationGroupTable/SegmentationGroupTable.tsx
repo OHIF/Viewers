@@ -6,6 +6,7 @@ import SegmentationDropDownRow from './SegmentationDropDownRow';
 import NoSegmentationRow from './NoSegmentationRow';
 import AddSegmentRow from './AddSegmentRow';
 import SegmentationGroupSegment from './SegmentationGroupSegment';
+import { useTranslation } from 'react-i18next';
 
 const SegmentationGroupTable = ({
   segmentations,
@@ -41,6 +42,7 @@ const SegmentationGroupTable = ({
   setRenderFill,
   setRenderInactiveSegmentations,
   setRenderOutline,
+  addSegmentationClassName,
 }) => {
   const [isConfigOpen, setIsConfigOpen] = useState(false);
   const [activeSegmentationId, setActiveSegmentationId] = useState(null);
@@ -70,11 +72,12 @@ const SegmentationGroupTable = ({
   const activeSegmentation = segmentations?.find(
     segmentation => segmentation.id === activeSegmentationId
   );
+  const { t } = useTranslation('SegmentationTable');
 
   return (
     <div className="flex min-h-0 flex-col bg-black text-[13px] font-[300]">
       <PanelSection
-        title="Segmentation"
+        title={t('Segmentation')}
         actionIcons={
           activeSegmentation && [
             {
@@ -96,11 +99,14 @@ const SegmentationGroupTable = ({
             segmentationConfig={segmentationConfig}
           />
         )}
-        <div className="bg-primary-dark">
+        <div className="bg-primary-dark ">
           {segmentations?.length === 0 ? (
-            <div className="select-none rounded-[4px]">
+            <div className="select-none bg-black py-[3px]">
               {showAddSegmentation && !disableEditing && (
-                <NoSegmentationRow onSegmentationAdd={onSegmentationAdd} />
+                <NoSegmentationRow
+                  onSegmentationAdd={onSegmentationAdd}
+                  addSegmentationClassName={addSegmentationClassName}
+                />
               )}
             </div>
           ) : (
@@ -116,6 +122,7 @@ const SegmentationGroupTable = ({
                 onSegmentationDownloadRTSS={onSegmentationDownloadRTSS}
                 storeSegmentation={storeSegmentation}
                 onSegmentationAdd={onSegmentationAdd}
+                addSegmentationClassName={addSegmentationClassName}
                 onToggleSegmentationVisibility={onToggleSegmentationVisibility}
               />
               {!disableEditing && showAddSegment && (
@@ -125,7 +132,7 @@ const SegmentationGroupTable = ({
           )}
         </div>
         {activeSegmentation && (
-          <div className="ohif-scrollbar mt-1.5 flex min-h-0 flex-col overflow-y-hidden">
+          <div className="ohif-scrollbar flex h-fit min-h-0 flex-1 flex-col overflow-auto bg-black">
             {activeSegmentation?.segments?.map(segment => {
               if (!segment) {
                 return null;

@@ -1,44 +1,37 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React from 'react';
+import { Tooltip } from '@ohif/ui';
 import classnames from 'classnames';
+import { useToolbar } from '@ohif/core';
 
-export default function Toolbar({ servicesManager }) {
-  const { toolbarService } = servicesManager.services;
-  const [toolbarButtons, setToolbarButtons] = useState([]);
+export function Toolbar({ servicesManager, buttonSection = 'primary' }) {
+  const { toolbarButtons, onInteraction } = useToolbar({
+    servicesManager,
+    buttonSection,
+  });
 
-  useEffect(() => {
-    const { unsubscribe } = toolbarService.subscribe(toolbarService.EVENTS.TOOL_BAR_MODIFIED, () =>
-      setToolbarButtons(toolbarService.getButtonSection('primary'))
-    );
-
-    return () => {
-      unsubscribe();
-    };
-  }, [toolbarService]);
-
-  const onInteraction = useCallback(
-    args => toolbarService.recordInteraction(args),
-    [toolbarService]
-  );
+  if (!toolbarButtons.length) {
+    return null;
+  }
 
   return (
     <>
       {toolbarButtons.map(toolDef => {
+        if (!toolDef) {
+          return null;
+        }
+
         const { id, Component, componentProps } = toolDef;
-        return (
-          // The margin for separating the tools on the toolbar should go here and NOT in each individual component (button) item.
-          // This allows for the individual items to be included in other UI components where perhaps alternative margins are desired.
-          <div
+        const tool = (
+          <Component
             key={id}
-            className={classnames('mr-1')}
-          >
-            <Component
-              id={id}
-              {...componentProps}
-              onInteraction={onInteraction}
-              servicesManager={servicesManager}
-            />
-          </div>
+            id={id}
+            onInteraction={onInteraction}
+            servicesManager={servicesManager}
+            {...componentProps}
+          />
         );
+
+        return <div key={id}>{tool}</div>;
       })}
     </>
   );
