@@ -54,7 +54,7 @@ provided by the <a href="https://ohif.org/">Open Health Imaging Foundation (OHIF
 
 ## About
 
-The OHIF Medical Imaging Viewer is for viewing medical images. It can retrieve
+The OHIF Viewer can retrieve
 and load images from most sources and formats; render sets in 2D, 3D, and
 reconstructed representations; allows for the manipulation, annotation, and
 serialization of observations; supports internationalization, OpenID Connect,
