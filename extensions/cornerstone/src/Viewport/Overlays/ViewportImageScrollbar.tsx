@@ -23,7 +23,7 @@ function CornerstoneImageScrollbar({
 
     if (isCineEnabled) {
       // on image scrollbar change, stop the CINE if it is playing
-      cineService.stopClip(element);
+      cineService.stopClip(element, { viewportId });
       cineService.setCine({ id: viewportId, isPlaying: false });
     }
 

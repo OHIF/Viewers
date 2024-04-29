@@ -1,16 +1,5 @@
 import type { Button } from '@ohif/core/types';
 
-function _createSetToolActiveCommands(toolName) {
-  return [
-    {
-      commandName: 'setToolActive',
-      commandOptions: {
-        toolName,
-      },
-    },
-  ];
-}
-
 const toolbarButtons: Button[] = [
   {
     id: 'BrushTools',
@@ -26,7 +15,6 @@ const toolbarButtons: Button[] = [
             name: 'evaluate.cornerstone.segmentation',
             toolNames: ['CircularBrush', 'SphereBrush'],
           },
-          commands: _createSetToolActiveCommands('CircularBrush'),
           options: [
             {
               name: 'Size (mm)',
@@ -62,7 +50,6 @@ const toolbarButtons: Button[] = [
             name: 'evaluate.cornerstone.segmentation',
             toolNames: ['CircularEraser', 'SphereEraser'],
           },
-          commands: _createSetToolActiveCommands('CircularEraser'),
           options: [
             {
               name: 'Radius (mm)',
@@ -98,7 +85,6 @@ const toolbarButtons: Button[] = [
             name: 'evaluate.cornerstone.segmentation',
             toolNames: ['ThresholdCircularBrush', 'ThresholdSphereBrush'],
           },
-          commands: _createSetToolActiveCommands('ThresholdCircularBrush'),
           options: [
             {
               name: 'Radius (mm)',
@@ -156,7 +142,6 @@ const toolbarButtons: Button[] = [
         toolNames: ['CircleScissor', 'SphereScissor', 'RectangleScissor'],
       },
       icon: 'icon-tool-shape',
-      commands: _createSetToolActiveCommands('CircleScissor'),
       options: [
         {
           name: 'Shape',
