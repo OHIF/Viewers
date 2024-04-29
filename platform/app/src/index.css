@@ -1,0 +1,15 @@
+
+:root {
+  --text-color-primary: #ef8200;
+}
+
+body {
+  width: 100vw;
+  height: 100vh;
+  background: white;
+}
+
+.ant-table-cell {
+  line-height: 1.25 !important;
+  padding: 0.5rem 1rem !important;
+}

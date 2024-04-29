@@ -18,6 +18,7 @@ import { history } from './utils/history';
  */
 import { modes as defaultModes, extensions as defaultExtensions } from './pluginImports';
 import loadDynamicConfig from './loadDynamicConfig';
+import CustomApp from './customApp';
 
 loadDynamicConfig(window.config).then(config_json => {
   // Reset Dynamic config if defined
@@ -36,9 +37,17 @@ loadDynamicConfig(window.config).then(config_json => {
   };
 
   /** Create App */
-  const app = React.createElement(App, appProps, null);
+  // const app = React.createElement(App, appProps, null);
+  // const pacs_app_element = document.getElementById('pacs-app');
+  // if(pacs_app_element) {
+  //   ReactDOM.render(app, pacs_app_element);  
+  // }
+
+  const customApp = React.createElement(CustomApp, appProps, null);
+
+  // const root = document.getElementById('root');
   /** Render */
-  ReactDOM.render(app, document.getElementById('root'));
+  ReactDOM.render(customApp, document.getElementById('custom-root'));  
 });
 
 export { history };

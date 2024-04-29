@@ -1,0 +1,14 @@
+#custom-root {
+  background: white;
+  padding: 0.75rem !important;
+}
+
+:root {
+  --text-color-primary: #ef8200;
+}
+
+body {
+  width: 100vw;
+  height: 100vh;
+  background: white;
+}

@@ -1,0 +1,17 @@
+.header-container {
+  height: 60px;
+    display: flex;
+    align-items: center;
+    /* box-shadow: 0 10px 10px -10px #000000; */
+    border-bottom: 1px solid #0000004a;
+    padding: 0 10px;
+}
+
+.header-container .logo img {
+  height: 40px;
+}
+
+.hospital-name {
+  margin-left: auto;
+  margin-right: 10px;
+}

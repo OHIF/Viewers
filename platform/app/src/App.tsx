@@ -158,7 +158,7 @@ App.defaultProps = {
      * Hosted at: https://ohif.org/where-i-host-the/viewer/
      * Value: `/where-i-host-the/viewer/`
      * */
-    routerBaseName: '/',
+    routerBaseName: '/app',
     /**
      *
      */
