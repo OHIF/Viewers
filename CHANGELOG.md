@@ -3,6 +3,29 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.93...v3.8.0) (2024-04-29)
+
+
+
+# [3.7.0](https://github.com/OHIF/Viewers/compare/v3.7.0-beta.110...v3.7.0) (2023-10-11)
+
+
+
+# [3.6.0](https://github.com/OHIF/Viewers/compare/v3.6.0-beta.3...v3.6.0) (2023-06-07)
+
+
+
+# [3.5.0](https://github.com/OHIF/Viewers/compare/v3.5.0-beta.1...v3.5.0) (2023-06-07)
+
+
+### Features
+
+* **app:** change ohif viewer to ohif app ([#3451](https://github.com/OHIF/Viewers/issues/3451)) ([16afa74](https://github.com/OHIF/Viewers/commit/16afa740b60b31037100444ef9311b80ffea2f67))
+
+
+
+
+
 # [3.8.0-beta.93](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.92...v3.8.0-beta.93) (2024-04-29)
 
 
