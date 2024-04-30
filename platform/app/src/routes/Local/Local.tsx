@@ -10,6 +10,8 @@ import { extensionManager } from '../../App.tsx';
 
 import { Icon, Button, LoadingIndicatorProgress } from '@ohif/ui';
 
+import { useTranslation } from 'react-i18next';
+
 const getLoadButton = (onDrop, text, isDir) => {
   return (
     <Dropzone
@@ -48,6 +50,7 @@ type LocalProps = {
 };
 
 function Local({ modePath }: LocalProps) {
+  const { t } = useTranslation('Local');
   const navigate = useNavigate();
   const dropzoneRef = useRef();
   const [dropInitiated, setDropInitiated] = React.useState(false);
@@ -137,20 +140,17 @@ function Local({ modePath }: LocalProps) {
                   </div>
                 ) : (
                   <div className="space-y-2">
-                    <p className="text-desert-200 text-base">
-                      Note: You data is not uploaded to any server, it will stay in your local
-                      browser application
-                    </p>
+                    <p className="text-desert-200 text-base">{t('DataNotUploadedToServer')}</p>
                     <p className="text-xg text-primary-active pt-6 font-semibold">
-                      Drag and Drop DICOM files here to load them in the Viewer
+                      {t('Drag and Drop DICOM files here to load them in the Viewer')}
                     </p>
-                    <p className="text-desert-200 text-lg">Or click to </p>
+                    <p className="text-desert-200 text-lg">{t('Or click to')} </p>
                   </div>
                 )}
               </div>
               <div className="flex justify-around pt-4 ">
-                {getLoadButton(onDrop, 'Load files', false)}
-                {getLoadButton(onDrop, 'Load folders', true)}
+                {getLoadButton(onDrop, t('Load files'), false)}
+                {getLoadButton(onDrop, t('Load folders'), true)}
               </div>
             </div>
           </div>

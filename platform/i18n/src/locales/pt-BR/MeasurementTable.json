@@ -1,4 +1,15 @@
 {
+  "Criteria nonconformities": "Não conformidades de critérios",
+  "Delete": "Excluir",
+  "Description": "Descrição",
+  "MAX": "MAX",
+  "Measurements": "Medidas",
+  "No, do not ask again": "Não, não pergunte novamente",
+  "NonTargets": "NonTargets",
+  "Relabel": "Renomear",
+  "Targets": "Targets",
+  "Track measurements for this series?": "Acompanhar medições para esta série?",
+  "No tracked measurements": "Nenhuma medição rastreada",
   "Export": "Exportar",
   "Create Report": "Criar relatório"
 }
