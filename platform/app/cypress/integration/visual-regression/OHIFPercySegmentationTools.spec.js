@@ -4,7 +4,7 @@ describe('OHIF Percy Segmentation Tools', () => {
   beforeEach(() => {
     cy.openStudyInViewer(
       '1.3.6.1.4.1.25403.345050719074.3824.20170125113417.1',
-      '',
+      '&hangingProtocolId=default',
       '/segmentation'
     );
     cy.wait(5000);
@@ -20,7 +20,22 @@ describe('OHIF Percy Segmentation Tools', () => {
     );
     cy.get('[data-cy="study-browser-thumbnail"]').eq(2).dblclick();
     cy.get('span').contains('Add segmentation').click();
-    cy.wait(200);
+    cy.wait(500);
     cy.percyCanvasSnapshot('Segmentation added and tools are enabled');
+    cy.get('[data-cy="Brush"]').click();
+    cy.percyCanvasSnapshot('Brush tool selected');
+    cy.addBrush('.cornerstone-canvas');
+    cy.percyCanvasSnapshot('Brush tool applied');
+    cy.get('[data-cy="Eraser"]').click();
+    cy.percyCanvasSnapshot('Eraser tool selected');
+    cy.addEraser('.cornerstone-canvas');
+    cy.percyCanvasSnapshot('Eraser tool applied');
+    cy.selectLayoutPreset('MPR');
+    cy.get('[data-cy="Brush"]').click();
+    cy.percyCanvasSnapshot('Brush tool selected in MPR');
+    cy.get('button').contains('Sphere').click();
+    cy.percyCanvasSnapshot('Sphere mode for Brush tool selected');
+    cy.addBrush('[data-viewport-uid="mpr-axial"] > .viewport-element > .cornerstone-canvas');
+    cy.percyCanvasSnapshot('Sphere stroke for Brush tool applied');
   });
 });

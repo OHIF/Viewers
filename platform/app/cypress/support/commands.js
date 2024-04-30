@@ -24,7 +24,7 @@ Cypress.Commands.add('selectLayoutPreset', (presetName, screenshot) => {
   }
   cy.get('div').contains(presetName).should('be.visible').click();
   // fixed wait time for layout changes and rendering
-  cy.wait(2000);
+  cy.wait(3000);
 });
 
 /**
@@ -277,6 +277,56 @@ Cypress.Commands.add(
     });
   }
 );
+
+// Add brush stroke in the viewport
+Cypress.Commands.add('addBrush', (viewport, firstClick = [85, 100], secondClick = [85, 300]) => {
+  cy.get(viewport)
+    .first()
+    .then(viewportElement => {
+      const [x1, y1] = firstClick;
+      const [x2, y2] = secondClick;
+
+      const steps = 10;
+      const xStep = (x2 - x1) / steps;
+      const yStep = (y2 - y1) / steps;
+
+      cy.wrap(viewportElement)
+        .trigger('mousedown', x1, y1, { buttons: 1 })
+        .then(() => {
+          for (let i = 1; i <= steps; i++) {
+            let x = x1 + xStep * i;
+            let y = y1 + yStep * i;
+            cy.wrap(viewportElement).trigger('mousemove', x, y, { buttons: 1 });
+          }
+        })
+        .trigger('mouseup');
+    });
+});
+
+// Add erase stroke in the viewport
+Cypress.Commands.add('addEraser', (viewport, firstClick = [150, 100], secondClick = [300, 100]) => {
+  cy.get(viewport)
+    .first()
+    .then(viewportElement => {
+      const [x1, y1] = firstClick;
+      const [x2, y2] = secondClick;
+
+      const steps = 10;
+      const xStep = (x2 - x1) / steps;
+      const yStep = (y2 - y1) / steps;
+
+      cy.wrap(viewportElement)
+        .trigger('mousedown', x1, y1, { buttons: 1 })
+        .then(() => {
+          for (let i = 1; i <= steps; i++) {
+            let x = x1 + xStep * i;
+            let y = y1 + yStep * i;
+            cy.wrap(viewportElement).trigger('mousemove', x, y, { buttons: 1 });
+          }
+        })
+        .trigger('mouseup');
+    });
+});
 
 //Add measurements in the viewport
 Cypress.Commands.add(
