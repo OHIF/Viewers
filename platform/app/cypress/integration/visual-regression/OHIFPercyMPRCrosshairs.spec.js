@@ -17,6 +17,7 @@ describe('OHIF Percy MPR Crosshairs', () => {
     cy.get('[data-cy="Crosshairs"]').click();
     cy.wait(500);
     cy.percyCanvasSnapshot('Crosshairs enabled');
+    cy.wait(100);
     cy.get('[data-viewport-uid="mpr-axial"] > .viewport-element > .cornerstone-canvas').click(
       45,
       100

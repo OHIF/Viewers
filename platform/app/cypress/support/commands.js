@@ -304,7 +304,7 @@ Cypress.Commands.add('addBrush', (viewport, firstClick = [85, 100], secondClick 
 });
 
 // Add erase stroke in the viewport
-Cypress.Commands.add('addEraser', (viewport, firstClick = [150, 100], secondClick = [300, 100]) => {
+Cypress.Commands.add('addEraser', (viewport, firstClick = [85, 100], secondClick = [85, 300]) => {
   cy.get(viewport)
     .first()
     .then(viewportElement => {
