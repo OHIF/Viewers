@@ -13,3 +13,14 @@ body {
   line-height: 1.25 !important;
   padding: 0.5rem 1rem !important;
 }
+
+.mt-3 {
+  margin-top: 0.75rem;
+}
+
+.d-flex {
+  display: flex;
+} 
+.space-between {
+  justify-content: space-between;
+}
