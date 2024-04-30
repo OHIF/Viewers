@@ -25,4 +25,14 @@ describe('OHIF Percy TMTV', () => {
     cy.wait(500);
     cy.percyCanvasSnapshot('TMTV Back to original view');
   });
+
+  it('should still look fine when changing patient data', () => {
+    cy.get('[data-cy="petSUV-btn"]').click();
+    cy.percyCanvasSnapshot('TMTV Patient Panel Opened');
+    cy.get('[data-cy="input-weight-input"]').type('191');
+    cy.percyCanvasSnapshot('TMTV Patient Panel Weight Changed');
+    cy.get('button').contains('Reload Data').click();
+    cy.wait(5000);
+    cy.percyCanvasSnapshot('TMTV Reloaded Data');
+  });
 });
