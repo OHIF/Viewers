@@ -179,6 +179,10 @@ export default async function loadRTStruct(
         points,
         type: ContourGeometricType,
         isSupported,
+        imageId: _getImageId(
+          imageIdSopInstanceUidPairs,
+          ContourImageSequence.ReferencedSOPInstanceUID
+        ),
       });
     }
 

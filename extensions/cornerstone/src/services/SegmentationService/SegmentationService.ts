@@ -18,7 +18,8 @@ import isEqual from 'lodash.isequal';
 import { Types as ohifTypes } from '@ohif/core';
 import { easeInOutBell, reverseEaseInOutBell } from '../../utils/transitions';
 import { Segment, Segmentation, SegmentationConfig } from './SegmentationServiceTypes';
-import { mapROIContoursToRTStructData } from './RTSTRUCT/mapROIContoursToRTStructData';
+import { mapROIContoursToAnnotations } from './RTSTRUCT/mapROIContoursToRTStructData';
+import { annotation } from '@cornerstonejs/tools';
 
 const LABELMAP = csToolsEnums.SegmentationRepresentations.Labelmap;
 const CONTOUR = csToolsEnums.SegmentationRepresentations.Contour;
@@ -634,13 +635,27 @@ class SegmentationService extends PubSubService {
 
     const defaultScheme = this._getDefaultSegmentationScheme();
     const rtDisplaySetUID = rtDisplaySet.displaySetInstanceUID;
-
-    const allRTStructData = mapROIContoursToRTStructData(structureSet, rtDisplaySetUID);
-
+    const frameOfReferenceUID = this._getFrameOfReferenceUIDForSeg(rtDisplaySet);
+    const annotations = mapROIContoursToAnnotations(
+      structureSet,
+      rtDisplaySet,
+      segmentationId,
+      frameOfReferenceUID
+    );
     // sort by segmentIndex
-    allRTStructData.sort((a, b) => a.segmentIndex - b.segmentIndex);
+    annotations.sort((a, b) => a.segmentIndex - b.segmentIndex);
 
-    const geometryIds = allRTStructData.map(({ geometryId }) => geometryId);
+    const annotationUIDsMap = new Map();
+
+    annotations.forEach(annotation => {
+      const { data, annotationUID } = annotation;
+      const { segmentIndex } = data.segmentation;
+      if (!annotationUIDsMap.has(segmentIndex)) {
+        annotationUIDsMap.set(segmentIndex, new Set());
+      }
+
+      annotationUIDsMap.get(segmentIndex).add(annotationUID);
+    });
 
     const segmentation: Segmentation = {
       ...defaultScheme,
@@ -650,7 +665,7 @@ class SegmentationService extends PubSubService {
       label: rtDisplaySet.SeriesDescription,
       representationData: {
         [CONTOUR]: {
-          geometryIds,
+          annotationUIDsMap,
         },
       },
     };
@@ -673,29 +688,17 @@ class SegmentationService extends PubSubService {
       );
     }
     const segmentsCachedStats = {};
-    const initializeContour = async rtStructData => {
-      const { data, id, color, segmentIndex, geometryId } = rtStructData;
-
-      // catch error instead of failing to allow loading to continue
+    const initializeContour = async RTannotation => {
       try {
-        const geometry = await geometryLoader.createAndCacheGeometry(geometryId, {
-          geometryData: {
-            data,
-            id,
-            color,
-            frameOfReferenceUID: structureSet.frameOfReferenceUID,
-            segmentIndex,
-          },
-          type: csEnums.GeometryType.CONTOUR,
-        });
+        const { segmentIndex, color, id } = RTannotation.data.segmentation;
+        const annotationManager = annotation.state.getAnnotationManager();
+        annotationManager.addAnnotation(RTannotation);
+        cstUtils.contourSegmentation.addContourSegmentationAnnotation(RTannotation);
 
-        const contourSet = geometry.data;
-        const centroid = contourSet.getCentroid();
-
-        segmentsCachedStats[segmentIndex] = {
-          center: { world: centroid },
-          modifiedTime: rtDisplaySet.SeriesDate, // we use the SeriesDate as the modifiedTime since this is the first time we are creating the segmentation
-        };
+        // segmentsCachedStats[segmentIndex] = {
+        //  center: { world: centroid },
+        //    modifiedTime: rtDisplaySet.SeriesDate, // we use the SeriesDate as the modifiedTime since this is the first time we are creating the segmentation
+        //  };
 
         segmentation.segments[segmentIndex] = {
           label: id,
@@ -707,13 +710,11 @@ class SegmentationService extends PubSubService {
         const numInitialized = Object.keys(segmentsCachedStats).length;
 
         // Calculate percentage completed
-        const percentComplete = Math.round((numInitialized / allRTStructData.length) * 100);
+        const percentComplete = Math.round((numInitialized / annotations.length) * 100);
 
         this._broadcastEvent(EVENTS.SEGMENT_LOADING_COMPLETE, {
           percentComplete,
-          // Note: this is not the geometryIds length since there might be
-          // some missing ROINumbers
-          numSegments: allRTStructData.length,
+          numSegments: annotations.length,
         });
       } catch (e) {
         console.warn(e);
@@ -722,21 +723,7 @@ class SegmentationService extends PubSubService {
 
     const promiseArray = [];
 
-    for (let i = 0; i < allRTStructData.length; i++) {
-      const promise = new Promise<void>((resolve, reject) => {
-        setTimeout(() => {
-          initializeContour(allRTStructData[i]).then(() => {
-            resolve();
-          });
-        }, 0);
-      });
-
-      promiseArray.push(promise);
-    }
-
-    await Promise.all(promiseArray);
-
-    segmentation.segmentCount = allRTStructData.length;
+    segmentation.segmentCount = annotations.length;
     rtDisplaySet.isLoaded = true;
 
     segmentation.cachedStats = {
@@ -747,12 +734,26 @@ class SegmentationService extends PubSubService {
       },
     };
 
+    this.addOrUpdateSegmentation(segmentation, suppressEvents);
+
+    for (let i = 0; i < annotations.length; i++) {
+      const promise = new Promise<void>((resolve, reject) => {
+        setTimeout(() => {
+          initializeContour(annotations[i]).then(() => {
+            resolve();
+          });
+        }, 0);
+      });
+
+      promiseArray.push(promise);
+    }
+
+    await Promise.all(promiseArray);
+
     this._broadcastEvent(EVENTS.SEGMENTATION_LOADING_COMPLETE, {
       segmentationId,
       rtDisplaySet,
     });
-
-    return this.addOrUpdateSegmentation(segmentation, suppressEvents);
   }
 
   // Todo: this should not run on the main thread
