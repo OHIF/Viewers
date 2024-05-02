@@ -92,7 +92,7 @@
   },
   "devDependencies": {
     "cypress": "^6.0.0",
-    "gh-pages": "2.0.1",
+    "gh-pages": "5.0.0",
     "identity-obj-proxy": "3.0.x",
     "lodash": "4.17.21",
     "lodash.clonedeep": "4.5.0"
