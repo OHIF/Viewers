@@ -66,7 +66,7 @@ function WrappedCinePlayer({ enabledVPElement, viewportId, servicesManager }) {
     }
     cineService.setCine({ id: viewportId, isPlaying, frameRate });
     setNewStackFrameRate(frameRate);
-  }, [displaySetService, viewportId, viewportGridService, cines, isCineEnabled]);
+  }, [displaySetService, viewportId, viewportGridService, cines, isCineEnabled, enabledVPElement]);
 
   useEffect(() => {
     isMountedRef.current = true;
@@ -77,6 +77,14 @@ function WrappedCinePlayer({ enabledVPElement, viewportId, servicesManager }) {
       isMountedRef.current = false;
     };
   }, [isCineEnabled, newDisplaySetHandler]);
+
+  useEffect(() => {
+    if (!isCineEnabled) {
+      return;
+    }
+
+    cineHandler();
+  }, [isCineEnabled, cineHandler, enabledVPElement]);
 
   /**
    * Use effect for handling new display set
@@ -112,7 +120,7 @@ function WrappedCinePlayer({ enabledVPElement, viewportId, servicesManager }) {
     cineHandler();
 
     return () => {
-      cineService.stopClip(enabledVPElement);
+      cineService.stopClip(enabledVPElement, { viewportId });
     };
   }, [cines, viewportId, cineService, enabledVPElement, cineHandler]);
 

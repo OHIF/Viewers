@@ -532,6 +532,11 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     cameraProps: unknown
   ): string {
     const viewportInfo = this.getViewportInfo(activeViewportId);
+
+    if (viewportInfo.getViewportType() === csEnums.ViewportType.VOLUME_3D) {
+      return null;
+    }
+
     const { referencedImageId } = cameraProps;
     if (viewportInfo?.contains(displaySetInstanceUID, referencedImageId)) {
       return activeViewportId;

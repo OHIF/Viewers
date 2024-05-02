@@ -34,6 +34,7 @@ import link from './../../assets/icons/tool-stack-image-sync.svg';
 import listBullets from './../../assets/icons/list-bullets.svg';
 import lock from './../../assets/icons/lock.svg';
 import logoOhifSmall from './../../assets/icons/logo-ohif-small.svg';
+import logoDarkBackGround from './../../assets/icons/ohif-logo-color-darkbg.svg';
 import magnifier from './../../assets/icons/magnifier.svg';
 import notificationwarningDiamond from './../../assets/icons/notificationwarning-diamond.svg';
 import pencil from './../../assets/icons/pencil.svg';
@@ -264,6 +265,7 @@ const ICONS = {
   'list-bullets': listBullets,
   lock: lock,
   'logo-ohif-small': logoOhifSmall,
+  'logo-dark-background': logoDarkBackGround,
   magnifier: magnifier,
   exclamation: exclamation,
   'notificationwarning-diamond': notificationwarningDiamond,

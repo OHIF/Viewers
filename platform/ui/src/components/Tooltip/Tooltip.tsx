@@ -79,6 +79,13 @@ const Tooltip = ({
   };
 
   useEffect(() => {
+    return () => {
+      handleMouseOverDebounced.cancel();
+      handleMouseOutDebounced.cancel();
+    };
+  }, [handleMouseOverDebounced, handleMouseOutDebounced]);
+
+  useEffect(() => {
     if (!isOpen && onHide) {
       onHide();
     }
