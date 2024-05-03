@@ -1,5 +1,3 @@
-import cloneDeep from 'lodash.clonedeep';
-
 import { Types as OhifTypes, ServicesManager, PubSubService } from '@ohif/core';
 import {
   cache,
@@ -11,7 +9,6 @@ import {
   volumeLoader,
 } from '@cornerstonejs/core';
 import {
-  CONSTANTS as cstConstants,
   Enums as csToolsEnums,
   segmentation as cstSegmentation,
   Types as cstTypes,
@@ -23,7 +20,6 @@ import { easeInOutBell, reverseEaseInOutBell } from '../../utils/transitions';
 import { Segment, Segmentation, SegmentationConfig } from './SegmentationServiceTypes';
 import { mapROIContoursToRTStructData } from './RTSTRUCT/mapROIContoursToRTStructData';
 
-const { COLOR_LUT } = cstConstants;
 const LABELMAP = csToolsEnums.SegmentationRepresentations.Labelmap;
 const CONTOUR = csToolsEnums.SegmentationRepresentations.Contour;
 
@@ -465,15 +461,6 @@ class SegmentationService extends PubSubService {
       },
     ]);
 
-    // if first segmentation, we can use the default colorLUT, otherwise
-    // we need to generate a new one and use a new colorLUT
-    const colorLUTIndex = 0;
-    if (Object.keys(this.segmentations).length !== 0) {
-      const newColorLUT = this.generateNewColorLUT();
-      const colorLUTIndex = this.getNextColorLUTIndex();
-      cstSegmentation.config.color.addColorLUT(newColorLUT, colorLUTIndex);
-    }
-
     this.segmentations[segmentationId] = {
       ...segmentation,
       label: segmentation.label || '',
@@ -482,7 +469,6 @@ class SegmentationService extends PubSubService {
       segmentCount: segmentation.segmentCount ?? 0,
       isActive: false,
       isVisible: true,
-      colorLUTIndex,
     };
 
     cachedSegmentation = this.segmentations[segmentationId];
@@ -689,6 +675,7 @@ class SegmentationService extends PubSubService {
     const segmentsCachedStats = {};
     const initializeContour = async rtStructData => {
       const { data, id, color, segmentIndex, geometryId } = rtStructData;
+
       // catch error instead of failing to allow loading to continue
       try {
         const geometry = await geometryLoader.createAndCacheGeometry(geometryId, {
@@ -975,7 +962,7 @@ class SegmentationService extends PubSubService {
 
     // Force use of a Uint8Array SharedArrayBuffer for the segmentation to save space and so
     // it is easily compressible in worker thread.
-    await volumeLoader.createAndCacheDerivedVolume(volumeId, {
+    await volumeLoader.createAndCacheDerivedSegmentationVolume(volumeId, {
       volumeId: segmentationId,
       targetBuffer: {
         type: 'Uint8Array',
@@ -1001,6 +988,7 @@ class SegmentationService extends PubSubService {
           referencedVolumeId: volumeId, // Todo: this is so ugly
         },
       },
+      description: `S${displaySet.SeriesNumber}: ${displaySet.SeriesDescription}`,
     };
 
     this.addOrUpdateSegmentation(segmentation);
@@ -1036,8 +1024,6 @@ class SegmentationService extends PubSubService {
       segmentation.hydrated = true;
     }
 
-    const { colorLUTIndex } = segmentation;
-
     // Based on the segmentationId, set the colorLUTIndex.
     const segmentationRepresentationUIDs = await cstSegmentation.addSegmentationRepresentations(
       toolGroupId,
@@ -1054,12 +1040,6 @@ class SegmentationService extends PubSubService {
       segmentationId,
       toolGroupId,
       segmentationRepresentationUIDs[0]
-    );
-
-    cstSegmentation.config.color.setColorLUT(
-      toolGroupId,
-      segmentationRepresentationUIDs[0],
-      colorLUTIndex
     );
 
     // add the segmentation segments properly
@@ -1167,6 +1147,10 @@ class SegmentationService extends PubSubService {
 
     displaySet.isHydrated = isHydrated;
     displaySetService.setDisplaySetMetadataInvalidated(displaySetUID, false);
+
+    this._broadcastEvent(this.EVENTS.SEGMENTATION_UPDATED, {
+      segmentation: this.getSegmentation(displaySetUID),
+    });
   }
 
   private _highlightLabelmap(
@@ -1309,7 +1293,7 @@ class SegmentationService extends PubSubService {
     }
 
     const { colorLUTIndex } = segmentation;
-    this._removeSegmentationFromCornerstone(segmentationId);
+    const { updatedToolGroupIds } = this._removeSegmentationFromCornerstone(segmentationId);
 
     // Delete associated colormap
     // Todo: bring this back
@@ -1329,7 +1313,9 @@ class SegmentationService extends PubSubService {
       if (remainingHydratedSegmentations.length) {
         const { id } = remainingHydratedSegmentations[0];
 
-        this._setActiveSegmentationForToolGroup(id, this._getApplicableToolGroupId(), false);
+        updatedToolGroupIds.forEach(toolGroupId => {
+          this._setActiveSegmentationForToolGroup(id, toolGroupId, false);
+        });
       }
     }
 
@@ -1389,8 +1375,6 @@ class SegmentationService extends PubSubService {
 
   public setConfiguration = (configuration: SegmentationConfig): void => {
     const {
-      brushSize,
-      brushThresholdGate,
       fillAlpha,
       fillAlphaInactive,
       outlineWidthActive,
@@ -1482,7 +1466,6 @@ class SegmentationService extends PubSubService {
     segmentInfo.label = label;
 
     if (suppressEvents === false) {
-      // this._setSegmentationModified(segmentationId);
       this._broadcastEvent(this.EVENTS.SEGMENTATION_UPDATED, {
         segmentation,
       });
@@ -1529,7 +1512,6 @@ class SegmentationService extends PubSubService {
       segments: [],
       isVisible: true,
       isActive: false,
-      colorLUTIndex: 0,
     };
   }
 
@@ -1990,6 +1972,7 @@ class SegmentationService extends PubSubService {
     const removeFromCache = true;
     const segmentationState = cstSegmentation.state;
     const sourceSegState = segmentationState.getSegmentation(segmentationId);
+    const updatedToolGroupIds: Set<string> = new Set();
 
     if (!sourceSegState) {
       return;
@@ -2005,6 +1988,7 @@ class SegmentationService extends PubSubService {
       segmentationRepresentations.forEach(representation => {
         if (representation.segmentationId === segmentationId) {
           UIDsToRemove.push(representation.segmentationRepresentationUID);
+          updatedToolGroupIds.add(toolGroupId);
         }
       });
 
@@ -2022,6 +2006,8 @@ class SegmentationService extends PubSubService {
     if (removeFromCache && cache.getVolumeLoadObject(segmentationId)) {
       cache.removeVolumeLoadObject(segmentationId);
     }
+
+    return { updatedToolGroupIds: Array.from(updatedToolGroupIds) };
   }
 
   private _updateCornerstoneSegmentations({ segmentationId, notYetUpdatedAtSource }) {
@@ -2122,23 +2108,6 @@ class SegmentationService extends PubSubService {
 
     return viewportInfo.getToolGroupId();
   };
-
-  private getNextColorLUTIndex = (): number => {
-    let i = 0;
-    while (true) {
-      if (cstSegmentation.state.getColorLUT(i) === undefined) {
-        return i;
-      }
-
-      i++;
-    }
-  };
-
-  private generateNewColorLUT() {
-    const newColorLUT = cloneDeep(COLOR_LUT);
-
-    return newColorLUT;
-  }
 
   /**
    * Converts object of objects to array.
