@@ -169,6 +169,8 @@
     "**/@babel/runtime": "7.5.5",
     "fast-xml-parser": "4.2.4",
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.2/xlsx-0.20.2.tgz",
-    "lodash.pick": "https://github.com/lodash/lodash/archive/refs/tags/4.17.21.tar.gz"
+    "lodash.pick": "https://github.com/lodash/lodash/archive/refs/tags/4.17.21.tar.gz",
+    "lodash.template": "https://github.com/lodash/lodash/archive/refs/tags/4.17.21.tar.gz",
+    "html-minifier": "npm:html-minifier-terser@7.2.0"
   }
 }
