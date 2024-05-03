@@ -1,3 +1,5 @@
+import cloneDeep from 'lodash.clonedeep';
+
 import { Types as OhifTypes, ServicesManager, PubSubService } from '@ohif/core';
 import {
   cache,
@@ -9,6 +11,7 @@ import {
   volumeLoader,
 } from '@cornerstonejs/core';
 import {
+  CONSTANTS as cstConstants,
   Enums as csToolsEnums,
   segmentation as cstSegmentation,
   Types as cstTypes,
@@ -18,9 +21,9 @@ import isEqual from 'lodash.isequal';
 import { Types as ohifTypes } from '@ohif/core';
 import { easeInOutBell, reverseEaseInOutBell } from '../../utils/transitions';
 import { Segment, Segmentation, SegmentationConfig } from './SegmentationServiceTypes';
-import { mapROIContoursToAnnotations } from './RTSTRUCT/mapROIContoursToRTStructData';
-import { annotation } from '@cornerstonejs/tools';
+import { mapROIContoursToRTStructData } from './RTSTRUCT/mapROIContoursToRTStructData';
 
+const { COLOR_LUT } = cstConstants;
 const LABELMAP = csToolsEnums.SegmentationRepresentations.Labelmap;
 const CONTOUR = csToolsEnums.SegmentationRepresentations.Contour;
 
@@ -462,6 +465,15 @@ class SegmentationService extends PubSubService {
       },
     ]);
 
+    // if first segmentation, we can use the default colorLUT, otherwise
+    // we need to generate a new one and use a new colorLUT
+    const colorLUTIndex = 0;
+    if (Object.keys(this.segmentations).length !== 0) {
+      const newColorLUT = this.generateNewColorLUT();
+      const colorLUTIndex = this.getNextColorLUTIndex();
+      cstSegmentation.config.color.addColorLUT(newColorLUT, colorLUTIndex);
+    }
+
     this.segmentations[segmentationId] = {
       ...segmentation,
       label: segmentation.label || '',
@@ -470,6 +482,7 @@ class SegmentationService extends PubSubService {
       segmentCount: segmentation.segmentCount ?? 0,
       isActive: false,
       isVisible: true,
+      colorLUTIndex,
     };
 
     cachedSegmentation = this.segmentations[segmentationId];
@@ -635,27 +648,13 @@ class SegmentationService extends PubSubService {
 
     const defaultScheme = this._getDefaultSegmentationScheme();
     const rtDisplaySetUID = rtDisplaySet.displaySetInstanceUID;
-    const frameOfReferenceUID = this._getFrameOfReferenceUIDForSeg(rtDisplaySet);
-    const annotations = mapROIContoursToAnnotations(
-      structureSet,
-      rtDisplaySet,
-      segmentationId,
-      frameOfReferenceUID
-    );
+
+    const allRTStructData = mapROIContoursToRTStructData(structureSet, rtDisplaySetUID);
+
     // sort by segmentIndex
-    annotations.sort((a, b) => a.segmentIndex - b.segmentIndex);
+    allRTStructData.sort((a, b) => a.segmentIndex - b.segmentIndex);
 
-    const annotationUIDsMap = new Map();
-
-    annotations.forEach(annotation => {
-      const { data, annotationUID } = annotation;
-      const { segmentIndex } = data.segmentation;
-      if (!annotationUIDsMap.has(segmentIndex)) {
-        annotationUIDsMap.set(segmentIndex, new Set());
-      }
-
-      annotationUIDsMap.get(segmentIndex).add(annotationUID);
-    });
+    const geometryIds = allRTStructData.map(({ geometryId }) => geometryId);
 
     const segmentation: Segmentation = {
       ...defaultScheme,
@@ -665,7 +664,7 @@ class SegmentationService extends PubSubService {
       label: rtDisplaySet.SeriesDescription,
       representationData: {
         [CONTOUR]: {
-          annotationUIDsMap,
+          geometryIds,
         },
       },
     };
@@ -688,17 +687,28 @@ class SegmentationService extends PubSubService {
       );
     }
     const segmentsCachedStats = {};
-    const initializeContour = async RTannotation => {
+    const initializeContour = async rtStructData => {
+      const { data, id, color, segmentIndex, geometryId } = rtStructData;
+      // catch error instead of failing to allow loading to continue
       try {
-        const { segmentIndex, color, id } = RTannotation.data.segmentation;
-        const annotationManager = annotation.state.getAnnotationManager();
-        annotationManager.addAnnotation(RTannotation);
-        cstUtils.contourSegmentation.addContourSegmentationAnnotation(RTannotation);
+        const geometry = await geometryLoader.createAndCacheGeometry(geometryId, {
+          geometryData: {
+            data,
+            id,
+            color,
+            frameOfReferenceUID: structureSet.frameOfReferenceUID,
+            segmentIndex,
+          },
+          type: csEnums.GeometryType.CONTOUR,
+        });
 
-        // segmentsCachedStats[segmentIndex] = {
-        //  center: { world: centroid },
-        //    modifiedTime: rtDisplaySet.SeriesDate, // we use the SeriesDate as the modifiedTime since this is the first time we are creating the segmentation
-        //  };
+        const contourSet = geometry.data;
+        const centroid = contourSet.getCentroid();
+
+        segmentsCachedStats[segmentIndex] = {
+          center: { world: centroid },
+          modifiedTime: rtDisplaySet.SeriesDate, // we use the SeriesDate as the modifiedTime since this is the first time we are creating the segmentation
+        };
 
         segmentation.segments[segmentIndex] = {
           label: id,
@@ -710,11 +720,13 @@ class SegmentationService extends PubSubService {
         const numInitialized = Object.keys(segmentsCachedStats).length;
 
         // Calculate percentage completed
-        const percentComplete = Math.round((numInitialized / annotations.length) * 100);
+        const percentComplete = Math.round((numInitialized / allRTStructData.length) * 100);
 
         this._broadcastEvent(EVENTS.SEGMENT_LOADING_COMPLETE, {
           percentComplete,
-          numSegments: annotations.length,
+          // Note: this is not the geometryIds length since there might be
+          // some missing ROINumbers
+          numSegments: allRTStructData.length,
         });
       } catch (e) {
         console.warn(e);
@@ -723,23 +735,10 @@ class SegmentationService extends PubSubService {
 
     const promiseArray = [];
 
-    segmentation.segmentCount = annotations.length;
-    rtDisplaySet.isLoaded = true;
-
-    segmentation.cachedStats = {
-      ...segmentation.cachedStats,
-      segmentCenter: {
-        ...segmentation.cachedStats.segmentCenter,
-        ...segmentsCachedStats,
-      },
-    };
-
-    this.addOrUpdateSegmentation(segmentation, suppressEvents);
-
-    for (let i = 0; i < annotations.length; i++) {
+    for (let i = 0; i < allRTStructData.length; i++) {
       const promise = new Promise<void>((resolve, reject) => {
         setTimeout(() => {
-          initializeContour(annotations[i]).then(() => {
+          initializeContour(allRTStructData[i]).then(() => {
             resolve();
           });
         }, 0);
@@ -750,10 +749,23 @@ class SegmentationService extends PubSubService {
 
     await Promise.all(promiseArray);
 
+    segmentation.segmentCount = allRTStructData.length;
+    rtDisplaySet.isLoaded = true;
+
+    segmentation.cachedStats = {
+      ...segmentation.cachedStats,
+      segmentCenter: {
+        ...segmentation.cachedStats.segmentCenter,
+        ...segmentsCachedStats,
+      },
+    };
+
     this._broadcastEvent(EVENTS.SEGMENTATION_LOADING_COMPLETE, {
       segmentationId,
       rtDisplaySet,
     });
+
+    return this.addOrUpdateSegmentation(segmentation, suppressEvents);
   }
 
   // Todo: this should not run on the main thread
@@ -963,7 +975,7 @@ class SegmentationService extends PubSubService {
 
     // Force use of a Uint8Array SharedArrayBuffer for the segmentation to save space and so
     // it is easily compressible in worker thread.
-    await volumeLoader.createAndCacheDerivedSegmentationVolume(volumeId, {
+    await volumeLoader.createAndCacheDerivedVolume(volumeId, {
       volumeId: segmentationId,
       targetBuffer: {
         type: 'Uint8Array',
@@ -989,7 +1001,6 @@ class SegmentationService extends PubSubService {
           referencedVolumeId: volumeId, // Todo: this is so ugly
         },
       },
-      description: `S${displaySet.SeriesNumber}: ${displaySet.SeriesDescription}`,
     };
 
     this.addOrUpdateSegmentation(segmentation);
@@ -1025,6 +1036,8 @@ class SegmentationService extends PubSubService {
       segmentation.hydrated = true;
     }
 
+    const { colorLUTIndex } = segmentation;
+
     // Based on the segmentationId, set the colorLUTIndex.
     const segmentationRepresentationUIDs = await cstSegmentation.addSegmentationRepresentations(
       toolGroupId,
@@ -1041,6 +1054,12 @@ class SegmentationService extends PubSubService {
       segmentationId,
       toolGroupId,
       segmentationRepresentationUIDs[0]
+    );
+
+    cstSegmentation.config.color.setColorLUT(
+      toolGroupId,
+      segmentationRepresentationUIDs[0],
+      colorLUTIndex
     );
 
     // add the segmentation segments properly
@@ -1148,10 +1167,6 @@ class SegmentationService extends PubSubService {
 
     displaySet.isHydrated = isHydrated;
     displaySetService.setDisplaySetMetadataInvalidated(displaySetUID, false);
-
-    this._broadcastEvent(this.EVENTS.SEGMENTATION_UPDATED, {
-      segmentation: this.getSegmentation(displaySetUID),
-    });
   }
 
   private _highlightLabelmap(
@@ -1294,7 +1309,7 @@ class SegmentationService extends PubSubService {
     }
 
     const { colorLUTIndex } = segmentation;
-    const { updatedToolGroupIds } = this._removeSegmentationFromCornerstone(segmentationId);
+    this._removeSegmentationFromCornerstone(segmentationId);
 
     // Delete associated colormap
     // Todo: bring this back
@@ -1314,9 +1329,7 @@ class SegmentationService extends PubSubService {
       if (remainingHydratedSegmentations.length) {
         const { id } = remainingHydratedSegmentations[0];
 
-        updatedToolGroupIds.forEach(toolGroupId => {
-          this._setActiveSegmentationForToolGroup(id, toolGroupId, false);
-        });
+        this._setActiveSegmentationForToolGroup(id, this._getApplicableToolGroupId(), false);
       }
     }
 
@@ -1376,6 +1389,8 @@ class SegmentationService extends PubSubService {
 
   public setConfiguration = (configuration: SegmentationConfig): void => {
     const {
+      brushSize,
+      brushThresholdGate,
       fillAlpha,
       fillAlphaInactive,
       outlineWidthActive,
@@ -1467,6 +1482,7 @@ class SegmentationService extends PubSubService {
     segmentInfo.label = label;
 
     if (suppressEvents === false) {
+      // this._setSegmentationModified(segmentationId);
       this._broadcastEvent(this.EVENTS.SEGMENTATION_UPDATED, {
         segmentation,
       });
@@ -1513,6 +1529,7 @@ class SegmentationService extends PubSubService {
       segments: [],
       isVisible: true,
       isActive: false,
+      colorLUTIndex: 0,
     };
   }
 
@@ -1973,7 +1990,6 @@ class SegmentationService extends PubSubService {
     const removeFromCache = true;
     const segmentationState = cstSegmentation.state;
     const sourceSegState = segmentationState.getSegmentation(segmentationId);
-    const updatedToolGroupIds: Set<string> = new Set();
 
     if (!sourceSegState) {
       return;
@@ -1989,7 +2005,6 @@ class SegmentationService extends PubSubService {
       segmentationRepresentations.forEach(representation => {
         if (representation.segmentationId === segmentationId) {
           UIDsToRemove.push(representation.segmentationRepresentationUID);
-          updatedToolGroupIds.add(toolGroupId);
         }
       });
 
@@ -2007,8 +2022,6 @@ class SegmentationService extends PubSubService {
     if (removeFromCache && cache.getVolumeLoadObject(segmentationId)) {
       cache.removeVolumeLoadObject(segmentationId);
     }
-
-    return { updatedToolGroupIds: Array.from(updatedToolGroupIds) };
   }
 
   private _updateCornerstoneSegmentations({ segmentationId, notYetUpdatedAtSource }) {
@@ -2109,6 +2122,23 @@ class SegmentationService extends PubSubService {
 
     return viewportInfo.getToolGroupId();
   };
+
+  private getNextColorLUTIndex = (): number => {
+    let i = 0;
+    while (true) {
+      if (cstSegmentation.state.getColorLUT(i) === undefined) {
+        return i;
+      }
+
+      i++;
+    }
+  };
+
+  private generateNewColorLUT() {
+    const newColorLUT = cloneDeep(COLOR_LUT);
+
+    return newColorLUT;
+  }
 
   /**
    * Converts object of objects to array.
