@@ -339,8 +339,8 @@ function _getComponentType(ds) {
  */
 function _createStudyBrowserTabs(primaryStudyInstanceUIDs, studyDisplayList, displaySets) {
   const primaryStudies = [];
-  const recentStudies = [];
   const allStudies = [];
+  let recentStudies = [];
 
   studyDisplayList.forEach(study => {
     const displaySetsForStudy = displaySets.filter(
@@ -350,14 +350,30 @@ function _createStudyBrowserTabs(primaryStudyInstanceUIDs, studyDisplayList, dis
       displaySets: displaySetsForStudy,
     });
 
+    //If primary study, add to primary study
     if (primaryStudyInstanceUIDs.includes(study.studyInstanceUid)) {
       primaryStudies.push(tabStudy);
-    } else {
-      // TODO: Filter allStudies to dates within one year of current date
-      recentStudies.push(tabStudy);
-      allStudies.push(tabStudy);
     }
+    //In all case add to all Studies tab
+    allStudies.push(tabStudy);
   });
+
+  //Get primary studies date as time stamp
+  const primaryStudiesTimestamps = primaryStudies.filter(study => study.date).map((study) => new Date(study.date).getTime())
+
+  if (primaryStudiesTimestamps.length > 0) {
+    
+    const oldestPrimaryTimeStamp = Math.min(...primaryStudiesTimestamps)
+    const oneYearInMs = 365 * 24 * 3600 * 1000
+
+    //Select studies date previous to primary studies and up to one year earlier
+    recentStudies = allStudies.filter(study => {
+      if (!study.date) return false
+      const studyTimeStamp = new Date(study.date).getTime()
+      return (oldestPrimaryTimeStamp - studyTimeStamp) < oneYearInMs
+    })
+
+  }
 
   const tabs = [
     {
