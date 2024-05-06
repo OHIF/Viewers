@@ -54,7 +54,7 @@
     "@cornerstonejs/codec-libjpeg-turbo-8bit": "^1.2.2",
     "@cornerstonejs/codec-openjpeg": "^1.2.2",
     "@cornerstonejs/codec-openjph": "^2.4.5",
-    "@cornerstonejs/dicom-image-loader": "^1.70.14",
+    "@cornerstonejs/dicom-image-loader": "^1.71.2",
     "@emotion/serialize": "^1.1.3",
     "@ohif/core": "3.9.0-beta.0",
     "@ohif/extension-cornerstone": "3.9.0-beta.0",
