@@ -13,7 +13,6 @@ window.config = {
   showLoadingIndicator: true,
   strictZSpacingForVolumeViewport: true,
   groupEnabledModesFirst: true,
-  disableConfirmationPrompts: true,
   maxNumRequests: {
     interaction: 100,
     thumbnail: 75,
