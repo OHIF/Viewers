@@ -20,7 +20,11 @@ body {
 
 .d-flex {
   display: flex;
-} 
+}
 .space-between {
   justify-content: space-between;
+}
+
+.report-modal {
+
 }

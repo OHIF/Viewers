@@ -1,0 +1,45 @@
+.editor-container {
+  display: flex;
+  height: 100%;
+  min-height: 550px;
+}
+
+.left-section {
+  flex: 1;
+  flex-basis: 40%;
+}
+
+.right-section {
+  flex: 1;
+  padding: 10px;
+  overflow-y: scroll;
+  flex-basis: 70%;
+}
+
+.pat-name {
+  font-weight: 500;
+}
+
+.patient-details {
+  border: 1px solid;
+  margin-bottom: 1rem;
+  padding: 4px;
+}
+
+.previous-reports {
+  border: 1px solid;
+  margin-bottom: 1rem;
+  padding: 4px;
+}
+
+.templates-section {
+  border: 1px solid;
+  margin-bottom: 1rem;
+  padding: 4px;
+}
+
+.more-options {
+  border: 1px solid;
+  margin-bottom: 1rem;
+  padding: 4px;
+}

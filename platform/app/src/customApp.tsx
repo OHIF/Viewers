@@ -47,7 +47,7 @@ function CustomApp(appProps) {
     },
     {
       key: '2',
-      label: 'Pacs',
+      label: 'PACS',
       children: <MyViewer appProps={appProps} />,
     },
   ];

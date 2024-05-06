@@ -63,6 +63,9 @@
     "@kitware/vtk.js": "30.3.3",
     "antd": "^5.16.4",
     "core-js": "^3.2.1",
+    "html-docx": "^1.2.0",
+    "html-docx-js": "^0.3.1",
+    "html-to-docx": "^1.8.0",
     "quill": "^2.0.0"
   },
   "peerDependencies": {

@@ -40,14 +40,14 @@ loadDynamicConfig(window.config).then(config_json => {
   // const app = React.createElement(App, appProps, null);
   // const pacs_app_element = document.getElementById('pacs-app');
   // if(pacs_app_element) {
-  //   ReactDOM.render(app, pacs_app_element);  
+  //   ReactDOM.render(app, pacs_app_element);
   // }
 
   const customApp = React.createElement(CustomApp, appProps, null);
 
   // const root = document.getElementById('root');
   /** Render */
-  ReactDOM.render(customApp, document.getElementById('custom-root'));  
+  ReactDOM.render(customApp, document.getElementById('custom-root'));
 });
 
 export { history };
