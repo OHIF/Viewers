@@ -9,6 +9,7 @@ window.config = {
   showLoadingIndicator: true,
   strictZSpacingForVolumeViewport: true,
   groupEnabledModesFirst: true,
+  disableConfirmationPrompts: false,
   // filterQueryParam: false,
   defaultDataSourceName: 'dicomweb',
   dataSources: [
