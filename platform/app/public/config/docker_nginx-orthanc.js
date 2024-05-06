@@ -9,7 +9,7 @@ window.config = {
   showLoadingIndicator: true,
   strictZSpacingForVolumeViewport: true,
   defaultDataSourceName: 'dicomweb',
-  disableConfirmationPrompts: false,
+  disableConfirmationPrompts: true,
   dataSources: [
     {
       namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
