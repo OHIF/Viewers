@@ -51,7 +51,7 @@ function modeFactory({ modeConfiguration }) {
       const { toolbarService } = servicesManager.services;
 
       toolbarService.addButtons(toolbarButtons);
-      toolbarService.createButtonSection('primary', ['MeasurementTools', 'dragPan']);
+      toolbarService.createButtonSection('primary', ['MeasurementTools', 'dragPan', 'TagBrowser']);
     },
 
     onModeExit: ({ servicesManager }) => {

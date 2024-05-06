@@ -11,12 +11,15 @@ const RESPONSE = {
 
 function promptBeginTracking({ servicesManager, extensionManager }, ctx, evt) {
   const { uiViewportDialogService } = servicesManager.services;
+  const appConfig = extensionManager._appConfig;
   // When the state change happens after a promise, the state machine sends the retult in evt.data;
   // In case of direct transition to the state, the state machine sends the data in evt;
   const { viewportId, StudyInstanceUID, SeriesInstanceUID } = evt.data || evt;
 
   return new Promise(async function (resolve, reject) {
-    let promptResult = await _askTrackMeasurements(uiViewportDialogService, viewportId);
+    let promptResult = appConfig?.disableConfirmationPrompts
+      ? RESPONSE.SET_STUDY_AND_SERIES
+      : await _askTrackMeasurements(uiViewportDialogService, viewportId);
 
     resolve({
       userResponse: promptResult,

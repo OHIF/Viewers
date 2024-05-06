@@ -94,6 +94,7 @@ const Select = ({
       components={_components}
       placeholder={placeholder}
       options={options}
+      blurInputOnSelect={true}
       value={value && Array.isArray(value) ? selectedOptions : value}
       onChange={(selectedOptions, { action }) => {
         const newSelection = !selectedOptions.length
