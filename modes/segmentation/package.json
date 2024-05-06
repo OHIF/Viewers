@@ -1,6 +1,6 @@
 {
   "name": "@ohif/mode-segmentation",
-  "version": "3.9.0-beta.0",
+  "version": "3.9.0-beta.1",
   "description": "OHIF segmentation mode which enables labelmap segmentation read/edit/export",
   "author": "@ohif",
   "license": "MIT",
