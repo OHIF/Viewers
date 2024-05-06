@@ -2,7 +2,7 @@ import { createReportAsync, createReportDialogPrompt } from '@ohif/extension-def
 import getNextSRSeriesNumber from '../../_shared/getNextSRSeriesNumber';
 import RESPONSE from '../../_shared/PROMPT_RESPONSES';
 
-function promptSaveReport({ servicesManager, commandsManager, extensionManager }, ctx, evt) {
+async function promptSaveReport({ servicesManager, commandsManager, extensionManager }, ctx, evt) {
   const { uiDialogService, measurementService, displaySetService } = servicesManager.services;
   const viewportId = evt.viewportId === undefined ? evt.data.viewportId : evt.viewportId;
   const isBackupSave = evt.isBackupSave === undefined ? evt.data.isBackupSave : evt.isBackupSave;
@@ -12,8 +12,7 @@ function promptSaveReport({ servicesManager, commandsManager, extensionManager }
   const { trackedStudy, trackedSeries } = ctx;
   let displaySetInstanceUIDs;
 
-  return new Promise(async function (resolve, reject) {
-    // TODO: Fallback if (uiDialogService) {
+  try {
     const promptResult = await createReportDialogPrompt(uiDialogService, {
       extensionManager,
     });
@@ -57,15 +56,17 @@ function promptSaveReport({ servicesManager, commandsManager, extensionManager }
       // Do nothing
     }
 
-    resolve({
+    return {
       userResponse: promptResult.action,
       createdDisplaySetInstanceUIDs: displaySetInstanceUIDs,
       StudyInstanceUID,
       SeriesInstanceUID,
       viewportId,
       isBackupSave,
-    });
-  });
+    };
+  } catch (error) {
+    return null;
+  }
 }
 
 export default promptSaveReport;

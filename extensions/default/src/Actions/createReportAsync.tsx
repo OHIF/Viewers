@@ -39,6 +39,7 @@ async function createReportAsync({ servicesManager, getReport, reportType = 'mea
       message: error.message || `Failed to store ${reportType}`,
       type: 'error',
     });
+    throw new Error(`Failed to store ${reportType}. Error: ${error.message || 'Unknown error'}`);
   } finally {
     uiDialogService.dismiss({ id: loadingDialogId });
   }
