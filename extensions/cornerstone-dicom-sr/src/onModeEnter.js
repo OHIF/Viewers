@@ -1,6 +1,6 @@
 import { SOPClassHandlerId } from './id';
 
-export default function onModeEnter({ servicesManager }: withAppTypes) {
+export default function onModeEnter({ servicesManager }) {
   const { displaySetService } = servicesManager.services;
   const displaySetCache = displaySetService.getDisplaySetCache();
 
