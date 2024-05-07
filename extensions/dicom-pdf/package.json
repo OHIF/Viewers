@@ -38,7 +38,7 @@
     "@babel/runtime": "^7.5.5",
     "classnames": "^2.2.6",
     "lodash.isequal": "^4.5.0",
-    "pdfjs-dist": "^2.2.228"
+    "pdfjs-dist": "^4.2.67"
   },
   "gitHead": "a5baa9228c0eda0df880136bde4420d78e6f8706"
 }
