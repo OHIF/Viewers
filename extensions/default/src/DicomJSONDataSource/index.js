@@ -169,7 +169,7 @@ function createDicomJSONApi(dicomJsonConfig) {
         return getDirectURL(dicomJsonConfig, params);
       },
       series: {
-        metadata: async ({ StudyInstanceUID, madeInClient = false, customSort } = {}) => {
+        metadata: async ({ filters, StudyInstanceUID, madeInClient = false, customSort } = {}) => {
           if (!StudyInstanceUID) {
             throw new Error('Unable to query for SeriesMetadata without StudyInstanceUID');
           }
@@ -181,6 +181,18 @@ function createDicomJSONApi(dicomJsonConfig) {
             series = customSort(study.series);
           } else {
             series = study.series;
+          }
+
+          const seriesKeys = [
+            'SeriesInstanceUID',
+            'SeriesInstanceUIDs',
+            'seriesInstanceUID',
+            'seriesInstanceUIDs',
+          ];
+          const seriesFilter = seriesKeys.find(key => filters[key]);
+          if (seriesFilter) {
+            const seriesUIDs = filters[seriesFilter];
+            series = series.filter(s => seriesUIDs.includes(s.SeriesInstanceUID));
           }
 
           const seriesSummaryMetadata = series.map(series => {
