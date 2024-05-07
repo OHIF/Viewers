@@ -3,10 +3,10 @@ import RichTextEditor from "./rich-text-editor";
 import "./editor.css";
 import { ConvertStringToDate } from "../../utils/helper";
 import moment from "moment";
-import { Checkbox, Radio, Select, Table } from "antd";
+import { Card, Checkbox, Radio, Select, Table } from "antd";
 import { TemplateHeader } from "./constants";
-import TinyMceEditor from "./tinymce";
-import TinymceEditor from "./tinymce";
+import { RightSquareOutlined, DeleteOutlined } from '@ant-design/icons';
+
 
 const ReportEditor = ({ cancel, onSave, patientDetails }) => {
   const [content, setContent] = React.useState(null);
@@ -67,7 +67,7 @@ const ReportEditor = ({ cancel, onSave, patientDetails }) => {
 
   useEffect(() => {
     if (currentReport) {
-      setContent(`${TemplateHeader()}${currentReport?.pr_html}`);
+      setContent(`${TemplateHeader(patientDetails)}${currentReport?.pr_html}`);
     }
   }, [currentReport]);
 
@@ -91,58 +91,119 @@ const ReportEditor = ({ cancel, onSave, patientDetails }) => {
     },
     {
       title: '',
-      key: 'actions'
+      key: 'actions',
+      render: (_, record) => {
+        return (
+          <span>
+            <DeleteOutlined style={{ fontSize: '16px', color: 'red' }} className="mr-2" onClick={() => handleDelete(record)} />
+            <RightSquareOutlined style={{ fontSize: '16px', color: 'blue' }} onClick={() => loadTemplate(record)} />
+          </span>
+        )
+      }
     }
   ];
+
+  const loadTemplate = (rec) => {
+    console.log("rec", rec);
+    // setCurrentReport(rec);
+    setCurrentReport(rec)
+  }
+
+  const handleDelete = (rec) => {
+    console.log("rec", rec);
+    fetch('http://localhost:4000/delete-report', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        report_id: rec?.pr_id,
+        yh_no: patientDetails?.po_pin,
+      })
+    })
+      .then(res => res.json())
+      .then(res => {
+        console.log("resp", res);
+        fetchPrevReports();
+      })
+      .catch(e => {
+        console.log(e);
+      });
+  }
+
+  const handleTemplateChange = (val) => {
+    console.log('selected template', val);
+    fetch(`/templates/${val}.html`)
+      .then(response => response.text())
+      .then(html => {
+        // Do something with the HTML content
+        console.log(html);
+        // setContent(html)
+        setCurrentReport({ pr_html: html });
+      })
+      .catch(error => console.error('Error:', error));
+  }
+
+  console.log("selected", templates[selectedNode]);
 
   return (
     <div className="editor-container">
       <div className="left-section">
-        <div className="patient-details">
-          <div className="d-flex">
-            <div className="pat-name">
-              {`${patientDetails?.po_pat_name}, ${patientDetails?.po_pin}`}
+        <Card className="mb-3">
+          <div className="!patient-details">
+            <div className="d-flex">
+              <div className="pat-name">
+                {`${patientDetails?.po_pat_name}, ${patientDetails?.po_pin}`}
+              </div>
+            </div>
+            <div>
+              {`${patientDetails?.po_pat_sex} / ${patientDetails?.po_age}`}
+            </div>
+            <div>{`${patientDetails?.modality} / ${patientDetails?.po_ref_doc} ,
+            ${moment(ConvertStringToDate(patientDetails?.po_study_dt, patientDetails?.po_study_tm)).format("DD-MM-YYYY HH:mm:ss")}`}
             </div>
           </div>
-          <div>
-            {`${patientDetails?.po_pat_sex} / ${patientDetails?.po_age}`}
-          </div>
-          <div>{`${patientDetails?.modality} / ${patientDetails?.po_ref_doc} ,
-            ${moment(ConvertStringToDate(patientDetails?.po_study_dt, patientDetails?.po_study_tm)).format("DD-MM-YYYY HH:mm:ss")}`}
-          </div>
-        </div>
-        <div className="previous-reports">
-          <Table
-            pagination={false}
-            columns={reportColumns}
-            dataSource={reportsData ? reportsData?.slice(0, 2) : []}
-          />
+        </Card>
+        <Card className="mb-3">
+          <div className="!previous-reports">
+            <Table
+              pagination={false}
+              columns={reportColumns}
+              dataSource={reportsData ? reportsData?.slice(0, 2) : []}
+            />
 
-        </div>
-        <div className="templates-section">
-          <div>Load Template</div>
-          <div>
-            <span>Node</span>
-            <Select options={Object.keys(templates)?.map((itm) => ({ label: itm, value: itm }))} />
-            <span>Template</span>
-            <Select options={(templates && templates[selectedNode]) ? templates[selectedNode]?.map(itm => ({ label: itm.label, value: itm.template })) : []} />
           </div>
-        </div>
-        <div className="more-options">
-          <div>More Options</div>
-          <div><Checkbox /> There is a critical finding. Notify to physician</div>
-          <div><Checkbox /> Need peer opinion from</div>
-          <div><Checkbox /> Requires Sub-Speciality Opinion</div>
-          <div><Checkbox /> Report Co-Signing</div>
-          <div><Checkbox /> Proxy Draft</div>
-          <div><Checkbox /> Proxy Signoff</div>
-          <div>Clinically diagnosed
-            <Radio.Group >
-              <Radio value={1}>A</Radio>
-              <Radio value={2}>B</Radio>
-            </Radio.Group>
+        </Card>
+        <Card className="mb-3">
+          <div className="!templates-section">
+            <div className="bold-font">Load Template</div>
+            <div>
+              <span>Node</span>
+              <Select style={{ width: 180 }} onChange={(val) => { setSelectedNode(val) }} options={Object.keys(templates)?.map((itm) => ({ label: itm, value: itm }))} />
+              <span className="ms-3">Template</span>
+              <Select onChange={(val) => {
+                handleTemplateChange(val);
+              }} style={{ width: 200 }} options={(templates && templates[selectedNode]) ? templates[selectedNode]?.map(itm => ({ label: itm.label, value: itm.template })) : []} />
+            </div>
           </div>
-        </div>
+        </Card>
+        <Card className="mb-3">
+          <div className="!more-options">
+            <div className="bold-font">More Options</div>
+            <div><Checkbox /> There is a critical finding. Notify to physician</div>
+            <div><Checkbox /> Need peer opinion from</div>
+            <div><Checkbox /> Requires Sub-Speciality Opinion</div>
+            <div><Checkbox /> Report Co-Signing</div>
+            <div><Checkbox /> Proxy Draft</div>
+            <div><Checkbox /> Proxy Signoff</div>
+            <div>Clinically diagnosed
+              <Radio.Group >
+                <Radio value={1}>A</Radio>
+                <Radio value={2}>B</Radio>
+              </Radio.Group>
+            </div>
+          </div>
+        </Card>
       </div>
       <div className="right-section">
         <RichTextEditor cancel={cancel} content={content || "<div></div>"} onSave={onSave} onChange={handleContentChange} />

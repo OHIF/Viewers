@@ -63,10 +63,12 @@
     "@kitware/vtk.js": "30.3.3",
     "antd": "^5.16.4",
     "core-js": "^3.2.1",
+    "draft-js": "^0.11.7",
     "html-docx": "^1.2.0",
     "html-docx-js": "^0.3.1",
     "html-to-docx": "^1.8.0",
-    "quill": "^2.0.0"
+    "quill": "^2.0.0",
+    "react-draft-wysiwyg": "^1.15.0"
   },
   "peerDependencies": {
     "react": "17.0.2",

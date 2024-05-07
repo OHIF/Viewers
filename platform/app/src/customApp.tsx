@@ -14,6 +14,7 @@ import { ConfigProvider } from "antd";
 import AppHeader from './pages/header';
 import "./custom-app.css";
 import "./index.css";
+import WysigEditor from './pages/ReportEditor/wysig';
 
 const MyViewer = ({ appProps }) => {
   useEffect(() => {
@@ -88,6 +89,7 @@ function CustomApp(appProps) {
         <div className='custom-body'>
           <Tabs style={{ background: 'white' }} items={items} />
         </div>
+        {/* <WysigEditor /> */}
       </ConfigProvider>
 
     </>

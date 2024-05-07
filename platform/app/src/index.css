@@ -28,3 +28,41 @@ body {
 .report-modal {
 
 }
+
+.md-icon {
+  font-size: 1rem;
+}
+
+.pointer {
+  cursor: pointer;
+}
+
+.ms-3 {
+  margin-left: 0.5rem;
+}
+
+.ms-auto {
+  margin-left: auto;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.ant-btn-primary {
+  background-color: #fca428 !important;
+}
+
+.bold-font {
+  font-weight: bold;
+}
+
+
+.ant-card-bordered {
+  border: 1px solid #b8b1b1f7;
+  border-radius: 5px;
+}
+
+.ant-card-body {
+  padding: 0.5rem !important;
+}

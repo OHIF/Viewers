@@ -49,7 +49,7 @@ const RichTextEditor = ({ content, onChange, onSave, cancel }) => {
     onSave && onSave(quillInstance.current.root.innerHTML);
   }
 
-  return (<div><div ref={editorRef}></div>
+  return (<div className='editor-container'><div ref={editorRef}></div>
     <div className='d-flex space-between' >
       <Button className='mt-3' type='default' onClick={cancel}>Cancel</Button>
       <Button danger className='mt-3' type='default' color='primary' onClick={handleSave}>Save Changes</Button>
