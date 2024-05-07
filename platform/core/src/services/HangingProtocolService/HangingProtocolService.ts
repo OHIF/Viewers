@@ -6,7 +6,6 @@ import ProtocolEngine from './ProtocolEngine';
 import { StudyMetadata } from '../../types/StudyMetadata';
 import IDisplaySet from '../DisplaySetService/IDisplaySet';
 import { CommandsManager } from '../../classes';
-import ServicesManager from '../ServicesManager';
 import * as HangingProtocol from '../../types/HangingProtocol';
 import { isDisplaySetFromUrl, sopInstanceLocation } from './custom-attribute/isDisplaySetFromUrl';
 import numberOfDisplaySetsWithImages from './custom-attribute/numberOfDisplaySetsWithImages';
@@ -60,7 +59,7 @@ export default class HangingProtocolService extends PubSubService {
 
   stageIndex = 0;
   _commandsManager: CommandsManager;
-  _servicesManager: ServicesManager;
+  _servicesManager: servicesManager;
   protocolEngine: ProtocolEngine;
   customViewportSettings = [];
   displaySets: IDisplaySet[] = [];

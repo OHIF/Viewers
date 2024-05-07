@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { ServicesManager, ExtensionManager, CommandsManager, DicomMetadataStore } from '@ohif/core';
+import { ExtensionManager, CommandsManager, DicomMetadataStore } from '@ohif/core';
 import { MeasurementTable } from '@ohif/ui';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { EVENTS as MicroscopyEvents } from '../../services/MicroscopyService';
@@ -53,7 +53,7 @@ interface IMicroscopyPanelProps extends WithTranslation {
   onRejectComplete?: PropTypes.func; // callback when rejected annotations
 
   //
-  servicesManager: ServicesManager;
+  servicesManager: servicesManager;
   extensionManager: ExtensionManager;
   commandsManager: CommandsManager;
 }

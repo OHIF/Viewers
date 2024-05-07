@@ -2,7 +2,6 @@ import objectHash from 'object-hash';
 import { hotkeys } from '../utils';
 import isequal from 'lodash.isequal';
 import Hotkey from './Hotkey';
-import ServicesManager from '../services/ServicesManager';
 
 /**
  *
@@ -15,9 +14,9 @@ import ServicesManager from '../services/ServicesManager';
  */
 
 export class HotkeysManager {
-  private _servicesManager: ServicesManager;
+  private _servicesManager: servicesManager;
 
-  constructor(commandsManager, servicesManager) {
+  constructor(commandsManager, servicesManager: servicesManager) {
     this.hotkeyDefinitions = {};
     this.hotkeyDefaults = [];
     this.isEnabled = true;

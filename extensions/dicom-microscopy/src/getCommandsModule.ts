@@ -1,4 +1,4 @@
-import { ServicesManager, CommandsManager, ExtensionManager } from '@ohif/core';
+import { CommandsManager, ExtensionManager } from '@ohif/core';
 import styles from './utils/styles';
 import callInputDialog from './utils/callInputDialog';
 
@@ -7,7 +7,7 @@ export default function getCommandsModule({
   commandsManager,
   extensionManager,
 }: {
-  servicesManager: ServicesManager;
+  servicesManager: servicesManager;
   commandsManager: CommandsManager;
   extensionManager: ExtensionManager;
 }) {

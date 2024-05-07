@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router';
 import PropTypes from 'prop-types';
-import { ServicesManager, utils } from '@ohif/core';
+import { utils } from '@ohif/core';
 import { DragAndDropProvider, ImageViewerProvider } from '@ohif/ui';
 import { useSearchParams } from '@hooks';
 import { useAppConfig } from '@state';
@@ -21,6 +21,9 @@ export default function ModeRoute({
   servicesManager,
   commandsManager,
   hotkeysManager,
+}: {
+  servicesManager: servicesManager;
+  [key: string]: any;
 }) {
   const [appConfig] = useAppConfig();
 
@@ -60,9 +63,8 @@ export default function ModeRoute({
     locationRef.current = location;
   }
 
-  const { displaySetService, panelService, hangingProtocolService, userAuthenticationService } = (
-    servicesManager as ServicesManager
-  ).services;
+  const { displaySetService, panelService, hangingProtocolService, userAuthenticationService } =
+    servicesManager.services;
 
   const { extensions, sopClassHandlers, hotkeys: hotkeyObj, hangingProtocol } = mode;
 

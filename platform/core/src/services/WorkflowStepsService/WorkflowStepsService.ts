@@ -1,6 +1,5 @@
 import { CommandsManager } from '../../classes';
 import { ExtensionManager } from '../../extensions';
-import { ServicesManager } from '../../services';
 import { PubSubService } from '../_shared/pubSubServiceInterface';
 
 export const EVENTS = {
@@ -82,7 +81,7 @@ export type WorkflowStep = {
 
 class WorkflowStepsService extends PubSubService {
   private _extensionManager: ExtensionManager;
-  private _servicesManager: ServicesManager;
+  private _servicesManager: servicesManager;
   private _commandsManager: CommandsManager;
   private _workflowSteps: WorkflowStep[];
   private _activeWorkflowStep: WorkflowStep;
@@ -90,7 +89,7 @@ class WorkflowStepsService extends PubSubService {
   constructor(
     extensionManager: ExtensionManager,
     commandsManager: CommandsManager,
-    servicesManager: ServicesManager
+    servicesManager: servicesManager
   ) {
     super(EVENTS);
     this._workflowSteps = [];

@@ -90,7 +90,7 @@ function _getDisplaySetsFromSeries(instances, servicesManager: servicesManager, 
   return [displaySet];
 }
 
-function _load(rtDisplaySet, servicesManager, extensionManager, headers) {
+function _load(rtDisplaySet, servicesManager: servicesManager, extensionManager, headers) {
   const { SOPInstanceUID } = rtDisplaySet;
   const { segmentationService } = servicesManager.services;
   if (
@@ -168,7 +168,7 @@ function _deriveReferencedSeriesSequenceFromFrameOfReferenceSequence(
   return ReferencedSeriesSequence;
 }
 
-function _segmentationExistsInCache(rtDisplaySet, segmentationService: segmentationService) {
+function _segmentationExistsInCache(rtDisplaySet, segmentationService) {
   // Todo: fix this
   return false;
   // This should be abstracted with the CornerstoneCacheService
