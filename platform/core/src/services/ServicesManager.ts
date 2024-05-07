@@ -3,7 +3,7 @@ import CommandsManager from '../classes/CommandsManager';
 import ExtensionManager from '../extensions/ExtensionManager';
 
 export default class ServicesManager {
-  public services: Services & CornerstoneServices = {};
+  public services: AppTypes.Services = {};
   public registeredServiceNames: string[] = [];
   private _commandsManager: CommandsManager;
   private _extensionManager: ExtensionManager;
@@ -82,8 +82,4 @@ export default class ServicesManager {
       }
     });
   }
-}
-
-declare global {
-  type servicesManager = ServicesManager;
 }

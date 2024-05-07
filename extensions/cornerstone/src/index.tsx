@@ -61,7 +61,7 @@ const cornerstoneExtension: Types.Extensions.Extension = {
    */
   id,
 
-  onModeEnter: ({ servicesManager }: { servicesManager: servicesManager }): void => {
+  onModeEnter: ({ servicesManager }: { servicesManager: AppTypes.ServicesManager }): void => {
     const { cornerstoneViewportService, toolbarService, segmentationService } =
       servicesManager.services;
     toolbarService.registerEventForToolbarUpdate(cornerstoneViewportService, [
@@ -79,7 +79,7 @@ const cornerstoneExtension: Types.Extensions.Extension = {
     ]);
   },
 
-  onModeExit: ({ servicesManager }: { servicesManager: servicesManager }): void => {
+  onModeExit: ({ servicesManager }: { servicesManager: AppTypes.ServicesManager }): void => {
     const { cineService } = servicesManager.services;
     // Empty out the image load and retrieval pools to prevent memory leaks
     // on the mode exits

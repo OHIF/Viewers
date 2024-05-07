@@ -51,14 +51,14 @@ export default class ToolbarService extends PubSubService {
 
   _commandsManager: CommandsManager;
   _extensionManager: ExtensionManager;
-  _servicesManager: servicesManager;
+  _servicesManager: AppTypes.ServicesManager;
   _evaluateFunction: Record<string, EvaluateFunction> = {};
   _serviceSubscriptions = [];
 
   constructor(
     commandsManager: CommandsManager,
     extensionManager: ExtensionManager,
-    servicesManager: servicesManager
+    servicesManager: AppTypes.ServicesManager
   ) {
     super(EVENTS);
     this._commandsManager = commandsManager;

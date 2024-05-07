@@ -10,7 +10,7 @@ export function getWindowLevelActionMenu({
   verticalDirection,
   horizontalDirection,
 }: {
-  servicesManager: servicesManager;
+  servicesManager: AppTypes.ServicesManager;
 }): ReactNode {
   const { customizationService } = servicesManager.services;
 

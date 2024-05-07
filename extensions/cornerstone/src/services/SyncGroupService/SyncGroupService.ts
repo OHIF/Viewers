@@ -40,7 +40,7 @@ export default class SyncGroupService {
     },
   };
 
-  servicesManager: servicesManager;
+  servicesManager: AppTypes.ServicesManager;
   listeners: { [key: string]: (...args: any[]) => void } = {};
   EVENTS: { [key: string]: string };
   synchronizerCreators: Record<string, SyncCreator> = {
@@ -55,7 +55,7 @@ export default class SyncGroupService {
 
   synchronizersByType: { [key: string]: Synchronizer[] } = {};
 
-  constructor(serviceManager: servicesManager) {
+  constructor(serviceManager: AppTypes.ServicesManager) {
     this.servicesManager = serviceManager;
     this.listeners = {};
     this.EVENTS = EVENTS;

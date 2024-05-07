@@ -7,24 +7,14 @@ import CornerstoneViewportService from '../services/ViewportService/CornerstoneV
 import ViewportActionCornersService from '../services/ViewportActionCornersService/ViewportActionCornersService';
 import ColorbarService from '../services/ColorbarService';
 
-declare global {
-  interface CornerstoneServices extends Types.Services {
-    cornerstoneViewportService: CornerstoneViewportService;
-    toolGroupService: ToolGroupService;
-    syncGroupService: SyncGroupService;
-    segmentationService: SegmentationService;
-    cornerstoneCacheService: CornerstoneCacheService;
-    viewportActionCornersService: ViewportActionCornersService;
-    colorbarService: ColorbarService;
-  }
-
-  type cornerstoneViewportService = CornerstoneViewportService;
-  type toolGroupService = ToolGroupService;
-  type syncGroupService = SyncGroupService;
-  type segmentationService = SegmentationService;
-  type cornerstoneCacheService = CornerstoneCacheService;
-  type viewportActionCornersService = ViewportActionCornersService;
-  type colorbarService = ColorbarService;
+interface CornerstoneServices extends Types.Services {
+  cornerstoneViewportService: CornerstoneViewportService;
+  toolGroupService: ToolGroupService;
+  syncGroupService: SyncGroupService;
+  segmentationService: SegmentationService;
+  cornerstoneCacheService: CornerstoneCacheService;
+  viewportActionCornersService: ViewportActionCornersService;
+  colorbarService: ColorbarService;
 }
 
 export default CornerstoneServices;

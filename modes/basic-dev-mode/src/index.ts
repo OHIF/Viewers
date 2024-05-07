@@ -50,7 +50,7 @@ function modeFactory({ modeConfiguration }) {
     /**
      * Lifecycle hooks
      */
-    onModeEnter: ({ servicesManager, extensionManager }) => {
+    onModeEnter: ({ servicesManager, extensionManager }: withAppTypes) => {
       const { toolbarService, toolGroupService } = servicesManager.services;
       const utilityModule = extensionManager.getModuleEntry(
         '@ohif/extension-cornerstone.utilityModule.tools'
@@ -101,7 +101,7 @@ function modeFactory({ modeConfiguration }) {
         'MoreTools',
       ]);
     },
-    onModeExit: ({ servicesManager }) => {
+    onModeExit: ({ servicesManager }: withAppTypes) => {
       const {
         toolGroupService,
         measurementService,

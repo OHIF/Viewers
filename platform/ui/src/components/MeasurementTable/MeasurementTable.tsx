@@ -11,10 +11,7 @@ const MeasurementTable = ({
   onEdit,
   onDelete,
   servicesManager,
-}: {
-  servicesManager: servicesManager;
-  [key: string]: any;
-}) => {
+}: withAppTypes) => {
   const { customizationService, measurementService } = servicesManager.services;
   const { t } = useTranslation('MeasurementTable');
   const amount = data.length;

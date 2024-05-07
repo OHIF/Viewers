@@ -58,7 +58,7 @@ const metadataProvider = classes.MetadataProvider;
  * @param {object} userAuthenticationService.getAuthorizationHeader - Function that returns the authorization header
  * @returns {object} - DICOM Web API object
  */
-function createDicomWebApi(dicomWebConfig, servicesManager) {
+function createDicomWebApi(dicomWebConfig, servicesManager: AppTypes.ServicesManager) {
   const { userAuthenticationService, customizationService } = servicesManager.services;
   let dicomWebConfigCopy,
     qidoConfig,
@@ -89,9 +89,9 @@ function createDicomWebApi(dicomWebConfig, servicesManager) {
       };
 
       generateWadoHeader = () => {
-        let authorizationHeader = getAuthrorizationHeader();
+        const authorizationHeader = getAuthrorizationHeader();
         //Generate accept header depending on config params
-        let formattedAcceptHeader = utils.generateAcceptHeader(
+        const formattedAcceptHeader = utils.generateAcceptHeader(
           dicomWebConfig.acceptHeader,
           dicomWebConfig.requestTransferSyntaxUID,
           dicomWebConfig.omitQuotationForMultipartRequest

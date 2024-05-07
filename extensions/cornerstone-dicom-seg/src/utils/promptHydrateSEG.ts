@@ -12,7 +12,7 @@ function promptHydrateSEG({
   viewportId,
   preHydrateCallbacks,
   hydrateSEGDisplaySet,
-}) {
+}: withAppTypes) {
   const { uiViewportDialogService } = servicesManager.services;
 
   return new Promise(async function (resolve, reject) {

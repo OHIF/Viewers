@@ -23,7 +23,7 @@ export type WindowLevelActionMenuProps = {
   verticalDirection: AllInOneMenu.VerticalDirection;
   horizontalDirection: AllInOneMenu.HorizontalDirection;
   commandsManager: CommandsManager;
-  serviceManager: servicesManager;
+  serviceManager: AppTypes.ServicesManager;
   colorbarProperties: ColorbarProperties;
   displaySets: Array<any>;
   volumeRenderingPresets: Array<ViewportPreset>;

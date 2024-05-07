@@ -18,7 +18,7 @@ interface OverlayItemProps {
   element: HTMLElement;
   viewportData: ViewportData;
   imageSliceData: ImageSliceData;
-  servicesManager: servicesManager;
+  servicesManager: AppTypes.ServicesManager;
   viewportId: string;
   instance: InstanceMetadata;
   customization: any;
@@ -58,7 +58,7 @@ function CustomizableViewportOverlay({
   viewportData: ViewportData;
   imageSliceData: ImageSliceData;
   viewportId: string;
-  servicesManager: servicesManager;
+  servicesManager: AppTypes.ServicesManager;
 }) {
   const { cornerstoneViewportService, customizationService, toolGroupService } =
     servicesManager.services;

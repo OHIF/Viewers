@@ -6,11 +6,7 @@ export default function toggleImageSliceSync({
   servicesManager,
   viewports: providedViewports,
   syncId,
-}: {
-  servicesManager: servicesManager;
-  viewports: any;
-  syncId: any;
-}) {
+}: withAppTypes) {
   const { syncGroupService, viewportGridService, displaySetService, cornerstoneViewportService } =
     servicesManager.services;
 
@@ -52,7 +48,7 @@ export default function toggleImageSliceSync({
   });
 }
 
-function disableSync(syncName, servicesManager: servicesManager) {
+function disableSync(syncName, servicesManager: AppTypes.ServicesManager) {
   const { syncGroupService, viewportGridService, displaySetService, cornerstoneViewportService } =
     servicesManager.services;
   const viewports = getReconstructableStackViewports(viewportGridService, displaySetService);

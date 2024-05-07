@@ -10,7 +10,12 @@ import { Toolbar } from '../Toolbar/Toolbar';
 
 const { availableLanguages, defaultLanguage, currentLanguage } = i18n;
 
-function ViewerHeader({ hotkeysManager, extensionManager, servicesManager, appConfig }) {
+function ViewerHeader({
+  hotkeysManager,
+  extensionManager,
+  servicesManager,
+  appConfig,
+}: withAppTypes) {
   const navigate = useNavigate();
   const location = useLocation();
 

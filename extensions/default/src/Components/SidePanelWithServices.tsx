@@ -3,7 +3,7 @@ import { SidePanel } from '@ohif/ui';
 import { Types } from '@ohif/core';
 
 export type SidePanelWithServicesProps = {
-  servicesManager: servicesManager;
+  servicesManager: AppTypes.ServicesManager;
   side: 'left' | 'right';
   className: string;
   activeTabIndex: number;

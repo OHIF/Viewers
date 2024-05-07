@@ -71,10 +71,7 @@ const LegacySidePanel = ({
   className,
   activeTabIndex: activeTabIndexProp,
   tabs,
-}: {
-  servicesManager: servicesManager;
-  [key: string]: any;
-}) => {
+}: withAppTypes) => {
   const panelService = servicesManager?.services?.panelService;
 
   const { t } = useTranslation('LegacySidePanel');

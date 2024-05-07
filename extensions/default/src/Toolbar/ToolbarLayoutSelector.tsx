@@ -44,7 +44,7 @@ const _areSelectorsValid = (hp, displaySets, hangingProtocolService) => {
   );
 };
 
-const generateAdvancedPresets = ({ servicesManager }) => {
+const generateAdvancedPresets = ({ servicesManager }: withAppTypes) => {
   const { hangingProtocolService, viewportGridService, displaySetService } =
     servicesManager.services;
 
@@ -87,10 +87,7 @@ function ToolbarLayoutSelectorWithServices({
   commandsManager,
   servicesManager,
   ...props
-}: {
-  servicesManager: servicesManager;
-  [key: string]: any;
-}) {
+}: withAppTypes) {
   const [isDisabled, setIsDisabled] = useState(false);
 
   const handleMouseEnter = () => {
@@ -135,10 +132,7 @@ function LayoutSelector({
   servicesManager,
   tooltipDisabled,
   ...rest
-}: {
-  servicesManager: servicesManager;
-  [key: string]: any;
-}) {
+}: withAppTypes) {
   const [isOpen, setIsOpen] = useState(false);
 
   const { customizationService } = servicesManager.services;

@@ -8,7 +8,7 @@ import { Presentations } from '../../types/Presentation';
  * updating the viewport.
  */
 export interface IViewportService {
-  servicesManager: servicesManager;
+  servicesManager: AppTypes.ServicesManager;
   hangingProtocolService: unknown;
   renderingEngine: unknown;
   viewportGridResizeObserver: unknown;

@@ -18,10 +18,7 @@ function ViewerLayout({
   ViewportGridComp,
   leftPanelClosed = false,
   rightPanelClosed = false,
-}: {
-  servicesManager: servicesManager;
-  [key: string]: any;
-}): React.FunctionComponent {
+}: withAppTypes): React.FunctionComponent {
   const [appConfig] = useAppConfig();
 
   const { panelService, hangingProtocolService } = servicesManager.services;

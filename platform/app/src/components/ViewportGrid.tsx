@@ -7,15 +7,8 @@ import EmptyViewport from './EmptyViewport';
 import classNames from 'classnames';
 import { useAppConfig } from '@state';
 
-function ViewerViewportGrid(props) {
-  const {
-    servicesManager,
-    viewportComponents,
-    dataSource,
-  }: {
-    servicesManager: servicesManager;
-    [key: string]: any;
-  } = props;
+function ViewerViewportGrid(props: withAppTypes) {
+  const { servicesManager, viewportComponents, dataSource } = props;
   const [viewportGrid, viewportGridService] = useViewportGrid();
   const [appConfig] = useAppConfig();
 

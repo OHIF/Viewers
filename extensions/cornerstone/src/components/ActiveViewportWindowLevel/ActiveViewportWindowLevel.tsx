@@ -6,7 +6,7 @@ import ViewportWindowLevel from '../ViewportWindowLevel/ViewportWindowLevel';
 const ActiveViewportWindowLevel = ({
   servicesManager,
 }: {
-  servicesManager: servicesManager;
+  servicesManager: AppTypes.ServicesManager;
 }): ReactElement => {
   const [viewportGrid] = useViewportGrid();
   const { activeViewportId } = viewportGrid;

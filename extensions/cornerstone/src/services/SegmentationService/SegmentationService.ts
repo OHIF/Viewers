@@ -60,7 +60,7 @@ class SegmentationService extends PubSubService {
   };
 
   segmentations: Record<string, Segmentation>;
-  readonly servicesManager: servicesManager;
+  readonly servicesManager: AppTypes.ServicesManager;
   highlightIntervalId = null;
   readonly EVENTS = EVENTS;
 

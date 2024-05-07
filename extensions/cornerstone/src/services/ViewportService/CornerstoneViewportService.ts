@@ -52,14 +52,14 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
   enableResizeDetector: true;
   resizeRefreshRateMs: 200;
   resizeRefreshMode: 'debounce';
-  servicesManager: servicesManager = null;
+  servicesManager: AppTypes.ServicesManager = null;
 
   resizeQueue = [];
   viewportResizeTimer = null;
   gridResizeDelay = 50;
   gridResizeTimeOut = null;
 
-  constructor(servicesManager: servicesManager) {
+  constructor(servicesManager: AppTypes.ServicesManager) {
     super(EVENTS);
     this.renderingEngine = null;
     this.viewportGridResizeObserver = null;

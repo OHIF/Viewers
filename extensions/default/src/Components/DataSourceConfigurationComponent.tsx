@@ -5,7 +5,7 @@ import { ExtensionManager, Types } from '@ohif/core';
 import DataSourceConfigurationModalComponent from './DataSourceConfigurationModalComponent';
 
 type DataSourceConfigurationComponentProps = {
-  servicesManager: servicesManager;
+  servicesManager: AppTypes.ServicesManager;
   extensionManager: ExtensionManager;
 };
 

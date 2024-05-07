@@ -7,7 +7,11 @@ const sopClassUids = ['1.2.840.10008.5.1.4.1.1.481.3'];
 
 const loadPromises = {};
 
-function _getDisplaySetsFromSeries(instances, servicesManager: servicesManager, extensionManager) {
+function _getDisplaySetsFromSeries(
+  instances,
+  servicesManager: AppTypes.ServicesManager,
+  extensionManager
+) {
   const instance = instances[0];
 
   const {
@@ -69,8 +73,8 @@ function _getDisplaySetsFromSeries(instances, servicesManager: servicesManager, 
   displaySet.referencedSeriesInstanceUID = referencedSeries.SeriesInstanceUID;
 
   displaySet.getReferenceDisplaySet = () => {
-    const { DisplaySetService } = servicesManager.services;
-    const referencedDisplaySets = DisplaySetService.getDisplaySetsForSeries(
+    const { displaySetService } = servicesManager.services;
+    const referencedDisplaySets = displaySetService.getDisplaySetsForSeries(
       displaySet.referencedSeriesInstanceUID
     );
 
@@ -90,7 +94,7 @@ function _getDisplaySetsFromSeries(instances, servicesManager: servicesManager, 
   return [displaySet];
 }
 
-function _load(rtDisplaySet, servicesManager: servicesManager, extensionManager, headers) {
+function _load(rtDisplaySet, servicesManager: AppTypes.ServicesManager, extensionManager, headers) {
   const { SOPInstanceUID } = rtDisplaySet;
   const { segmentationService } = servicesManager.services;
   if (
@@ -168,7 +172,10 @@ function _deriveReferencedSeriesSequenceFromFrameOfReferenceSequence(
   return ReferencedSeriesSequence;
 }
 
-function _segmentationExistsInCache(rtDisplaySet, segmentationService) {
+function _segmentationExistsInCache(
+  rtDisplaySet,
+  segmentationService: AppTypes.SegmentationService
+) {
   // Todo: fix this
   return false;
   // This should be abstracted with the CornerstoneCacheService

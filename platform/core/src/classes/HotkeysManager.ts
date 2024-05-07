@@ -14,9 +14,9 @@ import Hotkey from './Hotkey';
  */
 
 export class HotkeysManager {
-  private _servicesManager: servicesManager;
+  private _servicesManager: AppTypes.ServicesManager;
 
-  constructor(commandsManager, servicesManager: servicesManager) {
+  constructor(commandsManager, servicesManager: AppTypes.ServicesManager) {
     this.hotkeyDefinitions = {};
     this.hotkeyDefaults = [];
     this.isEnabled = true;

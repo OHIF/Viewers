@@ -21,10 +21,7 @@ export default function ModeRoute({
   servicesManager,
   commandsManager,
   hotkeysManager,
-}: {
-  servicesManager: servicesManager;
-  [key: string]: any;
-}) {
+}: withAppTypes) {
   const [appConfig] = useAppConfig();
 
   // Parse route params/querystring

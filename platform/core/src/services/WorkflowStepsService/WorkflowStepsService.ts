@@ -81,7 +81,7 @@ export type WorkflowStep = {
 
 class WorkflowStepsService extends PubSubService {
   private _extensionManager: ExtensionManager;
-  private _servicesManager: servicesManager;
+  private _servicesManager: AppTypes.ServicesManager;
   private _commandsManager: CommandsManager;
   private _workflowSteps: WorkflowStep[];
   private _activeWorkflowStep: WorkflowStep;
@@ -89,7 +89,7 @@ class WorkflowStepsService extends PubSubService {
   constructor(
     extensionManager: ExtensionManager,
     commandsManager: CommandsManager,
-    servicesManager: servicesManager
+    servicesManager: AppTypes.ServicesManager
   ) {
     super(EVENTS);
     this._workflowSteps = [];

@@ -22,13 +22,7 @@ const DEFAULT_MEATADATA = {
  * @param param0
  * @returns
  */
-export default function PanelPetSUV({
-  servicesManager,
-  commandsManager,
-}: {
-  servicesManager: servicesManager;
-  [key: string]: any;
-}) {
+export default function PanelPetSUV({ servicesManager, commandsManager }: withAppTypes) {
   const { t } = useTranslation('PanelSUV');
   const { displaySetService, toolGroupService, toolbarService, hangingProtocolService } =
     servicesManager.services;

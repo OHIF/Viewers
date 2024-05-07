@@ -98,7 +98,7 @@ export default async function init({
     hangingProtocolService,
     viewportGridService,
     stateSyncService,
-  } = servicesManager.services as CornerstoneServices;
+  } = servicesManager.services;
 
   window.services = servicesManager.services;
   window.extensionManager = extensionManager;

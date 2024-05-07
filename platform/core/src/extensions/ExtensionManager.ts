@@ -9,7 +9,7 @@ import { DataSourceDefinition } from '../types';
  * This is the arguments given to create the extension.
  */
 export interface ExtensionConstructor {
-  servicesManager: servicesManager;
+  servicesManager: AppTypes.ServicesManager;
   serviceProvidersManager: ServiceProvidersManager;
   commandsManager: CommandsManager;
   hotkeysManager: HotkeysManager;
@@ -28,7 +28,7 @@ export type ExtensionConfiguration = Record<string, unknown>;
  */
 export interface ExtensionParams extends ExtensionConstructor {
   extensionManager: ExtensionManager;
-  servicesManager: servicesManager;
+  servicesManager: AppTypes.ServicesManager;
   serviceProvidersManager: ServiceProvidersManager;
   configuration?: ExtensionConfiguration;
 }
@@ -72,7 +72,7 @@ export default class ExtensionManager extends PubSubService {
   public static readonly MODULE_TYPES = MODULE_TYPES;
 
   private _commandsManager: CommandsManager;
-  private _servicesManager: servicesManager;
+  private _servicesManager: AppTypes.ServicesManager;
   private _hotkeysManager: HotkeysManager;
   private _serviceProvidersManager: ServiceProvidersManager;
   private modulesMap: Record<string, unknown>;

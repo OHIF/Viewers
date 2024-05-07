@@ -8,11 +8,7 @@ export default function toggleVOISliceSync({
   servicesManager,
   viewports: providedViewports,
   syncId,
-}: {
-  servicesManager: servicesManager;
-  viewports: any;
-  syncId: any;
-}) {
+}: withAppTypes) {
   const { syncGroupService, viewportGridService, displaySetService, cornerstoneViewportService } =
     servicesManager.services;
 
@@ -58,7 +54,7 @@ export default function toggleVOISliceSync({
   }
 }
 
-function disableSync(modalityViewports, syncId, servicesManager: servicesManager) {
+function disableSync(modalityViewports, syncId, servicesManager: AppTypes.ServicesManager) {
   const { syncGroupService, cornerstoneViewportService } = servicesManager.services;
 
   const viewports = modalityViewports;

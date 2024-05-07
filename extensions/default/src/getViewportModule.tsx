@@ -6,7 +6,7 @@ const getViewportModule = ({
   commandsManager,
   extensionManager,
 }: {
-  servicesManager: servicesManager;
+  servicesManager: AppTypes.ServicesManager;
   commandsManager: CommandsManager;
   extensionManager: ExtensionManager;
 }) => {

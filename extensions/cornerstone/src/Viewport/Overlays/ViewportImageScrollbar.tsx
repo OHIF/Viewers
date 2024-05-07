@@ -12,10 +12,7 @@ function CornerstoneImageScrollbar({
   setImageSliceData,
   scrollbarHeight,
   servicesManager,
-}: {
-  servicesManager: servicesManager;
-  [key: string]: any;
-}) {
+}: withAppTypes) {
   const { cineService, cornerstoneViewportService } = servicesManager.services;
 
   const onImageScrollbarChange = (imageIndex, viewportId) => {

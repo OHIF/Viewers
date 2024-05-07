@@ -7,7 +7,7 @@ export default function getCommandsModule({
   commandsManager,
   extensionManager,
 }: {
-  servicesManager: servicesManager;
+  servicesManager: AppTypes.ServicesManager;
   commandsManager: CommandsManager;
   extensionManager: ExtensionManager;
 }) {

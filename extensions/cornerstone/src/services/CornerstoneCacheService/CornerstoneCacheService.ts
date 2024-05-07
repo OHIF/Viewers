@@ -17,9 +17,9 @@ class CornerstoneCacheService {
 
   stackImageIds: Map<string, string[]> = new Map();
   volumeImageIds: Map<string, string[]> = new Map();
-  readonly servicesManager: servicesManager;
+  readonly servicesManager: AppTypes.ServicesManager;
 
-  constructor(servicesManager: servicesManager) {
+  constructor(servicesManager: AppTypes.ServicesManager) {
     this.servicesManager = servicesManager;
   }
 

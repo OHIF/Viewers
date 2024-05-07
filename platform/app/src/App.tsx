@@ -32,7 +32,7 @@ import OpenIdConnectRoutes from './utils/OpenIdConnectRoutes';
 
 let commandsManager: CommandsManager,
   extensionManager: ExtensionManager,
-  servicesManager: servicesManager,
+  servicesManager: AppTypes.ServicesManager,
   serviceProvidersManager: ServiceProvidersManager,
   hotkeysManager: HotkeysManager;
 

@@ -12,7 +12,7 @@ const ViewportWindowLevel = ({
   servicesManager,
   viewportId,
 }: {
-  servicesManager: servicesManager;
+  servicesManager: AppTypes.ServicesManager;
   viewportId: string;
 }): ReactElement => {
   const { cornerstoneViewportService } = servicesManager.services;

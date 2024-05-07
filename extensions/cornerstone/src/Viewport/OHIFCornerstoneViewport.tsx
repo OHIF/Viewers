@@ -99,7 +99,7 @@ function areEqual(prevProps, nextProps) {
 
 // Todo: This should be done with expose of internal API similar to react-vtkjs-viewport
 // Then we don't need to worry about the re-renders if the props change.
-const OHIFCornerstoneViewport = React.memo(props => {
+const OHIFCornerstoneViewport = React.memo((props: withAppTypes) => {
   const {
     displaySets,
     dataSource,
@@ -123,17 +123,6 @@ const OHIFCornerstoneViewport = React.memo(props => {
     // viewportId dependent and
     // eslint-disable-next-line react/prop-types
     isHangingProtocolLayout,
-  }: {
-    displaySets?: any;
-    dataSource?: any;
-    viewportOptions?: any;
-    displaySetOptions?: any;
-    servicesManager?: servicesManager;
-    onElementEnabled?: any;
-    onElementDisabled?: any;
-    isJumpToMeasurementDisabled?: any;
-    initialImageIndex?: any;
-    isHangingProtocolLayout?: any;
   } = props;
 
   const viewportId = viewportOptions.viewportId;

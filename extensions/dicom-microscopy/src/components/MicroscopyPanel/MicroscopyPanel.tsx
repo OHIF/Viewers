@@ -53,7 +53,7 @@ interface IMicroscopyPanelProps extends WithTranslation {
   onRejectComplete?: PropTypes.func; // callback when rejected annotations
 
   //
-  servicesManager: servicesManager;
+  servicesManager: AppTypes.ServicesManager;
   extensionManager: ExtensionManager;
   commandsManager: CommandsManager;
 }

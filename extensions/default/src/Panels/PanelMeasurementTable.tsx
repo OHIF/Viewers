@@ -24,10 +24,7 @@ export default function PanelMeasurementTable({
   servicesManager,
   commandsManager,
   extensionManager,
-}: {
-  servicesManager: servicesManager;
-  [key: string]: any;
-}): React.FunctionComponent {
+}: withAppTypes): React.FunctionComponent {
   const { t } = useTranslation('MeasurementTable');
 
   const [viewportGrid, viewportGridService] = useViewportGrid();

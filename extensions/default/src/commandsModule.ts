@@ -12,7 +12,6 @@ import { NavigateHistory } from './types/commandModuleTypes';
 import { history } from '@ohif/app';
 
 const { subscribeToNextViewportGridChange } = utils;
-
 export type HangingProtocolParams = {
   protocolId?: string;
   stageIndex?: number;

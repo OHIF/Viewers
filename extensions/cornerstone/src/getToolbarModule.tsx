@@ -12,7 +12,7 @@ export default function getToolbarModule({
   servicesManager,
 }: {
   commandsManager: CommandsManager;
-  servicesManager: servicesManager;
+  servicesManager: AppTypes.ServicesManager;
 }) {
   const {
     toolGroupService,

@@ -11,7 +11,7 @@ function WrappedCinePlayer({
 }: {
   enabledVPElement: HTMLElement;
   viewportId: string;
-  servicesManager: servicesManager;
+  servicesManager: AppTypes.ServicesManager;
 }) {
   const { customizationService, displaySetService, viewportGridService } = servicesManager.services;
   const [{ isCineEnabled, cines }, cineService] = useCine();

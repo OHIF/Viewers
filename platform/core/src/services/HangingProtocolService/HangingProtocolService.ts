@@ -59,7 +59,7 @@ export default class HangingProtocolService extends PubSubService {
 
   stageIndex = 0;
   _commandsManager: CommandsManager;
-  _servicesManager: servicesManager;
+  _servicesManager: AppTypes.ServicesManager;
   protocolEngine: ProtocolEngine;
   customViewportSettings = [];
   displaySets: IDisplaySet[] = [];
@@ -135,7 +135,7 @@ export default class HangingProtocolService extends PubSubService {
     HangingProtocol.ViewportMatchDetails
   > = new Map();
 
-  constructor(commandsManager: CommandsManager, servicesManager) {
+  constructor(commandsManager: CommandsManager, servicesManager: AppTypes.ServicesManager) {
     super(HangingProtocolService.EVENTS);
     this._commandsManager = commandsManager;
     this._servicesManager = servicesManager;

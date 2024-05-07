@@ -13,7 +13,7 @@ export default function getPanelModule({
   extensionManager,
   servicesManager,
 }: {
-  servicesManager: servicesManager;
+  servicesManager: AppTypes.ServicesManager;
   commandsManager: CommandsManager;
   extensionManager: ExtensionManager;
 }) {
