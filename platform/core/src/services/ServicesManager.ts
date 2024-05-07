@@ -1,10 +1,9 @@
 import log from './../log.js';
-import Services from '../types/Services';
 import CommandsManager from '../classes/CommandsManager';
 import ExtensionManager from '../extensions/ExtensionManager';
 
 export default class ServicesManager {
-  public services: Services = {};
+  public services: Services & CornerstoneServices = {};
   public registeredServiceNames: string[] = [];
   private _commandsManager: CommandsManager;
   private _extensionManager: ExtensionManager;
@@ -82,5 +81,12 @@ export default class ServicesManager {
         this.registerService(service);
       }
     });
+  }
+}
+
+// declare global for ServicesManager
+declare global {
+  interface Window {
+    ServicesManager: ServicesManager;
   }
 }

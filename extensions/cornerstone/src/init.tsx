@@ -30,11 +30,8 @@ import nthLoader from './utils/nthLoader';
 import interleaveTopToBottom from './utils/interleaveTopToBottom';
 import initContextMenu from './initContextMenu';
 import initDoubleClick from './initDoubleClick';
-import { CornerstoneServices } from './types';
 import initViewTiming from './utils/initViewTiming';
 import { colormaps } from './utils/colormaps';
-
-import { debounce } from 'lodash';
 
 const { registerColormap } = csUtilities.colormap;
 

@@ -1,5 +1,6 @@
 import React, { ReactNode } from 'react';
 import { WindowLevelActionMenu } from './WindowLevelActionMenu';
+import { ServicesManager } from '@ohif/core';
 
 export function getWindowLevelActionMenu({
   viewportId,
@@ -9,6 +10,8 @@ export function getWindowLevelActionMenu({
   commandsManager,
   verticalDirection,
   horizontalDirection,
+}: {
+  servicesManager: ServicesManager;
 }): ReactNode {
   const { customizationService } = servicesManager.services;
 

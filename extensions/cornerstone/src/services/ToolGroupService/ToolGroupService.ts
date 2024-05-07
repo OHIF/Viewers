@@ -1,7 +1,7 @@
 import { ToolGroupManager, Enums, Types } from '@cornerstonejs/tools';
 import { eventTarget } from '@cornerstonejs/core';
 
-import { Types as OhifTypes, pubSubServiceInterface } from '@ohif/core';
+import { Types as OhifTypes, ServicesManager, pubSubServiceInterface } from '@ohif/core';
 import getActiveViewportEnabledElement from '../../utils/getActiveViewportEnabledElement';
 
 const EVENTS = {
@@ -33,6 +33,9 @@ export default class ToolGroupService {
   };
 
   serviceManager: any;
+  cornerstoneViewportService: any;
+  viewportGridService: any;
+  uiNotificationService: any;
   private toolGroupIds: Set<string> = new Set();
   /**
    * Service-specific
@@ -40,7 +43,7 @@ export default class ToolGroupService {
   listeners: { [key: string]: Function[] };
   EVENTS: { [key: string]: string };
 
-  constructor(serviceManager) {
+  constructor(serviceManager: ServicesManager) {
     const { cornerstoneViewportService, viewportGridService, uiNotificationService } =
       serviceManager.services;
     this.cornerstoneViewportService = cornerstoneViewportService;
