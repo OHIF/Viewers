@@ -137,20 +137,8 @@ function CustomizableViewportOverlay({
           return;
         }
 
-        const imageData = viewport.getImageData();
+        const scale = viewport.getZoom();
 
-        if (!imageData) {
-          return;
-        }
-
-        if (camera.scale) {
-          setScale(camera.scale);
-          return;
-        }
-
-        const { spacing } = imageData;
-        // convert parallel scale to scale
-        const scale = (element.clientHeight * spacing[0] * 0.5) / camera.parallelScale;
         setScale(scale);
       }
     };

@@ -144,7 +144,6 @@ export default async function init({
   });
 
   const labelmapRepresentation = cornerstoneTools.Enums.SegmentationRepresentations.Labelmap;
-
   cornerstoneTools.segmentation.config.setGlobalRepresentationConfig(labelmapRepresentation, {
     fillAlpha: 0.5,
     fillAlphaInactive: 0.2,
