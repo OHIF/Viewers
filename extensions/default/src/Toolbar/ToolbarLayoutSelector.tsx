@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { LayoutSelector as OHIFLayoutSelector, ToolbarButton, LayoutPreset } from '@ohif/ui';
-import { ServicesManager } from '@ohif/core';
 
 const defaultCommonPresets = [
   {
@@ -84,7 +83,14 @@ const generateAdvancedPresets = ({ servicesManager }) => {
     .filter(preset => preset !== null);
 };
 
-function ToolbarLayoutSelectorWithServices({ commandsManager, servicesManager, ...props }) {
+function ToolbarLayoutSelectorWithServices({
+  commandsManager,
+  servicesManager,
+  ...props
+}: {
+  servicesManager: servicesManager;
+  [key: string]: any;
+}) {
   const [isDisabled, setIsDisabled] = useState(false);
 
   const handleMouseEnter = () => {
@@ -129,6 +135,9 @@ function LayoutSelector({
   servicesManager,
   tooltipDisabled,
   ...rest
+}: {
+  servicesManager: servicesManager;
+  [key: string]: any;
 }) {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -225,7 +234,7 @@ LayoutSelector.propTypes = {
   rows: PropTypes.number,
   columns: PropTypes.number,
   onLayoutChange: PropTypes.func,
-  servicesManager: PropTypes.instanceOf(ServicesManager),
+  servicesManager: PropTypes.object.isRequired,
 };
 
 LayoutSelector.defaultProps = {

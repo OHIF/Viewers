@@ -22,6 +22,9 @@ function ViewportOrientationMarkers({
   viewportId,
   servicesManager,
   orientationMarkers = ['top', 'left'],
+}: {
+  servicesManager: servicesManager;
+  [key: string]: any;
 }) {
   // Rotation is in degrees
   const [rotation, setRotation] = useState(0);

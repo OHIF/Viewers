@@ -5,9 +5,9 @@ import loadRTStruct from './loadRTStruct';
 
 const sopClassUids = ['1.2.840.10008.5.1.4.1.1.481.3'];
 
-let loadPromises = {};
+const loadPromises = {};
 
-function _getDisplaySetsFromSeries(instances, servicesManager, extensionManager) {
+function _getDisplaySetsFromSeries(instances, servicesManager: servicesManager, extensionManager) {
   const instance = instances[0];
 
   const {
@@ -168,7 +168,7 @@ function _deriveReferencedSeriesSequenceFromFrameOfReferenceSequence(
   return ReferencedSeriesSequence;
 }
 
-function _segmentationExistsInCache(rtDisplaySet, segmentationService) {
+function _segmentationExistsInCache(rtDisplaySet, segmentationService: segmentationService) {
   // Todo: fix this
   return false;
   // This should be abstracted with the CornerstoneCacheService

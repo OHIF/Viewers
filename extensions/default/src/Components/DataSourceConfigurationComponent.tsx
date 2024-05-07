@@ -1,11 +1,11 @@
 import React, { ReactElement, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Icon, useModal } from '@ohif/ui';
-import { ExtensionManager, ServicesManager, Types } from '@ohif/core';
+import { ExtensionManager, Types } from '@ohif/core';
 import DataSourceConfigurationModalComponent from './DataSourceConfigurationModalComponent';
 
 type DataSourceConfigurationComponentProps = {
-  servicesManager: ServicesManager;
+  servicesManager: servicesManager;
   extensionManager: ExtensionManager;
 };
 

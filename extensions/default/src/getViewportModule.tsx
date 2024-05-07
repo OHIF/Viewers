@@ -1,4 +1,4 @@
-import { ServicesManager, CommandsManager, ExtensionManager } from '@ohif/core';
+import { CommandsManager, ExtensionManager } from '@ohif/core';
 import LineChartViewport from './Components/LineChartViewport/index';
 
 const getViewportModule = ({
@@ -6,7 +6,7 @@ const getViewportModule = ({
   commandsManager,
   extensionManager,
 }: {
-  servicesManager: ServicesManager;
+  servicesManager: servicesManager;
   commandsManager: CommandsManager;
   extensionManager: ExtensionManager;
 }) => {

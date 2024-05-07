@@ -1,7 +1,7 @@
 import { synchronizers, SynchronizerManager, Synchronizer } from '@cornerstonejs/tools';
 import { getRenderingEngines, utilities } from '@cornerstonejs/core';
 
-import { pubSubServiceInterface, Types, ServicesManager } from '@ohif/core';
+import { pubSubServiceInterface, Types } from '@ohif/core';
 
 const EVENTS = {
   TOOL_GROUP_CREATED: 'event::cornerstone::syncgroupservice:toolgroupcreated',
@@ -40,7 +40,7 @@ export default class SyncGroupService {
     },
   };
 
-  servicesManager: ServicesManager;
+  servicesManager: servicesManager;
   listeners: { [key: string]: (...args: any[]) => void } = {};
   EVENTS: { [key: string]: string };
   synchronizerCreators: Record<string, SyncCreator> = {
@@ -55,7 +55,7 @@ export default class SyncGroupService {
 
   synchronizersByType: { [key: string]: Synchronizer[] } = {};
 
-  constructor(serviceManager: ServicesManager) {
+  constructor(serviceManager: servicesManager) {
     this.servicesManager = serviceManager;
     this.listeners = {};
     this.EVENTS = EVENTS;

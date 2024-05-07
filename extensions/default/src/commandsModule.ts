@@ -1,4 +1,4 @@
-import { ServicesManager, utils, Types } from '@ohif/core';
+import { utils, Types } from '@ohif/core';
 
 import { ContextMenuController, defaultContextMenu } from './CustomizableContextMenu';
 import DicomTagBrowser from './DicomTagBrowser/DicomTagBrowser';
@@ -38,7 +38,7 @@ const commandsModule = ({
     viewportGridService,
     displaySetService,
     stateSyncService,
-  } = (servicesManager as ServicesManager).services;
+  } = servicesManager.services;
 
   // Define a context menu controller for use with any context menus
   const contextMenuController = new ContextMenuController(servicesManager, commandsManager);

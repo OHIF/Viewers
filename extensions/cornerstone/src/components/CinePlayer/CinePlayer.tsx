@@ -3,7 +3,6 @@ import { CinePlayer, useCine } from '@ohif/ui';
 import { Enums, eventTarget, cache } from '@cornerstonejs/core';
 import { Enums as StreamingEnums } from '@cornerstonejs/streaming-image-volume-loader';
 import { useAppConfig } from '@state';
-import { ServicesManager } from '@ohif/core';
 
 function WrappedCinePlayer({
   enabledVPElement,
@@ -12,7 +11,7 @@ function WrappedCinePlayer({
 }: {
   enabledVPElement: HTMLElement;
   viewportId: string;
-  servicesManager: ServicesManager;
+  servicesManager: servicesManager;
 }) {
   const { customizationService, displaySetService, viewportGridService } = servicesManager.services;
   const [{ isCineEnabled, cines }, cineService] = useCine();

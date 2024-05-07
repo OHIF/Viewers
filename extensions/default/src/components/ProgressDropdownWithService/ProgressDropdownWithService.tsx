@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useCallback, ReactElement } from 'react';
-import { ServicesManager } from '@ohif/core';
 import { ProgressDropdown } from '@ohif/ui';
 
 const workflowStepsToDropdownOptions = (steps = []) =>
@@ -14,7 +13,7 @@ const workflowStepsToDropdownOptions = (steps = []) =>
 function ProgressDropdownWithService({
   servicesManager,
 }: {
-  servicesManager: ServicesManager;
+  servicesManager: servicesManager;
 }): ReactElement {
   const { workflowStepsService } = servicesManager.services;
   const [activeStepId, setActiveStepId] = useState(workflowStepsService.activeWorkflowStep?.id);

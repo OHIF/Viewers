@@ -1,6 +1,5 @@
 import { cache } from '@cornerstonejs/core';
 import { utilities } from '@cornerstonejs/tools';
-import { ServicesManager } from '@ohif/core';
 
 function _getVolumesFromViewport(viewport) {
   return viewport ? viewport.getActors().map(actor => cache.getVolume(actor.uid)) : [];
@@ -20,7 +19,7 @@ function _getVolumeFromViewport(viewport) {
  * @param srcViewportIndex Source viewport index
  * @returns array with viewport information.
  */
-function _getSyncedViewports(servicesManager: ServicesManager, srcViewportId) {
+function _getSyncedViewports(servicesManager: servicesManager, srcViewportId) {
   const { viewportGridService, cornerstoneViewportService } = servicesManager.services;
 
   const { viewports: viewportsStates } = viewportGridService.getState();
@@ -49,7 +48,7 @@ function _getSyncedViewports(servicesManager: ServicesManager, srcViewportId) {
     .map(({ viewportId }) => ({ viewportId }));
 }
 
-function initCineService(servicesManager: ServicesManager) {
+function initCineService(servicesManager: servicesManager) {
   const { cineService } = servicesManager.services;
 
   const getSyncedViewports = viewportId => {

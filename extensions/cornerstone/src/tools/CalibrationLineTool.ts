@@ -1,4 +1,3 @@
-import { metaData } from '@cornerstonejs/core';
 import { LengthTool, utilities } from '@cornerstonejs/tools';
 import callInputDialog from '../utils/callInputDialog';
 import getActiveViewportEnabledElement from '../utils/getActiveViewportEnabledElement';
@@ -49,7 +48,7 @@ function calculateLength3(pos1, pos2) {
 
 export default CalibrationLineTool;
 
-export function onCompletedCalibrationLine(servicesManager, csToolsEvent) {
+export function onCompletedCalibrationLine(servicesManager: servicesManager, csToolsEvent) {
   const { uiDialogService, viewportGridService } = servicesManager.services;
 
   // calculate length (mm) with the current Pixel Spacing

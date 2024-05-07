@@ -1,6 +1,6 @@
 import { eventTarget } from '@cornerstonejs/core';
 import { Enums, annotation } from '@cornerstonejs/tools';
-import { DicomMetadataStore, ServicesManager } from '@ohif/core';
+import { DicomMetadataStore } from '@ohif/core';
 import { toolNames } from './initCornerstoneTools';
 import { onCompletedCalibrationLine } from './tools/CalibrationLineTool';
 
@@ -178,7 +178,7 @@ const initMeasurementService = (
   return csTools3DVer1MeasurementSource;
 };
 
-const connectToolsToMeasurementService = (servicesManager: ServicesManager) => {
+const connectToolsToMeasurementService = (servicesManager: servicesManager) => {
   const {
     measurementService,
     displaySetService,

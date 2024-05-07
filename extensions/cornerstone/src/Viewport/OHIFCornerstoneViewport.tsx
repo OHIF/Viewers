@@ -18,7 +18,6 @@ import { setEnabledElement } from '../state';
 import './OHIFCornerstoneViewport.css';
 import CornerstoneOverlays from './Overlays/CornerstoneOverlays';
 import getSOPInstanceAttributes from '../utils/measurementServiceMappings/utils/getSOPInstanceAttributes';
-import CornerstoneServices from '../types/CornerstoneServices';
 import CinePlayer from '../components/CinePlayer';
 import { Types } from '@ohif/core';
 
@@ -108,11 +107,13 @@ const OHIFCornerstoneViewport = React.memo(props => {
     displaySetOptions,
     servicesManager,
     onElementEnabled,
+    // eslint-disable-next-line react/prop-types
     onElementDisabled,
     isJumpToMeasurementDisabled,
     // Note: you SHOULD NOT use the initialImageIdOrIndex for manipulation
     // of the imageData in the OHIFCornerstoneViewport. This prop is used
     // to set the initial state of the viewport's first image to render
+    // eslint-disable-next-line react/prop-types
     initialImageIndex,
     // if the viewport is part of a hanging protocol layout
     // we should not really rely on the old synchronizers and
@@ -120,7 +121,19 @@ const OHIFCornerstoneViewport = React.memo(props => {
     // is not part of the hanging protocol layout. HPs should
     // define their own synchronizers. Since the synchronizers are
     // viewportId dependent and
+    // eslint-disable-next-line react/prop-types
     isHangingProtocolLayout,
+  }: {
+    displaySets?: any;
+    dataSource?: any;
+    viewportOptions?: any;
+    displaySetOptions?: any;
+    servicesManager?: servicesManager;
+    onElementEnabled?: any;
+    onElementDisabled?: any;
+    isJumpToMeasurementDisabled?: any;
+    initialImageIndex?: any;
+    isHangingProtocolLayout?: any;
   } = props;
 
   const viewportId = viewportOptions.viewportId;
@@ -152,7 +165,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
     viewportGridService,
     stateSyncService,
     viewportActionCornersService,
-  } = servicesManager.services as CornerstoneServices;
+  } = servicesManager.services;
 
   const [viewportDialogState] = useViewportDialog();
   // useCallback for scroll bar height calculation

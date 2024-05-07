@@ -2,7 +2,7 @@ import React, { ReactElement, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import classNames from 'classnames';
 import { AllInOneMenu, useViewportGrid } from '@ohif/ui';
-import { CommandsManager, ServicesManager } from '@ohif/core';
+import { CommandsManager } from '@ohif/core';
 import { Colormap } from './Colormap';
 import { Colorbar } from './Colorbar';
 import { setViewportColorbar } from './Colorbar';
@@ -23,7 +23,7 @@ export type WindowLevelActionMenuProps = {
   verticalDirection: AllInOneMenu.VerticalDirection;
   horizontalDirection: AllInOneMenu.HorizontalDirection;
   commandsManager: CommandsManager;
-  serviceManager: ServicesManager;
+  serviceManager: servicesManager;
   colorbarProperties: ColorbarProperties;
   displaySets: Array<any>;
   volumeRenderingPresets: Array<ViewportPreset>;

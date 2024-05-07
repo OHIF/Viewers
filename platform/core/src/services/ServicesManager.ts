@@ -84,9 +84,6 @@ export default class ServicesManager {
   }
 }
 
-// declare global for ServicesManager
 declare global {
-  interface Window {
-    ServicesManager: ServicesManager;
-  }
+  type servicesManager = ServicesManager;
 }

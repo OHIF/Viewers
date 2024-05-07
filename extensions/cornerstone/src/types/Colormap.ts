@@ -1,4 +1,4 @@
-import { CommandsManager, ServicesManager } from '@ohif/core';
+import { CommandsManager } from '@ohif/core';
 
 export type ColorMapPreset = {
   ColorSpace;
@@ -10,7 +10,7 @@ export type ColorMapPreset = {
 export type ColormapProps = {
   viewportId: string;
   commandsManager: CommandsManager;
-  serviceManager: ServicesManager;
+  serviceManager: servicesManager;
   colormaps: Array<ColorMapPreset>;
   displaySets: Array<any>;
 };

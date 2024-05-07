@@ -1,9 +1,14 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { LayoutSelector as OHIFLayoutSelector, ToolbarButton } from '@ohif/ui';
-import { ServicesManager } from '@ohif/core';
 
-function LegacyLayoutSelectorWithServices({ servicesManager, ...props }) {
+function LegacyLayoutSelectorWithServices({
+  servicesManager,
+  ...props
+}: {
+  servicesManager: servicesManager;
+  [key: string]: any;
+}) {
   const { toolbarService } = servicesManager.services;
 
   const onSelection = useCallback(

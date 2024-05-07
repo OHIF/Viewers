@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ServicesManager, ExtensionManager } from '@ohif/core';
+import { ExtensionManager } from '@ohif/core';
 
 import { setTrackingUniqueIdentifiersForElement } from '../tools/modules/dicomSRModule';
 
@@ -15,8 +15,17 @@ const MEASUREMENT_TRACKING_EXTENSION_ID = '@ohif/extension-measurement-tracking'
 const SR_TOOLGROUP_BASE_NAME = 'SRToolGroup';
 
 function OHIFCornerstoneSRViewport(props) {
-  const { children, dataSource, displaySets, viewportOptions, servicesManager, extensionManager } =
-    props;
+  const {
+    children,
+    dataSource,
+    displaySets,
+    viewportOptions,
+    servicesManager,
+    extensionManager,
+  }: {
+    servicesManager: servicesManager;
+    [key: string]: any;
+  } = props;
 
   const [appConfig] = useAppConfig();
 
@@ -369,7 +378,7 @@ OHIFCornerstoneSRViewport.propTypes = {
   viewportLabel: PropTypes.string,
   customProps: PropTypes.object,
   viewportOptions: PropTypes.object,
-  servicesManager: PropTypes.instanceOf(ServicesManager).isRequired,
+  servicesManager: PropTypes.object.isRequired,
   extensionManager: PropTypes.instanceOf(ExtensionManager).isRequired,
 };
 

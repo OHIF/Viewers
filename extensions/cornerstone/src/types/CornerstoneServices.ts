@@ -17,6 +17,14 @@ declare global {
     viewportActionCornersService: ViewportActionCornersService;
     colorbarService: ColorbarService;
   }
+
+  type cornerstoneViewportService = CornerstoneViewportService;
+  type toolGroupService = ToolGroupService;
+  type syncGroupService = SyncGroupService;
+  type segmentationService = SegmentationService;
+  type cornerstoneCacheService = CornerstoneCacheService;
+  type viewportActionCornersService = ViewportActionCornersService;
+  type colorbarService = ColorbarService;
 }
 
 export default CornerstoneServices;
