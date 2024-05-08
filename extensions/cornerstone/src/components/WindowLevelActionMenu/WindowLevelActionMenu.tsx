@@ -22,8 +22,6 @@ export type WindowLevelActionMenuProps = {
   presets: Array<Record<string, Array<WindowLevelPreset>>>;
   verticalDirection: AllInOneMenu.VerticalDirection;
   horizontalDirection: AllInOneMenu.HorizontalDirection;
-  commandsManager: CommandsManager;
-  serviceManager: AppTypes.ServicesManager;
   colorbarProperties: ColorbarProperties;
   displaySets: Array<any>;
   volumeRenderingPresets: Array<ViewportPreset>;
@@ -42,7 +40,7 @@ export function WindowLevelActionMenu({
   displaySets,
   volumeRenderingPresets,
   volumeRenderingQualityRange,
-}: WindowLevelActionMenuProps): ReactElement {
+}: withAppTypes<WindowLevelActionMenuProps>): ReactElement {
   const {
     colormaps,
     colorbarContainerPosition,

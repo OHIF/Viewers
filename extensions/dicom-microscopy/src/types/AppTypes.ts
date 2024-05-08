@@ -1,11 +1,10 @@
 /* eslint-disable @typescript-eslint/no-namespace */
-import MicroscopyServiceType from '../services/MicroscopyService';
+import MicroscopyService from '../services/MicroscopyService';
 
 declare global {
   namespace AppTypes {
     export interface Services {
-      microscopyService?: MicroscopyServiceType;
+      microscopyService?: MicroscopyService;
     }
-    type MicroscopyService = MicroscopyServiceType;
   }
 }

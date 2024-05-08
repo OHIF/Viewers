@@ -226,7 +226,7 @@ async function _loadSegments({
   Object.assign(segDisplaySet, results);
 }
 
-function _segmentationExists(segDisplaySet, segmentationService: AppTypes.SegmentationService) {
+function _segmentationExists({ segDisplaySet, segmentationService }: withAppTypes) {
   // This should be abstracted with the CornerstoneCacheService
   return segmentationService.getSegmentation(segDisplaySet.displaySetInstanceUID);
 }
