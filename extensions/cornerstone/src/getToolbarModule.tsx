@@ -1,5 +1,4 @@
 import { Enums } from '@cornerstonejs/tools';
-import { CommandsManager } from '@ohif/core';
 
 const getToggledClassName = (isToggled: boolean) => {
   return isToggled
@@ -7,13 +6,7 @@ const getToggledClassName = (isToggled: boolean) => {
     : '!text-common-bright hover:!bg-primary-dark hover:text-primary-light';
 };
 
-export default function getToolbarModule({
-  commandsManager,
-  servicesManager,
-}: {
-  commandsManager: CommandsManager;
-  servicesManager: AppTypes.ServicesManager;
-}) {
+export default function getToolbarModule({ commandsManager, servicesManager }: withAppTypes) {
   const {
     toolGroupService,
     toolbarService,

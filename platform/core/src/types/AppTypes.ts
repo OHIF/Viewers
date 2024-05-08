@@ -15,10 +15,14 @@ import PanelServiceType from '../services/PanelService';
 import UIDialogServiceType from '../services/UIDialogService';
 import UIViewportDialogServiceType from '../services/UIViewportDialogService';
 import ServicesManagerType from '../services/ServicesManager';
+import CommandsManagerType from '../classes/CommandsManager';
+import ExtensionManagerType from '../extensions/ExtensionManager';
 
 declare global {
   namespace AppTypes {
     type ServicesManager = ServicesManagerType;
+    type CommandsManager = CommandsManagerType;
+    type ExtensionManager = ExtensionManagerType;
     type HangingProtocolService = HangingProtocolServiceType;
     type CustomizationService = CustomizationServiceType;
     type MeasurementService = MeasurementServiceType;
@@ -53,8 +57,10 @@ declare global {
     }
   }
 
-  interface withAppTypes<T = object> {
+  type withAppTypes<T = object> = T & {
+    servicesManager?: AppTypes.ServicesManager;
+    commandsManager?: AppTypes.CommandsManager;
+    extensionManager?: AppTypes.ExtensionManager;
     [key: string]: any;
-    servicesManager: AppTypes.ServicesManager;
-  }
+  };
 }
