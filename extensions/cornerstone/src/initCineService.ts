@@ -15,11 +15,11 @@ function _getVolumeFromViewport(viewport) {
 /**
  * Return all viewports that needs to be synchronized with the source
  * viewport passed as parameter when cine is updated.
- * @param servicesManager ServicesManager
+ * @param servicesManager ServiceManager
  * @param srcViewportIndex Source viewport index
  * @returns array with viewport information.
  */
-function _getSyncedViewports({ servicesManager, srcViewportId }: withAppTypes) {
+function _getSyncedViewports(servicesManager: AppTypes.ServicesManager, srcViewportId) {
   const { viewportGridService, cornerstoneViewportService } = servicesManager.services;
 
   const { viewports: viewportsStates } = viewportGridService.getState();
@@ -48,7 +48,7 @@ function _getSyncedViewports({ servicesManager, srcViewportId }: withAppTypes) {
     .map(({ viewportId }) => ({ viewportId }));
 }
 
-function initCineService({ servicesManager }: withAppTypes) {
+function initCineService(servicesManager: AppTypes.ServicesManager) {
   const { cineService } = servicesManager.services;
 
   const getSyncedViewports = viewportId => {

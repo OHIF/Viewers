@@ -48,7 +48,10 @@ function calculateLength3(pos1, pos2) {
 
 export default CalibrationLineTool;
 
-export function onCompletedCalibrationLine({ servicesManager, csToolsEvent }: withAppTypes) {
+export function onCompletedCalibrationLine(
+  servicesManager: AppTypes.ServicesManager,
+  csToolsEvent
+) {
   const { uiDialogService, viewportGridService } = servicesManager.services;
 
   // calculate length (mm) with the current Pixel Spacing

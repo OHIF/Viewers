@@ -4,13 +4,13 @@ import { StackViewport, VolumeViewport } from '@cornerstonejs/core';
 import { ColorbarProps } from '../../types/Colorbar';
 import { utilities } from '@cornerstonejs/core';
 
-export function setViewportColorbar({
+export function setViewportColorbar(
   viewportId,
   displaySets,
   commandsManager,
-  servicesManager,
-  colorbarOptions,
-}: withAppTypes) {
+  servicesManager: AppTypes.ServicesManager,
+  colorbarOptions
+) {
   const { cornerstoneViewportService } = servicesManager.services;
   const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
