@@ -2,11 +2,11 @@ import React, { ReactElement, useState, useEffect, useCallback } from 'react';
 import { VolumeLightingProps } from '../../types/ViewportPresets';
 
 export function VolumeLighting({
-  serviceManager,
+  servicesManager,
   commandsManager,
   viewportId,
 }: VolumeLightingProps): ReactElement {
-  const { cornerstoneViewportService } = serviceManager.services;
+  const { cornerstoneViewportService } = servicesManager.services;
   const [ambient, setAmbient] = useState(null);
   const [diffuse, setDiffuse] = useState(null);
   const [specular, setSpecular] = useState(null);

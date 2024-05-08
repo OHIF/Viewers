@@ -4,7 +4,7 @@ import { cache } from '@cornerstonejs/core';
 
 const LABELMAP = Enums.SegmentationRepresentations.Labelmap;
 
-const commandsModule = ({ commandsManager, servicesManager }) => {
+const commandsModule = ({ commandsManager, servicesManager }: withAppTypes) => {
   const services = servicesManager.services;
   const { displaySetService, viewportGridService, segmentationService } = services;
 

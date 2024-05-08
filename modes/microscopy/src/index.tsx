@@ -47,14 +47,14 @@ function modeFactory({ modeConfiguration }) {
     /**
      * Lifecycle hooks
      */
-    onModeEnter: ({ servicesManager, extensionManager, commandsManager }) => {
+    onModeEnter: ({ servicesManager, extensionManager, commandsManager }: withAppTypes) => {
       const { toolbarService } = servicesManager.services;
 
       toolbarService.addButtons(toolbarButtons);
       toolbarService.createButtonSection('primary', ['MeasurementTools', 'dragPan']);
     },
 
-    onModeExit: ({ servicesManager }) => {
+    onModeExit: ({ servicesManager }: withAppTypes) => {
       const { toolbarService, uiDialogService, uiModalService } = servicesManager.services;
 
       uiDialogService.dismissAll();

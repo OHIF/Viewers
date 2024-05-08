@@ -1,6 +1,6 @@
 import getWorkflowSettings from './getWorkflowSettings';
 
-export default function initWorkflowSteps({ servicesManager }): void {
+export default function initWorkflowSteps({ servicesManager }: withAppTypes): void {
   const { workflowStepsService } = servicesManager.services;
   const workflowSettings = getWorkflowSettings({ servicesManager });
 
