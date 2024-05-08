@@ -4,14 +4,14 @@ import { StackViewport, VolumeViewport } from '@cornerstonejs/core';
 import { ColorbarProps } from '../../types/Colorbar';
 import { utilities } from '@cornerstonejs/core';
 
-export function setViewportColorbar(
+export function setViewportColorbar({
   viewportId,
   displaySets,
   commandsManager,
-  serviceManager,
-  colorbarOptions
-) {
-  const { cornerstoneViewportService } = serviceManager.services;
+  servicesManager,
+  colorbarOptions,
+}: withAppTypes) {
+  const { cornerstoneViewportService } = servicesManager.services;
   const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
   const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
@@ -59,10 +59,10 @@ export function Colorbar({
   viewportId,
   displaySets,
   commandsManager,
-  serviceManager,
+  servicesManager,
   colorbarProperties,
-}: ColorbarProps): ReactElement {
-  const { colorbarService } = serviceManager.services;
+}: withAppTypes<ColorbarProps>): ReactElement {
+  const { colorbarService } = servicesManager.services;
   const {
     width: colorbarWidth,
     colorbarTickPosition,
@@ -73,7 +73,7 @@ export function Colorbar({
   const [showColorbar, setShowColorbar] = useState(colorbarService.hasColorbar(viewportId));
 
   const onSetColorbar = useCallback(() => {
-    setViewportColorbar(viewportId, displaySets, commandsManager, serviceManager, {
+    setViewportColorbar(viewportId, displaySets, commandsManager, servicesManager, {
       viewportId,
       colormaps,
       ticks: {

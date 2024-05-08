@@ -15,7 +15,7 @@ function _getVolumeFromViewport(viewport) {
 /**
  * Return all viewports that needs to be synchronized with the source
  * viewport passed as parameter when cine is updated.
- * @param servicesManager ServiceManager
+ * @param servicesManager ServicesManager
  * @param srcViewportIndex Source viewport index
  * @returns array with viewport information.
  */

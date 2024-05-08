@@ -12,7 +12,6 @@ export type ColorbarOptions = {
 export type ColorbarProps = {
   viewportId: string;
   commandsManager: CommandsManager;
-  serviceManager: AppTypes.ServicesManager;
   displaySets: Array<any>;
   colorbarProperties: ColorbarProperties;
 };

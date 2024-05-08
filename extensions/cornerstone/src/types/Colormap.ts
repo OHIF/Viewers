@@ -10,7 +10,7 @@ export type ColorMapPreset = {
 export type ColormapProps = {
   viewportId: string;
   commandsManager: CommandsManager;
-  serviceManager: AppTypes.ServicesManager;
+  servicesManager: AppTypes.ServicesManager;
   colormaps: Array<ColorMapPreset>;
   displaySets: Array<any>;
 };

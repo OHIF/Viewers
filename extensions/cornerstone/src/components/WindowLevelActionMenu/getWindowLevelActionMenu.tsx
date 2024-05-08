@@ -32,7 +32,7 @@ export function getWindowLevelActionMenu({
       verticalDirection={verticalDirection}
       horizontalDirection={horizontalDirection}
       commandsManager={commandsManager}
-      serviceManager={servicesManager}
+      servicesManager={servicesManager}
       colorbarProperties={colorbarProperties}
       displaySets={displaySets}
       volumeRenderingPresets={volumeRenderingPresets}

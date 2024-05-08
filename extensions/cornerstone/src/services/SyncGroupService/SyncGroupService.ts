@@ -55,8 +55,8 @@ export default class SyncGroupService {
 
   synchronizersByType: { [key: string]: Synchronizer[] } = {};
 
-  constructor(serviceManager: AppTypes.ServicesManager) {
-    this.servicesManager = serviceManager;
+  constructor(servicesManager: AppTypes.ServicesManager) {
+    this.servicesManager = servicesManager;
     this.listeners = {};
     this.EVENTS = EVENTS;
     //
