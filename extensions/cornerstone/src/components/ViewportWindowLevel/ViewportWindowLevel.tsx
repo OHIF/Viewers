@@ -11,10 +11,9 @@ const { Events } = Enums;
 const ViewportWindowLevel = ({
   servicesManager,
   viewportId,
-}: {
-  servicesManager: AppTypes.ServicesManager;
+}: withAppTypes<{
   viewportId: string;
-}): ReactElement => {
+}>): ReactElement => {
   const { cornerstoneViewportService } = servicesManager.services;
   const [windowLevels, setWindowLevels] = useState([]);
   const [cachedHistograms, setCachedHistograms] = useState({});

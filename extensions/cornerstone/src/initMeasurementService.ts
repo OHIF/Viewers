@@ -178,7 +178,7 @@ const initMeasurementService = (
   return csTools3DVer1MeasurementSource;
 };
 
-const connectToolsToMeasurementService = (servicesManager: AppTypes.ServicesManager) => {
+const connectToolsToMeasurementService = ({ servicesManager }: withAppTypes) => {
   const {
     measurementService,
     displaySetService,
