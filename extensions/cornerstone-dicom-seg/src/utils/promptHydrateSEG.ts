@@ -14,21 +14,27 @@ function promptHydrateSEG({
   hydrateSEGDisplaySet,
 }: withAppTypes) {
   const { uiViewportDialogService } = servicesManager.services;
+  const extensionManager = servicesManager._extensionManager;
+  const appConfig = extensionManager._appConfig;
 
   return new Promise(async function (resolve, reject) {
-    const promptResult = await _askHydrate(uiViewportDialogService, viewportId);
+    const promptResult = appConfig?.disableConfirmationPrompts
+      ? RESPONSE.HYDRATE_SEG
+      : await _askHydrate(uiViewportDialogService, viewportId);
 
     if (promptResult === RESPONSE.HYDRATE_SEG) {
       preHydrateCallbacks?.forEach(callback => {
         callback();
       });
 
-      const isHydrated = await hydrateSEGDisplaySet({
-        segDisplaySet,
-        viewportId,
-      });
+      window.setTimeout(async () => {
+        const isHydrated = await hydrateSEGDisplaySet({
+          segDisplaySet,
+          viewportId,
+        });
 
-      resolve(isHydrated);
+        resolve(isHydrated);
+      }, 0);
     }
   });
 }

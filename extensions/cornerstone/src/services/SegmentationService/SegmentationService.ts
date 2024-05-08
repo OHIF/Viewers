@@ -568,7 +568,7 @@ class SegmentationService extends PubSubService {
         rgba,
       } = segmentInfo;
 
-      const { x, y, z } = segDisplaySet.centroids.get(segmentIndex);
+      const { x, y, z } = segDisplaySet.centroids.get(segmentIndex) || { x: 0, y: 0, z: 0 };
       const centerWorld = derivedVolume.imageData.indexToWorld([x, y, z]);
 
       segmentation.cachedStats = {

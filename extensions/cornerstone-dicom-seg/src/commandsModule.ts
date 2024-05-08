@@ -258,9 +258,12 @@ const commandsModule = ({
       labelmapObj.metadata = [];
 
       const segmentationInOHIF = segmentationService.getSegmentation(segmentationId);
-      labelmapObj.segmentsOnLabelmap.forEach(segmentIndex => {
+      segmentationInOHIF.segments.forEach(segment => {
         // segmentation service already has a color for each segment
-        const segment = segmentationInOHIF?.segments[segmentIndex];
+        if (!segment) {
+          return;
+        }
+        const segmentIndex = segment.segmentIndex;
         const { label, color } = segment;
 
         const RecommendedDisplayCIELabValue = dcmjs.data.Colors.rgb2DICOMLAB(
