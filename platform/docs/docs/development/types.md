@@ -15,16 +15,6 @@ The `withAppTypes` function is a TypeScript utility that extends the base proper
 
 `withAppTypes` can be enhanced using generics to include custom properties. This is particularly useful for passing additional data or configurations specific to your component or service.
 
-#### Basic Syntax
-
-```typescript
-export type withAppTypes<T = object> = T & AppTypes.Services & AppTypes.Managers & {
-    [key: string]: any;
-};
-```
-
-This construct merges the generic type `T`, which you can define based on your component's needs, with the predefined service and manager types.
-
 ### Extending with Custom Properties
 
 You can extend `withAppTypes` to include custom properties by defining an interface for the props you need. For example:
@@ -49,40 +39,39 @@ export function Colorbar({
 
 In this example, `ColorbarProps` is a custom interface that extends the application types through `withAppTypes`.
 
-## Adding Services in Extensions
+## Typing the custom extensions's new services
 
 Extensions can define additional services that integrate seamlessly into the application's global service architecture, and will be available on the ServicesManager for use across the application.
 
-### Defining a New Service
+### Adding the extension's services Types
 
 Declare your service in the global namespace and use it across your application as demonstrated below:
 
-`extensions/my-extension/src/types/AppTypes.ts`
+`extensions/my-extension/src/types/whatever.ts`
 
 ```typescript
 declare global {
   namespace AppTypes {
-    export type MicroscopyService = MicroscopyServiceType; // AppTypes.MicroscopyService
+    // only add if you need direct access to the service ex. AppTypes.MicroscopyService
+    export type MicroscopyService = MicroscopyServiceType;
+    // add to the global Services interface, and to withAppTypes
     export interface Services {
-      microscopyService?: MicroscopyServiceType; // servicesManager.services.microscopyService
+      microscopyService?: MicroscopyServiceType;
     }
   }
 }
 ```
 
-Doing the above adds the `microscopyService` to the global Services interface, which ServicesManager uses by defualt `public services: AppTypes.Services = {};` to manage services, and is also used by withAppTypes to inject services into components.
+Doing the above adds the `microscopyService` to the global Services interface, which ServicesManager uses by default `public services: AppTypes.Services = {};` to type services, and is also used by withAppTypes to inject services into components.
 You will also get access to the seperate services via `AppTypes.YourServiceName` in your application.
 
 
 ```typescript
 export function CustomComponent({
-  microscopyService,
   servicesManager,
-  // other injected services
 }: withAppTypes<CustomComponentProps>): ReactElement {
+  const { microscopyService } = servicesManager.services;
   microscopyService.someMethod(); // auto completation available
-  const { microscopyService: microscopyServiceViaServicesManager } = servicesManager.services;
-  microscopyServiceViaServicesManager.someMethod(); // auto completation available
 
 }
 ```
@@ -90,38 +79,7 @@ export function CustomComponent({
 ```typescript
 export function CustomComponent2(
   microscopyService: AppTypes.MicroscopyService,
-  servicesManager: AppTypes.ServicesManager,
 ): ReactElement {
-}
-```
-
-## Extending Managers
-
-Managers handle more complex interactions and state management across services. You can extend existing managers or introduce new ones as part of your extension framework.
-
-### Example: Adding a New Manager
-
-```typescript
-declare global {
-  namespace AppTypes {
-    export type NewManager = NewManagerType;
-    export interface Managers {
-      newManager?: NewManager;
-    }
-  }
-}
-```
-
-Doing the above adds the `newManager` to the global Managers interface, making it available on 'withAppTypes' and also directly via `AppTypes.NewManager` in your application.
-
-```typescript
-export function SomeComponent({ newManager }: withAppTypes<SomeComponentProps>): ReactElement {
-  // Use newManager here
-}
-```
-
-```typescript
-export function SomeComponent2(newManager: AppTypes.NewManager): ReactElement {
-  // Use newManager here
+  microscopyService.someMethod(); // auto completation available
 }
 ```
