@@ -8,13 +8,13 @@ import {
   processResults,
   processSeriesResults,
 } from './qido.js';
-import dcm4cheeReject from './dcm4cheeReject';
+import dcm4cheeReject from './dcm4cheeReject.js';
 
-import getImageId from './utils/getImageId';
+import getImageId from './utils/getImageId.js';
 import dcmjs from 'dcmjs';
 import { retrieveStudyMetadata, deleteStudyMetadataPromise } from './retrieveStudyMetadata.js';
 import StaticWadoClient from './utils/StaticWadoClient';
-import getDirectURL from '../utils/getDirectURL';
+import getDirectURL from '../utils/getDirectURL.js';
 import { fixBulkDataURI } from './utils/fixBulkDataURI';
 
 const { DicomMetaDictionary, DicomDict } = dcmjs.data;
@@ -58,7 +58,7 @@ const metadataProvider = classes.MetadataProvider;
  * @param {object} userAuthenticationService.getAuthorizationHeader - Function that returns the authorization header
  * @returns {object} - DICOM Web API object
  */
-function createDicomWebApi(dicomWebConfig, servicesManager: AppTypes.ServicesManager) {
+function createDicomWebApi(dicomWebConfig, servicesManager) {
   const { userAuthenticationService, customizationService } = servicesManager.services;
   let dicomWebConfigCopy,
     qidoConfig,

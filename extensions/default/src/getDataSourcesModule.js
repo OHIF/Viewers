@@ -2,7 +2,7 @@
 // TODO: Use constructor to create an instance of IWebClientApi
 // TODO: Use existing DICOMWeb configuration (previously, appConfig, to configure instance)
 
-import { createDicomWebApi } from './DicomWebDataSource/index';
+import { createDicomWebApi } from './DicomWebDataSource/index.js';
 import { createDicomJSONApi } from './DicomJSONDataSource/index.js';
 import { createDicomLocalApi } from './DicomLocalDataSource/index.js';
 import { createDicomWebProxyApi } from './DicomWebProxyDataSource/index';
