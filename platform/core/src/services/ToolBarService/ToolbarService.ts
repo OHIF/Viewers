@@ -2,7 +2,6 @@ import { CommandsManager } from '../../classes';
 import { ExtensionManager } from '../../extensions';
 import { PubSubService } from '../_shared/pubSubServiceInterface';
 import type { RunCommand } from '../../types/Command';
-import ServicesManager from '../ServicesManager';
 import { Button, ButtonProps, EvaluateFunction, EvaluatePublic, NestedButtonProps } from './types';
 
 const EVENTS = {
@@ -52,14 +51,14 @@ export default class ToolbarService extends PubSubService {
 
   _commandsManager: CommandsManager;
   _extensionManager: ExtensionManager;
-  _servicesManager: ServicesManager;
+  _servicesManager: AppTypes.ServicesManager;
   _evaluateFunction: Record<string, EvaluateFunction> = {};
   _serviceSubscriptions = [];
 
   constructor(
     commandsManager: CommandsManager,
     extensionManager: ExtensionManager,
-    servicesManager: ServicesManager
+    servicesManager: AppTypes.ServicesManager
   ) {
     super(EVENTS);
     this._commandsManager = commandsManager;

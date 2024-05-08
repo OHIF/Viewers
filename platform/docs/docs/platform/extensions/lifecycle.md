@@ -36,11 +36,11 @@ for `OHIF-v3`.
 // new service inside new extension
 import MyNewService from './MyNewService';
 
-export default function MyNewServiceWithServices(serviceManager) {
+export default function MyNewServiceWithServices(servicesManager) {
   return {
     name: 'MyNewService',
     create: ({ configuration = {} }) => {
-      return new MyNewService(serviceManager);
+      return new MyNewService(servicesManager);
     },
   };
 }

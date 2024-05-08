@@ -9,21 +9,21 @@ export function VolumeRenderingOptions({
   viewportId,
   commandsManager,
   volumeRenderingQualityRange,
-  serviceManager,
+  servicesManager,
 }: VolumeRenderingOptionsProps): ReactElement {
   return (
     <AllInOneMenu.ItemPanel>
       <VolumeRenderingQuality
         viewportId={viewportId}
         commandsManager={commandsManager}
-        serviceManager={serviceManager}
+        servicesManager={servicesManager}
         volumeRenderingQualityRange={volumeRenderingQualityRange}
       />
 
       <VolumeShift
         viewportId={viewportId}
         commandsManager={commandsManager}
-        serviceManager={serviceManager}
+        servicesManager={servicesManager}
       />
       <div className="all-in-one-menu-item mt-2 flex !h-[20px] w-full justify-start">
         <div className="text-aqua-pale text-[13px]">LIGHTING</div>
@@ -32,14 +32,14 @@ export function VolumeRenderingOptions({
       <div className="all-in-one-menu-item flex w-full justify-center">
         <VolumeShade
           commandsManager={commandsManager}
-          serviceManager={serviceManager}
+          servicesManager={servicesManager}
           viewportId={viewportId}
         />
       </div>
       <VolumeLighting
         viewportId={viewportId}
         commandsManager={commandsManager}
-        serviceManager={serviceManager}
+        servicesManager={servicesManager}
       />
     </AllInOneMenu.ItemPanel>
   );

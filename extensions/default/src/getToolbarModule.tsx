@@ -13,7 +13,7 @@ const getClassName = isToggled => {
   };
 };
 
-export default function getToolbarModule({ commandsManager, servicesManager }) {
+export default function getToolbarModule({ commandsManager, servicesManager }: withAppTypes) {
   const { cineService } = servicesManager.services;
   return [
     {

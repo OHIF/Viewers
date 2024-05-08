@@ -6,7 +6,10 @@ import { eventTarget } from '@cornerstonejs/core';
 import { Enums } from '@cornerstonejs/tools';
 import { handleROIThresholding } from '../../utils/handleROIThresholding';
 
-export default function PanelRoiThresholdSegmentation({ servicesManager, commandsManager }) {
+export default function PanelRoiThresholdSegmentation({
+  servicesManager,
+  commandsManager,
+}: withAppTypes) {
   const { segmentationService, uiNotificationService } = servicesManager.services;
   const { t } = useTranslation('PanelSUVExport');
 

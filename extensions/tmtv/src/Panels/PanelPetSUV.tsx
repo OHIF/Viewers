@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { PanelSection, Input, Button } from '@ohif/ui';
-import { DicomMetadataStore, ServicesManager } from '@ohif/core';
+import { DicomMetadataStore } from '@ohif/core';
 import { useTranslation } from 'react-i18next';
 
 const DEFAULT_MEATADATA = {
@@ -22,11 +22,10 @@ const DEFAULT_MEATADATA = {
  * @param param0
  * @returns
  */
-export default function PanelPetSUV({ servicesManager, commandsManager }) {
+export default function PanelPetSUV({ servicesManager, commandsManager }: withAppTypes) {
   const { t } = useTranslation('PanelSUV');
-  const { displaySetService, toolGroupService, toolbarService, hangingProtocolService } = (
-    servicesManager as ServicesManager
-  ).services;
+  const { displaySetService, toolGroupService, toolbarService, hangingProtocolService } =
+    servicesManager.services;
   const [metadata, setMetadata] = useState(DEFAULT_MEATADATA);
   const [ptDisplaySet, setPtDisplaySet] = useState(null);
 

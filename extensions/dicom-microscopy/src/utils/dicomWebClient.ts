@@ -9,7 +9,7 @@ import { StaticWadoClient } from '@ohif/extension-default';
  * @param param0
  * @returns
  */
-export default function getDicomWebClient({ extensionManager, servicesManager }) {
+export default function getDicomWebClient({ extensionManager, servicesManager }: withAppTypes) {
   const dataSourceConfig = window.config.dataSources.find(
     ds => ds.sourceName === extensionManager.activeDataSource
   );

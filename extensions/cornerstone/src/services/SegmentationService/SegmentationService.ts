@@ -1,4 +1,4 @@
-import { Types as OhifTypes, ServicesManager, PubSubService } from '@ohif/core';
+import { Types as OhifTypes, PubSubService } from '@ohif/core';
 import {
   cache,
   Enums as csEnums,
@@ -60,7 +60,7 @@ class SegmentationService extends PubSubService {
   };
 
   segmentations: Record<string, Segmentation>;
-  readonly servicesManager: ServicesManager;
+  readonly servicesManager: AppTypes.ServicesManager;
   highlightIntervalId = null;
   readonly EVENTS = EVENTS;
 
