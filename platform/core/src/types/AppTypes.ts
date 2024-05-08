@@ -1,19 +1,19 @@
 /* eslint-disable @typescript-eslint/no-namespace */
-import HangingProtocolService from '../services/HangingProtocolService';
-import CustomizationService from '../services/CustomizationService';
-import MeasurementService from '../services/MeasurementService';
-import ViewportGridService from '../services/ViewportGridService';
-import ToolbarService from '../services/ToolBarService';
-import DisplaySetService from '../services/DisplaySetService';
-import StateSyncService from '../services/StateSyncService';
-import UINotificationService from '../services/UINotificationService';
-import UIModalService from '../services/UIModalService';
-import WorkflowStepsService from '../services/WorkflowStepsService';
-import CineService from '../services/CineService';
-import UserAuthenticationService from '../services/UserAuthenticationService';
-import PanelService from '../services/PanelService';
-import UIDialogService from '../services/UIDialogService';
-import UIViewportDialogService from '../services/UIViewportDialogService';
+import HangingProtocolServiceType from '../services/HangingProtocolService';
+import CustomizationServiceType from '../services/CustomizationService';
+import MeasurementServiceType from '../services/MeasurementService';
+import ViewportGridServiceType from '../services/ViewportGridService';
+import ToolbarServiceType from '../services/ToolBarService';
+import DisplaySetServiceType from '../services/DisplaySetService';
+import StateSyncServiceType from '../services/StateSyncService';
+import UINotificationServiceType from '../services/UINotificationService';
+import UIModalServiceType from '../services/UIModalService';
+import WorkflowStepsServiceType from '../services/WorkflowStepsService';
+import CineServiceType from '../services/CineService';
+import UserAuthenticationServiceType from '../services/UserAuthenticationService';
+import PanelServiceType from '../services/PanelService';
+import UIDialogServiceType from '../services/UIDialogService';
+import UIViewportDialogServiceType from '../services/UIViewportDialogService';
 
 import ServicesManagerType from '../services/ServicesManager';
 import CommandsManagerType from '../classes/CommandsManager';
@@ -24,6 +24,21 @@ declare global {
     export type ServicesManager = ServicesManagerType;
     export type CommandsManager = CommandsManagerType;
     export type ExtensionManager = ExtensionManagerType;
+    export type HangingProtocolService = HangingProtocolServiceType;
+    export type CustomizationService = CustomizationServiceType;
+    export type MeasurementService = MeasurementServiceType;
+    export type DisplaySetService = DisplaySetServiceType;
+    export type ToolbarService = ToolbarServiceType;
+    export type ViewportGridService = ViewportGridServiceType;
+    export type UIModalService = UIModalServiceType;
+    export type UINotificationService = UINotificationServiceType;
+    export type StateSyncService = StateSyncServiceType;
+    export type WorkflowStepsService = WorkflowStepsServiceType;
+    export type CineService = CineServiceType;
+    export type UserAuthenticationService = UserAuthenticationServiceType;
+    export type UIDialogService = UIDialogServiceType;
+    export type UIViewportDialogService = UIViewportDialogServiceType;
+    export type PanelService = PanelServiceType;
 
     export interface Managers {
       servicesManager?: ServicesManager;
@@ -32,21 +47,21 @@ declare global {
     }
 
     export interface Services {
-      hangingProtocolService?: HangingProtocolService;
-      customizationService?: CustomizationService;
-      measurementService?: MeasurementService;
-      displaySetService?: DisplaySetService;
-      toolbarService?: ToolbarService;
-      viewportGridService?: ViewportGridService;
-      uiModalService?: UIModalService;
-      uiNotificationService?: UINotificationService;
-      stateSyncService?: StateSyncService;
-      workflowStepsService?: WorkflowStepsService;
-      cineService?: CineService;
-      userAuthenticationService?: UserAuthenticationService;
-      uiDialogService?: UIDialogService;
-      uiViewportDialogService?: UIViewportDialogService;
-      panelService?: PanelService;
+      hangingProtocolService?: HangingProtocolServiceType;
+      customizationService?: CustomizationServiceType;
+      measurementService?: MeasurementServiceType;
+      displaySetService?: DisplaySetServiceType;
+      toolbarService?: ToolbarServiceType;
+      viewportGridService?: ViewportGridServiceType;
+      uiModalService?: UIModalServiceType;
+      uiNotificationService?: UINotificationServiceType;
+      stateSyncService?: StateSyncServiceType;
+      workflowStepsService?: WorkflowStepsServiceType;
+      cineService?: CineServiceType;
+      userAuthenticationService?: UserAuthenticationServiceType;
+      uiDialogService?: UIDialogServiceType;
+      uiViewportDialogService?: UIViewportDialogServiceType;
+      panelService?: PanelServiceType;
     }
   }
 
