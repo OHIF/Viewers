@@ -1,4 +1,4 @@
-import { ServicesManager, utils, Types } from '@ohif/core';
+import { utils, Types } from '@ohif/core';
 
 import { ContextMenuController, defaultContextMenu } from './CustomizableContextMenu';
 import DicomTagBrowser from './DicomTagBrowser/DicomTagBrowser';
@@ -12,7 +12,6 @@ import { NavigateHistory } from './types/commandModuleTypes';
 import { history } from '@ohif/app';
 
 const { subscribeToNextViewportGridChange } = utils;
-
 export type HangingProtocolParams = {
   protocolId?: string;
   stageIndex?: number;
@@ -38,7 +37,7 @@ const commandsModule = ({
     viewportGridService,
     displaySetService,
     stateSyncService,
-  } = (servicesManager as ServicesManager).services;
+  } = servicesManager.services;
 
   // Define a context menu controller for use with any context menus
   const contextMenuController = new ContextMenuController(servicesManager, commandsManager);

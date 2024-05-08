@@ -10,7 +10,7 @@ function ToolbarSplitButtonWithServices({
   renderer,
   onInteraction,
   servicesManager,
-}) {
+}: withAppTypes) {
   const { toolbarService } = servicesManager?.services;
 
   /* Bubbles up individual item clicks */

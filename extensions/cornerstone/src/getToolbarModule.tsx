@@ -6,7 +6,7 @@ const getToggledClassName = (isToggled: boolean) => {
     : '!text-common-bright hover:!bg-primary-dark hover:text-primary-light';
 };
 
-export default function getToolbarModule({ commandsManager, servicesManager }) {
+export default function getToolbarModule({ commandsManager, servicesManager }: withAppTypes) {
   const {
     toolGroupService,
     toolbarService,

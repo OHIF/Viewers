@@ -9,7 +9,7 @@ import { createDicomWebApi } from '../DicomWebDataSource/index';
  * dicomWeb configuration array
  *
  */
-function createDicomWebProxyApi(dicomWebProxyConfig, servicesManager) {
+function createDicomWebProxyApi(dicomWebProxyConfig, servicesManager: AppTypes.ServicesManager) {
   const { name } = dicomWebProxyConfig;
   let dicomWebDelegate = undefined;
 
@@ -21,7 +21,7 @@ function createDicomWebProxyApi(dicomWebProxyConfig, servicesManager) {
         throw new Error(`No url for '${name}'`);
       } else {
         const response = await fetch(url);
-        let data = await response.json();
+        const data = await response.json();
         if (!data.servers?.dicomWeb?.[0]) {
           throw new Error('Invalid configuration returned by url');
         }

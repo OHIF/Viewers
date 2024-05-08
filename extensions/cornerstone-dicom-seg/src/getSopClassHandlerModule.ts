@@ -8,9 +8,13 @@ import { dicomlabToRGB } from './utils/dicomlabToRGB';
 
 const sopClassUids = ['1.2.840.10008.5.1.4.1.1.66.4'];
 
-let loadPromises = {};
+const loadPromises = {};
 
-function _getDisplaySetsFromSeries(instances, servicesManager, extensionManager) {
+function _getDisplaySetsFromSeries(
+  instances,
+  servicesManager: AppTypes.ServicesManager,
+  extensionManager
+) {
   const instance = instances[0];
 
   const {
@@ -95,7 +99,12 @@ function _getDisplaySetsFromSeries(instances, servicesManager, extensionManager)
   return [displaySet];
 }
 
-function _load(segDisplaySet, servicesManager, extensionManager, headers) {
+function _load(
+  segDisplaySet,
+  servicesManager: AppTypes.ServicesManager,
+  extensionManager,
+  headers
+) {
   const { SOPInstanceUID } = segDisplaySet;
   const { segmentationService } = servicesManager.services;
 
@@ -137,7 +146,12 @@ function _load(segDisplaySet, servicesManager, extensionManager, headers) {
   return loadPromises[SOPInstanceUID];
 }
 
-async function _loadSegments({ extensionManager, servicesManager, segDisplaySet, headers }) {
+async function _loadSegments({
+  extensionManager,
+  servicesManager,
+  segDisplaySet,
+  headers,
+}: withAppTypes) {
   const utilityModule = extensionManager.getModuleEntry(
     '@ohif/extension-cornerstone.utilityModule.common'
   );
@@ -212,7 +226,7 @@ async function _loadSegments({ extensionManager, servicesManager, segDisplaySet,
   Object.assign(segDisplaySet, results);
 }
 
-function _segmentationExists(segDisplaySet, segmentationService) {
+function _segmentationExists(segDisplaySet, segmentationService: AppTypes.SegmentationService) {
   // This should be abstracted with the CornerstoneCacheService
   return segmentationService.getSegmentation(segDisplaySet.displaySetInstanceUID);
 }

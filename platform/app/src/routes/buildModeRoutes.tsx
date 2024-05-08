@@ -28,7 +28,7 @@ export default function buildModeRoutes({
   servicesManager,
   commandsManager,
   hotkeysManager,
-}) {
+}: withAppTypes) {
   const routes = [];
   const dataSourceNames = [];
 

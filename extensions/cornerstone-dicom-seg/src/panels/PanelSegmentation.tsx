@@ -17,7 +17,7 @@ export default function PanelSegmentation({
   commandsManager,
   extensionManager,
   configuration,
-}) {
+}: withAppTypes) {
   const {
     segmentationService,
     viewportGridService,

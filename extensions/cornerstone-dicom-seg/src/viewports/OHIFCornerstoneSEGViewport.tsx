@@ -8,7 +8,7 @@ import _getStatusComponent from './_getStatusComponent';
 
 const SEG_TOOLGROUP_BASE_NAME = 'SEGToolGroup';
 
-function OHIFCornerstoneSEGViewport(props) {
+function OHIFCornerstoneSEGViewport(props: withAppTypes) {
   const {
     children,
     displaySets,

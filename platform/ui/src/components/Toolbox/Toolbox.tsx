@@ -13,7 +13,13 @@ import { useToolbox } from '../../contextProviders';
  * role in enhancing the app with a toolbox by providing a way to integrate
  * and display various tools and their corresponding options
  */
-function Toolbox({ servicesManager, buttonSectionId, commandsManager, title, ...props }) {
+function Toolbox({
+  servicesManager,
+  buttonSectionId,
+  commandsManager,
+  title,
+  ...props
+}: withAppTypes) {
   const { state: toolboxState, api } = useToolbox(buttonSectionId);
   const { onInteraction, toolbarButtons } = useToolbar({
     servicesManager,

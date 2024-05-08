@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { Enums, Types, utilities } from '@cornerstonejs/core';
 import { utilities as csToolsUtils } from '@cornerstonejs/tools';
 import { ImageScrollbar } from '@ohif/ui';
-import { ServicesManger } from '@ohif/core';
 
 function CornerstoneImageScrollbar({
   viewportData,
@@ -13,8 +12,8 @@ function CornerstoneImageScrollbar({
   setImageSliceData,
   scrollbarHeight,
   servicesManager,
-}) {
-  const { cineService, cornerstoneViewportService } = (servicesManager as ServicesManger).services;
+}: withAppTypes) {
+  const { cineService, cornerstoneViewportService } = servicesManager.services;
 
   const onImageScrollbarChange = (imageIndex, viewportId) => {
     const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
