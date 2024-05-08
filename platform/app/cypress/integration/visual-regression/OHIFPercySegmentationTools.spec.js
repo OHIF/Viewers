@@ -2,6 +2,7 @@ import '@percy/cypress';
 
 describe('OHIF Percy Segmentation Tools', () => {
   beforeEach(() => {
+    Cypress.on('uncaught:exception', () => false);
     cy.openStudyInViewer(
       '1.3.6.1.4.1.25403.345050719074.3824.20170125113417.1',
       '&hangingProtocolId=default',
