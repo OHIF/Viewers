@@ -23,7 +23,7 @@ function Header({
   Secondary,
   appConfig,
   ...props
-}): ReactNode {
+}: withAppTypes): ReactNode {
   const { t } = useTranslation('Header');
 
   // TODO: this should be passed in as a prop instead and the react-router-dom

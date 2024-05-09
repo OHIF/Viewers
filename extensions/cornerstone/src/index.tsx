@@ -8,7 +8,7 @@ import {
 } from '@cornerstonejs/core';
 import * as csStreamingImageVolumeLoader from '@cornerstonejs/streaming-image-volume-loader';
 import { Enums as cs3DToolsEnums } from '@cornerstonejs/tools';
-import { ServicesManager, Types } from '@ohif/core';
+import { Types } from '@ohif/core';
 
 import init from './init';
 import getCustomizationModule from './getCustomizationModule';
@@ -61,7 +61,7 @@ const cornerstoneExtension: Types.Extensions.Extension = {
    */
   id,
 
-  onModeEnter: ({ servicesManager }): void => {
+  onModeEnter: ({ servicesManager }: withAppTypes): void => {
     const { cornerstoneViewportService, toolbarService, segmentationService } =
       servicesManager.services;
     toolbarService.registerEventForToolbarUpdate(cornerstoneViewportService, [
@@ -79,7 +79,7 @@ const cornerstoneExtension: Types.Extensions.Extension = {
     ]);
   },
 
-  onModeExit: ({ servicesManager }): void => {
+  onModeExit: ({ servicesManager }: withAppTypes): void => {
     const { cineService } = servicesManager.services;
     // Empty out the image load and retrieval pools to prevent memory leaks
     // on the mode exits
@@ -132,7 +132,7 @@ const cornerstoneExtension: Types.Extensions.Extension = {
       // const onNewImageHandler = jumpData => {
       //   commandsManager.runCommand('jumpToImage', jumpData);
       // };
-      const { toolbarService } = (servicesManager as ServicesManager).services;
+      const { toolbarService } = servicesManager.services;
 
       return (
         <OHIFCornerstoneViewport

@@ -35,7 +35,7 @@ const workerFn = () => {
   });
 };
 
-const commandsModule = ({ servicesManager, commandsManager, extensionManager }) => {
+const commandsModule = ({ servicesManager, commandsManager, extensionManager }: withAppTypes) => {
   const {
     viewportGridService,
     uiNotificationService,
@@ -354,7 +354,7 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }) 
 
       let segmentationMax = -Infinity;
       let segmentationMin = Infinity;
-      let segmentationValues = [];
+      const segmentationValues = [];
 
       let voxelCount = 0;
       for (let i = 0; i < scalarData.length; i++) {
@@ -551,7 +551,7 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }) 
         segmentations = segmentationService.getSegmentations();
       }
 
-      let report = {};
+      const report = {};
 
       for (const segmentation of segmentations) {
         const { id, label, cachedStats: data } = segmentation;
@@ -633,7 +633,7 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }) 
 
       const fusionViewportIds = toolGroup.getViewportIds();
 
-      let viewports = [];
+      const viewports = [];
       fusionViewportIds.forEach(viewportId => {
         commandsManager.runCommand('setViewportColormap', {
           viewportId,

@@ -85,7 +85,11 @@ function addInstances(instances: InstanceMetadata[], displaySetService: DisplayS
  * @param servicesManager is the services that can be used for creating
  * @returns The list of display sets created for the given instances object
  */
-function _getDisplaySetsFromSeries(instances, servicesManager, extensionManager) {
+function _getDisplaySetsFromSeries(
+  instances,
+  servicesManager: AppTypes.ServicesManager,
+  extensionManager
+) {
   // If the series has no instances, stop here
   if (!instances || !instances.length) {
     throw new Error('No instances were provided');
@@ -150,7 +154,7 @@ function _getDisplaySetsFromSeries(instances, servicesManager, extensionManager)
   return [displaySet];
 }
 
-async function _load(displaySet, servicesManager, extensionManager) {
+async function _load(displaySet, servicesManager: AppTypes.ServicesManager, extensionManager) {
   const { displaySetService, measurementService } = servicesManager.services;
   const dataSources = extensionManager.getDataSources();
   const dataSource = dataSources[0];
@@ -223,7 +227,7 @@ function _checkIfCanAddMeasurementsToDisplaySet(
   srDisplaySet,
   newDisplaySet,
   dataSource,
-  servicesManager
+  servicesManager: AppTypes.ServicesManager
 ) {
   const { customizationService } = servicesManager.services;
   let unloadedMeasurements = srDisplaySet.measurements.filter(

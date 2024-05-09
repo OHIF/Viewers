@@ -40,7 +40,7 @@ function reducer(state, action) {
   }
 }
 
-function RectangleROIOptions({ servicesManager, commandsManager }) {
+function RectangleROIOptions({ servicesManager, commandsManager }: withAppTypes) {
   const { segmentationService } = servicesManager.services;
   const [selectedSegmentationId, setSelectedSegmentationId] = useState(null);
 

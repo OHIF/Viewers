@@ -30,7 +30,7 @@ const StudyBrowser = ({
   onClickUntrack,
   activeDisplaySetInstanceUIDs,
   servicesManager,
-}) => {
+}: withAppTypes) => {
   const { t } = useTranslation('StudyBrowser');
   const { customizationService } = servicesManager?.services || {};
 

@@ -37,7 +37,7 @@ function modeFactory({ modeConfiguration }) {
     id,
     routeName: 'dynamic-volume',
     displayName: '4D PT/CT',
-    onModeEnter: function ({ servicesManager, extensionManager, commandsManager }) {
+    onModeEnter: function ({ servicesManager, extensionManager, commandsManager }: withAppTypes) {
       const {
         measurementService,
         toolbarService,
@@ -86,12 +86,12 @@ function modeFactory({ modeConfiguration }) {
         }
       );
     },
-    onSetupRouteComplete: ({ servicesManager }) => {
+    onSetupRouteComplete: ({ servicesManager }: withAppTypes) => {
       // This needs to run after hanging protocol matching process because
       // it may change the protocol/stage based on workflow stage settings
       initWorkflowSteps({ servicesManager });
     },
-    onModeExit: ({ servicesManager }) => {
+    onModeExit: ({ servicesManager }: withAppTypes) => {
       const {
         toolGroupService,
         syncGroupService,
