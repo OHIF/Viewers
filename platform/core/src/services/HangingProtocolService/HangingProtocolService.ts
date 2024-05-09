@@ -1432,7 +1432,11 @@ export default class HangingProtocolService extends PubSubService {
     // only match the required rules
     const requiredRules = seriesMatchingRules.filter(rule => rule.required);
     if (requiredRules.length) {
-      const matched = this.protocolEngine.findMatch(displaySet, requiredRules);
+      const matched = this.protocolEngine.findMatch(displaySet, requiredRules, {
+        studies: this.studies,
+        instance: displaySet.images?.[0],
+        displaySetMatchDetails: this.displaySetMatchDetails,
+      });
 
       if (!matched || matched.score === 0) {
         throw new Error(
