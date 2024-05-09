@@ -55,7 +55,7 @@ function modeFactory({ modeConfiguration }) {
       const { toolNames, Enums } = utilityModule.exports;
 
       measurementService.clearMeasurements();
-      initToolGroups({ toolNames, Enums, toolGroupService, commandsManager });
+      initToolGroups({ toolNames, Enums, toolGroupService, commandsManager, servicesManager });
 
       toolbarService.addButtons([...toolbarButtons, ...segmentationButtons]);
       toolbarService.createButtonSection('secondary', ['ProgressDropdown']);

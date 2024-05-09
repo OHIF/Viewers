@@ -6,7 +6,22 @@ export const toolGroupIds = {
   default: 'default',
 };
 
-function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager, modeLabelConfig) {
+const colours = {
+  'viewport-0': 'rgb(200, 0, 0)',
+  'viewport-1': 'rgb(200, 200, 0)',
+  'viewport-2': 'rgb(0, 200, 0)',
+};
+
+const colorsByOrientation = {
+  axial: 'rgb(200, 0, 0)',
+  sagittal: 'rgb(200, 200, 0)',
+  coronal: 'rgb(0, 200, 0)',
+};
+
+function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager, modeLabelConfig, servicesManager) {
+
+  const { cornerstoneViewportService } = servicesManager.services;
+
   const tools = {
     active: [
       {
@@ -125,11 +140,25 @@ function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager, mo
       {
         toolName: toolNames.Crosshairs,
         configuration: {
-          viewportIndicators: false,
+          viewportIndicators: true,
           disableOnPassive: true,
           autoPan: {
             enabled: false,
             panSize: 10,
+          },
+          getReferenceLineColor: viewportId => {
+            const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
+            const viewportOptions = viewportInfo?.viewportOptions;
+            if (viewportOptions) {
+              return (
+                colours[viewportOptions.id] ||
+                colorsByOrientation[viewportOptions.orientation] ||
+                '#0c0'
+              );
+            } else {
+              console.warn('missing viewport?', viewportId);
+              return '#0c0';
+            }
           },
         },
       },
@@ -178,8 +207,8 @@ function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager, mo
   toolGroupService.createToolGroupAndAddTools(toolGroupIds.MIP, mipTools);
 }
 
-function initToolGroups(toolNames, Enums, toolGroupService, commandsManager, modeLabelConfig) {
-  _initToolGroups(toolNames, Enums, toolGroupService, commandsManager, modeLabelConfig);
+function initToolGroups(toolNames, Enums, toolGroupService, commandsManager, modeLabelConfig, servicesManager) {
+  _initToolGroups(toolNames, Enums, toolGroupService, commandsManager, modeLabelConfig, servicesManager);
 }
 
 export default initToolGroups;
