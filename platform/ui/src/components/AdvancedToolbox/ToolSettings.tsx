@@ -103,7 +103,7 @@ const renderDoubleRangeSetting = option => {
       key={option.id}
     >
       <InputDoubleRange
-        values={option.value}
+        values={option.values}
         onChange={option.commands}
         minValue={option.min}
         maxValue={option.max}
