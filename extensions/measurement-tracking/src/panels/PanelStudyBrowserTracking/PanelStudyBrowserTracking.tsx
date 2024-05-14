@@ -18,7 +18,7 @@ function PanelStudyBrowserTracking({
   getStudiesForPatientByMRN,
   requestDisplaySetCreationForStudy,
   dataSource,
-}) {
+}: withAppTypes) {
   const {
     displaySetService,
     uiDialogService,

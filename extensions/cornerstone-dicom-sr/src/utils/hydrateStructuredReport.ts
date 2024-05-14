@@ -43,7 +43,7 @@ const convertSites = (codingValues, sites) => {
  *
  */
 export default function hydrateStructuredReport(
-  { servicesManager, extensionManager, appConfig },
+  { servicesManager, extensionManager, appConfig }: withAppTypes,
   displaySetInstanceUID
 ) {
   const annotationManager = CsAnnotation.state.getAnnotationManager();

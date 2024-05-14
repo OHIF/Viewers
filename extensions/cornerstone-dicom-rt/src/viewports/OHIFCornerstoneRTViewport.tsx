@@ -8,7 +8,7 @@ import createRTToolGroupAndAddTools from '../utils/initRTToolGroup';
 
 const RT_TOOLGROUP_BASE_NAME = 'RTToolGroup';
 
-function OHIFCornerstoneRTViewport(props) {
+function OHIFCornerstoneRTViewport(props: withAppTypes) {
   const {
     children,
     displaySets,

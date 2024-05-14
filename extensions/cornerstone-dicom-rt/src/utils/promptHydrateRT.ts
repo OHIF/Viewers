@@ -13,7 +13,7 @@ function promptHydrateRT({
   toolGroupId = 'default',
   preHydrateCallbacks,
   hydrateRTDisplaySet,
-}) {
+}: withAppTypes) {
   const { uiViewportDialogService } = servicesManager.services;
   const extensionManager = servicesManager._extensionManager;
   const appConfig = extensionManager._appConfig;
@@ -41,7 +41,7 @@ function promptHydrateRT({
   });
 }
 
-function _askHydrate(uiViewportDialogService, viewportId) {
+function _askHydrate(uiViewportDialogService: AppTypes.UIViewportDialogService, viewportId) {
   return new Promise(function (resolve, reject) {
     const message = 'Do you want to open this Segmentation?';
     const actions = [
@@ -62,6 +62,7 @@ function _askHydrate(uiViewportDialogService, viewportId) {
     };
 
     uiViewportDialogService.show({
+      id: 'promptHydrateRT',
       viewportId,
       type: 'info',
       message,

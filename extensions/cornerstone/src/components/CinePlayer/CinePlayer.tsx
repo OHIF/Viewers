@@ -4,7 +4,14 @@ import { Enums, eventTarget, cache } from '@cornerstonejs/core';
 import { Enums as StreamingEnums } from '@cornerstonejs/streaming-image-volume-loader';
 import { useAppConfig } from '@state';
 
-function WrappedCinePlayer({ enabledVPElement, viewportId, servicesManager }) {
+function WrappedCinePlayer({
+  enabledVPElement,
+  viewportId,
+  servicesManager,
+}: withAppTypes<{
+  enabledVPElement: HTMLElement;
+  viewportId: string;
+}>) {
   const { customizationService, displaySetService, viewportGridService } = servicesManager.services;
   const [{ isCineEnabled, cines }, cineService] = useCine();
   const [newStackFrameRate, setNewStackFrameRate] = useState(24);

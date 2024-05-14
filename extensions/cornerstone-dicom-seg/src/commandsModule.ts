@@ -1,6 +1,6 @@
 import dcmjs from 'dcmjs';
 import { createReportDialogPrompt } from '@ohif/extension-default';
-import { ServicesManager, Types } from '@ohif/core';
+import { Types } from '@ohif/core';
 import { cache, metaData } from '@cornerstonejs/core';
 import {
   segmentation as cornerstoneToolsSegmentation,
@@ -48,7 +48,7 @@ const commandsModule = ({
     displaySetService,
     viewportGridService,
     toolGroupService,
-  } = (servicesManager as ServicesManager).services;
+  } = servicesManager.services;
 
   const actions = {
     /**

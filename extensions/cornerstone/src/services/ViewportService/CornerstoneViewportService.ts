@@ -1,4 +1,4 @@
-import { PubSubService, ServicesManager } from '@ohif/core';
+import { PubSubService } from '@ohif/core';
 import * as OhifTypes from '@ohif/core/types';
 import {
   RenderingEngine,
@@ -52,14 +52,14 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
   enableResizeDetector: true;
   resizeRefreshRateMs: 200;
   resizeRefreshMode: 'debounce';
-  servicesManager = null;
+  servicesManager: AppTypes.ServicesManager = null;
 
   resizeQueue = [];
   viewportResizeTimer = null;
   gridResizeDelay = 50;
   gridResizeTimeOut = null;
 
-  constructor(servicesManager: ServicesManager) {
+  constructor(servicesManager: AppTypes.ServicesManager) {
     super(EVENTS);
     this.renderingEngine = null;
     this.viewportGridResizeObserver = null;

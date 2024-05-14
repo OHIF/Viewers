@@ -88,7 +88,7 @@ const createRoutes = ({
   hotkeysManager,
   routerBasename,
   showStudyList,
-}) => {
+}: withAppTypes) => {
   const routes =
     buildModeRoutes({
       modes,

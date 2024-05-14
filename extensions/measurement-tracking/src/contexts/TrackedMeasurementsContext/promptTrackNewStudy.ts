@@ -9,21 +9,18 @@ const RESPONSE = {
   NO_NOT_FOR_SERIES: 4,
 };
 
-function promptTrackNewStudy({ servicesManager, extensionManager }, ctx, evt) {
-  const { UIViewportDialogService } = servicesManager.services;
-  const appConfig = extensionManager._appConfig;
+function promptTrackNewStudy({ servicesManager, extensionManager }: withAppTypes, ctx, evt) {
+  const { uiViewportDialogService } = servicesManager.services;
   // When the state change happens after a promise, the state machine sends the retult in evt.data;
   // In case of direct transition to the state, the state machine sends the data in evt;
   const { viewportId, StudyInstanceUID, SeriesInstanceUID } = evt.data || evt;
 
   return new Promise(async function (resolve, reject) {
-    let promptResult = appConfig?.disableConfirmationPrompts
-      ? RESPONSE.SET_STUDY_AND_SERIES
-      : await _askTrackMeasurements(UIViewportDialogService, viewportId);
+    let promptResult = await _askTrackMeasurements(uiViewportDialogService, viewportId);
 
     if (promptResult === RESPONSE.SET_STUDY_AND_SERIES) {
       promptResult = ctx.isDirty
-        ? await _askSaveDiscardOrCancel(UIViewportDialogService, viewportId)
+        ? await _askSaveDiscardOrCancel(uiViewportDialogService, viewportId)
         : RESPONSE.SET_STUDY_AND_SERIES;
     }
 
@@ -37,7 +34,10 @@ function promptTrackNewStudy({ servicesManager, extensionManager }, ctx, evt) {
   });
 }
 
-function _askTrackMeasurements(UIViewportDialogService, viewportId) {
+function _askTrackMeasurements(
+  UIViewportDialogService: AppTypes.UIViewportDialogService,
+  viewportId
+) {
   return new Promise(function (resolve, reject) {
     const message = i18n.t('MeasurementTable:Track measurements for this series?');
     const actions = [
@@ -78,7 +78,10 @@ function _askTrackMeasurements(UIViewportDialogService, viewportId) {
   });
 }
 
-function _askSaveDiscardOrCancel(UIViewportDialogService, viewportId) {
+function _askSaveDiscardOrCancel(
+  UIViewportDialogService: AppTypes.UIViewportDialogService,
+  viewportId
+) {
   return new Promise(function (resolve, reject) {
     const message =
       'Measurements cannot span across multiple studies. Do you want to save your tracked measurements?';
