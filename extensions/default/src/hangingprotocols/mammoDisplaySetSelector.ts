@@ -117,6 +117,7 @@ const RMLOSeriesMatchingRules = [
     constraint: {
       contains: 'R',
     },
+    required: true,
   },
   {
     weight: 20,
