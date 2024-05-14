@@ -11,7 +11,11 @@ const metadataProvider = classes.MetadataProvider;
  * @param {Object} servicesManager
  * @param {Object} configuration
  */
-export default function init({ servicesManager, configuration = {}, commandsManager }): void {
+export default function init({
+  servicesManager,
+  configuration = {},
+  commandsManager,
+}: withAppTypes): void {
   const { stateSyncService, toolbarService, cineService, viewportGridService } =
     servicesManager.services;
 

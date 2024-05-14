@@ -25,7 +25,7 @@ async function run() {
   } else {
     console.log('Branch: master');
     const prereleaseComponents = semver.prerelease(currentVersion);
-    const isBumpBeta = lastCommitMessage.trim().endsWith('[BUMP BETA]');
+    const isBumpBeta = lastCommitMessage.trim().includes('[BUMP BETA]');
     console.log('isBumpBeta', isBumpBeta);
 
     if (prereleaseComponents?.includes('beta')) {

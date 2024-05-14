@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 
 import { ErrorBoundary, LoadingIndicatorProgress, InvestigationalUseDialog } from '@ohif/ui';
-import { ServicesManager, HangingProtocolService, CommandsManager } from '@ohif/core';
+import { HangingProtocolService, CommandsManager } from '@ohif/core';
 import { useAppConfig } from '@state';
 import ViewerHeader from './ViewerHeader';
 import SidePanelWithServices from '../Components/SidePanelWithServices';
@@ -18,7 +18,7 @@ function ViewerLayout({
   ViewportGridComp,
   leftPanelClosed = false,
   rightPanelClosed = false,
-}): React.FunctionComponent {
+}: withAppTypes): React.FunctionComponent {
   const [appConfig] = useAppConfig();
 
   const { panelService, hangingProtocolService } = servicesManager.services;
@@ -167,7 +167,7 @@ ViewerLayout.propTypes = {
     getModuleEntry: PropTypes.func.isRequired,
   }).isRequired,
   commandsManager: PropTypes.instanceOf(CommandsManager),
-  servicesManager: PropTypes.instanceOf(ServicesManager),
+  servicesManager: PropTypes.object.isRequired,
   // From modes
   leftPanels: PropTypes.array,
   rightPanels: PropTypes.array,

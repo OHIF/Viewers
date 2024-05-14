@@ -1,12 +1,17 @@
 import React from 'react';
-import { ServicesManager } from '@ohif/core';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 
 import MeasurementItem from './MeasurementItem';
 
-const MeasurementTable = ({ data, title, onClick, onEdit, onDelete, servicesManager }) => {
-  servicesManager = servicesManager as ServicesManager;
+const MeasurementTable = ({
+  data,
+  title,
+  onClick,
+  onEdit,
+  onDelete,
+  servicesManager,
+}: withAppTypes) => {
   const { customizationService, measurementService } = servicesManager.services;
   const { t } = useTranslation('MeasurementTable');
   const amount = data.length;

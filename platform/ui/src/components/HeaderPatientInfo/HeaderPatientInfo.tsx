@@ -13,7 +13,7 @@ const formatWithEllipsis = (str, maxLength) => {
   return str;
 };
 
-function usePatientInfo(servicesManager) {
+function usePatientInfo(servicesManager: AppTypes.ServicesManager) {
   const { displaySetService } = servicesManager.services;
 
   const [patientInfo, setPatientInfo] = useState({
@@ -47,12 +47,12 @@ function usePatientInfo(servicesManager) {
       return;
     }
     setPatientInfo({
-      PatientID: instance.PatientID || '',
-      PatientName: instance.PatientName ? formatPN(instance.PatientName.Alphabetic) : '',
-      PatientSex: instance.PatientSex || '',
-      PatientDOB: formatDate(instance.PatientBirthDate) || '',
+      PatientID: instance.PatientID || null,
+      PatientName: instance.PatientName ? formatPN(instance.PatientName.Alphabetic) : null,
+      PatientSex: instance.PatientSex || null,
+      PatientDOB: formatDate(instance.PatientBirthDate) || null,
     });
-    checkMixedPatients(instance.PatientID || '');
+    checkMixedPatients(instance.PatientID || null);
   };
 
   useEffect(() => {
@@ -70,7 +70,7 @@ function usePatientInfo(servicesManager) {
   return { patientInfo, isMixedPatients };
 }
 
-function HeaderPatientInfo({ servicesManager, appConfig }) {
+function HeaderPatientInfo({ servicesManager, appConfig }: withAppTypes) {
   const initialExpandedState =
     appConfig.showPatientInfo === PatientInfoVisibility.VISIBLE ||
     appConfig.showPatientInfo === PatientInfoVisibility.VISIBLE_READONLY;

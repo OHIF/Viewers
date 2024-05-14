@@ -5,11 +5,11 @@ import { VolumeRenderingPresetsContent } from './VolumeRenderingPresetsContent';
 
 export function VolumeRenderingPresets({
   viewportId,
-  serviceManager,
+  servicesManager,
   commandsManager,
   volumeRenderingPresets,
 }: VolumeRenderingPresetsProps): ReactElement {
-  const { uiModalService } = serviceManager.services;
+  const { uiModalService } = servicesManager.services;
 
   const onClickPresets = () => {
     uiModalService.show({

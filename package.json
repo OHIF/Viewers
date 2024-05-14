@@ -60,7 +60,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.20.13",
-    "@kitware/vtk.js": "30.3.3",
+    "@kitware/vtk.js": "30.4.1",
     "core-js": "^3.2.1"
   },
   "peerDependencies": {

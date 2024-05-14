@@ -1,6 +1,6 @@
 import dcmjs from 'dcmjs';
 import { createReportDialogPrompt } from '@ohif/extension-default';
-import { ServicesManager, Types } from '@ohif/core';
+import { Types } from '@ohif/core';
 import { cache, metaData } from '@cornerstonejs/core';
 import {
   segmentation as cornerstoneToolsSegmentation,
@@ -48,7 +48,7 @@ const commandsModule = ({
     displaySetService,
     viewportGridService,
     toolGroupService,
-  } = (servicesManager as ServicesManager).services;
+  } = servicesManager.services;
 
   const actions = {
     /**
@@ -258,9 +258,12 @@ const commandsModule = ({
       labelmapObj.metadata = [];
 
       const segmentationInOHIF = segmentationService.getSegmentation(segmentationId);
-      labelmapObj.segmentsOnLabelmap.forEach(segmentIndex => {
+      segmentationInOHIF.segments.forEach(segment => {
         // segmentation service already has a color for each segment
-        const segment = segmentationInOHIF?.segments[segmentIndex];
+        if (!segment) {
+          return;
+        }
+        const segmentIndex = segment.segmentIndex;
         const { label, color } = segment;
 
         const RecommendedDisplayCIELabValue = dcmjs.data.Colors.rgb2DICOMLAB(

@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 import { metaData, Enums, utilities } from '@cornerstonejs/core';
 import { ImageSliceData } from '@cornerstonejs/core/dist/esm/types';
 import { ViewportOverlay } from '@ohif/ui';
-import { ServicesManager } from '@ohif/core';
 import { InstanceMetadata } from '@ohif/core/src/types';
 import { formatPN, formatDICOMDate, formatDICOMTime, formatNumberPrecision } from './utils';
 import { StackViewportData, VolumeViewportData } from '../../types/CornerstoneCacheService';
@@ -19,7 +18,7 @@ interface OverlayItemProps {
   element: HTMLElement;
   viewportData: ViewportData;
   imageSliceData: ImageSliceData;
-  servicesManager: ServicesManager;
+  servicesManager: AppTypes.ServicesManager;
   viewportId: string;
   instance: InstanceMetadata;
   customization: any;
@@ -59,7 +58,7 @@ function CustomizableViewportOverlay({
   viewportData: ViewportData;
   imageSliceData: ImageSliceData;
   viewportId: string;
-  servicesManager: ServicesManager;
+  servicesManager: AppTypes.ServicesManager;
 }) {
   const { cornerstoneViewportService, customizationService, toolGroupService } =
     servicesManager.services;
@@ -137,20 +136,8 @@ function CustomizableViewportOverlay({
           return;
         }
 
-        const imageData = viewport.getImageData();
+        const scale = viewport.getZoom();
 
-        if (!imageData) {
-          return;
-        }
-
-        if (camera.scale) {
-          setScale(camera.scale);
-          return;
-        }
-
-        const { spacing } = imageData;
-        // convert parallel scale to scale
-        const scale = (element.clientHeight * spacing[0] * 0.5) / camera.parallelScale;
         setScale(scale);
       }
     };
