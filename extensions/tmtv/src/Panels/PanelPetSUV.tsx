@@ -154,6 +154,7 @@ export default function PanelPetSUV({ servicesManager, commandsManager }: withAp
                     PatientWeight: e.target.value,
                   });
                 }}
+                id="weight-input"
               />
               <Input
                 containerClassName={'!flex-row !justify-between items-center'}
