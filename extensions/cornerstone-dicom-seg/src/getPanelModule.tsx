@@ -10,7 +10,7 @@ const getPanelModule = ({
   extensionManager,
   configuration,
   title,
-}) => {
+}: withAppTypes) => {
   const { customizationService } = servicesManager.services;
 
   const wrappedPanelSegmentation = configuration => {

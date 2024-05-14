@@ -4,7 +4,7 @@ import PanelGenerateImage from './PanelGenerateImage';
 function DynamicDataPanel({ servicesManager, commandsManager }) {
   return (
     <div
-      className="flex flex-auto flex-col text-white"
+      className="flex flex-col text-white"
       data-cy={'dynamic-volume-panel'}
     >
       <PanelGenerateImage

@@ -2,10 +2,12 @@ import { getWebWorkerManager } from '@cornerstonejs/core';
 
 const workerManager = getWebWorkerManager();
 
-const options = {
-  // maxWorkerInstances: 1,
-  // overwrite: false
-  autoTerminationOnIdle: 1000,
+const WorkerOptions = {
+  maxWorkerInstances: 1,
+  autoTerminateOnIdle: {
+    enabled: true,
+    idleTimeThreshold: 1000,
+  },
 };
 
 // Register the task
@@ -15,9 +17,9 @@ const workerFn = () => {
   });
 };
 
-workerManager.registerWorker('histogram-worker', workerFn, options);
-
 const getViewportVolumeHistogram = async (viewport, volume, options?) => {
+  workerManager.registerWorker('histogram-worker', workerFn, WorkerOptions);
+
   if (!volume?.loadStatus.loaded) {
     return undefined;
   }

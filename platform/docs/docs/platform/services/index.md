@@ -40,7 +40,7 @@ The following services is available in the `OHIF-v3`.
         <tr>
             <td>
                 <a href="./data/DicomMetadataStore">
-                    DicomMetadataStore (NEW)
+                    DicomMetadataStore
                 </a>
             </td>
             <td>Data Service</td>
@@ -51,7 +51,7 @@ The following services is available in the `OHIF-v3`.
         <tr>
             <td>
                 <a href="./data/DisplaySetService">
-                    DisplaySetService (NEW)
+                    DisplaySetService
                 </a>
             </td>
             <td>Data Service</td>
@@ -62,7 +62,7 @@ The following services is available in the `OHIF-v3`.
         <tr>
             <td>
                 <a href="./data/SegmentationService">
-                    segmentationService (NEW)
+                    segmentationService
                 </a>
             </td>
             <td>Segmentation Service</td>
@@ -73,7 +73,7 @@ The following services is available in the `OHIF-v3`.
         <tr>
             <td>
                 <a href="./data/HangingProtocolService">
-                    HangingProtocolService (NEW)
+                    HangingProtocolService
                 </a>
             </td>
             <td>Data Service</td>
@@ -95,7 +95,7 @@ The following services is available in the `OHIF-v3`.
         <tr>
             <td>
                 <a href="./data/ToolBarService">
-                    ToolBarService (NEW)
+                    ToolBarService
                 </a>
             </td>
             <td>Data Service</td>
@@ -106,7 +106,7 @@ The following services is available in the `OHIF-v3`.
         <tr>
             <td>
                 <a href="./ui/viewport-grid-service">
-                    ViewportGridService (NEW)
+                    ViewportGridService
                 </a>
             </td>
             <td>UI Service</td>
@@ -117,7 +117,7 @@ The following services is available in the `OHIF-v3`.
         <tr>
             <td>
                 <a href="./ui/cine-service">
-                    Cine Service (NEW)
+                    Cine Service
                 </a>
             </td>
             <td>UI Service</td>
@@ -133,7 +133,7 @@ The following services is available in the `OHIF-v3`.
             </td>
             <td>UI Service</td>
             <td>
-                customizationService (NEW)
+                customizationService
             </td>
         </tr>
         <tr>
@@ -172,7 +172,7 @@ The following services is available in the `OHIF-v3`.
         <tr>
             <td>
                 <a href="./ui/ui-viewport-dialog-service">
-                    UIViewportDialogService (NEW)
+                    UIViewportDialogService
                 </a>
             </td>
             <td>UI Service</td>

@@ -20,20 +20,21 @@ const ActiveSegmentationConfig = ({
 }) => {
   const { t } = useTranslation('SegmentationTable');
   return (
-    <div className="flex justify-between px-3 pt-[13px] text-[12px]">
-      <div className="flex flex-col items-start">
+    <div className="flex justify-between gap-[5px] px-2 pt-[13px] text-[12px]">
+      <div className="flex h-[89px] flex-col items-start">
         <div className="mb-[12px] text-white">{t('Active')}</div>
         <CheckBox
           label={t('Outline')}
           checked={config.renderOutline}
-          labelClassName="text-[12px] pl-1 pt-1"
+          labelClassName="text-[12px]"
           className="mb-[9px]"
           onChange={setRenderOutline}
         />
+        <div className="mt-2"></div>
         <CheckBox
           label={t('Fill')}
           checked={config.renderFill}
-          labelClassName="text-[12px] pl-1 pt-1"
+          labelClassName="text-[12px]"
           className="mb-[9px]"
           onChange={setRenderFill}
         />
@@ -47,9 +48,9 @@ const ActiveSegmentationConfig = ({
           value={getRoundedValue(config.outlineOpacity * 100)}
           onChange={setOutlineOpacityActive}
           step={1}
-          containerClassName="mt-[4px] mb-[9px]"
+          containerClassName="mt-[4px] mb-[9px] w-[100px]"
           inputClassName="w-[64px]"
-          labelClassName="text-white text-[12px]"
+          labelClassName="text-white text-[12px] whitespace-nowrap"
           unit="%"
         />
         <InputRange
@@ -58,9 +59,9 @@ const ActiveSegmentationConfig = ({
           value={getRoundedValue(config.fillAlpha * 100)}
           onChange={setFillAlpha}
           step={1}
-          containerClassName="mt-[4px] mb-[9px]"
+          containerClassName="mt-[4px] mb-[9px] w-[100px]"
           inputClassName="w-[64px]"
-          labelClassName="text-white text-[12px]"
+          labelClassName="text-white text-[12px] whitespace-nowrap"
           unit="%"
         />
       </div>

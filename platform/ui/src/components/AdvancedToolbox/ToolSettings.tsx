@@ -86,6 +86,7 @@ const renderRadioSetting = option => {
       <span>{option.name}</span>
       <div className="max-w-1/2">
         <ButtonGroup
+          className="border-secondary-light rounded-md border"
           activeIndex={option.values.findIndex(({ value }) => value === option.value) || 0}
         >
           {renderButtons(option)}
@@ -102,7 +103,7 @@ const renderDoubleRangeSetting = option => {
       key={option.id}
     >
       <InputDoubleRange
-        values={option.values}
+        values={option.value}
         onChange={option.commands}
         minValue={option.min}
         maxValue={option.max}

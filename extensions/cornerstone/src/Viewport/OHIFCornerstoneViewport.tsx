@@ -18,7 +18,6 @@ import { setEnabledElement } from '../state';
 import './OHIFCornerstoneViewport.css';
 import CornerstoneOverlays from './Overlays/CornerstoneOverlays';
 import getSOPInstanceAttributes from '../utils/measurementServiceMappings/utils/getSOPInstanceAttributes';
-import CornerstoneServices from '../types/CornerstoneServices';
 import CinePlayer from '../components/CinePlayer';
 import { Types } from '@ohif/core';
 
@@ -100,7 +99,7 @@ function areEqual(prevProps, nextProps) {
 
 // Todo: This should be done with expose of internal API similar to react-vtkjs-viewport
 // Then we don't need to worry about the re-renders if the props change.
-const OHIFCornerstoneViewport = React.memo(props => {
+const OHIFCornerstoneViewport = React.memo((props: withAppTypes) => {
   const {
     displaySets,
     dataSource,
@@ -108,20 +107,34 @@ const OHIFCornerstoneViewport = React.memo(props => {
     displaySetOptions,
     servicesManager,
     onElementEnabled,
+    // eslint-disable-next-line react/prop-types
     onElementDisabled,
     isJumpToMeasurementDisabled,
     // Note: you SHOULD NOT use the initialImageIdOrIndex for manipulation
     // of the imageData in the OHIFCornerstoneViewport. This prop is used
     // to set the initial state of the viewport's first image to render
+    // eslint-disable-next-line react/prop-types
     initialImageIndex,
+    // if the viewport is part of a hanging protocol layout
+    // we should not really rely on the old synchronizers and
+    // you see below we only rehydrate the synchronizers if the viewport
+    // is not part of the hanging protocol layout. HPs should
+    // define their own synchronizers. Since the synchronizers are
+    // viewportId dependent and
+    // eslint-disable-next-line react/prop-types
+    isHangingProtocolLayout,
   } = props;
 
   const viewportId = viewportOptions.viewportId;
 
+  if (!viewportId) {
+    throw new Error('Viewport ID is required');
+  }
+
   // Since we only have support for dynamic data in volume viewports, we should
   // handle this case here and set the viewportType to volume if any of the
   // displaySets are dynamic volumes
-  viewportOptions.viewportType = displaySets.some(ds => ds.isDynamicVolume)
+  viewportOptions.viewportType = displaySets.some(ds => ds.isDynamicVolume && ds.isReconstructable)
     ? 'volume'
     : viewportOptions.viewportType;
 
@@ -141,7 +154,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
     viewportGridService,
     stateSyncService,
     viewportActionCornersService,
-  } = servicesManager.services as CornerstoneServices;
+  } = servicesManager.services;
 
   const [viewportDialogState] = useViewportDialog();
   // useCallback for scroll bar height calculation
@@ -194,7 +207,7 @@ const OHIFCornerstoneViewport = React.memo(props => {
 
       const synchronizersStore = stateSyncService.getState().synchronizersStore;
 
-      if (synchronizersStore?.[viewportId]?.length) {
+      if (synchronizersStore?.[viewportId]?.length && !isHangingProtocolLayout) {
         // If the viewport used to have a synchronizer, re apply it again
         _rehydrateSynchronizers(synchronizersStore, viewportId, syncGroupService);
       }
@@ -474,7 +487,10 @@ function _subscribeToJumpToMeasurementEvents(
           cornerstoneViewportService.getViewportIdToJump(
             jumpId,
             measurement.displaySetInstanceUID,
-            { referencedImageId: measurement.referencedImageId }
+            {
+              referencedImageId:
+                measurement.referencedImageId || measurement.metadata?.referencedImageId,
+            }
           );
       }
       if (cacheJumpToMeasurementEvent.cornerstoneViewport !== viewportId) {
@@ -582,6 +598,9 @@ function _jumpToMeasurement(
       imageIdIndex = referencedDisplaySet.images.findIndex(
         i => i.SOPInstanceUID === SOPInstanceUID
       );
+
+      // the index is reversed in the volume viewport
+      // imageIdIndex = referencedDisplaySet.images.length - 1 - imageIdIndex;
 
       const { viewPlaneNormal: viewportViewPlane } = viewport.getCamera();
 

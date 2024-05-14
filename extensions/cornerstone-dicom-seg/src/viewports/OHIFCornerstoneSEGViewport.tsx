@@ -8,7 +8,7 @@ import _getStatusComponent from './_getStatusComponent';
 
 const SEG_TOOLGROUP_BASE_NAME = 'SEGToolGroup';
 
-function OHIFCornerstoneSEGViewport(props) {
+function OHIFCornerstoneSEGViewport(props: withAppTypes) {
   const {
     children,
     displaySets,
@@ -25,7 +25,6 @@ function OHIFCornerstoneSEGViewport(props) {
     displaySetService,
     toolGroupService,
     segmentationService,
-    uiNotificationService,
     customizationService,
     viewportActionCornersService,
   } = servicesManager.services;
@@ -112,7 +111,10 @@ function OHIFCornerstoneSEGViewport(props) {
           orientation: viewportOptions.orientation,
           viewportId: viewportOptions.viewportId,
         }}
-        onElementEnabled={onElementEnabled}
+        onElementEnabled={evt => {
+          props.onElementEnabled?.(evt);
+          onElementEnabled(evt);
+        }}
         onElementDisabled={onElementDisabled}
       ></Component>
     );

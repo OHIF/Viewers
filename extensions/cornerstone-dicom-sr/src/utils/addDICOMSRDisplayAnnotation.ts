@@ -51,10 +51,9 @@ export default function addDICOMSRDisplayAnnotation(measurement, imageId, frameN
       handles: {
         textBox: measurement.textBox ?? {},
       },
-      cachedStats: {
-        TrackingUniqueIdentifier: measurementData.TrackingUniqueIdentifier,
-        renderableData: measurementData.renderableData,
-      },
+      cachedStats: {},
+      TrackingUniqueIdentifier: measurementData.TrackingUniqueIdentifier,
+      renderableData: measurementData.renderableData,
       frameNumber,
     },
   };

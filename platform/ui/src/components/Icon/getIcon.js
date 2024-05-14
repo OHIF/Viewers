@@ -34,6 +34,7 @@ import link from './../../assets/icons/tool-stack-image-sync.svg';
 import listBullets from './../../assets/icons/list-bullets.svg';
 import lock from './../../assets/icons/lock.svg';
 import logoOhifSmall from './../../assets/icons/logo-ohif-small.svg';
+import logoDarkBackGround from './../../assets/icons/ohif-logo-color-darkbg.svg';
 import magnifier from './../../assets/icons/magnifier.svg';
 import notificationwarningDiamond from './../../assets/icons/notificationwarning-diamond.svg';
 import pencil from './../../assets/icons/pencil.svg';
@@ -145,11 +146,11 @@ import iconAdd from './../../assets/icons/icon-add.svg';
 import iconRename from './../../assets/icons/icon-rename.svg';
 import iconDelete from './../../assets/icons/icon-delete.svg';
 import iconMoreMenu from './../../assets/icons/icon-more-menu.svg';
-import iconToolBrush from './../../assets/icons/icon-tool-brush.svg';
-import iconToolEraser from './../../assets/icons/icon-tool-eraser.svg';
+import iconToolBrush from './../../assets/icons/tool-seg-brush.svg';
+import iconToolEraser from './../../assets/icons/tool-seg-eraser.svg';
 import iconToolScissor from './../../assets/icons/icon-tool-scissor.svg';
-import iconToolShape from './../../assets/icons/icon-tool-shape.svg';
-import iconToolThreshold from './../../assets/icons/icon-tool-threshold.svg';
+import iconToolShape from './../../assets/icons/tool-seg-shape.svg';
+import iconToolThreshold from './../../assets/icons/tool-seg-threshold.svg';
 import viewportWindowLevel from './../../assets/icons/viewport-window-level.svg';
 import dicomTagBrowser from './../../assets/icons/tool-dicom-tag-browser.svg';
 import iconToolFreehandRoi from './../../assets/icons/tool-freehand-roi.svg';
@@ -216,6 +217,9 @@ import layoutCommon2x2 from './../../assets/icons/layout-common-2x2.svg';
 import layoutCommon2x3 from './../../assets/icons/layout-common-2x3.svg';
 import iconToolRotate from './../../assets/icons/tool-3d-rotate.svg';
 
+//
+import tab4D from './../../assets/icons/tab-4d.svg';
+
 /** New investigational use */
 import investigationalUse from './../../assets/icons/illustration-investigational-use.svg';
 
@@ -261,6 +265,7 @@ const ICONS = {
   'list-bullets': listBullets,
   lock: lock,
   'logo-ohif-small': logoOhifSmall,
+  'logo-dark-background': logoDarkBackGround,
   magnifier: magnifier,
   exclamation: exclamation,
   'notificationwarning-diamond': notificationwarningDiamond,
@@ -426,6 +431,7 @@ const ICONS = {
   'layout-common-1x2': layoutCommon1x2,
   'layout-common-2x2': layoutCommon2x2,
   'layout-common-2x3': layoutCommon2x3,
+  'tab-4d': tab4D,
 
   /** New investigational use */
   'illustration-investigational-use': investigationalUse,

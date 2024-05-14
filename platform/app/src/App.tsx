@@ -6,7 +6,6 @@ import { I18nextProvider } from 'react-i18next';
 import { BrowserRouter } from 'react-router-dom';
 import Compose from './routes/Mode/Compose';
 import {
-  ServicesManager,
   ExtensionManager,
   CommandsManager,
   HotkeysManager,
@@ -33,7 +32,7 @@ import OpenIdConnectRoutes from './utils/OpenIdConnectRoutes';
 
 let commandsManager: CommandsManager,
   extensionManager: ExtensionManager,
-  servicesManager: ServicesManager,
+  servicesManager: AppTypes.ServicesManager,
   serviceProvidersManager: ServiceProvidersManager,
   hotkeysManager: HotkeysManager;
 
@@ -61,6 +60,13 @@ function App({ config, defaultExtensions, defaultModes }) {
   // Set appConfig
   const appConfigState = init.appConfig;
   const { routerBasename, modes, dataSources, oidc, showStudyList } = appConfigState;
+
+  // get the maximum 3D texture size
+  const canvas = document.createElement('canvas');
+  const gl = canvas.getContext('webgl2');
+
+  const max3DTextureSize = gl.getParameter(gl.MAX_3D_TEXTURE_SIZE);
+  appConfigState.max3DTextureSize = max3DTextureSize;
 
   const {
     uiDialogService,

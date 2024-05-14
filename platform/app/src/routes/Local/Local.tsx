@@ -125,11 +125,12 @@ function Local({ modePath }: LocalProps) {
         >
           <div className="flex h-screen w-screen items-center justify-center ">
             <div className="bg-secondary-dark mx-auto space-y-2 rounded-lg py-8 px-8 drop-shadow-md">
-              <img
-                className="mx-auto block h-14"
-                src="./ohif-logo.svg"
-                alt="OHIF"
-              />
+              <div className="flex items-center justify-center">
+                <Icon
+                  name="logo-dark-background"
+                  className="h-28"
+                />
+              </div>
               <div className="space-y-2 pt-4 text-center">
                 {dropInitiated ? (
                   <div className="flex flex-col items-center justify-center pt-48">

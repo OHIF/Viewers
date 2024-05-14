@@ -1,9 +1,9 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { SidePanel } from '@ohif/ui';
-import { PanelService, ServicesManager, Types } from '@ohif/core';
+import { Types } from '@ohif/core';
 
 export type SidePanelWithServicesProps = {
-  servicesManager: ServicesManager;
+  servicesManager: AppTypes.ServicesManager;
   side: 'left' | 'right';
   className: string;
   activeTabIndex: number;
@@ -19,7 +19,7 @@ const SidePanelWithServices = ({
   expandedWidth,
   ...props
 }: SidePanelWithServicesProps) => {
-  const panelService: PanelService = servicesManager?.services?.panelService;
+  const panelService = servicesManager?.services?.panelService;
 
   // Tracks whether this SidePanel has been opened at least once since this SidePanel was inserted into the DOM.
   // Thus going to the Study List page and back to the viewer resets this flag for a SidePanel.
