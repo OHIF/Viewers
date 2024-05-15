@@ -57,10 +57,6 @@
       "default": false,
       "version": "3.0.0"
     },
-    {
-      "packageName": "ohif-gcp-extension",
-      "version": "0.0.1"
-    }
   ],
   "modes": [
     {
@@ -88,10 +84,6 @@
       "default": false,
       "version": "3.0.0"
     },
-    {
-      "packageName": "ohif-gcp-mode",
-      "version": "0.0.2"
-    }
   ],
   "public": [
     {
