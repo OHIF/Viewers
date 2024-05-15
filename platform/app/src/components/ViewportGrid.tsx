@@ -1,4 +1,5 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback, useRef, useState } from 'react';
+import ReactResizeDetector from 'react-resize-detector';
 import PropTypes from 'prop-types';
 import { ServicesManager, Types, MeasurementService } from '@ohif/core';
 import { ViewportGrid, ViewportPane, useViewportGrid } from '@ohif/ui';
@@ -11,13 +12,17 @@ function ViewerViewportGrid(props) {
   const [viewportGrid, viewportGridService] = useViewportGrid();
   const [appConfig] = useAppConfig();
 
-  const { layout, activeViewportId, viewports } = viewportGrid;
+  const { layout, activeViewportId, viewports, isHangingProtocolLayout } = viewportGrid;
   const { numCols, numRows } = layout;
+  const elementRef = useRef(null);
+  const layoutHash = useRef(null);
 
   // TODO -> Need some way of selecting which displaySets hit the viewports.
   const { displaySetService, measurementService, hangingProtocolService, uiNotificationService } = (
     servicesManager as ServicesManager
   ).services;
+
+  const generateLayoutHash = () => `${numCols}-${numRows}`;
 
   /**
    * This callback runs after the viewports structure has changed in any way.
@@ -92,6 +97,7 @@ function ViewerViewportGrid(props) {
       layoutType,
       layoutOptions,
       findOrCreateViewport,
+      isHangingProtocolLayout: true,
     });
   };
 
@@ -101,7 +107,8 @@ function ViewerViewportGrid(props) {
       try {
         updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
           viewportId,
-          displaySetInstanceUID
+          displaySetInstanceUID,
+          isHangingProtocolLayout
         );
       } catch (error) {
         console.warn(error);
@@ -116,7 +123,7 @@ function ViewerViewportGrid(props) {
 
       return updatedViewports;
     },
-    [hangingProtocolService, uiNotificationService]
+    [hangingProtocolService, uiNotificationService, isHangingProtocolLayout]
   );
 
   // Using Hanging protocol engine to match the displaySets
@@ -133,6 +140,16 @@ function ViewerViewportGrid(props) {
     };
   }, []);
 
+  // Check viewport readiness in useEffect
+  useEffect(() => {
+    const allReady = viewportGridService.getGridViewportsReady();
+    const sameLayoutHash = layoutHash.current === generateLayoutHash();
+    if (allReady && !sameLayoutHash) {
+      layoutHash.current = generateLayoutHash();
+      viewportGridService.publishViewportsReady();
+    }
+  }, [viewportGridService, generateLayoutHash]);
+
   useEffect(() => {
     const { unsubscribe } = measurementService.subscribe(
       MeasurementService.EVENTS.JUMP_TO_MEASUREMENT_LAYOUT,
@@ -146,6 +163,7 @@ function ViewerViewportGrid(props) {
         const { displaySetInstanceUID: referencedDisplaySetInstanceUID } = measurement;
 
         const updatedViewports = _getUpdatedViewports(viewportId, referencedDisplaySetInstanceUID);
+
         // Arbitrarily assign the viewport to element 0
         const viewport = updatedViewports?.[0];
 
@@ -325,6 +343,10 @@ function ViewerViewportGrid(props) {
               viewportOptions={viewportOptions}
               displaySetOptions={displaySetOptions}
               needsRerendering={displaySetsNeedsRerendering}
+              isHangingProtocolLayout={isHangingProtocolLayout}
+              onElementEnabled={() => {
+                viewportGridService.setViewportIsReady(viewportId, true);
+              }}
             />
           </div>
         </ViewportPane>
@@ -342,13 +364,25 @@ function ViewerViewportGrid(props) {
   }
 
   return (
-    <ViewportGrid
-      numRows={numRows}
-      numCols={numCols}
+    <div
+      ref={elementRef}
+      className="h-full w-full"
     >
-      {/* {ViewportPanes} */}
-      {getViewportPanes()}
-    </ViewportGrid>
+      <ViewportGrid
+        numRows={numRows}
+        numCols={numCols}
+      >
+        <ReactResizeDetector
+          refreshMode="debounce"
+          refreshRate={7} // ms seems to be fine for 10 viewports
+          onResize={() => {
+            viewportGridService.setViewportGridSizeChanged();
+          }}
+          targetRef={elementRef.current}
+        />
+        {getViewportPanes()}
+      </ViewportGrid>
+    </div>
   );
 }
 

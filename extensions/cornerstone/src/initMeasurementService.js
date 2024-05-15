@@ -17,7 +17,8 @@ const CORNERSTONE_3D_TOOLS_SOURCE_VERSION = '0.1';
 const initMeasurementService = (
   measurementService,
   displaySetService,
-  cornerstoneViewportService
+  cornerstoneViewportService,
+  customizationService
 ) => {
   /* Initialization */
   const {
@@ -30,10 +31,15 @@ const initMeasurementService = (
     CobbAngle,
     RectangleROI,
     PlanarFreehandROI,
+    SplineROI,
+    LivewireContour,
+    Probe,
+    UltrasoundDirectional,
   } = measurementServiceMappingsFactory(
     measurementService,
     displaySetService,
-    cornerstoneViewportService
+    cornerstoneViewportService,
+    customizationService
   );
   const csTools3DVer1MeasurementSource = measurementService.createSource(
     CORNERSTONE_3D_TOOLS_SOURCE_NAME,
@@ -47,6 +53,20 @@ const initMeasurementService = (
     Length.matchingCriteria,
     Length.toAnnotation,
     Length.toMeasurement
+  );
+
+  measurementService.addMapping(
+    csTools3DVer1MeasurementSource,
+    'Crosshairs',
+    Length.matchingCriteria,
+    () => {
+      console.warn('Crosshairs mapping not implemented.');
+      return {};
+    },
+    () => {
+      console.warn('Crosshairs mapping not implemented.');
+      return {};
+    }
   );
 
   measurementService.addMapping(
@@ -113,6 +133,14 @@ const initMeasurementService = (
     PlanarFreehandROI.toMeasurement
   );
 
+  measurementService.addMapping(
+    csTools3DVer1MeasurementSource,
+    'SplineROI',
+    SplineROI.matchingCriteria,
+    SplineROI.toAnnotation,
+    SplineROI.toMeasurement
+  );
+
   // On the UI side, the Calibration Line tool will work almost the same as the
   // Length tool
   measurementService.addMapping(
@@ -123,16 +151,45 @@ const initMeasurementService = (
     Length.toMeasurement
   );
 
+  measurementService.addMapping(
+    csTools3DVer1MeasurementSource,
+    'LivewireContour',
+    LivewireContour.matchingCriteria,
+    LivewireContour.toAnnotation,
+    LivewireContour.toMeasurement
+  );
+
+  measurementService.addMapping(
+    csTools3DVer1MeasurementSource,
+    'Probe',
+    Probe.matchingCriteria,
+    Probe.toAnnotation,
+    Probe.toMeasurement
+  );
+
+  measurementService.addMapping(
+    csTools3DVer1MeasurementSource,
+    'UltrasoundDirectionalTool',
+    UltrasoundDirectional.matchingCriteria,
+    UltrasoundDirectional.toAnnotation,
+    UltrasoundDirectional.toMeasurement
+  );
+
   return csTools3DVer1MeasurementSource;
 };
 
 const connectToolsToMeasurementService = servicesManager => {
-  const { measurementService, displaySetService, cornerstoneViewportService } =
-    servicesManager.services;
+  const {
+    measurementService,
+    displaySetService,
+    cornerstoneViewportService,
+    customizationService,
+  } = servicesManager.services;
   const csTools3DVer1MeasurementSource = initMeasurementService(
     measurementService,
     displaySetService,
-    cornerstoneViewportService
+    cornerstoneViewportService,
+    customizationService
   );
   connectMeasurementServiceToTools(
     measurementService,
@@ -357,6 +414,10 @@ const connectMeasurementServiceToTools = (
         imageId = dataSource.getImageIdsForInstance({ instance });
       }
 
+      /**
+       * This annotation is used by the cornerstone viewport.
+       * This is not the read-only annotation rendered by the SR viewport.
+       */
       const annotationManager = annotation.state.getAnnotationManager();
       annotationManager.addAnnotation({
         annotationUID: measurement.uid,
@@ -369,11 +430,16 @@ const connectMeasurementServiceToTools = (
           referencedImageId: imageId,
         },
         data: {
+          /**
+           * Don't remove this destructuring of data here.
+           * This is used to pass annotation specific data forward e.g. contour
+           */
+          ...(data.annotation.data || {}),
           text: data.annotation.data.text,
           handles: { ...data.annotation.data.handles },
           cachedStats: { ...data.annotation.data.cachedStats },
           label: data.annotation.data.label,
-          frameNumber: frameNumber,
+          frameNumber,
         },
       });
     }

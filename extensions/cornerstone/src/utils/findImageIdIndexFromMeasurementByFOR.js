@@ -26,8 +26,8 @@ const findImageIdIndexFromMeasurementByFOR = (imageIds, measurement) => {
         distanceAlongNormal += sliceNormal[j] * imageMetadata.ImagePositionPatient[j];
       }
 
-      // assuming 5 mm tolerance
-      if (Math.abs(distanceAlongNormal - coord.GraphicData[2]) > 5) {
+      /** Assuming 2 mm tolerance */
+      if (Math.abs(distanceAlongNormal - coord.GraphicData[2]) > 2) {
         continue;
       } else {
         coord.ReferencedSOPSequence = {

@@ -1,6 +1,5 @@
 import { utils, classes, DisplaySetService, Types } from '@ohif/core';
-
-import addMeasurement from './utils/addMeasurement';
+import addDICOMSRDisplayAnnotation from './utils/addDICOMSRDisplayAnnotation';
 import isRehydratable from './utils/isRehydratable';
 import { SOPClassHandlerName, SOPClassHandlerId } from './id';
 import {
@@ -137,11 +136,36 @@ function _getDisplaySetsFromSeries(instances, servicesManager, extensionManager)
  * @param {Object} servicesManager - The services manager containing displaySetService and measurementService.
  * @param {Object} extensionManager - The extension manager containing data sources.
  */
-function _load(displaySet, servicesManager, extensionManager) {
+async function _load(displaySet, servicesManager, extensionManager) {
   const { displaySetService, measurementService } = servicesManager.services;
   const dataSource = extensionManager.getActiveDataSource()[0];
 
   const { ContentSequence } = displaySet.instance;
+
+  async function retrieveBulkData(obj, parentObj = null, key = null) {
+    for (const prop in obj) {
+      if (typeof obj[prop] === 'object' && obj[prop] !== null) {
+        await retrieveBulkData(obj[prop], obj, prop);
+      } else if (Array.isArray(obj[prop])) {
+        await Promise.all(obj[prop].map(item => retrieveBulkData(item, obj, prop)));
+      } else if (prop === 'BulkDataURI') {
+        const value = await dataSource.retrieve.bulkDataURI({
+          BulkDataURI: obj[prop],
+          StudyInstanceUID: displaySet.instance.StudyInstanceUID,
+          SeriesInstanceUID: displaySet.instance.SeriesInstanceUID,
+          SOPInstanceUID: displaySet.instance.SOPInstanceUID,
+        });
+        if (parentObj && key) {
+          parentObj[key] = new Float32Array(value);
+        }
+      }
+    }
+  }
+
+  if (displaySet.isLoaded !== true) {
+    await retrieveBulkData(ContentSequence);
+  }
+
   displaySet.referencedImages = _getReferencedImagesList(ContentSequence);
   displaySet.measurements = _getMeasurements(ContentSequence);
 
@@ -182,6 +206,51 @@ function _load(displaySet, servicesManager, extensionManager) {
   });
 }
 
+const addReferencedSOPSequenceByFOR = (measurements, displaySet) => {
+  if (displaySet instanceof ImageSet) {
+    measurements.forEach(measurement => {
+      measurement.coords.forEach(coord => {
+        for (let i = 0; i < displaySet.images.length; ++i) {
+          const imageMetadata = displaySet.images[i];
+
+          if (imageMetadata.FrameOfReferenceUID !== coord.ReferencedFrameOfReferenceSequence) {
+            continue;
+          }
+
+          const sliceNormal = [0, 0, 0];
+          const orientation = imageMetadata.ImageOrientationPatient;
+          sliceNormal[0] = orientation[1] * orientation[5] - orientation[2] * orientation[4];
+          sliceNormal[1] = orientation[2] * orientation[3] - orientation[0] * orientation[5];
+          sliceNormal[2] = orientation[0] * orientation[4] - orientation[1] * orientation[3];
+
+          let distanceAlongNormal = 0;
+          for (let j = 0; j < 3; ++j) {
+            distanceAlongNormal += sliceNormal[j] * imageMetadata.ImagePositionPatient[j];
+          }
+
+          /** Assuming 2 mm tolerance */
+          if (Math.abs(distanceAlongNormal - coord.GraphicData[2]) > 2) {
+            continue;
+          }
+
+          if (coord.ReferencedSOPSequence === undefined) {
+            coord.ReferencedSOPSequence = {
+              ReferencedSOPClassUID: imageMetadata.SOPClassUID,
+              ReferencedSOPInstanceUID: imageMetadata.SOPInstanceUID,
+            };
+          }
+          console.debug('1');
+
+          const { frameNumber } = metadataProvider.getUIDsFromImageID(imageMetadata.imageId);
+          addDICOMSRDisplayAnnotation(measurement, imageMetadata.imageId, frameNumber);
+
+          break;
+        }
+      });
+    });
+  }
+};
+
 /**
  * Checks if measurements can be added to a display set.
  *
@@ -196,9 +265,10 @@ function _checkIfCanAddMeasurementsToDisplaySet(
   dataSource,
   servicesManager
 ) {
+  addReferencedSOPSequenceByFOR(srDisplaySet.measurements, newDisplaySet);
+
   const { customizationService } = servicesManager.services;
 
-  /** TODO: Investigate why without deepClone the measurements are not rendering */
   let unloadedMeasurements = srDisplaySet.measurements.filter(
     measurement => measurement.loaded === false
   );
@@ -216,50 +286,15 @@ function _checkIfCanAddMeasurementsToDisplaySet(
     return;
   }
 
-  const { sopClassUids, images } = newDisplaySet;
+  const { sopClassUids } = newDisplaySet;
 
-  /** Check if any have the newDisplaySet is the correct SOPClass */
+  /** Check correct SOPClassUID */
   unloadedMeasurements = unloadedMeasurements.filter(measurement =>
     measurement.coords.some(coord => {
-      /** Find reference sop instance uid by frame of reference if not present */
-      if (coord.ReferencedSOPSequence === undefined) {
-        for (let i = 0; i < images.length; ++i) {
-          const imageMetadata = images[i];
-          if (imageMetadata.FrameOfReferenceUID !== coord.ReferencedFrameOfReferenceSequence) {
-            continue;
-          }
-
-          const sliceNormal = [0, 0, 0];
-          const orientation = imageMetadata.ImageOrientationPatient;
-          sliceNormal[0] = orientation[1] * orientation[5] - orientation[2] * orientation[4];
-          sliceNormal[1] = orientation[2] * orientation[3] - orientation[0] * orientation[5];
-          sliceNormal[2] = orientation[0] * orientation[4] - orientation[1] * orientation[3];
-
-          let distanceAlongNormal = 0;
-          for (let j = 0; j < 3; ++j) {
-            distanceAlongNormal += sliceNormal[j] * imageMetadata.ImagePositionPatient[j];
-          }
-
-          // assuming 5 mm tolerance
-          if (Math.abs(distanceAlongNormal - coord.GraphicData[2]) > 5) {
-            continue;
-          }
-
-          measurement.loadedByFOR = true;
-          coord.ReferencedSOPSequence = {
-            ReferencedSOPClassUID: imageMetadata.SOPClassUID,
-            ReferencedSOPInstanceUID: imageMetadata.SOPInstanceUID,
-          };
-
-          break;
-        }
-
-        if (coord.ReferencedSOPSequence === undefined) {
-          return false;
-        }
-      }
-
-      return sopClassUids.includes(coord.ReferencedSOPSequence.ReferencedSOPClassUID);
+      return (
+        coord.ReferencedSOPSequence &&
+        sopClassUids.includes(coord.ReferencedSOPSequence.ReferencedSOPClassUID)
+      );
     })
   );
 
@@ -298,7 +333,22 @@ function _checkIfCanAddMeasurementsToDisplaySet(
         }
 
         if (_measurementReferencesSOPInstanceUID(measurement, SOPInstanceUID, frameNumber)) {
-          addMeasurement(measurement, imageId, newDisplaySet.displaySetInstanceUID);
+          const frame =
+            (measurement.coords[0].ReferencedSOPSequence &&
+              measurement.coords[0].ReferencedSOPSequence?.ReferencedFrameNumber) ||
+            1;
+
+          /** Add DICOMSRDisplay annotation for the SR viewport (only) */
+          addDICOMSRDisplayAnnotation(measurement, imageId, frame);
+
+          /** Update measurement properties */
+          measurement.loaded = true;
+          measurement.imageId = imageId;
+          measurement.displaySetInstanceUID = newDisplaySet.displaySetInstanceUID;
+          measurement.ReferencedSOPInstanceUID =
+            measurement.coords[0].ReferencedSOPSequence.ReferencedSOPInstanceUID;
+          measurement.frameNumber = frame;
+
           unloadedMeasurements.splice(j, 1);
         }
       }
@@ -320,10 +370,9 @@ function _measurementReferencesSOPInstanceUID(measurement, SOPInstanceUID, frame
    * NOTE: The ReferencedFrameNumber can be multiple values according to the DICOM
    * Standard. But for now, we will support only one ReferenceFrameNumber.
    */
-  const firstCoord = measurement.coords[0];
   const ReferencedFrameNumber =
-    (firstCoord.ReferencedSOPSequence &&
-      firstCoord.ReferencedSOPSequence[0]?.ReferencedFrameNumber) ||
+    (measurement.coords[0].ReferencedSOPSequence &&
+      measurement.coords[0].ReferencedSOPSequence?.ReferencedFrameNumber) ||
     1;
 
   if (frameNumber && Number(frameNumber) !== Number(ReferencedFrameNumber)) {

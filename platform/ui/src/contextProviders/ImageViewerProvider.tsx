@@ -1,18 +1,17 @@
-import React, { createContext, useContext, useReducer, useMemo } from 'react';
+import React, { ReactNode, createContext, useContext, useMemo } from 'react';
 
-// export const IMAGE_VIEWER_DEFAULT_VALUE = {
-//   StudyInstanceUIDs: [],
-//   setImageViewer: () => {},
-// };
+interface ImageViewerProviderProps {
+  StudyInstanceUIDs: string[];
+  children: ReactNode;
+}
 
-export const ImageViewerContext = createContext();
+export const ImageViewerContext = createContext(null);
+export const useImageViewer = () => useContext(ImageViewerContext);
 
-export function ImageViewerProvider({ StudyInstanceUIDs, reducer, initialState, children }) {
+export function ImageViewerProvider({ StudyInstanceUIDs, children }: ImageViewerProviderProps) {
   const value = useMemo(() => {
     return { StudyInstanceUIDs };
   }, [StudyInstanceUIDs]);
 
   return <ImageViewerContext.Provider value={value}>{children}</ImageViewerContext.Provider>;
 }
-
-export const useImageViewer = () => useContext(ImageViewerContext);

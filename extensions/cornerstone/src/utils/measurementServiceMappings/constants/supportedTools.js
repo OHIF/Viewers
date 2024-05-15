@@ -9,4 +9,8 @@ export default [
   'Probe',
   'RectangleROI',
   'PlanarFreehandROI',
+  'SplineROI',
+  'LivewireContour',
+  'Probe',
+  'UltrasoundDirectionalTool',
 ];

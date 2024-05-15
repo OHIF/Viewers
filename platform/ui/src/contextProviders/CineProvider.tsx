@@ -21,13 +21,30 @@ export default function CineProvider({ children, service }) {
         const { id, frameRate, isPlaying = undefined } = action.payload;
         const cines = state.cines;
 
-        if (!cines[id]) {
-          cines[id] = { id, ...DEFAULT_CINE };
-        }
-        cines[id].frameRate = frameRate || cines[id].frameRate;
-        cines[id].isPlaying = isPlaying !== undefined ? isPlaying : cines[id].isPlaying;
+        const syncedCineIds = service.getSyncedViewports(id).map(({ viewportId }) => viewportId);
+        const cineIdsToUpdate = [id, ...syncedCineIds].filter(curId => {
+          const currentCine = cines[curId] ?? {};
+          const shouldUpdateFrameRate =
+            currentCine.frameRate !== (frameRate ?? currentCine.frameRate);
+          const shouldUpdateIsPlaying =
+            currentCine.isPlaying !== (isPlaying ?? currentCine.isPlaying);
 
-        return { ...state, ...{ cines } };
+          return shouldUpdateFrameRate || shouldUpdateIsPlaying;
+        });
+
+        cineIdsToUpdate.forEach(currId => {
+          let cine = cines[currId];
+
+          if (!cine) {
+            cine = { id, ...DEFAULT_CINE };
+            cines[currId] = cine;
+          }
+
+          cine.frameRate = frameRate ?? cine.frameRate;
+          cine.isPlaying = isPlaying ?? cine.isPlaying;
+        });
+
+        return { ...state, ...cines };
       }
       case 'SET_IS_CINE_ENABLED': {
         return { ...state, ...{ isCineEnabled: action.payload } };
@@ -73,9 +90,9 @@ export default function CineProvider({ children, service }) {
   const api = {
     getState,
     setCine,
-    setIsCineEnabled,
+    setIsCineEnabled: isCineEnabled => service.setIsCineEnabled(isCineEnabled),
     playClip: (element, playClipOptions) => service.playClip(element, playClipOptions),
-    stopClip: element => service.stopClip(element),
+    stopClip: (element, stopClipOptions) => service.stopClip(element, stopClipOptions),
   };
 
   return <CineContext.Provider value={[state, api]}>{children}</CineContext.Provider>;

@@ -2,8 +2,14 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import { utils, ServicesManager } from '@ohif/core';
-import { MeasurementTable, Dialog, Input, useViewportGrid, ButtonEnums } from '@ohif/ui';
-import ActionButtons from './ActionButtons';
+import {
+  MeasurementTable,
+  Dialog,
+  Input,
+  useViewportGrid,
+  ButtonEnums,
+  ActionButtons,
+} from '@ohif/ui';
 import debounce from 'lodash.debounce';
 
 import createReportDialogPrompt, {
@@ -212,7 +218,7 @@ export default function PanelMeasurementTable({
         data-cy={'measurements-panel'}
       >
         <MeasurementTable
-          title={t("Measurements")}
+          title={t('Measurements')}
           servicesManager={servicesManager}
           data={displayMeasurements}
           onClick={jumpToImage}
@@ -221,9 +227,17 @@ export default function PanelMeasurementTable({
       </div>
       <div className="flex justify-center p-4">
         <ActionButtons
-          onExportClick={exportReport}
-          onClearMeasurementsClick={clearMeasurements}
-          onCreateReportClick={createReport}
+          t={t}
+          actions={[
+            {
+              label: 'Export',
+              onClick: exportReport,
+            },
+            {
+              label: 'Create Report',
+              onClick: createReport,
+            },
+          ]}
         />
       </div>
     </>

@@ -7,10 +7,10 @@ import {
   Types as cs3DToolsTypes,
 } from '@cornerstonejs/tools';
 
-import { getTrackingUniqueIdentifiersForElement } from './modules/dicomSRModule';
-import SCOORD_TYPES from '../constants/scoordTypes';
 import { CodeNameCodeSequenceValues } from '../enums';
 import toolNames from './toolNames';
+import { getTrackingUniqueIdentifiersForElement } from './modules/dicomSRModule';
+import SCOORD_TYPES from '../constants/scoordTypes';
 
 export default class DICOMSRDisplayTool extends AnnotationTool {
   static toolName = toolNames.DICOMSRDisplay;
@@ -25,14 +25,14 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
   }
 
   _getTextBoxLinesFromLabels(labels) {
-    // TODO -> max 3 for now (label + shortAxis + longAxis), need a generic solution for this!
+    // TODO -> max 5 for now (label + shortAxis + longAxis), need a generic solution for this!
 
-    const labelLength = Math.min(labels.length, 3);
+    const labelLength = Math.min(labels.length, 5);
     const lines = [];
 
     for (let i = 0; i < labelLength; i++) {
       const labelEntry = labels[i];
-      lines.push(`${_labelToShorthand(labelEntry.label)}${labelEntry.value}`);
+      lines.push(`${_labelToShorthand(labelEntry.label)} ${labelEntry.value}`);
     }
 
     return lines;
@@ -47,31 +47,31 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
     const { viewport } = enabledElement;
     const { element } = viewport;
 
-    // Todo: We don't need this anymore, filtering happens in triggerAnnotationRender
     let annotations = annotation.state.getAnnotations(this.getToolName(), element);
+
+    // Todo: We don't need this anymore, filtering happens in triggerAnnotationRender
     if (!annotations?.length) {
       return;
     }
 
     annotations = this.filterInteractableAnnotationsForElement(element, annotations);
+
     if (!annotations?.length) {
       return;
     }
 
-    let filteredAnnotations = annotations;
-    let activeTrackingUniqueIdentifier;
     const trackingUniqueIdentifiersForElement = getTrackingUniqueIdentifiersForElement(element);
-    if (
-      trackingUniqueIdentifiersForElement &&
-      trackingUniqueIdentifiersForElement.trackingUniqueIdentifiers.length
-    ) {
-      const { activeIndex, trackingUniqueIdentifiers } = trackingUniqueIdentifiersForElement;
-      activeTrackingUniqueIdentifier = trackingUniqueIdentifiers[activeIndex];
-      // Filter toolData to only render the data for the active SR.
-      filteredAnnotations = annotations.filter(annotation =>
-        trackingUniqueIdentifiers.includes(annotation.data?.cachedStats?.TrackingUniqueIdentifier)
-      );
-    }
+
+    const { activeIndex, trackingUniqueIdentifiers } = trackingUniqueIdentifiersForElement;
+
+    const activeTrackingUniqueIdentifier = trackingUniqueIdentifiers[activeIndex];
+
+    // Filter toolData to only render the data for the active SR.
+    const filteredAnnotations = annotations.filter(
+      annotation =>
+        !trackingUniqueIdentifiers.length ||
+        trackingUniqueIdentifiers.includes(annotation.data?.TrackingUniqueIdentifier)
+    );
 
     if (!viewport._actors?.size) {
       return;
@@ -82,21 +82,24 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
       toolName: this.getToolName(),
       viewportId: enabledElement.viewport.id,
     };
+    const { style: annotationStyle } = annotation.config;
 
     for (let i = 0; i < filteredAnnotations.length; i++) {
       const annotation = filteredAnnotations[i];
       const annotationUID = annotation.annotationUID;
-      const { renderableData } = annotation.data.cachedStats;
-      const { cachedStats } = annotation.data;
+      const { renderableData, TrackingUniqueIdentifier } = annotation.data;
       const { referencedImageId } = annotation.metadata;
 
       styleSpecifier.annotationUID = annotationUID;
 
+      const groupStyle = annotationStyle.getToolGroupToolStyles(this.toolGroupId)[
+        this.getToolName()
+      ];
+
       const lineWidth = this.getStyle('lineWidth', styleSpecifier, annotation);
       const lineDash = this.getStyle('lineDash', styleSpecifier, annotation);
       const color =
-        activeTrackingUniqueIdentifier &&
-        cachedStats.TrackingUniqueIdentifier === activeTrackingUniqueIdentifier
+        TrackingUniqueIdentifier === activeTrackingUniqueIdentifier
           ? 'rgb(0, 255, 0)'
           : this.getStyle('color', styleSpecifier, annotation);
 
@@ -104,6 +107,7 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
         color,
         lineDash,
         lineWidth,
+        ...groupStyle,
       };
 
       Object.keys(renderableData).forEach(GraphicType => {
@@ -151,6 +155,8 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
           styleSpecifier,
           options
         );
+
+        return true;
       });
     }
   };
@@ -166,6 +172,7 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
     const drawingOptions = {
       color: options.color,
       width: options.lineWidth,
+      lineDash: options.lineDash,
     };
     let allCanvasCoordinates = [];
     renderableData.map((data, index) => {
@@ -313,6 +320,7 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
         {
           color: options.color,
           width: options.lineWidth,
+          lineDash: options.lineDash,
         }
       );
     });
