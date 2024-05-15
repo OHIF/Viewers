@@ -70,7 +70,7 @@ function modeFactory({ modeConfiguration }) {
     /**
      * Lifecycle hooks
      */
-    onModeEnter: function ({ servicesManager, extensionManager, commandsManager }) {
+    onModeEnter: function ({ servicesManager, extensionManager, commandsManager }: withAppTypes) {
       const { measurementService, toolbarService, toolGroupService, customizationService } =
         servicesManager.services;
 
@@ -135,7 +135,7 @@ function modeFactory({ modeConfiguration }) {
       //   ]),
       // ];
     },
-    onModeExit: ({ servicesManager }) => {
+    onModeExit: ({ servicesManager }: withAppTypes) => {
       const {
         toolGroupService,
         syncGroupService,

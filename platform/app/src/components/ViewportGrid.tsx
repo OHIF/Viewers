@@ -1,13 +1,13 @@
 import React, { useEffect, useCallback, useRef, useState } from 'react';
 import ReactResizeDetector from 'react-resize-detector';
 import PropTypes from 'prop-types';
-import { ServicesManager, Types, MeasurementService } from '@ohif/core';
+import { Types, MeasurementService } from '@ohif/core';
 import { ViewportGrid, ViewportPane, useViewportGrid } from '@ohif/ui';
 import EmptyViewport from './EmptyViewport';
 import classNames from 'classnames';
 import { useAppConfig } from '@state';
 
-function ViewerViewportGrid(props) {
+function ViewerViewportGrid(props: withAppTypes) {
   const { servicesManager, viewportComponents, dataSource } = props;
   const [viewportGrid, viewportGridService] = useViewportGrid();
   const [appConfig] = useAppConfig();
@@ -18,9 +18,8 @@ function ViewerViewportGrid(props) {
   const layoutHash = useRef(null);
 
   // TODO -> Need some way of selecting which displaySets hit the viewports.
-  const { displaySetService, measurementService, hangingProtocolService, uiNotificationService } = (
-    servicesManager as ServicesManager
-  ).services;
+  const { displaySetService, measurementService, hangingProtocolService, uiNotificationService } =
+    servicesManager.services;
 
   const generateLayoutHash = () => `${numCols}-${numRows}`;
 
@@ -388,7 +387,7 @@ function ViewerViewportGrid(props) {
 
 ViewerViewportGrid.propTypes = {
   viewportComponents: PropTypes.array.isRequired,
-  servicesManager: PropTypes.instanceOf(ServicesManager),
+  servicesManager: PropTypes.instanceOf(Object).isRequired,
 };
 
 ViewerViewportGrid.defaultProps = {

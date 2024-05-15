@@ -24,7 +24,7 @@ const SR_SOPCLASSHANDLERID = '@ohif/extension-cornerstone-dicom-sr.sopClassHandl
  * @param {*} param0
  */
 function TrackedMeasurementsContextProvider(
-  { servicesManager, commandsManager, extensionManager }, // Bound by consumer
+  { servicesManager, commandsManager, extensionManager }: withAppTypes, // Bound by consumer
   { children } // Component props
 ) {
   const [appConfig] = useAppConfig();

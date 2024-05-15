@@ -22,7 +22,7 @@ async function updateViewportsForSegmentationRendering({
 }: {
   viewportId: string;
   loadFn: () => Promise<string>;
-  servicesManager: any;
+  servicesManager: AppTypes.ServicesManager;
   referencedDisplaySetInstanceUID?: string;
 }) {
   const { cornerstoneViewportService, segmentationService, viewportGridService } =
@@ -134,7 +134,7 @@ function getUpdatedViewportsForSegmentation({
   viewportId,
   servicesManager,
   referencedDisplaySetInstanceUID,
-}) {
+}: withAppTypes) {
   const { hangingProtocolService, displaySetService, segmentationService, viewportGridService } =
     servicesManager.services;
 

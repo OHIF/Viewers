@@ -40,7 +40,7 @@ const _generateReport = (measurementData, additionalFindingTypes, options = {}) 
   return dataset;
 };
 
-const commandsModule = props => {
+const commandsModule = (props: withAppTypes) => {
   const { servicesManager } = props;
   const { customizationService } = servicesManager.services;
   const actions = {
@@ -57,7 +57,7 @@ const commandsModule = props => {
       const reportBlob = dcmjs.data.datasetToBlob(srDataset);
 
       //Create a URL for the binary.
-      var objectUrl = URL.createObjectURL(reportBlob);
+      const objectUrl = URL.createObjectURL(reportBlob);
       window.location.assign(objectUrl);
     },
 

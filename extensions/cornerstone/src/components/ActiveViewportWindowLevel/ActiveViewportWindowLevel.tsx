@@ -1,14 +1,9 @@
 import React, { ReactElement } from 'react';
 import PropTypes from 'prop-types';
-import { ServicesManager } from '@ohif/core';
 import { useViewportGrid } from '@ohif/ui';
 import ViewportWindowLevel from '../ViewportWindowLevel/ViewportWindowLevel';
 
-const ActiveViewportWindowLevel = ({
-  servicesManager,
-}: {
-  servicesManager: ServicesManager;
-}): ReactElement => {
+const ActiveViewportWindowLevel = ({ servicesManager }: withAppTypes): ReactElement => {
   const [viewportGrid] = useViewportGrid();
   const { activeViewportId } = viewportGrid;
 
@@ -25,7 +20,7 @@ const ActiveViewportWindowLevel = ({
 };
 
 ActiveViewportWindowLevel.propTypes = {
-  servicesManager: PropTypes.instanceOf(ServicesManager),
+  servicesManager: PropTypes.object.isRequired,
 };
 
 export default ActiveViewportWindowLevel;

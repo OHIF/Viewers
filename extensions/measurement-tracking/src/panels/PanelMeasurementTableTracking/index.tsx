@@ -18,7 +18,7 @@ const DISPLAY_STUDY_SUMMARY_INITIAL_VALUE = {
   description: '', // 'CHEST/ABD/PELVIS W CONTRAST',
 };
 
-function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
+function PanelMeasurementTableTracking({ servicesManager, extensionManager }: withAppTypes) {
   const [viewportGrid] = useViewportGrid();
   const { t } = useTranslation('MeasurementTable');
   const [measurementChangeTimestamp, setMeasurementsUpdated] = useState(Date.now().toString());

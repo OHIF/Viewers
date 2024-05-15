@@ -1,16 +1,5 @@
 import type { Button } from '@ohif/core/types';
 
-function _createSetToolActiveCommands(toolName) {
-  return [
-    {
-      commandName: 'setToolActive',
-      commandOptions: {
-        toolName,
-      },
-    },
-  ];
-}
-
 const toolbarButtons: Button[] = [
   {
     id: 'BrushTools',
@@ -27,7 +16,6 @@ const toolbarButtons: Button[] = [
             toolNames: ['CircularBrush', 'SphereBrush'],
             disabledText: 'Create new segmentation to enable this tool.',
           },
-          commands: _createSetToolActiveCommands('CircularBrush'),
           options: [
             {
               name: 'Radius (mm)',
@@ -63,7 +51,6 @@ const toolbarButtons: Button[] = [
             name: 'evaluate.cornerstone.segmentation',
             toolNames: ['CircularEraser', 'SphereEraser'],
           },
-          commands: _createSetToolActiveCommands('CircularEraser'),
           options: [
             {
               name: 'Radius (mm)',
@@ -99,7 +86,6 @@ const toolbarButtons: Button[] = [
             name: 'evaluate.cornerstone.segmentation',
             toolNames: ['ThresholdCircularBrush', 'ThresholdSphereBrush'],
           },
-          commands: _createSetToolActiveCommands('ThresholdCircularBrush'),
           options: [
             {
               name: 'Radius (mm)',
@@ -130,22 +116,29 @@ const toolbarButtons: Button[] = [
                 { value: 'ThresholdDynamic', label: 'Dynamic' },
                 { value: 'ThresholdRange', label: 'Range' },
               ],
-              commands: ({ value, commandsManager }) => {
+              commands: ({ value, commandsManager, options }) => {
                 if (value === 'ThresholdDynamic') {
                   commandsManager.run('setToolActive', {
                     toolName: 'ThresholdCircularBrushDynamic',
                   });
-                } else {
-                  commandsManager.run('setToolActive', {
-                    toolName: 'ThresholdCircularBrush',
-                  });
+
+                  return;
                 }
+
+                // check the condition of the threshold-range option
+                const thresholdRangeOption = options.find(
+                  option => option.id === 'threshold-shape'
+                );
+
+                commandsManager.run('setToolActiveToolbar', {
+                  toolName: thresholdRangeOption.value,
+                });
               },
             },
             {
               name: 'Shape',
               type: 'radio',
-              id: 'eraser-mode',
+              id: 'threshold-shape',
               value: 'ThresholdCircularBrush',
               values: [
                 { value: 'ThresholdCircularBrush', label: 'Circle' },
@@ -162,7 +155,7 @@ const toolbarButtons: Button[] = [
               min: -1000,
               max: 1000,
               step: 1,
-              values: [100, 600],
+              value: [100, 600],
               condition: ({ options }) =>
                 options.find(option => option.id === 'dynamic-mode').value === 'ThresholdRange',
               commands: {
@@ -187,7 +180,6 @@ const toolbarButtons: Button[] = [
         toolNames: ['CircleScissor', 'SphereScissor', 'RectangleScissor'],
       },
       icon: 'icon-tool-shape',
-      commands: _createSetToolActiveCommands('CircleScissor'),
       options: [
         {
           name: 'Shape',

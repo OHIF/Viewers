@@ -3,6 +3,111 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.9.0-beta.7](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.6...v3.9.0-beta.7) (2024-05-15)
+
+
+### Bug Fixes
+
+* **tmtv:** threshold was crashing the side panel ([#4119](https://github.com/OHIF/Viewers/issues/4119)) ([8d5c676](https://github.com/OHIF/Viewers/commit/8d5c676a5e1f3eda664071c8aece313de766bd59))
+
+
+
+
+
+# [3.9.0-beta.6](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.5...v3.9.0-beta.6) (2024-05-15)
+
+**Note:** Version bump only for package @ohif/mode-tmtv
+
+
+
+
+
+# [3.9.0-beta.5](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.4...v3.9.0-beta.5) (2024-05-14)
+
+**Note:** Version bump only for package @ohif/mode-tmtv
+
+
+
+
+
+# [3.9.0-beta.4](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.3...v3.9.0-beta.4) (2024-05-14)
+
+**Note:** Version bump only for package @ohif/mode-tmtv
+
+
+
+
+
+# [3.9.0-beta.3](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.2...v3.9.0-beta.3) (2024-05-08)
+
+
+### Features
+
+* **typings:** Enhance typing support with withAppTypes and custom services throughout OHIF ([#4090](https://github.com/OHIF/Viewers/issues/4090)) ([374065b](https://github.com/OHIF/Viewers/commit/374065bc3bad9d212f9817a8d41546cc64cfabfb))
+
+
+
+
+
+# [3.9.0-beta.2](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.1...v3.9.0-beta.2) (2024-05-06)
+
+**Note:** Version bump only for package @ohif/mode-tmtv
+
+
+
+
+
+# [3.9.0-beta.1](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.0...v3.9.0-beta.1) (2024-05-06)
+
+**Note:** Version bump only for package @ohif/mode-tmtv
+
+
+
+
+
+# [3.9.0-beta.0](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.94...v3.9.0-beta.0) (2024-04-29)
+
+**Note:** Version bump only for package @ohif/mode-tmtv
+
+
+
+
+
+# [3.8.0-beta.94](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.93...v3.8.0-beta.94) (2024-04-29)
+
+**Note:** Version bump only for package @ohif/mode-tmtv
+
+
+
+
+
+# [3.8.0-beta.93](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.92...v3.8.0-beta.93) (2024-04-29)
+
+
+### Bug Fixes
+
+* **toolbox:** Preserve user-specified tool state and streamline command execution ([#4063](https://github.com/OHIF/Viewers/issues/4063)) ([f1a736d](https://github.com/OHIF/Viewers/commit/f1a736d1934733a434cb87b2c284907a3122403f))
+
+
+
+
+
+# [3.8.0-beta.92](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.91...v3.8.0-beta.92) (2024-04-28)
+
+**Note:** Version bump only for package @ohif/mode-tmtv
+
+
+
+
+
+# [3.8.0-beta.91](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.90...v3.8.0-beta.91) (2024-04-25)
+
+**Note:** Version bump only for package @ohif/mode-tmtv
+
+
+
+
+
 # [3.8.0-beta.90](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.89...v3.8.0-beta.90) (2024-04-22)
 
 **Note:** Version bump only for package @ohif/mode-tmtv

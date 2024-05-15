@@ -6,7 +6,6 @@ import { I18nextProvider } from 'react-i18next';
 import { BrowserRouter } from 'react-router-dom';
 import Compose from './routes/Mode/Compose';
 import {
-  ServicesManager,
   ExtensionManager,
   CommandsManager,
   HotkeysManager,
@@ -33,7 +32,7 @@ import OpenIdConnectRoutes from './utils/OpenIdConnectRoutes';
 
 let commandsManager: CommandsManager,
   extensionManager: ExtensionManager,
-  servicesManager: ServicesManager,
+  servicesManager: AppTypes.ServicesManager,
   serviceProvidersManager: ServiceProvidersManager,
   hotkeysManager: HotkeysManager;
 

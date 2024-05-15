@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router';
 import PropTypes from 'prop-types';
-import { ServicesManager, utils } from '@ohif/core';
+import { utils } from '@ohif/core';
 import { DragAndDropProvider, ImageViewerProvider } from '@ohif/ui';
 import { useSearchParams } from '@hooks';
 import { useAppConfig } from '@state';
@@ -21,7 +21,7 @@ export default function ModeRoute({
   servicesManager,
   commandsManager,
   hotkeysManager,
-}) {
+}: withAppTypes) {
   const [appConfig] = useAppConfig();
 
   // Parse route params/querystring
@@ -60,9 +60,8 @@ export default function ModeRoute({
     locationRef.current = location;
   }
 
-  const { displaySetService, panelService, hangingProtocolService, userAuthenticationService } = (
-    servicesManager as ServicesManager
-  ).services;
+  const { displaySetService, panelService, hangingProtocolService, userAuthenticationService } =
+    servicesManager.services;
 
   const { extensions, sopClassHandlers, hotkeys: hotkeyObj, hangingProtocol } = mode;
 
@@ -240,18 +239,15 @@ export default function ModeRoute({
       const filters =
         Array.from(query.keys()).reduce((acc: Record<string, string>, val: string) => {
           const lowerVal = val.toLowerCase();
-          if (lowerVal !== 'studyinstanceuids') {
-            // Not sure why the case matters here - it doesn't in the URL
-            if (lowerVal === 'seriesinstanceuids') {
-              const seriesUIDs = getSplitParam(lowerVal, query);
-              return {
-                ...acc,
-                seriesInstanceUID: seriesUIDs,
-              };
-            }
-
-            return { ...acc, [val]: getSplitParam(lowerVal, query) };
+          // Not sure why the case matters here - it doesn't in the URL
+          if (lowerVal === 'seriesinstanceuids') {
+            const seriesUIDs = getSplitParam(lowerVal, query);
+            return {
+              ...acc,
+              seriesInstanceUID: seriesUIDs,
+            };
           }
+          return { ...acc, [val]: getSplitParam(lowerVal, query) };
         }, {}) ?? {};
 
       let unsubs;
