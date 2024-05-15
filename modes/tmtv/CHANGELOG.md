@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.9.0-beta.7](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.6...v3.9.0-beta.7) (2024-05-15)
+
+
+### Bug Fixes
+
+* **tmtv:** threshold was crashing the side panel ([#4119](https://github.com/OHIF/Viewers/issues/4119)) ([8d5c676](https://github.com/OHIF/Viewers/commit/8d5c676a5e1f3eda664071c8aece313de766bd59))
+
+
+
+
+
 # [3.9.0-beta.6](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.5...v3.9.0-beta.6) (2024-05-15)
 
 **Note:** Version bump only for package @ohif/mode-tmtv
