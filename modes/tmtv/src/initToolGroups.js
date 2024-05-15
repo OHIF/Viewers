@@ -6,18 +6,6 @@ export const toolGroupIds = {
   default: 'default',
 };
 
-const colours = {
-  'viewport-0': 'rgb(200, 0, 0)',
-  'viewport-1': 'rgb(200, 200, 0)',
-  'viewport-2': 'rgb(0, 200, 0)',
-};
-
-const colorsByOrientation = {
-  axial: 'rgb(200, 0, 0)',
-  sagittal: 'rgb(200, 200, 0)',
-  coronal: 'rgb(0, 200, 0)',
-};
-
 function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager, modeLabelConfig, servicesManager) {
 
   const { cornerstoneViewportService } = servicesManager.services;
@@ -145,20 +133,6 @@ function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager, mo
           autoPan: {
             enabled: false,
             panSize: 10,
-          },
-          getReferenceLineColor: viewportId => {
-            const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
-            const viewportOptions = viewportInfo?.viewportOptions;
-            if (viewportOptions) {
-              return (
-                colours[viewportOptions.id] ||
-                colorsByOrientation[viewportOptions.orientation] ||
-                '#0c0'
-              );
-            } else {
-              console.warn('missing viewport?', viewportId);
-              return '#0c0';
-            }
           },
         },
       },
