@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.9.0-beta.5](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.4...v3.9.0-beta.5) (2024-05-14)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.9.0-beta.4](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.3...v3.9.0-beta.4) (2024-05-14)
+
+
+### Bug Fixes
+
+* **DicomJSONDataSource:** Fix series filtering ([#4092](https://github.com/OHIF/Viewers/issues/4092)) ([2de102c](https://github.com/OHIF/Viewers/commit/2de102c73c795cfb48b49005b10aa788444a45b7))
+
+
+
+
+
 # [3.9.0-beta.3](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.2...v3.9.0-beta.3) (2024-05-08)
 
 
