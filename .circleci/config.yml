@@ -444,34 +444,34 @@ workflows:
           requires:
             - BUILD_PACKAGES_QUICK
 
-  PR_OPTIONAL_VISUAL_TESTS:
-    jobs:
-      - BUILD_PACKAGES_QUICK:
-          filters:
-            branches:
-              ignore: master
-      - AWAIT_APPROVAL:
-          type: approval
-      - CYPRESS_CUSTOM_RUN:
-          name: 'Cypress Tests'
-          context: cypress
-          matrix:
-            parameters:
-              start-command:
-                - yarn run test:data && yarn run test:e2e:serve
-              install-browsers:
-                - true
-              cypress-command:
-                - 'npx wait-on@latest http://localhost:3000 && cd platform/app &&  percy exec -- cypress run
-                  --record --browser chrome --parallel'
-              package-manager:
-                - 'yarn'
-              cypress-cache-key:
-                - 'yarn-packages-{{ checksum "yarn.lock" }}'
-              cypress-cache-path:
-                - '~/.cache/Cypress'
-           requires:
-             - AWAIT_APPROVAL
+  # PR_OPTIONAL_VISUAL_TESTS:
+  #   jobs:
+  #     - AWAIT_APPROVAL:
+  #         type: approval
+  #     # Update hub.docker.org
+  #     - cypress/run:
+  #         name: 'Generate Percy Snapshots'
+  #         executor: cypress/browsers-chrome76
+  #         browser: chrome
+  #         pre-steps:
+  #           - run: 'rm -rf ~/.yarn && yarn -v && yarn global add wait-on'
+  #         yarn: true
+  #         store_artifacts: false
+  #         working_directory: platform/app
+  #         build:
+  #           yarn test:data && npx cross-env QUICK_BUILD=true APP_CONFIG=config/dicomweb-server.js
+  #           yarn run build
+  #         # start server --> verify running --> percy + chrome + cypress
+  #         command: yarn run test:e2e:dist
+  #         cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
+  #         no-workspace: true # Don't persist workspace
+  #         post-steps:
+  #           - store_artifacts:
+  #               path: platform/app/cypress/screenshots
+  #           - store_artifacts:
+  #               path: platform/app/cypress/videos
+  #         requires:
+  #           - AWAIT_APPROVAL
 
   # Our master branch deploys to viewer-dev.ohif.org, the viewer.ohif.org is
   # deployed from the release branch which is more stable and less frequently updated.
