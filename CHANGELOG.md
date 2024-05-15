@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.9.0-beta.6](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.5...v3.9.0-beta.6) (2024-05-15)
+
+
+### Bug Fixes
+
+* 🐛 Overflow scroll list menu based on screen hight ([#4123](https://github.com/OHIF/Viewers/issues/4123)) ([6bba2e7](https://github.com/OHIF/Viewers/commit/6bba2e70f80d8eacc57c0e765013d9c10adf5413))
+
+
+
+
+
 # [3.9.0-beta.5](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.4...v3.9.0-beta.5) (2024-05-14)
 
 **Note:** Version bump only for package ohif-monorepo-root
