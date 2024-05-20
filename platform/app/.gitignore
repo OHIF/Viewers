@@ -1,8 +1,1 @@
 .vercel
-node_modules/
-/test-results/
-tests/playwright-report/
-/blob-report/
-/playwright/.cache/
-
-/tests/test-results/

@@ -46,3 +46,11 @@ platform/app/.recipes/OpenResty-Orthanc/logs/*
 .vercel
 
 .vs
+
+# PlayWright
+
+node_modules/
+tests/test-results/
+tests/playwright-report/
+/blob-report/
+/playwright/.cache/

@@ -26,10 +26,13 @@ export default defineConfig({
       name: 'firefox',
       use: { ...devices['Desktop Firefox'], deviceScaleFactor: 1 },
     },
-    {
-      name: 'webkit',
-      use: { ...devices['Desktop Safari'], deviceScaleFactor: 1 },
-    },
+    // This is commented out until SharedArrayBuffer is enabled in WebKit
+    // See: https://github.com/microsoft/playwright/issues/14043
+
+    //{
+    //  name: 'webkit',
+    //  use: { ...devices['Desktop Safari'], deviceScaleFactor: 1 },
+    //},
   ],
   webServer: {
     command: 'yarn start',
