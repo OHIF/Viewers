@@ -1,10 +1,12 @@
+import { Locator, Page } from 'playwright';
+
 /**
  *
  * @param page - The page to simulate the drag on
  * @param locator - The locator of the element to perform the drag on
  */
 
-export async function simulateDrag(page, locator) {
+export async function simulateDrag(page: Page, locator: Locator) {
   const box = await locator.boundingBox();
   if (!box) {
     throw new Error('Element is not visible');

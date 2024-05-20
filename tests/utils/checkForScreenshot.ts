@@ -1,4 +1,5 @@
 import { expect } from '@playwright/test';
+import { Locator, Page } from 'playwright';
 
 /**
  * @param page - The page to interact with
@@ -8,7 +9,13 @@ import { expect } from '@playwright/test';
  * @param delay - The delay between attempts
  * @returns  True if the screenshot matches, otherwise throws an error
  */
-const checkForScreenshot = async (page, locator, screenshotPath, attempts = 10, delay = 100) => {
+const checkForScreenshot = async (
+  page: Page,
+  locator: Locator | Page,
+  screenshotPath: string,
+  attempts = 10,
+  delay = 100
+) => {
   await page.waitForLoadState('networkidle');
   for (let i = 1; i < attempts; i++) {
     try {
