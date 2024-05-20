@@ -42,6 +42,7 @@ const StudyListTableRow = props => {
                     { 'bg-secondary-dark': isExpanded }
                   )}
                   onClick={onClickRow}
+                  data-cy={`${dataCY}-clickable`}
                 >
                   {row.map((cell, index) => {
                     const { content, title, gridCol } = cell;

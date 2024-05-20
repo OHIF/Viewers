@@ -1,6 +1,6 @@
-import { visitExample } from './visitExample';
+import { visitStudy } from './visitStudy';
 import { checkForScreenshot } from './checkForScreenshot';
 import { screenShotPaths } from './screenShotPaths';
 import { simulateDrag } from './simulateDrag';
 
-export { visitExample, checkForScreenshot, screenShotPaths, simulateDrag };
+export { visitStudy, checkForScreenshot, screenShotPaths, simulateDrag };
