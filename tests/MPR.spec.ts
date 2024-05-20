@@ -8,9 +8,9 @@ test.beforeEach(async ({ page }) => {
 });
 
 test.describe('MPR Test', async () => {
-  test('should display a single DICOM image in a Stack viewport.', async ({ page }) => {
+  test('should render MPR correctly.', async ({ page }) => {
     await page.getByTestId('Layout').click();
     await page.locator('div').filter({ hasText: /^MPR$/ }).first().click();
-    await checkForScreenshot(page, screenShotPaths.mpr.mprDisplayedCorrectly);
+    await checkForScreenshot(page, page, screenShotPaths.mpr.mprDisplayedCorrectly);
   });
 });
