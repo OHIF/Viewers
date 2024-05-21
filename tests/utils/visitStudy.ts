@@ -8,8 +8,8 @@ import { Page } from '@playwright/test';
  */
 export async function visitStudy(page: Page, studyInstanceUID: string, mode: string) {
   await page.goto('/?resultsPerPage=100');
-  await page.getByRole('button', { name: 'Confirm and Hide' }).click();
-  await page.getByTestId(`studyRow-${studyInstanceUID}-clickable`).click();
+  await page.getByTestId('confirm-and-hide-button"').click();
+  await page.getByTestId(studyInstanceUID).click();
   await page.getByRole('button', { name: mode }).click();
   await page.waitForLoadState('domcontentloaded');
   await page.waitForLoadState('networkidle');
