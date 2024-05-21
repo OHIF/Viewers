@@ -29,31 +29,31 @@ const getDirectURL = (config, params) => {
   }
 
   const value = instance[tag];
-  if (!value) {
-    return undefined;
-  }
-
-  if (value.DirectRetrieveURL) {
-    return value.DirectRetrieveURL;
-  }
-  if (value.InlineBinary) {
-    const blob = utils.b64toBlob(value.InlineBinary, defaultType);
-    value.DirectRetrieveURL = URL.createObjectURL(blob);
-    return value.DirectRetrieveURL;
-  }
-  if (!singlepart || (singlepart !== true && singlepart.indexOf(fetchPart) === -1)) {
-    if (value.retrieveBulkData) {
-      // Try the specified retrieve type.
-      const options = {
-        mediaType: defaultType,
-      };
-      return value.retrieveBulkData(options).then(arr => {
-        value.DirectRetrieveURL = URL.createObjectURL(new Blob([arr], { type: defaultType }));
-        return value.DirectRetrieveURL;
-      });
+  if (value) {
+    if (value.DirectRetrieveURL) {
+      return value.DirectRetrieveURL;
     }
-    console.warn('Unable to retrieve', tag, 'from', instance);
-    return undefined;
+
+    if (value.InlineBinary) {
+      const blob = utils.b64toBlob(value.InlineBinary, defaultType);
+      value.DirectRetrieveURL = URL.createObjectURL(blob);
+      return value.DirectRetrieveURL;
+    }
+
+    if (!singlepart || (singlepart !== true && singlepart.indexOf(fetchPart) === -1)) {
+      if (value.retrieveBulkData) {
+        // Try the specified retrieve type.
+        const options = {
+          mediaType: defaultType,
+        };
+        return value.retrieveBulkData(options).then(arr => {
+          value.DirectRetrieveURL = URL.createObjectURL(new Blob([arr], { type: defaultType }));
+          return value.DirectRetrieveURL;
+        });
+      }
+      console.warn('Unable to retrieve', tag, 'from', instance);
+      return undefined;
+    }
   }
 
   const { StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID } = instance;
