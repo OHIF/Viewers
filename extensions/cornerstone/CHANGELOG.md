@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.9.0-beta.10](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.9...v3.9.0-beta.10) (2024-05-21)
+
+
+### Bug Fixes
+
+* **stack-invalidation:** Resolve stack invalidation if metadata invalidated ([#4147](https://github.com/OHIF/Viewers/issues/4147)) ([70bb6c4](https://github.com/OHIF/Viewers/commit/70bb6c46267b3733a665f12534b849c890ce54ad))
+
+
+
+
+
 # [3.9.0-beta.9](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.8...v3.9.0-beta.9) (2024-05-17)
 
 **Note:** Version bump only for package @ohif/extension-cornerstone

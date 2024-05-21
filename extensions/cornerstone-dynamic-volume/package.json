@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-cornerstone-dynamic-volume",
-  "version": "3.9.0-beta.9",
+  "version": "3.9.0-beta.10",
   "description": "OHIF extension for 4D volumes data",
   "author": "OHIF",
   "license": "MIT",
