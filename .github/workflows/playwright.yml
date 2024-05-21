@@ -15,9 +15,6 @@ jobs:
           node-version: lts/*
       - name: Install Python and dependencies
         run: |
-          brew install python@3.11
-          brew link --overwrite python@3.11
-          pip install distutils
           brew install pkg-config cairo pango libpng jpeg giflib librsvg
       - name: Install dependencies
         run: npm install -g yarn && yarn
