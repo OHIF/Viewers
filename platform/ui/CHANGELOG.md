@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.9.0-beta.10](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.9...v3.9.0-beta.10) (2024-05-21)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+# [3.9.0-beta.9](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.8...v3.9.0-beta.9) (2024-05-17)
+
+
+### Bug Fixes
+
+* **select:** utilize react portals for select component ([#4144](https://github.com/OHIF/Viewers/issues/4144)) ([dce1e7d](https://github.com/OHIF/Viewers/commit/dce1e7d423cb64ec0d4be7362ecbfd52db47ef36))
+
+
+
+
+
 # [3.9.0-beta.8](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.7...v3.9.0-beta.8) (2024-05-16)
 
 **Note:** Version bump only for package @ohif/ui
