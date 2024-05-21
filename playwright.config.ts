@@ -22,11 +22,18 @@ export default defineConfig({
       name: 'chromium',
       use: { ...devices['Desktop Chrome'], deviceScaleFactor: 1 },
     },
-    // TODO: Fix firefox
-    //{
-    //   name: 'firefox',
-    //   use: { ...devices['Desktop Firefox'], deviceScaleFactor: 1 },
-    //  },
+    {
+      name: 'firefox',
+      use: {
+        ...devices['Desktop Firefox'],
+        deviceScaleFactor: 1,
+        launchOptions: {
+          firefoxUserPrefs: {
+            'gfx.webrender.all': false,
+          },
+        },
+      },
+    },
     // This is commented out until SharedArrayBuffer is enabled in WebKit
     // See: https://github.com/microsoft/playwright/issues/14043
 
