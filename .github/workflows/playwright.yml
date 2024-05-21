@@ -13,6 +13,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: lts/*
+      - name: Install Python and dependencies
+        run: |
+          brew install python@3.12
+          brew link --overwrite python@3.12
+          pip install distutils
+          brew install pkg-config cairo pango libpng jpeg giflib librsvg
       - name: Install dependencies
         run: npm install -g yarn && yarn
       - name: Install Playwright Browsers
