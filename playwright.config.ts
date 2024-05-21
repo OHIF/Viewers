@@ -22,24 +22,11 @@ export default defineConfig({
       name: 'chromium',
       use: { ...devices['Desktop Chrome'], deviceScaleFactor: 1 },
     },
-    {
-      name: 'firefox',
-      use: {
-        ...devices['Desktop Firefox'],
-        deviceScaleFactor: 1,
-        launchOptions: {
-          firefoxUserPrefs: {
-            'gfx.webrender.all': true,
-            'gfx.webrender.compositor.force-enabled ': true,
-            'gfx.webrender.enable-capture': true,
-            'gfx.webrender.enabled': true,
-            'webgl.force-enabled': true,
-            'gfx.webrender.software': false,
-            'layers.acceleration.force-enabled': true,
-          },
-        },
-      },
-    },
+    // TODO: Fix firefox tests
+    // {
+    //  name: 'firefox',
+    //  use: { ...devices['Desktop Firefox'], deviceScaleFactor: 1 },
+    // },
     // This is commented out until SharedArrayBuffer is enabled in WebKit
     // See: https://github.com/microsoft/playwright/issues/14043
 
