@@ -18,7 +18,7 @@ export default function isDisplaySetReconstructable(instances, appConfig) {
 
   const isMultiframe = firstInstance.NumberOfFrames > 1;
 
-  if (appConfig && appConfig.max3DTextureSize) {
+  if (appConfig) {
     const rows = toNumber(firstInstance.Rows);
     const columns = toNumber(firstInstance.Columns);
 
