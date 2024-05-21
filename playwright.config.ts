@@ -29,7 +29,13 @@ export default defineConfig({
         deviceScaleFactor: 1,
         launchOptions: {
           firefoxUserPrefs: {
-            'gfx.webrender.all': false,
+            'gfx.webrender.all': true,
+            'gfx.webrender.compositor.force-enabled ': true,
+            'gfx.webrender.enable-capture': true,
+            'gfx.webrender.enabled': true,
+            'webgl.force-enabled': true,
+            'gfx.webrender.software': false,
+            'layers.acceleration.force-enabled': true,
           },
         },
       },
