@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.9.0-beta.11](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.10...v3.9.0-beta.11) (2024-05-21)
+
+
+### Features
+
+* **test:** Playwright testing integration ([#4146](https://github.com/OHIF/Viewers/issues/4146)) ([fe1a706](https://github.com/OHIF/Viewers/commit/fe1a706446cc33670bf5fab8451e8281b487fcd6))
+
+
+
+
+
 # [3.9.0-beta.10](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.9...v3.9.0-beta.10) (2024-05-21)
 
 
