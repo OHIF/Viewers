@@ -7,16 +7,14 @@ on:
 jobs:
   test:
     timeout-minutes: 60
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: lts/*
       - name: Install dependencies
-        run: brew install pkg-config cairo pango libpng jpeg giflib librsvg
-      - name: Install dependencies
-        run: npm install -g yarn && yarn
+        run: sudo apt install libdrm-dev && npm install -g yarn && yarn
       - name: Install Playwright Browsers
         run: yarn playwright install --with-deps
       - name: Run Playwright tests
