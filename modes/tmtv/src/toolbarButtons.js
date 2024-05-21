@@ -264,7 +264,7 @@ const toolbarButtons = [
               min: 0,
               max: 50,
               step: 0.5,
-              values: [2.5, 50],
+              value: [2.5, 50],
               condition: ({ options }) =>
                 options.find(option => option.id === 'dynamic-mode').value === 'ThresholdRange',
               commands: {

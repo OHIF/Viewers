@@ -495,13 +495,18 @@ workflows:
       - BUILD:
           filters:
             branches:
-              only: release
-      - NPM_PUBLISH:
+              only: /^release\/.*/
+      - HOLD_FOR_APPROVAL:
+          type: approval
           requires:
             - BUILD
+      - NPM_PUBLISH:
+          requires:
+            - HOLD_FOR_APPROVAL
       - DOCKER_RELEASE_PUBLISH:
           requires:
             - NPM_PUBLISH
+
   ###
   # Unit and E2E tests have already run for PR_CHECKS
   # Re-running should not gain us any confidence here

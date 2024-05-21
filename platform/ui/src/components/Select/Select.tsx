@@ -95,6 +95,12 @@ const Select = ({
       placeholder={placeholder}
       options={options}
       blurInputOnSelect={true}
+      menuPortalTarget={document.body}
+      styles={
+        {
+          menuPortal: base => ({ ...base, zIndex: 9999 }),
+        }
+      }
       value={value && Array.isArray(value) ? selectedOptions : value}
       onChange={(selectedOptions, { action }) => {
         const newSelection = !selectedOptions.length

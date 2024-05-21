@@ -119,7 +119,7 @@ const toolbarButtons: Button[] = [
               min: 0,
               max: 100,
               step: 0.5,
-              values: [2, 50],
+              value: [2, 50],
               commands: {
                 commandName: 'setThresholdRange',
                 commandOptions: {
