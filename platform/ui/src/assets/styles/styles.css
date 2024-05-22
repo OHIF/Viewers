@@ -55,3 +55,10 @@
 .invisible-scrollbar::-webkit-scrollbar-thumb:window-inactive {
   @apply hidden;
 }
+
+/* Custom table body calculated size to allow the table to expand/contract
+ *  as the screen size changes. */
+.table-body {
+  height: calc(100vh - 22em);
+  min-height: 5em;
+}

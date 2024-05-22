@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import classnames from 'classnames';
-import PropTypes, { object } from 'prop-types';
+import PropTypes from 'prop-types';
 import { Link, useNavigate } from 'react-router-dom';
 import moment from 'moment';
 import qs from 'query-string';
@@ -219,10 +219,8 @@ function WorkList({
       }
     };
 
-    // TODO: WHY WOULD YOU USE AN INDEX OF 1?!
-    // Note: expanded rows index begins at 1
     for (let z = 0; z < expandedRows.length; z++) {
-      const expandedRowIndex = expandedRows[z] - 1;
+      const expandedRowIndex = expandedRows[z];
       const studyInstanceUid = sortedStudies[expandedRowIndex].studyInstanceUid;
 
       if (studiesWithSeriesData.includes(studyInstanceUid)) {
@@ -243,8 +241,7 @@ function WorkList({
   const rollingPageNumber = (pageNumber - 1) % rollingPageNumberMod;
   const offset = resultsPerPage * rollingPageNumber;
   const offsetAndTake = offset + resultsPerPage;
-  const tableDataSource = sortedStudies.map((study, key) => {
-    const rowKey = key + 1;
+  const tableDataSource = sortedStudies.map((study, rowKey) => {
     const isExpanded = expandedRows.some(k => k === rowKey);
     const {
       studyInstanceUid,
