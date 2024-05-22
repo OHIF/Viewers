@@ -1,4 +1,5 @@
 // External
+
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import i18n from '@ohif/i18n';
@@ -23,6 +24,7 @@ import {
   UserAuthenticationProvider,
   ToolboxProvider,
 } from '@ohif/ui';
+import { ThemeWrapper as ThemeWrapperNext } from '@ohif/ui-next';
 // Viewer Project
 // TODO: Should this influence study list?
 import { AppConfigProvider } from '@state';
@@ -83,6 +85,7 @@ function App({ config, defaultExtensions, defaultModes }) {
     [AppConfigProvider, { value: appConfigState }],
     [UserAuthenticationProvider, { service: userAuthenticationService }],
     [I18nextProvider, { i18n }],
+    [ThemeWrapperNext],
     [ThemeWrapper],
     [ToolboxProvider],
     [ViewportGridProvider, { service: viewportGridService }],

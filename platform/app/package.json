@@ -71,6 +71,7 @@
     "@ohif/mode-microscopy": "3.9.0-beta.14",
     "@ohif/mode-test": "3.9.0-beta.14",
     "@ohif/ui": "3.9.0-beta.14",
+    "@ohif/ui-next": "3.9.0-beta.14",
     "@types/react": "^17.0.38",
     "classnames": "^2.3.2",
     "core-js": "^3.16.1",
