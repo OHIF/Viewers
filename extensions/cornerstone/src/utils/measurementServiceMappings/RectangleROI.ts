@@ -42,7 +42,7 @@ const RectangleROI = {
         SeriesInstanceUID
       );
     } else {
-      displaySet = displaySetService.getDisplaySetsForSeries(SeriesInstanceUID);
+      displaySet = displaySetService.getDisplaySetsForSeries(SeriesInstanceUID)[0];
     }
 
     const { points, textBox } = data.handles;
