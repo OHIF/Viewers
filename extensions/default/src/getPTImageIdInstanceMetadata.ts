@@ -17,14 +17,14 @@ export default function getPTImageIdInstanceMetadata(imageId: string): InstanceM
     dicomMetaData.CorrectedImage === undefined ||
     dicomMetaData.Units === undefined ||
     !dicomMetaData.RadiopharmaceuticalInformationSequence ||
-    dicomMetaData.RadiopharmaceuticalInformationSequence[0].RadionuclideHalfLife === undefined ||
-    dicomMetaData.RadiopharmaceuticalInformationSequence[0].RadionuclideTotalDose === undefined ||
+    dicomMetaData.RadiopharmaceuticalInformationSequence.RadionuclideHalfLife === undefined ||
+    dicomMetaData.RadiopharmaceuticalInformationSequence.RadionuclideTotalDose === undefined ||
     dicomMetaData.DecayCorrection === undefined ||
     dicomMetaData.AcquisitionDate === undefined ||
     dicomMetaData.AcquisitionTime === undefined ||
-    (dicomMetaData.RadiopharmaceuticalInformationSequence[0].RadiopharmaceuticalStartDateTime ===
+    (dicomMetaData.RadiopharmaceuticalInformationSequence.RadiopharmaceuticalStartDateTime ===
       undefined &&
-      dicomMetaData.RadiopharmaceuticalInformationSequence[0].RadiopharmaceuticalStartTime ===
+      dicomMetaData.RadiopharmaceuticalInformationSequence.RadiopharmaceuticalStartTime ===
         undefined)
   ) {
     throw new Error('required metadata are missing');
@@ -37,14 +37,13 @@ export default function getPTImageIdInstanceMetadata(imageId: string): InstanceM
   const instanceMetadata: InstanceMetadata = {
     CorrectedImage: dicomMetaData.CorrectedImage,
     Units: dicomMetaData.Units,
-    RadionuclideHalfLife:
-      dicomMetaData.RadiopharmaceuticalInformationSequence[0].RadionuclideHalfLife,
+    RadionuclideHalfLife: dicomMetaData.RadiopharmaceuticalInformationSequence.RadionuclideHalfLife,
     RadionuclideTotalDose:
-      dicomMetaData.RadiopharmaceuticalInformationSequence[0].RadionuclideTotalDose,
+      dicomMetaData.RadiopharmaceuticalInformationSequence.RadionuclideTotalDose,
     RadiopharmaceuticalStartDateTime:
-      dicomMetaData.RadiopharmaceuticalInformationSequence[0].RadiopharmaceuticalStartDateTime,
+      dicomMetaData.RadiopharmaceuticalInformationSequence.RadiopharmaceuticalStartDateTime,
     RadiopharmaceuticalStartTime:
-      dicomMetaData.RadiopharmaceuticalInformationSequence[0].RadiopharmaceuticalStartTime,
+      dicomMetaData.RadiopharmaceuticalInformationSequence.RadiopharmaceuticalStartTime,
     DecayCorrection: dicomMetaData.DecayCorrection,
     PatientWeight: dicomMetaData.PatientWeight,
     SeriesDate: dicomMetaData.SeriesDate,

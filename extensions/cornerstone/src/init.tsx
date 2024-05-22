@@ -249,7 +249,11 @@ export default async function init({
 
     element.addEventListener(EVENTS.CAMERA_RESET, evt => {
       const { element } = evt.detail;
-      const { viewportId } = getEnabledElement(element);
+      const enabledElement = getEnabledElement(element);
+      if (!enabledElement) {
+        return;
+      }
+      const { viewportId } = enabledElement;
       commandsManager.runCommand('resetCrosshairs', { viewportId });
     });
 
