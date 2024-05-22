@@ -164,8 +164,10 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }: wi
     dm => dm.measurementType !== measurementService.VALUE_TYPES.POINT && !dm.nonAcquisition
   );
   const additionalFindings = displayMeasurements.filter(
-    dm => dm.measurementType === measurementService.VALUE_TYPES.POINT || dm.nonAcquisition
+    dm => dm.measurementType === measurementService.VALUE_TYPES.POINT && !dm.nonAcquisition
   );
+
+  const nonAcquisitionMeasurements = displayMeasurements.filter(dm => dm.nonAcquisition);
 
   const disabled =
     additionalFindings.length === 0 && displayMeasurementsWithoutFindings.length === 0;
@@ -195,6 +197,15 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }: wi
           <MeasurementTable
             title="Additional Findings"
             data={additionalFindings}
+            servicesManager={servicesManager}
+            onClick={jumpToImage}
+            onEdit={onMeasurementItemEditHandler}
+          />
+        )}
+        {nonAcquisitionMeasurements.length !== 0 && (
+          <MeasurementTable
+            title="Non Acquisition Measurements"
+            data={nonAcquisitionMeasurements}
             servicesManager={servicesManager}
             onClick={jumpToImage}
             onEdit={onMeasurementItemEditHandler}
