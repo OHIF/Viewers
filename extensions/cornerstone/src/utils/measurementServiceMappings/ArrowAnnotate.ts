@@ -34,8 +34,8 @@ const Length = {
 
     const { SOPInstanceUID, SeriesInstanceUID, StudyInstanceUID } = getSOPInstanceAttributes(
       referencedImageId,
-      cornerstoneViewportService,
-      viewportId
+      displaySetService,
+      annotation
     );
 
     let displaySet;
@@ -46,7 +46,7 @@ const Length = {
         SeriesInstanceUID
       );
     } else {
-      displaySet = displaySetService.getDisplaySetsForSeries(SeriesInstanceUID);
+      displaySet = displaySetService.getDisplaySetsForSeries(SeriesInstanceUID)[0];
     }
 
     const { points, textBox } = data.handles;
@@ -74,6 +74,7 @@ const Length = {
       getReport: () => {
         throw new Error('Not implemented');
       },
+      nonAcquisition: referencedImageId == null,
     };
   },
 };
@@ -85,14 +86,13 @@ function getMappedAnnotations(annotation, displaySetService) {
 
   const annotations = [];
 
-  const { SOPInstanceUID, SeriesInstanceUID, frameNumber } =
-    getSOPInstanceAttributes(referencedImageId);
-
-  const displaySet = displaySetService.getDisplaySetForSOPInstanceUID(
-    SOPInstanceUID,
-    SeriesInstanceUID,
-    frameNumber
+  const { SOPInstanceUID, SeriesInstanceUID, frameNumber } = getSOPInstanceAttributes(
+    referencedImageId,
+    displaySetService,
+    annotation
   );
+
+  const displaySet = displaySetService.getDisplaySetsForSeries(SeriesInstanceUID)[0];
 
   const { SeriesNumber } = displaySet;
 
