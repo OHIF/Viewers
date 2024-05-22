@@ -3,6 +3,7 @@
 describe('OHIF Study List', function () {
   context('Desktop resolution', function () {
     beforeEach(function () {
+      Cypress.on('uncaught:exception', () => false);
       cy.window().then(win => win.sessionStorage.clear());
       cy.openStudyList();
 

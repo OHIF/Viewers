@@ -33,6 +33,7 @@ import {
   AdvancedMagnifyTool,
   UltrasoundDirectionalTool,
   PlanarFreehandROITool,
+  PlanarFreehandContourSegmentationTool,
   SplineROITool,
   LivewireContourTool,
   OrientationMarkerTool,
@@ -83,6 +84,7 @@ export default function initCornerstoneTools(configuration = {}) {
   addTool(SplineROITool);
   addTool(LivewireContourTool);
   addTool(OrientationMarkerTool);
+  addTool(PlanarFreehandContourSegmentationTool);
 
   // Modify annotation tools to use dashed lines on SR
   const annotationStyle = {
@@ -136,6 +138,7 @@ const toolNames = {
   LivewireContour: LivewireContourTool.toolName,
   PlanarFreehandROI: PlanarFreehandROITool.toolName,
   OrientationMarker: OrientationMarkerTool.toolName,
+  PlanarFreehandContourSegmentation: PlanarFreehandContourSegmentationTool.toolName,
 };
 
 export { toolNames };

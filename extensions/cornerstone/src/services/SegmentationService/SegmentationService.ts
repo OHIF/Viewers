@@ -1015,6 +1015,8 @@ class SegmentationService extends PubSubService {
   ): Promise<void> => {
     const segmentation = this.getSegmentation(segmentationId);
 
+    toolGroupId = toolGroupId || this._getApplicableToolGroupId();
+
     if (!segmentation) {
       throw new Error(`Segmentation with segmentationId ${segmentationId} not found.`);
     }
