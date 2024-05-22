@@ -143,14 +143,24 @@ class CornerstoneCacheService {
     return newViewportData;
   }
 
-  private _getStackViewportData(
+  private async _getStackViewportData(
     dataSource,
     displaySets,
     initialImageIndex,
     viewportType: Enums.ViewportType
-  ): StackViewportData {
+  ): Promise<StackViewportData> {
     // For Stack Viewport we don't have fusion currently
     const displaySet = displaySets[0];
+    const overlayDisplaySet = displaySets[1]?.Modality === 'RTSTRUCT' ? displaySets[1] : null;
+
+    // Incase of an RT
+    if (overlayDisplaySet) {
+      if (overlayDisplaySet.load && overlayDisplaySet.load instanceof Function) {
+        const { userAuthenticationService } = this.servicesManager.services;
+        const headers = userAuthenticationService.getAuthorizationHeader();
+        await overlayDisplaySet.load({ headers });
+      }
+    }
 
     let stackImageIds = this.stackImageIds.get(displaySet.displaySetInstanceUID);
 
@@ -166,6 +176,7 @@ class CornerstoneCacheService {
       data: {
         StudyInstanceUID,
         displaySetInstanceUID,
+        overlayDisplaySetInstanceUID: overlayDisplaySet?.displaySetInstanceUID,
         isCompositeStack,
         imageIds: stackImageIds,
       },

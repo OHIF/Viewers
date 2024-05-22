@@ -555,9 +555,11 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     viewportInfo: ViewportInfo,
     presentations: Presentations = {}
   ): Promise<void> {
+    const { displaySetService, toolGroupService } = this.servicesManager.services;
     const displaySetOptions = viewportInfo.getDisplaySetOptions();
 
-    const { imageIds, initialImageIndex, displaySetInstanceUID } = viewportData.data;
+    const { imageIds, initialImageIndex, displaySetInstanceUID, overlayDisplaySetInstanceUID } =
+      viewportData.data;
 
     this.viewportsDisplaySets.set(viewport.id, [displaySetInstanceUID]);
 
@@ -586,6 +588,13 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       if (colormap !== undefined) {
         properties.colormap = colormap;
       }
+    }
+
+    if (overlayDisplaySetInstanceUID) {
+      const overlayDisplaySet = displaySetService.getDisplaySetByUID(overlayDisplaySetInstanceUID);
+      this.addOverlayRepresentationForDisplaySet(overlayDisplaySet, viewport);
+      const toolGroup = toolGroupService.getToolGroupForViewport(viewport.id);
+      csToolsUtils.segmentation.triggerSegmentationRender(toolGroup.id);
     }
 
     return viewport.setStack(imageIds, initialImageIndexToUse).then(() => {
