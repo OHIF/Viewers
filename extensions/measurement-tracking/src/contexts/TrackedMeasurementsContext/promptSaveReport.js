@@ -21,9 +21,11 @@ async function promptSaveReport({ servicesManager, commandsManager, extensionMan
       const dataSources = extensionManager.getDataSources();
       const dataSource = dataSources[0];
       const measurements = measurementService.getMeasurements();
-      const trackedMeasurements = measurements.filter(
-        m => trackedStudy === m.referenceStudyUID && trackedSeries.includes(m.referenceSeriesUID)
-      );
+      const trackedMeasurements = measurements
+        .filter(
+          m => trackedStudy === m.referenceStudyUID && trackedSeries.includes(m.referenceSeriesUID)
+        )
+        .filter(m => m.nonAcquisition === false);
 
       const SeriesDescription =
         // isUndefinedOrEmpty
