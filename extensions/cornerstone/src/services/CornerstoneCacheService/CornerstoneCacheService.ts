@@ -149,18 +149,19 @@ class CornerstoneCacheService {
     initialImageIndex,
     viewportType: Enums.ViewportType
   ): Promise<StackViewportData> {
-    // For Stack Viewport we don't have fusion currently
-    const displaySet = displaySets[0];
-    const overlayDisplaySet = displaySets[1]?.Modality === 'RTSTRUCT' ? displaySets[1] : null;
+    const overlayDisplaySets = displaySets.filter(ds => ds.isOverlayDisplaySet);
+    const nonOverlayDisplaySets = displaySets.filter(ds => !ds.isOverlayDisplaySet);
 
-    // Incase of an RT
-    if (overlayDisplaySet) {
+    // load overlays if they are not loaded
+    for (const overlayDisplaySet of overlayDisplaySets) {
       if (overlayDisplaySet.load && overlayDisplaySet.load instanceof Function) {
         const { userAuthenticationService } = this.servicesManager.services;
         const headers = userAuthenticationService.getAuthorizationHeader();
         await overlayDisplaySet.load({ headers });
       }
     }
+
+    const displaySet = nonOverlayDisplaySets[0];
 
     let stackImageIds = this.stackImageIds.get(displaySet.displaySetInstanceUID);
 
@@ -169,24 +170,23 @@ class CornerstoneCacheService {
       this.stackImageIds.set(displaySet.displaySetInstanceUID, stackImageIds);
     }
 
-    const { displaySetInstanceUID, StudyInstanceUID, isCompositeStack } = displaySet;
+    // Ensuring the first non-overlay `displaySet` is always the primary one
+    const StackViewportData = [displaySet, ...overlayDisplaySets].map(ds => {
+      const { displaySetInstanceUID, StudyInstanceUID, isCompositeStack } = ds;
 
-    const StackViewportData: StackViewportData = {
-      viewportType,
-      data: {
+      return {
         StudyInstanceUID,
         displaySetInstanceUID,
-        overlayDisplaySetInstanceUID: overlayDisplaySet?.displaySetInstanceUID,
         isCompositeStack,
         imageIds: stackImageIds,
-      },
+        initialImageIndex,
+      };
+    });
+
+    return {
+      viewportType,
+      data: StackViewportData,
     };
-
-    if (typeof initialImageIndex === 'number') {
-      StackViewportData.data.initialImageIndex = initialImageIndex;
-    }
-
-    return StackViewportData;
   }
 
   private async _getVolumeViewportData(
