@@ -10,7 +10,6 @@ const colorsByOrientation = {
   coronal: 'rgb(0, 200, 0)',
 };
 
-
 function createTools(utilityModule) {
   const { toolNames, Enums } = utilityModule.exports;
   return {
@@ -107,14 +106,19 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
   const utilityModule = extensionManager.getModuleEntry(
     '@ohif/extension-cornerstone.utilityModule.tools'
   );
-  const servicesManager = extensionManager._servicesManager
-  const { cornerstoneViewportService } = servicesManager.services
+  const servicesManager = extensionManager._servicesManager;
+  const { cornerstoneViewportService } = servicesManager.services;
   const tools = createTools(utilityModule);
   tools.disabled.push(
     {
       toolName: utilityModule.exports.toolNames.Crosshairs,
       configuration: {
         viewportIndicators: true,
+        viewportIndicatorsConfig: {
+          circleRadius: 5,
+          xOffset: 0.95,
+          yOffset: 0.05,
+        },
         disableOnPassive: true,
         autoPan: {
           enabled: false,

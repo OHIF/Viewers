@@ -1,4 +1,5 @@
-window.config = {
+/** @type {import('@ohif/core').OHIFConfig} */
+const config = {
   routerBasename: '/',
   // whiteLabeling: {},
   extensions: [],
@@ -11,6 +12,7 @@ window.config = {
   showWarningMessageForCrossOrigin: true,
   showCPUFallbackMessage: true,
   showLoadingIndicator: true,
+  disableConfirmationPrompts: true,
   strictZSpacingForVolumeViewport: true,
   groupEnabledModesFirst: true,
   maxNumRequests: {
@@ -232,3 +234,5 @@ window.config = {
     },
   ],
 };
+
+window.config = config;

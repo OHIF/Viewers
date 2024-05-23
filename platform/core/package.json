@@ -12,6 +12,12 @@
   "publishConfig": {
     "access": "public"
   },
+  "exports": {
+    ".": {
+      "import": "./src/index.ts",
+      "require": "./dist/ohif-core.umd.js"
+    }
+  },
   "files": [
     "dist",
     "README.md"
@@ -37,7 +43,7 @@
     "@cornerstonejs/codec-libjpeg-turbo-8bit": "^1.2.2",
     "@cornerstonejs/codec-openjpeg": "^1.2.2",
     "@cornerstonejs/codec-openjph": "^2.4.2",
-    "@cornerstonejs/dicom-image-loader": "^1.74.6",
+    "@cornerstonejs/dicom-image-loader": "^1.74.7",
     "@ohif/ui": "3.9.0-beta.16",
     "cornerstone-math": "0.1.9",
     "dicom-parser": "^1.8.21"
