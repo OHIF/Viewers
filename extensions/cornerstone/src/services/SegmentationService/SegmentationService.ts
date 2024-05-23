@@ -545,7 +545,7 @@ class SegmentationService extends PubSubService {
       volumeId: segmentationId,
       targetBuffer: {
         type: 'Uint8Array',
-        sharedArrayBuffer: window.SharedArrayBuffer,
+        sharedArrayBuffer: window.config?.useSharedArrayBuffer,
       },
     });
     const derivedVolumeScalarData = derivedVolume.getScalarData();
@@ -770,8 +770,8 @@ class SegmentationService extends PubSubService {
     const segmentIndices = segmentIndex
       ? [segmentIndex]
       : segmentation.segments
-          .filter(segment => segment?.segmentIndex)
-          .map(segment => segment.segmentIndex);
+        .filter(segment => segment?.segmentIndex)
+        .map(segment => segment.segmentIndex);
 
     const segmentIndicesSet = new Set(segmentIndices);
 
@@ -966,7 +966,7 @@ class SegmentationService extends PubSubService {
       volumeId: segmentationId,
       targetBuffer: {
         type: 'Uint8Array',
-        sharedArrayBuffer: window.SharedArrayBuffer,
+        sharedArrayBuffer: window.config?.useSharedArrayBuffer,
       },
     });
 
