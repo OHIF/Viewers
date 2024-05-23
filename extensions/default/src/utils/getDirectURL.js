@@ -1,3 +1,5 @@
+import { utils } from '@ohif/core';
+
 import getBulkdataValue from './getBulkdataValue';
 import createRenderedRetrieve from './createRenderedRetrieve';
 
@@ -16,12 +18,48 @@ import createRenderedRetrieve from './createRenderedRetrieve';
  *    or is already retrieved, or a promise to a URL for such use if a BulkDataURI
  */
 const getDirectURL = (config, params) => {
-  const { url = null } = params;
+  const { singlepart } = config;
+  const {
+    instance,
+    tag = 'PixelData',
+    defaultType = 'video/mp4',
+    singlepart: fetchPart = 'video',
+    url = null,
+  } = params;
+
   if (url) {
     return url;
   }
 
-  return getBulkdataValue(config, params) || createRenderedRetrieve(config, params);
+  const value = instance[tag];
+  if (value) {
+    if (value.DirectRetrieveURL) {
+      return value.DirectRetrieveURL;
+    }
+
+    if (value.InlineBinary) {
+      const blob = utils.b64toBlob(value.InlineBinary, defaultType);
+      value.DirectRetrieveURL = URL.createObjectURL(blob);
+      return value.DirectRetrieveURL;
+    }
+
+    if (!singlepart || (singlepart !== true && singlepart.indexOf(fetchPart) === -1)) {
+      if (value.retrieveBulkData) {
+        // Try the specified retrieve type.
+        const options = {
+          mediaType: defaultType,
+        };
+        return value.retrieveBulkData(options).then(arr => {
+          value.DirectRetrieveURL = URL.createObjectURL(new Blob([arr], { type: defaultType }));
+          return value.DirectRetrieveURL;
+        });
+      }
+      console.warn('Unable to retrieve', tag, 'from', instance);
+      return undefined;
+    }
+  }
+
+  return createRenderedRetrieve(config, params) || getBulkdataValue(config, params);
 };
 
 export default getDirectURL;

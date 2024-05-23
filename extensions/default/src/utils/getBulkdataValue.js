@@ -1,5 +1,3 @@
-import { utils } from '@ohif/core';
-
 /**
  * Generates a URL that can be used for direct retrieve of the bulkdata.
  *
@@ -15,46 +13,17 @@ import { utils } from '@ohif/core';
  *    or is already retrieved, or a promise to a URL for such use if a BulkDataURI.
  */
 const getBulkdataValue = (config, params) => {
-  const { singlepart } = config;
   const {
     instance,
     tag = 'PixelData',
     defaultPath = '/pixeldata',
     defaultType = 'video/mp4',
-    singlepart: fetchPart = 'video',
   } = params;
 
   const value = instance[tag];
-  if (!value) {
-    return undefined;
-  }
-
-  if (value.DirectRetrieveURL) {
-    return value.DirectRetrieveURL;
-  }
-
-  if (value.InlineBinary) {
-    const blob = utils.b64toBlob(value.InlineBinary, defaultType);
-    value.DirectRetrieveURL = URL.createObjectURL(blob);
-    return value.DirectRetrieveURL;
-  }
-
-  if (!singlepart || (singlepart !== true && singlepart.indexOf(fetchPart) === -1)) {
-    if (value.retrieveBulkData) {
-      // Try the specified retrieve type.
-      const options = {
-        mediaType: defaultType,
-      };
-      return value.retrieveBulkData(options).then(arr => {
-        value.DirectRetrieveURL = URL.createObjectURL(new Blob([arr], { type: defaultType }));
-        return value.DirectRetrieveURL;
-      });
-    }
-    console.warn('Unable to retrieve', tag, 'from', instance);
-    return undefined;
-  }
 
   const { SeriesInstanceUID, SOPInstanceUID } = instance;
+
   const BulkDataURI =
     (value && value.BulkDataURI) ||
     `series/${SeriesInstanceUID}/instances/${SOPInstanceUID}${defaultPath}`;
