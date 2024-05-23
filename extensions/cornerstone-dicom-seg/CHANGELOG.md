@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.9.0-beta.16](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.15...v3.9.0-beta.16) (2024-05-23)
+
+
+### Bug Fixes
+
+* dicom json for orthanc by Update package versions for [@cornerstonejs](https://github.com/cornerstonejs) dependencies ([#4165](https://github.com/OHIF/Viewers/issues/4165)) ([34c7d72](https://github.com/OHIF/Viewers/commit/34c7d72142847486b98c9c52469940083eeaf87e))
+
+
+
+
+
 # [3.9.0-beta.15](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.14...v3.9.0-beta.15) (2024-05-22)
 
 **Note:** Version bump only for package @ohif/extension-cornerstone-dicom-seg
