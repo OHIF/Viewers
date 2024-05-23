@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.9.0-beta.17](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.16...v3.9.0-beta.17) (2024-05-23)
+
+
+### Bug Fixes
+
+* **crosshairs:** reset angle, position, and slabthickness for crosshairs when reset viewport tool is used ([#4113](https://github.com/OHIF/Viewers/issues/4113)) ([73d9e99](https://github.com/OHIF/Viewers/commit/73d9e99d5d6f38ab6c36f4471d54f18798feacb4))
+
+
+
+
+
 # [3.9.0-beta.16](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.15...v3.9.0-beta.16) (2024-05-23)
 
 **Note:** Version bump only for package @ohif/mode-preclinical-4d
