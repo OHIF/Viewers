@@ -539,13 +539,29 @@ class SegmentationService extends PubSubService {
       throw new Error(`No volume found for referencedVolumeId: ${referencedVolumeId}`);
     }
 
+    const useSharedArrayBufferValue = window.config?.useSharedArrayBuffer;
+    let sharedArrayBufferEnabled = true;
+
+    if (useSharedArrayBufferValue === 'AUTO') {
+      try {
+        /*eslint-disable no-constant-condition */
+        if (!new SharedArrayBuffer(0)) {
+          sharedArrayBufferEnabled = false;
+        }
+      } catch {
+        sharedArrayBufferEnabled = false;
+      }
+    } else if (useSharedArrayBufferValue === 'FALSE' || useSharedArrayBufferValue === false) {
+      sharedArrayBufferEnabled = false;
+    }
+
     // Force use of a Uint8Array SharedArrayBuffer for the segmentation to save space and so
     // it is easily compressible in worker thread.
     const derivedVolume = await volumeLoader.createAndCacheDerivedVolume(referencedVolumeId, {
       volumeId: segmentationId,
       targetBuffer: {
         type: 'Uint8Array',
-        sharedArrayBuffer: window.config?.useSharedArrayBuffer,
+        sharedArrayBuffer: sharedArrayBufferEnabled,
       },
     });
     const derivedVolumeScalarData = derivedVolume.getScalarData();
@@ -960,13 +976,29 @@ class SegmentationService extends PubSubService {
 
     const segmentationId = options?.segmentationId ?? `${csUtils.uuidv4()}`;
 
+    const useSharedArrayBufferValue = window.config?.useSharedArrayBuffer;
+    let sharedArrayBufferEnabled = true;
+
+    if (useSharedArrayBufferValue === 'AUTO') {
+      try {
+        /*eslint-disable no-constant-condition */
+        if (!new SharedArrayBuffer(0)) {
+          sharedArrayBufferEnabled = false;
+        }
+      } catch {
+        sharedArrayBufferEnabled = false;
+      }
+    } else if (useSharedArrayBufferValue === 'FALSE' || useSharedArrayBufferValue === false) {
+      sharedArrayBufferEnabled = false;
+    }
+
     // Force use of a Uint8Array SharedArrayBuffer for the segmentation to save space and so
     // it is easily compressible in worker thread.
     await volumeLoader.createAndCacheDerivedSegmentationVolume(volumeId, {
       volumeId: segmentationId,
       targetBuffer: {
         type: 'Uint8Array',
-        sharedArrayBuffer: window.config?.useSharedArrayBuffer,
+        sharedArrayBuffer: sharedArrayBufferEnabled,
       },
     });
 
