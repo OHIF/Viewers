@@ -24,7 +24,7 @@ import {
   UserAuthenticationProvider,
   ToolboxProvider,
 } from '@ohif/ui';
-import { ThemeWrapper as ThemeWrapperNext } from '@ohif/ui-next';
+import { ThemeWrapper as ThemeWrapperNext, NotificationProvider } from '@ohif/ui-next';
 // Viewer Project
 // TODO: Should this influence study list?
 import { AppConfigProvider } from '@state';
@@ -91,6 +91,7 @@ function App({ config, defaultExtensions, defaultModes }) {
     [ViewportGridProvider, { service: viewportGridService }],
     [ViewportDialogProvider, { service: uiViewportDialogService }],
     [CineProvider, { service: cineService }],
+    [NotificationProvider, { service: uiNotificationService }],
     [SnackbarProvider, { service: uiNotificationService }],
     [DialogProvider, { service: uiDialogService }],
     [ModalProvider, { service: uiModalService, modal: Modal }],

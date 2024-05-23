@@ -1,3 +1,11 @@
-import { Toaster, Button, ThemeWrapper } from './components';
+import { Button, ThemeWrapper } from './components';
+import { useNotification, NotificationProvider } from './contextProviders';
 
-export { Toaster, Button, ThemeWrapper };
+export {
+  // components
+  Button,
+  ThemeWrapper,
+  // contextProviders
+  NotificationProvider,
+  useNotification,
+};

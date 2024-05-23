@@ -7,14 +7,14 @@ module.exports = {
     './app/**/*.{ts,tsx}',
     './src/**/*.{ts,tsx}',
   ],
-  prefix: 'next-',
+  prefix: '',
   theme: {
-    colors: {
-      primary: {
-        light: '#ffffff',
-      },
-    },
     extend: {
+      colors: {
+        'next-primary': {
+          light: '#ffffff',
+        },
+      },
       keyframes: {
         'accordion-down': {
           from: { height: '0' },
