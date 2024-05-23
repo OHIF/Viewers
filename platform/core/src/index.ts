@@ -13,7 +13,6 @@ import defaults from './defaults';
 import * as Types from './types';
 import * as Enums from './enums';
 import { useToolbar } from './hooks/useToolbar';
-import { OHIFConfig } from './types/OHIFConfig';
 import {
   CineService,
   UIDialogService,
@@ -135,7 +134,5 @@ export {
 };
 
 export { OHIF };
-
-export type { OHIFConfig };
 
 export default OHIF;
