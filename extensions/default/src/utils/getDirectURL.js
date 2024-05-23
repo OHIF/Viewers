@@ -1,4 +1,5 @@
-import { utils } from '@ohif/core';
+import getBulkdataValue from './getBulkdataValue';
+import createRenderedRetrieve from './createRenderedRetrieve';
 
 /**
  * Generates a URL that can be used for direct retrieve of the bulkdata
@@ -15,63 +16,12 @@ import { utils } from '@ohif/core';
  *    or is already retrieved, or a promise to a URL for such use if a BulkDataURI
  */
 const getDirectURL = (config, params) => {
-  const { wadoRoot, singlepart } = config;
-  const {
-    instance,
-    tag = 'PixelData',
-    defaultPath = '/pixeldata',
-    defaultType = 'video/mp4',
-    singlepart: fetchPart = 'video',
-    url = null,
-  } = params;
+  const { url = null } = params;
   if (url) {
     return url;
   }
 
-  const value = instance[tag];
-  if (value) {
-    if (value.DirectRetrieveURL) {
-      return value.DirectRetrieveURL;
-    }
-
-    if (value.InlineBinary) {
-      const blob = utils.b64toBlob(value.InlineBinary, defaultType);
-      value.DirectRetrieveURL = URL.createObjectURL(blob);
-      return value.DirectRetrieveURL;
-    }
-
-    if (!singlepart || (singlepart !== true && singlepart.indexOf(fetchPart) === -1)) {
-      if (value.retrieveBulkData) {
-        // Try the specified retrieve type.
-        const options = {
-          mediaType: defaultType,
-        };
-        return value.retrieveBulkData(options).then(arr => {
-          value.DirectRetrieveURL = URL.createObjectURL(new Blob([arr], { type: defaultType }));
-          return value.DirectRetrieveURL;
-        });
-      }
-      console.warn('Unable to retrieve', tag, 'from', instance);
-      return undefined;
-    }
-  }
-
-  const { StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID } = instance;
-  const BulkDataURI =
-    (value && value.BulkDataURI) ||
-    `series/${SeriesInstanceUID}/instances/${SOPInstanceUID}${defaultPath}`;
-  const hasQuery = BulkDataURI.indexOf('?') !== -1;
-  const hasAccept = BulkDataURI.indexOf('accept=') !== -1;
-  const acceptUri =
-    BulkDataURI + (hasAccept ? '' : (hasQuery ? '&' : '?') + `accept=${defaultType}`);
-
-  if (tag === 'PixelData' || tag === 'EncapsulatedDocument') {
-    return `${wadoRoot}/studies/${StudyInstanceUID}/series/${SeriesInstanceUID}/instances/${SOPInstanceUID}/rendered`;
-  }
-
-  // The DICOMweb standard states that the default is multipart related, and then
-  // separately states that the accept parameter is the URL parameter equivalent of the accept header.
-  return acceptUri;
+  return getBulkdataValue(config, params) || createRenderedRetrieve(config, params);
 };
 
 export default getDirectURL;
