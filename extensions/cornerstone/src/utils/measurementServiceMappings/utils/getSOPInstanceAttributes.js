@@ -13,10 +13,10 @@ export default function getSOPInstanceAttributes(imageId, displaySetService, ann
   }
 
   const { metadata } = annotation;
-  const { FrameOfReferenceUID } = metadata;
+  const { volumeId } = metadata;
 
-  const displaySet = displaySetService.getDisplaySetsBy(
-    displaySet => displaySet.instance.FrameOfReferenceUID === FrameOfReferenceUID
+  const displaySet = displaySetService.getDisplaySetsBy(displaySet =>
+    volumeId.includes(displaySet.uid)
   )[0];
   const { StudyInstanceUID, SeriesInstanceUID } = displaySet;
 
