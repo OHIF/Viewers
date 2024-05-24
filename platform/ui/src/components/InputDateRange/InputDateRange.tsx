@@ -9,8 +9,8 @@ const InputDateRange = ({
   label,
   isSortable,
   sortDirection,
-  onLabelClick,
-  value,
+  onLabelClick = () => {},
+  value = {},
   onChange,
 }) => {
   const { startDate, endDate } = value;
@@ -37,13 +37,6 @@ const InputDateRange = ({
       </div>
     </InputLabelWrapper>
   );
-};
-
-const noop = () => {};
-
-InputDateRange.defaultProps = {
-  value: {},
-  onLabelClick: noop,
 };
 
 InputDateRange.propTypes = {

@@ -38,7 +38,27 @@ let commandsManager: CommandsManager,
   serviceProvidersManager: ServiceProvidersManager,
   hotkeysManager: HotkeysManager;
 
-function App({ config, defaultExtensions, defaultModes }) {
+function App({
+  config = {
+    /**
+     * Relative route from domain root that OHIF instance is installed at.
+     * For example:
+     *
+     * Hosted at: https://ohif.org/where-i-host-the/viewer/
+     * Value: `/where-i-host-the/viewer/`
+     * */
+    routerBaseName: '/',
+    /**
+     *
+     */
+    showLoadingIndicator: true,
+    showStudyList: true,
+    oidc: [],
+    extensions: [],
+  },
+  defaultExtensions = [],
+  defaultModes = [],
+}) {
   const [init, setInit] = useState(null);
   useEffect(() => {
     const run = async () => {
@@ -157,27 +177,9 @@ App.propTypes = {
   /* Extensions that are "bundled" or "baked-in" to the application.
    * These would be provided at build time as part of they entry point. */
   defaultExtensions: PropTypes.array,
-};
-
-App.defaultProps = {
-  config: {
-    /**
-     * Relative route from domain root that OHIF instance is installed at.
-     * For example:
-     *
-     * Hosted at: https://ohif.org/where-i-host-the/viewer/
-     * Value: `/where-i-host-the/viewer/`
-     * */
-    routerBaseName: '/',
-    /**
-     *
-     */
-    showLoadingIndicator: true,
-    showStudyList: true,
-    oidc: [],
-    extensions: [],
-  },
-  defaultExtensions: [],
+  /* Modes that are "bundled" or "baked-in" to the application.
+   * These would be provided at build time as part of they entry point. */
+  defaultModes: PropTypes.array,
 };
 
 export default App;

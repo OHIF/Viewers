@@ -109,7 +109,7 @@ const OHIFCornerstoneViewport = React.memo((props: withAppTypes) => {
     onElementEnabled,
     // eslint-disable-next-line react/prop-types
     onElementDisabled,
-    isJumpToMeasurementDisabled,
+    isJumpToMeasurementDisabled = false,
     // Note: you SHOULD NOT use the initialImageIdOrIndex for manipulation
     // of the imageData in the OHIFCornerstoneViewport. This prop is used
     // to set the initial state of the viewport's first image to render
@@ -682,10 +682,6 @@ function _rehydrateSynchronizers(
 
 // Component displayName
 OHIFCornerstoneViewport.displayName = 'OHIFCornerstoneViewport';
-
-OHIFCornerstoneViewport.defaultProps = {
-  isJumpToMeasurementDisabled: false,
-};
 
 OHIFCornerstoneViewport.propTypes = {
   displaySets: PropTypes.array.isRequired,

@@ -12,12 +12,12 @@ const UserPreferences = ({
   availableLanguages,
   defaultLanguage,
   currentLanguage,
-  disabled,
+  disabled = false,
   hotkeyDefinitions,
   hotkeyDefaults,
-  onCancel,
-  onSubmit,
-  onReset,
+  onCancel = () => {},
+  onSubmit = () => {},
+  onReset = () => {},
   hotkeysModule,
 }) => {
   const { t } = useTranslation('UserPreferencesModal');
@@ -140,12 +140,6 @@ UserPreferences.propTypes = {
   disabled: PropTypes.bool,
   hotkeyDefaults: PropTypes.object.isRequired,
   hotkeyDefinitions: PropTypes.object.isRequired,
-  languageOptions: PropTypes.arrayOf(
-    PropTypes.shape({
-      label: PropTypes.string.isRequired,
-      value: PropTypes.any.isRequired,
-    })
-  ),
   onCancel: PropTypes.func,
   onSubmit: PropTypes.func,
   onReset: PropTypes.func,
@@ -156,17 +150,6 @@ UserPreferences.propTypes = {
     startRecording: PropTypes.func.isRequired,
     record: PropTypes.func.isRequired,
   }).isRequired,
-};
-
-UserPreferences.defaultProps = {
-  languageOptions: [
-    { value: 'ONE', label: 'ONE' },
-    { value: 'TWO', label: 'TWO' },
-  ],
-  onCancel: noop,
-  onSubmit: noop,
-  onReset: noop,
-  disabled: false,
 };
 
 export default UserPreferences;
