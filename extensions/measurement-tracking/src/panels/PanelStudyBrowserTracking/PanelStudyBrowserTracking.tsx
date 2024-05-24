@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 import { utils } from '@ohif/core';
-import { StudyBrowser, useImageViewer, useViewportGrid, Dialog, ButtonEnums } from '@ohif/ui';
-import {Button, buttonVariants} from '@ohif/ui-next';
+import { StudyBrowser, useImageViewer, useViewportGrid, ButtonEnums } from '@ohif/ui';
+import { Button, buttonVariants, Combobox, Dialog } from '@ohif/ui-next';
 import { useTrackedMeasurements } from '../../getContextModule';
 
 const { formatDate } = utils;
@@ -35,6 +35,7 @@ function PanelStudyBrowserTracking({
   // doesn't have to have such an intense shape. This works well enough for now.
   // Tabs --> Studies --> DisplaySets --> Thumbnails
   const { StudyInstanceUIDs } = useImageViewer();
+  const [showDialog, setShowDialog] = useState(false);
   const [{ activeViewportId, viewports, isHangingProtocolLayout }, viewportGridService] =
     useViewportGrid();
   const [trackedMeasurements, sendTrackedMeasurementsEvent] = useTrackedMeasurements();
@@ -346,54 +347,90 @@ function PanelStudyBrowserTracking({
       });
     };
 
-    uiDialogService.create({
-      id: 'untrack-series',
-      centralize: true,
-      isDraggable: false,
-      showOverlay: true,
-      content: Dialog,
-      contentProps: {
-        title: 'Untrack Series',
-        body: () => (
-          <div className="bg-primary-dark p-4 text-white">
-            <p>Are you sure you want to untrack this series?</p>
-            <p className="mt-2">
-              This action cannot be undone and will delete all your existing measurements.
-            </p>
-          </div>
-        ),
-        actions: [
-          {
-            id: 'cancel',
-            text: 'Cancel',
-            type: ButtonEnums.type.secondary,
-          },
-          {
-            id: 'yes',
-            text: 'Yes',
-            type: ButtonEnums.type.primary,
-            classes: ['untrack-yes-button'],
-          },
-        ],
-        onClose: () => uiDialogService.dismiss({ id: 'untrack-series' }),
-        onSubmit: async ({ action }) => {
-          switch (action.id) {
-            case 'yes':
-              onConfirm();
-              uiDialogService.dismiss({ id: 'untrack-series' });
-              break;
-            case 'cancel':
-              uiDialogService.dismiss({ id: 'untrack-series' });
-              break;
-          }
-        },
-      },
-    });
+    // uiDialogService.create({
+    //   id: 'untrack-series',
+    //   centralize: true,
+    //   isDraggable: false,
+    //   showOverlay: true,
+    //   content: Dialog,
+    //   contentProps: {
+    //     title: 'Untrack Series',
+    //     body: () => (
+    //       <div className="bg-primary-dark p-4 text-white">
+    //         <p>Are you sure you want to untrack this series?</p>
+    //         <p className="mt-2">
+    //           This action cannot be undone and will delete all your existing measurements.
+    //         </p>
+    //       </div>
+    //     ),
+    //     actions: [
+    //       {
+    //         id: 'cancel',
+    //         text: 'Cancel',
+    //         type: ButtonEnums.type.secondary,
+    //       },
+    //       {
+    //         id: 'yes',
+    //         text: 'Yes',
+    //         type: ButtonEnums.type.primary,
+    //         classes: ['untrack-yes-button'],
+    //       },
+    //     ],
+    //     onClose: () => uiDialogService.dismiss({ id: 'untrack-series' }),
+    //     onSubmit: async ({ action }) => {
+    //       switch (action.id) {
+    //         case 'yes':
+    //           onConfirm();
+    //           uiDialogService.dismiss({ id: 'untrack-series' });
+    //           break;
+    //         case 'cancel':
+    //           uiDialogService.dismiss({ id: 'untrack-series' });
+    //           break;
+    //       }
+    //     },
+    //   },
+    // });
   };
 
+  const frameworks = [
+    {
+      value: 'next.js',
+      label: 'Next.js',
+    },
+    {
+      value: 'sveltekit',
+      label: 'SvelteKit',
+    },
+    {
+      value: 'nuxt.js',
+      label: 'Nuxt.js',
+    },
+    {
+      value: 'remix',
+      label: 'Remix',
+    },
+    {
+      value: 'astro',
+      label: 'Astro',
+    },
+  ];
+
   return (
-    <Button  > Button </Button>
-  )
+    <div>
+      <Button
+        onClick={() => {
+          setShowDialog(true);
+        }}
+      >
+        {' '}
+        Button{' '}
+      </Button>
+      <Combobox
+        data={frameworks}
+        placeholder="framework"
+      />
+    </div>
+  );
 
   return (
     <StudyBrowser
