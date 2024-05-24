@@ -165,10 +165,10 @@ function getDisplayText(annotation, displaySet, customizationService, displaySet
         if (isNaN(value)) {
           return value;
         }
-        return utils.roundNumber(value);
+        return utils.roundNumber(value, 2);
       });
     }
-    return isNaN(values) ? values : utils.roundNumber(values);
+    return isNaN(values) ? values : utils.roundNumber(values, 2);
   };
 
   const findUnitForValue = (displayTextItems, value) =>

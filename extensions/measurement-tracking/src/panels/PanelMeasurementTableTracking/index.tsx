@@ -204,7 +204,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }: wi
         )}
         {nonAcquisitionMeasurements.length !== 0 && (
           <MeasurementTable
-            title="Non Acquisition Measurements"
+            title="Non-tracked Measurements"
             data={nonAcquisitionMeasurements}
             servicesManager={servicesManager}
             onClick={jumpToImage}
@@ -218,7 +218,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }: wi
             t={t}
             actions={[
               {
-                label: 'Export',
+                label: 'Download CSV',
                 onClick: exportReport,
               },
               {
