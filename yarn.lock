@@ -1497,13 +1497,13 @@
   resolved "https://registry.yarnpkg.com/@colors/colors/-/colors-1.5.0.tgz#bb504579c1cae923e6576a4f5da43d25f97bdbd9"
   integrity sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ==
 
-"@cornerstonejs/adapters@^1.74.6":
-  version "1.74.6"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/adapters/-/adapters-1.74.6.tgz#41d77ce78c06f57d2c0bd5e9b7f43f0eb95c331a"
-  integrity sha512-tb1cIXUNXUuS5oAAdnBwZQoAFbEDY4wNGK4rP+/JCejysYT3G1HfCIr/r/K+l4NlWwSDyryHSQGqVRv1RMB87w==
+"@cornerstonejs/adapters@^1.74.7":
+  version "1.74.7"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/adapters/-/adapters-1.74.7.tgz#7fca3f8b464dd810eebce0f241ae8d522714d5ed"
+  integrity sha512-+k5Pw9YC2GdGJqigcPdaok9ouLg4GWd9n4nh5KAmf6CC9gtwa3gv9g+lP97NYFEsD+T1L95zMUsz5nocjdtduQ==
   dependencies:
     "@babel/runtime-corejs2" "^7.17.8"
-    "@cornerstonejs/tools" "^1.74.6"
+    "@cornerstonejs/tools" "^1.74.7"
     buffer "^6.0.3"
     dcmjs "^0.29.8"
     gl-matrix "^3.4.3"
@@ -1550,10 +1550,10 @@
   resolved "https://registry.yarnpkg.com/@cornerstonejs/codec-openjph/-/codec-openjph-2.4.5.tgz#8690b61a86fa53ef38a70eee9d665a79229517c0"
   integrity sha512-MZCUy8VG0VG5Nl1l58+g+kH3LujAzLYTfJqkwpWI2gjSrGXnP6lgwyy4GmPRZWVoS40/B1LDNALK905cNWm+sg==
 
-"@cornerstonejs/core@^1.74.6":
-  version "1.74.6"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/core/-/core-1.74.6.tgz#9276f4f60159c8960929c414e81cb69f3de01a57"
-  integrity sha512-42Q7rNZ33WI5w+fXELaBc43gWKuxgxl4Bdrtf9M7FEas981BkusIrMna+sxVMccnDQOfAO6tQlag1r2Wt8URNA==
+"@cornerstonejs/core@^1.74.7":
+  version "1.74.7"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/core/-/core-1.74.7.tgz#5dda0c83eaaebd2ac3ae24424042259e87ae7c72"
+  integrity sha512-nHHZStrZj4avLXbf+cULOtzXAFOMsraSANuCZtSVtXY5qtlTe5QzqPxtJw0nmZyMuv5JXZ8HJhxibzKarX9c+A==
   dependencies:
     "@kitware/vtk.js" "30.4.1"
     comlink "^4.4.1"
@@ -1561,34 +1561,34 @@
     gl-matrix "^3.4.3"
     lodash.clonedeep "4.5.0"
 
-"@cornerstonejs/dicom-image-loader@^1.74.6":
-  version "1.74.6"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/dicom-image-loader/-/dicom-image-loader-1.74.6.tgz#29aae228daa4c9a973d9ccef7c24d2ec806b79d4"
-  integrity sha512-EyvbmVWPk1bTWFnFimMISiUSpKkk1FJ2Q1478PlPgtP9sWtv260ZK/qKa+z0I0vXbcvNNk+Kq1aNtM31Gvn8jQ==
+"@cornerstonejs/dicom-image-loader@^1.74.7":
+  version "1.74.7"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/dicom-image-loader/-/dicom-image-loader-1.74.7.tgz#e3f8a7df256570b06880190397d16655dbc2a964"
+  integrity sha512-YKi80odvgYLZNU/Fm27KTE0Vmr8uDiCkdaozvVL+zvcULRGjENoyVVakWqvgHDF9a18W0cnI+lXHLN0W8QG6Yw==
   dependencies:
     "@cornerstonejs/codec-charls" "^1.2.3"
     "@cornerstonejs/codec-libjpeg-turbo-8bit" "^1.2.2"
     "@cornerstonejs/codec-openjpeg" "^1.2.2"
     "@cornerstonejs/codec-openjph" "^2.4.5"
-    "@cornerstonejs/core" "^1.74.6"
+    "@cornerstonejs/core" "^1.74.7"
     dicom-parser "^1.8.9"
     pako "^2.0.4"
     uuid "^9.0.0"
 
-"@cornerstonejs/streaming-image-volume-loader@^1.74.6":
-  version "1.74.6"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/streaming-image-volume-loader/-/streaming-image-volume-loader-1.74.6.tgz#b0e8ee3138550f684a477ec9d6c69934521035a5"
-  integrity sha512-p7i1vYFsfWgtfNGJq09QvmeVJ7SJLwD9Okkw0wnp9GOZ2EHEME5LsxrNhTwd3+VoMv2kCwDaB0SfjkTs9rNo/g==
+"@cornerstonejs/streaming-image-volume-loader@^1.74.7":
+  version "1.74.7"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/streaming-image-volume-loader/-/streaming-image-volume-loader-1.74.7.tgz#baa0cdb8f35ac3dec1c8e737fec98d5083e94871"
+  integrity sha512-FgNdPJkiD9qQLCpeqb1aWX/mxhRACFUtBvkNMM0rZY/952K9HAdmvDhGtFLo0vX5VsDA3JFkSMhBaHkhDYB+IA==
   dependencies:
-    "@cornerstonejs/core" "^1.74.6"
+    "@cornerstonejs/core" "^1.74.7"
     comlink "^4.4.1"
 
-"@cornerstonejs/tools@^1.74.6":
-  version "1.74.6"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/tools/-/tools-1.74.6.tgz#ac862432cb15f297e26d4897f169dd8513d38cac"
-  integrity sha512-JSCUHsBEP6eLg4uo4BIRzzdCx9gcJVAryUZzym/qHvAMU9q7W91oZ+BtAcSZi6Ppy2ERe4DiufwU4gK8oQNFFw==
+"@cornerstonejs/tools@^1.74.7":
+  version "1.74.7"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/tools/-/tools-1.74.7.tgz#65db685bc65b826f43a9484aeaa208ba37568bac"
+  integrity sha512-Rhq+xzpFgZij904PmUwAZRQIGiDYrK3RqbteToYu/+cjZ9g3uvJh3f9Bu9plDWwQOqfdFKzAuOlnQCnSaJs3qg==
   dependencies:
-    "@cornerstonejs/core" "^1.74.6"
+    "@cornerstonejs/core" "^1.74.7"
     "@icr/polyseg-wasm" "0.4.0"
     "@types/offscreencanvas" "2019.7.3"
     comlink "^4.4.1"
@@ -6526,13 +6526,6 @@ axios@^0.25.0:
   dependencies:
     follow-redirects "^1.14.7"
 
-axios@^0.26.1:
-  version "0.26.1"
-  resolved "https://registry.yarnpkg.com/axios/-/axios-0.26.1.tgz#1ede41c51fcf51bbbd6fd43669caaa4f0495aaa9"
-  integrity sha512-fPwcX4EvnSHuInCMItEhAGnaSEXRBjtzh9fOtsE6E1G6p7vl7edEeZe11QHf18+6+9gR5PbKV/sGKNaD8YaMeA==
-  dependencies:
-    follow-redirects "^1.14.8"
-
 axios@^0.27.2:
   version "0.27.2"
   resolved "https://registry.yarnpkg.com/axios/-/axios-0.27.2.tgz#207658cc8621606e586c85db4b41a750e756d972"
@@ -6540,6 +6533,15 @@ axios@^0.27.2:
   dependencies:
     follow-redirects "^1.14.9"
     form-data "^4.0.0"
+
+axios@^0.28.0:
+  version "0.28.1"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-0.28.1.tgz#2a7bcd34a3837b71ee1a5ca3762214b86b703e70"
+  integrity sha512-iUcGA5a7p0mVb4Gm/sy+FSECNkPFT4y7wt6OM/CDpO/OnNCvSs3PoMG8ibrC9jRoGYU0gUK5pXVC4NPXq6lHRQ==
+  dependencies:
+    follow-redirects "^1.15.0"
+    form-data "^4.0.0"
+    proxy-from-env "^1.1.0"
 
 axios@^1.0.0:
   version "1.6.8"
@@ -6801,9 +6803,9 @@ bare-os@^2.1.0:
   integrity sha512-oPb8oMM1xZbhRQBngTgpcQ5gXw6kjOaRsSWsIeNyRxGed2w/ARyP7ScBYpWR1qfX2E5rS3gBw6OWcSQo+s+kUg==
 
 bare-path@^2.0.0, bare-path@^2.1.0:
-  version "2.1.2"
-  resolved "https://registry.yarnpkg.com/bare-path/-/bare-path-2.1.2.tgz#7a0940d34ebe65f7e179fa61ed8d49d9dc151d67"
-  integrity sha512-o7KSt4prEphWUHa3QUwCxUI00R86VdjiuxmJK0iNVDHYPGo+HsDaVCnqCmPbf/MiW1ok8F4p3m8RTHlWk8K2ig==
+  version "2.1.3"
+  resolved "https://registry.yarnpkg.com/bare-path/-/bare-path-2.1.3.tgz#594104c829ef660e43b5589ec8daef7df6cedb3e"
+  integrity sha512-lh/eITfU8hrj9Ru5quUp0Io1kJWIk1bTjzo7JH1P5dWmQ2EL4hFUlfI8FonAhSlgIfhn63p84CDY/x+PisgcXA==
   dependencies:
     bare-os "^2.1.0"
 
@@ -9400,9 +9402,9 @@ ee-first@1.1.1:
   integrity sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==
 
 ejs@^3.1.6, ejs@^3.1.7, ejs@^3.1.8:
-  version "3.1.9"
-  resolved "https://registry.yarnpkg.com/ejs/-/ejs-3.1.9.tgz#03c9e8777fe12686a9effcef22303ca3d8eeb361"
-  integrity sha512-rC+QVNMJWv+MtPgkt0y+0rVEIdbtxVADApW9JXrUVlzHetgcyczP/E7DJmWJ4fJCZF2cPcBk0laWO9ZHMG3DmQ==
+  version "3.1.10"
+  resolved "https://registry.yarnpkg.com/ejs/-/ejs-3.1.10.tgz#69ab8358b14e896f80cc39e62087b88500c3ac3b"
+  integrity sha512-UeJmFfOrAQS8OJWPZ4qtgHyWExa088/MtK5UEyoJGFH67cDEXkZSviOiKRCZ4Xij0zxI3JECgYs3oKx+AizQBA==
   dependencies:
     jake "^10.8.5"
 
@@ -10803,7 +10805,7 @@ flux@^4.0.1:
     fbemitter "^3.0.0"
     fbjs "^3.0.1"
 
-follow-redirects@^1.0.0, follow-redirects@^1.14.7, follow-redirects@^1.14.8, follow-redirects@^1.14.9, follow-redirects@^1.15.6:
+follow-redirects@^1.0.0, follow-redirects@^1.14.7, follow-redirects@^1.14.9, follow-redirects@^1.15.0, follow-redirects@^1.15.6:
   version "1.15.6"
   resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.15.6.tgz#7f815c0cda4249c74ff09e95ef97c23b5fd0399b"
   integrity sha512-wWN62YITEaOpSK584EZXJafH1AGpO8RVgElfkuXbTOrPX4fIfOyEpW/CsiNd8JdYrAoOvafRTOEnvsO++qCqFA==
