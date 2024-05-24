@@ -1,3 +1,4 @@
+/** @type {AppTypes.Config} */
 window.config = {
   // Activate the new HP mode....
   isNewHP: true,
