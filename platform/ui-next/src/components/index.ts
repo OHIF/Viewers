@@ -1,4 +1,4 @@
-import { Button } from './Button';
+import { Button, buttonVariants } from './Button';
 import { ThemeWrapper } from './ThemeWrapper';
 
-export { Button, ThemeWrapper };
+export { Button, buttonVariants, ThemeWrapper };
