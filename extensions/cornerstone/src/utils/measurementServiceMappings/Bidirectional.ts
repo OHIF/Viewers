@@ -63,6 +63,7 @@ const Bidirectional = {
       metadata,
       referenceSeriesUID: SeriesInstanceUID,
       referenceStudyUID: StudyInstanceUID,
+      referencedImageId,
       frameNumber: mappedAnnotations[0]?.frameNumber || 1,
       toolName: metadata.toolName,
       displaySetInstanceUID: displaySet.displaySetInstanceUID,
@@ -71,7 +72,6 @@ const Bidirectional = {
       data: data.cachedStats,
       type: getValueTypeFromToolType(toolName),
       getReport,
-      nonAcquisition: referencedImageId == null,
     };
   },
 };

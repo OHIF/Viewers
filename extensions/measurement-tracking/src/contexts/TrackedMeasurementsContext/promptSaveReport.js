@@ -25,7 +25,7 @@ async function promptSaveReport({ servicesManager, commandsManager, extensionMan
         .filter(
           m => trackedStudy === m.referenceStudyUID && trackedSeries.includes(m.referenceSeriesUID)
         )
-        .filter(m => m.nonAcquisition === false);
+        .filter(m => m.referencedImageId != null);
 
       const SeriesDescription =
         // isUndefinedOrEmpty

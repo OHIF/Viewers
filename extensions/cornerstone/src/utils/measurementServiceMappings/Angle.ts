@@ -76,7 +76,7 @@ const Angle = {
       data: data.cachedStats,
       type: getValueTypeFromToolType(toolName),
       getReport,
-      nonAcquisition: referencedImageId == null,
+      referencedImageId,
     };
   },
 };

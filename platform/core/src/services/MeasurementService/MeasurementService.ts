@@ -60,7 +60,7 @@ const MEASUREMENT_SCHEMA_KEYS = [
   'cachedStats',
   'selected',
   'textBox',
-  'nonAcquisition',
+  'referencedImageId',
 ];
 
 const EVENTS = {

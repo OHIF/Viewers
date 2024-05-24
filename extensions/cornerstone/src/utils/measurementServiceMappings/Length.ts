@@ -67,6 +67,7 @@ const Length = {
       metadata,
       referenceSeriesUID: SeriesInstanceUID,
       referenceStudyUID: StudyInstanceUID,
+      referencedImageId,
       frameNumber: mappedAnnotations[0]?.frameNumber || 1,
       toolName: metadata.toolName,
       displaySetInstanceUID: displaySet.displaySetInstanceUID,
@@ -75,7 +76,6 @@ const Length = {
       data: data.cachedStats,
       type: getValueTypeFromToolType(toolName),
       getReport,
-      nonAcquisition: referencedImageId == null,
     };
   },
 };

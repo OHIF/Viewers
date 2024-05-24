@@ -64,6 +64,7 @@ const Length = {
       metadata,
       referenceSeriesUID: SeriesInstanceUID,
       referenceStudyUID: StudyInstanceUID,
+      referencedImageId,
       frameNumber: mappedAnnotations[0]?.frameNumber || 1,
       toolName: metadata.toolName,
       displaySetInstanceUID: displaySet.displaySetInstanceUID,
@@ -74,7 +75,6 @@ const Length = {
       getReport: () => {
         throw new Error('Not implemented');
       },
-      nonAcquisition: referencedImageId == null,
     };
   },
 };

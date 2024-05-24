@@ -161,13 +161,13 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }: wi
   };
 
   const displayMeasurementsWithoutFindings = displayMeasurements.filter(
-    dm => dm.measurementType !== measurementService.VALUE_TYPES.POINT && !dm.nonAcquisition
+    dm => dm.measurementType !== measurementService.VALUE_TYPES.POINT && dm.referencedImageId
   );
   const additionalFindings = displayMeasurements.filter(
-    dm => dm.measurementType === measurementService.VALUE_TYPES.POINT && !dm.nonAcquisition
+    dm => dm.measurementType === measurementService.VALUE_TYPES.POINT && dm.referencedImageId
   );
 
-  const nonAcquisitionMeasurements = displayMeasurements.filter(dm => dm.nonAcquisition);
+  const nonAcquisitionMeasurements = displayMeasurements.filter(dm => dm.referencedImageId == null);
 
   const disabled =
     additionalFindings.length === 0 && displayMeasurementsWithoutFindings.length === 0;
@@ -277,7 +277,7 @@ function _mapMeasurementToDisplay(measurement, types, displaySetService) {
     selected,
     findingSites,
     finding,
-    nonAcquisition,
+    referencedImageId,
   } = measurement;
 
   const firstSite = findingSites?.[0];
@@ -306,7 +306,7 @@ function _mapMeasurementToDisplay(measurement, types, displaySetService) {
     isActive: selected,
     finding,
     findingSites,
-    nonAcquisition,
+    referencedImageId,
   };
 }
 

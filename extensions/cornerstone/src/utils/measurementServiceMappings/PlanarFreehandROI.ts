@@ -62,6 +62,7 @@ const PlanarFreehandROI = {
       frameNumber,
       referenceSeriesUID: SeriesInstanceUID,
       referenceStudyUID: StudyInstanceUID,
+      referencedImageId,
       toolName: metadata.toolName,
       displaySetInstanceUID: displaySet.displaySetInstanceUID,
       label: data.label,
@@ -69,7 +70,6 @@ const PlanarFreehandROI = {
       data: data.cachedStats,
       type: getValueTypeFromToolType(toolName),
       getReport: () => getColumnValueReport(annotation, customizationService),
-      nonAcquisition: referencedImageId == null,
     };
   },
 };
