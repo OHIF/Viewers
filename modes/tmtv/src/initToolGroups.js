@@ -6,7 +6,14 @@ export const toolGroupIds = {
   default: 'default',
 };
 
-function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager, modeLabelConfig) {
+function _initToolGroups(
+  toolNames,
+  Enums,
+  toolGroupService,
+  commandsManager,
+  modeLabelConfig,
+  servicesManager
+) {
   const tools = {
     active: [
       {
@@ -125,7 +132,12 @@ function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager, mo
       {
         toolName: toolNames.Crosshairs,
         configuration: {
-          viewportIndicators: false,
+          viewportIndicators: true,
+          viewportIndicatorsConfig: {
+            circleRadius: 5,
+            xOffset: 0.95,
+            yOffset: 0.05,
+          },
           disableOnPassive: true,
           autoPan: {
             enabled: false,
@@ -178,8 +190,22 @@ function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager, mo
   toolGroupService.createToolGroupAndAddTools(toolGroupIds.MIP, mipTools);
 }
 
-function initToolGroups(toolNames, Enums, toolGroupService, commandsManager, modeLabelConfig) {
-  _initToolGroups(toolNames, Enums, toolGroupService, commandsManager, modeLabelConfig);
+function initToolGroups(
+  toolNames,
+  Enums,
+  toolGroupService,
+  commandsManager,
+  modeLabelConfig,
+  servicesManager
+) {
+  _initToolGroups(
+    toolNames,
+    Enums,
+    toolGroupService,
+    commandsManager,
+    modeLabelConfig,
+    servicesManager
+  );
 }
 
 export default initToolGroups;
