@@ -19,6 +19,8 @@ import ServicesManagerType from '../services/ServicesManager';
 import CommandsManagerType from '../classes/CommandsManager';
 import ExtensionManagerType from '../extensions/ExtensionManager';
 
+import Hotkey from '../classes/Hotkey';
+
 declare global {
   namespace AppTypes {
     export type ServicesManager = ServicesManagerType;
@@ -62,6 +64,60 @@ declare global {
       uiDialogService?: UIDialogServiceType;
       uiViewportDialogService?: UIViewportDialogServiceType;
       panelService?: PanelServiceType;
+    }
+    export interface Config {
+      routerBasename?: string;
+      customizationService?: any;
+      extensions?: string[];
+      modes?: string[];
+      defaultDataSourceName?: string;
+      hotkeys?: Record<string, Hotkey> | Hotkey[];
+      useSharedArrayBuffer?: 'AUTO' | 'FALSE' | 'TRUE';
+      preferSizeOverAccuracy?: boolean;
+      useNorm16Texture?: boolean;
+      useCPURendering?: boolean;
+      strictZSpacingForVolumeViewport?: boolean;
+      useCursors?: boolean;
+      maxCacheSize?: number;
+      max3DTextureSize?: number;
+      showWarningMessageForCrossOrigin?: boolean;
+      showCPUFallbackMessage?: boolean;
+      maxNumRequests?: {
+        interaction?: number;
+        prefetch?: number;
+        thumbnail?: number;
+      };
+      disableEditing?: boolean;
+      maxNumberOfWebWorkers?: number;
+      acceptHeader?: string[];
+      investigationalUseDialog?: {
+        option: 'always' | 'never' | 'configure';
+        days?: number;
+      };
+      groupEnabledModesFirst?: boolean;
+      disableConfirmationPrompts?: boolean;
+      showPatientInfo?: 'visible' | 'visibleCollapsed' | 'disabled' | 'visibleReadOnly';
+      requestTransferSyntaxUID?: string;
+      omitQuotationForMultipartRequest?: boolean;
+      modesConfiguration?: {
+        [key: string]: object;
+      };
+      showLoadingIndicator?: boolean;
+      supportsWildcard?: boolean;
+      allowMultiSelectExport?: boolean;
+      activateViewportBeforeInteraction?: boolean;
+      autoPlayCine?: boolean;
+      showStudyList?: boolean;
+      whiteLabeling?: any;
+      httpErrorHandler?: any;
+      addWindowLevelActionMenu?: boolean;
+      dangerouslyUseDynamicConfig?: {
+        enabled: boolean;
+        regex: RegExp;
+      };
+      onConfiguration?: (dicomWebConfig: any, options: any) => any;
+      dataSources?: any;
+      oidc?: any;
     }
   }
 
