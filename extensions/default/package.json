@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-default",
-  "version": "3.9.0-beta.18",
+  "version": "3.9.0-beta.19",
   "description": "Common/default features and functionality for basic image viewing",
   "author": "OHIF Core Team",
   "license": "MIT",
