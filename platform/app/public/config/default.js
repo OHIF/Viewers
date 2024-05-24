@@ -1,4 +1,5 @@
-/** @type {import('@ohif/core').OHIFConfig} */
+/** @type {AppTypes.Config} */
+
 const config = {
   routerBasename: '/',
   // whiteLabeling: {},
