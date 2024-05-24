@@ -170,7 +170,9 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }: wi
   const nonAcquisitionMeasurements = displayMeasurements.filter(dm => dm.referencedImageId == null);
 
   const disabled =
-    additionalFindings.length === 0 && displayMeasurementsWithoutFindings.length === 0;
+    additionalFindings.length === 0 &&
+    displayMeasurementsWithoutFindings.length === 0 &&
+    nonAcquisitionMeasurements.length === 0;
 
   return (
     <>
