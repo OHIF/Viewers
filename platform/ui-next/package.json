@@ -1,7 +1,7 @@
 {
   "name": "@ohif/ui-next",
   "version": "3.9.0-beta.14",
-  "description": "Next version of OHIF Viewers UI, more customizable using shadcn/UI",
+  "description": "Next version of OHIF Viewers UI, more customizable using shadcn/ui",
   "main": "index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -18,6 +18,8 @@
     "@radix-ui/react-slot": "^1.0.2",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
+    "cmdk": "^1.0.0",
+    "framer-motion": "6.2.4",
     "next-themes": "^0.3.0",
     "react": "^17.0.2",
     "sonner": "^1.4.41",

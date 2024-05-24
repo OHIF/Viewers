@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 import { utils } from '@ohif/core';
 import { StudyBrowser, useImageViewer, useViewportGrid, Dialog, ButtonEnums } from '@ohif/ui';
+import {Button, buttonVariants} from '@ohif/ui-next';
 import { useTrackedMeasurements } from '../../getContextModule';
 
 const { formatDate } = utils;
@@ -389,6 +390,10 @@ function PanelStudyBrowserTracking({
       },
     });
   };
+
+  return (
+    <Button  > Button </Button>
+  )
 
   return (
     <StudyBrowser

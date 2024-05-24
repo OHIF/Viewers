@@ -1,4 +1,4 @@
-import { Button, buttonVariants,  ThemeWrapper } from './components';
+import { Button, buttonVariants, ThemeWrapper } from './components';
 import { useNotification, NotificationProvider } from './contextProviders';
 
 export {
