@@ -206,7 +206,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }: wi
         )}
         {nonAcquisitionMeasurements.length !== 0 && (
           <MeasurementTable
-            title="Non-tracked Measurements"
+            title="Non-tracked"
             data={nonAcquisitionMeasurements}
             servicesManager={servicesManager}
             onClick={jumpToImage}
