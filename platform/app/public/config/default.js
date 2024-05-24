@@ -1,4 +1,5 @@
-window.config = {
+/** @type {import('@ohif/core').OHIFConfig} */
+const config = {
   routerBasename: '/',
   // whiteLabeling: {},
   extensions: [],
@@ -232,3 +233,5 @@ window.config = {
     },
   ],
 };
+
+window.config = config;
