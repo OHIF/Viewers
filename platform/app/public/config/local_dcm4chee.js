@@ -1,3 +1,4 @@
+/** @type {AppTypes.Config} */
 window.config = {
   routerBasename: '/',
   customizationService: {
