@@ -20,6 +20,12 @@
       "@ohif/app": ["platform/app/src"]
     }
   },
-  "include": ["platform/**/src/**/*", "extensions/**/src/**/*", "modes/**/src/**/*", "custom.d.ts"],
+  "include": [
+    "platform/**/src/**/*",
+    "platform/**/public/**/*",
+    "extensions/**/src/**/*",
+    "modes/**/src/**/*",
+    "custom.d.ts"
+  ],
   "exclude": ["node_modules", "dist"]
 }
