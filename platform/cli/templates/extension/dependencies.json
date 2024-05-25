@@ -47,7 +47,7 @@
     "@babel/plugin-proposal-private-property-in-object": "7.21.11",
     "babel-eslint": "9.x",
     "babel-loader": "^8.2.4",
-    "babel-plugin-inline-react-svg": "^2.0.2",
+    "@svgr/webpack": "^8.1.0",
     "babel-plugin-module-resolver": "^5.0.0",
     "clean-webpack-plugin": "^4.0.0",
     "copy-webpack-plugin": "^10.2.0",
