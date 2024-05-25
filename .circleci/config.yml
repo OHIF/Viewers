@@ -408,13 +408,9 @@ jobs:
           package-manager: << parameters.package-manager >>
           post-install: << parameters.post-install >>
           working-directory: << parameters.working-directory >>
-      - run:
-          name: Start Test Server
-          command: << parameters.start-command >>
-          background: true
       - cypress/run-tests:
           cypress-command: << parameters.cypress-command >>
-          start-command: ''
+          start-command: << parameters.start-command >>
           working-directory: << parameters.working-directory >>
 
 workflows:
