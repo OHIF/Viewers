@@ -408,9 +408,13 @@ jobs:
           package-manager: << parameters.package-manager >>
           post-install: << parameters.post-install >>
           working-directory: << parameters.working-directory >>
+      - run:
+          name: Start Test Server
+          command: << parameters.start-command >>
+          background: true
       - cypress/run-tests:
           cypress-command: << parameters.cypress-command >>
-          start-command: << parameters.start-command >>
+          start-command: ''
           working-directory: << parameters.working-directory >>
 
 workflows:
@@ -495,18 +499,13 @@ workflows:
       - BUILD:
           filters:
             branches:
-              only: /^release\/.*/
-      - HOLD_FOR_APPROVAL:
-          type: approval
-          requires:
-            - BUILD
+              only: release
       - NPM_PUBLISH:
           requires:
-            - HOLD_FOR_APPROVAL
+            - BUILD
       - DOCKER_RELEASE_PUBLISH:
           requires:
             - NPM_PUBLISH
-
   ###
   # Unit and E2E tests have already run for PR_CHECKS
   # Re-running should not gain us any confidence here
