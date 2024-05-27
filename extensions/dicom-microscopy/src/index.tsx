@@ -8,6 +8,8 @@ import { useViewportGrid } from '@ohif/ui';
 import getDicomMicroscopySopClassHandler from './DicomMicroscopySopClassHandler';
 import getDicomMicroscopySRSopClassHandler from './DicomMicroscopySRSopClassHandler';
 import MicroscopyService from './services/MicroscopyService';
+import { useResizeDetector } from 'react-resize-detector';
+import debounce from 'lodash.debounce';
 
 const Component = React.lazy(() => {
   return import('./DicomMicroscopyViewport');
@@ -59,13 +61,24 @@ const extension: Types.Extensions.Extension = {
       const [viewportGrid, viewportGridService] = useViewportGrid();
       const { activeViewportId } = viewportGrid;
 
-      // a unique identifier based on the contents of displaySets.
-      // since we changed our rendering pipeline and if there is no
-      // element size change nor viewportId change we won't re-render
-      // we need a way to force re-rendering when displaySets change.
       const displaySetsKey = useMemo(() => {
         return props.displaySets.map(ds => ds.displaySetInstanceUID).join('-');
       }, [props.displaySets]);
+
+      const onResize = debounce(() => {
+        const { microscopyService } = servicesManager.services;
+        const managedViewer = microscopyService.getAllManagedViewers();
+
+        if (managedViewer && managedViewer.length > 0) {
+          managedViewer[0].viewer.resize();
+        }
+      }, 100);
+
+      const { ref: resizeRef } = useResizeDetector({
+        onResize,
+        handleHeight: true,
+        handleWidth: true,
+      });
 
       return (
         <MicroscopyViewport
@@ -78,6 +91,7 @@ const extension: Types.Extensions.Extension = {
             viewportGridService.setActiveViewportId(viewportId);
           }}
           viewportData={viewportOptions}
+          resizeRef={resizeRef}
           {...props}
         />
       );

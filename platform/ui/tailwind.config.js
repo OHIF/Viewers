@@ -34,7 +34,6 @@ module.exports = {
         dark: '#090c29',
         active: '#348cfd',
       },
-
       inputfield: {
         main: '#3a3f99',
         disabled: '#2b166b',
@@ -47,6 +46,10 @@ module.exports = {
         main: '#2b166b',
         dark: '#041c4a',
         active: '#1f1f27',
+      },
+
+      indigo: {
+        dark: '#0b1a42',
       },
 
       common: {

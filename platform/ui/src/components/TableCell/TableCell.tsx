@@ -4,14 +4,14 @@ import classnames from 'classnames';
 
 const TableCell = ({
   children,
-  className,
-  colSpan,
+  className = '',
+  colSpan = 1,
   // ignored because we don't want to expose this prop
   // eslint-disable-next-line react/prop-types
   cellsNum,
-  isTableHead,
-  align,
-  style,
+  isTableHead = false,
+  align = 'left',
+  style = {},
 }) => {
   const classes = {
     align: {
@@ -40,14 +40,6 @@ const TableCell = ({
       {children}
     </div>
   );
-};
-
-TableCell.defaultProps = {
-  align: 'left',
-  className: '',
-  colSpan: 1,
-  isTableHead: false,
-  style: {},
 };
 
 TableCell.propTypes = {

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="28px" height="28px" viewBox="0 0 28 28" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>tool-livewire</title>
+    <g id="tool-livewire" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <rect id="Rectangle" x="0" y="0" width="28" height="28"></rect>
+        <line x1="12.5" y1="6.5" x2="8.5" y2="9.5" id="Line" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"></line>
+        <line x1="6.5" y1="12.5" x2="5.5" y2="19.5" id="Line" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"></line>
+        <g id="Group" transform="translate(16.998, 17.5912) rotate(45) translate(-16.998, -17.5912)translate(12.496, 13.5)" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5">
+            <line x1="0.00327299164" y1="2.45474373" x2="3.27626463" y2="2.45474373" id="Path"></line>
+            <line x1="5.73100836" y1="2.45474373" x2="9.004" y2="2.45474373" id="Path"></line>
+            <path d="M5.72773537,4.09123955 C5.72773537,4.76909831 5.17822227,5.31861141 4.5003635,5.31861141 C3.82250474,5.31861141 3.27299164,4.76909831 3.27299164,4.09123955 L3.27299164,0.81824791 C3.25976214,0.371936739 2.9010549,0.0132295012 2.45474373,-5.11613498e-14 L0.81824791,-5.11613498e-14 C0.371936739,0.0132295012 0.0132295012,0.371936739 0,0.81824791 L0,4.09123955 C0,6.80209487 2.01452635,8.1824791 4.5003635,8.1824791 C6.98620065,8.1824791 9.00072701,6.80209487 9.00072701,4.09123955 L9.00072701,0.81824791 C8.98749751,0.371936739 8.62879027,0.0132295012 8.1824791,-5.11613498e-14 L6.54598328,-5.11613498e-14 C6.09967211,0.0132295012 5.74096487,0.371936739 5.72773537,0.81824791 L5.72773537,4.09123955 Z" id="Path"></path>
+        </g>
+        <circle id="Oval" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" cx="14.5" cy="5.5" r="1.5"></circle>
+        <circle id="Oval" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" cx="5.5" cy="21.5" r="1.5"></circle>
+        <circle id="Oval" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" cx="7" cy="10.5" r="1.5"></circle>
+    </g>
+</svg>

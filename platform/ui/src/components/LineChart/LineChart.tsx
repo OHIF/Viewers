@@ -10,11 +10,11 @@ const LineChart = ({
   height: heightProp,
   axis,
   series,
-  showAxisLabels,
-  showAxisGrid,
-  showLegend,
-  legendWidth,
-  transparentChartBackground,
+  showAxisLabels = true,
+  showAxisGrid = true,
+  showLegend = false,
+  legendWidth = 120,
+  transparentChartBackground = false,
   containerClassName,
   chartContainerClassName,
 }: {
@@ -103,14 +103,6 @@ const LineChart = ({
       ></div>
     </div>
   );
-};
-
-LineChart.defaultProps = {
-  showAxisLabels: true,
-  showAxisGrid: true,
-  showLegend: false,
-  legendWidth: 120,
-  transparentChartBackground: false,
 };
 
 LineChart.propTypes = {

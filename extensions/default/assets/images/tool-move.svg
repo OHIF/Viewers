@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="28px" height="28px" viewBox="0 0 28 28" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>tool-move</title>
+    <g id="tool-move" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <rect id="Rectangle" x="0" y="0" width="28" height="28"></rect>
+        <line x1="13.8823529" y1="22.5294118" x2="13.8823529" y2="4" id="Line" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></line>
+        <line x1="22.5294118" y1="13.8823529" x2="5.23529412" y2="13.8823529" id="Line" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></line>
+        <polyline id="Path-28" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" points="11.4117647 6.46832349 13.8800882 4 16.3642969 6.48420875"></polyline>
+        <polyline id="Path-28" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" transform="translate(13.888, 22.5362) rotate(-180) translate(-13.888, -22.5362)" points="11.4117647 23.7624411 13.8800882 21.2941176 16.3642969 23.7783264"></polyline>
+        <polyline id="Path-28" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" transform="translate(5.2421, 13.888) rotate(-90) translate(-5.2421, -13.888)" points="2.76583826 15.1142499 5.23416174 12.6459264 7.71837049 15.1301352"></polyline>
+        <polyline id="Path-28" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" transform="translate(22.5362, 13.888) rotate(-270) translate(-22.5362, -13.888)" points="20.0599559 15.1142499 22.5282794 12.6459264 25.0124881 15.1301352"></polyline>
+    </g>
+</svg>

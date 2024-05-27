@@ -19,16 +19,18 @@ const getTrackedSeries = displaySets => {
   return trackedSeries;
 };
 
+const noop = () => {};
+
 const StudyBrowser = ({
   tabs,
   activeTabName,
   expandedStudyInstanceUIDs,
-  onClickTab,
-  onClickStudy,
+  onClickTab = noop,
+  onClickStudy = noop,
+  onClickThumbnail = noop,
+  onDoubleClickThumbnail = noop,
+  onClickUntrack = noop,
   onClickLaunch,
-  onClickThumbnail,
-  onDoubleClickThumbnail,
-  onClickUntrack,
   activeDisplaySetInstanceUIDs,
   servicesManager,
 }: withAppTypes) => {
@@ -168,16 +170,6 @@ StudyBrowser.propTypes = {
       ).isRequired,
     })
   ),
-};
-
-const noop = () => {};
-
-StudyBrowser.defaultProps = {
-  onClickTab: noop,
-  onClickStudy: noop,
-  onClickThumbnail: noop,
-  onDoubleClickThumbnail: noop,
-  onClickUntrack: noop,
 };
 
 export default StudyBrowser;
