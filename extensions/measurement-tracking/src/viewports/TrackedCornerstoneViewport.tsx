@@ -242,11 +242,6 @@ TrackedCornerstoneViewport.propTypes = {
   viewportId: PropTypes.string.isRequired,
   dataSource: PropTypes.object,
   children: PropTypes.node,
-  customProps: PropTypes.object,
-};
-
-TrackedCornerstoneViewport.defaultProps = {
-  customProps: {},
 };
 
 function _getNextMeasurementUID(

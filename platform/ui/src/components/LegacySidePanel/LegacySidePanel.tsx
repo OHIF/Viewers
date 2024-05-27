@@ -283,10 +283,6 @@ const LegacySidePanel = ({
   );
 };
 
-LegacySidePanel.defaultProps = {
-  defaultComponentOpen: null,
-};
-
 LegacySidePanel.propTypes = {
   servicesManager: PropTypes.object.isRequired,
   side: PropTypes.oneOf(['left', 'right']).isRequired,
