@@ -1,5 +1,5 @@
 module.exports = {
-  plugins: ['inline-react-svg', '@babel/plugin-proposal-class-properties'],
+  plugins: [ '@babel/plugin-proposal-class-properties'],
   env: {
     test: {
       presets: [

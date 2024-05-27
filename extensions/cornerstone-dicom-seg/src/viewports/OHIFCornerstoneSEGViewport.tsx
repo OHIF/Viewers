@@ -367,11 +367,6 @@ OHIFCornerstoneSEGViewport.propTypes = {
   viewportId: PropTypes.string.isRequired,
   dataSource: PropTypes.object,
   children: PropTypes.node,
-  customProps: PropTypes.object,
-};
-
-OHIFCornerstoneSEGViewport.defaultProps = {
-  customProps: {},
 };
 
 function _getReferencedDisplaySetMetadata(referencedDisplaySet, segDisplaySet) {

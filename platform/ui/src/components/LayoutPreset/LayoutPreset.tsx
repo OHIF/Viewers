@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import Icon from '../Icon/Icon';
 
 function LayoutPreset({
-  onSelection,
+  onSelection = () => {},
   title,
   icon,
   commandOptions,
@@ -26,10 +26,6 @@ function LayoutPreset({
     </div>
   );
 }
-
-LayoutPreset.defaultProps = {
-  onSelection: () => {},
-};
 
 LayoutPreset.propTypes = {
   onSelection: PropTypes.func.isRequired,

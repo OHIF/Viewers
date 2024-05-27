@@ -49,8 +49,6 @@ const PanelSection = ({ title, children, actionIcons = [], childrenClassName }) 
   );
 };
 
-PanelSection.defaultProps = {};
-
 PanelSection.propTypes = {
   title: PropTypes.string,
   children: PropTypes.node,

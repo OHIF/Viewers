@@ -74,14 +74,14 @@ const fullWidthClasses = {
 
 const IconButton = ({
   children,
-  variant,
-  color,
-  size,
-  rounded,
-  disabled,
-  type,
-  fullWidth,
-  onClick,
+  variant = 'contained',
+  color = 'default',
+  size = 'medium',
+  rounded = 'medium',
+  disabled = false,
+  type = 'button',
+  fullWidth = false,
+  onClick = () => {},
   className,
   id,
   ...rest
@@ -120,17 +120,6 @@ const IconButton = ({
       })}
     </button>
   );
-};
-
-IconButton.defaultProps = {
-  onClick: () => {},
-  color: 'default',
-  disabled: false,
-  fullWidth: false,
-  rounded: 'medium',
-  size: 'medium',
-  type: 'button',
-  variant: 'contained',
 };
 
 IconButton.propTypes = {

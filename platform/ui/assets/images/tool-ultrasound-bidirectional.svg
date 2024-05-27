@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="28px" height="28px" viewBox="0 0 28 28" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>tool-ultrasound-bidirectional</title>
+    <g id="tool-ultrasound-bidirectional" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <line x1="4" y1="17.5" x2="4" y2="23.5" id="Line" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"></line>
+        <line x1="7.5" y1="20.5" x2="7.5" y2="26.5" id="Line" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" transform="translate(7.5, 23.5) rotate(-90) translate(-7.5, -23.5)"></line>
+        <circle id="Oval" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" cx="4" cy="15.5" r="1.5"></circle>
+        <circle id="Oval" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" cx="12.5" cy="23.5" r="1.5"></circle>
+        <rect id="Rectangle" stroke="currentColor" stroke-width="1.5" x="8" y="4" width="17" height="10" rx="2"></rect>
+        <g id="US" transform="translate(11.6055, 6.5586)" fill="currentColor" fill-rule="nonzero">
+            <path d="M2.15625,4.61328125 C1.49609375,4.61328125 1.05859375,4.21875 1.05859375,3.4921875 L1.05859375,0.109375 L0,0.109375 L0,3.6015625 C0,4.76953125 0.84375,5.54296875 2.15625,5.54296875 C3.46484375,5.54296875 4.30859375,4.76953125 4.30859375,3.6015625 L4.30859375,0.109375 L3.25,0.109375 L3.25,3.4921875 C3.25,4.21484375 2.8125,4.61328125 2.15625,4.61328125 Z" id="Path"></path>
+            <path d="M5.25390625,3.97265625 C5.30078125,4.81640625 5.95703125,5.54296875 7.3125,5.54296875 C8.6640625,5.54296875 9.42578125,4.859375 9.42578125,3.859375 C9.42578125,2.953125 8.85546875,2.5390625 7.9921875,2.34765625 L7.1640625,2.1640625 C6.6953125,2.06640625 6.43359375,1.86328125 6.43359375,1.546875 C6.43359375,1.1484375 6.78125,0.85546875 7.36328125,0.85546875 C7.9296875,0.85546875 8.27734375,1.1484375 8.34375,1.51953125 L9.34375,1.51953125 C9.29296875,0.6953125 8.58984375,0 7.37109375,0 C6.1953125,0 5.37890625,0.63671875 5.37890625,1.625 C5.37890625,2.44921875 5.90234375,2.91796875 6.73046875,3.10546875 L7.5546875,3.29296875 C8.109375,3.41796875 8.375,3.6015625 8.375,3.96484375 C8.375,4.38671875 8.02734375,4.6796875 7.37109375,4.6796875 C6.7421875,4.6796875 6.34375,4.375 6.2734375,3.97265625 L5.25390625,3.97265625 Z" id="Path"></path>
+        </g>
+    </g>
+</svg>

@@ -8,14 +8,14 @@ import Icon from '../Icon';
 import './LegacyCinePlayerCustomInputRange.css';
 
 const LegacyCinePlayer = ({
-  isPlaying,
-  minFrameRate,
-  maxFrameRate,
-  stepFrameRate,
-  frameRate: defaultFrameRate,
-  onFrameRateChange,
-  onPlayPauseChange,
-  onClose,
+  isPlaying = false,
+  minFrameRate = 1,
+  maxFrameRate = 90,
+  stepFrameRate = 1,
+  frameRate: defaultFrameRate = 24,
+  onFrameRateChange = () => {},
+  onPlayPauseChange = () => {},
+  onClose = () => {},
 }) => {
   const [frameRate, setFrameRate] = useState(defaultFrameRate);
   const debouncedSetFrameRate = debounce(onFrameRateChange, 300);
@@ -73,17 +73,6 @@ const LegacyCinePlayer = ({
 };
 
 const noop = () => {};
-
-LegacyCinePlayer.defaultProps = {
-  isPlaying: false,
-  minFrameRate: 1,
-  maxFrameRate: 90,
-  stepFrameRate: 1,
-  frameRate: 24,
-  onPlayPauseChange: noop,
-  onFrameRateChange: noop,
-  onClose: noop,
-};
 
 LegacyCinePlayer.propTypes = {
   /** Minimum value for range slider */
