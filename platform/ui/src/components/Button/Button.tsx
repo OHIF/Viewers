@@ -58,7 +58,7 @@ const defaults = {
 };
 
 const Button = ({
-  children,
+  children = '',
   size = defaults.size,
   disabled = defaults.disabled,
   type = defaults.type,
@@ -66,7 +66,7 @@ const Button = ({
   endIcon: endIconProp,
   name,
   className,
-  onClick,
+  onClick = () => {},
   dataCY,
   startIconTooltip = null,
   endIconTooltip = null,
@@ -119,14 +119,6 @@ const Button = ({
       {endIconTooltip ? <Tooltip content={endIconTooltip}>{endIcon}</Tooltip> : endIcon}
     </button>
   );
-};
-
-Button.defaultProps = {
-  disabled: false,
-  children: '',
-  onClick: () => {},
-  type: defaults.type,
-  size: defaults.size,
 };
 
 Button.propTypes = {

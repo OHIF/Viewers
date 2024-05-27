@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
-import ReactResizeDetector from 'react-resize-detector';
 import PropTypes from 'prop-types';
-import debounce from 'lodash.debounce';
 import { LoadingIndicatorProgress } from '@ohif/ui';
 
 import './DicomMicroscopyViewport.css';
@@ -23,18 +21,12 @@ class DicomMicroscopyViewport extends Component {
 
   container = React.createRef();
   overlayElement = React.createRef();
-  debouncedResize: () => any;
 
   constructor(props: any) {
     super(props);
 
     const { microscopyService } = this.props.servicesManager.services;
     this.microscopyService = microscopyService;
-    this.debouncedResize = debounce(() => {
-      if (this.viewer) {
-        this.viewer.resize();
-      }
-    }, 100);
   }
 
   static propTypes = {
@@ -54,6 +46,7 @@ class DicomMicroscopyViewport extends Component {
     servicesManager: PropTypes.object,
     extensionManager: PropTypes.object,
     commandsManager: PropTypes.object,
+    resizeRef: PropTypes.oneOfType([PropTypes.func, PropTypes.shape({ current: PropTypes.any })]),
   };
 
   /**
@@ -298,13 +291,16 @@ class DicomMicroscopyViewport extends Component {
             </div>
           </div>
         </div>
-        {ReactResizeDetector && (
-          <ReactResizeDetector handleWidth handleHeight onResize={this.onWindowResize} />
-        )}
         {this.state.error ? (
           <h2>{JSON.stringify(this.state.error)}</h2>
         ) : (
-          <div style={style} ref={this.container} />
+          <div
+            style={style}
+            ref={(ref: any) => {
+              this.container.current = ref;
+              this.props.resizeRef.current = ref;
+            }}
+          />
         )}
         {this.state.isLoaded ? null : (
           <LoadingIndicatorProgress className={'h-full w-full bg-black'} />
@@ -312,10 +308,6 @@ class DicomMicroscopyViewport extends Component {
       </div>
     );
   }
-
-  onWindowResize = () => {
-    this.debouncedResize();
-  };
 }
 
 export default DicomMicroscopyViewport;

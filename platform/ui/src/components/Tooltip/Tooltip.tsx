@@ -36,15 +36,15 @@ const arrowPositionStyle = {
 const Tooltip = ({
   content,
   secondaryContent = null,
-  isSticky,
-  position,
+  isSticky = false,
+  position = 'bottom',
   className,
-  tight,
+  tight = false,
   children,
-  isDisabled,
+  isDisabled = false,
   tooltipBoxClassName,
   // time to show/hide the tooltip on mouse over and  mouse out events (default: 300ms)
-  showHideDelay,
+  showHideDelay = 300,
   onHide,
 }) => {
   const [isActive, setIsActive] = useState(false);
@@ -187,14 +187,6 @@ const Tooltip = ({
       {tooltipContainer && ReactDOM.createPortal(tooltipContent, tooltipContainer)}
     </div>
   );
-};
-
-Tooltip.defaultProps = {
-  tight: false,
-  isSticky: false,
-  position: 'bottom',
-  isDisabled: false,
-  showHideDelay: 300,
 };
 
 Tooltip.propTypes = {
