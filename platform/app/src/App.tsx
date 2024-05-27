@@ -111,7 +111,7 @@ function App({
     [ViewportGridProvider, { service: viewportGridService }],
     [ViewportDialogProvider, { service: uiViewportDialogService }],
     [CineProvider, { service: cineService }],
-    [NotificationProvider, { service: uiNotificationService }],
+    // [NotificationProvider, { service: uiNotificationService }],
     [SnackbarProvider, { service: uiNotificationService }],
     [DialogProvider, { service: uiDialogService }],
     [ModalProvider, { service: uiModalService, modal: Modal }],
