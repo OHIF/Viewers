@@ -1,8 +1,7 @@
 import * as React from 'react';
-import { format, parse } from 'date-fns';
+import { format, parse, isValid } from 'date-fns';
 import { Calendar as CalendarIcon } from 'lucide-react';
 import { cn } from '../../lib/utils';
-import { Button } from '../Button';
 import Calendar from '../Calendar';
 import Popover from '../Popover';
 
@@ -24,52 +23,78 @@ export function DatePickerWithRange({
   onChange,
   ...props
 }: React.HTMLAttributes<HTMLDivElement> & DatePickerWithRangeProps) {
-  const [start, setStart] = React.useState<Date | undefined>(
-    startDate ? parse(startDate, 'yyyyMMdd', new Date()) : undefined
+  const [start, setStart] = React.useState<string>(
+    startDate ? format(parse(startDate, 'yyyyMMdd', new Date()), 'yyyy-MM-dd') : ''
   );
-  const [end, setEnd] = React.useState<Date | undefined>(
-    endDate ? parse(endDate, 'yyyyMMdd', new Date()) : undefined
+  const [end, setEnd] = React.useState<string>(
+    endDate ? format(parse(endDate, 'yyyyMMdd', new Date()), 'yyyy-MM-dd') : ''
   );
   const [openEnd, setOpenEnd] = React.useState(false);
 
   const handleStartSelect = (selectedDate: Date | undefined) => {
-    setStart(selectedDate);
-    setOpenEnd(true);
-    onChange({
-      startDate: selectedDate ? format(selectedDate, 'yyyyMMdd') : '',
-      endDate: end ? format(end, 'yyyyMMdd') : '',
-    });
+    if (selectedDate) {
+      const formattedDate = format(selectedDate, 'yyyy-MM-dd');
+      setStart(formattedDate);
+      setOpenEnd(true);
+      onChange({
+        startDate: format(selectedDate, 'yyyyMMdd'),
+        endDate: end.replace(/-/g, ''),
+      });
+    }
   };
 
   const handleEndSelect = (selectedDate: Date | undefined) => {
-    setEnd(selectedDate);
-    setOpenEnd(false);
-    onChange({
-      startDate: start ? format(start, 'yyyyMMdd') : '',
-      endDate: selectedDate ? format(selectedDate, 'yyyyMMdd') : '',
-    });
+    if (selectedDate) {
+      const formattedDate = format(selectedDate, 'yyyy-MM-dd');
+      setEnd(formattedDate);
+      setOpenEnd(false);
+      onChange({
+        startDate: start.replace(/-/g, ''),
+        endDate: format(selectedDate, 'yyyyMMdd'),
+      });
+    }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>, type: 'start' | 'end') => {
+    const value = e.target.value;
+    const date = parse(value, 'yyyy-MM-dd', new Date());
+    if (type === 'start') {
+      setStart(value);
+      if (isValid(date)) {
+        handleStartSelect(date);
+      }
+    } else {
+      setEnd(value);
+      if (isValid(date)) {
+        handleEndSelect(date);
+      }
+    }
   };
 
   React.useEffect(() => {
-    setStart(startDate ? parse(startDate, 'yyyyMMdd', new Date()) : undefined);
-    setEnd(endDate ? parse(endDate, 'yyyyMMdd', new Date()) : undefined);
+    setStart(startDate ? format(parse(startDate, 'yyyyMMdd', new Date()), 'yyyy-MM-dd') : '');
+    setEnd(endDate ? format(parse(endDate, 'yyyyMMdd', new Date()), 'yyyy-MM-dd') : '');
   }, [startDate, endDate]);
 
   return (
     <div className={cn('flex gap-2', className)}>
       <Popover.Popover>
         <Popover.PopoverTrigger asChild>
-          <Button
-            id={`${id}-start`}
-            variant={'outline'}
-            className={cn(
-              'border-inputfield-main focus:border-inputfield-focus [&[data-state=open]]:border-inputfield-focus h-full w-full justify-start rounded bg-black py-[6.5px] pl-[6.5px] pr-[6.5px] text-left font-normal hover:bg-black hover:text-white',
-              !start && 'text-muted-foreground'
-            )}
-          >
-            <CalendarIcon className="mr-2 h-4 w-4" />
-            {start ? format(start, 'LLL dd, y') : <span>Start date</span>}
-          </Button>
+          <div className="relative w-full">
+            <CalendarIcon className="absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 transform text-white" />
+            <input
+              id={`${id}-start`}
+              type="text"
+              placeholder="Start date"
+              autoComplete="off"
+              value={start}
+              onChange={e => handleInputChange(e, 'start')}
+              className={cn(
+                'border-inputfield-main focus:border-inputfield-focus h-full w-full justify-start rounded border bg-black py-[6.5px] pl-[6.5px] pr-[6.5px] text-left text-sm font-normal hover:bg-black hover:text-white',
+                !start && 'text-muted-foreground'
+              )}
+            />
+          </div>
         </Popover.PopoverTrigger>
         <Popover.PopoverContent
           className="w-auto p-0"
@@ -78,8 +103,8 @@ export function DatePickerWithRange({
           <Calendar
             initialFocus
             mode="single"
-            defaultMonth={start}
-            selected={start}
+            defaultMonth={start ? parse(start, 'yyyy-MM-dd', new Date()) : new Date()}
+            selected={start ? parse(start, 'yyyy-MM-dd', new Date()) : undefined}
             onSelect={handleStartSelect}
             numberOfMonths={1}
           />
@@ -91,17 +116,21 @@ export function DatePickerWithRange({
         onOpenChange={setOpenEnd}
       >
         <Popover.PopoverTrigger asChild>
-          <Button
-            id={`${id}-end`}
-            variant={'outline'}
-            className={cn(
-              'border-inputfield-main focus:border-inputfield-focus [&[data-state=open]]:border-inputfield-focus h-full w-full justify-start rounded bg-black py-[6.5px] pl-[6.5px] pr-[6.5px] text-left font-normal hover:bg-black hover:text-white',
-              !end && 'text-muted-foreground'
-            )}
-          >
-            <CalendarIcon className="mr-2 h-4 w-4" />
-            {end ? format(end, 'LLL dd, y') : <span>End date</span>}
-          </Button>
+          <div className="relative w-full">
+            <CalendarIcon className="absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 transform text-white" />
+            <input
+              id={`${id}-end`}
+              type="text"
+              placeholder="End date"
+              autoComplete="off"
+              value={end}
+              onChange={e => handleInputChange(e, 'end')}
+              className={cn(
+                'border-inputfield-main focus:border-inputfield-focus h-full w-full justify-start rounded border bg-black py-[6.5px] pl-[6.5px] pr-[6.5px] text-left text-sm font-normal hover:bg-black hover:text-white',
+                !end && 'text-muted-foreground'
+              )}
+            />
+          </div>
         </Popover.PopoverTrigger>
         <Popover.PopoverContent
           className="w-auto p-0"
@@ -110,8 +139,8 @@ export function DatePickerWithRange({
           <Calendar
             initialFocus
             mode="single"
-            defaultMonth={start ?? new Date()} // Start from the selected start date or current date
-            selected={end}
+            defaultMonth={start ? parse(start, 'yyyy-MM-dd', new Date()) : new Date()}
+            selected={end ? parse(end, 'yyyy-MM-dd', new Date()) : undefined}
             onSelect={handleEndSelect}
             numberOfMonths={1}
           />
