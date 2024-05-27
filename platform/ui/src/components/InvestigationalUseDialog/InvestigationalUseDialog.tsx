@@ -9,7 +9,11 @@ export enum showDialogOption {
   ShowOnceAndConfigure = 'configure',
 }
 
-const InvestigationalUseDialog = ({ dialogConfiguration }) => {
+const InvestigationalUseDialog = ({
+  dialogConfiguration = {
+    option: showDialogOption.AlwaysShowDialog,
+  },
+}) => {
   const { option, days } = dialogConfiguration;
   const [isHidden, setIsHidden] = useState(true);
 
@@ -97,13 +101,7 @@ InvestigationalUseDialog.propTypes = {
   dialogConfiguration: PropTypes.shape({
     option: PropTypes.oneOf(Object.values(showDialogOption)).isRequired,
     days: PropTypes.number,
-  }).isRequired,
-};
-
-InvestigationalUseDialog.defaultProps = {
-  dialogConfiguration: {
-    option: showDialogOption.AlwaysShowDialog,
-  },
+  }),
 };
 
 export default InvestigationalUseDialog;

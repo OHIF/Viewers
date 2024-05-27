@@ -1,5 +1,5 @@
 import React, { useEffect, useCallback, useRef, useState } from 'react';
-import ReactResizeDetector from 'react-resize-detector';
+import { useResizeDetector } from 'react-resize-detector';
 import PropTypes from 'prop-types';
 import { Types, MeasurementService } from '@ohif/core';
 import { ViewportGrid, ViewportPane, useViewportGrid } from '@ohif/ui';
@@ -8,16 +8,22 @@ import classNames from 'classnames';
 import { useAppConfig } from '@state';
 
 function ViewerViewportGrid(props: withAppTypes) {
-  const { servicesManager, viewportComponents, dataSource } = props;
+  const { servicesManager, viewportComponents = [], dataSource } = props;
   const [viewportGrid, viewportGridService] = useViewportGrid();
   const [appConfig] = useAppConfig();
 
   const { layout, activeViewportId, viewports, isHangingProtocolLayout } = viewportGrid;
   const { numCols, numRows } = layout;
-  const elementRef = useRef(null);
+  const { ref: resizeRef } = useResizeDetector({
+    refreshMode: 'debounce',
+    refreshRate: 7,
+    refreshOptions: { leading: true },
+    onResize: () => {
+      viewportGridService.setViewportGridSizeChanged();
+    },
+  });
   const layoutHash = useRef(null);
 
-  // TODO -> Need some way of selecting which displaySets hit the viewports.
   const { displaySetService, measurementService, hangingProtocolService, uiNotificationService } =
     servicesManager.services;
 
@@ -198,50 +204,6 @@ function ViewerViewportGrid(props: withAppTypes) {
     };
   }, [viewports]);
 
-  /**
-  const onDoubleClick = viewportId => {
-    // TODO -> Disabled for now.
-    // onNewImage on a cornerstone viewport is firing setDisplaySetsForViewport.
-    // Which it really really shouldn't. We need a larger fix for jump to
-    // measurements and all cornerstone "imageIndex" state to fix this.
-    if (cachedLayout) {
-      viewportGridService.set({
-        numCols: cachedLayout.numCols,
-        numRows: cachedLayout.numRows,
-        activeViewportId: cachedLayout.activeViewportId,
-        viewports: cachedLayout.viewports,
-        cachedLayout: null,
-      });
-
-      return;
-    }
-
-    const cachedViewports = viewports.map(viewport => {
-      return {
-        displaySetInstanceUID: viewport.displaySetInstanceUID,
-      };
-    });
-
-    viewportGridService.set({
-      numCols: 1,
-      numRows: 1,
-      activeViewportId: 0,
-      viewports: [
-        {
-          displaySetInstanceUID: viewports[viewportId].displaySetInstanceUID,
-          imageIndex: undefined,
-        },
-      ],
-      cachedLayout: {
-        numCols,
-        numRows,
-        viewports: cachedViewports,
-        activeViewportId: viewportId,
-      },
-    });
-  };
-  */
-
   const onDropHandler = (viewportId, { displaySetInstanceUID }) => {
     const updatedViewports = _getUpdatedViewports(viewportId, displaySetInstanceUID);
     viewportGridService.setDisplaySetsForViewports(updatedViewports);
@@ -363,21 +325,13 @@ function ViewerViewportGrid(props: withAppTypes) {
 
   return (
     <div
-      ref={elementRef}
+      ref={resizeRef}
       className="h-full w-full"
     >
       <ViewportGrid
         numRows={numRows}
         numCols={numCols}
       >
-        <ReactResizeDetector
-          refreshMode="debounce"
-          refreshRate={7} // ms seems to be fine for 10 viewports
-          onResize={() => {
-            viewportGridService.setViewportGridSizeChanged();
-          }}
-          targetRef={elementRef.current}
-        />
         {getViewportPanes()}
       </ViewportGrid>
     </div>
@@ -387,10 +341,6 @@ function ViewerViewportGrid(props: withAppTypes) {
 ViewerViewportGrid.propTypes = {
   viewportComponents: PropTypes.array.isRequired,
   servicesManager: PropTypes.instanceOf(Object).isRequired,
-};
-
-ViewerViewportGrid.defaultProps = {
-  viewportComponents: [],
 };
 
 function _getViewportComponent(displaySets, viewportComponents, uiNotificationService) {

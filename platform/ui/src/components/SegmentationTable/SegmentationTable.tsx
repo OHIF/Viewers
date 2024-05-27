@@ -5,14 +5,14 @@ import SegmentationItem from './SegmentationItem';
 import Icon from '../Icon';
 
 const SegmentationTable = ({
-  title,
-  segmentations,
-  activeSegmentationId,
-  onClick,
-  onEdit,
-  onDelete,
-  onToggleVisibility,
-  onToggleVisibilityAll,
+  title = '',
+  segmentations = [],
+  activeSegmentationId = '',
+  onClick = () => {},
+  onEdit = () => {},
+  onDelete = () => {},
+  onToggleVisibility = () => {},
+  onToggleVisibilityAll = () => {},
 }) => {
   const [hiddenSegmentationIds, setHiddenSegmentationIds] = useState([]);
   const amount = segmentations.length;
@@ -110,16 +110,6 @@ SegmentationTable.propTypes = {
   onDelete: PropTypes.func.isRequired,
   onToggleVisibility: PropTypes.func.isRequired,
   onToggleVisibilityAll: PropTypes.func.isRequired,
-};
-
-SegmentationTable.defaultProps = {
-  title: '',
-  segmentations: [],
-  activeSegmentationId: '',
-  onClick: () => {},
-  onEdit: () => {},
-  onToggleVisibility: () => {},
-  onToggleVisibilityAll: () => {},
 };
 
 export default SegmentationTable;

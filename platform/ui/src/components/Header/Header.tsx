@@ -14,9 +14,9 @@ import { PatientInfoVisibility } from '../../types/PatientInfoVisibility';
 function Header({
   children,
   menuOptions,
-  isReturnEnabled,
+  isReturnEnabled = true,
   onClickReturnButton,
-  isSticky,
+  isSticky = false,
   WhiteLabeling,
   showPatientInfo = PatientInfoVisibility.VISIBLE_COLLAPSED,
   servicesManager,
@@ -111,11 +111,6 @@ Header.propTypes = {
   WhiteLabeling: PropTypes.object,
   showPatientInfo: PropTypes.string,
   servicesManager: PropTypes.object,
-};
-
-Header.defaultProps = {
-  isReturnEnabled: true,
-  isSticky: false,
 };
 
 export default Header;

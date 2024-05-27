@@ -8,8 +8,8 @@ import SegmentationGroupSegment from './SegmentationGroupSegment';
 import { Tooltip } from '../../components';
 
 function SegmentationItem({
-  segmentation,
-  disableEditing,
+  segmentation = {},
+  disableEditing = false,
   onSegmentationEdit,
   onSegmentationDownload,
   onSegmentationDownloadRTSS,
@@ -201,11 +201,6 @@ SegmentationItem.propTypes = {
   onToggleSegmentVisibility: PropTypes.func,
   onToggleSegmentLock: PropTypes.func,
   activeSegmentationId: PropTypes.string,
-};
-
-SegmentationItem.defaultProps = {
-  segmentation: null,
-  disableEditing: false,
 };
 
 export default SegmentationItem;
