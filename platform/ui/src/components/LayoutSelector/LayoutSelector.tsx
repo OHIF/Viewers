@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
-function LayoutSelector({ onSelection, rows, columns }) {
+function LayoutSelector({ onSelection = () => {}, rows = 3, columns = 4 }) {
   const [hoveredIndex, setHoveredIndex] = useState();
   const hoverX = hoveredIndex % columns;
   const hoverY = Math.floor(hoveredIndex / columns);
@@ -47,12 +47,6 @@ function LayoutSelector({ onSelection, rows, columns }) {
     </div>
   );
 }
-
-LayoutSelector.defaultProps = {
-  onSelection: () => {},
-  columns: 4,
-  rows: 3,
-};
 
 LayoutSelector.propTypes = {
   onSelection: PropTypes.func.isRequired,

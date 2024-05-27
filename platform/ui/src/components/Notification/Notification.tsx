@@ -5,7 +5,15 @@ import PropTypes from 'prop-types';
 import Button, { ButtonEnums } from '../Button';
 import Icon from '../Icon';
 
-const Notification = ({ id, type, message, actions, onSubmit, onOutsideClick, onKeyPress }) => {
+const Notification = ({
+  id,
+  type = 'info',
+  message,
+  actions,
+  onSubmit,
+  onOutsideClick = () => {},
+  onKeyPress,
+}) => {
   const notificationRef = useRef(null);
 
   useEffect(() => {
@@ -97,11 +105,6 @@ const Notification = ({ id, type, message, actions, onSubmit, onOutsideClick, on
       </div>
     </div>
   );
-};
-
-Notification.defaultProps = {
-  type: 'info',
-  onOutsideClick: () => {},
 };
 
 Notification.propTypes = {

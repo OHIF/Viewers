@@ -13,7 +13,7 @@ function ViewportPane({
   isActive,
   onDrop,
   onDoubleClick,
-  onInteraction,
+  onInteraction = () => {},
   acceptDropsFor,
 }) {
   let dropElement = null;
@@ -106,12 +106,6 @@ ViewportPane.propTypes = {
   onInteraction: PropTypes.func.isRequired,
   /** Executed when the pane is double clicked */
   onDoubleClick: PropTypes.func,
-};
-
-const noop = () => {};
-
-ViewportPane.defaultProps = {
-  onInteraction: noop,
 };
 
 export default ViewportPane;

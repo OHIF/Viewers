@@ -1,6 +1,6 @@
 import React from 'react';
 // Svgs
-import logoOhif from './../../assets/svgs/ohif-logo.svg';
+import { ReactComponent as logoOhif } from './../../assets/svgs/ohif-logo.svg';
 
 const SVGS = {
   'logo-ohif': logoOhif,

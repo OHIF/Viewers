@@ -1,6 +1,5 @@
 import MODULE_TYPES from './MODULE_TYPES';
 import log from '../log';
-import { AppConfig } from '../types/AppConfig';
 import { PubSubService, ServiceProvidersManager } from '../services';
 import { HotkeysManager, CommandsManager } from '../classes';
 import { DataSourceDefinition } from '../types';
@@ -13,7 +12,7 @@ export interface ExtensionConstructor {
   serviceProvidersManager: ServiceProvidersManager;
   commandsManager: CommandsManager;
   hotkeysManager: HotkeysManager;
-  appConfig: AppConfig;
+  appConfig: AppTypes.Config;
 }
 
 /**
