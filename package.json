@@ -40,7 +40,7 @@
     "preinstall": "node preinstall.js",
     "start": "yarn run dev",
     "test": "yarn run test:unit",
-    "test:data": "git submodule update --init -r",
+    "test:data": "git submodule update --init -f testdata",
     "test-watch": "jest --collectCoverage --watchAll",
     "test:unit": "jest --collectCoverage",
     "test:unit:ci": "lerna run test:unit:ci --parallel --stream",
