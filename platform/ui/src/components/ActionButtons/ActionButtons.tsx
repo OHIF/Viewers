@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import { Button, ButtonEnums } from '../../components';
 
-function ActionButtons({ actions, disabled, t }) {
+function ActionButtons({ actions, disabled = false, t }) {
   return (
     <React.Fragment>
       {actions.map((action, index) => (
@@ -31,10 +31,6 @@ ActionButtons.propTypes = {
     })
   ).isRequired,
   disabled: PropTypes.bool,
-};
-
-ActionButtons.defaultProps = {
-  disabled: false,
 };
 
 export default ActionButtons;

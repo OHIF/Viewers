@@ -136,16 +136,6 @@ function ViewportOrientationMarkers({
   return <div className="ViewportOrientationMarkers select-none">{markers}</div>;
 }
 
-ViewportOrientationMarkers.propTypes = {
-  percentComplete: PropTypes.number,
-  error: PropTypes.object,
-};
-
-ViewportOrientationMarkers.defaultProps = {
-  percentComplete: 0,
-  error: null,
-};
-
 /**
  *
  * Computes the orientation labels on a Cornerstone-enabled Viewport element

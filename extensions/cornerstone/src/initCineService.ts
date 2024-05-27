@@ -6,7 +6,7 @@ function _getVolumesFromViewport(viewport) {
 }
 
 function _getVolumeFromViewport(viewport) {
-  const volumes = _getVolumesFromViewport(viewport);
+  const volumes = _getVolumesFromViewport(viewport).filter(volume => volume);
   const dynamicVolume = volumes.find(volume => volume.isDynamicVolume());
 
   return dynamicVolume ?? volumes[0];

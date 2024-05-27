@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="28px" height="28px" viewBox="0 0 28 28" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>tool-window-level</title>
+    <g id="tool-window-level" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <rect id="Rectangle" x="0" y="0" width="28" height="28"></rect>
+        <circle id="Oval-2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" cx="14" cy="14" r="10"></circle>
+        <path d="M21.4837076,7.36702528 C23.0493155,9.13213184 24,11.4550438 24,14 C24,19.5228475 19.5228475,24 14,24 C11.4550438,24 9.13213184,23.0493155 7.36702528,21.4837076 Z" id="Combined-Shape" fill="currentColor"></path>
+    </g>
+</svg>

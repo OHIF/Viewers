@@ -91,9 +91,9 @@ const SplitButton = ({
   primary,
   secondary,
   items,
-  renderer,
+  renderer = null,
   onInteraction,
-  Component,
+  Component = Icon,
 }) => {
   const { t } = useTranslation('Buttons');
   const [state, setState] = useState({ isHovering: false, isExpanded: false });
@@ -172,7 +172,6 @@ const SplitButton = ({
 };
 
 SplitButton.propTypes = {
-  isToggle: PropTypes.bool,
   groupId: PropTypes.string.isRequired,
   primary: PropTypes.object.isRequired,
   secondary: PropTypes.object.isRequired,
@@ -182,13 +181,6 @@ SplitButton.propTypes = {
   onInteraction: PropTypes.func.isRequired,
   Component: PropTypes.elementType,
   interactionType: PropTypes.oneOf(['action', 'tool', 'toggle']),
-};
-
-SplitButton.defaultProps = {
-  isToggle: false,
-  renderer: null,
-  isActive: false,
-  Component: null,
 };
 
 export default SplitButton;
