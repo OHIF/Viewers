@@ -84,12 +84,26 @@ class CornerstoneCacheService {
     invalidatedDisplaySetInstanceUID: string,
     dataSource,
     displaySetService
-  ) {
+  ): Promise<VolumeViewportData | StackViewportData> {
     if (viewportData.viewportType === Enums.ViewportType.STACK) {
-      return this._getCornerstoneStackImageIds(
-        displaySetService.getDisplaySetByUID(invalidatedDisplaySetInstanceUID),
-        dataSource
-      );
+      const displaySet = displaySetService.getDisplaySetByUID(invalidatedDisplaySetInstanceUID);
+      const imageIds = this._getCornerstoneStackImageIds(displaySet, dataSource);
+
+      // remove images from the cache to be able to re-load them
+      imageIds.forEach(imageId => {
+        if (cs3DCache.getImageLoadObject(imageId)) {
+          cs3DCache.removeImageLoadObject(imageId);
+        }
+      });
+
+      return {
+        viewportType: Enums.ViewportType.STACK,
+        data: {
+          StudyInstanceUID: displaySet.StudyInstanceUID,
+          displaySetInstanceUID: invalidatedDisplaySetInstanceUID,
+          imageIds,
+        },
+      };
     }
 
     // Todo: grab the volume and get the id from the viewport itself

@@ -270,6 +270,7 @@ function WorkList({
 
     return {
       dataCY: `studyRow-${studyInstanceUid}`,
+      clickableCY: studyInstanceUid,
       row: [
         {
           key: 'patientName',
@@ -630,7 +631,7 @@ function _getQueryFilterValues(params) {
     sortBy: params.get('sortby'),
     sortDirection: params.get('sortdirection'),
     pageNumber: _tryParseInt(params.get('pagenumber'), undefined),
-    resultsPerPage: _tryParseInt(params.get('resultsperpage'), undefined),
+    resultsPerPage: _tryParseInt(params.get('resultsPerPage'), undefined),
     datasources: params.get('datasources'),
     configUrl: params.get('configurl'),
   };
