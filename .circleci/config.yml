@@ -397,7 +397,7 @@ jobs:
         default: ''
         description: Directory containing package.json
         type: string
-    resource_class: xlarge
+    resource_class: large
     steps:
       - cypress/install:
           cypress-cache-key: << parameters.cypress-cache-key >>
