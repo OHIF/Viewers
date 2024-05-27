@@ -93,6 +93,7 @@ export function DatePickerWithRange({
                 'border-inputfield-main focus:border-inputfield-focus h-full w-full justify-start rounded border bg-black py-[6.5px] pl-[6.5px] pr-[6.5px] text-left text-sm font-normal hover:bg-black hover:text-white',
                 !start && 'text-muted-foreground'
               )}
+              data-cy="input-date-range-start"
             />
           </div>
         </Popover.PopoverTrigger>
@@ -129,6 +130,7 @@ export function DatePickerWithRange({
                 'border-inputfield-main focus:border-inputfield-focus h-full w-full justify-start rounded border bg-black py-[6.5px] pl-[6.5px] pr-[6.5px] text-left text-sm font-normal hover:bg-black hover:text-white',
                 !end && 'text-muted-foreground'
               )}
+              data-cy="input-date-range-end"
             />
           </div>
         </Popover.PopoverTrigger>

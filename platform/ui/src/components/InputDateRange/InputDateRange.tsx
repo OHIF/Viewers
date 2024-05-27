@@ -26,11 +26,11 @@ const InputDateRange = ({
       isSortable={isSortable}
       sortDirection={sortDirection}
       onLabelClick={onClickHandler}
-      className='xl:min-w-[284px]'
+      className="xl:min-w-[284px]"
     >
       <div className="relative xl:max-w-[246px]">
         <DatePickerWithRange
-          className='mt-2'
+          className="mt-2"
           id={id}
           startDate={startDate}
           endDate={endDate}
