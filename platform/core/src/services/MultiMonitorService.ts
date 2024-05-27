@@ -33,7 +33,7 @@ export class MultiMonitorService {
     if (!this.screenNumber) {
       this.launchWindows[0] = window;
     }
-    for (const windowsConfig of configuration || []) {
+    for (const windowsConfig of Array.isArray(configuration) ? configuration : []) {
       if (windowsConfig.test(testParams)) {
         this.isMultimonitor = true;
         this.numberOfScreens = windowsConfig.screens.length;
