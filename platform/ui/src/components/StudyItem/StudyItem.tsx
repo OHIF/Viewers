@@ -30,7 +30,6 @@ const StudyItem = ({
     evt.stopPropagation();
     return false;
   };
-  console.log('Has onClickLaunch', !!onClickLaunch, onClickLaunch);
 
   return (
     <div

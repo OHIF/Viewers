@@ -32,7 +32,7 @@ function ViewerHeader({
     if (dataSourceIdx !== -1 && existingDataSource) {
       searchQuery.append('datasources', pathname.substring(dataSourceIdx + 1));
     }
-
+    servicesManager.services.multiMonitorService.appendQuery(searchQuery);
     if (configUrl) {
       searchQuery.append('configUrl', configUrl);
     }

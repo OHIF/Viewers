@@ -386,6 +386,7 @@ function WorkList({
               if (filterValues.configUrl) {
                 query.append('configUrl', filterValues.configUrl);
               }
+              servicesManager.services.multiMonitorService.appendQuery(query);
               query.append('StudyInstanceUIDs', studyInstanceUid);
               return (
                 mode.displayName && (
@@ -495,7 +496,7 @@ function WorkList({
     });
   }
 
-  const { customizationService } = servicesManager.services;
+  const { customizationService, multiMonitorService } = servicesManager.services;
   const { component: dicomUploadComponent } =
     customizationService.get('dicomUploadComponent') ?? {};
   const uploadProps =
@@ -605,6 +606,7 @@ const defaultFilterValues = {
   resultsPerPage: 25,
   datasources: '',
   configUrl: null,
+  multimonitor: null,
 };
 
 function _tryParseInt(str, defaultValue) {
@@ -634,6 +636,7 @@ function _getQueryFilterValues(params) {
     resultsPerPage: _tryParseInt(params.get('resultsPerPage'), undefined),
     datasources: params.get('datasources'),
     configUrl: params.get('configurl'),
+    multimonitor: params.get('multimonitor'),
   };
 
   // Delete null/undefined keys

@@ -17,16 +17,18 @@ window.config = {
   // Defines multi-monitor layouts
   multimonitor: [
     {
+      id: 'split',
       test: ({ multimonitor }) => multimonitor === 'split',
       screens: [
         {
           id: 'primary',
           // This is the primary screen, so don't launch is separately, but use primary
           launch: 'primary',
+          screen: null,
           location: {
             screen: 0,
-            width: 50,
-            height: 100,
+            width: 0.5,
+            height: 1,
             left: 0,
             top: 0,
           },
@@ -35,11 +37,11 @@ window.config = {
           id: 'secondary',
           // This is a window instance, so launch as a url
           launch: 'url',
+          screen: null,
           location: {
-            screen: 0,
-            width: 50,
-            height: 100,
-            left: 50,
+            width: 0.48,
+            height: 1,
+            left: 0.52,
             top: 0,
           },
         },
@@ -47,14 +49,15 @@ window.config = {
     },
 
     {
+      id: '2',
       test: ({ multimonitor }) => multimonitor === '2',
       screens: [
         {
           id: 'primary',
           // This is the primary screen, so don't launch is separately, but use primary
           launch: 'primary',
+          screen: 0,
           location: {
-            screen: 0,
             width: 100,
             height: 100,
             left: 0,
@@ -65,11 +68,11 @@ window.config = {
           id: 'secondary',
           // This is a window instance, so launch as a url
           launch: 'url',
+          screen: 1,
           location: {
-            screen: 1,
             width: 100,
             height: 100,
-            left: 50,
+            left: 0,
             top: 0,
           },
         },
