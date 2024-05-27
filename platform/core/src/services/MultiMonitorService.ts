@@ -32,41 +32,35 @@ export class MultiMonitorService {
         if (!this.screenInfo) {
           throw new Error(`Screen ${screenNumber} not configured in ${this.screenConfig}`);
         }
-        console.log(
-          '*** Multimonitor',
-          screenConfig,
-          this.numberOfScreens,
-          this.screenNumber,
-          this.screenInfo
-        );
         return;
       }
     }
-    console.log('*** Single monitor', screenNumber, this.screenNumber);
     this.numberOfScreens = 1;
     this.isMultimonitor = false;
   }
 
   public launchStudy(studyUid: string, screenDelta = 1) {
     const forScreen = (this.screenNumber + screenDelta) % this.numberOfScreens;
-    const forWindow = this.getOrCreateWindow(forScreen, studyUid);
-    console.log('Launched to', forWindow);
+    const url = this.createUrlForStudy(studyUid);
+    const forWindow = this.getOrCreateWindow(forScreen, url);
+    console.log('Launched to', forWindow, url);
+    forWindow.location = url;
   }
 
-  public getOrCreateWindow(screenNumber, studyUid: string) {
+  createUrlForStudy(studyUid) {
+    const { pathname, origin } = window.location;
+    return `${origin}${pathname}?StudyInstanceUIDs=${studyUid}`;
+  }
+
+  public getOrCreateWindow(screenNumber, url = window.location.href) {
     if (screenNumber === this.screenNumber) {
       return window;
     }
     if (!this.launchWindows[screenNumber]) {
-      const { pathname, search, origin } = window.location;
-      if (search.indexOf('multimonitor=secondary') !== -1) {
-        throw new Error('Launch from secondary not supported');
-      }
-
       const width = 1024;
       const height = 1024;
       this.launchWindows[screenNumber] = window.open(
-        `${origin}${pathname}?multimonitor=secondary&screenNumber=${screenNumber}&StudyInstanceUIDs=${studyUid}`,
+        `${url}&multimonitor=secondary&screenNumber=${screenNumber}`,
         `${this.screenConfig.screens[screenNumber].id}`,
         `screenX=${width + 1},top=0,width=${width},height=${height}`
       );
