@@ -34,12 +34,22 @@ export function DatePickerWithRange({
     to: endDate ? parse(endDate, "yyyyMMdd", new Date()) : undefined,
   })
 
+  const handleSelect = (selectedDate: DateRange | undefined) => {
+    setDate(selectedDate);
+    if (selectedDate) {
+      onChange({
+        startDate: selectedDate.from ? format(selectedDate.from, "yyyyMMdd") : "",
+        endDate: selectedDate.to ? format(selectedDate.to, "yyyyMMdd") : "",
+      });
+    }
+  }
+
   React.useEffect(() => {
-    onChange({
-      startDate: date?.from ? format(date.from, "yyyyMMdd") : "",
-      endDate: date?.to ? format(date.to, "yyyyMMdd") : "",
+    setDate({
+      from: startDate ? parse(startDate, "yyyyMMdd", new Date()) : undefined,
+      to: endDate ? parse(endDate, "yyyyMMdd", new Date()) : undefined,
     })
-  }, [date])
+  } , [startDate, endDate])
 
   return (
     <div className={cn("grid gap-2", className)}>
@@ -74,7 +84,7 @@ export function DatePickerWithRange({
             mode="range"
             defaultMonth={date?.from}
             selected={date}
-            onSelect={setDate}
+            onSelect={handleSelect}
             numberOfMonths={2}
           />
         </Popover.PopoverContent>
