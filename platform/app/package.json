@@ -1,4 +1,5 @@
 {
+  "name": "@ohif/app",
   "version": "3.9.0-beta.22",
   "productVersion": "3.4.0",
   "description": "OHIF Viewer",
