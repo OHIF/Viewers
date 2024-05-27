@@ -16,10 +16,15 @@ function Calendar({ className, classNames, showOutsideDays = true, ...props }: C
       captionLayout="dropdown"
       fromYear={1945}
       toYear={2024}
+      labels={{
+        labelMonthDropdown: () => undefined,
+        labelYearDropdown: () => undefined,
+      }}
       classNames={{
         months: 'flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0',
         month: 'space-y-4',
         caption: 'flex justify-between items-center px-2',
+
         caption_dropdowns: 'flex space-x-2',
         caption_label: 'hidden',
         nav: 'space-x-1 flex items-center',
