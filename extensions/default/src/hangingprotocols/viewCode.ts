@@ -1,11 +1,11 @@
-export default (displaySet) => {
+export default displaySet => {
   const ViewCodeSequence = displaySet?.images[0]?.ViewCodeSequence[0];
-  if( !ViewCodeSequence ) {
+  if (!ViewCodeSequence) {
     return undefined;
   }
-  const {CodingSchemeDesignator, CodeValue} = ViewCodeSequence;
-  if( !CodingSchemeDesignator || !CodeValue ) {
+  const { CodingSchemeDesignator, CodeValue } = ViewCodeSequence;
+  if (!CodingSchemeDesignator || !CodeValue) {
     return undefined;
   }
   return `${CodingSchemeDesignator}:${CodeValue}`;
-}
+};

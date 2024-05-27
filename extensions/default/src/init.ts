@@ -2,7 +2,7 @@ import { DicomMetadataStore, classes } from '@ohif/core';
 import { calculateSUVScalingFactors } from '@cornerstonejs/calculate-suv';
 
 import getPTImageIdInstanceMetadata from './getPTImageIdInstanceMetadata';
-import { registerCustomAttributes } from './hangingprotocols';
+import { registerHangingProtocolAttributes } from './hangingprotocols';
 
 const metadataProvider = classes.MetadataProvider;
 
@@ -62,7 +62,7 @@ export default function init({
   stateSyncService.register('viewportsByPosition', { clearOnModeExit: true });
 
   // Adds extra custom attributes for use by hanging protocols
-  registerCustomAttributes({ servicesManager });
+  registerHangingProtocolAttributes({ servicesManager });
 
   // Function to process and subscribe to events for a given set of commands and listeners
   const subscribeToEvents = listeners => {

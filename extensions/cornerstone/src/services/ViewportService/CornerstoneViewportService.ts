@@ -281,10 +281,10 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     }
 
     const cleanProperties = properties => {
-    if (properties.isComputedVOI) {
-      delete properties.voiRange;
-      delete properties.VOILUTFunction;
-    }
+      if (properties.isComputedVOI) {
+        delete properties.voiRange;
+        delete properties.VOILUTFunction;
+      }
       return properties;
     };
 
@@ -388,7 +388,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
           targetViewports: [...synchronizer.getTargetViewports()],
         }))
       );
-  }
+    }
 
     stateSyncService.store(newState);
   }
@@ -568,7 +568,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       initialImageIndexToUse = this._getInitialImageIndexForViewport(viewportInfo, imageIds) || 0;
     }
 
-    const { rotation, flipHorizontal, displayArea } = viewportInfo.getViewportOptions() as any;
+    const { rotation, flipHorizontal, displayArea } = viewportInfo.getViewportOptions();
 
     const properties = { ...presentations.lutPresentation?.properties };
     if (!presentations.lutPresentation?.properties) {
@@ -587,7 +587,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
 
       if (colormap !== undefined) {
         properties.colormap = colormap;
-    }
+      }
     }
 
     return viewport.setStack(imageIds, initialImageIndexToUse).then(() => {
@@ -717,19 +717,19 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     const volumesNotLoaded = volumeToLoad.filter(volume => !volume.loadStatus.loaded);
 
     if (volumesNotLoaded.length) {
-    if (hangingProtocolService.getShouldPerformCustomImageLoad()) {
-      // delegate the volume loading to the hanging protocol service if it has a custom image load strategy
-      return hangingProtocolService.runImageLoadStrategy({
-        viewportId: viewport.id,
-        volumeInputArray,
-      });
-    }
+      if (hangingProtocolService.getShouldPerformCustomImageLoad()) {
+        // delegate the volume loading to the hanging protocol service if it has a custom image load strategy
+        return hangingProtocolService.runImageLoadStrategy({
+          viewportId: viewport.id,
+          volumeInputArray,
+        });
+      }
 
       volumesNotLoaded.forEach(volume => {
         if (!volume.loadStatus.loading) {
-        volume.load();
-      }
-    });
+          volume.load();
+        }
+      });
     }
 
     // This returns the async continuation only
@@ -962,8 +962,8 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       );
     }
 
-      throw new Error('Unknown viewport type');
-    }
+    throw new Error('Unknown viewport type');
+  }
 
   /**
    * Removes the resize observer from the viewport element
@@ -1035,17 +1035,17 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     this.viewportResizeTimer = setTimeout(() => {
       this.processViewportResizeQueue();
     }, this.gridResizeDelay);
-    }
+  }
 
   private processViewportResizeQueue() {
     const isGridResizeInQueue = this.resizeQueue.some(isGridResize => isGridResize);
     if (this.resizeQueue.length > 0 && !isGridResizeInQueue && !this.gridResizeTimeOut) {
       this.performResize();
-  }
+    }
 
     // Clear the queue after processing viewport resizes
     this.resizeQueue = [];
-}
+  }
 
   private performResize() {
     const isImmediate = false;

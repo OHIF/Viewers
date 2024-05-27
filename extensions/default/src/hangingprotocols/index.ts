@@ -1,6 +1,6 @@
 import viewCodeAttribute from './viewCode';
 import lateralityAttribute from './laterality';
-import registerCustomAttributes from './registerCustomAttributes';
+import registerHangingProtocolAttributes from './registerHangingProtocolAttributes';
 import hpMammography from './hpMammo';
 import hpMNGrid from './hpMNGrid';
 import hpCompare from './hpCompare';
@@ -11,5 +11,5 @@ export {
   hpMammography as hpMammo,
   hpMNGrid,
   hpCompare,
-  registerCustomAttributes,
+  registerHangingProtocolAttributes,
 };
