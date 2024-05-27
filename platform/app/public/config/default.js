@@ -1,4 +1,6 @@
-window.config = {
+/** @type {AppTypes.Config} */
+
+const config = {
   routerBasename: '/',
   // whiteLabeling: {},
   extensions: [],
@@ -232,3 +234,5 @@ window.config = {
     },
   ],
 };
+
+window.config = config;

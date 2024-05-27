@@ -77,9 +77,12 @@ function initDefaultToolGroup(
       { toolName: toolNames.Magnify },
       { toolName: toolNames.SegmentationDisplay },
       { toolName: toolNames.CalibrationLine },
-      { toolName: toolNames.PlanarFreehandContourSegmentation, configuration: {
-        displayOnePointAsCrosshairs: true,
-      } },
+      {
+        toolName: toolNames.PlanarFreehandContourSegmentation,
+        configuration: {
+          displayOnePointAsCrosshairs: true,
+        },
+      },
       { toolName: toolNames.UltrasoundDirectional },
       { toolName: toolNames.PlanarFreehandROI },
       { toolName: toolNames.SplineROI },
@@ -150,9 +153,12 @@ function initSRToolGroup(extensionManager, toolGroupService) {
       { toolName: SRToolNames.SRCircleROI },
       { toolName: SRToolNames.SRPlanarFreehandROI },
       { toolName: SRToolNames.SRRectangleROI },
-      { toolName: SRToolNames.SRPlanarFreehandContourSegmentation, configuration: {
-        displayOnePointAsCrosshairs: true,
-      } },
+      {
+        toolName: SRToolNames.SRPlanarFreehandContourSegmentation,
+        configuration: {
+          displayOnePointAsCrosshairs: true,
+        },
+      },
     ],
     enabled: [
       {
@@ -230,15 +236,23 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager, m
       { toolName: toolNames.CobbAngle },
       { toolName: toolNames.PlanarFreehandROI },
       { toolName: toolNames.SegmentationDisplay },
-      { toolName: toolNames.PlanarFreehandContourSegmentation, configuration: {
-        displayOnePointAsCrosshairs: true,
-      } },
+      {
+        toolName: toolNames.PlanarFreehandContourSegmentation,
+        configuration: {
+          displayOnePointAsCrosshairs: true,
+        },
+      },
     ],
     disabled: [
       {
         toolName: toolNames.Crosshairs,
         configuration: {
-          viewportIndicators: false,
+          viewportIndicators: true,
+          viewportIndicatorsConfig: {
+            circleRadius: 5,
+            xOffset: 0.95,
+            yOffset: 0.05,
+          },
           disableOnPassive: true,
           autoPan: {
             enabled: false,
