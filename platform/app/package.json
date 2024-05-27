@@ -72,6 +72,7 @@
     "@ohif/mode-test": "3.9.0-beta.21",
     "@ohif/ui": "3.9.0-beta.21",
     "@ohif/ui-next": "3.9.0-beta.14",
+    "@svgr/webpack": "^8.1.0",
     "@types/react": "^18.3.3",
     "classnames": "^2.3.2",
     "core-js": "^3.16.1",

@@ -6,6 +6,8 @@ import {
   Command,
   Popover,
   Combobox,
+  Calendar,
+  DatePickerWithRange,
 } from './components';
 import { useNotification, NotificationProvider } from './contextProviders';
 
@@ -18,6 +20,8 @@ export {
   Combobox,
   buttonVariants,
   ThemeWrapper,
+  Calendar,
+  DatePickerWithRange,
   // contextProviders
   NotificationProvider,
   useNotification,
