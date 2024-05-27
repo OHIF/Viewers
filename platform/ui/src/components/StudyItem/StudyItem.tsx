@@ -16,8 +16,22 @@ const StudyItem = ({
   trackedSeries,
   isActive,
   onClick,
+  onClickLaunch,
 }) => {
   const { t } = useTranslation('StudyItem');
+
+  const onSetActive = evt => {
+    evt.stopPropagation();
+    onClickLaunch(0);
+    return false;
+  };
+  const onLaunchWindow = evt => {
+    onClickLaunch(1);
+    evt.stopPropagation();
+    return false;
+  };
+  console.log('Has onClickLaunch', !!onClickLaunch, onClickLaunch);
+
   return (
     <div
       className={classnames(
@@ -39,6 +53,20 @@ const StudyItem = ({
             />
             {numInstances}
           </div>
+          {!!onClickLaunch && (
+            <div className="items-right flex flex-row text-base text-blue-300">
+              <Icon
+                name="icon-play"
+                className="mx-2 w-4 text-blue-300"
+                onClick={onSetActive}
+              />
+              <Icon
+                name="launch-arrow"
+                className="mx-2 w-4 text-blue-300"
+                onClick={onLaunchWindow}
+              />
+            </div>
+          )}
         </div>
         <div className="flex flex-row items-center py-1">
           <div className="text-l flex items-center pr-5 text-blue-300">{modalities}</div>

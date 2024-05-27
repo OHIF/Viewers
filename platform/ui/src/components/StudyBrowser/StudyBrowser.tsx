@@ -25,6 +25,7 @@ const StudyBrowser = ({
   expandedStudyInstanceUIDs,
   onClickTab,
   onClickStudy,
+  onClickLaunch,
   onClickThumbnail,
   onDoubleClickThumbnail,
   onClickUntrack,
@@ -51,6 +52,7 @@ const StudyBrowser = ({
               onClick={() => {
                 onClickStudy(studyInstanceUid);
               }}
+              onClickLaunch={onClickLaunch?.bind(null, studyInstanceUid)}
               data-cy="thumbnail-list"
             />
             {isExpanded && displaySets && (

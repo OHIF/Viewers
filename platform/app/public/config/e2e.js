@@ -14,6 +14,68 @@ window.config = {
   investigationalUseDialog: {
     option: 'never',
   },
+  // Defines multi-monitor layouts
+  multimonitor: [
+    {
+      test: ({ multimonitor }) => multimonitor === 'split',
+      screens: [
+        {
+          id: 'primary',
+          // This is the primary screen, so don't launch is separately, but use primary
+          launch: 'primary',
+          location: {
+            screen: 0,
+            width: 50,
+            height: 100,
+            left: 0,
+            top: 0,
+          },
+        },
+        {
+          id: 'secondary',
+          // This is a window instance, so launch as a url
+          launch: 'url',
+          location: {
+            screen: 0,
+            width: 50,
+            height: 100,
+            left: 50,
+            top: 0,
+          },
+        },
+      ],
+    },
+
+    {
+      test: ({ multimonitor }) => multimonitor === '2',
+      screens: [
+        {
+          id: 'primary',
+          // This is the primary screen, so don't launch is separately, but use primary
+          launch: 'primary',
+          location: {
+            screen: 0,
+            width: 100,
+            height: 100,
+            left: 0,
+            top: 0,
+          },
+        },
+        {
+          id: 'secondary',
+          // This is a window instance, so launch as a url
+          launch: 'url',
+          location: {
+            screen: 1,
+            width: 100,
+            height: 100,
+            left: 50,
+            top: 0,
+          },
+        },
+      ],
+    },
+  ],
   dataSources: [
     {
       namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
