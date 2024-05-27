@@ -25,7 +25,6 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }: wi
   const debouncedMeasurementChangeTimestamp = useDebounce(measurementChangeTimestamp, 200);
   const {
     measurementService,
-    viewportGridService,
     uiDialogService,
     displaySetService,
     customizationService,
@@ -55,34 +54,31 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }: wi
 
   // ~~ DisplayStudySummary
   useEffect(() => {
-    const updateDisplayStudySummary = async () => {
-      if (trackedMeasurements.matches('tracking')) {
-        const StudyInstanceUID = trackedStudy;
-        const studyMeta = DicomMetadataStore.getStudy(StudyInstanceUID);
-        const instanceMeta = studyMeta.series[0].instances[0];
-        const { StudyDate, StudyDescription } = instanceMeta;
+    if (trackedMeasurements.matches('tracking')) {
+      const StudyInstanceUID = trackedStudy;
+      const studyMeta = DicomMetadataStore.getStudy(StudyInstanceUID);
+      const instanceMeta = studyMeta.series[0].instances[0];
+      const { StudyDate, StudyDescription } = instanceMeta;
 
-        const modalities = new Set();
-        studyMeta.series.forEach(series => {
-          if (trackedSeries.includes(series.SeriesInstanceUID)) {
-            modalities.add(series.instances[0].Modality);
-          }
-        });
-        const modality = Array.from(modalities).join('/');
-
-        if (displayStudySummary.key !== StudyInstanceUID) {
-          setDisplayStudySummary({
-            key: StudyInstanceUID,
-            date: StudyDate, // TODO: Format: '07-Sep-2010'
-            modality,
-            description: StudyDescription,
-          });
+      const modalities = new Set();
+      studyMeta.series.forEach(series => {
+        if (trackedSeries.includes(series.SeriesInstanceUID)) {
+          modalities.add(series.instances[0].Modality);
         }
-      } else if (trackedStudy === '' || trackedStudy === undefined) {
-        setDisplayStudySummary(DISPLAY_STUDY_SUMMARY_INITIAL_VALUE);
+      });
+      const modality = Array.from(modalities).join('/');
+
+      if (displayStudySummary.key !== StudyInstanceUID) {
+        setDisplayStudySummary({
+          key: StudyInstanceUID,
+          date: StudyDate, // TODO: Format: '07-Sep-2010'
+          modality,
+          description: StudyDescription,
+        });
       }
-    };
-    updateDisplayStudySummary();
+    } else if (trackedStudy === '' || trackedStudy === undefined) {
+      setDisplayStudySummary(DISPLAY_STUDY_SUMMARY_INITIAL_VALUE);
+    }
   }, [displayStudySummary.key, trackedMeasurements, trackedStudy, trackedSeries]);
 
   // TODO: Better way to consolidated, debounce, check on change?
@@ -124,7 +120,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }: wi
       m => trackedStudy === m.referenceStudyUID && trackedSeries.includes(m.referenceSeriesUID)
     );
 
-    downloadCSVReport(trackedMeasurements, measurementService);
+    downloadCSVReport(trackedMeasurements);
   }
 
   const jumpToImage = ({ uid, isActive }) => {
