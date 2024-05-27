@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import Button, { ButtonEnums } from '../Button';
 import Icon from '../Icon';
 
-const Notification = ({ id, type, message, actions, onSubmit, onOutsideClick }) => {
+const Notification = ({ id, type, message, actions, onSubmit, onOutsideClick, onKeyPress }) => {
   const notificationRef = useRef(null);
 
   useEffect(() => {
@@ -28,6 +28,10 @@ const Notification = ({ id, type, message, actions, onSubmit, onOutsideClick }) 
       document.removeEventListener('mouseup', handleClick);
     };
   }, [onOutsideClick]);
+
+  useEffect(() => {
+    notificationRef.current.focus();
+  }, []);
 
   const iconsByType = {
     error: {
@@ -62,8 +66,10 @@ const Notification = ({ id, type, message, actions, onSubmit, onOutsideClick }) 
   return (
     <div
       ref={notificationRef}
-      className="border-customblue-10 bg-customblue-400 mx-2 mt-2 flex flex-col rounded-md border-2 p-2"
+      className="border-customblue-10 bg-customblue-400 mx-2 mt-2 flex flex-col rounded-md border-2 p-2 outline-none"
       data-cy={id}
+      onKeyDown={onKeyPress}
+      tabIndex={0}
     >
       <div className="flex grow items-center">
         <Icon
@@ -112,6 +118,7 @@ Notification.propTypes = {
   onSubmit: PropTypes.func.isRequired,
   /** Can be used as a callback to dismiss the notification for clicks that occur outside of it */
   onOutsideClick: PropTypes.func,
+  onKeyPress: PropTypes.func,
 };
 
 export default Notification;

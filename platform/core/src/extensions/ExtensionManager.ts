@@ -1,7 +1,6 @@
 import MODULE_TYPES from './MODULE_TYPES';
 import log from '../log';
-import { AppConfig } from '../types/AppConfig';
-import { PubSubService, ServicesManager } from '../services';
+import { PubSubService, ServiceProvidersManager } from '../services';
 import { HotkeysManager, CommandsManager } from '../classes';
 import { DataSourceDefinition } from '../types';
 
@@ -9,10 +8,11 @@ import { DataSourceDefinition } from '../types';
  * This is the arguments given to create the extension.
  */
 export interface ExtensionConstructor {
-  servicesManager: ServicesManager;
+  servicesManager: AppTypes.ServicesManager;
+  serviceProvidersManager: ServiceProvidersManager;
   commandsManager: CommandsManager;
   hotkeysManager: HotkeysManager;
-  appConfig: AppConfig;
+  appConfig: AppTypes.Config;
 }
 
 /**
@@ -27,7 +27,8 @@ export type ExtensionConfiguration = Record<string, unknown>;
  */
 export interface ExtensionParams extends ExtensionConstructor {
   extensionManager: ExtensionManager;
-  servicesManager: ServicesManager;
+  servicesManager: AppTypes.ServicesManager;
+  serviceProvidersManager: ServiceProvidersManager;
   configuration?: ExtensionConfiguration;
 }
 
@@ -46,6 +47,8 @@ export interface Extension {
   getCustomizationModule?: (p: ExtensionParams) => unknown;
   getDataSourcesModule?: (p: ExtensionParams) => unknown;
   getSopClassHandlerModule?: (p: ExtensionParams) => unknown;
+  getToolbarModule?: (p: ExtensionParams) => unknown;
+  getPanelModule?: (p: ExtensionParams) => unknown;
   onModeEnter?: () => void;
   onModeExit?: () => void;
 }
@@ -66,13 +69,30 @@ export default class ExtensionManager extends PubSubService {
     ACTIVE_DATA_SOURCE_CHANGED: 'event::activedatasourcechanged',
   };
 
+  public static readonly MODULE_TYPES = MODULE_TYPES;
+
   private _commandsManager: CommandsManager;
-  private _servicesManager: ServicesManager;
+  private _servicesManager: AppTypes.ServicesManager;
   private _hotkeysManager: HotkeysManager;
+  private _serviceProvidersManager: ServiceProvidersManager;
+  private modulesMap: Record<string, unknown>;
+  private modules: Record<string, any[]>;
+  private registeredExtensionIds: string[];
+  private moduleTypeNames: string[];
+  private _appConfig: any;
+  private _extensionLifeCycleHooks: {
+    onModeEnter: Record<string, any>;
+    onModeExit: Record<string, any>;
+  };
+  private dataSourceMap: Record<string, any>;
+  private dataSourceDefs: Record<string, any>;
+  private defaultDataSourceName: string;
+  private activeDataSource: string;
 
   constructor({
     commandsManager,
     servicesManager,
+    serviceProvidersManager,
     hotkeysManager,
     appConfig = {},
   }: ExtensionConstructor) {
@@ -83,6 +103,7 @@ export default class ExtensionManager extends PubSubService {
     //
     this._commandsManager = commandsManager;
     this._servicesManager = servicesManager;
+    this._serviceProvidersManager = serviceProvidersManager;
     this._hotkeysManager = hotkeysManager;
     this._appConfig = appConfig;
 
@@ -241,6 +262,7 @@ export default class ExtensionManager extends PubSubService {
     if (extension.preRegistration) {
       await extension.preRegistration({
         servicesManager: this._servicesManager,
+        serviceProvidersManager: this._serviceProvidersManager,
         commandsManager: this._commandsManager,
         hotkeysManager: this._hotkeysManager,
         extensionManager: this,
@@ -266,55 +288,72 @@ export default class ExtensionManager extends PubSubService {
         configuration
       );
 
-      if (extensionModule) {
-        switch (moduleType) {
-          case MODULE_TYPES.COMMANDS:
-            this._initCommandsModule(extensionModule);
-            break;
-          case MODULE_TYPES.DATA_SOURCE:
-            this._initDataSourcesModule(extensionModule, extensionId, dataSources);
-            break;
-          case MODULE_TYPES.HANGING_PROTOCOL:
-            this._initHangingProtocolsModule(extensionModule, extensionId);
-          case MODULE_TYPES.TOOLBAR:
-          case MODULE_TYPES.VIEWPORT:
-          case MODULE_TYPES.PANEL:
-          case MODULE_TYPES.SOP_CLASS_HANDLER:
-          case MODULE_TYPES.CONTEXT:
-          case MODULE_TYPES.LAYOUT_TEMPLATE:
-          case MODULE_TYPES.CUSTOMIZATION:
-          case MODULE_TYPES.STATE_SYNC:
-          case MODULE_TYPES.UTILITY:
-            // Default for most extension points,
-            // Just adds each entry ready for consumption by mode.
-            extensionModule.forEach(element => {
-              if (!element.name) {
-                throw new Error(
-                  `Extension ID ${extensionId} module ${moduleType} element has no name`
-                );
-              }
-              const id = `${extensionId}.${moduleType}.${element.name}`;
-              element.id = id;
-              this.modulesMap[id] = element;
-            });
-            break;
-          default:
-            throw new Error(`Module type invalid: ${moduleType}`);
-        }
-
-        this.modules[moduleType].push({
-          extensionId,
-          module: extensionModule,
-        });
+      if (!extensionModule) {
+        return;
       }
+
+      switch (moduleType) {
+        case MODULE_TYPES.COMMANDS:
+          this._initCommandsModule(extensionModule);
+          break;
+
+        case MODULE_TYPES.DATA_SOURCE:
+          this._initDataSourcesModule(extensionModule, extensionId, dataSources);
+          break;
+
+        case MODULE_TYPES.HANGING_PROTOCOL:
+          this._initHangingProtocolsModule(extensionModule, extensionId);
+          break;
+
+        case MODULE_TYPES.PANEL:
+          this._initPanelModule(extensionModule, extensionId);
+          break;
+
+        case MODULE_TYPES.TOOLBAR:
+          this._initToolbarModule(extensionModule, extensionId);
+          break;
+
+        case MODULE_TYPES.VIEWPORT:
+        case MODULE_TYPES.SOP_CLASS_HANDLER:
+        case MODULE_TYPES.CONTEXT:
+        case MODULE_TYPES.LAYOUT_TEMPLATE:
+        case MODULE_TYPES.CUSTOMIZATION:
+        case MODULE_TYPES.STATE_SYNC:
+        case MODULE_TYPES.UTILITY:
+          this.processExtensionModule(extensionModule, extensionId, moduleType);
+          break;
+        default:
+          throw new Error(`Module type invalid: ${moduleType}`);
+      }
+
+      this.modules[moduleType].push({
+        extensionId,
+        module: extensionModule,
+      });
     });
 
     // Track extension registration
     this.registeredExtensionIds.push(extensionId);
   };
 
+  /**
+   * Retrieves the module entry associated with the given string entry
+   * @param stringEntry - The string entry to retrieve the module entry for which is
+   * in the format of `${extensionId}.${moduleType}.${moduleName}`
+   * @returns The module entry associated with the given string entry.
+   */
   getModuleEntry = stringEntry => {
     return this.modulesMap[stringEntry];
+  };
+
+  /**
+   * Retrieves all modules of a given type for all registered extensions.
+   *
+   * @param moduleType - The type of modules to retrieve.
+   * @returns An array of modules of the specified type.
+   */
+  getModulesByType = (moduleType: string) => {
+    return this.modules[moduleType];
   };
 
   getDataSources = dataSourceName => {
@@ -402,6 +441,38 @@ export default class ExtensionManager extends PubSubService {
       }
     });
   };
+
+  _initPanelModule = (extensionModule, extensionId) => {
+    this.processExtensionModule(extensionModule, extensionId, MODULE_TYPES.PANEL);
+  };
+
+  _initToolbarModule = (extensionModule, extensionId) => {
+    // check if the toolbar module has a handler function for evaluation of
+    // the toolbar button state
+    const { toolbarService } = this._servicesManager.services;
+    extensionModule.forEach(toolbarButton => {
+      if (toolbarButton.evaluate) {
+        toolbarService.registerEvaluateFunction(toolbarButton.name, toolbarButton.evaluate);
+      }
+    });
+  };
+
+  /**
+   * Processes an extension module.
+   * @param extensionModule - The extension module to process.
+   * @param extensionId - The ID of the extension.
+   * @param moduleType - The type of the module.
+   */
+  private processExtensionModule(extensionModule, extensionId: string, moduleType: string) {
+    extensionModule.forEach(element => {
+      if (!element.name) {
+        throw new Error(`Extension ID ${extensionId} module ${moduleType} element has no name`);
+      }
+      const id = `${extensionId}.${moduleType}.${element.name}`;
+      element.id = id;
+      this.modulesMap[id] = element;
+    });
+  }
 
   /**
    * Adds the given data source and optionally sets it as the active data source.

@@ -1,6 +1,6 @@
 import * as ContextMenuItemsBuilder from './ContextMenuItemsBuilder';
 import ContextMenu from '../../../../platform/ui/src/components/ContextMenu/ContextMenu';
-import { CommandsManager, ServicesManager, Types } from '@ohif/core';
+import { CommandsManager } from '@ohif/core';
 import { annotation as CsAnnotation } from '@cornerstonejs/tools';
 import { Menu, MenuItem, Point, ContextMenuProps } from './types';
 
@@ -17,11 +17,11 @@ import { Menu, MenuItem, Point, ContextMenuProps } from './types';
  */
 export default class ContextMenuController {
   commandsManager: CommandsManager;
-  services: Types.Services;
+  services: AppTypes.Services;
   menuItems: Menu[] | MenuItem[];
 
-  constructor(servicesManager: ServicesManager, commandsManager: CommandsManager) {
-    this.services = servicesManager.services as Obj;
+  constructor(servicesManager: AppTypes.ServicesManager, commandsManager: CommandsManager) {
+    this.services = servicesManager.services;
     this.commandsManager = commandsManager;
   }
 
@@ -60,7 +60,6 @@ export default class ContextMenuController {
       return;
     }
 
-    console.log('Getting items from', menus);
     const items = ContextMenuItemsBuilder.getMenuItems(
       selectorProps || contextMenuProps,
       event,

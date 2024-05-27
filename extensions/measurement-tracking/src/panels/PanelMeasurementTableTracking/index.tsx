@@ -1,19 +1,12 @@
 import React, { useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
-import {
-  StudySummary,
-  MeasurementTable,
-  Dialog,
-  Input,
-  useViewportGrid,
-  ButtonEnums,
-} from '@ohif/ui';
+import { StudySummary, MeasurementTable, useViewportGrid, ActionButtons } from '@ohif/ui';
 import { DicomMetadataStore, utils } from '@ohif/core';
 import { useDebounce } from '@hooks';
 import { useAppConfig } from '@state';
-import ActionButtons from './ActionButtons';
 import { useTrackedMeasurements } from '../../getContextModule';
 import debounce from 'lodash.debounce';
+import { useTranslation } from 'react-i18next';
 
 const { downloadCSVReport } = utils;
 const { formatDate } = utils;
@@ -25,11 +18,13 @@ const DISPLAY_STUDY_SUMMARY_INITIAL_VALUE = {
   description: '', // 'CHEST/ABD/PELVIS W CONTRAST',
 };
 
-function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
+function PanelMeasurementTableTracking({ servicesManager, extensionManager }: withAppTypes) {
   const [viewportGrid] = useViewportGrid();
+  const { t } = useTranslation('MeasurementTable');
   const [measurementChangeTimestamp, setMeasurementsUpdated] = useState(Date.now().toString());
   const debouncedMeasurementChangeTimestamp = useDebounce(measurementChangeTimestamp, 200);
-  const { measurementService, uiDialogService, displaySetService } = servicesManager.services;
+  const { measurementService, uiDialogService, displaySetService, customizationService } =
+    servicesManager.services;
   const [trackedMeasurements, sendTrackedMeasurementsEvent] = useTrackedMeasurements();
   const { trackedStudy, trackedSeries } = trackedMeasurements.context;
   const [displayStudySummary, setDisplayStudySummary] = useState(
@@ -134,67 +129,24 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
   };
 
   const onMeasurementItemEditHandler = ({ uid, isActive }) => {
-    const measurement = measurementService.getMeasurement(uid);
     jumpToImage({ uid, isActive });
-
-    const onSubmitHandler = ({ action, value }) => {
-      switch (action.id) {
-        case 'save': {
-          measurementService.update(
-            uid,
-            {
-              ...measurement,
-              ...value,
-            },
-            true
-          );
-        }
+    const labelConfig = customizationService.get('measurementLabels');
+    const measurement = measurementService.getMeasurement(uid);
+    const utilityModule = extensionManager.getModuleEntry(
+      '@ohif/extension-cornerstone.utilityModule.common'
+    );
+    const { showLabelAnnotationPopup } = utilityModule.exports;
+    showLabelAnnotationPopup(measurement, uiDialogService, labelConfig).then(
+      (val: Map<any, any>) => {
+        measurementService.update(
+          uid,
+          {
+            ...val,
+          },
+          true
+        );
       }
-      uiDialogService.dismiss({ id: 'enter-annotation' });
-    };
-
-    uiDialogService.create({
-      id: 'enter-annotation',
-      centralize: true,
-      isDraggable: false,
-      showOverlay: true,
-      content: Dialog,
-      contentProps: {
-        title: 'Annotation',
-        noCloseButton: true,
-        value: { label: measurement.label || '' },
-        body: ({ value, setValue }) => {
-          const onChangeHandler = event => {
-            event.persist();
-            setValue(value => ({ ...value, label: event.target.value }));
-          };
-
-          const onKeyPressHandler = event => {
-            if (event.key === 'Enter') {
-              onSubmitHandler({ value, action: { id: 'save' } });
-            }
-          };
-          return (
-            <Input
-              label="Enter your annotation"
-              labelClassName="text-white grow text-[14px] leading-[1.2]"
-              autoFocus
-              id="annotation"
-              className="border-primary-main bg-black"
-              type="text"
-              value={value.label}
-              onChange={onChangeHandler}
-              onKeyPress={onKeyPressHandler}
-            />
-          );
-        },
-        actions: [
-          { id: 'cancel', text: 'Cancel', type: ButtonEnums.type.secondary },
-          { id: 'save', text: 'Save', type: ButtonEnums.type.primary },
-        ],
-        onSubmit: onSubmitHandler,
-      },
-    });
+    );
   };
 
   const onMeasurementItemClickHandler = ({ uid, isActive }) => {
@@ -214,6 +166,9 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
   const additionalFindings = displayMeasurements.filter(
     dm => dm.measurementType === measurementService.VALUE_TYPES.POINT
   );
+
+  const disabled =
+    additionalFindings.length === 0 && displayMeasurementsWithoutFindings.length === 0;
 
   return (
     <>
@@ -249,16 +204,23 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
       {!appConfig?.disableEditing && (
         <div className="flex justify-center p-4">
           <ActionButtons
-            onExportClick={exportReport}
-            onCreateReportClick={() => {
-              sendTrackedMeasurementsEvent('SAVE_REPORT', {
-                viewportId: viewportGrid.activeViewportId,
-                isBackupSave: true,
-              });
-            }}
-            disabled={
-              additionalFindings.length === 0 && displayMeasurementsWithoutFindings.length === 0
-            }
+            t={t}
+            actions={[
+              {
+                label: 'Export',
+                onClick: exportReport,
+              },
+              {
+                label: 'Create Report',
+                onClick: () => {
+                  sendTrackedMeasurementsEvent('SAVE_REPORT', {
+                    viewportId: viewportGrid.activeViewportId,
+                    isBackupSave: true,
+                  });
+                },
+              },
+            ]}
+            disabled={disabled}
           />
         </div>
       )}

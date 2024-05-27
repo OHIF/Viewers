@@ -22,7 +22,7 @@ function ViewportOrientationMarkers({
   viewportId,
   servicesManager,
   orientationMarkers = ['top', 'left'],
-}) {
+}: withAppTypes) {
   // Rotation is in degrees
   const [rotation, setRotation] = useState(0);
   const [flipHorizontal, setFlipHorizontal] = useState(false);
@@ -108,17 +108,15 @@ function ViewportOrientationMarkers({
       console.log('ViewportOrientationMarkers::No viewport');
       return null;
     }
-    const backgroundColor = ohifViewport.getViewportOptions().background;
-
-    // Todo: probably this can be done in a better way in which we identify bright
-    // background
-    const isLight = backgroundColor ? csUtils.isEqual(backgroundColor, [1, 1, 1]) : false;
 
     return orientationMarkers.map((m, index) => (
       <div
         className={classNames(
+          'overlay-text',
           `${m}-mid orientation-marker`,
-          isLight ? 'text-[#726F7E]' : 'text-[#ccc]'
+          'text-aqua-pale',
+          'text-[13px]',
+          'leading-5'
         )}
         key={`${m}-mid orientation-marker`}
       >
@@ -135,7 +133,7 @@ function ViewportOrientationMarkers({
     element,
   ]);
 
-  return <div className="ViewportOrientationMarkers noselect">{markers}</div>;
+  return <div className="ViewportOrientationMarkers select-none">{markers}</div>;
 }
 
 ViewportOrientationMarkers.propTypes = {

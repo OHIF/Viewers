@@ -146,12 +146,12 @@ and the logic for your service shall be
 // Canonical name of upper camel case BackEndService for the class
 import BackEndService from './BackEndService';
 
-export default function WrappedBackEndService(serviceManager) {
+export default function WrappedBackEndService(servicesManager) {
   return {
     // Note the canonical name of lower camel case backEndService
     name: 'backEndService',
     create: ({ configuration = {} }) => {
-      return new BackEndService(serviceManager);
+      return new BackEndService(servicesManager);
     },
   };
 }
@@ -161,8 +161,8 @@ with implementation of
 
 ```ts
 export default class BackEndService {
-  constructor(serviceManager) {
-    this.serviceManager = serviceManager;
+  constructor(servicesManager) {
+    this.servicesManager = servicesManager;
   }
 
   putAnnotations() {

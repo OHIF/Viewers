@@ -8,6 +8,8 @@ import Svg from '../Svg';
 import Icon from '../Icon';
 import IconButton from '../IconButton';
 import Dropdown from '../Dropdown';
+import HeaderPatientInfo from '../HeaderPatientInfo';
+import { PatientInfoVisibility } from '../../types/PatientInfoVisibility';
 
 function Header({
   children,
@@ -16,8 +18,12 @@ function Header({
   onClickReturnButton,
   isSticky,
   WhiteLabeling,
+  showPatientInfo = PatientInfoVisibility.VISIBLE_COLLAPSED,
+  servicesManager,
+  Secondary,
+  appConfig,
   ...props
-}): ReactNode {
+}: withAppTypes): ReactNode {
   const { t } = useTranslation('Header');
 
   // TODO: this should be passed in as a prop instead and the react-router-dom
@@ -30,13 +36,11 @@ function Header({
 
   return (
     <NavBar
-      className="justify-between border-b-4 border-black"
       isSticky={isSticky}
+      {...props}
     >
-      <div className="flex flex-1 justify-between">
-        <div className="flex items-center">
-          {/* // TODO: Should preserve filter/sort
-              // Either injected service? Or context (like react router's `useLocation`?) */}
+      <div className="relative h-[48px] items-center ">
+        <div className="absolute left-0 top-1/2 flex -translate-y-1/2 items-center">
           <div
             className={classNames(
               'mr-3 inline-flex items-center',
@@ -51,39 +55,41 @@ function Header({
                 className="text-primary-active w-8"
               />
             )}
-            <div className="ml-4">
+            <div className="ml-1">
               {WhiteLabeling?.createLogoComponentFn?.(React, props) || <Svg name="logo-ohif" />}
             </div>
           </div>
         </div>
-        <div className="flex items-center">{children}</div>
-        <div className="flex items-center">
-          <span className="text-common-light mr-3 text-lg">{t('INVESTIGATIONAL USE ONLY')}</span>
-          <Dropdown
-            id="options"
-            showDropdownIcon={false}
-            list={menuOptions}
-            alignment="right"
-          >
-            <IconButton
-              id={'options-settings-icon'}
-              variant="text"
-              color="inherit"
-              size="initial"
-              className="text-primary-active"
+        <div className="absolute top-1/2 left-[250px]  h-8 -translate-y-1/2">{Secondary}</div>
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform">
+          <div className="flex items-center justify-center space-x-2">{children}</div>
+        </div>
+        <div className="absolute right-0 top-1/2 flex -translate-y-1/2 select-none items-center">
+          {showPatientInfo !== PatientInfoVisibility.DISABLED && (
+            <HeaderPatientInfo
+              servicesManager={servicesManager}
+              appConfig={appConfig}
+            />
+          )}
+          <div className="border-primary-dark mx-1.5 h-[25px] border-r"></div>
+          <div className="flex-shrink-0">
+            <Dropdown
+              id="options"
+              showDropdownIcon={false}
+              list={menuOptions}
+              alignment="right"
             >
-              <Icon name="settings" />
-            </IconButton>
-            <IconButton
-              id={'options-chevron-down-icon'}
-              variant="text"
-              color="inherit"
-              size="initial"
-              className="text-primary-active"
-            >
-              <Icon name="chevron-down" />
-            </IconButton>
-          </Dropdown>
+              <IconButton
+                id={'options-settings-icon'}
+                variant="text"
+                color="inherit"
+                size="initial"
+                className="text-primary-active hover:bg-primary-dark h-full w-full"
+              >
+                <Icon name="icon-settings" />
+              </IconButton>
+            </Dropdown>
+          </div>
         </div>
       </div>
     </NavBar>
@@ -103,6 +109,8 @@ Header.propTypes = {
   isSticky: PropTypes.bool,
   onClickReturnButton: PropTypes.func,
   WhiteLabeling: PropTypes.object,
+  showPatientInfo: PropTypes.string,
+  servicesManager: PropTypes.object,
 };
 
 Header.defaultProps = {

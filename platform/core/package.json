@@ -1,6 +1,6 @@
 {
   "name": "@ohif/core",
-  "version": "3.8.0-beta.52",
+  "version": "3.9.0-beta.21",
   "description": "Generic business logic for web-based medical imaging applications",
   "author": "OHIF Core Team",
   "license": "MIT",
@@ -22,6 +22,8 @@
     "yarn": ">=1.16.0"
   },
   "scripts": {
+    "clean": "shx rm -rf dist",
+    "clean:deep": "yarn run clean && shx rm -rf node_modules",
     "dev": "jest --watchAll",
     "dev:core": "yarn run dev",
     "build": "cross-env NODE_ENV=production webpack --config .webpack/webpack.prod.js",
@@ -35,8 +37,8 @@
     "@cornerstonejs/codec-libjpeg-turbo-8bit": "^1.2.2",
     "@cornerstonejs/codec-openjpeg": "^1.2.2",
     "@cornerstonejs/codec-openjph": "^2.4.2",
-    "@cornerstonejs/dicom-image-loader": "^1.44.1",
-    "@ohif/ui": "3.8.0-beta.52",
+    "@cornerstonejs/dicom-image-loader": "^1.74.7",
+    "@ohif/ui": "3.9.0-beta.21",
     "cornerstone-math": "0.1.9",
     "dicom-parser": "^1.8.21"
   },

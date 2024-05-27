@@ -1,14 +1,18 @@
 import React from 'react';
-import { ServicesManager } from '@ohif/core';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
-import { annotation as CsAnnotation } from '@cornerstonejs/tools';
 
 import MeasurementItem from './MeasurementItem';
 
-const MeasurementTable = ({ data, title, onClick, onEdit, servicesManager }) => {
-  servicesManager = servicesManager as ServicesManager;
-  const { customizationService } = servicesManager.services;
+const MeasurementTable = ({
+  data,
+  title,
+  onClick,
+  onEdit,
+  onDelete,
+  servicesManager,
+}: withAppTypes) => {
+  const { customizationService, measurementService } = servicesManager.services;
   const { t } = useTranslation('MeasurementTable');
   const amount = data.length;
 
@@ -17,8 +21,18 @@ const MeasurementTable = ({ data, title, onClick, onEdit, servicesManager }) => 
     contentProps: {},
   });
   const CustomMeasurementItem = itemCustomization.content;
-  const annotationManager = CsAnnotation.state.getAnnotationManager();
-  const { locking } = CsAnnotation;
+
+  const onMeasurementDeleteHandler = ({ uid }) => {
+    const measurement = measurementService.getMeasurement(uid);
+    onDelete?.({ uid });
+    measurementService.remove(
+      uid,
+      {
+        ...measurement,
+      },
+      true
+    );
+  };
 
   return (
     <div>
@@ -28,25 +42,20 @@ const MeasurementTable = ({ data, title, onClick, onEdit, servicesManager }) => 
       </div>
       <div className="ohif-scrollbar max-h-112 overflow-hidden">
         {data.length !== 0 &&
-          data.map((measurementItem, index) => {
-            const isLocked = locking.isAnnotationLocked(
-              annotationManager.getAnnotation(measurementItem.uid)
-            );
-            return (
-              <CustomMeasurementItem
-                key={measurementItem.uid}
-                uid={measurementItem.uid}
-                index={index + 1}
-                label={measurementItem.label}
-                isActive={measurementItem.isActive}
-                isLocked={isLocked}
-                displayText={measurementItem.displayText}
-                item={measurementItem}
-                onClick={onClick}
-                onEdit={onEdit}
-              />
-            );
-          })}
+          data.map((measurementItem, index) => (
+            <CustomMeasurementItem
+              key={measurementItem.uid}
+              uid={measurementItem.uid}
+              index={index + 1}
+              label={measurementItem.label}
+              isActive={measurementItem.isActive}
+              displayText={measurementItem.displayText}
+              item={measurementItem}
+              onClick={onClick}
+              onEdit={onEdit}
+              onDelete={onMeasurementDeleteHandler}
+            />
+          ))}
         {data.length === 0 && (
           <div className="group flex cursor-default border border-transparent bg-black transition duration-300">
             <div className="bg-primary-dark text-primary-light group-hover:bg-secondary-main w-6 py-1 text-center text-base transition duration-300"></div>

@@ -1,3 +1,4 @@
+/** @type {AppTypes.Config} */
 window.config = {
   routerBasename: '/',
   extensions: ['@ohif/extension-multimonitor'],
@@ -17,6 +18,9 @@ window.config = {
   ],
 
   defaultDataSourceName: 'e2e',
+  investigationalUseDialog: {
+    option: 'never',
+  },
   dataSources: [
     {
       namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
@@ -107,7 +111,7 @@ window.config = {
         supportsFuzzyMatching: false,
         supportsWildcard: true,
         staticWado: true,
-        singlepart: 'bulkdata,video,pdf',
+        singlepart: 'video,pdf',
         bulkDataURI: {
           enabled: true,
           relativeResolution: 'studies',

@@ -42,6 +42,9 @@ class UIModalService {
     closeButton = true,
     title = null,
     customClassName = null,
+    movable = false,
+    containerDimensions = null,
+    contentDimensions = null,
   }) {
     return serviceImplementation._show({
       content,
@@ -51,6 +54,9 @@ class UIModalService {
       closeButton,
       title,
       customClassName,
+      movable,
+      containerDimensions,
+      contentDimensions,
     });
   }
 

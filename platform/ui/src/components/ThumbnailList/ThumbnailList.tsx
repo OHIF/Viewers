@@ -16,7 +16,7 @@ const ThumbnailList = ({
   return (
     <div
       id="ohif-thumbnail-list"
-      className="ohif-scrollbar study-min-height overflow-y-hidden bg-black py-3"
+      className="ohif-scrollbar study-min-height overflow-y-hidden bg-black py-5"
     >
       {thumbnails.map(
         ({
@@ -29,7 +29,6 @@ const ThumbnailList = ({
           componentType,
           seriesDate,
           countIcon,
-          viewportIdentificator,
           isTracked,
           canReject,
           onReject,
@@ -53,7 +52,6 @@ const ThumbnailList = ({
                   imageSrc={imageSrc}
                   imageAltText={imageAltText}
                   messages={messages}
-                  viewportIdentificator={viewportIdentificator}
                   isActive={isActive}
                   onClick={() => onThumbnailClick(displaySetInstanceUID)}
                   onDoubleClick={() => onThumbnailDoubleClick(displaySetInstanceUID)}
@@ -72,7 +70,6 @@ const ThumbnailList = ({
                   imageSrc={imageSrc}
                   imageAltText={imageAltText}
                   messages={messages}
-                  viewportIdentificator={viewportIdentificator}
                   isTracked={isTracked}
                   isActive={isActive}
                   onClick={() => onThumbnailClick(displaySetInstanceUID)}
@@ -96,7 +93,6 @@ const ThumbnailList = ({
                   onReject={onReject}
                   onClick={() => onThumbnailClick(displaySetInstanceUID)}
                   onDoubleClick={() => onThumbnailDoubleClick(displaySetInstanceUID)}
-                  viewportIdentificator={viewportIdentificator}
                   isHydratedForDerivedDisplaySet={isHydratedForDerivedDisplaySet}
                 />
               );
@@ -120,7 +116,6 @@ ThumbnailList.propTypes = {
       numInstances: PropTypes.number,
       description: PropTypes.string,
       componentType: Types.ThumbnailType.isRequired,
-      viewportIdentificator: Types.StringArray,
       isTracked: PropTypes.bool,
       /**
        * Data the thumbnail should expose to a receiving drop target. Use a matching

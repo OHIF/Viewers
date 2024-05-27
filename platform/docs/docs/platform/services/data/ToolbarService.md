@@ -3,16 +3,15 @@ sidebar_position: 5
 sidebar_label: Toolbar Service
 ---
 
-# Toolbar Service
+# Toolbar **Service**
 
 ## Overview
 
-`ToolBarService` handles the toolbar section buttons, and what happens when a
-button is clicked by the user.
+The `ToolBarService` is a straightforward service designed to handle the toolbar. Its main tasks include adding buttons, configuring them, and organizing button sections. When a button is clicked, it executes the designated commands. In the past, this service was more intricate, managing button states and logic. However, all that functionality has now been transferred to the `ToolBarModule` and evaluators.
 
-<div style={{padding:"56.25% 0 0 0", position:"relative"}}>
-    <iframe src="https://player.vimeo.com/video/547957214?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479"  frameBorder="0" allow="autoplay; fullscreen; picture-in-picture" allowFullScreen style= {{ position:"absolute",top:0,left:0,width:"100%",height:"100%"}} title="measurement-report"></iframe>
-</div>
+<!-- <div style={{padding:"56.25% 0 0 0", position:"relative"}}>
+    <iframe src="https://player.vimeo.com/video/547957214?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479"  frameBorder="0" allow="autoplay; fullscreen; picture-in-picture" allowFullScreen style= {{ position:"absolute",top:0,left:0,width:"100%",height:"100%"}} **title**="measurement-report"></iframe>
+</div> -->
 
 ## Events
 
@@ -23,20 +22,7 @@ button is clicked by the user.
 
 ## API
 
-- `recordInteraction(interaction)`: executes the provided interaction which is
-  an object providing the following properties to the ToolBarService:
-
-  - `interactionType`: can be `tool`, `toggle` and `action`. We will discuss
-    more each type below.
-  - `itemId`: tool name
-  - `groupId`: the Id for the tool button group; e.g., `Wwwc` which holds
-    presets.
-  - `commandName`: if tool has a command attached to run
-  - `commandOptions`: arguments for the command.
-  - `setActive`: Sets a given tool active (not as primary but as secondary)
-
-- `reset`: reset the state of the toolbarService, set the primary tool to be
-  `Wwwc` and unsubscribe tools that have registered their functions.
+- `createButtonSection(key, buttons)` : creates a section of buttons in the toolbar with the given key and button Ids
 
 - `addButtons`: add the button definition to the service.
   [See below for button definition](#button-definitions).
@@ -44,86 +30,26 @@ button is clicked by the user.
 - `setButtons`: sets the buttons defined in the service. It overrides all the
   previous buttons
 
-- `getActiveTools`: returns the active tool + all the toggled-on tools
 
-- `setDefaultTool`: sets the default tool that will be activated whenever the primary tool is deactivated without activating another/different tool
 
-## State
-
-ToolBarService has an internal state that gets updated per tool interaction and
-tracks the active toolId, state of the buttons that have toggled state, and the
-group buttons and which tool in each group is active.
-
-```js
-state = {
-  primaryToolId: 'Wwwc',
-  toggles: {
-    /* id: true/false */
-  },
-  groups: {
-    /* track most recent click per group...*/
-  },
-};
-```
-
-## Interaction type
-
-There are three main types that a tool can have which is defined in the
-interaction object.
-
-- `tool`: setting a tool to be active; e.g., measurement tools
-- `toggle`: toggling state of a tool; e.g., viewport link (sync)
-- `action`: performs a registered action outside of the ToolBarService; e.g.,
-  capture
-
-A _simplified_ implementation of the ToolBarService is:
-
-```js
-export default class ToolBarService {
-  /** ... **/
-  recordInteraction(interaction) {
-    /** ... **/
-    switch (interactionType) {
-      case 'action': {
-        break;
-      }
-      case 'tool': {
-        this.state.primaryToolId = itemId;
-
-        commandsManager.runCommand('setToolActive', interaction.commandOptions);
-        break;
-      }
-      case 'toggle': {
-        this.state.toggles[itemId] =
-          this.state.toggles[itemId] === undefined
-            ? true
-            : !this.state.toggles[itemId];
-        interaction.commandOptions.toggledState = this.state.toggles[itemId];
-        break;
-      }
-      default:
-        throw new Error(`Invalid interaction type: ${interactionType}`);
-    }
-    /** ... **/
-  }
-  /** ... **/
-}
-```
 
 ## Button Definitions
+
+
+### Basic
 
 The simplest toolbarButtons definition has the following properties:
 
 ![toolbarModule-zoom](../../../assets/img/toolbarModule-zoom.png)
 
+
 ```js
 {
-  "id": "Zoom",
-  "type": "ohif.radioGroup",
-  "props": {
-    "type": "tool",
-    "icon": "tool-zoom",
-    "label": "Zoom",
+  id: 'Zoom',
+  uiType: 'ohif.radioGroup',
+  props: {
+    icon: 'tool-zoom',
+    label: 'Zoom',
     "commands": [
       {
         "commandName": "setToolActive",
@@ -133,27 +59,20 @@ The simplest toolbarButtons definition has the following properties:
         "context": "CORNERSTONE"
       }
     ]
-  }
-}
+    evaluate: 'evaluate.cornerstoneTool',
+  },
+},
 ```
 
 | property         | description                                                       | values                                      |
 | ---------------- | ----------------------------------------------------------------- | ------------------------------------------- |
 | `id`             | Unique string identifier for the definition                       | \*                                          |
-| `type`           | Used to determine the button's behaviour                          | "tool", "toggle", "action"                  |
 | `icon`           | A string name for an icon supported by the consuming application. | \*                                          |
 | `label`          | User/display friendly to show in UI                               | \*                                          |
 | `commands`       | (optional) The commands to run when the button is used. It include a commandName, commandOptions, and/or a context            | Any command registered by a `CommandModule` |
 
-There are three main types of toolbar buttons:
 
-- `tool`: buttons that enable a tool by running the `setToolActive` command with
-  the `commandOptions`
-- `toggle`: buttons that acts as a toggle: e.g., linking viewports
-- `action`: buttons that executes an action: e.g., capture button to save
-  screenshot
-
-## Nested Buttons
+### Nested (dropdown)
 
 You can use the `ohif.splitButton` type to build a button with extra tools in
 the dropdown.
@@ -169,91 +88,177 @@ to create `MeasurementTools` nested button
 
 ```js title="modes/longitudinal/src/toolbarButtons.js"
 {
-  "id": "MeasurementTools",
-  "type": "ohif.splitButton",
-  "props": {
-    "groupId": "MeasurementTools",
-    "isRadio": true,
-    "primary": {
-      "id": "Length",
-      "icon": "tool-length",
-      "label": "Length",
-      "type": "tool",
-      "commands": [
-        {
-          "commandName": "setToolActive",
-          "commandOptions": {
-            "toolName": "Length"
-          },
-          "context": "CORNERSTONE"
-        },
-        {
-          "commandName": "setToolActive",
-          "commandOptions": {
-            "toolName": "SRLength",
-            "toolGroupId": "SRToolGroup"
-          },
-          "context": "CORNERSTONE"
-        }
+    id: 'MeasurementTools',
+    uiType: 'ohif.splitButton',
+    props: {
+      groupId: 'MeasurementToolsGroupId',
+      // group evaluate to determine which item should move to the top
+      evaluate: 'evaluate.group.promoteToPrimaryIfCornerstoneToolNotActiveInTheList',
+      primary: ToolbarService.createButton({
+        id: 'Length',
+        icon: 'tool-length',
+        label: 'Length',
+        tooltip: 'Length Tool',
+        commands: _createSetToolActiveCommands('Length'),
+        evaluate: 'evaluate.cornerstoneTool',
+      }),
+      secondary: {
+        icon: 'chevron-down',
+        tooltip: 'More Measure Tools',
+      },
+      items: [
+        ToolbarService.createButton({
+          id: 'Length',
+          icon: 'tool-length',
+          label: 'Length',
+          tooltip: 'Length Tool',
+          commands: [
+            {
+              commandName: 'setToolActive',
+              commandOptions: {
+                toolName: 'Length',
+              },
+              context: 'CORNERSTONE',
+            },
+            {
+              commandName: 'setToolActive',
+              commandOptions: {
+                toolName: 'SRLength',
+                toolGroupId: 'SRToolGroup',
+              },
+              // we can use the setToolActive command for this from Cornerstone commandsModule
+              context: 'CORNERSTONE',
+            },
+          ],
+          evaluate: 'evaluate.cornerstoneTool',
+        }),
+        ToolbarService.createButton({
+          id: 'Bidirectional',
+          icon: 'tool-bidirectional',
+          label: 'Bidirectional',
+          tooltip: 'Bidirectional Tool',
+          commands: [
+            {
+              commandName: 'setToolActive',
+              commandOptions: {
+                toolName: 'Bidirectional',
+              },
+              context: 'CORNERSTONE',
+            },
+            {
+              commandName: 'setToolActive',
+              commandOptions: {
+                toolName: 'SRBidirectional',
+                toolGroupId: 'SRToolGroup',
+              },
+              context: 'CORNERSTONE',
+            },
+          ],
+          evaluate: 'evaluate.cornerstoneTool',
+        }),
       ],
-      "tooltip": "Length"
     },
-    "secondary": {
-      "icon": "chevron-down",
-      "label": "",
-      "isActive": true,
-      "tooltip": "More Measure Tools"
-    },
-    "items": [
-      {
-        "id": "Bidirectional",
-        "icon": "tool-bidirectional",
-        "label": "Bidirectional",
-        "type": "tool",
-        "commands": [
-          {
-            "commandName": "setToolActive",
-            "commandOptions": {
-              "toolName": "Bidirectional"
-            },
-            "context": "CORNERSTONE"
-          },
-          {
-            "commandName": "setToolActive",
-            "commandOptions": {
-              "toolName": "SRBidirectional",
-              "toolGroupId": "SRToolGroup"
-            },
-            "context": "CORNERSTONE"
-          }
-        ],
-        "tooltip": "Bidirectional Tool"
-      },
-      {
-        "id": "ArrowAnnotate",
-        "icon": "tool-annotate",
-        "label": "Annotation",
-        "type": "tool",
-        "commands": [
-          {
-            "commandName": "setToolActive",
-            "commandOptions": {
-              "toolName": "ArrowAnnotate"
-            },
-            "context": "CORNERSTONE"
-          },
-          {
-            "commandName": "setToolActive",
-            "commandOptions": {
-              "toolName": "SRArrowAnnotate",
-              "toolGroupId": "SRToolGroup"
-            },
-            "context": "CORNERSTONE"
-          }
-        ],
-        "tooltip": "Arrow Annotate"
-      },
-    ]
-  }
-}
+  },
 ```
+
+:::tip
+split buttons can have a group evaluator (in the above example `evaluate.group.promoteToPrimaryIfCornerstoneToolNotActiveInTheList`) which can decide what happens
+when the user interacts with the buttons. In the above example, we are promoting the button to the primary section if the cornerstone tool is not active in the list of buttons.
+
+There are other evaluators for instance `evaluate.group.promoteToPrimary`
+which does not care about the cornerstone tool and promotes the button to the primary section anyway
+:::
+
+:::tip
+If you don't provide a group evaluator nothing would happen and the button will stay in the secondary section.
+:::
+
+## Listeners
+Sometimes you need a tool to listen to specific events in order to react properly.
+You can add `listeners` for this purpose. We use this pattern for referencelineTools
+which should set its source of reference upon active viewport change
+
+Currently you can subscribe to the following events:
+- `ViewportGridService.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED`: when the active viewport changes
+- `ViewportGridService.EVENTS.VIEWPORTS_READY`: when the viewports are ready in the grid
+
+
+```js
+
+const ReferenceLinesListeners: RunCommand = [
+  {
+    commandName: 'setSourceViewportForReferenceLinesTool',
+    context: 'CORNERSTONE',
+  },
+];
+
+ToolbarService.createButton({
+  id: 'ReferenceLines',
+  icon: 'tool-referenceLines',
+  label: 'Reference Lines',
+  tooltip: 'Show Reference Lines',
+  commands: [
+    {
+      commandName: 'setToolEnabled',
+      commandOptions: {
+        toolName: 'ReferenceLines',
+        toggle: true,
+      },
+      context: 'CORNERSTONE',
+    },
+  ],
+  listeners: {
+    [ViewportGridService.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED]: ReferenceLinesListeners,
+    [ViewportGridService.EVENTS.VIEWPORTS_READY]: ReferenceLinesListeners,
+  },
+  evaluate: 'evaluate.cornerstoneTool.toggle',
+}),
+
+```
+
+
+
+## Button Sections
+In order to organize the buttons, you can create button sections in the toolbar. And
+assign buttons to each section separately.
+
+OHIF provides a `primary` section by default. You can add more sections as needed in your UI
+and use toolbarService to create and manage them. (You can look at the toolBox implementation
+which take advantage of having a dedicated section for the tools with advanced options,
+we use that in the segmentation mode).
+
+
+## Example
+
+For instance in `longitudinal` mode we are using the `onModeEnter` hook to
+add the buttons to the toolbarService and assign them to the primary section.
+
+```js title="modes/longitudinal/src/index.js"
+toolbarService.addButtons([...toolbarButtons, ...moreTools]);
+toolbarService.createButtonSection('primary', [
+  'MeasurementTools',
+  'Zoom',
+  'info',
+  'WindowLevel',
+  'Pan',
+  'Capture',
+  'Layout',
+  'Crosshairs',
+  'MoreTools',
+]);
+```
+
+as you see we creating the button section and assigning buttons based on their Ids.
+
+:::tip
+You can even duplicate the same button in different sections and the button will be
+in sync in all sections (thanks to the evaluation system).
+:::
+
+:::tip
+we will add more section in the toolbar (other than primary) in the future.
+:::
+
+:::note
+Don't forget to set up your toolGroups to ensure that your buttons function correctly. Buttons serve as a visual interface. When you interact with them, they execute their commands, and evaluators determine their state post-interaction.
+:::

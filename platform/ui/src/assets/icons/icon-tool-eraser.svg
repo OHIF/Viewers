@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg width="25px" height="25px" viewBox="0 0 25 25" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <title>icon-tool-eraser</title>
-    <g id="Artboards" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="Segmentation---assets" transform="translate(-83, -145)">
-            <g id="icon-tool-eraser" transform="translate(83, 145)">
-                <path d="M8.39130435,20.50359 C7.23520605,20.4411204 6.135127,19.9856264 5.27326087,19.2125465 L3.29104348,17.2285031 C2.58057562,16.5140665 2.58057562,15.3599396 3.29104348,14.6455031 L14.4036957,3.53285089 C15.1181322,2.82238304 16.2722591,2.82238304 16.9866957,3.53285089 L21.7080435,8.25419872 C22.4185113,8.96863525 22.4185113,10.1227622 21.7080435,10.8371987 L13.3345217,19.2107205 C12.4731497,19.9842722 11.3733983,20.4404081 10.2173913,20.50359 L8.39130435,20.50359 Z" id="Path" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"></path>
-                <line x1="10.2173913" y1="7.71915524" x2="17.5217391" y2="15.0235031" id="Path" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"></line>
-                <line x1="2" y1="22.3278509" x2="23" y2="22.3278509" id="Path" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"></line>
-                <rect id="Rectangle" x="0" y="0" width="25" height="25"></rect>
-            </g>
-        </g>
+<svg width="28px" height="28px" viewBox="0 0 28 28" version="1.1" xmlns="http://www.w3.org/2000/svg"
+    xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>tool-seg-eraser</title>
+    <g id="tool-seg-eraser" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <rect id="Rectangle" x="0" y="0" width="28" height="28"></rect>
+        <path
+            d="M8.47826087,18.0030772 C7.48731947,17.9495317 6.54439458,17.5591084 5.80565217,16.8964685 L4.1066087,15.1958598 C3.49763625,14.5834856 3.49763625,13.5942339 4.1066087,12.9818598 L13.6317391,3.45672934 C14.2441133,2.84775689 15.233365,2.84775689 15.8457391,3.45672934 L19.8926087,7.5035989 C20.5015811,8.11597307 20.5015811,9.10522473 19.8926087,9.7175989 L12.7153043,16.8949033 C11.9769855,17.5579476 11.0343414,17.9489213 10.0434783,18.0030772 L8.47826087,18.0030772 Z"
+            id="Path" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+        <line x1="10.0434783" y1="7.04499021" x2="16.3043478" y2="13.3058598" id="Path" stroke="currentColor"
+            stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></line>
+        <line x1="3" y1="20.5667293" x2="21" y2="20.5667293" id="Path" stroke="currentColor" stroke-width="1.5"
+            stroke-linecap="round" stroke-linejoin="round"></line>
     </g>
 </svg>

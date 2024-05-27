@@ -1,4 +1,4 @@
-import { ServicesManager, Types } from '@ohif/core';
+import { Types } from '@ohif/core';
 import { cache as cs3DCache, Enums, volumeLoader, utilities as utils } from '@cornerstonejs/core';
 
 import getCornerstoneViewportType from '../../utils/getCornerstoneViewportType';
@@ -17,9 +17,9 @@ class CornerstoneCacheService {
 
   stackImageIds: Map<string, string[]> = new Map();
   volumeImageIds: Map<string, string[]> = new Map();
-  readonly servicesManager: ServicesManager;
+  readonly servicesManager: AppTypes.ServicesManager;
 
-  constructor(servicesManager: ServicesManager) {
+  constructor(servicesManager: AppTypes.ServicesManager) {
     this.servicesManager = servicesManager;
   }
 
@@ -45,7 +45,11 @@ class CornerstoneCacheService {
     // as a reference volume, if so, we should hang a volume viewport
     // instead of a stack viewport
     if (this._shouldRenderSegmentation(displaySets)) {
-      viewportType = 'volume';
+      // if the viewport type is volume 3D, we should let it be as it is
+      // Todo: in future here we should kick start the conversion of the
+      // segmentation to closed surface
+      viewportType =
+        viewportType === Enums.ViewportType.VOLUME_3D ? Enums.ViewportType.VOLUME_3D : 'volume';
 
       // update viewportOptions to reflect the new viewport type
       viewportOptions.viewportType = viewportType;
@@ -80,12 +84,26 @@ class CornerstoneCacheService {
     invalidatedDisplaySetInstanceUID: string,
     dataSource,
     displaySetService
-  ) {
+  ): Promise<VolumeViewportData | StackViewportData> {
     if (viewportData.viewportType === Enums.ViewportType.STACK) {
-      return this._getCornerstoneStackImageIds(
-        displaySetService.getDisplaySetByUID(invalidatedDisplaySetInstanceUID),
-        dataSource
-      );
+      const displaySet = displaySetService.getDisplaySetByUID(invalidatedDisplaySetInstanceUID);
+      const imageIds = this._getCornerstoneStackImageIds(displaySet, dataSource);
+
+      // remove images from the cache to be able to re-load them
+      imageIds.forEach(imageId => {
+        if (cs3DCache.getImageLoadObject(imageId)) {
+          cs3DCache.removeImageLoadObject(imageId);
+        }
+      });
+
+      return {
+        viewportType: Enums.ViewportType.STACK,
+        data: {
+          StudyInstanceUID: displaySet.StudyInstanceUID,
+          displaySetInstanceUID: invalidatedDisplaySetInstanceUID,
+          imageIds,
+        },
+      };
     }
 
     // Todo: grab the volume and get the id from the viewport itself
@@ -94,7 +112,21 @@ class CornerstoneCacheService {
     const volume = cs3DCache.getVolume(volumeId);
 
     if (volume) {
-      cs3DCache.removeVolumeLoadObject(volumeId);
+      if (volume.imageIds) {
+        // also for each imageId in the volume, remove the imageId from the cache
+        // since that will hold the old metadata as well
+
+        volume.imageIds.forEach(imageId => {
+          if (cs3DCache.getImageLoadObject(imageId)) {
+            cs3DCache.removeImageLoadObject(imageId);
+          }
+        });
+      }
+
+      // this shouldn't be via removeVolumeLoadObject, since that will
+      // remove the texture as well, but here we really just need a remove
+      // from registry so that we load it again
+      cs3DCache._volumeCache.delete(volumeId);
       this.volumeImageIds.delete(volumeId);
     }
 
@@ -200,6 +232,7 @@ class CornerstoneCacheService {
         volume,
         volumeId,
         imageIds: volumeImageIds,
+        isDynamicVolume: displaySet.isDynamicVolume,
       });
     }
 
@@ -228,7 +261,7 @@ class CornerstoneCacheService {
 
       const shouldDisplaySeg = segmentationService.shouldRenderSegmentation(
         viewportDisplaySetInstanceUIDs,
-        instance.FrameOfReferenceUID
+        instance?.FrameOfReferenceUID || segDisplaySet.FrameOfReferenceUID
       );
 
       if (shouldDisplaySeg) {

@@ -16,11 +16,16 @@ import { Types as OhifTypes } from '@ohif/core';
 import { vec3, mat4 } from 'gl-matrix';
 
 import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownloadForm';
-import callInputDialog from './utils/callInputDialog';
+import { callLabelAutocompleteDialog, showLabelAnnotationPopup } from './utils/callInputDialog';
 import toggleImageSliceSync from './utils/imageSliceSync/toggleImageSliceSync';
 import { getFirstAnnotationSelected } from './utils/measurementServiceMappings/utils/selection';
 import getActiveViewportEnabledElement from './utils/getActiveViewportEnabledElement';
-import { CornerstoneServices } from './types';
+import toggleVOISliceSync from './utils/toggleVOISliceSync';
+
+const toggleSyncFunctions = {
+  imageSlice: toggleImageSliceSync,
+  voi: toggleVOISliceSync,
+};
 
 function commandsModule({
   servicesManager,
@@ -30,18 +35,27 @@ function commandsModule({
     viewportGridService,
     toolGroupService,
     cineService,
-    toolbarService,
     uiDialogService,
     cornerstoneViewportService,
     uiNotificationService,
     measurementService,
-  } = servicesManager.services as CornerstoneServices;
+    customizationService,
+    colorbarService,
+    hangingProtocolService,
+    syncGroupService,
+  } = servicesManager.services;
 
   const { measurementServiceSource } = this;
 
   function _getActiveViewportEnabledElement() {
     return getActiveViewportEnabledElement(viewportGridService);
   }
+
+  function _getActiveViewportToolGroupId() {
+    const viewport = _getActiveViewportEnabledElement();
+    return toolGroupService.getToolGroupForViewport(viewport.id);
+  }
+
   const actions = {
     /**
      * Generates the selector props for the context menu, specific to
@@ -117,38 +131,29 @@ function commandsModule({
         ? nearbyToolData
         : null;
     },
-
-    // Measurement tool commands:
-
     /** Delete the given measurement */
     deleteMeasurement: ({ uid }) => {
       if (uid) {
         measurementServiceSource.remove(uid);
       }
     },
-
     /**
      * Show the measurement labelling input dialog and update the label
      * on the measurement with a response if not cancelled.
      */
     setMeasurementLabel: ({ uid }) => {
+      const labelConfig = customizationService.get('measurementLabels');
       const measurement = measurementService.getMeasurement(uid);
-
-      callInputDialog(
-        uiDialogService,
-        measurement,
-        (label, actionId) => {
-          if (actionId === 'cancel') {
-            return;
-          }
-
-          const updatedMeasurement = Object.assign({}, measurement, {
-            label,
-          });
-
-          measurementService.update(updatedMeasurement.uid, updatedMeasurement, true);
-        },
-        false
+      showLabelAnnotationPopup(measurement, uiDialogService, labelConfig).then(
+        (val: Map<any, any>) => {
+          measurementService.update(
+            uid,
+            {
+              ...val,
+            },
+            true
+          );
+        }
       );
     },
 
@@ -224,46 +229,21 @@ function commandsModule({
 
       viewportGridService.setActiveViewportId(viewportId);
     },
-    arrowTextCallback: ({ callback, data }) => {
-      callInputDialog(uiDialogService, data, callback);
-    },
-    cleanUpCrosshairs: () => {
-      // if the crosshairs tool is active, deactivate it and set window level active
-      // since we are going back to main non-mpr HP
-      const activeViewportToolGroup = toolGroupService.getToolGroup(null);
-
-      if (activeViewportToolGroup._toolInstances?.Crosshairs?.mode === Enums.ToolModes.Active) {
-        actions.toolbarServiceRecordInteraction({
-          interactionType: 'tool',
-          commands: [
-            {
-              commandOptions: {
-                toolName: 'WindowLevel',
-              },
-              context: 'CORNERSTONE',
-            },
-          ],
-        });
-      }
+    arrowTextCallback: ({ callback, data, uid }) => {
+      const labelConfig = customizationService.get('measurementLabels');
+      callLabelAutocompleteDialog(uiDialogService, callback, {}, labelConfig);
     },
     toggleCine: () => {
       const { viewports } = viewportGridService.getState();
       const { isCineEnabled } = cineService.getState();
       cineService.setIsCineEnabled(!isCineEnabled);
-      toolbarService.setButton('Cine', { props: { isActive: !isCineEnabled } });
       viewports.forEach((_, index) => cineService.setCine({ id: index, isPlaying: false }));
     },
-    setWindowLevel({ window, level, toolGroupId }) {
+
+    setViewportWindowLevel({ viewportId, window, level }) {
       // convert to numbers
       const windowWidthNum = Number(window);
       const windowCenterNum = Number(level);
-
-      const { viewportId } = _getActiveViewportEnabledElement();
-      const viewportToolGroupId = toolGroupService.getToolGroupForViewport(viewportId);
-
-      if (toolGroupId && toolGroupId !== viewportToolGroupId) {
-        return;
-      }
 
       // get actor from the viewport
       const renderingEngine = cornerstoneViewportService.getRenderingEngine();
@@ -280,34 +260,102 @@ function commandsModule({
       viewport.render();
     },
 
-    // Just call the toolbar service record interaction - allows
-    // executing a toolbar command as a full toolbar command with side affects
-    // coming from the ToolbarService itself.
-    toolbarServiceRecordInteraction: props => {
-      toolbarService.recordInteraction(props);
+    toggleViewportColorbar: ({ viewportId, displaySetInstanceUIDs, options = {} }) => {
+      const hasColorbar = colorbarService.hasColorbar(viewportId);
+      if (hasColorbar) {
+        colorbarService.removeColorbar(viewportId);
+        return;
+      }
+      colorbarService.addColorbar(viewportId, displaySetInstanceUIDs, options);
     },
-    // Enable or disable a toggleable command, without calling the activation
-    // Used to setup already active tools from hanging protocols
-    setToolbarToggled: props => {
-      toolbarService.setToggled(props.toolId, props.isActive ?? true);
-    },
-    setToolActive: ({ toolName, toolGroupId = null, toggledState }) => {
-      if (toolName === 'Crosshairs') {
-        const activeViewportToolGroup = toolGroupService.getToolGroup(null);
 
-        if (!activeViewportToolGroup._toolInstances.Crosshairs) {
-          uiNotificationService.show({
-            title: 'Crosshairs',
-            message:
-              'You need to be in a MPR view to use Crosshairs. Click on MPR button in the toolbar to activate it.',
-            type: 'info',
-            duration: 3000,
-          });
+    setWindowLevel(props) {
+      const { toolGroupId } = props;
+      const { viewportId } = _getActiveViewportEnabledElement();
+      const viewportToolGroupId = toolGroupService.getToolGroupForViewport(viewportId);
 
-          throw new Error('Crosshairs tool is not available in this viewport');
-        }
+      if (toolGroupId && toolGroupId !== viewportToolGroupId) {
+        return;
       }
 
+      actions.setViewportWindowLevel({ ...props, viewportId });
+    },
+    setToolEnabled: ({ toolName, toggle, toolGroupId }) => {
+      const { viewports } = viewportGridService.getState();
+
+      if (!viewports.size) {
+        return;
+      }
+
+      const toolGroup = toolGroupService.getToolGroup(toolGroupId ?? null);
+
+      if (!toolGroup || !toolGroup.hasTool(toolName)) {
+        return;
+      }
+
+      const toolIsEnabled = toolGroup.getToolOptions(toolName).mode === Enums.ToolModes.Enabled;
+
+      // Toggle the tool's state only if the toggle is true
+      if (toggle) {
+        toolIsEnabled ? toolGroup.setToolDisabled(toolName) : toolGroup.setToolEnabled(toolName);
+      } else {
+        toolGroup.setToolEnabled(toolName);
+      }
+
+      const renderingEngine = cornerstoneViewportService.getRenderingEngine();
+      renderingEngine.render();
+    },
+    toggleEnabledDisabledToolbar({ value, itemId, toolGroupId }) {
+      const toolName = itemId || value;
+      toolGroupId = toolGroupId ?? _getActiveViewportToolGroupId();
+
+      const toolGroup = toolGroupService.getToolGroup(toolGroupId);
+      if (!toolGroup || !toolGroup.hasTool(toolName)) {
+        return;
+      }
+
+      const toolIsEnabled = toolGroup.getToolOptions(toolName).mode === Enums.ToolModes.Enabled;
+
+      toolIsEnabled ? toolGroup.setToolDisabled(toolName) : toolGroup.setToolEnabled(toolName);
+    },
+    toggleActiveDisabledToolbar({ value, itemId, toolGroupId }) {
+      const toolName = itemId || value;
+      toolGroupId = toolGroupId ?? _getActiveViewportToolGroupId();
+      const toolGroup = toolGroupService.getToolGroup(toolGroupId);
+      if (!toolGroup || !toolGroup.hasTool(toolName)) {
+        return;
+      }
+
+      const toolIsActive = [
+        Enums.ToolModes.Active,
+        Enums.ToolModes.Enabled,
+        Enums.ToolModes.Passive,
+      ].includes(toolGroup.getToolOptions(toolName).mode);
+
+      toolIsActive
+        ? toolGroup.setToolDisabled(toolName)
+        : actions.setToolActive({ toolName, toolGroupId });
+
+      // we should set the previously active tool to active after we set the
+      // current tool disabled
+      if (toolIsActive) {
+        const prevToolName = toolGroup.getPrevActivePrimaryToolName();
+        if (prevToolName !== toolName) {
+          actions.setToolActive({ toolName: prevToolName, toolGroupId });
+        }
+      }
+    },
+    setToolActiveToolbar: ({ value, itemId, toolName, toolGroupIds = [] }) => {
+      // Sometimes it is passed as value (tools with options), sometimes as itemId (toolbar buttons)
+      toolName = toolName || itemId || value;
+
+      toolGroupIds = toolGroupIds.length ? toolGroupIds : toolGroupService.getToolGroupIds();
+
+      toolGroupIds.forEach(toolGroupId => {
+        actions.setToolActive({ toolName, toolGroupId });
+      });
+    },
+    setToolActive: ({ toolName, toolGroupId = null }) => {
       const { viewports } = viewportGridService.getState();
 
       if (!viewports.size) {
@@ -320,34 +368,17 @@ function commandsModule({
         return;
       }
 
-      if (!toolGroup.getToolInstance(toolName)) {
-        uiNotificationService.show({
-          title: `${toolName} tool`,
-          message: `The ${toolName} tool is not available in this viewport.`,
-          type: 'info',
-          duration: 3000,
-        });
-
-        throw new Error(`ToolGroup ${toolGroup.id} does not have this tool.`);
+      if (!toolGroup.hasTool(toolName)) {
+        return;
       }
 
       const activeToolName = toolGroup.getActivePrimaryMouseButtonTool();
 
       if (activeToolName) {
-        // Todo: this is a hack to prevent the crosshairs to stick around
-        // after another tool is selected. We should find a better way to do this
-        if (activeToolName === 'Crosshairs') {
-          toolGroup.setToolDisabled(activeToolName);
-        } else {
-          toolGroup.setToolPassive(activeToolName);
-        }
-      }
-
-      // If there is a toggle state, then simply set the enabled/disabled state without
-      // setting the tool active.
-      if (toggledState != null) {
-        toggledState ? toolGroup.setToolEnabled(toolName) : toolGroup.setToolDisabled(toolName);
-        return;
+        const activeToolOptions = toolGroup.getToolConfiguration(activeToolName);
+        activeToolOptions?.disableOnPassive
+          ? toolGroup.setToolDisabled(activeToolName)
+          : toolGroup.setToolPassive(activeToolName);
       }
 
       // Set the new toolName to be active
@@ -383,6 +414,7 @@ function commandsModule({
             onClose: uiModalService.hide,
             cornerstoneViewportService,
           },
+          containerDimensions: 'w-[70%] max-w-[900px]',
         });
       }
     },
@@ -418,11 +450,9 @@ function commandsModule({
 
       const { viewport } = enabledElement;
 
-      if (viewport instanceof StackViewport) {
-        const { flipHorizontal } = viewport.getCamera();
-        viewport.setCamera({ flipHorizontal: !flipHorizontal });
-        viewport.render();
-      }
+      const { flipHorizontal } = viewport.getCamera();
+      viewport.setCamera({ flipHorizontal: !flipHorizontal });
+      viewport.render();
     },
     flipViewportVertical: () => {
       const enabledElement = _getActiveViewportEnabledElement();
@@ -433,11 +463,9 @@ function commandsModule({
 
       const { viewport } = enabledElement;
 
-      if (viewport instanceof StackViewport) {
-        const { flipVertical } = viewport.getCamera();
-        viewport.setCamera({ flipVertical: !flipVertical });
-        viewport.render();
-      }
+      const { flipVertical } = viewport.getCamera();
+      viewport.setCamera({ flipVertical: !flipVertical });
+      viewport.render();
     },
     invertViewport: ({ element }) => {
       let enabledElement;
@@ -540,18 +568,51 @@ function commandsModule({
 
       cstUtils.scroll(viewport, options);
     },
-    setViewportColormap: ({ viewportId, displaySetInstanceUID, colormap, immediate = false }) => {
+    setViewportColormap: ({
+      viewportId,
+      displaySetInstanceUID,
+      colormap,
+      opacity = 1,
+      immediate = false,
+    }) => {
       const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
       const actorEntries = viewport.getActors();
+      let hpOpacity;
+      // Retrieve active protocol's viewport match details
+      const { viewportMatchDetails } = hangingProtocolService.getActiveProtocol();
+      // Get display set options for the specified viewport ID
+      const displaySetsInfo = viewportMatchDetails.get(viewportId)?.displaySetsInfo;
 
-      const actorEntry = actorEntries.find(actorEntry => {
-        return actorEntry.uid.includes(displaySetInstanceUID);
-      });
+      if (displaySetsInfo) {
+        // Find the display set that matches the given UID
+        const matchingDisplaySet = displaySetsInfo.find(
+          displaySet => displaySet.displaySetInstanceUID === displaySetInstanceUID
+        );
+        // If a matching display set is found, update the opacity with its value
+        hpOpacity = matchingDisplaySet?.displaySetOptions?.options?.colormap?.opacity;
+      }
 
-      const { actor: volumeActor, uid: volumeId } = actorEntry;
+      // HP takes priority over the default opacity
+      colormap = { ...colormap, opacity: hpOpacity || opacity };
 
-      viewport.setProperties({ colormap, volumeActor }, volumeId);
+      const setViewportProperties = (viewport, uid) => {
+        const actorEntry = actorEntries.find(entry => entry.uid.includes(uid));
+        const { actor: volumeActor, uid: volumeId } = actorEntry;
+        viewport.setProperties({ colormap, volumeActor }, volumeId);
+      };
+
+      if (viewport instanceof StackViewport) {
+        setViewportProperties(viewport, viewportId);
+      }
+
+      if (viewport instanceof VolumeViewport) {
+        if (!displaySetInstanceUID) {
+          const { viewports } = viewportGridService.getState();
+          displaySetInstanceUID = viewports.get(viewportId)?.displaySetInstanceUIDs[0];
+        }
+        setViewportProperties(viewport, displaySetInstanceUID);
+      }
 
       if (immediate) {
         viewport.render();
@@ -565,31 +626,68 @@ function commandsModule({
         (currentIndex + direction + viewportIds.length) % viewportIds.length;
       viewportGridService.setActiveViewportId(viewportIds[nextViewportIndex] as string);
     },
+    /**
+     * If the syncId is given and a synchronizer with that ID already exists, it will
+     * toggle it on/off for the provided viewports. If not, it will attempt to create
+     * a new synchronizer using the given syncId and type for the specified viewports.
+     * If no viewports are provided, you may notice some default behavior.
+     * - 'voi' type, we will aim to synchronize all viewports with the same modality
+     * -'imageSlice' type, we will aim to synchronize all viewports with the same orientation.
+     *
+     * @param options
+     * @param options.viewports - The viewports to synchronize
+     * @param options.syncId - The synchronization group ID
+     * @param options.type - The type of synchronization to perform
+     */
+    toggleSynchronizer: ({ type, viewports, syncId }) => {
+      const synchronizer = syncGroupService.getSynchronizer(syncId);
 
-    toggleImageSliceSync: ({ toggledState }) => {
-      toggleImageSliceSync({
-        servicesManager,
-        toggledState,
-      });
+      if (synchronizer) {
+        synchronizer.isDisabled() ? synchronizer.setEnabled(true) : synchronizer.setEnabled(false);
+        return;
+      }
+
+      const fn = toggleSyncFunctions[type];
+
+      if (fn) {
+        fn({
+          servicesManager,
+          viewports,
+          syncId,
+        });
+      }
     },
-    setSourceViewportForReferenceLinesTool: ({ toggledState, viewportId }) => {
+    setSourceViewportForReferenceLinesTool: ({ viewportId }) => {
       if (!viewportId) {
         const { activeViewportId } = viewportGridService.getState();
-        viewportId = activeViewportId;
+        viewportId = activeViewportId ?? 'default';
       }
 
       const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
 
-      toolGroup.setToolConfiguration(
+      toolGroup?.setToolConfiguration(
         ReferenceLinesTool.toolName,
         {
           sourceViewportId: viewportId,
         },
         true // overwrite
       );
+
+      const renderingEngine = cornerstoneViewportService.getRenderingEngine();
+      renderingEngine.render();
     },
     storePresentation: ({ viewportId }) => {
       cornerstoneViewportService.storePresentation({ viewportId });
+    },
+    updateVolumeData: ({ volume }) => {
+      // update vtkOpenGLTexture and imageData of computed volume
+      const { imageData, vtkOpenGLTexture } = volume;
+      const numSlices = imageData.getDimensions()[2];
+      const slicesToUpdate = [...Array(numSlices).keys()];
+      slicesToUpdate.forEach(i => {
+        vtkOpenGLTexture.setUpdatedFrame(i);
+      });
+      imageData.modified();
     },
 
     attachProtocolViewportDataListener: ({ protocol, stageIndex }) => {
@@ -608,6 +706,127 @@ function commandsModule({
         }
       });
     },
+
+    setViewportPreset: ({ viewportId, preset }) => {
+      const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+      if (!viewport) {
+        return;
+      }
+      viewport.setProperties({
+        preset,
+      });
+      viewport.render();
+    },
+
+    /**
+     * Sets the volume quality for a given viewport.
+     * @param {string} viewportId - The ID of the viewport to set the volume quality.
+     * @param {number} volumeQuality - The desired quality level of the volume rendering.
+     */
+
+    setVolumeRenderingQulaity: ({ viewportId, volumeQuality }) => {
+      const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+      const { actor } = viewport.getActors()[0];
+      const mapper = actor.getMapper();
+      const image = mapper.getInputData();
+      const dims = image.getDimensions();
+      const spacing = image.getSpacing();
+      const spatialDiagonal = vec3.length(
+        vec3.fromValues(dims[0] * spacing[0], dims[1] * spacing[1], dims[2] * spacing[2])
+      );
+
+      let sampleDistance = spacing.reduce((a, b) => a + b) / 3.0;
+      sampleDistance /= volumeQuality > 1 ? 0.5 * volumeQuality ** 2 : 1.0;
+      const samplesPerRay = spatialDiagonal / sampleDistance + 1;
+      mapper.setMaximumSamplesPerRay(samplesPerRay);
+      mapper.setSampleDistance(sampleDistance);
+      viewport.render();
+    },
+
+    /**
+     * Shifts opacity points for a given viewport id.
+     * @param {string} viewportId - The ID of the viewport to set the mapping range.
+     * @param {number} shift - The shift value to shift the points by.
+     */
+    shiftVolumeOpacityPoints: ({ viewportId, shift }) => {
+      const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+      const { actor } = viewport.getActors()[0];
+      const ofun = actor.getProperty().getScalarOpacity(0);
+
+      const opacityPointValues = []; // Array to hold values
+      // Gather Existing Values
+      const size = ofun.getSize();
+      for (let pointIdx = 0; pointIdx < size; pointIdx++) {
+        const opacityPointValue = [0, 0, 0, 0];
+        ofun.getNodeValue(pointIdx, opacityPointValue);
+        // opacityPointValue now holds [xLocation, opacity, midpoint, sharpness]
+        opacityPointValues.push(opacityPointValue);
+      }
+      // Add offset
+      opacityPointValues.forEach(opacityPointValue => {
+        opacityPointValue[0] += shift; // Change the location value
+      });
+      // Set new values
+      ofun.removeAllPoints();
+      opacityPointValues.forEach(opacityPointValue => {
+        ofun.addPoint(...opacityPointValue);
+      });
+      viewport.render();
+    },
+
+    /**
+     * Sets the volume lighting settings for a given viewport.
+     * @param {string} viewportId - The ID of the viewport to set the lighting settings.
+     * @param {Object} options - The lighting settings to be set.
+     * @param {boolean} options.shade - The shade setting for the lighting.
+     * @param {number} options.ambient - The ambient setting for the lighting.
+     * @param {number} options.diffuse - The diffuse setting for the lighting.
+     * @param {number} options.specular - The specular setting for the lighting.
+     **/
+
+    setVolumeLighting: ({ viewportId, options }) => {
+      const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+      const { actor } = viewport.getActors()[0];
+      const property = actor.getProperty();
+
+      if (options.shade !== undefined) {
+        property.setShade(options.shade);
+      }
+
+      if (options.ambient !== undefined) {
+        property.setAmbient(options.ambient);
+      }
+
+      if (options.diffuse !== undefined) {
+        property.setDiffuse(options.diffuse);
+      }
+
+      if (options.specular !== undefined) {
+        property.setSpecular(options.specular);
+      }
+
+      viewport.render();
+    },
+    resetCrosshairs: ({ viewportId }) => {
+      const crosshairInstances = [];
+
+      const getCrosshairInstances = toolGroupId => {
+        const toolGroup = toolGroupService.getToolGroup(toolGroupId);
+        crosshairInstances.push(toolGroup.getToolInstance('Crosshairs'));
+      };
+
+      if (!viewportId) {
+        const toolGroupIds = toolGroupService.getToolGroupIds();
+        toolGroupIds.forEach(getCrosshairInstances);
+      } else {
+        const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
+        getCrosshairInstances(toolGroup.id);
+      }
+
+      crosshairInstances.forEach(ins => {
+        ins?.resetCrosshairs();
+      });
+    },
   };
 
   const definitions = {
@@ -615,7 +834,6 @@ function commandsModule({
     // context menu
     showCornerstoneContextMenu: {
       commandFn: actions.showCornerstoneContextMenu,
-      storeContexts: [],
       options: {
         menuCustomizationId: 'measurementsContextMenu',
         commands: [
@@ -634,6 +852,9 @@ function commandsModule({
       storeContexts: [],
       options: {},
     },
+    toggleViewportColorbar: {
+      commandFn: actions.toggleViewportColorbar,
+    },
     deleteMeasurement: {
       commandFn: actions.deleteMeasurement,
     },
@@ -643,15 +864,20 @@ function commandsModule({
     updateMeasurement: {
       commandFn: actions.updateMeasurement,
     },
-
+    setViewportWindowLevel: {
+      commandFn: actions.setViewportWindowLevel,
+    },
     setWindowLevel: {
       commandFn: actions.setWindowLevel,
     },
-    toolbarServiceRecordInteraction: {
-      commandFn: actions.toolbarServiceRecordInteraction,
-    },
     setToolActive: {
       commandFn: actions.setToolActive,
+    },
+    setToolActiveToolbar: {
+      commandFn: actions.setToolActiveToolbar,
+    },
+    setToolEnabled: {
+      commandFn: actions.setToolEnabled,
     },
     rotateViewportCW: {
       commandFn: actions.rotateViewport,
@@ -726,23 +952,41 @@ function commandsModule({
     setViewportColormap: {
       commandFn: actions.setViewportColormap,
     },
-    toggleImageSliceSync: {
-      commandFn: actions.toggleImageSliceSync,
-    },
     setSourceViewportForReferenceLinesTool: {
       commandFn: actions.setSourceViewportForReferenceLinesTool,
     },
     storePresentation: {
       commandFn: actions.storePresentation,
     },
-    setToolbarToggled: {
-      commandFn: actions.setToolbarToggled,
-    },
-    cleanUpCrosshairs: {
-      commandFn: actions.cleanUpCrosshairs,
-    },
     attachProtocolViewportDataListener: {
       commandFn: actions.attachProtocolViewportDataListener,
+    },
+    setViewportPreset: {
+      commandFn: actions.setViewportPreset,
+    },
+    setVolumeRenderingQulaity: {
+      commandFn: actions.setVolumeRenderingQulaity,
+    },
+    shiftVolumeOpacityPoints: {
+      commandFn: actions.shiftVolumeOpacityPoints,
+    },
+    setVolumeLighting: {
+      commandFn: actions.setVolumeLighting,
+    },
+    resetCrosshairs: {
+      commandFn: actions.resetCrosshairs,
+    },
+    toggleSynchronizer: {
+      commandFn: actions.toggleSynchronizer,
+    },
+    updateVolumeData: {
+      commandFn: actions.updateVolumeData,
+    },
+    toggleEnabledDisabledToolbar: {
+      commandFn: actions.toggleEnabledDisabledToolbar,
+    },
+    toggleActiveDisabledToolbar: {
+      commandFn: actions.toggleActiveDisabledToolbar,
     },
   };
 

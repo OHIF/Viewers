@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-dicom-microscopy",
-  "version": "3.8.0-beta.52",
+  "version": "3.9.0-beta.21",
   "description": "OHIF extension for DICOM microscopy",
   "author": "Bill Wallace, md-prog",
   "license": "MIT",
@@ -21,6 +21,8 @@
     "yarn": ">=1.18.0"
   },
   "scripts": {
+    "clean": "shx rm -rf dist",
+    "clean:deep": "yarn run clean && shx rm -rf node_modules",
     "dev": "cross-env NODE_ENV=development webpack --config .webpack/webpack.dev.js --watch --output-pathinfo",
     "dev:dicom-pdf": "yarn run dev",
     "build": "cross-env NODE_ENV=production webpack --config .webpack/webpack.prod.js",
@@ -28,10 +30,10 @@
     "start": "yarn run dev"
   },
   "peerDependencies": {
-    "@ohif/core": "3.8.0-beta.52",
-    "@ohif/extension-default": "3.8.0-beta.52",
-    "@ohif/i18n": "3.8.0-beta.52",
-    "@ohif/ui": "3.8.0-beta.52",
+    "@ohif/core": "3.9.0-beta.21",
+    "@ohif/extension-default": "3.9.0-beta.21",
+    "@ohif/i18n": "3.9.0-beta.21",
+    "@ohif/ui": "3.9.0-beta.21",
     "prop-types": "^15.6.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",

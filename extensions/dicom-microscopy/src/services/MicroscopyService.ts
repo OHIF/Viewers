@@ -18,17 +18,17 @@ const EVENTS = {
  * ROI annotations relevant to the application
  */
 export default class MicroscopyService extends PubSubService {
-  public static REGISTRATION = serviceManager => {
+  public static REGISTRATION = servicesManager => {
     return {
       name: 'microscopyService',
       altName: 'MicroscopyService',
       create: ({ configuration = {} }) => {
-        return new MicroscopyService(serviceManager);
+        return new MicroscopyService(servicesManager);
       },
     };
   };
 
-  serviceManager: any;
+  servicesManager: any;
 
   managedViewers = new Set();
   roiUids = new Set();
@@ -36,9 +36,9 @@ export default class MicroscopyService extends PubSubService {
   selectedAnnotation = null;
   pendingFocus = false;
 
-  constructor(serviceManager) {
+  constructor(servicesManager) {
     super(EVENTS);
-    this.serviceManager = serviceManager;
+    this.servicesManager = servicesManager;
     this._onRoiAdded = this._onRoiAdded.bind(this);
     this._onRoiModified = this._onRoiModified.bind(this);
     this._onRoiRemoved = this._onRoiRemoved.bind(this);
@@ -571,6 +571,10 @@ export default class MicroscopyService extends PubSubService {
   activateInteractions(interactions) {
     this.managedViewers.forEach(mv => mv.activateInteractions(interactions));
     this.activeInteractions = interactions;
+  }
+
+  getActiveInteractions() {
+    return this.activeInteractions;
   }
 
   /**

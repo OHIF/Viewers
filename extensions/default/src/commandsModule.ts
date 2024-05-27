@@ -1,4 +1,4 @@
-import { ServicesManager, utils, Types } from '@ohif/core';
+import { utils, Types } from '@ohif/core';
 
 import { ContextMenuController, defaultContextMenu } from './CustomizableContextMenu';
 import DicomTagBrowser from './DicomTagBrowser/DicomTagBrowser';
@@ -12,27 +12,18 @@ import { NavigateHistory } from './types/commandModuleTypes';
 import { history } from '@ohif/app';
 
 const { subscribeToNextViewportGridChange } = utils;
-
 export type HangingProtocolParams = {
   protocolId?: string;
   stageIndex?: number;
   activeStudyUID?: string;
   stageId?: string;
+  reset?: false;
 };
 
 export type UpdateViewportDisplaySetParams = {
   direction: number;
   excludeNonImageModalities?: boolean;
 };
-
-/**
- * Determine if a command is a hanging protocol one.
- * For now, just use the two hanging protocol commands that are in this
- * commands module, but if others get added elsewhere this may need enhancing.
- */
-const isHangingProtocolCommand = command =>
-  command &&
-  (command.commandName === 'setHangingProtocol' || command.commandName === 'toggleHangingProtocol');
 
 const commandsModule = ({
   servicesManager,
@@ -46,8 +37,7 @@ const commandsModule = ({
     viewportGridService,
     displaySetService,
     stateSyncService,
-    toolbarService,
-  } = (servicesManager as ServicesManager).services;
+  } = servicesManager.services;
 
   // Define a context menu controller for use with any context menus
   const contextMenuController = new ContextMenuController(servicesManager, commandsManager);
@@ -108,41 +98,6 @@ const commandsModule = ({
     },
 
     /**
-     * Toggles off all tools which contain a commandName of setHangingProtocol
-     * or toggleHangingProtocol, and which match/don't match the protocol id/stage
-     */
-    toggleHpTools: () => {
-      const {
-        protocol,
-        stageIndex: toggleStageIndex,
-        stage,
-      } = hangingProtocolService.getActiveProtocol();
-      const enableListener = button => {
-        if (!button.id) {
-          return;
-        }
-        const { commands, items, primary } = button.props || button;
-        if (primary) {
-          enableListener(primary);
-        }
-        if (items) {
-          items.forEach(enableListener);
-        }
-        const hpCommand = commands?.find?.(isHangingProtocolCommand);
-        if (!hpCommand) {
-          return;
-        }
-        const { protocolId, stageIndex, stageId } = hpCommand.commandOptions;
-        const isActive =
-          (!protocolId || protocolId === protocol.id) &&
-          (stageIndex === undefined || stageIndex === toggleStageIndex) &&
-          (!stageId || stageId === stage.id);
-        toolbarService.setToggled(button.id, isActive);
-      };
-      Object.values(toolbarService.getButtons()).forEach(enableListener);
-    },
-
-    /**
      *  Sets the specified protocol
      *    1. Records any existing state using the viewport grid service
      *    2. Finds the destination state - this can be one of:
@@ -173,14 +128,12 @@ const commandsModule = ({
       stageIndex,
       reset = false,
     }: HangingProtocolParams): boolean => {
-      const primaryToolBeforeHPChange = toolbarService.getActivePrimaryTool();
       try {
         // Stores in the state the display set selector id to displaySetUID mapping
         // Pass in viewportId for the active viewport.  This item will get set as
         // the activeViewportId
         const state = viewportGridService.getState();
         const hpInfo = hangingProtocolService.getState();
-        const { protocol: oldProtocol } = hangingProtocolService.getActiveProtocol();
         const stateSyncReduce = reuseCachedLayouts(state, hangingProtocolService, stateSyncService);
         const { hangingProtocolStageIndexMap, viewportGridStore, displaySetSelectorMap } =
           stateSyncReduce;
@@ -243,33 +196,9 @@ const commandsModule = ({
           `${activeStudyUID || hpInfo.activeStudyUID}:activeDisplaySet:0`
         ];
         stateSyncService.store(stateSyncReduce);
-        // This is a default action applied
-        actions.toggleHpTools();
-
-        // try to use the same tool in the new hanging protocol stage
-        const primaryButton = toolbarService.getButton(primaryToolBeforeHPChange);
-        if (primaryButton) {
-          // is there any type of interaction on this button, if not it might be in the
-          // items. This is a bit of a hack, but it works for now.
-
-          let interactionType = primaryButton.props?.interactionType;
-
-          if (!interactionType && primaryButton.props?.items) {
-            const firstItem = primaryButton.props.items[0];
-            interactionType = firstItem.props?.interactionType || firstItem.props?.type;
-          }
-
-          if (interactionType) {
-            toolbarService.recordInteraction({
-              interactionType,
-              ...primaryButton.props,
-            });
-          }
-        }
         return true;
       } catch (e) {
         console.error(e);
-        actions.toggleHpTools();
         uiNotificationService.show({
           title: 'Apply Hanging Protocol',
           message: 'The hanging protocol could not be applied.',
@@ -341,7 +270,7 @@ const commandsModule = ({
     /**
      * Changes the viewport grid layout in terms of the MxN layout.
      */
-    setViewportGridLayout: ({ numRows, numCols }) => {
+    setViewportGridLayout: ({ numRows, numCols, isHangingProtocolLayout = false }) => {
       const { protocol } = hangingProtocolService.getActiveProtocol();
       const onLayoutChange = protocol.callbacks?.onLayoutChange;
       if (commandsManager.run(onLayoutChange, { numRows, numCols }) === false) {
@@ -356,6 +285,7 @@ const commandsModule = ({
         const findOrCreateViewport = layoutFindOrCreate.bind(
           null,
           hangingProtocolService,
+          isHangingProtocolLayout,
           stateReduce.viewportsByPosition
         );
 
@@ -363,6 +293,7 @@ const commandsModule = ({
           numRows,
           numCols,
           findOrCreateViewport,
+          isHangingProtocolLayout,
         });
         stateSyncService.store(stateReduce);
       };
@@ -372,7 +303,7 @@ const commandsModule = ({
 
     toggleOneUp() {
       const viewportGridState = viewportGridService.getState();
-      const { activeViewportId, viewports, layout } = viewportGridState;
+      const { activeViewportId, viewports, layout, isHangingProtocolLayout } = viewportGridState;
       const { displaySetInstanceUIDs, displaySetOptions, viewportOptions } =
         viewports.get(activeViewportId);
 
@@ -399,7 +330,8 @@ const commandsModule = ({
                 .map(displaySetInstanceUID =>
                   hangingProtocolService.getViewportsRequireUpdate(
                     viewportIdToUpdate,
-                    displaySetInstanceUID
+                    displaySetInstanceUID,
+                    isHangingProtocolLayout
                   )
                 )
                 .flat();
@@ -436,6 +368,7 @@ const commandsModule = ({
           activeViewportId: viewportIdToUpdate,
           layoutOptions,
           findOrCreateViewport,
+          isHangingProtocolLayout: true,
         });
       } else {
         // We are not in one-up, so toggle to one up.
@@ -460,6 +393,7 @@ const commandsModule = ({
           numRows: 1,
           numCols: 1,
           findOrCreateViewport,
+          isHangingProtocolLayout: true,
         });
 
         // Subscribe to ANY (i.e. manual and hanging protocol) layout changes so that
@@ -515,6 +449,7 @@ const commandsModule = ({
           displaySetInstanceUID,
           onClose: UIModalService.hide,
         },
+        containerDimensions: 'w-[70%] max-w-[900px]',
         title: 'DICOM Tag Browser',
       });
     },
@@ -577,7 +512,8 @@ const commandsModule = ({
 
       currentDisplaySets.sort(dsSortFn);
 
-      const { activeViewportId, viewports } = viewportGridService.getState();
+      const { activeViewportId, viewports, isHangingProtocolLayout } =
+        viewportGridService.getState();
 
       const { displaySetInstanceUIDs } = viewports.get(activeViewportId);
 
@@ -611,7 +547,8 @@ const commandsModule = ({
       try {
         updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
           activeViewportId,
-          displaySetInstanceUID
+          displaySetInstanceUID,
+          isHangingProtocolLayout
         );
       } catch (error) {
         console.warn(error);
@@ -639,56 +576,38 @@ const commandsModule = ({
     },
     clearMeasurements: {
       commandFn: actions.clearMeasurements,
-      storeContexts: [],
-      options: {},
     },
     displayNotification: {
       commandFn: actions.displayNotification,
-      storeContexts: [],
-      options: {},
     },
     setHangingProtocol: {
       commandFn: actions.setHangingProtocol,
-      storeContexts: [],
-      options: {},
     },
     toggleHangingProtocol: {
       commandFn: actions.toggleHangingProtocol,
-      storeContexts: [],
-      options: {},
     },
     navigateHistory: {
       commandFn: actions.navigateHistory,
-      storeContexts: [],
-      options: {},
     },
     nextStage: {
       commandFn: actions.deltaStage,
-      storeContexts: [],
       options: { direction: 1 },
     },
     previousStage: {
       commandFn: actions.deltaStage,
-      storeContexts: [],
       options: { direction: -1 },
     },
     setViewportGridLayout: {
       commandFn: actions.setViewportGridLayout,
-      storeContexts: [],
-      options: {},
     },
     toggleOneUp: {
       commandFn: actions.toggleOneUp,
-      storeContexts: [],
-      options: {},
     },
     openDICOMTagViewer: {
       commandFn: actions.openDICOMTagViewer,
     },
     updateViewportDisplaySet: {
       commandFn: actions.updateViewportDisplaySet,
-      storeContexts: [],
-      options: {},
     },
   };
 

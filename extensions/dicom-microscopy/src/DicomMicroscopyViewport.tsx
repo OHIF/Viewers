@@ -11,16 +11,6 @@ import dcmjs from 'dcmjs';
 import cleanDenaturalizedDataset from './utils/cleanDenaturalizedDataset';
 import MicroscopyService from './services/MicroscopyService';
 
-function transformImageTypeUnnaturalized(entry) {
-  if (entry.vr === 'CS') {
-    return {
-      vr: 'US',
-      Value: entry.Value[0].split('\\'),
-    };
-  }
-  return entry;
-}
-
 class DicomMicroscopyViewport extends Component {
   state = {
     error: null as any,
@@ -250,7 +240,6 @@ class DicomMicroscopyViewport extends Component {
 
   componentDidMount() {
     const { displaySets, viewportOptions } = this.props;
-    const { viewportId } = viewportOptions;
     // Todo-rename: this is always getting the 0
     const displaySet = displaySets[0];
     this.installOpenLayersRenderer(this.container.current, displaySet).then(() => {

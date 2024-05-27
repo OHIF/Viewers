@@ -13,7 +13,7 @@ version: 2.1
 ##
 orbs:
   codecov: codecov/codecov@1.0.5
-  cypress: cypress-io/cypress@3.2.1
+  cypress: cypress-io/cypress@3.3.1
 
 executors:
   cypress-custom:
@@ -495,13 +495,18 @@ workflows:
       - BUILD:
           filters:
             branches:
-              only: release
-      - NPM_PUBLISH:
+              only: /^release\/.*/
+      - HOLD_FOR_APPROVAL:
+          type: approval
           requires:
             - BUILD
+      - NPM_PUBLISH:
+          requires:
+            - HOLD_FOR_APPROVAL
       - DOCKER_RELEASE_PUBLISH:
           requires:
             - NPM_PUBLISH
+
   ###
   # Unit and E2E tests have already run for PR_CHECKS
   # Re-running should not gain us any confidence here

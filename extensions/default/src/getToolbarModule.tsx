@@ -1,39 +1,73 @@
 import ToolbarDivider from './Toolbar/ToolbarDivider';
 import ToolbarLayoutSelectorWithServices from './Toolbar/ToolbarLayoutSelector';
 import ToolbarSplitButtonWithServices from './Toolbar/ToolbarSplitButtonWithServices';
-import ToolbarButtonWithServices from './Toolbar/ToolbarButtonWithServices';
+import ToolbarButtonGroupWithServices from './Toolbar/ToolbarButtonGroupWithServices';
+import { ToolbarButton } from '@ohif/ui';
+import ProgressDropdownWithService from './components/ProgressDropdownWithService';
 
-export default function getToolbarModule({ commandsManager, servicesManager }) {
+const getClassName = isToggled => {
+  return {
+    className: isToggled
+      ? '!text-primary-active'
+      : '!text-common-bright hover:!bg-primary-dark hover:text-primary-light',
+  };
+};
+
+export default function getToolbarModule({ commandsManager, servicesManager }: withAppTypes) {
+  const { cineService } = servicesManager.services;
   return [
+    {
+      name: 'ohif.radioGroup',
+      defaultComponent: ToolbarButton,
+    },
     {
       name: 'ohif.divider',
       defaultComponent: ToolbarDivider,
-      clickHandler: () => {},
-    },
-    {
-      name: 'ohif.action',
-      defaultComponent: ToolbarButtonWithServices,
-      clickHandler: () => {},
-    },
-    {
-      name: 'ohif.radioGroup',
-      defaultComponent: ToolbarButtonWithServices,
-      clickHandler: () => {},
     },
     {
       name: 'ohif.splitButton',
       defaultComponent: ToolbarSplitButtonWithServices,
-      clickHandler: () => {},
     },
     {
       name: 'ohif.layoutSelector',
-      defaultComponent: ToolbarLayoutSelectorWithServices,
-      clickHandler: (evt, clickedBtn, btnSectionName) => {},
+      defaultComponent: props =>
+        ToolbarLayoutSelectorWithServices({ ...props, commandsManager, servicesManager }),
     },
     {
-      name: 'ohif.toggle',
-      defaultComponent: ToolbarButtonWithServices,
-      clickHandler: () => {},
+      name: 'ohif.buttonGroup',
+      defaultComponent: ToolbarButtonGroupWithServices,
+    },
+    {
+      name: 'ohif.progressDropdown',
+      defaultComponent: ProgressDropdownWithService,
+    },
+    {
+      name: 'evaluate.group.promoteToPrimary',
+      evaluate: ({ viewportId, button, itemId }) => {
+        const { items } = button.props;
+
+        if (!itemId) {
+          return {
+            primary: button.props.primary,
+            items,
+          };
+        }
+
+        // other wise we can move the clicked tool to the primary button
+        const clickedItemProps = items.find(item => item.id === itemId || item.itemId === itemId);
+
+        return {
+          primary: clickedItemProps,
+          items,
+        };
+      },
+    },
+    {
+      name: 'evaluate.cine',
+      evaluate: () => {
+        const isToggled = cineService.getState().isCineEnabled;
+        return getClassName(isToggled);
+      },
     },
   ];
 }

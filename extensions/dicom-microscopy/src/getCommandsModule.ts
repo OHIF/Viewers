@@ -1,4 +1,4 @@
-import { ServicesManager, CommandsManager, ExtensionManager } from '@ohif/core';
+import { CommandsManager, ExtensionManager } from '@ohif/core';
 import styles from './utils/styles';
 import callInputDialog from './utils/callInputDialog';
 
@@ -7,7 +7,7 @@ export default function getCommandsModule({
   commandsManager,
   extensionManager,
 }: {
-  servicesManager: ServicesManager;
+  servicesManager: AppTypes.ServicesManager;
   commandsManager: CommandsManager;
   extensionManager: ExtensionManager;
 }) {
@@ -124,7 +124,7 @@ export default function getCommandsModule({
       }
 
       // overview
-      const { activeViewportId, viewports } = viewportGridService.getState();
+      const { activeViewportId } = viewportGridService.getState();
       microscopyService.toggleOverviewMap(activeViewportId);
     },
     toggleAnnotations: () => {
@@ -135,28 +135,18 @@ export default function getCommandsModule({
   const definitions = {
     deleteMeasurement: {
       commandFn: actions.deleteMeasurement,
-      storeContexts: [] as any[],
-      options: {},
     },
     setLabel: {
       commandFn: actions.setLabel,
-      storeContexts: [] as any[],
-      options: {},
     },
     setToolActive: {
       commandFn: actions.setToolActive,
-      storeContexts: [] as any[],
-      options: {},
     },
     toggleOverlays: {
       commandFn: actions.toggleOverlays,
-      storeContexts: [] as any[],
-      options: {},
     },
     toggleAnnotations: {
       commandFn: actions.toggleAnnotations,
-      storeContexts: [] as any[],
-      options: {},
     },
   };
 

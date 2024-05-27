@@ -2,6 +2,7 @@ import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import * as ButtonEnums from './ButtonEnums';
+import Tooltip from '../Tooltip/Tooltip';
 
 const sizeClasses = {
   [ButtonEnums.size.small]: 'h-[26px] text-[13px]',
@@ -66,11 +67,16 @@ const Button = ({
   name,
   className,
   onClick,
+  dataCY,
+  startIconTooltip = null,
+  endIconTooltip = null,
 }) => {
+  dataCY = dataCY || `${name}-btn`;
+
   const startIcon = startIconProp && (
     <>
       {React.cloneElement(startIconProp, {
-        className: classnames('w-4 h-4 fill-current'),
+        className: classnames('w-4 h-4 fill-current', startIconProp?.props?.className),
       })}
     </>
   );
@@ -78,7 +84,7 @@ const Button = ({
   const endIcon = endIconProp && (
     <>
       {React.cloneElement(endIconProp, {
-        className: classnames('w-4 h-4 fill-current'),
+        className: classnames('w-4 h-4 fill-current', endIconProp?.props?.className),
       })}
     </>
   );
@@ -106,11 +112,11 @@ const Button = ({
       disabled={disabled}
       ref={buttonElement}
       onClick={handleOnClick}
-      data-cy={`${name}-btn`}
+      data-cy={dataCY}
     >
-      {startIcon}
+      {startIconTooltip ? <Tooltip content={startIconTooltip}>{startIcon}</Tooltip> : startIcon}
       {children}
-      {endIcon}
+      {endIconTooltip ? <Tooltip content={endIconTooltip}>{endIcon}</Tooltip> : endIcon}
     </button>
   );
 };
@@ -141,6 +147,12 @@ Button.propTypes = {
   endIcon: PropTypes.node,
   /** Additional TailwindCSS classnames */
   className: PropTypes.string,
+  /** Tooltip for the start icon */
+  startIconTooltip: PropTypes.node,
+  /** Tooltip for the end icon */
+  endIconTooltip: PropTypes.node,
+  /** Data attribute for testing */
+  dataCY: PropTypes.string,
 };
 
 export default Button;

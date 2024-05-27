@@ -10,8 +10,17 @@ const metadataProvider = classes.MetadataProvider;
  * @param {Object} servicesManager
  * @param {Object} configuration
  */
-export default function init({ servicesManager, configuration = {} }): void {
-  const { stateSyncService } = servicesManager.services;
+export default function init({
+  servicesManager,
+  configuration = {},
+  commandsManager,
+}: withAppTypes): void {
+  const { stateSyncService, toolbarService, cineService, viewportGridService } =
+    servicesManager.services;
+
+  toolbarService.registerEventForToolbarUpdate(cineService, [
+    cineService.EVENTS.CINE_STATE_CHANGED,
+  ]);
   // Add
   DicomMetadataStore.subscribe(DicomMetadataStore.EVENTS.INSTANCES_ADDED, handlePETImageMetadata);
 
@@ -23,6 +32,10 @@ export default function init({ servicesManager, configuration = {} }): void {
   // ViewportGridService getState, by the keys `<activeStudyUID>:<protocolId>:<stageIndex>`
   // Used to recover manual changes to the layout of a stage.
   stateSyncService.register('viewportGridStore', { clearOnModeExit: true });
+
+  // uiStateStore is a sync state which stores the relevant
+  // UI state for the viewer
+  stateSyncService.register('uiStateStore', { clearOnModeExit: true });
 
   // displaySetSelectorMap stores a map from
   // `<activeStudyUID>:<displaySetSelectorId>:<matchOffset>` to
@@ -38,7 +51,7 @@ export default function init({ servicesManager, configuration = {} }): void {
   });
 
   // Stores a map from the to be applied hanging protocols `<activeStudyUID>:<protocolId>`
-  // to the previously applied hanging protolStageIndexMap key, in order to toggle
+  // to the previously applied hanging protocolStageIndexMap key, in order to toggle
   // off the applied protocol and remember the old state.
   stateSyncService.register('toggleHangingProtocol', { clearOnModeExit: true });
 
@@ -46,6 +59,45 @@ export default function init({ servicesManager, configuration = {} }): void {
   // changes numRows and numCols, the viewports can be remembers and then replaced
   // afterwards.
   stateSyncService.register('viewportsByPosition', { clearOnModeExit: true });
+
+  // Function to process and subscribe to events for a given set of commands and listeners
+  const subscribeToEvents = listeners => {
+    Object.entries(listeners).forEach(([event, commands]) => {
+      const supportedEvents = [
+        viewportGridService.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED,
+        viewportGridService.EVENTS.VIEWPORTS_READY,
+      ];
+
+      if (supportedEvents.includes(event)) {
+        viewportGridService.subscribe(event, eventData => {
+          const viewportId = eventData?.viewportId ?? viewportGridService.getActiveViewportId();
+
+          commandsManager.run(commands, { viewportId });
+        });
+      }
+    });
+  };
+
+  toolbarService.subscribe(toolbarService.EVENTS.TOOL_BAR_MODIFIED, state => {
+    const { buttons } = state;
+    for (const [id, button] of Object.entries(buttons)) {
+      const { groupId, items, listeners } = button.props || {};
+
+      // Handle group items' listeners
+      if (groupId && items) {
+        items.forEach(item => {
+          if (item.listeners) {
+            subscribeToEvents(item.listeners);
+          }
+        });
+      }
+
+      // Handle button listeners
+      if (listeners) {
+        subscribeToEvents(listeners);
+      }
+    }
+  });
 }
 
 const handlePETImageMetadata = ({ SeriesInstanceUID, StudyInstanceUID }) => {

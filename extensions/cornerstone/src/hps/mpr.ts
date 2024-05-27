@@ -2,8 +2,10 @@ import { Types } from '@ohif/core';
 
 export const mpr: Types.HangingProtocol.Protocol = {
   id: 'mpr',
-  name: 'Multi-Planar Reconstruction',
+  name: 'MPR',
   locked: true,
+  icon: 'layout-advanced-mpr',
+  isPreset: true,
   createdDate: '2021-02-23',
   modifiedDate: '2023-08-15',
   availableTo: {},
@@ -12,22 +14,7 @@ export const mpr: Types.HangingProtocol.Protocol = {
   numberOfPriorsReferenced: 0,
   protocolMatchingRules: [],
   imageLoadStrategy: 'nth',
-  callbacks: {
-    // Switches out of MPR mode when the layout change button is used
-    onLayoutChange: [
-      {
-        commandName: 'toggleHangingProtocol',
-        commandOptions: { protocolId: 'mpr' },
-        context: 'DEFAULT',
-      },
-    ],
-    // Turns off crosshairs when switching out of MPR mode
-    onProtocolExit: [
-      {
-        commandName: 'cleanUpCrosshairs',
-      },
-    ],
-  },
+  callbacks: {},
   displaySetSelectors: {
     activeDisplaySet: {
       seriesMatchingRules: [
@@ -90,6 +77,9 @@ export const mpr: Types.HangingProtocol.Protocol = {
                 id: 'mpr',
                 source: true,
                 target: true,
+                options: {
+                  syncColormap: true,
+                },
               },
             ],
           },
@@ -114,6 +104,9 @@ export const mpr: Types.HangingProtocol.Protocol = {
                 id: 'mpr',
                 source: true,
                 target: true,
+                options: {
+                  syncColormap: true,
+                },
               },
             ],
           },
@@ -138,6 +131,9 @@ export const mpr: Types.HangingProtocol.Protocol = {
                 id: 'mpr',
                 source: true,
                 target: true,
+                options: {
+                  syncColormap: true,
+                },
               },
             ],
           },
