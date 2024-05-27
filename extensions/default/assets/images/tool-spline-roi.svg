@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="28px" height="28px" viewBox="0 0 28 28" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>tool-spline-roi</title>
+    <g id="tool-spline-roi" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <rect id="Rectangle" x="0" y="0" width="28" height="28"></rect>
+        <g id="Group-3" transform="translate(5, 5)" stroke="currentColor" stroke-linejoin="round" stroke-width="1.5">
+            <path d="M5,4 C6.80276265,2.42407491 9.10583462,1.538278 11.5,1.5 L15.5,1.5" id="Path"></path>
+            <path d="M1.5,15.5 L1.5,11.5 C1.50313857,9.33936854 2.19845937,7.23658385 3.484,5.5" id="Path"></path>
+            <circle id="Oval" stroke-linecap="round" cx="4" cy="4.5" r="1.5"></circle>
+            <circle id="Oval" stroke-linecap="round" cx="17.5" cy="1.5" r="1.5"></circle>
+            <circle id="Oval" stroke-linecap="round" cx="1.5" cy="17.5" r="1.5"></circle>
+        </g>
+    </g>
+</svg>
