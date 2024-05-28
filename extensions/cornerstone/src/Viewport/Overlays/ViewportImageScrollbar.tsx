@@ -48,7 +48,7 @@ function CornerstoneImageScrollbar({
 
       setImageSliceData({
         imageIndex: imageIndex,
-        numberOfSlices: viewportData.data.imageIds.length,
+        numberOfSlices: viewportData.data[0].imageIds.length,
       });
 
       return;
@@ -78,7 +78,7 @@ function CornerstoneImageScrollbar({
       // find the index of imageId in the imageIds
       setImageSliceData({
         imageIndex: newImageIdIndex,
-        numberOfSlices: viewportData.data.imageIds.length,
+        numberOfSlices: viewportData.data[0].imageIds.length,
       });
     };
 
