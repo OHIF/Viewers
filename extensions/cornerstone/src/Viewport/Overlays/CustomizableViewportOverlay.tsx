@@ -317,7 +317,7 @@ function CustomizableViewportOverlay({
 function _getViewportInstances(viewportData) {
   const imageIds = [];
   if (viewportData.viewportType === Enums.ViewportType.STACK) {
-    imageIds.push(viewportData.data.imageIds[0]);
+    imageIds.push(viewportData.data[0].imageIds[0]);
   } else if (viewportData.viewportType === Enums.ViewportType.ORTHOGRAPHIC) {
     const volumes = viewportData.data;
     volumes.forEach(volume => {
@@ -357,7 +357,7 @@ const getInstanceNumber = (viewportData, viewportId, imageIndex, cornerstoneView
 };
 
 function _getInstanceNumberFromStack(viewportData, imageIndex) {
-  const imageIds = viewportData.data.imageIds;
+  const imageIds = viewportData.data[0].imageIds;
   const imageId = imageIds[imageIndex];
 
   if (!imageId) {

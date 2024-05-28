@@ -67,7 +67,7 @@ function ViewportOrientationMarkers({
     let rowCosines, columnCosines;
     if (viewportData.viewportType === 'stack') {
       const imageIndex = imageSliceData.imageIndex;
-      const imageId = viewportData.data.imageIds?.[imageIndex];
+      const imageId = viewportData.data[0].imageIds?.[imageIndex];
 
       // Workaround for below TODO stub
       if (!imageId) {
