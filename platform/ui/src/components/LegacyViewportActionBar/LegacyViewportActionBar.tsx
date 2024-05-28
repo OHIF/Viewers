@@ -11,11 +11,11 @@ import LegacyCinePlayer from '../LegacyCinePlayer';
 
 const LegacyViewportActionBar = ({
   studyData,
-  showNavArrows,
-  showStatus,
-  showCine,
-  cineProps,
-  showPatientInfo: patientInfoVisibility,
+  showNavArrows = true,
+  showStatus = true,
+  showCine = false,
+  cineProps = {},
+  showPatientInfo: patientInfoVisibility = false,
   onArrowsClick,
   onDoubleClick,
   getStatusComponent,
@@ -166,14 +166,8 @@ LegacyViewportActionBar.propTypes = {
     }),
   }).isRequired,
   getStatusComponent: PropTypes.func.isRequired,
-};
-
-LegacyViewportActionBar.defaultProps = {
-  cineProps: {},
-  showCine: false,
-  showStatus: true,
-  showNavArrows: true,
-  showPatientInfo: false,
+  onDoubleClick: PropTypes.func.isRequired,
+  showStatus: PropTypes.bool,
 };
 
 export default LegacyViewportActionBar;

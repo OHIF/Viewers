@@ -30,7 +30,6 @@ import nthLoader from './utils/nthLoader';
 import interleaveTopToBottom from './utils/interleaveTopToBottom';
 import initContextMenu from './initContextMenu';
 import initDoubleClick from './initDoubleClick';
-import { CornerstoneServices } from './types';
 import initViewTiming from './utils/initViewTiming';
 import { colormaps } from './utils/colormaps';
 
@@ -97,25 +96,9 @@ export default async function init({
     uiNotificationService,
     cornerstoneViewportService,
     hangingProtocolService,
-    toolbarService,
     viewportGridService,
     stateSyncService,
-    segmentationService,
-  } = servicesManager.services as CornerstoneServices;
-
-  toolbarService.registerEventForToolbarUpdate(cornerstoneViewportService, [
-    cornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED,
-  ]);
-
-  toolbarService.registerEventForToolbarUpdate(segmentationService, [
-    segmentationService.EVENTS.SEGMENTATION_ADDED,
-    segmentationService.EVENTS.SEGMENTATION_REMOVED,
-    segmentationService.EVENTS.SEGMENTATION_UPDATED,
-  ]);
-
-  toolbarService.registerEventForToolbarUpdate(eventTarget, [
-    cornerstoneTools.Enums.Events.TOOL_ACTIVATED,
-  ]);
+  } = servicesManager.services;
 
   window.services = servicesManager.services;
   window.extensionManager = extensionManager;
@@ -158,9 +141,8 @@ export default async function init({
   });
 
   const labelmapRepresentation = cornerstoneTools.Enums.SegmentationRepresentations.Labelmap;
-
   cornerstoneTools.segmentation.config.setGlobalRepresentationConfig(labelmapRepresentation, {
-    fillAlpha: 0.3,
+    fillAlpha: 0.5,
     fillAlphaInactive: 0.2,
     outlineOpacity: 1,
     outlineOpacityInactive: 0.65,
@@ -267,7 +249,11 @@ export default async function init({
 
     element.addEventListener(EVENTS.CAMERA_RESET, evt => {
       const { element } = evt.detail;
-      const { viewportId } = getEnabledElement(element);
+      const enabledElement = getEnabledElement(element);
+      if (!enabledElement) {
+        return;
+      }
+      const { viewportId } = enabledElement;
       commandsManager.runCommand('resetCrosshairs', { viewportId });
     });
 
@@ -291,8 +277,20 @@ export default async function init({
   eventTarget.addEventListener(EVENTS.ELEMENT_ENABLED, elementEnabledHandler.bind(null));
 
   eventTarget.addEventListener(EVENTS.ELEMENT_DISABLED, elementDisabledHandler.bind(null));
-
   colormaps.forEach(registerColormap);
+
+  // Event listener
+  eventTarget.addEventListenerDebounced(
+    EVENTS.ERROR_EVENT,
+    ({ detail }) => {
+      uiNotificationService.show({
+        title: detail.type,
+        message: detail.message,
+        type: 'error',
+      });
+    },
+    1000
+  );
 }
 
 function CPUModal() {

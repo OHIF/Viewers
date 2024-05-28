@@ -161,7 +161,7 @@ const createBaseStyle = (expandedWidth: number) => {
 const SidePanel = ({
   side,
   className,
-  activeTabIndex: activeTabIndexProp,
+  activeTabIndex: activeTabIndexProp = null,
   tabs,
   onOpen,
   expandedWidth = 248,
@@ -354,7 +354,7 @@ const SidePanel = ({
     return (
       <div
         className={classnames(
-          'text-primary-active flex grow cursor-pointer justify-center self-center text-[13px]'
+          'text-primary-active flex	 grow cursor-pointer select-none justify-center self-center text-[13px]'
         )}
         style={{
           ...(side === 'left'
@@ -371,7 +371,7 @@ const SidePanel = ({
 
   const getOpenStateComponent = () => {
     return (
-      <div className="bg-primary-dark flex rounded-t pt-1.5 pb-[2px]">
+      <div className="bg-primary-dark flex select-none rounded-t pt-1.5 pb-[2px]	">
         {getCloseIcon()}
         {tabs.length === 1 ? getOneTabComponent() : getTabGridComponent()}
       </div>
@@ -386,25 +386,18 @@ const SidePanel = ({
       {panelOpen ? (
         <>
           {getOpenStateComponent()}
-          {tabs.map((tab, tabIndex) => (
-            <div
-              key={tab.id}
-              className={tabIndex === activeTabIndex ? '' : 'hidden'}
-            >
-              <tab.content />
-            </div>
-          ))}
+          {tabs.map((tab, tabIndex) => {
+            if (tabIndex === activeTabIndex) {
+              return <tab.content key={tabIndex} />;
+            }
+            return null;
+          })}
         </>
       ) : (
         <React.Fragment>{getCloseStateComponent()}</React.Fragment>
       )}
     </div>
   );
-};
-
-SidePanel.defaultProps = {
-  defaultComponentOpen: null,
-  activeTabIndex: null, // the default is to close the side panel
 };
 
 SidePanel.propTypes = {

@@ -14,16 +14,16 @@ import { PatientInfoVisibility } from '../../types/PatientInfoVisibility';
 function Header({
   children,
   menuOptions,
-  isReturnEnabled,
+  isReturnEnabled = true,
   onClickReturnButton,
-  isSticky,
+  isSticky = false,
   WhiteLabeling,
   showPatientInfo = PatientInfoVisibility.VISIBLE_COLLAPSED,
   servicesManager,
   Secondary,
   appConfig,
   ...props
-}): ReactNode {
+}: withAppTypes): ReactNode {
   const { t } = useTranslation('Header');
 
   // TODO: this should be passed in as a prop instead and the react-router-dom
@@ -65,8 +65,7 @@ function Header({
           <div className="flex items-center justify-center space-x-2">{children}</div>
         </div>
         <div className="absolute right-0 top-1/2 flex -translate-y-1/2 select-none items-center">
-          {(showPatientInfo === PatientInfoVisibility.VISIBLE ||
-            showPatientInfo === PatientInfoVisibility.VISIBLE_COLLAPSED) && (
+          {showPatientInfo !== PatientInfoVisibility.DISABLED && (
             <HeaderPatientInfo
               servicesManager={servicesManager}
               appConfig={appConfig}
@@ -112,11 +111,6 @@ Header.propTypes = {
   WhiteLabeling: PropTypes.object,
   showPatientInfo: PropTypes.string,
   servicesManager: PropTypes.object,
-};
-
-Header.defaultProps = {
-  isReturnEnabled: true,
-  isSticky: false,
 };
 
 export default Header;

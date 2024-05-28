@@ -11,6 +11,16 @@ and other resources that we have provided to the community in the past:
 
 ## 2023
 
+### IMNO 2024 - March 19-20, 2024
+
+We participated in the Imaging Network Ontario (ImNO) 2024 symposium, presenting three posters. One of our presentations received the best talk award during the session.
+
+
+- Advancing Medical Imaging on the Web: Implementation of Hanging Protocols for Automated Image Display Configuration in OHIF V3 [Poster](https://www.dropbox.com/scl/fi/z4h86bmsxi0c62e1n6h9l/P7-9-Alireza-Sedghi-Final.pdf?rlkey=v5pm0p5ygkbq41x9bz3hr5yi8&dl=0)
+- Advancing Medical Imaging on the Web: Optimizing the Dicomweb Server Architecture with Static Dicomweb [Poster](https://www.dropbox.com/scl/fi/ep0lxjp90kbxhjoffe4kh/P7-10-Bill-Wallace-Final.pdf?rlkey=xl2u6tdnh9j9hgvkajxv3b02o&dl=0)
+- (**🏆🏆 BEST PRESENTATION AWARD in the Session 7 Pitches: Devices, HW, SW Development 🏆🏆**) Advancing Medical Imaging on the Web: Integrating High Throughput JPEG 2000 (HTJ2K) in Cornerstone3D for Streamlined Progressive Loading and Visualization [Poster](https://www.dropbox.com/scl/fi/srs2rxgtv2r69ver9ub1j/P7-8-Bill-Wallace-Final.pdf?rlkey=k9mmraw76r9q2s3b9w9s0793w&dl=0)
+
+
 ### ITCR 2023 Conference | September 11-13, 2023
 
 Dr. Gordon Harris presented an update on OHIF in [NCI Informatics Technology for Cancer Research Annual Meeting](https://www.itcr2023.org/). You can find the slides and poster here:

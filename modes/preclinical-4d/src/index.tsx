@@ -37,7 +37,7 @@ function modeFactory({ modeConfiguration }) {
     id,
     routeName: 'dynamic-volume',
     displayName: '4D PT/CT',
-    onModeEnter: function ({ servicesManager, extensionManager, commandsManager }) {
+    onModeEnter: function ({ servicesManager, extensionManager, commandsManager }: withAppTypes) {
       const {
         measurementService,
         toolbarService,
@@ -55,7 +55,7 @@ function modeFactory({ modeConfiguration }) {
       const { toolNames, Enums } = utilityModule.exports;
 
       measurementService.clearMeasurements();
-      initToolGroups({ toolNames, Enums, toolGroupService, commandsManager });
+      initToolGroups({ toolNames, Enums, toolGroupService, commandsManager, servicesManager });
 
       toolbarService.addButtons([...toolbarButtons, ...segmentationButtons]);
       toolbarService.createButtonSection('secondary', ['ProgressDropdown']);
@@ -79,19 +79,19 @@ function modeFactory({ modeConfiguration }) {
         () => {
           const viewportId = viewportGridService.getActiveViewportId();
           const csViewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
-          cineService.playClip(csViewport.element);
+          cineService.playClip(csViewport.element, { viewportId });
           // cineService.setIsCineEnabled(true);
 
           unsubscribe();
         }
       );
     },
-    onSetupRouteComplete: ({ servicesManager }) => {
+    onSetupRouteComplete: ({ servicesManager }: withAppTypes) => {
       // This needs to run after hanging protocol matching process because
       // it may change the protocol/stage based on workflow stage settings
       initWorkflowSteps({ servicesManager });
     },
-    onModeExit: ({ servicesManager }) => {
+    onModeExit: ({ servicesManager }: withAppTypes) => {
       const {
         toolGroupService,
         syncGroupService,

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { PanelSection, Input, Button } from '@ohif/ui';
-import { DicomMetadataStore, ServicesManager } from '@ohif/core';
+import { DicomMetadataStore } from '@ohif/core';
 import { useTranslation } from 'react-i18next';
 
 const DEFAULT_MEATADATA = {
@@ -22,11 +22,10 @@ const DEFAULT_MEATADATA = {
  * @param param0
  * @returns
  */
-export default function PanelPetSUV({ servicesManager, commandsManager }) {
+export default function PanelPetSUV({ servicesManager, commandsManager }: withAppTypes) {
   const { t } = useTranslation('PanelSUV');
-  const { displaySetService, toolGroupService, toolbarService, hangingProtocolService } = (
-    servicesManager as ServicesManager
-  ).services;
+  const { displaySetService, toolGroupService, toolbarService, hangingProtocolService } =
+    servicesManager.services;
   const [metadata, setMetadata] = useState(DEFAULT_MEATADATA);
   const [ptDisplaySet, setPtDisplaySet] = useState(null);
 
@@ -127,7 +126,7 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
   }
   return (
     <div className="ohif-scrollbar flex min-h-0 flex-auto select-none flex-col justify-between overflow-auto">
-      <div className="flex min-h-0 flex-col bg-black text-[13px] font-[300]">
+      <div className="flex min-h-0 flex-1 flex-col bg-black text-[13px] font-[300]">
         <PanelSection title={t('Patient Information')}>
           <div className="flex flex-col">
             <div className="bg-primary-dark flex flex-col gap-4 p-2">
@@ -155,6 +154,7 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
                     PatientWeight: e.target.value,
                   });
                 }}
+                id="weight-input"
               />
               <Input
                 containerClassName={'!flex-row !justify-between items-center'}

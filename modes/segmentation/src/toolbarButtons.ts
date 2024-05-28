@@ -13,21 +13,7 @@ const ReferenceLinesListeners: RunCommand = [
 export const setToolActiveToolbar = {
   commandName: 'setToolActiveToolbar',
   commandOptions: {
-    toolGroupIds: ['default', 'mpr', 'SRToolGroup'],
-  },
-};
-
-export const toggleEnabledDisabledToolbar = {
-  commandName: 'toggleEnabledDisabledToolbar',
-  commandOptions: {
-    toolGroupIds: ['default', 'mpr', 'SRToolGroup'],
-  },
-};
-
-export const toggleActiveDisabledToolbar = {
-  commandName: 'toggleActiveDisabledToolbar',
-  commandOptions: {
-    toolGroupIds: ['default', 'mpr', 'SRToolGroup'],
+    toolGroupIds: ['default', 'mpr', 'SRToolGroup', 'volume3d'],
   },
 };
 
@@ -163,7 +149,7 @@ const toolbarButtons: Button[] = [
           icon: 'tool-referenceLines',
           label: 'Reference Lines',
           tooltip: 'Show Reference Lines',
-          commands: toggleEnabledDisabledToolbar,
+          commands: 'toggleEnabledDisabledToolbar',
           listeners: {
             [ViewportGridService.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED]: ReferenceLinesListeners,
             [ViewportGridService.EVENTS.VIEWPORTS_READY]: ReferenceLinesListeners,
@@ -175,7 +161,7 @@ const toolbarButtons: Button[] = [
           icon: 'toggle-dicom-overlay',
           label: 'Image Overlay',
           tooltip: 'Toggle Image Overlay',
-          commands: toggleEnabledDisabledToolbar,
+          commands: 'toggleEnabledDisabledToolbar',
           evaluate: 'evaluate.cornerstoneTool.toggle',
         }),
         createButton({
@@ -221,8 +207,8 @@ const toolbarButtons: Button[] = [
         createButton({
           id: 'Magnify',
           icon: 'tool-magnify',
-          label: 'Magnify',
-          tooltip: 'Magnify',
+          label: 'Zoom-in',
+          tooltip: 'Zoom-in',
           commands: setToolActiveToolbar,
           evaluate: 'evaluate.cornerstoneTool',
         }),
@@ -252,10 +238,10 @@ const toolbarButtons: Button[] = [
         createButton({
           id: 'AdvancedMagnify',
           icon: 'icon-tool-loupe',
-          label: 'Loupe',
-          tooltip: 'Loupe',
-          commands: toggleActiveDisabledToolbar,
-          evaluate: 'evaluate.cornerstoneTool',
+          label: 'Magnify Probe',
+          tooltip: 'Magnify Probe',
+          commands: 'toggleActiveDisabledToolbar',
+          evaluate: 'evaluate.cornerstoneTool.toggle.ifStrictlyDisabled',
         }),
         createButton({
           id: 'UltrasoundDirectionalTool',

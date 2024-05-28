@@ -1,16 +1,5 @@
 import type { Button } from '@ohif/core/types';
 
-function _createSetToolActiveCommands(toolName) {
-  return [
-    {
-      commandName: 'setToolActive',
-      commandOptions: {
-        toolName,
-      },
-    },
-  ];
-}
-
 const toolbarButtons: Button[] = [
   {
     id: 'BrushTools',
@@ -24,12 +13,11 @@ const toolbarButtons: Button[] = [
           label: 'Brush',
           evaluate: {
             name: 'evaluate.cornerstone.segmentation',
-            options: { toolNames: ['CircularBrush', 'SphereBrush'] },
+            toolNames: ['CircularBrush', 'SphereBrush'],
           },
-          commands: _createSetToolActiveCommands('CircularBrush'),
           options: [
             {
-              name: 'Radius (mm)',
+              name: 'Size (mm)',
               id: 'brush-radius',
               type: 'range',
               min: 0.5,
@@ -60,11 +48,8 @@ const toolbarButtons: Button[] = [
           label: 'Eraser',
           evaluate: {
             name: 'evaluate.cornerstone.segmentation',
-            options: {
-              toolNames: ['CircularEraser', 'SphereEraser'],
-            },
+            toolNames: ['CircularEraser', 'SphereEraser'],
           },
-          commands: _createSetToolActiveCommands('CircularEraser'),
           options: [
             {
               name: 'Radius (mm)',
@@ -98,9 +83,8 @@ const toolbarButtons: Button[] = [
           label: 'Eraser',
           evaluate: {
             name: 'evaluate.cornerstone.segmentation',
-            options: { toolNames: ['ThresholdCircularBrush', 'ThresholdSphereBrush'] },
+            toolNames: ['ThresholdCircularBrush', 'ThresholdSphereBrush'],
           },
-          commands: _createSetToolActiveCommands('ThresholdCircularBrush'),
           options: [
             {
               name: 'Radius (mm)',
@@ -133,9 +117,9 @@ const toolbarButtons: Button[] = [
               type: 'double-range',
               id: 'threshold-range',
               min: 0,
-              max: 10,
-              step: 1,
-              values: [2, 5],
+              max: 100,
+              step: 0.5,
+              value: [2, 50],
               commands: {
                 commandName: 'setThresholdRange',
                 commandOptions: {
@@ -155,10 +139,9 @@ const toolbarButtons: Button[] = [
       label: 'Shapes',
       evaluate: {
         name: 'evaluate.cornerstone.segmentation',
-        options: { toolNames: ['CircleScissor', 'SphereScissor', 'RectangleScissor'] },
+        toolNames: ['CircleScissor', 'SphereScissor', 'RectangleScissor'],
       },
       icon: 'icon-tool-shape',
-      commands: _createSetToolActiveCommands('CircleScissor'),
       options: [
         {
           name: 'Shape',

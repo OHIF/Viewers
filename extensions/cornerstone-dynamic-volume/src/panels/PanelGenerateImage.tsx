@@ -8,7 +8,7 @@ import DynamicVolumeControls from './DynamicVolumeControls';
 
 const SOPClassHandlerId = '@ohif/extension-default.sopClassHandlerModule.stack';
 
-export default function PanelGenerateImage({ servicesManager, commandsManager }) {
+export default function PanelGenerateImage({ servicesManager, commandsManager }: withAppTypes) {
   const { cornerstoneViewportService, viewportGridService, displaySetService } =
     servicesManager.services;
 
@@ -202,7 +202,7 @@ export default function PanelGenerateImage({ servicesManager, commandsManager })
     }
 
     const { element } = viewportInfo;
-    cineService.playClip(element, { framesPerSecond: frameRate });
+    cineService.playClip(element, { framesPerSecond: frameRate, viewportId: activeViewportId });
   };
 
   const handleStop = () => {

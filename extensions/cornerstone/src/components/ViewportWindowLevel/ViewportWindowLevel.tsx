@@ -1,7 +1,6 @@
 import React, { useEffect, useCallback, useState, ReactElement } from 'react';
 import PropTypes from 'prop-types';
 import debounce from 'lodash.debounce';
-import { ServicesManager } from '@ohif/core';
 import { PanelSection, WindowLevel } from '@ohif/ui';
 import vtkColorMaps from '@kitware/vtk.js/Rendering/Core/ColorTransferFunction/ColorMaps';
 import { Enums, eventTarget, cache as cs3DCache, utilities as csUtils } from '@cornerstonejs/core';
@@ -12,10 +11,9 @@ const { Events } = Enums;
 const ViewportWindowLevel = ({
   servicesManager,
   viewportId,
-}: {
-  servicesManager: ServicesManager;
+}: withAppTypes<{
   viewportId: string;
-}): ReactElement => {
+}>): ReactElement => {
   const { cornerstoneViewportService } = servicesManager.services;
   const [windowLevels, setWindowLevels] = useState([]);
   const [cachedHistograms, setCachedHistograms] = useState({});
@@ -380,7 +378,7 @@ const ViewportWindowLevel = ({
 };
 
 ViewportWindowLevel.propTypes = {
-  servicesManager: PropTypes.instanceOf(ServicesManager),
+  servicesManager: PropTypes.object.isRequired,
   viewportId: PropTypes.string.isRequired,
 };
 

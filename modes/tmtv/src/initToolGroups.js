@@ -4,10 +4,16 @@ export const toolGroupIds = {
   Fusion: 'fusionToolGroup',
   MIP: 'mipToolGroup',
   default: 'default',
-  // MPR: 'mpr',
 };
 
-function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager, modeLabelConfig) {
+function _initToolGroups(
+  toolNames,
+  Enums,
+  toolGroupService,
+  commandsManager,
+  modeLabelConfig,
+  servicesManager
+) {
   const tools = {
     active: [
       {
@@ -59,13 +65,79 @@ function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager, mo
       { toolName: toolNames.Angle },
       { toolName: toolNames.CobbAngle },
       { toolName: toolNames.Magnify },
+      {
+        toolName: 'CircularBrush',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'FILL_INSIDE_CIRCLE',
+        },
+      },
+      {
+        toolName: 'CircularEraser',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'ERASE_INSIDE_CIRCLE',
+        },
+      },
+      {
+        toolName: 'SphereBrush',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'FILL_INSIDE_SPHERE',
+        },
+      },
+      {
+        toolName: 'SphereEraser',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'ERASE_INSIDE_SPHERE',
+        },
+      },
+      {
+        toolName: 'ThresholdCircularBrush',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'THRESHOLD_INSIDE_CIRCLE',
+        },
+      },
+      {
+        toolName: 'ThresholdSphereBrush',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'THRESHOLD_INSIDE_SPHERE',
+        },
+      },
+      {
+        toolName: 'ThresholdCircularBrushDynamic',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'THRESHOLD_INSIDE_CIRCLE',
+          // preview: {
+          //   enabled: true,
+          // },
+          strategySpecificConfiguration: {
+            // to use the use the center segment index to determine
+            // if inside -> same segment, if outside -> eraser
+            // useCenterSegmentIndex: true,
+            THRESHOLD: {
+              isDynamic: true,
+              dynamicRadius: 3,
+            },
+          },
+        },
+      },
     ],
     enabled: [{ toolName: toolNames.SegmentationDisplay }],
     disabled: [
       {
         toolName: toolNames.Crosshairs,
         configuration: {
-          viewportIndicators: false,
+          viewportIndicators: true,
+          viewportIndicatorsConfig: {
+            circleRadius: 5,
+            xOffset: 0.95,
+            yOffset: 0.05,
+          },
           disableOnPassive: true,
           autoPan: {
             enabled: false,
@@ -118,8 +190,22 @@ function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager, mo
   toolGroupService.createToolGroupAndAddTools(toolGroupIds.MIP, mipTools);
 }
 
-function initToolGroups(toolNames, Enums, toolGroupService, commandsManager, modeLabelConfig) {
-  _initToolGroups(toolNames, Enums, toolGroupService, commandsManager, modeLabelConfig);
+function initToolGroups(
+  toolNames,
+  Enums,
+  toolGroupService,
+  commandsManager,
+  modeLabelConfig,
+  servicesManager
+) {
+  _initToolGroups(
+    toolNames,
+    Enums,
+    toolGroupService,
+    commandsManager,
+    modeLabelConfig,
+    servicesManager
+  );
 }
 
 export default initToolGroups;

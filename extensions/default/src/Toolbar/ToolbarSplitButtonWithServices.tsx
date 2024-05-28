@@ -10,7 +10,7 @@ function ToolbarSplitButtonWithServices({
   renderer,
   onInteraction,
   servicesManager,
-}) {
+}: withAppTypes) {
   const { toolbarService } = servicesManager?.services;
 
   /* Bubbles up individual item clicks */
@@ -54,7 +54,6 @@ function ToolbarSplitButtonWithServices({
 }
 
 ToolbarSplitButtonWithServices.propTypes = {
-  isRadio: PropTypes.bool,
   groupId: PropTypes.string,
   primary: PropTypes.shape({
     id: PropTypes.string.isRequired,
@@ -85,11 +84,6 @@ ToolbarSplitButtonWithServices.propTypes = {
       toolbarService: PropTypes.object,
     }),
   }),
-};
-
-ToolbarSplitButtonWithServices.defaultProps = {
-  isRadio: false,
-  isAction: false,
 };
 
 export default ToolbarSplitButtonWithServices;

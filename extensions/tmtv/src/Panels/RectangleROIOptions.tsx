@@ -40,7 +40,7 @@ function reducer(state, action) {
   }
 }
 
-function RectangleROIOptions({ servicesManager, commandsManager }) {
+function RectangleROIOptions({ servicesManager, commandsManager }: withAppTypes) {
   const { segmentationService } = servicesManager.services;
   const [selectedSegmentationId, setSelectedSegmentationId] = useState(null);
 
@@ -62,72 +62,16 @@ function RectangleROIOptions({ servicesManager, commandsManager }) {
 
   const handleROIThresholding = useCallback(() => {
     const segmentationId = selectedSegmentationId;
-
-    const segmentation = segmentationService.getSegmentation(segmentationId);
     const activeSegmentIndex =
       cs3dTools.segmentation.segmentIndex.getActiveSegmentIndex(segmentationId);
 
     // run the threshold based on the active segment index
     // Todo: later find a way to associate each rectangle with a segment (e.g., maybe with color?)
-    const labelmap = runCommand('thresholdSegmentationByRectangleROITool', {
+    runCommand('thresholdSegmentationByRectangleROITool', {
       segmentationId,
       config,
       segmentIndex: activeSegmentIndex,
     });
-
-    // re-calculating the cached stats for the active segmentation
-    const updatedPerSegmentCachedStats = {};
-    segmentation.segments = segmentation.segments.map(segment => {
-      if (!segment || !segment.segmentIndex) {
-        return segment;
-      }
-
-      const segmentIndex = segment.segmentIndex;
-
-      const lesionStats = runCommand('getLesionStats', { labelmap, segmentIndex });
-      const suvPeak = runCommand('calculateSuvPeak', { labelmap, segmentIndex });
-      const lesionGlyoclysisStats = lesionStats.volume * lesionStats.meanValue;
-
-      // update segDetails with the suv peak for the active segmentation
-      const cachedStats = {
-        lesionStats,
-        suvPeak,
-        lesionGlyoclysisStats,
-      };
-
-      segment.cachedStats = cachedStats;
-      segment.displayText = [
-        `SUV Peak: ${suvPeak.suvPeak.toFixed(2)}`,
-        `Volume: ${lesionStats.volume.toFixed(2)} mm3`,
-      ];
-      updatedPerSegmentCachedStats[segmentIndex] = cachedStats;
-
-      return segment;
-    });
-
-    const notYetUpdatedAtSource = true;
-
-    const segmentations = segmentationService.getSegmentations();
-    const tmtv = runCommand('calculateTMTV', { segmentations });
-
-    segmentation.cachedStats = Object.assign(
-      segmentation.cachedStats,
-      updatedPerSegmentCachedStats,
-      {
-        tmtv: {
-          value: tmtv.toFixed(3),
-          config: { ...config },
-        },
-      }
-    );
-
-    segmentationService.addOrUpdateSegmentation(
-      {
-        ...segmentation,
-      },
-      false, // don't suppress events
-      notYetUpdatedAtSource
-    );
   }, [selectedSegmentationId, config]);
 
   useEffect(() => {
@@ -168,27 +112,6 @@ function RectangleROIOptions({ servicesManager, commandsManager }) {
       subscriptions.forEach(unsub => {
         unsub();
       });
-    };
-  }, []);
-
-  useEffect(() => {
-    const { unsubscribe } = segmentationService.subscribe(
-      segmentationService.EVENTS.SEGMENTATION_REMOVED,
-      () => {
-        const segmentations = segmentationService.getSegmentations();
-
-        if (segmentations.length > 0) {
-          setSelectedSegmentationId(segmentations[0].id);
-          handleROIThresholding();
-        } else {
-          setSelectedSegmentationId(null);
-          handleROIThresholding();
-        }
-      }
-    );
-
-    return () => {
-      unsubscribe();
     };
   }, []);
 

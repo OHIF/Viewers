@@ -51,6 +51,38 @@ const config = {
           extensions: ['.js', '.jsx', '.ts', '.tsx'],
         },
       },
+      {
+        test: /\.svg?$/,
+        oneOf: [
+          {
+            use: [
+              {
+                loader: '@svgr/webpack',
+                options: {
+                  svgoConfig: {
+                    plugins: [
+                      {
+                        name: 'preset-default',
+                        params: {
+                          overrides: {
+                            removeViewBox: false
+                          },
+                        },
+                      },
+                    ]
+                  },
+                  prettier: false,
+                  svgo: true,
+                  titleProp: true,
+                },
+              },
+            ],
+            issuer: {
+              and: [/\.(ts|tsx|js|jsx|md|mdx)$/],
+            },
+          },
+        ],
+      },
     ],
   },
   resolve: {

@@ -2,7 +2,6 @@ import React, { ReactElement, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import classNames from 'classnames';
 import { AllInOneMenu, useViewportGrid } from '@ohif/ui';
-import { CommandsManager, ServicesManager } from '@ohif/core';
 import { Colormap } from './Colormap';
 import { Colorbar } from './Colorbar';
 import { setViewportColorbar } from './Colorbar';
@@ -19,11 +18,9 @@ import { utilities } from '@cornerstonejs/core';
 export type WindowLevelActionMenuProps = {
   viewportId: string;
   element: HTMLElement;
-  presets: Record<string, Array<WindowLevelPreset>>;
+  presets: Array<Record<string, Array<WindowLevelPreset>>>;
   verticalDirection: AllInOneMenu.VerticalDirection;
   horizontalDirection: AllInOneMenu.HorizontalDirection;
-  commandsManager: CommandsManager;
-  serviceManager: ServicesManager;
   colorbarProperties: ColorbarProperties;
   displaySets: Array<any>;
   volumeRenderingPresets: Array<ViewportPreset>;
@@ -37,12 +34,12 @@ export function WindowLevelActionMenu({
   verticalDirection,
   horizontalDirection,
   commandsManager,
-  serviceManager,
+  servicesManager,
   colorbarProperties,
   displaySets,
   volumeRenderingPresets,
   volumeRenderingQualityRange,
-}: WindowLevelActionMenuProps): ReactElement {
+}: withAppTypes<WindowLevelActionMenuProps>): ReactElement {
   const {
     colormaps,
     colorbarContainerPosition,
@@ -50,8 +47,9 @@ export function WindowLevelActionMenu({
     colorbarTickPosition,
     width: colorbarWidth,
   } = colorbarProperties;
-  const { colorbarService, cornerstoneViewportService } = serviceManager.services;
+  const { colorbarService, cornerstoneViewportService } = servicesManager.services;
   const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
+  const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
   const backgroundColor = viewportInfo.getViewportOptions().background;
   const isLight = backgroundColor ? utilities.isEqual(backgroundColor, [1, 1, 1]) : false;
 
@@ -67,7 +65,7 @@ export function WindowLevelActionMenu({
   const [is3DVolume, setIs3DVolume] = useState(false);
 
   const onSetColorbar = useCallback(() => {
-    setViewportColorbar(viewportId, displaySets, commandsManager, serviceManager, {
+    setViewportColorbar(viewportId, displaySets, commandsManager, servicesManager, {
       colormaps,
       ticks: {
         position: colorbarTickPosition,
@@ -93,13 +91,7 @@ export function WindowLevelActionMenu({
       colorbarService.removeColorbar(viewportId);
       onSetColorbar();
     }, 0);
-  }, [viewportId]);
-
-  useEffect(() => {
-    if (colorbarService.hasColorbar(viewportId)) {
-      colorbarService.removeColorbar(viewportId);
-    }
-  }, [displaySets]);
+  }, [viewportId, displaySets, viewport]);
 
   useEffect(() => {
     setMenuKey(menuKey + 1);
@@ -128,10 +120,8 @@ export function WindowLevelActionMenu({
       iconClassName={classNames(
         // Visible on hover and for the active viewport
         activeViewportId === viewportId ? 'visible' : 'invisible group-hover:visible',
-        'flex shrink-0 cursor-pointer rounded active:text-white',
-        isLight
-          ? 'text-aqua-pale hover:bg-secondary-dark'
-          : 'text-primary-light hover:bg-secondary-light/60'
+        'flex shrink-0 cursor-pointer rounded active:text-white text-primary-light',
+        isLight ? ' hover:bg-secondary-dark' : 'hover:bg-secondary-light/60'
       )}
       menuStyle={{ maxHeight: vpHeight - 32, minWidth: 218 }}
       onVisibilityChange={() => {
@@ -145,7 +135,7 @@ export function WindowLevelActionMenu({
             viewportId={viewportId}
             displaySets={displaySets.filter(ds => !nonImageModalities.includes(ds.Modality))}
             commandsManager={commandsManager}
-            serviceManager={serviceManager}
+            servicesManager={servicesManager}
             colorbarProperties={colorbarProperties}
           />
         )}
@@ -161,15 +151,15 @@ export function WindowLevelActionMenu({
               viewportId={viewportId}
               displaySets={displaySets.filter(ds => !nonImageModalities.includes(ds.Modality))}
               commandsManager={commandsManager}
-              serviceManager={serviceManager}
+              servicesManager={servicesManager}
             />
           </AllInOneMenu.SubMenu>
         )}
 
-        {presets && !is3DVolume && (
+        {presets && presets.length > 0 && !is3DVolume && (
           <AllInOneMenu.SubMenu
             key="windowLevelPresets"
-            itemLabel={t('Modality Window Presets', { modality: Object.keys(presets)[0] })}
+            itemLabel={t('Modality Window Presets')}
             itemIcon="viewport-window-level"
           >
             <WindowLevel
@@ -182,7 +172,7 @@ export function WindowLevelActionMenu({
 
         {volumeRenderingPresets && is3DVolume && (
           <VolumeRenderingPresets
-            serviceManager={serviceManager}
+            servicesManager={servicesManager}
             viewportId={viewportId}
             commandsManager={commandsManager}
             volumeRenderingPresets={volumeRenderingPresets}
@@ -195,7 +185,7 @@ export function WindowLevelActionMenu({
               viewportId={viewportId}
               commandsManager={commandsManager}
               volumeRenderingQualityRange={volumeRenderingQualityRange}
-              serviceManager={serviceManager}
+              servicesManager={servicesManager}
             />
           </AllInOneMenu.SubMenu>
         )}

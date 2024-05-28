@@ -1,19 +1,20 @@
 import PropTypes from 'prop-types';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ServicesManager, ExtensionManager } from '@ohif/core';
+import { ExtensionManager } from '@ohif/core';
 
 import { setTrackingUniqueIdentifiersForElement } from '../tools/modules/dicomSRModule';
 
 import { Icon, Tooltip, useViewportGrid, ViewportActionArrows } from '@ohif/ui';
 import hydrateStructuredReport from '../utils/hydrateStructuredReport';
 import { useAppConfig } from '@state';
+import createReferencedImageDisplaySet from '../utils/createReferencedImageDisplaySet';
 
 const MEASUREMENT_TRACKING_EXTENSION_ID = '@ohif/extension-measurement-tracking';
 
 const SR_TOOLGROUP_BASE_NAME = 'SRToolGroup';
 
-function OHIFCornerstoneSRViewport(props) {
+function OHIFCornerstoneSRViewport(props: withAppTypes) {
   const { children, dataSource, displaySets, viewportOptions, servicesManager, extensionManager } =
     props;
 
@@ -203,7 +204,10 @@ function OHIFCornerstoneSRViewport(props) {
           // The positionIds for the viewport aren't meaningful for the child display sets
           positionIds: null,
         }}
-        onElementEnabled={onElementEnabled}
+        onElementEnabled={evt => {
+          props.onElementEnabled?.(evt);
+          onElementEnabled(evt);
+        }}
         initialImageIndex={initialImageIndex}
         isJumpToMeasurementDisabled={true}
       ></Component>
@@ -363,14 +367,9 @@ OHIFCornerstoneSRViewport.propTypes = {
   dataSource: PropTypes.object,
   children: PropTypes.node,
   viewportLabel: PropTypes.string,
-  customProps: PropTypes.object,
   viewportOptions: PropTypes.object,
-  servicesManager: PropTypes.instanceOf(ServicesManager).isRequired,
+  servicesManager: PropTypes.object.isRequired,
   extensionManager: PropTypes.instanceOf(ExtensionManager).isRequired,
-};
-
-OHIFCornerstoneSRViewport.defaultProps = {
-  customProps: {},
 };
 
 async function _getViewportReferencedDisplaySetData(
@@ -378,6 +377,10 @@ async function _getViewportReferencedDisplaySetData(
   measurementSelected,
   displaySetService
 ) {
+  const { measurements } = displaySet;
+  const measurement = measurements[measurementSelected];
+
+  const { displaySetInstanceUID } = measurement;
   if (!displaySet.keyImageDisplaySet) {
     // Create a new display set, and preserve a reference to it here,
     // so that it can be re-displayed and shown inside the SR viewport.

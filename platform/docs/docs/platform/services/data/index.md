@@ -28,7 +28,7 @@ We maintain the following non-ui Services:
 ![services-data](../../../assets/img/services-data.png)
 
 > We have explained services and how to create a custom service in the
-> [`ServiceManager`](../../managers/service.md) section of the docs
+> [`ServicesManager`](../../managers/service.md) section of the docs
 
 To recap: The simplest service return a new object that has a `name` property,
 and `Create` method which instantiate the service class. The "Factory Function"
@@ -39,11 +39,11 @@ different for UI Services).
 // extensions/customExtension/src/services/backEndService/index.js
 import backEndService from './backEndService';
 
-export default function WrappedBackEndService(serviceManager) {
+export default function WrappedBackEndService(servicesManager) {
   return {
     name: 'myService',
     create: ({ configuration = {} }) => {
-      return new backEndService(serviceManager);
+      return new backEndService(servicesManager);
     },
   };
 }

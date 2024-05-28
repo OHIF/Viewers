@@ -17,7 +17,7 @@ const DialogContext = createContext(null);
 
 export const useDialog = () => useContext(DialogContext);
 
-const DialogProvider = ({ children, service }) => {
+const DialogProvider = ({ children, service = null }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [dialogs, setDialogs] = useState([]);
   const [lastDialogId, setLastDialogId] = useState(null);
@@ -201,7 +201,7 @@ const DialogProvider = ({ children, service }) => {
               isDragging && 'dragging',
               isDraggable && 'draggable'
             )}
-            style={{ zIndex: '999', position: 'absolute', width: '350px' }}
+            style={{ zIndex: '999', position: 'absolute' }}
             onClick={() => _bringToFront(id)}
           >
             <DialogContent
@@ -298,10 +298,6 @@ export const withDialog = Component => {
       />
     );
   };
-};
-
-DialogProvider.defaultProps = {
-  service: null,
 };
 
 DialogProvider.propTypes = {

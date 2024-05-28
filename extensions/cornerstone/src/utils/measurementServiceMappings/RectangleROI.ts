@@ -2,6 +2,7 @@ import SUPPORTED_TOOLS from './constants/supportedTools';
 import { getDisplayUnit } from './utils';
 import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
 import { utils } from '@ohif/core';
+import { getStatisticDisplayString } from './utils/getValueDisplayString';
 
 const RectangleROI = {
   toAnnotation: measurement => {},
@@ -113,6 +114,7 @@ function getMappedAnnotations(annotation, DisplaySetService) {
       unit: modalityUnit,
       mean,
       stdDev,
+      metadata,
       max,
       area,
       areaUnit,
@@ -193,11 +195,7 @@ function getDisplayText(mappedAnnotations, displaySet, customizationService) {
   mappedAnnotations.forEach(mappedAnnotation => {
     const { unit, max, SeriesNumber } = mappedAnnotation;
 
-    let maxStr = '';
-    if (max) {
-      const roundedMax = utils.roundNumber(max, 2);
-      maxStr = `Max: ${roundedMax} <small>${getDisplayUnit(unit)}</small> `;
-    }
+    const maxStr = getStatisticDisplayString(max, unit, 'max');
 
     const str = `${maxStr}(S:${SeriesNumber}${instanceText}${frameText})`;
     if (!displayText.includes(str)) {

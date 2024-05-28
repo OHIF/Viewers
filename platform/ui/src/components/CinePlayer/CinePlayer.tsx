@@ -31,15 +31,15 @@ const fpsButtonClassNames =
 
 const CinePlayer: React.FC<CinePlayerProps> = ({
   className,
-  isPlaying,
-  minFrameRate,
-  maxFrameRate,
-  stepFrameRate,
-  frameRate: defaultFrameRate,
+  isPlaying = false,
+  minFrameRate = 1,
+  maxFrameRate = 90,
+  stepFrameRate = 1,
+  frameRate: defaultFrameRate = 24,
+  onFrameRateChange = () => {},
+  onPlayPauseChange = () => {},
+  onClose = () => {},
   dynamicInfo = {},
-  onFrameRateChange,
-  onPlayPauseChange,
-  onClose,
   updateDynamicInfo,
 }) => {
   const isDynamic = !!dynamicInfo?.numTimePoints;
@@ -161,21 +161,6 @@ const CinePlayer: React.FC<CinePlayerProps> = ({
       </div>
     </div>
   );
-};
-
-const noop = () => {};
-
-CinePlayer.defaultProps = {
-  isPlaying: false,
-  minFrameRate: 1,
-  maxFrameRate: 90,
-  stepFrameRate: 1,
-  frameRate: 24,
-  onPlayPauseChange: noop,
-  onFrameRateChange: noop,
-  onClose: noop,
-  isDynamic: false,
-  dynamicInfo: {},
 };
 
 CinePlayer.propTypes = {

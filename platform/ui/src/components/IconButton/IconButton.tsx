@@ -64,6 +64,7 @@ const iconSizeClasses = {
   medium: 'w-5 h-5',
   large: 'w-6 h-6',
   toolbar: 'w-[28px] h-[28px]',
+  toolbox: 'w-[24px] h-[24px]',
 };
 
 const fullWidthClasses = {
@@ -73,14 +74,14 @@ const fullWidthClasses = {
 
 const IconButton = ({
   children,
-  variant,
-  color,
-  size,
-  rounded,
-  disabled,
-  type,
-  fullWidth,
-  onClick,
+  variant = 'contained',
+  color = 'default',
+  size = 'medium',
+  rounded = 'medium',
+  disabled = false,
+  type = 'button',
+  fullWidth = false,
+  onClick = () => {},
   className,
   id,
   ...rest
@@ -92,7 +93,7 @@ const IconButton = ({
     onClick(e);
   };
 
-  const padding = size === 'toolbar' ? '6px' : size === 'toolbox' ? '6px' : null;
+  const padding = size === 'toolbar' ? '6px' : size === 'toolbox' ? '4px' : null;
 
   return (
     <button
@@ -119,17 +120,6 @@ const IconButton = ({
       })}
     </button>
   );
-};
-
-IconButton.defaultProps = {
-  onClick: () => {},
-  color: 'default',
-  disabled: false,
-  fullWidth: false,
-  rounded: 'medium',
-  size: 'medium',
-  type: 'button',
-  variant: 'contained',
 };
 
 IconButton.propTypes = {

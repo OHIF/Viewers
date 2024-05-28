@@ -1,3 +1,15 @@
+const colours = {
+  'viewport-0': 'rgb(200, 0, 0)',
+  'viewport-1': 'rgb(200, 200, 0)',
+  'viewport-2': 'rgb(0, 200, 0)',
+};
+
+const colorsByOrientation = {
+  axial: 'rgb(200, 0, 0)',
+  sagittal: 'rgb(200, 200, 0)',
+  coronal: 'rgb(0, 200, 0)',
+};
+
 function initDefaultToolGroup(extensionManager, toolGroupService, commandsManager, toolGroupId) {
   const utilityModule = extensionManager.getModuleEntry(
     '@ohif/extension-cornerstone.utilityModule.tools'
@@ -50,7 +62,7 @@ function initDefaultToolGroup(extensionManager, toolGroupService, commandsManage
       { toolName: toolNames.Angle },
       { toolName: toolNames.Magnify },
       { toolName: toolNames.SegmentationDisplay },
-      { toolName: toolNames.AdvancedMagnify },
+
       { toolName: toolNames.UltrasoundDirectional },
       { toolName: toolNames.PlanarFreehandROI },
       { toolName: toolNames.SplineROI },
@@ -59,7 +71,7 @@ function initDefaultToolGroup(extensionManager, toolGroupService, commandsManage
     // enabled
     enabled: [{ toolName: toolNames.ImageOverlayViewer }],
     // disabled
-    disabled: [{ toolName: toolNames.ReferenceLines }],
+    disabled: [{ toolName: toolNames.ReferenceLines }, { toolName: toolNames.AdvancedMagnify }],
   };
 
   toolGroupService.createToolGroupAndAddTools(toolGroupId, tools);
@@ -132,6 +144,9 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
     '@ohif/extension-cornerstone.utilityModule.tools'
   );
 
+  const serviceManager = extensionManager._servicesManager;
+  const { cornerstoneViewportService } = serviceManager.services;
+
   const { toolNames, Enums } = utilityModule.exports;
 
   const tools = {
@@ -187,6 +202,20 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
           autoPan: {
             enabled: false,
             panSize: 10,
+          },
+          getReferenceLineColor: viewportId => {
+            const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
+            const viewportOptions = viewportInfo?.viewportOptions;
+            if (viewportOptions) {
+              return (
+                colours[viewportOptions.id] ||
+                colorsByOrientation[viewportOptions.orientation] ||
+                '#0c0'
+              );
+            } else {
+              console.warn('missing viewport?', viewportId);
+              return '#0c0';
+            }
           },
         },
       },

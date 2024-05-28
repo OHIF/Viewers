@@ -1,4 +1,4 @@
-import { Types as OhifTypes, ServicesManager, PubSubService } from '@ohif/core';
+import { Types as OhifTypes, PubSubService } from '@ohif/core';
 import {
   cache,
   Enums as csEnums,
@@ -60,7 +60,7 @@ class SegmentationService extends PubSubService {
   };
 
   segmentations: Record<string, Segmentation>;
-  readonly servicesManager: ServicesManager;
+  readonly servicesManager: AppTypes.ServicesManager;
   highlightIntervalId = null;
   readonly EVENTS = EVENTS;
 
@@ -568,7 +568,7 @@ class SegmentationService extends PubSubService {
         rgba,
       } = segmentInfo;
 
-      const { x, y, z } = segDisplaySet.centroids.get(segmentIndex);
+      const { x, y, z } = segDisplaySet.centroids.get(segmentIndex) || { x: 0, y: 0, z: 0 };
       const centerWorld = derivedVolume.imageData.indexToWorld([x, y, z]);
 
       segmentation.cachedStats = {
@@ -1015,6 +1015,8 @@ class SegmentationService extends PubSubService {
   ): Promise<void> => {
     const segmentation = this.getSegmentation(segmentationId);
 
+    toolGroupId = toolGroupId || this._getApplicableToolGroupId();
+
     if (!segmentation) {
       throw new Error(`Segmentation with segmentationId ${segmentationId} not found.`);
     }
@@ -1147,6 +1149,10 @@ class SegmentationService extends PubSubService {
 
     displaySet.isHydrated = isHydrated;
     displaySetService.setDisplaySetMetadataInvalidated(displaySetUID, false);
+
+    this._broadcastEvent(this.EVENTS.SEGMENTATION_UPDATED, {
+      segmentation: this.getSegmentation(displaySetUID),
+    });
   }
 
   private _highlightLabelmap(

@@ -4,7 +4,14 @@ import { Enums, eventTarget, cache } from '@cornerstonejs/core';
 import { Enums as StreamingEnums } from '@cornerstonejs/streaming-image-volume-loader';
 import { useAppConfig } from '@state';
 
-function WrappedCinePlayer({ enabledVPElement, viewportId, servicesManager }) {
+function WrappedCinePlayer({
+  enabledVPElement,
+  viewportId,
+  servicesManager,
+}: withAppTypes<{
+  enabledVPElement: HTMLElement;
+  viewportId: string;
+}>) {
   const { customizationService, displaySetService, viewportGridService } = servicesManager.services;
   const [{ isCineEnabled, cines }, cineService] = useCine();
   const [newStackFrameRate, setNewStackFrameRate] = useState(24);
@@ -21,7 +28,7 @@ function WrappedCinePlayer({ enabledVPElement, viewportId, servicesManager }) {
     const validFrameRate = Math.max(frameRate, 1);
 
     return isPlaying
-      ? cineService.playClip(enabledVPElement, { framesPerSecond: validFrameRate })
+      ? cineService.playClip(enabledVPElement, { framesPerSecond: validFrameRate, viewportId })
       : cineService.stopClip(enabledVPElement);
   };
 
@@ -66,7 +73,7 @@ function WrappedCinePlayer({ enabledVPElement, viewportId, servicesManager }) {
     }
     cineService.setCine({ id: viewportId, isPlaying, frameRate });
     setNewStackFrameRate(frameRate);
-  }, [displaySetService, viewportId, viewportGridService, cines, isCineEnabled]);
+  }, [displaySetService, viewportId, viewportGridService, cines, isCineEnabled, enabledVPElement]);
 
   useEffect(() => {
     isMountedRef.current = true;
@@ -77,6 +84,14 @@ function WrappedCinePlayer({ enabledVPElement, viewportId, servicesManager }) {
       isMountedRef.current = false;
     };
   }, [isCineEnabled, newDisplaySetHandler]);
+
+  useEffect(() => {
+    if (!isCineEnabled) {
+      return;
+    }
+
+    cineHandler();
+  }, [isCineEnabled, cineHandler, enabledVPElement]);
 
   /**
    * Use effect for handling new display set
@@ -112,7 +127,7 @@ function WrappedCinePlayer({ enabledVPElement, viewportId, servicesManager }) {
     cineHandler();
 
     return () => {
-      cineService.stopClip(enabledVPElement);
+      cineService.stopClip(enabledVPElement, { viewportId });
     };
   }, [cines, viewportId, cineService, enabledVPElement, cineHandler]);
 
