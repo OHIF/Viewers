@@ -39,6 +39,7 @@
     "orthanc:up": "docker-compose -f platform/app/.recipes/OpenResty-Orthanc/docker-compose.yml up",
     "preinstall": "node preinstall.js",
     "start": "yarn run dev",
+    "install:externals": "cd externals && yarn install",
     "test": "yarn run test:unit",
     "test:data": "git submodule update --init -r",
     "test-watch": "jest --collectCoverage --watchAll",

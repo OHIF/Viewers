@@ -1,0 +1,12 @@
+{
+  "name": "@cornerstonejs/externals",
+  "description": "Cornerstone.js Externals",
+  "private": true,
+  "engines": {
+    "node": ">=12",
+    "yarn": ">=1.19.1"
+  },
+  "dependencies": {
+    "dicom-microscopy-viewer": "file:./dicom-microscopy-viewer-0.46.1.tgz"
+  }
+}
