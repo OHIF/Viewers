@@ -65,6 +65,10 @@ function getRuntimeLoadModesExtensions(modules) {
     "  if (typeof module !== 'string') return module;"
   );
   modules.forEach(module => {
+    // External modules are included as dynamic imports
+    if (module.external) {
+      return;
+    }
     const packageName = extractName(module);
     dynamicLoad.push(
       `  if( module==="${packageName}") {`,
@@ -113,8 +117,9 @@ const createCopyPluginToDistForLink = (srcDir, distDir, plugins, folderName) => 
 const createCopyPluginToDistForBuild = (SRC_DIR, DIST_DIR, plugins, folderName) => {
   return plugins
     .map(plugin => {
-      const from = `${SRC_DIR}/../../../node_modules/${plugin.packageName}/${folderName}/`;
+      const from = `${SRC_DIR}/../../../${plugin.external ? 'externals/' : ''}node_modules/${plugin.packageName}/${folderName}/`;
       const exists = fs.existsSync(from);
+      console.log("****************** plugin", plugin, exists, from);
       return exists
         ? {
             from,
