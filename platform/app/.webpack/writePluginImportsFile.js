@@ -119,7 +119,6 @@ const createCopyPluginToDistForBuild = (SRC_DIR, DIST_DIR, plugins, folderName) 
     .map(plugin => {
       const from = `${SRC_DIR}/../../../${plugin.external ? 'externals/' : ''}node_modules/${plugin.packageName}/${folderName}/`;
       const exists = fs.existsSync(from);
-      console.log("****************** plugin", plugin, exists, from);
       return exists
         ? {
             from,
