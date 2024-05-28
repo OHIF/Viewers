@@ -23,12 +23,8 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }: wi
   const { t } = useTranslation('MeasurementTable');
   const [measurementChangeTimestamp, setMeasurementsUpdated] = useState(Date.now().toString());
   const debouncedMeasurementChangeTimestamp = useDebounce(measurementChangeTimestamp, 200);
-  const {
-    measurementService,
-    uiDialogService,
-    displaySetService,
-    customizationService,
-  } = servicesManager.services;
+  const { measurementService, uiDialogService, displaySetService, customizationService } =
+    servicesManager.services;
   const [trackedMeasurements, sendTrackedMeasurementsEvent] = useTrackedMeasurements();
   const { trackedStudy, trackedSeries } = trackedMeasurements.context;
   const [displayStudySummary, setDisplayStudySummary] = useState(
@@ -40,20 +36,18 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }: wi
 
   useEffect(() => {
     const measurements = measurementService.getMeasurements();
-    const mappedMeasurements = measurements.map(m =>
+    const filteredMeasurements = measurements.filter(
+      m => trackedStudy === m.referenceStudyUID && trackedSeries.includes(m.referenceSeriesUID)
+    );
+
+    const mappedMeasurements = filteredMeasurements.map(m =>
       _mapMeasurementToDisplay(m, measurementService.VALUE_TYPES, displaySetService)
     );
     setDisplayMeasurements(mappedMeasurements);
-  }, [
-    measurementService,
-    displaySetService,
-    trackedStudy,
-    trackedSeries,
-    debouncedMeasurementChangeTimestamp,
-  ]);
+    // eslint-ignore-next-line
+  }, [measurementService, trackedStudy, trackedSeries, debouncedMeasurementChangeTimestamp]);
 
-  // ~~ DisplayStudySummary
-  useEffect(() => {
+  const updateDisplayStudySummary = async () => {
     if (trackedMeasurements.matches('tracking')) {
       const StudyInstanceUID = trackedStudy;
       const studyMeta = DicomMetadataStore.getStudy(StudyInstanceUID);
@@ -79,7 +73,12 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }: wi
     } else if (trackedStudy === '' || trackedStudy === undefined) {
       setDisplayStudySummary(DISPLAY_STUDY_SUMMARY_INITIAL_VALUE);
     }
-  }, [displayStudySummary.key, trackedMeasurements, trackedStudy, trackedSeries]);
+  };
+
+  // ~~ DisplayStudySummary
+  useEffect(() => {
+    updateDisplayStudySummary();
+  }, [displayStudySummary.key, trackedMeasurements, trackedStudy, updateDisplayStudySummary]);
 
   // TODO: Better way to consolidated, debounce, check on change?
   // Are we exposing the right API for measurementService?
@@ -120,11 +119,12 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }: wi
       m => trackedStudy === m.referenceStudyUID && trackedSeries.includes(m.referenceSeriesUID)
     );
 
-    downloadCSVReport(trackedMeasurements);
+    downloadCSVReport(trackedMeasurements, measurementService);
   }
 
   const jumpToImage = ({ uid, isActive }) => {
     measurementService.jumpToMeasurement(viewportGrid.activeViewportId, uid);
+
     onMeasurementItemClickHandler({ uid, isActive });
   };
 
@@ -153,6 +153,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }: wi
     if (!isActive) {
       const measurements = [...displayMeasurements];
       const measurement = measurements.find(m => m.uid === uid);
+
       measurements.forEach(m => (m.isActive = m.uid !== uid ? false : true));
       measurement.isActive = true;
       setDisplayMeasurements(measurements);
@@ -160,19 +161,10 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }: wi
   };
 
   const displayMeasurementsWithoutFindings = displayMeasurements.filter(
-    dm =>
-      trackedStudy === dm.referenceStudyUID &&
-      trackedSeries.includes(dm.referenceSeriesUID) &&
-      dm.measurementType !== measurementService.VALUE_TYPES.POINT
+    dm => dm.measurementType !== measurementService.VALUE_TYPES.POINT
   );
   const additionalFindings = displayMeasurements.filter(
-    dm =>
-      trackedStudy === dm.referenceStudyUID &&
-      trackedSeries.includes(dm.referenceSeriesUID) &&
-      dm.measurementType === measurementService.VALUE_TYPES.POINT
-  );
-  const untrackableFindings = displayMeasurements.filter(
-    dm => trackedStudy !== dm.referenceStudyUID && !trackedSeries.includes(dm.referenceSeriesUID)
+    dm => dm.measurementType === measurementService.VALUE_TYPES.POINT
   );
 
   const disabled =
@@ -203,15 +195,6 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }: wi
           <MeasurementTable
             title="Additional Findings"
             data={additionalFindings}
-            servicesManager={servicesManager}
-            onClick={jumpToImage}
-            onEdit={onMeasurementItemEditHandler}
-          />
-        )}
-        {untrackableFindings.length !== 0 && (
-          <MeasurementTable
-            title="Untrackable"
-            data={untrackableFindings}
             servicesManager={servicesManager}
             onClick={jumpToImage}
             onEdit={onMeasurementItemEditHandler}
@@ -311,8 +294,6 @@ function _mapMeasurementToDisplay(measurement, types, displaySetService) {
     isActive: selected,
     finding,
     findingSites,
-    referenceStudyUID,
-    referenceSeriesUID,
   };
 }
 
