@@ -14,7 +14,6 @@ export class MultiMonitorService {
     name: 'multiMonitorService',
     create: ({ configuration }): MultiMonitorService => {
       const service = new MultiMonitorService(configuration);
-      console.log('global multimonitor setup', (window as any).multimonitor);
       return service;
     },
   };
@@ -101,12 +100,10 @@ export class MultiMonitorService {
     const screenInfo = this.windowsConfig.screens[screenNumber];
     if (!this.launchWindows[screenNumber] || this.launchWindows[screenNumber].closed) {
       const screenDetails = await window.getScreenDetails?.();
-      console.log('screenDetails=', screenDetails);
       const screen =
         (screenInfo.screen >= 0 && screenDetails.screens[screenInfo.screen]) ||
         screenDetails.currentScreen ||
         window.screen;
-      console.log('Chosen screen', screen);
       const { width = 1024, height = 1024, availLeft = 0, availTop = 0 } = screen || {};
       const newScreen = this.windowsConfig.screens[screenNumber];
       const {
