@@ -213,7 +213,7 @@ const commandsModule = ({
       updateViewportsForSegmentationRendering({
         viewportId,
         servicesManager,
-        referencedDisplaySetInstanceUID: displaySet.referencedDisplaySetInstanceUID,
+        displaySet,
         loadFn: async () => {
           const segDisplaySet = displaySet;
           const suppressEvents = false;
