@@ -154,10 +154,10 @@ const WindowLevelHistogram = ({
   range,
   voiRange,
   histogram,
-  colormap,
-  style,
-  fillColor,
-  lineColor,
+  colormap = DEFAULT_COLORMAP,
+  style = 'polygon',
+  fillColor = '#3f3f3f',
+  lineColor = '#707070',
 }: {
   range: Range;
   voiRange: VOIRange;
@@ -214,13 +214,6 @@ const WindowLevelHistogram = ({
       ></canvas>
     </div>
   );
-};
-
-WindowLevelHistogram.defaultProps = {
-  colormap: DEFAULT_COLORMAP,
-  style: 'polygon',
-  fillColor: '#3f3f3f',
-  lineColor: '#707070',
 };
 
 WindowLevelHistogram.propTypes = {

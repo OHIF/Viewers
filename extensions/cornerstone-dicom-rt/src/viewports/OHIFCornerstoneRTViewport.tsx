@@ -358,11 +358,6 @@ OHIFCornerstoneRTViewport.propTypes = {
   viewportId: PropTypes.string.isRequired,
   dataSource: PropTypes.object,
   children: PropTypes.node,
-  customProps: PropTypes.object,
-};
-
-OHIFCornerstoneRTViewport.defaultProps = {
-  customProps: {},
 };
 
 function _getReferencedDisplaySetMetadata(referencedDisplaySet) {

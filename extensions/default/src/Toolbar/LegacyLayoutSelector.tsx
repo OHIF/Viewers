@@ -2,7 +2,13 @@ import React, { useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { LayoutSelector as OHIFLayoutSelector, ToolbarButton } from '@ohif/ui';
 
-function LegacyLayoutSelectorWithServices({ servicesManager, ...props }: withAppTypes) {
+function LegacyLayoutSelectorWithServices({
+  servicesManager,
+  rows = 3,
+  columns = 3,
+  onLayoutChange = () => {},
+  ...props
+}) {
   const { toolbarService } = servicesManager.services;
 
   const onSelection = useCallback(
@@ -76,12 +82,6 @@ LayoutSelector.propTypes = {
   columns: PropTypes.number,
   onLayoutChange: PropTypes.func,
   servicesManager: PropTypes.object.isRequired,
-};
-
-LayoutSelector.defaultProps = {
-  rows: 3,
-  columns: 3,
-  onLayoutChange: () => {},
 };
 
 export default LegacyLayoutSelectorWithServices;

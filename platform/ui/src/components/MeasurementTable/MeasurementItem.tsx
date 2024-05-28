@@ -9,7 +9,7 @@ const MeasurementItem = ({
   index,
   label,
   displayText,
-  isActive,
+  isActive = false,
   onClick,
   onEdit,
   onDelete,
@@ -108,10 +108,6 @@ MeasurementItem.propTypes = {
   onClick: PropTypes.func,
   onEdit: PropTypes.func,
   onDelete: PropTypes.func,
-};
-
-MeasurementItem.defaultProps = {
-  isActive: false,
 };
 
 export default MeasurementItem;

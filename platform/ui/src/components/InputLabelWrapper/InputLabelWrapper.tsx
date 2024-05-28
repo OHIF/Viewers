@@ -17,7 +17,7 @@ const InputLabelWrapper = ({
   isSortable,
   sortDirection,
   onLabelClick,
-  className,
+  className = '',
   children,
 }) => {
   const onClickHandler = e => {
@@ -51,10 +51,6 @@ const InputLabelWrapper = ({
       <span>{children}</span>
     </label>
   );
-};
-
-InputLabelWrapper.defaultProps = {
-  className: '',
 };
 
 InputLabelWrapper.propTypes = {

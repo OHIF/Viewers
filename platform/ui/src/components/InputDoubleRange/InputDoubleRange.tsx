@@ -25,20 +25,20 @@ type InputDoubleRangeProps = {
 const InputDoubleRange: React.FC<InputDoubleRangeProps> = ({
   values,
   onChange,
-  minValue,
-  maxValue,
-  step,
-  unit,
-  containerClassName,
-  inputClassName,
-  labelClassName,
-  labelVariant,
-  showLabel,
-  labelPosition,
-  trackColor,
-  allowNumberEdit,
+  minValue = 0,
+  maxValue = 100,
+  step = 1,
+  unit = '',
+  containerClassName = '',
+  inputClassName = '',
+  labelClassName = '',
+  labelVariant = 'body1',
+  showLabel = false,
+  labelPosition = 'left',
+  trackColor = 'primary',
+  allowNumberEdit = false,
   allowOutOfRange = false,
-  showAdjustmentArrows,
+  showAdjustmentArrows = false,
 }) => {
   // Set initial thumb positions as percentages
   const initialPercentageStart = Math.round(((values[0] - minValue) / (maxValue - minValue)) * 100);
@@ -233,22 +233,6 @@ const InputDoubleRange: React.FC<InputDoubleRangeProps> = ({
       {showLabel && LabelOrEditableNumber(rangeValue[1], 1)}
     </div>
   );
-};
-
-InputDoubleRange.defaultProps = {
-  minValue: 0,
-  maxValue: 100,
-  step: 1,
-  unit: '',
-  containerClassName: '',
-  inputClassName: '',
-  labelClassName: '',
-  labelVariant: 'body1',
-  showLabel: false,
-  labelPosition: 'left',
-  trackColor: 'primary',
-  allowNumberEdit: false,
-  showAdjustmentArrows: false,
 };
 
 export default InputDoubleRange;
