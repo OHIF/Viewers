@@ -1,5 +1,5 @@
 import { MeasurementService } from '@ohif/core';
-import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
+import { getSOPInstanceAttributes } from '@ohif/extension-cornerstone';
 
 const getValueTypeByGraphicType = graphicType => {
   const { POINT } = MeasurementService.VALUE_TYPES;
