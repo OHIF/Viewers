@@ -62,7 +62,7 @@ export default function init({
     lineDash: '4,4',
   };
   annotation.config.style.setToolGroupToolStyles('default', {
-    [toolNames.DICOMSRDisplay]: dashedLine,
+    [toolNames.DICOMSRDisplay]: {},
   });
   annotation.config.style.setToolGroupToolStyles('SRToolGroup', {
     [toolNames.DICOMSRDisplay]: dashedLine,

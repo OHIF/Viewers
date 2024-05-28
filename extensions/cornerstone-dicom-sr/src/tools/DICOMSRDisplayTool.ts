@@ -218,6 +218,7 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
       const handleGroupUID = '0';
       drawing.drawHandles(svgDrawingHelper, annotationUID, handleGroupUID, canvasCoordinates, {
         color: options.color,
+        lineDash: options.lineDash,
       });
     });
   }
@@ -268,6 +269,7 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
         {
           color: options.color,
           width: options.lineWidth,
+          lineDash: options.lineDash,
         }
       );
     });
