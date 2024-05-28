@@ -31,8 +31,6 @@ const hpMammography = {
   id: '@ohif/hpMammo',
   hasUpdatedPriorsInformation: false,
   name: 'Mammography Breast Screening',
-  availableTo: {},
-  editableBy: {},
   protocolMatchingRules: [
     {
       id: 'Mammography',
@@ -82,6 +80,7 @@ const hpMammography = {
             displayArea: leftDisplayArea,
             // flipHorizontal: true,
             // rotation: 180,
+            allowUnmatchedView: true,
           },
           displaySets: [
             {
@@ -94,6 +93,7 @@ const hpMammography = {
             toolGroupId: 'default',
             // flipHorizontal: true,
             displayArea: rightDisplayArea,
+            allowUnmatchedView: true,
           },
           displaySets: [
             {
@@ -107,6 +107,7 @@ const hpMammography = {
             displayArea: leftDisplayArea,
             // rotation: 180,
             // flipHorizontal: true,
+            allowUnmatchedView: true,
           },
           displaySets: [
             {
@@ -119,6 +120,7 @@ const hpMammography = {
             toolGroupId: 'default',
             displayArea: rightDisplayArea,
             // flipHorizontal: true,
+            allowUnmatchedView: true,
           },
           displaySets: [
             {

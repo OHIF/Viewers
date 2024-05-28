@@ -601,7 +601,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       viewport.setProperties({ ...properties });
       this.setPresentations(viewport.id, presentations);
       if (displayArea) {
-        viewport.setOptions({ displayArea }, true);
+        viewport.setDisplayArea(displayArea);
       }
       if (rotation) {
         viewport.setProperties({ rotation });
