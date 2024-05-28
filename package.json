@@ -18,7 +18,7 @@
   },
   "scripts": {
     "cm": "npx git-cz",
-    "build": "lerna run build:viewer --stream",
+    "build": "yarn install:externals && lerna run build:viewer --stream",
     "build:dev": "lerna run build:dev --stream",
     "build:ci": "lerna run build:viewer:ci --stream",
     "build:qa": "lerna run build:viewer:qa --stream",
