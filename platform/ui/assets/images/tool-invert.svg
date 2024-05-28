@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="28px" height="28px" viewBox="0 0 28 28" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>tool-invert</title>
+    <g id="tool-invert" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <rect id="Rectangle" x="0" y="0" width="28" height="28"></rect>
+        <rect id="Rectangle" stroke="currentColor" stroke-width="1.5" x="4" y="5" width="20" height="18" rx="2"></rect>
+        <path d="M14,23 L6,23 C4.8954305,23 4,22.1045695 4,21 L4,7 C4,5.8954305 4.8954305,5 6,5 L14,5 L14,8 C10.6862915,8 8,10.6862915 8,14 C8,17.3137085 10.6862915,20 14,20 L14,23 Z" id="Combined-Shape" fill="currentColor"></path>
+        <path d="M14,8 C17.3137085,8 20,10.6862915 20,14 C20,17.3137085 17.3137085,20 14,20 Z" id="Combined-Shape" fill="currentColor"></path>
+    </g>
+</svg>
