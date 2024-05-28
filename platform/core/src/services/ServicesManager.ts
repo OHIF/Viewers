@@ -1,10 +1,9 @@
 import log from './../log.js';
-import Services from '../types/Services';
 import CommandsManager from '../classes/CommandsManager';
 import ExtensionManager from '../extensions/ExtensionManager';
 
 export default class ServicesManager {
-  public services: Services = {};
+  public services: AppTypes.Services = {};
   public registeredServiceNames: string[] = [];
   private _commandsManager: CommandsManager;
   private _extensionManager: ExtensionManager;

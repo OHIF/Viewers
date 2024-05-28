@@ -10,7 +10,6 @@
           "test:unit:ci",
           "test",
           "test:e2e",
-          "test:e2e:ci",
           "test:e2e:local",
           "test:e2e:dist",
           "test:e2e:serve",
@@ -38,8 +37,8 @@
     "test:e2e": {
       "dependsOn": ["^test:e2e"]
     },
-    "test:e2e:ci": {
-      "dependsOn": ["^test:e2e:ci"]
+    "test:e2e:headed": {
+      "dependsOn": ["^test:e2e:headed"]
     },
     "test:e2e:local": {
       "dependsOn": ["^test:e2e:local"]

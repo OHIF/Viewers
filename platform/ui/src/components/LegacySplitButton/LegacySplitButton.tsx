@@ -72,10 +72,10 @@ const LegacySplitButton = ({
   primary,
   secondary,
   items,
-  renderer,
+  renderer = null,
   onInteraction,
-  Component,
-  isActive,
+  Component = null,
+  isActive = false,
 }) => {
   const { t } = useTranslation('Buttons');
   const [state, setState] = useState({ isHovering: false, isExpanded: false });
@@ -149,7 +149,6 @@ const LegacySplitButton = ({
 };
 
 LegacySplitButton.propTypes = {
-  isToggle: PropTypes.bool,
   groupId: PropTypes.string.isRequired,
   primary: PropTypes.object.isRequired,
   secondary: PropTypes.object.isRequired,
@@ -158,13 +157,6 @@ LegacySplitButton.propTypes = {
   isActive: PropTypes.bool,
   onInteraction: PropTypes.func.isRequired,
   Component: PropTypes.elementType,
-};
-
-LegacySplitButton.defaultProps = {
-  isToggle: false,
-  renderer: null,
-  isActive: false,
-  Component: null,
 };
 
 export default LegacySplitButton;

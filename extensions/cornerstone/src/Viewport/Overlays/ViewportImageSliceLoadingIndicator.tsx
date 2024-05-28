@@ -78,14 +78,8 @@ function ViewportImageSliceLoadingIndicator({ viewportData, element }) {
 }
 
 ViewportImageSliceLoadingIndicator.propTypes = {
-  percentComplete: PropTypes.number,
   error: PropTypes.object,
   element: PropTypes.object,
-};
-
-ViewportImageSliceLoadingIndicator.defaultProps = {
-  percentComplete: 0,
-  error: null,
 };
 
 export default ViewportImageSliceLoadingIndicator;

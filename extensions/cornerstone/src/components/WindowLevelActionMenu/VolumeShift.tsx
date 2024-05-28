@@ -4,9 +4,9 @@ import { VolumeShiftProps } from '../../types/ViewportPresets';
 export function VolumeShift({
   viewportId,
   commandsManager,
-  serviceManager,
+  servicesManager,
 }: VolumeShiftProps): ReactElement {
-  const { cornerstoneViewportService } = serviceManager.services;
+  const { cornerstoneViewportService } = servicesManager.services;
   const [minShift, setMinShift] = useState<number | null>(null);
   const [maxShift, setMaxShift] = useState<number | null>(null);
   const [shift, setShift] = useState<number | null>(

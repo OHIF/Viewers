@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ActionButtons } from '@ohif/ui';
 import { useTranslation } from 'react-i18next';
 
-function DynamicExport({ commandsManager, servicesManager, extensionManager }) {
+function DynamicExport({ commandsManager, servicesManager, extensionManager }: withAppTypes) {
   const { segmentationService } = servicesManager.services;
   const { t } = useTranslation('dynamicExport');
 

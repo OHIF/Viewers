@@ -8,7 +8,7 @@ import DynamicVolumeControls from './DynamicVolumeControls';
 
 const SOPClassHandlerId = '@ohif/extension-default.sopClassHandlerModule.stack';
 
-export default function PanelGenerateImage({ servicesManager, commandsManager }) {
+export default function PanelGenerateImage({ servicesManager, commandsManager }: withAppTypes) {
   const { cornerstoneViewportService, viewportGridService, displaySetService } =
     servicesManager.services;
 

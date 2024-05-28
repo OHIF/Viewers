@@ -8,7 +8,7 @@ import { useTrackedMeasurements } from './../getContextModule';
 import { BaseVolumeViewport, Enums } from '@cornerstonejs/core';
 import { useTranslation } from 'react-i18next';
 
-function TrackedCornerstoneViewport(props) {
+function TrackedCornerstoneViewport(props: withAppTypes) {
   const { displaySets, viewportId, servicesManager, extensionManager } = props;
 
   const {
@@ -242,16 +242,11 @@ TrackedCornerstoneViewport.propTypes = {
   viewportId: PropTypes.string.isRequired,
   dataSource: PropTypes.object,
   children: PropTypes.node,
-  customProps: PropTypes.object,
-};
-
-TrackedCornerstoneViewport.defaultProps = {
-  customProps: {},
 };
 
 function _getNextMeasurementUID(
   direction,
-  servicesManager,
+  servicesManager: AppTypes.ServicesManager,
   trackedMeasurementId,
   trackedMeasurements
 ) {

@@ -3,6 +3,242 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.9.0-beta.23](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.22...v3.9.0-beta.23) (2024-05-28)
+
+
+### Bug Fixes
+
+* **rt:** dont convert to volume for RTSTRUCT ([#4157](https://github.com/OHIF/Viewers/issues/4157)) ([7745c09](https://github.com/OHIF/Viewers/commit/7745c092bb3edf0090f32fbbbae2f0776128d5a2))
+
+
+
+
+
+# [3.9.0-beta.22](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.21...v3.9.0-beta.22) (2024-05-27)
+
+
+### Features
+
+* **ui:** move to React 18 and base for using shadcn/ui ([#4174](https://github.com/OHIF/Viewers/issues/4174)) ([70f2c79](https://github.com/OHIF/Viewers/commit/70f2c797f42af603d7ea0eb8d23b4103aba66f77))
+
+
+
+
+
+# [3.9.0-beta.21](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.20...v3.9.0-beta.21) (2024-05-24)
+
+
+### Features
+
+* **types:** typed app config ([#4171](https://github.com/OHIF/Viewers/issues/4171)) ([8960b89](https://github.com/OHIF/Viewers/commit/8960b89911a9342d93bf1a62bec97a696f101fd4))
+
+
+
+
+
+# [3.9.0-beta.20](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.19...v3.9.0-beta.20) (2024-05-24)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.9.0-beta.19](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.18...v3.9.0-beta.19) (2024-05-24)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.9.0-beta.18](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.17...v3.9.0-beta.18) (2024-05-24)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.9.0-beta.17](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.16...v3.9.0-beta.17) (2024-05-23)
+
+
+### Bug Fixes
+
+* **crosshairs:** reset angle, position, and slabthickness for crosshairs when reset viewport tool is used ([#4113](https://github.com/OHIF/Viewers/issues/4113)) ([73d9e99](https://github.com/OHIF/Viewers/commit/73d9e99d5d6f38ab6c36f4471d54f18798feacb4))
+
+
+
+
+
+# [3.9.0-beta.16](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.15...v3.9.0-beta.16) (2024-05-23)
+
+
+### Bug Fixes
+
+* dicom json for orthanc by Update package versions for [@cornerstonejs](https://github.com/cornerstonejs) dependencies ([#4165](https://github.com/OHIF/Viewers/issues/4165)) ([34c7d72](https://github.com/OHIF/Viewers/commit/34c7d72142847486b98c9c52469940083eeaf87e))
+
+
+
+
+
+# [3.9.0-beta.15](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.14...v3.9.0-beta.15) (2024-05-22)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.9.0-beta.14](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.13...v3.9.0-beta.14) (2024-05-21)
+
+
+### Bug Fixes
+
+* **HangingProtocol:** fix hp when unsupported series load first ([#4145](https://github.com/OHIF/Viewers/issues/4145)) ([b124c91](https://github.com/OHIF/Viewers/commit/b124c91d8fa0def262d1fee8f105295b02864129))
+
+
+
+
+
+# [3.9.0-beta.13](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.12...v3.9.0-beta.13) (2024-05-21)
+
+
+### Features
+
+* **rt:** allow rendering of points in RT Struct ([#4128](https://github.com/OHIF/Viewers/issues/4128)) ([5903b07](https://github.com/OHIF/Viewers/commit/5903b0749aa41112d2e991bf53ed29b1fd7bd13f))
+
+
+
+
+
+# [3.9.0-beta.12](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.11...v3.9.0-beta.12) (2024-05-21)
+
+
+### Bug Fixes
+
+* **segmentation:** Address issue where segmentation creation failed on layout change ([#4153](https://github.com/OHIF/Viewers/issues/4153)) ([29944c8](https://github.com/OHIF/Viewers/commit/29944c8512c35718af03c03ef82bc43675ee1872))
+
+
+
+
+
+# [3.9.0-beta.11](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.10...v3.9.0-beta.11) (2024-05-21)
+
+
+### Features
+
+* **test:** Playwright testing integration ([#4146](https://github.com/OHIF/Viewers/issues/4146)) ([fe1a706](https://github.com/OHIF/Viewers/commit/fe1a706446cc33670bf5fab8451e8281b487fcd6))
+
+
+
+
+
+# [3.9.0-beta.10](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.9...v3.9.0-beta.10) (2024-05-21)
+
+
+### Bug Fixes
+
+* **stack-invalidation:** Resolve stack invalidation if metadata invalidated ([#4147](https://github.com/OHIF/Viewers/issues/4147)) ([70bb6c4](https://github.com/OHIF/Viewers/commit/70bb6c46267b3733a665f12534b849c890ce54ad))
+
+
+
+
+
+# [3.9.0-beta.9](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.8...v3.9.0-beta.9) (2024-05-17)
+
+
+### Bug Fixes
+
+* **select:** utilize react portals for select component ([#4144](https://github.com/OHIF/Viewers/issues/4144)) ([dce1e7d](https://github.com/OHIF/Viewers/commit/dce1e7d423cb64ec0d4be7362ecbfd52db47ef36))
+
+
+
+
+
+# [3.9.0-beta.8](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.7...v3.9.0-beta.8) (2024-05-16)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.9.0-beta.7](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.6...v3.9.0-beta.7) (2024-05-15)
+
+
+### Bug Fixes
+
+* **tmtv:** threshold was crashing the side panel ([#4119](https://github.com/OHIF/Viewers/issues/4119)) ([8d5c676](https://github.com/OHIF/Viewers/commit/8d5c676a5e1f3eda664071c8aece313de766bd59))
+
+
+
+
+
+# [3.9.0-beta.6](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.5...v3.9.0-beta.6) (2024-05-15)
+
+
+### Bug Fixes
+
+* 🐛 Overflow scroll list menu based on screen hight ([#4123](https://github.com/OHIF/Viewers/issues/4123)) ([6bba2e7](https://github.com/OHIF/Viewers/commit/6bba2e70f80d8eacc57c0e765013d9c10adf5413))
+
+
+
+
+
+# [3.9.0-beta.5](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.4...v3.9.0-beta.5) (2024-05-14)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.9.0-beta.4](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.3...v3.9.0-beta.4) (2024-05-14)
+
+
+### Bug Fixes
+
+* **auth:** bind handleUnauthenticated to correct context ([#4120](https://github.com/OHIF/Viewers/issues/4120)) ([8fa339f](https://github.com/OHIF/Viewers/commit/8fa339f296fd7e844f3879cfd81e47dbff315e66))
+* **DicomJSONDataSource:** Fix series filtering ([#4092](https://github.com/OHIF/Viewers/issues/4092)) ([2de102c](https://github.com/OHIF/Viewers/commit/2de102c73c795cfb48b49005b10aa788444a45b7))
+
+
+
+
+
+# [3.9.0-beta.3](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.2...v3.9.0-beta.3) (2024-05-08)
+
+
+### Features
+
+* **typings:** Enhance typing support with withAppTypes and custom services throughout OHIF ([#4090](https://github.com/OHIF/Viewers/issues/4090)) ([374065b](https://github.com/OHIF/Viewers/commit/374065bc3bad9d212f9817a8d41546cc64cfabfb))
+
+
+
+
+
+# [3.9.0-beta.2](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.1...v3.9.0-beta.2) (2024-05-06)
+
+
+### Bug Fixes
+
+* **bugs:** enhancements and bugs in several areas ([#4086](https://github.com/OHIF/Viewers/issues/4086)) ([730f434](https://github.com/OHIF/Viewers/commit/730f4349100f21b4489a21707dbb2dca9dbfbba2))
+
+
+
+
+
+# [3.9.0-beta.1](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.0...v3.9.0-beta.1) (2024-05-06)
+
+
+### Bug Fixes
+
+* **rt:** enhanced RT support, utilize SVGs for rendering. ([#4074](https://github.com/OHIF/Viewers/issues/4074)) ([0156bc4](https://github.com/OHIF/Viewers/commit/0156bc426f1840ae0d090223e94a643726e856cb))
+
+
+
+
+
 # [3.9.0-beta.0](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.94...v3.9.0-beta.0) (2024-04-29)
 
 **Note:** Version bump only for package ohif-monorepo-root

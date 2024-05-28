@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import classnames from 'classnames';
-import PropTypes from 'prop-types';
+import PropTypes, { object } from 'prop-types';
 import { Link, useNavigate } from 'react-router-dom';
 import moment from 'moment';
 import qs from 'query-string';
@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 import filtersMeta from './filtersMeta.js';
 import { useAppConfig } from '@state';
 import { useDebounce, useSearchParams } from '@hooks';
-import { utils, hotkeys, ServicesManager } from '@ohif/core';
+import { utils, hotkeys } from '@ohif/core';
 
 import {
   Icon,
@@ -56,7 +56,7 @@ function WorkList({
   dataPath,
   onRefresh,
   servicesManager,
-}) {
+}: withAppTypes) {
   const { hotkeyDefinitions, hotkeyDefaults } = hotkeysManager;
   const { show, hide } = useModal();
   const { t } = useTranslation();
@@ -270,6 +270,7 @@ function WorkList({
 
     return {
       dataCY: `studyRow-${studyInstanceUid}`,
+      clickableCY: studyInstanceUid,
       row: [
         {
           key: 'patientName',
@@ -585,7 +586,7 @@ WorkList.propTypes = {
     getConfig: PropTypes.func,
   }).isRequired,
   isLoadingData: PropTypes.bool.isRequired,
-  servicesManager: PropTypes.instanceOf(ServicesManager),
+  servicesManager: PropTypes.object.isRequired,
 };
 
 const defaultFilterValues = {
@@ -630,7 +631,7 @@ function _getQueryFilterValues(params) {
     sortBy: params.get('sortby'),
     sortDirection: params.get('sortdirection'),
     pageNumber: _tryParseInt(params.get('pagenumber'), undefined),
-    resultsPerPage: _tryParseInt(params.get('resultsperpage'), undefined),
+    resultsPerPage: _tryParseInt(params.get('resultsPerPage'), undefined),
     datasources: params.get('datasources'),
     configUrl: params.get('configurl'),
   };

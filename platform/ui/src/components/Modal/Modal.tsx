@@ -15,12 +15,12 @@ if (typeof document !== 'undefined') {
 
 const Modal = ({
   closeButton,
-  shouldCloseOnEsc,
+  shouldCloseOnEsc = true,
   isOpen,
   title,
   onClose,
   children,
-  shouldCloseOnOverlayClick,
+  shouldCloseOnOverlayClick = true,
   movable = false,
   containerDimensions = null,
   contentDimensions = null,
@@ -97,14 +97,6 @@ const Modal = ({
       )}
     </ReactModal>
   );
-};
-
-Modal.defaultProps = {
-  shouldCloseOnEsc: true,
-  shouldCloseOnOverlayClick: true,
-  movable: false,
-  containerDimensions: null,
-  contentDimensions: null,
 };
 
 Modal.propTypes = {

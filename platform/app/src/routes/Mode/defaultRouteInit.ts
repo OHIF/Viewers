@@ -16,7 +16,7 @@ const { sortingCriteria, getSplitParam } = utils;
  * @returns array of subscriptions to cancel
  */
 export async function defaultRouteInit(
-  { servicesManager, studyInstanceUIDs, dataSource, filters, appConfig },
+  { servicesManager, studyInstanceUIDs, dataSource, filters, appConfig }: withAppTypes,
   hangingProtocolId
 ) {
   const { displaySetService, hangingProtocolService, uiNotificationService, customizationService } =

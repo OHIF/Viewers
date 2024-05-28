@@ -1,4 +1,4 @@
-export function getToolbarModule({ servicesManager }) {
+export function getToolbarModule({ servicesManager }: withAppTypes) {
   const { segmentationService, toolbarService, toolGroupService } = servicesManager.services;
   return [
     {

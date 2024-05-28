@@ -5,9 +5,9 @@ import { VolumeShadeProps } from '../../types/ViewportPresets';
 export function VolumeShade({
   commandsManager,
   viewportId,
-  serviceManager,
+  servicesManager,
 }: VolumeShadeProps): ReactElement {
-  const { cornerstoneViewportService } = serviceManager.services;
+  const { cornerstoneViewportService } = servicesManager.services;
   const [shade, setShade] = useState(true);
   const [key, setKey] = useState(0);
 

@@ -15,7 +15,7 @@ function usePrevious(value) {
 /**
  * Just refactoring from the toolbox component to make it more readable
  */
-function ToolboxUI(props) {
+function ToolboxUI(props: withAppTypes) {
   const {
     toolbarButtons,
     handleToolSelect,

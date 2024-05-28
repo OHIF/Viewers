@@ -8,7 +8,7 @@ import createRTToolGroupAndAddTools from '../utils/initRTToolGroup';
 
 const RT_TOOLGROUP_BASE_NAME = 'RTToolGroup';
 
-function OHIFCornerstoneRTViewport(props) {
+function OHIFCornerstoneRTViewport(props: withAppTypes) {
   const {
     children,
     displaySets,
@@ -111,7 +111,7 @@ function OHIFCornerstoneRTViewport(props) {
         {...props}
         displaySets={[referencedDisplaySet, rtDisplaySet]}
         viewportOptions={{
-          viewportType: 'volume',
+          viewportType: 'stack',
           toolGroupId: toolGroupId,
           orientation: viewportOptions.orientation,
           viewportId: viewportOptions.viewportId,
@@ -358,11 +358,6 @@ OHIFCornerstoneRTViewport.propTypes = {
   viewportId: PropTypes.string.isRequired,
   dataSource: PropTypes.object,
   children: PropTypes.node,
-  customProps: PropTypes.object,
-};
-
-OHIFCornerstoneRTViewport.defaultProps = {
-  customProps: {},
 };
 
 function _getReferencedDisplaySetMetadata(referencedDisplaySet) {
