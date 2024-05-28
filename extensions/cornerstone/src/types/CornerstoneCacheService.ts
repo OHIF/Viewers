@@ -22,7 +22,7 @@ type VolumeData = {
 
 type StackViewportData = {
   viewportType: Enums.ViewportType;
-  data: StackData;
+  data: StackData[];
 };
 
 type VolumeViewportData = {
