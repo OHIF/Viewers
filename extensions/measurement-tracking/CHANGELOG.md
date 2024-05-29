@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.9.0-beta.25](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.24...v3.9.0-beta.25) (2024-05-29)
+
+
+### Bug Fixes
+
+* **ultrasound:** Upgrade cornerstone3D version to resolve coloring issues ([#4181](https://github.com/OHIF/Viewers/issues/4181)) ([75a71db](https://github.com/OHIF/Viewers/commit/75a71db7f89840250ad1c2b35df5a35aceb8be7d))
+
+
+
+
+
 # [3.9.0-beta.24](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.23...v3.9.0-beta.24) (2024-05-29)
 
 
