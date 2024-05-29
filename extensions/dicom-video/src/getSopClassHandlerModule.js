@@ -66,6 +66,7 @@ const _getDisplaySetsFromSeries = (instances, servicesManager, extensionManager)
         SOPClassHandlerId,
         referencedImages: null,
         measurements: null,
+        viewportType: 'video',
         videoUrl: dataSource.retrieve.directURL({
           instance,
           singlepart: 'video',

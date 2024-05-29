@@ -140,16 +140,16 @@ function modeFactory() {
               viewports: [
                 {
                   namespace: tracked.viewport,
-                  displaySetsToDisplay: [ohif.sopClassHandler],
+                  displaySetsToDisplay: [ohif.sopClassHandler, dicomvideo.sopClassHandler],
                 },
                 {
                   namespace: dicomsr.viewport,
                   displaySetsToDisplay: [dicomsr.sopClassHandler],
                 },
-                {
-                  namespace: dicomvideo.viewport,
-                  displaySetsToDisplay: [dicomvideo.sopClassHandler],
-                },
+                // {
+                //   namespace: dicomvideo.viewport,
+                //   displaySetsToDisplay: [dicomvideo.sopClassHandler],
+                // },
                 {
                   namespace: dicompdf.viewport,
                   displaySetsToDisplay: [dicompdf.sopClassHandler],

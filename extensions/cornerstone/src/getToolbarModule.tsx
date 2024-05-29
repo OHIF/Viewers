@@ -250,7 +250,7 @@ export default function getToolbarModule({ commandsManager, servicesManager }: w
         const displaySets = displaySetUIDs.map(displaySetService.getDisplaySetByUID);
 
         const areReconstructable = displaySets.every(displaySet => {
-          return displaySet.isReconstructable;
+          return displaySet?.isReconstructable;
         });
 
         if (!areReconstructable) {

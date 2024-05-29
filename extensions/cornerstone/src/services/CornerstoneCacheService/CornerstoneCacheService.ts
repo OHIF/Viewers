@@ -32,7 +32,7 @@ class CornerstoneCacheService {
   }
 
   public async createViewportData(
-    displaySets: unknown[],
+    displaySets: Types.IDisplaySet[],
     viewportOptions: Record<string, unknown>,
     dataSource: unknown,
     initialImageIndex?: number
@@ -55,23 +55,22 @@ class CornerstoneCacheService {
       viewportOptions.viewportType = viewportType;
     }
 
-    const cs3DViewportType = getCornerstoneViewportType(viewportType);
+    const cs3DViewportType = getCornerstoneViewportType(viewportType, displaySets);
     let viewportData: StackViewportData | VolumeViewportData;
-
-    if (cs3DViewportType === Enums.ViewportType.STACK) {
-      viewportData = await this._getStackViewportData(
-        dataSource,
-        displaySets,
-        initialImageIndex,
-        cs3DViewportType
-      );
-    }
 
     if (
       cs3DViewportType === Enums.ViewportType.ORTHOGRAPHIC ||
       cs3DViewportType === Enums.ViewportType.VOLUME_3D
     ) {
       viewportData = await this._getVolumeViewportData(dataSource, displaySets, cs3DViewportType);
+    } else {
+    // Everything else looks like a stack
+      viewportData = await this._getStackViewportData(
+        dataSource,
+        displaySets,
+        initialImageIndex,
+        cs3DViewportType
+      );
     }
 
     viewportData.viewportType = cs3DViewportType;
