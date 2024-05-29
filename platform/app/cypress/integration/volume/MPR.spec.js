@@ -78,8 +78,8 @@ describe('OHIF MPR', () => {
         const fOR = Object.keys(fORMap)[0];
         const fORAnnotation = fORMap[fOR];
 
-        // it should have crosshairs as the only key
-        expect(Object.keys(fORAnnotation)).to.have.length(1);
+        // it should have crosshairs as the only key (references lines make this 2)
+        expect(Object.keys(fORAnnotation)).to.have.length(2);
 
         const crosshairs = fORAnnotation.Crosshairs;
 

@@ -8,7 +8,7 @@ const SegmentItem = ({
   segmentIndex,
   segmentationId,
   label,
-  isActive,
+  isActive = false,
   isVisible,
   color,
   showDelete,
@@ -234,10 +234,6 @@ SegmentItem.propTypes = {
   onToggleVisibility: PropTypes.func.isRequired,
   onToggleLocked: PropTypes.func,
   displayText: PropTypes.string,
-};
-
-SegmentItem.defaultProps = {
-  isActive: false,
 };
 
 export default SegmentItem;

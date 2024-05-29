@@ -111,7 +111,7 @@ function OHIFCornerstoneRTViewport(props: withAppTypes) {
         {...props}
         displaySets={[referencedDisplaySet, rtDisplaySet]}
         viewportOptions={{
-          viewportType: 'volume',
+          viewportType: 'stack',
           toolGroupId: toolGroupId,
           orientation: viewportOptions.orientation,
           viewportId: viewportOptions.viewportId,
@@ -358,11 +358,6 @@ OHIFCornerstoneRTViewport.propTypes = {
   viewportId: PropTypes.string.isRequired,
   dataSource: PropTypes.object,
   children: PropTypes.node,
-  customProps: PropTypes.object,
-};
-
-OHIFCornerstoneRTViewport.defaultProps = {
-  customProps: {},
 };
 
 function _getReferencedDisplaySetMetadata(referencedDisplaySet) {

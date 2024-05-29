@@ -12,7 +12,6 @@ import {
   histogramPropType,
   colormapPropType,
 } from './types';
-import PanelSection from '../PanelSection';
 
 const convertVOItoVOIRange = voi => {
   return {
@@ -22,21 +21,19 @@ const convertVOItoVOIRange = voi => {
 };
 
 const WindowLevel = ({
-  title,
-  step,
+  step = 1,
   histogram,
   voi: voiProp,
-  opacity: opacityProp,
-  showOpacitySlider,
+  opacity: opacityProp = 1,
+  showOpacitySlider = false,
   colormap,
-  style,
-  fillColor,
-  lineColor,
+  style = 'polygon',
+  fillColor = '#3f3f3f',
+  lineColor = '#707070',
   containerClassName,
   onVOIChange,
   onOpacityChange,
 }: {
-  title: string;
   step: number;
   histogram: Histogram;
   voi: VOI;
@@ -105,7 +102,6 @@ const WindowLevel = ({
   return (
     <div className={classnames('maxValue-w-sm p-0.5 text-[0px] text-white', containerClassName)}>
       <div className="px-2 pt-0 pb-[0.5]">
-        {/* <legend className="pb-1 text-base text-white"> {title}</legend> */}
         <div className="flex h-4 text-xs">
           <div className="relative h-fit grow">
             <span className="absolute left-0 bottom-px leading-3">{range.min}</span>
@@ -161,17 +157,7 @@ const WindowLevel = ({
   );
 };
 
-WindowLevel.defaultProps = {
-  step: 1,
-  opacity: 1,
-  showOpacitySlider: false,
-  style: 'polygon',
-  fillColor: '#3f3f3f',
-  lineColor: '#707070',
-};
-
 WindowLevel.propTypes = {
-  title: PropTypes.string,
   step: PropTypes.number,
   histogram: histogramPropType.isRequired,
   voi: voiPropType,
