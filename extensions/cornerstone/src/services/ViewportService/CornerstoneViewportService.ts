@@ -428,7 +428,10 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     // override the viewportOptions and displaySetOptions with the public ones
     // since those are the newly set ones, we set them here so that it handles defaults
     const displaySetOptions = viewportInfo.setPublicDisplaySetOptions(publicDisplaySetOptions);
-    const viewportOptions = viewportInfo.setPublicViewportOptions(publicViewportOptions);
+    const viewportOptions = viewportInfo.setPublicViewportOptions(
+      publicViewportOptions,
+      viewportData.viewportType
+    );
 
     const element = viewportInfo.getElement();
     const type = viewportInfo.getViewportType();
@@ -547,6 +550,21 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
         viewportInfo.contains(displaySetInstanceUID, referencedImageId)
       )?.viewportId ?? null
     );
+  }
+
+  /**
+   * Sets the image data for the given viewport.
+   */
+  private async _setOtherViewport(
+    viewport: Types.IStackViewport,
+    viewportData: StackViewportData,
+    _viewportInfo: ViewportInfo,
+    _presentations: Presentations = {}
+  ): Promise<void> {
+    // TODO - create a client for this web api
+    const client = null;
+    const [displaySet] = viewportData.data;
+    return viewport.setImageIds(displaySet.displaySetInstanceUID, displaySet.imageIds, client);
   }
 
   private async _setStackViewport(
@@ -963,7 +981,12 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       );
     }
 
-    throw new Error('Unknown viewport type');
+    return this._setOtherViewport(
+      viewport as Types.IViewport,
+      viewportData as StackViewportData,
+      viewportInfo,
+      presentations
+    );
   }
 
   /**

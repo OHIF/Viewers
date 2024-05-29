@@ -58,15 +58,21 @@ const getDirectURL = (config, params) => {
 
   const { StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID } = instance;
   const BulkDataURI =
-    (value && value.BulkDataURI) ||
-    `series/${SeriesInstanceUID}/instances/${SOPInstanceUID}${defaultPath}`;
+    value?.BulkDataURI || `series/${SeriesInstanceUID}/instances/${SOPInstanceUID}${defaultPath}`;
   const hasQuery = BulkDataURI.indexOf('?') !== -1;
   const hasAccept = BulkDataURI.indexOf('accept=') !== -1;
   const acceptUri =
     BulkDataURI + (hasAccept ? '' : (hasQuery ? '&' : '?') + `accept=${defaultType}`);
 
-  if (tag === 'PixelData' || tag === 'EncapsulatedDocument') {
+  if ((tag === 'PixelData' || tag === 'EncapsulatedDocument') && !hasQuery) {
+  // Only return the default path if it doesn't have the query
     return `${wadoRoot}/studies/${StudyInstanceUID}/series/${SeriesInstanceUID}/instances/${SOPInstanceUID}/rendered`;
+  }
+
+  if (acceptUri.startsWith('series')) {
+    // Use a relative path for series level retrieves when they contain a query
+    // parameter - that is used to assume it has provided the correct overall URL.
+    return `${wadoRoot}/studies/${StudyInstanceUID}/${acceptUri}`;
   }
 
   // The DICOMweb standard states that the default is multipart related, and then

@@ -231,21 +231,17 @@ class ViewportInfo {
     return viewportData.data.displaySetInstanceUID === displaySetInstanceUID;
   }
 
-  public setPublicViewportOptions(viewportOptionsEntry: PublicViewportOptions): ViewportOptions {
-    let viewportType = viewportOptionsEntry.viewportType;
-    const { toolGroupId = DEFAULT_TOOLGROUP_ID, presentationIds } = viewportOptionsEntry;
-    let orientation;
+  public setPublicViewportOptions(
+    viewportOptionsEntry: PublicViewportOptions,
+    viewportTypeDisplaySet: string
+  ): ViewportOptions {
+    const ohifViewportType = viewportTypeDisplaySet || viewportOptionsEntry.viewportType || STACK;
+    const { presentationIds } = viewportOptionsEntry;
+    let { toolGroupId = DEFAULT_TOOLGROUP_ID } = viewportOptionsEntry;
+    // Just assign the orientation for any viewport type and let the viewport deal with it
+    const orientation = getCornerstoneOrientation(viewportOptionsEntry.orientation);
 
-    if (!viewportType) {
-      viewportType = getCornerstoneViewportType(STACK);
-    } else {
-      viewportType = getCornerstoneViewportType(viewportOptionsEntry.viewportType);
-    }
-
-    // map SAGITTAL, AXIAL, CORONAL orientation to be used by cornerstone
-    if (viewportOptionsEntry.viewportType?.toLowerCase() !== STACK) {
-      orientation = getCornerstoneOrientation(viewportOptionsEntry.orientation);
-    }
+    const viewportType = getCornerstoneViewportType(ohifViewportType);
 
     if (!toolGroupId) {
       toolGroupId = DEFAULT_TOOLGROUP_ID;

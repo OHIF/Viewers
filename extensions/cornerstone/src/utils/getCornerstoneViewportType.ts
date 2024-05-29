@@ -13,7 +13,6 @@ export default function getCornerstoneViewportType(
 ): Enums.ViewportType {
   const lowerViewportType =
     displaySets?.[0]?.viewportType?.toLowerCase() || viewportType.toLowerCase();
-  console.log("lowerViewportType for viewport", lowerViewportType, displaySets?.[0]);
   if (lowerViewportType === STACK) {
     return Enums.ViewportType.STACK;
   }
@@ -21,7 +20,7 @@ export default function getCornerstoneViewportType(
     return Enums.ViewportType.VIDEO;
   }
   if (lowerViewportType === WSI) {
-    return WSI as unknown as Enums.ViewportType; // TODO remove hack to allow Enums.ViewportType.WSI;
+    return Enums.ViewportType.WSI;
   }
 
   if (lowerViewportType === VOLUME || lowerViewportType === ORTHOGRAPHIC) {
