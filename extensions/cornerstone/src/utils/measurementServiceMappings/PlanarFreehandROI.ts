@@ -20,7 +20,7 @@ const PlanarFreehandROI = {
    */
   toMeasurement: (
     csToolsEventDetail,
-    DisplaySetService,
+    displaySetService,
     CornerstoneViewportService,
     getValueTypeFromToolType,
     customizationService
@@ -40,16 +40,16 @@ const PlanarFreehandROI = {
     }
 
     const { SOPInstanceUID, SeriesInstanceUID, frameNumber, StudyInstanceUID } =
-      getSOPInstanceAttributes(referencedImageId);
+      getSOPInstanceAttributes(referencedImageId, displaySetService, annotation);
 
     let displaySet;
     if (SOPInstanceUID) {
-      displaySet = DisplaySetService.getDisplaySetForSOPInstanceUID(
+      displaySet = displaySetService.getDisplaySetForSOPInstanceUID(
         SOPInstanceUID,
         SeriesInstanceUID
       );
     } else {
-      displaySet = DisplaySetService.getDisplaySetsForSeries(SeriesInstanceUID);
+      displaySet = displaySetService.getDisplaySetsForSeries(SeriesInstanceUID)[0];
     }
 
     return {
@@ -62,10 +62,11 @@ const PlanarFreehandROI = {
       frameNumber,
       referenceSeriesUID: SeriesInstanceUID,
       referenceStudyUID: StudyInstanceUID,
+      referencedImageId,
       toolName: metadata.toolName,
       displaySetInstanceUID: displaySet.displaySetInstanceUID,
       label: data.label,
-      displayText: getDisplayText(annotation, displaySet, customizationService),
+      displayText: getDisplayText(annotation, displaySet, customizationService, displaySetService),
       data: data.cachedStats,
       type: getValueTypeFromToolType(toolName),
       getReport: () => getColumnValueReport(annotation, customizationService),
@@ -122,17 +123,17 @@ function getColumnValueReport(annotation, customizationService) {
  * @param {Object} displaySet - The display set object.
  * @returns {string[]} - An array of display text.
  */
-function getDisplayText(annotation, displaySet, customizationService) {
+function getDisplayText(annotation, displaySet, customizationService, displaySetService) {
   const { PlanarFreehandROI } = customizationService.get('cornerstone.measurements');
   const { displayText } = PlanarFreehandROI;
 
   const { metadata, data } = annotation;
 
-  if (!data.cachedStats || !data.cachedStats[`imageId:${metadata.referencedImageId}`]) {
-    return [];
-  }
-
-  const { SOPInstanceUID, frameNumber } = getSOPInstanceAttributes(metadata.referencedImageId);
+  const { SOPInstanceUID, frameNumber } = getSOPInstanceAttributes(
+    metadata.referencedImageId,
+    displaySetService,
+    annotation
+  );
 
   const displayTextArray = [];
 
@@ -150,7 +151,13 @@ function getDisplayText(annotation, displaySet, customizationService) {
     displayTextArray.push(`S: ${SeriesNumber}${instanceText}${frameText}`);
   }
 
-  const stats = data.cachedStats[`imageId:${metadata.referencedImageId}`];
+  const stats =
+    data.cachedStats[`imageId:${metadata.referencedImageId}`] ||
+    Array.from(Object.values(data.cachedStats))[0];
+
+  if (!stats) {
+    return displayTextArray;
+  }
 
   const roundValues = values => {
     if (Array.isArray(values)) {
@@ -158,10 +165,10 @@ function getDisplayText(annotation, displaySet, customizationService) {
         if (isNaN(value)) {
           return value;
         }
-        return utils.roundNumber(value);
+        return utils.roundNumber(value, 2);
       });
     }
-    return isNaN(values) ? values : utils.roundNumber(values);
+    return isNaN(values) ? values : utils.roundNumber(values, 2);
   };
 
   const findUnitForValue = (displayTextItems, value) =>
