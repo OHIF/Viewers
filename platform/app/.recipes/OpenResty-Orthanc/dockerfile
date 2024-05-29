@@ -38,8 +38,7 @@ RUN apt-get update && apt-get install -y build-essential python3
 
 
 # ADD . /usr/src/app/
-RUN yarn config set workspaces-experimental true
-RUN yarn install
+RUN yarn install:externals
 
 ENV APP_CONFIG=config/docker_openresty-orthanc.js
 ENV PATH /usr/src/app/node_modules/.bin:$PATH

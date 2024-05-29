@@ -535,7 +535,7 @@ workflows:
   #         executor: cypress/browsers-chrome76
   #         browser: chrome
   #         pre-steps:
-  #           - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v && yarn global
+  #           - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v install:externals && yarn global
   #               add wait-on' # Use yarn latest
   #         yarn: true
   #         store_artifacts: false

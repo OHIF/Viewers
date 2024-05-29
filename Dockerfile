@@ -51,7 +51,7 @@ RUN yarn install:externals --frozen-lockfile --verbose
 COPY . .
 
 # To restore workspaces symlinks
-RUN yarn install --frozen-lockfile --verbose
+RUN yarn install:externals --frozen-lockfile --verbose
 
 ENV PATH /usr/src/app/node_modules/.bin:$PATH
 ENV QUICK_BUILD true
