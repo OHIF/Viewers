@@ -18,6 +18,7 @@
   },
   "scripts": {
     "cm": "npx git-cz",
+    "install:dev": ".scripts/install.sh",
     "build": "lerna run build:viewer --stream",
     "build:dev": "lerna run build:dev --stream",
     "build:ci": "lerna run build:viewer:ci --stream",
