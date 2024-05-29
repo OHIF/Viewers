@@ -43,6 +43,24 @@ const hpMN: Types.HangingProtocol.Protocol = {
       ],
     },
   },
+  screens: [
+    // This hanging protocol will match screens primary and secondary
+    {
+      matches: ['primary', 'secondary'],
+      primary: {
+        x: 0.5,
+        y: 0,
+        width: 0.5,
+        height: 1,
+      },
+      secondary: {
+        x: 0.5,
+        y: 0,
+        width: 0.5,
+        height: 1,
+      },
+    },
+  ],
   defaultViewport: {
     viewportOptions: {
       viewportType: 'stack',
@@ -58,7 +76,7 @@ const hpMN: Types.HangingProtocol.Protocol = {
   },
   stages: [
     {
-      id: '2x2',
+      name: '2x2',
       stageActivation: {
         enabled: {
           minViewportsMatched: 4,
@@ -124,11 +142,7 @@ const hpMN: Types.HangingProtocol.Protocol = {
 
     // 3x1 stage
     {
-      id: '3x1',
-      // Obsolete settings:
-      requiredViewports: 1,
-      preferredViewports: 3,
-      // New equivalent:
+      name: '3x1',
       stageActivation: {
         enabled: {
           minViewportsMatched: 3,
@@ -182,9 +196,7 @@ const hpMN: Types.HangingProtocol.Protocol = {
 
     // A 2x1 stage
     {
-      id: '2x1',
-      requiredViewports: 1,
-      preferredViewports: 2,
+      name: '2x1',
       stageActivation: {
         enabled: {
           minViewportsMatched: 2,
@@ -226,9 +238,7 @@ const hpMN: Types.HangingProtocol.Protocol = {
 
     // A 1x1 stage - should be automatically activated if there is only 1 viewable instance
     {
-      id: '1x1',
-      requiredViewports: 1,
-      preferredViewports: 1,
+      name: '1x1',
       stageActivation: {
         enabled: {
           minViewportsMatched: 1,

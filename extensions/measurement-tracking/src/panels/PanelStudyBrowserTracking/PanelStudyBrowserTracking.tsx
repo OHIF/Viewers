@@ -25,6 +25,7 @@ function PanelStudyBrowserTracking({
     hangingProtocolService,
     uiNotificationService,
     measurementService,
+    multiMonitorService,
   } = servicesManager.services;
   const navigate = useNavigate();
 
@@ -279,18 +280,25 @@ function PanelStudyBrowserTracking({
     hangingProtocolService
   );
 
+  const _launchMultiMonitor =
+    multiMonitorService.numberOfScreens > 1
+      ? (studyInstanceUID, screenDelta) => {
+        multiMonitorService.launchStudy(studyInstanceUID, screenDelta);
+      }
+      : null;
+
   // TODO: Should not fire this on "close"
-  function _handleStudyClick(StudyInstanceUID) {
-    const shouldCollapseStudy = expandedStudyInstanceUIDs.includes(StudyInstanceUID);
+  function _handleStudyClick(studyInstanceUID) {
+    const shouldCollapseStudy = expandedStudyInstanceUIDs.includes(studyInstanceUID);
     const updatedExpandedStudyInstanceUIDs = shouldCollapseStudy
-      ? [...expandedStudyInstanceUIDs.filter(stdyUid => stdyUid !== StudyInstanceUID)]
-      : [...expandedStudyInstanceUIDs, StudyInstanceUID];
+      ? [...expandedStudyInstanceUIDs.filter(studyUid => studyUid !== studyInstanceUID)]
+      : [...expandedStudyInstanceUIDs, studyInstanceUID];
 
     setExpandedStudyInstanceUIDs(updatedExpandedStudyInstanceUIDs);
 
     if (!shouldCollapseStudy) {
       const madeInClient = true;
-      requestDisplaySetCreationForStudy(displaySetService, StudyInstanceUID, madeInClient);
+      requestDisplaySetCreationForStudy(displaySetService, studyInstanceUID, madeInClient);
     }
   }
 
@@ -397,6 +405,7 @@ function PanelStudyBrowserTracking({
       activeTabName={activeTabName}
       expandedStudyInstanceUIDs={expandedStudyInstanceUIDs}
       onClickStudy={_handleStudyClick}
+      onClickLaunch={_launchMultiMonitor}
       onClickTab={clickedTabName => {
         setActiveTabName(clickedTabName);
       }}
