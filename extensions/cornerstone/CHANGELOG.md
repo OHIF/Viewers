@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.9.0-beta.27](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.26...v3.9.0-beta.27) (2024-05-29)
+
+
+### Bug Fixes
+
+* **contour:** set renderFill to false for contour ([#4186](https://github.com/OHIF/Viewers/issues/4186)) ([731340d](https://github.com/OHIF/Viewers/commit/731340d70ab23e116dd23e80b880bd8a28526f19))
+
+
+
+
+
 # [3.9.0-beta.26](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.25...v3.9.0-beta.26) (2024-05-29)
 
 
