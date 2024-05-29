@@ -4,10 +4,6 @@
   "private": true,
   "workspaces": {
     "nohoist": [
-      "@docusaurus/core/**",
-      "@docusaurus/core",
-      "@docusaurus/preset-classic",
-      "@docusaurus/preset-classic/**",
       "**/react-router-dom",
       "**/react-router",
       "**/history"
@@ -27,24 +23,6 @@
     "serve": "docusaurus serve",
     "write-translations": "docusaurus write-translations",
     "write-heading-ids": "docusaurus write-heading-ids"
-  },
-  "dependencies": {
-    "@docusaurus/core": "2.4.3",
-    "@docusaurus/plugin-client-redirects": "2.4.3",
-    "@docusaurus/plugin-google-gtag": "2.4.3",
-    "@docusaurus/plugin-ideal-image": "2.4.3",
-    "@docusaurus/plugin-pwa": "2.4.3",
-    "@docusaurus/preset-classic": "2.4.3",
-    "@docusaurus/remark-plugin-npm2yarn": "2.4.3",
-    "@docusaurus/theme-classic": "2.4.3",
-    "@docusaurus/theme-live-codeblock": "2.4.3",
-    "@mdx-js/react": "^1.6.21",
-    "@svgr/webpack": "^5.5.0",
-    "classnames": "^2.3.2",
-    "clsx": "^1.1.1",
-    "docusaurus-plugin-image-zoom": "^1.0.1",
-    "file-loader": "^6.2.0",
-    "url-loader": "^4.1.1"
   },
   "peerDependencies": {
     "react": "^18.3.1",

@@ -117,7 +117,7 @@ const createCopyPluginToDistForLink = (srcDir, distDir, plugins, folderName) => 
 const createCopyPluginToDistForBuild = (SRC_DIR, DIST_DIR, plugins, folderName) => {
   return plugins
     .map(plugin => {
-      const from = `${SRC_DIR}/../../../${plugin.external ? 'externals/' : ''}node_modules/${plugin.packageName}/${folderName}/`;
+      const from = `${SRC_DIR}/../../../node_modules/${plugin.packageName}/${folderName}/`;
       const exists = fs.existsSync(from);
       return exists
         ? {

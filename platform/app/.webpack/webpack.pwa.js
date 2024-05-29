@@ -102,7 +102,7 @@ module.exports = (env, argv) => {
           },
           // Copy Dicom Microscopy Viewer build files
           {
-            from: '../../../externals/node_modules/dicom-microscopy-viewer/dist/dynamic-import',
+            from: '../../../node_modules/dicom-microscopy-viewer/dist/dynamic-import',
             to: DIST_DIR,
             globOptions: {
               ignore: ['**/*.min.js.map'],
