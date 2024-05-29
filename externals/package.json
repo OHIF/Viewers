@@ -7,7 +7,7 @@
     "yarn": ">=1.19.1"
   },
   "scripts": {
-    "install:externals": "yarn install --no-lockfile --modules-folder ../node_modules"
+    "install:externals": "yarn install --modules-folder ../node_modules"
   },
   "workspaces": [
     "../platform/*",

@@ -24,6 +24,18 @@ export type DisplaySetAndViewportOptions = {
   displaySetOptions: DisplaySetOptions;
 };
 
+export type DisplayArea = {
+  type?: 'SCALE' | 'FIT';
+  scale?: number;
+  interpolationType?: any;
+  imageArea?: [number, number]; // areaX, areaY
+  imageCanvasPoint?: {
+    imagePoint: [number, number]; // imageX, imageY
+    canvasPoint?: [number, number]; // canvasX, canvasY
+  };
+  storeAsInitialCamera?: boolean;
+};
+
 export type SetProtocolOptions = {
   /** Used to provide a mapping of what keys are provided for which viewport.
    * For example, a Chest XRay might use have the display set selector id of
@@ -155,6 +167,7 @@ export type ViewportOptions = {
   id?: string;
   orientation?: CustomOption<string>;
   viewportId?: string;
+  displayArea?: DisplayArea;
   initialImageOptions?: CustomOption<initialImageOptions>;
   syncGroups?: CustomOption<SyncGroup>[];
   customViewportProps?: Record<string, unknown>;

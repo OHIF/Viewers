@@ -57,8 +57,7 @@ jobs:
             - yarn-packages-
       - run:
           name: Install Dependencies
-          command: |
-            yarn install:externals
+          command: yarn install:externals --frozen-lockfile
       - save_cache:
           name: Save Yarn Package Cache
           paths:
@@ -112,8 +111,7 @@ jobs:
             - yarn-packages-
       - run:
           name: Install Dependencies
-          command: |
-            yarn install:externals
+          command: yarn install:externals --frozen-lockfile
       - save_cache:
           name: Save Yarn Package Cache
           paths:
@@ -165,8 +163,7 @@ jobs:
             - yarn-packages-
       - run:
           name: Install Dependencies
-          command: |
-            yarn install:externals
+          command: yarn install:externals --frozen-lockfile
       - save_cache:
           name: Save Yarn Package Cache
           paths:
@@ -216,8 +213,7 @@ jobs:
             - yarn-packages-
       - run:
           name: Install Dependencies
-          command: |
-            yarn install:externals
+          command: yarn install:externals --frozen-lockfile
       - save_cache:
           name: Save Yarn Package Cache
           paths:

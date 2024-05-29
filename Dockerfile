@@ -46,8 +46,7 @@ COPY --from=json-copier /usr/src/app .
 
 # Run the install before copying the rest of the files
 RUN yarn config set workspaces-experimental true
-RUN yarn install --frozen-lockfile --verbose
-RUN yarn install:externals
+RUN yarn install:externals --frozen-lockfile --verbose
 
 COPY . .
 
