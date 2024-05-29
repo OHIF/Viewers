@@ -3,7 +3,12 @@
   "private": true,
   "workspaces": {
     "packages": [
-      "platform/*",
+      "platform/app",
+      "platform/cli",
+      "platform/core",
+      "platform/i18n",
+      "platform/ui",
+      "platform/ui-next",
       "extensions/*",
       "modes/*"
     ],
