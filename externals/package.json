@@ -1,6 +1,6 @@
 {
-  "name": "@cornerstonejs/externals",
-  "description": "Cornerstone.js Externals",
+  "name": "@ohif/externals",
+  "description": "External/optional dependencies for OHIF",
   "private": true,
   "engines": {
     "node": ">=18",
@@ -30,6 +30,7 @@
     "@percy/cypress": "^3.1.1",
     "@playwright/test": "^1.44.0",
     "cypress": "13.7.2",
-    "cypress-file-upload": "^3.5.3"
+    "cypress-file-upload": "^3.5.3",
+    "webpack-cli": "^4.7.2"
   }
 }
