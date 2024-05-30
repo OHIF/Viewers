@@ -22,7 +22,8 @@
   NODE_VERSION = "18.16.1"
   YARN_VERSION = "1.22.5"
   RUBY_VERSION = "2.6.2"
-  YARN_FLAGS = "--no-ignore-optional --pure-lockfile"
+  # Excluding the pure lockfile for now  --pure-lockfile TODO - add back in
+  YARN_FLAGS = "--no-ignore-optional"
   NETLIFY_USE_YARN = "true"
 
 [[headers]]
