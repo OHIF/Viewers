@@ -1,5 +1,5 @@
 {
-  "version": "3.9.0-beta.28",
+  "version": "3.9.0-beta.29",
   "packages": ["extensions/*", "platform/*", "modes/*", "externals/external-*", "externals/local-*"],
   "npmClient": "yarn"
 }
