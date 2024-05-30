@@ -22,3 +22,9 @@ mkdir externals/local-mode-ecg
 cp externals/example-mode-ecg/* externals/local-mode-ecg -r
 yarn install
 ```
+
+## `npm pack` file depencies
+If you have npm pack stored file dependencies, there is a bug in yarn which will not
+permit the install to work.  YOu will have to add a resolutions entry for the
+relative URL in the root package.json file.
+See [7598](https://github.com/yarnpkg/yarn/issues/7598)
