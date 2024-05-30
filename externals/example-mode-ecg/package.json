@@ -1,0 +1,14 @@
+{
+  "name": "@ohif/example-mode-ecg",
+  "description": "Example external optional dependency for ECG Mode in OHIF",
+  "license": "MIT",
+  "version": "3.0.0",
+  "engines": {
+    "node": ">=18",
+    "yarn": ">=1.19.1"
+  },
+  "optionalDependencies": {
+    "@radicalimaging/ecg-dicom": "3.19.1",
+    "@radicalimaging/mode-ecg": "3.19.1"
+  }
+}
