@@ -234,29 +234,34 @@ export default DataSourceWrapper;
  */
 function _getQueryFilterValues(query, queryLimit) {
   query = new URLSearchParams(query);
+  const newParams = new URLSearchParams();
+  for (const [key, value] of query) {
+    newParams.set(key.toLowerCase(), value);
+  }
+  query = newParams;
 
-  const pageNumber = _tryParseInt(query.get('pageNumber'), 1);
-  const resultsPerPage = _tryParseInt(query.get('resultsPerPage'), 25);
+  const pageNumber = _tryParseInt(query.get('pagenumber'), 1);
+  const resultsPerPage = _tryParseInt(query.get('resultsperpage'), 25);
 
   const queryFilterValues = {
     // DCM
     patientId: query.get('mrn'),
-    patientName: query.get('patientName'),
+    patientName: query.get('patientname'),
     studyDescription: query.get('description'),
     modalitiesInStudy: query.get('modalities') && query.get('modalities').split(','),
     accessionNumber: query.get('accession'),
     //
-    startDate: query.get('startDate'),
-    endDate: query.get('endDate'),
+    startDate: query.get('startdate'),
+    endDate: query.get('enddate'),
     page: _tryParseInt(query.get('page'), undefined),
     pageNumber,
     resultsPerPage,
     // Rarely supported server-side
-    sortBy: query.get('sortBy'),
-    sortDirection: query.get('sortDirection'),
+    sortBy: query.get('sortby'),
+    sortDirection: query.get('sortdirection'),
     // Offset...
     offset: Math.floor((pageNumber * resultsPerPage) / queryLimit) * (queryLimit - 1),
-    config: query.get('configUrl'),
+    config: query.get('configurl'),
   };
 
   // patientName: good
