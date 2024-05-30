@@ -167,6 +167,7 @@
     ]
   },
   "resolutions": {
+    "dicom-microscopy-viewer": "file:./externals/external-dicom-microscopy-viewer/dicom-microscopy-viewer-0.46.1.tgz",
     "**/@babel/runtime": "^7.20.13",
     "commander": "8.3.0",
     "dcmjs": ">=0.33.0",
