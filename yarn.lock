@@ -8312,23 +8312,6 @@ dezalgo@^1.0.0:
     asap "^2.0.0"
     wrappy "1"
 
-"dicom-microscopy-viewer@file:./externals/external-dicom-microscopy-viewer/dicom-microscopy-viewer-0.46.1.tgz":
-  version "0.46.1"
-  resolved "file:./externals/external-dicom-microscopy-viewer/dicom-microscopy-viewer-0.46.1.tgz#6e3ef3ccf030b7d62d146fdb5e4eb402eb2a3b2b"
-  dependencies:
-    "@cornerstonejs/codec-charls" "^1.2.3"
-    "@cornerstonejs/codec-libjpeg-turbo-8bit" "^1.2.2"
-    "@cornerstonejs/codec-openjpeg" "^1.2.2"
-    "@cornerstonejs/codec-openjph" "^2.4.5"
-    colormap "^2.3"
-    dcmjs "^0.29.8"
-    dicomicc "^0.1"
-    dicomweb-client "^0.8.4"
-    image-type "^4.1"
-    mathjs "^11.2"
-    ol "^7.1"
-    uuid "^9.0"
-
 dicom-parser@^1.8.9:
   version "1.8.21"
   resolved "https://registry.yarnpkg.com/dicom-parser/-/dicom-parser-1.8.21.tgz#916fdc77776367976b8457cad462b5b7cf74eaea"
