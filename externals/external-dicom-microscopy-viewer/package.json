@@ -7,7 +7,7 @@
     "node": ">=18",
     "yarn": ">=1.19.1"
   },
-  "dependencies": {
+  "optionalDependencies": {
     "dicom-microscopy-viewer": "file:./dicom-microscopy-viewer-0.46.1.tgz"
   }
 }
