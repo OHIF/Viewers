@@ -23,14 +23,14 @@ executors:
       - image: cimg/node:<< parameters.node-version >>-browsers
     parameters:
       node-version:
-        default: '18.16.1'
+        default: '20.14.0'
         description: |
           The version of Node to run your tests with.
         type: string
 
 defaults: &defaults
   docker:
-    - image: cimg/node:18.18
+    - image: cimg/node:20.14
       environment:
         TERM: xterm # Enable colors in term
         QUICK_BUILD: true
@@ -335,7 +335,7 @@ jobs:
             fi
 
   # This is copied from the Cypress orb since the default for cypress/run is node 16 and
-  # we migrated to 18
+  # we migrated to 20
   CYPRESS_CUSTOM_RUN:
     description: |
       A single, complete job to run Cypress end-to-end tests in your application.
