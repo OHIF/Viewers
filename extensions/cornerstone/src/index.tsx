@@ -36,6 +36,7 @@ import { showLabelAnnotationPopup } from './utils/callInputDialog';
 import ViewportActionCornersService from './services/ViewportActionCornersService/ViewportActionCornersService';
 import { ViewportActionCornersProvider } from './contextProviders/ViewportActionCornersProvider';
 import ActiveViewportWindowLevel from './components/ActiveViewportWindowLevel';
+import { getSopClassHandlerModule } from './getSopClassHandlerModule';
 
 const { helpers: volumeLoaderHelpers } = csStreamingImageVolumeLoader;
 const { getDynamicVolumeInfo } = volumeLoaderHelpers ?? {};
@@ -187,6 +188,7 @@ const cornerstoneExtension: Types.Extensions.Extension = {
       },
     ];
   },
+  getSopClassHandlerModule,
 };
 
 export type { PublicViewportOptions };

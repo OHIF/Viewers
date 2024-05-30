@@ -43,29 +43,13 @@ function CornerstoneImageScrollbar({
       return;
     }
 
-    if (viewportData.viewportType === Enums.ViewportType.STACK) {
-      const imageIndex = viewport.getCurrentImageIdIndex();
+    const imageIndex = viewport.getCurrentImageIdIndex();
+    const numberOfSlices = viewport.getNumberOfSlices();
 
-      setImageSliceData({
-        imageIndex: imageIndex,
-        numberOfSlices: viewportData.data[0].imageIds.length,
-      });
-
-      return;
-    }
-
-    if (viewportData.viewportType === Enums.ViewportType.ORTHOGRAPHIC) {
-      const sliceData = utilities.getImageSliceDataForVolumeViewport(
-        viewport as Types.IVolumeViewport
-      );
-
-      if (!sliceData) {
-        return;
-      }
-
-      const { imageIndex, numberOfSlices } = sliceData;
-      setImageSliceData({ imageIndex, numberOfSlices });
-    }
+    setImageSliceData({
+      imageIndex: imageIndex,
+      numberOfSlices,
+    });
   }, [viewportId, viewportData]);
 
   useEffect(() => {
@@ -74,11 +58,13 @@ function CornerstoneImageScrollbar({
     }
 
     const updateStackIndex = event => {
+      const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
       const { newImageIdIndex } = event.detail;
+      const numberOfSlices = viewport.getNumberOfSlices();
       // find the index of imageId in the imageIds
       setImageSliceData({
         imageIndex: newImageIdIndex,
-        numberOfSlices: viewportData.data[0].imageIds.length,
+        numberOfSlices,
       });
     };
 

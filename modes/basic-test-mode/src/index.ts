@@ -7,11 +7,13 @@ import i18n from 'i18next';
 
 // Allow this mode by excluding non-imaging modalities such as SR, SEG
 // Also, SM is not a simple imaging modalities, so exclude it.
-const NON_IMAGE_MODALITIES = ['SM', 'ECG', 'SR', 'SEG'];
+const NON_IMAGE_MODALITIES = ['ECG', 'SR', 'SEG', 'RTSTRUCT'];
 
 const ohif = {
   layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
   sopClassHandler: '@ohif/extension-default.sopClassHandlerModule.stack',
+  wsiSopClassHandler:
+    '@ohif/extension-cornerstone.sopClassHandlerModule.DicomMicroscopySopClassHandler',
   thumbnailList: '@ohif/extension-default.panelModule.seriesList',
 };
 
@@ -140,7 +142,11 @@ function modeFactory() {
               viewports: [
                 {
                   namespace: tracked.viewport,
-                  displaySetsToDisplay: [ohif.sopClassHandler, dicomvideo.sopClassHandler],
+                  displaySetsToDisplay: [
+                    ohif.sopClassHandler,
+                    dicomvideo.sopClassHandler,
+                    ohif.wsiSopClassHandler,
+                  ],
                 },
                 {
                   namespace: dicomsr.viewport,
@@ -174,6 +180,7 @@ function modeFactory() {
     sopClassHandlers: [
       dicomvideo.sopClassHandler,
       dicomSeg.sopClassHandler,
+      ohif.wsiSopClassHandler,
       ohif.sopClassHandler,
       dicompdf.sopClassHandler,
       dicomsr.sopClassHandler,

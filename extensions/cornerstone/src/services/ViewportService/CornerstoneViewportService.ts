@@ -564,7 +564,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     // TODO - create a client for this web api
     const client = null;
     const [displaySet] = viewportData.data;
-    return viewport.setImageIds(displaySet.displaySetInstanceUID, displaySet.imageIds, client);
+    return viewport.setImageIds(displaySet.displaySetInstanceUID, displaySet.imageIds);
   }
 
   private async _setStackViewport(
