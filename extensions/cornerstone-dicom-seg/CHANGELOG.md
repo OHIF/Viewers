@@ -3,6 +3,71 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.9.0-beta.29](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.28...v3.9.0-beta.29) (2024-05-30)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone-dicom-seg
+
+
+
+
+
+# [3.9.0-beta.28](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.27...v3.9.0-beta.28) (2024-05-30)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone-dicom-seg
+
+
+
+
+
+# [3.9.0-beta.27](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.26...v3.9.0-beta.27) (2024-05-29)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone-dicom-seg
+
+
+
+
+
+# [3.9.0-beta.26](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.25...v3.9.0-beta.26) (2024-05-29)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone-dicom-seg
+
+
+
+
+
+# [3.9.0-beta.25](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.24...v3.9.0-beta.25) (2024-05-29)
+
+
+### Bug Fixes
+
+* **ultrasound:** Upgrade cornerstone3D version to resolve coloring issues ([#4181](https://github.com/OHIF/Viewers/issues/4181)) ([75a71db](https://github.com/OHIF/Viewers/commit/75a71db7f89840250ad1c2b35df5a35aceb8be7d))
+
+
+
+
+
+# [3.9.0-beta.24](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.23...v3.9.0-beta.24) (2024-05-29)
+
+
+### Features
+
+* **measurements:** show untracked measurements in measurement panel under additional findings ([#4160](https://github.com/OHIF/Viewers/issues/4160)) ([18686c2](https://github.com/OHIF/Viewers/commit/18686c2caf13ede3e881303100bd4cc34b8b135f))
+
+
+
+
+
+# [3.9.0-beta.23](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.22...v3.9.0-beta.23) (2024-05-28)
+
+
+### Bug Fixes
+
+* **rt:** dont convert to volume for RTSTRUCT ([#4157](https://github.com/OHIF/Viewers/issues/4157)) ([7745c09](https://github.com/OHIF/Viewers/commit/7745c092bb3edf0090f32fbbbae2f0776128d5a2))
+
+
+
+
+
 # [3.9.0-beta.22](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.21...v3.9.0-beta.22) (2024-05-27)
 
 

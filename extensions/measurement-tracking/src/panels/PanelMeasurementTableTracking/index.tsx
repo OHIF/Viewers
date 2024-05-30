@@ -170,7 +170,9 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }: wi
   const nonAcquisitionMeasurements = displayMeasurements.filter(dm => dm.referencedImageId == null);
 
   const disabled =
-    additionalFindings.length === 0 && displayMeasurementsWithoutFindings.length === 0;
+    additionalFindings.length === 0 &&
+    displayMeasurementsWithoutFindings.length === 0 &&
+    nonAcquisitionMeasurements.length === 0;
 
   return (
     <>
@@ -204,7 +206,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }: wi
         )}
         {nonAcquisitionMeasurements.length !== 0 && (
           <MeasurementTable
-            title="Non Acquisition Measurements"
+            title="Non-tracked"
             data={nonAcquisitionMeasurements}
             servicesManager={servicesManager}
             onClick={jumpToImage}
@@ -218,7 +220,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }: wi
             t={t}
             actions={[
               {
-                label: 'Export',
+                label: 'Download CSV',
                 onClick: exportReport,
               },
               {

@@ -10,7 +10,7 @@ import { Enums, cache } from '@cornerstonejs/core';
  * @param params.viewportId - ID of the viewport to be updated.
  * @param params.loadFn - Function to load the segmentation data.
  * @param params.servicesManager - The services manager.
- * @param params.referencedDisplaySetInstanceUID - Optional UID for the referenced display set instance.
+ * @param params.displaySet -  the display set.
  *
  * @returns Returns true upon successful update of viewports for segmentation rendering.
  */
@@ -18,12 +18,12 @@ async function updateViewportsForSegmentationRendering({
   viewportId,
   loadFn,
   servicesManager,
-  referencedDisplaySetInstanceUID,
+  displaySet,
 }: {
   viewportId: string;
   loadFn: () => Promise<string>;
   servicesManager: AppTypes.ServicesManager;
-  referencedDisplaySetInstanceUID?: string;
+  displaySet?: any;
 }) {
   const { cornerstoneViewportService, segmentationService, viewportGridService } =
     servicesManager.services;
@@ -31,13 +31,13 @@ async function updateViewportsForSegmentationRendering({
   const viewport = getTargetViewport({ viewportId, viewportGridService });
   const targetViewportId = viewport.viewportOptions.viewportId;
 
-  referencedDisplaySetInstanceUID =
-    referencedDisplaySetInstanceUID || viewport?.displaySetInstanceUIDs[0];
+  const referencedDisplaySetInstanceUID =
+    displaySet?.referencedDisplaySetInstanceUID || viewport?.displaySetInstanceUIDs[0];
 
   const updatedViewports = getUpdatedViewportsForSegmentation({
     servicesManager,
     viewportId,
-    referencedDisplaySetInstanceUID,
+    displaySet,
   });
 
   // create Segmentation callback which needs to be waited until
@@ -56,7 +56,7 @@ async function updateViewportsForSegmentationRendering({
   updatedViewports.forEach(async viewport => {
     viewport.viewportOptions = {
       ...viewport.viewportOptions,
-      viewportType: 'volume',
+      viewportType: displaySet?.Modality === 'RTSTRUCT' ? 'stack' : 'volume',
       needsRerendering: true,
     };
     const viewportId = viewport.viewportId;
@@ -66,7 +66,7 @@ async function updateViewportsForSegmentationRendering({
 
     // only run the createSegmentationForVolume for the targetViewportId
     // since the rest will get handled by cornerstoneViewportService
-    if (volumeExists && viewportId === targetViewportId) {
+    if ((volumeExists || displaySet.Modality === 'RTSTRUCT') && viewportId === targetViewportId) {
       await createSegmentationForVolume();
       return;
     }
@@ -126,14 +126,14 @@ const getTargetViewport = ({ viewportId, viewportGridService }) => {
  * @param {Object} params - Parameters for the function.
  * @param params.viewportId - the ID of the viewport to be updated.
  * @param params.servicesManager - The services manager
- * @param params.referencedDisplaySetInstanceUID - Optional UID for the referenced display set instance.
+ * @param params.displaySet -  the display set.
  *
  * @returns {Array} Returns an array of viewports that require updates for segmentation rendering.
  */
 function getUpdatedViewportsForSegmentation({
   viewportId,
   servicesManager,
-  referencedDisplaySetInstanceUID,
+  displaySet,
 }: withAppTypes) {
   const { hangingProtocolService, displaySetService, segmentationService, viewportGridService } =
     servicesManager.services;
@@ -146,7 +146,7 @@ function getUpdatedViewportsForSegmentation({
   const displaySetInstanceUIDs = viewports.get(targetViewportId).displaySetInstanceUIDs;
 
   const referenceDisplaySetInstanceUID =
-    referencedDisplaySetInstanceUID || displaySetInstanceUIDs[0];
+    displaySet?.referencedDisplaySetInstanceUID || displaySetInstanceUIDs[0];
 
   const referencedDisplaySet = displaySetService.getDisplaySetByUID(referenceDisplaySetInstanceUID);
   const segmentationFrameOfReferenceUID = referencedDisplaySet.instances[0].FrameOfReferenceUID;
@@ -175,7 +175,7 @@ function getUpdatedViewportsForSegmentation({
         viewportId,
         displaySetInstanceUIDs: viewport.displaySetInstanceUIDs,
         viewportOptions: {
-          viewportType: 'volume',
+          viewportType: displaySet.Modality === 'RTSTRUCT' ? 'stack' : 'volume',
           needsRerendering: true,
         },
       });
