@@ -1,14 +1,5 @@
 {
-  "version": "3.9.0-beta.27",
-  "packages": [
-    "extensions/*",
-    "platform/*",
-    "modes/*",
-    "externals/external-*",
-    "externals/local-*"
-  ],
-  "npmClient": "yarn",
-  "$schema": "node_modules/lerna/schemas/lerna-schema.json",
-  "useNx": false,
-  "useWorkspaces": false
+  "version": "3.9.0-beta.28",
+  "packages": ["extensions/*", "platform/*", "modes/*", "externals/external-*", "externals/local-*"],
+  "npmClient": "yarn"
 }
