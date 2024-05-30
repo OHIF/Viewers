@@ -53,16 +53,16 @@ jobs:
           name: Restore Yarn and Cypress Package Cache
           keys:
             # when lock file changes, use increasingly general patterns to restore cache
-            - yarn-packages-{{ checksum "externals/yarn.lock" }}
+            - yarn-packages-{{ checksum "yarn.lock" }}
             - yarn-packages-
       - run:
           name: Install Dependencies
-          command: yarn install:externals --frozen-lockfile
+          command: yarn install --frozen-lockfile
       - save_cache:
           name: Save Yarn Package Cache
           paths:
             - ~/.cache ## Cache yarn and Cypress
-          key: yarn-packages-{{ checksum "externals/yarn.lock" }}
+          key: yarn-packages-{{ checksum "yarn.lock" }}
       # RUN TESTS
       - run:
           name: 'JavaScript Test Suite'
@@ -107,16 +107,16 @@ jobs:
           name: Restore Yarn and Cypress Package Cache
           keys:
             # when lock file changes, use increasingly general patterns to restore cache
-            - yarn-packages-{{ checksum "externals/yarn.lock" }}
+            - yarn-packages-{{ checksum "yarn.lock" }}
             - yarn-packages-
       - run:
           name: Install Dependencies
-          command: yarn install:externals --frozen-lockfile
+          command: yarn install --frozen-lockfile
       - save_cache:
           name: Save Yarn Package Cache
           paths:
             - ~/.cache ## Cache yarn and Cypress
-          key: yarn-packages-{{ checksum "externals/yarn.lock" }}
+          key: yarn-packages-{{ checksum "yarn.lock" }}
       # Build & Test
       - run:
           name: 'Perform the versioning before build'
@@ -159,16 +159,16 @@ jobs:
       - restore_cache:
           name: Restore Yarn and Cypress Package Cache
           keys:
-            - yarn-packages-{{ checksum "externals/yarn.lock" }}
+            - yarn-packages-{{ checksum "yarn.lock" }}
             - yarn-packages-
       - run:
           name: Install Dependencies
-          command: yarn install:externals --frozen-lockfile
+          command: yarn install --frozen-lockfile
       - save_cache:
           name: Save Yarn Package Cache
           paths:
             - ~/.cache/yarn
-          key: yarn-packages-{{ checksum "externals/yarn.lock" }}
+          key: yarn-packages-{{ checksum "yarn.lock" }}
       - run:
           name: Avoid hosts unknown for github
           command: |
@@ -209,16 +209,16 @@ jobs:
       - restore_cache:
           name: Restore Yarn and Cypress Package Cache
           keys:
-            - yarn-packages-{{ checksum "externals/yarn.lock" }}
+            - yarn-packages-{{ checksum "yarn.lock" }}
             - yarn-packages-
       - run:
           name: Install Dependencies
-          command: yarn install:externals --frozen-lockfile
+          command: yarn install --frozen-lockfile
       - save_cache:
           name: Save Yarn Package Cache
           paths:
             - ~/.cache/yarn
-          key: yarn-packages-{{ checksum "externals/yarn.lock" }}
+          key: yarn-packages-{{ checksum "yarn.lock" }}
       - run:
           name: Avoid hosts unknown for github
           command: |
@@ -445,7 +445,7 @@ workflows:
               package-manager:
                 - 'yarn'
               cypress-cache-key:
-                - 'yarn-packages-{{ checksum "externals/yarn.lock" }}'
+                - 'yarn-packages-{{ checksum "yarn.lock" }}'
               cypress-cache-path:
                 - '~/.cache/Cypress'
           requires:
@@ -470,7 +470,7 @@ workflows:
   #           yarn run build
   #         # start server --> verify running --> percy + chrome + cypress
   #         command: yarn run test:e2e:dist
-  #         cache-key: 'yarn-packages-{{ checksum "externals/yarn.lock" }}'
+  #         cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
   #         no-workspace: true # Don't persist workspace
   #         post-steps:
   #           - store_artifacts:
@@ -535,7 +535,7 @@ workflows:
   #         executor: cypress/browsers-chrome76
   #         browser: chrome
   #         pre-steps:
-  #           - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v install:externals && yarn global
+  #           - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v && yarn global
   #               add wait-on' # Use yarn latest
   #         yarn: true
   #         store_artifacts: false
@@ -545,7 +545,7 @@ workflows:
   #           build
   #         # start server --> verify running --> percy + chrome + cypress
   #         command: yarn run test:e2e:dist
-  #         cache-key: 'yarn-packages-{{ checksum "externals/yarn.lock" }}'
+  #         cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
   #         no-workspace: true # Don't persist workspace
   #         post-steps:
   #           - store_artifacts:

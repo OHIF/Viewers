@@ -39,7 +39,8 @@ ENV PATH /usr/src/app/node_modules/.bin:$PATH
 COPY ./ /usr/src/app/
 
 ADD . /usr/src/app/
-RUN yarn install:externals
+RUN yarn config set workspaces-experimental true
+RUN yarn install
 RUN yarn run build
 
 # Stage 2: Bundle the built application into a Docker container

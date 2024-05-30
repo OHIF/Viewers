@@ -44,18 +44,18 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.20.13",
-    "dcmjs": "^0.29.12",
+    "dcmjs": "*",
     "dicomweb-client": "^0.10.4",
     "gl-matrix": "^3.4.3",
     "isomorphic-base64": "^1.0.2",
     "lodash.clonedeep": "^4.5.0",
     "lodash.merge": "^4.6.1",
-    "moment": "^2.24.0",
+    "moment": "*",
     "object-hash": "2.1.1",
     "query-string": "^6.14.0",
     "validate.js": "^0.12.0"
   },
   "devDependencies": {
-    "webpack-merge": "5.7.3"
+    "webpack-merge": "*"
   }
 }

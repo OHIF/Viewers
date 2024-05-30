@@ -1,0 +1,13 @@
+{
+  "name": "@ohif/external-dicom-microscopy-viewer",
+  "description": "External runtime dependency for dicom-microscopy-viewer",
+  "license": "MIT",
+  "version": "0.46.1",
+  "engines": {
+    "node": ">=18",
+    "yarn": ">=1.19.1"
+  },
+  "dependencies": {
+    "dicom-microscopy-viewer": "file:./dicom-microscopy-viewer-0.46.1.tgz"
+  }
+}

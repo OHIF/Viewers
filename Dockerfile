@@ -46,12 +46,12 @@ COPY --from=json-copier /usr/src/app .
 
 # Run the install before copying the rest of the files
 RUN yarn config set workspaces-experimental true
-RUN yarn install:externals --frozen-lockfile --verbose
+RUN yarn install --frozen-lockfile --verbose
 
 COPY . .
 
 # To restore workspaces symlinks
-RUN yarn install:externals --frozen-lockfile --verbose
+RUN yarn install --frozen-lockfile --verbose
 
 ENV PATH /usr/src/app/node_modules/.bin:$PATH
 ENV QUICK_BUILD true

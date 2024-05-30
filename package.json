@@ -3,23 +3,20 @@
   "private": true,
   "workspaces": {
     "packages": [
-      "platform/app",
-      "platform/cli",
-      "platform/core",
-      "platform/i18n",
-      "platform/ui",
-      "platform/ui-next",
+      "platform/*",
       "extensions/*",
-      "modes/*"
+      "modes/*",
+      "externals/external-*",
+      "externals/local-*"
     ],
     "nohoist": [
       "**/html-minifier-terser"
     ]
   },
   "engines": {
-    "node": ">=16",
+    "node": ">=18",
     "npm": ">=6",
-    "yarn": ">=1.16.0"
+    "yarn": ">=1.20.0"
   },
   "scripts": {
     "cm": "npx git-cz",
@@ -41,10 +38,10 @@
     "dev:orthanc:no:cache": "lerna run dev:orthanc:no:cache --stream",
     "dev:dcm4chee": "lerna run dev:dcm4chee --stream",
     "dev:static": "lerna run dev:static --stream",
+    "install:dev": "cd externals && yarn install:dev",
     "orthanc:up": "docker-compose -f platform/app/.recipes/OpenResty-Orthanc/docker-compose.yml up",
     "preinstall": "node preinstall.js",
     "start": "yarn run dev",
-    "install:externals": "cd externals && yarn install:externals",
     "test": "yarn run test:unit",
     "test:data": "git submodule update --init -f testdata",
     "test-watch": "jest --collectCoverage --watchAll",
@@ -68,6 +65,7 @@
   "dependencies": {
     "@babel/runtime": "^7.20.13",
     "@kitware/vtk.js": "30.4.1",
+    "moment": "^2.9.4",
     "core-js": "^3.2.1"
   },
   "peerDependencies": {
@@ -123,7 +121,7 @@
     "jest-canvas-mock": "^2.1.0",
     "jest-environment-jsdom": "^29.5.0",
     "jest-junit": "^6.4.0",
-    "lerna": "^7.2.0",
+    "lerna": "^5.4.2",
     "lint-staged": "^9.0.2",
     "mini-css-extract-plugin": "^2.1.0",
     "optimize-css-assets-webpack-plugin": "^6.0.1",
@@ -148,7 +146,7 @@
     "unused-webpack-plugin": "2.4.0",
     "webpack": "^5.90.3",
     "webpack-bundle-analyzer": "^4.8.0",
-    "webpack-cli": "^5.0.2",
+    "webpack-cli": "^4.7.2",
     "webpack-dev-server": "4.7.3",
     "webpack-hot-middleware": "^2.25.0",
     "webpack-merge": "^5.7.3",
@@ -169,6 +167,8 @@
   "resolutions": {
     "**/@babel/runtime": "^7.20.13",
     "commander": "8.3.0",
+    "dcmjs": ">=0.33.0",
+    "dicomweb-client": ">=0.10.4",
     "nth-check": "^2.1.1",
     "trim-newlines": "^5.0.0",
     "glob-parent": "^6.0.2",
