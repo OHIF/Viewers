@@ -1,5 +1,3 @@
-import { utilities } from '@cornerstonejs/core';
-
 /**
  * Add tests to ensure image consistency and quality
  */
