@@ -19,12 +19,15 @@ function ToolboxUI(props: withAppTypes) {
   const {
     toolbarButtons,
     handleToolSelect,
-    activeToolOptions,
+    toolboxState,
     numRows,
     servicesManager,
     title,
     useCollapsedPanel = true,
   } = props;
+
+  const { activeTool, toolOptions, selectedEvent } = toolboxState;
+  const activeToolOptions = toolOptions?.[activeTool];
 
   const prevToolOptions = usePrevious(activeToolOptions);
 
@@ -35,7 +38,7 @@ function ToolboxUI(props: withAppTypes) {
 
     activeToolOptions.forEach((option, index) => {
       const prevOption = prevToolOptions ? prevToolOptions[index] : undefined;
-      if (!prevOption || option.value !== prevOption.value) {
+      if (!prevOption || option.value !== prevOption.value || selectedEvent) {
         const isOptionValid = option.condition
           ? option.condition({ options: activeToolOptions })
           : true;
@@ -45,7 +48,7 @@ function ToolboxUI(props: withAppTypes) {
         }
       }
     });
-  }, [activeToolOptions]);
+  }, [activeToolOptions, selectedEvent]);
 
   const render = () => {
     return (
