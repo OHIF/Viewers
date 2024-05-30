@@ -3,7 +3,7 @@ import ToolbarLayoutSelectorWithServices from './Toolbar/ToolbarLayoutSelector';
 import ToolbarSplitButtonWithServices from './Toolbar/ToolbarSplitButtonWithServices';
 import ToolbarButtonGroupWithServices from './Toolbar/ToolbarButtonGroupWithServices';
 import { ToolbarButton } from '@ohif/ui';
-import ProgressDropdownWithService from './components/ProgressDropdownWithService';
+import { ProgressDropdownWithService } from './Components/ProgressDropdownWithService';
 
 const getClassName = isToggled => {
   return {
