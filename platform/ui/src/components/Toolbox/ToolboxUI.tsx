@@ -29,7 +29,7 @@ function ToolboxUI(props: withAppTypes) {
   const prevToolOptions = usePrevious(activeToolOptions);
 
   useEffect(() => {
-    if (!activeToolOptions) {
+    if (!activeToolOptions || Array.isArray(activeToolOptions) === false) {
       return;
     }
 
