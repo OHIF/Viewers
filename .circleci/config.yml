@@ -111,7 +111,9 @@ jobs:
             - yarn-packages-
       - run:
           name: Install Dependencies
-          command: yarn install --frozen-lockfile
+          command: |
+            echo 'Using non-frozen lockfile to work around bug'
+            yarn install
       - save_cache:
           name: Save Yarn Package Cache
           paths:
