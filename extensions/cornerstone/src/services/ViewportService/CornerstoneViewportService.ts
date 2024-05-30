@@ -591,6 +591,8 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       initialImageIndexToUse = this._getInitialImageIndexForViewport(viewportInfo, imageIds) || 0;
     }
 
+    const { rotation, flipHorizontal, displayArea } = viewportInfo.getViewportOptions();
+
     const properties = { ...presentations.lutPresentation?.properties };
     if (!presentations.lutPresentation?.properties) {
       const { voi, voiInverted, colormap } = displaySetOptions[0];
@@ -616,6 +618,15 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     return viewport.setStack(imageIds, initialImageIndexToUse).then(() => {
       viewport.setProperties({ ...properties });
       this.setPresentations(viewport.id, presentations);
+      if (displayArea) {
+        viewport.setDisplayArea(displayArea);
+      }
+      if (rotation) {
+        viewport.setProperties({ rotation });
+      }
+      if (flipHorizontal) {
+        viewport.setCamera({ flipHorizontal: true });
+      }
     });
   }
 
