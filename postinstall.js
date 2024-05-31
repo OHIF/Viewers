@@ -10,7 +10,7 @@ const log = (err, stdout, stderr) => console.log(stdout);
 // dicom-microscopy-viewer is released.
 if (!fs.existsSync(path.resolve(__dirname, './node_modules/dicom-microscopy-viewer'))) {
   console.log('Extracting dicom-microscopy-viewer');
-  const command = `tar -zxvf addOns/externals/dicom-microscopy-viewer/dicom-microscopy-viewer-0.46.1.tgz --transform s,package,dicom-microscopy-viewer, -C node_modules`;
+  const command = `tar -zxf addOns/externals/dicom-microscopy-viewer/dicom-microscopy-viewer-0.46.1.tgz --transform s,package,dicom-microscopy-viewer, -C node_modules`;
   console.log(command);
   exec(command, log);
 } else {
