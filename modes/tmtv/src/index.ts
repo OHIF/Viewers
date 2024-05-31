@@ -53,7 +53,6 @@ function modeFactory({ modeConfiguration }) {
         customizationService,
         hangingProtocolService,
         displaySetService,
-        viewportGridService,
       } = servicesManager.services;
 
       const utilityModule = extensionManager.getModuleEntry(
@@ -97,7 +96,6 @@ function modeFactory({ modeConfiguration }) {
         'WindowLevel',
         'Crosshairs',
         'Pan',
-        'SyncToggle',
       ]);
       toolbarService.createButtonSection('ROIThresholdToolbox', [
         'RectangleROIStartEndThreshold',
