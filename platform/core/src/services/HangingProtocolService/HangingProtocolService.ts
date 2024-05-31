@@ -1020,6 +1020,8 @@ export default class HangingProtocolService extends PubSubService {
           if (this.registeredImageLoadStrategies[imageLoadStrategy] instanceof Function) {
             this.activeImageLoadStrategyName = imageLoadStrategy;
           }
+        } else {
+          this.activeImageLoadStrategyName = null;
         }
 
         this._updateStageStatus(options);

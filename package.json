@@ -61,7 +61,8 @@
   "dependencies": {
     "@babel/runtime": "^7.20.13",
     "@kitware/vtk.js": "30.4.1",
-    "core-js": "^3.2.1"
+    "core-js": "^3.2.1",
+    "comlink": "^4.4.1"
   },
   "peerDependencies": {
     "react": "17.0.2",
