@@ -57,7 +57,7 @@ jobs:
             - yarn-packages-
       - run:
           name: Install Dependencies
-          command: yarn install --frozen-lockfile
+          command: yarn install --frozen-lockfile --no-ignore-optional
       - save_cache:
           name: Save Yarn Package Cache
           paths:
@@ -111,9 +111,7 @@ jobs:
             - yarn-packages-
       - run:
           name: Install Dependencies
-          command: |
-            echo 'Using non-frozen lockfile to work around bug'
-            yarn install
+          command: yarn install --frozen-lockfile --no-ignore-optional
       - save_cache:
           name: Save Yarn Package Cache
           paths:
@@ -165,7 +163,7 @@ jobs:
             - yarn-packages-
       - run:
           name: Install Dependencies
-          command: yarn install --frozen-lockfile
+          command: yarn install --frozen-lockfile --no-ignore-optional
       - save_cache:
           name: Save Yarn Package Cache
           paths:
@@ -215,7 +213,7 @@ jobs:
             - yarn-packages-
       - run:
           name: Install Dependencies
-          command: yarn install --frozen-lockfile
+          command: yarn install --frozen-lockfile --no-ignore-optional
       - save_cache:
           name: Save Yarn Package Cache
           paths:

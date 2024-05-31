@@ -48,10 +48,9 @@ export default async function loadSR(
 async function _getROIsFromToolState(naturalizedDataset, FrameOfReferenceUID) {
   const toolState = MeasurementReport.generateToolState(naturalizedDataset);
   const tools = Object.getOwnPropertyNames(toolState);
-  await import(
-    /* webpackIgnore: true */ DicomMicroscopyViewport.getImportPath());
+  // Does a dynamic import to prevent webpack from rebuilding the library
+  await import(/* webpackIgnore: true */ DicomMicroscopyViewport.getImportPath());
   const DICOMMicroscopyViewer = (window as any).dicomMicroscopyViewer;
-
 
   const measurementGroupContentItems = _getMeasurementGroups(naturalizedDataset);
 

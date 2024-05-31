@@ -108,6 +108,8 @@ module.exports = (env, argv) => {
             globOptions: {
               ignore: ['**/*.min.js.map'],
             },
+            // The dicom-microscopy-viewer is optional, so if it doeesn't get
+            // installed, it shouldn't cause issues.
             noErrorOnMissing: true,
           },
           // Copy dicom-image-loader build files
