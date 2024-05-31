@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.9.0-beta.32](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.31...v3.9.0-beta.32) (2024-05-31)
+
+
+### Bug Fixes
+
+* **tmtv:** crosshairs should not have viewport indicators ([#4197](https://github.com/OHIF/Viewers/issues/4197)) ([f85da32](https://github.com/OHIF/Viewers/commit/f85da32f34389ef7cecae03c07e0af26468b52a6))
+
+
+
+
+
 # [3.9.0-beta.31](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.30...v3.9.0-beta.31) (2024-05-30)
 
 
