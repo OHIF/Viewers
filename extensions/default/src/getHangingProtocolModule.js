@@ -42,6 +42,7 @@ const defaultProtocol = {
         // Try to match series with images by default, to prevent weird display
         // on SEG/SR containing studies
         {
+          weight: 10,
           attribute: 'numImageFrames',
           constraint: {
             greaterThan: { value: 0 },
@@ -106,11 +107,6 @@ function getHangingProtocolModule() {
       name: defaultProtocol.id,
       protocol: defaultProtocol,
     },
-    // Create a MxN hanging protocol available by default
-    {
-      name: hpMNGrid.id,
-      protocol: hpMNGrid,
-    },
     // Create a MxN comparison hanging protocol available by default
     {
       name: hpMNCompare.id,
@@ -120,10 +116,15 @@ function getHangingProtocolModule() {
       name: hpMammography.id,
       protocol: hpMammography,
     },
-    // {
-    //   name: hpScale.id,
-    //   protocol: hpScale,
-    // },
+    {
+      name: hpScale.id,
+      protocol: hpScale,
+    },
+    // Create a MxN hanging protocol available by default
+    {
+      name: hpMNGrid.id,
+      protocol: hpMNGrid,
+    },
   ];
 }
 
