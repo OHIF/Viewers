@@ -1,13 +1,13 @@
 {
-  "name": "@ohif/external-dicom-microscopy-viewer",
-  "description": "External runtime dependency for dicom-microscopy-viewer",
-  "license": "MIT",
+  "name": "@cornerstonejs/external-dicom-microscopy-viewer",
+  "description": "External reference to dicom-microscopy-viewer",
   "version": "0.46.1",
+  "license": "MIT",
   "engines": {
-    "node": ">=18",
+    "node": ">=12",
     "yarn": ">=1.19.1"
   },
-  "optionalDependencies": {
-    "dicom-microscopy-viewer": "file:./dicom-microscopy-viewer-0.46.1.tgz"
+  "scripts": {
+    "build": "Installed right now in postinstall.js"
   }
 }
