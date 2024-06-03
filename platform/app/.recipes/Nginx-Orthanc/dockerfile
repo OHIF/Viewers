@@ -22,7 +22,7 @@ RUN yarn install
 
 # set QUICK_BUILD to true to make the build faster for dev
 
-ENV APP_CONFIG=platform/app/.recipes/Nginx-Orthanc/docker_nginx-orthanc.js
+ENV APP_CONFIG=config/docker_nginx-orthanc.js
 
 # Build the application
 RUN yarn run build
