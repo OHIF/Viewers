@@ -1,5 +1,5 @@
 import type { Button } from '@ohif/core/types';
-import { defaults, ToolbarService, ViewportGridService } from '@ohif/core';
+import { ToolbarService, ViewportGridService } from '@ohif/core';
 
 const { createButton } = ToolbarService;
 
