@@ -81,7 +81,7 @@ export default function buildModeRoutes({
     routes.push({
       path,
       children,
-      private: true, // todo: all mode routes are private for now
+      private: true,
     });
   });
 
