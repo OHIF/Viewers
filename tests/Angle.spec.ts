@@ -7,23 +7,28 @@ test.beforeEach(async ({ page }) => {
   await visitStudy(page, studyInstanceUID, mode);
 });
 
-test('should display the length tool', async ({ page }) => {
-  await checkForScreenshot(page, page, screenShotPaths.length.viewportLoaded);
-  await page.getByTestId('MeasurementTools-split-button-primary').click();
+test('should display the angle tool', async ({ page }) => {
+  await checkForScreenshot(page, page, screenShotPaths.angle.viewportLoaded);
+  await page.getByTestId('MoreTools-split-button-secondary').click();
+  await page.getByTestId('Angle').click();
   const locator = page.getByTestId('viewport-pane').locator('canvas');
   await simulateClicksOnElement({
     locator,
     points: [
       {
-        x: 364,
-        y: 234,
+        x: 550,
+        y: 200,
       },
       {
-        x: 544,
-        y: 232,
+        x: 450,
+        y: 250,
+      },
+      {
+        x: 550,
+        y: 300,
       },
     ],
   });
   await page.getByTestId('prompt-begin-tracking-yes-btn').click();
-  await checkForScreenshot(page, page, screenShotPaths.length.lengthDisplayedCorrectly);
+  await checkForScreenshot(page, page, screenShotPaths.angle.angleDisplayedCorrectly);
 });

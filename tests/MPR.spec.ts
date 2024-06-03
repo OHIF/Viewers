@@ -9,6 +9,7 @@ test.beforeEach(async ({ page }) => {
 
 test.describe('MPR Test', async () => {
   test('should render MPR correctly.', async ({ page }) => {
+    await checkForScreenshot(page, page, screenShotPaths.mpr.viewportLoaded);
     await page.getByTestId('Layout').click();
     await page.locator('div').filter({ hasText: /^MPR$/ }).first().click();
     await checkForScreenshot(page, page, screenShotPaths.mpr.mprDisplayedCorrectly);
