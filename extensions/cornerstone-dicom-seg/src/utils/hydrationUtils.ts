@@ -35,8 +35,8 @@ async function updateViewportsForSegmentationRendering({
     displaySet?.referencedDisplaySetInstanceUID || viewport?.displaySetInstanceUIDs[0];
 
   const updatedViewports = getUpdatedViewportsForSegmentation({
-    servicesManager,
     viewportId,
+    servicesManager,
     displaySet,
   });
 
@@ -175,7 +175,7 @@ function getUpdatedViewportsForSegmentation({
         viewportId,
         displaySetInstanceUIDs: viewport.displaySetInstanceUIDs,
         viewportOptions: {
-          viewportType: displaySet.Modality === 'RTSTRUCT' ? 'stack' : 'volume',
+          viewportType: displaySet?.Modality === 'RTSTRUCT' ? 'stack' : 'volume',
           needsRerendering: true,
         },
       });

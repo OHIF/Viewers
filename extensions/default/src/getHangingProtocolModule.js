@@ -120,10 +120,10 @@ function getHangingProtocolModule() {
       name: hpMammography.id,
       protocol: hpMammography,
     },
-    {
-      name: hpScale.id,
-      protocol: hpScale,
-    },
+    // {
+    //   name: hpScale.id,
+    //   protocol: hpScale,
+    // },
   ];
 }
 
