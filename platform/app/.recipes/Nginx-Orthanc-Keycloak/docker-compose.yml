@@ -9,11 +9,12 @@ services:
       # Project root
       context: ./../../../../
       # Relative to context
-      dockerfile: ./platform/app/.recipes/Nginx-Orthanc/dockerfile
+      dockerfile: ./platform/app/.recipes/Nginx-Orthanc-Keycloak/dockerfile
     image: webapp:latest
     container_name: ohif_orthanc
     volumes:
       # Nginx config
+      - ./../../../../platform/app/dist:/var/www/html
       - ./config/nginx.conf:/etc/nginx/nginx.conf
       # Logs
       - ./logs/nginx:/var/logs/nginx
@@ -34,7 +35,7 @@ services:
   orthanc:
     image: jodogne/orthanc-plugins
     hostname: orthanc
-    container_name: orthancPACS
+    container_name: orthanc
     volumes:
       # Config
       - ./config/orthanc.json:/etc/orthanc/orthanc.json:ro

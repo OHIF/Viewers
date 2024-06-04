@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y build-essential python3
 # Copy package.json and other dependency-related files first
 # Assuming your package.json and yarn.lock or similar are located in the project root
 
-COPY . .
+# COPY . .
 
 # Install node dependencies
 # RUN yarn config set workspaces-experimental true
@@ -22,7 +22,7 @@ COPY . .
 
 # set QUICK_BUILD to true to make the build faster for dev
 
-ENV APP_CONFIG=config/docker_nginx-orthanc-keycloak.js
+# ENV APP_CONFIG=config/docker_nginx-orthanc.js
 
 # Build the application
 # RUN yarn run build
