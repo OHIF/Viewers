@@ -156,6 +156,8 @@ function modeFactory({ modeConfiguration }) {
     /** List of extensions that are used by the mode */
     extensions: extensionDependencies,
     /** HangingProtocol used by the mode */
+    // Commented out to just use the most applicable registered hanging protocol
+    // The example is used for a grid layout to specify that as a preferred layout
     // hangingProtocol: ['@ohif/mnGrid'],
     /** SopClassHandlers used by the mode */
     sopClassHandlers: [ohif.sopClassHandler, segmentation.sopClassHandler],
