@@ -36,19 +36,19 @@ window.config = {
     },
   ],
   // This is an array, but we'll only use the first entry for now
-  // oidc: [
-  //   {
-  //     // ~ REQUIRED
-  //     // Authorization Server URL
-  //     authority: 'http://127.0.0.1/auth/realms/ohif',
-  //     client_id: 'ohif-viewer',
-  //     redirect_uri: 'http://127.0.0.1/callback', // `OHIFStandaloneViewer.js`
-  //     // "Authorization Code Flow"
-  //     // Resource: https://medium.com/@darutk/diagrams-of-all-the-openid-connect-flows-6968e3990660
-  //     response_type: 'code',
-  //     scope: 'openid', // email profile openid
-  //     // ~ OPTIONAL
-  //     post_logout_redirect_uri: '/logout-redirect.html',
-  //   },
-  // ],
+  oidc: [
+    {
+      // ~ REQUIRED
+      // Authorization Server URL
+      authority: 'http://127.0.0.1/auth/realms/ohif',
+      client_id: 'ohif-viewer',
+      redirect_uri: 'http://127.0.0.1/callback', // `OHIFStandaloneViewer.js`
+      // "Authorization Code Flow"
+      // Resource: https://medium.com/@darutk/diagrams-of-all-the-openid-connect-flows-6968e3990660
+      response_type: 'code',
+      scope: 'openid', // email profile openid
+      // ~ OPTIONAL
+      post_logout_redirect_uri: '/logout-redirect.html',
+    },
+  ],
 };
