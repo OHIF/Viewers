@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.9.0-beta.36](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.35...v3.9.0-beta.36) (2024-06-05)
+
+
+### Bug Fixes
+
+* get direct url pixel data should be optional for video ([#4152](https://github.com/OHIF/Viewers/issues/4152)) ([649ffab](https://github.com/OHIF/Viewers/commit/649ffab4d97be875d42e1a3473a4354aac14e87d))
+
+
+
+
+
+# [3.9.0-beta.35](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.34...v3.9.0-beta.35) (2024-06-05)
+
+
+### Bug Fixes
+
+* **seg:** maintain algorithm name and algorithm type when DICOM seg is exported or downloaded ([#4203](https://github.com/OHIF/Viewers/issues/4203)) ([a29e94d](https://github.com/OHIF/Viewers/commit/a29e94de803f79bbb3372d00ad8eb14b4224edc2))
+
+
+
+
+
 # [3.9.0-beta.34](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.33...v3.9.0-beta.34) (2024-06-05)
 
 
