@@ -42,7 +42,7 @@ const toolbarButtons: Button[] = [
     id: 'WindowLevelRegion',
     uiType: 'ohif.radioGroup',
     props: {
-      icon: 'tool-rectangle',
+      icon: 'icon-tool-window-region',
       label: 'Window Level Region',
       commands: setToolActiveToolbar,
       evaluate: 'evaluate.cornerstoneTool',
