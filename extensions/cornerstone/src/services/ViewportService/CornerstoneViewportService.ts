@@ -1,5 +1,5 @@
 import { PubSubService } from '@ohif/core';
-import * as OhifTypes from '@ohif/core/types';
+import { Types as OhifTypes } from '@ohif/core';
 import {
   RenderingEngine,
   StackViewport,
@@ -617,11 +617,9 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     imageIds?: string[]
   ): number {
     const initialImageOptions = viewportInfo.getInitialImageOptions();
-
     if (!initialImageOptions) {
       return;
     }
-
     const { index, preset } = initialImageOptions;
     const viewportType = viewportInfo.getViewportType();
 
