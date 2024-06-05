@@ -48,6 +48,7 @@ const commandsModule = ({
     displaySetService,
     viewportGridService,
     toolGroupService,
+    cornerstoneViewportService,
   } = servicesManager.services;
 
   const actions = {
@@ -210,6 +211,8 @@ const commandsModule = ({
       const referencedDisplaySet = displaySetService.getDisplaySetByUID(
         displaySet.referencedDisplaySetInstanceUID
       );
+      const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+      const initialSliceIndex = viewport.getSliceIndex();
 
       updateViewportsForSegmentationRendering({
         viewportId,
@@ -229,6 +232,7 @@ const commandsModule = ({
           segmentation.description = `S${referencedDisplaySet.SeriesNumber}: ${referencedDisplaySet.SeriesDescription}`;
           return segmentationId;
         },
+        initialSliceIndex,
       });
     },
     /**
