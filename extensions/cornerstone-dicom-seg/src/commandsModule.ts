@@ -278,8 +278,8 @@ const commandsModule = ({
         const segmentMetadata = {
           SegmentNumber: segmentIndex.toString(),
           SegmentLabel: label,
-          SegmentAlgorithmType: 'MANUAL',
-          SegmentAlgorithmName: 'OHIF Brush',
+          SegmentAlgorithmType: segment?.algorithmType || 'MANUAL',
+          SegmentAlgorithmName: segment?.algorithmName || 'OHIF Brush',
           RecommendedDisplayCIELabValue,
           SegmentedPropertyCategoryCodeSequence: {
             CodeValue: 'T-D0050',
