@@ -24,10 +24,12 @@ services:
     ports:
       - '443:443' # SSL
       - '80:80' # Web
-    depends_on:
-      - keycloak
-      # - orthanc
+    # depends_on:
+    # keycloak:
+    #   condition: service_healthy
     restart: on-failure
+    networks:
+      - default
 
   # LINK: https://hub.docker.com/r/jodogne/orthanc-plugins/
   # TODO: Update to use Postgres
@@ -42,6 +44,8 @@ services:
       # Persist data
       - ./volumes/orthanc-db/:/var/lib/orthanc/db/
     restart: unless-stopped
+    networks:
+      - default
 
   keycloak:
     image: quay.io/keycloak/keycloak:24.0.5
@@ -71,11 +75,27 @@ services:
       KEYCLOAK_JDBC_PARAMS: connectTimeout=40000
       KC_LOG_LEVEL: INFO
       KC_HOSTNAME_DEBUG: true
+      # added later
+      PROXY_ADDRESS_FORWARDING: true
     ports:
       - 18080:8080
     depends_on:
       - postgres
     restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'curl',
+          '-k',
+          '-f',
+          'https://keycloak:8080/auth/realms/master/.well-known/openid-configuration',
+        ]
+      interval: 10s
+      timeout: 1s
+      retries: 15
+    networks:
+      - default
 
   # LINK: https://hub.docker.com/_/postgres/
   postgres:
@@ -89,6 +109,25 @@ services:
       POSTGRES_USER: keycloak
       POSTGRES_PASSWORD: password
     restart: unless-stopped
+  ##
+  ##
+  ##
+  oauth2-proxy:
+    container_name: oauth2-proxy
+    image: quay.io/oauth2-proxy/oauth2-proxy:v7.4.0
+    command: --config /oauth2-proxy.cfg
+    environment:
+      - OAUTH2_PROXY_SKIP_PROVIDER_BUTTON=true
+    #   ports:
+    #     - 4180:4180/tcp
+    volumes:
+      - ./config/oauth2-proxy.cfg:/oauth2-proxy.cfg
+    restart: unless-stopped
+    networks:
+      - default
+    depends_on:
+      keycloak:
+        condition: service_healthy
 
 volumes:
   postgres_data:
