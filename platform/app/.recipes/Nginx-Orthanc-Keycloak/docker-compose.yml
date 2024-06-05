@@ -24,9 +24,11 @@ services:
     ports:
       - '443:443' # SSL
       - '80:80' # Web
-    # depends_on:
-    # keycloak:
-    #   condition: service_healthy
+    depends_on:
+      keycloak:
+        condition: service_completed_successfully
+      oauth2-proxy:
+        condition: service_completed_successfully
     restart: on-failure
     networks:
       - default
@@ -34,18 +36,18 @@ services:
   # LINK: https://hub.docker.com/r/jodogne/orthanc-plugins/
   # TODO: Update to use Postgres
   # https://github.com/mrts/docker-postgresql-multiple-databases
-  orthanc:
-    image: jodogne/orthanc-plugins
-    hostname: orthanc
-    container_name: orthanc
-    volumes:
-      # Config
-      - ./config/orthanc.json:/etc/orthanc/orthanc.json:ro
-      # Persist data
-      - ./volumes/orthanc-db/:/var/lib/orthanc/db/
-    restart: unless-stopped
-    networks:
-      - default
+  # orthanc:
+  #   image: jodogne/orthanc-plugins
+  #   hostname: orthanc
+  #   container_name: orthanc
+  #   volumes:
+  #     # Config
+  #     - ./config/orthanc.json:/etc/orthanc/orthanc.json:ro
+  #     # Persist data
+  #     - ./volumes/orthanc-db/:/var/lib/orthanc/db/
+  #   restart: unless-stopped
+  #   networks:
+  #     - default
 
   keycloak:
     image: quay.io/keycloak/keycloak:24.0.5
@@ -62,8 +64,11 @@ services:
       KC_DB_SCHEMA: public
       KC_DB_USERNAME: keycloak
       KC_DB_PASSWORD: password
-      KC_HOSTNAME_ADMIN_URL: http://localhost:18080/
-      KC_HOSTNAME_URL: http://localhost:18080/
+      # KC_HOSTNAME_ADMIN_URL: http://127.0.0.1:8080/
+      # KC_HOSTNAME_URL: http://127.0.0.1:8080/
+      KC_HOSTNAME_ADMIN_URL: http://127.0.0.1:8080/
+      KC_HOSTNAME_URL: http://127.0.0.1:8080/
+      KEYCLOAK_FRONTEND_URL: http://127.0.0.1:8080/auth
       KC_HOSTNAME_STRICT_BACKCHANNEL: true
       KC_HOSTNAME_STRICT_HTTPS: false
       KC_HTTP_ENABLED: true
@@ -78,22 +83,10 @@ services:
       # added later
       PROXY_ADDRESS_FORWARDING: true
     ports:
-      - 18080:8080
+      - 8080:8080
     depends_on:
       - postgres
     restart: unless-stopped
-    healthcheck:
-      test:
-        [
-          'CMD',
-          'curl',
-          '-k',
-          '-f',
-          'https://keycloak:8080/auth/realms/master/.well-known/openid-configuration',
-        ]
-      interval: 10s
-      timeout: 1s
-      retries: 15
     networks:
       - default
 
@@ -109,6 +102,8 @@ services:
       POSTGRES_USER: keycloak
       POSTGRES_PASSWORD: password
     restart: unless-stopped
+    networks:
+      - default
   ##
   ##
   ##
@@ -133,3 +128,7 @@ volumes:
   postgres_data:
     driver: local
   keycloak:
+
+networks:
+  default:
+    driver: bridge
