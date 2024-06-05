@@ -30,12 +30,12 @@
     "test:unit:ci": "jest --ci --runInBand --collectCoverage --passWithNoTests"
   },
   "peerDependencies": {
-    "@ohif/core": "3.9.0-beta.35",
-    "@ohif/extension-cornerstone": "3.9.0-beta.35",
-    "@ohif/extension-cornerstone-dicom-seg": "3.9.0-beta.35",
-    "@ohif/extension-cornerstone-dynamic-volume": "3.9.0-beta.35",
-    "@ohif/extension-default": "3.9.0-beta.35",
-    "@ohif/extension-tmtv": "3.9.0-beta.35"
+    "@ohif/core": "3.9.0-beta.36",
+    "@ohif/extension-cornerstone": "3.9.0-beta.36",
+    "@ohif/extension-cornerstone-dicom-seg": "3.9.0-beta.36",
+    "@ohif/extension-cornerstone-dynamic-volume": "3.9.0-beta.36",
+    "@ohif/extension-default": "3.9.0-beta.36",
+    "@ohif/extension-tmtv": "3.9.0-beta.36"
   },
   "dependencies": {
     "@babel/runtime": "^7.20.13"
