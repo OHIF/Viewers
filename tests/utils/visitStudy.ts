@@ -5,6 +5,7 @@ import { Page } from '@playwright/test';
  * @param page - The page to interact with
  * @param title - The study instance UID of the study to visit
  * @param mode - The mode to visit the study in
+ * @param delay - The delay to wait after visiting the study
  */
 export async function visitStudy(
   page: Page,
