@@ -62,7 +62,7 @@ function initDefaultToolGroup(extensionManager, toolGroupService, commandsManage
       { toolName: toolNames.Angle },
       { toolName: toolNames.Magnify },
       { toolName: toolNames.SegmentationDisplay },
-
+      { toolName: toolNames.WindowLevelRegion },
       { toolName: toolNames.UltrasoundDirectional },
       { toolName: toolNames.PlanarFreehandROI },
       { toolName: toolNames.SplineROI },
@@ -125,6 +125,7 @@ function initSRToolGroup(extensionManager, toolGroupService, commandsManager) {
       { toolName: SRToolNames.SRBidirectional },
       { toolName: SRToolNames.SREllipticalROI },
       { toolName: SRToolNames.SRCircleROI },
+      { toolName: toolNames.WindowLevelRegion },
     ],
     enabled: [
       {
@@ -193,6 +194,7 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
       { toolName: toolNames.StackScroll },
       { toolName: toolNames.Angle },
       { toolName: toolNames.SegmentationDisplay },
+      { toolName: toolNames.WindowLevelRegion },
     ],
     disabled: [
       {

@@ -173,6 +173,8 @@ import { ReactComponent as iconToolRotate } from './../../assets/icons/tool-3d-r
 import { ReactComponent as tab4D } from './../../assets/icons/tab-4d.svg';
 import { ReactComponent as investigationalUse } from './../../assets/icons/illustration-investigational-use.svg';
 import { ReactComponent as actionNewDialog } from './../../assets/icons/action-new-dialog.svg';
+import { ReactComponent as iconToolCobbAngle } from './../../assets/icons/tool-cobb-angle.svg';
+import { ReactComponent as iconToolWindowRegion } from './../../assets/icons/tool-window-region.svg';
 
 import CTAAA from './../../assets/icons/CT-AAA.png';
 import CTAAA2 from './../../assets/icons/CT-AAA2.png';
@@ -358,6 +360,8 @@ const ICONS = {
   'icon-tool-spline-roi': iconToolSplineRoi,
   'icon-tool-ultrasound-bidirectional': iconToolUltrasoundBidirectional,
   'icon-tool-loupe': iconToolLoupe,
+  'icon-tool-cobb-angle': iconToolCobbAngle,
+  'icon-tool-window-region': iconToolWindowRegion,
   /** Old OHIF */
   'old-trash': oldTrash,
   'old-play': oldPlay,

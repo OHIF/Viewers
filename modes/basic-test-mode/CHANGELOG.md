@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.9.0-beta.34](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.33...v3.9.0-beta.34) (2024-06-05)
+
+**Note:** Version bump only for package @ohif/mode-test
+
+
+
+
+
+# [3.9.0-beta.33](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.32...v3.9.0-beta.33) (2024-06-05)
+
+
+### Features
+
+* **window-level-region:** add window level region tool ([#4127](https://github.com/OHIF/Viewers/issues/4127)) ([ab1a18a](https://github.com/OHIF/Viewers/commit/ab1a18af5a5b0f9086c080ed81c8fda9bfaa975b))
+
+
+
+
+
 # [3.9.0-beta.32](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.31...v3.9.0-beta.32) (2024-05-31)
 
 **Note:** Version bump only for package @ohif/mode-test
