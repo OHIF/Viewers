@@ -7,22 +7,39 @@ test.beforeEach(async ({ page }) => {
   await visitStudy(page, studyInstanceUID, mode, 2000);
 });
 
-test('should display the length tool', async ({ page }) => {
-  await page.getByTestId('MeasurementTools-split-button-primary').click();
+test('should display the spline tool', async ({ page }) => {
+  await page.getByTestId('MeasurementTools-split-button-secondary').click();
+  await page.getByTestId('SplineROI').click();
   const locator = page.getByTestId('viewport-pane').locator('canvas');
   await simulateClicksOnElement({
     locator,
     points: [
       {
-        x: 364,
-        y: 234,
+        x: 380,
+        y: 459,
       },
       {
-        x: 544,
-        y: 232,
+        x: 420,
+        y: 396,
+      },
+      {
+        x: 523,
+        y: 392,
+      },
+      {
+        x: 581,
+        y: 447,
+      },
+      {
+        x: 482,
+        y: 493,
+      },
+      {
+        x: 383,
+        y: 461,
       },
     ],
   });
   await page.getByTestId('prompt-begin-tracking-yes-btn').click();
-  await checkForScreenshot(page, page, screenShotPaths.length.lengthDisplayedCorrectly);
+  await checkForScreenshot(page, page, screenShotPaths.spline.splineDisplayedCorrectly);
 });

@@ -7,22 +7,23 @@ test.beforeEach(async ({ page }) => {
   await visitStudy(page, studyInstanceUID, mode, 2000);
 });
 
-test('should display the length tool', async ({ page }) => {
-  await page.getByTestId('MeasurementTools-split-button-primary').click();
+test('should display the circle tool', async ({ page }) => {
+  await page.getByTestId('MeasurementTools-split-button-secondary').click();
+  await page.getByTestId('CircleROI').click();
   const locator = page.getByTestId('viewport-pane').locator('canvas');
   await simulateClicksOnElement({
     locator,
     points: [
       {
-        x: 364,
-        y: 234,
+        x: 480,
+        y: 205,
       },
       {
-        x: 544,
-        y: 232,
+        x: 488,
+        y: 247,
       },
     ],
   });
   await page.getByTestId('prompt-begin-tracking-yes-btn').click();
-  await checkForScreenshot(page, page, screenShotPaths.length.lengthDisplayedCorrectly);
+  await checkForScreenshot(page, page, screenShotPaths.circle.circleDisplayedCorrectly);
 });

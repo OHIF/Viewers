@@ -1,6 +1,6 @@
 import { visitStudy } from './visitStudy';
 import { checkForScreenshot } from './checkForScreenshot';
 import { screenShotPaths } from './screenShotPaths';
-import { simulateDrag } from './simulateDrag';
+import { simulateClicksOnElement } from './simulateClicksOnElement';
 
-export { visitStudy, checkForScreenshot, screenShotPaths, simulateDrag };
+export { visitStudy, checkForScreenshot, screenShotPaths, simulateClicksOnElement };
