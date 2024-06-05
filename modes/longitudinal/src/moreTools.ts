@@ -137,7 +137,7 @@ const moreTools = [
         }),
         createButton({
           id: 'CobbAngle',
-          icon: 'tool-angle',
+          icon: 'icon-tool-cobb-angle',
           label: 'Cobb Angle',
           tooltip: 'Cobb Angle',
           commands: setToolActiveToolbar,
