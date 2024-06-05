@@ -46,6 +46,7 @@ window.config = {
       // "Authorization Code Flow"
       // Resource: https://medium.com/@darutk/diagrams-of-all-the-openid-connect-flows-6968e3990660
       response_type: 'code',
+      useImplicitFlow: false,
       scope: 'openid', // email profile openid
       // ~ OPTIONAL
       post_logout_redirect_uri: '/logout-redirect.html',
