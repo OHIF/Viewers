@@ -26,8 +26,8 @@ function Toolbox({
     buttonSection: buttonSectionId,
   });
 
-  const prevButtonIdsRef = useRef();
-  const prevToolboxStateRef = useRef();
+  const prevButtonIdsRef = useRef('');
+  const prevToolboxStateRef = useRef('');
 
   useEffect(() => {
     const currentButtonIdsStr = JSON.stringify(
@@ -130,7 +130,7 @@ function Toolbox({
     );
 
     api.initializeToolOptions(initializeOptionsWithEnhancements);
-  }, [toolbarButtons, api, toolboxState]);
+  }, [toolbarButtons, api, toolboxState, commandsManager, servicesManager]);
 
   const handleToolOptionChange = (toolName, optionName, newValue) => {
     api.handleToolOptionChange(toolName, optionName, newValue);
@@ -147,7 +147,7 @@ function Toolbox({
       {...props}
       title={title}
       toolbarButtons={toolbarButtons}
-      activeToolOptions={toolboxState.toolOptions?.[toolboxState.activeTool]}
+      toolboxState={toolboxState}
       handleToolSelect={id => api.handleToolSelect(id)}
       handleToolOptionChange={handleToolOptionChange}
       onInteraction={onInteraction}

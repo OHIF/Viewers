@@ -17,7 +17,7 @@ const DialogContext = createContext(null);
 
 export const useDialog = () => useContext(DialogContext);
 
-const DialogProvider = ({ children, service }) => {
+const DialogProvider = ({ children, service = null }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [dialogs, setDialogs] = useState([]);
   const [lastDialogId, setLastDialogId] = useState(null);
@@ -298,10 +298,6 @@ export const withDialog = Component => {
       />
     );
   };
-};
-
-DialogProvider.defaultProps = {
-  service: null,
 };
 
 DialogProvider.propTypes = {

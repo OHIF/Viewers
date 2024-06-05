@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useCallback, useState } from 'react';
-import ReactResizeDetector from 'react-resize-detector';
+import { useResizeDetector } from 'react-resize-detector';
 import PropTypes from 'prop-types';
 import * as cs3DTools from '@cornerstonejs/tools';
 import {
@@ -109,7 +109,7 @@ const OHIFCornerstoneViewport = React.memo((props: withAppTypes) => {
     onElementEnabled,
     // eslint-disable-next-line react/prop-types
     onElementDisabled,
-    isJumpToMeasurementDisabled,
+    isJumpToMeasurementDisabled = false,
     // Note: you SHOULD NOT use the initialImageIdOrIndex for manipulation
     // of the imageData in the OHIFCornerstoneViewport. This prop is used
     // to set the initial state of the viewport's first image to render
@@ -140,7 +140,7 @@ const OHIFCornerstoneViewport = React.memo((props: withAppTypes) => {
 
   const [scrollbarHeight, setScrollbarHeight] = useState('100px');
   const [enabledVPElement, setEnabledVPElement] = useState(null);
-  const elementRef = useRef();
+  const elementRef = useRef() as React.MutableRefObject<HTMLDivElement>;
   const [appConfig] = useAppConfig();
 
   const {
@@ -417,19 +417,21 @@ const OHIFCornerstoneViewport = React.memo((props: withAppTypes) => {
     });
   }, [displaySets, viewportId, viewportActionCornersService, servicesManager, commandsManager]);
 
+  const { ref: resizeRef } = useResizeDetector({
+    onResize,
+  });
   return (
     <React.Fragment>
       <div className="viewport-wrapper">
-        <ReactResizeDetector
-          onResize={onResize}
-          targetRef={elementRef.current}
-        />
         <div
           className="cornerstone-viewport-element"
           style={{ height: '100%', width: '100%' }}
           onContextMenu={e => e.preventDefault()}
           onMouseDown={e => e.preventDefault()}
-          ref={elementRef}
+          ref={el => {
+            resizeRef.current = el;
+            elementRef.current = el;
+          }}
         ></div>
         <CornerstoneOverlays
           viewportId={viewportId}
@@ -682,10 +684,6 @@ function _rehydrateSynchronizers(
 
 // Component displayName
 OHIFCornerstoneViewport.displayName = 'OHIFCornerstoneViewport';
-
-OHIFCornerstoneViewport.defaultProps = {
-  isJumpToMeasurementDisabled: false,
-};
 
 OHIFCornerstoneViewport.propTypes = {
   displaySets: PropTypes.array.isRequired,

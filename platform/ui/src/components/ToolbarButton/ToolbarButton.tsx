@@ -12,7 +12,7 @@ const ToolbarButton = ({
   label,
   commands,
   onInteraction,
-  dropdownContent,
+  dropdownContent = null,
   //
   className,
   disabled,
@@ -63,10 +63,6 @@ const ToolbarButton = ({
       </Tooltip>
     </div>
   );
-};
-
-ToolbarButton.defaultProps = {
-  dropdownContent: null,
 };
 
 ToolbarButton.propTypes = {

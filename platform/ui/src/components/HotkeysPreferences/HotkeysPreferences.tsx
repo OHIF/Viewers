@@ -11,10 +11,10 @@ import { MODIFIER_KEYS } from './hotkeysConfig';
 import { validate, splitHotkeyDefinitionsAndCreateTuples } from './utils';
 
 const HotkeysPreferences = ({
-  disabled,
+  disabled = false,
   hotkeyDefinitions,
   errors: controlledErrors,
-  onChange,
+  onChange = () => {},
   hotkeysModule,
 }) => {
   const { t } = useTranslation('UserPreferencesModal');
@@ -127,8 +127,6 @@ const HotkeysPreferences = ({
   );
 };
 
-const noop = () => {};
-
 HotkeysPreferences.propTypes = {
   onChange: PropTypes.func,
   disabled: PropTypes.bool,
@@ -140,11 +138,6 @@ HotkeysPreferences.propTypes = {
     startRecording: PropTypes.func.isRequired,
     record: PropTypes.func.isRequired,
   }).isRequired,
-};
-
-HotkeysPreferences.defaultProps = {
-  onChange: noop,
-  disabled: false,
 };
 
 export default HotkeysPreferences;

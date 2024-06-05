@@ -84,12 +84,26 @@ class CornerstoneCacheService {
     invalidatedDisplaySetInstanceUID: string,
     dataSource,
     displaySetService
-  ) {
+  ): Promise<VolumeViewportData | StackViewportData> {
     if (viewportData.viewportType === Enums.ViewportType.STACK) {
-      return this._getCornerstoneStackImageIds(
-        displaySetService.getDisplaySetByUID(invalidatedDisplaySetInstanceUID),
-        dataSource
-      );
+      const displaySet = displaySetService.getDisplaySetByUID(invalidatedDisplaySetInstanceUID);
+      const imageIds = this._getCornerstoneStackImageIds(displaySet, dataSource);
+
+      // remove images from the cache to be able to re-load them
+      imageIds.forEach(imageId => {
+        if (cs3DCache.getImageLoadObject(imageId)) {
+          cs3DCache.removeImageLoadObject(imageId);
+        }
+      });
+
+      return {
+        viewportType: Enums.ViewportType.STACK,
+        data: {
+          StudyInstanceUID: displaySet.StudyInstanceUID,
+          displaySetInstanceUID: invalidatedDisplaySetInstanceUID,
+          imageIds,
+        },
+      };
     }
 
     // Todo: grab the volume and get the id from the viewport itself
@@ -129,14 +143,25 @@ class CornerstoneCacheService {
     return newViewportData;
   }
 
-  private _getStackViewportData(
+  private async _getStackViewportData(
     dataSource,
     displaySets,
     initialImageIndex,
     viewportType: Enums.ViewportType
-  ): StackViewportData {
-    // For Stack Viewport we don't have fusion currently
-    const displaySet = displaySets[0];
+  ): Promise<StackViewportData> {
+    const overlayDisplaySets = displaySets.filter(ds => ds.isOverlayDisplaySet);
+    const nonOverlayDisplaySets = displaySets.filter(ds => !ds.isOverlayDisplaySet);
+
+    // load overlays if they are not loaded
+    for (const overlayDisplaySet of overlayDisplaySets) {
+      if (overlayDisplaySet.load && overlayDisplaySet.load instanceof Function) {
+        const { userAuthenticationService } = this.servicesManager.services;
+        const headers = userAuthenticationService.getAuthorizationHeader();
+        await overlayDisplaySet.load({ headers });
+      }
+    }
+
+    const displaySet = nonOverlayDisplaySets[0];
 
     let stackImageIds = this.stackImageIds.get(displaySet.displaySetInstanceUID);
 
@@ -145,23 +170,23 @@ class CornerstoneCacheService {
       this.stackImageIds.set(displaySet.displaySetInstanceUID, stackImageIds);
     }
 
-    const { displaySetInstanceUID, StudyInstanceUID, isCompositeStack } = displaySet;
+    // Ensuring the first non-overlay `displaySet` is always the primary one
+    const StackViewportData = [displaySet, ...overlayDisplaySets].map(ds => {
+      const { displaySetInstanceUID, StudyInstanceUID, isCompositeStack } = ds;
 
-    const StackViewportData: StackViewportData = {
-      viewportType,
-      data: {
+      return {
         StudyInstanceUID,
         displaySetInstanceUID,
         isCompositeStack,
         imageIds: stackImageIds,
-      },
+        initialImageIndex,
+      };
+    });
+
+    return {
+      viewportType,
+      data: StackViewportData,
     };
-
-    if (typeof initialImageIndex === 'number') {
-      StackViewportData.data.initialImageIndex = initialImageIndex;
-    }
-
-    return StackViewportData;
   }
 
   private async _getVolumeViewportData(

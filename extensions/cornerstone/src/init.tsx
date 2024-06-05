@@ -141,11 +141,17 @@ export default async function init({
   });
 
   const labelmapRepresentation = cornerstoneTools.Enums.SegmentationRepresentations.Labelmap;
+  const contourRepresentation = cornerstoneTools.Enums.SegmentationRepresentations.Contour;
+
   cornerstoneTools.segmentation.config.setGlobalRepresentationConfig(labelmapRepresentation, {
     fillAlpha: 0.5,
     fillAlphaInactive: 0.2,
     outlineOpacity: 1,
     outlineOpacityInactive: 0.65,
+  });
+
+  cornerstoneTools.segmentation.config.setGlobalRepresentationConfig(contourRepresentation, {
+    renderFill: false,
   });
 
   const metadataProvider = OHIF.classes.MetadataProvider;
@@ -249,7 +255,11 @@ export default async function init({
 
     element.addEventListener(EVENTS.CAMERA_RESET, evt => {
       const { element } = evt.detail;
-      const { viewportId } = getEnabledElement(element);
+      const enabledElement = getEnabledElement(element);
+      if (!enabledElement) {
+        return;
+      }
+      const { viewportId } = enabledElement;
       commandsManager.runCommand('resetCrosshairs', { viewportId });
     });
 

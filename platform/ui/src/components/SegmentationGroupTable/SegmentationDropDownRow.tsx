@@ -7,7 +7,7 @@ function SegmentationDropDownRow({
   segmentations = [],
   activeSegmentation,
   onActiveSegmentationChange,
-  disableEditing,
+  disableEditing = false,
   onToggleSegmentationVisibility,
   onSegmentationEdit,
   onSegmentationDownload,
@@ -178,11 +178,6 @@ SegmentationDropDownRow.propTypes = {
   storeSegmentation: PropTypes.func,
   onSegmentationDelete: PropTypes.func,
   onSegmentationAdd: PropTypes.func,
-};
-
-SegmentationDropDownRow.defaultProps = {
-  segmentations: [],
-  disableEditing: false,
 };
 
 export default SegmentationDropDownRow;

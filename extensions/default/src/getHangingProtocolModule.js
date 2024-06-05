@@ -1,5 +1,7 @@
-import hpMNGrid from './hpMNGrid';
-import hpMNCompare from './hpCompare';
+import hpMNGrid from './hangingprotocols/hpMNGrid';
+import hpMNCompare from './hangingprotocols/hpCompare';
+import hpMammography from './hangingprotocols/hpMammo';
+import hpScale from './hangingprotocols/hpScale';
 
 const defaultProtocol = {
   id: 'default',
@@ -14,7 +16,6 @@ const defaultProtocol = {
   editableBy: {},
   protocolMatchingRules: [],
   toolGroupIds: ['default'],
-  hpInitiationCriteria: { minSeriesLoaded: 1 },
   // -1 would be used to indicate active only, whereas other values are
   // the number of required priors referenced - so 0 means active with
   // 0 or more priors.
@@ -115,6 +116,14 @@ function getHangingProtocolModule() {
       name: hpMNCompare.id,
       protocol: hpMNCompare,
     },
+    {
+      name: hpMammography.id,
+      protocol: hpMammography,
+    },
+    // {
+    //   name: hpScale.id,
+    //   protocol: hpScale,
+    // },
   ];
 }
 

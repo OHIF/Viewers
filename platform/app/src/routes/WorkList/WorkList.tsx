@@ -270,6 +270,7 @@ function WorkList({
 
     return {
       dataCY: `studyRow-${studyInstanceUid}`,
+      clickableCY: studyInstanceUid,
       row: [
         {
           key: 'patientName',
@@ -617,6 +618,12 @@ function _tryParseInt(str, defaultValue) {
 }
 
 function _getQueryFilterValues(params) {
+  const newParams = new URLSearchParams();
+  for (const [key, value] of params) {
+    newParams.set(key.toLowerCase(), value);
+  }
+  params = newParams;
+
   const queryFilterValues = {
     patientName: params.get('patientname'),
     mrn: params.get('mrn'),

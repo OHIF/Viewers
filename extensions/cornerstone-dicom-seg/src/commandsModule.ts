@@ -94,6 +94,7 @@ const commandsModule = ({
       updateViewportsForSegmentationRendering({
         viewportId,
         servicesManager,
+        displaySet,
         loadFn: async () => {
           const currentSegmentations = segmentationService.getSegmentations();
           const segmentationId = await segmentationService.createSegmentationForDisplaySet(
@@ -213,7 +214,7 @@ const commandsModule = ({
       updateViewportsForSegmentationRendering({
         viewportId,
         servicesManager,
-        referencedDisplaySetInstanceUID: displaySet.referencedDisplaySetInstanceUID,
+        displaySet,
         loadFn: async () => {
           const segDisplaySet = displaySet;
           const suppressEvents = false;

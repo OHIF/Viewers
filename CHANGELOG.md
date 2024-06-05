@@ -3,6 +3,289 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.9.0-beta.32](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.31...v3.9.0-beta.32) (2024-05-31)
+
+
+### Bug Fixes
+
+* **tmtv:** crosshairs should not have viewport indicators ([#4197](https://github.com/OHIF/Viewers/issues/4197)) ([f85da32](https://github.com/OHIF/Viewers/commit/f85da32f34389ef7cecae03c07e0af26468b52a6))
+
+
+
+
+
+# [3.9.0-beta.31](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.30...v3.9.0-beta.31) (2024-05-30)
+
+
+### Bug Fixes
+
+* **seg:** should be able to navigate outside toolbox and come back later ([#4196](https://github.com/OHIF/Viewers/issues/4196)) ([93e7609](https://github.com/OHIF/Viewers/commit/93e760937f6587ba7481fcf3484ba9004ba49a62))
+
+
+
+
+
+# [3.9.0-beta.30](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.29...v3.9.0-beta.30) (2024-05-30)
+
+
+### Bug Fixes
+
+* **docker:** docker build was broken because of imports ([#4192](https://github.com/OHIF/Viewers/issues/4192)) ([d7aa386](https://github.com/OHIF/Viewers/commit/d7aa386800153e0bb9eea6bbf36c696c57750ad8))
+* segmentation creation and segmentation mode viewport rendering ([#4193](https://github.com/OHIF/Viewers/issues/4193)) ([2174026](https://github.com/OHIF/Viewers/commit/217402678981f74293dff615f6b6812e54216d37))
+
+
+
+
+
+# [3.9.0-beta.29](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.28...v3.9.0-beta.29) (2024-05-30)
+
+
+### Bug Fixes
+
+* **tmtv:** side panel crashing when activeToolOptions is not an array ([#4189](https://github.com/OHIF/Viewers/issues/4189)) ([19b5b1c](https://github.com/OHIF/Viewers/commit/19b5b1c15cb29ddf1cfd9b608815199bc838f8b2))
+
+
+
+
+
+# [3.9.0-beta.28](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.27...v3.9.0-beta.28) (2024-05-30)
+
+
+### Bug Fixes
+
+* **queryparam:** set all query params to lowercase by default ([#4190](https://github.com/OHIF/Viewers/issues/4190)) ([e073d19](https://github.com/OHIF/Viewers/commit/e073d195fdec7f8bdb67e5e3dae522a0fd121ad2))
+
+
+
+
+
+# [3.9.0-beta.27](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.26...v3.9.0-beta.27) (2024-05-29)
+
+
+### Bug Fixes
+
+* **contour:** set renderFill to false for contour ([#4186](https://github.com/OHIF/Viewers/issues/4186)) ([731340d](https://github.com/OHIF/Viewers/commit/731340d70ab23e116dd23e80b880bd8a28526f19))
+
+
+
+
+
+# [3.9.0-beta.26](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.25...v3.9.0-beta.26) (2024-05-29)
+
+
+### Features
+
+* **hp:** Add displayArea option for Hanging protocols and example with Mamo([#3808](https://github.com/OHIF/Viewers/issues/3808)) ([18ac08e](https://github.com/OHIF/Viewers/commit/18ac08ed860d119721c52e4ffc270332259100b6))
+
+
+
+
+
+# [3.9.0-beta.25](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.24...v3.9.0-beta.25) (2024-05-29)
+
+
+### Bug Fixes
+
+* **ultrasound:** Upgrade cornerstone3D version to resolve coloring issues ([#4181](https://github.com/OHIF/Viewers/issues/4181)) ([75a71db](https://github.com/OHIF/Viewers/commit/75a71db7f89840250ad1c2b35df5a35aceb8be7d))
+
+
+
+
+
+# [3.9.0-beta.24](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.23...v3.9.0-beta.24) (2024-05-29)
+
+
+### Features
+
+* **measurements:** show untracked measurements in measurement panel under additional findings ([#4160](https://github.com/OHIF/Viewers/issues/4160)) ([18686c2](https://github.com/OHIF/Viewers/commit/18686c2caf13ede3e881303100bd4cc34b8b135f))
+
+
+
+
+
+# [3.9.0-beta.23](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.22...v3.9.0-beta.23) (2024-05-28)
+
+
+### Bug Fixes
+
+* **rt:** dont convert to volume for RTSTRUCT ([#4157](https://github.com/OHIF/Viewers/issues/4157)) ([7745c09](https://github.com/OHIF/Viewers/commit/7745c092bb3edf0090f32fbbbae2f0776128d5a2))
+
+
+
+
+
+# [3.9.0-beta.22](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.21...v3.9.0-beta.22) (2024-05-27)
+
+
+### Features
+
+* **ui:** move to React 18 and base for using shadcn/ui ([#4174](https://github.com/OHIF/Viewers/issues/4174)) ([70f2c79](https://github.com/OHIF/Viewers/commit/70f2c797f42af603d7ea0eb8d23b4103aba66f77))
+
+
+
+
+
+# [3.9.0-beta.21](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.20...v3.9.0-beta.21) (2024-05-24)
+
+
+### Features
+
+* **types:** typed app config ([#4171](https://github.com/OHIF/Viewers/issues/4171)) ([8960b89](https://github.com/OHIF/Viewers/commit/8960b89911a9342d93bf1a62bec97a696f101fd4))
+
+
+
+
+
+# [3.9.0-beta.20](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.19...v3.9.0-beta.20) (2024-05-24)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.9.0-beta.19](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.18...v3.9.0-beta.19) (2024-05-24)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.9.0-beta.18](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.17...v3.9.0-beta.18) (2024-05-24)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.9.0-beta.17](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.16...v3.9.0-beta.17) (2024-05-23)
+
+
+### Bug Fixes
+
+* **crosshairs:** reset angle, position, and slabthickness for crosshairs when reset viewport tool is used ([#4113](https://github.com/OHIF/Viewers/issues/4113)) ([73d9e99](https://github.com/OHIF/Viewers/commit/73d9e99d5d6f38ab6c36f4471d54f18798feacb4))
+
+
+
+
+
+# [3.9.0-beta.16](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.15...v3.9.0-beta.16) (2024-05-23)
+
+
+### Bug Fixes
+
+* dicom json for orthanc by Update package versions for [@cornerstonejs](https://github.com/cornerstonejs) dependencies ([#4165](https://github.com/OHIF/Viewers/issues/4165)) ([34c7d72](https://github.com/OHIF/Viewers/commit/34c7d72142847486b98c9c52469940083eeaf87e))
+
+
+
+
+
+# [3.9.0-beta.15](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.14...v3.9.0-beta.15) (2024-05-22)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.9.0-beta.14](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.13...v3.9.0-beta.14) (2024-05-21)
+
+
+### Bug Fixes
+
+* **HangingProtocol:** fix hp when unsupported series load first ([#4145](https://github.com/OHIF/Viewers/issues/4145)) ([b124c91](https://github.com/OHIF/Viewers/commit/b124c91d8fa0def262d1fee8f105295b02864129))
+
+
+
+
+
+# [3.9.0-beta.13](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.12...v3.9.0-beta.13) (2024-05-21)
+
+
+### Features
+
+* **rt:** allow rendering of points in RT Struct ([#4128](https://github.com/OHIF/Viewers/issues/4128)) ([5903b07](https://github.com/OHIF/Viewers/commit/5903b0749aa41112d2e991bf53ed29b1fd7bd13f))
+
+
+
+
+
+# [3.9.0-beta.12](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.11...v3.9.0-beta.12) (2024-05-21)
+
+
+### Bug Fixes
+
+* **segmentation:** Address issue where segmentation creation failed on layout change ([#4153](https://github.com/OHIF/Viewers/issues/4153)) ([29944c8](https://github.com/OHIF/Viewers/commit/29944c8512c35718af03c03ef82bc43675ee1872))
+
+
+
+
+
+# [3.9.0-beta.11](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.10...v3.9.0-beta.11) (2024-05-21)
+
+
+### Features
+
+* **test:** Playwright testing integration ([#4146](https://github.com/OHIF/Viewers/issues/4146)) ([fe1a706](https://github.com/OHIF/Viewers/commit/fe1a706446cc33670bf5fab8451e8281b487fcd6))
+
+
+
+
+
+# [3.9.0-beta.10](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.9...v3.9.0-beta.10) (2024-05-21)
+
+
+### Bug Fixes
+
+* **stack-invalidation:** Resolve stack invalidation if metadata invalidated ([#4147](https://github.com/OHIF/Viewers/issues/4147)) ([70bb6c4](https://github.com/OHIF/Viewers/commit/70bb6c46267b3733a665f12534b849c890ce54ad))
+
+
+
+
+
+# [3.9.0-beta.9](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.8...v3.9.0-beta.9) (2024-05-17)
+
+
+### Bug Fixes
+
+* **select:** utilize react portals for select component ([#4144](https://github.com/OHIF/Viewers/issues/4144)) ([dce1e7d](https://github.com/OHIF/Viewers/commit/dce1e7d423cb64ec0d4be7362ecbfd52db47ef36))
+
+
+
+
+
+# [3.9.0-beta.8](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.7...v3.9.0-beta.8) (2024-05-16)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.9.0-beta.7](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.6...v3.9.0-beta.7) (2024-05-15)
+
+
+### Bug Fixes
+
+* **tmtv:** threshold was crashing the side panel ([#4119](https://github.com/OHIF/Viewers/issues/4119)) ([8d5c676](https://github.com/OHIF/Viewers/commit/8d5c676a5e1f3eda664071c8aece313de766bd59))
+
+
+
+
+
+# [3.9.0-beta.6](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.5...v3.9.0-beta.6) (2024-05-15)
+
+
+### Bug Fixes
+
+* 🐛 Overflow scroll list menu based on screen hight ([#4123](https://github.com/OHIF/Viewers/issues/4123)) ([6bba2e7](https://github.com/OHIF/Viewers/commit/6bba2e70f80d8eacc57c0e765013d9c10adf5413))
+
+
+
+
+
 # [3.9.0-beta.5](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.4...v3.9.0-beta.5) (2024-05-14)
 
 **Note:** Version bump only for package ohif-monorepo-root

@@ -42,6 +42,7 @@ jobs:
   ###
   UNIT_TESTS:
     <<: *defaults
+    resource_class: large
     steps:
       # Update yarn
       - run: yarn -v
@@ -98,6 +99,7 @@ jobs:
   ###
   BUILD:
     <<: *defaults
+    resource_class: large
     steps:
       # Checkout code and ALL Git Tags
       - checkout
@@ -146,6 +148,7 @@ jobs:
   # just to make sure later on we can publish them
   BUILD_PACKAGES_QUICK:
     <<: *defaults
+    resource_class: large
     steps:
       - run: yarn -v
       # Checkout code and ALL Git Tags
@@ -195,6 +198,7 @@ jobs:
   ###
   NPM_PUBLISH:
     <<: *defaults
+    resource_class: large
     steps:
       - run: yarn -v
       # Checkout code and ALL Git Tags
@@ -264,6 +268,7 @@ jobs:
 
   DOCKER_RELEASE_PUBLISH:
     <<: *defaults
+    resource_class: large
     steps:
       - attach_workspace:
           at: ~/repo
@@ -293,6 +298,7 @@ jobs:
 
   DOCKER_BETA_PUBLISH:
     <<: *defaults
+    resource_class: large
     steps:
       - attach_workspace:
           at: ~/repo
@@ -397,6 +403,7 @@ jobs:
         default: ''
         description: Directory containing package.json
         type: string
+    resource_class: large
     steps:
       - cypress/install:
           cypress-cache-key: << parameters.cypress-cache-key >>
@@ -495,13 +502,18 @@ workflows:
       - BUILD:
           filters:
             branches:
-              only: release
-      - NPM_PUBLISH:
+              only: /^release\/.*/
+      - HOLD_FOR_APPROVAL:
+          type: approval
           requires:
             - BUILD
+      - NPM_PUBLISH:
+          requires:
+            - HOLD_FOR_APPROVAL
       - DOCKER_RELEASE_PUBLISH:
           requires:
             - NPM_PUBLISH
+
   ###
   # Unit and E2E tests have already run for PR_CHECKS
   # Re-running should not gain us any confidence here

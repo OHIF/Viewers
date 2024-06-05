@@ -367,14 +367,9 @@ OHIFCornerstoneSRViewport.propTypes = {
   dataSource: PropTypes.object,
   children: PropTypes.node,
   viewportLabel: PropTypes.string,
-  customProps: PropTypes.object,
   viewportOptions: PropTypes.object,
   servicesManager: PropTypes.object.isRequired,
   extensionManager: PropTypes.instanceOf(ExtensionManager).isRequired,
-};
-
-OHIFCornerstoneSRViewport.defaultProps = {
-  customProps: {},
 };
 
 async function _getViewportReferencedDisplaySetData(

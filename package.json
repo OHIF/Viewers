@@ -45,7 +45,8 @@
     "test:unit": "jest --collectCoverage",
     "test:unit:ci": "lerna run test:unit:ci --parallel --stream",
     "test:e2e": "lerna run test:e2e --stream",
-    "test:e2e:ci": "lerna run test:e2e:ci --stream",
+    "test:e2e:ci": "npx playwright test",
+    "test:e2e:headed": "npx playwright test --headed",
     "test:e2e:dist": "lerna run test:e2e:dist --stream",
     "test:e2e:serve": "yarn test:data && lerna run test:e2e:serve --stream",
     "see-changed": "lerna changed",
@@ -64,8 +65,8 @@
     "core-js": "^3.2.1"
   },
   "peerDependencies": {
-    "react": "17.0.2",
-    "react-dom": "17.0.2"
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
     "@babel/core": "^7.23.2",
@@ -81,13 +82,13 @@
     "@babel/preset-env": "^7.23.2",
     "@babel/preset-react": "^7.16.7",
     "@babel/preset-typescript": "^7.13.0",
+    "@svgr/webpack": "^8.1.0",
     "@types/jest": "^27.5.0",
     "@typescript-eslint/eslint-plugin": "^6.3.0",
     "@typescript-eslint/parser": "^6.3.0",
     "autoprefixer": "^10.4.4",
     "babel-eslint": "9.x",
     "babel-loader": "^8.2.4",
-    "babel-plugin-inline-react-svg": "^2.0.2",
     "babel-plugin-module-resolver": "^5.0.0",
     "clean-webpack-plugin": "^3.0.0",
     "copy-webpack-plugin": "^9.0.1",

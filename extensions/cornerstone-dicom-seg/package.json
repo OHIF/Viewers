@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-cornerstone-dicom-seg",
-  "version": "3.9.0-beta.5",
+  "version": "3.9.0-beta.32",
   "description": "DICOM SEG read workflow",
   "author": "OHIF",
   "license": "MIT",
@@ -33,21 +33,21 @@
     "start": "yarn run dev"
   },
   "peerDependencies": {
-    "@ohif/core": "3.9.0-beta.5",
-    "@ohif/extension-cornerstone": "3.9.0-beta.5",
-    "@ohif/extension-default": "3.9.0-beta.5",
-    "@ohif/i18n": "3.9.0-beta.5",
+    "@ohif/core": "3.9.0-beta.32",
+    "@ohif/extension-cornerstone": "3.9.0-beta.32",
+    "@ohif/extension-default": "3.9.0-beta.32",
+    "@ohif/i18n": "3.9.0-beta.32",
     "prop-types": "^15.6.2",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "react-i18next": "^12.2.2",
     "react-router": "^6.8.1",
     "react-router-dom": "^6.8.1"
   },
   "dependencies": {
     "@babel/runtime": "^7.20.13",
-    "@cornerstonejs/adapters": "^1.72.0",
-    "@cornerstonejs/core": "^1.72.0",
+    "@cornerstonejs/adapters": "^1.77.3",
+    "@cornerstonejs/core": "^1.77.3",
     "@kitware/vtk.js": "30.4.1",
     "react-color": "^2.19.3"
   }

@@ -8,14 +8,14 @@ import Icon from '../Icon';
 import './ExpandableToolbarButton.css';
 
 const ExpandableToolbarButton = ({
-  type,
-  id,
-  isActive,
-  onClick,
-  icon,
+  type = 'primary',
+  id = '',
+  isActive = false,
+  onClick = () => {},
+  icon = 'clipboard',
   className,
-  content: Content,
-  contentProps,
+  content: Content = null,
+  contentProps = {},
 }) => {
   const classes = {
     type: {
@@ -70,15 +70,6 @@ const ExpandableToolbarButton = ({
 };
 
 const noop = () => {};
-
-ExpandableToolbarButton.defaultProps = {
-  id: '',
-  icon: 'clipboard',
-  isActive: false,
-  type: 'primary',
-  content: null,
-  onClick: noop,
-};
 
 ExpandableToolbarButton.propTypes = {
   /* Influences background/hover styling */

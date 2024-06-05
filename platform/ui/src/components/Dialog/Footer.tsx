@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 
 import Button, { ButtonEnums } from '../Button';
 
-const Footer = ({ actions, className, onSubmit, value }) => {
+const Footer = ({ actions = [], className, onSubmit = () => {}, value }) => {
   const flex = 'flex items-center justify-end';
   const padding = 'pt-[20px]';
 
@@ -45,11 +45,6 @@ Footer.propTypes = {
       classes: PropTypes.arrayOf(PropTypes.string),
     })
   ).isRequired,
-};
-
-Footer.defaultProps = {
-  onSubmit: noop,
-  actions: [],
 };
 
 export default Footer;

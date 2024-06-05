@@ -628,6 +628,15 @@ export default class MicroscopyService extends PubSubService {
   setROIStyle(uid, styleOptions) {
     this.managedViewers.forEach(mv => mv.setROIStyle(uid, styleOptions));
   }
+
+  /**
+   * Get all managed viewers
+   *
+   * @returns {Array} managedViewers
+   */
+  getAllManagedViewers() {
+    return Array.from(this.managedViewers);
+  }
 }
 
 export { EVENTS };

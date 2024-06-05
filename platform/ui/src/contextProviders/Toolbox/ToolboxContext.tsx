@@ -6,7 +6,7 @@ export const toolboxReducer = (state, action) => {
   const { toolbarSectionId } = action.payload;
 
   if (!state[toolbarSectionId]) {
-    state[toolbarSectionId] = { activeTool: null, toolOptions: {} };
+    state[toolbarSectionId] = { activeTool: null, toolOptions: {}, selectedEvent: false };
   }
 
   switch (action.type) {
@@ -16,6 +16,7 @@ export const toolboxReducer = (state, action) => {
         [toolbarSectionId]: {
           ...state[toolbarSectionId],
           activeTool: action.payload.activeTool,
+          selectedEvent: true,
         },
       };
     case 'UPDATE_TOOL_OPTION':
@@ -24,6 +25,7 @@ export const toolboxReducer = (state, action) => {
         ...state,
         [toolbarSectionId]: {
           ...state[toolbarSectionId],
+          selectedEvent: false,
           toolOptions: {
             ...state[toolbarSectionId].toolOptions,
             [toolName]: state[toolbarSectionId].toolOptions[toolName].map(option =>
@@ -36,6 +38,7 @@ export const toolboxReducer = (state, action) => {
       // Initialize tool options for each toolbarSectionId
       return {
         ...state,
+        selectedEvent: false,
         [action.toolbarSectionId]: {
           ...state[action.toolbarSectionId],
           toolOptions: action.payload,

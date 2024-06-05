@@ -13,7 +13,6 @@ import defaults from './defaults';
 import * as Types from './types';
 import * as Enums from './enums';
 import { useToolbar } from './hooks/useToolbar';
-
 import {
   CineService,
   UIDialogService,

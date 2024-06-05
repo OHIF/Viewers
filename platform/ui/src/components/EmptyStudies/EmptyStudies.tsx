@@ -7,7 +7,7 @@ import Icon from '../Icon';
 import Typography from '../Typography';
 
 // TODO: Add loading spinner to OHIF + use it here.
-const EmptyStudies = ({ className }) => {
+const EmptyStudies = ({ className = '' }) => {
   const { t } = useTranslation('StudyList');
   return (
     <div className={classnames('inline-flex flex-col items-center', className)}>
@@ -23,10 +23,6 @@ const EmptyStudies = ({ className }) => {
       </Typography>
     </div>
   );
-};
-
-EmptyStudies.defaultProps = {
-  className: '',
 };
 
 EmptyStudies.propTypes = {
