@@ -352,6 +352,7 @@ function _createStudyBrowserTabs(primaryStudyInstanceUIDs, studyDisplayList, dis
 
     if (primaryStudyInstanceUIDs.includes(study.studyInstanceUid)) {
       primaryStudies.push(tabStudy);
+      allStudies.push(tabStudy);
     } else {
       // TODO: Filter allStudies to dates within one year of current date
       recentStudies.push(tabStudy);

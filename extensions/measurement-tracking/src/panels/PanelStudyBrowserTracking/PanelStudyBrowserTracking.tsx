@@ -619,10 +619,6 @@ function _createStudyBrowserTabs(
       ds => ds.StudyInstanceUID === study.studyInstanceUid
     );
 
-    // Sort them
-    const dsSortFn = hangingProtocolService.getDisplaySetSortFunction();
-    displaySetsForStudy.sort(dsSortFn);
-
     /* Sort by series number, then by series date
       displaySetsForStudy.sort((a, b) => {
         if (a.seriesNumber !== b.seriesNumber) {
