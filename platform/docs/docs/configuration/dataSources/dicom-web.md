@@ -167,6 +167,16 @@ then consider switching to using [DICOMweb instead](https://book.orthanc-server.
 
 ![toolbarModule-layout](../../assets/img/uploader.gif)
 
+Don't forget to add the customization to the config as well
+
+```js
+customizationService: {
+  dicomUploadComponent:
+    '@ohif/extension-cornerstone.customizationModule.cornerstoneDicomUploadComponent',
+},
+```
+
+
 #### `singlepart`
 A comma delimited string specifying which payloads the data source responds with as single part. Those not listed are considered multipart. Values that can be included here are `pdf`, `video`, `bulkdata`, `thumbnail` and `image`.
 
@@ -177,6 +187,15 @@ To learn more about how you can configure the OHIF Viewer, check out our
 
 ### DICOM Upload
 See the [`dicomUploadEnabled`](#dicomuploadenabled) data source configuration option.
+
+Don't forget to add the customization to the config as well
+
+```js
+customizationService: {
+  dicomUploadComponent:
+    '@ohif/extension-cornerstone.customizationModule.cornerstoneDicomUploadComponent',
+},
+```
 
 ### DICOM PDF
 See the [`singlepart`](#singlepart) data source configuration option.
