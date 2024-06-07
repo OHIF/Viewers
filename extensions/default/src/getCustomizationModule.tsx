@@ -160,6 +160,31 @@ export default function getCustomizationModule({ servicesManager, extensionManag
           id: 'progressDropdownWithServiceComponent',
           component: ProgressDropdownWithService,
         },
+        {
+          id: 'studyBrowser.sortFunctions',
+          values: [
+            {
+              label: 'Series Number',
+              sortFunction: (a, b) => {
+                return a.seriesNumber - b.seriesNumber;
+              },
+            },
+            {
+              label: 'Series Instances',
+              sortFunction: (a, b) => {
+                return a.numInstances - b.numInstances;
+              },
+            },
+            {
+              label: 'Series Date',
+              sortFunction: (a, b) => {
+                const dateA = new Date(a.seriesDate);
+                const dateB = new Date(b.seriesDate);
+                return dateB - dateA;
+              },
+            },
+          ],
+        },
       ],
     },
   ];

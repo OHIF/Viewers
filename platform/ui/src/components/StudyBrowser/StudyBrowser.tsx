@@ -7,6 +7,7 @@ import LegacyButtonGroup from '../LegacyButtonGroup';
 import LegacyButton from '../LegacyButton';
 import ThumbnailList from '../ThumbnailList';
 import { StringNumber } from '../../types';
+import StudyBrowserSort from '../StudyBrowserSort';
 
 const getTrackedSeries = displaySets => {
   let trackedSeries = 0;
@@ -32,6 +33,7 @@ const StudyBrowser = ({
   onClickUntrack = noop,
   activeDisplaySetInstanceUIDs,
   servicesManager,
+  setDisplaySetsSort,
 }: withAppTypes) => {
   const { t } = useTranslation('StudyBrowser');
   const { customizationService } = servicesManager?.services || {};
@@ -70,10 +72,14 @@ const StudyBrowser = ({
     );
   };
 
+  if (!tabs.length) {
+    return null;
+  }
+
   return (
     <React.Fragment>
       <div
-        className="w-100 border-secondary-light bg-primary-dark flex h-16 flex-row items-center justify-center border-b p-4"
+        className="w-100 border-secondary-light bg-primary-dark flex h-20 flex-col items-center justify-center gap-2 border-b p-4"
         data-cy={'studyBrowser-panel'}
       >
         {/* TODO Revisit design of LegacyButtonGroup later - for now use LegacyButton for its children.*/}
@@ -111,6 +117,10 @@ const StudyBrowser = ({
             );
           })}
         </LegacyButtonGroup>
+        <StudyBrowserSort
+          setDisplaySetsSort={setDisplaySetsSort}
+          servicesManager={servicesManager}
+        />
       </div>
       <div className="ohif-scrollbar invisible-scrollbar flex flex-1 flex-col overflow-auto">
         {getTabContent()}
