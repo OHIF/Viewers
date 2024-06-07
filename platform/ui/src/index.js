@@ -132,6 +132,7 @@ export {
   Toolbox,
   InvestigationalUseDialog,
   LayoutPreset,
+  StudyBrowserSort,
 } from './components';
 
 export { useSessionStorage } from './hooks';
