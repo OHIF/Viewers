@@ -56,11 +56,9 @@ yarn run orthanc:up
 _Upload your first Study:_
 
 1. Navigate to
-   [Orthanc's web interface](http://localhost:8042/app/explorer.html) at
-   `http://localhost:8042/app/explorer.html` in a web browser.
-2. In the top right corner, click "Upload"
-3. Click "Select files to upload..." and select one or more DICOM files
-4. Click "Start the upload"
+   [Orthanc's web interface](http://localhost:8042/ui/app/index.html#/) at
+   `http://localhost:8042/ui/app/index.html#/` in a web browser.
+2. In the left you can see the upload button where you can drag and drop your DICOM files
 
 #### Orthanc: Learn More
 
