@@ -4,6 +4,7 @@ import { id } from './id';
 import initToolGroups from './initToolGroups';
 import toolbarButtons from './toolbarButtons';
 import moreTools from './moreTools';
+import * as cs3dTools from '@cornerstonejs/tools';
 
 // Allow this mode by excluding non-imaging modalities such as SR, SEG
 // Also, SM is not a simple imaging modalities, so exclude it.
@@ -70,7 +71,11 @@ function modeFactory({ modeConfiguration }) {
     /**
      * Lifecycle hooks
      */
-    onModeEnter: function ({ servicesManager, extensionManager, commandsManager }: withAppTypes) {
+    onModeEnter: async function ({
+      servicesManager,
+      extensionManager,
+      commandsManager,
+    }: withAppTypes) {
       const { measurementService, toolbarService, toolGroupService, customizationService } =
         servicesManager.services;
 
@@ -135,6 +140,14 @@ function modeFactory({ modeConfiguration }) {
       //     },
       //   ]),
       // ];
+
+      const annotation = await fetch(
+        'https://ohif-assets.s3.us-east-2.amazonaws.com/ohif-faq/rectangle-roi.json'
+      );
+
+      const annotationData = await annotation.json();
+
+      cs3dTools.annotation.state.addAnnotation(annotationData);
     },
     onModeExit: ({ servicesManager }: withAppTypes) => {
       const {
@@ -183,7 +196,7 @@ function modeFactory({ modeConfiguration }) {
             id: ohif.layout,
             props: {
               leftPanels: [tracked.thumbnailList],
-              rightPanels: [dicomSeg.panel, tracked.measurements],
+              rightPanels: [dicomSeg.panel, '@ohif/extension-default.panelModule.measure'],
               rightPanelClosed: true,
               viewports: [
                 {

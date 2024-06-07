@@ -197,3 +197,78 @@ As you see in the ranges above 2048 there will be inaccuracies in the rendering.
 Memory snapshot after enabling `preferSizeOverAccuracy` for the same study as above
 
 ![](../assets/img/preferSizeOverAccuracy.png)
+
+
+## How to dynamically load a measurement
+
+You can dynamically load a measurement by using a combination of `MeasurementService` and `CornerstoneTools` Annotation API. Here, we will demonstrate this with an example of loading a `Rectangle` measurement.
+
+![alt text](faq-measure-1.png)
+
+So if we look at the terminal and get the measurement service we can see there is one measurement
+
+![alt text](faq-measure-2.png)
+
+However, this is the `mapped` cornerstone measurement inside OHIF, and it has additional information such as `geReport` and `source`, which are internal details of OHIF Viewers that you don't need to worry about.
+
+we can call the `cornerstoneTools` api to grab the raw annotation data with the `uid`
+
+`cornerstoneTools.annotation.state.getAnnotation("ea45a45c-0731-47d4-9438-d2a53ffea4ff")`
+
+![alt text](faq-measure3.png)
+
+
+
+
+:::note
+Note: There is a `pointsInShape` attribute inside the data that stores the points within the annotation for some tools like `Rectangle` and `EllipticalRoi`. However, you can remove that attribute as well.
+:::
+
+For the sake of this example, I have extracted those keys and uploaded them to our server for fetching.
+
+`
+https://ohif-assets.s3.us-east-2.amazonaws.com/ohif-faq/rectangle-roi.json
+`
+
+Now, let's discuss how to load this measurement dynamically and programmatically.
+
+There are numerous places in OHIF where you can add annotations, but we always recommend having your own extensions and modes to maintain full control over your custom API.
+
+For this example, I will add the logic in the `longitudinal` mode. However, as mentioned, you can create your own extension and mode, and either use `onModeEnter` or other lifecycle hooks to add annotations. Learn more about lifecycle hooks [here](../platform/extensions/lifecycle.md).
+
+
+Of course, you need to load the appropriate measurement for each study. However, for simplicity's sake, I will hardcode the URL in this example.
+
+```js
+import * as cs3dTools from '@cornerstonejs/tools';
+
+onModeEnter: function ({ servicesManager, extensionManager, commandsManager }: withAppTypes) {
+  // rest of logic
+
+  const annotationResponse = await fetch(
+    'https://ohif-assets.s3.us-east-2.amazonaws.com/ohif-faq/rectangle-roi.json'
+  );
+
+  const annotationData = await annotationResponse.json();
+
+  cs3dTools.annotation.state.addAnnotation(annotationData);
+},
+```
+
+As you can see, we use the CornerstoneTools API to add the annotation. Since OHIF has mappers set up for CornerstoneTools (`extensions/cornerstone/src/utils/measurementServiceMappings/measurementServiceMappingsFactory.ts`), it will automatically map the annotation to the OHIF measurement service.
+
+If you refresh the viewer, you'll see the measurement loaded on the image.
+
+![alt text](faq-measure-4.png)
+
+But if you notice it does not appear on the right panel, the reason is that the right panel is the tracking measurement panel. You can switch to a non-tracking measurement by changing
+
+`rightPanels: [dicomSeg.panel, tracked.measurements],`
+
+to
+
+`rightPanels: [dicomSeg.panel, '@ohif/extension-default.panelModule.measure'],`
+
+which then it will look like
+
+![alt text](faq-measure-5.png)
