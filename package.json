@@ -41,7 +41,6 @@
     "orthanc:up": "docker-compose -f platform/app/.recipes/Nginx-Orthanc/docker-compose.yml up",
     "install:dev": "yarn install --ignore-optional",
     "preinstall": "node preinstall.js",
-    "postinstall": "node postinstall.js",
     "start": "yarn run dev",
     "test": "yarn run test:unit",
     "test:data": "git submodule update --init -f testdata",
