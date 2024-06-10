@@ -33,7 +33,6 @@ const StudyBrowser = ({
   onClickUntrack = noop,
   activeDisplaySetInstanceUIDs,
   servicesManager,
-  setDisplaySetsSort,
 }: withAppTypes) => {
   const { t } = useTranslation('StudyBrowser');
   const { customizationService } = servicesManager?.services || {};
@@ -71,10 +70,6 @@ const StudyBrowser = ({
       }
     );
   };
-
-  if (!tabs.length) {
-    return null;
-  }
 
   return (
     <React.Fragment>
@@ -117,10 +112,7 @@ const StudyBrowser = ({
             );
           })}
         </LegacyButtonGroup>
-        <StudyBrowserSort
-          setDisplaySetsSort={setDisplaySetsSort}
-          servicesManager={servicesManager}
-        />
+        <StudyBrowserSort servicesManager={servicesManager} />
       </div>
       <div className="ohif-scrollbar invisible-scrollbar flex flex-1 flex-col overflow-auto">
         {getTabContent()}

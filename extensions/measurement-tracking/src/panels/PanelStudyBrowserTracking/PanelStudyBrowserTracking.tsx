@@ -45,8 +45,6 @@ function PanelStudyBrowserTracking({
   const [displaySets, setDisplaySets] = useState([]);
   const [thumbnailImageSrcMap, setThumbnailImageSrcMap] = useState({});
   const [jumpToDisplaySet, setJumpToDisplaySet] = useState(null);
-  const [displaySetsSort, setDisplaySetsSort] = useState(null);
-  const [tabs, setTabs] = useState([]);
 
   const onDoubleClickThumbnailHandler = displaySetInstanceUID => {
     let updatedViewports = [];
@@ -274,6 +272,13 @@ function PanelStudyBrowserTracking({
     };
   }, [thumbnailImageSrcMap, trackedSeries, viewports, dataSource, displaySetService]);
 
+  const tabs = _createStudyBrowserTabs(
+    StudyInstanceUIDs,
+    studyDisplayList,
+    displaySets,
+    hangingProtocolService
+  );
+
   // TODO: Should not fire this on "close"
   function _handleStudyClick(StudyInstanceUID) {
     const shouldCollapseStudy = expandedStudyInstanceUIDs.includes(StudyInstanceUID);
@@ -325,17 +330,6 @@ function PanelStudyBrowserTracking({
       setExpandedStudyInstanceUIDs(updatedExpandedStudyInstanceUIDs);
     }
   }, [expandedStudyInstanceUIDs, jumpToDisplaySet, tabs]);
-
-  useEffect(() => {
-    const tabs = _createStudyBrowserTabs(
-      StudyInstanceUIDs,
-      studyDisplayList,
-      displaySets,
-      hangingProtocolService,
-      displaySetsSort
-    );
-    setTabs(tabs);
-  }, [StudyInstanceUIDs, displaySets, displaySetsSort, hangingProtocolService, studyDisplayList]);
 
   const onClickUntrack = displaySetInstanceUID => {
     const onConfirm = () => {
@@ -412,7 +406,6 @@ function PanelStudyBrowserTracking({
       onClickThumbnail={() => {}}
       onDoubleClickThumbnail={onDoubleClickThumbnailHandler}
       activeDisplaySetInstanceUIDs={activeViewportDisplaySetInstanceUIDs}
-      setDisplaySetsSort={setDisplaySetsSort}
     />
   );
 }
@@ -613,8 +606,7 @@ function _createStudyBrowserTabs(
   primaryStudyInstanceUIDs,
   studyDisplayList,
   displaySets,
-  hangingProtocolService,
-  displaySetsSort
+  hangingProtocolService
 ) {
   const primaryStudies = [];
   const recentStudies = [];
@@ -627,49 +619,46 @@ function _createStudyBrowserTabs(
       ds => ds.StudyInstanceUID === study.studyInstanceUid
     );
 
+    // Sort them
+    const dsSortFn = hangingProtocolService.getDisplaySetSortFunction();
+    displaySetsForStudy.sort(dsSortFn);
+
+    /* Sort by series number, then by series date
+      displaySetsForStudy.sort((a, b) => {
+        if (a.seriesNumber !== b.seriesNumber) {
+          return a.seriesNumber - b.seriesNumber;
+        }
+
+        const seriesDateA = Date.parse(a.seriesDate);
+        const seriesDateB = Date.parse(b.seriesDate);
+
+        return seriesDateA - seriesDateB;
+      });
+    */
+
+    // Map the study to it's tab/view representation
     const tabStudy = Object.assign({}, study, {
       displaySets: displaySetsForStudy,
     });
 
+    // Add the "tab study" to the 'primary', 'recent', and/or 'all' tab group(s)
     if (primaryStudyInstanceUIDs.includes(study.studyInstanceUid)) {
       primaryStudies.push(tabStudy);
       allStudies.push(tabStudy);
     } else {
+      // TODO: Filter allStudies to dates within one year of current date
       recentStudies.push(tabStudy);
       allStudies.push(tabStudy);
     }
   });
 
-  // sort displaySets
-
+  // Newest first
   const _byDate = (a, b) => {
     const dateA = Date.parse(a);
     const dateB = Date.parse(b);
 
     return dateB - dateA;
   };
-
-  if (displaySetsSort) {
-    const { sortFunction, sortDirection } = displaySetsSort;
-    primaryStudies.forEach(study => {
-      study.displaySets.sort(sortFunction);
-      if (sortDirection === 'descending') {
-        study.displaySets.reverse();
-      }
-    });
-    recentStudies.forEach(study => {
-      study.displaySets.sort(sortFunction);
-      if (sortDirection === 'descending') {
-        study.displaySets.reverse();
-      }
-    });
-    allStudies.forEach(study => {
-      study.displaySets.sort(sortFunction);
-      if (sortDirection === 'descending') {
-        study.displaySets.reverse();
-      }
-    });
-  }
 
   const tabs = [
     {

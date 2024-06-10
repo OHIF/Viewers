@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Icon from '../Icon';
 
-export default function StudyBrowserSort({ setDisplaySetsSort, servicesManager }: withAppTypes) {
+export default function StudyBrowserSort({ servicesManager }: withAppTypes) {
   const { customizationService } = servicesManager.services;
   const { values: sortFunctions } = customizationService.get('studyBrowser.sortFunctions');
 
@@ -19,7 +19,7 @@ export default function StudyBrowserSort({ setDisplaySetsSort, servicesManager }
   };
 
   useEffect(() => {
-    setDisplaySetsSort({
+    console.log({
       sortFunction: selectedSort.sortFunction,
       sortDirection,
     });

@@ -16,7 +16,7 @@ function PanelStudyBrowser({
   getStudiesForPatientByMRN,
   requestDisplaySetCreationForStudy,
   dataSource,
-}: withAppTypes) {
+}) {
   const { hangingProtocolService, displaySetService, uiNotificationService } =
     servicesManager.services;
   const navigate = useNavigate();
@@ -34,8 +34,6 @@ function PanelStudyBrowser({
   const [studyDisplayList, setStudyDisplayList] = useState([]);
   const [displaySets, setDisplaySets] = useState([]);
   const [thumbnailImageSrcMap, setThumbnailImageSrcMap] = useState({});
-  const [displaySetsSort, setDisplaySetsSort] = useState(null);
-  const [tabs, setTabs] = useState([]);
 
   const onDoubleClickThumbnailHandler = displaySetInstanceUID => {
     let updatedViewports = [];
@@ -208,6 +206,8 @@ function PanelStudyBrowser({
     };
   }, [StudyInstanceUIDs, thumbnailImageSrcMap, displaySetService]);
 
+  const tabs = _createStudyBrowserTabs(StudyInstanceUIDs, studyDisplayList, displaySets);
+
   // TODO: Should not fire this on "close"
   function _handleStudyClick(StudyInstanceUID) {
     const shouldCollapseStudy = expandedStudyInstanceUIDs.includes(StudyInstanceUID);
@@ -226,17 +226,6 @@ function PanelStudyBrowser({
 
   const activeDisplaySetInstanceUIDs = viewports.get(activeViewportId)?.displaySetInstanceUIDs;
 
-  useEffect(() => {
-    const tabs = _createStudyBrowserTabs(
-      StudyInstanceUIDs,
-      studyDisplayList,
-      displaySets,
-      hangingProtocolService,
-      displaySetsSort
-    );
-    setTabs(tabs);
-  }, [StudyInstanceUIDs, displaySets, displaySetsSort, hangingProtocolService, studyDisplayList]);
-
   return (
     <StudyBrowser
       tabs={tabs}
@@ -249,7 +238,6 @@ function PanelStudyBrowser({
       onClickTab={clickedTabName => {
         setActiveTabName(clickedTabName);
       }}
-      setDisplaySetsSort={setDisplaySetsSort}
     />
   );
 }
@@ -349,12 +337,7 @@ function _getComponentType(ds) {
  * @param {object[]} displaySets
  * @returns tabs - The prop object expected by the StudyBrowser component
  */
-function _createStudyBrowserTabs(
-  primaryStudyInstanceUIDs,
-  studyDisplayList,
-  displaySets,
-  displaySetsSort
-) {
+function _createStudyBrowserTabs(primaryStudyInstanceUIDs, studyDisplayList, displaySets) {
   const primaryStudies = [];
   const recentStudies = [];
   const allStudies = [];
@@ -369,35 +352,12 @@ function _createStudyBrowserTabs(
 
     if (primaryStudyInstanceUIDs.includes(study.studyInstanceUid)) {
       primaryStudies.push(tabStudy);
-      allStudies.push(tabStudy);
     } else {
       // TODO: Filter allStudies to dates within one year of current date
       recentStudies.push(tabStudy);
       allStudies.push(tabStudy);
     }
   });
-
-  if (displaySetsSort) {
-    const { sortFunction, sortDirection } = displaySetsSort;
-    primaryStudies.forEach(study => {
-      study.displaySets.sort(sortFunction);
-      if (sortDirection === 'descending') {
-        study.displaySets.reverse();
-      }
-    });
-    recentStudies.forEach(study => {
-      study.displaySets.sort(sortFunction);
-      if (sortDirection === 'descending') {
-        study.displaySets.reverse();
-      }
-    });
-    allStudies.forEach(study => {
-      study.displaySets.sort(sortFunction);
-      if (sortDirection === 'descending') {
-        study.displaySets.reverse();
-      }
-    });
-  }
 
   const tabs = [
     {
