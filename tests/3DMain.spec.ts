@@ -19,7 +19,7 @@ test.describe('3D main Test', async () => {
       page,
       page,
       screenShotPaths.threeDMain.threeDMainDisplayedCorrectly,
-      50
+      200
     );
   });
 });

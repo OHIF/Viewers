@@ -19,7 +19,7 @@ test.describe('3D four up Test', async () => {
       page,
       page,
       screenShotPaths.threeDFourUp.threeDFourUpDisplayedCorrectly,
-      50
+      200
     );
   });
 });

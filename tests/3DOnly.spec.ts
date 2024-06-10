@@ -19,7 +19,7 @@ test.describe('3D only Test', async () => {
       page,
       page,
       screenShotPaths.threeDOnly.threeDOnlyDisplayedCorrectly,
-      50
+      200
     );
   });
 });

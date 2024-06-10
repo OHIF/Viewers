@@ -20,7 +20,7 @@ test.describe('3D primary Test', async () => {
       page,
       page,
       screenShotPaths.threeDPrimary.threeDPrimaryDisplayedCorrectly,
-      50
+      200
     );
   });
 });

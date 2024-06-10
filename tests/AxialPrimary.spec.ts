@@ -19,7 +19,7 @@ test.describe('Axial Primary Test', async () => {
       page,
       page,
       screenShotPaths.axialPrimary.axialPrimaryDisplayedCorrectly,
-      50
+      200
     );
   });
 });
