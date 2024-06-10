@@ -26,6 +26,21 @@ const screenShotPaths = {
   mpr: {
     mprDisplayedCorrectly: 'mprDisplayedCorrectly.png',
   },
+  threeDFourUp: {
+    threeDFourUpDisplayedCorrectly: 'threeDFourUpDisplayedCorrectly.png',
+  },
+  threeDMain: {
+    threeDMainDisplayedCorrectly: 'threeDMainDisplayedCorrectly.png',
+  },
+  threeDPrimary: {
+    threeDPrimaryDisplayedCorrectly: 'threeDPrimaryDisplayedCorrectly.png',
+  },
+  threeDOnly: {
+    threeDOnlyDisplayedCorrectly: 'threeDOnlyDisplayedCorrectly.png',
+  },
+  axialPrimary: {
+    axialPrimaryDisplayedCorrectly: 'axialPrimaryDisplayedCorrectly.png',
+  },
   probe: {
     probeDisplayedCorrectly: 'probeDisplayedCorrectly.png',
   },
