@@ -24,7 +24,7 @@ import ColorbarService from './services/ColorbarService';
 import * as CornerstoneExtensionTypes from './types';
 
 import { toolNames } from './initCornerstoneTools';
-import { getEnabledElement, reset as enabledElementReset } from './state';
+import { getEnabledElement, reset as enabledElementReset, setEnabledElement } from './state';
 import dicomLoaderService from './utils/dicomLoaderService';
 import getActiveViewportEnabledElement from './utils/getActiveViewportEnabledElement';
 
@@ -36,6 +36,8 @@ import { showLabelAnnotationPopup } from './utils/callInputDialog';
 import ViewportActionCornersService from './services/ViewportActionCornersService/ViewportActionCornersService';
 import { ViewportActionCornersProvider } from './contextProviders/ViewportActionCornersProvider';
 import ActiveViewportWindowLevel from './components/ActiveViewportWindowLevel';
+import getSOPInstanceAttributes from './utils/measurementServiceMappings/utils/getSOPInstanceAttributes';
+import { findNearbyToolData } from './utils/findNearbyToolData';
 import { getSopClassHandlerModule } from './getSopClassHandlerModule';
 
 const { helpers: volumeLoaderHelpers } = csStreamingImageVolumeLoader;
@@ -197,6 +199,10 @@ export {
   CornerstoneExtensionTypes as Types,
   toolNames,
   getActiveViewportEnabledElement,
+  setEnabledElement,
+  findNearbyToolData,
+  getEnabledElement,
   ImageOverlayViewerTool,
+  getSOPInstanceAttributes,
 };
 export default cornerstoneExtension;

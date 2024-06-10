@@ -30,7 +30,7 @@ const getDirectURL = (config, params) => {
 
   const value = instance[tag];
   if (!value) {
-    return undefined;
+      return createRenderedRetrieve(config, params) || getBulkdataValue(config, params);
   }
 
   if (value.DirectRetrieveURL) {

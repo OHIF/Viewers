@@ -1,5 +1,5 @@
 import type { Button } from '@ohif/core/types';
-import { defaults, ToolbarService, ViewportGridService } from '@ohif/core';
+import { ToolbarService, ViewportGridService } from '@ohif/core';
 
 const { createButton } = ToolbarService;
 
@@ -250,6 +250,14 @@ const toolbarButtons: Button[] = [
           tooltip: 'Ultrasound Directional',
           commands: setToolActiveToolbar,
           evaluate: ['evaluate.cornerstoneTool', 'evaluate.isUS'],
+        }),
+        createButton({
+          id: 'WindowLevelRegion',
+          icon: 'icon-tool-window-region',
+          label: 'Window Level Region',
+          tooltip: 'Window Level Region',
+          commands: setToolActiveToolbar,
+          evaluate: 'evaluate.cornerstoneTool',
         }),
       ],
     },

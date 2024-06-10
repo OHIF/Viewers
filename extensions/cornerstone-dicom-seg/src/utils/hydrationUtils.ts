@@ -11,6 +11,7 @@ import { Enums, cache } from '@cornerstonejs/core';
  * @param params.loadFn - Function to load the segmentation data.
  * @param params.servicesManager - The services manager.
  * @param params.displaySet -  the display set.
+ * @param params.initialSliceIndex - The initial slice index.
  *
  * @returns Returns true upon successful update of viewports for segmentation rendering.
  */
@@ -19,11 +20,13 @@ async function updateViewportsForSegmentationRendering({
   loadFn,
   servicesManager,
   displaySet,
+  initialSliceIndex = null,
 }: {
   viewportId: string;
   loadFn: () => Promise<string>;
   servicesManager: AppTypes.ServicesManager;
   displaySet?: any;
+  initialSliceIndex?: number;
 }) {
   const { cornerstoneViewportService, segmentationService, viewportGridService } =
     servicesManager.services;
@@ -35,8 +38,8 @@ async function updateViewportsForSegmentationRendering({
     displaySet?.referencedDisplaySetInstanceUID || viewport?.displaySetInstanceUIDs[0];
 
   const updatedViewports = getUpdatedViewportsForSegmentation({
-    servicesManager,
     viewportId,
+    servicesManager,
     displaySet,
   });
 
@@ -60,6 +63,14 @@ async function updateViewportsForSegmentationRendering({
       needsRerendering: true,
     };
     const viewportId = viewport.viewportId;
+
+    // maintain the prehydration slice on the target viewport only
+    if (viewportId === targetViewportId) {
+      viewport.viewportOptions.initialImageOptions = {
+        index: initialSliceIndex,
+        useOnce: true,
+      };
+    }
 
     const csViewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
     const prevCamera = csViewport.getCamera();
@@ -175,7 +186,7 @@ function getUpdatedViewportsForSegmentation({
         viewportId,
         displaySetInstanceUIDs: viewport.displaySetInstanceUIDs,
         viewportOptions: {
-          viewportType: displaySet.Modality === 'RTSTRUCT' ? 'stack' : 'volume',
+          viewportType: displaySet?.Modality === 'RTSTRUCT' ? 'stack' : 'volume',
           needsRerendering: true,
         },
       });

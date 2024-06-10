@@ -132,6 +132,15 @@ Additional Resources
   - For more information on the new toolbar module and its usage, refer to the [Toolbar documentation](../platform/extensions/modules/toolbar.md).
   - Consult the updated button definitions in `modes/longitudinal/src/toolbarButtons.ts` for examples of the new object-based button definition format and the usage of evaluators.
 
+## Toolbar Service
+
+toolbarService.init is not a function.
+
+**Action Needed**
+remove the call to toolbarService.init() from your codebase.
+
+
+
 ## leftPanelDefaultClosed and rightPanelDefaultClosed
 
 Now they are renamed to `leftPanelClosed` and `rightPanelClosed` respectively.
@@ -140,3 +149,24 @@ Now they are renamed to `leftPanelClosed` and `rightPanelClosed` respectively.
 ## StudyInstanceUID in the URL param
 
 Previously there were two params that you could choose: seriesInstanceUID and seriesInstanceUIDs, they have been replaced with seriesInstanceUIDs so even if you would like to filter one series use ``seriesInstanceUIDs`
+
+
+## UI
+
+### Header
+Header in @ohif/ui now needs servicesManager and appConfig as input.
+
+
+### Panels
+Left and right panel lists are no longer injected into the LayoutTemplate, and have been moved to a PanelService where you have to fetch them from.
+
+If you're using the main layout, you're fine. However, if you have a custom layout, you'll need to update it. To get the panels, see the
+
+`extensions/default/src/ViewerLayout/index.tsx`
+
+
+
+
+## Refactoring
+
+- TimingEnum (and I guess all enums exported from OHIF core have now moved from Types to Enums export).
