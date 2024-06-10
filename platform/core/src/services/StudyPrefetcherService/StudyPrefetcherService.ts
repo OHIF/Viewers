@@ -14,16 +14,35 @@ export const EVENTS = {
   DISPLAYSET_LOAD_COMPLETE: 'event::studyPrefetcherService:displaySetLoadComplete',
 };
 
+/**
+ * Order used for prefetching display set
+ */
 enum StudyPrefetchOrder {
   closest = 'closest',
   downward = 'downward',
   upward = 'upward',
 }
 
+/**
+ * Study Prefetching configuration
+ */
 type StudyPrefetchConfig = {
+  /* Enable/disable study prefetching service */
   enabled: boolean;
-  displaySetCount: number;
+  /* Number of displaysets to be prefetched */
+  displaySetsCount: number;
+  /**
+   * Max number of concurrent prefetch requests
+   * High numbers may impact on the time to load a new dropped series because
+   * the browser will be busy with all prefetching requests. As soon as the
+   * prefetch requests get fulfilled the new ones from the new dropped series
+   * are sent to the server.
+   *
+   * TODO: abort all prefetch requests when a new series is loaded on a viewport.
+   * (need to add support for `AbortController` on Cornerstone)
+   * */
   maxNumPrefetchRequests: number;
+  /* Display sets prefetching order (closest, downward and upward) */
   order: StudyPrefetchOrder;
 };
 
@@ -54,9 +73,9 @@ class StudyPrefetcherService extends PubSubService {
   private _displaySetLoadingStates = new Map<string, DisplaySetStatus>();
   private config: StudyPrefetchConfig = {
     /* Enable/disable study prefetching service */
-    enabled: true,
-    /* number of displaysets to be prefetched */
-    displaySetCount: 2,
+    enabled: false,
+    /* Number of displaysets to be prefetched */
+    displaySetsCount: 2,
     /**
      * Max number of concurrent prefetch requests
      * High numbers may impact on the time to load a new dropped series because
@@ -68,8 +87,8 @@ class StudyPrefetcherService extends PubSubService {
      * (need to add support for `AbortController` on Cornerstone)
      * */
     maxNumPrefetchRequests: 10,
-    /* Display sets loading order (closest, top-bottom or bottom-up) */
-    order: StudyPrefetchOrder.downward,
+    /* Display sets prefetching order (closest, downward and upward) */
+    order: StudyPrefetchOrder.closest,
   };
 
   public static REGISTRATION = {
@@ -201,7 +220,7 @@ class StudyPrefetcherService extends PubSubService {
     return true;
   }
 
-  private _getDisplaySetSortedByClosest(displaySets: DisplaySet[], activeDisplaySetIndex: number) {
+  private _getClosestDisplaySets(displaySets: DisplaySet[], activeDisplaySetIndex: number) {
     const sortedDisplaySets = [];
     let previousIndex = activeDisplaySetIndex - 1;
     let nextIndex = activeDisplaySetIndex + 1;
@@ -221,27 +240,21 @@ class StudyPrefetcherService extends PubSubService {
     return sortedDisplaySets;
   }
 
-  private _getDisplaySetSortedByDownward(displaySets: DisplaySet[], activeDisplaySetIndex: number) {
+  private _getDownwardDisplaySets(displaySets: DisplaySet[], activeDisplaySetIndex: number) {
     const sortedDisplaySets = [];
-    const numDisplaySets = displaySets.length;
-    let nextIndex = (activeDisplaySetIndex + 1) % numDisplaySets;
 
-    while (nextIndex !== activeDisplaySetIndex) {
-      sortedDisplaySets.push(displaySets[nextIndex]);
-      nextIndex = (nextIndex + 1) % numDisplaySets;
+    for (let i = activeDisplaySetIndex + 1; i < displaySets.length; i++) {
+      sortedDisplaySets.push(displaySets[i]);
     }
 
     return sortedDisplaySets;
   }
 
-  private _getDisplaySetSortedByUpward(displaySets: DisplaySet[], activeDisplaySetIndex: number) {
+  private _getUpwardDisplaySets(displaySets: DisplaySet[], activeDisplaySetIndex: number) {
     const sortedDisplaySets = [];
-    const numDisplaySets = displaySets.length;
-    let nextIndex = (activeDisplaySetIndex - 1 + numDisplaySets) % numDisplaySets;
 
-    while (nextIndex !== activeDisplaySetIndex) {
-      sortedDisplaySets.push(displaySets[nextIndex]);
-      nextIndex = (nextIndex - 1 + numDisplaySets) % numDisplaySets;
+    for (let i = activeDisplaySetIndex - 1; i >= 0 && i !== activeDisplaySetIndex; i--) {
+      sortedDisplaySets.push(displaySets[i]);
     }
 
     return sortedDisplaySets;
@@ -257,23 +270,23 @@ class StudyPrefetcherService extends PubSubService {
     const activeDisplaySetIndex = this._activeDisplaySetsInstanceUIDs.length
       ? displaySets.findIndex(ds => ds.displaySetInstanceUID === activeDisplaySetUIDs[0])
       : -1;
-    const sortingMethods = {
-      [StudyPrefetchOrder.closest]: this._getDisplaySetSortedByClosest,
-      [StudyPrefetchOrder.downward]: this._getDisplaySetSortedByDownward,
-      [StudyPrefetchOrder.upward]: this._getDisplaySetSortedByUpward,
+    const getDisplaySetsFunctionsMap = {
+      [StudyPrefetchOrder.closest]: this._getClosestDisplaySets,
+      [StudyPrefetchOrder.downward]: this._getDownwardDisplaySets,
+      [StudyPrefetchOrder.upward]: this._getUpwardDisplaySets,
     };
     const { order } = this.config;
-    const fnSort = sortingMethods[order];
+    const fnGetDisplaySets = getDisplaySetsFunctionsMap[order];
 
-    if (!fnSort) {
-      throw new Error(`Invalid sorting order (${order})`);
+    if (!fnGetDisplaySets) {
+      throw new Error(`Invalid order (${order})`);
     }
 
-    return fnSort.call(this, displaySets, activeDisplaySetIndex);
+    return fnGetDisplaySets.call(this, displaySets, activeDisplaySetIndex);
   }
 
   private _getSortedDisplaySetsToPrefetch(): DisplaySet[] {
-    const { displaySetCount } = this.config;
+    const { displaySetsCount } = this.config;
     const activeDisplaySetsInstanceUIDs = new Set(this._activeDisplaySetsInstanceUIDs);
 
     // Needs to filter to make sure loaded displaySets will not be in the array
@@ -282,7 +295,7 @@ class StudyPrefetcherService extends PubSubService {
       ds => !activeDisplaySetsInstanceUIDs.has(ds.displaySetInstanceUID)
     );
 
-    return displaySets.slice(0, displaySetCount);
+    return displaySets.slice(0, displaySetsCount);
   }
 
   private _moveImageIdToLoadedSet({ displaySetInstanceUID, imageId }) {
