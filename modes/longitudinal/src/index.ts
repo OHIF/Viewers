@@ -100,7 +100,6 @@ function modeFactory({ modeConfiguration }) {
         'Pan',
         'TrackballRotate',
         'WindowLevel',
-        'WindowLevelRegion',
         'Capture',
         'Layout',
         'Crosshairs',

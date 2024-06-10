@@ -65,11 +65,9 @@ yarn run orthanc:up
 _Upload your first Study:_
 
 1. Navigate to
-   [Orthanc's web interface](http://localhost:8042/app/explorer.html) at
-   `http://localhost:8042/app/explorer.html` in a web browser.
-2. In the top right corner, click "Upload"
-3. Click "Select files to upload..." and select one or more DICOM files
-4. Click "Start the upload"
+   [Orthanc's web interface](http://localhost:8042/ui/app/index.html#/) at
+   `http://localhost:8042/ui/app/index.html#/` in a web browser.
+2. In the left you can see the upload button where you can drag and drop your DICOM files
 
 #### Orthanc: Learn More
 
@@ -169,6 +167,16 @@ then consider switching to using [DICOMweb instead](https://book.orthanc-server.
 
 ![toolbarModule-layout](../../assets/img/uploader.gif)
 
+Don't forget to add the customization to the config as well
+
+```js
+customizationService: {
+  dicomUploadComponent:
+    '@ohif/extension-cornerstone.customizationModule.cornerstoneDicomUploadComponent',
+},
+```
+
+
 #### `singlepart`
 A comma delimited string specifying which payloads the data source responds with as single part. Those not listed are considered multipart. Values that can be included here are `pdf`, `video`, `bulkdata`, `thumbnail` and `image`.
 
@@ -179,6 +187,15 @@ To learn more about how you can configure the OHIF Viewer, check out our
 
 ### DICOM Upload
 See the [`dicomUploadEnabled`](#dicomuploadenabled) data source configuration option.
+
+Don't forget to add the customization to the config as well
+
+```js
+customizationService: {
+  dicomUploadComponent:
+    '@ohif/extension-cornerstone.customizationModule.cornerstoneDicomUploadComponent',
+},
+```
 
 ### DICOM PDF
 See the [`singlepart`](#singlepart) data source configuration option.

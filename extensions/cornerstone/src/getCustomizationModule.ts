@@ -24,9 +24,15 @@ const tools = {
     },
     { toolName: toolNames.StackScrollMouseWheel, bindings: [] },
   ],
-  enabled: [{ toolName: toolNames.SegmentationDisplay }, { toolName: toolNames.PlanarFreehandContourSegmentation, configuration: {
-    displayOnePointAsCrosshairs: true,
-  }}],
+  enabled: [
+    { toolName: toolNames.SegmentationDisplay },
+    {
+      toolName: toolNames.PlanarFreehandContourSegmentation,
+      configuration: {
+        displayOnePointAsCrosshairs: true,
+      },
+    },
+  ],
 };
 
 function getCustomizationModule() {
