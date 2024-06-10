@@ -17,6 +17,7 @@ const Thumbnail = ({
   description,
   seriesNumber,
   numInstances,
+  loadingProgress,
   countIcon,
   messages,
   dragData = {},
@@ -94,6 +95,12 @@ const Thumbnail = ({
             />
             {` ${numInstances}`}
           </div>
+          {loadingProgress && loadingProgress < 1 && (
+            <div className="mr-4">
+              <span className="text-primary-main font-bold">{'P: '}</span>
+              {Math.round(loadingProgress * 100)}%
+            </div>
+          )}
           <DisplaySetMessageListTooltip
             messages={messages}
             id={`display-set-tooltip-${displaySetInstanceUID}`}
@@ -124,6 +131,7 @@ Thumbnail.propTypes = {
   description: PropTypes.string.isRequired,
   seriesNumber: StringNumber.isRequired,
   numInstances: PropTypes.number.isRequired,
+  loadingProgress: PropTypes.number,
   messages: PropTypes.object,
   isActive: PropTypes.bool.isRequired,
   onClick: PropTypes.func.isRequired,
