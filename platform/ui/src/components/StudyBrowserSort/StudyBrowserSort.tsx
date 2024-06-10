@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Icon from '../Icon';
 
 export default function StudyBrowserSort({ servicesManager }: withAppTypes) {
-  const { customizationService } = servicesManager.services;
+  const { customizationService, displaySetService } = servicesManager.services;
   const { values: sortFunctions } = customizationService.get('studyBrowser.sortFunctions');
 
   const [selectedSort, setSelectedSort] = useState(sortFunctions[0]);
@@ -19,11 +19,28 @@ export default function StudyBrowserSort({ servicesManager }: withAppTypes) {
   };
 
   useEffect(() => {
-    console.log({
-      sortFunction: selectedSort.sortFunction,
-      sortDirection,
-    });
-  }, [selectedSort, sortDirection]);
+    displaySetService.sortDisplaySets(selectedSort.sortFunction, sortDirection);
+  }, [displaySetService, selectedSort, sortDirection]);
+
+  useEffect(() => {
+    const SubscriptionDisplaySetsChanged = displaySetService.subscribe(
+      displaySetService.EVENTS.DISPLAY_SETS_CHANGED,
+      () => {
+        displaySetService.sortDisplaySets(selectedSort.sortFunction, sortDirection, true);
+      }
+    );
+    const SubscriptionDisplaySetMetaDataInvalidated = displaySetService.subscribe(
+      displaySetService.EVENTS.DISPLAY_SET_SERIES_METADATA_INVALIDATED,
+      () => {
+        displaySetService.sortDisplaySets(selectedSort.sortFunction, sortDirection, true);
+      }
+    );
+
+    return () => {
+      SubscriptionDisplaySetsChanged.unsubscribe();
+      SubscriptionDisplaySetMetaDataInvalidated.unsubscribe();
+    };
+  }, [displaySetService, selectedSort, sortDirection]);
 
   return (
     <div className="flex gap-2">

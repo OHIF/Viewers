@@ -4,6 +4,9 @@ import DataSourceSelector from './Panels/DataSourceSelector';
 import { ProgressDropdownWithService } from './Components/ProgressDropdownWithService';
 import DataSourceConfigurationComponent from './Components/DataSourceConfigurationComponent';
 import { GoogleCloudDataSourceConfigurationAPI } from './DataSourceConfigurationAPI/GoogleCloudDataSourceConfigurationAPI';
+import { utils } from '@ohif/core';
+
+const formatDate = utils.formatDate;
 
 /**
  *
@@ -166,21 +169,21 @@ export default function getCustomizationModule({ servicesManager, extensionManag
             {
               label: 'Series Number',
               sortFunction: (a, b) => {
-                return a.seriesNumber - b.seriesNumber;
+                return a?.SeriesNumber - b?.SeriesNumber;
               },
             },
             {
-              label: 'Series Instances',
+              label: 'Series Images',
               sortFunction: (a, b) => {
-                return a.numInstances - b.numInstances;
+                return a?.numImageFrames - b?.numImageFrames;
               },
             },
             {
               label: 'Series Date',
               sortFunction: (a, b) => {
-                const dateA = new Date(a.seriesDate);
-                const dateB = new Date(b.seriesDate);
-                return dateB - dateA;
+                const dateA = new Date(formatDate(a?.SeriesDate));
+                const dateB = new Date(formatDate(b?.SeriesDate));
+                return dateB.getTime() - dateA.getTime();
               },
             },
           ],
