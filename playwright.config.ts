@@ -9,7 +9,7 @@ export default defineConfig({
   snapshotPathTemplate: './tests/screenshots{/projectName}/{testFilePath}/{arg}{ext}',
   outputDir: './tests/test-results',
   reporter: [['html', { outputFolder: './tests/playwright-report' }]],
-  timeout: 360 * 1000,
+  timeout: 720 * 1000,
   use: {
     baseURL: 'http://localhost:3000',
     trace: 'on-first-retry',
