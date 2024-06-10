@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.9.0-beta.39](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.38...v3.9.0-beta.39) (2024-06-08)
+
+**Note:** Version bump only for package @ohif/mode-test
+
+
+
+
+
+# [3.9.0-beta.38](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.37...v3.9.0-beta.38) (2024-06-07)
+
+
+### Bug Fixes
+
+* **window-level:** move window level region to more tools menu ([#4215](https://github.com/OHIF/Viewers/issues/4215)) ([33f4c18](https://github.com/OHIF/Viewers/commit/33f4c18f2687d30a250fe7183df3daae8394a984))
+
+
+
+
+
 # [3.9.0-beta.37](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.36...v3.9.0-beta.37) (2024-06-05)
 
 **Note:** Version bump only for package @ohif/mode-test

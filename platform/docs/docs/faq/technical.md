@@ -1,92 +1,9 @@
----
-sidebar_position: 8
-sidebar_label: FAQ
----
-
-
-- [General FAQ](#general-faq)
-  - [How do I report a bug?](#how-do-i-report-a-bug)
-  - [How can I request a new feature?](#how-can-i-request-a-new-feature)
-  - [Who should I contact about Academic Collaborations?](#who-should-i-contact-about-academic-collaborations)
-  - [Does OHIF offer support?](#does-ohif-offer-support)
-  - [Does The OHIF Viewer have 510(k) Clearance from the U.S. F.D.A or CE Marking from the European Commission?](#does-the-ohif-viewer-have-510k-clearance-from-the-us-fda-or-ce-marking-from-the-european-commission)
-  - [Is there a DICOM Conformance Statement for the OHIF Viewer?](#is-there-a-dicom-conformance-statement-for-the-ohif-viewer)
-  - [Is The OHIF Viewer HIPAA Compliant?](#is-the-ohif-viewer-hipaa-compliant)
-  - [Could you provide me with a particular study from the OHIF Viewer Demo?](#could-you-provide-me-with-a-particular-study-from-the-ohif-viewer-demo)
-- [Technical FAQ](#technical-faq)
-  - [Why do I keep seeing a Cross Origin Isolation warning](#why-do-i-keep-seeing-a-cross-origin-isolation-warning)
-  - [What if my setup does not support the Shared Array Buffers API?](#what-if-my-setup-does-not-support-the-shared-array-buffers-api)
-  - [Viewer opens but does not show any thumbnails](#viewer-opens-but-does-not-show-any-thumbnails)
-  - [What are the list of required metadata for the OHIF Viewer to work?](#what-are-the-list-of-required-metadata-for-the-ohif-viewer-to-work)
-    - [Mandatory](#mandatory)
-    - [Optional](#optional)
-  - [How do I handle large volumes for MPR and Volume Rendering](#how-do-i-handle-large-volumes-for-mpr-and-volume-rendering)
-    - [`useNorm16Texture`](#usenorm16texture)
-    - [`preferSizeOverAccuracy`](#prefersizeoveraccuracy)
-
-
-# General FAQ
-
-
-## How do I report a bug?
-
-Navigate to our [GitHub Repository][new-issue], and submit a new bug report.
-Follow the steps outlined in the [Bug Report Template][bug-report-template].
-
-## How can I request a new feature?
-
-At the moment we are in the process of defining our roadmap and will do our best
-to communicate this to the community. If your requested feature is on the
-roadmap, then it will most likely be built at some point. If it is not, you are
-welcome to build it yourself and [contribute it](development/contributing.md).
-If you have resources and would like to fund the development of a feature,
-please [contact us](https://ohif.org/get-support).
-
-
-## Who should I contact about Academic Collaborations?
-
-[Gordon J. Harris](https://www.dfhcc.harvard.edu/insider/member-detail/member/gordon-j-harris-phd/)
-at Massachusetts General Hospital is the primary contact for any academic
-collaborators. We are always happy to hear about new groups interested in using
-the OHIF framework, and may be able to provide development support if the
-proposed collaboration has an impact on cancer research.
-
-## Does OHIF offer support?
-
-yes, you can contact us for more information [here](https://ohif.org/get-support)
-
-
-## Does The OHIF Viewer have [510(k) Clearance][501k-clearance] from the U.S. F.D.A or [CE Marking][ce-marking] from the European Commission?
-
-**NO.** The OHIF Viewer is **NOT** F.D.A. cleared or CE Marked. It is the users'
-responsibility to ensure compliance with applicable rules and regulations. The
-[License](https://github.com/OHIF/Viewers/blob/master/LICENSE) for the OHIF
-Platform does not prevent your company or group from seeking F.D.A. clearance
-for a product built using the platform.
-
-If you have gone this route (or are going there), please let us know because we
-would be interested to hear about your experience.
-
-## Is there a DICOM Conformance Statement for the OHIF Viewer?
-
-Yes, check it here [DICOM Conformance Statement](https://docs.google.com/document/d/1hbDlUApX4svX33gAUGxGfD7fXXZNaBsX0hSePbc-hNA/edit?usp=sharing)
-
-## Is The OHIF Viewer [HIPAA][hipaa-def] Compliant?
-
-**NO.** The OHIF Viewer **DOES NOT** fulfill all of the criteria to become HIPAA
-Compliant. It is the users' responsibility to ensure compliance with applicable
-rules and regulations.
-
-## Could you provide me with a particular study from the OHIF Viewer Demo?
-
-You can check out the studies that we have put in this [Dropbox link](https://www.dropbox.com/scl/fo/66xidsx13pn0zf3b9cbfq/ADaCgn7aT29WMlnTdT_WRXM?rlkey=rratvx6g4kfxnswjdbupewjye&dl=0)
-
 # Technical FAQ
 
 
 
 ## Why do I keep seeing a Cross Origin Isolation warning
-If you encounter a warning while running OHIF indicating that your application is not cross-origin isolated, it implies that volume rendering, such as MPR, will not function properly since they depend on Shared Array Buffers. To resolve this issue, we recommend referring to our comprehensive guide on Cross Origin Isolation available at [our dedicated cors page](./deployment/cors.md).
+If you encounter a warning while running OHIF indicating that your application is not cross-origin isolated, it implies that volume rendering, such as MPR, will not function properly since they depend on Shared Array Buffers. To resolve this issue, we recommend referring to our comprehensive guide on Cross Origin Isolation available at [our dedicated cors page](../deployment/cors.md).
 
 ## What if my setup does not support the Shared Array Buffers API?
 You can simply disable that by adding the `useSharedArrayBuffer: 'FALSE'` (notice the string FALSE), and the volumes will only use a regular
@@ -101,7 +18,7 @@ One
 
 For instance for the following filtering in the worklist tab we send this request
 
-![](assets/img/filtering-worklist.png)
+![](../assets/img/filtering-worklist.png)
 
 `https://d33do7qe4w26qo.cloudfront.net/dicomweb/studies?PatientName=*Head*&limit=101&offset=0&fuzzymatching=false&includefield=00081030%2C00080060`
 
@@ -223,25 +140,25 @@ WebGL officially supports only 8-bit and 32-bit data types. For most images, 8 b
 Through [EXT_texture_norm16](https://registry.khronos.org/webgl/extensions/EXT_texture_norm16/) , WebGL can support 16 bit data type which is ideal
 for most images. You can look into the [webgl report](https://webglreport.com/?v=2) to check if you have that extension enabled.
 
-![](assets/img/webgl-report-norm16.png)
+![](../assets/img/webgl-report-norm16.png)
 
 
-This is a flag that you can set in your [configuration file](./configuration/configurationFiles.md) to force usage of 16 bit data type for the volume rendering and MPR. This will reduce the memory usage by half.
+This is a flag that you can set in your [configuration file](../configuration/configurationFiles.md) to force usage of 16 bit data type for the volume rendering and MPR. This will reduce the memory usage by half.
 
 
 For instance for a large pt/ct study
 
-![](assets/img/large-pt-ct.png)
+![](../assets/img/large-pt-ct.png)
 
 Before (without the flag) the app shows 399 MB of memory usage
 
-![](assets/img/memory-profiling-regular.png)
+![](../assets/img/memory-profiling-regular.png)
 
 
 After (with flag, running locally) the app shows 249 MB of memory usage
 
 
-![](assets/img/webgl-int16.png)
+![](../assets/img/webgl-int16.png)
 
 :::note
 Using the 16 bit texture (if supported) will not have any effect in the rendering what so ever, and pixelData
@@ -264,7 +181,7 @@ to be still some issues with it. You can read and track bugs below.
 
 ### `preferSizeOverAccuracy`
 
-This is another flag that you can set in your [configuration file](./configuration/configurationFiles.md) to force the usage of the `half_float` data type for volume rendering and MPR. The main reason to choose this option over `useNorm16Texture` is its broader support across hardware and browsers. However, it is less accurate than the 16-bit data type and may lead to some rendering artifacts.
+This is another flag that you can set in your [configuration file](../configuration/configurationFiles.md) to force the usage of the `half_float` data type for volume rendering and MPR. The main reason to choose this option over `useNorm16Texture` is its broader support across hardware and browsers. However, it is less accurate than the 16-bit data type and may lead to some rendering artifacts.
 
 ```js
 Integers between 0 and 2048 can be exactly represented (and also between −2048 and 0)
@@ -279,24 +196,79 @@ As you see in the ranges above 2048 there will be inaccuracies in the rendering.
 
 Memory snapshot after enabling `preferSizeOverAccuracy` for the same study as above
 
-![](assets/img/preferSizeOverAccuracy.png)
+![](../assets/img/preferSizeOverAccuracy.png)
+
+
+## How to dynamically load a measurement
+
+You can dynamically load a measurement by using a combination of `MeasurementService` and `CornerstoneTools` Annotation API. Here, we will demonstrate this with an example of loading a `Rectangle` measurement.
+
+![alt text](faq-measure-1.png)
+
+So if we look at the terminal and get the measurement service we can see there is one measurement
+
+![alt text](faq-measure-2.png)
+
+However, this is the `mapped` cornerstone measurement inside OHIF, and it has additional information such as `geReport` and `source`, which are internal details of OHIF Viewers that you don't need to worry about.
+
+we can call the `cornerstoneTools` api to grab the raw annotation data with the `uid`
+
+`cornerstoneTools.annotation.state.getAnnotation("ea45a45c-0731-47d4-9438-d2a53ffea4ff")`
+
+![alt text](faq-measure3.png)
 
 
 
 
-<!--
-  Links
-  -->
-[general]: #general
-[technical]: #technical
-[report-bug]: #how-do-i-report-a-bug
-[new-feature]: #how-can-i-request-a-new-feature
-[commercial-support]: #does-ohif-offer-commercial-support
-[academic]: #who-should-i-contact-about-academic-collaborations
-[fda-clearance]: #does-the-ohif-viewer-have-510k-clearance-from-the-us-fda-or-ce-marking-from-the-european-commission
-[hipaa]: #is-the-ohif-viewer-hipaa-compliant
-[501k-clearance]: https://www.fda.gov/MedicalDevices/DeviceRegulationandGuidance/HowtoMarketYourDevice/PremarketSubmissions/PremarketNotification510k/
-[ce-marking]: https://ec.europa.eu/growth/single-market/ce-marking_en
-[hipaa-def]: https://en.wikipedia.org/wiki/Health_Insurance_Portability_and_Accountability_Act
-[new-issue]: https://github.com/OHIF/Viewers/issues/new/choose
-[bug-report-template]: https://github.com/OHIF/Viewers/issues/new?assignees=&labels=Bug+Report+%3Abug%3A&template=---bug-report.md&title=
+:::note
+Note: There is a `pointsInShape` attribute inside the data that stores the points within the annotation for some tools like `Rectangle` and `EllipticalRoi`. However, you can remove that attribute as well.
+:::
+
+For the sake of this example, I have extracted those keys and uploaded them to our server for fetching.
+
+`
+https://ohif-assets.s3.us-east-2.amazonaws.com/ohif-faq/rectangle-roi.json
+`
+
+Now, let's discuss how to load this measurement dynamically and programmatically.
+
+There are numerous places in OHIF where you can add annotations, but we always recommend having your own extensions and modes to maintain full control over your custom API.
+
+For this example, I will add the logic in the `longitudinal` mode. However, as mentioned, you can create your own extension and mode, and either use `onModeEnter` or other lifecycle hooks to add annotations. Learn more about lifecycle hooks [here](../platform/extensions/lifecycle.md).
+
+
+Of course, you need to load the appropriate measurement for each study. However, for simplicity's sake, I will hardcode the URL in this example.
+
+```js
+import * as cs3dTools from '@cornerstonejs/tools';
+
+onModeEnter: function ({ servicesManager, extensionManager, commandsManager }: withAppTypes) {
+  // rest of logic
+
+  const annotationResponse = await fetch(
+    'https://ohif-assets.s3.us-east-2.amazonaws.com/ohif-faq/rectangle-roi.json'
+  );
+
+  const annotationData = await annotationResponse.json();
+
+  cs3dTools.annotation.state.addAnnotation(annotationData);
+},
+```
+
+As you can see, we use the CornerstoneTools API to add the annotation. Since OHIF has mappers set up for CornerstoneTools (`extensions/cornerstone/src/utils/measurementServiceMappings/measurementServiceMappingsFactory.ts`), it will automatically map the annotation to the OHIF measurement service.
+
+If you refresh the viewer, you'll see the measurement loaded on the image.
+
+![alt text](faq-measure-4.png)
+
+But if you notice it does not appear on the right panel, the reason is that the right panel is the tracking measurement panel. You can switch to a non-tracking measurement by changing
+
+`rightPanels: [dicomSeg.panel, tracked.measurements],`
+
+to
+
+`rightPanels: [dicomSeg.panel, '@ohif/extension-default.panelModule.measure'],`
+
+which then it will look like
+
+![alt text](faq-measure-5.png)

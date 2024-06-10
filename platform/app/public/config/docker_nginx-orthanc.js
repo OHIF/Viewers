@@ -2,6 +2,10 @@
 window.config = {
   routerBasename: '/',
   showStudyList: true,
+  customizationService: {
+    dicomUploadComponent:
+      '@ohif/extension-cornerstone.customizationModule.cornerstoneDicomUploadComponent',
+  },
   extensions: [],
   modes: [],
   // below flag is for performance reasons, but it might not work for all servers
@@ -23,6 +27,7 @@ window.config = {
         qidoSupportsIncludeField: false,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
+        dicomUploadEnabled: true,
         omitQuotationForMultipartRequest: true,
       },
     },

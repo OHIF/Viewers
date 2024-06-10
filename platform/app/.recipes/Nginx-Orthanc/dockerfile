@@ -1,0 +1,44 @@
+# Stage 1: Build the application
+FROM node:18.16.1-slim as builder
+
+# Setup the working directory
+RUN mkdir /usr/src/app
+WORKDIR /usr/src/app
+
+# Install dependencies
+# apt-get update is combined with apt-get install to avoid using outdated packages
+RUN apt-get update && apt-get install -y build-essential python3
+
+# Copy package.json and other dependency-related files first
+# Assuming your package.json and yarn.lock or similar are located in the project root
+
+COPY . .
+
+# Install node dependencies
+# RUN yarn config set workspaces-experimental true
+# RUN yarn install
+
+# Copy the rest of the application code
+
+# set QUICK_BUILD to true to make the build faster for dev
+
+ENV APP_CONFIG=config/docker_nginx-orthanc-keycloak.js
+
+# Build the application
+# RUN yarn run build
+
+# # Stage 2: Bundle the built application into a Docker container which runs NGINX using Alpine Linux
+FROM nginx:alpine
+
+# # Create directories for logs and html content if they don't already exist
+RUN mkdir -p /var/log/nginx /var/www/html
+
+
+# # Copy build output to serve static files
+# COPY --from=builder /usr/src/app/platform/app/dist /var/www/html
+
+# # Expose HTTP and HTTPS ports
+EXPOSE 80 443
+
+# # Start NGINX
+CMD ["nginx", "-g", "daemon off;"]

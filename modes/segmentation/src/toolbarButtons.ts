@@ -39,16 +39,6 @@ const toolbarButtons: Button[] = [
     },
   },
   {
-    id: 'WindowLevelRegion',
-    uiType: 'ohif.radioGroup',
-    props: {
-      icon: 'icon-tool-window-region',
-      label: 'Window Level Region',
-      commands: setToolActiveToolbar,
-      evaluate: 'evaluate.cornerstoneTool',
-    },
-  },
-  {
     id: 'Pan',
     uiType: 'ohif.radioGroup',
     props: {
@@ -260,6 +250,14 @@ const toolbarButtons: Button[] = [
           tooltip: 'Ultrasound Directional',
           commands: setToolActiveToolbar,
           evaluate: ['evaluate.cornerstoneTool', 'evaluate.isUS'],
+        }),
+        createButton({
+          id: 'WindowLevelRegion',
+          icon: 'icon-tool-window-region',
+          label: 'Window Level Region',
+          tooltip: 'Window Level Region',
+          commands: setToolActiveToolbar,
+          evaluate: 'evaluate.cornerstoneTool',
         }),
       ],
     },
