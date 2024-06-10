@@ -50,6 +50,21 @@ const screenShotPaths = {
   spline: {
     splineDisplayedCorrectly: 'splineDisplayedCorrectly.png',
   },
+  dicomTagBrowser: {
+    dicomTagBrowserDisplayedCorrectly: 'dicomTagBrowserDisplayedCorrectly.png',
+  },
+  rotateRight: {
+    rotateRightDisplayedCorrectly: 'rotateRightDisplayedCorrectly.png',
+  },
+  invert: {
+    invertDisplayedCorrectly: 'invertDisplayedCorrectly.png',
+  },
+  flipHorizontal: {
+    flipHorizontalDisplayedCorrectly: 'flipHorizontalDisplayedCorrectly.png',
+  },
+  reset: {
+    resetDisplayedCorrectly: 'resetDisplayedCorrectly.png',
+  },
 };
 
 export { screenShotPaths };
