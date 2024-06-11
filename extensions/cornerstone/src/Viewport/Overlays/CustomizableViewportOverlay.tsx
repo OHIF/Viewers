@@ -60,7 +60,7 @@ function CustomizableViewportOverlay({
   viewportId: string;
   servicesManager: AppTypes.ServicesManager;
 }) {
-  const { cornerstoneViewportService, customizationService, toolGroupService } =
+  const { cornerstoneViewportService, customizationService, toolGroupService, displaySetService } =
     servicesManager.services;
   const [voi, setVOI] = useState({ windowCenter: null, windowWidth: null });
   const [scale, setScale] = useState(1);
@@ -79,13 +79,6 @@ function CustomizableViewportOverlay({
     'cornerstoneOverlayBottomRight'
   );
 
-  const instances = useMemo(() => {
-    if (viewportData != null) {
-      return _getViewportInstances(viewportData);
-    } else {
-      return null;
-    }
-  }, [viewportData, imageIndex]);
 
   const instanceNumber = useMemo(
     () =>
@@ -94,6 +87,15 @@ function CustomizableViewportOverlay({
         : null,
     [viewportData, viewportId, imageIndex, cornerstoneViewportService]
   );
+
+  const instances = useMemo(() => {
+    if (viewportData != null) {
+      return _getViewportInstances(viewportData, displaySetService, instanceNumber - 1);
+    } else {
+      return null;
+    }
+  }, [viewportData, viewportId, instanceNumber, cornerstoneViewportService]);
+
 
   /**
    * Updating the VOI when the viewport changes its voi
@@ -164,7 +166,8 @@ function CustomizableViewportOverlay({
           formatTime: formatDICOMTime,
           formatNumberPrecision,
         },
-        instance: instances ? instances[item?.instanceIndex] : null,
+        currentInstance: instances ? instances.currentInstances[item?.instanceIndex] : null,
+        referenceInstance: instances ? instances.referenceInstances[item?.instanceIndex] : null,
         voi,
         scale,
         instanceNumber,
@@ -210,9 +213,10 @@ function CustomizableViewportOverlay({
             <div key={`${keyPrefix}_${index}`}>
               {item?.condition
                 ? item.condition({
-                    instance: instances ? instances[item?.instanceIndex] : null,
-                    formatters: { formatDate: formatDICOMDate },
-                  })
+                  currentInstance: instances ? instances.currentInstances[item?.instanceIndex] : null,
+                  referenceInstance: instances ? instances.referenceInstances[item?.instanceIndex] : null,
+                  formatters: { formatDate: formatDICOMDate },
+                })
                   ? _renderOverlayItem(item)
                   : null
                 : _renderOverlayItem(item)}
@@ -229,8 +233,8 @@ function CustomizableViewportOverlay({
     customizationType: 'ohif.overlayItem',
     label: '',
     title: 'Study date',
-    condition: ({ instance }) => instance && instance.StudyDate,
-    contentF: ({ instance, formatters: { formatDate } }) => formatDate(instance.StudyDate),
+    condition: ({ referenceInstance }) => referenceInstance && referenceInstance.StudyDate,
+    contentF: ({ referenceInstance, formatters: { formatDate } }) => formatDate(referenceInstance.StudyDate),
   };
 
   const seriesDescriptionItem = {
@@ -238,27 +242,27 @@ function CustomizableViewportOverlay({
     customizationType: 'ohif.overlayItem',
     label: '',
     title: 'Series description',
-    attribute: 'SeriesDescription',
-    condition: ({ instance }) => {
-      return instance && instance.SeriesDescription;
+    condition: ({ referenceInstance }) => {
+      return referenceInstance && referenceInstance.SeriesDescription;
     },
+    contentF: ({ referenceInstance }) => referenceInstance.SeriesDescription
   };
 
   const topLeftItems = instances
-    ? instances
-        .map((instance, index) => {
-          return [
-            {
-              ...studyDateItem,
-              instanceIndex: index,
-            },
-            {
-              ...seriesDescriptionItem,
-              instanceIndex: index,
-            },
-          ];
-        })
-        .flat()
+    ? instances.referenceInstances
+      .map((instance, index) => {
+        return [
+          {
+            ...studyDateItem,
+            instanceIndex: index,
+          },
+          {
+            ...seriesDescriptionItem,
+            instanceIndex: index,
+          },
+        ];
+      })
+      .flat()
     : [];
 
   return (
@@ -302,26 +306,41 @@ function CustomizableViewportOverlay({
   );
 }
 
-function _getViewportInstances(viewportData) {
+function _getViewportInstances(viewportData, displaySetService, instanceIndex) {
   const imageIds = [];
+  const displaySets = []
   if (viewportData.viewportType === Enums.ViewportType.STACK) {
-    imageIds.push(viewportData.data[0].imageIds[0]);
+    imageIds.push(viewportData.data[0].imageIds[instanceIndex]);
   } else if (viewportData.viewportType === Enums.ViewportType.ORTHOGRAPHIC) {
     const volumes = viewportData.data;
+
     volumes.forEach(volume => {
+      displaySets.push(displaySetService.getDisplaySetByUID(volume.displaySetInstanceUID));
       if (!volume?.imageIds || volume.imageIds.length === 0) {
         return;
       }
-      imageIds.push(volume.imageIds[0]);
+      const isAcquisitionPlane = instanceIndex != -1;
+      if (isAcquisitionPlane) {
+        imageIds.push(volume.imageIds[instanceIndex]);
+      }
     });
   }
-  const instances = [];
-
+  const currentInstances = [];
   imageIds.forEach(imageId => {
     const instance = metaData.get('instance', imageId) || {};
-    instances.push(instance);
+    currentInstances.push(instance);
   });
-  return instances;
+  const referenceInstances = [];
+  if (viewportData.viewportType === Enums.ViewportType.STACK) {
+    referenceInstances.push(...currentInstances);
+  } else if (viewportData.viewportType === Enums.ViewportType.ORTHOGRAPHIC) {
+    displaySets.forEach(ds => {
+      referenceInstances.push(ds.instance);
+    })
+  }
+
+  return { currentInstances: currentInstances, referenceInstances: referenceInstances };
+
 }
 
 const getInstanceNumber = (viewportData, viewportId, imageIndex, cornerstoneViewportService) => {
@@ -363,6 +382,7 @@ function _getInstanceNumberFromStack(viewportData, imageIndex) {
 
   return parseInt(instanceNumber);
 }
+
 
 // Since volume viewports can be in any view direction, they can render
 // a reconstructed image which don't have imageIds; therefore, no instance and instanceNumber
