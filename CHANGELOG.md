@@ -3,6 +3,35 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.8.1](https://github.com/OHIF/Viewers/compare/v3.8.0...v3.8.1) (2024-06-11)
+
+
+### Bug Fixes
+
+* **contour:** set renderFill to false for contour ([#4186](https://github.com/OHIF/Viewers/issues/4186)) ([471e6a1](https://github.com/OHIF/Viewers/commit/471e6a1559d983267448058b8e17461f79130c79))
+* **crosshairs:** reset angle, position, and slabthickness for crosshairs when reset viewport tool is used ([#4113](https://github.com/OHIF/Viewers/issues/4113)) ([2d4e049](https://github.com/OHIF/Viewers/commit/2d4e049d8a54ca25c9dc02f29f2e53a6968d82e1))
+* dicom json for orthanc by Update package versions for [@cornerstonejs](https://github.com/cornerstonejs) dependencies ([#4165](https://github.com/OHIF/Viewers/issues/4165)) ([9f5165d](https://github.com/OHIF/Viewers/commit/9f5165de47ed547919683498cfae87909de94786))
+* **docker:** docker build was broken because of imports ([#4192](https://github.com/OHIF/Viewers/issues/4192)) ([53c2740](https://github.com/OHIF/Viewers/commit/53c2740d7589439f5fa6de20baf00b766680ddee))
+* **rt:** dont convert to volume for RTSTRUCT ([#4157](https://github.com/OHIF/Viewers/issues/4157)) ([634abf3](https://github.com/OHIF/Viewers/commit/634abf353f02cffec462e341d594741fdefb6f22))
+* segmentation creation and segmentation mode viewport rendering ([#4193](https://github.com/OHIF/Viewers/issues/4193)) ([a3d7f88](https://github.com/OHIF/Viewers/commit/a3d7f88b038fdb8c9dbe5358402a159cdadd41c8))
+* **segmentation:** Address issue where segmentation creation failed on layout change ([#4153](https://github.com/OHIF/Viewers/issues/4153)) ([1b290bd](https://github.com/OHIF/Viewers/commit/1b290bdaa1a0ba750a4e5f539a51a636de529240))
+* **seg:** should be able to navigate outside toolbox and come back later ([#4196](https://github.com/OHIF/Viewers/issues/4196)) ([6262a7f](https://github.com/OHIF/Viewers/commit/6262a7f9d4cb71d2dd9615ccc8fe25c947da65dd))
+* **select:** utilize react portals for select component ([#4144](https://github.com/OHIF/Viewers/issues/4144)) ([8feef28](https://github.com/OHIF/Viewers/commit/8feef28bff1ef4547ff744b64ffbbbfdb93d4c72))
+* **tmtv:** crosshairs should not have viewport indicators ([#4197](https://github.com/OHIF/Viewers/issues/4197)) ([a3d8129](https://github.com/OHIF/Viewers/commit/a3d81290897397634a246910a30190301066580c))
+* **tmtv:** side panel crashing when activeToolOptions is not an array ([#4189](https://github.com/OHIF/Viewers/issues/4189)) ([85a82fa](https://github.com/OHIF/Viewers/commit/85a82fac0e1700eb2b9964078a90aadb1877853b))
+* **tmtv:** threshold was crashing the side panel ([#4119](https://github.com/OHIF/Viewers/issues/4119)) ([c11c3b7](https://github.com/OHIF/Viewers/commit/c11c3b7e611af231773c5d52320b8b777c7c717d))
+* **us:** logic for color conversion ([b7ebb0a](https://github.com/OHIF/Viewers/commit/b7ebb0aa8f814427045b7d5e7568dc0298ab0973))
+
+
+### Features
+
+* **types:** typed app config ([#4171](https://github.com/OHIF/Viewers/issues/4171)) ([4c8a808](https://github.com/OHIF/Viewers/commit/4c8a808a12718865501e362ce37c2d2f75a1a687))
+* **typings:** Enhance typing support with withAppTypes and custom services throughout OHIF ([#4090](https://github.com/OHIF/Viewers/issues/4090)) ([3539e04](https://github.com/OHIF/Viewers/commit/3539e040193369b8011254d0c67804ef67d83a6c))
+
+
+
+
+
 # [3.8.0](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.93...v3.8.0) (2024-04-29)
 
 

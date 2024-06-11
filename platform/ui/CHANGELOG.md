@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.8.1](https://github.com/OHIF/Viewers/compare/v3.8.0...v3.8.1) (2024-06-11)
+
+
+### Bug Fixes
+
+* **seg:** should be able to navigate outside toolbox and come back later ([#4196](https://github.com/OHIF/Viewers/issues/4196)) ([6262a7f](https://github.com/OHIF/Viewers/commit/6262a7f9d4cb71d2dd9615ccc8fe25c947da65dd))
+* **select:** utilize react portals for select component ([#4144](https://github.com/OHIF/Viewers/issues/4144)) ([8feef28](https://github.com/OHIF/Viewers/commit/8feef28bff1ef4547ff744b64ffbbbfdb93d4c72))
+* **tmtv:** side panel crashing when activeToolOptions is not an array ([#4189](https://github.com/OHIF/Viewers/issues/4189)) ([85a82fa](https://github.com/OHIF/Viewers/commit/85a82fac0e1700eb2b9964078a90aadb1877853b))
+
+
+### Features
+
+* **typings:** Enhance typing support with withAppTypes and custom services throughout OHIF ([#4090](https://github.com/OHIF/Viewers/issues/4090)) ([3539e04](https://github.com/OHIF/Viewers/commit/3539e040193369b8011254d0c67804ef67d83a6c))
+
+
+
+
+
 # [3.8.0](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.93...v3.8.0) (2024-04-29)
 
 **Note:** Version bump only for package @ohif/ui

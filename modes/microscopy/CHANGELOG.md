@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.8.1](https://github.com/OHIF/Viewers/compare/v3.8.0...v3.8.1) (2024-06-11)
+
+
+### Features
+
+* **typings:** Enhance typing support with withAppTypes and custom services throughout OHIF ([#4090](https://github.com/OHIF/Viewers/issues/4090)) ([3539e04](https://github.com/OHIF/Viewers/commit/3539e040193369b8011254d0c67804ef67d83a6c))
+
+
+
+
+
 # [3.8.0](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.93...v3.8.0) (2024-04-29)
 
 **Note:** Version bump only for package @ohif/mode-microscopy

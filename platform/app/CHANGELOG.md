@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.8.1](https://github.com/OHIF/Viewers/compare/v3.8.0...v3.8.1) (2024-06-11)
+
+
+### Bug Fixes
+
+* **crosshairs:** reset angle, position, and slabthickness for crosshairs when reset viewport tool is used ([#4113](https://github.com/OHIF/Viewers/issues/4113)) ([2d4e049](https://github.com/OHIF/Viewers/commit/2d4e049d8a54ca25c9dc02f29f2e53a6968d82e1))
+* dicom json for orthanc by Update package versions for [@cornerstonejs](https://github.com/cornerstonejs) dependencies ([#4165](https://github.com/OHIF/Viewers/issues/4165)) ([9f5165d](https://github.com/OHIF/Viewers/commit/9f5165de47ed547919683498cfae87909de94786))
+* **segmentation:** Address issue where segmentation creation failed on layout change ([#4153](https://github.com/OHIF/Viewers/issues/4153)) ([1b290bd](https://github.com/OHIF/Viewers/commit/1b290bdaa1a0ba750a4e5f539a51a636de529240))
+* **tmtv:** crosshairs should not have viewport indicators ([#4197](https://github.com/OHIF/Viewers/issues/4197)) ([a3d8129](https://github.com/OHIF/Viewers/commit/a3d81290897397634a246910a30190301066580c))
+* **us:** logic for color conversion ([b7ebb0a](https://github.com/OHIF/Viewers/commit/b7ebb0aa8f814427045b7d5e7568dc0298ab0973))
+
+
+### Features
+
+* **types:** typed app config ([#4171](https://github.com/OHIF/Viewers/issues/4171)) ([4c8a808](https://github.com/OHIF/Viewers/commit/4c8a808a12718865501e362ce37c2d2f75a1a687))
+* **typings:** Enhance typing support with withAppTypes and custom services throughout OHIF ([#4090](https://github.com/OHIF/Viewers/issues/4090)) ([3539e04](https://github.com/OHIF/Viewers/commit/3539e040193369b8011254d0c67804ef67d83a6c))
+
+
+
+
+
 # [3.8.0](https://github.com/OHIF/Viewers/compare/v3.8.0-beta.93...v3.8.0) (2024-04-29)
 
 **Note:** Version bump only for package @ohif/app
