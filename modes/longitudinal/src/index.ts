@@ -90,6 +90,18 @@ function modeFactory({ modeConfiguration }) {
       //   },
       // ]);
 
+      customizationService.addModeCustomizations([
+        {
+          id: 'studyBrowser.sortFunctions',
+          values: {
+            label: 'Series Images',
+            sortFunction: (a, b) => {
+              return a?.numImageFrames - b?.numImageFrames;
+            },
+          },
+        },
+      ]);
+
       // Init Default and SR ToolGroups
       initToolGroups(extensionManager, toolGroupService, commandsManager, this.labelConfig);
 

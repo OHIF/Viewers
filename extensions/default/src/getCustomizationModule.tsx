@@ -167,17 +167,12 @@ export default function getCustomizationModule({ servicesManager, extensionManag
         },
         {
           id: 'studyBrowser.sortFunctions',
+          merge: 'Append',
           values: [
             {
               label: 'Series Number',
               sortFunction: (a, b) => {
                 return a?.SeriesNumber - b?.SeriesNumber;
-              },
-            },
-            {
-              label: 'Series Images',
-              sortFunction: (a, b) => {
-                return a?.numImageFrames - b?.numImageFrames;
               },
             },
             {
