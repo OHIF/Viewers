@@ -51,18 +51,25 @@ export default function interleaveCenterLoader({
    * listen to it and as the other viewports are created we can set the volumes for them
    * since volumes are already started loading.
    */
-  if (matchDetails.size !== viewportIdVolumeInputArrayMap.size) {
+  const uniqueViewportVolumeDisplaySetUIDs = new Set();
+  viewportIdVolumeInputArrayMap.forEach((volumeInputArray, viewportId) => {
+    volumeInputArray.forEach(volumeInput => {
+      const { volumeId } = volumeInput;
+      uniqueViewportVolumeDisplaySetUIDs.add(volumeId);
+    });
+  });
+
+  const uniqueMatchedDisplaySetUIDs = new Set();
+
+  matchDetails.forEach(matchDetail => {
+    const { displaySetsInfo } = matchDetail;
+    displaySetsInfo.forEach(({ displaySetInstanceUID }) => {
+      uniqueMatchedDisplaySetUIDs.add(displaySetInstanceUID);
+    });
+  });
+
+  if (uniqueViewportVolumeDisplaySetUIDs.size !== uniqueMatchedDisplaySetUIDs.size) {
     return;
-  }
-
-  // Check if all the matched volumes are loaded
-  for (const [_, details] of displaySetsMatchDetails.entries()) {
-    const { SeriesInstanceUID } = details;
-
-    // HangingProtocol has matched, but don't have all the volumes created yet, so return
-    if (!Array.from(volumeIdMapsToLoad.values()).includes(SeriesInstanceUID)) {
-      return;
-    }
   }
 
   const volumeIds = Array.from(volumeIdMapsToLoad.keys()).slice();

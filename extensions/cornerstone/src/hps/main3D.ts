@@ -1,7 +1,9 @@
 export const main3D = {
   id: 'main3D',
   locked: true,
-  name: 'main3D',
+  name: '3D main',
+  icon: 'layout-advanced-3d-main',
+  isPreset: true,
   createdDate: '2023-03-15T10:29:44.894Z',
   modifiedDate: '2023-03-15T10:29:44.894Z',
   availableTo: {},
@@ -75,8 +77,11 @@ export const main3D = {
             {
               id: 'mprDisplaySet',
               options: {
-                // ToDo: choose appropriate preset
-                displayPreset: 'CT-Bone',
+                displayPreset: {
+                  CT: 'CT-Bone',
+                  MR: 'MR-Default',
+                  default: 'CT-Bone',
+                },
               },
             },
           ],
@@ -95,6 +100,9 @@ export const main3D = {
                 id: 'mpr',
                 source: true,
                 target: true,
+                options: {
+                  syncColormap: true,
+                },
               },
             ],
           },
@@ -118,6 +126,9 @@ export const main3D = {
                 id: 'mpr',
                 source: true,
                 target: true,
+                options: {
+                  syncColormap: true,
+                },
               },
             ],
           },
@@ -141,6 +152,9 @@ export const main3D = {
                 id: 'mpr',
                 source: true,
                 target: true,
+                options: {
+                  syncColormap: true,
+                },
               },
             ],
           },

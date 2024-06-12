@@ -1,6 +1,7 @@
 import React, { useEffect, useCallback, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
+import ReactDOM from 'react-dom';
 
 import Icon from '../Icon';
 import Typography from '../Typography';
@@ -10,18 +11,20 @@ const borderStyle = 'border-b last:border-b-0 border-secondary-main';
 const Dropdown = ({
   id,
   children,
-  showDropdownIcon,
+  showDropdownIcon = true,
   list,
   itemsClassName,
   titleClassName,
-  showBorders,
+  showBorders = true,
   alignment,
   // By default the max characters per line is the longest title
   // if you wish to override this, you can pass in a number
-  maxCharactersPerLine,
+  maxCharactersPerLine = 20,
 }) => {
   const [open, setOpen] = useState(false);
-  const element = useRef(null);
+  const elementRef = useRef(null);
+  const dropdownRef = useRef(null);
+  const [coords, setCoords] = useState({ x: 0, y: 0 });
 
   // choose the max characters per line based on the longest title
   const longestTitle = list.reduce((acc, item) => {
@@ -107,23 +110,54 @@ const Dropdown = ({
   };
 
   const handleClick = e => {
-    if (element.current && !element.current.contains(e.target)) {
+    if (elementRef.current && !elementRef.current.contains(e.target)) {
       setOpen(false);
     }
   };
 
+  useEffect(() => {
+    if (elementRef.current && dropdownRef.current) {
+      const triggerRect = elementRef.current.getBoundingClientRect();
+      const dropdownRect = dropdownRef.current.getBoundingClientRect();
+      let x, y;
+
+      switch (alignment) {
+        case 'right':
+          x = triggerRect.right + window.scrollX - dropdownRect.width;
+          y = triggerRect.bottom + window.scrollY;
+          break;
+        case 'left':
+          x = triggerRect.left + window.scrollX;
+          y = triggerRect.bottom + window.scrollY;
+          break;
+        default:
+          x = triggerRect.left + window.scrollX;
+          y = triggerRect.bottom + window.scrollY;
+          break;
+      }
+      setCoords({ x, y });
+    }
+  }, [open, alignment, elementRef.current, dropdownRef.current]);
+
   const renderList = () => {
-    return (
+    const portalElement = document.getElementById('react-portal');
+
+    const listElement = (
       <div
         className={classnames(
-          'top-100 border-secondary-main absolute z-10 mt-2 transform rounded border bg-black shadow transition duration-300',
+          'top-100 border-secondary-main w-max-content absolute mt-2 transform rounded border bg-black shadow transition duration-300',
           {
             'right-0 origin-top-right': alignment === 'right',
             'left-0 origin-top-left': alignment === 'left',
-            'scale-0': !open,
-            'scale-100': open,
           }
         )}
+        ref={dropdownRef}
+        style={{
+          position: 'absolute',
+          top: `${coords.y}px`,
+          left: open ? `${coords.x}px` : -999999,
+          zIndex: 9999,
+        }}
         data-cy={`${id}-dropdown`}
       >
         {list.map((item, idx) => (
@@ -137,6 +171,7 @@ const Dropdown = ({
         ))}
       </div>
     );
+    return ReactDOM.createPortal(listElement, portalElement);
   };
 
   useEffect(() => {
@@ -150,7 +185,7 @@ const Dropdown = ({
   return (
     <div
       data-cy="dropdown"
-      ref={element}
+      ref={elementRef}
       className="relative"
     >
       <div
@@ -163,11 +198,6 @@ const Dropdown = ({
       {renderList()}
     </div>
   );
-};
-Dropdown.defaultProps = {
-  showDropdownIcon: true,
-  maxCharactersPerLine: 20,
-  showBorders: true,
 };
 
 Dropdown.propTypes = {

@@ -1,34 +1,33 @@
-import React, {useEffect, useCallback, useMemo} from 'react';
+import React, { useEffect, useCallback, useRef, useState } from 'react';
+import { useResizeDetector } from 'react-resize-detector';
 import PropTypes from 'prop-types';
-import { ServicesManager, Types, MeasurementService } from '@ohif/core';
+import { Types, MeasurementService } from '@ohif/core';
 import { ViewportGrid, ViewportPane, useViewportGrid } from '@ohif/ui';
 import EmptyViewport from './EmptyViewport';
 import classNames from 'classnames';
 import { useAppConfig } from '@state';
 
-function ViewerViewportGrid(props) {
-  const { servicesManager, viewportComponents, dataSource } = props;
+function ViewerViewportGrid(props: withAppTypes) {
+  const { servicesManager, viewportComponents = [], dataSource } = props;
   const [viewportGrid, viewportGridService] = useViewportGrid();
+  const [appConfig] = useAppConfig();
 
-  const { layout, activeViewportId, viewports } = viewportGrid;
+  const { layout, activeViewportId, viewports, isHangingProtocolLayout } = viewportGrid;
   const { numCols, numRows } = layout;
+  const { ref: resizeRef } = useResizeDetector({
+    refreshMode: 'debounce',
+    refreshRate: 7,
+    refreshOptions: { leading: true },
+    onResize: () => {
+      viewportGridService.setViewportGridSizeChanged();
+    },
+  });
+  const layoutHash = useRef(null);
 
-  // TODO -> Need some way of selecting which displaySets hit the viewports.
-  const { displaySetService, measurementService, hangingProtocolService, uiNotificationService } = (
-    servicesManager as ServicesManager
-  ).services;
+  const { displaySetService, measurementService, hangingProtocolService, uiNotificationService } =
+    servicesManager.services;
 
-  /**
-   * Determine whether users need to use the tools directly, or whether they need to click once to activate the viewport before using tools.
-   * If 'activateViewportBeforeInteraction' is available in the 'window.config' object, use its value;
-   * otherwise, default to true.
-   * If true, users need to click once to activate the viewport before using the tools.
-   * if false, tools can be used directly.
-   */
-  const activateViewportBeforeInteraction = useMemo(() => {
-    const [appConfig] = useAppConfig();
-    return appConfig?.activateViewportBeforeInteraction ?? true;
-  }, []);
+  const generateLayoutHash = () => `${numCols}-${numRows}`;
 
   /**
    * This callback runs after the viewports structure has changed in any way.
@@ -103,6 +102,7 @@ function ViewerViewportGrid(props) {
       layoutType,
       layoutOptions,
       findOrCreateViewport,
+      isHangingProtocolLayout: true,
     });
   };
 
@@ -112,7 +112,8 @@ function ViewerViewportGrid(props) {
       try {
         updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
           viewportId,
-          displaySetInstanceUID
+          displaySetInstanceUID,
+          isHangingProtocolLayout
         );
       } catch (error) {
         console.warn(error);
@@ -127,7 +128,7 @@ function ViewerViewportGrid(props) {
 
       return updatedViewports;
     },
-    [hangingProtocolService, uiNotificationService]
+    [hangingProtocolService, uiNotificationService, isHangingProtocolLayout]
   );
 
   // Using Hanging protocol engine to match the displaySets
@@ -143,6 +144,16 @@ function ViewerViewportGrid(props) {
       unsubscribe();
     };
   }, []);
+
+  // Check viewport readiness in useEffect
+  useEffect(() => {
+    const allReady = viewportGridService.getGridViewportsReady();
+    const sameLayoutHash = layoutHash.current === generateLayoutHash();
+    if (allReady && !sameLayoutHash) {
+      layoutHash.current = generateLayoutHash();
+      viewportGridService.publishViewportsReady();
+    }
+  }, [viewportGridService, generateLayoutHash]);
 
   useEffect(() => {
     const { unsubscribe } = measurementService.subscribe(
@@ -192,50 +203,6 @@ function ViewerViewportGrid(props) {
       unsubscribe();
     };
   }, [viewports]);
-
-  /**
-  const onDoubleClick = viewportId => {
-    // TODO -> Disabled for now.
-    // onNewImage on a cornerstone viewport is firing setDisplaySetsForViewport.
-    // Which it really really shouldn't. We need a larger fix for jump to
-    // measurements and all cornerstone "imageIndex" state to fix this.
-    if (cachedLayout) {
-      viewportGridService.set({
-        numCols: cachedLayout.numCols,
-        numRows: cachedLayout.numRows,
-        activeViewportId: cachedLayout.activeViewportId,
-        viewports: cachedLayout.viewports,
-        cachedLayout: null,
-      });
-
-      return;
-    }
-
-    const cachedViewports = viewports.map(viewport => {
-      return {
-        displaySetInstanceUID: viewport.displaySetInstanceUID,
-      };
-    });
-
-    viewportGridService.set({
-      numCols: 1,
-      numRows: 1,
-      activeViewportId: 0,
-      viewports: [
-        {
-          displaySetInstanceUID: viewports[viewportId].displaySetInstanceUID,
-          imageIndex: undefined,
-        },
-      ],
-      cachedLayout: {
-        numCols,
-        numRows,
-        viewports: cachedViewports,
-        activeViewportId: viewportId,
-      },
-    });
-  };
-  */
 
   const onDropHandler = (viewportId, { displaySetInstanceUID }) => {
     const updatedViewports = _getUpdatedViewports(viewportId, displaySetInstanceUID);
@@ -324,7 +291,8 @@ function ViewerViewportGrid(props) {
           <div
             data-cy="viewport-pane"
             className={classNames('flex h-full w-full flex-col', {
-              'pointer-events-none': !isActive && activateViewportBeforeInteraction,
+              'pointer-events-none':
+                !isActive && (appConfig?.activateViewportBeforeInteraction ?? true),
             })}
           >
             <ViewportComponent
@@ -335,6 +303,10 @@ function ViewerViewportGrid(props) {
               viewportOptions={viewportOptions}
               displaySetOptions={displaySetOptions}
               needsRerendering={displaySetsNeedsRerendering}
+              isHangingProtocolLayout={isHangingProtocolLayout}
+              onElementEnabled={() => {
+                viewportGridService.setViewportIsReady(viewportId, true);
+              }}
             />
           </div>
         </ViewportPane>
@@ -352,23 +324,23 @@ function ViewerViewportGrid(props) {
   }
 
   return (
-    <ViewportGrid
-      numRows={numRows}
-      numCols={numCols}
+    <div
+      ref={resizeRef}
+      className="h-full w-full"
     >
-      {/* {ViewportPanes} */}
-      {getViewportPanes()}
-    </ViewportGrid>
+      <ViewportGrid
+        numRows={numRows}
+        numCols={numCols}
+      >
+        {getViewportPanes()}
+      </ViewportGrid>
+    </div>
   );
 }
 
 ViewerViewportGrid.propTypes = {
   viewportComponents: PropTypes.array.isRequired,
-  servicesManager: PropTypes.instanceOf(ServicesManager),
-};
-
-ViewerViewportGrid.defaultProps = {
-  viewportComponents: [],
+  servicesManager: PropTypes.instanceOf(Object).isRequired,
 };
 
 function _getViewportComponent(displaySets, viewportComponents, uiNotificationService) {

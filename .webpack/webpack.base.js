@@ -99,6 +99,38 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
       noParse: [/(codec)/, /(dicomicc)/],
       rules: [
         {
+          test: /\.svg?$/,
+          oneOf: [
+            {
+              use: [
+                {
+                  loader: '@svgr/webpack',
+                  options: {
+                    svgoConfig: {
+                      plugins: [
+                        {
+                          name: 'preset-default',
+                          params: {
+                            overrides: {
+                              removeViewBox: false
+                            },
+                          },
+                        },
+                      ]
+                    },
+                    prettier: false,
+                    svgo: true,
+                    titleProp: true,
+                  },
+                },
+              ],
+              issuer: {
+                and: [/\.(ts|tsx|js|jsx|md|mdx)$/],
+              },
+            },
+          ],
+        },
+        {
           test: /\.js$/,
           enforce: 'pre',
           use: 'source-map-loader',
@@ -119,6 +151,17 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
         {
           test: /\.wasm/,
           type: 'asset/resource',
+        },
+        {
+          test: /\.(png|jpe?g|gif|svg)$/i,
+          use: [
+            {
+              loader: 'file-loader',
+              options: {
+                name: 'assets/images/[name].[ext]',
+              },
+            },
+          ],
         },
       ], //.concat(vtkRules),
     },

@@ -24,6 +24,7 @@ yarn-error.log
 .DS_Store
 .env
 *.code-workspace
+.directory
 
 # Common Example Data Directories
 sampledata/
@@ -32,7 +33,7 @@ docker/dcm4che/dcm4che-arc
 
 # Cypress test results
 videos/
-screenshots/
+
 
 # Locize settings
 .locize
@@ -45,3 +46,11 @@ platform/app/.recipes/OpenResty-Orthanc/logs/*
 .vercel
 
 .vs
+
+# PlayWright
+
+node_modules/
+tests/test-results/
+tests/playwright-report/
+/blob-report/
+/playwright/.cache/

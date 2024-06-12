@@ -6,13 +6,16 @@ import { useLocation } from 'react-router';
 import { ErrorBoundary, UserPreferences, AboutModal, Header, useModal } from '@ohif/ui';
 import i18n from '@ohif/i18n';
 import { hotkeys } from '@ohif/core';
-import { useAppConfig } from '@state';
-import Toolbar from '../Toolbar/Toolbar';
+import { Toolbar } from '../Toolbar/Toolbar';
 
 const { availableLanguages, defaultLanguage, currentLanguage } = i18n;
 
-function ViewerHeader({ hotkeysManager, extensionManager, servicesManager }) {
-  const [appConfig] = useAppConfig();
+function ViewerHeader({
+  hotkeysManager,
+  extensionManager,
+  servicesManager,
+  appConfig,
+}: withAppTypes) {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -55,6 +58,7 @@ function ViewerHeader({ hotkeysManager, extensionManager, servicesManager }) {
           content: AboutModal,
           title: t('AboutModal:About OHIF Viewer'),
           contentProps: { versionNumber, commitHash },
+          containerDimensions: 'max-w-4xl max-h-4xl',
         }),
     },
     {
@@ -64,6 +68,7 @@ function ViewerHeader({ hotkeysManager, extensionManager, servicesManager }) {
         show({
           title: t('UserPreferencesModal:User preferences'),
           content: UserPreferences,
+          containerDimensions: 'w-[70%] max-w-[900px]',
           contentProps: {
             hotkeyDefaults: hotkeysManager.getValidHotkeyDefinitions(hotkeyDefaults),
             hotkeyDefinitions,
@@ -105,9 +110,18 @@ function ViewerHeader({ hotkeysManager, extensionManager, servicesManager }) {
       isReturnEnabled={!!appConfig.showStudyList}
       onClickReturnButton={onClickReturnButton}
       WhiteLabeling={appConfig.whiteLabeling}
+      showPatientInfo={appConfig.showPatientInfo}
+      servicesManager={servicesManager}
+      Secondary={
+        <Toolbar
+          servicesManager={servicesManager}
+          buttonSection="secondary"
+        />
+      }
+      appConfig={appConfig}
     >
       <ErrorBoundary context="Primary Toolbar">
-        <div className="relative flex justify-center">
+        <div className="relative flex justify-center gap-[4px]">
           <Toolbar servicesManager={servicesManager} />
         </div>
       </ErrorBoundary>

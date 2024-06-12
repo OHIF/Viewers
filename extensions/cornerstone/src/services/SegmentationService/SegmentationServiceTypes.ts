@@ -20,6 +20,12 @@ type Segment = {
   isVisible: boolean;
   // whether the segment is locked
   isLocked: boolean;
+  // display texts
+  displayText?: string[];
+  // The name of algorithm used to generate the segment. (0062,0009)
+  algorithmName?: string;
+  // Type of algorithm used to generate the segment. 	(0062,0008)
+  algorithmType?: string;
 };
 
 type Segmentation = {
@@ -67,4 +73,4 @@ type SegmentationRepresentationData = {
   LABELMAP?: LabelmapSegmentationData;
 };
 
-export { SegmentationConfig, Segment, Segmentation };
+export type { SegmentationConfig, Segment, Segmentation };

@@ -1,7 +1,58 @@
 import dcmjs from 'dcmjs';
-import { sortStudySeries, sortingCriteria } from '@ohif/core/src/utils/sortStudy';
+import { sortStudySeries } from '@ohif/core/src/utils/sortStudy';
 import RetrieveMetadataLoader from './retrieveMetadataLoader';
 
+// Series Date, Series Time, Series Description and Series Number to be included
+// in the series metadata query result
+const includeField = ['00080021', '00080031', '0008103E', '00200011'].join(',');
+
+export class DeferredPromise {
+  metadata = undefined;
+  processFunction = undefined;
+  internalPromise = undefined;
+  thenFunction = undefined;
+  rejectFunction = undefined;
+
+  setMetadata(metadata) {
+    this.metadata = metadata;
+  }
+  setProcessFunction(func) {
+    this.processFunction = func;
+  }
+  getPromise() {
+    return this.start();
+  }
+  start() {
+    if (this.internalPromise) {
+      return this.internalPromise;
+    }
+    this.internalPromise = this.processFunction();
+    // in case then and reject functions called before start
+    if (this.thenFunction) {
+      this.then(this.thenFunction);
+      this.thenFunction = undefined;
+    }
+    if (this.rejectFunction) {
+      this.reject(this.rejectFunction);
+      this.rejectFunction = undefined;
+    }
+    return this.internalPromise;
+  }
+  then(func) {
+    if (this.internalPromise) {
+      return this.internalPromise.then(func);
+    } else {
+      this.thenFunction = func;
+    }
+  }
+  reject(func) {
+    if (this.internalPromise) {
+      return this.internalPromise.reject(func);
+    } else {
+      this.rejectFunction = func;
+    }
+  }
+}
 /**
  * Creates an immutable series loader object which loads each series sequentially using the iterator interface.
  *
@@ -16,12 +67,17 @@ function makeSeriesAsyncLoader(client, studyInstanceUID, seriesInstanceUIDList) 
     hasNext() {
       return seriesInstanceUIDList.length > 0;
     },
-    async next() {
-      const seriesInstanceUID = seriesInstanceUIDList.shift();
-      return client.retrieveSeriesMetadata({
-        studyInstanceUID,
-        seriesInstanceUID,
+    next() {
+      const { seriesInstanceUID, metadata } = seriesInstanceUIDList.shift();
+      const promise = new DeferredPromise();
+      promise.setMetadata(metadata);
+      promise.setProcessFunction(() => {
+        return client.retrieveSeriesMetadata({
+          studyInstanceUID,
+          seriesInstanceUID,
+        });
       });
+      return promise;
     },
   });
 }
@@ -40,15 +96,22 @@ export default class RetrieveMetadataLoaderAsync extends RetrieveMetadataLoader 
     const preLoaders = [];
     const { studyInstanceUID, filters: { seriesInstanceUID } = {}, client } = this;
 
+    // asking to include Series Date, Series Time, Series Description
+    // and Series Number in the series metadata returned to better sort series
+    // in preLoad function
+    let options = {
+      studyInstanceUID,
+      queryParams: {
+        includefield: includeField,
+      },
+    };
+
     if (seriesInstanceUID) {
-      const options = {
-        studyInstanceUID,
-        queryParams: { SeriesInstanceUID: seriesInstanceUID },
-      };
+      options.queryParams.SeriesInstanceUID = seriesInstanceUID;
       preLoaders.push(client.searchForSeries.bind(client, options));
     }
     // Fallback preloader
-    preLoaders.push(client.searchForSeries.bind(client, { studyInstanceUID }));
+    preLoaders.push(client.searchForSeries.bind(client, options));
 
     yield* preLoaders;
   }
@@ -62,24 +125,23 @@ export default class RetrieveMetadataLoaderAsync extends RetrieveMetadataLoader 
     const { naturalizeDataset } = dcmjs.data.DicomMetaDictionary;
     const naturalized = result.map(naturalizeDataset);
 
-    return sortStudySeries(
-      naturalized,
-      sortCriteria || sortingCriteria.seriesSortCriteria.seriesInfoSortingCriteria,
-      sortFunction
-    );
+    return sortStudySeries(naturalized, sortCriteria, sortFunction);
   }
 
   async load(preLoadData) {
     const { client, studyInstanceUID } = this;
 
-    const seriesInstanceUIDs = preLoadData.map(s => s.SeriesInstanceUID);
+    const seriesInstanceUIDs = preLoadData.map(seriesMetadata => {
+      return { seriesInstanceUID: seriesMetadata.SeriesInstanceUID, metadata: seriesMetadata };
+    });
 
     const seriesAsyncLoader = makeSeriesAsyncLoader(client, studyInstanceUID, seriesInstanceUIDs);
 
     const promises = [];
 
     while (seriesAsyncLoader.hasNext()) {
-      promises.push(seriesAsyncLoader.next());
+      const promise = seriesAsyncLoader.next();
+      promises.push(promise);
     }
 
     return {

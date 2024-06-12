@@ -19,18 +19,20 @@ const getTrackedSeries = displaySets => {
   return trackedSeries;
 };
 
+const noop = () => {};
+
 const StudyBrowser = ({
   tabs,
   activeTabName,
   expandedStudyInstanceUIDs,
-  onClickTab,
-  onClickStudy,
-  onClickThumbnail,
-  onDoubleClickThumbnail,
-  onClickUntrack,
+  onClickTab = noop,
+  onClickStudy = noop,
+  onClickThumbnail = noop,
+  onDoubleClickThumbnail = noop,
+  onClickUntrack = noop,
   activeDisplaySetInstanceUIDs,
   servicesManager,
-}) => {
+}: withAppTypes) => {
   const { t } = useTranslation('StudyBrowser');
   const { customizationService } = servicesManager?.services || {};
 
@@ -149,7 +151,6 @@ StudyBrowser.propTypes = {
               componentType: PropTypes.oneOf(['thumbnail', 'thumbnailTracked', 'thumbnailNoImage'])
                 .isRequired,
               isTracked: PropTypes.bool,
-              viewportIdentificator: PropTypes.arrayOf(PropTypes.string),
               /**
                * Data the thumbnail should expose to a receiving drop target. Use a matching
                * `dragData.type` to identify which targets can receive this draggable item.
@@ -167,16 +168,6 @@ StudyBrowser.propTypes = {
       ).isRequired,
     })
   ),
-};
-
-const noop = () => {};
-
-StudyBrowser.defaultProps = {
-  onClickTab: noop,
-  onClickStudy: noop,
-  onClickThumbnail: noop,
-  onDoubleClickThumbnail: noop,
-  onClickUntrack: noop,
 };
 
 export default StudyBrowser;

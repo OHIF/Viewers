@@ -1,10 +1,11 @@
 import dcmjs from 'dcmjs';
 import { createReportDialogPrompt } from '@ohif/extension-default';
-import { ServicesManager, Types } from '@ohif/core';
+import { Types } from '@ohif/core';
 import { cache, metaData } from '@cornerstonejs/core';
 import {
   segmentation as cornerstoneToolsSegmentation,
   Enums as cornerstoneToolsEnums,
+  utilities,
 } from '@cornerstonejs/tools';
 import { adaptersRT, helpers, adaptersSEG } from '@cornerstonejs/adapters';
 import { classes, DicomMetadataStore } from '@ohif/core';
@@ -18,6 +19,7 @@ import {
   getUpdatedViewportsForSegmentation,
   getTargetViewport,
 } from './utils/hydrationUtils';
+const { segmentation: segmentationUtils } = utilities;
 
 const { datasetToBlob } = dcmjs.data;
 
@@ -45,7 +47,9 @@ const commandsModule = ({
     uiDialogService,
     displaySetService,
     viewportGridService,
-  } = (servicesManager as ServicesManager).services;
+    toolGroupService,
+    cornerstoneViewportService,
+  } = servicesManager.services;
 
   const actions = {
     /**
@@ -91,6 +95,7 @@ const commandsModule = ({
       updateViewportsForSegmentationRendering({
         viewportId,
         servicesManager,
+        displaySet,
         loadFn: async () => {
           const currentSegmentations = segmentationService.getSegmentations();
           const segmentationId = await segmentationService.createSegmentationForDisplaySet(
@@ -203,11 +208,16 @@ const commandsModule = ({
     loadSegmentationDisplaySetsForViewport: async ({ viewportId, displaySets }) => {
       // Todo: handle adding more than one segmentation
       const displaySet = displaySets[0];
+      const referencedDisplaySet = displaySetService.getDisplaySetByUID(
+        displaySet.referencedDisplaySetInstanceUID
+      );
+      const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+      const initialSliceIndex = viewport.getSliceIndex();
 
       updateViewportsForSegmentationRendering({
         viewportId,
         servicesManager,
-        referencedDisplaySetInstanceUID: displaySet.referencedDisplaySetInstanceUID,
+        displaySet,
         loadFn: async () => {
           const segDisplaySet = displaySet;
           const suppressEvents = false;
@@ -218,9 +228,11 @@ const commandsModule = ({
 
           const boundFn = segmentationService[serviceFunction].bind(segmentationService);
           const segmentationId = await boundFn(segDisplaySet, null, suppressEvents);
-
+          const segmentation = segmentationService.getSegmentation(segmentationId);
+          segmentation.description = `S${referencedDisplaySet.SeriesNumber}: ${referencedDisplaySet.SeriesDescription}`;
           return segmentationId;
         },
+        initialSliceIndex,
       });
     },
     /**
@@ -251,9 +263,12 @@ const commandsModule = ({
       labelmapObj.metadata = [];
 
       const segmentationInOHIF = segmentationService.getSegmentation(segmentationId);
-      labelmapObj.segmentsOnLabelmap.forEach(segmentIndex => {
+      segmentationInOHIF.segments.forEach(segment => {
         // segmentation service already has a color for each segment
-        const segment = segmentationInOHIF?.segments[segmentIndex];
+        if (!segment) {
+          return;
+        }
+        const segmentIndex = segment.segmentIndex;
         const { label, color } = segment;
 
         const RecommendedDisplayCIELabValue = dcmjs.data.Colors.rgb2DICOMLAB(
@@ -263,8 +278,8 @@ const commandsModule = ({
         const segmentMetadata = {
           SegmentNumber: segmentIndex.toString(),
           SegmentLabel: label,
-          SegmentAlgorithmType: 'MANUAL',
-          SegmentAlgorithmName: 'OHIF Brush',
+          SegmentAlgorithmType: segment?.algorithmType || 'MANUAL',
+          SegmentAlgorithmName: segment?.algorithmName || 'OHIF Brush',
           RecommendedDisplayCIELabValue,
           SegmentedPropertyCategoryCodeSequence: {
             CodeValue: 'T-D0050',
@@ -397,6 +412,36 @@ const commandsModule = ({
         console.warn(e);
       }
     },
+    setBrushSize: ({ value, toolNames }) => {
+      const brushSize = Number(value);
+
+      toolGroupService.getToolGroupIds()?.forEach(toolGroupId => {
+        if (toolNames?.length === 0) {
+          segmentationUtils.setBrushSizeForToolGroup(toolGroupId, brushSize);
+        } else {
+          toolNames?.forEach(toolName => {
+            segmentationUtils.setBrushSizeForToolGroup(toolGroupId, brushSize, toolName);
+          });
+        }
+      });
+    },
+    setThresholdRange: ({
+      value,
+      toolNames = ['ThresholdCircularBrush', 'ThresholdSphereBrush'],
+    }) => {
+      toolGroupService.getToolGroupIds()?.forEach(toolGroupId => {
+        const toolGroup = toolGroupService.getToolGroup(toolGroupId);
+        toolNames?.forEach(toolName => {
+          toolGroup.setToolConfiguration(toolName, {
+            strategySpecificConfiguration: {
+              THRESHOLD: {
+                threshold: value,
+              },
+            },
+          });
+        });
+      });
+    },
   };
 
   const definitions = {
@@ -424,11 +469,18 @@ const commandsModule = ({
     downloadRTSS: {
       commandFn: actions.downloadRTSS,
     },
+    setBrushSize: {
+      commandFn: actions.setBrushSize,
+    },
+    setThresholdRange: {
+      commandFn: actions.setThresholdRange,
+    },
   };
 
   return {
     actions,
     definitions,
+    defaultContext: 'SEGMENTATION',
   };
 };
 

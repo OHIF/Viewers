@@ -20,6 +20,9 @@ const ctAXIAL = {
         id: 'ctWLSync',
         source: true,
         target: true,
+        options: {
+          syncColormap: true,
+        },
       },
     ],
   },
@@ -48,6 +51,9 @@ const ctSAGITTAL = {
         id: 'ctWLSync',
         source: true,
         target: true,
+        options: {
+          syncColormap: true,
+        },
       },
     ],
   },
@@ -75,6 +81,9 @@ const ctCORONAL = {
         id: 'ctWLSync',
         source: true,
         target: true,
+        options: {
+          syncColormap: true,
+        },
       },
     ],
   },
@@ -108,6 +117,9 @@ const ptAXIAL = {
         id: 'ptWLSync',
         source: true,
         target: true,
+        options: {
+          syncColormap: true,
+        },
       },
       {
         type: 'voi',
@@ -115,7 +127,7 @@ const ptAXIAL = {
         source: true,
         target: false,
         options: {
-          syncInvertState: false,
+          syncColormap: false,
         },
       },
     ],
@@ -152,6 +164,9 @@ const ptSAGITTAL = {
         id: 'ptWLSync',
         source: true,
         target: true,
+        options: {
+          syncColormap: true,
+        },
       },
       {
         type: 'voi',
@@ -159,7 +174,7 @@ const ptSAGITTAL = {
         source: true,
         target: false,
         options: {
-          syncInvertState: false,
+          syncColormap: false,
         },
       },
     ],
@@ -196,6 +211,9 @@ const ptCORONAL = {
         id: 'ptWLSync',
         source: true,
         target: true,
+        options: {
+          syncColormap: true,
+        },
       },
       {
         type: 'voi',
@@ -203,7 +221,7 @@ const ptCORONAL = {
         source: true,
         target: false,
         options: {
-          syncInvertState: false,
+          syncColormap: false,
         },
       },
     ],
@@ -249,6 +267,9 @@ const fusionAXIAL = {
         id: 'fusionWLSync',
         source: true,
         target: true,
+        options: {
+          syncColormap: true,
+        },
       },
       {
         type: 'voi',
@@ -256,7 +277,7 @@ const fusionAXIAL = {
         source: false,
         target: true,
         options: {
-          syncInvertState: false,
+          syncColormap: false,
         },
       },
     ],
@@ -312,6 +333,9 @@ const fusionSAGITTAL = {
         id: 'fusionWLSync',
         source: true,
         target: true,
+        options: {
+          syncColormap: true,
+        },
       },
       {
         type: 'voi',
@@ -319,7 +343,7 @@ const fusionSAGITTAL = {
         source: false,
         target: true,
         options: {
-          syncInvertState: false,
+          syncColormap: false,
         },
       },
     ],
@@ -375,6 +399,9 @@ const fusionCORONAL = {
         id: 'fusionWLSync',
         source: true,
         target: true,
+        options: {
+          syncColormap: true,
+        },
       },
       {
         type: 'voi',
@@ -382,7 +409,7 @@ const fusionCORONAL = {
         source: false,
         target: true,
         options: {
-          syncInvertState: false,
+          syncColormap: false,
         },
       },
     ],
@@ -423,6 +450,9 @@ const mipSAGITTAL = {
         id: 'ptWLSync',
         source: true,
         target: true,
+        options: {
+          syncColormap: true,
+        },
       },
       {
         type: 'voi',
@@ -430,7 +460,7 @@ const mipSAGITTAL = {
         source: true,
         target: false,
         options: {
-          syncInvertState: false,
+          syncColormap: false,
         },
       },
     ],

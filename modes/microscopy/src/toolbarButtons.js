@@ -1,182 +1,162 @@
-// TODO: torn, can either bake this here; or have to create a whole new button type
-/**
- *
- * @param {*} type - 'tool' | 'action' | 'toggle'
- * @param {*} id
- * @param {*} icon
- * @param {*} label
- */
-function _createButton(type, id, icon, label, commands, tooltip) {
-  return {
-    id,
-    icon,
-    label,
-    type,
-    commands,
-    tooltip,
-  };
-}
-
-const _createActionButton = _createButton.bind(null, 'action');
-const _createToggleButton = _createButton.bind(null, 'toggle');
-const _createToolButton = _createButton.bind(null, 'tool');
+import { ToolbarService } from '@ohif/core';
 
 const toolbarButtons = [
-  // Measurement
   {
     id: 'MeasurementTools',
-    type: 'ohif.splitButton',
+    uiType: 'ohif.splitButton',
     props: {
       groupId: 'MeasurementTools',
-      isRadio: true, // ?
-      // Switch?
-      primary: _createToolButton(
-        'line',
-        'tool-length',
-        'Line',
-        [
+      // group evaluate to determine which item should move to the top
+      evaluate: 'evaluate.group.promoteToPrimary',
+      primary: ToolbarService.createButton({
+        id: 'line',
+        icon: 'tool-length',
+        label: 'Line',
+        tooltip: 'Line',
+        commands: [
           {
             commandName: 'setToolActive',
-            commandOptions: {
-              toolName: 'line',
-            },
+            commandOptions: { toolName: 'line' },
             context: 'MICROSCOPY',
           },
         ],
-        'Line'
-      ),
+        evaluate: 'evaluate.microscopyTool',
+      }),
       secondary: {
         icon: 'chevron-down',
-        label: '',
-        isActive: true,
         tooltip: 'More Measure Tools',
       },
       items: [
-        _createToolButton(
-          'line',
-          'tool-length',
-          'Line',
-          [
+        ToolbarService.createButton({
+          id: 'line',
+          icon: 'tool-length',
+          label: 'Line',
+          tooltip: 'Line',
+          commands: [
             {
               commandName: 'setToolActive',
-              commandOptions: {
-                toolName: 'line',
-              },
+              commandOptions: { toolName: 'line' },
               context: 'MICROSCOPY',
             },
           ],
-          'Line Tool'
-        ),
-        _createToolButton(
-          'point',
-          'tool-point',
-          'Point',
-          [
+          evaluate: 'evaluate.microscopyTool',
+        }),
+        ToolbarService.createButton({
+          id: 'point',
+          icon: 'tool-point',
+          label: 'Point',
+          tooltip: 'Point Tool',
+          commands: [
             {
               commandName: 'setToolActive',
-              commandOptions: {
-                toolName: 'point',
-              },
+              commandOptions: { toolName: 'point' },
               context: 'MICROSCOPY',
             },
           ],
-          'Point Tool'
-        ),
-        _createToolButton(
-          'polygon',
-          'tool-polygon',
-          'Polygon',
-          [
+          evaluate: 'evaluate.microscopyTool',
+        }),
+        // Point Tool was previously defined
+        ToolbarService.createButton({
+          id: 'polygon',
+          icon: 'tool-polygon',
+          label: 'Polygon',
+          tooltip: 'Polygon Tool',
+          commands: [
             {
               commandName: 'setToolActive',
-              commandOptions: {
-                toolName: 'polygon',
-              },
+              commandOptions: { toolName: 'polygon' },
               context: 'MICROSCOPY',
             },
           ],
-          'Polygon Tool'
-        ),
-        _createToolButton(
-          'circle',
-          'tool-circle',
-          'Circle',
-          [
+          evaluate: 'evaluate.microscopyTool',
+        }),
+        ToolbarService.createButton({
+          id: 'circle',
+          icon: 'tool-circle',
+          label: 'Circle',
+          tooltip: 'Circle Tool',
+          commands: [
             {
               commandName: 'setToolActive',
-              commandOptions: {
-                toolName: 'circle',
-              },
+              commandOptions: { toolName: 'circle' },
               context: 'MICROSCOPY',
             },
           ],
-          'Circle Tool'
-        ),
-        _createToolButton(
-          'box',
-          'tool-rectangle',
-          'Box',
-          [
+          evaluate: 'evaluate.microscopyTool',
+        }),
+        ToolbarService.createButton({
+          id: 'box',
+          icon: 'tool-rectangle',
+          label: 'Box',
+          tooltip: 'Box Tool',
+          commands: [
             {
               commandName: 'setToolActive',
-              commandOptions: {
-                toolName: 'box',
-              },
+              commandOptions: { toolName: 'box' },
               context: 'MICROSCOPY',
             },
           ],
-          'Box Tool'
-        ),
-        _createToolButton(
-          'freehandpolygon',
-          'tool-freehand-polygon',
-          'Freehand Polygon',
-          [
+          evaluate: 'evaluate.microscopyTool',
+        }),
+        ToolbarService.createButton({
+          id: 'freehandpolygon',
+          icon: 'tool-freehand-polygon',
+          label: 'Freehand Polygon',
+          tooltip: 'Freehand Polygon Tool',
+          commands: [
             {
               commandName: 'setToolActive',
-              commandOptions: {
-                toolName: 'freehandpolygon',
-              },
+              commandOptions: { toolName: 'freehandpolygon' },
               context: 'MICROSCOPY',
             },
           ],
-          'Freehand Polygon Tool'
-        ),
-        _createToolButton(
-          'freehandline',
-          'tool-freehand-line',
-          'Freehand Line',
-          [
+          evaluate: 'evaluate.microscopyTool',
+        }),
+        ToolbarService.createButton({
+          id: 'freehandline',
+          icon: 'tool-freehand-line',
+          label: 'Freehand Line',
+          tooltip: 'Freehand Line Tool',
+          commands: [
             {
               commandName: 'setToolActive',
-              commandOptions: {
-                toolName: 'freehandline',
-              },
+              commandOptions: { toolName: 'freehandline' },
               context: 'MICROSCOPY',
             },
           ],
-          'Freehand Line Tool'
-        ),
+          evaluate: 'evaluate.microscopyTool',
+        }),
       ],
     },
   },
-  // Pan...
   {
     id: 'dragPan',
-    type: 'ohif.radioGroup',
+    uiType: 'ohif.radioGroup',
     props: {
-      type: 'tool',
       icon: 'tool-move',
       label: 'Pan',
       commands: [
         {
           commandName: 'setToolActive',
-          commandOptions: {
-            toolName: 'dragPan',
-          },
+          commandOptions: { toolName: 'dragPan' },
           context: 'MICROSCOPY',
         },
       ],
+      evaluate: 'evaluate.microscopyTool',
+    },
+  },
+  {
+    id: 'TagBrowser',
+    uiType: 'ohif.radioGroup',
+    props: {
+      icon: 'dicom-tag-browser',
+      label: 'Dicom Tag Browser',
+      commands: [
+        {
+          commandName: 'openDICOMTagViewer',
+        },
+      ],
+      evaluate: 'evaluate.action',
     },
   },
 ];

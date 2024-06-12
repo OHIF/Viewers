@@ -13,7 +13,7 @@ function ViewportPane({
   isActive,
   onDrop,
   onDoubleClick,
-  onInteraction,
+  onInteraction = () => {},
   acceptDropsFor,
 }) {
   let dropElement = null;
@@ -64,7 +64,7 @@ function ViewportPane({
       onScroll={onInteractionHandler}
       onWheel={onInteractionHandler}
       className={classnames(
-        'hover:border-primary-light group h-full w-full overflow-hidden rounded-md transition duration-300',
+        'group h-full w-full overflow-hidden rounded-md transition duration-300',
         {
           'border-primary-light border-2': isActive,
           'border-2 border-transparent': !isActive,
@@ -77,10 +77,10 @@ function ViewportPane({
     >
       <div
         className={classnames(
-          'h-full w-full overflow-hidden rounded-md group-hover:border-transparent',
+          'h-full w-full overflow-hidden rounded-md',
           {
             'border border-transparent': isActive,
-            'border-secondary-light border': !isActive,
+            'border-secondary-light group-hover:border-primary-light/70 border': !isActive,
           },
           className
         )}
@@ -106,12 +106,6 @@ ViewportPane.propTypes = {
   onInteraction: PropTypes.func.isRequired,
   /** Executed when the pane is double clicked */
   onDoubleClick: PropTypes.func,
-};
-
-const noop = () => {};
-
-ViewportPane.defaultProps = {
-  onInteraction: noop,
 };
 
 export default ViewportPane;

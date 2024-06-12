@@ -40,7 +40,7 @@ you'll see the following:
 │   ├── core                 # Business Logic
 │   ├── i18n                 # Internationalization Support
 │   ├── ui                   # React component library
-│   └── viewer               # Connects platform and extension projects
+│   └── app               # Connects platform and extension projects
 │
 ├── ...                      # misc. shared configuration
 ├── lerna.json               # MonoRepo (Lerna) settings
@@ -162,7 +162,7 @@ logic you desire. As the components are presentational, you may swap out
 the viewer. The UI library is here to make development easier and quicker, but
 it is not mandatory for extension components to use.
 
-[Check out our component library!](https://react.ohif.org/)
+[Check out our component library!](https://ui.ohif.org/)
 
 ## Overview of the architecture
 

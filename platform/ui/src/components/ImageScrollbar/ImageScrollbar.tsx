@@ -20,10 +20,12 @@ class ImageScrollbar extends PureComponent {
       width: `${this.props.height}`,
     };
 
+    const { onContextMenu = e => e.preventDefault() } = this.props;
+
     return (
       <div
         className="scroll"
-        onContextMenu={this.props.onContextMenu}
+        onContextMenu={onContextMenu}
       >
         <div className="scroll-holder">
           <input
@@ -69,9 +71,5 @@ class ImageScrollbar extends PureComponent {
     }
   };
 }
-
-ImageScrollbar.defaultProps = {
-  onContextMenu: e => e.preventDefault(),
-};
 
 export default ImageScrollbar;

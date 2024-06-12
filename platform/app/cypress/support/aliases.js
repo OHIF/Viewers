@@ -12,7 +12,6 @@ export function initCornerstoneToolsAliases() {
   cy.get('[data-cy="MoreTools-split-button-secondary"]').as('moreBtnSecondary');
   cy.get('[data-cy="Layout"]').as('layoutBtn');
   cy.get('.cornerstone-viewport-element').as('viewport');
-  cy.get('[data-cy="MPR"]').as('mprBtn');
 }
 
 //Creating aliases for Common page elements
@@ -62,8 +61,8 @@ export function initStudyListAliasesOnDesktop() {
 
   // We can't use data attributes (e.g. data--cy) for these since
   // they are using third party libraries (i.e. react-dates, react-select)
-  cy.get('#date-range-studyDate-start-date').as('studyListStartDate');
-  cy.get('#date-range-studyDate-end-date').as('studyListEndDate');
+  cy.get('[data-cy="input-date-range-start"').as('studyListStartDate');
+  cy.get('[data-cy="input-date-range-end"').as('studyListEndDate');
   cy.get('#input-modalities').as('modalities');
 }
 

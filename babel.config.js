@@ -5,23 +5,6 @@ module.exports = {
   babelrcRoots: ['./platform/*', './extensions/*', './modes/*'],
   presets: ['@babel/preset-env', '@babel/preset-react', '@babel/preset-typescript'],
   plugins: [
-    [
-      'inline-react-svg',
-      {
-        svgo: {
-          plugins: [
-            {
-              name: 'preset-default',
-              params: {
-                overrides: {
-                  removeViewBox: false,
-                },
-              },
-            },
-          ],
-        },
-      },
-    ],
     ['@babel/plugin-proposal-class-properties', { loose: true }],
     '@babel/plugin-transform-typescript',
     ['@babel/plugin-proposal-private-property-in-object', { loose: true }],
@@ -49,6 +32,7 @@ module.exports = {
         '@babel/transform-destructuring',
         '@babel/plugin-transform-runtime',
         '@babel/plugin-transform-typescript',
+        '@babel/plugin-transform-class-static-block',
       ],
     },
     production: {

@@ -7,10 +7,10 @@ import type {
   BaseDataSourceConfigurationAPI,
   BaseDataSourceConfigurationAPIItem,
 } from './DataSourceConfigurationAPI';
+import type { PresentationIds } from '../services/ViewportGridService';
 
 export type * from '../services/CustomizationService/types';
 // Separate out some generic types
-export type * from './AppConfig';
 export type * from './Consumer';
 export type * from './Command';
 export type * from './DisplaySet';
@@ -18,9 +18,6 @@ export type * from './StudyMetadata';
 export type * from './PanelModule';
 export type * from './IPubSub';
 export type * from './Color';
-
-// Enum exports
-export * from './TimingEnum';
 
 /**
  * Export the types used within the various services and managers, but
@@ -34,4 +31,5 @@ export {
   DataSourceDefinition,
   BaseDataSourceConfigurationAPI,
   BaseDataSourceConfigurationAPIItem,
+  PresentationIds,
 };

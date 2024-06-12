@@ -1,3 +1,4 @@
+/** @type {AppTypes.Config} */
 window.config = {
   routerBasename: '/',
   extensions: [],
@@ -29,9 +30,11 @@ window.config = {
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
         enableStudyLazyLoad: true,
+        useBulkDataURI: false,
         supportsFuzzyMatching: true,
         supportsWildcard: true,
         dicomUploadEnabled: true,
+        omitQuotationForMultipartRequest: true,
         bulkDataURI: {
           enabled: true,
         },

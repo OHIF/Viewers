@@ -24,6 +24,18 @@ export type DisplaySetAndViewportOptions = {
   displaySetOptions: DisplaySetOptions;
 };
 
+export type DisplayArea = {
+  type?: 'SCALE' | 'FIT';
+  scale?: number;
+  interpolationType?: any;
+  imageArea?: [number, number]; // areaX, areaY
+  imageCanvasPoint?: {
+    imagePoint: [number, number]; // imageX, imageY
+    canvasPoint?: [number, number]; // canvasX, canvasY
+  };
+  storeAsInitialCamera?: boolean;
+};
+
 export type SetProtocolOptions = {
   /** Used to provide a mapping of what keys are provided for which viewport.
    * For example, a Chest XRay might use have the display set selector id of
@@ -133,6 +145,7 @@ export type SyncGroup = {
   id: string;
   source?: boolean;
   target?: boolean;
+  options?: object;
 };
 
 /** Declares a custom option, that is a computed type value */
@@ -154,6 +167,7 @@ export type ViewportOptions = {
   id?: string;
   orientation?: CustomOption<string>;
   viewportId?: string;
+  displayArea?: DisplayArea;
   initialImageOptions?: CustomOption<initialImageOptions>;
   syncGroups?: CustomOption<SyncGroup>[];
   customViewportProps?: Record<string, unknown>;
@@ -293,6 +307,27 @@ export type Protocol = {
    */
   numberOfPriorsReferenced?: number;
   syncDataForViewports?: boolean;
+  /**
+   * Set of minimal conditions necessary to run the hanging protocol.
+   */
+  hpInitiationCriteria?: {
+    /* If configured, sets the minimum number of series needed to run the hanging
+     * protocol and start displaying images. Used when OHIF needs to handle studies
+     * with several series and it is required that the first image should be loaded
+     * faster.
+     */
+    minSeriesLoaded: number;
+  };
+
+  /*
+   * The icon to use for this protocol.  This is used to display the protocol
+   * in the advanced layout selector.
+   */
+
+  icon?: string;
+
+  /** Indicates if the protocol is a preset or not. Useful for setting presets for the layout selector */
+  isPreset?: true;
 };
 
 /** Used to dynamically generate protocols.
@@ -300,7 +335,7 @@ export type Protocol = {
  * to the GUI when this is used, and it can be expensive to apply.
  * Alternatives include using the custom attributes where possible.
  */
-export type ProtocolGenerator = ({ servicesManager: any, commandsManager: any }) => {
+export type ProtocolGenerator = ({ servicesManager, commandsManager }: withAppTypes) => {
   protocol: Protocol;
 };
 
