@@ -277,7 +277,8 @@ which then it will look like
 
 ## How do I sort the series in the study panel by a specific value
 
-You need to enable the expermiental StudyBrowserSort component by setting the `experimentalStudyBrowserSort` to true in your config file.
+You need to enable the experimental StudyBrowserSort component by setting the `experimentalStudyBrowserSort` to true in your config file. This will add a dropdown in the study panel to sort the series by a specific value. This component is experimental
+since we are re-deigning the study panel and it might change in the future, but the functionality will remain the same.
 
 ```js
 {
@@ -286,7 +287,7 @@ You need to enable the expermiental StudyBrowserSort component by setting the `e
 ```
 The component will appear in the study panel and will allow you to sort the series by a specific value. It comes with 3 default sorting functions, Series Number, Series Image Count, and Series Date.
 
-You can sort the series in the study panel by a specific value by adding a custom sorting function in the customizationModule, you can use the existing customizationModule in extensions/default/src/getCustomizationModule.tsx or create your own in your extension.
+You can sort the series in the study panel by a specific value by adding a custom sorting function in the customizationModule, you can use the existing customizationModule in `extensions/default/src/getCustomizationModule.tsx` or create your own in your extension.
 
 The value to be used for the entry is `studyBrowser.sortFunctions` and should be under the `default` key.
 
@@ -316,6 +317,7 @@ export default function getCustomizationModule({ servicesManager, extensionManag
   ];
 }
 ```
+
 ### Explanation
 This function will be retrieved by the StudyBrowserSort component and will be used to sort all displaySets, it will reflect in all parts of the app since it works at the displaySetService level, which means the thumbnails in the study panel will also be sorted by the desired value.
 You can define multiple functions and pick which sort to use via the dropdown in the StudyBrowserSort component that appears in the study panel.

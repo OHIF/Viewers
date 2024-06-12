@@ -434,13 +434,13 @@ export default class DisplaySetService extends PubSubService {
   public sortDisplaySets(
     sortFn: (a: DisplaySet, b: DisplaySet) => number,
     direction: string,
-    supressEvent = false
+    suppressEvent = false
   ): void {
     this.activeDisplaySets.sort(sortFn);
     if (direction === 'descending') {
       this.activeDisplaySets.reverse();
     }
-    if (!supressEvent) {
+    if (!suppressEvent) {
       this._broadcastEvent(EVENTS.DISPLAY_SETS_CHANGED, this.activeDisplaySets);
     }
   }
