@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.9.0-beta.43](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.42...v3.9.0-beta.43) (2024-06-12)
+
+
+### Bug Fixes
+
+* **sr:** rendering issue by running loadSR before updateSR ([#4226](https://github.com/OHIF/Viewers/issues/4226)) ([6971287](https://github.com/OHIF/Viewers/commit/69712874603109aa4f655d47daf15d72167a49ff))
+
+
+
+
+
 # [3.9.0-beta.42](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.41...v3.9.0-beta.42) (2024-06-12)
 
 **Note:** Version bump only for package @ohif/extension-cornerstone-dicom-sr
