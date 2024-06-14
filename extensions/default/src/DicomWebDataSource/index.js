@@ -393,10 +393,10 @@ function createDicomWebApi(dicomWebConfig, servicesManager) {
           // The value.Value will be set with the bulkdata read value
           // in which case it isn't necessary to re-read this.
           if (value && value.BulkDataURI && !value.Value) {
+            // handle the scenarios where bulkDataURI is relative path
+            fixBulkDataURI(value, naturalized, dicomWebConfig);
             // Provide a method to fetch bulkdata
             value.retrieveBulkData = (options = {}) => {
-              // handle the scenarios where bulkDataURI is relative path
-              fixBulkDataURI(value, naturalized, dicomWebConfig);
 
               const { mediaType } = options;
               const useOptions = {
