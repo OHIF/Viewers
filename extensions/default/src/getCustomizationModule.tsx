@@ -18,6 +18,7 @@ export default function getCustomizationModule({ servicesManager, extensionManag
   return [
     {
       name: 'helloPage',
+      merge: 'Append',
       value: {
         id: 'customRoutes',
         routes: [
@@ -32,6 +33,7 @@ export default function getCustomizationModule({ servicesManager, extensionManag
     // Example customization to list a set of datasources
     {
       name: 'datasources',
+      merge: 'Append',
       value: {
         id: 'customRoutes',
         routes: [
