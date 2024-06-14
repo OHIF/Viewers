@@ -14,7 +14,7 @@ import getImageId from './utils/getImageId.js';
 import dcmjs from 'dcmjs';
 import { retrieveStudyMetadata, deleteStudyMetadataPromise } from './retrieveStudyMetadata.js';
 import StaticWadoClient from './utils/StaticWadoClient';
-import getDirectURL from '../utils/getDirectURL.js';
+import getDirectURL from '../utils/getDirectURL';
 import { fixBulkDataURI } from './utils/fixBulkDataURI';
 
 const { DicomMetaDictionary, DicomDict } = dcmjs.data;

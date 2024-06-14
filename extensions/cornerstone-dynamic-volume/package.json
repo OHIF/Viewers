@@ -42,9 +42,9 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.20.13",
-    "@cornerstonejs/core": "^1.77.6",
-    "@cornerstonejs/streaming-image-volume-loader": "^1.77.6",
-    "@cornerstonejs/tools": "^1.77.6",
+    "@cornerstonejs/core": "^1.78.1",
+    "@cornerstonejs/streaming-image-volume-loader": "^1.78.1",
+    "@cornerstonejs/tools": "^1.78.1",
     "classnames": "^2.3.2"
   }
 }
