@@ -23,9 +23,10 @@ function fixBulkDataURI(value, instance, dicomWebConfig) {
   const { BulkDataURI } = value;
   if (!BulkDataURI.startsWith('http') && !value.BulkDataURI.startsWith('/')) {
     const { StudyInstanceUID, SeriesInstanceUID } = instance;
-    const isInstanceStart = BulkDataURI.startsWith('instances/');
+    const isInstanceStart = BulkDataURI.startsWith('instances/') || BulkDataURI.startsWith('../');
     if (
       BulkDataURI.startsWith('series/') ||
+      BulkDataURI.startsWith('bulkdata/') ||
       (dicomWebConfig.bulkDataURI?.relativeResolution === 'studies' && isInstanceStart)
     ) {
       value.BulkDataURI = `${dicomWebConfig.wadoRoot}/studies/${StudyInstanceUID}/${BulkDataURI}`;

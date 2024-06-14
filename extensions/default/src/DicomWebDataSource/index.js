@@ -415,7 +415,7 @@ function createDicomWebApi(dicomWebConfig, servicesManager) {
                   : undefined,
                 ...options,
               };
-              // Todo: this needs to be from wado dicom web client
+              console.log("Retrieving bulkdata", useOptions.BulkDataURI);
               return qidoDicomWebClient.retrieveBulkData(useOptions).then(val => {
                 // There are DICOM PDF cases where the first ArrayBuffer in the array is
                 // the bulk data and DICOM video cases where the second ArrayBuffer is
