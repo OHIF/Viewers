@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.8.2](https://github.com/OHIF/Viewers/compare/v3.8.1...v3.8.2) (2024-06-14)
+
+
+### Bug Fixes
+
+* **cli:** version txt had a new line which it should not ([3392991](https://github.com/OHIF/Viewers/commit/339299113c65b5ce4032b02b5b4043a8968107ed))
+
+
+
+
+
 ## [3.8.1](https://github.com/OHIF/Viewers/compare/v3.8.0...v3.8.1) (2024-06-11)
 
 
