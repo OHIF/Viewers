@@ -15,9 +15,9 @@
     "start": "yarn run dev"
   },
   "peerDependencies": {
-    "@ohif/core": "^3.0.0",
-    "@ohif/extension-default": "^3.0.0",
-    "@ohif/extension-cornerstone": "^3.0.0",
+    "@ohif/core": "^{LATEST_OHIF_VERSION}",
+    "@ohif/extension-default": "^{LATEST_OHIF_VERSION}",
+    "@ohif/extension-cornerstone": "^{LATEST_OHIF_VERSION}",
     "@ohif/i18n": "^1.0.0",
     "prop-types": "^15.6.2",
     "react": "^17.0.2",
