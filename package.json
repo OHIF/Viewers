@@ -122,7 +122,7 @@
     "jest-canvas-mock": "^2.1.0",
     "jest-environment-jsdom": "^29.5.0",
     "jest-junit": "^6.4.0",
-    "lerna": "^7.2.0",
+    "lerna": "^6.6.1",
     "lint-staged": "^9.0.2",
     "mini-css-extract-plugin": "^2.1.0",
     "optimize-css-assets-webpack-plugin": "^6.0.1",
