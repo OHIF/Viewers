@@ -1,4 +1,5 @@
-import mergeWith from 'lodash.mergewith';
+import { mergeWith, cloneDeepWith } from 'lodash';
+
 import { PubSubService } from '../_shared/pubSubServiceInterface';
 import { Customization, NestedStrings } from './types';
 import { CommandsManager } from '../../classes';
@@ -127,11 +128,19 @@ export default class CustomizationService extends PubSubService {
     customization: Customization,
     merge = MergeEnum.Merge
   ): void {
+    const modeCustomization = this.modeCustomizations[customizationId];
+    const globCustomization = this.globalCustomizations[customizationId];
+    const sourceCustomization =
+      modeCustomization ||
+      (globCustomization && cloneDeepWith(globCustomization, cloneCustomizer)) ||
+      {};
+
     this.modeCustomizations[customizationId] = this.mergeValue(
-      this.modeCustomizations[customizationId],
+      sourceCustomization,
       customization,
       merge
     );
+    console.log("Set m'Set mode customization to", this.modeCustomizations[customizationId]);
     this._broadcastEvent(this.EVENTS.CUSTOMIZATION_MODIFIED, {
       buttons: this.modeCustomizations,
       button: this.modeCustomizations[customizationId],
@@ -157,7 +166,9 @@ export default class CustomizationService extends PubSubService {
 
   /** Mode customizations are changes to the behavior of the extensions
    * when running in a given mode.  Reset clears mode customizations.
-   * Note that global customizations over-ride mode customizations.
+   *
+   * Note that global customizations over-ride mode customizations
+   *
    * @param defaultValue to return if no customization specified.
    */
   public getModeCustomization(
@@ -229,12 +240,21 @@ export default class CustomizationService extends PubSubService {
     return this.transform(this.globalCustomizations[id] ?? defaultValue);
   }
 
+  /**
+   * Performs a merge, creating a new instance value - that is, not referencing
+   * the old one.  This only works if you run once for the merge, so in general,
+   * the source value should be global, while the appends should be mode based.
+   * However, you can append to a global value too, as long as you ensure it
+   * only gets merged once.
+   */
   private mergeValue(oldValue, newValue, mergeType = MergeEnum.Replace) {
     if (mergeType === MergeEnum.Replace) {
       return newValue;
     }
 
-    return mergeWith(oldValue || {}, newValue, mergeCustomizer.bind(null, mergeType));
+    const returnValue = mergeWith(oldValue || {}, newValue, mergeCustomizer.bind(null, mergeType));
+    console.log('mergeValue', oldValue, newValue, 'is', returnValue);
+    return returnValue;
   }
 
   public setGlobalCustomization(id: string, value: Customization, merge = MergeEnum.Replace): void {
@@ -312,5 +332,14 @@ export default class CustomizationService extends PubSubService {
 function mergeCustomizer(merge: MergeEnum, obj, src) {
   if (merge === MergeEnum.Append && Array.isArray(obj)) {
     return obj.concat(src);
+  }
+}
+
+/**
+ * Custom cloning function to just copy function reference
+ */
+function cloneCustomizer(value) {
+  if (typeof value === 'function') {
+    return value;
   }
 }

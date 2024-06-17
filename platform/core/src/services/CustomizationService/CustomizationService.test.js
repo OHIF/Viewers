@@ -1,4 +1,4 @@
-import CustomizationService from './CustomizationService';
+import CustomizationService, { MergeEnum } from './CustomizationService';
 import log from '../../log';
 
 jest.mock('../../log.js', () => ({
@@ -159,6 +159,51 @@ describe('CustomizationService.ts', () => {
       const result = item.content(props);
       expect(result.label).toBe(testItem.label);
       expect(result.value).toBe(props.testAttribute);
+    });
+  });
+
+  describe('merge', () => {
+    it('appends to global configuration', () => {
+      customizationService.init(extensionManager);
+
+      customizationService.setGlobalCustomization('appendSet', {
+        values: [{ id: 'one' }, { id: 'two' }],
+      });
+      const appendSet = customizationService.getCustomization('appendSet');
+      expect(appendSet.values.length).toBe(2);
+
+      customizationService.setGlobalCustomization(
+        'appendSet',
+        {
+          values: [{ id: 'three' }],
+        },
+        MergeEnum.Append
+      );
+      const appendSet2 = customizationService.getCustomization('appendSet');
+      expect(appendSet2.values.length).toBe(3);
+    });
+
+    it('appends mode to global without touching global', () => {
+      customizationService.init(extensionManager);
+
+      customizationService.setGlobalCustomization('appendSet', {
+        values: [{ id: 'one' }, { id: 'two' }],
+      });
+      const appendSet = customizationService.getCustomization('appendSet');
+      expect(appendSet.values.length).toBe(2);
+
+      customizationService.setModeCustomization(
+        'appendSet',
+        {
+          values: [{ id: 'three' }],
+        },
+        MergeEnum.Append
+      );
+
+      expect(appendSet.values.length).toBe(2);
+      const appendSet2 = customizationService.getModeCustomization('appendSet');
+      console.log('appendSet2=', appendSet2);
+      expect(appendSet2.values.length).toBe(3);
     });
   });
 });
