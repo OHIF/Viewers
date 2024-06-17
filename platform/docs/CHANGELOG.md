@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.9.0-beta.44](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.43...v3.9.0-beta.44) (2024-06-17)
+
+
+### Bug Fixes
+
+* **cli:** version txt had a new line which it should not ([#4233](https://github.com/OHIF/Viewers/issues/4233)) ([097ef76](https://github.com/OHIF/Viewers/commit/097ef7665559a672d73e1babfc42afccc3cdd41d))
+
+
+
+
+
 # [3.9.0-beta.43](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.42...v3.9.0-beta.43) (2024-06-12)
 
 **Note:** Version bump only for package ohif-docs

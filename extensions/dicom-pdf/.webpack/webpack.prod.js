@@ -4,6 +4,8 @@ const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const webpackCommon = require('./../../../.webpack/webpack.base.js');
 const pkg = require('./../package.json');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+
 // const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 const ROOT_DIR = path.join(__dirname, './..');
@@ -12,6 +14,8 @@ const DIST_DIR = path.join(__dirname, '../dist');
 const ENTRY = {
   app: `${SRC_DIR}/index.tsx`,
 };
+const outputName = `ohif-${pkg.name.split('/').pop()}`;
+
 const outputName = `ohif-${pkg.name.split('/').pop()}`;
 
 module.exports = (env, argv) => {
