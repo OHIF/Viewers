@@ -14,7 +14,6 @@ const DIST_DIR = path.join(__dirname, '../dist');
 const ENTRY = {
   app: `${SRC_DIR}/index.tsx`,
 };
-const outputName = `ohif-${pkg.name.split('/').pop()}`;
 
 const outputName = `ohif-${pkg.name.split('/').pop()}`;
 
