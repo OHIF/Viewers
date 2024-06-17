@@ -37,7 +37,6 @@ const getDirectURL = (config, params) => {
       return value.DirectRetrieveURL;
     }
 
-    console.log("********* Getting direct URL from", value);
     if (value.InlineBinary) {
       const blob = utils.b64toBlob(value.InlineBinary, defaultType);
       value.DirectRetrieveURL = URL.createObjectURL(blob);
