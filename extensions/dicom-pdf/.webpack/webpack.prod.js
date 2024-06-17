@@ -4,7 +4,6 @@ const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const webpackCommon = require('./../../../.webpack/webpack.base.js');
 const pkg = require('./../package.json');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 // const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
