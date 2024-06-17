@@ -55,9 +55,6 @@ const frameView: Types.HangingProtocol.Protocol = {
         {
           viewportOptions: {
             toolGroupId: 'default',
-            initialImageOptions: {
-              index: 0,
-            },
             syncGroups: [
               {
                 type: 'cameraPosition',
@@ -94,9 +91,6 @@ const frameView: Types.HangingProtocol.Protocol = {
         {
           viewportOptions: {
             toolGroupId: 'default',
-            initialImageOptions: {
-              index: 1,
-            },
             syncGroups: [
               {
                 type: 'cameraPosition',
@@ -133,9 +127,6 @@ const frameView: Types.HangingProtocol.Protocol = {
         {
           viewportOptions: {
             toolGroupId: 'default',
-            initialImageOptions: {
-              index: 2,
-            },
             syncGroups: [
               {
                 type: 'cameraPosition',
@@ -172,9 +163,6 @@ const frameView: Types.HangingProtocol.Protocol = {
         {
           viewportOptions: {
             toolGroupId: 'default',
-            initialImageOptions: {
-              index: 3,
-            },
             syncGroups: [
               {
                 type: 'cameraPosition',
@@ -211,9 +199,6 @@ const frameView: Types.HangingProtocol.Protocol = {
         {
           viewportOptions: {
             toolGroupId: 'default',
-            initialImageOptions: {
-              index: 4,
-            },
             syncGroups: [
               {
                 type: 'cameraPosition',
@@ -250,9 +235,6 @@ const frameView: Types.HangingProtocol.Protocol = {
         {
           viewportOptions: {
             toolGroupId: 'default',
-            initialImageOptions: {
-              index: 5,
-            },
             syncGroups: [
               {
                 type: 'cameraPosition',
@@ -289,9 +271,6 @@ const frameView: Types.HangingProtocol.Protocol = {
         {
           viewportOptions: {
             toolGroupId: 'default',
-            initialImageOptions: {
-              index: 6,
-            },
             syncGroups: [
               {
                 type: 'cameraPosition',
@@ -328,9 +307,6 @@ const frameView: Types.HangingProtocol.Protocol = {
         {
           viewportOptions: {
             toolGroupId: 'default',
-            initialImageOptions: {
-              index: 7,
-            },
             syncGroups: [
               {
                 type: 'cameraPosition',
@@ -367,9 +343,6 @@ const frameView: Types.HangingProtocol.Protocol = {
         {
           viewportOptions: {
             toolGroupId: 'default',
-            initialImageOptions: {
-              index: 8,
-            },
             syncGroups: [
               {
                 type: 'cameraPosition',
@@ -406,9 +379,6 @@ const frameView: Types.HangingProtocol.Protocol = {
         {
           viewportOptions: {
             toolGroupId: 'default',
-            initialImageOptions: {
-              index: 9,
-            },
             syncGroups: [
               {
                 type: 'cameraPosition',
@@ -445,9 +415,6 @@ const frameView: Types.HangingProtocol.Protocol = {
         {
           viewportOptions: {
             toolGroupId: 'default',
-            initialImageOptions: {
-              index: 10,
-            },
             syncGroups: [
               {
                 type: 'cameraPosition',
@@ -484,9 +451,6 @@ const frameView: Types.HangingProtocol.Protocol = {
         {
           viewportOptions: {
             toolGroupId: 'default',
-            initialImageOptions: {
-              index: 11,
-            },
             syncGroups: [
               {
                 type: 'cameraPosition',
@@ -523,9 +487,6 @@ const frameView: Types.HangingProtocol.Protocol = {
         {
           viewportOptions: {
             toolGroupId: 'default',
-            initialImageOptions: {
-              index: 12,
-            },
             syncGroups: [
               {
                 type: 'cameraPosition',
@@ -562,9 +523,6 @@ const frameView: Types.HangingProtocol.Protocol = {
         {
           viewportOptions: {
             toolGroupId: 'default',
-            initialImageOptions: {
-              index: 13,
-            },
             syncGroups: [
               {
                 type: 'cameraPosition',
@@ -601,9 +559,6 @@ const frameView: Types.HangingProtocol.Protocol = {
         {
           viewportOptions: {
             toolGroupId: 'default',
-            initialImageOptions: {
-              index: 14,
-            },
             syncGroups: [
               {
                 type: 'cameraPosition',
@@ -640,9 +595,6 @@ const frameView: Types.HangingProtocol.Protocol = {
         {
           viewportOptions: {
             toolGroupId: 'default',
-            initialImageOptions: {
-              index: 15,
-            },
             syncGroups: [
               {
                 type: 'cameraPosition',
@@ -692,9 +644,6 @@ const frameView: Types.HangingProtocol.Protocol = {
         {
           viewportOptions: {
             toolGroupId: 'default',
-            initialImageOptions: {
-              index: 0,
-            },
             syncGroups: [
               {
                 type: 'cameraPosition',
@@ -731,9 +680,6 @@ const frameView: Types.HangingProtocol.Protocol = {
         {
           viewportOptions: {
             toolGroupId: 'default',
-            initialImageOptions: {
-              index: 1,
-            },
             syncGroups: [
               {
                 type: 'cameraPosition',
@@ -770,9 +716,6 @@ const frameView: Types.HangingProtocol.Protocol = {
         {
           viewportOptions: {
             toolGroupId: 'default',
-            initialImageOptions: {
-              index: 2,
-            },
             syncGroups: [
               {
                 type: 'cameraPosition',
@@ -809,9 +752,6 @@ const frameView: Types.HangingProtocol.Protocol = {
         {
           viewportOptions: {
             toolGroupId: 'default',
-            initialImageOptions: {
-              index: 3,
-            },
             syncGroups: [
               {
                 type: 'cameraPosition',
@@ -848,9 +788,6 @@ const frameView: Types.HangingProtocol.Protocol = {
         {
           viewportOptions: {
             toolGroupId: 'default',
-            initialImageOptions: {
-              index: 4,
-            },
             syncGroups: [
               {
                 type: 'cameraPosition',
@@ -887,9 +824,6 @@ const frameView: Types.HangingProtocol.Protocol = {
         {
           viewportOptions: {
             toolGroupId: 'default',
-            initialImageOptions: {
-              index: 5,
-            },
             syncGroups: [
               {
                 type: 'cameraPosition',
@@ -926,9 +860,6 @@ const frameView: Types.HangingProtocol.Protocol = {
         {
           viewportOptions: {
             toolGroupId: 'default',
-            initialImageOptions: {
-              index: 6,
-            },
             syncGroups: [
               {
                 type: 'cameraPosition',
@@ -965,9 +896,6 @@ const frameView: Types.HangingProtocol.Protocol = {
         {
           viewportOptions: {
             toolGroupId: 'default',
-            initialImageOptions: {
-              index: 7,
-            },
             syncGroups: [
               {
                 type: 'cameraPosition',
@@ -1004,9 +932,6 @@ const frameView: Types.HangingProtocol.Protocol = {
         {
           viewportOptions: {
             toolGroupId: 'default',
-            initialImageOptions: {
-              index: 8,
-            },
             syncGroups: [
               {
                 type: 'cameraPosition',
@@ -1056,9 +981,6 @@ const frameView: Types.HangingProtocol.Protocol = {
         {
           viewportOptions: {
             toolGroupId: 'default',
-            initialImageOptions: {
-              index: 0,
-            },
             syncGroups: [
               {
                 type: 'cameraPosition',
@@ -1095,9 +1017,6 @@ const frameView: Types.HangingProtocol.Protocol = {
         {
           viewportOptions: {
             toolGroupId: 'default',
-            initialImageOptions: {
-              index: 1,
-            },
             syncGroups: [
               {
                 type: 'cameraPosition',
@@ -1134,9 +1053,6 @@ const frameView: Types.HangingProtocol.Protocol = {
         {
           viewportOptions: {
             toolGroupId: 'default',
-            initialImageOptions: {
-              index: 2,
-            },
             syncGroups: [
               {
                 type: 'cameraPosition',
@@ -1173,9 +1089,6 @@ const frameView: Types.HangingProtocol.Protocol = {
         {
           viewportOptions: {
             toolGroupId: 'default',
-            initialImageOptions: {
-              index: 3,
-            },
             syncGroups: [
               {
                 type: 'cameraPosition',
@@ -1212,9 +1125,6 @@ const frameView: Types.HangingProtocol.Protocol = {
         {
           viewportOptions: {
             toolGroupId: 'default',
-            initialImageOptions: {
-              index: 4,
-            },
             syncGroups: [
               {
                 type: 'cameraPosition',
@@ -1251,9 +1161,6 @@ const frameView: Types.HangingProtocol.Protocol = {
         {
           viewportOptions: {
             toolGroupId: 'default',
-            initialImageOptions: {
-              index: 5,
-            },
             syncGroups: [
               {
                 type: 'cameraPosition',
@@ -1303,9 +1210,6 @@ const frameView: Types.HangingProtocol.Protocol = {
         {
           viewportOptions: {
             toolGroupId: 'default',
-            initialImageOptions: {
-              index: 0,
-            },
             syncGroups: [
               {
                 type: 'cameraPosition',
@@ -1342,9 +1246,6 @@ const frameView: Types.HangingProtocol.Protocol = {
         {
           viewportOptions: {
             toolGroupId: 'default',
-            initialImageOptions: {
-              index: 1,
-            },
             syncGroups: [
               {
                 type: 'cameraPosition',
@@ -1381,9 +1282,6 @@ const frameView: Types.HangingProtocol.Protocol = {
         {
           viewportOptions: {
             toolGroupId: 'default',
-            initialImageOptions: {
-              index: 2,
-            },
             syncGroups: [
               {
                 type: 'cameraPosition',
@@ -1420,9 +1318,6 @@ const frameView: Types.HangingProtocol.Protocol = {
         {
           viewportOptions: {
             toolGroupId: 'default',
-            initialImageOptions: {
-              index: 3,
-            },
             syncGroups: [
               {
                 type: 'cameraPosition',
@@ -1472,9 +1367,6 @@ const frameView: Types.HangingProtocol.Protocol = {
         {
           viewportOptions: {
             toolGroupId: 'default',
-            initialImageOptions: {
-              index: 0,
-            },
             syncGroups: [
               {
                 type: 'cameraPosition',
@@ -1511,9 +1403,6 @@ const frameView: Types.HangingProtocol.Protocol = {
         {
           viewportOptions: {
             toolGroupId: 'default',
-            initialImageOptions: {
-              index: 1,
-            },
             syncGroups: [
               {
                 type: 'cameraPosition',
@@ -1550,9 +1439,6 @@ const frameView: Types.HangingProtocol.Protocol = {
         {
           viewportOptions: {
             toolGroupId: 'default',
-            initialImageOptions: {
-              index: 2,
-            },
             syncGroups: [
               {
                 type: 'cameraPosition',
@@ -1602,9 +1488,6 @@ const frameView: Types.HangingProtocol.Protocol = {
         {
           viewportOptions: {
             toolGroupId: 'default',
-            initialImageOptions: {
-              index: 0,
-            },
             syncGroups: [
               {
                 type: 'cameraPosition',
@@ -1641,9 +1524,6 @@ const frameView: Types.HangingProtocol.Protocol = {
         {
           viewportOptions: {
             toolGroupId: 'default',
-            initialImageOptions: {
-              index: 1,
-            },
             syncGroups: [
               {
                 type: 'cameraPosition',
