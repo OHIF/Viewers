@@ -5,6 +5,7 @@ export type DisplaySet = {
   instances: InstanceMetadata[];
   StudyInstanceUID: string;
   SeriesInstanceUID?: string;
+  SeriesDescription?: string;
   numImages?: number;
   unsupported?: boolean;
 };

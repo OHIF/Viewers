@@ -28,7 +28,8 @@ async function createReportAsync({
 
     const displaySet = displaySetService.getMostRecentDisplaySet();
 
-    const displaySetInstanceUID = displaySet.displaySetInstanceUID;
+    const { displaySetInstanceUID, SeriesDescription } = displaySet;
+
 
     uiNotificationService.show({
       title: 'Create Report',
