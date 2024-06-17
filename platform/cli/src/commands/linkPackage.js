@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { execa } from 'execa';
 import { keywords } from './enums/index.js';
-import { validateYarn, addExtensionToConfig, addModeToConfig } from './utils/index.js';
+import { validateYarn, addExtensionToConfig, addModeToConfig } from './utils/index';
 
 async function linkPackage(packageDir, options, addToConfig, keyword) {
   const { viewerDirectory } = options;
