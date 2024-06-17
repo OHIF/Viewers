@@ -77,6 +77,11 @@ function modeFactory({ modeConfiguration }) {
           {
             toolName: toolNames.Zoom,
             bindings: [{ mouseButton: Enums.MouseBindings.Secondary }],
+            configuration: {
+              zoomToCenter: false,
+              pan: false,
+              pinchToZoom: false,
+            },
           },
           { toolName: toolNames.StackScrollMouseWheel, bindings: [] },
         ],

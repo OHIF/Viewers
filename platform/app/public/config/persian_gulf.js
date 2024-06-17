@@ -8,7 +8,11 @@ window.config = {
   maxNumberOfWebWorkers: 3,
   // below flag is for performance reasons, but it might not work for all servers
   showWarningMessageForCrossOrigin: false,
-  showCPUFallbackMessage: true,
+  showCPUFallbackMessage: false,
+  useNorm16Texture: true,
+  preferSizeOverAccuracy: true,
+  useCursors: true,
+  useSharedArrayBuffer: true,
   showLoadingIndicator: true,
   strictZSpacingForVolumeViewport: true,
   maxNumRequests: {

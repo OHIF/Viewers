@@ -1,5 +1,5 @@
 /* IMPORT CUSTOM FONT */
-@import url('https://fonts.googleapis.com/css?family=Inter:100,300,400,500,700&display=swap');
+@import url('http://fonts.googleapis.com/css?family=Vazirmatn:100,300,400,500,700&subset=latin,arabic&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -7,7 +7,7 @@
 
 @layer base {
   html {
-    font-family: system-ui;
+    font-family: 'Vazirmatn', sans-serif;
   }
 }
 

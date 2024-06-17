@@ -164,6 +164,9 @@ const toolbarButtons = [
             commandName: 'setToolActive',
             commandOptions: {
               toolName: 'StackScroll',
+              configuration: {
+                loop: true,
+              },
             },
             context: 'CORNERSTONE',
           },
@@ -186,6 +189,9 @@ const toolbarButtons = [
               commandName: 'setToolActive',
               commandOptions: {
                 toolName: 'StackScroll',
+                configuration: {
+                  loop: true,
+                },
               },
               context: 'CORNERSTONE',
             },
@@ -227,6 +233,9 @@ const toolbarButtons = [
             commandName: 'setToolActive',
             commandOptions: {
               toolName: 'Magnify',
+              configuration: {
+                magnifySize: 100,
+              },
             },
             context: 'CORNERSTONE',
           },
@@ -249,6 +258,10 @@ const toolbarButtons = [
               commandName: 'setToolActive',
               commandOptions: {
                 toolName: 'Zoom',
+                configuration: {
+                  pan: false,
+                  zoomToCenter: true,
+                },
               },
               context: 'CORNERSTONE',
             },
@@ -264,6 +277,9 @@ const toolbarButtons = [
               commandName: 'setToolActive',
               commandOptions: {
                 toolName: 'Magnify',
+                configuration: {
+                  magnifySize: 100,
+                },
               },
               context: 'CORNERSTONE',
             },
