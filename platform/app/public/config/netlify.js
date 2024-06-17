@@ -12,11 +12,11 @@ window.config = {
   strictZSpacingForVolumeViewport: true,
   groupEnabledModesFirst: true,
   // filterQueryParam: false,
-  defaultDataSourceName: 'ohif',
+  defaultDataSourceName: 'dicomweb',
   dataSources: [
     {
       namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
-      sourceName: 'ohif',
+      sourceName: 'dicomweb',
       configuration: {
         friendlyName: 'AWS S3 Static wado server',
         name: 'aws',
@@ -41,10 +41,9 @@ window.config = {
         omitQuotationForMultipartRequest: true,
       },
     },
-
     {
       namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
-      sourceName: 'ohif2',
+      sourceName: 'dicomweb2',
       configuration: {
         friendlyName: 'AWS S3 Static wado secondary server',
         name: 'aws',
@@ -70,61 +69,6 @@ window.config = {
         omitQuotationForMultipartRequest: true,
       },
     },
-
-    {
-      namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
-      sourceName: 'ohif3',
-      configuration: {
-        friendlyName: 'AWS S3 Static wado secondary server',
-        name: 'aws',
-        wadoUriRoot: 'https://d3t6nz73ql33tx.cloudfront.net/dicomweb',
-        qidoRoot: 'https://d3t6nz73ql33tx.cloudfront.net/dicomweb',
-        wadoRoot: 'https://d3t6nz73ql33tx.cloudfront.net/dicomweb',
-        qidoSupportsIncludeField: false,
-        supportsReject: false,
-        imageRendering: 'wadors',
-        thumbnailRendering: 'wadors',
-        enableStudyLazyLoad: true,
-        supportsFuzzyMatching: false,
-        supportsWildcard: true,
-        staticWado: true,
-        singlepart: 'bulkdata,video',
-        // whether the data source should use retrieveBulkData to grab metadata,
-        // and in case of relative path, what would it be relative to, options
-        // are in the series level or study level (some servers like series some study)
-        bulkDataURI: {
-          enabled: true,
-          relativeResolution: 'studies',
-        },
-        omitQuotationForMultipartRequest: true,
-      },
-    },
-
-    {
-      namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
-      sourceName: 'local5000',
-      configuration: {
-        friendlyName: 'Static WADO Local Data',
-        name: 'DCM4CHEE',
-        qidoRoot: 'http://localhost:5000/dicomweb',
-        wadoRoot: 'http://localhost:5000/dicomweb',
-        qidoSupportsIncludeField: false,
-        supportsReject: true,
-        supportsStow: true,
-        imageRendering: 'wadors',
-        thumbnailRendering: 'wadors',
-        enableStudyLazyLoad: true,
-        supportsFuzzyMatching: false,
-        supportsWildcard: true,
-        staticWado: true,
-        singlepart: 'video',
-        bulkDataURI: {
-          enabled: true,
-          relativeResolution: 'studies',
-        },
-      },
-    },
-
     {
       namespace: '@ohif/extension-default.dataSourcesModule.dicomjson',
       sourceName: 'dicomjson',

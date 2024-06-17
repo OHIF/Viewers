@@ -11,7 +11,9 @@ function transpileJavaScript(mode) {
           // https://github.com/react-dnd/react-dnd/issues/1342
           // 'dcmjs', // contains: loglevelnext
           // https://github.com/shellscape/loglevelnext#browser-support
-        // 'loglevelnext',
+          // 'loglevelnext',
+          // https://github.com/dcmjs-org/dicom-microscopy-viewer/issues/35
+          // 'dicom-microscopy-viewer',
           // https://github.com/openlayers/openlayers#supported-browsers
           // 'ol', --> Should be fine
         ])

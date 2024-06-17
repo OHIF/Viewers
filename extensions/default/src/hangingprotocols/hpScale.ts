@@ -32,7 +32,6 @@ const hpScale: Types.HangingProtocol.Protocol = {
     defaultDisplaySetId: {
       seriesMatchingRules: [
         {
-          weight: 1,
           attribute: 'numImageFrames',
           constraint: {
             greaterThan: { value: 0 },
