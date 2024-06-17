@@ -57,8 +57,8 @@ const frameView: Types.HangingProtocol.Protocol = {
             toolGroupId: 'default',
             syncGroups: [
               {
-                type: 'cameraPosition',
-                id: 'camerasync',
+                type: 'zoompan',
+                id: 'zoompansync',
                 source: true,
                 target: true,
               },
@@ -93,8 +93,8 @@ const frameView: Types.HangingProtocol.Protocol = {
             toolGroupId: 'default',
             syncGroups: [
               {
-                type: 'cameraPosition',
-                id: 'camerasync',
+                type: 'zoompan',
+                id: 'zoompansync',
                 source: true,
                 target: true,
               },
@@ -129,8 +129,8 @@ const frameView: Types.HangingProtocol.Protocol = {
             toolGroupId: 'default',
             syncGroups: [
               {
-                type: 'cameraPosition',
-                id: 'camerasync',
+                type: 'zoompan',
+                id: 'zoompansync',
                 source: true,
                 target: true,
               },
@@ -165,8 +165,8 @@ const frameView: Types.HangingProtocol.Protocol = {
             toolGroupId: 'default',
             syncGroups: [
               {
-                type: 'cameraPosition',
-                id: 'camerasync',
+                type: 'zoompan',
+                id: 'zoompansync',
                 source: true,
                 target: true,
               },
@@ -201,8 +201,8 @@ const frameView: Types.HangingProtocol.Protocol = {
             toolGroupId: 'default',
             syncGroups: [
               {
-                type: 'cameraPosition',
-                id: 'camerasync',
+                type: 'zoompan',
+                id: 'zoompansync',
                 source: true,
                 target: true,
               },
@@ -237,8 +237,8 @@ const frameView: Types.HangingProtocol.Protocol = {
             toolGroupId: 'default',
             syncGroups: [
               {
-                type: 'cameraPosition',
-                id: 'camerasync',
+                type: 'zoompan',
+                id: 'zoompansync',
                 source: true,
                 target: true,
               },
@@ -273,8 +273,8 @@ const frameView: Types.HangingProtocol.Protocol = {
             toolGroupId: 'default',
             syncGroups: [
               {
-                type: 'cameraPosition',
-                id: 'camerasync',
+                type: 'zoompan',
+                id: 'zoompansync',
                 source: true,
                 target: true,
               },
@@ -309,8 +309,8 @@ const frameView: Types.HangingProtocol.Protocol = {
             toolGroupId: 'default',
             syncGroups: [
               {
-                type: 'cameraPosition',
-                id: 'camerasync',
+                type: 'zoompan',
+                id: 'zoompansync',
                 source: true,
                 target: true,
               },
@@ -345,8 +345,8 @@ const frameView: Types.HangingProtocol.Protocol = {
             toolGroupId: 'default',
             syncGroups: [
               {
-                type: 'cameraPosition',
-                id: 'camerasync',
+                type: 'zoompan',
+                id: 'zoompansync',
                 source: true,
                 target: true,
               },
@@ -381,8 +381,8 @@ const frameView: Types.HangingProtocol.Protocol = {
             toolGroupId: 'default',
             syncGroups: [
               {
-                type: 'cameraPosition',
-                id: 'camerasync',
+                type: 'zoompan',
+                id: 'zoompansync',
                 source: true,
                 target: true,
               },
@@ -417,8 +417,8 @@ const frameView: Types.HangingProtocol.Protocol = {
             toolGroupId: 'default',
             syncGroups: [
               {
-                type: 'cameraPosition',
-                id: 'camerasync',
+                type: 'zoompan',
+                id: 'zoompansync',
                 source: true,
                 target: true,
               },
@@ -453,8 +453,8 @@ const frameView: Types.HangingProtocol.Protocol = {
             toolGroupId: 'default',
             syncGroups: [
               {
-                type: 'cameraPosition',
-                id: 'camerasync',
+                type: 'zoompan',
+                id: 'zoompansync',
                 source: true,
                 target: true,
               },
@@ -489,8 +489,8 @@ const frameView: Types.HangingProtocol.Protocol = {
             toolGroupId: 'default',
             syncGroups: [
               {
-                type: 'cameraPosition',
-                id: 'camerasync',
+                type: 'zoompan',
+                id: 'zoompansync',
                 source: true,
                 target: true,
               },
@@ -525,8 +525,8 @@ const frameView: Types.HangingProtocol.Protocol = {
             toolGroupId: 'default',
             syncGroups: [
               {
-                type: 'cameraPosition',
-                id: 'camerasync',
+                type: 'zoompan',
+                id: 'zoompansync',
                 source: true,
                 target: true,
               },
@@ -561,8 +561,8 @@ const frameView: Types.HangingProtocol.Protocol = {
             toolGroupId: 'default',
             syncGroups: [
               {
-                type: 'cameraPosition',
-                id: 'camerasync',
+                type: 'zoompan',
+                id: 'zoompansync',
                 source: true,
                 target: true,
               },
@@ -597,8 +597,8 @@ const frameView: Types.HangingProtocol.Protocol = {
             toolGroupId: 'default',
             syncGroups: [
               {
-                type: 'cameraPosition',
-                id: 'camerasync',
+                type: 'zoompan',
+                id: 'zoompansync',
                 source: true,
                 target: true,
               },
@@ -646,8 +646,8 @@ const frameView: Types.HangingProtocol.Protocol = {
             toolGroupId: 'default',
             syncGroups: [
               {
-                type: 'cameraPosition',
-                id: 'camerasync',
+                type: 'zoompan',
+                id: 'zoompansync',
                 source: true,
                 target: true,
               },
@@ -682,8 +682,8 @@ const frameView: Types.HangingProtocol.Protocol = {
             toolGroupId: 'default',
             syncGroups: [
               {
-                type: 'cameraPosition',
-                id: 'camerasync',
+                type: 'zoompan',
+                id: 'zoompansync',
                 source: true,
                 target: true,
               },
@@ -718,8 +718,8 @@ const frameView: Types.HangingProtocol.Protocol = {
             toolGroupId: 'default',
             syncGroups: [
               {
-                type: 'cameraPosition',
-                id: 'camerasync',
+                type: 'zoompan',
+                id: 'zoompansync',
                 source: true,
                 target: true,
               },
@@ -754,8 +754,8 @@ const frameView: Types.HangingProtocol.Protocol = {
             toolGroupId: 'default',
             syncGroups: [
               {
-                type: 'cameraPosition',
-                id: 'camerasync',
+                type: 'zoompan',
+                id: 'zoompansync',
                 source: true,
                 target: true,
               },
@@ -790,8 +790,8 @@ const frameView: Types.HangingProtocol.Protocol = {
             toolGroupId: 'default',
             syncGroups: [
               {
-                type: 'cameraPosition',
-                id: 'camerasync',
+                type: 'zoompan',
+                id: 'zoompansync',
                 source: true,
                 target: true,
               },
@@ -826,8 +826,8 @@ const frameView: Types.HangingProtocol.Protocol = {
             toolGroupId: 'default',
             syncGroups: [
               {
-                type: 'cameraPosition',
-                id: 'camerasync',
+                type: 'zoompan',
+                id: 'zoompansync',
                 source: true,
                 target: true,
               },
@@ -862,8 +862,8 @@ const frameView: Types.HangingProtocol.Protocol = {
             toolGroupId: 'default',
             syncGroups: [
               {
-                type: 'cameraPosition',
-                id: 'camerasync',
+                type: 'zoompan',
+                id: 'zoompansync',
                 source: true,
                 target: true,
               },
@@ -898,8 +898,8 @@ const frameView: Types.HangingProtocol.Protocol = {
             toolGroupId: 'default',
             syncGroups: [
               {
-                type: 'cameraPosition',
-                id: 'camerasync',
+                type: 'zoompan',
+                id: 'zoompansync',
                 source: true,
                 target: true,
               },
@@ -934,8 +934,8 @@ const frameView: Types.HangingProtocol.Protocol = {
             toolGroupId: 'default',
             syncGroups: [
               {
-                type: 'cameraPosition',
-                id: 'camerasync',
+                type: 'zoompan',
+                id: 'zoompansync',
                 source: true,
                 target: true,
               },
@@ -983,8 +983,8 @@ const frameView: Types.HangingProtocol.Protocol = {
             toolGroupId: 'default',
             syncGroups: [
               {
-                type: 'cameraPosition',
-                id: 'camerasync',
+                type: 'zoompan',
+                id: 'zoompansync',
                 source: true,
                 target: true,
               },
@@ -1019,8 +1019,8 @@ const frameView: Types.HangingProtocol.Protocol = {
             toolGroupId: 'default',
             syncGroups: [
               {
-                type: 'cameraPosition',
-                id: 'camerasync',
+                type: 'zoompan',
+                id: 'zoompansync',
                 source: true,
                 target: true,
               },
@@ -1055,8 +1055,8 @@ const frameView: Types.HangingProtocol.Protocol = {
             toolGroupId: 'default',
             syncGroups: [
               {
-                type: 'cameraPosition',
-                id: 'camerasync',
+                type: 'zoompan',
+                id: 'zoompansync',
                 source: true,
                 target: true,
               },
@@ -1091,8 +1091,8 @@ const frameView: Types.HangingProtocol.Protocol = {
             toolGroupId: 'default',
             syncGroups: [
               {
-                type: 'cameraPosition',
-                id: 'camerasync',
+                type: 'zoompan',
+                id: 'zoompansync',
                 source: true,
                 target: true,
               },
@@ -1127,8 +1127,8 @@ const frameView: Types.HangingProtocol.Protocol = {
             toolGroupId: 'default',
             syncGroups: [
               {
-                type: 'cameraPosition',
-                id: 'camerasync',
+                type: 'zoompan',
+                id: 'zoompansync',
                 source: true,
                 target: true,
               },
@@ -1163,8 +1163,8 @@ const frameView: Types.HangingProtocol.Protocol = {
             toolGroupId: 'default',
             syncGroups: [
               {
-                type: 'cameraPosition',
-                id: 'camerasync',
+                type: 'zoompan',
+                id: 'zoompansync',
                 source: true,
                 target: true,
               },
@@ -1212,8 +1212,8 @@ const frameView: Types.HangingProtocol.Protocol = {
             toolGroupId: 'default',
             syncGroups: [
               {
-                type: 'cameraPosition',
-                id: 'camerasync',
+                type: 'zoompan',
+                id: 'zoompansync',
                 source: true,
                 target: true,
               },
@@ -1248,8 +1248,8 @@ const frameView: Types.HangingProtocol.Protocol = {
             toolGroupId: 'default',
             syncGroups: [
               {
-                type: 'cameraPosition',
-                id: 'camerasync',
+                type: 'zoompan',
+                id: 'zoompansync',
                 source: true,
                 target: true,
               },
@@ -1284,8 +1284,8 @@ const frameView: Types.HangingProtocol.Protocol = {
             toolGroupId: 'default',
             syncGroups: [
               {
-                type: 'cameraPosition',
-                id: 'camerasync',
+                type: 'zoompan',
+                id: 'zoompansync',
                 source: true,
                 target: true,
               },
@@ -1320,8 +1320,8 @@ const frameView: Types.HangingProtocol.Protocol = {
             toolGroupId: 'default',
             syncGroups: [
               {
-                type: 'cameraPosition',
-                id: 'camerasync',
+                type: 'zoompan',
+                id: 'zoompansync',
                 source: true,
                 target: true,
               },
@@ -1369,8 +1369,8 @@ const frameView: Types.HangingProtocol.Protocol = {
             toolGroupId: 'default',
             syncGroups: [
               {
-                type: 'cameraPosition',
-                id: 'camerasync',
+                type: 'zoompan',
+                id: 'zoompansync',
                 source: true,
                 target: true,
               },
@@ -1405,8 +1405,8 @@ const frameView: Types.HangingProtocol.Protocol = {
             toolGroupId: 'default',
             syncGroups: [
               {
-                type: 'cameraPosition',
-                id: 'camerasync',
+                type: 'zoompan',
+                id: 'zoompansync',
                 source: true,
                 target: true,
               },
@@ -1441,8 +1441,8 @@ const frameView: Types.HangingProtocol.Protocol = {
             toolGroupId: 'default',
             syncGroups: [
               {
-                type: 'cameraPosition',
-                id: 'camerasync',
+                type: 'zoompan',
+                id: 'zoompansync',
                 source: true,
                 target: true,
               },
@@ -1490,8 +1490,8 @@ const frameView: Types.HangingProtocol.Protocol = {
             toolGroupId: 'default',
             syncGroups: [
               {
-                type: 'cameraPosition',
-                id: 'camerasync',
+                type: 'zoompan',
+                id: 'zoompansync',
                 source: true,
                 target: true,
               },
@@ -1526,8 +1526,8 @@ const frameView: Types.HangingProtocol.Protocol = {
             toolGroupId: 'default',
             syncGroups: [
               {
-                type: 'cameraPosition',
-                id: 'camerasync',
+                type: 'zoompan',
+                id: 'zoompansync',
                 source: true,
                 target: true,
               },
