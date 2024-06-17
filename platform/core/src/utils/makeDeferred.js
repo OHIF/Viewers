@@ -1,7 +1,7 @@
 export default function makeDeferred() {
   let reject,
     resolve,
-    promise = new Promise(function(res, rej) {
+    promise = new Promise(function (res, rej) {
       resolve = res;
       reject = rej;
     });

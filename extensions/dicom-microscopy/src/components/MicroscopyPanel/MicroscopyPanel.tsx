@@ -1,16 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import {
-  ServicesManager,
-  ExtensionManager,
-  CommandsManager,
-  DicomMetadataStore,
-} from '@ohif/core';
-import { MeasurementTable, Icon, ButtonGroup, Button } from '@ohif/ui';
+import { ExtensionManager, CommandsManager, DicomMetadataStore } from '@ohif/core';
+import { MeasurementTable } from '@ohif/ui';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { EVENTS as MicroscopyEvents } from '../../services/MicroscopyService';
 import dcmjs from 'dcmjs';
-import styles from '../../utils/styles';
 import callInputDialog from '../../utils/callInputDialog';
 import constructSR from '../../utils/constructSR';
 import { saveByteArray } from '../../utils/saveByteArray';
@@ -52,14 +46,14 @@ const formatLength = (length, unit) => {
 
 interface IMicroscopyPanelProps extends WithTranslation {
   viewports: PropTypes.array;
-  activeViewportIndex: PropTypes.number;
+  activeViewportId: PropTypes.string;
 
   //
   onSaveComplete?: PropTypes.func; // callback when successfully saved annotations
   onRejectComplete?: PropTypes.func; // callback when rejected annotations
 
   //
-  servicesManager: ServicesManager;
+  servicesManager: AppTypes.ServicesManager;
   extensionManager: ExtensionManager;
   commandsManager: CommandsManager;
 }
@@ -73,9 +67,7 @@ interface IMicroscopyPanelProps extends WithTranslation {
 function MicroscopyPanel(props: IMicroscopyPanelProps) {
   const { microscopyService } = props.servicesManager.services;
 
-  const [studyInstanceUID, setStudyInstanceUID] = useState(
-    null as string | null
-  );
+  const [studyInstanceUID, setStudyInstanceUID] = useState(null as string | null);
   const [roiAnnotations, setRoiAnnotations] = useState([] as any[]);
   const [selectedAnnotation, setSelectedAnnotation] = useState(null as any);
   const { servicesManager, extensionManager } = props;
@@ -83,22 +75,18 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
   const { uiDialogService, displaySetService } = servicesManager.services;
 
   useEffect(() => {
-    const viewport = props.viewports[props.activeViewportIndex];
-    if (viewport.displaySetInstanceUIDs[0]) {
-      const displaySet = displaySetService.getDisplaySetByUID(
-        viewport.displaySetInstanceUIDs[0]
-      );
+    const viewport = props.viewports.get(props.activeViewportId);
+    if (viewport?.displaySetInstanceUIDs[0]) {
+      const displaySet = displaySetService.getDisplaySetByUID(viewport.displaySetInstanceUIDs[0]);
       if (displaySet) {
         setStudyInstanceUID(displaySet.StudyInstanceUID);
       }
     }
-  }, [props.viewports, props.activeViewportIndex]);
+  }, [props.viewports, props.activeViewportId]);
 
   useEffect(() => {
     const onAnnotationUpdated = () => {
-      const roiAnnotations = microscopyService.getAnnotationsForStudy(
-        studyInstanceUID
-      );
+      const roiAnnotations = microscopyService.getAnnotationsForStudy(studyInstanceUID);
       setRoiAnnotations(roiAnnotations);
     };
 
@@ -111,21 +99,15 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
       onAnnotationUpdated();
     };
 
-    const {
-      unsubscribe: unsubscribeAnnotationUpdated,
-    } = microscopyService.subscribe(
+    const { unsubscribe: unsubscribeAnnotationUpdated } = microscopyService.subscribe(
       MicroscopyEvents.ANNOTATION_UPDATED,
       onAnnotationUpdated
     );
-    const {
-      unsubscribe: unsubscribeAnnotationSelected,
-    } = microscopyService.subscribe(
+    const { unsubscribe: unsubscribeAnnotationSelected } = microscopyService.subscribe(
       MicroscopyEvents.ANNOTATION_SELECTED,
       onAnnotationSelected
     );
-    const {
-      unsubscribe: unsubscribeAnnotationRemoved,
-    } = microscopyService.subscribe(
+    const { unsubscribe: unsubscribeAnnotationRemoved } = microscopyService.subscribe(
       MicroscopyEvents.ANNOTATION_REMOVED,
       onAnnotationRemoved
     );
@@ -147,9 +129,7 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
    * @returns
    */
   const promptSave = () => {
-    const annotations = microscopyService.getAnnotationsForStudy(
-      studyInstanceUID
-    );
+    const annotations = microscopyService.getAnnotationsForStudy(studyInstanceUID);
 
     if (!annotations || saving) {
       return;
@@ -172,9 +152,7 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
   const getAllDisplaySets = (studyMetadata: any) => {
     let allDisplaySets = [] as any[];
     studyMetadata.series.forEach((series: any) => {
-      const displaySets = displaySetService.getDisplaySetsForSeries(
-        series.SeriesInstanceUID
-      );
+      const displaySets = displaySetService.getDisplaySetsForSeries(series.SeriesInstanceUID);
       allDisplaySets = allDisplaySets.concat(displaySets);
     });
     return allDisplaySets;
@@ -189,9 +167,7 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
   const saveFunction = async (SeriesDescription: string) => {
     const dataSource = extensionManager.getActiveDataSource()[0];
     const { onSaveComplete } = props;
-    const annotations = microscopyService.getAnnotationsForStudy(
-      studyInstanceUID
-    );
+    const annotations = microscopyService.getAnnotationsForStudy(studyInstanceUID);
 
     saving = true;
 
@@ -206,10 +182,7 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
     // Get the next available series number after 4700.
 
     const dsWithMetadata = displaySets.filter(
-      ds =>
-        ds.metadata &&
-        ds.metadata.SeriesNumber &&
-        typeof ds.metadata.SeriesNumber === 'number'
+      ds => ds.metadata && ds.metadata.SeriesNumber && typeof ds.metadata.SeriesNumber === 'number'
     );
 
     // Generate next series number
@@ -220,11 +193,7 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
     const { instance: metadata } = smDisplaySet;
 
     // construct SR dataset
-    const dataset = constructSR(
-      metadata,
-      { SeriesDescription, SeriesNumber },
-      annotations
-    );
+    const dataset = constructSR(metadata, { SeriesDescription, SeriesNumber }, annotations);
 
     // Save in DICOM format
     try {
@@ -243,7 +212,7 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
         }
         onSaveComplete({
           title: 'SR Saved',
-          meassage: 'Measurements downloaded successfully',
+          message: 'Measurements downloaded successfully',
           type: 'success',
         });
       } else {
@@ -265,19 +234,17 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
    */
   const onDeleteCurrentSRHandler = async () => {
     try {
-      const activeViewport = props.viewports[props.activeViewportIndex];
+      const activeViewport = props.viewports[props.activeViewportId];
       const { StudyInstanceUID } = activeViewport;
 
       // TODO: studies?
       const study = DicomMetadataStore.getStudy(StudyInstanceUID);
 
-      const lastDerivedDisplaySet = study.derivedDisplaySets.sort(
-        (ds1: any, ds2: any) => {
-          const dateTime1 = Number(`${ds1.SeriesDate}${ds1.SeriesTime}`);
-          const dateTime2 = Number(`${ds2.SeriesDate}${ds2.SeriesTime}`);
-          return dateTime1 > dateTime2;
-        }
-      )[study.derivedDisplaySets.length - 1];
+      const lastDerivedDisplaySet = study.derivedDisplaySets.sort((ds1: any, ds2: any) => {
+        const dateTime1 = Number(`${ds1.SeriesDate}${ds1.SeriesTime}`);
+        const dateTime2 = Number(`${ds2.SeriesDate}${ds2.SeriesTime}`);
+        return dateTime1 > dateTime2;
+      })[study.derivedDisplaySets.length - 1];
 
       // TODO: use dataSource.reject.dicom()
       // await DICOMSR.rejectMeasurements(
@@ -307,21 +274,20 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
   const onMeasurementItemClickHandler = ({ uid }: { uid: string }) => {
     const roiAnnotation = microscopyService.getAnnotation(uid);
     microscopyService.selectAnnotation(roiAnnotation);
-    microscopyService.focusAnnotation(roiAnnotation, props.activeViewportIndex);
+    microscopyService.focusAnnotation(roiAnnotation, props.activeViewportId);
   };
 
   /**
    * Handler for "Edit" action of an annotation item
    * @param param0
    */
-  const onMeasurementItemEditHandler = ({
-    uid,
-    isActive,
-  }: {
-    uid: string;
-    isActive: boolean;
-  }) => {
+  const onMeasurementItemEditHandler = ({ uid, isActive }: { uid: string; isActive: boolean }) => {
     props.commandsManager.runCommand('setLabel', { uid }, 'MICROSCOPY');
+  };
+
+  const onMeasurementDeleteHandler = ({ uid, isActive }: { uid: string; isActive: boolean }) => {
+    const roiAnnotation = microscopyService.getAnnotation(uid);
+    microscopyService.removeAnnotation(roiAnnotation);
   };
 
   // Convert ROI annotations managed by microscopyService into our
@@ -344,10 +310,7 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
     } else if (length !== undefined) {
       displayText.push(
         shortAxisLength
-          ? `${formatLength(length, 'μm')} x ${formatLength(
-              shortAxisLength,
-              'μm'
-            )}`
+          ? `${formatLength(length, 'μm')} x ${formatLength(shortAxisLength, 'μm')}`
           : `${formatLength(length, 'μm')}`
       );
     }
@@ -363,12 +326,10 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
     };
   });
 
-  const disabled = data.length === 0;
-
   return (
     <>
       <div
-        className="overflow-x-hidden overflow-y-auto ohif-scrollbar"
+        className="ohif-scrollbar overflow-y-auto overflow-x-hidden"
         data-cy={'measurements-panel'}
       >
         <MeasurementTable
@@ -377,37 +338,13 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
           data={data}
           onClick={onMeasurementItemClickHandler}
           onEdit={onMeasurementItemEditHandler}
+          onDelete={onMeasurementDeleteHandler}
         />
-      </div>
-      <div className="flex justify-center p-4">
-        <ButtonGroup color="black" size="inherit">
-          {/* Let's hide the save button for now, as export SR for SM is a proof of concept */}
-          {/*{promptSave && (
-            <Button
-              className="px-2 py-2 text-base"
-              size="initial"
-              variant={disabled ? 'disabled' : 'outlined'}
-              color="black"
-              border="primaryActive"
-              onClick={promptSave}
-            >
-              {props.t('Create Report')}
-            </Button>
-          )} */}
-          {/* <Button
-            className="px-2 py-2 text-base"
-            onClick={onDeleteCurrentSRHandler}
-          >
-            {props.t('Reject latest report')}
-          </Button> */}
-        </ButtonGroup>
       </div>
     </>
   );
 }
 
-const connectedMicroscopyPanel = withTranslation(['MicroscopyTable', 'Common'])(
-  MicroscopyPanel
-);
+const connectedMicroscopyPanel = withTranslation(['MicroscopyTable', 'Common'])(MicroscopyPanel);
 
 export default connectedMicroscopyPanel;

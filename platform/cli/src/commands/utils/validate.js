@@ -25,9 +25,7 @@ async function validateExtensionYarnInfo(packageName) {
 function validateYarnInfo(packageName, keyword) {
   return new Promise(async (resolve, reject) => {
     function rejectIfNotFound() {
-      const error = new Error(
-        `${chalk.red.bold('Error')} extension ${packageName} not installed`
-      );
+      const error = new Error(`${chalk.red.bold('Error')} extension ${packageName} not installed`);
       reject(error);
     }
 
@@ -77,14 +75,14 @@ function getVersion(json, version) {
   const [majorVersion] = version
     .split('^')[1]
     .split('.')
-    .map((v) => parseInt(v));
+    .map(v => parseInt(v));
 
   // Find the version that matches the major version, but is the latest minor version
   versions
-    .filter((version) => parseInt(version.split('.')[0]) === majorVersion)
+    .filter(version => parseInt(version.split('.')[0]) === majorVersion)
     .sort((a, b) => {
-      const [majorA, minorA, patchA] = a.split('.').map((v) => parseInt(v));
-      const [majorB, minorB, patchB] = b.split('.').map((v) => parseInt(v));
+      const [majorA, minorA, patchA] = a.split('.').map(v => parseInt(v));
+      const [majorB, minorB, patchB] = b.split('.').map(v => parseInt(v));
 
       if (majorA === majorB) {
         if (minorA === minorB) {
@@ -110,19 +108,17 @@ function validate(packageName, version, keyword) {
 
     // Gets the registry of the package. Scoped packages may not be using the global default.
     const registryUrlOfPackage = registryUrl(scope);
-    let options = {}
-    if (process.env.NPM_TOKEN){
+    let options = {};
+    if (process.env.NPM_TOKEN) {
       options['headers'] = {
-        'Authorization': `Bearer ${process.env.NPM_TOKEN}`,
-      }
+        Authorization: `Bearer ${process.env.NPM_TOKEN}`,
+      };
     }
     const response = await fetch(`${registryUrlOfPackage}${packageName}`, options);
     const json = await response.json();
 
     if (json.error && json.error === NOT_FOUND) {
-      const error = new Error(
-        `${chalk.red.bold('Error')} package ${packageName} not found`
-      );
+      const error = new Error(`${chalk.red.bold('Error')} package ${packageName} not found`);
       reject(error);
       return;
     }
@@ -139,27 +135,18 @@ function validate(packageName, version, keyword) {
         resolve(true);
       } else {
         const error = new Error(
-          `${chalk.red.bold(
-            'Error'
-          )} package ${packageName} is not an ${keyword}`
+          `${chalk.red.bold('Error')} package ${packageName} is not an ${keyword}`
         );
         reject(error);
       }
     } else {
       // Particular version undefined
       const error = new Error(
-        `${chalk.red.bold(
-          'Error'
-        )} version ${packageVersion} of package ${packageName} not found`
+        `${chalk.red.bold('Error')} version ${packageVersion} of package ${packageName} not found`
       );
       reject(error);
     }
   });
 }
 
-export {
-  validateMode,
-  validateExtension,
-  validateModeYarnInfo,
-  validateExtensionYarnInfo,
-};
+export { validateMode, validateExtension, validateModeYarnInfo, validateExtensionYarnInfo };

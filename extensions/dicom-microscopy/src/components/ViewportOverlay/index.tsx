@@ -3,12 +3,7 @@ import classnames from 'classnames';
 
 import listComponentGenerator from './listComponentGenerator';
 import './ViewportOverlay.css';
-import {
-  formatDICOMDate,
-  formatDICOMTime,
-  formatNumberPrecision,
-  formatPN,
-} from './utils';
+import { formatDICOMDate, formatDICOMTime, formatNumberPrecision, formatPN } from './utils';
 
 interface OverlayItem {
   id: string;
@@ -41,20 +36,15 @@ export const generateFromConfig = ({
 }) => {
   return (props: any) => {
     const topLeftClass = 'top-viewport left-viewport text-primary-light';
-    const topRightClass =
-      'top-viewport right-viewport-scrollbar text-primary-light';
-    const bottomRightClass =
-      'bottom-viewport right-viewport-scrollbar text-primary-light';
+    const topRightClass = 'top-viewport right-viewport-scrollbar text-primary-light';
+    const bottomRightClass = 'bottom-viewport right-viewport-scrollbar text-primary-light';
     const bottomLeftClass = 'bottom-viewport left-viewport text-primary-light';
     const overlay = 'absolute pointer-events-none microscopy-viewport-overlay';
 
     return (
       <>
         {topLeft && topLeft.length > 0 && (
-          <div
-            data-cy={'viewport-overlay-top-left'}
-            className={classnames(overlay, topLeftClass)}
-          >
+          <div data-cy={'viewport-overlay-top-left'} className={classnames(overlay, topLeftClass)}>
             {listComponentGenerator({ ...props, list: topLeft, itemGenerator })}
           </div>
         )}
@@ -107,8 +97,12 @@ const itemGenerator = (props: any) => {
   props.formatTime = formatDICOMTime;
   props.formatPN = formatPN;
   props.formatNumberPrecision = formatNumberPrecision;
-  if (condition && !condition(props)) return null;
-  if (!contents && !valueFunc) return null;
+  if (condition && !condition(props)) {
+    return null;
+  }
+  if (!contents && !valueFunc) {
+    return null;
+  }
   const value = valueFunc && valueFunc(props);
   const contentsValue = (contents && contents(props)) || [
     { className: 'mr-1', value: title },

@@ -1,7 +1,9 @@
 const absoluteUrl = path => {
   let absolutePath = '/';
 
-  if (!path) return absolutePath;
+  if (!path) {
+    return absolutePath;
+  }
 
   // TODO: Find another way to get root url
   const absoluteUrl = window.location.origin;

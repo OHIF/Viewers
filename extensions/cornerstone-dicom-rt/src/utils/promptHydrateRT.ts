@@ -1,5 +1,4 @@
 import { ButtonEnums } from '@ohif/ui';
-import hydrateRTDisplaySet from './_hydrateRT';
 
 const RESPONSE = {
   NO_NEVER: -1,
@@ -10,32 +9,40 @@ const RESPONSE = {
 function promptHydrateRT({
   servicesManager,
   rtDisplaySet,
-  viewportIndex,
+  viewportId,
   toolGroupId = 'default',
-}) {
+  preHydrateCallbacks,
+  hydrateRTDisplaySet,
+}: withAppTypes) {
   const { uiViewportDialogService } = servicesManager.services;
-
-  return new Promise(async function(resolve, reject) {
-    const promptResult = await _askHydrate(
-      uiViewportDialogService,
-      viewportIndex
-    );
+  const extensionManager = servicesManager._extensionManager;
+  const appConfig = extensionManager._appConfig;
+  return new Promise(async function (resolve, reject) {
+    const promptResult = appConfig?.disableConfirmationPrompts
+      ? RESPONSE.HYDRATE_SEG
+      : await _askHydrate(uiViewportDialogService, viewportId);
 
     if (promptResult === RESPONSE.HYDRATE_SEG) {
-      const isHydrated = await hydrateRTDisplaySet({
-        rtDisplaySet,
-        viewportIndex,
-        toolGroupId,
-        servicesManager,
+      preHydrateCallbacks?.forEach(callback => {
+        callback();
       });
 
-      resolve(isHydrated);
+      window.setTimeout(async () => {
+        const isHydrated = await hydrateRTDisplaySet({
+          rtDisplaySet,
+          viewportId,
+          toolGroupId,
+          servicesManager,
+        });
+
+        resolve(isHydrated);
+      }, 0);
     }
   });
 }
 
-function _askHydrate(uiViewportDialogService, viewportIndex) {
-  return new Promise(function(resolve, reject) {
+function _askHydrate(uiViewportDialogService: AppTypes.UIViewportDialogService, viewportId) {
+  return new Promise(function (resolve, reject) {
     const message = 'Do you want to open this Segmentation?';
     const actions = [
       {
@@ -55,7 +62,8 @@ function _askHydrate(uiViewportDialogService, viewportIndex) {
     };
 
     uiViewportDialogService.show({
-      viewportIndex,
+      id: 'promptHydrateRT',
+      viewportId,
       type: 'info',
       message,
       actions,
@@ -63,6 +71,11 @@ function _askHydrate(uiViewportDialogService, viewportIndex) {
       onOutsideClick: () => {
         uiViewportDialogService.hide();
         resolve(RESPONSE.CANCEL);
+      },
+      onKeyPress: event => {
+        if (event.key === 'Enter') {
+          onSubmit(RESPONSE.HYDRATE_SEG);
+        }
       },
     });
   });

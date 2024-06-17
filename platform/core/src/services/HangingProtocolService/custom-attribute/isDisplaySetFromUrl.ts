@@ -8,23 +8,21 @@ import { getSplitParam } from '../../../utils';
  */
 const isDisplaySetFromUrl = (displaySet): boolean => {
   const params = new URLSearchParams(window.location.search);
-  const initialSeriesInstanceUID = getSplitParam(
-    'initialseriesinstanceuid',
-    params
-  );
+  const initialSeriesInstanceUID = getSplitParam('initialseriesinstanceuid', params);
   const initialSOPInstanceUID = getSplitParam('initialsopinstanceuid', params);
-  if (!initialSeriesInstanceUID && !initialSOPInstanceUID) return false;
-  const isSeriesMatch =
-    !initialSeriesInstanceUID ||
-    initialSeriesInstanceUID.some(
-      seriesUID => displaySet.SeriesInstanceUID === seriesUID
-    );
-  const isSopMatch =
-    !initialSOPInstanceUID ||
-    displaySet.instances?.some?.(instance =>
-      initialSOPInstanceUID.some(sopUID => sopUID === instance.SOPInstanceUID)
-    );
-  return isSeriesMatch && isSopMatch;
+  if (!initialSeriesInstanceUID && !initialSOPInstanceUID) {
+    return false;
+  }
+
+  const isSeriesMatch = initialSeriesInstanceUID?.some(
+    seriesUID => displaySet.SeriesInstanceUID === seriesUID
+  );
+
+  const isSopMatch = initialSOPInstanceUID?.some(sopUID =>
+    displaySet.instances?.some(instance => sopUID === instance.SOPInstanceUID)
+  );
+
+  return isSeriesMatch || isSopMatch;
 };
 
 /** Returns the index location of the requested image, or the defaultValue in this.
@@ -32,9 +30,13 @@ const isDisplaySetFromUrl = (displaySet): boolean => {
  */
 function sopInstanceLocation(displaySets) {
   const displaySet = displaySets?.[0];
-  if (!displaySet) return;
+  if (!displaySet) {
+    return;
+  }
   const initialSOPInstanceUID = getSplitParam('initialsopinstanceuid');
-  if (!initialSOPInstanceUID) return;
+  if (!initialSOPInstanceUID) {
+    return;
+  }
 
   const index = displaySet.instances.findIndex(instance =>
     initialSOPInstanceUID.includes(instance.SOPInstanceUID)

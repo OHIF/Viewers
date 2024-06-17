@@ -20,8 +20,13 @@ class ImageScrollbar extends PureComponent {
       width: `${this.props.height}`,
     };
 
+    const { onContextMenu = e => e.preventDefault() } = this.props;
+
     return (
-      <div className="scroll" onContextMenu={this.props.onContextMenu}>
+      <div
+        className="scroll"
+        onContextMenu={onContextMenu}
+      >
         <div className="scroll-holder">
           <input
             // adding mousetrap let the mousetrap know about the scrollbar otherwise,
@@ -66,9 +71,5 @@ class ImageScrollbar extends PureComponent {
     }
   };
 }
-
-ImageScrollbar.defaultProps = {
-  onContextMenu: e => e.preventDefault(),
-};
 
 export default ImageScrollbar;

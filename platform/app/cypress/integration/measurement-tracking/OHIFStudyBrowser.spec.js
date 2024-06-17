@@ -1,34 +1,34 @@
-describe('OHIF Study Viewer Page', function() {
-  beforeEach(function() {
-    cy.checkStudyRouteInViewer(
-      '1.2.840.113619.2.5.1762583153.215519.978957063.78'
-    );
+describe('OHIF Study Browser', function () {
+  beforeEach(function () {
+    cy.checkStudyRouteInViewer('1.2.840.113619.2.5.1762583153.215519.978957063.78');
 
     cy.expectMinimumThumbnails(3);
     cy.initCommonElementsAliases();
     cy.initCornerstoneToolsAliases();
-    cy.resetViewport().wait(50);
   });
 
-  it('checks if series thumbnails are being displayed', function() {
-    cy.get('[data-cy="study-browser-thumbnail"]')
-      .its('length')
-      .should('be.gt', 1);
+  it('checks if series thumbnails are being displayed', function () {
+    cy.get('[data-cy="study-browser-thumbnail"]').its('length').should('be.gt', 1);
   });
 
-  it('drags and drop a series thumbnail into viewport', function() {
+  it('drags and drop a series thumbnail into viewport', function () {
     // Can't use the native drag version as the element should be rerendered
     // cy.get('[data-cy="study-browser-thumbnail"]:nth-child(2)') //element to be dragged
     //   .drag('.cornerstone-canvas'); //dropzone element
 
     const dataTransfer = new DataTransfer();
 
-    cy.get('[data-cy="study-browser-thumbnail"]:nth-child(2)')
+    cy.get('[data-cy="study-browser-thumbnail"]:nth-child(2)').as('seriesThumbnail');
+
+    cy.get('@seriesThumbnail')
       .first()
       .trigger('mousedown', { which: 1, button: 0 })
       .trigger('dragstart', { dataTransfer })
       .trigger('drag', {});
-    cy.get('.cornerstone-canvas')
+
+    cy.get('.cornerstone-canvas').as('viewport');
+
+    cy.get('@viewport')
       .trigger('mousemove', 'center')
       .trigger('dragover', { dataTransfer, force: true })
       .trigger('drop', { dataTransfer, force: true });
@@ -38,7 +38,7 @@ describe('OHIF Study Viewer Page', function() {
     //cy.get('@viewportInfoBottomLeft').should('contain.text', expectedText);
   });
 
-  it('checks if Series left panel can be hidden/displayed', function() {
+  it('checks if Series left panel can be hidden/displayed', function () {
     cy.get('@seriesPanel').should('exist');
     cy.get('@seriesPanel').should('be.visible');
 

@@ -1,6 +1,7 @@
 import * as ContextMenuItemsBuilder from './ContextMenuItemsBuilder';
 import ContextMenu from '../../../../platform/ui/src/components/ContextMenu/ContextMenu';
-import { CommandsManager, ServicesManager, Types } from '@ohif/core';
+import { CommandsManager } from '@ohif/core';
+import { annotation as CsAnnotation } from '@cornerstonejs/tools';
 import { Menu, MenuItem, Point, ContextMenuProps } from './types';
 
 /**
@@ -16,14 +17,11 @@ import { Menu, MenuItem, Point, ContextMenuProps } from './types';
  */
 export default class ContextMenuController {
   commandsManager: CommandsManager;
-  services: Types.Services;
+  services: AppTypes.Services;
   menuItems: Menu[] | MenuItem[];
 
-  constructor(
-    servicesManager: ServicesManager,
-    commandsManager: CommandsManager
-  ) {
-    this.services = servicesManager.services as Obj;
+  constructor(servicesManager: AppTypes.ServicesManager, commandsManager: CommandsManager) {
+    this.services = servicesManager.services;
     this.commandsManager = commandsManager;
   }
 
@@ -50,7 +48,18 @@ export default class ContextMenuController {
 
     const { event, subMenu, menuId, menus, selectorProps } = contextMenuProps;
 
-    console.log('Getting items from', menus);
+    const annotationManager = CsAnnotation.state.getAnnotationManager();
+    const { locking } = CsAnnotation;
+    const targetAnnotationId = selectorProps?.nearbyToolData?.annotationUID as string;
+    const isLocked = locking.isAnnotationLocked(
+      annotationManager.getAnnotation(targetAnnotationId)
+    );
+
+    if (isLocked) {
+      console.warn('Annotation is locked.');
+      return;
+    }
+
     const items = ContextMenuItemsBuilder.getMenuItems(
       selectorProps || contextMenuProps,
       event,
@@ -72,10 +81,9 @@ export default class ContextMenuController {
       event,
       content: ContextMenu,
 
-      // This naming is part of hte uiDialogService convention
-      // Clicking outside simpy closes the dialog box.
-      onClickOutside: () =>
-        this.services.uiDialogService.dismiss({ id: 'context-menu' }),
+      // This naming is part of the uiDialogService convention
+      // Clicking outside simply closes the dialog box.
+      onClickOutside: () => this.services.uiDialogService.dismiss({ id: 'context-menu' }),
 
       contentProps: {
         items,
@@ -170,9 +178,7 @@ export default class ContextMenuController {
   };
 
   static _isValidPosition = (source): boolean => {
-    return (
-      source && typeof source.x === 'number' && typeof source.y === 'number'
-    );
+    return source && typeof source.x === 'number' && typeof source.y === 'number';
   };
 
   /**
@@ -180,10 +186,7 @@ export default class ContextMenuController {
    */
   static _getDefaultPosition = (canvasPoints, eventDetail, viewerElement) => {
     function* getPositionIterator() {
-      yield ContextMenuController._getCanvasPointsPosition(
-        canvasPoints,
-        viewerElement
-      );
+      yield ContextMenuController._getCanvasPointsPosition(canvasPoints, viewerElement);
       yield ContextMenuController._getEventDefaultPosition(eventDetail);
       yield ContextMenuController._getElementDefaultPosition(viewerElement);
       yield ContextMenuController.getDefaultPosition();

@@ -4,13 +4,13 @@ import PropTypes from 'prop-types';
 
 import Button, { ButtonEnums } from '../Button';
 
-const Footer = ({ actions, className, onSubmit, value }) => {
+const Footer = ({ actions = [], className, onSubmit = () => {}, value }) => {
   const flex = 'flex items-center justify-end';
   const padding = 'pt-[20px]';
 
   return (
     <div className={classNames(flex, padding, className)}>
-      {actions.map((action, index) => {
+      {actions?.map((action, index) => {
         const isFirst = index === 0;
 
         const onClickHandler = event => onSubmit({ action, value, event });
@@ -41,18 +41,10 @@ Footer.propTypes = {
       id: PropTypes.string.isRequired,
       text: PropTypes.string.isRequired,
       value: PropTypes.any,
-      type: PropTypes.oneOf([
-        ButtonEnums.type.primary,
-        ButtonEnums.type.secondary,
-      ]).isRequired,
+      type: PropTypes.oneOf([ButtonEnums.type.primary, ButtonEnums.type.secondary]).isRequired,
       classes: PropTypes.arrayOf(PropTypes.string),
     })
   ).isRequired,
-};
-
-Footer.defaultProps = {
-  onSubmit: noop,
-  actions: [],
 };
 
 export default Footer;

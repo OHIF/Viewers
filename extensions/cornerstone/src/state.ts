@@ -9,26 +9,22 @@ const state = {
  * @param {HTMLElement} dom Active viewport element.
  * @return void
  */
-const setEnabledElement = (
-  viewportIndex: number,
-  element: HTMLElement,
-  context?: string
-): void => {
+const setEnabledElement = (viewportId: string, element: HTMLElement, context?: string): void => {
   const targetContext = context || state.DEFAULT_CONTEXT;
 
-  state.enabledElements[viewportIndex] = {
+  state.enabledElements[viewportId] = {
     element,
     context: targetContext,
   };
 };
 
 /**
- * Grabs the enabled element `dom` reference of an ative viewport.
+ * Grabs the enabled element `dom` reference of an active viewport.
  *
  * @return {HTMLElement} Active viewport element.
  */
-const getEnabledElement = viewportIndex => {
-  return state.enabledElements[viewportIndex];
+const getEnabledElement = viewportId => {
+  return state.enabledElements[viewportId];
 };
 
 const reset = () => {

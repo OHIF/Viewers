@@ -6,11 +6,17 @@ export const argTypes = {
   title: 'Components/CheckBox',
 };
 
-<Meta title="Components/CheckBox" component={CheckBox} />
+<Meta
+  title="Components/CheckBox"
+  component={CheckBox}
+/>
 
-export const CheckBoxTemplate = args => <CheckBox {...args} />
+export const CheckBoxTemplate = args => <CheckBox {...args} />;
 
-<Heading title="CheckBox" componentRelativePath="CheckBox/CheckBox.tsx" />
+<Heading
+  title="CheckBox"
+  componentRelativePath="CheckBox/CheckBox.tsx"
+/>
 
 - [Overview](#overview)
 - [Props](#props)
@@ -26,8 +32,8 @@ CheckBox is a component that allows you to use as a boolean value
     args={{
       checked: false,
       onChange: () => console.log('on change callback'),
-      label: "checkBoxLabel",
-      labelClassName: "text-black text-sm",
+      label: 'checkBoxLabel',
+      labelClassName: 'text-black text-sm',
     }}
   >
     {CheckBoxTemplate.bind({})}

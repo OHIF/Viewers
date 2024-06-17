@@ -1,10 +1,14 @@
 import React, { useState } from 'react';
-import classNames from 'classnames';
-
 import Icon from '../Icon';
 import InputRange from '../InputRange';
 import CheckBox from '../CheckBox';
 import InputNumber from '../InputNumber';
+import classNames from 'classnames';
+import { useTranslation } from 'react-i18next';
+
+const getRoundedValue = value => {
+  return Math.round(value * 100) / 100;
+};
 
 const ActiveSegmentationConfig = ({
   config,
@@ -14,54 +18,56 @@ const ActiveSegmentationConfig = ({
   setRenderFill,
   setFillAlpha,
 }) => {
+  const { t } = useTranslation('SegmentationTable');
   return (
-    <div className="flex justify-between text-[12px] pt-[13px] px-2">
-      <div className="flex flex-col items-start">
-        <div className="text-white mb-[12px]">Active</div>
+    <div className="flex justify-between gap-[5px] px-2 pt-[13px] text-[12px]">
+      <div className="flex h-[89px] flex-col items-start">
+        <div className="mb-[12px] text-white">{t('Active')}</div>
         <CheckBox
-          label="Outline"
+          label={t('Outline')}
           checked={config.renderOutline}
-          labelClassName="text-[12px] pl-1 pt-1"
+          labelClassName="text-[12px]"
           className="mb-[9px]"
           onChange={setRenderOutline}
         />
+        <div className="mt-2"></div>
         <CheckBox
-          label="Fill"
+          label={t('Fill')}
           checked={config.renderFill}
-          labelClassName="text-[12px] pl-1 pt-1"
+          labelClassName="text-[12px]"
           className="mb-[9px]"
           onChange={setRenderFill}
         />
       </div>
 
-      <div className="flex flex-col items-center col-span-2">
-        <div className="text-[#b3b3b3] text-[10px] mb-[12px]">Opacity</div>
+      <div className="col-span-2 flex flex-col items-center">
+        <div className="mb-[12px] text-[10px] text-[#b3b3b3]">{t('Opacity')}</div>
         <InputRange
           minValue={0}
           maxValue={100}
-          value={config.outlineOpacity * 100}
+          value={getRoundedValue(config.outlineOpacity * 100)}
           onChange={setOutlineOpacityActive}
           step={1}
-          containerClassName="mt-[4px] mb-[9px]"
+          containerClassName="mt-[4px] mb-[9px] w-[100px]"
           inputClassName="w-[64px]"
-          labelClassName="text-white text-[12px]"
+          labelClassName="text-white text-[12px] whitespace-nowrap"
           unit="%"
         />
         <InputRange
           minValue={0}
           maxValue={100}
-          value={config.fillAlpha * 100}
+          value={getRoundedValue(config.fillAlpha * 100)}
           onChange={setFillAlpha}
           step={1}
-          containerClassName="mt-[4px] mb-[9px]"
+          containerClassName="mt-[4px] mb-[9px] w-[100px]"
           inputClassName="w-[64px]"
-          labelClassName="text-white text-[12px]"
+          labelClassName="text-white text-[12px] whitespace-nowrap"
           unit="%"
         />
       </div>
 
       <div className="flex flex-col items-center">
-        <div className="text-[#b3b3b3] text-[10px] mb-[12px]">Size</div>
+        <div className="mb-[12px] text-[10px] text-[#b3b3b3]">{t('Size')}</div>
         <InputNumber
           value={config.outlineWidthActive}
           onChange={setOutlineWidthActive}
@@ -79,22 +85,23 @@ const InactiveSegmentationConfig = ({
   setRenderInactiveSegmentations,
   setFillAlphaInactive,
 }) => {
+  const { t } = useTranslation('SegmentationTable');
   return (
-    <div className="px-2">
+    <div className="px-3">
       <CheckBox
-        label="Display Inactive Segmentations"
+        label={t('Display inactive segmentations')}
         checked={config.renderInactiveSegmentations}
-        labelClassName="text-[12px] pt-1"
+        labelClassName="text-[12px]"
         className="mb-[9px]"
         onChange={setRenderInactiveSegmentations}
       />
 
-      <div className="flex pl-4 items-center space-x-2">
-        <span className="text-[10px] text-[#b3b3b3]">Opacity</span>
+      <div className="flex items-center space-x-2 pl-4">
+        <span className="text-[10px] text-[#b3b3b3]">{t('Opacity')}</span>
         <InputRange
           minValue={0}
           maxValue={100}
-          value={config.fillAlphaInactive * 100}
+          value={getRoundedValue(config.fillAlphaInactive * 100)}
           onChange={setFillAlphaInactive}
           step={1}
           containerClassName="mt-[4px]"
@@ -117,59 +124,43 @@ const SegmentationConfig = ({
   setRenderInactiveSegmentations,
   setRenderOutline,
 }) => {
+  const { t } = useTranslation('SegmentationTable');
   const { initialConfig } = segmentationConfig;
   const [isMinimized, setIsMinimized] = useState(true);
   return (
-    <div className="bg-primary-dark">
-      <div
-        className="flex cursor-pointer items-center"
-        onClick={evt => {
-          evt.stopPropagation();
-          setIsMinimized(!isMinimized);
-        }}
-      >
-        <Icon
-          name="panel-group-open-close"
-          className={classNames(
-            'w-5 h-5 text-white transition duration-300 cursor-pointer',
-            {
-              'transform rotate-90': !isMinimized,
-            }
-          )}
+    <div className="bg-primary-dark select-none">
+      <div>
+        <ActiveSegmentationConfig
+          config={initialConfig}
+          setFillAlpha={setFillAlpha}
+          setOutlineWidthActive={setOutlineWidthActive}
+          setOutlineOpacityActive={setOutlineOpacityActive}
+          setRenderFill={setRenderFill}
+          setRenderOutline={setRenderOutline}
         />
-        <span className="text-[#d8d8d8] text-[12px] font-[300]">
-          {'Segmentation Appearance'}
-        </span>
-      </div>
-      {/* active segmentation */}
-      {!isMinimized && (
-        <div>
-          <ActiveSegmentationConfig
-            config={initialConfig}
-            setFillAlpha={setFillAlpha}
-            setOutlineWidthActive={setOutlineWidthActive}
-            setOutlineOpacityActive={setOutlineOpacityActive}
-            setRenderFill={setRenderFill}
-            setRenderOutline={setRenderOutline}
+        <div className="mx-1 mb-[8px] h-[1px] bg-[#212456]"></div>
+        <div
+          onClick={() => setIsMinimized(!isMinimized)}
+          className="flex cursor-pointer items-center pl-2 pb-[9px]"
+        >
+          <Icon
+            name="panel-group-open-close"
+            className={classNames('h-5 w-5 cursor-pointer text-white transition duration-300', {
+              'rotate-90 transform': !isMinimized,
+            })}
           />
-          {/* A small line  */}
-          <div className="h-[1px] bg-[#212456] mb-[8px] mx-1"></div>
-          {/* inactive segmentation */}
-          <div
-            onClick={() => setIsMinimized(!isMinimized)}
-            className="flex items-center cursor-pointer pl-2 pb-[9px]"
-          >
-            <span className="text-[#d8d8d8] text-[12px] font-[300]">
-              {'Inactive Segmentations'}
-            </span>
-          </div>
+          <span className="text-[12px] font-[300] text-[#d8d8d8]">
+            {t('Inactive segmentations')}
+          </span>
+        </div>
+        {!isMinimized && (
           <InactiveSegmentationConfig
             config={initialConfig}
             setRenderInactiveSegmentations={setRenderInactiveSegmentations}
             setFillAlphaInactive={setFillAlphaInactive}
           />
-        </div>
-      )}
+        )}
+      </div>
       <div className="h-[6px] bg-black "></div>
     </div>
   );

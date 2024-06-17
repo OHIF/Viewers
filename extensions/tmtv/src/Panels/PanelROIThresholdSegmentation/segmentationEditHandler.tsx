@@ -1,7 +1,7 @@
 import React from 'react';
 import { Input, Dialog, ButtonEnums } from '@ohif/ui';
 
-function segmentationItemEditHandler({ id, servicesManager }) {
+function segmentationItemEditHandler({ id, servicesManager }: withAppTypes) {
   const { segmentationService, uiDialogService } = servicesManager.services;
 
   const segmentation = segmentationService.getSegmentation(id);
@@ -46,7 +46,7 @@ function segmentationItemEditHandler({ id, servicesManager }) {
         return (
           <Input
             autoFocus
-            className="bg-black border-primary-main"
+            className="border-primary-main bg-black"
             type="text"
             containerClassName="mr-2"
             value={value.label}

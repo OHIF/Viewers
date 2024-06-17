@@ -13,8 +13,8 @@ const transparentClasses = {
 
 const smallInputClasses = {
   true: 'input-small',
-  false: ''
-}
+  false: '',
+};
 
 const Input = ({
   id,
@@ -33,11 +33,16 @@ const Input = ({
   onKeyDown,
   readOnly,
   disabled,
+  labelChildren,
   ...otherProps
 }) => {
   return (
-    <div className={classnames('flex flex-col flex-1', containerClassName)}>
-      <Label className={labelClassName} text={label}></Label>
+    <div className={classnames('flex flex-1 flex-col', containerClassName)}>
+      <Label
+        className={labelClassName}
+        text={label}
+        children={labelChildren}
+      ></Label>
       <input
         data-cy={`input-${id}`}
         className={classnames(
@@ -80,6 +85,7 @@ Input.propTypes = {
   onKeyPress: PropTypes.func,
   onKeyDown: PropTypes.func,
   disabled: PropTypes.bool,
+  labelChildren: PropTypes.node,
 };
 
 export default Input;

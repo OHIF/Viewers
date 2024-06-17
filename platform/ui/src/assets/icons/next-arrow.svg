@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>arrow-right</title>
+    <g id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Artboard" transform="translate(-310, -87)">
+            <g id="arrow-right" transform="translate(310, 87)">
+                <rect id="Rectangle" opacity="0.5" x="0" y="0" width="24" height="24"></rect>
+                <polygon id="Path" fill="currentColor" fill-rule="nonzero" points="10.41 6 9 7.41 13.58 12 9 16.59 10.41 18 16.41 12"></polygon>
+            </g>
+        </g>
+    </g>
+</svg>

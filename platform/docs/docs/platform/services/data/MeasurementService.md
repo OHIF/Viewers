@@ -68,7 +68,7 @@ There are seven events that get publish in `MeasurementService`:
   - `toMeasurementSchema`: A function to get the `data` into the same shape as
     the source definition.
 
-- `jumpToMeasurement(viewportIndex, id)`: calls the listeners who have
+- `jumpToMeasurement(viewportId, id)`: calls the listeners who have
   subscribed to `JUMP_TO_MEASUREMENT`.
 
 ## Source / Mappers
@@ -159,4 +159,24 @@ const _initMeasurementService = (MeasurementService, DisplaySetService) => {
   /** Other tools **/
   return csToolsVer4MeasurementSource;
 };
+```
+
+
+## Auto complete
+Use a customization service to add more customizations for measurement labels. Later, when adding a measurement, the user will be prompted to choose from a list of labels.
+
+```js
+customizationService.addModeCustomizations([
+  {
+    id: 'measurementLabels',
+    labelOnMeasure: true,
+    exclusive: true,
+    items: [
+      { value: 'Head', label: 'Head' },
+      { value: 'Neck', label: 'Neck' },
+      { value: 'Knee', label: 'Knee' },
+      { value: 'Toe', label: 'Toe' },
+    ],
+  },
+]);
 ```

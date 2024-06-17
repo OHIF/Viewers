@@ -4,8 +4,8 @@
  * @param filename
  */
 export function saveByteArray(buffer: ArrayBuffer, filename: string) {
-  var blob = new Blob([buffer], { type: 'application/dicom' });
-  var link = document.createElement('a');
+  const blob = new Blob([buffer], { type: 'application/dicom' });
+  const link = document.createElement('a');
   link.href = window.URL.createObjectURL(blob);
   link.download = filename;
   link.click();

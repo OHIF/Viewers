@@ -1,5 +1,5 @@
 ---
-sidebar_position: 9
+sidebar_position: 13
 sidebar_label: Resources
 ---
 
@@ -10,18 +10,37 @@ conferences and "hackathons". In this page, we will provide the presentations
 and other resources that we have provided to the community in the past:
 
 ## 2023
+
+### IMNO 2024 - March 19-20, 2024
+
+We participated in the Imaging Network Ontario (ImNO) 2024 symposium, presenting three posters. One of our presentations received the best talk award during the session.
+
+
+- Advancing Medical Imaging on the Web: Implementation of Hanging Protocols for Automated Image Display Configuration in OHIF V3 [Poster](https://www.dropbox.com/scl/fi/z4h86bmsxi0c62e1n6h9l/P7-9-Alireza-Sedghi-Final.pdf?rlkey=v5pm0p5ygkbq41x9bz3hr5yi8&dl=0)
+- Advancing Medical Imaging on the Web: Optimizing the Dicomweb Server Architecture with Static Dicomweb [Poster](https://www.dropbox.com/scl/fi/ep0lxjp90kbxhjoffe4kh/P7-10-Bill-Wallace-Final.pdf?rlkey=xl2u6tdnh9j9hgvkajxv3b02o&dl=0)
+- (**🏆🏆 BEST PRESENTATION AWARD in the Session 7 Pitches: Devices, HW, SW Development 🏆🏆**) Advancing Medical Imaging on the Web: Integrating High Throughput JPEG 2000 (HTJ2K) in Cornerstone3D for Streamlined Progressive Loading and Visualization [Poster](https://www.dropbox.com/scl/fi/srs2rxgtv2r69ver9ub1j/P7-8-Bill-Wallace-Final.pdf?rlkey=k9mmraw76r9q2s3b9w9s0793w&dl=0)
+
+
+### ITCR 2023 Conference | September 11-13, 2023
+
+Dr. Gordon Harris presented an update on OHIF in [NCI Informatics Technology for Cancer Research Annual Meeting](https://www.itcr2023.org/). You can find the slides and poster here:
+[[Slides]](https://docs.google.com/presentation/d/1R38s95db_yZj0WoYdlUbaWGZsWVb3H-3u_hXBZXiTaE/edit?usp=sharing)[[Poster]](https://ohif-assets.s3.us-east-2.amazonaws.com/presentations/OHIF-ITCR-2023-FINAL-PRINT.pdf)
+
+
+
+
 ### SIIM 2023 Tech Tools Webinar |  April 12th, 2023
 
 Free, Open Source Tools for Research: MONAI and OHIF Viewer
 [[Slides](https://docs.google.com/presentation/d/1afJ5Y9Tzukgn7eAbaO1oiCtN7XvIimFdmZP-HcOUofA/edit?usp=sharing)][[Video](https://www.youtube.com/watch?v=lo8J5w5jUJI)]
 
 
-### [NA-MIC Project Week 38th 2023 - Remote]
+### NA-MIC Project Week 38th 2023 - Remote
 
 We participated in the 38th Project Week with three projects around OHIF. [[Website](https://projectweek.na-mic.org/PW38_2023_GranCanaria/)]
 
 - PolySeg representations for OHIF Viewer ([link](https://projectweek.na-mic.org/PW38_2023_GranCanaria/Projects/OHIF_PolySeg/))
-- Cross study sychronizer for OHIF Crosshair ([link](https://projectweek.na-mic.org/PW38_2023_GranCanaria/Projects/OHIF_SyncCrosshair/))
+- Cross study synchronizer for OHIF Crosshair ([link](https://projectweek.na-mic.org/PW38_2023_GranCanaria/Projects/OHIF_SyncCrosshair/))
 - DATSCAN Viewer implementation in OHIF ([link](https://projectweek.na-mic.org/PW38_2023_GranCanaria/Projects/OHIF_DATSCAN/))
 
 

@@ -51,18 +51,25 @@ export default function interleaveCenterLoader({
    * listen to it and as the other viewports are created we can set the volumes for them
    * since volumes are already started loading.
    */
-  if (matchDetails.size !== viewportIdVolumeInputArrayMap.size) {
+  const uniqueViewportVolumeDisplaySetUIDs = new Set();
+  viewportIdVolumeInputArrayMap.forEach((volumeInputArray, viewportId) => {
+    volumeInputArray.forEach(volumeInput => {
+      const { volumeId } = volumeInput;
+      uniqueViewportVolumeDisplaySetUIDs.add(volumeId);
+    });
+  });
+
+  const uniqueMatchedDisplaySetUIDs = new Set();
+
+  matchDetails.forEach(matchDetail => {
+    const { displaySetsInfo } = matchDetail;
+    displaySetsInfo.forEach(({ displaySetInstanceUID }) => {
+      uniqueMatchedDisplaySetUIDs.add(displaySetInstanceUID);
+    });
+  });
+
+  if (uniqueViewportVolumeDisplaySetUIDs.size !== uniqueMatchedDisplaySetUIDs.size) {
     return;
-  }
-
-  // Check if all the matched volumes are loaded
-  for (const [_, details] of displaySetsMatchDetails.entries()) {
-    const { SeriesInstanceUID } = details;
-
-    // HangingProtocol has matched, but don't have all the volumes created yet, so return
-    if (!Array.from(volumeIdMapsToLoad.values()).includes(SeriesInstanceUID)) {
-      return;
-    }
   }
 
   const volumeIds = Array.from(volumeIdMapsToLoad.keys()).slice();
@@ -105,9 +112,7 @@ export default function interleaveCenterLoader({
     const { imageId } = request;
 
     AllRequests.forEach(volumeRequests => {
-      const volumeImageIdRequest = volumeRequests.find(
-        req => req.imageId === imageId
-      );
+      const volumeImageIdRequest = volumeRequests.find(req => req.imageId === imageId);
       if (volumeImageIdRequest) {
         finalRequests.push(volumeImageIdRequest);
       }
@@ -117,31 +122,17 @@ export default function interleaveCenterLoader({
   const requestType = Enums.RequestType.Prefetch;
   const priority = 0;
 
-  finalRequests.forEach(
-    ({ callLoadImage, additionalDetails, imageId, imageIdIndex, options }) => {
-      const callLoadImageBound = callLoadImage.bind(
-        null,
-        imageId,
-        imageIdIndex,
-        options
-      );
+  finalRequests.forEach(({ callLoadImage, additionalDetails, imageId, imageIdIndex, options }) => {
+    const callLoadImageBound = callLoadImage.bind(null, imageId, imageIdIndex, options);
 
-      imageLoadPoolManager.addRequest(
-        callLoadImageBound,
-        requestType,
-        additionalDetails,
-        priority
-      );
-    }
-  );
+    imageLoadPoolManager.addRequest(callLoadImageBound, requestType, additionalDetails, priority);
+  });
 
   // clear the volumeIdMapsToLoad
   volumeIdMapsToLoad.clear();
 
   // copy the viewportIdVolumeInputArrayMap
-  const viewportIdVolumeInputArrayMapCopy = new Map(
-    viewportIdVolumeInputArrayMap
-  );
+  const viewportIdVolumeInputArrayMapCopy = new Map(viewportIdVolumeInputArrayMap);
 
   // reset the viewportIdVolumeInputArrayMap
   viewportIdVolumeInputArrayMap.clear();

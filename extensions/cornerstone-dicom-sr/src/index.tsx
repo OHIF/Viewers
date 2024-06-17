@@ -1,8 +1,6 @@
 import React from 'react';
 import getSopClassHandlerModule from './getSopClassHandlerModule';
-import getHangingProtocolModule, {
-  srProtocol,
-} from './getHangingProtocolModule';
+import { srProtocol } from './getHangingProtocolModule';
 import onModeEnter from './onModeEnter';
 import getCommandsModule from './commandsModule';
 import preRegistration from './init';
@@ -13,9 +11,7 @@ import createReferencedImageDisplaySet from './utils/createReferencedImageDispla
 import convertCode from './utils/convertCode';
 
 const Component = React.lazy(() => {
-  return import(
-    /* webpackPrefetch: true */ './viewports/OHIFCornerstoneSRViewport'
-  );
+  return import(/* webpackPrefetch: true */ './viewports/OHIFCornerstoneSRViewport');
 });
 
 const OHIFCornerstoneSRViewport = props => {
@@ -59,7 +55,7 @@ const dicomSRExtension = {
   },
   getCommandsModule,
   getSopClassHandlerModule,
-  // Include dynmically computed values such as toolNames not known till instantiation
+  // Include dynamically computed values such as toolNames not known till instantiation
   getUtilityModule({ servicesManager }) {
     return [
       {

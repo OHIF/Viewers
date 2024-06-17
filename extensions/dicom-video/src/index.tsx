@@ -3,9 +3,7 @@ import getSopClassHandlerModule from './getSopClassHandlerModule';
 import { id } from './id';
 
 const Component = React.lazy(() => {
-  return import(
-    /* webpackPrefetch: true */ './viewports/OHIFCornerstoneVideoViewport'
-  );
+  return import(/* webpackPrefetch: true */ './viewports/OHIFCornerstoneVideoViewport');
 });
 
 const OHIFCornerstoneVideoViewport = props => {
@@ -42,23 +40,8 @@ const dicomVideoExtension = {
       );
     };
 
-    return [
-      { name: 'dicom-video', component: ExtendedOHIFCornerstoneVideoViewport },
-    ];
+    return [{ name: 'dicom-video', component: ExtendedOHIFCornerstoneVideoViewport }];
   },
-  // getCommandsModule({ servicesManager }) {
-  //   return {
-  //     definitions: {
-  //       setToolActive: {
-  //         commandFn: ({ toolName, element }) => {
-  //         },
-  //         storeContexts: [],
-  //         options: {},
-  //       },
-  //     },
-  //     defaultContext: 'ACTIVE_VIEWPORT::VIDEO',
-  //   };
-  // },
   getSopClassHandlerModule,
 };
 

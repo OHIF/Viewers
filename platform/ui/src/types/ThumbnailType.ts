@@ -1,7 +1,3 @@
 import PropTypes from 'prop-types';
 
-export default PropTypes.oneOf([
-  'thumbnail',
-  'thumbnailTracked',
-  'thumbnailNoImage',
-]);
+export default PropTypes.oneOf(['thumbnail', 'thumbnailTracked', 'thumbnailNoImage']);

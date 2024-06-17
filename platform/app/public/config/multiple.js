@@ -1,3 +1,4 @@
+/** @type {AppTypes.Config} */
 window.config = {
   // Activate the new HP mode....
   isNewHP: true,
@@ -59,7 +60,6 @@ window.config = {
         qidoRoot: 'https://d33do7qe4w26qo.cloudfront.net/dicomweb',
         wadoRoot: 'https://d33do7qe4w26qo.cloudfront.net/dicomweb',
         qidoSupportsIncludeField: false,
-        supportsReject: false,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
         enableStudyLazyLoad: true,
@@ -78,7 +78,6 @@ window.config = {
         qidoRoot: 'https://dd32w2rfebxel.cloudfront.net/dicomweb',
         wadoRoot: 'https://dd32w2rfebxel.cloudfront.net/dicomweb',
         qidoSupportsIncludeField: false,
-        supportsReject: false,
         supportsStow: false,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
@@ -99,7 +98,6 @@ window.config = {
         qidoRoot: '/viewer-testdata',
         wadoRoot: '/viewer-testdata',
         qidoSupportsIncludeField: false,
-        supportsReject: false,
         supportsStow: false,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',

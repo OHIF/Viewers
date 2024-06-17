@@ -21,9 +21,15 @@ const DEFAULT_DOUBLE_CLICK = {
  */
 function getDoubleClickEventName(evt: CustomEvent) {
   const nameArr = [];
-  if (evt.detail.event.altKey) nameArr.push('alt');
-  if (evt.detail.event.ctrlKey) nameArr.push('ctrl');
-  if (evt.detail.event.shiftKey) nameArr.push('shift');
+  if (evt.detail.event.altKey) {
+    nameArr.push('alt');
+  }
+  if (evt.detail.event.ctrlKey) {
+    nameArr.push('ctrl');
+  }
+  if (evt.detail.event.shiftKey) {
+    nameArr.push('shift');
+  }
   nameArr.push('doubleClick');
   return nameArr.join('');
 }
@@ -33,10 +39,7 @@ export type initDoubleClickArgs = {
   commandsManager: CommandsManager;
 };
 
-function initDoubleClick({
-  customizationService,
-  commandsManager,
-}: initDoubleClickArgs): void {
+function initDoubleClick({ customizationService, commandsManager }: initDoubleClickArgs): void {
   const cornerstoneViewportHandleDoubleClick = (evt: CustomEvent) => {
     // Do not allow double click on a tool.
     const nearbyToolData = findNearbyToolData(commandsManager, evt);
@@ -48,8 +51,7 @@ function initDoubleClick({
 
     // Allows for the customization of the double click on a viewport.
     const customizations =
-      customizationService.get('cornerstoneViewportClickCommands') ||
-      DEFAULT_DOUBLE_CLICK;
+      customizationService.get('cornerstoneViewportClickCommands') || DEFAULT_DOUBLE_CLICK;
 
     const toRun = customizations[eventName];
 
@@ -78,15 +80,9 @@ function initDoubleClick({
     );
   }
 
-  eventTarget.addEventListener(
-    EVENTS.ELEMENT_ENABLED,
-    elementEnabledHandler.bind(null)
-  );
+  eventTarget.addEventListener(EVENTS.ELEMENT_ENABLED, elementEnabledHandler.bind(null));
 
-  eventTarget.addEventListener(
-    EVENTS.ELEMENT_DISABLED,
-    elementDisabledHandler.bind(null)
-  );
+  eventTarget.addEventListener(EVENTS.ELEMENT_DISABLED, elementDisabledHandler.bind(null));
 }
 
 export default initDoubleClick;

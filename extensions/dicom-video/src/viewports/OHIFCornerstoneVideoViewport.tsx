@@ -22,17 +22,23 @@ function OHIFCornerstoneVideoViewport({ displaySets }) {
 
   // Need to copies of the source to fix a firefox bug
   return (
-    <div className="bg-primary-black w-full h-full">
+    <div className="bg-primary-black h-full w-full">
       <video
         src={url}
         controls
         controlsList="nodownload"
         preload="auto"
-        className="w-full h-full"
+        className="h-full w-full"
         crossOrigin="anonymous"
       >
-        <source src={url} type={mimeType} />
-        <source src={url} type={mimeType} />
+        <source
+          src={url}
+          type={mimeType}
+        />
+        <source
+          src={url}
+          type={mimeType}
+        />
         Video src/type not supported:{' '}
         <a href={url}>
           {url} of type {mimeType}

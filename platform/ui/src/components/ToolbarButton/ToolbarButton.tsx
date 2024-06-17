@@ -1,68 +1,55 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import classnames from 'classnames';
+import classNames from 'classnames';
 
 import IconButton from '../IconButton';
 import Icon from '../Icon';
 import Tooltip from '../Tooltip';
 
 const ToolbarButton = ({
-  type = 'tool',
   id,
   icon,
   label,
   commands,
   onInteraction,
-  dropdownContent,
+  dropdownContent = null,
   //
-  isActive: _isActive,
   className,
-  bState = {},
+  disabled,
+  disabledText,
+  size,
+  toolTipClassName,
+  disableToolTip = false,
   ...rest
   //
 }) => {
-  const { primaryToolId } = bState;
-  const isActive = _isActive || (type === 'tool' && id === primaryToolId);
-  const classes = {
-    tool: isActive
-      ? 'text-black'
-      : 'text-common-bright hover:!bg-primary-dark hover:text-primary-light',
-    toggle: isActive
-      ? '!text-[#348CFD]'
-      : 'text-common-bright hover:!bg-primary-dark hover:text-primary-light',
-    action: isActive
-      ? 'text-black'
-      : 'text-common-bright hover:!bg-primary-dark hover:text-primary-light',
-  };
+  const shouldShowDropdown = !!dropdownContent;
+  const iconEl = icon ? <Icon name={icon} /> : <div>{label || 'Missing icon and label'}</div>;
 
-  const bgClasses = {
-    toggle: isActive && 'bg-transparent',
-  };
-
-  const activeClass = isActive ? 'active' : '';
-  const shouldShowDropdown = !!isActive && !!dropdownContent;
-  const iconEl = icon ? (
-    <Icon name={icon} />
-  ) : (
-    <div>{label || 'Missing icon and label'}</div>
-  );
+  const sizeToUse = size ?? 'toolbar';
+  const toolTipClassNameToUse =
+    toolTipClassName !== undefined
+      ? toolTipClassName
+      : sizeToUse === 'toolbar'
+        ? 'w-[40px] h-[40px]'
+        : 'w-[32px] h-[32px]';
 
   return (
     <div key={id}>
       <Tooltip
         isSticky={shouldShowDropdown}
         content={shouldShowDropdown ? dropdownContent : label}
+        secondaryContent={disabled ? disabledText : null}
         tight={shouldShowDropdown}
+        className={toolTipClassNameToUse}
+        isDisabled={disableToolTip}
       >
         <IconButton
-          variant={isActive ? 'contained' : 'text'}
-          bgColor={bgClasses[type]}
-          size="toolbar"
-          className={classnames(activeClass, classes[type], className)}
+          size={sizeToUse}
+          className={classNames(className, disabled ? 'ohif-disabled' : '')}
           onClick={() => {
             onInteraction({
               itemId: id,
-              interactionType: type,
               commands,
             });
           }}
@@ -78,22 +65,20 @@ const ToolbarButton = ({
   );
 };
 
-ToolbarButton.defaultProps = {
-  dropdownContent: null,
-  isActive: false,
-  type: 'action',
-};
-
 ToolbarButton.propTypes = {
   /* Influences background/hover styling */
-  type: PropTypes.oneOf(['action', 'toggle', 'tool']),
   id: PropTypes.string.isRequired,
-  isActive: PropTypes.bool,
-  onInteraction: PropTypes.func.isRequired,
+  className: PropTypes.string,
+  commands: PropTypes.oneOfType([PropTypes.array, PropTypes.object, PropTypes.string]),
+  onInteraction: PropTypes.func,
   icon: PropTypes.string.isRequired,
   label: PropTypes.string.isRequired,
   /** Tooltip content can be replaced for a customized content by passing a node to this value. */
   dropdownContent: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+  size: PropTypes.string,
+  toolTipClassName: PropTypes.string,
+  disableToolTip: PropTypes.bool,
+  disabled: PropTypes.bool,
 };
 
 export default ToolbarButton;

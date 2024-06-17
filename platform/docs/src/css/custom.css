@@ -284,18 +284,14 @@ html[data-theme='dark'] .docusaurus-highlight-code-line {
 }
 
 .new-badge::after {
-  content: ' (NEW)';
+  content: '';
   @apply bg-red-300 text-red-500;
   @apply dark:bg-blue-900 dark:text-blue-100;
 }
 
 div[class^='announcementBar_'] {
-  --site-announcement-bar-stripe-color1: hsl(
-    var(--site-primary-hue-saturation) 85%
-  );
-  --site-announcement-bar-stripe-color2: hsl(
-    var(--site-primary-hue-saturation) 95%
-  );
+  --site-announcement-bar-stripe-color1: hsl(var(--site-primary-hue-saturation) 85%);
+  --site-announcement-bar-stripe-color2: hsl(var(--site-primary-hue-saturation) 95%);
   background: repeating-linear-gradient(
     35deg,
     var(--site-announcement-bar-stripe-color1),

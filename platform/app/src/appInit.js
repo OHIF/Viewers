@@ -2,6 +2,7 @@ import {
   CommandsManager,
   ExtensionManager,
   ServicesManager,
+  ServiceProvidersManager,
   HotkeysManager,
   UINotificationService,
   UIModalService,
@@ -18,6 +19,7 @@ import {
   errorHandler,
   CustomizationService,
   PanelService,
+  WorkflowStepsService,
   // utils,
 } from '@ohif/core';
 
@@ -34,6 +36,7 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
 
   const commandsManager = new CommandsManager(commandsManagerConfig);
   const servicesManager = new ServicesManager(commandsManager);
+  const serviceProvidersManager = new ServiceProvidersManager();
   const hotkeysManager = new HotkeysManager(commandsManager, servicesManager);
 
   const appConfig = {
@@ -45,9 +48,12 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
   const extensionManager = new ExtensionManager({
     commandsManager,
     servicesManager,
+    serviceProvidersManager,
     hotkeysManager,
     appConfig,
   });
+
+  servicesManager.setExtensionManager(extensionManager);
 
   servicesManager.registerServices([
     UINotificationService.REGISTRATION,
@@ -63,6 +69,7 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
     CineService.REGISTRATION,
     UserAuthenticationService.REGISTRATION,
     PanelService.REGISTRATION,
+    WorkflowStepsService.REGISTRATION,
     StateSyncService.REGISTRATION,
   ]);
 
@@ -76,14 +83,8 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
    * Example: [ext1, ext2, ext3]
    * Example2: [[ext1, config], ext2, [ext3, config]]
    */
-  const loadedExtensions = await loadModules([
-    ...defaultExtensions,
-    ...appConfig.extensions,
-  ]);
-  await extensionManager.registerExtensions(
-    loadedExtensions,
-    appConfig.dataSources
-  );
+  const loadedExtensions = await loadModules([...defaultExtensions, ...appConfig.extensions]);
+  await extensionManager.registerExtensions(loadedExtensions, appConfig.dataSources);
 
   // TODO: We no longer use `utils.addServer`
   // TODO: We no longer init webWorkers at app level
@@ -93,33 +94,36 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
     throw new Error('No modes are defined! Check your app-config.js');
   }
 
-  const loadedModes = await loadModules([
-    ...(appConfig.modes || []),
-    ...defaultModes,
-  ]);
+  const loadedModes = await loadModules([...(appConfig.modes || []), ...defaultModes]);
 
-  // This is the name for the loaded istance object
+  // This is the name for the loaded instance object
   appConfig.loadedModes = [];
   const modesById = new Set();
   for (let i = 0; i < loadedModes.length; i++) {
     let mode = loadedModes[i];
-    if (!mode) continue;
+    if (!mode) {
+      continue;
+    }
     const { id } = mode;
 
     if (mode.modeFactory) {
       // If the appConfig contains configuration for this mode, use it.
-      const modeConfig =
-        appConfig.modeConfig && appConfig.modeConfig[i]
-          ? appConfig.modeConfig[id]
+      const modeConfiguration =
+        appConfig.modesConfiguration && appConfig.modesConfiguration[id]
+          ? appConfig.modesConfiguration[id]
           : {};
 
-      mode = mode.modeFactory(modeConfig);
+      mode = mode.modeFactory({ modeConfiguration });
     }
 
-    if (modesById.has(id)) continue;
+    if (modesById.has(id)) {
+      continue;
+    }
     // Prevent duplication
     modesById.add(id);
-    if (!mode || typeof mode !== 'object') continue;
+    if (!mode || typeof mode !== 'object') {
+      continue;
+    }
     appConfig.loadedModes.push(mode);
   }
   // Hack alert - don't touch the original modes definition,
@@ -131,6 +135,7 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
     commandsManager,
     extensionManager,
     servicesManager,
+    serviceProvidersManager,
     hotkeysManager,
   };
 }

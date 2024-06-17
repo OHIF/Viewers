@@ -1,26 +1,22 @@
 describe('OHIF Cornerstone Hotkeys', () => {
   beforeEach(() => {
-    cy.checkStudyRouteInViewer(
-      '1.2.840.113619.2.5.1762583153.215519.978957063.78'
-    );
+    cy.checkStudyRouteInViewer('1.2.840.113619.2.5.1762583153.215519.978957063.78');
 
     cy.window()
       .its('cornerstone')
       .then(cornerstone => {
         // For debugging issues where tests pass locally but fail on CI
         // - Sometimes Cypress orb seems to use CPU rendering pathway
-        cy.log(
-          `Cornerstone using CPU Rendering?: ${cornerstone.getShouldUseCPURendering()}`
-        );
+        cy.log(`Cornerstone using CPU Rendering?: ${cornerstone.getShouldUseCPURendering()}`);
       });
 
     cy.expectMinimumThumbnails(3);
     cy.initCornerstoneToolsAliases();
     cy.initCommonElementsAliases();
+    cy.waitDicomImage();
   });
 
   it('checks if hotkeys "R" and "L" can rotate the image', () => {
-    // Hotkey R
     cy.get('body').type('R');
     cy.get('@viewportInfoMidLeft').should('contains.text', 'P');
     cy.get('@viewportInfoMidTop').should('contains.text', 'R');
@@ -33,10 +29,10 @@ describe('OHIF Cornerstone Hotkeys', () => {
   it('checks if hotkeys "ArrowUp" and "ArrowDown" can navigate in the stack', () => {
     // Hotkey ArrowDown
     cy.get('body').type('{downarrow}');
-    cy.get('@viewportInfoTopRight').should('contains.text', 'I:2 (2/26)');
+    cy.get('@viewportInfoBottomRight').should('contains.text', 'I:2 (2/26)');
     // Hotkey ArrowUp
     cy.get('body').type('{uparrow}');
-    cy.get('@viewportInfoTopRight').should('contains.text', 'I:1 (1/26)');
+    cy.get('@viewportInfoBottomRight').should('contains.text', 'I:1 (1/26)');
   });
 
   it('checks if hotkeys "V" and "H" can flip the image', () => {

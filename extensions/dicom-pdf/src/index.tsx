@@ -3,9 +3,7 @@ import getSopClassHandlerModule from './getSopClassHandlerModule';
 import { id } from './id.js';
 
 const Component = React.lazy(() => {
-  return import(
-    /* webpackPrefetch: true */ './viewports/OHIFCornerstonePdfViewport'
-  );
+  return import(/* webpackPrefetch: true */ './viewports/OHIFCornerstonePdfViewport');
 });
 
 const OHIFCornerstonePdfViewport = props => {
@@ -41,22 +39,8 @@ const dicomPDFExtension = {
       );
     };
 
-    return [
-      { name: 'dicom-pdf', component: ExtendedOHIFCornerstonePdfViewport },
-    ];
+    return [{ name: 'dicom-pdf', component: ExtendedOHIFCornerstonePdfViewport }];
   },
-  // getCommandsModule({ servicesManager }) {
-  //   return {
-  //     definitions: {
-  //       setToolActive: {
-  //         commandFn: () => null,
-  //         storeContexts: [],
-  //         options: {},
-  //       },
-  //     },
-  //     defaultContext: 'ACTIVE_VIEWPORT::PDF',
-  // };
-  // },
   getSopClassHandlerModule,
 };
 

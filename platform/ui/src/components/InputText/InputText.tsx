@@ -7,10 +7,10 @@ import InputLabelWrapper from '../InputLabelWrapper';
 const InputText = ({
   id,
   label,
-  isSortable,
-  sortDirection,
-  onLabelClick,
-  value,
+  isSortable = false,
+  sortDirection = 'none',
+  onLabelClick = () => {},
+  value = '',
   onChange,
 }) => {
   return (
@@ -32,13 +32,6 @@ const InputText = ({
       />
     </InputLabelWrapper>
   );
-};
-
-InputText.defaultProps = {
-  value: '',
-  isSortable: false,
-  onLabelClick: () => {},
-  sortDirection: 'none',
 };
 
 InputText.propTypes = {

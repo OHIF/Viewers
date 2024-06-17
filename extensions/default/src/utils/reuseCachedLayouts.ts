@@ -19,22 +19,29 @@ const reuseCachedLayout = (
   hangingProtocolService: HangingProtocolService,
   syncService: StateSyncService
 ): ReturnType => {
-  const { activeViewportIndex, viewports, layout } = state;
+  const { activeViewportId } = state;
+  const { protocol } = hangingProtocolService.getActiveProtocol();
+
+  if (!protocol) {
+    return;
+  }
+
   const hpInfo = hangingProtocolService.getState();
   const { protocolId, stageIndex, activeStudyUID } = hpInfo;
-  const { protocol } = hangingProtocolService.getActiveProtocol();
+
+  const syncState = syncService.getState();
+  const viewportGridStore = { ...syncState.viewportGridStore };
+  const displaySetSelectorMap = { ...syncState.displaySetSelectorMap };
+
   const stage = protocol.stages[stageIndex];
   const storeId = `${activeStudyUID}:${protocolId}:${stageIndex}`;
-  const syncState = syncService.getState();
   const cacheId = `${activeStudyUID}:${protocolId}`;
-  const viewportGridStore = { ...syncState.viewportGridStore };
   const hangingProtocolStageIndexMap = {
     ...syncState.hangingProtocolStageIndexMap,
   };
-  const displaySetSelectorMap = { ...syncState.displaySetSelectorMap };
   const { rows, columns } = stage.viewportStructure.properties;
   const custom =
-    stage.viewports.length !== state.viewports.length ||
+    stage.viewports.length !== state.viewports.size ||
     state.layout.numRows !== rows ||
     state.layout.numCols !== columns;
 
@@ -44,26 +51,28 @@ const reuseCachedLayout = (
     viewportGridStore[storeId] = { ...state };
   }
 
-  for (let idx = 0; idx < state.viewports.length; idx++) {
-    const viewport = state.viewports[idx];
+  state.viewports.forEach((viewport, viewportId) => {
     const { displaySetOptions, displaySetInstanceUIDs } = viewport;
-    if (!displaySetOptions) continue;
+    if (!displaySetOptions) {
+      return;
+    }
     for (let i = 0; i < displaySetOptions.length; i++) {
       const displaySetUID = displaySetInstanceUIDs[i];
-      if (!displaySetUID) continue;
-      if (idx === activeViewportIndex && i === 0) {
-        displaySetSelectorMap[
-          `${activeStudyUID}:activeDisplaySet:0`
-        ] = displaySetUID;
+      if (!displaySetUID) {
+        continue;
+      }
+      if (viewportId === activeViewportId && i === 0) {
+        displaySetSelectorMap[`${activeStudyUID}:activeDisplaySet:0`] = displaySetUID;
       }
       if (displaySetOptions[i]?.id) {
         displaySetSelectorMap[
-          `${activeStudyUID}:${displaySetOptions[i].id}:${displaySetOptions[i]
-            .matchedDisplaySetsIndex || 0}`
+          `${activeStudyUID}:${displaySetOptions[i].id}:${
+            displaySetOptions[i].matchedDisplaySetsIndex || 0
+          }`
         ] = displaySetUID;
       }
     }
-  }
+  });
 
   return {
     hangingProtocolStageIndexMap,

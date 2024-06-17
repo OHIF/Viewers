@@ -15,10 +15,10 @@ const Dialog = ({
   actions,
   onShow,
   onSubmit,
-  header: HeaderComponent,
-  body: BodyComponent,
-  footer: FooterComponent,
-  value: defaultValue,
+  header: HeaderComponent = Header,
+  body: BodyComponent = Body,
+  footer: FooterComponent = Footer,
+  value: defaultValue = {},
 }) => {
   const [value, setValue] = useState(defaultValue);
 
@@ -37,17 +37,7 @@ const Dialog = ({
   }, [onShow]);
 
   return (
-    <div
-      className={classNames(
-        theme,
-        flex,
-        border,
-        outline,
-        position,
-        width,
-        padding
-      )}
-    >
+    <div className={classNames(theme, flex, border, outline, position, width, padding)}>
       <HeaderComponent
         title={title}
         noCloseButton={noCloseButton}
@@ -55,7 +45,11 @@ const Dialog = ({
         value={value}
         setValue={setValue}
       />
-      <BodyComponent text={text} value={value} setValue={setValue} />
+      <BodyComponent
+        text={text}
+        value={value}
+        setValue={setValue}
+      />
       <FooterComponent
         actions={actions}
         onSubmit={onSubmit}
@@ -84,13 +78,7 @@ Dialog.propTypes = {
       type: PropTypes.oneOf(['primary', 'secondary', 'cancel']).isRequired,
     })
   ).isRequired,
-};
-
-Dialog.defaultProps = {
-  header: Header,
-  footer: Footer,
-  body: Body,
-  value: {},
+  onShow: PropTypes.func,
 };
 
 export default Dialog;

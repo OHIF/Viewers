@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 
 import StudyItem from '../StudyItem';
-import ButtonGroup from '../ButtonGroup';
+import LegacyButtonGroup from '../LegacyButtonGroup';
 import LegacyButton from '../LegacyButton';
 import ThumbnailList from '../ThumbnailList';
 import { StringNumber } from '../../types';
@@ -19,32 +19,27 @@ const getTrackedSeries = displaySets => {
   return trackedSeries;
 };
 
+const noop = () => {};
+
 const StudyBrowser = ({
   tabs,
   activeTabName,
   expandedStudyInstanceUIDs,
-  onClickTab,
-  onClickStudy,
-  onClickThumbnail,
-  onDoubleClickThumbnail,
-  onClickUntrack,
+  onClickTab = noop,
+  onClickStudy = noop,
+  onClickThumbnail = noop,
+  onDoubleClickThumbnail = noop,
+  onClickUntrack = noop,
   activeDisplaySetInstanceUIDs,
   servicesManager,
-}) => {
+}: withAppTypes) => {
   const { t } = useTranslation('StudyBrowser');
   const { customizationService } = servicesManager?.services || {};
 
   const getTabContent = () => {
     const tabData = tabs.find(tab => tab.name === activeTabName);
     return tabData.studies.map(
-      ({
-        studyInstanceUid,
-        date,
-        description,
-        numInstances,
-        modalities,
-        displaySets,
-      }) => {
+      ({ studyInstanceUid, date, description, numInstances, modalities, displaySets }) => {
         const isExpanded = expandedStudyInstanceUIDs.includes(studyInstanceUid);
         return (
           <React.Fragment key={studyInstanceUid}>
@@ -78,11 +73,15 @@ const StudyBrowser = ({
   return (
     <React.Fragment>
       <div
-        className="flex flex-row items-center justify-center h-16 p-4 border-b w-100 border-secondary-light bg-primary-dark"
+        className="w-100 border-secondary-light bg-primary-dark flex h-16 flex-row items-center justify-center border-b p-4"
         data-cy={'studyBrowser-panel'}
       >
-        {/* TODO Revisit design of ButtonGroup later - for now use LegacyButton for its children.*/}
-        <ButtonGroup variant="outlined" color="secondary" splitBorder={false}>
+        {/* TODO Revisit design of LegacyButtonGroup later - for now use LegacyButton for its children.*/}
+        <LegacyButtonGroup
+          variant="outlined"
+          color="secondary"
+          splitBorder={false}
+        >
           {tabs.map(tab => {
             const { name, label, studies } = tab;
             const isActive = activeTabName === name;
@@ -98,7 +97,7 @@ const StudyBrowser = ({
             return (
               <LegacyButton
                 key={name}
-                className={'text-white text-base p-2 min-w-18'}
+                className={'min-w-18 p-2 text-base text-white'}
                 size="initial"
                 color={color}
                 bgColor={isActive ? 'bg-primary-main' : 'bg-black'}
@@ -111,9 +110,9 @@ const StudyBrowser = ({
               </LegacyButton>
             );
           })}
-        </ButtonGroup>
+        </LegacyButtonGroup>
       </div>
-      <div className="flex flex-col flex-1 overflow-auto ohif-scrollbar invisible-scrollbar">
+      <div className="ohif-scrollbar invisible-scrollbar flex flex-1 flex-col overflow-auto">
         {getTabContent()}
       </div>
     </React.Fragment>
@@ -149,13 +148,9 @@ StudyBrowser.propTypes = {
               seriesNumber: StringNumber,
               numInstances: PropTypes.number,
               description: PropTypes.string,
-              componentType: PropTypes.oneOf([
-                'thumbnail',
-                'thumbnailTracked',
-                'thumbnailNoImage',
-              ]).isRequired,
+              componentType: PropTypes.oneOf(['thumbnail', 'thumbnailTracked', 'thumbnailNoImage'])
+                .isRequired,
               isTracked: PropTypes.bool,
-              viewportIdentificator: PropTypes.arrayOf(PropTypes.string),
               /**
                * Data the thumbnail should expose to a receiving drop target. Use a matching
                * `dragData.type` to identify which targets can receive this draggable item.
@@ -173,16 +168,6 @@ StudyBrowser.propTypes = {
       ).isRequired,
     })
   ),
-};
-
-const noop = () => {};
-
-StudyBrowser.defaultProps = {
-  onClickTab: noop,
-  onClickStudy: noop,
-  onClickThumbnail: noop,
-  onDoubleClickThumbnail: noop,
-  onClickUntrack: noop,
 };
 
 export default StudyBrowser;

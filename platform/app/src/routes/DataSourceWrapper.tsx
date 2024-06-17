@@ -1,10 +1,11 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useCallback, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { ExtensionManager, MODULE_TYPES } from '@ohif/core';
+import { Enums, ExtensionManager, MODULE_TYPES, log } from '@ohif/core';
 //
 import { extensionManager } from '../App.tsx';
 import { useParams, useLocation } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import useSearchParams from '../hooks/useSearchParams.ts';
 
 /**
@@ -26,7 +27,9 @@ const areLocationsTheSame = (location0, location1) => {
  * @param {object} props
  * @param {function} props.children - Layout Template React Component
  */
-function DataSourceWrapper(props) {
+function DataSourceWrapper(props: withAppTypes) {
+  const { servicesManager } = props;
+  const navigate = useNavigate();
   const { children: LayoutTemplate, ...rest } = props;
   const params = useParams();
   const location = useLocation();
@@ -58,8 +61,7 @@ function DataSourceWrapper(props) {
     if (!dataSourceName) {
       // Gets the first defined datasource with the right name
       // Mostly for historical reasons - new configs should use the defaultDataSourceName
-      const dataSourceModules =
-        extensionManager.modules[MODULE_TYPES.DATA_SOURCE];
+      const dataSourceModules = extensionManager.modules[MODULE_TYPES.DATA_SOURCE];
       // TODO: Good usecase for flatmap?
       const webApiDataSources = dataSourceModules.reduce((acc, curr) => {
         const mods = [];
@@ -123,6 +125,7 @@ function DataSourceWrapper(props) {
 
   useEffect(() => {
     const dataSourceChangedCallback = () => {
+      setIsLoading(false);
       setIsDataSourceInitialized(false);
       setDataSourcePath('');
       setDataSource(extensionManager.getActiveDataSource()[0]);
@@ -142,15 +145,12 @@ function DataSourceWrapper(props) {
       return;
     }
 
-    const queryFilterValues = _getQueryFilterValues(
-      location.search,
-      STUDIES_LIMIT
-    );
+    const queryFilterValues = _getQueryFilterValues(location.search, STUDIES_LIMIT);
 
     // 204: no content
     async function getData() {
       setIsLoading(true);
-
+      log.time(Enums.TimingEnum.SEARCH_TO_LIST);
       const studies = await dataSource.query.studies.search(queryFilterValues);
 
       setData({
@@ -160,6 +160,8 @@ function DataSourceWrapper(props) {
         pageNumber: queryFilterValues.pageNumber,
         location,
       });
+      log.timeEnd(Enums.TimingEnum.SCRIPT_TO_VIEW);
+      log.timeEnd(Enums.TimingEnum.SEARCH_TO_LIST);
 
       setIsLoading(false);
     }
@@ -170,40 +172,53 @@ function DataSourceWrapper(props) {
       // - And we didn't cross a result offset range
       const isSamePage = data.pageNumber === queryFilterValues.pageNumber;
       const previousOffset =
-        Math.floor((data.pageNumber * data.resultsPerPage) / STUDIES_LIMIT) *
-        (STUDIES_LIMIT - 1);
+        Math.floor((data.pageNumber * data.resultsPerPage) / STUDIES_LIMIT) * (STUDIES_LIMIT - 1);
       const newOffset =
         Math.floor(
-          (queryFilterValues.pageNumber * queryFilterValues.resultsPerPage) /
-            STUDIES_LIMIT
+          (queryFilterValues.pageNumber * queryFilterValues.resultsPerPage) / STUDIES_LIMIT
         ) *
         (STUDIES_LIMIT - 1);
       // Simply checking data.location !== location is not sufficient because even though the location href (i.e. entire URL)
       // has not changed, the React Router still provides a new location reference and would result in two study queries
       // on initial load. Alternatively, window.location.href could be used.
       const isLocationUpdated =
-        typeof data.location === 'string' ||
-        !areLocationsTheSame(data.location, location);
+        typeof data.location === 'string' || !areLocationsTheSame(data.location, location);
       const isDataInvalid =
-        !isSamePage ||
-        (!isLoading && (newOffset !== previousOffset || isLocationUpdated));
+        !isSamePage || (!isLoading && (newOffset !== previousOffset || isLocationUpdated));
 
       if (isDataInvalid) {
-        getData();
+        getData().catch(e => {
+          console.error(e);
+
+          const { configurationAPI, friendlyName } = dataSource.getConfig();
+          // If there is a data source configuration API, then the Worklist will popup the dialog to attempt to configure it
+          // and attempt to resolve this issue.
+          if (configurationAPI) {
+            return;
+          }
+
+          servicesManager.services.uiModalService.show({
+            title: 'Data Source Connection Error',
+            containerDimensions: 'w-1/2',
+            content: () => {
+              return (
+                <div>
+                  <p className="text-red-600">Error: {e.message}</p>
+                  <p>
+                    Please ensure the following data source is configured correctly or is running:
+                  </p>
+                  <div className="mt-2 font-bold">{friendlyName}</div>
+                </div>
+              );
+            },
+          });
+        });
       }
     } catch (ex) {
       console.warn(ex);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    data,
-    location,
-    params,
-    isLoading,
-    setIsLoading,
-    dataSource,
-    isDataSourceInitialized,
-  ]);
+  }, [data, location, params, isLoading, setIsLoading, dataSource, isDataSourceInitialized]);
   // queryFilterValues
 
   // TODO: Better way to pass DataSource?
@@ -235,31 +250,34 @@ export default DataSourceWrapper;
  */
 function _getQueryFilterValues(query, queryLimit) {
   query = new URLSearchParams(query);
+  const newParams = new URLSearchParams();
+  for (const [key, value] of query) {
+    newParams.set(key.toLowerCase(), value);
+  }
+  query = newParams;
 
-  const pageNumber = _tryParseInt(query.get('pageNumber'), 1);
-  const resultsPerPage = _tryParseInt(query.get('resultsPerPage'), 25);
+  const pageNumber = _tryParseInt(query.get('pagenumber'), 1);
+  const resultsPerPage = _tryParseInt(query.get('resultsperpage'), 25);
 
   const queryFilterValues = {
     // DCM
     patientId: query.get('mrn'),
-    patientName: query.get('patientName'),
+    patientName: query.get('patientname'),
     studyDescription: query.get('description'),
-    modalitiesInStudy:
-      query.get('modalities') && query.get('modalities').split(','),
+    modalitiesInStudy: query.get('modalities') && query.get('modalities').split(','),
     accessionNumber: query.get('accession'),
     //
-    startDate: query.get('startDate'),
-    endDate: query.get('endDate'),
+    startDate: query.get('startdate'),
+    endDate: query.get('enddate'),
     page: _tryParseInt(query.get('page'), undefined),
     pageNumber,
     resultsPerPage,
     // Rarely supported server-side
-    sortBy: query.get('sortBy'),
-    sortDirection: query.get('sortDirection'),
+    sortBy: query.get('sortby'),
+    sortDirection: query.get('sortdirection'),
     // Offset...
-    offset:
-      Math.floor((pageNumber * resultsPerPage) / queryLimit) * (queryLimit - 1),
-    config: query.get('configUrl'),
+    offset: Math.floor((pageNumber * resultsPerPage) / queryLimit) * (queryLimit - 1),
+    config: query.get('configurl'),
   };
 
   // patientName: good

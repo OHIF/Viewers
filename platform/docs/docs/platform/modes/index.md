@@ -79,7 +79,7 @@ function modeFactory() {
     extensions: extensionDependencies,
     hangingProtocol: [],
     sopClassHandlers: [],
-    hotkeys: [],
+    hotkeys: []
   };
 }
 
@@ -191,7 +191,7 @@ export default mode;
 ### Consuming Extensions
 
 As mentioned in the [Extensions](../extensions/index.md) section, in `OHIF-v3`
-developers write their extensions to create re-usable functionalities that later
+developers write their extensions to create reusable functionalities that later
 can be used by `modes`. Now, it is time to describe how the registered
 extensions will get utilized for a workflow mode via its `id`.
 
@@ -362,6 +362,10 @@ function modeFactory() {
 // exports
 ```
 
+
+
+
+
 ## Registration
 
 Similar to extension registration, `viewer` will look inside the `pluginConfig.json` to
@@ -393,3 +397,17 @@ Use the provided `cli` to add/remove/install/uninstall modes. Read more [here](.
 :::
 
 The final registration and import of the modes happen inside a non-tracked file `pluginImport.js` (this file is also for internal use only).
+
+
+:::note
+You can stack multiple panel components on top of each other by providing an array of panel components in the `rightPanels` or `leftPanels` properties.
+
+For instance we can use
+
+```
+rightPanels: [[dicomSeg.panel, tracked.measurements], [dicomSeg.panel, tracked.measurements]]
+```
+
+This will result in two panels, one with `dicomSeg.panel` and `tracked.measurements` and the other with `dicomSeg.panel` and `tracked.measurements` stacked on top of each other.
+
+:::

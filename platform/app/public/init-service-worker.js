@@ -1,4 +1,4 @@
-navigator.serviceWorker.getRegistrations().then(function(registrations) {
+navigator.serviceWorker.getRegistrations().then(function (registrations) {
   for (let registration of registrations) {
     registration.unregister();
   }
@@ -17,8 +17,7 @@ if ('function' === typeof importScripts) {
   );
 
   var supportsServiceWorker = 'serviceWorker' in navigator;
-  var isNotLocalDevelopment =
-    ['localhost', '127'].indexOf(location.hostname) === -1;
+  var isNotLocalDevelopment = ['localhost', '127'].indexOf(location.hostname) === -1;
 
   if (supportsServiceWorker && isNotLocalDevelopment) {
     const swFileLocation = (window.PUBLIC_URL || '/') + 'sw.js';
@@ -28,8 +27,7 @@ if ('function' === typeof importScripts) {
     // service worker has installed but is waiting to activate.
     wb.addEventListener('waiting', event => {
       // customize the UI prompt accordingly.
-      const isFirstTimeUpdatedServiceWorkerIsWaiting =
-        event.wasWaitingBeforeRegister === false;
+      const isFirstTimeUpdatedServiceWorkerIsWaiting = event.wasWaitingBeforeRegister === false;
       console.log(
         'isFirstTimeUpdatedServiceWorkerIsWaiting',
         isFirstTimeUpdatedServiceWorkerIsWaiting

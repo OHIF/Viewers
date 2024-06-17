@@ -65,7 +65,7 @@ myCommandName: {
 | Property        | Type               | Description                                                                                                                             |
 | --------------- | ------------------ | --------------------------------------------------------------------------------------------------------------------------------------- |
 | `commandFn`     | func               | The function to call when command is run. Receives `options` and `storeContexts`.                                                       |
-| `storeContexts` | string[]           | (optional) Expected state objects to be passed in as props. Located using `getAppState` fn defined at `CommandsManager`'s instatiation. |
+| `storeContexts` | string[]           | (optional) Expected state objects to be passed in as props. Located using `getAppState` fn defined at `CommandsManager`'s instantiation. |
 | `options`       | object             | (optional) Arguments to pass at the time of calling to the `commandFn`                                                                  |
 | `context`       | string[] or string | (optional) Overrides the `defaultContext`. Let's us know if command is currently "available" to be run.                                 |
 
@@ -150,7 +150,7 @@ It is up to the consuming application to define what contexts are possible, and
 which ones are currently active. As extensions depend heavily on these, we will
 likely publish guidance around creating contexts, and ways to override extension
 defined contexts in the near future. If you would like to discuss potential
-changes to how contexts work, please don't hesistate to createa new GitHub
+changes to how contexts work, please don't hesitate to create new GitHub
 issue.
 
 [Some additional information on Contexts can be found here.](./../index.md#contexts)

@@ -17,32 +17,21 @@ function _getReferencedFrameOfReferenceUID(naturalizedDataset) {
   const { ContentSequence } = naturalizedDataset;
 
   const imagingMeasurementsContentItem = ContentSequence.find(
-    ci =>
-      ci.ConceptNameCodeSequence.CodeValue ===
-      DCM_CODE_VALUES.IMAGING_MEASUREMENTS
+    ci => ci.ConceptNameCodeSequence.CodeValue === DCM_CODE_VALUES.IMAGING_MEASUREMENTS
   );
 
   const firstMeasurementGroupContentItem = toArray(
     imagingMeasurementsContentItem.ContentSequence
-  ).find(
-    ci =>
-      ci.ConceptNameCodeSequence.CodeValue === DCM_CODE_VALUES.MEASUREMENT_GROUP
-  );
+  ).find(ci => ci.ConceptNameCodeSequence.CodeValue === DCM_CODE_VALUES.MEASUREMENT_GROUP);
 
-  const imageRegionContentItem = toArray(
-    firstMeasurementGroupContentItem.ContentSequence
-  ).find(
+  const imageRegionContentItem = toArray(firstMeasurementGroupContentItem.ContentSequence).find(
     ci => ci.ConceptNameCodeSequence.CodeValue === DCM_CODE_VALUES.IMAGE_REGION
   );
 
   return imageRegionContentItem.ReferencedFrameOfReferenceUID;
 }
 
-function _getDisplaySetsFromSeries(
-  instances,
-  servicesManager,
-  extensionManager
-) {
+function _getDisplaySetsFromSeries(instances, servicesManager, extensionManager) {
   // If the series has no instances, stop here
   if (!instances || !instances.length) {
     throw new Error('No instances were provided');
@@ -53,14 +42,12 @@ function _getDisplaySetsFromSeries(
   const instance = instances[0];
 
   // TODO ! Consumption of DICOMMicroscopySRSOPClassHandler to a derived dataset or normal dataset?
-  // TOOD -> Easy to swap this to a "non-derived" displaySet, but unfortunately need to put it in a different extension.
+  // TODO -> Easy to swap this to a "non-derived" displaySet, but unfortunately need to put it in a different extension.
   const naturalizedDataset = DicomMetadataStore.getSeries(
     instance.StudyInstanceUID,
     instance.SeriesInstanceUID
   ).instances[0];
-  const ReferencedFrameOfReferenceUID = _getReferencedFrameOfReferenceUID(
-    naturalizedDataset
-  );
+  const ReferencedFrameOfReferenceUID = _getReferencedFrameOfReferenceUID(naturalizedDataset);
 
   const {
     FrameOfReferenceUID,
@@ -98,23 +85,19 @@ function _getDisplaySetsFromSeries(
     loadError: false,
   };
 
-  displaySet.load = function(referencedDisplaySet) {
-    return loadSR(microscopyService, displaySet, referencedDisplaySet).catch(
-      error => {
-        displaySet.isLoaded = false;
-        displaySet.loadError = true;
-        throw new Error(error);
-      }
-    );
+  displaySet.load = function (referencedDisplaySet) {
+    return loadSR(microscopyService, displaySet, referencedDisplaySet).catch(error => {
+      displaySet.isLoaded = false;
+      displaySet.loadError = true;
+      throw new Error(error);
+    });
   };
 
-  displaySet.getSourceDisplaySet = function() {
+  displaySet.getSourceDisplaySet = function () {
     let allDisplaySets = [];
     const studyMetadata = DicomMetadataStore.getStudy(StudyInstanceUID);
     studyMetadata.series.forEach(series => {
-      const displaySets = displaySetService.getDisplaySetsForSeries(
-        series.SeriesInstanceUID
-      );
+      const displaySets = displaySetService.getDisplaySetsForSeries(series.SeriesInstanceUID);
       allDisplaySets = allDisplaySets.concat(displaySets);
     });
     return getSourceDisplaySet(allDisplaySets, displaySet);
@@ -123,16 +106,9 @@ function _getDisplaySetsFromSeries(
   return [displaySet];
 }
 
-export default function getDicomMicroscopySRSopClassHandler({
-  servicesManager,
-  extensionManager,
-}) {
+export default function getDicomMicroscopySRSopClassHandler({ servicesManager, extensionManager }) {
   const getDisplaySetsFromSeries = instances => {
-    return _getDisplaySetsFromSeries(
-      instances,
-      servicesManager,
-      extensionManager
-    );
+    return _getDisplaySetsFromSeries(instances, servicesManager, extensionManager);
   };
 
   return {

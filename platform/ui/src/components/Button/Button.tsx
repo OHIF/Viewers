@@ -2,6 +2,7 @@ import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import * as ButtonEnums from './ButtonEnums';
+import Tooltip from '../Tooltip/Tooltip';
 
 const sizeClasses = {
   [ButtonEnums.size.small]: 'h-[26px] text-[13px]',
@@ -11,16 +12,14 @@ const sizeClasses = {
 const layoutClasses =
   'box-content inline-flex flex-row items-center justify-center gap-[5px] justify center px-[10px] outline-none rounded';
 
-const baseFontTextClasses =
-  'leading-[1.2] font-sans text-center whitespace-nowrap';
+const baseFontTextClasses = 'leading-[1.2] font-sans text-center whitespace-nowrap';
 
 const fontTextClasses = {
   [ButtonEnums.type.primary]: classnames(baseFontTextClasses, 'font-semibold'),
   [ButtonEnums.type.secondary]: classnames(baseFontTextClasses, 'font-400'),
 };
 
-const baseEnabledEffectClasses =
-  'transition duration-300 ease-in-out focus:outline-none';
+const baseEnabledEffectClasses = 'transition duration-300 ease-in-out focus:outline-none';
 
 const enabledEffectClasses = {
   [ButtonEnums.type.primary]: classnames(
@@ -48,8 +47,7 @@ const enabledClasses = {
   ),
 };
 
-const disabledClasses =
-  'bg-inputfield-placeholder text-common-light cursor-default';
+const disabledClasses = 'bg-inputfield-placeholder text-common-light cursor-default';
 
 const defaults = {
   color: 'default',
@@ -60,7 +58,7 @@ const defaults = {
 };
 
 const Button = ({
-  children,
+  children = '',
   size = defaults.size,
   disabled = defaults.disabled,
   type = defaults.type,
@@ -68,12 +66,17 @@ const Button = ({
   endIcon: endIconProp,
   name,
   className,
-  onClick,
+  onClick = () => {},
+  dataCY,
+  startIconTooltip = null,
+  endIconTooltip = null,
 }) => {
+  dataCY = dataCY || `${name}-btn`;
+
   const startIcon = startIconProp && (
     <>
       {React.cloneElement(startIconProp, {
-        className: classnames('w-4 h-4 fill-current'),
+        className: classnames('w-4 h-4 fill-current', startIconProp?.props?.className),
       })}
     </>
   );
@@ -81,7 +84,7 @@ const Button = ({
   const endIcon = endIconProp && (
     <>
       {React.cloneElement(endIconProp, {
-        className: classnames('w-4 h-4 fill-current'),
+        className: classnames('w-4 h-4 fill-current', endIconProp?.props?.className),
       })}
     </>
   );
@@ -109,21 +112,13 @@ const Button = ({
       disabled={disabled}
       ref={buttonElement}
       onClick={handleOnClick}
-      data-cy={`${name}-btn`}
+      data-cy={dataCY}
     >
-      {startIcon}
+      {startIconTooltip ? <Tooltip content={startIconTooltip}>{startIcon}</Tooltip> : startIcon}
       {children}
-      {endIcon}
+      {endIconTooltip ? <Tooltip content={endIconTooltip}>{endIcon}</Tooltip> : endIcon}
     </button>
   );
-};
-
-Button.defaultProps = {
-  disabled: false,
-  children: '',
-  onClick: () => {},
-  type: defaults.type,
-  size: defaults.size,
 };
 
 Button.propTypes = {
@@ -144,6 +139,12 @@ Button.propTypes = {
   endIcon: PropTypes.node,
   /** Additional TailwindCSS classnames */
   className: PropTypes.string,
+  /** Tooltip for the start icon */
+  startIconTooltip: PropTypes.node,
+  /** Tooltip for the end icon */
+  endIconTooltip: PropTypes.node,
+  /** Data attribute for testing */
+  dataCY: PropTypes.string,
 };
 
 export default Button;

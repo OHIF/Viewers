@@ -1,15 +1,10 @@
 import OHIF from '@ohif/core';
 
-import {
-  InstanceMetadata,
-  PhilipsPETPrivateGroup,
-} from '@cornerstonejs/calculate-suv/src/types';
+import { InstanceMetadata, PhilipsPETPrivateGroup } from '@cornerstonejs/calculate-suv/src/types';
 
 const metadataProvider = OHIF.classes.MetadataProvider;
 
-export default function getPTImageIdInstanceMetadata(
-  imageId: string
-): InstanceMetadata {
+export default function getPTImageIdInstanceMetadata(imageId: string): InstanceMetadata {
   const dicomMetaData = metadataProvider.get('instance', imageId);
 
   if (!dicomMetaData) {
@@ -19,40 +14,36 @@ export default function getPTImageIdInstanceMetadata(
   if (
     dicomMetaData.SeriesDate === undefined ||
     dicomMetaData.SeriesTime === undefined ||
-    dicomMetaData.PatientWeight === undefined ||
     dicomMetaData.CorrectedImage === undefined ||
     dicomMetaData.Units === undefined ||
     !dicomMetaData.RadiopharmaceuticalInformationSequence ||
-    dicomMetaData.RadiopharmaceuticalInformationSequence[0]
-      .RadionuclideHalfLife === undefined ||
-    dicomMetaData.RadiopharmaceuticalInformationSequence[0]
-      .RadionuclideTotalDose === undefined ||
+    dicomMetaData.RadiopharmaceuticalInformationSequence.RadionuclideHalfLife === undefined ||
+    dicomMetaData.RadiopharmaceuticalInformationSequence.RadionuclideTotalDose === undefined ||
     dicomMetaData.DecayCorrection === undefined ||
     dicomMetaData.AcquisitionDate === undefined ||
     dicomMetaData.AcquisitionTime === undefined ||
-    (dicomMetaData.RadiopharmaceuticalInformationSequence[0]
-      .RadiopharmaceuticalStartDateTime === undefined &&
-      dicomMetaData.RadiopharmaceuticalInformationSequence[0]
-        .RadiopharmaceuticalStartTime === undefined)
+    (dicomMetaData.RadiopharmaceuticalInformationSequence.RadiopharmaceuticalStartDateTime ===
+      undefined &&
+      dicomMetaData.RadiopharmaceuticalInformationSequence.RadiopharmaceuticalStartTime ===
+        undefined)
   ) {
     throw new Error('required metadata are missing');
+  }
+
+  if (dicomMetaData.PatientWeight === undefined) {
+    console.warn('PatientWeight missing from PT instance metadata');
   }
 
   const instanceMetadata: InstanceMetadata = {
     CorrectedImage: dicomMetaData.CorrectedImage,
     Units: dicomMetaData.Units,
-    RadionuclideHalfLife:
-      dicomMetaData.RadiopharmaceuticalInformationSequence[0]
-        .RadionuclideHalfLife,
+    RadionuclideHalfLife: dicomMetaData.RadiopharmaceuticalInformationSequence.RadionuclideHalfLife,
     RadionuclideTotalDose:
-      dicomMetaData.RadiopharmaceuticalInformationSequence[0]
-        .RadionuclideTotalDose,
+      dicomMetaData.RadiopharmaceuticalInformationSequence.RadionuclideTotalDose,
     RadiopharmaceuticalStartDateTime:
-      dicomMetaData.RadiopharmaceuticalInformationSequence[0]
-        .RadiopharmaceuticalStartDateTime,
+      dicomMetaData.RadiopharmaceuticalInformationSequence.RadiopharmaceuticalStartDateTime,
     RadiopharmaceuticalStartTime:
-      dicomMetaData.RadiopharmaceuticalInformationSequence[0]
-        .RadiopharmaceuticalStartTime,
+      dicomMetaData.RadiopharmaceuticalInformationSequence.RadiopharmaceuticalStartTime,
     DecayCorrection: dicomMetaData.DecayCorrection,
     PatientWeight: dicomMetaData.PatientWeight,
     SeriesDate: dicomMetaData.SeriesDate,
@@ -78,17 +69,11 @@ export default function getPTImageIdInstanceMetadata(
     instanceMetadata.GEPrivatePostInjectionDateTime = dicomMetaData['0009100d'];
   }
 
-  if (
-    dicomMetaData.FrameReferenceTime &&
-    dicomMetaData.FrameReferenceTime !== undefined
-  ) {
+  if (dicomMetaData.FrameReferenceTime && dicomMetaData.FrameReferenceTime !== undefined) {
     instanceMetadata.FrameReferenceTime = dicomMetaData.FrameReferenceTime;
   }
 
-  if (
-    dicomMetaData.ActualFrameDuration &&
-    dicomMetaData.ActualFrameDuration !== undefined
-  ) {
+  if (dicomMetaData.ActualFrameDuration && dicomMetaData.ActualFrameDuration !== undefined) {
     instanceMetadata.ActualFrameDuration = dicomMetaData.ActualFrameDuration;
   }
 
@@ -108,10 +93,7 @@ function convertInterfaceTimeToString(time): string {
   const minutes = `${time.minutes || '00'}`.padStart(2, '0');
   const seconds = `${time.seconds || '00'}`.padStart(2, '0');
 
-  const fractionalSeconds = `${time.fractionalSeconds || '000000'}`.padEnd(
-    6,
-    '0'
-  );
+  const fractionalSeconds = `${time.fractionalSeconds || '000000'}`.padEnd(6, '0');
 
   const timeString = `${hours}${minutes}${seconds}.${fractionalSeconds}`;
   return timeString;

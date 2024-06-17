@@ -18,6 +18,7 @@ const DEFAULT_CONTEXT_MENU_CLICKS = {
       {
         commandName: 'showCornerstoneContextMenu',
         commandOptions: {
+          requireNearbyToolData: true,
           menuId: 'measurementsContextMenu',
         },
       },
@@ -35,9 +36,15 @@ const DEFAULT_CONTEXT_MENU_CLICKS = {
 function getEventName(evt) {
   const button = evt.detail.event.which;
   const nameArr = [];
-  if (evt.detail.event.altKey) nameArr.push('alt');
-  if (evt.detail.event.ctrlKey) nameArr.push('ctrl');
-  if (evt.detail.event.shiftKey) nameArr.push('shift');
+  if (evt.detail.event.altKey) {
+    nameArr.push('alt');
+  }
+  if (evt.detail.event.ctrlKey) {
+    nameArr.push('ctrl');
+  }
+  if (evt.detail.event.shiftKey) {
+    nameArr.push('shift');
+  }
   nameArr.push('button');
   nameArr.push(button);
   return nameArr.join('');
@@ -54,12 +61,22 @@ function initContextMenu({
    */
   const cornerstoneViewportHandleEvent = (name, evt) => {
     const customizations =
-      customizationService.get('cornerstoneViewportClickCommands') ||
-      DEFAULT_CONTEXT_MENU_CLICKS;
+      customizationService.get('cornerstoneViewportClickCommands') || DEFAULT_CONTEXT_MENU_CLICKS;
     const toRun = customizations[name];
-    console.log('initContextMenu::cornerstoneViewportHandleEvent', name, toRun);
+
+    if (!toRun) {
+      return;
+    }
+
+    // only find nearbyToolData if required, for the click (which closes the context menu
+    // we don't need to find nearbyToolData)
+    let nearbyToolData = null;
+    if (toRun.commands.some(command => command.commandOptions?.requireNearbyToolData)) {
+      nearbyToolData = findNearbyToolData(commandsManager, evt);
+    }
+
     const options = {
-      nearbyToolData: findNearbyToolData(commandsManager, evt),
+      nearbyToolData,
       event: evt,
     };
     commandsManager.run(toRun, options);
@@ -73,35 +90,24 @@ function initContextMenu({
   function elementEnabledHandler(evt) {
     const { viewportId, element } = evt.detail;
     const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
-    if (!viewportInfo) return;
-    const viewportIndex = viewportInfo.getViewportIndex();
+    if (!viewportInfo) {
+      return;
+    }
     // TODO check update upstream
-    setEnabledElement(viewportIndex, element);
+    setEnabledElement(viewportId, element);
 
-    element.addEventListener(
-      cs3DToolsEvents.MOUSE_CLICK,
-      cornerstoneViewportHandleClick
-    );
+    element.addEventListener(cs3DToolsEvents.MOUSE_CLICK, cornerstoneViewportHandleClick);
   }
 
   function elementDisabledHandler(evt) {
     const { element } = evt.detail;
 
-    element.removeEventListener(
-      cs3DToolsEvents.MOUSE_CLICK,
-      cornerstoneViewportHandleClick
-    );
+    element.removeEventListener(cs3DToolsEvents.MOUSE_CLICK, cornerstoneViewportHandleClick);
   }
 
-  eventTarget.addEventListener(
-    EVENTS.ELEMENT_ENABLED,
-    elementEnabledHandler.bind(null)
-  );
+  eventTarget.addEventListener(EVENTS.ELEMENT_ENABLED, elementEnabledHandler.bind(null));
 
-  eventTarget.addEventListener(
-    EVENTS.ELEMENT_DISABLED,
-    elementDisabledHandler.bind(null)
-  );
+  eventTarget.addEventListener(EVENTS.ELEMENT_DISABLED, elementDisabledHandler.bind(null));
 }
 
 export default initContextMenu;

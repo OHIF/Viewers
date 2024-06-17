@@ -1,35 +1,29 @@
-describe('OHIF Study Viewer Page', function() {
-  beforeEach(function() {
-    cy.checkStudyRouteInViewer(
-      '1.2.840.113619.2.5.1762583153.215519.978957063.78'
-    );
+describe('OHIF General Viewer', function () {
+  beforeEach(() =>
+    cy.initViewer('1.2.840.113619.2.5.1762583153.215519.978957063.78', {
+      minimumThumbnails: 3,
+    })
+  );
 
-    cy.expectMinimumThumbnails(3);
-    cy.initCommonElementsAliases();
-    cy.initCornerstoneToolsAliases();
-  });
-
-  it('scrolls series stack using scrollbar', function() {
+  it('scrolls series stack using scrollbar', function () {
     cy.scrollToIndex(13);
 
-    cy.get('@viewportInfoTopRight').should('contains.text', '14');
+    cy.get('@viewportInfoBottomRight').should('contains.text', '14');
   });
 
-  it('performs right click to zoom', function() {
+  it('performs right click to zoom', function () {
     // This is not used to activate the tool, it is used to ensure the
     // top left viewport info shows the zoom values (it only shows up
     // when the zoom tool is active)
     cy.get('@zoomBtn')
       .click()
       .then($zoomBtn => {
-        cy.wrap($zoomBtn).should('have.class', 'active');
+        cy.wrap($zoomBtn).should('have.class', 'bg-primary-light');
       });
 
-    const zoomLevelInitial = cy
-      .get('@viewportInfoTopLeft')
-      .then($viewportInfo => {
-        return $viewportInfo.text().substring(6, 9);
-      });
+    const zoomLevelInitial = cy.get('@viewportInfoTopLeft').then($viewportInfo => {
+      return $viewportInfo.text().substring(6, 9);
+    });
 
     //Right click on viewport
     cy.get('@viewport')
@@ -38,7 +32,7 @@ describe('OHIF Study Viewer Page', function() {
       .trigger('mouseup');
 
     // make sure the new zoom level is less than the initial
-    cy.get('@viewportInfoTopLeft').then($viewportInfo => {
+    cy.get('@viewportInfoBottomLeft').then($viewportInfo => {
       const zoomLevelFinal = $viewportInfo.text().substring(6, 9);
       expect(zoomLevelFinal < zoomLevelInitial).to.eq(true);
     });

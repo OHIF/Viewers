@@ -1,16 +1,13 @@
 import React from 'react';
 import { WrappedPanelStudyBrowser, PanelMeasurementTable } from './Panels';
+import i18n from 'i18next';
 
 // TODO:
 // - No loading UI exists yet
 // - cancel promises when component is destroyed
 // - show errors in UI for thumbnails if promise fails
 
-function getPanelModule({
-  commandsManager,
-  extensionManager,
-  servicesManager,
-}) {
+function getPanelModule({ commandsManager, extensionManager, servicesManager }) {
   const wrappedMeasurementPanel = () => {
     return (
       <PanelMeasurementTable
@@ -24,9 +21,9 @@ function getPanelModule({
   return [
     {
       name: 'seriesList',
-      iconName: 'group-layers',
+      iconName: 'tab-studies',
       iconLabel: 'Studies',
-      label: 'Studies',
+      label: i18n.t('SidePanel:Studies'),
       component: WrappedPanelStudyBrowser.bind(null, {
         commandsManager,
         extensionManager,
@@ -37,8 +34,8 @@ function getPanelModule({
       name: 'measure',
       iconName: 'tab-linear',
       iconLabel: 'Measure',
-      label: 'Measurements',
-      secondaryLabel: 'Measurements',
+      label: i18n.t('SidePanel:Measurements'),
+      secondaryLabel: i18n.t('SidePanel:Measurements'),
       component: wrappedMeasurementPanel,
     },
   ];

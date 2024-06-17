@@ -7,7 +7,10 @@ export const argTypes = {
   title: 'Components/Dropdown',
 };
 
-<Meta title="Components/Dropdown" component={Dropdown} />
+<Meta
+  title="Components/Dropdown"
+  component={Dropdown}
+/>
 
 export const DropdownTemplate = args => (
   // Todo: this should not set a background
@@ -16,7 +19,10 @@ export const DropdownTemplate = args => (
   </div>
 );
 
-<Heading title="Dropdown" componentRelativePath="Dropdown/Dropdown.tsx" />
+<Heading
+  title="Dropdown"
+  componentRelativePath="Dropdown/Dropdown.tsx"
+/>
 
 - [Overview](#overview)
 - [Props](#props)
@@ -28,7 +34,10 @@ export const DropdownTemplate = args => (
 Dropdown is a modal Dropdown component which enabled to show a modal Dropdown.
 
 <Canvas>
-  <Story name="Overview" args={{ id: 'dropdown-d', list: [] }}>
+  <Story
+    name="Overview"
+    args={{ id: 'dropdown-d', list: [] }}
+  >
     {DropdownTemplate.bind({})}
   </Story>
 </Canvas>

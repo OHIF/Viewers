@@ -1,7 +1,4 @@
-export default function createAndDownloadTMTVReport(
-  segReport,
-  additionalReportRows
-) {
+export default function createAndDownloadTMTVReport(segReport, additionalReportRows, options = {}) {
   const firstReport = segReport[Object.keys(segReport)[0]];
   const columns = Object.keys(firstReport);
   const csv = [columns.join(',')];
@@ -11,9 +8,7 @@ export default function createAndDownloadTMTVReport(
     columns.forEach(column => {
       // if it is array then we need to replace , with space to avoid csv parsing error
       row.push(
-        Array.isArray(segmentation[column])
-          ? segmentation[column].join(' ')
-          : segmentation[column]
+        Array.isArray(segmentation[column]) ? segmentation[column].join(' ') : segmentation[column]
       );
     });
     csv.push(row.join(','));
@@ -45,6 +40,6 @@ export default function createAndDownloadTMTVReport(
 
   const a = document.createElement('a');
   a.href = url;
-  a.download = `${firstReport.PatientID}_tmtv.csv`;
+  a.download = options.filename ?? `${firstReport.PatientID}_tmtv.csv`;
   a.click();
 }

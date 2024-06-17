@@ -1,6 +1,6 @@
 {
   "name": "@ohif/i18n",
-  "version": "3.7.0-beta.41",
+  "version": "3.9.0-beta.44",
   "description": "Internationalization library for The OHIF Viewer",
   "author": "OHIF",
   "license": "MIT",
@@ -20,6 +20,8 @@
     "access": "public"
   },
   "scripts": {
+    "clean": "shx rm -rf dist",
+    "clean:deep": "yarn run clean && shx rm -rf node_modules",
     "dev": "cross-env NODE_ENV=development webpack --config .webpack/webpack.dev.js --watch --output-pathinfo",
     "dev:i18n": "yarn run dev",
     "build": "cross-env NODE_ENV=production webpack --config .webpack/webpack.prod.js",
@@ -31,8 +33,8 @@
   "peerDependencies": {
     "i18next": "^17.0.3",
     "i18next-browser-languagedetector": "^3.0.1",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "react-i18next": "^12.2.2"
   },
   "dependencies": {
@@ -44,8 +46,8 @@
   "devDependencies": {
     "i18next": "^17.0.3",
     "i18next-browser-languagedetector": "^3.0.1",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "react-i18next": "^12.2.2",
     "webpack-merge": "^5.7.3"
   }

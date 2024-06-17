@@ -1,14 +1,7 @@
-import { InstanceMetadata } from '../../types';
+import { ExtensionManager } from '../../extensions';
+import { DisplaySet, InstanceMetadata } from '../../types';
 import { PubSubService } from '../_shared/pubSubServiceInterface';
 import EVENTS from './EVENTS';
-
-export type DisplaySet = {
-  displaySetInstanceUID: string;
-  instances: InstanceMetadata[];
-  StudyInstanceUID: string;
-  SeriesInstanceUID?: string;
-  numImages?: number;
-};
 
 const displaySetCache = new Map<string, DisplaySet>();
 
@@ -26,15 +19,11 @@ const filterInstances = (
     if (!dsInstances) {
       console.warn('No instances in', ds);
     } else {
-      dsInstances.forEach(instance =>
-        dsInstancesSOP.add(instance.SOPInstanceUID)
-      );
+      dsInstances.forEach(instance => dsInstancesSOP.add(instance.SOPInstanceUID));
     }
   });
 
-  return instances.filter(
-    instance => !dsInstancesSOP.has(instance.SOPInstanceUID)
-  );
+  return instances.filter(instance => !dsInstancesSOP.has(instance.SOPInstanceUID));
 };
 
 export default class DisplaySetService extends PubSubService {
@@ -47,6 +36,8 @@ export default class DisplaySetService extends PubSubService {
   };
 
   public activeDisplaySets = [];
+  public unsupportedSOPClassHandler;
+  extensionManager: ExtensionManager;
 
   protected activeDisplaySetsMap = new Map<string, DisplaySet>();
 
@@ -56,6 +47,8 @@ export default class DisplaySetService extends PubSubService {
 
   constructor() {
     super(EVENTS);
+    this.unsupportedSOPClassHandler =
+      '@ohif/extension-default.sopClassHandlerModule.not-supported-display-sets-handler';
   }
 
   public init(extensionManager, SOPClassHandlerIds): void {
@@ -81,6 +74,14 @@ export default class DisplaySetService extends PubSubService {
         activeDisplaySetsMap.set(displaySet.displaySetInstanceUID, displaySet);
       }
     });
+  }
+
+  /**
+   * Sets the handler for unsupported sop classes
+   * @param sopClassHandlerUID
+   */
+  public setUnsuportedSOPClassHandler(sopClassHandler) {
+    this.unsupportedSOPClassHandler = sopClassHandler;
   }
 
   /**
@@ -114,9 +115,7 @@ export default class DisplaySetService extends PubSubService {
     return this.activeDisplaySets;
   }
 
-  public getDisplaySetsForSeries = (
-    seriesInstanceUID: string
-  ): DisplaySet[] => {
+  public getDisplaySetsForSeries = (seriesInstanceUID: string): DisplaySet[] => {
     return [...displaySetCache.values()].filter(
       displaySet => displaySet.SeriesInstanceUID === seriesInstanceUID
     );
@@ -132,15 +131,16 @@ export default class DisplaySetService extends PubSubService {
       : [...this.getDisplaySetCache().values()];
 
     const displaySet = displaySets.find(ds => {
-      return (
-        ds.images && ds.images.some(i => i.SOPInstanceUID === sopInstanceUID)
-      );
+      return ds.images && ds.images.some(i => i.SOPInstanceUID === sopInstanceUID);
     });
 
     return displaySet;
   }
 
-  public setDisplaySetMetadataInvalidated(displaySetInstanceUID: string): void {
+  public setDisplaySetMetadataInvalidated(
+    displaySetInstanceUID: string,
+    invalidateData = true
+  ): void {
     const displaySet = this.getDisplaySetByUID(displaySetInstanceUID);
 
     if (!displaySet) {
@@ -148,14 +148,16 @@ export default class DisplaySetService extends PubSubService {
     }
 
     // broadcast event to update listeners with the new displaySets
-    this._broadcastEvent(
-      EVENTS.DISPLAY_SET_SERIES_METADATA_INVALIDATED,
-      displaySetInstanceUID
-    );
+    this._broadcastEvent(EVENTS.DISPLAY_SET_SERIES_METADATA_INVALIDATED, {
+      displaySetInstanceUID,
+      invalidateData,
+    });
   }
 
   public deleteDisplaySet(displaySetInstanceUID) {
-    if (!displaySetInstanceUID) return;
+    if (!displaySetInstanceUID) {
+      return;
+    }
     const { activeDisplaySets, activeDisplaySetsMap } = this;
 
     const activeDisplaySetsIndex = activeDisplaySets.findIndex(
@@ -176,8 +178,15 @@ export default class DisplaySetService extends PubSubService {
    * @param {string} displaySetInstanceUID
    * @returns {object} displaySet
    */
-  public getDisplaySetByUID = (displaySetInstanceUid: string): DisplaySet =>
-    displaySetCache.get(displaySetInstanceUid);
+  public getDisplaySetByUID = (displaySetInstanceUid: string): DisplaySet => {
+    if (typeof displaySetInstanceUid !== 'string') {
+      throw new Error(
+        `getDisplaySetByUID: displaySetInstanceUid must be a string, you passed ${displaySetInstanceUid}`
+      );
+    }
+
+    return displaySetCache.get(displaySetInstanceUid);
+  };
 
   /**
    *
@@ -185,18 +194,13 @@ export default class DisplaySetService extends PubSubService {
    * @param {*} param1: settings: initialViewportSettings by HP or callbacks after rendering
    * @returns {string[]} - added displaySetInstanceUIDs
    */
-  makeDisplaySets = (
-    input,
-    { batch = false, madeInClient = false, settings = {} } = {}
-  ) => {
+  makeDisplaySets = (input, { batch = false, madeInClient = false, settings = {} } = {}) => {
     if (!input || !input.length) {
       throw new Error('No instances were provided.');
     }
 
     if (batch && !input[0].length) {
-      throw new Error(
-        'Batch displaySet creation does not contain array of array of instances.'
-      );
+      throw new Error('Batch displaySet creation does not contain array of array of instances.');
     }
 
     // If array of instances => One instance.
@@ -205,10 +209,7 @@ export default class DisplaySetService extends PubSubService {
     if (batch) {
       for (let i = 0; i < input.length; i++) {
         const instances = input[i];
-        const displaySets = this.makeDisplaySetForInstances(
-          instances,
-          settings
-        );
+        const displaySets = this.makeDisplaySetForInstances(instances, settings);
 
         displaySetsAdded.push(...displaySets);
       }
@@ -253,6 +254,41 @@ export default class DisplaySetService extends PubSubService {
   }
 
   /**
+   * This function hides the old makeDisplaySetForInstances function to first
+   * separate the instances by sopClassUID so each call have only instances
+   * with the same sopClassUID, to avoid a series composed by different
+   * sopClassUIDs be filtered inside one of the SOPClassHandler functions and
+   * didn't appear in the series list.
+   * @param instancesSrc
+   * @param settings
+   * @returns
+   */
+  public makeDisplaySetForInstances(instancesSrc: InstanceMetadata[], settings): DisplaySet[] {
+    // creating a sopClassUID list and for each sopClass associate its respective
+    // instance list
+    const instancesForSetSOPClasses = instancesSrc.reduce((sopClassList, instance) => {
+      if (!(instance.SOPClassUID in sopClassList)) {
+        sopClassList[instance.SOPClassUID] = [];
+      }
+      sopClassList[instance.SOPClassUID].push(instance);
+      return sopClassList;
+    }, {});
+    // for each sopClassUID, call the old makeDisplaySetForInstances with a
+    // instance list composed only by instances with the same sopClassUID and
+    // accumulate the displaySets in the variable allDisplaySets
+    const sopClasses = Object.keys(instancesForSetSOPClasses);
+    let allDisplaySets = [];
+    sopClasses.forEach(sopClass => {
+      const displaySets = this._makeDisplaySetForInstances(
+        instancesForSetSOPClasses[sopClass],
+        settings
+      );
+      allDisplaySets = [...allDisplaySets, ...displaySets];
+    });
+    return allDisplaySets;
+  }
+
+  /**
    * Creates new display sets for the instances contained in instancesSrc
    * according to the sop class handlers registered.
    * This is idempotent in that calling it a second time with the
@@ -268,17 +304,13 @@ export default class DisplaySetService extends PubSubService {
    * @param settings are settings to add
    * @returns Array of the display sets added.
    */
-  public makeDisplaySetForInstances(
-    instancesSrc: InstanceMetadata[],
-    settings
-  ): DisplaySet[] {
+  private _makeDisplaySetForInstances(instancesSrc: InstanceMetadata[], settings): DisplaySet[] {
     // Some of the sop class handlers take a direct reference to instances
     // so make sure it gets copied here so that they have their own ref
     let instances = [...instancesSrc];
     const instance = instances[0];
 
-    const existingDisplaySets =
-      this.getDisplaySetsForSeries(instance.SeriesInstanceUID) || [];
+    const existingDisplaySets = this.getDisplaySetsForSeries(instance.SeriesInstanceUID) || [];
 
     const SOPClassHandlerIds = this.SOPClassHandlerIds;
     const allDisplaySets = [];
@@ -306,13 +338,13 @@ export default class DisplaySetService extends PubSubService {
               this.activeDisplaySetsChanged = true;
               instances = filterInstances(instances, [addedDs]);
               this._addActiveDisplaySets([addedDs]);
-              this.setDisplaySetMetadataInvalidated(
-                addedDs.displaySetInstanceUID
-              );
+              this.setDisplaySetMetadataInvalidated(addedDs.displaySetInstanceUID);
             }
             // This means that all instances already existed or got added to
             // existing display sets, and had an invalidated event fired
-            if (!instances.length) return allDisplaySets;
+            if (!instances.length) {
+              return allDisplaySets;
+            }
           }
 
           if (!instances.length) {
@@ -327,7 +359,9 @@ export default class DisplaySetService extends PubSubService {
         // creating additional display sets using the sop class handler
         displaySets = handler.getDisplaySetsFromSeries(instances);
 
-        if (!displaySets || !displaySets.length) continue;
+        if (!displaySets || !displaySets.length) {
+          continue;
+        }
 
         // applying hp-defined viewport settings to the displaysets
         displaySets.forEach(ds => {
@@ -343,6 +377,24 @@ export default class DisplaySetService extends PubSubService {
         // but there may need to be other instances handled by other handlers,
         // so remove the handled instances
         instances = filterInstances(instances, displaySets);
+
+        allDisplaySets.push(...displaySets);
+      }
+    }
+    // applying the default sopClassUID handler
+    if (allDisplaySets.length === 0) {
+      // applying hp-defined viewport settings to the displaysets
+      const handler = this.extensionManager.getModuleEntry(this.unsupportedSOPClassHandler);
+      const displaySets = handler.getDisplaySetsFromSeries(instances);
+      if (displaySets?.length) {
+        displaySets.forEach(ds => {
+          Object.keys(settings).forEach(key => {
+            ds[key] = settings[key];
+          });
+        });
+
+        this._addDisplaySetsToCache(displaySets);
+        this._addActiveDisplaySets(displaySets);
 
         allDisplaySets.push(...displaySets);
       }

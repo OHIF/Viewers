@@ -1,4 +1,5 @@
 import { ToolGroupManager, Enums, Types } from '@cornerstonejs/tools';
+import { eventTarget } from '@cornerstonejs/core';
 
 import { Types as OhifTypes, pubSubServiceInterface } from '@ohif/core';
 import getActiveViewportEnabledElement from '../../utils/getActiveViewportEnabledElement';
@@ -6,6 +7,8 @@ import getActiveViewportEnabledElement from '../../utils/getActiveViewportEnable
 const EVENTS = {
   VIEWPORT_ADDED: 'event::cornerstone::toolgroupservice:viewportadded',
   TOOLGROUP_CREATED: 'event::cornerstone::toolgroupservice:toolgroupcreated',
+  TOOL_ACTIVATED: 'event::cornerstone::toolgroupservice:toolactivated',
+  PRIMARY_TOOL_ACTIVATED: 'event::cornerstone::toolgroupservice:primarytoolactivated',
 };
 
 type Tool = {
@@ -24,14 +27,15 @@ export default class ToolGroupService {
   public static REGISTRATION = {
     name: 'toolGroupService',
     altName: 'ToolGroupService',
-    create: ({
-      servicesManager,
-    }: OhifTypes.Extensions.ExtensionParams): ToolGroupService => {
+    create: ({ servicesManager }: OhifTypes.Extensions.ExtensionParams): ToolGroupService => {
       return new ToolGroupService(servicesManager);
     },
   };
 
-  serviceManager: any;
+  servicesManager: AppTypes.ServicesManager;
+  cornerstoneViewportService: any;
+  viewportGridService: any;
+  uiNotificationService: any;
   private toolGroupIds: Set<string> = new Set();
   /**
    * Service-specific
@@ -39,20 +43,25 @@ export default class ToolGroupService {
   listeners: { [key: string]: Function[] };
   EVENTS: { [key: string]: string };
 
-  constructor(serviceManager) {
-    const {
-      cornerstoneViewportService,
-      viewportGridService,
-    } = serviceManager.services;
+  constructor(servicesManager: AppTypes.ServicesManager) {
+    const { cornerstoneViewportService, viewportGridService, uiNotificationService } =
+      servicesManager.services;
     this.cornerstoneViewportService = cornerstoneViewportService;
     this.viewportGridService = viewportGridService;
+    this.uiNotificationService = uiNotificationService;
     this.listeners = {};
     this.EVENTS = EVENTS;
     Object.assign(this, pubSubServiceInterface);
+
+    this._init();
   }
 
   onModeExit() {
     this.destroy();
+  }
+
+  private _init() {
+    eventTarget.addEventListener(Enums.Events.TOOL_ACTIVATED, this._onToolActivated);
   }
 
   /**
@@ -66,19 +75,14 @@ export default class ToolGroupService {
 
     if (!toolGroupIdToUse) {
       // Use the active viewport's tool group if no tool group id is provided
-      const enabledElement = getActiveViewportEnabledElement(
-        this.viewportGridService
-      );
+      const enabledElement = getActiveViewportEnabledElement(this.viewportGridService);
 
       if (!enabledElement) {
         return;
       }
 
       const { renderingEngineId, viewportId } = enabledElement;
-      const toolGroup = ToolGroupManager.getToolGroupForViewport(
-        viewportId,
-        renderingEngineId
-      );
+      const toolGroup = ToolGroupManager.getToolGroupForViewport(viewportId, renderingEngineId);
 
       if (!toolGroup) {
         console.warn(
@@ -103,27 +107,26 @@ export default class ToolGroupService {
 
   public getToolGroupForViewport(viewportId: string): Types.IToolGroup | void {
     const renderingEngine = this.cornerstoneViewportService.getRenderingEngine();
-    return ToolGroupManager.getToolGroupForViewport(
-      viewportId,
-      renderingEngine.id
-    );
+    return ToolGroupManager.getToolGroupForViewport(viewportId, renderingEngine.id);
   }
 
   public getActiveToolForViewport(viewportId: string): string {
-    const toolGroup = ToolGroupManager.getToolGroupForViewport(viewportId);
+    const toolGroup = this.getToolGroupForViewport(viewportId);
     if (!toolGroup) {
-      return null;
+      return;
     }
 
     return toolGroup.getActivePrimaryMouseButtonTool();
   }
 
-  public destroy() {
+  public destroy(): void {
     ToolGroupManager.destroy();
     this.toolGroupIds = new Set();
+
+    eventTarget.removeEventListener(Enums.Events.TOOL_ACTIVATED, this._onToolActivated);
   }
 
-  public destroyToolGroup(toolGroupId: string) {
+  public destroyToolGroup(toolGroupId: string): void {
     ToolGroupManager.destroyToolGroup(toolGroupId);
     this.toolGroupIds.delete(toolGroupId);
   }
@@ -133,10 +136,7 @@ export default class ToolGroupService {
     renderingEngineId: string,
     deleteToolGroupIfEmpty?: boolean
   ): void {
-    const toolGroup = ToolGroupManager.getToolGroupForViewport(
-      viewportId,
-      renderingEngineId
-    );
+    const toolGroup = ToolGroupManager.getToolGroupForViewport(viewportId, renderingEngineId);
 
     if (!toolGroup) {
       return;
@@ -193,39 +193,18 @@ export default class ToolGroupService {
     return toolGroup;
   }
 
-  public addToolsToToolGroup(
-    toolGroupId: string,
-    tools: Array<Tool>,
-    configs: any = {}
-  ): void {
+  public addToolsToToolGroup(toolGroupId: string, tools: Array<Tool>, configs: any = {}): void {
     const toolGroup = ToolGroupManager.getToolGroup(toolGroupId);
     // this.changeConfigurationIfNecessary(toolGroup, volumeId);
     this._addTools(toolGroup, tools, configs);
     this._setToolsMode(toolGroup, tools);
   }
 
-  public createToolGroupAndAddTools(
-    toolGroupId: string,
-    tools: Array<Tool>,
-    configs: any = {}
-  ): Types.IToolGroup {
+  public createToolGroupAndAddTools(toolGroupId: string, tools: Array<Tool>): Types.IToolGroup {
     const toolGroup = this.createToolGroup(toolGroupId);
-    this.addToolsToToolGroup(toolGroupId, tools, configs);
+    this.addToolsToToolGroup(toolGroupId, tools);
     return toolGroup;
   }
-
-  /**
-  private changeConfigurationIfNecessary(toolGroup, volumeUID) {
-    // handle specific assignment for volumeUID (e.g., fusion)
-    const toolInstances = toolGroup._toolInstances;
-    // Object.values(toolInstances).forEach(toolInstance => {
-    //   if (toolInstance.configuration) {
-    //     toolInstance.configuration.volumeUID = volumeUID;
-    //   }
-    // });
-  }
-  */
-
   /**
    * Get the tool's configuration based on the tool name and tool group id
    * @param toolGroupId - The id of the tool group that the tool instance belongs to.
@@ -259,32 +238,8 @@ export default class ToolGroupService {
     toolInstance.configuration = config;
   }
 
-  private _getToolNames(toolGroupTools: Tools): string[] {
-    const toolNames = [];
-    if (toolGroupTools.active) {
-      toolGroupTools.active.forEach(tool => {
-        toolNames.push(tool.toolName);
-      });
-    }
-    if (toolGroupTools.passive) {
-      toolGroupTools.passive.forEach(tool => {
-        toolNames.push(tool.toolName);
-      });
-    }
-
-    if (toolGroupTools.enabled) {
-      toolGroupTools.enabled.forEach(tool => {
-        toolNames.push(tool.toolName);
-      });
-    }
-
-    if (toolGroupTools.disabled) {
-      toolGroupTools.disabled.forEach(tool => {
-        toolNames.push(tool.toolName);
-      });
-    }
-
-    return toolNames;
+  public getActivePrimaryMouseButtonTool(toolGroupId?: string): string {
+    return this.getToolGroup(toolGroupId)?.getActivePrimaryMouseButtonTool();
   }
 
   private _setToolsMode(toolGroup, tools) {
@@ -315,17 +270,52 @@ export default class ToolGroupService {
     }
   }
 
-  private _addTools(toolGroup, tools, configs) {
-    const toolNames = this._getToolNames(tools);
-    toolNames.forEach(toolName => {
-      // Initialize the toolConfig if no configuration is provided
-      const toolConfig = configs[toolName] ?? {};
+  private _addTools(toolGroup, tools) {
+    const addTools = tools => {
+      tools.forEach(({ toolName, parentTool, configuration }) => {
+        if (parentTool) {
+          toolGroup.addToolInstance(toolName, parentTool, {
+            ...configuration,
+          });
+        } else {
+          toolGroup.addTool(toolName, { ...configuration });
+        }
+      });
+    };
 
-      // if (volumeUID) {
-      //   toolConfig.volumeUID = volumeUID;
-      // }
+    if (tools.active) {
+      addTools(tools.active);
+    }
 
-      toolGroup.addTool(toolName, { ...toolConfig });
-    });
+    if (tools.passive) {
+      addTools(tools.passive);
+    }
+
+    if (tools.enabled) {
+      addTools(tools.enabled);
+    }
+
+    if (tools.disabled) {
+      addTools(tools.disabled);
+    }
   }
+
+  private _onToolActivated = (evt: Types.EventTypes.ToolActivatedEventType) => {
+    const { toolGroupId, toolName, toolBindingsOptions } = evt.detail;
+    const isPrimaryTool = toolBindingsOptions.bindings?.some(
+      binding => binding.mouseButton === Enums.MouseBindings.Primary
+    );
+
+    const callbackProps = {
+      toolGroupId,
+      toolName,
+      toolBindingsOptions,
+    };
+
+    this._broadcastEvent(EVENTS.TOOL_ACTIVATED, callbackProps);
+
+    if (isPrimaryTool) {
+      this._broadcastEvent(EVENTS.PRIMARY_TOOL_ACTIVATED, callbackProps);
+    }
+  };
 }

@@ -47,7 +47,7 @@ grid store state as a modal state.
 ```
 
 ### getState
-The `getState` call returns an object containing all of the reigstered states,
+The `getState` call returns an object containing all of the registered states,
 by id.  The values can be read directly, but should not be modified.
 
 ### reduce
@@ -69,7 +69,6 @@ list as state stores are added:
 * `viewportGridStore` has viewport grid restore information for returning to an earlier grid layout.
 * `reuseIdMap` has a map of names to display sets for preserving user changes to hp display set selections.
 * `hanging` has a map of the hanging protocol stage information applied (HPInfo)
-* `toggleHangingProtocol` has the previously applied hanging protocol, to toggle an HP off.
 
 ### Cornerstone Extension Stores
 

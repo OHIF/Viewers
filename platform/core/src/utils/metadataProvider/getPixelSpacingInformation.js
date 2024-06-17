@@ -28,7 +28,6 @@ export default function getPixelSpacingInformation(instance) {
     PixelSpacingCalibrationType,
     PixelSpacingCalibrationDescription,
     EstimatedRadiographicMagnificationFactor,
-    SequenceOfUltrasoundRegions,
   } = instance;
   const isProjection = projectionRadiographSOPClassUIDs.includes(SOPClassUID);
 
@@ -48,11 +47,7 @@ export default function getPixelSpacingInformation(instance) {
       type: TYPES.UNKNOWN,
       isProjection,
     };
-  } else if (
-    PixelSpacing &&
-    ImagerPixelSpacing &&
-    PixelSpacing === ImagerPixelSpacing
-  ) {
+  } else if (PixelSpacing && ImagerPixelSpacing && PixelSpacing === ImagerPixelSpacing) {
     // If Imager Pixel Spacing and Pixel Spacing are present and they have the same values,
     // then the user should be informed that the measurements are at the detector plane
     return {
@@ -60,11 +55,7 @@ export default function getPixelSpacingInformation(instance) {
       type: TYPES.DETECTOR,
       isProjection,
     };
-  } else if (
-    PixelSpacing &&
-    ImagerPixelSpacing &&
-    PixelSpacing !== ImagerPixelSpacing
-  ) {
+  } else if (PixelSpacing && ImagerPixelSpacing && PixelSpacing !== ImagerPixelSpacing) {
     // If Imager Pixel Spacing and Pixel Spacing are present and they have different values,
     // then the user should be informed that these are "calibrated"
     // (in some unknown manner if Pixel Spacing Calibration Type and/or
@@ -86,33 +77,18 @@ export default function getPixelSpacingInformation(instance) {
         pixelSpacing => pixelSpacing / EstimatedRadiographicMagnificationFactor
       );
     } else {
-      log.info(
-        'EstimatedRadiographicMagnificationFactor was not present. Unable to correct ImagerPixelSpacing.'
-      );
+      if (!instance._loggedSpacingMessage) {
+        log.info(
+          'EstimatedRadiographicMagnificationFactor was not present. Unable to correct ImagerPixelSpacing.'
+        );
+        instance._loggedSpacingMessage = true;
+      }
     }
 
     return {
       PixelSpacing: CorrectedImagerPixelSpacing,
       isProjection,
     };
-  } else if (
-    SequenceOfUltrasoundRegions &&
-    typeof SequenceOfUltrasoundRegions === 'object'
-  ) {
-    const { PhysicalDeltaX, PhysicalDeltaY } = SequenceOfUltrasoundRegions;
-    const USPixelSpacing = [PhysicalDeltaX * 10, PhysicalDeltaY * 10];
-
-    return {
-      PixelSpacing: USPixelSpacing,
-    };
-  } else if (
-    SequenceOfUltrasoundRegions &&
-    Array.isArray(SequenceOfUltrasoundRegions) &&
-    SequenceOfUltrasoundRegions.length > 1
-  ) {
-    log.warn(
-      'Sequence of Ultrasound Regions > one entry. This is not yet implemented, all measurements will be shown in pixels.'
-    );
   } else if (isProjection === false && !ImagerPixelSpacing) {
     // If only Pixel Spacing is present, and this is not a projection radiograph,
     // we can stop here

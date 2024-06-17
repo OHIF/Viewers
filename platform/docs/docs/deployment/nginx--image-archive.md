@@ -1,5 +1,5 @@
 ---
-sidebar_position: 8
+sidebar_position: 9
 ---
 
 # Nginx + Image Archive
@@ -83,11 +83,12 @@ in command prompt or terminal_
 
 ### Setup
 
-- Navigate to `viewer` folder inside `platform`
+- Navigate to `app` folder inside `platform`
 - then: `cd .recipes/OpenResty-Orthanc`
 - run: `docker-compose up --build`
 - Navigate to `127.0.0.1` for the viewer
-- Navigate to `127.0.0.1/pacs-admin` for uploading studies
+- Navigate to `127.0.0.1/pacs-admin` for uploading studies via the UI, or send studies via DIMSE C-STORE to `ORTHANC@127.0.0.1:4242` (hint: you can use utilites like dcm4che's `storescu` to send studies in bulk via the command line)
+
 
 
 You can see the overview of the mentioned steps:

@@ -2,28 +2,38 @@ import React, { useState } from 'react';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
-const ListMenu = ({ items = [], renderer, onClick }) => {
+const flex = 'flex flex-row justify-between items-center';
+const theme = 'bg-indigo-dark text-white';
+
+const ListMenu = ({ items = [], renderer, onClick = () => {} }) => {
   const [selectedIndex, setSelectedIndex] = useState(null);
 
   const ListItem = ({ item, index, isSelected }) => {
-    const flex = 'flex flex-row justify-between items-center';
-    const theme = 'bg-indigo-dark';
-
     const onClickHandler = () => {
       setSelectedIndex(index);
       onClick({ item, selectedIndex: index });
-      if (item.onClick) item.onClick({ ...item, index, isSelected });
+      item.onClick?.({ ...item, index, isSelected });
     };
 
     return (
-      <div className={classnames(flex, theme, 'cursor-pointer')} onClick={onClickHandler} data-cy={item.id}>
+      <div
+        className={classnames(flex, theme, {
+          'cursor-pointer': !item.disabled,
+          'ohif-disabled': item.disabled,
+        })}
+        onClick={onClickHandler}
+        data-cy={item.id}
+      >
         {renderer && renderer({ ...item, index, isSelected })}
       </div>
     );
   };
 
   return (
-    <div className="flex flex-col rounded-md bg-secondary-dark pt-2 pb-2">
+    <div
+      className="bg-secondary-dark flex flex-col gap-[4px] overflow-auto rounded-md p-1"
+      style={{ maxHeight: 'calc(100vh - 5rem)' }}
+    >
       {items.map((item, index) => {
         return (
           <ListItem
@@ -38,16 +48,10 @@ const ListMenu = ({ items = [], renderer, onClick }) => {
   );
 };
 
-const noop = () => { };
-
 ListMenu.propTypes = {
   items: PropTypes.array.isRequired,
   renderer: PropTypes.func.isRequired,
-  onClick: PropTypes.func
-};
-
-ListMenu.defaultProps = {
-  onClick: noop
+  onClick: PropTypes.func,
 };
 
 export default ListMenu;

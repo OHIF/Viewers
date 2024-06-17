@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="28px" height="28px" viewBox="0 0 28 28" version="1.1" xmlns="http://www.w3.org/2000/svg"
+    xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>tool-seg-eraser</title>
+    <g id="tool-seg-eraser" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <rect id="Rectangle" x="0" y="0" width="28" height="28"></rect>
+        <path
+            d="M8.47826087,18.0030772 C7.48731947,17.9495317 6.54439458,17.5591084 5.80565217,16.8964685 L4.1066087,15.1958598 C3.49763625,14.5834856 3.49763625,13.5942339 4.1066087,12.9818598 L13.6317391,3.45672934 C14.2441133,2.84775689 15.233365,2.84775689 15.8457391,3.45672934 L19.8926087,7.5035989 C20.5015811,8.11597307 20.5015811,9.10522473 19.8926087,9.7175989 L12.7153043,16.8949033 C11.9769855,17.5579476 11.0343414,17.9489213 10.0434783,18.0030772 L8.47826087,18.0030772 Z"
+            id="Path" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+        <line x1="10.0434783" y1="7.04499021" x2="16.3043478" y2="13.3058598" id="Path" stroke="currentColor"
+            stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></line>
+        <line x1="3" y1="20.5667293" x2="21" y2="20.5667293" id="Path" stroke="currentColor" stroke-width="1.5"
+            stroke-linecap="round" stroke-linejoin="round"></line>
+    </g>
+</svg>

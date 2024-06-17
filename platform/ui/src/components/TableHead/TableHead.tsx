@@ -2,11 +2,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
-const TableHead = ({ children, className, style }) => {
+const TableHead = ({ children, className = '', style = {} }) => {
   return (
     <div
       className={classnames(
-        'bg-secondary-dark border-b border-secondary-light flex font-bold pr-2',
+        'bg-secondary-dark border-secondary-light flex border-b pr-2 font-bold',
         className
       )}
       style={style}
@@ -20,15 +20,10 @@ const TableHead = ({ children, className, style }) => {
   );
 };
 
-TableHead.defaultProps = {
-  className: '',
-  style: {},
-};
-
 TableHead.propTypes = {
   children: function (props, propName, componentName) {
     const elements = React.Children.toArray(props.children);
-    const isString = elements.some((child) => typeof child === 'string');
+    const isString = elements.some(child => typeof child === 'string');
 
     if (isString) {
       return new Error(
@@ -36,9 +31,7 @@ TableHead.propTypes = {
       );
     }
 
-    const isInvalidElement = elements.some(
-      (child) => !React.isValidElement(child)
-    );
+    const isInvalidElement = elements.some(child => !React.isValidElement(child));
 
     if (isInvalidElement) {
       return new Error(

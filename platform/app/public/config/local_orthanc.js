@@ -1,3 +1,4 @@
+/** @type {AppTypes.Config} */
 window.config = {
   routerBasename: '/',
   extensions: [],
@@ -19,7 +20,7 @@ window.config = {
       namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
       sourceName: 'dicomweb',
       configuration: {
-        friendlyName: 'dcmjs DICOMWeb Server',
+        friendlyName: 'local Orthanc DICOMWeb Server',
         name: 'DCM4CHEE',
         wadoUriRoot: 'http://localhost/dicom-web',
         qidoRoot: 'http://localhost/dicom-web',
@@ -29,9 +30,11 @@ window.config = {
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
         enableStudyLazyLoad: true,
+        useBulkDataURI: false,
         supportsFuzzyMatching: true,
         supportsWildcard: true,
         dicomUploadEnabled: true,
+        omitQuotationForMultipartRequest: true,
         bulkDataURI: {
           enabled: true,
         },

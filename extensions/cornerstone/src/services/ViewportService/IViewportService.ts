@@ -1,23 +1,19 @@
 import { Types } from '@cornerstonejs/core';
-import { StackData, VolumeData } from '../../types/CornerstoneCacheService';
-import {
-  DisplaySetOptions,
-  PublicViewportOptions,
-  ViewportOptions,
-} from './Viewport';
+import { StackViewportData, VolumeViewportData } from '../../types/CornerstoneCacheService';
+import { DisplaySetOptions, PublicViewportOptions } from './Viewport';
+import { Presentations } from '../../types/Presentation';
 
 /**
  * Handles cornerstone viewport logic including enabling, disabling, and
  * updating the viewport.
  */
 export interface IViewportService {
-  servicesManager: unknown;
+  servicesManager: AppTypes.ServicesManager;
   hangingProtocolService: unknown;
   renderingEngine: unknown;
   viewportGridResizeObserver: unknown;
   viewportsInfo: unknown;
   sceneVolumeInputs: unknown;
-  viewportIndexUIDMap: unknown;
   viewportDivElements: unknown;
   ViewportPropertiesMap: unknown;
   volumeUIDs: unknown;
@@ -28,14 +24,9 @@ export interface IViewportService {
   _broadcastEvent: unknown;
   /**
    * Adds the HTML element to the viewportService
-   * @param {*} viewportIndex
    * @param {*} elementRef
    */
-  enableViewport(
-    viewportIndex: number,
-    viewportOptions: ViewportOptions,
-    elementRef: HTMLDivElement
-  ): void;
+  enableViewport(viewportId: string, elementRef: HTMLDivElement): void;
   /**
    * It retrieves the renderingEngine if it does exist, or creates one otherwise
    * @returns {RenderingEngine} rendering engine
@@ -46,7 +37,7 @@ export interface IViewportService {
    * the element for resizing events
    * @param {*} elementRef
    */
-  resize(element: HTMLDivElement): void;
+  resize(isGridResize: boolean): void;
   /**
    * Removes the viewport from cornerstone, and destroys the rendering engine
    */
@@ -54,21 +45,21 @@ export interface IViewportService {
   /**
    * Disables the viewport inside the renderingEngine, if no viewport is left
    * it destroys the renderingEngine.
-   * @param viewportIndex
+   * @param viewportId
    */
-  disableElement(viewportIndex: number): void;
+  disableElement(viewportId: string): void;
   /**
    * Uses the renderingEngine to enable the element for the given viewport index
    * and sets the displaySet data to the viewport
-   * @param {*} viewportIndex
    * @param {*} displaySet
    * @param {*} dataSource
    * @returns
    */
   setViewportData(
-    viewportIndex: number,
-    viewportData: StackData | VolumeData,
+    viewportId: string,
+    viewportData: StackViewportData | VolumeViewportData,
     publicViewportOptions: PublicViewportOptions,
-    publicDisplaySetOptions: DisplaySetOptions[]
+    publicDisplaySetOptions: DisplaySetOptions[],
+    presentations?: Presentations
   ): void;
 }

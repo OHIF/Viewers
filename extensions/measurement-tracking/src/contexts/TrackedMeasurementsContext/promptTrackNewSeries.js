@@ -11,17 +11,16 @@ const RESPONSE = {
 
 function promptTrackNewSeries({ servicesManager, extensionManager }, ctx, evt) {
   const { UIViewportDialogService } = servicesManager.services;
-  const { viewportIndex, StudyInstanceUID, SeriesInstanceUID } = evt;
+  // When the state change happens after a promise, the state machine sends the retult in evt.data;
+  // In case of direct transition to the state, the state machine sends the data in evt;
+  const { viewportId, StudyInstanceUID, SeriesInstanceUID } = evt.data || evt;
 
-  return new Promise(async function(resolve, reject) {
-    let promptResult = await _askShouldAddMeasurements(
-      UIViewportDialogService,
-      viewportIndex
-    );
+  return new Promise(async function (resolve, reject) {
+    let promptResult = await _askShouldAddMeasurements(UIViewportDialogService, viewportId);
 
     if (promptResult === RESPONSE.CREATE_REPORT) {
       promptResult = ctx.isDirty
-        ? await _askSaveDiscardOrCancel(UIViewportDialogService, viewportIndex)
+        ? await _askSaveDiscardOrCancel(UIViewportDialogService, viewportId)
         : RESPONSE.SET_STUDY_AND_SERIES;
     }
 
@@ -29,16 +28,15 @@ function promptTrackNewSeries({ servicesManager, extensionManager }, ctx, evt) {
       userResponse: promptResult,
       StudyInstanceUID,
       SeriesInstanceUID,
-      viewportIndex,
+      viewportId,
       isBackupSave: false,
     });
   });
 }
 
-function _askShouldAddMeasurements(uiViewportDialogService, viewportIndex) {
-  return new Promise(function(resolve, reject) {
-    const message =
-      'Do you want to add this measurement to the existing report?';
+function _askShouldAddMeasurements(uiViewportDialogService, viewportId) {
+  return new Promise(function (resolve, reject) {
+    const message = 'Do you want to add this measurement to the existing report?';
     const actions = [
       {
         type: ButtonEnums.type.secondary,
@@ -62,7 +60,7 @@ function _askShouldAddMeasurements(uiViewportDialogService, viewportIndex) {
     };
 
     uiViewportDialogService.show({
-      viewportIndex,
+      viewportId,
       type: 'info',
       message,
       actions,
@@ -75,8 +73,8 @@ function _askShouldAddMeasurements(uiViewportDialogService, viewportIndex) {
   });
 }
 
-function _askSaveDiscardOrCancel(UIViewportDialogService, viewportIndex) {
-  return new Promise(function(resolve, reject) {
+function _askSaveDiscardOrCancel(UIViewportDialogService, viewportId) {
+  return new Promise(function (resolve, reject) {
     const message =
       'You have existing tracked measurements. What would you like to do with your existing tracked measurements?';
     const actions = [
@@ -98,7 +96,7 @@ function _askSaveDiscardOrCancel(UIViewportDialogService, viewportIndex) {
     };
 
     UIViewportDialogService.show({
-      viewportIndex,
+      viewportId,
       type: 'warning',
       message,
       actions,

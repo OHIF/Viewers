@@ -36,7 +36,6 @@ Here is an example protocol which if used will hang a 1x3 layout with the first 
 const oneByThreeProtocol = {
   id: 'oneByThreeProtocol',
   locked: true,
-  hasUpdatedPriorsInformation: false,
   name: 'Default',
   createdDate: '2021-02-23T19:22:08.894Z',
   modifiedDate: '2022-10-04T19:22:08.894Z',
@@ -215,7 +214,7 @@ The skeleton of a hanging protocol is as follows:
 unique identifier for the protocol, this id can be used inside mode configuration
 to specify which protocol should be used for a specific mode. A mode can
 request a protocol by its id (which makes OHIF to apply the protocol without
-matching), or provides and array of ids which will
+matching), or provides an array of ids which will
 make the ProtocolEngine to choose the best matching protocol (based on
 protocolMatching rules, which is next section).
 
@@ -241,6 +240,9 @@ A list of criteria for the protocol along with the provided points for ranking.
     "StudyDescription", "ModalitiesInStudy", "NumberOfStudyRelatedSeries", "NumberOfSeriesRelatedInstances"
     In addition to these tags, you can also use a custom attribute that you have registered before.
     We will learn more about this later.
+  - `from`: Indicates the source of the attribute.  This allows getting values
+    from other objects such as the `prior` instance object instead of from the
+    current one.
 
 
 
@@ -279,7 +281,22 @@ A list of criteria for the protocol along with the provided points for ranking.
     },
     ```
 
-### displaySetSelectors
+### `from` attribute (optional)
+The `from` attribute allows you to retrieve the attribute to test from another object, such as the previous study, the overall list of studies, or another provided value from a module.
+
+The values provided by OHIF which you can use are:
+
+-  `activeStudy`: to use the metadata of the active study to match
+-  `studies`: to use the metadata of the list of studies (all studies) to match
+-  `allDisplaySets`: all available display sets
+-  `displaySets`: if the selector has matched a study, these are the display sets for that study
+-  `prior`: the metadata of the first study in the list of studies that is not the active study
+-  `options`: during matching, we also provide an options object with the following information that you can use as the `from` value:
+  - `studyInstanceUIDsIndex`: the index of the study in the list of studies
+  - `instance`: the metadata of the instance being matched, which is exactly the displaySet.instance metadata.
+
+
+### displaySetSelectors (mandatory)
 Defines the display sets that the protocol will use for arrangement.
 
 ```js
@@ -346,7 +363,7 @@ As you see each selector is composed of an `id` as the key and a set of `seriesM
 based on the matching rules. The displaySet with the highest score will be used for the `id`.
 
 ### stages
-Each protocol can define one or more stages. Each stage defines a certain layout and viewport rules. Therefore, the `stages` property is array of objects, each object being one stage.
+Each protocol can define one or more stages. Each stage defines a certain layout and viewport rules. Therefore, the `stages` property is an array of objects, each object being one stage.
 
 ### viewportStructure
 Defines the layout of the viewer. You can define the number of `rows` and `columns`. There should be `rows * columns` number of
@@ -387,6 +404,7 @@ viewportStructure: {
       ],
     },
 },
+
 ```
 
 
@@ -432,6 +450,7 @@ As you can see in the hanging protocol we defined three viewports (but only show
    - `toolGroupId`: tool group that will be used for the viewport (optional)
    - `initialImageOptions`: initial image options (optional - can be specific imageIndex number or preset (first, middle, last))
    - `syncGroups`: sync groups for the viewport (optional)
+   -The `displayArea` parameter refers to the designated area within the viewport where a specific portion of the image can be displayed. This parameter is optional and allows you to choose the location of the image within the viewport. For example, in mammography images, you can display the left breast on the left side of the viewport and the right breast on the right side, with the chest wall positioned in the middle. To understand how to define the display area, you can refer to the live example provided by CornerstoneJS [here](https://www.cornerstonejs.org/live-examples/programaticpanzoom).
 
 
 2. `displaySets`: defines the display sets that are displayed on a viewport. It is an array of objects, each object being one display set.
@@ -475,22 +494,131 @@ HangingProtocolService.addCustomAttribute(
 ```
 
 
-
 ## Matching on Prior Study with UID
 
 Often it is desired to match a new study to a prior study (e.g., follow up on
 a surgery). Since the hanging protocols run on displaySets we need to have a
 way to let OHIF knows that it needs to load the prior study as well. This can
-be done by specifying both StudyInstanceUIDs in the URL. Below we are
-running OHIF with two studies
+be done by specifying both StudyInstanceUIDs in the URL. The additional studies
+are then accessible to the hanging protocol.  Below we are
+running OHIF with two studies, and a comparison hanging protocol available by
+default.
 
 ```bash
-http://localhost:3000/viewer?StudyInstanceUIDs=1.3.6.1.4.1.25403.345050719074.3824.20170125095438.5&StudyInstanceUIDs=1.3.6.1.4.1.25403.345050719074.3824.20170125095722.1
+http://localhost:3000/viewer?StudyInstanceUIDs=1.3.6.1.4.1.25403.345050719074.3824.20170125095438.5&StudyInstanceUIDs=1.3.6.1.4.1.25403.345050719074.3824.20170125095722.1&hangingprotocolId=@ohif/hpCompare
 ```
 
-Now you have access to both studies and you can use matchingRules to match
-displaySets.
+The `&hangingProtocolId` option forces the specific hanging protocol to be
+applied, but the mode can also add the hanging protocols to the default set,
+and then the best matching hanging protocol will be applied by the run method.
+
+To match any other studies, it is required to enable the prior matching rules
+capability using:
+
+```javascript
+  // Indicate number of priors used - 0 means any number, -1 means none.
+  numberOfPriorsReferenced: 1,
+```
+
+The matching rule that allows the hanging protocol to be runnable is:
+
+```javascript
+  protocolMatchingRules: [
+    {
+      id: 'Two Studies',
+      weight: 1000,
+      // This will generate 1.3.6.1.4.1.25403.345050719074.3824.20170125095722.1
+      // since that is study instance UID in the prior from instance.
+      attribute: 'StudyInstanceUID',
+      // The 'from' attribute says where to get the 'attribute' value from.  In this case
+      // prior means the second study in the study list.
+      from: 'prior',
+      required: true,
+      constraint: {
+        notNull: true,
+      },
+    },
+  ],
+```
+
+The display set selector selecting the specific study to display is included
+in the studyMatchingRules.  Note that this rule will cause ONLY the second study
+to be matched, so it won't attempt to match anything in other studies.
+Additional series level criteria, such as modality rules must be included at the
+`seriesMatchingRules`.
+
+```javascript
+  studyMatchingRules: [
+    {
+      // The priorInstance is a study counter that indicates what position this study is in
+      // and the value comes from the options parameter.
+      attribute: 'studyInstanceUIDsIndex',
+      from: 'options',
+      required: true,
+      constraint: {
+        equals: { value: 1 },
+      },
+    },
+  ],
+```
 
 
+## Callbacks
 
-Our roadmap includes enabling matching on prior studies without the UID (e.g., baseline, most recent and index).
+
+Hanging protocols in `OHIF-v3` provide the flexibility to define various callbacks that allow you to customize the behavior of your viewer when specific events occur during protocol execution. These callbacks are defined in the `ProtocolNotifications` type and can be added to your hanging protocol configuration.
+
+Each callback is an array of commands or actions that are executed when the event occurs.
+
+```js
+[
+  {
+    commandName: 'showDownloadViewportModal',
+    commandOptions: {}
+  }
+]
+```
+
+
+Here, we'll explain the available callbacks and their purposes:
+
+### `onProtocolExit`
+
+The `onProtocolExit` callback is executed after the protocol is exited and the new one is applied. This callback is useful for performing actions or executing commands when switching between hanging protocols.
+
+### `onProtocolEnter`
+
+The `onProtocolEnter` callback is executed after the protocol is entered and applied. You can use this callback to define actions or commands that should run when entering a specific hanging protocol.
+
+### `onLayoutChange`
+
+The `onLayoutChange` callback is executed before the layout change is started. You can use it to apply a specific hanging protocol based on the current layout or other criteria.
+
+### `onViewportDataInitialized`
+
+The `onViewportDataInitialized` callback is executed after the initial viewport grid data is set and all viewport data includes a designated display set. This callback runs during the initial layout setup for each stage. You can use it to perform actions or apply settings to the viewports at the start.
+
+Here is an example of how you can add these callbacks to your hanging protocol configuration:
+
+```javascript
+const protocol = {
+  id: 'myProtocol',
+  name: 'My Protocol',
+  // rest of the protocol configuration
+  callbacks: {
+    onProtocolExit: [
+      // Array of commands or actions to execute on protocol exit
+    ],
+    onProtocolEnter: [
+      // Array of commands or actions to execute on protocol enter
+    ],
+    onLayoutChange: [
+      // Array of commands or actions to execute on layout change
+    ],
+    onViewportDataInitialized: [
+      // Array of commands or actions to execute on viewport data initialization
+    ],
+  },
+  // protocolMatchingRules
+  // the rest
+};

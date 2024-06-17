@@ -1,72 +1,42 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import OHIF, { utils } from '@ohif/core';
 
-import { ViewportActionBar, Tooltip, Icon } from '@ohif/ui';
-
-import { useTranslation } from 'react-i18next';
+import { Tooltip, Icon, ViewportActionArrows, useViewportGrid } from '@ohif/ui';
 
 import { annotation } from '@cornerstonejs/tools';
 import { useTrackedMeasurements } from './../getContextModule';
 import { BaseVolumeViewport, Enums } from '@cornerstonejs/core';
+import { useTranslation } from 'react-i18next';
 
-const { formatDate } = utils;
-
-function TrackedCornerstoneViewport(props) {
-  const {
-    displaySets,
-    viewportIndex,
-    viewportLabel,
-    servicesManager,
-    extensionManager,
-    viewportOptions,
-  } = props;
-
-  const { t } = useTranslation('Common');
+function TrackedCornerstoneViewport(props: withAppTypes) {
+  const { displaySets, viewportId, servicesManager, extensionManager } = props;
 
   const {
     measurementService,
     cornerstoneViewportService,
     viewportGridService,
+    viewportActionCornersService,
   } = servicesManager.services;
 
   // Todo: handling more than one displaySet on the same viewport
   const displaySet = displaySets[0];
+  const { t } = useTranslation('Common');
 
-  const [
-    trackedMeasurements,
-    sendTrackedMeasurementsEvent,
-  ] = useTrackedMeasurements();
+  const [viewportGrid] = useViewportGrid();
+  const { activeViewportId } = viewportGrid;
+
+  const [trackedMeasurements, sendTrackedMeasurementsEvent] = useTrackedMeasurements();
 
   const [isTracked, setIsTracked] = useState(false);
   const [trackedMeasurementUID, setTrackedMeasurementUID] = useState(null);
   const [viewportElem, setViewportElem] = useState(null);
 
   const { trackedSeries } = trackedMeasurements.context;
-  const viewportId = viewportOptions.viewportId;
 
-  const {
-    SeriesDate,
-    SeriesDescription,
-    SeriesInstanceUID,
-    SeriesNumber,
-  } = displaySet;
-
-  const {
-    PatientID,
-    PatientName,
-    PatientSex,
-    PatientAge,
-    SliceThickness,
-    SpacingBetweenSlices,
-    StudyDate,
-    ManufacturerModelName,
-  } = displaySet.images[0];
+  const { SeriesInstanceUID } = displaySet;
 
   const updateIsTracked = useCallback(() => {
-    const viewport = cornerstoneViewportService.getCornerstoneViewportByIndex(
-      viewportIndex
-    );
+    const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
     if (viewport instanceof BaseVolumeViewport) {
       // A current image id will only exist for volume viewports that can have measurements tracked.
@@ -84,7 +54,7 @@ function TrackedCornerstoneViewport(props) {
     if (trackedSeries.includes(SeriesInstanceUID) !== isTracked) {
       setIsTracked(!isTracked);
     }
-  }, [isTracked, trackedMeasurements, viewportIndex, SeriesInstanceUID]);
+  }, [isTracked, trackedMeasurements, viewportId, SeriesInstanceUID]);
 
   const onElementEnabled = useCallback(
     evt => {
@@ -101,10 +71,7 @@ function TrackedCornerstoneViewport(props) {
   );
 
   const onElementDisabled = useCallback(() => {
-    viewportElem?.removeEventListener(
-      Enums.Events.VOLUME_VIEWPORT_NEW_VOLUME,
-      updateIsTracked
-    );
+    viewportElem?.removeEventListener(Enums.Events.VOLUME_VIEWPORT_NEW_VOLUME, updateIsTracked);
   }, [updateIsTracked, viewportElem]);
 
   useEffect(updateIsTracked, [updateIsTracked]);
@@ -113,7 +80,7 @@ function TrackedCornerstoneViewport(props) {
     const { unsubscribe } = cornerstoneViewportService.subscribe(
       cornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED,
       props => {
-        if (props.viewportIndex !== viewportIndex) {
+        if (props.viewportId !== viewportId) {
           return;
         }
 
@@ -124,7 +91,7 @@ function TrackedCornerstoneViewport(props) {
     return () => {
       unsubscribe();
     };
-  }, [updateIsTracked, viewportIndex]);
+  }, [updateIsTracked, viewportId]);
 
   useEffect(() => {
     if (isTracked) {
@@ -134,9 +101,7 @@ function TrackedCornerstoneViewport(props) {
         },
       });
 
-      cornerstoneViewportService
-        .getRenderingEngine()
-        .renderViewport(viewportId);
+      cornerstoneViewportService.getRenderingEngine().renderViewport(viewportId);
 
       return;
     }
@@ -169,22 +134,24 @@ function TrackedCornerstoneViewport(props) {
     [added, addedRaw].forEach(evt => {
       subscriptions.push(
         measurementService.subscribe(evt, ({ source, measurement }) => {
-          const { activeViewportIndex } = viewportGridService.getState();
+          const { activeViewportId } = viewportGridService.getState();
 
           // Each TrackedCornerstoneViewport receives the MeasurementService's events.
           // Only send the tracked measurements event for the active viewport to avoid
           // sending it more than once.
-          if (viewportIndex === activeViewportIndex) {
+          if (viewportId === activeViewportId) {
             const {
               referenceStudyUID: StudyInstanceUID,
               referenceSeriesUID: SeriesInstanceUID,
+              uid: measurementId,
             } = measurement;
 
             sendTrackedMeasurementsEvent('SET_DIRTY', { SeriesInstanceUID });
             sendTrackedMeasurementsEvent('TRACK_SERIES', {
-              viewportIndex,
+              viewportId,
               StudyInstanceUID,
               SeriesInstanceUID,
+              measurementId,
             });
           }
         }).unsubscribe
@@ -196,32 +163,53 @@ function TrackedCornerstoneViewport(props) {
         unsub();
       });
     };
-  }, [
-    measurementService,
-    sendTrackedMeasurementsEvent,
-    viewportIndex,
-    viewportGridService,
-  ]);
+  }, [measurementService, sendTrackedMeasurementsEvent, viewportId, viewportGridService]);
 
-  function switchMeasurement(direction) {
-    const newTrackedMeasurementUID = _getNextMeasurementUID(
-      direction,
-      servicesManager,
-      trackedMeasurementUID,
-      trackedMeasurements
+  const switchMeasurement = useCallback(
+    direction => {
+      const newTrackedMeasurementUID = _getNextMeasurementUID(
+        direction,
+        servicesManager,
+        trackedMeasurementUID,
+        trackedMeasurements
+      );
+
+      if (!newTrackedMeasurementUID) {
+        return;
+      }
+
+      setTrackedMeasurementUID(newTrackedMeasurementUID);
+
+      measurementService.jumpToMeasurement(viewportId, newTrackedMeasurementUID);
+    },
+    [measurementService, servicesManager, trackedMeasurementUID, trackedMeasurements, viewportId]
+  );
+
+  useEffect(() => {
+    const statusComponent = _getStatusComponent(isTracked, t);
+    const arrowsComponent = _getArrowsComponent(
+      isTracked,
+      switchMeasurement,
+      viewportId === activeViewportId
     );
 
-    if (!newTrackedMeasurementUID) {
-      return;
-    }
-
-    setTrackedMeasurementUID(newTrackedMeasurementUID);
-
-    measurementService.jumpToMeasurement(
-      viewportIndex,
-      newTrackedMeasurementUID
-    );
-  }
+    viewportActionCornersService.setComponents([
+      {
+        viewportId,
+        id: 'viewportStatusComponent',
+        component: statusComponent,
+        indexPriority: -100,
+        location: viewportActionCornersService.LOCATIONS.topLeft,
+      },
+      {
+        viewportId,
+        id: 'viewportActionArrowsComponent',
+        component: arrowsComponent,
+        indexPriority: 0,
+        location: viewportActionCornersService.LOCATIONS.topRight,
+      },
+    ]);
+  }, [activeViewportId, isTracked, switchMeasurement, viewportActionCornersService, viewportId]);
 
   const getCornerstoneViewport = () => {
     const { component: Component } = extensionManager.getModuleEntry(
@@ -231,7 +219,10 @@ function TrackedCornerstoneViewport(props) {
     return (
       <Component
         {...props}
-        onElementEnabled={onElementEnabled}
+        onElementEnabled={evt => {
+          props.onElementEnabled?.(evt);
+          onElementEnabled(evt);
+        }}
         onElementDisabled={onElementDisabled}
       />
     );
@@ -239,38 +230,7 @@ function TrackedCornerstoneViewport(props) {
 
   return (
     <>
-      <ViewportActionBar
-        onDoubleClick={evt => {
-          evt.stopPropagation();
-          evt.preventDefault();
-        }}
-        useAltStyling={isTracked}
-        onArrowsClick={direction => switchMeasurement(direction)}
-        getStatusComponent={() => _getStatusComponent(isTracked)}
-        studyData={{
-          label: viewportLabel,
-          studyDate:
-            formatDate(SeriesDate) || formatDate(StudyDate) || t('NoStudyDate'),
-          currentSeries: SeriesNumber, // TODO - switch entire currentSeries to be UID based or actual position based
-          seriesDescription: SeriesDescription,
-          patientInformation: {
-            patientName: PatientName ? OHIF.utils.formatPN(PatientName) : '',
-            patientSex: PatientSex || '',
-            patientAge: PatientAge || '',
-            MRN: PatientID || '',
-            thickness: SliceThickness
-              ? `${parseFloat(SliceThickness).toFixed(2)}mm`
-              : '',
-            spacing:
-              SpacingBetweenSlices !== undefined
-                ? `${parseFloat(SpacingBetweenSlices).toFixed(2)}mm`
-                : '',
-            scanner: ManufacturerModelName || '',
-          },
-        }}
-      />
-      {/* TODO: Viewport interface to accept stack or layers of content like this? */}
-      <div className="relative flex flex-row w-full h-full overflow-hidden">
+      <div className="relative flex h-full w-full flex-row overflow-hidden">
         {getCornerstoneViewport()}
       </div>
     </>
@@ -279,29 +239,23 @@ function TrackedCornerstoneViewport(props) {
 
 TrackedCornerstoneViewport.propTypes = {
   displaySets: PropTypes.arrayOf(PropTypes.object.isRequired).isRequired,
-  viewportIndex: PropTypes.number.isRequired,
+  viewportId: PropTypes.string.isRequired,
   dataSource: PropTypes.object,
   children: PropTypes.node,
-  customProps: PropTypes.object,
-};
-
-TrackedCornerstoneViewport.defaultProps = {
-  customProps: {},
 };
 
 function _getNextMeasurementUID(
   direction,
-  servicesManager,
+  servicesManager: AppTypes.ServicesManager,
   trackedMeasurementId,
   trackedMeasurements
 ) {
   const { measurementService, viewportGridService } = servicesManager.services;
   const measurements = measurementService.getMeasurements();
 
-  const { activeViewportIndex, viewports } = viewportGridService.getState();
-  const {
-    displaySetInstanceUIDs: activeViewportDisplaySetInstanceUIDs,
-  } = viewports[activeViewportIndex];
+  const { activeViewportId, viewports } = viewportGridService.getState();
+  const { displaySetInstanceUIDs: activeViewportDisplaySetInstanceUIDs } =
+    viewports.get(activeViewportId);
 
   const { trackedSeries } = trackedMeasurements.context;
 
@@ -330,18 +284,11 @@ function _getNextMeasurementUID(
     // Not tracking a measurement, or previous measurement now deleted, revert to 0.
     measurementIndex = 0;
   } else {
-    if (direction === 'left') {
-      measurementIndex--;
-
-      if (measurementIndex < 0) {
-        measurementIndex = measurementCount - 1;
-      }
-    } else if (direction === 'right') {
-      measurementIndex++;
-
-      if (measurementIndex === measurementCount) {
-        measurementIndex = 0;
-      }
+    measurementIndex += direction;
+    if (measurementIndex < 0) {
+      measurementIndex = measurementCount - 1;
+    } else if (measurementIndex === measurementCount) {
+      measurementIndex = 0;
     }
   }
 
@@ -350,8 +297,23 @@ function _getNextMeasurementUID(
   return newTrackedMeasurementId;
 }
 
-function _getStatusComponent(isTracked) {
-  const trackedIcon = isTracked ? 'status-tracked' : 'status-untracked';
+const _getArrowsComponent = (isTracked, switchMeasurement, isActiveViewport) => {
+  if (!isTracked) {
+    return null;
+  }
+
+  return (
+    <ViewportActionArrows
+      onArrowsClick={direction => switchMeasurement(direction)}
+      className={isActiveViewport ? 'visible' : 'invisible group-hover:visible'}
+    ></ViewportActionArrows>
+  );
+};
+
+function _getStatusComponent(isTracked, t) {
+  if (!isTracked) {
+    return null;
+  }
 
   return (
     <div className="relative">
@@ -360,22 +322,20 @@ function _getStatusComponent(isTracked) {
         content={
           <div className="flex py-2">
             <div className="flex pt-1">
-              <Icon name="info-link" className="w-4 text-primary-main" />
+              <Icon
+                name="info-link"
+                className="text-primary-main w-4"
+              />
             </div>
-            <div className="flex ml-4">
-              <span className="text-base text-common-light">
+            <div className="ml-4 flex">
+              <span className="text-common-light text-base">
                 {isTracked ? (
-                  <>
-                    Series is
-                    <span className="font-bold text-white"> tracked</span> and
-                    can be viewed <br /> in the measurement panel
-                  </>
+                  <>{t('Series is tracked and can be viewed in the measurement panel')}</>
                 ) : (
                   <>
-                    Measurements for
-                    <span className="font-bold text-white"> untracked </span>
-                    series <br /> will not be shown in the <br /> measurements
-                    panel
+                    {t(
+                      'Measurements for untracked series will not be shown in the measurements panel'
+                    )}
                   </>
                 )}
               </span>
@@ -383,7 +343,10 @@ function _getStatusComponent(isTracked) {
           </div>
         }
       >
-        <Icon name={trackedIcon} className="text-primary-light" />
+        <Icon
+          name={'viewport-status-tracked'}
+          className="text-aqua-pale"
+        />
       </Tooltip>
     </div>
   );

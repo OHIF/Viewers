@@ -24,22 +24,23 @@ you'll see the following:
 ```bash
 │
 ├── extensions
-│   ├── _example              # Skeleton of example extension
 │   ├── default               # default functionalities
 │   ├── cornerstone           # 2D/3D images w/ Cornerstonejs
 │   ├── cornerstone-dicom-sr  # Structured reports
 │   ├── measurement-tracking  # measurement tracking
 │   └── dicom-pdf             # View DICOM wrapped PDFs in viewport
+|   # and many more ...
 │
 ├── modes
 │   └── longitudinal         # longitudinal measurement tracking mode
 |   └── basic-dev-mode       # basic viewer with Cornerstone (a developer focused mode)
+|   # and many more
 │
 ├── platform
 │   ├── core                 # Business Logic
 │   ├── i18n                 # Internationalization Support
 │   ├── ui                   # React component library
-│   └── viewer               # Connects platform and extension projects
+│   └── app               # Connects platform and extension projects
 │
 ├── ...                      # misc. shared configuration
 ├── lerna.json               # MonoRepo (Lerna) settings
@@ -161,7 +162,7 @@ logic you desire. As the components are presentational, you may swap out
 the viewer. The UI library is here to make development easier and quicker, but
 it is not mandatory for extension components to use.
 
-[Check out our component library!](https://react.ohif.org/)
+[Check out our component library!](https://ui.ohif.org/)
 
 ## Overview of the architecture
 

@@ -15,7 +15,8 @@ const Length = {
     csToolsEventDetail,
     displaySetService,
     cornerstoneViewportService,
-    getValueTypeFromToolType
+    getValueTypeFromToolType,
+    customizationService
   ) => {
     const { annotation, viewportId } = csToolsEventDetail;
     const { metadata, data, annotationUID } = annotation;
@@ -32,12 +33,11 @@ const Length = {
       throw new Error('Tool not supported');
     }
 
-    const { SOPInstanceUID, SeriesInstanceUID, StudyInstanceUID } =
-      getSOPInstanceAttributes(
-        referencedImageId,
-        cornerstoneViewportService,
-        viewportId
-      );
+    const { SOPInstanceUID, SeriesInstanceUID, StudyInstanceUID } = getSOPInstanceAttributes(
+      referencedImageId,
+      displaySetService,
+      annotation
+    );
 
     let displaySet;
 
@@ -47,28 +47,27 @@ const Length = {
         SeriesInstanceUID
       );
     } else {
-      displaySet = displaySetService.getDisplaySetsForSeries(SeriesInstanceUID);
+      displaySet = displaySetService.getDisplaySetsForSeries(SeriesInstanceUID)[0];
     }
 
-    const { points } = data.handles;
+    const { points, textBox } = data.handles;
 
-    const mappedAnnotations = getMappedAnnotations(
-      annotation,
-      displaySetService
-    );
+    const mappedAnnotations = getMappedAnnotations(annotation, displaySetService);
 
-    const displayText = getDisplayText(mappedAnnotations, displaySet);
+    const displayText = getDisplayText(mappedAnnotations, displaySet, customizationService);
     const getReport = () =>
-      _getReport(mappedAnnotations, points, FrameOfReferenceUID);
+      _getReport(mappedAnnotations, points, FrameOfReferenceUID, customizationService);
 
     return {
       uid: annotationUID,
       SOPInstanceUID,
       FrameOfReferenceUID,
       points,
+      textBox,
       metadata,
       referenceSeriesUID: SeriesInstanceUID,
       referenceStudyUID: StudyInstanceUID,
+      referencedImageId,
       frameNumber: mappedAnnotations[0]?.frameNumber || 1,
       toolName: metadata.toolName,
       displaySetInstanceUID: displaySet.displaySetInstanceUID,
@@ -95,24 +94,16 @@ function getMappedAnnotations(annotation, displaySetService) {
   Object.keys(cachedStats).forEach(targetId => {
     const targetStats = cachedStats[targetId];
 
-    if (!referencedImageId) {
-      throw new Error(
-        'Non-acquisition plane measurement mapping not supported'
-      );
-    }
-
-    const { SOPInstanceUID, SeriesInstanceUID, frameNumber } =
-      getSOPInstanceAttributes(referencedImageId);
-
-    const displaySet = displaySetService.getDisplaySetForSOPInstanceUID(
-      SOPInstanceUID,
-      SeriesInstanceUID,
-      frameNumber
+    const { SOPInstanceUID, SeriesInstanceUID, frameNumber } = getSOPInstanceAttributes(
+      referencedImageId,
+      displaySetService,
+      annotation
     );
 
+    const displaySet = displaySetService.getDisplaySetsForSeries(SeriesInstanceUID)[0];
+
     const { SeriesNumber } = displaySet;
-    const { length } = targetStats;
-    const unit = 'mm';
+    const { length, unit = 'mm' } = targetStats;
 
     annotations.push({
       SeriesInstanceUID,
@@ -132,7 +123,7 @@ This function is used to convert the measurement data to a format that is
 suitable for the report generation (e.g. for the csv report). The report
 returns a list of columns and corresponding values.
 */
-function _getReport(mappedAnnotations, points, FrameOfReferenceUID) {
+function _getReport(mappedAnnotations, points, FrameOfReferenceUID, customizationService) {
   const columns = [];
   const values = [];
 
@@ -141,9 +132,11 @@ function _getReport(mappedAnnotations, points, FrameOfReferenceUID) {
   values.push('Cornerstone:Length');
 
   mappedAnnotations.forEach(annotation => {
-    const { length } = annotation;
-    columns.push(`Length (mm)`);
+    const { length, unit } = annotation;
+    columns.push(`Length`);
     values.push(length);
+    columns.push('Unit');
+    values.push(unit);
   });
 
   if (FrameOfReferenceUID) {
@@ -165,7 +158,7 @@ function _getReport(mappedAnnotations, points, FrameOfReferenceUID) {
   };
 }
 
-function getDisplayText(mappedAnnotations, displaySet) {
+function getDisplayText(mappedAnnotations, displaySet, customizationService) {
   if (!mappedAnnotations || !mappedAnnotations.length) {
     return '';
   }
@@ -173,12 +166,9 @@ function getDisplayText(mappedAnnotations, displaySet) {
   const displayText = [];
 
   // Area is the same for all series
-  const { length, SeriesNumber, SOPInstanceUID, frameNumber } =
-    mappedAnnotations[0];
+  const { length, SeriesNumber, SOPInstanceUID, frameNumber, unit } = mappedAnnotations[0];
 
-  const instance = displaySet.images.find(
-    image => image.SOPInstanceUID === SOPInstanceUID
-  );
+  const instance = displaySet.images.find(image => image.SOPInstanceUID === SOPInstanceUID);
 
   let InstanceNumber;
   if (instance) {
@@ -188,11 +178,11 @@ function getDisplayText(mappedAnnotations, displaySet) {
   const instanceText = InstanceNumber ? ` I: ${InstanceNumber}` : '';
   const frameText = displaySet.isMultiFrame ? ` F: ${frameNumber}` : '';
 
-  if (length === null || length === undefined) return displayText;
+  if (length === null || length === undefined) {
+    return displayText;
+  }
   const roundedLength = utils.roundNumber(length, 2);
-  displayText.push(
-    `${roundedLength} mm (S: ${SeriesNumber}${instanceText}${frameText})`
-  );
+  displayText.push(`${roundedLength} ${unit} (S: ${SeriesNumber}${instanceText}${frameText})`);
 
   return displayText;
 }

@@ -1,4 +1,4 @@
-import { ServicesManager, CommandsManager, ExtensionManager } from '@ohif/core';
+import { CommandsManager, ExtensionManager } from '@ohif/core';
 import styles from './utils/styles';
 import callInputDialog from './utils/callInputDialog';
 
@@ -7,22 +7,20 @@ export default function getCommandsModule({
   commandsManager,
   extensionManager,
 }: {
-  servicesManager: ServicesManager;
+  servicesManager: AppTypes.ServicesManager;
   commandsManager: CommandsManager;
   extensionManager: ExtensionManager;
 }) {
-  const {
-    viewportGridService,
-    uiDialogService,
-    microscopyService,
-  } = servicesManager.services;
+  const { viewportGridService, uiDialogService, microscopyService } = servicesManager.services;
 
   const actions = {
     // Measurement tool commands:
     deleteMeasurement: ({ uid }) => {
       if (uid) {
         const roiAnnotation = microscopyService.getAnnotation(uid);
-        if (roiAnnotation) microscopyService.removeAnnotation(roiAnnotation);
+        if (roiAnnotation) {
+          microscopyService.removeAnnotation(roiAnnotation);
+        }
       }
     },
 
@@ -61,18 +59,12 @@ export default function getCommandsModule({
         },
       ];
       if (
-        [
-          'line',
-          'box',
-          'circle',
-          'point',
-          'polygon',
-          'freehandpolygon',
-          'freehandline',
-        ].indexOf(toolName) >= 0
+        ['line', 'box', 'circle', 'point', 'polygon', 'freehandpolygon', 'freehandline'].indexOf(
+          toolName
+        ) >= 0
       ) {
         // TODO: read from configuration
-        let options = {
+        const options = {
           geometryType: toolName,
           vertexEnabled: true,
           styleOptions: styles.default,
@@ -120,33 +112,20 @@ export default function getCommandsModule({
         ]);
       }
     },
-
-    incrementActiveViewport: () => {
-      const { activeViewportIndex, viewports } = viewportGridService.getState();
-      const nextViewportIndex = (activeViewportIndex + 1) % viewports.length;
-      viewportGridService.setActiveViewportIndex(nextViewportIndex);
-    },
-    decrementActiveViewport: () => {
-      const { activeViewportIndex, viewports } = viewportGridService.getState();
-      const nextViewportIndex =
-        (activeViewportIndex - 1 + viewports.length) % viewports.length;
-      viewportGridService.setActiveViewportIndex(nextViewportIndex);
-    },
-
     toggleOverlays: () => {
       // overlay
-      const overlays = document.getElementsByClassName(
-        'microscopy-viewport-overlay'
-      );
+      const overlays = document.getElementsByClassName('microscopy-viewport-overlay');
       let onoff = false; // true if this will toggle on
       for (let i = 0; i < overlays.length; i++) {
-        if (i === 0) onoff = overlays.item(0).classList.contains('hidden');
+        if (i === 0) {
+          onoff = overlays.item(0).classList.contains('hidden');
+        }
         overlays.item(i).classList.toggle('hidden');
       }
 
       // overview
-      const { activeViewportIndex, viewports } = viewportGridService.getState();
-      microscopyService.toggleOverviewMap(activeViewportIndex);
+      const { activeViewportId } = viewportGridService.getState();
+      microscopyService.toggleOverviewMap(activeViewportId);
     },
     toggleAnnotations: () => {
       microscopyService.toggleROIsVisibility();
@@ -156,36 +135,18 @@ export default function getCommandsModule({
   const definitions = {
     deleteMeasurement: {
       commandFn: actions.deleteMeasurement,
-      storeContexts: [] as any[],
-      options: {},
     },
     setLabel: {
       commandFn: actions.setLabel,
-      storeContexts: [] as any[],
-      options: {},
     },
     setToolActive: {
       commandFn: actions.setToolActive,
-      storeContexts: [] as any[],
-      options: {},
-    },
-    incrementActiveViewport: {
-      commandFn: actions.incrementActiveViewport,
-      storeContexts: [] as any[],
-    },
-    decrementActiveViewport: {
-      commandFn: actions.decrementActiveViewport,
-      storeContexts: [] as any[],
     },
     toggleOverlays: {
       commandFn: actions.toggleOverlays,
-      storeContexts: [] as any[],
-      options: {},
     },
     toggleAnnotations: {
       commandFn: actions.toggleAnnotations,
-      storeContexts: [] as any[],
-      options: {},
     },
   };
 

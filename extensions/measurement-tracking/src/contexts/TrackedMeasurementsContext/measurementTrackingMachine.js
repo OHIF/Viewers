@@ -15,6 +15,7 @@ const machineConfiguration = {
   id: 'measurementTracking',
   initial: 'idle',
   context: {
+    activeViewportId: null,
     trackedStudy: '',
     trackedSeries: [],
     ignoredSeries: [],
@@ -30,10 +31,33 @@ const machineConfiguration = {
     off: {
       type: 'final',
     },
+    labellingOnly: {
+      on: {
+        TRACK_SERIES: [
+          {
+            target: 'promptLabelAnnotation',
+            actions: ['setPreviousState'],
+          },
+          {
+            target: 'off',
+          },
+        ],
+      },
+    },
     idle: {
       entry: 'clearContext',
       on: {
-        TRACK_SERIES: 'promptBeginTracking',
+        TRACK_SERIES: [
+          {
+            target: 'promptLabelAnnotation',
+            cond: 'isLabelOnMeasure',
+            actions: ['setPreviousState'],
+          },
+          {
+            target: 'promptBeginTracking',
+            actions: ['setPreviousState'],
+          },
+        ],
         // Unused? We may only do PROMPT_HYDRATE_SR now?
         SET_TRACKED_SERIES: [
           {
@@ -47,6 +71,11 @@ const machineConfiguration = {
         },
         RESTORE_PROMPT_HYDRATE_SR: 'promptHydrateStructuredReport',
         HYDRATE_SR: 'hydrateStructuredReport',
+        UPDATE_ACTIVE_VIEWPORT_ID: {
+          actions: assign({
+            activeViewportId: (_, event) => event.activeViewportId,
+          }),
+        },
       },
     },
     promptBeginTracking: {
@@ -57,6 +86,10 @@ const machineConfiguration = {
             target: 'tracking',
             actions: ['setTrackedStudyAndSeries', 'setIsDirty'],
             cond: 'shouldSetStudyAndSeries',
+          },
+          {
+            target: 'labellingOnly',
+            cond: 'isLabelOnMeasureAndShouldKillMachine',
           },
           {
             target: 'off',
@@ -74,6 +107,11 @@ const machineConfiguration = {
     tracking: {
       on: {
         TRACK_SERIES: [
+          {
+            target: 'promptLabelAnnotation',
+            cond: 'isLabelOnMeasure',
+            actions: ['setPreviousState'],
+          },
           {
             target: 'promptTrackNewStudy',
             cond: 'isNewStudy',
@@ -183,10 +221,7 @@ const machineConfiguration = {
           // - show DICOM SR
           {
             target: 'idle',
-            actions: [
-              'clearAllMeasurements',
-              'showStructuredReportDisplaySetInActiveViewport',
-            ],
+            actions: ['clearAllMeasurements', 'showStructuredReportDisplaySetInActiveViewport'],
             cond: 'shouldSaveAndContinueWithSameReport',
           },
           // "starting a new report"
@@ -194,10 +229,7 @@ const machineConfiguration = {
           // - start tracking a new study + report
           {
             target: 'tracking',
-            actions: [
-              'discardPreviouslyTrackedMeasurements',
-              'setTrackedStudyAndSeries',
-            ],
+            actions: ['discardPreviouslyTrackedMeasurements', 'setTrackedStudyAndSeries'],
             cond: 'shouldSaveAndStartNewReport',
           },
           // Cancel, back to tracking
@@ -218,7 +250,7 @@ const machineConfiguration = {
             target: 'tracking',
             actions: [
               'setTrackedStudyAndMultipleSeries',
-              'jumpToFirstMeasurementInActiveViewport',
+              'jumpToSameImageInActiveViewport',
               'setIsDirtyToClean',
             ],
             cond: 'shouldHydrateStructuredReport',
@@ -242,7 +274,7 @@ const machineConfiguration = {
             target: 'tracking',
             actions: [
               'setTrackedStudyAndMultipleSeries',
-              'jumpToFirstMeasurementInActiveViewport',
+              'jumpToSameImageInActiveViewport',
               'setIsDirtyToClean',
             ],
           },
@@ -250,6 +282,36 @@ const machineConfiguration = {
         onError: {
           target: 'idle',
         },
+      },
+    },
+    promptLabelAnnotation: {
+      invoke: {
+        src: 'promptLabelAnnotation',
+        onDone: [
+          {
+            target: 'labellingOnly',
+            cond: 'wasLabellingOnly',
+          },
+          {
+            target: 'promptBeginTracking',
+            cond: 'wasIdle',
+          },
+          {
+            target: 'promptTrackNewStudy',
+            cond: 'wasTrackingAndIsNewStudy',
+          },
+          {
+            target: 'promptTrackNewSeries',
+            cond: 'wasTrackingAndIsNewSeries',
+          },
+          {
+            target: 'tracking',
+            cond: 'wasTracking',
+          },
+          {
+            target: 'off',
+          },
+        ],
       },
     },
   },
@@ -279,9 +341,7 @@ const defaultOptions = {
       console.warn('jumpToFirstMeasurementInActiveViewport: not implemented');
     },
     showStructuredReportDisplaySetInActiveViewport: (ctx, evt) => {
-      console.warn(
-        'showStructuredReportDisplaySetInActiveViewport: not implemented'
-      );
+      console.warn('showStructuredReportDisplaySetInActiveViewport: not implemented');
     },
     clearContext: assign({
       trackedStudy: '',
@@ -302,10 +362,8 @@ const defaultOptions = {
       ignoredSeries: [],
     })),
     setTrackedStudyAndMultipleSeries: assign((ctx, evt) => {
-      const studyInstanceUID =
-        evt.StudyInstanceUID || evt.data.StudyInstanceUID;
-      const seriesInstanceUIDs =
-        evt.SeriesInstanceUIDs || evt.data.SeriesInstanceUIDs;
+      const studyInstanceUID = evt.StudyInstanceUID || evt.data.StudyInstanceUID;
+      const seriesInstanceUIDs = evt.SeriesInstanceUIDs || evt.data.SeriesInstanceUIDs;
 
       return {
         prevTrackedStudy: ctx.trackedStudy,
@@ -338,13 +396,14 @@ const defaultOptions = {
       trackedSeries: [...ctx.trackedSeries, evt.data.SeriesInstanceUID],
     })),
     removeTrackedSeries: assign((ctx, evt) => ({
-      prevTrackedSeries: ctx.trackedSeries
-        .slice()
-        .filter(ser => ser !== evt.SeriesInstanceUID),
-      trackedSeries: ctx.trackedSeries
-        .slice()
-        .filter(ser => ser !== evt.SeriesInstanceUID),
+      prevTrackedSeries: ctx.trackedSeries.slice().filter(ser => ser !== evt.SeriesInstanceUID),
+      trackedSeries: ctx.trackedSeries.slice().filter(ser => ser !== evt.SeriesInstanceUID),
     })),
+    setPreviousState: assign((ctx, evt, meta) => {
+      return {
+        prevState: meta.state.value,
+      };
+    }),
   },
   guards: {
     // We set dirty any time we performan an action that:
@@ -367,22 +426,42 @@ const defaultOptions = {
     shouldSetDirty: (ctx, evt) => {
       return (
         // When would this happen?
-        evt.SeriesInstanceUID === undefined ||
-        ctx.trackedSeries.includes(evt.SeriesInstanceUID)
+        evt.SeriesInstanceUID === undefined || ctx.trackedSeries.includes(evt.SeriesInstanceUID)
       );
     },
-    shouldKillMachine: (ctx, evt) =>
-      evt.data && evt.data.userResponse === RESPONSE.NO_NEVER,
-    shouldAddSeries: (ctx, evt) =>
-      evt.data && evt.data.userResponse === RESPONSE.ADD_SERIES,
+    wasLabellingOnly: (ctx, evt, condMeta) => {
+      return ctx.prevState === 'labellingOnly';
+    },
+    wasIdle: (ctx, evt, condMeta) => {
+      return ctx.prevState === 'idle';
+    },
+    wasTracking: (ctx, evt, condMeta) => {
+      return ctx.prevState === 'tracking';
+    },
+    wasTrackingAndIsNewStudy: (ctx, evt, condMeta) => {
+      return (
+        ctx.prevState === 'tracking' &&
+        !ctx.ignoredSeries.includes(evt.data.SeriesInstanceUID) &&
+        ctx.trackedStudy !== evt.data.StudyInstanceUID
+      );
+    },
+    wasTrackingAndIsNewSeries: (ctx, evt, condMeta) => {
+      return (
+        ctx.prevState === 'tracking' &&
+        !ctx.ignoredSeries.includes(evt.data.SeriesInstanceUID) &&
+        !ctx.trackedSeries.includes(evt.data.SeriesInstanceUID)
+      );
+    },
+
+    shouldKillMachine: (ctx, evt) => evt.data && evt.data.userResponse === RESPONSE.NO_NEVER,
+    shouldAddSeries: (ctx, evt) => evt.data && evt.data.userResponse === RESPONSE.ADD_SERIES,
     shouldSetStudyAndSeries: (ctx, evt) =>
       evt.data && evt.data.userResponse === RESPONSE.SET_STUDY_AND_SERIES,
     shouldAddIgnoredSeries: (ctx, evt) =>
       evt.data && evt.data.userResponse === RESPONSE.NO_NOT_FOR_SERIES,
     shouldPromptSaveReport: (ctx, evt) =>
       evt.data && evt.data.userResponse === RESPONSE.CREATE_REPORT,
-    shouldIgnoreHydrationForSR: (ctx, evt) =>
-      evt.data && evt.data.userResponse === RESPONSE.CANCEL,
+    shouldIgnoreHydrationForSR: (ctx, evt) => evt.data && evt.data.userResponse === RESPONSE.CANCEL,
     shouldSaveAndContinueWithSameReport: (ctx, evt) =>
       evt.data &&
       evt.data.userResponse === RESPONSE.CREATE_REPORT &&
@@ -396,8 +475,7 @@ const defaultOptions = {
     // Has more than 1, or SeriesInstanceUID is not in list
     // --> Post removal would have non-empty trackedSeries array
     hasRemainingTrackedSeries: (ctx, evt) =>
-      ctx.trackedSeries.length > 1 ||
-      !ctx.trackedSeries.includes(evt.SeriesInstanceUID),
+      ctx.trackedSeries.length > 1 || !ctx.trackedSeries.includes(evt.SeriesInstanceUID),
     hasNotIgnoredSRSeriesForHydration: (ctx, evt) => {
       return !ctx.ignoredSRSeriesForHydration.includes(evt.SeriesInstanceUID);
     },
@@ -410,4 +488,4 @@ const defaultOptions = {
   },
 };
 
-export { defaultOptions, machineConfiguration };
+export { defaultOptions, machineConfiguration, RESPONSE };

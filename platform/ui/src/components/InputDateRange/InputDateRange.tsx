@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import DateRange from '../DateRange';
+import { DatePickerWithRange } from '@ohif/ui-next';
 import InputLabelWrapper from '../InputLabelWrapper';
 
 const InputDateRange = ({
@@ -9,8 +9,8 @@ const InputDateRange = ({
   label,
   isSortable,
   sortDirection,
-  onLabelClick,
-  value,
+  onLabelClick = () => {},
+  value = {},
   onChange,
 }) => {
   const { startDate, endDate } = value;
@@ -26,9 +26,11 @@ const InputDateRange = ({
       isSortable={isSortable}
       sortDirection={sortDirection}
       onLabelClick={onClickHandler}
+      className="xl:min-w-[284px]"
     >
-      <div className="relative">
-        <DateRange
+      <div className="relative xl:max-w-[246px]">
+        <DatePickerWithRange
+          className="mt-2"
           id={id}
           startDate={startDate}
           endDate={endDate}
@@ -39,19 +41,11 @@ const InputDateRange = ({
   );
 };
 
-const noop = () => {};
-
-InputDateRange.defaultProps = {
-  value: {},
-  onLabelClick: noop,
-};
-
 InputDateRange.propTypes = {
   id: PropTypes.string,
   label: PropTypes.string.isRequired,
   isSortable: PropTypes.bool.isRequired,
-  sortDirection: PropTypes.oneOf(['ascending', 'descending', 'none'])
-    .isRequired,
+  sortDirection: PropTypes.oneOf(['ascending', 'descending', 'none']).isRequired,
   onLabelClick: PropTypes.func.isRequired,
   value: PropTypes.shape({
     /** YYYYMMDD (19921022) */

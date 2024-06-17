@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import PropTypes from 'prop-types';
 //
 import PanelStudyBrowserTracking from './PanelStudyBrowserTracking';
@@ -25,18 +25,14 @@ function WrappedPanelStudyBrowserTracking({
   commandsManager,
   extensionManager,
   servicesManager,
-}) {
+}: withAppTypes) {
   const dataSource = extensionManager.getActiveDataSource()[0];
 
-  const getStudiesForPatientByMRN = _getStudyForPatientUtility(
-    extensionManager
-  );
-  const _getStudiesForPatientByMRN = getStudiesForPatientByMRN.bind(
-    null,
-    dataSource
-  );
-  const _getImageSrcFromImageId = _createGetImageSrcFromImageIdFn(
-    extensionManager
+  const getStudiesForPatientByMRN = _getStudyForPatientUtility(extensionManager);
+  const _getStudiesForPatientByMRN = getStudiesForPatientByMRN.bind(null, dataSource);
+  const _getImageSrcFromImageId = useCallback(
+    _createGetImageSrcFromImageIdFn(extensionManager),
+    []
   );
   const _requestDisplaySetCreationForStudy = requestDisplaySetCreationForStudy.bind(
     null,

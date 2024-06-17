@@ -1,6 +1,7 @@
 import ObjectPath from './objectPath';
 import absoluteUrl from './absoluteUrl';
 import guid from './guid';
+import uuidv4 from './uuidv4';
 import sortBy from './sortBy.js';
 import writeScript from './writeScript.js';
 import b64toBlob from './b64toBlob.js';
@@ -26,6 +27,7 @@ import debounce from './debounce';
 import roundNumber from './roundNumber';
 import downloadCSVReport from './downloadCSVReport';
 import isEqualWithin from './isEqualWithin';
+import addAccessors from './addAccessors';
 import {
   sortStudy,
   sortStudySeries,
@@ -41,6 +43,7 @@ import { splitComma, getSplitParam } from './splitComma';
 
 const utils = {
   guid,
+  uuidv4,
   ObjectPath,
   absoluteUrl,
   sortBy,
@@ -63,6 +66,7 @@ const utils = {
   Queue,
   isDicomUid,
   isEqualWithin,
+  addAccessors,
   resolveObjectPath,
   hierarchicalListUtils,
   progressTrackingUtils,

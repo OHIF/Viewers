@@ -1,7 +1,8 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import classNames from 'classnames';
-import Typography from '../Typography';
+import { InputNumber } from '../../components';
 import './InputRange.css';
+import getMaxDigits from '../../utils/getMaxDigits';
 
 /**
  * React Range Input component
@@ -9,12 +10,16 @@ import './InputRange.css';
  * value is a number value
  * onChange is a function that will be called when the range input is changed
  *
- *
  */
 
-const InputRange: React.FC<{
+type Label = {
+  text: string;
+  position: number;
+};
+
+type InputRangeProps = {
   value: number;
-  onChange: (value) => void;
+  onChange: (value: number) => void;
   minValue: number;
   maxValue: number;
   step: number;
@@ -25,8 +30,17 @@ const InputRange: React.FC<{
   labelVariant?: string;
   showLabel?: boolean;
   labelPosition?: string;
-  trackColor?: string;
-}> = ({
+  leftColor?: string;
+  rightColor?: string;
+  thumbColor?: string;
+  thumbColorOuter?: string;
+  allowNumberEdit?: boolean;
+  showAdjustmentArrows?: boolean;
+  trackHeight?: string;
+  labels?: Label[];
+};
+
+const InputRange: React.FC<InputRangeProps> = ({
   value,
   onChange,
   minValue,
@@ -36,75 +50,101 @@ const InputRange: React.FC<{
   containerClassName,
   inputClassName,
   labelClassName,
-  labelVariant,
   showLabel = true,
-  labelPosition = '',
-  trackColor,
+  labelPosition = 'right',
+  leftColor = '#5acce6',
+  rightColor = '#3a3f99',
+  thumbColor = '#5acce6',
+  thumbColorOuter = '#090c29',
+  trackHeight = '3px',
+  allowNumberEdit = false,
+  showAdjustmentArrows = true,
+  labels = [],
 }) => {
   const [rangeValue, setRangeValue] = useState(value);
+  const maxDigits = getMaxDigits(maxValue, step);
+  const labelWidth = `${maxDigits * 15}px`;
 
-  // Allow for the value property to update the range value.
   useEffect(() => setRangeValue(value), [value]);
 
   const handleChange = useCallback(
     e => {
-      const rangeValue = Number(e.target.value);
-      setRangeValue(rangeValue);
-      onChange(rangeValue);
+      const val = Number(e.target.value);
+      const roundedVal = Math.round(val / step) * step;
+      setRangeValue(roundedVal);
+      onChange(roundedVal);
     },
-    [onChange, setRangeValue]
+    [onChange, step]
   );
 
-  const rangeValuePercentage =
-    ((rangeValue - minValue) / (maxValue - minValue)) * 100;
+  const rangeValuePercentage = ((rangeValue - minValue) / (maxValue - minValue)) * 100;
 
-  const rangeValueForStr =
-    step >= 1 ? rangeValue.toFixed(0) : rangeValue.toFixed(1);
+  const LabelOrEditableNumber = allowNumberEdit ? (
+    <InputNumber
+      minValue={minValue}
+      maxValue={maxValue}
+      value={rangeValue}
+      onChange={val => {
+        setRangeValue(val);
+        onChange(val);
+      }}
+      step={step}
+      showAdjustmentArrows={showAdjustmentArrows}
+    />
+  ) : (
+    <span className={classNames(labelClassName ?? 'text-white')}>
+      {rangeValue} {unit}
+    </span>
+  );
 
   return (
     <div
-      className={`flex items-center cursor-pointer space-x-1 ${
-        containerClassName ? containerClassName : ''
-      }`}
+      className={`flex cursor-pointer items-center ${containerClassName ?? ''}`}
+      onClick={e => {
+        e.stopPropagation();
+        e.preventDefault();
+      }}
     >
-      {showLabel && labelPosition === 'left' && (
-        <Typography
-          variant={labelVariant ?? 'subtitle'}
-          component="p"
-          className={classNames('w-8', labelClassName ?? 'text-white')}
-        >
-          {rangeValueForStr}
-          {unit}
-        </Typography>
-      )}
-      <input
-        type="range"
-        min={minValue}
-        max={maxValue}
-        value={rangeValue}
-        className={`appearance-none h-[3px] rounded-lg input-range-thumb-design ${
-          inputClassName ? inputClassName : ''
-        }`}
-        style={{
-          background:
-            trackColor ||
-            `linear-gradient(to right, #5acce6 0%, #5acce6 ${rangeValuePercentage -
-              10}%, #3a3f99 ${rangeValuePercentage + 10}%, #3a3f99 100%)`,
-        }}
-        onChange={handleChange}
-        id="myRange"
-        step={step}
-      />
-      {showLabel && (!labelPosition || labelPosition === 'right') && (
-        <Typography
-          variant={labelVariant ?? 'subtitle'}
-          component="p"
-          className={classNames('w-8', labelClassName ?? 'text-white')}
-        >
-          {rangeValueForStr}
-          {unit}
-        </Typography>
-      )}
+      <div className={'relative flex w-full items-center ' + (showLabel ? 'space-x-2' : '')}>
+        {showLabel && labelPosition === 'left' && (
+          <div style={{ width: labelWidth }}>{LabelOrEditableNumber}</div>
+        )}
+        <input
+          type="range"
+          min={minValue}
+          max={maxValue}
+          value={rangeValue}
+          className={`w-full appearance-none rounded-md ${inputClassName ?? ''}`}
+          style={{
+            background: `linear-gradient(to right, ${leftColor} 0%, ${leftColor} ${rangeValuePercentage}%, ${rightColor} ${rangeValuePercentage}%, ${rightColor} 100%)`,
+            '--thumb-inner-color': thumbColor,
+            '--thumb-outer-color': thumbColorOuter,
+            height: trackHeight,
+          }}
+          onChange={handleChange}
+          id="myRange"
+          step={step}
+        />
+        {showLabel && labelPosition === 'right' && (
+          <div style={{ width: labelWidth }}>{LabelOrEditableNumber}</div>
+        )}
+        {labels.length > 0 && (
+          <>
+            {labels.map((label, index) => {
+              const position = label.position;
+              return (
+                <div
+                  key={index}
+                  className="absolute !m-0"
+                  style={{ left: `calc(${position}%)`, bottom: '-20px' }}
+                >
+                  <span className="text-aqua-pale text-xs">{label.text}</span>
+                </div>
+              );
+            })}
+          </>
+        )}
+      </div>
     </div>
   );
 };

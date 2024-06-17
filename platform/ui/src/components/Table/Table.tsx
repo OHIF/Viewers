@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
-const Table = ({ children, className, fullWidth, style }) => {
+const Table = ({ children, className = '', fullWidth = true, style = {} }) => {
   const classes = {
     base: 'text-lg text-white',
     fullWidth: {
@@ -13,22 +13,12 @@ const Table = ({ children, className, fullWidth, style }) => {
 
   return (
     <div
-      className={classnames(
-        classes.base,
-        classes.fullWidth[fullWidth],
-        className
-      )}
+      className={classnames(classes.base, classes.fullWidth[fullWidth], className)}
       style={style}
     >
       {children}
     </div>
   );
-};
-
-Table.defaultProps = {
-  className: '',
-  fullWidth: true,
-  style: {},
 };
 
 Table.propTypes = {

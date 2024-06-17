@@ -1,16 +1,14 @@
 import { id } from './id';
 import React from 'react';
 
-import { Types } from '@ohif/core';
-
 import getSopClassHandlerModule from './getSopClassHandlerModule';
-import PanelSegmentation from './panels/PanelSegmentation';
 import getHangingProtocolModule from './getHangingProtocolModule';
+import getPanelModule from './getPanelModule';
+import getCommandsModule from './commandsModule';
+import { getToolbarModule } from './getToolbarModule';
 
 const Component = React.lazy(() => {
-  return import(
-    /* webpackPrefetch: true */ './viewports/OHIFCornerstoneSEGViewport'
-  );
+  return import(/* webpackPrefetch: true */ './viewports/OHIFCornerstoneSEGViewport');
 });
 
 const OHIFCornerstoneSEGViewport = props => {
@@ -30,53 +28,28 @@ const extension = {
    * You ID can be anything you want, but it should be unique.
    */
   id,
-
   /**
    * PanelModule should provide a list of panels that will be available in OHIF
    * for Modes to consume and render. Each panel is defined by a {name,
    * iconName, iconLabel, label, component} object. Example of a panel module
    * is the StudyBrowserPanel that is provided by the default extension in OHIF.
    */
-  getPanelModule: ({
-    servicesManager,
-    commandsManager,
-    extensionManager,
-  }): Types.Panel[] => {
-    const wrappedPanelSegmentation = () => {
-      return (
-        <PanelSegmentation
-          commandsManager={commandsManager}
-          servicesManager={servicesManager}
-          extensionManager={extensionManager}
-        />
-      );
-    };
-
-    return [
-      {
-        name: 'panelSegmentation',
-        iconName: 'tab-segmentation',
-        iconLabel: 'Segmentation',
-        label: 'Segmentation',
-        component: wrappedPanelSegmentation,
-      },
-    ];
-  },
-
-  getViewportModule({ servicesManager, extensionManager }) {
+  getPanelModule,
+  getCommandsModule,
+  getToolbarModule,
+  getViewportModule({ servicesManager, extensionManager, commandsManager }) {
     const ExtendedOHIFCornerstoneSEGViewport = props => {
       return (
         <OHIFCornerstoneSEGViewport
           servicesManager={servicesManager}
           extensionManager={extensionManager}
+          commandsManager={commandsManager}
           {...props}
         />
       );
     };
 
-    return [
-      { name: 'dicom-seg', component: ExtendedOHIFCornerstoneSEGViewport },
-    ];
+    return [{ name: 'dicom-seg', component: ExtendedOHIFCornerstoneSEGViewport }];
   },
   /**
    * SopClassHandlerModule should provide a list of sop class handlers that will be

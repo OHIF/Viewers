@@ -1,4 +1,7 @@
-import hpMNGrid from './hpMNGrid';
+import hpMNGrid from './hangingprotocols/hpMNGrid';
+import hpMNCompare from './hangingprotocols/hpCompare';
+import hpMammography from './hangingprotocols/hpMammo';
+import hpScale from './hangingprotocols/hpScale';
 
 const defaultProtocol = {
   id: 'default',
@@ -6,7 +9,6 @@ const defaultProtocol = {
   // Don't store this hanging protocol as it applies to the currently active
   // display set by default
   // cacheId: null,
-  hasUpdatedPriorsInformation: false,
   name: 'Default',
   createdDate: '2021-02-23T19:22:08.894Z',
   modifiedDate: '2023-04-01',
@@ -73,6 +75,7 @@ const defaultProtocol = {
         {
           viewportOptions: {
             viewportType: 'stack',
+            viewportId: 'default',
             toolGroupId: 'default',
             // This will specify the initial image options index if it matches in the URL
             // and will otherwise not specify anything.
@@ -107,6 +110,19 @@ function getHangingProtocolModule() {
     {
       name: hpMNGrid.id,
       protocol: hpMNGrid,
+    },
+    // Create a MxN comparison hanging protocol available by default
+    {
+      name: hpMNCompare.id,
+      protocol: hpMNCompare,
+    },
+    {
+      name: hpMammography.id,
+      protocol: hpMammography,
+    },
+    {
+      name: hpScale.id,
+      protocol: hpScale,
     },
   ];
 }

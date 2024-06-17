@@ -1,33 +1,44 @@
 import React from 'react';
-import { PanelPetSUV, PanelROIThresholdSegmentation } from './Panels';
+import { PanelPetSUV, PanelROIThresholdExport } from './Panels';
+import { Toolbox } from '@ohif/ui';
 
 // TODO:
 // - No loading UI exists yet
 // - cancel promises when component is destroyed
 // - show errors in UI for thumbnails if promise fails
 
-function getPanelModule({
-  commandsManager,
-  extensionManager,
-  servicesManager,
-}) {
+function getPanelModule({ commandsManager, extensionManager, servicesManager }) {
   const wrappedPanelPetSuv = () => {
     return (
       <PanelPetSUV
         commandsManager={commandsManager}
         servicesManager={servicesManager}
-        extensionManager={extensionManager}
       />
     );
   };
 
-  const wrappedROIThresholdSeg = () => {
+  const wrappedROIThresholdToolbox = () => {
     return (
-      <PanelROIThresholdSegmentation
-        commandsManager={commandsManager}
-        servicesManager={servicesManager}
-        extensionManager={extensionManager}
-      />
+      <>
+        <Toolbox
+          commandsManager={commandsManager}
+          servicesManager={servicesManager}
+          extensionManager={extensionManager}
+          buttonSectionId="ROIThresholdToolbox"
+          title="Threshold Tools"
+        />
+      </>
+    );
+  };
+
+  const wrappedROIThresholdExport = () => {
+    return (
+      <>
+        <PanelROIThresholdExport
+          commandsManager={commandsManager}
+          servicesManager={servicesManager}
+        />
+      </>
     );
   };
 
@@ -35,16 +46,23 @@ function getPanelModule({
     {
       name: 'petSUV',
       iconName: 'tab-patient-info',
-      iconLabel: 'PET SUV',
-      label: 'PET SUV',
+      iconLabel: 'Patient Info',
+      label: 'Patient Info',
       component: wrappedPanelPetSuv,
     },
     {
-      name: 'ROIThresholdSeg',
-      iconName: 'tab-roi-threshold',
-      iconLabel: 'ROI Threshold',
-      label: 'ROI Threshold',
-      component: wrappedROIThresholdSeg,
+      name: 'tmtvBox',
+      iconName: 'tab-segmentation',
+      iconLabel: 'Segmentation',
+      label: 'Segmentation Toolbox',
+      component: wrappedROIThresholdToolbox,
+    },
+    {
+      name: 'tmtvExport',
+      iconName: 'tab-segmentation',
+      iconLabel: 'Segmentation',
+      label: 'Segmentation Export',
+      component: wrappedROIThresholdExport,
     },
   ];
 }

@@ -11,8 +11,12 @@ type StudyMetadata = Types.StudyMetadata;
  * @returns - compare a and b, returning 1 if a<b -1 if a>b and defaultCompare otherwise
  */
 const compare = (a, b, defaultCompare = 0): number => {
-  if (a === b) return defaultCompare;
-  if (a < b) return 1;
+  if (a === b) {
+    return defaultCompare;
+  }
+  if (a < b) {
+    return 1;
+  }
   return -1;
 };
 
@@ -35,11 +39,7 @@ const getStudiesfromDisplaySets = (displaysets): StudyMetadata[] => {
   }, []);
   // Return the sorted studies, first on study date and second on study instance UID
   ret.sort((a, b) => {
-    return compare(
-      a.StudyDate,
-      b.StudyDate,
-      compare(a.StudyInstanceUID, b.StudyInstanceUID)
-    );
+    return compare(a.StudyDate, b.StudyDate, compare(a.StudyInstanceUID, b.StudyInstanceUID));
   });
   return ret;
 };
@@ -49,15 +49,15 @@ const getStudiesfromDisplaySets = (displaysets): StudyMetadata[] => {
  * in the original order, as specified.
  */
 const getStudiesFromUIDs = (studyUids: string[]): StudyMetadata[] => {
-  if (!studyUids?.length) return;
+  if (!studyUids?.length) {
+    return;
+  }
   return studyUids.map(uid => DicomMetadataStore.getStudy(uid));
 };
 
 /** Gets the array of studies */
 const getStudies = (studyUids?: string[], displaySets): StudyMetadata[] => {
-  return (
-    getStudiesFromUIDs(studyUids) || getStudiesfromDisplaySets(displaySets)
-  );
+  return getStudiesFromUIDs(studyUids) || getStudiesfromDisplaySets(displaySets);
 };
 
 export default getStudies;

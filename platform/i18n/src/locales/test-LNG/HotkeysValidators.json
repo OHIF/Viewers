@@ -1,0 +1,6 @@
+{
+  "Field can't be empty": "Test Field can't be empty",
+  "Hotkey is already in use": "Test \"{{action}}\" is already using the  \"{{pressedKeys}}\" shortcut.",
+  "It's not possible to define only modifier keys (ctrl, alt and shift) as a shortcut": "Test It's not possible to define only modifier keys (ctrl, alt and shift) as a shortcut",
+  "Shortcut combination is not allowed": "Test {{pressedKeys}} shortcut combination is not allowed"
+}

@@ -1,0 +1,9 @@
+{
+  "Cancel": "$t(Buttons:Cancel)",
+  "No hotkeys found": "Bu uygulama için hiçbir kısayol tuşu yapılandırılmamış. Kısayol tuşları, uygulamanın app-config.js dosyasında yapılandırılabilir.",
+  "Reset to defaults": "$t(Buttons:Reset to defaults)",
+  "ResetDefaultMessage": "Tercihler başarıyla varsayılana sıfırlandı. <br /> Bu eylemi gerçekleştirmek için <strong>Kaydetmelisiniz</strong>.",
+  "Save": "$t(Buttons:Save)",
+  "SaveMessage": "Tercihler kaydedildi",
+  "User preferences": "Kullanıcı tercihleri"
+}

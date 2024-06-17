@@ -12,12 +12,12 @@ const UserPreferences = ({
   availableLanguages,
   defaultLanguage,
   currentLanguage,
-  disabled,
+  disabled = false,
   hotkeyDefinitions,
   hotkeyDefaults,
-  onCancel,
-  onSubmit,
-  onReset,
+  onCancel = () => {},
+  onSubmit = () => {},
+  onReset = () => {},
   hotkeysModule,
 }) => {
   const { t } = useTranslation('UserPreferencesModal');
@@ -66,11 +66,11 @@ const UserPreferences = ({
 
   const Section = ({ title, children }) => (
     <>
-      <div className="border-b-2 border-black mb-2">
+      <div className="mb-2 border-b-2 border-black">
         <Typography
           variant="inherit"
           color="primaryLight"
-          className="flex text-[16px] font-semibold pb-2 !leading-[1.2]"
+          className="flex pb-2 text-[16px] font-semibold !leading-[1.2]"
         >
           {title}
         </Typography>
@@ -82,8 +82,11 @@ const UserPreferences = ({
   return (
     <>
       <Section title={t('General')}>
-        <div className="flex flex-row justify-center items-center w-72">
-          <Typography variant="subtitle" className="mr-5 text-right h-full">
+        <div className="flex w-72 flex-row items-center justify-center">
+          <Typography
+            variant="subtitle"
+            className="mr-5 h-full text-right"
+          >
             {t('Language')}
           </Typography>
           <Select
@@ -109,10 +112,13 @@ const UserPreferences = ({
           onClick={onResetHandler}
           disabled={disabled}
         >
-          {t('Reset to Defaults')}
+          {t('Reset to defaults')}
         </Button>
         <div className="flex flex-row">
-          <Button type={ButtonEnums.type.secondary} onClick={onCancelHandler}>
+          <Button
+            type={ButtonEnums.type.secondary}
+            onClick={onCancelHandler}
+          >
             {t('Cancel')}
           </Button>
           <Button
@@ -134,12 +140,6 @@ UserPreferences.propTypes = {
   disabled: PropTypes.bool,
   hotkeyDefaults: PropTypes.object.isRequired,
   hotkeyDefinitions: PropTypes.object.isRequired,
-  languageOptions: PropTypes.arrayOf(
-    PropTypes.shape({
-      label: PropTypes.string.isRequired,
-      value: PropTypes.any.isRequired,
-    })
-  ),
   onCancel: PropTypes.func,
   onSubmit: PropTypes.func,
   onReset: PropTypes.func,
@@ -150,17 +150,6 @@ UserPreferences.propTypes = {
     startRecording: PropTypes.func.isRequired,
     record: PropTypes.func.isRequired,
   }).isRequired,
-};
-
-UserPreferences.defaultProps = {
-  languageOptions: [
-    { value: 'ONE', label: 'ONE' },
-    { value: 'TWO', label: 'TWO' },
-  ],
-  onCancel: noop,
-  onSubmit: noop,
-  onReset: noop,
-  disabled: false,
 };
 
 export default UserPreferences;

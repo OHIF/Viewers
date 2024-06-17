@@ -1,12 +1,12 @@
-import path from 'path';
+import path, { dirname, join } from 'path';
 import remarkGfm from 'remark-gfm';
 import type { StorybookConfig } from '@storybook/react-webpack5';
 
 const config: StorybookConfig = {
   stories: ['../src/**/*.stories.@(mdx)'],
   addons: [
-    '@storybook/addon-links',
-    '@storybook/addon-essentials',
+    getAbsolutePath('@storybook/addon-links'),
+    getAbsolutePath('@storybook/addon-essentials'),
     // Other addons go here
     {
       name: '@storybook/addon-docs',
@@ -19,9 +19,9 @@ const config: StorybookConfig = {
       },
     },
   ],
-  core: { builder: '@storybook/builder-webpack5' },
+  core: {},
   framework: {
-    name: '@storybook/react-webpack5',
+    name: getAbsolutePath('@storybook/react-webpack5'),
     options: {},
   },
   docs: {
@@ -58,9 +58,7 @@ const config: StorybookConfig = {
     });
 
     // Default rule for images /\.(svg|ico|jpg|jpeg|png|gif|eot|otf|webp|ttf|woff|woff2|cur|ani|pdf)(\?.*)?$/
-    const fileLoaderRule = config.module.rules.find(
-      rule => rule.test && rule.test.test('.svg')
-    );
+    const fileLoaderRule = config.module.rules.find(rule => rule.test && rule.test.test('.svg'));
     fileLoaderRule.exclude = /\.svg$/;
 
     config.module.rules.push({
@@ -87,9 +85,21 @@ const config: StorybookConfig = {
       include: path.resolve(__dirname, '../'),
     });
 
+    // ignore the file @icr/polyseg-wasm during the build as it is a wasm file and
+    // we don't need that for ui
+    config.module.rules.push({
+      test: /@icr\/polyseg-wasm/,
+      type: 'javascript/auto',
+      loader: 'file-loader',
+    });
+
     // Return the altered config
     return config;
   },
 };
 
 export default config;
+
+function getAbsolutePath(value: string): any {
+  return dirname(require.resolve(join(value, 'package.json')));
+}

@@ -59,7 +59,7 @@ This diagram is a conceptual illustration of how the Viewer is architected.
 
 1. (optional) `extensions` can be registered with `@ohif/core`'s
    `ExtensionManager`
-2. `@ohif/core` provides bussiness logic and a way for `@ohif/viewer` to access
+2. `@ohif/core` provides business logic and a way for `@ohif/viewer` to access
    registered extensions
 3. The `@ohif/viewer` composes and provides data to components from our
    component library (`@ohif/ui`)

@@ -1,3 +1,4 @@
+/** @type {AppTypes.Config} */
 window.config = {
   routerBasename: '/',
   customizationService: {
@@ -16,8 +17,7 @@ window.config = {
       // ~ REQUIRED
       // Authorization Server URL
       authority: 'https://accounts.google.com',
-      client_id:
-        '723928408739-k9k9r3i44j32rhu69vlnibipmmk9i57p.apps.googleusercontent.com',
+      client_id: '723928408739-k9k9r3i44j32rhu69vlnibipmmk9i57p.apps.googleusercontent.com',
       redirect_uri: '/callback',
       response_type: 'id_token token',
       scope:
@@ -55,6 +55,7 @@ window.config = {
         supportsWildcard: false,
         dicomUploadEnabled: true,
         omitQuotationForMultipartRequest: true,
+        configurationAPI: 'ohif.dataSourceConfigurationAPI.google',
       },
     },
     {

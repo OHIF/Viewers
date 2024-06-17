@@ -31,14 +31,8 @@ export default function findSRWithSameSeriesDescription(
       instances.length,
       ...sameSeries.instances.map(it => it.InstanceNumber)
     );
-    const {
-      SeriesInstanceUID,
-      SeriesDescription,
-      SeriesDate,
-      SeriesTime,
-      SeriesNumber,
-      Modality,
-    } = instance;
+    const { SeriesInstanceUID, SeriesDescription, SeriesDate, SeriesTime, SeriesNumber, Modality } =
+      instance;
     return {
       SeriesInstanceUID,
       SeriesDescription,

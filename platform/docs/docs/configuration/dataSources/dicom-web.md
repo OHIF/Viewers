@@ -65,16 +65,14 @@ yarn run orthanc:up
 _Upload your first Study:_
 
 1. Navigate to
-   [Orthanc's web interface](http://localhost:8042/app/explorer.html) at
-   `http://localhost:8042/app/explorer.html` in a web browser.
-2. In the top right corner, click "Upload"
-3. Click "Select files to upload..." and select one or more DICOM files
-4. Click "Start the upload"
+   [Orthanc's web interface](http://localhost:8042/ui/app/index.html#/) at
+   `http://localhost:8042/ui/app/index.html#/` in a web browser.
+2. In the left you can see the upload button where you can drag and drop your DICOM files
 
 #### Orthanc: Learn More
 
 You can see the `docker-compose.yml` file this command runs at
-[`<project-root>/.docker/Nginx-Orthanc/`][orthanc-docker-compose], and more on
+[`<project-root>/platform/app/.recipes/Nginx-Orthanc`][orthanc-docker-compose], and more on
 Orthanc for Docker in [Orthanc's documentation][orthanc-docker].
 
 #### Connecting to Orthanc
@@ -160,7 +158,24 @@ The following properties can be added to the `configuration` property of each da
 ##### `dicomUploadEnabled`
 A boolean indicating if the DICOM upload to the data source is permitted/accepted or not. A value of true provides a link on the OHIF work list page that allows for DICOM files from the local file system to be uploaded to the data source
 
+:::tip
+The [OHIF plugin for Orthanc](https://book.orthanc-server.com/plugins/ohif.html) by default utilizes the DICOM JSON data
+source and it has been discovered that only those studies uploaded to Orthanc AFTER the plugin has been installed are
+available as DICOM JSON. As such, if the OHIF plugin for Orthanc is desired for studies uploaded prior to installing the plugin,
+then consider switching to using [DICOMweb instead](https://book.orthanc-server.com/plugins/ohif.html#using-dicomweb).
+:::
+
 ![toolbarModule-layout](../../assets/img/uploader.gif)
+
+Don't forget to add the customization to the config as well
+
+```js
+customizationService: {
+  dicomUploadComponent:
+    '@ohif/extension-cornerstone.customizationModule.cornerstoneDicomUploadComponent',
+},
+```
+
 
 #### `singlepart`
 A comma delimited string specifying which payloads the data source responds with as single part. Those not listed are considered multipart. Values that can be included here are `pdf`, `video`, `bulkdata`, `thumbnail` and `image`.
@@ -172,6 +187,15 @@ To learn more about how you can configure the OHIF Viewer, check out our
 
 ### DICOM Upload
 See the [`dicomUploadEnabled`](#dicomuploadenabled) data source configuration option.
+
+Don't forget to add the customization to the config as well
+
+```js
+customizationService: {
+  dicomUploadComponent:
+    '@ohif/extension-cornerstone.customizationModule.cornerstoneDicomUploadComponent',
+},
+```
 
 ### DICOM PDF
 See the [`singlepart`](#singlepart) data source configuration option.
@@ -230,3 +254,5 @@ below:
   https://github.com/OHIF/Viewers/tree/master/platform/app/public/html-templates
 [config-files]:
   https://github.com/OHIF/Viewers/tree/master/platform/app/public/config
+[storescu]: http://support.dcmtk.org/docs/storescu.html
+[webpack-proxy]: https://webpack.js.org/configuration/dev-server/#devserverproxy
