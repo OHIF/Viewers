@@ -10,6 +10,13 @@ window.config = {
   showCPUFallbackMessage: false,
   strictZSpacingForVolumeViewport: true,
   // filterQueryParam: false,
+
+  // Add some customizations to the default e2e datasource
+  customizationService: [
+    '@ohif/extension-default.customizationModule.datasources',
+    '@ohif/extension-default.customizationModule.helloPage',
+  ],
+
   defaultDataSourceName: 'e2e',
   investigationalUseDialog: {
     option: 'never',
