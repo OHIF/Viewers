@@ -23,14 +23,14 @@ executors:
       - image: cimg/node:<< parameters.node-version >>-browsers
     parameters:
       node-version:
-        default: '18.16.0'
+        default: '18.16.1'
         description: |
           The version of Node to run your tests with.
         type: string
 
 defaults: &defaults
   docker:
-    - image: cimg/node:18.16
+    - image: cimg/node:18.18
       environment:
         TERM: xterm # Enable colors in term
         QUICK_BUILD: true
