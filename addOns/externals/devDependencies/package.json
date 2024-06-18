@@ -33,7 +33,7 @@
     "cross-env": "^5.2.0",
     "css-loader": "^6.8.1",
     "dotenv": "^8.1.0",
-    "eslint": "^7.32.0",
+    "eslint": "^8.39.0",
     "eslint-config-prettier": "^7.2.0",
     "eslint-config-react-app": "^6.0.0",
     "eslint-plugin-cypress": "^2.12.1",

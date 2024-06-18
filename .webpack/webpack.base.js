@@ -100,14 +100,14 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
     module: {
       noParse: [/(codec)/, /(dicomicc)/],
       rules: [
-        {
+        ...(isProdBuild ? [] : [{
           test: /\.[jt]sx?$/,
           exclude: /node_modules/,
           loader: 'babel-loader',
           options: {
             plugins: ['react-refresh/babel'],
           },
-        },
+        }]),
         {
           test: /\.svg?$/,
           oneOf: [
@@ -213,7 +213,7 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
       new webpack.ProvidePlugin({
         Buffer: ['buffer', 'Buffer'],
       }),
-      new ReactRefreshWebpackPlugin(),
+      ...(isProdBuild ? [] : [new ReactRefreshWebpackPlugin()]),
       // Uncomment to generate bundle analyzer
       // new BundleAnalyzerPlugin(),
     ],
