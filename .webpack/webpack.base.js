@@ -7,7 +7,7 @@ const fs = require('fs');
 const webpack = require('webpack');
 
 // ~~ PLUGINS
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+// const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const TerserJSPlugin = require('terser-webpack-plugin');
 
 // ~~ PackageJSON
@@ -19,6 +19,8 @@ const loadWebWorkersRule = require('./rules/loadWebWorkers.js');
 const transpileJavaScriptRule = require('./rules/transpileJavaScript.js');
 const cssToJavaScript = require('./rules/cssToJavaScript.js');
 const stylusToJavaScript = require('./rules/stylusToJavaScript.js');
+const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
+
 
 // ~~ ENV VARS
 const NODE_ENV = process.env.NODE_ENV;
@@ -98,6 +100,14 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
     module: {
       noParse: [/(codec)/, /(dicomicc)/],
       rules: [
+        {
+          test: /\.[jt]sx?$/,
+          exclude: /node_modules/,
+          loader: 'babel-loader',
+          options: {
+            plugins: ['react-refresh/babel'],
+          },
+        },
         {
           test: /\.svg?$/,
           oneOf: [
@@ -203,6 +213,7 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
       new webpack.ProvidePlugin({
         Buffer: ['buffer', 'Buffer'],
       }),
+      new ReactRefreshWebpackPlugin(),
       // Uncomment to generate bundle analyzer
       // new BundleAnalyzerPlugin(),
     ],

@@ -37,7 +37,7 @@ module.exports = {
         '@babel/preset-react',
         '@babel/preset-typescript',
       ],
-      plugins: ['react-hot-loader/babel'],
+      plugins: ['react-refresh/babel'
       ignore: ['**/*.test.jsx', '**/*.test.js', '__snapshots__', '__tests__'],
     },
   },
