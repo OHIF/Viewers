@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.9.0-beta.45](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.44...v3.9.0-beta.45) (2024-06-18)
+
+
+### Bug Fixes
+
+* Re-enable hpScale module ([#4237](https://github.com/OHIF/Viewers/issues/4237)) ([2eab049](https://github.com/OHIF/Viewers/commit/2eab049d7993bb834f7736093941c175f16d61fc))
+
+
+
+
+
 # [3.9.0-beta.44](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.43...v3.9.0-beta.44) (2024-06-17)
 
 
