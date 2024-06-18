@@ -186,7 +186,7 @@ describe('CustomizationService.ts', () => {
     it('appends mode to global without touching global', () => {
       customizationService.init(extensionManager);
 
-      customizationService.setGlobalCustomization('appendSet', {
+      customizationService.setModeCustomization('appendSet', {
         values: [{ id: 'one' }, { id: 'two' }],
       });
       const appendSet = customizationService.getCustomization('appendSet');
@@ -202,7 +202,6 @@ describe('CustomizationService.ts', () => {
 
       expect(appendSet.values.length).toBe(2);
       const appendSet2 = customizationService.getModeCustomization('appendSet');
-      console.log('appendSet2=', appendSet2);
       expect(appendSet2.values.length).toBe(3);
     });
   });

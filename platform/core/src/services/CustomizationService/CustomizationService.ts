@@ -252,7 +252,7 @@ export default class CustomizationService extends PubSubService {
       return newValue;
     }
 
-    const returnValue = mergeWith(oldValue || {}, newValue, mergeCustomizer.bind(null, mergeType));
+    const returnValue = mergeWith({}, oldValue, newValue, mergeCustomizer.bind(null, mergeType));
     console.log('mergeValue', oldValue, newValue, 'is', returnValue);
     return returnValue;
   }
