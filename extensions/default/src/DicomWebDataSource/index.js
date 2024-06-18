@@ -14,7 +14,7 @@ import getImageId from './utils/getImageId.js';
 import dcmjs from 'dcmjs';
 import { retrieveStudyMetadata, deleteStudyMetadataPromise } from './retrieveStudyMetadata.js';
 import StaticWadoClient from './utils/StaticWadoClient';
-import getDirectURL from '../utils/getDirectURL.js';
+import getDirectURL from '../utils/getDirectURL';
 import { fixBulkDataURI } from './utils/fixBulkDataURI';
 
 const { DicomMetaDictionary, DicomDict } = dcmjs.data;
@@ -393,10 +393,10 @@ function createDicomWebApi(dicomWebConfig, servicesManager) {
           // The value.Value will be set with the bulkdata read value
           // in which case it isn't necessary to re-read this.
           if (value && value.BulkDataURI && !value.Value) {
+            // handle the scenarios where bulkDataURI is relative path
+            fixBulkDataURI(value, naturalized, dicomWebConfig);
             // Provide a method to fetch bulkdata
             value.retrieveBulkData = (options = {}) => {
-              // handle the scenarios where bulkDataURI is relative path
-              fixBulkDataURI(value, naturalized, dicomWebConfig);
 
               const { mediaType } = options;
               const useOptions = {
@@ -415,7 +415,6 @@ function createDicomWebApi(dicomWebConfig, servicesManager) {
                   : undefined,
                 ...options,
               };
-              // Todo: this needs to be from wado dicom web client
               return qidoDicomWebClient.retrieveBulkData(useOptions).then(val => {
                 // There are DICOM PDF cases where the first ArrayBuffer in the array is
                 // the bulk data and DICOM video cases where the second ArrayBuffer is
