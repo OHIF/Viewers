@@ -1,16 +1,9 @@
 {
-  "name": "@ohif/dicom-microscopy-viewer",
+  "name": "@externals/dicom-microscopy-viewer",
   "description": "External reference to dicom-microscopy-viewer",
   "version": "0.46.1",
   "license": "MIT",
-  "engines": {
-    "node": ">=12",
-    "yarn": ">=1.19.1"
-  },
   "dependencies": {
     "dicom-microscopy-viewer": "^0.46.1"
-  },
-  "scripts": {
-    "build": "Included as direct dependency"
   }
 }
