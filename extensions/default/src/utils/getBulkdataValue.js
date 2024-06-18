@@ -22,7 +22,7 @@ const getBulkdataValue = (config, params) => {
 
   const value = instance[tag];
 
-  const { SeriesInstanceUID, SOPInstanceUID } = instance;
+  const { StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID } = instance;
 
   const BulkDataURI =
     (value && value.BulkDataURI) ||
@@ -31,6 +31,11 @@ const getBulkdataValue = (config, params) => {
   const hasAccept = BulkDataURI.indexOf('accept=') !== -1;
   const acceptUri =
     BulkDataURI + (hasAccept ? '' : (hasQuery ? '&' : '?') + `accept=${defaultType}`);
+
+  if (acceptUri.startsWith('series/')) {
+    const { wadoRoot } = config;
+    return `${wadoRoot}/studies/${StudyInstanceUID}/${acceptUri}`;
+  }
 
   // The DICOMweb standard states that the default is multipart related, and then
   // separately states that the accept parameter is the URL parameter equivalent of the accept header.
