@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.9.0-beta.46](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.45...v3.9.0-beta.46) (2024-06-18)
+
+
+### Bug Fixes
+
+* Use correct external URL for rendered responses with relative URI ([#4236](https://github.com/OHIF/Viewers/issues/4236)) ([d8f6991](https://github.com/OHIF/Viewers/commit/d8f6991dbe72465080cfc5de39c7ea225702f2e0))
+
+
+
+
+
 # [3.9.0-beta.45](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.44...v3.9.0-beta.45) (2024-06-18)
 
 
