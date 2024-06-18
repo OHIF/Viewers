@@ -11,6 +11,8 @@ const extensionManager = {
   registeredExtensionIds: [],
   moduleEntries: {},
 
+  getRegisteredExtensionIds: () => extensionManager.registeredExtensionIds,
+
   getModuleEntry: function (id) {
     return this.moduleEntries[id];
   },
@@ -133,6 +135,7 @@ describe('CustomizationService.ts', () => {
       expect(customizationService.getGlobalCustomization('testItem')).toBeUndefined();
 
       const item = customizationService.getModeCustomization('testItem');
+      expect(item).not.toBeUndefined();
 
       const props = { testAttribute: 'testAttrValue' };
       const result = item.content(props);
