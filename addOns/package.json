@@ -4,63 +4,21 @@
   "packageManager": "yarn@1.22.22",
   "workspaces": {
     "packages": [
-      "platform/*",
-      "extensions/*",
-      "modes/*",
-      "addOns/externals/*"
+      "../platform/i18n",
+      "../platform/core",
+      "../platform/ui",
+      "../platform/ui-next",
+      "../platform/app",
+      "../extensions/*",
+      "../modes/*",
+      "../addOns/externals/*"
     ],
     "nohoist": [
       "**/html-minifier-terser"
     ]
   },
-  "engines": {
-    "node": ">=18",
-    "npm": ">=6",
-    "yarn": ">=1.20.0"
-  },
   "scripts": {
-    "cm": "npx git-cz",
-    "build": "lerna run build:viewer --stream",
-    "build:dev": "lerna run build:dev --stream",
-    "build:ci": "lerna run build:viewer:ci --stream",
-    "build:qa": "lerna run build:viewer:qa --stream",
-    "clean": "npx lerna run clean --stream",
-    "clean:deep": "npx lerna run clean:deep --stream",
-    "cli": "node ./platform/cli/src/index.js",
-    "build:ui:deploy-preview": "lerna run build:ui:deploy-preview --stream",
-    "build:demo": "lerna run build:viewer:demo --stream",
-    "build:package-all": "lerna run build:package --parallel --stream",
-    "build:package-all-1": "lerna run build:package-1 --parallel --stream",
-    "dev": "lerna run dev:viewer --stream",
-    "dev:no:cache": "lerna run dev:no:cache --stream",
-    "dev:project": ".scripts/dev.sh",
-    "dev:orthanc": "lerna run dev:orthanc --stream",
-    "dev:orthanc:no:cache": "lerna run dev:orthanc:no:cache --stream",
-    "dev:dcm4chee": "lerna run dev:dcm4chee --stream",
-    "dev:static": "lerna run dev:static --stream",
-    "orthanc:up": "docker-compose -f platform/app/.recipes/Nginx-Orthanc/docker-compose.yml up",
-    "install:dev": "cp -f yarn.lock addOns/yarn.lock && cd addOns && yarn install --modules-folder ../node_modules",
-    "preinstall": "node preinstall.js",
-    "start": "yarn run dev",
-    "test": "yarn run test:unit",
-    "test:data": "git submodule update --init -f testdata",
-    "test-watch": "jest --collectCoverage --watchAll",
-    "test:unit": "jest --collectCoverage",
-    "test:unit:ci": "lerna run test:unit:ci --parallel --stream",
-    "test:e2e": "lerna run test:e2e --stream",
-    "test:e2e:ci": "npx playwright test",
-    "test:e2e:headed": "npx playwright test --headed",
-    "test:e2e:dist": "lerna run test:e2e:dist --stream",
-    "test:e2e:serve": "yarn test:data && lerna run test:e2e:serve --stream",
-    "see-changed": "lerna changed",
-    "docs:preview": "lerna run docs:preview --stream",
-    "docs:publish": "chmod +x ./build-and-publish-docs.sh && ./build-and-publish-docs.sh",
-    "release": "yarn run lerna:version && yarn run lerna:publish",
-    "lerna:clean": "lerna clean",
-    "lerna:cache": "./netlify-lerna-cache.sh",
-    "lerna:restore": "./netlify-lerna-restore.sh",
-    "lerna:customVersion": "node version.mjs",
-    "link-list": "npm ls --depth=0 --link=true"
+    "preinstall": "cd .. && node preinstall.js"
   },
   "dependencies": {
     "@babel/runtime": "^7.20.13",
@@ -72,12 +30,6 @@
   "peerDependencies": {
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
-  },
-  "optionalDependencies": {
-    "@percy/cypress": "^3.1.1",
-    "@playwright/test": "^1.44.0",
-    "cypress": "13.7.2",
-    "cypress-file-upload": "^3.5.3"
   },
   "devDependencies": {
     "@babel/core": "^7.23.2",
@@ -159,17 +111,6 @@
     "webpack-merge": "^5.7.3",
     "workbox-webpack-plugin": "^6.1.5",
     "worker-loader": "^3.0.8"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
-  "lint-staged": {
-    "src/**/*.{js,json,css}": [
-      "prettier --write",
-      "git add"
-    ]
   },
   "resolutions": {
     "**/@babel/runtime": "^7.20.13",

@@ -105,11 +105,5 @@
     "identity-obj-proxy": "3.0.x",
     "lodash": "^4.17.21",
     "tailwindcss": "3.2.4"
-  },
-  "optionalDependencies": {
-    "@percy/cypress": "^3.1.1",
-    "@playwright/test": "^1.44.0",
-    "cypress": "13.7.2",
-    "cypress-file-upload": "^3.5.3"
   }
 }
