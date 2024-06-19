@@ -50,6 +50,14 @@ class DicomMicroscopyViewport extends Component {
   };
 
   /**
+   * Need to return this as a function to prevent webpack from munging it.
+   */
+  public static getImportPath() {
+    return '/dicom-microscopy-viewer/dicomMicroscopyViewer.min.js';
+  }
+
+
+  /**
    * Get the nearest ROI from the mouse click point
    *
    * @param event
@@ -86,9 +94,10 @@ class DicomMicroscopyViewport extends Component {
   // you should only do this once.
   async installOpenLayersRenderer(container, displaySet) {
     const loadViewer = async metadata => {
-      const { viewer: DicomMicroscopyViewer, metadata: metadataUtils } = await import(
-        /* webpackChunkName: "dicom-microscopy-viewer" */ 'dicom-microscopy-viewer'
-      );
+      await import(
+        /* webpackIgnore: true */ DicomMicroscopyViewport.getImportPath());
+      const { viewer: DicomMicroscopyViewer, metadata: metadataUtils } = (window as any).dicomMicroscopyViewer;
+
       const microscopyViewer = DicomMicroscopyViewer.VolumeImageViewer;
 
       const client = getDicomWebClient({
