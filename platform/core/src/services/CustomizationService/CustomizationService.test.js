@@ -1,4 +1,4 @@
-import CustomizationService, { MergeEnum } from './CustomizationService';
+import CustomizationService, { CustomizationType, MergeEnum } from './CustomizationService';
 import log from '../../log';
 
 jest.mock('../../log.js', () => ({
@@ -256,7 +256,7 @@ describe('CustomizationService.ts', () => {
       customizationService.init(extensionManager);
 
       customizationService.setDefaultCustomization('appendSet', {
-        values: [{ f: () => 0 }, { f: () => 5 }],
+        values: [{ f: () => 0, id: '0' }, { f: () => 5, id: '5' }],
       });
       const appendSet = customizationService.get('appendSet');
       expect(appendSet.values.length).toBe(2);
@@ -264,7 +264,7 @@ describe('CustomizationService.ts', () => {
       customizationService.setModeCustomization(
         'appendSet',
         {
-          values: [{ f: () => 2 }]
+          values: [{ f: () => 2, id: '2' }]
         },
         MergeEnum.Merge,
       );
@@ -275,5 +275,39 @@ describe('CustomizationService.ts', () => {
       expect(value1.f()).toBe(5);
     });
 
+    it('merges list with object', () => {
+      customizationService.init(extensionManager);
+
+      const destination = [
+        1,
+        { id: 'two', value: 2, list: [5, 6], },
+        { id: 'three', value: 3 }
+      ];
+
+      const source = {
+        two: { value: 'updated2', list: { 0: 8 } },
+        1: { extraValue: 2, list: [7], },
+        1.0001: { id: 'inserted', value: 1.0001 },
+        '-1': {
+          value: -3
+        },
+      };
+
+      customizationService.setDefaultCustomization('appendSet', {
+        values: destination,
+      });
+      customizationService.setModeCustomization('appendSet', {
+        values: source,
+      }, MergeEnum.Append);
+
+      const { values } = customizationService.getCustomization('appendSet');
+      const [zero, one, two, three] = values;
+      expect(zero).toBe(1);
+      expect(one.value).toBe('updated2');
+      expect(one.extraValue).toBe(2);
+      expect(one.list).toEqual([8, 6, 7]);
+      expect(two.id).toBe('inserted');
+      expect(three.value).toBe(-3);
+    });
   });
 });

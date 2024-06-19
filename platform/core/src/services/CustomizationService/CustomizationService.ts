@@ -297,7 +297,7 @@ export default class CustomizationService extends PubSubService {
       return newValue;
     }
 
-    const returnValue = mergeWith({}, oldValue, newValue, mergeCustomizer.bind(null, mergeType));
+    const returnValue = mergeWith({}, oldValue, newValue, mergeType === MergeEnum.Append ? appendCustomizer : mergeCustomizer);
     return returnValue;
   }
 
@@ -391,13 +391,62 @@ export default class CustomizationService extends PubSubService {
 /**
  * Custom merging function, to handle merging arrays and copying functions
  */
-function mergeCustomizer(merge: MergeEnum, obj, src) {
-  if (merge === MergeEnum.Append && Array.isArray(obj)) {
+function appendCustomizer(obj, src) {
+  if (Array.isArray(obj)) {
+    const srcArray = Array.isArray(src);
+    if (srcArray) {
+      return obj.concat(...src);
+    }
+    if (typeof src === 'object') {
+      const newList = obj.map(value => cloneDeepWith(value, cloneCustomizer));
+      for (const [key, value] of Object.entries(src)) {
+        const { position, isMerge } = findPosition(key, value, newList);
+        if (isMerge) {
+          if (typeof obj[position] === 'object') {
+            newList[position] = mergeWith(Array.isArray(newList[position]) ? [] : {}, newList[position], value, appendCustomizer);
+          } else {
+            newList[position] = value;
+          }
+        } else {
+          newList.splice(position, 0, value);
+        }
+      }
+      return newList;
+    }
     return obj.concat(src);
   }
-  if (typeof src === 'function') {
-    return src;
+  return cloneCustomizer(src);
+}
+
+function mergeCustomizer(obj, src) {
+  return cloneCustomizer(src);
+}
+
+function findPosition(key, value, newList) {
+  const numVal = Number(key);
+  const isNumeric = !isNaN(numVal);
+  const { length: len } = newList;
+
+  if (isNumeric) {
+    if (newList[(numVal + len) % len]) {
+      return { isMerge: true, position: (numVal + len) % len };
+    }
+    const absPosition = Math.ceil(numVal < 0 ? len + numVal : numVal);
+    return { isMerge: false, position: Math.min(len, Math.max(absPosition, 0)) }
   }
+  const findIndex = newList.findIndex(it => it.id === key);
+  if (findIndex !== -1) {
+    return { isMerge: true, position: findIndex };
+  }
+  const { _priority: priority } = value;
+  if (priority !== undefined) {
+    if (newList[(priority + len) % len]) {
+      return { isMerge: true, position: (priority + len) % len };
+    }
+    const absPosition = Math.ceil(priority < 0 ? len + priority : priority);
+    return { isMerge: false, position: Math.min(len, Math.max(absPosition, 0)) }
+  }
+  return { isMerge: false, position: len };
 }
 
 /**
