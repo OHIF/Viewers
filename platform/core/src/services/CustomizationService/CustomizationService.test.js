@@ -51,6 +51,8 @@ describe('CustomizationService.ts', () => {
       configuration,
       commandsManager,
     });
+    extensionManager.registeredExtensionIds = [];
+    extensionManager.moduleEntries = {};
   });
 
   describe('init', () => {
@@ -103,7 +105,7 @@ describe('CustomizationService.ts', () => {
       configuration.testItem = testItem;
       customizationService.init(extensionManager);
 
-      const item = customizationService.getGlobalCustomization('testItem2', {
+      const item = customizationService.getCustomization('testItem2', {
         id: 'testItem2',
         customizationType: 'ohif.overlayItem',
         label: 'otherLabel',
@@ -146,7 +148,7 @@ describe('CustomizationService.ts', () => {
 
     it('global customizations override modes', () => {
       extensionManager.registeredExtensionIds.push('@testExtension');
-      extensionManager.moduleEntries['@testExtension.customizationModule.default'] = {
+      extensionManager.moduleEntries['@testExtension.customizationModule.global'] = {
         name: 'default',
         value: [ohifOverlayItem],
       };
@@ -161,6 +163,25 @@ describe('CustomizationService.ts', () => {
       const props = { testAttribute: 'testAttrValue' };
       const result = item.content(props);
       expect(result.label).toBe(testItem.label);
+      expect(result.value).toBe(props.testAttribute);
+    });
+
+    it('mode customizations override default', () => {
+      extensionManager.registeredExtensionIds.push('@testExtension');
+      extensionManager.moduleEntries['@testExtension.customizationModule.default'] = {
+        name: 'default',
+        value: [ohifOverlayItem, testItem],
+      };
+      customizationService.init(extensionManager);
+
+      // Add a mode customization that would otherwise fail below
+      customizationService.addModeCustomizations([{ ...testItem, label: 'other' }]);
+
+      const item = customizationService.getCustomization('testItem');
+
+      const props = { testAttribute: 'testAttrValue' };
+      const result = item.content(props);
+      expect(result.label).toBe('other');
       expect(result.value).toBe(props.testAttribute);
     });
   });

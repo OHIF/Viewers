@@ -118,25 +118,34 @@ export default class CustomizationService extends PubSubService {
 
   public init(extensionManager: ExtensionManager): void {
     this.extensionManager = extensionManager;
+    // Clear defaults as those are defined by the customization modules
+    this.defaultCustomizations.clear();
+    // Clear modes because those are defined in onModeEnter functions.
+    this.modeCustomizations.clear();
     this.initDefaults();
     this.addReferences(this.configuration);
   }
 
   initDefaults(): void {
     this.extensionManager.getRegisteredExtensionIds().forEach(extensionId => {
-      const key = `${extensionId}.customizationModule.default`;
-      const defaultCustomizations = this.findExtensionValue(key);
-      if (!defaultCustomizations) {
-        return;
+      const keyDefault = `${extensionId}.customizationModule.default`;
+      const defaultCustomizations = this.findExtensionValue(keyDefault);
+      if (defaultCustomizations) {
+        const { value } = defaultCustomizations;
+        this.addReference(value, CustomizationType.Default);
       }
-      const { value } = defaultCustomizations;
-      this.addReference(value, CustomizationType.Global);
+      const keyGlobal = `${extensionId}.customizationModule.global`;
+      const globalCustomizations = this.findExtensionValue(keyGlobal);
+      if (globalCustomizations) {
+        const { value } = globalCustomizations;
+        this.addReference(value, CustomizationType.Global);
+      }
     });
   }
 
   findExtensionValue(value: string) {
     const entry = this.extensionManager.getModuleEntry(value);
-    return entry;
+    return entry as { value: Customization };
   }
 
   public onModeEnter(): void {
@@ -182,10 +191,7 @@ export default class CustomizationService extends PubSubService {
    * @return A customization to use if one is found, or the default customization,
    * both enhanced with any customizationType inheritance (see transform)
    */
-  public getCustomization(
-    customizationId: string,
-    defaultValue?: Customization
-  ): Customization | void {
+  public getCustomization(customizationId: string, defaultValue?: Customization): Customization {
     return this.getModeCustomization(customizationId, defaultValue);
   }
 
@@ -200,11 +206,13 @@ export default class CustomizationService extends PubSubService {
     customizationId: string,
     defaultValue?: Customization
   ): Customization {
+    if (defaultValue && !this.defaultCustomizations.has(customizationId)) {
+      this.setDefaultCustomization(customizationId, defaultValue);
+    }
     const customization =
       this.globalCustomizations.get(customizationId) ??
       this.modeCustomizations.get(customizationId) ??
-      this.defaultCustomizations.get(customizationId) ??
-      defaultValue;
+      this.defaultCustomizations.get(customizationId);
     return this.transform(customization);
   }
 
