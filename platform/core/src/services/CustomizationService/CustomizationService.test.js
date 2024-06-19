@@ -207,13 +207,13 @@ describe('CustomizationService.ts', () => {
       expect(appendSet2.values.length).toBe(3);
     });
 
-    it('appends mode to global without touching global', () => {
+    it('appends mode to default without touching default', () => {
       customizationService.init(extensionManager);
 
-      customizationService.setModeCustomization('appendSet', {
+      customizationService.setDefaultCustomization('appendSet', {
         values: [{ id: 'one' }, { id: 'two' }],
       });
-      const appendSet = customizationService.getCustomization('appendSet');
+      const appendSet = customizationService.get('appendSet');
       expect(appendSet.values.length).toBe(2);
 
       customizationService.setModeCustomization(
@@ -228,5 +228,52 @@ describe('CustomizationService.ts', () => {
       const appendSet2 = customizationService.getModeCustomization('appendSet');
       expect(appendSet2.values.length).toBe(3);
     });
+
+    it('merges values by name/position', () => {
+      customizationService.init(extensionManager);
+
+      customizationService.setDefaultCustomization('appendSet', {
+        values: [{ id: 'one', obj: { v: '5' }, list: [1, 2, 3] }, { id: 'two' }],
+      });
+      const appendSet = customizationService.get('appendSet');
+      expect(appendSet.values.length).toBe(2);
+
+      customizationService.setModeCustomization(
+        'appendSet',
+        {
+          values: [{ id: 'three', obj: { v: 2 }, list: [3, 2, 1, 4] }],
+        },
+        MergeEnum.Merge,
+      );
+
+      const appendSet2 = customizationService.get('appendSet');
+      const [value0] = appendSet2.values;
+      expect(value0.id).toBe('three');
+      expect(value0.list).toEqual([3, 2, 1, 4]);
+    });
+
+    it('merges functions', () => {
+      customizationService.init(extensionManager);
+
+      customizationService.setDefaultCustomization('appendSet', {
+        values: [{ f: () => 0 }, { f: () => 5 }],
+      });
+      const appendSet = customizationService.get('appendSet');
+      expect(appendSet.values.length).toBe(2);
+
+      customizationService.setModeCustomization(
+        'appendSet',
+        {
+          values: [{ f: () => 2 }]
+        },
+        MergeEnum.Merge,
+      );
+
+      const appendSet2 = customizationService.get('appendSet');
+      const [value0, value1] = appendSet2.values;
+      expect(value0.f()).toBe(2);
+      expect(value1.f()).toBe(5);
+    });
+
   });
 });
