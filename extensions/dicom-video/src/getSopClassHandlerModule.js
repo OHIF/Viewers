@@ -60,7 +60,6 @@ const _getDisplaySetsFromSeries = (instances, servicesManager, extensionManager)
         tag: 'PixelData',
         url,
       });
-
       const displaySet = {
         //plugin: id,
         Modality,

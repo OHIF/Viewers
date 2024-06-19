@@ -1,6 +1,6 @@
 {
   "name": "@ohif/ui",
-  "version": "3.9.0-beta.43",
+  "version": "3.9.0-beta.46",
   "description": "A set of React components for Medical Imaging Viewers",
   "author": "OHIF Contributors",
   "license": "MIT",
@@ -44,7 +44,7 @@
     "d3-shape": "3",
     "d3-zoom": "3",
     "lodash.debounce": "4.0.8",
-    "moment": "2.29.4",
+    "moment": "*",
     "mousetrap": "^1.6.5",
     "react": "^18.3.1",
     "react-dates": "^21.8.0",

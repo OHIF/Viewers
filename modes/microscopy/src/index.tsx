@@ -114,7 +114,6 @@ function modeFactory({ modeConfiguration }) {
       },
     ],
     extensions: extensionDependencies,
-    hangingProtocols: [ohif.hangingProtocols],
     hangingProtocol: ['default'],
 
     sopClassHandlers: [
