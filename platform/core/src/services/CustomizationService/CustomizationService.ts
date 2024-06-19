@@ -181,31 +181,24 @@ export default class CustomizationService extends PubSubService {
     });
   }
 
-  /** This is the preferred getter for all customizations,
-   * getting mode customizations first and otherwise global customizations.
+  /**
+   * This is the preferred getter for all customizations,
+   * getting global (priority) customizations first,
+   * then mode customizations, and finally the default customization.
    *
    * @param customizationId - the customization id to look for
-   * @param defaultValue - is the default value to return.  Note this value
-   * may have been extended with any customizationType extensions provided,
-   * so you cannot just use `|| defaultValue`
+   * @param defaultValue - is the default value to return.
+   *    This value will be assigned as the default customization if there isn't
+   *    currently a default customization, and thus, the first default provided
+   *    will be used as the default - you cannot update this after or have it depend
+   *    on changing values.
+   *    Also, the value returned by the get customization has merges/updates applied,
+   *    and is thus may be modified from the value provided, and may not be the original
+   *    default provided.  This allows applying the defaults for things like inheritance.
    * @return A customization to use if one is found, or the default customization,
-   * both enhanced with any customizationType inheritance (see transform)
+   *    both enhanced with any customizationType inheritance (see transform)
    */
   public getCustomization(customizationId: string, defaultValue?: Customization): Customization {
-    return this.getModeCustomization(customizationId, defaultValue);
-  }
-
-  /** Mode customizations are changes to the behavior of the extensions
-   * when running in a given mode.  Reset clears mode customizations.
-   *
-   * Note that global customizations over-ride mode customizations
-   *
-   * @param defaultValue to return if no customization specified.
-   */
-  public getModeCustomization(
-    customizationId: string,
-    defaultValue?: Customization
-  ): Customization {
     if (defaultValue && !this.defaultCustomizations.has(customizationId)) {
       this.setDefaultCustomization(customizationId, defaultValue);
     }
@@ -215,6 +208,15 @@ export default class CustomizationService extends PubSubService {
       this.defaultCustomizations.get(customizationId);
     return this.transform(customization);
   }
+
+  /** Mode customizations are changes to the behavior of the extensions
+   * when running in a given mode.  Reset clears mode customizations.
+   *
+   * Note that global customizations over-ride mode customizations
+   *
+   * @param defaultValue to return if no customization specified.
+   */
+  public getModeCustomization = this.getCustomization;
 
   /**
    *  Returns true if there is a mode customization.  Doesn't include defaults, but
