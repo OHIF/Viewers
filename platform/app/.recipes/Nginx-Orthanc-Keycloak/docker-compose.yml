@@ -14,9 +14,9 @@ services:
       - '80:80' # Web
     depends_on:
       keycloak:
-        condition: service_completed_successfully
+        condition: service_healthy
       oauth2-proxy:
-        condition: service_completed_successfully
+        condition: service_started
     restart: on-failure
     networks:
       - default
@@ -36,7 +36,7 @@ services:
 
   keycloak:
     image: quay.io/keycloak/keycloak:24.0.5
-    command: 'start-dev'
+    command: 'start-dev --import-realm'
     hostname: keycloak
     container_name: keycloak
     volumes:
@@ -74,6 +74,12 @@ services:
       - default
     extra_hosts:
       - 'host.docker.internal:host-gateway'
+    healthcheck:
+      test: ["CMD-SHELL", "exec 3<>/dev/tcp/127.0.0.1/8080;echo -e \"GET /health/ready HTTP/1.1\r\nhost: http://localhost\r\nConnection: close\r\n\r\n\" >&3;grep \"HTTP/1.1 200 OK\" <&3"]
+      interval: 1s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
   postgres:
     image: postgres:15
@@ -107,7 +113,6 @@ services:
         condition: service_healthy
     extra_hosts:
       - 'host.docker.internal:host-gateway'
-
 volumes:
   postgres_data:
     driver: local
