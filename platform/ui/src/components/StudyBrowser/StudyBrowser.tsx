@@ -119,7 +119,7 @@ const StudyBrowser = ({
           })}
         </LegacyButtonGroup>
       </div>
-      <div className="ohif-scrollbar invisible-scrollbar flex flex-1 flex-col overflow-auto">
+      <div className="ohif-scrollbar invisible-scrollbar mb-12 flex flex-1 flex-col overflow-auto">
         {getTabContent()}
       </div>
     </React.Fragment>

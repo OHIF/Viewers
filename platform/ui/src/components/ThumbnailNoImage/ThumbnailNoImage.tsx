@@ -71,11 +71,6 @@ const ThumbnailNoImage = ({
                 {modality}
               </div>
             </Tooltip>
-            <span className="ml-4 text-base text-blue-300">{seriesDate}</span>
-            <DisplaySetMessageListTooltip
-              messages={messages}
-              id={`display-set-tooltip-${displaySetInstanceUID}`}
-            />
           </div>
           <div className="flex flex-row">
             {canReject && (
@@ -86,6 +81,15 @@ const ThumbnailNoImage = ({
                 onClick={onReject}
               />
             )}
+            <div className="mb-2 flex flex-1 flex-row items-center">
+              <span className="ml-4 text-base text-blue-300">{seriesDate}</span>
+
+              <DisplaySetMessageListTooltip
+                messages={messages}
+                id={`display-set-tooltip-${displaySetInstanceUID}`}
+              />
+            </div>
+
             <div className="ml-4 break-all text-base text-white">{description}</div>
           </div>
         </div>
