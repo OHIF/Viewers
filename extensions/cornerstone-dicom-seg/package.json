@@ -41,14 +41,14 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-i18next": "^12.2.2",
-    "react-router": "^6.8.1",
-    "react-router-dom": "^6.8.1"
+    "react-router": "^6.23.1",
+    "react-router-dom": "^6.23.1"
   },
   "dependencies": {
     "@babel/runtime": "^7.20.13",
-    "@cornerstonejs/adapters": "^1.77.6",
-    "@cornerstonejs/core": "^1.77.6",
-    "@kitware/vtk.js": "30.4.1",
+    "@cornerstonejs/adapters": "^1.78.1",
+    "@cornerstonejs/core": "^1.78.1",
+    "@kitware/vtk.js": "*",
     "react-color": "^2.19.3"
   }
 }

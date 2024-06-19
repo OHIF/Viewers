@@ -113,7 +113,6 @@ function modeFactory({ modeConfiguration }) {
       },
     ],
     extensions: extensionDependencies,
-    hangingProtocols: [ohif.hangingProtocols],
     hangingProtocol: ['default'],
 
     // Order is important in sop class handlers when two handlers both use
