@@ -108,6 +108,12 @@ export default class CustomizationService extends PubSubService {
    */
   private defaultCustomizations = new Map<string, Customization>();
 
+  /**
+   * Has the transformed/final customization value.  This avoids needing to
+   * transform every time a customization is requested.
+   */
+  private transformedCustomizations = new Map<string, Customization>();
+
   configuration: any;
 
   constructor({ configuration, commandsManager }) {
@@ -175,6 +181,7 @@ export default class CustomizationService extends PubSubService {
       customizationId,
       this.mergeValue(sourceCustomization, customization, merge)
     );
+    this.transformedCustomizations.clear();
     this._broadcastEvent(this.EVENTS.CUSTOMIZATION_MODIFIED, {
       buttons: this.modeCustomizations,
       button: this.modeCustomizations.get(customizationId),
@@ -199,6 +206,10 @@ export default class CustomizationService extends PubSubService {
    *    both enhanced with any customizationType inheritance (see transform)
    */
   public getCustomization(customizationId: string, defaultValue?: Customization): Customization {
+    const transformed = this.transformedCustomizations.get(customizationId);
+    if (transformed) {
+      return transformed;
+    }
     if (defaultValue && !this.defaultCustomizations.has(customizationId)) {
       this.setDefaultCustomization(customizationId, defaultValue);
     }
@@ -206,7 +217,11 @@ export default class CustomizationService extends PubSubService {
       this.globalCustomizations.get(customizationId) ??
       this.modeCustomizations.get(customizationId) ??
       this.defaultCustomizations.get(customizationId);
-    return this.transform(customization);
+    const newTransformed = this.transform(customization);
+    if (newTransformed !== undefined) {
+      this.transformedCustomizations.set(customizationId, newTransformed);
+    }
+    return newTransformed;
   }
 
   /** Mode customizations are changes to the behavior of the extensions
@@ -306,6 +321,7 @@ export default class CustomizationService extends PubSubService {
       id,
       this.mergeValue(this.globalCustomizations.get(id), value, merge)
     );
+    this.transformedCustomizations.clear();
     this._broadcastGlobalCustomizationModified();
   }
 
@@ -317,11 +333,11 @@ export default class CustomizationService extends PubSubService {
     if (this.defaultCustomizations.has(id)) {
       throw new Error(`Trying to update existing default for customization ${id}`);
     }
+    this.transformedCustomizations.clear();
     this.defaultCustomizations.set(
       id,
       this.mergeValue(this.defaultCustomizations.get(id), value, merge)
     );
-    this._broadcastGlobalCustomizationModified();
   }
 
   protected setConfigGlobalCustomization(configuration: AppConfigCustomization): void {
