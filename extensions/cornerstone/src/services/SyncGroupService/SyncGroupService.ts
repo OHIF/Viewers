@@ -27,7 +27,6 @@ const VOI = 'voi';
 const ZOOMPAN = 'zoompan';
 const STACKIMAGE = 'stackimage';
 const IMAGE_SLICE = 'imageslice';
-const FRAME_VIEW = 'frameview';
 
 const asSyncGroup = (syncGroup: string | SyncGroup): SyncGroup =>
   typeof syncGroup === 'string' ? { type: syncGroup } : syncGroup;
@@ -52,7 +51,6 @@ export default class SyncGroupService {
     // handles both stack and volume viewports
     [STACKIMAGE]: synchronizers.createImageSliceSynchronizer,
     [IMAGE_SLICE]: synchronizers.createImageSliceSynchronizer,
-    [FRAME_VIEW]: synchronizers.createFrameViewSynchronizer,
   };
 
   synchronizersByType: { [key: string]: Synchronizer[] } = {};
@@ -98,6 +96,15 @@ export default class SyncGroupService {
 
   public getSynchronizer(id: string): Synchronizer | void {
     return SynchronizerManager.getSynchronizer(id);
+  }
+
+  /**
+   * Registers a custom synchronizer.
+   * @param id - The id of the synchronizer.
+   * @param createFunction - The function that creates the synchronizer.
+   */
+  public registerCustomSynchronizer(id: string, createFunction: SyncCreator): void {
+    this.synchronizerCreators[id] = createFunction;
   }
 
   /**
