@@ -1,6 +1,6 @@
 {
   "name": "@ohif/ui-next",
-  "version": "3.9.0-beta.40",
+  "version": "3.9.0-beta.46",
   "description": "Next version of OHIF Viewers UI, more customizable using shadcn/ui",
   "main": "index.ts",
   "scripts": {
@@ -18,7 +18,7 @@
     "@radix-ui/react-popover": "^1.0.7",
     "@radix-ui/react-slot": "^1.0.2",
     "class-variance-authority": "^0.7.0",
-    "clsx": "^2.1.1",
+    "clsx": "*",
     "cmdk": "^1.0.0",
     "date-fns": "^3.6.0",
     "framer-motion": "6.2.4",

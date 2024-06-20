@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-cornerstone-dicom-rt",
-  "version": "3.9.0-beta.40",
+  "version": "3.9.0-beta.46",
   "description": "DICOM RT read workflow",
   "author": "OHIF",
   "license": "MIT",
@@ -33,16 +33,16 @@
     "start": "yarn run dev"
   },
   "peerDependencies": {
-    "@ohif/core": "3.9.0-beta.40",
-    "@ohif/extension-cornerstone": "3.9.0-beta.40",
-    "@ohif/extension-default": "3.9.0-beta.40",
-    "@ohif/i18n": "3.9.0-beta.40",
+    "@ohif/core": "3.9.0-beta.46",
+    "@ohif/extension-cornerstone": "3.9.0-beta.46",
+    "@ohif/extension-default": "3.9.0-beta.46",
+    "@ohif/i18n": "3.9.0-beta.46",
     "prop-types": "^15.6.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-i18next": "^10.11.0",
-    "react-router": "^6.3.0",
-    "react-router-dom": "^6.3.0"
+    "react-router": "^6.23.1",
+    "react-router-dom": "^6.23.1"
   },
   "dependencies": {
     "@babel/runtime": "^7.20.13",
