@@ -321,3 +321,29 @@ export default function getCustomizationModule({ servicesManager, extensionManag
 ### Explanation
 This function will be retrieved by the StudyBrowserSort component and will be used to sort all displaySets, it will reflect in all parts of the app since it works at the displaySetService level, which means the thumbnails in the study panel will also be sorted by the desired value.
 You can define multiple functions and pick which sort to use via the dropdown in the StudyBrowserSort component that appears in the study panel.
+
+
+## How can i change the sorting of the thumbnail / study panel / study browser
+We are currently redesigning the study panel and the study browser. During this process, you can enable our undesigned component via the `experimentalStudyBrowserSort` flag. This will look like:
+
+![alt text](study-sorting.png)
+
+You can also add your own sorting functions by utilizing the `customizationService` and adding the `studyBrowser.sortFunctions` key, as shown below:
+
+```
+customizationService.addModeCustomizations([
+  {
+    id: 'studyBrowser.sortFunctions',
+    values: [{
+      label: 'Series Images',
+      sortFunction: (a, b) => {
+        return a?.numImageFrames - b?.numImageFrames;
+      },
+    }],
+  },
+]);
+```
+
+:::note
+Notice the arrays and objects, the values are arrays
+:::
