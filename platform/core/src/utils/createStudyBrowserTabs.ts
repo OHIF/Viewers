@@ -8,10 +8,11 @@
  * @param {string} studyDisplayList.modalities
  * @param {number} studyDisplayList.numInstances
  * @param {object[]} displaySets
+ * @param {number} recentTimeframe - The number of milliseconds to consider a study recent
  * @returns tabs - The prop object expected by the StudyBrowser component
  */
 
-export function createStudyBrowserTabs(primaryStudyInstanceUIDs, studyDisplayList, displaySets) {
+export function createStudyBrowserTabs(primaryStudyInstanceUIDs, studyDisplayList, displaySets, recentTimeframeMS = 31536000000) {
   const primaryStudies = [];
   const allStudies = [];
 
@@ -25,9 +26,8 @@ export function createStudyBrowserTabs(primaryStudyInstanceUIDs, studyDisplayLis
 
     if (primaryStudyInstanceUIDs.includes(study.studyInstanceUid)) {
       primaryStudies.push(tabStudy);
-    } else {
-      allStudies.push(tabStudy);
     }
+    allStudies.push(tabStudy);
   });
 
   const primaryStudiesTimestamps = primaryStudies
@@ -38,13 +38,13 @@ export function createStudyBrowserTabs(primaryStudyInstanceUIDs, studyDisplayLis
     primaryStudiesTimestamps.length > 0
       ? allStudies.filter(study => {
           const oldestPrimaryTimeStamp = Math.min(...primaryStudiesTimestamps);
-          const oneYearInMs = 365 * 24 * 3600 * 1000;
 
           if (!study.date) {
             return false;
           }
           const studyTimeStamp = new Date(study.date).getTime();
-          return oldestPrimaryTimeStamp - studyTimeStamp < oneYearInMs;
+          console.log(oldestPrimaryTimeStamp, studyTimeStamp, recentTimeframeMS)
+          return oldestPrimaryTimeStamp - studyTimeStamp < recentTimeframeMS;
         })
       : [];
 

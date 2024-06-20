@@ -276,7 +276,6 @@ function PanelStudyBrowserTracking({
     StudyInstanceUIDs,
     studyDisplayList,
     displaySets,
-    hangingProtocolService
   );
 
   // TODO: Should not fire this on "close"
