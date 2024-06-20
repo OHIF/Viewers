@@ -2,6 +2,7 @@ import dcmjs from 'dcmjs';
 
 import DCM_CODE_VALUES from './dcmCodeValues';
 import toArray from './toArray';
+import DicomMicroscopyViewport from '../DicomMicroscopyViewport';
 
 const MeasurementReport = dcmjs.adapters.DICOMMicroscopyViewer.MeasurementReport;
 
@@ -47,10 +48,9 @@ export default async function loadSR(
 async function _getROIsFromToolState(naturalizedDataset, FrameOfReferenceUID) {
   const toolState = MeasurementReport.generateToolState(naturalizedDataset);
   const tools = Object.getOwnPropertyNames(toolState);
-
-  const DICOMMicroscopyViewer = await import(
-    /* webpackChunkName: "dicom-microscopy-viewer" */ 'dicom-microscopy-viewer'
-  );
+  // Does a dynamic import to prevent webpack from rebuilding the library
+  await import(/* webpackIgnore: true */ DicomMicroscopyViewport.getImportPath());
+  const DICOMMicroscopyViewer = (window as any).dicomMicroscopyViewer;
 
   const measurementGroupContentItems = _getMeasurementGroups(naturalizedDataset);
 

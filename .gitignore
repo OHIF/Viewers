@@ -10,6 +10,8 @@ junit.xml
 coverage/
 .docz/
 .yarn/
+.nx/
+addOns/yarn.lock
 
 # YALC (for Erik)
 .yalc

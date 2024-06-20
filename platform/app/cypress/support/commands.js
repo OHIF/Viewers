@@ -106,10 +106,10 @@ Cypress.Commands.add('isPageLoaded', (url = '/basic-test') => {
 
 Cypress.Commands.add('openStudyList', () => {
   cy.initRouteAliases();
-  cy.visit('/');
+  cy.visit('/', { timeout: 15000 });
 
   // For some reason cypress 12.x does not like to stub the network request
-  // so we just wait herer for 1 second
+  // so we just wait here for 1 second
   // cy.wait('@getStudies');
   cy.waitQueryList();
 });
