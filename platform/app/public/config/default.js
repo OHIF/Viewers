@@ -1,6 +1,6 @@
 /** @type {AppTypes.Config} */
 
-const config = {
+window.config = {
   routerBasename: '/',
   // whiteLabeling: {},
   extensions: [],
@@ -13,6 +13,7 @@ const config = {
   showWarningMessageForCrossOrigin: true,
   showCPUFallbackMessage: true,
   showLoadingIndicator: true,
+  experimentalStudyBrowserSort: true,
   strictZSpacingForVolumeViewport: true,
   groupEnabledModesFirst: true,
   maxNumRequests: {
@@ -289,5 +290,3 @@ const config = {
     },
   ],
 };
-
-window.config = config;
