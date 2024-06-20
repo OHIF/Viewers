@@ -37,6 +37,7 @@ import {
 } from './sortStudy';
 import { subscribeToNextViewportGridChange } from './subscribeToNextViewportGridChange';
 import { splitComma, getSplitParam } from './splitComma';
+import { createStudyBrowserTabs } from './createStudyBrowserTabs';
 import { sopClassDictionary } from './sopClassDictionary';
 
 // Commented out unused functionality.
@@ -82,6 +83,7 @@ const utils = {
   splitComma,
   getSplitParam,
   generateAcceptHeader,
+  createStudyBrowserTabs,
 };
 
 export {
@@ -114,6 +116,7 @@ export {
   splitComma,
   getSplitParam,
   generateAcceptHeader,
+  createStudyBrowserTabs,
 };
 
 export default utils;
