@@ -272,3 +272,78 @@ to
 which then it will look like
 
 ![alt text](faq-measure-5.png)
+
+
+
+## How do I sort the series in the study panel by a specific value
+
+You need to enable the experimental StudyBrowserSort component by setting the `experimentalStudyBrowserSort` to true in your config file. This will add a dropdown in the study panel to sort the series by a specific value. This component is experimental
+since we are re-deigning the study panel and it might change in the future, but the functionality will remain the same.
+
+```js
+{
+  experimentalStudyBrowserSort: true,
+}
+```
+The component will appear in the study panel and will allow you to sort the series by a specific value. It comes with 3 default sorting functions, Series Number, Series Image Count, and Series Date.
+
+You can sort the series in the study panel by a specific value by adding a custom sorting function in the customizationModule, you can use the existing customizationModule in `extensions/default/src/getCustomizationModule.tsx` or create your own in your extension.
+
+The value to be used for the entry is `studyBrowser.sortFunctions` and should be under the `default` key.
+
+### Example
+
+```js
+export default function getCustomizationModule({ servicesManager, extensionManager }) {
+  return [
+    {
+      name: 'default',
+      value: [
+
+        {
+          id: 'studyBrowser.sortFunctions',
+          values: [
+            {
+              label: 'Series Number',
+              sortFunction: (a, b) => {
+                return a?.SeriesNumber - b?.SeriesNumber;
+              },
+            },
+            // Add more sort functions as needed
+          ],
+        },
+      ],
+    },
+  ];
+}
+```
+
+### Explanation
+This function will be retrieved by the StudyBrowserSort component and will be used to sort all displaySets, it will reflect in all parts of the app since it works at the displaySetService level, which means the thumbnails in the study panel will also be sorted by the desired value.
+You can define multiple functions and pick which sort to use via the dropdown in the StudyBrowserSort component that appears in the study panel.
+
+
+## How can i change the sorting of the thumbnail / study panel / study browser
+We are currently redesigning the study panel and the study browser. During this process, you can enable our undesigned component via the `experimentalStudyBrowserSort` flag. This will look like:
+
+![alt text](study-sorting.png)
+
+You can also add your own sorting functions by utilizing the `customizationService` and adding the `studyBrowser.sortFunctions` key, as shown below:
+
+```
+customizationService.addModeCustomizations([
+  {
+    id: 'studyBrowser.sortFunctions',
+    values: [{
+      label: 'Series Images',
+      sortFunction: (a, b) => {
+        return a?.numImageFrames - b?.numImageFrames;
+      },
+    }],
+  },
+]);
+```
+
+:::note
+Notice the arrays and objects, the values are arrays
+:::
