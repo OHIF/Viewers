@@ -139,7 +139,7 @@ function CustomizableViewportOverlay({
 
   // The new customization is 'cornerstoneOverlay', with an append or replace
   // on the individual items rather than defining individual items.
-  const cornerstoneOverlay = customizationService.getCustomization('@ohif/CornerstoneOverlay', CornerstoneOverlay);
+  const cornerstoneOverlay = customizationService.getCustomization('@ohif/cornerstoneOverlay');
 
   // Historical usage defined the overlays as separate items due to lack of
   // append functionality.  This code enables the historical usage, but
@@ -147,16 +147,16 @@ function CustomizableViewportOverlay({
   // cornerstoneOverlay rather than defining individual items.
   const topLeftCustomization = customizationService.getCustomization(
     'cornerstoneOverlayTopLeft'
-  ) || cornerstoneOverlay.topLeftItems;
+  ) || cornerstoneOverlay?.topLeftItems;
   const topRightCustomization = customizationService.getCustomization(
     'cornerstoneOverlayTopRight'
-  ) || cornerstoneOverlay.topRightItems;
+  ) || cornerstoneOverlay?.topRightItems;
   const bottomLeftCustomization = customizationService.getCustomization(
     'cornerstoneOverlayBottomLeft'
-  ) || cornerstoneOverlay.bottomLeftItems;
+  ) || cornerstoneOverlay?.bottomLeftItems;
   const bottomRightCustomization = customizationService.getCustomization(
     'cornerstoneOverlayBottomRight'
-  ) || cornerstoneOverlay.bottomRightItems;
+  ) || cornerstoneOverlay?.bottomRightItems;
 
 
   const instanceNumber = useMemo(
@@ -289,6 +289,9 @@ function CustomizableViewportOverlay({
 
   const getContent = useCallback(
     (customization, keyPrefix) => {
+      if (!customization?.items) {
+        return null;
+      }
       const { items } = customization;
       const props = {
         ...displaySetProps,

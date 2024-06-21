@@ -318,9 +318,15 @@ export default class CustomizationService extends PubSubService {
   }
 
   public setGlobalCustomization(id: string, value: Customization, merge = MergeEnum.Replace): void {
+    const defaultCustomization = this.defaultCustomizations.get(id);
+    const globCustomization = this.globalCustomizations.get(id);
+    const sourceCustomization =
+      (globCustomization && cloneDeepWith(globCustomization, cloneCustomizer)) ||
+      defaultCustomization ||
+      {};
     this.globalCustomizations.set(
       id,
-      this.mergeValue(this.globalCustomizations.get(id), value, merge)
+      this.mergeValue(sourceCustomization, value, value.merge ?? merge)
     );
     this.transformedCustomizations.clear();
     this._broadcastGlobalCustomizationModified();
@@ -414,6 +420,7 @@ function appendCustomizer(obj, src) {
     if (srcArray) {
       return obj.concat(...src);
     }
+    debugger;
     if (typeof src === 'object') {
       const newList = obj.map(value => cloneDeepWith(value, cloneCustomizer));
       for (const [key, value] of Object.entries(src)) {
@@ -445,7 +452,7 @@ function findPosition(key, value, newList) {
   const { length: len } = newList;
 
   if (isNumeric) {
-    if (newList[(numVal + len) % len]) {
+    if (newList[numVal < 0 ? numVal + len : numVal]) {
       return { isMerge: true, position: (numVal + len) % len };
     }
     const absPosition = Math.ceil(numVal < 0 ? len + numVal : numVal);
