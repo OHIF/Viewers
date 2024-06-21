@@ -4,6 +4,9 @@ import DataSourceSelector from './Panels/DataSourceSelector';
 import { ProgressDropdownWithService } from './Components/ProgressDropdownWithService';
 import DataSourceConfigurationComponent from './Components/DataSourceConfigurationComponent';
 import { GoogleCloudDataSourceConfigurationAPI } from './DataSourceConfigurationAPI/GoogleCloudDataSourceConfigurationAPI';
+import { utils } from '@ohif/core';
+
+const formatDate = utils.formatDate;
 
 /**
  *
@@ -18,6 +21,7 @@ export default function getCustomizationModule({ servicesManager, extensionManag
   return [
     {
       name: 'helloPage',
+      merge: 'Append',
       value: {
         id: 'customRoutes',
         routes: [
@@ -32,6 +36,7 @@ export default function getCustomizationModule({ servicesManager, extensionManag
     // Example customization to list a set of datasources
     {
       name: 'datasources',
+      merge: 'Append',
       value: {
         id: 'customRoutes',
         routes: [
@@ -159,6 +164,26 @@ export default function getCustomizationModule({ servicesManager, extensionManag
         {
           id: 'progressDropdownWithServiceComponent',
           component: ProgressDropdownWithService,
+        },
+        {
+          id: 'studyBrowser.sortFunctions',
+          merge: 'Append',
+          values: [
+            {
+              label: 'Series Number',
+              sortFunction: (a, b) => {
+                return a?.SeriesNumber - b?.SeriesNumber;
+              },
+            },
+            {
+              label: 'Series Date',
+              sortFunction: (a, b) => {
+                const dateA = new Date(formatDate(a?.SeriesDate));
+                const dateB = new Date(formatDate(b?.SeriesDate));
+                return dateB.getTime() - dateA.getTime();
+              },
+            },
+          ],
         },
       ],
     },

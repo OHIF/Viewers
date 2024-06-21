@@ -26,6 +26,61 @@ supports customization. (for example, `CustomizableViewportOverlay` component us
 `CustomizationService` to implement viewport overlay that is easily customizable
 from configuration.)
 
+## Global, Default and Mode customizations
+There are various customization sets that define the lifetime/setup of the
+customization.  The global customizations are those used for overriding
+customizations defined elsewhere, and allow replacing a customization.
+
+Mode customizations are only registered for the lifetime of the mode, allowing
+the mode definition to update/modify the underlying behaviour.  This is related
+to default customizations, which provide a fallback if the mode or global customization
+isn't defined.  Default customizations may only be defined once, otherwise throwing
+an exception.
+
+## Append and Merge Customizations
+In addition to the replace a customization, there is the ability to merge or append
+a customization.  The merge customization simply applies the lodash merge functionality
+to the existing customization, with the new one, while the append customization
+modifies the customization by appending to the value.
+
+### Append Behaviour
+When a list is found in the destination object, the append source object is
+examined to see how to handle the change.  If the source is simply a list,
+then the list object is appended, and no additional changes are performed.
+However, if the source is an object other than a list, then the iterable
+attributes of the object are examined to match child objects to the destination list,
+according to the following table:
+
+* Natural or zero number value - match the given index location and merge at the point
+* Fractional number value - insert at a new point in the list, starting from the end or beginning
+* keyword - match a value having the same id as the keyword, inserting at the end, or at _priority as defined in the keywords above.
+
+#### Example Append
+
+```javascript
+const destination = [
+  1,
+  {id: 'two', value: 2},
+  {id: 'three', value: 3}
+]
+
+const source = {
+  two: { value: 'updated2' },
+  1: { extraValue: 2 },
+  1.0001: { id: 'inserted', value: 1.0001 },
+  -1: { value: -3 },
+}
+```
+
+Results in two updates to `destination[1]`, the first using an id match on 'two', while the second one
+does a positional match on `1`, resulting in the value `{id: 'two', value: 'updated2', extraValue: 2 }`
+
+Then, it inserts the id 'inserted' after position 1.
+
+Finally, position -1 (the end position) is updated from value 3 to value -3.
+
+The ordering is not specified on any of these insertions, so can happen out of order.  Use multiple updates to perform order specific inserts.
+
 ## Registering customizable modules (or defining customization prototypes)
 
 Extensions and Modes can register customization templates they support.
@@ -37,8 +92,8 @@ Below is the protocol of the `getCustomizationModule()`, if defined in Typescrip
   getCustomizationModule() : { name: string, value: any }[]
 ```
 
-If the name is 'default', it is the Default customization, which is loaded
-automatically when the extension or mode is loaded.
+If the name is 'default', it is the a default customization, while if it
+is 'global', then it is a priority/over-riding customization.
 
 In the `value` of each customizations, you will define customization prototype(s).
 These customization prototype(s) can be considered like "Prototype" in Javascript.

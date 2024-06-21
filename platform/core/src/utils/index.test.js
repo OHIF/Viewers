@@ -1,4 +1,4 @@
-import * as utils from './index.js';
+import * as utils from './index';
 
 describe('Top level exports', () => {
   test('should export the modules ', () => {

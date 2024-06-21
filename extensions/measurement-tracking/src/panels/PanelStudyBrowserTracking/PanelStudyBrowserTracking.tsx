@@ -6,7 +6,7 @@ import { utils } from '@ohif/core';
 import { StudyBrowser, useImageViewer, useViewportGrid, Dialog, ButtonEnums } from '@ohif/ui';
 import { useTrackedMeasurements } from '../../getContextModule';
 
-const { formatDate } = utils;
+const { formatDate, createStudyBrowserTabs } = utils;
 
 /**
  *
@@ -272,12 +272,7 @@ function PanelStudyBrowserTracking({
     };
   }, [thumbnailImageSrcMap, trackedSeries, viewports, dataSource, displaySetService]);
 
-  const tabs = _createStudyBrowserTabs(
-    StudyInstanceUIDs,
-    studyDisplayList,
-    displaySets,
-    hangingProtocolService
-  );
+  const tabs = createStudyBrowserTabs(StudyInstanceUIDs, studyDisplayList, displaySets);
 
   // TODO: Should not fire this on "close"
   function _handleStudyClick(StudyInstanceUID) {
@@ -588,97 +583,6 @@ function _getComponentType(ds) {
   }
 
   return 'thumbnailTracked';
-}
-
-/**
- *
- * @param {string[]} primaryStudyInstanceUIDs
- * @param {object[]} studyDisplayList
- * @param {string} studyDisplayList.studyInstanceUid
- * @param {string} studyDisplayList.date
- * @param {string} studyDisplayList.description
- * @param {string} studyDisplayList.modalities
- * @param {number} studyDisplayList.numInstances
- * @param {object[]} displaySets
- * @returns tabs - The prop object expected by the StudyBrowser component
- */
-function _createStudyBrowserTabs(
-  primaryStudyInstanceUIDs,
-  studyDisplayList,
-  displaySets,
-  hangingProtocolService
-) {
-  const primaryStudies = [];
-  const recentStudies = [];
-  const allStudies = [];
-
-  // Iterate over each study...
-  studyDisplayList.forEach(study => {
-    // Find it's display sets
-    const displaySetsForStudy = displaySets.filter(
-      ds => ds.StudyInstanceUID === study.studyInstanceUid
-    );
-
-    // Sort them
-    const dsSortFn = hangingProtocolService.getDisplaySetSortFunction();
-    displaySetsForStudy.sort(dsSortFn);
-
-    /* Sort by series number, then by series date
-      displaySetsForStudy.sort((a, b) => {
-        if (a.seriesNumber !== b.seriesNumber) {
-          return a.seriesNumber - b.seriesNumber;
-        }
-
-        const seriesDateA = Date.parse(a.seriesDate);
-        const seriesDateB = Date.parse(b.seriesDate);
-
-        return seriesDateA - seriesDateB;
-      });
-    */
-
-    // Map the study to it's tab/view representation
-    const tabStudy = Object.assign({}, study, {
-      displaySets: displaySetsForStudy,
-    });
-
-    // Add the "tab study" to the 'primary', 'recent', and/or 'all' tab group(s)
-    if (primaryStudyInstanceUIDs.includes(study.studyInstanceUid)) {
-      primaryStudies.push(tabStudy);
-      allStudies.push(tabStudy);
-    } else {
-      // TODO: Filter allStudies to dates within one year of current date
-      recentStudies.push(tabStudy);
-      allStudies.push(tabStudy);
-    }
-  });
-
-  // Newest first
-  const _byDate = (a, b) => {
-    const dateA = Date.parse(a);
-    const dateB = Date.parse(b);
-
-    return dateB - dateA;
-  };
-
-  const tabs = [
-    {
-      name: 'primary',
-      label: 'Primary',
-      studies: primaryStudies.sort((studyA, studyB) => _byDate(studyA.date, studyB.date)),
-    },
-    {
-      name: 'recent',
-      label: 'Recent',
-      studies: recentStudies.sort((studyA, studyB) => _byDate(studyA.date, studyB.date)),
-    },
-    {
-      name: 'all',
-      label: 'All',
-      studies: allStudies.sort((studyA, studyB) => _byDate(studyA.date, studyB.date)),
-    },
-  ];
-
-  return tabs;
 }
 
 function _findTabAndStudyOfDisplaySet(displaySetInstanceUID, tabs) {

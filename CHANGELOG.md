@@ -3,6 +3,78 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.9.0-beta.46](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.45...v3.9.0-beta.46) (2024-06-18)
+
+
+### Bug Fixes
+
+* Use correct external URL for rendered responses with relative URI ([#4236](https://github.com/OHIF/Viewers/issues/4236)) ([d8f6991](https://github.com/OHIF/Viewers/commit/d8f6991dbe72465080cfc5de39c7ea225702f2e0))
+
+
+
+
+
+# [3.9.0-beta.45](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.44...v3.9.0-beta.45) (2024-06-18)
+
+
+### Bug Fixes
+
+* Re-enable hpScale module ([#4237](https://github.com/OHIF/Viewers/issues/4237)) ([2eab049](https://github.com/OHIF/Viewers/commit/2eab049d7993bb834f7736093941c175f16d61fc))
+
+
+
+
+
+# [3.9.0-beta.44](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.43...v3.9.0-beta.44) (2024-06-17)
+
+
+### Bug Fixes
+
+* **cli:** version txt had a new line which it should not ([#4233](https://github.com/OHIF/Viewers/issues/4233)) ([097ef76](https://github.com/OHIF/Viewers/commit/097ef7665559a672d73e1babfc42afccc3cdd41d))
+* **pdf-viewport:** Allow Drag and Drop on PDF Viewport ([#4225](https://github.com/OHIF/Viewers/issues/4225)) ([729efb6](https://github.com/OHIF/Viewers/commit/729efb6d766e0f72f1fd8adefbca6fb46b355b2b))
+
+
+
+
+
+# [3.9.0-beta.43](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.42...v3.9.0-beta.43) (2024-06-12)
+
+
+### Bug Fixes
+
+* **sr:** rendering issue by running loadSR before updateSR ([#4226](https://github.com/OHIF/Viewers/issues/4226)) ([6971287](https://github.com/OHIF/Viewers/commit/69712874603109aa4f655d47daf15d72167a49ff))
+
+
+
+
+
+# [3.9.0-beta.42](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.41...v3.9.0-beta.42) (2024-06-12)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.9.0-beta.41](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.40...v3.9.0-beta.41) (2024-06-12)
+
+
+### Features
+
+* Add customization merge, append or replace functionality ([#3871](https://github.com/OHIF/Viewers/issues/3871)) ([55dcfa1](https://github.com/OHIF/Viewers/commit/55dcfa1f6994a7036e7e594efb23673382a41915))
+
+
+
+
+
+# [3.9.0-beta.40](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.39...v3.9.0-beta.40) (2024-06-12)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
 # [3.9.0-beta.39](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.38...v3.9.0-beta.39) (2024-06-08)
 
 **Note:** Version bump only for package ohif-monorepo-root
