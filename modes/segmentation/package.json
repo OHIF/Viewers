@@ -70,7 +70,7 @@
     "dotenv": "^14.1.0",
     "eslint": "^8.39.0",
     "eslint-loader": "^2.0.0",
-    "webpack": "5.91.0",
+    "webpack": "5.89.0",
     "webpack-cli": "^4.7.2",
     "webpack-merge": "^5.7.3"
   }
