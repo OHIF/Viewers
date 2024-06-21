@@ -38,6 +38,7 @@ import { ViewportActionCornersProvider } from './contextProviders/ViewportAction
 import ActiveViewportWindowLevel from './components/ActiveViewportWindowLevel';
 import getSOPInstanceAttributes from './utils/measurementServiceMappings/utils/getSOPInstanceAttributes';
 import { findNearbyToolData } from './utils/findNearbyToolData';
+import { createFrameViewSynchronizer } from './synchronizers/frameViewSynchronizer';
 
 const { helpers: volumeLoaderHelpers } = csStreamingImageVolumeLoader;
 const { getDynamicVolumeInfo } = volumeLoaderHelpers ?? {};
@@ -114,6 +115,9 @@ const cornerstoneExtension: Types.Extensions.Extension = {
       ViewportActionCornersService.REGISTRATION.name,
       ViewportActionCornersProvider
     );
+
+    const { syncGroupService } = servicesManager.services;
+    syncGroupService.registerCustomSynchronizer('frameview', createFrameViewSynchronizer);
     return init.call(this, props);
   },
 
