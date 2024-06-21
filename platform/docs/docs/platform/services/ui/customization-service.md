@@ -401,145 +401,68 @@ customizationService: [
 
 Below is the full example configuration of the customizable viewport overlay and the screenshot of the result overlay.
 
+There are working examples that can be run with:
+```
+set APP_CONFIG=config/customization.js
+yarn dev
+```
+
 ```javascript
-// this is one of the configuration files in `platform/app/public/config/*.js`
+// this is part of customization.js, an example customization dataset
 window.config = {
-  // ...
 
-  customizationService: {
-    cornerstoneOverlayTopLeft: {
-      id: 'cornerstoneOverlayTopLeft',
-      items: [
-        {
-          id: 'WindowLevel',
-          customizationType: 'ohif.overlayItem.windowLevel',
+   // This shows how to append to the customization data
+   customizationService: [
+    {
+      id: '@ohif/cornerstoneOverlay',
+      // Append recursively, rather than replacing
+      merge: 'Append',
+      topRightItems: {
+        id: 'cornerstoneOverlayTopRight',
+        items: [
+          {
+            id: 'PatientNameOverlay',
+            // Note below that here we are using the customization prototype of
+            // `ohif.overlayItem` which was registered to the customization module in
+            // `ohif/extension-default` extension.
+            customizationType: 'ohif.overlayItem',
+            // the following props are passed to the `ohif.overlayItem` prototype
+            // which is used to render the overlay item based on the label, color,
+            // conditions, etc.
+            attribute: 'PatientName',
+            label: 'PN:',
+            title: 'Patient Name',
+            color: 'yellow',
+            condition: ({ instance }) => instance?.PatientName,
+            contentF: ({ instance, formatters: { formatPN } }) =>
+              formatPN(instance.PatientName) +
+              (instance.PatientSex ? ' (' + instance.PatientSex + ')' : ''),
+          },
+        ],
+      },
+
+      topLeftItems: {
+        items: {
+          // Note the -10000 means -10000 + length of existing list, which is
+          // much before the start of hte list, so put the new value at the start.
+          '-10000':
+          {
+            id: 'Species',
+            customizationType: 'ohif.overlayItem',
+            label: 'Species:',
+            color: 'red',
+            background: 'green',
+            condition: ({ instance }) =>
+              instance?.PatientSpeciesDescription,
+            contentF: ({ instance }) =>
+              instance.PatientSpeciesDescription +
+              '/' +
+              instance.PatientBreedDescription,
+          },
         },
-        {
-          id: 'PatientName',
-          customizationType: 'ohif.overlayItem',
-          label: '',
-          color: 'green',
-          background: 'white',
-          condition: ({ instance }) =>
-            instance && instance.PatientName && instance.PatientName.Alphabetic,
-          contentF: ({ instance, formatters: { formatPN } }) =>
-            formatPN(instance.PatientName.Alphabetic) +
-            ' ' +
-            (instance.PatientSex ? '(' + instance.PatientSex + ')' : ''),
-        },
-        {
-          id: 'Species',
-          customizationType: 'ohif.overlayItem',
-          label: 'Species:',
-          condition: ({ instance }) =>
-            instance && instance.PatientSpeciesDescription,
-          contentF: ({ instance }) =>
-            instance.PatientSpeciesDescription +
-            '/' +
-            instance.PatientBreedDescription,
-        },
-        {
-          id: 'PID',
-          customizationType: 'ohif.overlayItem',
-          label: 'PID:',
-          title: 'Patient PID',
-          condition: ({ instance }) => instance && instance.PatientID,
-          contentF: ({ instance }) => instance.PatientID,
-        },
-        {
-          id: 'PatientBirthDate',
-          customizationType: 'ohif.overlayItem',
-          label: 'DOB:',
-          title: "Patient's Date of birth",
-          condition: ({ instance }) => instance && instance.PatientBirthDate,
-          contentF: ({ instance }) => instance.PatientBirthDate,
-        },
-        {
-          id: 'OtherPid',
-          customizationType: 'ohif.overlayItem',
-          label: 'Other PID:',
-          title: 'Other Patient IDs',
-          condition: ({ instance }) => instance && instance.OtherPatientIDs,
-          contentF: ({ instance, formatters: { formatPN } }) =>
-            formatPN(instance.OtherPatientIDs),
-        },
-      ],
+      },
     },
-    cornerstoneOverlayTopRight: {
-      id: 'cornerstoneOverlayTopRight',
-
-      items: [
-        {
-          id: 'InstanceNmber',
-          customizationType: 'ohif.overlayItem.instanceNumber',
-        },
-        {
-          id: 'StudyDescription',
-          customizationType: 'ohif.overlayItem',
-          label: '',
-          title: ({ instance }) =>
-            instance &&
-            instance.StudyDescription &&
-            `Study Description: ${instance.StudyDescription}`,
-          condition: ({ instance }) => instance && instance.StudyDescription,
-          contentF: ({ instance }) => instance.StudyDescription,
-        },
-        {
-          id: 'StudyDate',
-          customizationType: 'ohif.overlayItem',
-          label: '',
-          title: 'Study date',
-          condition: ({ instance }) => instance && instance.StudyDate,
-          contentF: ({ instance, formatters: { formatDate } }) =>
-            formatDate(instance.StudyDate),
-        },
-        {
-          id: 'StudyTime',
-          customizationType: 'ohif.overlayItem',
-          label: '',
-          title: 'Study time',
-          condition: ({ instance }) => instance && instance.StudyTime,
-          contentF: ({ instance, formatters: { formatTime } }) =>
-            formatTime(instance.StudyTime),
-        },
-      ],
-    },
-    cornerstoneOverlayBottomLeft: {
-      id: 'cornerstoneOverlayBottomLeft',
-
-      items: [
-        {
-          id: 'SeriesNumber',
-          customizationType: 'ohif.overlayItem',
-          label: 'Ser:',
-          title: 'Series Number',
-          condition: ({ instance }) => instance && instance.SeriesNumber,
-          contentF: ({ instance }) => instance.SeriesNumber,
-        },
-        {
-          id: 'SliceLocation',
-          customizationType: 'ohif.overlayItem',
-          label: 'Loc:',
-          title: 'Slice Location',
-          condition: ({ instance }) => instance && instance.SliceLocation,
-          contentF: ({ instance, formatters: { formatNumberPrecision } }) =>
-            formatNumberPrecision(instance.SliceLocation, 2) + ' mm',
-        },
-        {
-          id: 'SliceThickness',
-          customizationType: 'ohif.overlayItem',
-          label: 'Thick:',
-          title: 'Slice Thickness',
-          condition: ({ instance }) => instance && instance.SliceThickness,
-          contentF: ({ instance, formatters: { formatNumberPrecision } }) =>
-            formatNumberPrecision(instance.SliceThickness, 2) + ' mm',
-        },
-      ],
-    },
-  },
-
-  // ...
-}
+...
 ```
 
 <img src="../../../assets/img/customizable-overlay.png" />
