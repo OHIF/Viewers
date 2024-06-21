@@ -6,6 +6,8 @@ services:
     image: webapp:latest
     container_name: webapp
     volumes:
+      # the next line is for development purposes where we don't want to build
+      # the image every time we make a change
       - ./../../../../platform/app/dist:/var/www/html
       - ./config/nginx.conf:/etc/nginx/nginx.conf
       - ./logs/nginx:/var/logs/nginx

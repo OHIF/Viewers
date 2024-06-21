@@ -44,7 +44,7 @@ const initUserManager = (oidc, routerBasename) => {
     post_logout_redirect_uri: _makeAbsoluteIfNecessary(post_logout_redirect_uri, baseUri),
   });
 
-  const client = firstOpenIdClient.useImplicitFlow ? LegacyClient : NextClient;
+  const client = firstOpenIdClient.useAuthorizationCodeFlow ? NextClient: LegacyClient
 
   return client(openIdConnectConfiguration);
 };
