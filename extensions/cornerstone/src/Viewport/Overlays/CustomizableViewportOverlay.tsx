@@ -39,6 +39,7 @@ interface OverlayItemProps {
 }
 
 const OverlayItemComponents = {
+  'ohif.overlayItem': OverlayItem,
   'ohif.overlayItem.windowLevel': VOIOverlayItem,
   'ohif.overlayItem.zoomLevel': ZoomOverlayItem,
   'ohif.overlayItem.instanceNumber': InstanceNumberOverlayItem,
@@ -267,8 +268,8 @@ function CustomizableViewportOverlay({
       } else {
         const renderItem = customizationService.transform(item);
 
-        if (typeof renderItem.content === 'function') {
-          return renderItem.content(overlayItemProps);
+        if (typeof renderItem.contentF === 'function') {
+          return renderItem.contentF(overlayItemProps);
         }
       }
     },
@@ -426,6 +427,24 @@ function _getInstanceNumberFromVolume(
   }
 }
 
+function OverlayItem(props) {
+  const { instance, customization = {} } = props;
+  const { color, attribute, title, label, background } = customization;
+  const value = customization.contentF?.(props, customization) ?? instance?.[attribute];
+  if (value === undefined || value === null) {
+    return null;
+  }
+  return (
+    <div
+      className="overlay-item flex flex-row"
+      style={{ color, background }}
+      title={title}
+    >
+      {label ? (<span className="mr-1 shrink-0">{label}</span>) : null}
+      <span className="ml-1 mr-2 shrink-0">{value}</span>
+    </div>);
+}
+
 /**
  * Window Level / Center Overlay item
  */
@@ -438,7 +457,7 @@ function VOIOverlayItem({ voi, customization }: OverlayItemProps) {
   return (
     <div
       className="overlay-item flex flex-row"
-      style={{ color: (customization && customization.color) || undefined }}
+      style={{ color: customization?.color }}
     >
       <span className="mr-1 shrink-0">W:</span>
       <span className="ml-1 mr-2 shrink-0">{windowWidth.toFixed(0)}</span>

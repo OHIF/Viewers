@@ -401,6 +401,12 @@ customizationService: [
 
 Below is the full example configuration of the customizable viewport overlay and the screenshot of the result overlay.
 
+There are working examples that can be run with:
+```
+set APP_CONFIG=config/customization.js
+yarn dev
+```
+
 ```javascript
 // this is one of the configuration files in `platform/app/public/config/*.js`
 window.config = {
@@ -421,7 +427,7 @@ window.config = {
           color: 'green',
           background: 'white',
           condition: ({ instance }) =>
-            instance && instance.PatientName && instance.PatientName.Alphabetic,
+            instance?.PatientName?.Alphabetic,
           contentF: ({ instance, formatters: { formatPN } }) =>
             formatPN(instance.PatientName.Alphabetic) +
             ' ' +
@@ -432,7 +438,7 @@ window.config = {
           customizationType: 'ohif.overlayItem',
           label: 'Species:',
           condition: ({ instance }) =>
-            instance && instance.PatientSpeciesDescription,
+            instance?.PatientSpeciesDescription,
           contentF: ({ instance }) =>
             instance.PatientSpeciesDescription +
             '/' +
@@ -443,7 +449,7 @@ window.config = {
           customizationType: 'ohif.overlayItem',
           label: 'PID:',
           title: 'Patient PID',
-          condition: ({ instance }) => instance && instance.PatientID,
+          condition: ({ instance }) => instance?.PatientID,
           contentF: ({ instance }) => instance.PatientID,
         },
         {
@@ -451,7 +457,7 @@ window.config = {
           customizationType: 'ohif.overlayItem',
           label: 'DOB:',
           title: "Patient's Date of birth",
-          condition: ({ instance }) => instance && instance.PatientBirthDate,
+          condition: ({ instance }) => instance?.PatientBirthDate,
           contentF: ({ instance }) => instance.PatientBirthDate,
         },
         {
@@ -459,7 +465,7 @@ window.config = {
           customizationType: 'ohif.overlayItem',
           label: 'Other PID:',
           title: 'Other Patient IDs',
-          condition: ({ instance }) => instance && instance.OtherPatientIDs,
+          condition: ({ instance }) => instance?.OtherPatientIDs,
           contentF: ({ instance, formatters: { formatPN } }) =>
             formatPN(instance.OtherPatientIDs),
         },
@@ -481,7 +487,7 @@ window.config = {
             instance &&
             instance.StudyDescription &&
             `Study Description: ${instance.StudyDescription}`,
-          condition: ({ instance }) => instance && instance.StudyDescription,
+          condition: ({ instance }) => instance?.StudyDescription,
           contentF: ({ instance }) => instance.StudyDescription,
         },
         {
@@ -489,7 +495,7 @@ window.config = {
           customizationType: 'ohif.overlayItem',
           label: '',
           title: 'Study date',
-          condition: ({ instance }) => instance && instance.StudyDate,
+          condition: ({ instance }) => instance?.StudyDate,
           contentF: ({ instance, formatters: { formatDate } }) =>
             formatDate(instance.StudyDate),
         },
@@ -498,7 +504,7 @@ window.config = {
           customizationType: 'ohif.overlayItem',
           label: '',
           title: 'Study time',
-          condition: ({ instance }) => instance && instance.StudyTime,
+          condition: ({ instance }) => instance?.StudyTime,
           contentF: ({ instance, formatters: { formatTime } }) =>
             formatTime(instance.StudyTime),
         },
@@ -513,7 +519,7 @@ window.config = {
           customizationType: 'ohif.overlayItem',
           label: 'Ser:',
           title: 'Series Number',
-          condition: ({ instance }) => instance && instance.SeriesNumber,
+          condition: ({ instance }) => instance?.SeriesNumber,
           contentF: ({ instance }) => instance.SeriesNumber,
         },
         {
@@ -521,7 +527,7 @@ window.config = {
           customizationType: 'ohif.overlayItem',
           label: 'Loc:',
           title: 'Slice Location',
-          condition: ({ instance }) => instance && instance.SliceLocation,
+          condition: ({ instance }) => instance?.SliceLocation,
           contentF: ({ instance, formatters: { formatNumberPrecision } }) =>
             formatNumberPrecision(instance.SliceLocation, 2) + ' mm',
         },
@@ -530,7 +536,7 @@ window.config = {
           customizationType: 'ohif.overlayItem',
           label: 'Thick:',
           title: 'Slice Thickness',
-          condition: ({ instance }) => instance && instance.SliceThickness,
+          condition: ({ instance }) => instance?.SliceThickness,
           contentF: ({ instance, formatters: { formatNumberPrecision } }) =>
             formatNumberPrecision(instance.SliceThickness, 2) + ' mm',
         },
