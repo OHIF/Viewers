@@ -43,7 +43,6 @@ export function createStudyBrowserTabs(primaryStudyInstanceUIDs, studyDisplayLis
             return false;
           }
           const studyTimeStamp = new Date(study.date).getTime();
-          console.log(oldestPrimaryTimeStamp, studyTimeStamp, recentTimeframeMS)
           return oldestPrimaryTimeStamp - studyTimeStamp < recentTimeframeMS;
         })
       : [];
