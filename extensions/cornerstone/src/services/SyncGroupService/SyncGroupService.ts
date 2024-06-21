@@ -99,6 +99,15 @@ export default class SyncGroupService {
   }
 
   /**
+   * Registers a custom synchronizer.
+   * @param id - The id of the synchronizer.
+   * @param createFunction - The function that creates the synchronizer.
+   */
+  public registerCustomSynchronizer(id: string, createFunction: SyncCreator): void {
+    this.synchronizerCreators[id] = createFunction;
+  }
+
+  /**
    * Retrieves an array of synchronizers of a specific type.
    * @param type - The type of synchronizers to retrieve.
    * @returns An array of synchronizers of the specified type.
