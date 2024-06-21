@@ -149,13 +149,13 @@ function CustomizableViewportOverlay({
   ) || cornerstoneOverlay.topLeftItems;
   const topRightCustomization = customizationService.getCustomization(
     'cornerstoneOverlayTopRight'
-  ) || topRightItems;
+  ) || cornerstoneOverlay.topRightItems;
   const bottomLeftCustomization = customizationService.getCustomization(
     'cornerstoneOverlayBottomLeft'
   ) || cornerstoneOverlay.bottomLeftItems;
   const bottomRightCustomization = customizationService.getCustomization(
     'cornerstoneOverlayBottomRight'
-  ) || bottomRightItems;
+  ) || cornerstoneOverlay.bottomRightItems;
 
 
   const instanceNumber = useMemo(
