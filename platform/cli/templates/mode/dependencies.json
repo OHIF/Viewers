@@ -1,6 +1,8 @@
 {
   "repository": "OHIF/Viewers",
-  "keywords": ["ohif-mode"],
+  "keywords": [
+    "ohif-mode"
+  ],
   "module": "src/index.tsx",
   "engines": {
     "node": ">=14",
@@ -44,7 +46,7 @@
     "dotenv": "^14.1.0",
     "eslint": "^8.39.0",
     "eslint-loader": "^2.0.0",
-    "webpack": "^5.50.0",
+    "webpack": "5.89.0",
     "webpack-merge": "^5.7.3",
     "webpack-cli": "^5.0.2"
   }

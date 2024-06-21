@@ -41,7 +41,7 @@
     "react-dom": "^18.3.1",
     "react-i18next": "^12.2.2",
     "react-window": "^1.8.9",
-    "webpack": "^5.89.0",
+    "webpack": "5.89.0",
     "webpack-merge": "^5.7.3"
   },
   "dependencies": {
