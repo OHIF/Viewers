@@ -22,6 +22,7 @@ describe('Top level exports', () => {
       'imageIdToURI',
       'roundNumber',
       'b64toBlob',
+      'createStudyBrowserTabs',
       'formatDate',
       'formatPN',
       'generateAcceptHeader',
