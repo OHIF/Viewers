@@ -84,6 +84,7 @@ function _getDisplaySetsFromSeries(instances, servicesManager, extensionManager)
   const displaySet = {
     plugin: 'microscopy',
     Modality: 'SM',
+    viewportType: 'WholeSlide',
     altImageText: 'Microscopy',
     displaySetInstanceUID: utils.guid(),
     SOPInstanceUID,
@@ -106,7 +107,6 @@ function _getDisplaySetsFromSeries(instances, servicesManager, extensionManager)
     instances,
     othersFrameOfReferenceUID,
     imageIds: instances.map(instance => instance.imageId),
-    viewportType: 'wsi',
   };
   csUtils.genericMetadataProvider.add(displaySet.imageIds[0], {
     type: 'webClient',
