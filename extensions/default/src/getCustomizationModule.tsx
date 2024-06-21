@@ -18,7 +18,6 @@ const formatDate = utils.formatDate;
  * page for login etc.
  */
 export default function getCustomizationModule({ servicesManager, extensionManager }) {
-  console.log("***** getCustomizationModule for extensions/default")
   return [
     {
       name: 'helloPage',
@@ -168,7 +167,6 @@ export default function getCustomizationModule({ servicesManager, extensionManag
         },
         {
           id: 'studyBrowser.sortFunctions',
-          merge: 'Append',
           values: [
             {
               label: 'Series Number',
