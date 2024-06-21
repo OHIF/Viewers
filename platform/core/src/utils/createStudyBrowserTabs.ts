@@ -12,8 +12,6 @@
  * @returns tabs - The prop object expected by the StudyBrowser component
  */
 
-import { sortStudySeries } from "./sortStudy";
-
 export function createStudyBrowserTabs(primaryStudyInstanceUIDs, studyDisplayList, displaySets, recentTimeframeMS = 31536000000) {
   const primaryStudies = [];
   const allStudies = [];
@@ -22,7 +20,6 @@ export function createStudyBrowserTabs(primaryStudyInstanceUIDs, studyDisplayLis
     const displaySetsForStudy = displaySets.filter(
       ds => ds.StudyInstanceUID === study.studyInstanceUid
     );
-    sortStudySeries(displaySetsForStudy);
     const tabStudy = Object.assign({}, study, {
       displaySets: displaySetsForStudy,
     });
@@ -40,14 +37,14 @@ export function createStudyBrowserTabs(primaryStudyInstanceUIDs, studyDisplayLis
   const recentStudies =
     primaryStudiesTimestamps.length > 0
       ? allStudies.filter(study => {
-        const oldestPrimaryTimeStamp = Math.min(...primaryStudiesTimestamps);
+          const oldestPrimaryTimeStamp = Math.min(...primaryStudiesTimestamps);
 
-        if (!study.date) {
-          return false;
-        }
-        const studyTimeStamp = new Date(study.date).getTime();
-        return oldestPrimaryTimeStamp - studyTimeStamp < recentTimeframeMS;
-      })
+          if (!study.date) {
+            return false;
+          }
+          const studyTimeStamp = new Date(study.date).getTime();
+          return oldestPrimaryTimeStamp - studyTimeStamp < recentTimeframeMS;
+        })
       : [];
 
   // Newest first
