@@ -177,9 +177,10 @@ export default class CustomizationService extends PubSubService {
       defaultCustomization ||
       {};
 
+    // use the source merge type if not provided then fallback to merge
     this.modeCustomizations.set(
       customizationId,
-      this.mergeValue(sourceCustomization, customization, merge)
+      this.mergeValue(sourceCustomization, customization, sourceCustomization.merge ?? merge)
     );
     this.transformedCustomizations.clear();
     this._broadcastEvent(this.EVENTS.CUSTOMIZATION_MODIFIED, {

@@ -272,11 +272,7 @@ function PanelStudyBrowserTracking({
     };
   }, [thumbnailImageSrcMap, trackedSeries, viewports, dataSource, displaySetService]);
 
-  const tabs = createStudyBrowserTabs(
-    StudyInstanceUIDs,
-    studyDisplayList,
-    displaySets,
-  );
+  const tabs = createStudyBrowserTabs(StudyInstanceUIDs, studyDisplayList, displaySets);
 
   // TODO: Should not fire this on "close"
   function _handleStudyClick(StudyInstanceUID) {
