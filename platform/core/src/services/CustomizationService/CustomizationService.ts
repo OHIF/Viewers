@@ -420,7 +420,6 @@ function appendCustomizer(obj, src) {
     if (srcArray) {
       return obj.concat(...src);
     }
-    debugger;
     if (typeof src === 'object') {
       const newList = obj.map(value => cloneDeepWith(value, cloneCustomizer));
       for (const [key, value] of Object.entries(src)) {
