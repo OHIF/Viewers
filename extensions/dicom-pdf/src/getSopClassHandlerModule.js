@@ -12,7 +12,7 @@ const sopClassUids = Object.values(SOP_CLASS_UIDS);
 const _getDisplaySetsFromSeries = (instances, servicesManager, extensionManager) => {
   const dataSource = extensionManager.getActiveDataSource()[0];
   return instances.map(instance => {
-    const { Modality, SOPInstanceUID, EncapsulatedDocument } = instance;
+    const { Modality, SOPInstanceUID } = instance;
     const { SeriesDescription = 'PDF', MIMETypeOfEncapsulatedDocument } = instance;
     const { SeriesNumber, SeriesDate, SeriesInstanceUID, StudyInstanceUID, SOPClassUID } = instance;
     const pdfUrl = dataSource.retrieve.directURL({

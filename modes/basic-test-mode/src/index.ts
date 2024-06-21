@@ -83,7 +83,6 @@ function modeFactory() {
         'MeasurementTools',
         'Zoom',
         'WindowLevel',
-        'WindowLevelRegion',
         'Pan',
         'Capture',
         'Layout',

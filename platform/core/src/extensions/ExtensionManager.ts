@@ -130,6 +130,10 @@ export default class ExtensionManager extends PubSubService {
     );
   }
 
+  public getRegisteredExtensionIds() {
+    return [...this.registeredExtensionIds];
+  }
+
   /**
    * Calls all the services and extension on mode enters.
    * The service onModeEnter is called first
