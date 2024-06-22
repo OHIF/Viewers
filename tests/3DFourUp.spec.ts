@@ -1,5 +1,5 @@
 import { test } from '@playwright/test';
-import { visitStudy, checkForScreenshot, screenShotPaths } from './utils';
+import { visitStudy, checkForScreenshot, screenShotPaths, reduce3DViewportSize } from './utils';
 
 test.beforeEach(async ({ page }) => {
   const studyInstanceUID = '2.16.840.1.114362.1.11972228.22789312658.616067305.306.2';
@@ -15,6 +15,7 @@ test.describe('3D four up Test', async () => {
       .filter({ hasText: /^3D four up$/ })
       .first()
       .click();
+    await reduce3DViewportSize(page);
     await checkForScreenshot(
       page,
       page,
