@@ -29,6 +29,12 @@ jobs:
           key: ${{ runner.os }}-playwright-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-playwright-
+      - name: Install dependencies
+        if: steps.cache-yarn.outputs.cache-hit != 'true'
+        run: yarn install --frozen-lockfile
+      - name: Install Playwright Browsers
+        if: steps.cache-playwright.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps
 
   playwright-tests:
     needs: cache
@@ -44,10 +50,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 18
-      - name: Install dependencies
-        run: yarn install --frozen-lockfile
-      - name: Install Playwright Browsers
-        run: npx playwright install --with-deps
       - name: Run Playwright tests
         run: export NODE_OPTIONS="--max_old_space_size=8192" && npx playwright test --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
