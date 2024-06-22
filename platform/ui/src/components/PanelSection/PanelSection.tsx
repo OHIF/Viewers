@@ -12,7 +12,7 @@ const PanelSection = ({ title, children, actionIcons = [], childrenClassName }) 
   return (
     <>
       <div
-        className="bg-secondary-dark mt-[2px] flex h-7 cursor-pointer select-none items-center justify-between rounded-[4px] pl-2.5 text-[13px]"
+        className="bg-secondary-dark flex h-7 cursor-pointer select-none items-center justify-between rounded-[4px] pl-2.5 text-[13px]"
         onClick={handleHeaderClick}
       >
         <div className="text-aqua-pale">{title}</div>

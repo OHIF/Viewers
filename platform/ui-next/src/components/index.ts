@@ -6,5 +6,6 @@ import Combobox from './Combobox';
 import Popover from './Popover';
 import Calendar  from './Calendar';
 import DatePickerWithRange from './DateRange';
+import Separator from './Separator';
 
-export { Button, buttonVariants, ThemeWrapper, Command, Dialog, Combobox, Popover, Calendar, DatePickerWithRange};
+export { Button, buttonVariants, ThemeWrapper, Command, Dialog, Combobox, Popover, Calendar, DatePickerWithRange, Separator};

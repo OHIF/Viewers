@@ -8,6 +8,7 @@ import {
   Combobox,
   Calendar,
   DatePickerWithRange,
+  Separator
 } from './components';
 import { useNotification, NotificationProvider } from './contextProviders';
 
@@ -25,4 +26,5 @@ export {
   // contextProviders
   NotificationProvider,
   useNotification,
+  Separator
 };
