@@ -62,6 +62,9 @@
     "lerna:customVersion": "node version.mjs",
     "link-list": "npm ls --depth=0 --link=true"
   },
+  "dependencies": {
+    "execa" :"^8.0.1"
+  },
   "optionalDependencies": {
     "@percy/cypress": "^3.1.1",
     "@playwright/test": "^1.44.0",
