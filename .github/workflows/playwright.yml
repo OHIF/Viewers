@@ -5,20 +5,46 @@ on:
   pull_request:
     branches: [main, master]
 jobs:
-  playwright-tests:
-    timeout-minutes: 60
+  cache:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        shardIndex: [1, 2, 3, 4, 5]
-        shardTotal: [5]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 18
-      - name: Install dependencies playwright
+      - name: Cache Yarn dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/yarn
+            node_modules
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+      - name: Cache Playwright browsers
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-playwright-
+
+  playwright-tests:
+    needs: cache
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        shardIndex: [1, 2, 3, 4, 5, 6]
+        shardTotal: [6]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+      - name: Install dependencies
         run: yarn install --frozen-lockfile
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
@@ -36,7 +62,6 @@ jobs:
   merge-reports:
     if: ${{ !cancelled() }}
     needs: [playwright-tests]
-
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
