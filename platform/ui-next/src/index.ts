@@ -8,7 +8,15 @@ import {
   Combobox,
   Calendar,
   DatePickerWithRange,
-  Separator
+  Separator,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+  Toggle,
+  toggleVariants,
+  ToggleGroup,
+  ToggleGroupItem
 } from './components';
 import { useNotification, NotificationProvider } from './contextProviders';
 
@@ -26,5 +34,13 @@ export {
   // contextProviders
   NotificationProvider,
   useNotification,
-  Separator
+  Separator,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+  Toggle,
+  toggleVariants,
+  ToggleGroup,
+  ToggleGroupItem
 };
