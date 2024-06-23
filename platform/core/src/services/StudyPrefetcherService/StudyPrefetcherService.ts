@@ -48,7 +48,7 @@ type StudyPrefetchConfig = {
 
 type DisplaySetStatus = {
   displaySetInstanceUID: string;
-  numImages: number;
+  numInstances: number;
   pendingImageIds: Set<string>;
   loadedImageIds: Set<string>;
   failedImageIds: Set<string>;
@@ -321,14 +321,14 @@ class StudyPrefetcherService extends PubSubService {
 
     const { displaySetInstanceUID, imageId } = imageRequest;
     const displaySetLoadingState = this._displaySetLoadingStates.get(displaySetInstanceUID);
-    const { numImages, loadedImageIds, failedImageIds } = displaySetLoadingState;
-    const loadingProgress = (loadedImageIds.size + failedImageIds.size) / numImages;
+    const { numInstances, loadedImageIds, failedImageIds } = displaySetLoadingState;
+    const loadingProgress = (loadedImageIds.size + failedImageIds.size) / numInstances;
 
     this._inflightRequests.delete(imageId);
     this._broadcastEvent(this.EVENTS.DISPLAYSET_LOAD_PROGRESS, {
       displaySetInstanceUID,
-      numImages,
-      loadingProgress: (loadedImageIds.size + failedImageIds.size) / numImages,
+      numInstances,
+      loadingProgress: (loadedImageIds.size + failedImageIds.size) / numInstances,
     });
 
     if (loadingProgress >= 1) {
@@ -418,7 +418,7 @@ class StudyPrefetcherService extends PubSubService {
 
     this._displaySetLoadingStates.set(displaySetInstanceUID, {
       displaySetInstanceUID,
-      numImages: imageIds.length,
+      numInstances: imageIds.length,
       pendingImageIds: new Set(imageIds),
       loadedImageIds: new Set(),
       failedImageIds: new Set(),
