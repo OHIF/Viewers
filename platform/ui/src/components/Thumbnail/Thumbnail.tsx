@@ -96,9 +96,14 @@ const Thumbnail = ({
             {` ${numInstances}`}
           </div>
           {loadingProgress && loadingProgress < 1 && (
+            <div className="mr-4">{Math.round(loadingProgress * 100)}%</div>
+          )}
+          {loadingProgress && loadingProgress === 1 && (
             <div className="mr-4">
-              <span className="text-primary-main font-bold">{'P: '}</span>
-              {Math.round(loadingProgress * 100)}%
+              <Icon
+                name={'database'}
+                className="w-3"
+              />
             </div>
           )}
           <DisplaySetMessageListTooltip
