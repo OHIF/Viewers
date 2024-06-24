@@ -53,6 +53,12 @@ const _getDisplaySetsFromSeries = (instances, servicesManager, extensionManager)
       const { Modality, SOPInstanceUID, SeriesDescription = 'VIDEO' } = instance;
       const { SeriesNumber, SeriesDate, SeriesInstanceUID, StudyInstanceUID, NumberOfFrames, url } =
         instance;
+      const videoUrl = dataSource.retrieve.directURL({
+        instance,
+        singlepart: 'video',
+        tag: 'PixelData',
+        url,
+      });
       const displaySet = {
         //plugin: id,
         Modality,
@@ -66,12 +72,7 @@ const _getDisplaySetsFromSeries = (instances, servicesManager, extensionManager)
         SOPClassHandlerId,
         referencedImages: null,
         measurements: null,
-        videoUrl: dataSource.retrieve.directURL({
-          instance,
-          singlepart: 'video',
-          tag: 'PixelData',
-          url,
-        }),
+        videoUrl,
         instances: [instance],
         thumbnailSrc: dataSource.retrieve.directURL({
           instance,

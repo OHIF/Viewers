@@ -52,7 +52,7 @@ export default class ServicesManager {
         extensionManager: this._extensionManager,
       });
       if (service.altName) {
-        console.log('Registering old name', service.altName);
+        // TODO - remove this registration
         this.services[service.altName] = this.services[service.name];
       }
     } else {

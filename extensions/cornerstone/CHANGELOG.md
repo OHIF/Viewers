@@ -3,6 +3,83 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.9.0-beta.47](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.46...v3.9.0-beta.47) (2024-06-21)
+
+
+### Bug Fixes
+
+* Allow the mode setup/creation to be async, and provide a few more values to extension/app config/mode setup. ([#4016](https://github.com/OHIF/Viewers/issues/4016)) ([88575c6](https://github.com/OHIF/Viewers/commit/88575c6c09fd778a31b2f91524163ce65d1639dd))
+* **CustomViewportOverlay:** pass accurate data to Custom Viewport Functions ([#4224](https://github.com/OHIF/Viewers/issues/4224)) ([aef00e9](https://github.com/OHIF/Viewers/commit/aef00e91d63e9bc2de289cc6f35975e36547fb20))
+
+
+### Features
+
+* customization service append and customize functionality should run once ([#4238](https://github.com/OHIF/Viewers/issues/4238)) ([e462fd3](https://github.com/OHIF/Viewers/commit/e462fd31f7944acfee34f08cfbc28cfd9de16169))
+* **HP:** Frame View HP ([#4235](https://github.com/OHIF/Viewers/issues/4235)) ([d5d8214](https://github.com/OHIF/Viewers/commit/d5d821464acb0f89fc9b189bd245a06c209d77b4))
+
+
+
+
+
+# [3.9.0-beta.46](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.45...v3.9.0-beta.46) (2024-06-18)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.9.0-beta.45](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.44...v3.9.0-beta.45) (2024-06-18)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.9.0-beta.44](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.43...v3.9.0-beta.44) (2024-06-17)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.9.0-beta.43](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.42...v3.9.0-beta.43) (2024-06-12)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.9.0-beta.42](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.41...v3.9.0-beta.42) (2024-06-12)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.9.0-beta.41](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.40...v3.9.0-beta.41) (2024-06-12)
+
+
+### Features
+
+* Add customization merge, append or replace functionality ([#3871](https://github.com/OHIF/Viewers/issues/3871)) ([55dcfa1](https://github.com/OHIF/Viewers/commit/55dcfa1f6994a7036e7e594efb23673382a41915))
+
+
+
+
+
+# [3.9.0-beta.40](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.39...v3.9.0-beta.40) (2024-06-12)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
 # [3.9.0-beta.39](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.38...v3.9.0-beta.39) (2024-06-08)
 
 **Note:** Version bump only for package @ohif/extension-cornerstone

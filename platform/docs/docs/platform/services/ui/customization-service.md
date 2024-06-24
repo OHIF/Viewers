@@ -26,6 +26,61 @@ supports customization. (for example, `CustomizableViewportOverlay` component us
 `CustomizationService` to implement viewport overlay that is easily customizable
 from configuration.)
 
+## Global, Default and Mode customizations
+There are various customization sets that define the lifetime/setup of the
+customization.  The global customizations are those used for overriding
+customizations defined elsewhere, and allow replacing a customization.
+
+Mode customizations are only registered for the lifetime of the mode, allowing
+the mode definition to update/modify the underlying behaviour.  This is related
+to default customizations, which provide a fallback if the mode or global customization
+isn't defined.  Default customizations may only be defined once, otherwise throwing
+an exception.
+
+## Append and Merge Customizations
+In addition to the replace a customization, there is the ability to merge or append
+a customization.  The merge customization simply applies the lodash merge functionality
+to the existing customization, with the new one, while the append customization
+modifies the customization by appending to the value.
+
+### Append Behaviour
+When a list is found in the destination object, the append source object is
+examined to see how to handle the change.  If the source is simply a list,
+then the list object is appended, and no additional changes are performed.
+However, if the source is an object other than a list, then the iterable
+attributes of the object are examined to match child objects to the destination list,
+according to the following table:
+
+* Natural or zero number value - match the given index location and merge at the point
+* Fractional number value - insert at a new point in the list, starting from the end or beginning
+* keyword - match a value having the same id as the keyword, inserting at the end, or at _priority as defined in the keywords above.
+
+#### Example Append
+
+```javascript
+const destination = [
+  1,
+  {id: 'two', value: 2},
+  {id: 'three', value: 3}
+]
+
+const source = {
+  two: { value: 'updated2' },
+  1: { extraValue: 2 },
+  1.0001: { id: 'inserted', value: 1.0001 },
+  -1: { value: -3 },
+}
+```
+
+Results in two updates to `destination[1]`, the first using an id match on 'two', while the second one
+does a positional match on `1`, resulting in the value `{id: 'two', value: 'updated2', extraValue: 2 }`
+
+Then, it inserts the id 'inserted' after position 1.
+
+Finally, position -1 (the end position) is updated from value 3 to value -3.
+
+The ordering is not specified on any of these insertions, so can happen out of order.  Use multiple updates to perform order specific inserts.
+
 ## Registering customizable modules (or defining customization prototypes)
 
 Extensions and Modes can register customization templates they support.
@@ -37,8 +92,8 @@ Below is the protocol of the `getCustomizationModule()`, if defined in Typescrip
   getCustomizationModule() : { name: string, value: any }[]
 ```
 
-If the name is 'default', it is the Default customization, which is loaded
-automatically when the extension or mode is loaded.
+If the name is 'default', it is the a default customization, while if it
+is 'global', then it is a priority/over-riding customization.
 
 In the `value` of each customizations, you will define customization prototype(s).
 These customization prototype(s) can be considered like "Prototype" in Javascript.
@@ -346,145 +401,68 @@ customizationService: [
 
 Below is the full example configuration of the customizable viewport overlay and the screenshot of the result overlay.
 
+There are working examples that can be run with:
+```
+set APP_CONFIG=config/customization.js
+yarn dev
+```
+
 ```javascript
-// this is one of the configuration files in `platform/app/public/config/*.js`
+// this is part of customization.js, an example customization dataset
 window.config = {
-  // ...
 
-  customizationService: {
-    cornerstoneOverlayTopLeft: {
-      id: 'cornerstoneOverlayTopLeft',
-      items: [
-        {
-          id: 'WindowLevel',
-          customizationType: 'ohif.overlayItem.windowLevel',
+   // This shows how to append to the customization data
+   customizationService: [
+    {
+      id: '@ohif/cornerstoneOverlay',
+      // Append recursively, rather than replacing
+      merge: 'Append',
+      topRightItems: {
+        id: 'cornerstoneOverlayTopRight',
+        items: [
+          {
+            id: 'PatientNameOverlay',
+            // Note below that here we are using the customization prototype of
+            // `ohif.overlayItem` which was registered to the customization module in
+            // `ohif/extension-default` extension.
+            customizationType: 'ohif.overlayItem',
+            // the following props are passed to the `ohif.overlayItem` prototype
+            // which is used to render the overlay item based on the label, color,
+            // conditions, etc.
+            attribute: 'PatientName',
+            label: 'PN:',
+            title: 'Patient Name',
+            color: 'yellow',
+            condition: ({ instance }) => instance?.PatientName,
+            contentF: ({ instance, formatters: { formatPN } }) =>
+              formatPN(instance.PatientName) +
+              (instance.PatientSex ? ' (' + instance.PatientSex + ')' : ''),
+          },
+        ],
+      },
+
+      topLeftItems: {
+        items: {
+          // Note the -10000 means -10000 + length of existing list, which is
+          // much before the start of hte list, so put the new value at the start.
+          '-10000':
+          {
+            id: 'Species',
+            customizationType: 'ohif.overlayItem',
+            label: 'Species:',
+            color: 'red',
+            background: 'green',
+            condition: ({ instance }) =>
+              instance?.PatientSpeciesDescription,
+            contentF: ({ instance }) =>
+              instance.PatientSpeciesDescription +
+              '/' +
+              instance.PatientBreedDescription,
+          },
         },
-        {
-          id: 'PatientName',
-          customizationType: 'ohif.overlayItem',
-          label: '',
-          color: 'green',
-          background: 'white',
-          condition: ({ instance }) =>
-            instance && instance.PatientName && instance.PatientName.Alphabetic,
-          contentF: ({ instance, formatters: { formatPN } }) =>
-            formatPN(instance.PatientName.Alphabetic) +
-            ' ' +
-            (instance.PatientSex ? '(' + instance.PatientSex + ')' : ''),
-        },
-        {
-          id: 'Species',
-          customizationType: 'ohif.overlayItem',
-          label: 'Species:',
-          condition: ({ instance }) =>
-            instance && instance.PatientSpeciesDescription,
-          contentF: ({ instance }) =>
-            instance.PatientSpeciesDescription +
-            '/' +
-            instance.PatientBreedDescription,
-        },
-        {
-          id: 'PID',
-          customizationType: 'ohif.overlayItem',
-          label: 'PID:',
-          title: 'Patient PID',
-          condition: ({ instance }) => instance && instance.PatientID,
-          contentF: ({ instance }) => instance.PatientID,
-        },
-        {
-          id: 'PatientBirthDate',
-          customizationType: 'ohif.overlayItem',
-          label: 'DOB:',
-          title: "Patient's Date of birth",
-          condition: ({ instance }) => instance && instance.PatientBirthDate,
-          contentF: ({ instance }) => instance.PatientBirthDate,
-        },
-        {
-          id: 'OtherPid',
-          customizationType: 'ohif.overlayItem',
-          label: 'Other PID:',
-          title: 'Other Patient IDs',
-          condition: ({ instance }) => instance && instance.OtherPatientIDs,
-          contentF: ({ instance, formatters: { formatPN } }) =>
-            formatPN(instance.OtherPatientIDs),
-        },
-      ],
+      },
     },
-    cornerstoneOverlayTopRight: {
-      id: 'cornerstoneOverlayTopRight',
-
-      items: [
-        {
-          id: 'InstanceNmber',
-          customizationType: 'ohif.overlayItem.instanceNumber',
-        },
-        {
-          id: 'StudyDescription',
-          customizationType: 'ohif.overlayItem',
-          label: '',
-          title: ({ instance }) =>
-            instance &&
-            instance.StudyDescription &&
-            `Study Description: ${instance.StudyDescription}`,
-          condition: ({ instance }) => instance && instance.StudyDescription,
-          contentF: ({ instance }) => instance.StudyDescription,
-        },
-        {
-          id: 'StudyDate',
-          customizationType: 'ohif.overlayItem',
-          label: '',
-          title: 'Study date',
-          condition: ({ instance }) => instance && instance.StudyDate,
-          contentF: ({ instance, formatters: { formatDate } }) =>
-            formatDate(instance.StudyDate),
-        },
-        {
-          id: 'StudyTime',
-          customizationType: 'ohif.overlayItem',
-          label: '',
-          title: 'Study time',
-          condition: ({ instance }) => instance && instance.StudyTime,
-          contentF: ({ instance, formatters: { formatTime } }) =>
-            formatTime(instance.StudyTime),
-        },
-      ],
-    },
-    cornerstoneOverlayBottomLeft: {
-      id: 'cornerstoneOverlayBottomLeft',
-
-      items: [
-        {
-          id: 'SeriesNumber',
-          customizationType: 'ohif.overlayItem',
-          label: 'Ser:',
-          title: 'Series Number',
-          condition: ({ instance }) => instance && instance.SeriesNumber,
-          contentF: ({ instance }) => instance.SeriesNumber,
-        },
-        {
-          id: 'SliceLocation',
-          customizationType: 'ohif.overlayItem',
-          label: 'Loc:',
-          title: 'Slice Location',
-          condition: ({ instance }) => instance && instance.SliceLocation,
-          contentF: ({ instance, formatters: { formatNumberPrecision } }) =>
-            formatNumberPrecision(instance.SliceLocation, 2) + ' mm',
-        },
-        {
-          id: 'SliceThickness',
-          customizationType: 'ohif.overlayItem',
-          label: 'Thick:',
-          title: 'Slice Thickness',
-          condition: ({ instance }) => instance && instance.SliceThickness,
-          contentF: ({ instance, formatters: { formatNumberPrecision } }) =>
-            formatNumberPrecision(instance.SliceThickness, 2) + ' mm',
-        },
-      ],
-    },
-  },
-
-  // ...
-}
+...
 ```
 
 <img src="../../../assets/img/customizable-overlay.png" />

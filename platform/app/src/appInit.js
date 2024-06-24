@@ -42,7 +42,7 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
 
   const appConfig = {
     ...(typeof appConfigOrFunc === 'function'
-      ? await appConfigOrFunc({ servicesManager })
+      ? await appConfigOrFunc({ servicesManager, loadModules })
       : appConfigOrFunc),
   };
 
@@ -115,7 +115,7 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
           ? appConfig.modesConfiguration[id]
           : {};
 
-      mode = mode.modeFactory({ modeConfiguration });
+      mode = await mode.modeFactory({ modeConfiguration, loadModules });
     }
 
     if (modesById.has(id)) {

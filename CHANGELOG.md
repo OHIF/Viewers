@@ -3,6 +3,99 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.9.0-beta.47](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.46...v3.9.0-beta.47) (2024-06-21)
+
+
+### Bug Fixes
+
+* Allow the mode setup/creation to be async, and provide a few more values to extension/app config/mode setup. ([#4016](https://github.com/OHIF/Viewers/issues/4016)) ([88575c6](https://github.com/OHIF/Viewers/commit/88575c6c09fd778a31b2f91524163ce65d1639dd))
+* **code:** remove console log ([#4248](https://github.com/OHIF/Viewers/issues/4248)) ([f3bbfff](https://github.com/OHIF/Viewers/commit/f3bbfff09b66ee020daf503656a2b58e763634a3))
+* **CustomViewportOverlay:** pass accurate data to Custom Viewport Functions ([#4224](https://github.com/OHIF/Viewers/issues/4224)) ([aef00e9](https://github.com/OHIF/Viewers/commit/aef00e91d63e9bc2de289cc6f35975e36547fb20))
+* **studybrowser:** Differentiate recent and all in study panel based on a provided time period ([#4242](https://github.com/OHIF/Viewers/issues/4242)) ([6f93449](https://github.com/OHIF/Viewers/commit/6f9344914951c204feaff48aaeb43cd7d727623d))
+
+
+### Features
+
+* customization service append and customize functionality should run once ([#4238](https://github.com/OHIF/Viewers/issues/4238)) ([e462fd3](https://github.com/OHIF/Viewers/commit/e462fd31f7944acfee34f08cfbc28cfd9de16169))
+* **HP:** Frame View HP ([#4235](https://github.com/OHIF/Viewers/issues/4235)) ([d5d8214](https://github.com/OHIF/Viewers/commit/d5d821464acb0f89fc9b189bd245a06c209d77b4))
+* **sort:** custom series sort in study panel ([#4214](https://github.com/OHIF/Viewers/issues/4214)) ([a433d40](https://github.com/OHIF/Viewers/commit/a433d406e2cac13f644203996c682260b54e8865))
+
+
+
+
+
+# [3.9.0-beta.46](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.45...v3.9.0-beta.46) (2024-06-18)
+
+
+### Bug Fixes
+
+* Use correct external URL for rendered responses with relative URI ([#4236](https://github.com/OHIF/Viewers/issues/4236)) ([d8f6991](https://github.com/OHIF/Viewers/commit/d8f6991dbe72465080cfc5de39c7ea225702f2e0))
+
+
+
+
+
+# [3.9.0-beta.45](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.44...v3.9.0-beta.45) (2024-06-18)
+
+
+### Bug Fixes
+
+* Re-enable hpScale module ([#4237](https://github.com/OHIF/Viewers/issues/4237)) ([2eab049](https://github.com/OHIF/Viewers/commit/2eab049d7993bb834f7736093941c175f16d61fc))
+
+
+
+
+
+# [3.9.0-beta.44](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.43...v3.9.0-beta.44) (2024-06-17)
+
+
+### Bug Fixes
+
+* **cli:** version txt had a new line which it should not ([#4233](https://github.com/OHIF/Viewers/issues/4233)) ([097ef76](https://github.com/OHIF/Viewers/commit/097ef7665559a672d73e1babfc42afccc3cdd41d))
+* **pdf-viewport:** Allow Drag and Drop on PDF Viewport ([#4225](https://github.com/OHIF/Viewers/issues/4225)) ([729efb6](https://github.com/OHIF/Viewers/commit/729efb6d766e0f72f1fd8adefbca6fb46b355b2b))
+
+
+
+
+
+# [3.9.0-beta.43](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.42...v3.9.0-beta.43) (2024-06-12)
+
+
+### Bug Fixes
+
+* **sr:** rendering issue by running loadSR before updateSR ([#4226](https://github.com/OHIF/Viewers/issues/4226)) ([6971287](https://github.com/OHIF/Viewers/commit/69712874603109aa4f655d47daf15d72167a49ff))
+
+
+
+
+
+# [3.9.0-beta.42](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.41...v3.9.0-beta.42) (2024-06-12)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.9.0-beta.41](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.40...v3.9.0-beta.41) (2024-06-12)
+
+
+### Features
+
+* Add customization merge, append or replace functionality ([#3871](https://github.com/OHIF/Viewers/issues/3871)) ([55dcfa1](https://github.com/OHIF/Viewers/commit/55dcfa1f6994a7036e7e594efb23673382a41915))
+
+
+
+
+
+# [3.9.0-beta.40](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.39...v3.9.0-beta.40) (2024-06-12)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
 # [3.9.0-beta.39](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.38...v3.9.0-beta.39) (2024-06-08)
 
 **Note:** Version bump only for package ohif-monorepo-root
