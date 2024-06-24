@@ -186,7 +186,7 @@ function PanelStudyBrowserTracking({
     thumbnailImageSrcMap,
   ]);
 
-  // -- displaySetLoadingState
+  // -- displaySetsLoadingState
   useEffect(() => {
     const { unsubscribe } = studyPrefetcherService.subscribe(
       studyPrefetcherService.EVENTS.DISPLAYSET_LOAD_PROGRESS,
