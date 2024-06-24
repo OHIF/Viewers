@@ -1,4 +1,4 @@
-import { dicomWebUtils } from '@ohif/extension-default';
+import { fixBulkDataURI } from "./fixBulkDataURI";
 
 function isPrimitive(v: any) {
   return !(typeof v == 'object' || Array.isArray(v));
@@ -26,9 +26,9 @@ const vrNumerics = [
  * @param obj
  * @returns
  */
-export default function cleanDenaturalizedDataset(
+export function cleanDenaturalizedDataset(
   obj: any,
-  options: {
+  options?: {
     StudyInstanceUID: string;
     SeriesInstanceUID: string;
     dataSourceConfig: unknown;
@@ -45,7 +45,10 @@ export default function cleanDenaturalizedDataset(
         delete obj[key].Value;
       } else if (Array.isArray(obj[key].Value) && obj[key].vr) {
         if (obj[key].Value.length === 1 && obj[key].Value[0].BulkDataURI) {
-          dicomWebUtils.fixBulkDataURI(obj[key].Value[0], options, options.dataSourceConfig);
+          if (options?.dataSourceConfig) {
+            // Not needed unless data source is directly used for loading data.
+            fixBulkDataURI(obj[key].Value[0], options, options.dataSourceConfig);
+          }
 
           obj[key].BulkDataURI = obj[key].Value[0].BulkDataURI;
 
@@ -63,4 +66,14 @@ export default function cleanDenaturalizedDataset(
     });
     return obj;
   }
+}
+
+/**
+ * This is required to make the denaturalized data transferrable when it has
+ * added proxy values.
+ */
+export function transferDenaturalizedDataset(dataset) {
+  const nonull = cleanDenaturalizedDataset(dataset);
+  const json = JSON.stringify(nonull);
+  return JSON.parse(json);
 }
