@@ -930,7 +930,6 @@ class SegmentationService extends PubSubService {
     );
 
     const { type } = segmentationRepresentation;
-    console.debug(type)
     const { segments } = segmentation;
 
     const highlightFn =
