@@ -95,17 +95,17 @@ const Thumbnail = ({
             />
             {` ${numInstances}`}
           </div>
-          {loadingProgress && loadingProgress < 1 && (
-            <div className="mr-4">{Math.round(loadingProgress * 100)}%</div>
-          )}
-          {loadingProgress && loadingProgress === 1 && (
-            <div className="mr-4">
+          <div className="flex mr-2 last:mr-0">
+            {loadingProgress && loadingProgress < 1 && (
+              <>{Math.round(loadingProgress * 100)}%</>
+            )}
+            {loadingProgress && loadingProgress === 1 && (
               <Icon
                 name={'database'}
                 className="w-3"
               />
-            </div>
-          )}
+            )}
+          </div>
           <DisplaySetMessageListTooltip
             messages={messages}
             id={`display-set-tooltip-${displaySetInstanceUID}`}

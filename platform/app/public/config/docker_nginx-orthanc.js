@@ -12,7 +12,14 @@ window.config = {
   showWarningMessageForCrossOrigin: true,
   showCPUFallbackMessage: true,
   showLoadingIndicator: true,
+  experimentalStudyBrowserSort: false,
   strictZSpacingForVolumeViewport: true,
+  studyPrefetcher: {
+    enabled: true,
+    displaySetsCount: 2,
+    maxNumPrefetchRequests: 10,
+    order: 'closest',
+  },
   defaultDataSourceName: 'dicomweb',
   dataSources: [
     {
@@ -47,4 +54,7 @@ window.config = {
       },
     },
   ],
+  httpErrorHandler: error => {
+    console.warn(`HTTP Error Handler (status: ${error.status})`, error);
+  },
 };
