@@ -128,6 +128,21 @@ yarn playwright show-report tests/playwright-report
 
 By default, when you run the tests, it will call the `yarn start` command to serve the viewer first, then run the tests, if you would like to serve the viewer manually, you can use the same command. The viewer will be available at `http://localhost:3000`. This could speed up your development process since playwright will skip this step and use the existing server on port 3000.
 
+## Accessing services, managers, configs and cornerstone in your tests
+
+If you would like to access the cornerstone3D, services, or command managers in your tests, you can use the `page.evaluate` function to access them. For example, if you would like to access the `services` so you can show a UI notifcation using the uiNotifcationService, you can use the following code snippet:
+
+```ts
+  await page.evaluate(({ services }: AppTypes.Test) => {
+    const { uiNotificationService } = services;
+    uiNotificationService.show({
+      title: 'Test',
+      message: 'This is a test',
+      type: 'info',
+    });
+  }, await page.evaluateHandle('window'));
+ ```
+
 ## Playwright VSCode Extension and Recording Tests
 
 If you are using VSCode, you can use the Playwright extension to help you write your tests. The extension provides a test runner and many great features such as picking a locator using your mouse, recording a new test, and more. You can install the extension by searching for `Playwright` in the extensions tab in VSCode or by visiting the [Playwright extension page](https://marketplace.visualstudio.com/items?itemName=ms-playwright.playwright).
