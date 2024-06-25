@@ -21,3 +21,6 @@ docker-compose up
 
 http://localhost/ -> OHIF
 localhost/pacs -> Orthanc
+
+
+See [here](../../../docs/docs/deployment/nginx--image-archive.md) for more information about this recipe.
