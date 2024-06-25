@@ -136,6 +136,16 @@ All other files are found in: `/docker/Nginx-Orthanc/`
 
 ## Next Steps
 
+### OHIF + Dcm4chee
+
+You can follow the similar steps above to run OHIF Viewer with Dcm4chee PACS. You can watch the
+video below to see how to run OHIF Viewer with Dcm4chee:
+
+<div style={{padding:"56.25% 0 0 0", position:"relative"}}>
+    <iframe src="https://player.vimeo.com/video/843233827?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479"  frameBorder="0" allow="autoplay; fullscreen; picture-in-picture" allowFullScreen style= {{ position:"absolute",top:0,left:0,width:"100%",height:"100%"}} title="measurement-report"></iframe>
+</div>
+
+
 ### Deploying to Production
 
 While these configuration and docker-compose files model an environment suitable
