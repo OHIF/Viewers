@@ -6,6 +6,8 @@ import SyncGroupServiceType from '../services/SyncGroupService';
 import ToolGroupServiceType from '../services/ToolGroupService';
 import ViewportActionCornersServiceType from '../services/ViewportActionCornersService/ViewportActionCornersService';
 import ColorbarServiceType from '../services/ColorbarService';
+import * as cornerstone from '@cornerstonejs/core';
+import * as cornerstoneTools from '@cornerstonejs/tools';
 
 declare global {
   namespace AppTypes {
@@ -24,6 +26,12 @@ declare global {
       cornerstoneCacheService?: CornerstoneCacheServiceType;
       viewportActionCornersService?: ViewportActionCornersServiceType;
       colorbarService?: ColorbarServiceType;
+    }
+
+    export interface Test {
+      services?: Services;
+      cornerstone?: typeof cornerstone;
+      cornerstoneTools?: typeof cornerstoneTools;
     }
   }
 }

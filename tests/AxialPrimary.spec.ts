@@ -2,7 +2,7 @@ import { test } from '@playwright/test';
 import { visitStudy, checkForScreenshot, screenShotPaths } from './utils';
 
 test.beforeEach(async ({ page }) => {
-  const studyInstanceUID = '2.16.840.1.114362.1.11972228.22789312658.616067305.306.2';
+  const studyInstanceUID = '1.3.6.1.4.1.14519.5.2.1.1706.8374.643249677828306008300337414785';
   const mode = 'Basic Viewer';
   await visitStudy(page, studyInstanceUID, mode, 2000);
 });
