@@ -73,8 +73,9 @@ function getRuntimeLoadModesExtensions(modules) {
       '  }'
     );
   });
+  // TODO - handle more cases for import than just default
   dynamicLoad.push(
-    '  return (await import(/* webpackIgnore: true */ module)).default;',
+    '  return (await window.browserImportFunction(module)).default;',
     '}\n',
     '// Import a list of items (modules or string names)',
     '// @return a Promise evaluating to a list of modules',

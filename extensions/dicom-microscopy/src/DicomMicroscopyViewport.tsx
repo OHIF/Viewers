@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { LoadingIndicatorProgress } from '@ohif/ui';
+import { WSIViewport } from '@cornerstonejs/core';
 
 import './DicomMicroscopyViewport.css';
 import ViewportOverlay from './components/ViewportOverlay';
@@ -49,13 +50,6 @@ class DicomMicroscopyViewport extends Component {
     resizeRef: PropTypes.oneOfType([PropTypes.func, PropTypes.shape({ current: PropTypes.any })]),
   };
 
-  /**
-   * Need to return this as a function to prevent webpack from munging it.
-   */
-  public static getImportPath() {
-    return '/dicom-microscopy-viewer/dicomMicroscopyViewer.min.js';
-  }
-
 
   /**
    * Get the nearest ROI from the mouse click point
@@ -94,9 +88,8 @@ class DicomMicroscopyViewport extends Component {
   // you should only do this once.
   async installOpenLayersRenderer(container, displaySet) {
     const loadViewer = async metadata => {
-      await import(
-        /* webpackIgnore: true */ DicomMicroscopyViewport.getImportPath());
-      const { viewer: DicomMicroscopyViewer, metadata: metadataUtils } = (window as any).dicomMicroscopyViewer;
+      const dicomMicroscopyModule = await WSIViewport.getDicomMicroscopyViewer();
+      const { viewer: DicomMicroscopyViewer, metadata: metadataUtils } = dicomMicroscopyModule;
 
       const microscopyViewer = DicomMicroscopyViewer.VolumeImageViewer;
 
