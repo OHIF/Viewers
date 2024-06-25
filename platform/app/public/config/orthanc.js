@@ -27,7 +27,10 @@ window.config = {
         bulkDataURI: {
           enabled: true,
           relativeResolution: 'studies',
-          // This is an example config that could potentially be used to fix the retrieve URL
+          // This is an example config that can be used to fix the retrieve URL
+          // where it has the wrong prefix (eg a canned prefix).  It is better to
+          // just use the correct prefix out of the box, but that is sometimes hard
+          // when URLs go through several systems.
           startsWith: 'http://localhost/',
           prefixWith: '/orthanc/',
         },
