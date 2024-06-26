@@ -131,7 +131,7 @@ export default class DisplaySetService extends PubSubService {
       : [...this.getDisplaySetCache().values()];
 
     const displaySet = displaySets.find(ds => {
-      return ds.images && ds.images.some(i => i.SOPInstanceUID === sopInstanceUID);
+      return ds.instances?.some(i => i.SOPInstanceUID === sopInstanceUID);
     });
 
     return displaySet;
